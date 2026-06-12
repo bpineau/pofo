@@ -162,7 +162,8 @@ sim, _ := portfolio.Simulate(p, 90)
 - `portfolio` — parsing des fichiers d'allocation et simulation rebalancée.
 - `report` — rendu du rapport HTML.
 - `simgen` — moteur de reconstruction (composites linéaires, références
-  importées, backcasts par régression) et recettes validées.
+  importées, moteur trend-following TSMOM, backcasts par régression) et
+  recettes validées.
 
 ## Limites connues
 
