@@ -39,16 +39,58 @@ type Portfolio struct {
 	// Cash is the financing/deposit rate series, in annualized percent
 	// levels (e.g. ^IRX). Nil means a flat 0 % rate.
 	Cash *marketdata.Series
+
+	// Capital is the starting amount (0 or negative: the simulation runs
+	// on a relative base of 100). Required for external flows.
+	Capital float64
+
+	// Contribute and Withdraw are periodic external flows, applied on the
+	// first trading day of each new calendar period at that day's prices.
+	// A percentage withdrawal takes that share of the current value.
+	Contribute Flow
+	Withdraw   Flow
 }
 
-// SimResult is the simulated value of a portfolio over time, starting at 100.
+// SimResult is the simulated value of a portfolio over time.
+//
+// Values is the portfolio's worth (starting at Capital, or at 100 when no
+// capital is set) and moves with external flows. Index is the
+// time-weighted return rebased to 100: it strips contributions and
+// withdrawals out, so it is the series to use for metrics and for
+// comparing portfolios. Without flows the two only differ by scale.
 type SimResult struct {
 	Dates  []time.Time
 	Values []float64
+	Index  []float64
 
-	// Ruined is true when a levered portfolio's net value hit zero: the
-	// series is truncated at that point.
+	// FlowDates and FlowAmounts record the external flows (positive:
+	// contribution, negative: withdrawal), e.g. for metrics.IRR.
+	FlowDates   []time.Time
+	FlowAmounts []float64
+
+	// Contributed and Withdrawn are the totals of external flows.
+	Contributed float64
+	Withdrawn   float64
+
+	// Ruined is true when the value hit zero (levered losses, or
+	// withdrawals from a depleted portfolio): the series is truncated.
 	Ruined bool
+}
+
+// periodKey maps a date to its calendar period, so a flow fires on the
+// first trading day of each new period.
+func periodKey(t time.Time, p Period) int {
+	switch p {
+	case Weekly:
+		y, w := t.ISOWeek()
+		return y*100 + w
+	case Monthly:
+		return t.Year()*12 + int(t.Month())
+	case Quarterly:
+		return t.Year()*4 + (int(t.Month())-1)/3
+	default: // Yearly
+		return t.Year()
+	}
 }
 
 // Simulate replays the portfolio from the first date where every asset has a
@@ -138,15 +180,22 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		return r
 	}
 
+	startValue := 100.0
+	if p.Capital > 0 {
+		startValue = p.Capital
+	}
 	values := make([]float64, len(dates))
-	values[0] = 100
-	setShares(0, 100)
+	index := make([]float64, len(dates))
+	values[0], index[0] = startValue, 100
+	setShares(0, startValue)
 	dailyFee := 0.0
 	if p.EnvelopeFees > 0 {
 		dailyFee = p.EnvelopeFees / 100 / 252
 	}
+	res := &SimResult{}
+	contribKey := periodKey(dates[0], p.Contribute.Period)
+	withdrawKey := periodKey(dates[0], p.Withdraw.Period)
 	nextRebalance := dates[0].AddDate(0, 0, rebalanceDays)
-	ruined := false
 	for k := 1; k < len(dates); k++ {
 		cash *= (1 - dailyFee) * (1 + dailyCashRate(k))
 		v := cash
@@ -154,10 +203,50 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			shares[i] *= 1 - dailyFee
 			v += shares[i] * prices[i][k]
 		}
-		if p.Leverage && v <= 0 {
-			// Capital wiped out: the series stops here.
-			dates, values, ruined = dates[:k], values[:k], true
+		if v <= 0 {
+			// Capital wiped out (levered losses): the series stops here.
+			dates, values, index, res.Ruined = dates[:k], values[:k], index[:k], true
 			break
+		}
+		// Index accrues the market return only, before today's flows.
+		index[k] = index[k-1] * v / values[k-1]
+
+		// External flows fire on the first trading day of a new period,
+		// at today's prices, and buy or sell every position pro rata.
+		flow := 0.0
+		if p.Contribute.Active() {
+			if nk := periodKey(dates[k], p.Contribute.Period); nk != contribKey {
+				contribKey = nk
+				flow += p.Contribute.Amount
+				res.Contributed += p.Contribute.Amount
+			}
+		}
+		if p.Withdraw.Active() {
+			if nk := periodKey(dates[k], p.Withdraw.Period); nk != withdrawKey {
+				withdrawKey = nk
+				w := p.Withdraw.Amount
+				if p.Withdraw.Percent {
+					w = p.Withdraw.Amount / 100 * v
+				}
+				flow -= w
+				res.Withdrawn += w
+			}
+		}
+		if flow != 0 {
+			res.FlowDates = append(res.FlowDates, dates[k])
+			res.FlowAmounts = append(res.FlowAmounts, flow)
+			if v+flow <= 0 {
+				// Withdrawals depleted the portfolio.
+				dates, values, index, res.Ruined = dates[:k+1], values[:k+1], index[:k+1], true
+				values[k] = 0
+				break
+			}
+			scale := (v + flow) / v
+			for i := range shares {
+				shares[i] *= scale
+			}
+			cash *= scale
+			v += flow
 		}
 		values[k] = v
 		if rebalanceDays > 0 && !dates[k].Before(nextRebalance) {
@@ -165,5 +254,6 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			nextRebalance = dates[k].AddDate(0, 0, rebalanceDays)
 		}
 	}
-	return &SimResult{Dates: dates, Values: values, Ruined: ruined}, nil
+	res.Dates, res.Values, res.Index = dates, values, index
+	return res, nil
 }
