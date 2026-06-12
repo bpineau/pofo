@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: IEF
-# name: iShares 7-10Y Treasury — courbes de taux (réf. importée)
-# method: réf. IEF-REF (1962→), frais 0.15 %/an, réel IEF greffé depuis 2002
-# validation: corr=1.000 (hebdo 1.000) beta=1.00 TE=0.1%/an CAGR sim 3.37% vs réel 3.57% (overlap 6004 j de 2002-07-30 à 2026-06-10) vs IEF
+# name: iShares 7-10Y Treasury — yield curves (imported ref.)
+# method: ref. IEF-REF (1962→), 0.15%/yr fees, real IEF grafted from 2002
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.1%/yr CAGR sim 3.37% vs real 3.57% (overlap 6004 d from 2002-07-30 to 2026-06-10) vs IEF
 # generated: 2026-06-12
 date,close
 1962-01-02,2.281924

@@ -11,21 +11,21 @@ func TestIsISIN(t *testing.T) {
 	}
 	for _, id := range valid {
 		if !IsISIN(id) {
-			t.Errorf("%s devrait être un ISIN valide", id)
+			t.Errorf("%s should be a valid ISIN", id)
 		}
 	}
 	invalid := []string{
-		"US0378331004", // mauvaise clé de contrôle
+		"US0378331004", // wrong check digit
 		"AAPL",
 		"VOO",
 		"^GSPC",
 		"IWDA.AS",
-		"US03783310050", // 13 caractères
-		"123456789012",  // ne commence pas par deux lettres
+		"US03783310050", // 13 characters
+		"123456789012",  // does not start with two letters
 	}
 	for _, id := range invalid {
 		if IsISIN(id) {
-			t.Errorf("%s ne devrait pas être un ISIN valide", id)
+			t.Errorf("%s should not be a valid ISIN", id)
 		}
 	}
 }

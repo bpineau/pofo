@@ -42,7 +42,7 @@ type Spec struct {
 	BorrowSpread float64
 
 	// EnvelopeFees is the additional yearly fee of the hosting envelope
-	// (assurance-vie, PER, mandat…) set by "#meta extra-fees:X" — fees
+	// (life insurance, PER, managed account…) set by "#meta extra-fees:X" — fees
 	// applied on top of the WHOLE portfolio, in addition to the assets'
 	// own TERs — in percent per year;
 	// negative when absent. Unlike asset TERs (already reflected in
@@ -72,7 +72,7 @@ func ParseFile(path string) (*Spec, error) {
 
 // Parse reads a portfolio description: one line per asset, formatted as
 //
-//	<poids en %> <ticker, ISIN ou alias> [texte libre…]
+//	<weight in %> <ticker, ISIN or alias> [free text…]
 //
 // Everything after a # is a comment; blank lines and lines starting with //
 // are ignored. Lines starting with "#meta" carry per-portfolio directives
@@ -89,7 +89,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		line := strings.TrimSpace(sc.Text())
 		if isMeta, rest := metaDirective(line); isMeta {
 			if err := spec.applyMeta(rest); err != nil {
-				return nil, fmt.Errorf("ligne %d: %w", lineNo, err)
+				return nil, fmt.Errorf("line %d: %w", lineNo, err)
 			}
 			continue
 		}
@@ -102,11 +102,11 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		}
 		fields := strings.Fields(line)
 		if len(fields) < 2 {
-			return nil, fmt.Errorf("ligne %d: attendu « <poids> <ticker/ISIN> [texte] », trouvé %q", lineNo, line)
+			return nil, fmt.Errorf("line %d: expected \"<weight> <ticker/ISIN> [text]\", got %q", lineNo, line)
 		}
 		w, err := parseWeight(fields[0])
 		if err != nil {
-			return nil, fmt.Errorf("ligne %d: poids %q invalide: %v", lineNo, fields[0], err)
+			return nil, fmt.Errorf("line %d: invalid weight %q: %v", lineNo, fields[0], err)
 		}
 		h := Holding{RawWeight: w, ID: fields[1], Fees: -1}
 		rest := fields[2:]
@@ -114,7 +114,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		if len(rest) > 0 {
 			if fees, ferr := parseNumber(rest[0]); ferr == nil {
 				if fees < 0 || fees > 20 {
-					return nil, fmt.Errorf("ligne %d: frais %q hors limites (0–20 %%/an)", lineNo, rest[0])
+					return nil, fmt.Errorf("line %d: fees %q out of range (0–20 %%/year)", lineNo, rest[0])
 				}
 				h.Fees = fees
 				rest = rest[1:]
@@ -127,38 +127,38 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		return nil, err
 	}
 	if len(spec.Holdings) == 0 {
-		return nil, fmt.Errorf("aucune ligne d'allocation trouvée")
+		return nil, fmt.Errorf("no allocation line found")
 	}
 	sum := 0.0
 	for _, h := range spec.Holdings {
 		sum += h.RawWeight
 	}
 	if sum <= 0 {
-		return nil, fmt.Errorf("somme des poids nulle")
+		return nil, fmt.Errorf("weights sum to zero")
 	}
 	if spec.Leverage {
-		// Levier explicite: les poids sont des fractions du capital, tels
-		// qu'écrits; le résidu (100−somme) devient une position cash.
+		// Explicit leverage: weights are fractions of the capital, as
+		// written; the residual (100−sum) becomes a cash position.
 		if sum > 500 {
-			return nil, fmt.Errorf("exposition totale %.4g %% au-delà du plafond de 500 %%", sum)
+			return nil, fmt.Errorf("total exposure %.4g %% exceeds the 500 %% cap", sum)
 		}
 		for i := range spec.Holdings {
 			spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / 100
 		}
 		if math.Abs(sum-100) > 0.5 {
 			spec.Warnings = append(spec.Warnings,
-				fmt.Sprintf("levier explicite : exposition totale %.4g %%, résidu en cash %.4g %%", sum, 100-sum))
+				fmt.Sprintf("explicit leverage: total exposure %.4g %%, cash residual %.4g %%", sum, 100-sum))
 		}
 		return spec, nil
 	}
 	for _, h := range spec.Holdings {
 		if h.RawWeight > 100 {
-			return nil, fmt.Errorf("poids %.4g %% > 100 %% — ajoutez « #meta leverage:on » si l'exposition est volontaire", h.RawWeight)
+			return nil, fmt.Errorf("weight %.4g %% > 100 %% — add \"#meta leverage:on\" if the exposure is intentional", h.RawWeight)
 		}
 	}
 	if math.Abs(sum-100) > 0.5 {
 		spec.Warnings = append(spec.Warnings,
-			fmt.Sprintf("les poids totalisent %.4g %% au lieu de 100 %% — ils ont été normalisés", sum))
+			fmt.Sprintf("weights sum to %.4g %% instead of 100 %% — they were normalized", sum))
 	}
 	for i := range spec.Holdings {
 		spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / sum
@@ -201,7 +201,7 @@ func (s *Spec) applyMeta(directives string) error {
 	for _, tok := range strings.Fields(directives) {
 		key, val, ok := strings.Cut(tok, ":")
 		if !ok || val == "" {
-			return fmt.Errorf("directive #meta invalide %q (attendu clé:valeur, ex. rebalance:90)", tok)
+			return fmt.Errorf("invalid #meta directive %q (expected key:value, e.g. rebalance:90)", tok)
 		}
 		key = strings.ToLower(key)
 		if s.Meta == nil {
@@ -212,7 +212,7 @@ func (s *Spec) applyMeta(directives string) error {
 		case "rebalance":
 			n, err := strconv.Atoi(val)
 			if err != nil || n < 0 {
-				return fmt.Errorf("#meta rebalance: %q n'est pas un nombre de jours valide", val)
+				return fmt.Errorf("#meta rebalance: %q is not a valid number of days", val)
 			}
 			s.RebalanceDays = n
 		case "leverage":
@@ -222,24 +222,24 @@ func (s *Spec) applyMeta(directives string) error {
 			case "off":
 				s.Leverage = false
 			default:
-				return fmt.Errorf("#meta leverage: %q invalide (attendu on ou off)", val)
+				return fmt.Errorf("#meta leverage: invalid %q (expected on or off)", val)
 			}
 		case "borrow-spread":
 			f, err := parseNumber(val)
 			if err != nil || f < 0 || f > 10 {
-				return fmt.Errorf("#meta borrow-spread: %q n'est pas un pourcentage annuel valide", val)
+				return fmt.Errorf("#meta borrow-spread: %q is not a valid yearly percentage", val)
 			}
 			s.BorrowSpread = f
 		case "extra-fees", "envelope-fees":
-			// Frais additionnels appliqués à l'ensemble du portefeuille
-			// (enveloppe, mandat, courtier), en plus des TER des actifs.
+			// Additional fees applied to the whole portfolio (envelope,
+			// managed account, broker), on top of the assets' TERs.
 			f, err := parseNumber(val)
 			if err != nil || f < 0 || f > 20 {
-				return fmt.Errorf("#meta extra-fees: %q n'est pas un pourcentage annuel valide", val)
+				return fmt.Errorf("#meta extra-fees: %q is not a valid yearly percentage", val)
 			}
 			s.EnvelopeFees = f
 		default:
-			s.Warnings = append(s.Warnings, fmt.Sprintf("directive #meta inconnue ignorée: %s", key))
+			s.Warnings = append(s.Warnings, fmt.Sprintf("unknown #meta directive ignored: %s", key))
 		}
 	}
 	return nil
@@ -250,10 +250,10 @@ func (s *Spec) applyMeta(directives string) error {
 func parseWeight(s string) (float64, error) {
 	w, err := parseNumber(s)
 	if err != nil {
-		return 0, fmt.Errorf("nombre attendu")
+		return 0, fmt.Errorf("expected a number")
 	}
 	if w <= 0 || w > 500 {
-		return 0, fmt.Errorf("doit être compris entre 0 exclu et 500")
+		return 0, fmt.Errorf("must be greater than 0 and at most 500")
 	}
 	return w, nil
 }

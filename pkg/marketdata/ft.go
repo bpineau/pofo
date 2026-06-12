@@ -28,7 +28,7 @@ func (c *Client) ftSearch(query string) (resolution, error) {
 		} `json:"data"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return resolution{}, fmt.Errorf("réponse de recherche FT illisible: %w", err)
+		return resolution{}, fmt.Errorf("unreadable FT search response: %w", err)
 	}
 	secs := resp.Data.Security
 	// Prefer a listing not quoted in pence (GBX); fall back to any match.
@@ -49,7 +49,7 @@ func (c *Client) ftSearch(query string) (resolution, error) {
 		}
 	}
 	if best < 0 {
-		return resolution{}, fmt.Errorf("aucun résultat FT pour %q", query)
+		return resolution{}, fmt.Errorf("no FT results for %q", query)
 	}
 	sec := secs[best]
 	base, _, _ := strings.Cut(sec.Symbol, ":")
@@ -96,10 +96,10 @@ func (c *Client) fetchFT(id string, res resolution, from time.Time) (*Series, er
 		} `json:"Elements"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("réponse FT illisible: %w", err)
+		return nil, fmt.Errorf("unreadable FT response: %w", err)
 	}
 	if len(resp.Elements) == 0 {
-		return nil, fmt.Errorf("FT: réponse vide pour %s", id)
+		return nil, fmt.Errorf("FT: empty response for %s", id)
 	}
 	var closes []*float64
 	for _, cs := range resp.Elements[0].ComponentSeries {
@@ -109,7 +109,7 @@ func (c *Client) fetchFT(id string, res resolution, from time.Time) (*Series, er
 		}
 	}
 	if closes == nil || len(closes) != len(resp.Dates) {
-		return nil, fmt.Errorf("FT: pas de série de clôtures pour %s", id)
+		return nil, fmt.Errorf("FT: no close series for %s", id)
 	}
 	currency := resp.Elements[0].Currency
 	if currency == "" {

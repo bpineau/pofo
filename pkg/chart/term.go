@@ -50,7 +50,7 @@ func Term(opt TermOptions, series []Series) string {
 		}
 	}
 	if tmin >= tmax || vmin >= vmax {
-		return "(pas assez de données à tracer)\n"
+		return "(not enough data to plot)\n"
 	}
 
 	// Plot grid: -1 empty, otherwise the series index (later series win).

@@ -30,18 +30,18 @@ type TSMOMConfig struct {
 func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 	cash, ok := fr.Returns[cfg.CashID]
 	if !ok {
-		return nil, 0, fmt.Errorf("cash %s absent du cadre", cfg.CashID)
+		return nil, 0, fmt.Errorf("cash %s missing from frame", cfg.CashID)
 	}
 	n := len(fr.Dates)
 	if n <= cfg.Lookback+2 {
-		return nil, 0, fmt.Errorf("historique trop court pour le lookback (%d dates)", n)
+		return nil, 0, fmt.Errorf("history too short for the lookback (%d dates)", n)
 	}
 	// Excess returns per market.
 	excess := make([][]float64, len(cfg.Markets))
 	for i, id := range cfg.Markets {
 		r, ok := fr.Returns[id]
 		if !ok {
-			return nil, 0, fmt.Errorf("marché %s absent du cadre", id)
+			return nil, 0, fmt.Errorf("market %s missing from frame", id)
 		}
 		ex := make([]float64, n)
 		for k := 1; k < n; k++ {

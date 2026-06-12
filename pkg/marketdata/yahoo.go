@@ -42,13 +42,13 @@ func (c *Client) fetchYahoo(symbol string, from time.Time) (*Series, error) {
 		} `json:"chart"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("réponse yahoo illisible: %w", err)
+		return nil, fmt.Errorf("unreadable yahoo response: %w", err)
 	}
 	if resp.Chart.Error != nil {
 		return nil, fmt.Errorf("yahoo: %s (%s)", resp.Chart.Error.Description, resp.Chart.Error.Code)
 	}
 	if len(resp.Chart.Result) == 0 {
-		return nil, fmt.Errorf("yahoo: réponse vide pour %s", symbol)
+		return nil, fmt.Errorf("yahoo: empty response for %s", symbol)
 	}
 	r := resp.Chart.Result[0]
 
@@ -59,7 +59,7 @@ func (c *Client) fetchYahoo(symbol string, from time.Time) (*Series, error) {
 	case len(r.Indicators.Quote) > 0 && len(r.Indicators.Quote[0].Close) == len(r.Timestamp):
 		closes = r.Indicators.Quote[0].Close
 	default:
-		return nil, fmt.Errorf("yahoo: pas de série de clôtures pour %s", symbol)
+		return nil, fmt.Errorf("yahoo: no close series for %s", symbol)
 	}
 
 	name := r.Meta.LongName
@@ -112,7 +112,7 @@ func (c *Client) search(query string) ([]searchQuote, error) {
 		} `json:"quotes"`
 	}
 	if err := json.Unmarshal(body, &resp); err != nil {
-		return nil, fmt.Errorf("réponse de recherche illisible: %w", err)
+		return nil, fmt.Errorf("unreadable search response: %w", err)
 	}
 	var out []searchQuote
 	for _, q := range resp.Quotes {
@@ -126,7 +126,7 @@ func (c *Client) search(query string) ([]searchQuote, error) {
 		out = append(out, searchQuote{Symbol: q.Symbol, Name: name, QuoteType: q.QuoteType})
 	}
 	if len(out) == 0 {
-		return nil, fmt.Errorf("aucun résultat pour %q", query)
+		return nil, fmt.Errorf("no results for %q", query)
 	}
 	return out, nil
 }

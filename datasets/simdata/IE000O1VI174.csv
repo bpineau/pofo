@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: IE000O1VI174
-# name: Winton Trend-Enhanced Global Equity — actions + fonds Trend réel
-# method: 0.60×VFINX + 0.40×VTMGX + 0.50×(WINTON-TREND-REF − cash ^IRX), frais 0.80 %/an
-# validation: corr=0.757 (hebdo 0.920) beta=0.86 TE=10.9%/an CAGR sim 35.81% vs réel 41.98% (overlap 263 j de 2025-04-30 à 2026-06-10) vs IE000O1VI174
+# name: Winton Trend-Enhanced Global Equity — equities + real Trend fund
+# method: 0.60×VFINX + 0.40×VTMGX + 0.50×(WINTON-TREND-REF − cash ^IRX), 0.80%/yr fees
+# validation: corr=0.757 (weekly 0.920) beta=0.86 TE=10.9%/yr CAGR sim 35.81% vs real 41.98% (overlap 263 d from 2025-04-30 to 2026-06-10) vs IE000O1VI174
 # generated: 2026-06-12
 date,close
 2000-01-01,100.000000

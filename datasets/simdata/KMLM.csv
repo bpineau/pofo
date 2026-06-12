@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: KMLM
-# name: KraneShares MLM — indice MLM officiel
-# method: réf. MLM-INDEX (historique officiel, 1987→), frais ETF 0.90 %/an, réel KMLM greffé depuis 2020
-# validation: corr=1.000 (hebdo 1.000) beta=1.00 TE=0.3%/an CAGR sim 5.07% vs réel 6.09% (overlap 1385 j de 2020-12-02 à 2026-06-10) vs KMLM
+# name: KraneShares MLM — official MLM Index
+# method: ref. MLM-INDEX (official history, 1987→), 0.90%/yr ETF fees, real KMLM grafted from 2020
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.3%/yr CAGR sim 5.07% vs real 6.09% (overlap 1385 d from 2020-12-02 to 2026-06-10) vs KMLM
 # generated: 2026-06-12
 date,close
 1987-12-31,2.474815

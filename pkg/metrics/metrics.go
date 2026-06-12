@@ -16,7 +16,7 @@ const (
 type Stats struct {
 	Start, End  time.Time
 	Years       float64
-	CAGR        float64 // annualized growth rate (0.07 = +7 %/an)
+	CAGR        float64 // annualized growth rate (0.07 = +7 %/year)
 	Volatility  float64 // annualized standard deviation of daily returns
 	Sharpe      float64 // annualized mean return / volatility, risk-free rate 0
 	Sortino     float64 // annualized mean return / downside deviation
@@ -32,18 +32,18 @@ type Stats struct {
 // values strictly positive, both of equal length >= 2.
 func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if len(dates) != len(values) || len(values) < 2 {
-		return Stats{}, fmt.Errorf("série trop courte (%d points)", len(values))
+		return Stats{}, fmt.Errorf("series too short (%d points)", len(values))
 	}
 	for _, v := range values {
 		if !(v > 0) {
-			return Stats{}, fmt.Errorf("valeur non positive dans la série")
+			return Stats{}, fmt.Errorf("non-positive value in series")
 		}
 	}
 	var s Stats
 	s.Start, s.End = dates[0], dates[len(dates)-1]
 	s.Years = s.End.Sub(s.Start).Hours() / 24 / daysPerYear
 	if s.Years <= 0 {
-		return Stats{}, fmt.Errorf("période vide")
+		return Stats{}, fmt.Errorf("empty period")
 	}
 	s.CAGR = math.Pow(values[len(values)-1]/values[0], 1/s.Years) - 1
 

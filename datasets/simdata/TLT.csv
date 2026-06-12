@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: TLT
-# name: iShares 20+Y Treasury — courbes de taux (réf. importée)
-# method: réf. TLT-REF (1962→), frais 0.15 %/an, réel TLT greffé depuis 2002
-# validation: corr=1.000 (hebdo 1.000) beta=1.00 TE=0.2%/an CAGR sim 3.47% vs réel 3.66% (overlap 6004 j de 2002-07-30 à 2026-06-10) vs TLT
+# name: iShares 20+Y Treasury — yield curves (imported ref.)
+# method: ref. TLT-REF (1962→), 0.15%/yr fees, real TLT grafted from 2002
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.2%/yr CAGR sim 3.47% vs real 3.66% (overlap 6004 d from 2002-07-30 to 2026-06-10) vs TLT
 # generated: 2026-06-12
 date,close
 1962-01-02,2.525586
