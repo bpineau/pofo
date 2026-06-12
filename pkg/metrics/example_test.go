@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"portfodor/metrics"
+	"portfodor/pkg/metrics"
 )
 
 // Compute dérive toutes les statistiques d'une série de valeurs datées.

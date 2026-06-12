@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"portfodor/marketdata"
+	"portfodor/pkg/marketdata"
 )
 
 // Asset is a resolved portfolio constituent, ready for simulation.
