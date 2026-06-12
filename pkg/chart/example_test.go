@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"portfodor/chart"
+	"portfodor/pkg/chart"
 )
 
 // Line produit un document SVG autonome, embarquable tel quel dans une page

@@ -6,8 +6,8 @@ import (
 	"math"
 	"time"
 
-	"portfodor/marketdata"
-	"portfodor/metrics"
+	"portfodor/pkg/marketdata"
+	"portfodor/pkg/metrics"
 )
 
 // ErrUnfaithful marks reconstructions whose fit against reality is too poor
