@@ -57,3 +57,21 @@ func ExampleAlign() {
 	// Output:
 	// 3 [10 11 12] [100 100 102]
 }
+
+// Verify is the data doctor: it flags bad points, gaps, flat stretches and
+// staleness so suspect series are reviewed instead of silently skewing a
+// simulation.
+func ExampleVerify() {
+	s := &marketdata.Series{Symbol: "DEMO"}
+	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	closes := []float64{100, 101, 102, 350, 103, 104} // one obviously bad point
+	for i, c := range closes {
+		s.Points = append(s.Points, marketdata.Point{Date: start.AddDate(0, 0, i), Close: c})
+	}
+	for _, issue := range marketdata.Verify(s, start.AddDate(0, 0, 7)) {
+		fmt.Println(issue)
+	}
+	// Output:
+	// [warn] 2024-01-04: daily move of +243.1 % — missed split or bad point?
+	// [warn] 2024-01-05: daily move of -70.6 % — missed split or bad point?
+}
