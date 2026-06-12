@@ -11,24 +11,24 @@ func TestCanonicalID(t *testing.T) {
 		"AMUNDI-VOLATILITY":       "LU0319687124",
 		"AMUNDI-VOLATILITY-WORLD": "LU0319687124",
 		"BHMG":                    "GG00BQBFY362",
-		"VOO":                     "VOO", // pas un alias
+		"VOO":                     "VOO", // not an alias
 		"IE00B4L5Y983":            "IE00B4L5Y983",
 	}
 	for in, want := range cases {
 		if got := CanonicalID(in); got != want {
-			t.Errorf("CanonicalID(%q) = %q, attendu %q", in, got, want)
+			t.Errorf("CanonicalID(%q) = %q, want %q", in, got, want)
 		}
 	}
 }
 
-// TestCanonicalIndexNoConflicts garantit qu'aucun identifiant (ID, ISIN,
-// alias, ticker embarqué) ne pointe vers deux actifs différents.
+// TestCanonicalIndexNoConflicts guarantees that no identifier (ID, ISIN,
+// alias, embedded ticker) points to two different assets.
 func TestCanonicalIndexNoConflicts(t *testing.T) {
 	r := canonicalIndex()
 	for _, c := range r.conflicts {
-		t.Errorf("collision d'identifiants: %s", c)
+		t.Errorf("identifier collision: %s", c)
 	}
-	// Les aliases par entrée du catalogue fonctionnent.
+	// Per-entry catalog aliases work.
 	for alias, want := range map[string]string{
 		"GOLD":  "XAUUSD",
 		"WTI":   "CL=F",
@@ -36,20 +36,20 @@ func TestCanonicalIndexNoConflicts(t *testing.T) {
 		"DJXXF": "DE0002635307",
 		"CRRY":  "XS3022291473",
 		"CW8":   "LU1681043599",
-		"IWDA":  "IE00B4L5Y983", // ticker de la liste embarquée
+		"IWDA":  "IE00B4L5Y983", // ticker from the embedded list
 		"NTSG":  "IE00077IIPQ8",
 	} {
 		if got := CanonicalID(alias); got != want {
-			t.Errorf("CanonicalID(%q) = %q, attendu %q", alias, got, want)
+			t.Errorf("CanonicalID(%q) = %q, want %q", alias, got, want)
 		}
 	}
-	// Le symbole de cotation du jumeau US n'est PAS indexé: NTSX reste
-	// l'UCITS (convention utilisateur), NTSX-US se désigne par son ID.
+	// The US twin's quote symbol is NOT indexed: NTSX stays the UCITS
+	// (the user-facing convention), NTSX-US is addressed by its ID.
 	if got := CanonicalID("NTSX"); got != "IE000KF370H3" {
-		t.Errorf("NTSX doit rester l'UCITS, obtenu %q", got)
+		t.Errorf("NTSX must stay the UCITS, got %q", got)
 	}
 	if got := CanonicalID("NTSX-US"); got != "NTSX-US" {
-		t.Errorf("NTSX-US doit rester accessible, obtenu %q", got)
+		t.Errorf("NTSX-US must stay reachable, got %q", got)
 	}
 }
 
@@ -64,13 +64,13 @@ func TestSplitSim(t *testing.T) {
 		"WINTON-TREND-EQUITYSIM": {"WINTON-TREND-EQUITY", true},
 		"IE000O1VI174SIM":        {"IE000O1VI174", true},
 		"NTSG":                   {"NTSG", false},
-		"GOLD":                   {"GOLD", false}, // ne finit pas par SIM
-		"SIM":                    {"SIM", false},  // base vide interdite
+		"GOLD":                   {"GOLD", false}, // does not end in SIM
+		"SIM":                    {"SIM", false},  // empty base forbidden
 	}
 	for in, want := range cases {
 		base, sim := SplitSim(in)
 		if base != want.base || sim != want.sim {
-			t.Errorf("SplitSim(%q) = (%q, %v), attendu (%q, %v)", in, base, sim, want.base, want.sim)
+			t.Errorf("SplitSim(%q) = (%q, %v), want (%q, %v)", in, base, sim, want.base, want.sim)
 		}
 	}
 }

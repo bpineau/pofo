@@ -7,13 +7,13 @@ import (
 	"portfodor/pkg/portfolio"
 )
 
-// Parse lit une description de portefeuille: « <poids %> <identifiant>
-// [texte libre] », tout ce qui suit un # étant un commentaire.
+// Parse reads a portfolio description: "<weight %> <identifier>
+// [free text]", everything after a # being a comment.
 func ExampleParse() {
-	spec, err := portfolio.Parse("mon-portefeuille", strings.NewReader(`
-# Lignes de commentaire et lignes vides ignorées.
-60   VTI    actions US      # texte libre accepté
-25,5 IE00B4L5Y983           # virgule décimale acceptée
+	spec, err := portfolio.Parse("my-portfolio", strings.NewReader(`
+# Comment lines and blank lines are ignored.
+60   VTI    US stocks       # free text accepted
+25,5 IE00B4L5Y983           # decimal comma accepted
 14.5 GLD
 `))
 	if err != nil {

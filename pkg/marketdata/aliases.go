@@ -27,11 +27,11 @@ var canonicalIndex = sync.OnceValue(func() indexResult {
 			if prev != target {
 				r.conflicts = append(r.conflicts, key+": "+prev+" vs "+target)
 			}
-			return // premier arrivé (ordre de priorité ci-dessous) gagne
+			return // first one in (priority order below) wins
 		}
 		r.byKey[key] = target
 	}
-	// Priorité décroissante: ID d'entrée, ISIN, aliases, tickers embarqués.
+	// Decreasing priority: entry ID, ISIN, aliases, embedded tickers.
 	for _, e := range catalog {
 		set(e.ID, e.ID)
 	}
@@ -50,7 +50,7 @@ var canonicalIndex = sync.OnceValue(func() indexResult {
 	for t := range tickers {
 		keys = append(keys, t)
 	}
-	sort.Strings(keys) // ordre déterministe pour la détection de conflits
+	sort.Strings(keys) // deterministic order for conflict detection
 	for _, t := range keys {
 		isin := tickers[t]
 		target := isin

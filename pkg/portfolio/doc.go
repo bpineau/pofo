@@ -1,34 +1,34 @@
-// Package portfolio lit des descriptions de portefeuilles et les simule
-// dans le temps.
+// Package portfolio reads portfolio descriptions and simulates them over
+// time.
 //
-// # Format des fichiers
+// # File format
 //
-// Une ligne par actif :
+// One line per asset:
 //
-//	<poids en %> <identifiant> [frais en %/an] [texte libre]
+//	<weight in %> <identifier> [fees in %/year] [free text]
 //
-// Tout ce qui suit un # est un commentaire ; lignes vides ignorées ; le
-// poids et les frais acceptent la virgule décimale et un suffixe %. Les
-// poids ne sommant pas à 100 sont normalisés (avertissement dans
-// Spec.Warnings). Les lignes « #meta clé:valeur » portent des directives :
+// Everything after a # is a comment; blank lines are ignored; the weight
+// and fees accept a decimal comma and a % suffix. Weights that do not sum
+// to 100 are normalized (warning in Spec.Warnings). "#meta key:value"
+// lines carry directives:
 //
-//	#meta rebalance:N     rebalancement tous les N jours (0 = jamais)
-//	#meta extra-fees:X    frais annuels appliqués à tout le portefeuille
-//	                      (enveloppe, mandat), déduits par Simulate
-//	#meta leverage:on     poids gardés tels qu'écrits ; le résidu
-//	                      (100−somme) est une position cash, négative et
-//	                      financée au taux cash+spread au-delà de 100 %
-//	#meta borrow-spread:X spread d'emprunt en %/an (défaut de l'appelant)
+//	#meta rebalance:N     rebalance every N days (0 = never)
+//	#meta extra-fees:X    yearly fees applied to the whole portfolio
+//	                      (envelope, managed account), deducted by Simulate
+//	#meta leverage:on     weights kept as written; the residual
+//	                      (100−sum) is a cash position, negative and
+//	                      financed at the cash rate plus spread above 100 %
+//	#meta borrow-spread:X borrowing spread in %/year (caller's default)
 //
-// L'interprétation des identifiants (tickers, ISIN, aliases, suffixe SIM)
-// appartient à l'appelant — voir marketdata.Fetch et marketdata.SplitSim.
+// Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
+// caller's job — see marketdata.Fetch and marketdata.SplitSim.
 //
 // # Simulation
 //
-// Simulate rejoue le portefeuille en base 100 sur l'union des calendriers
-// de cotation (cours forward-fillés via marketdata.Align), du premier jour
-// où tous les actifs cotent au dernier jour où tous cotent encore, avec
-// rebalancement vers les poids cibles tous les N jours calendaires et
-// déduction quotidienne des frais d'enveloppe. Les TER des actifs ne sont
-// jamais déduits : ils sont déjà reflétés dans les cours.
+// Simulate replays the portfolio at base 100 over the union of the quoting
+// calendars (prices forward-filled via marketdata.Align), from the first
+// day every asset trades to the last day they all still trade, rebalancing
+// back to the target weights every N calendar days and deducting envelope
+// fees daily. Asset TERs are never deducted: they are already reflected in
+// prices.
 package portfolio

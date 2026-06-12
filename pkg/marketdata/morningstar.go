@@ -25,10 +25,10 @@ func (c *Client) fetchMorningstar(id string, res resolution, from time.Time) (*S
 	// COMPACTJSON: [[epoch_ms, value], …]. Errors come back as XML.
 	var rows [][]float64
 	if err := json.Unmarshal(body, &rows); err != nil {
-		return nil, fmt.Errorf("réponse morningstar illisible pour %s", res.Symbol)
+		return nil, fmt.Errorf("unreadable morningstar response for %s", res.Symbol)
 	}
 	if len(rows) == 0 {
-		return nil, fmt.Errorf("morningstar: aucune donnée pour %s", res.Symbol)
+		return nil, fmt.Errorf("morningstar: no data for %s", res.Symbol)
 	}
 	name := res.Name
 	if name == "" {

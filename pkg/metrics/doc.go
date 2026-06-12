@@ -1,28 +1,27 @@
-// Package metrics calcule les statistiques de risque et de rendement d'une
-// série de valeurs datées : CAGR, volatilité, Sharpe, Sortino, Ulcer Index,
-// Max Drawdown, TTR (durée de récupération) et Beta contre un benchmark.
+// Package metrics computes risk and return statistics for a series of
+// dated values: CAGR, volatility, Sharpe, Sortino, Ulcer Index, Max
+// Drawdown, TTR (time to recovery) and Beta against a benchmark.
 //
 // # Conventions
 //
-// Connaître les conventions est indispensable pour comparer les résultats à
-// d'autres outils :
+// Knowing the conventions is essential to compare the results with other
+// tools:
 //
-//   - les séries sont des clôtures quotidiennes ; volatilité et ratios sont
-//     annualisés sur 252 jours de bourse ;
-//   - Sharpe et Sortino utilisent un taux sans risque nul (comme Curvo) ;
-//     PortfolioVisualizer et LazyPortfolioETF utilisent les T-bills et des
-//     données mensuelles — leurs Sharpe ressortent ≈ 0,10–0,15 plus bas ;
-//   - Max Drawdown, Ulcer et TTR sont mesurés sur clôtures quotidiennes,
-//     plus sévères que les outils à pas mensuel (COVID 2020 : −33,7 % en
-//     quotidien contre ≈ −20 % en clôtures mensuelles) ;
-//   - le CAGR utilise des années de 365,25 jours entre la première et la
-//     dernière date.
+//   - series are daily closes; volatility and ratios are annualized over
+//     252 trading days;
+//   - Sharpe and Sortino use a zero risk-free rate (like Curvo);
+//     PortfolioVisualizer and LazyPortfolioETF use T-bills and monthly
+//     data — their Sharpe ratios come out ≈ 0.10–0.15 lower;
+//   - Max Drawdown, Ulcer and TTR are measured on daily closes, harsher
+//     than monthly-step tools (COVID 2020: −33.7 % on daily closes
+//     versus ≈ −20 % on monthly closes);
+//   - the CAGR uses 365.25-day years between the first and the last
+//     date.
 //
-// Point d'entrée principal : Compute. Beta apparie les rendements
-// quotidiens par date avec ceux du benchmark. Returns et Mean sont exposés
-// comme briques de base.
+// The main entry point is Compute. Beta pairs daily returns with the
+// benchmark's by date. Returns and Mean are exposed as building blocks.
 //
-// Ces calculs sont verrouillés par les tests étalon du paquet golden, qui
-// les confrontent à des références externes (rendements annuels officiels
-// S&P 500 TR, drawdowns canoniques).
+// These computations are locked down by the golden package's benchmark
+// tests, which check them against external references (official S&P 500
+// TR annual returns, canonical drawdowns).
 package metrics
