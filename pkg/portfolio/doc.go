@@ -19,6 +19,11 @@
 //	                      (100−sum) is a cash position, negative and
 //	                      financed at the cash rate plus spread above 100 %
 //	#meta borrow-spread:X borrowing spread in %/year (caller's default)
+//	#meta capital:X       starting amount (required for flows)
+//	#meta contribute:A/P  add amount A every period P (week, month,
+//	                      quarter or year), e.g. contribute:500/month
+//	#meta withdraw:A/P    take A (or A% of the value: withdraw:4%/year)
+//	                      out every period P
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
 // caller's job — see marketdata.Fetch and marketdata.SplitSim.
