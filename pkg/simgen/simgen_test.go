@@ -2,6 +2,7 @@ package simgen
 
 import (
 	"math"
+	"os"
 	"testing"
 	"time"
 
@@ -232,7 +233,7 @@ func TestWithRefDataServesLocalFiles(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f := WithRefData(dir, fakeFetcher{"AUTRE": mkSeries("AUTRE", 5, 0.01)})
+	f := WithRefData(os.DirFS(dir), fakeFetcher{"AUTRE": mkSeries("AUTRE", 5, 0.01)})
 	s, err := f.Fetch("REF-X", day(0))
 	if err != nil || len(s.Points) != 2 || s.Points[1].Close != 11 {
 		t.Fatalf("référence locale: %+v, %v", s, err)
@@ -255,7 +256,7 @@ func TestRefImportAppliesFeeDrag(t *testing.T) {
 		t.Fatal(err)
 	}
 	build := refImport("REF-Y", "Y avec frais", 0.0252) // 0.01 %/jour
-	s, err := build(WithRefData(dir, nil), day(0))
+	s, err := build(WithRefData(os.DirFS(dir), nil), day(0))
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -13,12 +13,18 @@ périodique et génère un rapport HTML autonome ouvert dans le navigateur
 ## Utilisation
 
 ```sh
-go build ./cmd/portfodor
+go build ./cmd/portfodor                       # binaire autonome (datasets embarqués)
 ./portfodor mon-portefeuille.txt autre.txt     # rapport HTML dans /tmp + open
 ./portfodor -assets WPEA,NTSG,CSPX             # compare des actifs isolés (100 % chacun)
 ./portfodor -cli -assets VOO,IWDA              # quick check dans le terminal
 ./portfodor -warmup                            # précharge le cache du catalogue
+./portfodor -gen-simdata                       # régénère datasets/simdata (puis rebuild)
 ```
+
+Le binaire est installable n'importe où : les historiques simulés et les
+références sont **embarqués au build** (`go:embed` de `datasets/`), et le
+cache des cotations vit dans le répertoire de cache utilisateur standard
+(`~/Library/Caches/portfodor` sur macOS, `~/.cache/portfodor` sur Linux).
 
 L'option `-assets` traite chaque identifiant comme un portefeuille investi à
 100 % dessus — pratique pour comparer des ETF entre eux sans écrire de
@@ -77,8 +83,8 @@ elles existent. `-no-simulate` ignore les suffixes SIM globalement.
 | Option | Défaut | Description |
 |---|---|---|
 | `-out` | `/tmp/portfodor-<horodatage>.html` | fichier HTML généré |
-| `-data` | `data` | cache des cotations (JSON) |
-| `-simdata` | `simdata` | historiques simulés permanents |
+| `-data` | cache utilisateur standard | cache des cotations (JSON) |
+| `-simdata` | embarqués dans le binaire | source des historiques simulés (répertoire pour le dev) |
 | `-rebalance` | `90` | rebalancement tous les N jours calendaires (0 = jamais) |
 | `-start` | `2006-01-01` | date de début souhaitée |
 | `-benchmark` | `^GSPC` | référence pour le Beta |
@@ -110,8 +116,8 @@ cotations réelles, puis stockés en CSV auto-documentés (méthode, validation,
 date) dans `datasets/simdata/` :
 
 ```sh
-go build ./cmd/simgen && ./simgen          # régénère tout
-./simgen -dry NTSX                         # valide sans écrire
+./portfodor -gen-simdata                   # régénère tout (puis make build pour ré-embarquer)
+./portfodor -gen-simdata -dry NTSX         # valide sans écrire
 ```
 
 Recettes livrées et qualité mesurée (corrélation quotidienne/hebdomadaire des
@@ -156,12 +162,12 @@ pkg/chart/        graphes SVG (Line) et terminal (Term), palette partagée
 pkg/portfolio/    format des fichiers d'allocation + simulation rebalancée
 pkg/report/       rendu HTML et texte du modèle de comparaison
 pkg/simgen/       reconstruction d'historiques (composites, TSMOM, backcasts)
-cmd/              les deux binaires (portfodor, simgen)
-datasets/         données versionnées et leur contrôle qualité :
+cmd/              le binaire portfodor (rapport, warmup, gen-simdata)
+datasets/         données versionnées (embarquées au build) et leur QA :
   simdata/          historiques simulés permanents (recollés au runtime)
   refdata/          séries de référence importées (indices officiels…)
   golden/           tests étalon + fixtures gelées vs références externes
-data/             cache réseau (jetable, non versionné)
+data/             ancien cache local (remplacé par le cache utilisateur)
 ```
 
 Tout ce qui est consommable comme bibliothèque vit sous `pkg/` ; `cmd/` ne
