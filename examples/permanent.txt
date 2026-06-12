@@ -1,0 +1,5 @@
+# Portefeuille permanent de Harry Browne
+25  VTI  actions US
+25  TLT  obligations US long terme
+25  GLD  or
+25  SHY  obligations US court terme (équivalent cash)
