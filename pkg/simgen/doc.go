@@ -13,7 +13,8 @@
 //     lookback, vol cible, levier) pour répliquer des stratégies trend ;
 //   - FitBackcast régresse un actif sur des facteurs et rejoue le modèle
 //     sur tout l'historique (refusé sous un R² plancher : ErrUnfaithful) ;
-//   - WithRefData sert des séries de référence locales (refdata/) avant
+//   - WithRefData sert des séries de référence locales (datasets/refdata/)
+//     avant
 //     toute source réseau ; Validate mesure corrélation quotidienne et
 //     hebdomadaire, beta, tracking error et CAGR contre le réel ;
 //   - les recettes livrées (All, Find) assemblent ces briques pour NTSX,
