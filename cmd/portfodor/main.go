@@ -67,7 +67,7 @@ func run(argv []string) error {
 	var startStr string
 	fs.StringVar(&opt.out, "out", "", "fichier HTML de sortie (défaut: /tmp/portfodor-<horodatage>.html)")
 	fs.StringVar(&opt.dataDir, "data", "data", "répertoire de cache des cotations")
-	fs.StringVar(&opt.simdataDir, "simdata", "simdata", "répertoire des historiques simulés permanents")
+	fs.StringVar(&opt.simdataDir, "simdata", "datasets/simdata", "répertoire des historiques simulés permanents")
 	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalancement tous les N jours calendaires (0 = jamais)")
 	fs.StringVar(&startStr, "start", "2006-01-01", "date de début souhaitée (AAAA-MM-JJ)")
 	var endStr string
@@ -96,7 +96,7 @@ Format des fichiers — une ligne par actif :
   - Identifiant : ticker US (VOO), ticker européen de la liste embarquée
     (IWDA, CW8, CSPX…), ISIN, ou alias du catalogue (GOLD, NTSG, BHMG…).
   - Suffixe SIM (VOOSIM, DBMFSIM…) : étend l'historique avant la première
-    cotation réelle via simdata/ ou un proxy ; identifiant nu = réel seul.
+    cotation réelle via datasets/simdata/ ou un proxy ; nu = réel seul.
   - 3e colonne numérique optionnelle : TER de l'actif en %%/an (prime sur
     la récupération automatique) ; non numérique = texte libre.
   - Directives par portefeuille :
@@ -624,7 +624,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
-			"Historiques étendus avant la création de certains fonds : par proxy (indices ou fonds plus anciens — les indices de prix n'incluent pas les dividendes) ou par données simulées permanentes (fichiers simdata/<id>.csv générés par cmd/simgen, méthodologie et qualité de réplication en tête de chaque fichier).")
+			"Historiques étendus avant la création de certains fonds : par proxy (indices ou fonds plus anciens — les indices de prix n'incluent pas les dividendes) ou par données simulées permanentes (fichiers datasets/simdata/<id>.csv générés par cmd/simgen, méthodologie et qualité de réplication en tête de chaque fichier).")
 	}
 	if bench != nil {
 		page.Footnotes = append(page.Footnotes,
