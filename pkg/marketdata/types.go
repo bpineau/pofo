@@ -19,7 +19,7 @@ type Series struct {
 	Symbol   string
 	Name     string
 	Currency string
-	Source   string // "yahoo", "stooq", "ft", "morningstar" ou "simdata"
+	Source   string // "yahoo", "stooq", "ft", "morningstar" or "simdata"
 	Points   []Point
 
 	// SimulatedBefore is non-zero when points before that date were

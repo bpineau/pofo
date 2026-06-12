@@ -34,7 +34,7 @@ type Client struct {
 	retryDelay time.Duration
 	mu         sync.Mutex
 	memo       map[string]*Series
-	fees       map[string]feesEntry // cache TER, chargé paresseusement depuis fees.json
+	fees       map[string]feesEntry // TER cache, lazily loaded from fees.json
 }
 
 // NewClient returns a Client caching downloads under cacheDir.
@@ -60,7 +60,7 @@ func NewClient(cacheDir string) *Client {
 // resolution is the cached mapping from an ISIN to a quotable instrument.
 type resolution struct {
 	Source   string `json:"source"` // "yahoo", "ft" or "morningstar"; empty means yahoo (legacy cache files)
-	Symbol   string `json:"symbol"` // yahoo symbol, Morningstar id (0P…), ou ticker de base FT (informatif)
+	Symbol   string `json:"symbol"` // yahoo symbol, Morningstar id (0P…), or FT base ticker (informational)
 	Xid      string `json:"xid"`    // FT internal id, unused otherwise
 	Name     string `json:"name"`
 	Currency string `json:"currency"`
@@ -118,7 +118,7 @@ func (c *Client) fetchISIN(isin string, from time.Time) (*Series, error) {
 	}
 	s, res, failures := c.resolveBest(isin, from, "")
 	if s == nil {
-		return nil, fmt.Errorf("ISIN %s: aucune source exploitable (%s)", isin, strings.Join(failures, "; "))
+		return nil, fmt.Errorf("ISIN %s: no usable source (%s)", isin, strings.Join(failures, "; "))
 	}
 	c.adoptResolution(isin, res)
 	return s, nil
@@ -143,7 +143,7 @@ func (c *Client) fetchTicker(ticker string, from time.Time) (*Series, error) {
 		if direct != nil {
 			return direct, nil
 		}
-		return nil, fmt.Errorf("ticker %s: aucune source exploitable (%s)", ticker, strings.Join(failures, "; "))
+		return nil, fmt.Errorf("ticker %s: no usable source (%s)", ticker, strings.Join(failures, "; "))
 	}
 	c.adoptResolution(ticker, res)
 	return resolved, nil
@@ -161,9 +161,9 @@ func (c *Client) cachedResolutionHistory(id string, from time.Time) (*Series, bo
 		return s, true
 	}
 	if err != nil {
-		c.Logf("avertissement: la source en cache pour %s ne répond plus (%v), nouvelle résolution…", id, err)
+		c.Logf("warning: cached source for %s no longer responds (%v), resolving again…", id, err)
 	} else {
-		c.Logf("avertissement: l'historique en cache de %s est trop court (%d cotations), nouvelle résolution…", id, len(s.Points))
+		c.Logf("warning: cached history for %s is too short (%d quotes), resolving again…", id, len(s.Points))
 	}
 	return nil, false
 }
@@ -178,7 +178,7 @@ func (c *Client) adoptResolution(id string, res resolution) {
 	case "morningstar":
 		via = "Morningstar " + res.Symbol
 	}
-	c.Logf("%s résolu via %s: %s", id, via, res.Name)
+	c.Logf("%s resolved via %s: %s", id, via, res.Name)
 }
 
 // resolveBest tries every known source for an identifier (ISIN or unknown
@@ -394,22 +394,22 @@ func (c *Client) history(symbol string, from time.Time) (*Series, error) {
 	if s, ok := c.loadCache(symbol, from); ok {
 		return s, nil
 	}
-	c.Logf("téléchargement de %s…", symbol)
+	c.Logf("downloading %s…", symbol)
 	s, yahooErr := c.fetchYahoo(symbol, from)
 	if yahooErr != nil {
 		var stooqErr error
 		s, stooqErr = c.fetchStooq(symbol, from)
 		if stooqErr != nil {
-			err := fmt.Errorf("téléchargement de %s impossible (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr)
+			err := fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr)
 			return c.staleFallback(symbol, from, err)
 		}
-		c.Logf("%s récupéré via stooq (cours non ajustés des dividendes)", symbol)
+		c.Logf("%s fetched via stooq (prices not dividend-adjusted)", symbol)
 	}
 	if len(s.Points) == 0 {
-		return c.staleFallback(symbol, from, fmt.Errorf("aucune cotation renvoyée pour %s", symbol))
+		return c.staleFallback(symbol, from, fmt.Errorf("no quotes returned for %s", symbol))
 	}
 	c.saveCache(s, from)
-	c.Logf("%s — %s — %d cotations depuis %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
+	c.Logf("%s — %s — %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
 }
 
@@ -421,7 +421,7 @@ func (c *Client) staleFallback(symbol string, from time.Time, cause error) (*Ser
 	if !ok {
 		return nil, cause
 	}
-	c.Logf("avertissement: rafraîchissement de %s impossible (%v) — données en cache du %s conservées (dernière cotation %s)",
+	c.Logf("warning: refreshing %s failed (%v) — keeping cached data from %s (last quote %s)",
 		symbol, cause, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
 	return s, nil
 }
@@ -453,10 +453,10 @@ func (c *Client) cachedHistory(source, id string, from time.Time, fetch func() (
 		c.memoize(key, s)
 		return s, nil
 	}
-	c.Logf("téléchargement de %s via %s…", id, source)
+	c.Logf("downloading %s via %s…", id, source)
 	s, err := fetch()
 	if err == nil && len(s.Points) == 0 {
-		err = fmt.Errorf("aucune cotation %s pour %s", source, id)
+		err = fmt.Errorf("no %s quotes for %s", source, id)
 	}
 	if err != nil {
 		s, err = c.staleFallback(id, from, err)
@@ -467,7 +467,7 @@ func (c *Client) cachedHistory(source, id string, from time.Time, fetch func() (
 		return s, nil
 	}
 	c.saveCache(s, from)
-	c.Logf("%s — %s — %d cotations depuis %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
+	c.Logf("%s — %s — %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	c.memoize(key, s)
 	return s, nil
 }

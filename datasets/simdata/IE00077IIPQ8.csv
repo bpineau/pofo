@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: IE00077IIPQ8
-# name: WisdomTree Global Efficient Core — réplication 90/60 monde
-# method: 0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, frais 0.25 %/an
-# validation: corr=0.394 (hebdo 0.861) beta=0.39 TE=16.1%/an CAGR sim 20.03% vs réel 15.30% (overlap 386 j de 2024-11-13 à 2026-06-11) vs IE00077IIPQ8
+# name: WisdomTree Global Efficient Core — global 90/60 replication
+# method: 0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees
+# validation: corr=0.394 (weekly 0.861) beta=0.39 TE=16.1%/yr CAGR sim 20.03% vs real 15.30% (overlap 386 d from 2024-11-13 to 2026-06-11) vs IE00077IIPQ8
 # generated: 2026-06-12
 date,close
 1999-08-17,100.000000

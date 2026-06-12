@@ -1,11 +1,9 @@
-// Package chart trace des graphes de séries financières sans aucune
-// dépendance :
+// Package chart plots financial series charts without any dependency:
 //
-//   - Line produit un document SVG autonome (axes, grille, légende,
-//     décimation des longues séries), embarquable tel quel dans une page
-//     HTML ;
-//   - Term produit un graphe pour le terminal (couleurs ANSI sur un TTY,
-//     marqueurs distincts par série sinon) ;
-//   - les deux partagent le modèle Series et la palette par défaut,
-//     accessible via PaletteColor pour garder plusieurs graphes cohérents.
+//   - Line produces a self-contained SVG document (axes, grid, legend,
+//     decimation of long series), embeddable as-is in an HTML page;
+//   - Term produces a chart for the terminal (ANSI colors on a TTY,
+//     distinct markers per series otherwise);
+//   - both share the Series model and the default palette, accessible
+//     via PaletteColor to keep multiple charts consistent.
 package chart

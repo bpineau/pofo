@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: DBMF
 # name: iMGP DBi Managed Futures — SG CTA Index
-# method: réf. SG-CTA (indice officiel, 2000→), réel DBMF greffé depuis 2019
-# validation: corr=0.675 (hebdo 0.750) beta=0.96 TE=9.2%/an CAGR sim 5.68% vs réel 9.28% (overlap 1780 j de 2019-05-08 à 2026-06-08) vs DBMF
+# method: ref. SG-CTA (official index, 2000→), real DBMF grafted from 2019
+# validation: corr=0.675 (weekly 0.750) beta=0.96 TE=9.2%/yr CAGR sim 5.68% vs real 9.28% (overlap 1780 d from 2019-05-08 to 2026-06-08) vs DBMF
 # generated: 2026-06-12
 date,close
 2000-01-01,7.559357

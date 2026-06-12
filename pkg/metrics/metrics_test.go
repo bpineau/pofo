@@ -21,7 +21,7 @@ func days(n int) []time.Time {
 func near(t *testing.T, name string, got, want, tol float64) {
 	t.Helper()
 	if math.Abs(got-want) > tol {
-		t.Errorf("%s = %v, attendu %v (±%v)", name, got, want, tol)
+		t.Errorf("%s = %v, want %v (±%v)", name, got, want, tol)
 	}
 }
 
@@ -42,11 +42,11 @@ func TestComputeRiskMetrics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	near(t, "Volatilité", s.Volatility, math.Sqrt(0.02)*math.Sqrt(252), 1e-9)
+	near(t, "Volatility", s.Volatility, math.Sqrt(0.02)*math.Sqrt(252), 1e-9)
 	near(t, "Sharpe", s.Sharpe, 0, 1e-9)
 	near(t, "Sortino", s.Sortino, 0, 1e-9)
 	near(t, "MaxDrawdown", s.MaxDrawdown, -0.10, 1e-12)
-	// Drawdowns en %: 0, 0, −10 → Ulcer = sqrt(100/3).
+	// Drawdowns in %: 0, 0, −10 → Ulcer = sqrt(100/3).
 	near(t, "Ulcer", s.Ulcer, math.Sqrt(100.0/3), 1e-9)
 	near(t, "CAGR", s.CAGR, math.Pow(0.99, 365.25/2)-1, 1e-9)
 }
@@ -57,7 +57,7 @@ func TestComputeTTR(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.TTRDays != 3 || s.TTROngoing {
-		t.Errorf("TTR = %d j (en cours: %v), attendu 3 j récupérés", s.TTRDays, s.TTROngoing)
+		t.Errorf("TTR = %d d (ongoing: %v), want 3 d recovered", s.TTRDays, s.TTROngoing)
 	}
 	near(t, "MaxDrawdown", s.MaxDrawdown, -0.25, 1e-12)
 }
@@ -68,16 +68,16 @@ func TestComputeTTROngoing(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.TTRDays != 2 || !s.TTROngoing {
-		t.Errorf("TTR = %d j (en cours: %v), attendu 2 j en cours", s.TTRDays, s.TTROngoing)
+		t.Errorf("TTR = %d d (ongoing: %v), want 2 d ongoing", s.TTRDays, s.TTROngoing)
 	}
 }
 
 func TestComputeErrors(t *testing.T) {
 	if _, err := Compute(days(1), []float64{100}); err == nil {
-		t.Error("erreur attendue: série trop courte")
+		t.Error("expected error: series too short")
 	}
 	if _, err := Compute(days(2), []float64{100, -5}); err == nil {
-		t.Error("erreur attendue: valeur négative")
+		t.Error("expected error: negative value")
 	}
 }
 
@@ -90,19 +90,19 @@ func TestBetaTwiceTheBenchmark(t *testing.T) {
 	port := make([]float64, n)
 	bench[0], port[0] = 100, 100
 	for i := 1; i < n; i++ {
-		r := 0.01 * float64(i%5-2) // -2 %, -1 %, 0, +1 %, +2 % en cycle
+		r := 0.01 * float64(i%5-2) // -2 %, -1 %, 0, +1 %, +2 % cycling
 		bench[i] = bench[i-1] * (1 + r)
 		port[i] = port[i-1] * (1 + 2*r)
 	}
 	beta, ok := Beta(dates, port, dates, bench)
 	if !ok {
-		t.Fatal("Beta devrait être calculable")
+		t.Fatal("Beta should be computable")
 	}
 	near(t, "Beta", beta, 2.0, 1e-9)
 }
 
 func TestBetaTooFewOverlaps(t *testing.T) {
 	if _, ok := Beta(days(5), []float64{1, 2, 3, 4, 5}, days(5), []float64{1, 2, 3, 4, 5}); ok {
-		t.Error("Beta ne devrait pas être calculé avec si peu de points")
+		t.Error("Beta should not be computed with so few points")
 	}
 }

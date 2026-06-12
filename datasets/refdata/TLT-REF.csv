@@ -1,8 +1,8 @@
 # portfodor refdata v1 (format simdata)
 # id: TLT-REF
-# name: Treasuries US 20+ ans — simulation tierce
-# method: dérivé des courbes de taux US depuis 1962 (simulation du serveur portfolio)
-# source: serveur MCP « portfolio » (tiers), importé le 2026-06-12
+# name: US 20+ year Treasuries — third-party simulation
+# method: derived from US yield curves since 1962 (third-party portfolio-server simulation)
+# source: third-party "portfolio" MCP server, imported on 2026-06-12
 date,close
 1962-01-02,2.404387
 1962-01-03,2.404787

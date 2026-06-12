@@ -1,8 +1,8 @@
 # portfodor refdata v1 (format simdata)
 # id: XAUUSD-SPOT
-# name: Or spot XAU/USD
-# method: fixings/spot or depuis 1968 (importé du serveur portfolio)
-# source: serveur MCP « portfolio » (tiers), importé le 2026-06-12
+# name: Gold spot XAU/USD
+# method: gold spot/fixings since 1968 (imported from the portfolio server)
+# source: third-party "portfolio" MCP server, imported on 2026-06-12
 date,close
 1968-04-01,37.782765
 1968-04-02,37.381890

@@ -41,9 +41,9 @@ func All() []Recipe {
 func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
-		Name:   "iShares Core MSCI World — réplication 60/40 US/international",
-		Method: "0.60×VFINX + 0.40×VTMGX, frais 0.20 %/an",
-		Build: composite("IWDA (réplication MSCI World)", []Leg{
+		Name:   "iShares Core MSCI World — 60/40 US/international replication",
+		Method: "0.60×VFINX + 0.40×VTMGX, 0.20%/yr fees",
+		Build: composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
 		}, "", 0.0020),
@@ -53,13 +53,13 @@ func iwdaRecipe() Recipe {
 
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
 // global equities plus a half-sized overlay of the actual Winton Trend Fund
-// (refdata/WINTON-TREND-REF: réel depuis 2019, simulation Winton avant).
+// (refdata/WINTON-TREND-REF: real from 2019, Winton's own simulation before).
 func wintonRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000O1VI174",
-		Name:   "Winton Trend-Enhanced Global Equity — actions + fonds Trend réel",
-		Method: "0.60×VFINX + 0.40×VTMGX + 0.50×(WINTON-TREND-REF − cash ^IRX), frais 0.80 %/an",
-		Build: composite("Winton Trend-Enhanced Global Equity (réplication)", []Leg{
+		Name:   "Winton Trend-Enhanced Global Equity — equities + real Trend fund",
+		Method: "0.60×VFINX + 0.40×VTMGX + 0.50×(WINTON-TREND-REF − cash ^IRX), 0.80%/yr fees",
+		Build: composite("Winton Trend-Enhanced Global Equity (replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
 			{ID: "WINTON-TREND-REF", Weight: 0.50, Excess: true},
@@ -117,9 +117,9 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 func ntsxRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000KF370H3",
-		Name:   "WisdomTree US Efficient Core — réplication 90/60",
-		Method: "0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, rebalancement quotidien, frais 0.20 %/an",
-		Build: composite("NTSX (réplication 90/60)", []Leg{
+		Name:   "WisdomTree US Efficient Core — 90/60 replication",
+		Method: "0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, daily rebalancing, 0.20%/yr fees",
+		Build: composite("NTSX (90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.90},
 			{ID: "VFITX", Weight: 0.60, Excess: true},
 			{ID: "^IRX", Weight: 0.10},
@@ -135,9 +135,9 @@ func ntsxRecipe() Recipe {
 func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
-		Name:   "WisdomTree Global Efficient Core — réplication 90/60 monde",
-		Method: "0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, frais 0.25 %/an",
-		Build: composite("NTSG (réplication 90/60 monde)", []Leg{
+		Name:   "WisdomTree Global Efficient Core — global 90/60 replication",
+		Method: "0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees",
+		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
 			{ID: "VTMGX", Weight: 0.36},
 			{ID: "VFITX", Weight: 0.60, Excess: true},
@@ -152,9 +152,9 @@ func ntsgRecipe() Recipe {
 func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
-		Name:   "iShares MSCI World — réplication 60/40 US/international",
-		Method: "0.60×VFINX + 0.40×VTMGX, frais 0.24 %/an",
-		Build: composite("URTH (réplication MSCI World)", []Leg{
+		Name:   "iShares MSCI World — 60/40 US/international replication",
+		Method: "0.60×VFINX + 0.40×VTMGX, 0.24%/yr fees",
+		Build: composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
 		}, "", 0.0024),
@@ -167,9 +167,9 @@ func urthRecipe() Recipe {
 func iefRecipe() Recipe {
 	return Recipe{
 		ID:              "IEF",
-		Name:            "iShares 7-10Y Treasury — courbes de taux (réf. importée)",
-		Method:          "réf. IEF-REF (1962→), frais 0.15 %/an, réel IEF greffé depuis 2002",
-		Build:           refImport("IEF-REF", "IEF (réf. courbes de taux)", 0.0015),
+		Name:            "iShares 7-10Y Treasury — yield curves (imported ref.)",
+		Method:          "ref. IEF-REF (1962→), 0.15%/yr fees, real IEF grafted from 2002",
+		Build:           refImport("IEF-REF", "IEF (yield-curve ref.)", 0.0015),
 		ValidateAgainst: "IEF",
 		SpliceReal:      "IEF",
 	}
@@ -178,9 +178,9 @@ func iefRecipe() Recipe {
 func tltRecipe() Recipe {
 	return Recipe{
 		ID:              "TLT",
-		Name:            "iShares 20+Y Treasury — courbes de taux (réf. importée)",
-		Method:          "réf. TLT-REF (1962→), frais 0.15 %/an, réel TLT greffé depuis 2002",
-		Build:           refImport("TLT-REF", "TLT (réf. courbes de taux)", 0.0015),
+		Name:            "iShares 20+Y Treasury — yield curves (imported ref.)",
+		Method:          "ref. TLT-REF (1962→), 0.15%/yr fees, real TLT grafted from 2002",
+		Build:           refImport("TLT-REF", "TLT (yield-curve ref.)", 0.0015),
 		ValidateAgainst: "TLT",
 		SpliceReal:      "TLT",
 	}
@@ -191,9 +191,9 @@ func tltRecipe() Recipe {
 func xauusdRecipe() Recipe {
 	return Recipe{
 		ID:              "XAUUSD",
-		Name:            "Or XAU/USD — spot 1968→",
-		Method:          "réf. XAUUSD-SPOT (fixings importés, 1968→), réel GC=F greffé depuis 2000",
-		Build:           refImport("XAUUSD-SPOT", "Or (spot importé)", 0),
+		Name:            "Gold XAU/USD — spot 1968→",
+		Method:          "ref. XAUUSD-SPOT (imported fixings, 1968→), real GC=F grafted from 2000",
+		Build:           refImport("XAUUSD-SPOT", "Gold (imported spot)", 0),
 		ValidateAgainst: "XAUUSD",
 		SpliceReal:      "XAUUSD",
 	}
@@ -202,13 +202,13 @@ func xauusdRecipe() Recipe {
 // zrozRecipe serves the imported yield-curve reconstruction of 25+ year
 // STRIPS (refdata/ZROZ-REF, 1962→), real ZROZ quotes grafted on top. It
 // replaces the earlier fixed-beta stretch of VUSTX, whose pre-2009 duration
-// was too short (la comparaison croisée l'a montré).
+// was too short (the cross-comparison showed it).
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
-		Name:            "PIMCO 25+Y zero-coupon — courbes de taux (réf. importée)",
-		Method:          "réf. ZROZ-REF (STRIPS 25+ dérivés des courbes de taux US, 1962→), réel ZROZ greffé depuis 2009",
-		Build:           refImport("ZROZ-REF", "ZROZ (réf. courbes de taux)", 0.0015),
+		Name:            "PIMCO 25+Y zero-coupon — yield curves (imported ref.)",
+		Method:          "ref. ZROZ-REF (25+ STRIPS derived from US yield curves, 1962→), real ZROZ grafted from 2009",
+		Build:           refImport("ZROZ-REF", "ZROZ (yield-curve ref.)", 0.0015),
 		ValidateAgainst: "ZROZ",
 		SpliceReal:      "ZROZ",
 	}
@@ -220,7 +220,7 @@ func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures — SG CTA Index",
-		Method:          "réf. SG-CTA (indice officiel, 2000→), réel DBMF greffé depuis 2019",
+		Method:          "ref. SG-CTA (official index, 2000→), real DBMF grafted from 2019",
 		Build:           refImport("SG-CTA", "DBMF (SG CTA Index)", 0),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
@@ -232,9 +232,9 @@ func dbmfRecipe() Recipe {
 func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
-		Name:            "KraneShares MLM — indice MLM officiel",
-		Method:          "réf. MLM-INDEX (historique officiel, 1987→), frais ETF 0.90 %/an, réel KMLM greffé depuis 2020",
-		Build:           refImport("MLM-INDEX", "KMLM (indice MLM)", 0.0090),
+		Name:            "KraneShares MLM — official MLM Index",
+		Method:          "ref. MLM-INDEX (official history, 1987→), 0.90%/yr ETF fees, real KMLM grafted from 2020",
+		Build:           refImport("MLM-INDEX", "KMLM (MLM Index)", 0.0090),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -246,7 +246,7 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA — SG Trend Index",
-		Method:          "réf. SG-TREND (indice officiel, 2000→), réel CTA greffé depuis 2022",
+		Method:          "ref. SG-TREND (official index, 2000→), real CTA grafted from 2022",
 		Build:           refImport("SG-TREND", "CTA (SG Trend Index)", 0),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
@@ -283,8 +283,8 @@ func backcastBuild(name, realID string, ids []string) func(Fetcher, time.Time) (
 func amundiVolRecipe() Recipe {
 	return Recipe{
 		ID:              "LU0319687124",
-		Name:            "Amundi Volatility World — backcast sur ^VIX",
-		Method:          "régression des rendements quotidiens du fonds sur Δ^VIX et VFISX (2007→), rejouée avant 2007; résidus ignorés",
+		Name:            "Amundi Volatility World — backcast on ^VIX",
+		Method:          "regression of the fund's daily returns on Δ^VIX and VFISX (2007→), replayed before 2007; residuals dropped",
 		Build:           backcastBuild("Amundi Volatility World", "LU0319687124", []string{"^VIX", "VFISX"}),
 		ValidateAgainst: "LU0319687124",
 	}
@@ -296,8 +296,8 @@ func amundiVolRecipe() Recipe {
 func bhmgRecipe() Recipe {
 	return Recipe{
 		ID:              "GG00BQBFY362",
-		Name:            "BH Macro — backcast factoriel",
-		Method:          "régression des rendements quotidiens sur VUSTX, VFINX, GC=F (2007→), rejouée avant; résidus ignorés",
+		Name:            "BH Macro — factor backcast",
+		Method:          "regression of daily returns on VUSTX, VFINX, GC=F (2007→), replayed before; residuals dropped",
 		Build:           backcastBuild("BH Macro", "GG00BQBFY362", []string{"VUSTX", "VFINX", "GC=F"}),
 		ValidateAgainst: "GG00BQBFY362",
 	}

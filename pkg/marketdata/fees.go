@@ -40,11 +40,11 @@ func (c *Client) Fees(id string) (ter float64, ok bool) {
 	}
 	ter, src, err := c.fetchFees(canonical)
 	if err != nil {
-		c.Logf("frais inconnus pour %s (%v)", canonical, err)
-		c.saveFeesEntry(canonical, feesEntry{TER: -1, Source: "aucune", AsOf: time.Now()})
+		c.Logf("fees unknown for %s (%v)", canonical, err)
+		c.saveFeesEntry(canonical, feesEntry{TER: -1, Source: "none", AsOf: time.Now()})
 		return 0, false
 	}
-	c.Logf("frais de %s: %.2f %%/an (%s)", canonical, ter, src)
+	c.Logf("fees for %s: %.2f %%/yr (%s)", canonical, ter, src)
 	c.saveFeesEntry(canonical, feesEntry{TER: ter, Source: src, AsOf: time.Now()})
 	return ter, true
 }
@@ -62,13 +62,13 @@ func (c *Client) fetchFees(canonical string) (float64, string, error) {
 	var errs []string
 
 	if isin != "" {
-		// FT funds tearsheet covers European OPCVM and many ETFs by ISIN.
+		// The FT funds tearsheet covers European mutual funds and many ETFs by ISIN.
 		for _, cur := range candidateCurrencies(currency, isin) {
 			if ter, err := c.ftTearsheetFees("funds", isin+":"+cur); err == nil {
 				return ter, "FT", nil
 			}
 		}
-		errs = append(errs, "FT funds: non trouvé")
+		errs = append(errs, "FT funds: not found")
 		if ter, err := c.justETFFees(isin); err == nil {
 			return ter, "justETF", nil
 		} else {
@@ -85,10 +85,10 @@ func (c *Client) fetchFees(canonical string) (float64, string, error) {
 		if ter, err := c.ftTearsheetFees("funds", sym); err == nil {
 			return ter, "FT", nil
 		}
-		errs = append(errs, "FT etfs/funds US: non trouvé")
+		errs = append(errs, "FT US etfs/funds: not found")
 	}
 	if len(errs) == 0 {
-		errs = append(errs, "aucune source applicable")
+		errs = append(errs, "no applicable source")
 	}
 	return 0, "", fmt.Errorf("%s", strings.Join(errs, "; "))
 }
@@ -133,11 +133,11 @@ func (c *Client) justETFFees(isin string) (float64, error) {
 func parseFeesMatch(re *regexp.Regexp, body []byte) (float64, error) {
 	m := re.FindSubmatch(body)
 	if m == nil {
-		return 0, fmt.Errorf("frais absents de la page")
+		return 0, fmt.Errorf("no fees on the page")
 	}
 	ter, err := strconv.ParseFloat(strings.ReplaceAll(string(m[1]), ",", "."), 64)
 	if err != nil || ter < 0 || ter > 20 {
-		return 0, fmt.Errorf("frais illisibles: %q", m[1])
+		return 0, fmt.Errorf("unreadable fees: %q", m[1])
 	}
 	return ter, nil
 }
@@ -164,7 +164,7 @@ func (c *Client) feesLookup(id string) (feesEntry, bool) {
 // saveFeesEntry updates the in-memory TER cache and persists it, without
 // re-reading the file.
 func (c *Client) saveFeesEntry(id string, e feesEntry) {
-	c.feesLookup(id) // garantit le chargement initial
+	c.feesLookup(id) // guarantees the initial load
 	c.mu.Lock()
 	c.fees[id] = e
 	data, err := json.MarshalIndent(c.fees, "", " ")
