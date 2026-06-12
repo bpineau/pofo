@@ -1,4 +1,3 @@
-// Package chart renders self-contained SVG line charts, without JavaScript.
 package chart
 
 import (
