@@ -15,6 +15,10 @@
 //	#meta rebalance:N     rebalancement tous les N jours (0 = jamais)
 //	#meta extra-fees:X    frais annuels appliqués à tout le portefeuille
 //	                      (enveloppe, mandat), déduits par Simulate
+//	#meta leverage:on     poids gardés tels qu'écrits ; le résidu
+//	                      (100−somme) est une position cash, négative et
+//	                      financée au taux cash+spread au-delà de 100 %
+//	#meta borrow-spread:X spread d'emprunt en %/an (défaut de l'appelant)
 //
 // L'interprétation des identifiants (tickers, ISIN, aliases, suffixe SIM)
 // appartient à l'appelant — voir marketdata.Fetch et marketdata.SplitSim.

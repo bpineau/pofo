@@ -26,11 +26,6 @@ import (
 	"portfodor/report"
 )
 
-var palette = []string{
-	"#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
-	"#9467bd", "#8c564b", "#e377c2", "#17becf",
-}
-
 func main() {
 	log.SetFlags(0)
 	if err := run(os.Args[1:]); err != nil {
@@ -108,6 +103,9 @@ Format des fichiers — une ligne par actif :
         #meta rebalance:N    rebalancement tous les N jours (0 = jamais)
         #meta extra-fees:X   frais d'enveloppe en %%/an, déduits de la
                              performance (synonyme: envelope-fees)
+        #meta leverage:on    poids gardés tels qu'écrits: somme > 100 %%
+                             financée au taux cash (^IRX) + spread
+        #meta borrow-spread:X  spread d'emprunt en %%/an (défaut 1.0)
 
 Exemple :
     #meta rebalance:30
@@ -217,9 +215,31 @@ Options :
 			return client.Fees(base)
 		}
 	}
+	// Le taux de financement (levier) n'est récupéré qu'au besoin.
+	var cashRate *marketdata.Series
+	for _, spec := range specs {
+		if spec.Leverage {
+			cr, err := client.Fetch("^IRX", opt.start)
+			if err != nil {
+				log.Printf("avertissement: taux de financement ^IRX indisponible (%v) — levier financé à 0 %%", err)
+			} else {
+				cashRate = cr
+			}
+			break
+		}
+	}
+
 	results := make([]*result, 0, len(specs))
 	for i, spec := range specs {
 		p := buildPortfolio(spec, seriesByID, feesFor)
+		if spec.Leverage {
+			p.Leverage = true
+			p.BorrowSpread = spec.BorrowSpread
+			if p.BorrowSpread < 0 {
+				p.BorrowSpread = 1.0 // défaut: cash + 1 %/an
+			}
+			p.Cash = cashRate
+		}
 		days := opt.rebalance
 		if spec.RebalanceDays >= 0 {
 			days = spec.RebalanceDays
@@ -228,7 +248,14 @@ Options :
 		if err != nil {
 			return fmt.Errorf("portefeuille %s: %w", spec.Name, err)
 		}
-		results = append(results, &result{p: p, sim: sim, color: palette[i%len(palette)], rebalanceDays: days})
+		if sim.Ruined {
+			log.Printf("avertissement: portefeuille %s ruiné le %s (levier) — série tronquée",
+				spec.Name, sim.Dates[len(sim.Dates)-1].Format("2006-01-02"))
+			p.Warnings = append(p.Warnings, fmt.Sprintf(
+				"capital anéanti le %s : l'exposition à levier a épuisé la valeur nette ; la série s'arrête là",
+				sim.Dates[len(sim.Dates)-1].Format("2006-01-02")))
+		}
+		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(i), rebalanceDays: days})
 	}
 
 	// Common window across portfolios: statistics and the comparison chart
@@ -512,6 +539,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		}
 		if r.p.EnvelopeFees > 0 {
 			subtitle += fmt.Sprintf(" — frais d'enveloppe %.2f %%/an déduits", r.p.EnvelopeFees)
+		}
+		if r.p.Leverage {
+			expo := 0.0
+			for _, a := range r.p.Assets {
+				expo += a.Weight
+			}
+			subtitle += fmt.Sprintf(" — exposition %.4g %%, financement cash + %.2g %%/an (#meta leverage)", expo*100, r.p.BorrowSpread)
 		}
 		section := report.PortfolioSection{
 			Name:     r.p.Name,
