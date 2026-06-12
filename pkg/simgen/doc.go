@@ -20,4 +20,13 @@
 //   - the bundled recipes (All, Find) assemble these building blocks for
 //     NTSX, NTSG, URTH, IWDA, ZROZ, IEF, TLT, XAUUSD, DBMF, KMLM, CTA and
 //     the Winton Trend-Equity fund.
+//
+// # Units
+//
+// Beware of the unit conventions: fees passed to Composite, TSMOMConfig and
+// refImport recipes are FRACTIONS per year (0.0085 = 0.85 %/yr), as are
+// volatility targets (0.10 = 10 %), whereas the portfolio package and
+// marketdata.Fees express fees in PERCENT per year (0.85 = 0.85 %/yr).
+// Rate series (^IRX, ^FVX, ^TNX, ^TYX) are annualized percent levels and
+// are converted to daily accruals by BuildFrame.
 package simgen
