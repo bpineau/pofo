@@ -31,4 +31,10 @@
 // back to the target weights every N calendar days and deducting envelope
 // fees daily. Asset TERs are never deducted: they are already reflected in
 // prices.
+// # Units
+//
+// Holding.Weight and Asset.Weight are FRACTIONS (0.60 = 60 %); RawWeight,
+// Fees, EnvelopeFees and BorrowSpread are PERCENT per year as written in
+// portfolio files. The simgen package uses fractions for its own fee
+// parameters — do not mix them up.
 package portfolio
