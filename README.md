@@ -57,7 +57,17 @@ written (sum up to 500%) and the residual `100−sum` becomes a cash
 position — earning the short rate (^IRX) if positive, **financed at the
 rate + spread** if negative (`#meta borrow-spread:X`, default 1%/yr). A
 NAV that reaches zero is a ruin: the series stops and the report flags it.
-Without this directive, a weight > 100% is rejected (with a hint) and sums
+`#meta capital:10000` sets a starting amount, and unlocks periodic external
+flows: `#meta contribute:500/month` (fixed amount added every week, month,
+quarter or year) and `#meta withdraw:4%/year` (fixed amount, or a
+percentage of the current value). Flows are invested or sold pro rata on
+the first trading day of each new period. Statistics and comparison charts
+stay on a **time-weighted index** (flows don't distort returns), while the
+money rows — starting capital, total contributed/withdrawn, final value and
+a **money-weighted IRR** — follow the actual cash. Withdrawing a depleted
+portfolio is a ruin: the series stops and the report flags it.
+
+Without `#meta leverage:on`, a weight > 100% is rejected (with a hint) and sums
 ≠ 100% are normalized as before.
 An optional third numeric column declares an asset's TER
 (e.g. `60 VOO 0.03`); otherwise it is fetched automatically (FT, justETF)
@@ -86,6 +96,7 @@ suffixes globally.
 | `-rebalance` | `90` | rebalance every N calendar days (0 = never) |
 | `-start` | `2006-01-01` | desired start date |
 | `-benchmark` | `^GSPC` | reference for Beta |
+| `-currency` | `EUR` | convert every series (and the benchmark) to this currency; empty disables |
 | `-cache-age` | `720h` (1 month) | cache freshness before re-downloading |
 | `-assets` | | list `A,B,C`: each asset compared as a 100% portfolio |
 | `-cli` | | curves and summary table in the terminal, no HTML |
@@ -98,6 +109,10 @@ suffixes globally.
 - **Resolution**: aliases → embedded ticker→ISIN list (European ETFs/funds)
   → built-in catalog of pinned resolutions → multi-source search
   (Yahoo, FT, Morningstar via Boursorama), the deepest series winning.
+- **Currency**: every series is converted to the `-currency` (default EUR)
+  using daily Yahoo FX crosses, so USD ETFs and EUR funds compare fairly;
+  the earliest known rate is held flat before the FX history starts (with a
+  warning), and unconverted (unknown-currency) assets are flagged.
 - **Cache**: 1 month by default; a failed refresh **serves the stale data**
   with a stderr warning (charts may stop before today), and never deletes
   anything.
