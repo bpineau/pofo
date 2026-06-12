@@ -66,3 +66,28 @@ func ExampleSimulate() {
 	// Output:
 	// 504 points, final value 115, max drawdown 0.0 %
 }
+
+// With a starting capital and periodic flows, Simulate tracks two series:
+// Values follows the money (contributions included), while Index is the
+// time-weighted return — the one to use for statistics and comparisons.
+func ExampleSimulate_flows() {
+	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	s := &marketdata.Series{Symbol: "FLAT"}
+	for i := 0; i < 95; i++ {
+		s.Points = append(s.Points, marketdata.Point{Date: start.AddDate(0, 0, i), Close: 10})
+	}
+	p := &portfolio.Portfolio{
+		Name:       "dca",
+		Assets:     []portfolio.Asset{{ID: "FLAT", Symbol: "FLAT", Weight: 1, Fees: -1, Series: s}},
+		Capital:    1000,
+		Contribute: portfolio.Flow{Amount: 100, Period: portfolio.Monthly},
+	}
+	sim, err := portfolio.Simulate(p, 0)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("contributed %.0f, final value %.0f, index %.0f\n",
+		sim.Contributed, sim.Values[len(sim.Values)-1], sim.Index[len(sim.Index)-1])
+	// Output:
+	// contributed 300, final value 1300, index 100
+}
