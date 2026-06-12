@@ -46,6 +46,14 @@ l'ensemble du portefeuille**, en plus des TER individuels des actifs :
 enveloppe assurance-vie/PER, mandat de gestion, frais courtier… N'étant pas
 inclus dans les cours (contrairement aux TER), ils sont **déduits** de la
 performance simulée.
+
+`#meta leverage:on` active les portefeuilles à levier : les poids sont
+gardés tels qu'écrits (somme jusqu'à 500 %) et le résidu `100−somme` devient
+une position cash — rémunérée au taux court (^IRX) si positive, **financée
+au taux + spread** si négative (`#meta borrow-spread:X`, défaut 1 %/an). Une
+NAV qui atteint zéro est une ruine : la série s'arrête et le rapport le
+signale. Sans cette directive, un poids > 100 % est refusé (avec indice) et
+les sommes ≠ 100 % restent normalisées comme avant.
 Une troisième colonne numérique optionnelle déclare le TER d'un actif
 (ex. `60 VOO 0.03`), sinon il est récupéré automatiquement (FT, justETF)
 et mis en cache 6 mois ; `-no-fees` désactive cette récupération. Le
