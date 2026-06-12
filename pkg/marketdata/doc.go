@@ -26,7 +26,7 @@
 // # Données simulées
 //
 // ReadSimdata/WriteSimdata lisent et écrivent les historiques simulés
-// permanents (répertoire simdata/) produits par le package simgen;
+// permanents (datasets/simdata/) produits par le package simgen;
 // ExtendBack recolle ces séries — ou un proxy (ProxySymbol) — devant les
 // cotations réelles. La convention « suffixe SIM » (DBMFSIM = DBMF avec
 // extension simulée) est décodée par SplitSim.

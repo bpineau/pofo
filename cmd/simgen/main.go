@@ -1,5 +1,5 @@
 // Command simgen (re)builds the permanent simulated histories stored under
-// simdata/. Each bundled recipe reconstructs a complex asset (90/60 funds,
+// datasets/simdata/. Each bundled recipe reconstructs a complex asset
 // managed-futures ETFs, …) from long-history components, validates the
 // result against the asset's real quotes and writes a self-describing CSV.
 //
@@ -33,8 +33,8 @@ func main() {
 func run(argv []string) error {
 	fs := flag.NewFlagSet("simgen", flag.ContinueOnError)
 	dataDir := fs.String("data", "data", "répertoire de cache des cotations")
-	simdataDir := fs.String("simdata", "simdata", "répertoire des données simulées permanentes")
-	refdataDir := fs.String("refdata", "refdata", "répertoire des séries de référence importées")
+	simdataDir := fs.String("simdata", "datasets/simdata", "répertoire des données simulées permanentes")
+	refdataDir := fs.String("refdata", "datasets/refdata", "répertoire des séries de référence importées")
 	dry := fs.Bool("dry", false, "valider sans écrire les fichiers")
 	if err := fs.Parse(argv); err != nil {
 		return err

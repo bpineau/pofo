@@ -12,7 +12,7 @@ import (
 )
 
 // SimdataFile is a permanently stored simulated price series, used to extend
-// an asset's history before its real quotes begin. Files live in a simdata/
+// an asset's history before its real quotes begin. Files live in a simdata
 // directory, one CSV per canonical identifier, with self-describing headers:
 //
 //	# portfodor simdata v1
