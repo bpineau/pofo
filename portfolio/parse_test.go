@@ -4,6 +4,8 @@ import (
 	"math"
 	"strings"
 	"testing"
+
+	"portfodor/marketdata"
 )
 
 func TestParseBasic(t *testing.T) {
@@ -203,6 +205,94 @@ func TestSimulateEnvelopeFees(t *testing.T) {
 	got := sim.Values[len(sim.Values)-1]
 	if math.Abs(got-want) > 1e-9 {
 		t.Errorf("valeur finale avec frais d'enveloppe: %v, attendu %v", got, want)
+	}
+}
+
+func TestParseLeverage(t *testing.T) {
+	// Sans leverage:on, somme > 100 avec poids > 100: erreur avec indice.
+	if _, err := Parse("t", strings.NewReader("150 SPY")); err == nil || !strings.Contains(err.Error(), "leverage:on") {
+		t.Errorf("erreur avec indice leverage attendue, eu: %v", err)
+	}
+	// Avec leverage:on: poids gardés tels quels (fractions de capital).
+	spec, err := Parse("t", strings.NewReader("#meta leverage:on\n#meta borrow-spread:0.5\n90 SPY\n60 IEF"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !spec.Leverage || spec.BorrowSpread != 0.5 {
+		t.Errorf("meta levier: %+v", spec)
+	}
+	if spec.Holdings[0].Weight != 0.90 || spec.Holdings[1].Weight != 0.60 {
+		t.Errorf("poids non normalisés attendus: %+v", spec.Holdings)
+	}
+	if len(spec.Warnings) != 1 || !strings.Contains(spec.Warnings[0], "exposition totale 150") {
+		t.Errorf("warning d'exposition attendu: %v", spec.Warnings)
+	}
+	// Plafond.
+	if _, err := Parse("t", strings.NewReader("#meta leverage:on\n400 SPY\n200 IEF")); err == nil {
+		t.Error("erreur de plafond 500 % attendue")
+	}
+	// Valeur invalide.
+	if _, err := Parse("t", strings.NewReader("#meta leverage:peut-etre\n100 SPY")); err == nil {
+		t.Error("erreur leverage invalide attendue")
+	}
+}
+
+func TestSimulateLeverage(t *testing.T) {
+	n := 253
+	flat := constSeries("A", 0, n, 100)
+	rate := &marketdata.Series{Symbol: "^IRX"}
+	for i := range n {
+		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 2.52}) // 0.01 %/jour
+	}
+	// 150 % d'un actif plat, financé à 2.52 % + spread 2.52 %: la dette de
+	// 50 se compose à 0.02 %/jour, la NAV s'érode d'autant.
+	p := &Portfolio{
+		Name: "t", Leverage: true, BorrowSpread: 2.52, Cash: rate,
+		Assets: []Asset{{Symbol: "A", Weight: 1.5, Series: flat}},
+	}
+	sim, err := Simulate(p, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantDebt := 50 * math.Pow(1.0002, float64(n-1))
+	want := 150 - wantDebt
+	got := sim.Values[len(sim.Values)-1]
+	if math.Abs(got-want) > 1e-9 {
+		t.Errorf("NAV avec financement: %v, attendu %v", got, want)
+	}
+	// Amplification sans frais: actif +1 %/j à levier 1.5, taux nul.
+	up := &marketdata.Series{Symbol: "B"}
+	v := 100.0
+	for i := range 50 {
+		up.Points = append(up.Points, marketdata.Point{Date: day(i), Close: v})
+		v *= 1.01
+	}
+	p2 := &Portfolio{Name: "t", Leverage: true, Assets: []Asset{{Symbol: "B", Weight: 1.5, Series: up}}}
+	sim2, err := Simulate(p2, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want2 := 150*math.Pow(1.01, 49) - 50
+	if got2 := sim2.Values[len(sim2.Values)-1]; math.Abs(got2-want2) > 1e-9 {
+		t.Errorf("amplification: %v, attendu %v", got2, want2)
+	}
+	// Ruine: levier 3 sur un actif qui s'effondre.
+	down := &marketdata.Series{Symbol: "C"}
+	v = 100.0
+	for i := range 60 {
+		down.Points = append(down.Points, marketdata.Point{Date: day(i), Close: v})
+		v *= 0.95
+	}
+	p3 := &Portfolio{Name: "t", Leverage: true, Assets: []Asset{{Symbol: "C", Weight: 3, Series: down}}}
+	sim3, err := Simulate(p3, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !sim3.Ruined {
+		t.Error("la ruine devait être détectée")
+	}
+	if len(sim3.Values) >= 60 {
+		t.Error("la série devait être tronquée")
 	}
 }
 
