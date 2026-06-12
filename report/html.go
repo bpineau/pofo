@@ -1,4 +1,3 @@
-// Package report renders the final HTML document with embedded SVG charts.
 package report
 
 import (
