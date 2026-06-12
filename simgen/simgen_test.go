@@ -96,6 +96,38 @@ func TestCompositeNinetySixty(t *testing.T) {
 	near(t, "rendement composite", values[1]/values[0]-1, want, 1e-12)
 }
 
+func TestTSMOMGoesLongUptrendShortDowntrend(t *testing.T) {
+	n := 400
+	f := fakeFetcher{
+		"UP":   mkSeries("UP", n, 0.004),
+		"DOWN": mkSeries("DOWN", n, -0.004),
+		"^IRX": mkLevels("^IRX", n, 0),
+	}
+	fr, err := BuildFrame(f, []string{"UP", "DOWN", "^IRX"}, day(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	values, start, err := TSMOM(fr, TSMOMConfig{
+		Markets:     []string{"UP", "DOWN"},
+		CashID:      "^IRX",
+		Lookback:    252,
+		VolWindow:   63,
+		Rebalance:   21,
+		TargetVol:   0.10,
+		MaxLeverage: 2,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if start != 253 {
+		t.Errorf("début après warmup: %d", start)
+	}
+	// Long sur UP et short sur DOWN: les deux jambes gagnent.
+	if last := values[len(values)-1]; last <= 100 {
+		t.Errorf("la stratégie devrait gagner sur des tendances nettes: %v", last)
+	}
+}
+
 func TestFitBackcastRecoversLinearModel(t *testing.T) {
 	n := 300
 	x := mkWobbly("X", n, 0.001, 0.01)
