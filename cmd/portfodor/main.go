@@ -89,6 +89,7 @@ func run(argv []string) error {
 	fs.IntVar(&opt.width, "width", 0, "chart width in -cli mode, in columns (default: $COLUMNS, else 100)")
 	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "re-download quotes older than this duration")
 	warmup := fs.Bool("warmup", false, "pre-fetch the cache for the bundled asset catalog, then stop")
+	verifyData := fs.Bool("verify-data", false, "data doctor: check the quotes of the referenced assets (or the whole catalog) for anomalies, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "directory of reference series for -gen-simdata (default: embedded)")
@@ -143,7 +144,7 @@ Options:
 		return err
 	}
 	files := fs.Args()
-	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata {
+	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -201,7 +202,7 @@ Options:
 			addSpec(portfolio.Single(id))
 		}
 	}
-	if len(specs) == 0 && !*warmup {
+	if len(specs) == 0 && !*warmup && !*verifyData {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -211,6 +212,9 @@ Options:
 
 	if *warmup {
 		return runWarmup(client, &opt)
+	}
+	if *verifyData {
+		return runVerifyData(client, specs, &opt)
 	}
 
 	// Download every distinct asset once.
@@ -505,6 +509,66 @@ func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r sim
 		Generated:  time.Now().Format("2006-01-02"),
 		Points:     sim.Points,
 	})
+}
+
+// runVerifyData is the data doctor: it fetches every asset referenced by
+// the given portfolios (or the whole bundled catalog when none is given)
+// and reports data-quality findings from marketdata.Verify. It returns an
+// error when any series has error-grade problems.
+func runVerifyData(c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
+	var ids []string
+	seen := map[string]bool{}
+	for _, spec := range specs {
+		for _, h := range spec.Holdings {
+			if !seen[h.ID] {
+				seen[h.ID] = true
+				ids = append(ids, h.ID)
+			}
+		}
+	}
+	if len(ids) == 0 {
+		ids = marketdata.WarmupIDs()
+		fmt.Printf("no portfolio given: checking the %d bundled catalog assets\n", len(ids))
+	}
+	now := time.Now()
+	broken, suspicious := 0, 0
+	for _, id := range ids {
+		s, err := fetchAsset(c, id, opt)
+		if err != nil {
+			fmt.Printf("%-22s FETCH FAILED: %v\n", id, err)
+			broken++
+			continue
+		}
+		issues := marketdata.Verify(s, now)
+		span := fmt.Sprintf("%s → %s, %d points, %s",
+			s.First().Date.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"),
+			len(s.Points), s.Source)
+		if len(issues) == 0 {
+			fmt.Printf("%-22s ok (%s)\n", id, span)
+			continue
+		}
+		hasError := false
+		for _, is := range issues {
+			if is.Severity == "error" {
+				hasError = true
+			}
+		}
+		if hasError {
+			broken++
+		} else {
+			suspicious++
+		}
+		fmt.Printf("%-22s %d finding(s) (%s)\n", id, len(issues), span)
+		for _, is := range issues {
+			fmt.Printf("    %s\n", is)
+		}
+	}
+	fmt.Printf("\n%d asset(s) checked: %d clean, %d with warnings, %d broken\n",
+		len(ids), len(ids)-suspicious-broken, suspicious, broken)
+	if broken > 0 {
+		return fmt.Errorf("%d asset(s) with error-grade data problems", broken)
+	}
+	return nil
 }
 
 // runWarmup pre-fetches the whole bundled asset catalog into the cache so
