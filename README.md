@@ -102,6 +102,7 @@ suffixes globally.
 | `-cli` | | curves and summary table in the terminal, no HTML |
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
+| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies — bad points, gaps, stale feeds — then exit |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
 
 ## Data
