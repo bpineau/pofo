@@ -46,8 +46,9 @@ type Frame struct {
 }
 
 // BuildFrame fetches every id and aligns daily returns on the union of
-// trading dates from the latest first-quote on. Rate ids (see isRate) are
-// converted from annualized percent levels to daily returns.
+// trading dates from the latest first-quote on. The rate ids ^IRX, ^FVX, ^TNX and
+// ^TYX are treated as annualized percent levels and converted to daily
+// accruals instead of price returns.
 func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 	series := make(map[string]*marketdata.Series, len(ids))
 	start := from
