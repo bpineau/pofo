@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/marketdata"
 )
 
 // ComponentsFrom is how far back component histories are requested; actual

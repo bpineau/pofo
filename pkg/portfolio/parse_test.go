@@ -5,7 +5,7 @@ import (
 	"strings"
 	"testing"
 
-	"portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/marketdata"
 )
 
 func TestParseBasic(t *testing.T) {

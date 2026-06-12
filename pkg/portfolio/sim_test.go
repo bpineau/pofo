@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/marketdata"
 )
 
 func day(i int) time.Time {
