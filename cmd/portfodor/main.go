@@ -9,21 +9,25 @@ import (
 	"flag"
 	"fmt"
 	"html/template"
+	iofs "io/fs"
 	"log"
 	"math"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"runtime"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
+	"portfodor/datasets"
 	"portfodor/pkg/chart"
 	"portfodor/pkg/marketdata"
 	"portfodor/pkg/metrics"
 	"portfodor/pkg/portfolio"
 	"portfodor/pkg/report"
+	"portfodor/pkg/simgen"
 )
 
 func main() {
@@ -37,6 +41,7 @@ type options struct {
 	out        string
 	dataDir    string
 	simdataDir string
+	simdata    iofs.FS // source des historiques simulés (embarqué ou -simdata)
 	rebalance  int
 	start      time.Time
 	end        time.Time // zéro = jusqu'à aujourd'hui
@@ -66,8 +71,8 @@ func run(argv []string) error {
 	var opt options
 	var startStr string
 	fs.StringVar(&opt.out, "out", "", "fichier HTML de sortie (défaut: /tmp/portfodor-<horodatage>.html)")
-	fs.StringVar(&opt.dataDir, "data", "data", "répertoire de cache des cotations")
-	fs.StringVar(&opt.simdataDir, "simdata", "datasets/simdata", "répertoire des historiques simulés permanents")
+	fs.StringVar(&opt.dataDir, "data", defaultDataDir(), "répertoire de cache des cotations")
+	fs.StringVar(&opt.simdataDir, "simdata", "", "répertoire des historiques simulés (défaut: embarqués dans le binaire)")
 	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalancement tous les N jours calendaires (0 = jamais)")
 	fs.StringVar(&startStr, "start", "2006-01-01", "date de début souhaitée (AAAA-MM-JJ)")
 	var endStr string
@@ -80,6 +85,9 @@ func run(argv []string) error {
 	fs.IntVar(&opt.width, "width", 0, "largeur du graphe en mode -cli, en colonnes (défaut: $COLUMNS, sinon 100)")
 	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "retélécharger les cotations plus vieilles que cette durée")
 	warmup := fs.Bool("warmup", false, "précharger le cache pour le catalogue d'actifs intégré, puis s'arrêter")
+	genSimdata := fs.Bool("gen-simdata", false, "(re)générer les historiques simulés (recettes en arguments, défaut: toutes) puis s'arrêter; recompilez ensuite pour les ré-embarquer")
+	dry := fs.Bool("dry", false, "avec -gen-simdata: valider sans écrire")
+	refdataDir := fs.String("refdata", "", "répertoire des séries de référence pour -gen-simdata (défaut: embarquées)")
 	assetsList := fs.String("assets", "", "liste de tickers/ISIN séparés par des virgules, chacun comparé comme un portefeuille investi à 100 % dessus")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: portfodor [options] portefeuille.txt [portefeuille2.txt …]
@@ -125,7 +133,7 @@ Options :
 		return err
 	}
 	files := fs.Args()
-	if len(files) == 0 && *assetsList == "" && !*warmup {
+	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata {
 		fs.Usage()
 		return errors.New("aucun fichier de portefeuille ni option -assets")
 	}
@@ -172,12 +180,21 @@ Options :
 		return errors.New("l'option -assets ne contient aucun identifiant")
 	}
 
+	if opt.simdataDir != "" {
+		opt.simdata = os.DirFS(opt.simdataDir)
+	} else {
+		opt.simdata = datasets.Simdata()
+	}
+
 	client := marketdata.NewClient(opt.dataDir)
 	client.MaxAge = opt.cacheAge
 	client.Logf = log.Printf
 
 	if *warmup {
 		return runWarmup(client, &opt)
+	}
+	if *genSimdata {
+		return runGenSimdata(client, &opt, *refdataDir, fs.Args(), *dry)
 	}
 
 	// Download every distinct asset once.
@@ -373,6 +390,101 @@ func termWidth(flag int) int {
 	return 100
 }
 
+// defaultDataDir picks the standard per-user cache location
+// (~/Library/Caches/portfodor sur macOS, ~/.cache/portfodor sur Linux),
+// falling back to a local directory when the home is unknown.
+func defaultDataDir() string {
+	if c, err := os.UserCacheDir(); err == nil {
+		return filepath.Join(c, "portfodor")
+	}
+	return "data"
+}
+
+// runGenSimdata (re)builds the simulated histories — the former standalone
+// simgen command, kept as a sub-mode. Files are written to datasets/simdata
+// (or -simdata when set): regeneration is a repository activity, and a
+// rebuild re-embeds the result into the binary.
+func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, ids []string, dry bool) error {
+	recipes := simgen.All()
+	if len(ids) > 0 {
+		recipes = recipes[:0]
+		for _, id := range ids {
+			r, ok := simgen.Find(id)
+			if !ok {
+				return fmt.Errorf("aucune recette pour %q", id)
+			}
+			recipes = append(recipes, r)
+		}
+	}
+	var refdata iofs.FS = datasets.Refdata()
+	if refdataDir != "" {
+		refdata = os.DirFS(refdataDir)
+	}
+	outDir := opt.simdataDir
+	if outDir == "" {
+		outDir = "datasets/simdata"
+	}
+	fetcher := simgen.WithRefData(refdata, client)
+	failures := 0
+	for _, r := range recipes {
+		err := genOne(client, fetcher, outDir, r, dry)
+		switch {
+		case errors.Is(err, simgen.ErrUnfaithful):
+			log.Printf("⚠ %-14s ignoré: %v", r.ID, err)
+		case err != nil:
+			log.Printf("✗ %-14s %v", r.ID, err)
+			failures++
+		}
+	}
+	if failures > 0 {
+		return fmt.Errorf("%d recette(s) en échec", failures)
+	}
+	if !dry {
+		log.Printf("recompilez (make build) pour ré-embarquer datasets/simdata dans le binaire")
+	}
+	return nil
+}
+
+func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r simgen.Recipe, dry bool) error {
+	sim, err := r.Build(fetcher, simgen.ComponentsFrom)
+	if err != nil {
+		return err
+	}
+	validation := "non validé (pas de série réelle)"
+	if r.ValidateAgainst != "" {
+		real, err := client.Fetch(r.ValidateAgainst, simgen.ComponentsFrom)
+		if err != nil {
+			return fmt.Errorf("série réelle %s: %w", r.ValidateAgainst, err)
+		}
+		v, err := simgen.Validate(sim, real)
+		if err != nil {
+			return fmt.Errorf("validation vs %s: %w", r.ValidateAgainst, err)
+		}
+		validation = fmt.Sprintf("%s vs %s", v, r.ValidateAgainst)
+	}
+	if r.SpliceReal != "" {
+		real, err := client.Fetch(r.SpliceReal, simgen.ComponentsFrom)
+		if err != nil {
+			return fmt.Errorf("série à greffer %s: %w", r.SpliceReal, err)
+		}
+		sim = simgen.Splice(real, sim)
+	}
+	log.Printf("✓ %-14s %s → %s (%d points)", r.ID,
+		sim.First().Date.Format("2006-01-02"), sim.Last().Date.Format("2006-01-02"), len(sim.Points))
+	log.Printf("  %s", validation)
+	if dry {
+		return nil
+	}
+	return marketdata.WriteSimdata(dir, &marketdata.SimdataFile{
+		ID:         r.ID,
+		Name:       r.Name,
+		Method:     r.Method,
+		Validation: validation,
+		Generated:  time.Now().Format("2006-01-02"),
+		Points:     sim.Points,
+	})
+}
+
 // runWarmup pre-fetches the whole bundled asset catalog into the cache so
 // that later runs work fast and (mostly) offline.
 func runWarmup(c *marketdata.Client, opt *options) error {
@@ -409,10 +521,10 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 // bare identifier sticks to the asset's real quotes, from its actual
 // inception. A "SIM"-suffixed identifier (DBMFSIM, VOOSIM…) additionally
 // extends the uncovered period backwards: first with the permanent simulated
-// series stored under simdata/, then with a known index/fund proxy — real
+// series (embedded datasets, or -simdata), then a known proxy — real
 // quotes always win wherever they exist.
 func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
-	from, allowSim, simdataDir := opt.start, !opt.noSim, opt.simdataDir
+	from, allowSim := opt.start, !opt.noSim
 	base, wantSim := marketdata.SplitSim(id)
 	if !wantSim || !allowSim {
 		s, err := c.Fetch(base, from)
@@ -422,7 +534,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 		return trim(s, time.Time{}, opt.end), nil
 	}
 	canonical := marketdata.CanonicalID(base)
-	sim, simOK, simErr := marketdata.ReadSimdata(simdataDir, canonical)
+	sim, simOK, simErr := marketdata.ReadSimdataFS(opt.simdata, canonical)
 	if simErr != nil {
 		log.Printf("avertissement: simdata %s illisible: %v", canonical, simErr)
 	}

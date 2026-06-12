@@ -2,7 +2,9 @@ package marketdata
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"sort"
@@ -32,12 +34,18 @@ type SimdataFile struct {
 	Points     []Point
 }
 
-// ReadSimdata loads the simulated series stored for the canonical id in dir.
-// ok is false when no file exists.
-func ReadSimdata(dir, id string) (s *Series, ok bool, err error) {
-	path := filepath.Join(dir, sanitizeFilename(CanonicalID(id))+".csv")
-	f, err := os.Open(path)
-	if os.IsNotExist(err) {
+// ReadSimdata loads the simulated series stored for the canonical id in a
+// directory on disk. ok is false when no file exists.
+func ReadSimdata(dir, id string) (*Series, bool, error) {
+	return ReadSimdataFS(os.DirFS(dir), id)
+}
+
+// ReadSimdataFS is ReadSimdata over any fs.FS — typically the datasets
+// embedded in the binary, or os.DirFS for development overrides.
+func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
+	path := sanitizeFilename(CanonicalID(id)) + ".csv"
+	f, err := fsys.Open(path)
+	if errors.Is(err, fs.ErrNotExist) {
 		return nil, false, nil
 	}
 	if err != nil {
