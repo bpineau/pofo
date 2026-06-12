@@ -161,8 +161,8 @@ sim, _ := portfolio.Simulate(p, 90)
 - `chart` — graphes SVG en ligne pure stdlib.
 - `portfolio` — parsing des fichiers d'allocation et simulation rebalancée.
 - `report` — rendu du rapport HTML.
-- `simgen` — moteur de reconstruction (composites linéaires, TSMOM,
-  backcasts par régression) et recettes validées.
+- `simgen` — moteur de reconstruction (composites linéaires, références
+  importées, backcasts par régression) et recettes validées.
 
 ## Limites connues
 
