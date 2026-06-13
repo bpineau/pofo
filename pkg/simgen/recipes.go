@@ -61,8 +61,8 @@ func shyRecipe() Recipe {
 	return Recipe{
 		ID:              "SHY",
 		Name:            "iShares 1-3 Year Treasury Bond ETF",
-		Method:          "ref. SHY-REF (1-3y treasuries from US yield curves, 1962→), real SHY grafted from 2002",
-		Build:           refImport("SHY-REF", "SHY (yield-curve ref.)", 0.0015),
+		Method:          "VFISX (Vanguard Short-Term Treasury, 1991→), real SHY grafted from 2002",
+		Build:           composite("SHY (short Treasury)", []Leg{{ID: "VFISX", Weight: 1}}, "", 0),
 		ValidateAgainst: "SHY",
 		SpliceReal:      "SHY",
 	}
@@ -99,10 +99,15 @@ func btalRecipe() Recipe {
 
 func rssbRecipe() Recipe {
 	return Recipe{
-		ID:              "RSSB",
-		Name:            "Return Stacked Global Stocks & Bonds",
-		Method:          "ref. RSSB-REF (100/100 stocks+bonds simulation, 1969→), real RSSB grafted from 2023",
-		Build:           refImport("RSSB-REF", "RSSB (return-stacked ref.)", 0),
+		ID:     "RSSB",
+		Name:   "Return Stacked Global Stocks & Bonds",
+		Method: "100% world equity + 100% (VFITX − cash) Treasury stack (1999→), real RSSB grafted from 2023",
+		Build: composite("RSSB (100/100 stocks+bonds replication)", []Leg{
+			{ID: "VFINX", Weight: 0.60},
+			{ID: "VTMGX", Weight: 0.30},
+			{ID: "VEIEX", Weight: 0.10},
+			{ID: "VFITX", Weight: 1.00, Excess: true},
+		}, "^IRX", 0),
 		ValidateAgainst: "RSSB",
 		SpliceReal:      "RSSB",
 	}
@@ -110,10 +115,14 @@ func rssbRecipe() Recipe {
 
 func vtRecipe() Recipe {
 	return Recipe{
-		ID:              "VT",
-		Name:            "Vanguard Total World Stock",
-		Method:          "ref. VT-REF (total-world simulation, 1969→), real VT grafted from 2008",
-		Build:           refImport("VT-REF", "VT (total world ref.)", 0),
+		ID:     "VT",
+		Name:   "Vanguard Total World Stock",
+		Method: "0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM world, 1999→), real VT grafted from 2008",
+		Build: composite("VT (total world replication)", []Leg{
+			{ID: "VFINX", Weight: 0.60},
+			{ID: "VTMGX", Weight: 0.30},
+			{ID: "VEIEX", Weight: 0.10},
+		}, "", 0),
 		ValidateAgainst: "VT",
 		SpliceReal:      "VT",
 	}
@@ -252,8 +261,8 @@ func iefRecipe() Recipe {
 	return Recipe{
 		ID:              "IEF",
 		Name:            "iShares 7-10Y Treasury — yield curves (imported ref.)",
-		Method:          "ref. IEF-REF (1962→), 0.15%/yr fees, real IEF grafted from 2002",
-		Build:           refImport("IEF-REF", "IEF (yield-curve ref.)", 0.0015),
+		Method:          "VFITX (Vanguard Intermediate-Term Treasury, 1991→), real IEF grafted from 2002",
+		Build:           composite("IEF (intermediate Treasury)", []Leg{{ID: "VFITX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IEF",
 		SpliceReal:      "IEF",
 	}
@@ -263,8 +272,8 @@ func tltRecipe() Recipe {
 	return Recipe{
 		ID:              "TLT",
 		Name:            "iShares 20+Y Treasury — yield curves (imported ref.)",
-		Method:          "ref. TLT-REF (1962→), 0.15%/yr fees, real TLT grafted from 2002",
-		Build:           refImport("TLT-REF", "TLT (yield-curve ref.)", 0.0015),
+		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002",
+		Build:           composite("TLT (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
 		ValidateAgainst: "TLT",
 		SpliceReal:      "TLT",
 	}
@@ -291,8 +300,8 @@ func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
 		Name:            "PIMCO 25+Y zero-coupon — yield curves (imported ref.)",
-		Method:          "ref. ZROZ-REF (25+ STRIPS derived from US yield curves, 1962→), real ZROZ grafted from 2009",
-		Build:           refImport("ZROZ-REF", "ZROZ (yield-curve ref.)", 0.0015),
+		Method:          "1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
+		Build:           composite("ZROZ (1.65x long Treasury excess)", []Leg{{ID: "VUSTX", Weight: 1.65, Excess: true}}, "^IRX", 0),
 		ValidateAgainst: "ZROZ",
 		SpliceReal:      "ZROZ",
 	}
