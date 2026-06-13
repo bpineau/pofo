@@ -32,6 +32,61 @@ func All() []Recipe {
 		ctaRecipe(),
 		amundiVolRecipe(),
 		bhmgRecipe(),
+		crryRecipe(),
+		btalRecipe(),
+		rssbRecipe(),
+		vtRecipe(),
+	}
+}
+
+// The next four recipes import third-party reconstructions served by a
+// friend's "portfolio" MCP server (already validated against the real funds
+// there) and graft our own real quotes on top. They extend assets the
+// catalog gained recently but had no history for. (A fifth, broad
+// commodities, was dropped: the imported series correlated −0.19 with the
+// real ICOM ETF, so it did not faithfully represent it.)
+
+func crryRecipe() Recipe {
+	return Recipe{
+		ID:              "XS3022291473",
+		Name:            "WisdomTree Enhanced Commodity Carry — carry strategy",
+		Method:          "ref. CRRY-REF (commodity-carry simulation, 2008→), real CRRY grafted from 2025",
+		Build:           refImport("CRRY-REF", "CRRY (commodity carry ref.)", 0),
+		ValidateAgainst: "XS3022291473",
+		SpliceReal:      "XS3022291473",
+	}
+}
+
+func btalRecipe() Recipe {
+	return Recipe{
+		ID:              "BTAL",
+		Name:            "AGFiQ US Market Neutral Anti-Beta",
+		Method:          "ref. BTAL-REF (anti-beta simulation, 2001→), real BTAL grafted from 2011",
+		Build:           refImport("BTAL-REF", "BTAL (anti-beta ref.)", 0),
+		ValidateAgainst: "BTAL",
+		SpliceReal:      "BTAL",
+	}
+}
+
+func rssbRecipe() Recipe {
+	return Recipe{
+		ID:              "RSSB",
+		Name:            "Return Stacked Global Stocks & Bonds",
+		Method:          "ref. RSSB-REF (100/100 stocks+bonds simulation, 1969→), real RSSB grafted from 2023",
+		Build:           refImport("RSSB-REF", "RSSB (return-stacked ref.)", 0),
+		ValidateAgainst: "RSSB",
+		SpliceReal:      "RSSB",
+	}
+}
+
+func vtRecipe() Recipe {
+	return Recipe{
+		ID:              "VT",
+		Name:            "Vanguard Total World Stock",
+		Method:          "ref. VT-REF (total-world simulation, 1969→), real VT grafted from 2008",
+		Build:           refImport("VT-REF", "VT (total world ref.)", 0),
+		ValidateAgainst: "VT",
+		SpliceReal:      "VT",
 	}
 }
 
