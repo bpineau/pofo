@@ -1,0 +1,14 @@
+# Decumulation demo — balanced 50/30/20, 4%/yr withdrawal
+# Idea: shows the withdrawal mechanics on a diversified balanced portfolio,
+#   drawn at 4% a year. Compare its IRR and final value with the yield-shield
+#   and all-weather decumulation files.
+# Inspired by: Bengen/Trinity 4% safe-withdrawal studies.
+#meta capital:1000000
+#meta withdraw:4%/year
+#meta rebalance:180
+
+50    IE00B4L5Y983    # World equity (IWDA)
+20    IE00BSKRJZ44    # Long Treasuries (IDTL)
+10    IE00B4WXJJ64    # € Govt Bond (IEGA)
+10    IE00B4ND3602    # Gold (IGLN)
+10    IE00BGCSB447    # Cash / ultrashort (ERNA)

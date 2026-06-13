@@ -1,0 +1,17 @@
+# Yield Shield — gentle 4%/yr decumulation demo
+# Idea: a balanced, income-tilted portfolio drawn down at 4% a year. The
+#   dividend + bond yield ('shield') covers much of the withdrawal, so fewer
+#   shares are sold in downturns (less sequence-of-returns risk).
+# Inspired by: Millennial Revolution 'Yield Shield'; Bengen/Trinity 4% rule.
+#   https://www.millennial-revolution.com/invest/workshop-15-yield-shield/
+# Demonstrates #meta capital + withdraw. UCITS.
+#meta capital:500000
+#meta withdraw:4%/year
+#meta rebalance:180
+
+30    IE00B8GKDB10    # High-dividend world (VHYL)
+10    IE00B1FZS350    # Global REITs (IWDP)
+30    IE00B4WXJJ64    # € Government Bond (IEGA)
+10    IE00B1FZSC47    # TIPS (ITPS)
+10    IE00B4ND3602    # Gold (IGLN)
+10    IE00BGCSB447    # Cash / ultrashort (ERNA)

@@ -1,0 +1,9 @@
+# World + global small-cap value tilt
+# Idea: a broad world core with a small, evidence-based tilt to the size and
+#   value premia (Fama-French) — a mild factor lean without much complexity.
+# Inspired by: Fama-French factor research; Ben Felix / Rational Reminder model portfolios.
+#   https://www.pwlcapital.com/rational-reminder/
+# UCITS, 100% equity.
+
+85    IE00B4L5Y983    # World (IWDA)
+15    IE0003R87OG3    # Avantis Global Small Cap Value (AVWS)

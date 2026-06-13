@@ -1,0 +1,13 @@
+# The Cockroach Portfolio (Jason Buck / Mutiny Fund) — modernized
+# Idea: the four-quadrant cousin of the Dragon — equal risk to stocks, bonds,
+#   gold and trend-following. Ugly but unkillable: survives whatever the decade
+#   throws at it.
+# Inspired by: Mutiny Fund / Jason Buck, 'The Cockroach Portfolio'.
+#   https://mutinyfund.com/cockroach/
+# Trend via managed futures (UCITS buy-route: iMGP DBi).
+#meta rebalance:180
+
+25    IWDASIM         # Equity (UCITS: IWDA)
+25    TLTSIM          # Long bonds (UCITS: IDTL)
+25    GOLDSIM         # Gold (UCITS: IGLN)
+25    KMLMSIM         # Managed futures (UCITS: iMGP DBi LU2951555585)
