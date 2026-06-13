@@ -7,7 +7,7 @@
 
 15    IE00B4L5Y983    # World (IWDA)
 10    IE00BP3QZB59    # World Value (IWVL)
-10    IE0003R87OG3    # Global SC Value (AVWS)
+10    ZPRVSIM         # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 10    IE00BKM4GZ66    # Emerging Markets (EIMI)
 15    IE00B4WXJJ64    # € Govt Bond (IEGA)
 15    IE00B1FZSC47    # TIPS (ITPS)
