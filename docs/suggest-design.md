@@ -108,11 +108,21 @@ Suggestions (fill the gaps, validated out-of-sample):
   those, render the terminal block, then exit. Reuses `fetchAsset`,
   `metrics.Compute`, `marketdata` catalog.
 
-The macro-regime **coverage** chart (and the asset-class column) is also
-rendered in the normal HTML report and the `-cli` summary, computed from the
-metadata at no extra fetch cost. The full gap-filling **suggestions** (which
-require fetching candidate histories) stay in the dedicated `-suggest`
-terminal mode.
+The **coverage** chart (and the asset-class column) is also rendered in the
+normal HTML report and the `-cli` summary, computed from the metadata at no
+extra fetch cost. The full gap-filling **suggestions** (which require
+fetching candidate histories) stay in the dedicated `-suggest` terminal mode.
 
-Out of scope for v1: HTML rendering of the ranked suggestions; factor-model
-framework; suggesting uncatalogued assets.
+Two follow-ups shipped after v1:
+
+- **`-coverage`** — an offline advisor: the coverage chart plus, for each
+  gap, the catalog assets that fill it grouped by asset class. No price
+  downloads, no ranking; `-suggest` ranks them afterwards.
+- **`-framework`** — the classification is pluggable (`suggest.Framework`):
+  `regimes` (default, the four macro quadrants) or `factors` (market, size,
+  value, momentum, quality, term, credit, alternative, cash). The factor
+  mapping is intentionally coarse — diversifiers that are not Fama-French
+  factors land in *alternative* — so regimes stay the default.
+
+Still out of scope: HTML rendering of the ranked suggestions; suggesting
+uncatalogued assets.

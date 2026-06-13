@@ -19,24 +19,26 @@ type AssetRow struct {
 	Note     string
 }
 
-// CoverageBar is one macro-regime row of a portfolio's coverage chart.
+// CoverageBar is one category row (a macro regime or a risk factor) of a
+// portfolio's coverage chart.
 type CoverageBar struct {
-	Regime string
-	Pct    int  // coverage as a percent of portfolio weight (can exceed 100)
-	Width  int  // bar width, the percent capped at 100
-	Gap    bool // true when the regime is under-covered
+	Regime string // the category label
+	Pct    int    // coverage as a percent of portfolio weight (can exceed 100)
+	Width  int    // bar width, the percent capped at 100
+	Gap    bool   // true when the category is under-covered
 }
 
 // PortfolioSection groups everything shown for one portfolio. Sections are
 // rendered folded (<details>) so the report opens on the comparison.
 type PortfolioSection struct {
-	Name     string
-	Subtitle string // optional hint shown next to the name (e.g. rebalancing override)
-	ChartSVG template.HTML
-	Coverage []CoverageBar // macro-regime coverage; empty to omit
-	Assets   []AssetRow
-	Notes    []string // informational lines (e.g. optimizer choices)
-	Warnings []string
+	Name          string
+	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
+	ChartSVG      template.HTML
+	CoverageLabel string        // heading for the coverage chart
+	Coverage      []CoverageBar // macro-regime or factor coverage; empty to omit
+	Assets        []AssetRow
+	Notes         []string // informational lines (e.g. optimizer choices)
+	Warnings      []string
 }
 
 // StatCell is one value of the statistics table; Best cells are highlighted.
@@ -137,7 +139,7 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 {{.ChartSVG}}
 {{if .Coverage}}
 <div class="cov">
-<div class="cov-title">Macro-regime coverage (by weight)</div>
+<div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
 <div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} — gap{{end}}</span></div>
 {{- end}}
