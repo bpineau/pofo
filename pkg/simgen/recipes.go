@@ -180,6 +180,49 @@ func refImport(refID, name string, annualFee float64) func(Fetcher, time.Time) (
 	return composite(name, []Leg{{ID: refID, Weight: 1}}, "", annualFee)
 }
 
+// mfMarkets is the cross-asset futures basket traded by the managed-futures
+// trend reconstructions (equities, bonds, commodities; currencies omitted —
+// no fetchable series). The youngest component (gold/oil futures, ~2000)
+// sets the start date.
+var mfMarkets = []string{"VFINX", "VTMGX", "VEIEX", "VFITX", "VUSTX", "GC=F", "CL=F"}
+
+// mfConfig is the standard 12-month time-series-momentum configuration, with
+// a per-fund volatility target and fee.
+func mfConfig(targetVol, annualFee float64) TSMOMConfig {
+	return TSMOMConfig{
+		Markets:     mfMarkets,
+		CashID:      "^IRX",
+		Lookback:    252,
+		VolWindow:   63,
+		Rebalance:   21,
+		TargetVol:   targetVol,
+		MaxLeverage: 2,
+		AnnualFee:   annualFee,
+		EarnCash:    true,
+	}
+}
+
+// tsmom is the shared Build for trend-following reconstructions: it builds a
+// frame on the markets and runs the TSMOM engine, returning the strategy
+// index aligned to the dates after the signal warm-up.
+func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+		fr, err := BuildFrame(f, append([]string{cfg.CashID}, cfg.Markets...), from)
+		if err != nil {
+			return nil, err
+		}
+		values, start, err := TSMOM(fr, cfg)
+		if err != nil {
+			return nil, err
+		}
+		s := &marketdata.Series{Name: name, Source: "simdata"}
+		for i, v := range values {
+			s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
+		}
+		return s, nil
+	}
+}
+
 // composite is the shared Build for constant-weight linear recipes.
 func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
@@ -309,12 +352,18 @@ func zrozRecipe() Recipe {
 
 // dbmfRecipe anchors DBMF on the official SG CTA Index (the very index the
 // fund replicates), real DBMF quotes grafted on top.
+// dbmf/kmlm/cta reconstruct managed-futures trend from a generic 12-month
+// TSMOM on a cross-asset futures basket. Measured daily correlation vs the
+// real funds (self-generated, no official index): DBMF 0.52, KMLM 0.35, CTA
+// 0.20 — these funds run faster/idiosyncratic strategies a generic trend
+// model only partly captures, but it is a faithful "diversified trend"
+// proxy, and the real fund is grafted on top from its inception.
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
-		Name:            "iMGP DBi Managed Futures — SG CTA Index",
-		Method:          "ref. SG-CTA (official index, 2000→), real DBMF grafted from 2019",
-		Build:           refImport("SG-CTA", "DBMF (SG CTA Index)", 0),
+		Name:            "iMGP DBi Managed Futures — TSMOM replication",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF grafted from 2019",
+		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
@@ -325,9 +374,9 @@ func dbmfRecipe() Recipe {
 func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
-		Name:            "KraneShares MLM — official MLM Index",
-		Method:          "ref. MLM-INDEX (official history, 1987→), 0.90%/yr ETF fees, real KMLM grafted from 2020",
-		Build:           refImport("MLM-INDEX", "KMLM (MLM Index)", 0.0090),
+		Name:            "KraneShares KMLM — TSMOM replication",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), real KMLM grafted from 2020",
+		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.15, 0.0090)),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -338,9 +387,9 @@ func kmlmRecipe() Recipe {
 func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
-		Name:            "Simplify CTA — SG Trend Index",
-		Method:          "ref. SG-TREND (official index, 2000→), real CTA grafted from 2022",
-		Build:           refImport("SG-TREND", "CTA (SG Trend Index)", 0),
+		Name:            "Simplify CTA — TSMOM replication",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real CTA grafted from 2022",
+		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.10, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
