@@ -1377,7 +1377,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			"All series converted to %s (daily Yahoo FX crosses; the earliest known rate is held constant before the FX history starts).", opt.currency))
 	}
 	page.Footnotes = append(page.Footnotes, []string{
-		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs) — local cache in \"" + opt.dataDir + "\".",
+		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs).",
 		fmt.Sprintf("Simulation: base 100, rebalanced to the target weights every %d calendar days by default (overridable per portfolio via \"#meta rebalance:N\"), with no fees or taxes.", opt.rebalance),
 		"Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data — their volatilities and drawdowns therefore come out lower).",
 		"Fees: published TERs (FT/justETF sources), already included in prices and NAVs — informational column; only the additional portfolio fees \"#meta extra-fees:X\" (envelope, mandate…) are deducted from the simulated performance.",
