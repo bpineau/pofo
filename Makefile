@@ -12,6 +12,10 @@ STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run hon
 build: ## Build the ./portfodor binary (datasets/ embedded)
 	$(GO) build -o portfodor ./cmd/portfodor
 
+.PHONY: install
+install: ## Install the portfodor binary (go install → GOBIN or GOPATH/bin)
+	$(GO) install ./cmd/portfodor
+
 .PHONY: fmt
 fmt: ## Reformat all the code (gofmt -w)
 	gofmt -w .
