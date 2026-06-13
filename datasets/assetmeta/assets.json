@@ -401,6 +401,32 @@
     ]
   },
   {
+    "id": "FR0010510800",
+    "isin": "FR0010510800",
+    "aliases": [
+      "C3M"
+    ],
+    "name": "Amundi EUR Overnight Return UCITS ETF Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "C3M.PA",
+    "currency": "EUR",
+    "fees": 0.1,
+    "asset_class": "money-market",
+    "underlying": "Euro overnight money-market rate (€STR) via swap",
+    "benchmark_index": "Solactive €STR Overnight Total Return Index",
+    "strategy": "synthetic-swap",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR cash-equivalent; popular French liquidity sleeve / dry powder",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0010510800"
+    ]
+  },
+  {
     "id": "FR0010755611",
     "isin": "FR0010755611",
     "name": "Amundi MSCI USA Daily (2x) Leveraged UCITS ETF Acc",
@@ -868,6 +894,46 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-prime-all-country-world-ucits-etf-acc/ie0003xja0j9"
+    ]
+  },
+  {
+    "id": "IE0006WW1TQ4",
+    "isin": "IE0006WW1TQ4",
+    "aliases": [
+      "EXUS",
+      "WEXUS"
+    ],
+    "name": "Xtrackers MSCI World ex USA UCITS ETF 1C",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "EXUS.L",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "equity",
+    "underlying": "Developed-market equities excluding the United States",
+    "benchmark_index": "MSCI World ex USA Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Japan": 22,
+      "UK": 14,
+      "France": 10,
+      "Canada": 10,
+      "Switzerland": 9,
+      "Other": 35
+    },
+    "sectors": {
+      "Financials": 21,
+      "Industrials": 17,
+      "Technology": 11,
+      "Health Care": 11,
+      "Other": 40
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "World ex-US building block; US-underweight diversifier popular for valuation balance",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4"
     ]
   },
   {
@@ -1512,6 +1578,35 @@
     ]
   },
   {
+    "id": "IE00B3F81R35",
+    "isin": "IE00B3F81R35",
+    "aliases": [
+      "IEAC"
+    ],
+    "name": "iShares Core € Corp Bond UCITS ETF EUR (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IEAC.L",
+    "currency": "EUR",
+    "fees": 0.2,
+    "asset_class": "corporate-bond",
+    "underlying": "Euro-denominated investment-grade corporate bonds",
+    "benchmark_index": "Bloomberg Euro Corporate Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Europe": 88,
+      "Other": 12
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad EUR IG corporate credit; income with moderate spread and rate duration",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3F81R35"
+    ]
+  },
+  {
     "id": "IE00B3RBWM25",
     "isin": "IE00B3RBWM25",
     "name": "Vanguard FTSE All-World UCITS ETF",
@@ -1555,6 +1650,38 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3RBWM25"
+    ]
+  },
+  {
+    "id": "IE00B3VTMJ91",
+    "isin": "IE00B3VTMJ91",
+    "aliases": [
+      "IBGS"
+    ],
+    "name": "iShares € Govt Bond 1-3yr UCITS ETF EUR (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IBGS.L",
+    "currency": "EUR",
+    "fees": 0.15,
+    "asset_class": "government-bond",
+    "underlying": "Euro-area government bonds with 1-3 years to maturity",
+    "benchmark_index": "Bloomberg Euro Government Bond 1-3 Year Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Italy": 24,
+      "France": 24,
+      "Germany": 18,
+      "Spain": 16,
+      "Other": 18
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Short-duration EUR sovereign; low-volatility defensive sleeve near cash",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91"
     ]
   },
   {
@@ -2012,6 +2139,43 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/uk/etf-profile.html?isin=IE00B4X9L533"
+    ]
+  },
+  {
+    "id": "IE00B52MJY50",
+    "isin": "IE00B52MJY50",
+    "aliases": [
+      "CPXJ"
+    ],
+    "name": "iShares Core MSCI Pacific ex-Japan UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "CPXJ.L",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "equity",
+    "underlying": "Developed Asia-Pacific ex-Japan equities (Australia, Hong Kong, Singapore, NZ)",
+    "benchmark_index": "MSCI Pacific ex Japan Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Australia": 62,
+      "Hong Kong": 21,
+      "Singapore": 14,
+      "New Zealand": 3
+    },
+    "sectors": {
+      "Financials": 42,
+      "Materials": 17,
+      "Real Estate": 9,
+      "Industrials": 8,
+      "Other": 24
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Regional developed Asia-Pacific ex-Japan; commodity- and financials-heavy",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B52MJY50"
     ]
   },
   {
