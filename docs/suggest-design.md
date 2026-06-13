@@ -108,5 +108,11 @@ Suggestions (fill the gaps, validated out-of-sample):
   those, render the terminal block, then exit. Reuses `fetchAsset`,
   `metrics.Compute`, `marketdata` catalog.
 
-Out of scope for v1: HTML rendering of suggestions (terminal only, like
-`-verify-data`); factor-model framework; suggesting uncatalogued assets.
+The macro-regime **coverage** chart (and the asset-class column) is also
+rendered in the normal HTML report and the `-cli` summary, computed from the
+metadata at no extra fetch cost. The full gap-filling **suggestions** (which
+require fetching candidate histories) stay in the dedicated `-suggest`
+terminal mode.
+
+Out of scope for v1: HTML rendering of the ranked suggestions; factor-model
+framework; suggesting uncatalogued assets.
