@@ -111,7 +111,7 @@ func run(argv []string) error {
 	coverageFlag := fs.Bool("coverage", false, "offline coverage advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
-	refdataDir := fs.String("refdata", "", "directory of reference series for -gen-simdata (default: embedded)")
+	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
 	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: portfodor [options] portfolio.txt [portfolio2.txt …]
@@ -534,15 +534,16 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 			recipes = append(recipes, r)
 		}
 	}
-	var refdata iofs.FS = datasets.Refdata()
-	if refdataDir != "" {
-		refdata = os.DirFS(refdataDir)
-	}
 	outDir := opt.simdataDir
 	if outDir == "" {
 		outDir = "datasets/simdata"
 	}
-	fetcher := simgen.WithRefData(refdata, client)
+	// Recipes build from fetchable funds; -refdata only injects extra local
+	// reference CSVs for development (none are bundled).
+	var fetcher simgen.Fetcher = client
+	if refdataDir != "" {
+		fetcher = simgen.WithRefData(os.DirFS(refdataDir), client)
+	}
 	failures := 0
 	for _, r := range recipes {
 		err := genOne(client, fetcher, outDir, r, dry)
