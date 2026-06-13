@@ -9,7 +9,7 @@
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "aggregate-bond",
-    "underlying": "~17,000 US investment-grade taxable bonds, maturity \u003e=1 year",
+    "underlying": "~17,000 US investment-grade taxable bonds, maturity >=1 year",
     "benchmark_index": "Bloomberg US Aggregate Float Adjusted Index",
     "strategy": "physical-replication",
     "geography": {
@@ -30,6 +30,32 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
+    ]
+  },
+  {
+    "id": "BTAL",
+    "isin": "US00110G4082",
+    "aliases": [
+      "BTAL"
+    ],
+    "name": "AGF U.S. Market Neutral Anti-Beta Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "BTAL",
+    "currency": "USD",
+    "fees": 1.43,
+    "asset_class": "other",
+    "underlying": "Long low-beta / short high-beta US equities, dollar-neutral within sectors",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Iconic anti-beta ETF; persistently negative market beta; shines in risk-off, vol spikes",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US00110G4082"
     ]
   },
   {
@@ -307,7 +333,7 @@
     "currency": "EUR",
     "fees": 0.3,
     "asset_class": "equity",
-    "underlying": "MSCI World Index (large \u0026 mid cap, 23 developed markets)",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
@@ -429,15 +455,15 @@
   {
     "id": "FR0011550185",
     "isin": "FR0011550185",
-    "name": "BNP Paribas Easy S\u0026P 500 UCITS ETF EUR C",
+    "name": "BNP Paribas Easy S&P 500 UCITS ETF EUR C",
     "ucits": true,
     "source": "yahoo",
     "symbol": "ESE.PA",
     "currency": "EUR",
     "fees": 0.14,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Index (500 largest US companies)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 Index (500 largest US companies)",
+    "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -457,7 +483,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic S\u0026P 500 (BNP Easy, ESE); France-domiciled unfunded swap; pure US large-cap exposure",
+    "notes": "PEA-eligible synthetic S&P 500 (BNP Easy, ESE); France-domiciled unfunded swap; pure US large-cap exposure",
     "confidence": "high",
     "sources": [
       "https://www.bnpparibas-am.com/en-sk/fundsheet/equity/bnp-paribas-easy-sp-500-ucits-etf-eur-c-c-fr0011550185/"
@@ -501,7 +527,7 @@
   {
     "id": "FR0011871128",
     "isin": "FR0011871128",
-    "name": "Amundi PEA S\u0026P 500 UCITS ETF Acc",
+    "name": "Amundi PEA S&P 500 UCITS ETF Acc",
     "ucits": true,
     "source": "yahoo",
     "symbol": "PSP5.PA",
@@ -509,7 +535,7 @@
     "fees": 0.12,
     "asset_class": "equity",
     "underlying": "500 largest US listed companies (via unfunded swap)",
-    "benchmark_index": "S\u0026P 500 Net Total Return Index",
+    "benchmark_index": "S&P 500 Net Total Return Index",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -529,7 +555,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "French-domiciled synthetic S\u0026P 500 ETF designed for PEA eligibility; swap counterparty Societe Generale; EUR share class",
+    "notes": "French-domiciled synthetic S&P 500 ETF designed for PEA eligibility; swap counterparty Societe Generale; EUR share class",
     "confidence": "high",
     "sources": [
       "https://www.amundietf.be/en/professional/products/equity/amundi-pea-sp-500-ucits-etf-acc/fr0011871128"
@@ -652,15 +678,15 @@
   {
     "id": "FR0013412285",
     "isin": "FR0013412285",
-    "name": "Amundi PEA S\u0026P 500 Screened UCITS ETF - Acc",
+    "name": "Amundi PEA S&P 500 Screened UCITS ETF - Acc",
     "ucits": true,
     "source": "yahoo",
     "symbol": "PE500.PA",
     "currency": "EUR",
     "fees": 0.25,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Scored \u0026 Screened+ (ESG-filtered S\u0026P 500, ~490 US large-cap equities)",
-    "benchmark_index": "S\u0026P 500 Scored \u0026 Screened+",
+    "underlying": "S&P 500 Scored & Screened+ (ESG-filtered S&P 500, ~490 US large-cap equities)",
+    "benchmark_index": "S&P 500 Scored & Screened+",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -680,7 +706,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic swap on US large-cap equities with ESG screening (PE500); near-identical to standard S\u0026P 500",
+    "notes": "PEA-eligible synthetic swap on US large-cap equities with ESG screening (PE500); near-identical to standard S&P 500",
     "confidence": "high",
     "sources": [
       "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-sp-500-screened-ucits-etf-acc/fr0013412285"
@@ -696,7 +722,7 @@
     "currency": "EUR",
     "fees": 0.2,
     "asset_class": "equity",
-    "underlying": "MSCI World Index (large \u0026 mid cap, 23 developed markets)",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
@@ -808,8 +834,8 @@
     "currency": "MUN",
     "fees": 0.07,
     "asset_class": "equity",
-    "underlying": "Solactive GBS Global Markets Large \u0026 Mid Cap Index (~3,400 stocks, developed + emerging markets)",
-    "benchmark_index": "Solactive GBS Global Markets Large \u0026 Mid Cap Index",
+    "underlying": "Solactive GBS Global Markets Large & Mid Cap Index (~3,400 stocks, developed + emerging markets)",
+    "benchmark_index": "Solactive GBS Global Markets Large & Mid Cap Index",
     "strategy": "physical-replication",
     "geography": {
       "Canada": 3,
@@ -855,7 +881,7 @@
     "currency": "USD",
     "fees": 0.15,
     "asset_class": "equity",
-    "underlying": "FTSE All-World Index (large \u0026 mid cap, developed + emerging, ~4100 stocks)",
+    "underlying": "FTSE All-World Index (large & mid cap, developed + emerging, ~4100 stocks)",
     "benchmark_index": "FTSE All-World Index",
     "strategy": "physical-replication",
     "geography": {
@@ -918,6 +944,67 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc"
+    ]
+  },
+  {
+    "id": "IE000A89Y2G7",
+    "isin": "IE000A89Y2G7",
+    "aliases": [
+      "WUTS"
+    ],
+    "name": "iShares MSCI World Utilities Sector ESG UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "WUTS.AS",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "equity",
+    "underlying": "Developed-market utilities: electric, gas, water",
+    "benchmark_index": "MSCI World Utilities Advanced Select Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 48,
+      "Spain": 14,
+      "UK": 12,
+      "Italy": 9,
+      "Other": 17
+    },
+    "sectors": {
+      "Utilities": 99,
+      "Other": 1
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Defensive utilities sector; rate-sensitive, bond-proxy equity",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000A89Y2G7"
+    ]
+  },
+  {
+    "id": "IE000EPX8KB7",
+    "isin": "IE000EPX8KB7",
+    "aliases": [
+      "SPQH"
+    ],
+    "name": "Global X S&P 500 Quarterly Tail Hedge UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "SPQH.DE",
+    "currency": "USD",
+    "fees": 0.5,
+    "asset_class": "tail-risk",
+    "underlying": "S&P 500 exposure with a quarterly put-option buffer absorbing the -3% to -12% band",
+    "benchmark_index": "Cboe S&P 500 Quarterly Buffer Protect Index",
+    "strategy": "long-volatility",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Tail-risk buffer ETF; cushions sharp drawdowns via puts, low drag in calm markets",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000EPX8KB7"
     ]
   },
   {
@@ -986,7 +1073,7 @@
   {
     "id": "IE000XZSV718",
     "isin": "IE000XZSV718",
-    "name": "State Street SPDR S\u0026P 500 UCITS ETF USD Acc",
+    "name": "State Street SPDR S&P 500 UCITS ETF USD Acc",
     "ucits": true,
     "source": "ft",
     "symbol": "SPYL",
@@ -994,8 +1081,8 @@
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 (500 largest US equities by market cap)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
@@ -1016,7 +1103,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "SPDR physical S\u0026P 500 UCITS ETF accumulating (SPYL); TER 0.03% — cheapest S\u0026P 500 UCITS",
+    "notes": "SPDR physical S&P 500 UCITS ETF accumulating (SPYL); TER 0.03% — cheapest S&P 500 UCITS",
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy"
@@ -1025,7 +1112,7 @@
   {
     "id": "IE0031442068",
     "isin": "IE0031442068",
-    "name": "iShares Core S\u0026P 500 UCITS ETF USD Dist",
+    "name": "iShares Core S&P 500 UCITS ETF USD Dist",
     "ucits": true,
     "source": "ft",
     "symbol": "IDUS",
@@ -1033,8 +1120,8 @@
     "currency": "USD",
     "fees": 0.07,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 (500 largest US equities by market cap)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
@@ -1056,7 +1143,7 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "iShares physical S\u0026P 500 UCITS ETF (IDUS), distributing quarterly; one of the oldest US-equity UCITS ETFs",
+    "notes": "iShares physical S&P 500 UCITS ETF (IDUS), distributing quarterly; one of the oldest US-equity UCITS ETFs",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0031442068"
@@ -1097,6 +1184,236 @@
     ]
   },
   {
+    "id": "IE0032895942",
+    "isin": "IE0032895942",
+    "aliases": [
+      "LQDE"
+    ],
+    "name": "iShares $ Corp Bond UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "LQDE.L",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "corporate-bond",
+    "underlying": "USD investment-grade corporate bonds, most liquid issues",
+    "benchmark_index": "iBoxx USD Liquid Investment Grade Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 80,
+      "Other": 20
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Flagship UCITS USD IG corporate ETF; credit-spread exposure at investment-grade quality",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0032895942"
+    ]
+  },
+  {
+    "id": "IE00B0M62X26",
+    "isin": "IE00B0M62X26",
+    "aliases": [
+      "IBCI"
+    ],
+    "name": "iShares € Inflation Linked Govt Bond UCITS ETF EUR (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IBCI.DE",
+    "currency": "EUR",
+    "fees": 0.09,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "Euro-area government inflation-linked bonds (OATi, BTPei, Bundei)",
+    "benchmark_index": "Bloomberg Euro Government Inflation-Linked Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 35,
+      "Italy": 30,
+      "Germany": 15,
+      "Spain": 12,
+      "Other": 8
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26"
+    ]
+  },
+  {
+    "id": "IE00B0M63284",
+    "isin": "IE00B0M63284",
+    "aliases": [
+      "IPRP"
+    ],
+    "name": "iShares European Property Yield UCITS ETF EUR (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IPRP.L",
+    "currency": "EUR",
+    "fees": 0.4,
+    "asset_class": "real-estate",
+    "underlying": "Developed-Europe ex-UK listed real estate and REITs with >=2% yield",
+    "benchmark_index": "FTSE EPRA/NAREIT Developed Europe ex UK Dividend+ Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Germany": 25,
+      "France": 18,
+      "Sweden": 16,
+      "Netherlands": 14,
+      "Spain": 10,
+      "Other Europe": 17
+    },
+    "sectors": {
+      "Real Estate": 100
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Pure European REIT play in EUR; domestic real-asset income",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M63284"
+    ]
+  },
+  {
+    "id": "IE00B1FZS350",
+    "isin": "IE00B1FZS350",
+    "aliases": [
+      "IWDP"
+    ],
+    "name": "iShares Developed Markets Property Yield UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IWDP.L",
+    "currency": "USD",
+    "fees": 0.59,
+    "asset_class": "real-estate",
+    "underlying": "Global developed-market REITs and listed property with >=2% forecast yield",
+    "benchmark_index": "FTSE EPRA/NAREIT Developed Dividend+ Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 60,
+      "Asia Pacific": 24,
+      "Europe": 16
+    },
+    "sectors": {
+      "Diversified REITs": 18,
+      "Industrial REITs": 17,
+      "Retail REITs": 15,
+      "Residential REITs": 14,
+      "Office REITs": 9,
+      "Other Real Estate": 27
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Flagship global REIT UCITS; real-asset income with inflation linkage",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS350"
+    ]
+  },
+  {
+    "id": "IE00B1FZS467",
+    "isin": "IE00B1FZS467",
+    "aliases": [
+      "INFR"
+    ],
+    "name": "iShares Global Infrastructure UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "INFR.MI",
+    "currency": "USD",
+    "fees": 0.65,
+    "asset_class": "equity",
+    "underlying": "Global listed infrastructure equities: utilities, transportation, energy infrastructure",
+    "benchmark_index": "FTSE Global Core Infrastructure Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 54,
+      "Europe": 26,
+      "Oceania": 12,
+      "Asia": 7,
+      "Latin America": 1
+    },
+    "sectors": {
+      "Utilities": 41,
+      "Transportation": 40,
+      "Industrial/Energy": 18,
+      "Other": 1
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Listed-infrastructure real-asset income; defensive, low correlation to broad equity",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS467"
+    ]
+  },
+  {
+    "id": "IE00B1FZS913",
+    "isin": "IE00B1FZS913",
+    "aliases": [
+      "IBGL"
+    ],
+    "name": "iShares € Govt Bond 15-30yr UCITS ETF EUR (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IBGL.AS",
+    "currency": "EUR",
+    "fees": 0.15,
+    "asset_class": "government-bond",
+    "underlying": "Euro-area government bonds with 15-30 years to maturity",
+    "benchmark_index": "Bloomberg Euro Government Bond 15-30 Year Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Italy": 28,
+      "France": 26,
+      "Germany": 20,
+      "Spain": 14,
+      "Other": 12
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Long-duration EUR sovereign; convexity in deflation; barbell partner to broad EUR govt",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS913"
+    ]
+  },
+  {
+    "id": "IE00B1FZSC47",
+    "isin": "IE00B1FZSC47",
+    "aliases": [
+      "ITPS"
+    ],
+    "name": "iShares $ TIPS UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ITPS.MI",
+    "currency": "EUR",
+    "fees": 0.1,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "US Treasury Inflation-Protected Securities, all maturities",
+    "benchmark_index": "Bloomberg US Government Inflation-Linked Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Core USD inflation hedge; long real-rate duration; serves reflation and stagflation regimes",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZSC47"
+    ]
+  },
+  {
     "id": "IE00B1XNHC34",
     "isin": "IE00B1XNHC34",
     "name": "iShares Global Clean Energy Transition UCITS ETF USD (Dist)",
@@ -1108,7 +1425,7 @@
     "fees": 0.65,
     "asset_class": "equity",
     "underlying": "Global clean energy companies (producers + equipment/technology), large-cap, ~100 constituents",
-    "benchmark_index": "S\u0026P Global Clean Energy Transition Index",
+    "benchmark_index": "S&P Global Clean Energy Transition Index",
     "strategy": "physical-replication",
     "geography": {
       "Asia Pacific ex-Japan": 10,
@@ -1132,6 +1449,37 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/251911/ishares-global-clean-energy-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00B2NPKV68",
+    "isin": "IE00B2NPKV68",
+    "aliases": [
+      "SEMB"
+    ],
+    "name": "iShares J.P. Morgan $ EM Bond UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "SEMB.L",
+    "currency": "USD",
+    "fees": 0.45,
+    "asset_class": "government-bond",
+    "underlying": "USD-denominated EM sovereign and quasi-sovereign bonds",
+    "benchmark_index": "J.P. Morgan EMBI Global Core Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Latin America": 30,
+      "Middle East & Africa": 25,
+      "Asia": 25,
+      "Eastern Europe": 20
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Benchmark EM hard-currency sovereign ETF; high carry; benefits in EM risk-on / commodity booms",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B2NPKV68"
     ]
   },
   {
@@ -1258,7 +1606,7 @@
   {
     "id": "IE00B3WJKG14",
     "isin": "IE00B3WJKG14",
-    "name": "iShares S\u0026P 500 Information Technology Sector UCITS ETF USD (Acc)",
+    "name": "iShares S&P 500 Information Technology Sector UCITS ETF USD (Acc)",
     "ucits": true,
     "source": "ft",
     "symbol": "IUIT",
@@ -1266,8 +1614,8 @@
     "currency": "USD",
     "fees": 0.15,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Information Technology sector stocks (capped 35/20)",
-    "benchmark_index": "S\u0026P 500 Capped 35/20 Information Technology Index",
+    "underlying": "S&P 500 Information Technology sector stocks (capped 35/20)",
+    "benchmark_index": "S&P 500 Capped 35/20 Information Technology Index",
     "strategy": "physical-replication",
     "geography": {
       "Other": 6,
@@ -1288,15 +1636,15 @@
   {
     "id": "IE00B3XXRP09",
     "isin": "IE00B3XXRP09",
-    "name": "Vanguard S\u0026P 500 UCITS ETF",
+    "name": "Vanguard S&P 500 UCITS ETF",
     "ucits": true,
     "source": "yahoo",
     "symbol": "VUSA.L",
     "currency": "GBP",
     "fees": 0.07,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 (500 largest US equities by market cap)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
@@ -1318,7 +1666,7 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Vanguard physical S\u0026P 500 UCITS ETF (VUSA), distributing quarterly; low TER",
+    "notes": "Vanguard physical S&P 500 UCITS ETF (VUSA), distributing quarterly; low TER",
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9503/sp-500-ucits-etf-usd-distributing"
@@ -1327,7 +1675,7 @@
   {
     "id": "IE00B3YCGJ38",
     "isin": "IE00B3YCGJ38",
-    "name": "Invesco S\u0026P 500 UCITS ETF Acc",
+    "name": "Invesco S&P 500 UCITS ETF Acc",
     "ucits": true,
     "source": "ft",
     "xid": "24497790",
@@ -1335,7 +1683,7 @@
     "fees": 0.05,
     "asset_class": "equity",
     "underlying": "500 largest US listed companies (via unfunded swap)",
-    "benchmark_index": "S\u0026P 500",
+    "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -1355,7 +1703,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Lowest-cost S\u0026P 500 UCITS ETF via synthetic unfunded swap; no withholding tax drag; alternative to physical for tax-efficient portfolios",
+    "notes": "Lowest-cost S&P 500 UCITS ETF via synthetic unfunded swap; no withholding tax drag; alternative to physical for tax-efficient portfolios",
     "confidence": "high",
     "sources": [
       "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B3YCGJ38_factsheet_en.pdf"
@@ -1372,7 +1720,7 @@
     "currency": "EUR",
     "fees": 0.17,
     "asset_class": "equity",
-    "underlying": "MSCI ACWI IMI (large, mid \u0026 small cap, 23 developed + 24 emerging markets)",
+    "underlying": "MSCI ACWI IMI (large, mid & small cap, 23 developed + 24 emerging markets)",
     "benchmark_index": "MSCI All Country World Investable Market Index (ACWI IMI)",
     "strategy": "physical-replication",
     "geography": {
@@ -1416,7 +1764,7 @@
     "currency": "EUR",
     "fees": 0.12,
     "asset_class": "equity",
-    "underlying": "MSCI ACWI (large \u0026 mid cap, 23 developed + 24 emerging markets)",
+    "underlying": "MSCI ACWI (large & mid cap, 23 developed + 24 emerging markets)",
     "benchmark_index": "MSCI All Country World Index (ACWI)",
     "strategy": "physical-replication",
     "geography": {
@@ -1541,6 +1889,30 @@
     ]
   },
   {
+    "id": "IE00B4NCWG09",
+    "isin": "IE00B4NCWG09",
+    "aliases": [],
+    "name": "iShares Physical Silver ETC",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ISLN.L",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "broad-commodity",
+    "underlying": "Physically allocated silver bullion",
+    "benchmark_index": "LBMA Silver Price",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Lower-cost physical silver ETC (0.20%)",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4NCWG09"
+    ]
+  },
+  {
     "id": "IE00B4ND3602",
     "isin": "IE00B4ND3602",
     "name": "iShares Physical Gold ETC",
@@ -1562,6 +1934,38 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602"
+    ]
+  },
+  {
+    "id": "IE00B4WXJJ64",
+    "isin": "IE00B4WXJJ64",
+    "aliases": [
+      "IEGA"
+    ],
+    "name": "iShares Core € Govt Bond UCITS ETF EUR (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IEGA.AS",
+    "currency": "EUR",
+    "fees": 0.09,
+    "asset_class": "government-bond",
+    "underlying": "Euro-area investment-grade government bonds, all maturities",
+    "benchmark_index": "Bloomberg Euro Treasury Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Italy": 25,
+      "France": 24,
+      "Germany": 18,
+      "Spain": 15,
+      "Other": 18
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad EUR sovereign core; defensive in EUR risk-off",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4WXJJ64"
     ]
   },
   {
@@ -1715,7 +2119,7 @@
   {
     "id": "IE00B5BMR087",
     "isin": "IE00B5BMR087",
-    "name": "iShares Core S\u0026P 500 UCITS ETF USD (Acc)",
+    "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
     "ucits": true,
     "source": "yahoo",
     "symbol": "CSSPX.MI",
@@ -1723,7 +2127,7 @@
     "fees": 0.07,
     "asset_class": "equity",
     "underlying": "500 largest US listed companies",
-    "benchmark_index": "S\u0026P 500",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Ireland": 1,
@@ -1749,6 +2153,66 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund"
+    ]
+  },
+  {
+    "id": "IE00B5M4WH52",
+    "isin": "IE00B5M4WH52",
+    "aliases": [
+      "SEML"
+    ],
+    "name": "iShares J.P. Morgan EM Local Govt Bond UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "SEML.L",
+    "currency": "USD",
+    "fees": 0.5,
+    "asset_class": "government-bond",
+    "underlying": "Local-currency emerging-market government bonds across ~18 countries",
+    "benchmark_index": "J.P. Morgan GBI-EM Global Diversified Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Asia": 30,
+      "Latin America": 28,
+      "Eastern Europe": 22,
+      "Middle East & Africa": 20
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Local-currency EM bonds with FX carry; diversifies vs USD EM bonds",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5M4WH52"
+    ]
+  },
+  {
+    "id": "IE00B66F4759",
+    "isin": "IE00B66F4759",
+    "aliases": [
+      "IHYG"
+    ],
+    "name": "iShares € High Yield Corp Bond UCITS ETF EUR (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IHYG.L",
+    "currency": "EUR",
+    "fees": 0.5,
+    "asset_class": "corporate-bond",
+    "underlying": "Euro sub-investment-grade corporate bonds, most liquid issues",
+    "benchmark_index": "iBoxx EUR Liquid High Yield Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Europe": 90,
+      "Other": 10
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Largest, most liquid EUR HY ETF; risk-on credit-spread play",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B66F4759"
     ]
   },
   {
@@ -1799,17 +2263,54 @@
     ]
   },
   {
+    "id": "IE00B6SPMN59",
+    "isin": "IE00B6SPMN59",
+    "aliases": [
+      "SPMV"
+    ],
+    "name": "iShares Edge S&P 500 Minimum Volatility UCITS ETF (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "SPMV.L",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "equity",
+    "underlying": "US large-cap equities optimised for lowest volatility (minimum-volatility factor)",
+    "benchmark_index": "S&P 500 Minimum Volatility Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 92,
+      "Switzerland": 2,
+      "Ireland": 2,
+      "Other": 4
+    },
+    "sectors": {
+      "Technology": 31,
+      "Financials": 15,
+      "Health Care": 13,
+      "Consumer Staples": 10,
+      "Other": 31
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Minimum-volatility factor tilt on the S&P 500; US-only low-vol equity",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B6SPMN59"
+    ]
+  },
+  {
     "id": "IE00B6YX5C33",
     "isin": "IE00B6YX5C33",
-    "name": "State Street SPDR S\u0026P 500 UCITS ETF",
+    "name": "State Street SPDR S&P 500 UCITS ETF",
     "ucits": true,
     "source": "yahoo",
     "symbol": "SPY5.DE",
     "currency": "EUR",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 (500 largest US equities by market cap)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
@@ -1830,10 +2331,79 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "SPDR physical S\u0026P 500 UCITS ETF distributing (SPY5); TER 0.03%, quarterly dividends",
+    "notes": "SPDR physical S&P 500 UCITS ETF distributing (SPY5); TER 0.03%, quarterly dividends",
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/uk/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-dist-spy5-gy"
+    ]
+  },
+  {
+    "id": "IE00B8FHGS14",
+    "isin": "IE00B8FHGS14",
+    "aliases": [
+      "MVOL"
+    ],
+    "name": "iShares Edge MSCI World Minimum Volatility UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "MVOL.L",
+    "currency": "USD",
+    "fees": 0.3,
+    "asset_class": "equity",
+    "underlying": "Developed-market equities optimised for lowest portfolio volatility (minimum-volatility factor)",
+    "benchmark_index": "MSCI World Minimum Volatility Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 62,
+      "Japan": 11,
+      "Switzerland": 5,
+      "Canada": 4,
+      "Other": 18
+    },
+    "sectors": {
+      "Technology": 22,
+      "Health Care": 14,
+      "Financials": 13,
+      "Communication Services": 12,
+      "Other": 39
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Minimum-volatility factor tilt on MSCI World; defensive equity, shallower drawdowns",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B8FHGS14"
+    ]
+  },
+  {
+    "id": "IE00B8GF1M35",
+    "isin": "IE00B8GF1M35",
+    "aliases": [],
+    "name": "SPDR Dow Jones Global Real Estate UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "GLRE.L",
+    "currency": "USD",
+    "fees": 0.4,
+    "asset_class": "real-estate",
+    "underlying": "Global equity REITs and real estate operating companies",
+    "benchmark_index": "Dow Jones Global Select Real Estate Securities Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 64,
+      "Asia Pacific": 20,
+      "Europe": 12,
+      "Other": 4
+    },
+    "sectors": {
+      "Real Estate": 100
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad global REIT ETF; alternative index to IWDP, lower fee",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B8GF1M35"
     ]
   },
   {
@@ -1918,6 +2488,70 @@
     ]
   },
   {
+    "id": "IE00B9CQXS71",
+    "isin": "IE00B9CQXS71",
+    "aliases": [
+      "ZPRG"
+    ],
+    "name": "SPDR S&P Global Dividend Aristocrats UCITS ETF (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ZPRG.DE",
+    "currency": "USD",
+    "fees": 0.45,
+    "asset_class": "equity",
+    "underlying": "Global equities with 7+ years of stable or growing dividends",
+    "benchmark_index": "S&P Global Dividend Aristocrats Quality Income Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 53,
+      "Canada": 10,
+      "Hong Kong": 5,
+      "UK": 4,
+      "Other": 28
+    },
+    "sectors": {
+      "Financials": 22,
+      "Utilities": 16,
+      "Real Estate": 13,
+      "Industrials": 10,
+      "Other": 39
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Dividend-growth / high-dividend factor tilt; income with value/quality lean",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B9CQXS71"
+    ]
+  },
+  {
+    "id": "IE00BD6FTQ80",
+    "isin": "IE00BD6FTQ80",
+    "aliases": [
+      "CMOD"
+    ],
+    "name": "Invesco Bloomberg Commodity UCITS ETF Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "CMOD.L",
+    "currency": "USD",
+    "fees": 0.19,
+    "asset_class": "broad-commodity",
+    "underlying": "Diversified commodity futures: energy, precious & industrial metals, agriculture",
+    "benchmark_index": "Bloomberg Commodity Index",
+    "strategy": "synthetic-swap",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Largest broad-commodity UCITS ETF by AUM; same index as ICOM, alternative provider",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD6FTQ80"
+    ]
+  },
+  {
     "id": "IE00BDBRDM35",
     "isin": "IE00BDBRDM35",
     "name": "ISHARES III PLC ISH GLOBAL AGG ",
@@ -1944,6 +2578,118 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00BDFL4P12",
+    "isin": "IE00BDFL4P12",
+    "aliases": [
+      "ICOM"
+    ],
+    "name": "iShares Diversified Commodity Swap UCITS ETF",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ICOM.L",
+    "currency": "USD",
+    "fees": 0.19,
+    "asset_class": "broad-commodity",
+    "underlying": "Diversified basket of commodity futures: energy, metals, agriculture, livestock",
+    "benchmark_index": "Bloomberg Commodity Total Return Index",
+    "strategy": "synthetic-swap",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Core broad-commodity allocation; inflation hedge across all commodity sectors",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BDFL4P12"
+    ]
+  },
+  {
+    "id": "IE00BDT6FP91",
+    "isin": "IE00BDT6FP91",
+    "aliases": [
+      "SPF1"
+    ],
+    "name": "SPDR Refinitiv Global Convertible Bond EUR Hdg UCITS ETF (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "SPF1.DE",
+    "currency": "EUR",
+    "fees": 0.55,
+    "asset_class": "other",
+    "underlying": "Global convertible bonds, EUR hedged; embedded equity optionality",
+    "benchmark_index": "Refinitiv Qualified Global Convertible (EUR Hedged) Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 50,
+      "Europe": 25,
+      "Asia": 20,
+      "Other": 5
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Hybrid bond/equity with convex payoff; rises with equities, has a bond floor",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BDT6FP91"
+    ]
+  },
+  {
+    "id": "IE00BF0BCP69",
+    "isin": "IE00BF0BCP69",
+    "aliases": [
+      "BCOM"
+    ],
+    "name": "L&G All Commodities UCITS ETF",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "BCOM.L",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "broad-commodity",
+    "underlying": "Diversified commodity futures across all sectors",
+    "benchmark_index": "Bloomberg Commodity Index",
+    "strategy": "synthetic-swap",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Lowest-cost broad-commodity UCITS (0.15%)",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BF0BCP69"
+    ]
+  },
+  {
+    "id": "IE00BF3N7102",
+    "isin": "IE00BF3N7102",
+    "aliases": [
+      "IHYE"
+    ],
+    "name": "iShares $ High Yield Corp Bond UCITS ETF EUR Hedged (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IHYE.L",
+    "currency": "EUR",
+    "fees": 0.55,
+    "asset_class": "corporate-bond",
+    "underlying": "US dollar high-yield corporate bonds, hedged to EUR",
+    "benchmark_index": "iBoxx USD Liquid High Yield Capped (EUR Hedged) Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 90,
+      "Other": 10
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Access to deep USD HY market without FX risk; complements EUR HY",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BF3N7102"
     ]
   },
   {
@@ -1990,15 +2736,15 @@
   {
     "id": "IE00BFMXXD54",
     "isin": "IE00BFMXXD54",
-    "name": "Vanguard S\u0026P 500 UCITS ETF USD Accumulation",
+    "name": "Vanguard S&P 500 UCITS ETF USD Accumulation",
     "ucits": true,
     "source": "yahoo",
     "symbol": "VUAA.L",
     "currency": "USD",
     "fees": 0.07,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 (500 largest US equities by market cap)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
@@ -2020,7 +2766,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Vanguard physical S\u0026P 500 UCITS ETF accumulating (VUAA); same index as VUSA, dividends reinvested",
+    "notes": "Vanguard physical S&P 500 UCITS ETF accumulating (VUAA); same index as VUSA, dividends reinvested",
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9694/sp-500-ucits-etf-usd-accumulating"
@@ -2100,7 +2846,7 @@
   {
     "id": "IE00BGV5VN51",
     "isin": "IE00BGV5VN51",
-    "name": "Xtrackers Artificial Intelligence \u0026 Big Data UCITS ETF 1C",
+    "name": "Xtrackers Artificial Intelligence & Big Data UCITS ETF 1C",
     "ucits": true,
     "source": "ft",
     "symbol": "XAIX",
@@ -2177,6 +2923,112 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/IE00BJ0KDQ92-msci-world-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "IE00BJ5JP097",
+    "isin": "IE00BJ5JP097",
+    "aliases": [
+      "WFNS"
+    ],
+    "name": "iShares MSCI World Financials Sector ESG UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "WFNS.AS",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "equity",
+    "underlying": "Developed-market financials: banks, insurance, diversified financials",
+    "benchmark_index": "MSCI World Financials Advanced Select Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 44,
+      "Canada": 10,
+      "UK": 6,
+      "Japan": 6,
+      "Other": 34
+    },
+    "sectors": {
+      "Financials": 88,
+      "Technology": 8,
+      "Other": 4
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Global financials sector; benefits from rising rates / steep curves",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP097"
+    ]
+  },
+  {
+    "id": "IE00BJ5JP105",
+    "isin": "IE00BJ5JP105",
+    "aliases": [
+      "WENS"
+    ],
+    "name": "iShares MSCI World Energy Sector UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "WENS.AS",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "equity",
+    "underlying": "Developed-market energy companies (integrated oils, E&P, equipment & services)",
+    "benchmark_index": "MSCI World Energy Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 61,
+      "Canada": 16,
+      "UK": 10,
+      "France": 5,
+      "Other": 8
+    },
+    "sectors": {
+      "Energy": 99,
+      "Other": 1
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Pure-play global energy sector; inflation/commodity-cycle equity tilt",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP105"
+    ]
+  },
+  {
+    "id": "IE00BJ5JP329",
+    "isin": "IE00BJ5JP329",
+    "aliases": [
+      "WCSS"
+    ],
+    "name": "iShares MSCI World Consumer Staples Sector ESG UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "WCSS.AS",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "equity",
+    "underlying": "Developed-market consumer staples: food, beverage, household products",
+    "benchmark_index": "MSCI World Consumer Staples Advanced Select Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 54,
+      "France": 8,
+      "Switzerland": 7,
+      "UK": 7,
+      "Other": 24
+    },
+    "sectors": {
+      "Consumer Staples": 88,
+      "Other": 12
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Defensive consumer-staples sector; low cyclicality",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP329"
     ]
   },
   {
@@ -2278,7 +3130,7 @@
     "currency": "USD",
     "fees": 0.12,
     "asset_class": "equity",
-    "underlying": "FTSE Developed Index (large \u0026 mid cap, developed markets only)",
+    "underlying": "FTSE Developed Index (large & mid cap, developed markets only)",
     "benchmark_index": "FTSE Developed Index",
     "strategy": "physical-replication",
     "geography": {
@@ -2413,7 +3265,7 @@
     "currency": "GBP",
     "fees": 0.12,
     "asset_class": "equity",
-    "underlying": "FTSE Developed Index (large \u0026 mid cap, developed markets only)",
+    "underlying": "FTSE Developed Index (large & mid cap, developed markets only)",
     "benchmark_index": "FTSE Developed Index",
     "strategy": "physical-replication",
     "geography": {
@@ -2444,6 +3296,42 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9675/ftse-developed-world-ucits-etf-usd-accumulating"
+    ]
+  },
+  {
+    "id": "IE00BLNMYC90",
+    "isin": "IE00BLNMYC90",
+    "aliases": [
+      "XDEW"
+    ],
+    "name": "Xtrackers S&P 500 Equal Weight UCITS ETF 1C",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "XDEW.L",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "equity",
+    "underlying": "The 500 S&P constituents equally weighted (~0.2% each)",
+    "benchmark_index": "S&P 500 Equal Weight Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 91,
+      "Ireland": 2,
+      "Other": 7
+    },
+    "sectors": {
+      "Industrials": 14,
+      "Financials": 14,
+      "Technology": 17,
+      "Health Care": 10,
+      "Other": 45
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Equal-weight S&P 500; removes mega-cap concentration, implicit size and value tilt",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BLNMYC90"
     ]
   },
   {
@@ -2828,17 +3716,83 @@
     ]
   },
   {
+    "id": "IE00BYYHSQ67",
+    "isin": "IE00BYYHSQ67",
+    "aliases": [
+      "WQDV"
+    ],
+    "name": "iShares MSCI World Quality Dividend ESG UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "WQDV.L",
+    "currency": "USD",
+    "fees": 0.38,
+    "asset_class": "equity",
+    "underlying": "Developed-market equities with high, persistent dividend yield and quality screen",
+    "benchmark_index": "MSCI World High Dividend Yield Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 49,
+      "Japan": 9,
+      "Germany": 5,
+      "Switzerland": 5,
+      "Other": 32
+    },
+    "sectors": {
+      "Technology": 34,
+      "Financials": 17,
+      "Health Care": 12,
+      "Industrials": 11,
+      "Other": 26
+    },
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "High-dividend / quality-income factor tilt on MSCI World",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BYYHSQ67"
+    ]
+  },
+  {
+    "id": "IEF",
+    "isin": "",
+    "aliases": [
+      "IEF"
+    ],
+    "name": "iShares 7-10 Year Treasury Bond ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "IEF",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 7-10 years to maturity",
+    "benchmark_index": "ICE US Treasury 7-10 Year Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Intermediate-duration US treasuries (duration ~7.5y); classic recession/deflation ballast",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin="
+    ]
+  },
+  {
     "id": "IVV",
     "isin": "US4642872000",
-    "name": "iShares Core S\u0026P 500 ETF",
+    "name": "iShares Core S&P 500 ETF",
     "ucits": false,
     "source": "yahoo",
     "symbol": "IVV",
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Index — ~503 large-cap US stocks",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 Index — ~503 large-cap US stocks",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "US": 100
@@ -2858,10 +3812,36 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "iShares equivalent of VOO; higher AUM liquidity and ETF options market depth; same S\u0026P 500 beta",
+    "notes": "iShares equivalent of VOO; higher AUM liquidity and ETF options market depth; same S&P 500 beta",
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/us/individual/products/239726/ishares-core-sp-500-etf"
+    ]
+  },
+  {
+    "id": "JE00B1VS3333",
+    "isin": "JE00B1VS3333",
+    "aliases": [
+      "SILVER"
+    ],
+    "name": "WisdomTree Physical Silver",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "PHAG.L",
+    "currency": "USD",
+    "fees": 0.49,
+    "asset_class": "broad-commodity",
+    "underlying": "Physically allocated silver bullion",
+    "benchmark_index": "LBMA Silver Price",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Largest UCITS silver ETC; dual monetary/industrial metal; higher beta than gold",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3333"
     ]
   },
   {
@@ -2886,6 +3866,30 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/products/physical-precious-metals/wisdomtree-physical-gold"
+    ]
+  },
+  {
+    "id": "JE00B1VS3W29",
+    "isin": "JE00B1VS3W29",
+    "aliases": [],
+    "name": "WisdomTree Physical Precious Metals",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "PHPM.L",
+    "currency": "USD",
+    "fees": 0.44,
+    "asset_class": "broad-commodity",
+    "underlying": "Physically allocated basket: gold ~62%, silver ~22%, palladium ~10%, platinum ~6%",
+    "benchmark_index": "WisdomTree Physical Precious Metals composite",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Single-ticket exposure to all four precious metals; adds silver/PGM diversification beyond gold",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3W29"
     ]
   },
   {
@@ -2914,7 +3918,7 @@
   {
     "id": "LU0131510165",
     "isin": "LU0131510165",
-    "name": "Indépendance AM - France Small \u0026 Mid A (C)",
+    "name": "Indépendance AM - France Small & Mid A (C)",
     "ucits": true,
     "source": "ft",
     "xid": "8542",
@@ -2922,7 +3926,7 @@
     "fees": 2.16,
     "asset_class": "equity",
     "underlying": "French small- and mid-cap listed companies selected by Quality Value methodology",
-    "benchmark_index": "CAC Mid \u0026 Small NR",
+    "benchmark_index": "CAC Mid & Small NR",
     "strategy": "active",
     "geography": {
       "France": 100
@@ -2956,7 +3960,7 @@
     "currency": "USD",
     "fees": 0,
     "asset_class": "equity",
-    "underlying": "Global healthcare equities (\u003e=70% in healthcare, pharma, medtech, biotech; 70-120 holdings)",
+    "underlying": "Global healthcare equities (>=70% in healthcare, pharma, medtech, biotech; 70-120 holdings)",
     "benchmark_index": "MSCI World Health Care Index",
     "strategy": "active",
     "geography": {
@@ -2986,7 +3990,7 @@
     "currency": "EUR",
     "fees": 1.81,
     "asset_class": "equity",
-    "underlying": "Global technology equities (\u003e=70% in technology sector, large-cap bias; top holdings: NVIDIA, Broadcom, Microsoft, Apple, Meta)",
+    "underlying": "Global technology equities (>=70% in technology sector, large-cap bias; top holdings: NVIDIA, Broadcom, Microsoft, Apple, Meta)",
     "benchmark_index": "MSCI All Country World Information Technology Net Return Index",
     "strategy": "active",
     "geography": {
@@ -3063,7 +4067,7 @@
       "Europe": 41,
       "North America": 55,
       "Other": 2,
-      "South \u0026 Central America": 2
+      "South & Central America": 2
     },
     "sectors": {
       "Basic Materials": 5,
@@ -3180,15 +4184,15 @@
   {
     "id": "LU0496786574",
     "isin": "LU0496786574",
-    "name": "Amundi Core S\u0026P 500 Swap UCITS ETF EUR Dist",
+    "name": "Amundi Core S&P 500 Swap UCITS ETF EUR Dist",
     "ucits": true,
     "source": "yahoo",
     "symbol": "LYPS.DE",
     "currency": "EUR",
     "fees": 0.05,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 index (500 largest US companies)",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 index (500 largest US companies)",
+    "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -3258,6 +4262,35 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-core-stoxx-europe-600-ucits-etf-acc/lu0908500753"
+    ]
+  },
+  {
+    "id": "LU1563454310",
+    "isin": "LU1563454310",
+    "aliases": [],
+    "name": "Amundi Global Aggregate Green Bond UCITS ETF Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "CLMU.L",
+    "currency": "EUR",
+    "fees": 0.25,
+    "asset_class": "aggregate-bond",
+    "underlying": "Global green bonds (sovereigns, supranationals, corporates), EUR and USD",
+    "benchmark_index": "Solactive Green Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Europe": 45,
+      "US": 35,
+      "Asia": 12,
+      "Other": 8
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Investment-grade green-labelled bond allocation; aggregate-style diversification with ESG screen",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1563454310"
     ]
   },
   {
@@ -3433,7 +4466,7 @@
     "currency": "EUR",
     "fees": 0.38,
     "asset_class": "equity",
-    "underlying": "MSCI World Index (large \u0026 mid cap, 23 developed markets)",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
@@ -3508,6 +4541,54 @@
     ]
   },
   {
+    "id": "LU2951555585",
+    "isin": "LU2951555585",
+    "aliases": [],
+    "name": "iMGP DBi Managed Futures Fund UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "DBMF.PA",
+    "currency": "USD",
+    "fees": 0.75,
+    "asset_class": "managed-futures",
+    "underlying": "Long/short global futures across equities, bonds, commodities and currencies (CTA replication)",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "UCITS wrapper of the US DBMF; managed-futures crisis-alpha diversifier",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2951555585"
+    ]
+  },
+  {
+    "id": "LU3024069877",
+    "isin": "LU3024069877",
+    "aliases": [],
+    "name": "iMGP DBi Managed Futures ex-Commodities Fund UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "MFA8.PA",
+    "currency": "USD",
+    "fees": 0.75,
+    "asset_class": "managed-futures",
+    "underlying": "Long/short futures in equities and bonds only (no commodities)",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Ex-commodities CTA replication; for portfolios already holding commodities",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU3024069877"
+    ]
+  },
+  {
     "id": "NL0011683594",
     "isin": "NL0011683594",
     "name": "VanEck Morningstar Developed Markets Dividend Leaders UCITS ETF",
@@ -3558,7 +4639,7 @@
     "currency": "USD",
     "fees": 0.2,
     "asset_class": "multi-asset",
-    "underlying": "90% S\u0026P 500 large-cap US equities + 10% cash collateral leveraging a 60% notional US Treasury futures ladder (2/5/10/30yr)",
+    "underlying": "90% S&P 500 large-cap US equities + 10% cash collateral leveraging a 60% notional US Treasury futures ladder (2/5/10/30yr)",
     "benchmark_index": "WisdomTree US Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
@@ -3584,6 +4665,32 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx"
+    ]
+  },
+  {
+    "id": "PFIX",
+    "isin": "US82889N8552",
+    "aliases": [
+      "PFIX"
+    ],
+    "name": "Simplify Interest Rate Hedge ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "PFIX",
+    "currency": "USD",
+    "fees": 0.5,
+    "asset_class": "other",
+    "underlying": "Long OTC payer swaptions on long US rates plus short-duration bonds",
+    "benchmark_index": "active (no index)",
+    "strategy": "long-volatility",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Convex long-rates hedge; profits from rising long-term rates and rate-vol spikes",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US82889N8552"
     ]
   },
   {
@@ -3614,9 +4721,87 @@
     ]
   },
   {
+    "id": "RSBT",
+    "isin": "US88636J1051",
+    "aliases": [
+      "RSBT"
+    ],
+    "name": "Return Stacked Bonds & Managed Futures ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "RSBT",
+    "currency": "USD",
+    "fees": 1.02,
+    "asset_class": "managed-futures",
+    "underlying": "$1 broad US bonds + $1 managed-futures exposure per $1 invested",
+    "benchmark_index": "active (no index)",
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051"
+    ]
+  },
+  {
+    "id": "RSSB",
+    "isin": "US88636J2042",
+    "aliases": [
+      "RSSB"
+    ],
+    "name": "Return Stacked Global Stocks & Bonds ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "RSSB",
+    "currency": "USD",
+    "fees": 0.41,
+    "asset_class": "multi-asset",
+    "underlying": "$1 global equity + $1 US Treasury futures exposure per $1 invested (capital-efficient)",
+    "benchmark_index": "active (no index)",
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042"
+    ]
+  },
+  {
+    "id": "RSST",
+    "isin": "US88636J8163",
+    "aliases": [
+      "RSST"
+    ],
+    "name": "Return Stacked US Stocks & Managed Futures ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "RSST",
+    "currency": "USD",
+    "fees": 0.99,
+    "asset_class": "managed-futures",
+    "underlying": "$1 US large-cap equity + $1 managed-futures exposure per $1 invested",
+    "benchmark_index": "active (no index)",
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Return-stacked 100/100 equities+CTA; trend diversification without cutting equity",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US88636J8163"
+    ]
+  },
+  {
     "id": "SPEA",
     "isin": "IE000DQLYVB9",
-    "name": "iShares S\u0026P 500 Swap PEA UCITS ETF EUR (Acc)",
+    "name": "iShares S&P 500 Swap PEA UCITS ETF EUR (Acc)",
     "ucits": true,
     "source": "ft",
     "symbol": "SPEA",
@@ -3624,8 +4809,8 @@
     "currency": "EUR",
     "fees": 0.1,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Index (500 largest US companies)",
-    "benchmark_index": "S\u0026P 500 Index",
+    "underlying": "S&P 500 Index (500 largest US companies)",
+    "benchmark_index": "S&P 500 Index",
     "strategy": "synthetic-swap",
     "geography": {
       "United States": 100
@@ -3645,10 +4830,38 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on S\u0026P 500; EUR share class; iShares; launched May 2025",
+    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on S&P 500; EUR share class; iShares; launched May 2025",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/ch/professionals/en/products/342916/ishares-s-p-500-swap-pea-ucits-etf"
+    ]
+  },
+  {
+    "id": "TLT",
+    "isin": "",
+    "aliases": [
+      "TLT"
+    ],
+    "name": "iShares 20+ Year Treasury Bond ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "TLT",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 20+ years to maturity",
+    "benchmark_index": "ICE US Treasury 20+ Year Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Long-duration US treasuries (duration ~17y); strong convexity in deflation/recession; the classic risk-off hedge",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin="
     ]
   },
   {
@@ -3703,7 +4916,7 @@
     "currency": "USD",
     "fees": 0.15,
     "asset_class": "aggregate-bond",
-    "underlying": "US investment-grade taxable bonds (government, corporate, MBS, ABS, maturity \u003e1yr)",
+    "underlying": "US investment-grade taxable bonds (government, corporate, MBS, ABS, maturity >1yr)",
     "benchmark_index": "Bloomberg U.S. Aggregate Float Adjusted Index",
     "strategy": "physical-replication",
     "geography": {
@@ -3721,15 +4934,15 @@
   {
     "id": "VOO",
     "isin": "US9229083632",
-    "name": "Vanguard S\u0026P 500 ETF",
+    "name": "Vanguard S&P 500 ETF",
     "ucits": false,
     "source": "yahoo",
     "symbol": "VOO",
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S\u0026P 500 Index — 503 large-cap US stocks",
-    "benchmark_index": "S\u0026P 500",
+    "underlying": "S&P 500 Index — 503 large-cap US stocks",
+    "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
       "US": 100
