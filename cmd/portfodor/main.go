@@ -432,7 +432,42 @@ func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time
 		PortfolioNames: names,
 		StatRows:       buildStatRows(results, opt.benchmark),
 	}
-	return report.RenderText(os.Stdout, page, color)
+	if err := report.RenderText(os.Stdout, page, color); err != nil {
+		return err
+	}
+	printCoverageCLI(results)
+	return nil
+}
+
+// printCoverageCLI prints each portfolio's macro-regime coverage under the
+// CLI summary table (same data as the HTML report and -suggest).
+func printCoverageCLI(results []*result) {
+	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
+	if err != nil {
+		return
+	}
+	var lines []string
+	for _, r := range results {
+		bars := coverageBars(r.p.Assets, meta)
+		if bars == nil {
+			continue
+		}
+		parts := make([]string, len(bars))
+		for i, b := range bars {
+			parts[i] = fmt.Sprintf("%s %d %%", b.Regime, b.Pct)
+			if b.Gap {
+				parts[i] += " (gap)"
+			}
+		}
+		lines = append(lines, "  "+r.p.Name+": "+strings.Join(parts, "   "))
+	}
+	if len(lines) == 0 {
+		return
+	}
+	fmt.Println("\nRegime coverage (share of weight; gap = under-covered — run -suggest):")
+	for _, l := range lines {
+		fmt.Println(l)
+	}
 }
 
 // isTerminal reports whether f is attached to a character device.
