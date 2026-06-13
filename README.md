@@ -7,8 +7,10 @@ and produce SVG charts.
 The CLI reads allocation files, downloads price histories (Yahoo Finance,
 Financial Times, Morningstar, Stooq), rebuilds the missing past (proxies and
 simulated data), simulates each portfolio with periodic rebalancing and
-generates a self-contained HTML report opened in the browser (per-portfolio
-sections collapsed, comparison and statistics front and center).
+generates a self-contained HTML report opened in the browser (comparison and
+statistics front and center; per-portfolio sections collapsed, each with a
+performance curve, three composition pies — geography, sector, asset type —
+and its macro-regime coverage).
 
 ## Usage
 
