@@ -50,57 +50,60 @@ func DefaultOptions() Options {
 // Suggestion is one recommended asset to add.
 type Suggestion struct {
 	Meta          Meta
-	Fills         Regime  // the gap regime it primarily fills
-	Weight        float64 // suggested weight (fraction)
-	Corr          float64 // correlation to the held portfolio
-	VolBefore     float64 // portfolio daily-return volatility before
-	VolAfter      float64 // ... and after adding the candidate
-	SharpeWins    int     // walk-forward windows where Sharpe improved
-	DDWins        int     // ... where max-drawdown improved
-	Windows       int     // total walk-forward windows evaluated
-	MedSharpeGain float64 // median out-of-sample Sharpe gain across windows
+	Fills         Category // the gap category it primarily fills
+	Weight        float64  // suggested weight (fraction)
+	Corr          float64  // correlation to the held portfolio
+	VolBefore     float64  // portfolio daily-return volatility before
+	VolAfter      float64  // ... and after adding the candidate
+	SharpeWins    int      // walk-forward windows where Sharpe improved
+	DDWins        int      // ... where max-drawdown improved
+	Windows       int      // total walk-forward windows evaluated
+	MedSharpeGain float64  // median out-of-sample Sharpe gain across windows
 	Years         float64
 	Simulated     bool
 }
 
 // Result is the full analysis.
 type Result struct {
-	Coverage     map[Regime]float64
+	Framework    string
+	Coverage     map[Category]float64
 	Unclassified float64
-	Gaps         []Regime
+	Gaps         []Category
 	Redundancies []Group
 	Suggestions  []Suggestion
 }
 
-// Analyze computes regime coverage, redundancies and ranked suggestions.
-// heldReturns[i] is holdings[i]'s daily-return series (aligned, equal length)
-// over the held window; candidates carry their own overlap-aligned returns.
-func Analyze(holdings []Holding, heldReturns [][]float64, candidates []Candidate, opts Options) Result {
-	cov, uncl := Coverage(holdings)
-	gaps := Gaps(cov, opts.GapThreshold)
+// Analyze computes the framework coverage, redundancies and ranked
+// suggestions. heldReturns[i] is holdings[i]'s daily-return series (aligned,
+// equal length) over the held window; candidates carry their own
+// overlap-aligned returns.
+func Analyze(holdings []Holding, heldReturns [][]float64, candidates []Candidate, opts Options, fw Framework) Result {
+	cov, uncl := Coverage(holdings, fw)
+	gaps := Gaps(cov, fw, opts.GapThreshold)
 	res := Result{
+		Framework:    fw.Name,
 		Coverage:     cov,
 		Unclassified: uncl,
 		Gaps:         gaps,
 		Redundancies: Redundancies(holdings, heldReturns, opts.RedundancyMin),
-		Suggestions:  RankCandidates(gaps, cov, candidates, opts),
+		Suggestions:  RankCandidates(gaps, cov, candidates, opts, fw),
 	}
 	return res
 }
 
-// RankCandidates keeps the candidates that fill a gap regime and whose
+// RankCandidates keeps the candidates that fill a gap category and whose
 // benefit is robust out-of-sample, ranked by the gap they fill (most
 // under-covered first) then by median out-of-sample Sharpe gain.
-func RankCandidates(gaps []Regime, cov map[Regime]float64, candidates []Candidate, opts Options) []Suggestion {
-	gapSet := map[Regime]bool{}
+func RankCandidates(gaps []Category, cov map[Category]float64, candidates []Candidate, opts Options, fw Framework) []Suggestion {
+	gapSet := map[Category]bool{}
 	for _, g := range gaps {
 		gapSet[g] = true
 	}
 	var out []Suggestion
 	for _, c := range candidates {
-		fills := primaryGap(c.Meta, gapSet, cov)
+		fills := primaryGap(c.Meta, gapSet, cov, fw)
 		if fills == "" {
-			continue // helps no gap regime
+			continue // helps no gap category
 		}
 		bestW, bestGain := 0.0, math.Inf(-1)
 		var sWins, ddWins, total int
@@ -158,14 +161,14 @@ func RankCandidates(gaps []Regime, cov map[Regime]float64, candidates []Candidat
 	return out
 }
 
-// primaryGap returns the gap regime with the lowest coverage that the asset
-// helps in, or "" when it helps none.
-func primaryGap(m Meta, gapSet map[Regime]bool, cov map[Regime]float64) Regime {
-	best := Regime("")
+// primaryGap returns the gap category with the lowest coverage that the
+// asset helps in, or "" when it helps none.
+func primaryGap(m Meta, gapSet map[Category]bool, cov map[Category]float64, fw Framework) Category {
+	best := Category("")
 	bestCov := math.Inf(1)
-	for _, r := range Regimes(m) {
-		if gapSet[r] && cov[r] < bestCov {
-			best, bestCov = r, cov[r]
+	for _, c := range fw.Classify(m) {
+		if gapSet[c] && cov[c] < bestCov {
+			best, bestCov = c, cov[c]
 		}
 	}
 	return best
