@@ -2,29 +2,68 @@ package suggest
 
 import "strings"
 
-// Regime is one of the four macro environments a diversified portfolio
-// should cover (the growth x inflation quadrants behind All-Weather- and
-// Dragon-style portfolios).
-type Regime string
+// Category is one bucket of a classification framework (a macro regime, or a
+// risk factor). A portfolio "covers" a category when it holds assets that
+// help in it.
+type Category string
 
-// The four macro regimes.
+// The macro regimes — the growth x inflation quadrants behind All-Weather-
+// and Dragon-style portfolios (the default framework).
 const (
-	Growth    Regime = "growth"    // rising growth, benign inflation
-	Deflation Regime = "deflation" // falling growth, low/falling inflation (recession)
-	Inflation Regime = "inflation" // rising inflation
-	Crisis    Regime = "crisis"    // protracted dislocations / stagflation / divergent trends
+	Growth    Category = "growth"    // rising growth, benign inflation
+	Deflation Category = "deflation" // falling growth, low/falling inflation (recession)
+	Inflation Category = "inflation" // rising inflation
+	Crisis    Category = "crisis"    // protracted dislocations / stagflation / divergent trends
 )
 
-// AllRegimes lists the four regimes in display order.
-var AllRegimes = []Regime{Growth, Deflation, Inflation, Crisis}
+// The risk factors (the alternative framework). Coverage by factor is
+// coarser than by regime: this catalog holds many diversifiers (gold,
+// commodities, managed futures, volatility) that are not Fama-French
+// factors, so they all land in "alternative".
+const (
+	Market      Category = "market"      // broad equity beta
+	Size        Category = "size"        // small-cap premium
+	Value       Category = "value"       // cheap vs expensive
+	Momentum    Category = "momentum"    // recent winners
+	Quality     Category = "quality"     // profitable, low-leverage
+	Term        Category = "term"        // duration / interest-rate exposure
+	Credit      Category = "credit"      // corporate credit spread
+	Alternative Category = "alternative" // gold, commodities, CTAs, volatility, macro
+	Cash        Category = "cash"        // money-market / very short rates
+)
 
-// Regimes maps an asset's metadata to the regimes it helps in. The mapping
-// is driven by asset_class and strategy, with a few keyword refinements for
-// equity sub-cases (gold miners and energy lean inflationary, value and
-// dividend tilts add an inflation leg). An asset can help in several.
-func Regimes(m Meta) []Regime {
+// AllRegimes lists the regime categories in display order.
+var AllRegimes = []Category{Growth, Deflation, Inflation, Crisis}
+
+// allFactors lists the factor categories in display order.
+var allFactors = []Category{Market, Size, Value, Momentum, Quality, Term, Credit, Alternative, Cash}
+
+// Framework is a way to classify assets into categories a portfolio should
+// cover: the macro regimes (RegimeFramework) or the risk factors
+// (FactorFramework).
+type Framework struct {
+	Name       string
+	Categories []Category
+	Classify   func(Meta) []Category
+}
+
+// RegimeFramework is the default: the four macro regimes.
+func RegimeFramework() Framework {
+	return Framework{Name: "regimes", Categories: AllRegimes, Classify: regimeClassify}
+}
+
+// FactorFramework is the alternative: the risk factors.
+func FactorFramework() Framework {
+	return Framework{Name: "factors", Categories: allFactors, Classify: factorClassify}
+}
+
+// Regimes maps an asset to the macro regimes it helps in (the default
+// framework's classifier).
+func Regimes(m Meta) []Category { return regimeClassify(m) }
+
+func hinter(m Meta) func(...string) bool {
 	hint := strings.ToLower(m.Underlying + " " + m.Benchmark + " " + m.Notes)
-	has := func(words ...string) bool {
+	return func(words ...string) bool {
 		for _, w := range words {
 			if strings.Contains(hint, w) {
 				return true
@@ -32,73 +71,127 @@ func Regimes(m Meta) []Regime {
 		}
 		return false
 	}
+}
 
+// regimeClassify drives the mapping from asset_class and strategy, with a few
+// keyword refinements for equity sub-cases (gold miners and energy lean
+// inflationary, value and dividend tilts add an inflation leg).
+func regimeClassify(m Meta) []Category {
+	has := hinter(m)
 	switch m.AssetClass {
 	case "equity":
 		switch {
 		case has("gold", "mining", "miner", "precious metal"):
-			return []Regime{Inflation}
+			return []Category{Inflation}
 		case has("energy", "oil", "commodit"):
-			return []Regime{Growth, Inflation}
+			return []Category{Growth, Inflation}
 		case has("value", "dividend", "high yield equity"):
-			return []Regime{Growth, Inflation}
+			return []Category{Growth, Inflation}
 		default:
-			return []Regime{Growth}
+			return []Category{Growth}
 		}
 	case "multi-asset":
-		return []Regime{Growth, Deflation}
+		return []Category{Growth, Deflation}
 	case "real-estate":
-		return []Regime{Growth, Inflation}
+		return []Category{Growth, Inflation}
 	case "corporate-bond":
-		return []Regime{Growth, Deflation}
+		return []Category{Growth, Deflation}
 	case "aggregate-bond", "government-bond":
-		return []Regime{Deflation}
+		return []Category{Deflation}
 	case "inflation-linked-bond":
-		return []Regime{Inflation, Deflation}
+		return []Category{Inflation, Deflation}
 	case "money-market":
-		return []Regime{Deflation}
+		return []Category{Deflation}
 	case "gold":
-		return []Regime{Inflation, Crisis}
+		return []Category{Inflation, Crisis}
 	case "broad-commodity":
-		return []Regime{Inflation, Crisis}
+		return []Category{Inflation, Crisis}
 	case "managed-futures":
-		return []Regime{Crisis, Inflation}
+		return []Category{Crisis, Inflation}
 	case "long-volatility", "tail-risk":
-		return []Regime{Deflation, Crisis}
+		return []Category{Deflation, Crisis}
 	default: // "other" (e.g. global macro hedge funds)
-		return []Regime{Crisis}
+		return []Category{Crisis}
+	}
+}
+
+// factorClassify is a best-effort mapping to risk factors. Equity factor
+// tilts are read from the benchmark/name; bonds split into term and credit;
+// every non-factor diversifier lands in "alternative".
+func factorClassify(m Meta) []Category {
+	has := hinter(m)
+	switch m.AssetClass {
+	case "equity":
+		switch {
+		case has("gold", "mining", "miner", "precious metal"):
+			return []Category{Alternative}
+		case has("multi-factor", "multifactor", "diversified factor"):
+			return []Category{Market, Value, Momentum, Quality}
+		}
+		out := []Category{Market}
+		if has("energy", "oil", "commodit") {
+			out = append(out, Alternative)
+		}
+		if has("small cap", "small-cap", "smallcap") {
+			out = append(out, Size)
+		}
+		if has("value", "dividend", "high yield equity") {
+			out = append(out, Value)
+		}
+		if has("momentum") {
+			out = append(out, Momentum)
+		}
+		if has("quality") {
+			out = append(out, Quality)
+		}
+		return out
+	case "multi-asset":
+		return []Category{Market, Term}
+	case "real-estate":
+		return []Category{Market, Alternative}
+	case "government-bond", "inflation-linked-bond":
+		return []Category{Term}
+	case "aggregate-bond":
+		return []Category{Term, Credit}
+	case "corporate-bond":
+		return []Category{Credit, Term}
+	case "money-market":
+		return []Category{Cash}
+	default: // gold, broad-commodity, managed-futures, long-volatility, tail-risk, other
+		return []Category{Alternative}
 	}
 }
 
 // Coverage returns the total weight of the holdings that help in each
-// regime (an asset helping in several contributes its full weight to each),
-// plus the weight of holdings with no metadata (unclassified). Weights are
-// fractions; coverage values are not normalized and can exceed 1 when
-// assets span regimes.
-func Coverage(holdings []Holding) (cov map[Regime]float64, unclassified float64) {
-	cov = map[Regime]float64{Growth: 0, Deflation: 0, Inflation: 0, Crisis: 0}
+// category of the framework (an asset helping in several contributes its
+// full weight to each), plus the weight of holdings with no metadata.
+// Coverage values are not normalized and can exceed 1.
+func Coverage(holdings []Holding, fw Framework) (cov map[Category]float64, unclassified float64) {
+	cov = map[Category]float64{}
+	for _, c := range fw.Categories {
+		cov[c] = 0
+	}
 	for _, h := range holdings {
 		if !h.HasMeta {
 			unclassified += h.Weight
 			continue
 		}
-		for _, r := range Regimes(h.Meta) {
-			cov[r] += h.Weight
+		for _, c := range fw.Classify(h.Meta) {
+			cov[c] += h.Weight
 		}
 	}
 	return cov, unclassified
 }
 
-// Gaps returns the regimes whose coverage is at or below threshold (a
-// fraction of portfolio weight), ordered from least to most covered.
-func Gaps(cov map[Regime]float64, threshold float64) []Regime {
-	var gaps []Regime
-	for _, r := range AllRegimes {
-		if cov[r] <= threshold {
-			gaps = append(gaps, r)
+// Gaps returns the framework categories whose coverage is at or below
+// threshold (a fraction of portfolio weight), least-covered first.
+func Gaps(cov map[Category]float64, fw Framework, threshold float64) []Category {
+	var gaps []Category
+	for _, c := range fw.Categories {
+		if cov[c] <= threshold {
+			gaps = append(gaps, c)
 		}
 	}
-	// Least-covered first.
 	for i := 1; i < len(gaps); i++ {
 		for j := i; j > 0 && cov[gaps[j]] < cov[gaps[j-1]]; j-- {
 			gaps[j], gaps[j-1] = gaps[j-1], gaps[j]

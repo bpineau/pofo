@@ -55,6 +55,19 @@ type options struct {
 	cli        bool
 	width      int
 	cacheAge   time.Duration
+	fw         suggest.Framework // classification used by coverage and -suggest
+}
+
+// frameworkFor resolves the -framework flag to a classification.
+func frameworkFor(name string) (suggest.Framework, error) {
+	switch name {
+	case "", "regimes":
+		return suggest.RegimeFramework(), nil
+	case "factors":
+		return suggest.FactorFramework(), nil
+	default:
+		return suggest.Framework{}, fmt.Errorf("unknown -framework %q (regimes or factors)", name)
+	}
 }
 
 // result holds everything computed for one portfolio.
@@ -94,6 +107,8 @@ func run(argv []string) error {
 	warmup := fs.Bool("warmup", false, "pre-fetch the cache for the bundled asset catalog, then stop")
 	verifyData := fs.Bool("verify-data", false, "data doctor: check the quotes of the referenced assets (or the whole catalog) for anomalies, then exit")
 	suggestFlag := fs.Bool("suggest", false, "suggest catalog assets to add for better regime coverage/diversification, then exit")
+	frameworkName := fs.String("framework", "regimes", "classification for coverage and -suggest: \"regimes\" (macro quadrants) or \"factors\" (risk factors)")
+	coverageFlag := fs.Bool("coverage", false, "offline coverage advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "directory of reference series for -gen-simdata (default: embedded)")
@@ -153,7 +168,7 @@ Options:
 		return err
 	}
 	files := fs.Args()
-	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag {
+	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -162,6 +177,9 @@ Options:
 		return fmt.Errorf("invalid -start option: %w", err)
 	}
 	opt.start = start
+	if opt.fw, err = frameworkFor(*frameworkName); err != nil {
+		return err
+	}
 	if endStr != "" {
 		end, err := time.ParseInLocation("2006-01-02", endStr, time.UTC)
 		if err != nil {
@@ -211,7 +229,7 @@ Options:
 			addSpec(portfolio.Single(id))
 		}
 	}
-	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag {
+	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -227,6 +245,9 @@ Options:
 	}
 	if *suggestFlag {
 		return runSuggest(client, specs, &opt)
+	}
+	if *coverageFlag {
+		return runCoverage(specs, &opt)
 	}
 
 	// Download every distinct asset once.
@@ -436,16 +457,16 @@ func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time
 	if err := report.RenderText(os.Stdout, page, color); err != nil {
 		return err
 	}
-	printCoverageCLI(results, meta)
+	printCoverageCLI(results, meta, opt.fw)
 	return nil
 }
 
 // printCoverageCLI prints each portfolio's macro-regime coverage under the
 // CLI summary table (same data as the HTML report and -suggest).
-func printCoverageCLI(results []*result, meta map[string]suggest.Meta) {
+func printCoverageCLI(results []*result, meta map[string]suggest.Meta, fw suggest.Framework) {
 	var lines []string
 	for _, r := range results {
-		bars := coverageBars(r.p.Assets, meta)
+		bars := coverageBars(r.p.Assets, meta, fw)
 		if bars == nil {
 			continue
 		}
@@ -711,12 +732,12 @@ func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *option
 	}
 
 	opts := suggest.DefaultOptions()
-	cov, _ := suggest.Coverage(holdings)
-	gaps := suggest.Gaps(cov, opts.GapThreshold)
+	cov, _ := suggest.Coverage(holdings, opt.fw)
+	gaps := suggest.Gaps(cov, opt.fw, opts.GapThreshold)
 
 	candidates := buildCandidates(c, opt, meta, gaps, heldCanon, heldEquiv, held, weights)
-	res := suggest.Analyze(holdings, heldRet, candidates, opts)
-	renderSuggest(spec.Name, start, end, res)
+	res := suggest.Analyze(holdings, heldRet, candidates, opts, opt.fw)
+	renderSuggest(spec.Name, start, end, res, opt.fw)
 	return nil
 }
 
@@ -725,12 +746,12 @@ func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *option
 // near-duplicate of a holding), fetches their histories (simulated extension
 // included for the longest fair comparison) and aligns each with the held
 // portfolio over their overlap.
-func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest.Meta, gaps []suggest.Regime,
+func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest.Meta, gaps []suggest.Category,
 	heldCanon, heldEquiv map[string]bool, held []*marketdata.Series, weights []float64) []suggest.Candidate {
 	if len(gaps) == 0 {
 		return nil
 	}
-	gapSet := map[suggest.Regime]bool{}
+	gapSet := map[suggest.Category]bool{}
 	for _, g := range gaps {
 		gapSet[g] = true
 	}
@@ -749,7 +770,7 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 			continue
 		}
 		m, ok := meta[id]
-		if !ok || !intersectsGap(suggest.Regimes(m), gapSet) {
+		if !ok || !intersectsGap(opt.fw.Classify(m), gapSet) {
 			continue
 		}
 		if heldEquiv[m.AssetClass+"|"+m.Benchmark] {
@@ -767,8 +788,8 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 	}
 	sort.Slice(reps, func(i, j int) bool { return reps[i].id < reps[j].id })
 
-	// Cap per gap regime, most-under-covered first.
-	perGap := map[suggest.Regime]int{}
+	// Cap per gap category, most-under-covered first.
+	perGap := map[suggest.Category]int{}
 	picked := map[string]bool{}
 	var order []rep
 	for _, g := range gaps {
@@ -776,7 +797,7 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 			if picked[r.id] || perGap[g] >= maxPerGap {
 				continue
 			}
-			if !intersectsGap(suggest.Regimes(r.m), map[suggest.Regime]bool{g: true}) {
+			if !intersectsGap(opt.fw.Classify(r.m), map[suggest.Category]bool{g: true}) {
 				continue
 			}
 			perGap[g]++
@@ -785,7 +806,7 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 		}
 	}
 	if dropped := len(reps) - len(order); dropped > 0 {
-		log.Printf("suggest: %d gap-filling candidate(s) beyond %d per regime were not evaluated", dropped, maxPerGap)
+		log.Printf("suggest: %d gap-filling candidate(s) beyond %d per category were not evaluated", dropped, maxPerGap)
 	}
 
 	var out []suggest.Candidate
@@ -821,7 +842,7 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 	return out
 }
 
-func intersectsGap(rs []suggest.Regime, gapSet map[suggest.Regime]bool) bool {
+func intersectsGap(rs []suggest.Category, gapSet map[suggest.Category]bool) bool {
 	for _, r := range rs {
 		if gapSet[r] {
 			return true
@@ -856,30 +877,35 @@ func commonWindow(list []*marketdata.Series) (start, end time.Time) {
 	return start, end
 }
 
-// renderSuggest prints the analysis for one portfolio.
-func renderSuggest(name string, start, end time.Time, res suggest.Result) {
-	fmt.Printf("\n=== Suggestions for %s ===\n", name)
-	fmt.Printf("Coverage over %s → %s (by weight):\n",
-		start.Format("2006-01-02"), end.Format("2006-01-02"))
-	gapSet := map[suggest.Regime]bool{}
-	for _, g := range res.Gaps {
+// printCoverageBars prints one bar per framework category, marking gaps.
+func printCoverageBars(cov map[suggest.Category]float64, gaps []suggest.Category, unclassified float64, fw suggest.Framework) {
+	gapSet := map[suggest.Category]bool{}
+	for _, g := range gaps {
 		gapSet[g] = true
 	}
-	for _, r := range suggest.AllRegimes {
-		pct := res.Coverage[r] * 100
+	for _, c := range fw.Categories {
+		pct := cov[c] * 100
 		bars := int(pct/5 + 0.5)
 		if bars > 20 {
 			bars = 20
 		}
 		mark := ""
-		if gapSet[r] {
+		if gapSet[c] {
 			mark = "   ← gap"
 		}
-		fmt.Printf("  %-10s %-20s %3.0f %%%s\n", r, strings.Repeat("█", bars), pct, mark)
+		fmt.Printf("  %-11s %-20s %3.0f %%%s\n", c, strings.Repeat("█", bars), pct, mark)
 	}
-	if res.Unclassified > 0 {
-		fmt.Printf("  (%.0f %% of the portfolio is unclassified — no catalog metadata)\n", res.Unclassified*100)
+	if unclassified > 0 {
+		fmt.Printf("  (%.0f %% of the portfolio is unclassified — no catalog metadata)\n", unclassified*100)
 	}
+}
+
+// renderSuggest prints the analysis for one portfolio.
+func renderSuggest(name string, start, end time.Time, res suggest.Result, fw suggest.Framework) {
+	fmt.Printf("\n=== Suggestions for %s (%s) ===\n", name, fw.Name)
+	fmt.Printf("Coverage over %s → %s (by weight):\n",
+		start.Format("2006-01-02"), end.Format("2006-01-02"))
+	printCoverageBars(res.Coverage, res.Gaps, res.Unclassified, fw)
 
 	if len(res.Redundancies) > 0 {
 		fmt.Println("\nRedundancies (effectively one bet held several times):")
@@ -890,7 +916,7 @@ func renderSuggest(name string, start, end time.Time, res suggest.Result) {
 	}
 
 	if len(res.Gaps) == 0 {
-		fmt.Println("\nAll four regimes are covered — no gap to fill.")
+		fmt.Printf("\nEvery %s category is covered — no gap to fill.\n", fw.Name)
 		return
 	}
 	if len(res.Suggestions) == 0 {
@@ -913,6 +939,77 @@ func renderSuggest(name string, start, end time.Time, res suggest.Result) {
 		}
 		if strings.TrimSpace(line) != "" {
 			fmt.Println(line)
+		}
+	}
+}
+
+// runCoverage is the offline coverage advisor: it shows which framework
+// categories a portfolio under-covers and lists the catalog assets that
+// would fill each gap. It needs no price data — only the embedded metadata.
+func runCoverage(specs []*portfolio.Spec, opt *options) error {
+	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
+	if err != nil {
+		return fmt.Errorf("asset metadata: %w", err)
+	}
+	if len(specs) == 0 {
+		return errors.New("-coverage needs a portfolio (a file or -assets)")
+	}
+	for _, spec := range specs {
+		coverageAdvice(spec, opt, meta)
+	}
+	return nil
+}
+
+func coverageAdvice(spec *portfolio.Spec, opt *options, meta map[string]suggest.Meta) {
+	holdings := make([]suggest.Holding, len(spec.Holdings))
+	held := map[string]bool{}
+	for i, h := range spec.Holdings {
+		m, canon, ok := metaFor(meta, h.ID)
+		holdings[i] = suggest.Holding{ID: h.ID, Weight: h.Weight, Meta: m, HasMeta: ok}
+		held[canon] = true
+	}
+	cov, uncl := suggest.Coverage(holdings, opt.fw)
+	gaps := suggest.Gaps(cov, opt.fw, suggest.DefaultOptions().GapThreshold)
+
+	fmt.Printf("\n=== Coverage advisor for %s (%s) ===\n", spec.Name, opt.fw.Name)
+	fmt.Println("Coverage (by weight):")
+	printCoverageBars(cov, gaps, uncl, opt.fw)
+	if len(gaps) == 0 {
+		fmt.Printf("\nEvery %s category is covered.\n", opt.fw.Name)
+		return
+	}
+
+	fmt.Println("\nTo fill the gaps, the catalog offers (run -suggest to rank them):")
+	for _, g := range gaps {
+		byClass := map[string][]string{}
+		var classes []string
+		for _, id := range marketdata.WarmupIDs() {
+			if held[id] {
+				continue
+			}
+			m, ok := meta[id]
+			if !ok || !intersectsGap(opt.fw.Classify(m), map[suggest.Category]bool{g: true}) {
+				continue
+			}
+			if _, seen := byClass[m.AssetClass]; !seen {
+				classes = append(classes, m.AssetClass)
+			}
+			byClass[m.AssetClass] = append(byClass[m.AssetClass], id)
+		}
+		fmt.Printf("  %s:\n", g)
+		if len(classes) == 0 {
+			fmt.Println("    (no catalog asset available)")
+			continue
+		}
+		sort.Strings(classes)
+		for _, cl := range classes {
+			ids := byClass[cl]
+			extra := ""
+			if len(ids) > 3 {
+				extra = fmt.Sprintf(" … (+%d)", len(ids)-3)
+				ids = ids[:3]
+			}
+			fmt.Printf("    %-16s %s%s\n", cl, strings.Join(ids, ", "), extra)
 		}
 	}
 }
@@ -1182,7 +1279,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
-		section.Coverage = coverageBars(r.p.Assets, meta)
+		section.Coverage = coverageBars(r.p.Assets, meta, opt.fw)
+		if len(section.Coverage) > 0 {
+			section.CoverageLabel = "Macro-regime coverage (by weight)"
+			if opt.fw.Name == "factors" {
+				section.CoverageLabel = "Risk-factor coverage (by weight)"
+			}
+		}
 		for _, a := range r.p.Assets {
 			var notes []string
 			if !a.Series.SimulatedBefore.IsZero() {
@@ -1295,7 +1398,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 
 // coverageBars computes a portfolio's macro-regime coverage for the report.
 // It returns nil when no asset carries metadata (nothing meaningful to show).
-func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta) []report.CoverageBar {
+func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw suggest.Framework) []report.CoverageBar {
 	holdings := make([]suggest.Holding, len(assets))
 	anyMeta := false
 	for i, a := range assets {
@@ -1306,13 +1409,13 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta) []repo
 	if !anyMeta {
 		return nil
 	}
-	cov, _ := suggest.Coverage(holdings)
-	gapSet := map[suggest.Regime]bool{}
-	for _, g := range suggest.Gaps(cov, suggest.DefaultOptions().GapThreshold) {
+	cov, _ := suggest.Coverage(holdings, fw)
+	gapSet := map[suggest.Category]bool{}
+	for _, g := range suggest.Gaps(cov, fw, suggest.DefaultOptions().GapThreshold) {
 		gapSet[g] = true
 	}
-	bars := make([]report.CoverageBar, 0, len(suggest.AllRegimes))
-	for _, rg := range suggest.AllRegimes {
+	bars := make([]report.CoverageBar, 0, len(fw.Categories))
+	for _, rg := range fw.Categories {
 		pct := int(cov[rg]*100 + 0.5)
 		width := pct
 		if width > 100 {
