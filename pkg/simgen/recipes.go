@@ -36,6 +36,18 @@ func All() []Recipe {
 		btalRecipe(),
 		rssbRecipe(),
 		vtRecipe(),
+		shyRecipe(),
+	}
+}
+
+func shyRecipe() Recipe {
+	return Recipe{
+		ID:              "SHY",
+		Name:            "iShares 1-3 Year Treasury Bond ETF",
+		Method:          "ref. SHY-REF (1-3y treasuries from US yield curves, 1962→), real SHY grafted from 2002",
+		Build:           refImport("SHY-REF", "SHY (yield-curve ref.)", 0.0015),
+		ValidateAgainst: "SHY",
+		SpliceReal:      "SHY",
 	}
 }
 
