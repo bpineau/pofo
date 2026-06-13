@@ -41,12 +41,17 @@ func All() []Recipe {
 	}
 }
 
+// scvwRecipe rebuilds US small-cap value from DFA US Small Cap Value
+// (DFSVX, 1993→, total return), with the real SPDR ZPRV grafted on top.
+// Self-contained (no third-party series); cross-checked once against the
+// MSCI USA Small Cap Value Weighted index (weekly corr 0.90, CAGR 11.4% vs
+// 10.4% over 1997-2015) to confirm faithfulness.
 func scvwRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BSPLC413",
 		Name:            "SPDR MSCI USA Small Cap Value Weighted",
-		Method:          "ref. SCVW-REF (MSCI USA Small Cap Value Weighted index, 1997→), real ZPRV grafted from 2015",
-		Build:           refImport("SCVW-REF", "US small-cap value (index ref.)", 0.0030),
+		Method:          "DFSVX (DFA US Small Cap Value, 1993→), real ZPRV grafted from 2015",
+		Build:           composite("US small-cap value (DFSVX)", []Leg{{ID: "DFSVX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IE00BSPLC413",
 		SpliceReal:      "IE00BSPLC413",
 	}
