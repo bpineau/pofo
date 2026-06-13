@@ -1,0 +1,13 @@
+# Global Dividend Income — balanced, withdrawal-friendly
+# Idea: a diversified income core (high-dividend + quality-dividend +
+#   aristocrats + REITs) over a bond and gold cushion — built to pay a steady,
+#   rising distribution through a gentle decumulation.
+# Inspired by: dividend-growth / 'income floor' retirement approaches.
+# UCITS. Tilt to quality dividends to limit value traps.
+
+20    IE00B8GKDB10    # FTSE All-World High Dividend (VHYL)
+15    IE00BYYHSQ67    # World Quality Dividend (WQDV)
+15    IE00B9CQXS71    # Global Dividend Aristocrats (ZPRG)
+10    IE00B1FZS350    # Global REITs (IWDP)
+25    IE00B4WXJJ64    # € Government Bond (IEGA)
+15    IE00B4ND3602    # Gold (IGLN)

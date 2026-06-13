@@ -1,0 +1,12 @@
+# The Larry Portfolio (Larry Swedroe) — modernized, UCITS-route
+# Idea: take equity risk efficiently — a SMALL slice of high-expected-return
+#   small-cap value (~30%) paired with a LARGE safe-bond anchor (~70%). Same
+#   expected return as a plain stock/bond mix, with shallower drawdowns.
+# Inspired by: Larry Swedroe, 'Reducing the Risk of Black Swans'.
+#   https://www.bogleheads.org/wiki/Larry_Swedroe
+# UCITS. The bond sleeve stays short/high-quality on purpose.
+
+15    IE00BSPLC413    # US Small-Cap Value (ZPRV)
+15    IE0003R87OG3    # Global SC Value (AVWS)
+50    IE00B4WXJJ64    # € Government Bond (IEGA)
+20    IE00B1FZSC47    # TIPS (ITPS)

@@ -1,0 +1,9 @@
+# All-World — one fund, 100% equity
+# Idea: the simplest aggressive-accumulation portfolio: own the whole
+#   developed + emerging stock market in a single line and keep buying.
+# Inspired by: Bogleheads 'VT and chill' / JL Collins 'The Simple Path to Wealth'.
+#   https://www.bogleheads.org/wiki/Three-fund_portfolio  (the 1-fund variant)
+# UCITS, accumulating. Maximum growth, maximum volatility — ideal for a long
+#   accumulation horizon, less so once you approach withdrawals.
+
+100   IE00BK5BQT80    # Vanguard FTSE All-World (VWRA) — dev+EM

@@ -1,0 +1,17 @@
+# Gentle Decumulation (UCITS, my curated build)
+# Idea: for the soft-withdrawal phase — a balanced equity/bond core, a dividend
+#   and REIT income tilt, short bonds and cash to fund withdrawals without
+#   selling equities low, and gold for tail protection. Drawn at 4%/yr.
+# Inspired by: bucket / yield-shield decumulation + 4% rule, made all-weather.
+# Demonstrates a withdrawal phase; tune the rate to your needs.
+#meta capital:600000
+#meta withdraw:4%/year
+#meta rebalance:180
+
+30    IE00B4L5Y983    # World equity (IWDA)
+12    IE00B8GKDB10    # High-dividend world (VHYL)
+8     IE00B1FZS350    # Global REITs (IWDP)
+20    IE00B4WXJJ64    # € Government Bond (IEGA)
+10    IE00B1FZSC47    # TIPS (ITPS)
+10    IE00B4ND3602    # Gold (IGLN)
+10    IE00BGCSB447    # Cash / ultrashort (ERNA)
