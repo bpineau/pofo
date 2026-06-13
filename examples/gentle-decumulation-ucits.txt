@@ -4,14 +4,19 @@
 #   selling equities low, and gold for tail protection. Drawn at 4%/yr.
 # Inspired by: bucket / yield-shield decumulation + 4% rule, made all-weather.
 # Demonstrates a withdrawal phase; tune the rate to your needs.
+# Tuning note: weights nudged toward what the optimizer favored over 2018→ —
+#   slightly less equity/dividend for a touch more TIPS and gold, which
+#   shrinks the drawdown that matters most in a withdrawal phase (sequence
+#   risk). Tempered, not the optimizer's raw gold-heavy in-sample mix; the
+#   result Pareto-beats the prior weights (more return, less vol, lower DD).
 #meta capital:600000
 #meta withdraw:4%/year
 #meta rebalance:180
 
-30    IE00B4L5Y983    # World equity (IWDA)
-12    IE00B8GKDB10    # High-dividend world (VHYL)
+28    IE00B4L5Y983    # World equity (IWDA)
+10    IE00B8GKDB10    # High-dividend world (VHYL)
 8     IE00B1FZS350    # Global REITs (IWDP)
 20    IE00B4WXJJ64    # € Government Bond (IEGA)
-10    IE00B1FZSC47    # TIPS (ITPS)
-10    IE00B4ND3602    # Gold (IGLN)
+12    IE00B1FZSC47    # TIPS (ITPS)
+12    IE00B4ND3602    # Gold (IGLN)
 10    IE00BGCSB447    # Cash / ultrashort (ERNA)
