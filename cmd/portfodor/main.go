@@ -1395,32 +1395,35 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			"Information ratio: average active return (portfolio − benchmark) divided by its tracking error (the volatility of that active return) — how much benchmark-beating return is earned per unit of benchmark-relative risk. Higher is better; above ~0.5 is good, negative means the active bets cost return.",
 			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).")
 	}
+	var hasBreakdowns, hasCoverage bool
 	for _, s := range page.Portfolios {
-		if s.Breakdowns != "" {
-			page.Footnotes = append(page.Footnotes,
-				"Composition pies (per portfolio): geography, sector and asset type, each holding's published breakdown weighted by its portfolio weight. Holdings without a geography or sector split (bonds, gold, managed futures…) are pooled into a neutral \"Other\" wedge, so each pie still totals the whole portfolio.")
-			break
-		}
+		hasBreakdowns = hasBreakdowns || len(s.Breakdowns) > 0
+		hasCoverage = hasCoverage || len(s.Coverage) > 0
 	}
-	for _, s := range page.Portfolios {
-		if len(s.Coverage) > 0 {
-			page.Footnotes = append(page.Footnotes,
-				"Macro-regime coverage: weight of the assets that help in each growth/inflation environment (an asset can span several); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
-			break
-		}
+	if hasBreakdowns {
+		page.Footnotes = append(page.Footnotes,
+			"Composition pies (per portfolio): geography, sector and asset type, each holding's published breakdown weighted by its portfolio weight. Holdings without a geography or sector split (bonds, gold, managed futures…) are pooled into a neutral \"Other\" wedge, so each pie still totals the whole portfolio.")
+	}
+	if hasCoverage {
+		page.Footnotes = append(page.Footnotes,
+			"Macro-regime coverage: weight of the assets that help in each growth/inflation environment (an asset can span several); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
 	}
 	return page
 }
 
-// breakdownPies builds the row of three composition pies (geography, sector,
-// asset type) for a portfolio's detail section, each holding's split weighted
-// by its portfolio weight. Holdings whose catalog metadata lacks a geography
-// or sector split (bonds, gold, managed futures…) fall into a single
-// "Other / N/A" wedge so every pie still sums to the whole portfolio. Returns
-// "" when no metadata is available at all.
-func breakdownPies(assets []portfolio.Asset, meta map[string]suggest.Meta) template.HTML {
+// neutralSliceColor fills the catch-all "Other" wedge of the composition pies,
+// keeping it visually distinct from the palette-colored slices.
+const neutralSliceColor = "#cbcbcb"
+
+// breakdownPies builds the composition pies (geography, sector, asset type)
+// for a portfolio's detail section, each holding's split weighted by its
+// portfolio weight. Holdings whose catalog metadata lacks a geography or
+// sector split (bonds, gold, managed futures…) fall into a single "Other /
+// N/A" wedge so every pie still sums to the whole portfolio. Returns the
+// non-empty pie SVGs (nil when no metadata is available at all).
+func breakdownPies(assets []portfolio.Asset, meta map[string]suggest.Meta) []template.HTML {
 	if len(meta) == 0 {
-		return ""
+		return nil
 	}
 	const naLabel = "Other / N/A"
 	geo := map[string]float64{}
@@ -1445,25 +1448,18 @@ func breakdownPies(assets []portfolio.Asset, meta map[string]suggest.Meta) templ
 			cls["Unknown"] += a.Weight
 		}
 	}
-	pies := []string{
+	svgs := []string{
 		chart.Pie(chart.PieOptions{Title: "Geography"}, breakdownSlices(geo, naLabel, 8)),
 		chart.Pie(chart.PieOptions{Title: "Sector"}, breakdownSlices(sec, naLabel, 9)),
 		chart.Pie(chart.PieOptions{Title: "Asset type"}, breakdownSlices(cls, "Unknown", 8)),
 	}
-	var b strings.Builder
-	b.WriteString(`<div class="pies">`)
-	any := false
-	for _, p := range pies {
-		if p != "" {
-			b.WriteString(p)
-			any = true
+	var pies []template.HTML
+	for _, s := range svgs {
+		if s != "" {
+			pies = append(pies, template.HTML(s))
 		}
 	}
-	b.WriteString(`</div>`)
-	if !any {
-		return ""
-	}
-	return template.HTML(b.String())
+	return pies
 }
 
 // addBreakdown adds weight w split over an asset's percentage map (values
@@ -1529,9 +1525,9 @@ func breakdownSlices(agg map[string]float64, naLabel string, maxSlices int) []ch
 		slices = append(slices, chart.Slice{Label: it.k, Value: it.v})
 	}
 	if other > 0 {
-		slices = append(slices, chart.Slice{Label: "Other", Value: other, Color: chart.NeutralColor})
+		slices = append(slices, chart.Slice{Label: "Other", Value: other, Color: neutralSliceColor})
 	}
-	if len(slices) == 1 && slices[0].Color == chart.NeutralColor {
+	if len(slices) == 1 && slices[0].Color == neutralSliceColor {
 		return nil // only "Other" — nothing to show
 	}
 	return slices
