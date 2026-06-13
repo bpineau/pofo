@@ -3,7 +3,7 @@
 # name: WisdomTree US Efficient Core — 90/60 replication
 # method: 0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, daily rebalancing, 0.20%/yr fees
 # validation: corr=0.964 (weekly 0.989) beta=1.00 TE=4.9%/yr CAGR sim 13.04% vs real 12.67% (overlap 1974 d from 2018-08-02 to 2026-06-11) vs NTSX-US
-# generated: 2026-06-12
+# generated: 2026-06-13
 date,close
 1991-10-28,1.424316
 1991-10-29,1.438419

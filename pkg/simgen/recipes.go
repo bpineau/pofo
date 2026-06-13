@@ -21,7 +21,6 @@ func All() []Recipe {
 		ntsxRecipe(),
 		iefRecipe(),
 		tltRecipe(),
-		xauusdRecipe(),
 		ntsgRecipe(),
 		urthRecipe(),
 		iwdaRecipe(),
@@ -32,8 +31,6 @@ func All() []Recipe {
 		ctaRecipe(),
 		amundiVolRecipe(),
 		bhmgRecipe(),
-		crryRecipe(),
-		btalRecipe(),
 		rssbRecipe(),
 		vtRecipe(),
 		shyRecipe(),
@@ -65,35 +62,6 @@ func shyRecipe() Recipe {
 		Build:           composite("SHY (short Treasury)", []Leg{{ID: "VFISX", Weight: 1}}, "", 0),
 		ValidateAgainst: "SHY",
 		SpliceReal:      "SHY",
-	}
-}
-
-// The next four recipes import third-party reconstructions served by a
-// friend's "portfolio" MCP server (already validated against the real funds
-// there) and graft our own real quotes on top. They extend assets the
-// catalog gained recently but had no history for. (A fifth, broad
-// commodities, was dropped: the imported series correlated −0.19 with the
-// real ICOM ETF, so it did not faithfully represent it.)
-
-func crryRecipe() Recipe {
-	return Recipe{
-		ID:              "XS3022291473",
-		Name:            "WisdomTree Enhanced Commodity Carry — carry strategy",
-		Method:          "ref. CRRY-REF (commodity-carry simulation, 2008→), real CRRY grafted from 2025",
-		Build:           refImport("CRRY-REF", "CRRY (commodity carry ref.)", 0),
-		ValidateAgainst: "XS3022291473",
-		SpliceReal:      "XS3022291473",
-	}
-}
-
-func btalRecipe() Recipe {
-	return Recipe{
-		ID:              "BTAL",
-		Name:            "AGFiQ US Market Neutral Anti-Beta",
-		Method:          "ref. BTAL-REF (anti-beta simulation, 2001→), real BTAL grafted from 2011",
-		Build:           refImport("BTAL-REF", "BTAL (anti-beta ref.)", 0),
-		ValidateAgainst: "BTAL",
-		SpliceReal:      "BTAL",
 	}
 }
 
@@ -145,20 +113,45 @@ func iwdaRecipe() Recipe {
 }
 
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
-// global equities plus a half-sized overlay of the actual Winton Trend Fund
-// (refdata/WINTON-TREND-REF: real from 2019, Winton's own simulation before).
+// global equities (60/40 US/international) plus a half-sized self-generated
+// TSMOM trend overlay, net of 0.80%/yr fees.
 func wintonRecipe() Recipe {
 	return Recipe{
-		ID:     "IE000O1VI174",
-		Name:   "Winton Trend-Enhanced Global Equity — equities + real Trend fund",
-		Method: "0.60×VFINX + 0.40×VTMGX + 0.50×(WINTON-TREND-REF − cash ^IRX), 0.80%/yr fees",
-		Build: composite("Winton Trend-Enhanced Global Equity (replication)", []Leg{
-			{ID: "VFINX", Weight: 0.60},
-			{ID: "VTMGX", Weight: 0.40},
-			{ID: "WINTON-TREND-REF", Weight: 0.50, Excess: true},
-		}, "^IRX", 0.0080),
+		ID:              "IE000O1VI174",
+		Name:            "Winton Trend-Enhanced Global Equity — equities + TSMOM overlay",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend), 0.80%/yr fees (~2001→)",
+		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
+}
+
+// wintonBuild blends a 60/40 equity core with a half-weighted TSMOM trend
+// overlay (the trend run as a pure excess strategy, no collateral).
+func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	ids := append([]string{"^IRX", "VFINX", "VTMGX"}, mfMarkets...)
+	fr, err := BuildFrame(f, ids, from)
+	if err != nil {
+		return nil, err
+	}
+	cfg := mfConfig(0.10, 0)
+	cfg.EarnCash = false
+	trend, start, err := TSMOM(fr, cfg)
+	if err != nil {
+		return nil, err
+	}
+	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
+	const feeDaily = 0.0080 / 252
+	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
+	val := 100.0
+	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start], Close: val})
+	for i := 1; i < len(trend); i++ {
+		k := start + i
+		rEq := 0.6*vfinx[k] + 0.4*vtmgx[k]
+		rTrend := trend[i]/trend[i-1] - 1
+		val *= 1 + rEq + 0.5*rTrend - feeDaily
+		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
+	}
+	return s, nil
 }
 
 // Find returns the recipe whose ID or validation target matches id.
@@ -170,14 +163,6 @@ func Find(id string) (Recipe, bool) {
 		}
 	}
 	return Recipe{}, false
-}
-
-// refImport is the shared Build for reconstructions that ARE an imported
-// reference series (official index, third-party simulation): the series is
-// served as-is from refdata/, with an optional annual fee drag to bridge an
-// index to its investable wrapper.
-func refImport(refID, name string, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
-	return composite(name, []Leg{{ID: refID, Weight: 1}}, "", annualFee)
 }
 
 // mfMarkets is the cross-asset futures basket traded by the managed-futures
@@ -298,12 +283,12 @@ func urthRecipe() Recipe {
 	}
 }
 
-// iefRecipe and tltRecipe extend the treasury ETFs (2002) with third-party
-// yield-curve reconstructions going back to 1962.
+// iefRecipe and tltRecipe extend the treasury ETFs (2002) with their
+// long-running Vanguard equivalents (VFITX 1991→, VUSTX 1986→).
 func iefRecipe() Recipe {
 	return Recipe{
 		ID:              "IEF",
-		Name:            "iShares 7-10Y Treasury — yield curves (imported ref.)",
+		Name:            "iShares 7-10Y Treasury — VFITX intermediate Treasury",
 		Method:          "VFITX (Vanguard Intermediate-Term Treasury, 1991→), real IEF grafted from 2002",
 		Build:           composite("IEF (intermediate Treasury)", []Leg{{ID: "VFITX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IEF",
@@ -314,7 +299,7 @@ func iefRecipe() Recipe {
 func tltRecipe() Recipe {
 	return Recipe{
 		ID:              "TLT",
-		Name:            "iShares 20+Y Treasury — yield curves (imported ref.)",
+		Name:            "iShares 20+Y Treasury — VUSTX long Treasury",
 		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002",
 		Build:           composite("TLT (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
 		ValidateAgainst: "TLT",
@@ -322,27 +307,13 @@ func tltRecipe() Recipe {
 	}
 }
 
-// xauusdRecipe extends gold (real series: GC=F futures from 2000) with the
-// imported spot fixings back to 1968.
-func xauusdRecipe() Recipe {
-	return Recipe{
-		ID:              "XAUUSD",
-		Name:            "Gold XAU/USD — spot 1968→",
-		Method:          "ref. XAUUSD-SPOT (imported fixings, 1968→), real GC=F grafted from 2000",
-		Build:           refImport("XAUUSD-SPOT", "Gold (imported spot)", 0),
-		ValidateAgainst: "XAUUSD",
-		SpliceReal:      "XAUUSD",
-	}
-}
-
-// zrozRecipe serves the imported yield-curve reconstruction of 25+ year
-// STRIPS (refdata/ZROZ-REF, 1962→), real ZROZ quotes grafted on top. It
-// replaces the earlier fixed-beta stretch of VUSTX, whose pre-2009 duration
-// was too short (the cross-comparison showed it).
+// zrozRecipe approximates 25+ year zero-coupon STRIPS by leveraging the long
+// Treasury fund VUSTX to 1.65× as a pure excess strategy (its ~25-year
+// duration matches ZROZ's), real ZROZ quotes grafted on top.
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
-		Name:            "PIMCO 25+Y zero-coupon — yield curves (imported ref.)",
+		Name:            "PIMCO 25+Y zero-coupon — 1.65× long Treasury",
 		Method:          "1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
 		Build:           composite("ZROZ (1.65x long Treasury excess)", []Leg{{ID: "VUSTX", Weight: 1.65, Excess: true}}, "^IRX", 0),
 		ValidateAgainst: "ZROZ",
@@ -350,8 +321,6 @@ func zrozRecipe() Recipe {
 	}
 }
 
-// dbmfRecipe anchors DBMF on the official SG CTA Index (the very index the
-// fund replicates), real DBMF quotes grafted on top.
 // dbmf/kmlm/cta reconstruct managed-futures trend from a generic 12-month
 // TSMOM on a cross-asset futures basket. Measured daily correlation vs the
 // real funds (self-generated, no official index): DBMF 0.52, KMLM 0.35, CTA
@@ -369,8 +338,8 @@ func dbmfRecipe() Recipe {
 	}
 }
 
-// kmlmRecipe anchors KMLM on the official MLM Index history (1987→), real
-// KMLM quotes grafted on top.
+// kmlmRecipe reconstructs KMLM from the same TSMOM engine at a higher vol
+// target, real KMLM quotes grafted on top (see dbmf/kmlm/cta note above).
 func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
@@ -382,8 +351,8 @@ func kmlmRecipe() Recipe {
 	}
 }
 
-// ctaRecipe anchors Simplify CTA on the official SG Trend Index, real CTA
-// quotes grafted on top.
+// ctaRecipe reconstructs Simplify CTA from the same TSMOM engine, real CTA
+// quotes grafted on top (see dbmf/kmlm/cta note above).
 func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
