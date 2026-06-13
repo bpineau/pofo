@@ -1,0 +1,10 @@
+# Bogleheads three-fund — world equity + EM + global bonds
+# Idea: the canonical low-cost lazy portfolio: total world stock plus an
+#   investment-grade global bond anchor for ballast.
+# Inspired by: Bogleheads three-fund portfolio.
+#   https://www.bogleheads.org/wiki/Three-fund_portfolio
+# UCITS. 80/20 here — tilt the bond sleeve up as your horizon shortens.
+
+70    IE00B4L5Y983    # World (IWDA)
+10    IE00BKM4GZ66    # EM (EIMI)
+20    IE00BDBRDM35    # iShares Global Aggregate Bond EUR-H (AGGH)
