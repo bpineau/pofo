@@ -763,18 +763,23 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 			repByKey[key] = rep{id, m}
 		}
 	}
+	// Deterministic order (map iteration is randomized).
+	reps := make([]rep, 0, len(repByKey))
+	for _, r := range repByKey {
+		reps = append(reps, r)
+	}
+	sort.Slice(reps, func(i, j int) bool { return reps[i].id < reps[j].id })
+
 	// Cap per gap regime, most-under-covered first.
 	perGap := map[suggest.Regime]int{}
 	picked := map[string]bool{}
 	var order []rep
-	dropped := 0
 	for _, g := range gaps {
-		for _, r := range repByKey {
-			if picked[r.id] || !intersectsGap(suggest.Regimes(r.m), map[suggest.Regime]bool{g: true}) {
+		for _, r := range reps {
+			if picked[r.id] || perGap[g] >= maxPerGap {
 				continue
 			}
-			if perGap[g] >= maxPerGap {
-				dropped++
+			if !intersectsGap(suggest.Regimes(r.m), map[suggest.Regime]bool{g: true}) {
 				continue
 			}
 			perGap[g]++
@@ -782,8 +787,8 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 			order = append(order, r)
 		}
 	}
-	if dropped > 0 {
-		log.Printf("suggest: %d extra candidate(s) beyond %d per regime were not evaluated", dropped, maxPerGap)
+	if dropped := len(reps) - len(order); dropped > 0 {
+		log.Printf("suggest: %d gap-filling candidate(s) beyond %d per regime were not evaluated", dropped, maxPerGap)
 	}
 
 	var out []suggest.Candidate
