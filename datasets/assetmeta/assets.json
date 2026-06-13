@@ -1,0 +1,3330 @@
+[
+  {
+    "id": "BND",
+    "isin": "US9219378356",
+    "asset_class": "aggregate-bond",
+    "underlying": "~17,000 US investment-grade taxable bonds, maturity >=1 year",
+    "benchmark_index": "Bloomberg US Aggregate Float Adjusted Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 96,
+      "Foreign (USD-denominated)": 4
+    },
+    "sectors": {
+      "US Government": 46,
+      "Government Mortgage-Backed": 27,
+      "Investment-Grade Corporate": 19,
+      "Asset-Backed": 1,
+      "Commercial MBS": 1,
+      "Other": 6
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
+    ]
+  },
+  {
+    "id": "CL=F",
+    "isin": null,
+    "asset_class": "broad-commodity",
+    "underlying": "WTI crude oil continuous front-month futures (NYMEX)",
+    "benchmark_index": null,
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "notes": "Energy commodity; positive in supply-shock/inflation regimes; roll cost embedded in return",
+    "confidence": "high",
+    "sources": [
+      "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.html"
+    ]
+  },
+  {
+    "id": "CTA",
+    "isin": "US82889N6994",
+    "asset_class": "managed-futures",
+    "underlying": "50+ futures markets — commodities, currencies, fixed income; systematic managed futures",
+    "benchmark_index": "SG CTA Index (reference benchmark)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Actively managed systematic long/short managed futures; absolute return profile; diversifies equity-dominated portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://www.simplify.us/etfs/cta-simplify-managed-futures-strategy-etf"
+    ]
+  },
+  {
+    "id": "DBMF",
+    "isin": null,
+    "asset_class": "managed-futures",
+    "underlying": "Long/short positions in 10-15 liquid equity, fixed income, currency and commodity futures, replicating a basket of CTA hedge funds",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Managed-futures / CTA replicator; tends to profit in trending markets and acts as crisis alpha during equity bear markets",
+    "confidence": "medium",
+    "sources": [
+      "https://stockanalysis.com/etf/dbmf/holdings/"
+    ]
+  },
+  {
+    "id": "DE0002635307",
+    "isin": "DE0002635307",
+    "asset_class": "equity",
+    "underlying": "600 largest European listed companies",
+    "benchmark_index": "STOXX Europe 600",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 20,
+      "France": 14,
+      "Germany": 13,
+      "Switzerland": 12,
+      "Netherlands": 7,
+      "Sweden": 6,
+      "Other Europe": 28
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 18,
+      "Health Care": 8,
+      "Technology": 8,
+      "Consumer Discretionary": 7,
+      "Consumer Staples": 8,
+      "Basic Materials": 6,
+      "Energy": 5,
+      "Utilities": 5,
+      "Communication Services": 3,
+      "Real Estate": 1
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad European large/mid-cap core holding; distributing; full physical replication of STOXX 600",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/ch/individual/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund"
+    ]
+  },
+  {
+    "id": "DE0005933931",
+    "isin": "DE0005933931",
+    "asset_class": "equity",
+    "underlying": "40 largest and most liquid German blue-chip stocks listed on the Frankfurt Stock Exchange",
+    "benchmark_index": "DAX",
+    "strategy": "physical-replication",
+    "geography": {
+      "Germany": 93,
+      "Netherlands": 6,
+      "Other": 1
+    },
+    "sectors": {
+      "Industrials": 35,
+      "Financials": 21,
+      "Technology": 13,
+      "Consumer Discretionary": 7,
+      "Health Care": 7,
+      "Basic Materials": 5,
+      "Consumer Staples": 4,
+      "Utilities": 3,
+      "Energy": 2,
+      "Communication Services": 2,
+      "Real Estate": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Concentrated German large-cap exposure (EXS1, 40 stocks); domiciled in Germany as a contractual fund (Sondervermoegen)",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/de/individual/de/products/251770/"
+    ]
+  },
+  {
+    "id": "DE000A0S9GB0",
+    "isin": "DE000A0S9GB0",
+    "asset_class": "gold",
+    "underlying": "Physical gold (EUR-quoted on Xetra; deliverable claim on gold)",
+    "benchmark_index": "LBMA Gold Price (USD)",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "German-law physical gold ETC (Xetra-Gold, 4GLD); EUR trading currency with unhedged USD gold exposure; largest European gold ETC",
+    "confidence": "high",
+    "sources": [
+      "https://www.xetra-gold.com/en/"
+    ]
+  },
+  {
+    "id": "EEMA",
+    "isin": "US4642864262",
+    "asset_class": "equity",
+    "underlying": "~890 large- and mid-cap stocks across 8 Asian emerging markets",
+    "benchmark_index": "MSCI EM Asia Custom Capped Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "China": 36,
+      "Taiwan": 22,
+      "South Korea": 15,
+      "India": 14,
+      "Other EM Asia": 13
+    },
+    "sectors": {
+      "Information Technology": 43,
+      "Financials": 15,
+      "Consumer Discretionary": 10,
+      "Industrials": 8,
+      "Communication Services": 7,
+      "Materials": 4,
+      "Health Care": 3,
+      "Energy": 3,
+      "Consumer Staples": 3,
+      "Utilities": 2,
+      "Real Estate": 1
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Pure Asian emerging market equity play; dominant tech/semiconductor exposure; benefits from EM Asia growth cycles",
+    "confidence": "medium",
+    "sources": [
+      "https://www.ishares.com/us/products/239629/ishares-msci-emerging-markets-asia-etf"
+    ]
+  },
+  {
+    "id": "FR0007052782",
+    "isin": "FR0007052782",
+    "asset_class": "equity",
+    "underlying": "CAC 40 (40 largest French blue-chip equities on Euronext Paris)",
+    "benchmark_index": "CAC 40",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 83,
+      "Netherlands": 7,
+      "Luxembourg": 2,
+      "Switzerland": 2,
+      "Other": 6
+    },
+    "sectors": {
+      "Industrials": 29,
+      "Consumer Discretionary": 16,
+      "Financials": 14,
+      "Energy": 9,
+      "Health Care": 7,
+      "Materials": 6,
+      "Information Technology": 6,
+      "Consumer Staples": 5,
+      "Utilities": 5,
+      "Communication Services": 3
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Physical full-replication ETF on French large caps; oldest French equity ETF; distributes annual dividends",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-cac-40-ucits-etf-dist/fr0007052782"
+    ]
+  },
+  {
+    "id": "FR0010315770",
+    "isin": "FR0010315770",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 74,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "France": 3,
+      "Switzerland": 3,
+      "Other": 7
+    },
+    "sectors": {
+      "Information Technology": 31,
+      "Financials": 15,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Oldest Amundi MSCI World swap ETF (2006, WLD); France-domiciled; unfunded swap; annual distribution",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ii-ucits-etf-dist/fr0010315770"
+    ]
+  },
+  {
+    "id": "FR0010342592",
+    "isin": "FR0010342592",
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 Index (100 largest non-financial Nasdaq stocks), 2x daily leveraged",
+    "benchmark_index": "Nasdaq-100 Leverage (2x) Notional Net Total Return Index",
+    "strategy": "leveraged-2x",
+    "geography": {
+      "United States": 98,
+      "Other": 2
+    },
+    "sectors": {
+      "Technology": 55,
+      "Communication Services": 16,
+      "Consumer Discretionary": 14,
+      "Health Care": 6,
+      "Industrials": 5,
+      "Other": 4
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 2.0,
+    "notes": "2x daily leveraged Nasdaq-100 via unfunded swap (LQQ); path-dependent returns; short-term tactical/satellite bull-market amplifier",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/professional/products/equity/amundi-nasdaq100-daily-2x-leveraged-ucits-etf-acc/fr0010342592"
+    ]
+  },
+  {
+    "id": "FR0010755611",
+    "isin": "FR0010755611",
+    "asset_class": "equity",
+    "underlying": "Two-times daily leveraged exposure to the MSCI USA index of large- and mid-cap US equities, via unfunded swap with Societe Generale",
+    "benchmark_index": "MSCI USA Leveraged 2x Daily Index (Net TR)",
+    "strategy": "leveraged-2x",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 2.0,
+    "notes": "Tactical 2x daily leveraged US equity instrument; subject to volatility drag; suited for short-term directional bets, not long-term holding",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0010755611"
+    ]
+  },
+  {
+    "id": "FR0011147594",
+    "isin": "FR0011147594",
+    "asset_class": "aggregate-bond",
+    "underlying": "Flexible multi-segment EUR bonds (government, corporate, high-yield, EM debt, convertibles); unconstrained duration [0-7]",
+    "benchmark_index": "ESTR + 100 bps",
+    "strategy": "active",
+    "geography": {
+      "Europe": 80,
+      "Global": 20
+    },
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active flexible EUR bond fund (Flornoy Ferri); benchmark-agnostic, top-down + bottom-up; suits low-rate or credit-spread tightening regimes",
+    "confidence": "medium",
+    "sources": [
+      "https://www.flornoyferri.com/nos_fonds/omnibond/"
+    ]
+  },
+  {
+    "id": "FR0011550185",
+    "isin": "FR0011550185",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Index (500 largest US companies)",
+    "benchmark_index": "S&P 500",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Information Technology": 32,
+      "Financials": 14,
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Health Care": 11,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic S&P 500 (BNP Easy, ESE); France-domiciled unfunded swap; pure US large-cap exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.bnpparibas-am.com/en-sk/fundsheet/equity/bnp-paribas-easy-sp-500-ucits-etf-eur-c-c-fr0011550185/"
+    ]
+  },
+  {
+    "id": "FR0011871110",
+    "isin": "FR0011871110",
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 (100 largest non-financial Nasdaq-listed companies)",
+    "benchmark_index": "Nasdaq-100",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Information Technology": 51,
+      "Communication Services": 16,
+      "Consumer Discretionary": 13,
+      "Consumer Staples": 9,
+      "Health Care": 5,
+      "Industrials": 4,
+      "Utilities": 1,
+      "Materials": 1,
+      "Energy": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic swap on Nasdaq-100 (PUST); heavily tilted to US mega-cap tech and growth",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.be/en/professional/products/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110"
+    ]
+  },
+  {
+    "id": "FR0011871128",
+    "isin": "FR0011871128",
+    "asset_class": "equity",
+    "underlying": "500 largest US listed companies (via unfunded swap)",
+    "benchmark_index": "S&P 500 Net Total Return Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Technology": 38,
+      "Communication Services": 11,
+      "Financials": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Real Estate": 2,
+      "Utilities": 2,
+      "Basic Materials": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "French-domiciled synthetic S&P 500 ETF designed for PEA eligibility; swap counterparty Societe Generale; EUR share class",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.be/en/professional/products/equity/amundi-pea-sp-500-ucits-etf-acc/fr0011871128"
+    ]
+  },
+  {
+    "id": "FR0012336683",
+    "isin": "FR0012336683",
+    "asset_class": "equity",
+    "underlying": "Gold mining and precious metals equities (international)",
+    "benchmark_index": "NYSE Arca Gold Miners TR USD",
+    "strategy": "active",
+    "geography": {
+      "North America": 60,
+      "Australia": 15,
+      "Africa": 10,
+      "Europe": 8,
+      "Other": 7
+    },
+    "sectors": {
+      "Materials": 100
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active fund targeting gold miners; high beta to gold price with operational leverage; performs best in risk-on gold bull markets",
+    "confidence": "high",
+    "sources": [
+      "https://funds360.fefundinfo.com/opcvm/fiche/amundi-actions-or-part-p-c"
+    ]
+  },
+  {
+    "id": "FR0013412020",
+    "isin": "FR0013412020",
+    "asset_class": "equity",
+    "underlying": "MSCI EM ex-Egypt ESG Broad CTB Select (large/mid-cap emerging markets, ESG-filtered)",
+    "benchmark_index": "MSCI EM ex-Egypt ESG Broad CTB Select",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "Taiwan": 25,
+      "China": 24,
+      "South Korea": 19,
+      "India": 12,
+      "Other emerging markets": 20
+    },
+    "sectors": {
+      "Financials": 22,
+      "Information Technology": 21,
+      "Consumer Discretionary": 13,
+      "Communication Services": 10,
+      "Materials": 8,
+      "Industrials": 7,
+      "Consumer Staples": 6,
+      "Energy": 5,
+      "Health Care": 4,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic swap on diversified emerging market equities with ESG/climate tilt (PAEEM)",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0013412020"
+    ]
+  },
+  {
+    "id": "FR0013412038",
+    "isin": "FR0013412038",
+    "asset_class": "equity",
+    "underlying": "MSCI Europe (large/mid-cap equities across 15 developed European countries)",
+    "benchmark_index": "MSCI Europe Net Total Return",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United Kingdom": 22,
+      "France": 15,
+      "Switzerland": 14,
+      "Germany": 14,
+      "Netherlands": 9,
+      "Other Europe": 26
+    },
+    "sectors": {
+      "Financials": 24,
+      "Industrials": 19,
+      "Health Care": 13,
+      "Consumer Staples": 8,
+      "Information Technology": 9,
+      "Consumer Discretionary": 7,
+      "Materials": 6,
+      "Utilities": 5,
+      "Energy": 5,
+      "Communication Services": 3,
+      "Real Estate": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic swap on broad developed European equities (PCEU); financials and industrials dominate",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-msci-europe-ucits-etf-acc/fr0013412038"
+    ]
+  },
+  {
+    "id": "FR0013412285",
+    "isin": "FR0013412285",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Scored & Screened+ (ESG-filtered S&P 500, ~490 US large-cap equities)",
+    "benchmark_index": "S&P 500 Scored & Screened+",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Information Technology": 39,
+      "Communication Services": 14,
+      "Financials": 13,
+      "Health Care": 11,
+      "Consumer Discretionary": 5,
+      "Consumer Staples": 5,
+      "Industrials": 6,
+      "Energy": 3,
+      "Real Estate": 2,
+      "Materials": 2,
+      "Utilities": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic swap on US large-cap equities with ESG screening (PE500); near-identical to standard S&P 500",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-sp-500-screened-ucits-etf-acc/fr0013412285"
+    ]
+  },
+  {
+    "id": "FR001400U5Q4",
+    "isin": "FR001400U5Q4",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 74,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "France": 3,
+      "Switzerland": 3,
+      "Other": 7
+    },
+    "sectors": {
+      "Information Technology": 26,
+      "Financials": 16,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Other": 4
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic ETF (Amundi PEA Monde, DCAM); France domicile; launched March 2025",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=FR001400U5Q4"
+    ]
+  },
+  {
+    "id": "GG00BQBFY362",
+    "isin": "GG00BQBFY362",
+    "asset_class": "other",
+    "underlying": "Feeder into Brevan Howard Master Fund Limited; global macro and relative-value trading across fixed income and FX",
+    "benchmark_index": null,
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "currency": "GBP",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Global macro hedge fund (Brevan Howard); low equity correlation; hedges interest-rate and macro tail risks; London-listed closed-end vehicle",
+    "confidence": "high",
+    "sources": [
+      "https://bhmacro.com/"
+    ]
+  },
+  {
+    "id": "IE0003R87OG3",
+    "isin": "IE0003R87OG3",
+    "asset_class": "equity",
+    "underlying": "Small-cap developed-market stocks tilted toward low valuation and high profitability",
+    "benchmark_index": "active (MSCI World Small Cap Value as comparison)",
+    "strategy": "active",
+    "geography": {
+      "North America": 40,
+      "Japan": 18,
+      "Europe ex-UK": 15,
+      "UK": 8,
+      "Asia Pacific ex-Japan": 8,
+      "Other": 11
+    },
+    "sectors": {
+      "Financials": 23,
+      "Consumer Discretionary": 19,
+      "Industrials": 15,
+      "Energy": 14,
+      "Materials": 10,
+      "Technology": 8,
+      "Consumer Staples": 4,
+      "Health Care": 4,
+      "Other": 3
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Actively managed global small-cap value (AVWS); ~5% tech vs ~25% in broad world trackers; high size+value factor loading",
+    "confidence": "medium",
+    "sources": [
+      "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/"
+    ]
+  },
+  {
+    "id": "IE0003XJA0J9",
+    "isin": "IE0003XJA0J9",
+    "asset_class": "equity",
+    "underlying": "Solactive GBS Global Markets Large & Mid Cap Index (~3,400 stocks, developed + emerging markets)",
+    "benchmark_index": "Solactive GBS Global Markets Large & Mid Cap Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 58,
+      "Japan": 6,
+      "Taiwan": 3,
+      "United Kingdom": 3,
+      "China": 3,
+      "Canada": 3,
+      "India": 2,
+      "France": 2,
+      "Germany": 2,
+      "Other": 18
+    },
+    "sectors": {
+      "Technology": 29,
+      "Financials": 15,
+      "Industrials": 10,
+      "Consumer Discretionary": 10,
+      "Communication Services": 9,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Cheapest all-world ETF (Amundi Prime, WEBN); full physical replication; tracks Solactive index",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/individual/products/equity/amundi-prime-all-country-world-ucits-etf-acc/ie0003xja0j9"
+    ]
+  },
+  {
+    "id": "IE000716YHJ7",
+    "isin": "IE000716YHJ7",
+    "asset_class": "equity",
+    "underlying": "FTSE All-World Index (large & mid cap, developed + emerging, ~4100 stocks)",
+    "benchmark_index": "FTSE All-World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 62,
+      "Japan": 6,
+      "United Kingdom": 3,
+      "Taiwan": 3,
+      "Canada": 3,
+      "China": 3,
+      "Other": 20
+    },
+    "sectors": {
+      "Information Technology": 29,
+      "Financials": 14,
+      "Industrials": 10,
+      "Consumer Discretionary": 10,
+      "Health Care": 9,
+      "Communication Services": 8,
+      "Consumer Staples": 6,
+      "Materials": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 3
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Invesco FTSE All-World (FWRA); FTSE equivalent to MSCI ACWI; physical sampling",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/uk/en/invesco-ftse-all-world-ucits-etf.html"
+    ]
+  },
+  {
+    "id": "IE00077IIPQ8",
+    "isin": "IE00077IIPQ8",
+    "asset_class": "multi-asset",
+    "underlying": "90% global large-cap equities (developed markets, ESG-screened) + 60% notional government bond futures (US, Germany, UK, Japan)",
+    "benchmark_index": "WisdomTree Global Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "US": 69,
+      "Japan": 6,
+      "France": 3,
+      "UK": 3,
+      "Other developed": 19
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc"
+    ]
+  },
+  {
+    "id": "IE000KF370H3",
+    "isin": "IE000KF370H3",
+    "asset_class": "multi-asset",
+    "underlying": "90% large-cap US equities + 60% notional US Treasury bond futures overlay (capital-efficient 60/40 equivalent)",
+    "benchmark_index": "WisdomTree US Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "US": 94,
+      "Other": 6
+    },
+    "sectors": {
+      "Technology": 36,
+      "Financials": 12,
+      "Consumer Discretionary": 11,
+      "Communication Services": 10,
+      "Other": 31
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Capital-efficient 90/60 structure delivering equity+bond diversification in one position; bonds cushion equity drawdowns",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsx-wisdomtree-us-efficient-core-ucits-etf---usd-acc"
+    ]
+  },
+  {
+    "id": "IE000O1VI174",
+    "isin": "IE000O1VI174",
+    "asset_class": "multi-asset",
+    "underlying": "100% MSCI World Total Return exposure + 100% Winton Major-Market Trend Strategy (systematic futures CTA across commodities, FX, fixed income, equity indices)",
+    "benchmark_index": null,
+    "strategy": "trend-following",
+    "geography": {
+      "Global developed": 100
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 2.0,
+    "notes": "Portable alpha structure: equity beta + CTA overlay; diversifying in trending/crisis regimes; launched March 2025",
+    "confidence": "medium",
+    "sources": [
+      "https://www.wintonucits.com/portable-alpha"
+    ]
+  },
+  {
+    "id": "IE000XZSV718",
+    "isin": "IE000XZSV718",
+    "asset_class": "equity",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 95,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 37,
+      "Financials": 12,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Health Care": 9,
+      "Industrials": 9,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "SPDR physical S&P 500 UCITS ETF accumulating (SPYL); TER 0.03% — cheapest S&P 500 UCITS",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy"
+    ]
+  },
+  {
+    "id": "IE0031442068",
+    "isin": "IE0031442068",
+    "asset_class": "equity",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 95,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 36,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Financials": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2,
+      "Other": 3
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "iShares physical S&P 500 UCITS ETF (IDUS), distributing quarterly; one of the oldest US-equity UCITS ETFs",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0031442068"
+    ]
+  },
+  {
+    "id": "IE0032077012",
+    "isin": "IE0032077012",
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 index (100 largest non-financial Nasdaq-listed companies)",
+    "benchmark_index": "Nasdaq-100",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 93,
+      "Other": 7
+    },
+    "sectors": {
+      "Information Technology": 52,
+      "Communication Services": 15,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 7,
+      "Health Care": 4,
+      "Industrials": 4,
+      "Other": 6
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Oldest and largest UCITS Nasdaq-100 ETF (EQQQ); quarterly distributor, physically replicated",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/uk/en/financial-products/etfs/invesco-eqqq-nasdaq-100-ucits-etf-dist.html"
+    ]
+  },
+  {
+    "id": "IE00B1XNHC34",
+    "isin": "IE00B1XNHC34",
+    "asset_class": "equity",
+    "underlying": "Global clean energy companies (producers + equipment/technology), large-cap, ~100 constituents",
+    "benchmark_index": "S&P Global Clean Energy Transition Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 32,
+      "China": 19,
+      "Brazil": 6,
+      "Denmark": 5,
+      "Europe ex-UK": 14,
+      "Asia Pacific ex-Japan": 10,
+      "Other": 14
+    },
+    "sectors": {
+      "Utilities": 34,
+      "Industrials": 33,
+      "Technology": 17,
+      "Energy": 1,
+      "Other": 15
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Thematic clean-energy play (IQQH/INRG); concentrated in Utilities and Industrials; high policy-risk sensitivity; satellite/ESG allocation",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/251911/ishares-global-clean-energy-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00B3DKXQ41",
+    "isin": "IE00B3DKXQ41",
+    "asset_class": "aggregate-bond",
+    "underlying": "Bloomberg MSCI Euro Aggregate and Green Bond ESG SRI Index; govt ~71%, corp ~29%",
+    "benchmark_index": "Bloomberg MSCI Euro Aggregate and Green Bond ESG SRI",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 19,
+      "Germany": 15,
+      "Italy": 11,
+      "Spain": 8,
+      "Other": 47
+    },
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "EUR-denominated investment-grade aggregate bonds (SEAG) with ESG/SRI screening; core EUR rate exposure with green bond tilt",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00B3RBWM25",
+    "isin": "IE00B3RBWM25",
+    "asset_class": "equity",
+    "underlying": "FTSE All-World Index (~3,700 large/mid-cap stocks, developed + emerging markets)",
+    "benchmark_index": "FTSE All-World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 57,
+      "Japan": 6,
+      "Taiwan": 3,
+      "United Kingdom": 3,
+      "China": 3,
+      "Canada": 3,
+      "India": 2,
+      "France": 2,
+      "Germany": 2,
+      "Other": 19
+    },
+    "sectors": {
+      "Technology": 29,
+      "Financials": 16,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Same index and physical replication as VWRA but distributing (VWRD); USD share class",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3RBWM25"
+    ]
+  },
+  {
+    "id": "IE00B3VVMM84",
+    "isin": "IE00B3VVMM84",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities in emerging market countries (~2,300 stocks, FTSE Emerging universe)",
+    "benchmark_index": "FTSE Emerging",
+    "strategy": "physical-replication",
+    "geography": {
+      "Taiwan": 28,
+      "China": 26,
+      "India": 14,
+      "Brazil": 4,
+      "Saudi Arabia": 4,
+      "South Africa": 3,
+      "Mexico": 2,
+      "Indonesia": 2,
+      "Thailand": 2,
+      "Other": 15
+    },
+    "sectors": {
+      "Technology": 28,
+      "Financials": 19,
+      "Consumer Discretionary": 10,
+      "Basic Materials": 7,
+      "Industrials": 7,
+      "Communication Services": 6,
+      "Consumer Staples": 6,
+      "Energy": 5,
+      "Health Care": 5,
+      "Utilities": 3,
+      "Real Estate": 4
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "FTSE Emerging (VFEM; excludes South Korea vs MSCI EM); distributing with ~2% yield",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9455/ftse-emerging-markets-ucits-etf-usd-distributing"
+    ]
+  },
+  {
+    "id": "IE00B3WJKG14",
+    "isin": "IE00B3WJKG14",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Information Technology sector stocks (capped 35/20)",
+    "benchmark_index": "S&P 500 Capped 35/20 Information Technology Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 94,
+      "Other": 6
+    },
+    "sectors": {
+      "Information Technology": 96,
+      "Other": 4
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Pure-play US tech sector ETF (IUIT); ~96% IT sector concentration; high-conviction tech sleeve",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/280510/ishares-sp-500-information-technology-sector-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00B3XXRP09",
+    "isin": "IE00B3XXRP09",
+    "asset_class": "equity",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 95,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 36,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Financials": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2,
+      "Other": 3
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Vanguard physical S&P 500 UCITS ETF (VUSA), distributing quarterly; low TER",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9503/sp-500-ucits-etf-usd-distributing"
+    ]
+  },
+  {
+    "id": "IE00B3YCGJ38",
+    "isin": "IE00B3YCGJ38",
+    "asset_class": "equity",
+    "underlying": "500 largest US listed companies (via unfunded swap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Technology": 38,
+      "Communication Services": 11,
+      "Financials": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Real Estate": 2,
+      "Utilities": 2,
+      "Basic Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Lowest-cost S&P 500 UCITS ETF via synthetic unfunded swap; no withholding tax drag; alternative to physical for tax-efficient portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B3YCGJ38_factsheet_en.pdf"
+    ]
+  },
+  {
+    "id": "IE00B3YLTY66",
+    "isin": "IE00B3YLTY66",
+    "asset_class": "equity",
+    "underlying": "MSCI ACWI IMI (large, mid & small cap, 23 developed + 24 emerging markets)",
+    "benchmark_index": "MSCI All Country World Investable Market Index (ACWI IMI)",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 59,
+      "Japan": 6,
+      "United Kingdom": 3,
+      "Taiwan": 3,
+      "Canada": 3,
+      "China": 3,
+      "Other": 23
+    },
+    "sectors": {
+      "Information Technology": 30,
+      "Financials": 16,
+      "Industrials": 12,
+      "Consumer Discretionary": 9,
+      "Health Care": 8,
+      "Communication Services": 8,
+      "Consumer Staples": 5,
+      "Materials": 4,
+      "Energy": 4,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "SPDR MSCI ACWI IMI; widest global coverage including small caps (~99% investable universe)",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/de/en_gb/intermediary/etfs/spdr-msci-all-country-world-investable-market-ucits-etf-acc-spyi-gy"
+    ]
+  },
+  {
+    "id": "IE00B44Z5B48",
+    "isin": "IE00B44Z5B48",
+    "asset_class": "equity",
+    "underlying": "MSCI ACWI (large & mid cap, 23 developed + 24 emerging markets)",
+    "benchmark_index": "MSCI All Country World Index (ACWI)",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 64,
+      "Japan": 5,
+      "United Kingdom": 3,
+      "Taiwan": 3,
+      "Canada": 3,
+      "China": 3,
+      "France": 2,
+      "Germany": 2,
+      "Other": 15
+    },
+    "sectors": {
+      "Information Technology": 32,
+      "Financials": 16,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 8,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "SPDR MSCI ACWI; broad global equity coverage (developed+emerging); optimised sampling physical replication",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-all-country-world-ucits-etf-acc-spyy-gy"
+    ]
+  },
+  {
+    "id": "IE00B4K48X80",
+    "isin": "IE00B4K48X80",
+    "asset_class": "equity",
+    "underlying": "Large and mid-cap equities across 15 European developed markets",
+    "benchmark_index": "MSCI Europe Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 20,
+      "France": 14,
+      "Germany": 14,
+      "Switzerland": 12,
+      "Netherlands": 6,
+      "Sweden": 5,
+      "Spain": 4,
+      "Denmark": 3,
+      "Italy": 3,
+      "Other": 19
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 18,
+      "Health Care": 9,
+      "Information Technology": 9,
+      "Consumer Staples": 8,
+      "Consumer Discretionary": 6,
+      "Materials": 6,
+      "Energy": 5,
+      "Utilities": 4,
+      "Real Estate": 2,
+      "Communication Services": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Optimised-sampling iShares MSCI Europe core holding (IMAE); broader than STOXX 600, ~400 holdings",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/lu/intermediaries/products/251861/ishares-msci-europe-ucits-etf-acc-fund"
+    ]
+  },
+  {
+    "id": "IE00B4L5Y983",
+    "isin": "IE00B4L5Y983",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities across 23 developed markets, market-cap weighted",
+    "benchmark_index": "MSCI World Index (Net TR)",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 68,
+      "Japan": 6,
+      "UK": 3,
+      "Canada": 3,
+      "Other developed": 20
+    },
+    "sectors": {
+      "Technology": 28,
+      "Financials": 14,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Health Care": 8,
+      "Communication Services": 8,
+      "Consumer Staples": 6,
+      "Materials": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 3,
+      "Other": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Core global developed-market equity exposure; performs well in broad equity bull markets",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983"
+    ]
+  },
+  {
+    "id": "IE00B4ND3602",
+    "isin": "IE00B4ND3602",
+    "asset_class": "gold",
+    "underlying": "Physically allocated gold bullion bars held in custody at JPMorgan",
+    "benchmark_index": "LBMA Gold Price PM (USD)",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Pure gold price exposure via physical backing; inflation and tail-risk hedge, uncorrelated to equities",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602"
+    ]
+  },
+  {
+    "id": "IE00B4X9L533",
+    "isin": "IE00B4X9L533",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (~1,280 large/mid-cap stocks, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 68,
+      "Japan": 6,
+      "United Kingdom": 3,
+      "Canada": 3,
+      "Switzerland": 3,
+      "France": 2,
+      "Germany": 2,
+      "Australia": 2,
+      "Netherlands": 1,
+      "Other": 10
+    },
+    "sectors": {
+      "Technology": 28,
+      "Financials": 14,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "HSBC physical MSCI World; quarterly distributing; optimised sampling; no emerging market exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/uk/etf-profile.html?isin=IE00B4X9L533"
+    ]
+  },
+  {
+    "id": "IE00B52VJ196",
+    "isin": "IE00B52VJ196",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap European equities screened for ESG criteria with reduced fossil-fuel exposure (~128 stocks)",
+    "benchmark_index": "MSCI Europe SRI Select Reduced Fossil Fuels Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 20,
+      "Switzerland": 17,
+      "Netherlands": 13,
+      "United Kingdom": 11,
+      "Germany": 8,
+      "Denmark": 7,
+      "Sweden": 6,
+      "Spain": 4,
+      "Other": 14
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 19,
+      "Technology": 11,
+      "Consumer Staples": 9,
+      "Health Care": 9,
+      "Consumer Discretionary": 8,
+      "Utilities": 6,
+      "Basic Materials": 5,
+      "Energy": 3,
+      "Communication Services": 3,
+      "Real Estate": 4
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "SRI-screened European equity exposure (IESG) with fossil-fuel exclusions; higher active share vs plain MSCI Europe",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B52VJ196"
+    ]
+  },
+  {
+    "id": "IE00B53SZB19",
+    "isin": "IE00B53SZB19",
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 index (100 largest non-financial Nasdaq-listed companies)",
+    "benchmark_index": "Nasdaq-100",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 92,
+      "Other": 8
+    },
+    "sectors": {
+      "Information Technology": 51,
+      "Communication Services": 15,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 8,
+      "Health Care": 4,
+      "Industrials": 4,
+      "Other": 6
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Accumulating Nasdaq-100 (CSNDX); broadly equivalent to EQQQ but reinvests dividends",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/ch/individual/en/products/253741/ishares-nasdaq-100-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00B579F325",
+    "isin": "IE00B579F325",
+    "asset_class": "gold",
+    "underlying": "Physical gold bullion (allocated bars, J.P. Morgan vaults, London)",
+    "benchmark_index": "LBMA Gold Price (USD)",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Low-cost physical gold ETC; allocated gold in JP Morgan London vaults; safe-haven / inflation hedge / USD hedge role",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B579F325_factsheet_en.pdf"
+    ]
+  },
+  {
+    "id": "IE00B5BMR087",
+    "isin": "IE00B5BMR087",
+    "asset_class": "equity",
+    "underlying": "500 largest US listed companies",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 97,
+      "Ireland": 1,
+      "Other": 2
+    },
+    "sectors": {
+      "Technology": 38,
+      "Communication Services": 11,
+      "Financials": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Real Estate": 2,
+      "Utilities": 2,
+      "Basic Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Flagship physical US large-cap core ETF (CSPX); USD denominated accumulating; one of the largest UCITS ETFs globally",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund"
+    ]
+  },
+  {
+    "id": "IE00B6R52259",
+    "isin": "IE00B6R52259",
+    "asset_class": "equity",
+    "underlying": "MSCI ACWI Index (~2,400 large/mid-cap stocks, 23 developed + 24 emerging markets)",
+    "benchmark_index": "MSCI All Country World Index (ACWI)",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 60,
+      "Japan": 5,
+      "Taiwan": 3,
+      "United Kingdom": 3,
+      "China": 3,
+      "Canada": 3,
+      "India": 2,
+      "France": 2,
+      "Germany": 2,
+      "Other": 17
+    },
+    "sectors": {
+      "Technology": 29,
+      "Financials": 15,
+      "Industrials": 10,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "iShares MSCI ACWI physical ETF (ISAC); largest in its category; includes ~10% emerging markets",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B6R52259"
+    ]
+  },
+  {
+    "id": "IE00B6YX5C33",
+    "isin": "IE00B6YX5C33",
+    "asset_class": "equity",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 95,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 37,
+      "Financials": 12,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Health Care": 9,
+      "Industrials": 9,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "SPDR physical S&P 500 UCITS ETF distributing (SPY5); TER 0.03%, quarterly dividends",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/uk/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-dist-spy5-gy"
+    ]
+  },
+  {
+    "id": "IE00B8GKDB10",
+    "isin": "IE00B8GKDB10",
+    "asset_class": "equity",
+    "underlying": "FTSE All-World High Dividend Yield Index (~2,300 developed+EM high-yield stocks)",
+    "benchmark_index": "FTSE All-World High Dividend Yield",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 37,
+      "Japan": 9,
+      "United Kingdom": 6,
+      "Canada": 4,
+      "Other": 44
+    },
+    "sectors": {
+      "Financials": 27,
+      "Industrials": 11,
+      "Health Care": 10,
+      "Energy": 9,
+      "Other": 43
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Global high-dividend equity (VHYL); income-oriented value tilt; overweights financials, energy, health care vs cap-weighted indices",
+    "confidence": "high",
+    "sources": [
+      "https://www.nl.vanguard/professional/product/etf/equity/9506/ftse-all-world-high-dividend-yield-ucits-etf-usd-distributing"
+    ]
+  },
+  {
+    "id": "IE00B945VV12",
+    "isin": "IE00B945VV12",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities in developed European markets",
+    "benchmark_index": "FTSE Developed Europe",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 20,
+      "Germany": 13,
+      "France": 13,
+      "Switzerland": 12,
+      "Netherlands": 7,
+      "Sweden": 5,
+      "Denmark": 4,
+      "Spain": 4,
+      "Italy": 4,
+      "Other": 18
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 18,
+      "Health Care": 14,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 9,
+      "Technology": 8,
+      "Energy": 5,
+      "Basic Materials": 4,
+      "Utilities": 4,
+      "Communication Services": 3,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Broad developed Europe equity exposure (VEUR), low TER, quarterly distributions; core European equity building block",
+    "confidence": "high",
+    "sources": [
+      "https://www.nl.vanguard/professional/product/etf/equity/9520/ftse-developed-europe-ucits-etf-eur-distributing"
+    ]
+  },
+  {
+    "id": "IE00BDBRDM35",
+    "isin": "IE00BDBRDM35",
+    "asset_class": "aggregate-bond",
+    "underlying": "Bloomberg Global Aggregate Bond Index (EUR Hedged); govt ~65%, corp ~23%, securitized ~10%",
+    "benchmark_index": "Bloomberg Global Aggregate Bond (EUR Hedged)",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 38,
+      "Europe": 34,
+      "Asia": 25,
+      "Oceania": 2,
+      "Other": 1
+    },
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Broad investment-grade global bonds EUR-hedged (AGGH); diversified rate/credit exposure across developed and EM issuers",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00BF4RFH31",
+    "isin": "IE00BF4RFH31",
+    "asset_class": "equity",
+    "underlying": "MSCI World Small Cap Index (small cap, 23 developed markets)",
+    "benchmark_index": "MSCI World Small Cap Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 52,
+      "Japan": 12,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "Other": 29
+    },
+    "sectors": {
+      "Industrials": 20,
+      "Financials": 14,
+      "Information Technology": 11,
+      "Consumer Discretionary": 12,
+      "Real Estate": 8,
+      "Consumer Staples": 6,
+      "Materials": 7,
+      "Health Care": 8,
+      "Energy": 5,
+      "Communication Services": 5,
+      "Utilities": 4
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Small-cap sleeve of developed markets (WSML); Industrials-heavy; complements MSCI World for full-market coverage",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/lu/individual/products/296576/ishares-msci-world-small-cap-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00BFMXXD54",
+    "isin": "IE00BFMXXD54",
+    "asset_class": "equity",
+    "underlying": "S&P 500 (500 largest US equities by market cap)",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 95,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 36,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Financials": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2,
+      "Other": 3
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Vanguard physical S&P 500 UCITS ETF accumulating (VUAA); same index as VUSA, dividends reinvested",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9694/sp-500-ucits-etf-usd-accumulating"
+    ]
+  },
+  {
+    "id": "IE00BFY0GT14",
+    "isin": "IE00BFY0GT14",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (~1,300 large/mid-cap stocks, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 68,
+      "Japan": 6,
+      "United Kingdom": 3,
+      "Canada": 3,
+      "Switzerland": 3,
+      "France": 2,
+      "Germany": 2,
+      "Australia": 2,
+      "Netherlands": 1,
+      "Other": 10
+    },
+    "sectors": {
+      "Technology": 28,
+      "Financials": 14,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "State Street SPDR physical MSCI World; optimised sampling; no emerging market exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/it/en_gb/intermediary/etfs/state-street-spdr-msci-world-ucits-etf-sppw-gy"
+    ]
+  },
+  {
+    "id": "IE00BGSF1X88",
+    "isin": "IE00BGSF1X88",
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 0-1 year maturity",
+    "benchmark_index": "IDC US Treasury Short Term Index (0-1 year)",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Ultra-short US Treasuries (IB01, 0-1yr); near-zero duration, cash-like liquidity buffer; benefits from high short-term rates",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/307243/"
+    ]
+  },
+  {
+    "id": "IE00BGV5VN51",
+    "isin": "IE00BGV5VN51",
+    "asset_class": "equity",
+    "underlying": "Global companies in AI, big data, and cybersecurity",
+    "benchmark_index": "Nasdaq Global Artificial Intelligence and Big Data Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 73,
+      "South Korea": 13,
+      "Germany": 2,
+      "China": 2,
+      "Other": 10
+    },
+    "sectors": {
+      "Information Technology": 69,
+      "Communication Services": 14,
+      "Financials": 5,
+      "Consumer Discretionary": 5,
+      "Other": 7
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Global thematic ETF covering AI/big data/cybersecurity (XAIX); notable South Korea tilt via Samsung, SK Hynix",
+    "confidence": "high",
+    "sources": [
+      "https://etf.dws.com/en-lu/IE00BGV5VN51-artificial-intelligence-big-data-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "IE00BJ0KDQ92",
+    "isin": "IE00BJ0KDQ92",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (~1,400 large/mid-cap stocks, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 68,
+      "Japan": 6,
+      "United Kingdom": 3,
+      "Canada": 3,
+      "Switzerland": 3,
+      "France": 2,
+      "Germany": 2,
+      "Australia": 2,
+      "Netherlands": 1,
+      "Other": 10
+    },
+    "sectors": {
+      "Technology": 30,
+      "Financials": 14,
+      "Industrials": 10,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Large, liquid MSCI World physical ETF (Xtrackers); optimised sampling; no emerging market exposure",
+    "confidence": "high",
+    "sources": [
+      "https://etf.dws.com/en-gb/IE00BJ0KDQ92-msci-world-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "IE00BJRCLL96",
+    "isin": "IE00BJRCLL96",
+    "asset_class": "equity",
+    "underlying": "Developed-world large/mid-cap stocks selected via value, momentum, low-volatility, and size factors with equal regional risk allocation",
+    "benchmark_index": "JP Morgan Diversified Factor Global Developed (Region Aware) Equity Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 55,
+      "Japan": 6,
+      "UK": 4,
+      "Canada": 11,
+      "Europe ex-UK": 15,
+      "Other": 9
+    },
+    "sectors": {
+      "Health Care": 12,
+      "Financials": 11,
+      "Industrials": 10,
+      "Technology": 10,
+      "Utilities": 9,
+      "Consumer Staples": 8,
+      "Energy": 8,
+      "Materials": 8,
+      "Consumer Discretionary": 8,
+      "Real Estate": 8,
+      "Communication Services": 6
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Multi-factor (value+momentum+low-vol+size) with explicit regional diversification (JPGL); lower US bias, more balanced sectors",
+    "confidence": "high",
+    "sources": [
+      "https://am.jpmorgan.com/gb/en/asset-management/adv/products/jpm-global-equity-multi-factor-ucits-etf-usd-acc-ie00bjrcll96"
+    ]
+  },
+  {
+    "id": "IE00BK5BQT80",
+    "isin": "IE00BK5BQT80",
+    "asset_class": "equity",
+    "underlying": "FTSE All-World Index (~3,700 large/mid-cap stocks, developed + emerging markets)",
+    "benchmark_index": "FTSE All-World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 57,
+      "Japan": 6,
+      "Taiwan": 3,
+      "United Kingdom": 3,
+      "China": 3,
+      "Canada": 3,
+      "India": 2,
+      "France": 2,
+      "Germany": 2,
+      "Other": 19
+    },
+    "sectors": {
+      "Technology": 29,
+      "Financials": 16,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Broadest global equity coverage (dev+EM ~10%) VWRA; optimised sampling physical; USD share class; low TER",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80"
+    ]
+  },
+  {
+    "id": "IE00BK5BQV03",
+    "isin": "IE00BK5BQV03",
+    "asset_class": "equity",
+    "underlying": "FTSE Developed Index (large & mid cap, developed markets only)",
+    "benchmark_index": "FTSE Developed Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 69,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "South Korea": 3,
+      "Other": 15
+    },
+    "sectors": {
+      "Information Technology": 28,
+      "Financials": 14,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Health Care": 9,
+      "Communication Services": 8,
+      "Consumer Staples": 5,
+      "Materials": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 3,
+      "Other": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Accumulating Vanguard FTSE Developed World (VHVE); identical exposure to VEVE",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9675/ftse-developed-world-ucits-etf-usd-accumulating"
+    ]
+  },
+  {
+    "id": "IE00BK5BR733",
+    "isin": "IE00BK5BR733",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities in emerging market countries (~2,300 stocks, FTSE Emerging universe)",
+    "benchmark_index": "FTSE Emerging",
+    "strategy": "physical-replication",
+    "geography": {
+      "Taiwan": 28,
+      "China": 26,
+      "India": 14,
+      "Brazil": 4,
+      "Saudi Arabia": 4,
+      "South Africa": 3,
+      "Mexico": 2,
+      "Indonesia": 2,
+      "Thailand": 2,
+      "Other": 15
+    },
+    "sectors": {
+      "Technology": 28,
+      "Financials": 19,
+      "Consumer Discretionary": 10,
+      "Basic Materials": 7,
+      "Industrials": 7,
+      "Communication Services": 6,
+      "Consumer Staples": 6,
+      "Energy": 5,
+      "Health Care": 5,
+      "Utilities": 3,
+      "Real Estate": 4
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Accumulating FTSE Emerging (VFEA); same index and physical replication as VFEM",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9527/ftse-emerging-markets-ucits-etf-usd-accumulating"
+    ]
+  },
+  {
+    "id": "IE00BKM4GZ66",
+    "isin": "IE00BKM4GZ66",
+    "asset_class": "equity",
+    "underlying": "Large-, mid- and small-cap equities in 24 emerging market countries (~3,000 stocks, IMI universe)",
+    "benchmark_index": "MSCI Emerging Markets Investable Market Index (IMI)",
+    "strategy": "physical-replication",
+    "geography": {
+      "Taiwan": 24,
+      "China": 19,
+      "South Korea": 18,
+      "India": 11,
+      "Brazil": 4,
+      "Saudi Arabia": 4,
+      "South Africa": 3,
+      "Mexico": 2,
+      "Indonesia": 2,
+      "Other": 13
+    },
+    "sectors": {
+      "Technology": 35,
+      "Financials": 17,
+      "Consumer Discretionary": 9,
+      "Industrials": 7,
+      "Communication Services": 6,
+      "Basic Materials": 6,
+      "Consumer Staples": 6,
+      "Health Care": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 3
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Broadest EM equity coverage including small caps (EIMI, IMI); one of the largest EM ETFs in Europe",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/264659/"
+    ]
+  },
+  {
+    "id": "IE00BKX55T58",
+    "isin": "IE00BKX55T58",
+    "asset_class": "equity",
+    "underlying": "FTSE Developed Index (large & mid cap, developed markets only)",
+    "benchmark_index": "FTSE Developed Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 69,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "South Korea": 3,
+      "Other": 15
+    },
+    "sectors": {
+      "Information Technology": 28,
+      "Financials": 14,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Health Care": 9,
+      "Communication Services": 8,
+      "Consumer Staples": 5,
+      "Materials": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 3,
+      "Other": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Distributing Vanguard FTSE Developed World (VEVE); no emerging markets; quarterly dividends",
+    "confidence": "high",
+    "sources": [
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9675/ftse-developed-world-ucits-etf-usd-accumulating"
+    ]
+  },
+  {
+    "id": "IE00BMC38736",
+    "isin": "IE00BMC38736",
+    "asset_class": "equity",
+    "underlying": "US-listed semiconductor companies (worldwide HQ)",
+    "benchmark_index": "MarketVector US Listed Semiconductor 10% Capped Screened Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 84,
+      "Netherlands": 8,
+      "Taiwan": 8
+    },
+    "sectors": {
+      "Information Technology": 100
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Concentrated semiconductor thematic ETF (SMH); ~84% US-listed; meaningful TSMC and ASML exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.vaneck.com/es/en/semiconductor-etf/"
+    ]
+  },
+  {
+    "id": "IE00BMVB5P51",
+    "isin": "IE00BMVB5P51",
+    "asset_class": "multi-asset",
+    "underlying": "60% global equity (dev + EM) + 40% global bonds EUR-hedged, via Vanguard index funds",
+    "benchmark_index": null,
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 34,
+      "Japan": 4,
+      "United Kingdom": 3,
+      "China": 2,
+      "Europe ex-UK": 15,
+      "Other": 42
+    },
+    "sectors": {
+      "Technology": 12,
+      "Financials": 9,
+      "Health Care": 8,
+      "Consumer Discretionary": 6,
+      "Industrials": 6,
+      "Communication Services": 5,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Other": 51
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Balanced moderate allocation (V60A, 60/40 eq/bond); bond sleeve EUR-hedged; lower volatility than 80/20 sibling",
+    "confidence": "high",
+    "sources": [
+      "https://fund-docs.vanguard.com/LifeStrategy_60_Equity_UCITS_ETF_EUR_Accumulating_9494_EU_INT_EN.pdf"
+    ]
+  },
+  {
+    "id": "IE00BMVB5R75",
+    "isin": "IE00BMVB5R75",
+    "asset_class": "multi-asset",
+    "underlying": "80% global equity (dev + EM) + 20% global bonds EUR-hedged, via Vanguard index funds",
+    "benchmark_index": null,
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 45,
+      "Japan": 5,
+      "United Kingdom": 3,
+      "China": 3,
+      "Europe ex-UK": 20,
+      "Other": 24
+    },
+    "sectors": {
+      "Technology": 16,
+      "Financials": 11,
+      "Health Care": 10,
+      "Consumer Discretionary": 8,
+      "Industrials": 8,
+      "Communication Services": 7,
+      "Consumer Staples": 6,
+      "Energy": 4,
+      "Other": 30
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Balanced growth allocation (V80A, 80/20 eq/bond); bond sleeve EUR-hedged; one-ticket diversified portfolio",
+    "confidence": "high",
+    "sources": [
+      "https://fund-docs.vanguard.com/LifeStrategy_80_Equity_UCITS_ETF_EUR_Accumulating_9496_EU_INT_EN.pdf"
+    ]
+  },
+  {
+    "id": "IE00BP3QZ601",
+    "isin": "IE00BP3QZ601",
+    "asset_class": "equity",
+    "underlying": "Developed-world stocks scoring high on ROE, low leverage, and earnings stability, sector-neutral",
+    "benchmark_index": "MSCI World Sector Neutral Quality Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 67,
+      "Europe ex-UK": 15,
+      "UK": 3,
+      "Japan": 3,
+      "Asia Pacific ex-Japan": 2,
+      "Other": 10
+    },
+    "sectors": {
+      "Technology": 32,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Financials": 11,
+      "Health Care": 8,
+      "Other": 20
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Quality factor tilt on MSCI World (IWQU); defensive-growth characteristics, tends to hold up in late-cycle and mild drawdowns",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/270054/ishares-msci-world-quality-factor-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00BP3QZ825",
+    "isin": "IE00BP3QZ825",
+    "asset_class": "equity",
+    "underlying": "Large/mid-cap developed-world stocks with high 6- and 12-month price momentum",
+    "benchmark_index": "MSCI World Momentum Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 53,
+      "Europe ex-UK": 20,
+      "UK": 5,
+      "Japan": 12,
+      "Asia Pacific ex-Japan": 5,
+      "Other": 5
+    },
+    "sectors": {
+      "Technology": 30,
+      "Industrials": 21,
+      "Financials": 20,
+      "Health Care": 7,
+      "Communication Services": 7,
+      "Energy": 6,
+      "Other": 9
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Pure price-momentum factor tilt on MSCI World (IWMO); outperforms in trending bull markets, vulnerable to sharp reversals",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/lu/intermediaries/products/270051/ishares-msci-world-momentum-factor-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE00BP3QZB59",
+    "isin": "IE00BP3QZB59",
+    "asset_class": "equity",
+    "underlying": "Value-style large- and mid-cap equities across developed markets, selected on price-to-book, price-to-forward earnings, and EV/cash flow",
+    "benchmark_index": "MSCI World Enhanced Value Index (Net TR)",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 44,
+      "Japan": 20,
+      "UK": 8,
+      "France": 6,
+      "Other developed": 22
+    },
+    "sectors": {
+      "Technology": 34,
+      "Financials": 14,
+      "Industrials": 11,
+      "Health Care": 8,
+      "Consumer Discretionary": 8,
+      "Communication Services": 8,
+      "Consumer Staples": 4,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Value-factor tilt on global developed equities; overweights Japan and Europe vs standard MSCI World; tends to outperform in rising-rate and value-rotation regimes",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BP3QZB59"
+    ]
+  },
+  {
+    "id": "IE00BSKRJZ44",
+    "isin": "IE00BSKRJZ44",
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 20+ years to maturity",
+    "benchmark_index": "ICE US Treasury 20+ Year Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Long-duration US Treasuries (IDTL, 20+yr); high interest-rate sensitivity (~17yr duration); deflation/recession hedge and rate-cut beneficiary",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/284433/"
+    ]
+  },
+  {
+    "id": "IE00BSPLC298",
+    "isin": "IE00BSPLC298",
+    "asset_class": "equity",
+    "underlying": "MSCI Europe Small Cap Value Weighted Index",
+    "benchmark_index": "MSCI Europe Small Cap Value Weighted",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 23,
+      "France": 11,
+      "Germany": 10,
+      "Sweden": 7,
+      "Other": 49
+    },
+    "sectors": {
+      "Industrials": 25,
+      "Consumer Discretionary": 15,
+      "Financials": 15,
+      "Materials": 11,
+      "Real Estate": 8,
+      "Communication Services": 6,
+      "Energy": 5,
+      "Health Care": 4,
+      "Information Technology": 4,
+      "Consumer Staples": 4,
+      "Utilities": 3
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "European small-cap value via fundamental weighting (ZPRX); industrials and materials heavy; captures European value premium",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-europe-small-cap-value-weighted-ucits-etf-zprx-gy"
+    ]
+  },
+  {
+    "id": "IE00BSPLC413",
+    "isin": "IE00BSPLC413",
+    "asset_class": "equity",
+    "underlying": "MSCI USA Small Cap Value Weighted Index",
+    "benchmark_index": "MSCI USA Small Cap Value Weighted",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 99,
+      "Other": 1
+    },
+    "sectors": {
+      "Financials": 23,
+      "Consumer Discretionary": 16,
+      "Industrials": 16,
+      "Health Care": 8,
+      "Information Technology": 8,
+      "Energy": 7,
+      "Consumer Staples": 6,
+      "Real Estate": 6,
+      "Materials": 5,
+      "Communication Services": 3,
+      "Utilities": 3
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "US small-cap equities tilted toward value via fundamental weighting (USSC/ZPRV); enhances small-cap value premium",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy"
+    ]
+  },
+  {
+    "id": "IE00BTJRMP35",
+    "isin": "IE00BTJRMP35",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities in 24 emerging market countries (~1,200 stocks, optimized sampling of MSCI EM universe)",
+    "benchmark_index": "MSCI Emerging Markets",
+    "strategy": "physical-replication",
+    "geography": {
+      "Taiwan": 24,
+      "South Korea": 20,
+      "China": 20,
+      "India": 10,
+      "Brazil": 4,
+      "Saudi Arabia": 4,
+      "South Africa": 3,
+      "Mexico": 2,
+      "Indonesia": 2,
+      "Other": 11
+    },
+    "sectors": {
+      "Technology": 39,
+      "Financials": 17,
+      "Consumer Discretionary": 9,
+      "Communication Services": 6,
+      "Industrials": 6,
+      "Basic Materials": 5,
+      "Consumer Staples": 5,
+      "Health Care": 4,
+      "Energy": 4,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Optimized physical MSCI EM replication (XMME); higher tech weight due to large-/mid-cap-only scope",
+    "confidence": "high",
+    "sources": [
+      "https://etf.dws.com/en-gb/IE00BTJRMP35-msci-emerging-markets-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "IVV",
+    "isin": "US4642872000",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Index — ~503 large-cap US stocks",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Information Technology": 33,
+      "Financials": 12,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 10,
+      "Industrials": 9,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "iShares equivalent of VOO; higher AUM liquidity and ETF options market depth; same S&P 500 beta",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/us/individual/products/239726/ishares-core-sp-500-etf"
+    ]
+  },
+  {
+    "id": "JE00B1VS3770",
+    "isin": "JE00B1VS3770",
+    "asset_class": "gold",
+    "underlying": "Physical gold (LBMA Gold Price PM, USD/troy oz)",
+    "benchmark_index": "LBMA Gold Price (USD)",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Physically backed gold ETC (PHAU, Jersey-domiciled, HSBC custodian); inflation hedge, tail-risk and USD weakness diversifier",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.eu/en-gb/products/physical-precious-metals/wisdomtree-physical-gold"
+    ]
+  },
+  {
+    "id": "KMLM",
+    "isin": "US5007676522",
+    "asset_class": "managed-futures",
+    "underlying": "22 liquid futures contracts — 11 commodities, 6 currencies, 5 global bond futures",
+    "benchmark_index": "KFA MLM Index",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Rules-based trend-following across commodities, currencies and rates; historically uncorrelated to equities; crisis-alpha potential",
+    "confidence": "high",
+    "sources": [
+      "https://kraneshares.com/kmlm/"
+    ]
+  },
+  {
+    "id": "LU0131510165",
+    "isin": "LU0131510165",
+    "asset_class": "equity",
+    "underlying": "French small- and mid-cap listed companies selected by Quality Value methodology",
+    "benchmark_index": "CAC Mid & Small NR",
+    "strategy": "active",
+    "geography": {
+      "France": 100
+    },
+    "sectors": {
+      "Industrials": 36,
+      "Financials": 15,
+      "Technology": 12,
+      "Energy": 9,
+      "Consumer Discretionary": 8,
+      "Basic Materials": 8,
+      "Communication Services": 7,
+      "Consumer Staples": 3,
+      "Other": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active French small/mid-cap value fund since 1993; Quality Value stock-picking; PEA/assurance-vie eligible; strong long-term track record",
+    "confidence": "high",
+    "sources": [
+      "https://www.independance-am.com/en/our-funds/france-small/"
+    ]
+  },
+  {
+    "id": "LU0171307068",
+    "isin": "LU0171307068",
+    "asset_class": "equity",
+    "underlying": "Global healthcare equities (>=70% in healthcare, pharma, medtech, biotech; 70-120 holdings)",
+    "benchmark_index": "MSCI World Health Care Index",
+    "strategy": "active",
+    "geography": {
+      "US": 67,
+      "Europe": 20,
+      "Japan": 5,
+      "Other": 8
+    },
+    "sectors": {
+      "Health Care": 100
+    },
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Actively managed global healthcare equity fund; defensive growth characteristics; benefits from ageing demographics and innovation cycles",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/lu/intermediaries/products/229337/blackrock-world-healthscience-a2-eur-fund"
+    ]
+  },
+  {
+    "id": "LU0171310443",
+    "isin": "LU0171310443",
+    "asset_class": "equity",
+    "underlying": "Global technology equities (>=70% in technology sector, large-cap bias; top holdings: NVIDIA, Broadcom, Microsoft, Apple, Meta)",
+    "benchmark_index": "MSCI All Country World Information Technology Net Return Index",
+    "strategy": "active",
+    "geography": {
+      "US": 78,
+      "Europe": 7,
+      "Asia Pacific": 10,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 100
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Actively managed global tech equity fund; outperforms in secular tech bull markets; concentrated semiconductor and software exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.blackrock.com/lu/individual/literature/fact-sheet/bgf-world-technology-fund-class-a2-eur-factsheet-lu0171310443-lu-en-individual.pdf"
+    ]
+  },
+  {
+    "id": "LU0274211480",
+    "isin": "LU0274211480",
+    "asset_class": "equity",
+    "underlying": "40 largest and most liquid German blue-chip stocks listed on the Frankfurt Stock Exchange",
+    "benchmark_index": "DAX",
+    "strategy": "physical-replication",
+    "geography": {
+      "Germany": 93,
+      "Netherlands": 6,
+      "Other": 1
+    },
+    "sectors": {
+      "Industrials": 35,
+      "Financials": 21,
+      "Technology": 13,
+      "Consumer Discretionary": 7,
+      "Health Care": 7,
+      "Basic Materials": 5,
+      "Consumer Staples": 4,
+      "Utilities": 3,
+      "Energy": 2,
+      "Communication Services": 2,
+      "Real Estate": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Lowest-TER DAX ETF (DBXD), Luxembourg-domiciled accumulating share class",
+    "confidence": "high",
+    "sources": [
+      "https://www.xtrackers.com/en/products/etf/equity/lu0274211480"
+    ]
+  },
+  {
+    "id": "LU0280435461",
+    "isin": "LU0280435461",
+    "asset_class": "equity",
+    "underlying": "Global clean energy transition equities (renewables, energy efficiency, smart grid, electrification; ~98% equities)",
+    "benchmark_index": "MSCI AC World Index (NR USD) — reference only, not tracked",
+    "strategy": "active",
+    "geography": {
+      "North America": 55,
+      "Europe": 41,
+      "South & Central America": 2,
+      "Other": 2
+    },
+    "sectors": {
+      "Technology": 42,
+      "Industrials": 22,
+      "Utilities": 17,
+      "Energy": 11,
+      "Basic Materials": 5,
+      "Other": 3
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Thematic active equity fund on energy transition; benefits from decarbonisation capex cycle; concentrated semiconductors + clean infra exposure",
+    "confidence": "high",
+    "sources": [
+      "https://www.finect.com/fondos-inversion/LU0280435461-Pictetclean_energy_r_eur"
+    ]
+  },
+  {
+    "id": "LU0290358497",
+    "isin": "LU0290358497",
+    "asset_class": "money-market",
+    "underlying": "Synthetic exposure to the euro short-term rate (ESTR) plus a small spread via unfunded swap",
+    "benchmark_index": "Solactive ESTR +8.5bps Daily Index",
+    "strategy": "synthetic-swap",
+    "geography": null,
+    "sectors": null,
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR cash-equivalent (XEON); tracks overnight ESTR rate — used as a liquidity sleeve or short-term cash parking vehicle",
+    "confidence": "high",
+    "sources": [
+      "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "LU0319687124",
+    "isin": "LU0319687124",
+    "asset_class": "long-volatility",
+    "underlying": "Exchange-traded options and variance swaps on equity indices of the US, Eurozone and Asia (approx 1-year maturity), actively managed long/short volatility exposure with cash in money-market instruments",
+    "benchmark_index": "active (SOFR +3%/yr target)",
+    "strategy": "long-volatility",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active long-volatility absolute-return fund; diversifies against equity tail risk and benefits from volatility spikes",
+    "confidence": "medium",
+    "sources": [
+      "https://www.amundi.com/globaldistributor/product/view/LU0319687124"
+    ]
+  },
+  {
+    "id": "LU0328475792",
+    "isin": "LU0328475792",
+    "asset_class": "equity",
+    "underlying": "600 largest European listed companies",
+    "benchmark_index": "STOXX Europe 600",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 20,
+      "Germany": 13,
+      "France": 13,
+      "Switzerland": 12,
+      "Sweden": 5,
+      "Netherlands": 4,
+      "Spain": 4,
+      "Italy": 3,
+      "Other": 26
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 18,
+      "Health Care": 8,
+      "Information Technology": 9,
+      "Consumer Staples": 8,
+      "Consumer Discretionary": 7,
+      "Energy": 5,
+      "Utilities": 4,
+      "Materials": 4,
+      "Real Estate": 2,
+      "Communication Services": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Xtrackers physically replicated STOXX 600 ETF (XSX6)",
+    "confidence": "high",
+    "sources": [
+      "https://etf.dws.com/en-gb/LU0328475792-stoxx-europe-600-ucits-etf-1c/"
+    ]
+  },
+  {
+    "id": "LU0496786574",
+    "isin": "LU0496786574",
+    "asset_class": "equity",
+    "underlying": "S&P 500 index (500 largest US companies)",
+    "benchmark_index": "S&P 500",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Information Technology": 36,
+      "Financials": 12,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Low-cost swap-based core US large-cap equity exposure (LYPS); distributes dividends annually",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/individual/products/equity/amundi-core-sp-500-swap-ucits-etf-eur-dist/lu0496786574"
+    ]
+  },
+  {
+    "id": "LU0908500753",
+    "isin": "LU0908500753",
+    "asset_class": "equity",
+    "underlying": "600 largest European listed companies",
+    "benchmark_index": "STOXX Europe 600",
+    "strategy": "physical-replication",
+    "geography": {
+      "United Kingdom": 20,
+      "Germany": 13,
+      "France": 13,
+      "Switzerland": 12,
+      "Sweden": 5,
+      "Netherlands": 4,
+      "Spain": 4,
+      "Italy": 3,
+      "Other": 26
+    },
+    "sectors": {
+      "Financials": 23,
+      "Industrials": 19,
+      "Health Care": 8,
+      "Information Technology": 8,
+      "Consumer Staples": 8,
+      "Consumer Discretionary": 7,
+      "Energy": 5,
+      "Utilities": 4,
+      "Materials": 4,
+      "Real Estate": 2,
+      "Communication Services": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Low-cost EUR-accumulating pan-European core holding (MEUD); full physical replication of STOXX 600",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/individual/products/equity/amundi-core-stoxx-europe-600-ucits-etf-acc/lu0908500753"
+    ]
+  },
+  {
+    "id": "LU1681038243",
+    "isin": "LU1681038243",
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 index (100 largest non-financial Nasdaq-listed companies)",
+    "benchmark_index": "Nasdaq-100",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 92,
+      "Other": 8
+    },
+    "sectors": {
+      "Information Technology": 51,
+      "Communication Services": 15,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 8,
+      "Health Care": 4,
+      "Industrials": 4,
+      "Other": 6
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-denominated synthetic Nasdaq-100 tracker (ANX); swap-based",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/individual/products/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243"
+    ]
+  },
+  {
+    "id": "LU1681043599",
+    "isin": "LU1681043599",
+    "asset_class": "equity",
+    "underlying": "~1,395 large and mid-cap stocks across 23 developed markets (via synthetic swap)",
+    "benchmark_index": "MSCI World",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 74,
+      "Japan": 5,
+      "United Kingdom": 3,
+      "Canada": 3,
+      "France": 3,
+      "Other Developed": 12
+    },
+    "sectors": {
+      "Information Technology": 31,
+      "Financials": 15,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Synthetic MSCI World tracker in EUR (CW8); swap counterparty BNP Paribas; popular PEA-eligible; broad developed-market core",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599"
+    ]
+  },
+  {
+    "id": "LU1681045370",
+    "isin": "LU1681045370",
+    "asset_class": "equity",
+    "underlying": "Large- and mid-cap equities in 24 emerging market countries (~1,400 stocks, MSCI EM universe), via unfunded swap",
+    "benchmark_index": "MSCI Emerging Markets",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "China": 28,
+      "Taiwan": 20,
+      "India": 14,
+      "South Korea": 11,
+      "Brazil": 5,
+      "Saudi Arabia": 4,
+      "South Africa": 3,
+      "Mexico": 2,
+      "Indonesia": 2,
+      "Other": 11
+    },
+    "sectors": {
+      "Technology": 24,
+      "Financials": 24,
+      "Consumer Discretionary": 10,
+      "Communication Services": 8,
+      "Industrials": 7,
+      "Basic Materials": 6,
+      "Consumer Staples": 6,
+      "Energy": 5,
+      "Health Care": 5,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Synthetic MSCI EM replication (AEEM) via BNP Paribas swap; EUR share class",
+    "confidence": "medium",
+    "sources": [
+      "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-emerging-markets-swap-ucits-etf-eur-acc/lu1681045370"
+    ]
+  },
+  {
+    "id": "LU1832174962",
+    "isin": "LU1832174962",
+    "asset_class": "equity",
+    "underlying": "European (ex-UK) small- and mid-cap listed companies selected by Quality Value methodology",
+    "benchmark_index": "STOXX Europe Small ex UK NR",
+    "strategy": "active",
+    "geography": {
+      "France": 22,
+      "Italy": 17,
+      "Spain": 11,
+      "Germany": 9,
+      "Netherlands": 8,
+      "Sweden": 7,
+      "Other Europe ex-UK": 26
+    },
+    "sectors": {
+      "Industrials": 57,
+      "Consumer Discretionary": 15,
+      "Materials": 7,
+      "Financials": 7,
+      "Technology": 6,
+      "Other": 8
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active European small/mid-cap value fund (ex-UK) since 2018; Quality Value ESG-integrated strategy; high industrials concentration",
+    "confidence": "high",
+    "sources": [
+      "https://www.independance-am.com/en/our-funds/europe-small/"
+    ]
+  },
+  {
+    "id": "LU2655993207",
+    "isin": "LU2655993207",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index (large & mid cap, 23 developed markets)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 74,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "France": 3,
+      "Switzerland": 3,
+      "Other": 7
+    },
+    "sectors": {
+      "Information Technology": 31,
+      "Financials": 15,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Synthetic (unfunded swap, BNP Paribas); EUR-denominated distributing MSCI World; Luxembourg domicile",
+    "confidence": "high",
+    "sources": [
+      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-dist/lu2655993207"
+    ]
+  },
+  {
+    "id": "LU2798962978",
+    "isin": "LU2798962978",
+    "asset_class": "equity",
+    "underlying": "European mid-cap equities (developed Europe ex UK, active quality-value stock-picking)",
+    "benchmark_index": "STOXX Europe ex UK Mid NR",
+    "strategy": "active",
+    "geography": {
+      "France": 25,
+      "Italy": 22,
+      "Spain": 15,
+      "Greece": 10,
+      "Netherlands": 8,
+      "Other Europe": 20
+    },
+    "sectors": {
+      "Industrials": 51,
+      "Energy": 14,
+      "Consumer Discretionary": 10,
+      "Financials": 9,
+      "Consumer Staples": 4,
+      "Technology": 4,
+      "Materials": 4,
+      "Communication Services": 2,
+      "Utilities": 1,
+      "Health Care": 1
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Active quality-value European mid-cap fund; PEA/AV eligible; relatively concentrated, high tracking error vs benchmark",
+    "confidence": "medium",
+    "sources": [
+      "https://www.independance-am.com/en/our-funds/independance-europe-mid/"
+    ]
+  },
+  {
+    "id": "NL0011683594",
+    "isin": "NL0011683594",
+    "asset_class": "equity",
+    "underlying": "Morningstar Developed Markets Large Cap Dividend Leaders Screened Select Index (~100 stocks)",
+    "benchmark_index": "Morningstar Developed Markets Large Cap Dividend Leaders Screened Select",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 24,
+      "France": 10,
+      "United Kingdom": 9,
+      "Germany": 7,
+      "Other": 50
+    },
+    "sectors": {
+      "Financials": 32,
+      "Energy": 20,
+      "Health Care": 9,
+      "Communication Services": 9,
+      "Consumer Staples": 10,
+      "Utilities": 6,
+      "Industrials": 4,
+      "Consumer Discretionary": 4,
+      "Materials": 1,
+      "Other": 5
+    },
+    "currency": "EUR",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Concentrated ~100-stock developed-market high-yield dividend portfolio (TDIV); strong value/income tilt; heavy financials and energy",
+    "confidence": "high",
+    "sources": [
+      "https://www.vaneck.com/nl/en/investments/dividend-etf/"
+    ]
+  },
+  {
+    "id": "NTSX-US",
+    "isin": "US97717X8488",
+    "asset_class": "multi-asset",
+    "underlying": "90% S&P 500 large-cap US equities + 10% cash collateral leveraging a 60% notional US Treasury futures ladder (2/5/10/30yr)",
+    "benchmark_index": "WisdomTree US Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Technology": 34,
+      "Financials": 12,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Consumer Staples": 6,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2,
+      "Other": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.5,
+    "notes": "US version of NTSX (US ticker); capital-efficient 90/60 US equity/Treasury overlay (~1.5x a 60/40); US-only",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx"
+    ]
+  },
+  {
+    "id": "PFOCX",
+    "isin": "US6933912601",
+    "asset_class": "corporate-bond",
+    "underlying": "Preferred and capital securities (banks/insurers), mostly USD investment-grade and high-yield hybrids",
+    "benchmark_index": "ICE BofA US All Capital Securities Index",
+    "strategy": "active",
+    "geography": {
+      "US": 70,
+      "Europe": 20,
+      "Other": 10
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Actively managed preferred/hybrid bank capital securities; high income; credit- and rate-sensitive",
+    "confidence": "medium",
+    "sources": [
+      "https://www.pimco.com/us/en/investments/mutual-fund/preferred-and-capital-securities-fund/c"
+    ]
+  },
+  {
+    "id": "SPEA",
+    "isin": "IE000DQLYVB9",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Index (500 largest US companies)",
+    "benchmark_index": "S&P 500 Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": {
+      "Information Technology": 33,
+      "Financials": 12,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 10,
+      "Industrials": 9,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on S&P 500; EUR share class; iShares; launched May 2025",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/ch/professionals/en/products/342916/ishares-s-p-500-swap-pea-ucits-etf"
+    ]
+  },
+  {
+    "id": "URTH",
+    "isin": "US4642863926",
+    "asset_class": "equity",
+    "underlying": "~1,322 large- and mid-cap stocks across 23 developed markets",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 72,
+      "Japan": 5,
+      "UK": 4,
+      "Canada": 3,
+      "France": 3,
+      "Other Developed": 13
+    },
+    "sectors": {
+      "Information Technology": 31,
+      "Financials": 15,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 2,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Developed-world equity exposure excluding emerging markets; US-heavy due to market cap weighting",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/us/products/239691/ishares-msci-world-etf"
+    ]
+  },
+  {
+    "id": "VBMFX",
+    "isin": null,
+    "asset_class": "aggregate-bond",
+    "underlying": "US investment-grade taxable bonds (government, corporate, MBS, ABS, maturity >1yr)",
+    "benchmark_index": "Bloomberg U.S. Aggregate Float Adjusted Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Core US bond market exposure; defensive ballast in risk-off regimes; pays monthly income distributions",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vbmfx"
+    ]
+  },
+  {
+    "id": "VOO",
+    "isin": "US9229083632",
+    "asset_class": "equity",
+    "underlying": "S&P 500 Index — 503 large-cap US stocks",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Information Technology": 33,
+      "Financials": 12,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Health Care": 10,
+      "Industrials": 9,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Utilities": 2,
+      "Real Estate": 2,
+      "Materials": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Core US large-cap equity exposure; low-cost beta building block; performs well in equity bull markets",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/voo"
+    ]
+  },
+  {
+    "id": "VT",
+    "isin": "US9220427424",
+    "asset_class": "equity",
+    "underlying": "~10,000 stocks across developed and emerging markets globally",
+    "benchmark_index": "FTSE Global All Cap Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "North America": 63,
+      "Europe": 15,
+      "Pacific": 11,
+      "Emerging Markets": 10,
+      "Other": 1
+    },
+    "sectors": {
+      "Information Technology": 25,
+      "Financials": 16,
+      "Industrials": 12,
+      "Health Care": 9,
+      "Consumer Discretionary": 9,
+      "Communication Services": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 4,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Single-fund global equity market exposure including emerging markets; true market-cap weighted world portfolio",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vt"
+    ]
+  },
+  {
+    "id": "WPEA",
+    "isin": "IE0002XZSHO1",
+    "asset_class": "equity",
+    "underlying": "MSCI World Index large/mid-cap developed markets (~1,500 stocks)",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "United States": 72,
+      "Japan": 6,
+      "United Kingdom": 4,
+      "Canada": 3,
+      "Switzerland": 3,
+      "France": 2,
+      "Germany": 2,
+      "Australia": 2,
+      "Netherlands": 2,
+      "Other": 4
+    },
+    "sectors": {
+      "Information Technology": 28,
+      "Financials": 16,
+      "Industrials": 11,
+      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Health Care": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Utilities": 3,
+      "Real Estate": 2
+    },
+    "currency": "EUR",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on MSCI World; EUR share class; iShares; launched March 2024",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0002XZSHO1"
+    ]
+  },
+  {
+    "id": "XAUUSD",
+    "isin": null,
+    "asset_class": "gold",
+    "underlying": "Physical gold spot price (XAU per USD troy ounce)",
+    "benchmark_index": null,
+    "strategy": "other",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "notes": "Safe-haven store of value; performs in inflation, USD weakness, and systemic-stress regimes",
+    "confidence": "high",
+    "sources": [
+      "https://www.gold.org/goldhub/data/gold-prices"
+    ]
+  },
+  {
+    "id": "XS3022291473",
+    "isin": "XS3022291473",
+    "asset_class": "broad-commodity",
+    "underlying": "BNP Paribas Enhanced Commodity Carry Excess Return index (BCOM ex-precious metals universe, long deferred / short front-month futures, 3x leveraged carry spread)",
+    "benchmark_index": "BNP Paribas Enhanced Commodity Carry Excess Return Index (BNPIF73P)",
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Harvests commodity carry factor via long-deferred/short-front-month futures spread; return uncorrelated to equity beta; benefits from backwardated commodity curves",
+    "confidence": "medium",
+    "sources": [
+      "https://www.wisdomtree.eu/en-gb/etps/unleveraged-etps/wisdomtree-enhanced-commodity-carry"
+    ]
+  },
+  {
+    "id": "ZROZ",
+    "isin": "US72201R8824",
+    "asset_class": "government-bond",
+    "underlying": "US Treasury STRIPS with 25+ years to maturity (~23 securities)",
+    "benchmark_index": "ICE BofA Long US Treasury Principal STRIPS Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "currency": "USD",
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Extreme long-duration zero-coupon Treasuries; highest interest-rate sensitivity; powerful deflation/recession hedge; very volatile",
+    "confidence": "high",
+    "sources": [
+      "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd"
+    ]
+  }
+]
