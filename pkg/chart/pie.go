@@ -22,10 +22,6 @@ type PieOptions struct {
 	Width int
 }
 
-// NeutralColor is the suggested fill for a catch-all "Other / N/A" wedge,
-// so callers can keep that slice visually distinct from the palette.
-const NeutralColor = "#cbcbcb"
-
 // Pie renders a donut chart with a title and a legend beneath it. Slices of
 // non-positive value are dropped; an empty result (no positive value) yields
 // an empty string so callers can omit the chart entirely.
@@ -34,15 +30,20 @@ func Pie(opt PieOptions, slices []Slice) string {
 	if w == 0 {
 		w = 300
 	}
+	// Keep positive slices and resolve each color once (palette in order).
 	total := 0.0
 	clean := make([]Slice, 0, len(slices))
 	for _, s := range slices {
-		if s.Value > 0 {
-			clean = append(clean, s)
-			total += s.Value
+		if s.Value <= 0 {
+			continue
 		}
+		if s.Color == "" {
+			s.Color = defaultPalette[len(clean)%len(defaultPalette)]
+		}
+		clean = append(clean, s)
+		total += s.Value
 	}
-	if total <= 0 || len(clean) == 0 {
+	if total <= 0 {
 		return ""
 	}
 
@@ -60,31 +61,22 @@ func Pie(opt PieOptions, slices []Slice) string {
 
 	// Wedges, clockwise from the top (−90°).
 	angle := -math.Pi / 2
-	for i, s := range clean {
+	for _, s := range clean {
 		frac := s.Value / total
 		if frac > 0.99999 { // a lone full slice still needs a hairline gap to render
 			frac = 0.99999
 		}
 		next := angle + frac*2*math.Pi
-		color := s.Color
-		if color == "" {
-			color = defaultPalette[i%len(defaultPalette)]
-		}
-		b.WriteString(donutPath(cx, cy, outerR, innerR, angle, next, color))
-		angle = angle + frac*2*math.Pi
+		b.WriteString(donutPath(cx, cy, outerR, innerR, angle, next, s.Color))
+		angle = next
 	}
 
 	// Legend: swatch + "Label 42%".
 	y := legendY
-	for i, s := range clean {
-		color := s.Color
-		if color == "" {
-			color = defaultPalette[i%len(defaultPalette)]
-		}
-		pct := 100 * s.Value / total
-		fmt.Fprintf(&b, `<rect x="6" y="%g" width="10" height="10" rx="2" fill="%s"/>`, y-9, color)
+	for _, s := range clean {
+		fmt.Fprintf(&b, `<rect x="6" y="%g" width="10" height="10" rx="2" fill="%s"/>`, y-9, s.Color)
 		fmt.Fprintf(&b, `<text x="22" y="%g" font-size="11" fill="#444">%s</text>`, y, esc(s.Label))
-		fmt.Fprintf(&b, `<text x="%g" y="%g" text-anchor="end" font-size="11" fill="#666" font-variant-numeric="tabular-nums">%s</text>`, float64(w)-6, y, esc(fmtPctSlice(pct)))
+		fmt.Fprintf(&b, `<text x="%g" y="%g" text-anchor="end" font-size="11" fill="#666" font-variant-numeric="tabular-nums">%s</text>`, float64(w)-6, y, esc(fmtPctSlice(100*s.Value/total)))
 		y += rowH
 	}
 	b.WriteString(`</svg>`)
