@@ -3,7 +3,6 @@ package marketdata
 import (
 	"bufio"
 	_ "embed"
-	"encoding/json"
 	"sort"
 	"strings"
 	"sync"
@@ -11,45 +10,17 @@ import (
 	"github.com/bpineau/portfodor/datasets"
 )
 
-// CatalogEntry pins the resolution of a well-known asset: how to fetch its
-// quotes without any network search, plus display metadata. Entries are
-// loaded from the embedded datasets/assetmeta/assets.json (the single source
-// of truth, which also carries each asset's descriptive metadata).
-type CatalogEntry struct {
-	ID       string   `json:"id"`      // canonical identifier (ticker or ISIN)
-	ISIN     string   `json:"isin"`    // informational; may be empty for indices/commodities
-	Aliases  []string `json:"aliases"` // alternative identifiers accepted in portfolio files
-	UCITS    bool     `json:"ucits"`   // UCITS funds/ETFs (ETCs, US funds, indices… are not)
-	Name     string   `json:"name"`
-	Source   string   `json:"source"`   // "yahoo", "ft", "morningstar" or "stooq"
-	Symbol   string   `json:"symbol"`   // yahoo/stooq symbol or Morningstar id; unused for ft
-	Xid      string   `json:"xid"`      // FT internal id; unused otherwise
-	Currency string   `json:"currency"` //
-	Fees     float64  `json:"fees"`     // published TER, percent per year; 0 = unknown
-}
-
-// catalog lists the assets bundled with portfodor, loaded once from the
+// catalog lists the assets bundled with portfodor, the typed view of the
 // embedded datasets/assetmeta/assets.json. The catalog IS the bundle:
 // everything here resolves deterministically (no search APIs), has its TER
 // pinned when published, and is fully cached by a single --warmup. Entries
 // are addressable by ID, ISIN, Aliases and the tickers of the embedded fund
 // list — but never by quote Symbol, which may collide (e.g. US-listed NTSX
 // vs the NTSX UCITS).
-var catalog = loadCatalog()
+var catalog = datasets.Catalog()
 
-// loadCatalog parses the embedded asset metadata into catalog entries. The
-// descriptive fields (asset_class, geography…) in the JSON are ignored here;
-// they are consumed by pkg/suggest.
-func loadCatalog() []CatalogEntry {
-	var entries []CatalogEntry
-	if err := json.Unmarshal(datasets.AssetMeta(), &entries); err != nil {
-		panic("marketdata: cannot parse the embedded asset catalog: " + err.Error())
-	}
-	return entries
-}
-
-var catalogByID = sync.OnceValue(func() map[string]CatalogEntry {
-	m := make(map[string]CatalogEntry, 2*len(catalog))
+var catalogByID = sync.OnceValue(func() map[string]datasets.Asset {
+	m := make(map[string]datasets.Asset, 2*len(catalog))
 	for _, e := range catalog {
 		m[e.ID] = e
 		if e.ISIN != "" {
@@ -58,6 +29,14 @@ var catalogByID = sync.OnceValue(func() map[string]CatalogEntry {
 	}
 	return m
 })
+
+// Lookup returns the full catalog metadata for an identifier (ticker, alias,
+// ISIN or canonical id), which it resolves to its canonical id first. The
+// second result is false when the identifier is not in the bundled catalog.
+func Lookup(id string) (datasets.Asset, bool) {
+	a, ok := catalogByID()[CanonicalID(id)]
+	return a, ok
+}
 
 // catalogResolution returns the pinned resolution for a canonical id.
 func catalogResolution(id string) (resolution, bool) {
