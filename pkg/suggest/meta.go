@@ -14,19 +14,23 @@ import (
 	"io"
 )
 
-// Meta is the factual metadata of one catalog asset, a row of
-// datasets/assetmeta/assets.json.
+// Meta is the factual metadata of one catalog asset — a full row of
+// datasets/assetmeta/assets.json. It is the structured, third-party-friendly
+// view of the bundled catalog (load it with LoadMeta over datasets.AssetMeta).
 type Meta struct {
 	ID           string             `json:"id"`
 	ISIN         string             `json:"isin"`
+	Name         string             `json:"name"`
+	UCITS        bool               `json:"ucits"` // UCITS-regulated fund/ETF
+	Fees         float64            `json:"fees"`  // published TER, percent per year; 0 = unknown
 	AssetClass   string             `json:"asset_class"`
 	Underlying   string             `json:"underlying"`
 	Benchmark    string             `json:"benchmark_index"`
 	Strategy     string             `json:"strategy"`
-	Geography    map[string]float64 `json:"geography"`
-	Sectors      map[string]float64 `json:"sectors"`
+	Geography    map[string]float64 `json:"geography"` // country/region → percent of holdings
+	Sectors      map[string]float64 `json:"sectors"`   // GICS sector → percent of holdings
 	Currency     string             `json:"currency"`
-	Distribution string             `json:"distribution"`
+	Distribution string             `json:"distribution"` // "accumulating" or "distributing"
 	Leverage     float64            `json:"leverage"`
 	Notes        string             `json:"notes"`
 	Confidence   string             `json:"confidence"`
