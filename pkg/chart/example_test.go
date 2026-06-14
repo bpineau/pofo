@@ -46,3 +46,15 @@ func ExampleTerm() {
 	// Output:
 	// true true
 }
+
+// Pie renders a self-contained SVG donut with a legend, for composition
+// breakdowns. Slice shares are normalized internally.
+func ExamplePie() {
+	svg := chart.Pie(chart.PieOptions{Title: "Allocation"}, []chart.Slice{
+		{Label: "Equity", Value: 60},
+		{Label: "Bonds", Value: 40},
+	})
+	fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(svg, "Equity"), strings.Contains(svg, "60%"))
+	// Output:
+	// true true true
+}
