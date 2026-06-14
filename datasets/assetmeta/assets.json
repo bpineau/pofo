@@ -5483,6 +5483,227 @@
     ]
   },
   {
+    "id": "IE00BD4TXW66",
+    "isin": "IE00BD4TXW66",
+    "aliases": [
+      "BCFT"
+    ],
+    "name": "UBS Core S&P 500 UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "BCFT.DE",
+    "currency": "EUR",
+    "fees": 0.03,
+    "asset_class": "equity",
+    "underlying": "S&P 500 — 500 large-cap US stocks, full physical replication",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "Ireland": 1,
+      "Other": 2,
+      "United States": 97
+    },
+    "sectors": {
+      "Basic Materials": 2,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 11,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Real Estate": 2,
+      "Technology": 38,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "Ultra-low-cost (0.03%) full-physical S&P 500; UBS; Irish domicile; launched Aug 2025 so very short live history",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXW66"
+    ]
+  },
+  {
+    "id": "IE000Z9SJA06",
+    "isin": "IE000Z9SJA06",
+    "aliases": [
+      "XDPU"
+    ],
+    "name": "Xtrackers S&P 500 UCITS ETF 4C",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "XDPU.MI",
+    "currency": "EUR",
+    "fees": 0.03,
+    "asset_class": "equity",
+    "underlying": "S&P 500 — 500 large-cap US stocks, full physical replication",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "Ireland": 1,
+      "Other": 2,
+      "United States": 97
+    },
+    "sectors": {
+      "Basic Materials": 2,
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 11,
+      "Health Care": 8,
+      "Industrials": 8,
+      "Real Estate": 2,
+      "Technology": 38,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "Ultra-low-cost (0.03%) full-physical S&P 500; Xtrackers (DWS); Irish domicile; launched 2022",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000Z9SJA06"
+    ]
+  },
+  {
+    "id": "IE000BI8OT95",
+    "isin": "IE000BI8OT95",
+    "aliases": [
+      "MWRE"
+    ],
+    "name": "Amundi Core MSCI World UCITS ETF Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "MWRD.PA",
+    "currency": "EUR",
+    "fees": 0.12,
+    "asset_class": "equity",
+    "underlying": "MSCI World — ~1,400 large/mid-cap stocks across 23 developed markets, full physical replication",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Canada": 3,
+      "Japan": 6,
+      "Other developed": 20,
+      "UK": 3,
+      "US": 68
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 6,
+      "Energy": 4,
+      "Financials": 14,
+      "Health Care": 8,
+      "Industrials": 11,
+      "Materials": 4,
+      "Other": 2,
+      "Real Estate": 3,
+      "Technology": 28,
+      "Utilities": 3
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "Low-cost (0.12%) full-physical MSCI World; Amundi; Irish domicile; launched Jan 2024",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000BI8OT95"
+    ]
+  },
+  {
+    "id": "IE00BD4TXV59",
+    "isin": "IE00BD4TXV59",
+    "aliases": [
+      "UETW",
+      "WRDA"
+    ],
+    "name": "UBS Core MSCI World UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "UETW.DE",
+    "currency": "EUR",
+    "fees": 0.06,
+    "asset_class": "equity",
+    "underlying": "MSCI World — ~1,400 large/mid-cap developed-market stocks, full physical replication",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Canada": 3,
+      "Japan": 6,
+      "Other developed": 20,
+      "UK": 3,
+      "US": 68
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 6,
+      "Energy": 4,
+      "Financials": 14,
+      "Health Care": 8,
+      "Industrials": 11,
+      "Materials": 4,
+      "Other": 2,
+      "Real Estate": 3,
+      "Technology": 28,
+      "Utilities": 3
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "Cheapest physical MSCI World (0.06%); UBS; Irish domicile; full replication; launched 2019",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXV59"
+    ]
+  },
+  {
+    "id": "IE000UQND7H4",
+    "isin": "IE000UQND7H4",
+    "aliases": [
+      "H4ZY",
+      "HMWA"
+    ],
+    "name": "HSBC MSCI World UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "HMWA.L",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "equity",
+    "underlying": "MSCI World — ~1,400 large/mid-cap developed-market stocks, optimised physical sampling",
+    "benchmark_index": "MSCI World Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Canada": 3,
+      "Japan": 6,
+      "Other developed": 20,
+      "UK": 3,
+      "US": 68
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 6,
+      "Energy": 4,
+      "Financials": 14,
+      "Health Care": 8,
+      "Industrials": 11,
+      "Materials": 4,
+      "Other": 2,
+      "Real Estate": 3,
+      "Technology": 28,
+      "Utilities": 3
+    },
+    "distribution": "accumulating",
+    "leverage": 1,
+    "notes": "Accumulating share class of HSBC MSCI World (0.15%); Irish domicile; physical sampling; launched 2022",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000UQND7H4"
+    ]
+  },
+  {
     "id": "XAUUSD",
     "isin": "",
     "aliases": [
