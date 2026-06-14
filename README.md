@@ -256,14 +256,11 @@ Each package has its documentation page — calculation conventions included
 
 ```go
 import (
-	"bytes"
-
 	"github.com/bpineau/portfodor/datasets"
 	"github.com/bpineau/portfodor/pkg/chart"
 	"github.com/bpineau/portfodor/pkg/marketdata"
 	"github.com/bpineau/portfodor/pkg/metrics"
 	"github.com/bpineau/portfodor/pkg/portfolio"
-	"github.com/bpineau/portfodor/pkg/suggest"
 )
 
 // Fetch a price history (transparent resolution + caching).
@@ -276,26 +273,33 @@ stats, err := metrics.Compute(dates, values)
 // Render a standalone SVG.
 svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1", Dates: dates, Values: values}})
 
-// Parse and simulate a portfolio (N-day rebalancing).
+// Parse a portfolio file, fetch each holding, then simulate (N-day
+// rebalancing). The CLI additionally converts currencies and extends SIM
+// histories; this is the core path.
 spec, _ := portfolio.ParseFile("p.txt")
+p := &portfolio.Portfolio{Name: spec.Name}
+for _, h := range spec.Holdings {
+	s, _ := client.Fetch(h.ID, time.Time{})
+	p.Assets = append(p.Assets, portfolio.Asset{ID: h.ID, Weight: h.Weight, Fees: h.Fees, Series: s})
+}
 sim, _ := portfolio.Simulate(p, 90)
 
-// Read the bundled asset catalog (name, TER, UCITS, geography, sectors,
-// asset class…). The map is keyed by canonical id and ISIN; resolve a
-// ticker/alias first with marketdata.CanonicalID. datasets.AssetMeta() also
-// returns the same data as raw JSON if you prefer your own struct.
-meta, _ := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
-iwda := meta[marketdata.CanonicalID("IWDA")] // or meta["IE00B4L5Y983"]
-_ = iwda.Fees                                // 0.20  (percent/yr)
-_ = iwda.Geography                           // map[US:68 Japan:6 …]
+// Read the bundled asset catalog as typed datasets.Asset records (name, TER,
+// UCITS, geography, sectors, asset class…); AssetMeta() returns the same data
+// as raw JSON if you prefer your own struct.
+for _, a := range datasets.Catalog() {
+	_ = a.Name // a.Fees, a.Geography, a.AssetClass, a.UCITS…
+}
+// Resolve a ticker / alias / ISIN to its full record in one call:
+iwda, ok := marketdata.Lookup("IWDA") // → (datasets.Asset, true)
+_ = iwda.Fees                         // 0.20  (percent/yr)
 ```
 
-- `datasets` — the versioned data embedded at build time; `AssetMeta()`
-  exposes the full asset catalog as JSON for third-party use.
-- `suggest` — regime/factor coverage and gap-filling; `LoadMeta` decodes the
-  catalog into the typed `Meta` (the structured view of `assets.json`).
-- `marketdata` — resolution (aliases, ISIN, catalog), multi-source
-  downloads, cache, simdata, proxies.
+- `datasets` — the versioned data embedded at build time; `Catalog()` returns
+  the typed asset list (`Asset`), `AssetMeta()` the same data as raw JSON.
+- `marketdata` — resolution (aliases, ISIN, catalog), `Lookup` for an asset's
+  full metadata, multi-source downloads, cache, simdata, proxies.
+- `suggest` — regime/factor coverage and gap-filling (consumes `datasets.Asset`).
 - `metrics` — statistics over value series (returns, drawdowns, Beta).
 - `chart` — pure-stdlib inline SVG charts.
 - `portfolio` — allocation file parsing and rebalanced simulation.
