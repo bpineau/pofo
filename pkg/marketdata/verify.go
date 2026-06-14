@@ -16,6 +16,8 @@ type Issue struct {
 	Message  string
 }
 
+// String renders the issue as a one-line "[severity] message", prefixed with
+// the concerned date when the issue is tied to a specific quote.
 func (i Issue) String() string {
 	if i.Date.IsZero() {
 		return fmt.Sprintf("[%s] %s", i.Severity, i.Message)

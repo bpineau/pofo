@@ -4,13 +4,16 @@
 //
 // # Resolution
 //
-// An identifier goes through the following steps (see ResolveCanonical):
+// An identifier goes through the following steps. CanonicalID applies
+// steps 1–3 (identifier → canonical id); Client.Fetch runs the whole
+// pipeline (and Lookup returns a catalogued asset's full metadata):
 //
 //  1. the built-in aliases (GOLD → XAUUSD, BHMG → GG00BQBFY362, …);
 //  2. the embedded ticker → ISIN list of European ETFs and mutual funds
 //     (FundISIN);
-//  3. the built-in catalog of pinned resolutions (Catalog), which makes
-//     common assets deterministic and independent of search engines;
+//  3. the built-in catalog of pinned resolutions (Lookup, backed by
+//     datasets.Catalog), which makes common assets deterministic and
+//     independent of search engines;
 //  4. otherwise, a multi-source resolution: every candidate from the Yahoo
 //     search ("fund" entries first), then the Financial Times, then the
 //     Morningstar identifier discovered via Boursorama — the series with
@@ -35,8 +38,8 @@
 //
 //   - Align merges the trading calendars of several series (union of
 //     dates, forward-filled prices);
-//   - Fees returns an asset's published TER (pinned catalog, disk cache,
-//     otherwise FT tearsheets and justETF);
+//   - Client.Fees returns an asset's published TER (pinned catalog, disk
+//     cache, otherwise FT tearsheets and justETF);
 //   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
 //   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker
 //     from the embedded list) to its canonical form;
