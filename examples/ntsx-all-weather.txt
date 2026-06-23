@@ -6,7 +6,7 @@
 #   https://www.optimizedportfolio.com/ntsx/
 # Mostly UCITS (NTSX); trend via SIM, UCITS buy-route iMGP DBi.
 #meta rebalance:180
-#meta optimize:max-sharpe,max-weight:70
+#meta optimize:max-sharpe,max-weight:40
 
 50    NTSXSIM 	      # IE000KF370H3  US Efficient Core 90/60 (NTSX) — equity+bond engine + sim
 15    GOLDSIM         # Gold (UCITS: IGLN)
