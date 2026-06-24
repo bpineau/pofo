@@ -7,11 +7,11 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bpineau/portfodor/datasets"
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
-// catalog lists the assets bundled with portfodor, the typed view of the
-// embedded datasets/assetmeta/assets.json. The catalog IS the bundle:
+// catalog lists the assets bundled with pofo, the typed view of the
+// embedded pkg/datasets/assetmeta/assets.json. The catalog IS the bundle:
 // everything here resolves deterministically (no search APIs), has its TER
 // pinned when published, and is fully cached by a single --warmup. Entries
 // are addressable by ID, ISIN, Aliases and the tickers of the embedded fund

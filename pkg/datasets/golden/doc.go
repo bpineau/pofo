@@ -1,4 +1,4 @@
-// Package golden contains portfodor's golden tests: they replay the
+// Package golden contains pofo's golden tests: they replay the
 // simulation and the metrics on frozen real data (testdata/) and compare
 // the results against hand-validated external references (official S&P 500
 // TR annual returns, canonical drawdowns, statistics published by
