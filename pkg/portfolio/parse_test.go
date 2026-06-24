@@ -11,8 +11,8 @@ import (
 func TestParseBasic(t *testing.T) {
 	in := `
 # comment
-60   VOO    Vanguard S&P 500
-40	BND  US bonds
+60   VOO    # Vanguard S&P 500
+40	BND  # US bonds
 `
 	spec, err := Parse("test", strings.NewReader(in))
 	if err != nil {
@@ -22,11 +22,11 @@ func TestParseBasic(t *testing.T) {
 		t.Fatalf("want 2 lines, got %d", len(spec.Holdings))
 	}
 	h := spec.Holdings[0]
-	if h.ID != "VOO" || math.Abs(h.Weight-0.60) > 1e-12 || h.Note != "Vanguard S&P 500" {
+	if h.ID != "VOO" || math.Abs(h.Weight-0.60) > 1e-12 {
 		t.Errorf("line 1 misread: %+v", h)
 	}
 	h = spec.Holdings[1]
-	if h.ID != "BND" || math.Abs(h.Weight-0.40) > 1e-12 || h.Note != "US bonds" {
+	if h.ID != "BND" || math.Abs(h.Weight-0.40) > 1e-12 {
 		t.Errorf("line 2 misread: %+v", h)
 	}
 	if len(spec.Warnings) != 0 {
@@ -39,7 +39,7 @@ func TestParseInlineComments(t *testing.T) {
 # Test portfolio
 # https://example.invalid/doc
 
-60 VOO  useful note # the S&P 500
+60 VOO # the S&P 500
 40 BND# glued to the ticker
 `
 	spec, err := Parse("t", strings.NewReader(in))
@@ -49,16 +49,20 @@ func TestParseInlineComments(t *testing.T) {
 	if len(spec.Holdings) != 2 {
 		t.Fatalf("want 2 lines, got %d", len(spec.Holdings))
 	}
-	if h := spec.Holdings[0]; h.ID != "VOO" || h.Note != "useful note" {
+	if h := spec.Holdings[0]; h.ID != "VOO" {
 		t.Errorf("comment not stripped: %+v", h)
 	}
-	if h := spec.Holdings[1]; h.ID != "BND" || h.Note != "" {
+	if h := spec.Holdings[1]; h.ID != "BND" {
 		t.Errorf("glued comment not stripped: %+v", h)
+	}
+	// Free text after the ticker, without a "#", is now rejected.
+	if _, err := Parse("t", strings.NewReader("60 VOO useful note")); err == nil {
+		t.Error("expected error for un-commented free text after the ticker")
 	}
 }
 
 func TestParseDecimalCommaAndPercent(t *testing.T) {
-	spec, err := Parse("t", strings.NewReader("33,5% IWDA.AS\n66.5 IE00B4L5Y983 world"))
+	spec, err := Parse("t", strings.NewReader("33,5% IWDA.AS\n66.5 IE00B4L5Y983 # world"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -141,8 +145,8 @@ func TestParseMetaRebalance(t *testing.T) {
 func TestParseFeesColumnAndEnvelope(t *testing.T) {
 	in := `
 #meta extra-fees:0,60  # life-insurance envelope
-60 VOO 0.03  S&P 500     # 3rd numeric column = TER
-40 BND       no declared fees
+60 VOO 0.03  # 3rd numeric column = TER
+40 BND       # no declared fees
 `
 	spec, err := Parse("t", strings.NewReader(in))
 	if err != nil {
@@ -151,30 +155,29 @@ func TestParseFeesColumnAndEnvelope(t *testing.T) {
 	if spec.EnvelopeFees != 0.60 {
 		t.Errorf("EnvelopeFees = %v, want 0.60", spec.EnvelopeFees)
 	}
-	if h := spec.Holdings[0]; h.Fees != 0.03 || h.Note != "S&P 500" {
+	if h := spec.Holdings[0]; h.Fees != 0.03 {
 		t.Errorf("fees column: %+v", h)
 	}
-	if h := spec.Holdings[1]; h.Fees != -1 || h.Note != "no declared fees" {
+	if h := spec.Holdings[1]; h.Fees != -1 {
 		t.Errorf("absent fees: %+v", h)
 	}
 	// Fees out of range: error.
-	if _, err := Parse("t", strings.NewReader("60 VOO 25 note")); err == nil {
+	if _, err := Parse("t", strings.NewReader("60 VOO 25 # note")); err == nil {
 		t.Error("expected error for 25 %/year fees")
 	}
-	// Decimal point (default convention) with a % suffix.
-	sp2bis, err := Parse("t", strings.NewReader("100 VOO 0.25% note"))
+	// Decimal point (default convention) with a % suffix, plus a comment.
+	sp2bis, err := Parse("t", strings.NewReader("100 VOO 0.25% # note"))
 	if err != nil || sp2bis.Holdings[0].Fees != 0.25 {
 		t.Errorf("fees 0.25%%: %+v, %v", sp2bis.Holdings, err)
 	}
 	// Decimal comma and %% suffix accepted in the 3rd column.
-	sp2, err := Parse("t", strings.NewReader("100 VOO 0,25% note"))
-	if err != nil || sp2.Holdings[0].Fees != 0.25 || sp2.Holdings[0].Note != "note" {
+	sp2, err := Parse("t", strings.NewReader("100 VOO 0,25%"))
+	if err != nil || sp2.Holdings[0].Fees != 0.25 {
 		t.Errorf("fees 0,25%%: %+v, %v", sp2.Holdings, err)
 	}
-	// A 3rd column starting with a digit but non-numeric = text.
-	sp2, err = Parse("t", strings.NewReader("100 VOO 3a-long-term goal"))
-	if err != nil || sp2.Holdings[0].Fees != -1 || !strings.HasPrefix(sp2.Holdings[0].Note, "3a-long-term") {
-		t.Errorf("textual 3rd column: %+v, %v", sp2.Holdings, err)
+	// A 3rd column that is neither a number nor a "#" comment = error.
+	if _, err := Parse("t", strings.NewReader("100 VOO 3a-long-term goal")); err == nil {
+		t.Error("expected error for a non-numeric, un-commented 3rd column")
 	}
 	// Accepted synonym.
 	sp, err := Parse("t", strings.NewReader("#meta envelope-fees:1"+"\n"+"100 VOO"))
