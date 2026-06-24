@@ -1,7 +1,7 @@
 # A 100 %-equity portfolio built from catalog assets. It covers only the
 # "growth" regime — run
 #
-#     portfodor -suggest examples/world-equity.txt
+#     pofo -suggest examples/world-equity.txt
 #
 # to see catalog assets that would fill the inflation / deflation / crisis
 # gaps (gold, long bonds, managed futures…), validated out-of-sample.

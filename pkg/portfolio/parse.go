@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/bpineau/portfodor/pkg/optimize"
+	"github.com/bpineau/pofo/pkg/optimize"
 )
 
 // Holding is one allocation line of a portfolio file.

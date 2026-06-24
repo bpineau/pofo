@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
 // flatSeries builds a daily series at a constant price over n days.
