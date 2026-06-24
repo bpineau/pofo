@@ -34,15 +34,16 @@ can be combined with portfolio files.
 
 ## Portfolio file format
 
-One line per asset: `<weight in %> <identifier> [free text]`. Everything
-after a `#` is a comment; blank lines are ignored. The portfolio name is the
-file name without its extension.
+One line per asset: `<weight in %> <identifier> [TER in %/year]`. Everything
+after a `#` is a comment, and nothing else may follow the optional fee
+column; blank lines are ignored. The portfolio name is the file name without
+its extension.
 
 ```
 # Description, links, notes…
 #meta rebalance:30   # directive: this portfolio rebalances every 30 days
 #meta extra-fees:0.5 # wrapper/mandate fees, applied on top of the whole portfolio
-60   VTI            US equities
+60   VTI            # US equities
 25,5 IE00B4L5Y983   # ISIN resolved automatically (decimal comma accepted)
 14.5 GOLD           # built-in alias → gold XAU/USD
 ```
@@ -85,7 +86,7 @@ and `optimize` cannot be combined with `leverage`.
 
 Without `#meta leverage:on`, a weight > 100% is rejected (with a hint) and sums
 ≠ 100% are normalized as before.
-An optional third numeric column declares an asset's TER
+An optional third column declares an asset's TER
 (e.g. `60 VOO 0.03`); otherwise it is fetched automatically (FT, justETF)
 and cached for 6 months; `-no-fees` disables that lookup. The report shows
 per-asset fees and a "Weighted ongoing fees" row in the statistics table.
