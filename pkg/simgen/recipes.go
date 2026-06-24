@@ -27,6 +27,8 @@ func All() []Recipe {
 		wintonRecipe(),
 		zrozRecipe(),
 		dbmfRecipe(),
+		dbmfpaRecipe(),
+		dbmfeRecipe(),
 		kmlmRecipe(),
 		ctaRecipe(),
 		amundiVolRecipe(),
@@ -336,6 +338,71 @@ func dbmfRecipe() Recipe {
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
+}
+
+// dbmfpaRecipe reconstructs the UCITS USD share class (DBMF.PA,
+// LU2951555585, Paris-listed, launched 2025-04-22) of the iMGP DBi
+// managed-futures fund: the same USD TSMOM replication as the US-listed DBMF,
+// with the real UCITS quotes grafted from inception. Same strategy and
+// currency (USD, unhedged) as DBMF — only a different (UCITS) wrapper, at the
+// UCITS 0.75% TER.
+func dbmfpaRecipe() Recipe {
+	return Recipe{
+		ID:              "LU2951555585",
+		Name:            "iMGP DBi Managed Futures UCITS USD — TSMOM replication",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025",
+		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.10, 0.0075)),
+		ValidateAgainst: "LU2951555585",
+		SpliceReal:      "LU2951555585",
+	}
+}
+
+// dbmfeRecipe reconstructs the *unhedged* EUR share class (DBMFE,
+// LU2951555403, Paris-listed, launched 2025-03-24) of the iMGP DBi
+// managed-futures fund. It runs the same USD TSMOM replication as DBMF, then
+// re-expresses it in EUR at the EUR/USD spot rate — unhedged, so the EUR
+// investor also carries the USD/EUR currency move on top of the strategy. The
+// real DBMFE quotes are grafted from inception. EURUSD=X (Yahoo, ~2003→) is
+// the youngest component and sets the start date.
+func dbmfeRecipe() Recipe {
+	return Recipe{
+		ID:              "DBMFE",
+		Name:            "iMGP DBi Managed Futures EUR unhedged — TSMOM replication in EUR",
+		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (~2003→), real DBMFE grafted from 2025",
+		Build:           dbmfeBuild,
+		ValidateAgainst: "DBMFE",
+		SpliceReal:      "DBMFE",
+	}
+}
+
+// dbmfeBuild runs the USD DBMF strategy and converts each daily return into an
+// unhedged EUR return via the EUR/USD spot rate: a EUR-denominated NAV equals
+// the USD NAV divided by the USD-per-EUR rate, so r_eur = (1+r_usd)/(1+r_fx)−1
+// where r_fx is the EURUSD (USD per EUR) daily change.
+func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	cfg := mfConfig(0.10, 0.0085) // identical USD strategy to dbmfRecipe
+	ids := append([]string{cfg.CashID}, cfg.Markets...)
+	ids = append(ids, "EURUSD=X")
+	fr, err := BuildFrame(f, ids, from)
+	if err != nil {
+		return nil, err
+	}
+	usd, start, err := TSMOM(fr, cfg)
+	if err != nil {
+		return nil, err
+	}
+	fx := fr.Returns["EURUSD=X"] // daily return of USD per EUR
+	s := &marketdata.Series{Name: "DBMFE (USD TSMOM converted to unhedged EUR)", Source: "simdata"}
+	val := 100.0
+	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start], Close: val})
+	for i := 1; i < len(usd); i++ {
+		k := start + i
+		rUSD := usd[i]/usd[i-1] - 1
+		rEUR := (1+rUSD)/(1+fx[k]) - 1
+		val *= 1 + rEUR
+		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
+	}
+	return s, nil
 }
 
 // kmlmRecipe reconstructs KMLM from the same TSMOM engine at a higher vol
