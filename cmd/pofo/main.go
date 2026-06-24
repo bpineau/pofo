@@ -1,4 +1,4 @@
-// Command portfodor reads portfolio description files, downloads the price
+// Command pofo reads portfolio description files, downloads the price
 // history of each asset, simulates the portfolios with periodic rebalancing
 // and produces a self-contained HTML report comparing them.
 package main
@@ -21,21 +21,21 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bpineau/portfodor/datasets"
-	"github.com/bpineau/portfodor/pkg/chart"
-	"github.com/bpineau/portfodor/pkg/marketdata"
-	"github.com/bpineau/portfodor/pkg/metrics"
-	"github.com/bpineau/portfodor/pkg/optimize"
-	"github.com/bpineau/portfodor/pkg/portfolio"
-	"github.com/bpineau/portfodor/pkg/report"
-	"github.com/bpineau/portfodor/pkg/simgen"
-	"github.com/bpineau/portfodor/pkg/suggest"
+	"github.com/bpineau/pofo/pkg/chart"
+	"github.com/bpineau/pofo/pkg/datasets"
+	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
+	"github.com/bpineau/pofo/pkg/optimize"
+	"github.com/bpineau/pofo/pkg/portfolio"
+	"github.com/bpineau/pofo/pkg/report"
+	"github.com/bpineau/pofo/pkg/simgen"
+	"github.com/bpineau/pofo/pkg/suggest"
 )
 
 func main() {
 	log.SetFlags(0)
 	if err := run(os.Args[1:]); err != nil {
-		log.Fatal("portfodor: ", err)
+		log.Fatal("pofo: ", err)
 	}
 }
 
@@ -86,10 +86,10 @@ type result struct {
 }
 
 func run(argv []string) error {
-	fs := flag.NewFlagSet("portfodor", flag.ContinueOnError)
+	fs := flag.NewFlagSet("pofo", flag.ContinueOnError)
 	var opt options
 	var startStr string
-	fs.StringVar(&opt.out, "out", "", "output HTML file (default: /tmp/portfodor-<timestamp>.html)")
+	fs.StringVar(&opt.out, "out", "", "output HTML file (default: /tmp/pofo-<timestamp>.html)")
 	fs.StringVar(&opt.dataDir, "data", defaultDataDir(), "quote cache directory")
 	fs.StringVar(&opt.simdataDir, "simdata", "", "directory of simulated histories (default: embedded in the binary)")
 	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalance every N calendar days (0 = never)")
@@ -114,8 +114,8 @@ func run(argv []string) error {
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
 	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), `Usage: portfodor [options] portfolio.txt [portfolio2.txt …]
-       portfodor [options] -assets VOO,IWDA,NTSG
+		fmt.Fprintf(fs.Output(), `Usage: pofo [options] portfolio.txt [portfolio2.txt …]
+       pofo [options] -assets VOO,IWDA,NTSG
 
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
@@ -128,7 +128,7 @@ File format — one line per asset:
   - Identifier: US ticker (VOO), European ticker from the bundled list
     (IWDA, CW8, CSPX…), ISIN, or catalog alias (GOLD, NTSG, BHMG…).
   - SIM suffix (VOOSIM, DBMFSIM…): extends the history before the first
-    real quote via datasets/simdata/ or a proxy; bare = real data only.
+    real quote via pkg/datasets/simdata/ or a proxy; bare = real data only.
   - Optional numeric 3rd column: the asset's TER in %%/yr (overrides
     the automatic lookup); non-numeric = free text.
   - Per-portfolio directives:
@@ -412,7 +412,7 @@ Options:
 	}
 	outPath := opt.out
 	if outPath == "" {
-		outPath = fmt.Sprintf("/tmp/portfodor-%s.html", time.Now().Format("20060102-150405"))
+		outPath = fmt.Sprintf("/tmp/pofo-%s.html", time.Now().Format("20060102-150405"))
 	}
 	if err := os.WriteFile(outPath, buf.Bytes(), 0o644); err != nil {
 		return err
@@ -509,17 +509,17 @@ func termWidth(flag int) int {
 }
 
 // defaultDataDir picks the standard per-user cache location
-// (~/Library/Caches/portfodor on macOS, ~/.cache/portfodor on Linux),
+// (~/Library/Caches/pofo on macOS, ~/.cache/pofo on Linux),
 // falling back to a local directory when the home is unknown.
 func defaultDataDir() string {
 	if c, err := os.UserCacheDir(); err == nil {
-		return filepath.Join(c, "portfodor")
+		return filepath.Join(c, "pofo")
 	}
 	return "data"
 }
 
 // runGenSimdata (re)builds the simulated histories — the former standalone
-// simgen command, kept as a sub-mode. Files are written to datasets/simdata
+// simgen command, kept as a sub-mode. Files are written to pkg/datasets/simdata
 // (or -simdata when set): regeneration is a repository activity, and a
 // rebuild re-embeds the result into the binary.
 func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, ids []string, dry bool) error {
@@ -536,7 +536,7 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 	}
 	outDir := opt.simdataDir
 	if outDir == "" {
-		outDir = "datasets/simdata"
+		outDir = "pkg/datasets/simdata"
 	}
 	// Recipes build from fetchable funds; -refdata only injects extra local
 	// reference CSVs for development (none are bundled).
@@ -559,7 +559,7 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 		return fmt.Errorf("%d recipe(s) failed", failures)
 	}
 	if !dry {
-		log.Printf("rebuild (make build) to re-embed datasets/simdata into the binary")
+		log.Printf("rebuild (make build) to re-embed pkg/datasets/simdata into the binary")
 	}
 	return nil
 }
@@ -1387,7 +1387,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}...)
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
-			"Histories extended before some funds' inception: via a proxy (older indices or funds — price indices do not include dividends) or via permanent simulated data (datasets/simdata/<id>.csv files generated by cmd/simgen, methodology and replication quality at the top of each file).")
+			"Histories extended before some funds' inception: via a proxy (older indices or funds — price indices do not include dividends) or via permanent simulated data (pkg/datasets/simdata/<id>.csv files generated by -gen-simdata, methodology and replication quality at the top of each file).")
 	}
 	if bench != nil {
 		page.Footnotes = append(page.Footnotes,

@@ -1,4 +1,4 @@
-# portfodor
+# pofo
 
 Go tool to visualize and compare investment portfolios over time — plus
 reusable libraries to fetch price histories, compute risk/return metrics
@@ -15,18 +15,18 @@ and its macro-regime coverage).
 ## Usage
 
 ```sh
-go build ./cmd/portfodor                       # self-contained binary (datasets embedded)
-./portfodor my-portfolio.txt other.txt         # HTML report in /tmp + open
-./portfodor -assets WPEA,NTSG,CSPX             # compare individual assets (100% each)
-./portfodor -cli -assets VOO,IWDA              # quick check in the terminal
-./portfodor -warmup                            # pre-warm the catalog cache
-./portfodor -gen-simdata                       # regenerate datasets/simdata (then rebuild)
+go build ./cmd/pofo                       # self-contained binary (datasets embedded)
+./pofo my-portfolio.txt other.txt         # HTML report in /tmp + open
+./pofo -assets WPEA,NTSG,CSPX             # compare individual assets (100% each)
+./pofo -cli -assets VOO,IWDA              # quick check in the terminal
+./pofo -warmup                            # pre-warm the catalog cache
+./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
 ```
 
 The binary can be installed anywhere: simulated histories and reference
-series are **embedded at build time** (`go:embed` of `datasets/`), and the
+series are **embedded at build time** (`go:embed` of `pkg/datasets/`), and the
 quote cache lives in the standard user cache directory
-(`~/Library/Caches/portfodor` on macOS, `~/.cache/portfodor` on Linux).
+(`~/Library/Caches/pofo` on macOS, `~/.cache/pofo` on Linux).
 
 The `-assets` option treats each identifier as a portfolio invested 100% in
 it — handy for comparing ETFs against each other without writing a file. It
@@ -98,18 +98,18 @@ weights do not sum to 100, they are normalized with a warning.
 **SIM convention**: a bare identifier (`DBMF`, `NTSG`, `VOO`) uses only the
 asset's real quotes — the history starts at its inception date. The `SIM`
 suffix (`DBMFSIM`, `NTSGSIM`, `VOOSIM`…) additionally allows extending the
-uncovered period, via `datasets/simdata/` then the known proxies; real
+uncovered period, via `pkg/datasets/simdata/` then the known proxies; real
 quotes always keep priority wherever they exist. `-no-simulate` ignores SIM
 suffixes globally.
 
 ## Suggesting assets to add
 
-`portfodor -suggest portfolio.txt` analyses a portfolio's **macro-regime
+`pofo -suggest portfolio.txt` analyses a portfolio's **macro-regime
 coverage** and recommends catalog assets to add that fill the gaps. The four
 regimes are the growth × inflation quadrants behind All-Weather- and
 Dragon-style portfolios — `growth`, `deflation`, `inflation`, `crisis` — and
 each catalog asset is mapped to the regimes it helps in from its factual tags
-(asset class, strategy; see `datasets/assetmeta/`). A regime with little
+(asset class, strategy; see `pkg/datasets/assetmeta/`). A regime with little
 weight is a gap.
 
 It is **structure-first**: only assets that fill a gap are considered, and
@@ -125,7 +125,7 @@ their correlation to the portfolio, and the out-of-sample win counts.
 identically and share an asset class (three S&P 500 trackers are one bet, not
 three). It prints to the terminal and exits, like `-verify-data`.
 
-For a quick, **offline** read, `portfodor -coverage portfolio.txt` shows the
+For a quick, **offline** read, `pofo -coverage portfolio.txt` shows the
 same coverage chart and then, for each gap, lists the catalog assets that
 fill it (grouped by asset class) — no price downloads, no ranking, just the
 menu of options. Run `-suggest` afterwards to rank and validate them.
@@ -142,7 +142,7 @@ regime view stays the default.
 
 | Option | Default | Description |
 |---|---|---|
-| `-out` | `/tmp/portfodor-<timestamp>.html` | generated HTML file |
+| `-out` | `/tmp/pofo-<timestamp>.html` | generated HTML file |
 | `-data` | standard user cache | quote cache (JSON) |
 | `-simdata` | embedded in the binary | source of simulated histories (directory for dev) |
 | `-rebalance` | `90` | rebalance every N calendar days (0 = never) |
@@ -173,20 +173,20 @@ regime view stays the default.
   with a stderr warning (charts may stop before today), and never deletes
   anything.
 - **History extension** (`…SIM` identifiers only): first the
-  `datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
+  `pkg/datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
   BND→VBMFX, …), rescaled to the first real quote. The report flags every
   simulated portion.
 
-## Simulated data (datasets/simdata/)
+## Simulated data (pkg/datasets/simdata/)
 
 Complex assets (90/60 funds, managed futures…) are rebuilt by `pkg/simgen`
 from long-history building blocks, validated against their real quotes,
 then stored as self-documenting CSVs (method, validation, date) in
-`datasets/simdata/`:
+`pkg/datasets/simdata/`:
 
 ```sh
-./portfodor -gen-simdata                   # regenerate everything (then make build to re-embed)
-./portfodor -gen-simdata -dry NTSX         # validate without writing
+./pofo -gen-simdata                   # regenerate everything (then make build to re-embed)
+./pofo -gen-simdata -dry NTSX         # validate without writing
 ```
 
 Every series is built **only from quotes the tool itself can fetch**
@@ -240,27 +240,28 @@ pkg/chart/        SVG charts (Line) and terminal (Term), shared palette
 pkg/portfolio/    allocation file format + rebalanced simulation
 pkg/report/       HTML and text rendering of the comparison model
 pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
-cmd/              the portfodor binary (report, warmup, gen-simdata)
-datasets/         versioned data (embedded at build time) and its QA:
-  simdata/          permanent simulated histories (spliced at runtime)
+pkg/datasets/     versioned data (embedded at build time) and its QA:
   assetmeta/        catalog asset metadata (classes, factors, regimes…)
+  simdata/          permanent simulated histories (spliced at runtime)
   golden/           golden tests + frozen fixtures vs external references
+cmd/              the pofo binary (report, warmup, gen-simdata)
 data/             old local cache (replaced by the user cache)
 ```
 
-Everything consumable as a library lives under `pkg/`; `cmd/` only contains
-the CLI wiring and `golden/` the golden test suite.
+Everything consumable as a library lives under `pkg/` — the bundled data
+(catalog and simulated histories) included, via `pkg/datasets`; `cmd/` only
+contains the CLI wiring.
 
 Each package has its documentation page — calculation conventions included
-(`go doc github.com/bpineau/portfodor/pkg/metrics`) — and runnable examples:
+(`go doc github.com/bpineau/pofo/pkg/metrics`) — and runnable examples:
 
 ```go
 import (
-	"github.com/bpineau/portfodor/datasets"
-	"github.com/bpineau/portfodor/pkg/chart"
-	"github.com/bpineau/portfodor/pkg/marketdata"
-	"github.com/bpineau/portfodor/pkg/metrics"
-	"github.com/bpineau/portfodor/pkg/portfolio"
+	"github.com/bpineau/pofo/datasets"
+	"github.com/bpineau/pofo/pkg/chart"
+	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
+	"github.com/bpineau/pofo/pkg/portfolio"
 )
 
 // Fetch a price history (transparent resolution + caching).
@@ -318,12 +319,12 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 
 ## Golden tests
 
-`datasets/golden/` replays the simulation on frozen real data (SPY
+`pkg/datasets/golden/` replays the simulation on frozen real data (SPY
 2006-2025, URTH 2012-2025) and compares CAGR, volatility, Sharpe, Sortino,
 Ulcer, Max Drawdown and TTR against validated external references (official
 S&P 500 TR annual returns, canonical GFC/COVID drawdowns,
 LazyPortfolioETF).
-Any calculation drift beyond the tolerances fails `go test ./datasets/golden`.
+Any calculation drift beyond the tolerances fails `go test ./pkg/datasets/golden`.
 
 ## Development
 
