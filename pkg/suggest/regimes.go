@@ -1,6 +1,9 @@
 package suggest
 
-import "strings"
+import (
+	"sort"
+	"strings"
+)
 
 // Category is one bucket of a classification framework (a macro regime, or a
 // risk factor). A portfolio "covers" a category when it holds assets that
@@ -77,10 +80,42 @@ func hinter(m Meta) func(...string) bool {
 	}
 }
 
-// regimeClassify drives the mapping from asset_class and strategy, with a few
-// keyword refinements for equity sub-cases (gold miners and energy lean
-// inflationary, value and dividend tilts add an inflation leg).
+// classifyExposures maps a stacked / efficient-core fund (one carrying an
+// explicit notional exposures breakdown, e.g. NTSX 90/60, RSST 100/100) to
+// the union of the categories of each of its legs, every leg classified as a
+// plain asset of that class. Legs are visited in sorted order so the result
+// is deterministic.
+func classifyExposures(m Meta, leg func(Meta) []Category) []Category {
+	classes := make([]string, 0, len(m.Exposures))
+	for c := range m.Exposures {
+		classes = append(classes, c)
+	}
+	sort.Strings(classes)
+	seen := map[Category]bool{}
+	var out []Category
+	for _, class := range classes {
+		for _, cat := range leg(Meta{AssetClass: class}) {
+			if !seen[cat] {
+				seen[cat] = true
+				out = append(out, cat)
+			}
+		}
+	}
+	return out
+}
+
+// regimeClassify drives the mapping from asset_class to macro regimes. Stacked
+// funds are classified leg-by-leg from their exposures; bond duration and FX
+// hedging refine the sovereign branch; a few equity keywords add an inflation
+// leg (gold miners, energy, value/dividend tilts).
 func regimeClassify(m Meta) []Category {
+	if len(m.Exposures) > 0 {
+		return classifyExposures(m, regimeLeg)
+	}
+	return regimeLeg(m)
+}
+
+func regimeLeg(m Meta) []Category {
 	has := hinter(m)
 	switch m.AssetClass {
 	case "equity":
@@ -101,7 +136,17 @@ func regimeClassify(m Meta) []Category {
 	case "corporate-bond":
 		return []Category{Growth, Deflation}
 	case "aggregate-bond", "government-bond":
-		return []Category{Deflation}
+		switch {
+		case m.Duration > 0 && m.Duration < 2:
+			// very short maturities behave like cash, not a duration hedge
+			return []Category{Deflation}
+		case m.Duration >= 10 && !m.CurrencyHedged:
+			// long sovereign duration rallies in a crisis on both rates and,
+			// left unhedged, the safe-haven currency bid
+			return []Category{Deflation, Crisis}
+		default:
+			return []Category{Deflation}
+		}
 	case "inflation-linked-bond":
 		return []Category{Inflation, Deflation}
 	case "money-market":
@@ -119,13 +164,24 @@ func regimeClassify(m Meta) []Category {
 	}
 }
 
-// factorClassify is a best-effort mapping to risk factors. Equity factor
-// tilts are read from the benchmark/name; bonds split into term and credit;
-// every non-factor diversifier lands in "alternative".
+// factorClassify is a best-effort mapping to risk factors. Equity tilts are
+// read from the explicit factors list (falling back to benchmark/name
+// keywords); bond duration splits term from cash; stacked funds are classified
+// leg-by-leg; every non-factor diversifier lands in "alternative".
 func factorClassify(m Meta) []Category {
+	if len(m.Exposures) > 0 {
+		return classifyExposures(m, factorLeg)
+	}
+	return factorLeg(m)
+}
+
+func factorLeg(m Meta) []Category {
 	has := hinter(m)
 	switch m.AssetClass {
 	case "equity":
+		if len(m.Factors) > 0 {
+			return equityFactors(m.Factors)
+		}
 		switch {
 		case has("gold", "mining", "miner", "precious metal"):
 			return []Category{Alternative}
@@ -154,8 +210,14 @@ func factorClassify(m Meta) []Category {
 	case "real-estate":
 		return []Category{Market, Alternative}
 	case "government-bond", "inflation-linked-bond":
+		if m.Duration > 0 && m.Duration < 2 {
+			return []Category{Cash} // money-market-like, negligible term risk
+		}
 		return []Category{Term}
 	case "aggregate-bond":
+		if m.Duration > 0 && m.Duration < 2 {
+			return []Category{Cash}
+		}
 		return []Category{Term, Credit}
 	case "corporate-bond":
 		return []Category{Credit, Term}
@@ -164,6 +226,26 @@ func factorClassify(m Meta) []Category {
 	default: // gold, broad-commodity, managed-futures, long-volatility, tail-risk, other
 		return []Category{Alternative}
 	}
+}
+
+// equityFactors maps explicit factor tilts to factor categories, always on top
+// of the broad market exposure. low-vol has no dedicated bucket (it is a
+// defensive market exposure) and contributes nothing extra.
+func equityFactors(factors []string) []Category {
+	out := []Category{Market}
+	for _, f := range factors {
+		switch f {
+		case "size":
+			out = append(out, Size)
+		case "value":
+			out = append(out, Value)
+		case "momentum":
+			out = append(out, Momentum)
+		case "quality":
+			out = append(out, Quality)
+		}
+	}
+	return out
 }
 
 // Coverage returns the total weight of the holdings that help in each
