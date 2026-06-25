@@ -31,7 +31,8 @@
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
     ],
-    "since": "2007-04-03"
+    "since": "2007-04-03",
+    "duration": 6.0
   },
   {
     "id": "BTAL",
@@ -410,7 +411,10 @@
     "sources": [
       "https://www.amundietf.lu/en/professional/products/equity/amundi-nasdaq100-daily-2x-leveraged-ucits-etf-acc/fr0010342592"
     ],
-    "since": "2007-01-19"
+    "since": "2007-01-19",
+    "exposures": {
+      "equity": 2.0
+    }
   },
   {
     "id": "FR0010510800",
@@ -437,7 +441,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010510800"
     ],
-    "since": "2008-06-10"
+    "since": "2008-06-10",
+    "duration": 0.05
   },
   {
     "id": "FR0010755611",
@@ -464,7 +469,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010755611"
     ],
-    "since": "2009-09-25"
+    "since": "2009-09-25",
+    "exposures": {
+      "equity": 2.0
+    }
   },
   {
     "id": "FR0011147594",
@@ -491,7 +499,8 @@
     "sources": [
       "https://www.flornoyferri.com/nos_fonds/omnibond/"
     ],
-    "since": "2011-12-16"
+    "since": "2011-12-16",
+    "duration": 6.0
   },
   {
     "id": "FR0011550185",
@@ -872,7 +881,11 @@
     "sources": [
       "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/"
     ],
-    "since": "2024-09-25"
+    "since": "2024-09-25",
+    "factors": [
+      "size",
+      "value"
+    ]
   },
   {
     "id": "IE0003XJA0J9",
@@ -1039,7 +1052,11 @@
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc"
     ],
-    "since": "2024-11-05"
+    "since": "2024-11-05",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
   },
   {
     "id": "IE000A89Y2G7",
@@ -1138,7 +1155,11 @@
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsx-wisdomtree-us-efficient-core-ucits-etf---usd-acc"
     ],
-    "since": "2023-10-10"
+    "since": "2023-10-10",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
   },
   {
     "id": "IE000O1VI174",
@@ -1167,7 +1188,11 @@
     "sources": [
       "https://www.wintonucits.com/portable-alpha"
     ],
-    "since": "2025-03-27"
+    "since": "2025-03-27",
+    "exposures": {
+      "equity": 1.0,
+      "managed-futures": 1.0
+    }
   },
   {
     "id": "IE000RHYOR04",
@@ -1197,7 +1222,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000RHYOR04"
     ],
-    "since": "2022-04-27"
+    "since": "2022-04-27",
+    "duration": 0.4
   },
   {
     "id": "IE000WIQIPT2",
@@ -1226,7 +1252,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000WIQIPT2"
     ],
-    "since": "2022-04-06"
+    "since": "2022-04-06",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "duration": 2.5
   },
   {
     "id": "IE000XZSV718",
@@ -1372,7 +1401,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0032895942"
     ],
-    "since": "2003-05-07"
+    "since": "2003-05-07",
+    "duration": 7.0
   },
   {
     "id": "IE00B0M62X26",
@@ -1405,7 +1435,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26"
     ],
-    "since": "2005-11-15"
+    "since": "2005-11-15",
+    "duration": 8.0
   },
   {
     "id": "IE00B0M63284",
@@ -1550,7 +1581,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS913"
     ],
-    "since": "2007-11-08"
+    "since": "2007-11-08",
+    "duration": 16.5
   },
   {
     "id": "IE00B1FZSC47",
@@ -1579,7 +1611,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZSC47"
     ],
-    "since": "2007-11-08"
+    "since": "2007-11-08",
+    "duration": 7.0
   },
   {
     "id": "IE00B1XNHC34",
@@ -1650,7 +1683,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B2NPKV68"
     ],
-    "since": "2008-03-18"
+    "since": "2008-03-18",
+    "duration": 7.0
   },
   {
     "id": "IE00B3DKXQ41",
@@ -1680,7 +1714,8 @@
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
     ],
-    "since": "2009-03-06"
+    "since": "2009-03-06",
+    "duration": 6.5
   },
   {
     "id": "IE00B3F81R35",
@@ -1710,7 +1745,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3F81R35"
     ],
-    "since": "2009-04-07"
+    "since": "2009-04-07",
+    "duration": 4.5
   },
   {
     "id": "IE00B3RBWM25",
@@ -1790,7 +1826,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91"
     ],
-    "since": "2010-04-14"
+    "since": "2010-04-14",
+    "duration": 1.9
   },
   {
     "id": "IE00B3VVMM84",
@@ -2212,7 +2249,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4WXJJ64"
     ],
-    "since": "2009-09-24"
+    "since": "2009-09-24",
+    "duration": 7.5
   },
   {
     "id": "IE00B4X9L533",
@@ -2474,7 +2512,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B5M4WH52"
     ],
-    "since": "2011-01-27"
+    "since": "2011-01-27",
+    "duration": 5.0
   },
   {
     "id": "IE00B66F4759",
@@ -2504,7 +2543,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B66F4759"
     ],
-    "since": "2010-02-25"
+    "since": "2010-02-25",
+    "duration": 3.0
   },
   {
     "id": "IE00B67B7N93",
@@ -2534,7 +2574,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B67B7N93"
     ],
-    "since": "2009-03-05"
+    "since": "2009-03-05",
+    "duration": 0.4
   },
   {
     "id": "IE00B6R52259",
@@ -2620,7 +2661,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B6SPMN59"
     ],
-    "since": "2012-10-30"
+    "since": "2012-10-30",
+    "factors": [
+      "low-vol"
+    ]
   },
   {
     "id": "IE00B6YX5C33",
@@ -2698,7 +2742,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B8FHGS14"
     ],
-    "since": "2012-04-11"
+    "since": "2012-04-11",
+    "factors": [
+      "low-vol"
+    ]
   },
   {
     "id": "IE00B8GF1M35",
@@ -2766,7 +2813,10 @@
     "sources": [
       "https://www.nl.vanguard/professional/product/etf/equity/9506/ftse-all-world-high-dividend-yield-ucits-etf-usd-distributing"
     ],
-    "since": "2013-05-21"
+    "since": "2013-05-21",
+    "factors": [
+      "value"
+    ]
   },
   {
     "id": "IE00B945VV12",
@@ -2852,7 +2902,11 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B9CQXS71"
     ],
-    "since": "2013-05-30"
+    "since": "2013-05-30",
+    "factors": [
+      "value",
+      "quality"
+    ]
   },
   {
     "id": "IE00BD6FTQ80",
@@ -2909,7 +2963,10 @@
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
     ],
-    "since": "2017-11-02"
+    "since": "2017-11-02",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "duration": 6.5
   },
   {
     "id": "IE00BDFL4P12",
@@ -2965,7 +3022,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDQYWQ65"
     ],
-    "since": "2017-10-05"
+    "since": "2017-10-05",
+    "duration": 2.5
   },
   {
     "id": "IE00BDT6FP91",
@@ -2997,7 +3055,9 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDT6FP91"
     ],
-    "since": "2017-11-30"
+    "since": "2017-11-30",
+    "currency_hedged": true,
+    "hedged_to": "EUR"
   },
   {
     "id": "IE00BF0BCP69",
@@ -3054,7 +3114,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BF3N7102"
     ],
-    "since": "2018-01-16"
+    "since": "2018-01-16",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "duration": 3.5
   },
   {
     "id": "IE00BF4RFH31",
@@ -3096,7 +3159,10 @@
     "sources": [
       "https://www.blackrock.com/lu/individual/products/296576/ishares-msci-world-small-cap-ucits-etf"
     ],
-    "since": "2018-01-23"
+    "since": "2018-01-23",
+    "factors": [
+      "size"
+    ]
   },
   {
     "id": "IE00BFMXXD54",
@@ -3213,7 +3279,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BG8BCY43"
     ],
-    "since": "2018-11-15"
+    "since": "2018-11-15",
+    "duration": 0.4
   },
   {
     "id": "IE00BGCSB447",
@@ -3243,7 +3310,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BGCSB447"
     ],
-    "since": "2019-03-21"
+    "since": "2019-03-21",
+    "duration": 0.4
   },
   {
     "id": "IE00BGSF1X88",
@@ -3269,7 +3337,8 @@
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/307243/"
     ],
-    "since": "2019-02-20"
+    "since": "2019-02-20",
+    "duration": 0.4
   },
   {
     "id": "IE00BGV5VN51",
@@ -3506,7 +3575,12 @@
     "sources": [
       "https://am.jpmorgan.com/gb/en/asset-management/adv/products/jpm-global-equity-multi-factor-ucits-etf-usd-acc-ie00bjrcll96"
     ],
-    "since": "2019-07-09"
+    "since": "2019-07-09",
+    "factors": [
+      "value",
+      "momentum",
+      "quality"
+    ]
   },
   {
     "id": "IE00BK5BQT80",
@@ -3772,7 +3846,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BLNMYC90"
     ],
-    "since": "2020-02-27"
+    "since": "2020-02-27",
+    "factors": [
+      "size"
+    ]
   },
   {
     "id": "IE00BMC38736",
@@ -3926,7 +4003,10 @@
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/270054/ishares-msci-world-quality-factor-ucits-etf"
     ],
-    "since": "2014-09-30"
+    "since": "2014-09-30",
+    "factors": [
+      "quality"
+    ]
   },
   {
     "id": "IE00BP3QZ825",
@@ -3966,7 +4046,10 @@
     "sources": [
       "https://www.blackrock.com/lu/intermediaries/products/270051/ishares-msci-world-momentum-factor-ucits-etf"
     ],
-    "since": "2014-09-30"
+    "since": "2014-09-30",
+    "factors": [
+      "momentum"
+    ]
   },
   {
     "id": "IE00BP3QZB59",
@@ -4009,7 +4092,10 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BP3QZB59"
     ],
-    "since": "2014-09-30"
+    "since": "2014-09-30",
+    "factors": [
+      "value"
+    ]
   },
   {
     "id": "IE00BSKRJZ44",
@@ -4035,7 +4121,8 @@
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/284433/"
     ],
-    "since": "2020-10-09"
+    "since": "2020-10-09",
+    "duration": 17.0
   },
   {
     "id": "IE00BSPLC298",
@@ -4077,7 +4164,11 @@
     "sources": [
       "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-europe-small-cap-value-weighted-ucits-etf-zprx-gy"
     ],
-    "since": "2015-02-18"
+    "since": "2015-02-18",
+    "factors": [
+      "size",
+      "value"
+    ]
   },
   {
     "id": "IE00BSPLC413",
@@ -4116,7 +4207,11 @@
     "sources": [
       "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy"
     ],
-    "since": "2015-02-18"
+    "since": "2015-02-18",
+    "factors": [
+      "size",
+      "value"
+    ]
   },
   {
     "id": "IE00BTJRMP35",
@@ -4202,7 +4297,11 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BYYHSQ67"
     ],
-    "since": "2009-04-23"
+    "since": "2009-04-23",
+    "factors": [
+      "quality",
+      "value"
+    ]
   },
   {
     "id": "IEF",
@@ -4231,7 +4330,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin="
     ],
-    "since": "2002-07-22"
+    "since": "2002-07-22",
+    "duration": 7.5
   },
   {
     "id": "IVV",
@@ -4406,7 +4506,12 @@
     "sources": [
       "https://www.independance-am.com/en/our-funds/france-small/"
     ],
-    "since": "2002-07-08"
+    "since": "2002-07-08",
+    "factors": [
+      "size",
+      "value",
+      "quality"
+    ]
   },
   {
     "id": "LU0171307068",
@@ -4570,7 +4675,8 @@
     "sources": [
       "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
     ],
-    "since": "2007-12-11"
+    "since": "2007-12-11",
+    "duration": 0.05
   },
   {
     "id": "LU0319687124",
@@ -4759,7 +4865,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1563454310"
     ],
-    "since": "2017-04-18"
+    "since": "2017-04-18",
+    "duration": 7.0
   },
   {
     "id": "LU1681038243",
@@ -4926,7 +5033,12 @@
     "sources": [
       "https://www.independance-am.com/en/our-funds/europe-small/"
     ],
-    "since": "2018-11-13"
+    "since": "2018-11-13",
+    "factors": [
+      "size",
+      "value",
+      "quality"
+    ]
   },
   {
     "id": "LU2655993207",
@@ -5012,7 +5124,11 @@
     "sources": [
       "https://www.independance-am.com/en/our-funds/independance-europe-mid/"
     ],
-    "since": "2024-09-30"
+    "since": "2024-09-30",
+    "factors": [
+      "value",
+      "quality"
+    ]
   },
   {
     "id": "LU2951555585",
@@ -5104,7 +5220,10 @@
     "sources": [
       "https://www.vaneck.com/nl/en/investments/dividend-etf/"
     ],
-    "since": "2015-10-07"
+    "since": "2015-10-07",
+    "factors": [
+      "value"
+    ]
   },
   {
     "id": "NTSX-US",
@@ -5143,7 +5262,11 @@
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx"
     ],
-    "since": "2018-08-02"
+    "since": "2018-08-02",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
   },
   {
     "id": "PFIX",
@@ -5198,7 +5321,8 @@
     "sources": [
       "https://www.pimco.com/us/en/investments/mutual-fund/preferred-and-capital-securities-fund/c"
     ],
-    "since": "2008-04-30"
+    "since": "2008-04-30",
+    "duration": 4.0
   },
   {
     "id": "QNZIX",
@@ -5250,7 +5374,11 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051"
     ],
-    "since": "2023-02-07"
+    "since": "2023-02-07",
+    "exposures": {
+      "aggregate-bond": 1.0,
+      "managed-futures": 1.0
+    }
   },
   {
     "id": "RSSB",
@@ -5277,7 +5405,11 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042"
     ],
-    "since": "2023-12-04"
+    "since": "2023-12-04",
+    "exposures": {
+      "equity": 1.0,
+      "government-bond": 1.0
+    }
   },
   {
     "id": "RSST",
@@ -5304,7 +5436,11 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J8163"
     ],
-    "since": "2023-09-06"
+    "since": "2023-09-06",
+    "exposures": {
+      "equity": 1.0,
+      "managed-futures": 1.0
+    }
   },
   {
     "id": "SHY",
@@ -5333,7 +5469,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US4642874576"
     ],
-    "since": "2002-07-22"
+    "since": "2002-07-22",
+    "duration": 1.9
   },
   {
     "id": "SPEA",
@@ -5401,7 +5538,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin="
     ],
-    "since": "2002-07-22"
+    "since": "2002-07-22",
+    "duration": 17.0
   },
   {
     "id": "URTH",
@@ -5470,7 +5608,8 @@
     "sources": [
       "https://investor.vanguard.com/investment-products/mutual-funds/profile/vbmfx"
     ],
-    "since": "1986-12-11"
+    "since": "1986-12-11",
+    "duration": 6.0
   },
   {
     "id": "VOO",
@@ -5943,7 +6082,8 @@
     "sources": [
       "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd"
     ],
-    "since": "2009-10-30"
+    "since": "2009-10-30",
+    "duration": 26.0
   },
   {
     "id": "GDE",
@@ -5981,7 +6121,11 @@
       "https://www.wisdomtree.com/investments/etfs/alternatives/gde",
       "https://stockanalysis.com/etf/gde/"
     ],
-    "since": "2022-03-17"
+    "since": "2022-03-17",
+    "exposures": {
+      "equity": 0.9,
+      "gold": 0.9
+    }
   },
   {
     "id": "GDMN",
@@ -6017,7 +6161,11 @@
       "https://www.wisdomtree.com/investments/etfs/alternatives/gdmn",
       "https://stockanalysis.com/etf/gdmn/"
     ],
-    "since": "2021-12-16"
+    "since": "2021-12-16",
+    "exposures": {
+      "equity": 0.9,
+      "gold": 0.9
+    }
   },
   {
     "id": "NTSI",
@@ -6059,7 +6207,11 @@
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntsi",
       "https://stockanalysis.com/etf/ntsi/"
     ],
-    "since": "2021-05-20"
+    "since": "2021-05-20",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
   },
   {
     "id": "NTSE",
@@ -6101,7 +6253,11 @@
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntse",
       "https://stockanalysis.com/etf/ntse/"
     ],
-    "since": "2021-05-20"
+    "since": "2021-05-20",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
   },
   {
     "id": "PSLDX",
@@ -6138,7 +6294,11 @@
       "https://www.pimco.com/us/en/investments/mutual-fund/stocksplus-long-duration-fund",
       "https://www.optimizedportfolio.com/psldx/"
     ],
-    "since": "2007-08-31"
+    "since": "2007-08-31",
+    "exposures": {
+      "equity": 1.0,
+      "government-bond": 1.0
+    }
   },
   {
     "id": "QSPRX",
