@@ -61,6 +61,30 @@ func TestCoverageAndGaps(t *testing.T) {
 	}
 }
 
+func TestCoverageExposureWeighted(t *testing.T) {
+	// A 50% NTSX-style 90/60 stacked fund + 50% plain equity. The stacked
+	// fund contributes its leg notionals, not a flat weight: equity legs sum
+	// to growth, the bond leg to deflation.
+	holdings := []Holding{
+		{ID: "EQ", Weight: 0.5, HasMeta: true, Meta: Meta{AssetClass: "equity"}},
+		{ID: "NTSX", Weight: 0.5, HasMeta: true, Meta: Meta{
+			AssetClass: "multi-asset",
+			Exposures:  map[string]float64{"equity": 0.9, "government-bond": 0.6},
+		}},
+	}
+	cov, _ := Coverage(holdings, RegimeFramework())
+	// growth: 0.5 (plain equity) + 0.5*0.9 (NTSX equity leg) = 0.95
+	// deflation: 0.5*0.6 (NTSX bond leg) = 0.30
+	if math.Abs(cov[Growth]-0.95) > 1e-9 || math.Abs(cov[Deflation]-0.30) > 1e-9 {
+		t.Fatalf("exposure-weighted coverage = %v, want growth 0.95 deflation 0.30", cov)
+	}
+	// Factor framework: the bond leg is intermediate duration → term.
+	fcov, _ := Coverage(holdings, FactorFramework())
+	if math.Abs(fcov[Market]-0.95) > 1e-9 || math.Abs(fcov[Term]-0.30) > 1e-9 {
+		t.Fatalf("factor coverage = %v, want market 0.95 term 0.30", fcov)
+	}
+}
+
 func TestCorrelationAndDiversification(t *testing.T) {
 	a := []float64{0.01, -0.01, 0.01, -0.01, 0.01, -0.01}
 	if c := Correlation(a, a); math.Abs(c-1) > 1e-9 {
