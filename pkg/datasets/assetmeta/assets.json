@@ -6402,5 +6402,311 @@
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0503879685:USD"
     ],
     "since": "2010-08-10"
+  },
+  {
+    "id": "IE000WX7BVB0",
+    "isin": "IE000WX7BVB0",
+    "aliases": [
+      "JEGA",
+      "JEAG"
+    ],
+    "name": "JPMorgan Global Equity Premium Income Active UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "JEAG.L",
+    "currency": "USD",
+    "fees": 0.35,
+    "asset_class": "equity",
+    "underlying": "Developed-market large-cap equity (defensive, lower-volatility selection) with a written out-of-the-money index call overlay (equity-linked notes) for monthly option premium",
+    "benchmark_index": "active (MSCI World reference)",
+    "strategy": "covered-call overlay",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Covered-call income: lower equity beta and higher yield, but the call overlay caps upside — trades equity convexity for premium",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000WX7BVB0"
+    ],
+    "since": "2023-11-30"
+  },
+  {
+    "id": "LU2941599081",
+    "isin": "LU2941599081",
+    "aliases": [
+      "JCL0"
+    ],
+    "name": "Janus Henderson Tabula EUR AAA CLO UCITS ETF EUR Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "JCL0.DE",
+    "currency": "EUR",
+    "fees": 0.35,
+    "asset_class": "corporate-bond",
+    "underlying": "European AAA-rated collateralised loan obligations (senior secured, floating-rate corporate credit); up to 30% non-European AAA CLOs",
+    "benchmark_index": "J.P. Morgan EUR CLOIE AAA",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash — a cash-plus building block, not a duration hedge",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081"
+    ],
+    "since": "2024-12-23"
+  },
+  {
+    "id": "IE00BQQP9F84",
+    "isin": "IE00BQQP9F84",
+    "aliases": [
+      "GDX"
+    ],
+    "name": "VanEck Gold Miners UCITS ETF",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "GDX.L",
+    "currency": "USD",
+    "fees": 0.53,
+    "asset_class": "equity",
+    "underlying": "Global gold and silver mining companies",
+    "benchmark_index": "MarketVector Global Gold Miners",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": {
+      "Materials": 100
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price — equity risk plus amplified gold sensitivity",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84"
+    ],
+    "since": "2015-03-25"
+  },
+  {
+    "id": "LU1079841513",
+    "isin": "LU1079841513",
+    "aliases": [
+      "UCAP"
+    ],
+    "name": "Ossiam Shiller Barclays CAPE US Sector Value TR UCITS ETF 1C USD",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "UCAP.L",
+    "currency": "USD",
+    "fees": 0.65,
+    "asset_class": "equity",
+    "underlying": "US equity rotated into the sectors cheapest on cyclically-adjusted (Shiller CAPE) earnings, with a momentum screen to drop the worst recent performer",
+    "benchmark_index": "Shiller Barclays CAPE US Sector Value Net TR",
+    "strategy": "rules-based value rotation",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "factors": [
+      "value"
+    ],
+    "notes": "CAPE quant: systematic US sector value tilt driven by cyclically-adjusted valuations rather than market cap",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1079841513"
+    ],
+    "since": "2015-06-22"
+  },
+  {
+    "id": "IE00BF4G6Y48",
+    "isin": "IE00BF4G6Y48",
+    "aliases": [
+      "JREG"
+    ],
+    "name": "JPMorgan Global Research Enhanced Index Equity (ESG) UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "JREG.L",
+    "currency": "USD",
+    "fees": 0.25,
+    "asset_class": "equity",
+    "underlying": "Developed-market equity tracking MSCI World closely, with small fundamental-research over/underweights at tightly controlled tracking error",
+    "benchmark_index": "MSCI World",
+    "strategy": "research-enhanced index",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Enhanced indexing: MSCI World beta plus modest stock-selection alpha at low tracking error and near-passive cost",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BF4G6Y48"
+    ],
+    "since": "2018-10-10"
+  },
+  {
+    "id": "IE00BZ0PKT83",
+    "isin": "IE00BZ0PKT83",
+    "aliases": [
+      "IFSW",
+      "FSWD"
+    ],
+    "name": "iShares Edge MSCI World Multifactor UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "IFSW.L",
+    "currency": "USD",
+    "fees": 0.3,
+    "asset_class": "equity",
+    "underlying": "Developed-market equity selected for joint exposure to value, quality, momentum and smaller size",
+    "benchmark_index": "STOXX Developed World Equity Factor Screened",
+    "strategy": "multi-factor",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "factors": [
+      "value",
+      "quality",
+      "momentum",
+      "size"
+    ],
+    "notes": "Integrated multifactor: targets value, quality, momentum and size together in one developed-world sleeve",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ0PKT83"
+    ],
+    "since": "2015-09-04"
+  },
+  {
+    "id": "IE00BZ56SW52",
+    "isin": "IE00BZ56SW52",
+    "aliases": [
+      "GGRA",
+      "GGRG"
+    ],
+    "name": "WisdomTree Global Quality Dividend Growth UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "GGRG.L",
+    "currency": "USD",
+    "fees": 0.38,
+    "asset_class": "equity",
+    "underlying": "Global developed quality companies with growing dividends, weighted by quality and earnings-growth screens",
+    "benchmark_index": "WisdomTree Global Developed Quality Dividend Growth",
+    "strategy": "fundamentally-weighted",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "factors": [
+      "quality"
+    ],
+    "notes": "Quality plus dividend-growth tilt: profitable, defensive companies; typically lower beta than market-cap world",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56SW52"
+    ],
+    "since": "2016-06-03"
+  },
+  {
+    "id": "IE000U5MJOZ6",
+    "isin": "IE000U5MJOZ6",
+    "aliases": [
+      "JEPI",
+      "JEIP"
+    ],
+    "name": "JPMorgan US Equity Premium Income Active UCITS ETF USD Dist",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "JEPI.SW",
+    "currency": "USD",
+    "fees": 0.35,
+    "asset_class": "equity",
+    "underlying": "US large-cap equity (defensive, low-volatility selection) with a written S&P 500 call overlay (equity-linked notes) for monthly income",
+    "benchmark_index": "active (S&P 500 reference)",
+    "strategy": "covered-call overlay",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "US covered-call income: defensive equity plus option premium, lower beta and capped upside. Distributing — the NAV price series excludes payouts, so total return is understated; prefer for income, not growth",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000U5MJOZ6"
+    ],
+    "since": "2024-11-05"
+  },
+  {
+    "id": "IE000EGGFVG6",
+    "isin": "IE000EGGFVG6",
+    "aliases": [
+      "DPGC",
+      "DEGC"
+    ],
+    "name": "Dimensional Global Core Equity UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "DPGC.L",
+    "currency": "USD",
+    "fees": 0.26,
+    "asset_class": "equity",
+    "underlying": "Broad developed-market equity tilted toward smaller-cap, lower-valuation and higher-profitability stocks (systematic Fama-French style)",
+    "benchmark_index": "active (developed market universe)",
+    "strategy": "systematic factor tilt",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "factors": [
+      "size",
+      "value",
+      "quality"
+    ],
+    "notes": "Dimensional core: near-market breadth with integrated small/value/profitability tilts. Short live history (launched Nov 2025)",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000EGGFVG6"
+    ],
+    "since": "2025-11-12"
+  },
+  {
+    "id": "IE000S67ID55",
+    "isin": "IE000S67ID55",
+    "aliases": [
+      "DPGT",
+      "DGTV",
+      "DDGT"
+    ],
+    "name": "Dimensional Global Targeted Value UCITS ETF USD Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "DPGT.L",
+    "currency": "USD",
+    "fees": 0.44,
+    "asset_class": "equity",
+    "underlying": "Developed-market small and mid-cap stocks with a strong tilt to low valuations and high profitability",
+    "benchmark_index": "active (developed small/mid-cap value universe)",
+    "strategy": "systematic factor tilt",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "factors": [
+      "size",
+      "value",
+      "quality"
+    ],
+    "notes": "Dimensional targeted value: a concentrated small-cap value + profitability tilt, the aggressive end of the factor range. Short live history (launched Nov 2025)",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000S67ID55"
+    ],
+    "since": "2025-11-12"
   }
 ]
