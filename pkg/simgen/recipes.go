@@ -37,7 +37,53 @@ func All() []Recipe {
 		vtRecipe(),
 		shyRecipe(),
 		scvwRecipe(),
+		dpgtRecipe(),
 	}
+}
+
+// dpgtRecipe rebuilds the Dimensional Global Targeted Value UCITS ETF
+// (IE000S67ID55, launched 2025) from Dimensional's own long-running US and
+// international small-cap value mutual funds — the same shop and factor design
+// — blended 60/40 US / developed-ex-US, net of the 0.44% TER. The only market
+// quote is the LSE line in GBP, so the USD blend is re-expressed in GBP at the
+// GBP/USD spot rate (GBPUSD=X, ~2004→, sets the start) to match the real
+// series, which is grafted from inception.
+func dpgtRecipe() Recipe {
+	return Recipe{
+		ID:              "IE000S67ID55",
+		Name:            "Dimensional Global Targeted Value — DFA small-cap value blend (GBP)",
+		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (~2004→), real DPGT grafted from 2025",
+		Build:           dpgtBuild,
+		ValidateAgainst: "IE000S67ID55",
+		SpliceReal:      "IE000S67ID55",
+	}
+}
+
+// dpgtBuild builds the 60/40 DFA small-cap value blend in USD, then converts
+// each daily return into GBP via the GBP/USD spot rate (a GBP-denominated NAV
+// equals the USD NAV divided by the USD-per-GBP rate), so the simulated
+// history matches the GBP quote the real DPGT trades in.
+func dpgtBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	legs := []Leg{{ID: "DFSVX", Weight: 0.60}, {ID: "DISVX", Weight: 0.40}}
+	fr, err := BuildFrame(f, []string{"DFSVX", "DISVX", "GBPUSD=X"}, from)
+	if err != nil {
+		return nil, err
+	}
+	usd, err := Composite(fr, legs, "", 0.0044)
+	if err != nil {
+		return nil, err
+	}
+	fx := fr.Returns["GBPUSD=X"] // daily return of USD per GBP
+	s := &marketdata.Series{Name: "DPGT (USD small-value blend expressed in GBP)", Source: "simdata"}
+	val := 100.0
+	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[0], Close: val})
+	for i := 1; i < len(usd); i++ {
+		rUSD := usd[i]/usd[i-1] - 1
+		rGBP := (1+rUSD)/(1+fx[i]) - 1
+		val *= 1 + rGBP
+		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[i], Close: val})
+	}
+	return s, nil
 }
 
 // scvwRecipe rebuilds US small-cap value from DFA US Small Cap Value
