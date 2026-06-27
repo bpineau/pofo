@@ -3,7 +3,7 @@
 # name: Return Stacked Global Stocks & Bonds
 # method: 100% world equity + 100% (VFITX − cash) Treasury stack (1999→), real RSSB grafted from 2023
 # validation: corr=0.950 (weekly 0.987) beta=1.04 TE=5.3%/yr CAGR sim 22.27% vs real 20.72% (overlap 631 d from 2023-12-05 to 2026-06-12) vs RSSB
-# generated: 2026-06-13
+# generated: 2026-06-25
 date,close
 1999-08-17,2.356056
 1999-08-18,2.349375
