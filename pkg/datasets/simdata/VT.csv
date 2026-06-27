@@ -3,7 +3,7 @@
 # name: Vanguard Total World Stock
 # method: 0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM world, 1999→), real VT grafted from 2008
 # validation: corr=0.976 (weekly 0.992) beta=1.03 TE=4.5%/yr CAGR sim 9.67% vs real 8.86% (overlap 4518 d from 2008-06-26 to 2026-06-12) vs VT
-# generated: 2026-06-13
+# generated: 2026-06-25
 date,close
 1999-08-17,23.815617
 1999-08-18,23.729565
