@@ -1,7 +1,7 @@
 // Package report formats portfolio comparison results from a single model
 // (Page):
 //
-//   - Render writes a self-contained HTML document — embedded SVG charts,
+//   - Render writes a self-contained HTML document (embedded SVG charts,
 //     comparison and statistics table up top, detailed per-portfolio
 //     sections folded (<details>), no JavaScript;
 //   - RenderText writes the summary for the terminal (aligned table,

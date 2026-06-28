@@ -54,9 +54,9 @@ type Spec struct {
 	BorrowSpread float64
 
 	// EnvelopeFees is the additional yearly fee of the hosting envelope
-	// (life insurance, PER, managed account…) set by "#meta extra-fees:X" — fees
+	// (life insurance, PER, managed account…) set by "#meta extra-fees:X", fees
 	// applied on top of the WHOLE portfolio, in addition to the assets'
-	// own TERs — in percent per year;
+	// own TERs, in percent per year;
 	// negative when absent. Unlike asset TERs (already reflected in
 	// prices), it must be deducted from the simulated performance.
 	EnvelopeFees float64
@@ -94,7 +94,7 @@ func ParseFile(path string) (*Spec, error) {
 //
 // Everything after a "#" is a comment; nothing else may follow the optional
 // fee column. Blank lines and lines starting with // are ignored. Lines
-// starting with "#meta" carry per-portfolio directives as key:value pairs —
+// starting with "#meta" carry per-portfolio directives as key:value pairs;
 // currently "rebalance:N" (days between rebalancings, 0 to never rebalance).
 // Weights accept a decimal comma and an optional % suffix. If the weights do
 // not sum to 100 they are normalized and a warning is recorded.
@@ -133,7 +133,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		if len(rest) > 0 {
 			fees, ferr := parseNumber(rest[0])
 			if ferr != nil {
-				return nil, fmt.Errorf("line %d: unexpected %q after the ticker — write a TER (number) or move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
+				return nil, fmt.Errorf("line %d: unexpected %q after the ticker; write a TER (number) or move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
 			}
 			if fees < 0 || fees > 20 {
 				return nil, fmt.Errorf("line %d: fees %q out of range (0–20 %%/year)", lineNo, rest[0])
@@ -142,7 +142,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 			rest = rest[1:]
 		}
 		if len(rest) > 0 {
-			return nil, fmt.Errorf("line %d: unexpected %q after the TER — move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
+			return nil, fmt.Errorf("line %d: unexpected %q after the TER; move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
 		}
 		spec.Holdings = append(spec.Holdings, h)
 	}
@@ -182,12 +182,12 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	}
 	for _, h := range spec.Holdings {
 		if h.RawWeight > 100 {
-			return nil, fmt.Errorf("weight %.4g %% > 100 %% — add \"#meta leverage:on\" if the exposure is intentional", h.RawWeight)
+			return nil, fmt.Errorf("weight %.4g %% > 100 %%; add \"#meta leverage:on\" if the exposure is intentional", h.RawWeight)
 		}
 	}
 	if math.Abs(sum-100) > 0.5 {
 		spec.Warnings = append(spec.Warnings,
-			fmt.Sprintf("weights sum to %.4g %% instead of 100 %% — they were normalized", sum))
+			fmt.Sprintf("weights sum to %.4g %% instead of 100 %%, they were normalized", sum))
 	}
 	for i := range spec.Holdings {
 		spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / sum

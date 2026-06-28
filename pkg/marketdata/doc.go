@@ -16,7 +16,7 @@
 //     independent of search engines;
 //  4. otherwise, a multi-source resolution: every candidate from the Yahoo
 //     search ("fund" entries first), then the Financial Times, then the
-//     Morningstar identifier discovered via Boursorama — the series with
+//     Morningstar identifier discovered via Boursorama; the series with
 //     the deepest history wins, and the resolution is cached.
 //
 // # Sources
@@ -42,7 +42,7 @@
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
 // (pkg/datasets/simdata/) produced by the simgen package; ExtendBack splices
-// those series — or a proxy (ProxySymbol) — in front of the real quotes.
+// those series, or a proxy (ProxySymbol), in front of the real quotes.
 // The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
 // decoded by SplitSim.
 //

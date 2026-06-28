@@ -144,7 +144,7 @@ func RankCandidates(gaps []Category, cov map[Category]float64, candidates []Cand
 		return out[a].MedSharpeGain > out[b].MedSharpeGain
 	})
 	// Keep the suggestions diverse: at most one per asset class (two golds
-	// add nothing the second time — the whole point is diversification).
+	// add nothing the second time, the whole point is diversification).
 	seen := map[string]bool{}
 	kept := out[:0]
 	for _, s := range out {
