@@ -45,7 +45,6 @@ type Result struct {
 	Cards        []Card `json:"cards"`
 	BufferSVG    string `json:"bufferSvg"`
 	RuinCurveSVG string `json:"ruinCurveSvg"`
-	SurfaceSVG   string `json:"surfaceSvg"`
 	RecoverySVG  string `json:"recoverySvg"`
 }
 
@@ -128,17 +127,6 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		bars = append(bars, chart.Bar{Label: fmt.Sprintf("%dy", b.Years), Value: b.Share})
 	}
 
-	// ruin surface: buffer x (real CAGR for the parametric model, else
-	// spending floor, which the historical models can vary).
-	xs := bufVals
-	xParam, yParam := decumul.BufferYears, decumul.Mu
-	ys := []float64{0.02, 0.03, 0.035, 0.04, 0.045, 0.05}
-	if _, ok := p.Source.(scenario.ParametricSource); !ok {
-		yParam = decumul.NeedAnnual
-		ys = []float64{36000, 42000, 48000, 54000, 60000}
-	}
-	surf := p.Sweep2D(xParam, yParam, xs, ys, pr.NPaths/2+1, simWorkers, seed)
-
 	return Result{
 		Cards: []Card{
 			{"Ruin", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
@@ -148,7 +136,6 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		},
 		BufferSVG:    chart.Bars(chart.Options{Title: "Ruin % by buffer years"}, barsFromSweep(sweep)),
 		RuinCurveSVG: chart.Bars(chart.Options{Title: "Terminal wealth p50 (k€) by buffer"}, terminalBars(sweep)),
-		SurfaceSVG:   chart.Heatmap(chart.Options{Title: "Ruin: buffer (x) × scenario axis (y)"}, surfaceData(surf)),
 		RecoverySVG:  chart.Bars(chart.Options{Title: "Recovery-time distribution"}, bars),
 	}
 }
@@ -169,6 +156,3 @@ func terminalBars(s []decumul.SweepPoint) []chart.Bar {
 	return out
 }
 
-func surfaceData(s decumul.Surface) chart.HeatmapData {
-	return chart.HeatmapData{Xs: s.Xs, Ys: s.Ys, Z: s.Ruin, XLabel: "buffer years"}
-}
