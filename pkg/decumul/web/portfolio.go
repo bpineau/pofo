@@ -62,10 +62,18 @@ func lastPerMonth(points []marketdata.Point) []marketdata.Point {
 	return out
 }
 
-// FitParametric returns the annualised mean and standard deviation of the
-// weighted real returns of a monthly panel, to seed the parametric mu/sigma
-// sliders. The monthly returns are compounded into annual returns first, so
-// the figures are directly comparable to the (annual) parametric model.
+// FitParametric returns the mean and standard deviation of the weighted
+// real ANNUAL returns of a monthly panel, to seed the parametric mu/sigma
+// sliders. Both are the directly relevant quantities for an i.i.d. annual
+// model: mu is the arithmetic mean of the realised annual real returns and
+// sigma is their dispersion.
+//
+// This sigma is typically BELOW the volatility shown on the main report,
+// which annualises daily returns (×√252). The two measure different things:
+// daily-annualised vol overstates the realised dispersion of annual returns
+// whenever returns mean-revert or the strategy trends (vol drag). The annual
+// dispersion is the honest input for the annual kernel; the slider lets the
+// user raise sigma toward the headline figure for a more conservative test.
 func FitParametric(panel scenario.Panel, weights []float64) (mu, sigma float64) {
 	annual := scenario.Annualize(panel.Combine(weights), 12)
 	if len(annual) == 0 {
