@@ -30,8 +30,11 @@ type Params struct {
 	Model         string    `json:"model"` // "parametric" (default), "bootstrap", "cohorts"
 }
 
-// Result is the JSON returned for one parameter set.
+// Result is the JSON returned for one parameter set. Note carries a
+// user-facing caveat (e.g. a horizon longer than the available history for
+// the cohorts model), empty when the result is fully usable.
 type Result struct {
+	Note         string            `json:"note"`
 	Cards        map[string]string `json:"cards"`
 	BufferSVG    string            `json:"bufferSvg"`
 	RuinCurveSVG string            `json:"ruinCurveSvg"`
@@ -87,6 +90,14 @@ func ComputeWithPanel(pr Params, panel *scenario.Panel) Result {
 func computeFrom(pr Params, p decumul.Plan) Result {
 	if pr.NPaths == 0 {
 		pr.NPaths = 5000
+	}
+	// The cohorts model cannot extrapolate beyond the available history:
+	// report the limit honestly instead of producing all-zero (certain-ruin)
+	// paths.
+	if hc, ok := p.Source.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
+		return Result{Note: fmt.Sprintf(
+			"Not enough history for a %d-year horizon under the cohorts model (only %d years of aligned data). Use the bootstrap or parametric model, or shorten the horizon.",
+			pr.Years, p.Source.(scenario.HistoricalCohorts).Panel.Periods())}
 	}
 	seed := uint64(7)
 
