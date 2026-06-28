@@ -64,6 +64,69 @@ func TestMonthlyToDailyGeometric(t *testing.T) {
 	}
 }
 
+func TestParseHICPSnapshot(t *testing.T) {
+	const csv = `# a comment line
+# another
+
+2006-01,100.5
+2006-02,101
+2006-03,bad
+2006-04,102.25
+`
+	pts := parseHICPSnapshot(csv)
+	if len(pts) != 3 {
+		t.Fatalf("got %d points, want 3 (comments/blank/unparsable skipped)", len(pts))
+	}
+	if !pts[0].Date.Equal(time.Date(2006, 1, 1, 0, 0, 0, 0, time.UTC)) || pts[0].Close != 100.5 {
+		t.Errorf("first = %v, want {2006-01-01, 100.5}", pts[0])
+	}
+	if pts[2].Close != 102.25 {
+		t.Errorf("third close = %v, want 102.25", pts[2].Close)
+	}
+}
+
+func TestEmbeddedHICPFR(t *testing.T) {
+	pts, ok := embeddedHICP("FR")
+	if !ok {
+		t.Fatal("FR snapshot must be embedded")
+	}
+	if len(pts) < 300 {
+		t.Fatalf("embedded FR snapshot too short: %d months", len(pts))
+	}
+	if !pts[0].Date.Equal(time.Date(1996, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("first anchor = %v, want 1996-01", pts[0].Date)
+	}
+	if _, ok := embeddedHICP("ZZ"); ok {
+		t.Error("unknown geo must not have an embedded snapshot")
+	}
+}
+
+func TestFetchEurostatHICPEmbeddedFallback(t *testing.T) {
+	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
+	calls := 0
+	mux := http.NewServeMux()
+	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		calls++
+		w.WriteHeader(http.StatusBadGateway) // simulate an Eurostat outage
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux) // fresh temp dir: no disk cache
+	defer srv.Close()
+
+	s, err := c.Fetch("^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		t.Fatalf("expected embedded fallback to succeed, got %v", err)
+	}
+	if calls == 0 {
+		t.Error("live API should have been attempted before falling back")
+	}
+	if s.Source != "eurostat" || len(s.Points) < 1000 {
+		t.Errorf("fallback series looks wrong: source=%q points=%d", s.Source, len(s.Points))
+	}
+	if !s.First().Date.Equal(time.Date(1996, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("fallback first date = %v, want 1996-01-01", s.First().Date)
+	}
+}
+
 func TestFetchEurostatHICP(t *testing.T) {
 	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
 	mux := http.NewServeMux()
