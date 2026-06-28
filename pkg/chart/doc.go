@@ -8,4 +8,8 @@
 //     distinct markers per series otherwise);
 //   - Line and Term share the Series model and the default palette,
 //     accessible via PaletteColor to keep multiple charts consistent.
+//
+// Line labels sub-day spans with clock times (HH:MM), so the same
+// renderer draws both daily and intraday series without any extra
+// configuration.
 package chart
