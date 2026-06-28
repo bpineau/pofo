@@ -10,7 +10,7 @@ import (
 // help in it.
 type Category string
 
-// The macro regimes (the growth x inflation quadrants behind All-Weather-
+// The macro regimes: the growth x inflation quadrants behind All-Weather-
 // and Dragon-style portfolios (the default framework).
 const (
 	Growth    Category = "growth"    // rising growth, benign inflation
