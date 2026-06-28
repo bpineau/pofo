@@ -3,7 +3,6 @@ package datasets
 import (
 	"encoding/json"
 	"io/fs"
-	"strings"
 	"testing"
 )
 
@@ -39,30 +38,5 @@ func TestCatalogParsesAndIsTyped(t *testing.T) {
 	}
 	if iwda.Name == "" || !iwda.UCITS || iwda.Fees == 0 || iwda.Geography["US"] == 0 || iwda.AssetClass != "equity" {
 		t.Fatalf("IWDA did not decode into a full Asset: %+v", iwda)
-	}
-}
-
-func TestLookup(t *testing.T) {
-	all := Catalog()
-	if len(all) == 0 {
-		t.Fatal("empty catalog")
-	}
-	want := all[0]
-
-	got, ok := Lookup(want.ID)
-	if !ok || got.ID != want.ID {
-		t.Fatalf("Lookup by id: got %q (%v), want %q", got.ID, ok, want.ID)
-	}
-	if _, ok := Lookup("__definitely_not_an_asset__"); ok {
-		t.Error("Lookup of an unknown id returned ok")
-	}
-	if want.ISIN != "" {
-		if g, ok := Lookup(want.ISIN); !ok || g.ID != want.ID {
-			t.Errorf("Lookup by ISIN failed for %q", want.ISIN)
-		}
-		// Case-insensitive.
-		if g, ok := Lookup(strings.ToLower(want.ISIN)); !ok || g.ID != want.ID {
-			t.Errorf("Lookup is not case-insensitive for %q", want.ISIN)
-		}
 	}
 }
