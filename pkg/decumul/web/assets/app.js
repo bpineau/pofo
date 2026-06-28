@@ -1,30 +1,41 @@
-// Slider definitions: [key, label, min, max, step, default].
+// Slider definitions: [key, label, min, max, step, default, unit].
+// unit drives how the live value is shown: pct (×100, "%"), eur, or int.
 const SLIDERS = [
-  ["capital","Capital (€)",800000,4000000,10000,1800000],
-  ["needAnnual","Spending floor /yr (€)",24000,84000,1000,48000],
-  ["bufferYears","Buffer (years)",0,10,1,3],
-  ["mu","Real growth return",0.01,0.07,0.005,0.045],
-  ["sigma","Volatility",0.06,0.20,0.005,0.12],
-  ["df","Tail df (low=fat)",3,30,1,6],
-  ["bufferReturn","Buffer real return",-0.01,0.02,0.005,0.005],
-  ["years","Horizon (years)",20,45,1,40],
-  ["pensionYear","Pension from year",5,20,1,12],
-  ["pensionAnnual","Pension /yr (€)",0,36000,1000,12000],
-  ["flexCut","Possible spending cut",0,0.40,0.05,0.25],
-  ["taxRate","Flat tax on gains",0,0.35,0.01,0.314],
-  ["nPaths","Simulations",500,5000,500,2000],
+  ["capital","Capital",800000,4000000,10000,1800000,"eur"],
+  ["needAnnual","Spending floor /yr",24000,84000,1000,48000,"eur"],
+  ["bufferYears","Buffer (years)",0,10,1,3,"int"],
+  ["mu","Real growth return",0.01,0.07,0.005,0.045,"pct"],
+  ["sigma","Volatility",0.06,0.20,0.005,0.12,"pct"],
+  ["df","Tail df (low=fat)",3,30,1,6,"int"],
+  ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
+  ["years","Horizon (years)",20,45,1,40,"int"],
+  ["pensionYear","Pension from year",5,20,1,12,"int"],
+  ["pensionAnnual","Pension /yr",0,36000,1000,12000,"eur"],
+  ["flexCut","Possible spending cut",0,0.40,0.05,0.25,"pct"],
+  ["taxRate","Flat tax on gains",0,0.35,0.01,0.314,"pct"],
+  ["nPaths","Simulations",500,5000,500,2000,"int"],
 ];
+
+const FMT = {
+  pct: v => (v * 100).toFixed(1).replace(/\.0$/, "") + "%",
+  eur: v => Math.round(v).toLocaleString("fr-FR") + " €",
+  int: v => String(Math.round(v)),
+};
+const UNIT = {};
+for (const [k, , , , , , unit] of SLIDERS) UNIT[k] = unit;
+const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
+
 const form = document.getElementById("controls");
 const state = {};
-for (const [k,label,min,max,step,def] of SLIDERS) {
+for (const [k, label, min, max, step, def] of SLIDERS) {
   state[k] = def;
   const d = document.createElement("label"); d.className = "ctl";
-  d.innerHTML = `${label}: <span id="v_${k}">${def}</span>
+  d.innerHTML = `<span class="lab"><span>${label}</span><span class="val" id="v_${k}">${fmtVal(k, def)}</span></span>
     <input type="range" min="${min}" max="${max}" step="${step}" value="${def}" id="s_${k}">`;
   form.appendChild(d);
   d.querySelector("input").addEventListener("input", e => {
     state[k] = parseFloat(e.target.value);
-    document.getElementById("v_"+k).textContent = e.target.value;
+    document.getElementById("v_" + k).textContent = fmtVal(k, state[k]);
     schedule();
   });
 }
@@ -41,8 +52,8 @@ let run = async function(){
   document.getElementById("note").textContent = r.note || "";
   for (const id of ["bufferSvg","ruinCurveSvg","surfaceSvg","recoverySvg"])
     document.getElementById(id).innerHTML = r[id] || "";
-  document.getElementById("cards").innerHTML = !r.cards ? "" : Object.entries(r.cards)
-    .map(([k,v]) => `<div class="card"><div>${k}</div><div class="v">${v}</div></div>`).join("");
+  document.getElementById("cards").innerHTML = (r.cards || [])
+    .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");
 };
 
 // Portfolio mode: fetch holdings, add a model toggle and allocation sliders.
@@ -57,11 +68,11 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
     if (typeof v === "number") {
       state[k] = v;
       const s = document.getElementById("s_"+k);
-      if (s) { s.value = v; document.getElementById("v_"+k).textContent = v.toFixed(3); }
+      if (s) { s.value = v; document.getElementById("v_"+k).textContent = fmtVal(k, v); }
     }
   }
   const sel = document.createElement("label"); sel.className="ctl";
-  sel.innerHTML = `Return model:
+  sel.innerHTML = `<span class="lab"><span>Return model</span></span>
     <select id="model"><option value="parametric">parametric</option>
     <option value="bootstrap">historical bootstrap</option>
     <option value="cohorts">historical cohorts</option></select>`;
@@ -70,12 +81,12 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   state.model = "parametric";
   labels.forEach((name,i)=>{
     const d=document.createElement("label"); d.className="ctl";
-    d.innerHTML=`${name}: <span id="w_${i}">${Math.round(weights[i]*100)}</span>%
+    d.innerHTML=`<span class="lab"><span>${name}</span><span class="val" id="w_${i}">${Math.round(weights[i]*100)}%</span></span>
       <input type="range" min="0" max="100" step="1" value="${Math.round(weights[i]*100)}" id="al_${i}">`;
     form.appendChild(d);
     d.querySelector("input").addEventListener("input",e=>{
       weights[i]=parseFloat(e.target.value)/100;
-      document.getElementById("w_"+i).textContent=e.target.value; schedule();});
+      document.getElementById("w_"+i).textContent=e.target.value+"%"; schedule();});
   });
   run();
 });
