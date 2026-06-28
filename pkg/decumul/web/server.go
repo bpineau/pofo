@@ -15,8 +15,15 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(mustSub())))
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
+		meta := map[string]any{"labels": labels, "hasPanel": panel != nil}
+		if panel != nil {
+			mu, sigma := FitParametric(*panel, panel.Weights)
+			meta["weights"] = panel.Weights
+			meta["mu"] = mu
+			meta["sigma"] = sigma
+		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(map[string]any{"labels": labels, "hasPanel": panel != nil})
+		_ = json.NewEncoder(w).Encode(meta)
 	})
 	mux.HandleFunc("/api/sim", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
