@@ -519,7 +519,7 @@ func defaultDataDir() string {
 	return "data"
 }
 
-// runGenSimdata (re)builds the simulated histories (the former standalone
+// runGenSimdata (re)builds the simulated histories, the former standalone
 // simgen command, kept as a sub-mode. Files are written to pkg/datasets/simdata
 // (or -simdata when set): regeneration is a repository activity, and a
 // rebuild re-embeds the result into the binary.
