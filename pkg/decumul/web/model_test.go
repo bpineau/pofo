@@ -21,3 +21,20 @@ func TestComputeWithPanelBootstrap(t *testing.T) {
 		t.Errorf("empty result for bootstrap model")
 	}
 }
+
+func TestComputeWithPanelCohortsTooShort(t *testing.T) {
+	// 8 years of history, 30-year horizon: cohorts cannot extrapolate.
+	panel := scenario.Panel{
+		Returns: [][]float64{{0.08, -0.10, 0.15, 0.05, 0.20, -0.05, 0.12, 0.03}},
+		Weights: []float64{1},
+	}
+	pr := Params{Capital: 1_500_000, NeedAnnual: 48000, Years: 30, TaxRate: 0.30,
+		NPaths: 1000, Model: "cohorts", Weights: []float64{1}}
+	res := ComputeWithPanel(pr, &panel)
+	if res.Note == "" {
+		t.Errorf("expected a note about insufficient history")
+	}
+	if res.Cards["ruin"] != "" {
+		t.Errorf("should not report a misleading ruin figure, got %q", res.Cards["ruin"])
+	}
+}
