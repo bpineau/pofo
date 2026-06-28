@@ -3,7 +3,7 @@ package suggest
 import "sort"
 
 // Group is a set of holdings that move almost identically and belong to the
-// same asset class — effectively one bet held several times.
+// same asset class, effectively one bet held several times.
 type Group struct {
 	IDs     []string
 	Weight  float64 // combined fraction of the portfolio

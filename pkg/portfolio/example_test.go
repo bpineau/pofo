@@ -69,7 +69,7 @@ func ExampleSimulate() {
 
 // With a starting capital and periodic flows, Simulate tracks two series:
 // Values follows the money (contributions included), while Index is the
-// time-weighted return — the one to use for statistics and comparisons.
+// time-weighted return, the one to use for statistics and comparisons.
 func ExampleSimulate_flows() {
 	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	s := &marketdata.Series{Symbol: "FLAT"}

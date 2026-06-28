@@ -10,7 +10,7 @@ import (
 // help in it.
 type Category string
 
-// The macro regimes — the growth x inflation quadrants behind All-Weather-
+// The macro regimes (the growth x inflation quadrants behind All-Weather-
 // and Dragon-style portfolios (the default framework).
 const (
 	Growth    Category = "growth"    // rising growth, benign inflation
@@ -68,7 +68,7 @@ func FactorFramework() Framework {
 // A stacked / efficient-core fund (one with an explicit Exposures breakdown)
 // contributes each leg's notional weight to that leg's categories, so a
 // leveraged 90/60 fund counts 0.9 toward its equity categories and 0.6 toward
-// its bond ones — the economic exposure, not a flat 1.
+// its bond ones, the economic exposure, not a flat 1.
 func (fw Framework) Contribution(m Meta) map[Category]float64 {
 	out := map[Category]float64{}
 	if len(m.Exposures) > 0 && fw.leg != nil {

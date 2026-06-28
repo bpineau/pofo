@@ -244,7 +244,7 @@ func SeriesFromFrame(name string, fr *Frame, values []float64) *marketdata.Serie
 }
 
 // WithRefData returns a Fetcher that serves series found in fsys (CSV files
-// in the simdata format — an os.DirFS of local reference series, used in
+// in the simdata format (an os.DirFS of local reference series, used in
 // development via -refdata) before falling back to the wrapped fetcher.
 // No reference data is bundled; recipes build from fetchable quotes only.
 func WithRefData(fsys fs.FS, fallback Fetcher) Fetcher {

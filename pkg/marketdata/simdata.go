@@ -40,8 +40,8 @@ func ReadSimdata(dir, id string) (*Series, bool, error) {
 	return ReadSimdataFS(os.DirFS(dir), id)
 }
 
-// ReadSimdataFS is ReadSimdata over any fs.FS — typically the datasets
-// embedded in the binary, or os.DirFS for development overrides.
+// ReadSimdataFS is ReadSimdata over any fs.FS, typically the datasets
+// embedded in the binary or os.DirFS for development overrides.
 func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
 	path := sanitizeFilename(CanonicalID(id)) + ".csv"
 	f, err := fsys.Open(path)
