@@ -28,6 +28,7 @@ type Client struct {
 	JustETFBase     string
 	BoursoramaBase  string
 	MorningstarBase string
+	EurostatBase    string
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
@@ -50,6 +51,7 @@ func NewClient(cacheDir string) *Client {
 		JustETFBase:     "https://www.justetf.com",
 		BoursoramaBase:  "https://www.boursorama.com",
 		MorningstarBase: "https://tools.morningstar.fr",
+		EurostatBase:    "https://ec.europa.eu",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
 		retryDelay:      time.Second,
@@ -76,6 +78,9 @@ func (c *Client) Fetch(id string, from time.Time) (*Series, error) {
 	canonical := CanonicalID(id)
 	if canonical != strings.ToUpper(strings.TrimSpace(id)) {
 		c.Logf("%s → %s", strings.ToUpper(strings.TrimSpace(id)), canonical)
+	}
+	if geo, ok := hicpGeo(canonical); ok {
+		return c.fetchHICP(canonical, geo, from)
 	}
 	if IsISIN(canonical) {
 		return c.fetchISIN(canonical, from)

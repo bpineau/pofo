@@ -26,6 +26,13 @@
 // disk (JSON, one file per instrument); a failed refresh serves the stale
 // data with a warning rather than failing.
 //
+// Eurostat serves the Harmonised Index of Consumer Prices under the
+// "^HICP-<geo>" identifiers (^HICP-FR France, ^HICP-EA euro area, …): the
+// monthly all-items index (2015=100) is interpolated to a smooth daily curve,
+// so an inflation series behaves like any other (a chart, a CAGR that reads as
+// average inflation, drawdowns that mark deflation episodes, a deflator for
+// real-return work). It carries no currency.
+//
 // # Intraday
 //
 // Client.Intraday fetches the current trading day's price path for an
