@@ -139,6 +139,28 @@ holds many diversifiers (gold, commodities, managed futures, volatility)
 that are not Fama-French factors and all land in *alternative*, so the
 regime view stays the default.
 
+## Decumulation / FIRE analysis
+
+`pofo -fire` opens a local web explorer that simulates a withdrawal
+(retirement) phase and shows the **probability of ruin** as you drag sliders
+for capital, spending floor, cash-buffer years, real return, volatility, tail
+df, horizon, pension and the flat tax on gains. Charts show the buffer
+arbitrage (ruin vs buffer years), the terminal-wealth trade-off, the
+recovery-time distribution and a 2D ruin surface (buffer × expected return).
+The engine runs in Go (parallel Monte-Carlo); the page only renders.
+
+`pofo -fire portfolio.txt` seeds the model from a real portfolio: it derives
+the return assumptions and a historical real-return panel from the holdings
+(reconstructed back via `SIM`, deflated by `^HICP-FR`), lets you switch
+between a **parametric**, **historical bootstrap** or **historical-cohort**
+projection, and drag each holding's weight to re-test ruin live. Everything is
+in real euros; the model is a fat-tailed hypothesis-exploration tool,
+**not investment advice**.
+
+The reusable pieces live in the library: `pkg/scenario` (return-path
+generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
+and sweeps), with the thin web layer under `pkg/decumul/web`.
+
 ## Main options
 
 | Option | Default | Description |
@@ -158,6 +180,7 @@ regime view stays the default.
 | `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies (bad points, gaps, stale feeds), then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
+| `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
 
@@ -269,10 +292,12 @@ pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, IRR…)
 pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity
 pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
-pkg/chart/        SVG charts (Line) and terminal (Term), shared palette
+pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
 pkg/portfolio/    allocation file format + rebalanced simulation
 pkg/report/       HTML and text rendering of the comparison model
 pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
+pkg/scenario/     return-path generation (parametric, bootstrap, cohorts)
+pkg/decumul/      decumulation/FIRE engine + metrics + sweeps; web/ live UI
 pkg/datasets/     versioned data (embedded at build time) and its QA:
   assetmeta/        catalog asset metadata (classes, factors, regimes…)
   simdata/          permanent simulated histories (spliced at runtime)
