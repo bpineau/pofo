@@ -35,7 +35,7 @@
 // if the identifier does not resolve to a Yahoo symbol, Intraday returns
 // ErrNotCovered (check with errors.Is). The mapping from an IntradaySeries
 // to a chart is caller-side: iterate IntradaySeries.Points and copy
-// Point.Time into Dates and Point.Close into Values on a chart.Series
+// IntradayPoint.Time into Dates and IntradayPoint.Close into Values on a chart.Series
 // before passing it to chart.Line.
 //
 // # Simulated data
