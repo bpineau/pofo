@@ -169,6 +169,16 @@ type tick struct {
 // timeTicks picks round year boundaries producing at most ~10 labels, falling
 // back to evenly spaced month labels for short spans.
 func timeTicks(from, to time.Time) []tick {
+	// Sub-day spans (intraday) get clock-time labels.
+	if d := to.Sub(from); d > 0 && d <= 36*time.Hour {
+		const n = 5
+		out := make([]tick, 0, n+1)
+		for i := 0; i <= n; i++ {
+			t := from.Add(time.Duration(i) * d / n)
+			out = append(out, tick{t, t.Format("15:04")})
+		}
+		return out
+	}
 	years := to.Year() - from.Year()
 	for _, step := range []int{1, 2, 5, 10, 20} {
 		if years/step > 10 {
