@@ -30,7 +30,7 @@ func ExampleLine() {
 	// 2
 }
 
-// Term plots the same series for the terminal — ANSI colors on a TTY,
+// Term plots the same series for the terminal: ANSI colors on a TTY,
 // distinct markers otherwise.
 func ExampleTerm() {
 	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)

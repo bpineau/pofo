@@ -11,7 +11,7 @@
 //     252 trading days;
 //   - Sharpe and Sortino use a zero risk-free rate (like Curvo);
 //     PortfolioVisualizer and LazyPortfolioETF use T-bills and monthly
-//     data — their Sharpe ratios come out ≈ 0.10–0.15 lower;
+//     data; their Sharpe ratios come out ≈ 0.10–0.15 lower;
 //   - Max Drawdown, Ulcer and TTR are measured on daily closes, harsher
 //     than monthly-step tools (COVID 2020: −33.7 % on daily closes
 //     versus ≈ −20 % on monthly closes);

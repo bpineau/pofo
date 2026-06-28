@@ -1,4 +1,4 @@
-# Asset metadata — the bundled catalog
+# Asset metadata: the bundled catalog
 
 `assets.json` is the **single source of truth** for the assets pofo
 bundles. It carries both how to fetch each asset (the resolution fields) and
@@ -12,7 +12,7 @@ Morningstar and index providers. Breakdowns are approximate (whole percents)
 and dated; they describe the instrument, not a precise point-in-time holding.
 Treat `confidence: medium|low` records with extra care and refresh as needed.
 
-## Schema (`assets.json` — array of objects)
+## Schema (`assets.json`: array of objects)
 
 Resolution fields (consumed by `pkg/marketdata`):
 
@@ -42,7 +42,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `distribution` | `accumulating`, `distributing`, `n/a` |
 | `leverage` | `1.0` normal; `2.0` for 2× daily; embedded notional for capital-efficient funds (e.g. `1.5` for a 90/60 structure) |
 | `notes` | one line on the asset's portfolio role / the market regime it serves |
-| `confidence` | `high`, `medium`, `low` — confidence in the breakdowns |
+| `confidence` | `high`, `medium`, `low`: confidence in the breakdowns |
 | `sources` | reference URLs |
 
 ## Adding an asset

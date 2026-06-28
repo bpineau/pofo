@@ -23,7 +23,7 @@ import (
 //     (withholding taxes + 0.24 % TER).
 //   - Canonical daily Max Drawdowns: GFC −55.25 % (S&P TR), COVID
 //     −33.7 %.
-//   - Sharpe/Sortino: in-house conventions (daily, rf = 0) — wide bounds
+//   - Sharpe/Sortino: in-house conventions (daily, rf = 0); wide bounds
 //     meant to catch computation regressions, not convention differences.
 type window struct {
 	name     string

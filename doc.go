@@ -7,25 +7,25 @@
 //
 // The toolkit is a layered set of focused packages:
 //
-//   - pkg/datasets — the bundled, versioned data, embedded into the binary:
+//   - pkg/datasets: the bundled, versioned data, embedded into the binary:
 //     the curated asset catalog (assetmeta/assets.json, typed as
 //     datasets.Asset) and the permanent simulated histories (simdata/).
 //     This is the single source of truth other packages read from.
-//   - pkg/marketdata — fetches, caches and post-processes daily and intraday
+//   - pkg/marketdata: fetches, caches and post-processes daily and intraday
 //     prices from public sources, addressed by ticker, ISIN or alias; resolves
 //     identifiers against the embedded catalog and aligns trading calendars.
-//   - pkg/metrics — risk/return statistics (CAGR, volatility, Sharpe,
+//   - pkg/metrics: risk/return statistics (CAGR, volatility, Sharpe,
 //     Sortino, Ulcer, max drawdown, time-to-recovery, Beta, IRR).
-//   - pkg/optimize — long-only weights for an objective (max-sharpe,
+//   - pkg/optimize: long-only weights for an objective (max-sharpe,
 //     min-volatility, risk-parity) from the assets' historical returns.
-//   - pkg/portfolio — the allocation file format and the rebalanced,
+//   - pkg/portfolio: the allocation file format and the rebalanced,
 //     fee-aware simulation that replays a portfolio over time.
-//   - pkg/suggest — structure-first analysis: regime coverage, redundancy
+//   - pkg/suggest: structure-first analysis: regime coverage, redundancy
 //     and out-of-sample-validated gap-filling suggestions from the catalog.
-//   - pkg/simgen — reconstruction of the missing past of complex assets
+//   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
-//   - pkg/chart — dependency-free SVG and terminal charts (line, pie).
-//   - pkg/report — HTML and text rendering of a portfolio-comparison model.
+//   - pkg/chart: dependency-free SVG and terminal charts (line, pie).
+//   - pkg/report: HTML and text rendering of a portfolio-comparison model.
 //
 // # Typical pipeline
 //

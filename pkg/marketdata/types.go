@@ -2,7 +2,7 @@ package marketdata
 
 import "time"
 
-// dayUTC truncates a time to its civil date at 00:00 UTC — the invariant
+// dayUTC truncates a time to its civil date at 00:00 UTC, the invariant
 // every Point.Date in this package respects.
 func dayUTC(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
