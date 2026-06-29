@@ -24,6 +24,33 @@ func TestCTOFlatTaxGrossUp(t *testing.T) {
 	}
 }
 
+// When the sale is capped at the available growth, the gain fraction (and thus
+// the tax) must be computed on the gross actually sold, not implied from the
+// requested net; otherwise the reported tax can even go negative.
+func TestCTOFlatTaxGrossUpCapped(t *testing.T) {
+	tax := CTOFlatTax{Rate: 0.5}
+	// Want 70k net but only 60k of growth available, all at a 0.5 gain
+	// fraction (cost 30k): the sale is capped at the 60k market value.
+	gross, newCost, paid := tax.GrossUp(70000, 60000, 30000)
+	if math.Abs(gross-60000) > 1e-6 {
+		t.Errorf("gross = %.2f, want 60000 (capped at growth)", gross)
+	}
+	// Effective rate 0.5*0.5 = 0.25 on the 60k sold -> 15k tax.
+	if math.Abs(paid-15000) > 1e-6 {
+		t.Errorf("paid = %.2f, want 15000", paid)
+	}
+	if paid < 0 {
+		t.Errorf("paid = %.2f, must never be negative", paid)
+	}
+	// Net actually delivered is gross - tax = 45k, below the 70k requested.
+	if net := gross - paid; net >= 70000 {
+		t.Errorf("net delivered = %.2f, must be below the 70000 requested", net)
+	}
+	if math.Abs(newCost-0) > 1e-6 {
+		t.Errorf("newCost = %.2f, want 0 (whole sleeve sold)", newCost)
+	}
+}
+
 func TestNeedAtAppliesCashflows(t *testing.T) {
 	p := Plan{NeedAnnual: 48000, Cashflows: []Cashflow{{FromYear: 12, Annual: 18000}}}
 	if got := p.needAt(0); math.Abs(got-48000) > 1e-9 {
