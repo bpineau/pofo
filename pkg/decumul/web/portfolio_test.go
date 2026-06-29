@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/scenario"
 )
 
 func mo(y int, m time.Month) time.Time { return time.Date(y, m, 28, 0, 0, 0, 0, time.UTC) }
@@ -29,14 +30,54 @@ func TestBuildMonthlyPanelAndFit(t *testing.T) {
 	if panel.Periods() != 24 {
 		t.Fatalf("monthly periods = %d, want 24", panel.Periods())
 	}
-	mu, sigma := FitParametric(panel, []float64{1})
+	f := FitParametric(panel, []float64{1})
 	// +1%/month compounds to (1.01^12 - 1) ≈ 12.68% real per year.
 	want := math.Pow(1.01, 12) - 1
-	if math.Abs(mu-want) > 0.005 {
-		t.Errorf("annualised mu = %.4f, want ~%.4f", mu, want)
+	if math.Abs(f.Mu-want) > 0.005 {
+		t.Errorf("annualised mu = %.4f, want ~%.4f", f.Mu, want)
 	}
-	if sigma < 0 {
+	if f.Sigma < 0 {
 		t.Errorf("sigma negative")
+	}
+}
+
+// Sigma must come from the monthly dispersion scaled by √12, far more stable
+// than the std of the ~20 annual points, and df must be seeded from the
+// monthly excess kurtosis.
+func TestFitParametricSigmaFromMonthly(t *testing.T) {
+	// 24 monthly returns alternating ±5% around zero: a known monthly std.
+	monthly := make([]float64, 24)
+	for i := range monthly {
+		if i%2 == 0 {
+			monthly[i] = 0.05
+		} else {
+			monthly[i] = -0.05
+		}
+	}
+	panel := scenario.Panel{Returns: [][]float64{monthly}, Weights: []float64{1}}
+	f := FitParametric(panel, []float64{1})
+
+	wantSigma := stdev(monthly) * math.Sqrt(12)
+	if math.Abs(f.Sigma-wantSigma) > 1e-9 {
+		t.Errorf("sigma = %.6f, want %.6f (monthly std × √12)", f.Sigma, wantSigma)
+	}
+}
+
+func TestDofFromKurtosis(t *testing.T) {
+	cases := []struct{ excess, want float64 }{
+		{2, 7},    // 4 + 6/2
+		{6, 5},    // 4 + 6/6
+		{0.1, 30}, // very fat -> clamped to the slider max
+		{0, 30},   // undefined / thin -> near-normal end
+		{-1, 30},  // thin tails -> near-normal end
+	}
+	for _, c := range cases {
+		if got := dofFromKurtosis(c.excess); math.Abs(got-c.want) > 1e-9 {
+			t.Errorf("dofFromKurtosis(%.2f) = %.2f, want %.2f", c.excess, got, c.want)
+		}
+	}
+	if got := dofFromKurtosis(math.NaN()); got != 30 {
+		t.Errorf("dofFromKurtosis(NaN) = %.2f, want 30", got)
 	}
 }
 
