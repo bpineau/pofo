@@ -27,7 +27,8 @@ type Params struct {
 	TaxRate       float64   `json:"taxRate"`
 	NPaths        int       `json:"nPaths"`
 	Weights       []float64 `json:"weights"`
-	Model         string    `json:"model"` // "parametric" (default), "bootstrap", "cohorts"
+	Model         string    `json:"model"`      // "parametric" (default), "bootstrap", "cohorts"
+	TargetRuin    float64   `json:"targetRuin"` // solve target (fraction), used by /api/solve
 }
 
 // Card is one labelled summary figure shown above the charts.
@@ -95,22 +96,28 @@ func ComputeWithPanel(pr Params, panel *scenario.Panel) Result {
 	return computeFrom(pr, p)
 }
 
+// cohortsNote returns a user-facing caveat when the plan's source is a cohorts
+// model with too little history for the horizon, otherwise an empty string.
+func cohortsNote(pr Params, p decumul.Plan) string {
+	src := p.Source
+	if c, ok := src.(scenario.Compounded); ok {
+		src = c.Inner // the historical source is wrapped in a Compounded
+	}
+	if hc, ok := src.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
+		return fmt.Sprintf(
+			"Not enough history for a %d-year horizon under the cohorts model (only %d years of aligned data). Use the bootstrap or parametric model, or shorten the horizon.",
+			pr.Years, hc.Panel.Periods()/12)
+	}
+	return ""
+}
+
 // computeFrom runs the simulation and renders the charts for a built plan.
 func computeFrom(pr Params, p decumul.Plan) Result {
 	if pr.NPaths == 0 {
 		pr.NPaths = 5000
 	}
-	// The cohorts model cannot extrapolate beyond the available history:
-	// report the limit honestly instead of producing all-zero (certain-ruin)
-	// paths. The historical source is wrapped in a Compounded, so unwrap it.
-	src := p.Source
-	if c, ok := src.(scenario.Compounded); ok {
-		src = c.Inner
-	}
-	if hc, ok := src.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
-		return Result{Note: fmt.Sprintf(
-			"Not enough history for a %d-year horizon under the cohorts model (only %d years of aligned data). Use the bootstrap or parametric model, or shorten the horizon.",
-			pr.Years, hc.Panel.Periods()/12)}
+	if note := cohortsNote(pr, p); note != "" {
+		return Result{Note: note}
 	}
 	seed := uint64(7)
 
@@ -151,6 +158,48 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth"},
 			"Buffer years", ruinSeries(sweep), terminalSeries(sweep)),
 		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)"}, bars),
+	}
+}
+
+// SolveResult answers the two "solve" questions for a scenario: the capital
+// needed to hit a target ruin, and the ruin-minimising buffer at the current
+// capital. Note carries a caveat when the model cannot answer (e.g. cohorts).
+type SolveResult struct {
+	Note            string  `json:"note"`
+	TargetRuin      float64 `json:"targetRuin"`      // requested ruin target (fraction)
+	RequiredCapital float64 `json:"requiredCapital"` // smallest capital meeting the target
+	BestBufferYears float64 `json:"bestBufferYears"` // ruin-minimising buffer at current capital
+	BestBufferRuin  float64 `json:"bestBufferRuin"`  // ruin at that buffer
+}
+
+// capital search bounds for the solver, generous around the slider range.
+const solveLo, solveHi = 200000.0, 6000000.0
+
+// Solve answers the capital and buffer solve questions for the params. A target
+// of 0 defaults to 5% ruin.
+func Solve(pr Params, panel *scenario.Panel) SolveResult {
+	if pr.NPaths == 0 {
+		pr.NPaths = 5000
+	}
+	target := pr.TargetRuin
+	if target <= 0 {
+		target = 0.05
+	}
+	p := pr.plan()
+	p.Source = pr.source(panel)
+	if note := cohortsNote(pr, p); note != "" {
+		return SolveResult{Note: note}
+	}
+	seed := uint64(7)
+	years, ruin, err := p.BestBuffer([]float64{0, 1, 2, 3, 4, 5, 6, 8, 10}, pr.NPaths, simWorkers, seed)
+	if err != nil {
+		return SolveResult{Note: err.Error()}
+	}
+	return SolveResult{
+		TargetRuin:      target,
+		RequiredCapital: p.CapitalForRuin(target, solveLo, solveHi, pr.NPaths, simWorkers, seed),
+		BestBufferYears: years,
+		BestBufferRuin:  ruin,
 	}
 }
 

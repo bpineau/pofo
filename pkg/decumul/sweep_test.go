@@ -46,6 +46,33 @@ func TestSweep2DShape(t *testing.T) {
 	}
 }
 
+// BestBuffer must return the candidate buffer with the lowest ruin, consistent
+// with the underlying sweep.
+func TestBestBuffer(t *testing.T) {
+	p := sweepPlan()
+	p.Buffer.RealReturn = 0.005
+	cands := []float64{0, 1, 2, 4, 6, 8}
+	years, ruin, err := p.BestBuffer(cands, 4000, 4, 7)
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, c := range cands {
+		if c == years {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("BestBuffer years = %.1f, not among candidates", years)
+	}
+	pts, _ := p.Sweep1D(BufferYears, cands, 4000, 4, 7)
+	for _, pt := range pts {
+		if pt.RuinProb < ruin-1e-12 {
+			t.Errorf("BestBuffer ruin %.4f is not the minimum (found %.4f at %.0fy)", ruin, pt.RuinProb, pt.Value)
+		}
+	}
+}
+
 // Sharing pre-drawn paths across the buffer-years sweep must not change the
 // numbers: each point must match an independent per-value Simulate at the same
 // seed, exactly (the optimisation is behaviour-preserving).
