@@ -67,10 +67,14 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
    this safe in practice, but a holding with internal gaps could misalign. A
    date-keyed alignment (intersect on month keys) would be robust.
 
-9. **`FitParametric` does not fit `df`** and estimates annual sigma from ~20
-   annualised points (noisy). Consider deriving annual vol from monthly returns
-   (`σ_m·√12`) for stability, and optionally fitting `df` from the sample
-   kurtosis to seed the fat-tail slider from history.
+9. ✅ **Done (2026-06-29).** **`FitParametric` does not fit `df`** and estimates
+   annual sigma from ~20 annualised points (noisy). Consider deriving annual vol
+   from monthly returns (`σ_m·√12`) for stability, and optionally fitting `df`
+   from the sample kurtosis to seed the fat-tail slider from history.
+   Done: `FitParametric` now returns a `Fit{Mu, Sigma, Df}`; sigma is the
+   monthly std × √12, and df is seeded from the monthly excess kurtosis
+   (inverting the Student-t 6/(df−4)), clamped to the slider range and exposed
+   via `/api/meta` + `/api/fit` so the df slider is seeded from history too.
 
 ## Features / "most useful FIRE info" (P3)
 
