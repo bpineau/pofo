@@ -63,6 +63,14 @@ monthlyCtl.innerHTML = `<input type="checkbox" id="monthly"> <span>Monthly withd
 form.appendChild(monthlyCtl);
 monthlyCtl.querySelector("input").addEventListener("change", e => { state.monthly = e.target.checked; schedule(); });
 
+// Stress regimes: a two-state Markov source where bad years cluster, adding the
+// sequence risk and fatter left tail that i.i.d. draws miss (annual steps).
+state.regime = false;
+const regimeCtl = document.createElement("label"); regimeCtl.className = "ctl span chk";
+regimeCtl.innerHTML = `<input type="checkbox" id="regime"> <span>Stress regimes: cluster bad years (sequence risk)</span>`;
+form.appendChild(regimeCtl);
+regimeCtl.querySelector("input").addEventListener("change", e => { state.regime = e.target.checked; schedule(); });
+
 // Guyton-Klinger guardrails: adjust spending to a band around the initial
 // withdrawal rate, instead of the single drawdown-triggered flex cut.
 state.guardrails = false;
@@ -115,6 +123,10 @@ if (shared.get("conservative") === "1") {
   consCtl.querySelector("input").checked = true;
   applyReturns(PRIOR);
 }
+if (shared.get("regime") === "1") {
+  state.regime = true;
+  regimeCtl.querySelector("input").checked = true;
+}
 function syncURL() {
   const p = new URLSearchParams();
   for (const [k] of SLIDERS) p.set(k, state[k]);
@@ -122,6 +134,7 @@ function syncURL() {
   if (state.monthly) p.set("monthly", "1");
   if (state.guardrails) p.set("guardrails", "1");
   if (state.conservative) p.set("conservative", "1");
+  if (state.regime) p.set("regime", "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
