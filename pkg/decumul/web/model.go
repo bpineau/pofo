@@ -161,6 +161,34 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	}
 }
 
+// CompareResult holds two allocations evaluated side by side: a pinned baseline
+// and the current variant (the "60/25/15 vs 20/20/…" question).
+type CompareResult struct {
+	Baseline Result `json:"baseline"`
+	Variant  Result `json:"variant"`
+}
+
+// computeAllocation evaluates one allocation. In portfolio mode each allocation
+// is re-fitted from the panel so the comparison is fair (its own mu/sigma/df),
+// matching what the interactive path does client-side on a weight change.
+func computeAllocation(pr Params, weights []float64, panel *scenario.Panel) Result {
+	pr.Weights = weights
+	if panel != nil && weights != nil {
+		f := FitParametric(*panel, weights)
+		pr.Mu, pr.Sigma, pr.Df = f.Mu, f.Sigma, f.Df
+	}
+	return ComputeWithPanel(pr, panel)
+}
+
+// Compare evaluates the pinned baseline allocation and the current variant
+// (pr.Weights) side by side, each under the same non-allocation parameters.
+func Compare(pr Params, baselineWeights []float64, panel *scenario.Panel) CompareResult {
+	return CompareResult{
+		Baseline: computeAllocation(pr, baselineWeights, panel),
+		Variant:  computeAllocation(pr, pr.Weights, panel),
+	}
+}
+
 // SolveResult answers the two "solve" questions for a scenario: the capital
 // needed to hit a target ruin, and the ruin-minimising buffer at the current
 // capital. Note carries a caveat when the model cannot answer (e.g. cohorts).

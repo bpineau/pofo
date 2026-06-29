@@ -119,6 +119,36 @@ func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
 	}
 }
 
+// Compare must evaluate the two allocations independently, re-fitting each from
+// the panel, so clearly different allocations yield clearly different outcomes.
+func TestCompareAllocationsDiffer(t *testing.T) {
+	// Asset 0 grows +1%/month (no ruin); asset 1 shrinks -0.5%/month (ruin).
+	good, bad := make([]float64, 36), make([]float64, 36)
+	for i := range good {
+		good[i], bad[i] = 0.01, -0.005
+	}
+	panel := scenario.Panel{Returns: [][]float64{good, bad}, Weights: []float64{0.5, 0.5}}
+
+	pr := Params{Capital: 1_000_000, NeedAnnual: 40000, BufferYears: 2, Years: 30,
+		NPaths: 2000, TaxRate: 0.30, Model: "parametric", Weights: []float64{1, 0}}
+	cmp := Compare(pr, []float64{0, 1}, &panel) // baseline all-bad, variant all-good
+
+	ruin := func(res Result) string {
+		for _, c := range res.Cards {
+			if c.Label == "Ruin" {
+				return c.Value
+			}
+		}
+		return ""
+	}
+	if ruin(cmp.Baseline) == ruin(cmp.Variant) {
+		t.Errorf("baseline and variant ruin both %q; allocations were not evaluated independently", ruin(cmp.Variant))
+	}
+	if len(cmp.Variant.Cards) == 0 || len(cmp.Baseline.Cards) == 0 {
+		t.Error("both sides should produce cards")
+	}
+}
+
 // Internal gaps must not produce a spanning return masquerading as a one-month
 // return: a month missing from one asset drops only that month from the common
 // grid, and the multi-month return across the gap is excluded.
