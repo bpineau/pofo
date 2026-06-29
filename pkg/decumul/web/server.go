@@ -68,5 +68,21 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(Solve(pr, panel))
 	})
+	mux.HandleFunc("/api/compare", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "POST only", http.StatusMethodNotAllowed)
+			return
+		}
+		var body struct {
+			Params
+			BaselineWeights []float64 `json:"baselineWeights"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(Compare(body.Params, body.BaselineWeights, panel))
+	})
 	return mux
 }
