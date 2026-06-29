@@ -93,6 +93,19 @@ type Plan struct {
 	Flex       FlexRule
 	Tax        Tax
 	Source     scenario.Source
+	// Monthly steps the kernel monthly (RunPathMonthly) instead of annually;
+	// the Source must then yield monthly returns (Years*12 per path).
+	Monthly bool
+}
+
+// runPath dispatches to the monthly or the annual kernel; Simulate and the
+// sweeps go through it so a monthly plan is simulated end to end, while the
+// annual RunPath stays the validated reference (and its golden tests).
+func (p Plan) runPath(seq scenario.Sequence) PathResult {
+	if p.Monthly {
+		return p.RunPathMonthly(seq)
+	}
+	return p.RunPath(seq)
 }
 
 // needAt is the net spending in a given year after active cashflows,
