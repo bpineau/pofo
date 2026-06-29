@@ -6,6 +6,13 @@ import "math/rand/v2"
 // coarser return each: out[k] = Π(1+s[k*group+j]) − 1 for j in [0,group). A
 // trailing partial group (when len(s) is not a multiple of group) is dropped.
 // With group 12 it turns a path of monthly returns into annual returns.
+//
+// Grouping is positional from the path's start, not aligned to calendar years:
+// months [0..11] form the first "year", [12..23] the second, and so on. For a
+// cohort whose history starts in, say, July, the resulting annual returns run
+// July–June, not January–December. This is statistically sound (each output is
+// still a genuine 12-month compounded return) but means the annual figures are
+// not calendar years; do not read them as such.
 func Annualize(s Sequence, group int) Sequence {
 	if group < 1 {
 		return s
