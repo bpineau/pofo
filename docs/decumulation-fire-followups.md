@@ -116,10 +116,16 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     configuration can be bookmarked or shared (the server is local, so this is
     cheap).
 
-16. **Performance.** Each `/api/sim` runs Sweep1D + a full Simulate + Sweep2D,
-    i.e. many independent Monte-Carlo passes per slider drag. Share pre-drawn
-    paths across the sweep evaluations (as `CapitalForRuin` already does) to cut
-    the per-request cost, especially at higher path counts.
+16. ✅ **Done (2026-06-29).** **Performance.** Each `/api/sim` runs Sweep1D + a
+    full Simulate + Sweep2D, i.e. many independent Monte-Carlo passes per slider
+    drag. Share pre-drawn paths across the sweep evaluations (as
+    `CapitalForRuin` already does) to cut the per-request cost, especially at
+    higher path counts. Done: split `Simulate` into `drawPaths` + `simulateOn`;
+    `Sweep1D` (for every parameter but Mu, which rebuilds the Source) and
+    `CapitalForRuin` now draw the paths once and reuse them. Behaviour is
+    byte-identical, locked by a regression test comparing the shared-path sweep
+    to a per-value `Simulate`. (Sweep2D is no longer run; the heatmap was
+    dropped, see item 6.)
 
 17. **Redesign the `-fire` UI with the frontend-design skill (later).** The
     current explorer (`pkg/decumul/web/assets/`) was built functionally, not
