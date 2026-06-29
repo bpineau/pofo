@@ -90,8 +90,12 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     side by side (the original motivating question: "60/25/15 vs 20/20/…"),
     rather than only re-dragging one set of weights.
 
-12. **Solve in the UI.** Expose `CapitalForRuin` and a buffer optimiser: given a
-    target ruin %, show the required capital and the ruin-minimising buffer.
+12. ✅ **Done (2026-06-29).** **Solve in the UI.** Expose `CapitalForRuin` and a
+    buffer optimiser: given a target ruin %, show the required capital and the
+    ruin-minimising buffer. Done: added `Plan.BestBuffer` (argmin ruin over
+    candidate buffer years), a `/api/solve` endpoint returning the required
+    capital (`CapitalForRuin`) and the ruin-minimising buffer, and a Solve panel
+    in the UI (target-ruin input + button + result line).
 
 13. **Monthly withdrawal kernel (stated requirement, P2-ish).** Ben's real
     use case is a **monthly** withdrawal, like a salary, and the buffer-vs-cut

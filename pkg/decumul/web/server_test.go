@@ -28,6 +28,30 @@ func TestAPISim(t *testing.T) {
 	}
 }
 
+func TestAPISolve(t *testing.T) {
+	body, _ := json.Marshal(Params{
+		Capital: 1_500_000, NeedAnnual: 48000, BufferYears: 3,
+		Mu: 0.035, Sigma: 0.12, Df: 6, Years: 35, NPaths: 2000, TaxRate: 0.30,
+		TargetRuin: 0.05,
+	})
+	req := httptest.NewRequest(http.MethodPost, "/api/solve", bytes.NewReader(body))
+	rec := httptest.NewRecorder()
+	Handler(nil, nil).ServeHTTP(rec, req)
+	if rec.Code != 200 {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	var res SolveResult
+	if err := json.Unmarshal(rec.Body.Bytes(), &res); err != nil {
+		t.Fatalf("bad json: %v", err)
+	}
+	if res.RequiredCapital < solveLo || res.RequiredCapital > solveHi {
+		t.Errorf("required capital %.0f outside the search bounds", res.RequiredCapital)
+	}
+	if res.BestBufferYears < 0 || res.BestBufferRuin < 0 || res.BestBufferRuin > 1 {
+		t.Errorf("implausible buffer solve: %+v", res)
+	}
+}
+
 func TestServesIndex(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
