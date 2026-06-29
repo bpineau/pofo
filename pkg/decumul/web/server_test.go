@@ -23,7 +23,7 @@ func TestAPISim(t *testing.T) {
 	if err := json.Unmarshal(rec.Body.Bytes(), &res); err != nil {
 		t.Fatalf("bad json: %v", err)
 	}
-	if res.BufferSVG == "" || len(res.Cards) == 0 {
+	if res.ArbitrageSVG == "" || len(res.Cards) == 0 {
 		t.Errorf("empty result: %+v", res.Cards)
 	}
 }
