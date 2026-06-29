@@ -87,6 +87,8 @@ type result struct {
 	stats     metrics.Stats
 	rel       metrics.Relative
 	hasRel    bool
+	vts       metrics.VolTermStructure // daily/monthly volatility term structure
+	hasVTS    bool
 }
 
 func run(argv []string) error {
@@ -402,6 +404,7 @@ Options:
 				r.rel, r.hasRel = rel, true
 			}
 		}
+		r.vts, r.hasVTS = metrics.VarianceRatio(r.winDates, r.winValues)
 		r.stats = st
 	}
 
@@ -1430,6 +1433,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		fmt.Sprintf("Simulation: base 100, rebalanced to the target weights every %d calendar days by default (overridable per portfolio via \"#meta rebalance:N\"), with no fees or taxes.", opt.rebalance),
 		"Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data; their volatilities and drawdowns therefore come out lower).",
 		"Fees: published TERs (FT/justETF sources), already included in prices and NAVs, informational column; only the additional portfolio fees \"#meta extra-fees:X\" (envelope, mandate…) are deducted from the simulated performance.",
+		"Monthly volatility and variance ratio (Lo-MacKinlay): the monthly figure annualizes the standard deviation of month-end returns, and the ratio divides the monthly annualized variance by the daily one. It exposes the autocorrelation the single-frequency stats hide: ≈1 means returns are serially uncorrelated (daily vol is faithful), below 1 means they mean-revert (daily vol overstates the risk realized over months), above 1 means they trend (daily vol understates it). Read it as complementary to the rolling-CAGR and drawdown columns, and note the small-sample caveat: a month-end series holds only ~12 points per year, so over short common periods the monthly figures are noisier point estimates than the daily ones.",
 		"Max Drawdown, Ulcer and TTR on daily closes, harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
 		"TTR: duration of the longest stretch spent below a previous peak (peak to recovery).",
 	}...)
@@ -1688,6 +1692,20 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			pct(func(s metrics.Stats) float64 { return s.CAGR }), +1},
 		{"Volatility (annualized)", "standard deviation of daily returns, annualized",
 			pct(func(s metrics.Stats) float64 { return s.Volatility }), -1},
+		{"Volatility (monthly, annualized)", "standard deviation of monthly returns, annualized; lower than the daily figure means daily noise that mean-reverts within the month",
+			func(r *result) (float64, string) {
+				if !r.hasVTS {
+					return math.NaN(), "-"
+				}
+				return r.vts.MonthlyVol, fmtPct(r.vts.MonthlyVol)
+			}, -1},
+		{"Variance ratio (monthly/daily)", "monthly vs daily annualized variance; ≈1 i.i.d., <1 mean-reverting (daily vol overstates risk), >1 trending (it understates)",
+			func(r *result) (float64, string) {
+				if !r.hasVTS {
+					return math.NaN(), "-"
+				}
+				return r.vts.Ratio, fmtNum(r.vts.Ratio)
+			}, 0},
 		{"Sharpe", "annualized return / volatility (risk-free rate 0)",
 			num(func(s metrics.Stats) float64 { return s.Sharpe }), +1},
 		{"Sortino", "annualized return / volatility of down days only",

@@ -1,6 +1,8 @@
 // Package metrics computes risk and return statistics for a series of
 // dated values: CAGR, volatility, Sharpe, Sortino, Ulcer Index, Max
-// Drawdown, TTR (time to recovery) and Beta against a benchmark.
+// Drawdown, TTR (time to recovery), Beta against a benchmark, and the
+// daily-versus-monthly volatility term structure (the Lo-MacKinlay
+// variance ratio).
 //
 // # Conventions
 //
@@ -19,7 +21,10 @@
 //     date.
 //
 // The main entry point is Compute. Beta pairs daily returns with the
-// benchmark's by date. Returns and Mean are exposed as building blocks.
+// benchmark's by date. VarianceRatio resamples to month-end closes and
+// reports the volatility at both frequencies plus their ratio, revealing
+// the autocorrelation the daily statistics hide. Returns and Mean are
+// exposed as building blocks.
 //
 // These computations are locked down by the golden package's benchmark
 // tests, which check them against external references (official S&P 500
