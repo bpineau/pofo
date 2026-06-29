@@ -68,7 +68,16 @@ fixed-withdrawal figure; turning flex on visibly lowers ruin.
 
 **Priority: P1.**
 
-### W2 — More honest return defaults + a "conservative prior" toggle
+### W2 — More honest return defaults + a "conservative prior" toggle ✅ Done (2026-06-29)
+
+Implemented: default sliders raised to mu 0.04 / sigma 0.16 / df 5 (from
+0.045 / 0.12 / 6), and a "Conservative broad-sample prior" toggle that overrides
+the fitted/default returns with mu 0.03 / sigma 0.18 / df 4 (cautious,
+forward-looking world-equity real assumptions; sources: DMS world real equity
+~5% geo historically, haircut for forward returns and the broad cross-section,
+σ and fat tails from the broad sample). Purely client-side (overrides the
+sliders, skips the panel refit while on), round-tripped through the URL hash.
+The server blend of FitParametric toward the prior was not needed.
 
 **Problem.** Defaults `mu 4.5% / sigma 12%` and, worse, the per-portfolio fit
 from a short favourable window are optimistic: low vol, high mean, thin tails.
