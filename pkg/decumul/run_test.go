@@ -47,6 +47,41 @@ func TestBufferRefillCapZeroHonored(t *testing.T) {
 	}
 }
 
+// Guyton-Klinger guardrails cut spending when a market drop pushes the
+// withdrawal rate above the upper guardrail, so the path withdraws less than
+// the fixed-spending plan on the same declining sequence.
+func TestRunPathGuardrailsCutSpending(t *testing.T) {
+	base := Plan{Capital: 100000, NeedAnnual: 5000, Years: 3, Tax: CTOFlatTax{Rate: 0}}
+	seq := scenario.Sequence{-0.3, -0.3, 0}
+
+	fixed := base.RunPath(seq)
+	guarded := base
+	guarded.Guard = Guardrails{Upper: 0.06, Lower: 0.03, Cut: 0.10, Raise: 0.10}
+	got := guarded.RunPath(seq)
+
+	if !(got.Withdrawn < fixed.Withdrawn) {
+		t.Errorf("guardrails should cut spending after the drop: guarded=%.0f fixed=%.0f", got.Withdrawn, fixed.Withdrawn)
+	}
+}
+
+// A glidepath buffer stops refilling after the sequence-risk window: with
+// RefillStopYear set, the late-path refill is skipped, so less tax is paid than
+// when the buffer keeps topping up.
+func TestBufferRefillStopYearHonored(t *testing.T) {
+	base := Plan{Capital: 100000, NeedAnnual: 5000, Years: 4,
+		Buffer: BufferSleeve{Years: 2}, Tax: CTOFlatTax{Rate: 0.5}}
+	seq := scenario.Sequence{0.3, -0.2, 0.25, 0}
+
+	on := base.RunPath(seq) // refills throughout
+	stop := base
+	stop.Buffer.RefillStopYear = 3 // no refill from year 3 onward
+	got := stop.RunPath(seq)
+
+	if !(got.TaxPaid < on.TaxPaid) {
+		t.Errorf("RefillStopYear should skip the year-3 refill and pay less tax: got=%.0f default=%.0f", got.TaxPaid, on.TaxPaid)
+	}
+}
+
 // With zero returns, no tax and no pension, capital depletes by need/year.
 func TestRunPathDepletion(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
