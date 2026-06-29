@@ -51,7 +51,7 @@ Already shipped (honesty only, numbers unchanged): a short-history warning
 
 ## 3. Workstreams
 
-### W1 — Default the flex cut OFF (highest impact)
+### W1 — Default the flex cut OFF (highest impact) ✅ Done (2026-06-29)
 
 **Problem.** `flexCut` defaults to 0.25, so the headline is "4% *and I cut 25%
 in a crash*", which roughly halves ruin vs the fixed 4% rule everyone means.
