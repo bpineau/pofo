@@ -125,10 +125,17 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     kernel needs its own validation targets. Bigger change, but it is what the
     real plan needs, so prioritise above the other P3 items.
 
-14. **Richer policies.** Melting/glidepath buffer (stop refilling after the
-    sequence-risk window), a distinct inflation-linked sleeve vs pure cash,
-    side income (rental/activity) as another `Cashflow`, and a guardrails
-    withdrawal rule (Guyton-Klinger style) beyond the single flex cut.
+14. ✅ **Done (2026-06-29).** **Richer policies.** Melting/glidepath buffer (stop
+    refilling after the sequence-risk window), a distinct inflation-linked sleeve
+    vs pure cash, side income (rental/activity) as another `Cashflow`, and a
+    guardrails withdrawal rule (Guyton-Klinger style) beyond the single flex cut.
+    Done: `BufferSleeve.RefillStopYear` (glidepath), `Cashflow.ToYear` (bounded
+    side income), `Plan.Guard` Guyton-Klinger guardrails (yearly spending band on
+    the withdrawal rate, replacing flex when set) — all in both kernels and
+    exposed in the web (side-income + glidepath sliders, a guardrails toggle).
+    The inflation-linked-vs-cash distinction is the existing `RealReturn` /
+    "buffer real return" knob (≈0 for a linker, negative for cash), so no
+    separate sleeve was needed.
 
 15. ✅ **Done (2026-06-29).** **Shareable scenarios.** URL-encode the
     slider/allocation state so a configuration can be bookmarked or shared (the
