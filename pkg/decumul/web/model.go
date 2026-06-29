@@ -43,8 +43,7 @@ type Card struct {
 type Result struct {
 	Note         string `json:"note"`
 	Cards        []Card `json:"cards"`
-	BufferSVG    string `json:"bufferSvg"`
-	RuinCurveSVG string `json:"ruinCurveSvg"`
+	ArbitrageSVG string `json:"arbitrageSvg"` // ruin % and terminal wealth vs buffer years (dual axis)
 	RecoverySVG  string `json:"recoverySvg"`
 }
 
@@ -129,7 +128,11 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	o := e.Outcome()
 	var bars []chart.Bar
 	for _, b := range e.RecoveryTimeDistribution() {
-		bars = append(bars, chart.Bar{Label: fmt.Sprintf("%dy", b.Years), Value: b.Share})
+		bars = append(bars, chart.Bar{
+			Label: fmt.Sprintf("%dy", b.Years),
+			Value: b.Share * 100,
+			Text:  fmt.Sprintf("%.0f%%", b.Share*100),
+		})
 	}
 
 	return Result{
@@ -145,25 +148,27 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 			{"Median cumulative tax", fmt.Sprintf("%.0f k€", o.MedianCumTax/1000)},
 			{"Effective tax rate", fmt.Sprintf("%.1f%%", o.EffectiveTaxRate*100)},
 		},
-		BufferSVG:    chart.Bars(chart.Options{Title: "Ruin % by buffer years"}, barsFromSweep(sweep)),
-		RuinCurveSVG: chart.Bars(chart.Options{Title: "Terminal wealth p50 (k€) by buffer"}, terminalBars(sweep)),
-		RecoverySVG:  chart.Bars(chart.Options{Title: "Recovery-time distribution"}, bars),
+		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth"},
+			"Buffer years", ruinSeries(sweep), terminalSeries(sweep)),
+		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)"}, bars),
 	}
 }
 
-func barsFromSweep(s []decumul.SweepPoint) []chart.Bar {
-	out := make([]chart.Bar, len(s))
+// ruinSeries is the ruin-probability curve (%) against buffer years.
+func ruinSeries(s []decumul.SweepPoint) chart.XYSeries {
+	xs, ys := make([]float64, len(s)), make([]float64, len(s))
 	for i, p := range s {
-		out[i] = chart.Bar{Label: fmt.Sprintf("%.0fy", p.Value), Value: p.RuinProb * 100}
+		xs[i], ys[i] = p.Value, p.RuinProb*100
 	}
-	return out
+	return chart.XYSeries{Name: "Ruin %", Xs: xs, Ys: ys, Color: chart.PaletteColor(3)}
 }
 
-func terminalBars(s []decumul.SweepPoint) []chart.Bar {
-	out := make([]chart.Bar, len(s))
+// terminalSeries is the median terminal-wealth curve (k€) against buffer years.
+func terminalSeries(s []decumul.SweepPoint) chart.XYSeries {
+	xs, ys := make([]float64, len(s)), make([]float64, len(s))
 	for i, p := range s {
-		out[i] = chart.Bar{Label: fmt.Sprintf("%.0fy", p.Value), Value: p.TerminalP50 / 1000}
+		xs[i], ys[i] = p.Value, p.TerminalP50/1000
 	}
-	return out
+	return chart.XYSeries{Name: "Terminal wealth p50 (k€)", Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
 }
 
