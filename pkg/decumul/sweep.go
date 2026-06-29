@@ -62,9 +62,21 @@ func (p Plan) Sweep1D(param Param, values []float64, nPaths, workers int, seed u
 	if err := p.applicable(param); err != nil {
 		return nil, err
 	}
+	// Only Mu rebuilds the Source; for every other parameter the drawn paths
+	// are identical across values, so draw them once and reuse them.
+	var shared []scenario.Sequence
+	if param != Mu {
+		shared = p.drawPaths(nPaths, workers, seed)
+	}
 	out := make([]SweepPoint, len(values))
 	for i, v := range values {
-		o := p.set(param, v).Simulate(nPaths, workers, seed).Outcome()
+		q := p.set(param, v)
+		var o Outcome
+		if shared != nil {
+			o = q.simulateOn(shared, workers).Outcome()
+		} else {
+			o = q.Simulate(nPaths, workers, seed).Outcome()
+		}
 		out[i] = SweepPoint{Value: v, RuinProb: o.RuinProb, TerminalP50: o.TerminalP50}
 	}
 	return out, nil

@@ -46,6 +46,28 @@ func TestSweep2DShape(t *testing.T) {
 	}
 }
 
+// Sharing pre-drawn paths across the buffer-years sweep must not change the
+// numbers: each point must match an independent per-value Simulate at the same
+// seed, exactly (the optimisation is behaviour-preserving).
+func TestSweep1DSharedPathsMatchSimulate(t *testing.T) {
+	p := sweepPlan()
+	p.Buffer.RealReturn = 0.005
+	values := []float64{0, 1, 2, 4, 6}
+	const n, w, seed = 3000, 4, uint64(7)
+
+	pts, err := p.Sweep1D(BufferYears, values, n, w, seed)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, v := range values {
+		ref := p.set(BufferYears, v).Simulate(n, w, seed).Outcome()
+		if pts[i].RuinProb != ref.RuinProb || pts[i].TerminalP50 != ref.TerminalP50 {
+			t.Errorf("buffer=%.0f: sweep (%.6f, %.0f) != simulate (%.6f, %.0f)",
+				v, pts[i].RuinProb, pts[i].TerminalP50, ref.RuinProb, ref.TerminalP50)
+		}
+	}
+}
+
 // Sweeping Mu on a non-parametric source used to be a silent no-op (a flat
 // surface). It must now report the constraint as an error rather than mislead.
 func TestSweepMuOnNonParametricErrors(t *testing.T) {
