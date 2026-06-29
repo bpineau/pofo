@@ -60,3 +60,18 @@ func TestNeedAtAppliesCashflows(t *testing.T) {
 		t.Errorf("needAt(12) = %.0f, want 30000", got)
 	}
 }
+
+// A bounded cashflow (side income with a ToYear) applies only over [FromYear,
+// ToYear); a zero ToYear keeps running to the horizon.
+func TestNeedAtBoundedCashflow(t *testing.T) {
+	p := Plan{NeedAnnual: 48000, Cashflows: []Cashflow{{FromYear: 0, ToYear: 5, Annual: 12000}}}
+	if got := p.needAt(0); math.Abs(got-36000) > 1e-9 {
+		t.Errorf("needAt(0) = %.0f, want 36000", got)
+	}
+	if got := p.needAt(4); math.Abs(got-36000) > 1e-9 {
+		t.Errorf("needAt(4) = %.0f, want 36000", got)
+	}
+	if got := p.needAt(5); math.Abs(got-48000) > 1e-9 {
+		t.Errorf("needAt(5) = %.0f, want 48000 (side income ended)", got)
+	}
+}
