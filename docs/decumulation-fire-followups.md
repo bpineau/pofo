@@ -112,9 +112,12 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     side income (rental/activity) as another `Cashflow`, and a guardrails
     withdrawal rule (Guyton-Klinger style) beyond the single flex cut.
 
-15. **Shareable scenarios.** URL-encode the slider/allocation state so a
-    configuration can be bookmarked or shared (the server is local, so this is
-    cheap).
+15. ✅ **Done (2026-06-29).** **Shareable scenarios.** URL-encode the
+    slider/allocation state so a configuration can be bookmarked or shared (the
+    server is local, so this is cheap). Done: the slider values, return model and
+    allocation weights round-trip through the URL hash; `run()` writes the hash
+    after each compute and the page applies a shared hash on load (shared
+    mu/sigma/df override the historical seed).
 
 16. ✅ **Done (2026-06-29).** **Performance.** Each `/api/sim` runs Sweep1D + a
     full Simulate + Sweep2D, i.e. many independent Monte-Carlo passes per slider

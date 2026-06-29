@@ -49,6 +49,27 @@ function setSliderVal(k, v) {
   if (s) { s.value = v; document.getElementById("v_" + k).textContent = fmtVal(k, v); }
 }
 
+// --- shareable scenarios: the whole slider/model/allocation state round-trips
+// through the URL hash, so a configuration can be bookmarked or shared. ---
+const shared = new URLSearchParams(location.hash.slice(1));
+const sharedModel = shared.get("model");
+const sharedWeights = shared.has("w")
+  ? shared.get("w").split(",").map(Number).filter(x => !isNaN(x)) : null;
+// Apply any shared slider values up front (portfolio-mode seeding re-applies
+// them after the fit so the shared values still win).
+function applySharedSliders() {
+  for (const [k] of SLIDERS)
+    if (shared.has(k)) { const v = parseFloat(shared.get(k)); if (!isNaN(v)) setSliderVal(k, v); }
+}
+applySharedSliders();
+function syncURL() {
+  const p = new URLSearchParams();
+  for (const [k] of SLIDERS) p.set(k, state[k]);
+  if (state.model) p.set("model", state.model);
+  if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
+  history.replaceState(null, "", "#" + p.toString());
+}
+
 let timer = null;
 function schedule(){ clearTimeout(timer); timer = setTimeout(run, 200); }
 
@@ -85,6 +106,7 @@ let run = async function(){
     document.getElementById(id).innerHTML = r[id] || "";
   document.getElementById("cards").innerHTML = (r.cards || [])
     .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");
+  syncURL();
 };
 
 // --- allocation bar: drag a divider to move weight between two adjacent
@@ -142,11 +164,13 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   if(!m.hasPanel) { run(); return; }
   hasPanel = true;
   labels = m.labels;
-  weights = (m.weights && m.weights.length === labels.length) ? m.weights.slice()
+  weights = (sharedWeights && sharedWeights.length === labels.length) ? sharedWeights.slice()
+    : (m.weights && m.weights.length === labels.length) ? m.weights.slice()
     : labels.map(()=>1/labels.length);
   lastFitW = weights.slice(); // mu/sigma already seeded below; avoid a redundant refit
   for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma], ["df", m.df]])
     if (typeof v === "number") setSliderVal(k, v);
+  applySharedSliders(); // a shared mu/sigma/df overrides the historical seed
 
   const sel = document.createElement("label"); sel.className="ctl span";
   sel.innerHTML = `<span class="lab"><span>Return model</span></span>
@@ -162,8 +186,9 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   const help = document.getElementById("modelhelp");
   const setHelp = mdl => { help.textContent = MODEL_HELP[mdl] || ""; };
   sel.querySelector("select").addEventListener("change", e=>{state.model=e.target.value;setHelp(state.model);schedule();});
-  state.model = "parametric";
-  setHelp("parametric");
+  state.model = sharedModel || "parametric";
+  sel.querySelector("select").value = state.model;
+  setHelp(state.model);
 
   const alloc = document.createElement("div"); alloc.className = "ctl span";
   alloc.innerHTML = `<span class="lab"><span>Allocation — drag a divider to shift weight</span></span>
