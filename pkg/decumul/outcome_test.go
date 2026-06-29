@@ -29,6 +29,21 @@ func TestOutcomeWorst10yRobust(t *testing.T) {
 	}
 }
 
+// Cumulative tax and the effective tax rate are medians across paths of each
+// path's total tax and its tax/gross ratio.
+func TestOutcomeTaxMetrics(t *testing.T) {
+	o := Ensemble{Years: 1, Paths: []PathResult{
+		{Wealth: []float64{100, 100}, Withdrawn: 90000, TaxPaid: 10000}, // eff 0.10
+		{Wealth: []float64{100, 100}, Withdrawn: 80000, TaxPaid: 20000}, // eff 0.20
+	}}.Outcome()
+	if math.Abs(o.MedianCumTax-15000) > 1e-6 {
+		t.Errorf("MedianCumTax = %.0f, want 15000", o.MedianCumTax)
+	}
+	if math.Abs(o.EffectiveTaxRate-0.15) > 1e-9 {
+		t.Errorf("EffectiveTaxRate = %.4f, want 0.15", o.EffectiveTaxRate)
+	}
+}
+
 func TestOutcomeBasics(t *testing.T) {
 	// two paths: one survives flat at 100, one ruined.
 	e := Ensemble{Years: 2, Paths: []PathResult{
