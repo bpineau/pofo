@@ -115,9 +115,14 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	}
 	seed := uint64(7)
 
-	// buffer arbitrage curve (ruin and terminal vs buffer years).
+	// buffer arbitrage curve (ruin and terminal vs buffer years). BufferYears
+	// applies to every Source, so this sweep cannot fail; surface any error
+	// rather than hide it.
 	bufVals := []float64{0, 1, 2, 3, 4, 5, 6, 8, 10}
-	sweep := p.Sweep1D(decumul.BufferYears, bufVals, pr.NPaths, simWorkers, seed)
+	sweep, err := p.Sweep1D(decumul.BufferYears, bufVals, pr.NPaths, simWorkers, seed)
+	if err != nil {
+		return Result{Note: err.Error()}
+	}
 
 	// headline outcome and recovery distribution at the selected buffer.
 	e := p.Simulate(pr.NPaths, simWorkers, seed)
