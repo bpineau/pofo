@@ -14,7 +14,8 @@ type Outcome struct {
 	TerminalP5            float64 // 5th-percentile terminal wealth (0 for ruined)
 	TerminalP50           float64 // median terminal wealth
 	MedianYearsUnderwater float64 // median years spent below the prior real high
-	Worst10yCAGR          float64 // worst rolling 10-year real CAGR across paths
+	Worst10yCAGR          float64 // worst (min) rolling 10-year real CAGR across all paths
+	Worst10yP5            float64 // 5th-percentile of paths' worst 10-year real CAGR (robust)
 	CDaR                  float64 // mean of the worst 5% path drawdowns (0.30 = 30%)
 }
 
@@ -27,6 +28,7 @@ func (e Ensemble) Outcome() Outcome {
 	terminals := make([]float64, len(e.Paths))
 	underwater := make([]float64, len(e.Paths))
 	maxDDs := make([]float64, len(e.Paths))
+	worsts := make([]float64, 0, len(e.Paths))
 	ruined, worst := 0, 0.0
 	for i, p := range e.Paths {
 		terminals[i] = p.Wealth[len(p.Wealth)-1]
@@ -35,8 +37,11 @@ func (e Ensemble) Outcome() Outcome {
 		}
 		underwater[i] = float64(yearsUnderwater(p.Wealth))
 		maxDDs[i] = pathMaxDD(p.Wealth)
-		if c := worst10y(p.Wealth); c < worst {
-			worst = c
+		if c, ok := worst10y(p.Wealth); ok {
+			worsts = append(worsts, c)
+			if c < worst {
+				worst = c
+			}
 		}
 	}
 	o.RuinProb = float64(ruined) / float64(len(e.Paths))
@@ -44,6 +49,9 @@ func (e Ensemble) Outcome() Outcome {
 	o.TerminalP5, o.TerminalP50 = q[0], q[1]
 	o.MedianYearsUnderwater = metrics.Quantiles(underwater, 0.50)[0]
 	o.Worst10yCAGR = worst
+	if len(worsts) > 0 {
+		o.Worst10yP5 = metrics.Quantiles(worsts, 0.05)[0]
+	}
 	o.CDaR = conditionalTail(maxDDs, 0.05)
 	return o
 }
@@ -77,20 +85,25 @@ func pathMaxDD(w []float64) float64 {
 	return dd
 }
 
-// worst10y is the lowest 10-year real CAGR found in the wealth path, or -1
-// (worst possible) when the path hits zero within a 10-year window.
-func worst10y(w []float64) float64 {
-	worst := 0.0
+// worst10y is the lowest 10-year real CAGR found in the wealth path; ok is
+// false when no decade window has a positive starting wealth (a path shorter
+// than 11 points, or one already at zero throughout). A decade that ends at
+// zero counts as its realised -100% return rather than as an undefined value:
+// the -1 then means "lost everything over this decade", and windows that start
+// after ruin (zero starting wealth) are skipped instead of conflated with it.
+func worst10y(w []float64) (float64, bool) {
+	worst, ok := 0.0, false
 	for i := 0; i+10 < len(w); i++ {
-		if w[i] <= 0 || w[i+10] <= 0 {
-			return -1
+		if w[i] <= 0 {
+			continue // window starts after ruin: undefined, skip
 		}
-		c := math.Pow(w[i+10]/w[i], 0.1) - 1
-		if c < worst {
-			worst = c
+		end := max(w[i+10], 0)
+		c := math.Pow(end/w[i], 0.1) - 1 // end == 0 -> -1 (total loss realised)
+		if !ok || c < worst {
+			worst, ok = c, true
 		}
 	}
-	return worst
+	return worst, ok
 }
 
 // conditionalTail averages the worst frac share of dds (already losses).
