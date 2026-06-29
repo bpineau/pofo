@@ -2,6 +2,7 @@ package decumul
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bpineau/pofo/pkg/scenario"
 )
@@ -80,6 +81,24 @@ func (p Plan) Sweep1D(param Param, values []float64, nPaths, workers int, seed u
 		out[i] = SweepPoint{Value: v, RuinProb: o.RuinProb, TerminalP50: o.TerminalP50}
 	}
 	return out, nil
+}
+
+// BestBuffer evaluates ruin over the candidate buffer-years values and returns
+// the candidate with the lowest ruin, together with that ruin. It is the
+// "ruin-minimising buffer" solve: more buffer cuts sequence risk up to a point,
+// then drags on growth, so the optimum is interior.
+func (p Plan) BestBuffer(candidates []float64, nPaths, workers int, seed uint64) (years, ruin float64, err error) {
+	pts, err := p.Sweep1D(BufferYears, candidates, nPaths, workers, seed)
+	if err != nil {
+		return 0, 0, err
+	}
+	years, ruin = 0, math.Inf(1)
+	for _, pt := range pts {
+		if pt.RuinProb < ruin {
+			years, ruin = pt.Value, pt.RuinProb
+		}
+	}
+	return years, ruin, nil
 }
 
 // Surface is a grid of ruin probabilities over two parameters.
