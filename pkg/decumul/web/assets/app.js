@@ -13,6 +13,9 @@ const SLIDERS = [
   ["pensionAnnual","Pension /yr",0,36000,1000,12000,"eur"],
   ["flexCut","Possible spending cut",0,0.40,0.05,0.25,"pct"],
   ["taxRate","Flat tax on gains",0,0.35,0.01,0.314,"pct"],
+  ["sideAnnual","Side income /yr",0,30000,1000,0,"eur"],
+  ["sideUntilYear","Side income until year",0,20,1,0,"int"],
+  ["bufferStopYear","Buffer refill stop (yr, 0=never)",0,20,1,0,"int"],
   ["nPaths","Simulations",500,5000,500,2000,"int"],
 ];
 
@@ -60,6 +63,14 @@ monthlyCtl.innerHTML = `<input type="checkbox" id="monthly"> <span>Monthly withd
 form.appendChild(monthlyCtl);
 monthlyCtl.querySelector("input").addEventListener("change", e => { state.monthly = e.target.checked; schedule(); });
 
+// Guyton-Klinger guardrails: adjust spending to a band around the initial
+// withdrawal rate, instead of the single drawdown-triggered flex cut.
+state.guardrails = false;
+const guardCtl = document.createElement("label"); guardCtl.className = "ctl span chk";
+guardCtl.innerHTML = `<input type="checkbox" id="guardrails"> <span>Guyton-Klinger guardrails (replaces flex cut)</span>`;
+form.appendChild(guardCtl);
+guardCtl.querySelector("input").addEventListener("change", e => { state.guardrails = e.target.checked; schedule(); });
+
 // --- shareable scenarios: the whole slider/model/allocation state round-trips
 // through the URL hash, so a configuration can be bookmarked or shared. ---
 const shared = new URLSearchParams(location.hash.slice(1));
@@ -77,11 +88,16 @@ if (shared.get("monthly") === "1") {
   state.monthly = true;
   monthlyCtl.querySelector("input").checked = true;
 }
+if (shared.get("guardrails") === "1") {
+  state.guardrails = true;
+  guardCtl.querySelector("input").checked = true;
+}
 function syncURL() {
   const p = new URLSearchParams();
   for (const [k] of SLIDERS) p.set(k, state[k]);
   if (state.model) p.set("model", state.model);
   if (state.monthly) p.set("monthly", "1");
+  if (state.guardrails) p.set("guardrails", "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -113,7 +129,8 @@ let run = async function(){
     }
   }
   const body = {...state, years: Math.round(state.years),
-    pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths)};
+    pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
+    sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear)};
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",

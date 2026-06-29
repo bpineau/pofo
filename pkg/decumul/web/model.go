@@ -29,8 +29,12 @@ type Params struct {
 	NPaths        int       `json:"nPaths"`
 	Weights       []float64 `json:"weights"`
 	Model         string    `json:"model"`      // "parametric" (default), "bootstrap", "cohorts"
-	TargetRuin    float64   `json:"targetRuin"` // solve target (fraction), used by /api/solve
-	Monthly       bool      `json:"monthly"`    // step the kernel monthly (salary-like withdrawals)
+	TargetRuin     float64 `json:"targetRuin"`     // solve target (fraction), used by /api/solve
+	Monthly        bool    `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
+	BufferStopYear int     `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
+	SideAnnual     float64 `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
+	SideUntilYear  int     `json:"sideUntilYear"`  // side income runs until this year, exclusive
+	Guardrails     bool    `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
 }
 
 // Card is one labelled summary figure shown above the charts.
@@ -57,14 +61,22 @@ func (pr Params) plan() decumul.Plan {
 		Capital:    pr.Capital,
 		NeedAnnual: pr.NeedAnnual,
 		Years:      pr.Years,
-		Buffer:     decumul.BufferSleeve{Years: pr.BufferYears, RealReturn: pr.BufferReturn},
+		Buffer:     decumul.BufferSleeve{Years: pr.BufferYears, RealReturn: pr.BufferReturn, RefillStopYear: pr.BufferStopYear},
 		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
 		Monthly:    pr.Monthly,
 	}
 	if pr.PensionAnnual > 0 {
-		p.Cashflows = []decumul.Cashflow{{FromYear: pr.PensionYear, Annual: pr.PensionAnnual}}
+		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: pr.PensionAnnual})
+	}
+	if pr.SideAnnual > 0 {
+		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, ToYear: pr.SideUntilYear, Annual: pr.SideAnnual})
+	}
+	// Guardrails band centred on the initial withdrawal rate (±20%).
+	if pr.Guardrails && pr.Capital > 0 {
+		wr0 := pr.NeedAnnual / pr.Capital
+		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10}
 	}
 	return p
 }
