@@ -14,11 +14,31 @@ type Cashflow struct {
 // Years times annual spending (capped at the capital). It earns RealReturn
 // and is drained first while the portfolio drawdown exceeds DrawThreshold;
 // otherwise it is refilled from growth, by at most RefillCap of growth/year.
+//
+// DrawThreshold and RefillCap are pointers so a nil leaves the default while an
+// explicit zero is honoured (always draw the buffer, resp. never refill), which
+// a plain zero field could not express.
 type BufferSleeve struct {
 	Years         float64
 	RealReturn    float64
-	DrawThreshold float64 // default 0.10
-	RefillCap     float64 // default 0.50
+	DrawThreshold *float64 // nil = 0.10; 0 = always tap the buffer first
+	RefillCap     *float64 // nil = 0.50; 0 = never refill
+}
+
+// drawThreshold resolves DrawThreshold, applying the 0.10 default when unset.
+func (b BufferSleeve) drawThreshold() float64 {
+	if b.DrawThreshold == nil {
+		return 0.10
+	}
+	return *b.DrawThreshold
+}
+
+// refillCap resolves RefillCap, applying the 0.50 default when unset.
+func (b BufferSleeve) refillCap() float64 {
+	if b.RefillCap == nil {
+		return 0.50
+	}
+	return *b.RefillCap
 }
 
 // FlexRule cuts the year's spending by Cut (e.g. 0.25) whenever the
