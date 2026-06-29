@@ -70,6 +70,7 @@ let run = async function(){
         const f = await resp.json();
         if (typeof f.mu === "number") setSliderVal("mu", f.mu);
         if (typeof f.sigma === "number") setSliderVal("sigma", f.sigma);
+        if (typeof f.df === "number") setSliderVal("df", f.df);
       } catch (e) { /* keep the current mu/sigma on failure */ }
       lastFitW = weights.slice();
     }
@@ -144,7 +145,7 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   weights = (m.weights && m.weights.length === labels.length) ? m.weights.slice()
     : labels.map(()=>1/labels.length);
   lastFitW = weights.slice(); // mu/sigma already seeded below; avoid a redundant refit
-  for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma]])
+  for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma], ["df", m.df]])
     if (typeof v === "number") setSliderVal(k, v);
 
   const sel = document.createElement("label"); sel.className="ctl span";

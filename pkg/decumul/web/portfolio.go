@@ -94,31 +94,62 @@ func lastPerMonth(points []marketdata.Point) []marketdata.Point {
 	return out
 }
 
-// FitParametric returns the mean and standard deviation of the weighted
-// real ANNUAL returns of a monthly panel, to seed the parametric mu/sigma
-// sliders. Both are the directly relevant quantities for an i.i.d. annual
-// model: mu is the arithmetic mean of the realised annual real returns and
-// sigma is their dispersion.
+// Fit seeds the parametric sliders from a portfolio's history: the i.i.d.
+// annual Student-t the kernel draws from.
+type Fit struct {
+	Mu    float64 // mean realised annual real return
+	Sigma float64 // annualised volatility, from the monthly dispersion (σ_m·√12)
+	Df    float64 // Student-t dof seeded from the monthly excess kurtosis
+}
+
+// FitParametric estimates the parametric annual model from a monthly panel.
 //
-// This sigma is typically BELOW the volatility shown on the main report,
-// which annualises daily returns (×√252). The two measure different things:
-// daily-annualised vol overstates the realised dispersion of annual returns
-// whenever returns mean-revert or the strategy trends (vol drag). The annual
-// dispersion is the honest input for the annual kernel; the slider lets the
-// user raise sigma toward the headline figure for a more conservative test.
-func FitParametric(panel scenario.Panel, weights []float64) (mu, sigma float64) {
-	annual := scenario.Annualize(panel.Combine(weights), 12)
-	if len(annual) == 0 {
-		return 0, 0
+//   - Mu is the arithmetic mean of the realised annual real returns.
+//   - Sigma is the monthly real-return standard deviation scaled by √12, far
+//     more stable than the std of the ~20 annual points and the right i.i.d.
+//     annual sigma for the model. It is typically BELOW the volatility shown on
+//     the main report (daily returns ×√252): daily-annualised vol overstates
+//     the dispersion realised at an annual horizon when returns mean-revert or
+//     trend (vol drag). The slider lets the user raise it for a more
+//     conservative test.
+//   - Df is seeded from the monthly excess kurtosis (Student-t excess kurtosis
+//     6/(df−4)). It is a rough hint: monthly returns are fatter-tailed than the
+//     annual aggregates the model actually draws (returns sum toward normal), so
+//     this errs toward heavier tails. A user-adjustable seed, not a precise fit.
+func FitParametric(panel scenario.Panel, weights []float64) Fit {
+	monthly := panel.Combine(weights)
+	annual := scenario.Annualize(monthly, 12)
+	if len(annual) == 0 || len(monthly) < 2 {
+		return Fit{}
 	}
-	mu = metrics.Mean(annual)
-	for _, r := range annual {
-		sigma += (r - mu) * (r - mu)
+	return Fit{
+		Mu:    metrics.Mean(annual),
+		Sigma: stdev(monthly) * math.Sqrt(12),
+		Df:    dofFromKurtosis(metrics.ExcessKurtosis(monthly)),
 	}
-	if len(annual) > 1 {
-		sigma = math.Sqrt(sigma / float64(len(annual)-1))
+}
+
+// stdev is the sample (n−1) standard deviation; 0 for fewer than two points.
+func stdev(xs []float64) float64 {
+	if len(xs) < 2 {
+		return 0
 	}
-	return mu, sigma
+	m := metrics.Mean(xs)
+	var s float64
+	for _, x := range xs {
+		s += (x - m) * (x - m)
+	}
+	return math.Sqrt(s / float64(len(xs)-1))
+}
+
+// dofFromKurtosis maps a sample excess kurtosis to a Student-t dof seed,
+// inverting the t excess kurtosis 6/(df−4). Thin-tailed or undefined samples
+// map to the near-normal end (30); the result is clamped to the slider range.
+func dofFromKurtosis(excess float64) float64 {
+	if math.IsNaN(excess) || excess <= 0 {
+		return 30
+	}
+	return math.Max(3, math.Min(4+6/excess, 30))
 }
 
 // normalize scales weights to sum to 1 (returned unchanged if they sum to 0).
