@@ -31,6 +31,7 @@ type Params struct {
 	Model         string    `json:"model"`      // "parametric" (default), "bootstrap", "cohorts"
 	TargetRuin     float64 `json:"targetRuin"`     // solve target (fraction), used by /api/solve
 	Monthly        bool    `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
+	Regime         bool    `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
 	BufferStopYear int     `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
 	SideAnnual     float64 `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
 	SideUntilYear  int     `json:"sideUntilYear"`  // side income runs until this year, exclusive
@@ -65,7 +66,7 @@ func (pr Params) plan() decumul.Plan {
 		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
-		Monthly:    pr.Monthly,
+		Monthly:    pr.Monthly && !pr.Regime, // the regime source is annual
 	}
 	if pr.PensionAnnual > 0 {
 		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: pr.PensionAnnual})
@@ -100,6 +101,15 @@ func (pr Params) source(panel *scenario.Panel) scenario.Source {
 				return inner // the monthly kernel consumes the monthly source directly
 			}
 			return scenario.Compounded{Inner: inner, Group: 12}
+		}
+	}
+	if pr.Regime {
+		// Stress regimes: a two-state Markov source (annual) where bad years
+		// cluster. The bear state is derived from the calm mu/sigma sliders.
+		return scenario.MarkovRegime{
+			CalmMu: pr.Mu, CalmSigma: pr.Sigma,
+			BearMu: pr.Mu - 2*pr.Sigma, BearSigma: pr.Sigma * 1.5,
+			StayCalm: 0.92, StayBear: 0.65, Df: pr.Df, Periods: pr.Years,
 		}
 	}
 	if pr.Monthly {
