@@ -39,6 +39,7 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	res := PathResult{Wealth: make([]float64, p.Years+1)}
 	res.Wealth[0] = p.Capital
 	peak := p.Capital
+	spending := p.NeedAnnual // dynamic spending level for the guardrails rule
 
 	// sellGrowth sells from the growth sleeve to deliver up to want net euros,
 	// returning the net actually delivered (below want when the sleeve cannot
@@ -76,9 +77,15 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		}
 		dd := 1 - total/peak
 
-		need := p.needAt(k)
-		if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
-			need *= 1 - p.Flex.Cut
+		var need float64
+		if p.Guard.active() {
+			spending = p.Guard.adjust(spending, total)
+			need = p.netOf(spending, k)
+		} else {
+			need = p.needAt(k)
+			if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
+				need *= 1 - p.Flex.Cut
+			}
 		}
 
 		// Deliver the net need, each source falling back to the other: the
@@ -91,7 +98,7 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		} else {
 			delivered = sellGrowth(need)
 			delivered += drawBuffer(need - delivered)
-			if refill := target - buffer; refill > 0 && growth > 0 {
+			if refill := target - buffer; refill > 0 && growth > 0 && p.Buffer.refillsAt(k) {
 				if cap := growth * refillCap; refill > cap {
 					refill = cap
 				}
