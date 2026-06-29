@@ -58,7 +58,7 @@ func (p Plan) simulateOn(seqs []scenario.Sequence, workers int) Ensemble {
 		go func(w int) {
 			defer wg.Done()
 			for i := w; i < len(seqs); i += workers {
-				paths[i] = p.RunPath(seqs[i])
+				paths[i] = p.runPath(seqs[i])
 			}
 		}(w)
 	}
