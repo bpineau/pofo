@@ -120,6 +120,36 @@ func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
 	}
 }
 
+// The stress-regime toggle must build an annual Markov source and, at equal
+// inputs, raise ruin above the i.i.d. parametric model (sequence risk).
+func TestRegimeRaisesRuin(t *testing.T) {
+	base := Params{Capital: 1_000_000, NeedAnnual: 40000, Years: 40,
+		Mu: 0.045, Sigma: 0.12, Df: 6, NPaths: 8000}
+
+	if _, ok := base.source(nil).(scenario.ParametricSource); !ok {
+		t.Fatal("default source should be parametric")
+	}
+	reg := base
+	reg.Regime = true
+	if _, ok := reg.source(nil).(scenario.MarkovRegime); !ok {
+		t.Fatal("regime source should be a MarkovRegime")
+	}
+
+	iidRuin := Compute(base).Cards
+	regRuin := Compute(reg).Cards
+	ruinOf := func(cards []Card) string {
+		for _, c := range cards {
+			if c.Label == "Ruin" {
+				return c.Value
+			}
+		}
+		return ""
+	}
+	if ruinOf(iidRuin) == ruinOf(regRuin) {
+		t.Errorf("regime ruin %q should differ from (exceed) i.i.d. %q", ruinOf(regRuin), ruinOf(iidRuin))
+	}
+}
+
 // The richer-policy params map onto the plan: glidepath stop year, bounded side
 // income, and guardrails banded around the initial withdrawal rate.
 func TestPlanRicherPolicies(t *testing.T) {
