@@ -139,7 +139,7 @@ function syncURL() {
   history.replaceState(null, "", "#" + p.toString());
 }
 
-let timer = null;
+let timer = null, lastBody = null;
 function schedule(){ clearTimeout(timer); timer = setTimeout(run, 200); }
 
 function weightsChanged() {
@@ -168,7 +168,9 @@ let run = async function(){
   const body = {...state, years: Math.round(state.years),
     pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
     sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear)};
+  lastBody = body;
   renderModels(body); // the multi-model hero strip, in parallel with the detail sim
+  renderPaths(body);  // the wealth fan chart for the selected model
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",
@@ -223,8 +225,26 @@ async function renderModels(body) {
     cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
+  // Keep the fan-chart model picker in sync with the available models.
+  const sel = document.getElementById("fanModel");
+  if (sel && ms.length) {
+    const cur = sel.value;
+    sel.innerHTML = ms.map(m => `<option value="${m.name}">${m.name}</option>`).join("");
+    sel.value = ms.some(m => m.name === cur) ? cur : "Student-t";
+  }
 }
 document.getElementById("targetRuin").addEventListener("input", schedule);
+
+// Wealth fan chart: the picture of the simulated market for the chosen model.
+async function renderPaths(body) {
+  const model = document.getElementById("fanModel").value || "";
+  try {
+    const r = await (await fetch("/api/paths", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, fanModel: model})})).json();
+    document.getElementById("fanSvg").innerHTML = r.fanSvg || "";
+  } catch (e) { /* leave the previous chart on failure */ }
+}
+document.getElementById("fanModel").addEventListener("change", () => { if (lastBody) renderPaths(lastBody); });
 
 // --- solver: required capital for a target ruin, and the ruin-minimising
 // buffer at the current capital. ---
