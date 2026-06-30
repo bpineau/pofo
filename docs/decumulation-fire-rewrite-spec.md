@@ -395,10 +395,30 @@ everywhere).
 
 ## 11. Decisions (resolved with Ben, 2026-06-30)
 
-- **Central-case defaults** (lean conservative, not optimistic): central column
-  **μ 3.25% real / σ 17% / df 5** for ~100% global equity; Conservative column
-  **μ 3.0% / σ 18% / df 4** (Anarkulova-class). These seed the parametric,
-  regime and conservative sources.
+- **Return-model stance (resolved after a calibration pass):** i.i.d., calibrated,
+  accepting long-horizon caution. Pessimism comes from tails, volatility and
+  sequence clustering, NOT from an implausibly low mean. The earlier "μ 3.25% /
+  σ 17%" defaults were wrong: read as the model's arithmetic mean and 1-year
+  vol, they imply ~2% real geometric and reproduce the "FIRE is impossible"
+  artifact. Two corrections were essential and are now in the engine:
+  - **Geometric vs arithmetic.** `Mu` is the arithmetic per-period mean;
+    geometric ≈ Mu − σ²/2. Target a realistic ~4.5% real geometric.
+  - **i.i.d. vs the 1-year vol.** i.i.d. draws have no cross-year mean reversion,
+    so feeding the ~17% one-year equity vol into a 30-50y i.i.d. model
+    double-counts dispersion. Use the long-horizon (variance-ratio-consistent)
+    volatility, ~11%.
+- **Calibrated defaults / model family:**
+  - Central **Student-t (i.i.d.)**: μ 5% / σ 11% / df 5 (geometric ~4.4% real).
+    Reproduces the literature at 30y (~3.4% safe WR, Trinity/Morningstar range)
+    and reads honestly tougher at 45-50y. **This is the verdict source.**
+  - **Regime**: a sequence-risk *stress* at the same mean (mean-preserving
+    `NewMarkovRegime`, `bearGapFactor` 0.6 so it costs a realistic ~0.5% of safe
+    WR, not ~1%).
+  - **Conservative (broad-sample prior)**: μ 4.5% / σ 13% / df 4 with clustering,
+    ~3.5% real geometric, landing ~1.9% safe WR at 30y (Anarkulova ballpark).
+  - At 45-50y the i.i.d. family reads stricter than the mean-reverting historical
+    evidence by design; the Historical / Block-bootstrap columns (when a panel is
+    loaded) show the mean-reverting counterpoint.
 - **Target ruin is a control**: default 5% ruin / 95% success for the headline
   safe-WR, but the user can dial the target (2%, 10%, ...) and the solver answers
   per lever for that target. Not a single fixed definition of "safe".
