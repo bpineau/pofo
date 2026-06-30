@@ -117,13 +117,22 @@ Notes from the critical reading:
 
 ---
 
-## 5. UI / information architecture (compact by construction)
+## 5. UI / information architecture (dense but legible)
 
-Ben's explicit constraint: it must fit on one screen so the impact of a slider
-change is *immediately* visible, and ChatGPT's many tables/panels do not fit.
-Resolution: a fixed **hero strip that updates live on every drag**, one **tabbed
-main chart** (only one chart visible at a time), and **collapsible** detail.
-Keep the sliders and the allocation bar.
+Ben likes **dense information**, so the goal is not minimalism. The real
+constraint is *legibility of change*: however much is on screen, the impact of
+moving a slider must be **immediately visible** without scrolling kilometres or
+re-running. Resolution: a fixed **hero strip that updates live on every drag**
+(always in view), a **persistent main layout** (the sliders, the model strip and
+the active chart never move), and rich detail shown by default rather than
+hidden. Tabs switch the *main chart* only; they do not gate the headline
+numbers. Keep the sliders and the allocation bar.
+
+**Pervasive hover help (Ben's request).** Every model column, every toggle,
+every metric and every chart axis carries a plain-language mouse-hover
+explanation aimed at a non-specialist ("what this is, why it differs, how to
+read it"). The long methodology stays one click away; the inline hovers carry
+the day-to-day understanding.
 
 ```
 ┌───────────────────────────────────────────────────────────────────────┐
@@ -149,12 +158,14 @@ Keep the sliders and the allocation bar.
 ```
 
 ### Hero strip (always visible, recomputed live, ~200ms debounce)
-- **Verdict line**: the safe withdrawal rate in €/yr at **95% success** (the
-  headline confidence; 90% shown on hover), vs the user's planned spend. This is
-  the single most useful sentence; promote it from the buried "Solve" panel.
-  (Both Ben and ChatGPT: SWR + ruin are the two things that matter; Claude's
-  original solver targeting *starting capital* was wrong because capital is the
-  least controllable input.)
+- **Verdict line**: the safe withdrawal rate in €/yr at the **target ruin**, vs
+  the user's planned spend. The target ruin is a control (default 5% ruin /
+  95% success; the user can dial it to 2%, 10%, etc.), so the verdict answers
+  "at the risk level *I* accept, what can I spend?" not a single fixed
+  definition of safe. This is the single most useful sentence; promote it from
+  the buried "Solve" panel. (Both Ben and ChatGPT: SWR + ruin are the two things
+  that matter; Claude's original solver targeting *starting capital* was wrong
+  because capital is the least controllable input.)
 - **Model strip**: the §4 table, three rows (Ruin, Safe WR, Median wealth),
   one column per model, cells colour-graded (green→red). Column headers carry
   the plain-language hover (§4). This is the epistemic-uncertainty view and the
@@ -195,20 +206,37 @@ specified but **phase 2** to protect compactness.
   the panel for historical/bootstrap), and show a quick A/B against a pinned
   baseline as today.
 
-### Solver (compact, one line in/out)
-No accumulation phase (Ben's decision), so the solver targets the spending-side
-levers, **not** starting capital and **not** retirement year / required savings:
+### Solver: "what do I need to hit my target ruin?" (multi-lever)
+The user sets a **target ruin** (e.g. "keep it < 2%") and the solver answers
+*per controllable lever*, showing the menu of equivalent ways to get there, not
+one number. No accumulation phase (Ben's decision), so it never targets starting
+capital, retirement year or required savings.
 ```
-Solve for  [ Safe withdrawal ▾ | Allocation ]
-Target     [ 5% ▾ ] ruin (i.e. 95% success)
-→  "Safe spend 59k/yr at 95% success"
-```
-`CapitalForRuin` is generalised to a `Solve(target, variable)` root-find on the
-chosen axis (withdrawal rate primary). Capital remains available but demoted.
+Keep ruin below  [ 2% ▾ ]   (under the [ central ▾ ] model)
 
-### Detail metrics (collapsed)
-Terminal p5, years underwater, worst-10y CAGR, CDaR, taxes: both Ben and ChatGPT
-agree these are secondary; keep them, collapsed, for power users.
+To reach it, any one of:
+  • Withdrawal      3.1%  (€56k/yr)      vs your 4.0% (€48k)   ← spend less
+  • Temporary cut   accept a 25% spending cut in downturns      ← flex / guardrails
+  • Allocation      shift ~15% equity → bonds/buffer
+  • Buffer          hold 5y cash instead of 3y
+  • (or combine: 3.6% withdrawal + a 15% downturn cut)
+```
+The "temporary cut" lever is first-class: the user explicitly wants to trade a
+**reversible drop in living standard during bad years** (the flex cut depth, or
+the Guyton-Klinger guardrail band width) against a lower ruin, instead of only
+permanently spending less. So the solver root-finds on the lever the user
+chooses, including the flex/guardrail depth, to meet the chosen target.
+
+Engine: `CapitalForRuin` is generalised to `Solve(targetRuin, lever)` that
+root-finds the chosen lever (withdrawal rate, flex-cut depth, equity weight,
+buffer years; capital demoted) at the chosen target and model. The live "menu"
+runs one root-find per lever and is cheap with shared pre-drawn paths.
+
+### Detail metrics (shown, visually secondary)
+Terminal p5, years underwater, worst-10y CAGR, CDaR, taxes: kept on screen (Ben
+likes dense information) but in a smaller, lower-priority band under the hero, so
+they inform without competing with ruin/safe-WR. Each carries a hover
+explanation. They update live like everything else.
 
 ---
 
@@ -222,10 +250,13 @@ agree these are secondary; keep them, collapsed, for power users.
    wealth, confidence). Reuse pre-drawn paths where the source allows
    (`drawPaths`/`simulateOn` already exist); the per-model cost at 2000 paths is
    acceptable. The live hero strip calls this.
-3. **Safe-withdrawal-rate solver.** Generalise `CapitalForRuin` into a
-   root-finder over a selectable axis: withdrawal rate (primary) and capital
-   (demoted). No accumulation pre-phase (Ben's decision), so retirement-year and
-   required-savings targets are out of scope. The headline confidence is 95%.
+3. **Multi-lever solver.** Generalise `CapitalForRuin` into
+   `Solve(targetRuin, lever, model)` that root-finds a selectable lever
+   (withdrawal rate, flex-cut depth / guardrail-band width, equity weight,
+   buffer years; capital demoted) to meet a **user-set target ruin** (not a
+   fixed 5%). Drives both the verdict line and the solver "menu" (one root-find
+   per lever). No accumulation pre-phase (Ben's decision), so retirement-year and
+   required-savings targets are out of scope.
 4. **Ruin-frontier series**: `Sweep1D` over withdrawal rate per model, returned
    for the Frontier chart.
 5. **Sensitivity**: finite-difference Δruin/ΔsafeWR per controllable lever,
@@ -348,11 +379,13 @@ everywhere).
 1. **Engine truth**: §2 regime fix + §7 calibration tests. Nothing else is
    trustworthy until this lands.
 2. **Multi-model core**: `/api/models`, the live hero strip (verdict + model
-   strip + confidence), generalised safe-WR solver. The conceptual redesign.
+   strip + confidence), and the multi-lever `Solve(targetRuin, lever, model)`
+   with a user-set target. The conceptual redesign.
 3. **Show the market**: `chart.Fan` + Paths tab; `chart.MultiLine` + Frontier
    tab.
-4. **Robustness**: `chart.HBars` + Sensitivity tab; fix the allocation bar;
-   accumulation pre-phase (retire-in / required-savings solver targets).
+4. **Robustness**: `chart.HBars` + Sensitivity tab; the solver "menu" (per-lever
+   answers to hit the target ruin, incl. the temporary-cut lever); fix the
+   allocation bar so it drives every model.
 5. **Polish**: confidence/anchor copy, methodology disclosure, demoted detail
    metrics, colour system.
 6. **Phase 2**: "Why it fails", risk decomposition, pofo integration, bundled
@@ -366,8 +399,9 @@ everywhere).
   **μ 3.25% real / σ 17% / df 5** for ~100% global equity; Conservative column
   **μ 3.0% / σ 18% / df 4** (Anarkulova-class). These seed the parametric,
   regime and conservative sources.
-- **Verdict confidence**: **95% success** is the headline safe-WR; 90% shown on
-  hover.
+- **Target ruin is a control**: default 5% ruin / 95% success for the headline
+  safe-WR, but the user can dial the target (2%, 10%, ...) and the solver answers
+  per lever for that target. Not a single fixed definition of "safe".
 - **Broad-sample historical panel**: **deferred to phase 2** (block bootstrap +
   the Conservative column cover the dark past for v1). Tracked as a follow-up.
 - **Accumulation phase**: **out of scope.** The solver targets safe-WR /
