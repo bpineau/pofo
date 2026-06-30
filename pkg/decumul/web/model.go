@@ -14,29 +14,29 @@ const simWorkers = 8
 // Params is the slider state posted by the browser. Weights is nil in
 // parametric mode and holds per-holding fractions in portfolio mode.
 type Params struct {
-	Capital       float64   `json:"capital"`
-	NeedAnnual    float64   `json:"needAnnual"`
-	BufferYears   float64   `json:"bufferYears"`
-	Mu            float64   `json:"mu"`
-	Sigma         float64   `json:"sigma"`
-	Df            float64   `json:"df"`
-	BufferReturn  float64   `json:"bufferReturn"`
-	Years         int       `json:"years"`
-	PensionYear   int       `json:"pensionYear"`
-	PensionAnnual float64   `json:"pensionAnnual"`
-	FlexCut       float64   `json:"flexCut"`
-	TaxRate       float64   `json:"taxRate"`
-	NPaths        int       `json:"nPaths"`
-	Weights       []float64 `json:"weights"`
-	Model         string    `json:"model"`      // "parametric" (default), "bootstrap", "cohorts"
-	TargetRuin     float64 `json:"targetRuin"`     // solve target (fraction), used by /api/solve
-	Monthly        bool    `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
-	Regime         bool    `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
-	BufferStopYear int     `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
-	SideAnnual     float64 `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
-	SideUntilYear  int     `json:"sideUntilYear"`  // side income runs until this year, exclusive
-	Guardrails     bool    `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
-	FanModel       string  `json:"fanModel"`       // which model's paths the fan chart shows (default: central Student-t)
+	Capital        float64   `json:"capital"`
+	NeedAnnual     float64   `json:"needAnnual"`
+	BufferYears    float64   `json:"bufferYears"`
+	Mu             float64   `json:"mu"`
+	Sigma          float64   `json:"sigma"`
+	Df             float64   `json:"df"`
+	BufferReturn   float64   `json:"bufferReturn"`
+	Years          int       `json:"years"`
+	PensionYear    int       `json:"pensionYear"`
+	PensionAnnual  float64   `json:"pensionAnnual"`
+	FlexCut        float64   `json:"flexCut"`
+	TaxRate        float64   `json:"taxRate"`
+	NPaths         int       `json:"nPaths"`
+	Weights        []float64 `json:"weights"`
+	Model          string    `json:"model"`          // "parametric" (default), "bootstrap", "cohorts"
+	TargetRuin     float64   `json:"targetRuin"`     // solve target (fraction), used by /api/solve
+	Monthly        bool      `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
+	Regime         bool      `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
+	BufferStopYear int       `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
+	SideAnnual     float64   `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
+	SideUntilYear  int       `json:"sideUntilYear"`  // side income runs until this year, exclusive
+	Guardrails     bool      `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
+	FanModel       string    `json:"fanModel"`       // which model's paths the fan chart shows (default: central Student-t)
 }
 
 // Card is one labelled summary figure shown above the charts.
@@ -308,4 +308,3 @@ func terminalSeries(s []decumul.SweepPoint) chart.XYSeries {
 	}
 	return chart.XYSeries{Name: "Terminal wealth p50 (k€)", Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
 }
-
