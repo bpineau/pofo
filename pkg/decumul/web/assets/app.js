@@ -173,6 +173,7 @@ let run = async function(){
   renderPaths(body);    // the wealth fan chart for the selected model
   renderSolver(body);   // the per-lever menu to reach the acceptable ruin
   renderFrontier(body); // ruin vs withdrawal rate, per model
+  renderSensitivity(body); // change in ruin per controllable lever
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",
@@ -254,6 +255,15 @@ async function renderFrontier(body) {
     const r = await (await fetch("/api/frontier", {method: "POST",
       headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
     document.getElementById("frontierSvg").innerHTML = r.frontierSvg || "";
+  } catch (e) { /* leave the previous chart on failure */ }
+}
+
+// Sensitivity "greeks": the change in ruin from nudging each controllable lever.
+async function renderSensitivity(body) {
+  try {
+    const r = await (await fetch("/api/sensitivity", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
+    document.getElementById("sensitivitySvg").innerHTML = r.sensitivitySvg || "";
   } catch (e) { /* leave the previous chart on failure */ }
 }
 
