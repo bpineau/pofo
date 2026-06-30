@@ -82,7 +82,9 @@ guardCtl.querySelector("input").addEventListener("change", e => { state.guardrai
 // Conservative broad-sample prior: override the (often rosy) fitted/default
 // mu/sigma/df with cautious, forward-looking world-equity real assumptions.
 // Lower real return, higher volatility, fatter tails than a favourable window.
-const PRIOR = {mu: 0.03, sigma: 0.18, df: 4};
+// Matches the server's Conservative column (web.consMu/consSigma/consDf): a
+// ~3.5% real geometric mean with fat tails, not an "equities barely grow" 1.4%.
+const PRIOR = {mu: 0.045, sigma: 0.13, df: 4};
 const DEFAULT = Object.fromEntries(SLIDERS.map(([k, , , , , def]) => [k, def]));
 function applyReturns(src) { for (const k of ["mu", "sigma", "df"]) setSliderVal(k, src[k]); }
 state.conservative = false;
@@ -201,6 +203,29 @@ let run = async function(){
 // --- multi-model hero strip: ruin / safe spend / median wealth per return
 // model, the epistemic-uncertainty view that replaces a single ruin figure. ---
 const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+// Instant tooltip for any [data-help] element (native title has a ~1s delay).
+const tip = document.createElement("div");
+tip.id = "tip";
+document.body.appendChild(tip);
+document.addEventListener("mouseover", e => {
+  const el = e.target.closest("[data-help]");
+  if (!el) return;
+  tip.textContent = el.getAttribute("data-help");
+  tip.style.display = "block";
+});
+document.addEventListener("mousemove", e => {
+  if (tip.style.display !== "block") return;
+  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = e.clientX + pad, y = e.clientY + pad;
+  if (x + w > innerWidth) x = e.clientX - pad - w;
+  if (y + h > innerHeight) y = e.clientY - pad - h;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+});
+document.addEventListener("mouseout", e => {
+  if (e.target.closest("[data-help]")) tip.style.display = "none";
+});
 // Ruin colour: green (safe) through amber to red, saturating at 30%.
 function ruinColor(r) {
   const x = Math.max(0, Math.min(r, 0.30));
@@ -219,12 +244,12 @@ async function renderModels(body) {
   conf.className = r.confidence ? "conf-" + r.confidence.toLowerCase() : "";
   const ms = r.models || [];
   const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
-  const head = `<tr><th></th>${ms.map(m => `<th title="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
-  const ruinRow = `<tr><th title="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
+  const head = `<tr><th></th>${ms.map(m => `<th data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+  const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => (m.ruin * 100).toFixed(1) + "%", m => `style="background:${ruinColor(m.ruin)}"`) + `</tr>`;
-  const spendRow = `<tr><th title="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
+  const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
     cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub"> ${(m.safeWR * 100).toFixed(1)}%</span>`) + `</tr>`;
-  const wealthRow = `<tr><th title="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
+  const wealthRow = `<tr><th data-help="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
     cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
@@ -351,23 +376,9 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   applySharedSliders(); // a shared mu/sigma/df overrides the historical seed
   if (state.conservative) applyReturns(PRIOR); // the prior wins over the fit
 
-  const sel = document.createElement("label"); sel.className="ctl span";
-  sel.innerHTML = `<span class="lab"><span>Return model</span></span>
-    <select id="model"><option value="parametric">parametric</option>
-    <option value="bootstrap">historical bootstrap</option>
-    <option value="cohorts">historical cohorts</option></select>`;
-  form.prepend(sel);
-  const MODEL_HELP = {
-    parametric: "Draws i.i.d. annual real returns from the mu/sigma sliders above (fat-tailed Student-t). Sliders are seeded from this portfolio's historical ANNUAL real-return dispersion, which is usually below the report's daily-annualised volatility (vol drag / trending); raise sigma toward that headline figure for a more conservative test.",
-    bootstrap: "Resamples 2-year blocks of this portfolio's actual monthly real returns (2006→), preserving regimes and cross-asset correlations. Optimistic by construction: anchored to that one favourable historical window.",
-    cohorts: "Replays every actual historical start month, no resampling. The most faithful but limited to the available history length, so long horizons may be unavailable.",
-  };
-  const help = document.getElementById("modelhelp");
-  const setHelp = mdl => { help.textContent = MODEL_HELP[mdl] || ""; };
-  sel.querySelector("select").addEventListener("change", e=>{state.model=e.target.value;setHelp(state.model);schedule();});
-  state.model = sharedModel || "parametric";
-  sel.querySelector("select").value = state.model;
-  setHelp(state.model);
+  // The hero strip already evaluates every return model side by side, so there
+  // is no model to pick: the detail charts below use the central parametric one.
+  state.model = "parametric";
 
   const alloc = document.createElement("div"); alloc.className = "ctl span";
   alloc.innerHTML = `<span class="lab"><span>Allocation — drag a divider to shift weight</span></span>

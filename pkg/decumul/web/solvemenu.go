@@ -50,8 +50,10 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 	menu := SolverMenu{TargetRuin: target}
 	menu.CurrentRuin = base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
 
-	// Withdrawal: the safe spend at the target (always reachable by spending less).
-	safe := base.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
+	// Withdrawal: the safe spend at the target (always reachable by spending
+	// less). Solved on the fixed rule (no flex/guardrails), the monotonic and
+	// conventional safe withdrawal.
+	safe := fixedRule(base).Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
 	menu.Options = append(menu.Options, SolverOption{
 		Lever: "Spend less", OK: true,
 		Text: fmt.Sprintf("Spend up to %.0f k€/yr (%.1f%%) instead of %.0f k€ (%.1f%%)",

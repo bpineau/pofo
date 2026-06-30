@@ -111,21 +111,35 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 	return out
 }
 
-// evalModel runs one model: ruin and median wealth at the planned spend, and the
-// safe withdrawal that meets the target ruin. The shared seed keeps the figures
-// comparable across models.
+// evalModel runs one model: ruin and median wealth at the planned spend (under
+// the user's actual policy), and the safe withdrawal that meets the target ruin.
+// The safe-withdrawal solve uses the fixed rule (fixedRule strips flex and
+// guardrails): the conventional definition of a safe withdrawal rate, and the
+// only one that is monotonic in the withdrawal, so the bisection is well
+// defined. The shared seed keeps the figures comparable across models.
 func evalModel(base decumul.Plan, ns namedSource, capital, target float64, nPaths int) ModelStat {
 	const seed = uint64(7)
 	p := base
 	p.Source = ns.source
 
 	o := p.Simulate(nPaths, simWorkers, seed).Outcome()
-	safe := p.Solve(target, decumul.WithdrawalAxis(0, capital*0.15), nPaths, simWorkers, seed)
+	safe := fixedRule(p).Solve(target, decumul.WithdrawalAxis(0, capital*0.15), nPaths, simWorkers, seed)
 	return ModelStat{
 		Name: ns.name, Help: ns.help,
 		Ruin: o.RuinProb, MedianWealth: o.TerminalP50,
 		SafeSpend: safe, SafeWR: safe / capital,
 	}
+}
+
+// fixedRule strips the adaptive spending rules (flex cut and guardrails) so the
+// plan withdraws a fixed real amount. A safe-withdrawal solve must run on the
+// fixed rule: guardrails rebase spending on the initial withdrawal rate, which
+// makes ruin non-monotonic in the withdrawal and the bisection ill-defined (it
+// can jump between very different "safe" spends for a tiny target change).
+func fixedRule(p decumul.Plan) decumul.Plan {
+	p.Flex = decumul.FlexRule{}
+	p.Guard = decumul.Guardrails{}
+	return p
 }
 
 // confidence rates how much the data-backed models can be trusted at the chosen
@@ -140,10 +154,10 @@ func confidence(pr Params, panel *scenario.Panel) (level, note string) {
 	switch {
 	case histYears >= pr.Years:
 		return "HIGH", fmt.Sprintf("Fund history %dy covers the %dy horizon.", histYears, pr.Years)
-	case histYears*2 >= pr.Years:
-		return "MEDIUM", fmt.Sprintf("Fund history %dy vs %dy horizon: the historical models extrapolate beyond the data.", histYears, pr.Years)
+	case histYears*3 >= pr.Years:
+		return "MEDIUM", fmt.Sprintf("History %dy vs %dy horizon: the history-based columns (Historical, Block bootstrap) reflect one favourable window and read optimistic; Conservative is a deliberate broad-sample worst case. Plan near the central columns, between the two.", histYears, pr.Years)
 	default:
-		return "LOW", fmt.Sprintf("Fund history %dy vs %dy horizon: far too short for the historical models; lean on the conservative column.", histYears, pr.Years)
+		return "LOW", fmt.Sprintf("History %dy is short vs the %dy horizon: the history-based columns are unreliable here. Weight the central (Student-t/Regime) and Conservative columns.", histYears, pr.Years)
 	}
 }
 
