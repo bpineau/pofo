@@ -5,6 +5,52 @@ import (
 	"math/rand/v2"
 )
 
+// Default Markov-regime persistence probabilities. These control how sticky
+// each state is: a high stayCalm means calm years run in streaks; a high
+// stayBear means downturns last several years, as in historical equity bear
+// markets. Together they imply a stationary bear probability of roughly 18.6%.
+const (
+	stayCalm = 0.92 // probability of remaining in the calm state each period
+	stayBear = 0.65 // probability of remaining in the bear state each period
+)
+
+// bearGapFactor is the multiple of sigma by which the bear-state mean falls
+// below the calm-state mean. Scaling with sigma keeps the spread proportional
+// to the volatility of the underlying return series.
+const bearGapFactor = 1.5
+
+// bearSigmaFactor is the multiple applied to the calm-state sigma in the bear
+// state. Volatility clustering (bear markets are more volatile than calm
+// markets) increases the left-tail severity without relying solely on the lower
+// mean.
+const bearSigmaFactor = 1.5
+
+// NewMarkovRegime builds a mean-preserving two-state regime: the calm mean is
+// lifted just enough that the time spent in the (deeper, more volatile, sticky)
+// bear state leaves the blended long-run mean equal to mu. It injects sequence
+// risk (clustered, persistent real drawdowns and a fatter left tail) WITHOUT
+// changing the long-run expected return.
+//
+// Persistence uses the package constants stayCalm and stayBear. The bear state
+// is bearGapFactor*sigma worse than the calm state (mean) and bearSigmaFactor
+// times as volatile.
+func NewMarkovRegime(mu, sigma, df float64, periods int) MarkovRegime {
+	toBear := 1 - stayCalm
+	toCalm := 1 - stayBear
+	piBear := toBear / (toBear + toCalm)
+
+	bearGap := bearGapFactor * sigma // bear mean is this much below calm mean
+	calmMu := mu + piBear*bearGap    // lift calm so the blend equals mu
+	bearMu := calmMu - bearGap       // equivalent to mu - (1-piBear)*bearGap
+
+	return MarkovRegime{
+		CalmMu: calmMu, CalmSigma: sigma,
+		BearMu: bearMu, BearSigma: sigma * bearSigmaFactor,
+		StayCalm: stayCalm, StayBear: stayBear,
+		Df: df, Periods: periods,
+	}
+}
+
 // MarkovRegime draws returns from a two-state Markov chain, a calm state and a
 // bear state, so bad years cluster into prolonged real drawdowns: the
 // sequence-of-returns risk that i.i.d. parametric draws miss. The bear state
@@ -14,10 +60,9 @@ import (
 // standardised to that state's sigma; the path starts from the chain's
 // stationary distribution so a retirement can begin in a downturn.
 //
-// It is a generic Source, usable wherever ParametricSource is, and is meant as
-// a more honest stress alternative: at comparable calm parameters it has a
-// fatter left tail and deeper multi-year drawdowns, and a slightly lower
-// blended mean (time spent in the bear state).
+// Use NewMarkovRegime to build a mean-preserving regime from a target
+// mean/sigma/df; constructing the struct directly allows custom state
+// parameters, but the blended long-run mean is then set by the caller.
 type MarkovRegime struct {
 	CalmMu, CalmSigma float64
 	BearMu, BearSigma float64
