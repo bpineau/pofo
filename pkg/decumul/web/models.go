@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
@@ -97,18 +98,38 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 			"Resamples multi-year blocks of this portfolio's real returns, preserving clustered bear markets and cross-asset correlation. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window.",
 			scenario.Compounded{Inner: scenario.StationaryBootstrap{Panel: *panel, Weights: w, MeanBlock: 24, Periods: months}, Group: 12}})
 	}
+	cMu, cSigma, cDf := centralParams(pr, panel)
 	out = append(out,
 		namedSource{"Student-t",
-			"The calibrated central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. It assumes no mean reversion across years, so long (45-50y) horizons read a little tougher than history.",
-			scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}},
+			"The central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. No mean reversion across years, so long horizons read a touch tougher than history; and when your history is shorter than the horizon it leans toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
+			scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}},
 		namedSource{"Regime",
 			"Sequence-risk stress: clustered, persistent bull/bear regimes at the same long-run mean as Student-t, so a run of bad years can land early in retirement. Read it as the downside if the sequence is unlucky.",
-			scenario.NewMarkovRegime(pr.Mu, pr.Sigma, pr.Df, pr.Years)},
+			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Conservative",
 			"Forward-looking pessimism, not this fund's history: a lower real return (~3.5% geometric), higher volatility, fat left tail and clustered drawdowns, in line with broad century-long developed-market evidence (Anarkulova et al.).",
 			scenario.NewMarkovRegime(consMu, consSigma, consDf, pr.Years)},
 	)
 	return out
+}
+
+// centralParams blends the fitted (slider) parameters toward the broad-sample
+// prior by the history shortfall: with a panel shorter than the horizon, the
+// central planning models lean toward the prior, because a short favourable
+// window cannot reveal the long-horizon tail and sequence risk. The blend is
+// capped at half so the data is never fully discarded; with no panel or ample
+// history it returns the fitted values unchanged. This pulls the rosy short-run
+// fit toward a believable middle rather than leaving the central case optimistic.
+func centralParams(pr Params, panel *scenario.Panel) (mu, sigma, df float64) {
+	mu, sigma, df = pr.Mu, pr.Sigma, pr.Df
+	if panel == nil || pr.Years <= 0 {
+		return
+	}
+	histYears := float64(panel.Periods() / 12)
+	s := (float64(pr.Years) - histYears) / float64(pr.Years)
+	s = math.Max(0, math.Min(s, 0.5))
+	blend := func(fit, prior float64) float64 { return (1-s)*fit + s*prior }
+	return blend(mu, consMu), blend(sigma, consSigma), blend(df, consDf)
 }
 
 // evalModel runs one model: ruin and median wealth at the planned spend (under
