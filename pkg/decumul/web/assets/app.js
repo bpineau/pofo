@@ -2,7 +2,7 @@
 // unit drives how the live value is shown: pct (×100, "%"), eur, or int.
 const SLIDERS = [
   ["capital","Capital",800000,4000000,10000,1800000,"eur"],
-  ["needAnnual","Net spending /yr",24000,84000,1000,48000,"eur"],
+  ["needAnnual","Net spending /yr",24000,84000,1000,60000,"eur"],
   ["bufferYears","Buffer (years)",0,10,1,3,"int"],
   ["mu","Real growth return",0.01,0.12,0.005,0.05,"pct"],
   ["sigma","Volatility (long-horizon)",0.06,0.20,0.005,0.11,"pct"],
@@ -171,6 +171,7 @@ let run = async function(){
   lastBody = body;
   renderModels(body); // the multi-model hero strip, in parallel with the detail sim
   renderPaths(body);  // the wealth fan chart for the selected model
+  renderSolver(body); // the per-lever menu to reach the acceptable ruin
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",
@@ -246,24 +247,25 @@ async function renderPaths(body) {
 }
 document.getElementById("fanModel").addEventListener("change", () => { if (lastBody) renderPaths(lastBody); });
 
-// --- solver: required capital for a target ruin, and the ruin-minimising
-// buffer at the current capital. ---
+// --- solver menu: the equivalent ways to reach the acceptable ruin, one per
+// controllable lever (spend less, cut in downturns, hold a cash buffer). ---
 const eur = v => Math.round(v).toLocaleString("fr-FR") + " €";
-document.getElementById("solveBtn").addEventListener("click", async () => {
-  const out = document.getElementById("solveOut");
-  out.textContent = "solving…";
+async function renderSolver(body) {
   const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
-  const body = {...state, years: Math.round(state.years),
-    pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
-    targetRuin: target, weights};
+  const box = document.getElementById("solvermenu");
+  let m;
   try {
-    const r = await (await fetch("/api/solve", {method:"POST",
-      headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)})).json();
-    if (r.note) { out.textContent = r.note; return; }
-    out.innerHTML = `Capital for ${(r.targetRuin*100).toFixed(1)}% ruin: <b>${eur(r.requiredCapital)}</b>` +
-      ` · ruin-minimising buffer: <b>${r.bestBufferYears.toFixed(0)} y</b> (${(r.bestBufferRuin*100).toFixed(1)}% ruin)`;
-  } catch (e) { out.textContent = "solve failed"; }
-});
+    m = await (await fetch("/api/solvemenu", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, targetRuin: target})})).json();
+  } catch (e) { return; }
+  const met = m.currentRuin <= m.targetRuin;
+  const head = met
+    ? `<b>Your plan meets the target</b> (ruin ${(m.currentRuin * 100).toFixed(1)}% ≤ ${(m.targetRuin * 100).toFixed(1)}%). Room to spare, or tighten the target.`
+    : `<b>To get ruin down to ${(m.targetRuin * 100).toFixed(1)}%</b> (now ${(m.currentRuin * 100).toFixed(1)}%), any one of:`;
+  const items = (m.options || []).map(o =>
+    `<li class="${o.ok ? "" : "no"}">${o.ok ? "" : "✗ "}<span class="lev">${o.lever}:</span> ${o.text}</li>`).join("");
+  box.innerHTML = `<div class="solvehead">${head}</div><ul class="solveopts">${items}</ul>`;
+}
 
 // --- allocation bar: drag a divider to move weight between two adjacent
 // assets; the total stays at 100 % by construction. ---
