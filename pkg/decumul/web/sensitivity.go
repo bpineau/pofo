@@ -27,7 +27,8 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	const seed = uint64(7)
 	base := pr.plan()
 	base.Monthly = false
-	base.Source = scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}
+	cMu, cSigma, cDf := centralParams(pr, panel)
+	base.Source = scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}
 	baseRuin := base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
 
 	// Each nudge is a single-lever change. The source's path length (Periods) is
