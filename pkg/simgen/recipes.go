@@ -414,21 +414,38 @@ func zrozRecipe() Recipe {
 // history is available offline and as the gold proxy for other builds.
 func xauusdRecipe() Recipe {
 	return Recipe{
-		ID:     "XAUUSD",
-		Name:   "Gold (XAU/USD spot)",
-		Method: "real gold spot (XAU/USD), decades of history (~1968)",
-		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-			return f.Fetch("XAUUSD", from)
-		},
+		ID:              "XAUUSD",
+		Name:            "Gold (XAU/USD spot)",
+		Method:          "real gold spot (XAU/USD daily, ~2000→) extended back with the monthly London/LBMA gold fix (bundled refdata XAUUSD-LBMA, 1968→)",
+		Build:           xauusdBuild,
 		ValidateAgainst: "XAUUSD",
 	}
+}
+
+// xauusdBuild returns the gold spot series: the fetchable daily XAU/USD quote
+// (~2000→) with the bundled monthly London/LBMA gold fix (XAUUSD-LBMA, 1968→)
+// spliced behind it, so a gold sleeve covers the whole post-Bretton-Woods
+// floating era. If the daily quote is unavailable the monthly fix stands alone.
+func xauusdBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	long, _ := f.Fetch("XAUUSD-LBMA", from)
+	s, err := f.Fetch("XAUUSD", from)
+	if err != nil || s == nil || len(s.Points) == 0 {
+		if long != nil && len(long.Points) > 0 {
+			return long, nil
+		}
+		return s, err
+	}
+	if long != nil {
+		marketdata.ExtendBack(s, long)
+	}
+	return s, nil
 }
 
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (gold extended to XAU/USD spot ~1968, dev-intl to MSCI EAFE ~1970; start still limited by the EM/treasury legs ~1991-94), real DBMF grafted from 2019",
+		Method:          "12-month TSMOM on a cross-asset futures basket (gold extended to the bundled LBMA fix ~1968, dev-intl to MSCI EAFE ~1970; start still limited by the EM/treasury legs ~1991-94), real DBMF grafted from 2019",
 		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
@@ -458,12 +475,13 @@ func dbmfpaRecipe() Recipe {
 // re-expresses it in EUR at the EUR/USD spot rate (unhedged), so the EUR
 // investor also carries the USD/EUR currency move on top of the strategy. The
 // real DBMFE quotes are grafted from inception. EURUSD=X (Yahoo, ~2003→) is
-// the youngest component and sets the start date.
+// extended back to 1978 by the bundled ECU/EUR proxy, so the start date is now
+// set by the strategy's own youngest leg, not the FX cross.
 func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMFE",
 		Name:            "iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR",
-		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (~2003→), real DBMFE grafted from 2025",
+		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (bundled ECU/EUR proxy back to 1978), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
 		SpliceReal:      "DBMFE",

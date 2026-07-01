@@ -1,10 +1,52 @@
 package marketdata
 
 import (
+	_ "embed"
 	"fmt"
 	"strings"
 	"time"
 )
+
+// eurusdLongCSV is the bundled long monthly EUR/USD (USD per EUR) history:
+// ECU/USD before 1999 chained 1:1 to the euro after, used to extend the
+// fetchable EURUSD=X cross (Yahoo, ~2003→) back to 1978 so a EUR-investor
+// backcast and the EUR share-class reconstructions cover a long retirement.
+//
+//go:embed data/eurusd-long.csv
+var eurusdLongCSV string
+
+// eurusdLongCross returns the bundled long EUR/USD proxy expressed as the given
+// currency cross: "EURUSD=X" (USD per EUR) directly, "USDEUR=X" (EUR per USD)
+// as the reciprocal. ok is false for any other symbol, so the splice only ever
+// touches the euro cross.
+func eurusdLongCross(symbol string) (proxy []Point, ok bool) {
+	anchors := parseMonthlyAnchors(eurusdLongCSV)
+	switch symbol {
+	case "EURUSD=X":
+		return anchors, true
+	case "USDEUR=X":
+		out := make([]Point, 0, len(anchors))
+		for _, p := range anchors {
+			if p.Close > 0 {
+				out = append(out, Point{Date: p.Date, Close: 1 / p.Close})
+			}
+		}
+		return out, true
+	}
+	return nil, false
+}
+
+// extendFXBack splices the bundled long monthly EUR/USD history behind a
+// freshly fetched euro cross so USD↔EUR conversion (and the EUR reconstructions
+// that read the cross) reach back to 1978. Any other symbol is left untouched.
+func extendFXBack(symbol string, s *Series) {
+	if s == nil {
+		return
+	}
+	if proxy, ok := eurusdLongCross(symbol); ok {
+		ExtendBack(s, &Series{Symbol: symbol + " (ECU/EUR long)", Points: proxy})
+	}
+}
 
 // ConvertCurrency returns a copy of s converted into the target currency
 // using daily FX rates (Yahoo "<FROM><TO>=X" crosses, forward-filled on the
@@ -69,8 +111,9 @@ func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out 
 // under a FIXED (zero) start so the cache key is constant across assets: the
 // caller passes each asset's own first date, which would otherwise miss the
 // cache and refetch the FX series once per converted asset. The full cross is
-// small and covers every asset's range; dates before it are held constant by
-// the caller (pre-2003 for EUR/USD on Yahoo).
+// small and covers every asset's range; the euro cross is additionally
+// extended back to 1978 by the bundled ECU/EUR proxy (see extendFXBack), and
+// dates before any cross starts are held constant by the caller.
 func (c *Client) fxHistory(src, target string, _ time.Time) (*Series, error) {
 	return c.History(src+target+"=X", time.Time{})
 }

@@ -245,29 +245,36 @@ and on the currency conversion and fetch performance a EUR investor needs.
 - **French CPI to 1955**: `^HICP-FR` is extended back with the OECD French CPI
   from FRED (`FRACPIALLMINMEI`), chained at the Eurostat overlap
   (`extendMonthlyBack`), best-effort/cached, short FRED timeout.
-- New `XAUUSD` recipe (real gold spot); `simgen.extendingFetcher` splices a
-  longer proxy behind a component (EAFE for VTMGX, XAU for GC=F) and logs each
-  splice outcome to stderr for diagnosis.
+- **Gold real spot to 1968**: the `XAUUSD` recipe now splices the bundled
+  monthly London/LBMA gold fix (`pkg/datasets/refdata/XAUUSD-LBMA.csv`, 1968→,
+  from datahub `core/gold-prices`) behind the fetchable daily spot (`xauusdBuild`),
+  and `longBack["GC=F"]` points at it too. Splice validated at the 2000 overlap
+  (LBMA 2000-08 = $274.47 vs the daily quote $273.90). If the daily fetch fails,
+  the monthly fix stands alone.
+- **EUR/USD real cross to 1978**: `EURUSD=X`/`USDEUR=X` are extended back by a
+  bundled monthly ECU/EUR proxy (`pkg/marketdata/data/eurusd-long.csv`: FRED
+  `EXUSEC` ECU 1978-12→1998-12 chained 1:1 to `EXUSEU` euro 1999→), spliced in
+  `Client.History` via `extendFXBack`. Benefits both `ConvertCurrency` (the
+  convert-at-end path) and `dbmfeBuild`.
 - **Perf**: the EUR/USD FX cross is fetched once per run (constant cache key,
-  Yahoo). FRED was removed from the FX path: it failed/stalled per USD asset and
-  made runs take >1 min. FRED remains only for the (cached) French CPI.
+  Yahoo). FRED was removed from the *live* FX path: it failed/stalled per USD
+  asset and made runs take >1 min. FRED remains only for the (cached) French CPI;
+  the euro long history is now a bundled snapshot, not a live fetch.
 
 **Open:**
-- **NTSG capped ~1991, DBMF ~1994**: the equity legs now reach 1969/1976 but the
-  intermediate-treasury leg (VFITX, 1991) and the EM leg (VEIEX, 1994) cap them.
-  Need a constant-maturity treasury total-return reconstruction (from `^FVX`/
-  `^TNX`, 1962) and MSCI EM (`^891800-USD-STRD` ~1988, or a bundled series).
-- **Gold long**: XAUUSD still starts 2000 (Stooq is anti-bot/PoW gated, Yahoo
-  `GC=F` starts 2000, FRED LBMA gold IDs are discontinued). Need a bundled
-  LBMA/World-Gold-Council snapshot for ~1968.
-- **Pre-1999/2003 EUR/USD FX is held flat** (Yahoo FX starts ~2003; no free
-  synthetic-euro daily source). To fix properly: per-segment currency
-  conversion, i.e. convert each source (real, simdata, proxy) in its own
-  currency **before** `ExtendBack`, plus a `# currency:` tag in the simdata
-  format. This would also let the EUR MSCI World Curvo export be used directly
-  (it bakes in the pre-1999 FX via the ECU) without double-counting FX. Decided
-  for now: keep everything USD and convert uniformly at the end (simpler,
-  consistent), accepting the flat pre-1999/2003 FX.
+- **NTSG capped ~1991, DBMF ~1994**: the equity legs now reach 1969/1976 and gold
+  1968, but the intermediate-treasury leg (VFITX, 1991) and the EM leg (VEIEX,
+  1994) cap them. Need a constant-maturity treasury total-return reconstruction
+  (from `^FVX`/`^TNX`, 1962) and MSCI EM (`^891800-USD-STRD` ~1988, or a bundled
+  series). DBMF/DBMFE are additionally capped by crude `CL=F` (~2000), not yet
+  extended.
+- **Pre-1978 EUR/USD**: the ECU series starts 1978-12; earlier still needs a DM
+  or EUA proxy. 1978 already covers a 45-year backcast, so deferred.
+- **FX granularity pre-2003 is monthly** (the bundled ECU/EUR proxy). The uniform
+  "convert at end in USD" stance stands; a fuller fix (per-segment currency
+  conversion with a `# currency:` tag before `ExtendBack`, letting the EUR MSCI
+  World Curvo export be used directly without double-counting FX) is still open
+  but no longer blocking a long backcast.
 - **Cache expiry**: `MaxAge` (30d) re-downloads the WHOLE historical series when
   stale, though old history never changes. Add an incremental cache (keep the
   history, fetch only the recent delta) or a long/never expiry for stable
@@ -276,6 +283,10 @@ and on the currency conversion and fetch performance a EUR investor needs.
   sandbox (Yahoo 429, Stooq PoW); FRED is reachable but flaky. Regeneration and
   timing must be validated on Ben's machine.
 
-**Next-session action:** regenerate IWDA/URTH with the embedded MSCI World
-(`pofo -gen-simdata IE00B4L5Y983 URTH && make`) and confirm the perf fix (2nd
-`pofo` run should be seconds, no `downloading DEXUSEU`).
+**Next-session action (on Ben's machine, needs Yahoo):** regenerate the extended
+series and re-embed:
+
+    pofo -gen-simdata IE00B4L5Y983 URTH XAUUSD DBMF DBMFE && make
+
+Then confirm: `XAUUSD.csv` starts ~1968, `DBMFE.csv` FX reaches back to the ECU
+era, IWDA/URTH reach 1969, and the 2nd `pofo` run is seconds (no re-`downloading`).
