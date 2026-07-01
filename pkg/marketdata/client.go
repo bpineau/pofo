@@ -416,6 +416,7 @@ func (c *Client) history(symbol string, from time.Time) (*Series, error) {
 	if len(s.Points) == 0 {
 		return c.staleFallback(symbol, from, fmt.Errorf("no quotes returned for %s", symbol))
 	}
+	s.Points = dropDropouts(s.Points) // strip provider placeholders/bad prints
 	c.saveCache(s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
