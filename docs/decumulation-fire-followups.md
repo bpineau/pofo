@@ -261,13 +261,26 @@ and on the currency conversion and fetch performance a EUR investor needs.
   asset and made runs take >1 min. FRED remains only for the (cached) French CPI;
   the euro long history is now a bundled snapshot, not a live fetch.
 
+- **Crude to 1946 + Treasury TR to 1953** (done): `longBack["CL=F"]` → bundled
+  monthly WTI spot (`WTI-USD.csv`, FRED WTISPLC). `longBack["VFITX"]`/`["VUSTX"]`
+  → a constant-maturity par-bond total-return reconstruction (`simgen.TreasuryTR`,
+  exact monthly repricing) bundled at `TREASURY-INT-USD.csv` (GS5, 5y) and
+  `TREASURY-LONG-USD.csv` (GS20, 20y), 1953→. Stats: intermediate 5.12%/yr @
+  4.3% vol, long 5.04%/yr @ 11.3% vol. NTSG's start is now the US-equity leg
+  VFINX (~1976); DBMF is capped only by the EM leg.
+
 **Open:**
-- **NTSG capped ~1991, DBMF ~1994**: the equity legs now reach 1969/1976 and gold
-  1968, but the intermediate-treasury leg (VFITX, 1991) and the EM leg (VEIEX,
-  1994) cap them. Need a constant-maturity treasury total-return reconstruction
-  (from `^FVX`/`^TNX`, 1962) and MSCI EM (`^891800-USD-STRD` ~1988, or a bundled
-  series). DBMF/DBMFE are additionally capped by crude `CL=F` (~2000), not yet
-  extended.
+- **DBMF EM leg (VEIEX, 1994)** is now the sole remaining cap on the managed-
+  futures basket. Need MSCI EM long (Yahoo `^891800-USD-STRD` ~1988, blocked from
+  the sandbox) as a bundled export (like the MSCI World Curvo file) → would take
+  DBMF to ~1976. Ben action (export), then `longBack["VEIEX"]`.
+- **Short rate (^IRX) for the excess/cash legs**: `VFITX` (excess) and the cash
+  leg subtract `^IRX`; if Yahoo `^IRX` does not reach as far back as the now-1953
+  treasury proxy, the composite frame is capped there. If so, extend `^IRX` with
+  a FRED short bill (`TB3MS`, 1934). Verify at regen.
+- **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
+  `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
+  the default / make it auto = earliest available) to see the long backcast.
 - **Pre-1978 EUR/USD**: the ECU series starts 1978-12; earlier still needs a DM
   or EUA proxy. 1978 already covers a 45-year backcast, so deferred.
 - **FX granularity pre-2003 is monthly** (the bundled ECU/EUR proxy). The uniform
@@ -286,7 +299,10 @@ and on the currency conversion and fetch performance a EUR investor needs.
 **Next-session action (on Ben's machine, needs Yahoo):** regenerate the extended
 series and re-embed:
 
-    pofo -gen-simdata IE00B4L5Y983 URTH XAUUSD DBMF DBMFE && make
+    pofo -gen-simdata IE00B4L5Y983 URTH XAUUSD DBMF DBMFE IE00077IIPQ8 && make
 
-Then confirm: `XAUUSD.csv` starts ~1968, `DBMFE.csv` FX reaches back to the ECU
-era, IWDA/URTH reach 1969, and the 2nd `pofo` run is seconds (no re-`downloading`).
+Then confirm (with e.g. `-start 1970-01-01`): `XAUUSD.csv` starts ~1968,
+`DBMFE.csv` FX reaches the ECU era, IWDA/URTH reach 1969, NTSG (IE00077IIPQ8)
+reaches ~1976 (VFINX), DBMF ~1994 (VEIEX), and the 2nd `pofo` run is seconds.
+To refresh the bundled treasury CSVs: fetch FRED GS5/GS20 and run them through
+`simgen.TreasuryTR` (5y / 20y), validating against VFITX/VUSTX on the overlap.
