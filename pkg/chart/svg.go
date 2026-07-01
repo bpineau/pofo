@@ -22,9 +22,12 @@ type Options struct {
 	Height int // pixels, defaults to 420
 }
 
+// defaultPalette is the pofo "risk desk" series palette: a deep petrol anchor,
+// a burnt-amber counterpoint, then supporting instrument hues, all legible on
+// the cool-paper background and distinct from the matplotlib default.
 var defaultPalette = []string{
-	"#1f77b4", "#ff7f0e", "#2ca02c", "#d62728",
-	"#9467bd", "#8c564b", "#e377c2", "#17becf",
+	"#0F766E", "#B4531F", "#3A5A8C", "#2E7D5B",
+	"#6D5A9C", "#9C6B3F", "#B0476B", "#227C9D",
 }
 
 // PaletteColor returns the i-th default series color (hex), cycling; the
@@ -107,15 +110,15 @@ func Line(opt Options, series []Series) string {
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
 	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#ffffff"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="15" font-weight="600" fill="#222">%s</text>`+"\n", left, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#14232B">%s</text>`+"\n", left, esc(opt.Title))
 	}
 
 	// Horizontal grid and y-axis labels.
 	step := niceStep(vmax-vmin, 6)
 	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#e6e6e6"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="11" fill="#555" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
+		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#E8ECEA"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#55666E" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
 	}
 	// Vertical grid and x-axis labels.
 	// Use the location of the first series point so intraday charts show
@@ -127,12 +130,12 @@ func Line(opt Options, series []Series) string {
 	}
 	for _, tk := range timeTicks(time.Unix(tmin, 0).In(loc), time.Unix(tmax, 0).In(loc)) {
 		x := xAt(tk.t)
-		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#efefef"/>`+"\n", x, y0, x, y1)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="11" fill="#555" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
+		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#E8ECEA"/>`+"\n", x, y0, x, y1)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="12" fill="#55666E" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
 	}
 	// Axes.
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#999"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#999"/>`+"\n", x0, y0, x0, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#AEB9B8"/>`+"\n", x0, y1, x1, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#AEB9B8"/>`+"\n", x0, y0, x0, y1)
 
 	// Series lines.
 	for _, s := range plot {
@@ -160,7 +163,7 @@ func Line(opt Options, series []Series) string {
 		x := left
 		for _, s := range plot {
 			fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, x, s.Color)
-			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#333">%s</text>`+"\n", x+17, esc(s.Name))
+			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#14232B">%s</text>`+"\n", x+17, esc(s.Name))
 			x += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 		}
 	}
@@ -238,6 +241,14 @@ func fmtTick(v, step float64) string {
 	if math.Abs(v) < step/1e6 {
 		v = 0
 	}
+	// Compact large magnitudes (e.g. wealth axes in raw euros) so ticks read
+	// "15M" / "500k" instead of "15000000". The 100k gate keeps already-scaled
+	// axes (k€, percentages, small counts) in their plain form.
+	if a := math.Abs(v); a >= 1e6 {
+		return fmt.Sprintf("%gM", trim(v/1e6))
+	} else if a >= 1e5 {
+		return fmt.Sprintf("%gk", trim(v/1e3))
+	}
 	switch {
 	case step >= 1:
 		return fmt.Sprintf("%.0f", v)
@@ -247,6 +258,9 @@ func fmtTick(v, step float64) string {
 		return fmt.Sprintf("%.2f", v)
 	}
 }
+
+// trim rounds to two significant decimals so compacted ticks stay short.
+func trim(v float64) float64 { return math.Round(v*100) / 100 }
 
 // decimate stride-samples long series down to maxPlotPoints, keeping the
 // first and last points.
