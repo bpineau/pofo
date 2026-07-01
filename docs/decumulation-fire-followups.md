@@ -277,22 +277,26 @@ and on the currency conversion and fetch performance a EUR investor needs.
   `longBack["VEIEX"]`. Now NTSG's start is VFINX (~1976), DBMF's is EM (~1989).
   `frame_start_test.go` reproduces the old 1999 cap and proves the fix.
 
+- **Custom builders now extend too** (done): only `composite()`/`tsmom()` wrapped
+  their fetch in `extend()`; the custom builders (`wintonBuild`, `dbmfeBuild`,
+  `dpgtBuild`, `backcastBuild`) did not, so Winton stayed 2001 and a clean regen
+  would have regressed DBMFE to ~2001. Every `BuildFrame` call site now uses
+  `extend(f)`. Regenerate IE000O1VI174, DBMFE, GG00BQBFY362.
+- **US legs extended** (done): `longBack["VFINX"]` → `USEQ-USD.csv` (Ken French US
+  total market, ~1926); `longBack["^IRX"]` → `TBILL-3M.csv` (FRED TB3MS, ~1934,
+  a rate, rescaled ≈1 at the splice). NTSG's floor is now the dev-ex-US leg
+  (~1969); NTSX reaches ~1953.
+- **^HICP-FR long history embedded** (done): `hicp-fr.csv` now carries the OECD
+  French CPI (FRED FRACPIALLMINMEI) chained before Eurostat, ~1955→, so the
+  offline fallback deflates the high-inflation decades too.
+
 **Open:**
 - **Upgrade the intl-equity proxies to true MSCI** (Ben Curvo export, like World):
-  overwrite `DEVEXUS-USD.csv` with MSCI EAFE (correct ex-US universe pre-1990, to
-  1969) and `EM-USD.csv` with MSCI EM (to 1988). The French series are honest
-  interim proxies (dev-ex-US market / emerging market, USD) but EAFE pre-1990 is
-  World-approximated. Same file, same format as `MSCIWORLD-USD.csv`; drop in and
-  regenerate.
-- **US-equity leg VFINX (1976)** is now NTSG's floor. To go earlier, extend VFINX
-  with a long US series (Ken French US market, 1926, is sandbox-reachable; or
-  S&P 500 TR) → `longBack["VFINX"]`. ~1976 is already a 50-year backcast, so low
-  priority.
-- **Short rate (^IRX) for the excess/cash legs**: `VFITX` (excess) and the cash
-  leg subtract `^IRX`; if Yahoo `^IRX` does not reach ~1976, the composite frame
-  is capped there instead of at VFINX. If the regen shows NTSG starting later than
-  1976, extend `^IRX` with a FRED short bill (`TB3MS`, 1934) — mind that it is a
-  rate (`isRate`), so splice its percent levels, not price returns. Verify at regen.
+  overwrite `DEVEXUS-USD.csv` with MSCI World-ex-US / EAFE (correct ex-US universe
+  pre-1990, to 1969 — currently World-approximated before 1990) and `EM-USD.csv`
+  with MSCI EM (to 1988). Same format as `MSCIWORLD-USD.csv`; drop in, regenerate.
+  This would take DBMF/RSSB/VT below their current EM-driven ~1989 floor toward
+  1969, and make NTSG's dev-ex-US leg the true universe.
 - **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
   `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
   the default / make it auto = earliest available) to see the long backcast.
@@ -311,13 +315,16 @@ and on the currency conversion and fetch performance a EUR investor needs.
   sandbox (Yahoo 429, Stooq PoW); FRED is reachable but flaky. Regeneration and
   timing must be validated on Ben's machine.
 
-**Next-session action (on Ben's machine, needs Yahoo):** regenerate the extended
-series and re-embed:
+**Next-session action (on Ben's machine, needs Yahoo):** after the VFINX/^IRX +
+custom-builder changes, do a FULL regen so every recipe picks them up, then
+re-embed:
 
-    pofo -gen-simdata IE00B4L5Y983 URTH XAUUSD DBMF DBMFE IE00077IIPQ8 && make
+    pofo -gen-simdata && make
 
-Then confirm (with e.g. `-start 1970-01-01`): `XAUUSD.csv` starts ~1968,
-`DBMFE.csv` FX reaches the ECU era, IWDA/URTH reach 1969, NTSG (IE00077IIPQ8)
-reaches ~1976 (VFINX), DBMF ~1994 (VEIEX), and the 2nd `pofo` run is seconds.
-To refresh the bundled treasury CSVs: fetch FRED GS5/GS20 and run them through
-`simgen.TreasuryTR` (5y / 20y), validating against VFITX/VUSTX on the overlap.
+Then confirm (with e.g. `-start 1968-01-01`): NTSG (IE00077IIPQ8) reaches ~1969
+(dev-ex-US leg), NTSX (IE000KF370H3) ~1953, Winton (IE000O1VI174) ~1990 (no
+longer 2001), DBMF ~1989, XAUUSD ~1968, IWDA/URTH 1969. The 2nd `pofo` run
+should be seconds. Bundled data regeneration recipes: FRED GS5/GS20 →
+`simgen.TreasuryTR`; Ken French US/dev-ex-US/emerging → cumulate Mkt-RF+RF; FRED
+WTISPLC (crude), EXUSEC+EXUSEU (EUR), TB3MS (^IRX), FRACPIALLMINMEI (HICP);
+datahub gold-prices (XAUUSD-LBMA).
