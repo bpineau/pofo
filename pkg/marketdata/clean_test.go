@@ -34,6 +34,28 @@ func eq(a []float64, b ...float64) bool {
 	return true
 }
 
+func TestIsRateSymbol(t *testing.T) {
+	// Rate series legitimately visit near-zero levels and must be excluded from
+	// the dropout filter (^IRX hit ~0.003% in March 2020, a real value).
+	for _, s := range []string{"^IRX", "^FVX", "^TNX", "^TYX"} {
+		if !isRateSymbol(s) {
+			t.Errorf("isRateSymbol(%q) = false, want true", s)
+		}
+	}
+	for _, s := range []string{"AAPL", "IB01.L", "EURUSD=X", "^GSPC", "^VIX"} {
+		if isRateSymbol(s) {
+			t.Errorf("isRateSymbol(%q) = true, want false", s)
+		}
+	}
+	// The near-zero pattern the guard protects: ^IRX 0.165 -> 0.003 -> 0.013
+	// (March 2020) IS an interior "dropout" by shape, so the filter would strip
+	// it; the call site must skip rate series to keep it.
+	got := closes(dropDropouts(pts(0.165, 0.003, 0.013)))
+	if len(got) != 2 {
+		t.Errorf("dropDropouts strips the real near-zero rate point; the caller must guard rate series (got %v)", got)
+	}
+}
+
 func TestDropDropouts(t *testing.T) {
 	tests := []struct {
 		name string
