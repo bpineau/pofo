@@ -550,11 +550,12 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 	if outDir == "" {
 		outDir = "pkg/datasets/simdata"
 	}
-	// Recipes build from fetchable funds; -refdata only injects extra local
-	// reference CSVs for development (none are bundled).
-	var fetcher simgen.Fetcher = client
+	// Recipes read long reference series (e.g. MSCI World) from the embedded
+	// refdata first, so regeneration is self-contained; -refdata adds or
+	// overrides with extra local CSVs on top.
+	var fetcher simgen.Fetcher = simgen.WithRefData(datasets.Refdata(), client)
 	if refdataDir != "" {
-		fetcher = simgen.WithRefData(os.DirFS(refdataDir), client)
+		fetcher = simgen.WithRefData(os.DirFS(refdataDir), fetcher)
 	}
 	failures := 0
 	for _, r := range recipes {
