@@ -1,30 +1,36 @@
 /* ============================================================================
-   pofo — shared visual identity ("risk desk tearsheet")
-   A quant tearsheet voice: cool paper, petrol ink, one burnt-amber counterpoint,
-   monospace for every figure and label, a neutral sans for prose. Dense, precise,
-   legible. Shared by the portfolio report and the FIRE explorer.
+   pofo — shared visual identity ("warm study")
+   A rich, cosy reading-room feel: warm sand paper, espresso ink, a copper accent
+   with a deep-teal counterpoint, soft floating cards, generous space, and a
+   friendly humanist sans (no monospace to squint at). Full width, big charts.
+   Shared by the portfolio report and the FIRE explorer; all embedded, plain
+   `go build`.
    ========================================================================== */
 :root{
-  --paper:#EEF1F0;         /* cool off-white, faint green-grey (not cream)     */
-  --surface:#FBFCFB;       /* card / panel                                      */
-  --surface-2:#F3F6F5;     /* inset / zebra                                     */
-  --ink:#13232B;           /* deep petrol-ink, near-black                       */
-  --ink-soft:#54666E;      /* secondary text                                    */
-  --muted:#8A979C;         /* captions, de-emphasis                             */
-  --line:#DCE3E1;          /* hairline                                          */
-  --line-strong:#C2CECB;   /* structural rule                                   */
-  --accent:#0F766E;        /* petrol — primary, links, key figures              */
-  --accent-ink:#0B564F;    /* darker petrol for text-on-wash                    */
-  --accent-wash:#E2EEEC;   /* petrol tint fill                                  */
-  --warm:#B4531F;          /* burnt amber — the "you / your plan" counterpoint  */
-  --warm-wash:#F4E7DD;
-  --good:#2E7D5B;          /* risk scale: safe                                  */
-  --warn:#B9852A;          /*             caution                               */
-  --bad:#C1483C;           /*             danger                                */
-  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --r:5px;                 /* corner radius, kept tight                         */
-  --pad:clamp(.9rem, 1.6vw, 1.5rem);
+  --bg:#EFE7DA;            /* warm sand                                         */
+  --bg-tint:#F5EEE3;       /* lighter warm wash for bands                       */
+  --surface:#FFFDF9;       /* card / panel (warm white)                         */
+  --surface-2:#F7F0E4;     /* inset / zebra                                     */
+  --ink:#2A231F;           /* espresso, warm near-black                         */
+  --ink-soft:#6E6157;      /* warm taupe, secondary text                        */
+  --muted:#9C8C7C;         /* captions                                          */
+  --line:#E4D9C8;          /* hairline                                          */
+  --line-strong:#D3C4AE;   /* structural rule                                   */
+  --accent:#B25A34;        /* copper — primary, links, key figures              */
+  --accent-ink:#8F4526;    /* darker copper for text-on-wash                    */
+  --accent-wash:#F3E4D8;   /* copper tint                                       */
+  --teal:#2E6E63;          /* deep teal — cool counterpoint for data            */
+  --teal-wash:#E1EDE9;
+  --gold:#C08A2D;          /* honey highlight                                   */
+  --good:#3F8A5F;          /* risk scale: safe                                  */
+  --warn:#C08A2D;          /*             caution                               */
+  --bad:#C0492F;           /*             danger / ruin                         */
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --r:14px;                /* generous cosy radius                              */
+  --r-sm:9px;
+  --sh:0 1px 2px rgba(42,35,31,.05), 0 10px 30px -18px rgba(42,35,31,.35);
+  --sh-soft:0 1px 2px rgba(42,35,31,.05), 0 4px 14px -10px rgba(42,35,31,.28);
 }
 
 *{box-sizing:border-box}
@@ -32,106 +38,86 @@ html{-webkit-text-size-adjust:100%}
 body{
   font-family:var(--sans);
   color:var(--ink);
-  background:var(--paper);
-  margin:0;
-  line-height:1.5;
-  font-size:15px;
-  -webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(1200px 420px at 78% -8%, rgba(178,90,52,.10), transparent 60%),
+    radial-gradient(1000px 460px at 8% -6%, rgba(46,110,99,.09), transparent 62%),
+    var(--bg);
+  background-attachment:fixed;
+  margin:0;line-height:1.55;font-size:15.5px;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
-a{color:var(--accent-ink);text-underline-offset:2px}
+a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(143,69,38,.4)}
 
-/* ---- page shell ---------------------------------------------------------- */
-.wrap{max-width:min(1500px,95vw);margin:0 auto;padding:0 clamp(.8rem,2vw,1.6rem) 4rem}
+/* ---- full-width shell (no wasted side bands) ----------------------------- */
+.wrap{width:100%;max-width:1720px;margin:0 auto;padding:0 clamp(1rem,2.4vw,2.2rem) 4rem}
 
-/* ---- masthead: the shared identity band ---------------------------------- */
-.masthead{
-  display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;
-  border-bottom:2px solid var(--ink);
-  padding:1rem 0 .6rem;margin-bottom:1.4rem;
-}
-.masthead .mark{
-  font-family:var(--mono);font-weight:700;font-size:1.05rem;letter-spacing:.02em;
-  color:var(--ink);
-}
-.masthead .mark b{color:var(--accent)}
-.masthead .ctx{
-  font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
-  color:var(--ink-soft);
-}
+/* ---- masthead ------------------------------------------------------------ */
+.masthead{display:flex;align-items:baseline;gap:.8rem 1.1rem;flex-wrap:wrap;padding:1.3rem 0 1rem}
+.masthead .mark{font-weight:800;font-size:1.15rem;letter-spacing:-.01em;color:var(--ink)}
+.masthead .mark b{color:var(--accent);font-weight:800}
+.masthead .ctx{font-size:.82rem;color:var(--ink-soft);font-weight:600;letter-spacing:.02em}
 .masthead .spacer{flex:1}
-.masthead .stamp{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.masthead .stamp{font-size:.78rem;color:var(--muted)}
 
 /* ---- typography ---------------------------------------------------------- */
-h1{font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1.1;margin:.2rem 0 .3rem;letter-spacing:-.01em}
-h2{font-size:1.1rem;margin:0}
-h3{font-size:.92rem;margin:0}
-.eyebrow{
-  font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--accent-ink);
-}
-.lede{color:var(--ink-soft);font-size:.9rem;max-width:74ch}
-.mono{font-family:var(--mono)}
-.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,3vw,2.4rem);line-height:1.08;
+  margin:.1rem 0 .35rem;letter-spacing:-.005em}
+h2{font-size:1.2rem;margin:0;letter-spacing:-.01em}
+h3{font-size:.95rem;margin:0}
+.lede{color:var(--ink-soft);font-size:1rem;max-width:70ch;margin:.1rem 0 0}
+.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink)}
+.num{font-variant-numeric:tabular-nums}
 
-/* section header: eyebrow index + title + rule, encodes order without decor */
-.section-head{display:flex;align-items:baseline;gap:.7rem;margin:2.2rem 0 .8rem;border-bottom:1px solid var(--line-strong);padding-bottom:.4rem}
-.section-head .idx{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
-.section-head h2{letter-spacing:-.01em}
-.section-head .aside{margin-left:auto;font-family:var(--mono);font-size:.74rem;color:var(--ink-soft)}
+.section-head{display:flex;align-items:center;gap:.7rem;margin:2.4rem 0 1rem}
+.section-head .idx{font-family:var(--serif);font-size:1.15rem;color:var(--accent);font-weight:600;
+  width:1.9rem;height:1.9rem;display:grid;place-items:center;border-radius:50%;
+  background:var(--accent-wash);flex:none}
+.section-head h2{font-weight:650}
+.section-head .aside{margin-left:auto;font-size:.82rem;color:var(--ink-soft)}
 
 /* ---- cards & panels ------------------------------------------------------ */
-.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--pad)}
-.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
-.panel>.panel-h{
-  display:flex;align-items:center;gap:.6rem;
-  padding:.55rem .8rem;border-bottom:1px solid var(--line);
-  font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
-}
-.panel>.panel-b{padding:.7rem .8rem}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh-soft);padding:clamp(1rem,1.6vw,1.4rem)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
 
-/* ---- charts -------------------------------------------------------------- */
+/* ---- charts sit in warm floating frames --------------------------------- */
 svg{display:block;width:100%;height:auto}
-.chart-frame{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.5rem .6rem}
+.chart-frame{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh-soft);padding:.7rem .85rem}
 
-/* ---- tables (tearsheet grid) --------------------------------------------- */
-table{border-collapse:collapse;width:100%;font-size:.84rem}
-thead th{
-  font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
-  color:var(--ink-soft);text-align:left;
-  border-bottom:1.5px solid var(--line-strong);padding:.4rem .55rem;white-space:nowrap;
-}
-tbody td{padding:.38rem .55rem;border-bottom:1px solid var(--line);vertical-align:baseline}
+/* ---- tables -------------------------------------------------------------- */
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+thead th{font-weight:650;font-size:.74rem;letter-spacing:.03em;color:var(--ink-soft);text-align:left;
+  border-bottom:2px solid var(--line-strong);padding:.5rem .6rem;white-space:nowrap}
+tbody td{padding:.45rem .6rem;border-bottom:1px solid var(--line);vertical-align:baseline}
 tbody tr:nth-child(even){background:var(--surface-2)}
-td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
-td.best{background:var(--accent-wash);color:var(--accent-ink);font-weight:600}
+tbody tr:hover{background:var(--teal-wash)}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.best{background:var(--teal-wash);color:var(--teal);font-weight:700;border-radius:0}
 
-/* ---- badges & chips ------------------------------------------------------ */
-.badge{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
-  padding:.08rem .4rem;border-radius:3px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+/* ---- badges -------------------------------------------------------------- */
+.badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.12rem .5rem;border-radius:999px;
+  border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
 .badge.good{color:var(--good);border-color:#bfe0cd;background:#eaf5ef}
 .badge.warn{color:#8a5f11;border-color:#e6d3a3;background:#f7efdb}
-.badge.bad{color:var(--bad);border-color:#e6c3bd;background:#f8e9e6}
-.badge.accent{color:var(--accent-ink);border-color:#bcdcd7;background:var(--accent-wash)}
-
-/* ---- risk scale (ruin / coverage), a shared 3-stop ramp ------------------ */
-.riskbar{position:relative;height:.7rem;border-radius:3px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
-.riskbar>span{display:block;height:100%}
+.badge.bad{color:var(--bad);border-color:#e6c3bd;background:#f8e7e3}
+.badge.accent{color:var(--accent-ink);border-color:#e3c9b8;background:var(--accent-wash)}
 
 /* ---- disclosures --------------------------------------------------------- */
-details{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
-details>summary{cursor:pointer;padding:.5rem .75rem;font-weight:600;font-size:.85rem;list-style-position:inside}
-details>summary:hover{color:var(--accent-ink)}
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-soft)}
+details>summary{cursor:pointer;padding:.7rem .95rem;font-weight:650;font-size:.92rem;list-style:none;
+  display:flex;align-items:center;gap:.5rem}
+details>summary::before{content:"▸";color:var(--accent);font-size:.8rem;transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
 details[open]>summary{border-bottom:1px solid var(--line)}
-.disclosure-body{padding:.6rem .8rem;font-size:.84rem;color:var(--ink-soft)}
+.disclosure-body{padding:.85rem 1rem;font-size:.9rem;color:var(--ink-soft)}
+.disclosure-body b{color:var(--ink)}
 
 /* ---- notes / warnings ---------------------------------------------------- */
-.note{color:var(--ink-soft);font-size:.82rem;margin:.3rem 0}
-.warn{color:#8a5f11;background:var(--warm-wash);border:1px solid #e6d3a3;border-radius:var(--r);
-  padding:.4rem .7rem;font-size:.82rem;margin:.4rem 0}
+.note{color:var(--ink-soft);font-size:.85rem;margin:.3rem 0}
+.warn{color:#8a5f11;background:#f7efdb;border:1px solid #e6d3a3;border-radius:var(--r-sm);
+  padding:.5rem .8rem;font-size:.85rem;margin:.5rem 0}
 
-/* ---- utilities ----------------------------------------------------------- */
-.grid{display:grid;gap:1rem}
-.muted{color:var(--muted)}
-.soft{color:var(--ink-soft)}
+.muted{color:var(--muted)}.soft{color:var(--ink-soft)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

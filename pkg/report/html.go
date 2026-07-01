@@ -77,24 +77,24 @@ type Page struct {
 
 // reportCSS holds the view-specific rules layered on the shared theme.
 const reportCSS = `
-.lede{margin:.1rem 0 0}
-.pies{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;justify-content:center;align-items:flex-start;margin:.8rem 0}
-.pies>svg{flex:0 1 auto;max-width:340px}
-.cov{margin:.9rem 0}
-.cov-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem}
-.cov-row{display:flex;align-items:center;gap:.7rem;margin:.2rem 0}
-.cov-label{width:8rem;color:var(--ink-soft);font-size:.8rem}
-.cov-track{flex:0 0 clamp(160px,30vw,300px);height:.7rem;border-radius:3px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
-.cov-fill{display:block;height:100%;background:var(--accent)}
-.cov-val{font-family:var(--mono);font-size:.76rem;color:var(--ink-soft)}
-.cov-val.gap{color:var(--warm)}
-details.pf{margin-top:.7rem}
-details.pf>summary{padding:.5rem .75rem}
-.pf-name{font-weight:600}
-.pf-sub{color:var(--muted);font-size:.82rem;margin-left:.5rem;font-family:var(--mono)}
-.pf-body{padding:.7rem .8rem 1rem}
-.legend .disclosure-body ul{margin:.3rem 0;padding-left:1.1rem;line-height:1.5}
-.stat-scroll{overflow-x:auto}
+.pies{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;justify-content:center;align-items:flex-start;margin:1rem 0}
+.pies>svg{flex:0 1 auto;max-width:360px}
+.cov{margin:1rem 0}
+.cov-title{font-size:.74rem;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:.5rem}
+.cov-row{display:flex;align-items:center;gap:.8rem;margin:.25rem 0}
+.cov-label{width:8.5rem;color:var(--ink-soft);font-size:.84rem}
+.cov-track{flex:0 0 clamp(180px,34vw,340px);height:.8rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.cov-fill{display:block;height:100%;background:var(--teal);border-radius:999px}
+.cov-val{font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.cov-val.gap{color:var(--accent-ink)}
+.overview,.stat-scroll{overflow-x:auto}
+details.pf{margin-top:.8rem}
+.pf-name{font-weight:700}
+.pf-sub{color:var(--muted);font-size:.84rem;margin-left:.5rem}
+.pf-body{padding:1rem 1.1rem 1.2rem}
+.pf-body>.chart-frame{box-shadow:none;border-color:var(--line)}
+.legend{margin-top:.8rem}
+.legend .disclosure-body ul{margin:.3rem 0;padding-left:1.15rem;line-height:1.55}
 `
 
 var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>

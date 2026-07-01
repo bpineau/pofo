@@ -27,7 +27,7 @@ func TestFanRendersBandsAndMedian(t *testing.T) {
 		t.Errorf("expected the title")
 	}
 	// The ruin sample ends at zero and should be flagged in red.
-	if !strings.Contains(svg, "#C1483C") {
+	if !strings.Contains(svg, "#C0492F") {
 		t.Errorf("expected the ruin sample drawn in red")
 	}
 }
