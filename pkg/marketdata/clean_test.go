@@ -34,6 +34,67 @@ func eq(a []float64, b ...float64) bool {
 	return true
 }
 
+// ramp builds a smooth n-point series starting at start, each step *factor plus
+// small noise-free drift, so tests can splice two scales cleanly.
+func ramp(start, step float64, n int) []float64 {
+	out := make([]float64, n)
+	v := start
+	for i := range out {
+		out[i] = v
+		v += step
+	}
+	return out
+}
+
+func concat(a, b []float64) []float64 { return append(append([]float64{}, a...), b...) }
+
+func TestMendScaleBreak(t *testing.T) {
+	// Older segment at ~100x scale, then a clean junction to the real ~120 NAV
+	// (the IBGS.L shape). After mending, the older segment must sit on the newer
+	// scale and the series must be continuous (no >=8x jump left).
+	t.Run("single clean break rescaled", func(t *testing.T) {
+		old := ramp(12000, 20, 25) // ~12000..12480
+		new := ramp(120, 0.2, 25)  // ~120..124.8
+		got := closes(mendScaleBreak(pts(concat(old, new)...)))
+		// Junction ratio at index 25: 120/12480 ≈ 0.009615; older *= that.
+		if got[24] > 200 || got[24] < 100 {
+			t.Errorf("older segment not rescaled onto newer: got[24]=%.2f", got[24])
+		}
+		for i := 1; i < len(got); i++ {
+			if r := got[i] / got[i-1]; r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
+				t.Errorf("scale break remains at %d: %.2f -> %.2f", i, got[i-1], got[i])
+			}
+		}
+	})
+	// A spliced share class with several breaks (CL2.PA) is ambiguous: leave it.
+	t.Run("multiple breaks untouched", func(t *testing.T) {
+		s := concat(concat(ramp(12000, 20, 25), ramp(120, 1, 25)), ramp(40000, 50, 25))
+		in := append([]float64{}, s...)
+		got := closes(mendScaleBreak(pts(s...)))
+		if !eq(got, in...) {
+			t.Errorf("multiple-break series was modified")
+		}
+	})
+	// A too-short older side is a leading placeholder / stray tail, not a scale.
+	t.Run("short side untouched", func(t *testing.T) {
+		s := concat(ramp(12000, 20, 5), ramp(120, 1, 40))
+		in := append([]float64{}, s...)
+		got := closes(mendScaleBreak(pts(s...)))
+		if !eq(got, in...) {
+			t.Errorf("short-older-side series was modified")
+		}
+	})
+	// A moderate 3x move (below the 8x threshold) is not a denomination break.
+	t.Run("moderate move untouched", func(t *testing.T) {
+		s := concat(ramp(40, 0.1, 25), ramp(120, 0.3, 25))
+		in := append([]float64{}, s...)
+		got := closes(mendScaleBreak(pts(s...)))
+		if !eq(got, in...) {
+			t.Errorf("moderate 3x move was modified")
+		}
+	})
+}
+
 func TestIsRateSymbol(t *testing.T) {
 	// Rate series legitimately visit near-zero levels and must be excluded from
 	// the dropout filter (^IRX hit ~0.003% in March 2020, a real value).
