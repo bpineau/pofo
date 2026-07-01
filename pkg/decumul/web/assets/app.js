@@ -227,8 +227,10 @@ async function renderModels(body) {
   } catch (e) { return; }
   document.getElementById("verdict").textContent = r.verdict || "";
   const conf = document.getElementById("confidence");
-  conf.textContent = r.confidence ? `Confidence: ${r.confidence} · ${r.confNote}` : "";
-  conf.className = r.confidence ? "conf-" + r.confidence.toLowerCase() : "";
+  const cap = s => s ? s[0] + s.slice(1).toLowerCase() : "";
+  conf.textContent = r.confidence ? `Confidence: ${cap(r.confidence)}` : "";
+  if (r.confNote) conf.setAttribute("data-help", r.confNote);
+  else conf.removeAttribute("data-help");
   const ms = r.models || [];
   const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
   // Signature: a green→amber→red rail under the headers, encoding the models'

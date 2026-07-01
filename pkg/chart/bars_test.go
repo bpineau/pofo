@@ -36,8 +36,8 @@ func TestBarsYAxisTicksAndValueLabels(t *testing.T) {
 			t.Errorf("SVG missing value label %q", want)
 		}
 	}
-	if strings.Count(svg, `stroke="#E8ECEA"`) < 2 {
-		t.Errorf("expected y-axis gridlines, got %d", strings.Count(svg, `stroke="#E8ECEA"`))
+	if strings.Count(svg, `stroke="#EAE1D3"`) < 2 {
+		t.Errorf("expected y-axis gridlines, got %d", strings.Count(svg, `stroke="#EAE1D3"`))
 	}
 }
 
