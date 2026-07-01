@@ -297,6 +297,12 @@ and on the currency conversion and fetch performance a EUR investor needs.
   gross TR (Curvo, 1987-12→). DBMF/RSSB/VT's EM floor moves 1989→1988.
 
 **Open:**
+- **Reference-validation pass (planned)**: cross-check both the bundled data and
+  the calc algorithms (CAGR, vol, max drawdown, TTR nominal+real, Sharpe/Sortino)
+  against pre-computed reference values found online, over several different
+  periods, using the three easy-to-reference assets: XAUUSD(SIM) (gold/LBMA),
+  MSCI World (MSCIWORLD-USD / IWDA-URTH), and S&P 500 (SP500-USD / VFINX). Now
+  feasible in-session since Yahoo fetch works again (query2 fallback).
 - **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
   `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
   the default / make it auto = earliest available) to see the long backcast.
