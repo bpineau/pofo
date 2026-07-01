@@ -73,9 +73,11 @@ func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out 
 // PPP-consistent extension would need a synthetic-euro source).
 func (c *Client) fxHistory(src, target string, from time.Time) (*Series, error) {
 	if (src == "USD" && target == "EUR") || (src == "EUR" && target == "USD") {
-		// Cache the raw reference rate (memoised per run, on disk for MaxAge):
-		// fetched once, not once per converted asset.
-		raw, err := c.cachedHistory("fred", "DEXUSEU", from, func() (*Series, error) {
+		// Cache the raw reference rate under a FIXED start so the cache key is
+		// constant across assets: the caller passes each asset's own first date,
+		// which would otherwise miss the cache and re-download the (slow) FRED
+		// series once per converted asset. FRED returns the full history anyway.
+		raw, err := c.cachedHistory("fred", "DEXUSEU", time.Time{}, func() (*Series, error) {
 			pts, e := c.fetchFRED("DEXUSEU")
 			if e != nil {
 				return nil, e
