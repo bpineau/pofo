@@ -7,8 +7,15 @@ import (
 
 // TSMOMConfig drives the classic time-series-momentum reconstruction used
 // for managed-futures funds (DBMF, KMLM, CTA…): each market is held long or
-// short according to the sign of its trailing 12-month excess return, sized
-// to an equal share of a portfolio volatility target.
+// short according to the sign of its trailing 12-month excess return and
+// weighted inverse to its own volatility (risk parity), then the whole book is
+// scaled so its covariance-implied volatility meets TargetVol.
+//
+// The scaling uses the full rolling covariance rather than summing per-market
+// risks in isolation: a basket whose legs are positively correlated (the equity
+// legs among themselves, the bond legs among themselves) realizes more
+// volatility than the sum of standalone risks would suggest, so ignoring the
+// cross-terms overshoots the target by the correlation factor.
 //
 // This is the standard academic replication (Moskowitz–Ooi–Pedersen); real
 // funds add carry, faster signals and execution details, so expect daily
@@ -60,26 +67,7 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 	for k := start + 1; k < n; k++ {
 		if sinceRebalance >= cfg.Rebalance {
 			sinceRebalance = 0
-			for i := range cfg.Markets {
-				// Sign of the trailing total excess return.
-				cum := 1.0
-				for j := k - cfg.Lookback; j < k; j++ {
-					cum *= 1 + excess[i][j]
-				}
-				sign := 1.0
-				if cum < 1 {
-					sign = -1
-				}
-				// Inverse-volatility sizing toward the per-market share of
-				// the portfolio volatility target (naive risk parity).
-				vol := rollingVol(excess[i], k, cfg.VolWindow)
-				perMarket := cfg.TargetVol / math.Sqrt(float64(len(cfg.Markets)))
-				lev := 0.0
-				if vol > 0 {
-					lev = math.Min(perMarket/vol, cfg.MaxLeverage)
-				}
-				positions[i] = sign * lev
-			}
+			sizePositions(positions, excess, k, cfg)
 		}
 		sinceRebalance++
 
@@ -96,21 +84,74 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 	return values, start, nil
 }
 
-// rollingVol is the annualized standard deviation of xs[(k-window):k].
-func rollingVol(xs []float64, k, window int) float64 {
+// sizePositions recomputes the target position in each market at date index k:
+// long or short by the sign of the trailing Lookback excess return, weighted
+// inverse to each market's own volatility (risk parity), then scaled as a whole
+// so the book's covariance-implied volatility meets cfg.TargetVol. Positions are
+// finally capped at ±MaxLeverage per market. A market with no measurable
+// volatility over the window is left flat.
+func sizePositions(positions []float64, excess [][]float64, k int, cfg TSMOMConfig) {
+	cov := rollingCov(excess, k, cfg.VolWindow)
+	w := make([]float64, len(excess))
+	for i := range excess {
+		cum := 1.0
+		for j := k - cfg.Lookback; j < k; j++ {
+			cum *= 1 + excess[i][j]
+		}
+		sign := 1.0
+		if cum < 1 {
+			sign = -1
+		}
+		if vol := math.Sqrt(cov[i][i]); vol > 0 {
+			w[i] = sign / vol
+		}
+	}
+	// Portfolio variance of the risk-parity weights, cross-terms included.
+	portVar := 0.0
+	for i := range w {
+		for j := range w {
+			portVar += w[i] * w[j] * cov[i][j]
+		}
+	}
+	scale := 0.0
+	if portVar > 0 {
+		scale = cfg.TargetVol / math.Sqrt(portVar)
+	}
+	for i := range positions {
+		positions[i] = math.Max(-cfg.MaxLeverage, math.Min(cfg.MaxLeverage, scale*w[i]))
+	}
+}
+
+// rollingCov is the annualized covariance matrix of the excess-return series
+// over the window [k-window, k). Element [i][j] is Cov(excess_i, excess_j)·252.
+func rollingCov(excess [][]float64, k, window int) [][]float64 {
+	m := len(excess)
+	cov := make([][]float64, m)
+	for i := range cov {
+		cov[i] = make([]float64, m)
+	}
 	lo := max(k-window, 1)
 	n := k - lo
 	if n < 2 {
-		return 0
+		return cov
 	}
-	m := 0.0
-	for j := lo; j < k; j++ {
-		m += xs[j]
+	means := make([]float64, m)
+	for i := range excess {
+		s := 0.0
+		for j := lo; j < k; j++ {
+			s += excess[i][j]
+		}
+		means[i] = s / float64(n)
 	}
-	m /= float64(n)
-	v := 0.0
-	for j := lo; j < k; j++ {
-		v += (xs[j] - m) * (xs[j] - m)
+	for i := range m {
+		for j := i; j < m; j++ {
+			c := 0.0
+			for t := lo; t < k; t++ {
+				c += (excess[i][t] - means[i]) * (excess[j][t] - means[j])
+			}
+			c = c / float64(n-1) * 252
+			cov[i][j], cov[j][i] = c, c
+		}
 	}
-	return math.Sqrt(v/float64(n-1)) * math.Sqrt(252)
+	return cov
 }
