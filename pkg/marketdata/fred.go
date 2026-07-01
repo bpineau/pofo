@@ -16,14 +16,15 @@ import (
 // HTTP/2 INTERNAL_ERROR stream reset to Go's default transport, so HTTP/2 is
 // disabled here (a nil-but-present TLSNextProto map turns it off).
 var fredHTTP = &http.Client{
-	Timeout:   30 * time.Second,
+	Timeout:   12 * time.Second,
 	Transport: &http.Transport{TLSNextProto: map[string]func(string, *tls.Conn) http.RoundTripper{}},
 }
 
 // fetchFRED downloads a monthly (or daily) series from the FRED CSV endpoint,
-// a free, key-less, reliable source. It is used for long macro histories the
-// market-data providers do not carry: French and US consumer prices (decades of
-// monthly data) and the USD/EUR reference rate. Rows with a missing value (".")
+// a free, key-less source. It is used for long macro histories the market-data
+// providers do not carry, chiefly French consumer prices (monthly, 1955→) that
+// extend ^HICP-FR. Best-effort with a short timeout, since it is a slow-changing
+// series fetched at most once per cache period. Rows with a missing value (".")
 // are skipped; dates are FRED's YYYY-MM-DD.
 func (c *Client) fetchFRED(id string) ([]Point, error) {
 	u := fmt.Sprintf("%s/graph/fredgraph.csv?id=%s", c.FredBase, url.QueryEscape(id))
