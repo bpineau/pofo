@@ -30,7 +30,7 @@ const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
 const PAL = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#17becf"];
 
 // portfolio-mode state, set once /api/meta resolves.
-let weights = null, labels = [], hasPanel = false, lastFitW = null, baseline = null;
+let weights = null, labels = [], hasPanel = false, lastFitW = null;
 
 const cardsHTML = cards => (cards || [])
   .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");
@@ -176,30 +176,13 @@ let run = async function(){
   renderSolver(body);   // the per-lever menu to reach the acceptable ruin
   renderFrontier(body); // ruin vs withdrawal rate, per model
   renderSensitivity(body); // change in ruin per controllable lever
-  // A/B: with a pinned baseline allocation, compare it against the current one.
-  if (hasPanel && baseline) {
-    const r = await (await fetch("/api/compare", {method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({...body, baselineWeights: baseline})})).json();
-    document.getElementById("note").textContent = r.variant.note || r.baseline.note || "";
-    document.getElementById("cards").innerHTML =
-      `<div class="abcol"><h3>Baseline</h3><div class="cardrow">${cardsHTML(r.baseline.cards)}</div></div>` +
-      `<div class="abcol"><h3>Variant (current)</h3><div class="cardrow">${cardsHTML(r.variant.cards)}</div></div>`;
-    for (const id of ["arbitrageSvg","recoverySvg"])
-      document.getElementById(id).innerHTML = r.variant[id] || "";
-    syncURL();
-    return;
-  }
   const res = await fetch("/api/sim",{method:"POST",headers:{"Content-Type":"application/json"},
     body: JSON.stringify(body)});
   const r = await res.json();
   document.getElementById("note").textContent = r.note || "";
   for (const id of ["arbitrageSvg","recoverySvg"])
     document.getElementById(id).innerHTML = r[id] || "";
-  // The per-model hero strip already carries ruin, safe spend and median wealth,
-  // so the single-scenario metric cards would be redundant here; they are only
-  // shown as the A/B comparison above, when a baseline allocation is pinned.
-  document.getElementById("cards").innerHTML = "";
+  document.getElementById("cards").innerHTML = cardsHTML(r.cards);
   syncURL();
 };
 
@@ -378,19 +361,8 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
 
   const alloc = document.createElement("div"); alloc.className = "ctl span";
   alloc.innerHTML = `<span class="lab"><span>Allocation — drag a divider to shift weight</span></span>
-    <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>
-    <button type="button" id="pinBtn" class="pinbtn">Pin allocation as baseline (A/B)</button>`;
+    <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>`;
   form.prepend(alloc);
-  alloc.querySelector("#pinBtn").addEventListener("click", e => {
-    if (baseline) {
-      baseline = null;
-      e.target.textContent = "Pin allocation as baseline (A/B)";
-    } else {
-      baseline = weights.slice();
-      e.target.textContent = "Clear baseline (A/B on)";
-    }
-    schedule();
-  });
   renderAlloc();
   run();
 });
