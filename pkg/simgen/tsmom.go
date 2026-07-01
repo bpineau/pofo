@@ -43,8 +43,10 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 	if n <= cfg.Lookback+2 {
 		return nil, 0, fmt.Errorf("history too short for the lookback (%d dates)", n)
 	}
-	// Excess returns per market.
+	// Excess returns per market, plus the raw price returns kept alongside to
+	// detect stale (forward-filled) legs in the deep backcast.
 	excess := make([][]float64, len(cfg.Markets))
+	raw := make([][]float64, len(cfg.Markets))
 	for i, id := range cfg.Markets {
 		r, ok := fr.Returns[id]
 		if !ok {
@@ -55,6 +57,7 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 			ex[k] = r[k] - cash[k]
 		}
 		excess[i] = ex
+		raw[i] = r
 	}
 
 	start := cfg.Lookback + 1
@@ -67,7 +70,7 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 	for k := start + 1; k < n; k++ {
 		if sinceRebalance >= cfg.Rebalance {
 			sinceRebalance = 0
-			sizePositions(positions, excess, k, cfg)
+			sizePositions(positions, excess, raw, k, cfg)
 		}
 		sinceRebalance++
 
@@ -89,11 +92,15 @@ func TSMOM(fr *Frame, cfg TSMOMConfig) ([]float64, int, error) {
 // inverse to each market's own volatility (risk parity), then scaled as a whole
 // so the book's covariance-implied volatility meets cfg.TargetVol. Positions are
 // finally capped at ±MaxLeverage per market. A market with no measurable
-// volatility over the window is left flat.
-func sizePositions(positions []float64, excess [][]float64, k int, cfg TSMOMConfig) {
+// volatility over the window, or whose proxy is stale (mostly forward-filled
+// in the deep backcast, which would corrupt the covariance), is left flat.
+func sizePositions(positions []float64, excess, raw [][]float64, k int, cfg TSMOMConfig) {
 	cov := rollingCov(excess, k, cfg.VolWindow)
 	w := make([]float64, len(excess))
 	for i := range excess {
+		if activeFraction(raw[i], k, cfg.VolWindow) < 0.5 {
+			continue
+		}
 		cum := 1.0
 		for j := k - cfg.Lookback; j < k; j++ {
 			cum *= 1 + excess[i][j]
@@ -120,6 +127,24 @@ func sizePositions(positions []float64, excess [][]float64, k int, cfg TSMOMConf
 	for i := range positions {
 		positions[i] = math.Max(-cfg.MaxLeverage, math.Min(cfg.MaxLeverage, scale*w[i]))
 	}
+}
+
+// activeFraction is the share of the window [k-window, k) on which the raw
+// price return actually moved. A live daily leg sits near 1; a monthly proxy
+// forward-filled onto the daily frame sits near 1/21, flagging it as stale.
+func activeFraction(xs []float64, k, window int) float64 {
+	lo := max(k-window, 1)
+	n := k - lo
+	if n < 1 {
+		return 0
+	}
+	nz := 0
+	for j := lo; j < k; j++ {
+		if xs[j] != 0 {
+			nz++
+		}
+	}
+	return float64(nz) / float64(n)
 }
 
 // rollingCov is the annualized covariance matrix of the excess-return series
