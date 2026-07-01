@@ -93,8 +93,8 @@ func TestEmbeddedHICPFR(t *testing.T) {
 	if len(pts) < 300 {
 		t.Fatalf("embedded FR snapshot too short: %d months", len(pts))
 	}
-	if !pts[0].Date.Equal(time.Date(1996, 1, 1, 0, 0, 0, 0, time.UTC)) {
-		t.Errorf("first anchor = %v, want 1996-01", pts[0].Date)
+	if !pts[0].Date.Equal(time.Date(1955, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("first anchor = %v, want 1955-01 (long history: OECD CPI chained before Eurostat)", pts[0].Date)
 	}
 	if _, ok := embeddedHICP("ZZ"); ok {
 		t.Error("unknown geo must not have an embedded snapshot")
@@ -122,8 +122,8 @@ func TestFetchEurostatHICPEmbeddedFallback(t *testing.T) {
 	if s.Source != "eurostat" || len(s.Points) < 1000 {
 		t.Errorf("fallback series looks wrong: source=%q points=%d", s.Source, len(s.Points))
 	}
-	if !s.First().Date.Equal(time.Date(1996, 1, 1, 0, 0, 0, 0, time.UTC)) {
-		t.Errorf("fallback first date = %v, want 1996-01-01", s.First().Date)
+	if !s.First().Date.Equal(time.Date(1955, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("fallback first date = %v, want 1955-01-01 (embedded long history)", s.First().Date)
 	}
 }
 
