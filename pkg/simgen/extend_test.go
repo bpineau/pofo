@@ -4,8 +4,47 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
+
+// gold1968 is the earliest month the bundled LBMA gold fix must cover.
+var gold1968 = time.Date(1969, 1, 1, 0, 0, 0, 0, time.UTC)
+
+// xauusdBuild splices the bundled monthly LBMA gold fix (XAUUSD-LBMA, 1968→)
+// behind the fetchable daily spot, so a gold sleeve reaches the floating era.
+func TestXAUUSDBuildSplicesBundledLBMA(t *testing.T) {
+	daily := atSeries("XAUUSD", 100, 50, 275) // recent daily quote only
+	f := WithRefData(datasets.Refdata(), fakeFetcher{"XAUUSD": daily})
+
+	got, err := xauusdBuild(f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !got.First().Date.Before(gold1968) {
+		t.Errorf("spliced gold starts %s, want ≤1968 from the bundled LBMA fix", got.First().Date.Format("2006-01"))
+	}
+	if got.SimulatedBefore.IsZero() {
+		t.Error("expected SimulatedBefore after splicing the LBMA fix")
+	}
+	if last := got.Last().Close; last != 275 {
+		t.Errorf("recent tail = %v, want the daily quote (275) preserved", last)
+	}
+}
+
+// Without a fetchable daily quote, xauusdBuild returns the bundled monthly fix
+// on its own rather than failing.
+func TestXAUUSDBuildFallsBackToBundledLBMA(t *testing.T) {
+	f := WithRefData(datasets.Refdata(), fakeFetcher{}) // no daily XAUUSD
+
+	got, err := xauusdBuild(f, time.Time{})
+	if err != nil || got == nil {
+		t.Fatalf("got %v, err %v; want the bundled monthly fix", got, err)
+	}
+	if !got.First().Date.Before(gold1968) {
+		t.Errorf("fallback gold starts %s, want ≤1968", got.First().Date.Format("2006-01"))
+	}
+}
 
 // atSeries builds a daily series of n points from a start offset, constant level.
 func atSeries(symbol string, startOffset, n int, level float64) *marketdata.Series {
