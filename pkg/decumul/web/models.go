@@ -55,8 +55,9 @@ type namedSource struct {
 // Models evaluates the return models side by side for one parameter set, the
 // core of the rewrite: instead of a single hypersensitive ruin figure it shows
 // the plausible range across calibrated models. The synthetic family (Student-t,
-// the mean-preserving Regime, and the Conservative broad-sample prior) is always
-// present; a panel adds the data-driven Historical and Block-bootstrap columns.
+// the mean-preserving Sequence stress, the Broad-sample prior and the Lost-decade
+// tail) is always present; a panel adds the data-driven Historical windows and
+// Block-bootstrap columns.
 func Models(pr Params, panel *scenario.Panel) ModelsResult {
 	if pr.NPaths == 0 {
 		pr.NPaths = 2000
@@ -90,8 +91,8 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 		months := pr.Years * 12
 		cohorts := scenario.HistoricalCohorts{Panel: *panel, Weights: w, Periods: months}
 		if cohorts.Count() > 0 {
-			out = append(out, namedSource{"Historical",
-				"Replays this portfolio's actual return sequences, no resampling. Honest but limited: a short history holds few independent retirements, so it tends to look optimistic for long horizons.",
+			out = append(out, namedSource{"Historical windows",
+				"Replays this portfolio's actual return sequences (every historical start date, no resampling). Honest but limited: a short history holds few independent retirements, so it tends to look optimistic for long horizons.",
 				scenario.Compounded{Inner: cohorts, Group: 12}})
 		}
 		out = append(out, namedSource{"Block bootstrap",
@@ -103,12 +104,15 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 		namedSource{"Student-t",
 			"The central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. No mean reversion across years, so long horizons read a touch tougher than history; and when your history is shorter than the horizon it leans toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
 			scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}},
-		namedSource{"Regime",
-			"Sequence-risk stress: clustered, persistent bull/bear regimes at the same long-run mean as Student-t, so a run of bad years can land early in retirement. Read it as the downside if the sequence is unlucky.",
+		namedSource{"Sequence stress",
+			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged; only the ordering is stressed. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
-		namedSource{"Conservative",
+		namedSource{"Broad-sample",
 			"Forward-looking pessimism, not this fund's history: a lower real return (~3.5% geometric), higher volatility, fat left tail and clustered drawdowns, in line with broad century-long developed-market evidence (Anarkulova et al.).",
 			scenario.NewMarkovRegime(consMu, consSigma, consDf, pr.Years)},
+		namedSource{"Lost decade",
+			"Japan-style tail: a very sticky, deep bear averaging a whole decade, layered on your mean. Unlike Sequence stress this lowers the realised return too, modelling a prolonged real drawdown (Japanese equities 1990-2010). The grimmest planning model, the scenario where a retirement begins inside a lost decade.",
+			scenario.NewLostDecadeRegime(cMu, cSigma, cDf, pr.Years)},
 	)
 	return out
 }

@@ -10,12 +10,16 @@
 <p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b> (e.g. Anarkulova, Cederburg &amp; O'Doherty, 2023, who find a fixed 4% rule fails far more often across a broad, century-long sample of developed markets). The main reasons, in rough order of impact:</p>
 <ul>
 <li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces the withdrawal in downturns, which roughly <i>halves</i> the ruin vs a true fixed 4% rule. It now defaults to 0 (the canonical fixed rule); raise it, or use the guardrails toggle, to model adaptive spending.</li>
-<li><b>Optimistic return inputs.</b> mu/sigma fitted from a fund's own history reflect a favourable, often US-heavy and post-2009 window. A broad sample has a lower real return, higher volatility and a fatter left tail (prolonged real bear markets like Japan 1990–). Tick <b>"Conservative broad-sample prior"</b> to override the fit with cautious world-equity assumptions.</li>
+<li><b>Optimistic return inputs.</b> mu/sigma fitted from a fund's own history reflect a favourable, often US-heavy and post-2009 window. A broad sample has a lower real return, higher volatility and a fatter left tail (prolonged real bear markets like Japan 1990–). Tick <b>"Broad-sample prior"</b> to override the fit with cautious world-equity assumptions.</li>
 <li><b>Short history.</b> A 20–30-year series contains no independent 40–50-year retirement, so it cannot show the worst long-horizon sequences. A warning appears above when the sample is shorter than the horizon.</li>
-<li><b>I.i.d. parametric draws</b> miss the persistence (sequence risk) and negative skew of real returns; they under-produce the early-crash paths that actually cause ruin. Tick <b>"Stress regimes"</b> to cluster bad years into prolonged drawdowns.</li>
+<li><b>I.i.d. parametric draws</b> miss the persistence (sequence risk) and negative skew of real returns; they under-produce the early-crash paths that actually cause ruin. Tick <b>"Sequence-risk stress"</b> to cluster bad years into prolonged drawdowns, and read the Lost-decade column for a Japan-style prolonged trough.</li>
 <li><b>Horizon.</b> Set it past your life expectancy: an early retirement can last 50–60 years, and ruin rises steeply with the horizon (≈40→50y nearly doubles it). The default is now 45 years.</li>
 </ul>
 <p>For a life plan, prefer the pessimistic end: flex off, a lower mu and higher sigma than the rosy fit, and a horizon past your life expectancy.</p>
+</details>
+<details class="controls" id="controlsfold"><summary>Detailed controls — allocation, spending, return model, taxes</summary>
+<form id="controls"></form>
+<p id="modelhelp"></p>
 </details>
 <div id="hero">
 <div id="verdict"></div>
@@ -28,14 +32,14 @@
 <p class="anchor">Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 </div>
 <div id="pathsbox">
-<label class="tgt">Simulated wealth paths for <select id="fanModel"></select></label>
-<div id="fanSvg"></div>
+<h2>Simulated wealth paths, per planning model</h2>
+<div id="fansGrid"></div>
+<div id="riskgrid">
 <div id="frontierSvg"></div>
 <div id="sensitivitySvg"></div>
 </div>
+</div>
 <div id="layout">
-<form id="controls"></form>
-<p id="modelhelp"></p>
 <p id="note"></p>
 <div id="cards"></div>
 <div id="charts">

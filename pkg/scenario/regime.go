@@ -54,6 +54,38 @@ func NewMarkovRegime(mu, sigma, df float64, periods int) MarkovRegime {
 	}
 }
 
+// Lost-decade regime constants: a very persistent, deep bear that models a
+// Japan-style prolonged real drawdown (Japanese equities were roughly flat to
+// negative in real terms from 1990 to 2010). The calm state sits at the
+// requested mu while the bear is a deep, sticky trough averaging a full decade,
+// so the blended long-run mean falls BELOW mu (this regime is deliberately not
+// mean-preserving, unlike NewMarkovRegime).
+const (
+	lostStayCalm        = 0.95 // calm-to-bear switch roughly once in 20 years
+	lostStayBear        = 0.90 // mean bear run ~10 years: the "lost decade"
+	lostBearGapFactor   = 0.8  // bear mean is 0.8*sigma below the calm mean
+	lostBearSigmaFactor = 1.4
+)
+
+// NewLostDecadeRegime builds a Japan-style lost-decade stress: a very sticky,
+// deep bear state (mean run ~10 years) layered on a calm state at mu. It is NOT
+// mean-preserving: the time spent in the trough drags the blended long-run mean
+// below mu, so it bakes in a genuinely lower realised return, not just an
+// unlucky sequence. Read it as the tail scenario where a whole retirement lands
+// inside a lost decade, the grimmest of the planning models, not a central case.
+//
+// Contrast NewMarkovRegime, whose calm mean is lifted to preserve mu (it stresses
+// the sequence only). Here the calm mean stays at mu and the trough is left to
+// pull the average down.
+func NewLostDecadeRegime(mu, sigma, df float64, periods int) MarkovRegime {
+	return MarkovRegime{
+		CalmMu: mu, CalmSigma: sigma,
+		BearMu: mu - lostBearGapFactor*sigma, BearSigma: sigma * lostBearSigmaFactor,
+		StayCalm: lostStayCalm, StayBear: lostStayBear,
+		Df: df, Periods: periods,
+	}
+}
+
 // MarkovRegime draws returns from a two-state Markov chain, a calm state and a
 // bear state, so bad years cluster into prolonged real drawdowns: the
 // sequence-of-returns risk that i.i.d. parametric draws miss. The bear state
