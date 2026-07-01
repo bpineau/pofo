@@ -21,6 +21,57 @@ func isRateSymbol(symbol string) bool {
 	return false
 }
 
+// scaleBreakFactor is the minimum adjacent jump (>= this, or <= its reciprocal)
+// treated as a denomination break rather than a real move. 8x in a single day of
+// a split-adjusted close is not a market move or a residual split (Yahoo already
+// back-adjusts splits): it is a provider splicing two segments of the same fund
+// at different units (pence vs pounds, an old share class, …).
+const scaleBreakFactor = 8.0
+
+// minScaleSegment is the smallest segment (in points) on either side of a break
+// that is trusted as a real scale. A shorter side is a stray tail or a leading
+// placeholder (dropDropouts territory), not an authoritative denomination.
+const minScaleSegment = 20
+
+// mendScaleBreak repairs a single large, persistent denomination break: when a
+// series has EXACTLY ONE adjacent jump beyond scaleBreakFactor with a
+// substantial segment on both sides, the older segment is rescaled onto the
+// newer one (the recent segment is the current NAV, hence authoritative). The
+// real IBGS.L / ITPS.L case: their pre-2009 history sits at ~100x the true NAV,
+// a -99% cliff at the junction; after mending the whole series is continuous.
+//
+// It is deliberately timid: no break, several breaks (a spliced share class like
+// CL2.PA), a reversed round-trip (GRE), or a too-short side are all left
+// untouched for the -verify-data doctor to flag, because rescaling them
+// automatically could corrupt genuine data. Run it AFTER dropDropouts, so
+// leading placeholders and isolated dropouts are already gone.
+func mendScaleBreak(pts []Point) []Point {
+	n := len(pts)
+	if n < 2*minScaleSegment {
+		return pts
+	}
+	breakIdx, count := -1, 0
+	for i := 1; i < n; i++ {
+		if pts[i-1].Close <= 0 || pts[i].Close <= 0 {
+			continue
+		}
+		if r := pts[i].Close / pts[i-1].Close; r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
+			breakIdx, count = i, count+1
+		}
+	}
+	if count != 1 || breakIdx < minScaleSegment || n-breakIdx < minScaleSegment {
+		return pts
+	}
+	// Rescale the older segment [0, breakIdx) so its last point meets the newer
+	// segment: the spurious junction move is absorbed (a normal day's real move
+	// across it is negligible next to an 8x+ break).
+	f := pts[breakIdx].Close / pts[breakIdx-1].Close
+	for i := 0; i < breakIdx; i++ {
+		pts[i].Close *= f
+	}
+	return pts
+}
+
 // dropDropouts removes obvious bad prints from a sorted daily series:
 //
 //   - a leading run of placeholder points before the price first jumps up (>=4x)
