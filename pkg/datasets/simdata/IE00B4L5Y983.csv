@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: IE00B4L5Y983
 # name: iShares Core MSCI World: MSCI World total return (1969 with -refdata)
-# method: real MSCI World gross TR (via -refdata MSCIWORLD-USD, monthly 1969→), net 0.20%/yr; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)
+# method: real MSCI World net TR (via -refdata MSCIWORLD-USD, monthly 1969→), less 0.20%/yr TER; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)
 # validation: corr=0.359 (weekly 0.873) beta=0.35 TE=86.7%/yr CAGR sim 11.13% vs real 11.09% (overlap 126 d from 2009-10-01 to 2026-05-01) vs IE00B4L5Y983
 # generated: 2026-07-01
 date,close

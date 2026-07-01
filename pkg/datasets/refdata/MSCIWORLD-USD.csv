@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: MSCIWORLD-USD
-# name: MSCI World gross total return (USD, monthly)
-# source: MSCI via Curvo export, personal use; not for redistribution
+# name: MSCI World net total return (USD, monthly)
+# source: MSCI via Curvo export (curvo.eu/backtest uses NET total-return indices), personal use; not for redistribution. Validated 2026-07-01: Dec2012->Dec2024 10.82%/yr and Dec2014->Dec2024 9.95%/yr match MSCI World NET USD exactly (gross was 11.41% / 10.52%). Net is the right proxy for an Irish-domiciled UCITS World ETF (IWDA/URTH track the net index).
 1969-12-01,10000.000000
 1970-01-01,9445.500000
 1970-02-01,9740.500000
