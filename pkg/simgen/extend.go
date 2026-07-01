@@ -28,6 +28,11 @@ import (
 //   - VFITX (Intermediate-Term Treasury, 1991) and VUSTX (Long-Term, 1986) →
 //     constant-maturity Treasury total-return reconstructions (refdata
 //     TREASURY-INT-USD / TREASURY-LONG-USD, from FRED CMT yields, ~1953).
+//   - VFINX (Vanguard 500, 1976) → US equity TR (refdata USEQ-USD: Ken French
+//     total US market, ~1926).
+//   - ^IRX (13-week T-bill rate) → the 3-month T-bill rate (refdata TBILL-3M:
+//     FRED TB3MS, ~1934). A rate, not a price: rescaled by a ≈1 factor at the
+//     splice (^IRX ≈ TB3MS there), then read as an isRate series.
 var longBack = map[string]string{
 	"VTMGX": "DEVEXUS-USD",
 	"VEIEX": "EM-USD",
@@ -35,6 +40,8 @@ var longBack = map[string]string{
 	"CL=F":  "WTI-USD",
 	"VFITX": "TREASURY-INT-USD",
 	"VUSTX": "TREASURY-LONG-USD",
+	"VFINX": "USEQ-USD",
+	"^IRX":  "TBILL-3M",
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
