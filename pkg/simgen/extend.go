@@ -20,6 +20,10 @@ import (
 //     London/LBMA gold fix (refdata XAUUSD-LBMA, ~1968).
 //   - CL=F (NYMEX WTI futures, 2000) is extended with the bundled monthly WTI
 //     spot price (refdata WTI-USD, ~1946).
+//   - VFITX (Vanguard Intermediate-Term Treasury, 1991) and VUSTX (Long-Term,
+//     1986) are extended with a bundled constant-maturity Treasury total-return
+//     reconstruction (refdata TREASURY-INT-USD / TREASURY-LONG-USD, from FRED
+//     CMT yields via simgen.TreasuryTR, ~1953).
 //
 // All proxies are total-return / spot levels in USD, so the splice is
 // homogeneous with the component it extends.
@@ -27,6 +31,8 @@ var longBack = map[string]string{
 	"VTMGX": "^990300-USD-STRD",
 	"GC=F":  "XAUUSD-LBMA",
 	"CL=F":  "WTI-USD",
+	"VFITX": "TREASURY-INT-USD",
+	"VUSTX": "TREASURY-LONG-USD",
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
