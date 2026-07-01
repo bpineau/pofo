@@ -4,6 +4,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
@@ -78,6 +79,30 @@ func TestCompositeUnlockedWhenYoungestLegExtended(t *testing.T) {
 	}
 	if got := s.First().Date.Year(); got != 1976 {
 		t.Fatalf("composite starts %d, want 1976 (VFINX) once VTMGX is extended", got)
+	}
+}
+
+// Custom builders (not just the shared composite/tsmom) must route their legs
+// through extend() too, otherwise their intl-equity legs stay short and cap the
+// recipe near 2000. wintonBuild reaches back to the EM proxy (~1989) plus the
+// TSMOM warm-up once its frame is extended; without extend() it would stop near
+// 1994. VFINX/^IRX are daily from 1985 to give the frame daily dates.
+func TestWintonBuilderExtendsItsLegs(t *testing.T) {
+	fake := fakeFetcher{
+		"VFINX": dailyFrom("VFINX", 1985, 1, 1, 9200),
+		"^IRX":  dailyFrom("^IRX", 1985, 1, 1, 9200),
+	}
+	for _, id := range []string{"VTMGX", "VEIEX", "VFITX", "VUSTX", "GC=F", "CL=F"} {
+		fake[id] = dailyFrom(id, 1994, 1, 1, 5900)
+	}
+	f := WithRefData(datasets.Refdata(), fake)
+
+	s, err := wintonBuild(f, ComponentsFrom)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := s.First().Date.Year(); got > 1991 {
+		t.Errorf("Winton starts %s, want ≤1991 (its legs must be extended via extend())", s.First().Date.Format("2006-01"))
 	}
 }
 
