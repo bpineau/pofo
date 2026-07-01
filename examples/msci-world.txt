@@ -1,7 +1,3 @@
 # MSCI World — 100% equity base
-# Same fund as before (iShares Core MSCI World, IWDA / IE00B4L5Y983), but with
-# the SIM suffix so the backtest reaches back to 1999 (real IWDA quotes from
-# 2009, simulated before that as 0.60 US + 0.40 developed-international). Add
-# "-start 1999-01-01" to see the full window — the report floors at 2006 by
-# default; the extended history then covers the dot-com bust and 2008.
+# The SIM suffix allows extending the history before the ETF's inception.
 100	IWDASIM  # iShares Core MSCI World UCITS ETF USD (Acc), history-extended
