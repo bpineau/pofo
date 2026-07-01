@@ -29,6 +29,7 @@ type Client struct {
 	BoursoramaBase  string
 	MorningstarBase string
 	EurostatBase    string
+	FredBase        string
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
@@ -52,6 +53,7 @@ func NewClient(cacheDir string) *Client {
 		BoursoramaBase:  "https://www.boursorama.com",
 		MorningstarBase: "https://tools.morningstar.fr",
 		EurostatBase:    "https://ec.europa.eu",
+		FredBase:        "https://fred.stlouisfed.org",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
 		retryDelay:      time.Second,

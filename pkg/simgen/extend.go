@@ -1,6 +1,8 @@
 package simgen
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -43,8 +45,19 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 	if !ok || s == nil {
 		return s, err
 	}
-	if p, perr := e.inner.Fetch(pid, from); perr == nil && p != nil && len(p.Points) > 1 {
-		marketdata.ExtendBack(s, p)
+	// Diagnostics to stderr (gen-simdata only): a silent skip hides why a
+	// backcast did not lengthen, so report the proxy fetch and splice outcome.
+	p, perr := e.inner.Fetch(pid, from)
+	switch {
+	case perr != nil:
+		fmt.Fprintf(os.Stderr, "extend: %s: proxy %s fetch failed: %v\n", id, pid, perr)
+	case p == nil || len(p.Points) < 2:
+		fmt.Fprintf(os.Stderr, "extend: %s: proxy %s returned no usable history\n", id, pid)
+	case marketdata.ExtendBack(s, p):
+		fmt.Fprintf(os.Stderr, "extend: %s extended with %s back to %s\n", id, pid, s.Points[0].Date.Format("2006-01-02"))
+	default:
+		fmt.Fprintf(os.Stderr, "extend: %s: proxy %s (from %s) added no earlier data than %s\n",
+			id, pid, p.Points[0].Date.Format("2006-01-02"), s.Points[0].Date.Format("2006-01-02"))
 	}
 	return s, nil
 }
