@@ -14,7 +14,7 @@ func TestFrontierRendersPerModelCurves(t *testing.T) {
 	if !strings.HasPrefix(res.SVG, "<svg") {
 		t.Fatalf("expected an SVG, got %.30q", res.SVG)
 	}
-	for _, name := range []string{"Student-t", "Regime", "Conservative"} {
+	for _, name := range []string{"Student-t", "Sequence stress", "Broad-sample", "Lost decade"} {
 		if !strings.Contains(res.SVG, name) {
 			t.Errorf("frontier missing the %q curve", name)
 		}

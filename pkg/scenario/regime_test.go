@@ -109,6 +109,46 @@ func TestNewMarkovRegimeSequenceRisk(t *testing.T) {
 	}
 }
 
+// TestNewLostDecadeRegime verifies the two defining properties of the Japan-style
+// stress: it is NOT mean-preserving (the blended long-run mean falls clearly
+// below mu, because the deep bear is left to drag the average down), and it
+// produces deeper multi-year drawdowns than the mean-preserving sequence-risk
+// regime at the same mu/sigma.
+func TestNewLostDecadeRegime(t *testing.T) {
+	const n, periods = 4000, 40
+	mu, sigma := 0.05, 0.13
+	lost := NewLostDecadeRegime(mu, sigma, 5, periods)
+	seq := NewMarkovRegime(mu, sigma, 5, periods)
+
+	// Mean is materially below mu (a real haircut, not just sequence noise).
+	rng := rand.New(rand.NewPCG(7, 0))
+	var sum float64
+	var count int
+	for range n {
+		for _, r := range lost.Draw(rng) {
+			sum += r
+			count++
+		}
+	}
+	if got := sum / float64(count); !(got < mu-0.015) {
+		t.Errorf("lost-decade mean = %.4f, want clearly below mu=%.3f (not mean-preserving)", got, mu)
+	}
+
+	// Worst 10-year window is deeper than the mean-preserving regime's.
+	p5 := func(s Source) float64 {
+		rng := rand.New(rand.NewPCG(1, 2))
+		worsts := make([]float64, n)
+		for i := range worsts {
+			worsts[i] = worstWindow(s.Draw(rng), 10)
+		}
+		sort.Float64s(worsts)
+		return worsts[n/20]
+	}
+	if lp5, sp5 := p5(lost), p5(seq); !(lp5 < sp5) {
+		t.Errorf("lost-decade worst-10y p5 = %.3f should be below the sequence regime %.3f", lp5, sp5)
+	}
+}
+
 func TestMarkovRegimeLen(t *testing.T) {
 	m := MarkovRegime{Periods: 25}
 	if m.Len() != 25 {
