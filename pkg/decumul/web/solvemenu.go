@@ -21,9 +21,15 @@ type SolverOption struct {
 // ways to get there, rather than a single number. It evaluates at the user's
 // planned spend, so the flex and buffer options keep that spend and change
 // something else instead.
+//
+// When the plan already meets the target (Met), the levers to reach it would all
+// collapse to "no change" (a 0% cut, a 0-year buffer), which reads as nonsense;
+// the menu then reports the headroom instead: how much more could be spent while
+// still meeting the target.
 type SolverMenu struct {
 	TargetRuin  float64        `json:"targetRuin"`
 	CurrentRuin float64        `json:"currentRuin"`
+	Met         bool           `json:"met"`
 	Options     []SolverOption `json:"options"`
 }
 
@@ -50,14 +56,28 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 
 	menu := SolverMenu{TargetRuin: target}
 	menu.CurrentRuin = base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
+	menu.Met = menu.CurrentRuin <= target
 
-	// Withdrawal: the safe spend at the target (always reachable by spending
-	// less). Solved on the fixed rule (no flex/guardrails), the monotonic and
-	// conventional safe withdrawal.
+	// The safe spend at the target on the fixed rule (no flex/guardrails), the
+	// monotonic and conventional safe withdrawal. Above the plan when the target
+	// is already met (headroom), below it when the plan is too aggressive.
 	safe := fixedRule(base).Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
+
+	// Met: the reach-the-target levers would all read "no change" (a 0% cut, a
+	// 0-year buffer), so report the spending headroom instead of a nonsense menu.
+	if menu.Met {
+		menu.Options = append(menu.Options, SolverOption{
+			Lever: "Room to spare", OK: true,
+			Text: fmt.Sprintf("You could spend up to %.0f k€/yr (%.1f%%) and still meet the target (you plan %.0f k€, %.1f%%)",
+				safe/1000, safe/pr.Capital*100, pr.NeedAnnual/1000, pr.NeedAnnual/pr.Capital*100),
+		})
+		return menu
+	}
+
+	// Missed: the equivalent ways to bring ruin down to the target.
 	menu.Options = append(menu.Options, SolverOption{
 		Lever: "Spend less", OK: true,
-		Text: fmt.Sprintf("Spend up to %.0f k€/yr (%.1f%%) instead of %.0f k€ (%.1f%%)",
+		Text: fmt.Sprintf("Spend down to %.0f k€/yr (%.1f%%) instead of %.0f k€ (%.1f%%)",
 			safe/1000, safe/pr.Capital*100, pr.NeedAnnual/1000, pr.NeedAnnual/pr.Capital*100),
 	})
 
