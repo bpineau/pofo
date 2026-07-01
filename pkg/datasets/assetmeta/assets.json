@@ -4838,6 +4838,40 @@
     "since": "2013-02-19"
   },
   {
+    "id": "LU1459801780",
+    "isin": "LU1459801780",
+    "aliases": [
+      "42C0",
+      "TIP1E"
+    ],
+    "name": "UBS Core BBG TIPS 1-10 UCITS ETF hEUR acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "TIP1E.SW",
+    "currency": "EUR",
+    "fees": 0.11,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "US Treasury Inflation-Protected Securities, 1-10 year maturities, FX-hedged to EUR",
+    "benchmark_index": "Bloomberg US Government 1-10 Year Inflation-Linked Bond (EUR Hedged)",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-hedged intermediate US TIPS (real-rate duration ~4.5y); US inflation protection without USD/EUR FX risk; low-cost UBS Core range",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1459801780",
+      "https://www.ubs.com/at/en/assetmanagement/funds/etf/lu1459801780-ubs-lux-fund-solutions-bloomberg-tips-1-10-ucits-etf-hedged-to-eur-a-acc-pd001.html"
+    ],
+    "since": "2016-09-30",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "duration": 4.5
+  },
+  {
     "id": "LU1563454310",
     "isin": "LU1563454310",
     "aliases": [],
@@ -4867,6 +4901,40 @@
     ],
     "since": "2017-04-18",
     "duration": 7.0
+  },
+  {
+    "id": "LU1645380442",
+    "isin": "LU1645380442",
+    "aliases": [
+      "CHSN"
+    ],
+    "name": "UBS Core BBG Euro Inflation Linked Bond 1-10 UCITS ETF EUR acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "CHSN.DE",
+    "currency": "EUR",
+    "fees": 0.08,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "Euro-area government inflation-linked bonds (French OATei, Italian BTPei, German Bundei, Spanish Bonosi), 1-10 year maturities",
+    "benchmark_index": "Bloomberg Euro Government Inflation-Linked 1-10 Year",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 38,
+      "Italy": 30,
+      "Germany": 17,
+      "Spain": 13,
+      "Other": 2
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR inflation hedge, intermediate segment (duration ~4.8y); pairs with nominal euro govts; European stagflation protection; brand-new EUR-acc share class (launched 2025-07), backcast from euro linker history; country split approximate",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1645380442"
+    ],
+    "since": "2025-07-15",
+    "duration": 4.8
   },
   {
     "id": "LU1681038243",
