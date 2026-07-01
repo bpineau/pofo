@@ -339,7 +339,7 @@ func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX + 0.36×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970) + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees; start still limited by the VFITX treasury leg (~1991)",
+		Method: "0.54×VFINX + 0.36×VTMGX (dev-intl, extended with MSCI EAFE gross TR ~1970) + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees; VFITX extended with a CMT Treasury TR reconstruction (~1953), so the start is now set by the US-equity leg VFINX (~1976)",
 		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
 			{ID: "VTMGX", Weight: 0.36},
@@ -445,7 +445,7 @@ func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (gold extended to the bundled LBMA fix ~1968, dev-intl to MSCI EAFE ~1970; start still limited by the EM/treasury legs ~1991-94), real DBMF grafted from 2019",
+		Method:          "12-month TSMOM on a cross-asset futures basket (gold→LBMA fix ~1968, crude→WTI spot ~1946, dev-intl→MSCI EAFE ~1970, treasuries→CMT TR ~1953; start now set by the EM leg VEIEX ~1994), real DBMF grafted from 2019",
 		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
