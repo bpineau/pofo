@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: CTA
-# name: Simplify CTA — TSMOM replication
+# name: Simplify CTA: TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→), real CTA grafted from 2022
 # validation: corr=0.197 (weekly 0.235) beta=0.23 TE=19.5%/yr CAGR sim 8.75% vs real 8.95% (overlap 1069 d from 2022-03-08 to 2026-06-11) vs CTA
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 2001-08-31,5.353025
 2001-09-04,5.307828
