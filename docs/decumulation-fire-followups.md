@@ -295,6 +295,19 @@ and on the currency conversion and fetch performance a EUR investor needs.
   MSCI World ex USA gross TR (Curvo, 1969-12→, the real ex-US universe, replacing
   the Ken-French/World approximation) and `EM-USD.csv` is MSCI Emerging Markets
   gross TR (Curvo, 1987-12→). DBMF/RSSB/VT's EM floor moves 1989→1988.
+- **S&P 500 total return + VFINX proxy** (done): bundled `SP500-USD.csv` (Shiller
+  price + reinvested dividends via datahub, ~1871→, ~9.4%/yr) and pointed
+  `longBack["VFINX"]` at it (VFINX tracks the S&P 500, so this beats the earlier
+  total-market proxy). Refines the pre-1976 US leg of NTSG/NTSX.
+- **Real (inflation-adjusted) drawdown/TTR in the report** (done): the stats table
+  now shows "Max Drawdown (real)" and "TTR real" beside the nominal ones,
+  deflating each portfolio's window by the base-currency CPI (^HICP-FR for EUR;
+  omitted for other currencies until a US CPI is wired). Makes the dot-com read
+  ~13y real vs ~6.8y nominal. `deflate()` in cmd/pofo, unit-tested.
+- **Yahoo 429 fix** (done): the client now falls back between Yahoo's twin
+  query1/query2 hosts (`yahooGet`, yahoo.go), defaulting to query2. A per-host
+  rate limit no longer sinks a run; fetch works again from constrained
+  environments (verified AAPL + CSPX).
 
 **Open:**
 - **Reference-validation pass (planned)**: cross-check both the bundled data and
@@ -321,16 +334,20 @@ and on the currency conversion and fetch performance a EUR investor needs.
   sandbox (Yahoo 429, Stooq PoW); FRED is reachable but flaky. Regeneration and
   timing must be validated on Ben's machine.
 
-**Next-session action (on Ben's machine, needs Yahoo):** after the VFINX/^IRX +
-custom-builder changes, do a FULL regen so every recipe picks them up, then
-re-embed:
+**Handover state (2026-07-01):** all the above is committed and pushed; the
+embedded simdata is current with the refdata/recipes (regenerated after each
+change). Yahoo fetch works from any environment again, so `make simdata` (which
+rebuilds → gens → rebuilds; never run a stale `./pofo -gen-simdata`) can be run
+in-session. Current backcast starts (with `-start 1968-01-01`): NTSG ~1969, NTSX
+~1953, Winton ~1990, DBMF/DBMFE ~1988, VT/RSSB 1987-12, XAUUSD 1968, IWDA/URTH
+1969, IEF/TLT/ZROZ 1962.
 
-    pofo -gen-simdata && make
+**To regenerate a bundled refdata series from source** (all sandbox-reachable):
+FRED GS5/GS20 → `simgen.TreasuryTR` (treasury); Ken French US / MSCI-World-ex-US
+via Curvo / MSCI-EM via Curvo (equity); datahub gold-prices (XAUUSD-LBMA) and
+s-and-p-500 (SP500-USD, Shiller TR); FRED WTISPLC (crude), EXUSEC+EXUSEU (EUR),
+TB3MS (^IRX), FRACPIALLMINMEI (HICP-FR). See the header of each refdata CSV.
 
-Then confirm (with e.g. `-start 1968-01-01`): NTSG (IE00077IIPQ8) reaches ~1969
-(dev-ex-US leg), NTSX (IE000KF370H3) ~1953, Winton (IE000O1VI174) ~1990 (no
-longer 2001), DBMF ~1989, XAUUSD ~1968, IWDA/URTH 1969. The 2nd `pofo` run
-should be seconds. Bundled data regeneration recipes: FRED GS5/GS20 →
-`simgen.TreasuryTR`; Ken French US/dev-ex-US/emerging → cumulate Mkt-RF+RF; FRED
-WTISPLC (crude), EXUSEC+EXUSEU (EUR), TB3MS (^IRX), FRACPIALLMINMEI (HICP);
-datahub gold-prices (XAUUSD-LBMA).
+**Next up:** the reference-validation pass (see the Open item) — cross-check data
+and calc algorithms against online references for XAUUSD/MSCI World/S&P 500 over
+several periods.
