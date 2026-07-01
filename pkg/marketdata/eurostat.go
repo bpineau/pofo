@@ -31,14 +31,15 @@ var hicpFRSnapshot string
 func embeddedHICP(geo string) ([]Point, bool) {
 	switch geo {
 	case "FR":
-		return parseHICPSnapshot(hicpFRSnapshot), true
+		return parseMonthlyAnchors(hicpFRSnapshot), true
 	}
 	return nil, false
 }
 
-// parseHICPSnapshot reads "YYYY-MM,index" lines (ignoring blanks and #
-// comments), skipping any malformed row, sorted ascending by date.
-func parseHICPSnapshot(csv string) []Point {
+// parseMonthlyAnchors reads "YYYY-MM,value" lines (ignoring blanks and #
+// comments), skipping any malformed row, sorted ascending by date. It backs
+// every bundled monthly series (HICP indices, the long EUR/USD proxy).
+func parseMonthlyAnchors(csv string) []Point {
 	var pts []Point
 	for _, line := range strings.Split(csv, "\n") {
 		line = strings.TrimSpace(line)

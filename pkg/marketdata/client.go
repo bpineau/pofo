@@ -393,6 +393,7 @@ func (c *Client) History(symbol string, from time.Time) (*Series, error) {
 	if err != nil {
 		return nil, err
 	}
+	extendFXBack(symbol, s) // splice the bundled long EUR/USD behind the euro cross
 	c.memoize(key, s)
 	return s, nil
 }
