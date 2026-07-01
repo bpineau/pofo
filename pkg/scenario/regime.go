@@ -67,8 +67,8 @@ func NewMarkovRegime(mu, sigma, df float64, periods int) MarkovRegime {
 // mean/sigma/df; constructing the struct directly allows custom state
 // parameters, but the blended long-run mean is then set by the caller.
 type MarkovRegime struct {
-	CalmMu, CalmSigma float64
-	BearMu, BearSigma float64
+	CalmMu, CalmSigma  float64
+	BearMu, BearSigma  float64
 	StayCalm, StayBear float64 // probability of staying in the current state, [0,1)
 	Df                 float64
 	Periods            int
