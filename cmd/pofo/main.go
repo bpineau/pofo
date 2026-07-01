@@ -101,7 +101,7 @@ func run(argv []string) error {
 	fs.StringVar(&opt.dataDir, "data", defaultDataDir(), "quote cache directory")
 	fs.StringVar(&opt.simdataDir, "simdata", "", "directory of simulated histories (default: embedded in the binary)")
 	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalance every N calendar days (0 = never)")
-	fs.StringVar(&startStr, "start", "2006-01-01", "desired start date (YYYY-MM-DD)")
+	fs.StringVar(&startStr, "start", "", "desired start date (YYYY-MM-DD, default: earliest available)")
 	var endStr string
 	fs.StringVar(&endStr, "end", "", "end date (YYYY-MM-DD, default: last available quote)")
 	fs.StringVar(&opt.benchmark, "benchmark", "^GSPC", "reference symbol for Beta (empty = no Beta)")
@@ -182,11 +182,18 @@ Options:
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
-	start, err := time.ParseInLocation("2006-01-02", startStr, time.UTC)
-	if err != nil {
-		return fmt.Errorf("invalid -start option: %w", err)
+	// An empty -start means "earliest available": leave opt.start at the zero
+	// time so fetches and the simdata trim keep every point, and the common
+	// window then aligns on the youngest holding's inception. This surfaces the
+	// full backcast by default instead of clipping it at a fixed recent date.
+	if startStr != "" {
+		start, err := time.ParseInLocation("2006-01-02", startStr, time.UTC)
+		if err != nil {
+			return fmt.Errorf("invalid -start option: %w", err)
+		}
+		opt.start = start
 	}
-	opt.start = start
+	var err error
 	if opt.fw, err = frameworkFor(*frameworkName); err != nil {
 		return err
 	}
@@ -1770,8 +1777,22 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			}, 0},
 		{"Sharpe", "annualized return / volatility (risk-free rate 0)",
 			num(func(s metrics.Stats) float64 { return s.Sharpe }), +1},
+		{"Sharpe (monthly)", "same ratio on monthly returns; above the daily Sharpe when daily noise mean-reverts (variance ratio <1), below it when the series trends",
+			func(r *result) (float64, string) {
+				if !r.hasVTS {
+					return math.NaN(), "-"
+				}
+				return r.vts.MonthlySharpe, fmtNum(r.vts.MonthlySharpe)
+			}, +1},
 		{"Sortino", "annualized return / volatility of down days only",
 			num(func(s metrics.Stats) float64 { return s.Sortino }), +1},
+		{"Sortino (monthly)", "annualized return / downside deviation of monthly returns; the monthly twin of Sortino",
+			func(r *result) (float64, string) {
+				if !r.hasVTS {
+					return math.NaN(), "-"
+				}
+				return r.vts.MonthlySortino, fmtNum(r.vts.MonthlySortino)
+			}, +1},
 		{"Ulcer Index", "average depth and duration of drawdowns (lower is better)",
 			num(func(s metrics.Stats) float64 { return s.Ulcer }), -1},
 		{"Max Drawdown", "worst decline from a peak",
