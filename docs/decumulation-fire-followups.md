@@ -290,13 +290,12 @@ and on the currency conversion and fetch performance a EUR investor needs.
   French CPI (FRED FRACPIALLMINMEI) chained before Eurostat, ~1955→, so the
   offline fallback deflates the high-inflation decades too.
 
+- **Intl-equity proxies upgraded to true MSCI** (done): `DEVEXUS-USD.csv` is now
+  MSCI World ex USA gross TR (Curvo, 1969-12→, the real ex-US universe, replacing
+  the Ken-French/World approximation) and `EM-USD.csv` is MSCI Emerging Markets
+  gross TR (Curvo, 1987-12→). DBMF/RSSB/VT's EM floor moves 1989→1988.
+
 **Open:**
-- **Upgrade the intl-equity proxies to true MSCI** (Ben Curvo export, like World):
-  overwrite `DEVEXUS-USD.csv` with MSCI World-ex-US / EAFE (correct ex-US universe
-  pre-1990, to 1969 — currently World-approximated before 1990) and `EM-USD.csv`
-  with MSCI EM (to 1988). Same format as `MSCIWORLD-USD.csv`; drop in, regenerate.
-  This would take DBMF/RSSB/VT below their current EM-driven ~1989 floor toward
-  1969, and make NTSG's dev-ex-US leg the true universe.
 - **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
   `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
   the default / make it auto = earliest available) to see the long backcast.
