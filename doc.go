@@ -41,7 +41,18 @@
 // series with pkg/marketdata (splicing simulated history from pkg/datasets
 // when a fund is young), simulate the portfolio, score it with pkg/metrics,
 // and either render it with pkg/chart and pkg/report or improve it with
-// pkg/optimize and pkg/suggest.
+// pkg/optimize and pkg/suggest. The high-level path is three calls, each
+// step staying independently reachable for custom pipelines:
+//
+//	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+//	spec, _ := portfolio.ParseFile("p.txt")
+//	p, _ := portfolio.Build(spec, portfolio.BuildOptions{
+//		Fetch: func(id string) (*marketdata.Series, error) {
+//			return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+//		},
+//	})
+//	sim, _ := portfolio.Simulate(p, 90)
+//	stats, _ := metrics.Compute(sim.Dates, sim.Index)
 //
 // # Conventions
 //
