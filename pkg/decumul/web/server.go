@@ -49,96 +49,32 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]float64{"mu": f.Mu, "sigma": f.Sigma, "df": f.Df})
 	})
-	mux.HandleFunc("/api/sim", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(ComputeWithPanel(pr, panel))
-	})
-	mux.HandleFunc("/api/models", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(Models(pr, panel))
-	})
-	mux.HandleFunc("/api/paths", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(Paths(pr, panel))
-	})
-	mux.HandleFunc("/api/sensitivity", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(Sensitivity(pr, panel))
-	})
-	mux.HandleFunc("/api/frontier", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(Frontier(pr, panel))
-	})
-	mux.HandleFunc("/api/solvemenu", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(SolveMenu(pr, panel))
-	})
-	mux.HandleFunc("/api/solve", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != http.MethodPost {
-			http.Error(w, "POST only", http.StatusMethodNotAllowed)
-			return
-		}
-		var pr Params
-		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(Solve(pr, panel))
-	})
+	// Every simulation endpoint shares the same shape: POST a Params, get a
+	// JSON result. post factors the boilerplate once.
+	post := func(path string, compute func(Params) any) {
+		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodPost {
+				http.Error(w, "POST only", http.StatusMethodNotAllowed)
+				return
+			}
+			var pr Params
+			if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(compute(pr))
+		})
+	}
+	post("/api/sim", func(pr Params) any { return ComputeWithPanel(pr, panel) })
+	post("/api/models", func(pr Params) any { return Models(pr, panel) })
+	post("/api/paths", func(pr Params) any { return Paths(pr, panel) })
+	post("/api/sensitivity", func(pr Params) any { return Sensitivity(pr, panel) })
+	post("/api/frontier", func(pr Params) any { return Frontier(pr, panel) })
+	post("/api/solvemenu", func(pr Params) any { return SolveMenu(pr, panel) })
+	post("/api/solve", func(pr Params) any { return Solve(pr, panel) })
+	post("/api/spending", func(pr Params) any { return Spending(pr, panel) })
+	post("/api/lifecycle", func(pr Params) any { return Lifecycle(pr, panel) })
+	post("/api/curves", func(pr Params) any { return Curves(pr, panel) })
 	return mux
 }
