@@ -154,8 +154,10 @@ func (c *Client) feesLookup(id string) (feesEntry, bool) {
 	defer c.mu.Unlock()
 	if c.fees == nil {
 		c.fees = map[string]feesEntry{}
-		if data, err := os.ReadFile(c.feesCachePath()); err == nil {
-			_ = json.Unmarshal(data, &c.fees)
+		if c.CacheDir != "" {
+			if data, err := os.ReadFile(c.feesCachePath()); err == nil {
+				_ = json.Unmarshal(data, &c.fees)
+			}
 		}
 	}
 	e, ok := c.fees[id]

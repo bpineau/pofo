@@ -37,6 +37,9 @@ func (c *Client) loadCache(symbol string, from time.Time) (*Series, bool) {
 // age, along with its download time. It backs the stale-cache fallback: a
 // failed refresh must never lose previously downloaded data.
 func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.Time, bool) {
+	if c.CacheDir == "" {
+		return nil, time.Time{}, false
+	}
 	data, err := os.ReadFile(c.cachePath(symbol))
 	if err != nil {
 		return nil, time.Time{}, false
@@ -89,8 +92,12 @@ func (c *Client) saveCache(s *Series, from time.Time) {
 	c.writeCacheFile(c.cachePath(s.Symbol), data)
 }
 
-// writeCacheFile writes data atomically, creating the cache directory on demand.
+// writeCacheFile writes data atomically, creating the cache directory on
+// demand. A cache-less client (empty CacheDir) never touches the disk.
 func (c *Client) writeCacheFile(path string, data []byte) {
+	if c.CacheDir == "" {
+		return
+	}
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
 		c.Logf("warning: cache directory unusable: %v", err)
 		return
