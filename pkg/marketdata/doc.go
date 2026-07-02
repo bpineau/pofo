@@ -8,7 +8,7 @@
 // currency conversion, i.e. the exact per-asset pipeline of the pofo CLI:
 //
 //	client := marketdata.NewClient(marketdata.DefaultCacheDir())
-//	s, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
+//	s, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 //
 // Every step stays independently reachable (Fetch, ReadSimdataFS,
 // ExtendBack, ConvertCurrency, Trim) for callers that need to deviate.

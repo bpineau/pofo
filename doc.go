@@ -44,11 +44,12 @@
 // pkg/optimize and pkg/suggest. The high-level path is three calls, each
 // step staying independently reachable for custom pipelines:
 //
+//	ctx := context.Background()
 //	client := marketdata.NewClient(marketdata.DefaultCacheDir())
 //	spec, _ := portfolio.ParseFile("p.txt")
 //	p, _ := portfolio.Build(spec, portfolio.BuildOptions{
 //		Fetch: func(id string) (*marketdata.Series, error) {
-//			return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+//			return client.FetchExtended(ctx, id, marketdata.FetchOptions{Currency: "EUR"})
 //		},
 //	})
 //	sim, _ := portfolio.Simulate(p, 90)
