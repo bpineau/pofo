@@ -1141,13 +1141,16 @@ func fetchAsset(ctx context.Context, c *marketdata.Client, id string, opt *optio
 // inflationSeries returns the consumer-price index used to deflate nominal
 // returns into real (purchasing-power) ones for the base currency, and whether
 // one is available. The euro is deflated by French HICP (^HICP-FR, the long
-// bundled series, ~1955→); other currencies have no wired CPI yet, so their
-// real drawdown/TTR columns are simply omitted.
+// bundled series, ~1955→), the dollar by the US CPI (^CPI-US, bundled from
+// 1913); other currencies have no wired CPI yet, so their real drawdown/TTR
+// columns are simply omitted.
 func inflationSeries(ctx context.Context, c *marketdata.Client, currency string, from time.Time) (*marketdata.Series, bool) {
 	sym := ""
 	switch strings.ToUpper(strings.TrimSpace(currency)) {
 	case "EUR":
 		sym = "^HICP-FR"
+	case "USD":
+		sym = "^CPI-US"
 	}
 	if sym == "" {
 		return nil, false
@@ -1389,7 +1392,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		"Monthly volatility and variance ratio (Lo-MacKinlay): the monthly figure annualizes the standard deviation of month-end returns, and the ratio divides the monthly annualized variance by the daily one. It exposes the autocorrelation the single-frequency stats hide: ≈1 means returns are serially uncorrelated (daily vol is faithful), below 1 means they mean-revert (daily vol overstates the risk realized over months), above 1 means they trend (daily vol understates it). Read it as complementary to the rolling-CAGR and drawdown columns, and note the small-sample caveat: a month-end series holds only ~12 points per year, so over short common periods the monthly figures are noisier point estimates than the daily ones.",
 		"Max Drawdown, Ulcer and TTR on daily closes, harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
 		"TTR: duration of the longest stretch spent below a previous peak (peak to recovery).",
-		"Real Max Drawdown / TTR real: the same measured on the inflation-adjusted series (nominal deflated by French HICP, ^HICP-FR), i.e. in purchasing power. Inflation deepens drawdowns and lengthens recoveries; the nominal figures understate the pain a spender actually feels. Shown for EUR reports only.",
+		"Real Max Drawdown / TTR real: the same measured on the inflation-adjusted series (nominal deflated by French HICP ^HICP-FR for EUR reports, by the US CPI ^CPI-US for USD ones), i.e. in purchasing power. Inflation deepens drawdowns and lengthens recoveries; the nominal figures understate the pain a spender actually feels.",
 	}...)
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
