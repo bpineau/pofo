@@ -60,6 +60,24 @@ func Example_fetchExtended() {
 		series.SimulatedBefore.Format("2006-01-02"))
 }
 
+// ExampleClient_Latest shows the one-call answer to "what is this asset worth
+// right now": the live Yahoo market price when the instrument is Yahoo-quoted
+// (Quote.Live true), otherwise its last daily close or fund NAV.
+// (Not run: requires the network.)
+func ExampleClient_Latest() {
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+	q, err := client.Latest(context.Background(), "VWCE")
+	if err != nil {
+		panic(err)
+	}
+	freshness := "close of"
+	if q.Live {
+		freshness = "live at"
+	}
+	fmt.Printf("%.2f %s (%s %s)\n", q.Price, q.Currency, freshness, q.Time.Format("2006-01-02 15:04"))
+}
+
 // Align merges trading calendars: the union of dates from start on, with
 // each series' level forward-filled across its own non-trading days.
 func ExampleAlign() {
