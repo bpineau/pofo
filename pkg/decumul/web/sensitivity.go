@@ -42,6 +42,25 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 		{"Horizon -5 y", func(p decumul.Plan) decumul.Plan { p.Years -= 5; return p }},
 		{"Buffer +2 y", func(p decumul.Plan) decumul.Plan { p.Buffer.Years += 2; return p }},
 		{"Cut 20% in downturns", func(p decumul.Plan) decumul.Plan { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.20}; return p }},
+		{"Pension +500 €/m", func(p decumul.Plan) decumul.Plan {
+			p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: 6000})
+			return p
+		}},
+		{"Side income 12 k€ ×8 y", func(p decumul.Plan) decumul.Plan {
+			p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, ToYear: 8, Annual: 12000})
+			return p
+		}},
+		{"Also cut above WR 3.6%", func(p decumul.Plan) decumul.Plan {
+			p.Flex.WRThreshold = 0.036
+			if p.Flex.Cut == 0 {
+				p.Flex.Cut = 0.15
+			}
+			return p
+		}},
+		{"Ratchet lifestyle up when rich", func(p decumul.Plan) decumul.Plan {
+			p.Ratchet = decumul.Ratchet{Trigger: 1.2, Step: 0.10 * p.NeedAnnual, Cap: 1.2 * p.NeedAnnual, Cooldown: 2, MaxWR: 0.022}
+			return p
+		}},
 	}
 
 	bars := make([]chart.Bar, 0, len(nudges))
