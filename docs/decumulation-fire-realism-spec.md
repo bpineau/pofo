@@ -1,6 +1,8 @@
 # Decumulation / FIRE — realism & conservatism spec
 
-Status: spec, not yet scheduled (2026-06-29).
+Status: DONE (2026-06-29). W1 (flex cut off by default), W2 (honest return
+defaults + conservative-prior toggle), W3 (sequence risk + fat left tail) and
+W4 (horizon/longevity nudge) all shipped, see the per-section markers below.
 
 Companion to `decumulation-fire-design.md` and `decumulation-fire-followups.md`.
 This spec captures work to make the FIRE explorer's headline ruin figures

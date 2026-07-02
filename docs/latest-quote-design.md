@@ -2,6 +2,10 @@
 
 Date: 2026-06-28
 
+Status: NOT IMPLEMENTED (superseded). Never built; the real-time valuation need
+is now met by the finador integration (`Series.At` + `Raw` closes). See the
+status note in `latest-quote-plan.md`.
+
 ## Context
 
 pofo can fetch a daily history (Fetch), today's intraday path (Intraday), and
