@@ -1,13 +1,7 @@
 /* FIRE explorer — view styles on the shared "warm study" theme.
-   Rich, cosy, full-width; readable sans (no monospace); big legible charts. */
-
-/* ---- top disclosures: side by side, but an OPEN one spans the full width
-   so it never leaves a lonely white square beside it. ---------------------- */
-.folds{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.4rem;align-items:start}
-.folds>details[open]{grid-column:1 / -1}
-@media (max-width:820px){.folds{grid-template-columns:1fr}}
-.caveat .disclosure-body ul{margin:.5rem 0 .2rem;padding-left:1.15rem}
-.caveat .disclosure-body li{margin:.3rem 0}
+   A dense two-column desk: a sticky control rail on the left, a long
+   numbered analysis column on the right, and a sticky plan bar that keeps
+   the live verdict in view however deep the page is scrolled. */
 
 /* ---- hero risk panel ----------------------------------------------------- */
 .hero{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
@@ -20,16 +14,15 @@
   line-height:1.2;letter-spacing:-.005em}
 #verdict:empty::before{content:"computing…";color:var(--muted);font-family:var(--sans);font-size:1rem}
 .herobar{margin-left:auto;display:flex;align-items:center;gap:1.1rem;font-size:.9rem;color:var(--ink-soft)}
-.herobar .tgt{white-space:nowrap;font-weight:500}
+.herobar .tgt{white-space:nowrap;font-weight:500;cursor:help}
 .herobar .tgt input{width:3.8rem;font-size:1rem;font-variant-numeric:tabular-nums;padding:.2rem .35rem;
   border:1px solid var(--line-strong);border-radius:8px;background:var(--surface);color:var(--ink)}
 #confidence{font-size:.82rem;color:var(--ink-soft);cursor:help;border-bottom:1px dotted var(--line-strong)}
 
-.hero-models{padding:.9rem 1.3rem .4rem}
+.hero-models{padding:.9rem 1.3rem .4rem;overflow-x:auto}
 .hero-models .eyebrow{display:block;margin-bottom:.6rem;color:var(--ink-soft);font-weight:600}
 
-/* risk-spectrum matrix: readable sans figures, ruin cells graded, a green→red
-   rail under the headers encoding optimistic→catastrophic ordering */
+/* risk-spectrum matrix: ruin cells graded, a green→red rail under the headers */
 .modeltab{border-collapse:separate;border-spacing:0;width:100%;font-size:.92rem}
 .modeltab th,.modeltab td{padding:.45rem .6rem;text-align:right;font-variant-numeric:tabular-nums}
 .modeltab thead th{font-size:.82rem;font-weight:650;color:var(--ink);white-space:nowrap;cursor:help;
@@ -54,42 +47,54 @@
 
 .anchor{padding:.7rem 1.3rem 1rem;font-size:.8rem;color:var(--muted);line-height:1.5;border-top:1px solid var(--line)}
 
-/* ---- wealth-path fans, 2×2, large --------------------------------------- */
-#fansGrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
-#fansGrid>.fan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  box-shadow:var(--sh-soft);padding:.5rem .6rem;min-width:0}
-@media (max-width:900px){#fansGrid{grid-template-columns:1fr}}
+/* ---- the plan bar: sticky condensed verdict ------------------------------- */
+#planbar{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:1rem;
+  margin:0 calc(-1*clamp(1rem,2.4vw,2.2rem));padding:.5rem clamp(1rem,2.4vw,2.2rem);
+  background:color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter:blur(6px);border-bottom:1px solid var(--line-strong);
+  box-shadow:0 6px 18px -14px rgba(42,35,31,.5)}
+#planbar[hidden]{display:none}
+#planbar .mark{font-weight:800;font-size:.9rem;color:var(--ink)}
+#planbar .mark b{color:var(--accent)}
+#planbar .spacer{flex:1}
+#planbar-verdict{font-family:var(--serif);font-weight:600;font-size:.98rem;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#planbar-beads{display:flex;gap:.3rem;cursor:help}
+#planbar-beads i{width:.85rem;height:.85rem;border-radius:50%;display:inline-block;
+  box-shadow:inset 0 0 0 1px rgba(42,35,31,.18)}
 
-/* ---- risk curves + detail charts ---------------------------------------- */
-#riskgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
-#charts{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem;margin-top:.6rem}
-#riskgrid>div,#charts>div{min-width:0}
-@media (max-width:900px){#riskgrid,#charts{grid-template-columns:1fr}}
+/* ---- deck: sticky rail + analysis column --------------------------------- */
+.deck{display:grid;grid-template-columns:minmax(280px,340px) 1fr;gap:1.4rem;margin-top:1.4rem;
+  align-items:start}
+@media (max-width:1020px){.deck{grid-template-columns:1fr}}
 
-#note:not(:empty){color:#8a5f11;background:#f7efdb;border:1px solid #e6d3a3;border-radius:var(--r-sm);
-  padding:.6rem .9rem;font-size:.88rem;margin:.5rem 0 1rem}
-#modelhelp:not(:empty){color:var(--ink-soft);background:var(--surface-2);border:1px solid var(--line);
-  border-radius:var(--r-sm);padding:.5rem .8rem;font-size:.86rem;margin:.6rem 0}
+#rail{position:sticky;top:3rem;max-height:calc(100vh - 3.6rem);overflow-y:auto;
+  scrollbar-width:thin;padding-bottom:1rem}
+@media (max-width:1020px){#rail{position:static;max-height:none}}
 
-/* ---- detail metric cards ------------------------------------------------- */
-#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:.8rem;margin:.3rem 0 1.2rem}
-#cards .card{padding:.7rem .9rem}
-#cards .k{font-size:.72rem;letter-spacing:.02em;color:var(--ink-soft)}
-#cards .v{font-size:1.5rem;font-weight:650;font-variant-numeric:tabular-nums;color:var(--ink);
-  margin-top:.15rem;font-family:var(--serif)}
+#controls{display:flex;flex-direction:column;gap:.9rem;margin:0}
+.group{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);
+  box-shadow:var(--sh-soft);padding:.55rem .8rem .8rem;margin:0;display:flex;
+  flex-direction:column;gap:.55rem;min-width:0}
+.group legend{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--accent-ink);padding:0 .4rem;margin-left:-.2rem}
 
-/* ---- controls ------------------------------------------------------------ */
-#controls{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem 1.1rem;margin:.2rem 0}
-@media (max-width:720px){#controls{grid-template-columns:repeat(2,1fr)}}
-.ctl{display:flex;flex-direction:column;font-size:.82rem;color:var(--ink-soft);gap:.15rem}
+.ctl{display:flex;flex-direction:column;font-size:.8rem;color:var(--ink-soft);gap:.12rem}
 .ctl .lab{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem}
 .ctl .lab>span:first-child{line-height:1.2}
 .ctl .val{font-variant-numeric:tabular-nums;color:var(--ink);font-weight:700;white-space:nowrap}
 .ctl input[type=range]{width:100%;margin:0;accent-color:var(--accent)}
 .ctl.span{grid-column:1/-1}
-.ctl.chk{flex-direction:row;align-items:center;gap:.5rem;font-size:.88rem;color:var(--ink);
-  padding:.45rem .7rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm)}
-.ctl.chk input{accent-color:var(--accent);width:1rem;height:1rem}
+.ctl.chk{flex-direction:row;align-items:center;gap:.5rem;font-size:.83rem;color:var(--ink);
+  padding:.4rem .6rem;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--r-sm)}
+.ctl.chk input{accent-color:var(--accent);width:.95rem;height:.95rem;flex:none}
+
+/* preset chips */
+.chips .chiprow{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.15rem}
+.chips button{font:inherit;font-size:.76rem;font-weight:600;color:var(--accent-ink);
+  background:var(--accent-wash);border:1px solid #e3c9b8;border-radius:999px;
+  padding:.18rem .65rem;cursor:pointer}
+.chips button:hover{background:var(--surface);border-color:var(--accent)}
 
 /* allocation bar */
 .allocbar{position:relative;height:36px;border-radius:var(--r-sm);overflow:hidden;background:var(--surface-2);
@@ -103,6 +108,45 @@
   background:rgba(255,253,249,.95);box-shadow:0 0 0 1px rgba(42,35,31,.35)}
 .alloclegend{display:flex;flex-wrap:wrap;gap:.2rem .9rem;margin-top:.35rem;font-size:.76rem;color:var(--ink-soft)}
 .alloclegend i{display:inline-block;width:.75rem;height:.75rem;border-radius:3px;margin-right:.3rem;vertical-align:middle}
+
+/* ---- analysis column ------------------------------------------------------ */
+#analysis{min-width:0}
+#analysis .section-head:first-child{margin-top:.2rem}
+.section-lede{color:var(--ink-soft);font-size:.9rem;max-width:80ch;margin:-.4rem 0 .9rem}
+
+/* wealth-path fans, 2×2 */
+#fansGrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+#fansGrid>.fan{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh-soft);padding:.5rem .6rem;min-width:0}
+@media (max-width:1280px){#fansGrid{grid-template-columns:1fr}}
+
+/* two-up rows and chart+cards pairings */
+.duo{display:grid;grid-template-columns:3fr 2fr;gap:1.1rem;align-items:start}
+.duo>div{min-width:0}
+.stack{display:flex;flex-direction:column;gap:1.1rem;min-width:0}
+#riskgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+#riskgrid>div{min-width:0}
+@media (max-width:1280px){.duo,#riskgrid{grid-template-columns:1fr}}
+
+/* card columns/rows beside charts */
+.cardcol{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;align-content:start}
+.cardrow{display:grid;grid-template-columns:repeat(auto-fill,minmax(9.5rem,1fr));gap:.8rem}
+.cardcol .card,.cardrow .card{padding:.7rem .9rem}
+.cardcol .k,.cardrow .k,#cards .k{font-size:.72rem;letter-spacing:.02em;color:var(--ink-soft)}
+.cardcol .v,.cardrow .v,#cards .v{font-size:1.35rem;font-weight:650;font-variant-numeric:tabular-nums;
+  color:var(--ink);margin-top:.15rem;font-family:var(--serif)}
+
+#note:not(:empty){color:#8a5f11;background:#f7efdb;border:1px solid #e6d3a3;border-radius:var(--r-sm);
+  padding:.6rem .9rem;font-size:.88rem;margin:.5rem 0 1rem}
+
+/* detail metric cards */
+#cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(10.5rem,1fr));gap:.8rem;margin:.3rem 0 1.4rem}
+#cards .card{padding:.7rem .9rem}
+
+/* method fold */
+.caveat{margin:1.2rem 0 0}
+.caveat .disclosure-body ul{margin:.5rem 0 .2rem;padding-left:1.15rem}
+.caveat .disclosure-body li{margin:.3rem 0}
 
 /* ---- tooltip ------------------------------------------------------------- */
 #tip{position:fixed;display:none;z-index:50;max-width:26rem;padding:.55rem .7rem;border-radius:9px;
