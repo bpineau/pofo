@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"time"
@@ -57,18 +58,18 @@ func (s *IntradaySeries) Last() IntradayPoint {
 // Yahoo symbol, returns ErrNotCovered. Intraday does not perform a network
 // resolution: it reuses the symbol Fetch already learned (the bundled catalog
 // plus the on-disk resolution cache). For an unseen ISIN, call Fetch first.
-func (c *Client) Intraday(id string) (*IntradaySeries, error) {
-	symbol, ok := c.yahooSymbol(id)
+func (c *Client) Intraday(ctx context.Context, id string) (*IntradaySeries, error) {
+	symbol, ok := c.yahooSymbol(ctx, id)
 	if !ok {
 		return nil, fmt.Errorf("%s: %w", id, ErrNotCovered)
 	}
-	return c.fetchYahooIntraday(symbol)
+	return c.fetchYahooIntraday(ctx, symbol)
 }
 
 // yahooSymbol maps a user identifier to a Yahoo symbol without any resolution
 // network call: a plain ticker is itself, an ISIN is covered only when its
 // cached or catalog resolution already points at Yahoo.
-func (c *Client) yahooSymbol(id string) (string, bool) {
+func (c *Client) yahooSymbol(ctx context.Context, id string) (string, bool) {
 	canonical := CanonicalID(id)
 	// Match the ISIN shape directly rather than calling IsISIN: an ISIN-shaped
 	// identifier must route to the resolution path even when its check digit is

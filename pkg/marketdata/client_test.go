@@ -1,7 +1,9 @@
 package marketdata
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -66,7 +68,7 @@ func TestHistoryFetchParseAndCache(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	s, err := c.History("VOO", from)
+	s, err := c.History(context.Background(), "VOO", from)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,7 +87,7 @@ func TestHistoryFetchParseAndCache(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
-	s2, err := c2.History("VOO", from)
+	s2, err := c2.History(context.Background(), "VOO", from)
 	if err != nil {
 		t.Fatalf("the cache should have answered: %v", err)
 	}
@@ -110,14 +112,14 @@ func TestHistoryCacheExpiry(t *testing.T) {
 	defer srv.Close()
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	if _, err := c.History("SPY", from); err != nil {
+	if _, err := c.History(context.Background(), "SPY", from); err != nil {
 		t.Fatal(err)
 	}
 	// With a negative MaxAge the cache is always stale: a new request.
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	c2.MaxAge = -time.Second
-	if _, err := c2.History("SPY", from); err != nil {
+	if _, err := c2.History(context.Background(), "SPY", from); err != nil {
 		t.Fatal(err)
 	}
 	if requests != 2 {
@@ -145,7 +147,7 @@ func TestHistoryStaleCacheFallback(t *testing.T) {
 	defer srv.Close()
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	if _, err := c.History("SPY", from); err != nil {
+	if _, err := c.History(context.Background(), "SPY", from); err != nil {
 		t.Fatal(err)
 	}
 	// Stale cache + failed refresh: the stale data must be served with a
@@ -159,7 +161,7 @@ func TestHistoryStaleCacheFallback(t *testing.T) {
 			warned = true
 		}
 	}
-	s, err := c2.History("SPY", from)
+	s, err := c2.History(context.Background(), "SPY", from)
 	if err != nil {
 		t.Fatalf("the stale cache should have been served: %v", err)
 	}
@@ -194,7 +196,7 @@ func TestFetchISINViaYahoo(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	s, err := c.Fetch("FR0000120271", from)
+	s, err := c.Fetch(context.Background(), "FR0000120271", from)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -206,7 +208,7 @@ func TestFetchISINViaYahoo(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
-	if s2, err := c2.Fetch("FR0000120271", from); err != nil || s2.Symbol != "IWDA.AS" {
+	if s2, err := c2.Fetch(context.Background(), "FR0000120271", from); err != nil || s2.Symbol != "IWDA.AS" {
 		t.Errorf("resolution from the cache: %+v, %v", s2, err)
 	}
 	if searches != 1 {
@@ -251,7 +253,7 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	s, err := c.Fetch("DE0007164600", from)
+	s, err := c.Fetch(context.Background(), "DE0007164600", from)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -265,7 +267,7 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
-	if s2, err := c2.Fetch("DE0007164600", from); err != nil || s2.Source != "ft" || len(s2.Points) != 80 {
+	if s2, err := c2.Fetch(context.Background(), "DE0007164600", from); err != nil || s2.Source != "ft" || len(s2.Points) != 80 {
 		t.Errorf("FT reload from the cache: %+v, %v", s2, err)
 	}
 }
@@ -294,7 +296,7 @@ func TestFetchISINPicksDeepestCandidate(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Fetch("LU0171307068", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "LU0171307068", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -334,7 +336,7 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	s, err := c.Fetch("US0378331005", from)
+	s, err := c.Fetch(context.Background(), "US0378331005", from)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -351,7 +353,7 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
-	if s2, err := c2.Fetch("US0378331005", from); err != nil || s2.Source != "morningstar" || len(s2.Points) != 70 {
+	if s2, err := c2.Fetch(context.Background(), "US0378331005", from); err != nil || s2.Source != "morningstar" || len(s2.Points) != 70 {
 		t.Errorf("Morningstar reload from the cache: %v", err)
 	}
 }
@@ -383,7 +385,7 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 
-	s, err := c.Fetch("qqzz", from)
+	s, err := c.Fetch(context.Background(), "qqzz", from)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -394,7 +396,7 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
-	if s2, err := c2.Fetch("QQZZ", from); err != nil || s2.Symbol != "QQZZ.MI" {
+	if s2, err := c2.Fetch(context.Background(), "QQZZ", from); err != nil || s2.Symbol != "QQZZ.MI" {
 		t.Errorf("ticker resolution from the cache: %+v, %v", s2, err)
 	}
 	if searches != 1 {
@@ -410,7 +412,7 @@ func TestFetchTickerUppercases(t *testing.T) {
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
-	s, err := c.Fetch("voo", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "voo", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil || s.Symbol != "VOO" {
 		t.Errorf("lowercase ticker: %+v, %v", s, err)
 	}
@@ -431,7 +433,7 @@ func TestHistoryFallsBackToStooq(t *testing.T) {
 	c, srv := newTestClient(t, dir, mux)
 	defer srv.Close()
 
-	s, err := c.History("XYZ", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.History(context.Background(), "XYZ", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -471,11 +473,39 @@ func TestFetchTickerPrefersFundOverNamesakeStock(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Fetch("SPEA", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "SPEA", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if s.Symbol != "SPEA.PA" {
 		t.Fatalf("the same-ticker ETF should have won, got %s (%s)", s.Symbol, s.Name)
+	}
+}
+
+func TestFetchCanceledContext(t *testing.T) {
+	// A server that always rate-limits: the client would normally retry
+	// with a backoff; a canceled context must abort promptly instead.
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusTooManyRequests)
+	}))
+	defer srv.Close()
+	c := NewClient(t.TempDir())
+	stubAllBases(c, srv.URL)
+	c.retryDelay = time.Hour // a non-canceling run would hang here
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	done := make(chan error, 1)
+	go func() {
+		_, err := c.Fetch(ctx, "VOO", time.Time{})
+		done <- err
+	}()
+	select {
+	case err := <-done:
+		if err == nil || !errors.Is(err, context.Canceled) {
+			t.Fatalf("err = %v, want context.Canceled", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Fetch did not honor the canceled context")
 	}
 }

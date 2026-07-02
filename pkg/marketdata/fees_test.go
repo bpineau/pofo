@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"testing"
@@ -19,7 +20,7 @@ func TestFeesFromFTFundsTearsheet(t *testing.T) {
 	defer srv.Close()
 
 	// An ISIN unknown to the catalog: goes through the FT tearsheet (EUR first).
-	ter, ok := c.Fees("FR0000120271")
+	ter, ok := c.Fees(context.Background(), "FR0000120271")
 	if !ok || ter != 1.49 {
 		t.Fatalf("Fees = %v, %v; want 1.49", ter, ok)
 	}
@@ -27,7 +28,7 @@ func TestFeesFromFTFundsTearsheet(t *testing.T) {
 	srv.Close()
 	c2 := NewClient(c.CacheDir)
 	stubAllBases(c2, srv.URL)
-	if ter, ok := c2.Fees("FR0000120271"); !ok || ter != 1.49 {
+	if ter, ok := c2.Fees(context.Background(), "FR0000120271"); !ok || ter != 1.49 {
 		t.Fatalf("Fees from the cache = %v, %v", ter, ok)
 	}
 }
@@ -36,14 +37,14 @@ func TestFeesMissRecorded(t *testing.T) {
 	mux := http.NewServeMux() // no source responds
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
-	if _, ok := c.Fees("FR0000120271"); ok {
+	if _, ok := c.Fees(context.Background(), "FR0000120271"); ok {
 		t.Fatal("unexpected fees")
 	}
 	// The miss is recorded: no new request.
 	srv.Close()
 	c2 := NewClient(c.CacheDir)
 	stubAllBases(c2, srv.URL)
-	if _, ok := c2.Fees("FR0000120271"); ok {
+	if _, ok := c2.Fees(context.Background(), "FR0000120271"); ok {
 		t.Fatal("the miss should have been cached")
 	}
 }
@@ -55,7 +56,7 @@ func TestFeesPinnedInCatalog(t *testing.T) {
 	defer srv.Close()
 	for _, e := range catalog {
 		if e.Fees > 0 {
-			if ter, ok := c.Fees(e.ID); !ok || ter != e.Fees {
+			if ter, ok := c.Fees(context.Background(), e.ID); !ok || ter != e.Fees {
 				t.Errorf("Fees(%s) = %v, %v; want %v", e.ID, ter, ok, e.Fees)
 			}
 			return

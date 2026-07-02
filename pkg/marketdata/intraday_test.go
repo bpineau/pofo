@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -38,7 +39,7 @@ func TestIntradayParse(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Intraday("VOO")
+	s, err := c.Intraday(context.Background(), "VOO")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +61,7 @@ func TestIntradayUnknownISINNotCovered(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	_, err := c.Intraday("FR0000000000")
+	_, err := c.Intraday(context.Background(), "FR0000000000")
 	if !errors.Is(err, ErrNotCovered) {
 		t.Fatalf("err = %v, want ErrNotCovered", err)
 	}
