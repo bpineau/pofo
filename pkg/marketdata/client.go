@@ -83,6 +83,13 @@ type resolution struct {
 // exchange suffix). An ISIN is resolved via the Yahoo search API, then the
 // Financial Times, then Morningstar.
 func (c *Client) Fetch(ctx context.Context, id string, from time.Time) (*Series, error) {
+	return c.fetch(ctx, id, from, false)
+}
+
+// fetch is Fetch with the close-column choice: raw asks for unadjusted
+// closes (see FetchOptions.Raw). Only Yahoo distinguishes the two views;
+// fund NAVs and rate symbols are their own raw price.
+func (c *Client) fetch(ctx context.Context, id string, from time.Time, raw bool) (*Series, error) {
 	canonical := CanonicalID(id)
 	if canonical != strings.ToUpper(strings.TrimSpace(id)) {
 		c.Logf("%s → %s", strings.ToUpper(strings.TrimSpace(id)), canonical)
@@ -94,9 +101,9 @@ func (c *Client) Fetch(ctx context.Context, id string, from time.Time) (*Series,
 		geo, _ := hicpGeo(canonical)
 		s, err = c.fetchHICP(ctx, canonical, geo, from)
 	case IsISIN(canonical):
-		s, err = c.fetchISIN(ctx, canonical, from)
+		s, err = c.fetchISIN(ctx, canonical, from, raw)
 	default:
-		s, err = c.fetchTicker(ctx, canonical, from)
+		s, err = c.fetchTicker(ctx, canonical, from, raw)
 	}
 	// A canceled context surfaces as such (errors.Is-able) instead of the
 	// per-source failure summary it caused.
@@ -137,11 +144,11 @@ func deeper(a, b *Series) bool {
 	return false
 }
 
-func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time) (*Series, error) {
-	if s, ok := c.cachedResolutionHistory(ctx, isin, from); ok {
+func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time, raw bool) (*Series, error) {
+	if s, ok := c.cachedResolutionHistory(ctx, isin, from, raw); ok {
 		return s, nil
 	}
-	s, res, failures := c.resolveBest(ctx, isin, from, "")
+	s, res, failures := c.resolveBest(ctx, isin, from, "", raw)
 	if s == nil {
 		return nil, fmt.Errorf("ISIN %s: no usable source (%s)", isin, strings.Join(failures, "; "))
 	}
@@ -152,15 +159,15 @@ func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time) (*S
 // fetchTicker downloads a plain ticker, falling back to the search-based
 // resolution (preferring listings of the same ticker on other exchanges)
 // when the direct quote is missing or degenerate.
-func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time) (*Series, error) {
-	if s, ok := c.cachedResolutionHistory(ctx, ticker, from); ok {
+func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time, raw bool) (*Series, error) {
+	if s, ok := c.cachedResolutionHistory(ctx, ticker, from, raw); ok {
 		return s, nil
 	}
-	direct, directErr := c.History(ctx, ticker, from)
+	direct, directErr := c.historyView(ctx, ticker, from, raw)
 	if directErr == nil && goodSeries(direct) {
 		return direct, nil
 	}
-	resolved, res, failures := c.resolveBest(ctx, ticker, from, ticker)
+	resolved, res, failures := c.resolveBest(ctx, ticker, from, ticker, raw)
 	if directErr != nil {
 		failures = append([]string{directErr.Error()}, failures...)
 	}
@@ -176,12 +183,12 @@ func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time)
 
 // cachedResolutionHistory serves an identifier from its cached resolution,
 // reporting false when it must be re-resolved.
-func (c *Client) cachedResolutionHistory(ctx context.Context, id string, from time.Time) (*Series, bool) {
+func (c *Client) cachedResolutionHistory(ctx context.Context, id string, from time.Time, raw bool) (*Series, bool) {
 	res, ok := c.loadResolution(id)
 	if !ok {
 		return nil, false
 	}
-	s, err := c.historyForResolution(ctx, id, res, from)
+	s, err := c.historyForResolution(ctx, id, res, from, raw)
 	if err == nil && goodSeries(s) {
 		return s, true
 	}
@@ -211,7 +218,7 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // search candidate (same-ticker listings and fund entries first), then the
 // Financial Times when years remain uncovered, then a Morningstar fund id
 // obtained from Boursorama as a last resort.
-func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string) (*Series, resolution, []string) {
+func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string, raw bool) (*Series, resolution, []string) {
 	// Candidates compete in tiered slots so that the right instrument beats
 	// the deep one: a young same-ticker ETF must win against a namesake
 	// stock (SPEA the PEA ETF vs Saipem SpA) and against a fuzzy-matched
@@ -281,7 +288,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			continue
 		}
 		tried[q.Symbol] = true
-		s, herr := c.History(ctx, q.Symbol, from)
+		s, herr := c.historyView(ctx, q.Symbol, from, raw)
 		if herr != nil {
 			failures = append(failures, fmt.Sprintf("yahoo %s: %v", q.Symbol, herr))
 			continue
@@ -295,7 +302,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	}
 	if !covered() {
 		if res, ferr := c.ftSearch(ctx, query); ferr == nil {
-			if s, herr := c.historyFT(ctx, query, res, from); herr == nil {
+			if s, herr := c.historyFT(ctx, query, res, from, raw); herr == nil {
 				consider(s, res, true, matchesBase(res.Symbol))
 			} else {
 				failures = append(failures, fmt.Sprintf("ft: %v", herr))
@@ -307,7 +314,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	if s, _ := preferred(); !goodSeries(s) {
 		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr == nil {
 			res := resolution{Source: "morningstar", Symbol: msid, Name: name}
-			if s, herr := c.historyMS(ctx, query, res, from); herr == nil {
+			if s, herr := c.historyMS(ctx, query, res, from, raw); herr == nil {
 				consider(s, res, true, false)
 			} else {
 				failures = append(failures, fmt.Sprintf("morningstar %s: %v", msid, herr))
@@ -344,18 +351,18 @@ func rankQuotes(quotes []searchQuote, preferBase string) []searchQuote {
 
 // historyForResolution fetches the history of an already-resolved ISIN from
 // the source recorded in the resolution.
-func (c *Client) historyForResolution(ctx context.Context, isin string, res resolution, from time.Time) (*Series, error) {
+func (c *Client) historyForResolution(ctx context.Context, isin string, res resolution, from time.Time, raw bool) (*Series, error) {
 	switch res.Source {
 	case "ft":
-		return c.historyFT(ctx, isin, res, from)
+		return c.historyFT(ctx, isin, res, from, raw)
 	case "morningstar":
-		return c.historyMS(ctx, isin, res, from)
+		return c.historyMS(ctx, isin, res, from, raw)
 	case "stooq":
-		return c.cachedHistory(ctx, "Stooq", isin, from, func() (*Series, error) {
+		return c.cachedHistory(ctx, "Stooq", isin, from, raw, func() (*Series, error) {
 			return c.fetchStooq(ctx, res.Symbol, from)
 		})
 	default:
-		s, err := c.History(ctx, res.Symbol, from)
+		s, err := c.historyView(ctx, res.Symbol, from, raw)
 		// The curated resolution name beats source metadata (e.g. Yahoo
 		// labels continuous futures with their front-month contract).
 		if err == nil && res.Name != "" {
@@ -405,12 +412,20 @@ func (c *Client) saveResolution(isin string, res resolution) {
 // today. Results come from the on-disk cache when fresh enough, otherwise
 // from Yahoo Finance, with Stooq as a fallback source.
 func (c *Client) History(ctx context.Context, symbol string, from time.Time) (*Series, error) {
+	return c.historyView(ctx, symbol, from, false)
+}
+
+// historyView is History with the close-column choice. Raw series live
+// under their own cache identity ("SYMBOL~raw"): the price-cleaning passes
+// may drop or repair points differently per view, so the views never share
+// a file.
+func (c *Client) historyView(ctx context.Context, symbol string, from time.Time, raw bool) (*Series, error) {
 	symbol = strings.ToUpper(strings.TrimSpace(symbol))
-	key := symbol + "|" + from.Format("2006-01-02")
+	key := viewKey(symbol, raw) + "|" + from.Format("2006-01-02")
 	if s, ok := c.memoized(key); ok {
 		return s, nil
 	}
-	s, err := c.history(ctx, symbol, from)
+	s, err := c.history(ctx, symbol, from, raw)
 	if err != nil {
 		return nil, err
 	}
@@ -419,29 +434,38 @@ func (c *Client) History(ctx context.Context, symbol string, from time.Time) (*S
 	return s, nil
 }
 
-func (c *Client) history(ctx context.Context, symbol string, from time.Time) (*Series, error) {
-	if s, ok := c.loadCache(symbol, from); ok {
+// viewKey is the cache and memoization identity of a series view.
+func viewKey(id string, raw bool) string {
+	if raw {
+		return id + "~raw"
+	}
+	return id
+}
+
+func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw bool) (*Series, error) {
+	cacheID := viewKey(symbol, raw)
+	if s, ok := c.loadCache(cacheID, from); ok {
 		return s, nil
 	}
 	c.Logf("downloading %s…", symbol)
-	s, yahooErr := c.fetchYahoo(ctx, symbol, from)
+	s, yahooErr := c.fetchYahoo(ctx, symbol, from, raw)
 	if yahooErr != nil {
 		var stooqErr error
 		s, stooqErr = c.fetchStooq(ctx, symbol, from)
 		if stooqErr != nil {
 			err := fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr)
-			return c.staleFallback(ctx, symbol, from, err)
+			return c.staleFallback(ctx, cacheID, from, err)
 		}
 		c.Logf("%s fetched via stooq (prices not dividend-adjusted)", symbol)
 	}
 	if len(s.Points) == 0 {
-		return c.staleFallback(ctx, symbol, from, fmt.Errorf("no quotes returned for %s", symbol))
+		return c.staleFallback(ctx, cacheID, from, fmt.Errorf("no quotes returned for %s", symbol))
 	}
 	if !isRateSymbol(symbol) {
 		s.Points = dropDropouts(s.Points)   // strip provider placeholders/bad prints
 		s.Points = mendScaleBreak(s.Points) // repair a single denomination break
 	}
-	c.saveCache(s, from)
+	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
 }
@@ -461,28 +485,29 @@ func (c *Client) staleFallback(ctx context.Context, symbol string, from time.Tim
 
 // historyFT returns the daily history of an FT-resolved instrument, cached
 // under its original identifier.
-func (c *Client) historyFT(ctx context.Context, id string, res resolution, from time.Time) (*Series, error) {
-	return c.cachedHistory(ctx, "FT", id, from, func() (*Series, error) {
+func (c *Client) historyFT(ctx context.Context, id string, res resolution, from time.Time, raw bool) (*Series, error) {
+	return c.cachedHistory(ctx, "FT", id, from, raw, func() (*Series, error) {
 		return c.fetchFT(ctx, id, res, from)
 	})
 }
 
 // historyMS returns the daily history of a Morningstar-resolved fund, cached
 // under its original identifier.
-func (c *Client) historyMS(ctx context.Context, id string, res resolution, from time.Time) (*Series, error) {
-	return c.cachedHistory(ctx, "Morningstar", id, from, func() (*Series, error) {
+func (c *Client) historyMS(ctx context.Context, id string, res resolution, from time.Time, raw bool) (*Series, error) {
+	return c.cachedHistory(ctx, "Morningstar", id, from, raw, func() (*Series, error) {
 		return c.fetchMorningstar(ctx, id, res, from)
 	})
 }
 
 // cachedHistory wraps a downloader with the memoization and on-disk cache
 // shared by every non-Yahoo source, keyed by the original identifier.
-func (c *Client) cachedHistory(ctx context.Context, source, id string, from time.Time, fetch func() (*Series, error)) (*Series, error) {
-	key := source + ":" + id + "|" + from.Format("2006-01-02")
+func (c *Client) cachedHistory(ctx context.Context, source, id string, from time.Time, raw bool, fetch func() (*Series, error)) (*Series, error) {
+	cacheID := viewKey(id, raw)
+	key := source + ":" + cacheID + "|" + from.Format("2006-01-02")
 	if s, ok := c.memoized(key); ok {
 		return s, nil
 	}
-	if s, ok := c.loadCache(id, from); ok {
+	if s, ok := c.loadCache(cacheID, from); ok {
 		c.memoize(key, s)
 		return s, nil
 	}
@@ -492,14 +517,14 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 		err = fmt.Errorf("no %s quotes for %s", source, id)
 	}
 	if err != nil {
-		s, err = c.staleFallback(ctx, id, from, err)
+		s, err = c.staleFallback(ctx, cacheID, from, err)
 		if err != nil {
 			return nil, err
 		}
 		c.memoize(key, s)
 		return s, nil
 	}
-	c.saveCache(s, from)
+	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	c.memoize(key, s)
 	return s, nil

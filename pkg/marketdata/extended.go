@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"context"
+	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -50,6 +51,13 @@ type FetchOptions struct {
 	// currency. A series whose currency is unknown passes through
 	// unchanged.
 	Currency string
+
+	// Raw asks for unadjusted closes: split-adjusted but with dividends
+	// NOT reinvested (the price actually traded), instead of the default
+	// adjusted (total-return) closes. Pair it with Series.Dividends to
+	// account for income separately. Raw combined with a SIM suffix is an
+	// error: simulated histories are total-return by construction.
+	Raw bool
 }
 
 // FetchExtended fetches an asset the way the pofo CLI does: Fetch, then for
@@ -69,8 +77,11 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 	if opt.NoSim {
 		wantSim = false
 	}
+	if opt.Raw && wantSim {
+		return nil, fmt.Errorf("%s: raw closes cannot be SIM-extended (simulated histories are total-return); set NoSim or drop Raw", id)
+	}
 	if !wantSim {
-		s, err := c.Fetch(ctx, base, opt.From)
+		s, err := c.fetch(ctx, base, opt.From, opt.Raw)
 		if err != nil {
 			return nil, err
 		}
@@ -155,22 +166,30 @@ func (c *Client) convertTo(ctx context.Context, s *Series, currency string, from
 }
 
 // Trim returns s restricted to [from, to]; a zero bound is open on that
-// side. When the series already fits the window it is returned as is,
-// otherwise the result is a copy with a fresh Points slice and the same
-// metadata.
+// side. Dividends are clipped to the same window. When the series already
+// fits the window it is returned as is, otherwise the result is a copy
+// with fresh slices and the same metadata.
 func Trim(s *Series, from, to time.Time) *Series {
 	if len(s.Points) == 0 ||
 		((from.IsZero() || !s.First().Date.Before(from)) &&
 			(to.IsZero() || !s.Last().Date.After(to))) {
 		return s
 	}
+	inWindow := func(d time.Time) bool {
+		return (from.IsZero() || !d.Before(from)) && (to.IsZero() || !d.After(to))
+	}
 	out := *s
 	out.Points = nil
 	for _, p := range s.Points {
-		if (!from.IsZero() && p.Date.Before(from)) || (!to.IsZero() && p.Date.After(to)) {
-			continue
+		if inWindow(p.Date) {
+			out.Points = append(out.Points, p)
 		}
-		out.Points = append(out.Points, p)
+	}
+	out.Dividends = nil
+	for _, d := range s.Dividends {
+		if inWindow(d.Date) {
+			out.Dividends = append(out.Dividends, d)
+		}
 	}
 	return &out
 }
