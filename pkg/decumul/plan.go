@@ -60,9 +60,62 @@ func (b BufferSleeve) refillCap() float64 {
 }
 
 // FlexRule cuts the year's spending by Cut (e.g. 0.25) whenever the
-// portfolio drawdown exceeds Threshold (e.g. 0.20). A zero rule is inactive.
+// portfolio drawdown exceeds Threshold (e.g. 0.20) or, when WRThreshold is
+// set, whenever the current withdrawal rate (this year's net need over the
+// portfolio value) exceeds it. The two triggers OR together, matching the
+// written-rules style "cut when drawdown > 20% or current rate > 3.6%"; a
+// zero WRThreshold keeps the drawdown-only behaviour. A zero rule is inactive.
 type FlexRule struct {
 	Threshold, Cut float64
+	WRThreshold    float64
+}
+
+// triggered reports whether the cut applies given the current drawdown and
+// the year's net need against the portfolio value.
+func (f FlexRule) triggered(dd, need, total float64) bool {
+	if dd > f.Threshold {
+		return true
+	}
+	return f.WRThreshold > 0 && total > 0 && need/total > f.WRThreshold
+}
+
+// Ratchet is a Kitces-style only-up spending rule: once total real wealth
+// exceeds Trigger times the initial capital, the spending level rises by Step
+// (real euros per year), at most once per Cooldown years and never past Cap.
+// MaxWR optionally vetoes a raise while the current withdrawal rate is above
+// it, so the level only ratchets when the rate is comfortable. Raises are
+// permanent (the level never steps back down; the flex cut still applies on
+// top in downturns). A zero Trigger or Step leaves the rule inactive.
+type Ratchet struct {
+	Trigger  float64 // raise when wealth > Trigger × initial capital (e.g. 1.2)
+	Step     float64 // real € added to the annual spending level per raise
+	Cap      float64 // ceiling on the ratcheted level (0 = none)
+	Cooldown int     // minimum years between raises (0 = none)
+	MaxWR    float64 // veto raises while spending/wealth exceeds this (0 = none)
+}
+
+// active reports whether the ratchet is configured.
+func (r Ratchet) active() bool { return r.Trigger > 0 && r.Step > 0 }
+
+// raise applies the rule for one year: given the current level, wealth,
+// initial capital, year and last raise year, it returns the (possibly raised)
+// level and the updated last raise year.
+func (r Ratchet) raise(level, total, capital0 float64, year, lastRaise int) (float64, int) {
+	switch {
+	case !r.active() || total <= 0 || total < r.Trigger*capital0:
+		return level, lastRaise
+	case year-lastRaise < r.Cooldown:
+		return level, lastRaise
+	case r.MaxWR > 0 && level/total > r.MaxWR:
+		return level, lastRaise
+	case r.Cap > 0 && level >= r.Cap:
+		return level, lastRaise
+	}
+	level += r.Step
+	if r.Cap > 0 && level > r.Cap {
+		level = r.Cap
+	}
+	return level, year
 }
 
 // Guardrails is a Guyton-Klinger-style withdrawal rule: real spending starts at
@@ -141,6 +194,16 @@ type Plan struct {
 	Tax        Tax
 	Source     scenario.Source
 	Guard      Guardrails // optional Guyton-Klinger spending rule (replaces Flex when active)
+	Ratchet    Ratchet    // optional only-up spending rule (ignored while Guard is active)
+	// Envelopes optionally splits the growth sleeve across tax wrappers
+	// (CTO/PEA/AV), drained in slice order; nil keeps the single sleeve
+	// taxed by Tax. See Envelope.
+	Envelopes []Envelope
+	// SpendSchedule optionally scales the base spending year by year (real
+	// multipliers): a slow health-cost drift ({1, 1.005, 1.010, …}) or a
+	// retirement smile (falling then rising). Years beyond the slice keep a
+	// factor of 1; nil means constant real spending.
+	SpendSchedule []float64
 	// Monthly steps the kernel monthly (RunPathMonthly) instead of annually;
 	// the Source must then yield monthly returns (Years*12 per path).
 	Monthly bool
@@ -156,9 +219,18 @@ func (p Plan) runPath(seq scenario.Sequence) PathResult {
 	return p.RunPath(seq)
 }
 
-// needAt is the net spending in a given year after active cashflows,
-// floored at 0.
-func (p Plan) needAt(year int) float64 { return p.netOf(p.NeedAnnual, year) }
+// needAt is the scheduled net spending in a given year: the base need scaled
+// by the spend schedule, minus active cashflows, floored at 0.
+func (p Plan) needAt(year int) float64 { return p.netOf(p.NeedAnnual*p.schedAt(year), year) }
+
+// schedAt is the spending multiplier for a year: SpendSchedule[year] when
+// present, 1 otherwise.
+func (p Plan) schedAt(year int) float64 {
+	if year < len(p.SpendSchedule) {
+		return p.SpendSchedule[year]
+	}
+	return 1
+}
 
 // netOf reduces a gross annual spend by the cashflows active in the year,
 // floored at 0. It lets the guardrails rule feed a dynamic spending level

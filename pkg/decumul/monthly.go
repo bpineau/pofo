@@ -20,38 +20,24 @@ import (
 // This is a distinct kernel from RunPath (the validated annual reference); it
 // has its own validation tests.
 func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
-	tax := p.Tax
-	if tax == nil {
-		tax = CTOFlatTax{Rate: 0}
-	}
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
 		buffer = p.Capital
 	}
-	growth := p.Capital - buffer
-	cost := growth
+	pks := pocketOps(p.newPockets(p.Capital - buffer))
 
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
 	bufferStep := math.Pow(1+p.Buffer.RealReturn, 1.0/12) - 1
 	monthlyNeedCap := p.NeedAnnual / 12
 
-	res := PathResult{Wealth: make([]float64, p.Years+1)}
-	res.Wealth[0] = p.Capital
+	res := newPathResult(p.Capital, p.Years)
 	peak := p.Capital
-	spending := p.NeedAnnual // dynamic spending level for the guardrails rule
+	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
+	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
+	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
 
-	sellGrowth := func(want float64) float64 {
-		if want <= 0 || growth <= 0 {
-			return 0
-		}
-		gross, nc, paid := tax.GrossUp(want, growth, cost)
-		growth -= gross
-		cost = nc
-		res.TaxPaid += paid
-		return gross - paid
-	}
 	drawBuffer := func(want float64) float64 {
 		take := want
 		if take > buffer {
@@ -63,14 +49,24 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 
 	ruined := false
 	for k := 0; k < p.Years && !ruined; k++ {
-		// Guardrails are a yearly decision: adjust the spending level at the
-		// start of each year against the current withdrawal rate.
+		// Guardrails, the ratchet and stateful taxes are yearly decisions:
+		// adjust them at the start of each year against the current wealth.
+		pks.newYear()
 		if p.Guard.active() {
-			spending = p.Guard.adjust(spending, growth+buffer)
+			spending = p.Guard.adjust(spending, pks.total()+buffer)
+		} else {
+			level, lastRaise = p.Ratchet.raise(level, pks.total()+buffer, p.Capital, k, lastRaise)
+		}
+		// The year's uncut reference standard, for the cut accounting: the
+		// initial level under guardrails, the ratcheted level otherwise.
+		uncut := p.needAt(k)
+		if !p.Guard.active() {
+			uncut = p.netOf(level*p.schedAt(k), k)
 		}
 		for m := range 12 {
-			total := growth + buffer
+			total := pks.total() + buffer
 			if total <= 0 {
+				res.ruinAt(k)
 				ruined = true
 				break
 			}
@@ -81,10 +77,11 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 
 			var need float64
 			if p.Guard.active() {
-				need = p.netOf(spending, k) / 12
+				need = p.netOf(spending*p.schedAt(k), k) / 12
 			} else {
-				need = p.needAt(k) / 12
-				if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
+				yearNeed := p.netOf(level*p.schedAt(k), k)
+				need = yearNeed / 12
+				if p.Flex.Cut > 0 && p.Flex.triggered(dd, yearNeed, total) {
 					need *= 1 - p.Flex.Cut
 				}
 			}
@@ -94,39 +91,37 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 			var delivered float64
 			if dd > drawTh && buffer > 0 {
 				delivered = drawBuffer(need)
-				delivered += sellGrowth(need - delivered)
+				delivered += pks.sell(need-delivered, &res.TaxPaid)
 			} else {
-				delivered = sellGrowth(need)
+				delivered = pks.sell(need, &res.TaxPaid)
 				delivered += drawBuffer(need - delivered)
-				if refill := target - buffer; refill > 0 && growth > 0 && p.Buffer.refillsAt(k) {
-					if cap := growth * refillCap / 12; refill > cap {
+				if refill := target - buffer; refill > 0 && pks.total() > 0 && p.Buffer.refillsAt(k) {
+					if cap := pks.total() * refillCap / 12; refill > cap {
 						refill = cap
 					}
 					if refill > monthlyNeedCap {
 						refill = monthlyNeedCap
 					}
-					buffer += sellGrowth(refill)
+					buffer += pks.sell(refill, &res.TaxPaid)
 				}
 			}
 			res.Withdrawn += delivered
+			res.Spend[k] += delivered
 			if delivered < need-1e-6 {
-				res.Ruined = true
+				res.ruinAt(k)
 			}
-			if growth < 0 {
-				buffer += growth
-				growth = 0
-			}
-			if growth+buffer <= 0 {
-				res.Ruined = true
+			buffer = pks.settle(buffer)
+			if pks.total()+buffer <= 0 {
+				res.ruinAt(k)
 			}
 
-			growth *= 1 + ret(returns, k*12+m)
+			pks.grow(ret(returns, k*12+m))
 			buffer *= 1 + bufferStep
 		}
-		res.Wealth[k+1] = growth + buffer
-	}
-	if ruined {
-		res.Ruined = true
+		if res.Spend[k] < uncut-1e-6 {
+			res.cutAt(k)
+		}
+		res.Wealth[k+1] = pks.total() + buffer
 	}
 	return res
 }
