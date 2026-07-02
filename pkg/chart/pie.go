@@ -68,7 +68,7 @@ func Pie(opt PieOptions, slices []Slice) string {
 	innerR := math.Round(outerR * hole)
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif">`, w, h, w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">`, w, h, w, h)
 	if opt.Title != "" && !opt.HideLegend {
 		fmt.Fprintf(&b, `<text x="%g" y="16" text-anchor="middle" font-size="13" font-weight="600" fill="#16181D">%s</text>`, cx, esc(opt.Title))
 	}

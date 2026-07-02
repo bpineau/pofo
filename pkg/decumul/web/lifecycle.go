@@ -47,7 +47,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 		dead[i] = pt.Dead * 100
 	}
 	lifeSVG := chart.StackedArea(
-		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 720, Height: 440},
+		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 900, Height: 360},
 		"Years into retirement", "% of simulated households",
 		[]chart.AreaSeries{
 			{Name: "Funded", Values: funded, Color: "#12B76A"},
@@ -69,7 +69,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 			Text:  fmt.Sprintf("%.1f%%", share*100),
 		})
 	}
-	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 480, Height: 280}, bars)
+	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
 
 	cards := lifecycleCards(e, age)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, Cards: cards}

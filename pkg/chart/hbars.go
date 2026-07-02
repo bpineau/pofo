@@ -23,7 +23,7 @@ func HBars(opt Options, bars []Bar) string {
 	zero := (x0 + x1) / 2
 
 	var sb strings.Builder
-	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
+	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">`+"\n", w, h, w, h)
 	fmt.Fprintf(&sb, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
 	if opt.Title != "" {
 		fmt.Fprintf(&sb, `<text x="8" y="22" font-size="14" font-weight="600" fill="#16181D">%s</text>`+"\n", esc(opt.Title))
