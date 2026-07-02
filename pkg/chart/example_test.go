@@ -47,6 +47,15 @@ func ExampleStyleMinimal() {
 	// false true
 }
 
+// Sparkline packs a value trail into a bare inline curve for table cells.
+func ExampleSparkline() {
+	svg := chart.Sparkline(chart.SparkOptions{Width: 72, Height: 20, Color: "#2E6E63"},
+		[]float64{100, 104, 101, 108, 112})
+	fmt.Println(strings.Count(svg, "<polyline"), strings.Contains(svg, "<text"))
+	// Output:
+	// 1 false
+}
+
 // Term plots the same series for the terminal: ANSI colors on a TTY,
 // distinct markers otherwise.
 func ExampleTerm() {
