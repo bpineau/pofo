@@ -15,11 +15,13 @@ type Series struct {
 	Color  string // CSS color; picked from a default palette when empty
 }
 
-// Options controls the rendering of a chart.
+// Options controls the rendering of a chart. The zero Style keeps the
+// default look; see Style and StyleMinimal for the available knobs.
 type Options struct {
 	Title  string
 	Width  int // pixels, defaults to 960
 	Height int // pixels, defaults to 420
+	Style  Style
 }
 
 // defaultPalette is the pofo "warm study" series palette: a copper anchor and a
@@ -48,10 +50,33 @@ func Line(opt Options, series []Series) string {
 	if h == 0 {
 		h = 420
 	}
-	multi := len(series) > 1
+	st := opt.Style
+	font := st.Font
+	if font == "" {
+		font = "-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+	}
+	fontSize := st.FontSize
+	if fontSize == 0 {
+		fontSize = 12
+	}
+	strokeW := st.StrokeWidth
+	if strokeW == 0 {
+		strokeW = 1.8
+	}
+	yTicks := st.YTicks
+	if yTicks == 0 {
+		yTicks = 6
+	}
+	tickFmt := func(v, step float64) string {
+		if st.TickFormat != nil {
+			return st.TickFormat(v)
+		}
+		return fmtTick(v, step)
+	}
+	legend := len(series) > 1 && !st.HideLegend
 	left, right, bottom := 64.0, 14.0, 32.0
 	top := 40.0
-	if multi {
+	if legend {
 		top = 64.0 // room for the legend row
 	}
 	x0, x1 := left, float64(w)-right
@@ -107,35 +132,79 @@ func Line(opt Options, series []Series) string {
 	}
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
-	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="%s">`+"\n", w, h, w, h, font)
+	switch st.Background {
+	case "none":
+	case "":
+		fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
+	default:
+		fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="%s"/>`+"\n", w, h, st.Background)
+	}
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#2A231F">%s</text>`+"\n", left, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="%d" font-weight="600" fill="#2A231F">%s</text>`+"\n", left, fontSize+4, esc(opt.Title))
 	}
 
 	// Horizontal grid and y-axis labels.
-	step := niceStep(vmax-vmin, 6)
+	step := niceStep(vmax-vmin, yTicks)
 	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
+		if !st.HideGrid {
+			fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3"/>`+"\n", x0, y, x1, y)
+		}
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="%d" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fontSize, tickFmt(v, step))
 	}
-	// Vertical grid and x-axis labels.
-	// Use the location of the first series point so intraday charts show
-	// exchange-local clock times; daily series use UTC-midnight dates, so
-	// this is a no-op for them.
+	// X-axis labels (and vertical grid). Use the location of the first series
+	// point so intraday charts show exchange-local clock times; daily series
+	// use UTC-midnight dates, so this is a no-op for them.
 	loc := time.UTC
 	if len(series) > 0 && len(series[0].Dates) > 0 {
 		loc = series[0].Dates[0].Location()
 	}
-	for _, tk := range timeTicks(time.Unix(tmin, 0).In(loc), time.Unix(tmax, 0).In(loc)) {
-		x := xAt(tk.t)
-		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#EAE1D3"/>`+"\n", x, y0, x, y1)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="12" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
+	tfrom, tto := time.Unix(tmin, 0).In(loc), time.Unix(tmax, 0).In(loc)
+	if st.CornerDates {
+		layout := "2006-01-02"
+		if d := tto.Sub(tfrom); d > 0 && d <= 36*time.Hour {
+			layout = "15:04"
+		}
+		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#6E6157">%s</text>`+"\n", x0, y1+18, fontSize, tfrom.Format(layout))
+		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x1, y1+18, fontSize, tto.Format(layout))
+	} else {
+		for _, tk := range timeTicks(tfrom, tto) {
+			x := xAt(tk.t)
+			if !st.HideGrid {
+				fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#EAE1D3"/>`+"\n", x, y0, x, y1)
+			}
+			fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="%d" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", x, y1+18, fontSize, esc(tk.label))
+		}
 	}
 	// Axes.
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
+	if !st.HideAxes {
+		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y1, x1, y1)
+		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
+	}
+
+	// Area fill under the first series (finite stretches only).
+	if st.Fill && len(plot) > 0 {
+		for _, s := range plot[:1] {
+			var pts strings.Builder
+			first, last := -1, -1
+			for j := range s.Dates {
+				if !isFinite(s.Values[j]) {
+					continue
+				}
+				if first < 0 {
+					first = j
+				}
+				last = j
+				fmt.Fprintf(&pts, "%.1f,%.1f ", xAt(s.Dates[j]), yAt(s.Values[j]))
+			}
+			if first < 0 {
+				continue
+			}
+			fmt.Fprintf(&b, `<polygon points="%s%.1f,%g %.1f,%g" fill="%s" fill-opacity="0.07"/>`+"\n",
+				pts.String(), xAt(s.Dates[last]), y1, xAt(s.Dates[first]), y1, s.Color)
+		}
+	}
 
 	// Series lines.
 	for _, s := range plot {
@@ -155,15 +224,15 @@ func Line(opt Options, series []Series) string {
 		if p.Len() == 0 {
 			continue
 		}
-		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>`+"\n", p.String(), s.Color)
+		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="%g" stroke-linejoin="round" stroke-linecap="round"/>`+"\n", p.String(), s.Color, strokeW)
 	}
 
 	// Legend (only useful with several series).
-	if multi {
+	if legend {
 		x := left
 		for _, s := range plot {
 			fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, x, s.Color)
-			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#2A231F">%s</text>`+"\n", x+17, esc(s.Name))
+			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="%d" fill="#2A231F">%s</text>`+"\n", x+17, fontSize, esc(s.Name))
 			x += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 		}
 	}
