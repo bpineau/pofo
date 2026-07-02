@@ -47,6 +47,20 @@ func ExampleBeta() {
 	// beta=2.0 ok=true
 }
 
+// TWR neutralizes external flows: a deposit is not performance. Here the
+// market gains 10 % on day 2, then a 100 deposit lands on day 3: the
+// money-agnostic return stays +10 %.
+func ExampleTWR() {
+	d0 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	dates := []time.Time{d0, d0.AddDate(0, 0, 1), d0.AddDate(0, 0, 2)}
+	values := []float64{100, 110, 210}
+	flows := []metrics.Flow{{Date: dates[2], Amount: 100}}
+	twr, ok := metrics.TWR(dates, values, flows)
+	fmt.Printf("ok=%v TWR=%.1f %%\n", ok, twr*100)
+	// Output:
+	// ok=true TWR=10.0 %
+}
+
 // IRR weighs each cash flow by its date: money invested early counts more
 // than money added late. Flows are signed from the investor's standpoint
 // (negative going in, positive coming out).

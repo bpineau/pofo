@@ -26,6 +26,18 @@
 // the autocorrelation the daily statistics hide. Returns and Mean are
 // exposed as building blocks.
 //
+// # External flows
+//
+// When a series carries external contributions and withdrawals (a savings
+// account, a wealth tracker), Compute's raw figures would mistake them for
+// performance. TWR chain-links flow-neutralized daily returns, FlowReturns
+// yields the flow-adjusted daily returns (weekend points dropped, so
+// calendar-daily forward-filled series keep an honest volatility), and
+// Volatility, Sharpe and Sortino accept those returns with an explicit
+// annual risk-free rate (Compute's convention stays rf = 0). Annualize
+// turns a cumulative return over a day span into a compound annual rate,
+// and IRR solves the money-weighted rate of the flows themselves.
+//
 // These computations are locked down by the golden package's benchmark
 // tests, which check them against external references (official S&P 500
 // TR annual returns, canonical drawdowns).
