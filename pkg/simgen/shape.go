@@ -2,6 +2,7 @@ package simgen
 
 import (
 	"math"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
@@ -18,6 +19,23 @@ import (
 // typically splices them back behind with marketdata.ExtendBack); with no
 // usable overlap the anchors are returned unchanged. Both inputs must be
 // ascending with positive closes.
+// shapedSeries returns the anchors series with the daily shape blended in
+// where the shape covers it (anchorShape) and the untouched anchors spliced
+// back in front of that. A missing shape, or one that stops short of the
+// anchors' end (a truncated fetch must not silently drop the recent
+// anchors), leaves the anchors unchanged.
+func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
+	if shape == nil || len(shape.Points) == 0 || len(anchors.Points) == 0 ||
+		shape.Last().Date.Before(anchors.Last().Date) {
+		return anchors
+	}
+	out := *anchors
+	out.Points = anchorShape(anchors.Points, shape.Points)
+	out.SimulatedBefore = time.Time{} // allow the pre-shape months back in front
+	marketdata.ExtendBack(&out, anchors)
+	return &out
+}
+
 func anchorShape(anchors, shape []marketdata.Point) []marketdata.Point {
 	// Boundary of anchor j: the first shape point on or after its date.
 	// Several anchors falling before one shape point collapse to the

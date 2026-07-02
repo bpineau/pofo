@@ -105,6 +105,21 @@ func TestMSCIWorldBlendsDailyShape(t *testing.T) {
 	}
 }
 
+func TestShapedSeriesTruncatedShapeKeepsAnchors(t *testing.T) {
+	// A shape that stops short of the anchors' end must not silently drop
+	// the recent anchors: the series stays monthly.
+	anchors := &marketdata.Series{Points: []marketdata.Point{
+		pt(2020, 1, 1, 100), pt(2020, 2, 1, 110), pt(2020, 3, 1, 99),
+	}}
+	shape := &marketdata.Series{Points: []marketdata.Point{
+		pt(2020, 1, 2, 50), pt(2020, 1, 20, 51),
+	}}
+	got := shapedSeries(anchors, shape)
+	if len(got.Points) != 3 || got.Points[2].Close != 99 {
+		t.Errorf("truncated shape: got %+v, want the anchors unchanged", got.Points)
+	}
+}
+
 func TestAnchorShapeDegenerate(t *testing.T) {
 	anchors := []marketdata.Point{pt(2020, 1, 1, 100), pt(2020, 2, 1, 110)}
 	// No shape at all: the anchors come back unchanged.

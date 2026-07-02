@@ -145,11 +145,11 @@ func TestGoldenMSCIWorld(t *testing.T) {
 	})
 }
 
-// TestGoldenGold validates XAUUSD-LBMA (London/LBMA gold fix, monthly) against
-// published nominal gold returns. The datahub series is a monthly average, so
-// the volatile 1979/1980 boundary reads a point or two below the year-end fixes;
-// the modern and long windows are validated where that averaging washes out.
-// Gold nominal: 2000s ~14-15 %/yr, since 1971 ~8 %/yr.
+// TestGoldenGold validates XAUUSD-LBMA (London/LBMA PM fix, daily since
+// 1968-04) against published nominal gold returns. The volatile 1979/1980
+// boundary is skipped (year-end fixes there are extreme prints); the modern
+// and long windows are validated. Gold nominal: 2000s ~14-15 %/yr, since
+// 1971 ~8 %/yr.
 func TestGoldenGold(t *testing.T) {
 	s := loadRefdata(t, "XAUUSD-LBMA")
 	runRefCases(t, s, []refCase{
