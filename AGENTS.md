@@ -96,9 +96,9 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Annualization: 252 trading days, zero risk-free rate, CAGR over
   365.25-day years. Comparisons with PortfolioVisualizer et al. differ for
   documented reasons (see `pkg/metrics/doc.go`).
-- Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`) are annualized percent
-  LEVELS, not prices; `^HICP-<geo>` are index levels; both chart fine but
-  never belong in a return computation directly.
+- Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`) and `^VIX` are annualized
+  percent LEVELS, not prices; `^HICP-<geo>` and `^CPI-US` are index levels;
+  all chart fine but never belong in a return computation directly.
 
 ## House rules
 
