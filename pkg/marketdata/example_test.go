@@ -62,12 +62,18 @@ func Example_fetchExtended() {
 
 // ExampleClient_Latest shows the one-call answer to "what is this asset worth
 // right now": the live Yahoo market price when the instrument is Yahoo-quoted
-// (Quote.Live true), otherwise its last daily close or fund NAV.
+// (Quote.Live true), otherwise its last daily close or fund NAV. FXRate turns
+// the quote currency into the display one.
 // (Not run: requires the network.)
 func ExampleClient_Latest() {
 	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+	ctx := context.Background()
 
-	q, err := client.Latest(context.Background(), "VWCE")
+	q, err := client.Latest(ctx, "VWCE")
+	if err != nil {
+		panic(err)
+	}
+	rate, err := client.FXRate(ctx, q.Currency, "EUR", q.Time)
 	if err != nil {
 		panic(err)
 	}
@@ -75,7 +81,8 @@ func ExampleClient_Latest() {
 	if q.Live {
 		freshness = "live at"
 	}
-	fmt.Printf("%.2f %s (%s %s)\n", q.Price, q.Currency, freshness, q.Time.Format("2006-01-02 15:04"))
+	shares := 12.0
+	fmt.Printf("%.2f EUR (%s %s)\n", shares*q.Price*rate, freshness, q.Time.Format("2006-01-02 15:04"))
 }
 
 // Align merges trading calendars: the union of dates from start on, with

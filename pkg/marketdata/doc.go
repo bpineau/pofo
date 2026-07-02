@@ -77,8 +77,10 @@
 // Yahoo-quoted, otherwise the last daily close (Quote.Live false), which for an
 // FT or Morningstar fund is its latest NAV. Like Intraday the live path is
 // stateless, so a caller valuing a portfolio repeatedly keeps its own
-// short-TTL cache; the fallback reuses the on-disk daily cache and its stale
-// fallback, so Latest still answers offline.
+// short-TTL cache; the fallback inherits the whole Fetch resilience (Stooq,
+// FT/Morningstar re-resolution, stale on-disk cache), so Latest still answers
+// through a Yahoo outage or offline. Pair it with Client.FXRate to express
+// the price in a display currency.
 //
 // # Simulated data
 //
