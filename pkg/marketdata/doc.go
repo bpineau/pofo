@@ -70,6 +70,16 @@
 // IntradayPoint.Time into Dates and IntradayPoint.Close into Values on a chart.Series
 // before passing it to chart.Line.
 //
+// # Latest quote
+//
+// Client.Latest returns the most recent price of an instrument as a Quote: the
+// live Yahoo regular-market price (Quote.Live true) when the instrument is
+// Yahoo-quoted, otherwise the last daily close (Quote.Live false), which for an
+// FT or Morningstar fund is its latest NAV. Like Intraday the live path is
+// stateless, so a caller valuing a portfolio repeatedly keeps its own
+// short-TTL cache; the fallback reuses the on-disk daily cache and its stale
+// fallback, so Latest still answers offline.
+//
 // # Simulated data
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
@@ -92,6 +102,9 @@
 //   - Client.ConvertCurrency reprices a whole Series into a target currency
 //     using daily Yahoo FX crosses; the earliest known rate is held flat
 //     before the FX history starts;
+//   - Client.Latest returns the freshest known price (a Quote) for an
+//     identifier, the live Yahoo market price when available, otherwise the
+//     last daily close;
 //   - Client.Resolve returns a Resolution describing the instrument pofo
 //     would quote for an identifier (ticker, ISIN or alias), using the catalog and
 //     on-disk cache first, then the same multi-source search Fetch uses;
