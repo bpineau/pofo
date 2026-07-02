@@ -1,5 +1,10 @@
 # Monthly sampling Implementation Plan
 
+> **Status: DONE.** Shipped: `scenario.Compounded` (monthly inner source
+> aggregated to annual) and the web monthly panel. See follow-up item 13 in
+> `decumulation-fire-followups.md`. The unchecked boxes below are the original
+> checklist, not remaining work.
+
 > Follow-up to `decumulation-fire-plan.md`. TDD, commit+push per task. Golden tests in `pkg/decumul` must stay green throughout.
 
 **Goal:** Sample the historical return models (bootstrap, cohorts) monthly and compound to the annual returns the unchanged decumul kernel expects.
