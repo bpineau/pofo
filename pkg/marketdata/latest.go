@@ -37,8 +37,9 @@ func latestFrom() time.Time { return time.Now().AddDate(-1, 0, 0) }
 // Latest degrades gracefully rather than failing. A spot request Yahoo cannot
 // serve (outage, throttling past the built-in retries and the query1/query2
 // host fallback, missing field) falls through to the daily-close path, which
-// inherits the whole Fetch resilience: the Stooq fallback for US tickers and
-// major indices, re-resolution through the Financial Times and Morningstar,
+// inherits the whole Fetch resilience: the Stooq fallback for US tickers,
+// major indices and major currency crosses, re-resolution through the
+// Financial Times and Morningstar,
 // and the on-disk cache, whose stale data still answers when every source is
 // unreachable. Quote.Live, Quote.Time and Quote.Source report what the caller
 // actually got.
