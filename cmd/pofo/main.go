@@ -1256,8 +1256,12 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	for _, r := range results {
 		first := r.sim.Dates[0].Format("2006-01-02")
 		last := r.sim.Dates[len(r.sim.Dates)-1].Format("2006-01-02")
+		// Rendered wider than the default so the full-width report shows the
+		// chart at a moderate, print-like scale rather than blown up.
 		svg := chart.Line(chart.Options{
-			Title: fmt.Sprintf("%s: base 100 from %s to %s", r.p.Name, first, last),
+			Title:  fmt.Sprintf("%s: base 100 from %s to %s", r.p.Name, first, last),
+			Width:  1200,
+			Height: 400,
 		}, []chart.Series{{Name: r.p.Name, Dates: r.sim.Dates, Values: r.sim.Values, Color: r.color}})
 
 		subtitle := fmt.Sprintf("%s → %s", first, last)
@@ -1361,7 +1365,8 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	page.OverviewHeading = heading + ": base 100 at " + page.CommonStart
 	page.CompareSVG = template.HTML(chart.Line(chart.Options{
 		Title:  title + ": base 100 at " + page.CommonStart,
-		Height: 480,
+		Width:  1200,
+		Height: 460,
 	}, cmp))
 
 	page.StatRows = buildStatRows(results, opt.benchmark)
@@ -1377,6 +1382,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}
 	page.UnderwaterSVG = template.HTML(chart.Line(chart.Options{
 		Title:  "Drawdowns (%), common period",
+		Width:  1200,
 		Height: 300,
 	}, uw))
 
@@ -1422,7 +1428,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 
 // neutralSliceColor fills the catch-all "Other" wedge of the composition pies,
 // keeping it visually distinct from the palette-colored slices.
-const neutralSliceColor = "#cbcbcb"
+const neutralSliceColor = "#C6CEDA"
 
 // breakdownPies builds the composition pies (geography, sector, asset type)
 // for a portfolio's detail section, each holding's split weighted by its

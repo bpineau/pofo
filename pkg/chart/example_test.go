@@ -71,7 +71,7 @@ func ExampleTerm_braille() {
 
 // Sparkline packs a value trail into a bare inline curve for table cells.
 func ExampleSparkline() {
-	svg := chart.Sparkline(chart.SparkOptions{Width: 72, Height: 20, Color: "#2E6E63"},
+	svg := chart.Sparkline(chart.SparkOptions{Width: 72, Height: 20, Color: "#0E9384"},
 		[]float64{100, 104, 101, 108, 112})
 	fmt.Println(strings.Count(svg, "<polyline"), strings.Contains(svg, "<text"))
 	// Output:

@@ -47,12 +47,12 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 		dead[i] = pt.Dead * 100
 	}
 	lifeSVG := chart.StackedArea(
-		chart.Options{Title: fmt.Sprintf("Alive, broke or gone — couple aged %.0f at retirement", age)},
+		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 720, Height: 440},
 		"Years into retirement", "% of simulated households",
 		[]chart.AreaSeries{
-			{Name: "Funded", Values: funded, Color: "#2E6E63"},
-			{Name: "Broke", Values: broke, Color: "#C0492F"},
-			{Name: "Gone", Values: dead, Color: "#C9BCAB"},
+			{Name: "Funded", Values: funded, Color: "#12B76A"},
+			{Name: "Broke", Values: broke, Color: "#D92D20"},
+			{Name: "Gone", Values: dead, Color: "#D5DBE5"},
 		})
 
 	// Ruin-year histogram, folded into 5-year buckets so it reads at a glance.
@@ -69,16 +69,16 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 			Text:  fmt.Sprintf("%.1f%%", share*100),
 		})
 	}
-	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)"}, bars)
+	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 480, Height: 280}, bars)
 
-	cards := lifecycleCards(e, curve, age)
+	cards := lifecycleCards(e, age)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, Cards: cards}
 }
 
 // lifecycleCards summarises the mortality-adjusted risk: the classic ruin
 // figure, the probability of ever being alive AND broke, and the odds of
 // outliving the horizon.
-func lifecycleCards(e decumul.Ensemble, curve []decumul.LifePoint, age float64) []Card {
+func lifecycleCards(e decumul.Ensemble, age float64) []Card {
 	o := e.Outcome()
 	// Probability of experiencing ruin while alive: the ruin year must be
 	// reached alive, i.e. weight each ruined path by survival to its ruin year.
@@ -96,20 +96,5 @@ func lifecycleCards(e decumul.Ensemble, curve []decumul.LifePoint, age float64) 
 		{"Ruin (ignoring mortality)", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
 		{"Ever alive and broke", fmt.Sprintf("%.1f%%", pRuinAlive*100)},
 		{"Still alive at horizon", fmt.Sprintf("%.0f%%", decumul.FrenchMortality.CoupleSurvival(age, horizon)*100)},
-		{"Broke at horizon (if alive)", brokeAtHorizon(curve)},
 	}
-}
-
-// brokeAtHorizon is the share of surviving households that are broke at the
-// last year, i.e. Broke / (Broke + Funded).
-func brokeAtHorizon(curve []decumul.LifePoint) string {
-	if len(curve) == 0 {
-		return "—"
-	}
-	last := curve[len(curve)-1]
-	alive := last.Broke + last.Funded
-	if alive <= 0 {
-		return "—"
-	}
-	return fmt.Sprintf("%.1f%%", last.Broke/alive*100)
 }
