@@ -65,14 +65,14 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
-	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
+	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#2A231F">%s</text>`+"\n", x0, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#101828">%s</text>`+"\n", x0, esc(opt.Title))
 	}
 
 	// Layers first, so the grid stays visible on top of the soft fills.
 	for i := range series {
-		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="0.55" stroke="#FFFDF9" stroke-width="1"/>`+"\n",
+		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="1"/>`+"\n",
 			bandPolygon(cum[i], cum[i+1], xAt, yAt), series[i].Color)
 	}
 
@@ -80,22 +80,22 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 	ystep := niceStep(vmax, 5)
 	for v := 0.0; v <= vmax+ystep/1e6; v += ystep {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3" stroke-opacity="0.6"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, ystep))
+		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#E9EDF3" stroke-opacity="0.6"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#667085" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, ystep))
 	}
 	// X ticks and labels.
 	for _, i := range axisTicks(steps) {
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#6E6157" text-anchor="middle">%d</text>`+"\n", xAt(i), y1+16, i)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#667085" text-anchor="middle">%d</text>`+"\n", xAt(i), y1+16, i)
 	}
 	if xLabel != "" {
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+34, esc(xLabel))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#667085" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+34, esc(xLabel))
 	}
 	if yLabel != "" {
-		fmt.Fprintf(&b, `<text x="14" y="%.1f" font-size="12" fill="#6E6157" text-anchor="middle" transform="rotate(-90 14 %.1f)">%s</text>`+"\n", (y0+y1)/2, (y0+y1)/2, esc(yLabel))
+		fmt.Fprintf(&b, `<text x="14" y="%.1f" font-size="12" fill="#667085" text-anchor="middle" transform="rotate(-90 14 %.1f)">%s</text>`+"\n", (y0+y1)/2, (y0+y1)/2, esc(yLabel))
 	}
 	// Axes.
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C6CEDA"/>`+"\n", x0, y1, x1, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C6CEDA"/>`+"\n", x0, y0, x0, y1)
 
 	// Legend row.
 	lx := x0
@@ -104,7 +104,7 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 			continue
 		}
 		fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s" fill-opacity="0.75"/>`, lx, s.Color)
-		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#2A231F">%s</text>`+"\n", lx+17, esc(s.Name))
+		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#101828">%s</text>`+"\n", lx+17, esc(s.Name))
 		lx += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 	}
 	b.WriteString("</svg>")

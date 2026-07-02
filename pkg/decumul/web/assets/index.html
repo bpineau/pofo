@@ -11,25 +11,25 @@
   <span class="mark">pofo<b>/</b>fire</span>
   <span class="ctx">decumulation robustness explorer</span>
   <span class="spacer"></span>
-  <span class="stamp">real €, net of tax — a model, not advice</span>
+  <span class="stamp">real €, net of tax · a model, not advice</span>
 </header>
 
-<!-- Hero: the live verdict and the epistemic range across return models. -->
+<!-- Hero: the live verdict on the left, the epistemic range across return
+     models on the right. Two panels, one reading: what the plan does, and
+     how much that answer depends on the lens. -->
 <section class="hero" id="hero">
   <div class="hero-verdict">
-    <div class="eyebrow">Central-case verdict</div>
+    <div class="eyebrow">Plan verdict · central case</div>
     <div id="verdict"></div>
     <div class="herobar">
-      <label class="tgt" data-help="The failure probability you accept. Every safe-spend figure, the solver menu and the planning curves are solved against this target.">Acceptable risk of ruin <input type="number" id="targetRuin" min="0.5" max="30" step="0.5" value="4">%</label>
+      <label class="tgt" data-help="The failure probability you accept. Every safe-spend figure, the solver menu and the planning curves are solved against this target.">Acceptable ruin <input type="number" id="targetRuin" min="0.5" max="30" step="0.5" value="4"><span class="unit">%</span></label>
       <span id="confidence"></span>
     </div>
   </div>
   <div class="hero-models">
-    <div class="eyebrow">Risk across return models · optimistic → catastrophic</div>
+    <div class="eyebrow">The same plan under every return model · columns ordered optimistic → catastrophic</div>
     <div id="modelstrip"></div>
   </div>
-  <div id="solvermenu"></div>
-  <p class="anchor">Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 </section>
 
 <!-- The plan bar: a condensed, sticky echo of the verdict so a slider's
@@ -51,12 +51,12 @@
 <!-- Right column: the analysis, in reading order. -->
 <main id="analysis">
 
-<div class="section-head"><span class="idx">01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model — the cone of outcomes</span></div>
+<div class="section-head"><span class="idx">01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model · the cone of outcomes</span></div>
 <p class="section-lede">Each panel is the same plan under a different lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median; red paths are simulated ruins.</p>
 <div id="fansGrid"></div>
 
 <div class="section-head"><span class="idx">02</span><h2>The spending you actually live</h2><span class="aside">what the flex rules cost in lifestyle, not in statistics</span></div>
-<p class="section-lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths — how often the cut happens, how soon, how deep and for how long.</p>
+<p class="section-lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths: how often the cut happens, how soon, how deep and for how long.</p>
 <div class="duo">
   <div id="spendingSvg" class="chart-frame"></div>
   <div id="spendingCards" class="cardcol"></div>
@@ -92,16 +92,20 @@
 <p id="note"></p>
 <div id="cards"></div>
 
+<div class="section-head"><span class="idx">07</span><h2>Reaching your target</h2><span class="aside">equivalent single moves, solved at your acceptable ruin</span></div>
+<div id="solvermenu" class="panel"></div>
+
 <details class="caveat">
-<summary>Method &amp; honest caveats — why these figures can look optimistic</summary>
+<summary>Method &amp; honest caveats · why these figures can look optimistic</summary>
 <div class="disclosure-body">
-<p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b> (e.g. Anarkulova, Cederburg &amp; O'Doherty, who find a fixed 4% rule fails far more often across a broad, century-long sample of developed markets). The main reasons, in rough order of impact:</p>
+<p>Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
+<p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b>. The main reasons, in rough order of impact:</p>
 <ul>
 <li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 02 shows what enabling it costs in lived spending.</li>
 <li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable, often post-2009 window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case is automatically blended toward the broad-sample prior when the fund history is shorter than the horizon.</li>
 <li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean to expose that risk separately from the return level.</li>
 <li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the real French multi-envelope sequencing, which is materially cheaper.</li>
-<li><b>Mortality.</b> The ruin figures ignore death by default (a 45-year horizon is survived with certainty); section 03 shows the mortality-weighted picture, which is kinder — and more honest about late-life failures.</li>
+<li><b>Mortality.</b> The ruin figures ignore death by default (a 45-year horizon is survived with certainty); section 03 shows the mortality-weighted picture, which is kinder, and more honest about late-life failures.</li>
 </ul>
 <p>For a life plan, read the pessimistic columns, keep the horizon past your life expectancy, and treat the ruin figures as ordinal (compare scenarios, don't trust decimals).</p>
 </div>

@@ -70,7 +70,7 @@ func Pie(opt PieOptions, slices []Slice) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif">`, w, h, w, h)
 	if opt.Title != "" && !opt.HideLegend {
-		fmt.Fprintf(&b, `<text x="%g" y="16" text-anchor="middle" font-size="13" font-weight="600" fill="#2A231F">%s</text>`, cx, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="16" text-anchor="middle" font-size="13" font-weight="600" fill="#101828">%s</text>`, cx, esc(opt.Title))
 	}
 
 	// Wedges, clockwise from the top (−90°).
@@ -93,8 +93,8 @@ func Pie(opt PieOptions, slices []Slice) string {
 	y := legendY
 	for _, s := range clean {
 		fmt.Fprintf(&b, `<rect x="6" y="%g" width="10" height="10" rx="2" fill="%s"/>`, y-9, s.Color)
-		fmt.Fprintf(&b, `<text x="22" y="%g" font-size="12" fill="#6E6157">%s</text>`, y, esc(s.Label))
-		fmt.Fprintf(&b, `<text x="%g" y="%g" text-anchor="end" font-size="12" fill="#6E6157" font-variant-numeric="tabular-nums">%s</text>`, float64(w)-6, y, esc(fmtPctSlice(100*s.Value/total)))
+		fmt.Fprintf(&b, `<text x="22" y="%g" font-size="12" fill="#667085">%s</text>`, y, esc(s.Label))
+		fmt.Fprintf(&b, `<text x="%g" y="%g" text-anchor="end" font-size="12" fill="#667085" font-variant-numeric="tabular-nums">%s</text>`, float64(w)-6, y, esc(fmtPctSlice(100*s.Value/total)))
 		y += rowH
 	}
 	b.WriteString(`</svg>`)
