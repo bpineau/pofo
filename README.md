@@ -242,17 +242,19 @@ svg := chart.Line(chart.Options{Title: s.Name}, []chart.Series{ser})
 for a live portfolio valuation. A Yahoo-quoted instrument yields its live
 market price (`Quote.Live == true`); any other instrument (an FT or Morningstar
 fund, whose last NAV close is its latest price) yields its last daily close
-(`Quote.Live == false`). It reuses the multi-source resolution, the on-disk
-daily cache and the stale fallback, so it answers for every asset and even
-offline.
+(`Quote.Live == false`). When Yahoo is down or throttled, the call degrades
+instead of failing: retries and a second Yahoo host first, then the daily-close
+path with its Stooq/FT/Morningstar fallbacks and, last, the stale on-disk
+cache, so it answers for every asset and even offline.
 
 ```go
 q, err := client.Latest(ctx, "VWCE")
 if err != nil {
 	// no usable quote for this identifier
 }
-value := shares * q.Price // in q.Currency; convert with client.ConvertCurrency
-_ = q.Live                // true: real-time; false: last daily close (q.Time)
+rate, _ := client.FXRate(ctx, q.Currency, "EUR", q.Time)
+value := shares * q.Price * rate // valuation in EUR
+_ = q.Live                       // true: real-time; false: last daily close (q.Time)
 ```
 
 ## Simulated data (pkg/datasets/simdata/)
