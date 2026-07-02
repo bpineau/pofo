@@ -33,12 +33,8 @@ const GROUPS = [
       "Net real pension once it starts. Simulations show this is the plan's second-biggest sensitivity."),
     r("pensionYear", "Pension starts in year", 5, 25, 1, 15, "int",
       "Years from retirement to the pension. Retiring at 52 with a pension at 67 = year 15."),
-    chips("Bridge income",
-      "Unemployment benefits (ARE) after leaving salaried work are ~2 years without touching the capital: the best sequence-risk insurance there is.",
-      [["ARE ≈ 2y", {sideAnnual: 30000, sideUntilYear: 2}],
-       ["None", {sideAnnual: 0, sideUntilYear: 0}]]),
     r("sideAnnual", "Side income /yr", 0, 40000, 1000, 0, "eur",
-      "Temporary net real income (ARE, rental, activity) subtracted from the need while it lasts."),
+      "Temporary net real income (rental, activity…) subtracted from the need while it lasts. Income covering the early years is the best sequence-risk insurance there is."),
     r("sideUntilYear", "Side income until year", 0, 20, 1, 0, "int",
       "The side income runs from year 0 up to (excluding) this year."),
   ]},
@@ -332,6 +328,31 @@ document.addEventListener("mousemove", e => {
 });
 document.addEventListener("mouseout", e => {
   if (e.target.closest("[data-help]")) tip.style.display = "none";
+});
+
+// ---------------------------------------------------------------------------
+// Chart lightbox: click any chart to view it large over the page, click
+// again (or press Escape) to come back.
+// ---------------------------------------------------------------------------
+const lightbox = document.createElement("div");
+lightbox.id = "lightbox";
+lightbox.hidden = true;
+document.body.appendChild(lightbox);
+function closeLightbox() {
+  lightbox.hidden = true;
+  lightbox.innerHTML = "";
+  document.body.classList.remove("noscroll");
+}
+document.addEventListener("click", e => {
+  if (!lightbox.hidden) { closeLightbox(); return; }
+  const frame = e.target.closest(".chart-frame, .fan");
+  if (!frame || !frame.querySelector("svg")) return;
+  lightbox.innerHTML = frame.innerHTML;
+  lightbox.hidden = false;
+  document.body.classList.add("noscroll");
+});
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !lightbox.hidden) closeLightbox();
 });
 
 // Ruin colour: a soft ramp, green (safe) through amber to red, saturating at
