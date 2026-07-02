@@ -2,6 +2,17 @@
 // prices (daily closes) from public sources, addressed by ticker, ISIN or
 // alias.
 //
+// Client.Fetch is the base entry point (resolution, download, disk cache);
+// Client.FetchExtended is the do-what-I-mean one, adding the SIM-suffix
+// history extension (bundled simulated series, long-history proxies) and
+// currency conversion, i.e. the exact per-asset pipeline of the pofo CLI:
+//
+//	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+//	s, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
+//
+// Every step stays independently reachable (Fetch, ReadSimdataFS,
+// ExtendBack, ConvertCurrency, Trim) for callers that need to deviate.
+//
 // # Resolution
 //
 // An identifier goes through the following steps. CanonicalID applies
@@ -53,7 +64,8 @@
 // (pkg/datasets/simdata/) produced by the simgen package; ExtendBack splices
 // those series, or a proxy (ProxySymbol), in front of the real quotes.
 // The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
-// decoded by SplitSim.
+// decoded by SplitSim. Client.FetchExtended packages all of this into one
+// call; the pieces stay public for custom pipelines.
 //
 // # Toolbox
 //
