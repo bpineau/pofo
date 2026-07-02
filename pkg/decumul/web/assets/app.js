@@ -1,22 +1,97 @@
-// Slider definitions: [key, label, min, max, step, default, unit].
-// unit drives how the live value is shown: pct (×100, "%"), eur, or int.
-const SLIDERS = [
-  ["capital","Capital",800000,4000000,10000,1800000,"eur"],
-  ["needAnnual","Net spending /yr",24000,84000,1000,60000,"eur"],
-  ["bufferYears","Buffer (years)",0,10,1,3,"int"],
-  ["mu","Real growth return",0.01,0.12,0.005,0.05,"pct"],
-  ["sigma","Volatility (long-horizon)",0.06,0.20,0.005,0.11,"pct"],
-  ["df","Tail df (low=fat)",3,30,1,5,"int"],
-  ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
-  ["years","Horizon (years from today)",20,60,1,45,"int"],
-  ["pensionYear","Pension from year",5,20,1,12,"int"],
-  ["pensionAnnual","Pension /yr",0,36000,1000,12000,"eur"],
-  ["flexCut","Spending cut in downturns (0 = fixed rule)",0,0.40,0.05,0,"pct"],
-  ["taxRate","Flat tax on gains",0,0.35,0.01,0.314,"pct"],
-  ["sideAnnual","Side income /yr",0,30000,1000,0,"eur"],
-  ["sideUntilYear","Side income until year",0,20,1,0,"int"],
-  ["bufferStopYear","Buffer refill stop (yr, 0=never)",0,20,1,0,"int"],
-  ["nPaths","Simulations",500,5000,500,2000,"int"],
+// FIRE explorer front-end: a grouped control rail on the left, a long
+// analysis column on the right, and a sticky plan bar echoing the live
+// verdict. All charts are server-rendered SVG; this file only wires state,
+// fetches and DOM.
+
+// ---------------------------------------------------------------------------
+// Control definitions. r() is a slider, c() a checkbox, chips() a preset row.
+// Every control carries a plain-language data-help hover.
+// ---------------------------------------------------------------------------
+const r = (key, label, min, max, step, def, unit, help) =>
+  ({kind: "range", key, label, min, max, step, def, unit, help});
+const c = (key, label, help) => ({kind: "check", key, label, help});
+const chips = (label, help, items) => ({kind: "chips", label, help, items});
+
+const GROUPS = [
+  {title: "Your situation", items: [
+    r("capital", "Deployed capital", 800000, 4000000, 10000, 1800000, "eur",
+      "Liquid capital deployed for the retirement, excluding your home and the emergency fund."),
+    r("age", "Age at retirement", 40, 70, 1, 52, "int",
+      "Age in year 0. Drives the mortality view (section 03): being broke at 61 and at 92 are different life events."),
+    r("years", "Horizon (years)", 20, 60, 1, 45, "int",
+      "Plan past your life expectancy: ruin rises steeply with the horizon (40→50y nearly doubles it)."),
+    r("needAnnual", "Net spending /yr", 24000, 84000, 1000, 60000, "eur",
+      "Real (inflation-indexed) net-of-tax household spending. 60 k€/yr = 5 000 €/month."),
+  ]},
+  {title: "Pension & side income", items: [
+    chips("Pension scenario",
+      "Three pension levels: a politically-stressed 1 000 €/m, the acquired-rights central ~1 700 €/m, and the official-simulator ~2 250 €/m (net real).",
+      [["Stress 12k", {pensionAnnual: 12000}],
+       ["Central 20.4k", {pensionAnnual: 20400}],
+       ["Official 27k", {pensionAnnual: 27000}]]),
+    r("pensionAnnual", "Pension /yr (net real)", 0, 36000, 600, 12000, "eur",
+      "Net real pension once it starts. Simulations show this is the plan's second-biggest sensitivity."),
+    r("pensionYear", "Pension starts in year", 5, 25, 1, 15, "int",
+      "Years from retirement to the pension. Retiring at 52 with a pension at 67 = year 15."),
+    chips("Bridge income",
+      "Unemployment benefits (ARE) after leaving salaried work are ~2 years without touching the capital: the best sequence-risk insurance there is.",
+      [["ARE ≈ 2y", {sideAnnual: 30000, sideUntilYear: 2}],
+       ["None", {sideAnnual: 0, sideUntilYear: 0}]]),
+    r("sideAnnual", "Side income /yr", 0, 40000, 1000, 0, "eur",
+      "Temporary net real income (ARE, rental, activity) subtracted from the need while it lasts."),
+    r("sideUntilYear", "Side income until year", 0, 20, 1, 0, "int",
+      "The side income runs from year 0 up to (excluding) this year."),
+  ]},
+  {title: "Spending policy", items: [
+    r("flexCut", "Cut in downturns (0 = fixed rule)", 0, 0.40, 0.05, 0, "pct",
+      "Reversible spending cut while the portfolio drawdown exceeds 20%. The single most powerful lever: 15% roughly halves ruin. Section 02 shows its lived cost."),
+    r("wrTrigger", "Also cut above this WR (0 = off)", 0, 0.06, 0.002, 0, "pct",
+      "Second trigger from the written rules: cut whenever the current withdrawal rate (spend / portfolio) exceeds this, e.g. 3.6%."),
+    c("guardrails", "Guyton-Klinger guardrails (replaces the cut)",
+      "Adjust spending ±10% whenever the current withdrawal rate leaves a ±20% band around the initial rate. A richer alternative to the single flex cut."),
+    c("ratchet", "Ratchet lifestyle up when rich",
+      "Only-up rule from the written rules: +10% of the base spend when real wealth exceeds 120% of the start, at most every 2 years, capped at 120% of the base, only while the current rate is below 2.2%."),
+    r("spendDrift", "Real spending drift /yr", -0.01, 0.02, 0.001, 0, "pct",
+      "Structural real drift of the need: health insurance and care costs drift upward faster than inflation (+0.3-0.5%/yr is a common planning value)."),
+    c("smile", "Retirement smile (down, plateau, up late)",
+      "Blanchett's observed shape: real spending drifts down through the go-go years, plateaus, then climbs back with late-life health costs."),
+  ]},
+  {title: "Market model", items: [
+    r("mu", "Real growth return", 0.01, 0.12, 0.005, 0.05, "pct",
+      "Arithmetic mean annual real return of the growth sleeve. Geometric ≈ μ − σ²/2, so 5%/11% ≈ 4.4% real compounding."),
+    r("sigma", "Volatility (long-horizon)", 0.06, 0.20, 0.005, 0.11, "pct",
+      "Long-horizon annual volatility (variance-ratio-consistent), lower than the 1-year headline vol. Vol matters almost as much as return: 10→12% nearly doubles ruin."),
+    r("df", "Tail df (low = fat)", 3, 30, 1, 5, "int",
+      "Student-t degrees of freedom: 3-6 = fat crash-prone tails; 30 ≈ normal."),
+    c("regime", "Sequence-risk stress (cluster bad years)",
+      "Two-state Markov source at the SAME long-run mean: bad years cluster into multi-year bears, the risk i.i.d. draws miss. The strip's Sequence-stress column always shows it; this makes it the active model for the detail charts."),
+    c("conservative", "Broad-sample prior (override the fit)",
+      "Replace the fitted μ/σ/df with cautious world-equity assumptions (~3.5% real geometric, fat tails): what broad century-long samples suggest, not this fund's history."),
+    c("monthly", "Monthly withdrawals (salary-like)",
+      "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month."),
+  ]},
+  {title: "Cash buffer", items: [
+    r("bufferYears", "Buffer (years of spending)", 0, 10, 1, 3, "int",
+      "Low-volatility pocket (cash + short euro linkers) drained when the portfolio is down >10%. Statistically the arbitrage is flat past 2-3 years; its value is behavioural and inflation matching."),
+    r("bufferReturn", "Buffer real return", -0.01, 0.05, 0.005, 0.005, "pct",
+      "Real return of the buffer: ~0% for inflation-linked, negative for pure cash."),
+    r("bufferStopYear", "Buffer refill stops in year (0 = never)", 0, 20, 1, 0, "int",
+      "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down — a bond-tent glidepath."),
+  ]},
+  {title: "Taxes & envelopes", items: [
+    r("taxRate", "CTO flat tax on gains", 0, 0.35, 0.01, 0.314, "pct",
+      "French flat tax (PFU + CEHR) on the gain share of every CTO sale. The effective rate starts low and drifts up as unrealised gains compound."),
+    r("peaCapital", "PEA envelope", 0, 400000, 5000, 0, "eur",
+      "Capital held in a PEA (>5y): withdrawals only pay 17.2% social levies on gains. Drained after the CTO."),
+    r("avCapital", "Assurance-vie envelope", 0, 500000, 5000, 0, "eur",
+      "Capital held in assurance-vie (>8y): 9 200 €/yr of realised gains tax-free for a couple, then 24.7%. Drained last."),
+    r("gainFrac", "Embedded gain at start", 0, 0.9, 0.05, 0, "pct",
+      "Unrealised gain share of the portfolio on day one. High embedded gains make every early sale taxable — set >0 for a portfolio carrying years of appreciation."),
+  ]},
+  {title: "Simulation", items: [
+    r("nPaths", "Simulated paths", 500, 5000, 500, 2000, "int",
+      "Monte-Carlo paths per model. More paths = smoother figures, slower updates."),
+  ]},
 ];
 
 const FMT = {
@@ -24,173 +99,219 @@ const FMT = {
   eur: v => Math.round(v).toLocaleString("fr-FR") + " €",
   int: v => String(Math.round(v)),
 };
-const UNIT = {};
-for (const [k, , , , , , unit] of SLIDERS) UNIT[k] = unit;
+const UNIT = {}, INTKEYS = [];
+for (const g of GROUPS) for (const it of g.items) if (it.kind === "range") {
+  UNIT[it.key] = it.unit;
+  if (it.unit === "int") INTKEYS.push(it.key);
+}
 const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
-const PAL = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#17becf"];
+const PAL = ["#B25A34","#2E6E63","#C08A2D","#7A4A63","#6E7A3A","#3E5C7E","#A8506A","#8A5A2A"];
+const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // portfolio-mode state, set once /api/meta resolves.
 let weights = null, labels = [], hasPanel = false, lastFitW = null;
 
-const cardsHTML = cards => (cards || [])
-  .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");
-
+// ---------------------------------------------------------------------------
+// Build the rail.
+// ---------------------------------------------------------------------------
 const form = document.getElementById("controls");
 const state = {};
-for (const [k, label, min, max, step, def] of SLIDERS) {
-  state[k] = def;
-  const d = document.createElement("label"); d.className = "ctl";
-  d.innerHTML = `<span class="lab"><span>${label}</span><span class="val" id="v_${k}">${fmtVal(k, def)}</span></span>
-    <input type="range" min="${min}" max="${max}" step="${step}" value="${def}" id="s_${k}">`;
-  form.appendChild(d);
+const checkEls = {};
+
+function renderRail() {
+  for (const g of GROUPS) {
+    const fs = document.createElement("fieldset");
+    fs.className = "group";
+    fs.innerHTML = `<legend>${g.title}</legend>`;
+    for (const it of g.items) fs.appendChild(buildControl(it));
+    form.appendChild(fs);
+  }
+}
+
+function buildControl(it) {
+  if (it.kind === "check") {
+    state[it.key] = false;
+    const d = document.createElement("label");
+    d.className = "ctl chk";
+    if (it.help) d.setAttribute("data-help", it.help);
+    d.innerHTML = `<input type="checkbox" id="c_${it.key}"> <span>${it.label}</span>`;
+    const input = d.querySelector("input");
+    checkEls[it.key] = input;
+    input.addEventListener("change", e => {
+      state[it.key] = e.target.checked;
+      if (it.key === "conservative") applyConservative();
+      schedule();
+    });
+    return d;
+  }
+  if (it.kind === "chips") {
+    const d = document.createElement("div");
+    d.className = "ctl chips";
+    if (it.help) d.setAttribute("data-help", it.help);
+    d.innerHTML = `<span class="lab"><span>${it.label}</span></span>`;
+    const row = document.createElement("div");
+    row.className = "chiprow";
+    for (const [text, sets] of it.items) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.textContent = text;
+      b.addEventListener("click", () => {
+        for (const [k, v] of Object.entries(sets)) setSliderVal(k, v);
+        schedule();
+      });
+      row.appendChild(b);
+    }
+    d.appendChild(row);
+    return d;
+  }
+  // range slider
+  state[it.key] = it.def;
+  const d = document.createElement("label");
+  d.className = "ctl";
+  if (it.help) d.setAttribute("data-help", it.help);
+  d.innerHTML = `<span class="lab"><span>${it.label}</span><span class="val" id="v_${it.key}">${fmtVal(it.key, it.def)}</span></span>
+    <input type="range" min="${it.min}" max="${it.max}" step="${it.step}" value="${it.def}" id="s_${it.key}">`;
   d.querySelector("input").addEventListener("input", e => {
-    state[k] = parseFloat(e.target.value);
-    document.getElementById("v_" + k).textContent = fmtVal(k, state[k]);
+    state[it.key] = parseFloat(e.target.value);
+    refreshVal(it.key);
     schedule();
   });
+  return d;
 }
+
+// refreshVal renders a slider's live value, with contextual extras (ages).
+function refreshVal(k) {
+  const el = document.getElementById("v_" + k);
+  if (!el) return;
+  let text = fmtVal(k, state[k]);
+  if (k === "pensionYear" || k === "years") text += ` (age ${Math.round(state.age + state[k])})`;
+  el.textContent = text;
+}
+function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); }
+
 function setSliderVal(k, v) {
   state[k] = v;
   const s = document.getElementById("s_" + k);
-  if (s) { s.value = v; document.getElementById("v_" + k).textContent = fmtVal(k, v); }
+  if (s) { s.value = v; refreshVal(k); }
+  if (k === "age") refreshAges();
 }
 
-// Monthly-withdrawal toggle: step the kernel monthly (salary-like) instead of
-// once a year.
-state.monthly = false;
-const monthlyCtl = document.createElement("label"); monthlyCtl.className = "ctl span chk";
-monthlyCtl.innerHTML = `<input type="checkbox" id="monthly"> <span>Monthly withdrawals (salary-like)</span>`;
-form.appendChild(monthlyCtl);
-monthlyCtl.querySelector("input").addEventListener("change", e => { state.monthly = e.target.checked; schedule(); });
+renderRail();
+refreshAges();
+document.getElementById("s_age").addEventListener("input", refreshAges);
 
-// Stress regimes: a two-state Markov source where bad years cluster, adding the
-// sequence risk and fatter left tail that i.i.d. draws miss (annual steps).
-state.regime = false;
-const regimeCtl = document.createElement("label"); regimeCtl.className = "ctl span chk";
-regimeCtl.innerHTML = `<input type="checkbox" id="regime"> <span>Sequence-risk stress: cluster bad years into drawdowns</span>`;
-form.appendChild(regimeCtl);
-regimeCtl.querySelector("input").addEventListener("change", e => { state.regime = e.target.checked; schedule(); });
-
-// Guyton-Klinger guardrails: adjust spending to a band around the initial
-// withdrawal rate, instead of the single drawdown-triggered flex cut.
-state.guardrails = false;
-const guardCtl = document.createElement("label"); guardCtl.className = "ctl span chk";
-guardCtl.innerHTML = `<input type="checkbox" id="guardrails"> <span>Guyton-Klinger guardrails (replaces flex cut)</span>`;
-form.appendChild(guardCtl);
-guardCtl.querySelector("input").addEventListener("change", e => { state.guardrails = e.target.checked; schedule(); });
-
-// Conservative broad-sample prior: override the (often rosy) fitted/default
-// mu/sigma/df with cautious, forward-looking world-equity real assumptions.
-// Lower real return, higher volatility, fatter tails than a favourable window.
-// Matches the server's Conservative column (web.consMu/consSigma/consDf): a
-// ~3.5% real geometric mean with fat tails, not an "equities barely grow" 1.4%.
+// Broad-sample prior: override the fitted mu/sigma/df with cautious values
+// matching the server's Broad-sample column, or restore the fit/defaults.
 const PRIOR = {mu: 0.045, sigma: 0.13, df: 4};
-const DEFAULT = Object.fromEntries(SLIDERS.map(([k, , , , , def]) => [k, def]));
+const DEFAULTS = {mu: 0.05, sigma: 0.11, df: 5};
 function applyReturns(src) { for (const k of ["mu", "sigma", "df"]) setSliderVal(k, src[k]); }
-state.conservative = false;
-const consCtl = document.createElement("label"); consCtl.className = "ctl span chk";
-consCtl.innerHTML = `<input type="checkbox" id="conservative"> <span>Broad-sample prior (override the fit)</span>`;
-form.appendChild(consCtl);
-consCtl.querySelector("input").addEventListener("change", e => {
-  state.conservative = e.target.checked;
+function applyConservative() {
   if (state.conservative) applyReturns(PRIOR);
   else if (hasPanel) lastFitW = null; // force a refit from the panel
-  else applyReturns(DEFAULT);
-  schedule();
-});
+  else applyReturns(DEFAULTS);
+}
 
-// --- shareable scenarios: the whole slider/model/allocation state round-trips
-// through the URL hash, so a configuration can be bookmarked or shared. ---
+// ---------------------------------------------------------------------------
+// Shareable scenarios: the whole state round-trips through the URL hash.
+// ---------------------------------------------------------------------------
+const CHECKKEYS = Object.keys(checkEls);
 const shared = new URLSearchParams(location.hash.slice(1));
 const sharedWeights = shared.has("w")
   ? shared.get("w").split(",").map(Number).filter(x => !isNaN(x)) : null;
-// Apply any shared slider values up front (portfolio-mode seeding re-applies
-// them after the fit so the shared values still win).
 function applySharedSliders() {
-  for (const [k] of SLIDERS)
+  for (const k of Object.keys(UNIT))
     if (shared.has(k)) { const v = parseFloat(shared.get(k)); if (!isNaN(v)) setSliderVal(k, v); }
 }
 applySharedSliders();
-if (shared.get("monthly") === "1") {
-  state.monthly = true;
-  monthlyCtl.querySelector("input").checked = true;
+for (const k of CHECKKEYS) {
+  if (shared.get(k) === "1") { state[k] = true; checkEls[k].checked = true; }
 }
-if (shared.get("guardrails") === "1") {
-  state.guardrails = true;
-  guardCtl.querySelector("input").checked = true;
-}
-if (shared.get("conservative") === "1") {
-  state.conservative = true;
-  consCtl.querySelector("input").checked = true;
-  applyReturns(PRIOR);
-}
-if (shared.get("regime") === "1") {
-  state.regime = true;
-  regimeCtl.querySelector("input").checked = true;
-}
+if (state.conservative) applyReturns(PRIOR);
+
 function syncURL() {
   const p = new URLSearchParams();
-  for (const [k] of SLIDERS) p.set(k, state[k]);
+  for (const k of Object.keys(UNIT)) p.set(k, state[k]);
   if (state.model) p.set("model", state.model);
-  if (state.monthly) p.set("monthly", "1");
-  if (state.guardrails) p.set("guardrails", "1");
-  if (state.conservative) p.set("conservative", "1");
-  if (state.regime) p.set("regime", "1");
+  for (const k of CHECKKEYS) if (state[k]) p.set(k, "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
 
-let timer = null, lastBody = null;
-function schedule(){ clearTimeout(timer); timer = setTimeout(run, 200); }
+// ---------------------------------------------------------------------------
+// Scheduling: a fast lane for the live views, a slow lane for the two
+// solver-heavy planning curves. A run id drops stale responses.
+// ---------------------------------------------------------------------------
+let timer = null, slowTimer = null, runId = 0;
+function schedule() {
+  clearTimeout(timer); timer = setTimeout(run, 200);
+  clearTimeout(slowTimer); slowTimer = setTimeout(runSlow, 600);
+}
+const post = (url, body) =>
+  fetch(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})
+    .then(r => r.json());
+// fresh(id) is true while no newer run started: renderers check it before
+// touching the DOM so a slow older response never overwrites a newer one.
+const fresh = id => id === runId;
+
+function body() {
+  const b = {...state};
+  for (const k of INTKEYS) b[k] = Math.round(b[k]);
+  b.targetRuin = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
+  if (weights) b.weights = weights;
+  return b;
+}
+
+let run = async function() {
+  runId++;
+  const id = runId;
+  // In portfolio mode the parametric models read mu/sigma, not the weights,
+  // so a weight change re-fits mu/sigma from the panel before computing.
+  if (weights && hasPanel && weightsChanged() && !state.conservative) {
+    try {
+      const f = await post("/api/fit", {weights});
+      if (typeof f.mu === "number") setSliderVal("mu", f.mu);
+      if (typeof f.sigma === "number") setSliderVal("sigma", f.sigma);
+      if (typeof f.df === "number") setSliderVal("df", f.df);
+    } catch (e) { /* keep the current mu/sigma on failure */ }
+    lastFitW = weights.slice();
+  }
+  const b = body();
+  renderModels(b, id);
+  renderPaths(b, id);
+  renderSolver(b, id);
+  renderFrontier(b, id);
+  renderSensitivity(b, id);
+  renderSpending(b, id);
+  renderLifecycle(b, id);
+  renderSim(b, id);
+  syncURL();
+};
+
+async function runSlow() {
+  const id = runId;
+  try {
+    const r = await post("/api/curves", body());
+    if (!fresh(id)) return;
+    setSVG("horizonSvg", r.horizonSvg);
+    setSVG("capitalSvg", r.capitalSvg);
+  } catch (e) { /* keep the previous curves */ }
+}
 
 function weightsChanged() {
   if (!weights || !lastFitW || lastFitW.length !== weights.length) return true;
   return weights.some((w, i) => Math.abs(w - lastFitW[i]) > 1e-9);
 }
 
-let run = async function(){
-  // In portfolio mode the parametric model reads mu/sigma, not the weights,
-  // so a weight change must re-fit mu/sigma from the panel before computing,
-  // otherwise dragging the allocation would not move the parametric result.
-  if (weights) {
-    state.weights = weights;
-    if (hasPanel && weightsChanged() && !state.conservative) {
-      try {
-        const resp = await fetch("/api/fit", {method:"POST",
-          headers:{"Content-Type":"application/json"}, body: JSON.stringify({weights})});
-        const f = await resp.json();
-        if (typeof f.mu === "number") setSliderVal("mu", f.mu);
-        if (typeof f.sigma === "number") setSliderVal("sigma", f.sigma);
-        if (typeof f.df === "number") setSliderVal("df", f.df);
-      } catch (e) { /* keep the current mu/sigma on failure */ }
-      lastFitW = weights.slice();
-    }
-  }
-  const body = {...state, years: Math.round(state.years),
-    pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
-    sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear),
-    targetRuin: (parseFloat(document.getElementById("targetRuin").value) || 5) / 100};
-  lastBody = body;
-  renderModels(body);   // the multi-model hero strip, in parallel with the detail sim
-  renderPaths(body);    // the wealth fan charts, one per planning model
-  renderSolver(body);   // the per-lever menu to reach the acceptable ruin
-  renderFrontier(body); // ruin vs withdrawal rate, per model
-  renderSensitivity(body); // change in ruin per controllable lever
-  const res = await fetch("/api/sim",{method:"POST",headers:{"Content-Type":"application/json"},
-    body: JSON.stringify(body)});
-  const r = await res.json();
-  document.getElementById("note").textContent = r.note || "";
-  for (const id of ["arbitrageSvg","recoverySvg"])
-    document.getElementById(id).innerHTML = r[id] || "";
-  document.getElementById("cards").innerHTML = cardsHTML(r.cards);
-  syncURL();
-};
+function setSVG(elId, svg) {
+  const el = document.getElementById(elId);
+  if (el && svg) el.innerHTML = svg;
+}
+const cardsHTML = cards => (cards || [])
+  .map(c => `<div class="card"><div class="k">${esc(c.label)}</div><div class="v">${esc(c.value)}</div></div>`).join("");
 
-// --- multi-model hero strip: ruin / safe spend / median wealth per return
-// model, the epistemic-uncertainty view that replaces a single ruin figure. ---
-const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-
-// Instant tooltip for any [data-help] element (native title has a ~1s delay).
+// ---------------------------------------------------------------------------
+// Instant tooltip for any [data-help] element.
+// ---------------------------------------------------------------------------
 const tip = document.createElement("div");
 tip.id = "tip";
 document.body.appendChild(tip);
@@ -212,19 +333,25 @@ document.addEventListener("mousemove", e => {
 document.addEventListener("mouseout", e => {
   if (e.target.closest("[data-help]")) tip.style.display = "none";
 });
-// Ruin colour: a soft tearsheet ramp, green (safe) through amber to red,
-// saturating at 30%. Kept light so the monospace figure stays readable.
+
+// Ruin colour: a soft ramp, green (safe) through amber to red, saturating at
+// 30%. Kept light so the figures stay readable.
 function ruinColor(r) {
   const x = Math.max(0, Math.min(r, 0.30)) / 0.30;
   return `hsl(${(150 - 142 * x).toFixed(0)},50%,${(91 - 5 * x).toFixed(0)}%)`;
 }
-async function renderModels(body) {
-  const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
+function beadColor(r) {
+  const x = Math.max(0, Math.min(r, 0.30)) / 0.30;
+  return `hsl(${(150 - 142 * x).toFixed(0)},55%,45%)`;
+}
+
+// ---------------------------------------------------------------------------
+// Hero strip + plan bar.
+// ---------------------------------------------------------------------------
+async function renderModels(b, id) {
   let r;
-  try {
-    r = await (await fetch("/api/models", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, targetRuin: target})})).json();
-  } catch (e) { return; }
+  try { r = await post("/api/models", b); } catch (e) { return; }
+  if (!fresh(id)) return;
   document.getElementById("verdict").textContent = r.verdict || "";
   const conf = document.getElementById("confidence");
   const cap = s => s ? s[0] + s.slice(1).toLowerCase() : "";
@@ -233,8 +360,7 @@ async function renderModels(body) {
   else conf.removeAttribute("data-help");
   const ms = r.models || [];
   const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
-  // Signature: a green→amber→red rail under the headers, encoding the models'
-  // optimistic→catastrophic ordering (left = central case, right = the tail).
+  // A green→red rail under the headers encodes the optimistic→catastrophic order.
   const rail = i => ms.length < 2 ? "var(--accent)"
     : `hsl(${(150 - 142 * i / (ms.length - 1)).toFixed(0)},55%,45%)`;
   const head = `<tr><th></th>${ms.map((m, i) =>
@@ -247,60 +373,93 @@ async function renderModels(body) {
     cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
+
+  // Plan bar echo: verdict condensed + one ruin bead per model.
+  document.getElementById("planbar-verdict").textContent = r.verdict || "";
+  document.getElementById("planbar-beads").innerHTML = ms.map(m =>
+    `<i title="${esc(m.name)} ${(m.ruin * 100).toFixed(1)}%" style="background:${beadColor(m.ruin)}"></i>`).join("");
 }
 document.getElementById("targetRuin").addEventListener("input", schedule);
 
-// Wealth fan charts: one picture of the simulated market per planning model,
-// laid out two per row so the central case and the successive stresses can be
-// compared side by side.
-async function renderPaths(body) {
+// Show the plan bar only while the hero is out of view.
+const planbar = document.getElementById("planbar");
+new IntersectionObserver(entries => {
+  planbar.hidden = entries[0].isIntersecting;
+}, {rootMargin: "-60px 0px 0px 0px"}).observe(document.getElementById("hero"));
+
+// ---------------------------------------------------------------------------
+// Section renderers.
+// ---------------------------------------------------------------------------
+async function renderPaths(b, id) {
   try {
-    const r = await (await fetch("/api/paths", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
+    const r = await post("/api/paths", b);
+    if (!fresh(id)) return;
     document.getElementById("fansGrid").innerHTML =
       (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
-  } catch (e) { /* leave the previous charts on failure */ }
+  } catch (e) { /* keep the previous charts */ }
 }
 
-// Ruin vs withdrawal-rate frontier, one curve per model.
-async function renderFrontier(body) {
+async function renderFrontier(b, id) {
   try {
-    const r = await (await fetch("/api/frontier", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
-    document.getElementById("frontierSvg").innerHTML = r.frontierSvg || "";
-  } catch (e) { /* leave the previous chart on failure */ }
+    const r = await post("/api/frontier", b);
+    if (fresh(id)) setSVG("frontierSvg", r.frontierSvg);
+  } catch (e) { /* keep the previous chart */ }
 }
 
-// Sensitivity "greeks": the change in ruin from nudging each controllable lever.
-async function renderSensitivity(body) {
+async function renderSensitivity(b, id) {
   try {
-    const r = await (await fetch("/api/sensitivity", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
-    document.getElementById("sensitivitySvg").innerHTML = r.sensitivitySvg || "";
-  } catch (e) { /* leave the previous chart on failure */ }
+    const r = await post("/api/sensitivity", b);
+    if (fresh(id)) setSVG("sensitivitySvg", r.sensitivitySvg);
+  } catch (e) { /* keep the previous chart */ }
 }
 
-// --- solver menu: the equivalent ways to reach the acceptable ruin, one per
-// controllable lever (spend less, cut in downturns, hold a cash buffer). ---
-const eur = v => Math.round(v).toLocaleString("fr-FR") + " €";
-async function renderSolver(body) {
-  const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
-  const box = document.getElementById("solvermenu");
+async function renderSpending(b, id) {
+  try {
+    const r = await post("/api/spending", b);
+    if (!fresh(id)) return;
+    setSVG("spendingSvg", r.spendingSvg);
+    document.getElementById("spendingCards").innerHTML = cardsHTML(r.cards);
+  } catch (e) { /* keep the previous chart */ }
+}
+
+async function renderLifecycle(b, id) {
+  try {
+    const r = await post("/api/lifecycle", b);
+    if (!fresh(id)) return;
+    setSVG("lifeSvg", r.lifeSvg);
+    setSVG("ruinYearSvg", r.ruinYearSvg);
+    document.getElementById("lifecycleCards").innerHTML = cardsHTML(r.cards);
+  } catch (e) { /* keep the previous chart */ }
+}
+
+async function renderSim(b, id) {
+  try {
+    const r = await post("/api/sim", b);
+    if (!fresh(id)) return;
+    document.getElementById("note").textContent = r.note || "";
+    setSVG("arbitrageSvg", r.arbitrageSvg);
+    setSVG("recoverySvg", r.recoverySvg);
+    document.getElementById("cards").innerHTML = cardsHTML(r.cards);
+  } catch (e) { /* keep the previous cards */ }
+}
+
+// Solver menu: the equivalent ways to reach the acceptable ruin.
+async function renderSolver(b, id) {
   let m;
-  try {
-    m = await (await fetch("/api/solvemenu", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, targetRuin: target})})).json();
-  } catch (e) { return; }
+  try { m = await post("/api/solvemenu", b); } catch (e) { return; }
+  if (!fresh(id)) return;
   const head = m.met
     ? `<b>Your plan meets the target</b> (ruin ${(m.currentRuin * 100).toFixed(1)}% ≤ ${(m.targetRuin * 100).toFixed(1)}%):`
     : `<b>To get ruin down to ${(m.targetRuin * 100).toFixed(1)}%</b> (now ${(m.currentRuin * 100).toFixed(1)}%), any one of:`;
   const items = (m.options || []).map(o =>
-    `<li class="${o.ok ? "" : "no"}">${o.ok ? "" : "✗ "}<span class="lev">${o.lever}:</span> ${o.text}</li>`).join("");
-  box.innerHTML = `<div class="solvehead">${head}</div><ul class="solveopts">${items}</ul>`;
+    `<li class="${o.ok ? "" : "no"}">${o.ok ? "" : "✗ "}<span class="lev">${esc(o.lever)}:</span> ${esc(o.text)}</li>`).join("");
+  document.getElementById("solvermenu").innerHTML =
+    `<div class="solvehead">${head}</div><ul class="solveopts">${items}</ul>`;
 }
 
-// --- allocation bar: drag a divider to move weight between two adjacent
-// assets; the total stays at 100 % by construction. ---
+// ---------------------------------------------------------------------------
+// Allocation bar (portfolio mode): drag a divider to shift weight.
+// ---------------------------------------------------------------------------
 function renderAlloc() {
   const bar = document.getElementById("allocbar");
   bar.innerHTML = "";
@@ -312,7 +471,7 @@ function renderAlloc() {
     seg.style.left = (cums[i] * 100) + "%";
     seg.style.width = (w * 100) + "%";
     seg.style.background = PAL[i % PAL.length];
-    seg.innerHTML = `<span>${labels[i]}</span><b>${Math.round(w * 100)}%</b>`;
+    seg.innerHTML = `<span>${esc(labels[i])}</span><b>${Math.round(w * 100)}%</b>`;
     bar.appendChild(seg);
   });
   for (let i = 0; i < weights.length - 1; i++) {
@@ -324,7 +483,7 @@ function renderAlloc() {
   }
   const leg = document.getElementById("alloclegend");
   leg.innerHTML = labels.map((n, i) =>
-    `<span><i style="background:${PAL[i % PAL.length]}"></i>${n} ${Math.round(weights[i] * 100)}%</span>`).join("");
+    `<span><i style="background:${PAL[i % PAL.length]}"></i>${esc(n)} ${Math.round(weights[i] * 100)}%</span>`).join("");
 }
 
 function startDrag(ev, i) {
@@ -349,28 +508,35 @@ function startDrag(ev, i) {
   window.addEventListener("pointerup", up);
 }
 
-// Portfolio mode: fetch holdings, add a model toggle, help and the bar.
-fetch("/api/meta").then(r=>r.json()).then(m=>{
-  if(!m.hasPanel) { run(); return; }
+// ---------------------------------------------------------------------------
+// Portfolio mode bootstrap: fetch holdings, seed the fit, add the bar.
+// ---------------------------------------------------------------------------
+fetch("/api/meta").then(r => r.json()).then(m => {
+  if (!m.hasPanel) { run(); runSlow(); return; }
   hasPanel = true;
   labels = m.labels;
   weights = (sharedWeights && sharedWeights.length === labels.length) ? sharedWeights.slice()
     : (m.weights && m.weights.length === labels.length) ? m.weights.slice()
-    : labels.map(()=>1/labels.length);
-  lastFitW = weights.slice(); // mu/sigma already seeded below; avoid a redundant refit
+    : labels.map(() => 1 / labels.length);
+  lastFitW = weights.slice(); // mu/sigma seeded below; avoid a redundant refit
   for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma], ["df", m.df]])
     if (typeof v === "number") setSliderVal(k, v);
   applySharedSliders(); // a shared mu/sigma/df overrides the historical seed
   if (state.conservative) applyReturns(PRIOR); // the prior wins over the fit
 
-  // The hero strip already evaluates every return model side by side, so there
-  // is no model to pick: the detail charts below use the central parametric one.
+  // The hero strip evaluates every return model side by side; the detail
+  // charts below use the central parametric one.
   state.model = "parametric";
 
-  const alloc = document.createElement("div"); alloc.className = "ctl span";
-  alloc.innerHTML = `<span class="lab"><span>Allocation — drag a divider to shift weight</span></span>
-    <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>`;
-  form.prepend(alloc);
+  const fs = document.createElement("fieldset");
+  fs.className = "group";
+  fs.innerHTML = `<legend>Allocation</legend>
+    <div class="ctl span" data-help="Drag a divider to shift weight between adjacent holdings. Every model re-fits (μ/σ/df and the historical panel) from the live weights.">
+      <span class="lab"><span>Drag a divider to shift weight</span></span>
+      <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>
+    </div>`;
+  form.insertBefore(fs, form.children[1] || null);
   renderAlloc();
   run();
+  runSlow();
 });
