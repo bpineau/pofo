@@ -200,8 +200,8 @@ func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
 		Name:   "iShares Core MSCI World: MSCI World total return (1969 with -refdata)",
-		Method: "real MSCI World net TR (via -refdata MSCIWORLD-USD, monthly 1969→), less 0.20%/yr TER; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
-		Build: longIndexOr("MSCIWORLD-USD", 0.0020, composite("IWDA (MSCI World replication)", []Leg{
+		Method: "real MSCI World net TR (MSCIWORLD-USD refdata, monthly 1969→) with the daily shape of the MSCI World price index (^990100-USD-STRD, 1972→), less 0.20%/yr TER; without the refdata falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Build: msciWorld(0.0020, composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
 		}, "", 0.0020)),
@@ -305,19 +305,37 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 	}
 }
 
-// longIndexOr returns a Build that uses a long real index served by symbol (net
-// of annualFee) when it is available, e.g. a licensed MSCI series supplied via
-// -refdata, and otherwise falls back to the given proxy Build. The refdata file
-// stays local (licensing), so CI and others still regenerate from the fetchable
-// proxy; a machine that has the file gets the decades-longer real history. The
-// >300-point guard distinguishes the long monthly series from an accidental
-// short fetch of the same symbol.
-func longIndexOr(symbol string, annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
+// msciWorldShapeID is the Yahoo daily MSCI World PRICE index (1972→). Its
+// levels lag total return by the dividend yield (it carries no income), so
+// it never sets levels: it only supplies the intra-month daily shape behind
+// the monthly net-TR anchors (see anchorShape).
+const msciWorldShapeID = "^990100-USD-STRD"
+
+// msciWorld returns the Build shared by the MSCI World trackers (IWDA,
+// URTH): the monthly net total-return index served as MSCIWORLD-USD
+// refdata (1969→) sets the levels, the daily price index supplies the
+// intra-month shape from 1972, and the tracker's TER is deducted last.
+// The refdata file stays embedded/local, so without it everything falls
+// back to the given fetchable proxy Build; without the daily shape, or
+// when it stops short of the refdata's end (a truncated fetch must not
+// silently drop the recent anchors), the backcast simply stays monthly.
+// The >300-point guards distinguish the real long series from an
+// accidental short fetch of the same symbol.
+func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		if s, err := f.Fetch(symbol, from); err == nil && s != nil && len(s.Points) > 300 {
-			return afterFee(s, annualFee), nil
+		net, err := f.Fetch("MSCIWORLD-USD", from)
+		if err != nil || net == nil || len(net.Points) <= 300 {
+			return fallback(f, from)
 		}
-		return fallback(f, from)
+		out := net
+		if shape, serr := f.Fetch(msciWorldShapeID, from); serr == nil && shape != nil &&
+			len(shape.Points) > 300 && !shape.Last().Date.Before(net.Last().Date) {
+			blended := *net
+			blended.Points = anchorShape(net.Points, shape.Points)
+			marketdata.ExtendBack(&blended, net) // pre-shape months (1969→1972) in front
+			out = &blended
+		}
+		return afterFee(out, annualFee), nil
 	}
 }
 
@@ -403,8 +421,8 @@ func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
 		Name:   "iShares MSCI World: MSCI World total return (1969 with -refdata)",
-		Method: "real MSCI World net TR (via -refdata MSCIWORLD-USD, monthly 1969→), less 0.24%/yr TER; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
-		Build: longIndexOr("MSCIWORLD-USD", 0.0024, composite("URTH (MSCI World replication)", []Leg{
+		Method: "real MSCI World net TR (MSCIWORLD-USD refdata, monthly 1969→) with the daily shape of the MSCI World price index (^990100-USD-STRD, 1972→), less 0.24%/yr TER; without the refdata falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Build: msciWorld(0.0024, composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
 		}, "", 0.0024)),
