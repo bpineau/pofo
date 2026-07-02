@@ -46,6 +46,18 @@
 // the binary as an offline fallback (used only when the live API is unreachable
 // and nothing is cached), so an inflation series is always available.
 //
+// # Dividends and raw closes
+//
+// Series.Dividends lists the cash distributions the source reported
+// (ex-date, per-share amount in the quote currency); currency conversion
+// reprices them alongside the points. The default close column is
+// ADJUSTED (dividends reinvested): pairing it with Dividends would count
+// income twice. Valuation-style consumers (holdings priced at market,
+// dividends booked as cash) set FetchOptions.Raw to get the unadjusted
+// (split-adjusted only) closes instead; raw series are cached as their own
+// entries and cannot combine with the SIM extension, which is total-return
+// by construction.
+//
 // # Intraday
 //
 // Client.Intraday fetches the current trading day's price path for an

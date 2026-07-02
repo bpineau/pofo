@@ -7,7 +7,10 @@ import (
 	"time"
 )
 
-// cacheFile is the JSON document stored in the cache directory, one per symbol.
+// cacheFile is the JSON document stored in the cache directory, one per
+// series view (a raw view lives under its own "SYMBOL~raw" identity).
+// Dividend dates and amounts are parallel arrays; files written before the
+// dividend columns existed simply load with none.
 type cacheFile struct {
 	Symbol        string    `json:"symbol"`
 	Name          string    `json:"name"`
@@ -17,6 +20,8 @@ type cacheFile struct {
 	FetchedAt     time.Time `json:"fetched_at"`
 	Dates         []string  `json:"dates"`
 	Closes        []float64 `json:"closes"`
+	DivDates      []string  `json:"div_dates,omitempty"`
+	DivAmounts    []float64 `json:"div_amounts,omitempty"`
 }
 
 func (c *Client) cachePath(symbol string) string {
@@ -66,11 +71,27 @@ func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.T
 	if len(s.Points) == 0 {
 		return nil, time.Time{}, false
 	}
+	if len(cf.DivDates) == len(cf.DivAmounts) {
+		for i, d := range cf.DivDates {
+			t, err := time.ParseInLocation("2006-01-02", d, time.UTC)
+			if err != nil || t.Before(from) {
+				continue
+			}
+			s.Dividends = append(s.Dividends, Dividend{Date: t, Amount: cf.DivAmounts[i]})
+		}
+	}
 	return s, cf.FetchedAt, true
 }
 
-// saveCache persists a downloaded series; failures are logged, never fatal.
+// saveCache persists a downloaded series under its own symbol; failures are
+// logged, never fatal.
 func (c *Client) saveCache(s *Series, from time.Time) {
+	c.saveCacheAs(s.Symbol, s, from)
+}
+
+// saveCacheAs persists a downloaded series under an explicit cache identity
+// (the view key: "VOO", "VOO~raw", or the original ISIN for fund sources).
+func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
 	cf := cacheFile{
 		Symbol:        s.Symbol,
 		Name:          s.Name,
@@ -85,11 +106,15 @@ func (c *Client) saveCache(s *Series, from time.Time) {
 		cf.Dates = append(cf.Dates, p.Date.Format("2006-01-02"))
 		cf.Closes = append(cf.Closes, p.Close)
 	}
+	for _, d := range s.Dividends {
+		cf.DivDates = append(cf.DivDates, d.Date.Format("2006-01-02"))
+		cf.DivAmounts = append(cf.DivAmounts, d.Amount)
+	}
 	data, err := json.Marshal(cf)
 	if err != nil {
 		return
 	}
-	c.writeCacheFile(c.cachePath(s.Symbol), data)
+	c.writeCacheFile(c.cachePath(cacheID), data)
 }
 
 // writeCacheFile writes data atomically, creating the cache directory on

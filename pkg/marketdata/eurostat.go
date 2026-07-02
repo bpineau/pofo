@@ -98,7 +98,7 @@ var hicpName = map[string]string{
 // sources); if it is unreachable and no cached copy exists, a bundled snapshot
 // keeps the series available offline, at the cost of missing the latest months.
 func (c *Client) fetchHICP(ctx context.Context, symbol, geo string, from time.Time) (*Series, error) {
-	s, err := c.cachedHistory(ctx, "eurostat", symbol, from, func() (*Series, error) {
+	s, err := c.cachedHistory(ctx, "eurostat", symbol, from, false, func() (*Series, error) {
 		return c.downloadHICP(ctx, symbol, geo)
 	})
 	if err != nil {
