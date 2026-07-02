@@ -1,5 +1,13 @@
 # Latest Quote Implementation Plan
 
+> **Status: NOT IMPLEMENTED (superseded).** This plan was never executed: there
+> is no `pkg/marketdata/latest.go`, no `Quote` type and no `Client.Latest`
+> method on master (only the design and this plan were committed, `ae5378f` /
+> `992e04a`). The real-time valuation need it targeted is now met by the finador
+> integration (point-in-time `Series.At` + unadjusted `Raw` closes), so a
+> dedicated live-spot `Latest` was not built. Kept for reference; revive this
+> plan only if a true intraday `regularMarketPrice` path is actually wanted.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add a one-call "most recent price" capability to pkg/marketdata for real-time portfolio valuation.

@@ -389,9 +389,9 @@ via Curvo / MSCI-EM via Curvo (equity); datahub gold-prices (XAUUSD-LBMA) and
 s-and-p-500 (SP500-USD, Shiller TR); FRED WTISPLC (crude), EXUSEC+EXUSEU (EUR),
 TB3MS (^IRX), FRACPIALLMINMEI (HICP-FR). See the header of each refdata CSV.
 
-**Next up:** the reference-validation pass is done (golden `refdata_test.go`; it
-found and fixed the MSCI-World net-vs-gross mislabel). The only remaining
-non-frontend backlog items are deliberately deferred (pre-1978 EUR/USD, per-
-segment FX conversion) or resolved-by-analysis (cache expiry). The highest-value
-open work is the `frontend-design` pass on the `-fire` UI (item 17), left for a
-dedicated session.
+**Next up:** all 18 numbered items above are done, including the `frontend-design`
+pass on the `-fire` UI (item 17, shipped 2026-07-02 with the v3 enrichment,
+`decumulation-fire-v3-enrichment.md`). The only remaining backlog items are
+deliberately deferred (pre-1978 EUR/USD, per-segment FX conversion, the
+broad-sample century panel for the historical models = rewrite-spec phase 2) or
+resolved-by-analysis (cache expiry). No open work is currently scheduled.
