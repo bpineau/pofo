@@ -236,6 +236,25 @@ for _, p := range s.Points {
 svg := chart.Line(chart.Options{Title: s.Name}, []chart.Series{ser})
 ```
 
+### Latest quote
+
+`Client.Latest` returns the most recent price of an instrument as a `Quote`,
+for a live portfolio valuation. A Yahoo-quoted instrument yields its live
+market price (`Quote.Live == true`); any other instrument (an FT or Morningstar
+fund, whose last NAV close is its latest price) yields its last daily close
+(`Quote.Live == false`). It reuses the multi-source resolution, the on-disk
+daily cache and the stale fallback, so it answers for every asset and even
+offline.
+
+```go
+q, err := client.Latest(ctx, "VWCE")
+if err != nil {
+	// no usable quote for this identifier
+}
+value := shares * q.Price // in q.Currency; convert with client.ConvertCurrency
+_ = q.Live                // true: real-time; false: last daily close (q.Time)
+```
+
 ## Simulated data (pkg/datasets/simdata/)
 
 Complex assets (90/60 funds, managed futures…) are rebuilt by `pkg/simgen`
@@ -363,8 +382,9 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
   the typed asset list (`Asset`), `AssetMeta()` the same data as raw JSON.
 - `marketdata`: resolution (aliases, ISIN, catalog), `Lookup` for an asset's
   full metadata, `Resolve` to inspect the resolved source/symbol, multi-source
-  daily downloads, `Intraday` for the live 5-minute path, cache, simdata,
-  proxies; `FetchExtended` bundles the whole per-asset pipeline in one call.
+  daily downloads, `Intraday` for the live 5-minute path, `Latest` for the
+  freshest quote, cache, simdata, proxies; `FetchExtended` bundles the whole
+  per-asset pipeline in one call.
 - `suggest`: regime/factor coverage and gap-filling (consumes `datasets.Asset`).
 - `metrics`: statistics over value series (returns, drawdowns, Beta).
 - `chart`: pure-stdlib inline SVG charts.
