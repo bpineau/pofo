@@ -31,6 +31,7 @@ type Client struct {
 	MorningstarBase string
 	EurostatBase    string
 	FredBase        string
+	ECBBase         string
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
@@ -60,6 +61,7 @@ func NewClient(cacheDir string) *Client {
 		MorningstarBase: "https://tools.morningstar.fr",
 		EurostatBase:    "https://ec.europa.eu",
 		FredBase:        "https://fred.stlouisfed.org",
+		ECBBase:         "https://www.ecb.europa.eu",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
 		retryDelay:      time.Second,
@@ -450,13 +452,11 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	c.Logf("downloading %s…", symbol)
 	s, yahooErr := c.fetchYahoo(ctx, symbol, from, raw)
 	if yahooErr != nil {
-		var stooqErr error
-		s, stooqErr = c.fetchStooq(ctx, symbol, from)
-		if stooqErr != nil {
-			err := fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr)
-			return c.staleFallback(ctx, cacheID, from, err)
+		var fallbackErr error
+		s, fallbackErr = c.historyFallback(ctx, symbol, from, yahooErr)
+		if fallbackErr != nil {
+			return c.staleFallback(ctx, cacheID, from, fallbackErr)
 		}
-		c.Logf("%s fetched via stooq (prices not dividend-adjusted)", symbol)
 	}
 	if len(s.Points) == 0 {
 		return c.staleFallback(ctx, cacheID, from, fmt.Errorf("no quotes returned for %s", symbol))
