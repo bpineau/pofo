@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"html"
 	"net/url"
@@ -19,9 +20,9 @@ var morningstarIDRe = regexp.MustCompile(`/bourse/(?:opcvm|trackers)/cours/(0P[0
 // boursoramaMorningstarID finds the Morningstar identifier (and name) of a
 // fund by querying the Boursorama search with an ISIN. It is used as a last
 // resort for ISINs that neither Yahoo nor the FT know.
-func (c *Client) boursoramaMorningstarID(isin string) (id, name string, err error) {
+func (c *Client) boursoramaMorningstarID(ctx context.Context, isin string) (id, name string, err error) {
 	u := fmt.Sprintf("%s/recherche/ajax?query=%s", c.BoursoramaBase, url.QueryEscape(isin))
-	body, err := c.do("GET", u, "", nil, map[string]string{"X-Requested-With": "XMLHttpRequest"})
+	body, err := c.do(ctx, "GET", u, "", nil, map[string]string{"X-Requested-With": "XMLHttpRequest"})
 	if err != nil {
 		return "", "", err
 	}

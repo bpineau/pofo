@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"net/http"
@@ -112,7 +113,7 @@ func TestFetchEurostatHICPEmbeddedFallback(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux) // fresh temp dir: no disk cache
 	defer srv.Close()
 
-	s, err := c.Fetch("^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatalf("expected embedded fallback to succeed, got %v", err)
 	}
@@ -142,7 +143,7 @@ func TestFetchEurostatHICP(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Fetch("^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}
