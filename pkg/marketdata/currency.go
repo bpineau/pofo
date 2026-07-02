@@ -146,8 +146,9 @@ func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (flo
 	return rate, nil
 }
 
-// fxHistory returns the src→target daily FX cross from Yahoo, with Stooq as
-// a fallback for the major crosses (see stooqFX). It always fetches
+// fxHistory returns the src→target daily FX cross from Yahoo, with Stooq
+// then the ECB reference rates as fallbacks (see historyFallback). It
+// always fetches
 // under a FIXED (zero) start so the cache key is constant across assets: the
 // caller passes each asset's own first date, which would otherwise miss the
 // cache and refetch the FX series once per converted asset. The full cross is
