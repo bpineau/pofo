@@ -1,6 +1,7 @@
 package marketdata_test
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -34,7 +35,7 @@ func Example_fetch() {
 	client := marketdata.NewClient("data")
 	client.Logf = func(format string, args ...any) { /* optional logging */ }
 
-	series, err := client.Fetch("IWDA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+	series, err := client.Fetch(context.Background(), "IWDA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		panic(err)
 	}
@@ -50,7 +51,7 @@ func Example_fetch() {
 func Example_fetchExtended() {
 	client := marketdata.NewClient(marketdata.DefaultCacheDir())
 
-	series, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
+	series, err := client.FetchExtended(context.Background(), "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 	if err != nil {
 		panic(err)
 	}

@@ -1,6 +1,9 @@
 package marketdata
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 // Resolution is how pofo maps a user identifier to a quotable instrument:
 // which source serves it, under which symbol, plus the resolved name and quote
@@ -25,12 +28,12 @@ func resolveFrom() time.Time { return time.Now().AddDate(-15, 0, 0) }
 // resolution cache first, then the same multi-source search Fetch uses. It may
 // perform network I/O and caches the result, so a later Fetch of the same id
 // reuses this work.
-func (c *Client) Resolve(id string) (Resolution, error) {
+func (c *Client) Resolve(ctx context.Context, id string) (Resolution, error) {
 	canonical := CanonicalID(id)
 	if res, ok := c.loadResolution(canonical); ok {
 		return toResolution(res), nil
 	}
-	s, err := c.Fetch(id, resolveFrom())
+	s, err := c.Fetch(ctx, id, resolveFrom())
 	if err != nil {
 		return Resolution{}, err
 	}

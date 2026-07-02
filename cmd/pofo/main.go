@@ -5,6 +5,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -16,11 +17,13 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"runtime"
 	"sort"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/chart"
@@ -38,7 +41,9 @@ import (
 
 func main() {
 	log.SetFlags(0)
-	if err := run(os.Args[1:]); err != nil {
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+	if err := run(ctx, os.Args[1:]); err != nil {
 		log.Fatal("pofo: ", err)
 	}
 }
@@ -93,7 +98,7 @@ type result struct {
 	hasVTS    bool
 }
 
-func run(argv []string) error {
+func run(ctx context.Context, argv []string) error {
 	fs := flag.NewFlagSet("pofo", flag.ContinueOnError)
 	var opt options
 	var startStr string
@@ -220,7 +225,7 @@ Options:
 		genClient := marketdata.NewClient(opt.dataDir)
 		genClient.MaxAge = opt.cacheAge
 		genClient.Logf = log.Printf
-		return runGenSimdata(genClient, &opt, *refdataDir, fs.Args(), *dry)
+		return runGenSimdata(ctx, genClient, &opt, *refdataDir, fs.Args(), *dry)
 	}
 
 	// Parse every portfolio file, disambiguating duplicate names, then add
@@ -255,19 +260,19 @@ Options:
 	client.Logf = log.Printf
 
 	if *warmup {
-		return runWarmup(client, &opt)
+		return runWarmup(ctx, client, &opt)
 	}
 	if *verifyData {
-		return runVerifyData(client, specs, &opt)
+		return runVerifyData(ctx, client, specs, &opt)
 	}
 	if *suggestFlag {
-		return runSuggest(client, specs, &opt)
+		return runSuggest(ctx, client, specs, &opt)
 	}
 	if *coverageFlag {
 		return runCoverage(specs, &opt)
 	}
 	if *fireFlag {
-		return runFire(&opt, client, specs)
+		return runFire(ctx, &opt, client, specs)
 	}
 
 	// Download every distinct asset once.
@@ -277,7 +282,7 @@ Options:
 			if _, ok := seriesByID[h.ID]; ok {
 				continue
 			}
-			s, err := fetchAsset(client, h.ID, &opt)
+			s, err := fetchAsset(ctx, client, h.ID, &opt)
 			if err != nil {
 				return fmt.Errorf("portfolio %s, asset %q: %w", spec.Name, h.ID, err)
 			}
@@ -288,7 +293,7 @@ Options:
 	// Benchmark for Beta, best effort.
 	var bench *marketdata.Series
 	if opt.benchmark != "" {
-		b, err := client.FetchExtended(opt.benchmark, marketdata.FetchOptions{
+		b, err := client.FetchExtended(ctx, opt.benchmark, marketdata.FetchOptions{
 			From: opt.start, NoSim: true, Currency: opt.currency,
 		})
 		if err != nil {
@@ -304,14 +309,14 @@ Options:
 	if !opt.noFees {
 		feesFor = func(id string) (float64, bool) {
 			base, _ := marketdata.SplitSim(id)
-			return client.Fees(base)
+			return client.Fees(ctx, base)
 		}
 	}
 	// The financing rate (leverage) is only fetched when needed.
 	var cashRate *marketdata.Series
 	for _, spec := range specs {
 		if spec.Leverage {
-			cr, err := client.Fetch("^IRX", opt.start)
+			cr, err := client.Fetch(ctx, "^IRX", opt.start)
 			if err != nil {
 				log.Printf("warning: financing rate ^IRX unavailable (%v), leverage financed at 0 %%", err)
 			} else {
@@ -400,7 +405,7 @@ Options:
 	// Consumer-price index of the base currency, to report drawdowns/TTR in real
 	// (purchasing-power) terms alongside the nominal ones. Best-effort: absent it,
 	// the real columns are simply omitted.
-	deflator, hasDeflator := inflationSeries(client, opt.currency, commonStart)
+	deflator, hasDeflator := inflationSeries(ctx, client, opt.currency, commonStart)
 	for _, r := range results {
 		i, j := window(r.sim.Dates, commonStart, commonEnd)
 		if j-i < 2 {
@@ -553,7 +558,7 @@ func defaultDataDir() string {
 // simgen command, kept as a sub-mode. Files are written to pkg/datasets/simdata
 // (or -simdata when set): regeneration is a repository activity, and a
 // rebuild re-embeds the result into the binary.
-func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, ids []string, dry bool) error {
+func runGenSimdata(ctx context.Context, client *marketdata.Client, opt *options, refdataDir string, ids []string, dry bool) error {
 	recipes := simgen.All()
 	if len(ids) > 0 {
 		recipes = recipes[:0]
@@ -572,13 +577,13 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 	// Recipes read long reference series (e.g. MSCI World) from the embedded
 	// refdata first, so regeneration is self-contained; -refdata adds or
 	// overrides with extra local CSVs on top.
-	var fetcher simgen.Fetcher = simgen.WithRefData(datasets.Refdata(), client)
+	var fetcher simgen.Fetcher = simgen.WithRefData(datasets.Refdata(), simgen.WithContext(ctx, client))
 	if refdataDir != "" {
 		fetcher = simgen.WithRefData(os.DirFS(refdataDir), fetcher)
 	}
 	failures := 0
 	for _, r := range recipes {
-		err := genOne(client, fetcher, outDir, r, dry)
+		err := genOne(ctx, client, fetcher, outDir, r, dry)
 		switch {
 		case errors.Is(err, simgen.ErrUnfaithful):
 			log.Printf("⚠ %-14s skipped: %v", r.ID, err)
@@ -596,14 +601,14 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 	return nil
 }
 
-func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r simgen.Recipe, dry bool) error {
+func genOne(ctx context.Context, client *marketdata.Client, fetcher simgen.Fetcher, dir string, r simgen.Recipe, dry bool) error {
 	sim, err := r.Build(fetcher, simgen.ComponentsFrom)
 	if err != nil {
 		return err
 	}
 	validation := "not validated (no real series)"
 	if r.ValidateAgainst != "" {
-		real, err := client.Fetch(r.ValidateAgainst, simgen.ComponentsFrom)
+		real, err := client.Fetch(ctx, r.ValidateAgainst, simgen.ComponentsFrom)
 		if err != nil {
 			return fmt.Errorf("real series %s: %w", r.ValidateAgainst, err)
 		}
@@ -614,7 +619,7 @@ func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r sim
 		validation = fmt.Sprintf("%s vs %s", v, r.ValidateAgainst)
 	}
 	if r.SpliceReal != "" {
-		real, err := client.Fetch(r.SpliceReal, simgen.ComponentsFrom)
+		real, err := client.Fetch(ctx, r.SpliceReal, simgen.ComponentsFrom)
 		if err != nil {
 			return fmt.Errorf("series to splice %s: %w", r.SpliceReal, err)
 		}
@@ -640,7 +645,7 @@ func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r sim
 // the given portfolios (or the whole bundled catalog when none is given)
 // and reports data-quality findings from marketdata.Verify. It returns an
 // error when any series has error-grade problems.
-func runVerifyData(c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
+func runVerifyData(ctx context.Context, c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
 	var ids []string
 	seen := map[string]bool{}
 	for _, spec := range specs {
@@ -658,7 +663,7 @@ func runVerifyData(c *marketdata.Client, specs []*portfolio.Spec, opt *options) 
 	now := time.Now()
 	broken, suspicious := 0, 0
 	for _, id := range ids {
-		s, err := fetchAsset(c, id, opt)
+		s, err := fetchAsset(ctx, c, id, opt)
 		if err != nil {
 			fmt.Printf("%-22s FETCH FAILED: %v\n", id, err)
 			broken++
@@ -699,7 +704,7 @@ func runVerifyData(c *marketdata.Client, specs []*portfolio.Spec, opt *options) 
 // runSuggest analyses each portfolio's macro-regime coverage, flags
 // redundant holdings, and recommends catalog assets to add that fill the
 // gaps, validated out-of-sample. See pkg/suggest and docs/suggest-design.md.
-func runSuggest(c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
+func runSuggest(ctx context.Context, c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
 	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
 		return fmt.Errorf("asset metadata: %w", err)
@@ -708,7 +713,7 @@ func runSuggest(c *marketdata.Client, specs []*portfolio.Spec, opt *options) err
 		return errors.New("-suggest needs a portfolio (a file or -assets)")
 	}
 	for _, spec := range specs {
-		if err := suggestForPortfolio(c, spec, opt, meta); err != nil {
+		if err := suggestForPortfolio(ctx, c, spec, opt, meta); err != nil {
 			return fmt.Errorf("portfolio %s: %w", spec.Name, err)
 		}
 	}
@@ -729,7 +734,7 @@ func metaFor(meta map[string]suggest.Meta, id string) (suggest.Meta, string, boo
 	return suggest.Meta{}, canon, false
 }
 
-func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *options, meta map[string]suggest.Meta) error {
+func suggestForPortfolio(ctx context.Context, c *marketdata.Client, spec *portfolio.Spec, opt *options, meta map[string]suggest.Meta) error {
 	if len(spec.Holdings) == 0 {
 		return errors.New("empty portfolio")
 	}
@@ -740,7 +745,7 @@ func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *option
 	heldCanon := map[string]bool{}
 	heldEquiv := map[string]bool{}
 	for i, h := range spec.Holdings {
-		s, err := fetchAsset(c, h.ID, opt)
+		s, err := fetchAsset(ctx, c, h.ID, opt)
 		if err != nil {
 			return fmt.Errorf("asset %q: %w", h.ID, err)
 		}
@@ -768,7 +773,7 @@ func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *option
 	cov, _ := suggest.Coverage(holdings, opt.fw)
 	gaps := suggest.Gaps(cov, opt.fw, opts.GapThreshold)
 
-	candidates := buildCandidates(c, opt, meta, gaps, heldCanon, heldEquiv, held, weights)
+	candidates := buildCandidates(ctx, c, opt, meta, gaps, heldCanon, heldEquiv, held, weights)
 	res := suggest.Analyze(holdings, heldRet, candidates, opts, opt.fw)
 	renderSuggest(spec.Name, start, end, res, opt.fw)
 	return nil
@@ -779,7 +784,7 @@ func suggestForPortfolio(c *marketdata.Client, spec *portfolio.Spec, opt *option
 // near-duplicate of a holding), fetches their histories (simulated extension
 // included for the longest fair comparison) and aligns each with the held
 // portfolio over their overlap.
-func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest.Meta, gaps []suggest.Category,
+func buildCandidates(ctx context.Context, c *marketdata.Client, opt *options, meta map[string]suggest.Meta, gaps []suggest.Category,
 	heldCanon, heldEquiv map[string]bool, held []*marketdata.Series, weights []float64) []suggest.Candidate {
 	if len(gaps) == 0 {
 		return nil
@@ -844,7 +849,7 @@ func buildCandidates(c *marketdata.Client, opt *options, meta map[string]suggest
 
 	var out []suggest.Candidate
 	for _, r := range order {
-		cs, err := fetchAsset(c, r.id+"SIM", opt)
+		cs, err := fetchAsset(ctx, c, r.id+"SIM", opt)
 		if err != nil {
 			log.Printf("suggest: candidate %s unavailable: %v", r.id, err)
 			continue
@@ -1046,14 +1051,14 @@ func coverageAdvice(spec *portfolio.Spec, opt *options, meta map[string]suggest.
 
 // runWarmup pre-fetches the whole bundled asset catalog into the cache so
 // that later runs work fast and (mostly) offline.
-func runWarmup(c *marketdata.Client, opt *options) error {
+func runWarmup(ctx context.Context, c *marketdata.Client, opt *options) error {
 	ids := marketdata.WarmupIDs()
 	var failed []string
 	for i, id := range ids {
 		if i > 0 {
 			time.Sleep(300 * time.Millisecond) // go easy on the sources
 		}
-		s, err := fetchAsset(c, id, opt)
+		s, err := fetchAsset(ctx, c, id, opt)
 		if err != nil {
 			log.Printf("FAIL  %s: %v", id, err)
 			failed = append(failed, id)
@@ -1061,7 +1066,7 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 		}
 		feesText := ""
 		if !opt.noFees {
-			if ter, ok := c.Fees(id); ok {
+			if ter, ok := c.Fees(ctx, id); ok {
 				feesText = fmt.Sprintf("  TER %.2f %%", ter)
 			}
 		}
@@ -1081,13 +1086,13 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 // real-return panel from the holdings (deflated by ^HICP-FR) so the UI can
 // switch to the bootstrap/cohort models and re-weight allocations live. It
 // blocks, serving until interrupted.
-func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
+func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
 	var panel *scenario.Panel
 	var labels []string
 	if len(specs) > 0 {
 		var assets []web.AssetSeries
 		for _, h := range specs[0].Holdings {
-			s, err := fetchAsset(c, h.ID, opt)
+			s, err := fetchAsset(ctx, c, h.ID, opt)
 			if err != nil {
 				log.Printf("fire: skipping %s: %v", h.ID, err)
 				continue
@@ -1095,7 +1100,7 @@ func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error 
 			labels = append(labels, h.ID)
 			assets = append(assets, web.AssetSeries{Weight: h.Weight, Points: s.Points})
 		}
-		if hicp, err := fetchAsset(c, "^HICP-FR", opt); err == nil {
+		if hicp, err := fetchAsset(ctx, c, "^HICP-FR", opt); err == nil {
 			if pnl, err := web.BuildMonthlyPanel(assets, hicp.Points); err == nil {
 				panel = &pnl
 			} else {
@@ -1123,8 +1128,8 @@ func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error 
 // quotes always win wherever they exist.
 // fetchAsset runs the full library pipeline (SIM extension, currency
 // conversion, window) for one asset, from the CLI options.
-func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
-	return c.FetchExtended(id, marketdata.FetchOptions{
+func fetchAsset(ctx context.Context, c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
+	return c.FetchExtended(ctx, id, marketdata.FetchOptions{
 		From:     opt.start,
 		To:       opt.end,
 		NoSim:    opt.noSim,
@@ -1138,7 +1143,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 // one is available. The euro is deflated by French HICP (^HICP-FR, the long
 // bundled series, ~1955→); other currencies have no wired CPI yet, so their
 // real drawdown/TTR columns are simply omitted.
-func inflationSeries(c *marketdata.Client, currency string, from time.Time) (*marketdata.Series, bool) {
+func inflationSeries(ctx context.Context, c *marketdata.Client, currency string, from time.Time) (*marketdata.Series, bool) {
 	sym := ""
 	switch strings.ToUpper(strings.TrimSpace(currency)) {
 	case "EUR":
@@ -1147,7 +1152,7 @@ func inflationSeries(c *marketdata.Client, currency string, from time.Time) (*ma
 	if sym == "" {
 		return nil, false
 	}
-	s, err := c.Fetch(sym, from)
+	s, err := c.Fetch(ctx, sym, from)
 	if err != nil || s == nil || len(s.Points) < 2 {
 		if err != nil {
 			log.Printf("warning: inflation index %s unavailable (%v); real drawdowns omitted", sym, err)

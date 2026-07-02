@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"bytes"
+	"context"
 	"encoding/csv"
 	"fmt"
 	"net/url"
@@ -38,14 +39,14 @@ func stooqSymbol(symbol string) string {
 // fetchStooq downloads daily history from the stooq.com CSV endpoint, used as
 // a fallback when Yahoo fails. Stooq closes are split-adjusted but not
 // dividend-adjusted.
-func (c *Client) fetchStooq(symbol string, from time.Time) (*Series, error) {
+func (c *Client) fetchStooq(ctx context.Context, symbol string, from time.Time) (*Series, error) {
 	ss := stooqSymbol(symbol)
 	if ss == "" {
 		return nil, fmt.Errorf("no stooq equivalent for %s", symbol)
 	}
 	u := fmt.Sprintf("%s/q/d/l/?s=%s&i=d&d1=%s&d2=%s", c.StooqBase, url.QueryEscape(ss),
 		from.Format("20060102"), time.Now().Format("20060102"))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return nil, err
 	}
