@@ -51,8 +51,8 @@ func Bars(opt Options, bars []Bar) string {
 	step := niceStep(max, 5)
 	for v := 0.0; v <= max+step/1e6; v += step {
 		y := yAt(v)
-		fmt.Fprintf(&sb, `<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#E9EDF3"/>`, padL, y, w-padR, y)
-		fmt.Fprintf(&sb, `<text x="%d" y="%.1f" dy="0.35em" font-size="12" fill="#667085" text-anchor="end">%s</text>`, padL-6, y, fmtTick(v, step))
+		fmt.Fprintf(&sb, `<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="#EDF0F3"/>`, padL, y, w-padR, y)
+		fmt.Fprintf(&sb, `<text x="%d" y="%.1f" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">%s</text>`, padL-6, y, fmtTick(v, step))
 	}
 	bw := float64(plotW) / float64(n) * 0.7
 	gap := float64(plotW) / float64(n)
@@ -61,7 +61,7 @@ func Bars(opt Options, bars []Bar) string {
 		y := yAt(b.Value)
 		fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, x, y, bw, float64(padT+plotH)-y, PaletteColor(0))
 		if b.Text != "" {
-			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" fill="#101828">%s</text>`, x+bw/2, y-4, esc(b.Text))
+			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" fill="#16181D">%s</text>`, x+bw/2, y-4, esc(b.Text))
 		}
 		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
 	}
