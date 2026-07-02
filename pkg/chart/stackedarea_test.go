@@ -7,9 +7,9 @@ import (
 
 func TestStackedAreaRendersLayers(t *testing.T) {
 	series := []AreaSeries{
-		{Name: "Funded", Values: []float64{100, 90, 80}, Color: "#2E6E63"},
-		{Name: "Broke", Values: []float64{0, 5, 10}, Color: "#C0492F"},
-		{Name: "Dead", Values: []float64{0, 5, 10}, Color: "#9C8C7C"},
+		{Name: "Funded", Values: []float64{100, 90, 80}, Color: "#0E9384"},
+		{Name: "Broke", Values: []float64{0, 5, 10}, Color: "#D92D20"},
+		{Name: "Dead", Values: []float64{0, 5, 10}, Color: "#98A2B3"},
 	}
 
 	svg := StackedArea(Options{Title: "Alive, broke or dead"}, "Year", "%", series)

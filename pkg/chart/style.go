@@ -7,7 +7,7 @@ import (
 )
 
 // Style adjusts the rendering of a chart beyond its dimensions. The zero
-// value reproduces the default pofo look (warm background, grid, axes,
+// value reproduces the default pofo look (white background, grid, axes,
 // legend on multi-series charts), so existing callers are unaffected;
 // each field opts one aspect out or overrides one default. StyleMinimal
 // bundles the knobs into a bare, embeddable dialect.

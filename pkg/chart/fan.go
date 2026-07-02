@@ -57,34 +57,34 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
-	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
+	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#2A231F">%s</text>`+"\n", x0, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#101828">%s</text>`+"\n", x0, esc(opt.Title))
 	}
 
 	// Horizontal grid and y-axis labels (wealth).
 	step := niceStep(vmax-vmin, 6)
 	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
+		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#E9EDF3"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#667085" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
 	}
 	// X-axis ticks (years) and label.
 	for _, i := range axisTicks(steps) {
-		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#EAE1D3"/>`+"\n", xAt(i), y0, xAt(i), y1)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#6E6157" text-anchor="middle">%d</text>`+"\n", xAt(i), y1+16, i)
+		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#E9EDF3"/>`+"\n", xAt(i), y0, xAt(i), y1)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#667085" text-anchor="middle">%d</text>`+"\n", xAt(i), y1+16, i)
 	}
 	if xLabel != "" {
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+32, esc(xLabel))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#667085" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+32, esc(xLabel))
 	}
 	// Bottom axis is zero wealth: draw it as a bold red ruin line, labelled, so
 	// paths reaching 0 (running out of money) are unmistakable.
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C0492F" stroke-width="1.8"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="#C0492F">ruin · 0</text>`+"\n", x0+5, y1-4)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#D92D20" stroke-width="1.8"/>`+"\n", x0, y1, x1, y1)
+	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="#D92D20">ruin · 0</text>`+"\n", x0+5, y1-4)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C6CEDA"/>`+"\n", x0, y0, x0, y1)
 
 	// Shaded bands, outermost first so inner pairs paint on top.
-	const bandFill = "#2E6E63"
+	const bandFill = "#2E4BE0"
 	n := len(bands)
 	for i := 0; i < n/2; i++ {
 		opacity := 0.10 + 0.10*float64(i) // inner pairs a touch more opaque
@@ -94,11 +94,11 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 
 	// Individual sample paths (clipped to the band range). Ruin paths (ending at
 	// or below 0) are drawn thicker and saturated so failures stand out; the rest
-	// are faint warm-grey context.
+	// are faint grey context.
 	for _, s := range samples {
-		color, width, op := "#9C8C7C", "1", "0.55"
+		color, width, op := "#98A2B3", "1", "0.55"
 		if len(s) > 0 && s[len(s)-1] <= 0 {
-			color, width, op = "#C0492F", "1.8", "0.9"
+			color, width, op = "#D92D20", "1.8", "0.9"
 		}
 		clipped := make([]float64, len(s))
 		for i, v := range s {
@@ -110,7 +110,7 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 
 	// Median line: the central band when the percentile count is odd.
 	if n%2 == 1 {
-		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="#2A231F" stroke-width="2.2" stroke-linejoin="round"/>`+"\n",
+		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="#101828" stroke-width="2.2" stroke-linejoin="round"/>`+"\n",
 			linePath(bands[n/2], xAt, yAt))
 	}
 	b.WriteString("</svg>")
