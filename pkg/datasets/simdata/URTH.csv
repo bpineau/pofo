@@ -3,7 +3,7 @@
 # name: iShares MSCI World: MSCI World total return (1969 with -refdata)
 # method: real MSCI World net TR (MSCIWORLD-USD refdata, monthly 1969→) with the daily shape of the MSCI World price index (^990100-USD-STRD, 1972→), less 0.24%/yr TER; without the refdata falls back to 0.60×VFINX+0.40×VTMGX (1999)
 # validation: corr=0.846 (weekly 0.754) beta=1.00 TE=9.1%/yr CAGR sim 11.71% vs real 12.09% (overlap 3588 d from 2012-01-12 to 2026-05-01) vs URTH
-# generated: 2026-07-02
+# generated: 2026-07-03
 date,close
 1969-12-01,10000.000000
 1970-01-01,9443.573872

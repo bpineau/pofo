@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: XAUUSD
 # name: Gold (XAU/USD spot)
-# method: real gold spot (XAU/USD daily, ~2000→) extended back with the monthly London/LBMA gold fix (bundled refdata XAUUSD-LBMA, 1968→)
+# method: real gold spot (XAU/USD daily, ~2000→) extended back with the daily London/LBMA PM gold fix (bundled refdata XAUUSD-LBMA, 1968→)
 # validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.0%/yr CAGR sim 8.36% vs real 8.36% (overlap 14635 d from 1968-04-01 to 2026-07-01) vs XAUUSD
-# generated: 2026-07-02
+# generated: 2026-07-03
 date,close
 1968-04-01,37.782765
 1968-04-02,37.381887
