@@ -166,5 +166,5 @@ cash). The stages are meant to be compared side by side:
 - `dca-accumulation-demo`: starting capital + monthly contributions.
 - `balanced-decumulation-demo`: starting capital + 4%/yr withdrawal.
 
-Older simple examples also live here: `classique-60-40`, `permanent`,
+Older simple examples also live here: `tradi-60-40`, `permanent`,
 `sp500`, `world-equity`, `optimized`.

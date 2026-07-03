@@ -8,7 +8,7 @@
 # Inspired by: Miller, "Using Trend-Following Managed Futures to Increase
 #   Expected Withdrawal Rates" (SSRN 3048332, 2017).
 # Drawn at the classic 4% here, on purpose: compare its money path with
-#   classique-60-40 plus '#meta withdraw' to see the trend leg pay.
+#   tradi-60-40 plus '#meta withdraw' to see the trend leg pay.
 #meta capital:1000000
 #meta withdraw:40000/year
 #meta rebalance:180
