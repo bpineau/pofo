@@ -20,8 +20,12 @@
 //   - extend/longBack splice a long real proxy behind a short component leg
 //     (VFINX→S&P 500 ~1871, VTMGX→MSCI World ex-US ~1969, VEIEX→MSCI EM ~1988,
 //     VFITX/VUSTX→constant-maturity Treasury TR ~1953, GC=F→LBMA gold ~1968,
-//     CL=F→WTI ~1946, ^IRX→3-month T-bill ~1934), so a multi-leg reconstruction
-//     reaches back to its youngest leg's first quote (BuildFrame's start);
+//     CL=F→WTI ~1946, ^IRX→3-month T-bill ~1934, GBPUSD=X→FRED daily ~1971),
+//     so a multi-leg reconstruction reaches back to its youngest leg's first
+//     quote (BuildFrame's start); dailyShape then blends a real daily series
+//     of the same market into a monthly proxy (anchors keep the levels, the
+//     shape supplies the day-to-day variance), so long backcasts stay honest
+//     at daily-statistics frequency;
 //   - the bundled recipes (All, Find) assemble these building blocks for
 //     NTSX, NTSG, URTH, IWDA, VT, RSSB, XAUUSD, ZPRV, SHY, IEF, TLT, ZROZ,
 //     DBMF, DBMFE, KMLM, CTA and the Winton Trend-Equity fund, among others.
