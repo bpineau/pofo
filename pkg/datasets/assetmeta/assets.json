@@ -1424,8 +1424,9 @@
     ],
     "name": "iShares € Inflation Linked Govt Bond UCITS ETF EUR (Acc)",
     "ucits": true,
-    "source": "yahoo",
-    "symbol": "IBCI.DE",
+    "source": "ft",
+    "symbol": "IBCI",
+    "xid": "3594824",
     "currency": "EUR",
     "fees": 0.09,
     "asset_class": "inflation-linked-bond",
@@ -1442,7 +1443,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection",
+    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection; FT xid is the Amsterdam EUR listing (IBCI:AEX:EUR), daily history from the 2005 inception (Yahoo only starts 2009)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26"
