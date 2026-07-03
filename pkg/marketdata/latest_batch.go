@@ -117,6 +117,7 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 			Price:    *r.RegularMarketPrice,
 			Time:     time.Unix(r.RegularMarketTime, 0).In(loc),
 			Currency: r.Currency,
+			Symbol:   r.Symbol,
 			Source:   "yahoo",
 			Live:     true,
 		}

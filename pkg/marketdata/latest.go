@@ -17,6 +17,7 @@ type Quote struct {
 	Price    float64   // in Currency
 	Time     time.Time // when this price was observed
 	Currency string    // ISO 4217 quote currency
+	Symbol   string    // the instrument actually served (a resolution may pick a twin listing)
 	Source   string    // "yahoo", "ft", "morningstar", "stooq" or "ecb"
 	Live     bool      // true: real-time market field; false: last daily close
 }
@@ -71,6 +72,7 @@ func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
 		Price:    last.Close,
 		Time:     last.Date,
 		Currency: s.Currency,
+		Symbol:   s.Symbol,
 		Source:   s.Source,
 		Live:     false,
 	}, nil
