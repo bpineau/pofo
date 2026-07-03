@@ -498,14 +498,23 @@ func tltRecipe() Recipe {
 }
 
 // zrozRecipe approximates 25+ year zero-coupon STRIPS by leveraging the long
-// Treasury fund VUSTX to 1.65× as a pure excess strategy (its ~25-year
-// duration matches ZROZ's), real ZROZ quotes grafted on top.
+// Treasury fund VUSTX to 1.65× over cash (its ~25-year duration matches
+// ZROZ's) ON TOP of the fully invested collateral earning cash: a STRIPS
+// fund owns its bonds outright, so the backcast must credit the cash rate
+// the excess formulation strips out. Without the collateral leg the sim
+// lagged the real fund by the T-bill average (~1.2%/yr over 2009-2026) and
+// collapsed in the high-rate 1960s-1980s (-6%/yr in the 60s, +1.9%/yr
+// full-period vs ~+6% for long Treasuries themselves). Real ZROZ quotes are
+// grafted on top.
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
 		Name:            "PIMCO 25+Y zero-coupon: 1.65× long Treasury",
-		Method:          "1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
-		Build:           composite("ZROZ (1.65x long Treasury excess)", []Leg{{ID: "VUSTX", Weight: 1.65, Excess: true}}, "^IRX", 0),
+		Method:          "cash + 1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
+		Build: composite("ZROZ (cash + 1.65x long Treasury excess)", []Leg{
+			{ID: "VUSTX", Weight: 1.65, Excess: true},
+			{ID: "^IRX", Weight: 1},
+		}, "^IRX", 0),
 		ValidateAgainst: "ZROZ",
 		SpliceReal:      "ZROZ",
 	}
