@@ -28,9 +28,12 @@ import (
 //   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
 //   - VFITX (Intermediate-Term Treasury, 1991) and VUSTX (Long-Term, 1986) →
 //     constant-maturity Treasury total-return reconstructions (refdata
-//     TREASURY-INT-USD / TREASURY-LONG-USD, from FRED CMT yields, ~1953).
+//     TREASURY-INT-USD / TREASURY-LONG-USD, from FRED CMT yields, ~1953),
+//     carried at daily granularity from 1962 by the TREASURY-*-DAILY
+//     daily-yield shapes (see dailyShape).
 //   - VFINX (Vanguard 500, 1976) → S&P 500 total return (refdata SP500-USD:
-//     Shiller price + reinvested dividends, ~1871), the index VFINX tracks.
+//     Shiller price + reinvested dividends, ~1871), the index VFINX tracks,
+//     carried at daily granularity from 1927-12 by the ^GSPC price shape.
 //   - ^IRX (13-week T-bill rate) → the 3-month T-bill rate (refdata TBILL-3M:
 //     FRED TB3MS, ~1934). A rate, not a price: rescaled by a ≈1 factor at the
 //     splice (^IRX ≈ TB3MS there), then read as an isRate series.
@@ -45,14 +48,20 @@ var longBack = map[string]string{
 	"^IRX":  "TBILL-3M",
 }
 
-// dailyShape maps a monthly longBack proxy to a bundled daily series of the
-// same market whose LEVELS are not authoritative (a close but not identical
-// universe, gross of withholding) but whose day-to-day moves are real. The
-// proxy's monthly anchors keep setting the levels and the shape supplies
-// the daily granularity in between (see shapedSeries), so reconstructions
-// stop feeding month-sized moves to daily-frequency statistics.
+// dailyShape maps a monthly longBack proxy to a daily series of the same
+// market whose LEVELS are not authoritative (a close but not identical
+// universe, gross of withholding, or a price index without income) but
+// whose day-to-day moves are real. The proxy's monthly anchors keep setting
+// the levels and the shape supplies the daily granularity in between (see
+// shapedSeries), so reconstructions stop feeding month-sized moves to
+// daily-frequency statistics. A shape may stop before the anchors' end:
+// real fund quotes take over from their inception anyway, and shapedSeries
+// keeps the later anchors at their own cadence.
 var dailyShape = map[string]string{
-	"DEVEXUS-USD": "DEVEXUS-DAILY", // Ken French developed-ex-US market TR, daily 1990-07→
+	"DEVEXUS-USD":       "DEVEXUS-DAILY",       // Ken French developed-ex-US market TR, daily 1990-07→
+	"SP500-USD":         "^GSPC",               // S&P 500 daily price index (Yahoo, 1927-12→)
+	"TREASURY-INT-USD":  "TREASURY-INT-DAILY",  // FRED DGS5 daily 5y CMT through TreasuryTR, 1962→1992
+	"TREASURY-LONG-USD": "TREASURY-LONG-DAILY", // FRED DGS20 daily 20y CMT through TreasuryTR, 1962→1986
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced

@@ -20,17 +20,28 @@ import (
 // usable overlap the anchors are returned unchanged. Both inputs must be
 // ascending with positive closes.
 // shapedSeries returns the anchors series with the daily shape blended in
-// where the shape covers it (anchorShape) and the untouched anchors spliced
-// back in front of that. A missing shape, or one that stops short of the
-// anchors' end (a truncated fetch must not silently drop the recent
-// anchors), leaves the anchors unchanged.
+// where the shape covers it (anchorShape) and the untouched anchors kept on
+// both sides: spliced back in front (ExtendBack) and appended after the
+// shape's last date. A shape may legitimately stop decades before the
+// anchors' end (e.g. the daily Treasury yields only matter before the real
+// fund's inception, which replaces the proxy from there anyway); the
+// remaining anchors then keep their own cadence rather than being dropped
+// or, worse, vetoing the whole blend. A missing or non-overlapping shape
+// leaves the anchors unchanged.
 func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
-	if shape == nil || len(shape.Points) == 0 || len(anchors.Points) == 0 ||
-		shape.Last().Date.Before(anchors.Last().Date) {
+	if shape == nil || len(shape.Points) == 0 || len(anchors.Points) == 0 {
 		return anchors
 	}
 	out := *anchors
 	out.Points = anchorShape(anchors.Points, shape.Points)
+	// Anchors past the shape's coverage: anchorShape ends exactly on an
+	// anchor level, so later anchors continue the same index seamlessly.
+	last := out.Points[len(out.Points)-1].Date
+	for _, a := range anchors.Points {
+		if a.Date.After(last) {
+			out.Points = append(out.Points, a)
+		}
+	}
 	out.SimulatedBefore = time.Time{} // allow the pre-shape months back in front
 	marketdata.ExtendBack(&out, anchors)
 	return &out

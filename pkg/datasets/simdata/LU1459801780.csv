@@ -3,7 +3,7 @@
 # name: UBS Core BBG TIPS 1-10 (EUR-hedged): US TIPS hedged to EUR
 # method: 0.64×VIPSX (Vanguard Inflation-Protected, US TIPS TR, 2000->, duration-matched to 1-10) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged TIPS; real 42C0 grafted from 2016
 # validation: corr=0.367 (weekly 0.845) beta=0.51 TE=4.9%/yr CAGR sim 0.65% vs real 0.74% (overlap 2382 d from 2016-09-30 to 2026-06-30) vs LU1459801780
-# generated: 2026-07-02
+# generated: 2026-07-03
 date,close
 2000-06-29,5.557544
 2000-06-30,5.560291
