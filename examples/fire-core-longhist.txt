@@ -1,0 +1,19 @@
+# FIRE Core, long-history variant -- built for the -fire cohort models
+# Idea: the same four-engine cruise allocation as fire-decumulation-core,
+#   but every brick chosen for maximum simulated depth (all legs reach the
+#   late 1980s; the linker sleeve is swapped for short Treasuries, its
+#   nearest long-history stand-in). Purpose: feed 'pofo -fire' with the
+#   longest aligned real-return history so the bootstrap and cohort models
+#   have actual 1990s/2000s sequences to resample, instead of being capped
+#   by the youngest fund. For buying decisions use fire-decumulation-core;
+#   for ruin-probability work use this one:
+#   ./pofo -fire examples/fire-core-longhist.txt
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+56    NTSGSIM         # Global Efficient Core 90/60 (sim to 1969)
+10    DBMFESIM        # Trend leg A: CTA replication (sim to 1988)
+8     KMLMSIM         # Trend leg B: MLM index (sim to 1988)
+12    XAUUSDSIM       # Gold (sim to 1968)
+14    SHYSIM          # Short Treasuries, the buffer stand-in (sim to 1991; live: euro linkers + cash)

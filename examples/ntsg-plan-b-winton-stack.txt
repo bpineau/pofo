@@ -1,0 +1,19 @@
+# NTSG Plan B (Winton equity+trend stack, duration added back)
+# Idea: the other NTSG contingency: Winton's Trend-Enhanced Global Equity
+#   stacks 100% world equity + 100% direct trend in one UCITS. But it is an
+#   equity+TREND stack, not equity+BONDS: swapping it in for NTSG weight-
+#   for-weight would silently delete the duration sleeve and balloon trend.
+#   So this build re-adds duration explicitly and shrinks the standalone
+#   trend legs to zero: the stack IS the trend budget (~50% notional).
+# Inspired by: the return-stacking rule that substitutions must be made at
+#   constant engine exposure, never at constant fund count.
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+50    WINTON-TREND-EQUITYSIM  # 100% world equity + 100% Winton trend (IE000O1VI174)
+22    TLTSIM          # Long Treasuries, the duration sleeve rebuilt (UCITS: IDTL IE00BSKRJZ44)
+12    XAUUSDSIM       # Gold (buy IGLN)
+8     LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN)
+4     LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E)
+4     LU0290358497    # EUR overnight cash (XEON)

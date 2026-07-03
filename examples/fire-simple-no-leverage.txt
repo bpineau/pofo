@@ -1,0 +1,20 @@
+# FIRE Simple (no leverage, no trend) -- the explainable-to-anyone build
+# Idea: the control group for the fire-* family: what a prudent decumulation
+#   looks like with ONLY plain, unleveraged, self-explanatory bricks: world
+#   equity, euro government bonds, short euro linkers, gold, cash. No
+#   futures overlay, no managed futures, nothing that needs a manager or a
+#   model to keep working. The price of that simplicity is a weaker answer
+#   to stagflation (nominal bonds + equities can fall together in real
+#   terms, 2022-style) -- which is exactly what the trend and efficient-core
+#   builds are trying to fix. Compare and decide what complexity buys.
+# Inspired by: Bogleheads three-fund thinking + Anarkulova et al. 2025
+#   (global history supports ~2.5-3% withdrawals, not 4%).
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:180
+
+45    IE00B4L5Y983    # World equity (IWDA)
+20    IE00B4WXJJ64    # Euro government bonds, all maturities (IEGA)
+15    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN)
+12    IE00B4ND3602    # Gold (IGLN)
+8     LU0290358497    # EUR overnight cash (XEON)

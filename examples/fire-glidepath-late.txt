@@ -1,0 +1,17 @@
+# FIRE Glidepath, late phase -- after the tent has melted
+# Idea: years ~8+ of the decumulation glidepath: the pension is closer, the
+#   remaining liability is smaller, so the linker/cash tent has been consumed
+#   and equity exposure has drifted UP. This is the "rising equity glidepath"
+#   endpoint: the same four engines, minimum defensive drag.
+# Inspired by: Kitces & Pfau 2014 -- retiring conservative then re-risking
+#   beats both static mixes and traditional declining glidepaths.
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+62    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR)
+8     KMLMSIM         # Trend leg B: direct trend (buy Winton or AQR UCITS)
+12    XAUUSDSIM       # Gold (buy IGLN)
+4     LU1645380442SIM # Euro inflation-linked 1-10y (residual buffer)
+4     LU0290358497    # EUR overnight cash (XEON)

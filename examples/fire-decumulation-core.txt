@@ -1,0 +1,24 @@
+# FIRE Decumulation Core (UCITS, curated) -- the cruise allocation
+# Idea: a ~3% real-withdrawal portfolio for a European early retiree. One
+#   capital-efficient engine (NTSG: 90% world equity + 60% bond futures),
+#   a trend sleeve split over TWO distinct engines (CTA replication + direct
+#   trend), gold, and a defensive pocket that actually matches the liability:
+#   short euro inflation-linked bonds plus EUR cash. Four return engines,
+#   ~130% look-through notional, targeting ~10% portfolio volatility.
+# Inspired by: Miller 2017 (trend raises safe withdrawal rates); Neville,
+#   Harvey et al. 2021 (trend + gold + short linkers in inflationary times);
+#   Anarkulova et al. 2025 (global data say withdraw ~2.3-3%, not 4%);
+#   Return Stacked / WisdomTree efficient core.
+# The withdrawal below is 3%/yr of the start capital; sequence risk is the
+#   enemy, so compare with fire-bond-tent-departure (the year-0 variant).
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+56    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR, LU2951555585)
+8     KMLMSIM         # Trend leg B: direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR LU1103257975)
+12    XAUUSDSIM       # Gold (buy a physical ETC: IGLN IE00B4ND3602)
+8     LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability
+3     LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E) -- diversifies the sovereign linker risk
+3     LU0290358497    # EUR overnight cash (XEON) -- the withdrawal float

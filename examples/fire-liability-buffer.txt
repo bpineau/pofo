@@ -1,0 +1,18 @@
+# FIRE Liability Buffer -- the defensive tent, isolated
+# Idea: just the pocket that funds withdrawals when the growth sleeve is in
+#   drawdown: EUR cash + short euro linkers + EUR-hedged short TIPS. The job
+#   is not return, it is matching a REAL, EURO liability: short duration (~4)
+#   so a 2022-style real-rate shock cannot destroy it, inflation indexation
+#   so a 1970s-style shock cannot either. Run it alone to see how the tool
+#   behaves in stress before trusting it inside the fire-* builds.
+# Inspired by: liability-driven investing, scaled down to one household;
+#   the 2022 lesson that LONG linkers lost 25-35% during an inflation shock.
+# Backtest caveat: the euro-linker line only has real quotes from 2025; its
+#   simulated history borrows IBCI (ALL maturities, duration ~7-8), so the
+#   2022 dip shown here is roughly TWICE what a 1-10y fund would have taken.
+#   Read the pre-2025 drawdowns as a pessimistic bound.
+#meta rebalance:180
+
+30    LU0290358497    # EUR overnight cash (XEON)
+47    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN, LU1645380442)
+23    LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E, LU1459801780) -- non-euro sovereign diversification

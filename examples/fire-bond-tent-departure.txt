@@ -1,0 +1,22 @@
+# FIRE Bond Tent (departure years) -- the sequence-risk window build
+# Idea: the same engines as fire-decumulation-core, but with the defensive
+#   pocket inflated to ~20% (about 6-7 years of a 3% withdrawal) for the
+#   "retirement red zone": the ~10 first years where a bad sequence does
+#   permanent damage. The tent is meant to MELT: stop refilling linkers/cash
+#   after year ~8 and drift toward fire-glidepath-late.
+# Inspired by: Kitces & Pfau 2014 (rising equity glidepaths / bond tent);
+#   Morningstar State of Retirement Income (early losses + rigid spending
+#   is what kills retirements).
+# Run the three fire-* stages side by side:
+#   ./pofo examples/fire-bond-tent-departure.txt examples/fire-decumulation-core.txt examples/fire-glidepath-late.txt
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+50    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+9     DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR)
+7     KMLMSIM         # Trend leg B: direct trend (buy Winton or AQR UCITS)
+10    XAUUSDSIM       # Gold (buy IGLN)
+12    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN) -- the tent's core
+5     LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E)
+7     LU0290358497    # EUR overnight cash (XEON) -- ~2 years of spending
