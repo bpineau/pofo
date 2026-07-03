@@ -42,50 +42,58 @@ nets out at the monthly horizon (dollar/equity correlation), plus the
 90/60 overlay's mean reversion. Do not try to "fix" it; compare portfolios
 on the monthly rows.
 
+## Done in the 2026-07-03 pass
+
+- **Treasury legs daily (1962→)**: `TREASURY-INT-DAILY` / `TREASURY-LONG-DAILY`
+  refdata shapes from the FRED daily CMT yields (DGS5 1962→1992, DGS20
+  1962→1986; real VFITX/VUSTX take over from there) through `TreasuryTR`,
+  wired via `simgen.dailyShape`. `shapedSeries` now keeps anchors past the
+  shape's end instead of vetoing the blend. IEF/TLT/ZROZ pre-1991 and the
+  NTSX/RSSB/TSMOM rates legs are daily back to 1962.
+- **S&P 500 daily shape (1927→)**: `dailyShape[SP500-USD] = ^GSPC` (Yahoo
+  daily price index), same anchors+shape blend as MSCI World; the VFINX leg
+  is daily before 1976 now.
+- **WTI daily (1986→2000)**: `WTI-DAILY` refdata (FRED DCOILWTICO spot)
+  shapes the WTI-USD monthly averages; improved every TSMOM validation.
+- **Daily FX from 1971**: `eurusd-long.csv` is now daily throughout: FRED
+  DEXUSEU daily 1999→, monthly ECU anchors carrying the real daily
+  Bundesbank Frankfurt DM/USD fixing 1979-1998 (levels unchanged at every
+  month boundary), rescaled daily DM alone 1971-1978. GBPUSD gets the same
+  treatment through `longBack[GBPUSD=X] = GBPUSD-DAILY` (FRED DEXUSUK,
+  1971→), which moved the DPGT backcast start from 2004 to 1994.
+- **FX out of the frames**: `dbmfeBuild`/`dpgtBuild` no longer join the FX
+  cross into the strategy frame (Yahoo FX prints Sundays: DBMFE carried ~31
+  Sunday rows a year and a ~290-day calendar that under-annualized vol and
+  over-accrued the cash leg). The cross is forward-filled onto the
+  strategy's own calendar (`fxOnDates`/`convertDaily`).
+- **FX bad prints**: Yahoo printed EURUSD=X at 1.4918 on 2008-12-08 between
+  1.2717 and 1.2926, a ±15% one-day artefact in every EUR-converted series;
+  `dropFXSpikes` (marketdata clean layer, "=X" symbols only) now strips
+  isolated self-cancelling spikes ≥8%.
+
 ## Follow-ups, by expected impact
 
-1. **Treasury legs daily (1962→)**. `TREASURY-INT-USD` / `TREASURY-LONG-USD`
-   are monthly (FRED GS5/GS20 through `simgen.TreasuryTR`). FRED also
-   publishes the DAILY constant-maturity yields: `DGS5` (1962→, continuous)
-   and `DGS20`/`DGS30` (1962→/1977→, with gaps 1987-1993 and 2002-2006).
-   Run the daily series through `TreasuryTR` (generalize its monthly
-   repricing step to the actual day gap) to regenerate the refdata daily;
-   for the LONG leg, bridge the gaps with the monthly anchors (anchorShape
-   needs a small extension to keep anchors inside shape gaps, today it
-   collapses them). Affects NTSG/NTSX before VFITX (1991) and the rates
-   leg of every TSMOM frame. FRED was unreachable from the sandbox on
-   2026-07-02 (timeouts); retry, or find a mirror.
-
-2. **SG CTA index daily (2000→)**. `docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv`
+1. **SG CTA index daily (2000→)**. `docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv`
    already sits in this repo (daily index returns since 1999-12-31, not yet
    referenced by any code). Candidate uses: a refdata series to validate or
    anchor the DBMF-family TSMOM replications after 2000, or a splice source
    for a generic managed-futures asset. Before 2000 no free daily managed
-   futures series is known (Barclay CTA is monthly).
+   futures series is known (Barclay CTA is monthly). Not wired in the
+   2026-07-03 pass because it is a modeling decision (anchoring the TSMOM
+   replicas to a different strategy's index changes their returns), not a
+   granularity fix.
 
-3. **Emerging markets daily shape (VEIEX leg, monthly before 1994)**.
-   `EM-USD` (Curvo MSCI EM net, monthly ~1988→) could be shaped by the Ken
-   French "Emerging Markets 5 Factors [Daily]" file the same way as
-   dev-ex-US; check the daily file's actual start (the monthly one starts
-   1989-07). One more `dailyShape` entry once the refdata is generated.
+2. **Emerging markets daily shape (VEIEX leg, monthly before 1994)**.
+   Checked 2026-07-03: no free source. Ken French publishes no EM daily
+   factors (monthly only), and Yahoo's `^891800-USD-STRD` (MSCI EM) serves
+   no history. Revisit if a daily EM index (gross or price) ever surfaces.
 
-4. **Daily FX before 2003 (all EUR-converted statistics)**. The euro cross
-   is daily from ~2003 (Yahoo) and monthly anchors before (FRED ECU/EUR),
-   so every USD asset converted to EUR carries monthly FX steps before
-   2003. FRED publishes DAILY `DEXUSEU` (1999→) and `DEXGEUS` (DEM/USD,
-   1971-1998, chain at 1.95583 DEM/EUR): a daily extension of the bundled
-   eurusd-long proxy would make pre-2003 EUR statistics fully daily.
-
-5. **WTI daily (CL=F leg, monthly before 2000)**. `WTI-USD` is FRED
-   `WTISPLC` monthly averages. The EIA publishes the daily WTI spot from
-   1986 (API key required, free) and FRED mirrors it as `DCOILWTICO`
-   (daily, 1986→). Affects the energy leg of the TSMOM frames.
-
-6. **Pre-1972 / pre-1990 equity shapes (low priority)**. No free daily
-   MSCI data before 1972; a composite of national daily indices (^GSPC
-   1927→, ^N225 1965→, ^FTSE 1984→, ^GDAXI 1987→) could shape the world
-   and dev-ex-US anchors further back if the pre-1972 era ever matters at
-   daily granularity.
+3. **Pre-1972 / pre-1990 equity shapes (low priority)**. No free daily
+   MSCI data before 1972; a composite of national daily indices (^N225
+   1965→, ^FTSE 1984→, ^GDAXI 1987→) could shape the dev-ex-US anchors
+   further back if the pre-1972 era ever matters at daily granularity.
+   (The US side is covered: the ^GSPC shape carries SP500-USD daily from
+   1927-12.)
 
 Also worth considering instead of (or alongside) more data work: make the
 daily statistics time-aware (annualize each return by its actual calendar

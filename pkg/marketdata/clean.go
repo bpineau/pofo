@@ -1,5 +1,7 @@
 package marketdata
 
+import "math"
+
 // dropoutRatio is the fraction below which a close, relative to the surrounding
 // stable level, is treated as a data dropout (a provider placeholder or a bad
 // print) rather than a real quote. 0.25 means a >75% one-day collapse that
@@ -144,5 +146,45 @@ func dropDropouts(pts []Point) []Point {
 			out = append(out, p)
 		}
 	}
+	return out
+}
+
+// fxSpikeRatio is the minimum adjacent move treated as a candidate bad print
+// in a currency cross. Major crosses close within a fraction of a percent of
+// the prior day; even their historic extremes (the 2015 CHF depeg, -17%, or
+// the 2016 GBP flash crash, ~-2% close-to-close) either far exceed it without
+// reverting or stay well below it, so an 8% spike that immediately cancels is
+// a provider artefact, not a market move.
+const fxSpikeRatio = 0.08
+
+// dropFXSpikes removes isolated bad prints from a currency cross: an interior
+// point whose move in exceeds fxSpikeRatio, whose move out goes the opposite
+// way, and whose two moves nearly cancel (the two-day net is at most a quarter
+// of the spike). Real currency shocks fail the cancellation test: a
+// devaluation does not un-happen the next day. The real case: Yahoo printing
+// EURUSD=X at 1.4918 on 2008-12-08 between 1.2717 and 1.2926 (+17%/−13%),
+// which leaked a ±15% one-day artefact into every EUR-converted series.
+// Only applied to "=X" symbols; equities legitimately whipsaw harder.
+func dropFXSpikes(pts []Point) []Point {
+	n := len(pts)
+	if n < 3 {
+		return pts
+	}
+	out := make([]Point, 0, n)
+	out = append(out, pts[0])
+	for i := 1; i+1 < n; i++ {
+		prev, cur, next := pts[i-1].Close, pts[i].Close, pts[i+1].Close
+		if prev <= 0 || cur <= 0 || next <= 0 {
+			out = append(out, pts[i])
+			continue
+		}
+		a, b := cur/prev, next/cur
+		spike := math.Max(math.Abs(a-1), math.Abs(b-1))
+		if spike >= fxSpikeRatio && (a-1)*(b-1) < 0 && math.Abs(a*b-1) <= spike/4 {
+			continue // an isolated spike that cancels: a bad print
+		}
+		out = append(out, pts[i])
+	}
+	out = append(out, pts[n-1])
 	return out
 }

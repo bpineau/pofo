@@ -76,7 +76,7 @@ func vixSeries(pts []Point) *Series {
 // any: it answers only when every live source failed and nothing is cached,
 // so a chart still renders offline at the cost of missing the latest days.
 // ^VIX serves its full daily snapshot; the euro crosses serve the long
-// monthly ECU/EUR anchors (1978→) that normally only extend a live cross,
+// long ECU/DM/EUR proxy (daily, 1971→) that normally only extends a live cross,
 // so USD↔EUR conversion keeps working offline, at monthly granularity.
 func embeddedHistory(symbol string) (*Series, bool) {
 	switch symbol {
