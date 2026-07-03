@@ -1,0 +1,15 @@
+# NTSG Plan B (do-it-yourself 90/60) -- if the efficient-core fund closes
+# Idea: NTSG is a small fund; a closure would force a taxable exit. This is
+#   the contingency: rebuild the 90/60 by hand with two plain ETFs and
+#   explicit borrowing (150% gross, financed at the cash rate + spread via
+#   '#meta leverage:on'). Tracks the idea, not the implementation: a retail
+#   investor would run it unlevered at 60/40 within a bigger portfolio, or
+#   via margin/futures if equipped. Run against ntsg.txt to see how close
+#   the DIY version gets, and what the borrow spread costs.
+# Inspired by: WisdomTree Efficient Core's own construction (90% equities,
+#   60% bond futures, cash collateral).
+#meta leverage:on
+#meta rebalance:90
+
+90    IWDASIM         # World equity (UCITS: IWDA IE00B4L5Y983)
+60    IEFSIM          # Intermediate Treasuries, the futures ladder proxy (UCITS route: global govt EUR-hedged)
