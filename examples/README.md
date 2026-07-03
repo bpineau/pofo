@@ -81,6 +81,13 @@ rather than recomputing it (and drifting) on every run.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
+- `hydra-five-engines`: one head per return engine (efficient core, small
+  value, two trends, gold, deep duration); over 1993-2026 it beats the
+  dragon-lite blend on CAGR, vol, Sharpe, recovery time, worst rolling 5y
+  and every stress window (2000-02, 2008, 2022).
+- `hydra-five-engines-levered`: the same at 108% notional
+  (`#meta leverage:on`); buys the bull-market CAGR back at unchanged vol.
+  Accumulation-phase build.
 
 ## Capital-efficient / return-stacking (modern)
 

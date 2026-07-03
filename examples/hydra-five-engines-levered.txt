@@ -1,0 +1,23 @@
+# Hydra, levered (108%) -- the accumulation-phase sibling
+# Idea: the same five-engine hydra scaled to 108% notional with explicit
+#   borrowing ('#meta leverage:on', financed at the cash rate + spread).
+#   Diversification this deep leaves return on the table in bull markets;
+#   a modest lever buys the missing CAGR back WITHOUT giving up the risk
+#   profile, because what is levered is the whole balanced machine, not
+#   the equity sleeve.
+# Backtest vs claude-dragonlite (60/25/15) over 1993->2026, EUR: CAGR
+#   10.9% vs 10.0%, Sharpe 0.81 vs 0.77, recovery 2.9y vs 4.9y, worst
+#   rolling 5y CAGR +0.8% vs -1.7%, at essentially the same volatility
+#   (13.8% vs 13.6%). 2008 real drawdown -17% vs -23%; 2022 flat vs -2%.
+# Best suited to accumulation; for decumulation prefer the unlevered
+#   hydra-five-engines or the fire-* family (this one has no EUR
+#   liability matching and borrow costs rise exactly when cash gets dear).
+#meta leverage:on
+#meta rebalance:90
+
+38    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG)
+14    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV or Avantis)
+17    DBMFESIM        # Engine 3a, trend replication (iMGP DBi EUR)
+15    KMLMSIM         # Engine 3b, direct trend (buy Winton or AQR UCITS)
+19    XAUUSDSIM       # Engine 4, gold (buy IGLN)
+5     ZROZSIM         # Engine 5, deep deflation duration (UCITS route: IDTL at ~2x)

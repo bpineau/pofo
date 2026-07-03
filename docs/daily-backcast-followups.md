@@ -100,3 +100,28 @@ daily statistics time-aware (annualize each return by its actual calendar
 gap) or have the report flag daily stats when `SimulatedBefore` falls
 inside the window with monthly spacing; either would make the remaining
 monthly segments honest instead of silently wrong.
+
+## New backcast candidates (2026-07-03, from the examples/fire-* work)
+
+Bare assets that keep capping the common window of the curated
+decumulation portfolios, in the order they would pay:
+
+1. **EUR overnight cash (XEON, LU0290358497; real quotes 2007→).** The
+   cash sleeve of every decumulation build. simgen already carries an
+   internal `EURCASH-EUR` leg (EONIA/€STR chain), so a recipe would be
+   nearly free and would stop pinning portfolios at 2007.
+2. **Euro government bonds (IEGA, IE00B4WXJJ64; real quotes 2014→).** The
+   natural EUR duration brick; today `fire-simple-no-leverage` has to use
+   IEFSIM (US 7-10y) as a stand-in. The Bundesbank daily series already
+   fetched for the DM work could shape a Bund-based backcast.
+3. **Broad commodities (ICOM, IE00BDFL4P12; real quotes 2017→).** Used by
+   modern-all-weather, ntsx-all-weather and stagflation-bunker; a BCOM
+   total-return chain would take it decades back.
+4. **Direct-trend UCITS (Winton IE00BG382Q20 2018→, AQR LU1103257975
+   2014→).** The `fire-trend-sleeve-lab` legs. The SG CTA daily CSV above
+   (or the SG Trend index) is the obvious splice source; same modeling
+   caveat as follow-up (1).
+5. **Euro linkers before 2009 (LU1645380442 sims via IBCI, 2009→).** Caps
+   the whole fire-* family at 2009. Hard: no free daily euro-linker series
+   before IBCI's inception; French OATi index data would be needed. Low
+   priority next to (1)-(3).

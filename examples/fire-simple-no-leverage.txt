@@ -13,8 +13,8 @@
 #meta withdraw:60000/year
 #meta rebalance:180
 
-45    IE00B4L5Y983    # World equity (IWDA)
-20    IE00B4WXJJ64    # Euro government bonds, all maturities (IEGA)
+45    IWDASIM         # World equity (buy IWDA IE00B4L5Y983)
+20    IEFSIM          # 7-10y government bonds; buy euro govt IEGA IE00B4WXJJ64 (no euro-govt backcast yet, Treasuries stand in)
 15    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN)
-12    IE00B4ND3602    # Gold (IGLN)
+12    GOLDSIM         # Gold (buy IGLN IE00B4ND3602)
 8     LU0290358497    # EUR overnight cash (XEON)
