@@ -93,6 +93,17 @@
 // through a Yahoo outage or offline. Pair it with Client.FXRate to express
 // the price in a display currency.
 //
+// # Data repair
+//
+// Every fetched daily series goes through a conservative cleaning pass
+// before being cached: leading provider placeholders and isolated one-day
+// collapses are dropped, a single persistent denomination break (pence vs
+// pounds splices) is mended, and currency crosses lose isolated
+// self-cancelling spikes (a Yahoo bad print, not a market move). Anything
+// ambiguous is left untouched for the -verify-data doctor (Verify) to
+// flag for human review; rate symbols (^IRX, …) are exempt because their
+// legitimate extremes look like artefacts.
+//
 // # Simulated data
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
