@@ -1117,7 +1117,20 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 	if !opt.noOpen {
 		openBrowser(url)
 	}
-	return http.Serve(ln, web.Handler(panel, labels))
+	// main() routes SIGINT/SIGTERM into ctx (signal.NotifyContext), which
+	// replaces the default die-on-Ctrl-C behavior, so the server must watch
+	// the context and shut down when it fires.
+	srv := &http.Server{Handler: web.Handler(panel, labels)}
+	go func() {
+		<-ctx.Done()
+		shutCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+		_ = srv.Shutdown(shutCtx)
+	}()
+	if err := srv.Serve(ln); !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
 }
 
 // fetchAsset downloads the history of an identifier (ticker or ISIN). A
