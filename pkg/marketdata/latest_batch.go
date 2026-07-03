@@ -57,6 +57,15 @@ func (c *Client) LatestBatch(ctx context.Context, ids []string) map[string]Quote
 	return out
 }
 
+// LatestBatchLive returns the live Yahoo quotes of the given symbols in one
+// batched call - no resolution, no non-live fallback: a symbol Yahoo cannot
+// serve is simply absent from the result. Callers valuing declared
+// instruments get exactly the symbols they asked for; LatestBatch is the
+// batteries-included sibling.
+func (c *Client) LatestBatchLive(ctx context.Context, symbols []string) map[string]Quote {
+	return c.fetchYahooQuoteBatch(ctx, symbols)
+}
+
 // fetchYahooQuoteBatch reads live regular-market prices for many symbols in
 // yahooQuoteBatchMax-sized chunks of the v7 quote API (cookie+crumb needed).
 func (c *Client) fetchYahooQuoteBatch(ctx context.Context, symbols []string) map[string]Quote {
