@@ -35,7 +35,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `asset_class` | `equity`, `government-bond`, `corporate-bond`, `aggregate-bond`, `inflation-linked-bond`, `money-market`, `gold`, `broad-commodity`, `managed-futures`, `long-volatility`, `tail-risk`, `multi-asset`, `real-estate`, `other` |
 | `underlying` | one-line plain description of what it holds |
 | `benchmark_index` | the index it tracks, or `active (...)` / `null` |
-| `strategy` | `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `trend-following`, `long-volatility`, `other` |
+| `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `other` |
 | `geography` | approximate region weights (percent), `{ "Global developed": 100 }`, or `null` when not meaningful (gold, broad managed futures, money market) |
 | `sectors` | approximate equity sector weights (percent), or `null` for non-equity |
 | `currency` | quote currency used for fetching and FX conversion (ISO code) |
