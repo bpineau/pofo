@@ -429,7 +429,7 @@ function renderReadout(ruin, target) {
   chip.textContent = grade === "good"
     ? `inside your ${(target * 100).toFixed(1).replace(/\.0$/, "")}% tolerance`
     : `above your ${(target * 100).toFixed(1).replace(/\.0$/, "")}% tolerance`;
-  const scale = Math.max(0.10, 2.5 * target);
+  const scale = Math.max(0.10, 2.5 * target, 1.25 * ruin);
   document.getElementById("gaugeFill").style.width = (100 * Math.min(1, ruin / scale)).toFixed(1) + "%";
   document.getElementById("gaugeFill").className = "fill " + grade;
   document.getElementById("gaugeLim").style.left = (100 * target / scale).toFixed(1) + "%";
