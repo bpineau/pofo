@@ -39,17 +39,45 @@ var longFXProxies = []struct{ ccy, csv, tag string }{
 }
 
 // longFXCross returns a bundled long proxy for a currency cross, expressed in
-// the requested direction: "<CCY>USD=X" (USD per unit) directly, "USD<CCY>=X"
-// as the reciprocal. tag is the proxy's provenance suffix. ok is false for any
-// symbol without a bundled history, so the splice only ever touches those
-// crosses.
+// the requested direction. It triangulates through the US dollar from the
+// bundled "USD per unit" histories: a cross "XY=X" quotes Y per X, which is
+// (USD per X) / (USD per Y). This covers any pair among the dollar and the
+// bundled currencies (EUR, GBP, JPY, CHF) with at least one non-dollar leg, so
+// "<CCY>USD=X" resolves directly, "USD<CCY>=X" as the reciprocal, and a
+// cross-euro pair such as "GBPEUR=X" as GBP/USD ÷ EUR/USD. tag is the proxy's
+// provenance suffix. ok is false when a leg carries no bundled history, so the
+// splice only ever touches crosses it can extend.
 func longFXCross(symbol string) (proxy []Point, tag string, ok bool) {
+	base, quote, valid := fxCross(symbol)
+	if !valid {
+		return nil, "", false
+	}
+	num, numTag, numOK := usdPerUnit(base)  // USD per base (nil for USD itself)
+	den, denTag, denOK := usdPerUnit(quote) // USD per quote
+	switch {
+	case !numOK || !denOK: // a leg is neither the dollar nor a bundled currency
+		return nil, "", false
+	case num == nil && den == nil: // USD/USD: nothing to extend
+		return nil, "", false
+	case den == nil: // <CCY>USD: USD per base, directly
+		return num, numTag, true
+	case num == nil: // USD<CCY>: the reciprocal
+		return reciprocalPoints(den), denTag, true
+	default: // <CCY1><CCY2>: base/quote, triangulated through the dollar
+		return divideSeries(num, den), numTag + "÷" + denTag, true
+	}
+}
+
+// usdPerUnit returns the bundled long "USD per one unit of ccy" daily history.
+// The dollar itself is the constant 1, signalled by a nil series with ok true;
+// ok is false for a currency without a bundled proxy.
+func usdPerUnit(ccy string) (series []Point, tag string, ok bool) {
+	if ccy == "USD" {
+		return nil, "", true
+	}
 	for _, x := range longFXProxies {
-		switch symbol {
-		case x.ccy + "USD=X":
+		if x.ccy == ccy {
 			return parseAnchors(x.csv, "2006-01-02", "2006-01"), x.tag, true
-		case "USD" + x.ccy + "=X":
-			return reciprocalPoints(parseAnchors(x.csv, "2006-01-02", "2006-01")), x.tag, true
 		}
 	}
 	return nil, "", false
@@ -67,9 +95,29 @@ func reciprocalPoints(in []Point) []Point {
 	return out
 }
 
+// divideSeries returns num/den on num's date grid, den forward-filled to each
+// date (points before den's first quote, or with a non-positive rate, are
+// dropped). Both must be sorted ascending. With num = USD-per-X and
+// den = USD-per-Y it yields the "Y per X" cross.
+func divideSeries(num, den []Point) []Point {
+	out := make([]Point, 0, len(num))
+	j, d := 0, 0.0
+	for _, p := range num {
+		for j < len(den) && !den[j].Date.After(p.Date) {
+			d = den[j].Close
+			j++
+		}
+		if d > 0 && p.Close > 0 {
+			out = append(out, Point{Date: p.Date, Close: p.Close / d})
+		}
+	}
+	return out
+}
+
 // extendFXBack splices the bundled long daily history behind a freshly fetched
-// cross so USD↔<CCY> conversion (and the reconstructions that read the cross)
-// reach back to 1971. Any cross without a bundled proxy is left untouched.
+// cross so conversion between the dollar and the bundled currencies, and the
+// cross-euro pairs among them, reach back to 1971 (with the reconstructions
+// that read the cross). Any cross without a bundled proxy is left untouched.
 func extendFXBack(symbol string, s *Series) {
 	if s == nil {
 		return
