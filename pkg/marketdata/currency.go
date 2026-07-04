@@ -8,49 +8,74 @@ import (
 	"time"
 )
 
-// eurusdLongCSV is the bundled long DAILY EUR/USD (USD per EUR) history:
-// the FRED noon rate (DEXUSEU) from 1999, monthly ECU/USD anchors (chained
-// 1:1 to the euro) carrying the real daily shape of the Bundesbank
-// Frankfurt DM/USD fixing for 1979-1998, and the rescaled daily DM fixing
-// alone before the ECU existed (1971-1978). It extends the fetchable
-// EURUSD=X cross (Yahoo, ~2003→) back to 1971 so a EUR-investor backcast
-// and the EUR share-class reconstructions cover a long retirement at daily
-// granularity throughout; see the file header for regeneration.
+// Bundled long DAILY "<CCY>USD" histories, each in the "USD per one foreign
+// unit" convention. They extend the fetchable Yahoo crosses (~2003→) back to
+// 1971 so a foreign-currency backcast and the share-class reconstructions cover
+// a long retirement at daily granularity throughout. Every file carries real
+// daily FRED noon rates; the euro additionally chains monthly ECU/USD anchors
+// (1:1 to the euro) over the Bundesbank Frankfurt DM/USD fixing before 1999.
+// See each file's header for regeneration.
 //
 //go:embed data/eurusd-long.csv
 var eurusdLongCSV string
 
-// eurusdLongCross returns the bundled long EUR/USD proxy expressed as the given
-// currency cross: "EURUSD=X" (USD per EUR) directly, "USDEUR=X" (EUR per USD)
-// as the reciprocal. ok is false for any other symbol, so the splice only ever
-// touches the euro cross.
-func eurusdLongCross(symbol string) (proxy []Point, ok bool) {
-	anchors := parseAnchors(eurusdLongCSV, "2006-01-02", "2006-01")
-	switch symbol {
-	case "EURUSD=X":
-		return anchors, true
-	case "USDEUR=X":
-		out := make([]Point, 0, len(anchors))
-		for _, p := range anchors {
-			if p.Close > 0 {
-				out = append(out, Point{Date: p.Date, Close: 1 / p.Close})
-			}
-		}
-		return out, true
-	}
-	return nil, false
+//go:embed data/gbpusd-long.csv
+var gbpusdLongCSV string
+
+//go:embed data/jpyusd-long.csv
+var jpyusdLongCSV string
+
+//go:embed data/chfusd-long.csv
+var chfusdLongCSV string
+
+// longFXProxies lists every bundled cross, keyed by the foreign currency quoted
+// against the US dollar. csv holds the "USD per one unit" daily history; tag is
+// the provenance suffix stamped on the spliced series name.
+var longFXProxies = []struct{ ccy, csv, tag string }{
+	{"EUR", eurusdLongCSV, "ECU/EUR long"},
+	{"GBP", gbpusdLongCSV, "GBP long"},
+	{"JPY", jpyusdLongCSV, "JPY long"},
+	{"CHF", chfusdLongCSV, "CHF long"},
 }
 
-// extendFXBack splices the bundled long daily EUR/USD history behind a
-// freshly fetched euro cross so USD↔EUR conversion (and the EUR
-// reconstructions that read the cross) reach back to 1971. Any other symbol
-// is left untouched.
+// longFXCross returns a bundled long proxy for a currency cross, expressed in
+// the requested direction: "<CCY>USD=X" (USD per unit) directly, "USD<CCY>=X"
+// as the reciprocal. tag is the proxy's provenance suffix. ok is false for any
+// symbol without a bundled history, so the splice only ever touches those
+// crosses.
+func longFXCross(symbol string) (proxy []Point, tag string, ok bool) {
+	for _, x := range longFXProxies {
+		switch symbol {
+		case x.ccy + "USD=X":
+			return parseAnchors(x.csv, "2006-01-02", "2006-01"), x.tag, true
+		case "USD" + x.ccy + "=X":
+			return reciprocalPoints(parseAnchors(x.csv, "2006-01-02", "2006-01")), x.tag, true
+		}
+	}
+	return nil, "", false
+}
+
+// reciprocalPoints returns 1/close for each strictly positive point, order
+// preserved; it flips a "<CCY>USD" proxy into "USD<CCY>" and back.
+func reciprocalPoints(in []Point) []Point {
+	out := make([]Point, 0, len(in))
+	for _, p := range in {
+		if p.Close > 0 {
+			out = append(out, Point{Date: p.Date, Close: 1 / p.Close})
+		}
+	}
+	return out
+}
+
+// extendFXBack splices the bundled long daily history behind a freshly fetched
+// cross so USD↔<CCY> conversion (and the reconstructions that read the cross)
+// reach back to 1971. Any cross without a bundled proxy is left untouched.
 func extendFXBack(symbol string, s *Series) {
 	if s == nil {
 		return
 	}
-	if proxy, ok := eurusdLongCross(symbol); ok {
-		ExtendBack(s, &Series{Symbol: symbol + " (ECU/EUR long)", Points: proxy})
+	if proxy, tag, ok := longFXCross(symbol); ok {
+		ExtendBack(s, &Series{Symbol: symbol + " (" + tag + ")", Points: proxy})
 	}
 }
 
@@ -157,9 +182,10 @@ func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (flo
 // under a FIXED (zero) start so the cache key is constant across assets: the
 // caller passes each asset's own first date, which would otherwise miss the
 // cache and refetch the FX series once per converted asset. The full cross is
-// small and covers every asset's range; the euro cross is additionally
-// extended back to 1971 by the bundled ECU/EUR proxy (see extendFXBack), and
-// dates before any cross starts are held constant by the caller.
+// small and covers every asset's range; the bundled crosses (EUR, GBP, JPY,
+// CHF) are additionally extended back to 1971 by their long proxy (see
+// extendFXBack), and dates before any cross starts are held constant by the
+// caller.
 func (c *Client) fxHistory(ctx context.Context, src, target string, _ time.Time) (*Series, error) {
 	return c.History(ctx, src+target+"=X", time.Time{})
 }
