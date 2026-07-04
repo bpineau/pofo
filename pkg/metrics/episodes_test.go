@@ -1,6 +1,9 @@
 package metrics
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func TestDrawdownEpisodesTwo(t *testing.T) {
 	// 100,120,90,120,100,130: two completed drawdowns from the 120 peak.
@@ -29,5 +32,19 @@ func TestDrawdownEpisodesOngoing(t *testing.T) {
 func TestDrawdownEpisodesNone(t *testing.T) {
 	if eps := DrawdownEpisodes(days(4), []float64{100, 101, 102, 103}); len(eps) != 0 {
 		t.Errorf("monotone series should have no drawdown episodes, got %d", len(eps))
+	}
+}
+
+func TestMaxDrawdown(t *testing.T) {
+	dates := days(6)
+	// Two episodes: -10% (recovered), then -20% ongoing. The deepest wins.
+	values := []float64{100, 90, 101, 102, 90, 81.6}
+	ep := MaxDrawdown(dates, values)
+	if !ep.Ongoing || !ep.PeakDate.Equal(dates[3]) || math.Abs(ep.Depth-(-0.2)) > 1e-9 {
+		t.Fatalf("wrong episode: %+v", ep)
+	}
+	// A rising series has no drawdown: the zero Episode.
+	if ep := MaxDrawdown(dates[:2], []float64{1, 2}); ep.Depth != 0 || !ep.PeakDate.IsZero() {
+		t.Fatalf("expected zero episode, got %+v", ep)
 	}
 }
