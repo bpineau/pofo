@@ -86,5 +86,5 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.32em" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", px+11, py, esc(p.Label))
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }

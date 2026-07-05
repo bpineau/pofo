@@ -1135,6 +1135,7 @@ func runWarmup(ctx context.Context, c *marketdata.Client, opt *options) error {
 // switch to the bootstrap/cohort models and re-weight allocations live. It
 // blocks, serving until interrupted.
 func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
+	chart.SetDark(true) // the FIRE explorer renders in the terminal dark theme
 	var panel *scenario.Panel
 	var labels []string
 	if len(specs) > 0 {

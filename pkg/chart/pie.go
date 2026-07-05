@@ -88,7 +88,7 @@ func Pie(opt PieOptions, slices []Slice) string {
 	// Legend: swatch + "Label 42%".
 	if opt.HideLegend {
 		b.WriteString(`</svg>`)
-		return b.String()
+		return finish(b.String())
 	}
 	y := legendY
 	for _, s := range clean {
@@ -98,7 +98,7 @@ func Pie(opt PieOptions, slices []Slice) string {
 		y += rowH
 	}
 	b.WriteString(`</svg>`)
-	return b.String()
+	return finish(b.String())
 }
 
 // donutPath returns one filled donut wedge between angles a0 and a1 (radians).
