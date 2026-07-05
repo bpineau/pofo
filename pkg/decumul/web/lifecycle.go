@@ -87,7 +87,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	// What you leave behind: the distribution of terminal real wealth across
 	// paths (0 for the ruined). It shows the upside the broke/dead view hides:
 	// most futures end far richer than they started, a few end with nothing.
-	bequestSVG := chart.Bars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 1200, Height: 300}, bequestBuckets(e))
+	bequestSVG := chart.Bars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 900, Height: 300}, bequestBuckets(e))
 
 	cards := lifecycleCards(e, age)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}
