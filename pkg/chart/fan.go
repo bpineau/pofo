@@ -104,14 +104,19 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 		for i, v := range s {
 			clipped[i] = clamp(v)
 		}
-		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s"/>`+"\n",
+		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
 			linePath(clipped, xAt, yAt), color, width, op)
 	}
 
-	// Median line: the central band when the percentile count is odd.
+	// Median line: the central band when the percentile count is odd, finished
+	// with an emphasized endpoint so the eye lands on the expected outcome.
 	if n%2 == 1 {
-		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="#16181D" stroke-width="2.2" stroke-linejoin="round"/>`+"\n",
-			linePath(bands[n/2], xAt, yAt))
+		med := bands[n/2]
+		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="#16181D" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
+			linePath(med, xAt, yAt))
+		if k := len(med) - 1; k >= 0 {
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3" fill="#16181D"/>`+"\n", xAt(k), yAt(med[k]))
+		}
 	}
 	b.WriteString("</svg>")
 	return b.String()
