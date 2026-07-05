@@ -5,4 +5,4 @@
 # UCITS, accumulating, 100% equity.
 
 88    IWDASIM    # iShares Core MSCI World (IWDA)
-12    EIMI    # iShares Core MSCI EM IMI (EIMI)
+12    EIMISIM    # iShares Core MSCI EM IMI (EIMI)

@@ -4,5 +4,5 @@
 # Inspired by: the classic 80/20 'growth' allocation (e.g. Vanguard LifeStrategy 80).
 # UCITS, accumulation-leaning.
 
-80    VWRA    # All-World (VWRA)
+80    VWRASIM    # All-World (VWRA)
 20    IE00BDBRDM35    # Global Aggregate Bond EUR-H (AGGH)

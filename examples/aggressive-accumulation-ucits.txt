@@ -21,7 +21,7 @@
 #meta rebalance:180
 
 45    IWDASIM    # World core (IWDA)
-10    EIMI    # Emerging Markets (EIMI)
+10    EIMISIM    # Emerging Markets (EIMI)
 15    ZPRVSIM         # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 18    IWMO    # World Momentum (IWMO)
 12    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)

@@ -10,4 +10,4 @@
 20    IWVL    # World Value (IWVL)
 20    ZPRVSIM         # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 10    ZPRX    # Europe Small-Cap Value (ZPRX)
-10    EIMI    # Emerging Markets (EIMI)
+10    EIMISIM    # Emerging Markets (EIMI)
