@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">
+<rect width="640" height="360" fill="#FFFFFF"/>
+<text x="8" y="22" font-size="14" font-weight="600" fill="#16181D">Snap</text>
+<line x1="365.0" y1="36" x2="365.0" y2="344.0" stroke="#CDD2DA"/>
+<rect x="365.0" y="106.0" width="117.5" height="20.0" rx="2" fill="#D2402F"/>
+<text x="142.0" y="116.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">up</text>
+<text x="486.5" y="116.0" dy="0.35em" font-size="12" fill="#16181D" text-anchor="start">+2</text>
+<rect x="188.7" y="258.0" width="176.3" height="20.0" rx="2" fill="#0C8A47"/>
+<text x="142.0" y="268.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">dn</text>
+<text x="184.7" y="268.0" dy="0.35em" font-size="12" fill="#16181D" text-anchor="end">-3</text>
+</svg>

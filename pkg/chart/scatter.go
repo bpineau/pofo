@@ -50,17 +50,17 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 	yAt := func(v float64) float64 { return y1 - v/ymax*(y1-y0) }
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Instrument Sans',system-ui,sans-serif">`+"\n", w, h, w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeSans+`">`+"\n", w, h, w, h)
 	// Grid + y ticks.
 	ystep := niceStep(ymax, 5)
 	for v := 0.0; v <= ymax+ystep/1e6; v += ystep {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#EDF0F3"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="11" font-family="'Spline Sans Mono',monospace" fill="#7A8294" text-anchor="end">%s</text>`+"\n", x0-6, y, fmtTick(v, ystep))
+		fmt.Fprintf(&b, `<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="`+themeGrid+`"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="11" font-family="'Spline Sans Mono',monospace" fill="`+themeMuted+`" text-anchor="end">%s</text>`+"\n", x0-6, y, fmtTick(v, ystep))
 	}
 	// Axis labels.
-	fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="11" fill="#7A8294" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, float64(h)-8, esc(xlab))
-	fmt.Fprintf(&b, `<text x="14" y="%.1f" font-size="11" fill="#7A8294" text-anchor="middle" transform="rotate(-90 14 %.1f)">%s</text>`+"\n", (y0+y1)/2, (y0+y1)/2, esc(ylab))
+	fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="11" fill="`+themeMuted+`" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, float64(h)-8, esc(xlab))
+	fmt.Fprintf(&b, `<text x="14" y="%.1f" font-size="11" fill="`+themeMuted+`" text-anchor="middle" transform="rotate(-90 14 %.1f)">%s</text>`+"\n", (y0+y1)/2, (y0+y1)/2, esc(ylab))
 
 	// Frontier line through the points in x-order.
 	ordered := append([]LabeledPoint(nil), pts...)
@@ -73,17 +73,17 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 		}
 		fmt.Fprintf(&path, "%s%.1f %.1f", cmd, xAt(p.X), yAt(p.Y))
 	}
-	fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="#CDD2DA" stroke-width="1.5" stroke-dasharray="4 4"/>`+"\n", path.String())
+	fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="`+themeAxis+`" stroke-width="1.5" stroke-dasharray="4 4"/>`+"\n", path.String())
 
 	// Points and labels.
 	for _, p := range pts {
 		col := p.Color
 		if col == "" {
-			col = "#0B7285"
+			col = themeAccent
 		}
 		px, py := xAt(p.X), yAt(p.Y)
 		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`+"\n", px, py, col)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.32em" font-size="12" fill="#16181D">%s</text>`+"\n", px+11, py, esc(p.Label))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.32em" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", px+11, py, esc(p.Label))
 	}
 	b.WriteString("</svg>")
 	return b.String()

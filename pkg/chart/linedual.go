@@ -50,17 +50,17 @@ func LineDual(opt Options, xLabel string, left, right XYSeries) string {
 	yAtR := func(v float64) float64 { return y1 - (v-rmin)/(rmax-rmin)*(y1-y0) }
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">`+"\n", w, h, w, h)
-	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeMono+`">`+"\n", w, h, w, h)
+	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="`+themeSurface+`"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#16181D">%s</text>`+"\n", x0, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x0, esc(opt.Title))
 	}
 
 	// Left-axis gridlines and labels (the shared horizontal grid).
 	lstep := niceStep(lmax-lmin, 6)
 	for v := math.Ceil(lmin/lstep) * lstep; v <= lmax+lstep/1e6; v += lstep {
 		y := yAtL(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EDF0F3"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="`+themeGrid+`"/>`+"\n", x0, y, x1, y)
 		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="%s" text-anchor="end">%s</text>`+"\n", x0-8, y, left.Color, fmtTick(v, lstep))
 	}
 	// Right-axis labels only (no extra gridlines, to avoid clutter).
@@ -70,15 +70,15 @@ func LineDual(opt Options, xLabel string, left, right XYSeries) string {
 	}
 	// X-axis ticks at each distinct x of the (left) series.
 	for _, x := range left.Xs {
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#7A8294" text-anchor="middle">%s</text>`+"\n", xAt(x), y1+16, esc(fmt.Sprintf("%g", x)))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeMuted+`" text-anchor="middle">%s</text>`+"\n", xAt(x), y1+16, esc(fmt.Sprintf("%g", x)))
 	}
 	if xLabel != "" {
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="#7A8294" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+34, esc(xLabel))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeMuted+`" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+34, esc(xLabel))
 	}
 	// Axes: left, right and bottom.
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="%s"/>`+"\n", x0, y0, x0, y1, left.Color)
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="%s"/>`+"\n", x1, y0, x1, y1, right.Color)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CDD2DA"/>`+"\n", x0, y1, x1, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y1, x1, y1)
 
 	drawXY(&b, left, xAt, yAtL)
 	drawXY(&b, right, xAt, yAtR)
@@ -90,7 +90,7 @@ func LineDual(opt Options, xLabel string, left, right XYSeries) string {
 			continue
 		}
 		fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, lx, s.Color)
-		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#16181D">%s</text>`+"\n", lx+17, esc(s.Name))
+		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", lx+17, esc(s.Name))
 		lx += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 	}
 	b.WriteString("</svg>")
