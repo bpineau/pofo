@@ -551,6 +551,7 @@ async function renderLifecycle(b, id) {
     setSVG("lifeSvg", r.lifeSvg);
     setSVG("ruinYearSvg", r.ruinYearSvg);
     setSVG("causesSvg", r.causesSvg);
+    setSVG("bequestSvg", r.bequestSvg);
     document.getElementById("lifecycleCards").innerHTML = cardsHTML(r.cards);
   } catch (e) { /* keep the previous chart */ }
 }
@@ -576,8 +577,11 @@ async function renderSolver(b, id) {
     : `<b>To get ruin down to ${(m.targetRuin * 100).toFixed(1)}%</b> (now ${(m.currentRuin * 100).toFixed(1)}%), any one of:`;
   const items = (m.options || []).map(o =>
     `<li class="${o.ok ? "" : "no"}"><span class="lev">${esc(o.lever)}</span><span>${o.ok ? "" : "✗ "}${esc(o.text)}</span></li>`).join("");
+  // Few, long options (the "plan meets the target" case) read better in one
+  // column so the sentence doesn't wrap at the middle of the page.
+  const wide = m.met || (m.options || []).length <= 2 ? " wide" : "";
   document.getElementById("solvermenu").innerHTML =
-    `<div class="solvehead">${head}</div><ul class="solveopts">${items}</ul>`;
+    `<div class="solvehead">${head}</div><ul class="solveopts${wide}">${items}</ul>`;
 }
 
 // ---------------------------------------------------------------------------
