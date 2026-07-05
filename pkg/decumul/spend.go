@@ -1,6 +1,40 @@
 package decumul
 
-import "github.com/bpineau/pofo/pkg/metrics"
+import (
+	"math"
+
+	"github.com/bpineau/pofo/pkg/metrics"
+)
+
+// SpendCV is the coefficient of variation of delivered real spending across
+// every path-year: the standard deviation of the lived standard of living
+// divided by its mean. It is the spending-volatility axis of the decumulation
+// frontier, the price an adaptive or percentage-of-portfolio rule pays for
+// avoiding ruin. 0 for a perfectly steady income, rising as spending swings.
+func (e Ensemble) SpendCV() float64 {
+	var sum float64
+	var n int
+	for _, p := range e.Paths {
+		for _, s := range p.Spend {
+			sum += s
+			n++
+		}
+	}
+	if n == 0 {
+		return 0
+	}
+	mean := sum / float64(n)
+	if mean == 0 {
+		return 0
+	}
+	var v float64
+	for _, p := range e.Paths {
+		for _, s := range p.Spend {
+			v += (s - mean) * (s - mean)
+		}
+	}
+	return math.Sqrt(v/float64(n)) / mean
+}
 
 // SpendStats summarises the lived cost of an adaptive spending policy across
 // an ensemble: how often the household actually had to live below its uncut
