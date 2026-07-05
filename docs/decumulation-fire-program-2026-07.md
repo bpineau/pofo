@@ -26,14 +26,19 @@ own design spec under `docs/superpowers/specs/`.
   `Ensemble.RuinTiming` ("why plans fail" early/mid/late decomposition, section
   03).
 
+- **D — allocation glidepath + partial annuity (shipped).**
+  `scenario.Glidepath`: a correlation-preserving two-asset Student-t source whose
+  equity weight glides 30%->75% over the horizon (bond tent), wired as a
+  central-case toggle via a shared `centralSource` helper.
+  `decumul.AnnuityFactor`/`AnnuityIncome` + an `annuityShare` control: a share of
+  capital buys a joint-life inflation-linked income floor (premium out of
+  capital, lifelong cashflow). Honest framing on both: they trade growth for
+  security, so under the tool's full-need ruin metric they can *raise* headline
+  ruin (Cederburg; and the user declined the utility/floor metric that would
+  reward them), which the tool shows rather than hides.
+
 ## Remaining
 
-- **D — allocation glidepath + partial annuity.** Structural: the kernel has a
-  single growth sleeve + cash buffer and consumes one combined return path via
-  `scenario.Source`. A rising-equity / bond-tent glidepath needs time-varying
-  equity/bond weights (a `Panel` with a per-year weight schedule, or a
-  glidepath Source); a partial annuity needs a longevity-hedged income floor
-  wired through the mortality module. Both are larger than A-C.
 - **E (remaining) — chart-system reskin.** The new primitives (Gauge, Scatter,
   CategoryBars) match the mock; the older charts (Fan, StackedArea, Bars,
   Frontier) are competent but could get the same finish pass. Lower priority:
