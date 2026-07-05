@@ -2,7 +2,6 @@ package optimize
 
 import (
 	"fmt"
-	"math"
 
 	"github.com/bpineau/pofo/pkg/metrics"
 )
@@ -43,65 +42,17 @@ func SolveCWARP(returns [][]float64, replacement []float64, spec Spec) (Result, 
 		return Result{}, fmt.Errorf("max-weight too low: %d assets cannot sum to 100%% under a %.0f%% cap", n, maxW*100)
 	}
 
-	port := make([]float64, t)
+	buf := make([]float64, t)
 	score := func(w []float64) (float64, bool) {
-		for k := 0; k < t; k++ {
-			s := 0.0
-			for i := 0; i < n; i++ {
-				s += w[i] * returns[i][k]
-			}
-			port[k] = s
-		}
-		return metrics.CWARP(port, replacement, metrics.CWARPParams{})
+		blend(returns, w, buf)
+		return metrics.CWARP(buf, replacement, metrics.CWARPParams{})
 	}
-	// Minimize the negative score. An undefined score (a region where the
-	// blend has no drawdown or a non-positive replacement ratio) is a large
-	// penalty, so the search steers away from it.
-	neg := func(w []float64) float64 {
-		if c, ok := score(w); ok {
-			return -c
-		}
-		return 1e6
-	}
-	// Forward-difference gradient: projected descent only needs a descent
-	// direction, and the projection restores the simplex after each step.
-	grad := func(w []float64) []float64 {
-		const h = 1e-5
-		base := neg(w)
-		g := make([]float64, n)
-		for i := range w {
-			wp := append([]float64(nil), w...)
-			wp[i] += h
-			g[i] = (neg(wp) - base) / h
-		}
-		return g
-	}
+	w := maximizeSimplex(n, maxW, score)
 
-	result := func(w []float64) Result {
-		mu, cov := meanCov(returns)
-		r := stats(w, mu, cov)
-		if c, ok := score(w); ok {
-			r.CWARP = c
-		}
-		return r
+	mu, cov := meanCov(returns)
+	r := stats(w, mu, cov)
+	if c, ok := score(w); ok {
+		r.CWARP = c
 	}
-	if n == 1 {
-		return result([]float64{1}), nil
-	}
-
-	starts := [][]float64{equalStart(n, maxW)}
-	for i := 0; i < n; i++ {
-		s := make([]float64, n)
-		s[i] = 1
-		starts = append(starts, projectCappedSimplex(s, maxW))
-	}
-	var best []float64
-	bestVal := math.Inf(1)
-	for _, s := range starts {
-		w := minimizeSimplex(neg, grad, maxW, s)
-		if v := neg(w); v < bestVal {
-			bestVal, best = v, w
-		}
-	}
-	return result(best), nil
+	return r, nil
 }
