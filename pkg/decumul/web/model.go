@@ -47,6 +47,7 @@ type Params struct {
 	CapeAdjust     bool      `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
 	Percent        float64   `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
 	Glidepath      bool      `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
+	AnnuityShare   float64   `json:"annuityShare"`   // share of capital annuitized (joint-life real income); 0 = none
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).
@@ -112,6 +113,15 @@ func (pr Params) plan() decumul.Plan {
 	// never-ruin variable-spending rule (annual). Set last so it takes priority.
 	if pr.Percent > 0 {
 		p.Percent = pr.Percent
+	}
+	// Partial annuitisation: spend a share of capital on a joint-life, real
+	// immediate annuity (1% real rate, 10% insurer load), hedging longevity. The
+	// premium leaves the portfolio; its lifelong income lowers the net need.
+	if pr.AnnuityShare > 0 && pr.Capital > 0 {
+		premium := pr.AnnuityShare * pr.Capital
+		income := decumul.AnnuityIncome(decumul.FrenchMortality, pr.age(), premium, 0.01, 0.90)
+		p.Capital -= premium
+		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, Annual: income})
 	}
 	p.SpendSchedule = pr.spendSchedule()
 	p.Envelopes = pr.envelopes()
