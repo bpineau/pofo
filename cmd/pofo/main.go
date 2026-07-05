@@ -427,6 +427,9 @@ Options:
 				st.Beta, st.HasBeta = rel.Beta, true
 				r.rel, r.hasRel = rel, true
 			}
+			if c, ok := metrics.CWARPvs(r.winDates, r.winValues, benchDates, benchValues, metrics.CWARPParams{}); ok {
+				st.CWARP, st.HasCWARP = c, true
+			}
 		}
 		r.vts, r.hasVTS = metrics.VarianceRatio(r.winDates, r.winValues)
 		r.stats = st
@@ -1251,10 +1254,33 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portf
 	return &cp, note, nil
 }
 
+// assetCWARP formats a single holding's CWARP as a 25 % overlay on the
+// benchmark, measured over the common window, or "-" when there is no
+// benchmark or too little overlap.
+func assetCWARP(s *marketdata.Series, benchDates []time.Time, benchValues []float64, start, end time.Time) string {
+	if s == nil || len(benchDates) == 0 {
+		return "-"
+	}
+	dates, values := seriesSlices(s)
+	i, j := window(dates, start, end)
+	if j-i < 2 {
+		return "-"
+	}
+	if c, ok := metrics.CWARPvs(dates[i:j], values[i:j], benchDates, benchValues, metrics.CWARPParams{}); ok {
+		return fmt.Sprintf("%+.1f", c)
+	}
+	return "-"
+}
+
 func buildPage(results []*result, opt *options, bench *marketdata.Series, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) *report.Page {
 	names := make([]string, len(results))
 	for i, r := range results {
 		names[i] = r.p.Name
+	}
+	var benchDates []time.Time
+	var benchValues []float64
+	if bench != nil {
+		benchDates, benchValues = seriesSlices(bench)
 	}
 	page := &report.Page{
 		Title:          "Portfolios: " + strings.Join(names, ", "),
@@ -1346,7 +1372,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			if m, _, ok := metaFor(meta, a.ID); ok {
 				assetClass = m.AssetClass
 			}
-			section.Assets = append(section.Assets, report.AssetRow{
+			row := report.AssetRow{
 				Weight:   fmt.Sprintf("%.4g %%", a.Weight*100),
 				ID:       a.ID,
 				Symbol:   a.Symbol,
@@ -1358,8 +1384,10 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 				History: fmt.Sprintf("%s → %s",
 					a.Series.First().Date.Format("2006-01-02"),
 					a.Series.Last().Date.Format("2006-01-02")),
-				Note: strings.Join(notes, "; "),
-			})
+				CWARP: assetCWARP(a.Series, benchDates, benchValues, commonStart, commonEnd),
+				Note:  strings.Join(notes, "; "),
+			}
+			section.Assets = append(section.Assets, row)
 		}
 		page.Portfolios = append(page.Portfolios, section)
 	}
@@ -1421,7 +1449,8 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		page.Footnotes = append(page.Footnotes,
 			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.",
 			"Information ratio: average active return (portfolio − benchmark) divided by its tracking error (the volatility of that active return), showing how much benchmark-beating return is earned per unit of benchmark-relative risk. Higher is better; above ~0.5 is good, negative means the active bets cost return.",
-			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).")
+			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).",
+			"CWARP (Cole Wins Above Replacement Portfolio, Artemis Capital): the geometric average of the improvements a 25 %-of-notional overlay makes to the benchmark's Sortino ratio and return-to-max-drawdown, in percent (positive helps, negative hurts). Unlike Sharpe it rewards non-correlation and skew, since both denominators are measured on the combined series. The statistics row scores the whole portfolio as the overlay; the per-holding CWARP column scores each sleeve on its own, revealing which ones actually diversify "+bench.Symbol+" (typically gold, long duration and trend, not more equity).")
 	}
 	var hasBreakdowns, hasCoverage bool
 	for _, s := range page.Portfolios {
@@ -1777,6 +1806,13 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 				}
 				return r.stats.Beta, fmtNum(r.stats.Beta)
 			}, 0},
+		{"CWARP (vs " + benchmark + ")", "Cole Wins Above Replacement: does layering 25 % of this portfolio on top of the benchmark improve its risk-adjusted returns (Sortino and return-to-drawdown)? >0 helps, <0 hurts. Unlike Sharpe it rewards non-correlation and skew, since both are measured on the combined series.",
+			func(r *result) (float64, string) {
+				if !r.stats.HasCWARP {
+					return math.NaN(), "-"
+				}
+				return r.stats.CWARP, fmt.Sprintf("%+.1f", r.stats.CWARP)
+			}, +1},
 	}
 
 	if anyCapital {
