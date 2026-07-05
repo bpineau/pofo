@@ -59,6 +59,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	vipsx := mkWave("VIPSX", n, 2e-4, 0.004, 1.1, 2.9)
 	gold := mkWave("GC=F", n, 3e-4, 0.011, 0.5, 0.8)
 	crude := mkWave("CL=F", n, 2e-4, 0.020, 1.9, 2.2)
+	bcom := mkWave("^BCOM", n, 2e-4, 0.012, 1.6, 0.9)
 	dfsvx := mkWave("DFSVX", n, 4e-4, 0.013, 0.8, 1.4)
 	disvx := mkWave("DISVX", n, 3e-4, 0.011, 1.5, 0.2)
 	ibci := mkWave("IBCI", n, 2e-4, 0.004, 1.2, 1.7)
@@ -69,7 +70,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	f := fakeFetcher{
 		"VFINX": vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
-		"GC=F": gold, "CL=F": crude,
+		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
 		"^VIX":     vix,
