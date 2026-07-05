@@ -46,7 +46,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 			return scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: years}
 		}},
 		{"Broad-sample", 2, func(years int) scenario.Source {
-			return scenario.NewMarkovRegime(consMu, consSigma, consDf, years)
+			return broadSampleSource(years)
 		}},
 	}
 	var series []chart.XYSeries
