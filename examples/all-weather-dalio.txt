@@ -12,4 +12,4 @@
 40    TLTSIM          # Long US Treasuries (UCITS: IDTL)
 15    IEFSIM          # Intermediate US Treasuries (UCITS: IEGA)
 7.5   GOLDSIM         # Gold (UCITS: IGLN)
-7.5   ICOM    # Broad commodities (ICOM)
+7.5   ICOMSIM    # Broad commodities (ICOM)
