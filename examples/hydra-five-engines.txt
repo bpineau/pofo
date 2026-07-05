@@ -1,10 +1,17 @@
 # Hydra (five engines) -- a diversified build that outruns the dragon-lite
-# Idea: one head per return engine, each backed by its own literature, sized
-#   so no single engine can kill the portfolio. The frame is risk-parity
-#   thinking (Qian; Bridgewater's All Weather: balance exposures across
-#   macro regimes, not capital across tickers) executed with the most
-#   capital-efficient instrument available for each sleeve, in the spirit
-#   of return stacking (Hoffstein; WisdomTree Efficient Core).
+# Idea: diversify across independent return ENGINES, not across tickers. Each
+#   sleeve is a distinct, well-documented source of return driven by a different
+#   macro force, so their worst years rarely coincide, and combining lowly-
+#   correlated positive-return streams is what actually lifts risk-adjusted
+#   return, far more than owning more names does (Ilmanen & Kizer, "The Death of
+#   Diversification Has Been Greatly Exaggerated", 2012; Choueifaty & Coignard,
+#   "Toward Maximum Diversification", 2008). The sleeves are then sized by risk
+#   contribution rather than capital, so no single engine can dominate the ride
+#   or sink it (Qian; Bridgewater's All Weather: balance exposures across the
+#   growth / inflation / deflation regimes, not dollars across tickers). And each
+#   is expressed through the most capital-efficient instrument available, so the
+#   diversifiers stack ON TOP of a full growth engine instead of being funded by
+#   shrinking it (return stacking: Hoffstein; WisdomTree Efficient Core).
 #
 # Why each head:
 #   - NTSG (equity + duration engine): levering a balanced stock/bond mix
