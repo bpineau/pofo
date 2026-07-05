@@ -43,7 +43,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 	}
 	models := []curveModel{
 		{"Central (Student-t)", 0, func(years int) scenario.Source {
-			return scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: years}
+			return centralSource(pr, cMu, cSigma, cDf, years)
 		}},
 		{"Broad-sample", 2, func(years int) scenario.Source {
 			return broadSampleSource(years)
@@ -77,7 +77,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		p := fixedRule(pr.plan())
 		p.Monthly = false
 		p.NeedAnnual = spend
-		p.Source = scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}
+		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		// Ruin falls as capital rises: the smallest capital meeting the target.
 		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), pr.NPaths, simWorkers, seed)
 		xs[j], ys[j] = spend/1000, cap/1e6

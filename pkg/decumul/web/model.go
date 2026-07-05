@@ -46,6 +46,7 @@ type Params struct {
 	Smile          bool      `json:"smile"`          // Blanchett retirement-smile spending shape
 	CapeAdjust     bool      `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
 	Percent        float64   `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
+	Glidepath      bool      `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).

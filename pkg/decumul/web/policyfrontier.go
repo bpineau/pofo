@@ -37,7 +37,7 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		p.Guard = decumul.Guardrails{}
 		p.Ratchet = decumul.Ratchet{}
 		p.Percent = 0
-		p.Source = scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}
+		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		return p
 	}
 	wr := pr.NeedAnnual / pr.Capital
