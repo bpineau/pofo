@@ -33,21 +33,21 @@ func CategoryBars(opt Options, bars []CatBar) string {
 	top := 16.0
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Instrument Sans',system-ui,sans-serif">`+"\n", w, h, w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeSans+`">`+"\n", w, h, w, h)
 	for i, bar := range bars {
 		y := top + float64(i)*rowH
 		col := bar.Color
 		if col == "" {
-			col = "#0B7285"
+			col = themeAccent
 		}
 		bw := bar.Value * (x1 - x0)
 		if bw < 0 {
 			bw = 0
 		}
-		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="#EEF0F3"/>`+"\n", x0, y, x1-x0)
+		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="`+themeWell+`"/>`+"\n", x0, y, x1-x0)
 		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="%s"/>`+"\n", x0, y, bw, col)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" fill="#4A5160" text-anchor="end">%s</text>`+"\n", labelW-10, y+14, esc(bar.Label))
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="#16181D">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" fill="`+themeInkSoft+`" text-anchor="end">%s</text>`+"\n", labelW-10, y+14, esc(bar.Label))
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
 	}
 	b.WriteString("</svg>")
 	return b.String()
