@@ -16,9 +16,9 @@
 //     or alias; resolves identifiers against the embedded catalog and aligns
 //     trading calendars.
 //   - pkg/metrics: risk/return statistics (CAGR, volatility, Sharpe,
-//     Sortino, Ulcer, max drawdown, time-to-recovery, Beta, IRR).
+//     Sortino, Ulcer, max drawdown, time-to-recovery, Beta, CWARP, IRR).
 //   - pkg/optimize: long-only weights for an objective (max-sharpe,
-//     min-volatility, risk-parity) from the assets' historical returns.
+//     min-volatility, risk-parity, cwarp) from the assets' historical returns.
 //   - pkg/portfolio: the allocation file format and the rebalanced,
 //     fee-aware simulation that replays a portfolio over time.
 //   - pkg/suggest: structure-first analysis: regime coverage, redundancy

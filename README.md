@@ -70,19 +70,57 @@ money rows (starting capital, total contributed/withdrawn, final value and
 a **money-weighted IRR**) follow the actual cash. Withdrawing a depleted
 portfolio is a ruin: the series stops and the report flags it.
 
-`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`) lets the
-optimizer compute the weights instead of using the ones you wrote. It works
+`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`, `cwarp`) lets
+the optimizer compute the weights instead of using the ones you wrote. It works
 out the long-only allocation that maximizes the Sharpe ratio, minimizes
-volatility, or equalizes each asset's risk contribution, over the period
-where all the assets quote. An optional cap diversifies the result:
-`#meta optimize:max-sharpe,max-weight:40`. The report then shows **two
-portfolios side by side**: `name (as written)` and `name (max-sharpe)`,
+volatility, equalizes each asset's risk contribution, or maximizes CWARP (see
+below), over the period where all the assets quote. An optional cap diversifies
+the result: `#meta optimize:max-sharpe,max-weight:40`. The report then shows
+**two portfolios side by side**: `name (as written)` and `name (max-sharpe)`,
 so the optimizer's choice is compared with your baseline; the computed
 weights and their in-sample expected return/volatility/Sharpe appear as a
 note under the optimized portfolio. Those figures are fitted on the past,
 so treat them as a starting point, not a promise. `max-weight` does not
 apply to `risk-parity` (its weights follow from the equal-risk condition),
 and `optimize` cannot be combined with `leverage`.
+
+### CWARP
+
+**CWARP** (Cole Wins Above Replacement Portfolio, Artemis Capital Management's
+"Moneyball for Modern Portfolio Theory", 2020) scores whether an asset improves
+a pre-existing *replacement* portfolio when layered on top at 25% of notional,
+financed by borrowing. It is the geometric average of the improvements the
+overlay makes to the replacement's Sortino ratio and return-to-maximum-drawdown,
+minus one, in percent: **positive helps, negative hurts**. Unlike the Sharpe
+ratio it rewards non-correlation and skew, because both denominators are
+measured on the *combined* series.
+
+The replacement is the report benchmark (`-benchmark`, default `^GSPC` = equity
+beta, the paper's standard; point it at a 60/40 series for that variant). CWARP
+appears in the report in two forms:
+
+- a **CWARP row** in the statistics table, scoring the whole portfolio as a 25%
+  overlay on the benchmark;
+- a **per-holding CWARP column** in each portfolio's asset table, scoring each
+  sleeve on its own, so you can see which holdings actually diversify equity
+  beta (typically gold, long duration and trend, not more equity).
+
+`#meta optimize:cwarp` maximizes it directly, choosing the weights whose blend
+best improves the benchmark; the achieved score is reported in the optimizer
+note. The objective is non-convex, so the solver is a multi-start heuristic and
+its weights are a good allocation rather than a certified optimum.
+
+**Read the result correctly.** `optimize:cwarp` finds the best *diversifier of
+the benchmark* (the ideal satellite sleeve to layer on top of equity beta), not
+a good standalone portfolio. It therefore loads exactly the assets that look
+weak on their own but shine in combination: gold, long-duration bonds, trend.
+The report's CAGR / volatility / drawdown columns describe that sleeve **on its
+own**, so they will almost always look worse than your written portfolio, by
+design; that is the whole point of the Sharpe critique. The value is not in the
+sleeve's standalone stats but in the `+CWARP` it adds when overlaid on the
+benchmark. Use `optimize:cwarp` when you already hold equity beta and want the
+best diversifying satellite; use `max-sharpe` / `min-volatility` for a complete
+standalone allocation.
 
 Without `#meta leverage:on`, a weight > 100% is rejected (with a hint) and sums
 ≠ 100% are normalized as before.
@@ -173,7 +211,7 @@ and sweeps), with the thin web layer under `pkg/decumul/web`.
 | `-simdata` | embedded in the binary | source of simulated histories (directory for dev) |
 | `-rebalance` | `90` | rebalance every N calendar days (0 = never) |
 | `-start` | `2006-01-01` | desired start date |
-| `-benchmark` | `^GSPC` | reference for Beta |
+| `-benchmark` | `^GSPC` | reference for Beta, capture ratios and the CWARP replacement |
 | `-currency` | `EUR` | convert every series (and the benchmark) to this currency; empty disables |
 | `-cache-age` | `720h` (1 month) | cache freshness before re-downloading |
 | `-assets` | | list `A,B,C`: each asset compared as a 100% portfolio |
@@ -351,8 +389,8 @@ applications. Layout:
 ```
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
-pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, IRR…)
-pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity
+pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
+pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity / cwarp
 pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
 pkg/portfolio/    allocation file format + rebalanced simulation
