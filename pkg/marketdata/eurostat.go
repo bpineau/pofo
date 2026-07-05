@@ -109,23 +109,22 @@ var hicpName = map[string]string{
 	"DE": "Germany",
 }
 
-// fetchHICP returns the daily-interpolated HICP index for a geography. The
-// live Eurostat API is preferred (and disk-cached like the other non-Yahoo
-// sources); if it is unreachable and no cached copy exists, a bundled snapshot
-// keeps the series available offline, at the cost of missing the latest months.
+// fetchHICP returns the daily-interpolated HICP index for a geography. A
+// geography with a bundled snapshot (^HICP-FR) is served offline-first: a
+// normal run never downloads it, and the live Eurostat API is used only under
+// RefreshInflation (warmup). Geographies without an embed keep the live path.
 func (c *Client) fetchHICP(ctx context.Context, symbol, geo string, from time.Time) (*Series, error) {
-	s, err := c.cachedHistory(ctx, "eurostat", symbol, from, false, func() (*Series, error) {
-		return c.downloadHICP(ctx, symbol, geo)
-	})
-	if err != nil {
-		if anchors, ok := embeddedHICP(geo); ok {
-			c.Logf("warning: Eurostat unavailable (%v), using the embedded %s snapshot (ends %s)",
-				err, symbol, anchors[len(anchors)-1].Date.Format("2006-01"))
-			return hicpSeries(symbol, geo, anchors), nil
-		}
-		return nil, err
-	}
-	return s, nil
+	return c.embeddedHistory(ctx, "eurostat", symbol, from,
+		func() (*Series, bool) {
+			anchors, ok := embeddedHICP(geo)
+			if !ok {
+				return nil, false
+			}
+			return hicpSeries(symbol, geo, anchors), true
+		},
+		func() (*Series, error) {
+			return c.downloadHICP(ctx, symbol, geo)
+		})
 }
 
 // hicpSeries packages monthly anchors as a daily-interpolated index series.
