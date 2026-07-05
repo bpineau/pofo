@@ -108,5 +108,5 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 		lx += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }

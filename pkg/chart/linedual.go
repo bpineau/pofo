@@ -94,7 +94,7 @@ func LineDual(opt Options, xLabel string, left, right XYSeries) string {
 		lx += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }
 
 // drawXY renders one numeric-x series as a polyline plus point markers.

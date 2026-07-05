@@ -119,7 +119,7 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 		}
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }
 
 // bandPolygon builds the closed polygon between a lower and an upper band: along

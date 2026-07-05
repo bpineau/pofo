@@ -33,7 +33,7 @@ func Heatmap(opt Options, d HeatmapData) string {
 	ny, nx := len(d.Ys), len(d.Xs)
 	if ny == 0 || nx == 0 {
 		sb.WriteString(`</svg>`)
-		return sb.String()
+		return finish(sb.String())
 	}
 	cw := float64(plotW) / float64(nx)
 	ch := float64(plotH) / float64(ny)
@@ -49,7 +49,7 @@ func Heatmap(opt Options, d HeatmapData) string {
 		fmt.Fprintf(&sb, `<text x="%d" y="%d" text-anchor="middle">%s</text>`, padL+plotW/2, h-15, esc(d.XLabel))
 	}
 	sb.WriteString(`</svg>`)
-	return sb.String()
+	return finish(sb.String())
 }
 
 // heatColor maps v in [0,1] to the risk ramp, green through amber to red,
