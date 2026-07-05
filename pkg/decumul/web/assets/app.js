@@ -573,6 +573,7 @@ function startDrag(ev, i) {
 // Portfolio mode bootstrap: fetch holdings, seed the fit, add the bar.
 // ---------------------------------------------------------------------------
 fetch("/api/meta").then(r => r.json()).then(m => {
+  setSVG("capeGauge", m.capeGauge);
   if (!m.hasPanel) { run(); runSlow(); return; }
   hasPanel = true;
   labels = m.labels;
