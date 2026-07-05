@@ -2,5 +2,5 @@
 12	LU0171310443  # BGF World Technology
 12	LU0171307068  # BGF World Healthscience
 12	LU0280435461  # Pictet Clean Energy
-12	IE00B4L5Y983  # Shares Core MSCI World UCITS ETF USD (Acc), remplace "FR00140022T5  Aleph Monde" avec plus d'historique
+12	IE00B4L5Y983SIM  # Shares Core MSCI World UCITS ETF USD (Acc), remplace "FR00140022T5  Aleph Monde" avec plus d'historique
 12	FR0012336683  # Amundi Actions Or

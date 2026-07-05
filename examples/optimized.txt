@@ -2,6 +2,6 @@
 # single asset above 40%. The report compares it with the weights below.
 #meta optimize:max-sharpe,max-weight:40
 25 VTI   # US equities
-25 TLT   # US long-term bonds
-25 GLD   # gold
-25 IEF   # US 7-10y bonds
+25 TLTSIM   # US long-term bonds
+25 GOLDSIM   # gold
+25 IEFSIM   # US 7-10y bonds

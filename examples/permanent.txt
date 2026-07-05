@@ -1,5 +1,5 @@
 # Harry Browne's permanent portfolio
 25  VTI  # US equities
-25  TLT  # US long-term bonds
-25  GLD  # gold
-25  SHY  # US short-term bonds (cash equivalent)
+25  TLTSIM  # US long-term bonds
+25  GOLDSIM  # gold
+25  SHYSIM  # US short-term bonds (cash equivalent)

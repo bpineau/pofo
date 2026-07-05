@@ -13,6 +13,6 @@
 #   Read the pre-2025 drawdowns as a pessimistic bound.
 #meta rebalance:180
 
-30    LU0290358497    # EUR overnight cash (XEON)
+30    LU0290358497SIM    # EUR overnight cash (XEON)
 47    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN, LU1645380442)
 23    LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E, LU1459801780) -- non-euro sovereign diversification

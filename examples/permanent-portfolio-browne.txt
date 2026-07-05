@@ -7,7 +7,7 @@
 # Buy-route note: UCITS shown; the original uses US VTI/TLT/GLD/SHY.
 #meta rebalance:365
 
-25    IE00B4L5Y983    # World equity (IWDA)
-25    IE00BSKRJZ44    # $ Treasury 20+yr (IDTL)
-25    IE00B4ND3602    # Physical gold (IGLN)
-25    IE00BGCSB447    # USD ultrashort / cash (ERNA)
+25    IE00B4L5Y983SIM    # World equity (IWDA)
+25    IE00BSKRJZ44SIM    # $ Treasury 20+yr (IDTL)
+25    GOLDSIM    # Physical gold (IGLN)
+25    IE00BGCSB447SIM    # USD ultrashort / cash (ERNA)

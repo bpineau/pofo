@@ -4,5 +4,5 @@
 # Inspired by: the classic Bogleheads two-ETF world equity build.
 # UCITS, accumulating, 100% equity.
 
-88    IE00B4L5Y983    # iShares Core MSCI World (IWDA)
+88    IE00B4L5Y983SIM    # iShares Core MSCI World (IWDA)
 12    IE00BKM4GZ66    # iShares Core MSCI EM IMI (EIMI)
