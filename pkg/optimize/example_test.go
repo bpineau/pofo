@@ -2,6 +2,7 @@ package optimize_test
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bpineau/pofo/pkg/optimize"
 )
@@ -21,6 +22,31 @@ func ExampleSolve() {
 	fmt.Printf("A %.0f %%, B %.0f %%\n", res.Weights[0]*100, res.Weights[1]*100)
 	// Output:
 	// A 20 %, B 80 %
+}
+
+// SolveCWARP finds the blend that best improves a replacement portfolio (a
+// benchmark). Offered equity beta and an anti-correlated diversifier, it loads
+// the diversifier and reaches a positive CWARP.
+func ExampleSolveCWARP() {
+	repl := make([]float64, 300)
+	equity := make([]float64, 300)
+	diversifier := make([]float64, 300)
+	for i := range repl {
+		repl[i] = 0.001 + 0.006*math.Sin(float64(i)*0.3)
+		if i >= 100 && i < 115 {
+			repl[i] = -0.010 // a drawdown
+		}
+		equity[i] = repl[i]                // more equity beta
+		diversifier[i] = -repl[i] + 0.0007 // hedge plus carry
+	}
+	res, err := optimize.SolveCWARP([][]float64{equity, diversifier}, repl, optimize.Spec{Objective: optimize.CWARP})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("diversifier favored: %v, CWARP positive: %v\n",
+		res.Weights[1] > res.Weights[0], res.CWARP > 0)
+	// Output:
+	// diversifier favored: true, CWARP positive: true
 }
 
 // ParseSpec reads the value of a "#meta optimize:" directive.

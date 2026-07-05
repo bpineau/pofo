@@ -17,6 +17,10 @@ const (
 	MaxSharpe     Objective = "max-sharpe"
 	MinVolatility Objective = "min-volatility"
 	RiskParity    Objective = "risk-parity"
+	// CWARP maximizes the portfolio's Cole Wins Above Replacement Portfolio
+	// score against a replacement/benchmark series; solved by SolveCWARP,
+	// which needs that extra series, not Solve.
+	CWARP Objective = "cwarp"
 )
 
 // Spec describes an optimization: an objective and its constraints.
@@ -33,6 +37,7 @@ type Result struct {
 	Return     float64   // expected annualized return
 	Volatility float64   // expected annualized volatility
 	Sharpe     float64   // expected annualized Sharpe ratio (risk-free 0)
+	CWARP      float64   // achieved CWARP vs the replacement (SolveCWARP only)
 }
 
 // ParseSpec reads a "#meta optimize:" value: an objective optionally
@@ -42,9 +47,9 @@ func ParseSpec(s string) (Spec, error) {
 	tokens := strings.Split(s, ",")
 	obj := Objective(strings.ToLower(strings.TrimSpace(tokens[0])))
 	switch obj {
-	case MaxSharpe, MinVolatility, RiskParity:
+	case MaxSharpe, MinVolatility, RiskParity, CWARP:
 	default:
-		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility or risk-parity)", tokens[0])
+		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity or cwarp)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
 	for _, tok := range tokens[1:] {
