@@ -23,26 +23,22 @@ const cpiUSSymbol = "^CPI-US"
 //go:embed data/cpi-us.csv
 var cpiUSSnapshot string
 
-// fetchCPIUS returns the daily-interpolated US CPI index. The live FRED
-// series (CPIAUCNS, monthly since 1913) is preferred and disk-cached like
-// the other non-Yahoo sources; if it is unreachable and no cached copy
-// exists, the bundled snapshot keeps the series available offline, at the
-// cost of missing the latest months.
+// fetchCPIUS returns the daily-interpolated US CPI index, served offline-first
+// from the bundled snapshot (CPIAUCNS, monthly since 1913): a normal run never
+// downloads it. The live FRED series is fetched only under RefreshInflation
+// (set during warmup), which then updates the disk cache a later run prefers.
 func (c *Client) fetchCPIUS(ctx context.Context, from time.Time) (*Series, error) {
-	s, err := c.cachedHistory(ctx, "fred", cpiUSSymbol, from, false, func() (*Series, error) {
-		monthly, err := c.fetchFRED(ctx, "CPIAUCNS")
-		if err != nil {
-			return nil, err
-		}
-		return cpiUSSeries(monthly), nil
-	})
-	if err != nil {
-		anchors := parseMonthlyAnchors(cpiUSSnapshot)
-		c.Logf("warning: FRED unavailable (%v), using the embedded %s snapshot (ends %s)",
-			err, cpiUSSymbol, anchors[len(anchors)-1].Date.Format("2006-01"))
-		return cpiUSSeries(anchors), nil
-	}
-	return s, nil
+	return c.embeddedHistory(ctx, "fred", cpiUSSymbol, from,
+		func() (*Series, bool) {
+			return cpiUSSeries(parseMonthlyAnchors(cpiUSSnapshot)), true
+		},
+		func() (*Series, error) {
+			monthly, err := c.fetchFRED(ctx, "CPIAUCNS")
+			if err != nil {
+				return nil, err
+			}
+			return cpiUSSeries(monthly), nil
+		})
 }
 
 // cpiUSSeries packages monthly CPI anchors as a daily-interpolated index

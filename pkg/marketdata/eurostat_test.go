@@ -102,29 +102,48 @@ func TestEmbeddedHICPFR(t *testing.T) {
 	}
 }
 
-func TestFetchEurostatHICPEmbeddedFallback(t *testing.T) {
+func TestFetchEurostatHICPEmbedFirst(t *testing.T) {
 	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
-	calls := 0
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		calls++
-		w.WriteHeader(http.StatusBadGateway) // simulate an Eurostat outage
+		t.Error("Eurostat must not be hit: ^HICP-FR is served offline-first from the embed")
+		w.WriteHeader(http.StatusBadGateway)
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux) // fresh temp dir: no disk cache
 	defer srv.Close()
 
 	s, err := c.Fetch(context.Background(), "^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
-		t.Fatalf("expected embedded fallback to succeed, got %v", err)
-	}
-	if calls == 0 {
-		t.Error("live API should have been attempted before falling back")
+		t.Fatalf("expected the embedded snapshot to serve, got %v", err)
 	}
 	if s.Source != "eurostat" || len(s.Points) < 1000 {
-		t.Errorf("fallback series looks wrong: source=%q points=%d", s.Source, len(s.Points))
+		t.Errorf("embedded series looks wrong: source=%q points=%d", s.Source, len(s.Points))
 	}
 	if !s.First().Date.Equal(time.Date(1955, 1, 1, 0, 0, 0, 0, time.UTC)) {
-		t.Errorf("fallback first date = %v, want 1955-01-01 (embedded long history)", s.First().Date)
+		t.Errorf("embedded first date = %v, want 1955-01-01 (long history)", s.First().Date)
+	}
+}
+
+// A geography without a bundled snapshot (^HICP-EA) still uses the live API in
+// the default (non-refresh) mode: embed-first only diverts geos that have one.
+func TestFetchEurostatHICPNoEmbedGoesLive(t *testing.T) {
+	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
+	mux := http.NewServeMux()
+	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{
+			"value": {"0": 100.0, "1": 101.0},
+			"dimension": {"time": {"category": {"index": {"2006-01": 0, "2006-02": 1}}}}
+		}`)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.Fetch(context.Background(), "^HICP-EA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Source != "eurostat" || !s.First().Date.Equal(time.Date(2006, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("live series looks wrong: source=%q first=%v", s.Source, s.First().Date)
 	}
 }
 
@@ -142,6 +161,7 @@ func TestFetchEurostatHICP(t *testing.T) {
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
+	c.RefreshInflation = true // the live Eurostat path is refresh-only
 
 	s, err := c.Fetch(context.Background(), "^HICP-FR", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {

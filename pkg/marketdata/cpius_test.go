@@ -18,6 +18,7 @@ func TestFetchCPIUSLive(t *testing.T) {
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
+	c.RefreshInflation = true // the live FRED path is refresh-only
 
 	// Lowercase exercises the identifier canonicalization on the way in.
 	s, err := c.Fetch(t.Context(), "^cpi-us", time.Time{})
@@ -40,9 +41,10 @@ func TestFetchCPIUSLive(t *testing.T) {
 	}
 }
 
-func TestFetchCPIUSOfflineSnapshot(t *testing.T) {
+func TestFetchCPIUSEmbedFirst(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/graph/fredgraph.csv", func(w http.ResponseWriter, r *http.Request) {
+		t.Error("FRED must not be hit: ^CPI-US is served offline-first from the embed")
 		http.Error(w, "fred down", http.StatusInternalServerError)
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)

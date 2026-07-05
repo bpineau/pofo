@@ -49,13 +49,16 @@
 // monthly all-items index (2015=100) is interpolated to a smooth daily curve,
 // so an inflation series behaves like any other (a chart, a CAGR that reads as
 // average inflation, drawdowns that mark deflation episodes, a deflator for
-// real-return work). It carries no currency. A monthly snapshot is embedded in
-// the binary as an offline fallback (used only when the live API is unreachable
-// and nothing is cached), so an inflation series is always available.
+// real-return work). It carries no currency. ^HICP-FR embeds a monthly snapshot
+// (1955→) in the binary and is served offline-first from it: a normal run never
+// downloads it. The live Eurostat API is consulted only under
+// Client.RefreshInflation (set by "pofo -warmup"), which refreshes the disk
+// cache a later run then prefers. Geographies without a bundled snapshot
+// (^HICP-EA, …) keep the live path.
 //
 // "^CPI-US" is the dollar sibling: the US CPI-U all-items index (1982-84=100,
-// monthly since 1913), served live from FRED with the same daily interpolation
-// and the same embedded-snapshot fallback.
+// monthly since 1913), embedded and served offline-first the same way, with the
+// live FRED series fetched only on refresh.
 //
 // # Dividends and raw closes
 //
