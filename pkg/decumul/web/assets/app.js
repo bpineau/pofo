@@ -497,6 +497,7 @@ async function renderLifecycle(b, id) {
     if (!fresh(id)) return;
     setSVG("lifeSvg", r.lifeSvg);
     setSVG("ruinYearSvg", r.ruinYearSvg);
+    setSVG("causesSvg", r.causesSvg);
     document.getElementById("lifecycleCards").innerHTML = cardsHTML(r.cards);
   } catch (e) { /* keep the previous chart */ }
 }

@@ -16,6 +16,7 @@ import (
 type LifecycleResult struct {
 	LifeSVG     string `json:"lifeSvg"`
 	RuinYearSVG string `json:"ruinYearSvg"`
+	CausesSVG   string `json:"causesSvg"`
 	Cards       []Card `json:"cards"`
 	Note        string `json:"note"`
 }
@@ -71,8 +72,18 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	}
 	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
 
+	// Why plans fail: decompose the ruined paths by the timing that stands in for
+	// the cause (early crash / lost decade / longevity).
+	rt := e.RuinTiming()
+	causesSVG := chart.CategoryBars(chart.Options{Width: 460},
+		[]chart.CatBar{
+			{Label: "Early crash", Value: rt.Early, Text: fmt.Sprintf("%.0f%%", rt.Early*100), Color: "#D2402F"},
+			{Label: "Lost decade", Value: rt.Mid, Text: fmt.Sprintf("%.0f%%", rt.Mid*100), Color: "#C77E17"},
+			{Label: "Longevity", Value: rt.Late, Text: fmt.Sprintf("%.0f%%", rt.Late*100), Color: "#9AA2B1"},
+		})
+
 	cards := lifecycleCards(e, age)
-	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, Cards: cards}
+	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, Cards: cards}
 }
 
 // lifecycleCards summarises the mortality-adjusted risk: the classic ruin
