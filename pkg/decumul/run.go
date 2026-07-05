@@ -105,7 +105,13 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		// spent with no flex cut and no guardrails move. Delivering less
 		// counts the year as "cut" (cutAt), whatever the cause.
 		var need, uncut float64
-		if p.Guard.active() {
+		if p.Percent > 0 {
+			// Percentage-of-portfolio (VPW): spend a fixed share of current
+			// wealth. uncut stays the fixed reference standard, so years where the
+			// rule delivers less than that count as a lived cut.
+			need = p.Percent * total
+			uncut = p.needAt(k)
+		} else if p.Guard.active() {
 			spending = p.Guard.adjust(spending, total)
 			need = p.netOf(spending*p.schedAt(k), k)
 			uncut = p.needAt(k)

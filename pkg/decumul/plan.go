@@ -195,6 +195,14 @@ type Plan struct {
 	Source     scenario.Source
 	Guard      Guardrails // optional Guyton-Klinger spending rule (replaces Flex when active)
 	Ratchet    Ratchet    // optional only-up spending rule (ignored while Guard is active)
+	// Percent, when > 0, switches to a percentage-of-portfolio (VPW-style)
+	// withdrawal: each year the household spends Percent of current total real
+	// wealth instead of a fixed real need. It cannot ruin (spending is always a
+	// fraction of what remains) but the standard of living swings with the
+	// market, so it trades ruin risk for spending volatility, the other end of
+	// the decumulation frontier. It overrides Flex, Guard and Ratchet, and runs
+	// annually (a rebalancing rule), never monthly.
+	Percent float64
 	// Envelopes optionally splits the growth sleeve across tax wrappers
 	// (CTO/PEA/AV), drained in slice order; nil keeps the single sleeve
 	// taxed by Tax. See Envelope.
@@ -213,7 +221,7 @@ type Plan struct {
 // sweeps go through it so a monthly plan is simulated end to end, while the
 // annual RunPath stays the validated reference (and its golden tests).
 func (p Plan) runPath(seq scenario.Sequence) PathResult {
-	if p.Monthly {
+	if p.Monthly && p.Percent <= 0 {
 		return p.RunPathMonthly(seq)
 	}
 	return p.RunPath(seq)
