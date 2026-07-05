@@ -44,6 +44,7 @@ type Params struct {
 	WRTrigger      float64   `json:"wrTrigger"`      // flex also cuts above this current WR (0 = off)
 	SpendDrift     float64   `json:"spendDrift"`     // real spending drift per year (health costs)
 	Smile          bool      `json:"smile"`          // Blanchett retirement-smile spending shape
+	CapeAdjust     bool      `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).

@@ -5,7 +5,7 @@ import (
 	"io/fs"
 )
 
-//go:embed simdata assetmeta/assets.json refdata broadsample/country-real.csv
+//go:embed simdata assetmeta/assets.json refdata broadsample/country-real.csv cape/shiller-cape.csv
 var bundle embed.FS
 
 // Simdata returns the embedded simulated-history files.
@@ -34,6 +34,17 @@ func Refdata() fs.FS {
 // model. Regenerate with "make broadsample".
 func BroadSample() []byte {
 	b, err := bundle.ReadFile("broadsample/country-real.csv")
+	if err != nil {
+		panic(err) // broken repository layout: impossible at runtime
+	}
+	return b
+}
+
+// CAPE returns the embedded Shiller CAPE (PE10) monthly series (date,cape),
+// used by the FIRE explorer to anchor the central case to today's valuation.
+// Regenerate with "make cape".
+func CAPE() []byte {
+	b, err := bundle.ReadFile("cape/shiller-cape.csv")
 	if err != nil {
 		panic(err) // broken repository layout: impossible at runtime
 	}
