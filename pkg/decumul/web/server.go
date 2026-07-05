@@ -75,6 +75,7 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	post("/api/paths", func(pr Params) any { return Paths(pr, panel) })
 	post("/api/sensitivity", func(pr Params) any { return Sensitivity(pr, panel) })
 	post("/api/frontier", func(pr Params) any { return Frontier(pr, panel) })
+	post("/api/policyfrontier", func(pr Params) any { return PolicyFrontier(pr, panel) })
 	post("/api/solvemenu", func(pr Params) any { return SolveMenu(pr, panel) })
 	post("/api/solve", func(pr Params) any { return Solve(pr, panel) })
 	post("/api/spending", func(pr Params) any { return Spending(pr, panel) })
