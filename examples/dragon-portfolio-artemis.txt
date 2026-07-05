@@ -12,4 +12,4 @@
 18    TLTSIM          # Long bonds (UCITS: IDTL)
 19    GOLDSIM         # Gold (UCITS: IGLN)
 18    KMLMSIM         # Managed futures / commodity trend (UCITS: iMGP DBi LU2951555585)
-21    LU0319687124    # Long volatility (Amundi Volatility World)
+21    AMUNDI-VOLATILITY    # Long volatility (Amundi Volatility World)

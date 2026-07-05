@@ -6,4 +6,4 @@
 # UCITS, accumulating. Maximum growth, maximum volatility — ideal for a long
 #   accumulation horizon, less so once you approach withdrawals.
 
-100   IE00BK5BQT80    # Vanguard FTSE All-World (VWRA) — dev+EM
+100   VWRA    # Vanguard FTSE All-World (VWRA) — dev+EM

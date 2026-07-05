@@ -5,9 +5,9 @@
 # Inspired by: dividend-growth / 'income floor' retirement approaches.
 # UCITS. Tilt to quality dividends to limit value traps.
 
-20    IE00B8GKDB10    # FTSE All-World High Dividend (VHYL)
-15    IE00BYYHSQ67    # World Quality Dividend (WQDV)
-15    IE00B9CQXS71    # Global Dividend Aristocrats (ZPRG)
-10    IE00B1FZS350    # Global REITs (IWDP)
-25    IE00B4WXJJ64    # € Government Bond (IEGA)
+20    VHYL    # FTSE All-World High Dividend (VHYL)
+15    WQDV    # World Quality Dividend (WQDV)
+15    ZPRG    # Global Dividend Aristocrats (ZPRG)
+10    IWDP    # Global REITs (IWDP)
+25    IEGA    # € Government Bond (IEGA)
 15    GOLDSIM    # Gold (IGLN)

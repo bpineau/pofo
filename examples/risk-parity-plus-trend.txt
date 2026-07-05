@@ -11,5 +11,5 @@
 20    TLTSIM          # Long bonds
 15    SHYSIM          # Short bonds
 15    GOLDSIM         # Gold
-15    IE00BDFL4P12    # Broad commodities (ICOM)
+15    ICOM    # Broad commodities (ICOM)
 15    KMLMSIM         # Managed futures

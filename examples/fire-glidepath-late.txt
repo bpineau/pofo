@@ -13,5 +13,5 @@
 10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR)
 8     KMLMSIM         # Trend leg B: direct trend (buy Winton or AQR UCITS)
 12    XAUUSDSIM       # Gold (buy IGLN)
-4     LU1645380442SIM # Euro inflation-linked 1-10y (residual buffer)
-4     LU0290358497SIM    # EUR overnight cash (XEON)
+4     CHSNSIM # Euro inflation-linked 1-10y (residual buffer)
+4     XEONSIM    # EUR overnight cash (XEON)
