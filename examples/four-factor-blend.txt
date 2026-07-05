@@ -5,7 +5,7 @@
 # Inspired by: factor diversification (the 'factor zoo' meets common sense).
 # UCITS, 100% equity.
 
-25    IE00BP3QZB59    # World Value (IWVL)
-25    IE00BP3QZ825    # World Momentum (IWMO)
-25    IE00BP3QZ601    # World Quality (IWQU)
-25    IE00B8FHGS14    # World Minimum Volatility (MVOL)
+25    IWVL    # World Value (IWVL)
+25    IWMO    # World Momentum (IWMO)
+25    IWQU    # World Quality (IWQU)
+25    MVOL    # World Minimum Volatility (MVOL)

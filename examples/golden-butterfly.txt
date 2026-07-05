@@ -7,7 +7,7 @@
 #meta rebalance:365
 
 20    IWDASIM         # Total-market equity (UCITS: IWDA)
-20    IE00BSPLC413SIM    # US Small-Cap Value (ZPRV)
+20    ZPRVSIM    # US Small-Cap Value (ZPRV)
 20    TLTSIM          # Long US Treasuries (UCITS: IDTL)
 20    SHYSIM          # Short US Treasuries (UCITS: IB01)
 20    GOLDSIM         # Gold (UCITS: IGLN)
