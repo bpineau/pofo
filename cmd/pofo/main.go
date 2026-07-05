@@ -161,10 +161,10 @@ File format: one line per asset:
                              (withdraw:4%%/year), every period P
         #meta optimize:OBJ   compute the weights: OBJ is max-sharpe,
                              min-volatility, risk-parity, max-sortino,
-                             return-to-drawdown or cwarp (maximize CWARP vs
-                             the benchmark), with an optional ",max-weight:40"
-                             cap. The report shows the optimized weights next
-                             to the written ones.
+                             return-to-drawdown, min-ulcer, max-worst-5y or
+                             cwarp (maximize CWARP vs the benchmark), with an
+                             optional ",max-weight:40" cap. The report shows
+                             the optimized weights next to the written ones.
 
 Example:
     #meta rebalance:30
@@ -1283,6 +1283,10 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		note += fmt.Sprintf(", achieved Sortino %.2f", res.Sortino)
 	case optimize.ReturnToDrawdown:
 		note += fmt.Sprintf(", achieved return/max-drawdown %.2f", res.ReturnToMaxDD)
+	case optimize.MinUlcer:
+		note += fmt.Sprintf(", achieved Ulcer Index %.1f", res.Ulcer)
+	case optimize.MaxWorst5y:
+		note += fmt.Sprintf(", achieved worst rolling 5y return %.1f %%/yr", res.Worst5y*100)
 	}
 	if spec.Optimize.Objective == optimize.RiskParity && spec.Optimize.MaxWeight > 0 {
 		note += " (max-weight does not apply to risk-parity)"

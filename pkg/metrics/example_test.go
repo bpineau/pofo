@@ -62,6 +62,25 @@ func ExampleReturnToMaxDrawdown() {
 	// defined: true, positive: true
 }
 
+// Ulcer measures how painful the drawdowns were (depth and duration), and
+// WorstRollingReturn the worst outcome over any window of the given length:
+// the two underwater-robustness quantities the decumulation-minded optimizer
+// objectives (min-ulcer, max-worst-5y) target.
+func ExampleUlcer() {
+	returns := make([]float64, 300)
+	for i := range returns {
+		returns[i] = 0.001
+		if i >= 100 && i < 130 {
+			returns[i] = -0.01 // a prolonged drawdown
+		}
+	}
+	worst, _ := metrics.WorstRollingReturn(returns, 252)
+	fmt.Printf("Ulcer > 0: %v, worst 1y return negative: %v\n",
+		metrics.Ulcer(returns) > 0, worst < 0)
+	// Output:
+	// Ulcer > 0: true, worst 1y return negative: true
+}
+
 // Beta regresses a series' daily returns on a benchmark's, matching
 // observations by date.
 func ExampleBeta() {

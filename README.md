@@ -48,46 +48,57 @@ its extension.
 14.5 GOLD           # built-in alias → gold XAU/USD
 ```
 
-`#meta key:value` lines carry per-portfolio directives: `rebalance:N` (days
-between rebalances, `0` = never) and `extra-fees:X` (synonym
-`envelope-fees:X`), **additional fees in %/yr applied to the whole
-portfolio**, on top of the assets' individual TERs: life-insurance/pension
-wrappers, managed mandates, broker fees… Since they are not baked into the
-quotes (unlike TERs), they are **deducted** from the simulated performance.
+`#meta key:value` lines carry per-portfolio directives:
 
-`#meta leverage:on` enables leveraged portfolios: weights are kept as
-written (sum up to 500%) and the residual `100−sum` becomes a cash
-position, earning the short rate (^IRX) if positive, **financed at the
-rate + spread** if negative (`#meta borrow-spread:X`, default 1%/yr). A
-NAV that reaches zero is a ruin: the series stops and the report flags it.
-`#meta capital:10000` sets a starting amount, and unlocks periodic external
-flows: `#meta contribute:500/month` (fixed amount added every week, month,
-quarter or year) and `#meta withdraw:4%/year` (fixed amount, or a
-percentage of the current value). Flows are invested or sold pro rata on
-the first trading day of each new period. Statistics and comparison charts
-stay on a **time-weighted index** (flows don't distort returns), while the
-money rows (starting capital, total contributed/withdrawn, final value and
-a **money-weighted IRR**) follow the actual cash. Withdrawing a depleted
-portfolio is a ruin: the series stops and the report flags it.
+| Directive | Effect |
+|---|---|
+| `rebalance:N` | rebalance back to the target weights every N days (`0` = never) |
+| `extra-fees:X` (or `envelope-fees:X`) | extra fees in %/yr on the **whole** portfolio (insurance/pension wrapper, mandate, broker), on top of each asset's TER. Unlike TERs (already in the quotes) they are **deducted** from the simulation |
+| `leverage:on` | keep the written weights (sum up to 500%); the residual `100−sum` is a cash position, earning the short rate (`^IRX`) if positive, **financed** if negative. A NAV reaching zero is a ruin |
+| `borrow-spread:X` | financing spread in %/yr over cash when the cash position is negative (default `1.0`) |
+| `capital:X` | starting amount (e.g. `10000`); required for flows, and unlocks the money rows |
+| `contribute:A/P` | add a fixed amount A every period P ∈ {`week`, `month`, `quarter`, `year`} |
+| `withdraw:A/P` | take out A, or `A%` of the current value, every period P |
+| `optimize:OBJ[,max-weight:C]` | let the optimizer choose the weights for objective `OBJ` (table below), optionally capping each asset at C% |
 
-`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`, `max-sortino`,
-`return-to-drawdown`, `cwarp`) lets the optimizer compute the weights instead of
-using the ones you wrote. It works out the long-only allocation that maximizes
-the Sharpe ratio, minimizes volatility, equalizes each asset's risk
-contribution, maximizes the portfolio's **Sortino** (return over downside
-deviation, which rewards non-correlation and positive skew) or its
-**return-to-max-drawdown**, or maximizes CWARP (see below), over the period
-where all the assets quote. `max-sortino` and `return-to-drawdown` are the
-downside-aware way to weight a portfolio's *own* assets; `cwarp` instead selects
-a diversifier of an external benchmark (see the warning below). An optional cap diversifies
-the result: `#meta optimize:max-sharpe,max-weight:40`. The report then shows
-**two portfolios side by side**: `name (as written)` and `name (max-sharpe)`,
-so the optimizer's choice is compared with your baseline; the computed
-weights and their in-sample expected return/volatility/Sharpe appear as a
-note under the optimized portfolio. Those figures are fitted on the past,
-so treat them as a starting point, not a promise. `max-weight` does not
-apply to `risk-parity` (its weights follow from the equal-risk condition),
-and `optimize` cannot be combined with `leverage`.
+Flows are invested or sold pro rata on the first trading day of each new
+period. Statistics and comparison charts stay on a **time-weighted index**
+(flows don't distort returns), while the money rows (starting capital,
+contributed/withdrawn, final value and a **money-weighted IRR**) follow the
+actual cash. Withdrawing a depleted portfolio is a ruin, flagged in the report.
+
+**`optimize:` objectives.** The report shows `name (as written)` beside
+`name (OBJ)`, with the computed weights and their in-sample stats as a note
+(fitted on the past, so a starting point, not a promise). `optimize` cannot be
+combined with `leverage`.
+
+| `OBJ` | Long-only weights that… |
+|---|---|
+| `max-sharpe` | maximize return / volatility (the tangency portfolio) |
+| `min-volatility` | minimize variance |
+| `risk-parity` | equalize each asset's risk contribution (ignores `max-weight`) |
+| `max-sortino` | maximize return / downside deviation (rewards non-correlation & positive skew) |
+| `return-to-drawdown` | maximize return / max drawdown (Calmar-style) |
+| `min-ulcer` | minimize the Ulcer Index (depth **and** duration underwater) |
+| `max-worst-5y` | maximize the worst rolling 5-year return |
+| `cwarp` | maximize CWARP vs the `-benchmark` (a diversifier selector, see [CWARP](#cwarp)) |
+
+For **decumulation**, where long underwater stretches or a bad five-year run are
+hard to live through, `min-ulcer` and `max-worst-5y` target that discomfort
+directly; read the effect off the report's *Ulcer Index*, *TTR* and *Worst
+rolling 5y CAGR* rows. The longest-recovery TTR itself is a step function of the
+weights, so it is not an objective; `min-ulcer` is its smooth, optimizable
+proxy. A decumulation file might read:
+
+```
+#meta capital:500000
+#meta withdraw:4%/year
+#meta optimize:min-ulcer,max-weight:40
+40 NTSGSIM     # equity + duration engine
+25 XAUUSDSIM   # gold
+20 ZROZSIM     # long-duration deflation hedge
+15 DBMFESIM    # managed-futures trend
+```
 
 ### CWARP
 
@@ -396,7 +407,8 @@ pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
 pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity /
-                  max-sortino / return-to-drawdown / cwarp
+                  max-sortino / return-to-drawdown / min-ulcer / max-worst-5y /
+                  cwarp
 pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
 pkg/portfolio/    allocation file format + rebalanced simulation

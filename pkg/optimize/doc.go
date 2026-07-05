@@ -1,7 +1,7 @@
 // Package optimize computes portfolio weights that optimize a risk/return
 // objective from the historical returns of the candidate assets.
 //
-// Six objectives are supported:
+// Eight objectives are supported:
 //
 //   - MaxSharpe ("max-sharpe"): the tangency portfolio, maximizing the
 //     ratio of expected return to volatility.
@@ -14,6 +14,11 @@
 //   - ReturnToDrawdown ("return-to-drawdown"): maximizes the portfolio's own
 //     return-to-maximum-drawdown (a Calmar-style ratio), rewarding shallow
 //     drawdowns.
+//   - MinUlcer ("min-ulcer"): minimizes the Ulcer Index (root-mean-square
+//     drawdown), shortening and shallowing the underwater periods that are
+//     hard to sit through.
+//   - MaxWorst5y ("max-worst-5y"): maximizes the worst rolling five-year
+//     return, the robust worst-case medium-term outcome.
 //   - CWARP ("cwarp"): the blend that best improves a replacement portfolio
 //     (a benchmark) when overlaid on it. It is solved by SolveCWARP, which
 //     takes the replacement's returns as an extra argument; the objective is
@@ -26,10 +31,10 @@
 // RiskParity, whose weights follow directly from the equal-risk condition.
 //
 // MaxSharpe and MinVolatility optimize the mean and covariance in closed-ish
-// form; MaxSortino, ReturnToDrawdown and CWARP depend on the whole return
-// path, so they are solved by the same multi-start heuristic as MaxSharpe
-// (their weights are a good allocation, not a certified optimum). CWARP also
-// needs a replacement series and is solved by SolveCWARP, not Solve.
+// form; MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y and CWARP depend on
+// the whole return path, so they are solved by the same multi-start heuristic
+// as MaxSharpe (their weights are a good allocation, not a certified optimum).
+// CWARP also needs a replacement series and is solved by SolveCWARP, not Solve.
 //
 // Conventions match pkg/metrics: simple daily returns, 252 trading days per
 // year and a risk-free rate of 0. The estimates returned in Result are

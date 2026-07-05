@@ -58,8 +58,58 @@ func TestSolveReturnToDrawdown(t *testing.T) {
 	}
 }
 
+// TestSolveMinUlcer: the min-Ulcer weights beat the lower-Ulcer single asset
+// and form a genuine blend, since combining the anti-correlated pair shortens
+// and shallows the underwater stretches.
+func TestSolveMinUlcer(t *testing.T) {
+	a, b := antiCorrelated()
+	best := math.Min(metrics.Ulcer(a), metrics.Ulcer(b))
+	res, err := Solve([][]float64{a, b}, Spec{Objective: MinUlcer})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Ulcer > best+1e-6 {
+		t.Fatalf("optimized Ulcer %.3f above best single %.3f", res.Ulcer, best)
+	}
+	if res.Weights[0] < 0.1 || res.Weights[1] < 0.1 {
+		t.Fatalf("expected a diversified blend, got %.2f / %.2f", res.Weights[0], res.Weights[1])
+	}
+}
+
+// TestSolveMaxWorst5y: the worst-case five-year return of the blend is at least
+// as good as the best single asset's, over a >5-year synthetic history.
+func TestSolveMaxWorst5y(t *testing.T) {
+	// ~6 years of anti-correlated daily returns.
+	const n = 6 * 252
+	a := make([]float64, n)
+	b := make([]float64, n)
+	for i := 0; i < n; i++ {
+		swing := 0.010 * math.Sin(float64(i)*0.05)
+		a[i] = 0.0004 + swing
+		b[i] = 0.0004 - swing + 0.0002*math.Sin(float64(i)*0.9)
+	}
+	wa, _ := metrics.WorstRollingReturn(a, fiveYearWindow)
+	wb, _ := metrics.WorstRollingReturn(b, fiveYearWindow)
+	best := math.Max(wa, wb)
+	res, err := Solve([][]float64{a, b}, Spec{Objective: MaxWorst5y})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if res.Worst5y < best-1e-6 {
+		t.Fatalf("optimized worst-5y %.4f below best single %.4f", res.Worst5y, best)
+	}
+}
+
+func TestSolveMaxWorst5yShortHistory(t *testing.T) {
+	a := make([]float64, 252) // only 1 year
+	b := make([]float64, 252)
+	if _, err := Solve([][]float64{a, b}, Spec{Objective: MaxWorst5y}); err == nil {
+		t.Fatalf("expected an error for a history shorter than 5 years")
+	}
+}
+
 func TestParseSpecSeries(t *testing.T) {
-	for _, obj := range []Objective{MaxSortino, ReturnToDrawdown} {
+	for _, obj := range []Objective{MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y} {
 		s, err := ParseSpec(string(obj) + ",max-weight:60")
 		if err != nil {
 			t.Fatalf("%s: %v", obj, err)

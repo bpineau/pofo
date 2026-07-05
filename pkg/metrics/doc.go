@@ -39,7 +39,10 @@
 // replacement is typically equity beta or a 60/40 blend. Sortino and
 // ReturnToMaxDrawdown, its two building blocks, are exported on their own:
 // they are the downside-aware quantities pkg/optimize maximizes for the
-// max-sortino and return-to-drawdown objectives.
+// max-sortino and return-to-drawdown objectives. Ulcer (root-mean-square
+// drawdown) and WorstRollingReturn (worst outcome over a fixed window) round
+// out the underwater-robustness measures, behind the min-ulcer and
+// max-worst-5y objectives that matter most in decumulation.
 //
 // # External flows
 //
