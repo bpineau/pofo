@@ -37,9 +37,9 @@ func Bars(opt Options, bars []Bar) string {
 		max = 1
 	}
 	var sb strings.Builder
-	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" font-family="sans-serif" font-size="12">`, w, h)
+	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" font-family="`+themeMono+`" font-size="12">`, w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&sb, `<text x="%d" y="20" font-size="14" font-weight="600">%s</text>`, padL, esc(opt.Title))
+		fmt.Fprintf(&sb, `<text x="%d" y="20" font-size="14" font-weight="600" fill="`+themeInk+`">%s</text>`, padL, esc(opt.Title))
 	}
 	n := len(bars)
 	if n == 0 {
@@ -63,7 +63,7 @@ func Bars(opt Options, bars []Bar) string {
 		if b.Text != "" {
 			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" fill="%s">%s</text>`, x+bw/2, y-4, themeInk, esc(b.Text))
 		}
-		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
+		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle" fill="`+themeMuted+`">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
 	}
 	sb.WriteString(`</svg>`)
 	return finish(sb.String())
