@@ -1,6 +1,9 @@
 package metrics
 
-import "math"
+import (
+	"math"
+	"time"
+)
 
 // defaultCWARPWeight is Artemis's standard overlay size: the new asset is
 // layered on the replacement at 25 % of its notional, financed by borrowing.
@@ -60,6 +63,32 @@ func CWARP(asset, replacement []float64, p CWARPParams) (float64, bool) {
 		return 0, false
 	}
 	return cwarpScore(sRepl, sNew, mRepl, mNew)
+}
+
+// CWARPvs computes the CWARP of `values` overlaid on a benchmark (the
+// replacement portfolio), matching their daily returns by exact date. It is
+// the convenient entry point for callers holding dated value series (a
+// portfolio and its benchmark). ok is false when fewer than minBetaOverlap
+// dates overlap or the score is undefined (see CWARP).
+func CWARPvs(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64, p CWARPParams) (float64, bool) {
+	if len(dates) != len(values) || len(benchDates) != len(benchValues) || len(dates) < 2 || len(benchDates) < 2 {
+		return 0, false
+	}
+	bench := make(map[time.Time]float64, len(benchDates)-1)
+	for i := 1; i < len(benchDates); i++ {
+		bench[benchDates[i]] = benchValues[i]/benchValues[i-1] - 1
+	}
+	var asset, repl []float64
+	for i := 1; i < len(dates); i++ {
+		if br, found := bench[dates[i]]; found {
+			asset = append(asset, values[i]/values[i-1]-1)
+			repl = append(repl, br)
+		}
+	}
+	if len(asset) < minBetaOverlap {
+		return 0, false
+	}
+	return CWARP(asset, repl, p)
 }
 
 // cwarpScore combines the replacement and new-portfolio Sortino and
