@@ -46,6 +46,63 @@ func All() []Recipe {
 		ernaRecipe(),
 		ernxRecipe(),
 		xeonRecipe(),
+		eimiRecipe(),
+		vwraRecipe(),
+		vtiRecipe(),
+	}
+}
+
+// eimiRecipe backcasts the iShares Core MSCI EM IMI UCITS ETF (IE00BKM4GZ66,
+// USD, real from 2014) from Vanguard Emerging Markets (VEIEX, 1994->, itself
+// carried back to the MSCI EM net total-return reconstruction EM-USD, ~1988).
+// MSCI EM IMI only differs from standard MSCI EM by a small-cap tail; VEIEX is
+// the same broad EM equity exposure, so it is the faithful long proxy. Real
+// EIMI grafted from inception, same currency (USD), no FX leg.
+func eimiRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00BKM4GZ66",
+		Name:            "iShares Core MSCI EM IMI: emerging-market equity (VEIEX)",
+		Method:          "VEIEX (Vanguard Emerging Markets, 1994->, extended EM-USD MSCI EM net TR to ~1988), real EIMI grafted from 2014",
+		Build:           composite("EIMI (emerging markets)", []Leg{{ID: "VEIEX", Weight: 1}}, "", 0),
+		ValidateAgainst: "IE00BKM4GZ66",
+		SpliceReal:      "IE00BKM4GZ66",
+	}
+}
+
+// vwraRecipe backcasts the Vanguard FTSE All-World UCITS ETF (IE00BK5BQT80,
+// USD, real from 2019) with the same 60/30/10 US / developed-ex-US / emerging
+// blend as VT: FTSE All-World (large+mid, developed+emerging) is Vanguard's
+// Total World universe minus the small-cap tail, so the blend is the faithful
+// long proxy. The youngest leg (VEIEX/EM-USD) sets the ~1988 start; real VWRA
+// grafted from inception, same currency (USD), no FX leg.
+func vwraRecipe() Recipe {
+	return Recipe{
+		ID:     "IE00BK5BQT80",
+		Name:   "Vanguard FTSE All-World: world equity (US/dev-ex-US/EM blend)",
+		Method: "0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM, ~1988), real VWRA grafted from 2019",
+		Build: composite("VWRA (FTSE All-World replication)", []Leg{
+			{ID: "VFINX", Weight: 0.60},
+			{ID: "VTMGX", Weight: 0.30},
+			{ID: "VEIEX", Weight: 0.10},
+		}, "", 0),
+		ValidateAgainst: "IE00BK5BQT80",
+		SpliceReal:      "IE00BK5BQT80",
+	}
+}
+
+// vtiRecipe backcasts the Vanguard Total Stock Market ETF (VTI, USD, real from
+// 2001) from Vanguard 500 (VFINX, 1976->, carried back to the S&P 500 total
+// return SP500-USD ~1871). The total US market and the S&P 500 differ only by
+// a mid/small-cap tail and track at ~0.99 daily correlation, so VFINX is the
+// faithful deep-history proxy; real VTI grafted from inception.
+func vtiRecipe() Recipe {
+	return Recipe{
+		ID:              "VTI",
+		Name:            "Vanguard Total US Market: S&P 500 proxy (VFINX)",
+		Method:          "VFINX (Vanguard 500, 1976->, extended SP500-USD total return to ~1871; total US market ≈ S&P 500), real VTI grafted from 2001",
+		Build:           composite("VTI (total US market)", []Leg{{ID: "VFINX", Weight: 1}}, "", 0),
+		ValidateAgainst: "VTI",
+		SpliceReal:      "VTI",
 	}
 }
 
