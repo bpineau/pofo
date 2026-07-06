@@ -74,6 +74,11 @@ macropanel: ## (Re)generate the bundled OECD monthly macro panel (network) then 
 	$(GO) run ./cmd/gen-macropanel
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: euro-refdata
+euro-refdata: ## (Re)generate the bundled euro-area reference series (network) then rebuild
+	$(GO) run ./cmd/gen-euro-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt
