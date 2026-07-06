@@ -286,6 +286,7 @@ Options:
 	// Download every distinct (currency, asset) once. A "#meta currencies"
 	// directive evaluates the same portfolio in several currencies.
 	seriesByCur := map[string]map[string]*marketdata.Series{}
+	resolved := map[string]bool{} // report each id's resolved instrument once
 	for _, spec := range specs {
 		for _, cur := range effectiveCurrencies(spec, opt.currency) {
 			m := seriesByCur[cur]
@@ -302,6 +303,14 @@ Options:
 					return fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
 				}
 				m[h.ID] = s
+				// Surface what each identifier resolved to: a fuzzy source match
+				// can return a wrong instrument (e.g. "SP500" -> an S&P sector
+				// sub-index), and a silent mismatch is how delirious numbers slip
+				// through. Show it once so the user can catch it.
+				if !resolved[h.ID] {
+					resolved[h.ID] = true
+					log.Printf("resolved %s -> %q [%s, %s]", h.ID, s.Name, s.Source, s.Currency)
+				}
 			}
 		}
 	}
