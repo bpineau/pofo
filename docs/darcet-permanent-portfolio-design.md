@@ -252,7 +252,69 @@ multicountry_jst, breadth_faithful).
 - **[EMPIRICAL] Data quality changed levels but not the drawdown conclusion**;
   the fix was the *signal* (breadth + damping), not the *assets*.
 
-## 7. Generalizing the framework (e.g. Artemis Dragon)
+## 7. FIRE / decumulation relevance  [EMPIRICAL]
+
+The question that matters for a retiree is not CAGR or maxDD but **sequence
+risk**: withdrawing during a drawdown permanently impairs capital, and long
+stretches under water are where FIRE plans die. We measured the FIRE metrics
+directly (REAL, monthly, 1970-2024; global breadth model at a **moderate**
+`wMax=1.3`, not the cherry-picked 1.6; 4% real withdrawal over overlapping 30-year
+cohorts, Bengen-style). Prototype archived as `darcet_fire_relevance.go`.
+
+| strategy | CAGR | vol | maxDD | %UW | longest UW | 4% survival | p10 terminal |
+|---|---|---|---|---|---|---|---|
+| GLOBAL tactical PP2.0 | 4.83% | 7.5% | -22.7% | 75% | 10.4y | **100%** | **0.56x** |
+| GLOBAL static Browne PP | 3.61% | 7.0% | -25.4% | 79% | **6.2y** | **100%** | 0.46x |
+| GLOBAL 60/40 (World/bond) | 4.38% | 10.6% | -44.7% | 79% | 12.8y | 97% | 0.32x |
+| MSCI World (100% equity) | 4.83% | 14.9% | -54.1% | 85% | 12.7y | 98% | 0.59x |
+| JAPAN home-bias static PP | 3.35% | 6.1% | -24.6% | 81% | 16.4y | 85% | **0.00x** |
+| JAPAN equity only | 3.68% | 15.1% | -66.2% | 92% | **31.1y** | 76% | 0.00x |
+
+%UW = share of months below the prior real peak; longest UW = worst underwater
+stretch; 4% survival = share of 30y cohorts never ruined at a 4% real draw; p10
+terminal = 10th-percentile real wealth left after 30y at 4% (1.00x = starting
+capital, 0 = ruined).
+
+Findings:
+- **Relevant for FIRE: yes, strongly.** The tactical PP2.0 gave **100% historical
+  4% survival** with the best worst-case cushion (0.56x) among the low-risk
+  options, at 7.5% vol and -23% drawdown. That is exactly the sequence-risk
+  profile FIRE wants: little damage when you draw. 60/40 and equity match the
+  return but are far more fragile to a bad start (0.32x / 98%).
+- **Japan lost decades are cured by GLOBAL diversification, not by the overlay.**
+  Japan-equity-only = 31y under water, -66%, 24% of retirements ruined; a Japan-
+  concentrated static PP still ruins 15% of cohorts. Any *global* PP → 100%
+  survival. The tactical tilt does not fix single-country concentration (and the
+  single-country signal is noisy anyway, §5.4); diversification does.
+- **Long underwater periods: nuanced.** The tactical spends *less* total time
+  under water (75% vs 79%) and crushes equity/60-40 (~13y), but its single
+  *longest* stretch (10.4y) is **longer** than the static PP's (6.2y): it
+  compounds to higher peaks that take longer to reclaim. If the specific fear is
+  "years below my high-water mark," the **static PP is calmer**; the tactical
+  trades a longer worst-case underwater for more return, survival and terminal
+  cushion.
+
+**General lessons for any regime-quadrant portfolio (reusable for Dragon, All-
+Weather, etc.)**  [EMPIRICAL/ROBUST]:
+1. For decumulation, judge a quadrant strategy on **survival, worst-case terminal
+   wealth and time-under-water**, not CAGR/Sharpe. A quadrant overlay earns its
+   keep by *shrinking left-tail sequence risk* (shallow drawdowns), which these
+   portfolios do well, more than by raising the mean.
+2. **Diversification dominates timing for tail risk.** No quadrant overlay rescues
+   a single-country concentration (Japan); breadth/global exposure does. Build the
+   asset base globally first, then let the regime overlay shape the tilt.
+3. **The overlay can lengthen the *worst* underwater stretch even while lowering
+   average drawdown**, because higher compounding raises the bar to reclaim. Track
+   *longest* underwater, not just %-under-water or maxDD, when selling "smoothness".
+4. **Quadratic (1/d²) damping is a decumulation-friendly shape**: it de-risks
+   hardest exactly at the stagflation corner where real sequence risk concentrates.
+5. **Caveat carried into any FIRE claim**: overlapping cohorts on one historical
+   path (~24 near-independent starts) are encouraging but are **not** a Monte-Carlo
+   ruin probability. The proper test is to feed these real-return series into
+   `pkg/decumul` (bootstrap/parametric `scenario.Source`) for ruin bands — planned,
+   not yet done.
+
+## 8. Generalizing the framework (e.g. Artemis Dragon)
 
 Abstract the method into three reusable pieces, all now data-supported here:
 
@@ -282,7 +344,7 @@ in. Prefer keeping the *shape* (quadratic damping, breadth) fixed and changing
 only the pole *positions* from a-priori economics, then validate with the same
 subperiod/start-date/multi-country battery used here.
 
-## 8. Honest overfit ledger
+## 9. Honest overfit ledger
 
 - Weight function is **[RECON]** (Darcet's is secret): we test the mechanism.
 - Poles/scales set once, **not optimized** — but also not out-of-sample-validated
@@ -294,7 +356,7 @@ subperiod/start-date/multi-country battery used here.
   with global USD-real gold).
 - Single realized path per country/global; no Monte-Carlo bands on the edge.
 
-## 9. Next steps
+## 10. Next steps
 
 Candidate `pkg/permanent`: read `datasets.MacroPanel()`, compute the breadth
 world point + monetary means, apply §4 weights, backtest vs static PP and MSCI
