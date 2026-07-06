@@ -93,6 +93,22 @@ func TestMendScaleBreak(t *testing.T) {
 			t.Errorf("moderate 3x move was modified")
 		}
 	})
+	// A French-franc -> euro redenomination (6.55957, below 8x) must still be
+	// mended: a fund NAV spliced across the 1999 changeover (the LU0131510165
+	// case). The old francs sit at 6.55957x the euro NAV.
+	t.Run("euro-legacy redenomination mended", func(t *testing.T) {
+		old := ramp(200, 0.75, 25)         // francs, ending at 218
+		new := ramp(218/6.55957, 0.05, 25) // euros, starting at 218/6.55957
+		got := closes(mendScaleBreak(pts(concat(old, new)...)))
+		if got[24] > 40 || got[24] < 28 { // 218 franc point rescaled to ~33 euro
+			t.Errorf("franc segment not rescaled onto euro NAV: got[24]=%.2f", got[24])
+		}
+		for i := 1; i < len(got); i++ {
+			if r := got[i] / got[i-1]; r >= 6 || r <= 1.0/6 {
+				t.Errorf("redenomination break remains at %d: %.2f -> %.2f", i, got[i-1], got[i])
+			}
+		}
+	})
 }
 
 func TestIsRateSymbol(t *testing.T) {

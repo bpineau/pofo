@@ -1,6 +1,27 @@
 package marketdata
 
-import "math"
+import (
+	"math"
+	"strings"
+)
+
+// cleanQuotes applies the price-hygiene passes to a freshly fetched daily
+// series: strip provider placeholders and isolated bad prints, repair a single
+// denomination break, and (for FX crosses) drop self-cancelling spikes. Rate
+// symbols are exempt (a real low rate is not a bad print). BOTH the direct
+// download path and the resolved-ISIN path (FT / Morningstar / Stooq) must run
+// it, so a scale break or a redenomination never reaches the metrics whatever
+// the source.
+func cleanQuotes(symbol string, pts []Point) []Point {
+	if !isRateSymbol(symbol) {
+		pts = dropDropouts(pts)   // strip provider placeholders/bad prints
+		pts = mendScaleBreak(pts) // repair a single denomination break
+	}
+	if strings.HasSuffix(symbol, "=X") {
+		pts = dropFXSpikes(pts) // strip isolated self-cancelling FX prints
+	}
+	return pts
+}
 
 // dropoutRatio is the fraction below which a close, relative to the surrounding
 // stable level, is treated as a data dropout (a provider placeholder or a bad
@@ -38,6 +59,32 @@ const scaleBreakFactor = 8.0
 // placeholder (dropDropouts territory), not an authoritative denomination.
 const minScaleSegment = 20
 
+// euroLegacyRates are the irrevocable EUR fixed conversion rates of legacy
+// currencies that fall BELOW scaleBreakFactor, so a fund NAV series spliced
+// across the 1999/2001 changeover shows a denomination break the plain 8x
+// magnitude test misses. The French franc (6.55957) and Finnish markka
+// (5.94573) are the only euro-legacy rates in that 1..8 band; larger rates (the
+// lira at 1936, peseta at 166, schilling at 13.76, …) already exceed
+// scaleBreakFactor, and smaller ones (mark 1.96, guilder 2.20) sit too close to
+// genuine intraday moves to mend automatically.
+var euroLegacyRates = []float64{6.55957, 5.94573}
+
+// isDenominationBreak reports whether an adjacent ratio r = new/old is a splice
+// artefact rather than a market move: either beyond the 8x magnitude threshold,
+// or matching (within 1.5%, absorbing a few days of real drift across the
+// junction) a known euro-legacy conversion rate in either direction.
+func isDenominationBreak(r float64) bool {
+	if r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
+		return true
+	}
+	for _, rate := range euroLegacyRates {
+		if math.Abs(r/rate-1) <= 0.015 || math.Abs(r*rate-1) <= 0.015 {
+			return true
+		}
+	}
+	return false
+}
+
 // mendScaleBreak repairs a single large, persistent denomination break: when a
 // series has EXACTLY ONE adjacent jump beyond scaleBreakFactor with a
 // substantial segment on both sides, the older segment is rescaled onto the
@@ -60,7 +107,7 @@ func mendScaleBreak(pts []Point) []Point {
 		if pts[i-1].Close <= 0 || pts[i].Close <= 0 {
 			continue
 		}
-		if r := pts[i].Close / pts[i-1].Close; r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
+		if isDenominationBreak(pts[i].Close / pts[i-1].Close) {
 			breakIdx, count = i, count+1
 		}
 	}
