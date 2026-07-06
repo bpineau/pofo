@@ -18,6 +18,7 @@ make check     # fmt-check + lint + test: run this before any commit
 make golden    # computation goldens vs frozen external references
 make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
+make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 ```
 
 Tests never touch the network: HTTP sources are faked with `httptest`
@@ -134,3 +135,8 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
   the macro drivers live in `pkg/datasets/macropanel`.
+- Eurozone Efficient Core (NTSZ) / euro-native backcasts: read
+  `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
+  series (`EMU-EUR`, `EUROGOV-EUR`, `EUROGOV-DAILY`, `DECASH-EUR`) come from
+  DBnomics via `cmd/gen-euro-refdata` (`make euro-refdata`); note the equity-leg
+  daily-vol/FX caveat there.

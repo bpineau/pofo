@@ -376,6 +376,7 @@ simulation wherever it exists):
 |---|---|---|
 | NTSX (UCITS) | 0.90×VFINX + 0.60×(VFITX−cash) + 0.10×cash (1991→) | 0.96 / 0.99 |
 | NTSG (UCITS) | global 90/60 US/intl variant (1999→) | 0.39 / 0.86 (thin LSE listing, short overlap) |
+| NTSZ (UCITS) | eurozone 90/60: 0.90×EZU(EUR) + 0.60×(euro govt−cash) + 0.10×cash, euro-native refdata (1986→) | 0.63 / 0.93 (fund launched 2025-09, short overlap; use monthly stats) |
 | URTH (MSCI World) | 0.60×VFINX + 0.40×VTMGX (1999→) | 0.90 / 0.97 |
 | IWDA (MSCI World) | 0.60×VFINX + 0.40×VTMGX (1999→) | 0.60 / 0.85 (GBP listing, short overlap) |
 | VT (total world) | 0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (1999→) | 0.98 / 0.99 |
