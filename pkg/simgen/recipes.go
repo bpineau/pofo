@@ -39,6 +39,7 @@ func All() []Recipe {
 		xauusdRecipe(),
 		shyRecipe(),
 		scvwRecipe(),
+		spxRecipe(),
 		dpgtRecipe(),
 		chsnRecipe(),
 		tip1eRecipe(),
@@ -351,6 +352,22 @@ func scvwRecipe() Recipe {
 		Build:           composite("US small-cap value (DFSVX)", []Leg{{ID: "DFSVX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IE00BSPLC413",
 		SpliceReal:      "IE00BSPLC413",
+	}
+}
+
+// spxRecipe backcasts the Vanguard S&P 500 UCITS ETF (IE00BFMXXD54, USD Acc,
+// real from 2019) as the S&P 500 total return, from Vanguard 500 (VFINX, 1976→,
+// itself extended to the 1871 Shiller S&P 500 total return via the SP500-USD
+// refdata in the longBack table). USD throughout, so the EUR (or any) view
+// converts with real FX across the whole history; the real VUAA quotes
+// auto-splice from 2019. Reached by the "SP500" catalog alias, hence SP500SIM.
+func spxRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00BFMXXD54",
+		Name:            "Vanguard S&P 500 UCITS ETF: S&P 500 total return (1871 with -refdata)",
+		Method:          "VFINX (Vanguard 500, extended with the S&P 500 total return via SP500-USD refdata ~1871); real VUAA auto-spliced from 2019",
+		Build:           composite("S&P 500 total return (VFINX)", []Leg{{ID: "VFINX", Weight: 1}}, "", 0),
+		ValidateAgainst: "IE00BFMXXD54",
 	}
 }
 
