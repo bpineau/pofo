@@ -1,10 +1,9 @@
-# Darcet's tactical Permanent Portfolio 2.0 — research notes & design
+# Darcet's tactical Permanent Portfolio 2.0 - research notes & design
 
-Status: research complete for a US + multi-country prototype; the permanent data
-(`pkg/datasets/macropanel`) is shipped; the allocator itself is not yet a package
-(candidate `pkg/permanent`). This document is the complete record so the method
-can be refined, retuned, generalized (e.g. to the Artemis Dragon) or rewritten
-from scratch without re-deriving anything.
+Status: shipped as `pkg/datasets/macropanel` + `pkg/permanent` + the `pofo
+-permanent` CLI (backtest and decumul ruin bands). This document is the complete
+record so the method can be refined, retuned, generalized (e.g. to the Artemis
+Dragon) or rewritten from scratch without re-deriving anything.
 
 ## 0. Provenance
 
@@ -20,18 +19,18 @@ Ben's first requirement: never confuse what was *described in advance* (more
 reliable) with what we *found by fitting data* (overfit risk). Every claim below
 carries one tag:
 
-- **[DARCET]** — asserted by Darcet in the video, i.e. specified before we
+- **[DARCET]** - asserted by Darcet in the video, i.e. specified before we
   touched any data. The most reliable layer, but note he does **not** disclose
   his exact formulas, thresholds or weights (he says so explicitly).
-- **[RECON]** — our reconstruction of a gap Darcet left open (a weight function,
+- **[RECON]** - our reconstruction of a gap Darcet left open (a weight function,
   poles, scales). Set **once** from his qualitative rules and **not** optimized
   against the data. Medium reliability: not tuned, but a judgement call.
-- **[SELECTED]** — a specific parameter value we picked *after* seeing results
+- **[SELECTED]** - a specific parameter value we picked *after* seeing results
   (e.g. `wMax≈1.6` as the frontier sweet spot). **Highest overfit risk**; treat
   as illustrative, not validated.
-- **[EMPIRICAL]** — a measured result from running on data. Reliability depends
+- **[EMPIRICAL]** - a measured result from running on data. Reliability depends
   on whether it survived out-of-sample checks (see next tag).
-- **[ROBUST]** — an empirical result that held across independent subperiods,
+- **[ROBUST]** - an empirical result that held across independent subperiods,
   start dates, cost levels and/or countries. The empirical claims we trust.
 
 ## 2. The method as Darcet describes it  [DARCET]
@@ -48,7 +47,7 @@ duration (equities) vs public long-duration (bonds).
 Darcet's "2.0" keeps the four assets but **tilts them tactically**, in two
 independent blocks:
 
-**Equity block** — driven by exactly two macro variables, **growth** and
+**Equity block** - driven by exactly two macro variables, **growth** and
 **inflation**, forming four quadrants. **[DARCET]**:
 - Paradise = growth accelerating + inflation decelerating (profit growth × multiple
   expansion): maximum equity.
@@ -62,7 +61,7 @@ independent blocks:
   guard against entropy/"avalanches" (markets collapse like sandpiles; crash
   amplitude ∝ 1/frequency, verified on the S&P since 1927). **[DARCET]**
 
-**Defensive block** — for the non-equity sleeve, arbitrate gold / long bonds /
+**Defensive block** - for the non-equity sleeve, arbitrate gold / long bonds /
 cash from the **monetary quadrant**, short rate × long rate. **[DARCET]**:
 - Bonds when the curve is steep (10y − 3m > ~1%): duration is paid.
 - Cash when the curve is flat/inverted but short rates are well remunerated.
@@ -92,7 +91,7 @@ Assets (via pofo `marketdata`, SIM suffix splices long history):
 - Gold: `XAUUSDSIM` (1968→), USD; converted to a currency by pofo FX.
 - Deflator / inflation signal: `^CPI-US` (bundled) and per-country CPI.
 
-Macro signals — **the key sourcing lesson**:
+Macro signals - **the key sourcing lesson**:
 - **FRED is UNREACHABLE from the sandbox** (HTTP/2 INTERNAL_ERROR + timeout even
   on HTTP/1.1). Do not rely on it here.
 - **DBnomics is reachable** and mirrors OECD MEI. The growth proxy is US/where-
@@ -102,7 +101,7 @@ Macro signals — **the key sourcing lesson**:
   `IRSTCI01.ST` immediate). Share prices: `SPASTT01.IXOB`. CPI: `CPALTT01.IXOB`.
 
 **Now bundled permanently** (commit 8f649f3): `pkg/datasets/macropanel/oecd-
-monthly.csv` — 30 economies, monthly `iso,date,ip,cpi,shortrate,longrate,
+monthly.csv` - 30 economies, monthly `iso,date,ip,cpi,shortrate,longrate,
 shareprice` from OECD MEI. Generator `cmd/gen-macropanel`, `make macropanel`,
 accessor `datasets.MacroPanel()`. This is the offline, reproducible substrate for
 the breadth model.
@@ -147,7 +146,7 @@ wEq   = min(1, wMax * (dHell / sqrt2)^p)     # p=2 → Darcet's 1/d² damping
 (The earlier *single-country* variant instead placed a hell pole at
 `(g%,i%)=(-3, 8)`, scaled each axis by 5 pts, and used
 `wEq = wMax*(1 - 1/(1+(d/dRef)^2))`, `dRef=1.2`, `wMax=0.75`. **[RECON]**. It
-produced the return edge but *worse* drawdowns — superseded by the breadth
+produced the return edge but *worse* drawdowns - superseded by the breadth
 version.)
 
 ### 4.2 Short × long rate → defensive split (gold / bonds / cash)
@@ -217,7 +216,7 @@ multicountry_jst, breadth_faithful).
   country signal* + concentration.
 
 ### 5.7 Faithful breadth construction (global, 1970-2024, 30-country breadth)  [ROBUST]
-- **Clustering clean**: world-equity real return by breadth quadrant — paradise
+- **Clustering clean**: world-equity real return by breadth quadrant - paradise
   +6.4%, G+I+ +7.0%, G−I− +15.4%, **Hell (stagflation) −9.9%** (isolated,
   negative). This is the cleanest confirmation of **[DARCET]**'s core claim.
 - **Drawdown restored**: with quadratic damping, DD ≈ static PP.
@@ -230,7 +229,7 @@ multicountry_jst, breadth_faithful).
   | 1.60 | 46% | **5.35%** | **-21.5%** | **0.66** |
   (static PP 3.61%/-25.4/0.51; MSCI World 4.83%/-54/0.32)
 - **Linear** damping (p=1) at wMax=1.6 gives 6.30% but DD -37.6%: the **quadratic
-  damping is what holds drawdown low** — Darcet's 1/d² is load-bearing, not
+  damping is what holds drawdown low** - Darcet's 1/d² is load-bearing, not
   decoration. **[ROBUST]** (whole sweep), the specific wMax=1.6 is **[SELECTED]**.
 
 ## 6. What we learned about regimes & invariants
@@ -239,7 +238,7 @@ multicountry_jst, breadth_faithful).
   countries and eras; the failure mode is war-on-soil (gold-only survival).
 - **[ROBUST] Stagflation is the equity killer**, and it is cleanly separable
   *with breadth* (-9.9% vs +6/+15% elsewhere); single-country the signal is
-  noisy. Breadth is not cosmetic — it is what makes the growth axis usable.
+  noisy. Breadth is not cosmetic - it is what makes the growth axis usable.
 - **[ROBUST] The inflation axis dominates the growth axis.** Disinflation (even
   with slowing growth) is great for equities; the growth breadth mostly helps
   avoid the stagflation corner.
@@ -308,11 +307,20 @@ Weather, etc.)**  [EMPIRICAL/ROBUST]:
    *longest* underwater, not just %-under-water or maxDD, when selling "smoothness".
 4. **Quadratic (1/d²) damping is a decumulation-friendly shape**: it de-risks
    hardest exactly at the stagflation corner where real sequence risk concentrates.
-5. **Caveat carried into any FIRE claim**: overlapping cohorts on one historical
-   path (~24 near-independent starts) are encouraging but are **not** a Monte-Carlo
-   ruin probability. The proper test is to feed these real-return series into
-   `pkg/decumul` (bootstrap/parametric `scenario.Source`) for ruin bands — planned,
-   not yet done.
+5. **Monte-Carlo ruin bands (done)**: the realized tactical and static real
+   series are block-bootstrapped (stationary bootstrap, mean block 24 months)
+   through `pkg/decumul`, giving proper ruin probabilities rather than overlapping
+   cohorts. 40-year ruin at a fixed real withdrawal (`pofo -permanent`):
+
+   | withdrawal | 3.0% | 3.5% | 4.0% | 4.5% |
+   |---|---|---|---|---|
+   | tactical PP2.0 | 0.3% | 2.2% | 7.2% | 15.7% |
+   | static Browne PP | 1.4% | 6.0% | 17.3% | 37.2% |
+
+   The tactical overlay roughly **halves the ruin probability at every rate** (4%:
+   7.2% vs 17.3%). This is the sharpest FIRE argument: shallower drawdowns convert
+   directly into materially lower sequence-of-returns ruin. Still a single
+   historical path (one economy's realized series), pre-tax and pre-fee.
 
 ## 8. Generalizing the framework (e.g. Artemis Dragon)
 
@@ -330,11 +338,11 @@ Abstract the method into three reusable pieces, all now data-supported here:
 Mapping onto the **Artemis Dragon** (≈ equity, fixed income/long-duration, gold,
 commodity-trend/CTA, long-volatility): the same two quadrants drive four of the
 five buckets (equity from growth×inflation; bonds/cash/gold from the monetary
-quadrant). Long-vol and commodity-trend are *convexity/crisis* sleeves — they
+quadrant). Long-vol and commodity-trend are *convexity/crisis* sleeves - they
 want a **third axis**: a stress/volatility or trend-strength signal (e.g. VIX
 level `^VIX`, or realized-vol / oil-momentum from the panel). A Dragon 2.0 would
 size the crisis sleeves *up* as the world point approaches hell, exactly where
-1/d² is cutting equity — a natural, testable extension. The harness, breadth
+1/d² is cutting equity - a natural, testable extension. The harness, breadth
 panel and damping generalize unchanged; only the pole map and the extra axis are
 new.
 
@@ -347,7 +355,7 @@ subperiod/start-date/multi-country battery used here.
 ## 9. Honest overfit ledger
 
 - Weight function is **[RECON]** (Darcet's is secret): we test the mechanism.
-- Poles/scales set once, **not optimized** — but also not out-of-sample-validated
+- Poles/scales set once, **not optimized** - but also not out-of-sample-validated
   per parameter. The frontier sweep is our robustness evidence; `wMax=1.6` is a
   post-hoc pick.
 - In-sample, real-terms, pre-tax. Turnover cost tested (survives); taxes and ETF
@@ -356,11 +364,25 @@ subperiod/start-date/multi-country battery used here.
   with global USD-real gold).
 - Single realized path per country/global; no Monte-Carlo bands on the edge.
 
-## 10. Next steps
+## 10. Status & next steps
 
-Candidate `pkg/permanent`: read `datasets.MacroPanel()`, compute the breadth
-world point + monetary means, apply §4 weights, backtest vs static PP and MSCI
-World, expose a CLI mode. Port from the archived `darcet_breadth_faithful.go`.
-Keep the epistemic tags in the godoc so the [RECON]/[SELECTED] parameters stay
-visibly provisional. See memory `darcet-permanent-portfolio-2` and
-`[[fire-decumulation-followups]]` (shared real-terms/scenario machinery).
+Shipped:
+- `pkg/datasets/macropanel` (OECD monthly macro panel, `make macropanel`).
+- `pkg/permanent`: Panel -> Regime (breadth world point + monetary means) ->
+  quadratically-damped four-sleeve Allocation -> monthly-real Simulate/Compute.
+  Pure core, offline tests, epistemic tags kept in the godoc.
+- `pofo -permanent` CLI: fetches the four sleeves, deflates to real, drives the
+  allocation from the panel, prints the backtest stats and the decumul ruin
+  table (§7 caveat 5).
+
+Open:
+- Retune only pole *positions* and `wMax` from a-priori economics, not by fitting;
+  re-run the subperiod/start-date/multi-country/frontier battery on any change.
+- Generalize to the Artemis Dragon (§8): add the third stress/vol axis and the
+  crisis sleeves; the panel, damping and harness carry over.
+- Deeper decumul work: per-country ruin (single-market sequence risk), tax and
+  fees, and a `scenario.Source` that regenerates the tactical stream inside the
+  bootstrap rather than resampling one realized path.
+
+See memory `darcet-permanent-portfolio-2` and `[[fire-decumulation-followups]]`
+(shared real-terms / scenario machinery).
