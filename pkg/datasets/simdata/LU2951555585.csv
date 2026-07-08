@@ -3,7 +3,7 @@
 # name: iMGP DBi Managed Futures UCITS USD: TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025
 # validation: corr=0.299 (weekly 0.570) beta=0.31 TE=14.7%/yr CAGR sim 17.10% vs real 23.48% (overlap 324 d from 2025-03-10 to 2026-07-01) vs LU2951555585
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 1988-11-17,3.317712
 1988-11-18,3.337088

@@ -3,7 +3,7 @@
 # name: iShares Core MSCI EM IMI: emerging-market equity (VEIEX)
 # method: VEIEX (Vanguard Emerging Markets, 1994->, extended EM-USD MSCI EM net TR to ~1988), real EIMI grafted from 2014
 # validation: corr=0.832 (weekly 0.961) beta=0.96 TE=10.8%/yr CAGR sim 5.67% vs real 6.92% (overlap 2973 d from 2014-05-30 to 2026-06-12) vs IE00BKM4GZ66
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 1987-12-01,1.003553
 1988-01-01,1.102283
