@@ -3,7 +3,7 @@
 # name: UBS Core Euro Inflation Linked 1-10: euro govt linker proxy
 # method: 0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, duration-matched to 1-10) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025
 # validation: corr=0.820 (weekly 0.870) beta=0.85 TE=1.5%/yr CAGR sim 2.22% vs real 3.55% (overlap 225 d from 2025-08-06 to 2026-07-01) vs LU1645380442
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 2005-11-23,6.140010
 2005-11-24,6.161048
