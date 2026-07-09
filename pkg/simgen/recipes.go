@@ -36,6 +36,7 @@ func All() []Recipe {
 		amundiVolRecipe(),
 		bhmgRecipe(),
 		rssbRecipe(),
+		gdeRecipe(),
 		vtRecipe(),
 		xauusdRecipe(),
 		shyRecipe(),
@@ -448,6 +449,31 @@ func rssbRecipe() Recipe {
 		}, "^IRX", 0),
 		ValidateAgainst: "RSSB",
 		SpliceReal:      "RSSB",
+	}
+}
+
+// gdeRecipe backcasts the WisdomTree Efficient Gold Plus Equity Strategy Fund
+// (GDE, US-listed, real from 2022): for every dollar, ~90 % large-cap US equity
+// held as the funded core plus a ~90 % gold overlay run through futures, with
+// the residual cash as collateral. It mirrors the NTSX efficient-core method,
+// swapping the Treasury overlay for gold: the equity leg earns its full return,
+// the gold leg earns the spot excess over cash (gold futures ~= spot financed at
+// the T-bill rate, no carry yield), and 0.10 of NAV sits in cash. Every leg is
+// deep (VFINX -> S&P 500 TR, XAUUSD gold ~1968, ^IRX T-bill), so the composite
+// reaches back to the gold leg's floor. Real GDE quotes are grafted from
+// inception; same currency (USD), no FX leg.
+func gdeRecipe() Recipe {
+	return Recipe{
+		ID:     "GDE",
+		Name:   "WisdomTree Efficient Gold Plus Equity: 90/90 replication",
+		Method: "0.90×VFINX + 0.90×(GC=F gold − cash ^IRX) overlay + 0.10×cash, daily rebalancing, 0.20%/yr fees, real GDE grafted from 2022",
+		Build: composite("GDE (90/90 gold+equity replication)", []Leg{
+			{ID: "VFINX", Weight: 0.90},
+			{ID: "GC=F", Weight: 0.90, Excess: true},
+			{ID: "^IRX", Weight: 0.10},
+		}, "^IRX", 0.0020),
+		ValidateAgainst: "GDE",
+		SpliceReal:      "GDE",
 	}
 }
 
