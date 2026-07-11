@@ -16,7 +16,7 @@
 #meta rebalance:90
 
 56    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
-10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR, LU2951555585)
+10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR, LU2951555403)
 8     KMLMSIM         # Trend leg B: direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR LU1103257975)
 12    XAUUSDSIM       # Gold (buy a physical ETC: IGLN IE00B4ND3602)
 8     CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability

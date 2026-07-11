@@ -83,7 +83,7 @@
 #   backtest (which happily takes 40%: in-sample flattery of the shared
 #   TSMOM backcast). KNOWN WEAKNESS: 25% on ONE manager and ONE method
 #   (DBi replication); the robustness upgrade is splitting it two ways,
-#   e.g. 13% DBMFE (LU2951555585, EUR share) + 12% AQR Managed Futures
+#   e.g. 13% DBMFE (LU2951555403, EUR share) + 12% AQR Managed Futures
 #   UCITS (LU1103257975, the standout live record 2015-2026) -- at which
 #   point you are two thirds of the way to the hydra's trend sleeve.
 #   Rejected for the base build: WINTON-TREND-EQUITY (portable alpha,
@@ -178,7 +178,7 @@
 #meta rebalance:90
 
 60	NTSGSIM         # Head 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS; euro-native variant NTSZ IE000OV4XWA3)
-25	DBMFSIM         # Head 2, trend: iMGP DBi Managed Futures (buy the UCITS EUR share DBMFE, LU2951555585; best upgrade: split with AQR MF UCITS LU1103257975)
+25	DBMFSIM         # Head 2, trend: iMGP DBi Managed Futures (buy the UCITS EUR share DBMFE, LU2951555403; best upgrade: split with AQR MF UCITS LU1103257975)
 15	XAUUSDSIM       # Head 3, gold (buy a physical ETC: IGLN IE00B4ND3602)
 
 # Approaching decumulation: 7-15% of capital (3-3.5 years of spending) in

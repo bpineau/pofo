@@ -109,7 +109,7 @@
 #   For decumulation specifically, trend is the sleeve that most reduces
 #   sequence risk (Clare, Seaton, Smith & Thomas, "Reducing Sequence Risk
 #   Using Trend Following and the CAPE Ratio", FAJ 2017).
-#   UCITS: DBMFE is one (iMGP DBi Managed Futures, LU2951555585, EUR
+#   UCITS: DBMFE is one (iMGP DBi Managed Futures, LU2951555403, EUR
 #   share). KMLM is US-listed with no PRIIPs KID: the buyable substitutes
 #   are AQR Managed Futures UCITS (LU1103257975; the standout LIVE record
 #   2015-2026, see the wider-universe note in the capital-efficient
@@ -210,7 +210,7 @@
 
 35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413, or global Avantis AVWS IE0003R87OG3)
-16    DBMFESIM        # Engine 3a, trend replication (iMGP DBi EUR, LU2951555585)
+16    DBMFESIM        # Engine 3a, trend replication (iMGP DBi EUR, LU2951555403)
 14    KMLMSIM         # Engine 3b, second trend model, no equity futures (buy AQR MF UCITS LU1103257975, best live record, or Winton IE00BG382Q20)
 18    XAUUSDSIM       # Engine 4, gold (buy a physical ETC: IGLN IE00B4ND3602)
 5     ZROZSIM         # Engine 5, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~1.6x the weight, or EUR-hedged DTLE)
