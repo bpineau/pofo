@@ -1,65 +1,202 @@
-# Hydra (five engines) -- a diversified build that outruns the dragon-lite
-# Idea: diversify across independent return ENGINES, not across tickers. Each
-#   sleeve is a distinct, well-documented source of return driven by a different
-#   macro force, so their worst years rarely coincide, and combining lowly-
-#   correlated positive-return streams is what actually lifts risk-adjusted
-#   return, far more than owning more names does (Ilmanen & Kizer, "The Death of
-#   Diversification Has Been Greatly Exaggerated", 2012; Choueifaty & Coignard,
-#   "Toward Maximum Diversification", 2008). The sleeves are then sized by risk
-#   contribution rather than capital, so no single engine can dominate the ride
-#   or sink it (Qian; Bridgewater's All Weather: balance exposures across the
-#   growth / inflation / deflation regimes, not dollars across tickers). And each
-#   is expressed through the most capital-efficient instrument available, so the
-#   diversifiers stack ON TOP of a full growth engine instead of being funded by
-#   shrinking it (return stacking: Hoffstein; WisdomTree Efficient Core).
+# Hydra (five engines) -- diversify across return ENGINES, not tickers.
 #
-# Why each head:
-#   - NTSG (equity + duration engine): levering a balanced stock/bond mix
-#     beats concentrating in equities at equal risk (Asness, "Why Not 100%
-#     Equities", 1996). 35% of NTSG carries ~31% world equity AND ~21%
-#     Treasury-futures duration in one line.
-#   - US small-cap value (the ZPRV/USSC.L line): the size and value premia
-#     (Fama & French 1992/1993), in the value-WEIGHTED small-cap form that
-#     sidesteps the small-growth lottery corner. Also the factor with the
-#     longest clean daily backcast here (DFSVX chain, 1993). It diversifies
-#     the mega-cap-growth concentration a world index carries; buy the
-#     global version (Avantis IE0003R87OG3) or ZPRV (IE00BSPLC413).
-#   - Trend, TWO engines: time-series momentum is the best-documented
-#     crisis alpha (Moskowitz, Ooi & Pedersen 2012; Hurst, Ooi & Pedersen,
-#     "A Century of Evidence on Trend-Following", 2017) and the most
-#     reliable inflation-regime asset (Neville, Draaisma, Funnell, Harvey
-#     & van Hemert 2021). Split across two genuinely different methods
-#     (DBi CTA replication vs the rules-based MLM index, which trades no
-#     equity futures) so one model's decay does not take the sleeve down.
-#   - Gold: near-zero expected real return alone (Erb & Harvey, "The
-#     Golden Dilemma", 2013) but a debasement/geopolitical hedge nothing
-#     else replicates, and the complement to trend in stagflation, where
-#     trend can whipsaw (Neville et al. 2021).
-#   - ZROZ (deep duration): the deflation-crash head. A 25+y zero-coupon
-#     fund carries ~27y duration per euro vs ~17 for TLT, so 5% of ZROZ
-#     buys the flight-to-quality convexity of ~8% of TLT and frees capital
-#     for the other engines: capital efficiency applied to the defensive
-#     sleeve. NTSG's overlay is intermediate duration; this is the long
-#     end, which is what actually rallies in a 2008.
+# Thesis in one line: five independent, well-documented sources of return,
+#   each answering a different macro regime, sized by risk contribution
+#   rather than capital, and each expressed through the most capital-
+#   efficient instrument available, so the diversifiers stack ON TOP of a
+#   full growth engine instead of being funded by shrinking it.
 #
-# Honesty note on the WEIGHTS: the sleeves and their roles are theory-
-#   first, but the exact percentages are backtest-informed. They started
-#   from where the risk-parity and capped max-sharpe optimizers agreed
-#   over 1993->2026, were hand-tempered (the raw max-sharpe mix piled 35%
-#   into one trend fund and was discarded), and were tuned against one
-#   named benchmark. Expect the edge over that benchmark to shrink out of
-#   sample; the engine-level logic is the part built to survive.
+# This is the buyable flagship of the hydra family. Siblings:
+#   - hydra-five-engines-capital-efficient.txt: the research build (US-listed
+#     stacked funds, no PRIIPs constraint) plus the full alternatives-
+#     considered ledger (stacked swaps, euro duration, trend managers).
+#   - hydra-five-engines-levered.txt: same book at 108% notional, for
+#     accumulation (leverage-aversion rationale: Frazzini & Pedersen 2014).
+#   - hydra-all-weather-balanced.txt: re-weighted to even out the four
+#     growth x inflation quadrants, adding a broad-commodity head.
 #
-# Backtest vs claude-dragonlite (60/25/15) over 1993->2026, EUR: higher
-#   CAGR (10.3% vs 10.0%), lower vol (12.7% vs 13.6%), higher Sharpe
-#   (0.83 vs 0.77), recovery 2.9y vs 4.9y, worst rolling 5y CAGR +1.0% vs
-#   -1.7%, and a smaller real drawdown in 2000-02, 2008 and 2022 alike.
-#   The price: lower up-capture (53% vs 60%) in straight-up bull markets.
+# ## Why engines, and why these mechanics
+#
+# 1. DIVERSIFY ACROSS RETURN SOURCES. Adding tickers to an equity portfolio
+#    adds names, not diversification: everything loads on the same growth
+#    factor and correlations converge to 1 in a crash. What actually lifts
+#    risk-adjusted return is combining lowly-correlated streams that each
+#    carry a positive expected return of their own (Ilmanen & Kizer, "The
+#    Death of Diversification Has Been Greatly Exaggerated", JPM 2012;
+#    Choueifaty & Coignard, "Toward Maximum Diversification", JPM 2008).
+#    Each head below is such a stream, driven by a different macro force,
+#    so their worst years rarely coincide.
+# 2. SIZE BY RISK CONTRIBUTION, NOT CAPITAL. Dollars are a poor measure of
+#    exposure: 35% in a 90/60 fund is not "35% risk", and 5% of a 27-year-
+#    duration zero-coupon is a big rate bet. Weights are set so no engine
+#    dominates the ride or can sink it alone (Qian, "Risk Parity
+#    Portfolios", PanAgora 2005; Bridgewater's All Weather: balance
+#    exposures across growth/inflation/deflation outcomes, not dollars
+#    across tickers).
+# 3. CAPITAL EFFICIENCY (RETURN STACKING). A levered balanced mix beats a
+#    concentrated equity portfolio at equal risk (Asness, "Why Not 100%
+#    Equities", JPM 1996). Embedded-leverage funds (NTSG's 90/60, a
+#    zero-coupon's duration-per-euro) buy the defensive and diversifying
+#    exposures without giving up the growth engine that pays for the plan
+#    (return stacking: Hoffstein, Butler & Gordillo; WisdomTree Efficient
+#    Core).
+#
+# ## Regime map: what hurts a portfolio, and which head answers
+#
+#   Growth boom            NTSG equity core (~31% world) + ZPRV small value:
+#                          the only regime that needs no hedge, just presence.
+#   Disinflation/recession NTSG's futures overlay (~21% intermediate
+#                          duration) + trend rotating long bonds.
+#   Deflation crash (2008) ZROZ: the long end is what actually rallies in a
+#                          flight to quality; trend adds crisis alpha by
+#                          going short risk assets. Unhedged USD helps here
+#                          too (dollar flight-to-quality).
+#   Inflation shock        Trend long commodities / short bonds (the most
+#                          reliable inflation-regime asset: Neville,
+#                          Draaisma, Funnell, Harvey & van Hemert, "The Best
+#                          Strategies for Inflationary Times", JPM 2021)
+#                          + gold as the monetary/debasement expression.
+#   Choppy stagflation     Gold. Trend whipsaws when there is no trend
+#                          (Neville et al. 2021); gold is the backstop.
+#   Prolonged equity bear  Trend: time-series momentum is the best-
+#                          documented crisis alpha across a century (Hurst,
+#                          Ooi & Pedersen, "A Century of Evidence on Trend-
+#                          Following Investing", JPM 2017).
+#
+#   Measured coverage (this toolkit's regime classifier, share of weight):
+#   growth 44%, inflation 44%, crisis 37%, deflation 26%. Deflation is the
+#   thinnest quadrant by design: it is the cheapest one to hedge (convexity
+#   per euro via ZROZ) and trend historically picks up much of it.
+#
+# ## The five engines: rationale, sane weight ranges, UCITS routes
+#
+# ENGINE 1 -- NTSG, equity + duration (35%; sane range 30-45%).
+#   Global Efficient Core: 90% developed-world equities + 60% sovereign
+#   bond futures (US/Germany/UK/Japan, ~7y duration) in one UCITS line, so
+#   35% of capital carries ~31% world equity AND ~21% intermediate duration.
+#   Below ~30% the growth engine is too small to pay for the plan; above
+#   ~45% equity dominates every risk budget and the build degenerates into
+#   "equities plus garnish". UCITS: it IS one (IE00077IIPQ8). Variations:
+#   NTSZ (IE000OV4XWA3), the euro-native eurozone 90/60, removes the USD
+#   quotation and hedges the overlay to euro rates at the cost of eurozone-
+#   only equity concentration; splitting NTSG/NTSZ is a reasonable middle
+#   ground for a EUR investor.
+#
+# ENGINE 2 -- ZPRV, small-cap value (12%; sane range 8-15%).
+#   The size and value premia (Fama & French 1992/1993) in the value-
+#   WEIGHTED small-cap form that sidesteps the small-growth lottery corner
+#   (Asness, Frazzini, Israel, Moskowitz & Pedersen, "Size Matters, If You
+#   Control Your Junk", JFE 2018). Diversifies the mega-cap-growth
+#   concentration a world index carries, and owns the deepest clean daily
+#   backcast in this toolkit (DFSVX spliced onto Ken French small-value,
+#   1963). It is still equity beta: above ~15% it stops diversifying and
+#   starts doubling down. UCITS: ZPRV (IE00BSPLC413) for the US sleeve, or
+#   Avantis Global SCV (AVWS, IE0003R87OG3) for the geographically
+#   diversified version; ZPRV+ZPRX approximates global with two lines.
+#
+# ENGINES 3a/3b -- trend, TWO models (16% + 14%; sane range 20-35% total,
+#   split at least two ways, no single leg above ~20%).
+#   Time-series momentum (Moskowitz, Ooi & Pedersen, "Time Series
+#   Momentum", JFE 2012) is the one head that can profit in BOTH tails,
+#   which is why it gets the largest combined budget after equities. It is
+#   also the head with the worst single-point-of-failure risk: any one
+#   model can decay, close, or drift, so the sleeve is split across two
+#   genuinely different methods -- DBi's CTA-replication (DBMFE) and the
+#   rules-based MLM index (KMLM), which trades no equity futures at all
+#   and therefore stays clean when equities crash. Below ~20% total the
+#   sleeve no longer moves the needle in a crisis; above ~35% the tracking-
+#   error regret in long bull markets becomes untenable for most humans.
+#   For decumulation specifically, trend is the sleeve that most reduces
+#   sequence risk (Clare, Seaton, Smith & Thomas, "Reducing Sequence Risk
+#   Using Trend Following and the CAPE Ratio", FAJ 2017).
+#   UCITS: DBMFE is one (iMGP DBi Managed Futures, LU2951555585, EUR
+#   share). KMLM is US-listed with no PRIIPs KID: the buyable substitutes
+#   are AQR Managed Futures UCITS (LU1103257975; the standout LIVE record
+#   2015-2026, see the wider-universe note in the capital-efficient
+#   sibling) or Winton Trend UCITS (IE00BG382Q20). KMLMSIM stays in the
+#   backtest because all deep trend backcasts share one TSMOM proxy, so
+#   the models are indistinguishable before their real quotes anyway.
+#
+# ENGINE 4 -- gold (18%; sane range 10-20%).
+#   Near-zero expected real return on its own (Erb & Harvey, "The Golden
+#   Dilemma", FAJ 2013), so above ~20% the drag dominates; but it is the
+#   debasement/geopolitical hedge nothing else replicates, the complement
+#   to trend in choppy stagflation, and historically the best friend of a
+#   portfolio whose other hedges are all denominated in somebody's
+#   promise. UCITS route: a physically-backed ETC (IGLN IE00B4ND3602,
+#   Invesco SGLD, or Xetra-Gold for a EUR-listed line).
+#
+# ENGINE 5 -- ZROZ, deep deflation duration (5%; sane range 3-8%).
+#   A 25+y zero-coupon Treasury fund carries ~27y duration per euro vs ~17
+#   for a 20+y fund: capital efficiency applied to the defensive sleeve,
+#   the same logic as NTSG applied to crash insurance. NTSG's overlay is
+#   intermediate duration; this is the long end, which is what actually
+#   rallies in a 2008. Small on purpose: at 27y duration, 5% is already a
+#   meaningful rate bet, and 2022 showed what unhedged duration does in an
+#   inflation shock (the gold and trend heads exist for exactly that).
+#   UCITS: ZROZ is US-listed, no PRIIPs KID; the route is IDTL
+#   (IE00BSKRJZ44, ~17y duration) at ~1.6x the weight, or its EUR-hedged
+#   share class (DTLE) to strip the USD from the defensive sleeve.
+#
+# ## Blind spots (known, accepted, and what would patch them)
+#
+#   (a) A FAST joint stock/bond selloff that whipsaws trend before it can
+#       flip short: gold is then the only working head. 2022 was slow
+#       enough for trend; a faster rerun would bite harder.
+#   (b) Currency: every line is USD-quoted and unhedged for a EUR
+#       investor, so EUR/USD vol (~8-10%/yr) partly feeds the portfolio
+#       vol. It is half feature (USD rallies in global crises), half bug
+#       (a dollar-debasement decade drags everything at once). Patches:
+#       swap part of NTSG to NTSZ, prefer DTLE for the duration leg, use
+#       the EUR-hedged AQR share for trend.
+#   (c) Euro-area inflation is only hedged INDIRECTLY (gold, trend,
+#       commodities via trend). A EUR retiree's liability is euro
+#       inflation: approaching decumulation, add 7-15% in euro linkers /
+#       short euro IG / cash (see claude-dragonlite's buffer notes and the
+#       fire-* examples); this file holds none.
+#   (d) A Japan-style lost decade in the equity core: trend and duration
+#       soften it, nothing here profits from it. The optional patch is a
+#       small discretionary-macro head (BHMG; see fire-macro-leg-bhmg.txt).
+#   (e) Model and reconstruction risk: most of the deep history is
+#       backcast (SIM series). The trend backcasts especially understate
+#       live dispersion between managers -- over 2022-2026 the real KMLM
+#       drew down -42% while AQR's UCITS ran Sharpe 0.75. Treat the
+#       backtest as a regime-behavior study, not a promise.
+#   (f) Complexity: six lines, two of them without direct UCITS vehicles,
+#       quarterly rebalancing across five sleeves. If that overhead will
+#       not survive contact with real life, claude-dragonlite (3 lines)
+#       captures most of the idea.
+#
+# ## Honesty note on the WEIGHTS
+#   The sleeves and their roles are theory-first; the exact percentages
+#   are backtest-informed. They started from where the risk-parity and
+#   capped max-sharpe optimizers agreed over 1988-2026, were hand-tempered
+#   (the raw max-sharpe mix piled 35% into one trend fund and was
+#   discarded), and were tuned against claude-dragonlite as the named
+#   benchmark. Expect the measured edge over that benchmark to shrink out
+#   of sample; the engine-level logic, and the ranges above, are the part
+#   built to survive. Anywhere inside those ranges is the same portfolio.
+#
+# ## Measured profile (this toolkit, EUR, common window 1988-11 -> 2026-07)
+#   vs claude-dragonlite (60/25/15): CAGR 10.6% vs 10.2%, vol 12.3% vs
+#   12.9%, Sharpe 0.86 vs 0.81, worst recovery 3.0y vs 4.9y, worst rolling
+#   5y CAGR +1.0% vs -1.7%, weighted fees 0.26% vs 0.36%. Real drawdowns in
+#   the three real-data crises: 2000-02 -21% vs -30%, 2008 -13% vs -18%,
+#   2022 -13.3% vs -14.4%. The overall max drawdown (-32%) sits entirely in
+#   the pre-2000 backcast era. The price of the hedges: up-capture 55% vs
+#   61%, so it lags in straight-up bull markets -- that is the premium
+#   being paid, not a defect.
+#   Decumulation check (monthly real returns deflated by HICP, stationary
+#   bootstrap, 40y horizon): ruin at a 4% real withdrawal rate 0.2% vs
+#   0.7%; safe WR at 5% ruin 5.8% vs 5.3%. Read those LEVELS skeptically
+#   (the 1988-2026 panel compounds ~9%/yr real, far above any sane forward
+#   anchor) and the GAP comparatively: the sequence-risk profile, not the
+#   headline CAGR, is what this build buys for a FIRE plan.
 #meta rebalance:90
 
-35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
-12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413 or Avantis IE0003R87OG3)
+35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
+12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413, or global Avantis AVWS IE0003R87OG3)
 16    DBMFESIM        # Engine 3a, trend replication (iMGP DBi EUR, LU2951555585)
-14    KMLMSIM         # Engine 3b, direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR UCITS)
+14    KMLMSIM         # Engine 3b, second trend model, no equity futures (buy AQR MF UCITS LU1103257975, best live record, or Winton IE00BG382Q20)
 18    XAUUSDSIM       # Engine 4, gold (buy a physical ETC: IGLN IE00B4ND3602)
-5     ZROZSIM         # Engine 5, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~2x the weight)
+5     ZROZSIM         # Engine 5, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~1.6x the weight, or EUR-hedged DTLE)
