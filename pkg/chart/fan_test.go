@@ -38,3 +38,33 @@ func TestFanEmptyIsSafe(t *testing.T) {
 		t.Errorf("empty fan should still return an SVG, got %.20q", svg)
 	}
 }
+
+// A cone compounding far beyond the start must be capped at 10x the starting
+// wealth so the zero line stays readable, with the clip flagged.
+func TestFanYAxisCap(t *testing.T) {
+	years := 40
+	mk := func(mult float64) []float64 {
+		out := make([]float64, years)
+		for i := range out {
+			out[i] = 1e6 * (1 + (mult-1)*float64(i)/float64(years-1))
+		}
+		return out
+	}
+	svg := Fan(Options{Width: 640, Height: 360}, "Year",
+		[][]float64{mk(0.2), mk(5), mk(60)}, nil) // p95 ends at 60x start
+	if !strings.Contains(svg, "upside clipped") {
+		t.Errorf("cap marker missing when the upper band exceeds 10x start")
+	}
+	// The y-axis must not scale to 60M: no tick label at or above 20M.
+	for _, tick := range []string{">20M<", ">30M<", ">40M<", ">60M<"} {
+		if strings.Contains(svg, tick) {
+			t.Errorf("axis not capped: found tick %s", tick)
+		}
+	}
+	// A modest cone stays uncapped and unflagged.
+	svg = Fan(Options{Width: 640, Height: 360}, "Year",
+		[][]float64{mk(0.5), mk(2), mk(4)}, nil)
+	if strings.Contains(svg, "upside clipped") {
+		t.Errorf("cap marker drawn on an uncapped fan")
+	}
+}
