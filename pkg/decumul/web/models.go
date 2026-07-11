@@ -117,7 +117,7 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged; only the ordering is stressed. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Broad-sample",
-			"The empirical century: real equity returns block-bootstrapped from the actual 1870-2020 developed-market record (18 economies, Jorda-Schularick-Taylor), resampling runs of single national markets. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real bear decades (1929-32, the 1970s, Japan post-1990) that cause ruin. The broad-sample counterpoint to your favourable window.",
+			"The empirical century: a 60/40 domestic stock/bond portfolio (the broad-sample SWR literature's baseline, Anarkulova et al.) block-bootstrapped from the actual 1870-2020 record of 16 developed markets (Jorda-Schularick-Taylor), resampling runs of single countries. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real disasters (1929-32, the inflationary 1970s, Japan post-1990) that cause ruin, on bonds as well as stocks.",
 			broadSampleSource(pr.Years)},
 		namedSource{"Lost decade",
 			"Japan-style tail: a very sticky, deep bear averaging a whole decade, layered on your mean. Unlike Sequence stress this lowers the realised return too, modelling a prolonged real drawdown (Japanese equities 1990-2010). The grimmest planning model, the scenario where a retirement begins inside a lost decade.",
