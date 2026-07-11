@@ -16,6 +16,10 @@
 //	#meta rebalance:N     rebalance every N days (0 = never)
 //	#meta extra-fees:X    yearly fees applied to the whole portfolio
 //	                      (envelope, managed account), deducted by Simulate
+//	#meta sim:on          fetch every holding through its SIM (backcast-
+//	                      extended) variant, as if each id carried the "SIM"
+//	                      suffix (Spec.Sim); a holding with no backcast falls
+//	                      back to its real quotes (see Build, SimFetchID)
 //	#meta leverage:on     weights kept as written; the residual
 //	                      (100−sum) is a cash position, negative and
 //	                      financed at the cash rate plus spread above 100 %

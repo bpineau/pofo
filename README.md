@@ -53,6 +53,7 @@ its extension.
 | Directive | Effect |
 |---|---|
 | `rebalance:N` | rebalance back to the target weights every N days (`0` = never) |
+| `sim:on` | backcast **every** holding, as if each identifier carried the `SIM` suffix, so a file need not spell it out (and stays a one-liner to de-suffix when sharing). Identifiers already ending in `SIM` are untouched, and a holding with no simulated history falls back to its real quotes. `-no-simulate` overrides it (real data only) |
 | `extra-fees:X` (or `envelope-fees:X`) | extra fees in %/yr on the **whole** portfolio (insurance/pension wrapper, mandate, broker), on top of each asset's TER. Unlike TERs (already in the quotes) they are **deducted** from the simulation |
 | `leverage:on` | keep the written weights (sum up to 500%); the residual `100−sum` is a cash position, earning the short rate (`^IRX`) if positive, **financed** if negative. A NAV reaching zero is a ruin |
 | `borrow-spread:X` | financing spread in %/yr over cash when the cash position is negative (default `1.0`) |
@@ -156,7 +157,9 @@ asset's real quotes; the history starts at its inception date. The `SIM`
 suffix (`DBMFSIM`, `NTSGSIM`, `VOOSIM`…) additionally allows extending the
 uncovered period, via `pkg/datasets/simdata/` then the known proxies; real
 quotes always keep priority wherever they exist. `-no-simulate` ignores SIM
-suffixes globally.
+suffixes globally. `#meta sim:on` applies the suffix to every holding of a
+file at once, so you can drop it from each line (and add it back for the whole
+file just as easily).
 
 ## Suggesting assets to add
 

@@ -13,10 +13,13 @@ them:
 ```
 
 **Conventions.** Classic American models (All Weather, Permanent, Dragon…)
-use their US building blocks with the `SIM` suffix so the backtest reaches
+use their US building blocks with backcast-extended history so the test reaches
 back decades; the UCITS you would actually buy is named in each line's
-comment. Modern, European and PEA models use real UCITS quotes. `SIM`
-histories before a fund's inception are simulated (see `pkg/datasets/simdata/`).
+comment. Modern, European and PEA models use real UCITS quotes. Histories
+before a fund's inception are simulated (see `pkg/datasets/simdata/`). Several
+flagship files opt into that extension for the whole file with one
+`#meta sim:on` line instead of a per-line `SIM` suffix; a holding with no
+simulated history simply falls back to its real quotes.
 
 ## Using the optimizers
 

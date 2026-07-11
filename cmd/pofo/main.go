@@ -157,6 +157,9 @@ File format: one line per asset:
         #meta rebalance:N    rebalance every N days (0 = never)
         #meta extra-fees:X   envelope fees in %%/yr, deducted from the
                              performance (synonym: envelope-fees)
+        #meta sim:on         backcast every holding (as if each id carried
+                             the SIM suffix); falls back to real quotes when
+                             a holding has no simulated history
         #meta leverage:on    weights kept as written: sum > 100 %%
                              financed at the cash rate (^IRX) + spread
         #meta borrow-spread:X  borrowing spread in %%/yr (default 1.0)
@@ -298,14 +301,20 @@ Options:
 				seriesByCur[cur] = m
 			}
 			for _, h := range spec.Holdings {
-				if _, ok := m[h.ID]; ok {
+				// "#meta sim:on" backcasts every holding: fetch (and cache)
+				// its SIM variant, keyed by the same id Build will request.
+				// -no-simulate is honored downstream in FetchExtended (NoSim),
+				// which fetches real quotes for a SIM id, so the flag still
+				// wins over the meta with no extra handling here.
+				fetchID := portfolio.SimFetchID(h.ID, spec.Sim)
+				if _, ok := m[fetchID]; ok {
 					continue
 				}
-				s, err := fetchAssetIn(ctx, client, h.ID, &opt, cur)
+				s, err := fetchAssetIn(ctx, client, fetchID, &opt, cur)
 				if err != nil {
 					return fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
 				}
-				m[h.ID] = s
+				m[fetchID] = s
 				// Surface what each identifier resolved to: a fuzzy source match
 				// can return a wrong instrument (e.g. "SP500" -> an S&P sector
 				// sub-index), and a silent mismatch is how delirious numbers slip

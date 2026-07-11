@@ -40,6 +40,22 @@ func ExampleParse_currencies() {
 	// Output: [USD EUR]
 }
 
+// A "#meta sim:on" directive tells Build to fetch every holding through its
+// SIM (backcast-extended) variant, so the file need not suffix each line.
+// SimFetchID is the exact transformation Build applies: it appends "SIM" to
+// a bare identifier and leaves an already-suffixed one alone.
+func ExampleSimFetchID() {
+	spec, _ := portfolio.Parse("sleeves", strings.NewReader(
+		"#meta sim:on\n60 NTSG\n40 XAUUSDSIM\n"))
+	fmt.Println(spec.Sim)
+	fmt.Println(portfolio.SimFetchID("NTSG", spec.Sim))      // suffix added
+	fmt.Println(portfolio.SimFetchID("XAUUSDSIM", spec.Sim)) // already SIM, untouched
+	// Output:
+	// true
+	// NTSGSIM
+	// XAUUSDSIM
+}
+
 // Simulate replays a portfolio (base 100, periodic rebalancing) on series
 // obtained from marketdata or built by hand. Weights are FRACTIONS summing
 // to 1; fees fields are PERCENT per year. The result chains directly into
