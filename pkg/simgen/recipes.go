@@ -45,6 +45,7 @@ func All() []Recipe {
 		scvwRecipe(),
 		spxRecipe(),
 		dpgtRecipe(),
+		avantisRecipe(),
 		chsnRecipe(),
 		tip1eRecipe(),
 		idtlRecipe(),
@@ -340,6 +341,46 @@ func convertDaily(name string, f Fetcher, cross string, from time.Time, dates []
 		return nil, fmt.Errorf("%s: no overlap between the strategy and %s", name, cross)
 	}
 	return s, nil
+}
+
+// avantisRecipe rebuilds the Avantis Global Small Cap Value UCITS ETF
+// (IE0003R87OG3, AVWS, EUR-quoted on the FT line, launched 2024-09-25) from
+// Dimensional's long-running small-cap value mutual funds, the same size+value
+// design, blended 40/60 US / developed-ex-US to match the fund's ~40 % North
+// America geography (versus DPGT's 60/40 US tilt), net of the 0.39 % TER. The
+// blend is built in USD and re-expressed in EUR at the EURUSD spot (Yahoo daily,
+// ~2003, as for the DBMFE and NTSZ euro legs), which sets the start, so the real
+// series it splices onto (also EUR) lines up in currency. Real Avantis quotes
+// are grafted from inception. This makes the file-recommended global buy option
+// backtestable; ZPRV (US small-cap value) still reaches deeper, to 1963.
+func avantisRecipe() Recipe {
+	return Recipe{
+		ID:              "IE0003R87OG3",
+		Name:            "Avantis Global Small Cap Value: DFA small-cap value blend (EUR)",
+		Method:          "0.40×DFSVX (US small value) + 0.60×DISVX (intl developed small value), 0.39%/yr fees, converted USD→EUR at EURUSD spot (Yahoo daily ~2003), real Avantis grafted from 2024",
+		Build:           avantisBuild,
+		ValidateAgainst: "IE0003R87OG3",
+		SpliceReal:      "IE0003R87OG3",
+	}
+}
+
+// avantisBuild builds the 40/60 DFA small-cap value blend in USD, then converts
+// each daily return into EUR via the EURUSD spot rate, so the simulated history
+// matches the EUR quote the real Avantis Global Small Cap Value trades in. The
+// construction mirrors dpgtBuild (its GBP-quoted Dimensional sibling), with the
+// US/international split shifted to the Avantis fund's regional weights.
+func avantisBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	legs := []Leg{{ID: "DFSVX", Weight: 0.40}, {ID: "DISVX", Weight: 0.60}}
+	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX"}, from)
+	if err != nil {
+		return nil, err
+	}
+	usd, err := Composite(fr, legs, "", 0.0039)
+	if err != nil {
+		return nil, err
+	}
+	return convertDaily("Avantis Global SCV (USD small-value blend expressed in EUR)",
+		extend(f), "EURUSD=X", from, fr.Dates, usd)
 }
 
 // scvwRecipe rebuilds US small-cap value from DFA US Small Cap Value
