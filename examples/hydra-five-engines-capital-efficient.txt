@@ -1,0 +1,97 @@
+# Hydra (five engines) -- a diversified build that outruns the dragon-lite
+# Idea: diversify across independent return ENGINES, not across tickers. Each
+#   sleeve is a distinct, well-documented source of return driven by a different
+#   macro force, so their worst years rarely coincide, and combining lowly-
+#   correlated positive-return streams is what actually lifts risk-adjusted
+#   return, far more than owning more names does (Ilmanen & Kizer, "The Death of
+#   Diversification Has Been Greatly Exaggerated", 2012; Choueifaty & Coignard,
+#   "Toward Maximum Diversification", 2008). The sleeves are then sized by risk
+#   contribution rather than capital, so no single engine can dominate the ride
+#   or sink it (Qian; Bridgewater's All Weather: balance exposures across the
+#   growth / inflation / deflation regimes, not dollars across tickers). And each
+#   is expressed through the most capital-efficient instrument available, so the
+#   diversifiers stack ON TOP of a full growth engine instead of being funded by
+#   shrinking it (return stacking: Hoffstein; WisdomTree Efficient Core).
+#
+# Why each head:
+#   - NTSG (equity + duration engine): levering a balanced stock/bond mix
+#     beats concentrating in equities at equal risk (Asness, "Why Not 100%
+#     Equities", 1996). 35% of NTSG carries ~31% world equity AND ~21%
+#     Treasury-futures duration in one line.
+#   - US small-cap value (the ZPRV/USSC.L line): the size and value premia
+#     (Fama & French 1992/1993), in the value-WEIGHTED small-cap form that
+#     sidesteps the small-growth lottery corner. Also the factor with the
+#     longest clean daily backcast here (DFSVX spliced onto the Ken French
+#     small-value factor, 1963). It diversifies the mega-cap-growth
+#     concentration a world index carries; buy ZPRV (IE00BSPLC413) or, for
+#     the globally diversified version, the Avantis Global SCV (IE0003R87OG3).
+#   - Trend, TWO engines: time-series momentum is the best-documented
+#     crisis alpha (Moskowitz, Ooi & Pedersen 2012; Hurst, Ooi & Pedersen,
+#     "A Century of Evidence on Trend-Following", 2017) and the most
+#     reliable inflation-regime asset (Neville, Draaisma, Funnell, Harvey
+#     & van Hemert 2021). Split across two genuinely different methods
+#     (DBi CTA replication vs the rules-based MLM index, which trades no
+#     equity futures) so one model's decay does not take the sleeve down.
+#   - Gold: near-zero expected real return alone (Erb & Harvey, "The
+#     Golden Dilemma", 2013) but a debasement/geopolitical hedge nothing
+#     else replicates, and the complement to trend in stagflation, where
+#     trend can whipsaw (Neville et al. 2021).
+#   - ZROZ (deep duration): the deflation-crash head. A 25+y zero-coupon
+#     fund carries ~27y duration per euro vs ~17 for TLT, so 5% of ZROZ
+#     buys the flight-to-quality convexity of ~8% of TLT and frees capital
+#     for the other engines: capital efficiency applied to the defensive
+#     sleeve. NTSG's overlay is intermediate duration; this is the long
+#     end, which is what actually rallies in a 2008.
+#
+# Stacked alternatives for the three PLAIN sleeves, checked and rejected:
+#   KMLM, ZPRV and ZROZ are the sleeves NOT already return-stacked (unlike
+#   NTSG / RSBT / GDE). The test: could each be swapped for a stacked
+#   instrument carrying the SAME core plus a free second exposure, and win on
+#   most of the criteria above? Run over 1988->2026, EUR, same weights:
+#   - Trend (KMLM) -> RSST (US stocks + managed futures) or the Winton Trend
+#     Enhanced Global Equity fund (MSCI World + trend). Both raise CAGR
+#     (+0.8 / +0.05 pt) and median 5y CAGR, but stacking equity onto the
+#     trend sleeve is the wrong trade here: Sharpe falls (0.87 -> 0.84 / 0.82),
+#     vol rises (14.0 -> 15.5 / 15.1%), max drawdown deepens (-34 -> -36%),
+#     worst 5y CAGR collapses (1.6% -> 0.4% / -0.1%) and recovery stretches to
+#     3.7-4.7y. The book already carries ample equity beta (NTSG, GDE, ZPRV);
+#     the trend sleeve earns its keep precisely by NOT adding more, and by
+#     holding no equity futures it stays clean when equities crash. KMLM stays.
+#   - Small-cap value (ZPRV): no stacked small-cap-value instrument exists.
+#     The nearest same-core alternative is global (vs US) SCV -- the Avantis
+#     ETF or DPGT -- and on the common 1994 window it is a wash (Sharpe 0.89
+#     vs 0.88; global marginally lower vol and drawdown, US marginally higher
+#     CAGR and worst/median 5y). ZPRV keeps the deeper clean backcast (1963 vs
+#     1994), so it stays.
+#   - Long Treasury (ZROZ): no stacked long-Treasury instrument exists, and a
+#     25+y zero-coupon is ALREADY the most capital-efficient long-duration
+#     expression (max duration per euro). Nothing better to swap to. ZROZ stays.
+#   Net: the three plain sleeves are plain on purpose. Stacking would either
+#   inject unwanted equity beta (trend) or has no product at all (SCV, long
+#   STRIPS). The stacked instruments are used where stacking helps -- the
+#   growth, duration and gold cores -- not on the crisis diversifiers.
+#
+# Honesty note on the WEIGHTS: the sleeves and their roles are theory-
+#   first, but the exact percentages are backtest-informed. They started
+#   from where the risk-parity and capped max-sharpe optimizers agreed
+#   over 1988->2026, were hand-tempered (the raw max-sharpe mix piled 35%
+#   into one trend fund and was discarded), and were tuned against one
+#   named benchmark. Expect the edge over that benchmark to shrink out of
+#   sample; the engine-level logic is the part built to survive.
+#
+# Backtest vs claude-dragonlite (60/25/15) over the common 1988->2026 window,
+#   EUR: higher CAGR (12.08% vs 10.21%), higher Sharpe (0.87 vs 0.81), higher
+#   Sortino (1.25 vs 1.17), much faster recovery (2.8y vs 4.9y), worst rolling
+#   5y CAGR +1.58% vs -1.68% and median 5y 10.74% vs 10.02%, plus fuller regime
+#   coverage (inflation 58% vs 40%, crisis 51% vs 40%). The price: slightly
+#   higher vol (14.0% vs 12.9%), a deeper max drawdown (-34.4% vs -30.6%) and
+#   more down-capture (61.6% vs 56.9%) -- the levered long-Treasury and trend
+#   tails cost in a 2022-style joint stock/bond selloff.
+#meta rebalance:90
+
+35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413, or global Avantis IE0003R87OG3)
+16    RSBTSIM         # Engine 3a, trend replication (iMGP DBi EUR, LU2951555585)
+14    KMLMSIM         # Engine 3b, direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR UCITS)
+18    GDESIM          # Engine 4, gold (buy a physical ETC: IGLN IE00B4ND3602)
+5     ZROZSIM         # Engine 5, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~1.6x the weight)
