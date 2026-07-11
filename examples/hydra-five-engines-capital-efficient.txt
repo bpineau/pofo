@@ -6,8 +6,8 @@
 #   efficient frontier of this engine philosophy actually sits, (b) as the
 #   canonical rationale file for the hydra family, and (c) as a WATCH LIST:
 #   if a UCITS twin of the missing pieces ever launches, this is the build
-#   it unlocks. The implementable version is hydra-five-engines.txt, which
-#   gives up ~30-40 points of notional to stay buyable.
+#   it unlocks. The implementable version is hydra-five-engines-ucits.txt,
+#   which gives up ~30-40 points of notional to stay buyable.
 #
 # Thesis in one line: the same five engines as the buyable hydra, but every
 #   sleeve that CAN be expressed through an embedded-leverage instrument is,
@@ -33,8 +33,9 @@
 # ## Why embedded leverage, not external leverage
 #   The same ~148% book could be assembled from plain funds plus external
 #   financing: a margin/Lombard loan on the CTO, short box spreads, or a
-#   DIY futures overlay (hydra-five-engines-levered.txt backtests that
-#   route at the cash rate + 1%). Embedded stacking wins on five fronts:
+#   DIY futures overlay (a levered variant of the buyable hydra was
+#   backtested at the cash rate + 1%: it works on paper, with all the
+#   fragilities below). Embedded stacking wins on five fronts:
 #   1. NO MARGIN CALL, EVER. External leverage is path-dependent: a deep
 #      drawdown raises the account's leverage ratio exactly when prices
 #      are lowest, and the broker (whose risk desk can also RAISE margin
@@ -72,7 +73,7 @@
 #   futures-overlay funds qualify for this build; and external leverage
 #   can lever ANY mix, including UCITS-only sleeves, while stacking only
 #   exists in the combinations issuers ship -- which is exactly why this
-#   file doubles as a watch list, and why the levered sibling exists.
+#   file doubles as a watch list.
 #
 # ## Why engines, and why these mechanics
 #
@@ -204,8 +205,8 @@
 # ## Blind spots (the buyable hydra's, plus the leverage-specific ones)
 #
 #   (a) DEEPER CRISIS DRAWDOWNS, measured: vs the buyable hydra, real
-#       drawdowns of -24% vs -21% (2000-02), -20% vs -13% (2008), -16.5%
-#       vs -13.3% (2022). ~148% notional and ~60% equity mean the frontier
+#       drawdowns of -24% vs -23% (2000-02), -20% vs -14% (2008), -16.5%
+#       vs -12% (2022). ~148% notional and ~60% equity mean the frontier
 #       build is the BULL-market frontier, not the defensive one; beta vs
 #       S&P is 0.59 vs 0.47 and down-capture 62% vs 50%. The compensation
 #       is faster recoveries (2.8y worst) and a higher floor (worst 5y
@@ -214,7 +215,7 @@
 #       the funds. When cash is at 5% that is ~2.4%/yr of drag before the
 #       overlay earns anything, exactly when bonds and equities may both
 #       struggle (2022-23). Invisible on a statement, real in the return.
-#   (c) Fee stack: 0.46%/yr weighted TER vs 0.26% for the buyable hydra.
+#   (c) Fee stack: 0.46%/yr weighted TER vs 0.36% for the buyable hydra.
 #   (d) Product risk: RSBT and GDE are small, young ETFs; a closure or a
 #       mandate change forces an unplanned redesign (and a taxable event).
 #   (e) A fast joint stock/bond selloff that whipsaws trend before it
@@ -250,12 +251,12 @@
 # ## Measured profile (this toolkit, EUR, common window 1988-11 -> 2026-07)
 #   CAGR 12.08%, vol 14.0%, Sharpe 0.87, Sortino 1.25, max drawdown
 #   -34.4% with a 2.8y worst recovery, worst rolling 5y +1.58%, median 5y
-#   10.74%, up/down-capture 66/62%. Vs the buyable hydra: +1.5 pts of
-#   CAGR, +0.55 pt of worst-5y, +12 pts of up-capture, at the cost of
-#   +1.6 pts of vol, deeper crisis drawdowns (see (a)) and +0.20%/yr of
+#   10.74%, up/down-capture 66/62%. Vs the buyable hydra: +1.9 pts of
+#   CAGR, +0.8 pt of worst-5y, +12 pts of up-capture, at the cost of
+#   +2.0 pts of vol, deeper crisis drawdowns (see (a)) and +0.10%/yr of
 #   fees. That gap IS the current price of the UCITS constraint.
 #   Decumulation check (monthly real returns, stationary bootstrap, 40y):
-#   ruin at a 4% real WR 0.2%, safe WR at 5% ruin 6.3% vs 5.8% buyable.
+#   ruin at a 4% real WR 0.1%, safe WR at 5% ruin 6.2% vs 5.4% buyable.
 #   Read the LEVELS skeptically (the panel compounds ~10.6%/yr real, far
 #   above any sane forward anchor); read the GAP comparatively.
 #
@@ -269,13 +270,11 @@
 #     2023, NTSZ 2025), so this is not fantasy.
 #   - A UCITS 25y+ zero-coupon USD Treasury fund would retire the IDTL
 #     1.6x workaround.
-#   Until then, hydra-five-engines.txt is the same philosophy at ~110%
-#   effective notional, and the gap above is what waiting costs.
+#   Until then, hydra-five-engines-ucits.txt is the same philosophy at
+#   ~110% effective notional, and the gap above is what waiting costs.
 #
-# Siblings: hydra-five-engines.txt (buyable UCITS implementation),
-#   hydra-five-engines-levered.txt (explicit-borrowing variant, 108%),
-#   hydra-all-weather-balanced.txt (quadrant-balanced re-weighting; reads
-#   this file for the shared rationale and documents only its deltas).
+# Siblings: hydra-five-engines-ucits.txt (the buyable UCITS
+#   implementation), claude-dragonlite.txt (three-line distillation).
 #meta rebalance:90
 #meta sim:on
 
