@@ -6,6 +6,7 @@
 #   https://portfoliocharts.com/2021/12/16/nine-amazing-portfolios-for-uncertain-times/
 # Backtest via long US bonds (SIM); UCITS: IWDA, IEGA, IGLN.
 
-30    IWDASIM         # World equity (UCITS: IWDA)
-60    IEFSIM          # Intermediate US Treasuries (UCITS: IEGA)
-10    GOLDSIM         # Gold (UCITS: IGLN)
+#meta sim:on
+30    IWDA            # World equity (UCITS: IWDA)
+60    IEF             # Intermediate US Treasuries (UCITS: IEGA)
+10    GOLD            # Gold (UCITS: IGLN)

@@ -5,9 +5,10 @@
 #   https://portfoliocharts.com/portfolio/golden-butterfly/
 # Backtest via long US history (SIM); UCITS: IWDA, ZPRV, IDTL, IB01/SHY, IGLN.
 #meta rebalance:365
+#meta sim:on
 
-20    IWDASIM         # Total-market equity (UCITS: IWDA)
-20    ZPRVSIM    # US Small-Cap Value (ZPRV)
-20    TLTSIM          # Long US Treasuries (UCITS: IDTL)
-20    SHYSIM          # Short US Treasuries (UCITS: IB01)
-20    GOLDSIM         # Gold (UCITS: IGLN)
+20    IWDA            # Total-market equity (UCITS: IWDA)
+20    ZPRV       # US Small-Cap Value (ZPRV)
+20    TLT             # Long US Treasuries (UCITS: IDTL)
+20    SHY             # Short US Treasuries (UCITS: IB01)
+20    GOLD            # Gold (UCITS: IGLN)

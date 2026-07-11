@@ -12,8 +12,9 @@
 # The common window is short (capped by the youngest fund); read it as a
 #   correlation lab, not a backtest.
 #meta rebalance:180
+#meta sim:on
 
-25    DBMFESIM        # Engine A: CTA replication (iMGP DBi EUR, LU2951555403)
+25    DBMFE           # Engine A: CTA replication (iMGP DBi EUR, LU2951555403)
 25    IE00BG382Q20    # Engine B1: Winton Trend UCITS (direct systematic trend)
 25    LU1103257975    # Engine B2: AQR Managed Futures UCITS (direct, EUR-hedged share exists: LU1662502183)
-25    KMLMSIM         # Engine B3: MLM index, trend without equity futures (US-only fund; UCITS route: none yet)
+25    KMLM            # Engine B3: MLM index, trend without equity futures (US-only fund; UCITS route: none yet)
