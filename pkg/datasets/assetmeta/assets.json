@@ -2179,6 +2179,7 @@
   {
     "id": "IE00B4L5Y983",
     "isin": "IE00B4L5Y983",
+    "aliases": ["MSCIWORLD", "MSCI-WORLD"],
     "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
     "ucits": true,
     "source": "yahoo",
@@ -3218,7 +3219,7 @@
   {
     "id": "IE00BFMXXD54",
     "isin": "IE00BFMXXD54",
-    "aliases": ["SP500"],
+    "aliases": ["SP500", "SP-500"],
     "name": "Vanguard S&P 500 UCITS ETF USD Accumulation",
     "ucits": true,
     "source": "yahoo",
