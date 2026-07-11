@@ -221,6 +221,16 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
   text-transform:uppercase;color:var(--muted);line-height:1.35}
 .cardcol .v,.cardrow .v,#cards .v{font-family:var(--mono);font-size:1.24rem;font-weight:600;
   font-variant-numeric:tabular-nums;color:var(--ink);margin-top:.25rem;letter-spacing:-.02em}
+/* verdict grading (vintage replays): the outcome word carries the status color */
+.cardcol .v.good{color:var(--good-ink)}
+.cardcol .v.bad{color:var(--bad-ink)}
+/* vintage cards carry sentence-length verdicts: one column, calmer size */
+#vintagesCards{grid-template-columns:1fr}
+#vintagesCards .v{font-size:.92rem;line-height:1.4}
+.cardnote{grid-column:1/-1;font-family:var(--mono);font-size:.66rem;color:var(--muted);margin:.1rem .1rem 0}
+/* CAPE freshness: a stale bundled series must announce itself */
+.vbig .stale{font-family:var(--mono);font-size:.66rem;color:var(--warn-ink);background:var(--warn-wash);
+  border:1px solid #5a4620;border-radius:var(--r-sm);padding:.15rem .5rem}
 #note:not(:empty){color:var(--warn-ink);background:var(--warn-wash);border:1px solid #5a4620;
   border-radius:var(--r-sm);padding:.55rem .85rem;font-size:.82rem;margin:.4rem 0 .9rem}
 

@@ -37,16 +37,40 @@ own design spec under `docs/superpowers/specs/`.
   ruin (Cederburg; and the user declined the utility/floor metric that would
   reward them), which the tool shows rather than hides.
 
+## Shipped (2026-07-11 critique + enrichment drop)
+
+See `docs/superpowers/specs/2026-07-11-fire-critique-enrichment-design.md`
+for the full critique. Highlights:
+
+- **Portfolio-mode doom bug fixed.** `runFire` now honours `#meta sim:on`
+  (the de-suffix campaign had starved the panel to <12 common months:
+  µ=0/σ=0 fit, 58% central ruin, absurd bootstrap columns). Plus guards:
+  `Fit.Valid`, `minPanelMonths` (24) for the data-driven columns.
+- **§02 The retirements that actually happened.** Deterministic replay of
+  USA 1929/1966/2000 and Japan 1990 (JST year-indexed) through the user's
+  exact plan; graded verdict cards.
+- **§03 The decisive decade.** `PathResult.Ret10` + `Ensemble.DecadeBuckets`:
+  ruin by first-decade-return quintile, with the concentration cards.
+- **§04 income layers.** `/api/income` median funding mix (also fixed the
+  annuity income missing from the spending fan's overlay).
+- **CAPE refreshed and self-aware.** gen-cape multpl fallback (mirror's PE10
+  died 2023-09); bundle now 2026-07 (CAPE 42.2); `Stale` flag + UI chip.
+- Dual-axis buffer chart split into two single-axis panels; M€ formatting;
+  survivor-conditioned detail stats; largest-remainder cause shares.
+
 ## Remaining
 
 - **E (remaining) — chart-system reskin.** The new primitives (Gauge, Scatter,
   CategoryBars) match the mock; the older charts (Fan, StackedArea, Bars,
   Frontier) are competent but could get the same finish pass. Lower priority:
   the page frame already equals the mock's system.
+- **Hover/crosshair layer** on the live web charts (vanilla JS), promised in
+  the terminal-redesign doc, still pending.
 - **Refinements.** RuinTiming is a timing proxy for cause; a wealth-trajectory
   classifier (crash depth vs grind) would be more precise. The frontier's
   spending-CV for the fixed rule is inflated by post-ruin zeros; a
   solvency-conditional CV would separate ruin from lifestyle swing more cleanly.
+  The §04 spending fan could show the pension overlay more explicitly.
 
 ## Design mock
 
