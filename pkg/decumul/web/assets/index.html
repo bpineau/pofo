@@ -157,7 +157,7 @@
 
 <p><b>Two families of models.</b> Every figure on this page comes from one of two kinds of return model, and knowing which is which answers most "what does this slider actually change?" questions:</p>
 <ul>
-<li><b>Data-driven models</b> replay or resample <i>actual recorded returns</i>. In portfolio mode, <b>Historical windows</b> and <b>Block bootstrap</b> use your holdings' own monthly real returns (SIM-extended history, deflated, at your live weights). The <b>Broad-sample</b> column uses somebody else's data entirely: the Jorda-Schularick-Taylor academic record of real equity returns in 18 developed countries, 1870-2020, bundled into pofo. The μ/σ/df sliders have <b>no effect</b> on any of these.</li>
+<li><b>Data-driven models</b> replay or resample <i>actual recorded returns</i>. In portfolio mode, <b>Historical windows</b> and <b>Block bootstrap</b> use your holdings' own monthly real returns (SIM-extended history, deflated, at your live weights). The <b>Broad-sample</b> column uses somebody else's data entirely: the Jorda-Schularick-Taylor academic record of 16 developed countries, 1870-2020, bundled into pofo, held as a <b>60/40 domestic stock/bond portfolio</b> (the broad-sample SWR literature's baseline allocation). The μ/σ/df sliders have <b>no effect</b> on any of these.</li>
 <li><b>Parameter-driven models</b> (Student-t, Sequence stress, Lost decade) generate synthetic returns from three numbers: the mean μ, the volatility σ and the tail thickness df. Those three numbers are what the sliders control, and everything in the "Market model" group works by changing them.</li>
 </ul>
 
@@ -169,7 +169,7 @@
 <tr><td>Historical windows · Block bootstrap</td><td colspan="2">the portfolio's own monthly real returns, at your live weights (sliders ignored)</td><td>actual windows / block-resampled history</td></tr>
 <tr><td>Student-t</td><td>μ slider (seeded + blended as above; <span class="kbd">anchor to CAPE</span> replaces the mean only)</td><td>σ/df sliders (seeded from the fit)</td><td>none: each year drawn independently</td></tr>
 <tr><td>Sequence stress</td><td>same long-run mean as Student-t, by construction</td><td>same, 1.5× more volatile inside bears</td><td>synthetic sticky bears (Markov): ~19% of years, runs of ~3, so bad years arrive in clusters</td></tr>
-<tr><td>Broad-sample</td><td colspan="2">the JST record: 18 developed markets, 1870-2020, real equity (portfolio and sliders both ignored)</td><td>block-resampled runs of single national markets, so 1929, the 1970s and Japan survive intact</td></tr>
+<tr><td>Broad-sample</td><td colspan="2">the JST record: 16 developed markets, 1870-2020, as a 60/40 domestic stock/bond mix (portfolio and sliders both ignored)</td><td>block-resampled runs of single national markets, so 1929, the inflationary 1970s and Japan survive intact, on bonds as well as stocks</td></tr>
 <tr><td>Lost decade</td><td>your central μ, then dragged <i>below</i> it by the trough (deliberately not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>a very sticky decade-long deep bear (the Japan-1990 shape), the grimmest planning model</td></tr>
 </table>
 
