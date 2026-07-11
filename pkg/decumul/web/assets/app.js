@@ -62,7 +62,7 @@ const GROUPS = [
     r("sigma", "Volatility (long-horizon)", 0.06, 0.20, 0.005, 0.11, "pct",
       "Long-horizon annual volatility (variance-ratio-consistent), lower than the 1-year headline vol. Vol matters almost as much as return: 10→12% nearly doubles ruin."),
     r("df", "Tail df (low = fat)", 3, 30, 1, 5, "int",
-      "Student-t degrees of freedom: 3-6 = fat crash-prone tails; 30 ≈ normal."),
+      "How much more often EXTREME years happen than a bell curve allows, at the same volatility. At df 5 a catastrophic year (say -30% real, a 3-sigma event) is roughly ten times more likely than at df 30 (≈ normal law); ordinary years barely change. Low df = crash-prone world. In portfolio mode it is seeded from the holdings' monthly kurtosis."),
     c("regime", "Sequence-risk stress (cluster bad years)",
       "Two-state Markov source at the SAME long-run mean: bad years cluster into multi-year bears, the risk i.i.d. draws miss. The strip's Sequence-stress column always shows it; this makes it the active model for the detail charts."),
     c("conservative", "Broad-sample prior (override the fit)",
@@ -72,7 +72,7 @@ const GROUPS = [
     c("glidepath", "Rising-equity glidepath (bond tent)",
       "Hold less equity at retirement (30%) gliding to 75% later, blending in bonds (~1.5% real). It cuts sequence risk (the danger years are the least equity-heavy) but gives up return; with a wide equity-bond gap the drag can outweigh the protection, so compare the ruin both ways. Applies to the central case."),
     c("monthly", "Monthly withdrawals (salary-like)",
-      "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month."),
+      "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month. Only the plan-detail and buffer sections (§07-§08) honour it; the model strip and the analysis sections always compare annual kernels, for speed and comparability. The effect is small by design (a refinement, not a lever)."),
   ]},
   {title: "Cash buffer", items: [
     r("bufferYears", "Buffer (years of spending)", 0, 10, 1, 3, "int",

@@ -154,6 +154,16 @@
 <details class="caveat">
 <summary>Method &amp; honest caveats · why these figures can look optimistic</summary>
 <div class="disclosure-body">
+<p><b>What feeds each return model</b> (portfolio mode):</p>
+<table class="feedtab">
+<tr><th>Model</th><th>Mean</th><th>Vol &amp; tails</th><th>Sequence</th></tr>
+<tr><td>Historical windows · Block bootstrap</td><td colspan="2">the portfolio's own monthly real returns, at your live weights (sliders ignored)</td><td>actual / block-resampled history</td></tr>
+<tr><td>Student-t</td><td>μ slider (seeded from the portfolio fit, blended toward the broad-sample prior when history &lt; horizon; <span class="kbd">anchor to CAPE</span> overrides the mean only)</td><td>σ/df sliders (seeded from the fit)</td><td>i.i.d. — none</td></tr>
+<tr><td>Sequence stress</td><td>same as Student-t (mean-preserving)</td><td>same, 1.5× in bears</td><td>synthetic sticky bears (Markov), ~19% of years, ~3y runs</td></tr>
+<tr><td>Broad-sample</td><td colspan="2">JST record: 18 developed markets, 1870-2020, real equity (portfolio &amp; sliders ignored)</td><td>block-resampled single-market runs</td></tr>
+<tr><td>Lost decade</td><td>your central μ, dragged below it by the trough (not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>synthetic decade-long bear (Japan 1990 shape)</td></tr>
+</table>
+<p>The <span class="kbd">broad-sample prior</span> checkbox only overwrites the μ/σ/df sliders (it never touches the data-driven columns); <span class="kbd">anchor to CAPE</span> only replaces the central mean; <span class="kbd">monthly withdrawals</span> only affects §07-§08.</p>
 <p>Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 <p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b>. The main reasons, in rough order of impact:</p>
 <ul>
