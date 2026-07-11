@@ -44,6 +44,7 @@ func All() []Recipe {
 		rsbtRecipe(),
 		vtRecipe(),
 		xauusdRecipe(),
+		iglnRecipe(),
 		shyRecipe(),
 		scvwRecipe(),
 		spxRecipe(),
@@ -1108,6 +1109,25 @@ func xauusdBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		marketdata.ExtendBack(s, long)
 	}
 	return s, nil
+}
+
+// iglnRecipe backcasts the iShares Physical Gold ETC (IE00B4ND3602, USD, real
+// from 2011) as spot gold minus its 0.12%/yr storage fee. The single leg is
+// GC=F (the XAU/USD gold spot the XAUUSD sleeve and the managed-futures recipes
+// already trade, real ~2000), extended back to 1968 by the bundled daily
+// London/LBMA PM gold fix (refdata XAUUSD-LBMA). The fund is USD-quoted, like
+// gold spot, so no FX leg is needed; the real IGLN quotes are grafted from
+// inception. A physically-backed ETC tracks the LBMA price minus storage, which
+// the fee term reproduces.
+func iglnRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00B4ND3602",
+		Name:            "iShares Physical Gold: spot gold minus storage",
+		Method:          "GC=F (XAU/USD gold spot, extended to the daily London/LBMA PM fix XAUUSD-LBMA ~1968) minus 0.12%/yr storage, real IGLN grafted from 2011",
+		Build:           composite("IGLN (physical gold)", []Leg{{ID: "GC=F", Weight: 1}}, "", 0.0012),
+		ValidateAgainst: "IE00B4ND3602",
+		SpliceReal:      "IE00B4ND3602",
+	}
 }
 
 func dbmfRecipe() Recipe {
