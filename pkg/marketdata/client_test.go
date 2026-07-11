@@ -410,9 +410,11 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 func TestFetchTickerRejectsUnrelatedFuzzyMatch(t *testing.T) {
 	// Regression: a bare ticker with no exact listing anywhere must never
 	// adopt a fuzzy name-search hit that has nothing to do with it. FT's
-	// searchsecurities is a full-text search, so "MSCIWORLD" fuzzily matched
-	// "Fineco AM MSCI World Semiconductors …" (a wildly different instrument,
-	// symbol FAMMWS) and pofo served it, producing delirious statistics.
+	// searchsecurities is a full-text search, so a query like "GLOBALEQ"
+	// fuzzily matched "Fineco AM MSCI World Semiconductors …" (a wildly
+	// different instrument, symbol FAMMWS) and pofo served it, producing
+	// delirious statistics. (The real "MSCIWORLD" is now a catalog alias, so
+	// this uses an unrelated query that still exercises the fuzzy gate.)
 	days := testDays(120)
 	closes := make([]float64, len(days))
 	for i := range closes {
@@ -424,7 +426,7 @@ func TestFetchTickerRejectsUnrelatedFuzzyMatch(t *testing.T) {
 		ftCloses = append(ftCloses, fmt.Sprintf("%g", closes[i]))
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v8/finance/chart/MSCIWORLD", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/v8/finance/chart/GLOBALEQ", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "not found", http.StatusNotFound)
 	})
 	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
@@ -443,7 +445,7 @@ func TestFetchTickerRejectsUnrelatedFuzzyMatch(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Fetch(context.Background(), "MSCIWORLD", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "GLOBALEQ", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err == nil {
 		t.Fatalf("expected no usable source, got %q (%s) with %d points", s.Name, s.Symbol, len(s.Points))
 	}
