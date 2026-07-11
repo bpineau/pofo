@@ -28,8 +28,9 @@
 //     at daily-statistics frequency;
 //   - the bundled recipes (All, Find) assemble these building blocks for
 //     NTSX, NTSG, URTH, IWDA, VT, RSSB, GDE, XAUUSD, ZPRV, the Avantis Global
-//     Small Cap Value ETF, SHY, IEF, TLT, ZROZ, DBMF, DBMFE, KMLM, CTA and the
-//     Winton Trend-Equity fund, among others.
+//     Small Cap Value ETF, SHY, IEF, TLT, ZROZ, DBMF, DBMFE, KMLM, the AQR
+//     Managed Futures UCITS fund, CTA and the Winton Trend-Equity fund, among
+//     others.
 //
 // # Units
 //

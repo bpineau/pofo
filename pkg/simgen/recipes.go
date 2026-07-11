@@ -32,6 +32,7 @@ func All() []Recipe {
 		dbmfpaRecipe(),
 		dbmfeRecipe(),
 		kmlmRecipe(),
+		aqrmfRecipe(),
 		ctaRecipe(),
 		amundiVolRecipe(),
 		bhmgRecipe(),
@@ -1129,6 +1130,25 @@ func kmlmRecipe() Recipe {
 		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.13, 0.0090)),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
+	}
+}
+
+// aqrmfRecipe reconstructs the AQR Managed Futures UCITS Fund (LU1103257975,
+// USD, real from 2015-05) from the same TSMOM engine, real AQR quotes grafted
+// on top. AQR's multi-horizon trend model is genuinely distinct from the
+// SG/DBi replication that RSBT and DBMF track, and its live record (2015→) has
+// materially outrun the MLM index (KMLM), so it is the better real-world pick
+// for the "second, independent trend method" slot. The proxy vol target (~11%)
+// matches AQR's realized full-volatility programme, between DBMF (10%) and
+// KMLM (13%). USD native, so no FX leg (the fetch layer converts to view).
+func aqrmfRecipe() Recipe {
+	return Recipe{
+		ID:              "LU1103257975",
+		Name:            "AQR Managed Futures UCITS: TSMOM replication",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), real AQR grafted from 2015",
+		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.11, 0.0079)),
+		ValidateAgainst: "LU1103257975",
+		SpliceReal:      "LU1103257975",
 	}
 }
 
