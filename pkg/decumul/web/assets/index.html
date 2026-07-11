@@ -64,7 +64,7 @@
 
 <section class="section">
   <div class="shead"><span class="code">§01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model · the cone of outcomes</span></div>
-  <p class="lede">The same plan under each lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median; red paths are simulated ruins.</p>
+  <p class="lede">The same plan under each lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median. The thin lines are eight example futures spread evenly from worst to best: the red ones are the failures, so their count tracks the failure rate (two red ≈ one future in seven fails). The axis is capped at 10× the start so the zero line stays readable; "upside clipped" marks the cone continuing beyond.</p>
   <div id="fansGrid"></div>
 </section>
 
@@ -152,18 +152,51 @@
 </section>
 
 <details class="caveat">
+<summary>How this machine works · what feeds each model, every control explained</summary>
+<div class="disclosure-body">
+
+<p><b>Two families of models.</b> Every figure on this page comes from one of two kinds of return model, and knowing which is which answers most "what does this slider actually change?" questions:</p>
+<ul>
+<li><b>Data-driven models</b> replay or resample <i>actual recorded returns</i>. In portfolio mode, <b>Historical windows</b> and <b>Block bootstrap</b> use your holdings' own monthly real returns (SIM-extended history, deflated, at your live weights). The <b>Broad-sample</b> column uses somebody else's data entirely: the Jorda-Schularick-Taylor academic record of real equity returns in 18 developed countries, 1870-2020, bundled into pofo. The μ/σ/df sliders have <b>no effect</b> on any of these.</li>
+<li><b>Parameter-driven models</b> (Student-t, Sequence stress, Lost decade) generate synthetic returns from three numbers: the mean μ, the volatility σ and the tail thickness df. Those three numbers are what the sliders control, and everything in the "Market model" group works by changing them.</li>
+</ul>
+
+<p><b>Where the slider values come from.</b> In parametric mode they are just your inputs. In portfolio mode they are <i>seeded from your portfolio's history</i>: μ is the mean realised annual real return, σ the monthly dispersion scaled to annual, df fitted from the monthly kurtosis (fat months → low df). Then, because a 20-year history cannot reveal 45-year risks, the central models quietly <b>blend those fitted values toward a cautious world-equity prior</b> (μ 4.5%, σ 13%, df 4) in proportion to how much the horizon exceeds the history, capped at 50/50. So the portfolio's history reaches the central case through its <i>statistics</i>, never through its actual sequence of years.</p>
+
+<p><b>The model columns, one by one:</b></p>
+<table class="feedtab">
+<tr><th>Model</th><th>Mean</th><th>Vol &amp; tails</th><th>Sequence of years</th></tr>
+<tr><td>Historical windows · Block bootstrap</td><td colspan="2">the portfolio's own monthly real returns, at your live weights (sliders ignored)</td><td>actual windows / block-resampled history</td></tr>
+<tr><td>Student-t</td><td>μ slider (seeded + blended as above; <span class="kbd">anchor to CAPE</span> replaces the mean only)</td><td>σ/df sliders (seeded from the fit)</td><td>none: each year drawn independently</td></tr>
+<tr><td>Sequence stress</td><td>same long-run mean as Student-t, by construction</td><td>same, 1.5× more volatile inside bears</td><td>synthetic sticky bears (Markov): ~19% of years, runs of ~3, so bad years arrive in clusters</td></tr>
+<tr><td>Broad-sample</td><td colspan="2">the JST record: 18 developed markets, 1870-2020, real equity (portfolio and sliders both ignored)</td><td>block-resampled runs of single national markets, so 1929, the 1970s and Japan survive intact</td></tr>
+<tr><td>Lost decade</td><td>your central μ, then dragged <i>below</i> it by the trough (deliberately not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>a very sticky decade-long deep bear (the Japan-1990 shape), the grimmest planning model</td></tr>
+</table>
+
+<p><b>What each toggle really overrides:</b></p>
+<ul>
+<li><span class="kbd">broad-sample prior</span> just rewrites the three sliders with the cautious prior values. It changes the parameter-driven models and every detail section; it never touches the data-driven columns (they don't read sliders).</li>
+<li><span class="kbd">anchor to CAPE</span> replaces <i>only the central mean</i> with the valuation-implied return (1/CAPE, plus the volatility-drag correction). σ and df keep their fitted values; data-driven columns unchanged.</li>
+<li><span class="kbd">sequence-risk stress</span> does <b>not</b> replay a bad historical sequence: it switches the detail charts to the Markov bear-clustering model (the strip's Sequence-stress column always shows it). About one path in five <i>starts</i> inside a bear; none of it is scripted. The real named worst cases are section 02.</li>
+<li><span class="kbd">rising-equity glidepath</span> reshapes the central model's asset mix over time (30% equity gliding to 75%), trading return for early-years protection.</li>
+<li><span class="kbd">monthly withdrawals</span> refines the kernel's granularity and is visible only in sections 07-08; the model strip and analysis sections always compare annual kernels, for speed and comparability.</li>
+</ul>
+
+<p><b>Mechanics worth knowing:</b></p>
+<ul>
+<li><b>The cash buffer is carved out of the starting capital</b> (buffer = years × spending, the growth sleeve gets the rest), not added on top. Displayed wealth is always growth + buffer.</li>
+<li><b>Tail df in plain words:</b> at the same volatility, it sets how much more often <i>extreme</i> years happen than a bell curve allows. At df 5, a catastrophic year (-30% real, a 3-sigma event) is roughly ten times more likely than at df 30 (≈ normal); ordinary years barely change.</li>
+<li><b>The red lines on the wealth fans</b> are example failed futures. The eight thin sample paths are picked at evenly spaced ranks of final wealth (worst, ~14th percentile, ~29th, … best), so the count of red ones tracks the failure rate: one red line means "the worst future fails", two mean roughly "one future in seven fails", three "one in four", and so on. The bold red baseline is simply zero.</li>
+<li><b>The fans' vertical axis is capped at 10× the starting capital</b> ("upside clipped ↑"): the upper cone can compound far beyond, but showing it would crush the zero line, which is the part that matters.</li>
+<li><b>Safe spend</b> is always solved on the plain fixed rule at your acceptable ruin (the conventional definition of a safe withdrawal rate), even when your plan uses flex or guardrails; <b>Ruin</b> and <b>Median wealth</b> are evaluated under your actual policy.</li>
+<li><b>Taxes gross up every sale:</b> withdrawing 60 k€ net sells more than 60 k€ of assets; the annuity premium leaves the portfolio on day one and returns as lifelong income.</li>
+</ul>
+</div>
+</details>
+
+<details class="caveat">
 <summary>Method &amp; honest caveats · why these figures can look optimistic</summary>
 <div class="disclosure-body">
-<p><b>What feeds each return model</b> (portfolio mode):</p>
-<table class="feedtab">
-<tr><th>Model</th><th>Mean</th><th>Vol &amp; tails</th><th>Sequence</th></tr>
-<tr><td>Historical windows · Block bootstrap</td><td colspan="2">the portfolio's own monthly real returns, at your live weights (sliders ignored)</td><td>actual / block-resampled history</td></tr>
-<tr><td>Student-t</td><td>μ slider (seeded from the portfolio fit, blended toward the broad-sample prior when history &lt; horizon; <span class="kbd">anchor to CAPE</span> overrides the mean only)</td><td>σ/df sliders (seeded from the fit)</td><td>i.i.d. — none</td></tr>
-<tr><td>Sequence stress</td><td>same as Student-t (mean-preserving)</td><td>same, 1.5× in bears</td><td>synthetic sticky bears (Markov), ~19% of years, ~3y runs</td></tr>
-<tr><td>Broad-sample</td><td colspan="2">JST record: 18 developed markets, 1870-2020, real equity (portfolio &amp; sliders ignored)</td><td>block-resampled single-market runs</td></tr>
-<tr><td>Lost decade</td><td>your central μ, dragged below it by the trough (not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>synthetic decade-long bear (Japan 1990 shape)</td></tr>
-</table>
-<p>The <span class="kbd">broad-sample prior</span> checkbox only overwrites the μ/σ/df sliders (it never touches the data-driven columns); <span class="kbd">anchor to CAPE</span> only replaces the central mean; <span class="kbd">monthly withdrawals</span> only affects §07-§08.</p>
 <p>Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 <p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b>. The main reasons, in rough order of impact:</p>
 <ul>

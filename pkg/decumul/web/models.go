@@ -105,19 +105,19 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 				scenario.Compounded{Inner: cohorts, Group: 12}})
 		}
 		out = append(out, namedSource{"Block bootstrap",
-			"Resamples multi-year blocks of this portfolio's real returns, preserving clustered bear markets and cross-asset correlation. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window.",
+			"Resamples multi-year blocks of this portfolio's OWN monthly real returns at your live weights, preserving clustered bear markets and cross-asset correlation. Data-driven: the mu/sigma/df sliders have no effect here. Manufactures many full-length retirements from a short history, but stays anchored to that one favourable window.",
 			scenario.Compounded{Inner: scenario.StationaryBootstrap{Panel: *panel, Weights: w, MeanBlock: 24, Periods: months}, Group: 12}})
 	}
 	cMu, cSigma, cDf := centralParams(pr, panel)
 	out = append(out,
 		namedSource{"Student-t",
-			"The central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. No mean reversion across years, so long horizons read a touch tougher than history; and when your history is shorter than the horizon it leans toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
+			"The central case to plan on: synthetic i.i.d. annual real returns generated from the three sliders (mu, sigma, tail df), which in portfolio mode are seeded from your holdings' fitted statistics, never their actual sequence of years. When the history is shorter than the horizon the values are blended toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
 			centralSource(pr, cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Sequence stress",
 			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged; only the ordering is stressed. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Broad-sample",
-			"The empirical century: real returns block-bootstrapped from the actual 1870-2020 developed-market record (18 economies, Jorda-Schularick-Taylor), GDP-weighted world equity. Not this fund's short history and not synthetic; it carries the real bear decades (1929-32, the 1970s, Japan post-1990) that cause ruin. The broad-sample counterpoint to your favourable window.",
+			"The empirical century: real equity returns block-bootstrapped from the actual 1870-2020 developed-market record (18 economies, Jorda-Schularick-Taylor), resampling runs of single national markets. Fully data-driven and fully external: it ignores both your portfolio and the sliders, and it carries the real bear decades (1929-32, the 1970s, Japan post-1990) that cause ruin. The broad-sample counterpoint to your favourable window.",
 			broadSampleSource(pr.Years)},
 		namedSource{"Lost decade",
 			"Japan-style tail: a very sticky, deep bear averaging a whole decade, layered on your mean. Unlike Sequence stress this lowers the realised return too, modelling a prolonged real drawdown (Japanese equities 1990-2010). The grimmest planning model, the scenario where a retirement begins inside a lost decade.",
