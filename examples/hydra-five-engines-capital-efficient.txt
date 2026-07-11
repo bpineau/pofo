@@ -13,6 +13,19 @@
 #   diversifiers stack ON TOP of a full growth engine instead of being funded by
 #   shrinking it (return stacking: Hoffstein; WisdomTree Efficient Core).
 #
+# UCITS/PRIIPs note: this build deliberately IGNORES the constraints a real
+#   French/EU retail account faces -- it is a research portfolio, not a
+#   buy-list. Several backtest tickers are US-listed funds with no PRIIPs KID
+#   (RSBT, GDE, ZROZ, KMLM), so a French investor cannot buy them directly.
+#   NTSG and ZPRV are already UCITS; for the others the per-sleeve comments
+#   give the UCITS route where one exists (AQR MF UCITS for trend, IDTL for the
+#   long-Treasury leg). But some capital-efficient stacks have no clean UCITS
+#   twin (no single-line bonds+trend or gold+equity fund), so a realistic euro
+#   version has to rebuild them by hand -- a bond fund plus DBMFE, or a
+#   physical gold ETC plus equity -- giving up part of the leverage, and the
+#   deep-duration leg (IDTL, ~17y) is milder than ZROZ (~27y). Expect the euro
+#   UCITS version to land a little short of the numbers below.
+#
 # Why each head:
 #   - NTSG (equity + duration engine): levering a balanced stock/bond mix
 #     beats concentrating in equities at equal risk (Asness, "Why Not 100%
