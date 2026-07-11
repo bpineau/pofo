@@ -69,16 +69,39 @@
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§02</span><h2>The spending you actually live</h2><span class="aside">what the flex rules cost in lifestyle, not statistics</span></div>
-  <p class="lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths: how often the cut happens, how soon, how deep and for how long.</p>
+  <div class="shead"><span class="code">§02</span><h2>The retirements that actually happened</h2><span class="aside">replayed, not resampled · your plan, their dates</span></div>
+  <p class="lede">Monte-Carlo cones say "some futures fail"; history names them. This is your exact plan — rules, buffer, taxes, pension — walked through the four most infamous retirement start dates on record, year by year as they happened. Local real equity returns of each market: a stress proxy for the growth sleeve, not a EUR track.</p>
   <div class="duo">
-    <div id="spendingSvg" class="chart-frame"></div>
-    <div id="spendingCards" class="cardcol"></div>
+    <div id="vintagesSvg" class="chart-frame"></div>
+    <div id="vintagesCards" class="cardcol"></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§03</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
+  <div class="shead"><span class="code">§03</span><h2>The decisive decade</h2><span class="aside">sequence-of-returns risk, made visible</span></div>
+  <p class="lede">Group the simulated futures by the market return of their first ten years and ruin stops looking random: it concentrates in the bad openings. Same average return, different ordering, different fate — which is why the protections that pay are the ones covering the early years: the cash buffer, the flexibility rules, side income, a pension that starts sooner.</p>
+  <div class="duo">
+    <div id="decadeSvg" class="chart-frame"></div>
+    <div id="decadeCards" class="cardcol"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shead"><span class="code">§04</span><h2>The spending you actually live</h2><span class="aside">lifestyle delivered · and who funds it</span></div>
+  <p class="lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths: how often the cut happens, how soon, how deep and for how long. With the pure fixed rule the fan is flat by construction; a band sagging to zero late in the horizon is ruined paths delivering nothing, not thrift.</p>
+  <div class="duo">
+    <div id="spendingSvg" class="chart-frame"></div>
+    <div id="spendingCards" class="cardcol"></div>
+  </div>
+  <p class="lede">And where each year's money comes from, on the median path: the guaranteed floors (pension, annuity, side income) against the portfolio sales that carry everything else. The years the portfolio carries alone are the ones sequence risk can hurt.</p>
+  <div class="duo">
+    <div id="incomeSvg" class="chart-frame"></div>
+    <div id="incomeCards" class="cardcol"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shead"><span class="code">§05</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
   <p class="lede">A failure at 92 is not the same life event as a failure at 61. Crossing ruin timing with survival (INSEE-fitted Gompertz, couple) shows the risk that actually matters: being alive and out of money.</p>
   <div class="duo">
     <div class="stack">
@@ -94,7 +117,7 @@
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§04</span><h2>What moves the risk</h2><span class="aside">frontier · trade-off · levers · the price of time &amp; lifestyle</span></div>
+  <div class="shead"><span class="code">§06</span><h2>What moves the risk</h2><span class="aside">frontier · trade-off · levers · the price of time &amp; lifestyle</span></div>
   <p class="lede">The frontier shows how fast ruin rises as you spend more, under every model at once. The trade-off plots each withdrawal rule as ruin versus lifestyle volatility. The levers rank what improves the plan most; the two curves price a longer retirement and a bigger lifestyle.</p>
   <div id="riskgrid">
     <div id="frontierSvg" class="chart-frame"></div>
@@ -106,22 +129,25 @@
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§05</span><h2>Buffer &amp; recovery</h2><span class="aside">cash arbitrage · time underwater</span></div>
-  <p class="lede">More cash cuts sequence risk up to a point, then drags on growth: the arbitrage is an interior optimum. The recovery histogram shows how long the portfolio typically stays below a prior high.</p>
+  <div class="shead"><span class="code">§07</span><h2>Buffer &amp; recovery</h2><span class="aside">cash arbitrage · time underwater</span></div>
+  <p class="lede">More cash cuts sequence risk up to a point, then drags on growth: each curve gets its own scale so the interior optimum and the growth cost both show. The recovery histogram shows how long the portfolio typically stays below a prior high.</p>
   <div class="duo">
-    <div id="arbitrageSvg" class="chart-frame"></div>
+    <div class="stack">
+      <div id="arbitrageSvg" class="chart-frame"></div>
+      <div id="arbitrage2Svg" class="chart-frame"></div>
+    </div>
     <div id="recoverySvg" class="chart-frame"></div>
   </div>
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§06</span><h2>Plan detail</h2><span class="aside">central model, at your planned spend</span></div>
+  <div class="shead"><span class="code">§08</span><h2>Plan detail</h2><span class="aside">central model, at your planned spend</span></div>
   <p id="note"></p>
   <div id="cards"></div>
 </section>
 
 <section class="section">
-  <div class="shead"><span class="code">§07</span><h2>Reaching your target</h2><span class="aside">equivalent single moves, at your acceptable ruin</span></div>
+  <div class="shead"><span class="code">§09</span><h2>Reaching your target</h2><span class="aside">equivalent single moves, at your acceptable ruin</span></div>
   <div id="solvermenu" class="panel"></div>
 </section>
 
@@ -131,11 +157,11 @@
 <p>Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 <p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b>. The main reasons, in rough order of impact:</p>
 <ul>
-<li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 02 shows what enabling it costs in lived spending.</li>
+<li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 04 shows what enabling it costs in lived spending.</li>
 <li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case blends toward the broad-sample prior when the fund history is shorter than the horizon.</li>
 <li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean.</li>
 <li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the cheaper French multi-envelope sequencing.</li>
-<li><b>Mortality.</b> The ruin figures ignore death by default; section 03 shows the mortality-weighted picture.</li>
+<li><b>Mortality.</b> The ruin figures ignore death by default; section 05 shows the mortality-weighted picture.</li>
 </ul>
 <p>For a life plan, read the pessimistic columns, keep the horizon past your life expectancy, and treat the ruin figures as ordinal (compare scenarios, don't trust decimals).</p>
 </div>

@@ -17,7 +17,7 @@ const GROUPS = [
     r("capital", "Deployed capital", 800000, 4000000, 10000, 1800000, "eur",
       "Liquid capital deployed for the retirement, excluding your home and the emergency fund."),
     r("age", "Age at retirement", 40, 70, 1, 52, "int",
-      "Age in year 0. Drives the mortality view (section 03): being broke at 61 and at 92 are different life events."),
+      "Age in year 0. Drives the mortality view (section 05): being broke at 61 and at 92 are different life events."),
     r("years", "Horizon (years)", 20, 60, 1, 45, "int",
       "Plan past your life expectancy: ruin rises steeply with the horizon (40→50y nearly doubles it)."),
     r("needAnnual", "Net spending /yr", 24000, 84000, 1000, 60000, "eur",
@@ -40,7 +40,7 @@ const GROUPS = [
   ]},
   {title: "Spending policy", items: [
     r("flexCut", "Cut in downturns (0 = fixed rule)", 0, 0.40, 0.05, 0, "pct",
-      "Reversible spending cut while the portfolio drawdown exceeds 20%. The single most powerful lever: 15% roughly halves ruin. Section 02 shows its lived cost."),
+      "Reversible spending cut while the portfolio drawdown exceeds 20%. The single most powerful lever: 15% roughly halves ruin. Section 04 shows its lived cost."),
     r("wrTrigger", "Also cut above this WR (0 = off)", 0, 0.06, 0.002, 0, "pct",
       "Second trigger from the written rules: cut whenever the current withdrawal rate (spend / portfolio) exceeds this, e.g. 3.6%."),
     c("guardrails", "Guyton-Klinger guardrails (replaces the cut)",
@@ -301,6 +301,9 @@ let run = async function() {
   renderPolicyFrontier(b, id);
   renderSensitivity(b, id);
   renderSpending(b, id);
+  renderVintages(b, id);
+  renderDecade(b, id);
+  renderIncome(b, id);
   renderLifecycle(b, id);
   renderSim(b, id);
   updateCmd();
@@ -328,9 +331,14 @@ function renderCape(cape) {
   const el = document.getElementById("capeStrip");
   if (!el || !cape || !cape.value) return;
   const pct = Math.max(2, Math.min(98, cape.percentile));
+  const asOf = (cape.asOf || "").slice(0, 7);
+  // A reading older than a year must never present itself as "now".
+  const freshness = cape.stale
+    ? `<span class="stale" data-help="The bundled Shiller series ends in ${asOf}: this is NOT today's valuation. Refresh it with 'make cape'.">as of ${asOf} · stale</span>`
+    : `<span class="lbl">as of ${asOf}</span>`;
   el.innerHTML =
     `<div class="vbig"><span class="n">CAPE ${cape.value.toFixed(1)}</span>` +
-    `<span class="lbl">${Math.round(cape.percentile)}th percentile since 1881</span></div>` +
+    `<span class="lbl">${Math.round(cape.percentile)}th percentile since 1881</span>${freshness}</div>` +
     `<div class="vstrip" title="cheap on the left, rich on the right">` +
     `<span class="tick" style="left:50%"></span><span class="now" style="left:${pct}%"></span></div>` +
     `<div class="vstrip-labels"><span style="left:4%">cheap</span>` +
@@ -340,7 +348,7 @@ function renderCape(cape) {
     `</div>` +
     `<div class="vbig"><span class="n">${(cape.impliedReal * 100).toFixed(1)}%</span>` +
     `<span class="lbl">implied 10y real return · 1/CAPE</span></div>` +
-    `<div class="vnote">Rich valuations compress the first decade — this is why the central case sits at <b>μ5/σ11</b>, not a rosy fit. Enable <b>anchor to CAPE</b> to plan on it.</div>`;
+    `<div class="vnote">Rich valuations compress the first decade, the years that decide a retirement. Enable <b>anchor to CAPE</b> to plan on the implied return instead of the fitted average.</div>`;
 }
 
 // Settings drawer: fold the controls away to run the analysis full-width.
@@ -374,8 +382,16 @@ function setSVG(elId, svg) {
   const el = document.getElementById(elId);
   if (el && svg) el.innerHTML = svg;
 }
+// cardsHTML renders summary cards; a help field becomes the hover, and a
+// verdict-shaped value (vintage replays) is graded good/bad by its outcome.
+const cardGrade = v =>
+  v.startsWith("ruined") ? " bad" : v.startsWith("survived") ? " good" : "";
 const cardsHTML = cards => (cards || [])
-  .map(c => `<div class="card"><div class="k">${esc(c.label)}</div><div class="v">${esc(c.value)}</div></div>`).join("");
+  .map(c => `<div class="card"${c.help ? ` data-help="${esc(c.help)}"` : ""}>` +
+    `<div class="k">${esc(c.label)}</div><div class="v${cardGrade(c.value)}">${esc(c.value)}</div></div>`).join("");
+
+// fmtW renders a wealth figure with a readable unit (M€ past the million).
+const fmtW = v => Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(2) + "M€" : Math.round(v / 1000) + "k€";
 
 // ---------------------------------------------------------------------------
 // Instant tooltip for any [data-help] element.
@@ -460,9 +476,9 @@ async function renderModels(b, id) {
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
   const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
-    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(1)}%</span>`) + `</tr>`;
+    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%</span>`) + `</tr>`;
   const wealthRow = `<tr><th data-help="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
-    cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
+    cells(m => fmtW(m.medianWealth)) + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
 
@@ -544,6 +560,37 @@ async function renderSpending(b, id) {
   } catch (e) { /* keep the previous chart */ }
 }
 
+// §02: the plan replayed through the infamous historical start dates.
+async function renderVintages(b, id) {
+  try {
+    const r = await post("/api/vintages", b);
+    if (!fresh(id)) return;
+    setSVG("vintagesSvg", r.vintagesSvg);
+    document.getElementById("vintagesCards").innerHTML =
+      cardsHTML(r.cards) + (r.note ? `<p class="cardnote">${esc(r.note)}</p>` : "");
+  } catch (e) { /* keep the previous chart */ }
+}
+
+// §03: ruin decomposed by the first decade's market return.
+async function renderDecade(b, id) {
+  try {
+    const r = await post("/api/decade", b);
+    if (!fresh(id)) return;
+    setSVG("decadeSvg", r.decadeSvg);
+    document.getElementById("decadeCards").innerHTML = cardsHTML(r.cards);
+  } catch (e) { /* keep the previous chart */ }
+}
+
+// §04 second row: the median path's funding mix.
+async function renderIncome(b, id) {
+  try {
+    const r = await post("/api/income", b);
+    if (!fresh(id)) return;
+    setSVG("incomeSvg", r.incomeSvg);
+    document.getElementById("incomeCards").innerHTML = cardsHTML(r.cards);
+  } catch (e) { /* keep the previous chart */ }
+}
+
 async function renderLifecycle(b, id) {
   try {
     const r = await post("/api/lifecycle", b);
@@ -562,6 +609,7 @@ async function renderSim(b, id) {
     if (!fresh(id)) return;
     document.getElementById("note").textContent = r.note || "";
     setSVG("arbitrageSvg", r.arbitrageSvg);
+    setSVG("arbitrage2Svg", r.arbitrage2Svg);
     setSVG("recoverySvg", r.recoverySvg);
     document.getElementById("cards").innerHTML = cardsHTML(r.cards);
   } catch (e) { /* keep the previous cards */ }
