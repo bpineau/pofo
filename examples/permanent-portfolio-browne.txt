@@ -6,8 +6,9 @@
 #   https://portfoliocharts.com/portfolio/permanent-portfolio/
 # Buy-route note: UCITS shown; the original uses US VTI/TLT/GLD/SHY.
 #meta rebalance:365
+#meta sim:on
 
-25    IWDASIM    # World equity (IWDA)
-25    IDTLSIM    # $ Treasury 20+yr (IDTL)
-25    GOLDSIM    # Physical gold (IGLN)
-25    ERNASIM    # USD ultrashort / cash (ERNA)
+25    IWDA       # World equity (IWDA)
+25    IDTL       # $ Treasury 20+yr (IDTL)
+25    GOLD       # Physical gold (IGLN)
+25    ERNA       # USD ultrashort / cash (ERNA)
