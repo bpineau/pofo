@@ -3,7 +3,7 @@
 # name: Vanguard FTSE All-World: world equity (US/dev-ex-US/EM blend)
 # method: 0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM, ~1988), real VWRA grafted from 2019
 # validation: corr=0.668 (weekly 0.937) beta=0.63 TE=14.6%/yr CAGR sim 13.64% vs real 13.18% (overlap 1709 d from 2019-07-23 to 2026-07-01) vs IE00BK5BQT80
-# generated: 2026-07-08
+# generated: 2026-07-11
 date,close
 1987-12-01,4.511548
 1987-12-02,4.527736
