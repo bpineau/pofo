@@ -77,11 +77,12 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	// Why plans fail: decompose the ruined paths by the timing that stands in for
 	// the cause (early crash / lost decade / longevity).
 	rt := e.RuinTiming()
+	pct := roundShares100(rt.Early, rt.Mid, rt.Late)
 	causesSVG := chart.CategoryBars(chart.Options{Width: 460},
 		[]chart.CatBar{
-			{Label: "Early crash", Value: rt.Early, Text: fmt.Sprintf("%.0f%%", rt.Early*100), Color: "#D2402F"},
-			{Label: "Lost decade", Value: rt.Mid, Text: fmt.Sprintf("%.0f%%", rt.Mid*100), Color: "#C77E17"},
-			{Label: "Longevity", Value: rt.Late, Text: fmt.Sprintf("%.0f%%", rt.Late*100), Color: "#9AA2B1"},
+			{Label: "Early crash", Value: rt.Early, Text: fmt.Sprintf("%d%%", pct[0]), Color: "#D2402F"},
+			{Label: "Lost decade", Value: rt.Mid, Text: fmt.Sprintf("%d%%", pct[1]), Color: "#C77E17"},
+			{Label: "Longevity", Value: rt.Late, Text: fmt.Sprintf("%d%%", pct[2]), Color: "#9AA2B1"},
 		})
 
 	// What you leave behind: the distribution of terminal real wealth across
@@ -131,6 +132,40 @@ func bequestBuckets(e decumul.Ensemble) []chart.Bar {
 	return bars
 }
 
+// roundShares100 rounds fractional shares to integer percentages that sum to
+// exactly 100 (largest-remainder method), so a composition never reads 101%.
+// All-zero shares stay all zero.
+func roundShares100(shares ...float64) []int {
+	total := 0.0
+	for _, s := range shares {
+		total += s
+	}
+	out := make([]int, len(shares))
+	if total == 0 {
+		return out
+	}
+	rem := make([]float64, len(shares))
+	sum := 0
+	for i, s := range shares {
+		exact := 100 * s / total
+		out[i] = int(exact)
+		rem[i] = exact - float64(out[i])
+		sum += out[i]
+	}
+	for sum < 100 {
+		best := 0
+		for i := range rem {
+			if rem[i] > rem[best] {
+				best = i
+			}
+		}
+		out[best]++
+		rem[best] = -1
+		sum++
+	}
+	return out
+}
+
 func fmtPctShare(v float64) string {
 	if v < 0.05 {
 		return "0%"
@@ -156,8 +191,8 @@ func lifecycleCards(e decumul.Ensemble, age float64) []Card {
 	}
 	horizon := float64(e.Years)
 	return []Card{
-		{"Ruin (ignoring mortality)", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
-		{"Ever alive and broke", fmt.Sprintf("%.1f%%", pRuinAlive*100)},
-		{"Still alive at horizon", fmt.Sprintf("%.0f%%", decumul.FrenchMortality.CoupleSurvival(age, horizon)*100)},
+		{Label: "Ruin (ignoring mortality)", Value: fmt.Sprintf("%.1f%%", o.RuinProb*100)},
+		{Label: "Ever alive and broke", Value: fmt.Sprintf("%.1f%%", pRuinAlive*100)},
+		{Label: "Still alive at horizon", Value: fmt.Sprintf("%.0f%%", decumul.FrenchMortality.CoupleSurvival(age, horizon)*100)},
 	}
 }
