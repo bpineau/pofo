@@ -451,6 +451,35 @@ func TestFetchTickerRejectsUnrelatedFuzzyMatch(t *testing.T) {
 	}
 }
 
+func TestFetchIndexAssetServesEmbeddedReconstruction(t *testing.T) {
+	// A catalog "index" benchmark (MSCIWORLD) is served entirely from its
+	// embedded total-return reconstruction: long by default (no SIM suffix),
+	// in its native USD, with zero network calls.
+	hit := false
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		hit = true
+		http.Error(w, "no network for an index asset", http.StatusInternalServerError)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	from := time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)
+	s, err := c.Fetch(context.Background(), "msci-world", from)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Source != "index" || s.Currency != "USD" || s.Symbol != "MSCIWORLD" {
+		t.Fatalf("index series metadata: %+v", s)
+	}
+	if len(s.Points) < 500 || s.First().Date.After(time.Date(1980, 2, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Fatalf("expected a long series trimmed to 1980: %d points from %v", len(s.Points), s.First().Date)
+	}
+	if hit {
+		t.Error("an index asset must never touch the network")
+	}
+}
+
 func TestFetchTickerUppercases(t *testing.T) {
 	days := testDays(2)
 	mux := http.NewServeMux()

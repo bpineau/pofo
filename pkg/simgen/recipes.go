@@ -26,6 +26,8 @@ func All() []Recipe {
 		ntszRecipe(),
 		urthRecipe(),
 		iwdaRecipe(),
+		msciworldIndexRecipe(),
+		sp500IndexRecipe(),
 		wintonRecipe(),
 		zrozRecipe(),
 		dbmfRecipe(),
@@ -588,6 +590,37 @@ func iwdaRecipe() Recipe {
 	}
 }
 
+// msciworldIndexRecipe is the pure MSCI World Net TR benchmark: the same
+// reconstruction as the IWDA/URTH trackers but with NO fund fee, served as the
+// non-investable MSCIWORLD index (fees 0, no ISIN). The CAGR runs about a
+// tracker's TER above IE00B4L5Y983 by design; correlation stays ~1.0.
+func msciworldIndexRecipe() Recipe {
+	return Recipe{
+		ID:     "MSCIWORLD",
+		Name:   "MSCI World Net TR (index, fee-free)",
+		Method: "MSCI World net total return: MSCIWORLD-USD refdata (monthly 1969→) with the daily shape of the MSCI World price index (^990100-USD-STRD, 1972→), no fund fee; fallback 0.60×VFINX+0.40×VTMGX (1999)",
+		Build: msciWorld(0, composite("MSCI World (replication)", []Leg{
+			{ID: "VFINX", Weight: 0.60},
+			{ID: "VTMGX", Weight: 0.40},
+		}, "", 0)),
+		ValidateAgainst: "IE00B4L5Y983",
+	}
+}
+
+// sp500IndexRecipe is the pure S&P 500 Total Return benchmark: SP500-USD
+// refdata with the ^GSPC daily shape, no fund fee, served as the
+// non-investable SP500 index (fees 0, no ISIN). Its CAGR runs about a
+// tracker's TER above IE00BFMXXD54 by design; correlation stays ~1.0.
+func sp500IndexRecipe() Recipe {
+	return Recipe{
+		ID:              "SP500",
+		Name:            "S&P 500 Total Return (index, fee-free)",
+		Method:          "S&P 500 total return: SP500-USD refdata (monthly ~1871→) with the daily shape of the S&P 500 price index (^GSPC, 1927→), no fund fee; fallback VFINX (1976→)",
+		Build:           sp500Index(0, composite("S&P 500 (VFINX)", []Leg{{ID: "VFINX", Weight: 1}}, "", 0)),
+		ValidateAgainst: "IE00BFMXXD54",
+	}
+}
+
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
 // global equities (60/40 US/international) plus a half-sized self-generated
 // TSMOM trend overlay, net of 0.80%/yr fees.
@@ -738,14 +771,39 @@ const msciWorldShapeID = "^990100-USD-STRD"
 // The >300-point guards distinguish the real long series from an
 // accidental short fetch of the same symbol.
 func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return shapedIndex("MSCIWORLD-USD", msciWorldShapeID, annualFee, fallback)
+}
+
+// sp500ShapeID is the Yahoo daily S&P 500 PRICE index (1927→): like the MSCI
+// World price index it carries no dividends, so it only supplies the daily
+// shape behind the monthly SP500-USD total-return anchors, never the levels.
+const sp500ShapeID = "^GSPC"
+
+// sp500Index is the S&P 500 counterpart of msciWorld: the SP500-USD total
+// return refdata (~1871) sets the levels, ^GSPC supplies the daily shape from
+// 1927, and any fee is deducted last (0 for the pure index benchmark).
+func sp500Index(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return shapedIndex("SP500-USD", sp500ShapeID, annualFee, fallback)
+}
+
+// shapedIndex builds a daily total-return index from a coarse (monthly)
+// total-return anchor refdata series plus the daily intra-period shape of a
+// matching price index, applying an optional annual fee last so a pre-fee
+// index level can become an after-cost investable one. It falls back to the
+// given fetchable proxy Build when the anchor refdata is absent (it stays
+// local), and stays at the anchor's own cadence when the shape is missing;
+// shapedSeries never drops anchors a truncated shape fails to cover. The
+// >300-point guards distinguish the real long series from a short fetch of
+// the same symbol.
+func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		net, err := f.Fetch("MSCIWORLD-USD", from)
-		if err != nil || net == nil || len(net.Points) <= 300 {
+		anchor, err := f.Fetch(anchorID, from)
+		if err != nil || anchor == nil || len(anchor.Points) <= 300 {
 			return fallback(f, from)
 		}
-		out := net
-		if shape, serr := f.Fetch(msciWorldShapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
-			out = shapedSeries(net, shape)
+		out := anchor
+		if shape, serr := f.Fetch(shapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
+			out = shapedSeries(anchor, shape)
 		}
 		return afterFee(out, annualFee), nil
 	}

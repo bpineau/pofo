@@ -23,10 +23,10 @@ Resolution fields (consumed by `pkg/marketdata`):
 | `aliases` | extra identifiers accepted in portfolio files (e.g. `GOLD`, `NTSX`) |
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
-| `source` | quote provider: `yahoo`, `ft`, `morningstar` or `stooq` |
-| `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT |
+| `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, or `index` (non-investable benchmark served from its embedded reconstruction, no live symbol) |
+| `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT and `index` |
 | `xid` | FT internal id; empty otherwise |
-| `fees` | pinned ongoing charge (TER), percent per year; `0` = unknown |
+| `fees` | pinned ongoing charge (TER), percent per year; `0` = unknown, or genuinely fee-free for an `index` benchmark |
 
 Descriptive fields (consumed by `pkg/suggest`):
 

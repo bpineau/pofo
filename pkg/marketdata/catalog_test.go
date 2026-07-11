@@ -7,6 +7,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 func TestCatalogPinsResolutionWithoutSearch(t *testing.T) {
@@ -163,6 +165,12 @@ func TestWarmupIDsAllPinned(t *testing.T) {
 		case "ft":
 			if res.Xid == "" {
 				t.Errorf("%s: missing FT xid", id)
+			}
+		case "index":
+			// Non-investable benchmark: no live symbol, served straight from
+			// its embedded reconstruction, which therefore must be present.
+			if _, ok, _ := ReadSimdataFS(datasets.Simdata(), id); !ok {
+				t.Errorf("%s: index source without an embedded reconstruction", id)
 			}
 		default:
 			t.Errorf("%s: unexpected source %q", id, res.Source)

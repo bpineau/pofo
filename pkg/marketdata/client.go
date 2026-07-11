@@ -14,6 +14,8 @@ import (
 	"sync"
 	"time"
 	"unicode"
+
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -143,6 +145,8 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 		s, err = c.fetchHICP(ctx, canonical, geo, from)
 	case canonical == cpiUSSymbol:
 		s, err = c.fetchCPIUS(ctx, from)
+	case isIndexAsset(canonical):
+		s, err = c.fetchIndexAsset(canonical, from, spec)
 	case IsISIN(canonical):
 		s, err = c.fetchISIN(ctx, canonical, from, spec)
 	default:
@@ -257,6 +261,39 @@ func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time,
 	}
 	c.adoptResolution(ticker, res)
 	return resolved, nil
+}
+
+// isIndexAsset reports whether a canonical id is a catalog "index" asset: a
+// non-investable benchmark (MSCIWORLD, SP500) whose series is served straight
+// from its embedded total-return reconstruction rather than any live source.
+func isIndexAsset(canonical string) bool {
+	e, ok := catalogByID()[canonical]
+	return ok && e.Source == "index"
+}
+
+// fetchIndexAsset serves a catalog "index" benchmark from its embedded simdata
+// series (native currency, total return, gross of any fund fee), bypassing all
+// network resolution. Currency conversion and trimming happen in the caller,
+// exactly as for any other quote line, so the index composes with the rest of
+// the pipeline unchanged and is long by default (no SIM suffix needed).
+func (c *Client) fetchIndexAsset(canonical string, from time.Time, spec fetchSpec) (*Series, error) {
+	e := catalogByID()[canonical]
+	s, ok, err := ReadSimdataFS(datasets.Simdata(), canonical)
+	if err != nil {
+		return nil, fmt.Errorf("index %s: %w", canonical, err)
+	}
+	if !ok || len(s.Points) == 0 {
+		return nil, fmt.Errorf("index %s: no embedded reconstruction", canonical)
+	}
+	s.Name, s.Symbol, s.Source = e.Name, canonical, "index"
+	if s.Currency == "" {
+		s.Currency = e.Currency
+	}
+	if !spec.currencyOK(s.Currency) {
+		return nil, fmt.Errorf("index %s: quotes in %s, want %s: %w",
+			canonical, s.Currency, spec.wantCurrency, ErrWrongCurrency)
+	}
+	return Trim(s, from, time.Time{}), nil
 }
 
 // cachedResolutionHistory serves an identifier from its cached resolution,

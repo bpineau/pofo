@@ -13,17 +13,17 @@ func TestCanonicalID(t *testing.T) {
 		"BHMG":                    "GG00BQBFY362",
 		"VOO":                     "VOO", // not an alias
 		"IE00B4L5Y983":            "IE00B4L5Y983",
-		// MSCI World and S&P 500 have friendly index aliases, dashed and
-		// case-insensitive; the long history is one SIM suffix away.
-		"MSCIWORLD":   "IE00B4L5Y983",
-		"MSCI-WORLD":  "IE00B4L5Y983",
-		"msciworld":   "IE00B4L5Y983",
-		"msci-world":  "IE00B4L5Y983",
-		" MSCIWorld ": "IE00B4L5Y983",
-		"SP500":       "IE00BFMXXD54",
-		"SP-500":      "IE00BFMXXD54",
-		"sp500":       "IE00BFMXXD54",
-		"sp-500":      "IE00BFMXXD54",
+		// The fee-free index benchmarks resolve to their own catalog ids,
+		// dashed and case-insensitive; the investable ETFs keep separate ids.
+		"MSCIWORLD":   "MSCIWORLD",
+		"MSCI-WORLD":  "MSCIWORLD",
+		"msciworld":   "MSCIWORLD",
+		"msci-world":  "MSCIWORLD",
+		" MSCIWorld ": "MSCIWORLD",
+		"SP500":       "SP500",
+		"SP-500":      "SP500",
+		"sp500":       "SP500",
+		"sp-500":      "SP500",
 	}
 	for in, want := range cases {
 		if got := CanonicalID(in); got != want {
@@ -64,25 +64,25 @@ func TestCanonicalIndexNoConflicts(t *testing.T) {
 	}
 }
 
-// TestIndexAliasesResolve locks the friendly MSCI World and S&P 500 aliases
-// (and their long-history SIM forms) so a bare "MSCIWORLD"/"SP500" can never
-// again drift onto an unrelated fuzzy match. The base id owns simdata
-// (IE00B4L5Y983, IE00BFMXXD54), so the SIM suffix reaches the deep
-// reconstruction (MSCI World net TR ~1969, S&P 500 total return ~1871).
+// TestIndexAliasesResolve locks the fee-free index benchmarks and every
+// spelling (plain, dashed, lower-case, SIM) so a bare "MSCIWORLD"/"SP500" can
+// never again drift onto an unrelated fuzzy match. They are their own catalog
+// ids, served long by default from the embedded reconstruction, so the SIM
+// suffix is a harmless no-op that still resolves to the same id.
 func TestIndexAliasesResolve(t *testing.T) {
 	cases := map[string]struct {
 		base string
 		sim  bool
 	}{
-		"MSCIWORLD":     {"IE00B4L5Y983", false},
-		"MSCI-WORLD":    {"IE00B4L5Y983", false},
-		"msciworld":     {"IE00B4L5Y983", false},
-		"MSCIWORLDSIM":  {"IE00B4L5Y983", true},
-		"msci-worldsim": {"IE00B4L5Y983", true},
-		"SP500":         {"IE00BFMXXD54", false},
-		"SP-500":        {"IE00BFMXXD54", false},
-		"sp500sim":      {"IE00BFMXXD54", true},
-		"SP-500SIM":     {"IE00BFMXXD54", true},
+		"MSCIWORLD":     {"MSCIWORLD", false},
+		"MSCI-WORLD":    {"MSCIWORLD", false},
+		"msciworld":     {"MSCIWORLD", false},
+		"MSCIWORLDSIM":  {"MSCIWORLD", true},
+		"msci-worldsim": {"MSCIWORLD", true},
+		"SP500":         {"SP500", false},
+		"SP-500":        {"SP500", false},
+		"sp500sim":      {"SP500", true},
+		"SP-500SIM":     {"SP500", true},
 	}
 	for in, want := range cases {
 		base, sim := SplitSim(in)
