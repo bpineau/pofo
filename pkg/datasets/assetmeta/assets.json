@@ -6488,6 +6488,9 @@
   {
     "id": "LU1103257975",
     "isin": "LU1103257975",
+    "aliases": [
+      "AQFRAGA"
+    ],
     "name": "AQR Managed Futures UCITS Fund A USD",
     "ucits": true,
     "source": "ft",
