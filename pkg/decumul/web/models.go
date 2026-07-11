@@ -78,11 +78,20 @@ func Models(pr Params, panel *scenario.Panel) ModelsResult {
 	return res
 }
 
+// minPanelMonths is the least common history the data-driven columns accept:
+// below two years, resampling a handful of months manufactures absurd
+// full-length retirements (a few lucky months compounded 40 years), so the
+// Historical/Block-bootstrap columns are dropped rather than shown wrong.
+const minPanelMonths = 24
+
 // modelSources builds the ordered model set: the data-driven columns first (when
 // a panel and weights are available and the cohorts model has enough windows),
 // then the synthetic family from optimistic to conservative.
 func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 	var out []namedSource
+	if panel != nil && panel.Periods() < minPanelMonths {
+		panel = nil // too short to resample honestly
+	}
 	if panel != nil {
 		w := pr.Weights
 		if w == nil {

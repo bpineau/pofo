@@ -28,11 +28,15 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
 		meta := map[string]any{"labels": labels, "hasPanel": panel != nil, "cape": capeSnapshot(), "capeHistory": capeHistory()}
 		if panel != nil {
-			f := FitParametric(*panel, panel.Weights)
 			meta["weights"] = panel.Weights
-			meta["mu"] = f.Mu
-			meta["sigma"] = f.Sigma
-			meta["df"] = f.Df
+			meta["panelMonths"] = panel.Periods()
+			// A degenerate fit (panel too short) must not seed the sliders
+			// with zeros: omit the figures and let the UI keep its defaults.
+			if f := FitParametric(*panel, panel.Weights); f.Valid() {
+				meta["mu"] = f.Mu
+				meta["sigma"] = f.Sigma
+				meta["df"] = f.Df
+			}
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(meta)
@@ -49,9 +53,12 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		f := FitParametric(*panel, body.Weights)
+		out := map[string]float64{}
+		if f := FitParametric(*panel, body.Weights); f.Valid() {
+			out["mu"], out["sigma"], out["df"] = f.Mu, f.Sigma, f.Df
+		}
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(map[string]float64{"mu": f.Mu, "sigma": f.Sigma, "df": f.Df})
+		_ = json.NewEncoder(w).Encode(out)
 	})
 	// Every simulation endpoint shares the same shape: POST a Params, get a
 	// JSON result. post factors the boilerplate once.
@@ -79,6 +86,9 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	post("/api/solvemenu", func(pr Params) any { return SolveMenu(pr, panel) })
 	post("/api/solve", func(pr Params) any { return Solve(pr, panel) })
 	post("/api/spending", func(pr Params) any { return Spending(pr, panel) })
+	post("/api/decade", func(pr Params) any { return Decade(pr, panel) })
+	post("/api/vintages", func(pr Params) any { return Vintages(pr, panel) })
+	post("/api/income", func(pr Params) any { return Income(pr, panel) })
 	post("/api/lifecycle", func(pr Params) any { return Lifecycle(pr, panel) })
 	post("/api/curves", func(pr Params) any { return Curves(pr, panel) })
 	return mux
