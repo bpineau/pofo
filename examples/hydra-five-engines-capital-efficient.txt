@@ -30,6 +30,50 @@
 #   can reach and the whole point of the build: the diversifiers stack ON
 #   TOP of a full growth engine instead of being funded by shrinking it.
 #
+# ## Why embedded leverage, not external leverage
+#   The same ~148% book could be assembled from plain funds plus external
+#   financing: a margin/Lombard loan on the CTO, short box spreads, or a
+#   DIY futures overlay (hydra-five-engines-levered.txt backtests that
+#   route at the cash rate + 1%). Embedded stacking wins on five fronts:
+#   1. NO MARGIN CALL, EVER. External leverage is path-dependent: a deep
+#      drawdown raises the account's leverage ratio exactly when prices
+#      are lowest, and the broker (whose risk desk can also RAISE margin
+#      requirements overnight mid-crisis) forces sales at the bottom. A
+#      90/60 fund rebalances its own overlay internally; its NAV can
+#      drop, but the holder can never be liquidated out of the position.
+#      For a decumulation portfolio this is the decisive property:
+#      forced deleveraging at the low is sequence risk squared.
+#   2. LEVERAGE RATIO BEHAVIOR. A loan is a FIXED liability against a
+#      falling asset: leverage drifts UP in drawdowns (anti-convex, the
+#      dangerous direction) unless the investor actively deleverages at
+#      the worst moment. The funds keep notional ratios roughly constant
+#      by design, without the daily-reset volatility decay of 2x/3x ETFs.
+#   3. FINANCING RATE. Futures carry prices at ~T-bill, the wholesale
+#      rate. Retail margin runs benchmark +1 to +3%; only disciplined
+#      box-spread selling gets near ~+0.2-0.5%, and it must be re-rolled
+#      at maturity at whatever the new rate is, with options spreads and
+#      portfolio-margin requirements on top.
+#   4. TAX (French CTO). Margin interest is NOT deductible against PFU-
+#      taxed gains: a pure after-tax dead loss. A box spread's implicit
+#      interest at least realizes as an offsettable capital loss. Inside
+#      a fund, financing nets against returns BEFORE NAV, i.e. fully
+#      pre-tax, automatically. Embedded > box > margin, tax-wise.
+#   5. BALANCE SHEET AND OPERATIONS. Fund leverage is invisible to the
+#      investor's personal balance sheet: no debt line eating mortgage
+#      capacity (taux d'endettement), no rolls to execute, no expiries
+#      to diarize, nothing to mis-execute in a volatile week. The fund
+#      does daily, at institutional cost, what a retail investor does
+#      badly quarterly.
+#   Honest counterpoints: a well-run box-spread program costs about what
+#   the stacked funds' TER premium does (RSBT is the pricey one), so the
+#   case rests on points 1, 2, 4 and 5, not on raw cost; options and
+#   daily-reset leveraged ETFs DO charge an embedded-leverage premium
+#   (Frazzini & Pedersen, "Embedded Leverage", 2022), which is why only
+#   futures-overlay funds qualify for this build; and external leverage
+#   can lever ANY mix, including UCITS-only sleeves, while stacking only
+#   exists in the combinations issuers ship -- which is exactly why this
+#   file doubles as a watch list, and why the levered sibling exists.
+#
 # ## Why engines, and why these mechanics
 #
 # 1. DIVERSIFY ACROSS RETURN SOURCES. Combining lowly-correlated streams
