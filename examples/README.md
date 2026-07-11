@@ -89,21 +89,17 @@ rather than recomputing it (and drifting) on every run.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
-- `hydra-five-engines`: one head per return engine (efficient core, small
-  value, two trends, gold, deep duration); over 1988-2026 it beats the
-  dragon-lite blend on CAGR, vol, Sharpe, recovery time, worst rolling 5y
-  and every stress window (2000-02, 2008, 2022). The file doubles as the
-  design document: regime map, references, weight ranges, UCITS routes.
-- `hydra-five-engines-levered`: the same at 108% notional
-  (`#meta leverage:on`); buys the bull-market CAGR back at unchanged vol.
-  Accumulation-phase build.
+- `hydra-five-engines-ucits`: one head per return engine (efficient core,
+  small value, two trend models, gold, long duration), every line buyable
+  from an EU/French retail account; over 1988-2026 it matches the
+  dragon-lite blend on CAGR and beats it on vol, Sharpe, recovery time,
+  worst rolling 5y and every stress window (2000-02, 2008, 2022). The file
+  doubles as the design document: regime map, references, weight ranges,
+  blind spots.
 - `hydra-five-engines-capital-efficient`: the frontier build (~148% notional
-  via stacked funds: RSBT, GDE); +1.5 pts of CAGR over the buyable hydra but
+  via stacked funds: RSBT, GDE); +1.9 pts of CAGR over the buyable hydra but
   US-listed pieces an EU retail investor cannot buy. Research file, exposure
-  ledger, and UCITS watch list; the canonical rationale for the hydra family.
-- `hydra-all-weather-balanced`: the capital-efficient book re-weighted to
-  even out the four growth x inflation quadrants (adds a broad-commodity
-  head); documents only its deltas vs the capital-efficient parent.
+  ledger, alternatives-considered ledger, and UCITS watch list.
 
 ## Capital-efficient / return-stacking (modern)
 
