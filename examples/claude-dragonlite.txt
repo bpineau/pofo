@@ -82,13 +82,21 @@
 #   is behavioral (tracking-error regret) plus single-model prudence, not
 #   backtest (which happily takes 40%: in-sample flattery of the shared
 #   TSMOM backcast). KNOWN WEAKNESS: 25% on ONE manager and ONE method
-#   (DBi replication). The single best upgrade to this file is splitting
-#   it two ways, e.g. 13% DBMFE (LU2951555585, EUR share) + 12% AQR
-#   Managed Futures UCITS (LU1103257975, the standout live record
-#   2015-2026) -- at which point you are two thirds of the way to the
-#   hydra's trend sleeve. Rejected for the base build: WINTON-TREND-
-#   EQUITY (portable alpha, adds ~8 points of hidden equity), MFA8 (same
-#   DBi method as DBMFE, ESG-amputated commodities: not diversifying).
+#   (DBi replication); the robustness upgrade is splitting it two ways,
+#   e.g. 13% DBMFE (LU2951555585, EUR share) + 12% AQR Managed Futures
+#   UCITS (LU1103257975, the standout live record 2015-2026) -- at which
+#   point you are two thirds of the way to the hydra's trend sleeve.
+#   Rejected for the base build: WINTON-TREND-EQUITY (portable alpha,
+#   adds ~8 points of hidden equity), MFA8 (same DBi method as DBMFE,
+#   ESG-amputated commodities: not diversifying).
+#   NOTE, measured: the single highest-leverage EDIT to this file is not
+#   in this head at all. Swapping 12 points of NTSG into small-cap value
+#   (48/12/25/15 with ZPRV) erases most of the worst-5y gap to the hydra
+#   on its own (-1.7% -> 0.0%, recovery 5.2 -> 4.3y, modeled ruin at 4%
+#   0.7% -> 0.4%): value-in-small hedges the mega-growth-unwind regime
+#   the 54-point cap-weighted engine is exposed to (with the usual
+#   caveats: it is still equity beta, it made 2008 deeper, and the
+#   1999-2004 value run flatters it in this window).
 #
 # HEAD 3 -- gold (15%; sane range 10-20%).
 #   Near-zero expected real return alone (Erb & Harvey, "The Golden
