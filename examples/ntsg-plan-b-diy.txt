@@ -10,6 +10,7 @@
 #   60% bond futures, cash collateral).
 #meta leverage:on
 #meta rebalance:90
+#meta sim:on
 
-90    IWDASIM         # World equity (UCITS: IWDA IE00B4L5Y983)
-60    IEFSIM          # Intermediate Treasuries, the futures ladder proxy (UCITS route: global govt EUR-hedged)
+90    IWDA            # World equity (UCITS: IWDA IE00B4L5Y983)
+60    IEF             # Intermediate Treasuries, the futures ladder proxy (UCITS route: global govt EUR-hedged)

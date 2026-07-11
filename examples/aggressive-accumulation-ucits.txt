@@ -19,9 +19,10 @@
 #   Pareto-beats the even split (higher return, lower vol and drawdown).
 #   Drop "#meta optimize:risk-parity" on top to re-run the comparison.
 #meta rebalance:180
+#meta sim:on
 
-45    IWDASIM    # World core (IWDA)
-10    EIMISIM    # Emerging Markets (EIMI)
-15    ZPRVSIM         # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
+45    IWDA       # World core (IWDA)
+10    EIMI       # Emerging Markets (EIMI)
+15    ZPRV            # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 18    IWMO    # World Momentum (IWMO)
-12    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)
+12    KMLM            # Managed futures ballast (UCITS: iMGP DBi)

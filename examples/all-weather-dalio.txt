@@ -7,9 +7,10 @@
 # Backtest uses long US-treasury/gold history (SIM); UCITS buy-route: IDTL,
 #   IEF→IEGA, IGLN, ICOM.
 #meta rebalance:180
+#meta sim:on
 
-30    IWDASIM         # World equity (UCITS: IWDA)
-40    TLTSIM          # Long US Treasuries (UCITS: IDTL)
-15    IEFSIM          # Intermediate US Treasuries (UCITS: IEGA)
-7.5   GOLDSIM         # Gold (UCITS: IGLN)
-7.5   ICOMSIM    # Broad commodities (ICOM)
+30    IWDA            # World equity (UCITS: IWDA)
+40    TLT             # Long US Treasuries (UCITS: IDTL)
+15    IEF             # Intermediate US Treasuries (UCITS: IEGA)
+7.5   GOLD            # Gold (UCITS: IGLN)
+7.5   ICOM       # Broad commodities (ICOM)

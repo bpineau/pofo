@@ -5,9 +5,10 @@
 # Inspired by: dividend-growth / 'income floor' retirement approaches.
 # UCITS. Tilt to quality dividends to limit value traps.
 
+#meta sim:on
 20    VHYL    # FTSE All-World High Dividend (VHYL)
 15    WQDV    # World Quality Dividend (WQDV)
 15    ZPRG    # Global Dividend Aristocrats (ZPRG)
 10    IWDP    # Global REITs (IWDP)
 25    IEGA    # € Government Bond (IEGA)
-15    GOLDSIM    # Gold (IGLN)
+15    GOLD       # Gold (IGLN)

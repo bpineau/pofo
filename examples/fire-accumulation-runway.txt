@@ -11,8 +11,9 @@
 #meta capital:300000
 #meta contribute:4000/month
 #meta rebalance:180
+#meta sim:on
 
-70    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
-12    ZPRVSIM         # Small-cap value tilt (buy Avantis Global SCV IE0003R87OG3 or ZPRV)
-10    DBMFESIM        # Trend starter (iMGP DBi EUR, LU2951555403)
-8     XAUUSDSIM       # Gold starter (buy IGLN)
+70    NTSG            # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+12    ZPRV            # Small-cap value tilt (buy Avantis Global SCV IE0003R87OG3 or ZPRV)
+10    DBMFE           # Trend starter (iMGP DBi EUR, LU2951555403)
+8     XAUUSD          # Gold starter (buy IGLN)

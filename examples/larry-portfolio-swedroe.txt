@@ -6,6 +6,7 @@
 #   https://www.bogleheads.org/wiki/Larry_Swedroe
 # UCITS. The bond sleeve stays short/high-quality on purpose.
 
-30    ZPRVSIM         # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV (IE00BSPLC413)
+#meta sim:on
+30    ZPRV            # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV (IE00BSPLC413)
 50    IEGA    # € Government Bond (IEGA)
 20    ITPS    # TIPS (ITPS)

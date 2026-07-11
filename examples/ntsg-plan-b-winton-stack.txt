@@ -10,10 +10,11 @@
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90
+#meta sim:on
 
-50    WINTON-TREND-EQUITYSIM  # 100% world equity + 100% Winton trend (IE000O1VI174)
-22    TLTSIM          # Long Treasuries, the duration sleeve rebuilt (UCITS: IDTL IE00BSKRJZ44)
-12    XAUUSDSIM       # Gold (buy IGLN)
-8     CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN)
-4     TIP1ESIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E)
-4     XEONSIM    # EUR overnight cash (XEON)
+50    WINTON-TREND-EQUITY     # 100% world equity + 100% Winton trend (IE000O1VI174)
+22    TLT             # Long Treasuries, the duration sleeve rebuilt (UCITS: IDTL IE00BSKRJZ44)
+12    XAUUSD          # Gold (buy IGLN)
+8     CHSN    # Euro inflation-linked 1-10y (UBS CHSN)
+4     TIP1E    # $ TIPS 1-10 EUR-hedged (UBS TIP1E)
+4     XEON       # EUR overnight cash (XEON)

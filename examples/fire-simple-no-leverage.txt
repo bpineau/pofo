@@ -12,9 +12,10 @@
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:180
+#meta sim:on
 
-45    IWDASIM         # World equity (buy IWDA IE00B4L5Y983)
-20    IEFSIM          # 7-10y government bonds; buy euro govt IEGA IE00B4WXJJ64 (no euro-govt backcast yet, Treasuries stand in)
-15    CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN)
-12    GOLDSIM         # Gold (buy IGLN IE00B4ND3602)
-8     XEONSIM    # EUR overnight cash (XEON)
+45    IWDA            # World equity (buy IWDA IE00B4L5Y983)
+20    IEF             # 7-10y government bonds; buy euro govt IEGA IE00B4WXJJ64 (no euro-govt backcast yet, Treasuries stand in)
+15    CHSN    # Euro inflation-linked 1-10y (UBS CHSN)
+12    GOLD            # Gold (buy IGLN IE00B4ND3602)
+8     XEON       # EUR overnight cash (XEON)

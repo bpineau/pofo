@@ -6,9 +6,10 @@
 #meta capital:1000000
 #meta withdraw:4%/year
 #meta rebalance:180
+#meta sim:on
 
-50    IWDASIM    # World equity (IWDA)
-20    IDTLSIM    # Long Treasuries (IDTL)
+50    IWDA       # World equity (IWDA)
+20    IDTL       # Long Treasuries (IDTL)
 10    IEGA    # € Govt Bond (IEGA)
-10    GOLDSIM    # Gold (IGLN)
-10    ERNASIM    # Cash / ultrashort (ERNA)
+10    GOLD       # Gold (IGLN)
+10    ERNA       # Cash / ultrashort (ERNA)
