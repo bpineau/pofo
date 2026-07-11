@@ -407,6 +407,48 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 	}
 }
 
+func TestFetchTickerRejectsUnrelatedFuzzyMatch(t *testing.T) {
+	// Regression: a bare ticker with no exact listing anywhere must never
+	// adopt a fuzzy name-search hit that has nothing to do with it. FT's
+	// searchsecurities is a full-text search, so "MSCIWORLD" fuzzily matched
+	// "Fineco AM MSCI World Semiconductors …" (a wildly different instrument,
+	// symbol FAMMWS) and pofo served it, producing delirious statistics.
+	days := testDays(120)
+	closes := make([]float64, len(days))
+	for i := range closes {
+		closes[i] = 50 + float64(i) // deep, so depth alone would let it win
+	}
+	var ftDates, ftCloses []string
+	for i, d := range days {
+		ftDates = append(ftDates, fmt.Sprintf("%q", d.Format("2006-01-02T15:04:05")))
+		ftCloses = append(ftCloses, fmt.Sprintf("%g", closes[i]))
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/MSCIWORLD", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "not found", http.StatusNotFound)
+	})
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"quotes":[]}`)
+	})
+	mux.HandleFunc("/data/searchapi/searchsecurities", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"data":{"security":[{"name":"Fineco AM MSCI World Semiconductors and Semiconductor Equipment 20% Capped UCITS ETF A EUR Acc","symbol":"FAMMWS:MIL:EUR","xid":"99999","isPrimary":true}]}}`)
+	})
+	mux.HandleFunc("/data/chartapi/series", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{"Dates":[%s],"Elements":[{"Currency":"EUR","ComponentSeries":[{"Type":"Open","Values":[%s]},{"Type":"Close","Values":[%s]}]}]}`,
+			strings.Join(ftDates, ","), strings.Join(ftCloses, ","), strings.Join(ftCloses, ","))
+	})
+	mux.HandleFunc("/recherche/ajax", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, ``) // Boursorama knows nothing either.
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.Fetch(context.Background(), "MSCIWORLD", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	if err == nil {
+		t.Fatalf("expected no usable source, got %q (%s) with %d points", s.Name, s.Symbol, len(s.Points))
+	}
+}
+
 func TestFetchTickerUppercases(t *testing.T) {
 	days := testDays(2)
 	mux := http.NewServeMux()
