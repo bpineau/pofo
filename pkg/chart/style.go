@@ -23,6 +23,7 @@ type Style struct {
 	YTicks      int                  // number of y-label steps (approximate; default 6)
 	CornerDates bool                 // label only the first and last date, at the corners
 	TickFormat  func(float64) string // y-axis label formatter; see Compact
+	ZeroLabel   string               // Fan only: label of the bold zero baseline (default "ruin · 0")
 }
 
 // StyleMinimal returns the bare chart dialect: transparent background,
