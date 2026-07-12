@@ -37,6 +37,8 @@ type Params struct {
 	SideUntilYear  int       `json:"sideUntilYear"`  // side income runs until this year, exclusive
 	Guardrails     bool      `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
 	GKFloor        float64   `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
+	ABW            bool      `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
+	Bounded        bool      `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
 	Age            int       `json:"age"`            // age at year 0, for the mortality view (0 = 52)
 	PEACapital     float64   `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
 	AVCapital      float64   `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
@@ -120,6 +122,20 @@ func (pr Params) plan() decumul.Plan {
 	if pr.Percent > 0 {
 		p.Percent = pr.Percent
 	}
+	// Bounded percent-of-portfolio (Vanguard dynamic spending): the initial
+	// withdrawal rate as the target share, with the classic +5%/-2.5% yearly
+	// bounds on the real spending level.
+	if pr.Bounded && pr.Capital > 0 {
+		p.Bounded = decumul.BoundedPct{Pct: pr.NeedAnnual / pr.Capital, Up: 0.05, Down: 0.025}
+	}
+	// Amortization-based (ABW/TPAW): the assumed real return is the central
+	// case's GEOMETRIC return (mu - sigma^2/2; the CAPE-implied return when
+	// the valuation anchor is on), the honest compounding rate to amortize
+	// at. Takes priority over every other rule.
+	if pr.ABW {
+		p.Amortize = true
+		p.AmortReturn = pr.abwReturn()
+	}
 	// Partial annuitisation: spend a share of capital on a joint-life, real
 	// immediate annuity (1% real rate, 10% insurer load), hedging longevity. The
 	// premium leaves the portfolio; its lifelong income lowers the net need.
@@ -130,6 +146,18 @@ func (pr Params) plan() decumul.Plan {
 	p.SpendSchedule = pr.spendSchedule()
 	p.Envelopes = pr.envelopes()
 	return p
+}
+
+// abwReturn is the expected real return the amortization rule assumes: the
+// geometric central return (arithmetic mean minus the volatility drag), or
+// the CAPE-implied return when the valuation anchor is on. Floored at 0 so a
+// grim assumption degrades to straight-line spreading, never a negative
+// annuity.
+func (pr Params) abwReturn() float64 {
+	if pr.CapeAdjust {
+		return math.Max(0, capeSnapshot().ImpliedReal)
+	}
+	return math.Max(0, pr.Mu-pr.Sigma*pr.Sigma/2)
 }
 
 // annuityIncome is the lifelong yearly real income bought by the annuitised

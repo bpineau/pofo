@@ -144,3 +144,74 @@ func TestGuardrailsMonthlyStepped(t *testing.T) {
 		t.Errorf("12 monthly raises compound to %.4f, want 1.10", got)
 	}
 }
+
+// Amortization (ABW): with the assumed return realised exactly, the payment
+// is level and wealth lands on zero at the horizon, like a mortgage in
+// reverse; and whatever the market does, the rule can never ruin early.
+func TestAmortizeExactAndRuinFree(t *testing.T) {
+	const r, years = 0.03, 30
+	flat := make(scenario.Sequence, years)
+	for i := range flat {
+		flat[i] = r
+	}
+	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: years, Amortize: true, AmortReturn: r}
+	res := p.RunPath(flat)
+	if res.Ruined {
+		t.Fatalf("ABW must not ruin, got ruin at %d", res.RuinYear)
+	}
+	first, last := res.Spend[0], res.Spend[years-1]
+	if math.Abs(first-last) > 1 {
+		t.Errorf("with the assumed return realised, the payment must be level: %.2f vs %.2f", first, last)
+	}
+	if terminal := res.Wealth[years]; terminal > 1 {
+		t.Errorf("wealth must be exhausted at the horizon, %.2f left", terminal)
+	}
+	// A brutal market cuts the payments but never ruins.
+	crash := make(scenario.Sequence, years)
+	for i := range crash {
+		crash[i] = -0.10
+	}
+	res = p.RunPath(crash)
+	if res.Ruined {
+		t.Errorf("ABW must not ruin even in a relentless bear (ruin year %d)", res.RuinYear)
+	}
+	for k, s := range res.Spend {
+		if s <= 0 {
+			t.Fatalf("ABW spending must stay positive (year %d: %.2f)", k, s)
+		}
+	}
+}
+
+// Bounded percent-of-portfolio: yearly real spending never moves more than
+// +5%/-2.5%, and unlike VPW the rule can ruin in a deep persistent bear.
+func TestBoundedPct(t *testing.T) {
+	const years = 40
+	seq := make(scenario.Sequence, years)
+	for i := range seq {
+		seq[i] = 0.06
+		if i%7 < 2 {
+			seq[i] = -0.25 // recurring two-year bears
+		}
+	}
+	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: years,
+		Bounded: BoundedPct{Pct: 0.04, Up: 0.05, Down: 0.025}}
+	res := p.RunPath(seq)
+	for k := 1; k < years; k++ {
+		if res.Ruined && k >= res.RuinYear {
+			break
+		}
+		prev, cur := res.Spend[k-1], res.Spend[k]
+		if cur > prev*1.05+1e-6 || cur < prev*0.975-1e-6 {
+			t.Errorf("year %d: spending moved %.0f -> %.0f, outside the +5%%/-2.5%% bounds", k, prev, cur)
+		}
+	}
+	// A relentless bear must eventually ruin the bounded rule (the floor-like
+	// bounds keep spending high while wealth collapses).
+	crash := make(scenario.Sequence, years)
+	for i := range crash {
+		crash[i] = -0.20
+	}
+	if res := p.RunPath(crash); !res.Ruined {
+		t.Errorf("bounded rule should ruin in a relentless -20%%/yr bear")
+	}
+}

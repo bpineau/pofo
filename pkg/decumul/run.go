@@ -80,6 +80,7 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	peak := p.Capital
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
+	bounded := p.NeedAnnual          // last delivered level for the bounded-percent rule
 	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
 
 	// drawBuffer takes up to want euros from the buffer (no tax), returning the
@@ -111,7 +112,22 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		// spent with no flex cut and no guardrails move. Delivering less
 		// counts the year as "cut" (cutAt), whatever the cause.
 		var need, uncut float64
-		if p.Percent > 0 {
+		if p.Amortize {
+			// Amortization-based (ABW/TPAW): the actuarial payment exhausting
+			// the AFTER-TAX liquidation value over the remaining horizon (the
+			// gross wealth is not net-deliverable, so amortizing it would
+			// manufacture a fake final-years shortfall). uncut stays the
+			// fixed reference standard, so lean years count as lived cuts.
+			wNet := pks.liquidationNet() + buffer
+			need = math.Min(pmt(wNet, p.AmortReturn, p.Years-k), wNet*(1-1e-9))
+			uncut = p.needAt(k)
+		} else if p.Bounded.active() {
+			// Bounded percent-of-portfolio (Vanguard dynamic spending): target
+			// a share of wealth, move at most Up/Down from last year's level.
+			bounded = p.Bounded.clampStep(p.Bounded.Pct*total, bounded)
+			need = bounded
+			uncut = p.needAt(k)
+		} else if p.Percent > 0 {
 			// Percentage-of-portfolio (VPW): spend a fixed share of current
 			// wealth. uncut stays the fixed reference standard, so years where the
 			// rule delivers less than that count as a lived cut.

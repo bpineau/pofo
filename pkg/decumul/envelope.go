@@ -1,5 +1,7 @@
 package decumul
 
+import "math"
+
 // Envelope is one tax wrapper (a French CTO, PEA or assurance-vie) holding a
 // slice of the growth sleeve. Amounts are relative: the growth part of the
 // capital (after the buffer is carved out) is split across envelopes pro-rata,
@@ -193,6 +195,26 @@ func (ps pocketOps) settle(buffer float64) float64 {
 		}
 	}
 	return buffer
+}
+
+// liquidationNet previews the net proceeds of selling every pocket today,
+// without touching the real state: the amortization rule amortizes THIS
+// value, not the gross market value, because the gross is not deliverable
+// (the final actuarial payment would need a tax gross-up beyond what
+// exists). Stateful taxes are previewed on a fresh per-path clone; the
+// annual kernel prices needs before any sale of the year, so the fresh
+// allowance matches the real state.
+func (ps pocketOps) liquidationNet() float64 {
+	cp := make(pocketOps, len(ps))
+	for i, pk := range ps {
+		t := pk.tax
+		if yt, ok := t.(YearlyTax); ok {
+			t = yt.NewPath()
+		}
+		cp[i] = pocket{value: pk.value, cost: pk.cost, tax: t}
+	}
+	var tax float64
+	return cp.sell(math.MaxFloat64/4, &tax)
 }
 
 // newYear signals a year boundary to every stateful tax.
