@@ -25,15 +25,13 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 	if pr.Capital <= 0 || pr.NeedAnnual <= 0 {
 		return PolicyFrontierResult{Note: "set a capital and a spending floor"}
 	}
-	cMu, cSigma, cDf := centralParams(pr, panel)
-
 	// A clean baseline: the plan with every adaptive spending rule stripped, so
 	// each policy below is applied to the same fixed starting point on the same
-	// central return model.
+	// return model (the strip column the user selected, central by default).
 	bare := func() decumul.Plan {
 		p := fixedRule(pr.plan())
 		p.Monthly = false
-		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
+		p.Source = pr.detailSource(panel, pr.Years)
 		return p
 	}
 	wr := pr.NeedAnnual / pr.Capital
@@ -77,6 +75,6 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{
 		SVG:  svg,
-		Note: "Same plan, six spending rules, on the central model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
+		Note: "Same plan, six spending rules, under the selected return model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
 	}
 }

@@ -39,7 +39,7 @@
     <div class="eyebrow">Ruin probability · central case</div>
     <div class="big"><span class="n" id="ruinBig">·</span><span class="u">of futures fail</span></div>
     <span class="chip" id="ruinChip" hidden></span>
-    <div class="gauge" data-help="Your central-case ruin probability on a 0-to-max scale; the tick marks the tolerance you accept."><div class="fill" id="gaugeFill"></div><div class="lim" id="gaugeLim"></div></div>
+    <div class="gauge" data-help="The selected model's ruin probability on a 0-to-max scale; the tick marks the tolerance you accept. Click a column of the table to change the model."><div class="fill" id="gaugeFill"></div><div class="lim" id="gaugeLim"></div></div>
     <div class="gauge-l"><span>0%</span><span id="gaugeTol"></span><span id="gaugeMax"></span></div>
     <p id="verdict"></p>
     <div class="herobar">
@@ -138,7 +138,7 @@
       <div id="arbitrageSvg" class="chart-frame"></div>
       <div id="arbitrage2Svg" class="chart-frame"></div>
     </div>
-    <div id="recoverySvg" class="chart-frame"></div>
+    <div id="recoverySvg" class="chart-frame" data-help="Across the simulated futures: once the portfolio sets a new real high and then falls below it, how many years does it typically take to climb back? Each bar is the share of futures whose LONGEST such underwater spell lasted that many years; the 12y+ bar collects the long tail. Long spells are where flexibility rules and the cash buffer earn their keep."></div>
   </div>
 </section>
 
@@ -175,11 +175,22 @@
 <tr><td>Lost decade</td><td>your central μ, then dragged <i>below</i> it by the trough (deliberately not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>a very sticky decade-long deep bear (the Japan-1990 shape), the grimmest planning model</td></tr>
 </table>
 
+<p><b>Which model do the detail sections use? The one you click.</b> The hero table is the selector: click any column and every detail section of the page — spending, lifecycle, the decisive decade, income, the risk levers, the buffer arbitrage, the six-rule frontier — re-runs under that lens (the amber underline marks the active one; the fans of section 01 always show all four side by side). By default everything runs on the calibrated central case (the Student-t column).</p>
+
+<p><b>How much should you trust each column?</b> None of them is "the truth"; they bracket it:</p>
+<ul>
+<li><b>Historical windows / Block bootstrap</b> are the most faithful to <i>your assets</i> but the least faithful to <i>the future</i>: they can only recombine the one window your funds lived through, usually a favourable one, and a 20-year history contains not a single independent 45-year retirement. Read them as the optimistic bound.</li>
+<li><b>Student-t</b> is the planning default: your portfolio's fitted statistics, blended toward a cautious world prior, with fat tails. Its known blind spot is independence: real markets trend and cluster, so for long horizons it is mildly optimistic about sequence risk.</li>
+<li><b>Sequence stress</b> fixes exactly that blind spot (clustered bears at the same average). If you only stress one thing, stress this.</li>
+<li><b>Broad-sample</b> is the empirical century: everything that actually happened to a 60/40 investor across 16 countries, 1870-2020, including the disasters. It is the most honest single estimate of long-horizon risk for a passive allocation, and it is deliberately not about your specific portfolio.</li>
+<li><b>Lost decade</b> is a tail scenario, not a central estimate: plan so that it is survivable, not so that its number is low.</li>
+</ul>
+<p>Practical reading: plan between <b>Student-t and Broad-sample</b>; treat Sequence stress as the "am I robust to ordering?" check and Lost decade as the stress test.</p>
+
 <p><b>What each toggle really overrides:</b></p>
 <ul>
 <li><span class="kbd">broad-sample prior</span> just rewrites the three sliders with the cautious prior values. It changes the parameter-driven models and every detail section; it never touches the data-driven columns (they don't read sliders).</li>
 <li><span class="kbd">anchor to CAPE</span> replaces <i>only the central mean</i> with the valuation-implied return (1/CAPE, plus the volatility-drag correction). σ and df keep their fitted values; data-driven columns unchanged.</li>
-<li><span class="kbd">sequence-risk stress</span> does <b>not</b> replay a bad historical sequence: it switches the detail charts to the Markov bear-clustering model (the strip's Sequence-stress column always shows it). About one path in five <i>starts</i> inside a bear; none of it is scripted. The real named worst cases are section 02.</li>
 <li><span class="kbd">rising-equity glidepath</span> reshapes the central model's asset mix over time (30% equity gliding to 75%), trading return for early-years protection.</li>
 <li><span class="kbd">monthly withdrawals</span> refines the kernel's granularity and is visible only in sections 07-08; the model strip and analysis sections always compare annual kernels, for speed and comparability.</li>
 </ul>
@@ -216,7 +227,7 @@
 <li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 04 shows what enabling it costs in lived spending.</li>
 <li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case blends toward the broad-sample prior when the fund history is shorter than the horizon.</li>
 <li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean.</li>
-<li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the cheaper French multi-envelope sequencing.</li>
+<li><b>Taxes.</b> Every sale is grossed up at your rate on the gain share only, so the effective burden starts low and drifts up as unrealised gains compound; set the slider to your blended rate across accounts.</li>
 <li><b>Mortality.</b> The ruin figures ignore death by default; section 05 shows the mortality-weighted picture.</li>
 </ul>
 <p>For a life plan, read the pessimistic columns, keep the horizon past your life expectancy, and treat the ruin figures as ordinal (compare scenarios, don't trust decimals).</p>

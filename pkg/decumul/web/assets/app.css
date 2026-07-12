@@ -52,10 +52,13 @@ h2{margin:0;font-weight:600;text-wrap:balance}
 /* ---- settings drawer -------------------------------------------------------- */
 .drawer{border-bottom:1px solid var(--line-strong);background:linear-gradient(#1a150e,#141009)}
 .drawer[hidden]{display:none}
+/* Masonry-style columns: groups of very different heights (Spending policy
+   grew tall) pack without leaving a grid row's worth of dead space. */
 #controls{max-width:1360px;margin:0 auto;padding:1.1rem clamp(1rem,2.2vw,2rem) 1.4rem;
-  display:grid;grid-template-columns:repeat(4,1fr);gap:.7rem 1.5rem}
-@media (max-width:1080px){#controls{grid-template-columns:1fr 1fr}}
-@media (max-width:620px){#controls{grid-template-columns:1fr}}
+  columns:4;column-gap:1.5rem}
+#controls .group{break-inside:avoid;margin-bottom:1rem}
+@media (max-width:1080px){#controls{columns:2}}
+@media (max-width:620px){#controls{columns:1}}
 
 .group{display:flex;flex-direction:column;gap:.5rem;min-width:0}
 .group .group-h{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.12em;
@@ -106,8 +109,10 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 
 /* ---- page + planbar --------------------------------------------------------- */
 .page{max-width:1360px;margin:0 auto;padding:0 clamp(1rem,2.2vw,2rem) 3rem}
+/* #planbar sits at body level: no negative bleed margins here (they widen
+   the page past the viewport and summon a horizontal scrollbar). */
 #planbar{position:sticky;top:52px;z-index:40;display:flex;align-items:center;gap:1rem;
-  margin:0 calc(-1*clamp(1rem,2.2vw,2rem));padding:.5rem clamp(1rem,2.2vw,2rem);
+  padding:.5rem clamp(1rem,2.2vw,2rem);min-width:0;
   background:rgba(19,15,10,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line-strong)}
 #planbar[hidden]{display:none}
 #planbar .brand{font-size:.78rem}
@@ -160,6 +165,9 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .modeltab thead th{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
   color:var(--muted);cursor:help;border-bottom:1px solid var(--line-strong)}
 .modeltab thead th.sel{color:var(--accent);border-bottom:2px solid var(--accent)}
+/* the strip is the model selector: columns are clickable */
+.modeltab thead th[data-model]{cursor:pointer}
+.modeltab thead th[data-model]:hover{color:var(--ink)}
 .modeltab tbody th{text-align:left;font-weight:500;color:var(--ink-soft);font-size:.74rem;cursor:help}
 .modeltab tbody td{color:var(--ink);border-bottom:1px solid var(--line);
   font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:.82rem}

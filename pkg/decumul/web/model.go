@@ -39,6 +39,7 @@ type Params struct {
 	GKFloor        float64   `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
 	ABW            bool      `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
 	Bounded        bool      `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
+	Central        string    `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
 	Age            int       `json:"age"`            // age at year 0, for the mortality view (0 = 52)
 	PEACapital     float64   `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
 	AVCapital      float64   `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
@@ -92,7 +93,7 @@ func (pr Params) plan() decumul.Plan {
 		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
-		Monthly:    pr.Monthly && !pr.Regime, // the regime source is annual
+		Monthly:    pr.Monthly && pr.monthlyCapable(), // regime/pooled sources are annual
 	}
 	if pr.PensionAnnual > 0 {
 		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: pr.PensionYear, Annual: pr.PensionAnnual})
@@ -233,39 +234,56 @@ func (pr Params) envelopes() []decumul.Envelope {
 	return out
 }
 
-// source picks the return model. With a non-nil (monthly) panel and a
-// non-parametric Model, it resamples that panel at monthly frequency under
-// the live weights and compounds to annual; otherwise it falls back to the
-// annual parametric source.
-func (pr Params) source(panel *scenario.Panel) scenario.Source {
-	months := pr.Years * 12
-	if panel != nil && pr.Weights != nil {
-		var inner scenario.Source
-		switch pr.Model {
-		case "bootstrap":
-			inner = scenario.StationaryBootstrap{Panel: *panel, Weights: pr.Weights, MeanBlock: 24, Periods: months}
-		case "cohorts":
-			inner = scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: months}
-		}
-		if inner != nil {
-			if pr.Monthly {
-				return inner // the monthly kernel consumes the monthly source directly
-			}
-			return scenario.Compounded{Inner: inner, Group: 12}
-		}
+// central resolves the selected strip column, mapping the legacy params
+// (the old regime checkbox and the bootstrap/cohorts model selector) onto
+// the unified selection so old shared URLs keep meaning the same thing.
+func (pr Params) central() string {
+	if pr.Central != "" {
+		return pr.Central
 	}
 	if pr.Regime {
-		// Stress regimes: a mean-preserving two-state Markov source (annual)
-		// where bad years cluster, preserving the target long-run mean so the
-		// stress measures sequence risk only, not a secretly lower expected return.
-		return scenario.NewMarkovRegime(pr.Mu, pr.Sigma, pr.Df, pr.Years)
+		return "stress"
 	}
-	if pr.Monthly {
+	switch pr.Model {
+	case "bootstrap":
+		return "boot"
+	case "cohorts":
+		return "hist"
+	}
+	return ""
+}
+
+// monthlyCapable reports whether the selected model can feed the monthly
+// kernel (only the parametric central and the panel models have a monthly
+// form; the regime and pooled sources are annual).
+func (pr Params) monthlyCapable() bool {
+	switch pr.central() {
+	case "", "hist", "boot":
+		return true
+	}
+	return false
+}
+
+// source picks the return model for the /api/sim views: the selected strip
+// column (detailSource), except that a monthly plan gets a monthly-frequency
+// source when the selection has one (the panel models resampled monthly, or
+// monthly i.i.d. parametric draws compounding to the annual mu/sigma).
+func (pr Params) source(panel *scenario.Panel) scenario.Source {
+	months := pr.Years * 12
+	if pr.Monthly && panel != nil && pr.Weights != nil {
+		switch pr.central() {
+		case "boot":
+			return scenario.StationaryBootstrap{Panel: *panel, Weights: pr.Weights, MeanBlock: 24, Periods: months}
+		case "hist":
+			return scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: months}
+		}
+	}
+	if pr.Monthly && pr.central() == "" {
 		// Monthly i.i.d. parametric draws that compound to the annual mu/sigma.
 		return scenario.ParametricSource{
 			Mu: math.Pow(1+pr.Mu, 1.0/12) - 1, Sigma: pr.Sigma / math.Sqrt(12), Df: pr.Df, Periods: months}
 	}
-	return scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}
+	return pr.detailSource(panel, pr.Years)
 }
 
 // Compute runs the parametric model (no panel).
