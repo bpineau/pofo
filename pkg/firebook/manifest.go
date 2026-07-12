@@ -46,6 +46,8 @@ var Categories = []Category{
 			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des plaquettes ne sont pas vivables, et la cascade qui mène au taux de retrait."},
 			{"anarkulova-cederburg", "Au-delà des États-Unis : Anarkulova, Cederburg et l'échantillon mondial", "Le taux de retrait recalculé sur le siècle entier des pays développés, ses chiffres qui dérangent, et ses critiques."},
 			{"valorisations-et-cape", "Les valorisations (CAPE) et ce qu'elles disent du taux de retrait", "Le meilleur prédicteur connu du sort d'un millésime : définition, chiffres, critiques, et les quatre usages légitimes dans un plan."},
+			{"rendements-attendus", "Les rendements attendus prospectifs", "Construire un μ défendable : building blocks, les fourchettes de Vanguard à GMO, la précision réelle, et comment ne pas empiler les prudences."},
+			{"horizon-et-esperance-de-vie", "Horizon, espérance de vie et retraites de 50 ans", "Le bon quantile de survie, la courbe taux-horizon qui s'aplatit, la ruine pondérée par la mortalité, et la phase à découvert."},
 			{"serie-ern", "La série Safe Withdrawal Rate d'ERN : guide de lecture", "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
 		},
 	},
