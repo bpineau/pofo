@@ -215,3 +215,36 @@ func TestBoundedPct(t *testing.T) {
 		t.Errorf("bounded rule should ruin in a relentless -20%%/yr bear")
 	}
 }
+
+// The wealth-based rules set the HOUSEHOLD budget: active cashflows fund it
+// first and only the remainder leaves the portfolio, like the fixed rule.
+func TestWealthRulesNetCashflows(t *testing.T) {
+	flat := make(scenario.Sequence, 10)
+	base := Plan{Capital: 100000, NeedAnnual: 5000, Years: 10,
+		Cashflows: []Cashflow{{FromYear: 0, Annual: 2000}}}
+
+	vpw := base
+	vpw.Percent = 0.05 // budget 5000, pension 2000 -> portfolio delivers 3000
+	if got := vpw.RunPath(flat).Spend[0]; math.Abs(got-3000) > 1 {
+		t.Errorf("VPW year-0 portfolio draw = %.0f, want 3000 (5000 budget - 2000 pension)", got)
+	}
+
+	bd := base
+	bd.Bounded = BoundedPct{Pct: 0.05, Up: 0.05, Down: 0.025}
+	if got := bd.RunPath(flat).Spend[0]; math.Abs(got-3000) > 1 {
+		t.Errorf("bounded year-0 portfolio draw = %.0f, want 3000", got)
+	}
+
+	// ABW folds the PV of future cashflows into the amortized wealth: with a
+	// lifelong pension the year-0 budget exceeds the no-pension one by about
+	// the pension (portfolio draw stays near the no-pension payment).
+	abw := base
+	abw.Amortize, abw.AmortReturn = true, 0.02
+	noPension := abw
+	noPension.Cashflows = nil
+	with := abw.RunPath(flat).Spend[0]
+	without := noPension.RunPath(flat).Spend[0]
+	if math.Abs(with-without) > 200 {
+		t.Errorf("ABW portfolio draw with a lifelong pension = %.0f, want ~%.0f (budget rises by ~the pension, netting removes it)", with, without)
+	}
+}
