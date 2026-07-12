@@ -57,6 +57,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"monte-carlo-forces-faiblesses", "Monte-Carlo : forces, faiblesses, bon usage", "La machine derrière toutes les probabilités de ruine : comment elle marche, ses quatre faiblesses structurelles, et les huit règles du bon usage."},
 			{"historique-vs-parametrique", "Fenêtres historiques, bootstrap, paramétrique : trois familles de modèles", "D'où viennent les futurs simulés, quelle question chaque famille sait vraiment traiter, et que faire de leurs désaccords."},
+			{"queues-epaisses", "Queues épaisses, crises et Student-t", "Pourquoi les marchés produisent dix fois trop de catastrophes pour la courbe en cloche, et ce que le curseur df décide vraiment."},
+			{"lire-un-fan-chart", "Lire un fan chart et des percentiles sans se tromper", "L'anatomie du cône de richesse, sa géométrie qui parle, les cinq erreurs de lecture classiques et les autres éventails de la page."},
 		},
 	},
 }
