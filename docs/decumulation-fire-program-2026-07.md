@@ -67,19 +67,32 @@ for the full critique. Highlights:
   horizon, JST-16 disaster-heavy pool); anchors locked in
   `broadsample_test.go`. Vintages (§02) stay pure equity, labelled.
 
+## Shipped (2026-07-12 clarity + interaction drop)
+
+- **The market each model imagines** (§01 first row): growth-of-1 fans per
+  model + bear-texture captions (`/api/market`); an average path would hide
+  the crashes, individual draws + cones show them.
+- **Hover/crosshair layer** on every chart: Fan/MultiLine/StackedArea embed
+  their data as SVG metadata, one delegated JS handler snaps a hairline and
+  lists every series at that x; Bars/Scatter/CategoryBars carry native
+  titles with oversized hit targets.
+- **Ruin causes by trajectory shape** (`decumul.RuinShapes`: crash / grind /
+  longevity by wealth-path shape) replacing the timing proxy in the view.
+- **Solvency-conditional spending CV** on the policy frontier; scatter label
+  deconfliction; spending-fan markers (pension start, side income end).
+- **In-product explanations**: 'How this machine works' fold (model wiring
+  table, toggle scopes, mechanics FAQ), rewritten df/monthly/stress hovers,
+  fan axis capped at 10x start, M€ formats, 60/40 broad-sample column.
+
 ## Remaining
 
-- **E (remaining) — chart-system reskin.** The new primitives (Gauge, Scatter,
-  CategoryBars) match the mock; the older charts (Fan, StackedArea, Bars,
-  Frontier) are competent but could get the same finish pass. Lower priority:
-  the page frame already equals the mock's system.
-- **Hover/crosshair layer** on the live web charts (vanilla JS), promised in
-  the terminal-redesign doc, still pending.
-- **Refinements.** RuinTiming is a timing proxy for cause; a wealth-trajectory
-  classifier (crash depth vs grind) would be more precise. The frontier's
-  spending-CV for the fixed rule is inflated by post-ruin zeros; a
-  solvency-conditional CV would separate ruin from lifestyle swing more cleanly.
-  The §04 spending fan could show the pension overlay more explicitly.
+- **E (remaining) — chart-system reskin.** The older charts (Fan,
+  StackedArea, Bars, Frontier) could get the same proportion/margin finish
+  pass as the newer primitives. Lower priority: the page frame already
+  equals the mock's system.
+- Keyboard-focus parity for the chart tooltips (hover-only today); a table
+  view of the chart data for the accessibility-strict reading of the
+  dataviz spec.
 
 ## Design mock
 
