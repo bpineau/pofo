@@ -45,6 +45,7 @@ var Categories = []Category{
 			{"ruine-et-probabilites", "La probabilité de ruine : la lire, la choisir, ne pas la subir", "Ce que mesure vraiment le chiffre des simulateurs, comment choisir son seuil, et pourquoi les décimales mentent."},
 			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des plaquettes ne sont pas vivables, et la cascade qui mène au taux de retrait."},
 			{"anarkulova-cederburg", "Au-delà des États-Unis : Anarkulova, Cederburg et l'échantillon mondial", "Le taux de retrait recalculé sur le siècle entier des pays développés, ses chiffres qui dérangent, et ses critiques."},
+			{"valorisations-et-cape", "Les valorisations (CAPE) et ce qu'elles disent du taux de retrait", "Le meilleur prédicteur connu du sort d'un millésime : définition, chiffres, critiques, et les quatre usages légitimes dans un plan."},
 			{"serie-ern", "La série Safe Withdrawal Rate d'ERN : guide de lecture", "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
 		},
 	},
