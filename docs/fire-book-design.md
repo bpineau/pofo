@@ -118,8 +118,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
 
 ### IV. Les strategies de retrait
-- [ ] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
-- [ ] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
+- [x] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
+- [x] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
 - [ ] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
 - [ ] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
 - [ ] vpw: VPW, le retrait a pourcentage variable des Bogleheads
