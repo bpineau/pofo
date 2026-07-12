@@ -94,6 +94,19 @@ for the full critique. Highlights:
   (`Guardrails.stepped`): monthly evaluation at (1-c)^12 == 1-Cut, no
   anniversary-date lottery. Annual kernel keeps the yearly G-K cadence.
 
+## Shipped (2026-07-12, feedback batch)
+
+- **The strip is the model selector**: click a column, every detail section
+  re-runs under that lens (Params.Central + detailSource unify the old
+  regime checkbox and parametric/bootstrap/cohorts selector); realism
+  ladder in the fold.
+- Wealth-based rules net cashflows (household-budget semantics; ABW folds
+  the PV of future pensions in, the TPAW treatment): fixes Bounded % looking
+  inert next to ABW.
+- One generic tax slider (envelopes stay in the library); drawer masonry +
+  scroll-on-open; planbar overflow fixed; nPaths default 4000; TPAW spelled
+  out; recovery-histogram hover.
+
 ## Remaining
 
 - **E (remaining) — chart-system reskin.** The older charts (Fan,
