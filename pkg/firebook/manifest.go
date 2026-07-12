@@ -31,6 +31,7 @@ var Categories = []Category{
 			{"fire-cest-quoi", "Le FIRE, c'est quoi ?", "Histoire, variantes (Lean, Fat, Barista, Coast), ordres de grandeur : la carte d'entrée du sujet."},
 			{"la-regle-des-4-pourcents", "La règle des 4 % en dix minutes", "D'où elle vient, ce qu'elle dit exactement, et pourquoi ce n'est qu'un point de départ."},
 			{"combien-il-vous-faut", "Combien il vous faut", "Du budget annuel au capital cible : 25x, 28x, 33x, et tout ce qui fait bouger le multiple."},
+			{"les-trois-phases", "Accumulation, transition, retrait : les trois vies d'un plan FIRE", "Ce qui change à chaque phase, ce qu'il faut y optimiser, et les gestes de passage."},
 			{"erreurs-classiques-fire", "Les dix erreurs qui ruinent un plan FIRE", "Les pièges les plus fréquents, du taux irréaliste à l'oubli de la fiscalité, et comment les éviter."},
 		},
 	},
@@ -40,6 +41,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"etude-trinity", "Bengen, l'étude Trinity et la naissance du taux de retrait sûr", "Les études fondatrices de 1994-1998 : ce qu'elles ont montré, et ce qu'on leur fait dire à tort."},
 			{"sequence-des-rendements", "Le risque de séquence : le vrai ennemi du retraité", "Pourquoi deux retraités avec le même rendement moyen finissent l'un riche, l'autre ruiné."},
+			{"ruine-et-probabilites", "La probabilité de ruine : la lire, la choisir, ne pas la subir", "Ce que mesure vraiment le chiffre des simulateurs, comment choisir son seuil, et pourquoi les décimales mentent."},
+			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des plaquettes ne sont pas vivables, et la cascade qui mène au taux de retrait."},
 		},
 	},
 }
