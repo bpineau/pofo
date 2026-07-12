@@ -107,15 +107,15 @@ for the full critique. Highlights:
   scroll-on-open; planbar overflow fixed; nPaths default 4000; TPAW spelled
   out; recovery-histogram hover.
 
-## Remaining
+## Shipped (2026-07-12, backlog close-out)
 
-- **E (remaining) — chart-system reskin.** The older charts (Fan,
-  StackedArea, Bars, Frontier) could get the same proportion/margin finish
-  pass as the newer primitives. Lower priority: the page frame already
-  equals the mock's system.
-- Keyboard-focus parity for the chart tooltips (hover-only today); a table
-  view of the chart data for the accessibility-strict reading of the
-  dataviz spec.
+- Chart finish pass: line-stroke legend keys, direct end labels on 2-4
+  named series (deconflicted, ink text + colored key), fan median label.
+- Keyboard parity + table view: focusable charts, arrow-key crosshair,
+  T/Enter or the per-chart data button opens a modal table built from the
+  embedded hover payload (discrete charts embed rows+series for it).
+
+## Remaining
 - SOTA rules: ABW/TPAW and Vanguard bounded % SHIPPED 2026-07-12 (six-rule
   frontier; ABW amortizes the after-tax liquidation value via
   pocketOps.liquidationNet). Still open: a CAPE-conditioned spending rule
