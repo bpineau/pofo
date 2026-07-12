@@ -7,7 +7,7 @@ var assets embed.FS
 
 // Article is one page of the book.
 type Article struct {
-	Slug  string // file name (assets/book/<slug>.md) and URL path
+	Slug  string // file name (assets/book/fr/<slug>.md) and URL path
 	Title string // display title (the page h1; the in-file # line is dropped)
 	Blurb string // one-line teaser shown on the index page
 }

@@ -23,7 +23,7 @@ func plannedSet(t *testing.T) map[string]bool {
 }
 
 func TestManifestMatchesFiles(t *testing.T) {
-	files, err := assets.ReadDir("assets/book")
+	files, err := assets.ReadDir("assets/book/fr")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -31,7 +31,7 @@ func TestManifestMatchesFiles(t *testing.T) {
 	for _, f := range files {
 		slug, ok := strings.CutSuffix(f.Name(), ".md")
 		if !ok {
-			t.Errorf("assets/book/%s: not a .md file", f.Name())
+			t.Errorf("assets/book/fr/%s: not a .md file", f.Name())
 			continue
 		}
 		onDisk[slug] = true
@@ -39,12 +39,12 @@ func TestManifestMatchesFiles(t *testing.T) {
 	inManifest := Titles()
 	for slug := range inManifest {
 		if !onDisk[slug] {
-			t.Errorf("manifest lists %q but assets/book/%s.md does not exist", slug, slug)
+			t.Errorf("manifest lists %q but assets/book/fr/%s.md does not exist", slug, slug)
 		}
 	}
 	for slug := range onDisk {
 		if _, ok := inManifest[slug]; !ok {
-			t.Errorf("assets/book/%s.md exists but is not in the manifest", slug)
+			t.Errorf("assets/book/fr/%s.md exists but is not in the manifest", slug)
 		}
 	}
 	set := plannedSet(t)
@@ -61,7 +61,7 @@ func TestArticles(t *testing.T) {
 	set := plannedSet(t)
 	for _, cat := range Categories {
 		for _, a := range cat.Articles {
-			raw, err := assets.ReadFile("assets/book/" + a.Slug + ".md")
+			raw, err := assets.ReadFile("assets/book/fr/" + a.Slug + ".md")
 			if err != nil {
 				t.Errorf("%s: %v", a.Slug, err)
 				continue
