@@ -73,6 +73,16 @@ func Bars(opt Options, bars []Bar) string {
 		}
 		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle" fill="`+themeMuted+`">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
 	}
+	// Table-view payload: the bars as label/value rows (no crosshair; the
+	// per-mark titles carry the hover).
+	hm := hoverMeta{Kind: "bars", YLabel: opt.Title}
+	vals := hoverSeries{Name: "value"}
+	for _, b := range bars {
+		hm.Rows = append(hm.Rows, b.Label)
+		vals.Ys = append(vals.Ys, b.Value)
+	}
+	hm.Series = append(hm.Series, vals)
+	sb.WriteString(hoverBlock(hm))
 	sb.WriteString(`</svg>`)
 	return finish(sb.String())
 }

@@ -14,15 +14,19 @@ import (
 // data. Discrete-mark charts (Bars, Scatter, CategoryBars) do not use it;
 // they carry a native <title> per mark instead.
 type hoverMeta struct {
-	Kind   string        `json:"kind"` // "line" (explicit xs) | "fan" | "stack" (x = index)
-	X0     float64       `json:"x0"`   // plot box, viewBox pixels
-	X1     float64       `json:"x1"`
-	Y0     float64       `json:"y0"`
-	Y1     float64       `json:"y1"`
-	Xmin   float64       `json:"xmin"` // x domain mapped onto [X0, X1]
-	Xmax   float64       `json:"xmax"`
+	// Kind: "line" (explicit xs), "fan"/"stack" (x = the 0..n-1 index), or
+	// "bars"/"cat"/"scatter" (discrete marks: no crosshair, native titles
+	// carry the hover; the payload only feeds the table view).
+	Kind   string        `json:"kind"`
+	X0     float64       `json:"x0,omitempty"` // plot box, viewBox pixels (continuous kinds)
+	X1     float64       `json:"x1,omitempty"`
+	Y0     float64       `json:"y0,omitempty"`
+	Y1     float64       `json:"y1,omitempty"`
+	Xmin   float64       `json:"xmin,omitempty"` // x domain mapped onto [X0, X1]
+	Xmax   float64       `json:"xmax,omitempty"`
 	XLabel string        `json:"xlabel,omitempty"`
 	YLabel string        `json:"ylabel,omitempty"`
+	Rows   []string      `json:"rows,omitempty"` // row labels of discrete kinds
 	Series []hoverSeries `json:"series"`
 }
 

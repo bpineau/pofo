@@ -16,4 +16,5 @@
 <circle cx="459.5" cy="298.6" r="6" fill="#0B7285"><title>VPW · vol 18.00 · ruin 1.00</title></circle>
 <text x="111.8" y="88.7" font-size="12" fill="#16181D" text-anchor="start">Fixed</text>
 <text x="448.5" y="288.6" font-size="12" fill="#16181D" text-anchor="end">VPW</text>
+<metadata class="hover">{"kind":"scatter","xlabel":"vol","ylabel":"ruin","rows":["Fixed","VPW"],"series":[{"name":"vol","ys":[2,18]},{"name":"ruin","ys":[14,1]}]}</metadata>
 </svg>

@@ -160,6 +160,10 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64, mar
 			linePath(med, xAt, yAt))
 		if k := len(med) - 1; k >= 0 {
 			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3" fill="`+themeInk+`"/>`+"\n", xAt(k), yAt(med[k]))
+			// Direct label on the one emphasized line, so the dark stroke
+			// never needs a legend.
+			fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="11" fill="`+themeInkSoft+`" text-anchor="end">median</text>`+"\n",
+				xAt(k)-7, yAt(med[k])-7)
 		}
 	}
 	if clipped {
