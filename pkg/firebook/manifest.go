@@ -32,6 +32,7 @@ var Categories = []Category{
 			{"la-regle-des-4-pourcents", "La règle des 4 % en dix minutes", "D'où elle vient, ce qu'elle dit exactement, et pourquoi ce n'est qu'un point de départ."},
 			{"combien-il-vous-faut", "Combien il vous faut", "Du budget annuel au capital cible : 25x, 28x, 33x, et tout ce qui fait bouger le multiple."},
 			{"les-trois-phases", "Accumulation, transition, retrait : les trois vies d'un plan FIRE", "Ce qui change à chaque phase, ce qu'il faut y optimiser, et les gestes de passage."},
+			{"utiliser-la-page-fire", "Utiliser la page FIRE de pofo", "Le mode d'emploi complet : les sections dans l'ordre de lecture, chaque contrôle du tiroir, et les mésusages classiques."},
 			{"erreurs-classiques-fire", "Les dix erreurs qui ruinent un plan FIRE", "Les pièges les plus fréquents, du taux irréaliste à l'oubli de la fiscalité, et comment les éviter."},
 		},
 	},
@@ -43,6 +44,8 @@ var Categories = []Category{
 			{"sequence-des-rendements", "Le risque de séquence : le vrai ennemi du retraité", "Pourquoi deux retraités avec le même rendement moyen finissent l'un riche, l'autre ruiné."},
 			{"ruine-et-probabilites", "La probabilité de ruine : la lire, la choisir, ne pas la subir", "Ce que mesure vraiment le chiffre des simulateurs, comment choisir son seuil, et pourquoi les décimales mentent."},
 			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des plaquettes ne sont pas vivables, et la cascade qui mène au taux de retrait."},
+			{"anarkulova-cederburg", "Au-delà des États-Unis : Anarkulova, Cederburg et l'échantillon mondial", "Le taux de retrait recalculé sur le siècle entier des pays développés, ses chiffres qui dérangent, et ses critiques."},
+			{"serie-ern", "La série Safe Withdrawal Rate d'ERN : guide de lecture", "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
 		},
 	},
 }
