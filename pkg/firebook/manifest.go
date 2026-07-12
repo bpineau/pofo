@@ -51,6 +51,14 @@ var Categories = []Category{
 			{"serie-ern", "La série Safe Withdrawal Rate d'ERN : guide de lecture", "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
 		},
 	},
+	{
+		Title: "Modéliser : Monte-Carlo et autres machines",
+		Blurb: "Comprendre les simulateurs de l'intérieur : ce qu'ils savent faire, ce qu'ils inventent, et comment les lire.",
+		Articles: []Article{
+			{"monte-carlo-forces-faiblesses", "Monte-Carlo : forces, faiblesses, bon usage", "La machine derrière toutes les probabilités de ruine : comment elle marche, ses quatre faiblesses structurelles, et les huit règles du bon usage."},
+			{"historique-vs-parametrique", "Fenêtres historiques, bootstrap, paramétrique : trois familles de modèles", "D'où viennent les futurs simulés, quelle question chaque famille sait vraiment traiter, et que faire de leurs désaccords."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the

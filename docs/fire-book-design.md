@@ -109,8 +109,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
 
 ### III. Modeliser : Monte-Carlo et autres machines
-- [ ] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
-- [ ] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
+- [x] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
+- [x] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
 - [ ] queues-epaisses: Queues epaisses, crises et Student-t
 - [ ] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
 - [ ] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
