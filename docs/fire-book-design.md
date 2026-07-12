@@ -113,9 +113,9 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
 - [x] queues-epaisses: Queues epaisses, crises et Student-t
 - [x] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
-- [ ] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
-- [ ] rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
-- [ ] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
+- [x] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
+- [x] rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
+- [x] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
 
 ### IV. Les strategies de retrait
 - [ ] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
