@@ -104,8 +104,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] rendements-arithmetiques-geometriques: Moyenne arithmetique, moyenne geometrique et volatility drag
 - [x] anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
 - [x] valorisations-et-cape: Les valorisations (CAPE) et ce qu'elles disent du taux de retrait
-- [ ] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
-- [ ] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
+- [x] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
+- [x] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
 - [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
 
 ### III. Modeliser : Monte-Carlo et autres machines
