@@ -55,6 +55,10 @@ const GROUPS = [
       "Blanchett's observed shape: real spending drifts down through the go-go years, plateaus, then climbs back with late-life health costs."),
     r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
       "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier; overrides the fixed need and the flex/guardrails/ratchet rules."),
+    c("abw", "Amortize over the horizon (ABW / TPAW)",
+      "Amortization-Based Withdrawal, the rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth exactly over the REMAINING years, assuming the central expected return — a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market — after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
+    c("bounded", "Bounded % of portfolio (Vanguard-style)",
+      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out — it sits between the fixed rule and VPW on the frontier. Overrides flex/guardrails/ratchet."),
     r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
       "Spend this share of capital on a joint-life, inflation-linked annuity (1% real rate, 10% insurer load): a guaranteed lifelong income floor that hedges longevity. It converts growth assets into lower guaranteed income, so headline ruin (failing the FULL need) can rise even as the worst late-life outcomes improve; its value is the floor, not the average."),
   ]},
@@ -317,7 +321,8 @@ let run = async function() {
 function updateCmd() {
   const el = document.getElementById("cmdEcho");
   if (!el) return;
-  const rule = state.percent > 0 ? "vpw" : state.guardrails ? "guardrails" : state.flexCut > 0 ? "flex" : "fixed·real";
+  const rule = state.abw ? "abw" : state.bounded ? "bounded%" : state.percent > 0 ? "vpw"
+    : state.guardrails ? "guardrails" : state.flexCut > 0 ? "flex" : "fixed·real";
   const model = state.conservative ? "broad-sample" : state.regime ? "seq-stress" : state.capeAdjust ? "cape" : "student-t";
   const f = (k) => fmtVal(k, state[k]).replace(/\s?€/, "").replace(/\s/g, "");
   el.innerHTML =
