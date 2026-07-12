@@ -72,6 +72,8 @@ var Categories = []Category{
 			{"retrait-fixe-bengen", "Le retrait fixe indexé (Bengen) : le classique de référence", "La règle fondatrice en stratégie opérationnelle : la mécanique fine, la falaise silencieuse, et les trois amendements quasi gratuits."},
 			{"pourcentage-fixe", "Le pourcentage fixe du portefeuille : increvable mais inconfortable", "La ruine impossible et la ruine de train de vie, le lissage des dotations (règle de Yale), et le choix du pourcentage."},
 			{"guyton-klinger", "Guyton-Klinger : les guardrails historiques, grandeur et limites", "Les quatre règles exactes de 2006, la cascade de coupes des mauvais millésimes, et les correctifs modernes, plancher en tête."},
+			{"vpw", "VPW, le retrait à pourcentage variable des Bogleheads", "L'annuité inversée en table gravée : la mécanique exacte, le pont de pension, le test de tolérance à la perte, et la frontière avec l'ABW."},
+			{"regles-cape", "Les règles CAPE : ajuster le retrait aux valorisations (ERN)", "Taux = a + b/CAPE : la double contra-cyclicité qui auto-lisse le revenu, les paramètres d'ERN, et la forme aboutie ABW + ancre CAPE."},
 		},
 	},
 }
