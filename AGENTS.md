@@ -37,6 +37,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/suggest` | macro-regime/factor coverage, redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
 | `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; `web/` = embedded live UI |
+| `pkg/firebook` | the FIRE book: embedded French decumulation handbook (markdown articles + manifest + renderer + handler), served by the fire UI at `/livre/`; plan and progress ledger in `docs/fire-book-design.md` |
 | `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM, regression backcasts) into simdata files |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |

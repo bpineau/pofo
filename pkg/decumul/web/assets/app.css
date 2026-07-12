@@ -294,6 +294,10 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .feedtab th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .feedtab td:first-child{font-family:var(--mono);white-space:nowrap;color:var(--ink)}
 .caveat b{color:var(--ink)}
+/* the book, for initiates: a deliberately tiny link at the fold's end */
+.book-link{text-align:right;margin:.6rem 0 0}
+.book-link a{font-family:var(--mono);font-size:.66rem;letter-spacing:.08em;color:var(--muted);text-decoration:none}
+.book-link a:hover{color:var(--accent-ink);text-decoration:underline}
 
 /* ---- chart lightbox --------------------------------------------------------- */
 .chart-frame,#fansGrid>.fan{cursor:zoom-in}
