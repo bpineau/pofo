@@ -133,8 +133,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 ### V. Le portefeuille de retrait
 - [x] allocation-actions-obligations: L'allocation actions/obligations en retrait
 - [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
-- [ ] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
-- [ ] actifs-defensifs: Les actifs defensifs : panorama et roles
+- [x] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
+- [x] actifs-defensifs: Les actifs defensifs : panorama et roles
 - [ ] or-en-retrait: L'or dans un portefeuille de retrait
 - [ ] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
 - [ ] obligations-indexees: Les obligations indexees sur l'inflation
