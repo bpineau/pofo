@@ -60,17 +60,21 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		p := bare()
 		pol.apply(&p)
 		e := p.Simulate(pr.NPaths, simWorkers, 7)
+		// Lifestyle volatility on the SURVIVING paths only: post-ruin zeros
+		// would inflate the fixed rule's CV with what is really ruin, the
+		// quantity the y axis already carries. The x axis then measures pure
+		// standard-of-living swing among the futures that work.
 		pts = append(pts, chart.LabeledPoint{
-			X:     e.SpendCV() * 100,
+			X:     survivors(e).SpendCV() * 100,
 			Y:     e.RuinProb() * 100,
 			Label: pol.name,
 			Color: pol.color,
 		})
 	}
 	svg := chart.Scatter(chart.Options{Width: 720, Height: 360},
-		"lifestyle volatility (spending CV, %)", "ruin (%)", pts)
+		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{
 		SVG:  svg,
-		Note: "Same plan, four spending rules, on the central model. Up and left is safe but rigid; down and right never runs out but the standard of living swings.",
+		Note: "Same plan, four spending rules, on the central model. Up and left is safe but rigid; down and right never runs out but the standard of living swings. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
 	}
 }

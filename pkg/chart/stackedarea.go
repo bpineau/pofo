@@ -97,6 +97,15 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y1, x1, y1)
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y0, x0, y1)
 
+	// Hover payload: the raw (non-cumulative) layer values, top layer first
+	// so the tooltip reads like the stack.
+	hm := hoverMeta{Kind: "stack", X0: x0, X1: x1, Y0: y0, Y1: y1,
+		Xmin: 0, Xmax: xmax, XLabel: xLabel, YLabel: yLabel}
+	for i := len(series) - 1; i >= 0; i-- {
+		hm.Series = append(hm.Series, hoverSeries{Name: series[i].Name, Color: series[i].Color, Ys: series[i].Values})
+	}
+	b.WriteString(hoverBlock(hm))
+
 	// Legend row.
 	lx := x0
 	for _, s := range series {

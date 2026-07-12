@@ -12,7 +12,9 @@ import (
 // inner) and the central band, when the count is odd, is drawn as the median
 // line. samples are individual paths; one that ends at (or below) zero is a ruin
 // path and is drawn in red so the reader sees what failure looks like.
-func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) string {
+// Optional markers draw dashed reference lines (e.g. the year a pension
+// starts); the band data is embedded as hover metadata for the crosshair.
+func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64, markers ...Marker) string {
 	w, h := opt.Width, opt.Height
 	if w == 0 {
 		w = 960
@@ -105,14 +107,37 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="`+themeBad+`">%s</text>`+"\n", x0+5, y1-4, esc(zeroLabel))
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y0, x0, y1)
 
+	// Reference markers (dashed), e.g. the pension start year.
+	xAtF := func(v float64) float64 { return x0 + v/xmax*(x1-x0) }
+	for _, m := range markers {
+		if m.Axis != 'x' {
+			continue // fans only carry vertical (year) references
+		}
+		x := xAtF(m.Value)
+		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="`+themeFaint+`" stroke-dasharray="4 3"/>`+"\n", x, y0, x, y1)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="11" fill="`+themeFaint+`" text-anchor="middle">%s</text>`+"\n", x, y0-2, esc(m.Label))
+	}
+
+	// Hover payload: the percentile bands, high to low so the tooltip reads
+	// top-down like the chart.
+	names := fanBandNames(len(bands))
+	hm := hoverMeta{Kind: "fan", X0: x0, X1: x1, Y0: y0, Y1: y1, Xmin: 0, Xmax: xmax, XLabel: xLabel}
+	for i := len(bands) - 1; i >= 0; i-- {
+		color := bandFillColor
+		if len(bands)%2 == 1 && i == len(bands)/2 {
+			color = themeInk
+		}
+		hm.Series = append(hm.Series, hoverSeries{Name: names[i], Color: color, Ys: bands[i]})
+	}
+	b.WriteString(hoverBlock(hm))
+
 	// Shaded bands, outermost first so inner pairs paint on top, values
 	// clamped to the (possibly capped) axis range.
-	const bandFill = themeAccent
 	n := len(bands)
 	for i := 0; i < n/2; i++ {
 		opacity := 0.10 + 0.10*float64(i) // inner pairs a touch more opaque
 		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="%.2f" stroke="none"/>`+"\n",
-			bandPolygon(clampAll(bands[i]), clampAll(bands[n-1-i]), xAt, yAt), bandFill, opacity)
+			bandPolygon(clampAll(bands[i]), clampAll(bands[n-1-i]), xAt, yAt), bandFillColor, opacity)
 	}
 
 	// Individual sample paths (clipped to the axis range). Ruin paths (ending
