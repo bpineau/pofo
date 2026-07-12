@@ -48,14 +48,18 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 		return take
 	}
 
+	// Guardrails run at the monthly cadence in this kernel, with the moves
+	// rescaled so a persistent breach compounds to the same annual intensity
+	// (Guardrails.stepped): the rule reacts to the market as it moves instead
+	// of gambling on the state of the world at one anniversary date.
+	guardM := p.Guard.stepped(12)
+
 	ruined := false
 	for k := 0; k < p.Years && !ruined; k++ {
-		// Guardrails, the ratchet and stateful taxes are yearly decisions:
-		// adjust them at the start of each year against the current wealth.
+		// The ratchet and stateful taxes stay yearly decisions, adjusted at
+		// the start of each year against the current wealth.
 		pks.newYear()
-		if p.Guard.active() {
-			spending = p.Guard.adjust(spending, pks.total()+buffer)
-		} else {
+		if !p.Guard.active() {
 			level, lastRaise = p.Ratchet.raise(level, pks.total()+buffer, p.Capital, k, lastRaise)
 		}
 		// The year's uncut reference standard, for the cut accounting: the
@@ -78,6 +82,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 
 			var need float64
 			if p.Guard.active() {
+				spending = guardM.adjust(spending, total)
 				need = p.netOf(spending*p.schedAt(k), k) / 12
 			} else {
 				yearNeed := p.netOf(level*p.schedAt(k), k)
