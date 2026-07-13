@@ -159,8 +159,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] hyperinflation-et-extremes: Hyperinflations et scenarios extremes
 
 ### VIII. Fiscalite et cadre francais
-- [ ] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
-- [ ] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
+- [x] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
+- [x] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
 - [ ] taxe-puma: La taxe PUMa : le piege du rentier francais
 - [ ] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
 - [ ] sante-et-protection-sociale: Sante et protection sociale du rentier
