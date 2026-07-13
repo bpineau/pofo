@@ -1,6 +1,6 @@
 # La bibliothèque : sites, papiers, livres, outils
 
-Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), organisée par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent) : et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
+Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), organisée par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent). Et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
 
 ## Les séries et blogs de référence
 
@@ -97,7 +97,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie : puis [[construire-son-plan]], et la page FIRE ouverte à côté.
+**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], et la page FIRE ouverte à côté.
 :::
 
 ## L'essentiel à retenir
@@ -105,7 +105,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 - Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles, Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
 - Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee : la veille du plan est là.
 - Les outils se croisent (pofo en laboratoire principal, TPAW et les simulateurs historiques en seconds avis) : jamais un seul verdict ([[pieges-des-simulateurs]]).
-- Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti : et ce livre est conçu pour servir de carte au milieu.
+- Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti. Et ce livre est conçu pour servir de carte au milieu.
 
 ---
 

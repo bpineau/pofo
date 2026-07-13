@@ -7,7 +7,7 @@ Le résultat est unique dans la panoplie : le seul défensif à **espérance pos
 Cet article donne le mécanisme et les preuves (un siècle de données), la raison structurelle de son profil de crise, le dossier spécifique du rentier, la mise en œuvre UCITS pour un Français (le point délicat), les pièges, et la dose.
 
 ::: cle L'idée en une phrase
-Les grands mouvements de marché ne sont pas instantanés : ils **durent** (sous-réaction initiale, ralliement progressif, capitulations, des mois, parfois des années, [[regimes-de-marche]]) : une règle qui se contente de suivre la direction des derniers mois capte une part de chaque grand mouvement : à la hausse comme à la baisse : et se retrouve mécaniquement positionnée dans le sens de la crise quand la crise est longue. Le trend n'anticipe rien : il est simplement du bon côté de tout ce qui persiste, et les catastrophes persistent.
+Les grands mouvements de marché ne sont pas instantanés. Ils **durent** (sous-réaction initiale, ralliement progressif, capitulations, des mois, parfois des années, [[regimes-de-marche]]) : une règle qui se contente de suivre la direction des derniers mois capte une part de chaque grand mouvement : à la hausse comme à la baisse. Et se retrouve mécaniquement positionnée dans le sens de la crise quand la crise est longue. Le trend n'anticipe rien. Il est simplement du bon côté de tout ce qui persiste, et les catastrophes persistent.
 :::
 
 ## Le mécanisme, concrètement
@@ -38,11 +38,11 @@ C'est la brique la plus difficile à acheter proprement pour un particulier euro
 
 **L'abandon pendant l'hiver.** Le piège n° 1, de très loin. Le trend a des **saisons sèches** pluriannuelles : 2011-2019, la « CTA winter » (marchés sans tendance, retournements incessants, ~0 % cumulé pendant que les actions triplaient), a fait capituler la majorité des détenteurs : juste avant 2022. La tracking-error psychologique est maximale : huit ans à payer une assurance en regardant les voisins s'enrichir. La parade est la même que partout, en plus fort : une dose écrite, une thèse écrite (« cette poche perd ou stagne la plupart des années ; elle existe pour 1973, 2008, 2022 »), et l'interdiction de la juger sur une période sans grand régime ([[construire-son-plan]]).
 
-**Le mauvais véhicule.** La dispersion entre gérants de trend est énorme (des dizaines de points sur une année de crise, le signal, l'univers et la vitesse diffèrent) : d'où la réplication d'indice ou les très grands programmes diversifiés, et le contrôle SG Trend. Ne détenez pas un petit CTA : détenez l'industrie ou son cœur.
+**Le mauvais véhicule.** La dispersion entre gérants de trend est énorme (des dizaines de points sur une année de crise, le signal, l'univers et la vitesse diffèrent). D'où la réplication d'indice ou les très grands programmes diversifiés, et le contrôle SG Trend. Ne détenez pas un petit CTA : détenez l'industrie ou son cœur.
 
 **Le contresens sur le rôle.** Acheter du trend « pour la performance » (déception garantie, l'espérance nette est modeste) ou le vendre après une année de crise gagnée « pour prendre les profits » (c'est **précisément** le moment du rééquilibrage vers les actions massacrées, l'assurance vient de payer, on encaisse et on re-arme, [[or-en-retrait]], même logique de salaire par rééquilibrage).
 
-**Le sur-dosage d'enthousiasme.** Après 2022, la tentation des 25-30 % : mais la stratégie reste un programme systématique à queues propres **mais** à hivers longs, avec un risque de modèle réel (la prime peut se comprimer davantage). La dose raisonnée : 5-15 %, comme l'or, et pour les mêmes raisons épistémiques ([[portefeuilles-tous-temps]]).
+**Le sur-dosage d'enthousiasme.** Après 2022, la tentation des 25-30 %. Mais la stratégie reste un programme systématique à queues propres **mais** à hivers longs, avec un risque de modèle réel (la prime peut se comprimer davantage). La dose raisonnée : 5-15 %, comme l'or, et pour les mêmes raisons épistémiques ([[portefeuilles-tous-temps]]).
 
 ::: exemple Dix pour cent de trend, à l'épreuve
 Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. A : 65 % actions / 25 % obligations / 10 % or. B : 65 / 20 / 7,5 % or / 7,5 % trend (fonds UCITS à frais fixes, contrôlé SG Trend). Verdicts pofo type : central 3,8 → 3,7 % (rien, comme il se doit) ; stress 5,9 → 5,1 % ; décennie perdue : le drawdown réel médian des mauvaises trajectoires passe de −31 % à −26 %, et la §02 voit 1973 et 2000 s'adoucir (le trend est le seul actif du plan à avoir « gagné » les deux). Richesse médiane : −2 %. La clause écrite au plan : « poche trend : 7,5 %, jugée **uniquement** sur les années de régime (l'hiver est le fonctionnement normal), rééquilibrée aux bandes comme le reste ». Sans cette clause, ne pas acheter : l'actif sans la patience est une donation différée au marché.
@@ -50,7 +50,7 @@ Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. A : 65 % actions / 25
 
 ## L'essentiel à retenir
 
-- Le trend suit la direction de 50-100 marchés à terme, long et short, à risque ciblé : il est mécaniquement du bon côté de tout ce qui **dure** : et les grandes crises durent : 2008, 1973, 2022 (sa meilleure année, l'année où tout le reste cassait).
+- Le trend suit la direction de 50-100 marchés à terme, long et short, à risque ciblé. Il est mécaniquement du bon côté de tout ce qui **dure** : et les grandes crises durent : 2008, 1973, 2022 (sa meilleure année, l'année où tout le reste cassait).
 - C'est le seul défensif à espérance positive (2-4 % réels bruts estimés), corrélation ~0, documenté sur un siècle (positif chaque décennie depuis 1880) : le titulaire de la ligne « régimes longs » de la table des défenses ; inutile contre les chocs courts (2020).
 - Pour le rentier : 10-15 % améliorent les pires millésimes de 0,2-0,4 point de SWR et raccourcissent les drawdowns : l'effet vit exactement où les plans meurent : à condition d'un véhicule propre.
 - Mise en œuvre française : fonds UCITS de trend à frais fixes (0,7-1,5 %) ou réplication d'indice, contrôlés contre le SG Trend Index, en CTO ; éviter multi-stratégies déguisés, 2/20 et auto-réplication.

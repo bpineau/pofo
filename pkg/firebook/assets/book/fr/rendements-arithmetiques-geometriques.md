@@ -2,12 +2,12 @@
 
 Voici la question piège la plus rentable de toute la finance personnelle : un placement fait +50 % la première année, −50 % la seconde. Rendement moyen : 0 %. Combien avez-vous gagné ?
 
-Réponse : vous avez **perdu** 25 % (100 → 150 → 75). La « moyenne » qu'on vous a annoncée est parfaitement exacte, et parfaitement trompeuse. Cette page démonte le mécanisme, la différence entre moyenne arithmétique et moyenne géométrique et le « volatility drag » qui les sépare, parce qu'il est la clé de voûte silencieuse de tout le sujet FIRE : c'est lui qui explique pourquoi les rendements des plaquettes ne sont pas des rendements vivables, pourquoi la volatilité est un coût même sans krach, pourquoi les fonds à levier déçoivent, et pourquoi le taux de retrait sûr est si loin des « 7 % des actions ».
+Réponse : vous avez **perdu** 25 % (100 → 150 → 75). La « moyenne » qu'on vous a annoncée est parfaitement exacte, et parfaitement trompeuse. Cette page démonte le mécanisme, la différence entre moyenne arithmétique et moyenne géométrique et le « volatility drag » qui les sépare, parce qu'il est la clé de voûte silencieuse de tout le sujet FIRE. C'est lui qui explique pourquoi les rendements des plaquettes ne sont pas des rendements vivables, pourquoi la volatilité est un coût même sans krach, pourquoi les fonds à levier déçoivent, et pourquoi le taux de retrait sûr est si loin des « 7 % des actions ».
 
 Après cette page, plus personne ne pourra vous vendre une moyenne.
 
 ::: cle Les deux moyennes
-La moyenne **arithmétique** additionne les rendements et divise : (+50 − 50) / 2 = 0 %. Elle répond à « combien rapporte une année typique, prise isolément ? ». La moyenne **géométrique** compose : √(1,50 × 0,50) − 1 = −13,4 % par an. Elle répond à « à quel taux régulier mon capital a-t-il réellement crû ? » : c'est le CAGR, le seul chiffre qui décrit ce que vit un capital qui reste investi. La géométrique est **toujours** inférieure ou égale à l'arithmétique, et l'écart grandit avec la volatilité. Votre patrimoine vit en géométrique ; les plaquettes parlent en arithmétique.
+La moyenne **arithmétique** additionne les rendements et divise : (+50 − 50) / 2 = 0 %. Elle répond à « combien rapporte une année typique, prise isolément ? ». La moyenne **géométrique** compose : √(1,50 × 0,50) − 1 = −13,4 % par an. Elle répond à « à quel taux régulier mon capital a-t-il réellement crû ? ». C'est le CAGR, le seul chiffre qui décrit ce que vit un capital qui reste investi. La géométrique est **toujours** inférieure ou égale à l'arithmétique, et l'écart grandit avec la volatilité. Votre patrimoine vit en géométrique ; les plaquettes parlent en arithmétique.
 :::
 
 ## Le volatility drag : la volatilité est un coût
@@ -60,14 +60,14 @@ Quand on vous annonce un rendement, posez systématiquement les trois questions 
 
 ## Pour les curieux : pourquoi σ²/2 exactement
 
-Sans formalisme : le logarithme d'un rendement, ln(1+r), est ce qui s'additionne vraiment d'une année à l'autre (composer, c'est additionner des logs). Or ln(1+r) est une fonction concave : elle pénalise les écarts vers le bas plus qu'elle ne récompense les écarts vers le haut. En développant ln(1+r) ≈ r − r²/2 et en prenant l'espérance, le terme −r²/2 fait apparaître −σ²/2 en moyenne : c'est l'inégalité de Jensen rendue comptable. Le drag n'est donc ni un frottement de marché ni un coût caché : c'est une propriété mathématique de la composition, aussi inévitable que les intérêts composés eux-mêmes, dont il est exactement le côté obscur. Les modèles de pofo travaillent nativement en composition période par période, le drag y est donc capté par construction, pas par approximation ([[la-machine-pofo]]).
+Sans formalisme : le logarithme d'un rendement, ln(1+r), est ce qui s'additionne vraiment d'une année à l'autre (composer, c'est additionner des logs). Or ln(1+r) est une fonction concave. Elle pénalise les écarts vers le bas plus qu'elle ne récompense les écarts vers le haut. En développant ln(1+r) ≈ r − r²/2 et en prenant l'espérance, le terme −r²/2 fait apparaître −σ²/2 en moyenne. C'est l'inégalité de Jensen rendue comptable. Le drag n'est donc ni un frottement de marché ni un coût caché. C'est une propriété mathématique de la composition, aussi inévitable que les intérêts composés eux-mêmes, dont il est exactement le côté obscur. Les modèles de pofo travaillent nativement en composition période par période, le drag y est donc capté par construction, pas par approximation ([[la-machine-pofo]]).
 
 ## L'essentiel à retenir
 
 - Deux moyennes : l'arithmétique (l'année typique) et la géométrique (la croissance vécue) ; votre capital vit en géométrique, le marketing parle en arithmétique.
 - L'écart est le volatility drag ≈ σ²/2 : la volatilité est un coût de composition, même sans krach et même en moyenne nulle.
 - La cascade plaquette → vivable : − drag, − inflation, − frais, − prime de séquence ; il reste 3-3,5 % de retrait rigide soutenable, la règle des 4 % démystifiée.
-- Diversifier augmente la géométrique à arithmétique égale : c'est la justification mathématique du portefeuille de retrait diversifié ; le levier fait l'inverse.
+- Diversifier augmente la géométrique à arithmétique égale. C'est la justification mathématique du portefeuille de retrait diversifié ; le levier fait l'inverse.
 - Trois questions réflexes devant tout chiffre : composé ? réel ? net ? Et pour vos simulateurs : μ **réel** et modeste, jamais la moyenne de la plaquette.
 
 ---

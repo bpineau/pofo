@@ -22,13 +22,13 @@ Trois propriétés découlent immédiatement de cette mécanique, et elles expli
 
 **Le taux de retrait effectif, lui, flotte.** Si le portefeuille de Camille tombe à 700 000 € après un krach en année 2, ses 41 000 € représentent désormais 5,9 % du capital. La règle ne s'en soucie pas ; c'est précisément là que le risque se loge.
 
-**Le « 4 % » ne compte qu'une fois.** Le taux ne s'applique qu'au capital initial, au jour du départ. D'où un paradoxe connu : deux voisins identiques, l'un parti en 2021 avec 1 M€ (retrait 40 k€), l'autre parti en 2022 après un krach avec 800 k€ (retrait 32 k€), retirent des montants différents alors qu'ils ont désormais le même portefeuille. Ce paradoxe n'est pas un détail : il révèle que la règle est une simplification d'un objet plus profond (le taux de retrait dépend des valorisations de départ, [[valorisations-et-cape]]).
+**Le « 4 % » ne compte qu'une fois.** Le taux ne s'applique qu'au capital initial, au jour du départ. D'où un paradoxe connu : deux voisins identiques, l'un parti en 2021 avec 1 M€ (retrait 40 k€), l'autre parti en 2022 après un krach avec 800 k€ (retrait 32 k€), retirent des montants différents alors qu'ils ont désormais le même portefeuille. Ce paradoxe n'est pas un détail. Il révèle que la règle est une simplification d'un objet plus profond (le taux de retrait dépend des valorisations de départ, [[valorisations-et-cape]]).
 
 ## D'où viennent les chiffres
 
 La règle a deux actes fondateurs, détaillés dans [[etude-trinity]].
 
-**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions/obligations aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, dans les dents du marché plat et de l'inflation des années 1970) supportait un retrait initial d'environ 4,15 % sur 30 ans. Bengen appelle ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là : c'est le taux du **pire** cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
+**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions/obligations aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, dans les dents du marché plat et de l'inflation des années 1970) supportait un retrait initial d'environ 4,15 % sur 30 ans. Bengen appelle ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là. C'est le taux du **pire** cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
 
 **Trinity, 1998.** Trois professeurs de la Trinity University (Cooley, Hubbard, Walz) transforment l'approche en grille de probabilités : pour chaque taux de retrait, allocation et horizon, quel pourcentage des fenêtres historiques a survécu ? La cellule restée célèbre : 4 %, portefeuille 50/50, 30 ans, 95 à 100 % de succès selon les mises à jour. C'est de cette étude que vient l'idée de « probabilité de succès » qui structure encore tous les simulateurs, y compris pofo ([[ruine-et-probabilites]]).
 
@@ -63,10 +63,10 @@ Trente ans de recherche ont précisé le tableau. Les résultats convergent sur 
 
 **3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » que pofo embarque, 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 % : la France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
 
-**4. Les valorisations de départ déplacent le taux.** Partir quand les marchés sont chers (CAPE élevé) a historiquement toujours donné les pires millésimes. Les règles modernes conditionnent donc le taux initial aux valorisations ([[valorisations-et-cape]], [[regles-cape]]) : c'est l'une des améliorations les mieux établies.
+**4. Les valorisations de départ déplacent le taux.** Partir quand les marchés sont chers (CAPE élevé) a historiquement toujours donné les pires millésimes. Les règles modernes conditionnent donc le taux initial aux valorisations ([[valorisations-et-cape]], [[regles-cape]]). C'est l'une des améliorations les mieux établies.
 
 ::: science Où la recherche situe le « vrai » chiffre aujourd'hui
-Pour une retraite précoce (45 ans et plus d'horizon), portefeuille mondial diversifié, sans flexibilité ni revenu complémentaire, la littérature converge vers 3,0 à 3,5 % en régime rigide (ERN, 3,25 % ; Morningstar 2024, sur 30 ans avec rendements prospectifs, 3,7 % ; Anarkulova-Cederburg, échantillon mondial, plutôt 2,3 à 2,7 % pour les plus pessimistes, une borne basse discutée). Chaque protection ajoutée (flexibilité des dépenses [[flexibilite-realite]], revenus partiels [[retour-au-travail]], retraite légale future [[retraite-legale]], guardrails [[guardrails-morningstar]]) remonte ce chiffre, parfois au-delà de 4 %. Le taux sûr n'est pas une constante de la nature : c'est la sortie d'un modèle, fonction de vos hypothèses et de vos marges.
+Pour une retraite précoce (45 ans et plus d'horizon), portefeuille mondial diversifié, sans flexibilité ni revenu complémentaire, la littérature converge vers 3,0 à 3,5 % en régime rigide (ERN, 3,25 % ; Morningstar 2024, sur 30 ans avec rendements prospectifs, 3,7 % ; Anarkulova-Cederburg, échantillon mondial, plutôt 2,3 à 2,7 % pour les plus pessimistes, une borne basse discutée). Chaque protection ajoutée (flexibilité des dépenses [[flexibilite-realite]], revenus partiels [[retour-au-travail]], retraite légale future [[retraite-legale]], guardrails [[guardrails-morningstar]]) remonte ce chiffre, parfois au-delà de 4 %. Le taux sûr n'est pas une constante de la nature. C'est la sortie d'un modèle, fonction de vos hypothèses et de vos marges.
 :::
 
 ## Alors, la garder ou la jeter ?
@@ -75,14 +75,14 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 
 **Excellente comme unité de mesure.** « Ce niveau de dépenses exige 25 fois plus de capital » est le réflexe mental le plus utile du sujet. Une dépense récurrente de 100 €/mois « coûte » 30 000 à 36 000 € de capital : ce simple calcul change la façon dont on arbitre un abonnement, une voiture, un déménagement.
 
-**Excellente comme point de départ du dimensionnement.** Viser 25 fois ses dépenses, puis affiner avec un vrai modèle ([[utiliser-la-page-fire]]) et sa vraie situation : c'est la bonne séquence. L'erreur n'est pas de commencer par 4 %, c'est de s'y arrêter.
+**Excellente comme point de départ du dimensionnement.** Viser 25 fois ses dépenses, puis affiner avec un vrai modèle ([[utiliser-la-page-fire]]) et sa vraie situation. C'est la bonne séquence. L'erreur n'est pas de commencer par 4 %, c'est de s'y arrêter.
 
 **Excellente comme borne de récit.** Quand un vendeur promet « 8 % de rente sans risque », la règle vous dit instantanément que c'est deux fois le taux que le meilleur marché de l'histoire a soutenu en rigide sur 30 ans. Réflexe salvateur.
 
 **Mauvaise comme stratégie de retrait effective.** Personne ne devrait exécuter mécaniquement un retrait indexé aveugle pendant 40 ans. Non parce que la règle est fausse, mais parce qu'elle ignore l'information qui arrive : marchés, santé, dépenses réelles, valorisations. Toute la partie « stratégies de retrait » de ce livre ([[panorama-strategies-retrait]]) traite de ce qu'on met à la place : des règles qui écoutent le portefeuille ([[guyton-klinger]], [[guardrails-morningstar]], [[amortissement-abw]]) et rendent le même capital capable de financer davantage, ou le même train de vie beaucoup plus sûr.
 
 ::: attention Le contresens le plus fréquent
-« 4 %, donc je peux retirer 4 % du portefeuille chaque année. » Non : ça, c'est la stratégie du pourcentage fixe ([[pourcentage-fixe]]), qui ne peut jamais ruiner mais fait violemment fluctuer le train de vie. La règle de Bengen indexe le **montant** initial sur l'inflation ; le pourcentage du capital courant, lui, dérive. Les deux stratégies n'ont ni les mêmes risques ni le même confort ; les confondre fausse toute conversation sur le sujet.
+« 4 %, donc je peux retirer 4 % du portefeuille chaque année. » Non. Ça, c'est la stratégie du pourcentage fixe ([[pourcentage-fixe]]), qui ne peut jamais ruiner mais fait violemment fluctuer le train de vie. La règle de Bengen indexe le **montant** initial sur l'inflation ; le pourcentage du capital courant, lui, dérive. Les deux stratégies n'ont ni les mêmes risques ni le même confort ; les confondre fausse toute conversation sur le sujet.
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
@@ -105,4 +105,4 @@ Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an inde
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, 1998 (l'étude Trinity, [[etude-trinity]]).
 - Early Retirement Now, SWR Series volet 1 et volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») : la critique moderne la plus complète ([[serie-ern]]).
 - Morningstar, *The State of Retirement Income* (annuel) : le taux recommandé recalculé chaque année avec des rendements prospectifs ([[guardrails-morningstar]]).
-- Bengen lui-même, interviews récentes : il considère aujourd'hui 4 % comme trop conservateur pour 30 ans avec un portefeuille plus diversifié... et ne s'applique qu'au cadre américain sur 30 ans. Les deux mouvements (le sien vers le haut, celui de la recherche « monde + horizon long » vers le bas) illustrent bien que le chiffre dépend du cadre.
+- Bengen lui-même, interviews récentes. Il considère aujourd'hui 4 % comme trop conservateur pour 30 ans avec un portefeuille plus diversifié... et ne s'applique qu'au cadre américain sur 30 ans. Les deux mouvements (le sien vers le haut, celui de la recherche « monde + horizon long » vers le bas) illustrent bien que le chiffre dépend du cadre.

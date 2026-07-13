@@ -7,7 +7,7 @@ William Bengen, puis l'étude Trinity, ont démontré pourquoi cette réponse ru
 C'est un article d'histoire des idées autant que de technique : les concepts introduits ici (millésime, SAFEMAX, taux de succès) servent dans tout le reste du livre.
 
 ::: cle Le renversement fondateur
-L'apport de Bengen n'est pas le chiffre « 4 % » : c'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. La moyenne des retraites américaines historiques supportait plus de 6 % ; le millésime 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
+L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. La moyenne des retraites américaines historiques supportait plus de 6 % ; le millésime 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
 :::
 
 ## Le contexte : pourquoi la réponse « rendement moyen » ruine
@@ -18,7 +18,7 @@ La première : confondre moyenne arithmétique et croissance réellement compos�
 
 La seconde, plus meurtrière : un retraité qui retire un montant fixe vend davantage de parts quand les cours sont bas. Deux séquences de rendements de **même** moyenne donnent alors des fortunes opposées selon que les mauvaises années arrivent au début ou à la fin ([[sequence-des-rendements]]). La moyenne ne dit presque rien ; l'ordre dit presque tout.
 
-Au début des années 1990, Bengen, ingénieur du MIT reconverti en conseiller financier, voit arriver des clients à qui l'on a servi le « 8 % ». Plutôt que d'opposer une autre opinion, il fait ce que personne n'avait publié : il teste.
+Au début des années 1990, Bengen, ingénieur du MIT reconverti en conseiller financier, voit arriver des clients à qui l'on a servi le « 8 % ». Plutôt que d'opposer une autre opinion, il fait ce que personne n'avait publié. Il teste.
 
 ## Bengen 1994 : la méthode des millésimes
 
@@ -47,7 +47,7 @@ Extrait de la logique de la grille (chiffres de l'étude actualisée, retraits i
 | 5 % | 80 % | 82 % | 67 % | 27 % |
 | 6 % | 62 % | 60 % | 51 % | 20 % |
 
-Trois enseignements durables sortent de cette grille. D'abord la **falaise** : entre 4 et 5 %, le succès s'effondre ; le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue une fois sur trois là où le 75/25 ne faiblit pas). Enfin, la notion même de « taux de succès » : c'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
+Trois enseignements durables sortent de cette grille. D'abord la **falaise** : entre 4 et 5 %, le succès s'effondre ; le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue une fois sur trois là où le 75/25 ne faiblit pas). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
 
 ::: attention Ce que « 95 % de succès » veut dire chez Trinity, et ne veut pas dire
 Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du seul marché américain : « 95 % » signifie « 95 % des départs entre 1926 et 1980 auraient tenu », pas « votre plan a 95 % de chances de réussir ». Les fenêtres partagent leurs années (le krach de 1929 apparaît dans des dizaines de fenêtres), l'échantillon indépendant est minuscule, et le futur n'est pas tiré de cette urne. Les probabilités affichées par les simulateurs modernes ont des limites cousines ([[pieges-des-simulateurs]], [[lire-un-fan-chart]]) ; la parade est toujours la même, croiser plusieurs modèles et garder des marges.
@@ -67,7 +67,7 @@ Aucun de ces points n'est une réfutation. La méthode des millésimes est toujo
 
 ## Refaire Bengen vous-même
 
-C'est l'un des grands mérites pédagogiques de la méthode : elle se refait. La page FIRE de pofo contient un mode « fenêtres historiques » qui rejoue exactement la logique des millésimes sur l'historique de **votre** portefeuille, et une section « millésimes » (vintages) qui montre, départ par départ, où votre plan aurait tenu ou cassé ([[utiliser-la-page-fire]]). L'exercice vaut la peine : voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
+C'est l'un des grands mérites pédagogiques de la méthode. Elle se refait. La page FIRE de pofo contient un mode « fenêtres historiques » qui rejoue exactement la logique des millésimes sur l'historique de **votre** portefeuille, et une section « millésimes » (vintages) qui montre, départ par départ, où votre plan aurait tenu ou cassé ([[utiliser-la-page-fire]]). L'exercice vaut la peine : voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
 
 ::: exemple Lire un millésime
 Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et une arrivée à 30 ans essoufflée mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
@@ -78,7 +78,7 @@ Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ �
 - Bengen (1994) invente la méthode du rejeu par millésimes et le SAFEMAX : le taux qui survit au **pire** départ historique, ~4,15 % sur 30 ans aux États-Unis. Le « 4 % » est un plancher de pire cas américain, pas une moyenne.
 - Trinity (1998) transforme le plancher en grille de probabilités de succès et installe le langage de la ruine ; sa grille montre la falaise entre 4 et 5 % et le danger des portefeuilles trop peu actions.
 - Le pire ennemi identifié n'est pas le krach mais l'érosion réelle prolongée (millésime 1966) : inflation et marché plat.
-- Les angles morts (horizon FIRE, biais américain, valorisations, rigidité, frais et impôts) définissent la recherche moderne : c'est l'objet du reste de cette partie.
+- Les angles morts (horizon FIRE, biais américain, valorisations, rigidité, frais et impôts) définissent la recherche moderne. C'est l'objet du reste de cette partie.
 - La méthode se refait sur votre propre plan dans pofo : faites-le, un millésime vécu vaut mille probabilités.
 
 ---
