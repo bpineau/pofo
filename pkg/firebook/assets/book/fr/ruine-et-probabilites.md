@@ -42,7 +42,7 @@ Le simulateur affiche « 4,7 % » et l'esprit enregistre une précision d'orfèv
 
 **La sensibilité aux paramètres** est bien pire : baisser le rendement réel espéré de 0,5 point (bien en deçà de ce que quiconque sait estimer, [[rendements-attendus]]) peut doubler la ruine ; l'épaisseur des queues (le df de Student, [[queues-epaisses]]) la déplace encore. Vos paramètres sont incertains, donc votre ruine l'est au moins autant.
 
-**Le choix du modèle domine tout** : le même plan peut afficher 2 % en fenêtres historiques, 5 % en paramétrique central, 9 % en stress de séquence et 14 % en échantillon mondial. Aucun n'est faux ; ils répondent à des questions différentes (« et si le futur ressemble à l'histoire de mes fonds / à un monde i.i.d. calibré prudemment / au même monde avec des ours collants / au siècle des 16 pays développés »).
+**Le choix du modèle domine tout** : le même plan peut afficher 2 % en fenêtres historiques, 5 % en paramétrique central, 9 % en stress de séquence et 14 % en échantillon mondial. Aucun n'est faux ; ils répondent à des questions différentes (« et si le futur ressemble à l'histoire de mes fonds / à un monde i.i.d. calibré prudemment / au même monde avec des sticky bears / au siècle des 16 pays développés »).
 
 La conséquence pratique tient en une règle : **lisez la ruine en ordinal, pas en cardinal**. Elle compare admirablement (le plan A est plus robuste que le plan B ; ce levier réduit le risque plus que celui-là ; ce modèle pessimiste reste acceptable) et mesure médiocrement (« mon risque réel est 4,7 % »). Les décimales sont du bruit ; les écarts entre scénarios et entre colonnes sont du signal.
 

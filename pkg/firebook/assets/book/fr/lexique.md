@@ -134,7 +134,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Safety-first** : l'école de l'adossement : garantir le plancher par des revenus à vie (pension, rente, échelle), risquer seulement le confort. [[rentes-et-annuites]], [[panorama-strategies-retrait]]
 
-**Séquence stress** : le modèle de pofo à ours collants (Markov, moyenne préservée) : l'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
+**Séquence stress** : le modèle de pofo à sticky bears (Markov, moyenne préservée) : l'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
 
 **Sourire (retirement smile)** : la forme des dépenses réelles : hautes au début, déclinantes vingt ans, remontant à la fin (santé) : le besoin constant sur-provisionne de 10-20 %. [[depenses-en-retraite]]
 
