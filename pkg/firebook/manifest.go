@@ -95,6 +95,7 @@ var Categories = []Category{
 			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 			{"facteurs-fama-french", "Les facteurs (Fama-French, value, momentum) en phase de retrait", "Le noyau répliqué, le dossier du rentier (SCV, affinité value-inflation), la tracking error décennale, et le tilt optionnel bien dosé."},
 			{"diversification-internationale", "La diversification internationale (et le biais domestique)", "Le risque dominant est le décrochage de VOTRE pays : les destins nationaux chiffrés, le change qui amortit côté actions, et la cible en un ETF."},
+			{"etf-ucits-europeens", "Construire en UCITS : le portefeuille de retrait de l'investisseur européen", "Capitalisant, synthétique-PEA, domicile irlandais, tracking difference : les quatre choix, la table des briques, et vendre proprement."},
 		},
 	},
 }
