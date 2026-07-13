@@ -91,6 +91,8 @@ var Categories = []Category{
 			{"actifs-defensifs", "Les actifs défensifs : panorama et rôles", "Défendre contre quoi ? Le cahier des charges, la revue candidat par candidat, la galerie des faux défensifs, et l'assemblage."},
 			{"or-en-retrait", "L'or dans un portefeuille de retrait", "Zéro réel séculaire, décorrélation qui survit aux crises : les trois rôles, la dose de chacun, la pratique française et les erreurs."},
 			{"obligations-en-retrait", "Les obligations en retrait : types, durée, rôle exact", "Prix et duration, YTM = espérance affichée, les trois services conditionnels au régime, les quatre décisions, et le fonds euros à sa place."},
+			{"obligations-indexees", "Les obligations indexées sur l'inflation", "Le seul contrat écrit en réel : le point mort, la leçon de 2022, l'échelle de linkers qui garantit ce que le 4 % espère, et la pratique française."},
+			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 		},
 	},
 }
