@@ -5,7 +5,7 @@ Un plan FIRE n'est pas un état, c'est une trajectoire, et cette trajectoire tra
 Cette page décrit ce qui change à chaque phase, ce qu'il faut y optimiser, et les gestes concrets de passage de l'une à l'autre. Elle sert de colonne vertébrale : presque tous les autres articles du livre se rattachent à l'une de ces trois phases.
 
 ::: cle Ce qui change vraiment entre les phases
-Une seule variable gouverne tout : le **sens** et la **taille** des flux entre vous et le portefeuille. En accumulation vous versez (les krachs vous enrichissent : vous achetez bas). En retrait vous prélevez (les krachs vous saignent : vous vendez bas, [[sequence-des-rendements]]). À la transition, les flux s'inversent : c'est mécaniquement là que le portefeuille est le plus gros par rapport aux flux, donc que chaque pour cent de baisse pèse le plus lourd en euros, et que les erreurs sont les moins rattrapables. Même portefeuille, même marché : trois problèmes différents.
+Une seule variable gouverne tout : le **sens** et la **taille** des flux entre vous et le portefeuille. En accumulation vous versez (les krachs vous enrichissent, vous achetez bas). En retrait vous prélevez (les krachs vous saignent, vous vendez bas, [[sequence-des-rendements]]). À la transition, les flux s'inversent : c'est mécaniquement là que le portefeuille est le plus gros par rapport aux flux, donc que chaque pour cent de baisse pèse le plus lourd en euros, et que les erreurs sont les moins rattrapables. Même portefeuille, même marché : trois problèmes différents.
 :::
 
 ## Phase 1 : l'accumulation, la décennie (ou deux) où tout est simple
