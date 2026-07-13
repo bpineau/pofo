@@ -147,6 +147,14 @@ var Categories = []Category{
 			{"retour-au-travail", "Barista, coast, side income : le travail choisi", "Le meilleur actif défensif du livre : les formes, le quadruplé français, l'option qui fond et s'entretient, et la boîte à outils."},
 		},
 	},
+	{
+		Title: "En pratique",
+		Blurb: "Le chantier et le pilotage : construire le plan, le faire vivre, traverser les tempêtes, et les cas complets.",
+		Articles: []Article{
+			{"construire-son-plan", "Construire son plan pas à pas", "Les sept étapes dans l'ordre, le gabarit du plan d'une page à huit blocs, la recette de validation, et l'exécution du jour 1."},
+			{"revue-annuelle", "La revue annuelle : la check-list du rentier", "Une séance par an, sept blocs, le quiz inversé et la ligne non financière : la revue constate et exécute, elle ne re-conçoit pas."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
