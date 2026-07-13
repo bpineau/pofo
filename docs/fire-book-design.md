@@ -135,8 +135,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
 - [x] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
 - [x] actifs-defensifs: Les actifs defensifs : panorama et roles
-- [ ] or-en-retrait: L'or dans un portefeuille de retrait
-- [ ] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
+- [x] or-en-retrait: L'or dans un portefeuille de retrait
+- [x] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
 - [ ] obligations-indexees: Les obligations indexees sur l'inflation
 - [ ] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises
 - [ ] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
