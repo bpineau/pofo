@@ -172,8 +172,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
 - [x] sens-et-identite: Sens, identite, structure : la vie apres le travail
 - [x] couple-et-famille: FIRE en couple et en famille
-- [ ] flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
-- [ ] une-annee-de-plus: Le syndrome de l'annee de plus
+- [x] flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
+- [x] une-annee-de-plus: Le syndrome de l'annee de plus
 - [ ] retour-au-travail: Barista, coast, side income : le travail choisi
 
 ### X. En pratique
