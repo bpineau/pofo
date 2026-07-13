@@ -140,6 +140,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"psychologie-du-retrait", "La psychologie du retrait : pourquoi dépenser est si dur", "La sous-consommation chronique et la panique du krach : quatre mécanismes, les biais nommés, et la boîte à outils qui équipe tout."},
 			{"temoignages-fire", "Ce que disent les vrais FIRE : témoignages et conseils", "Six constats du corpus (l'argent marche, le mur des 18 mois, le regret n° 1 : pas parti assez tôt) et la liste canonique des vétérans."},
+			{"sens-et-identite", "Sens, identité, structure : la vie après le travail", "Les quatre chantiers que le salaire masquait, les pièges du profil optimiseur, et le prototypage qui fait tout l'écart."},
+			{"couple-et-famille", "FIRE en couple et en famille", "Le sport d'équipe : l'asymétrie d'appétence, le départ décalé, la gouvernance à deux (le quiz inversé), le divorce lucide, enfants et parents."},
 		},
 	},
 }
