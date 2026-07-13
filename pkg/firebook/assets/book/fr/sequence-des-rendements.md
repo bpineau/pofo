@@ -40,9 +40,9 @@ L'intuition à retenir : en accumulation, un krach précoce est une **aubaine** 
 
 ## La fenêtre fragile : les dix premières années
 
-Le risque de séquence n'est pas uniformément réparti dans le temps. Il se concentre massivement sur le début de la retraite, pour une raison mécanique : c'est là que le capital est le plus gros en proportion des retraits restants, et que la trajectoire a le plus d'années devant elle pour diverger. Un krach à l'année 25 d'une retraite de 30 ans est presque indolore : l'essentiel des retraits est derrière, et le capital requis pour finir est faible. Le même krach à l'année 2 gouverne tout le reste de la trajectoire.
+Le risque de séquence n'est pas uniformément réparti dans le temps. Il se concentre massivement sur le début de la retraite, pour une raison mécanique. C'est là que le capital est le plus gros en proportion des retraits restants, et que la trajectoire a le plus d'années devant elle pour diverger. Un krach à l'année 25 d'une retraite de 30 ans est presque indolore : l'essentiel des retraits est derrière, et le capital requis pour finir est faible. Le même krach à l'année 2 gouverne tout le reste de la trajectoire.
 
-La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, **le sort d'une retraite de 40 ans se joue aux trois quarts dans sa première décennie**. La page FIRE de pofo consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]) : elle montre la dispersion des issues finales conditionnée au rendement des dix premières années de chaque scénario.
+La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, **le sort d'une retraite de 40 ans se joue aux trois quarts dans sa première décennie**. La page FIRE de pofo consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]). Elle montre la dispersion des issues finales conditionnée au rendement des dix premières années de chaque scénario.
 
 Trois conséquences pratiques découlent de cette concentration temporelle.
 
@@ -89,7 +89,7 @@ Plan de base : 1 M€, 60/40, 40 000 €/an rigides, 45 ans d'horizon ; ruine «
 
 ## Trois malentendus à liquider
 
-**« Le risque de séquence, c'est le risque de krach. »** Non : c'est le risque d'un krach ou d'une érosion **mal placés**. Le pire millésime américain n'est pas 1929 mais 1966 : pas de krach spectaculaire, quinze ans d'étouffement réel par l'inflation ([[etude-trinity]], [[inflation-et-taux-de-retrait]]). Les parades purement « anti-krach » (options, stop-loss) ratent ce mode de défaillance ; les parades anti-séquence (flexibilité, revenus, actifs réels) le couvrent.
+**« Le risque de séquence, c'est le risque de krach. »** Non. C'est le risque d'un krach ou d'une érosion **mal placés**. Le pire millésime américain n'est pas 1929 mais 1966 : pas de krach spectaculaire, quinze ans d'étouffement réel par l'inflation ([[etude-trinity]], [[inflation-et-taux-de-retrait]]). Les parades purement « anti-krach » (options, stop-loss) ratent ce mode de défaillance ; les parades anti-séquence (flexibilité, revenus, actifs réels) le couvrent.
 
 **« Je suis passif et long terme, donc immunisé. »** L'immunité du passif vaut en accumulation, où l'ordre est indifférent. Dès le premier retrait, vous êtes dans le jeu de la séquence, aussi passif soit le portefeuille. C'est le point aveugle classique de l'épargnant chevronné qui aborde la retraite avec les réflexes de l'accumulation ([[erreurs-classiques-fire]]).
 
