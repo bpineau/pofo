@@ -167,7 +167,8 @@ article a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid 
 article a:hover{border-bottom-color:var(--accent)}
 article blockquote{margin:1.1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--accent);color:var(--muted);font-style:italic}
 article hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
-article table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.86rem;margin:1.15rem 0}
+.table-wrap{overflow-x:auto;margin:1.15rem 0}
+article table{width:100%;border-collapse:collapse;font-family:var(--sans);font-size:.86rem;margin:0}
 article th,article td{text-align:left;padding:.45rem .6rem;border-bottom:1px solid var(--rule-soft);vertical-align:top}
 article thead th{font-weight:600;color:var(--accent-deep);border-bottom:1px solid var(--rule)}
 article tr:last-child td{border-bottom:0}
