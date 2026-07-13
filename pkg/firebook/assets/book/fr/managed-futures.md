@@ -32,7 +32,7 @@ C'est la brique la plus difficile à acheter proprement pour un particulier euro
 
 **Logement et fiscalité.** CTO uniquement (fonds non éligibles PEA ; rares UC d'assurance-vie, aux frais de contrat près) : PFU sur les plus-values ([[flat-tax-et-imposition]]). La brique se loge donc en concurrence avec l'or ETC dans le budget CTO : un argument de plus pour partager la ligne des régimes hostiles entre les deux ([[or-en-retrait]]).
 
-**Dans pofo** : la brique existe : le catalogue embarque des historiques de managed futures reconstruits (backcasts TSMOM sur données longues, calibrés en volatilité) : l'A/B se joue comme pour l'or : composez 10 % de trend contre la même part en obligations, et lisez le stress, la décennie perdue, le broad-sample et les millésimes inflationnistes de la §02 : le profil attendu : central quasi inchangé, queues raccourcies, et : regardez-le : le drawdown réel maximal des trajectoires médiocres qui recule ([[utiliser-la-page-fire]], [[lire-un-fan-chart]]).
+**Dans pofo**, la brique existe : le catalogue embarque des historiques de managed futures reconstruits (backcasts TSMOM sur données longues, calibrés en volatilité). L'A/B se joue comme pour l'or. Composez 10 % de trend contre la même part en obligations, puis lisez le stress, la décennie perdue, le broad-sample et les millésimes inflationnistes de la §02. Le profil attendu : central quasi inchangé, queues raccourcies, et surtout un drawdown réel maximal qui recule sur les trajectoires médiocres ([[utiliser-la-page-fire]], [[lire-un-fan-chart]]).
 
 ## Les pièges, par ordre de mortalité
 
