@@ -89,6 +89,8 @@ var Categories = []Category{
 			{"glidepaths", "Les glidepaths : bond tent, rising equity et la fenêtre fragile", "La prudence comme dépense temporaire : les résultats Kitces-Pfau et ERN, l'exécution automatique par les retraits, et le match contre le buffer."},
 			{"portefeuilles-tous-temps", "Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon", "Un gagnant par saison : compositions exactes, chiffres qui comptent pour un rentier, critiques honnêtes, et la dose plutôt que le dogme."},
 			{"actifs-defensifs", "Les actifs défensifs : panorama et rôles", "Défendre contre quoi ? Le cahier des charges, la revue candidat par candidat, la galerie des faux défensifs, et l'assemblage."},
+			{"or-en-retrait", "L'or dans un portefeuille de retrait", "Zéro réel séculaire, décorrélation qui survit aux crises : les trois rôles, la dose de chacun, la pratique française et les erreurs."},
+			{"obligations-en-retrait", "Les obligations en retrait : types, durée, rôle exact", "Prix et duration, YTM = espérance affichée, les trois services conditionnels au régime, les quatre décisions, et le fonds euros à sa place."},
 		},
 	},
 }
