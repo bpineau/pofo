@@ -102,7 +102,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## L'essentiel à retenir
 
-- Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles : Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
+- Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles, Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
 - Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee : la veille du plan est là.
 - Les outils se croisent (pofo en laboratoire principal, TPAW et les simulateurs historiques en seconds avis) : jamais un seul verdict ([[pieges-des-simulateurs]]).
 - Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti : et ce livre est conçu pour servir de carte au milieu.
