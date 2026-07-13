@@ -98,6 +98,14 @@ var Categories = []Category{
 			{"etf-ucits-europeens", "Construire en UCITS : le portefeuille de retrait de l'investisseur européen", "Capitalisant, synthétique-PEA, domicile irlandais, tracking difference : les quatre choix, la table des briques, et vendre proprement."},
 		},
 	},
+	{
+		Title: "Buffers et protections",
+		Blurb: "Les amortisseurs du plan : le matelas et ses règles, les seaux démystifiés, l'échelle, et les protections patrimoniales.",
+		Articles: []Article{
+			{"cash-buffer", "Le matelas de liquidités : taille, coût, vrai rôle", "L'intuition juste, l'arithmétique têtue (±0,5 point), et la vraie valeur : anti-panique, permission de dépenser, gouvernance."},
+			{"strategie-buckets", "Les buckets : la stratégie des seaux, promesse et critique", "Une allocation déguisée plus des flux qui sont du rééquilibrage ou du timing : le procès équitable, et la version propre."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
