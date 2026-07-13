@@ -1,6 +1,10 @@
 # Bengen, l'étude Trinity et la naissance du taux de retrait sûr
 
-Avant 1994, la question « combien puis-je retirer de mon portefeuille chaque année ? » recevait une réponse fausse avec une belle constance : « le rendement moyen, voyons ». Actions à 10 % historiques, donc retirez 8 %, disaient sans rire des professionnels du conseil. William Bengen, puis l'étude Trinity, ont démontré pourquoi cette réponse ruine les gens, et inventé la méthode qui structure encore tout le domaine : rejouer l'histoire. Cette page raconte ce que ces travaux fondateurs ont réellement établi, comment leur méthode fonctionne, ce qu'elle a de génial et ce qu'elle a de daté. C'est un article d'histoire des idées autant que de technique : les concepts introduits ici (millésime, SAFEMAX, taux de succès) servent dans tout le reste du livre.
+Avant 1994, la question « combien puis-je retirer de mon portefeuille chaque année ? » recevait une réponse fausse avec une belle constance : « le rendement moyen, voyons ». Actions à 10 % historiques, donc retirez 8 %, disaient sans rire des professionnels du conseil.
+
+William Bengen, puis l'étude Trinity, ont démontré pourquoi cette réponse ruine les gens, et inventé la méthode qui structure encore tout le domaine : rejouer l'histoire. Cette page raconte ce que ces travaux fondateurs ont réellement établi, comment leur méthode fonctionne, ce qu'elle a de génial et ce qu'elle a de daté.
+
+C'est un article d'histoire des idées autant que de technique : les concepts introduits ici (millésime, SAFEMAX, taux de succès) servent dans tout le reste du livre.
 
 ::: cle Le renversement fondateur
 L'apport de Bengen n'est pas le chiffre « 4 % » : c'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. La moyenne des retraites américaines historiques supportait plus de 6 % ; le millésime 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).

@@ -1,6 +1,8 @@
 # Les dix erreurs qui ruinent un plan FIRE
 
-Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature. Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Lisez-la deux fois : avant de construire votre plan, et une fois par an ensuite ([[revue-annuelle]]).
+Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
+
+Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Lisez-la deux fois : avant de construire votre plan, et une fois par an ensuite ([[revue-annuelle]]).
 
 ::: cle Le fil conducteur
 Neuf de ces dix erreurs partagent une racine : confondre la sortie d'un modèle avec une promesse, et l'optimisme avec un plan. L'antidote est toujours le même : des entrées auditées, plusieurs modèles ([[pieges-des-simulateurs]]), des marges nommées, et une règle d'ajustement décidée à l'avance ([[panorama-strategies-retrait]]).

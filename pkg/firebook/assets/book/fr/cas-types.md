@@ -1,6 +1,8 @@
 # Trois plans complets, chiffrés de bout en bout
 
-La théorie est derrière nous ; voici trois ménages fictifs mais réalistes, déroulés de bout en bout par la procédure du livre ([[construire-son-plan]]) : le solo précoce et sobre (le cas où chaque marge compte), le couple FIRE classique (le fil rouge du livre, ici complet), et le départ tardif confortable (le cas au pont court, où tout se simplifie). Pour chacun : les chiffres audités, la cible, le portefeuille, la règle, les protections, la validation en faisceau, et : le plus instructif : les **leçons** : ce que le cas enseigne qui ne se voit que chiffré. Les nombres sont réalistes mais illustratifs (fiscalité 2026, marchés du moment) : votre plan se fait avec **vos** chiffres et la page FIRE ([[utiliser-la-page-fire]]) : ces trois-là servent d'étalonnage : si votre situation ressemble à l'un d'eux et que vos résultats en divergent fort, cherchez pourquoi : c'est le meilleur usage d'un cas-type.
+La théorie est derrière nous ; voici trois ménages fictifs mais réalistes, déroulés de bout en bout par la procédure du livre ([[construire-son-plan]]) : le solo précoce et sobre (le cas où chaque marge compte), le couple FIRE classique (le fil rouge du livre, ici complet), et le départ tardif confortable (le cas au pont court, où tout se simplifie). Pour chacun : les chiffres audités, la cible, le portefeuille, la règle, les protections, la validation en faisceau, et : le plus instructif : les **leçons** : ce que le cas enseigne qui ne se voit que chiffré.
+
+Les nombres sont réalistes mais illustratifs (fiscalité 2026, marchés du moment) : votre plan se fait avec **vos** chiffres et la page FIRE ([[utiliser-la-page-fire]]) : ces trois-là servent d'étalonnage : si votre situation ressemble à l'un d'eux et que vos résultats en divergent fort, cherchez pourquoi : c'est le meilleur usage d'un cas-type.
 
 ## Cas 1 : Jules, 38 ans, solo, le précoce sobre
 
