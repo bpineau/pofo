@@ -127,6 +127,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"enveloppes-francaises", "PEA, assurance-vie, CTO : les enveloppes du rentier français", "Chaque enveloppe vue de la décumulation, les horloges à dater tôt, et l'ordre de consommation qui est un panachage annuel."},
 			{"flat-tax-et-imposition", "PFU, barème, abattements : l'imposition des retraits", "La part de gain au PMP, l'arbitrage annuel PFU/barème, le lissage des tranches basses, et les purges de fin de partie."},
+			{"taxe-puma", "La taxe PUMa : le piège du rentier français", "La cotisation qui vise le rentier d'avant la pension : formule, seuils, zones grises, et les quatre mitigations dont l'interrupteur d'activité."},
+			{"retraite-legale", "FIRE et retraite légale : trimestres, AGIRC-ARRCO, décote", "L'actif négligé du plan : ce qu'une carrière écourtée produit, le taux plein automatique à 67 ans, les trimestres à bas coût, et la méthode M@REL."},
 		},
 	},
 }

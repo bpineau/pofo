@@ -161,8 +161,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 ### VIII. Fiscalite et cadre francais
 - [x] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
 - [x] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
-- [ ] taxe-puma: La taxe PUMa : le piege du rentier francais
-- [ ] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
+- [x] taxe-puma: La taxe PUMa : le piege du rentier francais
+- [x] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
 - [ ] sante-et-protection-sociale: Sante et protection sociale du rentier
 - [ ] succession-et-transmission: Succession et transmission
 - [ ] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
