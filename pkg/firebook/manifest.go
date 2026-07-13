@@ -116,6 +116,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"inflation-histoire", "L'inflation sur les dernières décennies : ce que 1914-2025 enseigne", "Le siècle français en cinq régimes, la mort du mot rentier, la répression financière, et les leçons structurelles pour le plan."},
 			{"suivre-inflation", "Suivre l'inflation : les indices, et la vôtre", "IPC, IPCH et leurs angles morts, l'inflation personnelle du retraité (+0,2 à +0,5), les points morts, et le réglage de la dérive."},
+			{"inflation-et-taux-de-retrait", "Inflation et taux de retrait : le lien exact", "Les ciseaux et la compression réelle simultanée : pourquoi 1966 bat 1929, les chiffres conditionnels, et l'inventaire d'indexation du plan."},
+			{"se-proteger-de-inflation", "Se protéger de l'inflation : ce qui marche vraiment", "L'arsenal classé par nature de preuve : contractuel, structurel, épisodique, comportemental : la liste noire, et l'assemblage par phase."},
 		},
 	},
 }
