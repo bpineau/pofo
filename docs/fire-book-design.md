@@ -163,8 +163,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
 - [x] taxe-puma: La taxe PUMa : le piege du rentier francais
 - [x] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
-- [ ] sante-et-protection-sociale: Sante et protection sociale du rentier
-- [ ] succession-et-transmission: Succession et transmission
+- [x] sante-et-protection-sociale: Sante et protection sociale du rentier
+- [x] succession-et-transmission: Succession et transmission
 - [ ] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
 
 ### IX. Le facteur humain
