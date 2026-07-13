@@ -1,6 +1,6 @@
 # Fenêtres historiques, bootstrap, paramétrique : trois familles de modèles
 
-Un simulateur de retraite est une machine à dérouler des plans dans des futurs générés ([[monte-carlo-forces-faiblesses]]) ; toute la question est de savoir D'**où viennent** ces futurs. Il n'existe que trois grandes réponses, trois familles de modèles : rejouer l'histoire telle quelle (les fenêtres historiques), rééchantillonner l'histoire en la remélangeant (le bootstrap), ou générer des rendements synthétiques depuis quelques paramètres (les modèles paramétriques).
+Un simulateur de retraite est une machine à dérouler des plans dans des futurs générés ([[monte-carlo-forces-faiblesses]]) ; toute la question est de savoir d'**où viennent** ces futurs. Il n'existe que trois grandes réponses, trois familles de modèles : rejouer l'histoire telle quelle (les fenêtres historiques), rééchantillonner l'histoire en la remélangeant (le bootstrap), ou générer des rendements synthétiques depuis quelques paramètres (les modèles paramétriques).
 
 Chaque famille répond en réalité à une question différente, a des vertus et des angles morts propres, et les désaccords entre leurs verdicts sur un même plan ne sont pas des bugs : ce sont les informations les plus précieuses que vous obtiendrez. Cette page fait le tour complet des trois familles, avec pour chacune la mécanique exacte, l'implémentation dans pofo (les six colonnes de la page FIRE s'y rattachent toutes), les forces, les pièges, et à la fin la grille de lecture combinée : quel modèle croire pour quelle question.
 

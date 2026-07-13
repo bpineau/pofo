@@ -36,7 +36,7 @@ Le blending corrige le passé (votre fenêtre) ; il reste aveugle au **présent*
 
 **Le prior broad-sample** (« Broad-sample prior ») réécrit les trois curseurs d'un coup avec les valeurs prudentes du siècle mondial : l'équivalent d'un blending poussé à 100 %. Utile comme borne, ou comme position par défaut pour qui se méfie de tout ajustement sur données récentes.
 
-Et le garde-fou déjà établi ailleurs mais qui prend ici sa place systémique : ces mécanismes **ne** S'**empilent pas** ([[rendements-attendus]]). Blending automatique, μ manuel, ancre CAPE, prior broad-sample sont quatre façons de calibrer le **même** modèle central : on en choisit une, les autres servent de contre-lectures. La prudence est un budget, pas une vertu cumulable.
+Et le garde-fou déjà établi ailleurs mais qui prend ici sa place systémique : ces mécanismes **ne** s'**empilent pas** ([[rendements-attendus]]). Blending automatique, μ manuel, ancre CAPE, prior broad-sample sont quatre façons de calibrer le **même** modèle central : on en choisit une, les autres servent de contre-lectures. La prudence est un budget, pas une vertu cumulable.
 
 ## Corrections 5 et 6 : les données brutes, et le vrai plan
 
