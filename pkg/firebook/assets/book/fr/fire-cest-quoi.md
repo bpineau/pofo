@@ -113,6 +113,6 @@ Interrogez des FIRE effectifs (forums, blogs, meetups) et un conseil revient plu
 
 - Vicki Robin & Joe Dominguez, *Your Money or Your Life* (1992, réédité) : le socle philosophique.
 - William Bengen, « Determining Withdrawal Rates Using Historical Data », *Journal of Financial Planning*, 1994 : l'article fondateur ([[etude-trinity]]).
-- Mr. Money Mustache, « The Shockingly Simple Math Behind Early Retirement » (mrmoneymustache.com, 2012) : l'arithmétique du taux d'épargne.
-- Early Retirement Now, « Safe Withdrawal Rate Series » (earlyretirementnow.com) : la référence moderne, plus de 60 volets ([[serie-ern]]).
-- Reddit r/Fire et r/vosfinances (pour la France) : les communautés actives.
+- Mr. Money Mustache, « The Shockingly Simple Math Behind Early Retirement » ([mrmoneymustache.com](https://www.mrmoneymustache.com), 2012) : l'arithmétique du taux d'épargne.
+- Early Retirement Now, « Safe Withdrawal Rate Series » ([earlyretirementnow.com](https://earlyretirementnow.com)) : la référence moderne, plus de 60 volets ([[serie-ern]]).
+- Reddit [r/Fire](https://www.reddit.com/r/Fire) et [r/vosfinances](https://www.reddit.com/r/vosfinances) (pour la France) : les communautés actives.

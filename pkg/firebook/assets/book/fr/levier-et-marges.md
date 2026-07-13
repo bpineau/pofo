@@ -54,5 +54,5 @@ Cas A, le pont : Mireille, 58 ans, 1,8 M€ dont AV 600 k€, plancher couvert a
 
 - Early Retirement Now, volets 49 et 52 (« Leverage in Retirement », « Timing Leverage ») : le dossier contracyclique complet ([[serie-ern]]).
 - Ayres & Nalebuff, *Lifecycle Investing* (2010) : la théorie du levier par âge : et pourquoi elle s'inverse en décumulation.
-- returnstacked.com et la littérature « capital efficiency » (Newfound/ReSolve) : le stacking expliqué par ses promoteurs : à lire avec l'esprit critique de rigueur.
+- [returnstacked.com](https://www.returnstacked.com) et la littérature « capital efficiency » (Newfound/ReSolve) : le stacking expliqué par ses promoteurs : à lire avec l'esprit critique de rigueur.
 - Dans ce livre : [[immobilier-en-retrait]] (le crédit conservé), [[cash-buffer]] et [[recharger-ou-pas]] (ce que le pont remplace), [[rendements-arithmetiques-geometriques]] (le drag qui gouverne tout).

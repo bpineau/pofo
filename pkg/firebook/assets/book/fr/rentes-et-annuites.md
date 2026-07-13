@@ -63,5 +63,5 @@ Couple, 74 et 72 ans, portefeuille 1,1 M€, dépenses plancher 38 000 €, conf
 - Yaari, « Uncertain Lifetime, Life Insurance, and the Theory of the Consumer » (1965) : le théorème fondateur ; Davidoff, Brown & Diamond (2005) pour la version moderne.
 - Wade Pfau, *Safety-First Retirement Planning* (2019) : la doctrine du plancher garanti, complète.
 - Early Retirement Now, volet 56 (évaluer rentes et pensions) ([[serie-ern]]).
-- info-retraite.fr et service-public.fr : rachats de trimestres (conditions, barèmes, déductibilité) : faites ce devis avant tout devis d'assureur.
+- [info-retraite.fr](https://www.info-retraite.fr) et [service-public.fr](https://www.service-public.fr) : rachats de trimestres (conditions, barèmes, déductibilité) : faites ce devis avant tout devis d'assureur.
 - Dans ce livre : [[retraite-legale]] (votre rente d'État), [[echelle-obligataire]] (l'autre moitié du plancher), [[horizon-et-esperance-de-vie]] (le risque couvert), [[choisir-sa-strategie]] (l'assemblage final).

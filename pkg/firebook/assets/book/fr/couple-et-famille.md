@@ -48,6 +48,6 @@ Chez Nadia et Marc ([[retraite-legale]]), la revue de janvier dure deux heures e
 
 ## Pour aller plus loin
 
-- Les fils « couples » des forums FIRE (r/financialindependence, MMM) : le terrain brut du chapitre, désaccords compris.
-- notaires.fr : régimes matrimoniaux et protection du conjoint : le rendez-vous à froid.
+- Les fils « couples » des forums FIRE ([r/financialindependence](https://www.reddit.com/r/financialindependence), MMM) : le terrain brut du chapitre, désaccords compris.
+- [notaires.fr](https://www.notaires.fr) : régimes matrimoniaux et protection du conjoint : le rendez-vous à froid.
 - Dans ce livre : [[sens-et-identite]] (les chantiers de chacun), [[temoignages-fire]] (les récits), [[succession-et-transmission]] (les outils civils), [[revue-annuelle]] (la boucle de gouvernance), [[sante-et-protection-sociale]] (la prévoyance du survivant).

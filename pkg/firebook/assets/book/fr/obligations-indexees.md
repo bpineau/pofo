@@ -60,6 +60,6 @@ Couple, 52 ans, plancher 40 000 €/an, confort 55 000 €, pensions couvrant le
 
 - Allan Roth, « The 4% Rule Just Became a Whole Lot Easier » (2023) et les analyses TIPS-ladder de Morningstar : le résultat de l'échelle, dans le texte.
 - Zvi Bodie (« Worry-Free Investing ») : le théoricien historique du linker comme actif sans risque du particulier.
-- L'Agence France Trésor (aft.gouv.fr) : les OATi/OAT€i, encours, indices de référence : la source primaire.
-- tipsladder.com (US) pour voir l'outil d'échelle en action : le concept se transpose.
+- L'Agence France Trésor ([aft.gouv.fr](https://www.aft.gouv.fr)) : les OATi/OAT€i, encours, indices de référence : la source primaire.
+- [tipsladder.com](https://www.tipsladder.com) (US) pour voir l'outil d'échelle en action : le concept se transpose.
 - Dans ce livre : [[obligations-en-retrait]] (la poche complète), [[echelle-obligataire]] (la construction à terme), [[inflation-et-taux-de-retrait]] (l'ennemi couvert), [[suivre-inflation]] (votre indice contre l'indice).

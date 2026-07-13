@@ -62,7 +62,7 @@ Couple, 58 ans, besoin 55 000 €/an nets, patrimoine 1,7 M€ gainé à ~45 %. 
 
 ## Pour aller plus loin
 
-- impots.gouv.fr et le BOFiP : les textes à jour (PEA, AV, PFU) : la source qui prime tout blog.
-- service-public.fr : les fiches enveloppes, tenues à jour.
+- [impots.gouv.fr](https://www.impots.gouv.fr) et le BOFiP : les textes à jour (PEA, AV, PFU) : la source qui prime tout blog.
+- [service-public.fr](https://www.service-public.fr) : les fiches enveloppes, tenues à jour.
 - Les comparatifs de contrats AV et PEA des sites spécialisés indépendants : pour la chasse aux frais, le critère n° 1.
 - Dans ce livre : [[flat-tax-et-imposition]] (le calcul des retraits, TMI et lissage), [[taxe-puma]] (la couche du rentier sans activité), [[succession-et-transmission]] (l'AV et le CTO au décès), [[etf-ucits-europeens]] (quoi loger où).

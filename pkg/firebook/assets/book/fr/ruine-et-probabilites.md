@@ -68,7 +68,7 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series volet 11 (comment noter une règle de retrait) et volet 46 (« The Need for Precision in an Uncertain World ») : earlyretirementnow.com ([[serie-ern]]).
-- Michael Kitces, « The Problem With FIREing At A 4% Withdrawal Rate » et « Is A Probability Of Success-Driven Retirement Plan Actually Riskier? » (kitces.com) : la lecture praticienne du taux de succès.
+- Early Retirement Now, SWR Series volet 11 (comment noter une règle de retrait) et volet 46 (« The Need for Precision in an Uncertain World ») : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
+- Michael Kitces, « The Problem With FIREing At A 4% Withdrawal Rate » et « Is A Probability Of Success-Driven Retirement Plan Actually Riskier? » ([kitces.com](https://www.kitces.com)) : la lecture praticienne du taux de succès.
 - Derek Tharp & Kitces sur les « guardrails » en probabilité de succès : le pilotage plutôt que le chiffre statique.
 - Dans pofo : la vue mortalité × ruine et le solveur « acceptable ruin » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
