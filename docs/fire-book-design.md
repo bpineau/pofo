@@ -1,9 +1,10 @@
 # The FIRE book: design
 
-Status: v1 COMPLETE: all 79 planned articles written (2026-07-13). Remaining
-work: the deepening pass on the 12 pre-depth-bar articles (the early batches
-of parts I-II), the later English translation, and continuous upkeep of the
-dated French tax/social chapters. The ledger below tracks per-article state.
+Status: v1 COMPLETE and accepted (2026-07-13): all 79 planned articles
+written. Ben decided the 12 pre-depth-bar articles (the early batches of
+parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
+later English translation, and continuous upkeep of the dated French
+tax/social chapters. The ledger below tracks per-article state.
 
 ## Goal
 
