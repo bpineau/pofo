@@ -54,3 +54,16 @@ func TestToHTMLCallout(t *testing.T) {
 		t.Errorf("unknown callout type should degrade to encart: %q", got)
 	}
 }
+
+func TestBoldWrappingItalic(t *testing.T) {
+	// A bold span containing an italic title (bibliography style) must render
+	// as <strong> with a nested <em>, not leak literal ** markers.
+	got := ToHTML("**Vicki Robin, *Your Money or Your Life* (1992)** : le socle.", nil)
+	if !strings.Contains(got, "<strong>Vicki Robin, <em>Your Money or Your Life</em> (1992)</strong>") {
+		t.Errorf("bold-wrapping-italic not rendered: %q", got)
+	}
+	// Plain bold and plain italic still work.
+	if got := ToHTML("un **mot** et un *autre*", nil); !strings.Contains(got, "<strong>mot</strong>") || !strings.Contains(got, "<em>autre</em>") {
+		t.Errorf("plain emphasis broke: %q", got)
+	}
+}
