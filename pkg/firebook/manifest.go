@@ -104,6 +104,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"cash-buffer", "Le matelas de liquidités : taille, coût, vrai rôle", "L'intuition juste, l'arithmétique têtue (±0,5 point), et la vraie valeur : anti-panique, permission de dépenser, gouvernance."},
 			{"strategie-buckets", "Les buckets : la stratégie des seaux, promesse et critique", "Une allocation déguisée plus des flux qui sont du rééquilibrage ou du timing : le procès équitable, et la version propre."},
+			{"echelle-obligataire", "Les échelles d'obligations (et l'échelle de linkers)", "L'appariement qui annule le risque de taux : le pont vers la pension, le plancher adossé, et la pratique française des fonds à échéance."},
+			{"recharger-ou-pas", "Consommer et recharger un buffer : les règles qui marchent", "Le déclencheur de drawdown, la recharge en terrain calme, l'interdiction absolue, et le buffer fondant qui domine le perpétuel."},
 		},
 	},
 }
