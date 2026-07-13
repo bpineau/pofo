@@ -152,8 +152,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] levier-et-marges: Levier, marge et lombard en retrait (avance)
 
 ### VII. L'inflation
-- [ ] inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne
-- [ ] suivre-inflation: Suivre l'inflation : les indices, et la votre
+- [x] inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne
+- [x] suivre-inflation: Suivre l'inflation : les indices, et la votre
 - [ ] inflation-et-taux-de-retrait: Inflation et taux de retrait : le lien exact
 - [ ] se-proteger-de-inflation: Se proteger de l'inflation : ce qui marche vraiment
 - [ ] hyperinflation-et-extremes: Hyperinflations et scenarios extremes

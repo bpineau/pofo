@@ -110,6 +110,14 @@ var Categories = []Category{
 			{"levier-et-marges", "Levier, marge et lombard en retrait (avancé)", "Pourquoi le levier change de signe à la retraite, les trois seuls usages défendables, et les cinq règles non négociables."},
 		},
 	},
+	{
+		Title: "L'inflation",
+		Blurb: "La grande tueuse de rentiers : son histoire, sa mesure, son effet exact sur le taux de retrait, et les défenses qui marchent.",
+		Articles: []Article{
+			{"inflation-histoire", "L'inflation sur les dernières décennies : ce que 1914-2025 enseigne", "Le siècle français en cinq régimes, la mort du mot rentier, la répression financière, et les leçons structurelles pour le plan."},
+			{"suivre-inflation", "Suivre l'inflation : les indices, et la vôtre", "IPC, IPCH et leurs angles morts, l'inflation personnelle du retraité (+0,2 à +0,5), les points morts, et le réglage de la dérive."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
