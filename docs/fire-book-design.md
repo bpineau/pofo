@@ -156,7 +156,7 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] suivre-inflation: Suivre l'inflation : les indices, et la votre
 - [x] inflation-et-taux-de-retrait: Inflation et taux de retrait : le lien exact
 - [x] se-proteger-de-inflation: Se proteger de l'inflation : ce qui marche vraiment
-- [ ] hyperinflation-et-extremes: Hyperinflations et scenarios extremes
+- [x] hyperinflation-et-extremes: Hyperinflations et scenarios extremes
 
 ### VIII. Fiscalite et cadre francais
 - [ ] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
