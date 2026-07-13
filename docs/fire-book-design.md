@@ -139,8 +139,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
 - [x] obligations-indexees: Les obligations indexees sur l'inflation
 - [x] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises
-- [ ] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
-- [ ] diversification-internationale: La diversification internationale (et le biais domestique)
+- [x] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
+- [x] diversification-internationale: La diversification internationale (et le biais domestique)
 - [ ] etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
 
 ### VI. Buffers et protections
