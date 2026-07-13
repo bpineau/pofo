@@ -144,6 +144,7 @@ var Categories = []Category{
 			{"couple-et-famille", "FIRE en couple et en famille", "Le sport d'équipe : l'asymétrie d'appétence, le départ décalé, la gouvernance à deux (le quiz inversé), le divorce lucide, enfants et parents."},
 			{"flexibilite-realite", "La flexibilité : mythe et réalité", "Ce qu'elle vaut vraiment (0,3-0,5 point), pourquoi la durée bat la profondeur, les six formes classées, et le plancher testé, pas déclaré."},
 			{"une-annee-de-plus", "Le syndrome de l'année de plus", "L'asymétrie comptable qui le fabrique, le chiffrage des deux colonnes, l'OMY rationnel en trois cas, et l'engagement pris à froid."},
+			{"retour-au-travail", "Barista, coast, side income : le travail choisi", "Le meilleur actif défensif du livre : les formes, le quadruplé français, l'option qui fond et s'entretient, et la boîte à outils."},
 		},
 	},
 }
