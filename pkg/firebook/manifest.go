@@ -118,6 +118,7 @@ var Categories = []Category{
 			{"suivre-inflation", "Suivre l'inflation : les indices, et la vôtre", "IPC, IPCH et leurs angles morts, l'inflation personnelle du retraité (+0,2 à +0,5), les points morts, et le réglage de la dérive."},
 			{"inflation-et-taux-de-retrait", "Inflation et taux de retrait : le lien exact", "Les ciseaux et la compression réelle simultanée : pourquoi 1966 bat 1929, les chiffres conditionnels, et l'inventaire d'indexation du plan."},
 			{"se-proteger-de-inflation", "Se protéger de l'inflation : ce qui marche vraiment", "L'arsenal classé par nature de preuve : contractuel, structurel, épisodique, comportemental : la liste noire, et l'assemblage par phase."},
+			{"hyperinflation-et-extremes", "Hyperinflations et scénarios extrêmes", "Weimar à Chypre : ce qui survit, la couverture structurelle quasi gratuite déjà en place, et le piège symétrique du prepper."},
 		},
 	},
 }
