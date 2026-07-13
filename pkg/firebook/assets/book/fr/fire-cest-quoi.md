@@ -44,7 +44,7 @@ Ensuite, **Barista et Coast sont des amortisseurs de risque de séquence**, pas 
 
 ## L'arithmétique qui rend le FIRE possible
 
-Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation ET abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache (hypothèses : 5 % de rendement réel, retrait à 4 %, départ de zéro) :
+Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation **et** abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache (hypothèses : 5 % de rendement réel, retrait à 4 %, départ de zéro) :
 
 | Taux d'épargne | Années de travail avant l'indépendance |
 |---|---|
@@ -56,7 +56,7 @@ Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une
 | 80 % | ~5,5 ans |
 
 ::: exemple Un couple concret
-Léa et Sam, 32 ans, gagnent 5 400 € nets par mois à deux et en dépensent 3 200. Taux d'épargne : 41 %. Cible à 4 % : 3 200 × 12 × 25 = 960 000 €. Avec 90 000 € déjà investis et 2 200 €/mois d'épargne à 5 % réel, ils atteignent la cible vers 53 ans ; à 4 % réel, vers 55 ans. S'ils réduisent leurs dépenses de 400 €/mois, la cible tombe à 840 000 € ET l'épargne monte à 2 600 €/mois : l'indépendance avance d'environ 4 ans. C'est la double détente. Pour aller plus loin sur le calcul de la cible : [[combien-il-vous-faut]].
+Léa et Sam, 32 ans, gagnent 5 400 € nets par mois à deux et en dépensent 3 200. Taux d'épargne : 41 %. Cible à 4 % : 3 200 × 12 × 25 = 960 000 €. Avec 90 000 € déjà investis et 2 200 €/mois d'épargne à 5 % réel, ils atteignent la cible vers 53 ans ; à 4 % réel, vers 55 ans. S'ils réduisent leurs dépenses de 400 €/mois, la cible tombe à 840 000 € **et** l'épargne monte à 2 600 €/mois : l'indépendance avance d'environ 4 ans. C'est la double détente. Pour aller plus loin sur le calcul de la cible : [[combien-il-vous-faut]].
 :::
 
 ::: attention Le rendement ne vous sauvera pas
@@ -69,7 +69,7 @@ Quelques mises au point que la première vague du mouvement a parfois laissées 
 
 **Ce n'est pas « ne plus jamais travailler ».** La majorité des FIRE réels ont des revenus après leur départ : projets devenus lucratifs, conseil ponctuel, passion monétisée. Non parce que le plan a échoué, mais parce que des gens capables d'épargner 50 % de leurs revenus pendant 15 ans sont rarement du genre à s'arrêter de produire ([[sens-et-identite]]).
 
-**Ce n'est pas une garantie.** Tout taux de retrait est une probabilité, pas une promesse. « 95 % de succès historique » signifie que dans 1 cas défavorable sur 20 du passé américain, le plan échouait, et le futur n'est pas tenu de ressembler au passé américain ([[pieges-des-simulateurs]]). Le vrai livrable d'un plan FIRE n'est pas un chiffre, c'est un chiffre PLUS une stratégie d'ajustement ([[panorama-strategies-retrait]]) PLUS des marges ([[cash-buffer]]).
+**Ce n'est pas une garantie.** Tout taux de retrait est une probabilité, pas une promesse. « 95 % de succès historique » signifie que dans 1 cas défavorable sur 20 du passé américain, le plan échouait, et le futur n'est pas tenu de ressembler au passé américain ([[pieges-des-simulateurs]]). Le vrai livrable d'un plan FIRE n'est pas un chiffre, c'est un chiffre **plus** une stratégie d'ajustement ([[panorama-strategies-retrait]]) **plus** des marges ([[cash-buffer]]).
 
 **Ce n'est pas réservé aux ingénieurs américains à 200 000 $ par an.** Le cadre s'applique à tout niveau de dépenses ; c'est le délai qui change. Et le lecteur français dispose d'atouts spécifiques (des enveloppes fiscales efficaces, [[enveloppes-francaises]], une retraite légale qui finira par arriver en soutien, [[retraite-legale]]) et de pièges spécifiques ([[taxe-puma]]).
 

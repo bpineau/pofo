@@ -3,7 +3,7 @@
 C'est la règle la plus célèbre de toute la finance personnelle : retirez 4 % de votre capital la première année de retraite, réindexez ce montant sur l'inflation chaque année, et votre portefeuille tiendra 30 ans. Elle est si célèbre qu'on l'appelle « la règle », tout court. Cette page explique exactement ce qu'elle dit (c'est plus subtil que la version de comptoir), d'où viennent ses chiffres, ce qu'elle suppose sans le dire, et pourquoi l'état de l'art la traite aujourd'hui comme un excellent point de départ et un mauvais point d'arrivée. À la fin, vous saurez l'utiliser pour ce qu'elle vaut : un ordre de grandeur, pas un plan.
 
 ::: cle Ce que la règle dit exactement
-Année 1 : retirez 4 % du capital initial (40 000 € pour 1 000 000 €). Années suivantes : retirez le MÊME montant ajusté de l'inflation (41 200 € si l'inflation a été de 3 %), quel que soit ce que fait le portefeuille. Historiquement, sur toutes les fenêtres de 30 ans américaines depuis 1926, un portefeuille 50 à 75 % actions n'a jamais été épuisé par ce régime. « Sûr » signifie ici : n'a jamais échoué dans le passé américain observé. Rien de plus.
+Année 1 : retirez 4 % du capital initial (40 000 € pour 1 000 000 €). Années suivantes : retirez le **même** montant ajusté de l'inflation (41 200 € si l'inflation a été de 3 %), quel que soit ce que fait le portefeuille. Historiquement, sur toutes les fenêtres de 30 ans américaines depuis 1926, un portefeuille 50 à 75 % actions n'a jamais été épuisé par ce régime. « Sûr » signifie ici : n'a jamais échoué dans le passé américain observé. Rien de plus.
 :::
 
 ## La mécanique, pas à pas
@@ -26,7 +26,7 @@ Trois propriétés découlent immédiatement de cette mécanique, et elles expli
 
 La règle a deux actes fondateurs, détaillés dans [[etude-trinity]].
 
-**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions/obligations aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, dans les dents du marché plat et de l'inflation des années 1970) supportait un retrait initial d'environ 4,15 % sur 30 ans. Bengen appelle ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là : c'est le taux du PIRE cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
+**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions/obligations aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, dans les dents du marché plat et de l'inflation des années 1970) supportait un retrait initial d'environ 4,15 % sur 30 ans. Bengen appelle ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là : c'est le taux du **pire** cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
 
 **Trinity, 1998.** Trois professeurs de la Trinity University (Cooley, Hubbard, Walz) transforment l'approche en grille de probabilités : pour chaque taux de retrait, allocation et horizon, quel pourcentage des fenêtres historiques a survécu ? La cellule restée célèbre : 4 %, portefeuille 50/50, 30 ans, 95 à 100 % de succès selon les mises à jour. C'est de cette étude que vient l'idée de « probabilité de succès » qui structure encore tous les simulateurs, y compris pofo ([[ruine-et-probabilites]]).
 
@@ -41,7 +41,7 @@ La force marketing du « 4 % » a fait oublier la liste, pourtant longue, de ses
 | Hypothèse implicite | La réalité de votre plan |
 |---|---|
 | Horizon de 30 ans | Un départ à 40 ans, c'est 45 à 55 ans ([[horizon-et-esperance-de-vie]]) |
-| Actions et obligations AMÉRICAINES, 1926-1995 | Le meilleur marché du siècle, sur son meilleur siècle ([[anarkulova-cederburg]]) |
+| Actions et obligations **américaines**, 1926-1995 | Le meilleur marché du siècle, sur son meilleur siècle ([[anarkulova-cederburg]]) |
 | Aucun frais | Un ETF coûte 0,1 à 0,4 %/an, un contrat d'assurance-vie parfois 1 % de plus ([[etf-ucits-europeens]]) |
 | Aucun impôt sur les retraits | PFU, prélèvements sociaux, PUMa : comptez-les dans les dépenses ([[flat-tax-et-imposition]], [[taxe-puma]]) |
 | Dépenses parfaitement rigides, indexées inflation | Les vraies dépenses varient, et c'est une marge exploitable ([[depenses-en-retraite]]) |
@@ -49,7 +49,7 @@ La force marketing du « 4 % » a fait oublier la liste, pourtant longue, de ses
 | Le retraité applique la règle mécaniquement 30 ans | Personne ne regarde son portefeuille fondre sans réagir ([[psychologie-du-retrait]]) |
 | Succès = il reste 1 € au dernier jour | Finir à 82 ans avec 3 000 € n'est un « succès » que pour le simulateur |
 
-Aucune de ces hypothèses n'invalide la règle comme ordre de grandeur. Mais leur somme explique pourquoi le chiffre qui sort d'une analyse sérieuse de VOTRE situation peut s'écarter de 4 % dans les deux sens, et de beaucoup.
+Aucune de ces hypothèses n'invalide la règle comme ordre de grandeur. Mais leur somme explique pourquoi le chiffre qui sort d'une analyse sérieuse de **votre** situation peut s'écarter de 4 % dans les deux sens, et de beaucoup.
 
 ## Ce qu'en dit l'état de l'art
 
@@ -80,7 +80,7 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 **Mauvaise comme stratégie de retrait effective.** Personne ne devrait exécuter mécaniquement un retrait indexé aveugle pendant 40 ans. Non parce que la règle est fausse, mais parce qu'elle ignore l'information qui arrive : marchés, santé, dépenses réelles, valorisations. Toute la partie « stratégies de retrait » de ce livre ([[panorama-strategies-retrait]]) traite de ce qu'on met à la place : des règles qui écoutent le portefeuille ([[guyton-klinger]], [[guardrails-morningstar]], [[amortissement-abw]]) et rendent le même capital capable de financer davantage, ou le même train de vie beaucoup plus sûr.
 
 ::: attention Le contresens le plus fréquent
-« 4 %, donc je peux retirer 4 % du portefeuille chaque année. » Non : ça, c'est la stratégie du pourcentage fixe ([[pourcentage-fixe]]), qui ne peut jamais ruiner mais fait violemment fluctuer le train de vie. La règle de Bengen indexe le MONTANT initial sur l'inflation ; le pourcentage du capital courant, lui, dérive. Les deux stratégies n'ont ni les mêmes risques ni le même confort ; les confondre fausse toute conversation sur le sujet.
+« 4 %, donc je peux retirer 4 % du portefeuille chaque année. » Non : ça, c'est la stratégie du pourcentage fixe ([[pourcentage-fixe]]), qui ne peut jamais ruiner mais fait violemment fluctuer le train de vie. La règle de Bengen indexe le **montant** initial sur l'inflation ; le pourcentage du capital courant, lui, dérive. Les deux stratégies n'ont ni les mêmes risques ni le même confort ; les confondre fausse toute conversation sur le sujet.
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
