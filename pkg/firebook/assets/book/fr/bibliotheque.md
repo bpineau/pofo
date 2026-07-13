@@ -14,7 +14,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Mr. Money Mustache** : le fondateur culturel du mouvement : à lire pour l'arithmétique du taux d'épargne et l'énergie : pas pour la science du retrait, qui a progressé depuis. [[fire-cest-quoi]]
 
-**r/vosfinances et les forums patrimoniaux français** : la communauté française : plus petite, précieuse pour les spécificités locales (PUMa, enveloppes, cas vécus). [[taxe-puma]], [[temoignages-fire]]
+**[r/vosfinances](https://www.reddit.com/r/vosfinances) et les forums patrimoniaux français** : la communauté française : plus petite, précieuse pour les spécificités locales (PUMa, enveloppes, cas vécus). [[taxe-puma]], [[temoignages-fire]]
 
 ## Les livres
 
@@ -68,31 +68,31 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives : la calibration annuelle de μ. [[rendements-attendus]]
 
-**Le site de Robert Shiller (données CAPE) et multpl.com** : le CAPE du jour : celui que pofo affiche en §00. [[valorisations-et-cape]]
+**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour : celui que pofo affiche en §00. [[valorisations-et-cape]]
 
 **Le SG Trend Index** : le référentiel des programmes de trend : le contrôle de tout véhicule. [[managed-futures]]
 
 ## Les sources officielles françaises
 
-**info-retraite.fr (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
+**[info-retraite.fr](https://www.info-retraite.fr) (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
 
-**impots.gouv.fr et le BOFiP ; service-public.fr** : les textes fiscaux à jour : priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
+**[impots.gouv.fr](https://www.impots.gouv.fr) et le BOFiP ; [service-public.fr](https://www.service-public.fr)** : les textes fiscaux à jour : priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
 
-**urssaf.fr (la CSM et son simulateur)** : le poste de veille du rentier de pont. [[taxe-puma]]
+**[urssaf.fr](https://www.urssaf.fr) (la CSM et son simulateur)** : le poste de veille du rentier de pont. [[taxe-puma]]
 
-**ameli.fr ; la DREES** : la couverture santé et les chiffres de la dépendance. [[sante-et-protection-sociale]]
+**[ameli.fr](https://www.ameli.fr) ; la DREES** : la couverture santé et les chiffres de la dépendance. [[sante-et-protection-sociale]]
 
-**insee.fr (IPC, indices par fonction, simulateur d'inflation personnalisée) ; l'Agence France Trésor (OATi)** : la mesure de l'inflation et ses instruments. [[suivre-inflation]], [[obligations-indexees]]
+**[insee.fr](https://www.insee.fr) (IPC, indices par fonction, simulateur d'inflation personnalisée) ; l'Agence France Trésor (OATi)** : la mesure de l'inflation et ses instruments. [[suivre-inflation]], [[obligations-indexees]]
 
 ## Les outils
 
 **pofo (la page FIRE que ce livre habite)** : le laboratoire multi-modèles du plan : quatre lentilles, les règles simulables, le solveur en équivalences : le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
 
-**TPAW Planner (tpawplanner.com)** : l'ABW/TPAW complet, gratuit : la référence de la famille actuarielle. [[amortissement-abw]]
+**TPAW Planner ([tpawplanner.com](https://tpawplanner.com))** : l'ABW/TPAW complet, gratuit : la référence de la famille actuarielle. [[amortissement-abw]]
 
 **Portfolio Charts ; cFIREsim ; FICalc** : les simulateurs historiques gratuits : de bons seconds avis (avec leurs biais d'échantillon en tête, [[pieges-des-simulateurs]]).
 
-**Le VPW worksheet (Bogleheads) ; tipsladder.com** : le classeur VPW (pont de pension compris) et l'échelle TIPS américaine (le modèle conceptuel de l'échelle euro). [[vpw]], [[echelle-obligataire]]
+**Le VPW worksheet (Bogleheads) ; [tipsladder.com](https://www.tipsladder.com)** : le classeur VPW (pont de pension compris) et l'échelle TIPS américaine (le modèle conceptuel de l'échelle euro). [[vpw]], [[echelle-obligataire]]
 
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 

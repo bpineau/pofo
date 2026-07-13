@@ -81,7 +81,7 @@ Question : « puis-je partir en 2027 ou faut-il attendre 2029 ? » Mauvais usage
 
 ## Pour aller plus loin
 
-- Michael Kitces, « The Problem With Monte Carlo Analyses In Retirement Projections » et les articles associés (kitces.com) : le bon usage vu du métier de conseiller.
+- Michael Kitces, « The Problem With Monte Carlo Analyses In Retirement Projections » et les articles associés ([kitces.com](https://www.kitces.com)) : le bon usage vu du métier de conseiller.
 - Early Retirement Now, volet 8 (l'appendice technique) et volet 46 (la fausse précision) ([[serie-ern]]).
 - Metropolis & Ulam, « The Monte Carlo Method » (1949) : l'article fondateur, étonnamment lisible.
 - La suite directe dans ce livre : [[historique-vs-parametrique]] (les trois familles de sources de rendements), [[queues-epaisses]] (le choix Student-t), [[rendre-monte-carlo-pertinent]] (blending, régimes, stress) et [[lire-un-fan-chart]] (la lecture des sorties).

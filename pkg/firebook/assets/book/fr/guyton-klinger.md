@@ -73,5 +73,5 @@ Plan : 1,3 M€, taux initial 4,3 % (55 900 €), corridor ±20 % (seuils : 3,44
 
 - Guyton & Klinger, « Decision Rules and Maximum Initial Withdrawal Rates », *Journal of Financial Planning*, 2006 : l'article original (lisible, et instructif à relire en connaissant la suite).
 - Early Retirement Now, volets 9-10 : la démonstration de la pathologie, simulations à l'appui ([[serie-ern]]).
-- Kitces & Tharp, « The Extraordinary Upside Potential Of Sequence Of Return Risk In Retirement » et les publications guardrails de kitces.com : la descendance par risque.
+- Kitces & Tharp, « The Extraordinary Upside Potential Of Sequence Of Return Risk In Retirement » et les publications guardrails de [kitces.com](https://www.kitces.com) : la descendance par risque.
 - Dans ce livre : [[guardrails-morningstar]] (l'état de l'art de la famille), [[plancher-plafond]] (l'autre voie du corridor), [[flexibilite-realite]] (ce que la flexibilité peut vraiment acheter).

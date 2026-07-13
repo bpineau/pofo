@@ -57,7 +57,7 @@ Léa et Sam, phase de pont de 12 ans, besoin 50 000 €/an, patrimoine organisé
 
 ## Pour aller plus loin
 
-- urssaf.fr : la page cotisation subsidiaire maladie et son simulateur : la source opérationnelle, à consulter chaque année de pont.
+- [urssaf.fr](https://www.urssaf.fr) : la page cotisation subsidiaire maladie et son simulateur : la source opérationnelle, à consulter chaque année de pont.
 - L'article L380-2 du code de la Sécurité sociale et le décret de 2019 : les textes, pour les amateurs de sources primaires.
 - Les analyses des contentieux 2016-2019 (doctrine et jurisprudence) : l'histoire du zigzag, instructive sur l'instabilité du dispositif.
 - Dans ce livre : [[flat-tax-et-imposition]] (le taux mixte où l'intégrer), [[enveloppes-francaises]] (le pilotage d'assiette), [[retour-au-travail]] (l'interrupteur d'activité comme choix de vie), [[retraite-legale]] (l'extinction par la pension).

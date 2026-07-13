@@ -53,6 +53,6 @@ Sam ([[taxe-puma]], version C) : départ à 47 ans, plan tenant seul à 3,7 %, e
 ## Pour aller plus loin
 
 - Les récits Barista et Coast du corpus ([[temoignages-fire]]) et les fils dédiés des forums : le terrain des dosages réels.
-- autoentrepreneur.urssaf.fr : la micro-entreprise, création et simulateurs : l'outil à ouvrir avant le départ.
+- [autoentrepreneur.urssaf.fr](https://www.autoentrepreneur.urssaf.fr) : la micro-entreprise, création et simulateurs : l'outil à ouvrir avant le départ.
 - Early Retirement Now sur les retraites échelonnées et le « redo » ([[serie-ern]]).
 - Dans ce livre : [[sequence-des-rendements]] (pourquoi les premières années), [[taxe-puma]] et [[retraite-legale]] (le quadruplé), [[flexibilite-realite]] (la forme n° 1), [[sens-et-identite]] (le travail comme utilité choisie).
