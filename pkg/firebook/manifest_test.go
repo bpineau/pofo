@@ -84,3 +84,27 @@ func TestArticles(t *testing.T) {
 		}
 	}
 }
+
+func TestFiguresResolve(t *testing.T) {
+	known := map[string]bool{}
+	for _, id := range FigureIDs() {
+		known[id] = true
+	}
+	used := map[string]bool{}
+	re := regexp.MustCompile(`(?m)^::: figure (\S+)`)
+	files, _ := assets.ReadDir("assets/book/fr")
+	for _, f := range files {
+		b, _ := assets.ReadFile("assets/book/fr/" + f.Name())
+		for _, m := range re.FindAllStringSubmatch(string(b), -1) {
+			used[m[1]] = true
+			if !known[m[1]] {
+				t.Errorf("%s: ::: figure %q has no SVG in figures.go", f.Name(), m[1])
+			}
+		}
+	}
+	for id := range known {
+		if !used[id] {
+			t.Logf("figure %q defined but not used in any article", id)
+		}
+	}
+}

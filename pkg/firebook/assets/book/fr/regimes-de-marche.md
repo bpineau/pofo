@@ -8,6 +8,10 @@ Et elles sont la clé de la question qui domine la partie portefeuille de ce liv
 Un portefeuille n'est jamais neutre : il est un pari implicite sur un régime (le 60/40 parie sur la croissance désinflationniste), et un plan de retrait est une promesse de 40 ans qui traversera **statistiquement** deux ou trois régimes hostiles. La question n'est pas d'éviter les mauvaises saisons (personne ne les prédit de façon fiable) mais de détenir de quoi survivre à chacune, et de les avoir mises dans le simulateur avant qu'elles n'arrivent dans la vie.
 :::
 
+::: figure regime-grid
+La grille croissance × inflation : chaque saison a ses gagnants. Le 60/40 ne couvre que la colonne de gauche ; la stagflation (bas-droite) est le trou de la défense classique et le cauchemar du rentier.
+:::
+
 ## Les régimes existent : la preuve en trois faits
 
 **Fait 1 : les marchés baissiers sont des épisodes, pas des accidents.** Sur un siècle américain, les grands marchés baissiers d'actions (−20 % réel et plus) durent en médiane un à deux ans, mais leur queue est longue : 1929-1932 (34 mois, −80 % réel), 1973-1974 (21 mois, −55 % réel en comptant l'inflation), 2000-2002 (30 mois), 2007-2009 (17 mois). Et le retour au sommet **réel** précédent prend bien plus longtemps : 7 ans après 1974, 13 ans après 2000, plus de 30 ans au Japon après 1990. Un monde i.i.d. produirait des baisses de cette ampleur, mais pas ces **durées** : l'enchaînement persistant d'années médiocres est la signature des régimes.
