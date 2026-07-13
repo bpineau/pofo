@@ -131,6 +131,7 @@ var Categories = []Category{
 			{"retraite-legale", "FIRE et retraite légale : trimestres, AGIRC-ARRCO, décote", "L'actif négligé du plan : ce qu'une carrière écourtée produit, le taux plein automatique à 67 ans, les trimestres à bas coût, et la méthode M@REL."},
 			{"sante-et-protection-sociale", "Santé et protection sociale du rentier", "PUMa et ALD comme socle, la mutuelle à charge pleine et sa dérive, le trou de prévoyance du pont, et la dépendance provisionnée."},
 			{"succession-et-transmission", "Succession et transmission", "Conjoint exonéré, abattements rechargeables, AV avant 70 ans, démembrement : les six outils dans l'ordre, et la règle d'or qui prime tout."},
+			{"expatriation-fiscale", "L'expatriation : fiscalité et protection sociale", "Le joker mental du rentier passé au calcul froid : résidence réelle, régimes datés, les attaches qui suivent, et le solde souvent proche de zéro."},
 		},
 	},
 }
