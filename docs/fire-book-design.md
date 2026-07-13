@@ -165,7 +165,7 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
 - [x] sante-et-protection-sociale: Sante et protection sociale du rentier
 - [x] succession-et-transmission: Succession et transmission
-- [ ] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
+- [x] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
 
 ### IX. Le facteur humain
 - [ ] psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
