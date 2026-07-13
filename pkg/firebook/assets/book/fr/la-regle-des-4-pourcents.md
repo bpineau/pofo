@@ -103,6 +103,6 @@ Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an inde
 
 - William Bengen, « Determining Withdrawal Rates Using Historical Data », *Journal of Financial Planning*, 1994.
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, 1998 (l'étude Trinity, [[etude-trinity]]).
-- Early Retirement Now, SWR Series Part 1 et Part 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») : la critique moderne la plus complète ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 1 et volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») : la critique moderne la plus complète ([[serie-ern]]).
 - Morningstar, *The State of Retirement Income* (annuel) : le taux recommandé recalculé chaque année avec des rendements prospectifs ([[guardrails-morningstar]]).
 - Bengen lui-même, interviews récentes : il considère aujourd'hui 4 % comme trop conservateur pour 30 ans avec un portefeuille plus diversifié... et ne s'applique qu'au cadre américain sur 30 ans. Les deux mouvements (le sien vers le haut, celui de la recherche « monde + horizon long » vers le bas) illustrent bien que le chiffre dépend du cadre.

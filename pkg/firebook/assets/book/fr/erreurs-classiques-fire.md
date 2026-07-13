@@ -18,7 +18,7 @@ L'erreur numéro un, de loin, parce qu'elle est amplifiée par le multiple de 25
 
 La règle des 4 % est calibrée sur 30 ans, aux États-Unis, sans frais ni impôts ([[la-regle-des-4-pourcents]]). Sur 45-55 ans d'horizon, en rigide, le taux historiquement sûr est plus proche de 3,25-3,5 % ([[serie-ern]]), et l'échantillon mondial est moins clément encore ([[anarkulova-cederburg]]). Partir à 42 ans sur du 25x sans marges, c'est accepter sans le savoir une probabilité d'échec à deux chiffres.
 
-**Correction** : dimensionner à 3-3,5 % **ou** compenser explicitement par des marges chiffrées (pension future, flexibilité, revenus partiels), en les donnant au simulateur plutôt qu'en les invoquant.
+**Correction** : dimensionner à 3-3,5 % ou compenser explicitement par des marges chiffrées (pension future, flexibilité, revenus partiels), en les donnant au simulateur plutôt qu'en les invoquant.
 
 ## 3. Ignorer la fiscalité et la PUMa
 
@@ -46,7 +46,7 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 7. Tout miser sur la flexibilité
 
-« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné : la recherche ([[flexibilite-realite]], ERN Parts 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, parce que les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget.
+« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné : la recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, parce que les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget.
 
 **Correction** : chiffrer le plancher réel (celui qu'on tient **cinq** ans, moral compris), et l'inscrire dans une règle décidée à l'avance ([[plancher-plafond]], [[guardrails-morningstar]]) plutôt que dans une intention.
 
@@ -80,7 +80,7 @@ Deux symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché ch
 - [ ] Plancher de dépenses chiffré et réaliste ; règle d'ajustement écrite
 - [ ] Ruine acceptable même dans le modèle broad-sample ; décennie perdue survivable
 - [ ] Buffer de liquidités dimensionné et règles de consommation/recharge décidées ([[cash-buffer]], [[recharger-ou-pas]])
-- [ ] Projet de vie prototypé ; accord du conjoint sur le budget **et** sur la vie
+- [ ] Projet de vie prototypé ; accord du conjoint sur le budget et sur la vie
 - [ ] Critères de départ écrits, avec date de revue
 
 ::: terrain Ce que disent les post-mortem
@@ -91,6 +91,6 @@ Les récits d'échec publiés sur les forums FIRE ont une constante frappante : 
 
 ## Pour aller plus loin
 
-- Early Retirement Now, Part 26 et Part 50 (« Ten Things the Makers of the 4% Rule / of FIRE Don't Want You to Know ») : les angles morts du mouvement par son meilleur analyste ([[serie-ern]]).
+- Early Retirement Now, volet 26 et volet 50 (« Ten Things the Makers of the 4% Rule / of FIRE Don't Want You to Know ») : les angles morts du mouvement par son meilleur analyste ([[serie-ern]]).
 - La construction de la cible, poste par poste : [[combien-il-vous-faut]].
 - La revue annuelle qui maintient le plan honnête : [[revue-annuelle]] ; et quand s'inquiéter vraiment : [[quand-s-inquieter]].

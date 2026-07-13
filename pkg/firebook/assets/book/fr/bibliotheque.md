@@ -4,11 +4,11 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les séries et blogs de référence
 
-**Early Retirement Now : la « Safe Withdrawal Rate Series » (Karsten Jeske)** : **la** référence quantitative du sujet : 60+ volets, simulations reproductibles, honnêteté systématique : le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les Parts 1 et 26 ; le guide de lecture complet est [[serie-ern]].
+**Early Retirement Now : la « Safe Withdrawal Rate Series » (Karsten Jeske)** : la référence quantitative du sujet : 60+ volets, simulations reproductibles, honnêteté systématique : le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les volets 1 et 26 ; le guide de lecture complet est [[serie-ern]].
 
 **Kitces.com (Michael Kitces)** : le blog du métier de conseiller américain : la source des guardrails par risque, du bond tent, du ratcheting : technique, nuancé, prolifique. Chercher par sujet plutôt que suivre le flux. [[guardrails-morningstar]], [[glidepaths]]
 
-**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel : le wiki est une encyclopédie tenue (VPW, ABW, **eu** investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
+**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel : le wiki est une encyclopédie tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
 
 **Portfolio Charts (Tyler)** : les portefeuilles types (Permanent, Golden Butterfly...) testés par pays avec SWR et drawdowns : l'outil visuel de la partie portefeuille. [[portefeuilles-tous-temps]]
 
@@ -22,7 +22,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Wade Pfau, *Retirement Planning Guidebook*** : le manuel praticien le plus complet du retrait américain : les deux écoles (probability-based / safety-first) traitées à égalité : la référence « métier ». [[panorama-strategies-retrait]], [[rentes-et-annuites]]
 
-**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : **la** référence sur ce que chaque classe d'actifs paie et pourquoi : le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
+**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : la référence sur ce que chaque classe d'actifs paie et pourquoi : le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
 
 **William Bernstein, *The Intelligent Asset Allocator* et *The Four Pillars of Investing*** : la meilleure pédagogie écrite des deux moyennes, de la diversification et de l'histoire des marchés. [[rendements-arithmetiques-geometriques]]
 
@@ -74,7 +74,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les sources officielles françaises
 
-**info-retraite.fr (relevé, M@REL, rachats)** : **la** source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
+**info-retraite.fr (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
 
 **impots.gouv.fr et le BOFiP ; service-public.fr** : les textes fiscaux à jour : priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
 
@@ -97,7 +97,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN Parts 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie : puis [[construire-son-plan]], et la page FIRE ouverte à côté.
+**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie : puis [[construire-son-plan]], et la page FIRE ouverte à côté.
 :::
 
 ## L'essentiel à retenir

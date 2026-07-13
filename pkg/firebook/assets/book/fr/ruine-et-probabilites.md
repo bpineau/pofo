@@ -2,7 +2,7 @@
 
 Tous les simulateurs de retraite, pofo compris, résument leur verdict en un chiffre : la probabilité de ruine (ou son complément, le « taux de succès »). C'est le chiffre le plus regardé du sujet, et le plus mal compris : on le lit comme une météo (« 5 % de risque, ça va »), on le compare entre outils qui ne mesurent pas la même chose, on lui demande une précision qu'il n'a pas, et on oublie qu'il décrit un monde où personne ne réagit jamais.
 
-Cette page apprend à lire ce chiffre en professionnel : ce qu'il mesure exactement, comment choisir **son** seuil acceptable, pourquoi 2 % et 8 % sont souvent indiscernables, et ce que la ruine simulée a de très différent d'une ruine réelle.
+Cette page apprend à lire ce chiffre en professionnel : ce qu'il mesure exactement, comment choisir son seuil acceptable, pourquoi 2 % et 8 % sont souvent indiscernables, et ce que la ruine simulée a de très différent d'une ruine réelle.
 
 ::: cle La définition, sans raccourci
 La probabilité de ruine d'un plan est la fraction des futurs simulés (ou des fenêtres historiques rejouées) dans lesquels le portefeuille atteint zéro **avant** la fin de l'horizon, sous une règle de retrait appliquée mécaniquement, sans aucune réaction humaine. C'est une propriété du **couple** plan + modèle, jamais du plan seul : changer de modèle change le chiffre, parfois du simple au triple, sans que votre plan ait bougé ([[historique-vs-parametrique]]).
@@ -12,7 +12,7 @@ La probabilité de ruine d'un plan est la fraction des futurs simulés (ou des f
 
 Décomposons la définition, terme à terme, parce que chaque terme cache un piège.
 
-**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par **un** modèle. Si le modèle tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]) ; s'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]) ; s'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai » : c'est pourquoi la page FIRE de pofo affiche le même plan sous quatre modèles côte à côte, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, pas une colonne.
+**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par un modèle. Si le modèle tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]) ; s'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]) ; s'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai » : c'est pourquoi la page FIRE de pofo affiche le même plan sous quatre modèles côte à côte, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, pas une colonne.
 
 **« Le portefeuille atteint zéro ».** La ruine du simulateur est binaire et terminale. Elle ne distingue pas l'échec à 71 ans de l'échec à 94 ans, ni le scénario qui finit à zéro de celui qui finit à 5 000 € (échec) ou 15 000 € (succès !). Deux plans à 5 % de ruine peuvent cacher des réalités très différentes : l'un échoue tôt et brutalement, l'autre s'essouffle en toute fin de parcours avec la pension légale en soutien. D'où l'intérêt des vues complémentaires : **quand** surviennent les échecs, et quelle richesse médiane en fin d'horizon ([[lire-un-fan-chart]]).
 
@@ -68,7 +68,7 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series Part 11 (comment noter une règle de retrait) et Part 46 (« The Need for Precision in an Uncertain World ») : earlyretirementnow.com ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 11 (comment noter une règle de retrait) et volet 46 (« The Need for Precision in an Uncertain World ») : earlyretirementnow.com ([[serie-ern]]).
 - Michael Kitces, « The Problem With FIREing At A 4% Withdrawal Rate » et « Is A Probability Of Success-Driven Retirement Plan Actually Riskier? » (kitces.com) : la lecture praticienne du taux de succès.
 - Derek Tharp & Kitces sur les « guardrails » en probabilité de succès : le pilotage plutôt que le chiffre statique.
 - Dans pofo : la vue mortalité × ruine et le solveur « acceptable ruin » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).

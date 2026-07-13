@@ -14,7 +14,7 @@ La règle tient en deux lignes, mais trois choix d'exécution, rarement explicit
 
 **D'où sort l'argent : le prélèvement-rééquilibrage.** La version naïve vend « un peu de tout » au prorata ; la bonne pratique vend **en priorité** la classe d'actifs en surpoids par rapport à l'allocation cible : après une bonne année actions on vend des actions, après un krach on vend des obligations (et on laisse les actions récupérer). Ce simple choix fait du retrait un rééquilibrage gratuit et améliore mesurablement la survie des pires millésimes : c'est une des raisons pour lesquelles les études historiques (qui supposent le rééquilibrage annuel) trouvent des SAFEMAX plus élevés que certains portefeuilles réels jamais rééquilibrés. pofo simule exactement cela : portefeuille agrégé aux poids cibles, prélèvement neutre ([[la-machine-pofo]]).
 
-**Quand : la fréquence du prélèvement.** Annuel en début d'année (la convention des études), mensuel (la vraie vie : la case « Monthly withdrawals » de pofo) : l'écart est faible (le mensuel lisse un peu le point d'entrée des ventes, quelques dixièmes de point sur la ruine) mais le mensuel a une vertu de gouvernance : il transforme le retrait en « salaire » et évite la tentation de décaler **la** grosse vente annuelle en regardant le marché, qui est du market timing déguisé.
+**Quand : la fréquence du prélèvement.** Annuel en début d'année (la convention des études), mensuel (la vraie vie : la case « Monthly withdrawals » de pofo) : l'écart est faible (le mensuel lisse un peu le point d'entrée des ventes, quelques dixièmes de point sur la ruine) mais le mensuel a une vertu de gouvernance : il transforme le retrait en « salaire » et évite la tentation de décaler la grosse vente annuelle en regardant le marché, qui est du market timing déguisé.
 
 **Quelle inflation : l'indice.** La règle canonique indexe sur l'IPC national ; votre inflation personnelle peut en diverger durablement (santé, dépendance : la dérive réglable de pofo, [[suivre-inflation]], [[depenses-en-retraite]]). Indexer sur l'IPC en laissant la dérive santé non financée est l'angle mort le plus courant des plans « à la Bengen » de plus de 30 ans.
 
@@ -75,5 +75,5 @@ Le fixe indexé est le mode par défaut de la page FIRE : « Net spending /yr »
 
 - Bengen, « Determining Withdrawal Rates Using Historical Data » (1994) et *Conserving Client Portfolios During Retirement* (2006) : la règle et ses propres amendements par son auteur.
 - Kitces, « The Ratcheting Safe Withdrawal Rate » (2015) : le cliquet à la hausse.
-- Early Retirement Now, Part 5 (les ajustements d'indexation) et Part 24 (la flexibilité minimale) ([[serie-ern]]).
+- Early Retirement Now, volet 5 (les ajustements d'indexation) et volet 24 (la flexibilité minimale) ([[serie-ern]]).
 - Dans ce livre : les deux articles amont ([[la-regle-des-4-pourcents]], [[etude-trinity]]), et les héritiers directs : [[guyton-klinger]] et [[plancher-plafond]].

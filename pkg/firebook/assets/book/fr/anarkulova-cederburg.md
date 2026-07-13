@@ -10,7 +10,7 @@ Si vous admettez que la France, le Japon, l'Allemagne ou l'Italie de 1900-2020 s
 
 ## Le biais du survivant géographique
 
-Commençons par le problème. Les données Ibbotson démarrent en 1926 à New York : elles contiennent la Grande Dépression et la stagflation, mais **aussi** un pays jamais envahi, jamais en défaut sur sa dette intérieure, dont la monnaie est devenue la réserve mondiale, et dont le marché actions a été **le** grand gagnant du siècle. Choisir ce pays comme unique échantillon, c'est calibrer son plan sur le billet gagnant de la loterie.
+Commençons par le problème. Les données Ibbotson démarrent en 1926 à New York : elles contiennent la Grande Dépression et la stagflation, mais **aussi** un pays jamais envahi, jamais en défaut sur sa dette intérieure, dont la monnaie est devenue la réserve mondiale, et dont le marché actions a été le grand gagnant du siècle. Choisir ce pays comme unique échantillon, c'est calibrer son plan sur le billet gagnant de la loterie.
 
 Ce que l'échantillon américain ne contient pas, et que le XXe siècle développé a pourtant produit en abondance : des marchés actions fermés ou spoliés (Allemagne 1948, Japon 1946), des hyperinflations qui pulvérisent les obligations ([[hyperinflation-et-extremes]]), des décennies perdues profondes (Japon post-1990 : les actions sous leur sommet réel pendant plus de trente ans), des défauts et des répressions financières. Un rentier allemand, japonais, français ou italien parti en 1900-1960 avec un plan « à l'américaine » a, dans une fraction non négligeable des cas, été ruiné non par malchance de séquence mais parce que son **pays** a traversé l'histoire.
 
@@ -22,7 +22,7 @@ Les travaux d'Anarkulova, Cederburg et o'Doherty (« The Safe Withdrawal Rate: E
 
 **Les données** : la base la plus propre disponible sur les pays développés (construite sur le référentiel GFD et les travaux académiques de long terme), 38 pays développés, environ 2 500 années-pays de rendements réels actions, obligations et monétaire, avec un soin particulier contre les biais de survie et d'anticipation (un pays entre dans l'échantillon quand il est développé à L'**époque**, pas rétrospectivement : l'Argentine de 1900, alors riche, y figure ; c'est le point qui fâche, on y revient).
 
-**La méthode** : plutôt que rejouer des fenêtres d'un seul pays, un **bootstrap par blocs** : on tire des blocs de dix ans (pour préserver les grappes, tendances et régimes, [[sequence-des-rendements]]) dans l'ensemble pays × époques, et on assemble des retraites synthétiques de la durée voulue. Chaque retraite simulée vit donc l'histoire d'**un** pays développé cohérent, morceau par morceau, catastrophes comprises. C'est très exactement ce que fait le modèle « broad sample » de pofo, qui embarque le panel académique Jorda-Schularick-Taylor (16 pays, 1870-2020) et le rejoue en blocs par pays sur un portefeuille 60/40 domestique ([[la-machine-pofo]]).
+**La méthode** : plutôt que rejouer des fenêtres d'un seul pays, un **bootstrap par blocs** : on tire des blocs de dix ans (pour préserver les grappes, tendances et régimes, [[sequence-des-rendements]]) dans l'ensemble pays × époques, et on assemble des retraites synthétiques de la durée voulue. Chaque retraite simulée vit donc l'histoire d'un pays développé cohérent, morceau par morceau, catastrophes comprises. C'est très exactement ce que fait le modèle « broad sample » de pofo, qui embarque le panel académique Jorda-Schularick-Taylor (16 pays, 1870-2020) et le rejoue en blocs par pays sur un portefeuille 60/40 domestique ([[la-machine-pofo]]).
 
 **La mortalité** : au lieu d'un horizon fixe de 30 ans, un couple de 65 ans avec les vraies tables de mortalité, ce qui donne des retraites de durée aléatoire, parfois 35 ans et plus.
 
@@ -40,11 +40,11 @@ Ces travaux ont leurs contradicteurs sérieux (ERN en tête, qui y a consacré p
 
 **Le cas argentin et les frontières de l'échantillon.** Inclure des pays « développés à l'époque » qui ont ensuite décroché (l'Argentine) est méthodologiquement défendable (c'est exactement le biais de survie qu'on veut éviter : en 1900, personne ne savait qui décrocherait) mais tire les chiffres vers le bas pour un investisseur des pays cœur d'aujourd'hui.
 
-**L'investisseur simulé est domestique.** Les retraites simulées vivent l'histoire d'**un** pays (actions **et** obligations locales). Un investisseur mondialisé d'aujourd'hui, en ETF monde non couvert en change, n'aurait pas vécu le Japon 1990 ou l'Italie 1970 en plein : la diversification internationale amortit précisément les pires blocs de l'échantillon. C'est probablement la critique la plus importante en pratique, et c'est un argument central **pour** la diversification ([[diversification-internationale]]) plus que **contre** l'étude.
+**L'investisseur simulé est domestique.** Les retraites simulées vivent l'histoire d'un pays (actions et obligations locales). Un investisseur mondialisé d'aujourd'hui, en ETF monde non couvert en change, n'aurait pas vécu le Japon 1990 ou l'Italie 1970 en plein : la diversification internationale amortit précisément les pires blocs de l'échantillon. C'est probablement la critique la plus importante en pratique, et c'est un argument central pour la diversification ([[diversification-internationale]]) plus que **contre** l'étude.
 
 **Le chevauchement des blocs** et la taille effective de l'échantillon : 2 500 années-pays semblent beaucoup, mais les crises sont mondiales et corrélées (1929, 1973, 2008 frappent tout le monde) ; l'échantillon de désastres **indépendants** reste petit. L'incertitude sur ces chiffres est donc elle-même large.
 
-La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'aujourd'hui se situe quelque part **entre** l'histoire américaine et l'échantillon mondial domestique, sans qu'on sache où précisément. D'où la conception de pofo : les deux bornes affichées côte à côte, en permanence.
+La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'aujourd'hui se situe quelque part entre l'histoire américaine et l'échantillon mondial domestique, sans qu'on sache où précisément. D'où la conception de pofo : les deux bornes affichées côte à côte, en permanence.
 
 ## Ce que ça change pour votre plan
 
@@ -52,7 +52,7 @@ La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'
 
 **La lecture de la page FIRE.** La colonne broad-sample de pofo n'**est pas** votre portefeuille : c'est un 60/40 domestique rejoué à travers le siècle des 16 pays, curseurs ignorés. Si votre plan tient dans cette colonne, il tient dans le pire monde développé documenté : c'est le meilleur label de robustesse disponible. S'il n'y tient pas, regardez **où** échouent les scénarios (souvent : blocs inflationnistes, [[inflation-et-taux-de-retrait]]) et ce qui manque à votre portefeuille pour ces régimes ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
-**Le portefeuille.** Deux leçons directes : la diversification internationale des actions n'est pas un raffinement, c'est **la** protection contre le risque dominant de l'échantillon (le décrochage d'un pays, fût-il le vôtre) ; et les obligations nominales domestiques ne sont pas l'actif sûr du long horizon : leur pire ennemi (l'inflation soutenue) est aussi celui du rentier ([[obligations-indexees]], [[or-en-retrait]]).
+**Le portefeuille.** Deux leçons directes : la diversification internationale des actions n'est pas un raffinement, c'est la protection contre le risque dominant de l'échantillon (le décrochage d'un pays, fût-il le vôtre) ; et les obligations nominales domestiques ne sont pas l'actif sûr du long horizon : leur pire ennemi (l'inflation soutenue) est aussi celui du rentier ([[obligations-indexees]], [[or-en-retrait]]).
 
 ::: exemple Le même plan sous les deux bornes
 Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à 67 ans, actions mondiales 70 % / obligations 30 %. Fenêtres historiques du portefeuille : ruine ~1 %. Central calibré : ~4 %. Broad-sample : ~9 %, échecs concentrés dans les blocs à inflation persistante, aux trois quarts après 80 ans, pension acquise. Lecture : le plan est solide (3,2 % avec pension est déjà prudent) ; la queue broad-sample s'adresse par 10-15 % de flexibilité écrite ([[flexibilite-realite]]) plutôt que par du capital en plus. Sans la colonne broad-sample, on n'aurait jamais su que le mode de défaillance résiduel était l'inflation, pas le krach.
@@ -62,7 +62,7 @@ Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à
 
 - L'histoire américaine est le billet gagnant du siècle : calibrer un plan dessus, c'est hériter de son biais optimiste ; le monde développé complet raconte une histoire plus dure.
 - Anarkulova-Cederburg-O'Doherty (38 pays, bootstrap par blocs, mortalité réelle) : le 4 % rigide échoue ~17 % du temps, le taux à 5 % d'échec est vers 2,3 % pour un couple domestique 60/40 ; et les obligations domestiques protègent moins que la diversification internationale des actions.
-- Les critiques (guerres, Argentine, investisseur domestique, crises corrélées) sont sérieuses : la vérité d'un investisseur mondialisé est **entre** les deux bornes ; personne ne sait où.
+- Les critiques (guerres, Argentine, investisseur domestique, crises corrélées) sont sérieuses : la vérité d'un investisseur mondialisé est entre les deux bornes ; personne ne sait où.
 - En pratique : 3-3,5 % rigide pour dimensionner, la colonne broad-sample de pofo comme label de robustesse, la diversification internationale et les actifs anti-inflation comme réponses aux modes de défaillance qu'elle révèle.
 - Ces données sont dans votre outil : le modèle broad-sample de la page FIRE rejoue le panel JST 16 pays, 1870-2020 ([[la-machine-pofo]], [[utiliser-la-page-fire]]).
 

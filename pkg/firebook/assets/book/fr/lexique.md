@@ -102,7 +102,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Permanent Portfolio** : les quatre quarts de Browne (actions, obligations longues, or, cash) : l'archétype tous-temps : un gagnant par régime, rééquilibré. [[portefeuilles-tous-temps]]
 
-**Plancher (de dépenses)** : le budget tenable cinq ans, moral compris : **la** capacité de flexibilité du plan : testé (le trimestre d'essai), jamais déclaré. [[flexibilite-realite]], [[combien-il-vous-faut]]
+**Plancher (de dépenses)** : le budget tenable cinq ans, moral compris : la capacité de flexibilité du plan : testé (le trimestre d'essai), jamais déclaré. [[flexibilite-realite]], [[combien-il-vous-faut]]
 
 **PMP (prix moyen pondéré)** : le prix d'acquisition fiscal d'une ligne : la friction d'une vente = taux × (1 − PMP/cours) : basse au début du plan, croissante ensuite. [[flat-tax-et-imposition]]
 
@@ -126,7 +126,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Réversion** : la fraction de pension versée au conjoint survivant : la base sous conditions, la complémentaire à 60 % : une partie de la protection du survivant. [[retraite-legale]], [[couple-et-famille]]
 
-**Risque de séquence** : avec des retraits, l'ordre des rendements compte autant que leur moyenne : les pertes précoces deviennent permanentes : **le** concept central du livre. [[sequence-des-rendements]]
+**Risque de séquence** : avec des retraits, l'ordre des rendements compte autant que leur moyenne : les pertes précoces deviennent permanentes : le concept central du livre. [[sequence-des-rendements]]
 
 ## S-Z
 
@@ -142,7 +142,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **SWR (Safe Withdrawal Rate)** : le taux de retrait « sûr » : jamais une constante : une fonction du cadre (horizon, échantillon, valorisations, marges). [[la-regle-des-4-pourcents]]
 
-**Taux courant (de retrait)** : dépenses annuelles / portefeuille du moment : **le** voyant central du pilotage, gradué en vert-orange-rouge. [[quand-s-inquieter]]
+**Taux courant (de retrait)** : dépenses annuelles / portefeuille du moment : le voyant central du pilotage, gradué en vert-orange-rouge. [[quand-s-inquieter]]
 
 **Time buckets** : dater ses envies par fenêtres physiologiques (avant 60, avant 75...) : ce qui est daté se finance maintenant : l'outil central de Die With Zero. [[depenses-en-retraite]]
 

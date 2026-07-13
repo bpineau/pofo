@@ -54,7 +54,7 @@ Le multiple est l'inverse du taux de retrait ([[la-regle-des-4-pourcents]]) ; le
 
 | Multiple | Taux | Le profil que ça sert |
 |---|---|---|
-| 25 (4 %) | 4,0 % | Horizon ≤ 30 ans, ou horizon long **avec** fortes marges : flexibilité réelle, pension légale future, revenus partiels probables |
+| 25 (4 %) | 4,0 % | Horizon ≤ 30 ans, ou horizon long avec fortes marges : flexibilité réelle, pension légale future, revenus partiels probables |
 | 28-29 (3,5 %) | ~3,5 % | Le compromis de travail pour un départ précoce avec portefeuille mondial diversifié et une flexibilité normale |
 | 33 (3 %) | 3,0 % | Horizon très long sans aucune marge, budget déjà au plancher, forte aversion au risque, ou foi dans l'échantillon mondial pessimiste |
 | > 33 | < 3 % | Rarement rationnel : à ce stade, le risque dominant n'est plus la ruine, c'est de mourir riche en ayant travaillé des années de trop ([[une-annee-de-plus]]) |
@@ -97,7 +97,7 @@ Le chiffre obtenu n'est pas une ligne d'arrivée sacrée : c'est le centre d'une
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series Part 2 (préservation vs consommation du capital) et Part 28 (l'outil de calcul) : earlyretirementnow.com ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 2 (préservation vs consommation du capital) et volet 28 (l'outil de calcul) : earlyretirementnow.com ([[serie-ern]]).
 - info-retraite.fr : votre relevé de carrière et l'estimation officielle de vos pensions, l'entrée « revenus différés » de votre plan ([[retraite-legale]]).
 - Morningstar, *The State of Retirement Income* : les taux recommandés recalculés chaque année ([[guardrails-morningstar]]).
 - Le simulateur intégré : [[utiliser-la-page-fire]], et ce qu'il calcule exactement : [[la-machine-pofo]].
