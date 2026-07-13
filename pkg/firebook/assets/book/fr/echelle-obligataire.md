@@ -22,7 +22,7 @@ Ce que l'échelle ne fait **pas** : la poche obligataire permanente du portefeui
 
 ## Nominal ou indexé : la question qui décide de tout
 
-Un barreau **nominal** de 40 000 € en 2038 financera... 40 000 € de 2038 : soit ~30 000 € d'aujourd'hui à 2,5 % d'inflation : sur les barreaux au-delà de 5-7 ans, la « garantie » nominale est une garantie de **pouvoir** D'**achat décroissant** : la fausse sécurité classique ([[inflation-et-taux-de-retrait]]). Trois réponses, par ordre de propreté :
+Un barreau **nominal** de 40 000 € en 2038 financera... 40 000 € de 2038 : soit ~30 000 € d'aujourd'hui à 2,5 % d'inflation : sur les barreaux au-delà de 5-7 ans, la « garantie » nominale est une garantie de **pouvoir** d'**achat décroissant** : la fausse sécurité classique ([[inflation-et-taux-de-retrait]]). Trois réponses, par ordre de propreté :
 
 - **L'échelle de LINKERS** : chaque barreau indexé sur les prix : le flux de 2038 sera 40 000 € **réels**, contractuellement : c'est l'objet « retraite garantie » déjà rencontré ([[obligations-indexees]] : l'échelle TIPS à 4,6 %, sa cousine euro à ~3,9 %) : la solution canonique dès que l'échelle dépasse 5-7 ans.
 - **L'échelle nominale GONFLÉE** : des barreaux nominaux croissants (40 000 × 1,025^n) : couvre l'inflation **anticipée**, reste nue contre les surprises : acceptable pour les barreaux courts, de plus en plus fragile ensuite.

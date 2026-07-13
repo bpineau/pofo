@@ -61,7 +61,7 @@ Nora et Malik, 47 ans, 1,6 M€, 60/40, pensions estimées 21 600 €/an à 67 a
 
 - VPW = l'annuité d'un crédit inversée : chaque année, le pourcentage (croissant avec l'âge : ~3,9 % à 40 ans, ~4,8 % à 65, 100 % à 99) qui épuiserait le portefeuille sur les années restantes à rendements supposés **fixes** (5 % réel actions, 1,9 % obligations).
 - Il hérite du pourcentage fixe (jamais de ruine du capital, contra-cyclique, auto-correcteur) et y ajoute la conscience de l'horizon : consommation délibérée, legs quasi nul, la consommation moyenne la plus généreuse du panorama.
-- Ses exigences : le **test de tolérance** À **la perte** (revenu sous « actions −50 % » ≥ plancher : ne le sautez jamais), le pont de pension en phase à découvert, et l'annuitisation vers 80 ans pour la longévité au-delà de la table.
+- Ses exigences : le **test de tolérance** à **la perte** (revenu sous « actions −50 % » ≥ plancher : ne le sautez jamais), le pont de pension en phase à découvert, et l'annuitisation vers 80 ans pour la longévité au-delà de la table.
 - Sa ligne de partage avec l'ABW : table gravée (robustesse comportementale) contre rendements courants (justesse conditionnelle) : même formule, deux paris sur l'exécutant.
 - Dans pofo : le curseur % (VPW à horizon long) et la case ABW (le VPW dynamique complet) ; jugez sur la §04 et la frontière, et en marché cher, décotez g d'un point.
 

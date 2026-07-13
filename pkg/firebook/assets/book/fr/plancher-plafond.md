@@ -53,7 +53,7 @@ Trois décisions, dans l'ordre d'importance.
 
 ## Pour qui, face aux deux finalistes
 
-Le profil du corridor borné : le ménage qui veut de la **simplicité** D'**exécution** avant tout (une multiplication, deux comparaisons : pas de seuils de ruine à surveiller, pas d'outil actuariel à faire tourner), un revenu qui ne surprend jamais (±2,5-5 % l'an, connus d'avance), et qui accepte d'être « deuxième partout ». C'est probablement la meilleure règle par défaut pour un conjoint survivant non gestionnaire ([[couple-et-famille]]) et une excellente règle de croisière pour la phase adossée.
+Le profil du corridor borné : le ménage qui veut de la **simplicité** d'**exécution** avant tout (une multiplication, deux comparaisons : pas de seuils de ruine à surveiller, pas d'outil actuariel à faire tourner), un revenu qui ne surprend jamais (±2,5-5 % l'an, connus d'avance), et qui accepte d'être « deuxième partout ». C'est probablement la meilleure règle par défaut pour un conjoint survivant non gestionnaire ([[couple-et-famille]]) et une excellente règle de croisière pour la phase adossée.
 
 Face aux finalistes : contre les guardrails ([[guardrails-morningstar]]), le corridor échange les marches rares de ±10 % (avec leur charge émotionnelle de « décision ») contre des glissements continus sans décision : moins optimal, plus vivable pour beaucoup ; contre l'ABW ([[amortissement-abw]]), il abandonne l'optimalité de consommation et la conscience de l'horizon contre une gouvernance de carte postale. La synthèse générale de sélection reste [[choisir-sa-strategie]].
 
