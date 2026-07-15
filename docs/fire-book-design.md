@@ -6,6 +6,20 @@ parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
 
+Style-finishing pass done 2026-07-16 (full line-by-line read of all 79 FR
+articles): rewrote the telegraphic `cas-types` into prose and broke the worst
+colon-cascade sentences elsewhere (couple-et-famille, plancher-plafond,
+inflation-histoire/-et-taux, hyperinflation, guyton-klinger); fixed generation
+artifacts (embedded NUL bytes in guardrails-morningstar, "et." broken clauses,
+spurious capital-L elisions, orphan ":" table cells, sentence-start casing,
+a few elision/grammar slips); switched `seaux` -> `buckets` in running text
+(the strategie-buckets title keeps the French gloss once, as does the lexique
+entry). Added two themed SVG figures (figures.go): `allocation-plateau` in
+allocation-actions-obligations and `withdrawal-frontier` in
+panorama-strategies-retrait. No pofo-advertising phrasing was found needing the
+"simulateur FIRE" softening beyond the cas-types rewrite; the many remaining
+pofo mentions are legitimate references to the page's actual features.
+
 ## Goal
 
 An extremely complete, engaging FIRE/decumulation handbook, written in French
