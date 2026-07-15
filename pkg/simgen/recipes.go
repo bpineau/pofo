@@ -629,7 +629,7 @@ func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend), 0.80%/yr fees (~2001→)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend, IR-pinned to the SG Trend Index), 0.80%/yr fees (~2001→)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
@@ -649,6 +649,10 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
+	// The overlay runs as a pure excess strategy (EarnCash=false), so its own
+	// return is the excess; pin its information ratio to the SG Trend Index with
+	// a zero cash reference, as for the other trend reconstructions.
+	trend = pinTrendIR(trend, fr.Dates[start:], make([]float64, len(trend)), sgTrendInfoRatio)
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
 	const feeDaily = 0.0080 / 252
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
@@ -698,9 +702,15 @@ func mfConfig(targetVol, annualFee float64) TSMOMConfig {
 }
 
 // tsmom is the shared Build for trend-following reconstructions: it builds a
-// frame on the markets and runs the TSMOM engine, returning the strategy
-// index aligned to the dates after the signal warm-up.
-func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
+// frame on the markets and runs the TSMOM engine, then pins the strategy's
+// realized excess-over-cash information ratio to trendIR (the realized IR of the
+// specific index the fund tracks; see the per-recipe constants), returning the
+// index aligned to the dates after the signal warm-up. The bare TSMOM engine
+// earns an in-sample IR of ~0.5-0.85 that no real managed-futures programme has
+// sustained, so pinning is the difference between a faithful backcast and one
+// that overstates return by several points a year (see stackedTrend and the
+// RSBT note).
+func tsmom(name string, cfg TSMOMConfig, trendIR float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		fr, err := BuildFrame(extend(f), append([]string{cfg.CashID}, cfg.Markets...), from)
 		if err != nil {
@@ -710,12 +720,34 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 		if err != nil {
 			return nil, err
 		}
+		values = pinTrendIR(values, fr.Dates[start:], fr.Returns[cfg.CashID][start:], trendIR)
 		s := &marketdata.Series{Name: name, Source: "simdata"}
 		for i, v := range values {
 			s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
 		}
 		return s, nil
 	}
+}
+
+// pinTrendIR rescales a standalone trend-strategy index so that, over the SG-
+// Trend-comparable window (2000 onward, where the anchors are measured), its
+// excess-over-cash realizes the target information ratio. It subtracts the
+// constant daily drag from trendDrag (which leaves volatility, correlation and
+// drawdown timing untouched: the 2008 and 2022 crisis-alpha spikes survive at
+// the same relative size, only the average level drops) and recompounds. cash[i]
+// is the cash return aligned to the index's date i.
+func pinTrendIR(values []float64, dates []time.Time, cash []float64, targetIR float64) []float64 {
+	excess := make([]float64, len(values))
+	for i := 1; i < len(values); i++ {
+		excess[i] = (values[i]/values[i-1] - 1) - cash[i]
+	}
+	drag := trendDrag(excess, dates, targetIR)
+	out := make([]float64, len(values))
+	out[0] = values[0]
+	for i := 1; i < len(values); i++ {
+		out[i] = out[i-1] * (1 + (values[i]/values[i-1] - 1) - drag)
+	}
+	return out
 }
 
 // sgTrendInfoRatio pins the managed-futures overlay to the realized experience
@@ -731,7 +763,29 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 // component reconstruction against SG Trend lands at ~5.7 %). We keep the
 // reconstruction's volatility, correlation and drawdown timing but pin its
 // information ratio to the SG Trend Index. See docs and the memory note.
-const sgTrendInfoRatio = 0.24
+//
+// The other trend funds are pinned the same way, each to the realized excess-
+// over-cash information ratio of the specific index it tracks (not one blanket
+// number). The anchors are triangulated from the index's public long-run record
+// and cross-checked against the fund's own grafted real quotes:
+//   - sgTrendInfoRatio (SG Trend Index, ~0.24): RSST/RSBT overlays and the
+//     Simplify CTA fund (broad systematic trend at a high vol target).
+//   - sgCTAInfoRatio (SG CTA Index, ~0.25): the iMGP DBi family (DBMF, DBMF.PA,
+//     DBMFE), which replicates the SG CTA Hedge Fund Index. The live DBMF record
+//     (IR ~0.5 over its strong 2019+ window) sets a generous upper bound.
+//   - mlmInfoRatio (KFA MLM Index, ~0.30): KMLM. The Mount Lucas index carries a
+//     genuinely richer crisis-alpha profile (2000 +38 %, 2008 +40 %, 2022 +45 %,
+//     ~15 % target vol) than the SG family, so it earns a higher pin; the live
+//     ETF window (2020+, IR ~0.19) is weak and sets a floor.
+//   - aqrTrendInfoRatio (AQR Managed Futures, ~0.20): the AQR UCITS. AQR's own
+//     AQMIX has realized only ~3.4 %/yr (IR ~0.15) over 2015-2026, a winter-heavy
+//     span; 0.20 credits the strong pre-2008 trend era the backcast also covers.
+const (
+	sgTrendInfoRatio  = 0.24
+	sgCTAInfoRatio    = 0.25
+	mlmInfoRatio      = 0.30
+	aqrTrendInfoRatio = 0.20
+)
 
 // stackedTrend backcasts a Return Stacked fund: a funded core (coreID, an equity
 // or bond index deep via refdata) plus a 100 % managed-futures overlay stacked
@@ -1196,8 +1250,8 @@ func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (gold→LBMA fix ~1968, crude→WTI spot ~1946, dev-ex-US→DEVEXUS-USD ~1969, EM→EM-USD ~1989, treasuries→CMT TR ~1953; start now set by the EM leg ~1989), real DBMF grafted from 2019",
-		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (gold→LBMA fix ~1968, crude→WTI spot ~1946, dev-ex-US→DEVEXUS-USD ~1969, EM→EM-USD ~1989, treasuries→CMT TR ~1953; start now set by the EM leg ~1989), IR-pinned to the SG CTA Index, real DBMF grafted from 2019",
+		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085), sgCTAInfoRatio),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
@@ -1213,8 +1267,8 @@ func dbmfpaRecipe() Recipe {
 	return Recipe{
 		ID:              "LU2951555585",
 		Name:            "iMGP DBi Managed Futures UCITS USD: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025",
-		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.10, 0.0075)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), IR-pinned to the SG CTA Index, real DBMF.PA grafted from 2025",
+		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.10, 0.0075), sgCTAInfoRatio),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
 	}
@@ -1232,7 +1286,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMFE",
 		Name:            "iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR",
-		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
+		Method:          "12-month TSMOM on a cross-asset futures basket (IR-pinned to the SG CTA Index), converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
 		SpliceReal:      "DBMFE",
@@ -1256,6 +1310,8 @@ func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
+	// Pin the USD strategy to the SG CTA Index (as DBMF) before the FX leg.
+	usd = pinTrendIR(usd, fr.Dates[start:], fr.Returns[cfg.CashID][start:], sgCTAInfoRatio)
 	return convertDaily("DBMFE (USD TSMOM converted to unhedged EUR)",
 		extend(f), "EURUSD=X", from, fr.Dates[start:], usd)
 }
@@ -1266,8 +1322,8 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), real KMLM grafted from 2020",
-		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.13, 0.0090)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), IR-pinned to the KFA MLM Index, real KMLM grafted from 2020",
+		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.13, 0.0090), mlmInfoRatio),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -1285,8 +1341,8 @@ func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1103257975",
 		Name:            "AQR Managed Futures UCITS: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), real AQR grafted from 2015",
-		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.11, 0.0079)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), IR-pinned to AQR's realized managed-futures record, real AQR grafted from 2015",
+		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.11, 0.0079), aqrTrendInfoRatio),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
 	}
@@ -1298,8 +1354,8 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, high vol target ~ the fund's ~18%), real CTA grafted from 2022",
-		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.15, 0.0075)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, high vol target ~ the fund's ~18%), IR-pinned to the SG Trend Index, real CTA grafted from 2022",
+		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.15, 0.0075), sgTrendInfoRatio),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
