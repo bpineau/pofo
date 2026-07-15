@@ -249,6 +249,6 @@
 35    NTSG      # Engine 1, equity + duration: WisdomTree Global Efficient Core 90/60 (NTSG, IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 12    ZPRV      # Engine 2, value factor: SPDR US Small Cap Value Weighted (ZPRV, IE00BSPLC413; global alt AVWS IE0003R87OG3)
 15    DBMFE     # Engine 3a, trend replication: iMGP DBi Managed Futures EUR (DBMFE, LU2951555403)
-13    AQFRAGA   # Engine 3b, second trend model: AQR Managed Futures UCITS (LU1103257975; EUR share LU1662502183 if available; fallback Winton IE00BG382Q20)
+13    LU1662501532 # Engine 3b, second trend model: AQR Managed Futures UCITS (LU1103257975; EUR share LU1662502183 if available; fallback Winton IE00BG382Q20 or Man AHL Trend LU0503879685)
 17    IGLN      # Engine 4, gold: iShares Physical Gold ETC (IGLN, IE00B4ND3602), backcast to 1968 spot minus 0.12%/yr fee
 8     IDTL      # Engine 5, deflation duration: iShares USD Treasury 20+y (IDTL, IE00BSKRJZ44; EUR-hedged share DTLE)
