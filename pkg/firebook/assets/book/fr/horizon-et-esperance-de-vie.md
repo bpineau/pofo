@@ -37,7 +37,7 @@ Passons au deuxième piège, le plus contre-intuitif et le plus libérateur. Voi
 
 | Horizon | SAFEMAX approximatif (60-75 % actions) | Baisse vs ligne précédente |
 |---|---|---|
-| 30 ans | ~4,0-4,15 % | : |
+| 30 ans | ~4,0-4,15 % | (référence) |
 | 40 ans | ~3,5-3,6 % | −0,5 point |
 | 50 ans | ~3,35-3,45 % | −0,15 point |
 | 60 ans | ~3,25-3,4 % | −0,05 point |
@@ -51,7 +51,7 @@ Trois corollaires pratiques de cette asymptote :
 
 **L'incertitude sur votre longévité est un problème de second ordre pour le portefeuille.** Entre planifier 50 ou 60 ans, la différence de taux est ~0,1 point : vous pouvez prendre le quantile très prudent sans surcoût réel. C'est une excellente nouvelle : l'inconnue la plus angoissante du plan (combien de temps vivrai-je ?) est celle qui coûte le moins cher à couvrir... côté portefeuille. Côté **dépenses** de fin de vie, c'est une autre histoire ([[depenses-en-retraite]]).
 
-**Le « capital préservé » est presque gratuit au-delà de 45 ans d'horizon.** à ~3,25 %, le portefeuille se maintient en termes réels dans la plupart des mondes : viser la préservation (pour transmettre, [[succession-et-transmission]], ou par sécurité pure) plutôt que l'épuisement ne renchérit un plan long que marginalement. ERN appelle ça la convergence entre « capital depletion » et « capital preservation » aux horizons FIRE.
+**Le « capital préservé » est presque gratuit au-delà de 45 ans d'horizon.** À ~3,25 %, le portefeuille se maintient en termes réels dans la plupart des mondes : viser la préservation (pour transmettre, [[succession-et-transmission]], ou par sécurité pure) plutôt que l'épuisement ne renchérit un plan long que marginalement. ERN appelle ça la convergence entre « capital depletion » et « capital preservation » aux horizons FIRE.
 
 ::: attention Le piège inverse : l'horizon trop court
 L'erreur symétrique existe et elle est plus grave : le retraité de 65 ans qui planifie « 25 ans, jusqu'à 90 ans » alors que sa femme a 62 ans et une chance sur trois de dépasser 95. Pour lui, l'horizon est dans la zone pentue de la courbe (25 → 35 ans coûte cher), et le tronquer de dix ans surestime le taux soutenable de 0,5 point ou plus. La règle : c'est aux horizons **courts** que le choix de l'horizon est critique ; aux horizons FIRE, il est presque indolore. Planifiez long, ça ne coûte rien ; tronquez, ça peut coûter tout.
