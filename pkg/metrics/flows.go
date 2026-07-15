@@ -27,10 +27,14 @@ func flowsByDay(flows []Flow) map[time.Time]float64 {
 }
 
 // TWR is the time-weighted total return of a value series with external
-// flows: daily returns r_t = (V_t - F_t) / V_{t-1} are chain-linked, so
+// flows: daily returns r_t = V_t / (V_{t-1} + F_t) - 1 are chain-linked, so
 // contributions and withdrawals are neutralized and the result measures the
-// strategy, not the saver. Days with a non-positive base are skipped. ok is
-// false when the series has fewer than two points or mismatched lengths.
+// strategy, not the saver. Flows are booked at the start of their day, so a
+// same-day contribution earns that day and belongs in the return's base;
+// dividing by V_{t-1} alone would charge a large flow's first-day P/L against
+// the tiny pre-flow value and detonate the chain. Days with a non-positive
+// base (V_{t-1} + F_t) are skipped. ok is false when the series has fewer than
+// two points or mismatched lengths.
 func TWR(dates []time.Time, values []float64, flows []Flow) (float64, bool) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return 0, false
@@ -38,19 +42,21 @@ func TWR(dates []time.Time, values []float64, flows []Flow) (float64, bool) {
 	byDay := flowsByDay(flows)
 	total := 1.0
 	for i := 1; i < len(values); i++ {
-		if values[i-1] <= 0 {
+		base := values[i-1] + byDay[dates[i]]
+		if base <= 0 {
 			continue
 		}
-		total *= (values[i] - byDay[dates[i]]) / values[i-1]
+		total *= values[i] / base
 	}
 	return total - 1, true
 }
 
 // FlowReturns yields the flow-adjusted daily returns of a value series:
-// (V_t - F_t)/V_{t-1} - 1. Saturday and Sunday points are dropped, so a
-// calendar-daily series (weekends forward-filled flat) does not dilute its
-// volatility; a trading-day series is unaffected. Days with a non-positive
-// base are skipped. Feed the result to Volatility, Sharpe or Sortino.
+// V_t/(V_{t-1} + F_t) - 1, the same start-of-day flow convention as TWR.
+// Saturday and Sunday points are dropped, so a calendar-daily series
+// (weekends forward-filled flat) does not dilute its volatility; a
+// trading-day series is unaffected. Days with a non-positive base
+// (V_{t-1} + F_t) are skipped. Feed the result to Volatility, Sharpe or Sortino.
 func FlowReturns(dates []time.Time, values []float64, flows []Flow) []float64 {
 	if len(dates) != len(values) {
 		return nil
@@ -58,13 +64,14 @@ func FlowReturns(dates []time.Time, values []float64, flows []Flow) []float64 {
 	byDay := flowsByDay(flows)
 	var out []float64
 	for i := 1; i < len(values); i++ {
-		if values[i-1] <= 0 {
+		base := values[i-1] + byDay[dates[i]]
+		if base <= 0 {
 			continue
 		}
 		if wd := dates[i].Weekday(); wd == time.Saturday || wd == time.Sunday {
 			continue
 		}
-		out = append(out, (values[i]-byDay[dates[i]])/values[i-1]-1)
+		out = append(out, values[i]/base-1)
 	}
 	return out
 }

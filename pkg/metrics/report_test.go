@@ -40,8 +40,8 @@ func TestStandardWindows(t *testing.T) {
 func TestReportRowsAndSummary(t *testing.T) {
 	d0 := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	day := func(i int) time.Time { return d0.AddDate(0, 0, i) }
-	// Three points, one 5-unit inflow on day 1:
-	// r1 = (106-5)/100 = 1.01 ; r2 = 110/106 ; TWR = 1.01*110/106 - 1.
+	// Three points, one 5-unit inflow at the start of day 1:
+	// r1 = 106/(100+5) ; r2 = 110/106 ; TWR = r1*r2 - 1 = 110/105 - 1.
 	dates := []time.Time{day(0), day(1), day(2)}
 	values := []float64{100, 106, 110}
 	flows := []Flow{{Date: day(1), Amount: 5}}
@@ -51,7 +51,7 @@ func TestReportRowsAndSummary(t *testing.T) {
 	if len(rows) != 1 || !rows[0].OK {
 		t.Fatalf("rows: %+v", rows)
 	}
-	wantTWR := 1.01*110/106 - 1
+	wantTWR := 106.0/105*110/106 - 1
 	if math.Abs(rows[0].TWR-wantTWR) > 1e-12 || rows[0].Gain != 5 {
 		t.Fatalf("row: %+v, want TWR %v gain 5", rows[0], wantTWR)
 	}
