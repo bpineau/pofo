@@ -10,6 +10,10 @@ Cette page est cette carte : le triangle impossible du retrait, les deux straté
 Toute règle de retrait promet trois choses désirables : un **revenu stable** (le même train de vie chaque année), la **sécurité du capital** (ne jamais épuiser le portefeuille), et un **revenu élevé** (consommer une part généreuse de l'espérance de rendement). Aucune règle ne peut garantir les trois : sur un actif risqué, c'est mathématiquement impossible. Chaque stratégie nommée est un choix de sacrifice : Bengen sacrifie la sécurité, le pourcentage fixe sacrifie la stabilité, le retrait minuscule sacrifie le niveau, et toutes les règles « intelligentes » sont des façons de **répartir** le sacrifice plus finement. Demander « quelle est la meilleure règle ? » sans dire quel sacrifice vous préférez n'a pas de réponse.
 :::
 
+::: figure withdrawal-frontier
+La frontière de décumulation : chaque règle est un point entre probabilité de ruine et variabilité du niveau de vie. Les deux extrêmes (Bengen, pourcentage fixe) bornent l'arc ; les règles modernes se rapprochent du coin idéal en écoutant plus d'information.
+:::
+
 ## Les deux extrêmes purs, et la frontière entre eux
 
 Commençons par les deux stratégies qui bornent tout l'espace, car chacune garantit parfaitement deux sommets du triangle en abandonnant le troisième.

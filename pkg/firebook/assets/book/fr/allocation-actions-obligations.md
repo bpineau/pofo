@@ -8,6 +8,10 @@ Cet article établit ce résultat et son mécanisme (pourquoi il **faut** de la 
 Sur toutes les données et tous les modèles, le taux de retrait soutenable à long horizon suit la même courbe en fonction de la part d'actions : faible à 0-30 % d'actions (les obligations seules ne battent pas l'inflation plus les retraits), maximal et **plat** de ~50 à ~80 %, en léger retrait au-delà de 90 % (la volatilité pure commence à coûter plus que sa prime ne rapporte). Deux conséquences : l'erreur grave est d'être sous le plateau, pas au-dessus ; et à l'intérieur du plateau, le choix fin (60/40 contre 75/25) compte peu pour la ruine. Il se fait sur d'autres critères : la profondeur des creux que vous pouvez vivre, et votre règle de retrait.
 :::
 
+::: figure allocation-plateau
+Le taux de retrait soutenable en fonction de la part d'actions (ordres de grandeur, horizon long). Trop peu d'actions et l'érosion l'emporte ; trop, et la volatilité coûte plus que sa prime. Entre les deux, un plateau large qui pardonne l'imprécision.
+:::
+
 ## Pourquoi il faut de la croissance : l'arithmétique du plateau
 
 Reprenons le mécanisme à la racine. Un plan de retrait à 3,5 % sur 45 ans doit servir des retraits **réels** (indexés) pendant des décennies. Il lui faut un moteur qui produise durablement plus de 3,5 % réels par an, drag de volatilité et séquence compris ([[rendements-arithmetiques-geometriques]]). Les obligations nominales de qualité rapportent, sur longue période, 1 à 2 % réels ([[rendements-attendus]]) : un portefeuille 20/80 a une espérance géométrique réelle de ~2 %. Il finance mathématiquement moins de 2,5 % de retrait perpétuel, et s'épuise sous 3,5 % **non** par malchance mais par construction : lentement, sûrement, sans krach : le mode de défaillance « érosion » ([[lire-un-fan-chart]]). C'est le bord gauche du plateau, et c'est pourquoi la grille de Trinity montrait déjà le 25/75 échouer une fois sur trois là où le 75/25 tenait ([[etude-trinity]]).
