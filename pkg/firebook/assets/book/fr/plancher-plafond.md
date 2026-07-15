@@ -24,7 +24,7 @@ Rien ne vaut un déroulé. Plan : 1,4 M€, w = 4 %, retrait initial 56 000 €.
 
 | Année | Portefeuille (réel) | Cible 4 % | Bornes (vs an dernier, réel) | Retrait servi |
 |---|---|---|---|---|
-| 1 | 1 400 000 | 56 000 | : | 56 000 |
+| 1 | 1 400 000 | 56 000 | (référence) | 56 000 |
 | 2 | 1 190 000 (−15 %) | 47 600 | ≥ 54 600 | **54 600** (plancher −2,5 %) |
 | 3 | 1 010 000 (−15 %) | 40 400 | ≥ 53 235 | **53 235** (plancher) |
 | 4 | 1 090 000 (+8 %) | 43 600 | ≥ 51 904 | **51 904** (plancher, encore) |
@@ -33,7 +33,7 @@ Rien ne vaut un déroulé. Plan : 1,4 M€, w = 4 %, retrait initial 56 000 €.
 
 Lisez bien les années 4-6 : le portefeuille remonte, mais le retrait **continue** de glisser vers le bas un moment (la cible 4 % est encore loin dessous), puis remonte au rythme plafonné. En six ans de traversée sévère (−28 % au creux), le revenu n'a jamais bougé de plus de 2,5 % par an, pour un sacrifice cumulé maximal de ~10 % : la même séquence sous pourcentage pur aurait servi −28 % en deux ans. Voilà le produit : des glissements à la place des chutes.
 
-Et le prix, visible dans la même table : aux années 3-5, on prélève 5,0-5,3 % d'un portefeuille amputé : la descente plafonnée « emprunte » au capital pendant les crises. Dans les scénarios ordinaires, le portefeuille rembourse à la reprise ; dans un régime vraiment long et hostile ([[regimes-de-marche]]), l'emprunt s'accumule et **la ruine redevient possible** : c'est le point à comprendre : les bornes revendent une partie de la garantie anti-ruine du pourcentage pour acheter la stabilité : la règle Vanguard se place entre le fixe et le pourcentage sur la frontière ([[panorama-strategies-retrait]]), et sa ruine, faible mais non nulle, est un **vrai** chiffre, comparable à celui du fixe : contrairement au 0 % creux du pourcentage pur, et contrairement au chiffre incomparable du Guyton-Klinger sans plancher ([[guyton-klinger]]).
+Et le prix, visible dans la même table : aux années 3-5, on prélève 5,0-5,3 % d'un portefeuille amputé : la descente plafonnée « emprunte » au capital pendant les crises. Dans les scénarios ordinaires, le portefeuille rembourse à la reprise ; dans un régime vraiment long et hostile ([[regimes-de-marche]]), l'emprunt s'accumule et **la ruine redevient possible**. C'est le point clé à comprendre : les bornes revendent une partie de la garantie anti-ruine du pourcentage pour acheter de la stabilité. La règle Vanguard se place donc entre le fixe et le pourcentage sur la frontière ([[panorama-strategies-retrait]]), et sa ruine, faible mais non nulle, est un **vrai** chiffre, comparable à celui du fixe. C'est là toute sa différence avec le 0 % creux du pourcentage pur, ou avec le chiffre incomparable du Guyton-Klinger sans plancher ([[guyton-klinger]]).
 
 ::: science Ce que disent les comparatifs
 Dans les études de Vanguard et les comparatifs indépendants (Morningstar teste une variante proche chaque année, [[guardrails-morningstar]]), la règle bornée se comporte en élève régulière : ruine nettement sous le fixe à taux initial égal (typiquement divisée par 2 à 3), consommation totale légèrement supérieure, variabilité du revenu très inférieure au pourcentage pur (écart-type des variations annuelles ~2 % contre ~11 %), legs intermédiaire. Elle ne gagne **aucune** catégorie. Elle est deuxième partout, sans pathologie connue. C'est précisément son argument. Les règles qui gagnent une catégorie (l'ABW en consommation, les guardrails en stabilité) paient ailleurs ; le corridor borné est le choix de qui refuse de payer cher quoi que ce soit.

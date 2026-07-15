@@ -62,7 +62,7 @@ Plan : 1,3 M€, taux initial 4,3 % (55 900 €), corridor ±20 % (seuils, 3,44 
 ## L'essentiel à retenir
 
 - Les quatre règles de 2006 : ordre des ventes, gel d'indexation conditionnel, coupe de 10 % quand le taux courant dépasse 120 % de l'initial, hausse de 10 % sous 80 % : une mécanique exécutable qui a inventé les guardrails.
-- La promesse (5,2-5,6 % initial, 99 % de succès) reposait sur un vice : des coupes illimitées dont les mauvais millésimes abusent : revenu réel à −35/−45 % pendant des décennies. Le taux de succès de GK ne se compare **jamais** à celui d'une règle fixe sans lire le revenu servi.
+- La promesse (5,2-5,6 % initial, 99 % de succès) reposait sur un vice : des coupes illimitées dont les mauvais millésimes abusent, jusqu'à un revenu réel amputé de 35 à 45 % pendant des décennies. Le taux de succès de GK ne se compare **jamais** à celui d'une règle fixe sans lire le revenu servi.
 - Les correctifs : un plancher à 75-80 % (qui recrée de la ruine honnête, c'est le but), des ajustements plus doux et plus fréquents, et, en remplacement conceptuel, les guardrails par risque de Kitces-Tharp-Morningstar ([[guardrails-morningstar]]).
 - Paramètres défendables aujourd'hui : taux initial 4-4,5 %, corridor ±20 %, coupes 10 %, plancher aligné sur le plancher réel, gel d'indexation conservé, revue annuelle à date fixe.
 - Dans pofo : case guardrails (corridor ±20 %, ajustements ±10 %) + curseur de plancher ; jugez **toujours** sur la §04 (la vie vécue) et la frontière §06, jamais sur la seule ruine.
