@@ -537,7 +537,7 @@ func rsstRecipe() Recipe {
 	return Recipe{
 		ID:              "RSST",
 		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFINX + 1.00×(deep TSMOM trend − cash ^IRX) overlay (~1989→), 0.96%/yr fees, real RSST grafted from 2023",
+		Method:          "1.00×VFINX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.96%/yr fees, real RSST grafted from 2023",
 		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", mfConfig(0.10, 0), 0.0096),
 		ValidateAgainst: "RSST",
 		SpliceReal:      "RSST",
@@ -553,7 +553,7 @@ func rsbtRecipe() Recipe {
 	return Recipe{
 		ID:              "RSBT",
 		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFITX + 1.00×(deep TSMOM trend − cash ^IRX) overlay (~1989→), 0.97%/yr fees, real RSBT grafted from 2023",
+		Method:          "1.00×VFITX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.97%/yr fees, real RSBT grafted from 2023",
 		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", mfConfig(0.10, 0), 0.0097),
 		ValidateAgainst: "RSBT",
 		SpliceReal:      "RSBT",
@@ -718,13 +718,33 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 	}
 }
 
+// sgTrendInfoRatio pins the managed-futures overlay to the realized experience
+// of the Société Générale Trend Index (NEIXCTAT), the very index the Return
+// Stacked funds replicate on their trend sleeve. Since its 2000 inception the SG
+// Trend Index has earned about 4.9 %/yr at ~13.6 % volatility against a ~1.6 %
+// cash rate, i.e. an excess-over-cash information ratio of roughly 0.24. The bare
+// 12-month TSMOM reconstruction (cfg) instead earns an in-sample IR near 0.7 over
+// the same window: idealized signals, frictionless execution, no capacity limit,
+// and a short clean basket that dodges the 2011-2019 trend drought the real index
+// lived through. Grafting that hot overlay onto the funded core overstated the
+// backcast return by ~4 %/yr (RSBT 2000-2022 came out near 10 % where a
+// component reconstruction against SG Trend lands at ~5.7 %). We keep the
+// reconstruction's volatility, correlation and drawdown timing but pin its
+// information ratio to the SG Trend Index. See docs and the memory note.
+const sgTrendInfoRatio = 0.24
+
 // stackedTrend backcasts a Return Stacked fund: a funded core (coreID, an equity
 // or bond index deep via refdata) plus a 100 % managed-futures overlay stacked
 // on top. The overlay is the same deep TSMOM replication used for KMLM/DBMF/CTA
 // (cfg), reconstructed from the underlying futures back to ~1989, which a plain
 // composite leg (limited to the real fund's 2020s inception) cannot reach. The
 // TSMOM index earns cash on its collateral (cfg.EarnCash), so its excess over
-// cash is the pure trend overlay: r = coreReturn + (trendReturn − cash) − fee.
+// cash is the raw trend overlay. That raw overlay carries a far higher Sharpe
+// than the SG Trend Index the fund actually tracks, so its excess-over-cash is
+// levelled by a constant daily drag calibrated on the 2000+ window to the SG
+// Trend information ratio (sgTrendInfoRatio): this preserves the overlay's
+// volatility and shape while removing the in-sample alpha the real index never
+// earned. The stacked return is r = coreReturn + (trendExcess − drag) − fee.
 func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		ids := append([]string{coreID, cfg.CashID}, cfg.Markets...)
@@ -737,13 +757,20 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 			return nil, err
 		}
 		core, cash := fr.Returns[coreID], fr.Returns[cfg.CashID]
+
+		// Daily overlay excess-over-cash of the raw reconstruction.
+		overlay := make([]float64, len(trend))
+		for i := 1; i < len(trend); i++ {
+			overlay[i] = (trend[i]/trend[i-1] - 1) - cash[start+i]
+		}
+		drag := trendDrag(overlay, fr.Dates[start:], sgTrendInfoRatio)
+
 		feeDaily := annualFee / 252
 		values := make([]float64, len(trend))
 		values[0] = 100
 		for i := 1; i < len(trend); i++ {
 			k := start + i
-			trendRet := trend[i]/trend[i-1] - 1
-			r := core[k] + (trendRet - cash[k]) - feeDaily
+			r := core[k] + (overlay[i] - drag) - feeDaily
 			values[i] = values[i-1] * (1 + r)
 		}
 		s := &marketdata.Series{Name: name, Source: "simdata"}
@@ -752,6 +779,41 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 		}
 		return s, nil
 	}
+}
+
+// trendDrag returns the constant daily return to subtract from a trend overlay's
+// excess-over-cash series so that, over the SG-Trend-comparable window (2000
+// onward, where the anchor is measured), the overlay's realized annualized
+// excess equals targetIR times its realized volatility. Subtracting a constant
+// leaves volatility, correlation and drawdown timing untouched and only lowers
+// the mean, mapping the in-sample-hot reconstruction onto the realized
+// information ratio of the index the fund tracks. The calibration ignores the
+// pre-2000 dates (kept in the output at the same absolute drag) because the SG
+// Trend anchor does not extend before its 2000 inception.
+func trendDrag(overlay []float64, dates []time.Time, targetIR float64) float64 {
+	anchor := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	var sum, sumSq float64
+	var n int
+	for i := 1; i < len(overlay); i++ {
+		if dates[i].Before(anchor) {
+			continue
+		}
+		sum += overlay[i]
+		sumSq += overlay[i] * overlay[i]
+		n++
+	}
+	if n < 2 {
+		return 0
+	}
+	mean := sum / float64(n)
+	variance := (sumSq - float64(n)*mean*mean) / float64(n-1)
+	if variance <= 0 {
+		return 0
+	}
+	// Target daily mean so annualized excess (mean·252) equals targetIR times
+	// annualized vol (sd·√252): targetMean = targetIR·sd/√252.
+	targetMean := targetIR * math.Sqrt(variance) / math.Sqrt(252)
+	return mean - targetMean
 }
 
 // msciWorldShapeID is the Yahoo daily MSCI World PRICE index (1972→). Its
