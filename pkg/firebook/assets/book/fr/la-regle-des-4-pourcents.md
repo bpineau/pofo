@@ -2,7 +2,7 @@
 
 C'est la règle la plus célèbre de toute la finance personnelle : retirez 4 % de votre capital la première année de retraite, réindexez ce montant sur l'inflation chaque année, et votre portefeuille tiendra 30 ans. Elle est si célèbre qu'on l'appelle « la règle », tout court.
 
-Cette page explique exactement ce qu'elle dit (c'est plus subtil que la version de comptoir), d'où viennent ses chiffres, ce qu'elle suppose sans le dire, et pourquoi l'état de l'art la traite aujourd'hui comme un excellent point de départ et un mauvais point d'arrivée. À la fin, vous saurez l'utiliser pour ce qu'elle vaut : un ordre de grandeur, pas un plan.
+Cette page explique exactement ce qu'elle dit (c'est plus subtil que la version de comptoir), d'où viennent ses chiffres, ce qu'elle suppose sans le dire, et pourquoi l'état de l'art la traite aujourd'hui comme un excellent point de départ et un mauvais point d'arrivée. À la fin, vous saurez l'utiliser pour ce qu'elle vaut : un ordre de grandeur, pas un plan. Et pour comprendre pourquoi, mathématiquement, ce chiffre-là tient (et ce qui le ferait bouger), la cascade complète est démontée dans [[les-maths-du-4-pourcent]].
 
 ::: cle Ce que la règle dit exactement
 Année 1 : retirez 4 % du capital initial (40 000 € pour 1 000 000 €). Années suivantes : retirez le **même** montant ajusté de l'inflation (41 200 € si l'inflation a été de 3 %), quel que soit ce que fait le portefeuille. Historiquement, sur toutes les fenêtres de 30 ans américaines depuis 1926, un portefeuille 50 à 75 % actions n'a jamais été épuisé par ce régime. « Sûr » signifie ici : n'a jamais échoué dans le passé américain observé. Rien de plus.
