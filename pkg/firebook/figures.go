@@ -463,8 +463,7 @@ func figCorrelSign() string {
 	b.WriteString(txt(552, m(1963, -0.5)[1]+4, 11, figGood, "end", "600", "négative : les obligations amortissent"))
 	// era annotations
 	b.WriteString(txt(m(1976, 0)[0], m(1976, 0.52)[1], 10, figSoft, "middle", "600", "ère inflationniste"))
-	b.WriteString(txt(m(2008, 0)[0], m(2008, -0.09)[1], 10, figSoft, "middle", "600", "l'âge d'or du 60/40 (2000-2021)"))
-	b.WriteString(txt(m(2019.5, 0)[0], m(2019.5, 0.14)[1], 10, figSoft, "middle", "600", "retour 2022"))
+	b.WriteString(txt(m(2012, 0)[0], m(2012, -0.13)[1], 10, figSoft, "middle", "600", "l'âge d'or du 60/40 (2000-2021)"))
 	// y ticks
 	for _, v := range []float64{-0.5, 0.5} {
 		p := m(1963, v)
