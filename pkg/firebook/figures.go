@@ -182,13 +182,15 @@ func figFanAnatomy() string {
 	p95 := []float64{1.00, 1.28, 1.55, 1.82, 2.08, 2.35, 2.60, 2.80, 2.95, 3.05}
 	green := []float64{1.00, 1.18, 1.42, 1.30, 1.58, 1.86, 2.10, 2.34, 2.55, 2.78}
 	red := []float64{1.00, 1.22, 1.10, 0.88, 0.68, 0.52, 0.37, 0.22, 0.10, 0.00}
-	m := mapper(0, 47, 0, 3.15, 62, 520, 300, 54)
+	m := mapper(0, 47, 0, 3.15, 62, 498, 300, 54)
 	var b strings.Builder
 	b.WriteString(fanArea(m, xs, p05, p95, figBandOuter))
 	b.WriteString(fanArea(m, xs, p25, p75, figBandInner))
+	one := m(0, 1)
+	b.WriteString(line(62, one[1], 498, one[1], figRule, 1))
 	// zero line (the only hard frontier)
 	z := m(0, 0)
-	b.WriteString(line(62, z[1], 520, z[1], figBad, 1.2))
+	b.WriteString(line(62, z[1], 498, z[1], figBad, 1.2))
 	b.WriteString(txt(66, z[1]-5, 11, figBad, "start", "600", "ruine (le zéro)"))
 	// example paths, then the median on top
 	b.WriteString(fanLine(m, xs, green, figGood, 2, ""))
@@ -196,30 +198,26 @@ func figFanAnatomy() string {
 	rp := m(45, 0)
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, rp[0], rp[1], figBad)
 	b.WriteString(fanLine(m, xs, p50, figDeep, 2.6, ""))
-	// right-edge direct labels
+	// right-gutter direct labels (line ends live at x=45, labels sit beyond)
 	me := m(45, 2.35)
-	b.WriteString(txt(me[0]+6, me[1]+4, 12, figDeep, "start", "600", "médiane"))
-	ib := m(45, 2.02)
-	b.WriteString(txt(ib[0]-6, ib[1]+14, 11, figMuted, "end", "400", "25-75 %"))
-	ob := m(42, 2.86)
-	b.WriteString(txt(ob[0], ob[1], 11, figMuted, "middle", "400", "5-95 %"))
+	b.WriteString(txt(me[0]+8, me[1]+4, 12, figDeep, "start", "600", "médiane"))
 	ge := m(45, 2.78)
-	b.WriteString(txt(ge[0]+6, ge[1]+3, 12, figGood, "start", "600", "prospère"))
-	re := m(45, 0.06)
-	b.WriteString(txt(re[0]+6, re[1]+3, 12, figBad, "start", "600", "finit ruiné"))
-	rmid := m(6, 1.22)
-	b.WriteString(txt(rmid[0]-2, rmid[1]-7, 10, figBad, "middle", "400", "(parti par le haut)"))
-	// axes ticks
+	b.WriteString(txt(ge[0]+8, ge[1]+3, 12, figGood, "start", "600", "prospère"))
+	b.WriteString(txt(rp[0]+8, rp[1]+3, 12, figBad, "start", "600", "finit ruiné"))
+	// band labels, placed inside the cone where it is wide
+	ob := m(38, 2.60)
+	b.WriteString(txt(ob[0], ob[1], 11, figMuted, "middle", "400", "5-95 %"))
+	ib := m(38, 1.82)
+	b.WriteString(txt(ib[0], ib[1], 11, figMuted, "middle", "400", "25-75 %"))
+	// axes ticks and labels
 	for _, c := range []float64{0, 15, 30, 45} {
 		p := m(c, 0)
 		b.WriteString(txt(p[0], 316, 11, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
 	}
-	one := m(0, 1)
-	b.WriteString(line(62, one[1], 520, one[1], figRule, 1))
-	b.WriteString(txt(291, 336, 12, figMuted, "middle", "400", "années de retraite  →"))
-	b.WriteString(txt(44, 50, 11, figMuted, "start", "400", "× capital de départ"))
-	b.WriteString(txt(291, 30, 13, figInk, "middle", "600", "Une pile de distributions par date, pas un faisceau de chemins"))
-	return svg(560, 356, b.String())
+	b.WriteString(txt(280, 336, 12, figMuted, "middle", "400", "années de retraite  →"))
+	b.WriteString(txt(62, 48, 11, figMuted, "start", "400", "× capital de départ"))
+	b.WriteString(txt(280, 30, 13, figInk, "middle", "600", "Une pile de distributions par date, pas un faisceau de chemins"))
+	return svg(620, 356, b.String())
 }
 
 // --- 8. Two cones: the first decade decides (defended vs tight plan) ---
