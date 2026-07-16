@@ -89,3 +89,4 @@ Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ �
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, février 1998, et ses mises à jour (2011).
 - Early Retirement Now, SWR Series volet 1 et volet 8 (l'appendice technique de la méthode) : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
 - Wade Pfau, « An International Perspective on Safe Withdrawal Rates » (2010) : la première grande sortie du cadre américain, prélude à [[anarkulova-cederburg]].
+- Dans ce livre : [[les-maths-du-4-pourcent]] (pourquoi le chiffre de Bengen tient mathématiquement, étage par étage).

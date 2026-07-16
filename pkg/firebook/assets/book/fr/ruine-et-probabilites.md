@@ -26,7 +26,7 @@ Quelle ruine accepter : 1 %, 5 %, 10 % ? La question semble technique ; elle est
 
 **La qualité de vos filets.** La ruine simulée suppose zéro recours. Un quadragénaire employable, propriétaire, avec pension légale à venir et famille solidaire peut rationnellement accepter 10 à 15 % de ruine **simulée**, parce que sa ruine **réelle** (fin de vie dans le dénuement sans aucun recours) est bien plus rare que le chiffre. Une personne de 60 ans sans pension notable, sans immobilier et sans possibilité de retravailler doit lire le chiffre presque littéralement, et viser bas.
 
-**Le coût d'une année de marge.** Passer de 5 % à 2 % de ruine coûte typiquement 10 à 20 % de capital en plus, soit deux à quatre ans de travail. Passer de 5 % à 10 % les rend. Le seuil est un prix d'arbitrage entre deux risques ([[une-annee-de-plus]]) : chiffrez ce que chaque point de ruine vous coûte ou vous rend en années de vie active, la discussion devient concrète.
+**Le coût d'une année de marge.** Passer de 5 % à 2 % de ruine coûte typiquement 10 à 20 % de capital en plus, soit deux à quatre ans de travail. Passer de 5 % à 10 % les rend. Le seuil est un prix d'arbitrage entre deux risques ([[une-annee-de-plus]]) : chiffrez ce que chaque point de ruine vous coûte ou vous rend en années de vie active, la discussion devient concrète. Le cadre général de ce type d'arbitrage (utilité, équivalent certain, regret) est posé dans [[decider-sous-incertitude]].
 
 **La nature de l'échec dans VOTRE plan.** Regardez quand échouent les scénarios qui échouent. Des échecs tardifs (après 85 ans), adossés à une pension qui couvre le plancher : un 8 % de ruine ainsi composé est plus confortable qu'un 4 % fait d'effondrements à 70 ans.
 
