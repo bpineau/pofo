@@ -1,7 +1,19 @@
 # The FIRE book: design
 
 Status: v1 COMPLETE and accepted (2026-07-13): all 79 planned articles
-written. Ben decided the 12 pre-depth-bar articles (the early batches of
+written. EXTENSION 2026-07-17 (Ben, after an external review of the TOC):
+8 new articles, bringing the plan to 87. A new category "Les actifs
+alternatifs" (Ben's must-have) hosts long-volatility, global-macro and
+return-stacking, and managed-futures moves into it from "Le portefeuille
+de retrait" (slug and URL unchanged; categories are only index grouping).
+Two financial-theory articles (primes-de-risque, pourquoi-la-diversification-
+marche) join "Le portefeuille de retrait"; decision theory
+(decider-sous-incertitude) and the mathematical anatomy of the 4 % rule
+(les-maths-du-4-pourcent) join "La science du retrait". Rejected from the
+review: actuarial chapters (already covered by rentes-et-annuites and
+horizon-et-esperance-de-vie), GARCH/copulas/ML/Bayesian-updating chapters
+(too exotic for the book's audience; at most passing mentions in the
+modelling articles), and reproducing the reviewer's table of contents. Ben decided the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
@@ -134,6 +146,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
 - [x] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
 - [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
+- [ ] les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
+- [ ] decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
 
 ### III. Modeliser : Monte-Carlo et autres machines
 - [x] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
@@ -158,6 +172,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
+- [ ] primes-de-risque: D'ou viennent les rendements : les primes de risque (actions, terme, credit, et pourquoi l'or ne rapporte rien)
+- [ ] pourquoi-la-diversification-marche: Pourquoi la diversification fonctionne : correlation, rebalancing premium, volatility harvesting
 - [x] allocation-actions-obligations: L'allocation actions/obligations en retrait
 - [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
 - [x] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
@@ -165,10 +181,15 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] or-en-retrait: L'or dans un portefeuille de retrait
 - [x] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
 - [x] obligations-indexees: Les obligations indexees sur l'inflation
-- [x] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises
 - [x] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
 - [x] diversification-internationale: La diversification internationale (et le biais domestique)
 - [x] etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
+
+### V bis. Les actifs alternatifs
+- [x] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises (moved here 2026-07-17)
+- [ ] long-volatility: Long volatility et tail hedging : payer pour les krachs
+- [ ] global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
+- [ ] return-stacking: Return stacking, overlays et portable alpha : empiler les primes
 
 ### VI. Buffers et protections
 - [x] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
@@ -217,7 +238,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] bibliotheque: La bibliotheque : sites, papiers, livres, outils
 - [x] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
-79 articles planned; at 2 500 words each the book lands around 200k words.
+87 articles planned (79 v1 + 8 of the 2026-07-17 extension); at 2 500 words
+each the book lands around 220k words.
 
 ## Writing plan (multi-session)
 
