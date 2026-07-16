@@ -397,8 +397,12 @@ func figVolDrag() string {
 	cp := m(x0, math.Pow(1.07, x0))
 	ang := math.Atan2(math.Pow(1.07, x0)*math.Log(1.07)*(58.0-292)/8.6, (548.0-72)/30) * 180 / math.Pi
 	b.WriteString(rotTxt(cp[0], cp[1]-10, ang, 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
-	lb := m(20.5, 2.0)
-	b.WriteString(txt(lb[0], lb[1], 11, figBad, "middle", "600", "+27 % / −13 % — même moyenne 7 %"))
+	// the volatile one rides just below its geometric trend, clear of the zigzag
+	rx := 19.5
+	rt := math.Pow(1.05114, rx)
+	rp := m(rx, rt)
+	rang := math.Atan2(rt*math.Log(1.05114)*(58.0-292)/8.6, (548.0-72)/30) * 180 / math.Pi
+	b.WriteString(rotTxt(rp[0], rp[1]+16, rang, 11, figBad, "middle", "600", "+27 % / −13 % (même moyenne 7 %)"))
 	// y ticks
 	for _, v := range []float64{2, 4, 6, 8} {
 		p := m(0, v)
