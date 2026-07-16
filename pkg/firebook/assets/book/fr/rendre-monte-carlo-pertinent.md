@@ -4,7 +4,7 @@ Un Monte-Carlo naïf (tirages gaussiens indépendants, paramètres copiés de l'
 
 La bonne nouvelle : chacun de ses défauts a une correction connue, documentée par la recherche, et implémentable. Cette page présente les six corrections qui transforment le générateur de nombres en instrument de planification, dans l'ordre où elles s'appliquent : calibrer les entrées sans hériter du biais de sa propre fenêtre (le « blending », l'idée la plus importante et la moins connue), épaissir les queues, réintroduire la mémoire des marchés (les régimes), ancrer aux valorisations, confronter aux données brutes, et simuler le vrai plan plutôt que sa caricature.
 
-C'est très exactement la liste de construction du modèle central de pofo, et cette page sert donc aussi de justification de conception : pourquoi la page FIRE calcule ce qu'elle calcule ([[la-machine-pofo]] donne la plomberie ; ici, le pourquoi).
+C'est très exactement la liste de construction du modèle central, et cette page sert donc aussi de justification de conception : pourquoi la page FIRE calcule ce qu'elle calcule ([[la-machine-pofo]] donne la plomberie ; ici, le pourquoi).
 
 ::: cle Le principe directeur
 Il n'existe pas de « meilleur modèle » ; il existe un modèle **central** honnête (calibré, corrigé, tiré vers la prudence là où l'information manque) et des **bornes** qui l'encadrent (l'optimiste, vos données rejouées ; les pessimistes, stress, siècle mondial, décennie perdue). Rendre un Monte-Carlo pertinent, ce n'est pas trouver la vérité. C'est construire ce faisceau, et décider dedans. Toute la suite détaille la fabrication du faisceau.
@@ -70,7 +70,7 @@ La trajectoire 1 % → 9 % → 3,5 % raconte toute la philosophie : le naïf fla
 - Le produit fini n'est pas un chiffre mais un faisceau : un central honnête encadré de bornes ; on décide dans le faisceau, sur les colonnes dures.
 - Les calibrations ne s'empilent pas : blending ou μ manuel ou ancre CAPE comme central, les autres en contre-lectures ; la prudence cumulée en triple couche se paie en années de travail.
 - Le réalisme du plan (pension, revenus, fiscalité, règles de dépense) pèse souvent plus que les raffinements de marché. C'est la complexité gratuite de la simulation, servez-vous-en.
-- Chaque correction a trente ans de littérature derrière elle ; la seule originalité de pofo est de les appliquer **toutes**, par défaut, dans un outil grand public.
+- Chaque correction a trente ans de littérature derrière elle ; la seule originalité est de les appliquer **toutes**, par défaut, dans un outil grand public.
 
 ---
 

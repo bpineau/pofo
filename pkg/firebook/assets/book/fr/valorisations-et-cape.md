@@ -2,7 +2,7 @@
 
 Voici le fait empirique le plus important de tout le sujet après le risque de séquence, et il tient en une phrase : tous les pires millésimes de départ à la retraite de l'histoire, 1929, 1966, 2000, le Japon 1990, ont un point commun, et ce n'est pas la malchance : le marché était historiquement **cher** au moment du départ. Le niveau de valorisation au jour du premier retrait est le meilleur prédicteur connu du taux de retrait qu'un millésime pourra soutenir.
 
-L'instrument de mesure standard de cette cherté est le CAPE de Shiller, et cette page en fait le tour complet : ce que c'est exactement et comment il se calcule, pourquoi et dans quelle mesure il prédit les rendements, la relation chiffrée CAPE-taux de retrait que la recherche a établie, les critiques sérieuses de l'indicateur (il y en a), et surtout les quatre façons concrètes de s'en servir dans un plan, dont l'ancre CAPE intégrée à la page FIRE de pofo. À la fin, vous saurez lire le CAPE du jour comme un rentier, pas comme un trader : non pas « faut-il vendre ? », mais « que puis-je promettre à mon plan ? ».
+L'instrument de mesure standard de cette cherté est le CAPE de Shiller, et cette page en fait le tour complet : ce que c'est exactement et comment il se calcule, pourquoi et dans quelle mesure il prédit les rendements, la relation chiffrée CAPE-taux de retrait que la recherche a établie, les critiques sérieuses de l'indicateur (il y en a), et surtout les quatre façons concrètes de s'en servir dans un plan, dont l'ancre CAPE intégrée à la page FIRE. À la fin, vous saurez lire le CAPE du jour comme un rentier, pas comme un trader : non pas « faut-il vendre ? », mais « que puis-je promettre à mon plan ? ».
 
 ::: cle L'idée en une phrase
 Le prix que vous payez pour un flux de bénéfices détermine le rendement que ce flux pourra vous servir : acheter cher, c'est accepter des rendements futurs plus bas. Pour un rentier, dont le sort se joue dans la première décennie ([[sequence-des-rendements]]), partir quand le marché est cher signifie que la décennie décisive a une espérance de rendement comprimée et un risque de correction accru : la double peine. Le CAPE ne prédit pas les krachs ; il mesure la taille de la promesse que le marché peut tenir.
@@ -34,7 +34,7 @@ Quelques repères pour calibrer l'œil (S&P 500, données Shiller depuis 1871) :
 | 2009 (creux de la crise financière) | ~13 | ~12 %/an réel sur la décennie suivante |
 | Zone 2024-2026 | 33-38 | À écrire ; historiquement, cette zone n'a jamais livré mieux que ~4 % réel sur 10 ans |
 
-La page FIRE de pofo affiche le CAPE du jour en tête de page (section §00, « Where we are in the cycle »), replacé sur son siècle d'histoire, précisément pour que chaque session de planification commence par ce constat de position ([[utiliser-la-page-fire]]).
+La page FIRE affiche le CAPE du jour en tête de page (section §00, « Where we are in the cycle »), replacé sur son siècle d'histoire, précisément pour que chaque session de planification commence par ce constat de position ([[utiliser-la-page-fire]]).
 
 ## Pourquoi ça prédit, et ce que ça ne prédit pas
 
@@ -113,7 +113,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 
 **Les CAPE nationaux existent** (Barclays-Shiller, Research Affiliates, StarCapital) et la relation valorisation-rendements futurs tient dans tous les marchés étudiés, avec la même pente approximative. Les niveaux, en revanche, ne se comparent pas naïvement d'un pays à l'autre (composition sectorielle, normes comptables, gouvernance) : le Japon a « mérité » des CAPE plus hauts pendant des décennies, l'Europe des CAPE plus bas. Utilisez chaque CAPE contre sa propre histoire.
 
-**Un portefeuille mondial dilue le problème sans le supprimer.** Le marché américain pèse 60-70 % des indices mondiaux : quand il est cher, votre ETF World est cher. La partie non américaine, structurellement moins chère ces dernières années, améliore l'earnings yield agrégé d'un point ou deux : réel, mais pas transformateur. L'ancre CAPE de pofo utilise le CAPE américain de Shiller comme proxy prudent de la cherté mondiale, un choix conservateur et assumé ([[la-machine-pofo]]).
+**Un portefeuille mondial dilue le problème sans le supprimer.** Le marché américain pèse 60-70 % des indices mondiaux : quand il est cher, votre ETF World est cher. La partie non américaine, structurellement moins chère ces dernières années, améliore l'earnings yield agrégé d'un point ou deux : réel, mais pas transformateur. L'ancre CAPE utilise le CAPE américain de Shiller comme proxy prudent de la cherté mondiale, un choix conservateur et assumé ([[la-machine-pofo]]).
 
 **Le CAPE ne dit rien de vos obligations, de votre or, de vos actifs alternatifs.** C'est un indicateur du moteur actions. L'espérance du reste du portefeuille se calibre autrement (taux réels courants pour les obligations, c'est l'un des rares cas où l'espérance est presque littéralement **affichée** sur l'étiquette, [[obligations-en-retrait]], [[rendements-attendus]]).
 
@@ -122,7 +122,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 - Le CAPE = prix / bénéfices réels moyens sur 10 ans : une mesure de cherté qui prédit le **centre** des rendements réels à 10-15 ans (R² ~0,4-0,6 aux États-Unis), pas leur calendrier ni leurs krachs.
 - Tous les pires millésimes de retraite partent à CAPE élevé : le « taux de retrait sûr » est une fonction du prix d'entrée ; à CAPE > 30 et horizon long, la zone historique est 3,0-3,25 % rigide, à CAPE < 15 elle dépasse 5 %.
 - Les critiques (comptabilité, buybacks, taux, secteurs) déplacent les seuils, pas la pente : usage ordinal et par zones, jamais au dixième ; lisez le rang dans les 30-40 dernières années, pas l'écart à la moyenne de 1871.
-- Quatre usages légitimes, par ordre de sûreté : calibrer l'espérance du modèle (l'ancre CAPE de pofo), dimensionner le taux initial, piloter le retrait ([[regles-cape]]), moduler (un peu, avec une borne datée) la date de départ. Un usage interdit : le timing binaire du portefeuille.
+- Quatre usages légitimes, par ordre de sûreté : calibrer l'espérance du modèle (l'ancre CAPE), dimensionner le taux initial, piloter le retrait ([[regles-cape]]), moduler (un peu, avec une borne datée) la date de départ. Un usage interdit : le timing binaire du portefeuille.
 - Le réflexe de session : regardez le §00 de la page FIRE, cochez l'ancre CAPE, et si le plan ne tient plus, c'est le solveur §09 qui vous dit le prix de votre point d'entrée, en euros, en années ou en flexibilité.
 
 ---
@@ -130,7 +130,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 ## Pour aller plus loin
 
 - Campbell & Shiller, « Stock Prices, Earnings, and Expected Dividends » (1988) ; Shiller, *Irrational Exuberance* (2000, rééditions avec l'ECY) : les sources.
-- Les données : le site de Robert Shiller (Yale) publie la série CAPE 1871-aujourd'hui, mise à jour mensuellement (c'est la série que pofo embarque, complétée en continu via [multpl.com](https://www.multpl.com)).
+- Les données : le site de Robert Shiller (Yale) publie la série CAPE 1871-aujourd'hui, mise à jour mensuellement (c'est la série utilisée ici, complétée en continu via [multpl.com](https://www.multpl.com)).
 - Early Retirement Now, SWR Series volet 3 (CAPE et SAFEMAX), volet 18 et volet 54 (les règles CAPE-based) : la formalisation pour rentiers ([[serie-ern]]).
 - Michael Kitces, « Resolving the Paradox: Is the Safe Withdrawal Rate Sometimes Too Safe? » (2008) : le lien valorisation-retrait côté praticien.
 - Wade Pfau, « Can We Predict the Sustainable Withdrawal Rate for New Retirees? » (2011) : la régression SAFEMAX ~ CAPE.

@@ -24,7 +24,7 @@ Deux partis pris à connaître pour lire correctement. D'abord, données **amér
 
 **Le CAPE comme règle, pas comme peur (volets 18, 54).** La proposition constructive de la série : des règles de retrait CAPE-based, où le taux initial (et courant) s'ajuste aux valorisations, formalisées au volet 54. C'est l'ancêtre direct de l'ancre CAPE de la page FIRE ([[regles-cape]]).
 
-**Les buckets et le cash ne font pas ce qu'on croit (volets 12, 48, 55).** Analyse à contre-courant du dogme des buckets : un matelas de cash consommé-rechargé mécaniquement améliore peu la ruine (le cash coûte en rendement ce qu'il économise en séquence) et les stratégies de buckets populaires sont souvent du market timing déguisé sans règle claire ([[cash-buffer]], [[strategie-buckets]], [[recharger-ou-pas]]). Nuance importante : pofo trouve le même ordre de grandeur (l'arbitrage buffer de la §07 est généralement plat), ce qui n'enlève pas au buffer sa valeur **psychologique** et de gouvernance ([[psychologie-du-retrait]]).
+**Les buckets et le cash ne font pas ce qu'on croit (volets 12, 48, 55).** Analyse à contre-courant du dogme des buckets : un matelas de cash consommé-rechargé mécaniquement améliore peu la ruine (le cash coûte en rendement ce qu'il économise en séquence) et les stratégies de buckets populaires sont souvent du market timing déguisé sans règle claire ([[cash-buffer]], [[strategie-buckets]], [[recharger-ou-pas]]). Nuance importante : la simulation trouve le même ordre de grandeur (l'arbitrage buffer de la §07 est généralement plat), ce qui n'enlève pas au buffer sa valeur **psychologique** et de gouvernance ([[psychologie-du-retrait]]).
 
 **Les glidepaths marchent (volets 19-20, 43).** La contrepartie positive : partir avec 60 % d'actions et remonter vers 100 % sur 10-15 ans améliore matériellement les pires millésimes, pour un coût modeste dans les bons : la protection concentrée sur la fenêtre fragile ([[glidepaths]], [[les-trois-phases]]).
 
@@ -33,7 +33,7 @@ Deux partis pris à connaître pour lire correctement. D'abord, données **amér
 **Les à-côtés qui changent la vie (volets 21-22, 27, 37, 42, 47, 60).** Le crédit immobilier en retraite (volet 21, le garder est un pari de levier sur la séquence), le « one more year » chiffré (volet 42, [[une-annee-de-plus]]), quand s'inquiéter en cours de route (volet 47, [[quand-s-inquieter]]), traverser un marché baissier (volet 37, [[marche-baissier-en-retraite]]), et la critique de « Die With Zero » (volet 60, [[depenses-en-retraite]]).
 
 ::: astuce Par où commencer, selon votre question
-Le tour d'horizon : volets 1 et 26. « Combien puis-je retirer ? » : volets 2-3 puis 54 (CAPE). « La flexibilité me sauvera-t-elle ? » : volets 23-25 puis 58. « Mon allocation autour du départ » : volets 19-20. « Les buckets ? » : volets 12 et 48. Chaque volet se lit en 20-40 minutes ; la série entière est un livre de fait, plus long que celui-ci, et le complète : ERN pousse les simulations américaines plus loin, ce livre couvre le cadre français, l'échantillon mondial et l'outillage pofo.
+Le tour d'horizon : volets 1 et 26. « Combien puis-je retirer ? » : volets 2-3 puis 54 (CAPE). « La flexibilité me sauvera-t-elle ? » : volets 23-25 puis 58. « Mon allocation autour du départ » : volets 19-20. « Les buckets ? » : volets 12 et 48. Chaque volet se lit en 20-40 minutes ; la série entière est un livre de fait, plus long que celui-ci, et le complète : ERN pousse les simulations américaines plus loin, ce livre couvre le cadre français, l'échantillon mondial et l'outillage du simulateur.
 :::
 
 ## Lire ERN avec les bons filtres
@@ -56,7 +56,7 @@ La série a durablement changé la conversation FIRE : « quel est ton SWR ? » 
 - Ses résultats structurants : 3,25-3,5 % rigide pour 50-60 ans, le rôle dominant de la séquence et des valorisations, la flexibilité surestimée (elle déplace la douleur), les buckets démystifiés, les glidepaths validés.
 - Ses partis pris : données américaines (chiffres plutôt optimistes), exigence de pire cas (recommandations plutôt prudentes) : les deux biais se compensent partiellement, sachez-le en la lisant.
 - Depuis la France : gardez les mécanismes, adaptez les chiffres, ignorez le chapitre fiscal américain ; ce livre fait la jonction.
-- Beaucoup de concepts de la page FIRE de pofo (ancre CAPE, niveau de vie vécu, stress de séquence, arbitrage buffer) sont en dialogue direct avec cette série ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+- Beaucoup de concepts de la page FIRE (ancre CAPE, niveau de vie vécu, stress de séquence, arbitrage buffer) sont en dialogue direct avec cette série ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
 
 ---
 

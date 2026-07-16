@@ -1,6 +1,6 @@
 # Monte-Carlo : forces, faiblesses, bon usage
 
-Derrière chaque probabilité de ruine, chaque cône de richesse, chaque « votre plan réussit dans 94 % des cas », il y a la même machine : la simulation de Monte-Carlo, qui consiste à générer des milliers de futurs possibles et à compter ce qui s'y passe. C'est l'outil central de toute la planification moderne, celui de pofo comme de tous les simulateurs sérieux, et c'est un outil magnifique à **condition** de savoir ce qu'il fait vraiment. Il ne prédit pas l'avenir, il déroule les conséquences de **vos** hypothèses avec une rigueur qu'aucun raisonnement de coin de table n'atteint.
+Derrière chaque probabilité de ruine, chaque cône de richesse, chaque « votre plan réussit dans 94 % des cas », il y a la même machine : la simulation de Monte-Carlo, qui consiste à générer des milliers de futurs possibles et à compter ce qui s'y passe. C'est l'outil central de toute la planification moderne, celui de tous les simulateurs sérieux, et c'est un outil magnifique à **condition** de savoir ce qu'il fait vraiment. Il ne prédit pas l'avenir, il déroule les conséquences de **vos** hypothèses avec une rigueur qu'aucun raisonnement de coin de table n'atteint.
 
 Cette page démonte la machine complètement. D'où vient la méthode et comment elle marche pas à pas, ce qu'elle fait mieux que toutes les alternatives (le rejeu historique, les formules fermées, l'intuition), ses quatre faiblesses structurelles et leur gravité réelle, et le mode d'emploi raisonné, celui qui distingue l'utilisateur qui **instruit** sa décision de celui qui se fait raconter une histoire par un générateur de nombres aléatoires. Les deux articles suivants prolongent : les familles de modèles qui alimentent la machine ([[historique-vs-parametrique]]) et les corrections qui la rendent pertinente ([[rendre-monte-carlo-pertinent]]).
 
@@ -12,7 +12,7 @@ Un Monte-Carlo ne contient **aucune** information sur l'avenir. Il contient troi
 
 La méthode naît en 1946 à Los Alamos : Stanislaw Ulam, convalescent, joue aux réussites et se demande quelle fraction des parties est gagnable. Le calcul combinatoire exact est inextricable ; l'idée lui vient de simplement **jouer** un grand nombre de parties et de compter. Avec von Neumann et Metropolis, l'idée devient méthode (baptisée du nom du casino où l'oncle d'Ulam perdait son argent) et résout les calculs de diffusion neutronique de la bombe : quand un système est trop complexe pour être résolu par une formule, on le fait tourner des milliers de fois et on regarde la distribution des issues.
 
-Le problème du rentier est **exactement** de cette classe. Un plan de retrait est un système à mémoire : le retrait de l'année 12 dépend du portefeuille de l'année 12, qui dépend de toute la séquence antérieure, des règles de dépense, du buffer, des impôts, de la pension qui démarre en l'année 15... Aucune formule fermée ne capture ça dès que le plan a un peu de réalisme. La simulation, si. Concrètement, pour une trajectoire, le moteur de pofo fait ceci ([[la-machine-pofo]]) :
+Le problème du rentier est **exactement** de cette classe. Un plan de retrait est un système à mémoire : le retrait de l'année 12 dépend du portefeuille de l'année 12, qui dépend de toute la séquence antérieure, des règles de dépense, du buffer, des impôts, de la pension qui démarre en l'année 15... Aucune formule fermée ne capture ça dès que le plan a un peu de réalisme. La simulation, si. Concrètement, pour une trajectoire, le moteur fait ceci ([[la-machine-pofo]]) :
 
 1. **Tirer une séquence de rendements réels** pour tout l'horizon, dans le modèle choisi : tirages Student-t indépendants pour le modèle central, blocs d'histoire pour le bootstrap, fenêtre réelle pour les cohortes, régimes de Markov pour le stress ([[historique-vs-parametrique]]).
 2. **Dérouler l'année 1** : appliquer le rendement au portefeuille, calculer le retrait selon la règle active (fixe indexé, flex, guardrails, VPW, ABW..., avec la majoration fiscale sur chaque vente), consommer ou recharger le buffer selon ses règles, encaisser pension et revenus s'ils ont commencé.
@@ -33,7 +33,7 @@ Pour apprécier l'outil, comparons-le à ses trois concurrents.
 
 ## Les quatre faiblesses structurelles, et leur gravité réelle
 
-**Faiblesse 1 : garbage in, garbage out, avec effet de levier.** La sortie est hypersensible aux entrées : ±0,5 point sur μ, indétectable statistiquement ([[rendements-attendus]]), peut faire varier la ruine du simple au double. Le simulateur **amplifie** la précision apparente : trois décimales de ruine calculées sur un μ connu à ±1 point. Gravité : maximale, mais entièrement gérable par la discipline des entrées (calibration prospective, blending, ancres) et la lecture en intervalle ([[ruine-et-probabilites]]). C'est la raison d'être de la conception multi-modèles de pofo.
+**Faiblesse 1 : garbage in, garbage out, avec effet de levier.** La sortie est hypersensible aux entrées : ±0,5 point sur μ, indétectable statistiquement ([[rendements-attendus]]), peut faire varier la ruine du simple au double. Le simulateur **amplifie** la précision apparente : trois décimales de ruine calculées sur un μ connu à ±1 point. Gravité : maximale, mais entièrement gérable par la discipline des entrées (calibration prospective, blending, ancres) et la lecture en intervalle ([[ruine-et-probabilites]]). C'est la raison d'être de la conception multi-modèles.
 
 **Faiblesse 2 : l'indépendance des tirages.** Le Monte-Carlo naïf tire chaque année indépendamment de la précédente : pile ou face, sans mémoire. Or les marchés réels ont de la mémoire : les mauvaises années s'agglutinent (récessions, marchés baissiers de plusieurs années), les valorisations créent des tendances décennales ([[valorisations-et-cape]]), la volatilité fait des grappes. Conséquence précise : à mêmes moyenne et variance, le modèle i.i.d. sous-estime la probabilité des **longues** séquences médiocres, celles qui tuent les rentiers ([[sequence-des-rendements]]), et surestime légèrement la dispersion à très long terme (les vrais marchés ont un retour vers la moyenne qui resserre les cônes à 30 ans). Gravité : réelle mais quantifiable, de l'ordre de quelques points de ruine ; les correctifs existent et pofo en implémente trois (blocs, régimes de Markov, cohortes, [[rendre-monte-carlo-pertinent]]).
 
@@ -47,15 +47,15 @@ L'erreur d'échantillonnage d'une probabilité p estimée sur N trajectoires vau
 
 ## Le bon usage : huit règles de conduite
 
-Voici la synthèse pratique, forgée par la littérature (Kitces a beaucoup écrit sur le « bon usage du Monte-Carlo » côté conseillers) et incarnée dans la conception de pofo.
+Voici la synthèse pratique, forgée par la littérature (Kitces a beaucoup écrit sur le « bon usage du Monte-Carlo » côté conseillers) et incarnée dans une conception multi-modèles.
 
 **1. Soignez les entrées dix fois plus que la lecture des sorties.** Une heure sur le budget réel et la calibration de μ ([[combien-il-vous-faut]], [[rendements-attendus]]) vaut plus que dix heures à contempler des cônes.
 
-**2. Ne lisez jamais un seul modèle.** L'intervalle entre les colonnes de pofo (central, stress, broad-sample, historique) est l'information ; une colonne seule est une opinion ([[ruine-et-probabilites]]).
+**2. Ne lisez jamais un seul modèle.** L'intervalle entre les colonnes (central, stress, broad-sample, historique) est l'information ; une colonne seule est une opinion ([[ruine-et-probabilites]]).
 
 **3. Lisez en ordinal.** Comparer (plan A vs plan B, levier X vs levier Y) est la force de l'outil ; mesurer (« mon risque est 4,7 % ») est son point faible. Les écarts sont du signal, les décimales du bruit.
 
-**4. Utilisez-le en machine à « et si », pas en oracle.** Sa vraie vocation. Et si je pars deux ans plus tôt ? et si l'inflation ajoute 0,5 point aux dépenses ? et si la pension est rabotée de 20 % ? La section §09 de pofo (le solveur en « mouvements équivalents ») industrialise cet usage. Elle convertit chaque marge en euros, en années ou en flexibilité ([[utiliser-la-page-fire]]).
+**4. Utilisez-le en machine à « et si », pas en oracle.** Sa vraie vocation. Et si je pars deux ans plus tôt ? et si l'inflation ajoute 0,5 point aux dépenses ? et si la pension est rabotée de 20 % ? La section §09 (le solveur en « mouvements équivalents ») industrialise cet usage. Elle convertit chaque marge en euros, en années ou en flexibilité ([[utiliser-la-page-fire]]).
 
 **5. Regardez les trajectoires, pas seulement les agrégats.** Une probabilité résume ; les chemins d'exemple du cône (dont les rouges, échoués) montrent **comment** on échoue : vite par krach précoce, ou lentement par érosion ([[lire-un-fan-chart]]). Le mode de défaillance dicte la parade, pas le taux d'échec.
 
