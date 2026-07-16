@@ -124,7 +124,7 @@ func ToHTML(src string, titles map[string]string) string {
 				}
 				i++ // closing :::
 				fmt.Fprintf(&b, `<figure class="book-fig">%s<figcaption>%s</figcaption></figure>`,
-					figureSVG(id), inline(strings.TrimSpace(strings.Join(cap, " "))))
+					FigureSVG(id), inline(strings.TrimSpace(strings.Join(cap, " "))))
 				continue
 			}
 			meta, ok := callouts[typ]

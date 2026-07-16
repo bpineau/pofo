@@ -26,6 +26,10 @@ Fait remarquable, la prime observée est même trop grosse pour la théorie stan
 
 **Les primes alternatives** (trend, carry, value) ont leur chapitre ([[global-macro]], [[managed-futures]], [[facteurs-fama-french]]). Leur particularité est d'être partiellement **comportementales** : elles rémunèrent moins un risque macro qu'une erreur persistante des autres participants (sous-réaction, recherche de loterie, contraintes institutionnelles). C'est ce qui les rend à la fois précieuses (décorrélées des mauvais états du monde) et plus fragiles (une erreur peut s'apprendre, une contrainte peut sauter).
 
+::: figure primes-echelle
+Les grandes primes, en points de rendement réel annuel au-dessus du cash (fourchettes historiques, avant frais et fiscalité). L'or et le cash n'offrent rien ici, par construction.
+:::
+
 ::: science La décomposition après publication : McLean et Pontiff
 Que devient une prime une fois publiée dans une revue académique ? McLean et Pontiff (« Does Academic Research Destroy Stock Return Predictability? », 2016) ont mesuré la réponse sur 97 anomalies : leur rendement baisse d'environ un tiers à la moitié après publication, mais ne tombe pas à zéro. La lecture correcte est une hiérarchie de robustesse. Les primes adossées à un risque macro non assurable (actions, terme) sont les plus solides, personne ne pouvant arbitrer les récessions. Les primes comportementales à limites d'arbitrage documentées (trend, value) se compriment mais survivent, des décennies après leur publication. Les anomalies statistiques fines sans histoire de risque ni de comportement meurent, et c'était souvent du data mining ([[pieges-des-simulateurs]]). Moralité pour le plan : fonder le gros du rendement sur les primes du premier étage, doser celles du deuxième, ignorer le troisième.
 :::
