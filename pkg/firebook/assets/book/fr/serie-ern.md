@@ -10,13 +10,13 @@ Avant ERN, le débat FIRE opposait des slogans (« 4 %, c'est réglé » contre 
 
 ## L'auteur et la méthode
 
-Le cadre de travail d'ERN, constant sur toute la série : données mensuelles américaines depuis 1871 (actions S&P composite, obligations d'État 10 ans, via Shiller), retraites simulées à **tous** les mois de départ possibles, horizons de 30 à 60 ans, et le critère regardé de près : non seulement la ruine, mais la richesse finale et le chemin (quand échoue-t-on, après quoi). Les outils sont publics : la « toolbox » Google Sheets du volet 28 permet de refaire chaque calcul chez soi.
+Le cadre de travail d'ERN, constant sur toute la série : données mensuelles américaines depuis 1871 (actions S&P composite, obligations d'État 10 ans, via Shiller), retraites simulées à **tous** les mois de départ possibles, horizons de 30 à 60 ans, et le critère regardé de près, qui n'est pas seulement la ruine mais la richesse finale et le chemin (quand échoue-t-on, après quoi). Les outils sont publics : la « toolbox » Google Sheets du volet 28 permet de refaire chaque calcul chez soi.
 
 Deux partis pris à connaître pour lire correctement. D'abord, données **américaines** : la série hérite du biais optimiste de l'échantillon ([[etude-trinity]], [[anarkulova-cederburg]]) ; ERN le sait, le dit, et considère que 150 ans mensuels d'un grand marché, avec 1929 et 1966 dedans, disciplinent déjà fortement les conclusions. Ensuite, une posture : ERN écrit pour le retraité précoce qui ne veut pas dépendre de la chance, d'où une exigence de robustesse (souvent, « survivre au pire millésime ») plus dure que les 90-95 % de succès des praticiens ([[guardrails-morningstar]], [[ruine-et-probabilites]]).
 
 ## Les résultats majeurs, partie par partie
 
-**Le socle : 4 % n'est pas fait pour vous (volets 1-3, 26).** Le résultat fondateur de la série : la règle des 4 % tient sur 30 ans, mais un horizon de 50-60 ans exige plutôt 3,25-3,5 % en rigide, et le taux sûr dépend fortement des valorisations de départ (volet 3) : à CAPE élevé (au-dessus de 20), les SAFEMAX historiques tombent, tous horizons confondus. Le volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») est le meilleur résumé grand public ([[la-regle-des-4-pourcents]], [[valorisations-et-cape]]).
+**Le socle : 4 % n'est pas fait pour vous (volets 1-3, 26).** Le résultat fondateur de la série : la règle des 4 % tient sur 30 ans, mais un horizon de 50-60 ans exige plutôt 3,25-3,5 % en rigide, et le taux sûr dépend fortement des valorisations de départ (volet 3). À CAPE élevé (au-dessus de 20), les SAFEMAX historiques tombent, tous horizons confondus. Le volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») est le meilleur résumé grand public ([[la-regle-des-4-pourcents]], [[valorisations-et-cape]]).
 
 **La séquence explique tout (volets 14-15).** Démonstration chiffrée que le rendement moyen sur 30 ans compte moins que le rendement des 5-10 premières années : le cœur de [[sequence-des-rendements]]. Corollaire (volet 53) : l'épargnant et le rentier ont des expositions **opposées** à la séquence.
 
@@ -26,7 +26,7 @@ Deux partis pris à connaître pour lire correctement. D'abord, données **amér
 
 **Les buckets et le cash ne font pas ce qu'on croit (volets 12, 48, 55).** Analyse à contre-courant du dogme des buckets : un matelas de cash consommé-rechargé mécaniquement améliore peu la ruine (le cash coûte en rendement ce qu'il économise en séquence) et les stratégies de buckets populaires sont souvent du market timing déguisé sans règle claire ([[cash-buffer]], [[strategie-buckets]], [[recharger-ou-pas]]). Nuance importante : la simulation trouve le même ordre de grandeur (l'arbitrage buffer de la §07 est généralement plat), ce qui n'enlève pas au buffer sa valeur **psychologique** et de gouvernance ([[psychologie-du-retrait]]).
 
-**Les glidepaths marchent (volets 19-20, 43).** La contrepartie positive : partir avec 60 % d'actions et remonter vers 100 % sur 10-15 ans améliore matériellement les pires millésimes, pour un coût modeste dans les bons : la protection concentrée sur la fenêtre fragile ([[glidepaths]], [[les-trois-phases]]).
+**Les glidepaths marchent (volets 19-20, 43).** La contrepartie positive : partir avec 60 % d'actions et remonter vers 100 % sur 10-15 ans améliore matériellement les pires millésimes, pour un coût modeste dans les bons, la protection se concentrant sur la fenêtre fragile ([[glidepaths]], [[les-trois-phases]]).
 
 **Rentes, obligations, or, immobilier, levier (volets 29-31, 34-36, 40, 49, 52, 56, 59).** Les inventaires d'actifs : le « yield illusion » des portefeuilles à dividendes (volets 29-31, vivre des dividendes n'est **pas** plus sûr, [[erreurs-classiques-fire]]), l'or comme couverture partielle de séquence (volet 34, [[or-en-retrait]]), l'immobilier (volet 36, [[immobilier-en-retrait]]), les rentes et la Sécurité sociale américaine (volets 56, 59, à adapter au système français, [[rentes-et-annuites]], [[retraite-legale]]), le levier (volets 49, 52, sophistiqué, à petites doses, [[levier-et-marges]]).
 
@@ -54,7 +54,7 @@ La série a durablement changé la conversation FIRE : « quel est ton SWR ? » 
 
 - La série SWR d'ERN ([earlyretirementnow.com](https://earlyretirementnow.com), 60+ volets depuis 2016) est la référence moderne du retrait de long horizon : méthodique, reproductible, gratuite.
 - Ses résultats structurants : 3,25-3,5 % rigide pour 50-60 ans, le rôle dominant de la séquence et des valorisations, la flexibilité surestimée (elle déplace la douleur), les buckets démystifiés, les glidepaths validés.
-- Ses partis pris : données américaines (chiffres plutôt optimistes), exigence de pire cas (recommandations plutôt prudentes) : les deux biais se compensent partiellement, sachez-le en la lisant.
+- Ses partis pris : données américaines (chiffres plutôt optimistes), exigence de pire cas (recommandations plutôt prudentes). Les deux biais se compensent partiellement, sachez-le en la lisant.
 - Depuis la France : gardez les mécanismes, adaptez les chiffres, ignorez le chapitre fiscal américain ; ce livre fait la jonction.
 - Beaucoup de concepts de la page FIRE (ancre CAPE, niveau de vie vécu, stress de séquence, arbitrage buffer) sont en dialogue direct avec cette série ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
 
