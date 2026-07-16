@@ -14,6 +14,10 @@ Sur un siècle français, la question n'a jamais été « l'inflation sera-t-ell
 
 En 1913, le franc germinal n'avait pas bougé depuis 1803 : cent dix ans de stabilité métallique : le rentier en obligations d'État vivait dans un monde où la monnaie était une constante physique. Puis : la Grande Guerre financée par la planche à billets (les prix quadruplent de 1914 à 1920) ; l'entre-deux-guerres et ses dévaluations (Poincaré stabilise en 1926-28 un franc qui a perdu 80 % de sa valeur-or) ; la Seconde Guerre et l'après-guerre (les prix sont multipliés par ~20 entre 1940 et 1950) ; les dévaluations à répétition jusqu'au nouveau franc de 1958-1960. Bilan cumulé : **de 1914 à 1958, le franc a perdu plus de 99 % de son pouvoir d'achat** : l'obligation d'État française, l'actif « de bon père de famille » par excellence, a ruiné deux générations de ses détenteurs : pas par défaut : l'État a toujours payé : en francs fondus. Pendant ce temps, les actions françaises ont fait un chemin chaotique mais réel (les entreprises repricent), l'or et les biens réels ont préservé, et l'immobilier a subi sa propre destruction réglementaire (les loyers bloqués de 1914 à 1948, la loi de 1948, ont ruiné les bailleurs en termes réels, rappel utile que l'actif réel n'est protecteur que si son **flux** peut suivre les prix, [[immobilier-en-retrait]]).
 
+::: figure franc-decay
+Le pouvoir d'achat de 100 francs de 1914, en francs constants. Deux effondrements (la Grande Guerre, puis la guerre et l'après-guerre) séparés par un entre-deux-guerres relativement stable, et un solde final sous 1 : plus de 99 % du pouvoir d'achat détruit en une vie d'homme. L'obligation d'État, l'actif « de bon père de famille », a été le vecteur de cette ruine, payée jusqu'au bout en francs fondus.
+:::
+
 C'est l'épisode fondateur du dossier. Il établit que le scénario « la monnaie perd 99 % » n'est ni exotique ni lointain. Il est **français**, il a duré une vie d'homme, et l'actif qui promettait la sécurité en a été le vecteur ([[anarkulova-cederburg]], c'est très exactement ce que le broad-sample rejoue).
 
 ## 1950-1985 : de la stabilité relative à la grande inflation
