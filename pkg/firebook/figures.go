@@ -58,6 +58,8 @@ var figures = map[string]func() string{
 	"horizon-flatten":     figHorizonFlatten,
 	"vol-drag":            figVolDrag,
 	"franc-decay":         figFrancDecay,
+	"correl-sign":         figCorrelSign,
+	"buffer-flat":         figBufferFlat,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
@@ -438,6 +440,81 @@ func figFrancDecay() string {
 	b.WriteString(txt(315, 330, 11, figMuted, "middle", "400", "pouvoir d'achat de 100 francs de 1914, en francs constants"))
 	b.WriteString(titleTxt(315, 30, "Le franc, 1914-1958 : la ruine silencieuse du rentier obligataire"))
 	return svg(620, 344, b.String())
+}
+
+// --- 15. Stock-bond correlation flipping sign with the inflation regime ---
+func figCorrelSign() string {
+	pts := [][2]float64{{1965, 0.24}, {1970, 0.34}, {1974, 0.30}, {1979, 0.40}, {1984, 0.22}, {1990, 0.12}, {1995, 0.02}, {2000, -0.18}, {2003, -0.40}, {2008, -0.45}, {2012, -0.30}, {2016, -0.36}, {2020, -0.40}, {2021, -0.24}, {2022, 0.34}, {2024, 0.40}}
+	m := mapper(1963, 2026, -0.62, 0.62, 76, 556, 300, 58)
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	// background bands: positive (they fall together, bad) vs negative (hedge, good)
+	tp, zp, bp := m(1963, 0.62), m(1963, 0), m(2026, -0.62)
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(192,101,91,.10)"/>`, tp[0], tp[1], bp[0]-tp[0], zp[1]-tp[1])
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(63,143,111,.10)"/>`, zp[0], zp[1], bp[0]-zp[0], bp[1]-zp[1])
+	b.WriteString(line(76, zp[1], 556, zp[1], figRule, 1.2))
+	b.WriteString(txt(80, zp[1]-4, 10, figMuted, "start", "400", "corrélation 0"))
+	b.WriteString(smoothStroke(px, figInk, 2.6))
+	// band labels (right)
+	b.WriteString(txt(552, m(1963, 0.5)[1]+4, 11, figBad, "end", "600", "positive : tombent ensemble"))
+	b.WriteString(txt(552, m(1963, -0.5)[1]+4, 11, figGood, "end", "600", "négative : les obligations amortissent"))
+	// era annotations
+	b.WriteString(txt(m(1976, 0)[0], m(1976, 0.52)[1], 10, figSoft, "middle", "600", "ère inflationniste"))
+	b.WriteString(txt(m(2008, 0)[0], m(2008, -0.09)[1], 10, figSoft, "middle", "600", "l'âge d'or du 60/40 (2000-2021)"))
+	b.WriteString(txt(m(2019.5, 0)[0], m(2019.5, 0.14)[1], 10, figSoft, "middle", "600", "retour 2022"))
+	// y ticks
+	for _, v := range []float64{-0.5, 0.5} {
+		p := m(1963, v)
+		b.WriteString(txt(72, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%+.1f", v)))
+	}
+	for _, c := range []float64{1970, 1985, 2000, 2015} {
+		p := m(c, -0.62)
+		b.WriteString(txt(p[0], 316, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(316, 336, 11, figMuted, "middle", "400", "corrélation glissante actions / obligations  →"))
+	b.WriteString(titleTxt(316, 30, "La corrélation actions / obligations change de signe"))
+	return svg(620, 350, b.String())
+}
+
+// --- 16. The cash-buffer arbitrage: an almost-flat curve that turns up ---
+func figBufferFlat() string {
+	pts := [][2]float64{{0, 5.05}, {1, 4.78}, {2, 4.62}, {3, 4.62}, {4, 4.72}, {5, 4.88}, {6, 5.05}, {7, 5.22}, {8, 5.38}}
+	m := mapper(0, 8, 4.0, 5.7, 78, 540, 288, 70)
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	b.WriteString(line(78, m(0, 4.0)[1], 540, m(0, 4.0)[1], figRule, 1))
+	b.WriteString(smoothStroke(px, figAccent, 2.8))
+	for _, p := range px {
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="2.6" fill="%s"/>`, p[0], p[1], figDeep)
+	}
+	// min marker + annotation
+	mn := m(2.5, 4.6)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.6" fill="%s"/>`, mn[0], mn[1], figGood)
+	b.WriteString(txt(mn[0], mn[1]+18, 10, figGood, "middle", "600", "optimum mou (2-3 ans)"))
+	// rising-right annotation
+	rr := m(6.2, 5.52)
+	b.WriteString(txt(rr[0], rr[1], 10, figBad, "middle", "600", "au-delà, le buffer appauvrit le moteur"))
+	// flatness note
+	b.WriteString(txt(m(0.2, 5.55)[0], m(0.2, 5.55)[1], 10, figSoft, "start", "400", "toute la plage tient en moins d'un point de ruine"))
+	// y ticks
+	for _, v := range []float64{4.5, 5.0, 5.5} {
+		p := m(0, v)
+		b.WriteString(txt(74, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.1f %%", v)))
+	}
+	for _, c := range []float64{0, 2, 4, 6, 8} {
+		p := m(c, 4.0)
+		b.WriteString(txt(p[0], 304, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(309, 326, 11, figMuted, "middle", "400", "taille du matelas (années de dépenses)  →"))
+	b.WriteString(txt(60, 62, 10, figMuted, "start", "400", "ruine"))
+	b.WriteString(titleTxt(309, 30, "L'arbitrage du buffer : une courbe presque plate"))
+	return svg(620, 340, b.String())
 }
 
 // --- 11. Fat tails: Normal vs Student-t density, same mean and variance ---
