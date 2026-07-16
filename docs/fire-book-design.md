@@ -94,6 +94,21 @@ rendering in Go is testable, stdlib-only and reusable.
   of the pre-existing ~1100 offenders is in progress and paused; see the
   `firebook-no-double-colon` note. Do NOT add an enforcing guard test until that
   cleanup finishes (it would fail on the backlog).
+- NO OUTRANCIER GALLICISMS (Ben, 2026-07-17): never translate an English idiom
+  literally ("sur une serviette" for "on a napkin" is out). Use the English
+  expression as-is or a real French idiom ("un calcul de coin de table").
+  Occasional English terms are welcome (free lunch, drawdown, trend...);
+  "bon francais" means CORRECT French (syntax, vocabulary, spelling), not
+  French-only vocabulary. Also: do not abuse bold (and never uppercase for
+  emphasis; acronyms and typographic conventions only).
+- STANDALONE BOOK (Ben, 2026-07-17): the book is not "a part of pofo" and must
+  read offline without it. Avoid pofo references except when really useful
+  (a pro-tip or a usage explanation), and then as an `::: encart` or
+  `::: astuce` callout, not in running text.
+- When ADDING articles, also AMEND the existing ones: hub articles
+  (actifs-defensifs, panorama-strategies-retrait, lexique...) must mention and
+  link the new dedicated articles; themes judged too small for an article
+  should be evaluated for a paragraph or a mention in an existing article.
 - Callout types: `cle` (the one idea to retain), `astuce` (pro-tip),
   `attention` (trap), `exemple` (worked numbers), `encart` (side note),
   `science` (what the research actually says, with references), `terrain`
