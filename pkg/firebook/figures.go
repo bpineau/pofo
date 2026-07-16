@@ -279,6 +279,13 @@ func titleTxt(x, y float64, s string) string {
 	return fmt.Sprintf(`<text x="%.1f" y="%.1f" font-size="14" fill="%s" text-anchor="middle" font-weight="600" font-family="%s">%s</text>`, x, y, figInk, figSerif, s)
 }
 
+// rotTxt sets a label rotated by angle (degrees) about its own anchor, so it can
+// ride along a sloped line instead of floating away from it.
+func rotTxt(x, y, angle float64, size int, color, anchor, weight, s string) string {
+	return fmt.Sprintf(`<text x="%.1f" y="%.1f" transform="rotate(%.2f %.1f %.1f)" font-size="%d" fill="%s" text-anchor="%s" font-weight="%s" font-family="ui-sans-serif,system-ui,sans-serif">%s</text>`,
+		x, y, angle, x, y, size, color, anchor, weight, s)
+}
+
 // catmull turns a point list into a smooth SVG path (Catmull-Rom -> Bézier):
 // curves, not straight segments, are what separate a real chart from a sketch.
 func catmull(pts [][2]float64) string {
@@ -385,10 +392,12 @@ func figVolDrag() string {
 	an := m(1.5, 7.7)
 	b.WriteString(txt(an[0], an[1], 11, figSoft, "start", "600", "le volatility drag"))
 	b.WriteString(txt(an[0], an[1]+14, 10, figMuted, "start", "400", "même moyenne, richesse en moins"))
-	// curve labels
-	la := m(15.5, 5.7)
-	b.WriteString(txt(la[0], la[1], 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
-	lb := m(17, 1.4)
+	// curve labels: the steady one rides just above its curve at the local slope
+	x0 := 22.0
+	cp := m(x0, math.Pow(1.07, x0))
+	ang := math.Atan2(math.Pow(1.07, x0)*math.Log(1.07)*(58.0-292)/8.6, (548.0-72)/30) * 180 / math.Pi
+	b.WriteString(rotTxt(cp[0], cp[1]-10, ang, 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
+	lb := m(20.5, 2.0)
 	b.WriteString(txt(lb[0], lb[1], 11, figBad, "middle", "600", "+27 % / −13 % — même moyenne 7 %"))
 	// y ticks
 	for _, v := range []float64{2, 4, 6, 8} {
