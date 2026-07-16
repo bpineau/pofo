@@ -16,6 +16,10 @@ La mécanique a une contrepartie structurelle que la recherche mesure depuis tre
 
 **Le coût, chiffré.** Les indices publics permettent de le mesurer sans polémique. Le CBOE PPUT (S&P 500 protégé en permanence par un put 5 % hors de la monnaie) rend historiquement 1,5 à 2,5 points de moins par an que le S&P 500 nu, pour un drawdown maximal à peine amélioré. Une poche de puts pure (sans les actions) coûte de l'ordre de 2 à 5 % de sa base notionnelle par an en régime calme. La critique académique de référence, « Pathetic Protection » (Roni Israelov, 2017), conclut que la protection par puts systématique est dominée sur quasiment tout l'historique par une solution triviale : détenir simplement moins d'actions et plus de cash ou d'obligations ([[allocation-actions-obligations]]).
 
+::: figure longvol-profil
+Le profil type d'une poche de puts systématique (stylisé) : une prime versée en continu, remboursée par de rares pics de convexité. Le pic ne compte que s'il est monétisé.
+:::
+
 ## Le cas d'école : Universa et mars 2020
 
 L'argument inverse a aussi ses lettres de noblesse. Universa, le fonds conseillé par Nassim Taleb ([[queues-epaisses]]), a publié en mars 2020 un rendement d'environ +4 144 % sur sa poche d'options pendant le krach Covid ; adossé à un portefeuille d'actions, quelques pourcents d'allocation ont suffi à effacer la baisse. Mark Spitznagel en tire la thèse de son livre Safe Haven : une assurance bien construite peut coûter si peu et payer si fort qu'elle augmente le taux de croissance composé du portefeuille total, en supprimant le volatility drag des krachs ([[rendements-arithmetiques-geometriques]]).

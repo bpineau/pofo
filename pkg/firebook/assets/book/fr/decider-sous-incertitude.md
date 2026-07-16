@@ -16,6 +16,10 @@ Pour le rentier, la concavité est extrême et asymétrique. La zone basse de sa
 
 L'outil qui rend tout cela opérationnel s'appelle l'**équivalent certain** : le montant garanti que vous accepteriez en échange d'une distribution risquée. Un plan qui donne 40 000 €/an à coup sûr et un plan qui donne entre 25 000 et 60 000 selon les marchés peuvent avoir la même moyenne, mais pour une personne raisonnablement prudente le second « vaut » peut-être 36 000 certains. L'équivalent certain convertit n'importe quelle loterie en un chiffre comparable, et il baisse d'autant plus vite que la queue basse est laide. Vous n'avez pas besoin de le calculer formellement pour l'utiliser : demander « à quel revenu garanti je préférerais ce plan risqué ? » est déjà le bon geste mental, et il dégonfle instantanément les plans à belle moyenne et queue pourrie.
 
+::: figure utilite-ce
+Sur une courbe d'utilité concave, la loterie 50/50 entre 20 et 65 k€ vaut moins que son espérance de 42,5 k€ : son équivalent certain tombe vers 36 k€. L'écart entre les deux est le prix du risque.
+:::
+
 ## Tolérance et capacité : deux curseurs, pas un
 
 Le vocabulaire courant confond deux choses que la décision doit séparer. La **tolérance** au risque est psychologique : combien de baisse vous supportez sans paniquer ni vendre ([[psychologie-du-retrait]]). La **capacité** de risque est objective : combien de baisse votre plan supporte sans casser, quelle que soit votre sérénité. Un ancien trader flegmatique avec un plan tendu à 4,5 % de retrait a une tolérance haute et une capacité basse ; un anxieux assis sur 50 fois ses dépenses a l'inverse. La règle de composition est simple et sans exception : c'est le **minimum des deux** qui commande. La capacité se calcule (le simulateur fait exactement cela) ; la tolérance se découvre, hélas, surtout dans les vraies baisses, d'où la valeur des tests d'admissibilité par stratégie ([[choisir-sa-strategie]]) et des questions du type « votre retrait peut-il baisser de 20 % une année ? » posées à froid.

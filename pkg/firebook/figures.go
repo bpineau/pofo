@@ -10,8 +10,9 @@ import (
 // Figures are inline SVG diagrams generated in Go and themed to the book's
 // warm palette, so they need no assets, no network and no build step, and a
 // guard test can check that every "::: figure <id>" in an article resolves.
-// figureSVG returns the <svg> for an id, or an empty string for an unknown id
-// (the caption still renders).
+// FigureSVG returns the <svg> for an id, or an empty string for an unknown
+// id (the caption still renders). It is exported so alternative frontends
+// (a print export, another host app) can reuse the book's plates.
 
 // book palette (mirrors bookCSS)
 const (
@@ -26,7 +27,7 @@ const (
 	figRule   = "rgba(60,48,34,.22)"
 )
 
-func figureSVG(id string) string {
+func FigureSVG(id string) string {
 	if f, ok := figures[id]; ok {
 		return f()
 	}
@@ -60,6 +61,13 @@ var figures = map[string]func() string{
 	"franc-decay":         figFrancDecay,
 	"correl-sign":         figCorrelSign,
 	"buffer-flat":         figBufferFlat,
+	"cascade-4pct":        figCascade4pct,
+	"utilite-ce":          figUtiliteCE,
+	"correlation-vol":     figCorrelationVol,
+	"primes-echelle":      figPrimesEchelle,
+	"longvol-profil":      figLongvolProfil,
+	"carry-courbes":       figCarryCourbes,
+	"stacking-expo":       figStackingExpo,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---

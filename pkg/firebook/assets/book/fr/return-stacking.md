@@ -12,6 +12,10 @@ Un future sur indice ne demande en garantie qu'une fraction de son exposition. U
 
 Le prototype est le fonds **90/60** : 90 % d'actions en direct, 60 % d'obligations d'État via futures, soit un 60/40 à levier 1,5. Les déclinaisons « stacked » empilent autre chose que des obligations : 100 % actions + 100 % trend, 100 % obligations + 100 % trend, etc. Trois points d'arithmétique commandent tout le reste.
 
+::: figure stacking-expo
+Trois façons d'investir 100 € : le levier logé dans le fonds porte l'exposition au-delà du capital investi, et la version empilée détient son 60/40 et ses diversifiants à la fois.
+:::
+
 **Le coût de financement d'abord.** L'exposition au-delà de 100 % est financée au taux monétaire (c'est le prix implicite d'un future, [[levier-et-marges]] pour la mécanique). L'étage empilé ne rapporte donc pas son rendement brut, mais son rendement **moins le cash**. Empiler des obligations qui rendent 3 % quand le taux court est à 3,5 % détruit de la valeur ; la même pile devient rentable quand la courbe se pentifie. En termes de primes, un étage empilé capture une prime au-dessus du cash, jamais un rendement absolu. C'est le critère d'admission de tout étage : a-t-il une espérance positive nette du taux court et des frais ?
 
 **Le volatility drag ensuite.** Le levier amplifie la volatilité, et la volatilité coûte en rendement composé ([[rendements-arithmetiques-geometriques]]). Un 60/40 à levier 1,5 a un drag supérieur au 60/40 simple ; tant que les deux jambes se compensent (corrélation actions-obligations négative ou nulle), l'effet reste petit devant la prime ajoutée. Ce qui amène directement au troisième point.

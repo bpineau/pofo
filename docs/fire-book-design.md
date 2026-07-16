@@ -13,7 +13,16 @@ marche) join "Le portefeuille de retrait"; decision theory
 review: actuarial chapters (already covered by rentes-et-annuites and
 horizon-et-esperance-de-vie), GARCH/copulas/ML/Bayesian-updating chapters
 (too exotic for the book's audience; at most passing mentions in the
-modelling articles), and reproducing the reviewer's table of contents. Ben decided the 12 pre-depth-bar articles (the early batches of
+modelling articles), and reproducing the reviewer's table of contents.
+The 7 extension articles are illustrated by second-generation figures
+("plates", figures_v2.go): left-aligned serif title + letterspaced kicker,
+Instrument Sans labels, Spline Sans Mono numbers, hairline grids, rounded
+data ends, CVD-validated series trio (amber #b4783c / blue #3a6db4 / red
+#c0655b, + green #2f9068 for stacked segments with gaps and direct labels).
+New figures should follow this system, not the first-batch style (Ben finds
+the v1 look amateur); always screenshot through the real page CSS (headless
+Chrome on a harness that inlines fonts.css/theme.css) and check for label
+overlaps before committing. Ben decided the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
