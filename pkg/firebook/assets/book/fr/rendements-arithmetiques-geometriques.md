@@ -10,6 +10,10 @@ Après cette page, plus personne ne pourra vous vendre une moyenne.
 La moyenne **arithmétique** additionne les rendements et divise : (+50 − 50) / 2 = 0 %. Elle répond à « combien rapporte une année typique, prise isolément ? ». La moyenne **géométrique** compose : √(1,50 × 0,50) − 1 = −13,4 % par an. Elle répond à « à quel taux régulier mon capital a-t-il réellement crû ? ». C'est le CAGR, le seul chiffre qui décrit ce que vit un capital qui reste investi. La géométrique est **toujours** inférieure ou égale à l'arithmétique, et l'écart grandit avec la volatilité. Votre patrimoine vit en géométrique ; les brochures parlent en arithmétique.
 :::
 
+::: figure vol-drag
+Deux placements de **même moyenne arithmétique** (7 %/an) : l'un régulier (+7 % chaque année), l'autre volatil (+27 % / −13 % en alternance). Après 30 ans, le régulier vaut ×7,6, le volatil ×4,5, pour la même moyenne annoncée. L'écart est le volatility drag : la volatilité ampute la croissance composée d'environ σ²/2, sans le moindre krach, la volatilité seule suffit.
+:::
+
 ## Le volatility drag : la volatilité est un coût
 
 L'écart entre les deux moyennes obéit à une approximation célèbre et remarquablement précise :
