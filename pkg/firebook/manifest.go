@@ -49,6 +49,7 @@ var Categories = []Category{
 			{"rendements-attendus", "Les rendements attendus prospectifs", "Construire un μ défendable : building blocks, les fourchettes de Vanguard à GMO, la précision réelle, et comment ne pas empiler les prudences."},
 			{"horizon-et-esperance-de-vie", "Horizon, espérance de vie et retraites de 50 ans", "Le bon quantile de survie, la courbe taux-horizon qui s'aplatit, la ruine pondérée par la mortalité, et la phase à découvert."},
 			{"serie-ern", "La série Safe Withdrawal Rate d'ERN : guide de lecture", "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
+			{"les-maths-du-4-pourcent", "Pourquoi 4 % ? L'anatomie mathématique de la règle", "La cascade en trois étages (rendement réel, bonus d'amortissement, pénalité de séquence), pourquoi elle est si robuste, et ce qui la casserait."},
 			{"decider-sous-incertitude", "Décider sous incertitude : utilité, Kelly, regret", "Vous ne vivez qu'une trajectoire : l'équivalent certain, tolérance contre capacité, pourquoi fuir le Kelly complet, et le protocole en cinq règles."},
 		},
 	},
