@@ -30,7 +30,7 @@ Fenêtres historiques : « qu'aurait donné mon plan si j'étais parti à chaque
 
 ## Famille 3 : le paramétrique (Student-t, et les régimes)
 
-**La mécanique.** On abandonne les données brutes. On décrit le monde par quelques paramètres, et on tire dedans. La version la plus simple, l'i.i.d. gaussien (moyenne, volatilité, tirages annuels indépendants), est celle de la plupart des simulateurs commerciaux, et elle a deux défauts corrigibles : des queues trop fines et aucune mémoire. pofo corrige le premier en tirant dans une **Student-t** à trois paramètres, μ (la moyenne), σ (la volatilité) et df (l'épaisseur des queues, à df 5, l'année à −30 % réel est environ dix fois plus probable qu'en loi normale, [[queues-epaisses]]) ; en mode portefeuille, les tirages sont mensuels puis composés, et les trois paramètres sont **ajustés** sur vos fonds puis mélangés vers un prior mondial prudent ([[rendre-monte-carlo-pertinent]]).
+**La mécanique.** On abandonne les données brutes. On décrit le monde par quelques paramètres, et on tire dedans. La version la plus simple, l'i.i.d. gaussien (moyenne, volatilité, tirages annuels indépendants), est celle de la plupart des simulateurs commerciaux, et elle a deux défauts corrigibles : des queues trop fines et aucune mémoire. Le modèle central corrige le premier en tirant dans une **Student-t** à trois paramètres, μ (la moyenne), σ (la volatilité) et df (l'épaisseur des queues, à df 5, l'année à −30 % réel est environ dix fois plus probable qu'en loi normale, [[queues-epaisses]]) ; en mode portefeuille, les tirages sont mensuels puis composés, et les trois paramètres sont **ajustés** sur vos fonds puis mélangés vers un prior mondial prudent ([[rendre-monte-carlo-pertinent]]).
 
 Le second défaut (l'absence de mémoire) donne naissance à la sous-famille des modèles à **régimes**, paramétriques mais séquencés : une chaîne de Markov alterne des états « normal » et « baissier », avec des probabilités de transition qui rendent ces marchés baissiers **persistants** (y entrer est rare, y rester est probable, les mauvaises années arrivent en grappes de trois ans environ). C'est la colonne « Sequence stress » : même moyenne de long terme que le central, par construction (le stress mesure le risque d'**ordre**, pas un pessimisme caché sur le niveau), mais la volatilité concentrée en épisodes. Et sa variante extrême, « Lost decade » : un marché baissier de type Japon 1990, long et profond, délibérément **non** compensé (la moyenne est tirée vers le bas) : un scénario de queue à survivre, pas une espérance ([[utiliser-la-page-fire]]).
 
@@ -72,7 +72,7 @@ Portefeuille réel de 15 ans d'historique (belle fenêtre 2010-2025), plan à 3,
 
 ## Pour aller plus loin
 
-- Politis & Romano, « The Stationary Bootstrap » (1994) : la méthode des blocs de longueur aléatoire que pofo implémente.
+- Politis & Romano, « The Stationary Bootstrap » (1994) : la méthode des blocs de longueur aléatoire que le simulateur implémente.
 - Anarkulova, Cederburg & O'Doherty (2023) : le bootstrap par blocs appliqué au siècle développé, la référence de la colonne broad-sample ([[anarkulova-cederburg]]).
 - Early Retirement Now, volet 8 : la méthode du rejeu mensuel systématique ([[serie-ern]]).
 - Dans ce livre : [[queues-epaisses]] (le choix Student-t en détail), [[rendre-monte-carlo-pertinent]] (blending et ancres du modèle central), [[la-machine-pofo]] (l'implémentation exacte, colonne par colonne).

@@ -52,7 +52,7 @@ Karim, 46 ans, 1,2 M€, poche actions : 40 % France (PEA historique, Air Liquid
 - Les chiffres : SAFEMAX domestiques de la plupart des pays sous 2-3 % contre ~3-3,5 % en mondial depuis les mêmes bases : la diversification internationale ferme le principal mode de défaillance. C'est une protection de **régime** (les mauvaises décennies), pas de krach (les corrélations courtes ont monté, peu importe).
 - Le change : côté actions, **ne pas** couvrir (volatilité ajoutée faible, amortisseur dollar en crise, coût de couverture évité) ; côté obligations, euro ou couvert : le risque de change se loge là où il amortit.
 - La concentration américaine des indices est un vrai débat de raffinement : cap-weight par défaut, tilt ex-US modéré défendable comme position de valorisation écrite ; émergents au poids de marché ou rien ; biais France résiduel sous 15-20 % de la poche.
-- L'argument est dans votre outil : l'écart central/broad-sample est le prix du destin domestique ; l'A/B monde-contre-Europe en dix minutes vaccine mieux que tout discours.
+- L'argument se vérifie en simulation : l'écart central/broad-sample est le prix du destin domestique ; l'A/B monde-contre-Europe en dix minutes vaccine mieux que tout discours.
 
 ---
 
