@@ -95,7 +95,7 @@ rather than recomputing it (and drifting) on every run.
 - `dragon-decumulation-household`: dragon-decumulation deployed across French tax wrappers:
   the equity sleeve carved out of the 90/60 core into a PEA/PEA-PME section
   (world swap ETF + small-value boutique funds), the lost bond overlay
-  rebuilt with an EUR-hedged long-duration line. Covers the wrapper logic
+  rebuilt with a euro-native long-duration line (accumulating). Covers the wrapper logic
   (spending order as an implicit glidepath, rebalancing asymmetry) and
   measures as the family's best-of-both under the two lenses.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
