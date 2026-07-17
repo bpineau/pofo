@@ -246,7 +246,7 @@
 # Siblings: claude-dragonlite.txt (the accumulation flagship this file
 #   descends from), hydra-five-engines-ucits.txt (the engineered
 #   all-rounder; add linkers to it and you get this file's big brother),
-#   dragon-decumulationmulation-household.txt (this design deployed across French tax
+#   dragon-decumulation-household.txt (this design deployed across French tax
 #   wrappers, PEA/PEA-PME section included), fire-liability-buffer.txt
 #   (the euro buffer this file assumes), dragon-portfolio-artemis.txt
 #   (the common ancestor).
