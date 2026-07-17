@@ -86,6 +86,12 @@ rather than recomputing it (and drifting) on every run.
 - `claude-dragonlite`: the Dragon distilled to three buyable UCITS lines
   (NTSG/trend/gold, no long vol, growth-heavier than Cole); the family's
   simplicity flagship, with its own design notes and honest range check.
+- `dragon-decu`: dragon-lite re-tuned for decumulation (45 NTSG, trend split
+  across two managers, gold, and a new euro-linkers head): the answer to
+  dragon-lite's own honesty note. Carries the family's best drawdown depth,
+  duration and Ulcer, a contractual euro-inflation line, and a two-lens
+  measured verdict (in-window vs valuation-anchored) with the biases of
+  each lens spelled out.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
