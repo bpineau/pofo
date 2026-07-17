@@ -78,6 +78,9 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"^IRX":     mkLevels("^IRX", n, 3.0),
 		"^VIX":     vix,
 		"EURUSD=X": eurusd, "GBPUSD=X": gbpusd,
+		// Real iShares Core MSCI World that wpeaBuild grafts over the mid-period:
+		// a 60/40 US/international combo, the MSCI World stand-in.
+		"IE00B4L5Y983": mkCombo("IE00B4L5Y983", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}),
 		// The funds the regression recipes backcast: exact factor combos,
 		// so the in-sample R² clears the faithfulness floor.
 		"LU0319687124": mkCombo("LU0319687124", []*marketdata.Series{vix, vfisx}, []float64{0.3, 0.7}),
