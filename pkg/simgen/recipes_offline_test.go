@@ -63,6 +63,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	dfsvx := mkWave("DFSVX", n, 4e-4, 0.013, 0.8, 1.4)
 	disvx := mkWave("DISVX", n, 3e-4, 0.011, 1.5, 0.2)
 	ibci := mkWave("IBCI", n, 2e-4, 0.004, 1.2, 1.7)
+	indepFr := mkWave("LU0131510165", n, 4e-4, 0.012, 0.9, 2.1)
 	vix := mkWave("^VIX", n, 0, 0.030, 0.6, 0.5)
 	eurusd := mkWave("EURUSD=X", n, 0, 0.005, 1.4, 2.6)
 	gbpusd := mkWave("GBPUSD=X", n, 0, 0.005, 0.4, 1.2)
@@ -74,7 +75,8 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
-		"EZU": ezu, "EUNH.DE": eunh,
+		"LU0131510165": indepFr,
+		"EZU":          ezu, "EUNH.DE": eunh,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
 		"^VIX":     vix,
 		"EURUSD=X": eurusd, "GBPUSD=X": gbpusd,
