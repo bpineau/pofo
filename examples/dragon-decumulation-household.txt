@@ -325,5 +325,5 @@
 
 # ---- PEA / PEA-PME section (tax-sheltered; equity-only by law) --------
 5	WPEA            # world equity via synthetic swap (IE0002XZSHO1; alts CW8 LU1681043599, EWLD)
-7	IAMES           # small value/quality tilt: Independance AM Europe Small (LU1832174962), held across PEA and PEA-PME
-2	IAMFS           # legacy overlap: Independance AM France Small Mid (LU0131510165; fine to fold into Europe Small over time)
+7	LU1832174962    # small value/quality tilt: Independance AM Europe Small, held across PEA and PEA-PME
+2	LU0131510165    # legacy overlap: Independance AM France Small Mid (fine to fold into Europe Small over time)
