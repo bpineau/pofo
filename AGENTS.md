@@ -19,6 +19,7 @@ make golden    # computation goldens vs frozen external references
 make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
+make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 ```
 
 Tests never touch the network: HTTP sources are faked with `httptest`
