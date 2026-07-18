@@ -46,8 +46,8 @@
 #
 #   CTO section
 #   28 NTSG   -> 25.2 world equity + 16.8 sovereign futures (~7y)
-#    4 DBXG   ->  4   25+y eurozone sovereigns (~19y duration,
-#                     ~10.9 points in 7y-equivalent terms)
+#    4 MTH    ->  4   25+y eurozone sovereigns (~20y duration,
+#                     ~11 points in 7y-equivalent terms)
 #   13 DBMFE  -> 13   trend (SG CTA replication, DBi)
 #   13 AQR MF -> 13   trend (direct multi-asset TSMOM, EUR-hedged)
 #   15 IGLN   -> 15   gold (physical ETC)
@@ -69,9 +69,9 @@
 #   Growth boom            ~39 points of equity: presence. The small
 #                          value tilt diversifies the mega-cap-growth
 #                          concentration a world index carries.
-#   Disinflation/recession NTSG's futures + DBXG + trend rotating long
+#   Disinflation/recession NTSG's futures + MTH + trend rotating long
 #                          bonds; linkers hold their value.
-#   Deflation crash (2008) DBXG is the line bought for this: the long
+#   Deflation crash (2008) MTH is the line bought for this: the long
 #                          end is what actually rallies in a flight to
 #                          quality, here in the liability currency.
 #                          Caveat: the small-value tilt DEEPENS this
@@ -84,7 +84,7 @@
 #                          than growth. The retiree-killer regime, and
 #                          the reason the linkers line exists.
 #   Prolonged equity bear  Trend crisis alpha (Hurst, Ooi & Pedersen,
-#                          JPM 2017); linkers and DBXG are what you
+#                          JPM 2017); linkers and MTH are what you
 #                          spend from while equities are underwater.
 #
 # ## Why the wrappers change behavior, not just taxes
@@ -113,29 +113,35 @@
 #   grow. Euro-native variant NTSZ (IE000OV4XWA3) for part of the
 #   sleeve trades USD quotation for eurozone concentration.
 #
-# CTO -- DBXG, deflation duration (4%; sane range 3-6%).
-#   Xtrackers Eurozone Government Bond 25+ (LU0290357846, 1C
-#   accumulating, 0.15%): euro-native long duration. Pure arithmetic
-#   first: every euro of equity carved out of NTSG lost 0.60 EUR of ~7y
-#   bond overlay; at ~19y duration DBXG rebuilds that at about 2.7x, so
-#   ~4 points restore what ~11 points of overlay would have carried. It
-#   also patches the dragon family's thinnest quadrant (2008-style
-#   convexity), in the liability currency and with no coupons to
-#   declare. WHY NOT US TREASURIES: every EUR-hedged long-Treasury
-#   UCITS is DISTRIBUTING (DTLE IE00BD8PGZ49; Amundi Long Dated
-#   LU1407890976 likewise), the only accumulating shares are unhedged
-#   (DTLA IE00BFM6TC58, IDTL), and for a euro household euro deflation
-#   is the scenario actually being insured: Bunds are the direct hedge.
-#   The prices of the euro line, stated: a small fund (closure risk, a
-#   forced taxable sale at a random date), and a market-weighted
-#   eurozone sovereign mix (heavy France/Italy), so a 2011-style euro
-#   sovereign crisis would wobble the hedge itself exactly when equity
-#   also suffers. Alternatives of equal quality: DTLE if you accept the
-#   coupons for the cleaner issuer, DTLA/IDTL if you prefer Acc plus
-#   the crisis-USD kicker bundled in; and on the measured panels all of
-#   these choices, including dropping the line for +2 linkers +2 gold,
-#   land within noise of each other. This line is bought on qualitative
-#   grounds; hold whichever variant you will not fiddle with.
+# CTO -- MTH, deflation duration (4%; sane range 3-6%).
+#   Amundi Euro Government Bond 25+Y Acc (LU1686832194, 0.07%): the
+#   cheapest and largest of the eurozone 25+ ETFs, euro-native long
+#   duration, accumulating. Pure arithmetic first: every euro of equity
+#   carved out of NTSG lost 0.60 EUR of ~7y bond overlay; at ~20y
+#   duration this line rebuilds it at about 2.8x, so ~4 points restore
+#   what ~11 points of overlay would have carried. It also patches the
+#   dragon family's thinnest quadrant (2008-style convexity), in the
+#   liability currency and with no coupons to declare.
+#   WHY THIS LINE, from a survey of the whole category rather than the
+#   toolkit's habits. Every EUR-hedged long-Treasury UCITS is
+#   DISTRIBUTING (DTLE IE00BD8PGZ49; Amundi Long Dated LU1407890976
+#   likewise) and the only accumulating Treasury shares are unhedged
+#   (DTLA IE00BFM6TC58, IDTL); a Bund-only LONG ETF does not exist (the
+#   Germany funds are all-maturity, ~8y), so eurozone-mix fragmentation
+#   risk is the unavoidable price of euro long duration; and among the
+#   eurozone 25+ funds this one dominates on fees and size (0.07% and
+#   ~350m vs 0.15% and ~110m for Xtrackers DBXG LU0290357846, the
+#   nearest equivalent). Remaining prices, stated: a market-weighted
+#   sovereign mix (heavy France/Italy), so a 2011-style euro sovereign
+#   crisis would wobble the hedge exactly when equity also suffers.
+#   Equal-quality alternatives: DBXG (same exposure), Amundi 15+Y Acc
+#   (LU1287023268, milder duration), Xtrackers Global Government Bond
+#   EUR-hedged 1C (LU0378818131, ~8y but issuer-diversified and 700m+),
+#   DTLE if you accept coupons for the US issuer, DTLA/IDTL for Acc
+#   plus the crisis-USD kicker. On the measured panels all of these,
+#   including dropping the line for +2 linkers +2 gold, land within
+#   noise of each other: the line is bought on qualitative grounds;
+#   hold whichever variant you will not fiddle with.
 #
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
 #   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
@@ -223,7 +229,7 @@
 #   (the hydra's sweep, and dragon-lite's own file measured that moving
 #   12 points of core into small value was its single best edit); NTSG
 #   plateau (flat across 24-35 here: pick the middle).
-#   ARITHMETIC: DBXG 3-6% (the duration-completion computation above).
+#   ARITHMETIC: MTH 3-6% (the duration-completion computation above).
 #   A PRIORI: the linkers dose 10-15% (liability matching; lens B
 #   supports it, lens A reads against it for stated in-sample reasons),
 #   the gold ceiling (~20%, zero-carry logic against a window that
@@ -237,20 +243,20 @@
 #       the sleeve ever exceeds its range.
 #   (b) SMALL-CAP CYCLICALITY: the tilt deepens 2008-style liquidity
 #       crashes and can trail cap-weight for years (2015-2020). It is
-#       equity beta with a premium, not a hedge; DBXG and trend exist
+#       equity beta with a premium, not a hedge; MTH and trend exist
 #       for the regime it worsens.
 #   (c) SWAP COUNTERPARTY inside WPEA/CW8: collateralized, reset, and
 #       small, but real; the price of world exposure inside a wrapper
 #       that bans it. Holding part of the world sleeve as physical ETFs
 #       on the CTO (via NTSG) already dilutes it.
-#   (d) DEFLATION CONVEXITY: improved by DBXG but still the modest
+#   (d) DEFLATION CONVEXITY: improved by MTH but still the modest
 #       quadrant; the family accepts this rather than pay negative
 #       carry for long-vol convexity (see dragon-decumulation and the hydra).
 #   (e) TREND WINTERS: 26 points can spend years flat while equities
 #       run; the cure is written rules, not weights.
 #   (f) CURRENCY: roughly half the book is USD-quoted unhedged (NTSG,
 #       IGLN), half feature (crisis USD), half bug; the AQR leg is
-#       EUR-hedged, DBXG, IBCI and the liability are euro-native.
+#       EUR-hedged, MTH, IBCI and the liability are euro-native.
 #   (g) RECONSTRUCTION AND WINDOW LIMITS: shared TSMOM backcast for
 #       deep trend history; linkers post-2000 only; WPEA listed 2024.
 #       Regime-behavior study, not a promise.
@@ -290,7 +296,7 @@
 
 # ---- CTO section (everything the shelters cannot hold) ----------------
 28	NTSG            # equity + duration core: Global Efficient Core 90/60 (IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
-4	DBXG            # deflation duration: Xtrackers Eurozone Govt Bond 25+ 1C Acc (LU0290357846; alts DTLE IE00BD8PGZ49, DTLA IE00BFM6TC58)
+4	MTH             # deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194; alts DBXG LU0290357846, DTLE IE00BD8PGZ49)
 13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
 13	LU1662501532    # trend, direct method: AQR Managed Futures UCITS EUR-hedged (fallback Winton IE00BG382Q20)
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
