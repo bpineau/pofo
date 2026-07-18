@@ -52,8 +52,8 @@ func TestRenderSegmentedCoverage(t *testing.T) {
 				Regime: "growth",
 				Pct:    39,
 				Segments: []CoverageSeg{
-					{Width: 25.2, Color: "#0880A8", Title: "NTSG 25%"},
-					{Width: 9, Color: "#C2452B", Title: "SMALL 9%"},
+					{Width: 25.2, Color: "#0880A8", Tip: "NTSG 25%"},
+					{Width: 9, Color: "#C2452B", Tip: "SMALL 9%"},
 				},
 				Detail: "NTSG 25 · SMALL 9",
 			}},

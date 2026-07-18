@@ -86,6 +86,29 @@ type SimResult struct {
 	Ruined bool
 }
 
+// MonthlyContributions folds Contributions into calendar months: it returns
+// the simulation's months (normalized to the first of the month, UTC,
+// ascending) and, per asset then per month, the summed contribution (same
+// asset-first orientation as Contributions). It is the input for
+// contribution timelines and per-regime aggregations; a trailing window is
+// then one more rolling sum away.
+func (r *SimResult) MonthlyContributions() (months []time.Time, contribs [][]float64) {
+	contribs = make([][]float64, len(r.Contributions))
+	for k := 1; k < len(r.Dates); k++ {
+		first := time.Date(r.Dates[k].Year(), r.Dates[k].Month(), 1, 0, 0, 0, 0, time.UTC)
+		if len(months) == 0 || !months[len(months)-1].Equal(first) {
+			months = append(months, first)
+			for i := range contribs {
+				contribs[i] = append(contribs[i], 0)
+			}
+		}
+		for i := range contribs {
+			contribs[i][len(months)-1] += r.Contributions[i][k]
+		}
+	}
+	return months, contribs
+}
+
 // periodKey maps a date to its calendar period, so a flow fires on the
 // first trading day of each new period.
 func periodKey(t time.Time, p Period) int {

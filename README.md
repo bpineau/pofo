@@ -434,7 +434,8 @@ pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity /
 pkg/suggest/      regime coverage, look-through composition, redundancy and
                   gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
-pkg/portfolio/    allocation file format + rebalanced simulation
+pkg/portfolio/    allocation file format + rebalanced simulation with
+                  per-holding return attribution
 pkg/report/       HTML and text rendering of the comparison model
 pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
 pkg/scenario/     return-path generation (parametric, bootstrap, cohorts)
@@ -510,7 +511,8 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 - `metrics`: statistics over value series (returns, drawdowns, Beta).
 - `chart`: pure-stdlib inline SVG charts.
 - `portfolio`: allocation file parsing, `Build` (spec + fetch callback →
-  simulatable portfolio) and rebalanced simulation.
+  simulatable portfolio) and rebalanced simulation; `Simulate` attributes
+  each day's return to its holdings (`Contributions`, `MonthlyContributions`).
 - `report`: HTML report rendering.
 - `simgen`: reconstruction engine (linear composites, TSMOM
   trend-following engine, regression backcasts) and validated recipes, all

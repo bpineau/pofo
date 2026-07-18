@@ -1810,7 +1810,7 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw sug
 			segs = append(segs, report.CoverageSeg{
 				Width: math.Round(c.Weight/scale*1000) / 10,
 				Color: chart.PaletteColor(c.Index),
-				Title: fmt.Sprintf("%s %.0f%%", c.ID, c.Weight*100),
+				Tip:   fmt.Sprintf("%s %.0f%%", c.ID, c.Weight*100),
 			})
 			parts = append(parts, fmt.Sprintf("%s %.0f", c.ID, c.Weight*100))
 		}
