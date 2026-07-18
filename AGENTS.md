@@ -26,6 +26,25 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 (`stubAllBases` in `pkg/marketdata/client_test.go`), file sources with
 `fstest.MapFS`. Keep it that way.
 
+## Verifying changes cheaply
+
+- Report/chart changes: `scripts/report-shot.sh [file] [out-prefix]` builds,
+  renders the report with every section unfolded and screenshots it full-page
+  (needs Chrome and a warm quote cache; `./pofo -warmup` once). Crop a region
+  with `sips -c <height> 1500 --cropOffset <y> 0 out.png --out crop.png` and
+  read the PNG. `examples/dragon-decumulation-household.txt` is the reference
+  fixture: 9 holdings across a stacked 90/60, long bonds, two trend funds,
+  gold, linkers and small-value equity, so it exercises every report block.
+- Chart hover/tooltip data: grep the rendered HTML for
+  `<metadata class="hover">` and replay the front-end math on the JSON
+  payload in node/python instead of driving a browser.
+- One golden at a time: `go test -v -run TestGoldenGold ./pkg/datasets/golden/`.
+  Chart snapshots moved on purpose? Regenerate with
+  `UPDATE_SNAPSHOTS=1 go test ./pkg/chart -run TestChartSnapshots` and justify
+  the diff in the commit message.
+- Catalog edits: `make test` revalidates `assets.json`;
+  `./pofo -verify-data -assets <id>` checks a single asset end to end.
+
 ## Map
 
 | Path | What lives there |
@@ -44,7 +63,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
 | `cmd/pofo` | CLI wiring only, one file per concern: `main.go` (flags + mode dispatch + terminal output), `fetch.go`, `page.go` (HTML report assembly), `composition.go` (pies/coverage), `contrib.go` (contribution charts), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go` |
-| `docs/` | design docs and plans, one per feature; read before reworking a feature |
+| `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`) |
 
 Root `doc.go` describes the layering and the typical pipeline.
@@ -104,6 +123,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`) and `^VIX` are annualized
   percent LEVELS, not prices; `^HICP-<geo>` and `^CPI-US` are index levels;
   all chart fine but never belong in a return computation directly.
+- A surprising CAGR/vol is usually a RESOLUTION bug, not a math bug: read the
+  "resolved X -> name" log line first (a fuzzy search may have matched and
+  cached an unrelated fund; delete that cache entry).
+- `-gen-simdata <ID>` writes `simdata/<CanonicalID(ID)>.csv`: make the id
+  canonical BEFORE generating (an alias collision silently overwrites another
+  asset's file) and check `git diff --stat pkg/datasets/simdata` after.
 
 ## House rules
 
