@@ -6,6 +6,12 @@
 //     for table cells and summaries;
 //   - Pie produces a self-contained SVG donut with a title and a legend,
 //     for composition breakdowns (geography, sector, asset type);
+//   - DivergingStack stacks signed series around a zero axis (positives up,
+//     negatives down), with an optional net line and categorical strip: the
+//     shape of a return-contribution timeline;
+//   - BarMatrix lays out a small-multiples grid of horizontal diverging
+//     bars (rows x categories on one shared scale), e.g. per-regime
+//     realized contributions;
 //   - Term produces a chart for the terminal (ANSI colors on a TTY,
 //     distinct markers per series otherwise; Braille mode packs 2x4 dots
 //     per cell for a smoother curve);
