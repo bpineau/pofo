@@ -3,5 +3,5 @@
 <rect x="108.0" y="16.0" width="146.0" height="20" rx="4" fill="#D2402F"><title>Early: 50%</title></rect>
 <text x="98.0" y="30.0" dy="0.02em" font-size="12" fill="#4A5160" text-anchor="end">Early</text>
 <text x="408.0" y="30.0" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="#16181D">50%</text>
-<metadata class="hover">{"kind":"cat","rows":["Early"],"series":[{"name":"share","ys":[0.5]}]}</metadata>
+<metadata class="hover">{"kind":"cat","xmin":0,"rows":["Early"],"series":[{"name":"share","ys":[0.5]}]}</metadata>
 </svg>
