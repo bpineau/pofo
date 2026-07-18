@@ -1536,31 +1536,40 @@ func aqrmfRecipe() Recipe {
 }
 
 // aqrmfHedgedRecipe backcasts the EUR-hedged retail share class of the AQR
-// Managed Futures UCITS fund (LU1662501532, "R" EURHDG, flat fee / no
-// performance fee, real from 2025). It reuses the USD AQR reconstruction (same
-// TSMOM engine and IR pin as aqrmfRecipe, with the real USD AQR quotes grafted
-// from 2015 so the hedged series carries AQR's real record), then re-expresses
-// it EUR-hedged via the standard FX-hedge identity used by the EUR-hedged TIPS
-// recipe (tip1eRecipe): a hedged foreign return equals the local (USD) return
-// minus the USD cash rate (^IRX) plus the EUR cash rate (EURCASH-EUR), so the
-// EUR investor earns the strategy return without the EUR/USD spot move, paying
-// the (currently negative) EUR-minus-USD carry. Real LU1662501532 quotes are
-// grafted on top from the class's 2025 inception.
+// Managed Futures UCITS fund (LU1662501532 "RAEF", flat fee / no performance
+// fee, real from 2021-04). Before RAEF's inception the fund itself already
+// existed, so the backcast prefers a REAL sister share class over any
+// reconstruction: the legacy B EUR class (LU1103258197, EUR-hedged) carries
+// continuous real NAVs from 2015-03 until its class was emptied in 2021-12.
+// The donor is used RAW: its published OCF (0.73%) would suggest draining
+// returns by the 0.58 %/yr fee gap to RAEF's 1.31%, but on both real overlap
+// windows (2021 and 2023-2026) B tracks RAEF with corr 1.000 while LAGGING
+// it by 0.4-1.2 pts/yr (a legacy fee structure the published OCF does not
+// capture), so any drag would double-penalize; the raw donor leaves the
+// backcast slightly conservative instead. Only before
+// 2015-03 does the series fall back to the TSMOM reconstruction (same engine
+// and IR pin as aqrmfRecipe), re-expressed EUR-hedged via the standard
+// FX-hedge identity used by the EUR-hedged TIPS recipe (tip1eRecipe): a
+// hedged foreign return equals the local (USD) return minus the USD cash
+// rate (^IRX) plus the EUR cash rate (EURCASH-EUR). Real LU1662501532 quotes
+// are grafted on top from the class's 2021-04 inception at fetch time.
 func aqrmfHedgedRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1662501532",
-		Name:            "AQR Managed Futures UCITS (EUR-hedged): TSMOM replication hedged to EUR",
-		Method:          "USD AQR managed-futures backcast (12-month TSMOM, IR-pinned; real AQR USD LU1103257975 grafted from 2015) re-expressed EUR-hedged via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR), real LU1662501532 grafted from 2025",
+		Name:            "AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast",
+		Method:          "real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
 		Build:           aqrHedgedBuild,
 		ValidateAgainst: "LU1662501532",
 		SpliceReal:      "LU1662501532",
 	}
 }
 
-// aqrHedgedBuild builds the USD AQR strategy (reconstruction spliced with the
-// real USD fund) and hedges it to EUR: r_eur = r_usd − usd_cash + eur_cash. The
-// cash accruals come from the same frame the strategy is built on, so the hedge
-// stays on the strategy's own calendar.
+// aqrHedgedBuild builds the EUR-hedged AQR series: the TSMOM reconstruction
+// hedged to EUR (r_eur = r_usd − usd_cash + eur_cash, accruals from the
+// strategy's own frame), then the real B EUR sister class spliced over it
+// raw, truncated at its first long NAV gap (see aqrmfHedgedRecipe for the
+// measured-drift rationale). When the donor is unavailable (offline builds)
+// the reconstruction stands alone.
 func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.11, 0.0079)
 	ids := append([]string{cfg.CashID, "EURCASH-EUR"}, cfg.Markets...)
@@ -1573,16 +1582,9 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	values = pinTrendIR(values, fr.Dates[start:], fr.Returns[cfg.CashID][start:], aqrTrendInfoRatio)
-	recon := &marketdata.Series{Name: "AQR MF USD (reconstruction)", Source: "simdata"}
+	usd := &marketdata.Series{Name: "AQR MF USD (reconstruction)", Source: "simdata"}
 	for i, v := range values {
-		recon.Points = append(recon.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
-	}
-	// Graft the real USD AQR fund so the hedged series carries the real 2015+
-	// record, not only the proxy, before applying the currency hedge. When the
-	// real fund is unavailable (offline builds), fall back to the reconstruction.
-	usd := recon
-	if realUSD, err := f.Fetch("LU1103257975", from); err == nil && realUSD != nil && len(realUSD.Points) > 0 {
-		usd = Splice(realUSD, recon)
+		usd.Points = append(usd.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
 	}
 
 	// Per-date EUR-minus-USD daily carry from the strategy's own frame.
@@ -1591,15 +1593,38 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	for k := range fr.Dates {
 		carry[fr.Dates[k]] = eur[k] - irx[k]
 	}
-	out := &marketdata.Series{Name: "AQR Managed Futures (EUR-hedged replication)", Source: "simdata"}
+	hedged := &marketdata.Series{Name: "AQR Managed Futures (EUR-hedged replication)", Source: "simdata"}
 	val := 100.0
-	out.Points = append(out.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
+	hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
 	for i := 1; i < len(usd.Points); i++ {
 		rUSD := usd.Points[i].Close/usd.Points[i-1].Close - 1
 		val *= 1 + rUSD + carry[usd.Points[i].Date] // carry is 0 for any off-calendar date
-		out.Points = append(out.Points, marketdata.Point{Date: usd.Points[i].Date, Close: val})
+		hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[i].Date, Close: val})
 	}
-	return out, nil
+
+	// Prefer the real B EUR sister class over the reconstruction wherever it
+	// has continuous NAVs: truncate it at its first long gap (the class was
+	// emptied in 2021-12).
+	donor, err := f.Fetch("LU1103258197", from)
+	if err != nil || donor == nil || len(donor.Points) == 0 {
+		return hedged, nil
+	}
+	donor = truncateAtGap(donor, 30)
+	donor.Name = "AQR Managed Futures B EUR (real donor)"
+	return Splice(donor, hedged), nil
+}
+
+// truncateAtGap cuts a series at its first quote gap longer than maxDays
+// calendar days, keeping the continuous head.
+func truncateAtGap(s *marketdata.Series, maxDays int) *marketdata.Series {
+	for i := 1; i < len(s.Points); i++ {
+		if s.Points[i].Date.Sub(s.Points[i-1].Date).Hours() > float64(maxDays)*24 {
+			t := *s
+			t.Points = s.Points[:i]
+			return &t
+		}
+	}
+	return s
 }
 
 // ctaRecipe reconstructs Simplify CTA from the same TSMOM engine, real CTA
