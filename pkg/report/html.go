@@ -45,7 +45,7 @@ type PortfolioSection struct {
 	Name          string
 	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG      template.HTML
-	Breakdowns    []template.HTML // composition pies (geography, sector, asset type) as SVGs; empty to omit
+	Breakdowns    []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
 	CoverageLabel string          // heading for the coverage chart
 	Coverage      []CoverageBar   // macro-regime or factor coverage; empty to omit
 	Assets        []AssetRow
@@ -87,7 +87,7 @@ type Page struct {
 // reportCSS holds the view-specific rules layered on the shared theme.
 const reportCSS = `
 .pies{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;justify-content:center;align-items:flex-start;margin:1rem 0}
-.pies>svg{flex:0 1 auto;max-width:340px}
+.pies>svg{flex:1 1 250px;min-width:240px;max-width:340px}
 .cov{margin:1rem 0}
 .cov-title{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
 .cov-row{display:flex;align-items:center;gap:.8rem;margin:.25rem 0}
