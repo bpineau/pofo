@@ -22,7 +22,7 @@ type hoverMeta struct {
 	X1     float64       `json:"x1,omitempty"`
 	Y0     float64       `json:"y0,omitempty"`
 	Y1     float64       `json:"y1,omitempty"`
-	Xmin   float64       `json:"xmin,omitempty"` // x domain mapped onto [X0, X1]
+	Xmin   float64       `json:"xmin"` // x domain mapped onto [X0, X1]; 0 is common (indexed kinds), so never omitted
 	Xmax   float64       `json:"xmax,omitempty"`
 	XLabel string        `json:"xlabel,omitempty"`
 	YLabel string        `json:"ylabel,omitempty"`
