@@ -47,6 +47,49 @@ type Regime struct {
 	Slope, RealShort float64
 }
 
+// Quadrant is the coarse growth x inflation reading of a Regime: the four
+// classic macro seasons behind All-Weather-style thinking.
+type Quadrant int
+
+const (
+	GrowthQuadrant    Quadrant = iota // growth accelerating, inflation not
+	InflationQuadrant                 // both accelerating (reflation / overheating)
+	DeflationQuadrant                 // both decelerating (recession / disinflation)
+	CrisisQuadrant                    // inflation without growth (stagflation)
+)
+
+// String returns the quadrant's lower-case label.
+func (q Quadrant) String() string {
+	switch q {
+	case InflationQuadrant:
+		return "inflation"
+	case DeflationQuadrant:
+		return "deflation"
+	case CrisisQuadrant:
+		return "crisis"
+	default:
+		return "growth"
+	}
+}
+
+// Quadrant reduces the regime's continuous breadths to their quadrant, both
+// thresholded at one half. This coarse view exists for labeling and
+// reporting (regime timelines, per-quadrant aggregations); the allocator
+// itself works on the continuous breadths (Allocate) and never uses this
+// discretization.
+func (r Regime) Quadrant() Quadrant {
+	switch {
+	case r.GrowthBreadth >= 0.5 && r.InflationBreadth >= 0.5:
+		return InflationQuadrant
+	case r.GrowthBreadth < 0.5 && r.InflationBreadth >= 0.5:
+		return CrisisQuadrant
+	case r.GrowthBreadth < 0.5 && r.InflationBreadth < 0.5:
+		return DeflationQuadrant
+	default:
+		return GrowthQuadrant
+	}
+}
+
 // accelerating reports whether column col for iso is accelerating at m: its
 // year-on-year rate now above its year-on-year rate AccelMonths ago.
 func (p *Panel) accelerating(col, iso string, m time.Time, cfg SignalConfig) (bool, bool) {
