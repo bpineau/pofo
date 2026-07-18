@@ -3,7 +3,7 @@
 # name: Return Stacked Bonds & Managed Futures: 100/100 replication
 # method: 1.00×VFITX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.97%/yr fees, real RSBT grafted from 2023
 # validation: corr=0.482 (weekly 0.475) beta=0.56 TE=13.2%/yr CAGR sim 5.14% vs real 0.01% (overlap 850 d from 2023-02-08 to 2026-07-01) vs RSBT
-# generated: 2026-07-15
+# generated: 2026-07-18
 date,close
 1988-11-17,1.724222
 1988-11-18,1.733875

@@ -32,8 +32,9 @@ import (
 //     carried at daily granularity from 1962 by the TREASURY-*-DAILY
 //     daily-yield shapes (see dailyShape).
 //   - VFINX (Vanguard 500, 1976) → S&P 500 total return (refdata SP500-USD:
-//     Shiller price + reinvested dividends, ~1871), the index VFINX tracks,
-//     carried at daily granularity from 1927-12 by the ^GSPC price shape.
+//     month-end levels from the ^SP500TR index 1988->, ^GSPC + Shiller dividend
+//     1928-1988, Shiller 1871-1928; see cmd/gen-sp500-refdata), the index VFINX
+//     tracks, carried at daily granularity from 1927-12 by the ^GSPC price shape.
 //   - ^IRX (13-week T-bill rate) → the 3-month T-bill rate (refdata TBILL-3M:
 //     FRED TB3MS, ~1934). A rate, not a price: rescaled by a ≈1 factor at the
 //     splice (^IRX ≈ TB3MS there), then read as an isRate series.

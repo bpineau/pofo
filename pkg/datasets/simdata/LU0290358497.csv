@@ -3,7 +3,7 @@
 # name: Xtrackers EUR Overnight Rate Swap: EUR overnight cash
 # method: EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->, interpolated to business days) less 0.10%/yr TER; sits ~0.2%/yr above ESTR (3M-vs-overnight term premium only partly offset); real XEON grafted from 2007
 # validation: corr=0.000 (weekly 0.538) beta=0.00 TE=1.0%/yr CAGR sim 0.91% vs real 0.72% (overlap 4695 d from 2007-06-28 to 2025-12-30) vs LU0290358497
-# generated: 2026-07-11
+# generated: 2026-07-18
 date,close
 1994-01-03,77.259336
 1994-01-04,77.273435

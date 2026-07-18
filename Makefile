@@ -79,6 +79,11 @@ euro-refdata: ## (Re)generate the bundled euro-area reference series (network) t
 	$(GO) run ./cmd/gen-euro-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: sp500-refdata
+sp500-refdata: ## (Re)generate the month-end SP500-USD reference series (network); run `make simdata` after
+	$(GO) run ./cmd/gen-sp500-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt

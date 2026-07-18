@@ -3,7 +3,7 @@
 # name: Avantis Global Small Cap Value: DFA small-cap value blend (EUR)
 # method: 0.40×DFSVX (US small value) + 0.60×DISVX (intl developed small value), 0.39%/yr fees, converted USD→EUR at EURUSD spot (Yahoo daily ~2003), real Avantis grafted from 2024
 # validation: corr=0.437 (weekly 0.868) beta=0.48 TE=18.5%/yr CAGR sim 21.43% vs real 21.13% (overlap 427 d from 2024-10-01 to 2026-07-01) vs IE0003R87OG3
-# generated: 2026-07-11
+# generated: 2026-07-18
 date,close
 1994-12-29,1.237453
 1994-12-30,1.235121
