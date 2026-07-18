@@ -164,7 +164,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   reusable logic down into a `pkg/` package first (see `FetchExtended`
   and `portfolio.Build`, which were extracted exactly that way).
 - FIRE/decumulation work: read `docs/decumulation-fire-design.md` first;
-  the follow-up backlog is `docs/decumulation-fire-followups.md`.
+  the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`.
 - Tactical Permanent Portfolio / Darcet / growth-inflation-regime work: read
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
