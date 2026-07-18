@@ -8035,7 +8035,7 @@
     "currency": "EUR",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "fees": 1.5,
+    "fees": 1.31,
     "asset_class": "managed-futures",
     "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
     "benchmark_index": "active (no index)",
@@ -8044,11 +8044,41 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-hedged flat-fee 'R' share class (no performance fee) of the AQR Managed Futures UCITS fund (sibling of the USD LU1103257975 and the perf-fee EUR RAE LU1662502183); the second, AQR-method trend leg of the hydra build. Confirm the exact OCF on the KID.",
+    "notes": "EUR-hedged flat-fee 'R' share class (no performance fee; mgmt 1.00%, OCF ~1.31%) of the AQR Managed Futures UCITS fund. For 100k+ tickets the institutional flat class IAE2F LU1662499612 (OCF ~0.88%) is the same fund ~0.43 pts/yr cheaper; catalogued for comparison.",
     "confidence": "medium",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662501532:EUR"
+    ]
+  },
+  {
+    "id": "LU1662499612",
+    "isin": "LU1662499612",
+    "aliases": [],
+    "name": "AQR Managed Futures UCITS Fund IAE2F EUR (hedged, no perf fee)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "535661683",
+    "currency": "EUR",
+    "fees": 0.88,
+    "since": "2017-11-03",
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "notes": "Institutional flat-fee 'I' EUR share class (no performance fee; mgmt 0.75%, OCF ~0.88%) of the same AQR Managed Futures UCITS fund as RAEF LU1662501532: identical strategy and hedging, ~0.43 pts/yr cheaper, but an I-class minimum subscription (~100k, verify on the KID and with the broker). Real NAV history since 2017-11 but with a 3-year gap (2020-02 to 2023-05: the class was emptied then re-seeded; the 2020 annual report lists no shares outstanding), so prefer RAEF/DBMFE series for analysis and this class as the cheap purchase vehicle. The even cheaper IAE3F (LU1775565218, 0.74%) and legacy E EUR (LU1103258437, 0.63%) classes have FROZEN NAV series (2022-01 and 2025-01): dormant or closed, do not use.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.fundsquare.net/fund-tree?idInstr=202658",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662499612:EUR"
     ]
   },
   {
