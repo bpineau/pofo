@@ -26,7 +26,7 @@ type hoverMeta struct {
 	Xmax   float64       `json:"xmax,omitempty"`
 	XLabel string        `json:"xlabel,omitempty"`
 	YLabel string        `json:"ylabel,omitempty"`
-	Rows   []string      `json:"rows,omitempty"` // row labels of discrete kinds
+	Rows   []string      `json:"rows,omitempty"` // row labels of discrete kinds; per-x hover headers for "stack"
 	Series []hoverSeries `json:"series"`
 }
 
