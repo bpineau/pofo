@@ -14,7 +14,7 @@ type AssetRow struct {
 	Symbol   string
 	Name     string
 	Class    string // catalog asset class (equity, gold…), empty when unknown
-	UCITS    string // "oui", "non" or "?" when undetermined
+	UCITS    string // "yes", "no", "no (KID)" (non-UCITS but EU-retail-buyable wrapper) or "?" when undetermined
 	Fees     string // published TER, or "-" when unknown
 	Currency string
 	History  string
