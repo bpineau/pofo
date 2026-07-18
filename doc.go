@@ -22,8 +22,10 @@
 //     min-ulcer, max-worst-5y, cwarp) from the assets' historical returns.
 //   - pkg/portfolio: the allocation file format and the rebalanced,
 //     fee-aware simulation that replays a portfolio over time.
-//   - pkg/suggest: structure-first analysis: regime coverage, redundancy
-//     and out-of-sample-validated gap-filling suggestions from the catalog.
+//   - pkg/suggest: structure-first analysis: regime coverage, look-through
+//     composition splits (asset classes, geography, currency, sectors,
+//     duration), redundancy and out-of-sample-validated gap-filling
+//     suggestions from the catalog.
 //   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
 //   - pkg/scenario: synthetic real-return path generation (parametric
