@@ -4,7 +4,7 @@ A portfolio analysis that recommends **catalog assets to add** to an
 existing portfolio so it covers the market regimes it is missing, validated
 out-of-sample. Phase 2 of the optimizer (after `pkg/optimize`).
 
-Decisions (Ben, 2026-06-13):
+Decisions (2026-06-13):
 
 1. **Output**: assets to *add* to the existing portfolio (1–3), each with a
    suggested weight. Not a from-scratch portfolio.

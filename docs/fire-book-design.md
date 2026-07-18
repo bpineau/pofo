@@ -1,9 +1,9 @@
 # The FIRE book: design
 
 Status: v1 COMPLETE and accepted (2026-07-13): all 79 planned articles
-written. EXTENSION 2026-07-17 (Ben, after an external review of the TOC):
+written. EXTENSION 2026-07-17 (after an external review of the TOC):
 7 new articles, bringing the plan to 86. A new category "Les actifs
-alternatifs" (Ben's must-have) hosts long-volatility, global-macro and
+alternatifs" (a must-have of the extension) hosts long-volatility, global-macro and
 return-stacking, and managed-futures moves into it from "Le portefeuille
 de retrait" (slug and URL unchanged; categories are only index grouping).
 Two financial-theory articles (primes-de-risque, pourquoi-la-diversification-
@@ -19,10 +19,10 @@ The 7 extension articles are illustrated by second-generation figures
 Instrument Sans labels, Spline Sans Mono numbers, hairline grids, rounded
 data ends, CVD-validated series trio (amber #b4783c / blue #3a6db4 / red
 #c0655b, + green #2f9068 for stacked segments with gaps and direct labels).
-New figures should follow this system, not the first-batch style (Ben finds
-the v1 look amateur); always screenshot through the real page CSS (headless
+New figures should follow this system, not the first-batch style (the v1
+look was judged amateur); always screenshot through the real page CSS (headless
 Chrome on a harness that inlines fonts.css/theme.css) and check for label
-overlaps before committing. Ben decided the 12 pre-depth-bar articles (the early batches of
+overlaps before committing. Decision: the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
@@ -93,7 +93,7 @@ rendering in Go is testable, stdlib-only and reusable.
 ## Writing conventions
 
 - French; no em-dash ever; numbers in French style in prose (4 %, 1 000 000).
-- PROSE STYLE (Ben, 2026-07-17): clear, simple, engaging, readable, pleasant,
+- PROSE STYLE (2026-07-17): clear, simple, engaging, readable, pleasant,
   fluid, good French. Hard rule: **no sentence may contain more than one French
   colon ` : `.** The colon-chain "A : B : C" reads clumsy ("claquee au sol") and
   hard to parse. Keep the announcing colon; make the second a period + new
@@ -103,14 +103,14 @@ rendering in Go is testable, stdlib-only and reusable.
   of the pre-existing ~1100 offenders is in progress and paused; see the
   `firebook-no-double-colon` note. Do NOT add an enforcing guard test until that
   cleanup finishes (it would fail on the backlog).
-- NO OUTRANCIER GALLICISMS (Ben, 2026-07-17): never translate an English idiom
+- NO OUTRANCIER GALLICISMS (2026-07-17): never translate an English idiom
   literally ("sur une serviette" for "on a napkin" is out). Use the English
   expression as-is or a real French idiom ("un calcul de coin de table").
   Occasional English terms are welcome (free lunch, drawdown, trend...);
   "bon francais" means CORRECT French (syntax, vocabulary, spelling), not
   French-only vocabulary. Also: do not abuse bold (and never uppercase for
   emphasis; acronyms and typographic conventions only).
-- STANDALONE BOOK (Ben, 2026-07-17): the book is not "a part of pofo" and must
+- STANDALONE BOOK (2026-07-17): the book is not "a part of pofo" and must
   read offline without it. Avoid pofo references except when really useful
   (a pro-tip or a usage explanation), and then as an `::: encart` or
   `::: astuce` callout, not in running text.
@@ -122,7 +122,7 @@ rendering in Go is testable, stdlib-only and reusable.
   `attention` (trap), `exemple` (worked numbers), `encart` (side note),
   `science` (what the research actually says, with references), `terrain`
   (practitioner/FIRE-community experience and testimony).
-- DEPTH IS THE BAR (Ben's review of the first batches, 2026-07-12): the style
+- DEPTH IS THE BAR (review of the first batches, 2026-07-12): the style
   (clear, airy, illustrated, practical) is right, but the first-batch length
   (~2 000 words) only passes for the introductory pages. Every non-intro
   article must be AT LEAST TWICE as long (target 4 000-5 000 words), deeper
@@ -148,130 +148,130 @@ rendering in Go is testable, stdlib-only and reusable.
   French tax pages. Cite by name and URL in "Pour aller plus loin".
 - French tax/social pages carry a dated-accuracy warning (rules move yearly).
 
-## Planned table of contents and progress ledger
+## Table of contents
 
-Mark `[x]` when an article is written, embedded and in the manifest.
+Every article below is written, embedded and in the manifest (79 v1 +
+7 extension). The link guard test keeps its own copy of this slug list;
+update both when adding an article.
 
 ### I. Demarrer
-- [x] fire-cest-quoi: Le FIRE, c'est quoi ? (histoire, variantes Lean/Fat/Barista/Coast, ordres de grandeur)
-- [x] la-regle-des-4-pourcents: La regle des 4 % en dix minutes (et pourquoi ce n'est qu'un point de depart)
-- [x] combien-il-vous-faut: Combien il vous faut (25x, 28x, 33x : du budget au capital cible)
-- [x] les-trois-phases: Accumulation, transition, retrait : les trois vies d'un plan FIRE
-- [x] utiliser-la-page-fire: Utiliser la page FIRE de pofo (chaque section, chaque controle)
-- [x] erreurs-classiques-fire: Les dix erreurs qui ruinent un plan FIRE
+- fire-cest-quoi: Le FIRE, c'est quoi ? (histoire, variantes Lean/Fat/Barista/Coast, ordres de grandeur)
+- la-regle-des-4-pourcents: La regle des 4 % en dix minutes (et pourquoi ce n'est qu'un point de depart)
+- combien-il-vous-faut: Combien il vous faut (25x, 28x, 33x : du budget au capital cible)
+- les-trois-phases: Accumulation, transition, retrait : les trois vies d'un plan FIRE
+- utiliser-la-page-fire: Utiliser la page FIRE de pofo (chaque section, chaque controle)
+- erreurs-classiques-fire: Les dix erreurs qui ruinent un plan FIRE
 
 ### II. La science du retrait
-- [x] etude-trinity: Bengen, l'etude Trinity et la naissance du taux de retrait sur (classique)
-- [x] sequence-des-rendements: Le risque de sequence : le vrai ennemi du retraite
-- [x] ruine-et-probabilites: La probabilite de ruine : la lire, la choisir, ne pas la subir
-- [x] rendements-arithmetiques-geometriques: Moyenne arithmetique, moyenne geometrique et volatility drag
-- [x] anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
-- [x] valorisations-et-cape: Les valorisations (CAPE) et ce qu'elles disent du taux de retrait
-- [x] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
-- [x] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
-- [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
-- [x] les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
-- [x] decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
+- etude-trinity: Bengen, l'etude Trinity et la naissance du taux de retrait sur (classique)
+- sequence-des-rendements: Le risque de sequence : le vrai ennemi du retraite
+- ruine-et-probabilites: La probabilite de ruine : la lire, la choisir, ne pas la subir
+- rendements-arithmetiques-geometriques: Moyenne arithmetique, moyenne geometrique et volatility drag
+- anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
+- valorisations-et-cape: Les valorisations (CAPE) et ce qu'elles disent du taux de retrait
+- rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
+- horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
+- serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
+- les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
+- decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
 
 ### III. Modeliser : Monte-Carlo et autres machines
-- [x] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
-- [x] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
-- [x] queues-epaisses: Queues epaisses, crises et Student-t
-- [x] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
-- [x] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
-- [x] rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
-- [x] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
+- monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
+- historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
+- queues-epaisses: Queues epaisses, crises et Student-t
+- lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
+- pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
+- rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
+- regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
 
 ### IV. Les strategies de retrait
-- [x] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
-- [x] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
-- [x] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
-- [x] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
-- [x] vpw: VPW, le retrait a pourcentage variable des Bogleheads
-- [x] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
-- [x] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
-- [x] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
-- [x] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
-- [x] rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
-- [x] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
+- panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
+- retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
+- pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
+- guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
+- vpw: VPW, le retrait a pourcentage variable des Bogleheads
+- regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
+- guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
+- amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
+- plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
+- rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
+- choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
-- [x] primes-de-risque: D'ou viennent les rendements : les primes de risque (actions, terme, credit, et pourquoi l'or ne rapporte rien)
-- [x] pourquoi-la-diversification-marche: Pourquoi la diversification fonctionne : correlation, rebalancing premium, volatility harvesting
-- [x] allocation-actions-obligations: L'allocation actions/obligations en retrait
-- [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
-- [x] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
-- [x] actifs-defensifs: Les actifs defensifs : panorama et roles
-- [x] or-en-retrait: L'or dans un portefeuille de retrait
-- [x] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
-- [x] obligations-indexees: Les obligations indexees sur l'inflation
-- [x] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
-- [x] diversification-internationale: La diversification internationale (et le biais domestique)
-- [x] etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
+- primes-de-risque: D'ou viennent les rendements : les primes de risque (actions, terme, credit, et pourquoi l'or ne rapporte rien)
+- pourquoi-la-diversification-marche: Pourquoi la diversification fonctionne : correlation, rebalancing premium, volatility harvesting
+- allocation-actions-obligations: L'allocation actions/obligations en retrait
+- glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
+- portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
+- actifs-defensifs: Les actifs defensifs : panorama et roles
+- or-en-retrait: L'or dans un portefeuille de retrait
+- obligations-en-retrait: Les obligations en retrait : types, duree, role exact
+- obligations-indexees: Les obligations indexees sur l'inflation
+- facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
+- diversification-internationale: La diversification internationale (et le biais domestique)
+- etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
 
 ### V bis. Les actifs alternatifs
-- [x] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises (moved here 2026-07-17)
-- [x] long-volatility: Long volatility et tail hedging : payer pour les krachs
-- [x] global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
-- [x] return-stacking: Return stacking, overlays et portable alpha : empiler les primes
+- managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises (moved here 2026-07-17)
+- long-volatility: Long volatility et tail hedging : payer pour les krachs
+- global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
+- return-stacking: Return stacking, overlays et portable alpha : empiler les primes
 
 ### VI. Buffers et protections
-- [x] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
-- [x] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
-- [x] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
-- [x] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
-- [x] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
-- [x] levier-et-marges: Levier, marge et lombard en retrait (avance)
+- cash-buffer: Le matelas de liquidites : taille, cout, vrai role
+- strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
+- echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
+- recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
+- immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
+- levier-et-marges: Levier, marge et lombard en retrait (avance)
 
 ### VII. L'inflation
-- [x] inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne
-- [x] suivre-inflation: Suivre l'inflation : les indices, et la votre
-- [x] inflation-et-taux-de-retrait: Inflation et taux de retrait : le lien exact
-- [x] se-proteger-de-inflation: Se proteger de l'inflation : ce qui marche vraiment
-- [x] hyperinflation-et-extremes: Hyperinflations et scenarios extremes
+- inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne
+- suivre-inflation: Suivre l'inflation : les indices, et la votre
+- inflation-et-taux-de-retrait: Inflation et taux de retrait : le lien exact
+- se-proteger-de-inflation: Se proteger de l'inflation : ce qui marche vraiment
+- hyperinflation-et-extremes: Hyperinflations et scenarios extremes
 
 ### VIII. Fiscalite et cadre francais
-- [x] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
-- [x] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
-- [x] taxe-puma: La taxe PUMa : le piege du rentier francais
-- [x] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
-- [x] sante-et-protection-sociale: Sante et protection sociale du rentier
-- [x] succession-et-transmission: Succession et transmission
-- [x] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
+- enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
+- flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
+- taxe-puma: La taxe PUMa : le piege du rentier francais
+- retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
+- sante-et-protection-sociale: Sante et protection sociale du rentier
+- succession-et-transmission: Succession et transmission
+- expatriation-fiscale: L'expatriation : fiscalite et protection sociale
 
 ### IX. Le facteur humain
-- [x] psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
-- [x] temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
-- [x] sens-et-identite: Sens, identite, structure : la vie apres le travail
-- [x] couple-et-famille: FIRE en couple et en famille
-- [x] flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
-- [x] une-annee-de-plus: Le syndrome de l'annee de plus
-- [x] retour-au-travail: Barista, coast, side income : le travail choisi
+- psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
+- temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
+- sens-et-identite: Sens, identite, structure : la vie apres le travail
+- couple-et-famille: FIRE en couple et en famille
+- flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
+- une-annee-de-plus: Le syndrome de l'annee de plus
+- retour-au-travail: Barista, coast, side income : le travail choisi
 
 ### X. En pratique
-- [x] construire-son-plan: Construire son plan pas a pas
-- [x] revue-annuelle: La revue annuelle : la check-list du rentier
-- [x] quand-s-inquieter: Quand s'inquieter, quand laisser courir
-- [x] marche-baissier-en-retraite: Traverser un marche baissier en retraite : le playbook
-- [x] revenus-complementaires: Pensions et revenus complementaires dans le plan
-- [x] depenses-en-retraite: Les depenses reelles en retraite (retirement smile, Die With Zero)
-- [x] cas-types: Trois plans complets, chiffres de bout en bout
+- construire-son-plan: Construire son plan pas a pas
+- revue-annuelle: La revue annuelle : la check-list du rentier
+- quand-s-inquieter: Quand s'inquieter, quand laisser courir
+- marche-baissier-en-retraite: Traverser un marche baissier en retraite : le playbook
+- revenus-complementaires: Pensions et revenus complementaires dans le plan
+- depenses-en-retraite: Les depenses reelles en retraite (retirement smile, Die With Zero)
+- cas-types: Trois plans complets, chiffres de bout en bout
 
 ### XI. References
-- [x] lexique: Lexique du FIRE et du retrait
-- [x] bibliotheque: La bibliotheque : sites, papiers, livres, outils
-- [x] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
+- lexique: Lexique du FIRE et du retrait
+- bibliotheque: La bibliotheque : sites, papiers, livres, outils
+- la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
 86 articles planned (79 v1 + 7 of the 2026-07-17 extension); at 2 500 words
 each the book lands around 215k words.
 
-## Writing plan (multi-session)
+## Adding articles
 
-Each session: pick the next unwritten articles (order of the ledger, but
-Demarrer + science first since everything links into them), research with
-live sources where needed (ERN, Morningstar, service-public/impots.gouv for
-the French pages), write, add to `manifest.go`, tick the ledger, `make check`,
-commit. Articles may link `[[slugs]]` that do not exist yet; the guard test
-only checks links against the PLANNED slug list above (kept as data in the
-test) so forward links are allowed before their targets are written, while
-typos are still caught.
+Research with live sources where needed (ERN, Morningstar,
+service-public/impots.gouv for the French pages), write, add to
+`manifest.go`, extend the TOC above and the guard test's slug list,
+`make check`, commit. Articles may link `[[slugs]]` that do not exist yet:
+the guard test checks links against the planned slug list (kept as data in
+the test), so forward links are allowed while typos are still caught.
