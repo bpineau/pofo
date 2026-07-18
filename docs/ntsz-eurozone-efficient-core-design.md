@@ -27,7 +27,22 @@ OECD or the ECB; it embeds the CSVs.
 | `EMU-EUR` | eurozone equity **net TR** | OECD euro-area share-price index `EA19.SPASTT01` (price) grossed by a constant net dividend yield | ~1986 |
 | `EUROGOV-EUR` | euro govt bond **TR** (monthly) | OECD euro-area 10y yield `EA19.IRLTLT01` → `TreasuryTR` (10y) | ~1970 |
 | `EUROGOV-DAILY` | euro govt bond TR (daily shape) | ECB daily 10y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y` → `TreasuryTR` | ~2004 |
+| `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | OECD 10y yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on the 2004-2026 ECB curve) → `TreasuryTR` (24y par, dur ~17) | ~1970 |
+| `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
 | `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.IR3TIB01`, compounded | 1960-1994 |
+
+The `EUROGOV-LONG-*` pair proxies the **25+** segment of the euro sovereign
+curve (`dbxgRecipe`, backing DBXG). It is a genuine long-bond reconstruction:
+the yield path is run through `TreasuryTR` at a long maturity, so the level and
+convexity come from real bond pricing, not a levered shorter bond. The maturity
+(24y par ≈ modified duration ~17) is trimmed below the 25y curve point so the
+daily reconstruction matches DBXG's ~14.4%/yr realized volatility over
+2007-2026, because the fitted long curve is slightly more volatile than the
+traded fund per year of maturity. DBXG's own quotes cover 2007-> (grafted);
+before that the daily ECB 25y series shapes it to 2004, and the OECD-10y-derived
+monthly tail carries it to ~1970. Reconstructing the 25+ from a levered 10y was
+rejected: leveraging the excess return compounds a sustained bond bull far too
+richly (~20%/yr over the 1981-2004 disinflation vs ~13%/yr for a real long bond).
 
 ## The recipe (`ntszRecipe` / `ntszBuild`)
 
@@ -108,6 +123,6 @@ volatility close to its NTSX peer.
 ## Regeneration
 
 ```sh
-make euro-refdata   # rebuild EMU-EUR / EUROGOV-EUR / EUROGOV-DAILY / DECASH-EUR (network)
+make euro-refdata   # rebuild EMU-EUR / EUROGOV-EUR{,-DAILY} / EUROGOV-LONG-EUR{,-DAILY} / DECASH-EUR (network)
 make simdata        # rebuild pkg/datasets/simdata/, including IE000OV4XWA3
 ```
