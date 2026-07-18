@@ -22,13 +22,21 @@ type AssetRow struct {
 	Note     string
 }
 
+// CoverageSeg is one holding's slice of a coverage bar.
+type CoverageSeg struct {
+	Width float64 // segment width as a percent of the track
+	Color string  // fill color (stable per holding across the rows)
+	Title string  // tooltip, e.g. "NTSG 25%"
+}
+
 // CoverageBar is one category row (a macro regime or a risk factor) of a
-// portfolio's coverage chart.
+// portfolio's coverage chart, split into per-holding segments.
 type CoverageBar struct {
-	Regime string // the category label
-	Pct    int    // coverage as a percent of portfolio weight (can exceed 100)
-	Width  int    // bar width, the percent capped at 100
-	Gap    bool   // true when the category is under-covered
+	Regime   string        // the category label
+	Pct      int           // coverage as a percent of portfolio weight (can exceed 100)
+	Gap      bool          // true when the category is under-covered
+	Segments []CoverageSeg // contributing holdings, largest first; widths sum to ≤ 100
+	Detail   string        // compact contributor line, e.g. "NTSG 25 · WPEA 5"
 }
 
 // PortfolioSection groups everything shown for one portfolio. Sections are
@@ -84,10 +92,11 @@ const reportCSS = `
 .cov-title{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
 .cov-row{display:flex;align-items:center;gap:.8rem;margin:.25rem 0}
 .cov-label{width:8.5rem;color:var(--ink-soft);font-size:.8rem}
-.cov-track{flex:0 0 clamp(180px,34vw,340px);height:.55rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
-.cov-fill{display:block;height:100%;background:var(--accent);border-radius:999px}
+.cov-track{flex:0 0 clamp(180px,34vw,340px);height:.55rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden;display:flex}
+.cov-seg{display:block;height:100%;flex:none}
 .cov-val{font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
 .cov-val.gap{color:var(--warn-ink)}
+.cov-detail{margin:-.1rem 0 .4rem 9.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
 .overview,.stat-scroll{overflow-x:auto}
 details.pf{margin-top:.8rem}
 .pf-name{font-weight:650}
@@ -161,7 +170,10 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%{{if .Gap}};background:var(--warn){{end}}"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track">{{range .Segments}}<span class="cov-seg" style="width:{{.Width}}%;background:{{.Color}}"{{if .Title}} title="{{.Title}}"{{end}}></span>{{end}}</span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+{{- if .Detail}}
+<div class="cov-detail">{{.Detail}}</div>
+{{- end}}
 {{- end}}
 </div>
 {{end}}

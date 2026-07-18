@@ -38,10 +38,12 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `benchmark_index` | the index it tracks, or `active (...)` / `null` |
 | `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `other` |
 | `geography` | approximate region weights (percent), `{ "Global developed": 100 }`, or `null` when not meaningful (gold, broad managed futures, money market) |
-| `sectors` | approximate equity sector weights (percent), or `null` for non-equity |
+| `sectors` | approximate equity sector weights (percent), or `null` for non-equity; for a stacked fund, describes the equity leg |
 | `currency` | quote currency used for fetching and FX conversion (ISO code) |
+| `currency_exposure` | optional look-through fiat exposure: currency (ISO code, plus `None` for real assets and `Dynamic` for futures books) → percent of capital; any shortfall below 100 counts as `None`. Set it only where the automatic derivation (`suggest.CurrencySplit`: hedging, asset class, geography, then quote currency) is wrong: funds denominated differently than their holdings' countries (corporate/aggregate bonds, EM hard-currency debt), mixed-region equity residuals worth resolving |
 | `distribution` | `accumulating`, `distributing`, `n/a` |
 | `leverage` | `1.0` normal; `2.0` for 2× daily; embedded notional for capital-efficient funds (e.g. `1.5` for a 90/60 structure) |
+| `duration` | effective duration in years (fixed income); for a stacked fund, the duration of its bond exposure per unit of notional (e.g. `7.0` for a 90/60 fund's intermediate futures ladder) |
 | `notes` | one line on the asset's portfolio role / the market regime it serves |
 | `confidence` | `high`, `medium`, `low`: confidence in the breakdowns |
 | `sources` | reference URLs |

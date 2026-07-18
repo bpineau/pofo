@@ -39,3 +39,38 @@ func TestRenderFoldsPortfolioSections(t *testing.T) {
 		t.Error("statistics must precede the detailed sections")
 	}
 }
+
+func TestRenderSegmentedCoverage(t *testing.T) {
+	var b strings.Builder
+	err := Render(&b, &Page{
+		Title: "Test",
+		Portfolios: []PortfolioSection{{
+			Name:          "P1",
+			ChartSVG:      "<svg></svg>",
+			CoverageLabel: "Macro-regime coverage (by weight)",
+			Coverage: []CoverageBar{{
+				Regime: "growth",
+				Pct:    39,
+				Segments: []CoverageSeg{
+					{Width: 25.2, Color: "#0880A8", Title: "NTSG 25%"},
+					{Width: 9, Color: "#C2452B", Title: "SMALL 9%"},
+				},
+				Detail: "NTSG 25 · SMALL 9",
+			}},
+		}},
+		PortfolioNames: []string{"P1"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	html := b.String()
+	for _, want := range []string{
+		`<span class="cov-seg" style="width:25.2%;background:#0880A8" title="NTSG 25%"></span>`,
+		`<span class="cov-seg" style="width:9%;background:#C2452B" title="SMALL 9%"></span>`,
+		`<div class="cov-detail">NTSG 25 · SMALL 9</div>`,
+	} {
+		if !strings.Contains(html, want) {
+			t.Errorf("rendered coverage lacks %q", want)
+		}
+	}
+}
