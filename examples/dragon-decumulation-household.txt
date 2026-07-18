@@ -231,7 +231,9 @@
 #   can go. Mind the window when comparing with siblings fitted on
 #   1988+ panels: same plan, different window, different verdict is a
 #   simulator artifact, not a portfolio property; on an identical
-#   panel this build matches or beats them (the tables above).
+#   panel this build matches or beats them (the tables above; to see it
+#   yourself, window the siblings with the CLI flag, e.g.
+#   `pofo -start 2000-07-01 -fire examples/claude-dragonlite.txt`).
 #
 # ## Range check honesty (measured floors, believed ceilings)
 #
