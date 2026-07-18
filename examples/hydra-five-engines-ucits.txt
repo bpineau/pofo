@@ -103,7 +103,8 @@
 #   model can decay, close, or drift, so the sleeve is split across two
 #   genuinely different methods -- DBi's CTA-replication (DBMFE,
 #   LU2951555403) and AQR's direct multi-asset trend (AQR Managed Futures
-#   UCITS, EUR-hedged flat "RAEF" share LU1662501532), the standout LIVE
+#   UCITS, EUR-hedged flat "RAEF" share LU1662501532; 100k+ tickets: the
+#   cheaper flat I class IAE2F LU1662499612, OCF ~0.88%), the standout LIVE
 #   record among UCITS trend funds:
 #   over 2022-2026 it ran Sharpe ~0.75 with a -20% max drawdown while the
 #   US-listed KMLM (the research build's second leg) did Sharpe ~0 and
