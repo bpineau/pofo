@@ -178,6 +178,12 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 		}
 	}
 
+	// A public entry point must not panic on empty input: callers reach this
+	// only with at least one spec today, but the guard keeps the API safe.
+	if len(results) == 0 {
+		return nil, errors.New("no portfolios to compare")
+	}
+
 	// Common window across portfolios: statistics and the comparison chart
 	// must cover the same period to be meaningful.
 	commonStart := results[0].sim.Dates[0]
