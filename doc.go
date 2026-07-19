@@ -38,6 +38,11 @@
 //   - pkg/chart: dependency-free SVG and terminal charts (line, pie, bars,
 //     heatmap).
 //   - pkg/report: HTML and text rendering of a portfolio-comparison model.
+//   - pkg/compare: the reusable comparison pipeline shared by the CLI and the
+//     -serve web app: it computes the comparison model (fetch, build,
+//     simulate, common window, nominal and real statistics) and assembles the
+//     HTML report Page. Presentation-neutral, it sits above report, suggest,
+//     metrics, portfolio and marketdata and below cmd/pofo.
 //
 // # Typical pipeline
 //
@@ -46,8 +51,10 @@
 // series with pkg/marketdata (splicing simulated history from pkg/datasets
 // when a fund is young), simulate the portfolio, score it with pkg/metrics,
 // and either render it with pkg/chart and pkg/report or improve it with
-// pkg/optimize and pkg/suggest. The high-level path is three calls, each
-// step staying independently reachable for custom pipelines:
+// pkg/optimize and pkg/suggest. pkg/compare packages exactly that wiring
+// (fetch, build, simulate, common window, statistics, report Page) so the CLI
+// and the -serve web app share one comparison pipeline. The high-level path is
+// three calls, each step staying independently reachable for custom pipelines:
 //
 //	ctx := context.Background()
 //	client := marketdata.NewClient(marketdata.DefaultCacheDir())
