@@ -30,6 +30,10 @@ type viewRequest struct {
 	currency   string
 	bench      *string
 	noSim      *bool
+	// fireHrefs maps each spec's (deduplicated) name to its FIRE simulator
+	// link: /fire/e/<name>/ for an embedded example, /fire/p/<escaped spec>/
+	// for an ad-hoc p= portfolio. Only the web report consumes it.
+	fireHrefs map[string]string
 }
 
 // serverOptions returns a copy of the server defaults with this request's
@@ -56,14 +60,19 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 	if vr.noSim != nil {
 		o.noSim = *vr.noSim
 	}
+	o.fireHref = vr.fireHrefs
 	return &o
 }
 
 // parseViewQuery translates a /view query into a viewRequest. Portfolio
 // parsing is delegated to pkg/portfolio by rebuilding the file text form,
-// so the URL grammar can never drift from the file grammar.
+// so the URL grammar can never drift from the file grammar. Each parsed
+// portfolio also gets a FIRE simulator link recorded in fireHrefs, keyed by
+// its final (deduplicated) name: /fire/e/<name>/ for an embedded example,
+// /fire/p/<escaped spec>/ for an ad-hoc p= portfolio. The rendered /view
+// report surfaces these as per-section "Simulate" links.
 func parseViewQuery(q url.Values) (*viewRequest, error) {
-	vr := &viewRequest{}
+	vr := &viewRequest{fireHrefs: map[string]string{}}
 	exs, ps := q["ex"], q["p"]
 	if len(exs)+len(ps) > maxViewPortfolios {
 		return nil, fmt.Errorf("at most %d portfolios per page", maxViewPortfolios)
@@ -90,6 +99,7 @@ func parseViewQuery(q url.Values) (*viewRequest, error) {
 			return nil, fmt.Errorf("example %s: %w", name, err)
 		}
 		add(spec)
+		vr.fireHrefs[spec.Name] = "/fire/e/" + name + "/"
 	}
 	for i, raw := range ps {
 		spec, err := adhocSpec(raw, i+1)
@@ -97,6 +107,7 @@ func parseViewQuery(q url.Values) (*viewRequest, error) {
 			return nil, err
 		}
 		add(spec)
+		vr.fireHrefs[spec.Name] = "/fire/p/" + url.PathEscape(raw) + "/"
 	}
 	if err := parseViewGlobals(q, vr); err != nil {
 		return nil, err
