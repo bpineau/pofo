@@ -25,6 +25,37 @@ import (
 // blocks, serving until interrupted.
 func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
 	chart.SetDark(true) // the FIRE explorer renders in the terminal dark theme
+	panel, labels := firePanel(ctx, opt, c, specs)
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return err
+	}
+	url := "http://" + ln.Addr().String() + "/"
+	fmt.Fprintf(os.Stderr, "FIRE explorer on %s (Ctrl-C to stop)\n", url)
+	if !opt.noOpen {
+		openBrowser(url)
+	}
+	// main() routes SIGINT/SIGTERM into ctx (signal.NotifyContext), which
+	// replaces the default die-on-Ctrl-C behavior, so the server must watch
+	// the context and shut down when it fires.
+	srv := &http.Server{Handler: web.Handler(panel, labels)}
+	go func() {
+		<-ctx.Done()
+		shutCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+		defer cancel()
+		_ = srv.Shutdown(shutCtx)
+	}()
+	if err := srv.Serve(ln); !errors.Is(err, http.ErrServerClosed) {
+		return err
+	}
+	return nil
+}
+
+// firePanel builds the historical real-return panel for the FIRE UI from
+// the first spec's holdings (SIM-extended, deflated by ^HICP-FR), or
+// returns (nil, nil) when no portfolio was given: the UI then runs its
+// parametric models only.
+func firePanel(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) (*scenario.Panel, []string) {
 	var panel *scenario.Panel
 	var labels []string
 	if len(specs) > 0 {
@@ -56,27 +87,5 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 			}
 		}
 	}
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
-	if err != nil {
-		return err
-	}
-	url := "http://" + ln.Addr().String() + "/"
-	fmt.Fprintf(os.Stderr, "FIRE explorer on %s (Ctrl-C to stop)\n", url)
-	if !opt.noOpen {
-		openBrowser(url)
-	}
-	// main() routes SIGINT/SIGTERM into ctx (signal.NotifyContext), which
-	// replaces the default die-on-Ctrl-C behavior, so the server must watch
-	// the context and shut down when it fires.
-	srv := &http.Server{Handler: web.Handler(panel, labels)}
-	go func() {
-		<-ctx.Done()
-		shutCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
-		defer cancel()
-		_ = srv.Shutdown(shutCtx)
-	}()
-	if err := srv.Serve(ln); !errors.Is(err, http.ErrServerClosed) {
-		return err
-	}
-	return nil
+	return panel, labels
 }

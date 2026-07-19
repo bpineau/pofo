@@ -283,8 +283,13 @@ function schedule() {
   clearTimeout(timer); timer = setTimeout(run, 200);
   clearTimeout(slowTimer); slowTimer = setTimeout(runSlow, 600);
 }
+// apiURL maps an absolute "/api/…" route onto the document's base URL so
+// the app reaches its own backend whether it is served at the site root
+// (pofo -fire) or mounted under a sub-path (pofo -serve serves it at
+// /fire/, where document.baseURI ends in "/fire/").
+const apiURL = p => new URL(p.replace(/^\//, ""), document.baseURI).href;
 const post = (url, body) =>
-  fetch(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})
+  fetch(apiURL(url), {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})
     .then(r => r.json());
 // fresh(id) is true while no newer run started: renderers check it before
 // touching the DOM so a slow older response never overwrites a newer one.
@@ -979,7 +984,7 @@ function startDrag(ev, i) {
 // ---------------------------------------------------------------------------
 // Portfolio mode bootstrap: fetch holdings, seed the fit, add the bar.
 // ---------------------------------------------------------------------------
-fetch("/api/meta").then(r => r.json()).then(m => {
+fetch(apiURL("/api/meta")).then(r => r.json()).then(m => {
   renderCape(m.cape);
   setSVG("capeHistory", m.capeHistory);
   if (!m.hasPanel) { run(); runSlow(); return; }
