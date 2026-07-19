@@ -286,6 +286,13 @@ anonymous visitor, so a raw quote symbol outside the catalog is rejected
 before any network call. `ex=` files carry no such limit; they are the vetted
 builds shipped in the binary.
 
+Every `/view` report also carries a live **composer**: an in-page editor over
+this same grammar. Add or remove holdings and portfolios, edit weights (with a
+sum badge and one-click normalize), name each id from the catalog as you type,
+and Fork an example into an editable copy; the URL rewrites itself as you go so
+the link is always the current state, and Run renders it. It stays within the
+same catalog gate and caps, so nothing you can compose escapes them.
+
 Each portfolio in a `/view` report carries a **Simulate** link that opens the
 FIRE simulator bound to that portfolio (`/fire/p/<spec>/` for an ad-hoc
 composition, `/fire/e/<name>/` for an example). The hub also remembers your

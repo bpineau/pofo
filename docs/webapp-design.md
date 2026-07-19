@@ -32,6 +32,8 @@ running a command per comparison.
 | `/fire/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/book/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book, with a chrome nav bar back to the other surfaces |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts |
+| `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
+| `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar) |
 
 The mux (`server.handler` in `serve.go`) is a plain `http.ServeMux`; the
 lifecycle (`runServe`) mirrors `runFire`: bind, serve, shut down on context
@@ -93,6 +95,67 @@ catalog ISINs, aliases and embedded fund tickers resolve (the `SIM` suffix is
 allowed); a raw quote symbol or an unknown identifier is rejected before any
 network call. The bundled catalog is wide enough to compose real portfolios;
 anything outside it is a CLI or portfolio-file job, not an anonymous web one.
+
+## The live composer
+
+Every `/view` report carries a small in-page editor over the `p=` grammar, so
+the shareable link never falls out of step with what is on screen. It is
+injected under the site nav through the optional `report.Page.Composer` field
+(empty for the standalone CLI report, which stays byte-for-byte unchanged) and
+served entirely from the binary: `composerMount` (`composer.go`) renders the
+panel through `html/template` (portfolio names and identifiers are user input,
+so every value, the `encoding/json` data attributes included, rides the
+template's contextual escaping), and `/composer.js` / `/composer.css` carry the
+front end.
+
+The design rests on a few decisions:
+
+- **The URL is the live state.** Every edit rewrites the query string in place
+  via `history.replaceState`, so the address bar is always a faithful,
+  copyable link to the current composition, with no server round trip. The
+  panel opens automatically when the page already has an editable `p=`
+  portfolio; an `ex=`-only page keeps it collapsed to a chip bar.
+- **Run, not live compute.** Editing never triggers a fetch or a render.
+  Run (or Enter) navigates to the rewritten URL and the server renders the
+  report, so the composer adds no compute or fetch surface beyond the existing
+  `/view` path. The **server stays authoritative** on every gate; the client
+  only mirrors the rules to warn early.
+- **Catalog autocomplete and inline validation.** The editor fetches
+  `/catalog.json` once and drives id autocomplete and per-row validation from
+  it (naming each holding, flagging an unknown id). If that fetch fails it
+  degrades to no autocomplete and no client validation; the server still
+  rejects anything outside the catalog gate, so correctness never depends on
+  the front end.
+- **Caps mirrored client-side.** The `/view` guardrails (6 portfolios, 20
+  holdings, 2000-byte `p=`) are handed to the front end in a `data-caps`
+  attribute (`composerCaps`), which gates add/remove of holdings and
+  portfolios and drives a live byte-budget meter, plus a weight-sum badge with
+  a one-click normalize. These are affordances; the server enforces the same
+  bounds regardless.
+- **Fork from an example.** Each `ex=` card is read-only. If at least one of
+  its holdings resolves locally, the card offers a Fork affordance carrying a
+  `data-fork-<i>` payload (`specToP`, the inverse of `adhocSpec` for what the
+  grammar can express): forking swaps that `ex=` for an editable `p=` and
+  surfaces a dismissible note listing what could not ride the grammar (holdings
+  that do not resolve locally, the comparison-shaping metas `optimize` and
+  `currencies`, and any name or meta whose text would break the `!` segment
+  grammar). An example whose holdings all drop is not composable and shows no
+  Fork button.
+- **Opaque rows pass through verbatim.** A `p=` value the front end cannot
+  parse is not discarded or rewritten: it renders as a locked, read-only
+  "manual" row and is passed through unchanged, so a hand-authored or
+  future-grammar link always survives a round trip through the editor.
+
+The currency control includes the `native` sentinel, with the empty value
+meaning "server default". A `#composer-selftest` URL hash runs the parse and
+serialize round-trip self-test in the browser console (the repo is stdlib-only
+and carries no JS test harness, so the self-test plus the live smoke stand in
+for a unit suite).
+
+One benign edge remains: a freshly added, still-empty portfolio serializes as
+`p=:` until an id is entered, and Run at that exact instant would 400. It
+resolves the moment a holding id is filled in, which is the next action the
+row invites.
 
 ## The composed simulator and the prefs cookie
 
@@ -187,10 +250,14 @@ smallest lever first:
   remembers a visitor's non-sensitive preferences (base currency, default
   rebalance, sim on/off) to pre-fill the hub, so the composer opens where they
   left it. See "The composed simulator and the prefs cookie" above.
-- **M3: a live composer that writes the URL.** A small in-page editor for the
-  `p=` spec (add/remove holdings, drag weights, toggle meta) that updates the
-  query string as you go, so the shareable link is always the current state.
-  No new server capability, just a front end over the existing grammar.
+- **M3: a live composer that writes the URL.** Shipped (2026-07-19). A small
+  in-page editor for the `p=` spec (add/remove holdings and portfolios, edit
+  weights with a sum badge and normalize, catalog autocomplete, Fork from an
+  example) that rewrites the query string as you go via `history.replaceState`,
+  so the shareable link is always the current state, and Run navigates to let
+  the server render. No new server capability beyond the `/catalog.json`
+  read-only endpoint, just a front end over the existing grammar. See "The live
+  composer" above.
 - **M4: extract the report assembly into `pkg/`.** `/view` currently reaches
   into `cmd/pofo`'s report-assembly path (`renderComparison` and friends).
   Pushing that reusable pipeline down into a package (the way `FetchExtended`
