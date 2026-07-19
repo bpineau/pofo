@@ -83,3 +83,15 @@ func CanonicalID(id string) string {
 	}
 	return u
 }
+
+// KnownLocal reports whether an identifier resolves locally, without any
+// network lookup: a catalog ID, a catalog ISIN, a catalog alias or an
+// embedded European fund ticker (exactly the set CanonicalID maps), with
+// an optional SIM suffix. Quote symbols (^GSPC, ^IRX, ...) are not local.
+// The web composer uses it to reject identifiers that would otherwise
+// trigger a network search on behalf of an anonymous visitor.
+func KnownLocal(id string) bool {
+	base, _ := SplitSim(id)
+	_, ok := canonicalIndex().byKey[base]
+	return ok
+}
