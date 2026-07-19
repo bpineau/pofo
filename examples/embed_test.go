@@ -36,4 +36,30 @@ func TestList(t *testing.T) {
 	if _, err := FS.ReadFile(h.Name + ".txt"); err != nil {
 		t.Errorf("FS.ReadFile: %v", err)
 	}
+
+	// ntsg.txt starts with the "#meta sim:on" directive, not a title line:
+	// it must degrade to Title = Name rather than surface the directive.
+	if ntsg, ok := byName["ntsg"]; !ok {
+		t.Fatal("ntsg missing")
+	} else {
+		if ntsg.Title != "ntsg" {
+			t.Errorf("ntsg.Title = %q, want %q (degraded from directive)", ntsg.Title, "ntsg")
+		}
+		if ntsg.Blurb != "" {
+			t.Errorf("ntsg.Blurb = %q, want empty", ntsg.Blurb)
+		}
+	}
+
+	// predictis.txt starts with a raw holdings line (no leading "#" at
+	// all): it must degrade to Title = Name rather than surface the line.
+	if predictis, ok := byName["predictis"]; !ok {
+		t.Fatal("predictis missing")
+	} else {
+		if predictis.Title != "predictis" {
+			t.Errorf("predictis.Title = %q, want %q (degraded, no comment line)", predictis.Title, "predictis")
+		}
+		if predictis.Blurb != "" {
+			t.Errorf("predictis.Blurb = %q, want empty", predictis.Blurb)
+		}
+	}
 }
