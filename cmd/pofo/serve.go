@@ -5,6 +5,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"html/template"
@@ -107,6 +108,21 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	}
 	mux.HandleFunc("/theme.css", css(webui.CSS))
 	mux.HandleFunc("/fonts.css", css(webui.FontsCSS))
+	// The local catalog, serialized once: the composer's autocomplete and
+	// inline validation read it; the server-side gates stay authoritative.
+	catalogJSON, err := json.Marshal(marketdata.LocalCatalog())
+	if err != nil {
+		panic(err) // embedded data; cannot fail at runtime
+	}
+	mux.HandleFunc("/catalog.json", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "GET only", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		_, _ = w.Write(catalogJSON)
+	})
 	return mux
 }
 
