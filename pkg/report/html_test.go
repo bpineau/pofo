@@ -40,6 +40,31 @@ func TestRenderFoldsPortfolioSections(t *testing.T) {
 	}
 }
 
+func TestFireHref(t *testing.T) {
+	page := &Page{
+		Title:          "t",
+		PortfolioNames: []string{"a"},
+		Portfolios:     []PortfolioSection{{Name: "a", FireHref: "/fire/p/IWDA:100/"}},
+	}
+	var buf strings.Builder
+	if err := Render(&buf, page); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(buf.String(), `class="pf-fire" href="/fire/p/IWDA:100/"`) {
+		t.Error("FireHref link missing")
+	}
+
+	// Empty FireHref: no trace in the output (the CLI report is unchanged).
+	page.Portfolios[0].FireHref = ""
+	buf.Reset()
+	if err := Render(&buf, page); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(buf.String(), "pf-fire") {
+		t.Error("empty FireHref must leave no markup behind")
+	}
+}
+
 func TestRenderSegmentedCoverage(t *testing.T) {
 	var b strings.Builder
 	err := Render(&b, &Page{
