@@ -29,7 +29,7 @@ type viewRequest struct {
 	specs      []*portfolio.Spec
 	start, end time.Time
 	rebalance  *int
-	currency   string
+	currency   *string // nil = no override; non-nil, "" = keep native currencies
 	bench      *string
 	noSim      *bool
 	// fireHrefs maps each spec's (deduplicated) name to its FIRE simulator
@@ -53,8 +53,8 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 	if vr.rebalance != nil {
 		o.rebalance = *vr.rebalance
 	}
-	if vr.currency != "" {
-		o.currency = vr.currency
+	if vr.currency != nil {
+		o.currency = *vr.currency
 	}
 	if vr.bench != nil {
 		o.benchmark = *vr.bench
@@ -73,7 +73,7 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 // its final (deduplicated) name: /fire/e/<name>/ for an embedded example,
 // /fire/p/<escaped spec>/ for an ad-hoc p= portfolio. The rendered /view
 // report surfaces these as per-section "Simulate" links.
-func parseViewQuery(q url.Values) (*viewRequest, error) {
+func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 	vr := &viewRequest{fireHrefs: map[string]string{}}
 	exs, ps := q["ex"], q["p"]
 	if len(exs)+len(ps) > maxViewPortfolios {
@@ -111,7 +111,7 @@ func parseViewQuery(q url.Values) (*viewRequest, error) {
 		add(spec)
 		vr.fireHrefs[spec.Name] = "/fire/p/" + url.PathEscape(raw) + "/"
 	}
-	if err := parseViewGlobals(q, vr); err != nil {
+	if err := parseViewGlobals(q, vr, base); err != nil {
 		return nil, err
 	}
 	return vr, nil
@@ -172,7 +172,19 @@ func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
 
 // parseViewGlobals fills the option overrides from the query's global
 // parameters, mirroring the CLI flags they correspond to.
-func parseViewGlobals(q url.Values, vr *viewRequest) error {
+//
+// Two parameters carry attacker-shaped identifiers that would otherwise reach
+// an outbound fetch on behalf of an anonymous visitor, so both are gated:
+//
+//   - currency: absent leaves the server default; "native" (any case) keeps
+//     each series in its native currency; otherwise a three-letter ISO code
+//     (validCurrency). Anything else is a 400, so no arbitrary bytes reach an
+//     FX fetch URL or mint an unbounded cache file.
+//   - bench: empty explicitly disables Beta; otherwise it must be a locally
+//     resolvable identifier (marketdata.KnownLocal) or the exact server
+//     default benchmark (a quote symbol like ^GSPC, which is not "local"), so
+//     the shared quote cache can never be poisoned with an arbitrary symbol.
+func parseViewGlobals(q url.Values, vr *viewRequest, base *options) error {
 	if v := q.Get("start"); v != "" {
 		t, err := time.ParseInLocation("2006-01-02", v, time.UTC)
 		if err != nil {
@@ -197,9 +209,24 @@ func parseViewGlobals(q url.Values, vr *viewRequest) error {
 		}
 		vr.rebalance = &n
 	}
-	vr.currency = strings.ToUpper(strings.TrimSpace(q.Get("currency")))
+	if vs, ok := q["currency"]; ok && len(vs) > 0 {
+		cur := strings.ToUpper(strings.TrimSpace(vs[0]))
+		switch {
+		case cur == "NATIVE":
+			native := ""
+			vr.currency = &native
+		case validCurrency(cur):
+			c := cur
+			vr.currency = &c
+		default:
+			return fmt.Errorf("invalid currency %q (want a 3-letter ISO code or native)", cur)
+		}
+	}
 	if vs, ok := q["bench"]; ok && len(vs) > 0 {
 		v := vs[0]
+		if v != "" && !marketdata.KnownLocal(v) && v != base.benchmark {
+			return fmt.Errorf("benchmark %q is not in the local catalog (empty disables it)", v)
+		}
 		vr.bench = &v
 	}
 	switch v := q.Get("sim"); v {
