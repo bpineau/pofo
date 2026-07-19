@@ -186,14 +186,3 @@ func (s *server) errorPage(w http.ResponseWriter, code int, msg string) {
 		Message string
 	}{http.StatusText(code), msg})
 }
-
-// hub is the constellation's front door. Placeholder until the designed
-// page lands (Task 7).
-func (s *server) hub(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<!DOCTYPE html><title>pofo</title><p>hub placeholder</p>")
-}
