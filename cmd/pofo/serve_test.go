@@ -12,18 +12,28 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
+// renderCall records one fake render: the options the server layered and the
+// specs it was handed. Options recording lets tests assert global overrides
+// (currency=native and friends) without running the real pipeline.
+type renderCall struct {
+	opt   *options
+	specs []*portfolio.Spec
+}
+
 // testServer returns a server whose render function is a recording fake:
-// no fetching, no network, no computation.
-func testServer(t *testing.T) (*server, *[][]*portfolio.Spec) {
+// no fetching, no network, no computation. Its buildPanel returns a minimal
+// non-nil panel so the FIRE caches behave as in production (a nil panel is
+// deliberately not cached); tests that need the degraded path stub their own.
+func testServer(t *testing.T) (*server, *[]renderCall) {
 	t.Helper()
-	var calls [][]*portfolio.Spec
+	var calls []renderCall
 	s := newServer(&options{currency: "EUR", benchmark: "^GSPC", rebalance: 90}, nil)
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
-		calls = append(calls, specs)
+		calls = append(calls, renderCall{opt: o, specs: specs})
 		return []byte("<html>fake report</html>"), nil
 	}
 	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
-		return nil, nil // parametric-only app; no fetching in tests
+		return &scenario.Panel{}, nil // non-nil: cacheable, no fetching
 	}
 	return s, &calls
 }
@@ -156,7 +166,7 @@ func TestServeView(t *testing.T) {
 	if rec.Header().Get("Cache-Control") != "no-store" {
 		t.Error("view must be no-store")
 	}
-	if len(*calls) != 1 || len((*calls)[0]) != 1 || (*calls)[0][0].Name != "claude-dragonlite" {
+	if len(*calls) != 1 || len((*calls)[0].specs) != 1 || (*calls)[0].specs[0].Name != "claude-dragonlite" {
 		t.Errorf("render calls = %+v", *calls)
 	}
 
@@ -166,6 +176,101 @@ func TestServeView(t *testing.T) {
 	if rec := serveGet(t, h, "/view?p=ZZZNOTANID:100"); rec.Code != 400 ||
 		!strings.Contains(rec.Body.String(), "not in the local catalog") {
 		t.Errorf("catalog gate: code=%d", rec.Code)
+	}
+}
+
+func TestServeViewCurrencyNative(t *testing.T) {
+	s, calls := testServer(t)
+	h := s.handler(nil, nil)
+
+	// currency=native renders with an empty currency override (keep native
+	// currencies), not the EUR server default.
+	rec := serveGet(t, h, "/view?ex=claude-dragonlite&currency=native")
+	if rec.Code != 200 {
+		t.Fatalf("view: code=%d", rec.Code)
+	}
+	if len(*calls) != 1 || (*calls)[0].opt.currency != "" {
+		t.Errorf("rendered currency = %q, want empty (native)", (*calls)[0].opt.currency)
+	}
+
+	// The cookie stores the native choice as the empty ISO code (the codec's
+	// internal representation).
+	var stored *http.Cookie
+	for _, c := range rec.Result().Cookies() {
+		if c.Name == prefsCookie {
+			stored = c
+		}
+	}
+	if stored == nil {
+		t.Fatal("no pofo_prefs cookie set")
+	}
+	if stored.Value != "currency=" {
+		t.Errorf("cookie value = %q, want exactly currency= (native as the empty code)", stored.Value)
+	}
+
+	// Feeding that cookie back to the hub re-selects the native option.
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(stored)
+	rec2 := httptest.NewRecorder()
+	h.ServeHTTP(rec2, req)
+	if !strings.Contains(rec2.Body.String(), `value="native" selected`) {
+		t.Error("hub did not re-select the native currency option")
+	}
+	// The hub's Open links carry the native sentinel, never a bare currency=.
+	if !strings.Contains(rec2.Body.String(), "currency=native") {
+		t.Error("hub Open links must carry currency=native")
+	}
+}
+
+func TestServeHubOutOfListPref(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	// A stored rebalance outside the hardcoded list must appear as its own
+	// selected option, never silently rewritten by a lying select.
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: "rebalance=7"})
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	if !strings.Contains(rec.Body.String(), `value="7" selected`) {
+		t.Error("hub must surface an out-of-list rebalance as its own selected option")
+	}
+}
+
+func TestFireForSpecPanelCaching(t *testing.T) {
+	spec, err := adhocSpec("IWDA:60,IGLN:40", 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// A degraded build (nil panel) is served but never cached: a transient
+	// failure must not freeze a permanently degraded simulator.
+	s, _ := testServer(t)
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+		return nil, nil
+	}
+	if h := s.fireForSpec(context.Background(), "k", spec); h == nil {
+		t.Fatal("a degraded build must still serve this request")
+	}
+	if len(s.fireBySpec) != 0 {
+		t.Errorf("nil-panel cache size = %d, want 0 (not cached)", len(s.fireBySpec))
+	}
+
+	// A healthy build (non-nil panel) is cached, and two sequential cold hits
+	// build exactly once.
+	s2, _ := testServer(t)
+	builds := 0
+	s2.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+		builds++
+		return &scenario.Panel{}, nil
+	}
+	s2.fireForSpec(context.Background(), "k", spec)
+	s2.fireForSpec(context.Background(), "k", spec)
+	if len(s2.fireBySpec) != 1 {
+		t.Errorf("non-nil-panel cache size = %d, want 1", len(s2.fireBySpec))
+	}
+	if builds != 1 {
+		t.Errorf("builds = %d, want 1 (second cold hit must reuse the cache)", builds)
 	}
 }
 
