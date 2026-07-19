@@ -544,9 +544,7 @@ func renderPage(cmp *comparison, opt *options) ([]byte, error) {
 // renderComparison runs the whole pipeline and renders the HTML report:
 // the single entry point the web server needs.
 //
-// report without writing a file); used once that mode lands.
-//
-//lint:ignore U1000 entry point for the forthcoming web server (renders a
+//lint:ignore U1000 kept uncalled until the -serve mode lands.
 func renderComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) ([]byte, error) {
 	cmp, err := computeComparison(ctx, client, opt, specs)
 	if err != nil {
