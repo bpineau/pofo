@@ -273,8 +273,11 @@ link you can bookmark or share:
 portfolio, `ID:WEIGHT` pairs comma-separated, with `!key:value` meta
 directives appended (`!` replaces the file format's `;`, which a query string
 cannot carry). Global options (`start`, `end`, `rebalance`, `currency`,
-`bench`, `sim`) mirror the CLI flags. Up to six portfolios per page, twenty
-holdings each.
+`bench`, `sim`) mirror the CLI flags. `currency` takes a three-letter ISO code
+or `native` (keep each series in its own currency); `bench` takes an
+identifier from the local catalog, the default `^GSPC`, or empty to drop Beta
+(anything else is rejected before any network call). Up to six portfolios per
+page, twenty holdings each.
 
 `p=` identifiers are **catalog-only**: the tool resolves them from the
 embedded catalog (ids, ISINs, aliases, bundled fund tickers, the `SIM` suffix

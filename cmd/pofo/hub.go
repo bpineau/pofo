@@ -86,7 +86,13 @@ func hubPrefsFrom(p prefs, opt *options) hubPrefs {
 	}
 	if stored {
 		v := url.Values{}
-		v.Set("currency", hp.Currency)
+		// The /view grammar spells "keep native currencies" as the sentinel
+		// currency=native; an empty currency= would render the server default.
+		if hp.Currency == "" {
+			v.Set("currency", "native")
+		} else {
+			v.Set("currency", hp.Currency)
+		}
 		v.Set("rebalance", strconv.Itoa(hp.Rebalance))
 		v.Set("sim", hp.Sim)
 		// Values are validated on read (validCurrency, integer, on/off), so
@@ -206,7 +212,7 @@ body.hub{background:
     <p class="lbl">Example portfolios <b>{{len .Items}}</b></p>
     <div class="hub-defs">
       <label>currency <select name="currency">
-        {{range $c := .Currencies}}<option value="{{$c}}"{{if eq $c $.Prefs.Currency}} selected{{end}}>{{if $c}}{{$c}}{{else}}native{{end}}</option>{{end}}
+        {{range $c := .Currencies}}<option value="{{if $c}}{{$c}}{{else}}native{{end}}"{{if eq $c $.Prefs.Currency}} selected{{end}}>{{if $c}}{{$c}}{{else}}native{{end}}</option>{{end}}
       </select></label>
       <label>rebalance <select name="rebalance">
         {{range $d := .Rebalances}}<option value="{{$d}}"{{if eq $d $.Prefs.Rebalance}} selected{{end}}>{{if $d}}{{$d}} d{{else}}never{{end}}</option>{{end}}
@@ -258,6 +264,19 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
+	prefs := hubPrefsFrom(readPrefs(r), s.opt)
+	// A stored pref outside the hardcoded option lists would otherwise render a
+	// lying select (the browser shows the first option and a submit silently
+	// rewrites the pref): surface it as its own selected option instead. The
+	// native currency ("") is always present, so it needs no appending.
+	currencies := []string{"EUR", "USD", "GBP", "CHF", ""}
+	if prefs.Currency != "" && !containsStr(currencies, prefs.Currency) {
+		currencies = append(currencies, prefs.Currency)
+	}
+	rebalances := []int{30, 90, 180, 365, 0}
+	if !containsInt(rebalances, prefs.Rebalance) {
+		rebalances = append(rebalances, prefs.Rebalance)
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_ = hubTmpl.Execute(w, struct {
 		Skin       template.CSS
@@ -265,6 +284,25 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 		Prefs      hubPrefs
 		Currencies []string
 		Rebalances []int
-	}{template.CSS(webui.WarmSkin), hubItems(), hubPrefsFrom(readPrefs(r), s.opt),
-		[]string{"EUR", "USD", "GBP", "CHF", ""}, []int{30, 90, 180, 365, 0}})
+	}{template.CSS(webui.WarmSkin), hubItems(), prefs, currencies, rebalances})
+}
+
+// containsStr reports whether s is in xs.
+func containsStr(xs []string, s string) bool {
+	for _, x := range xs {
+		if x == s {
+			return true
+		}
+	}
+	return false
+}
+
+// containsInt reports whether n is in xs.
+func containsInt(xs []int, n int) bool {
+	for _, x := range xs {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }

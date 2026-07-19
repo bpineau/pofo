@@ -47,6 +47,28 @@ func TestReadPrefs(t *testing.T) {
 	}
 }
 
+func TestValidCurrency(t *testing.T) {
+	cases := []struct {
+		in   string
+		want bool
+	}{
+		{"", true},    // keep native currencies
+		{"EUR", true}, // canonical ISO code
+		{"USD", true},
+		{"eur", false},  // must be uppercase
+		{"EU", false},   // too short
+		{"EURO", false}, // too long
+		{"E1R", false},  // digits are not letters
+		{"E R", false},  // spaces are not letters
+		{"DROP", false}, // an injection attempt
+	}
+	for _, c := range cases {
+		if got := validCurrency(c.in); got != c.want {
+			t.Errorf("validCurrency(%q) = %v, want %v", c.in, got, c.want)
+		}
+	}
+}
+
 func TestPrefsMerge(t *testing.T) {
 	base := readPrefs(prefsRequest("currency=USD&rebalance=30"))
 
@@ -73,6 +95,15 @@ func TestPrefsMerge(t *testing.T) {
 	got, changed = base.merge(url.Values{"currency": {""}})
 	if !changed || got.currency == nil || *got.currency != "" {
 		t.Errorf("empty currency merge = %+v changed=%v", got, changed)
+	}
+
+	// The /view sentinel currency=native (any case) stores as the empty ISO
+	// code, so the codec round-trips it as "keep native currencies".
+	for _, v := range []string{"native", "NATIVE", "Native"} {
+		got, changed = base.merge(url.Values{"currency": {v}})
+		if !changed || got.currency == nil || *got.currency != "" {
+			t.Errorf("currency=%s merge = %+v changed=%v, want stored empty", v, got, changed)
+		}
 	}
 }
 

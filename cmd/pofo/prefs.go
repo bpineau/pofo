@@ -77,6 +77,9 @@ func (p prefs) merge(q url.Values) (prefs, bool) {
 	changed := false
 	if vs, ok := q["currency"]; ok && len(vs) > 0 {
 		cur := strings.ToUpper(strings.TrimSpace(vs[0]))
+		if cur == "NATIVE" { // the /view sentinel stores as the empty ISO code
+			cur = ""
+		}
 		if validCurrency(cur) && (p.currency == nil || *p.currency != cur) {
 			p.currency, changed = &cur, true
 		}

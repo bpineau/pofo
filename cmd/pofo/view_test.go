@@ -16,8 +16,13 @@ func mustQuery(t *testing.T, raw string) url.Values {
 	return q
 }
 
+// viewBase is the server-default options the /view parser layers overrides on.
+func viewBase() *options {
+	return &options{currency: "EUR", benchmark: "^GSPC", rebalance: 90}
+}
+
 func TestParseViewQueryExamples(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=efficient-core-9060"))
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=efficient-core-9060"), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +39,7 @@ func TestParseViewQueryExamples(t *testing.T) {
 
 func TestParseViewQueryAdhoc(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t,
-		"p=NTSG:60,IGLN:20,IBCI:20!rebalance:30!sim:on!name:essai"))
+		"p=NTSG:60,IGLN:20,IBCI:20!rebalance:30!sim:on!name:essai"), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -58,7 +63,7 @@ func TestParseViewQueryAdhoc(t *testing.T) {
 
 func TestParseViewQueryGlobals(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t,
-		"ex=claude-dragonlite&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"))
+		"ex=claude-dragonlite&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -68,8 +73,8 @@ func TestParseViewQueryGlobals(t *testing.T) {
 	if vr.rebalance == nil || *vr.rebalance != 180 {
 		t.Error("rebalance override missing")
 	}
-	if vr.currency != "USD" {
-		t.Errorf("currency = %q", vr.currency)
+	if vr.currency == nil || *vr.currency != "USD" {
+		t.Errorf("currency = %v", vr.currency)
 	}
 	if vr.bench == nil || *vr.bench != "" {
 		t.Error("bench= (empty) must disable Beta, not keep the default")
@@ -104,10 +109,75 @@ func TestParseViewQueryErrors(t *testing.T) {
 		{"carriage return", "p=NTSG:100%0D:1", "control character"},
 	}
 	for _, c := range cases {
-		_, err := parseViewQuery(mustQuery(t, c.raw))
+		_, err := parseViewQuery(mustQuery(t, c.raw), viewBase())
 		if err == nil || !strings.Contains(err.Error(), c.wantErr) {
 			t.Errorf("%s: err = %v, want containing %q", c.name, err, c.wantErr)
 		}
+	}
+}
+
+func TestParseViewQueryBenchGate(t *testing.T) {
+	// An arbitrary symbol must be rejected before it can reach an outbound
+	// fetch or poison the shared quote cache.
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=ZZZNOPE"), viewBase()); err == nil ||
+		!strings.Contains(err.Error(), "not in the local catalog") {
+		t.Errorf("bench=ZZZNOPE: err = %v, want a catalog rejection", err)
+	}
+	// The exact server default (a quote symbol KnownLocal deliberately rejects)
+	// is accepted, so the gate never 400s the default.
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=^GSPC"), viewBase())
+	if err != nil {
+		t.Fatalf("bench=^GSPC (the server default): %v", err)
+	}
+	if vr.bench == nil || *vr.bench != "^GSPC" {
+		t.Errorf("bench = %v, want ^GSPC accepted", vr.bench)
+	}
+	// A catalog identifier is accepted as a benchmark.
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=IWDA"), viewBase()); err != nil {
+		t.Errorf("bench=IWDA (catalog): %v", err)
+	}
+	// Empty explicitly disables Beta.
+	vr, err = parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench="), viewBase())
+	if err != nil {
+		t.Fatalf("bench= (empty): %v", err)
+	}
+	if vr.bench == nil || *vr.bench != "" {
+		t.Errorf("bench= must disable Beta, got %v", vr.bench)
+	}
+}
+
+func TestParseViewQueryCurrency(t *testing.T) {
+	// Absent: no override, serverOptions keeps the server default.
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite"), viewBase())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if vr.currency != nil {
+		t.Errorf("absent currency = %v, want nil (no override)", vr.currency)
+	}
+	if o := vr.serverOptions(viewBase()); o.currency != "EUR" {
+		t.Errorf("absent currency serverOptions = %q, want the EUR default", o.currency)
+	}
+
+	// currency=native (any case) keeps native currencies: a non-nil, empty
+	// override, so serverOptions clears the server default.
+	for _, raw := range []string{"currency=native", "currency=NATIVE", "currency=Native"} {
+		vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&"+raw), viewBase())
+		if err != nil {
+			t.Fatalf("%s: %v", raw, err)
+		}
+		if vr.currency == nil || *vr.currency != "" {
+			t.Errorf("%s: currency = %v, want a non-nil empty override", raw, vr.currency)
+		}
+		if o := vr.serverOptions(viewBase()); o.currency != "" {
+			t.Errorf("%s: serverOptions currency = %q, want empty (native)", raw, o.currency)
+		}
+	}
+
+	// Junk currency is a 400, never bytes reaching an FX fetch URL.
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&currency=DROP%20TABLE"), viewBase()); err == nil ||
+		!strings.Contains(err.Error(), "invalid currency") {
+		t.Errorf("junk currency: err = %v, want a shape rejection", err)
 	}
 }
 
@@ -115,7 +185,7 @@ func TestViewFireHrefs(t *testing.T) {
 	vr, err := parseViewQuery(url.Values{
 		"ex": {"claude-dragonlite"},
 		"p":  {"IWDA:60,IGLN:40!sim:on"},
-	})
+	}, viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -135,7 +205,7 @@ func TestViewFireHrefs(t *testing.T) {
 }
 
 func TestParseViewQueryEmpty(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, ""))
+	vr, err := parseViewQuery(mustQuery(t, ""), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -145,7 +215,7 @@ func TestParseViewQueryEmpty(t *testing.T) {
 }
 
 func TestParseViewQueryDuplicateNames(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=claude-dragonlite"))
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=claude-dragonlite"), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}
