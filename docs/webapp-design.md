@@ -29,6 +29,7 @@ running a command per comparison.
 | `/examples/<name>.txt` | `exampleFile` | one embedded portfolio file, raw text (the hub's "Source" link) |
 | `/fire/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire` |
 | `/fire/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
+| `/fire/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/book/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book, with a chrome nav bar back to the other surfaces |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts |
 
@@ -85,6 +86,42 @@ allowed); a raw quote symbol or an unknown identifier is rejected before any
 network call. The bundled catalog is wide enough to compose real portfolios;
 anything outside it is a CLI or portfolio-file job, not an anonymous web one.
 
+## The composed simulator and the prefs cookie
+
+Two features close the loop between the report and the simulator.
+
+`/fire/p/<spec>/` mounts the FIRE simulator on an ad-hoc composed portfolio.
+`<spec>` is exactly the `/view` `p=` grammar carried in a single path segment,
+so a composed comparison and its simulator share one vocabulary. The spec is
+validated before anything is built: the same catalog gate as `p=`, the 2000-byte
+cap, the control-character rejection and the 20-holdings limit all apply up
+front, so an anonymous visitor can never make the server fetch an arbitrary
+symbol here either. A `!sim:on` directive is honored (the panel splices
+simulated history); the panel is built with the server's default currency.
+Built handlers live in a small bounded cache (arbitrary eviction past its cap),
+and the builds share the `/view` render semaphore, so the composed simulator
+adds no new fetch surface or concurrency beyond the visualizer's. The naked
+`/fire/e/<name>` and `/fire/p/<spec>` forms 301 to their trailing-slash
+canonical.
+
+Each `/view` report section then carries a **Simulate** link to the matching
+mount: an `ex=` section links `/fire/e/<name>/`, a `p=` section links
+`/fire/p/<escaped spec>/`. The link is optional in the report template (empty
+means omitted, so the standalone CLI report is byte-for-byte unchanged) and only
+appears under `-serve`. An optimized portfolio's "as written" twin and its
+multi-currency columns share the base spec's link, which is the intended
+portfolio.
+
+A small `pofo_prefs` cookie remembers a visitor's non-sensitive preferences
+(base currency, default rebalance, sim on/off), each validated field by field,
+`HttpOnly`, `SameSite=Lax`, one year. It **pre-fills the hub only**: the hub's
+defaults row starts where the visitor left it, and a row's Open link carries the
+stored options when the cookie exists. `/view` **writes** the cookie from its
+explicit, valid `currency` / `rebalance` / `sim` parameters (merge semantics)
+but **never reads** it: a `/view` URL is state entirely on its own, so a shared
+link reproduces the same report for everyone regardless of their cookie. The
+URL-as-state invariant is preserved.
+
 ## Style layering
 
 `pkg/webui` owns the shared "instrument" identity (tokens, embedded fonts,
@@ -126,13 +163,14 @@ user's explicit choice, not the default.
 The web app shipped as a read-mostly constellation. The planned follow-ups,
 smallest lever first:
 
-- **M2: per-request FIRE panel + a user-settings cookie.** A first slice
-  shipped: `/fire/e/<name>/` builds a panel per bundled example on demand
-  (lazily cached), so the hub's "Simulate" opens the simulator pre-loaded.
-  The rest of M2 generalizes this to an arbitrary composed portfolio (a panel
-  from a `p=` spec, not only a named example) and remembers a visitor's
-  non-sensitive preferences (base currency, default rebalance, sim on/off) in
-  a cookie, so the composer opens where they left it.
+- **M2: per-request FIRE panel + a user-settings cookie.** Shipped
+  (2026-07-19). `/fire/e/<name>/` builds a panel per bundled example on demand,
+  `/fire/p/<spec>/` generalizes it to an arbitrary composed portfolio (a panel
+  from a `p=` spec, catalog-gated, lazily and boundedly cached), every `/view`
+  section carries a Simulate link to its mount, and the `pofo_prefs` cookie
+  remembers a visitor's non-sensitive preferences (base currency, default
+  rebalance, sim on/off) to pre-fill the hub, so the composer opens where they
+  left it. See "The composed simulator and the prefs cookie" above.
 - **M3: a live composer that writes the URL.** A small in-page editor for the
   `p=` spec (add/remove holdings, drag weights, toggle meta) that updates the
   query string as you go, so the shareable link is always the current state.

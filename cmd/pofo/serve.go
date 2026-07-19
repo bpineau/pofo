@@ -258,7 +258,7 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 // building and caching it on first use. It returns nil for an unknown name.
 // The panel build (which fetches quotes) runs outside the lock so distinct
 // examples build in parallel; a rare double build of the same name is
-// harmless, the last writer wins.
+// harmless, the first writer wins.
 func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	if _, ok := s.examples[name]; !ok {
 		return nil
