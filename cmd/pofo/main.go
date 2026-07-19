@@ -117,6 +117,8 @@ func run(ctx context.Context, argv []string) error {
 	frameworkName := fs.String("framework", "regimes", "classification for coverage and -suggest: \"regimes\" (macro quadrants) or \"factors\" (risk factors)")
 	coverageFlag := fs.Bool("coverage", false, "offline coverage advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit")
 	fireFlag := fs.Bool("fire", false, "open the decumulation/FIRE explorer (local web UI; optionally for a portfolio file), then serve until stopped")
+	serveFlag := fs.Bool("serve", false, "serve the web app (hub, visualizer, FIRE simulator, book) until stopped; portfolio file args feed the FIRE historical models")
+	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
@@ -183,7 +185,7 @@ Options:
 		return err
 	}
 	files := fs.Args()
-	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*permanentFlag {
+	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -219,6 +221,19 @@ Options:
 		opt.simdata = datasets.Simdata()
 	}
 
+	if *serveFlag {
+		for name, on := range map[string]bool{
+			"-fire": *fireFlag, "-cli": opt.cli, "-warmup": *warmup,
+			"-verify-data": *verifyData, "-suggest": *suggestFlag,
+			"-coverage": *coverageFlag, "-permanent": *permanentFlag,
+			"-gen-simdata": *genSimdata,
+		} {
+			if on {
+				return fmt.Errorf("-serve cannot be combined with %s", name)
+			}
+		}
+	}
+
 	// Generation mode consumes positional args as recipe ids, not files;
 	// dispatch before any portfolio parsing.
 	if *genSimdata {
@@ -251,7 +266,7 @@ Options:
 			addSpec(portfolio.Single(id))
 		}
 	}
-	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*permanentFlag {
+	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -270,6 +285,9 @@ Options:
 	}
 	if *coverageFlag {
 		return runCoverage(specs, &opt)
+	}
+	if *serveFlag {
+		return runServe(ctx, &opt, client, specs, *listenAddr)
 	}
 	if *fireFlag {
 		return runFire(ctx, &opt, client, specs)
@@ -543,8 +561,6 @@ func renderPage(cmp *comparison, opt *options) ([]byte, error) {
 
 // renderComparison runs the whole pipeline and renders the HTML report:
 // the single entry point the web server needs.
-//
-//lint:ignore U1000 kept uncalled until the -serve mode lands.
 func renderComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) ([]byte, error) {
 	cmp, err := computeComparison(ctx, client, opt, specs)
 	if err != nil {
