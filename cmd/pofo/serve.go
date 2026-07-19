@@ -195,6 +195,12 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
+	// Remember explicit, valid global preferences (currency, rebalance,
+	// sim) so the hub can pre-fill its defaults row. Rendering itself never
+	// reads the cookie: a /view URL is a pure function of its query string.
+	if p, changed := readPrefs(r).merge(r.URL.Query()); changed {
+		http.SetCookie(w, p.cookie())
+	}
 	select {
 	case s.sem <- struct{}{}:
 		defer func() { <-s.sem }()
