@@ -239,6 +239,57 @@ generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
 and sweeps), with the thin web layer under `pkg/decumul/web`; the book is its
 own package, `pkg/firebook`, mountable by any server.
 
+## Web app
+
+`pofo -serve` starts the whole tool as one local web app, four surfaces on a
+single port:
+
+| URL | Surface |
+|---|---|
+| `/` | the **hub**: the bundled example portfolios, tick any and compare them |
+| `/view` | the **visualizer**: the same HTML comparison report the CLI writes, addressed by a shareable URL |
+| `/fire/` | the **FIRE simulator** (`-fire`, mounted under a prefix) |
+| `/book/fr/` | the **FIRE book**, with a small nav bar back to the other surfaces |
+
+```sh
+./pofo -serve                             # http://127.0.0.1:8787/
+./pofo -serve -listen 127.0.0.1:9000      # a different port
+./pofo -serve examples/dragon-decumulation-household.txt  # seed the FIRE panel from a file
+```
+
+`-listen` defaults to `127.0.0.1:8787` (loopback only). Portfolio file
+arguments feed the FIRE simulator's historical models, exactly as they do
+for `-fire`.
+
+The visualizer is driven entirely by its query string, so a comparison is a
+link you can bookmark or share:
+
+```
+/view?ex=dragon-decumulation-household&ex=claude-dragonlite
+/view?p=NTSG:60,IGLN:20,IBCI:20!sim:on&currency=EUR
+```
+
+`ex=` names a bundled example (repeat it to stack several). `p=` is an ad-hoc
+portfolio, `ID:WEIGHT` pairs comma-separated, with `!key:value` meta
+directives appended (`!` replaces the file format's `;`, which a query string
+cannot carry). Global options (`start`, `end`, `rebalance`, `currency`,
+`bench`, `sim`) mirror the CLI flags. Up to six portfolios per page, twenty
+holdings each.
+
+`p=` identifiers are **catalog-only**: the tool resolves them from the
+embedded catalog (ids, ISINs, aliases, bundled fund tickers, the `SIM` suffix
+allowed) and never hits the network on behalf of an anonymous visitor, so a
+raw quote symbol or an unknown identifier is rejected. `ex=` files carry no
+such limit; they are the vetted builds shipped in the binary.
+
+Everything runs on the machine that started it, and the default bind is
+loopback. To reach the app from your phone or another device, put it behind
+your tailnet instead of opening a port:
+
+```sh
+tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to your tailnet
+```
+
 ## Main options
 
 | Option | Default | Description |
@@ -259,6 +310,8 @@ own package, `pkg/firebook`, mountable by any server.
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
+| `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
+| `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
 
