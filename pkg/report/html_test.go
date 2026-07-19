@@ -1,6 +1,7 @@
 package report
 
 import (
+	"html/template"
 	"strings"
 	"testing"
 )
@@ -62,6 +63,28 @@ func TestFireHref(t *testing.T) {
 	}
 	if strings.Contains(buf.String(), "pf-fire") {
 		t.Error("empty FireHref must leave no markup behind")
+	}
+}
+
+func TestComposerSlot(t *testing.T) {
+	page := &Page{Title: "t", PortfolioNames: []string{"a"},
+		Portfolios: []PortfolioSection{{Name: "a"}}}
+	page.Composer = template.HTML(`<div id="composer" data-x="1"></div>`)
+	var buf strings.Builder
+	if err := Render(&buf, page); err != nil {
+		t.Fatal(err)
+	}
+	if !strings.Contains(buf.String(), `<div id="composer" data-x="1"></div>`) {
+		t.Error("Composer markup missing")
+	}
+	// Empty Composer: no trace (CLI byte-identity).
+	page.Composer = ""
+	buf.Reset()
+	if err := Render(&buf, page); err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(buf.String(), "composer") {
+		t.Error("empty Composer must leave no markup behind")
 	}
 }
 

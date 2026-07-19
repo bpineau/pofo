@@ -5,6 +5,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/portfolio"
 )
 
 func mustQuery(t *testing.T, raw string) url.Values {
@@ -14,6 +16,48 @@ func mustQuery(t *testing.T, raw string) url.Values {
 		t.Fatal(err)
 	}
 	return q
+}
+
+func TestViewComposerMount(t *testing.T) {
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&p=IWDA:60,IGLN:40"), viewBase())
+	if err != nil {
+		t.Fatal(err)
+	}
+	mount := string(composerMount(vr))
+	for _, want := range []string{"composer", "data-caps", "data-fork-0", "claude-dragonlite"} {
+		if !strings.Contains(mount, want) {
+			t.Errorf("mount missing %q", want)
+		}
+	}
+	// A p= portfolio present: the panel opens.
+	if !strings.Contains(mount, "<details class=\"cmp\" id=\"composer\" data-caps") ||
+		!strings.Contains(mount, "open>") {
+		t.Error("mount must open when a p= portfolio is present")
+	}
+	// The mount rides into the render options for the web app only.
+	o := vr.serverOptions(viewBase())
+	if o.composer == "" {
+		t.Error("serverOptions must carry the composer mount")
+	}
+}
+
+// TestComposerMountUnforkable checks that an example with no locally
+// resolvable holding renders read-only, with no Fork affordance.
+func TestComposerMountUnforkable(t *testing.T) {
+	vr := &viewRequest{
+		specs: []*portfolio.Spec{{
+			Name:     "opaque",
+			Holdings: []portfolio.Holding{{ID: "NOSUCHFUND", RawWeight: 100}},
+		}},
+		fireHrefs: map[string]string{"opaque": "/fire/e/opaque/"},
+	}
+	mount := string(composerMount(vr))
+	if strings.Contains(mount, "data-fork-0") {
+		t.Error("an all-dropped example must not be forkable")
+	}
+	if !strings.Contains(mount, "not composable") && !strings.Contains(mount, "cannot express") {
+		t.Error("an all-dropped example must render a not-composable note")
+	}
 }
 
 // viewBase is the server-default options the /view parser layers overrides on.

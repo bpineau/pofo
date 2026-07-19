@@ -1,0 +1,113 @@
+/* The live composer panel (-serve /view). Structure, class names and look
+   come from the "stacked cards" mock; all tokens are the shared theme's
+   (var(--...)), so the warm skin the report already links recolours it for
+   free. Layered on top of /theme.css. */
+
+.cmp{font-family:var(--sans);margin:1rem auto 0;max-width:min(1180px,94vw);
+  padding:0 clamp(1rem,4vw,2rem)}
+.cmp *{box-sizing:border-box}
+.cmp input,.cmp select{min-width:0;max-width:100%}
+
+/* collapsed bar = the <summary>; the disclosure triangle is ours (the toggle
+   label), so drop the native marker */
+.cmp-bar{display:flex;align-items:center;gap:.9rem 1.1rem;flex-wrap:wrap;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  box-shadow:var(--sh);padding:.7rem .9rem;cursor:pointer;list-style:none}
+.cmp-bar::-webkit-details-marker{display:none}
+.cmp-bar .eyebrow{font-family:var(--mono);font-size:.66rem;font-weight:600;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--accent-ink)}
+.cmp-sum{display:flex;align-items:center;gap:.4rem;flex-wrap:wrap}
+.cmp .grow{flex:1}
+.chip{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);
+  background:var(--surface-2);border:1px solid var(--line);border-radius:999px;
+  padding:.12rem .55rem}
+.chip b{color:var(--accent-ink);font-weight:600}
+.cmp-toggle::after{content:"Edit"}
+.cmp[open] .cmp-toggle::after{content:"Collapse"}
+
+/* shared buttons */
+.cmp .btn{font-family:var(--sans);font-weight:600;font-size:.82rem;
+  border-radius:var(--r-sm);padding:.42rem .95rem;cursor:pointer;
+  border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-soft)}
+.cmp .btn:hover{border-color:var(--accent);color:var(--accent-ink)}
+.cmp .btn-run{color:#fff;background:var(--accent);border-color:var(--accent);box-shadow:var(--sh)}
+.cmp .btn-run:hover{background:var(--accent-ink);color:#fff}
+.cmp .btn-ghost{background:transparent}
+
+/* open panel */
+.cmp-panel{background:var(--surface);border:1px solid var(--line);
+  border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;margin-top:.6rem}
+
+/* stack of portfolio cards */
+.stack{padding:.9rem;display:flex;flex-direction:column;gap:.75rem}
+.pcard{border:1px solid var(--line);border-radius:var(--r-sm);background:var(--surface);min-width:0}
+.pcard-head{display:flex;align-items:center;gap:.55rem .6rem;flex-wrap:wrap;
+  padding:.55rem .75rem;background:var(--surface-2);border-bottom:1px solid var(--line);
+  border-radius:var(--r-sm) var(--r-sm) 0 0}
+.kind{font-family:var(--mono);font-size:.6rem;font-weight:600;letter-spacing:.08em;
+  text-transform:uppercase;padding:.1rem .4rem;border-radius:5px;
+  border:1px solid var(--line-strong);color:var(--muted);background:var(--surface-2)}
+.kind.p{color:var(--accent-ink);border-color:#d9bf9a;background:var(--accent-wash)}
+.kind.ex{color:var(--good-ink);border-color:#bcd8c9;background:var(--good-wash)}
+.pname{font-family:var(--sans);font-weight:600;font-size:.9rem;color:var(--ink);
+  border:none;background:transparent;padding:.1rem 0;
+  border-bottom:1px dashed transparent;min-width:0}
+.pname:focus{outline:none;border-bottom-color:var(--accent)}
+.pname[readonly]{color:var(--ink-soft)}
+.fork{font-family:var(--sans);font-size:.7rem;font-weight:600;color:var(--accent-ink);
+  background:transparent;border:1px solid var(--line-strong);border-radius:999px;
+  padding:.12rem .6rem;cursor:pointer}
+.fork:hover{border-color:var(--accent);background:var(--accent-wash)}
+.pcard-body{padding:.65rem .75rem;min-width:0}
+
+/* editable holding rows */
+.field{font-family:var(--mono);font-size:.8rem;color:var(--ink);background:var(--surface);
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:.3rem .5rem}
+.field:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-wash)}
+.hrow{display:grid;grid-template-columns:150px 1fr 78px 24px;gap:.5rem;
+  align-items:center;margin-bottom:.4rem;min-width:0}
+.hrow .rn{font-family:var(--sans);font-size:.8rem;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wt{text-align:right}
+.idbox{position:relative;min-width:0}
+.idbox .field{width:100%}
+.rm{border:none;background:transparent;color:var(--faint);cursor:pointer;
+  font-size:1.05rem;line-height:1;font-family:var(--mono)}
+.rm:hover{color:var(--bad-ink)}
+.add{font-family:var(--mono);font-size:.74rem;color:var(--accent-ink);background:transparent;
+  border:1px dashed var(--line-strong);border-radius:var(--r-sm);padding:.28rem .6rem;
+  cursor:pointer;margin-top:.2rem}
+.add:hover{border-color:var(--accent);background:var(--accent-wash)}
+
+/* read-only ex= readout */
+.exlist{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);
+  display:flex;flex-wrap:wrap;gap:.35rem .8rem}
+.exlist span b{color:var(--ink);font-weight:600}
+.exlist .g{color:var(--muted)}
+
+/* globals row */
+.globals{display:flex;flex-wrap:wrap;gap:.8rem 1.1rem;align-items:flex-end;
+  padding:.8rem .95rem;border-top:1px solid var(--line);background:var(--surface-2);min-width:0}
+.globals .gt{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);width:100%;margin-bottom:-.2rem}
+.gfield{display:flex;flex-direction:column;gap:.18rem;min-width:0}
+.gfield label{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted)}
+.gfield .field{width:8.5rem}
+select.field{-webkit-appearance:none;appearance:none;cursor:pointer;padding-right:1.5rem;
+  background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23877c6d' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .5rem center/9px}
+
+/* run bar */
+.cmp-foot{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap;
+  padding:.75rem .95rem;border-top:1px solid var(--line-strong)}
+.cmp-foot .hint{font-size:.75rem;color:var(--muted)}
+.budget{display:flex;align-items:center;gap:.5rem;font-family:var(--mono);
+  font-size:.72rem;color:var(--warn-ink)}
+.budget .meter{width:80px;height:5px;border-radius:999px;background:var(--surface-2);
+  overflow:hidden;border:1px solid var(--line)}
+.budget .meter i{display:block;height:100%;width:0;background:var(--warn)}
+
+@media(max-width:560px){
+  .hrow{grid-template-columns:1fr 74px 22px}
+  .hrow .rn{display:none}
+}
