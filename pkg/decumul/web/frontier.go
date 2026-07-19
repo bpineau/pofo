@@ -56,7 +56,7 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 	if target <= 0 {
 		target = 0.05
 	}
-	svg := chart.MultiLine(
+	svg := darkMultiLine(
 		chart.Options{Title: "Ruin vs withdrawal rate", Width: 720, Height: 360}, "Withdrawal rate %", "Ruin %", series,
 		chart.Marker{Axis: 'x', Value: pr.NeedAnnual / pr.Capital * 100, Label: "your plan"},
 		chart.Marker{Axis: 'y', Value: target * 100, Label: "target"},

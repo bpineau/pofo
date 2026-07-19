@@ -48,7 +48,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 		broke[i] = pt.Broke * 100
 		dead[i] = pt.Dead * 100
 	}
-	lifeSVG := chart.StackedArea(
+	lifeSVG := darkStackedArea(
 		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 900, Height: 360},
 		"Years into retirement", "% of simulated households",
 		[]chart.AreaSeries{
@@ -71,14 +71,14 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 			Text:  fmt.Sprintf("%.1f%%", share*100),
 		})
 	}
-	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
+	ruinSVG := darkBars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
 
 	// Why plans fail: classify the ruined paths by trajectory shape (halved
 	// early / never grew / prospered then outlived), sharper than the old
 	// when-it-failed timing proxy.
 	sh := e.RuinShapes()
 	pct := roundShares100(sh.Crash, sh.Grind, sh.Longevity)
-	causesSVG := chart.CategoryBars(chart.Options{Width: 460},
+	causesSVG := darkCategoryBars(chart.Options{Width: 460},
 		[]chart.CatBar{
 			{Label: "Early crash", Value: sh.Crash, Text: fmt.Sprintf("%d%%", pct[0]), Color: "#D2402F"},
 			{Label: "Slow grind", Value: sh.Grind, Text: fmt.Sprintf("%d%%", pct[1]), Color: "#C77E17"},
@@ -88,7 +88,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	// What you leave behind: the distribution of terminal real wealth across
 	// paths (0 for the ruined). It shows the upside the broke/dead view hides:
 	// most futures end far richer than they started, a few end with nothing.
-	bequestSVG := chart.Bars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 900, Height: 300}, bequestBuckets(e))
+	bequestSVG := darkBars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 900, Height: 300}, bequestBuckets(e))
 
 	cards := lifecycleCards(e, age)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}

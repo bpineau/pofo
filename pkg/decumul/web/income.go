@@ -92,7 +92,7 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 			Help: "Pension + annuity as a share of the median household spending in the last plan year: the part of late-life spending no market crash can take away."},
 	}
 	return IncomeResult{
-		SVG: chart.StackedArea(chart.Options{
+		SVG: darkStackedArea(chart.Options{
 			Title: "Where the money comes from, median path (k€/yr)", Width: 1180, Height: 360},
 			"Years into retirement", "k€/yr", series),
 		Cards: cards,

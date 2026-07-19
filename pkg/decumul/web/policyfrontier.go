@@ -71,7 +71,7 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 			Color: pol.color,
 		})
 	}
-	svg := chart.Scatter(chart.Options{Width: 720, Height: 360},
+	svg := darkScatter(chart.Options{Width: 720, Height: 360},
 		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{
 		SVG:  svg,
