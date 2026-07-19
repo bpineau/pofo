@@ -64,7 +64,7 @@ func Decade(pr Params, panel *scenario.Panel) DecadeResult {
 			Help: "Median terminal real wealth of the worst-first-decade futures: what surviving a bad opening typically leaves at the end."},
 	}
 	return DecadeResult{
-		SVG: chart.Bars(chart.Options{
+		SVG: darkBars(chart.Options{
 			Title: "Ruin by first-decade real return (quintiles, worst → best)", Width: 720, Height: 360}, bars),
 		Cards: cards,
 	}
