@@ -9,6 +9,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	iofs "io/fs"
 	"log"
 	"os"
@@ -55,6 +56,7 @@ type options struct {
 	cli        bool
 	web        bool              // rendered inside the -serve web app (warm skin + site nav)
 	fireHref   map[string]string // per-spec-name simulator links for the web report (opt.web only)
+	composer   template.HTML     // live composer panel injected under the site nav (opt.web only)
 	width      int
 	cacheAge   time.Duration
 	fw         suggest.Framework // classification used by coverage and -suggest

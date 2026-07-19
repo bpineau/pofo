@@ -91,6 +91,25 @@ func TestServeRoutes(t *testing.T) {
 	}
 }
 
+func TestServeComposerAssets(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	if rec := serveGet(t, h, "/composer.js"); rec.Code != 200 ||
+		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/javascript") {
+		t.Errorf("composer.js: code=%d type=%q", rec.Code, rec.Header().Get("Content-Type"))
+	}
+	if rec := serveGet(t, h, "/composer.css"); rec.Code != 200 ||
+		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/css") {
+		t.Errorf("composer.css: code=%d type=%q", rec.Code, rec.Header().Get("Content-Type"))
+	}
+	// GET-only, like the other embedded assets.
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/composer.js", nil))
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST composer.js: code=%d, want 405", rec.Code)
+	}
+}
+
 func TestServeCatalogJSON(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
