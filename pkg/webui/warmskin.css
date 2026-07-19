@@ -1,0 +1,19 @@
+/* Warm "book" identity: the FIRE handbook's paper-and-ink palette expressed as
+   an override of the shared instrument tokens (theme.css). Loaded after
+   theme.css so the constellation's reading surfaces (the hub and the /view
+   report) match the book, while the FIRE simulator keeps the instrument look.
+   One source, so the warm identity never drifts across surfaces. */
+:root{
+  --bg:#faf6ef; --surface:#fffdf9; --surface-2:#f2ebdd;
+  --ink:#211c16; --ink-soft:#4c4438; --muted:#877c6d; --faint:#a89a86;
+  --line:#e8dfcd; --line-strong:#d8caae;
+  --accent:#b4783c; --accent-ink:#8a5526; --accent-wash:#f3e8d6;
+  --good:#3f8f6f; --good-ink:#2f7a5c; --good-wash:#e7f1ec;
+  --warn:#c0892e; --warn-ink:#8a6a1c; --warn-wash:#f6ecd8;
+  --bad:#c0655b; --bad-ink:#a24d44; --bad-wash:#f6e6e3;
+  --serif:Georgia,"Iowan Old Style","Palatino Linotype",Palatino,"Times New Roman",serif;
+  --sh:0 1px 2px rgba(60,48,34,.05),0 10px 30px -20px rgba(60,48,34,.35);
+}
+/* Headings pick up the book's serif; body copy, mono numbers and the marks
+   keep their instrument faces. */
+h1,h2,h3{font-family:var(--serif)}

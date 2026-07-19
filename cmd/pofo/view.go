@@ -37,6 +37,7 @@ type viewRequest struct {
 func (vr *viewRequest) serverOptions(base *options) *options {
 	o := *base
 	o.cli, o.out, o.noOpen = false, "", true
+	o.web = true // warm skin + site nav in the rendered report
 	if !vr.start.IsZero() {
 		o.start = vr.start
 	}
