@@ -21,6 +21,7 @@ import (
 	"html/template"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 
 	"github.com/bpineau/pofo/examples"
@@ -270,11 +271,11 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 	// rewrites the pref): surface it as its own selected option instead. The
 	// native currency ("") is always present, so it needs no appending.
 	currencies := []string{"EUR", "USD", "GBP", "CHF", ""}
-	if prefs.Currency != "" && !containsStr(currencies, prefs.Currency) {
+	if prefs.Currency != "" && !slices.Contains(currencies, prefs.Currency) {
 		currencies = append(currencies, prefs.Currency)
 	}
 	rebalances := []int{30, 90, 180, 365, 0}
-	if !containsInt(rebalances, prefs.Rebalance) {
+	if !slices.Contains(rebalances, prefs.Rebalance) {
 		rebalances = append(rebalances, prefs.Rebalance)
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
@@ -285,24 +286,4 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 		Currencies []string
 		Rebalances []int
 	}{template.CSS(webui.WarmSkin), hubItems(), prefs, currencies, rebalances})
-}
-
-// containsStr reports whether s is in xs.
-func containsStr(xs []string, s string) bool {
-	for _, x := range xs {
-		if x == s {
-			return true
-		}
-	}
-	return false
-}
-
-// containsInt reports whether n is in xs.
-func containsInt(xs []int, n int) bool {
-	for _, x := range xs {
-		if x == n {
-			return true
-		}
-	}
-	return false
 }
