@@ -74,6 +74,10 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.Handle("/book/fr/", http.StripPrefix("/book/fr", firebook.Handler(firebook.WithNav(nav))))
 	css := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				http.Error(w, "GET only", http.StatusMethodNotAllowed)
+				return
+			}
 			w.Header().Set("Content-Type", "text/css; charset=utf-8")
 			_, _ = w.Write([]byte(body))
 		}

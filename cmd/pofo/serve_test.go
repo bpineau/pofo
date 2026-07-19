@@ -56,6 +56,11 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/theme.css"); !strings.HasPrefix(rec.Header().Get("Content-Type"), "text/css") {
 		t.Error("theme.css content type")
 	}
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, "/theme.css", nil))
+	if rec.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST theme.css: code=%d, want 405", rec.Code)
+	}
 	if rec := serveGet(t, h, "/no-such-page"); rec.Code != 404 {
 		t.Errorf("unknown path: code=%d, want 404", rec.Code)
 	}
