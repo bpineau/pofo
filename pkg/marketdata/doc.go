@@ -124,7 +124,9 @@
 //     cache, otherwise FT tearsheets and justETF);
 //   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
 //   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker
-//     from the embedded list) to its canonical form;
+//     from the embedded list) to its canonical form; KnownLocal reports
+//     whether it resolves without a network lookup, and LocalCatalog
+//     enumerates that whole set, one entry per canonical id;
 //   - IsISIN validates an ISIN, check digit included;
 //   - Client.ConvertCurrency reprices a whole Series into a target currency
 //     using daily Yahoo FX crosses; the earliest known rate is held flat

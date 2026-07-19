@@ -126,3 +126,11 @@ func ExampleLookup() {
 	fmt.Println(ok, a.ID, a.AssetClass, a.Fees)
 	// Output: true IE00B4L5Y983 equity 0.2
 }
+
+// LocalCatalog enumerates the identifier set that resolves without any
+// network lookup: one entry per canonical id, sorted, with its alternates.
+func ExampleLocalCatalog() {
+	cat := marketdata.LocalCatalog()
+	fmt.Println(len(cat) > 0)
+	// Output: true
+}
