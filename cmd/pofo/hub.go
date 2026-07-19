@@ -3,11 +3,12 @@
 // pure-GET form that submits the ticked names to /view for a side-by-side
 // backtest, and points onward to the FIRE simulator and the FIRE book.
 //
-// The page is styled with the shared webui identity tokens (served from
-// /theme.css and /fonts.css): the FIRE book's calm reading rhythm rendered in
-// the instrument palette, so it reads as its own surface rather than a copy of
-// either the report or the book. All CSS is inline and self-contained; the
-// page carries no JavaScript.
+// The page is styled with the shared webui tokens (served from /theme.css and
+// /fonts.css) remapped to the FIRE book's warm paper-and-ink identity
+// (webui.WarmSkin), so the hub and the /view report read as the book's kin
+// while the FIRE simulator keeps the instrument look. Each row also offers to
+// send its portfolio straight to the simulator (/fire/e/<name>/). All CSS is
+// inline and self-contained; the page carries no JavaScript.
 package main
 
 import (
@@ -15,6 +16,7 @@ import (
 	"net/http"
 
 	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // hubItem is one catalog row, pre-shaped for the template. Untitled marks the
@@ -48,9 +50,10 @@ var hubTmpl = template.Must(template.New("hub").Parse(`<!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pofo &middot; portfolio lab</title>
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
+<style>{{.Skin}}</style>
 <style>
 body.hub{background:
-  radial-gradient(920px 480px at 88% -14%,rgba(11,114,133,.06),transparent 62%),var(--bg);
+  radial-gradient(920px 480px at 88% -14%,rgba(180,120,60,.08),transparent 62%),var(--bg);
   color:var(--ink-soft);min-height:100vh;overflow-x:hidden}
 .hub-shell{max-width:47rem;margin:0 auto;padding:2.4rem 1.3rem 4rem}
 .hub-top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
@@ -60,8 +63,8 @@ body.hub{background:
 .hub-here{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 .hub-kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
   color:var(--accent-ink);margin:0 0 .6rem}
-.hub-hero h1{font-family:var(--sans);font-weight:600;color:var(--ink);
-  font-size:clamp(1.7rem,4.6vw,2.15rem);line-height:1.12;letter-spacing:-.022em;margin:0 0 .7rem}
+.hub-hero h1{font-family:var(--serif);font-weight:600;color:var(--ink);
+  font-size:clamp(1.8rem,4.8vw,2.3rem);line-height:1.14;letter-spacing:0;margin:0 0 .7rem}
 .hub-lede{color:var(--ink-soft);font-size:1.02rem;line-height:1.6;margin:0;max-width:54ch}
 .hub-dest{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:1.8rem 0 0}
 .hub-dest a{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);
@@ -100,7 +103,7 @@ body.hub{background:
 .hub-pick input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .hub-body{min-width:0}
 .hub-titlerow{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
-.hub-title{font-weight:600;color:var(--ink);font-size:.95rem;line-height:1.3;overflow-wrap:anywhere}
+.hub-title{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
 .hub-title.id{font-family:var(--mono);font-weight:500;font-size:.9rem;letter-spacing:-.01em}
 .hub-code{font-family:var(--mono);font-size:.68rem;color:var(--muted);overflow-wrap:anywhere;
   background:var(--surface-2);border-radius:5px;padding:.05rem .38rem}
@@ -159,6 +162,7 @@ body.hub{background:
     </label>
     <span class="hub-links">
       <a href="/view?ex={{.Name}}">Open</a>
+      <a href="/fire/e/{{.Name}}/">Simulate</a>
       <a href="/examples/{{.Name}}.txt">Source</a>
     </span>
   </li>
@@ -185,5 +189,8 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_ = hubTmpl.Execute(w, struct{ Items []hubItem }{hubItems()})
+	_ = hubTmpl.Execute(w, struct {
+		Skin  template.CSS
+		Items []hubItem
+	}{template.CSS(webui.WarmSkin), hubItems()})
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
 	"github.com/bpineau/pofo/pkg/suggest"
+	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // assetCWARP formats a single holding's CWARP as a 25 % overlay on the
@@ -35,6 +36,19 @@ func assetCWARP(s *marketdata.Series, benchDates []time.Time, benchValues []floa
 	return "-"
 }
 
+// siteNavCSS and siteNavHTML style and render the web app's cross-navigation
+// bar at the top of the /view report; both are used only when opt.web is set.
+const siteNavCSS = `.site-nav{display:flex;gap:1.2rem;align-items:baseline;max-width:min(1180px,94vw);` +
+	`margin:0 auto;padding:.8rem clamp(1rem,4vw,2rem) 0;font-family:var(--mono);font-size:.72rem;` +
+	`letter-spacing:.06em;text-transform:uppercase}` +
+	`.site-nav a{color:var(--muted);text-decoration:none}` +
+	`.site-nav a:hover{color:var(--accent-ink)}` +
+	`.site-nav a:first-child{color:var(--accent-ink)}`
+
+var siteNavHTML = template.HTML(`<nav class="site-nav">` +
+	`<a href="/">Portfolios</a><a href="/fire/">FIRE simulator</a><a href="/book/fr/">FIRE book</a>` +
+	`</nav>`)
+
 func buildPage(results []*result, opt *options, bench *marketdata.Series, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) *report.Page {
 	names := make([]string, len(results))
 	for i, r := range results {
@@ -52,6 +66,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		CommonStart:    commonStart.Format("2006-01-02"),
 		CommonEnd:      commonEnd.Format("2006-01-02"),
 		PortfolioNames: names,
+	}
+	// Served inside the web app: warm the report to the book identity and add
+	// the site nav. The standalone CLI report leaves both empty (opt.web is
+	// false), so its output is unchanged.
+	if opt.web {
+		page.SkinCSS = template.CSS(webui.WarmSkin + siteNavCSS)
+		page.SiteNav = siteNavHTML
 	}
 
 	anySimulated := false
