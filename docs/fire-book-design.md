@@ -63,7 +63,7 @@ New package `pkg/firebook`, stdlib only:
 - `assets/book/fr/<slug>.md`: the articles, French, `go:embed`ed. The
   language directory leaves room for the planned English translation
   (`assets/book/en/`), and pofo's technical URLs stay English: the book is
-  mounted at `/book/fr/`.
+  mounted at `/firebook/fr/` (the old `/book/fr/` path 301-redirects there).
 - `manifest.go`: the table of contents as data (category -> [slug, title,
   blurb]). Single source of truth: the index page and navigation are generated
   from it. It only lists articles that exist; the full planned TOC lives in
@@ -80,8 +80,8 @@ New package `pkg/firebook`, stdlib only:
 - Guard test: every file under `assets/book/` appears in the manifest and vice
   versa; every `[[slug]]` in every article resolves to a manifest slug.
 
-Mounted in `pkg/decumul/web.Handler` under `/book/fr/`, and linked very
-discreetly (small `book` link at the bottom of the "How this machine works"
+Mounted in `pkg/decumul/web.Handler` under `/firebook/fr/`, and linked very
+discreetly (small link at the bottom of the "How this machine works"
 fold) in the fire page. Because the book is its own package with a self-contained
 handler, finador can mount the exact same book by importing `firebook`.
 
