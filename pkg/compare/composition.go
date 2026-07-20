@@ -147,7 +147,16 @@ func breakdownSlices(agg map[string]float64, maxSlices int, special ...string) [
 	if total <= 0 {
 		return nil
 	}
-	sort.Slice(items, func(i, j int) bool { return items[i].v > items[j].v })
+	// Sort by weight, breaking ties by label so the slice and legend order
+	// is deterministic: agg is a map, so without the tiebreak two equal
+	// weights would come out in random order and the rendered report would
+	// not be byte-stable run to run.
+	sort.Slice(items, func(i, j int) bool {
+		if items[i].v != items[j].v {
+			return items[i].v > items[j].v
+		}
+		return items[i].k < items[j].k
+	})
 	slices := make([]chart.Slice, 0, maxSlices)
 	for _, it := range items {
 		if it.v/total < 0.03 || len(slices) >= maxSlices-1 {
