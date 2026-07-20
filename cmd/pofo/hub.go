@@ -122,25 +122,19 @@ body.hub{background:
   radial-gradient(920px 480px at 88% -14%,rgba(180,120,60,.08),transparent 62%),var(--bg);
   color:var(--ink-soft);min-height:100vh;overflow-x:hidden}
 .hub-shell{max-width:47rem;margin:0 auto;padding:2.4rem 1.3rem 4rem}
-.hub-top{display:flex;align-items:baseline;justify-content:space-between;gap:1rem;
+.hub-top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem 1.4rem;flex-wrap:wrap;
   padding-bottom:1rem;margin-bottom:2.3rem;border-bottom:1px solid var(--line-strong)}
 .hub-mark{font-family:var(--mono);font-weight:600;font-size:1rem;letter-spacing:-.02em;color:var(--ink)}
 .hub-mark b{color:var(--accent);font-weight:600}
-.hub-here{font-family:var(--mono);font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+.hub-nav{display:flex;gap:1.4rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;
+  letter-spacing:.1em;text-transform:uppercase}
+.hub-nav a{color:var(--muted);text-decoration:none;transition:color .15s}
+.hub-nav a:hover{color:var(--accent-ink)}
 .hub-kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
   color:var(--accent-ink);margin:0 0 .6rem}
 .hub-hero h1{font-family:var(--serif);font-weight:600;color:var(--ink);
   font-size:clamp(1.8rem,4.8vw,2.3rem);line-height:1.14;letter-spacing:0;margin:0 0 .7rem}
 .hub-lede{color:var(--ink-soft);font-size:1.02rem;line-height:1.6;margin:0;max-width:54ch}
-.hub-dest{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:1.8rem 0 0}
-.hub-dest a{display:block;text-decoration:none;background:var(--surface);border:1px solid var(--line);
-  border-radius:var(--r);box-shadow:var(--sh);padding:.85rem .95rem;
-  transition:border-color .15s,transform .15s}
-.hub-dest a:hover{border-color:var(--accent);transform:translateY(-1px)}
-.hub-dest .d-t{display:flex;align-items:center;justify-content:space-between;gap:.5rem;
-  font-weight:600;color:var(--ink);font-size:.98rem}
-.hub-dest .d-t .arw{font-family:var(--mono);color:var(--accent);font-weight:400}
-.hub-dest .d-b{display:block;color:var(--muted);font-size:.84rem;line-height:1.42;margin-top:.25rem}
 /* the composer is the hero: strip its standalone centring/padding so it aligns
    to the hub column, and keep it visually first */
 .hub .cmp{max-width:none;margin:2rem 0 0;padding:0}
@@ -199,7 +193,6 @@ body.hub{background:
 .hub-foot{margin-top:2.1rem;padding-top:1.1rem;border-top:1px solid var(--line);
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;color:var(--muted);font-size:.8rem}
 .hub-foot .mono{font-family:var(--mono)}
-@media(max-width:520px){.hub-dest{grid-template-columns:1fr}}
 @media(max-width:440px){
   .hub-shell{padding:1.8rem 1rem 3rem}
   .hub-list li{gap:.15rem .9rem}
@@ -211,24 +204,20 @@ body.hub{background:
 <div class="hub-shell">
 <header class="hub-top">
   <span class="hub-mark">po<b>fo</b></span>
-  <span class="hub-here">running locally</span>
+  <nav class="hub-nav">
+    <a href="/fire/">FIRE simulator</a>
+    <a href="/firebook/fr/">FIRE book (fr)</a>
+  </nav>
 </header>
 
 <section class="hub-hero">
   <p class="hub-kicker">Portfolio lab</p>
   <h1>Put portfolios side by side.</h1>
   <p class="hub-lede">Build portfolios by hand or drop in a bundled build, put up to six on one backtest,
-  and share the link. Everything runs on this machine.</p>
+  and share the link.</p>
 </section>
 
 {{.Composer}}
-
-<nav class="hub-dest">
-  <a href="/fire/"><span class="d-t">FIRE simulator <span class="arw">&rarr;</span></span>
-    <span class="d-b">Model a withdrawal plan and its odds of lasting.</span></a>
-  <a href="/firebook/fr/"><span class="d-t">Le FIRE tranquille <span class="arw">&rarr;</span></span>
-    <span class="d-b">The decumulation book, in French.</span></a>
-</nav>
 
 <details class="hub-examples">
   <summary class="hub-exsum"><span class="hub-exsum-t">Example portfolios <b>{{len .Items}}</b></span><span class="hub-exsum-h">bundled builds, ready to compare or fork into the composer</span></summary>
@@ -271,7 +260,7 @@ body.hub{background:
 </details>
 
 <footer class="hub-foot">
-  <span>Everything runs on this machine. No portfolio leaves it.</span>
+  <span>No portfolio leaves it.</span>
   <span class="mono">pofo</span>
 </footer>
 </div>
