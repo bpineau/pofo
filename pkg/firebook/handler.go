@@ -155,8 +155,7 @@ func indexHTML() string {
 	b.WriteString(`<h1>` + siteName + `</h1>`)
 	b.WriteString(`<p class="book-lede">Vivre de son capital sans le survivre : la science du retrait, ` +
 		`les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, ` +
-		`l'inflation, la fiscalité française et le facteur humain. Chaque article se lit seul et renvoie ` +
-		`aux autres ; commencez par ce qui vous préoccupe, ou par le début.</p>`)
+		`l'inflation, la fiscalité française et le facteur humain.</p>`)
 	b.WriteString(`</header><main>`)
 	for _, cat := range Categories {
 		fmt.Fprintf(&b, `<section class="book-cat"><h2>%s</h2><p class="book-cat-blurb">%s</p><ul class="book-toc">`,
