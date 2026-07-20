@@ -1,4 +1,4 @@
-# Merriman-style worldwide equity (value & small tilts)
+# Merriman-style -- worldwide equity (value & small tilts)
 # Idea: Paul Merriman's 'Ultimate Buy & Hold' spirit -- a global core heavily
 #   tilted to size and value, where the long-run factor premia live. High
 #   expected return, higher tracking error vs a plain index.

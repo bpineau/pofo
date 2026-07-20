@@ -1,4 +1,4 @@
-# The Cockroach Portfolio (Jason Buck / Mutiny Fund) -- modernized
+# Cockroach Portfolio -- Jason Buck / Mutiny Fund, modernized
 # Idea: the four-quadrant cousin of the Dragon -- equal risk to stocks, bonds,
 #   gold and trend-following. Ugly but unkillable: survives whatever the decade
 #   throws at it.
