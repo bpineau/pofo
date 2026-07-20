@@ -91,7 +91,7 @@ const GROUPS = [
       "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts — e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
   ]},
   {title: "Simulation", col: 0, id: "group-simulation", items: [
-    r("nPaths", "Simulated paths", 1000, 10000, 500, 4000, "int",
+    r("nPaths", "Simulated paths", 1000, 10000, 500, 2000, "int",
       "Monte-Carlo paths per model. At 2000 the ruin figure wobbles by roughly ±0.7 point run to run (pure sampling noise); 4000 halves the wobble, 8000 halves it again. Raise it if the figures dance when nothing changed; the engine is fast."),
   ]},
 ];
