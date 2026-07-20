@@ -40,6 +40,14 @@ const (
 	viewParallel = 2
 )
 
+// fireSiteNav is the FIRE simulator's top-bar cross-navigation under -serve:
+// links back to the portfolios hub and the FIRE book. It is passed only here,
+// so the standalone -fire mount keeps a clean bar.
+var fireSiteNav = []web.NavLink{
+	{Label: "Portfolios", Href: "/"},
+	{Label: "FIRE book (fr)", Href: "/firebook/fr/"},
+}
+
 // server carries the constellation's shared state. render is a field so
 // tests can observe requests without running the real pipeline.
 type server struct {
@@ -90,7 +98,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 // handler assembles the constellation mux.
 func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
-	s.fireDefault = web.Handler(panel, labels)
+	s.fireDefault = web.Handler(panel, labels, web.WithNav(fireSiteNav))
 	mux.HandleFunc("/", s.hub)
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
@@ -295,7 +303,7 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels)
+	h = web.Handler(panel, labels, web.WithNav(fireSiteNav))
 	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
 		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
@@ -345,7 +353,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels)
+	h = web.Handler(panel, labels, web.WithNav(fireSiteNav))
 	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
 		// A degraded or partial build must not be cached, or a transient
 		// failure freezes this example into a permanently degraded or
