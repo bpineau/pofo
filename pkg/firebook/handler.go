@@ -1,6 +1,7 @@
 package firebook
 
 import (
+	"encoding/json"
 	"fmt"
 	"html"
 	"net/http"
@@ -8,6 +9,15 @@ import (
 
 	"github.com/bpineau/pofo/pkg/webui"
 )
+
+// siteName is the book's title, shown in the <h1>, the <title> suffix and
+// the SEO metadata.
+const siteName = "Le FIRE tranquille"
+
+// siteDescription is the index page's meta description (SEO): a single, dense
+// sentence under ~160 characters summarizing the whole book.
+const siteDescription = "Vivre de son capital sans le survivre : la science du retrait, " +
+	"les stratégies et portefeuilles qui résistent, l'inflation, la fiscalité française et le facteur humain."
 
 // NavLink is one entry of the optional site navigation bar.
 type NavLink struct{ Label, Href string }
@@ -28,7 +38,7 @@ func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = l
 // Handler serves the book: the sommaire at "/", one HTML page per article at
 // "/<slug>", and the shared identity stylesheets at "/theme.css" and
 // "/fonts.css" (relative URLs, so the handler can be mounted under any
-// prefix, e.g. http.StripPrefix("/book/fr", firebook.Handler())).
+// prefix, e.g. http.StripPrefix("/firebook/fr", firebook.Handler())).
 func Handler(opts ...Option) http.Handler {
 	var cfg handlerConfig
 	for _, o := range opts {
@@ -46,7 +56,7 @@ func Handler(opts ...Option) http.Handler {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.Trim(r.URL.Path, "/")
 		if slug == "" {
-			writePage(w, cfg.nav, "Le livre FIRE", indexHTML())
+			writePage(w, cfg.nav, siteName, siteDescription, indexHTML())
 			return
 		}
 		art, cat, ok := find(slug)
@@ -54,12 +64,12 @@ func Handler(opts ...Option) http.Handler {
 			http.NotFound(w, r)
 			return
 		}
-		writePage(w, cfg.nav, art.Title, articleHTML(art, cat))
+		writePage(w, cfg.nav, art.Title, art.Blurb, articleHTML(art, cat))
 	})
 	return mux
 }
 
-func writePage(w http.ResponseWriter, nav []NavLink, title, body string) {
+func writePage(w http.ResponseWriter, nav []NavLink, title, description, body string) {
 	var bar strings.Builder
 	if len(nav) > 0 {
 		bar.WriteString(`<nav class="book-sitenav"><a href=".">Sommaire</a>`)
@@ -68,13 +78,33 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, body string) {
 		}
 		bar.WriteString("</nav>\n")
 	}
+
+	// The index is the one page whose own title equals the site title; every
+	// other page is an article. This drives the <title> shape and og:type.
+	index := title == siteName
+	pageTitle := title + " · " + siteName
+	ogType := "article"
+	if index {
+		pageTitle = siteName
+		ogType = "website"
+	}
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, `<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>%s · Le livre FIRE</title>
+<title>%s</title>
+<meta name="description" content="%s">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="%s">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="%s">
+<meta property="og:title" content="%s">
+<meta property="og:description" content="%s">
+<meta name="twitter:card" content="summary">
+<script type="application/ld+json">%s</script>
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="theme.css">
 <style>%s</style>
@@ -82,7 +112,39 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, body string) {
 <body class="book">
 %s%s
 </body>
-</html>`, html.EscapeString(title), bookCSS, bar.String(), body)
+</html>`, html.EscapeString(pageTitle), html.EscapeString(description), ogType,
+		html.EscapeString(siteName), html.EscapeString(pageTitle), html.EscapeString(description),
+		jsonLD(title, description, index), bookCSS, bar.String(), body)
+}
+
+// jsonLD builds the schema.org structured-data blob for a page: a WebSite for
+// the index, an Article (part of the book) for each chapter. encoding/json
+// escapes "<", ">" and "&", so the result is safe to inline in the <script>.
+func jsonLD(title, description string, index bool) string {
+	var data map[string]any
+	if index {
+		data = map[string]any{
+			"@context":    "https://schema.org",
+			"@type":       "WebSite",
+			"name":        siteName,
+			"description": description,
+			"inLanguage":  "fr",
+		}
+	} else {
+		data = map[string]any{
+			"@context":    "https://schema.org",
+			"@type":       "Article",
+			"headline":    title,
+			"description": description,
+			"inLanguage":  "fr",
+			"isPartOf":    map[string]any{"@type": "Book", "name": siteName},
+		}
+	}
+	b, err := json.Marshal(data)
+	if err != nil { // a map of strings never fails to marshal
+		return "{}"
+	}
+	return string(b)
 }
 
 // indexHTML renders the sommaire from the manifest.
@@ -90,7 +152,7 @@ func indexHTML() string {
 	var b strings.Builder
 	b.WriteString(`<header class="book-hero">`)
 	b.WriteString(`<p class="book-kicker">pofo · référence</p>`)
-	b.WriteString(`<h1>Le livre FIRE</h1>`)
+	b.WriteString(`<h1>` + siteName + `</h1>`)
 	b.WriteString(`<p class="book-lede">Vivre de son capital sans le survivre : la science du retrait, ` +
 		`les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, ` +
 		`l'inflation, la fiscalité française et le facteur humain. Chaque article se lit seul et renvoie ` +

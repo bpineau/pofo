@@ -81,8 +81,13 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/examples/nope.txt"); rec.Code != 404 {
 		t.Errorf("unknown example file: code=%d", rec.Code)
 	}
-	if rec := serveGet(t, h, "/book/fr/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "book-sitenav") {
+	if rec := serveGet(t, h, "/firebook/fr/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "book-sitenav") {
 		t.Errorf("book: code=%d, navbar wanted", rec.Code)
+	}
+	// The old /book/ path permanently redirects to /firebook/.
+	if rec := serveGet(t, h, "/book/fr/"); rec.Code != http.StatusMovedPermanently ||
+		rec.Header().Get("Location") != "/firebook/fr/" {
+		t.Errorf("book redirect: code=%d loc=%q, want 301 to /firebook/fr/", rec.Code, rec.Header().Get("Location"))
 	}
 	if rec := serveGet(t, h, "/theme.css"); !strings.HasPrefix(rec.Header().Get("Content-Type"), "text/css") {
 		t.Error("theme.css content type")
@@ -367,7 +372,7 @@ func TestServeHub(t *testing.T) {
 		`href="/examples/dragon-decumulation-household.txt"`,
 		`href="/view?ex=dragon-decumulation-household"`,
 		`href="/fire/e/dragon-decumulation-household/"`,
-		`href="/fire/"`, `href="/book/fr/"`,
+		`href="/fire/"`, `href="/firebook/fr/"`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("hub missing %q", want)
