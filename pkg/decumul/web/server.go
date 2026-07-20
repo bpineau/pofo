@@ -2,20 +2,76 @@ package web
 
 import (
 	"encoding/json"
+	"fmt"
+	"html"
+	iofs "io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/bpineau/pofo/pkg/firebook"
 	"github.com/bpineau/pofo/pkg/scenario"
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
+// NavLink is one entry of the optional cross-navigation shown in the top bar.
+type NavLink struct{ Label, Href string }
+
+// handlerConfig collects Handler options.
+type handlerConfig struct{ nav []NavLink }
+
+// Option configures Handler.
+type Option func(*handlerConfig)
+
+// WithNav adds a cross-navigation to the top bar (e.g. links back to the
+// portfolios hub and the FIRE book). The simulator only knows these siblings
+// when served inside the -serve web app, so the option is set there and left
+// off for the standalone -fire mount, where the bar stays clean.
+func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
+
+// renderTopnav builds the top-bar cross-navigation, or "" when there is none
+// (so the index page's placeholder simply vanishes).
+func renderTopnav(links []NavLink) string {
+	if len(links) == 0 {
+		return ""
+	}
+	var b strings.Builder
+	b.WriteString(`<nav class="topnav">`)
+	for _, l := range links {
+		fmt.Fprintf(&b, `<a href="%s">%s</a>`, html.EscapeString(l.Href), html.EscapeString(l.Label))
+	}
+	b.WriteString(`</nav>`)
+	return b.String()
+}
+
 // Handler returns the decumulation UI: the embedded page at / and the
 // simulation endpoint at POST /api/sim. A non-nil panel enables the
 // portfolio models (bootstrap/cohorts) and live allocation sliders; labels
-// names the holdings for the allocation UI.
-func Handler(panel *scenario.Panel, labels []string) http.Handler {
+// names the holdings for the allocation UI. Options (e.g. WithNav) tune the
+// chrome.
+func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handler {
+	var cfg handlerConfig
+	for _, o := range opts {
+		o(&cfg)
+	}
 	mux := http.NewServeMux()
-	mux.Handle("/", http.FileServer(http.FS(mustSub())))
+	// The index page carries a "<!--topnav-->" placeholder; splice the
+	// cross-navigation into it once at startup, then serve the page for "/"
+	// and hand every other path to the static file server.
+	sub := mustSub()
+	fileSrv := http.FileServer(http.FS(sub))
+	indexRaw, err := iofs.ReadFile(sub, "index.html")
+	if err != nil {
+		panic(err) // embedded asset; cannot fail at runtime
+	}
+	indexPage := []byte(strings.Replace(string(indexRaw), "<!--topnav-->", renderTopnav(cfg.nav), 1))
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/" {
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			_, _ = w.Write(indexPage)
+			return
+		}
+		fileSrv.ServeHTTP(w, r)
+	})
 	// The FIRE book (pkg/firebook), linked discreetly from the page's
 	// "How this machine works" fold. The language segment leaves room for
 	// the planned English translation at /firebook/en/.
