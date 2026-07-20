@@ -248,6 +248,19 @@ func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string
 // server's realistic working set.
 const fireSpecCacheMax = 16
 
+// panelIncomplete reports whether a freshly built FIRE panel must NOT be
+// cached: a nil panel (the build fully degraded), a build whose context was
+// canceled or timed out mid-fetch, or a panel missing a holding (a transient
+// fetch failure dropped one, so the composition is wrong). Caching an
+// incomplete panel would freeze a degraded or wrong-composition simulator
+// until eviction; a rebuild is cheap and stays bounded by the render
+// semaphore. The rare cost is re-running a build for an asset whose data is
+// permanently unavailable, which is preferable to serving a silently wrong
+// panel.
+func panelIncomplete(panel *scenario.Panel, labels []string, buildCtx context.Context, holdings int) bool {
+	return panel == nil || buildCtx.Err() != nil || len(labels) < holdings
+}
+
 // fireForSpec returns the FIRE app for one composed spec, building and
 // caching it on first use. Same locking pattern as fireForExample: the
 // fetch-heavy build runs unlocked, a rare double build is harmless, the
@@ -278,12 +291,11 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
 	h = web.Handler(panel, labels)
-	if panel == nil {
-		// The build degraded (context canceled mid-fetch, every holding
-		// skipped): serve this request the parametric-only app but do NOT
+	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
+		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
-		// degraded simulator. A later visit rebuilds; the semaphore keeps
-		// those retries bounded.
+		// degraded or wrong-composition simulator. A later visit rebuilds;
+		// the semaphore keeps those retries bounded.
 		return h
 	}
 	s.fireMu.Lock()
@@ -329,11 +341,10 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
 	h = web.Handler(panel, labels)
-	if panel == nil {
-		// A degraded build (context canceled mid-fetch, every holding skipped)
-		// must not be cached, or a transient failure freezes this example into
-		// a permanently parametric-only simulator. Serve it once, rebuild next
-		// time.
+	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
+		// A degraded or partial build must not be cached, or a transient
+		// failure freezes this example into a permanently degraded or
+		// wrong-composition simulator. Serve it once, rebuild next time.
 		return h
 	}
 	s.fireMu.Lock()
