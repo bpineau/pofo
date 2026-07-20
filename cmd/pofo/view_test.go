@@ -91,7 +91,7 @@ func viewBase() *options {
 }
 
 func TestParseViewQueryExamples(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=efficient-core-9060"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=ntsx-all-weather"), viewBase())
 	if err != nil {
 		t.Fatal(err)
 	}

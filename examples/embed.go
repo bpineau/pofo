@@ -18,8 +18,9 @@ type Info struct {
 	Blurb string // the part of the title line after the "--" separator
 }
 
-// List returns every bundled portfolio file, sorted by Name. A file
-// without a leading comment line degrades to Title = Name.
+// List returns every bundled portfolio file, sorted by displayed Title
+// (case-insensitive). A file without a leading comment line degrades to
+// Title = Name, so the fallback still sorts predictably.
 func List() []Info {
 	entries, err := FS.ReadDir(".")
 	if err != nil {
@@ -34,23 +35,36 @@ func List() []Info {
 		}
 		infos = append(infos, Info{Name: name, Title: title, Blurb: blurb})
 	}
-	sort.Slice(infos, func(i, j int) bool { return infos[i].Name < infos[j].Name })
+	sort.Slice(infos, func(i, j int) bool {
+		li, lj := strings.ToLower(infos[i].Title), strings.ToLower(infos[j].Title)
+		if li != lj {
+			return li < lj
+		}
+		return infos[i].Name < infos[j].Name // stable tie-break on the file id
+	})
 	return infos
 }
 
-// titleOf extracts the title line: the first line stripped of its comment
-// marker, split on the " -- " separator (a few older files use an em-dash
-// variant, matched via its escape so the character never appears in this
-// source file). It returns ("", "") when the first line is not a genuine
-// title, i.e. when the file has no leading comment line at all, or when
-// that comment line is a "#meta ..." directive rather than prose; callers
-// then fall back to Title = Name.
+// titleOf extracts the title line of a bundled file: it reads the first line
+// and parses it with titleFromLine. It returns ("", "") when the file cannot
+// be read or when its first line is not a genuine title; callers then fall
+// back to Title = Name.
 func titleOf(file string) (title, blurb string) {
 	raw, err := FS.ReadFile(file)
 	if err != nil {
 		return "", ""
 	}
 	line, _, _ := strings.Cut(string(raw), "\n")
+	return titleFromLine(line)
+}
+
+// titleFromLine parses a file's first raw line into a title and blurb: the
+// line stripped of its comment marker, split on the " -- " separator (a few
+// older files use an em-dash variant, matched via its escape so the
+// character never appears in this source file). It returns ("", "") when the
+// line is not a genuine title, i.e. when it is not a leading comment line at
+// all, or when it is a "#meta ..." directive rather than prose.
+func titleFromLine(line string) (title, blurb string) {
 	line = strings.TrimSpace(line)
 	if !strings.HasPrefix(line, "#") {
 		return "", ""

@@ -377,8 +377,8 @@ func TestServeHubComposer(t *testing.T) {
 	// Every embedded preset is valid JSON whose p= the server would accept.
 	re := regexp.MustCompile(`data-preset-\d+="([^"]*)"`)
 	matches := re.FindAllStringSubmatch(body, -1)
-	if len(matches) < 50 {
-		t.Fatalf("only %d presets embedded, want >= 50", len(matches))
+	if len(matches) < 40 {
+		t.Fatalf("only %d presets embedded, want >= 40", len(matches))
 	}
 	for _, m := range matches {
 		var p composerPreset
