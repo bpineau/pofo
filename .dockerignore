@@ -1,0 +1,11 @@
+# Keep the build context lean. Everything the go:embed directives need
+# (pkg/datasets, examples, pkg/firebook/assets, pkg/decumul/web/assets) is
+# tracked source and stays in; only local, generated or private files leave.
+.git
+/pofo
+/data
+/my-portfolios
+pofo-*.html
+/TODO
+docs/superpowers
+.superpowers
