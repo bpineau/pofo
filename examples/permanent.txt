@@ -1,4 +1,4 @@
-# Harry Browne's permanent portfolio
+# Permanent Portfolio (raw US tickers) -- 25% each stocks, long bonds, gold, cash
 #meta sim:on
 25  VTI     # US equities
 25  TLT     # US long-term bonds

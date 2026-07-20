@@ -1,6 +1,6 @@
 # Four-factor equity blend (value / momentum / quality / min-vol)
 # Idea: equal-weight four MSCI World factor sleeves whose premia and drawdowns
-#   arrive at different times — a diversified factor portfolio that is steadier
+#   arrive at different times -- a diversified factor portfolio that is steadier
 #   than any single factor alone.
 # Inspired by: factor diversification (the 'factor zoo' meets common sense).
 # UCITS, 100% equity.

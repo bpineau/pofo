@@ -1,4 +1,4 @@
-# The Permanent Portfolio (Harry Browne) — modernized, UCITS
+# The Permanent Portfolio (Harry Browne) -- modernized, UCITS
 # Idea: one quarter each in prosperity (stocks), deflation (long bonds),
 #   inflation (gold) and tight money/recession (cash). Covers all four
 #   economic environments with no forecasting.

@@ -1,6 +1,6 @@
-# The Coffeehouse Portfolio (Bill Schultheis) — modernized, UCITS
+# The Coffeehouse Portfolio (Bill Schultheis) -- modernized, UCITS
 # Idea: a value/small/REIT-tilted equity core (60%) over a high-quality bond
-#   anchor (40%) — simple, balanced, slow-and-steady.
+#   anchor (40%) -- simple, balanced, slow-and-steady.
 # Inspired by: Bill Schultheis, 'The Coffeehouse Investor'.
 #   https://www.bogleheads.org/wiki/Lazy_portfolios#Coffeehouse_Portfolio
 # UCITS. Equity split across world, US value, world small-cap and REITs.

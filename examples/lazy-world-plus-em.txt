@@ -1,6 +1,6 @@
 # Developed World + Emerging Markets (cap-weighted ACWI, built cheaply)
 # Idea: replicate MSCI ACWI with two cheaper building blocks (World ~88%,
-#   EM ~12%) — broad equity beta at a lower blended fee.
+#   EM ~12%) -- broad equity beta at a lower blended fee.
 # Inspired by: the classic Bogleheads two-ETF world equity build.
 # UCITS, accumulating, 100% equity.
 
