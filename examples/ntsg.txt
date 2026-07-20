@@ -1,6 +1,0 @@
-# NTSG -- WisdomTree Global Efficient Core 90/60, single fund
-# Idea: one line holding ~90% world equity plus a ~60% global-sovereign bond
-#   futures overlay -- a capital-efficient 60/40 at ~1.5x notional. '#meta
-#   sim:on' splices simulated history in front of the fund's short live record.
-#meta sim:on
-100	NTSG            # Global Efficient Core 90/60 (WisdomTree NTSG, IE00077IIPQ8)

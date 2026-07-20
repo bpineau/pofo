@@ -1,4 +1,4 @@
-# Dragon-decumulation, household edition -- the whole-wealth build, wrappers included.
+# Dragon decumulation, household edition -- the whole-wealth build, wrappers included.
 #
 # STATUS: fully implementable today from a French retail setup. This is
 #   dragon-decumulation.txt expressed as a real household holds it: across a CTO

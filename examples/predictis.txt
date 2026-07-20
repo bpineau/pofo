@@ -1,5 +1,5 @@
 # Predictis -- French assurance-vie unit-linked allocation
-# Idea: a real Predictis (French life-insurance) contract mapped to pofo: a
+# Idea: a porfolio seemingly optimised for last years winners.
 #   40% bond core with thematic and world-equity satellites plus a gold-miner
 #   sleeve. IWDASIM stands in for the Aleph Monde unit to add backtest history.
 40	FR0011147594    # Bond core: Omnibond
