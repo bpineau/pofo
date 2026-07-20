@@ -1,4 +1,4 @@
-# pofo Makefile — `make help` for the list of targets.
+# pofo Makefile: `make help` for the list of targets.
 
 GO        ?= go
 BINARIES  := pofo
