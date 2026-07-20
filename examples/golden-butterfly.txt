@@ -1,5 +1,5 @@
-# Golden Butterfly (Tyler / Portfolio Charts) — modernized, UCITS-route
-# Idea: the Permanent Portfolio with an extra small-cap-value growth wing —
+# Golden Butterfly (Tyler / Portfolio Charts) -- modernized, UCITS-route
+# Idea: the Permanent Portfolio with an extra small-cap-value growth wing --
 #   20% each total-market equity, small-cap value, long bonds, short bonds, gold.
 # Inspired by: Tyler, Portfolio Charts.
 #   https://portfoliocharts.com/portfolio/golden-butterfly/

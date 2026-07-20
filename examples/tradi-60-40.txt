@@ -1,4 +1,4 @@
-# The classic 60/40 US stocks/bonds portfolio
+# Classic 60/40 -- US total-market stocks + total bond market
 #meta sim:on
 60  VTI        # Vanguard Total Stock Market
 40  BND     # Vanguard Total Bond Market (simulated before 2007 via VBMFX)

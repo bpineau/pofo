@@ -1,6 +1,6 @@
-# The Desert Portfolio (Gyroscopic Investing / Bridges) — UCITS
-# Idea: a deceptively simple 30/60/10 — a little equity, a lot of
-#   intermediate bonds, a pinch of gold — built to survive long dry spells
+# The Desert Portfolio (Gyroscopic Investing / Bridges) -- UCITS
+# Idea: a deceptively simple 30/60/10 -- a little equity, a lot of
+#   intermediate bonds, a pinch of gold -- built to survive long dry spells
 #   with low volatility and few deep drawdowns.
 # Inspired by: 'Desert Portfolio', gyroscopicinvesting / Bogleheads.
 #   https://portfoliocharts.com/2021/12/16/nine-amazing-portfolios-for-uncertain-times/

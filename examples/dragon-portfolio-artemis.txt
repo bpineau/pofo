@@ -1,5 +1,5 @@
-# The Dragon Portfolio (Christopher Cole / Artemis Capital) — modernized
-# Idea: own assets that win in EVERY regime — equity (secular growth), long
+# The Dragon Portfolio (Christopher Cole / Artemis Capital) -- modernized
+# Idea: own assets that win in EVERY regime -- equity (secular growth), long
 #   bonds (deflation), gold (monetary debasement), commodity-trend / managed
 #   futures (sustained inflation, long crises) and long volatility (sudden
 #   crashes). Designed to compound across 100-year cycles, not one decade.

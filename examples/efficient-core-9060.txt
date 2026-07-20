@@ -1,6 +1,6 @@
-# Efficient Core 90/60 (WisdomTree NTSX/NTSG) — capital-efficient 60/40
-# Idea: get ~1.5x a classic 60/40 in a single fund — 90% equities plus a 60%
-#   Treasury-futures overlay — freeing capital you can leave in equities or
+# Efficient Core 90/60 (WisdomTree NTSX/NTSG) -- capital-efficient 60/40
+# Idea: get ~1.5x a classic 60/40 in a single fund -- 90% equities plus a 60%
+#   Treasury-futures overlay -- freeing capital you can leave in equities or
 #   diversifiers. A modern, low-cost way to run a leveraged-but-balanced core.
 # Inspired by: WisdomTree Efficient Core; the 'return stacking' literature.
 #   https://www.wisdomtree.eu/en-gb/etfs/efficient-core

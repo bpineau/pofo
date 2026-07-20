@@ -37,29 +37,31 @@ func TestList(t *testing.T) {
 		t.Errorf("FS.ReadFile: %v", err)
 	}
 
-	// ntsg.txt starts with the "#meta sim:on" directive, not a title line:
-	// it must degrade to Title = Name rather than surface the directive.
+	// Every bundled file now opens with a real "# Title -- blurb" line, so
+	// the UI never has to fall back to the bare file id. ntsg.txt keeps its
+	// "#meta sim:on" directive below a prose title line: the title must be
+	// surfaced, not the directive.
 	if ntsg, ok := byName["ntsg"]; !ok {
 		t.Fatal("ntsg missing")
 	} else {
-		if ntsg.Title != "ntsg" {
-			t.Errorf("ntsg.Title = %q, want %q (degraded from directive)", ntsg.Title, "ntsg")
+		if ntsg.Title != "NTSG" {
+			t.Errorf("ntsg.Title = %q, want %q", ntsg.Title, "NTSG")
 		}
-		if ntsg.Blurb != "" {
-			t.Errorf("ntsg.Blurb = %q, want empty", ntsg.Blurb)
+		if ntsg.Blurb == "" {
+			t.Error("ntsg.Blurb empty, want the part after the -- separator")
 		}
 	}
 
-	// predictis.txt starts with a raw holdings line (no leading "#" at
-	// all): it must degrade to Title = Name rather than surface the line.
+	// predictis.txt used to open on a raw holdings line; it now carries a
+	// prose title line above the holdings, which must be surfaced.
 	if predictis, ok := byName["predictis"]; !ok {
 		t.Fatal("predictis missing")
 	} else {
-		if predictis.Title != "predictis" {
-			t.Errorf("predictis.Title = %q, want %q (degraded, no comment line)", predictis.Title, "predictis")
+		if predictis.Title != "Predictis" {
+			t.Errorf("predictis.Title = %q, want %q", predictis.Title, "Predictis")
 		}
-		if predictis.Blurb != "" {
-			t.Errorf("predictis.Blurb = %q, want empty", predictis.Blurb)
+		if predictis.Blurb == "" {
+			t.Error("predictis.Blurb empty, want the part after the -- separator")
 		}
 	}
 }

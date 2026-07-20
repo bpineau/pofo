@@ -1,8 +1,8 @@
-# Modern All-Weather (UCITS-first, curated)
-# Idea: an all-weather that a European investor can actually buy today — World
+# Modern All-Weather -- UCITS-first, risk spread across all four regimes
+# Idea: an all-weather that a European investor can actually buy today -- World
 #   equity, long Treasuries, TIPS, gold, broad commodities, managed futures and
-#   a slice of long volatility — risk spread across growth, deflation, inflation
-#   and crisis. My own blend, leaning UCITS where a UCITS exists.
+#   a slice of long volatility -- risk spread across growth, deflation, inflation
+#   and crisis. A curated blend, leaning UCITS where a UCITS exists.
 # Inspired by: Dalio All-Weather + Artemis Dragon, made investable in UCITS.
 # Trend/long-history sleeves use SIM where the UCITS is young; buy-routes noted.
 #meta rebalance:180

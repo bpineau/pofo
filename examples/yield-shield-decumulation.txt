@@ -1,4 +1,4 @@
-# Yield Shield — gentle 4%/yr decumulation demo
+# Yield Shield -- gentle 4%/yr decumulation demo
 # Idea: a balanced, income-tilted portfolio drawn down at 4% a year. The
 #   dividend + bond yield ('shield') covers much of the withdrawal, so fewer
 #   shares are sold in downturns (less sequence-of-returns risk).
