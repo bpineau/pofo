@@ -36,9 +36,22 @@ func testServer(t *testing.T) (*server, *[]renderCall) {
 		return []byte("<html>fake report</html>"), nil
 	}
 	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
-		return &scenario.Panel{}, nil // non-nil: cacheable, no fetching
+		// A complete build: non-nil panel with one label per holding, so it
+		// is cacheable (no fetching). See panelIncomplete.
+		return &scenario.Panel{}, stubLabels(spec)
 	}
 	return s, &calls
+}
+
+// stubLabels returns one placeholder label per holding, standing in for a
+// complete FIRE panel build (labels count == holdings, so panelIncomplete is
+// false).
+func stubLabels(spec *portfolio.Spec) []string {
+	labels := make([]string, len(spec.Holdings))
+	for i, h := range spec.Holdings {
+		labels[i] = h.ID
+	}
+	return labels
 }
 
 func serveGet(t *testing.T, h http.Handler, path string) *httptest.ResponseRecorder {
@@ -308,13 +321,27 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 		t.Errorf("nil-panel cache size = %d, want 0 (not cached)", len(s.fireBySpec))
 	}
 
-	// A healthy build (non-nil panel) is cached, and two sequential cold hits
-	// build exactly once.
+	// A partial build (non-nil panel but a holding dropped by a transient
+	// fetch failure, so fewer labels than holdings) is served but not cached:
+	// its composition is wrong and must not be frozen in.
+	sp, _ := testServer(t)
+	sp.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+		return &scenario.Panel{}, []string{spec.Holdings[0].ID} // 1 label, spec has 2 holdings
+	}
+	if h := sp.fireForSpec(context.Background(), "k", spec); h == nil {
+		t.Fatal("a partial build must still serve this request")
+	}
+	if len(sp.fireBySpec) != 0 {
+		t.Errorf("partial-panel cache size = %d, want 0 (not cached)", len(sp.fireBySpec))
+	}
+
+	// A healthy build (non-nil panel, a label per holding) is cached, and two
+	// sequential cold hits build exactly once.
 	s2, _ := testServer(t)
 	builds := 0
 	s2.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
 		builds++
-		return &scenario.Panel{}, nil
+		return &scenario.Panel{}, stubLabels(spec)
 	}
 	s2.fireForSpec(context.Background(), "k", spec)
 	s2.fireForSpec(context.Background(), "k", spec)
