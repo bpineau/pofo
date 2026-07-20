@@ -1,7 +1,7 @@
 # Dragon decumulation, household edition -- the whole-wealth build, wrappers included.
 #
 # STATUS: fully implementable today from a French retail setup. This is
-#   dragon-decumulation.txt expressed as a real household holds it: across a CTO
+#   the dragon-decumulation design expressed as a real household holds it: across a CTO
 #   AND the French tax shelters (PEA / PEA-PME), which by law can hold
 #   nothing but European-domiciled equity funds. The shelters are not a
 #   footnote; they reshape the build, and the reshaping turns out to be a
@@ -207,8 +207,7 @@
 # ## The two-lens verdict (and what was actually measured)
 #
 #   Decumulation builds cannot be judged through one lens; the two
-#   available lenses are biased in opposite directions (the full
-#   argument lives in dragon-decumulation.txt). Measured on the toolkit's
+#   available lenses are biased in opposite directions. Measured on the toolkit's
 #   deep panels, with two declared proxies for the young lines (ZPRV
 #   stands in for the Independance sleeve, the TIPS-hEUR backcast for
 #   IBCI; window 2000/2005 -> 2026):
@@ -303,13 +302,11 @@
 #     vs 30% on gains); the implicit glidepath above is a feature.
 #   - Rebalance quarterly or on bands, executed in the CTO section;
 #     inside the shelters only equity-for-equity trades exist.
-#   - The AQR leg is a FUND, not an ETF: check platform availability
-#     (see dragon-decumulation.txt for the fallback ladder).
+#   - The AQR leg is a FUND, not an ETF: check platform availability.
 #   - Pair with a floor-capped flexible withdrawal rule, not a rigid
 #     indexed one; the portfolio is half the machine.
 #
-# Siblings: dragon-decumulation.txt (the wrapper-free design this implements),
-#   claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
+# Siblings: claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
 #   accumulation flagship and the engineered all-rounder upstream),
 #   fire-liability-buffer.txt (the euro buffer this file assumes).
 #meta rebalance:90
