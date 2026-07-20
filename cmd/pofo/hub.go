@@ -206,7 +206,7 @@ body.hub{background:
   <span class="hub-mark">po<b>fo</b></span>
   <nav class="hub-nav">
     <a href="/fire/">Simulator</a>
-    <a href="/firebook/fr/">FIRE book (fr)</a>
+    <a href="/firebook/fr/">Book-fr</a>
   </nav>
 </header>
 
