@@ -44,6 +44,11 @@ type composerCaps struct {
 // injected under the site nav on every web report (report.Page.Composer) and
 // is empty for the standalone CLI report.
 //
+// It renders collapsed (Open stays false): on a result page the charts are the
+// content, so the composer sits as its chip-bar summary and the reader expands
+// it only to tweak and re-Run. The hub's primary compose surface stays open
+// (hubComposerMount).
+//
 // Each ex= card is read-only. If its spec has at least one locally resolvable
 // holding it carries a Fork affordance and a data-fork-<i> payload (the
 // specToP serialization the editor forks into an editable p= portfolio);
@@ -94,9 +99,6 @@ func composerMount(vr *viewRequest) template.HTML {
 			card.Holdings = displayHoldings(spec, names)
 		}
 		data.Cards = append(data.Cards, card)
-		if !isEx {
-			data.Open = true // an editable portfolio is present: open the panel
-		}
 	}
 
 	var buf bytes.Buffer
@@ -165,7 +167,7 @@ func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
 type composerData struct {
 	Caps        string // encoding/json of composerCaps, for the data-caps attribute
 	Count       int
-	Open        bool // render the panel expanded (an editable p= portfolio is present)
+	Open        bool // render the panel expanded (the hub's blank compose surface; /view stays collapsed)
 	MaxBytes    int
 	Boot        string // "blank" on the hub: the front end creates the first card
 	GlobalsSeed string // encoding/json of globalsSeed, for the data-globals attribute (hub only)
