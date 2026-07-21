@@ -165,6 +165,35 @@ func TestParseViewQueryGlobals(t *testing.T) {
 	}
 }
 
+// The web's global "sim=on" is a POSITIVE control: it must turn the backcast
+// on for every portfolio on the page, including a composed p= card that carries
+// no "!sim:on" of its own (otherwise a live portfolio never shows its
+// reconstructed history). "sim=on" also clears any inherited noSim.
+func TestParseViewQuerySimOnEnablesBackcast(t *testing.T) {
+	vr, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40&ex=claude-dragonlite&sim=on"),
+		&options{currency: "EUR", rebalance: 90, noSim: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if vr.noSim == nil || *vr.noSim {
+		t.Error("sim=on must clear noSim")
+	}
+	for _, s := range vr.specs {
+		if !s.Sim {
+			t.Errorf("sim=on must set Sim on every spec, %q has it off", s.Name)
+		}
+	}
+	// Absent the sim param, each spec keeps whatever its own text declared: a
+	// composed card with no "!sim:on" stays real-quotes-only.
+	plain, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40"), viewBase())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if plain.specs[0].Sim {
+		t.Error("no sim param must leave a plain p= card real-quotes-only")
+	}
+}
+
 func TestParseViewQueryErrors(t *testing.T) {
 	cases := []struct{ name, raw, wantErr string }{
 		{"unknown example", "ex=nope", "unknown example"},
