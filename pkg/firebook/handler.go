@@ -105,6 +105,7 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, description, body st
 <meta property="og:description" content="%s">
 <meta name="twitter:card" content="summary">
 <script type="application/ld+json">%s</script>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="theme.css">
 <style>%s</style>
