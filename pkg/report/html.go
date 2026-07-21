@@ -1,11 +1,20 @@
 package report
 
 import (
+	"encoding/base64"
 	"html/template"
 	"io"
 
 	"github.com/bpineau/pofo/pkg/webui"
 )
+
+// faviconDataURI inlines the shared tab icon so the self-contained report
+// carries it too, even when opened as a local file (no /favicon.svg to fetch).
+var faviconDataURI = template.URL("data:image/svg+xml;base64," +
+	base64.StdEncoding.EncodeToString([]byte(webui.FaviconSVG)))
+
+// Favicon exposes the inlined tab icon to the template.
+func (Page) Favicon() template.URL { return faviconDataURI }
 
 // AssetRow is one line of a portfolio composition table.
 type AssetRow struct {
@@ -206,6 +215,7 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{.Title}}</title>
+<link rel="icon" type="image/svg+xml" href="{{.Favicon}}">
 <style>{{.Theme}}</style>
 <style>{{.ReportCSS}}</style>
 {{if .SkinCSS}}<style>{{.SkinCSS}}</style>{{end}}{{if .HasFireLinks}}<style>.pf-fire{float:right;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);text-decoration:none;margin-left:1rem}
