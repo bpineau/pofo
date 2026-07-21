@@ -319,21 +319,30 @@ let run = async function() {
     lastFitW = weights.slice();
   }
   const b = body();
-  renderModels(b, id);
-  renderPaths(b, id);
-  renderMarket(b, id);
-  renderSolver(b, id);
+  // The command echo and the URL reflect the plan, not the results, so update
+  // them at once rather than after the simulations.
+  updateCmd();
+  syncURL();
+  // Two waves, so the top of the page answers first. Tier 1 feeds what the eye
+  // is on while dragging a slider: the hero verdict, the model strip and the
+  // simulated-futures fans. Fire it and wait for it, so on a low-core host it
+  // wins the cores before the heavier analysis lower down starts competing.
+  await Promise.all([renderModels(b, id), renderPaths(b, id), renderMarket(b, id)]);
+  // A newer run started while tier 1 was in flight: skip the analysis half
+  // entirely rather than compute it for a plan already superseded. A fast drag
+  // thus pays for the heavy sections only once, at the value it lands on.
+  if (!fresh(id)) return;
+  // Tier 2, dispatched top-to-bottom in page order: the sections you scroll to.
+  renderVintages(b, id);
+  renderDecade(b, id);
+  renderSpending(b, id);
+  renderIncome(b, id);
+  renderLifecycle(b, id);
   renderFrontier(b, id);
   renderPolicyFrontier(b, id);
   renderSensitivity(b, id);
-  renderSpending(b, id);
-  renderVintages(b, id);
-  renderDecade(b, id);
-  renderIncome(b, id);
-  renderLifecycle(b, id);
   renderSim(b, id);
-  updateCmd();
-  syncURL();
+  renderSolver(b, id);
 };
 
 // The top-bar command echo mirrors the live plan, terminal-style.
