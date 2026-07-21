@@ -31,9 +31,19 @@ running a command per comparison.
 | `/firesimulator/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
 | `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces; the old `/book/fr/` path 301-redirects here |
-| `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts |
+| `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
-| `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar) |
+| `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
+
+The four static assets above are **content-fingerprinted**: the HTML surfaces
+link them as `…?v=<hash>` (`assetURL`/`versionedAssets` in `serve.go`, applied to
+the hub, composer and error templates at parse time), and a versioned request is
+served `Cache-Control: immutable`. A deploy that changes an asset changes its
+URL, so an edge cache (Cloudflare, which keys by full URL, query string
+included) cannot serve stale CSS/JS: the HTML that carries the new hash is itself
+dynamic (`cf-cache-status: DYNAMIC`, never edge-cached), so the fresh URL reaches
+the browser on the next request with no manual purge. `pkg/decumul/web` does the
+same for the FIRE page's own `app.js`/`app.css`/`theme.css`/`fonts.css`.
 
 The mux (`server.handler` in `serve.go`) is a plain `http.ServeMux`; the
 lifecycle (`runServe`) mirrors `runFire`: bind, serve, shut down on context
