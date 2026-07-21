@@ -7,7 +7,7 @@ Cet article est le manuel de calcul. Il couvre le PFU et son alternative au bar�
 Même avertissement que pour tout le chapitre. **Les chiffres sont à jour de 2026, à re-vérifier chaque année. Les structures de raisonnement, elles, survivent aux lois de finances.**
 
 ::: cle Les deux mécanismes qui dominent tout
-**Un**. On n'est jamais taxé sur ce qu'on retire, mais sur la **part de gain** de ce qu'on vend, calculée au prix moyen pondéré d'acquisition. Un retrait de 50 000 € sur une ligne gainée à 30 % ne déclenche l'impôt que sur 15 000 €. La friction réelle d'un flux est donc (taux) × (fraction de gain). Elle démarre basse et monte avec les années. **Deux**. Le choix PFU/barème se refait **chaque** année, et la TMI d'un rentier précoce sans salaire est souvent 0 ou 11 %. Les années de pont sont des années d'or fiscal. Les gaspiller à ne rien réaliser est l'erreur silencieuse la plus chère de la décumulation française.
+**Un**. On n'est jamais taxé sur ce qu'on retire, mais sur la **part de gain** de ce qu'on vend, calculée au prix moyen pondéré d'acquisition. Un retrait de 50 000 € sur une ligne dont la part de gain atteint 30 % ne déclenche l'impôt que sur 15 000 €. La friction réelle d'un flux est donc (taux) × (fraction de gain). Elle démarre basse et monte avec les années. **Deux**. Le choix PFU/barème se refait **chaque** année, et la TMI d'un rentier précoce sans salaire est souvent 0 ou 11 %. Les années de pont sont des années d'or fiscal. Les gaspiller à ne rien réaliser est l'erreur silencieuse la plus chère de la décumulation française.
 :::
 
 ## Le PFU, et l'option barème : l'arbitrage annuel
@@ -18,7 +18,7 @@ Même avertissement que pour tout le chapitre. **Les chiffres sont à jour de 20
 
 L'arbitrage se lit par tranche. À **TMI 0 ou 11 %, le barème gagne presque toujours** (11 % + 17,2 % de PS sur une fraction abattue inférieure à 30 %). À TMI 30 %, le match est serré et se calcule cas par cas, car les dividendes sont abattus au barème quand les PV se taxent mieux au PFU, mais l'option reste globale. À TMI 41 % et plus, c'est le PFU sans discussion.
 
-Le point clé pour un FIRE tient à la phase à découvert. **Sans** salaire ni pension, votre revenu **imposable** peut être minuscule, car les rachats AV sous abattement et le PEA n'en créent presque pas ([[enveloppes-francaises]]). La TMI 0-11 % devient alors votre régime de croisière, et l'option barème coche presque toujours.
+Le point clé pour un FIRE tient à la phase de pont. **Sans** salaire ni pension, votre revenu **imposable** peut être minuscule, car les rachats AV sous abattement et le PEA n'en créent presque pas ([[enveloppes-francaises]]). La TMI 0-11 % devient alors votre régime de croisière, et l'option barème s'impose presque toujours.
 
 ## La mécanique d'une vente, et le lissage : les deux gestes du rentier
 
