@@ -65,7 +65,7 @@
 
 <section class="section">
   <div class="shead"><span class="code">§01</span><h2>Simulated futures</h2><span class="aside">the market each model imagines · then your plan inside it</span></div>
-  <p class="lede">First, the market alone: the growth of 1 real € under each lens, before any withdrawal — a few individual draws (thin lines: worst, median and best of 400) inside the percentile cone, the way a long S&amp;P 500 chart shows what investing in the US felt like. The caption under each is the model's bear texture: how deep and how long its typical and its 1-in-20 worst bears run. Note an <i>average</i> of scenarios would show none of this: crashes land on different dates per draw and average away.</p>
+  <p class="lede">First, the market alone: the growth of 1 real € under each lens, before any withdrawal: a few individual draws (thin lines: worst, median and best of 400) inside the percentile cone, the way a long S&amp;P 500 chart shows what investing in the US felt like. The caption under each is the model's bear texture: how deep and how long its typical and its 1-in-20 worst bears run. Note an <i>average</i> of scenarios would show none of this: crashes land on different dates per draw and average away.</p>
   <div id="marketGrid"></div>
   <p class="lede">Then the same markets with your plan inside: capital, withdrawals, buffer, taxes. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median. The thin lines are eight example futures spread evenly from worst to best: the red ones are the failures, so their count tracks the failure rate (two red ≈ one future in seven fails). The axis is capped at 10× the start so the zero line stays readable; "upside clipped" marks the cone continuing beyond.</p>
   <div id="fansGrid"></div>
@@ -73,7 +73,7 @@
 
 <section class="section">
   <div class="shead"><span class="code">§02</span><h2>The retirements that actually happened</h2><span class="aside">replayed, not resampled · your plan, their dates</span></div>
-  <p class="lede">Monte-Carlo cones say "some futures fail"; history names them. This is your exact plan — rules, buffer, taxes, pension — walked through the four most infamous retirement start dates on record, year by year as they happened. Local real equity returns of each market: a stress proxy for the growth sleeve, not a EUR track.</p>
+  <p class="lede">Monte-Carlo cones say "some futures fail"; history names them. This is your exact plan (rules, buffer, taxes, pension) walked through the four most infamous retirement start dates on record, year by year as they happened. Local real equity returns of each market: a stress proxy for the growth sleeve, not a EUR track.</p>
   <div class="duo">
     <div id="vintagesSvg" class="chart-frame"></div>
     <div id="vintagesCards" class="cardcol"></div>
@@ -82,7 +82,7 @@
 
 <section class="section">
   <div class="shead"><span class="code">§03</span><h2>The decisive decade</h2><span class="aside">sequence-of-returns risk, made visible</span></div>
-  <p class="lede">Group the simulated futures by the market return of their first ten years and ruin stops looking random: it concentrates in the bad openings. Same average return, different ordering, different fate — which is why the protections that pay are the ones covering the early years: the cash buffer, the flexibility rules, side income, a pension that starts sooner.</p>
+  <p class="lede">Group the simulated futures by the market return of their first ten years and ruin stops looking random: it concentrates in the bad openings. Same average return, different ordering, different fate, which is why the protections that pay are the ones covering the early years: the cash buffer, the flexibility rules, side income, a pension that starts sooner.</p>
   <div class="duo">
     <div id="decadeSvg" class="chart-frame"></div>
     <div id="decadeCards" class="cardcol"></div>
@@ -176,7 +176,7 @@
 <tr><td>Lost decade</td><td>your central μ, then dragged <i>below</i> it by the trough (deliberately not mean-preserving)</td><td>central σ/df, 1.4× in bears</td><td>a very sticky decade-long deep bear (the Japan-1990 shape), the grimmest planning model</td></tr>
 </table>
 
-<p><b>Which model do the detail sections use? The one you click.</b> The hero table is the selector: click any column and every detail section of the page — spending, lifecycle, the decisive decade, income, the risk levers, the buffer arbitrage, the six-rule frontier — re-runs under that lens (the amber underline marks the active one; the fans of section 01 always show all four side by side). By default everything runs on the calibrated central case (the Student-t column).</p>
+<p><b>Which model do the detail sections use? The one you click.</b> The hero table is the selector: click any column and every detail section of the page (spending, lifecycle, the decisive decade, income, the risk levers, the buffer arbitrage, the six-rule frontier) re-runs under that lens (the amber underline marks the active one; the fans of section 01 always show all four side by side). By default everything runs on the calibrated central case (the Student-t column).</p>
 
 <p><b>How much should you trust each column?</b> None of them is "the truth"; they bracket it:</p>
 <ul>
@@ -196,15 +196,15 @@
 <li><span class="kbd">monthly withdrawals</span> refines the kernel's granularity and is visible only in sections 07-08; the model strip and analysis sections always compare annual kernels, for speed and comparability.</li>
 </ul>
 
-<p><b>The withdrawal rules, one by one</b> (every rule answers the same question — how much to take out this year — and they all sit on one trade-off: certainty of income versus certainty of never running out):</p>
+<p><b>The withdrawal rules, one by one</b> (every rule answers the same question (how much to take out this year) and they all sit on one trade-off: certainty of income versus certainty of never running out):</p>
 <ul>
 <li><b>Fixed real</b> (the 4%-rule shape): take the same inflation-adjusted amount every year, whatever happens. Maximum lifestyle certainty, all the risk lands on ruin. The benchmark everything else is measured against.</li>
 <li><b>Flex cut</b>: fixed real, but cut a bounded slice (say 10-20%) while the portfolio is in a deep drawdown, restore it after. The mildest adaptive rule: a known, capped sacrifice in bad years roughly halves ruin.</li>
-<li><b>Guyton-Klinger guardrails</b>: ±10% spending moves whenever the current withdrawal rate leaves a ±20% band around the initial one. Powerful but unbounded downward — in a persistent bear the cuts compound (60k → 54k → 49k → …), which is exactly where its spectacular ruin reduction comes from. The floor slider bounds that descent at your incompressible standard.</li>
-<li><b>Ratchet</b>: only-up moves — raise the standard when wealth is well above start, never cut. Prices the lifestyle option; slightly raises ruin.</li>
+<li><b>Guyton-Klinger guardrails</b>: ±10% spending moves whenever the current withdrawal rate leaves a ±20% band around the initial one. Powerful but unbounded downward: in a persistent bear the cuts compound (60k → 54k → 49k → …), which is exactly where its spectacular ruin reduction comes from. The floor slider bounds that descent at your incompressible standard.</li>
+<li><b>Ratchet</b>: only-up moves, raise the standard when wealth is well above start, never cut. Prices the lifestyle option; slightly raises ruin.</li>
 <li><b>VPW (percent of portfolio)</b>: spend a fixed share of whatever remains. Mathematically cannot run out, but income swings one-for-one with the market.</li>
-<li><b>Bounded % (Vanguard dynamic spending)</b>: VPW smoothed — the yearly change in real spending is capped at +5%/-2.5%. Livable income path; some ruin risk returns because the descent is capped.</li>
-<li><b>ABW / TPAW (amortization)</b>: each year, the actuarial payment that exhausts current wealth exactly over the remaining horizon at the expected return — a reverse mortgage re-quoted yearly. Never ruins early, never strands wealth, adjusts in small continuous steps; income tracks the market. The rule much of the recent literature converges on; pairs naturally with an annuity floor for the incompressible part.</li>
+<li><b>Bounded % (Vanguard dynamic spending)</b>: VPW smoothed, the yearly change in real spending is capped at +5%/-2.5%. Livable income path; some ruin risk returns because the descent is capped.</li>
+<li><b>ABW / TPAW (amortization)</b>: each year, the actuarial payment that exhausts current wealth exactly over the remaining horizon at the expected return, a reverse mortgage re-quoted yearly. Never ruins early, never strands wealth, adjusts in small continuous steps; income tracks the market. The rule much of the recent literature converges on; pairs naturally with an annuity floor for the incompressible part.</li>
 </ul>
 
 <p><b>Mechanics worth knowing:</b></p>

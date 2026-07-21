@@ -1,5 +1,5 @@
 /* ============================================================================
-   pofo — shared visual identity ("instrument")
+   pofo: shared visual identity ("instrument")
    A precision instrument: cool light ground, white panels with a crisp
    contact shadow, deep neutral ink, one petrol accent, every figure in the
    mono face. The identity typefaces (Instrument Sans, Spline Sans Mono) are
@@ -18,7 +18,7 @@
   --faint:#A8AEBC;         /* placeholders, tertiary                           */
   --line:#E3E6EB;          /* hairline                                         */
   --line-strong:#CDD2DA;   /* structural rule                                  */
-  --accent:#0B7285;        /* petrol — the one brand color                     */
+  --accent:#0B7285;        /* petrol, the one brand color                      */
   --accent-ink:#0A6376;    /* accent tuned for text on white                   */
   --accent-wash:#E5F2F5;   /* accent tint for selected / highlighted surfaces  */
   --good:#0C8A47;          /* risk scale: safe (marks, dots)                   */

@@ -50,9 +50,9 @@ const GROUPS = [
     r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
       "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier; overrides the fixed need and the flex/guardrails/ratchet rules."),
     c("abw", "Amortize over the horizon (ABW / TPAW)",
-      "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return — a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market — after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
+      "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return, a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market; after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
     c("bounded", "Bounded % of portfolio (Vanguard-style)",
-      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out — it sits between the fixed rule and VPW on the frontier. Overrides flex/guardrails/ratchet."),
+      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Overrides flex/guardrails/ratchet."),
     r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
       "Spend this share of capital on a joint-life, inflation-linked annuity (1% real rate, 10% insurer load): a guaranteed lifelong income floor that hedges longevity. It converts growth assets into lower guaranteed income, so headline ruin (failing the FULL need) can rise even as the worst late-life outcomes improve; its value is the floor, not the average."),
   ]},
@@ -78,11 +78,11 @@ const GROUPS = [
     r("bufferReturn", "Buffer real return", -0.01, 0.05, 0.005, 0.005, "pct",
       "Real return of the buffer: ~0% for inflation-linked, negative for pure cash."),
     r("bufferStopYear", "Buffer refill stops in year (0 = never)", 0, 20, 1, 0, "int",
-      "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down — a bond-tent glidepath."),
+      "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down: a bond-tent glidepath."),
   ]},
   {title: "Taxes", col: 1, items: [
     r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.314, "pct",
-      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts — e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
+      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts, e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
   ]},
   {title: "Simulation", col: 0, id: "group-simulation", items: [
     r("nPaths", "Simulated paths", 1000, 10000, 500, 2000, "int",
@@ -776,7 +776,7 @@ async function renderModels(b, id) {
   const sel = i => (i === central ? ` class="sel"` : "");
   const cells = fn => ms.map((m, i) => `<td${sel(i)}>${fn(m)}</td>`).join("");
   const head = `<tr><th></th>${ms.map((m, i) =>
-    `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)} — CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
+    `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)}. CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
