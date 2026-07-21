@@ -94,12 +94,6 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .ctl .ticks::before{content:"";position:absolute;inset:0;
   background-image:repeating-linear-gradient(90deg,var(--line) 0 1px,transparent 1px 25%)}
 
-/* preset chips */
-.chips .chiprow{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.2rem}
-.chips button{font:inherit;font-family:var(--mono);font-size:.68rem;font-weight:600;color:var(--accent-ink);
-  background:transparent;border:1px solid var(--line-strong);border-radius:5px;padding:.16rem .55rem;cursor:pointer}
-.chips button:hover{background:var(--accent-wash);border-color:var(--amber-dim)}
-
 /* allocation bar */
 .allocbar{position:relative;height:32px;border-radius:var(--r-sm);overflow:hidden;
   background:var(--surface);margin-top:.35rem;touch-action:none;user-select:none;border:1px solid var(--line)}
