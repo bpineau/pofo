@@ -47,9 +47,14 @@ func (r *PathResult) cutAt(k int) {
 // newPathResult prepares a result with the wealth and spend series allocated
 // and RuinYear at its -1 sentinel.
 func newPathResult(capital float64, years int) PathResult {
+	// Wealth (years+1) and Spend (years) are the two per-path series, allocated
+	// millions of times per page render; back them with a single slice and hand
+	// out two non-overlapping, capacity-capped windows, halving the allocation
+	// count (and the GC pressure it drives) without changing the public fields.
+	buf := make([]float64, 2*years+1)
 	res := PathResult{
-		Wealth:   make([]float64, years+1),
-		Spend:    make([]float64, years),
+		Wealth:   buf[:years+1 : years+1],
+		Spend:    buf[years+1:],
 		RuinYear: -1,
 		FirstCut: -1,
 	}
@@ -83,6 +88,16 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	bounded := p.NeedAnnual          // last delivered level for the bounded-percent rule
 	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
 	ratchetActive := p.Ratchet.active()
+	// newYear() only matters when a pocket carries per-year tax state (AVTax);
+	// the common CTOFlatTax carries none, so decide once per path whether the
+	// per-year call is needed rather than type-asserting every pocket every year.
+	yearlyTax := false
+	for i := range pks {
+		if _, ok := pks[i].tax.(YearlyTax); ok {
+			yearlyTax = true
+			break
+		}
+	}
 
 	// drawBuffer takes up to want euros from the buffer (no tax), returning the
 	// amount actually taken.
@@ -96,7 +111,9 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	}
 
 	for k := 0; k < p.Years; k++ {
-		pks.newYear()
+		if yearlyTax {
+			pks.newYear()
+		}
 		growth := pks.total()
 		total := growth + buffer
 		if total <= 0 {
@@ -167,14 +184,16 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		} else {
 			delivered = pks.sell(need, &res.TaxPaid)
 			delivered += drawBuffer(need - delivered)
-			if refill := target - buffer; refill > 0 && pks.total() > 0 && p.Buffer.refillsAt(k) {
-				if cap := pks.total() * refillCap; refill > cap {
-					refill = cap
+			if refill := target - buffer; refill > 0 && p.Buffer.refillsAt(k) {
+				if avail := pks.total(); avail > 0 { // one total() for both the test and the cap
+					if cap := avail * refillCap; refill > cap {
+						refill = cap
+					}
+					if refill > p.NeedAnnual {
+						refill = p.NeedAnnual
+					}
+					buffer += pks.sell(refill, &res.TaxPaid)
 				}
-				if refill > p.NeedAnnual {
-					refill = p.NeedAnnual
-				}
-				buffer += pks.sell(refill, &res.TaxPaid)
 			}
 		}
 		res.Withdrawn += delivered
