@@ -111,7 +111,7 @@ func hubPrefsFrom(p prefs, opt *options) hubPrefs {
 	return hp
 }
 
-var hubTmpl = template.Must(template.New("hub").Parse(`<!DOCTYPE html>
+var hubTmpl = template.Must(template.New("hub").Parse(versionedAssets(`<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pofo &middot; portfolio lab</title>
@@ -264,7 +264,7 @@ body.hub{background:
   <span class="mono">pofo</span>
 </footer>
 </div>
-</body></html>`))
+</body></html>`)))
 
 // hub is the constellation's front door: the examples catalog and the links
 // on to the FIRE simulator and the FIRE book. It answers only "/" (the mux

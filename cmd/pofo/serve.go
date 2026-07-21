@@ -1,10 +1,12 @@
 // The -serve mode: the pofo web constellation on one local port: the hub
 // and /view visualizer (this file and hub.go), the FIRE explorer under
-// /fire/, and the FIRE book under /firebook/fr/.
+// /firesimulator/, and the FIRE book under /firebook/fr/.
 package main
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -39,6 +41,45 @@ const (
 	viewTimeout  = 60 * time.Second
 	viewParallel = 2
 )
+
+// Static assets are content-fingerprinted: their <link>/<script> URLs carry a
+// short hash of the served bytes (/theme.css -> /theme.css?v=<hash>), so a
+// deploy that changes an asset changes its URL. The HTML surfaces that link
+// them (hub, /view, error page) are dynamic and never edge-cached, and
+// Cloudflare keys its cache by full URL (query string included), so the new URL
+// is a guaranteed miss that refetches the fresh bytes with no manual purge.
+// Mirrors pkg/decumul/web, which does the same for the FIRE page assets.
+var (
+	themeCSSURL    = assetURL("/theme.css", webui.CSS)
+	fontsCSSURL    = assetURL("/fonts.css", webui.FontsCSS)
+	composerCSSURL = assetURL("/composer.css", composerCSS)
+	composerJSURL  = assetURL("/composer.js", composerJS)
+)
+
+// assetURL appends a 12-hex-char content fingerprint to a static asset path.
+func assetURL(path, body string) string {
+	sum := sha256.Sum256([]byte(body))
+	return path + "?v=" + hex.EncodeToString(sum[:6])
+}
+
+// versionedAssets rewrites the fixed asset links in an HTML template source to
+// their fingerprinted URLs, before the template is parsed.
+func versionedAssets(src string) string {
+	return strings.NewReplacer(
+		`"/theme.css"`, `"`+themeCSSURL+`"`,
+		`"/fonts.css"`, `"`+fontsCSSURL+`"`,
+		`"/composer.css"`, `"`+composerCSSURL+`"`,
+		`"/composer.js"`, `"`+composerJSURL+`"`,
+	).Replace(src)
+}
+
+// setImmutableIfVersioned marks a fingerprinted asset request (one carrying a
+// v= query) cacheable for a year: the URL changes whenever the bytes do.
+func setImmutableIfVersioned(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Has("v") {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	}
+}
 
 // fireSiteNav is the FIRE simulator's top-bar cross-navigation under -serve:
 // links back to the portfolios hub and the FIRE book. It is passed only here,
@@ -129,6 +170,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 				http.Error(w, "GET only", http.StatusMethodNotAllowed)
 				return
 			}
+			setImmutableIfVersioned(w, r)
 			w.Header().Set("Content-Type", "text/css; charset=utf-8")
 			_, _ = w.Write([]byte(body))
 		}
@@ -142,6 +184,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 				http.Error(w, "GET only", http.StatusMethodNotAllowed)
 				return
 			}
+			setImmutableIfVersioned(w, r)
 			w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
 			_, _ = w.Write([]byte(body))
 		}
@@ -451,7 +494,7 @@ func (s *server) exampleFile(w http.ResponseWriter, r *http.Request) {
 }
 
 // errorTmpl is the shared error page: title, message, a way home.
-var errorTmpl = template.Must(template.New("err").Parse(`<!DOCTYPE html>
+var errorTmpl = template.Must(template.New("err").Parse(versionedAssets(`<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pofo · error</title>
@@ -459,7 +502,7 @@ var errorTmpl = template.Must(template.New("err").Parse(`<!DOCTYPE html>
 </head><body>
 <main style="max-width:38rem;margin:4rem auto;padding:0 1.2rem">
 <h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/">Back to the portfolios</a></p>
-</main></body></html>`))
+</main></body></html>`)))
 
 func (s *server) errorPage(w http.ResponseWriter, code int, msg string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

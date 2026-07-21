@@ -136,6 +136,30 @@ func TestServeComposerAssets(t *testing.T) {
 	}
 }
 
+// Static assets are content-fingerprinted so a deploy changes their URL and
+// Cloudflare's edge cache cannot serve stale CSS/JS: the HTML links carry a
+// ?v=<hash>, and a versioned request is cacheable-immutable (the URL is the
+// version). A bare request stays uncached so it can never pin an old copy.
+func TestServeAssetFingerprinting(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	hub := serveGet(t, h, "/").Body.String()
+	for _, want := range []string{
+		`href="/theme.css?v=`, `href="/fonts.css?v=`,
+		`href="/composer.css?v=`, `src="/composer.js?v=`,
+	} {
+		if !strings.Contains(hub, want) {
+			t.Errorf("hub missing fingerprinted asset %q", want)
+		}
+	}
+	if got := serveGet(t, h, "/composer.js?v=abc123").Header().Get("Cache-Control"); !strings.Contains(got, "immutable") {
+		t.Errorf("versioned asset Cache-Control = %q, want immutable", got)
+	}
+	if got := serveGet(t, h, "/composer.js").Header().Get("Cache-Control"); got != "" {
+		t.Errorf("bare asset Cache-Control = %q, want none", got)
+	}
+}
+
 func TestServeCatalogJSON(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
@@ -405,7 +429,8 @@ func TestServeHubComposer(t *testing.T) {
 
 	for _, want := range []string{
 		`id="composer"`, `data-boot="blank"`, `data-globals=`,
-		`href="/composer.css"`, `src="/composer.js"`, `data-preset-count=`,
+		// Asset URLs are content-fingerprinted (…?v=<hash>); match the prefix.
+		`href="/composer.css?v=`, `src="/composer.js?v=`, `data-preset-count=`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("hub composer missing %q", want)
