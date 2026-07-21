@@ -1,6 +1,8 @@
 package web
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"html"
@@ -63,13 +65,21 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	if err != nil {
 		panic(err) // embedded asset; cannot fail at runtime
 	}
-	indexPage := []byte(strings.Replace(string(indexRaw), "<!--topnav-->", renderTopnav(cfg.nav), 1))
+	// Content-fingerprint the local asset URLs (app.js?v=…, app.css?v=…) so a
+	// deploy changes the URL and edge caches (Cloudflare) cannot serve stale
+	// bytes: the index page itself is never edge-cached, so the fresh hashes
+	// propagate on the next request with no manual purge. theme.css/fonts.css
+	// come from pkg/webui and are versioned the same way.
+	page := strings.Replace(string(indexRaw), "<!--topnav-->", renderTopnav(cfg.nav), 1)
+	page = fingerprintRefs(page, sub, webui.CSS, webui.FontsCSS)
+	indexPage := []byte(page)
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/" {
 			w.Header().Set("Content-Type", "text/html; charset=utf-8")
 			_, _ = w.Write(indexPage)
 			return
 		}
+		setImmutableIfVersioned(w, r)
 		fileSrv.ServeHTTP(w, r)
 	})
 	// The FIRE book (pkg/firebook), linked discreetly from the page's
@@ -79,10 +89,12 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {
+		setImmutableIfVersioned(w, r)
 		w.Header().Set("Content-Type", "text/css; charset=utf-8")
 		_, _ = w.Write([]byte(webui.CSS))
 	})
 	mux.HandleFunc("/fonts.css", func(w http.ResponseWriter, r *http.Request) {
+		setImmutableIfVersioned(w, r)
 		w.Header().Set("Content-Type", "text/css; charset=utf-8")
 		_, _ = w.Write([]byte(webui.FontsCSS))
 	})
@@ -154,4 +166,40 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	post("/api/lifecycle", func(pr Params) any { return Lifecycle(pr, panel) })
 	post("/api/curves", func(pr Params) any { return Curves(pr, panel) })
 	return mux
+}
+
+// fingerprintRefs rewrites the page's local asset references to carry a
+// short content hash (app.js -> app.js?v=<hash>), so a deploy changes every
+// URL whose bytes changed and edge/browser caches cannot serve stale assets.
+// app.js/app.css are read from the embedded FS; theme.css/fonts.css from the
+// shared pkg/webui bytes.
+func fingerprintRefs(page string, sub iofs.FS, themeCSS, fontsCSS string) string {
+	embedded := func(name string) string {
+		b, err := iofs.ReadFile(sub, name)
+		if err != nil {
+			panic(err) // embedded asset; cannot fail at runtime
+		}
+		return assetTag(b)
+	}
+	return strings.NewReplacer(
+		`href="app.css"`, `href="app.css?v=`+embedded("app.css")+`"`,
+		`src="app.js"`, `src="app.js?v=`+embedded("app.js")+`"`,
+		`href="theme.css"`, `href="theme.css?v=`+assetTag([]byte(themeCSS))+`"`,
+		`href="fonts.css"`, `href="fonts.css?v=`+assetTag([]byte(fontsCSS))+`"`,
+	).Replace(page)
+}
+
+// assetTag is the 12-hex-char content fingerprint used in versioned URLs.
+func assetTag(b []byte) string {
+	sum := sha256.Sum256(b)
+	return hex.EncodeToString(sum[:6])
+}
+
+// setImmutableIfVersioned marks a fingerprinted asset request (one carrying a
+// v= query) as immutable for a year: the URL changes whenever the bytes do, so
+// the response can be cached hard by both the browser and the edge.
+func setImmutableIfVersioned(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Query().Has("v") {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	}
 }
