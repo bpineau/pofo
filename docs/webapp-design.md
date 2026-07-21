@@ -27,9 +27,9 @@ running a command per comparison.
 | `/` | `hub` (`hub.go`) | the front door: the bundled example portfolios as a pure-GET checkbox form that submits ticked names to `/view`, plus links onward to the simulator and the book |
 | `/view` | `view` (`serve.go`, grammar in `view.go`) | the HTML comparison report the CLI writes, addressed by a query string (`ex=` / `p=` + global overrides) |
 | `/examples/<name>.txt` | `exampleFile` | one embedded portfolio file, raw text (the hub's "Source" link) |
-| `/fire/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire` |
-| `/fire/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
-| `/fire/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
+| `/firesimulator/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire`; the old `/firesimulator/` path 301-redirects here (sub-path and query preserved) |
+| `/firesimulator/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
+| `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces; the old `/book/fr/` path 301-redirects here |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
@@ -164,7 +164,7 @@ hub's freshly-booted empty card cannot poison a Run.
 
 Two features close the loop between the report and the simulator.
 
-`/fire/p/<spec>/` mounts the FIRE simulator on an ad-hoc composed portfolio.
+`/firesimulator/p/<spec>/` mounts the FIRE simulator on an ad-hoc composed portfolio.
 `<spec>` is exactly the `/view` `p=` grammar carried in a single path segment,
 so a composed comparison and its simulator share one vocabulary. The spec is
 validated before anything is built: the same catalog gate as `p=`, the 2000-byte
@@ -175,12 +175,12 @@ simulated history); the panel is built with the server's default currency.
 Built handlers live in a small bounded cache (arbitrary eviction past its cap),
 and the builds share the `/view` render semaphore, so the composed simulator
 adds no new fetch surface or concurrency beyond the visualizer's. The naked
-`/fire/e/<name>` and `/fire/p/<spec>` forms 301 to their trailing-slash
+`/firesimulator/e/<name>` and `/firesimulator/p/<spec>` forms 301 to their trailing-slash
 canonical.
 
 Each `/view` report section then carries a **Simulate** link to the matching
-mount: an `ex=` section links `/fire/e/<name>/`, a `p=` section links
-`/fire/p/<escaped spec>/`. The link is optional in the report template (empty
+mount: an `ex=` section links `/firesimulator/e/<name>/`, a `p=` section links
+`/firesimulator/p/<escaped spec>/`. The link is optional in the report template (empty
 means omitted, so the standalone CLI report is byte-for-byte unchanged) and only
 appears under `-serve`. An optimized portfolio's "as written" twin and its
 multi-currency columns share the base spec's link, which is the intended
@@ -246,8 +246,8 @@ The web app shipped as a read-mostly constellation. The planned follow-ups,
 smallest lever first:
 
 - **M2: per-request FIRE panel + a user-settings cookie.** Shipped
-  (2026-07-19). `/fire/e/<name>/` builds a panel per bundled example on demand,
-  `/fire/p/<spec>/` generalizes it to an arbitrary composed portfolio (a panel
+  (2026-07-19). `/firesimulator/e/<name>/` builds a panel per bundled example on demand,
+  `/firesimulator/p/<spec>/` generalizes it to an arbitrary composed portfolio (a panel
   from a `p=` spec, catalog-gated, lazily and boundedly cached), every `/view`
   section carries a Simulate link to its mount, and the `pofo_prefs` cookie
   remembers a visitor's non-sensitive preferences (base currency, default
