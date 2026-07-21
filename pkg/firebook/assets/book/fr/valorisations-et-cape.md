@@ -17,7 +17,7 @@ Le taux de retrait qui aurait survécu à tous les millésimes, en fonction du C
 CAPE signifie *Cyclically Adjusted Price-to-Earnings ratio* : le ratio cours/bénéfices ajusté du cycle. La recette a été proposée par Robert Shiller et John Campbell en 1988 (et inspirée de Graham et Dodd, 1934, qui recommandaient déjà de moyenner les bénéfices « sur cinq à dix ans, de préférence dix ») :
 
 1. Prenez le prix de l'indice (le S&P 500, historiquement).
-2. Divisez-le non pas par les bénéfices de l'année (le P/E classique), mais par la moyenne des bénéfices réels des dix dernières années, chaque année de bénéfices étant d'abord réévaluée en euros ou dollars constants via l'inflation.
+2. Divisez-le non pas par les bénéfices de l'année (le P/E classique), mais par la moyenne des bénéfices réels des dix dernières années, chaque année de bénéfices étant d'abord réexprimée en euros ou dollars constants (corrigée de l'inflation).
 
 Pourquoi dix ans ? Parce que les bénéfices d'une seule année font un très mauvais dénominateur. En récession, ils s'effondrent, ce qui gonfle le P/E au pire moment et fait paraître le marché « cher » au fond du trou de 2009, exactement le contresens. En haut de cycle, ils sont dopés par des marges insoutenables. Dix ans couvrent un cycle économique complet. Le dénominateur devient alors une estimation de la capacité bénéficiaire normale des entreprises, et le ratio mesure vraiment ce qu'on paie pour cette capacité.
 
@@ -32,7 +32,7 @@ Quelques repères pour calibrer l'œil (S&P 500, données Shiller depuis 1871) :
 | 1982 (plancher de la stagflation) | ~7 | Le plus grand bull market du siècle : >13 %/an |
 | Décembre 1999 (bulle internet) | ~44 | Record absolu ; deux krachs de 50 % dans la décennie suivante |
 | 2009 (creux de la crise financière) | ~13 | ~12 %/an réel sur la décennie suivante |
-| Zone 2024-2026 | 33-38 | À écrire ; historiquement, cette zone n'a jamais livré mieux que ~4 % réel sur 10 ans |
+| Zone 2024-2026 | 33-38 | À écrire ; historiquement, cette zone n'a jamais offert mieux que ~4 % réel sur 10 ans |
 
 La page FIRE affiche le CAPE du jour en tête de page (section §00, « Where we are in the cycle »), replacé sur son siècle d'histoire. Chaque session de planification commence ainsi par ce constat de position ([[utiliser-la-page-fire]]).
 
@@ -45,7 +45,7 @@ Empiriquement, la relation compte parmi les plus solides de la finance. Sur les 
 Trois choses que le CAPE ne fait pas, à graver avant d'aller plus loin :
 
 - **Il ne date rien.** Le CAPE a dépassé sa moyenne historique en 1996. La bulle a pourtant continué quatre ans et gagné +100 %. Shiller lui-même publiait *Irrational Exuberance* en mars 2000, un timing de légende, mais son indicateur était « en alerte » depuis des années. Sortir du marché sur signal CAPE est la stratégie qui a ruiné le plus de gens prudents.
-- **Il ne prédit pas les krachs.** Un marché cher peut dégonfler par krach (2000) ou par stagnation des prix pendant que les bénéfices rattrapent (au moins partiellement 2013-2019). Le CAPE prédit des rendements moyens faibles, pas leur chorégraphie.
+- **Il ne prédit pas les krachs.** Un marché cher peut dégonfler par krach (2000) ou par stagnation des prix pendant que les bénéfices rattrapent leur retard (au moins partiellement 2013-2019). Le CAPE prédit des rendements moyens faibles, pas leur chorégraphie.
 - **Il ne se compare pas naïvement entre pays ni entre époques.** On y revient dans la section critiques.
 
 ## Le lien CAPE-taux de retrait : les chiffres
@@ -77,7 +77,7 @@ Le CAPE de départ agit sur le SAFEMAX par trois canaux qui se cumulent. Canal 1
 
 Un indicateur aussi utilisé a été attaqué de partout. La plupart des attaques contiennent une part de vérité, et les connaître évite les deux naïvetés symétriques, l'ignorer ou le lire au dixième près.
 
-**« Les normes comptables ont changé. »** Vrai. Les bénéfices GAAP d'aujourd'hui ne sont pas ceux de 1950, entre dépréciations plus agressives (surtout depuis 2001), traitement des stock-options et intangibles passés en charges plutôt qu'immobilisés. Effet net, les bénéfices modernes sont plutôt sous-évalués à méthode constante, donc le CAPE moderne plutôt sur-évalué de quelques points face aux comparaisons centenaires. Jeremy Siegel en a fait sa critique centrale, en proposant un CAPE sur bénéfices NIPA (comptabilité nationale) qui ressort structurellement plus bas.
+**« Les normes comptables ont changé. »** Vrai. Les bénéfices GAAP d'aujourd'hui ne sont pas ceux de 1950, entre dépréciations plus agressives (surtout depuis 2001), traitement des stock-options et intangibles passés en charges plutôt qu'immobilisés. Effet net, les bénéfices modernes sont plutôt sous-évalués à méthode constante, donc le CAPE moderne plutôt surévalué de quelques points face aux comparaisons centenaires. Jeremy Siegel en a fait sa critique centrale, en proposant un CAPE sur bénéfices NIPA (comptabilité nationale) qui ressort structurellement plus bas.
 
 **« Les buybacks faussent la comparaison. »** Partiellement vrai. Les entreprises redistribuent aujourd'hui plus par rachats d'actions que par dividendes. À politique de distribution différente, la croissance du bénéfice par action est plus rapide qu'avant. Cela rend le dénominateur moyenné sur dix ans (donc en retard) un peu trop bas, donc le CAPE un peu trop haut. La correction proposée est le « Total Return CAPE » de Shiller lui-même.
 
@@ -85,7 +85,7 @@ Un indicateur aussi utilisé a été attaqué de partout. La plupart des attaque
 
 **« La composition sectorielle a changé. »** Vrai. Un indice à 30-40 % de technologie, à forte marge et faible intensité capitalistique, « mérite » un multiple structurellement plus élevé qu'un indice de conglomérats industriels de 1970. C'est difficile à quantifier proprement. Ce point justifie surtout de ne pas comparer le niveau absolu d'aujourd'hui aux moyennes d'avant 1990.
 
-**La synthèse pratique de ces critiques** tient en deux temps. Le CAPE américain moderne est probablement surévalué de 3 à 8 points dans une comparaison centenaire naïve, et sa « moyenne de retour » n'est plus 17 mais plutôt 22-25. Mais, et c'est le point décisif pour nous, ces corrections déplacent le niveau, pas la pente. Même corrigé, un CAPE à 35 reste dans le quintile cher de sa propre ère, et la relation « plus cher au départ = SAFEMAX plus bas » survit à toutes les corrections publiées. Pour un usage de planification (ordinal, par grandes zones), les critiques commandent l'humilité sur les seuils exacts, pas l'abandon de l'outil.
+**La synthèse pratique de ces critiques** tient en deux temps. Le CAPE américain moderne est probablement surévalué de 3 à 8 points dans une comparaison centenaire naïve, et la moyenne vers laquelle il revient n'est plus 17 mais plutôt 22-25. Mais, et c'est le point décisif pour nous, ces corrections déplacent le niveau, pas la pente. Même corrigé, un CAPE à 35 reste dans le quintile cher de sa propre ère, et la relation « plus cher au départ = SAFEMAX plus bas » survit à toutes les corrections publiées. Pour un usage de planification (ordinal, par grandes zones), les critiques commandent l'humilité sur les seuils exacts, pas l'abandon de l'outil.
 
 ::: attention Le contresens de la moyenne mobile
 Le mésusage le plus répandu tient dans cette phrase. « Le CAPE est au-dessus de sa moyenne historique depuis 1991 sauf quelques mois de 2009, donc il est cassé, donc je l'ignore. » Ce raisonnement confond deux usages. Comme signal de position (êtes-vous dans le quintile cher de votre époque ?), le CAPE fonctionne toujours. 1999 et 2021 étaient bien des sommets relatifs, 2009 un creux relatif, et les rendements suivants l'ont confirmé. Comme signal de retour à une moyenne éternelle de 17, il est effectivement cassé depuis trente ans. Utilisez le rang (percentile dans les 30-40 dernières années), pas l'écart à la moyenne de 1871.
@@ -111,9 +111,9 @@ Jumeaux : 1,3 M€, 60/40 mondial, 45 ans d'horizon, mêmes dépenses visées de
 
 Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là que sont les données longues. Trois compléments pour l'investisseur européen en portefeuille mondial ([[etf-ucits-europeens]]).
 
-**Les CAPE nationaux existent** (Barclays-Shiller, Research Affiliates, StarCapital), et la relation valorisation-rendements futurs tient dans tous les marchés étudiés, avec la même pente approximative. Les niveaux, en revanche, ne se comparent pas naïvement d'un pays à l'autre (composition sectorielle, normes comptables, gouvernance). Le Japon a « mérité » des CAPE plus hauts pendant des décennies, l'Europe des CAPE plus bas. Utilisez chaque CAPE contre sa propre histoire.
+**Les CAPE nationaux existent** (Barclays-Shiller, Research Affiliates, StarCapital), et la relation valorisation-rendements futurs tient dans tous les marchés étudiés, avec la même pente approximative. Les niveaux, en revanche, ne se comparent pas naïvement d'un pays à l'autre (composition sectorielle, normes comptables, gouvernance). Le Japon a « mérité » des CAPE plus hauts pendant des décennies, l'Europe des CAPE plus bas. Comparez chaque CAPE à sa propre histoire.
 
-**Un portefeuille mondial dilue le problème sans le supprimer.** Le marché américain pèse 60-70 % des indices mondiaux. Quand il est cher, votre ETF World est cher. La partie non américaine, structurellement moins chère ces dernières années, améliore l'earnings yield agrégé d'un point ou deux, un effet réel mais pas transformateur. L'ancre CAPE utilise le CAPE américain de Shiller comme proxy prudent de la cherté mondiale, un choix conservateur et assumé ([[la-machine-pofo]]).
+**Un portefeuille mondial dilue le problème sans le supprimer.** Le marché américain pèse 60-70 % des indices mondiaux. Quand il est cher, votre ETF World est cher. La partie non américaine, structurellement moins chère ces dernières années, améliore l'earnings yield agrégé d'un point ou deux, un effet réel mais pas déterminant. L'ancre CAPE utilise le CAPE américain de Shiller comme proxy prudent de la cherté mondiale, un choix conservateur et assumé ([[la-machine-pofo]]).
 
 **Le CAPE ne dit rien de vos obligations, de votre or, de vos actifs alternatifs.** C'est un indicateur du moteur actions. L'espérance du reste du portefeuille se calibre autrement (taux réels courants pour les obligations, l'un des rares cas où l'espérance est presque littéralement affichée sur l'étiquette, [[obligations-en-retrait]], [[rendements-attendus]]).
 
