@@ -333,7 +333,15 @@ func (p Plan) schedAt(year int) float64 {
 // adds it to the portfolio's liquidation value so a future pension raises
 // today's sustainable budget, the TPAW treatment of retirement income.
 func (p Plan) cashflowPV(from int, r float64) float64 {
-	pv := 0.0
+	if len(p.Cashflows) == 0 {
+		return 0 // no income to discount; skip the whole horizon scan
+	}
+	// The discount factor is (1+r)^-(j-from): it starts at 1 for j==from and is
+	// one extra division of (1+r) per year, so accumulate it multiplicatively
+	// instead of calling math.Pow every year. The amortization rule calls this
+	// once per simulated year, making the naive form quadratic in the horizon
+	// and math.Pow its dominant cost.
+	pv, disc, inv := 0.0, 1.0, 1/(1+r)
 	for j := from; j < p.Years; j++ {
 		cf := 0.0
 		for _, c := range p.Cashflows {
@@ -342,8 +350,9 @@ func (p Plan) cashflowPV(from int, r float64) float64 {
 			}
 		}
 		if cf > 0 {
-			pv += cf / math.Pow(1+r, float64(j-from))
+			pv += cf * disc
 		}
+		disc *= inv
 	}
 	return pv
 }
