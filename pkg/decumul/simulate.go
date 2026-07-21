@@ -17,14 +17,18 @@ type Ensemble struct {
 // worker derives its RNG from (seed, workerID) so the result is
 // reproducible for a fixed worker count.
 func (p Plan) Simulate(nPaths, workers int, seed uint64) Ensemble {
-	return p.simulateOn(p.drawPaths(nPaths, workers, seed), workers)
+	return p.SimulateOn(p.DrawPaths(nPaths, workers, seed), workers)
 }
 
-// drawPaths samples nPaths return sequences from the plan's Source, with the
+// DrawPaths samples nPaths return sequences from the plan's Source, with the
 // same per-worker RNG split as Simulate so the draws are identical. The
-// sequences depend only on the Source (not on Capital, BufferYears…), so a
-// sweep over those parameters can draw once and reuse them.
-func (p Plan) drawPaths(nPaths, workers int, seed uint64) []scenario.Sequence {
+// sequences depend only on the Source (not on Capital, BufferYears, the
+// spending rule…), so a caller sweeping those parameters can draw once and
+// reuse the sequences across many SimulateOn calls instead of re-sampling at
+// every point (which is where the sampling cost, a third of a path's total,
+// would otherwise be paid again and again). Sweep1D and CapitalForRuin do
+// exactly this internally.
+func (p Plan) DrawPaths(nPaths, workers int, seed uint64) []scenario.Sequence {
 	if workers < 1 {
 		workers = 1
 	}
@@ -44,10 +48,12 @@ func (p Plan) drawPaths(nPaths, workers int, seed uint64) []scenario.Sequence {
 	return seqs
 }
 
-// simulateOn runs the kernel on already-drawn sequences across workers
-// goroutines. RunPath is deterministic, so the Ensemble is identical whatever
-// the worker count.
-func (p Plan) simulateOn(seqs []scenario.Sequence, workers int) Ensemble {
+// SimulateOn runs the kernel on already-drawn sequences (from DrawPaths)
+// across workers goroutines, without re-sampling. RunPath is deterministic, so
+// the Ensemble is identical whatever the worker count. The plan may differ
+// from the one that drew the sequences in any non-Source field (capital,
+// horizon, spending rule…); the draws depend only on the Source.
+func (p Plan) SimulateOn(seqs []scenario.Sequence, workers int) Ensemble {
 	if workers < 1 {
 		workers = 1
 	}
@@ -72,12 +78,12 @@ func (p Plan) simulateOn(seqs []scenario.Sequence, workers int) Ensemble {
 // monotonicity. Buffer.Years scales with NeedAnnual, not with capital, so
 // only Capital varies between evaluations.
 func (p Plan) CapitalForRuin(target, lo, hi float64, nPaths, workers int, seed uint64) float64 {
-	shared := p.drawPaths(nPaths, workers, seed) // Capital does not affect the Source
+	shared := p.DrawPaths(nPaths, workers, seed) // Capital does not affect the Source
 	for i := 0; i < 18; i++ {
 		mid := (lo + hi) / 2
 		q := p
 		q.Capital = mid
-		if q.simulateOn(shared, workers).RuinProb() > target {
+		if q.SimulateOn(shared, workers).RuinProb() > target {
 			lo = mid
 		} else {
 			hi = mid

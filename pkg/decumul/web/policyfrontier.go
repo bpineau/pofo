@@ -35,6 +35,10 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		return p
 	}
 	wr := pr.NeedAnnual / pr.Capital
+	// Every policy shares this Source (they differ only in the spending rule),
+	// so the paths are drawn once and replayed for each of the six rules.
+	base := bare()
+	seqs := base.DrawPaths(min(pr.NPaths, shapePaths), simWorkers, 7)
 
 	policies := []struct {
 		name  string
@@ -57,9 +61,9 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 
 	pts := make([]chart.LabeledPoint, 0, len(policies))
 	for _, pol := range policies {
-		p := bare()
+		p := base
 		pol.apply(&p)
-		e := p.Simulate(pr.NPaths, simWorkers, 7)
+		e := p.SimulateOn(seqs, simWorkers)
 		// Lifestyle volatility on the SURVIVING paths only: post-ruin zeros
 		// would inflate the fixed rule's CV with what is really ruin, the
 		// quantity the y axis already carries. The x axis then measures pure
