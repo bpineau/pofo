@@ -2,7 +2,7 @@
 
 FIRE : *Financial Independence, Retire Early*. Indépendance financière, retraite précoce.
 
-Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page pose la carte du sujet. D'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire.
+Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page dresse la carte du sujet. D'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire.
 
 À la fin, vous saurez situer votre propre projet sur cette carte et par quel article continuer.
 
@@ -16,7 +16,7 @@ L'idée de vivre de ses rentes est aussi vieille que le capital, mais le mouveme
 
 **1992 : *Your Money or Your Life***. Le livre de Vicki Robin et Joe Dominguez pose le socle philosophique : l'argent est de l'énergie vitale échangée, chaque dépense s'évalue en heures de vie, et l'indépendance financière est le point où les revenus du capital croisent les dépenses. Pas encore de taux de retrait, mais déjà le graphique fondateur : deux courbes, dépenses et revenus passifs, et le croisement qui libère.
 
-**1994 : William Bengen**. Un conseiller financier californien publie dans le *Journal of Financial Planning* l'article qui invente le concept de taux de retrait sûr : en rejouant toutes les retraites historiques américaines depuis 1926, il montre qu'un retrait initial de 4 % du capital, réindexé sur l'inflation chaque année, a survécu à toutes les périodes de 30 ans, y compris pour ceux qui ont pris leur retraite en 1929 ou en 1966. C'est la naissance de la règle des 4 % ([[etude-trinity]]).
+**1994 : William Bengen**. Un conseiller financier californien publie dans le *Journal of Financial Planning* l'article qui invente le concept de taux de retrait sûr. Il rejoue toutes les retraites historiques américaines depuis 1926. Un retrait initial de 4 % du capital, réindexé sur l'inflation chaque année, a survécu à toutes les périodes de 30 ans, y compris celles commencées en 1929 ou en 1966. C'est la naissance de la règle des 4 % ([[etude-trinity]]).
 
 **1998 : l'étude Trinity** confirme et popularise le résultat avec une grille de probabilités de succès par taux de retrait, allocation et horizon.
 
@@ -25,7 +25,7 @@ L'idée de vivre de ses rentes est aussi vieille que le capital, mais le mouveme
 **2016 et après : la maturité scientifique**. Le blog *Early Retirement Now* de Karsten Jeske ([[serie-ern]]) reprend le sujet avec la rigueur d'un économiste et démonte les simplifications de la première vague : la règle des 4 % n'est pas adaptée aux retraites de 50 ans, les valorisations de départ comptent énormément, la flexibilité a des limites. En parallèle, la recherche académique élargit l'échantillon au-delà des États-Unis ([[anarkulova-cederburg]]) et les praticiens institutionnels (Morningstar, Vanguard, fonds de pension) publient leurs propres cadres ([[guardrails-morningstar]], [[rendements-attendus]]).
 
 ::: encart Où en est le mouvement aujourd'hui
-Le FIRE de 2026 n'est plus celui de 2012. La première vague vendait une certitude (« 4 %, c'est réglé ») ; l'état de l'art actuel vend une méthode : modéliser honnêtement l'incertitude, choisir une stratégie de retrait adaptative, construire un portefeuille qui résiste aux régimes hostiles, et garder des marges. C'est exactement le programme de ce livre.
+Le FIRE de 2026 n'est plus celui de 2012. La première vague vendait une certitude (« 4 %, c'est réglé »). L'état de l'art actuel vend une méthode : modéliser honnêtement l'incertitude, choisir une stratégie de retrait adaptative, construire un portefeuille qui résiste aux régimes hostiles, et garder des marges. C'est exactement le programme de ce livre.
 :::
 
 ## Les variantes : Lean, Fat, Barista, Coast
@@ -85,9 +85,9 @@ Tout projet FIRE, quelle que soit sa variante, se résume à trois nombres et à
 
 **1. Vos dépenses annuelles cibles.** Le nombre le plus important et le plus mal estimé. Pas vos dépenses actuelles : celles de la vie que vous visez, santé, impôts et lissage des grosses dépenses irrégulières compris ([[depenses-en-retraite]]).
 
-**2. Votre taux de retrait.** Le pont entre dépenses et capital. 4 % est le point de départ historique ([[la-regle-des-4-pourcents]]) ; pour un départ précoce, un portefeuille mondial et des valorisations élevées, la fourchette de travail moderne est plutôt 3 à 3,5 % en retrait rigide, davantage avec une stratégie flexible ([[choisir-sa-strategie]]).
+**2. Votre taux de retrait.** Le pont entre dépenses et capital. 4 % est le point de départ historique ([[la-regle-des-4-pourcents]]). Pour un départ précoce, un portefeuille mondial et des valorisations élevées, la fourchette de travail moderne est plutôt 3 à 3,5 % en retrait rigide, davantage avec une stratégie flexible ([[choisir-sa-strategie]]).
 
-**3. Votre horizon.** 30 ans (l'hypothèse des études fondatrices) et 50 ans (un départ à 40 ans) sont deux problèmes différents. L'horizon long réduit le taux sûr, mais moins qu'on ne l'imagine : au-delà de 40 ans, la courbe s'aplatit, un portefeuille qui survit 40 ans est presque toujours devenu si gros qu'il survit indéfiniment ([[horizon-et-esperance-de-vie]]).
+**3. Votre horizon.** 30 ans (l'hypothèse des études fondatrices) et 50 ans (un départ à 40 ans) sont deux problèmes différents. L'horizon long réduit le taux sûr, mais moins qu'on ne l'imagine. Au-delà de 40 ans, la courbe s'aplatit. Un portefeuille qui survit 40 ans est presque toujours devenu si gros qu'il survit indéfiniment ([[horizon-et-esperance-de-vie]]).
 
 ::: astuce Commencez par l'inventaire, pas par le simulateur
 Avant tout calcul savant : douze mois de relevés bancaires, un tableur, et le vrai chiffre de vos dépenses annuelles, grosses dépenses irrégulières incluses (voiture, travaux, santé, cadeaux). La plupart des gens découvrent un écart de 15 à 25 % entre leurs dépenses perçues et réelles. Ce chiffre-là, multiplié par 25 ou 30, vaut tous les simulateurs du monde pour savoir où vous en êtes.
