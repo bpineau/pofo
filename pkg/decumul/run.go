@@ -53,7 +53,7 @@ func newPathResult(capital float64, years int) PathResult {
 	// count (and the GC pressure it drives) without changing the public fields.
 	buf := make([]float64, 2*years+1)
 	res := PathResult{
-		Wealth:   buf[:years+1 : years+1],
+		Wealth:   buf[: years+1 : years+1],
 		Spend:    buf[years+1:],
 		RuinYear: -1,
 		FirstCut: -1,
