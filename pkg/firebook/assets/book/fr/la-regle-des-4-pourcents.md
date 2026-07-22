@@ -61,7 +61,7 @@ Trente ans de recherche ont précisé le tableau. Les résultats convergent sur 
 
 **2. Pour un horizon long, 4 % est trop haut en régime rigide.** C'est le résultat central de la série d'Early Retirement Now ([[serie-ern]]) : sur 50 à 60 ans, le taux qui aurait survécu à tous les millésimes américains tombe vers 3,25 à 3,5 %. La probabilité d'échec du 4 % rigide sur 50 ans, mesurée sur l'histoire américaine, est de l'ordre de 10 à 20 % selon l'allocation, trop pour un plan de vie.
 
-**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » de 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 % : la France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
+**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » de 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 %. La France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
 
 **4. Les valorisations de départ déplacent le taux.** Partir quand les marchés sont chers (CAPE élevé) a historiquement toujours donné les pires millésimes. Les règles modernes conditionnent donc le taux initial aux valorisations ([[valorisations-et-cape]], [[regles-cape]]). C'est l'une des améliorations les mieux établies.
 
@@ -86,7 +86,7 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
-Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles (page FIRE, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 € /mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
+Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles (page FIRE, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 €/mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
 :::
 
 ## L'essentiel à retenir
@@ -105,4 +105,4 @@ Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an inde
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, 1998 (l'étude Trinity, [[etude-trinity]]).
 - Early Retirement Now, SWR Series volet 1 et volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») : la critique moderne la plus complète ([[serie-ern]]).
 - Morningstar, *The State of Retirement Income* (annuel) : le taux recommandé recalculé chaque année avec des rendements prospectifs ([[guardrails-morningstar]]).
-- Bengen lui-même, interviews récentes. Il considère aujourd'hui 4 % comme trop conservateur pour 30 ans avec un portefeuille plus diversifié... et ne s'applique qu'au cadre américain sur 30 ans. Les deux mouvements (le sien vers le haut, celui de la recherche « monde + horizon long » vers le bas) illustrent bien que le chiffre dépend du cadre.
+- Bengen lui-même, interviews récentes. Il considère aujourd'hui 4 % comme trop conservateur pour 30 ans avec un portefeuille plus diversifié, tout en rappelant qu'elle ne vaut que dans le cadre américain sur 30 ans. Les deux mouvements (le sien vers le haut, celui de la recherche « monde + horizon long » vers le bas) illustrent bien que le chiffre dépend du cadre.
