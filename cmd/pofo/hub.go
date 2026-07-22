@@ -214,8 +214,7 @@ body.hub{background:
 <section class="hub-hero">
   <p class="hub-kicker">Portfolio lab</p>
   <h1>Put portfolios side by side.</h1>
-  <p class="hub-lede">Build portfolios by hand or drop in a bundled build, put up to six on one backtest,
-  and share the link.</p>
+  <p class="hub-lede">Build portfolios by hand or drop in a bundled build.</p>
 </section>
 
 {{.Composer}}
