@@ -673,14 +673,17 @@
 
   // ---- add / remove -------------------------------------------------------
 
-  // addHolding appends a blank editable row within the holdings cap.
+  // addHolding appends a blank editable row within the holdings cap and returns
+  // it (or null if the cap is reached), so callers can move focus into it.
   function addHolding(port) {
-    if (port.holdings.length >= CAP_HOLD) return;
+    if (port.holdings.length >= CAP_HOLD) return null;
     port.holdings.push({ id: "", w: "" });
     var body = port._el.querySelector(".pcard-body");
-    body.insertBefore(makeRow({ id: "", w: "" }), body.querySelector(".add"));
+    var row = makeRow({ id: "", w: "" });
+    body.insertBefore(row, body.querySelector(".add"));
     refreshBadge(port);
     commit();
+    return row;
   }
 
   // removeHolding drops one row.
@@ -931,6 +934,17 @@
           return;
         }
         if (e.key === "Escape") { closeAC(); return; }
+      }
+      // Enter in a weight field adds the next holding and jumps to its id, so a
+      // portfolio can be built with the keyboard alone (id, Tab, weight, Enter,
+      // repeat). At the holdings cap there is nothing to add, so it runs instead.
+      if (e.key === "Enter" && t.classList && t.classList.contains("wt")) {
+        e.preventDefault();
+        var wport = portOf(t);
+        var row = wport ? addHolding(wport) : null;
+        if (row) { var idf = row.querySelector(".id"); if (idf) idf.focus(); }
+        else run();
+        return;
       }
       if (e.key === "Enter" && t.classList && (t.classList.contains("field") || t.classList.contains("pname"))) {
         e.preventDefault();
