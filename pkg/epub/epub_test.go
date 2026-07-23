@@ -458,6 +458,7 @@ func TestValidationErrors(t *testing.T) {
 			b.Chapters[1].Children[0].Children = []Chapter{{FileName: "deep.xhtml", Title: "Deep"}}
 		}},
 		{"cover not png", func(b *Book) { b.Cover = []byte("GIF89a") }},
+		{"reserved filename", func(b *Book) { b.Chapters[0].FileName = "nav.xhtml" }},
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
