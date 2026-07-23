@@ -377,7 +377,9 @@ type ncxDoc struct {
 	} `xml:"navMap"`
 }
 type ncxPoint struct {
-	NavLabel struct {
+	ID        string `xml:"id,attr"`
+	PlayOrder int    `xml:"playOrder,attr"`
+	NavLabel  struct {
 		Text string `xml:"text"`
 	} `xml:"navLabel"`
 	Content struct {
@@ -410,13 +412,73 @@ func TestNCX(t *testing.T) {
 	}
 }
 
+// flattenNCX returns navPoints in document (depth-first pre-order) order.
+func flattenNCX(pts []ncxPoint) []ncxPoint {
+	var out []ncxPoint
+	for _, p := range pts {
+		out = append(out, p)
+		out = append(out, flattenNCX(p.Points)...)
+	}
+	return out
+}
+
+// TestNCXSequential enforces unique navPoint ids and a gapless playOrder
+// running 1..N in document order over the whole tree (epubcheck rejects
+// duplicate ids and playOrder gaps).
+func TestNCXSequential(t *testing.T) {
+	zr := openZip(t, writeToBytes(t, sampleBook()))
+	var nc ncxDoc
+	if err := xml.Unmarshal(readEntry(t, zr, "OEBPS/toc.ncx"), &nc); err != nil {
+		t.Fatalf("parse toc.ncx: %v", err)
+	}
+	flat := flattenNCX(nc.NavMap.Points)
+	if len(flat) != 6 { // intro + (cat-a, a1, a2) + (cat-b, b1)
+		t.Fatalf("total navPoints = %d, want 6", len(flat))
+	}
+	ids := map[string]bool{}
+	for i, p := range flat {
+		if p.PlayOrder != i+1 {
+			t.Errorf("navPoint %d (%q) playOrder = %d, want %d", i, p.Content.Src, p.PlayOrder, i+1)
+		}
+		if p.ID == "" || ids[p.ID] {
+			t.Errorf("navPoint id %q is empty or duplicated", p.ID)
+		}
+		ids[p.ID] = true
+	}
+}
+
+// TestSVGProperty enforces EPUB 3 OPF-014: a content document containing SVG
+// must carry properties="svg" on its manifest item, and one without must not.
+func TestSVGProperty(t *testing.T) {
+	b := &Book{
+		Title: "T", Author: "A", Language: "fr",
+		Identifier: "urn:uuid:svg", Modified: testModified, CSS: "x",
+		Chapters: []Chapter{
+			{FileName: "plain.xhtml", Title: "Plain", Body: "<p>rien</p>"},
+			{FileName: "withsvg.xhtml", Title: "Fig", Body: `<figure><svg viewBox="0 0 4 4"><rect x="0" y="0" width="4" height="4"/></svg></figure>`},
+		},
+	}
+	zr := openZip(t, writeToBytes(t, b))
+	p := parseOPF(t, zr)
+	props := map[string]string{}
+	for _, it := range p.Manifest.Items {
+		props[it.Href] = it.Properties
+	}
+	if props["withsvg.xhtml"] != "svg" {
+		t.Errorf("withsvg.xhtml properties = %q, want svg", props["withsvg.xhtml"])
+	}
+	if props["plain.xhtml"] != "" {
+		t.Errorf("plain.xhtml properties = %q, want empty", props["plain.xhtml"])
+	}
+}
+
 func TestChapterShell(t *testing.T) {
 	zr := openZip(t, writeToBytes(t, sampleBook()))
 	doc := string(readEntry(t, zr, "OEBPS/intro.xhtml"))
 	for _, want := range []string{
 		`<?xml version="1.0" encoding="utf-8"?>`,
 		`<!DOCTYPE html>`,
-		`<html xmlns="http://www.w3.org/2000/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">`,
+		`<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">`,
 		`<title>Introduction</title>`,
 		`href="style.css"`,
 		`<p>Bienvenue.</p>`,

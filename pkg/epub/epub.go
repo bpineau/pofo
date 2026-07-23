@@ -223,7 +223,15 @@ func (b *Book) renderOPF(flat []flatChapter) string {
 		spine = append(spine, "cover")
 	}
 	for _, c := range flat {
-		items = append(items, manifestItem{ID: c.ID, Href: c.FileName, MediaType: "application/xhtml+xml"})
+		// EPUB 3 (OPF-014) requires the "svg" property on the manifest item of
+		// any content document that embeds SVG. The renderer's tag inventory is
+		// closed, so a literal "<svg" scan is exact (SVG appears only as a
+		// figure payload, never in prose or attribute values).
+		props := ""
+		if strings.Contains(c.Body, "<svg") {
+			props = "svg"
+		}
+		items = append(items, manifestItem{ID: c.ID, Href: c.FileName, MediaType: "application/xhtml+xml", Properties: props})
 		spine = append(spine, c.ID)
 	}
 
@@ -276,13 +284,14 @@ func (b *Book) navTree() []navEntry {
 	build = func(cs []Chapter) []navEntry {
 		var out []navEntry
 		for _, c := range cs {
+			// Assign playOrder strictly depth-first pre-order, BEFORE
+			// recursing: a parent must number lower than its children, and a
+			// composite literal does not guarantee the field-read of order
+			// runs before the build(c.Children) call that mutates it.
 			order++
-			out = append(out, navEntry{
-				Href:      c.FileName,
-				Title:     c.Title,
-				PlayOrder: order,
-				Children:  build(c.Children),
-			})
+			e := navEntry{Href: c.FileName, Title: c.Title, PlayOrder: order}
+			e.Children = build(c.Children)
+			out = append(out, e)
 		}
 		return out
 	}
@@ -299,7 +308,7 @@ func (b *Book) renderNav() string {
 var navTmpl = template.Must(template.New("nav").Funcs(tmplFuncs).Parse(
 	`<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/2000/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
 <head>
 <meta charset="utf-8"/>
 <title>{{esc .Title}}</title>
@@ -355,7 +364,7 @@ func (b *Book) renderChapter(c Chapter) string {
 var chapterTmpl = template.Must(template.New("chapter").Funcs(tmplFuncs).Parse(
 	`<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/2000/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
 <head>
 <meta charset="utf-8"/>
 <title>{{esc .Title}}</title>
@@ -376,7 +385,7 @@ func (b *Book) renderCover() string {
 var coverTmpl = template.Must(template.New("cover").Funcs(tmplFuncs).Parse(
 	`<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/2000/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
 <head>
 <meta charset="utf-8"/>
 <title>{{esc .Title}}</title>
