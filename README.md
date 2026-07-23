@@ -25,6 +25,7 @@ go build ./cmd/pofo                       # self-contained binary (datasets embe
 ./pofo -cli -assets VOO,IWDA              # quick check in the terminal
 ./pofo -warmup                            # pre-warm the catalog cache
 ./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
+./pofo -export-epub le-fire-tranquille.epub  # export the FIRE book as EPUB 3
 ```
 
 The binary can be installed anywhere: simulated histories and reference
@@ -234,6 +235,11 @@ strategies, resilient portfolios, buffers and French taxation, written as
 cross-linked articles and served straight from the binary (`pkg/firebook`;
 an English translation will join at `/firebook/en/` later).
 
+The whole book is also downloadable as a single **EPUB 3** file for offline
+reading: every mount exposes it at `le-fire-tranquille.epub` (a discreet
+"Version EPUB" link sits on the book index), and `pofo -export-epub
+le-fire-tranquille.epub` writes the same file from the command line.
+
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
 and sweeps), with the thin web layer under `pkg/decumul/web`; the book is its
@@ -329,6 +335,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
+| `-export-epub` | | write the FIRE book to the given path as an EPUB 3 file, then exit |
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
