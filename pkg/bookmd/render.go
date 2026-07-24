@@ -107,11 +107,30 @@ func mdInline(s string, opt Options) string {
 	return s
 }
 
+// uniqueID returns base the first time it is seen, then base-2, base-3, ...
+// for later collisions, bumping past any candidate already taken (including
+// natural slugs), so every heading id in one render is distinct. used is the
+// per-document set, shared across nested renders (callout bodies, quotes).
+func uniqueID(base string, used map[string]bool) string {
+	id := base
+	for n := 2; used[id]; n++ {
+		id = fmt.Sprintf("%s-%d", base, n)
+	}
+	used[id] = true
+	return id
+}
+
 // ToHTML renders one article body (the book's Markdown dialect) to HTML.
 // opt.Titles maps the slugs of WRITTEN articles to their display titles; it
 // drives [[slug]] links (see wikiLink). The zero Options renders wiki-links
 // as plain text, keeps href="<slug>" and drops ::: figure blocks.
 func ToHTML(src string, opt Options) string {
+	return render(src, opt, map[string]bool{})
+}
+
+// render is the recursive worker. used carries the heading-id set of the whole
+// document so ids stay unique across callout and blockquote sub-renders.
+func render(src string, opt Options, used map[string]bool) string {
 	lines := strings.Split(strings.ReplaceAll(src, "\r\n", "\n"), "\n")
 	var b strings.Builder
 	inline := func(s string) string { return mdInline(html.EscapeString(s), opt) }
@@ -157,14 +176,15 @@ func ToHTML(src string, opt Options) string {
 			}
 			i++ // closing :::
 			fmt.Fprintf(&b, `<aside class="doc-box doc-box--%s"><div class="doc-box-h"><span class="doc-box-glyph">%s</span> %s</div>%s</aside>`,
-				typ, meta.Glyph, inline(title), ToHTML(strings.Join(body, "\n"), opt))
+				typ, meta.Glyph, inline(title), render(strings.Join(body, "\n"), opt, used))
 			continue
 		}
 
 		if g := reHeading.FindStringSubmatch(line); g != nil {
 			lvl := min(len(g[1])+1, 4) // # is demoted: the shell owns the h1
 			text := strings.TrimSpace(g[2])
-			id := strings.Trim(reAnchor.ReplaceAllString(strings.ToLower(text), "-"), "-")
+			base := strings.Trim(reAnchor.ReplaceAllString(strings.ToLower(text), "-"), "-")
+			id := uniqueID(base, used)
 			fmt.Fprintf(&b, `<h%d id="%s">%s</h%d>`, lvl, id, inline(text), lvl)
 			i++
 			continue
@@ -237,7 +257,7 @@ func ToHTML(src string, opt Options) string {
 				body = append(body, reQuote.ReplaceAllString(lines[i], ""))
 				i++
 			}
-			fmt.Fprintf(&b, "<blockquote>%s</blockquote>", ToHTML(strings.Join(body, "\n"), opt))
+			fmt.Fprintf(&b, "<blockquote>%s</blockquote>", render(strings.Join(body, "\n"), opt, used))
 			continue
 		}
 
