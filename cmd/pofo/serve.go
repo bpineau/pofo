@@ -11,6 +11,7 @@ import (
 	"errors"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -232,7 +233,7 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	}
 	fmt.Fprintf(os.Stderr, "pofo web app on http://%s/ (Ctrl-C to stop)\n", ln.Addr())
 	srv := &http.Server{
-		Handler:           newServer(opt, client).handler(panel, labels),
+		Handler:           logAccess(os.Stdout, newServer(opt, client).handler(panel, labels)),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
@@ -246,6 +247,63 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 		return err
 	}
 	return nil
+}
+
+// logAccess wraps h so every served request prints one NCSA combined-log-format
+// line to w (stdout): client IP, timestamp, request line, status, response
+// bytes, referer and user agent. Application errors keep going to log's own
+// destination (stderr), so the two streams stay separable.
+func logAccess(w io.Writer, h http.Handler) http.Handler {
+	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		start := time.Now()
+		rec := &statusRecorder{ResponseWriter: rw, status: http.StatusOK}
+		h.ServeHTTP(rec, r)
+		fmt.Fprintf(w, "%s - - [%s] %q %d %d %q %q %s\n",
+			clientIP(r),
+			start.Format("02/Jan/2006:15:04:05 -0700"),
+			r.Method+" "+r.RequestURI+" "+r.Proto,
+			rec.status,
+			rec.bytes,
+			r.Referer(),
+			r.UserAgent(),
+			time.Since(start).Round(time.Millisecond),
+		)
+	})
+}
+
+// clientIP returns the request's source address: the left-most entry of an
+// X-Forwarded-For header when present (the server may sit behind a reverse
+// proxy), otherwise the host part of RemoteAddr.
+func clientIP(r *http.Request) string {
+	if xff := r.Header.Get("X-Forwarded-For"); xff != "" {
+		if first, _, ok := strings.Cut(xff, ","); ok {
+			return strings.TrimSpace(first)
+		}
+		return strings.TrimSpace(xff)
+	}
+	if host, _, err := net.SplitHostPort(r.RemoteAddr); err == nil {
+		return host
+	}
+	return r.RemoteAddr
+}
+
+// statusRecorder is a minimal http.ResponseWriter that remembers the status
+// code and byte count so logAccess can report them after the handler returns.
+type statusRecorder struct {
+	http.ResponseWriter
+	status int
+	bytes  int
+}
+
+func (s *statusRecorder) WriteHeader(code int) {
+	s.status = code
+	s.ResponseWriter.WriteHeader(code)
+}
+
+func (s *statusRecorder) Write(b []byte) (int, error) {
+	n, err := s.ResponseWriter.Write(b)
+	s.bytes += n
+	return n, err
 }
 
 // fireBase is the public mount of the FIRE simulator. Everything the app
