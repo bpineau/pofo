@@ -52,6 +52,13 @@ cancel. Portfolio file arguments are turned into a FIRE panel once at startup
 (`firePanel`) and handed to both the simulator and, later, per-request `/view`
 work; they seed the historical models exactly as `-fire <file>` does.
 
+The mux is wrapped by `logAccess`, which prints one NCSA combined-log-format
+line per request to stdout (client IP, timestamp, request line, status,
+response bytes, referer, user agent, latency); the startup banner and
+application errors keep going to stderr, so `pofo -serve >access.log` cleanly
+separates the two streams. The client IP honors a left-most `X-Forwarded-For`
+entry when present, so the log stays truthful behind a reverse proxy.
+
 ## The `/view` URL grammar
 
 The visualizer is driven entirely by its query string. This is the
