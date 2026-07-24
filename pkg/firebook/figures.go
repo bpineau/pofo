@@ -24,7 +24,13 @@ const (
 	figGood   = "#3f8f6f"
 	figBad    = "#c0655b"
 	figWash   = "#f2ebdd"
-	figRule   = "rgba(60,48,34,.22)"
+	// figRule and every band/area fill below are PRE-BLENDED solid hex, not
+	// rgba: crengine (KOReader's EPUB SVG renderer) does not understand
+	// rgba and paints any such fill solid black. Each value is the original
+	// translucent color composited once onto the figure card background
+	// #fffdf9 (bg*(1-a) + color*a per channel), which reads the same on the web
+	// card and on near-white EPUB paper. figRule = ink 60,48,34 @ .22.
+	figRule = "#D4D0CA"
 )
 
 func FigureSVG(id string) string {
@@ -183,10 +189,14 @@ func fanLine(m func(x, y float64) [2]float64, xs, ys []float64, stroke string, w
 	return poly(pts, stroke, w, dash)
 }
 
-// band fills: translucent tints of the warm accent
+// band fills: warm-accent tints, PRE-BLENDED onto #fffdf9 (see figRule note;
+// rgba renders black in crengine). Outer = accent 180,120,60 @ .12, inner
+// @ .24; the inner is blended against plain paper (a slight double-blend over
+// the outer band, visually negligible) and is drawn AFTER the outer so it
+// still reads as the darker core.
 const (
-	figBandOuter = "rgba(180,120,60,.12)"
-	figBandInner = "rgba(180,120,60,.24)"
+	figBandOuter = "#F6EDE2"
+	figBandInner = "#EDDDCC"
 )
 
 // --- 7. Anatomy of a wealth cone (fan chart) ---
@@ -421,8 +431,10 @@ func figFrancDecay() string {
 		px[i] = m(p[0], p[1])
 	}
 	var b strings.Builder
+	// area first (now an opaque pre-blend, accent 180,120,60 @ .18 on #fffdf9),
+	// then the baseline rule on top so it stays visible along the fill's foot.
+	b.WriteString(smoothAreaBelow(px, m(1913, 0)[1], "#F2E5D7"))
 	b.WriteString(line(74, m(1913, 0)[1], 556, m(1913, 0)[1], figRule, 1))
-	b.WriteString(smoothAreaBelow(px, m(1913, 0)[1], "rgba(180,120,60,.18)"))
 	b.WriteString(smoothStroke(px, figDeep, 2.6))
 	// episode annotations
 	e1 := m(1917, 74)
@@ -461,8 +473,11 @@ func figCorrelSign() string {
 	var b strings.Builder
 	// background bands: positive (they fall together, bad) vs negative (hedge, good)
 	tp, zp, bp := m(1963, 0.62), m(1963, 0), m(2026, -0.62)
-	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(192,101,91,.10)"/>`, tp[0], tp[1], bp[0]-tp[0], zp[1]-tp[1])
-	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(63,143,111,.10)"/>`, zp[0], zp[1], bp[0]-zp[0], bp[1]-zp[1])
+	// pre-blended tints on #fffdf9 (rgba renders black in crengine); the two
+	// rects tile the top/bottom halves and are the background, drawn before the
+	// zero rule, curve and labels. Red 192,101,91 @ .10; green 63,143,111 @ .10.
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="#F9EEE9"/>`, tp[0], tp[1], bp[0]-tp[0], zp[1]-tp[1])
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="#ECF2EB"/>`, zp[0], zp[1], bp[0]-zp[0], bp[1]-zp[1])
 	b.WriteString(line(76, zp[1], 556, zp[1], figRule, 1.2))
 	b.WriteString(txt(80, zp[1]-4, 10, figMuted, "start", "400", "corrélation 0"))
 	b.WriteString(smoothStroke(px, figInk, 2.6))
@@ -547,10 +562,11 @@ func figFatTails() string {
 		tPts = append(tPts, m(x, tPdf(x)))
 	}
 	var b strings.Builder
-	// baseline
 	base := m(0, 0)[1]
-	b.WriteString(line(70, base, 556, base, figRule, 1))
-	// fat left-tail fill under the t curve, beyond -30 %
+	// fat left-tail fill under the t curve, beyond -30 %. Drawn first (it is an
+	// opaque pre-blend now, red 192,101,91 @ .22 on #fffdf9; rgba renders black
+	// in crengine), then the baseline rule on top so it stays visible along the
+	// fill's foot.
 	var tail [][2]float64
 	for x := -44.0; x <= -30.0001; x += 1 {
 		tail = append(tail, m(x, tPdf(x)))
@@ -563,7 +579,9 @@ func figFatTails() string {
 		fmt.Fprintf(&sb, "%.1f,%.1f", p[0], p[1])
 	}
 	last, first := m(-30, 0), m(-44, 0)
-	fmt.Fprintf(&b, `<polygon points="%s %.1f,%.1f %.1f,%.1f" fill="rgba(192,101,91,.22)"/>`, sb.String(), last[0], last[1], first[0], first[1])
+	fmt.Fprintf(&b, `<polygon points="%s %.1f,%.1f %.1f,%.1f" fill="#F1DCD6"/>`, sb.String(), last[0], last[1], first[0], first[1])
+	// baseline
+	b.WriteString(line(70, base, 556, base, figRule, 1))
 	// the two densities
 	b.WriteString(poly(nPts, figMuted, 1.8, "5 4"))
 	b.WriteString(smoothStroke(tPts, figDeep, 2.6))
@@ -607,9 +625,12 @@ func figWrSignal() string {
 		p0, p1 := m(0, hi), m(30, lo)
 		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, p0[0], p0[1], p1[0]-p0[0], p1[1]-p0[1], fill)
 	}
-	band(2.2, 4.3, "rgba(63,143,111,.13)")
-	band(4.3, 5.2, "rgba(180,120,60,.16)")
-	band(5.2, 5.8, "rgba(192,101,91,.16)")
+	// pre-blended signal tints on #fffdf9 (rgba renders black in crengine);
+	// the three bands tile the plot and are the background, drawn before the
+	// threshold rules, trajectory and labels. Green @ .13, amber @ .16, red @ .16.
+	band(2.2, 4.3, "#E6EFE7")
+	band(4.3, 5.2, "#F3E8DB")
+	band(5.2, 5.8, "#F5E5E0")
 	// threshold rules
 	for _, t := range []float64{4.3, 5.2} {
 		p := m(0, t)
@@ -661,9 +682,13 @@ func figBondTent() string {
 	var b strings.Builder
 	tl, br := m(-8, 100), m(15, 0)
 	// bonds fill the whole plot; equity area on top -> the bond band bulges at
-	// departure, and that bulge IS the "tent".
-	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(135,124,109,.13)"/>`, tl[0], tl[1], br[0]-tl[0], br[1]-tl[1])
-	b.WriteString(smoothAreaBelow(px, br[1], "rgba(180,120,60,.20)"))
+	// departure, and that bulge IS the "tent". Both fills are pre-blended onto
+	// #fffdf9 (rgba renders black in crengine): the bonds rect (muted
+	// 135,124,109 @ .13) is the background, the equity area (accent
+	// 180,120,60 @ .20, blended against plain paper) is drawn after as the
+	// warmer core, and the frame lines and equity boundary land on top of both.
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="#EFECE7"/>`, tl[0], tl[1], br[0]-tl[0], br[1]-tl[1])
+	b.WriteString(smoothAreaBelow(px, br[1], "#F0E2D3"))
 	// frame lines at 0 and 100 %
 	b.WriteString(line(tl[0], tl[1], br[0], tl[1], figRule, 1))
 	b.WriteString(line(tl[0], br[1], br[0], br[1], figRule, 1))
