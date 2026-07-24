@@ -240,6 +240,11 @@ reading: every mount exposes it at `le-fire-tranquille.epub` (a discreet
 "Version EPUB" link sits on the book index), and `pofo -export-epub
 le-fire-tranquille.epub` writes the same file from the command line.
 
+The same mount also serves an **OPDS 1.2 catalog** at `opds.xml` (e.g.
+`http://localhost:8080/firebook/fr/opds.xml`): add that URL once in an e-book
+reader such as KOReader to download and later refresh the book in place, the
+re-download overwriting the same file so any annotation sidecar is preserved.
+
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
 and sweeps), with the thin web layer under `pkg/decumul/web`; the book is its

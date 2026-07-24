@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/opds"
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
@@ -73,14 +74,16 @@ func Handler(opts ...Option) http.Handler {
 	// strong ETag. build() is shared by the download route and the index page
 	// (whose download link shows the file size).
 	var (
-		once sync.Once
-		body []byte
-		etag string
-		bErr error
+		once  sync.Once
+		body  []byte
+		etag  string
+		built time.Time
+		bErr  error
 	)
 	build := func() ([]byte, string, error) {
 		once.Do(func() {
-			body, bErr = EPUB(time.Now())
+			built = time.Now()
+			body, bErr = EPUB(built)
 			if bErr != nil {
 				log.Printf("firebook: EPUB build failed: %v", bErr)
 				return
@@ -104,6 +107,37 @@ func Handler(opts ...Option) http.Handler {
 		w.Header().Set("Content-Type", "application/epub+zip")
 		w.Header().Set("Content-Disposition", `attachment; filename="`+epubFileName+`"`)
 		_, _ = w.Write(data)
+	})
+
+	// An OPDS 1.2 acquisition catalog with the single book as its only entry.
+	// The acquisition link is the relative epub path, so a reader (KOReader)
+	// that added this feed downloads and later refreshes the same file, which
+	// preserves its annotation sidecar. Feed and entry share the book build
+	// time, so the feed changes only when the embedded book does.
+	mux.HandleFunc("/opds.xml", func(w http.ResponseWriter, r *http.Request) {
+		data, _, err := build()
+		if err != nil {
+			http.Error(w, "Catalogue indisponible", http.StatusInternalServerError)
+			return
+		}
+		feed := &opds.Feed{
+			Title:   siteName,
+			ID:      epubIdentifier + ":catalog",
+			Updated: built,
+			Self:    "opds.xml",
+			Entries: []opds.Entry{{
+				Title:   siteName,
+				Author:  "pofo",
+				Summary: siteLede,
+				ID:      epubIdentifier,
+				Updated: built,
+				Href:    epubFileName,
+				Type:    "application/epub+zip",
+				Size:    int64(len(data)),
+			}},
+		}
+		w.Header().Set("Content-Type", opds.FeedType)
+		_, _ = w.Write(feed.XML())
 	})
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
