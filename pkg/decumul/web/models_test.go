@@ -103,3 +103,35 @@ func TestModelsWithPanelAddsHistorical(t *testing.T) {
 		t.Errorf("expected a verdict line")
 	}
 }
+
+// The risk-based guardrail's table loosens as the horizon shortens (that is
+// its whole point), and ticking the rule changes the plan's outcome, i.e. it
+// is really wired into the kernel and not merely parsed.
+func TestRiskGuardrailsWired(t *testing.T) {
+	pr := Params{Capital: 1_000_000, NeedAnnual: 42_000, Years: 35,
+		Mu: 0.05, Sigma: 0.11, Df: 5, TaxRate: 0.30, NPaths: 1000, TargetRuin: 0.05,
+		Weights: []float64{1}}
+	tab := pr.safeRateTable()
+	if len(tab) != pr.Years {
+		t.Fatalf("table has %d entries, want %d", len(tab), pr.Years)
+	}
+	if tab[0] <= 0 || tab[0] > 0.10 {
+		t.Errorf("the long-horizon safe rate looks wrong: %.3f", tab[0])
+	}
+	for k := 1; k < len(tab); k++ {
+		if tab[k] < tab[k-1]-1e-9 {
+			t.Fatalf("the safe rate must never fall as the horizon shortens (year %d: %.4f then %.4f)",
+				k, tab[k-1], tab[k])
+		}
+	}
+	if tab[len(tab)-1] <= tab[0] {
+		t.Errorf("the band must open with the shortening horizon: %.4f then %.4f", tab[0], tab[len(tab)-1])
+	}
+
+	fixedRuin := Compute(pr).Cards[0].Value
+	pr.RiskGuard = true
+	guardedRuin := Compute(pr).Cards[0].Value
+	if fixedRuin == guardedRuin {
+		t.Errorf("ticking the risk guardrail changed nothing (ruin %s both ways)", fixedRuin)
+	}
+}

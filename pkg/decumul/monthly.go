@@ -53,19 +53,21 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 	// (Guardrails.stepped): the rule reacts to the market as it moves instead
 	// of gambling on the state of the world at one anniversary date.
 	guardM := p.Guard.stepped(12)
+	riskM := p.RiskGuard.stepped(12)
+	adaptive := p.Guard.active() || p.RiskGuard.active()
 
 	ruined := false
 	for k := 0; k < p.Years && !ruined; k++ {
 		// The ratchet and stateful taxes stay yearly decisions, adjusted at
 		// the start of each year against the current wealth.
 		pks.newYear()
-		if !p.Guard.active() {
+		if !adaptive {
 			level, lastRaise = p.Ratchet.raise(level, pks.total()+buffer, p.Capital, k, lastRaise)
 		}
 		// The year's uncut reference standard, for the cut accounting: the
 		// initial level under guardrails, the ratcheted level otherwise.
 		uncut := p.needAt(k)
-		if !p.Guard.active() {
+		if !adaptive {
 			uncut = p.netOf(level*p.schedAt(k), k)
 		}
 		for m := range 12 {
@@ -81,7 +83,10 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 			dd := 1 - total/peak
 
 			var need float64
-			if p.Guard.active() {
+			if p.RiskGuard.active() {
+				spending = riskM.adjust(spending, total+p.cashflowPV(k, p.RiskGuard.PVRate), k)
+				need = p.netOf(spending*p.schedAt(k), k) / 12
+			} else if p.Guard.active() {
 				spending = guardM.adjust(spending, total)
 				need = p.netOf(spending*p.schedAt(k), k) / 12
 			} else {

@@ -248,3 +248,82 @@ func TestWealthRulesNetCashflows(t *testing.T) {
 		t.Errorf("ABW portfolio draw with a lifelong pension = %.0f, want ~%.0f (budget rises by ~the pension, netting removes it)", with, without)
 	}
 }
+
+// The risk-based guardrail reads the SAME withdrawal rate differently
+// depending on the horizon left: a 4.5 % rate is a breach with forty years to
+// fund and perfectly fine with five, which is exactly what the 2006 sensor
+// cannot see.
+func TestRiskGuardrailsHorizonAware(t *testing.T) {
+	flat := make(scenario.Sequence, 40)
+	safe := make([]float64, 40)
+	for k := range safe {
+		// A table that loosens as the horizon shortens, the shape any solve
+		// produces: 3.5 % with forty years to go, 12 % with one.
+		safe[k] = 0.035 + 0.085*float64(k)/39
+	}
+	rule := RiskGuardrails{SafeWR: safe, Band: 0.20, Cut: 0.10, Raise: 0.10}
+
+	// Year 0: 45 k€ on 1 M€ is 4.5 %, above 3.5 % x 1.2 = 4.2 % -> cut.
+	if got := rule.adjust(45000, 1e6, 0); got >= 45000 {
+		t.Errorf("year 0: a 4.5%% rate must be cut, got %.0f", got)
+	}
+	// Year 39: the same rate is far below 12 % x 0.8 -> raise, not cut.
+	if got := rule.adjust(45000, 1e6, 39); got <= 45000 {
+		t.Errorf("year 39: a 4.5%% rate must be raised, got %.0f", got)
+	}
+	// Inside the band nothing moves.
+	if got := rule.adjust(36000, 1e6, 0); got != 36000 {
+		t.Errorf("inside the band spending must not move, got %.0f", got)
+	}
+	// The floor bounds the descent, as in the 2006 rule.
+	floored := rule
+	floored.Floor = 30000
+	if got := floored.adjust(31000, 1e5, 0); got < 30000-1e-9 {
+		t.Errorf("the floor must bound the cut, got %.0f", got)
+	}
+	// A pension still to come counts as wealth, so the plan is not cut for a
+	// rate it only shows against the portfolio alone.
+	p := Plan{Capital: 1e6, NeedAnnual: 45000, Years: 40,
+		Cashflows: []Cashflow{{Annual: 25000, FromYear: 10}},
+		RiskGuard: RiskGuardrails{SafeWR: safe, Band: 0.20, Cut: 0.10, Raise: 0.10, PVRate: 0.03}}
+	noPension := p
+	noPension.Cashflows = nil
+	if a, b := p.RunPath(flat).Spend[1], noPension.RunPath(flat).Spend[1]; a <= b {
+		t.Errorf("the discounted pension must hold the sensor back: %.0f vs %.0f", a, b)
+	}
+}
+
+// The risk-based rule takes precedence over the 2006 one and over the flex
+// cut, and it runs on both kernels with the same annual intensity.
+func TestRiskGuardrailsPrecedenceAndMonthly(t *testing.T) {
+	bear := make(scenario.Sequence, 20)
+	for i := range bear {
+		bear[i] = -0.15
+	}
+	safe := make([]float64, 20)
+	for k := range safe {
+		safe[k] = 0.035
+	}
+	base := Plan{Capital: 1e6, NeedAnnual: 40000, Years: 20,
+		Guard:     Guardrails{Upper: 0.99, Lower: 0.98, Cut: 0.50, Raise: 0.50}, // never fires if ignored
+		Flex:      FlexRule{Threshold: 0.10, Cut: 0.50},
+		RiskGuard: RiskGuardrails{SafeWR: safe, Band: 0.20, Cut: 0.10, Raise: 0.10}}
+	res := base.RunPath(bear)
+	if res.Spend[1] >= res.Spend[0] {
+		t.Errorf("the risk rule must cut in a bear: %.0f then %.0f", res.Spend[0], res.Spend[1])
+	}
+	if res.Spend[1] < res.Spend[0]*0.85 {
+		t.Errorf("the cut must be the rule's 10%%, not the flex rule's 50%%: %.0f then %.0f", res.Spend[0], res.Spend[1])
+	}
+	// Monthly, the first year lands between the uncut level and one annual cut.
+	months := make(scenario.Sequence, 240)
+	for i := range months {
+		months[i] = -0.013
+	}
+	m := base
+	m.Monthly = true
+	y0 := m.RunPathMonthly(months).Spend[0]
+	if y0 > 40000+1 || y0 < 36000 {
+		t.Errorf("monthly first-year spending %.0f: expected between one annual cut and none", y0)
+	}
+}
