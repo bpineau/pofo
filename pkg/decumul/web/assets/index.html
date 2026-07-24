@@ -85,7 +85,7 @@
   <div class="shead"><span class="code">§03</span><h2>The decisive decade</h2><span class="aside">sequence-of-returns risk, made visible</span></div>
   <p class="lede">Group the simulated futures by the market return of their first ten years and ruin stops looking random: it concentrates in the bad openings. Same average return, different ordering, different fate, which is why the protections that pay are the ones covering the early years: the cash buffer, the flexibility rules, side income, a pension that starts sooner.</p>
   <div class="duo">
-    <div id="decadeSvg" class="chart-frame"></div>
+    <div id="decadeSvg" class="chart-frame" data-help="Each bar is one fifth of the simulated futures, sorted by the annualised REAL market return of their first ten years. The label under a bar is that bucket's return range, so '-16.4..+1.8%' means the 20% of futures whose opening decade compounded somewhere between -16.4% and +1.8% a year; the bar's height is the ruin probability INSIDE that group, and the number on it repeats it. Reading it left to right is sequence-of-returns risk made visible: one plan, one average return, five different opening decades, wildly different fates. The bucket edges are quintiles of the simulated distribution, so they move with the return model you selected in the strip above."></div>
     <div id="decadeCards" class="cardcol"></div>
   </div>
 </section>
@@ -140,7 +140,7 @@
       <div id="arbitrageSvg" class="chart-frame"></div>
       <div id="arbitrage2Svg" class="chart-frame"></div>
     </div>
-    <div id="recoverySvg" class="chart-frame" data-help="Across the simulated futures: once the portfolio sets a new real high and then falls below it, how many years does it typically take to climb back? Each bar is the share of futures whose LONGEST such underwater spell lasted that many years; the 12y+ bar collects the long tail. Long spells are where flexibility rules and the cash buffer earn their keep."></div>
+    <div id="recoverySvg" class="chart-frame" data-help="Once total real wealth sets a new high and then falls below it, how long until it climbs back? Every such underwater episode of every simulated future is collected here (a single future usually contributes several), and each bar is the share of ALL those episodes that lasted that many years; the 12y+ bar folds the long tail, and an episode still open at the horizon counts at its length. This is measured on your plan as configured, withdrawals included, so it is longer than an index would recover: you are selling into the hole. Short bars on the right is what a cash buffer and a flexible rule are for."></div>
   </div>
 </section>
 
