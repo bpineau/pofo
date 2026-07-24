@@ -83,8 +83,8 @@ func EPUB(modified time.Time) ([]byte, error) {
 }
 
 // titlePageBody renders the opening page: the book title, its subtitle (the
-// index page's one-line description) and an edition note pointing at the
-// always-current online version.
+// same hero sentence as the web index page) and an edition note pointing at
+// the always-current online version.
 func titlePageBody() string {
 	return fmt.Sprintf(`<section epub:type="titlepage">`+
 		`<h1>%s</h1>`+
@@ -92,7 +92,7 @@ func titlePageBody() string {
 		`<p class="edition">La version en ligne, tenue à jour, est publiée par pofo à %s.</p>`+
 		`</section>`,
 		html.EscapeString(siteName),
-		html.EscapeString(siteDescription),
+		html.EscapeString(siteLede),
 		html.EscapeString(bookHomePath))
 }
 
