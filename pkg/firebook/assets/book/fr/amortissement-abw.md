@@ -22,6 +22,10 @@ La formule est celle du VPW ([[vpw]]) : retrait = W × g / (1 − (1+g)^(−n)).
 
 Le TPAW ajoute la touche mertonienne finale. La richesse totale inclut une grosse « obligation implicite », car la pension actualisée est un actif sans risque de marché. L'**allocation** se raisonne donc sur le total. Reprenons le couple : 1,4 M€ de portefeuille à 70 % d'actions, plus 350 000 € de pension actualisée, font un ensemble à ~56 % d'actions. Autrement dit, le quadragénaire à pension future peut porter plus d'actions dans son portefeuille visible qu'il ne le croit, à risque total égal. Allocation et retrait sortent du même calcul. D'où le nom, « Total Portfolio ».
 
+::: figure abw-1966
+Le millésime 1966, le pire de la littérature, vécu sous ABW et sous retrait fixe. En haut, les deux capitaux : le fixe s'épuise un an avant la fin de l'horizon, l'ABW atterrit sur zéro exactement le jour prévu, parce que la formule vise ce jour-là depuis le premier janvier. En bas, les deux revenus : l'ABW part 27 % plus haut, respire fort dans la décennie hostile (1974, marché réel à −22,7 %, rente recalculée à −25 %) et finit à 60 k€. **Aucune falaise, jamais de tas d'or, et 100 k€ de vie servie en plus au total.** La contrepartie est visible à l'œil nu : ce revenu-là bouge, d'où les pensions actualisées et le lissage d'affichage que la doctrine ajoute.
+:::
+
 ## Les quatre paramètres qui font VOTRE version
 
 **1. Le rendement g, et sa marge de prudence.** Le débat est classique. On peut brancher le rendement attendu **central** : la rente est alors juste en espérance, et les déceptions se paient en baisses de revenu futures. On peut aussi le **décoter** de 0,5 à 1 point : la rente est un peu basse en espérance, mais les bonnes surprises se paient en hausses, un sens que l'on préfère. La pratique TPAW et la logique de ce livre penchent pour la décote légère. Elle transforme la distribution du revenu, de « symétrique autour du plan » en « plancher probable, plus des bonnes surprises ». C'est psychologiquement bien meilleur ([[psychologie-du-retrait]]).

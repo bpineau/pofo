@@ -81,6 +81,10 @@ var figures = map[string]func() string{
 	"trend-annees":           figTrendAnnees,
 	"guardrails-capteur":     figGuardrailsCapteur,
 	"mc-entrees-vs-tirages":  figMcEntreesVsTirages,
+	"corridor-1966":          figCorridor1966,
+	"gk-cascade-1966":        figGkCascade1966,
+	"abw-1966":               figAbw1966,
+	"vpw-table":              figVpwTable,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---

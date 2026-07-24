@@ -29,6 +29,10 @@ Le VPW tabule ce ratio (retrait / capital) pour chaque âge, avec n qui court de
 | 85 | 15 | ~7,9 % |
 | 99 | 1 | 100 % |
 
+::: figure vpw-table
+En haut, la table : le taux part juste au-dessus du rendement supposé, reste presque plat pendant vingt-cinq ans, puis s'envole quand l'horizon se raccourcit. En bas, la vie que cette table produit pour un ménage parti à 40 ans avec 1 M€, si le marché sert exactement les rendements supposés. Le revenu est parfaitement plat, et le capital fond jusqu'à zéro à 100 ans : c'est la propriété de l'annuité, pas un hasard. La ligne pointillée montre l'autre visage de la règle. Un krach de 30 % à 70 ans fait descendre le revenu de 38,5 à 27,0 k€ **et il n'y revient pas**, car le VPW ne lisse rien : il recalcule.
+:::
+
 Deux propriétés de la formule méritent qu'on s'y arrête. D'abord, à horizon long, le pourcentage tend vers g lui-même. À 60 ans d'horizon, on retire à peine plus que la croissance supposée et le capital est quasi préservé. Le VPW d'un FIRE de 40 ans est donc, en pratique, un pourcentage fixe amélioré, et sa montée en âge ne devient sensible qu'après 65-70 ans. Ensuite, la montée finale est la consommation délibérée du capital. C'est un choix de conception, mourir à zéro à 100 ans, et non un accident. Il appelle donc un traitement du risque de longévité : la doctrine VPW recommande d'annuitiser une part du portefeuille vers 80 ans, pour couvrir les années au-delà de la table ([[rentes-et-annuites]], [[horizon-et-esperance-de-vie]]).
 
 **Le pont de pension** est l'autre innovation pratique du classeur. Avant la liquidation de vos pensions ([[retraite-legale]]), le VPW met de côté, virtuellement, le capital nécessaire pour « fabriquer » la pension manquante pendant les années de pont, par exemple 15 ans × 15 000 € pour une pension à 67 ans. Il l'investit en obligations et n'applique le pourcentage qu'au reste. C'est la décomposition phase à découvert / phase adossée de [[horizon-et-esperance-de-vie]], rendue opérationnelle : le besoin permanent est amorti, le besoin temporaire est provisionné.
