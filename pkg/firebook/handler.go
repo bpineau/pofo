@@ -28,6 +28,11 @@ const siteName = "Le FIRE tranquille"
 const siteDescription = "Vivre de son capital sans le survivre : la science du retrait, " +
 	"les stratégies et portefeuilles qui résistent, l'inflation, la fiscalité française et le facteur humain."
 
+// siteLede is the visible hero sentence, shared by the web index page (which
+// appends the epub download link) and the EPUB's title page.
+const siteLede = "Vivre de son capital sans le survivre : la science du retrait, " +
+	"les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, l'inflation."
+
 // NavLink is one entry of the optional site navigation bar.
 type NavLink struct{ Label, Href string }
 
@@ -209,9 +214,7 @@ func indexHTML(epubSize int) string {
 	b.WriteString(`<header class="book-hero">`)
 	b.WriteString(`<p class="book-kicker">pofo · référence</p>`)
 	b.WriteString(`<h1>` + siteName + `</h1>`)
-	b.WriteString(`<p class="book-lede">Vivre de son capital sans le survivre : la science du retrait, ` +
-		`les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, ` +
-		`l'inflation.`)
+	b.WriteString(`<p class="book-lede">` + siteLede)
 	if epubSize > 0 {
 		fmt.Fprintf(&b, ` <span class="book-epub"><a href="%s">Version epub</a> `+
 			`<span class="book-epub-size">(%s)</span></span>`, epubFileName, humanSize(epubSize))
