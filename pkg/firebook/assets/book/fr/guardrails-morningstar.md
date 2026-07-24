@@ -2,7 +2,7 @@
 
 La famille des garde-fous ne s'est pas arrêtée à Guyton-Klinger ([[guyton-klinger]]). Deux chantiers l'ont refondée depuis 2020. Le premier : les rapports annuels *The State of Retirement Income* de Morningstar, devenus la référence institutionnelle du domaine. C'est le rapport que citent la presse et les conseillers quand ils disent « le 4 % est devenu 3,7 % ». Le second : les guardrails **par risque** de Michael Kitces et Derek Tharp. Ils remplacent le capteur de 2006, le taux de retrait courant, par le bon instrument : la probabilité de succès du plan, recalculée.
 
-Le résultat cumulé est l'état de l'art du retrait flexible. C'est la stratégie que Morningstar classe première année après année sur le couple consommation totale / stabilité, et l'architecture que déploient les praticiens sérieux. Cet article déroule les deux chantiers en détail. D'abord la méthodologie et les chiffres de Morningstar, dont l'histoire du taux recommandé (3,3 % → 4,0 % → 3,7 %), une leçon en soi. Ensuite la mécanique exacte des guardrails par risque, et pourquoi leur capteur est supérieur. Puis leurs coûts réels, la dépendance au modèle surtout. Enfin la transposition pratique pour un lecteur français, un simulateur en guise de capteur, l'usage précis pour lequel la page FIRE est taillée.
+Le résultat cumulé est l'état de l'art du retrait flexible. C'est la stratégie que Morningstar classe première année après année sur le couple consommation totale / stabilité, et l'architecture que déploient les praticiens sérieux. Cet article déroule les deux chantiers en détail. D'abord la méthodologie et les chiffres de Morningstar, dont l'histoire du taux recommandé (3,3 % → 4,0 % → 3,7 %), une leçon en soi. Ensuite la mécanique exacte des guardrails par risque, et pourquoi leur capteur est supérieur. Puis leurs coûts réels, la dépendance au modèle surtout. Puis un déroulé de sept ans, table et graphique à l'appui, pour voir ce que la règle fait vivre, le rythme des décisions et l'ampleur des variations. Enfin la transposition pratique pour un lecteur français, un simulateur en guise de capteur, l'usage précis pour lequel la page FIRE est taillée.
 
 ::: cle Ce qui a changé depuis 2006
 Deux déplacements. Le **critère** d'abord : Morningstar juge les règles sur la consommation totale vécue et sa variabilité (le legs compris), pas sur le seul taux de succès. C'est le critère qui avait condamné Guyton-Klinger ([[panorama-strategies-retrait]]). Le **capteur** ensuite : Kitces-Tharp déclenchent les ajustements sur la probabilité de succès recalculée du plan complet (horizon restant, pensions à venir, allocation), pas sur le ratio brut retrait/portefeuille, aveugle à tout cela. Même architecture qu'en 2006, un corridor et des ajustements de ±10 %, mais un juge honnête et un thermomètre juste.
@@ -35,6 +35,30 @@ La supériorité du capteur tient en deux exemples. Prenez le retraité de 62 an
 Le thermomètre par risque hérite de tout ce que le simulateur a de fragile ([[pieges-des-simulateurs]]). Une probabilité de succès calculée sur un modèle gaussien-optimiste dira « tout va bien » jusque dans le mur. Une probabilité calculée sur le broad-sample coupera peut-être trop tôt. Les faux signaux existent aussi. La probabilité de succès bouge avec les marchés et les mises à jour d'hypothèses, et un couple de garde-fous trop serrés (75/95) fera yo-yo. Les parades sont connues. Un capteur multi-modèles, qui déclenche sur la ruine du modèle central et vérifie sur les colonnes dures, exactement la lecture en faisceau. Des bandes larges. Une hystérésis, qui ne réagit qu'à un franchissement confirmé deux revues de suite. Et des ajustements doux. Le guardrail par risque est l'état de l'art pour qui a un simulateur honnête et la discipline de s'en servir. Sans cela, le vieux ratio brut assorti d'un plancher reste défendable ([[guyton-klinger]]).
 :::
 
+## Sept ans avec un guardrail par risque
+
+Tout ce qui précède reste abstrait tant qu'on n'a pas vu la règle vivre. Rien ne vaut un déroulé, comme pour le corridor Vanguard ([[plancher-plafond]]). Prenons le plan qui servira d'exemple plus bas : 1,5 M€, retrait de confort 54 000 € (3,6 %), plancher 44 000 €, pension en année 18. Le corridor est écrit ainsi : coupe de 10 % si le succès simulé tombe sous 85 %, hausse de 10 % s'il dépasse 99 %, tout franchissement devant être confirmé par deux revues consécutives (l'hystérésis). La séquence est un marché baissier précoce suivi d'une reprise, et les valeurs du capteur sont illustratives.
+
+| Revue | Portefeuille (réel) | Succès lu | Décision (corridor 85-99, hystérésis) | Retrait servi (réel) |
+|---|---|---|---|---|
+| 1 | 1 500 000 | 93 % | dans le corridor : rien | 54 000 |
+| 2 | 1 150 000 (−20 %) | 82 % | 1re alerte basse : on attend | 54 000 |
+| 3 | 990 000 (−10 %) | 76 % | alerte confirmée : coupe −10 % | **48 600** |
+| 4 | 1 060 000 (+12 %) | 88 % | retour dans le corridor : rien | 48 600 |
+| 5 | 1 120 000 (+10 %) | 91 % | corridor : rien | 48 600 |
+| 6 | 1 340 000 (+24 %) | 99,2 % | 1re alerte haute : on attend | 48 600 |
+| 7 | 1 430 000 (+11 %) | 99,4 % | confirmée : hausse +10 % | **53 460** |
+
+::: figure guardrails-capteur
+Les sept revues de la table, en deux panneaux alignés. En haut, le capteur : la probabilité de succès recalculée traverse le corridor 85-99 %, et seuls les franchissements confirmés deux revues de suite déclenchent un ajustement (les cercles vides sont des premières alertes, mises en attente). En bas, le revenu : deux marches de ±10 % en sept ans, loin du plancher. Le cas normal est l'immobilité.
+:::
+
+**Lisez le rythme d'abord.** Sept revues, deux décisions. Le cas normal, cinq années sur sept, est « ne rien faire », et c'est voulu : un guardrail bien dimensionné est silencieux la plupart du temps ([[revue-annuelle]]). L'hystérésis a coûté un an de retard sur la coupe, puisque l'année 2 alertait déjà. Mais c'est son office. Si l'année 3 avait rebondi, l'alerte se serait éteinte sans décision, et le revenu n'aurait jamais bougé. On échange un peu de réactivité contre l'absence de yo-yo.
+
+**Lisez les ampleurs ensuite.** C'est la réponse à « qu'est-ce que ça fait vivre ? ». Dans une traversée sévère (−28 % réel au creux), le revenu a fait une seule marche, de −10 %, tenue quatre ans, avant de remonter. Jamais il ne s'est approché du plancher (48 600 contre 44 000). Le pourcentage pur aurait servi −28 % en deux ans ([[pourcentage-fixe]]) ; le fixe indexé n'aurait rien changé du tout, en laissant monter la ruine silencieuse ([[retrait-fixe-bengen]]). Les marches de ±10 %, rares et datées, sont la signature de la famille : des décisions peu fréquentes mais réelles, là où le corridor Vanguard préfère des glissements continus sans décision ([[plancher-plafond]]).
+
+**Lisez enfin ce que le capteur voit.** Entre les revues 3 et 6, le succès simulé remonte de 76 à 99 %. Les marchés n'expliquent qu'une partie du chemin. S'y ajoutent la coupe elle-même, moins de dépenses donc plus de succès, et un facteur que le ratio brut ne verra jamais : chaque année écoulée raccourcit l'horizon restant et rapproche la pension de l'année 18. Le temps travaille pour le capteur. C'est exactement l'information que le thermomètre de 2006 ignorait, et la raison d'être de la refonte.
+
 ## La transposition française, avec un simulateur comme capteur
 
 Assemblons le tout pour un lecteur de ce livre : la version exécutable des guardrails par risque, le simulateur en guise d'instrument.
@@ -58,6 +82,7 @@ Les guardrails modernes sont l'aboutissement de la famille « fixe qui plie ». 
 - Deux refondations : Morningstar (le juge honnête, consommation vécue + variabilité + legs, rendements prospectifs, rapport annuel dont la série 3,3 → 4,0 → 3,7 % enseigne que le taux respire) et Kitces-Tharp (le bon thermomètre, la probabilité de succès du plan complet, pas le ratio brut).
 - Au classement Morningstar, les guardrails assagis dominent le couple consommation/stabilité ; le simple gel d'indexation reste le meilleur rapport bénéfice/simplicité ; tout se transpose en architecture, jamais en taux, pour un horizon FIRE.
 - Le capteur par risque intègre horizon, pensions et valorisations. Il ne coupe pas le retraité dont la pension arrive, et alerte le FIRE en marché cher des années avant le ratio. Mais il hérite des fragilités du simulateur : multi-modèles, bandes larges, hystérésis et ajustements doux obligatoires.
+- Concrètement, le rythme est lent : des années de « rien », puis une marche de ±10 % confirmée par deux revues. Dans le déroulé type, une traversée à −28 % se vit comme une seule coupe de 10 % tenue quatre ans, loin du plancher, le capteur remontant ensuite par trois canaux (les marchés, la coupe, l'horizon qui raccourcit).
 - Version exécutable en simulation : trois seuils de ruine écrits (cible ~5 %, coupe >12-15 %, hausse <1 %), ±10 % jamais sous le plancher, revue annuelle, confirmation sur deux revues. Et chaque seuil **vérifié** au solveur dans les deux sens.
 - La famille est l'état de l'art du revenu stable piloté ; son concurrent final est l'amortissement ([[amortissement-abw]]) : rendez-vous dans [[choisir-sa-strategie]].
 
