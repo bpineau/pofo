@@ -1164,3 +1164,74 @@ func figCorridorBorne() string {
 		"Le millésime 1966 (cercle) a demandé vingt-trois ans de glisse d'affilée, jusqu'à 57 % du revenu de départ."))
 	return svg(640, 378, b.String())
 }
+
+// figVpwPont draws the VPW worksheet's pension bridge, the piece that makes
+// the rule usable before the pensions start. The household sets aside the
+// present value of the missing pension years in bonds and spends it as annual
+// slices; the percentage applies only to the rest. The payoff is the flat top
+// edge: income does not step at 67, it simply changes hands, and the crash
+// test bites less because the bridge sleeve holds no equities.
+//
+// Worked on the article's household (47 years old, 1.6 M EUR, 60/40, pensions
+// of 21.6 k EUR/yr at 67, floor 38 k, comfort 52 k) at the table's own
+// assumptions: g = 3.3 % real for the percentage, 1.9 % real to discount the
+// bridge. PV of twenty years of pension = 356.6 k, so the percentage applies
+// to 1 243.4 k at 4.02 % = 50.0 k, and the household lives on 71.6 k.
+func figVpwPont() string {
+	const (
+		bridge = 21.6 // k€/yr, the pension being bridged then paid
+		vpwInc = 50.0 // k€/yr, the percentage sleeve at the assumed returns
+		gap    = 0.9  // k€, the gap between stacked bands
+		washB  = "#DCE3ED"
+		washG  = "#DAE9DF"
+		washA  = "#F2E5D7"
+	)
+	x := func(age float64) float64 { return 96 + (age-47)/(95-47)*(556-96) }
+	y := func(v float64) float64 { return 300 - v/80*(300-80) }
+	band := func(a0, a1, lo, hi float64, fill string) string {
+		return fmt.Sprintf(`<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`,
+			x(a0), y(hi), x(a1)-x(a0), y(lo)-y(hi), fill)
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("vpw", "Le pont de pension : vingt ans de revenu qui n'existe pas encore"))
+	for _, g := range []float64{0, 20, 40, 60} {
+		b.WriteString(line(96, y(g), 556, y(g), figGrid, 1))
+		b.WriteString(mTxt(88, y(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(sTxt(96, 62, 10.5, figMuted, "start", "400", "revenu réel servi (k€/an), ménage de 47 ans, 1,6 M€, pensions de 21,6 k€ à 67 ans"))
+
+	// the two lower bands: the bridge, then the pension it was standing in for
+	b.WriteString(band(47, 67, 0, bridge, washB))
+	b.WriteString(band(67, 95, 0, bridge, washG))
+	b.WriteString(line(x(47), y(bridge), x(67), y(bridge), figBlue, 2))
+	b.WriteString(line(x(67), y(bridge), x(95), y(bridge), figGreen, 2))
+	// the percentage sleeve on top, level at the assumed returns
+	b.WriteString(band(47, 95, bridge+gap, bridge+vpwInc, washA))
+	b.WriteString(line(x(47), y(bridge+vpwInc), x(95), y(bridge+vpwInc), figAccent, 2.4))
+
+	b.WriteString(sTxt(x(49), y(13), 10.5, figBlue, "start", "600", "le pont : 21,6 k€/an,"))
+	b.WriteString(sTxt(x(49), y(7.5), 10.5, figBlue, "start", "400", "prélevés sur 356 k€ d'obligations"))
+	b.WriteString(sTxt(x(70), y(13), 10.5, figGreen, "start", "600", "la pension, enfin liquidée"))
+	b.WriteString(sTxt(x(49), y(64), 10.5, figDeep, "start", "600", "le VPW sur les 1 243 k€ restants : 50,0 k€/an"))
+	b.WriteString(mTxt(552, y(bridge+vpwInc)-9, 10.5, figDeep, "end", "600", "71,6 k€/an"))
+
+	// the handover
+	b.WriteString(dashLine(x(67), y(0), x(67), y(74), figMuted, 1, "3 4"))
+	b.WriteString(sTxt(x(67), y(76), 10.5, figSoft, "middle", "600", "67 ans : la pension prend le relais"))
+
+	// the loss-tolerance test the doctrine imposes
+	b.WriteString(line(x(56), y(56.6), x(66), y(56.6), figBad, 1.8))
+	b.WriteString(dashLine(x(61), y(71.6), x(61), y(56.6), figBad, 1.4, "3 3"))
+	b.WriteString(sTxt(x(56), y(50.5), 10.5, figBad, "start", "600", "test de tolérance, actions −50 % : 56,6 k€, le pont ne bouge pas"))
+
+	// the household's own floor
+	b.WriteString(dashLine(96, y(38), 556, y(38), figRule, 1.4, "5 4"))
+	b.WriteString(sTxt(100, y(38)-8, 10.5, figMuted, "start", "400", "le plancher du ménage, 38 k€"))
+	b.WriteString(line(96, y(0), 556, y(0), figRule, 1))
+	for _, age := range []float64{47, 57, 67, 77, 87, 95} {
+		b.WriteString(mTxt(x(age), 318, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f ans", age)))
+	}
+	b.WriteString(sTxt(96, 344, 10.5, figMuted, "start", "400",
+		"Aux rendements supposés de la table (3,3 % réel pour la part VPW, 1,9 % pour actualiser le pont), sans fiscalité."))
+	return svg(640, 360, b.String())
+}

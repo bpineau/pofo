@@ -86,6 +86,7 @@ var figures = map[string]func() string{
 	"abw-1966":               figAbw1966,
 	"vpw-table":              figVpwTable,
 	"corridor-borne":         figCorridorBorne,
+	"vpw-pont":               figVpwPont,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
