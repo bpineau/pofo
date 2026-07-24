@@ -426,3 +426,262 @@ func figStackingExpo() string {
 	b.WriteString(sTxt(56, y(160)-6, 10.5, figMuted, "start", "400", "exposition totale (€)"))
 	return svg(640, 384, b.String())
 }
+
+// barHL draws a horizontal bar ending at x1 with the LEFT (data) end rounded,
+// for bars growing leftward from a zero axis.
+func barHL(x0, x1, y, h float64, fill string) string {
+	r := 3.5
+	if x1-x0 < r*2 {
+		r = (x1 - x0) / 2
+	}
+	return fmt.Sprintf(`<path d="M %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Z" fill="%s"/>`,
+		x1, y, x0+r, y, x0, y, x0, y+r, x0, y+h-r, x0, y+h, x0+r, y+h, x1, y+h, fill)
+}
+
+// legendChips renders one quiet row of legend chips under the plate title.
+func legendChips(b *strings.Builder, y float64, items [][2]string) {
+	lx := 24.0
+	for _, it := range items {
+		fmt.Fprintf(b, `<rect x="%.1f" y="%.1f" width="10" height="10" rx="2.5" fill="%s"/>`, lx, y, it[0])
+		b.WriteString(sTxt(lx+15, y+9, 10.5, figSoft, "start", "400", it[1]))
+		lx += 15 + 6.4*float64(len(it[1])) + 22
+	}
+}
+
+// --- 24. Bond primer: one rate point, five durations ---
+func figDurationChoc() string {
+	m := mapper(0, 1, -32, 32, 0, 1, 336, 88)
+	y := func(v float64) float64 { return m(0, v)[1] }
+	var b strings.Builder
+	b.WriteString(plateHead("l'atlas des obligations", "Un point de taux, et le prix bouge de sa duration"))
+	legendChips(&b, 56, [][2]string{{figBlue, "taux −1 point : le prix monte"}, {figBad, "taux +1 point : le prix baisse"}})
+	// horizontal grid + mono ticks
+	for _, g := range []float64{-30, -15, 0, 15, 30} {
+		gy := y(g)
+		col := figGrid
+		if g == 0 {
+			col = figRule
+		}
+		b.WriteString(line(56, gy, 616, gy, col, 1))
+		lbl := fmt.Sprintf("%+.0f", g)
+		if g == 0 {
+			lbl = "0"
+		}
+		b.WriteString(mTxt(48, gy+3.5, 10, figMuted, "end", "400", lbl+" %"))
+	}
+	type it struct {
+		d      float64
+		l1, l2 string
+	}
+	items := []it{
+		{0.2, "monétaire", "duration 0,2"},
+		{2, "État 2 ans", "duration 2"},
+		{7, "aggregate euro", "duration 7"},
+		{15, "État 30 ans", "duration 15"},
+		{29, "zéro-coupon 30 ans", "duration 29"},
+	}
+	bw, span := 32.0, 560.0/5
+	for i, it := range items {
+		cx := 56 + span*(float64(i)+0.5)
+		b.WriteString(barV(cx-bw-2, bw, y(0), y(it.d), figBlue))
+		b.WriteString(barV(cx+2, bw, y(0), y(-it.d), figBad))
+		lbl := strings.Replace(fmt.Sprintf("±%g", it.d), ".", ",", 1)
+		b.WriteString(mTxt(cx, y(it.d)-7, 10.5, figInk, "middle", "600", lbl+" %"))
+		b.WriteString(sTxt(cx, 358, 11, figSoft, "middle", "600", it.l1))
+		b.WriteString(mTxt(cx, 372, 10, figMuted, "middle", "400", it.l2))
+	}
+	return svg(640, 388, b.String())
+}
+
+// --- 25. Bond primer: what each type pays, in real terms ---
+func figObligationsRendements() string {
+	x := func(v float64) float64 { return 218 + v*(600-218)/4.0 }
+	var b strings.Builder
+	b.WriteString(plateHead("l'atlas des obligations", "Ce que chaque espèce paie, en réel"))
+	type row struct {
+		name   string
+		lo, hi float64
+		fill   string
+	}
+	rows := []row{
+		{"Monétaire", 0, 0.5, figAccent},
+		{"État euro 2 ans", 0.5, 1, figAccent},
+		{"État euro 10 ans", 1, 1.5, figAccent},
+		{"État euro 30 ans", 1, 2, figAccent},
+		{"Linkers euro (réel affiché)", 0.5, 1.5, figAccent},
+		{"Crédit IG euro", 1.5, 2.5, figAccent},
+		{"High yield (corrélé actions)", 2, 3.5, figBad},
+	}
+	y0, dy, bh := 76.0, 34.0, 15.0
+	for _, g := range []float64{0, 1, 2, 3, 4} {
+		gx := x(g)
+		col := figGrid
+		if g == 0 {
+			col = figRule
+		}
+		b.WriteString(line(gx, y0-12, gx, y0+dy*float64(len(rows))-8, col, 1))
+		b.WriteString(mTxt(gx, y0+dy*float64(len(rows))+10, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(sTxt(409, y0+dy*float64(len(rows))+26, 11, figMuted, "middle", "400", "points de rendement réel par an (ordres de grandeur 2024-2026)"))
+	for i, r := range rows {
+		y := y0 + dy*float64(i)
+		b.WriteString(sTxt(208, y+bh-3.5, 11.5, figSoft, "end", "600", r.name))
+		mid := (r.lo + r.hi) / 2
+		b.WriteString(barH(x(0), x(mid), y, bh, r.fill))
+		wy := y + bh/2
+		b.WriteString(line(x(r.lo), wy, x(r.hi), wy, figDeep, 1.6))
+		b.WriteString(line(x(r.hi), wy-4, x(r.hi), wy+4, figDeep, 1.6))
+		lbl := strings.ReplaceAll(fmt.Sprintf("%g à %g", r.lo, r.hi), ".", ",")
+		b.WriteString(mTxt(x(r.hi)+8, y+bh-3.5, 10.5, figDeep, "start", "600", lbl))
+	}
+	return svg(640, 352, b.String())
+}
+
+// --- 26. Bond primer: two shocks, five answers ---
+func figObligationsRegimes() string {
+	xz := 448.0 // zero axis; scale −45..+30 over 208..608
+	x := func(v float64) float64 { return xz + v*(608-208)/75.0 }
+	var b strings.Builder
+	b.WriteString(plateHead("l'atlas des obligations", "Deux chocs, cinq réponses"))
+	legendChips(&b, 56, [][2]string{{figBlue, "choc déflationniste (2008)"}, {figBad, "choc d'inflation (2022)"}})
+	type row struct {
+		name       string
+		defl, infl float64
+	}
+	rows := []row{
+		{"État court", 5, -3},
+		{"État long", 25, -40},
+		{"Linker court", -1, -2},
+		{"Crédit IG", -5, -14},
+		{"High yield", -26, -11},
+	}
+	y0, pitch, bh := 88.0, 43.0, 11.0
+	// zero axis
+	b.WriteString(line(xz, y0-10, xz, y0+pitch*float64(len(rows))-12, figRule, 1))
+	bar := func(v, y float64, fill string) {
+		if v >= 0 {
+			b.WriteString(barH(xz, x(v), y, bh, fill))
+			b.WriteString(mTxt(x(v)+7, y+bh-2, 10.5, figDeep, "start", "600", fmt.Sprintf("%+.0f", v)))
+		} else {
+			b.WriteString(barHL(x(v), xz, y, bh, fill))
+			b.WriteString(mTxt(x(v)-7, y+bh-2, 10.5, figDeep, "end", "600", fmt.Sprintf("%.0f", v)))
+		}
+	}
+	for i, r := range rows {
+		y := y0 + pitch*float64(i)
+		b.WriteString(sTxt(198, y+bh+3, 11.5, figSoft, "end", "600", r.name))
+		bar(r.defl, y, figBlue)
+		bar(r.infl, y+bh+3, figBad)
+	}
+	b.WriteString(sTxt(408, y0+pitch*float64(len(rows))+8, 11, figMuted, "middle", "400", "rendement nominal sur l'année du choc (%, stylisé)"))
+	return svg(640, 332, b.String())
+}
+
+// --- 27. Managed futures: the trend smile ---
+func figTrendSmile() string {
+	m := mapper(-50, 50, -14, 32, 64, 600, 296, 72)
+	var b strings.Builder
+	b.WriteString(plateHead("managed futures", "Le sourire du trend : payé aux deux extrêmes"))
+	// axes: y ticks + grid
+	for _, g := range []float64{-10, 0, 10, 20, 30} {
+		gy := m(0, g)[1]
+		col := figGrid
+		if g == 0 {
+			col = figRule
+		}
+		b.WriteString(line(64, gy, 600, gy, col, 1))
+		b.WriteString(mTxt(58, gy+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%+.0f", g)))
+	}
+	// x ticks
+	for _, g := range []float64{-50, -25, 0, 25, 50} {
+		p := m(g, -14)
+		b.WriteString(mTxt(p[0], 312, 10, figMuted, "middle", "400", fmt.Sprintf("%+.0f", g)))
+	}
+	zx := m(0, 0)[0]
+	b.WriteString(dashLine(zx, 72, zx, 296, figRule, 1, "3 4"))
+	b.WriteString(sTxt(332, 330, 11, figMuted, "middle", "400", "rendement des actions mondiales sur 12 mois (%, profil stylisé)"))
+	b.WriteString(sTxt(64, 62, 10.5, figMuted, "start", "400", "rendement du trend sur la même fenêtre (%)"))
+	// the smile
+	pts := [][2]float64{{-50, 25}, {-40, 19}, {-30, 13}, {-20, 6}, {-12, 1}, {-6, -2}, {0, -4}, {6, -3}, {12, -1}, {20, 3}, {30, 8}, {40, 13}, {50, 18}}
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	b.WriteString(smoothStroke(px, figAccent, 2.4))
+	// annotations: the two tails and the middle trough
+	l := m(-40, 19)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.6" fill="%s" stroke="#fffdf9" stroke-width="1.6"/>`, l[0], l[1], figDeep)
+	b.WriteString(sTxt(l[0]+12, l[1]-6, 11, figSoft, "start", "600", "les grands krachs"))
+	b.WriteString(sTxt(l[0]+12, l[1]+8, 10.5, figMuted, "start", "400", "sont des tendances (2008)"))
+	r := m(40, 13)
+	b.WriteString(sTxt(r[0]-10, r[1]-16, 11, figSoft, "end", "600", "les grands bulls aussi"))
+	b.WriteString(sTxt(r[0]-10, r[1]-2, 10.5, figMuted, "end", "400", "(fin des années 1990)"))
+	tr := m(3, -4)
+	b.WriteString(sTxt(tr[0]+6, tr[1]+22, 11, figSoft, "start", "600", "le creux : marchés sans direction,"))
+	b.WriteString(sTxt(tr[0]+6, tr[1]+36, 10.5, figMuted, "start", "400", "faux départs (2011-2019)"))
+	// 2022, off the smile: gains came from rates & energy, not equities
+	s := m(-18, 27)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, s[0], s[1], figBlue)
+	b.WriteString(dashLine(s[0], s[1]+6, m(-18, 4.8)[0], m(-18, 4.8)[1], figMuted, 1, "2 3"))
+	b.WriteString(sTxt(s[0]+10, s[1]+3, 11, figBlue, "start", "600", "2022 : hors du sourire actions,"))
+	b.WriteString(sTxt(s[0]+10, s[1]+17, 10.5, figMuted, "start", "400", "gagné sur les taux et l'énergie"))
+	return svg(640, 344, b.String())
+}
+
+// --- 28. Managed futures: a quarter century of SG Trend, year by year ---
+func figTrendAnnees() string {
+	m := mapper(2000, 2025, -12, 30, 56, 616, 300, 64)
+	y := func(v float64) float64 { return m(2000, v)[1] }
+	type yr struct {
+		year int
+		v    float64
+	}
+	years := []yr{
+		{2000, 6}, {2001, 4}, {2002, 19}, {2003, 9}, {2004, 5}, {2005, 0}, {2006, 6}, {2007, 8},
+		{2008, 21}, {2009, -5}, {2010, 7}, {2011, -8}, {2012, -3}, {2013, 3}, {2014, 20}, {2015, 0},
+		{2016, -6}, {2017, 2}, {2018, -8}, {2019, 9}, {2020, 3}, {2021, 9}, {2022, 27}, {2023, -4}, {2024, 2},
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("managed futures", "Un quart de siècle de SG Trend, année par année"))
+	// the winter wash, behind everything
+	w0, w1 := m(2011, 30)[0], m(2020, -12)[0]
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, w0, 64.0, w1-w0, 236.0, figWash)
+	b.WriteString(sTxt((w0+w1)/2, 78, 10.5, figMuted, "middle", "600", "l'hiver : ≈ 0 % cumulé"))
+	// grid
+	for _, g := range []float64{-10, 0, 10, 20, 30} {
+		gy := y(g)
+		col := figGrid
+		if g == 0 {
+			col = figRule
+		}
+		b.WriteString(line(56, gy, 616, gy, col, 1))
+		b.WriteString(mTxt(48, gy+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%+.0f", g)))
+	}
+	// bars
+	bw := 14.0
+	for _, e := range years {
+		cx := m(float64(e.year)+0.5, 0)[0]
+		if e.v == 0 { // flat year: a quiet tick on the axis
+			b.WriteString(line(cx-bw/2, y(0)-1, cx+bw/2, y(0)-1, figMuted, 2))
+			continue
+		}
+		fill := figAccent
+		if e.v < 0 {
+			fill = figBad
+		}
+		b.WriteString(barV(cx-bw/2, bw, y(0), y(e.v), fill))
+	}
+	// direct labels on the memorable years
+	for _, e := range []yr{{2008, 21}, {2014, 20}, {2022, 27}} {
+		cx := m(float64(e.year)+0.5, 0)[0]
+		b.WriteString(mTxt(cx, y(e.v)-6, 10.5, figDeep, "middle", "600", fmt.Sprintf("+%.0f", e.v)))
+	}
+	b.WriteString(mTxt(m(2018.5, 0)[0], y(-8)+14, 10.5, figBad, "middle", "600", "−8"))
+	// x ticks
+	for _, t := range []int{2000, 2005, 2010, 2015, 2020, 2024} {
+		cx := m(float64(t)+0.5, 0)[0]
+		b.WriteString(mTxt(cx, 316, 10, figMuted, "middle", "400", fmt.Sprintf("%d", t)))
+	}
+	b.WriteString(sTxt(336, 336, 11, figMuted, "middle", "400", "rendement annuel, net de frais (ordres de grandeur)"))
+	return svg(640, 352, b.String())
+}
