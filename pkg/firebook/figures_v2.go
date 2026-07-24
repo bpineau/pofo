@@ -763,3 +763,79 @@ func figGuardrailsCapteur() string {
 	b.WriteString(sTxt(346, 412, 11, figMuted, "middle", "400", "revues annuelles (chiffres illustratifs de la table)"))
 	return svg(640, 424, b.String())
 }
+
+// figMcEntreesVsTirages contrasts the two things one can change in a
+// Monte-Carlo: the assumptions and the number of draws. Both blocks share one
+// ruin axis, so the eye reads the asymmetry directly, half a point of mu
+// scatters the dots across the axis while a tenfold N only shortens a whisker.
+//
+// The three ruin figures are computed with this repository's own engine
+// (decumul.Plan over a scenario.ParametricSource, 400 000 paths): 1 M EUR,
+// 32 k EUR/yr real (3.2 %), 35 years, no tax, Student-t sigma 11 % df 5, mu
+// 4.5/5.0/5.5 % arithmetic real. The whiskers are the 95 % sampling interval
+// 1.96*sqrt(p(1-p)/N) at p = 5.9 %, the very formula the article's callout gives.
+func figMcEntreesVsTirages() string {
+	x := func(pct float64) float64 { return 150 + pct/10*(596-150) }
+	var b strings.Builder
+	b.WriteString(plateHead("monte-carlo", "Ce qui déplace la ruine : les hypothèses, pas le nombre de tirages"))
+
+	// shared grid and axis
+	for _, g := range []float64{0, 2, 4, 6, 8, 10} {
+		b.WriteString(line(x(g), 66, x(g), 296, figGrid, 1))
+		b.WriteString(mTxt(x(g), 314, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(line(150, 296, 596, 296, figRule, 1))
+	b.WriteString(sTxt(373, 334, 11, figMuted, "middle", "400", "probabilité de ruine (%)"))
+	// the central estimate, the spine both blocks are read against
+	b.WriteString(dashLine(x(5.93), 66, x(5.93), 296, figMuted, 1, "2 4"))
+
+	// -- block A: the assumption moves -------------------------------------
+	b.WriteString(sTxt(24, 78, 10.5, figSoft, "start", "600", "On bouge μ de ±0,5 point (un écart indétectable dans les données), à N = 10 000"))
+	muRows := []struct {
+		label string
+		ruin  float64
+		value string
+	}{
+		{"μ 4,5 %", 8.66, "8,7 %"},
+		{"μ 5,0 %", 5.93, "5,9 %"},
+		{"μ 5,5 %", 4.05, "4,1 %"},
+	}
+	for i, r := range muRows {
+		y := 102 + float64(i)*24
+		b.WriteString(mTxt(138, y+3.5, 10.5, figSoft, "end", "400", r.label))
+		// the sampling whisker at N = 10 000, drawn to the same scale as block B
+		b.WriteString(line(x(r.ruin-0.46), y, x(r.ruin+0.46), y, figAccent, 1.4))
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, x(r.ruin), y, figDeep)
+		b.WriteString(mTxt(x(r.ruin+0.46)+9, y+3.5, 10.5, figDeep, "start", "600", r.value))
+	}
+	// the span bracket: how far the assumption alone carries the answer
+	b.WriteString(line(x(4.05), 172, x(8.66), 172, figDeep, 1.2))
+	b.WriteString(line(x(4.05), 168, x(4.05), 176, figDeep, 1.2))
+	b.WriteString(line(x(8.66), 168, x(8.66), 176, figDeep, 1.2))
+	b.WriteString(sTxt(x(7.4), 190, 10.5, figDeep, "middle", "600", "×2,1 sur la ruine"))
+
+	// -- block B: the number of draws moves --------------------------------
+	b.WriteString(sTxt(24, 218, 10.5, figSoft, "start", "600", "On multiplie N par dix, à hypothèses figées (μ = 5,0 %)"))
+	nRows := []struct {
+		label string
+		ci    float64
+		value string
+	}{
+		{"N 1 000", 1.46, "± 1,5 pt"},
+		{"N 4 000", 0.73, "± 0,7 pt"},
+		{"N 10 000", 0.46, "± 0,5 pt"},
+	}
+	for i, r := range nRows {
+		y := 242 + float64(i)*24
+		b.WriteString(mTxt(138, y+3.5, 10.5, figSoft, "end", "400", r.label))
+		b.WriteString(line(x(5.93-r.ci), y, x(5.93+r.ci), y, figBlue, 1.4))
+		b.WriteString(line(x(5.93-r.ci), y-4, x(5.93-r.ci), y+4, figBlue, 1.4))
+		b.WriteString(line(x(5.93+r.ci), y-4, x(5.93+r.ci), y+4, figBlue, 1.4))
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, x(5.93), y, figBlue)
+		b.WriteString(mTxt(x(5.93+r.ci)+9, y+3.5, 10.5, figBlue, "start", "600", r.value))
+	}
+
+	b.WriteString(sTxt(24, 356, 10.5, figMuted, "start", "400",
+		"1 M€, 32 k€/an réels (3,2 %), 35 ans, Student-t σ 11 %, df 5. Barres : erreur d'échantillonnage à 95 %."))
+	return svg(640, 372, b.String())
+}
