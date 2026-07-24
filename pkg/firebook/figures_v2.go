@@ -685,3 +685,81 @@ func figTrendAnnees() string {
 	b.WriteString(sTxt(336, 336, 11, figMuted, "middle", "400", "rendement annuel, net de frais (ordres de grandeur)"))
 	return svg(640, 352, b.String())
 }
+
+// --- 29. Risk-based guardrails: the sensor decides, the income follows ---
+func figGuardrailsCapteur() string {
+	xr := func(rev float64) float64 { return 96 + (rev-1)*(596-96)/6.5 }
+	// top panel: success probability, 70..103 % over py 200..70
+	ys := func(v float64) float64 { return 200 - (v-70)/33*130 }
+	// bottom panel: income, 42..57 k€ over py 380..240
+	yi := func(v float64) float64 { return 380 - (v-42)/15*140 }
+	var b strings.Builder
+	b.WriteString(plateHead("guardrails par risque", "Le capteur décide, le revenu suit"))
+	// vertical guides at the two confirmed decisions, spanning both panels
+	for _, r := range []float64{3, 7} {
+		b.WriteString(dashLine(xr(r), 70, xr(r), 380, figMuted, 1, "2 4"))
+	}
+	// -- top panel --
+	b.WriteString(sTxt(96, 60, 10.5, figMuted, "start", "400", "le capteur : probabilité de succès recalculée (%)"))
+	// corridor wash between the two guardrails
+	fmt.Fprintf(&b, `<rect x="96" y="%.1f" width="500" height="%.1f" fill="%s"/>`, ys(99), ys(85)-ys(99), figWash)
+	b.WriteString(sTxt(160, ys(96), 10.5, figMuted, "start", "400", "le corridor : on ne touche à rien"))
+	// guardrail thresholds
+	b.WriteString(dashLine(96, ys(85), 596, ys(85), figBad, 1.2, "5 4"))
+	b.WriteString(sTxt(592, ys(85)+14, 10.5, figBad, "end", "600", "coupe sous 85 %"))
+	b.WriteString(dashLine(96, ys(99), 596, ys(99), figGood, 1.2, "5 4"))
+	b.WriteString(sTxt(100, ys(99)-7, 10.5, figGood, "start", "600", "hausse au-dessus de 99 %"))
+	for _, g := range []float64{70, 85, 99} {
+		b.WriteString(mTxt(88, ys(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	// the sensor path
+	vals := []float64{93, 82, 76, 88, 91, 99.2, 99.4}
+	pts := make([][2]float64, len(vals))
+	for i, v := range vals {
+		pts[i] = [2]float64{xr(float64(i + 1)), ys(v)}
+	}
+	b.WriteString(poly(pts, figAccent, 2, ""))
+	for i, p := range pts {
+		switch i {
+		case 1: // first low alert: open circle, on hold
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="#fffdf9" stroke="%s" stroke-width="1.8"/>`, p[0], p[1], figBad)
+		case 2: // confirmed: cut
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, p[0], p[1], figBad)
+		case 5: // first high alert: open circle
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="#fffdf9" stroke="%s" stroke-width="1.8"/>`, p[0], p[1], figGood)
+		case 6: // confirmed: raise
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, p[0], p[1], figGood)
+		default:
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s" stroke="#fffdf9" stroke-width="1.4"/>`, p[0], p[1], figDeep)
+		}
+	}
+	b.WriteString(sTxt(xr(3)+10, ys(76)+5, 10.5, figBad, "start", "600", "confirmée : coupe −10 %"))
+	b.WriteString(sTxt(xr(7)-2, ys(85)-10, 10.5, figGood, "end", "600", "confirmée : hausse +10 %"))
+	// -- bottom panel --
+	b.WriteString(sTxt(96, 232, 10.5, figMuted, "start", "400", "le revenu : retrait réel servi (k€)"))
+	for _, g := range []float64{44, 48, 52, 56} {
+		gy := yi(g)
+		b.WriteString(line(96, gy, 596, gy, figGrid, 1))
+		b.WriteString(mTxt(88, gy+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	// the floor, never approached
+	b.WriteString(dashLine(96, yi(44), 596, yi(44), figRule, 1.4, "5 4"))
+	b.WriteString(sTxt(592, yi(44)-6, 10.5, figMuted, "end", "400", "le plancher (44 k€), jamais approché"))
+	// the income staircase
+	steps := [][2]float64{{1, 54}, {3, 54}, {3, 48.6}, {7, 48.6}, {7, 53.46}, {7.5, 53.46}}
+	spx := make([][2]float64, len(steps))
+	for i, s := range steps {
+		spx[i] = [2]float64{xr(s[0]), yi(s[1])}
+	}
+	b.WriteString(poly(spx, figDeep, 2.2, ""))
+	b.WriteString(mTxt(xr(1)+4, yi(54)-7, 10.5, figDeep, "start", "600", "54,0"))
+	b.WriteString(mTxt(xr(5), yi(48.6)+16, 10.5, figDeep, "middle", "600", "48,6 (quatre ans)"))
+	b.WriteString(mTxt(xr(7.5), yi(53.46)-7, 10.5, figDeep, "end", "600", "53,5"))
+	// shared x axis
+	b.WriteString(line(96, 380, 596, 380, figRule, 1))
+	for r := 1; r <= 7; r++ {
+		b.WriteString(mTxt(xr(float64(r)), 394, 10, figMuted, "middle", "400", fmt.Sprintf("%d", r)))
+	}
+	b.WriteString(sTxt(346, 412, 11, figMuted, "middle", "400", "revues annuelles (chiffres illustratifs de la table)"))
+	return svg(640, 424, b.String())
+}
