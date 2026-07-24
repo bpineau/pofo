@@ -20,7 +20,7 @@ Prenons trois années de rendements réels : +20 %, +10 %, −25 %. Moyenne géo
 
 **Séquence favorable (le krach à la fin)** : +20 %, +10 %, −25 %.
 
-| Année | Capital avant retrait | Après retrait | Rendement | Capital final |
+| Année | Avant retrait | Après retrait | Rendement | Capital final |
 |---|---|---|---|---|
 | 1 | 1 000 000 | 960 000 | +20 % | 1 152 000 |
 | 2 | 1 152 000 | 1 112 000 | +10 % | 1 223 200 |
@@ -28,7 +28,7 @@ Prenons trois années de rendements réels : +20 %, +10 %, −25 %. Moyenne géo
 
 **Séquence défavorable (le krach d'abord)** : −25 %, +10 %, +20 %.
 
-| Année | Capital avant retrait | Après retrait | Rendement | Capital final |
+| Année | Avant retrait | Après retrait | Rendement | Capital final |
 |---|---|---|---|---|
 | 1 | 1 000 000 | 960 000 | −25 % | 720 000 |
 | 2 | 720 000 | 680 000 | +10 % | 748 000 |

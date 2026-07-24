@@ -20,7 +20,7 @@ Il faut quand même créditer la règle de deux vertus réelles, derrière sa ga
 
 Le revenu vaut w × portefeuille, donc sa volatilité est celle du portefeuille. Une volatilité de 11 % donne un train de vie qui bouge de ±11 % les années ordinaires, et qui suit les drawdowns dans toute leur profondeur. Voici les ordres de grandeur à intérioriser, pour un 60/40 mondial :
 
-| Épisode | Drawdown réel du portefeuille | Votre revenu sous pourcentage fixe |
+| Épisode | Drawdown réel | Votre revenu |
 |---|---|---|
 | Correction ordinaire (tous les 2-3 ans) | −10 à −15 % | −10 à −15 % pendant 1-2 ans |
 | Krach type 2008 | −30 à −35 % | −30 % pendant 2-4 ans |

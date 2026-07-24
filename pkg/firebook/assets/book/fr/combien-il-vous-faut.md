@@ -50,7 +50,7 @@ Le portefeuille n'a pas à financer ce que d'autres revenus financeront. Trois c
 
 Le multiple est l'inverse du taux de retrait ([[la-regle-des-4-pourcents]]). Le choisir, c'est choisir votre taux. Vous arbitrez donc entre des années de travail supplémentaires et le risque de devoir vous ajuster plus tard. Les repères que donne la recherche ([[serie-ern]], [[guardrails-morningstar]], [[anarkulova-cederburg]]) :
 
-| Multiple | Taux | Le profil que ça sert |
+| Multiple | Taux | Pour qui |
 |---|---|---|
 | 25 (4 %) | 4,0 % | Horizon ≤ 30 ans, ou horizon long avec fortes marges : flexibilité réelle, pension légale future, revenus partiels probables |
 | 28-29 (3,5 %) | ~3,5 % | Le compromis de travail pour un départ précoce avec portefeuille mondial diversifié et une flexibilité normale |
