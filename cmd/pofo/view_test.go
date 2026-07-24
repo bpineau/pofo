@@ -38,11 +38,18 @@ func TestViewComposerMount(t *testing.T) {
 	if strings.Contains(mount, "open>") {
 		t.Error("the /view composer must render collapsed by default")
 	}
-	// The /view mount is unchanged: it never carries the hub's blank-boot or
-	// preset attributes (those belong to hubComposerMount alone).
-	for _, unwanted := range []string{"data-boot", "data-globals", "data-preset"} {
+	// The blank-boot attributes belong to hubComposerMount alone: /view always
+	// hydrates from the URL's portfolios, never from an empty first card.
+	for _, unwanted := range []string{"data-boot", "data-globals"} {
 		if strings.Contains(mount, unwanted) {
 			t.Errorf("/view mount must not carry %q", unwanted)
+		}
+	}
+	// The bundled presets ride the /view mount too, so "add preset" works from
+	// a result page without a detour through the hub.
+	for _, want := range []string{"data-preset-count", "data-preset-0"} {
+		if !strings.Contains(mount, want) {
+			t.Errorf("/view mount missing %q", want)
 		}
 	}
 	// The mount rides into the render options for the web app only.

@@ -98,8 +98,9 @@ type server struct {
 	render   func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
 	sem      chan struct{}
 	examples map[string]examples.Info
-	// presets are the bundled builds the hub's composer offers, precomputed
-	// once (the examples are embedded and immutable).
+	// presets are the bundled builds the hub's composer offers, shared with
+	// every /view mount through viewPresets (computed once: the examples are
+	// embedded and immutable).
 	presets []composerPreset
 
 	// FIRE mounts: fireDefault is the plain /firesimulator/ app (the startup
@@ -124,7 +125,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 		client:     client,
 		sem:        make(chan struct{}, viewParallel),
 		examples:   knownExamples(),
-		presets:    buildPresets(),
+		presets:    viewPresets(),
 		fireByEx:   map[string]http.Handler{},
 		fireBySpec: map[string]http.Handler{},
 	}
