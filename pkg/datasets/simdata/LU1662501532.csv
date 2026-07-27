@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: LU1662501532
 # name: AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast
-# method: real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception
+# method: real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps, the donor's 10% performance fee over EUR STR being what the published OCF misses) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception
 # validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.1%/yr CAGR sim -10.99% vs real -10.55% (overlap 176 d from 2021-04-01 to 2021-12-21) vs LU1662501532
-# generated: 2026-07-18
+# generated: 2026-07-28
 date,close
 1994-12-19,18.732061
 1994-12-20,18.563016
