@@ -1,0 +1,86 @@
+# ERN 75/25 -- Karsten Jeske, the safe-withdrawal-rate benchmark
+# Idea: the portfolio is the boring part. The Early Retirement Now
+#   safe-withdrawal-rate series (60+ installments, the most quantitatively
+#   serious body of work in the FIRE literature) reaches a deliberately
+#   unglamorous conclusion: a plain 75% US large-cap / 25% intermediate
+#   Treasuries mix, rebalanced monthly, is hard to beat on the metric that
+#   matters to a retiree, and the real work is done by the WITHDRAWAL RULE,
+#   not by adding sleeves. This file is that benchmark, and the useful
+#   counterweight to the trend/gold/all-weather builds in this directory.
+# Inspired by: Karsten Jeske, Early Retirement Now, "Safe Withdrawal Rate Series".
+#   https://earlyretirementnow.com/safe-withdrawal-rate-series/
+# Backtest via long US history (SIM); UCITS buy-route in each line comment.
+#meta capital:1000000
+#meta withdraw:27000/year
+#meta rebalance:30
+#meta sim:on
+
+75    SP500           # US large cap, fee-free index (buy VUAA IE00BFMXXD54 or CSPX IE00B5BMR087; PEA: SPEA)
+25    IEF             # 7-10y Treasuries (UCITS: IE00B3VWN518 Acc / IDTM Dist; a euro-liability investor usually takes euro govt IEGA IE00B4WXJJ64 instead)
+
+# ## The withdrawal rule IS the strategy
+#
+#   The 27,000 EUR on a million above is not a typo and not the 4% rule.
+#   The series' central result is that 4% is calibrated on 30-year US
+#   retirements and is too aggressive for a 50-year one, and its answer is a
+#   valuation-linked rule rather than a fixed percentage: spend
+#   a + b/CAPE, with a around 1.5-1.75% and b around 0.5. At the bundled
+#   CAPE (about 42 in mid-2026) that gives roughly 2.7-2.9%, hence the
+#   27,000. Two consequences worth internalizing before comparing this file
+#   with anything else. Spending falls when valuations are rich and rises
+#   when they are cheap, so the plan flexes instead of failing. And a
+#   backtest at a RIGID 4% flatters diversified low-volatility books,
+#   because it charges them for the sequence risk this rule sidesteps.
+#   Run it both ways: this file at 27,000, then at 40,000, and read what
+#   changes.
+
+# ## What this file is NOT
+#
+#   It is the series' published benchmark, not the author's own book. His
+#   real allocation is lower on equity (around 55%) and carries two things
+#   no ETF line can express: a short-dated S&P 500 option-writing overlay
+#   run on portfolio margin, and private real-estate funds. He is explicit
+#   that the option strategy is not a recipe he recommends to others, so it
+#   stays out of this file rather than being faked with a covered-call ETF,
+#   which is a different exposure.
+
+# ## The variant his own tables prefer
+#
+#   Swap 20 points of the S&P sleeve into US small-cap value (55 SP500 /
+#   20 ZPRV IE00BSPLC413 / 25 IEF). Over post-1926 30-year cohorts that
+#   variant beats the plain 75/25 in his published tables, and his own
+#   verdict on the risk-parity portfolios is that whatever worked in them
+#   came from their small-value sleeve rather than from the risk balancing.
+#   Copy the file and try it; it costs one line.
+
+# ## Where this disagrees with the rest of this directory, honestly
+#
+#   His headline ranking (30-year cohorts, rigid withdrawal, 0% terminal
+#   value) puts 75/25 at a 3.83% failsafe against 3.40% for All Weather,
+#   3.35% for the Golden Butterfly and 3.51% for the Golden Ratio, all
+#   measured without small-cap value. Three things are worth knowing before
+#   treating that as settled.
+#   WINDOW. Those all-years failsafes are set by the 1900s-1910s cohorts,
+#   when gold WAS the currency (a fixed nominal price by construction), and
+#   are pressed down again by 1934-1968, when gold was $35 by decree and
+#   illegal for Americans to hold until 1974 while T-bills sat rate-capped.
+#   A gold sleeve cannot testify in those decades. Restricted to cohorts
+#   since 1926 his own table already flips two of the three: All Weather
+#   3.92% and Golden Ratio 3.95% against 75/25 at 3.83%, with 4% failure
+#   rates of 1.30% and 0.19% against 1.94%.
+#   HORIZON. Stretched to 50 years the ranking flips back and his case is
+#   strong: cash and gold drag compounds with time, while sequence-risk
+#   protection is front-loaded. Retirees with a 50-year horizon should read
+#   that part of the series carefully.
+#   VALUATION. His most durable finding survives every window: conditional
+#   on CAPE above 20, failure rates roughly double for every portfolio
+#   here, diversified or not. Diversification does not hedge out
+#   overvaluation, which is precisely why the withdrawal rule above exists.
+#
+#   Compare for yourself, same window, same rule:
+#     ./pofo examples/ern-75-25-jeske.txt examples/golden-butterfly.txt \
+#            examples/miller-50-40-10.txt examples/all-weather-dalio.txt
+#     ./pofo -fire examples/ern-75-25-jeske.txt
+#   The honest summary is that the two camps disagree less about the data
+#   than about which century to weight, and about whether a spending rule
+#   or an asset sleeve should absorb the shock.
