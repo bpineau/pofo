@@ -50,7 +50,7 @@ Léa et Sam vivent une phase de pont de 12 ans, avec un besoin de 50 000 €/an 
 - La CSM (« taxe PUMa ») vise exactement le rentier d'avant la pension. Elle prélève ~6,5 % des revenus du capital au-delà d'une franchise (~0,5 PASS ≈ 23,7 k€), si les revenus d'activité restent sous ~0,2 PASS (≈ 9,5 k€). Assiette plafonnée, appel en N+1, formule retouchée deux fois depuis 2016, d'où une veille annuelle obligatoire.
 - Salariés, indépendants, chômeurs indemnisés et pensionnés y échappent. Elle ne concerne que la phase de pont. Et elle s'éteint à vie à la première pension liquidée.
 - Quatre mitigations, par efficacité. L'interrupteur d'activité (~9,5 k€ réels d'activité = zéro CSM, l'argument fiscal du Barista), le pilotage d'assiette (capitaliser, doser les rachats, étaler les PV, l'optimum conjoint avec le lissage fiscal réalisant jusqu'à la franchise et pas au-delà), la liquidation calculée, la provision budgétée.
-- Ordre de grandeur, 0,5-2 k€/an pour un plan organisé, 3-8 k€ pour un plan naïf, soit 0,2-0,4 point de taux de retrait. À intégrer au taux mixte (le défaut 31,4 % l'approxime), en le baissant pour la phase adossée.
+- Ordre de grandeur, 0,5-2 k€/an pour un plan organisé, 3-8 k€ pour un plan naïf, soit 0,2-0,4 point de taux de retrait. À intégrer au taux mixte (le défaut 32,8 % l'approxime), en le baissant pour la phase adossée.
 - Réflexes de gouvernance, simulateur URSSAF chaque année, provision l'année de réalisation, veille sur chaque loi de financement. C'est le prélèvement instable du plan français.
 
 ---

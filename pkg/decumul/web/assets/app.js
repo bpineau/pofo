@@ -85,8 +85,8 @@ const GROUPS = [
       "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down: a bond-tent glidepath."),
   ]},
   {title: "Taxes", col: 1, items: [
-    r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.314, "pct",
-      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts, e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
+    r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.328, "pct",
+      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts, e.g. ~31-35% for a plain French taxable account (the 2026 flat tax is 31.4%, plus the PUMa levy), less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
   ]},
   {title: "Simulation", col: 0, id: "group-simulation", items: [
     r("nPaths", "Simulated paths", 1000, 10000, 500, 2000, "int",
