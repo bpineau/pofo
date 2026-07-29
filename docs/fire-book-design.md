@@ -128,6 +128,16 @@ rendering in Go is testable, stdlib-only and reusable.
   "bon francais" means CORRECT French (syntax, vocabulary, spelling), not
   French-only vocabulary. Also: do not abuse bold (and never uppercase for
   emphasis; acronyms and typographic conventions only).
+- A REAL ENGLISH WORD BEATS A CALQUE (2026-07-29). This ranks the rule above.
+  Given the choice, keep the actual English term, glossed in French at first
+  use, rather than mint a French word shaped like the English one. A calque is
+  the worst of both: neither French nor English, and it teaches the reader
+  nothing. So "playbook", "time buckets", "cap-weighted" and "free lunch" stay;
+  "visualisateur de portefeuille", "bull obligataire", "retour de valorisation"
+  and "generateur de permission" had to go. Only replace English with French
+  when a REAL French word or idiom exists. Mechanical greps do not find calques
+  (they surface "cout d'opportunite" and "releve de carriere", which are
+  correct): the only method is to read the added prose.
 - STANDALONE BOOK (2026-07-17): the book is not "a part of pofo" and must
   read offline without it. Avoid pofo references except when really useful
   (a pro-tip or a usage explanation), and then as an `::: encart` or
