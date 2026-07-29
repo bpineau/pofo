@@ -10,6 +10,10 @@ Mais « proche » n'est pas « identique ». Les règles diffèrent par la **for
 On ne choisit pas « la meilleure règle ». On choisit la forme de risque qu'on préfère subir : faillite rare, ajustements bornés ou variabilité continue. Le choix se fait sous la contrainte de son plancher réel, et pour une personne précise, celle qui tiendra le stylo dans vingt ans. Trois questions, dans cet ordre. Que **puis**-je encaisser (le plancher) ? Que **veux**-je vivre (le tempérament) ? Qui **exécutera** (la gouvernance) ? La technique vient après, et se règle en une séance.
 :::
 
+::: figure arbre-decision
+La procédure entière tient sur une page, et son ordre n'est pas décoratif. Chaque étape réduit le champ, si bien que les questions coûteuses arrivent quand il ne reste plus que deux candidates. Sauter l'étape 1 pour comparer des règles est l'erreur la plus commune du domaine : on optimise alors le second ordre en laissant le premier ouvert.
+:::
+
 ## Étape 1 : le socle, avant toute règle
 
 Aucune règle ne se choisit sans trois chiffres établis ([[combien-il-vous-faut]]) : le **plancher** (les dépenses tenables cinq ans, moral compris), le **confort** (la vie visée) et la **couverture externe** du plancher (pension actualisée à sa date, rentes, revenus quasi sûrs, [[retraite-legale]], [[rentes-et-annuites]]). Le ratio décisif tient en une question. Quelle part du plancher le portefeuille doit-il financer, et pendant combien d'années (la phase à découvert, [[horizon-et-esperance-de-vie]]) ? Toute la suite en découle. Un plancher couvert à 80 % par des revenus garantis ouvre **toutes** les règles, même les plus variables. Un plancher financé à 100 % par le portefeuille pendant vingt ans en ferme la moitié.
