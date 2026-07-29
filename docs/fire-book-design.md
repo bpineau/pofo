@@ -213,6 +213,7 @@ update both when adding an article.
 - amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
 - plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
 - rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
+- sept-facons-de-vivre: Sept facons de vivre du meme portefeuille (les sept regles rejouees sur 1973, 1985 et 2000)
 - choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
@@ -282,8 +283,22 @@ update both when adding an article.
 - bibliotheque: La bibliotheque : sites, papiers, livres, outils
 - la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
-86 articles planned (79 v1 + 7 of the 2026-07-17 extension); at 2 500 words
-each the book lands around 215k words.
+87 articles planned (79 v1 + 7 of the 2026-07-17 extension + sept-facons-de-vivre,
+added 2026-07-29); at 2 500 words each the book lands around 218k words.
+
+### Data-backed articles
+
+`sept-facons-de-vivre` is the first article whose figures and tables carry
+computed numbers rather than illustrative ones. The pattern to follow when
+another one needs it: the computation lives in a library package
+(`pkg/replay`), the plate keeps FROZEN literal arrays so book figures stay
+pure dependency-free functions like every other plate, and a guard test
+recomputes both the arrays and the article's markdown tables from the engine
+and fails on any drift. That way a refreshed dataset breaks the build instead
+of quietly leaving a wrong chart in the book. Its summary tables are also
+TRANSPOSED (rules as rows, statistics as columns): a book page and an e-reader
+cannot carry a year x rule matrix without horizontal scrolling, and the
+year-by-year detail belongs in a figure anyway.
 
 ## Adding articles
 
