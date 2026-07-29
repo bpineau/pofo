@@ -2,7 +2,7 @@
 
 Entre le montant fixe qui ignore les marchés ([[retrait-fixe-bengen]]) et le pourcentage qui les épouse ([[pourcentage-fixe]]), il existe une troisième voie d'une simplicité désarmante. On suit le pourcentage, mais on borne le mouvement. C'est la famille plancher-plafond. Sa version industrielle est la « dynamic spending rule » de Vanguard : chaque année, on vise X % du portefeuille courant, mais on interdit au revenu réel de monter de plus de +5 % ou de descendre de plus de −2,5 % par rapport à l'an dernier.
 
-Deux bornes, rien d'autre. Cette asymétrie douce (on monte deux fois plus vite qu'on ne descend) suffit à transformer la volatilité brutale du pourcentage en glissements vivables, sans rien perdre de l'essentiel de son auto-correction. C'est la règle que le plus grand gestionnaire d'actifs du monde recommande à ses clients retraités. Elle est aussi l'une des plus faciles à exécuter du panorama, et un simulateur la reproduit directement.
+Deux bornes, rien d'autre. Cette asymétrie douce (on monte deux fois plus vite qu'on ne descend) suffit à transformer la volatilité brutale du pourcentage en glissements vivables, sans rien perdre de l'essentiel de son auto-correction. C'est la règle que l'un des deux plus grands gestionnaires d'actifs du monde recommande à ses clients retraités. Elle est aussi l'une des plus faciles à exécuter du panorama, puisque deux comparaisons par an suffisent.
 
 Cet article la détaille. Les deux lignées d'abord : le plancher-plafond originel de Bengen lui-même, puis le corridor Vanguard. Ensuite la mécanique année par année, ce que les bornes font exactement au risque (elles recréent une ruine possible, qu'il faut comprendre et accepter), le choix des paramètres, et sa place face aux guardrails et à l'ABW.
 
@@ -49,7 +49,7 @@ Trois décisions, dans l'ordre d'importance.
 
 **Le pourcentage w.** Même logique que le pourcentage fixe ([[pourcentage-fixe]]). La borne géométrique s'applique : w doit rester sous le rendement réel géométrique espéré pour un revenu médian stable. L'auto-correction autorise la même générosité qu'ailleurs, soit 4-4,5 % défendable là où le fixe exigerait 3,25-3,5 %. En marché cher, décotez ([[valorisations-et-cape]]) ou, mieux, laissez l'ancre CAPE juger votre w.
 
-**Le couple de bornes.** (+5/−2,5) est le standard. Deux variantes sont utiles : (+4/−2) pour les budgets plus rigides, avec une descente encore plus douce et une ruine un peu plus haute ; (+6/−4) pour les budgets élastiques qui veulent suivre la cible de plus près. La règle de cohérence est simple : la borne basse doit rester tenable une fois composée sur plusieurs années. Une descente de −2,5 %/an pendant six ans fait −14 %, est-ce au-dessus de votre plancher réel ? C'est le test d'admissibilité de la famille, à vérifier sur la §04.
+**Le couple de bornes.** (+5/−2,5) est le standard. Deux variantes sont utiles : (+4/−2) pour les budgets plus rigides, avec une descente encore plus douce et une ruine un peu plus haute ; (+6/−4) pour les budgets élastiques qui veulent suivre la cible de plus près. La règle de cohérence est simple : la borne basse doit rester tenable une fois composée sur plusieurs années. Une descente de −2,5 %/an pendant six ans fait −14 %, est-ce au-dessus de votre plancher réel ? C'est le test d'admissibilité de la famille, et il se vérifie sur la distribution du revenu servi année après année, jamais sur le seul taux de ruine.
 
 ::: figure corridor-borne
 Le test d'admissibilité, en une image. Chaque courbe est votre revenu après n années de baisse consécutive à la borne basse ; la ligne rouge est le plancher du ménage de l'exemple ci-dessous. Le standard Vanguard tient 7,8 ans avant de croiser ce plancher, la variante douce presque dix, la variante élastique moins de cinq. Le cercle rappelle ce que le millésime 1966 a réellement demandé au corridor : vingt-trois années de glisse d'affilée, jusqu'à 57 % du revenu de départ. **Testez la borne sur la durée d'un vrai régime hostile, pas sur six ans de politesse.**
@@ -57,8 +57,12 @@ Le test d'admissibilité, en une image. Chaque courbe est votre revenu après n 
 
 **L'interaction avec les revenus externes.** Comme toute la famille proportionnelle, la règle s'applique au portefeuille seul. En phase à découvert d'un FIRE, le pont de pension se provisionne à part ([[vpw]], [[horizon-et-esperance-de-vie]]). Une fois la pension au plancher, le corridor sur le portefeuille résiduel devient presque sans risque.
 
-::: astuce La règle dans le simulateur FIRE de pofo
-La case « Bounded % of portfolio (Vanguard-style) » implémente exactement la règle : cible = pourcentage initial du portefeuille courant, variations réelles bornées à +5 %/−2,5 %, prime sur les règles flex, guardrails et ratchet. Deux lectures sont utiles. La §04 donne la distribution du revenu, où vous vérifiez le test de la borne basse composée. La frontière §06 vous la montre assise entre le fixe et le VPW. L'aide au survol rappelle honnêtement que la descente plafonnée peut laisser filer un effondrement : « unlike VPW/ABW this rule can still run out » ([[utiliser-la-page-fire]]).
+::: astuce Éprouver le corridor borné dans un simulateur
+La règle tient en deux comparaisons par an, si bien qu'un simple tableur suffit à la dérouler soi-même. Dans un simulateur de décumulation, cherchez une politique de dépense de type « pourcentage borné », avec ses trois paramètres exposés : le pourcentage cible, la borne haute et la borne basse.
+
+- **Une politique de dépense à la fois.** Le corridor remplace le retrait fixe, le flex ou les guardrails, il ne s'empile pas dessus. Testez les règles l'une après l'autre, sur le même plan et les mêmes hypothèses de marché.
+- **Jugez sur le revenu servi.** La distribution des dépenses année par année est le seul endroit où se vérifie le test de la borne basse composée.
+- **Ne négligez pas la ruine pour autant.** Contrairement au pourcentage pur et aux règles actuarielles, le corridor borné peut vider le portefeuille. Un outil qui affiche 0 % d'échec sur cette règle a très probablement simulé un pourcentage sans bornes.
 :::
 
 ## Pour qui, face aux deux finalistes
@@ -68,7 +72,7 @@ Voici le profil du corridor borné. C'est le ménage qui veut d'abord la simplic
 Face aux finalistes, deux arbitrages. Contre les guardrails ([[guardrails-morningstar]]), le corridor échange les marches rares de ±10 %, avec leur charge émotionnelle de « décision », contre des glissements continus sans décision : moins optimal, mais plus vivable pour beaucoup. Contre l'ABW ([[amortissement-abw]]), il abandonne l'optimalité de consommation et la conscience de l'horizon, contre une gouvernance de carte postale. La synthèse générale de sélection reste [[choisir-sa-strategie]].
 
 ::: exemple Calibrer sa version en vingt minutes
-Ménage : plancher réel 41 000 €, confort 50 000 €, portefeuille 1,3 M€ (w cible de 3,85 %), pension à 15 ans. Passons le test de la borne basse. Une traversée de six ans au plancher −2,5 % mène le revenu à 50 000 × 0,975^6 ≈ 43 100 €, au-dessus du plancher, donc (+5/−2,5) est admissible. En simulation, case Vanguard cochée, la ruine centrale ressort à 2,8 % (contre 6,1 % en fixe à 50 000 €). La §04 montre un pire quartile à −9 % pendant 5-7 ans, que le ménage accepte. La variante (+4/−2), testée ensuite, donne une ruine de 3,4 % et un pire quartile de −7 % : le ménage la préfère et le note dans son plan écrit. Vingt minutes, deux simulations, une règle possédée. À comparer aux heures de débat qu'exigent les guardrails par risque, pour un résultat proche dans la plupart des scénarios.
+Ménage : plancher réel 41 000 €, confort 50 000 €, portefeuille 1,3 M€ (w cible de 3,85 %), pension à 15 ans. Passons le test de la borne basse. Une traversée de six ans au plancher −2,5 % mène le revenu à 50 000 × 0,975^6 ≈ 43 100 €, au-dessus du plancher, donc (+5/−2,5) est admissible. Reste à simuler. Sous un modèle central, le corridor ressort à 2,8 % de ruine, contre 6,1 % pour un retrait fixe de 50 000 €, et son pire quartile de revenu descend à −9 % pendant cinq à sept ans, ce que le ménage accepte. La variante (+4/−2), testée ensuite, donne une ruine de 3,4 % et un pire quartile de −7 % : le ménage la préfère et le note dans son plan écrit. Vingt minutes, deux simulations, une règle possédée. À comparer aux heures de débat qu'exigent les guardrails par risque, pour un résultat proche dans la plupart des scénarios.
 :::
 
 ## L'essentiel à retenir
@@ -77,7 +81,7 @@ Ménage : plancher réel 41 000 €, confort 50 000 €, portefeuille 1,3 M€ (
 - Le produit : des glissements au lieu de chutes, jamais plus de 2,5 % de baisse réelle par an. Le prix : la descente plafonnée « emprunte » au capital dans les crises, et la ruine redevient possible, faible mais honnête (comparable à celle du fixe).
 - Deuxième partout, première nulle part, aucune pathologie : c'est la règle de qui refuse de payer cher une optimalité quelconque, et probablement le meilleur défaut pour un exécutant non spécialiste.
 - Paramètres : w comme un pourcentage (borne géométrique, 4-4,5 % défendable), bornes (+5/−2,5) standard, et le test d'admissibilité. La borne basse composée sur six ans doit rester au-dessus du plancher réel.
-- Reproduite telle quelle par un simulateur (« Bounded % of portfolio ») : vérifiez la §04 et la frontière, et comparez en deux clics aux guardrails et à l'ABW avant de choisir ([[choisir-sa-strategie]]).
+- Aussi simple à simuler qu'à exécuter, à condition de la juger sur le revenu servi autant que sur la ruine, et de la comparer aux guardrails et à l'ABW sur le même plan avant de choisir ([[choisir-sa-strategie]]).
 
 ---
 
