@@ -12,13 +12,13 @@ La probabilité de ruine d'un plan est la fraction des futurs simulés (ou des f
 
 Décomposons la définition, terme à terme, parce que chaque terme cache un piège.
 
-**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par un modèle. Le modèle change tout. S'il tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]). S'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]). S'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai ». C'est pourquoi le simulateur FIRE de pofo affiche le même plan sous quatre modèles côte à côte, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, pas une colonne.
+**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par un modèle. Le modèle change tout. S'il tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]). S'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]). S'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai ». C'est pourquoi les simulateurs sérieux montrent le même plan sous plusieurs modèles à la fois, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, jamais un modèle isolé.
 
-**« Le portefeuille atteint zéro ».** La ruine du simulateur est binaire et terminale. Elle ne distingue pas l'échec à 71 ans de l'échec à 94 ans, ni le scénario qui finit à zéro de celui qui finit à 5 000 € (échec) ou 15 000 € (succès !). Deux plans à 5 % de ruine peuvent cacher des réalités très différentes : l'un échoue tôt et brutalement, l'autre s'essouffle en toute fin de parcours avec la pension légale en soutien. D'où l'intérêt des vues complémentaires : **quand** surviennent les échecs, et quelle richesse médiane en fin d'horizon ([[lire-un-fan-chart]]).
+**« Le portefeuille atteint zéro ».** La ruine du simulateur est binaire et terminale. Elle ne distingue pas l'échec à 71 ans de l'échec à 94 ans, ni le scénario qui finit à zéro de celui qui finit à 5 000 € (échec) ou 15 000 € (succès !). Deux plans à 5 % de ruine peuvent cacher des réalités très différentes : l'un échoue tôt et brutalement, l'autre s'essouffle en toute fin de parcours avec la pension légale en soutien. D'où l'intérêt de regarder deux choses de plus. **Quand** surviennent les échecs, et quelle richesse médiane reste en fin d'horizon ([[lire-un-fan-chart]]).
 
 **« Sans aucune réaction humaine ».** L'hypothèse la plus irréaliste et la plus utile. Irréaliste : aucun humain ne maintient 40 000 € de retraits indexés pendant que son portefeuille passe de 1 M€ à 150 k€ ; il aurait coupé ses dépenses des années plus tôt ([[quand-s-inquieter]]). Utile : c'est justement parce que la règle simulée est aveugle que le chiffre mesure la robustesse **intrinsèque** du plan, sans se payer de mots sur une flexibilité future hypothétique. Un plan flexible se simule avec sa propre règle flexible ([[plancher-plafond]], [[guardrails-morningstar]]). Mais alors la « ruine » chute, et c'est le niveau de vie délivré qu'il faut regarder. La flexibilité ne supprime pas la douleur, elle la déplace vers des années de dépenses réduites.
 
-**Et ce qu'il ignore superbement** : votre mortalité (une « ruine » à 97 ans concerne peu de monde, d'où l'intérêt d'une vue croisée mortalité × ruine), les à-coups de dépenses réels, la fiscalité fine, et tous les filets hors modèle (famille, patrimoine immobilier, retour au travail).
+**Et ce qu'il ignore superbement** : votre mortalité (une « ruine » à 97 ans concerne peu de monde, d'où l'intérêt de croiser la ruine avec les tables de mortalité), les à-coups de dépenses réels, la fiscalité fine, et tous les filets hors modèle (famille, patrimoine immobilier, retour au travail).
 
 ## Choisir son seuil : pourquoi il n'y a pas de bonne réponse universelle
 
@@ -31,7 +31,7 @@ Quelle ruine accepter : 1 %, 5 %, 10 % ? La question semble technique ; elle est
 **La nature de l'échec dans votre plan.** Regardez quand échouent les scénarios qui échouent. Des échecs tardifs (après 85 ans), adossés à une pension qui couvre le plancher : un 8 % de ruine ainsi composé est plus confortable qu'un 4 % fait d'effondrements à 70 ans.
 
 ::: astuce Le réflexe des praticiens
-Les planificateurs financiers sérieux (Kitces en tête) convergent vers une fourchette de travail de 5 à 20 % de ruine simulée pour des plans avec filets et règle d'ajustement, et rappellent qu'un taux de succès de 100 % n'est pas un objectif sain. Il signifie presque toujours que vous aurez travaillé des années de trop et mourrez au maximum de votre richesse. Morningstar calibre ses recommandations à 90 % de succès (10 % de ruine) sur 30 ans ([[guardrails-morningstar]]). pofo utilise 5 % par défaut pour ses solveurs, un choix prudent que le contrôle « acceptable ruin » vous laisse déplacer ([[utiliser-la-page-fire]]).
+Les planificateurs financiers sérieux (Kitces en tête) convergent vers une fourchette de travail de 5 à 20 % de ruine simulée pour des plans avec filets et règle d'ajustement, et rappellent qu'un taux de succès de 100 % n'est pas un objectif sain. Il signifie presque toujours que vous aurez travaillé des années de trop et mourrez au maximum de votre richesse. Morningstar calibre ses recommandations à 90 % de succès (10 % de ruine) sur 30 ans ([[guardrails-morningstar]]). Un solveur qui dimensionne un plan (capital cible, date de départ, retrait tenable) a besoin d'une ruine acceptable en entrée. Fixez-la vous-même. 5 % est un point de départ prudent, à remonter quand vos filets sont solides, à descendre quand ils manquent.
 :::
 
 ## La précision illusoire : 2 % et 8 % sont souvent le même chiffre
@@ -44,7 +44,7 @@ Le simulateur affiche « 4,7 % » et l'esprit enregistre une précision d'orfèv
 
 **Le choix du modèle domine tout** : le même plan peut afficher 2 % en fenêtres historiques, 5 % en paramétrique central, 9 % en stress de séquence et 14 % en échantillon mondial. Aucun n'est faux ; ils répondent à des questions différentes (« et si le futur ressemble à l'histoire de mes fonds / à un monde i.i.d. calibré prudemment / au même monde avec des sticky bears / au siècle des 16 pays développés »).
 
-La conséquence pratique tient en une règle : **lisez la ruine en ordinal, pas en cardinal**. Elle compare admirablement (le plan A est plus robuste que le plan B ; ce levier réduit le risque plus que celui-là ; ce modèle pessimiste reste acceptable) et mesure médiocrement (« mon risque réel est 4,7 % »). Les décimales sont du bruit ; les écarts entre scénarios et entre colonnes sont du signal.
+La conséquence pratique tient en une règle : **lisez la ruine en ordinal, pas en cardinal**. Elle compare admirablement (le plan A est plus robuste que le plan B ; ce levier réduit le risque plus que celui-là ; ce modèle pessimiste reste acceptable) et mesure médiocrement (« mon risque réel est 4,7 % »). Les décimales sont du bruit ; les écarts entre scénarios et entre modèles sont du signal.
 
 ::: exemple Une décision bien posée
 Plan : 1,2 M€, 42 000 €/an, 45 ans, pension 12 000 €/an à 66 ans. Lecture en intervalle : fenêtres historiques 1 %, central 4 %, stress séquence 7 %, échantillon mondial 11 %. Décision : le central et le stress sont sous 10 %, le broad-sample au-dessus de 10 % mais ses échecs surviennent après 80 ans, pension acquise ; plancher de dépenses à 34 000 € tenable. Verdict : plan acceptable, avec une règle écrite. Si le taux de retrait courant dépasse 5 % (portefeuille sous ~840 k€), on baisse au plancher jusqu'à retour sous 4,5 %. La même analyse avec des échecs précoces ou un plancher intenable aurait conclu : un an de plus, ou 10 % de dépenses en moins.
@@ -58,7 +58,7 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 
 ## L'essentiel à retenir
 
-- La ruine est une propriété du couple plan + modèle : lisez l'intervalle entre plusieurs modèles, jamais une colonne seule.
+- La ruine est une propriété du couple plan + modèle : lisez l'intervalle entre plusieurs modèles, jamais un modèle seul.
 - Le chiffre suppose zéro réaction humaine. Il mesure la robustesse intrinsèque, pas votre destin.
 - Choisissez votre seuil selon vos filets réels et le prix de la marge en années de travail ; 5-10 % simulés est la zone de travail commune avec filets, 100 % de succès est un anti-objectif.
 - Lisez en ordinal : les écarts comparent, les décimales mentent ; 2 % et 8 % sont souvent indiscernables une fois l'incertitude des paramètres comptée.
@@ -71,4 +71,4 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 - Early Retirement Now, SWR Series volet 11 (comment noter une règle de retrait) et volet 46 (« The Need for Precision in an Uncertain World ») : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
 - Michael Kitces, « The Problem With FIREing At A 4% Withdrawal Rate » et « Is A Probability Of Success-Driven Retirement Plan Actually Riskier? » ([kitces.com](https://www.kitces.com)) : la lecture praticienne du taux de succès.
 - Derek Tharp & Kitces sur les « guardrails » en probabilité de succès : le pilotage plutôt que le chiffre statique.
-- Dans pofo : la vue mortalité × ruine et le solveur « acceptable ruin » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+- Dans ce livre : [[historique-vs-parametrique]] (pourquoi les modèles divergent sur un même plan) et [[la-machine-pofo]] (comment pofo calcule cette ruine et la croise avec la mortalité).
