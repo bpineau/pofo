@@ -22,6 +22,10 @@ La lecture naïve compare ce taux au 4 % du portefeuille et conclut trop vite. L
 
 Le résultat théorique est ancien et robuste. Menahem Yaari (1965) a montré qu'un agent rationnel sans motif de legs devrait annuitiser la totalité de sa richesse. La littérature moderne, une fois pris en compte les motifs de legs et les frictions, ramène l'optimum à une annuitisation partielle du plancher. C'est le fondement de l'école safety-first ([[panorama-strategies-retrait]]), que Wade Pfau a formulée pour les praticiens. Couvrez les dépenses essentielles par des revenus garantis à vie (pension + rente + échelle d'obligations, [[echelle-obligataire]]). Laissez le portefeuille ne porter que le confort et les projets, là où la variabilité est tolérable ([[flexibilite-realite]]). Le plan cesse d'être un pari unique. Il devient deux étages aux risques différents.
 
+::: figure etages-du-plancher
+La doctrine safety-first tient dans l'alignement de ces deux colonnes. À gauche ce qu'il faut chaque année, à droite ce qui le paie, et une seule règle : les revenus garantis à vie doivent atteindre le trait du plancher, ni plus ni moins. Ce qui dépasse reste au portefeuille, où la variabilité ne menace que les projets. Remarquez ce que devient le portefeuille après l'opération : il ne sert plus que 1,4 % par an, un taux auquel plus aucune règle de retrait ne pose de problème.
+:::
+
 ## Le cadre français : trois produits, dont un imbattable
 
 **La rente viagère d'assurance-vie.** La sortie en rente d'un contrat d'assurance-vie profite du régime fiscal le plus doux du paysage. La rente viagère à titre onéreux n'est imposée que sur une fraction de son montant, fixée par l'âge au premier versement : 50 % entre 50 et 59 ans, 40 % entre 60 et 69 ans, 30 % au-delà de 69 ans (plus prélèvements sociaux sur la même fraction). Une rente prise à 75 ans n'est donc imposée que sur 30 % de son flux. Combinée aux crédits de mortalité, elle est fiscalement très compétitive face aux retraits taxés d'un CTO ([[flat-tax-et-imposition]], [[enveloppes-francaises]]).

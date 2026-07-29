@@ -320,9 +320,22 @@ warning light climbing over nineteen years (`bengen-falaise`, frozen from
 four instrument strips read side by side (`deux-thermometres`). Reusing a form
 that worked elsewhere is the failure mode to avoid, not the shortcut to take.
 Where a plate carries a closed-form model rather than a replayed series (the
-CAPE rule, the Gompertz mortality law), the model lives in the plate as a small
-pure function and the guard test checks it against the numbers the article
-quotes in prose, so figure and text cannot drift apart.
+CAPE rule, the Gompertz mortality law, the geometric bound), the model lives in
+the plate as a small pure function and the guard test checks it against the
+numbers the article quotes in prose, so figure and text cannot drift apart. A
+plate may also freeze raw inputs and derive the interesting series in code
+(`pourcentage-lissages` freezes twelve real returns and runs the three smoothing
+rules on them; `cape-depuis-1881` freezes 146 CAPE readings and applies the
+formula), which keeps the rule under study readable next to the picture it
+produces.
+
+Twelve of those plates shipped on 2026-07-29 in two batches, from the candidate
+list in `fire-book-illustrations-2026-07.md`. One candidate is blocked there and
+worth knowing about: replaying Guyton-Klinger at four initial rates contradicts
+a sourced sentence of `guyton-klinger.md`, and `pkg/replay`'s GK is only the
+corridor, without the indexation freeze or the last-fifteen-years suspension, so
+it is not faithful enough to overturn the literature. Do not ship a figure that
+argues with its own article.
 
 ## Adding articles
 
