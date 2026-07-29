@@ -77,5 +77,5 @@ Plan : 1,2 M€, 45 000 €/an, 50 ans. Simulateur A (gaussien, données US, bru
 
 - Early Retirement Now, volet 26 (les non-dits du 4 %) et la critique des simulateurs de la série ([[serie-ern]]).
 - Anarkulova, Cederburg & O'Doherty (2023) : l'ampleur chiffrée du piège n° 1 ([[anarkulova-cederburg]]).
-- Kitces.com, « Does Monte Carlo Analysis Actually Overstate Tail Risk In Retirement Projections? » : le contrepoint intelligent, où le retour de valorisation resserre les cônes longs, utile pour ne pas basculer dans le catastrophisme systématique.
+- Kitces.com, « Does Monte Carlo Analysis Actually Overstate Tail Risk In Retirement Projections? » : le contrepoint intelligent, où le retour des valorisations vers leur moyenne resserre les cônes longs, utile pour ne pas basculer dans le catastrophisme systématique.
 - Dans ce livre : [[monte-carlo-forces-faiblesses]] (la machine), [[historique-vs-parametrique]] (les familles), [[rendre-monte-carlo-pertinent]] (les corrections à exiger d'un moteur), [[la-machine-pofo]] (comment pofo répond, piège par piège).

@@ -92,7 +92,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Hystérésis** : déclencher à un seuil, désarmer à un autre plus bas. L'anti-fausse-alerte de tous les voyants du plan. [[quand-s-inquieter]]
 
-**i.i.d. (indépendants et identiquement distribués)** : des tirages sans mémoire, chaque période indépendante et tirée de la même loi. Le Monte-Carlo naïf. Il sous-représente les longues séquences médiocres (pas de grappes, pas de retour de valorisation), d'où les moteurs à mémoire. [[monte-carlo-forces-faiblesses]], [[rendre-monte-carlo-pertinent]]
+**i.i.d. (indépendants et identiquement distribués)** : des tirages sans mémoire, chaque période indépendante et tirée de la même loi. Le Monte-Carlo naïf. Il sous-représente les longues séquences médiocres (pas de grappes, pas de retour des valorisations vers leur moyenne), d'où les moteurs à mémoire. [[monte-carlo-forces-faiblesses]], [[rendre-monte-carlo-pertinent]]
 
 **IPCH (HICP)** : l'indice des prix harmonisé européen. La cible de la BCE et le déflateur (`^HICP-FR`). [[suivre-inflation]]
 
