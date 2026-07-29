@@ -45,8 +45,9 @@ Ce repérage change la façon d'utiliser n'importe quel outil, car un verdict ne
 | Outil | Familles | À savoir |
 |---|---|---|
 | cFIREsim | 1 (rejeu US depuis 1871) | Gratuit. Données Shiller actions/obligations/or, plans de dépense paramétrables. La référence de la simplicité. |
+| ERN SWR Toolbox | 1 (rejeu mensuel US depuis 1871, tous les mois de départ) | Gratuit. Un classeur à copier, auditable formule par formule, flux annexes et règles CAPE de la série compris ([[serie-ern]]). Exige de mettre les mains dans le tableur. |
 | FI Calc | 1 (rejeu US depuis 1871) | Gratuit. Le plus riche en règles de retrait prêtes à l'emploi (une douzaine, guardrails et VPW compris), pédagogie soignée. |
-| pofo | 1, 2 et 3 (fenêtres mensuelles de vos fonds ; bootstrap de vos fonds et broad-sample du siècle des 16 pays ; Student-t calibrée, stress de séquence, décennie perdue) | L'outil de ce livre. Le plus jeune de la liste, fiscalité réduite à un taux mixte global, pas de modèle à volatilité persistante. |
+| pofo | 1, 2 et 3 (fenêtres mensuelles de vos fonds ; bootstrap de vos fonds et broad-sample du siècle des 16 pays ; Student-t calibrée, stress de séquence, décennie perdue) | L'outil développé avec ce livre. Le plus jeune de la liste, fiscalité réduite à un taux mixte global, pas de modèle à volatilité persistante. |
 | Portfolio Visualizer | 2 et 3 (tirage d'années historiques, sans blocs ; normale, Student-t, GARCH, espérances prévisionnelles) | Le GARCH capture les grappes de volatilité, chose rare. Le tirage historique est année par année, donc sans mémoire. Une bonne partie des fonctions est devenue payante. |
 | Rich, Broke or Dead | 1 (cycles US depuis 1871) | Gratuit. Croise chaque cycle avec les tables de mortalité : la visualisation « riche, ruiné ou mort » la plus parlante du genre. |
 | TPAW Planner | 1 et 2 (séquences historiques, et tirages historiques recentrés sur les espérances du jour, 1/CAPE et taux réels) | Gratuit. L'implémentation de référence de l'amortissement (ABW), et le seul de la liste à ancrer d'office ses espérances sur les valorisations. |
