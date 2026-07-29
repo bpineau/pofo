@@ -15,7 +15,7 @@ of truth for everything current.
 | `dbmfe-simdata-validation-design.md` / `-results.md` | how the bundled DBMFE managed-futures backcast was validated against the SG CTA index, and the evidence; the raw reference series is `SG-CTA-Index-Daily-Returns-since-1999-12-31.csv` |
 | `epub-export-design.md` | EPUB 3 export of the embedded books (firebook, then locador): `pkg/bookmd` extraction, `pkg/epub` writer, delivery routes, the on-device validation gate |
 | `fire-book-design.md` | the embedded French FIRE book: plan, depth conventions, style rules, progress ledger (`pkg/firebook` godoc points here) |
-| `fire-book-illustrations-2026-07.md` | ACTIVE figure backlog for the withdrawal-strategies part: twenty candidate plates, what each shows and what it costs; twelve shipped 2026-07-29 in two batches, delete once the rest is shipped or dropped |
+| `fire-book-illustrations-2026-07.md` | ACTIVE figure backlog for the withdrawal-strategies part: twenty candidate plates, what each shows and what it costs; fourteen shipped and six deliberately dropped on 2026-07-29, each with its reason; the list is closed and the file can go |
 | `index-benchmarks-design.md` | why `MSCIWORLD`/`SP500` are fee-free long-history index benchmarks with bare ids and no SIM variant |
 | `ntsz-eurozone-efficient-core-design.md` | euro-native Efficient Core backcasts and the deep euro reference series (DBXG/MTH long sleeve, equity-leg caveats), with their epistemic ledger |
 | `suggest-design.md` | `-suggest`/`-coverage` classification and out-of-sample validation design (`pkg/suggest` godoc points here) |
