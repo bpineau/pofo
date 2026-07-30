@@ -12,6 +12,8 @@ import (
 	iofs "io/fs"
 	"log"
 	"math"
+	"net"
+	"net/http"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -23,11 +25,13 @@ import (
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/datasets"
+	"github.com/bpineau/pofo/pkg/decumul/web"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/optimize"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
+	"github.com/bpineau/pofo/pkg/scenario"
 	"github.com/bpineau/pofo/pkg/simgen"
 	"github.com/bpineau/pofo/pkg/suggest"
 )
@@ -109,6 +113,7 @@ func run(argv []string) error {
 	suggestFlag := fs.Bool("suggest", false, "suggest catalog assets to add for better regime coverage/diversification, then exit")
 	frameworkName := fs.String("framework", "regimes", "classification for coverage and -suggest: \"regimes\" (macro quadrants) or \"factors\" (risk factors)")
 	coverageFlag := fs.Bool("coverage", false, "offline coverage advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit")
+	fireFlag := fs.Bool("fire", false, "open the decumulation/FIRE explorer (local web UI; optionally for a portfolio file), then serve until stopped")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
@@ -169,7 +174,7 @@ Options:
 		return err
 	}
 	files := fs.Args()
-	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag {
+	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -230,7 +235,7 @@ Options:
 			addSpec(portfolio.Single(id))
 		}
 	}
-	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag {
+	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -249,6 +254,9 @@ Options:
 	}
 	if *coverageFlag {
 		return runCoverage(specs, &opt)
+	}
+	if *fireFlag {
+		return runFire(&opt, client, specs)
 	}
 
 	// Download every distinct asset once.
@@ -1046,6 +1054,45 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 		log.Printf("failed: %s", strings.Join(failed, ", "))
 	}
 	return nil
+}
+
+// runFire starts the embedded decumulation explorer on a local port and
+// opens it in the browser. With a portfolio file it builds a historical
+// real-return panel from the holdings (deflated by ^HICP-FR) so the UI can
+// switch to the bootstrap/cohort models and re-weight allocations live. It
+// blocks, serving until interrupted.
+func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
+	var panel *scenario.Panel
+	var labels []string
+	if len(specs) > 0 {
+		var assets []web.AssetSeries
+		for _, h := range specs[0].Holdings {
+			s, err := fetchAsset(c, h.ID, opt)
+			if err != nil {
+				log.Printf("fire: skipping %s: %v", h.ID, err)
+				continue
+			}
+			labels = append(labels, h.ID)
+			assets = append(assets, web.AssetSeries{Weight: h.Weight, Points: s.Points})
+		}
+		if hicp, err := fetchAsset(c, "^HICP-FR", opt); err == nil {
+			if pnl, err := web.BuildPanel(assets, hicp.Points); err == nil {
+				panel = &pnl
+			} else {
+				log.Printf("fire: no historical panel: %v", err)
+			}
+		}
+	}
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		return err
+	}
+	url := "http://" + ln.Addr().String() + "/"
+	fmt.Fprintf(os.Stderr, "FIRE explorer on %s (Ctrl-C to stop)\n", url)
+	if !opt.noOpen {
+		openBrowser(url)
+	}
+	return http.Serve(ln, web.Handler(panel, labels))
 }
 
 // fetchAsset downloads the history of an identifier (ticker or ISIN). A
