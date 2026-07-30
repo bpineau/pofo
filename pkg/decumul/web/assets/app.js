@@ -109,6 +109,25 @@ let run = async function(){
   syncURL();
 };
 
+// --- solver: required capital for a target ruin, and the ruin-minimising
+// buffer at the current capital. ---
+const eur = v => Math.round(v).toLocaleString("fr-FR") + " €";
+document.getElementById("solveBtn").addEventListener("click", async () => {
+  const out = document.getElementById("solveOut");
+  out.textContent = "solving…";
+  const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
+  const body = {...state, years: Math.round(state.years),
+    pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
+    targetRuin: target, weights};
+  try {
+    const r = await (await fetch("/api/solve", {method:"POST",
+      headers:{"Content-Type":"application/json"}, body: JSON.stringify(body)})).json();
+    if (r.note) { out.textContent = r.note; return; }
+    out.innerHTML = `Capital for ${(r.targetRuin*100).toFixed(1)}% ruin: <b>${eur(r.requiredCapital)}</b>` +
+      ` · ruin-minimising buffer: <b>${r.bestBufferYears.toFixed(0)} y</b> (${(r.bestBufferRuin*100).toFixed(1)}% ruin)`;
+  } catch (e) { out.textContent = "solve failed"; }
+});
+
 // --- allocation bar: drag a divider to move weight between two adjacent
 // assets; the total stays at 100 % by construction. ---
 function renderAlloc() {
