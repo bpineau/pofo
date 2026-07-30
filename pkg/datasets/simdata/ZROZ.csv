@@ -1,4 +1,4 @@
-# portfodor simdata v1
+# pofo simdata v1
 # id: ZROZ
 # name: PIMCO 25+Y zero-coupon — yield curves (imported ref.)
 # method: 1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009

@@ -1,6 +1,6 @@
 # Asset metadata — the bundled catalog
 
-`assets.json` is the **single source of truth** for the assets portfodor
+`assets.json` is the **single source of truth** for the assets pofo
 bundles. It carries both how to fetch each asset (the resolution fields) and
 what it is (the descriptive metadata). `pkg/marketdata` loads its catalog
 from this file (embedded via `datasets.AssetMeta()`); `pkg/suggest` reads the
@@ -49,6 +49,6 @@ Descriptive fields (consumed by `pkg/suggest`):
 
 This file is curated. Add a record with the resolution fields (a working
 `source`+`symbol`/`xid` and `currency`) and the descriptive fields, then
-verify it fetches cleanly with `portfodor -verify-data -assets <id>`. The
+verify it fetches cleanly with `pofo -verify-data -assets <id>`. The
 resolution fields make it part of the bundle (one `-warmup` away); the
 descriptive fields feed `-coverage` and `-suggest`.

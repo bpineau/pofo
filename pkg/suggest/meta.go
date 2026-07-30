@@ -1,23 +1,14 @@
-// Package suggest recommends catalog assets to add to a portfolio so it
-// covers the market regimes it is missing, and flags redundant holdings.
-//
-// It is the structure-first half of the optimizer: candidates are screened
-// by what they ARE (asset class, strategy → macro-regime coverage and
-// statistical diversification) before any return-based ranking, and the
-// return ranking is validated out-of-sample (walk-forward) so a suggestion
-// reflects a consistent benefit rather than one lucky period. Conventions
-// match pkg/metrics: simple daily returns, 252 trading days per year.
 package suggest
 
 import (
 	"encoding/json"
 	"io"
 
-	"github.com/bpineau/portfodor/datasets"
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 // Meta is the factual metadata of one catalog asset. It is an alias for the
-// canonical datasets.Asset (a full row of datasets/assetmeta/assets.json):
+// canonical datasets.Asset (a full row of pkg/datasets/assetmeta/assets.json):
 // load the bundled catalog directly with datasets.Catalog, or decode any
 // reader of the same JSON with LoadMeta.
 type Meta = datasets.Asset

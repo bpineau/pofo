@@ -3,7 +3,7 @@ package datasets
 import "encoding/json"
 
 // Asset is one row of the bundled asset catalog
-// (datasets/assetmeta/assets.json): a fund, ETF, index or commodity with its
+// (pkg/datasets/assetmeta/assets.json): a fund, ETF, index or commodity with its
 // resolution metadata (how to fetch its quotes) and its descriptive metadata
 // (class, geography, sectors…). It is the single canonical catalog type,
 // consumed across the toolkit (marketdata for resolution, suggest for the

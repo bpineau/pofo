@@ -3,7 +3,7 @@ package suggest_test
 import (
 	"fmt"
 
-	"github.com/bpineau/portfodor/pkg/suggest"
+	"github.com/bpineau/pofo/pkg/suggest"
 )
 
 // Regimes maps an asset's metadata to the macro regimes it helps in.
