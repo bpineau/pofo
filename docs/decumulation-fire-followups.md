@@ -76,9 +76,19 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 12. **Solve in the UI.** Expose `CapitalForRuin` and a buffer optimiser: given a
     target ruin %, show the required capital and the ruin-minimising buffer.
 
-13. **Fully monthly kernel (separate, bigger).** Monthly withdrawals and
-    intra-year sequence-of-returns; would re-validate the golden numbers. Keep
-    the annual kernel as the validated default; offer monthly as an option.
+13. **Monthly withdrawal kernel (stated requirement, P2-ish).** Ben's real
+    use case is a **monthly** withdrawal, like a salary, and the buffer-vs-cut
+    re-evaluation ("tap the buffer or cut this month's spend 25%?") is also a
+    **monthly** decision. So the kernel should step monthly: withdraw
+    NeedAnnual/12 each month, evaluate drawdown/flex/bucket monthly, apply one
+    monthly real return per step. Crucially, **the durations that are naturally
+    in years stay in years**: buffer size (years × annual spend), life horizon,
+    and years-before-retirement are still year-valued inputs. This pairs
+    naturally with the monthly return panel already built (a monthly Source
+    feeds the kernel directly, no Compounded wrapper for this path). Keep the
+    annual kernel + its golden tests as the validated reference; the monthly
+    kernel needs its own validation targets. Bigger change, but it is what the
+    real plan needs, so prioritise above the other P3 items.
 
 14. **Richer policies.** Melting/glidepath buffer (stop refilling after the
     sequence-risk window), a distinct inflation-linked sleeve vs pure cash,
@@ -93,3 +103,31 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     i.e. many independent Monte-Carlo passes per slider drag. Share pre-drawn
     paths across the sweep evaluations (as `CapitalForRuin` already does) to cut
     the per-request cost, especially at higher path counts.
+
+## Portfolio analysis / report (not FIRE-specific)
+
+17. **Volatility term structure in the comparison table (approved direction).**
+    The report currently ranks portfolios by **daily-annualised** volatility
+    (and Sharpe/Sortino built on it), which over/understates the dispersion an
+    investor actually realises at a multi-year horizon: it overstates when
+    returns mean-revert (intraday/daily noise that never compounds) and
+    understates when they trend (e.g. managed-futures sleeves). This biases the
+    risk ranking and the daily-based Sharpe.
+    - Add a reusable primitive **`metrics.VarianceRatio`** (Lo–MacKinlay): the
+      ratio of a lower-frequency annualised variance to the daily one,
+      e.g. monthly/daily. ≈1 → i.i.d.; <1 → mean reversion (daily vol
+      overstates real risk); >1 → trending (it understates).
+    - Surface in the comparison table: a **monthly annualised volatility**
+      column **plus the variance ratio**, with an **explanatory legend/footnote**
+      (what the ratio means, the small-sample caveat: weekly ~1000 pts and
+      monthly ~240 are fine, annual ~20 is too noisy to show as a point
+      estimate).
+    - This is a recognised statistic (volatility term structure / variance
+      ratio), not an ad-hoc home metric. Position it as **complementary** to the
+      existing rolling-CAGR / drawdown / Ulcer / TTR metrics (which already
+      capture long-horizon pain): the ratio specifically reveals the
+      autocorrelation those do not show directly.
+    - The same primitive would let the FIRE tool reconcile the report's daily
+      vol with the annual sigma it seeds (see P2 item 9), and could feed a
+      monthly-based Sharpe/Sortino variant. Note that `VarianceRatio` belongs in
+      `pkg/metrics` (reusable), consumed by both the report and the FIRE seeding.
