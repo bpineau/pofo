@@ -2,6 +2,7 @@ package simgen
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -151,12 +152,12 @@ func vtRecipe() Recipe {
 func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
-		Name:   "iShares Core MSCI World: 60/40 US/international replication",
-		Method: "0.60×VFINX (1976) + 0.40×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970), 0.20%/yr fees",
-		Build: composite("IWDA (MSCI World replication)", []Leg{
+		Name:   "iShares Core MSCI World: MSCI World total return (1969 with -refdata)",
+		Method: "real MSCI World gross TR (via -refdata MSCIWORLD-USD, monthly 1969→), net 0.20%/yr; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Build: longIndexOr("MSCIWORLD-USD", 0.0020, composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
-		}, "", 0.0020),
+		}, "", 0.0020)),
 		ValidateAgainst: "IE00B4L5Y983",
 	}
 }
@@ -257,6 +258,38 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 	}
 }
 
+// longIndexOr returns a Build that uses a long real index served by symbol (net
+// of annualFee) when it is available, e.g. a licensed MSCI series supplied via
+// -refdata, and otherwise falls back to the given proxy Build. The refdata file
+// stays local (licensing), so CI and others still regenerate from the fetchable
+// proxy; a machine that has the file gets the decades-longer real history. The
+// >300-point guard distinguishes the long monthly series from an accidental
+// short fetch of the same symbol.
+func longIndexOr(symbol string, annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+		if s, err := f.Fetch(symbol, from); err == nil && s != nil && len(s.Points) > 300 {
+			return afterFee(s, annualFee), nil
+		}
+		return fallback(f, from)
+	}
+}
+
+// afterFee returns a copy of s with a continuous annual fee applied, so a gross
+// index level becomes an after-cost investable one.
+func afterFee(s *marketdata.Series, annual float64) *marketdata.Series {
+	if annual <= 0 || len(s.Points) == 0 {
+		return s
+	}
+	out := *s
+	out.Points = make([]marketdata.Point, len(s.Points))
+	t0 := s.Points[0].Date
+	for i, p := range s.Points {
+		yrs := p.Date.Sub(t0).Hours() / 24 / 365.25
+		out.Points[i] = marketdata.Point{Date: p.Date, Close: p.Close * math.Pow(1-annual, yrs)}
+	}
+	return &out
+}
+
 // composite is the shared Build for constant-weight linear recipes.
 func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
@@ -322,12 +355,12 @@ func ntsgRecipe() Recipe {
 func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
-		Name:   "iShares MSCI World: 60/40 US/international replication",
-		Method: "0.60×VFINX (1976) + 0.40×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970), 0.24%/yr fees",
-		Build: composite("URTH (MSCI World replication)", []Leg{
+		Name:   "iShares MSCI World: MSCI World total return (1969 with -refdata)",
+		Method: "real MSCI World gross TR (via -refdata MSCIWORLD-USD, monthly 1969→), net 0.24%/yr; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Build: longIndexOr("MSCIWORLD-USD", 0.0024, composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
-		}, "", 0.0024),
+		}, "", 0.0024)),
 		ValidateAgainst: "URTH",
 	}
 }
