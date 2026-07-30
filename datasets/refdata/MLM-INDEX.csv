@@ -1,8 +1,8 @@
 # portfodor refdata v1 (format simdata)
 # id: MLM-INDEX
-# name: KFA MLM Index (EV, vol cible)
-# method: historique officiel de l'indice MLM Mount Lucas depuis 1987
-# source: serveur MCP « portfolio » (tiers), importé le 2026-06-12
+# name: KFA MLM Index (EV, vol target)
+# method: official Mount Lucas MLM Index history since 1987
+# source: third-party "portfolio" MCP server, imported on 2026-06-12
 date,close
 1987-12-31,1.840404
 1988-01-04,1.805216

@@ -1,3 +1,3 @@
-# Le classique 60/40 actions/obligations US
+# The classic 60/40 US stocks/bonds portfolio
 60  VTI     Vanguard Total Stock Market
-40  BNDSIM  Vanguard Total Bond Market (simulé avant 2007 via VBMFX)
+40  BNDSIM  Vanguard Total Bond Market (simulated before 2007 via VBMFX)

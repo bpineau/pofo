@@ -7,7 +7,7 @@ import (
 )
 
 func TestLineRendersAllSeries(t *testing.T) {
-	n := 3000 // force la décimation
+	n := 3000 // force decimation
 	start := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
 	dates := make([]time.Time, n)
 	v1 := make([]float64, n)
@@ -22,23 +22,23 @@ func TestLineRendersAllSeries(t *testing.T) {
 		{Name: "C", Dates: dates, Values: v2},
 	})
 	if !strings.HasPrefix(svg, "<svg") || !strings.HasSuffix(svg, "</svg>") {
-		t.Fatal("le document SVG est mal formé")
+		t.Fatal("malformed SVG document")
 	}
 	if got := strings.Count(svg, "<path"); got != 2 {
-		t.Errorf("2 courbes attendues, trouvé %d", got)
+		t.Errorf("want 2 curves, got %d", got)
 	}
 	if strings.Contains(svg, "NaN") {
-		t.Error("le SVG contient des NaN")
+		t.Error("the SVG contains NaN")
 	}
 	if !strings.Contains(svg, "Test &lt;chart&gt; &amp; co") {
-		t.Error("le titre doit être échappé")
+		t.Error("the title must be escaped")
 	}
 	if !strings.Contains(svg, "A &amp; B") {
-		t.Error("la légende doit être échappée")
+		t.Error("the legend must be escaped")
 	}
-	// Les années doivent apparaître en abscisse sur une période 2000-2008.
+	// Years must appear on the x-axis over a 2000-2008 span.
 	if !strings.Contains(svg, ">2004<") {
-		t.Error("graduation d'années manquante")
+		t.Error("missing year tick")
 	}
 }
 
@@ -49,6 +49,6 @@ func TestLineSingleSeriesHasNoLegend(t *testing.T) {
 	}
 	svg := Line(Options{Title: "solo"}, []Series{{Name: "P1", Dates: dates, Values: []float64{100, 110}}})
 	if strings.Contains(svg, ">P1<") {
-		t.Error("pas de légende attendue pour une seule série")
+		t.Error("no legend expected for a single series")
 	}
 }

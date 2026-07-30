@@ -13,8 +13,8 @@ import (
 type CatalogEntry struct {
 	ID       string   // canonical identifier (ticker or ISIN)
 	ISIN     string   // informational; may be empty for indices/commodities
-	Aliases  []string // identifiants alternatifs acceptés dans les fichiers portefeuille
-	UCITS    bool     // fonds/ETF au format UCITS (les ETC, fonds US, indices… ne le sont pas)
+	Aliases  []string // alternative identifiers accepted in portfolio files
+	UCITS    bool     // UCITS funds/ETFs (ETCs, US funds, indices… are not)
 	Name     string
 	Source   string // "yahoo", "ft", "morningstar" or "stooq"
 	Symbol   string // yahoo/stooq symbol or Morningstar id; unused for ft
@@ -45,14 +45,14 @@ var catalog = []CatalogEntry{
 
 	// Commodities. Yahoo carries both since ~2000; the Stooq spot series go
 	// further back but sit behind an anti-bot wall as of 2026.
-	{ID: "XAUUSD", Aliases: []string{"GOLD"}, Name: "Or XAU/USD (via futures GC=F)", Source: "yahoo", Symbol: "GC=F", Currency: "USD"},
-	{ID: "CL=F", Aliases: []string{"WTI"}, Name: "Pétrole brut WTI (futures continus)", Source: "yahoo", Symbol: "CL=F", Currency: "USD"},
+	{ID: "XAUUSD", Aliases: []string{"GOLD"}, Name: "Gold XAU/USD (via GC=F futures)", Source: "yahoo", Symbol: "GC=F", Currency: "USD"},
+	{ID: "CL=F", Aliases: []string{"WTI"}, Name: "WTI crude oil (continuous futures)", Source: "yahoo", Symbol: "CL=F", Currency: "USD"},
 
 	// European funds and ETFs, resolutions established by the multi-source
 	// pipeline then pinned here (see --warmup).
 	{ID: "IE00B4L5Y983", ISIN: "IE00B4L5Y983", Name: "iShares Core MSCI World UCITS ETF USD (Acc)", Source: "yahoo", Symbol: "IWDA.L", Currency: "USD", Fees: 0.20, UCITS: true},
-	{ID: "IE000KF370H3", Aliases: []string{"NTSX"}, ISIN: "IE000KF370H3", Name: "WisdomTree US Efficient Core UCITS ETF USD Acc", Source: "ft", Xid: "839245042", Currency: "USD", Fees: 0.20, UCITS: true},     // cotation LSE en USD, cohérente avec la simdata
-	{ID: "IE00077IIPQ8", Aliases: []string{"NTSG"}, ISIN: "IE00077IIPQ8", Name: "WisdomTree Global Efficient Core UCITS ETF USD Acc", Source: "ft", Xid: "944239356", Currency: "USD", Fees: 0.25, UCITS: true}, // cotation LSE en USD, cohérente avec la simdata
+	{ID: "IE000KF370H3", Aliases: []string{"NTSX"}, ISIN: "IE000KF370H3", Name: "WisdomTree US Efficient Core UCITS ETF USD Acc", Source: "ft", Xid: "839245042", Currency: "USD", Fees: 0.20, UCITS: true},     // LSE quote in USD, consistent with the simdata
+	{ID: "IE00077IIPQ8", Aliases: []string{"NTSG"}, ISIN: "IE00077IIPQ8", Name: "WisdomTree Global Efficient Core UCITS ETF USD Acc", Source: "ft", Xid: "944239356", Currency: "USD", Fees: 0.25, UCITS: true}, // LSE quote in USD, consistent with the simdata
 	{ID: "IE000O1VI174", Aliases: []string{"WINTON-TREND-EQUITY"}, ISIN: "IE000O1VI174", Name: "Winton Trend Enhanced Global Equity Fund (UCITS) I USD Acc", Source: "ft", Xid: "989556146", Currency: "USD", UCITS: true},
 	{ID: "GG00BQBFY362", Aliases: []string{"BHMG"}, ISIN: "GG00BQBFY362", Name: "BH Macro Ltd GBP", Source: "yahoo", Symbol: "BHMG.L", Currency: "GBp"},
 	{ID: "LU0319687124", Aliases: []string{"AMUNDI-VOLATILITY", "AMUNDI-VOLATILITY-WORLD"}, ISIN: "LU0319687124", Name: "Amundi Funds - Volatility World A USD (C)", Source: "ft", Xid: "10219357", Currency: "USD", Fees: 1.49, UCITS: true},
@@ -61,8 +61,8 @@ var catalog = []CatalogEntry{
 	{ID: "LU0280435461", ISIN: "LU0280435461", Name: "Pictet-Clean Energy Transition R EUR", Source: "ft", Xid: "129516373", Currency: "EUR", Fees: 2.70, UCITS: true},
 	{ID: "FR0011147594", ISIN: "FR0011147594", Name: "Omnibond R", Source: "ft", Xid: "121432102", Currency: "EUR", UCITS: true},
 	{ID: "FR0012336683", ISIN: "FR0012336683", Name: "Amundi Actions Or PC", Source: "yahoo", Symbol: "0P000163EJ.F", Currency: "EUR", Fees: 1.70, UCITS: true},
-	// Part distribuante: Yahoo (clôtures ajustées, dividendes réinvestis)
-	// plutôt que la VL FT qui les ignorerait.
+	// Distributing share class: Yahoo (adjusted closes, dividends
+	// reinvested) rather than the FT NAV, which would ignore them.
 	{ID: "DE0002635307", Aliases: []string{"DJXXF"}, ISIN: "DE0002635307", Name: "iShares STOXX Europe 600 UCITS ETF (DE) EUR (Dist)", Source: "yahoo", Symbol: "EXSA.DE", Currency: "EUR", Fees: 0.20, UCITS: true},
 	{ID: "XS3022291473", Aliases: []string{"CRRY"}, ISIN: "XS3022291473", Name: "WisdomTree Enhanced Commodity Carry ETC", Source: "ft", Xid: "984123045", Currency: "USD", Fees: 0.34},
 	{ID: "IE00B5BMR087", ISIN: "IE00B5BMR087", Name: "iShares Core S&P 500 UCITS ETF USD (Acc)", Source: "yahoo", Symbol: "CSSPX.MI", Currency: "EUR", Fees: 0.07, UCITS: true},
@@ -76,8 +76,8 @@ var catalog = []CatalogEntry{
 	{ID: "WPEA", ISIN: "IE0002XZSHO1", Name: "iShares MSCI World Swap PEA UCITS ETF EUR (Acc)", Source: "yahoo", Symbol: "WPEA.PA", Currency: "EUR", Fees: 0.20, UCITS: true},
 	{ID: "SPEA", ISIN: "IE000DQLYVB9", Name: "iShares S&P 500 Swap PEA UCITS ETF EUR (Acc)", Source: "ft", Symbol: "SPEA", Xid: "990931048", Currency: "EUR", Fees: 0.10, UCITS: true},
 
-	// Fonds de la liste embarquée (résolutions et TER moissonnés par
-	// --warmup puis figés ici; voir data/fund_tickers.csv pour les tickers).
+	// Funds from the embedded list (resolutions and TERs harvested by
+	// --warmup then pinned here; see data/fund_tickers.csv for the tickers).
 	{ID: "IE00BK5BQT80", ISIN: "IE00BK5BQT80", Name: "Vanguard FTSE All-World UCITS ETF", Source: "yahoo", Symbol: "VWRA.L", Currency: "USD", Fees: 0.19, UCITS: true},
 	{ID: "IE00B3RBWM25", ISIN: "IE00B3RBWM25", Name: "Vanguard FTSE All-World UCITS ETF", Source: "yahoo", Symbol: "VWRD.L", Currency: "USD", Fees: 0.19, UCITS: true},
 	{ID: "IE0003XJA0J9", ISIN: "IE0003XJA0J9", Name: "Amundi Prime All Country World UCITS ETF USD Dist", Source: "ft", Symbol: "WEBN", Xid: "894306203", Currency: "MUN", Fees: 0.07, UCITS: true},
@@ -149,7 +149,7 @@ var catalog = []CatalogEntry{
 
 	// US-listed twins, used by simgen for validation; the bare tickers map
 	// to the UCITS share classes via the embedded fund list.
-	{ID: "NTSX-US", Name: "WisdomTree US Efficient Core ETF (version US)", Source: "yahoo", Symbol: "NTSX", Currency: "USD", Fees: 0.20},
+	{ID: "NTSX-US", Name: "WisdomTree US Efficient Core ETF (US version)", Source: "yahoo", Symbol: "NTSX", Currency: "USD", Fees: 0.20},
 }
 
 var catalogByID = sync.OnceValue(func() map[string]CatalogEntry {

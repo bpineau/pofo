@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: ZROZ
-# name: PIMCO 25+Y zero-coupon — courbes de taux (réf. importée)
-# method: réf. ZROZ-REF (STRIPS 25+ dérivés des courbes de taux US, 1962→), réel ZROZ greffé depuis 2009
-# validation: corr=1.000 (hebdo 1.000) beta=1.00 TE=0.3%/an CAGR sim 1.90% vs réel 2.03% (overlap 4173 j de 2009-11-04 à 2026-06-10) vs ZROZ
+# name: PIMCO 25+Y zero-coupon — yield curves (imported ref.)
+# method: ref. ZROZ-REF (25+ STRIPS derived from US yield curves, 1962→), real ZROZ grafted from 2009
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.3%/yr CAGR sim 1.90% vs real 2.03% (overlap 4173 d from 2009-11-04 to 2026-06-10) vs ZROZ
 # generated: 2026-06-12
 date,close
 1962-01-02,1.848203

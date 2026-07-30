@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: IE00B4L5Y983
-# name: iShares Core MSCI World — réplication 60/40 US/international
-# method: 0.60×VFINX + 0.40×VTMGX, frais 0.20 %/an
-# validation: corr=0.600 (hebdo 0.848) beta=0.56 TE=14.6%/an CAGR sim 11.58% vs réel 10.87% (overlap 4125 j de 2009-09-25 à 2026-06-11) vs IE00B4L5Y983
+# name: iShares Core MSCI World — 60/40 US/international replication
+# method: 0.60×VFINX + 0.40×VTMGX, 0.20%/yr fees
+# validation: corr=0.600 (weekly 0.848) beta=0.56 TE=14.6%/yr CAGR sim 11.58% vs real 10.87% (overlap 4125 d from 2009-09-25 to 2026-06-11) vs IE00B4L5Y983
 # generated: 2026-06-12
 date,close
 1999-08-17,100.000000

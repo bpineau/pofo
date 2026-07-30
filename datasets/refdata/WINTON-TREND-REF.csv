@@ -1,8 +1,8 @@
 # portfodor refdata v1 (format simdata)
 # id: WINTON-TREND-REF
 # name: Winton Trend Fund (UCITS)
-# method: fonds réel depuis 2019, simulation Winton antérieure (importé du serveur portfolio)
-# source: serveur MCP « portfolio » (tiers), importé le 2026-06-12
+# method: real fund from 2019, Winton's own simulation before (imported from the portfolio server)
+# source: third-party "portfolio" MCP server, imported on 2026-06-12
 date,close
 2000-01-01,46.403716
 2000-01-03,46.272643

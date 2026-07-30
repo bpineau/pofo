@@ -12,13 +12,13 @@ import (
 // of each row is shown in green (or marked with a star without colors).
 // Per-portfolio details are deliberately omitted.
 func RenderText(w io.Writer, page *Page, color bool) error {
-	if _, err := fmt.Fprintf(w, "%s\nPériode commune : %s → %s\n\n", page.Title, page.CommonStart, page.CommonEnd); err != nil {
+	if _, err := fmt.Fprintf(w, "%s\nCommon period: %s → %s\n\n", page.Title, page.CommonStart, page.CommonEnd); err != nil {
 		return err
 	}
 
 	// Column widths (visual width ≈ rune count for our character set).
 	widths := make([]int, len(page.PortfolioNames)+1)
-	widths[0] = utf8.RuneCountInString("Métrique")
+	widths[0] = utf8.RuneCountInString("Metric")
 	for _, r := range page.StatRows {
 		widths[0] = max(widths[0], utf8.RuneCountInString(r.Label))
 	}
@@ -42,7 +42,7 @@ func RenderText(w io.Writer, page *Page, color bool) error {
 		return strings.Join(parts, "  ")
 	}
 
-	header := []string{pad("Métrique", widths[0], false)}
+	header := []string{pad("Metric", widths[0], false)}
 	for i, n := range page.PortfolioNames {
 		header = append(header, pad(n, widths[i+1], true))
 	}
