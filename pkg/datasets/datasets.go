@@ -1,8 +1,3 @@
-// Package datasets embeds the repository's versioned data into the binary:
-// the permanent simulated histories (simdata/) and the catalog asset
-// metadata (assetmeta/). The binary can therefore run from any directory;
-// after a regeneration (-gen-simdata), a recompilation is needed to re-embed
-// the files.
 package datasets
 
 import (

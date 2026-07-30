@@ -169,7 +169,9 @@ regime view stays the default.
 - **Currency**: every series is converted to the `-currency` (default EUR)
   using daily Yahoo FX crosses, so USD ETFs and EUR funds compare fairly;
   the earliest known rate is held flat before the FX history starts (with a
-  warning), and unconverted (unknown-currency) assets are flagged.
+  warning), and unconverted (unknown-currency) assets are flagged. For
+  library consumers, `Client.ConvertCurrency` reprices any `Series` into a
+  target currency via the same Yahoo crosses.
 - **Cache**: 1 month by default; a failed refresh **serves the stale data**
   with a stderr warning (charts may stop before today), and never deletes
   anything.
@@ -177,6 +179,30 @@ regime view stays the default.
   `pkg/datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
   BND→VBMFX, …), rescaled to the first real quote. The report flags every
   simulated portion.
+
+### Intraday
+
+`Client.Intraday` fetches the current trading day's price path (5-minute
+resolution) from Yahoo Finance. The call is live and stateless: the client
+performs no intraday caching, so the caller is responsible for throttling
+and storing results when needed. If the identifier does not resolve to a
+Yahoo symbol (for example, a fund quoted only by FT or Morningstar),
+the call returns `ErrNotCovered`; test with `errors.Is`.
+
+Mapping the result to a chart series is caller-side:
+
+```go
+s, err := client.Intraday("VOO")
+if err != nil {
+	// errors.Is(err, marketdata.ErrNotCovered) means no intraday for this asset
+}
+ser := chart.Series{Name: s.Name}
+for _, p := range s.Points {
+	ser.Dates = append(ser.Dates, p.Time)
+	ser.Values = append(ser.Values, p.Close)
+}
+svg := chart.Line(chart.Options{Title: s.Name}, []chart.Series{ser})
+```
 
 ## Simulated data (pkg/datasets/simdata/)
 
@@ -258,7 +284,7 @@ Each package has its documentation page — calculation conventions included
 
 ```go
 import (
-	"github.com/bpineau/pofo/datasets"
+	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
@@ -300,7 +326,9 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 - `datasets` — the versioned data embedded at build time; `Catalog()` returns
   the typed asset list (`Asset`), `AssetMeta()` the same data as raw JSON.
 - `marketdata` — resolution (aliases, ISIN, catalog), `Lookup` for an asset's
-  full metadata, multi-source downloads, cache, simdata, proxies.
+  full metadata, `Resolve` to inspect the resolved source/symbol, multi-source
+  daily downloads, `Intraday` for the live 5-minute path, cache, simdata,
+  proxies.
 - `suggest` — regime/factor coverage and gap-filling (consumes `datasets.Asset`).
 - `metrics` — statistics over value series (returns, drawdowns, Beta).
 - `chart` — pure-stdlib inline SVG charts.
