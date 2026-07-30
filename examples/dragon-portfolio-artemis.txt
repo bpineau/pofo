@@ -1,0 +1,15 @@
+# The Dragon Portfolio (Christopher Cole / Artemis Capital) — modernized
+# Idea: own assets that win in EVERY regime — equity (secular growth), long
+#   bonds (deflation), gold (monetary debasement), commodity-trend / managed
+#   futures (sustained inflation, long crises) and long volatility (sudden
+#   crashes). Designed to compound across 100-year cycles, not one decade.
+# Inspired by: Artemis, 'The Allegory of the Hawk and Serpent' (2020).
+#   https://www.artemiscapital.com/research
+# Long-vol via an actively managed UCITS vol fund; trend via managed futures.
+#meta rebalance:180
+
+24    IWDASIM         # Equity (UCITS: IWDA)
+18    TLTSIM          # Long bonds (UCITS: IDTL)
+19    GOLDSIM         # Gold (UCITS: IGLN)
+18    KMLMSIM         # Managed futures / commodity trend (UCITS: iMGP DBi LU2951555585)
+21    LU0319687124    # Long volatility (Amundi Volatility World)

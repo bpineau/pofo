@@ -1,0 +1,13 @@
+# Capital-Efficient All-Weather (NTSX core + diversifiers)
+# Idea: use an efficient-core 90/60 as the stock+bond engine, then spend the
+#   freed capital on the diversifiers an All-Weather wants — gold, commodities
+#   and managed futures. All-Weather risk balance, less capital tied up.
+# Inspired by: 'NTSX as a portfolio building block' (Optimized Portfolio).
+#   https://www.optimizedportfolio.com/ntsx/
+# Mostly UCITS (NTSX); trend via SIM, UCITS buy-route iMGP DBi.
+#meta rebalance:180
+
+50    IE000KF370H3    # US Efficient Core 90/60 (NTSX) — equity+bond engine
+15    GOLDSIM         # Gold (UCITS: IGLN)
+15    IE00BDFL4P12    # Broad commodities (ICOM)
+20    KMLMSIM         # Managed futures (UCITS: iMGP DBi)

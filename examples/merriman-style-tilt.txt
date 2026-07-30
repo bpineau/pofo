@@ -1,0 +1,13 @@
+# Merriman-style worldwide equity (value & small tilts)
+# Idea: Paul Merriman's 'Ultimate Buy & Hold' spirit — a global core heavily
+#   tilted to size and value, where the long-run factor premia live. High
+#   expected return, higher tracking error vs a plain index.
+# Inspired by: Paul Merriman, 'Ultimate Buy and Hold Strategy'.
+#   https://www.paulmerriman.com/ultimate-buy-and-hold-strategy
+# UCITS, 100% equity.
+
+40    IE00B4L5Y983    # World core (IWDA)
+20    IE00BP3QZB59    # World Value (IWVL)
+20    IE0003R87OG3    # Global Small-Cap Value (AVWS)
+10    IE00BSPLC298    # Europe Small-Cap Value (ZPRX)
+10    IE00BKM4GZ66    # Emerging Markets (EIMI)
