@@ -25,6 +25,7 @@ import (
 	"github.com/bpineau/portfodor/pkg/chart"
 	"github.com/bpineau/portfodor/pkg/marketdata"
 	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/optimize"
 	"github.com/bpineau/portfodor/pkg/portfolio"
 	"github.com/bpineau/portfodor/pkg/report"
 	"github.com/bpineau/portfodor/pkg/simgen"
@@ -61,6 +62,7 @@ type result struct {
 	sim           *portfolio.SimResult
 	color         string
 	rebalanceDays int
+	note          string // informational line (e.g. optimizer choice)
 	// Common-window view, renormalized to 100, used for stats and comparison.
 	winDates  []time.Time
 	winValues []float64
@@ -125,6 +127,11 @@ File format — one line per asset:
                              quarter, year}, e.g. contribute:500/month
         #meta withdraw:A/P   take out A, or A%% of the current value
                              (withdraw:4%%/year), every period P
+        #meta optimize:OBJ   compute the weights: OBJ is max-sharpe,
+                             min-volatility or risk-parity, with an
+                             optional ",max-weight:40" cap. The report
+                             shows the optimized weights next to the
+                             written ones.
 
 Example:
     #meta rebalance:30
@@ -269,7 +276,29 @@ Options:
 	}
 
 	results := make([]*result, 0, len(specs))
-	for i, spec := range specs {
+	simulateInto := func(p *portfolio.Portfolio, spec *portfolio.Spec) error {
+		days := opt.rebalance
+		if spec.RebalanceDays >= 0 {
+			days = spec.RebalanceDays
+		}
+		sim, err := portfolio.Simulate(p, days)
+		if err != nil {
+			return fmt.Errorf("portfolio %s: %w", p.Name, err)
+		}
+		if sim.Ruined {
+			cause := "the leveraged exposure exhausted the net value"
+			if p.Withdraw.Active() && !p.Leverage {
+				cause = "withdrawals exhausted the capital"
+			}
+			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
+			log.Printf("warning: portfolio %s wiped out on %s — series truncated", p.Name, when)
+			p.Warnings = append(p.Warnings, fmt.Sprintf(
+				"capital wiped out on %s: %s; the series stops there", when, cause))
+		}
+		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days})
+		return nil
+	}
+	for _, spec := range specs {
 		p := buildPortfolio(spec, seriesByID, feesFor, opt.currency)
 		if spec.Leverage {
 			p.Leverage = true
@@ -279,25 +308,26 @@ Options:
 			}
 			p.Cash = cashRate
 		}
-		days := opt.rebalance
-		if spec.RebalanceDays >= 0 {
-			days = spec.RebalanceDays
-		}
-		sim, err := portfolio.Simulate(p, days)
-		if err != nil {
-			return fmt.Errorf("portfolio %s: %w", spec.Name, err)
-		}
-		if sim.Ruined {
-			cause := "the leveraged exposure exhausted the net value"
-			if p.Withdraw.Active() && !p.Leverage {
-				cause = "withdrawals exhausted the capital"
+		// An optimized portfolio is shown next to its written weights, so
+		// the optimizer's choice can be compared with the baseline.
+		if spec.Optimize != nil {
+			pOpt, note, err := optimizedPortfolio(p, spec)
+			if err != nil {
+				return fmt.Errorf("portfolio %s: %w", spec.Name, err)
 			}
-			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
-			log.Printf("warning: portfolio %s wiped out on %s — series truncated", spec.Name, when)
-			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"capital wiped out on %s: %s; the series stops there", when, cause))
+			p.Name = spec.Name + " (as written)"
+			if err := simulateInto(p, spec); err != nil {
+				return err
+			}
+			if err := simulateInto(pOpt, spec); err != nil {
+				return err
+			}
+			results[len(results)-1].note = note
+			continue
 		}
-		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(i), rebalanceDays: days})
+		if err := simulateInto(p, spec); err != nil {
+			return err
+		}
 	}
 
 	// Common window across portfolios: statistics and the comparison chart
@@ -739,6 +769,54 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 	return p
 }
 
+// optimizedPortfolio returns a copy of base whose weights are replaced by
+// the optimizer's, computed over the period where every asset has a quote.
+// The original (base) keeps the weights written in the file.
+func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portfolio.Portfolio, string, error) {
+	list := make([]*marketdata.Series, len(base.Assets))
+	start := base.Assets[0].Series.First().Date
+	end := base.Assets[0].Series.Last().Date
+	for i, a := range base.Assets {
+		list[i] = a.Series
+		if f := a.Series.First().Date; f.After(start) {
+			start = f
+		}
+		if l := a.Series.Last().Date; l.Before(end) {
+			end = l
+		}
+	}
+	if !start.Before(end) {
+		return nil, "", errors.New("optimize: the assets have no period in common")
+	}
+	_, prices := marketdata.Align(list, start, end)
+	returns := make([][]float64, len(prices))
+	for i, px := range prices {
+		returns[i] = metrics.Returns(px)
+	}
+	res, err := optimize.Solve(returns, *spec.Optimize)
+	if err != nil {
+		return nil, "", fmt.Errorf("optimize: %w", err)
+	}
+
+	cp := *base
+	cp.Name = spec.Name + " (" + string(spec.Optimize.Objective) + ")"
+	cp.Assets = make([]portfolio.Asset, len(base.Assets))
+	copy(cp.Assets, base.Assets)
+	parts := make([]string, len(cp.Assets))
+	for i := range cp.Assets {
+		cp.Assets[i].Weight = res.Weights[i]
+		parts[i] = fmt.Sprintf("%s %.1f %%", cp.Assets[i].Symbol, res.Weights[i]*100)
+	}
+	note := fmt.Sprintf(
+		"weights computed by the optimizer (%s) over %s→%s: %s — in-sample expected return %.1f %%/yr, volatility %.1f %%, Sharpe %.2f",
+		spec.Optimize.Objective, start.Format("2006-01-02"), end.Format("2006-01-02"),
+		strings.Join(parts, ", "), res.Return*100, res.Volatility*100, res.Sharpe)
+	if spec.Optimize.Objective == optimize.RiskParity && spec.Optimize.MaxWeight > 0 {
+		note += " (max-weight does not apply to risk-parity)"
+	}
+	return &cp, note, nil
+}
+
 func buildPage(results []*result, opt *options, bench *marketdata.Series, commonStart, commonEnd time.Time) *report.Page {
 	names := make([]string, len(results))
 	for i, r := range results {
@@ -784,6 +862,9 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			Subtitle: subtitle,
 			ChartSVG: template.HTML(svg),
 			Warnings: r.p.Warnings,
+		}
+		if r.note != "" {
+			section.Notes = []string{r.note}
 		}
 		for _, a := range r.p.Assets {
 			var notes []string

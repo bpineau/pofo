@@ -9,6 +9,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/bpineau/portfodor/pkg/optimize"
 )
 
 // Holding is one allocation line of a portfolio file.
@@ -59,6 +61,12 @@ type Spec struct {
 	// negative when absent. Unlike asset TERs (already reflected in
 	// prices), it must be deducted from the simulated performance.
 	EnvelopeFees float64
+
+	// Optimize, when non-nil, asks an optimizer to compute the weights
+	// instead of using those written in the file
+	// ("#meta optimize:max-sharpe[,max-weight:40]"). The written weights
+	// then serve only as a baseline for comparison.
+	Optimize *optimize.Spec
 
 	// Meta holds every "#meta key:value" directive verbatim, for callers
 	// with custom needs.
@@ -149,6 +157,9 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	}
 	if (spec.Contribute.Active() || spec.Withdraw.Active()) && spec.Capital <= 0 {
 		return nil, fmt.Errorf("#meta contribute/withdraw need a starting amount: add \"#meta capital:<amount>\"")
+	}
+	if spec.Optimize != nil && spec.Leverage {
+		return nil, fmt.Errorf("#meta optimize and #meta leverage cannot be combined")
 	}
 	if spec.Leverage {
 		// Explicit leverage: weights are fractions of the capital, as
@@ -315,6 +326,12 @@ func (s *Spec) applyMeta(directives string) error {
 				return fmt.Errorf("#meta borrow-spread: %q is not a valid yearly percentage", val)
 			}
 			s.BorrowSpread = f
+		case "optimize":
+			os, err := optimize.ParseSpec(val)
+			if err != nil {
+				return fmt.Errorf("#meta optimize: %v", err)
+			}
+			s.Optimize = &os
 		case "extra-fees", "envelope-fees":
 			// Additional fees applied to the whole portfolio (envelope,
 			// managed account, broker), on top of the assets' TERs.
