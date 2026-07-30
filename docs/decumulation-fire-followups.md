@@ -86,9 +86,12 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     median years underwater, worst-10y real CAGR (both the robust p5 and the
     min), CDaR, median cumulative tax and the effective tax rate.
 
-11. **Allocation A/B comparison.** Pin a baseline allocation and show a variant
-    side by side (the original motivating question: "60/25/15 vs 20/20/…"),
-    rather than only re-dragging one set of weights.
+11. ✅ **Done (2026-06-29).** **Allocation A/B comparison.** Pin a baseline
+    allocation and show a variant side by side (the original motivating
+    question: "60/25/15 vs 20/20/…"), rather than only re-dragging one set of
+    weights. Done: added `Compare` + `/api/compare`, each allocation re-fitted
+    from the panel for a fair test; a "Pin allocation as baseline" button toggles
+    A/B mode, rendering baseline vs variant cards side by side.
 
 12. ✅ **Done (2026-06-29).** **Solve in the UI.** Expose `CapitalForRuin` and a
     buffer optimiser: given a target ruin %, show the required capital and the
