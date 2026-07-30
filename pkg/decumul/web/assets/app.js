@@ -11,7 +11,7 @@ const SLIDERS = [
   ["years","Horizon (years)",20,45,1,40,"int"],
   ["pensionYear","Pension from year",5,20,1,12,"int"],
   ["pensionAnnual","Pension /yr",0,36000,1000,12000,"eur"],
-  ["flexCut","Possible spending cut",0,0.40,0.05,0.25,"pct"],
+  ["flexCut","Spending cut in downturns (0 = fixed rule)",0,0.40,0.05,0,"pct"],
   ["taxRate","Flat tax on gains",0,0.35,0.01,0.314,"pct"],
   ["sideAnnual","Side income /yr",0,30000,1000,0,"eur"],
   ["sideUntilYear","Side income until year",0,20,1,0,"int"],
