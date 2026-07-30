@@ -10,7 +10,7 @@ Entre deux plans, ne choisissez pas celui qui a la meilleure moyenne. Choisissez
 
 ## L'utilité : pourquoi la moyenne est un mauvais juge
 
-Le point de départ classique est un paradoxe de 1738, celui de Saint-Pétersbourg. C'est un jeu de pile ou face à espérance de gain infinie, auquel pourtant personne n'accepterait de jouer pour plus de quelques dizaines d'euros. La résolution de Daniel Bernoulli fonde toute la suite. Ce qui compte n'est pas l'argent mais l'**utilité** de l'argent, et celle-ci croît de moins en moins vite. Passer de 500 000 € à 1 M€ change une vie ; passer de 10 M€ à 10,5 M€ ne change rien. Cette **concavité** a une conséquence directe. À espérance égale, moins de dispersion vaut plus d'utilité. L'aversion au risque n'est pas une émotion, mais un théorème.
+Le point de départ classique est un paradoxe posé en 1713, celui de Saint-Pétersbourg. C'est un jeu de pile ou face à espérance de gain infinie, auquel pourtant personne n'accepterait de jouer pour plus de quelques dizaines d'euros. La résolution de Daniel Bernoulli fonde toute la suite. Ce qui compte n'est pas l'argent mais l'**utilité** de l'argent, et celle-ci croît de moins en moins vite. Passer de 500 000 € à 1 M€ change une vie ; passer de 10 M€ à 10,5 M€ ne change rien. Cette **concavité** a une conséquence directe. À espérance égale, moins de dispersion vaut plus d'utilité. L'aversion au risque n'est pas une émotion, mais un théorème.
 
 Pour le rentier, la concavité est extrême et asymétrique. La zone basse de sa distribution détruit le mode de vie, la dignité, les options. Ce sont les trajectoires qui frôlent ou touchent la ruine ([[ruine-et-probabilites]]). La zone haute, celle où l'on meurt sur un tas d'or, n'ajoute presque rien, sinon un héritage plus gros ([[depenses-en-retraite]]). Un critère qui pèse ces deux zones symétriquement, comme la moyenne, est donc structurellement inadapté au rentier. D'où une habitude constante dans ce livre. On juge les plans sur le percentile 5 et la médiane, jamais sur la moyenne ([[lire-un-fan-chart]]).
 
@@ -60,7 +60,7 @@ Capital 1,2 M€, besoin 43 000 €/an. Plan A : 85 % actions, retrait fixe → 
 
 ## Pour aller plus loin
 
-- Daniel Bernoulli (1738), l'exposition du paradoxe de Saint-Pétersbourg ; Von Neumann & Morgenstern pour la théorie de l'utilité espérée.
+- Nicolas Bernoulli (1713), l'énoncé du paradoxe de Saint-Pétersbourg, et Daniel Bernoulli (1738), sa résolution par l'utilité ; Von Neumann & Morgenstern pour la théorie de l'utilité espérée.
 - Herbert Simon, « A Behavioral Model of Rational Choice » (1955) : le satisficing par son inventeur, prix Nobel pour cela.
 - Edward Thorp, « The Kelly Criterion in Blackjack, Sports Betting, and the Stock Market » : le meilleur exposé de Kelly, hypothèses incluses.
 - Kahneman & Tversky, « Prospect Theory » (1979) : l'aversion aux pertes mesurée, le pont vers [[psychologie-du-retrait]].
