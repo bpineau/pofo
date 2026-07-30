@@ -3,6 +3,7 @@ package web
 import (
 	"fmt"
 	"math"
+	"sort"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -18,33 +19,64 @@ type AssetSeries struct {
 }
 
 // BuildMonthlyPanel deflates each asset by hicp and aligns the resulting
-// monthly real returns into a scenario.Panel (indexed [asset][month]). Assets
-// are truncated to their common number of monthly returns so every row has
-// the same length. Monthly sampling gives the historical models ~12x more
-// data points than annual, so the bootstrap captures intra-year regimes and
-// the cohorts model has many more windows.
+// monthly real returns into a scenario.Panel (indexed [asset][month]). Rows are
+// aligned on shared calendar months (intersection of month keys), not by
+// trailing position, so holdings with different start/end months or internal
+// gaps stay column-aligned: every column is the same month across all assets.
+// Only genuine one-month returns count; a return spanning a gap is dropped.
+// Monthly sampling gives the historical models ~12x more data points than
+// annual, so the bootstrap captures intra-year regimes and the cohorts model
+// has many more windows.
 func BuildMonthlyPanel(assets []AssetSeries, hicp []marketdata.Point) (scenario.Panel, error) {
 	if len(assets) == 0 {
 		return scenario.Panel{}, fmt.Errorf("no assets")
 	}
-	rows := make([][]float64, len(assets))
+	// Per asset, the real return of each calendar month keyed by month index,
+	// keeping only months whose previous month is also present (true one-month
+	// returns). counts tracks how many assets cover each month.
+	perAsset := make([]map[int]float64, len(assets))
 	weights := make([]float64, len(assets))
-	min := -1
+	counts := make(map[int]int)
 	for i, a := range assets {
-		rows[i] = scenario.Deflate(lastPerMonth(a.Points), hicp)
+		pts := lastPerMonth(a.Points)
+		rets := scenario.Deflate(pts, hicp)
+		m := make(map[int]float64, len(rets))
+		for j, r := range rets {
+			key := monthKey(pts[j+1].Date)
+			if key != monthKey(pts[j].Date)+1 {
+				continue // not calendar-consecutive: a spanning return, drop it
+			}
+			m[key] = r
+			counts[key]++
+		}
+		perAsset[i] = m
 		weights[i] = a.Weight
-		if min < 0 || len(rows[i]) < min {
-			min = len(rows[i])
+	}
+	// Months covered by every asset, in ascending order.
+	var common []int
+	for key, c := range counts {
+		if c == len(assets) {
+			common = append(common, key)
 		}
 	}
-	if min <= 0 {
-		return scenario.Panel{}, fmt.Errorf("not enough history")
+	sort.Ints(common)
+	if len(common) == 0 {
+		return scenario.Panel{}, fmt.Errorf("not enough overlapping monthly history")
 	}
-	for i := range rows {
-		rows[i] = rows[i][len(rows[i])-min:] // keep the last min months (common window)
+	rows := make([][]float64, len(assets))
+	for i := range assets {
+		row := make([]float64, len(common))
+		for k, key := range common {
+			row[k] = perAsset[i][key]
+		}
+		rows[i] = row
 	}
 	return scenario.Panel{Returns: rows, Weights: normalize(weights)}, nil
 }
+
+// monthKey maps a date to a dense month index (year*12 + month), so consecutive
+// calendar months differ by exactly one.
+func monthKey(t time.Time) int { return t.Year()*12 + int(t.Month()) - 1 }
 
 // lastPerMonth keeps the last point of each calendar month, ascending.
 func lastPerMonth(points []marketdata.Point) []marketdata.Point {
