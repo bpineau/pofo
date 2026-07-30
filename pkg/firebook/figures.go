@@ -52,6 +52,7 @@ func FigureIDs() []string {
 
 var figures = map[string]func() string{
 	"sequence-risk":          figSequenceRisk,
+	"scv-ecart-10ans":        figScvEcart10Ans,
 	"cape-swr":               figCapeSWR,
 	"retirement-smile":       figSmile,
 	"regime-grid":            figRegimeGrid,
