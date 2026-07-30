@@ -1338,17 +1338,22 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		page.Portfolios = append(page.Portfolios, section)
 	}
 
-	if len(results) > 1 {
-		cmp := make([]chart.Series, len(results))
-		for i, r := range results {
-			cmp[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: r.winValues, Color: r.color}
-		}
-		svg := chart.Line(chart.Options{
-			Title:  "Portfolio comparison — base 100 at " + page.CommonStart,
-			Height: 480,
-		}, cmp)
-		page.CompareSVG = template.HTML(svg)
+	// Always show a curve up top — the comparison for several portfolios, or
+	// the single portfolio's own curve — so the report opens on a chart
+	// whatever the number of portfolios.
+	cmp := make([]chart.Series, len(results))
+	for i, r := range results {
+		cmp[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: r.winValues, Color: r.color}
 	}
+	title, heading := "Portfolio comparison", "Comparison"
+	if len(results) == 1 {
+		title, heading = results[0].p.Name, "Performance"
+	}
+	page.OverviewHeading = heading + " — base 100 at " + page.CommonStart
+	page.CompareSVG = template.HTML(chart.Line(chart.Options{
+		Title:  title + " — base 100 at " + page.CommonStart,
+		Height: 480,
+	}, cmp))
 
 	page.StatRows = buildStatRows(results, opt.benchmark)
 
