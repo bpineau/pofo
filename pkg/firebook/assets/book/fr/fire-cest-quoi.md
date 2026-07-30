@@ -48,7 +48,7 @@ Ensuite, **Barista et Coast sont des amortisseurs de risque de séquence**, pas 
 
 ## L'arithmétique qui rend le FIRE possible
 
-Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation et abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache (hypothèses, 5 % de rendement réel, retrait à 4 %, départ de zéro) :
+Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation et abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache, calculé avec 5 % de rendement réel, un retrait à 4 % et un départ de zéro :
 
 | Taux d'épargne | Années de travail avant l'indépendance |
 |---|---|
@@ -60,7 +60,7 @@ Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une
 | 80 % | ~5,5 ans |
 
 ::: exemple Un couple concret
-Léa et Sam, 32 ans, gagnent 5 400 € nets par mois à deux et en dépensent 3 200. Taux d'épargne : 41 %. Cible à 4 % : 3 200 × 12 × 25 = 960 000 €. Avec 90 000 € déjà investis et 2 200 €/mois d'épargne à 5 % réel, ils atteignent la cible vers 53 ans ; à 4 % réel, vers 55 ans. S'ils réduisent leurs dépenses de 400 €/mois, la cible tombe à 840 000 € et l'épargne monte à 2 600 €/mois : l'indépendance avance d'environ 4 ans. C'est la double détente. Pour aller plus loin sur le calcul de la cible : [[combien-il-vous-faut]].
+Léa et Sam, 32 ans, gagnent 5 400 € nets par mois à deux et en dépensent 3 200. Taux d'épargne : 41 %. Cible à 4 % : 3 200 × 12 × 25 = 960 000 €. Avec 90 000 € déjà investis et 2 200 €/mois d'épargne à 5 % réel, ils atteignent la cible vers 50 ans ; à 4 % réel, vers 52 ans. S'ils réduisent leurs dépenses de 400 €/mois, la cible tombe à 840 000 € et l'épargne monte à 2 600 €/mois : l'indépendance avance de 3 à 4 ans. C'est la double détente. Pour aller plus loin sur le calcul de la cible : [[combien-il-vous-faut]].
 :::
 
 ::: attention Le rendement ne vous sauvera pas
@@ -69,11 +69,11 @@ La tentation classique du débutant : compenser une épargne faible par un porte
 
 ## Ce que le FIRE n'est pas
 
-Quelques mises au point que la première vague du mouvement a parfois laissées dans le flou.
+Quelques mises au point sur ce que la première vague du mouvement a parfois laissé dans le flou.
 
 **Ce n'est pas « ne plus jamais travailler ».** La majorité des FIRE réels ont des revenus après leur départ : projets devenus lucratifs, conseil ponctuel, passion monétisée. Non parce que le plan a échoué, mais parce que des gens capables d'épargner 50 % de leurs revenus pendant 15 ans sont rarement du genre à s'arrêter de produire ([[sens-et-identite]]).
 
-**Ce n'est pas une garantie.** Tout taux de retrait est une probabilité, pas une promesse. « 95 % de succès historique » signifie que dans 1 cas défavorable sur 20 du passé américain, le plan échouait, et le futur n'est pas tenu de ressembler au passé américain ([[pieges-des-simulateurs]]). Le vrai livrable d'un plan FIRE n'est pas un chiffre, c'est un chiffre **plus** une stratégie d'ajustement ([[panorama-strategies-retrait]]) **plus** des marges ([[cash-buffer]]).
+**Ce n'est pas une garantie.** Tout taux de retrait est une probabilité, pas une promesse. « 95 % de succès historique » signifie que dans 1 cas sur 20 du passé américain, le plan échouait, et le futur n'est pas tenu de ressembler au passé américain ([[pieges-des-simulateurs]]). Le vrai livrable d'un plan FIRE n'est pas un chiffre, c'est un chiffre **plus** une stratégie d'ajustement ([[panorama-strategies-retrait]]) **plus** des marges ([[cash-buffer]]).
 
 **Ce n'est pas réservé aux ingénieurs américains à 200 000 $ par an.** Le cadre s'applique à tout niveau de dépenses ; c'est le délai qui change. Et le lecteur français dispose d'atouts spécifiques (des enveloppes fiscales efficaces, [[enveloppes-francaises]], une retraite légale qui finira par arriver en soutien, [[retraite-legale]]) et de pièges spécifiques ([[taxe-puma]]).
 
@@ -85,7 +85,7 @@ Tout projet FIRE, quelle que soit sa variante, se résume à trois nombres et à
 
 **1. Vos dépenses annuelles cibles.** Le nombre le plus important et le plus mal estimé. Pas vos dépenses actuelles : celles de la vie que vous visez, santé, impôts et lissage des grosses dépenses irrégulières compris ([[depenses-en-retraite]]).
 
-**2. Votre taux de retrait.** Le pont entre dépenses et capital. 4 % est le point de départ historique ([[la-regle-des-4-pourcents]]). Pour un départ précoce, un portefeuille mondial et des valorisations élevées, la fourchette de travail moderne est plutôt 3 à 3,5 % en retrait rigide, davantage avec une stratégie flexible ([[choisir-sa-strategie]]).
+**2. Votre taux de retrait.** Le pont entre dépenses et capital. 4 % est le point de départ historique ([[la-regle-des-4-pourcents]]). Avec un départ précoce, un portefeuille mondial et des valorisations élevées, la fourchette de travail moderne est plutôt 3 à 3,5 % en retrait rigide, davantage avec une stratégie flexible ([[choisir-sa-strategie]]).
 
 **3. Votre horizon.** 30 ans (l'hypothèse des études fondatrices) et 50 ans (un départ à 40 ans) sont deux problèmes différents. L'horizon long réduit le taux sûr, mais moins qu'on ne l'imagine. Au-delà de 40 ans, la courbe s'aplatit. Un portefeuille qui survit 40 ans est presque toujours devenu si gros qu'il survit indéfiniment ([[horizon-et-esperance-de-vie]]).
 
@@ -104,7 +104,7 @@ Le livre est découpé en articles autonomes, densément liés entre eux : prene
 - **Vous utilisez pofo** : [[utiliser-la-page-fire]] explique chaque contrôle du simulateur FIRE de pofo, et [[la-machine-pofo]] ce qui se passe sous le capot. Ce livre évoque parfois pofo parce qu'il a été conçu pendant l'écriture du livre et qu'il est en accès libre, mais d'autres excellents simulateurs (tels que FICalc, cFIREsim ou TPAW Planner) pourraient aussi vous intéresser.
 
 ::: terrain Le conseil le plus répété par ceux qui l'ont fait
-Interrogez des FIRE effectifs (forums, blogs, meetups) et un conseil revient plus que tout autre : « j'aurais dû passer moins de temps à optimiser mon taux de retrait au dixième de point, et plus de temps à préparer ce que j'allais faire de mes journées ». La mécanique financière est la partie facile ; la partie difficile est humaine ([[temoignages-fire]], [[sens-et-identite]]). Ce livre traite les deux, dans cet ordre, mais ne sautez pas la seconde.
+Interrogez des gens réellement partis (forums, blogs, meetups) et un conseil revient plus que tout autre : « j'aurais dû passer moins de temps à optimiser mon taux de retrait au dixième de point, et plus de temps à préparer ce que j'allais faire de mes journées ». La mécanique financière est la partie facile ; la partie difficile est humaine ([[temoignages-fire]], [[sens-et-identite]]). Ce livre traite les deux, dans cet ordre, mais ne sautez pas la seconde.
 :::
 
 ---
