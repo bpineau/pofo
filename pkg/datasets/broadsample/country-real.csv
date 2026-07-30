@@ -1,4 +1,4 @@
-# Per-country real annual total returns (fractions), 18 advanced economies.
+# Per-country real annual total returns (fractions), 16 advanced economies.
 # Source: Jorda-Schularick-Taylor Macrohistory Database R6
 # (https://www.macrohistory.net/app/download/9834512569/JSTdatasetR6.xlsx), each series deflated by its own CPI. Cite JST when reusing.
 # The FIRE explorer pool-bootstraps single-market runs from this table, so
