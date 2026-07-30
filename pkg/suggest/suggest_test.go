@@ -9,17 +9,17 @@ import (
 func TestRegimes(t *testing.T) {
 	cases := []struct {
 		m    Meta
-		want []Regime
+		want []Category
 	}{
-		{Meta{AssetClass: "equity", Benchmark: "MSCI World"}, []Regime{Growth}},
-		{Meta{AssetClass: "equity", Underlying: "gold mining equities"}, []Regime{Inflation}},
-		{Meta{AssetClass: "equity", Benchmark: "MSCI World Enhanced Value"}, []Regime{Growth, Inflation}},
-		{Meta{AssetClass: "gold"}, []Regime{Inflation, Crisis}},
-		{Meta{AssetClass: "managed-futures"}, []Regime{Crisis, Inflation}},
-		{Meta{AssetClass: "government-bond", Underlying: "20+ year treasuries"}, []Regime{Deflation}},
-		{Meta{AssetClass: "long-volatility"}, []Regime{Deflation, Crisis}},
-		{Meta{AssetClass: "multi-asset"}, []Regime{Growth, Deflation}},
-		{Meta{AssetClass: "other"}, []Regime{Crisis}},
+		{Meta{AssetClass: "equity", Benchmark: "MSCI World"}, []Category{Growth}},
+		{Meta{AssetClass: "equity", Underlying: "gold mining equities"}, []Category{Inflation}},
+		{Meta{AssetClass: "equity", Benchmark: "MSCI World Enhanced Value"}, []Category{Growth, Inflation}},
+		{Meta{AssetClass: "gold"}, []Category{Inflation, Crisis}},
+		{Meta{AssetClass: "managed-futures"}, []Category{Crisis, Inflation}},
+		{Meta{AssetClass: "government-bond", Underlying: "20+ year treasuries"}, []Category{Deflation}},
+		{Meta{AssetClass: "long-volatility"}, []Category{Deflation, Crisis}},
+		{Meta{AssetClass: "multi-asset"}, []Category{Growth, Deflation}},
+		{Meta{AssetClass: "other"}, []Category{Crisis}},
 	}
 	for _, c := range cases {
 		got := Regimes(c.m)
@@ -29,11 +29,11 @@ func TestRegimes(t *testing.T) {
 	}
 }
 
-func sameRegimes(a, b []Regime) bool {
+func sameRegimes(a, b []Category) bool {
 	if len(a) != len(b) {
 		return false
 	}
-	set := map[Regime]bool{}
+	set := map[Category]bool{}
 	for _, r := range a {
 		set[r] = true
 	}
@@ -50,12 +50,12 @@ func TestCoverageAndGaps(t *testing.T) {
 		{ID: "EQ", Weight: 0.6, HasMeta: true, Meta: Meta{AssetClass: "equity"}},
 		{ID: "TLT", Weight: 0.4, HasMeta: true, Meta: Meta{AssetClass: "government-bond"}},
 	}
-	cov, uncl := Coverage(holdings)
+	cov, uncl := Coverage(holdings, RegimeFramework())
 	if uncl != 0 || math.Abs(cov[Growth]-0.6) > 1e-9 || math.Abs(cov[Deflation]-0.4) > 1e-9 ||
 		cov[Inflation] != 0 || cov[Crisis] != 0 {
 		t.Fatalf("coverage = %v (uncl %v)", cov, uncl)
 	}
-	gaps := Gaps(cov, 0.10)
+	gaps := Gaps(cov, RegimeFramework(), 0.10)
 	if len(gaps) != 2 || gaps[0] != Inflation || gaps[1] != Crisis {
 		t.Fatalf("gaps = %v, want [inflation crisis]", gaps)
 	}
@@ -128,7 +128,7 @@ func TestAnalyzeSuggestsGapFiller(t *testing.T) {
 		// Another equity helps no gap (growth already covered) → excluded.
 		{Meta: Meta{ID: "VOO", AssetClass: "equity"}, PortReturns: portR, Returns: cand, Years: 5},
 	}
-	res := Analyze(holdings, [][]float64{portR}, candidates, DefaultOptions())
+	res := Analyze(holdings, [][]float64{portR}, candidates, DefaultOptions(), RegimeFramework())
 
 	if len(res.Suggestions) != 1 {
 		t.Fatalf("want 1 suggestion, got %d: %+v", len(res.Suggestions), res.Suggestions)
@@ -158,5 +158,28 @@ func TestLoadMeta(t *testing.T) {
 	// ISIN also resolves.
 	if _, ok := m["IE00B4L5Y983"]; !ok {
 		t.Fatal("ISIN key missing")
+	}
+}
+
+func TestFactorFramework(t *testing.T) {
+	fw := FactorFramework()
+	cases := []struct {
+		m    Meta
+		want []Category
+	}{
+		{Meta{AssetClass: "equity", Benchmark: "MSCI World"}, []Category{Market}},
+		{Meta{AssetClass: "equity", Benchmark: "MSCI World Value"}, []Category{Market, Value}},
+		{Meta{AssetClass: "equity", Benchmark: "MSCI World Momentum"}, []Category{Market, Momentum}},
+		{Meta{AssetClass: "equity", Underlying: "small cap stocks"}, []Category{Market, Size}},
+		{Meta{AssetClass: "gold"}, []Category{Alternative}},
+		{Meta{AssetClass: "managed-futures"}, []Category{Alternative}},
+		{Meta{AssetClass: "government-bond"}, []Category{Term}},
+		{Meta{AssetClass: "aggregate-bond"}, []Category{Term, Credit}},
+		{Meta{AssetClass: "money-market"}, []Category{Cash}},
+	}
+	for _, c := range cases {
+		if got := fw.Classify(c.m); !sameRegimes(got, c.want) {
+			t.Errorf("Factors(%q/%q) = %v, want %v", c.m.AssetClass, c.m.Benchmark, got, c.want)
+		}
 	}
 }
