@@ -50,6 +50,33 @@ func TestExtendCLFWithBundledWTI(t *testing.T) {
 	}
 }
 
+// The developed-ex-US equity leg (VTMGX, 1999) is extended by the bundled
+// DEVEXUS-USD series (French dev-ex-US, MSCI World before, ~1969) and the
+// emerging leg (VEIEX, 1994) by EM-USD (~1989). These are the legs that
+// actually cap NTSG/DBMF, so their real bundled proxies matter most.
+func TestExtendIntlEquityWithBundledProxies(t *testing.T) {
+	for _, tc := range []struct {
+		leg  string
+		want int // latest acceptable start year
+	}{
+		{"VTMGX", 1970}, // dev-ex-US reaches ~1969 via the MSCI World backfill
+		{"VEIEX", 1990}, // emerging reaches ~1989
+	} {
+		quotes := atSeries(tc.leg, 100, 50, 100) // recent fund quotes only
+		f := extend(WithRefData(datasets.Refdata(), fakeFetcher{tc.leg: quotes}))
+		got, err := f.Fetch(tc.leg, time.Time{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want := time.Date(tc.want, 1, 1, 0, 0, 0, 0, time.UTC); !got.First().Date.Before(want) {
+			t.Errorf("%s extended to %s, want before %d", tc.leg, got.First().Date.Format("2006-01"), tc.want)
+		}
+		if got.SimulatedBefore.IsZero() {
+			t.Errorf("%s: expected SimulatedBefore after splicing its bundled proxy", tc.leg)
+		}
+	}
+}
+
 // The intermediate-treasury leg (VFITX, 1991) is extended by the bundled
 // constant-maturity Treasury total-return reconstruction (~1953).
 func TestExtendVFITXWithBundledTreasury(t *testing.T) {
@@ -95,8 +122,8 @@ func atSeries(symbol string, startOffset, n int, level float64) *marketdata.Seri
 // starts at the proxy's first date, before the component's own inception.
 func TestExtendingFetcherSplicesConfiguredComponent(t *testing.T) {
 	f := fakeFetcher{
-		"VTMGX":            atSeries("VTMGX", 100, 50, 200), // starts at day(100)
-		"^990300-USD-STRD": atSeries("EAFE", 0, 200, 50),    // starts at day(0), earlier
+		"VTMGX":       atSeries("VTMGX", 100, 50, 200),   // starts at day(100)
+		"DEVEXUS-USD": atSeries("dev-ex-US", 0, 200, 50), // starts at day(0), earlier
 	}
 
 	got, err := extend(f).Fetch("VTMGX", time.Time{})
