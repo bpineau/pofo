@@ -28,7 +28,11 @@ Trois propriétés découlent immédiatement de cette mécanique, et elles expli
 
 La règle a deux actes fondateurs, détaillés dans [[etude-trinity]].
 
-**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions et obligations d'État aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, à l'entrée de quinze ans de bourse étale et d'inflation forte) supportait un retrait initial de 4,15 % sur 30 ans. Bengen baptisera plus tard ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là. C'est le taux du **pire** cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
+**Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions et obligations d'État aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, à l'entrée de quinze ans de bourse étale et d'inflation forte) supportait un retrait initial de 4,15 % sur 30 ans. Bengen baptisera plus tard ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là. C'est le taux du **pire** cas historique américain, pas une moyenne : le millésime médian, lui, supporte près de 6 %.
+
+::: figure millesimes-soutenables
+Chaque barre est un départ en retraite : le taux initial maximal qu'un 50/50 américain, réel et rééquilibré chaque année, aurait tenu trente ans (panel Jorda-Schularick-Taylor, rendements déflatés du CPI américain, millésimes 1926 à 1991). Le plancher tombe bien sur 1966, mais à 3,67 % ici : les 4,15 % de Bengen sortent de sa propre reconstruction, bâtie sur d'autres séries.
+:::
 
 **Trinity, 1998.** Trois professeurs de la Trinity University (Cooley, Hubbard, Walz) transforment l'approche en grille de probabilités : pour chaque taux de retrait, allocation et horizon, quel pourcentage des fenêtres historiques a survécu ? La cellule restée célèbre : 4 %, portefeuille 50/50, 30 ans, 95 à 96 % de succès selon les mises à jour. C'est de cette étude que vient l'idée de « probabilité de succès » qui structure encore tous les simulateurs ([[ruine-et-probabilites]]).
 
