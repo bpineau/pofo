@@ -1,8 +1,3 @@
-// Package simgen reconstructs the missing past of complex assets (leveraged
-// 90/60 funds, managed-futures ETFs, …) as composites of long-history
-// building blocks, and validates each reconstruction against the asset's
-// real quotes. The result is written as permanent "simdata" files that
-// portfodor splices in front of real histories.
 package simgen
 
 import (
