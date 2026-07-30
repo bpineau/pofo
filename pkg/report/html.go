@@ -95,7 +95,10 @@ details.pf > summary { cursor: pointer; padding: .3rem 0; list-style-position: o
 details.pf > summary:hover { color: #000; }
 .pf-name { font-size: 1.15rem; font-weight: 600; }
 .pf-sub { color: #666; font-size: .85rem; margin-left: .5rem; }
-ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
+ul.notes { color: #666; font-size: .8rem; line-height: 1.5; margin-top: .4rem; }
+details.legend { margin: .6rem 0; }
+details.legend > summary { cursor: pointer; color: #666; font-size: .85rem; }
+details.legend > summary:hover { color: #000; }
 .cov { margin: .7rem 0 1rem; font-size: .85rem; }
 .cov-title { font-weight: 600; margin-bottom: .3rem; }
 .cov-row { display: flex; align-items: center; gap: .5rem; margin: .15rem 0; }
@@ -125,11 +128,14 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 {{- end}}
 </tbody>
 </table>
+<details class="legend">
+<summary>Legend &amp; explanations</summary>
 <ul class="notes">
 {{- range .Footnotes}}
 <li>{{.}}</li>
 {{- end}}
 </ul>
+</details>
 {{if .UnderwaterSVG}}
 {{.UnderwaterSVG}}
 {{end}}
