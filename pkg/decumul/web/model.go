@@ -118,7 +118,31 @@ func Compute(pr Params) Result { return ComputeWithPanel(pr, nil) }
 func ComputeWithPanel(pr Params, panel *scenario.Panel) Result {
 	p := pr.plan()
 	p.Source = pr.source(panel)
-	return computeFrom(pr, p)
+	res := computeFrom(pr, p)
+	if res.Note == "" {
+		res.Note = reliabilityCaveat(pr, panel)
+	}
+	return res
+}
+
+// reliabilityCaveat warns when the historical sample is too short to speak to a
+// retirement-length horizon. A 27-year window (e.g. MSCI World since 1999) holds
+// no independent 40-year retirement, so any precise ruin figure from it
+// understates the long-horizon, sequence-of-returns risk that broad, century-long
+// samples reveal (Anarkulova, Cederburg & O'Doherty 2023 find materially higher
+// failure rates for a fixed 4% rule). Returns an empty string when the sample is
+// adequate or the model is purely parametric.
+func reliabilityCaveat(pr Params, panel *scenario.Panel) string {
+	if panel == nil || pr.Model == "parametric" {
+		return ""
+	}
+	histYears := panel.Periods() / 12
+	if histYears >= pr.Years {
+		return ""
+	}
+	return fmt.Sprintf(
+		"Caution: the historical sample is %d years but the horizon is %d, so it contains no independent full-length retirement. The ruin figure is optimistic about long-horizon sequence risk; broad, century-long studies find a fixed 4%% rule fails far more often.",
+		histYears, pr.Years)
 }
 
 // cohortsNote returns a user-facing caveat when the plan's source is a cohorts
