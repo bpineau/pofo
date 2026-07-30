@@ -7,8 +7,8 @@ import (
 	"unicode/utf8"
 )
 
-// RenderText writes the comparison summary — title, common period and the
-// statistics table — as aligned plain text for the CLI mode. The best cell
+// RenderText writes the comparison summary: title, common period and the
+// statistics table, as aligned plain text for the CLI mode. The best cell
 // of each row is shown in green (or marked with a star without colors).
 // Per-portfolio details are deliberately omitted.
 func RenderText(w io.Writer, page *Page, color bool) error {

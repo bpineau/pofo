@@ -27,7 +27,7 @@ var defaultPalette = []string{
 	"#9467bd", "#8c564b", "#e377c2", "#17becf",
 }
 
-// PaletteColor returns the i-th default series color (hex), cycling — the
+// PaletteColor returns the i-th default series color (hex), cycling; the
 // same palette Line falls back to, exported so callers can keep multiple
 // charts color-consistent.
 func PaletteColor(i int) string { return defaultPalette[i%len(defaultPalette)] }

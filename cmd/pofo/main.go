@@ -120,7 +120,7 @@ func run(argv []string) error {
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
 
-File format — one line per asset:
+File format: one line per asset:
 
     <weight in %%> <identifier> [fees in %%/yr]
 
@@ -198,7 +198,7 @@ Options:
 		opt.simdata = datasets.Simdata()
 	}
 
-	// Generation mode consumes positional args as recipe ids, not files —
+	// Generation mode consumes positional args as recipe ids, not files;
 	// dispatch before any portfolio parsing.
 	if *genSimdata {
 		genClient := marketdata.NewClient(opt.dataDir)
@@ -294,7 +294,7 @@ Options:
 		if spec.Leverage {
 			cr, err := client.Fetch("^IRX", opt.start)
 			if err != nil {
-				log.Printf("warning: financing rate ^IRX unavailable (%v) — leverage financed at 0 %%", err)
+				log.Printf("warning: financing rate ^IRX unavailable (%v), leverage financed at 0 %%", err)
 			} else {
 				cashRate = cr
 			}
@@ -318,7 +318,7 @@ Options:
 				cause = "withdrawals exhausted the capital"
 			}
 			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
-			log.Printf("warning: portfolio %s wiped out on %s — series truncated", p.Name, when)
+			log.Printf("warning: portfolio %s wiped out on %s, series truncated", p.Name, when)
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
 				"capital wiped out on %s: %s; the series stops there", when, cause))
 		}
@@ -399,7 +399,7 @@ Options:
 
 	assetMeta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
-		log.Printf("warning: asset metadata unavailable (%v) — regime coverage omitted", err)
+		log.Printf("warning: asset metadata unavailable (%v), regime coverage omitted", err)
 	}
 
 	if opt.cli {
@@ -426,7 +426,7 @@ Options:
 }
 
 // renderCLI prints the comparison curves and the summary table straight to
-// the terminal — quick checks without opening a browser. Per-portfolio
+// the terminal, for quick checks without opening a browser. Per-portfolio
 // details are intentionally omitted.
 func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) error {
 	color := os.Getenv("NO_COLOR") == "" && isTerminal(os.Stdout)
@@ -483,7 +483,7 @@ func printCoverageCLI(results []*result, meta map[string]suggest.Meta, fw sugges
 	if len(lines) == 0 {
 		return
 	}
-	fmt.Println("\nRegime coverage (share of weight; gap = under-covered — run -suggest):")
+	fmt.Println("\nRegime coverage (share of weight; gap = under-covered; run -suggest):")
 	for _, l := range lines {
 		fmt.Println(l)
 	}
@@ -519,7 +519,7 @@ func defaultDataDir() string {
 	return "data"
 }
 
-// runGenSimdata (re)builds the simulated histories — the former standalone
+// runGenSimdata (re)builds the simulated histories (the former standalone
 // simgen command, kept as a sub-mode. Files are written to pkg/datasets/simdata
 // (or -simdata when set): regeneration is a repository activity, and a
 // rebuild re-embeds the result into the binary.
@@ -667,7 +667,7 @@ func runVerifyData(c *marketdata.Client, specs []*portfolio.Spec, opt *options) 
 
 // runSuggest analyses each portfolio's macro-regime coverage, flags
 // redundant holdings, and recommends catalog assets to add that fill the
-// gaps — validated out-of-sample. See pkg/suggest and docs/suggest-design.md.
+// gaps, validated out-of-sample. See pkg/suggest and docs/suggest-design.md.
 func runSuggest(c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
 	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
@@ -898,7 +898,7 @@ func printCoverageBars(cov map[suggest.Category]float64, gaps []suggest.Category
 		fmt.Printf("  %-11s %-20s %3.0f %%%s\n", c, strings.Repeat("█", bars), pct, mark)
 	}
 	if unclassified > 0 {
-		fmt.Printf("  (%.0f %% of the portfolio is unclassified — no catalog metadata)\n", unclassified*100)
+		fmt.Printf("  (%.0f %% of the portfolio is unclassified, no catalog metadata)\n", unclassified*100)
 	}
 }
 
@@ -912,13 +912,13 @@ func renderSuggest(name string, start, end time.Time, res suggest.Result, fw sug
 	if len(res.Redundancies) > 0 {
 		fmt.Println("\nRedundancies (effectively one bet held several times):")
 		for _, g := range res.Redundancies {
-			fmt.Printf("  • %s — %.0f %% of the portfolio, correlation ≥ %.2f\n",
+			fmt.Printf("  • %s: %.0f %% of the portfolio, correlation ≥ %.2f\n",
 				strings.Join(g.IDs, " + "), g.Weight*100, g.MinCorr)
 		}
 	}
 
 	if len(res.Gaps) == 0 {
-		fmt.Printf("\nEvery %s category is covered — no gap to fill.\n", fw.Name)
+		fmt.Printf("\nEvery %s category is covered, no gap to fill.\n", fw.Name)
 		return
 	}
 	if len(res.Suggestions) == 0 {
@@ -927,7 +927,7 @@ func renderSuggest(name string, start, end time.Time, res suggest.Result, fw sug
 	}
 	fmt.Println("\nSuggestions to add (fill the gaps, validated out-of-sample):")
 	for i, s := range res.Suggestions {
-		fmt.Printf("  %d. %s — %s — fills the %s gap\n", i+1, s.Meta.ID, s.Meta.AssetClass, s.Fills)
+		fmt.Printf("  %d. %s (%s), fills the %s gap\n", i+1, s.Meta.ID, s.Meta.AssetClass, s.Fills)
 		fmt.Printf("     suggested weight %.0f %%  ·  correlation to portfolio %.2f  ·  daily vol %.2f %% → %.2f %%\n",
 			s.Weight*100, s.Corr, s.VolBefore*100, s.VolAfter*100)
 		fmt.Printf("     out-of-sample: Sharpe improved in %d/%d windows, max-drawdown in %d/%d (median Sharpe gain %+.2f)\n",
@@ -947,7 +947,7 @@ func renderSuggest(name string, start, end time.Time, res suggest.Result, fw sug
 
 // runCoverage is the offline coverage advisor: it shows which framework
 // categories a portfolio under-covers and lists the catalog assets that
-// would fill each gap. It needs no price data — only the embedded metadata.
+// would fill each gap. It needs no price data, only the embedded metadata.
 func runCoverage(specs []*portfolio.Spec, opt *options) error {
 	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
@@ -1052,7 +1052,7 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 // bare identifier sticks to the asset's real quotes, from its actual
 // inception. A "SIM"-suffixed identifier (DBMFSIM, VOOSIM…) additionally
 // extends the uncovered period backwards: first with the permanent simulated
-// series (embedded datasets, or -simdata), then a known proxy — real
+// series (embedded datasets, or -simdata), then a known proxy; real
 // quotes always win wherever they exist.
 func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
 	from, allowSim := opt.start, !opt.noSim
@@ -1080,7 +1080,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 	s, err := c.Fetch(base, from)
 	if err != nil {
 		if simOK {
-			log.Printf("warning: %s unavailable (%v) — using simulated data only", base, err)
+			log.Printf("warning: %s unavailable (%v), using simulated data only", base, err)
 			sim.SimulatedBefore = sim.Last().Date
 			sim.ProxySymbol = "simdata"
 			return trim(sim, time.Time{}, opt.end), nil
@@ -1133,7 +1133,7 @@ func convertToBase(c *marketdata.Client, s *marketdata.Series, opt *options) (*m
 		return nil, err
 	}
 	if !extrapolated.IsZero() {
-		log.Printf("warning: %s: FX rate %s→%s unavailable before %s — held constant earlier",
+		log.Printf("warning: %s: FX rate %s→%s unavailable before %s, held constant earlier",
 			s.Symbol, native, opt.currency, extrapolated.Format("2006-01-02"))
 	}
 	return out, nil
@@ -1169,7 +1169,7 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 			currencies[s.Currency] = true
 		} else if baseCurrency != "" {
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"%s: unknown currency — left unconverted", s.Symbol))
+				"%s: unknown currency, left unconverted", s.Symbol))
 		}
 	}
 	if len(currencies) > 1 {
@@ -1179,7 +1179,7 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 		}
 		sort.Strings(list)
 		p.Warnings = append(p.Warnings, fmt.Sprintf(
-			"mixed currencies (%s) — no FX conversion applied", strings.Join(list, ", ")))
+			"mixed currencies (%s), no FX conversion applied", strings.Join(list, ", ")))
 	}
 	return p
 }
@@ -1223,7 +1223,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portf
 		parts[i] = fmt.Sprintf("%s %.1f %%", cp.Assets[i].Symbol, res.Weights[i]*100)
 	}
 	note := fmt.Sprintf(
-		"weights computed by the optimizer (%s) over %s→%s: %s — in-sample expected return %.1f %%/yr, volatility %.1f %%, Sharpe %.2f",
+		"weights computed by the optimizer (%s) over %s→%s: %s, in-sample expected return %.1f %%/yr, volatility %.1f %%, Sharpe %.2f",
 		spec.Optimize.Objective, start.Format("2006-01-02"), end.Format("2006-01-02"),
 		strings.Join(parts, ", "), res.Return*100, res.Volatility*100, res.Sharpe)
 	if spec.Optimize.Objective == optimize.RiskParity && spec.Optimize.MaxWeight > 0 {
@@ -1251,26 +1251,26 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		first := r.sim.Dates[0].Format("2006-01-02")
 		last := r.sim.Dates[len(r.sim.Dates)-1].Format("2006-01-02")
 		svg := chart.Line(chart.Options{
-			Title: fmt.Sprintf("%s — base 100 from %s to %s", r.p.Name, first, last),
+			Title: fmt.Sprintf("%s: base 100 from %s to %s", r.p.Name, first, last),
 		}, []chart.Series{{Name: r.p.Name, Dates: r.sim.Dates, Values: r.sim.Values, Color: r.color}})
 
 		subtitle := fmt.Sprintf("%s → %s", first, last)
 		if r.rebalanceDays != opt.rebalance {
 			if r.rebalanceDays == 0 {
-				subtitle += " — never rebalanced (#meta)"
+				subtitle += ", never rebalanced (#meta)"
 			} else {
-				subtitle += fmt.Sprintf(" — rebalanced every %d d (#meta)", r.rebalanceDays)
+				subtitle += fmt.Sprintf(", rebalanced every %d d (#meta)", r.rebalanceDays)
 			}
 		}
 		if r.p.EnvelopeFees > 0 {
-			subtitle += fmt.Sprintf(" — %.2f %%/yr envelope fees deducted", r.p.EnvelopeFees)
+			subtitle += fmt.Sprintf(", %.2f %%/yr envelope fees deducted", r.p.EnvelopeFees)
 		}
 		if r.p.Leverage {
 			expo := 0.0
 			for _, a := range r.p.Assets {
 				expo += a.Weight
 			}
-			subtitle += fmt.Sprintf(" — exposure %.4g %%, financed at cash + %.2g %%/yr (#meta leverage)", expo*100, r.p.BorrowSpread)
+			subtitle += fmt.Sprintf(", exposure %.4g %%, financed at cash + %.2g %%/yr (#meta leverage)", expo*100, r.p.BorrowSpread)
 		}
 		section := report.PortfolioSection{
 			Name:     r.p.Name,
@@ -1304,13 +1304,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 				}
 				note := "source: " + src + " (NAV)"
 				if marketdata.LooksDistributing(a.Series.Name) {
-					note += " — distributing share class: dividends not reinvested in this series"
+					note += ", distributing share class: dividends not reinvested in this series"
 				}
 				notes = append(notes, note)
 			case "stooq":
 				notes = append(notes, "source: Stooq (not dividend-adjusted)")
 			}
-			feesText := "—"
+			feesText := "-"
 			if a.Fees >= 0 {
 				feesText = fmt.Sprintf("%.2f %%", a.Fees)
 			}
@@ -1341,8 +1341,8 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		page.Portfolios = append(page.Portfolios, section)
 	}
 
-	// Always show a curve up top — the comparison for several portfolios, or
-	// the single portfolio's own curve — so the report opens on a chart
+	// Always show a curve up top: the comparison for several portfolios, or
+	// the single portfolio's own curve, so the report opens on a chart
 	// whatever the number of portfolios.
 	cmp := make([]chart.Series, len(results))
 	for i, r := range results {
@@ -1352,9 +1352,9 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	if len(results) == 1 {
 		title, heading = results[0].p.Name, "Performance"
 	}
-	page.OverviewHeading = heading + " — base 100 at " + page.CommonStart
+	page.OverviewHeading = heading + ": base 100 at " + page.CommonStart
 	page.CompareSVG = template.HTML(chart.Line(chart.Options{
-		Title:  title + " — base 100 at " + page.CommonStart,
+		Title:  title + ": base 100 at " + page.CommonStart,
 		Height: 480,
 	}, cmp))
 
@@ -1370,7 +1370,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		uw[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: dd, Color: r.color}
 	}
 	page.UnderwaterSVG = template.HTML(chart.Line(chart.Options{
-		Title:  "Drawdowns (%) — common period",
+		Title:  "Drawdowns (%), common period",
 		Height: 300,
 	}, uw))
 
@@ -1381,19 +1381,19 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	page.Footnotes = append(page.Footnotes, []string{
 		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs).",
 		fmt.Sprintf("Simulation: base 100, rebalanced to the target weights every %d calendar days by default (overridable per portfolio via \"#meta rebalance:N\"), with no fees or taxes.", opt.rebalance),
-		"Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data — their volatilities and drawdowns therefore come out lower).",
-		"Fees: published TERs (FT/justETF sources), already included in prices and NAVs — informational column; only the additional portfolio fees \"#meta extra-fees:X\" (envelope, mandate…) are deducted from the simulated performance.",
-		"Max Drawdown, Ulcer and TTR on daily closes — harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
+		"Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data; their volatilities and drawdowns therefore come out lower).",
+		"Fees: published TERs (FT/justETF sources), already included in prices and NAVs, informational column; only the additional portfolio fees \"#meta extra-fees:X\" (envelope, mandate…) are deducted from the simulated performance.",
+		"Max Drawdown, Ulcer and TTR on daily closes, harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
 		"TTR: duration of the longest stretch spent below a previous peak (peak to recovery).",
 	}...)
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
-			"Histories extended before some funds' inception: via a proxy (older indices or funds — price indices do not include dividends) or via permanent simulated data (pkg/datasets/simdata/<id>.csv files generated by -gen-simdata, methodology and replication quality at the top of each file).")
+			"Histories extended before some funds' inception: via a proxy (older indices or funds; price indices do not include dividends) or via permanent simulated data (pkg/datasets/simdata/<id>.csv files generated by -gen-simdata, methodology and replication quality at the top of each file).")
 	}
 	if bench != nil {
 		page.Footnotes = append(page.Footnotes,
 			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.",
-			"Information ratio: average active return (portfolio − benchmark) divided by its tracking error (the volatility of that active return) — how much benchmark-beating return is earned per unit of benchmark-relative risk. Higher is better; above ~0.5 is good, negative means the active bets cost return.",
+			"Information ratio: average active return (portfolio − benchmark) divided by its tracking error (the volatility of that active return), showing how much benchmark-beating return is earned per unit of benchmark-relative risk. Higher is better; above ~0.5 is good, negative means the active bets cost return.",
 			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).")
 	}
 	var hasBreakdowns, hasCoverage bool
@@ -1529,7 +1529,7 @@ func breakdownSlices(agg map[string]float64, naLabel string, maxSlices int) []ch
 		slices = append(slices, chart.Slice{Label: "Other", Value: other, Color: neutralSliceColor})
 	}
 	if len(slices) == 1 && slices[0].Color == neutralSliceColor {
-		return nil // only "Other" — nothing to show
+		return nil // only "Other": nothing to show
 	}
 	return slices
 }
@@ -1603,11 +1603,11 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 	money := func(get func(r *result) (float64, bool)) func(*result) (float64, string) {
 		return func(r *result) (float64, string) {
 			if r.p.Capital <= 0 {
-				return math.NaN(), "—"
+				return math.NaN(), "-"
 			}
 			v, ok := get(r)
 			if !ok {
-				return math.NaN(), "—"
+				return math.NaN(), "-"
 			}
 			return v, fmtAmount(v)
 		}
@@ -1624,14 +1624,14 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 		{"IRR (money-weighted)", "annual rate weighting each contribution and withdrawal by its date",
 			func(r *result) (float64, string) {
 				if r.p.Capital <= 0 {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				dates := append([]time.Time{r.sim.Dates[0]}, r.sim.FlowDates...)
 				flows := append([]float64{-r.p.Capital}, negate(r.sim.FlowAmounts)...)
 				irr, ok := metrics.IRR(dates, flows,
 					r.sim.Dates[len(r.sim.Dates)-1], r.sim.Values[len(r.sim.Values)-1])
 				if !ok {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return irr, fmtPct(irr)
 			}, +1},
@@ -1664,7 +1664,7 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			func(r *result) (float64, string) {
 				worst, _, _, _, ok := metrics.RollingCAGR(r.winDates, r.winValues, 5)
 				if !ok {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return worst, fmtPct(worst)
 			}, +1},
@@ -1672,42 +1672,42 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			func(r *result) (float64, string) {
 				_, med, _, _, ok := metrics.RollingCAGR(r.winDates, r.winValues, 5)
 				if !ok {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return med, fmtPct(med)
 			}, +1},
 		{"Alpha (vs " + benchmark + ")", "annualized Jensen's alpha against the benchmark",
 			func(r *result) (float64, string) {
 				if !r.hasRel {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return r.rel.Alpha, fmtPct(r.rel.Alpha)
 			}, +1},
 		{"Information ratio", "mean active return / tracking error vs the benchmark",
 			func(r *result) (float64, string) {
 				if !r.hasRel {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return r.rel.InfoRatio, fmtNum(r.rel.InfoRatio)
 			}, +1},
 		{"Up capture", "participation in benchmark up days (>100 % = amplifies gains)",
 			func(r *result) (float64, string) {
 				if !r.hasRel || math.IsNaN(r.rel.UpCapture) {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return r.rel.UpCapture, fmtPct(r.rel.UpCapture)
 			}, +1},
 		{"Down capture", "participation in benchmark down days (<100 % = cushions losses)",
 			func(r *result) (float64, string) {
 				if !r.hasRel || math.IsNaN(r.rel.DownCapture) {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return r.rel.DownCapture, fmtPct(r.rel.DownCapture)
 			}, -1},
 		{"Beta (vs " + benchmark + ")", "sensitivity to benchmark moves",
 			func(r *result) (float64, string) {
 				if !r.stats.HasBeta {
-					return math.NaN(), "—"
+					return math.NaN(), "-"
 				}
 				return r.stats.Beta, fmtNum(r.stats.Beta)
 			}, 0},
@@ -1807,21 +1807,21 @@ func negate(xs []float64) []float64 {
 
 func fmtPct(x float64) string {
 	if math.IsNaN(x) || math.IsInf(x, 0) {
-		return "—"
+		return "-"
 	}
 	return fmt.Sprintf("%.2f %%", x*100)
 }
 
 func fmtNum(x float64) string {
 	if math.IsNaN(x) || math.IsInf(x, 0) {
-		return "—"
+		return "-"
 	}
 	return fmt.Sprintf("%.2f", x)
 }
 
 func fmtTTR(s metrics.Stats) string {
 	if s.TTRDays <= 0 {
-		return "—"
+		return "-"
 	}
 	out := fmt.Sprintf("%d d", s.TTRDays)
 	if s.TTRDays >= 365 {
@@ -1840,7 +1840,7 @@ func window(dates []time.Time, from, to time.Time) (int, int) {
 	return i, j
 }
 
-// trim returns s restricted to [from, to] — zero bounds are open. The input
+// trim returns s restricted to [from, to]; zero bounds are open. The input
 // may be shared through memoization, so trimming always works on a copy; it
 // is returned as-is when nothing falls outside the bounds.
 func trim(s *marketdata.Series, from, to time.Time) *marketdata.Series {

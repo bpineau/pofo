@@ -38,7 +38,7 @@ func Example_fetch() {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("%s — %d quotes since %s\n",
+	fmt.Printf("%s: %d quotes since %s\n",
 		series.Name, len(series.Points), series.First().Date.Format("2006-01-02"))
 }
 
@@ -72,8 +72,8 @@ func ExampleVerify() {
 		fmt.Println(issue)
 	}
 	// Output:
-	// [warn] 2024-01-04: daily move of +243.1 % — missed split or bad point?
-	// [warn] 2024-01-05: daily move of -70.6 % — missed split or bad point?
+	// [warn] 2024-01-04: daily move of +243.1 %, missed split or bad point?
+	// [warn] 2024-01-05: daily move of -70.6 %, missed split or bad point?
 }
 
 // Lookup resolves a ticker, alias or ISIN to the asset's full catalog
