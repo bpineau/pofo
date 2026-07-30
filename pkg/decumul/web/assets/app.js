@@ -4,9 +4,9 @@ const SLIDERS = [
   ["capital","Capital",800000,4000000,10000,1800000,"eur"],
   ["needAnnual","Net spending /yr",24000,84000,1000,48000,"eur"],
   ["bufferYears","Buffer (years)",0,10,1,3,"int"],
-  ["mu","Real growth return",0.01,0.12,0.005,0.045,"pct"],
-  ["sigma","Volatility",0.06,0.20,0.005,0.12,"pct"],
-  ["df","Tail df (low=fat)",3,30,1,6,"int"],
+  ["mu","Real growth return",0.01,0.12,0.005,0.04,"pct"],
+  ["sigma","Volatility",0.06,0.20,0.005,0.16,"pct"],
+  ["df","Tail df (low=fat)",3,30,1,5,"int"],
   ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
   ["years","Horizon (years)",20,45,1,40,"int"],
   ["pensionYear","Pension from year",5,20,1,12,"int"],
@@ -71,6 +71,24 @@ guardCtl.innerHTML = `<input type="checkbox" id="guardrails"> <span>Guyton-Kling
 form.appendChild(guardCtl);
 guardCtl.querySelector("input").addEventListener("change", e => { state.guardrails = e.target.checked; schedule(); });
 
+// Conservative broad-sample prior: override the (often rosy) fitted/default
+// mu/sigma/df with cautious, forward-looking world-equity real assumptions.
+// Lower real return, higher volatility, fatter tails than a favourable window.
+const PRIOR = {mu: 0.03, sigma: 0.18, df: 4};
+const DEFAULT = Object.fromEntries(SLIDERS.map(([k, , , , , def]) => [k, def]));
+function applyReturns(src) { for (const k of ["mu", "sigma", "df"]) setSliderVal(k, src[k]); }
+state.conservative = false;
+const consCtl = document.createElement("label"); consCtl.className = "ctl span chk";
+consCtl.innerHTML = `<input type="checkbox" id="conservative"> <span>Conservative broad-sample prior (override the fit)</span>`;
+form.appendChild(consCtl);
+consCtl.querySelector("input").addEventListener("change", e => {
+  state.conservative = e.target.checked;
+  if (state.conservative) applyReturns(PRIOR);
+  else if (hasPanel) lastFitW = null; // force a refit from the panel
+  else applyReturns(DEFAULT);
+  schedule();
+});
+
 // --- shareable scenarios: the whole slider/model/allocation state round-trips
 // through the URL hash, so a configuration can be bookmarked or shared. ---
 const shared = new URLSearchParams(location.hash.slice(1));
@@ -92,12 +110,18 @@ if (shared.get("guardrails") === "1") {
   state.guardrails = true;
   guardCtl.querySelector("input").checked = true;
 }
+if (shared.get("conservative") === "1") {
+  state.conservative = true;
+  consCtl.querySelector("input").checked = true;
+  applyReturns(PRIOR);
+}
 function syncURL() {
   const p = new URLSearchParams();
   for (const [k] of SLIDERS) p.set(k, state[k]);
   if (state.model) p.set("model", state.model);
   if (state.monthly) p.set("monthly", "1");
   if (state.guardrails) p.set("guardrails", "1");
+  if (state.conservative) p.set("conservative", "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
@@ -116,7 +140,7 @@ let run = async function(){
   // otherwise dragging the allocation would not move the parametric result.
   if (weights) {
     state.weights = weights;
-    if (hasPanel && weightsChanged()) {
+    if (hasPanel && weightsChanged() && !state.conservative) {
       try {
         const resp = await fetch("/api/fit", {method:"POST",
           headers:{"Content-Type":"application/json"}, body: JSON.stringify({weights})});
@@ -236,6 +260,7 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
   for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma], ["df", m.df]])
     if (typeof v === "number") setSliderVal(k, v);
   applySharedSliders(); // a shared mu/sigma/df overrides the historical seed
+  if (state.conservative) applyReturns(PRIOR); // the prior wins over the fit
 
   const sel = document.createElement("label"); sel.className="ctl span";
   sel.innerHTML = `<span class="lab"><span>Return model</span></span>
