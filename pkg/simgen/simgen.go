@@ -3,6 +3,7 @@ package simgen
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"math"
 	"time"
 
@@ -239,20 +240,20 @@ func SeriesFromFrame(name string, fr *Frame, values []float64) *marketdata.Serie
 	return s
 }
 
-// WithRefData returns a Fetcher that serves series found in dir (CSV files
-// in the simdata format, typically reference data imported from external
-// sources) before falling back to the wrapped fetcher.
-func WithRefData(dir string, fallback Fetcher) Fetcher {
-	return refFetcher{dir: dir, fallback: fallback}
+// WithRefData returns a Fetcher that serves series found in fsys (CSV files
+// in the simdata format — typically the embedded datasets.Refdata, or an
+// os.DirFS for development) before falling back to the wrapped fetcher.
+func WithRefData(fsys fs.FS, fallback Fetcher) Fetcher {
+	return refFetcher{fsys: fsys, fallback: fallback}
 }
 
 type refFetcher struct {
-	dir      string
+	fsys     fs.FS
 	fallback Fetcher
 }
 
 func (r refFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
-	if s, ok, err := marketdata.ReadSimdata(r.dir, id); err == nil && ok {
+	if s, ok, err := marketdata.ReadSimdataFS(r.fsys, id); err == nil && ok {
 		return s, nil
 	}
 	return r.fallback.Fetch(id, from)
