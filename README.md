@@ -196,7 +196,7 @@ simulation wherever it exists):
 | NTSX (UCITS) | 0.90×VFINX + 0.60×(VFITX−cash) + 0.10×cash (1991→) | corr 0.96 / weekly 0.99 vs NTSX US |
 | NTSG (UCITS) | global 60/40 US/intl variant | weekly 0.86 (thinly traded LSE listing) |
 | URTH, IWDA | 0.60×VFINX + 0.40×VTMGX (1999→) | corr 0.90 / weekly 0.97 |
-| ZROZ, IEF, TLT | imported refs derived from US yield curves (1962→) | corr 1.00 over 16–24 years of overlap |
+| ZROZ, IEF, TLT, SHY | imported refs derived from US yield curves (1962→) | corr 1.00 over 16–24 years of overlap |
 | XAUUSD (GOLD) | imported spot gold (1968→), real GC=F grafted | corr 1.00 |
 | KMLM | official MLM Index (1987→) + 0.90% ETF fees | corr 1.00 |
 | DBMF | official SG CTA Index (2000→) | corr 0.68 / weekly 0.75, beta 0.96 |
