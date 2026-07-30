@@ -109,6 +109,7 @@ var figures = map[string]func() string{
 	"puma-interrupteur":        figPumaInterrupteur,
 	"frictions-enveloppes":     figFrictionsEnveloppes,
 	"horloges-enveloppes":      figHorlogesEnveloppes,
+	"immobilier-net-net":       figImmobilierNetNet,
 	"borne-geometrique":        figBorneGeometrique,
 	"cape-depuis-1881":         figCapeDepuis1881,
 	"richesse-totale":          figRichesseTotale,
