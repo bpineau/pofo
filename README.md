@@ -153,9 +153,12 @@ The engine runs in Go (parallel Monte-Carlo); the page only renders.
 the return assumptions and a historical real-return panel from the holdings
 (reconstructed back via `SIM`, deflated by `^HICP-FR`), lets you switch
 between a **parametric**, **historical bootstrap** or **historical-cohort**
-projection, and drag each holding's weight to re-test ruin live. Everything is
-in real euros; the model is a fat-tailed hypothesis-exploration tool,
-**not investment advice**.
+projection, and drag each holding's weight to re-test ruin live. The two
+historical models sample at **monthly** frequency (a stationary block
+bootstrap and every actual start month), preserving intra-year regimes and
+cross-asset correlations, then compound to the annual withdrawal cycle.
+Everything is in real euros; the model is a fat-tailed hypothesis-exploration
+tool, **not investment advice**.
 
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
