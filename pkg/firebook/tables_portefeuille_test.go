@@ -13,15 +13,6 @@ import (
 // but closed formula, the volatility drag of a daily-leveraged ETF, is
 // recomputed here from the drag article's own volatility.
 
-func bookArticle(t *testing.T, slug string) string {
-	t.Helper()
-	raw, err := assets.ReadFile("assets/book/fr/" + slug + ".md")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(raw)
-}
-
 // markdownTable returns the rows of the first pipe table whose header starts
 // with the given first cell. The header is row 0; the separator is dropped.
 func markdownTable(t *testing.T, article, firstHeaderCell string) [][]string {
