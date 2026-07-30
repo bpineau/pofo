@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/marketdata"
 )
 
 // CanonicalID follows alias chains to the canonical identifier.
