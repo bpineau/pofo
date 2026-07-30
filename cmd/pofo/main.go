@@ -1076,7 +1076,7 @@ func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error 
 			assets = append(assets, web.AssetSeries{Weight: h.Weight, Points: s.Points})
 		}
 		if hicp, err := fetchAsset(c, "^HICP-FR", opt); err == nil {
-			if pnl, err := web.BuildPanel(assets, hicp.Points); err == nil {
+			if pnl, err := web.BuildMonthlyPanel(assets, hicp.Points); err == nil {
 				panel = &pnl
 			} else {
 				log.Printf("fire: no historical panel: %v", err)
