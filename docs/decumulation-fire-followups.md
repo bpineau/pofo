@@ -6,6 +6,12 @@ Running list of oddities to fix and enhancements to evaluate, from the fresh
 Not yet scheduled; each item should get its own brainstorm → spec → plan when
 picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 
+> **Realism / conservatism** of the ruin figures (the model is optimistic vs the
+> broad-sample SWR evidence) has its own spec:
+> [`decumulation-fire-realism-spec.md`](decumulation-fire-realism-spec.md)
+> (default flex off, honest return defaults + conservative prior, sequence-risk
+> capture, longevity horizon).
+
 ## Correctness oddities (P1)
 
 1. ✅ **Done (2026-06-29).** **Ruin is tested on net need, not the grossed-up
