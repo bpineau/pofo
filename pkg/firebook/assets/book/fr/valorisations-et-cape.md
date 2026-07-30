@@ -40,7 +40,13 @@ Un niveau brut ne se lit jamais seul. Il se replace sur son siècle d'histoire, 
 
 Le mécanisme n'a rien de mystique. C'est de l'arithmétique de flux. Détenir le marché actions, c'est détenir un droit sur les bénéfices futurs des entreprises. Le rendement de long terme de l'actionnaire se décompose en trois morceaux. D'abord le rendement des bénéfices au prix d'achat (l'earnings yield, environ 1/CAPE). Ensuite la croissance réelle de ces bénéfices (historiquement 1,5 à 2 %/an aux États-Unis). Enfin la variation de la valorisation entre l'achat et la vente (l'expansion ou la contraction du multiple). Sur un an, ce troisième terme domine tout et le CAPE ne prédit rien. Sur dix à quinze ans, il se moyenne et il ne reste que les deux premiers termes, dont le premier est connu dès l'achat. Un CAPE de 33, c'est un earnings yield de 3 %. La composante « certaine » de votre rendement réel futur est déjà plafonnée bas, quoi qu'il arrive au reste.
 
-Empiriquement, la relation compte parmi les plus solides de la finance. Sur les données américaines depuis 1881, le CAPE de départ explique de l'ordre de 40 à 60 % de la variance des rendements réels des 10-15 années suivantes (le R² dépend de la fenêtre et de la période). C'est à la fois énorme, car rien d'autre ne fait mieux, et très insuffisant pour du timing, car à CAPE égal l'éventail des issues à 10 ans reste large. La formulation honnête tient en une ligne. Le CAPE déplace le centre de la distribution des rendements futurs, sans en réduire beaucoup la largeur. C'est exactement l'information dont un planificateur a besoin, et exactement celle dont un trader ne peut rien faire.
+Empiriquement, la relation compte parmi les plus solides de la finance, mais elle est plus modeste que ce qu'on lit souvent. Sur les 1 241 départs mensuels américains de janvier 1913 à mai 2016, le CAPE de départ explique 29 % de la variance des rendements réels des dix années suivantes (régression sur 1/CAPE ; 31 % si l'on régresse sur le logarithme du CAPE). À quinze ans, on monte à 36 %, et 41 % en logarithme. Le chiffre dépend beaucoup de la fenêtre : environ 43 % sur les départs d'avant 1950, 25 % sur ceux d'après. Remonter jusqu'à 1881 sur la série de Shiller ne l'améliore pas, au contraire (28 % à dix ans).
+
+Retenez l'ordre de grandeur, un tiers de la variance à dix ans, un peu plus à quinze. C'est à la fois énorme, car rien d'autre ne fait mieux, et très insuffisant pour du timing, car à CAPE égal l'éventail des issues à 10 ans reste large. La formulation honnête tient en une ligne. Le CAPE déplace le centre de la distribution des rendements futurs, sans en réduire beaucoup la largeur. C'est exactement l'information dont un planificateur a besoin, et exactement celle dont un trader ne peut rien faire.
+
+::: figure cape-dix-ans
+Chaque point est un mois de départ entre janvier 1913 et mai 2016 : son CAPE en abscisse, le rendement réel annualisé du S&P 500 (rendement total, déflaté du CPI américain) sur les dix années suivantes en ordonnée. La courbe est l'ajustement des moindres carrés du rendement sur 1/CAPE, R² = 0,29 ; les trois colonnes montrent l'éventail des issues à CAPE donné.
+:::
 
 Trois choses que le CAPE ne fait pas, à graver avant d'aller plus loin :
 
@@ -119,7 +125,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 
 ## L'essentiel à retenir
 
-- Le CAPE = prix / bénéfices réels moyens sur 10 ans. C'est une mesure de cherté qui prédit le centre des rendements réels à 10-15 ans (R² ~0,4-0,6 aux États-Unis), pas leur calendrier ni leurs krachs.
+- Le CAPE = prix / bénéfices réels moyens sur 10 ans. C'est une mesure de cherté qui prédit le centre des rendements réels à 10-15 ans (R² ~0,3 à dix ans et ~0,4 à quinze ans aux États-Unis), pas leur calendrier ni leurs krachs.
 - Tous les pires millésimes de retraite partent à CAPE élevé. Le « taux de retrait sûr » est une fonction du prix d'entrée. À CAPE > 30 et horizon long, la zone historique est 3,0-3,25 % rigide, à CAPE < 15 elle dépasse 5 %.
 - Les critiques (comptabilité, buybacks, taux, secteurs) déplacent les seuils, pas la pente. Usage ordinal et par zones, jamais au dixième. Lisez le rang dans les 30-40 dernières années, pas l'écart à la moyenne depuis 1881.
 - Quatre usages légitimes, par ordre de sûreté : calibrer l'espérance du modèle (l'ancre CAPE), dimensionner le taux initial, piloter le retrait ([[regles-cape]]), moduler (un peu, avec une borne datée) la date de départ. Un usage interdit : le timing binaire du portefeuille.
