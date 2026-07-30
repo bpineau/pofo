@@ -41,6 +41,8 @@ p.meta{color:#666;font-size:.85rem;margin-top:0}
 .modeltab td .sub{color:#7a8699;font-size:.74rem}
 .modeltab td:first-of-type,.modeltab th:first-child{text-align:left}
 
+#tip{position:fixed;display:none;z-index:50;max-width:22rem;padding:.4rem .55rem;border-radius:6px;background:#10243f;color:#fff;font-size:.76rem;line-height:1.3;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.modeltab thead th,.modeltab tbody th{cursor:help}
 .anchor{margin:.5rem 0 0;font-size:.74rem;color:#8893a5;line-height:1.35}
 #solvermenu{margin-top:.6rem;border-top:1px solid #e7ecf4;padding-top:.5rem;font-size:.83rem;color:#243}
 .solvehead{margin-bottom:.25rem}
