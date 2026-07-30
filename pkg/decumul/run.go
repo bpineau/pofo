@@ -17,7 +17,9 @@ type PathResult struct {
 // year; missing years are treated as 0). The order each year is: compute the
 // net need after cashflows, apply the flex cut on deep drawdowns, withdraw
 // via the bucket rule (buffer first while underwater, else growth + refill),
-// then grow the sleeves.
+// then grow the sleeves. A year is ruin when it cannot deliver the full net
+// need, i.e. when the gross required exceeds the available liquidity; only the
+// net actually delivered is accounted, never the requested amount.
 func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	tax := p.Tax
 	if tax == nil {
@@ -44,6 +46,30 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	res.Wealth[0] = p.Capital
 	peak := p.Capital
 
+	// sellGrowth sells from the growth sleeve to deliver up to want net euros,
+	// returning the net actually delivered (below want when the sleeve cannot
+	// gross up the full amount). It updates growth and cost and accrues the tax.
+	sellGrowth := func(want float64) float64 {
+		if want <= 0 || growth <= 0 {
+			return 0
+		}
+		gross, nc, paid := tax.GrossUp(want, growth, cost)
+		growth -= gross
+		cost = nc
+		res.TaxPaid += paid
+		return gross - paid
+	}
+	// drawBuffer takes up to want euros from the buffer (no tax), returning the
+	// amount actually taken.
+	drawBuffer := func(want float64) float64 {
+		take := want
+		if take > buffer {
+			take = buffer
+		}
+		buffer -= take
+		return take
+	}
+
 	for k := 0; k < p.Years; k++ {
 		total := growth + buffer
 		if total <= 0 {
@@ -60,32 +86,17 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
 			need *= 1 - p.Flex.Cut
 		}
-		if need > total {
-			res.Ruined = true
-		}
 
+		// Deliver the net need, each source falling back to the other: the
+		// buffer first while underwater (it sells nothing, hence no tax),
+		// otherwise growth first with a refill of the buffer from any surplus.
+		var delivered float64
 		if dd > drawTh && buffer > 0 {
-			// drain buffer first (no tax), remainder from growth.
-			take := need
-			if take > buffer {
-				take = buffer
-			}
-			buffer -= take
-			res.Withdrawn += take
-			if rem := need - take; rem > 0 {
-				gross, nc, paid := tax.GrossUp(rem, growth, cost)
-				growth -= gross
-				cost = nc
-				res.TaxPaid += paid
-				res.Withdrawn += rem
-			}
+			delivered = drawBuffer(need)
+			delivered += sellGrowth(need - delivered)
 		} else {
-			gross, nc, paid := tax.GrossUp(need, growth, cost)
-			growth -= gross
-			cost = nc
-			res.TaxPaid += paid
-			res.Withdrawn += need
-			// refill buffer toward target from growth.
+			delivered = sellGrowth(need)
+			delivered += drawBuffer(need - delivered)
 			if refill := target - buffer; refill > 0 && growth > 0 {
 				if cap := growth * refillCap; refill > cap {
 					refill = cap
@@ -93,15 +104,15 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 				if refill > p.NeedAnnual {
 					refill = p.NeedAnnual
 				}
-				g2, nc2, paid2 := tax.GrossUp(refill, growth, cost)
-				growth -= g2
-				cost = nc2
-				res.TaxPaid += paid2
-				buffer += refill
+				buffer += sellGrowth(refill)
 			}
 		}
+		res.Withdrawn += delivered
+		if delivered < need-1e-6 {
+			res.Ruined = true
+		}
 		if growth < 0 {
-			buffer += growth // cover the shortfall from the buffer
+			buffer += growth // a stub without a cap may oversell; settle it here
 			growth = 0
 		}
 		if growth+buffer <= 0 {
