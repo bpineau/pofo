@@ -1,0 +1,11 @@
+# B — Dragon-lite équilibré
+# deux angles morts : 
+# (a) une stagflation à trend whipsaw, que l'or backstop
+# (b) le fait que la protection du plancher reste probabiliste, ce qui plaide pour ajouter une brique de linkers à l'approche de la décumulation.
+# Là où les trois protections peuvent décevoir en même temps, c'est un scénario précis : 
+# une stagflation où le trend whipsaw.
+60	NTSGSIM
+# LU1662502183 (AQR Managed Futures UCITS) performe encore mieux que DBMFE, mais
+# accessible aux institutionels avec ticket de 100k seulement
+25	DBMFSIM # DBMFESIM ou WINTON-TREND-EQUITYSIM ou MFA8 ou le nouveau Fortem
+15	XAUUSD
