@@ -37,11 +37,24 @@ Le tour des amortisseurs. Le **buffer** d'abord : niveau contre cible, et les r�
 La séance se fait à **deux**, et ces blocs en sont la raison ([[couple-et-famille]]). Le **quiz inversé** d'abord : le non-gestionnaire déroule « ce que je ferais si ». C'est le vrai livrable de gouvernance de l'année. Puis les **décisions** de vie qui touchent le plan : projets, famille, la ligne enfants/parents. Enfin la **ligne non financière** ([[sens-et-identite]]) : « les quatre chantiers, ça va ? », structure, identité, lien, utilité. Trente secondes par personne qui valent le reste de la séance. Le plan finance une vie, et la revue vérifie aussi la vie.
 
 ::: attention Les pièges de la revue elle-même
-**Quatre** dérives guettent le rituel. La **revue-bricolage** d'abord : la séance devient le prétexte annuel pour tout retoucher, un tilt par-ci, une ligne par-là. C'est la dérive de l'optimiseur ([[sens-et-identite]]), et le journal du plan la révèle. Si chaque revue change trois choses, le plan n'est pas piloté, il est tripoté. La **revue-renégociation** ensuite : rouvrir chaque année le taux, la règle, les critères, tout ce qui était réglé. La clause anti-goalposts vaut aussi ici. La **revue-procès** : juger le plan, et le conjoint gestionnaire, sur la performance de l'**année**. Or une année est du bruit : le plan se juge sur ses voyants et à l'échelle des phases. Enfin la **revue sautée** : « tout va bien, pas besoin ». C'est l'année où le quiz inversé rouille, où la clause bénéficiaire vieillit, où la dérive s'installe. La revue d'une année calme dure quatre-vingt-dix minutes. C'est son prix plancher, pas une option.
+**Quatre** dérives guettent le rituel.
+
+- **La revue-bricolage.** La séance devient le prétexte annuel pour tout retoucher, un tilt par-ci, une ligne par-là. C'est la dérive de l'optimiseur ([[sens-et-identite]]), et le journal du plan la révèle. Si chaque revue change trois choses, le plan n'est pas piloté, il est tripoté.
+- **La revue-renégociation.** Rouvrir chaque année le taux, la règle, les critères, tout ce qui était réglé. La clause anti-goalposts vaut aussi ici.
+- **La revue-procès.** Juger le plan, et le conjoint gestionnaire, sur la performance de l'**année**. Or une année est du bruit, car le plan se juge sur ses voyants et à l'échelle des phases.
+- **La revue sautée.** « Tout va bien, pas besoin. » C'est l'année où le quiz inversé rouille, où la clause bénéficiaire vieillit, où la dérive s'installe.
+
+La revue d'une année calme dure quatre-vingt-dix minutes. C'est son prix plancher, pas une option.
 :::
 
 ::: exemple Le journal de revue, trois années
-Extrait du journal d'Aline et Thomas ([[construire-son-plan]]). **Revue 2031**, année calme. Taux courant 3,4 % (vert), indexation +2,1 %, rééquilibrage par retraits. Lissage : 9 200 € d'abattement AV et 14 k€ de PV CTO au barème (TMI 11). Buffer plein, quiz inversé OK. Budget voyages sous-consommé, d'où réservation forcée. Durée : 1 h 50. **Revue 2033**, année rouge, −19 %. Taux courant 4,6 % (orange), indexation **gelée** par la règle. Buffer entamé sur 7 mois (le drawdown a dépassé 18 %, conforme). Re-simulation du guardrail : ruine 11 % < seuil 13 %, donc **pas** de coupe, première année sous surveillance. **Aucun** autre changement. La séance a surtout consisté à ne rien faire d'écrit nulle part. Durée : 2 h 10. **Revue 2034**. Marché récupéré, taux 3,9 %, buffer rechargé par les ventes du calme. Ruine re-simulée à 6 %, surveillance levée. Relecture des clauses (cycle de 3 ans). Ligne non financière : Thomas s'ennuie moins grâce au club d'échecs. Trois ans, six heures de pilotage au total. C'est **tout** ce qu'un bon plan demande. Et chaque ligne du journal était prévue par la page du plan.
+Extrait du journal d'Aline et Thomas ([[construire-son-plan]]).
+
+- **Revue 2031, année calme.** Taux courant 3,4 % (vert), indexation +2,1 %, rééquilibrage par retraits. Lissage : 9 200 € d'abattement AV et 14 k€ de PV CTO au barème (TMI 11). Buffer plein, quiz inversé OK. Budget voyages sous-consommé, d'où réservation forcée. Durée : 1 h 50.
+- **Revue 2033, année rouge, −19 %.** Taux courant 4,6 % (orange), indexation **gelée** par la règle. Buffer entamé sur 7 mois (le drawdown a dépassé 18 %, conforme). Re-simulation du guardrail : ruine 11 % < seuil 13 %, donc **pas** de coupe, première année sous surveillance. **Aucun** autre changement. La séance a surtout consisté à ne rien faire qui ne soit déjà écrit. Durée : 2 h 10.
+- **Revue 2034.** Marché récupéré, taux 3,9 %, buffer rechargé par les ventes du calme. Ruine re-simulée à 6 %, surveillance levée. Relecture des clauses (cycle de 3 ans). Ligne non financière : Thomas s'ennuie moins grâce au club d'échecs.
+
+Trois ans, six heures de pilotage au total. C'est **tout** ce qu'un bon plan demande. Et chaque ligne du journal était prévue par la page du plan.
 :::
 
 ## L'essentiel à retenir
