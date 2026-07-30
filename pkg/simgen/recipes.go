@@ -35,6 +35,7 @@ func All() []Recipe {
 		bhmgRecipe(),
 		rssbRecipe(),
 		vtRecipe(),
+		xauusdRecipe(),
 		shyRecipe(),
 		scvwRecipe(),
 		dpgtRecipe(),
@@ -151,7 +152,7 @@ func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
 		Name:   "iShares Core MSCI World: 60/40 US/international replication",
-		Method: "0.60×VFINX + 0.40×VTMGX, 0.20%/yr fees",
+		Method: "0.60×VFINX (1976) + 0.40×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970), 0.20%/yr fees",
 		Build: composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
@@ -240,7 +241,7 @@ func mfConfig(targetVol, annualFee float64) TSMOMConfig {
 // index aligned to the dates after the signal warm-up.
 func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		fr, err := BuildFrame(f, append([]string{cfg.CashID}, cfg.Markets...), from)
+		fr, err := BuildFrame(extend(f), append([]string{cfg.CashID}, cfg.Markets...), from)
 		if err != nil {
 			return nil, err
 		}
@@ -266,7 +267,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 		for _, l := range legs {
 			ids = append(ids, l.ID)
 		}
-		fr, err := BuildFrame(f, ids, from)
+		fr, err := BuildFrame(extend(f), ids, from)
 		if err != nil {
 			return nil, err
 		}
@@ -305,7 +306,7 @@ func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees",
+		Method: "0.54×VFINX + 0.36×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970) + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees; start still limited by the VFITX treasury leg (~1991)",
 		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
 			{ID: "VTMGX", Weight: 0.36},
@@ -322,7 +323,7 @@ func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
 		Name:   "iShares MSCI World: 60/40 US/international replication",
-		Method: "0.60×VFINX + 0.40×VTMGX, 0.24%/yr fees",
+		Method: "0.60×VFINX (1976) + 0.40×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970), 0.24%/yr fees",
 		Build: composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
@@ -375,11 +376,26 @@ func zrozRecipe() Recipe {
 // 0.20; these funds run faster/idiosyncratic strategies a generic trend
 // model only partly captures, but it is a faithful "diversified trend"
 // proxy, and the real fund is grafted on top from its inception.
+// xauusdRecipe snapshots gold: XAU/USD spot has decades of real history (~1968),
+// so the "reconstruction" is simply the real spot series, embedded so the long
+// history is available offline and as the gold proxy for other builds.
+func xauusdRecipe() Recipe {
+	return Recipe{
+		ID:     "XAUUSD",
+		Name:   "Gold (XAU/USD spot)",
+		Method: "real gold spot (XAU/USD), decades of history (~1968)",
+		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+			return f.Fetch("XAUUSD", from)
+		},
+		ValidateAgainst: "XAUUSD",
+	}
+}
+
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF grafted from 2019",
+		Method:          "12-month TSMOM on a cross-asset futures basket (gold extended to XAU/USD spot ~1968, dev-intl to MSCI EAFE ~1970; start still limited by the EM/treasury legs ~1991-94), real DBMF grafted from 2019",
 		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
