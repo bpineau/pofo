@@ -77,6 +77,33 @@ func TestExtendIntlEquityWithBundledProxies(t *testing.T) {
 	}
 }
 
+// The US-equity leg (VFINX, 1976) is extended by the bundled US total-market TR
+// (USEQ-USD, ~1926) and the cash rate (^IRX) by the 3-month T-bill (TBILL-3M,
+// ~1934), removing the last US caps on NTSG/NTSX.
+func TestExtendUSLegsWithBundledProxies(t *testing.T) {
+	for _, tc := range []struct {
+		leg   string
+		level float64
+		want  int
+	}{
+		{"VFINX", 100, 1930}, // US total market to ~1926
+		{"^IRX", 5, 1940},    // 3-month bill rate to ~1934 (a rate; realistic ~5% level)
+	} {
+		quotes := atSeries(tc.leg, 100, 50, tc.level)
+		f := extend(WithRefData(datasets.Refdata(), fakeFetcher{tc.leg: quotes}))
+		got, err := f.Fetch(tc.leg, time.Time{})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if want := time.Date(tc.want, 1, 1, 0, 0, 0, 0, time.UTC); !got.First().Date.Before(want) {
+			t.Errorf("%s extended to %s, want before %d", tc.leg, got.First().Date.Format("2006-01"), tc.want)
+		}
+		if got.SimulatedBefore.IsZero() {
+			t.Errorf("%s: expected SimulatedBefore after splicing its bundled proxy", tc.leg)
+		}
+	}
+}
+
 // The intermediate-treasury leg (VFITX, 1991) is extended by the bundled
 // constant-maturity Treasury total-return reconstruction (~1953).
 func TestExtendVFITXWithBundledTreasury(t *testing.T) {
@@ -141,9 +168,9 @@ func TestExtendingFetcherSplicesConfiguredComponent(t *testing.T) {
 // A component with no proxy, or a missing proxy, is returned unchanged (the
 // wrapper is safe to apply unconditionally).
 func TestExtendingFetcherLeavesOthersUnchanged(t *testing.T) {
-	f := fakeFetcher{"VFINX": atSeries("VFINX", 0, 50, 100)} // not in longBack; proxy absent anyway
+	f := fakeFetcher{"VBMFX": atSeries("VBMFX", 0, 50, 100)} // not in longBack
 
-	got, err := extend(f).Fetch("VFINX", time.Time{})
+	got, err := extend(f).Fetch("VBMFX", time.Time{})
 	if err != nil {
 		t.Fatal(err)
 	}

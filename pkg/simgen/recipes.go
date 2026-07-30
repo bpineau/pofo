@@ -339,7 +339,7 @@ func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX + 0.36×VTMGX (dev-ex-US, extended with DEVEXUS-USD ~1969) + 0.60×(VFITX − cash ^IRX, VFITX extended with a CMT Treasury TR ~1953) + 0.10×cash, 0.25%/yr fees; start now set by the US-equity leg VFINX (~1976)",
+		Method: "0.54×VFINX (extended with US total-market TR ~1926) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − cash ^IRX, both extended: CMT Treasury TR ~1953, T-bill ~1934) + 0.10×cash, 0.25%/yr fees; start now set by the dev-ex-US leg (~1969)",
 		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
 			{ID: "VTMGX", Weight: 0.36},
