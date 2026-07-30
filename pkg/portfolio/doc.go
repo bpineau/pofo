@@ -5,10 +5,11 @@
 //
 // One line per asset:
 //
-//	<weight in %> <identifier> [fees in %/year] [free text]
+//	<weight in %> <identifier> [fees in %/year]
 //
-// Everything after a # is a comment; blank lines are ignored; the weight
-// and fees accept a decimal comma and a % suffix. Weights that do not sum
+// Everything after a # is a comment, and nothing else may follow the
+// optional fee column; blank lines are ignored; the weight and fees accept
+// a decimal comma and a % suffix. Weights that do not sum
 // to 100 are normalized (warning in Spec.Warnings). "#meta key:value"
 // lines carry directives:
 //

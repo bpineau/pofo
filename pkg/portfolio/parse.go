@@ -19,7 +19,6 @@ type Holding struct {
 	RawWeight float64 // weight as written in the file, in percent
 	ID        string  // ticker or ISIN, verbatim
 	Fees      float64 // declared TER in percent per year; negative when absent
-	Note      string  // free text after the identifier, informational only
 }
 
 // Spec is a parsed portfolio description.
@@ -91,14 +90,14 @@ func ParseFile(path string) (*Spec, error) {
 
 // Parse reads a portfolio description: one line per asset, formatted as
 //
-//	<weight in %> <ticker, ISIN or alias> [free text…]
+//	<weight in %> <ticker, ISIN or alias> [TER in %/year]
 //
-// Everything after a # is a comment; blank lines and lines starting with //
-// are ignored. Lines starting with "#meta" carry per-portfolio directives
-// as key:value pairs — currently "rebalance:N" (days between rebalancings,
-// 0 to never rebalance). Weights accept a decimal comma and an optional %
-// suffix. If the weights do not sum to 100 they are normalized and a
-// warning is recorded.
+// Everything after a "#" is a comment; nothing else may follow the optional
+// fee column. Blank lines and lines starting with // are ignored. Lines
+// starting with "#meta" carry per-portfolio directives as key:value pairs —
+// currently "rebalance:N" (days between rebalancings, 0 to never rebalance).
+// Weights accept a decimal comma and an optional % suffix. If the weights do
+// not sum to 100 they are normalized and a warning is recorded.
 func Parse(name string, r io.Reader) (*Spec, error) {
 	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1, Capital: -1}
 	sc := bufio.NewScanner(r)
@@ -121,7 +120,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		}
 		fields := strings.Fields(line)
 		if len(fields) < 2 {
-			return nil, fmt.Errorf("line %d: expected \"<weight> <ticker/ISIN> [text]\", got %q", lineNo, line)
+			return nil, fmt.Errorf("line %d: expected \"<weight> <ticker/ISIN> [TER]\", got %q", lineNo, line)
 		}
 		w, err := parseWeight(fields[0])
 		if err != nil {
@@ -129,17 +128,22 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 		}
 		h := Holding{RawWeight: w, ID: fields[1], Fees: -1}
 		rest := fields[2:]
-		// Optional third numeric column: the asset's TER in percent/year.
+		// Optional third column: the asset's TER in percent/year. Anything
+		// else after the ticker must be a "#" comment, already stripped above.
 		if len(rest) > 0 {
-			if fees, ferr := parseNumber(rest[0]); ferr == nil {
-				if fees < 0 || fees > 20 {
-					return nil, fmt.Errorf("line %d: fees %q out of range (0–20 %%/year)", lineNo, rest[0])
-				}
-				h.Fees = fees
-				rest = rest[1:]
+			fees, ferr := parseNumber(rest[0])
+			if ferr != nil {
+				return nil, fmt.Errorf("line %d: unexpected %q after the ticker — write a TER (number) or move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
 			}
+			if fees < 0 || fees > 20 {
+				return nil, fmt.Errorf("line %d: fees %q out of range (0–20 %%/year)", lineNo, rest[0])
+			}
+			h.Fees = fees
+			rest = rest[1:]
 		}
-		h.Note = strings.Join(rest, " ")
+		if len(rest) > 0 {
+			return nil, fmt.Errorf("line %d: unexpected %q after the TER — move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
+		}
 		spec.Holdings = append(spec.Holdings, h)
 	}
 	if err := sc.Err(); err != nil {
