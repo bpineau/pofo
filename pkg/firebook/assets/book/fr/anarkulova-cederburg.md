@@ -70,8 +70,8 @@ Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à
 
 ## Pour aller plus loin
 
-- Anarkulova, Cederburg & O'Doherty, « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » (2023) et Cederburg et al., « Beyond the Status Quo: A Critical Assessment of Lifecycle Investment Advice » (2023) : les papiers sources (SSRN, accès libre).
+- Anarkulova, Cederburg, O'Doherty & Sias, « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » (2023) et Cederburg et al., « Beyond the Status Quo: A Critical Assessment of Lifecycle Investment Advice » (2023) : les papiers sources (SSRN, accès libre).
 - Dimson, Marsh & Staunton, *Triumph of the Optimists* (2002) et le *Global Investment Returns Yearbook* (annuel, UBS) : le siècle mondial en chiffres.
 - Wade Pfau, « An International Perspective on Safe Withdrawal Rates » (2010) : le précurseur.
 - Early Retirement Now sur ces études (critiques Parts consacrées) : la contradiction argumentée ([[serie-ern]]).
-- Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 » : le panel académique du modèle broad-sample.
+- Jorda, Knoll, Kuvshinov, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 » : le panel académique du modèle broad-sample.
