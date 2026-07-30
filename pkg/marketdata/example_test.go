@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"portfodor/marketdata"
+	"portfodor/pkg/marketdata"
 )
 
 // CanonicalID suit les chaînes d'aliases vers l'identifiant canonique.
