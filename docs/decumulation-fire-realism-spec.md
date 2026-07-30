@@ -136,7 +136,11 @@ within a stated tolerance.
 
 **Priority: P2** (larger; the highest-fidelity item).
 
-### W4 — Horizon / longevity nudge
+### W4 — Horizon / longevity nudge ✅ Done (2026-06-29)
+
+Implemented: the horizon slider now defaults to 45 (from 40), allows up to 60,
+and is relabelled "Horizon (years from today)", with a caveat note to set it
+past life expectancy. Full mortality modelling remains out of scope.
 
 **Problem.** A fixed 40y understates an early-retirement (FIRE) horizon; ruin
 rises steeply with years (21.8% → 38.9% from 40y → 50y).

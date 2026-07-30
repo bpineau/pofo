@@ -8,7 +8,7 @@ const SLIDERS = [
   ["sigma","Volatility",0.06,0.20,0.005,0.16,"pct"],
   ["df","Tail df (low=fat)",3,30,1,5,"int"],
   ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
-  ["years","Horizon (years)",20,45,1,40,"int"],
+  ["years","Horizon (years from today)",20,60,1,45,"int"],
   ["pensionYear","Pension from year",5,20,1,12,"int"],
   ["pensionAnnual","Pension /yr",0,36000,1000,12000,"eur"],
   ["flexCut","Spending cut in downturns (0 = fixed rule)",0,0.40,0.05,0,"pct"],
