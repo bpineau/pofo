@@ -5,6 +5,7 @@ import (
 	"math"
 	"net/http"
 	"testing"
+	"time"
 )
 
 func TestConvertCurrency(t *testing.T) {
@@ -50,5 +51,44 @@ func TestConvertCurrency(t *testing.T) {
 	gbp, _, err := c.ConvertCurrency(pence, "GBP", days[0])
 	if err != nil || gbp.Points[0].Close != 2.5 || gbp.Currency != "GBP" {
 		t.Errorf("GBp→GBP: %+v, %v", gbp, err)
+	}
+}
+
+// The FX cross must be fetched once and reused across assets, even though each
+// asset passes its own first date: the report converts many USD holdings to EUR,
+// and a per-asset FX download made runs take over a minute.
+func TestConvertCurrencyFetchesFXOncePerRun(t *testing.T) {
+	days := testDays(60)
+	closes := make([]float64, 60)
+	for i := range closes {
+		closes[i] = 0.9 // EUR per USD
+	}
+	fxRequests := 0
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/", func(w http.ResponseWriter, r *http.Request) {
+		fxRequests++
+		fmt.Fprint(w, chartJSON("USDEUR=X", days, closes))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	usdAsset := func(sym string, startDay int) *Series {
+		s := &Series{Symbol: sym, Currency: "USD"}
+		for i := 0; i < 10; i++ {
+			s.Points = append(s.Points, Point{Date: days[0].AddDate(0, 0, startDay+i), Close: 100})
+		}
+		return s
+	}
+
+	// Two USD assets with different first dates -> different caller `from`.
+	if _, _, err := c.ConvertCurrency(usdAsset("A", 0), "EUR", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+		t.Fatal(err)
+	}
+	if _, _, err := c.ConvertCurrency(usdAsset("B", 5), "EUR", time.Date(2019, 6, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+		t.Fatal(err)
+	}
+
+	if fxRequests != 1 {
+		t.Errorf("FX cross fetched %d times, want 1 (cached across assets)", fxRequests)
 	}
 }

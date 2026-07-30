@@ -65,47 +65,12 @@ func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out 
 	return &cp, extrapolatedBefore, nil
 }
 
-// fxHistory returns the src→target daily FX series. For the USD/EUR pair it uses
-// the FRED reference rate DEXUSEU (US dollars per euro, 1999→): reliable,
-// key-less and longer than Yahoo's FX history. Every other pair uses Yahoo's
-// "<src><target>=X" cross. Pre-1999 EUR/USD is not available as real data, so
-// callers hold the earliest rate constant before the series starts (a
-// PPP-consistent extension would need a synthetic-euro source).
-func (c *Client) fxHistory(src, target string, from time.Time) (*Series, error) {
-	if (src == "USD" && target == "EUR") || (src == "EUR" && target == "USD") {
-		// Cache the raw reference rate under a FIXED start so the cache key is
-		// constant across assets: the caller passes each asset's own first date,
-		// which would otherwise miss the cache and re-download the (slow) FRED
-		// series once per converted asset. FRED returns the full history anyway.
-		raw, err := c.cachedHistory("fred", "DEXUSEU", time.Time{}, func() (*Series, error) {
-			pts, e := c.fetchFRED("DEXUSEU")
-			if e != nil {
-				return nil, e
-			}
-			return &Series{Symbol: "DEXUSEU", Currency: "USD", Points: pts}, nil
-		})
-		if err == nil && raw != nil && len(raw.Points) > 1 {
-			return &Series{Symbol: src + target, Currency: target, Points: orientUSDEUR(raw.Points, target == "EUR")}, nil
-		}
-		// fall through to Yahoo on FRED failure
-	}
-	return c.History(src+target+"=X", from)
-}
-
-// orientUSDEUR turns FRED DEXUSEU points (US dollars per euro) into the wanted
-// orientation: euros per dollar when eurPerUsd is true (USD→EUR), else the raw
-// dollars-per-euro (EUR→USD).
-func orientUSDEUR(usdPerEur []Point, eurPerUsd bool) []Point {
-	out := make([]Point, 0, len(usdPerEur))
-	for _, p := range usdPerEur {
-		v := p.Close
-		if eurPerUsd {
-			if p.Close == 0 {
-				continue
-			}
-			v = 1 / p.Close
-		}
-		out = append(out, Point{Date: p.Date, Close: v})
-	}
-	return out
+// fxHistory returns the src→target daily FX cross from Yahoo. It always fetches
+// under a FIXED (zero) start so the cache key is constant across assets: the
+// caller passes each asset's own first date, which would otherwise miss the
+// cache and refetch the FX series once per converted asset. The full cross is
+// small and covers every asset's range; dates before it are held constant by
+// the caller (pre-2003 for EUR/USD on Yahoo).
+func (c *Client) fxHistory(src, target string, _ time.Time) (*Series, error) {
+	return c.History(src+target+"=X", time.Time{})
 }
