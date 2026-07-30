@@ -51,7 +51,7 @@ Denise (63 ans) et Paul (66 ans) sont propriétaires toit payé, avec 46 000 €
 :::
 
 ::: figure panier-contributions
-La soirée de calcul de Denise et Paul : chaque poste contribue à hauteur de son poids multiplié par la hausse de ses prix, et les six s'empilent jusqu'à 2,63 % quand l'IPCH publie 2,1 %. Le geste se refait tel quel sur n'importe quel relevé déjà classé.
+La soirée de calcul de Denise et Paul, poste par poste. Chaque contribution vaut le poids du poste multiplié par la hausse de ses prix, et les six s'empilent jusqu'à 2,63 %. Le geste se refait tel quel sur n'importe quel relevé déjà classé.
 :::
 
 ## L'essentiel à retenir
