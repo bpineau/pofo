@@ -122,8 +122,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
 - [x] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
 - [x] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
-- [ ] vpw: VPW, le retrait a pourcentage variable des Bogleheads
-- [ ] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
+- [x] vpw: VPW, le retrait a pourcentage variable des Bogleheads
+- [x] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
 - [ ] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
 - [ ] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
 - [ ] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
