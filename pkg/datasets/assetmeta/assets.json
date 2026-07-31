@@ -6384,47 +6384,6 @@
     }
   },
   {
-    "id": "PSLDX",
-    "isin": "US72201F4330",
-    "aliases": [
-      "PSLDX"
-    ],
-    "name": "PIMCO StocksPLUS Long Duration Fund (Institutional)",
-    "ucits": false,
-    "source": "yahoo",
-    "symbol": "PSLDX",
-    "currency": "USD",
-    "fees": 0.59,
-    "asset_class": "multi-asset",
-    "underlying": "S&P 500 exposure (swaps/futures) over an actively-managed long-duration US bond portfolio (~100% stocks + ~100% long bonds, capital-efficient)",
-    "benchmark_index": "S&P 500 + Bloomberg Long-Term Gov/Credit (blended)",
-    "strategy": "futures-overlay",
-    "geography": {
-      "US": 100
-    },
-    "sectors": {
-      "Technology": 33,
-      "Financials": 13,
-      "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Health Care": 10,
-      "Other": 24
-    },
-    "distribution": "distributing",
-    "leverage": 2.0,
-    "notes": "Capital-efficient ~100/100 S&P 500 + long-duration Treasuries; high distributions, best held tax-sheltered; net ER 0.59% (gross far higher incl. financing). Yahoo adj-close mishandles its large distribution dates (spurious daily spikes); treat return-based metrics with care",
-    "confidence": "medium",
-    "sources": [
-      "https://www.pimco.com/us/en/investments/mutual-fund/stocksplus-long-duration-fund",
-      "https://www.optimizedportfolio.com/psldx/"
-    ],
-    "since": "2007-08-31",
-    "exposures": {
-      "equity": 1.0,
-      "government-bond": 1.0
-    }
-  },
-  {
     "id": "QSPRX",
     "isin": "US00191K8493",
     "aliases": [
