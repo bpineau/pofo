@@ -8,4 +8,4 @@
 #   equivalents (IWDA, CSPX, EQQQ). These files are allocation guides for the PEA.
 
 85    WPEA            # World PEA (WPEA)
-15    FR0013412020    # Emerging Markets PEA (PAEEM)
+15    PAEEM    # Emerging Markets PEA (PAEEM)
