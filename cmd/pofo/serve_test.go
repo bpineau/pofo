@@ -87,3 +87,24 @@ func TestServeView(t *testing.T) {
 		t.Errorf("catalog gate: code=%d", rec.Code)
 	}
 }
+
+func TestServeHub(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	rec := serveGet(t, h, "/")
+	if rec.Code != 200 {
+		t.Fatalf("hub: code=%d", rec.Code)
+	}
+	body := rec.Body.String()
+	for _, want := range []string{
+		`action="/view"`, `method="get"`,
+		`name="ex" value="dragon-decumulation-household"`,
+		`href="/examples/dragon-decumulation-household.txt"`,
+		`href="/view?ex=dragon-decumulation-household"`,
+		`href="/fire/"`, `href="/book/fr/"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("hub missing %q", want)
+		}
+	}
+}
