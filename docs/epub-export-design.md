@@ -120,7 +120,7 @@ type Chapter struct {
 func (b *Book) Write(w io.Writer) error
 ```
 
-`Write` produces the reglementary OCF layout, in this order:
+`Write` produces the regulatory OCF layout, in this order:
 
 - `mimetype`: `application/epub+zip`, STORED (uncompressed), first entry,
   no extra field (the 38-byte offset rule).
