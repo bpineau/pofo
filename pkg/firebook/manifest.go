@@ -74,6 +74,8 @@ var Categories = []Category{
 			{"guyton-klinger", "Guyton-Klinger : les guardrails historiques, grandeur et limites", "Les quatre règles exactes de 2006, la cascade de coupes des mauvais millésimes, et les correctifs modernes, plancher en tête."},
 			{"vpw", "VPW, le retrait à pourcentage variable des Bogleheads", "L'annuité inversée en table gravée : la mécanique exacte, le pont de pension, le test de tolérance à la perte, et la frontière avec l'ABW."},
 			{"regles-cape", "Les règles CAPE : ajuster le retrait aux valorisations (ERN)", "Taux = a + b/CAPE : la double contra-cyclicité qui auto-lisse le revenu, les paramètres d'ERN, et la forme aboutie ABW + ancre CAPE."},
+			{"guardrails-morningstar", "Les guardrails modernes (Morningstar) : l'état de l'art", "Le juge honnête de Morningstar, le capteur par risque de Kitces-Tharp, et la version exécutable avec pofo en instrument."},
+			{"amortissement-abw", "Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle", "Le crédit inversé re-coté chaque année : richesse totale, quatre paramètres personnels, et le match final contre les guardrails."},
 		},
 	},
 }
