@@ -7,6 +7,11 @@ import (
 	"github.com/bpineau/pofo/pkg/metrics"
 )
 
+// fiveYearWindow is the rolling window MaxWorst5y measures its worst-case
+// return over: five years of trading days (a date-free approximation of the
+// report's calendar-year "Worst rolling 5y CAGR").
+const fiveYearWindow = 5 * tradingDays
+
 // solveSeries handles the objectives that depend on the whole return path
 // (MaxSortino, ReturnToDrawdown) rather than only the mean and covariance. It
 // maximizes the portfolio's own metric over the capped simplex with the shared
@@ -37,6 +42,20 @@ func solveSeries(returns [][]float64, spec Spec) (Result, error) {
 			blend(returns, w, buf)
 			return metrics.ReturnToMaxDrawdown(buf, 0)
 		}
+	case MinUlcer:
+		score = func(w []float64) (float64, bool) {
+			blend(returns, w, buf)
+			u := metrics.Ulcer(buf)
+			return -u, !math.IsNaN(u) // minimize: maximize the negative
+		}
+	case MaxWorst5y:
+		if t < fiveYearWindow {
+			return Result{}, fmt.Errorf("max-worst-5y needs at least 5 years of common history, got %d trading days", t)
+		}
+		score = func(w []float64) (float64, bool) {
+			blend(returns, w, buf)
+			return metrics.WorstRollingReturn(buf, fiveYearWindow)
+		}
 	default:
 		return Result{}, fmt.Errorf("solveSeries: unsupported objective %q", spec.Objective)
 	}
@@ -58,6 +77,14 @@ func seriesResult(w []float64, returns [][]float64) Result {
 	}
 	if v, ok := metrics.ReturnToMaxDrawdown(buf, 0); ok {
 		r.ReturnToMaxDD = v
+	}
+	if u := metrics.Ulcer(buf); !math.IsNaN(u) {
+		r.Ulcer = u
+	}
+	if len(buf) >= fiveYearWindow {
+		if w5, ok := metrics.WorstRollingReturn(buf, fiveYearWindow); ok {
+			r.Worst5y = w5
+		}
 	}
 	return r
 }
