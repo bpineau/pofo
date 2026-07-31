@@ -31,7 +31,11 @@ La cascade du 4 % : environ 4 % de rendement réel géométrique, plus le bonus 
 :::
 
 ::: exemple La cascade complète, sur un coin de table
-60/40 historique, 30 ans, retrait fixe indexé. Rendement réel arithmétique ≈ 4,6 % → moins le volatility drag ≈ 4 % géométrique (étage 1) → plus le bonus d'amortissement 30 ans ≈ 5,8 % (étage 2) → moins la pénalité du pire ordre historique ≈ 4,0 % (étage 3). Voilà la règle, reconstruite. Maintenant, faites-la respirer. Horizon 50 ans → le bonus fond et la pénalité s'allège un peu avec l'horizon, ~3,4 %. Échantillon mondial au lieu du seul cas américain ([[anarkulova-cederburg]]) → retirer 0,5 à 1 point. CAPE élevé au départ ([[valorisations-et-cape]]) → étage 1 raboté d'un point. 0,5 % de frais → −0,5, presque un pour un. Règle flexible à plancher → +0,3-0,5. Chaque débat sur « le vrai chiffre » de la règle est un débat sur un seul étage de la cascade, et il se règle étage par étage, pas par slogans.
+60/40 historique, 30 ans, retrait fixe indexé. Rendement réel arithmétique ≈ 4,6 % → moins le volatility drag ≈ 4 % géométrique (étage 1) → plus le bonus d'amortissement 30 ans ≈ 5,8 % (étage 2) → moins la pénalité du pire ordre historique ≈ 4,0 % (étage 3). Voilà la règle, reconstruite. Maintenant, faites-la respirer. Horizon de 50 ans → le bonus fond, la pénalité s'allège un peu, ~3,4 %. Échantillon mondial plutôt que le seul cas américain ([[anarkulova-cederburg]]) → −0,5 à −1 point. CAPE élevé au départ ([[valorisations-et-cape]]) → étage 1 raboté d'un point. 0,5 % de frais → −0,5, presque un pour un. Règle flexible à plancher → +0,3 à +0,5. Chaque débat sur « le vrai chiffre » de la règle porte sur un seul étage, et il se règle étage par étage, pas par slogans.
+:::
+
+::: figure clavier-leviers
+Chaque hypothèse déplacée seule, à partir du plan de référence de la cascade : 60/40 historique, 30 ans, retrait fixe indexé, soit 4,0 %. Les fourchettes sont celles de l'article, et l'ordre des barres dit l'essentiel : un débat sur « le vrai chiffre » de la règle porte presque toujours sur un seul de ces leviers.
 :::
 
 ## Pourquoi c'est si robuste (et ce qui le casserait)
