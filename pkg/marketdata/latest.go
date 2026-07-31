@@ -30,14 +30,24 @@ func latestFrom() time.Time { return time.Now().AddDate(-1, 0, 0) }
 
 // Latest returns the freshest available price for an identifier: the live
 // Yahoo market price when the instrument is Yahoo-quoted, otherwise the last
-// daily close (FT or Morningstar NAV), served from the on-disk cache when
-// fresh and from stale data on a failed refresh. A "SIM" suffix is ignored
-// (see SplitSim): simulated history never changes the current price.
+// daily close, which for an FT or Morningstar fund is its latest NAV. A "SIM"
+// suffix is ignored (see SplitSim): simulated history never changes the
+// current price.
+//
+// Latest degrades gracefully rather than failing. A spot request Yahoo cannot
+// serve (outage, throttling past the built-in retries and the query1/query2
+// host fallback, missing field) falls through to the daily-close path, which
+// inherits the whole Fetch resilience: the Stooq fallback for US tickers and
+// major indices, re-resolution through the Financial Times and Morningstar,
+// and the on-disk cache, whose stale data still answers when every source is
+// unreachable. Quote.Live, Quote.Time and Quote.Source report what the caller
+// actually got.
 //
 // Like Intraday, the live path is stateless: Latest performs no caching of the
 // live price, so a caller valuing a portfolio repeatedly should keep its own
 // short-TTL cache. The daily-close fallback path uses the existing on-disk
-// daily cache.
+// daily cache. To express the price in a display currency, pair Latest with
+// FXRate (ConvertCurrency is its whole-series sibling).
 func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
 	base, _ := SplitSim(id)
 	if symbol, ok := c.yahooSymbol(ctx, base); ok {
