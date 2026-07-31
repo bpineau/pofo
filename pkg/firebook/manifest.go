@@ -80,6 +80,7 @@ var Categories = []Category{
 			{"amortissement-abw", "Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle", "Le crédit inversé re-coté chaque année : richesse totale, quatre paramètres personnels, et le match final contre les guardrails."},
 			{"plancher-plafond", "Plancher-plafond et règles Vanguard : la flexibilité bornée", "Le corridor sur variation (+5 %/−2,5 %) : des glissements au lieu de chutes, une ruine redevenue honnête, deuxième partout."},
 			{"rentes-et-annuites", "Rentes, annuités et safety first : acheter un plancher", "Les crédits de mortalité, le cadre français (dont le rachat de trimestres, meilleure rente du marché), l'objection inflation, et quand annuitiser."},
+			{"sept-facons-de-vivre", "Sept façons de vivre du même portefeuille", "Trois retraites réelles rejouées année par année : ce que chaque règle a versé, quand elle a coupé, et ce qu'elle a laissé sur la table."},
 			{"choisir-sa-strategie", "Choisir sa stratégie : critères, comparatif, cas d'usage", "La procédure en cinq étapes : tests d'admissibilité, matrice profils-règles, hybrides par phases, et la page écrite qui conclut."},
 		},
 	},
@@ -233,7 +234,7 @@ var planned = []string{
 	"panorama-strategies-retrait", "retrait-fixe-bengen", "pourcentage-fixe",
 	"guyton-klinger", "vpw", "regles-cape", "guardrails-morningstar",
 	"amortissement-abw", "plancher-plafond", "rentes-et-annuites",
-	"choisir-sa-strategie",
+	"sept-facons-de-vivre", "choisir-sa-strategie",
 	// V. Le portefeuille de retrait
 	"primes-de-risque", "pourquoi-la-diversification-marche",
 	"concevoir-un-portefeuille",

@@ -35,6 +35,10 @@
 //   - pkg/decumul: decumulation/FIRE engine over a scenario.Source: ruin
 //     probability, FIRE outcome metrics, capital/buffer sizing and sweeps,
 //     with a thin embedded live UI under pkg/decumul/web.
+//   - pkg/replay: the same withdrawal rules run over the years as they
+//     actually happened, on a bundled real US 60/40, so a rule can be
+//     described by the life it delivered rather than by a failure
+//     probability; consumed by the FIRE book's historical replay article.
 //   - pkg/chart: dependency-free SVG and terminal charts (line, pie, bars,
 //     heatmap).
 //   - pkg/report: HTML and text rendering of a portfolio-comparison model.
