@@ -223,9 +223,16 @@ cross-asset correlations, then compound to the annual withdrawal cycle.
 Everything is in real euros; the model is a fat-tailed hypothesis-exploration
 tool, **not investment advice**.
 
+The explorer also embeds **le livre FIRE** at `/livre/` (a small `livre` link
+sits at the bottom of the "How this machine works" fold): a French-language
+handbook of decumulation, withdrawal strategies, resilient portfolios,
+buffers and French taxation, written as cross-linked articles and served
+straight from the binary (`pkg/firebook`).
+
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
-and sweeps), with the thin web layer under `pkg/decumul/web`.
+and sweeps), with the thin web layer under `pkg/decumul/web`; the book is its
+own package, `pkg/firebook`, mountable by any server.
 
 ## Main options
 
