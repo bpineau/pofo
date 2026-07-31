@@ -1,10 +1,10 @@
 # Lexique du FIRE et du retrait
 
-Tous les termes du livre (et du jargon des forums), définis en quelques phrases, avec le renvoi vers le chapitre qui les traite : le lexique se consulte, mais il se **lit** aussi. Parcouru d'un trait, c'est un résumé du livre en ordre alphabétique.
+Tous les termes du livre (et du jargon des forums), définis en quelques phrases, avec le renvoi vers le chapitre qui les traite : le lexique se consulte, mais il se **lit** aussi. Parcouru d'un trait, il forme un résumé du livre en ordre alphabétique.
 
 ## A-B
 
-**ABW (Amortization Based Withdrawal)** : règle de retrait actuarielle. Chaque année, le paiement qui épuiserait la richesse totale (portefeuille + flux futurs actualisés, moins le legs visé) sur l'horizon restant au rendement attendu courant. Le crédit immobilier inversé, re-coté annuellement. [[amortissement-abw]]
+**ABW (Amortization Based Withdrawal)** : règle de retrait actuarielle. Chaque année, le paiement qui épuiserait la richesse totale (portefeuille + flux futurs actualisés, moins le legs visé) sur l'horizon restant au rendement attendu courant. Le crédit immobilier à l'envers, recalculé chaque année. [[amortissement-abw]]
 
 **Allocation d'actifs** : la répartition du portefeuille entre classes (actions, obligations, or...). En retrait, un plateau large (50-80 % d'actions) qui plonge des deux côtés. [[allocation-actions-obligations]]
 
@@ -28,9 +28,9 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Broad sample** : le modèle qui rejoue le siècle de 16 pays développés (panel JST, 1870-2020) en 60/40 domestique. La borne empirique du risque de long horizon. [[anarkulova-cederburg]], [[la-machine-pofo]]
 
-**Buffer (matelas)** : 18-36 mois de dépenses en liquidités, consommés sous un seuil de drawdown écrit, rechargés au calme. Quantitativement neutre, comportementalement précieux. [[cash-buffer]], [[recharger-ou-pas]]
-
 **Buckets (seaux)** : découper le patrimoine en horizons (cash/obligations/actions). Une allocation déguisée plus des flux à écrire. Un bon langage, une mécanique sans valeur ajoutée propre. [[strategie-buckets]]
+
+**Buffer (matelas)** : 18-36 mois de dépenses en liquidités, consommés sous un seuil de drawdown écrit, rechargés au calme. Quantitativement neutre, comportementalement précieux. [[cash-buffer]], [[recharger-ou-pas]]
 
 ## C-D
 
@@ -54,7 +54,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Décumulation** : la phase où l'on vit du capital. L'objet de ce livre. Un problème différent de l'accumulation (l'ordre des rendements s'y met à compter). [[les-trois-phases]]
 
-**df (degrés de liberté)** : le paramètre de queues de la loi Student-t du modèle central. Plus df est bas, plus les années extrêmes sont fréquentes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]], [[la-machine-pofo]]
+**df (degrés de liberté)** : le paramètre d'épaisseur des queues de la loi Student-t du modèle central. Plus df est bas, plus les années extrêmes sont fréquentes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]], [[la-machine-pofo]]
 
 **Die With Zero** : la thèse de Perkins. Mourir riche est un échec. Dans sa version raisonnable, des time buckets datés et de la générosité du vivant, appliqués à l'excédent d'un plan sûr. [[depenses-en-retraite]]
 
@@ -70,19 +70,19 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Équivalent certain** : le revenu garanti que vous accepteriez en échange d'un plan risqué. Le convertisseur universel entre distributions, qui dégonfle les belles moyennes à queue laide. [[decider-sous-incertitude]]
 
-**ERN (Early Retirement Now)** : le blog de Karsten Jeske et sa série Safe Withdrawal Rate (60+ volets). La référence quantitative moderne du sujet. [[serie-ern]]
+**ERN (Early Retirement Now)** : le blog de Karsten Jeske et sa série Safe Withdrawal Rate (plus de 60 volets). La référence quantitative moderne du sujet. [[serie-ern]]
 
 **Fan chart (cône)** : la distribution des richesses simulées par date, en bandes de percentiles. Une pile de coupes, pas un faisceau de chemins. [[lire-un-fan-chart]]
 
 **Fenêtre fragile** : les 5-10 premières années de retrait, où se concentre le risque de séquence. La période que buffer, tente et revenus précoces protègent. [[sequence-des-rendements]]
 
-**Fonds euros** : le support d'assurance-vie garanti et lissé. Excellent buffer et tranche courte, victime désignée de la répression financière. Jamais une protection d'inflation. [[obligations-en-retrait]], [[enveloppes-francaises]]
+**Fonds euros** : le support d'assurance-vie garanti et lissé. Excellent buffer et tranche courte, victime désignée de la répression financière. Jamais une protection contre l'inflation. [[obligations-en-retrait]], [[enveloppes-francaises]]
 
 **Frontière de décumulation** : chaque règle de retrait posée comme un point dans le plan (risque de ruine ; variabilité du niveau de vie). Aucune ne gagne sur les deux axes à la fois, donc choisir sa règle revient à choisir sa place le long de la frontière. [[panorama-strategies-retrait]]
 
 **Glidepath** : faire varier l'allocation dans le temps. La version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
 
-**Global macro** : les fonds qui parient sur les grandes forces économiques (taux, devises, matières premières) plutôt que sur des titres. Corrélation basse et bons millésimes de crise, mais dispersion de gérants énorme et accès particulier fermé. [[global-macro]]
+**Global macro** : les fonds qui parient sur les grandes forces économiques (taux, devises, matières premières) plutôt que sur des titres. Corrélation basse et bons millésimes de crise, mais dispersion entre gérants énorme et grands fonds fermés au particulier. [[global-macro]]
 
 **Golden Butterfly** : Browne plus une aile small-cap value. Le meilleur couple SWR/drawdown de la famille tous-temps sur l'échantillon disponible. [[portefeuilles-tous-temps]]
 
@@ -98,13 +98,13 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Kelly (critère de)** : la fraction de capital qui maximise la croissance géométrique d'un pari répété. Génial au casino, inapplicable tel quel à une retraite (horizon fini, consommation, paramètres inconnus) ; en retenir le réflexe du demi-Kelly. [[decider-sous-incertitude]]
 
-**Lean / Fat FIRE** : les variantes sobre (~15-25 k€/an) et confortable (60 k€+). La difficulté n'est pas linéaire entre les deux. [[fire-cest-quoi]]
+**Lean / Fat FIRE** : les variantes sobre (~15-25 k€/an) et confortable (60 k€ et bien au-delà). La difficulté n'est pas linéaire entre les deux. [[fire-cest-quoi]]
 
 **Linkers (obligations indexées)** : OATi, OAT€i, TIPS. Le seul contrat écrit en réel (inflation + taux réel garanti). L'actif sans risque conceptuel du rentier. [[obligations-indexees]]
 
 **Lissage fiscal** : réaliser chaque année assez de gains pour remplir les tranches basses et l'abattement AV. L'actif périssable des années de pont à TMI faible. [[flat-tax-et-imposition]]
 
-**Long volatility / tail hedging** : détenir de la convexité (des puts) qui explose dans les krachs rapides, contre une prime versée en permanence. Espérance négative par construction, complément théorique du trend, presque inachetable proprement en UCITS. [[long-volatility]]
+**Long volatility / tail hedging** : détenir de la convexité (des puts) qui explose dans les krachs rapides, contre une prime versée en permanence. Espérance négative par construction, complément théorique du trend, presque impossible à acheter proprement en UCITS. [[long-volatility]]
 
 **Managed futures / trend** : les stratégies systématiques de suivi de tendance, long et short, multi-classes. Le seul défensif à espérance positive, gagnant des régimes longs (2008, 2022). [[managed-futures]]
 
@@ -140,7 +140,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **PUMa** : la Protection Universelle Maladie. La couverture santé de tout résident stable. Et, par métonymie, la cotisation (CSM) qui la finance chez le rentier. [[taxe-puma]], [[sante-et-protection-sociale]]
 
-**Quadruplé (français)** : les quatre bénéfices d'une petite activité de rentier. Le revenu, la PUMa éteinte (~9,5 k€), les 4 trimestres (~7,2 k€), la séquence amortie. [[retour-au-travail]]
+**Quadruplé (français)** : les quatre bénéfices d'une petite activité de rentier. Le revenu, la PUMa éteinte (~9,6 k€), les 4 trimestres (~7,2 k€), la séquence amortie. [[retour-au-travail]]
 
 **Rebalancing premium (diversification return)** : le supplément de rendement géométrique qu'un panier décorrélé et rééquilibré gagne sur la moyenne de ses composants, environ la moitié de la variance économisée (0,2-0,5 point/an typique). [[pourquoi-la-diversification-marche]]
 
@@ -182,9 +182,9 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Trinity (étude)** : la grille de 1998 (taux × allocation × horizon → % de succès historique). L'origine du langage de la probabilité de ruine. [[etude-trinity]]
 
-**Volatility drag** : la traînée σ²/2 entre moyenne arithmétique et géométrique. La volatilité est un coût de composition, même sans krach. [[rendements-arithmetiques-geometriques]]
-
 **Utilité (espérance d')** : le critère qui pèse chaque niveau de richesse par ce qu'il vaut vraiment pour vous, et non en euros bruts. Sa concavité fonde l'aversion au risque et le jugement des plans sur percentile 5 + médiane. [[decider-sous-incertitude]]
+
+**Volatility drag** : la traînée σ²/2 entre moyenne arithmétique et géométrique. La volatilité est un coût de composition, même sans krach. [[rendements-arithmetiques-geometriques]]
 
 **VPW (Variable Percentage Withdrawal)** : le pourcentage croissant avec l'âge des Bogleheads (l'annuité inversée à table gravée). Jamais de ruine du capital, consommation délibérée, test de tolérance à la perte obligatoire. [[vpw]]
 
