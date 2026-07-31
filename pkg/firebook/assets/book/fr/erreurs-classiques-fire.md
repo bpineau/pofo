@@ -52,7 +52,7 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 8. Se raconter le simulateur
 
-Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur devient alors un générateur de permission, pas un instrument ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
+Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur cesse alors d'être un instrument pour devenir une machine à se donner raison ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
 **Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre eux est l'information ([[historique-vs-parametrique]]). Planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
 
