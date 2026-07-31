@@ -95,6 +95,19 @@ func MultiLine(opt Options, xLabel, yLabel string, series []XYSeries, markers ..
 		drawXY(&b, s, xAt, yAt)
 	}
 
+	// Hover payload: every series with its own x positions, so the crosshair
+	// can read curves of different lengths (e.g. truncated vintages).
+	hm := hoverMeta{Kind: "line", X0: x0, X1: x1, Y0: y0, Y1: y1,
+		Xmin: xmin, Xmax: xmax, XLabel: xLabel, YLabel: yLabel}
+	for _, s := range series {
+		name := s.Name
+		if name == "" {
+			name = yLabel // single unnamed series: the axis names it
+		}
+		hm.Series = append(hm.Series, hoverSeries{Name: name, Color: s.Color, Xs: s.Xs, Ys: s.Ys})
+	}
+	b.WriteString(hoverBlock(hm))
+
 	// Legend.
 	lx := x0
 	for _, s := range series {

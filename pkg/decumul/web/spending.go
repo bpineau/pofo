@@ -53,9 +53,18 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 		{Label: "Years lived cut (p90)", Value: cutYearsText(s.EverCutShare, s.CutYearsP90)},
 		{Label: "Spending floor (p5, year 10)", Value: floorText(bands, 10)},
 	}
+	// Mark the deterministic income switch points, so the fan's steps have
+	// names: the pension start, and the side income's end while it lasts.
+	var markers []chart.Marker
+	if pr.PensionAnnual > 0 && pr.PensionYear > 0 && pr.PensionYear < pr.Years {
+		markers = append(markers, chart.Marker{Axis: 'x', Value: float64(pr.PensionYear), Label: "pension starts"})
+	}
+	if pr.SideAnnual > 0 && pr.SideUntilYear > 0 && pr.SideUntilYear < pr.Years {
+		markers = append(markers, chart.Marker{Axis: 'x', Value: float64(pr.SideUntilYear), Label: "side income ends"})
+	}
 	svg := chart.Fan(
 		chart.Options{Title: "Household real spending €/yr, incl. pension & side income (central model)", Width: 900, Height: 360},
-		"Year", bands, nil)
+		"Year", bands, nil, markers...)
 	return SpendingResult{SVG: svg, Cards: cards}
 }
 
