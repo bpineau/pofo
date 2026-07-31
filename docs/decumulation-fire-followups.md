@@ -178,7 +178,7 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     frontend-design pass on the new UI: the page is now a dense two-column
     desk (sticky grouped control rail + numbered analysis column), with a
     sticky "plan bar" echoing the live verdict and per-model ruin beads while
-    scrolled, preset chips (pension scenarios, ARE bridge), pervasive hover
+    scrolled, preset chips (pension scenarios), pervasive hover
     help on every control, and the shared warm-study theme throughout. See
     `decumulation-fire-v3-enrichment.md` for the whole feature drop (spending
     reality, mortality view, planning curves, envelopes, written rules…).
