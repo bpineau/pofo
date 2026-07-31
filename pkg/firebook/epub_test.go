@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/xml"
 	"io"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -50,7 +51,7 @@ func TestEPUBInventory(t *testing.T) {
 	}
 	articles := 0
 	for i, cat := range Categories {
-		want = append(want, "OEBPS/cat-"+itoa(i)+".xhtml")
+		want = append(want, "OEBPS/cat-"+strconv.Itoa(i)+".xhtml")
 		for _, a := range cat.Articles {
 			want = append(want, "OEBPS/"+a.Slug+".xhtml")
 			articles++
@@ -131,17 +132,4 @@ func TestEPUBDeterministic(t *testing.T) {
 	if !bytes.Equal(a, b) {
 		t.Error("EPUB output is not deterministic for a fixed modified time")
 	}
-}
-
-// itoa is strconv.Itoa without the import churn in this small test file.
-func itoa(i int) string {
-	if i == 0 {
-		return "0"
-	}
-	var digits []byte
-	for i > 0 {
-		digits = append([]byte{byte('0' + i%10)}, digits...)
-		i /= 10
-	}
-	return string(digits)
 }
