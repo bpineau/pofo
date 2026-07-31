@@ -22,15 +22,6 @@ var reRefsWikiLbl = regexp.MustCompile(`\[\[([^\]|]+)\|([^\]]+)\]\]`)
 // this repository computes, and the guard pins them on figures_pays.go, the
 // plate the same article shows just above.
 
-func refsArticle(t *testing.T, slug string) string {
-	t.Helper()
-	raw, err := assets.ReadFile("assets/book/fr/" + slug + ".md")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(raw)
-}
-
 // tableRows returns the pipe-table rows that follow heading, header and
 // separator excluded, each row split into trimmed cells.
 func refsTableRows(t *testing.T, article, heading string) [][]string {
@@ -98,7 +89,7 @@ var memoAnchors = []memoAnchor{
 
 // The memo restates the book, line by line, and never invents a value.
 func TestLexiqueMemoRestatesTheBook(t *testing.T) {
-	lexique := refsArticle(t, "lexique")
+	lexique := bookArticle(t, "lexique")
 	rows := refsTableRows(t, lexique, "## Le mémo chiffré")
 	if len(rows) != len(memoAnchors) {
 		t.Fatalf("the memo has %d rows, the guard knows %d", len(rows), len(memoAnchors))
@@ -122,7 +113,7 @@ func TestLexiqueMemoRestatesTheBook(t *testing.T) {
 			t.Errorf("row %d names %q, which is not an entry of the lexique", i, a.terme)
 		}
 		// and the cited chapter still states the number
-		chapter := refsArticle(t, a.slug)
+		chapter := bookArticle(t, a.slug)
 		ok := false
 		for _, s := range a.sources {
 			if strings.Contains(chapter, s) {
@@ -140,7 +131,7 @@ func TestLexiqueMemoRestatesTheBook(t *testing.T) {
 // The three-samples table agrees with the plate the same article carries: the
 // equal-weight world basket and the American bar of figSafemaxPays.
 func TestAnarkulovaSamplesTableAgreesWithThePlate(t *testing.T) {
-	article := refsArticle(t, "anarkulova-cederburg")
+	article := bookArticle(t, "anarkulova-cederburg")
 	rows := refsTableRows(t, article, "Trois échantillons circulent")
 	if len(rows) != 3 {
 		t.Fatalf("the table has %d rows, want 3", len(rows))
