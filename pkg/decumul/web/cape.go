@@ -1,13 +1,29 @@
 package web
 
 import (
+	"fmt"
 	"sort"
 	"strconv"
 	"strings"
 	"sync"
 
+	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/datasets"
 )
+
+// capeGauge renders the current valuation reading as a half-circle gauge: the
+// needle at today's CAPE percentile, the value and the implied real return at
+// the centre. Static (it does not depend on the sliders), so it is served with
+// the page metadata.
+func capeGauge() string {
+	s := capeSnapshot()
+	if s.Value == 0 {
+		return ""
+	}
+	caption := fmt.Sprintf("CAPE %s · %.1f%% implied real", s.AsOf, s.ImpliedReal*100)
+	return chart.Gauge(chart.Options{Width: 380, Height: 214},
+		strconv.FormatFloat(s.Value, 'f', 1, 64), caption, "cheap", "rich", s.Percentile/100)
+}
 
 // CapeSnapshot summarises where equity valuations stand today, the single best
 // predictor of the next decade's real return and therefore of a retirement's
