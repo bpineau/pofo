@@ -18,3 +18,13 @@ import _ "embed"
 //
 //go:embed theme.css
 var CSS string
+
+// WarmSkin remaps the instrument tokens to the FIRE book's warm paper-and-ink
+// palette. Inlined or linked after CSS, it gives the constellation's reading
+// surfaces (the hub and the /view report) the book's identity while the FIRE
+// simulator keeps the instrument look. It only redefines variables and the
+// heading face, so any component built on the tokens reskins with no markup
+// change.
+//
+//go:embed warmskin.css
+var WarmSkin string

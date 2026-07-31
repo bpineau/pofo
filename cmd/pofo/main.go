@@ -53,6 +53,7 @@ type options struct {
 	noFees     bool
 	currency   string
 	cli        bool
+	web        bool // rendered inside the -serve web app (warm skin + site nav)
 	width      int
 	cacheAge   time.Duration
 	fw         suggest.Framework // classification used by coverage and -suggest
