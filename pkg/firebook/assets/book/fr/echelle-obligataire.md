@@ -32,11 +32,19 @@ La doctrine qui en sort est simple. Courte, la nominale est acceptable. Longue, 
 
 ## La pratique française : les contournements du guichet absent
 
-Le particulier américain construit son échelle TIPS en ligne en une heure. Le Français, lui, doit composer.
+Le particulier américain construit son échelle TIPS en ligne en une heure. Le Français, lui, compose avec la boîte à outils ci-dessous, dans son état de 2026. L'OAT nominale en direct y est praticable, l'OAT€i beaucoup moins ([[obligations-indexees]]), et la ligne vide dit le reste.
 
-**Les obligations d'État en direct.** Les OAT s'achètent au détail chez certains courtiers (marché secondaire), avec des tickets raisonnables sur les souches liquides. C'est praticable pour une échelle nominale de qualité. Les OATi/OAT€i en direct, en revanche, restent difficiles d'accès au détail ([[obligations-indexees]]).
+| Véhicule | Horizon utile | Indexé | Frais | Accès |
+|---|---|---|---|---|
+| Fonds euros | Années 1-2 | Non | Pris avant le taux servi | Toute assurance-vie |
+| Fonds à échéance État | Jusqu'à 2030 | Non | 0,1 à 0,2 % | CTO, tout courtier |
+| Fonds à échéance IG | Jusqu'à 2036 | Non | 0,1 à 0,2 % | CTO, tout courtier |
+| OAT en direct | Toutes maturités | Non | Courtage et spread OTC | Quelques courtiers |
+| ETF linkers courts roulés | 5 ans et plus, approché | Oui | ~0,1 % | CTO, tout courtier |
+| OAT€i en direct | Toutes maturités | Oui | Courtage et spread large | Très difficile |
+| Fonds à échéance indexé euro |  | Oui |  | N'existe pas |
 
-**Les fonds à échéance (« iBonds » et équivalents UCITS).** Ce sont des ETF qui détiennent un panier d'obligations échéant **toutes** la même année, puis se liquident. C'est le barreau prêt-à-l'emploi, en versions obligations d'État ou entreprises investment grade, années 2026-2034 et au-delà. C'est la brique qui a rendu l'échelle praticable en Europe. Trois points de contrôle, la qualité du panier (préférer État/IG large), les frais (~0,1-0,2 %) et l'année exacte de liquidation. Pas encore de version **indexée** euro à ce jour. L'échelle de linkers directe reste le chaînon manquant français. En attendant que l'offre suive, on approche le résultat avec des ETF linkers courts roulés et des barreaux nominaux gonflés.
+**Les fonds à échéance, la brique qui a tout changé.** Ce sont des ETF qui détiennent un panier d'obligations échéant **toutes** la même année, puis se liquident. C'est le barreau prêt-à-l'emploi, et c'est lui qui a rendu l'échelle praticable en Europe. Deux contrôles complètent la ligne du tableau, la qualité du panier (préférer État ou IG large) et l'année exacte de liquidation. Faute de version indexée en euro, on approche le résultat avec des ETF linkers courts roulés et des barreaux nominaux gonflés. C'est le chaînon manquant de l'échelle française, et il faut suivre l'offre.
 
 **Le fonds euros en barreau court.** Pour les années 1-2, le fonds euros fait un barreau parfait (garanti, liquide, rémunéré). L'échelle française type commence souvent par lui ([[cash-buffer]]).
 
@@ -55,7 +63,7 @@ Reprenons le couple de [[choisir-sa-strategie]], plancher 45 000 €, pensions d
 - L'échelle, c'est un barreau par année de passif, détenu à terme. L'appariement actif-passif **annule** le risque de taux, là où « tenir à échéance » n'était qu'une illusion comptable pour une poche permanente. C'est le seul « garanti » littéral du livre.
 - Ses trois travaux sont le pont vers la pension, le plancher de la fenêtre fragile (un buffer rémunéré) et les dépenses datées. Jamais la poche permanente (le fonds), ni le très long terme ouvert (le portefeuille, puis la rente).
 - Nominal court, acceptable. Long, **indexé** ou rien. Un barreau nominal à 12 ans garantit un pouvoir d'achat décroissant. L'échelle de linkers est la solution canonique, encore imparfaitement accessible en euro (fonds à échéance nominaux et linkers courts roulés en attendant).
-- Pratique française, le fonds euros pour les barreaux 1-2, les fonds à échéance UCITS pour le cœur, l'OAT en direct possible. Les contrôles portent sur la qualité État/IG, les frais et l'année exacte. Et l'échelle se révise chaque année.
+- Pratique française, la boîte à outils tient dans un tableau, et son trou est l'absence de fonds à échéance indexé euro. Les contrôles portent sur la qualité État/IG, les frais et l'année exacte. Et l'échelle se révise chaque année.
 - Les pièges, ce sont le yield-chasing (contresens absolu), la granularité OTC, l'échelle-prison qui adosse le confort et le barreau oublié. L'échelle sert le plancher, le portefeuille sert la vie.
 
 ---
