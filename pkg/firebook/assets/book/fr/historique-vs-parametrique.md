@@ -85,6 +85,6 @@ Portefeuille réel de 15 ans d'historique (belle fenêtre 2010-2025), plan à 3,
 ## Pour aller plus loin
 
 - Politis & Romano, « The Stationary Bootstrap » (1994) : la méthode de référence des blocs de longueur aléatoire.
-- Anarkulova, Cederburg & O'Doherty (2023) : le bootstrap par blocs appliqué au siècle développé, la référence du modèle broad-sample ([[anarkulova-cederburg]]).
+- Anarkulova, Cederburg, O'Doherty & Sias (2023) : le bootstrap par blocs appliqué au siècle développé, la référence du modèle broad-sample ([[anarkulova-cederburg]]).
 - Early Retirement Now, volet 8 : la méthode du rejeu mensuel systématique ([[serie-ern]]).
 - Dans ce livre : [[queues-epaisses]] (le choix Student-t en détail), [[rendre-monte-carlo-pertinent]] (mélange et ancres du modèle central), [[la-machine-pofo]] (l'implémentation exacte de chacun de ces modèles dans pofo).
