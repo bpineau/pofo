@@ -22,7 +22,7 @@ Voici le barème en ligne directe, après l'abattement de 100 k€. Les taux mon
 Cumul transmis en franchise totale de droits par un couple avec deux enfants majeurs, selon l'âge de la première vague de donations. Abattements de l'art. 779 CGI et dons familiaux de l'art. 790 G, montants 2026, rappel fiscal de quinze ans de l'art. 784 CGI.
 :::
 
-**3. Le démembrement.** Il consiste à donner la **nue-propriété** en gardant l'usufruit. Les droits ne portent alors que sur la valeur de la nue-propriété, et le barème de l'article 669 du CGI la fixe par tranches de dix ans d'âge du donateur. Plus on donne tôt, plus l'usufruit gardé pèse lourd, donc moins la base taxable est grosse. Et au décès, l'usufruit rejoint la nue-propriété **sans** droits. C'est l'outil roi de l'immobilier de rapport et de la résidence secondaire, car le donateur garde les loyers ou l'usage à vie ([[immobilier-en-retrait]]).
+**3. Le démembrement.** Il consiste à donner la **nue-propriété** en gardant l'usufruit. Les droits ne portent alors que sur la valeur de la nue-propriété, et le barème de l'article 669 du CGI la fixe par tranches de dix ans d'âge du donateur. Plus on donne tôt, plus l'usufruit conservé pèse lourd, et plus la base taxable est faible. Et au décès, l'usufruit rejoint la nue-propriété **sans** droits. C'est l'outil roi de l'immobilier de rapport et de la résidence secondaire, car le donateur garde les loyers ou l'usage à vie ([[immobilier-en-retrait]]).
 
 Le barème est un escalier fixe, inchangé depuis 2004. La dernière colonne donne la valeur en pleine propriété qu'un seul abattement de 100 000 € laisse passer, donc pour un parent et un enfant.
 
