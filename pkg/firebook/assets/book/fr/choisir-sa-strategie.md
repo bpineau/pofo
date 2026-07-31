@@ -16,9 +16,9 @@ Aucune règle ne se choisit sans trois chiffres établis ([[combien-il-vous-faut
 
 ## Étape 2 : le test d'admissibilité, famille par famille
 
-Chaque famille a **un** test éliminatoire, tous déjà rencontrés ; les voici rassemblés :
+Chaque famille a un test éliminatoire, tous déjà rencontrés ; les voici rassemblés :
 
-- **Fixe (Bengen amendé)** : le taux initial est-il ≤ 3,5 % (horizon long, marché cher) **ou** compensé par des marges chiffrées ? Sinon, éliminé : la falaise est trop probable ([[retrait-fixe-bengen]]).
+- **Fixe (Bengen amendé)** : le taux initial est-il ≤ 3,5 % (horizon long, marché cher) ou compensé par des marges chiffrées ? Sinon, éliminé : la falaise est trop probable ([[retrait-fixe-bengen]]).
 - **Pourcentage / VPW / règles CAPE** : le revenu sous « actions −50 % » couvre-t-il le plancher (le test de tolérance à la perte, [[vpw]]) ? Sinon, éliminé, sauf pont de pension ou rente qui l'y ramène.
 - **Corridor borné (Vanguard)** : la borne basse composée six ans (≈ −14 % en réel) reste-t-elle au-dessus du plancher ([[plancher-plafond]]) ?
 - **Guardrails** : le plancher de coupe (75-80 % du retrait initial) est-il aligné sur le plancher réel, et l'exécutant appliquera-t-il **vraiment** une coupe de 10 % après trois années rouges ([[guyton-klinger]], [[guardrails-morningstar]]) ?
@@ -32,7 +32,7 @@ Parmi les familles admissibles, le tempérament et la gouvernance tranchent. Les
 
 | Profil dominant | Règle recommandée | Pourquoi |
 |---|---|---|
-| « Je veux **mon** revenu, ne touchez à rien sauf nécessité absolue » | Guardrails modernes avec plancher ([[guardrails-morningstar]]) | Stabilité entre franchissements, sécurité pilotée, seuils écrits |
+| « Je veux mon revenu, ne touchez à rien sauf nécessité absolue » | Guardrails modernes avec plancher ([[guardrails-morningstar]]) | Stabilité entre franchissements, sécurité pilotée, seuils écrits |
 | « Je veux consommer juste, j'accepte que ça respire » | ABW/TPAW, g décoté, ancre CAPE ([[amortissement-abw]]) | Consommation optimale, ni falaise ni tas d'or, valorisations natives |
 | « Le plus simple possible, exécutable par mon conjoint » | Corridor borné Vanguard ([[plancher-plafond]]) | Deuxième partout, aucune pathologie, gouvernance de carte postale |
 | « Plancher déjà couvert (pension/rente), le portefeuille c'est le confort » | VPW ou règle CAPE ([[vpw]], [[regles-cape]]) | La variabilité ne menace rien ; consommation généreuse et datée intelligemment |
@@ -44,13 +44,13 @@ Deux lectures de cette matrice. D'abord, le **tempérament** à considérer est 
 
 ## Étape 4 : les hybrides légitimes, dont le grand oublié : les phases
 
-Trois assemblages reviennent chez les praticiens sérieux, et le troisième est souvent **la** bonne réponse pour un plan FIRE.
+Trois assemblages reviennent chez les praticiens sérieux, et le troisième est souvent la bonne réponse pour un plan FIRE.
 
 **Le plancher garanti + la règle libre** (safety-first) : rente/pension/linkers au plancher, puis la règle qu'on veut sur le reste : déjà traité ([[rentes-et-annuites]]) ; compatible avec toutes les lignes de la matrice.
 
 **Le calcul actuariel + l'affichage lissé** : l'ABW comme calcul de **référence** annuel, un corridor de ±5-10 % autour pour le budget affiché : l'optimalité de l'un, le confort de l'autre ; c'est la pratique de beaucoup d'utilisateurs TPAW ([[amortissement-abw]]).
 
-**Des règles différentes par phase.** Le plan FIRE a deux vies ([[horizon-et-esperance-de-vie]], [[les-trois-phases]]) : la phase à découvert (le portefeuille finance tout, la fenêtre fragile est ouverte) appelle la prudence pilotée : Bengen amendé à taux prudent ou guardrails avec plancher ; la phase adossée (pension au plancher) libère : VPW, règle CAPE ou ABW généreux sur le portefeuille résiduel. Écrire dès le départ « guardrails jusqu'à la pension, VPW ensuite » est plus intelligent que chercher **la** règle unique des deux phases : les deux problèmes sont différents, les deux solutions aussi. La bascule elle-même se planifie à la revue annuelle de l'année de liquidation ([[revue-annuelle]]).
+**Des règles différentes par phase.** Le plan FIRE a deux vies ([[horizon-et-esperance-de-vie]], [[les-trois-phases]]) : la phase à découvert (le portefeuille finance tout, la fenêtre fragile est ouverte) appelle la prudence pilotée : Bengen amendé à taux prudent ou guardrails avec plancher ; la phase adossée (pension au plancher) libère : VPW, règle CAPE ou ABW généreux sur le portefeuille résiduel. Écrire dès le départ « guardrails jusqu'à la pension, VPW ensuite » est plus intelligent que chercher la règle unique des deux phases : les deux problèmes sont différents, les deux solutions aussi. La bascule elle-même se planifie à la revue annuelle de l'année de liquidation ([[revue-annuelle]]).
 
 ::: science Ce que pèsent vraiment les différences entre bonnes règles
 Remettons les ordres de grandeur en place, car ils dictent où investir votre attention. Entre deux bonnes règles bien calibrées (guardrails avec plancher contre ABW décoté, par exemple), l'écart typique est de 1 à 3 points de ruine et de ±5-8 % de consommation totale : réel, mais du second ordre. Contre cela : 10 % d'erreur sur les dépenses = ~3-6 points de ruine ; la pension oubliée = 3-8 points ; un taux initial de 4,5 % au lieu de 3,7 % en marché cher = 5-10 points ; l'abandon de la règle en pleine panique = incalculable. La hiérarchie de l'attention en découle : les **entrées** d'abord ([[combien-il-vous-faut]]), le taux initial ensuite ([[valorisations-et-cape]]), l'exécutabilité de la règle enfin : et le choix fin entre finalistes en dernier, sereinement, car on ne peut plus beaucoup se tromper.
@@ -82,7 +82,7 @@ Claire (51 ans) et Idris (53 ans) : 1,7 M€, plancher 45 000 €, confort 58 00
 
 - On choisit une **forme** de risque sous contrainte de plancher, exécutable par l'exécutant réel : tempérament des mauvaises années, gouvernance, puis technique : dans cet ordre.
 - Chaque famille a son test éliminatoire (taux ≤ 3,5 % pour le fixe, « actions −50 % ≥ plancher » pour les proportionnelles, borne basse composée pour le corridor, plancher aligné pour les guardrails, outil-à-vie pour l'ABW) : vingt minutes de pofo.
-- Les hybrides sont légitimes et souvent optimaux, surtout **le** grand oublié : deux règles pour deux phases (prudence pilotée à découvert, générosité proportionnelle une fois adossé).
+- Les hybrides sont légitimes et souvent optimaux, surtout le grand oublié : deux règles pour deux phases (prudence pilotée à découvert, générosité proportionnelle une fois adossé).
 - Les écarts entre bonnes règles sont du second ordre face aux erreurs d'entrées et au taux initial : investissez votre attention dans cet ordre, et choisissez ensuite sereinement.
 - Le produit final est **une page écrite** : règle, paramètres, seuils, revue, phase suivante, conditions de changement : sans elle, vous n'avez pas une stratégie, vous avez une intention.
 
@@ -90,6 +90,6 @@ Claire (51 ans) et Idris (53 ans) : 1,7 M€, plancher 45 000 €, confort 58 00
 
 ## Pour aller plus loin
 
-- Early Retirement Now, Part 11 (noter les règles) et l'ensemble des Parts stratégie ([[serie-ern]]) ; Morningstar, *The State of Retirement Income* (le comparatif annuel).
+- Early Retirement Now, volet 11 (noter les règles) et l'ensemble des Parts stratégie ([[serie-ern]]) ; Morningstar, *The State of Retirement Income* (le comparatif annuel).
 - Wade Pfau, *Retirement Planning Guidebook* : le manuel praticien le plus complet des deux écoles.
 - Les neuf articles de cette partie, pour revenir au détail de chaque candidate ; puis [[construire-son-plan]] pour l'assemblage, et [[revue-annuelle]] pour la vie de la règle.

@@ -12,7 +12,7 @@ Les nombres sont réalistes mais illustratifs (fiscalité 2026, marchés du mome
 
 **La validation.** Central 1,8 %, broad-sample 5,9 % (échecs très tardifs, pension acquise), 1966 traversé, décennie perdue : survivable avec palier 3 (monter les missions à 15 k€ : l'option est structurelle chez lui). Sensibilité dominante : **les missions** : sans elles, central 4,4 % : rattrapable : le test du plan trop adossé passe ([[revenus-complementaires]]).
 
-**Les leçons du cas.** Un : le semi-FIRE structurel transforme un plan solo tendu en plan solide **sans** année de travail plein temps supplémentaire ([[une-annee-de-plus]] : l'OMY partiel en régime permanent). Deux : le plancher à 81 % est **la** fragilité des plans sobres : la flexibilité de Jules est dans ses revenus, pas dans ses dépenses : sa règle et ses paliers le savent. Trois : à 2,4 % de retrait net, le vrai risque de Jules est la sous-vie ([[psychologie-du-retrait]]) : son gabarit porte un budget « décennie active » front-loadé et obligatoire ([[depenses-en-retraite]]).
+**Les leçons du cas.** Un : le semi-FIRE structurel transforme un plan solo tendu en plan solide **sans** année de travail plein temps supplémentaire ([[une-annee-de-plus]] : l'OMY partiel en régime permanent). Deux : le plancher à 81 % est la fragilité des plans sobres : la flexibilité de Jules est dans ses revenus, pas dans ses dépenses : sa règle et ses paliers le savent. Trois : à 2,4 % de retrait net, le vrai risque de Jules est la sous-vie ([[psychologie-du-retrait]]) : son gabarit porte un budget « décennie active » front-loadé et obligatoire ([[depenses-en-retraite]]).
 
 ## Cas 2 : Aline et Thomas, 46 et 48 ans, le couple FIRE classique
 

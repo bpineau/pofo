@@ -7,7 +7,7 @@ L'un finit avec deux millions ; l'autre est ruiné à 78 ans. La seule différen
 C'est le risque de séquence des rendements (« sequence of returns risk »), et c'est le concept central de tout ce livre : celui qui explique pourquoi le taux de retrait sûr est si bas par rapport aux rendements moyens, pourquoi les dix premières années de retraite dominent tout, et pourquoi la plupart des protections intelligentes (glidepaths, buffers, flexibilité, revenus partiels) sont en réalité des armes anti-séquence. À la fin de cette page, vous saurez reconnaître ce risque, le mesurer sur votre propre plan, et connaîtrez la carte des parades.
 
 ::: cle L'asymétrie fondamentale
-Sans retraits, l'ordre des rendements est indifférent : +30 % puis −20 % ou −20 % puis +30 % donnent le même capital (l'addition des logarithmes commute). **Avec** des retraits, l'ordre devient déterminant : chaque euro retiré pendant un creux est un euro vendu au pire prix, définitivement soustrait au rebond. Le retraité transforme des pertes temporaires en pertes permanentes, à hauteur exacte de ses retraits. Voilà pourquoi le même portefeuille est bien plus risqué en phase de retrait qu'en phase d'accumulation.
+Sans retraits, l'ordre des rendements est indifférent : +30 % puis −20 % ou −20 % puis +30 % donnent le même capital (l'addition des logarithmes commute). Avec des retraits, l'ordre devient déterminant : chaque euro retiré pendant un creux est un euro vendu au pire prix, définitivement soustrait au rebond. Le retraité transforme des pertes temporaires en pertes permanentes, à hauteur exacte de ses retraits. Voilà pourquoi le même portefeuille est bien plus risqué en phase de retrait qu'en phase d'accumulation.
 :::
 
 ## Le mécanisme, sur un exemple qu'on n'oublie pas
@@ -38,7 +38,7 @@ L'intuition à retenir : en accumulation, un krach précoce est une **aubaine** 
 
 Le risque de séquence n'est pas uniformément réparti dans le temps. Il se concentre massivement sur le début de la retraite, pour une raison mécanique : c'est là que le capital est le plus gros en proportion des retraits restants, et que la trajectoire a le plus d'années devant elle pour diverger. Un krach à l'année 25 d'une retraite de 30 ans est presque indolore : l'essentiel des retraits est derrière, et le capital requis pour finir est faible. Le même krach à l'année 2 gouverne tout le reste de la trajectoire.
 
-La recherche (ERN Part 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, **le sort d'une retraite de 40 ans se joue aux trois quarts dans sa première décennie**. La page FIRE de pofo consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]) : elle montre la dispersion des issues finales conditionnée au rendement des dix premières années de chaque scénario.
+La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, **le sort d'une retraite de 40 ans se joue aux trois quarts dans sa première décennie**. La page FIRE de pofo consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]) : elle montre la dispersion des issues finales conditionnée au rendement des dix premières années de chaque scénario.
 
 Trois conséquences pratiques découlent de cette concentration temporelle.
 
@@ -59,7 +59,7 @@ Le risque de séquence explique un paradoxe qui déroute tous les débutants : c
 Non, pour deux raisons empilées. La première est le volatility drag : la croissance composée d'un portefeuille volatil est inférieure à sa moyenne arithmétique, d'environ la moitié de la variance ([[rendements-arithmetiques-geometriques]]) ; « 5 % de moyenne » avec 15 % de volatilité compose à ~3,9 %. La seconde est la séquence : même le rendement géométrique n'est « retirable » que si les rendements arrivent régulièrement ; leur irrégularité, combinée à des retraits fixes, consomme une prime supplémentaire. Le taux de retrait sûr est donc structurellement inférieur au rendement géométrique espéré, lui-même inférieur à la moyenne arithmétique qu'affichent les plaquettes. Retenez la hiérarchie : **moyenne arithmétique > moyenne géométrique > taux de retrait soutenable**, chaque marche coûtant typiquement 0,5 à 1,5 point.
 
 ::: attention Le simulateur trop lisse
-Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central de pofo) sous-estime légèrement le risque de séquence : les vrais marchés font des grappes, des tendances, des décennies perdues, pas des tirages de loterie ([[pieges-des-simulateurs]]). C'est pourquoi la page FIRE affiche à côté du modèle central un « sequence stress » et le rejeu de l'échantillon mondial ([[anarkulova-cederburg]]) : si votre plan n'est acceptable **que** dans la colonne centrale, il n'est pas acceptable ([[rendre-monte-carlo-pertinent]]).
+Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central de pofo) sous-estime légèrement le risque de séquence : les vrais marchés font des grappes, des tendances, des décennies perdues, pas des tirages de loterie ([[pieges-des-simulateurs]]). C'est pourquoi la page FIRE affiche à côté du modèle central un « sequence stress » et le rejeu de l'échantillon mondial ([[anarkulova-cederburg]]) : si votre plan n'est acceptable que dans la colonne centrale, il n'est pas acceptable ([[rendre-monte-carlo-pertinent]]).
 :::
 
 ## La carte des parades
@@ -103,7 +103,7 @@ Plan de base : 1 M€, 60/40, 40 000 €/an rigides, 45 ans d'horizon ; ruine «
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series Parts 14-15 (« Sequence of Return Risk ») : la démonstration que la séquence explique l'essentiel du résultat ; Part 53 sur les couvertures ([[serie-ern]]).
+- Early Retirement Now, SWR Series volets 14-15 (« Sequence of Return Risk ») : la démonstration que la séquence explique l'essentiel du résultat ; volet 53 sur les couvertures ([[serie-ern]]).
 - Kitces & Pfau, « Reducing Retirement Risk with a Rising Equity Glide Path », *Journal of Financial Planning*, 2014 : la parade par l'allocation ([[glidepaths]]).
 - Moshe Milevsky, « Retirement Ruin and the Sequencing of Returns » : la formalisation actuarielle.
 - Dans pofo : la section « décennie décisive » et le modèle « sequence stress » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
