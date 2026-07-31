@@ -103,13 +103,12 @@ for the full critique. Highlights:
 - Keyboard-focus parity for the chart tooltips (hover-only today); a table
   view of the chart data for the accessibility-strict reading of the
   dataviz spec.
-- **State-of-the-art withdrawal rules, proposed to Ben (not approved yet):**
-  amortization-based withdrawals (ABW/TPAW: yearly actuarial PMT over the
-  remaining horizon, never ruins, smoother than G-K) and a CAPE-conditioned
-  spending rule (WR = a + b/CAPE, forward-looking); possibly Vanguard's
-  bounded percent-of-portfolio (ceiling/floor on the yearly change). These
-  complete the policy frontier with the rules the literature now prefers
-  over Guyton-Klinger.
+- SOTA rules: ABW/TPAW and Vanguard bounded % SHIPPED 2026-07-12 (six-rule
+  frontier; ABW amortizes the after-tax liquidation value via
+  pocketOps.liquidationNet). Still open: a CAPE-conditioned spending rule
+  (WR = a + b/CAPE) needs a per-path valuation model, which no source
+  simulates today; its planning-time content is covered by the CAPE anchor
+  feeding ABW's assumed return.
 
 ## Design mock
 
