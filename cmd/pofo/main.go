@@ -1088,6 +1088,18 @@ func coverageAdvice(spec *portfolio.Spec, opt *options, meta map[string]suggest.
 // runWarmup pre-fetches the whole bundled asset catalog into the cache so
 // that later runs work fast and (mostly) offline.
 func runWarmup(ctx context.Context, c *marketdata.Client, opt *options) error {
+	// Refresh the bundled CPI/HICP deflators from their live source (a normal
+	// run serves them offline-first from the embedded snapshot).
+	c.RefreshInflation = true
+	for _, sym := range []string{"^CPI-US", "^HICP-FR"} {
+		if s, err := c.Fetch(ctx, sym, opt.start); err != nil {
+			log.Printf("FAIL  %s: %v", sym, err)
+		} else {
+			log.Printf("OK    %-24s %s → %s  (%d points)", sym,
+				s.First().Date.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"), len(s.Points))
+		}
+	}
+
 	ids := marketdata.WarmupIDs()
 	var failed []string
 	for i, id := range ids {

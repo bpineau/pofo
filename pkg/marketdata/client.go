@@ -38,6 +38,13 @@ type Client struct {
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
+	// RefreshInflation forces the bundled CPI/HICP deflators (^CPI-US,
+	// ^HICP-<geo>) to be fetched from their live source instead of served
+	// offline-first from the embedded snapshot. It is set during warmup so
+	// "pofo -warmup" refreshes them; a normal run leaves it false and never
+	// downloads them inline.
+	RefreshInflation bool
+
 	retryDelay time.Duration
 	mu         sync.Mutex
 	memo       map[string]*Series
@@ -639,6 +646,32 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	c.memoize(key, s)
 	return s, nil
+}
+
+// embeddedHistory serves a bundled long-history index (a CPI/HICP deflator)
+// offline-first: memoized, then a fresh disk cache (written by a prior warmup),
+// then the embedded snapshot, with no network access. The live source is
+// consulted only when RefreshInflation is set (warmup) or when no embed is
+// available for this id (embed returns false, e.g. a HICP geography without a
+// bundled snapshot). It shares cachedHistory's memo/cache key convention.
+func (c *Client) embeddedHistory(ctx context.Context, source, id string, from time.Time, embed func() (*Series, bool), live func() (*Series, error)) (*Series, error) {
+	if c.RefreshInflation {
+		return c.cachedHistory(ctx, source, id, from, false, live)
+	}
+	cacheID := viewKey(id, false)
+	key := source + ":" + cacheID + "|" + from.Format("2006-01-02")
+	if s, ok := c.memoized(key); ok {
+		return s, nil
+	}
+	if s, ok := c.loadCache(cacheID, from); ok {
+		c.memoize(key, s)
+		return s, nil
+	}
+	if s, ok := embed(); ok {
+		c.memoize(key, s)
+		return s, nil
+	}
+	return c.cachedHistory(ctx, source, id, from, false, live)
 }
 
 func (c *Client) memoized(key string) (*Series, bool) {
