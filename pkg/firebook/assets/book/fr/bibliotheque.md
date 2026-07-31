@@ -86,7 +86,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les outils
 
-**pofo (la page FIRE que ce livre habite)** : le laboratoire multi-modèles du plan. Quatre lentilles, les règles simulables, le solveur en équivalences. Le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
+**pofo (le simulateur FIRE de pofo que ce livre habite)** : le laboratoire multi-modèles du plan. Quatre lentilles, les règles simulables, le solveur en équivalences. Le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
 
 **TPAW Planner ([tpawplanner.com](https://tpawplanner.com))** : l'ABW/TPAW complet, gratuit. La référence de la famille actuarielle. [[amortissement-abw]]
 
@@ -97,7 +97,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], et la page FIRE ouverte à côté.
+**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], et le simulateur FIRE de pofo ouverte à côté.
 :::
 
 ## L'essentiel à retenir

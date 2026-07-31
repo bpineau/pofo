@@ -11,7 +11,7 @@ Cette page déroule le sujet. D'abord le phénomène : d'où viennent les queues
 :::
 
 ::: figure fat-tails
-Deux lois de **même moyenne et même volatilité**, mais des queues opposées. Au centre, les années ordinaires se ressemblent. Dans la queue, tout change : sous la loi normale, l'année à −30 % réel est un événement de légende ; sous une Student-t à df 5 (calibrée sur les données réelles), elle est environ **dix fois** plus fréquente. Le paramètre df ne déplace pas le centre, il règle la fréquence des catastrophes.
+Deux lois de **même moyenne et même volatilité**, mais des queues opposées. Au centre, les années ordinaires se ressemblent. Dans la queue, tout change : sous la loi normale, l'année à −30 % réel est un événement de légende ; sous une Student-t à df 5 (calibrée sur les données réelles), elle est environ **dix fois** plus fréquente que sous cette normale, qui équivaut à un df infini. Le paramètre df ne déplace pas le centre, il règle la fréquence des catastrophes.
 :::
 
 ## Pourquoi la loi normale séduit, et où elle casse
@@ -34,14 +34,14 @@ Ce que df change **concrètement**, à volatilité annuelle identique (σ = 12 %
 
 | df | Le monde qu'il décrit | Fréquence du −30 % réel | Sur 45 ans de retraite |
 |---|---|---|---|
-| 30+ (≈ normale) | Le monde des manuels | ~1 année sur 400 | Probablement jamais |
+| 30+ (≈ normale) | Le monde des manuels de maths | ~1 année sur 400 | Probablement jamais |
 | 10 | Queues modérées | ~1 sur 150 | Peut-être une fois |
-| 5 (défaut de la page FIRE) | Le monde des données mensuelles réelles | ~1 sur 40 | Une à deux fois |
+| 5 (défaut du simulateur FIRE de pofo) | Le monde des données mensuelles réelles | ~1 sur 40 | Une à deux fois |
 | 3 | Monde à catastrophes | ~1 sur 20 | Deux à trois fois |
 
 Comparez la ligne df 5 à la ligne df 30 : **le même σ, et un facteur dix sur la fréquence des catastrophes**. Voilà pourquoi deux simulateurs affichant « 12 % de volatilité » peuvent rendre des verdicts sans rapport. Tout est dans la loi des queues, que la plupart des outils commerciaux ne documentent même pas ; ils sont gaussiens sans le dire ([[pieges-des-simulateurs]]).
 
-**D'où vient la valeur de df ?** En mode portefeuille, la page FIRE l'**ajuste** sur vos données. Le kurtosis des rendements mensuels de votre portefeuille se convertit en df. La relation théorique kurtosis ≈ 3 + 6/(df − 4) s'inverse, et des mois à kurtosis 7-9 donnent df ≈ 5-6. Des fonds actions classiques ressortent vers df 4-6. Un portefeuille très diversifié, avec des poches défensives, peut remonter vers 8-12. Le curseur reste ajustable pour les expériences. Le défaut de 5 n'est donc pas une opinion prudente. C'est la valeur qui ressort des données mensuelles réelles de la plupart des portefeuilles d'actions mondiales.
+**D'où vient la valeur de df ?** En mode portefeuille, le simulateur FIRE de pofo l'**ajuste** sur vos données. Le kurtosis des rendements mensuels de votre portefeuille se convertit en df. La relation théorique kurtosis ≈ 3 + 6/(df − 4) s'inverse, et des mois à kurtosis 7-9 donnent df ≈ 5-6. Des fonds actions classiques ressortent vers df 4-6. Un portefeuille très diversifié, avec des poches défensives, peut remonter vers 8-12. Le curseur reste ajustable pour les expériences. Le défaut de 5 n'est donc pas une opinion prudente. C'est la valeur qui ressort des données mensuelles réelles de la plupart des portefeuilles d'actions mondiales.
 
 ::: attention Ce que df ne mesure pas
 Le df de Student est **symétrique** : il épaissit autant la queue des années miraculeuses que celle des désastres. Les vraies distributions de rendements sont en outre **asymétriques** (skew négatif, les extrêmes baissiers sont plus fréquents et plus violents que les haussiers, « l'escalier à la montée, l'ascenseur à la descente »). La Student-t symétrique sous-estime donc légèrement la méchanceté spécifique de la queue gauche. Les correctifs pour cette asymétrie ne passent pas par la distribution mais par la **séquence** : les colonnes stress (sticky bears, volatilité amplifiée dans les phases baissières) et décennie perdue mettent la violence là où elle vit réellement, dans les enchaînements ([[rendre-monte-carlo-pertinent]]).
@@ -70,7 +70,7 @@ L'histoire mérite d'être connue, car elle vaccine contre les modèles trop pro
 ## L'essentiel à retenir
 
 - Les marchés produisent des extrêmes bien plus souvent que la loi normale : kurtosis mensuel 6-12 contre 3 ; c'est la signature des grappes de volatilité et des changements de régime, pas un accident.
-- La Student-t ajoute le paramètre manquant : df, l'épaisseur des queues. À σ identique, df 5 rend l'année à −30 % réel ~10 fois plus probable que df 30. La page FIRE ajuste df sur le kurtosis mensuel de **vos** fonds, typiquement 4-6.
+- La Student-t ajoute le paramètre manquant : df, l'épaisseur des queues. À σ identique, df 5 rend l'année à −30 % réel ~10 fois plus probable que df 30. Le simulateur FIRE de pofo ajuste df sur le kurtosis mensuel de **vos** fonds, typiquement 4-6.
 - Effet sur le plan : la médiane ne bouge pas, la ruine monte, souvent de +30 à +80 % en relatif. Les queues aggravent surtout la fenêtre fragile, et les protections anti-séquence sont aussi les protections anti-queues.
 - Limites du modèle : symétrique (le vrai risque a un skew négatif, couvert par les colonnes stress et décennie perdue) et sans mémoire (couvert par les régimes). La diversification protège moins dans la queue, sauf les briques dont la décorrélation survit aux crises.
 - Réflexe pratique : gardez le df ajusté, faites une fois le test 3/30 pour connaître votre exposition, et si la décision bascule, réparez par la structure du plan, pas par le curseur.
@@ -82,5 +82,5 @@ L'histoire mérite d'être connue, car elle vaccine contre les modèles trop pro
 - Mandelbrot, « The Variation of Certain Speculative Prices » (1963) et *The (Mis)Behavior of Markets* (2004) : l'acte fondateur et sa version grand public.
 - Fama, « The Behavior of Stock-Market Prices » (1965) ; Blattberg & Gonedes (1974) sur la Student-t : la confirmation académique.
 - Taleb, *The Black Swan* (2007) : la culture générale des queues, à lire d'un œil critique.
-- Le volet « How this machine works » de la page FIRE : la définition exacte du curseur df et de son fit ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+- Le volet « How this machine works » du simulateur FIRE de pofo : la définition exacte du curseur df et de son fit ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
 - La suite dans ce livre : [[regimes-de-marche]] (d'où viennent les grappes) et [[rendre-monte-carlo-pertinent]] (comment queues et régimes se combinent dans le modèle central).

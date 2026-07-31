@@ -71,7 +71,7 @@ C'est la brique la plus difficile à acheter proprement pour un particulier euro
 **Logement et fiscalité.** Le CTO uniquement : les fonds ne sont pas éligibles au PEA, et l'assurance-vie ne les propose que rarement, aux frais de contrat près. Les plus-values relèvent du PFU ([[flat-tax-et-imposition]]). La brique se loge donc dans le budget CTO, en concurrence avec l'or ETC. C'est un argument de plus pour partager la ligne des régimes hostiles entre les deux ([[or-en-retrait]]).
 
 ::: astuce Tester la dose avant de l'acheter
-La brique se teste en simulation. La page FIRE embarque des historiques de managed futures reconstruits : des backcasts de suivi de tendance sur données longues, calibrés en volatilité. L'A/B se joue comme pour l'or. Composez 10 % de trend contre la même part en obligations, puis lisez le stress, la décennie perdue, le broad-sample et les millésimes inflationnistes. Le profil attendu : un scénario central quasi inchangé, des queues raccourcies, et surtout un drawdown réel maximal qui recule sur les trajectoires médiocres ([[utiliser-la-page-fire]], [[lire-un-fan-chart]]).
+La brique se teste en simulation. Le simulateur FIRE de pofo embarque des historiques de managed futures reconstruits : des backcasts de suivi de tendance sur données longues, calibrés en volatilité. L'A/B se joue comme pour l'or. Composez 10 % de trend contre la même part en obligations, puis lisez le stress, la décennie perdue, le broad-sample et les millésimes inflationnistes. Le profil attendu : un scénario central quasi inchangé, des queues raccourcies, et surtout un drawdown réel maximal qui recule sur les trajectoires médiocres ([[utiliser-la-page-fire]], [[lire-un-fan-chart]]).
 :::
 
 ## Les pièges, par ordre de mortalité

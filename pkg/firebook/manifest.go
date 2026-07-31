@@ -32,7 +32,7 @@ var Categories = []Category{
 			{"la-regle-des-4-pourcents", "La règle des 4 % en dix minutes", "D'où elle vient, ce qu'elle dit exactement, et pourquoi ce n'est qu'un point de départ."},
 			{"combien-il-vous-faut", "Combien il vous faut", "Du budget annuel au capital cible : 25x, 28x, 33x, et tout ce qui fait bouger le multiple."},
 			{"les-trois-phases", "Accumulation, transition, retrait : les trois vies d'un plan FIRE", "Ce qui change à chaque phase, ce qu'il faut y optimiser, et les gestes de passage."},
-			{"utiliser-la-page-fire", "Utiliser la page FIRE de pofo", "Le mode d'emploi complet : les sections dans l'ordre de lecture, chaque contrôle du tiroir, et les mésusages classiques."},
+			{"utiliser-la-page-fire", "Utiliser le simulateur FIRE de pofo", "Le mode d'emploi complet : les sections dans l'ordre de lecture, chaque contrôle du panneau de paramètres, et les mésusages classiques."},
 			{"erreurs-classiques-fire", "Les dix erreurs qui ruinent un plan FIRE", "Les pièges les plus fréquents, du taux irréaliste à l'oubli de la fiscalité, et comment les éviter."},
 		},
 	},
