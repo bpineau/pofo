@@ -1,14 +1,14 @@
 # La bibliothèque : sites, papiers, livres, outils
 
-Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (POURQUOI la lire, et par où la prendre), organisée par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent) : et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
+Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), organisée par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent) : et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
 
 ## Les séries et blogs de référence
 
-**Early Retirement Now : la « Safe Withdrawal Rate Series » (Karsten Jeske)** : LA référence quantitative du sujet : 60+ volets, simulations reproductibles, honnêteté systématique : le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les Parts 1 et 26 ; le guide de lecture complet est [[serie-ern]].
+**Early Retirement Now : la « Safe Withdrawal Rate Series » (Karsten Jeske)** : **la** référence quantitative du sujet : 60+ volets, simulations reproductibles, honnêteté systématique : le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les Parts 1 et 26 ; le guide de lecture complet est [[serie-ern]].
 
 **Kitces.com (Michael Kitces)** : le blog du métier de conseiller américain : la source des guardrails par risque, du bond tent, du ratcheting : technique, nuancé, prolifique. Chercher par sujet plutôt que suivre le flux. [[guardrails-morningstar]], [[glidepaths]]
 
-**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel : le wiki est une encyclopédie tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
+**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel : le wiki est une encyclopédie tenue (VPW, ABW, **eu** investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
 
 **Portfolio Charts (Tyler)** : les portefeuilles types (Permanent, Golden Butterfly...) testés par pays avec SWR et drawdowns : l'outil visuel de la partie portefeuille. [[portefeuilles-tous-temps]]
 
@@ -22,7 +22,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Wade Pfau, *Retirement Planning Guidebook*** : le manuel praticien le plus complet du retrait américain : les deux écoles (probability-based / safety-first) traitées à égalité : la référence « métier ». [[panorama-strategies-retrait]], [[rentes-et-annuites]]
 
-**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : LA référence sur ce que chaque classe d'actifs paie et pourquoi : le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
+**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : **la** référence sur ce que chaque classe d'actifs paie et pourquoi : le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
 
 **William Bernstein, *The Intelligent Asset Allocator* et *The Four Pillars of Investing*** : la meilleure pédagogie écrite des deux moyennes, de la diversification et de l'histoire des marchés. [[rendements-arithmetiques-geometriques]]
 
@@ -30,7 +30,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Bill Perkins, *Die With Zero* (2020)** : le plaidoyer pour dépenser et donner du vivant : à lire avec les garde-fous du chapitre dédié. [[depenses-en-retraite]], [[psychologie-du-retrait]]
 
-**Ernie Zelinski, *How to Retire Happy, Wild, and Free*** : le classique NON financier que les vétérans recommandent le plus : le « vers quoi ». [[sens-et-identite]]
+**Ernie Zelinski, *How to Retire Happy, Wild, and Free*** : le classique **non** financier que les vétérans recommandent le plus : le « vers quoi ». [[sens-et-identite]]
 
 **Kahneman, *Système 1 / Système 2* ; Thaler, *Misbehaving*** : les fondations comportementales : les biais du rentier y sont tous. [[psychologie-du-retrait]]
 
@@ -74,7 +74,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les sources officielles françaises
 
-**info-retraite.fr (relevé, M@REL, rachats)** : LA source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
+**info-retraite.fr (relevé, M@REL, rachats)** : **la** source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
 
 **impots.gouv.fr et le BOFiP ; service-public.fr** : les textes fiscaux à jour : priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
 
