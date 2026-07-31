@@ -7670,6 +7670,34 @@
     ]
   },
   {
+    "id": "LU1662501532",
+    "isin": "LU1662501532",
+    "aliases": [],
+    "name": "AQR Managed Futures UCITS Fund RAEF EUR (hedged, no perf fee)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "xid": "653732806",
+    "currency": "EUR",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "fees": 1.5,
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-hedged flat-fee 'R' share class (no performance fee) of the AQR Managed Futures UCITS fund (sibling of the USD LU1103257975 and the perf-fee EUR RAE LU1662502183); the second, AQR-method trend leg of the hydra build. Confirm the exact OCF on the KID.",
+    "confidence": "medium",
+    "sources": [
+      "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662501532:EUR"
+    ]
+  },
+  {
     "id": "LU1662502183",
     "isin": "LU1662502183",
     "aliases": [],
