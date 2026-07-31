@@ -1,5 +1,10 @@
 # Intraday Support and Library Consumption Implementation Plan
 
+> **Status: DONE.** Shipped to master: intraday fetch (`pkg/marketdata/intraday.go`),
+> public identifier resolution / `Search`, the sub-day chart axis and the library
+> consumption docs. The unchecked `- [ ]` boxes below are the original one-shot
+> checklist and were never ticked; they do not track remaining work.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add intraday price data to pofo and make the library comfortable to consume from an external application (catalog lookup, public resolution, intraday chart axis, docs).

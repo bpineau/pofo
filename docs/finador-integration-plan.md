@@ -1,5 +1,12 @@
 # Finador Integration Implementation Plan
 
+> **Status: DONE (2026-07-02).** pofo gained the ctx-aware client,
+> dividends/raw closes, cache-less mode, `Search`, `FXRate`/`Series.At`,
+> flow-aware metrics and the chart style system; finador now delegates to pofo
+> (finador commits 006981d, 564b19b, 12811aa), validated end to end. See the
+> companion `finador-integration-design.md` (also marked DONE). The unchecked
+> `- [ ]` boxes below are the original checklist and were never ticked.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Enrich pofo (marketdata, metrics, chart) with everything finador

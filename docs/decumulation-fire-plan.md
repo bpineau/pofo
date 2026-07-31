@@ -1,5 +1,13 @@
 # Decumulation / FIRE analysis Implementation Plan
 
+> **Status: DONE.** Shipped to master: `pkg/scenario`, `pkg/decumul`,
+> `pkg/decumul/web` and `cmd/pofo -fire`. The follow-up backlog
+> (`decumulation-fire-followups.md`), the usability rewrite
+> (`decumulation-fire-rewrite-spec.md`, "largely implemented") and the v3
+> enrichment (`decumulation-fire-v3-enrichment.md`) were all built on top. The
+> unchecked `- [ ]` boxes below are the original one-shot checklist and were
+> never ticked; they do not track remaining work.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Add decumulation/FIRE analysis to pofo: project a portfolio's (or a set of parameters') probability of ruin under withdrawals, size cash buffers and capital against a target ruin, and explore it live in the browser.
