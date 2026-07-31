@@ -3,6 +3,7 @@ package firebook
 import (
 	"bytes"
 	"encoding/xml"
+	"github.com/bpineau/pofo/pkg/bookmd"
 	"html"
 	"io"
 	"net/http"
@@ -107,6 +108,48 @@ func TestHeadingAnchors(t *testing.T) {
 	}
 	if bytes.Contains(blob, []byte("book-hanchor")) {
 		t.Errorf("EPUB export must not contain the web-only heading anchors")
+	}
+}
+
+// TestIndexPartAnchors checks that the sommaire's part titles carry the same
+// affordance as an article heading: an id built by the shared rule, a "§" link
+// to it, and an article top bar that points back at it. Sharing a link to
+// "Les stratégies de retrait" must be as easy as sharing one to a section.
+func TestIndexPartAnchors(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+
+	code, body := get(t, srv, "/")
+	if code != http.StatusOK {
+		t.Fatalf("index: status %d", code)
+	}
+	for _, cat := range Categories {
+		id := bookmd.HeadingID(cat.Title)
+		if id == "" {
+			t.Errorf("part %q has an empty anchor id", cat.Title)
+			continue
+		}
+		if want := `<h2 id="` + id + `">`; !strings.Contains(body, want) {
+			t.Errorf("part %q misses %s", cat.Title, want)
+		}
+		if want := `<a class="book-hanchor" href="#` + id + `"`; !strings.Contains(body, want) {
+			t.Errorf("part %q misses its anchor link", cat.Title)
+		}
+	}
+	// The clipboard upgrade must no longer be scoped to article headings, or
+	// clicking the index anchor would only navigate.
+	if strings.Contains(body, `querySelectorAll("article .book-hanchor")`) {
+		t.Error("the clipboard script is still article-scoped; index anchors would not copy")
+	}
+	if !strings.Contains(body, `querySelectorAll(".book-hanchor")`) {
+		t.Error("index page misses the clipboard script")
+	}
+
+	// And an article points back at its own part of the sommaire.
+	art := Categories[0].Articles[0]
+	_, page := get(t, srv, "/"+art.Slug)
+	if want := `href="./#` + bookmd.HeadingID(Categories[0].Title) + `"`; !strings.Contains(page, want) {
+		t.Errorf("article top bar misses the link back to its part (%s)", want)
 	}
 }
 

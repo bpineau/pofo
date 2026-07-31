@@ -167,3 +167,23 @@ func TestBoldWrappingItalic(t *testing.T) {
 		t.Errorf("plain emphasis broke: %q", got)
 	}
 }
+
+func TestHeadingID(t *testing.T) {
+	for _, tc := range []struct{ in, want string }{
+		{"Les stratégies de retrait", "les-stratégies-de-retrait"},
+		{"  Modéliser : Monte-Carlo et autres machines  ", "modéliser-monte-carlo-et-autres-machines"},
+		{"Pourquoi 4 % ?", "pourquoi-4"},
+		{"L'inflation", "l-inflation"},
+		{"---", ""},
+	} {
+		if got := HeadingID(tc.in); got != tc.want {
+			t.Errorf("HeadingID(%q) = %q, want %q", tc.in, got, tc.want)
+		}
+	}
+	// The exported helper and the ids ToHTML emits must agree, or an index
+	// built on HeadingID would link to headings that do not exist.
+	html := ToHTML("## Les stratégies de retrait\n", Options{})
+	if want := `id="` + HeadingID("Les stratégies de retrait") + `"`; !strings.Contains(html, want) {
+		t.Errorf("ToHTML heading id disagrees with HeadingID (want %s in %s)", want, html)
+	}
+}

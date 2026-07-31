@@ -107,6 +107,16 @@ func mdInline(s string, opt Options) string {
 	return s
 }
 
+// HeadingID is the anchor id ToHTML gives a heading: the text lowercased, with
+// every run of non-alphanumeric characters folded to a single hyphen and the
+// edges trimmed. It is exported so a host page can label its OWN headings the
+// same way the articles are labelled, and offer the same shareable "#section"
+// links from one rule (the book's index does this for its part titles).
+// Collisions are resolved by ToHTML, not here.
+func HeadingID(text string) string {
+	return strings.Trim(reAnchor.ReplaceAllString(strings.ToLower(strings.TrimSpace(text)), "-"), "-")
+}
+
 // uniqueID returns base the first time it is seen, then base-2, base-3, ...
 // for later collisions, bumping past any candidate already taken (including
 // natural slugs), so every heading id in one render is distinct. used is the
@@ -183,8 +193,7 @@ func render(src string, opt Options, used map[string]bool) string {
 		if g := reHeading.FindStringSubmatch(line); g != nil {
 			lvl := min(len(g[1])+1, 4) // # is demoted: the shell owns the h1
 			text := strings.TrimSpace(g[2])
-			base := strings.Trim(reAnchor.ReplaceAllString(strings.ToLower(text), "-"), "-")
-			id := uniqueID(base, used)
+			id := uniqueID(HeadingID(text), used)
 			fmt.Fprintf(&b, `<h%d id="%s">%s</h%d>`, lvl, id, inline(text), lvl)
 			i++
 			continue
