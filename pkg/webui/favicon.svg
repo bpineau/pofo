@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="pofo">
+  <rect width="100" height="100" rx="23" fill="#0B7285"/>
+  <rect x="29" y="22" width="15" height="57" rx="3" fill="#F3F7F8"/>
+  <circle cx="53" cy="41" r="22" fill="#F3F7F8"/>
+  <circle cx="55" cy="41" r="9" fill="#0B7285"/>
+</svg>

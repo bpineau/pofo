@@ -98,6 +98,16 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		w.Header().Set("Content-Type", "text/css; charset=utf-8")
 		_, _ = w.Write([]byte(webui.FontsCSS))
 	})
+	// The tab icon (standalone `pofo -fire`; under -serve the same paths are
+	// served by cmd/pofo). Browsers auto-request /favicon.ico; the head also
+	// links /favicon.svg. Both return the same SVG bytes.
+	favicon := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "image/svg+xml")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		_, _ = w.Write([]byte(webui.FaviconSVG))
+	}
+	mux.HandleFunc("/favicon.svg", favicon)
+	mux.HandleFunc("/favicon.ico", favicon)
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
 		meta := map[string]any{"labels": labels, "hasPanel": panel != nil, "cape": capeSnapshot(), "capeHistory": capeHistory()}
 		if panel != nil {
