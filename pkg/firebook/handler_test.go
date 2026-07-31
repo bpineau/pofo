@@ -32,9 +32,15 @@ func TestHandler(t *testing.T) {
 		t.Fatalf("index: status %d", code)
 	}
 	esc := html.EscapeString
-	for _, want := range []string{"Le livre FIRE", esc(Categories[0].Title), esc(Categories[0].Articles[0].Title)} {
+	for _, want := range []string{"Le FIRE tranquille", esc(Categories[0].Title), esc(Categories[0].Articles[0].Title)} {
 		if !strings.Contains(body, want) {
 			t.Errorf("index misses %q", want)
+		}
+	}
+	// SEO: every page carries a meta description and Open Graph tags.
+	for _, want := range []string{`<meta name="description"`, `property="og:title"`, `application/ld+json`} {
+		if !strings.Contains(body, want) {
+			t.Errorf("index misses SEO markup %q", want)
 		}
 	}
 
@@ -48,6 +54,10 @@ func TestHandler(t *testing.T) {
 	}
 	if strings.Count(body, esc(art.Title)) < 2 {
 		t.Errorf("article page should carry the title in <title> and <h1>")
+	}
+	// SEO: the article's meta description is its manifest blurb.
+	if art.Blurb != "" && !strings.Contains(body, `<meta name="description" content="`+esc(art.Blurb)+`">`) {
+		t.Errorf("article page misses its blurb as the meta description")
 	}
 	if !strings.Contains(body, `href="."`) {
 		t.Errorf("article page misses the back-to-index link")
