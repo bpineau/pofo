@@ -2,8 +2,8 @@
 # id: LU2951555585
 # name: iMGP DBi Managed Futures UCITS USD: TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025
-# validation: corr=0.300 (weekly 0.581) beta=0.31 TE=14.7%/yr CAGR sim 16.65% vs real 23.88% (overlap 318 d from 2025-03-10 to 2026-06-23) vs LU2951555585
-# generated: 2026-07-01
+# validation: corr=0.299 (weekly 0.584) beta=0.31 TE=14.7%/yr CAGR sim 15.66% vs real 23.48% (overlap 324 d from 2025-03-10 to 2026-07-01) vs LU2951555585
+# generated: 2026-07-02
 date,close
 1988-11-23,5.830566
 1988-11-25,5.789049
@@ -9525,3 +9525,9 @@ date,close
 2026-06-19,130.639999
 2026-06-22,130.320007
 2026-06-23,129.080002
+2026-06-24,129.300003
+2026-06-25,128.630005
+2026-06-26,127.610001
+2026-06-29,128.380005
+2026-06-30,129.610001
+2026-07-01,129.139999
