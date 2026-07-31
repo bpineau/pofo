@@ -235,6 +235,25 @@ type Plan struct {
 	// the decumulation frontier. It overrides Flex, Guard and Ratchet, and runs
 	// annually (a rebalancing rule), never monthly.
 	Percent float64
+	// Amortize, when true, switches to an amortization-based withdrawal (the
+	// ABW / TPAW family): each year the household spends the actuarial
+	// payment that would exhaust CURRENT wealth exactly over the REMAINING
+	// horizon at the expected real return AmortReturn, like a mortgage run in
+	// reverse and re-quoted yearly. It cannot ruin before the horizon
+	// (spending is always the sustainable share of what remains) and it
+	// cannot die rich by accident (the payment rises as the horizon
+	// shortens); the cost is that income tracks the market, though more
+	// smoothly than VPW because the shortening horizon lifts the payout rate
+	// over time. Overrides every other spending rule; annual.
+	Amortize    bool
+	AmortReturn float64 // expected real return the amortization assumes
+	// Bounded, when active, is the bounded percent-of-portfolio rule
+	// (Vanguard's "dynamic spending"): each year target Pct of current
+	// wealth, but never move more than Up above or Down below last year's
+	// real spending. The bounds smooth VPW's swings into small yearly steps;
+	// unlike VPW it CAN ruin (in a deep bear the floor-bounded spending can
+	// outrun the portfolio). Overrides Flex, Guard and Ratchet; annual.
+	Bounded BoundedPct
 	// Envelopes optionally splits the growth sleeve across tax wrappers
 	// (CTO/PEA/AV), drained in slice order; nil keeps the single sleeve
 	// taxed by Tax. See Envelope.
@@ -251,12 +270,49 @@ type Plan struct {
 
 // runPath dispatches to the monthly or the annual kernel; Simulate and the
 // sweeps go through it so a monthly plan is simulated end to end, while the
-// annual RunPath stays the validated reference (and its golden tests).
+// annual RunPath stays the validated reference (and its golden tests). The
+// wealth-based rules (VPW, ABW, bounded %) are yearly rebalancing decisions
+// and always run on the annual kernel.
 func (p Plan) runPath(seq scenario.Sequence) PathResult {
-	if p.Monthly && p.Percent <= 0 {
+	if p.Monthly && p.Percent <= 0 && !p.Amortize && !p.Bounded.active() {
 		return p.RunPathMonthly(seq)
 	}
 	return p.RunPath(seq)
+}
+
+// BoundedPct parametrises the bounded percent-of-portfolio rule: target Pct
+// of current wealth, with the yearly change in real spending clamped to
+// [+Up, -Down] (Vanguard's classic bounds are +5% / -2.5%).
+type BoundedPct struct {
+	Pct, Up, Down float64
+}
+
+// active reports whether the bounded rule is set.
+func (b BoundedPct) active() bool { return b.Pct > 0 }
+
+// clampStep bounds this year's target spending by last year's level.
+func (b BoundedPct) clampStep(target, prev float64) float64 {
+	if hi := prev * (1 + b.Up); target > hi {
+		return hi
+	}
+	if lo := prev * (1 - b.Down); target < lo {
+		return lo
+	}
+	return target
+}
+
+// pmt is the begin-of-year payment that exhausts wealth exactly over n
+// periods at rate r (the kernel withdraws first, then applies the return, so
+// the annuity is due, not ordinary). n <= 0 spends everything.
+func pmt(wealth, r float64, n int) float64 {
+	if n <= 0 {
+		return wealth
+	}
+	if r <= 0 {
+		return wealth / float64(n)
+	}
+	f := math.Pow(1+r, float64(n))
+	return wealth * r * f / (f - 1) / (1 + r)
 }
 
 // needAt is the scheduled net spending in a given year: the base need scaled
