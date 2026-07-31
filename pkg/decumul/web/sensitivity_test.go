@@ -20,7 +20,7 @@ func TestSensitivityRendersSignedBars(t *testing.T) {
 			t.Errorf("missing lever %q", label)
 		}
 	}
-	if !strings.Contains(res.SVG, "#2E7D5B") {
+	if !strings.Contains(res.SVG, "#3F8A5F") {
 		t.Errorf("expected at least one ruin-reducing (green) bar")
 	}
 }
