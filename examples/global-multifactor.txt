@@ -1,4 +1,4 @@
-# Global Multi-Factor Equity (one fund)
+# Global Multi-Factor Equity -- one fund (JPGL)
 # Idea: a single diversified-factor sleeve harvesting value, momentum, quality
 #   and low-volatility together, region-aware -- evidence-based equity premia
 #   in one line.

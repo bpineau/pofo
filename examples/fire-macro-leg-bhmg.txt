@@ -1,4 +1,4 @@
-# FIRE Core + discretionary macro leg (BH Macro)
+# FIRE Core + macro -- With discretionary macro leg (BH Macro)
 # Idea: fire-decumulation-core with a third alternative engine: a small
 #   discretionary-macro position (BH Macro, the listed Brevan Howard feeder)
 #   CARVED OUT of the trend budget, never added on top. The buy case: crisis
