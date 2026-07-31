@@ -1,7 +1,7 @@
-# Dragon-decu, household edition -- the whole-wealth build, wrappers included.
+# Dragon-decumulation, household edition -- the whole-wealth build, wrappers included.
 #
 # STATUS: fully implementable today from a French retail setup. This is
-#   dragon-decumulationmulation.txt expressed as a real household holds it: across a CTO
+#   dragon-decumulation.txt expressed as a real household holds it: across a CTO
 #   AND the French tax shelters (PEA / PEA-PME), which by law can hold
 #   nothing but European-domiciled equity funds. The shelters are not a
 #   footnote; they reshape the build, and the reshaping turns out to be a
@@ -46,8 +46,8 @@
 #
 #   CTO section
 #   28 NTSG   -> 25.2 world equity + 16.8 sovereign futures (~7y)
-#    4 DTLE   ->  4   20+y US Treasuries, EUR-hedged (~17y duration,
-#                     ~9.7 points in 7y-equivalent terms)
+#    4 DBXG   ->  4   25+y eurozone sovereigns (~19y duration,
+#                     ~10.9 points in 7y-equivalent terms)
 #   13 DBMFE  -> 13   trend (SG CTA replication, DBi)
 #   13 AQR MF -> 13   trend (direct multi-asset TSMOM, EUR-hedged)
 #   15 IGLN   -> 15   gold (physical ETC)
@@ -69,12 +69,13 @@
 #   Growth boom            ~39 points of equity: presence. The small
 #                          value tilt diversifies the mega-cap-growth
 #                          concentration a world index carries.
-#   Disinflation/recession NTSG's futures + DTLE + trend rotating long
+#   Disinflation/recession NTSG's futures + DBXG + trend rotating long
 #                          bonds; linkers hold their value.
-#   Deflation crash (2008) DTLE is the line bought for this: the long
+#   Deflation crash (2008) DBXG is the line bought for this: the long
 #                          end is what actually rallies in a flight to
-#                          quality. Caveat: the small-value tilt DEEPENS
-#                          this regime (small caps fell harder in 2008).
+#                          quality, here in the liability currency.
+#                          Caveat: the small-value tilt DEEPENS this
+#                          regime (small caps fell harder in 2008).
 #   Inflation, trending    Trend short bonds / long commodities (Neville,
 #                          Draaisma, Funnell, Harvey & van Hemert, JPM
 #                          2021) + linkers accruing the index by contract.
@@ -83,7 +84,7 @@
 #                          than growth. The retiree-killer regime, and
 #                          the reason the linkers line exists.
 #   Prolonged equity bear  Trend crisis alpha (Hurst, Ooi & Pedersen,
-#                          JPM 2017); linkers and DTLE are what you
+#                          JPM 2017); linkers and DBXG are what you
 #                          spend from while equities are underwater.
 #
 # ## Why the wrappers change behavior, not just taxes
@@ -112,20 +113,29 @@
 #   grow. Euro-native variant NTSZ (IE000OV4XWA3) for part of the
 #   sleeve trades USD quotation for eurozone concentration.
 #
-# CTO -- DTLE, deflation duration (4%; sane range 3-6%).
-#   20+y US Treasuries EUR-hedged (IE00BD8PGZ49, the hedged share of
-#   IDTL). Pure arithmetic first: every euro of equity carved out of
-#   NTSG lost 0.60 EUR of ~7y bond overlay; at ~17y duration DTLE
-#   rebuilds that at about 2.4x, so ~4 points restore what ~10 points of
-#   overlay would have carried. It also patches the dragon family's
-#   thinnest quadrant (2008-style convexity). Share-class trade-off with
-#   no perfect answer: every EUR-hedged long-Treasury UCITS is
-#   DISTRIBUTING (DTLE here; Amundi Long Dated LU1407890976 likewise),
-#   and the only accumulating share is unhedged (DTLA IE00BFM6TC58, or
-#   IDTL). At ~4% weight the distribution tax drag is a few basis points
-#   of the whole book, and a decumulating household spends the coupons
-#   anyway; pick DTLE for the liability currency, DTLA/IDTL if you
-#   prefer Acc plus the crisis-USD kicker bundled in.
+# CTO -- DBXG, deflation duration (4%; sane range 3-6%).
+#   Xtrackers Eurozone Government Bond 25+ (LU0290357846, 1C
+#   accumulating, 0.15%): euro-native long duration. Pure arithmetic
+#   first: every euro of equity carved out of NTSG lost 0.60 EUR of ~7y
+#   bond overlay; at ~19y duration DBXG rebuilds that at about 2.7x, so
+#   ~4 points restore what ~11 points of overlay would have carried. It
+#   also patches the dragon family's thinnest quadrant (2008-style
+#   convexity), in the liability currency and with no coupons to
+#   declare. WHY NOT US TREASURIES: every EUR-hedged long-Treasury
+#   UCITS is DISTRIBUTING (DTLE IE00BD8PGZ49; Amundi Long Dated
+#   LU1407890976 likewise), the only accumulating shares are unhedged
+#   (DTLA IE00BFM6TC58, IDTL), and for a euro household euro deflation
+#   is the scenario actually being insured: Bunds are the direct hedge.
+#   The prices of the euro line, stated: a small fund (closure risk, a
+#   forced taxable sale at a random date), and a market-weighted
+#   eurozone sovereign mix (heavy France/Italy), so a 2011-style euro
+#   sovereign crisis would wobble the hedge itself exactly when equity
+#   also suffers. Alternatives of equal quality: DTLE if you accept the
+#   coupons for the cleaner issuer, DTLA/IDTL if you prefer Acc plus
+#   the crisis-USD kicker bundled in; and on the measured panels all of
+#   these choices, including dropping the line for +2 linkers +2 gold,
+#   land within noise of each other. This line is bought on qualitative
+#   grounds; hold whichever variant you will not fiddle with.
 #
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
 #   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
@@ -182,7 +192,7 @@
 #
 #   Decumulation builds cannot be judged through one lens; the two
 #   available lenses are biased in opposite directions (the full
-#   argument lives in dragon-decumulationmulation.txt). Measured on the toolkit's
+#   argument lives in dragon-decumulation.txt). Measured on the toolkit's
 #   deep panels, with two declared proxies for the young lines (ZPRV
 #   stands in for the Independance sleeve, the TIPS-hEUR backcast for
 #   IBCI; window 2000/2005 -> 2026):
@@ -213,7 +223,7 @@
 #   (the hydra's sweep, and dragon-lite's own file measured that moving
 #   12 points of core into small value was its single best edit); NTSG
 #   plateau (flat across 24-35 here: pick the middle).
-#   ARITHMETIC: DTLE 3-6% (the duration-completion computation above).
+#   ARITHMETIC: DBXG 3-6% (the duration-completion computation above).
 #   A PRIORI: the linkers dose 10-15% (liability matching; lens B
 #   supports it, lens A reads against it for stated in-sample reasons),
 #   the gold ceiling (~20%, zero-carry logic against a window that
@@ -227,20 +237,20 @@
 #       the sleeve ever exceeds its range.
 #   (b) SMALL-CAP CYCLICALITY: the tilt deepens 2008-style liquidity
 #       crashes and can trail cap-weight for years (2015-2020). It is
-#       equity beta with a premium, not a hedge; DTLE and trend exist
+#       equity beta with a premium, not a hedge; DBXG and trend exist
 #       for the regime it worsens.
 #   (c) SWAP COUNTERPARTY inside WPEA/CW8: collateralized, reset, and
 #       small, but real; the price of world exposure inside a wrapper
 #       that bans it. Holding part of the world sleeve as physical ETFs
 #       on the CTO (via NTSG) already dilutes it.
-#   (d) DEFLATION CONVEXITY: improved by DTLE but still the modest
+#   (d) DEFLATION CONVEXITY: improved by DBXG but still the modest
 #       quadrant; the family accepts this rather than pay negative
 #       carry for long-vol convexity (see dragon-decumulation and the hydra).
 #   (e) TREND WINTERS: 26 points can spend years flat while equities
 #       run; the cure is written rules, not weights.
 #   (f) CURRENCY: roughly half the book is USD-quoted unhedged (NTSG,
-#       IGLN), half feature (crisis USD), half bug; AQR and DTLE are
-#       EUR-hedged, IBCI and the liability are euro-native.
+#       IGLN), half feature (crisis USD), half bug; the AQR leg is
+#       EUR-hedged, DBXG, IBCI and the liability are euro-native.
 #   (g) RECONSTRUCTION AND WINDOW LIMITS: shared TSMOM backcast for
 #       deep trend history; linkers post-2000 only; WPEA listed 2024.
 #       Regime-behavior study, not a promise.
@@ -267,11 +277,11 @@
 #   - Rebalance quarterly or on bands, executed in the CTO section;
 #     inside the shelters only equity-for-equity trades exist.
 #   - The AQR leg is a FUND, not an ETF: check platform availability
-#     (see dragon-decumulationmulation.txt for the fallback ladder).
+#     (see dragon-decumulation.txt for the fallback ladder).
 #   - Pair with a floor-capped flexible withdrawal rule, not a rigid
 #     indexed one; the portfolio is half the machine.
 #
-# Siblings: dragon-decumulationmulation.txt (the wrapper-free design this implements),
+# Siblings: dragon-decumulation.txt (the wrapper-free design this implements),
 #   claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
 #   accumulation flagship and the engineered all-rounder upstream),
 #   fire-liability-buffer.txt (the euro buffer this file assumes).
@@ -280,7 +290,7 @@
 
 # ---- CTO section (everything the shelters cannot hold) ----------------
 28	NTSG            # equity + duration core: Global Efficient Core 90/60 (IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
-4	DTLE            # deflation duration: iShares $ Treasury 20+y EUR-hedged (IE00BD8PGZ49; unhedged twin IDTL)
+4	DBXG            # deflation duration: Xtrackers Eurozone Govt Bond 25+ 1C Acc (LU0290357846; alts DTLE IE00BD8PGZ49, DTLA IE00BFM6TC58)
 13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
 13	LU1662501532    # trend, direct method: AQR Managed Futures UCITS EUR-hedged (fallback Winton IE00BG382Q20)
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
