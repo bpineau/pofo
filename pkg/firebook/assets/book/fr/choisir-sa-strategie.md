@@ -60,6 +60,10 @@ Trois assemblages reviennent chez les praticiens sérieux, et le troisième est 
 Remettons les ordres de grandeur en place, car ils dictent où investir votre attention. Entre deux bonnes règles bien calibrées (guardrails avec plancher contre ABW décoté, par exemple), l'écart typique est de 1 à 3 points de ruine et de ±5-8 % de consommation totale : réel, mais du second ordre. Contre cela : 10 % d'erreur sur les dépenses = ~3-6 points de ruine ; la pension oubliée = 3-8 points ; un taux initial de 4,5 % au lieu de 3,7 % en marché cher = 5-10 points ; l'abandon de la règle en pleine panique = incalculable. La hiérarchie de l'attention en découle : les **entrées** d'abord ([[combien-il-vous-faut]]), le taux initial ensuite ([[valorisations-et-cape]]), l'exécutabilité de la règle enfin. Et le choix fin entre finalistes en dernier, sereinement, car on ne peut plus beaucoup se tromper.
 :::
 
+::: figure hierarchie-attention
+Les trois premières barres se règlent sur un coin de table, en une soirée de conversation. La quatrième est celle sur laquelle se dépensent les forums, les comparatifs et les mois d'hésitation. La cinquième n'a pas d'échelle parce qu'elle n'est pas de même nature : abandonner sa règle au creux transforme une mauvaise décennie en échec définitif, et c'est la seule ligne contre laquelle une simulation ne peut rien.
+:::
+
 ## La table récapitulative du panorama
 
 | Règle | Ruine | Revenu | Consommation | Gouvernance | Article |

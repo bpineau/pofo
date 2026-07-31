@@ -78,18 +78,18 @@ Même forme que `cascade-4pct`, donc cohérent avec le livre.
 
 ## 3. pourcentage-fixe
 
-**3.1 Le revenu EST le portefeuille (A)**
+**3.1 Le revenu EST le portefeuille (A). FONDUE dans `pourcentage-lissages`**
 Deux courbes superposées, portefeuille et revenu, littéralement la même forme à
 un facteur près. Trente secondes à dessiner, et ça rend inutile un paragraphe
 d'explication. À mettre juste avant le tableau des épisodes.
 
-**3.2 Brut contre Yale contre corridor, même krach (B)**
+**3.2 Brut contre Yale contre corridor, même krach (B). LIVRÉE : `pourcentage-lissages`**
 L'encadré `::: exemple` donne déjà les trois trajectoires en chiffres
 (56 → 34 k€ contre 56 → 48,6 k€). En figure, la chute libre contre la pente
 douce se lit d'un coup. Demande d'implémenter le lissage de Yale (70/30), qui
 n'existe pas dans `pkg/replay` : une quinzaine de lignes.
 
-**3.3 La borne géométrique (B)**
+**3.3 La borne géométrique (B). LIVRÉE : `borne-geometrique`**
 Revenu réel médian sur 30 ans pour w = 3, 4, 5, 6 %, avec le rendement
 géométrique en repère. On voit le point de bascule entre revenu stable et
 revenu qui s'érode. C'est l'encadré `::: science` rendu visible.
@@ -105,18 +105,28 @@ dans son couloir (3,44 % / 5,16 %), avec les franchissements marqués et la
 coupe qui en découle. La figure existante montre les conséquences ; celle-ci
 montre l'instrument. Complémentaire, pas redondante.
 
-**4.2 Le taux initial était le coupable (B)**
+**4.2 Le taux initial était le coupable (B). BLOQUÉE : le moteur contredit l'article**
 Le vrai apport possible. Même millésime, quatre taux initiaux (4,0 / 4,3 / 5,0
 / 5,5 %), et pour chacun : nombre de coupes, revenu au creux, années sous le
 plan. Un petit tableau-graphique 4 lignes. L'encadré `::: attention` l'affirme,
 personne ne l'a jamais montré au lecteur français.
+
+Calculé le 2026-07-29 avec `pkg/replay` sur 1966 (600 k€, GK sans plancher) :
+4,0 % donne 7 coupes et un creux à 48 % du plan, 4,3 % donne 8 coupes et 43 %,
+5,0 % donne 9 coupes et 39 %, 5,5 % donne 10 coupes et 35 %. Les quatre finissent
+au même train de vie absolu, ~11,5 k€. C'est intéressant, mais cela CONTREDIT la
+phrase « les mêmes règles avec un taux initial de 4-4,5 % coupent rarement, et
+brièvement », qui vient de la littérature. Le GK de `pkg/replay` n'implémente que
+le corridor, sans le gel d'indexation ni la suspension des quinze dernières
+années, donc il n'est pas assez fidèle pour renverser une affirmation sourcée.
+À trancher avec un GK complet, ou à laisser tomber.
 
 ---
 
 ## 5. vpw
 *Existant : `vpw-table` et `vpw-pont`. Bien servi, je ne vois rien d'urgent.*
 
-**5.1 Le test de tolérance à la perte (B, léger)**
+**5.1 Le test de tolérance à la perte (B, léger). LIVRÉE : `vpw-test-de-perte`**
 La doctrine l'impose et « tout le monde le saute », dit l'article. Une figure
 le rendrait incontournable : revenu VPW normal contre revenu sous « actions
 −50 % », pour trois allocations (40/60, 60/40, 80/20), avec la ligne du
@@ -133,7 +143,7 @@ prêts. Trois barres alignées sur le même krach : portefeuille −30 %, taux w
 +21 %, revenu −16 %. Le lecteur voit les deux facteurs qui se compensent. C'est
 la figure la plus rentable de la partie après la falaise de Bengen.
 
-**6.2 Le taux que la règle aurait servi depuis 1881 (B)**
+**6.2 Le taux que la règle aurait servi depuis 1881 (B). LIVRÉE : `cape-depuis-1881`**
 La courbe a + b/CAPE appliquée à l'historique CAPE (déjà embarqué dans
 `pkg/datasets/cape`), avec les zones repères. Le lecteur voit que la règle
 aurait dit 6 % en 1982 et 3,2 % en 2000, et que ce n'est pas un réglage
@@ -159,7 +169,7 @@ leçon d'épistémologie mieux qu'une courbe à quatre points.
 ## 8. amortissement-abw
 *Existant : `abw-1966`.*
 
-**8.1 La richesse totale, en une pile (A)**
+**8.1 La richesse totale, en une pile (A). LIVRÉE : `richesse-totale`**
 L'idée neuve de l'article (W = portefeuille + pensions actualisées − legs) est
 un empilement, donc se dessine comme tel : une barre en trois segments, à côté
 de la barre « portefeuille visible seul ». Le lecteur comprend d'un coup
@@ -188,7 +198,7 @@ Une courbe : crédit de mortalité en % par an, de 60 à 95 ans, avec la zone
 75-82 marquée comme fenêtre d'achat. On voit pourquoi la rente est « un mauvais
 produit de sexagénaire et un excellent produit d'octogénaire ».
 
-**10.2 Ce que couvre chaque étage (A)**
+**10.2 Ce que couvre chaque étage (A). LIVRÉE : `etages-du-plancher`**
 Un empilement plancher / confort avec, en face, qui le finance (pension, rente,
 portefeuille). C'est la doctrine safety-first en une image, et elle est
 réutilisable telle quelle dans `choisir-sa-strategie`.
@@ -213,7 +223,7 @@ L'article EST une procédure, et une procédure se dessine. Plancher couvert ?
 articles. C'est la figure de synthèse de toute la partie, et probablement la
 plus utile du livre entier pour un lecteur qui arrive à la décision.
 
-**12.2 Où porte vraiment votre attention (A)**
+**12.2 Où porte vraiment votre attention (A). LIVRÉE : `hierarchie-attention`**
 L'encadré `::: science` donne déjà tous les chiffres : erreur de dépenses 3-6
 pts, pension oubliée 3-8 pts, taux initial 5-10 pts, choix de la règle 1-3 pts.
 Quatre barres classées, et la hiérarchie de l'attention devient évidente. Un
@@ -221,7 +231,9 @@ antidote visuel à l'optimisation prématurée.
 
 ---
 
-## Les cinq retenues, livrées le 2026-07-29
+## Livrées
+
+### Le 2026-07-29, première fournée
 
 1. **2.1** la falaise silencieuse (Bengen n'a aucune figure, et c'est l'article
    le plus lu de la partie)
@@ -238,3 +250,20 @@ La forme retenue diffère à chaque fois, ce qui était le but : un voyant qui m
 pendant dix-neuf ans, un plan de revenus constants traversé de deux façons, deux
 courbes qui échangent leur rang à un âge nommable, une procédure qui se referme,
 quatre bandes d'instrument lues côte à côte.
+
+### Le 2026-07-29, seconde fournée
+
+1. **3.1 + 3.2** `pourcentage-lissages` : trois transmissions du même krach, plus
+   une bande de cases qui compte les années sous le seuil d'admissibilité.
+2. **3.3** `borne-geometrique` : la famille de courbes et la bascule w = g/(1+g).
+3. **6.2** `cape-depuis-1881` : cent quarante-cinq millésimes du taux que la
+   règle aurait servi, formule non bornée comprise.
+4. **8.1** `richesse-totale` : deux barres horizontales, la pension actualisée
+   ajoutée et le legs découpé.
+5. **10.2** `etages-du-plancher` : les deux colonnes qui doivent s'aligner.
+6. **12.2** `hierarchie-attention` : quatre barres d'intervalle classées, plus
+   une flèche sans échelle pour l'abandon en panique.
+7. **5.1** `vpw-test-de-perte` : le choc, avec et sans pont de pension.
+
+Restent sur la table : 1.1, 1.2, 2.2, 2.3, 4.1, 8.2, 10.3, plus 4.2 bloquée et
+les deux idées en coût C, qui restent des tableaux.

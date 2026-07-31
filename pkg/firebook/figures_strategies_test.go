@@ -2,8 +2,11 @@ package firebook
 
 import (
 	"math"
+	"strconv"
+	"strings"
 	"testing"
 
+	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/replay"
 )
 
@@ -89,5 +92,79 @@ func TestMortalityCreditsMatchTheArticle(t *testing.T) {
 	}
 	if gompertzCredit(70) >= gompertzCredit(75) {
 		t.Error("the credit must grow with age")
+	}
+}
+
+// The smoothing plate replays the real 1973 weather; keep the frozen returns in
+// step with the engine, and the three paths in step with the article's example.
+func TestSmoothingFigureMatchesTheEngine(t *testing.T) {
+	res, err := replay.Run(replay.Setup{
+		Start: 1973, Capital: 600000, Spend: 24000, Years: 40,
+		Mu: 0.045, Sigma: 0.10, Df: 5, TargetRuin: 0.05, RaiseCap: 1.5,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, want := range pourcentageReturns {
+		if got := res.Market[i]; math.Abs(got-want) > 0.0001 {
+			t.Errorf("%d: engine %.4f, plate %.4f", 1973+i, got, want)
+		}
+	}
+	raw, yale, corridor, end := smoothingPaths()
+	for _, tc := range []struct {
+		name string
+		got  float64
+		want float64
+	}{
+		{"brut an 1", raw[0], 56.0}, {"brut an 2", raw[1], 45.6}, {"brut an 3", raw[2], 33.8},
+		{"yale an 2", yale[1], 52.9}, {"yale an 3", yale[2], 47.1},
+		{"corridor an 3", corridor[2], 53.2},
+	} {
+		if math.Abs(tc.got-tc.want) > 0.05 {
+			t.Errorf("%s: %.1f, the article says %.1f", tc.name, tc.got, tc.want)
+		}
+	}
+	// The corridor's gentleness is paid on the capital: that is the plate's note.
+	if end[2] >= end[0] {
+		t.Errorf("corridor ends with %.0f k against the raw rule's %.0f k, the note claims less", end[2], end[0])
+	}
+}
+
+// The CAPE plate freezes 146 Januaries; read the dataset back and fail on drift.
+func TestCapeJanuariesMatchTheDataset(t *testing.T) {
+	byYear := map[int]float64{}
+	for _, l := range strings.Split(string(datasets.CAPE()), "\n") {
+		f := strings.Split(l, ",")
+		if len(f) < 2 || !strings.HasSuffix(f[0], "-01-01") {
+			continue
+		}
+		y, err := strconv.Atoi(f[0][:4])
+		if err != nil {
+			continue
+		}
+		if v, err := strconv.ParseFloat(f[1], 64); err == nil {
+			byYear[y] = v
+		}
+	}
+	for i, want := range capeJanuaries {
+		year := capeFirstYear + i
+		got, ok := byYear[year]
+		if !ok {
+			t.Errorf("january %d is in the plate but not in the dataset", year)
+			continue
+		}
+		if math.Abs(got-want) > 0.005 {
+			t.Errorf("january %d: dataset %.2f, plate %.2f", year, got, want)
+		}
+	}
+	if n := len(byYear); n != len(capeJanuaries) {
+		t.Errorf("the dataset has %d januaries, the plate freezes %d", n, len(capeJanuaries))
+	}
+	// The two readings the caption names.
+	if got := capeRate(capeJanuaries[1921-capeFirstYear]); math.Abs(got-11.5) > 0.05 {
+		t.Errorf("1921 would have quoted %.1f %%, the caption says 11,5 %%", got)
+	}
+	if got := capeRate(capeJanuaries[2000-capeFirstYear]); math.Abs(got-2.9) > 0.05 {
+		t.Errorf("2000 would have quoted %.1f %%, the caption says 2,9 %%", got)
 	}
 }

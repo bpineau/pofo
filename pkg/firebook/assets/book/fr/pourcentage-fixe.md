@@ -40,10 +40,18 @@ Le pourcentage fixe a un utilisateur institutionnel historique : les fondations 
 
 **Le corridor.** Troisième école : on prélève w × portefeuille, mais on borne la variation annuelle du revenu. Pas plus de +5 %, pas moins de −2,5 % en réel d'une année sur l'autre. C'est exactement la règle « dynamic spending » de Vanguard, à laquelle ce livre consacre un article ([[plancher-plafond]]). Le corridor réintroduit une ruine possible, car la descente plafonnée peut ne pas suivre un effondrement. C'est un choix assumé, un point intermédiaire de la frontière.
 
+::: figure pourcentage-lissages
+Le même portefeuille, le même krach, trois façons de le faire arriver au ménage. Le pourcentage brut transmet le choc intégralement, en deux ans. La règle de Yale l'étale sur cinq. Le corridor, lui, refuse presque de bouger, et il faut regarder la dernière ligne pour comprendre ce qu'il fait vraiment : il finance sa douceur en puisant dans le capital, donc il emprunte au ménage de la décennie suivante. Aucune des trois n'a supprimé le choc, elles ont seulement choisi qui le paie et quand.
+:::
+
 Ces trois techniques racontent la même leçon : le pourcentage fixe brut n'est pas une règle terminale, mais une **matière première**. Lissée par moyenne, par mémoire ou par corridor, elle donne les règles du milieu de la frontière. Croisée avec l'horizon restant, elle donne la famille actuarielle ([[vpw]], [[amortissement-abw]]).
 
 ::: science Choisir w : la borne géométrique
 Quel pourcentage choisir ? La théorie donne une borne claire. À long terme, le portefeuille sous pourcentage fixe croît en réel si, et seulement si, w reste inférieur au rendement réel **géométrique** espéré ([[rendements-arithmetiques-geometriques]]). Prenons w = 3-3,5 % face à un rendement géométrique réel de ~3,5-4,5 % pour un portefeuille diversifié ([[rendements-attendus]]) : le revenu réel médian est stable ou croissant. À w = 5-6 %, il s'érode tendanciellement. Chaque année prélève alors plus que la croissance, et le revenu suit le capital vers le bas, sans jamais l'annuler. Il n'y a pas de falaise à franchir, donc w peut légitimement être plus généreux que le taux de Bengen. Un w = 4-4,5 % est défendable là où un fixe indexé exigerait 3,25-3,5 %. C'est le dividende de l'auto-correction. La pratique des dotations, autour de 4,5-5 % lissé pour des portefeuilles plus agressifs, confirme l'ordre de grandeur.
+:::
+
+::: figure borne-geometrique
+Sans aucun aléa, en supposant simplement le rendement géométrique tenu, quatre taux et leur revenu servi sur trente ans. La bascule ne dépend que de deux nombres : tant que w reste sous g / (1 + g), le portefeuille repousse plus vite qu'on ne le ponctionne et le revenu monte doucement. Au-dessus, il s'érode à jamais. Le 6 % part au double du 3 % et passe dessous à vingt-deux ans, ce qui est exactement la durée d'une retraite ordinaire.
 :::
 
 ## Pour qui, et comment la piloter
@@ -59,7 +67,7 @@ C'est la règle la plus facile à programmer du panorama, un tableur y suffit. D
 :::
 
 ::: exemple Le même régime hostile, brut contre lissé
-Portefeuille de 1,4 M€, w = 4 %, soit 56 000 €. Scénario type 1973-1974 : −40 % réel en deux ans, puis une reprise lente. Sous pourcentage fixe brut, le revenu passe de 56 000 à 44 000 puis 34 000 € en deux ans, soit −39 %. Il remonte ensuite au rythme du marché, et reste sept ans sous 45 000 €. Sous la règle de Yale (70/30), il passe de 56 000 à 52 900 puis 48 600 €, soit −13 % en deux ans. Il touche un plancher vers 44 000 € en année 4, et sa remontée s'amorce avant même le retour du marché. Même portefeuille, même « garantie » anti-ruine, mais la version lissée transforme une chute libre en pente douce. Dans un budget avec 25 % de compressible, la première trajectoire est une crise de plan, la seconde une gestion courante. Le lissage n'est pas un raffinement. Il est la condition d'admissibilité de toute la famille proportionnelle.
+Portefeuille de 1,4 M€, w = 4 %, soit 56 000 €. Les rendements réels de 1973-1974 : −35 % en deux ans, puis une reprise molle. Sous pourcentage fixe brut, le revenu passe de 56 000 à 45 600 puis 33 800 € en deux ans, soit −40 %. Il remonte ensuite au rythme du marché, et passe dix des douze années suivantes sous 45 000 €. Sous la règle de Yale (70/30), il passe de 56 000 à 52 900 puis 47 100 €, soit −16 % en deux ans. Il touche son creux vers 31 700 € bien plus tard, et sa descente laisse le temps de s'organiser. Même portefeuille, même « garantie » anti-ruine, mais la version lissée transforme une chute libre en pente douce. Dans un budget avec 25 % de compressible, la première trajectoire est une crise de plan, la seconde une gestion courante. Le lissage n'est pas un raffinement. Il est la condition d'admissibilité de toute la famille proportionnelle.
 :::
 
 ## L'essentiel à retenir
