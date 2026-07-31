@@ -283,6 +283,13 @@ anonymous visitor, so a raw quote symbol outside the catalog is rejected
 before any network call. `ex=` files carry no such limit; they are the vetted
 builds shipped in the binary.
 
+Each portfolio in a `/view` report carries a **Simulate** link that opens the
+FIRE simulator bound to that portfolio (`/fire/p/<spec>/` for an ad-hoc
+composition, `/fire/e/<name>/` for an example). The hub also remembers your
+default currency, rebalance and sim settings in a cookie, so it opens where you
+left it; a `/view` link stays self-contained and reproduces the same report for
+anyone, cookie or not.
+
 Everything runs on the machine that started it, and the default bind is
 loopback. To reach the app from your phone or another device, put it behind
 your tailnet instead of opening a port:
