@@ -3,7 +3,7 @@
 # name: Vanguard Total US Market: S&P 500 proxy (VFINX)
 # method: VFINX (Vanguard 500, 1976->, extended SP500-USD total return to ~1871; total US market ≈ S&P 500), real VTI grafted from 2001
 # validation: corr=0.992 (weekly 0.996) beta=0.99 TE=2.4%/yr CAGR sim 9.41% vs real 9.76% (overlap 6296 d from 2001-06-15 to 2026-07-01) vs VTI
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 1962-01-01,0.706799
 1962-01-02,0.706799
