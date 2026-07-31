@@ -67,6 +67,8 @@ const GROUPS = [
       "Replace the fitted μ/σ/df with cautious world-equity assumptions (~3.5% real geometric, fat tails): what broad century-long samples suggest, not this fund's history."),
     c("capeAdjust", "Anchor return to today's valuation (CAPE)",
       "Set the central real return to the CAPE-implied estimate (1/CAPE): today's rich valuation compresses the next decade, the years that make or break a retirement. Overrides the return slider."),
+    c("glidepath", "Rising-equity glidepath (bond tent)",
+      "Hold less equity at retirement (30%) gliding to 75% later, blending in bonds (~1.5% real). It cuts sequence risk (the danger years are the least equity-heavy) but gives up return; with a wide equity-bond gap the drag can outweigh the protection, so compare the ruin both ways. Applies to the central case."),
     c("monthly", "Monthly withdrawals (salary-like)",
       "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month."),
   ]},
