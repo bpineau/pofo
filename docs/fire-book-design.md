@@ -168,8 +168,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
 
 ### IX. Le facteur humain
-- [ ] psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
-- [ ] temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
+- [x] psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
+- [x] temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
 - [ ] sens-et-identite: Sens, identite, structure : la vie apres le travail
 - [ ] couple-et-famille: FIRE en couple et en famille
 - [ ] flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
