@@ -157,7 +157,11 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 				return
 			}
 			w.Header().Set("Content-Type", "application/json")
-			_ = json.NewEncoder(w).Encode(compute(pr))
+			// The risk-based guardrail's table is solved on the page's own
+			// central assumptions (blended toward the prior on a short
+			// history, CAPE-anchored when the anchor is on), which only the
+			// server knows: stamp them before any plan is built.
+			_ = json.NewEncoder(w).Encode(compute(pr.withCentral(panel)))
 		})
 	}
 	post("/api/sim", func(pr Params) any { return ComputeWithPanel(pr, panel) })
