@@ -16,6 +16,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Assiette PUMa** : les revenus du capital soumis à la cotisation subsidiaire maladie du rentier sans activité. [[taxe-puma]]
 
+**Backwardation / contango** : les deux pentes possibles d'une courbe de contrats à terme. Rouler ses positions rapporte en backwardation (les échéances lointaines cotent sous le spot) et coûte en contango, ce qui condamne les trackers matières premières naïfs. [[global-macro]]
+
 **Barista FIRE** : le capital couvre une partie des dépenses, une activité choisie couvre le reste : structurellement subventionné en France (le quadruplé). [[fire-cest-quoi]], [[retour-au-travail]]
 
 **Bengen (règle de)** : le retrait fixe indexé sur l'inflation : la règle fondatrice (1994) et l'étalon de toutes les comparaisons. [[retrait-fixe-bengen]], [[etude-trinity]]
@@ -33,6 +35,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 ## C-D
 
 **CAPE (ratio de Shiller)** : prix / bénéfices réels moyens sur 10 ans : le meilleur prédicteur connu des rendements réels à 10-15 ans, donc du sort d'un millésime de départ. [[valorisations-et-cape]]
+
+**Carry** : la prime récoltée en détenant ce qui rapporte du portage, financé par ce qui n'en rapporte pas (devises, courbes de taux, matières premières). Documentée sur toutes les classes d'actifs, cyclique, et fragile dans les crises de liquidité. [[global-macro]]
 
 **Cascade (des rendements)** : arithmétique > géométrique > réel > net > soutenable : chaque marche coûte 0,5-1,5 point : la démystification de la règle des 4 %. [[rendements-arithmetiques-geometriques]]
 
@@ -64,6 +68,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Effet ciseaux** : l'inflation qui gonfle les retraits indexés pendant que le portefeuille nominal stagne : le mécanisme du millésime 1966. [[inflation-et-taux-de-retrait]]
 
+**Équivalent certain** : le revenu garanti que vous accepteriez en échange d'un plan risqué. Le convertisseur universel entre distributions, qui dégonfle les belles moyennes à queue laide. [[decider-sous-incertitude]]
+
 **ERN (Early Retirement Now)** : le blog de Karsten Jeske et sa série Safe Withdrawal Rate (60+ volets) : la référence quantitative moderne du sujet. [[serie-ern]]
 
 **Fan chart (cône)** : la distribution des richesses simulées par date, en bandes de percentiles : une pile de coupes, pas un faisceau de chemins. [[lire-un-fan-chart]]
@@ -75,6 +81,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 **Frontière de décumulation** : chaque règle de retrait comme un point (ruine ; variabilité du niveau de vie) : la §06 la trace pour votre plan. [[panorama-strategies-retrait]]
 
 **Glidepath** : faire varier l'allocation dans le temps : la version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
+
+**Global macro** : les fonds qui parient sur les grandes forces économiques (taux, devises, matières premières) plutôt que sur des titres. Corrélation basse et bons millésimes de crise, mais dispersion de gérants énorme et accès particulier fermé. [[global-macro]]
 
 **Golden Butterfly** : Browne plus une aile small-cap value : le meilleur couple SWR/drawdown de la famille tous-temps sur l'échantillon disponible. [[portefeuilles-tous-temps]]
 
@@ -88,11 +96,15 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **IPCH (HICP)** : l'indice des prix harmonisé européen : la cible de la BCE et le déflateur (`^HICP-FR`). [[suivre-inflation]]
 
+**Kelly (critère de)** : la fraction de capital qui maximise la croissance géométrique d'un pari répété. Génial au casino, inapplicable tel quel à une retraite (horizon fini, consommation, paramètres inconnus) ; en retenir le réflexe du demi-Kelly. [[decider-sous-incertitude]]
+
 **Lean / Fat FIRE** : les variantes sobre (~15-25 k€/an) et confortable (60 k€+) : la difficulté n'est pas linéaire entre les deux. [[fire-cest-quoi]]
 
 **Linkers (obligations indexées)** : OATi, OAT€i, TIPS : le seul contrat écrit en réel (inflation + taux réel garanti) : l'actif sans risque conceptuel du rentier. [[obligations-indexees]]
 
 **Lissage fiscal** : réaliser chaque année assez de gains pour remplir les tranches basses et l'abattement AV : l'actif périssable des années de pont à TMI faible. [[flat-tax-et-imposition]]
+
+**Long volatility / tail hedging** : détenir de la convexité (des puts) qui explose dans les krachs rapides, contre une prime versée en permanence. Espérance négative par construction, complément théorique du trend, presque inachetable proprement en UCITS. [[long-volatility]]
 
 **Managed futures / trend** : les stratégies systématiques de suivi de tendance, long et short, multi-classes : le seul défensif à espérance positive, gagnant des régimes longs (2008, 2022). [[managed-futures]]
 
@@ -116,7 +128,13 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Pont (phase à découvert)** : les années entre le départ et les pensions, où le portefeuille finance tout : le vrai horizon à risque d'un plan FIRE : sa longueur gouverne la complexité du plan. [[horizon-et-esperance-de-vie]], [[cas-types]]
 
+**Portable alpha** : la technique institutionnelle qui transporte une source de rendement au-dessus d'un beta obtenu via futures. L'ancêtre du return stacking. [[return-stacking]]
+
 **Pourcentage fixe** : retirer w % du portefeuille courant : la ruine du capital impossible, la ruine de train de vie possible : la matière première des règles modernes, à lisser (Yale). [[pourcentage-fixe]]
+
+**Prime de risque** : le salaire d'un risque porté, la raison d'être de tout rendement. Les actifs qui font mal au mauvais moment (actions) paient ; ceux qui ne transfèrent aucun risque (or, cash) ne rapportent rien en réel, par construction. [[primes-de-risque]]
+
+**Prime de variance** : l'écart persistant entre volatilité implicite (le prix de l'assurance) et volatilité réalisée, 2-4 points en moyenne. Ce que l'acheteur de protection paie en trop, et ce que le vendeur encaisse. [[long-volatility]]
 
 **Probabilité de ruine** : la fraction des futurs simulés où le portefeuille s'épuise avant l'horizon, sous une règle mécanique : une propriété du couple plan + modèle : se lit en intervalle et en ordinal. [[ruine-et-probabilites]]
 
@@ -124,11 +142,15 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Quadruplé (français)** : les quatre bénéfices d'une petite activité de rentier : le revenu, la PUMa éteinte (~9,5 k€), les 4 trimestres (~7,2 k€), la séquence amortie. [[retour-au-travail]]
 
+**Rebalancing premium (diversification return)** : le supplément de rendement géométrique qu'un panier décorrélé et rééquilibré gagne sur la moyenne de ses composants, environ la moitié de la variance économisée (0,2-0,5 point/an typique). [[pourquoi-la-diversification-marche]]
+
 **Régimes de marché** : les saisons persistantes croisant croissance et inflation : le 60/40 n'en couvre que deux : la stagflation est le cauchemar du rentier. [[regimes-de-marche]]
 
 **Règle CAPE** : taux de retrait = a + b × (1/CAPE) sur le portefeuille courant : le pourcentage devenu conscient des valorisations : auto-lissé par sa double contra-cyclicité. [[regles-cape]]
 
 **Répression financière** : maintenir les taux servis à l'épargne sous l'inflation pendant des années : la sortie de dette historiquement préférée des États : le régime qui érode sans alarme. [[inflation-histoire]]
+
+**Return stacking** : loger un levier modéré dans des fonds construits pour cela (90/60, actions + trend) afin de détenir les diversifiants en plus du cœur, pas à sa place. Tout étage empilé rapporte son rendement moins le cash. [[return-stacking]]
 
 **Réversion** : la fraction de pension versée au conjoint survivant : la base sous conditions, la complémentaire à 60 % : une partie de la protection du survivant. [[retraite-legale]], [[couple-et-famille]]
 
@@ -161,6 +183,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 **Trinity (étude)** : la grille de 1998 (taux × allocation × horizon → % de succès historique) : l'origine du langage de la probabilité de ruine. [[etude-trinity]]
 
 **Volatility drag** : la traînée σ²/2 entre moyenne arithmétique et géométrique : la volatilité est un coût de composition, même sans krach. [[rendements-arithmetiques-geometriques]]
+
+**Utilité (espérance d')** : le critère qui pèse chaque niveau de richesse par ce qu'il vaut vraiment pour vous, et non en euros bruts. Sa concavité fonde l'aversion au risque et le jugement des plans sur percentile 5 + médiane. [[decider-sous-incertitude]]
 
 **VPW (Variable Percentage Withdrawal)** : le pourcentage croissant avec l'âge des Bogleheads (l'annuité inversée à table gravée) : jamais de ruine du capital, consommation délibérée, test de tolérance à la perte obligatoire. [[vpw]]
 
