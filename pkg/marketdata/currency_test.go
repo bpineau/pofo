@@ -12,11 +12,11 @@ import (
 func TestConvertCurrency(t *testing.T) {
 	days := testDays(4)
 	mux := http.NewServeMux()
-	// CHF has no bundled long proxy, so this exercises the raw extrapolation
-	// path (the euro cross is separately backfilled, see TestExtendFXBack).
-	mux.HandleFunc("/v8/finance/chart/USDCHF=X", func(w http.ResponseWriter, r *http.Request) {
+	// SEK has no bundled long proxy, so this exercises the raw extrapolation
+	// path (the bundled crosses are separately backfilled, see TestExtendFXBack).
+	mux.HandleFunc("/v8/finance/chart/USDSEK=X", func(w http.ResponseWriter, r *http.Request) {
 		// FX disponible seulement à partir du 2e jour: extrapolation avant.
-		fmt.Fprint(w, chartJSON("USDCHF=X", days[1:], []float64{0.90, 0.92, 0.94}))
+		fmt.Fprint(w, chartJSON("USDSEK=X", days[1:], []float64{0.90, 0.92, 0.94}))
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
@@ -25,11 +25,11 @@ func TestConvertCurrency(t *testing.T) {
 	for i, d := range days {
 		s.Points = append(s.Points, Point{Date: d, Close: 100 + float64(i)})
 	}
-	out, extrap, err := c.ConvertCurrency(context.Background(), s, "CHF", days[0])
+	out, extrap, err := c.ConvertCurrency(context.Background(), s, "SEK", days[0])
 	if err != nil {
 		t.Fatal(err)
 	}
-	if out.Currency != "CHF" {
+	if out.Currency != "SEK" {
 		t.Errorf("currency = %s", out.Currency)
 	}
 	want := []float64{100 * 0.90, 101 * 0.90, 102 * 0.92, 103 * 0.94}
@@ -57,31 +57,36 @@ func TestConvertCurrency(t *testing.T) {
 	}
 }
 
-// TestExtendFXBack checks the bundled long EUR/USD proxy: it splices behind the
-// euro cross in both directions, reaches back to the late 1970s (ECU era), and
-// USDEUR is the exact reciprocal of EURUSD.
+// TestExtendFXBack checks every bundled long FX proxy: each splices behind its
+// cross in both directions, reaches back to 1971, ascends strictly in time, and
+// the USD<CCY> direction is the exact reciprocal of <CCY>USD.
 func TestExtendFXBack(t *testing.T) {
-	eurusd, ok := eurusdLongCross("EURUSD=X")
-	if !ok || len(eurusd) == 0 {
-		t.Fatal("EURUSD=X has no bundled long proxy")
-	}
-	if first := eurusd[0].Date; first.Year() > 1979 {
-		t.Errorf("long EUR/USD starts %s, want the ECU era (≤1979)", first.Format("2006-01"))
-	}
-	for i := 1; i < len(eurusd); i++ {
-		if !eurusd[i].Date.After(eurusd[i-1].Date) {
-			t.Fatalf("proxy not strictly ascending at %s", eurusd[i].Date.Format("2006-01"))
+	for _, ccy := range []string{"EUR", "GBP", "JPY", "CHF"} {
+		direct, tag, ok := longFXCross(ccy + "USD=X")
+		if !ok || len(direct) == 0 {
+			t.Fatalf("%sUSD=X has no bundled long proxy", ccy)
+		}
+		if tag == "" {
+			t.Errorf("%sUSD=X proxy has no provenance tag", ccy)
+		}
+		if first := direct[0].Date; first.Year() > 1971 {
+			t.Errorf("long %s/USD starts %s, want 1971", ccy, first.Format("2006-01"))
+		}
+		for i := 1; i < len(direct); i++ {
+			if !direct[i].Date.After(direct[i-1].Date) {
+				t.Fatalf("%s proxy not strictly ascending at %s", ccy, direct[i].Date.Format("2006-01-02"))
+			}
+		}
+		recip, _, ok := longFXCross("USD" + ccy + "=X")
+		if !ok || len(recip) != len(direct) {
+			t.Fatalf("USD%s=X proxy len %d, want %d", ccy, len(recip), len(direct))
+		}
+		if got := recip[0].Close * direct[0].Close; math.Abs(got-1) > 1e-9 {
+			t.Errorf("USD%s·%sUSD = %v, want 1 (reciprocal)", ccy, ccy, got)
 		}
 	}
-	usdeur, ok := eurusdLongCross("USDEUR=X")
-	if !ok || len(usdeur) != len(eurusd) {
-		t.Fatalf("USDEUR=X proxy len %d, want %d", len(usdeur), len(eurusd))
-	}
-	if got := usdeur[0].Close * eurusd[0].Close; math.Abs(got-1) > 1e-9 {
-		t.Errorf("USDEUR·EURUSD = %v, want 1 (reciprocal)", got)
-	}
-	if _, ok := eurusdLongCross("USDJPY=X"); ok {
-		t.Error("only the euro cross should carry a bundled proxy")
+	if _, _, ok := longFXCross("USDSEK=X"); ok {
+		t.Error("only bundled crosses should carry a proxy")
 	}
 
 	// Splice behind a short recent EURUSD=X: it gains the pre-quote history.
@@ -143,8 +148,8 @@ func TestFXRate(t *testing.T) {
 		time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC),
 	}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v8/finance/chart/GBPUSD=X", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, chartJSON("GBPUSD=X", days, []float64{1.26, 1.28}))
+	mux.HandleFunc("/v8/finance/chart/SEKUSD=X", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("SEKUSD=X", days, []float64{1.26, 1.28}))
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
@@ -155,13 +160,13 @@ func TestFXRate(t *testing.T) {
 	}
 	// Forward fill: a Saturday uses Friday's cross.
 	at := time.Date(2024, 1, 6, 0, 0, 0, 0, time.UTC)
-	r, err := c.FXRate(ctx, "gbp", "usd", at)
+	r, err := c.FXRate(ctx, "sek", "usd", at)
 	if err != nil || r != 1.28 {
 		t.Errorf("forward-filled rate: %v, %v", r, err)
 	}
-	// Before the cross starts: an explicit error. (Not the euro cross,
-	// which the bundled ECU/EUR proxy extends back to 1978.)
-	if _, err := c.FXRate(ctx, "GBP", "USD", time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
+	// Before the cross starts: an explicit error. (SEK carries no bundled
+	// proxy, unlike EUR/GBP/JPY/CHF which extend back to 1971.)
+	if _, err := c.FXRate(ctx, "SEK", "USD", time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
 		t.Error("a date before the FX history should error")
 	}
 }
