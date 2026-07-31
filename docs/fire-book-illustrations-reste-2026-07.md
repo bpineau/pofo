@@ -404,7 +404,7 @@ problème n'est pas l'inflation anticipée mais sa dispersion, la bande.
 
 Coût : **A/B** (deux lignes de calcul, aucune série externe).
 
-## 3. La fenêtre des taux réels : ce que finance une échelle de 30 ans
+## 3. La fenêtre des taux réels : ce que finance une échelle de 30 ans [FAIT 2026-07-30, `linkers-echelle`, posée dans `obligations-indexees` avec un renvoi depuis cet article]
 
 Trois courbes du retrait annuel finançable par une échelle indexée (facteur
 d'annuité) en fonction du taux réel de -1 % à +3 %, une courbe par horizon
@@ -639,7 +639,7 @@ L'article a déjà `franc-decay` (l'érosion du franc 1914-2025), qui couvre bie
 la section « grandes destructions ». Trois passages restent purement verbaux et
 portent chacun une thèse chiffrable.
 
-## 1. La hiérarchie des victimes, régime par régime, en données françaises
+## 1. La hiérarchie des victimes, régime par régime, en données françaises [FAIT 2026-07-30, `victimes-regimes`]
 
 Coût **A**. Données déjà dans le repo : `pkg/datasets/broadsample/country-real.csv`
 (JST R6, lignes `FRA`, rendements réels annuels actions / obligations / bills,
@@ -1107,7 +1107,7 @@ placement) réglerait la seule subtilité de calendrier de l'article.
 Article aujourd'hui sans aucune figure. Il porte une formule à deux entrées, donc
 une carte vaut mieux qu'un paragraphe. Trois idées, par ordre de valeur.
 
-## 1. La carte de l'interrupteur (coût A)
+## 1. La carte de l'interrupteur (coût A) [FAIT 2026-07-30, `puma-interrupteur`]
 
 Une grille en deux dimensions. En abscisse les revenus d'activité de 0 à 12 000 €,
 en ordonnée les revenus du capital réalisés de 0 à 150 000 €, et en remplissage le
@@ -2036,7 +2036,7 @@ tard). Elle couvre le mécanisme abstrait. Ce qui reste purement verbal et
 porteur, c'est (a) l'ancrage historique 1966 contre 1982, (b) la concentration
 du risque sur la première décennie, (c) la hiérarchie des parades.
 
-## 1. Les deux millésimes qui décident de tout : 1966 contre 1982 (coût A)
+## 1. Les deux millésimes qui décident de tout : 1966 contre 1982 (coût A) [FAIT 2026-07-30, `millesimes-1966-1982`]
 
 Deux trajectoires de capital réel sur le 60/40 US du livre, 1 M€, 4 % indexé,
 départ en 1966 et départ en 1982, tracées sur le même axe et la même durée
