@@ -24,7 +24,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Bootstrap (par blocs)** : rééchantillonner l'histoire en tirant des blocs de plusieurs années recollés : des histoires synthétiques faites de morceaux réels. [[historique-vs-parametrique]]
 
-**Broad sample** : le modèle de pofo qui rejoue le siècle de 16 pays développés (panel JST, 1870-2020) en 60/40 domestique : la borne empirique du risque de long horizon. [[anarkulova-cederburg]], [[la-machine-pofo]]
+**Broad sample** : le modèle qui rejoue le siècle de 16 pays développés (panel JST, 1870-2020) en 60/40 domestique : la borne empirique du risque de long horizon. [[anarkulova-cederburg]], [[la-machine-pofo]]
 
 **Buffer (matelas)** : 18-36 mois de dépenses en liquidités, consommés sous un seuil de drawdown écrit, rechargés au calme : quantitativement neutre, comportementalement précieux. [[cash-buffer]], [[recharger-ou-pas]]
 
@@ -72,7 +72,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Fonds euros** : le support d'assurance-vie garanti et lissé : excellent buffer et tranche courte, victime désignée de la répression financière : jamais une protection d'inflation. [[obligations-en-retrait]], [[enveloppes-francaises]]
 
-**Frontière de décumulation** : chaque règle de retrait comme un point (ruine ; variabilité du niveau de vie) : la §06 de pofo la trace pour votre plan. [[panorama-strategies-retrait]]
+**Frontière de décumulation** : chaque règle de retrait comme un point (ruine ; variabilité du niveau de vie) : la §06 la trace pour votre plan. [[panorama-strategies-retrait]]
 
 **Glidepath** : faire varier l'allocation dans le temps : la version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
 
@@ -86,7 +86,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **i.i.d. (indépendants et identiquement distribués)** : des tirages sans mémoire, chaque période indépendante et tirée de la même loi : le Monte-Carlo naïf : sous-représente les longues séquences médiocres (pas de grappes, pas de retour de valorisation), d'où les moteurs à mémoire. [[monte-carlo-forces-faiblesses]], [[rendre-monte-carlo-pertinent]]
 
-**IPCH (HICP)** : l'indice des prix harmonisé européen : la cible de la BCE et le déflateur de pofo (`^HICP-FR`). [[suivre-inflation]]
+**IPCH (HICP)** : l'indice des prix harmonisé européen : la cible de la BCE et le déflateur (`^HICP-FR`). [[suivre-inflation]]
 
 **Lean / Fat FIRE** : les variantes sobre (~15-25 k€/an) et confortable (60 k€+) : la difficulté n'est pas linéaire entre les deux. [[fire-cest-quoi]]
 
@@ -140,13 +140,13 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Safety-first** : l'école de l'adossement : garantir le plancher par des revenus à vie (pension, rente, échelle), risquer seulement le confort. [[rentes-et-annuites]], [[panorama-strategies-retrait]]
 
-**Séquence stress** : le modèle de pofo à sticky bears (Markov, moyenne préservée) : l'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
+**Séquence stress** : le modèle à sticky bears (Markov, moyenne préservée) : l'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
 
 **σ (sigma)** : la volatilité annualisée (écart-type des rendements) du moteur : sa traînée σ²/2 sépare moyenne arithmétique et géométrique (le volatility drag) : plus basse que la vol « une année » des brochures. [[rendements-arithmetiques-geometriques]], [[queues-epaisses]]
 
 **Sourire (retirement smile)** : la forme des dépenses réelles : hautes au début, déclinantes vingt ans, remontant à la fin (santé) : le besoin constant sur-provisionne de 10-20 %. [[depenses-en-retraite]]
 
-**Student-t (df)** : la loi à queues épaisses du modèle central de pofo : df règle la fréquence des années extrêmes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]]
+**Student-t (df)** : la loi à queues épaisses du modèle central : df règle la fréquence des années extrêmes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]]
 
 **SWR (Safe Withdrawal Rate)** : le taux de retrait « sûr » : jamais une constante : une fonction du cadre (horizon, échantillon, valorisations, marges). [[la-regle-des-4-pourcents]]
 

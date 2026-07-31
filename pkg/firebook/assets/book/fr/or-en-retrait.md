@@ -46,14 +46,14 @@ Puisque son espérance propre est ~nulle, tout le rendement **portefeuille** de 
 
 **Le dosage rétrospectif.** L'erreur n° 1, dans les deux sens : 0 % après vingt ans de purgatoire (l'investisseur de 1999 qui « sait » que l'or est mort, juste avant ×5), 25 % après une décennie dorée (celui de 2011 ou 2025 qui extrapole, juste avant les −40 %). La dose se fixe par le **rôle** (couvrir des régimes), pas par la forme récente : 5-15 %, écrite au plan, point.
 
-**Juger l'or en solo sur trois ans.** « Mon ETC a fait −12 % pendant que les actions faisaient +30 % » : oui. C'est le portage de l'assurance, budgété d'avance. L'or se juge à l'échelle du portefeuille, sur la traversée des régimes hostiles : la §02 de pofo (millésimes 1966, 1973) et la colonne broad-sample sont ses juges naturels, pas le relevé annuel.
+**Juger l'or en solo sur trois ans.** « Mon ETC a fait −12 % pendant que les actions faisaient +30 % » : oui. C'est le portage de l'assurance, budgété d'avance. L'or se juge à l'échelle du portefeuille, sur la traversée des régimes hostiles : la §02 (millésimes 1966, 1973) et la colonne broad-sample sont ses juges naturels, pas le relevé annuel.
 
 **L'or comme réponse à l'angoisse plutôt qu'au régime.** Monter la dose à chaque poussée de peur (géopolitique, bancaire). C'est le rôle 3 déguisé en rôle 2, et ça achète toujours au son du canon. Le plan écrit protège de soi-même, ici plus qu'ailleurs.
 
 **Oublier que l'or ne paie pas de retraits.** Dans la mécanique de décumulation, l'or est une poche de **réserve** et de rééquilibrage. On ne « vit » pas sur l'or, on vit sur les flux et les poches liquides ([[cash-buffer]]), l'or n'étant vendu qu'aux bandes ou dans les régimes où il est précisément l'actif en plus-value ([[recharger-ou-pas]]).
 
 ::: exemple Dix pour cent d'or, à l'épreuve des colonnes
-Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. A : 70 % actions / 30 % obligations intermédiaires. B : 70 / 20 / 10 % or (ETC physique, CTO). Verdicts pofo : central : 4,1 % (A) contre 3,9 % (B) : quasi rien, comme attendu. Stress : 7,2 → 6,1 %. Broad-sample : 10,8 → 8,9 %. C'est ici, dans le siècle qui contient les stagflations, que l'or gagne sa place. §02 : le millésime 1966 passe de « épuisé à l'année 27 » à « traversé, amoché » ; 2000 quasi inchangé. Richesse médiane à 45 ans : −5 %. Décision type : B, avec la moitié de la poche convertie en linkers si le CTO est déjà chargé fiscalement : même ligne de défense, autre mécanisme. Et une ligne au plan : « or : 10 %, bandes ±4 points, ne se discute pas dans les creux ».
+Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. A : 70 % actions / 30 % obligations intermédiaires. B : 70 / 20 / 10 % or (ETC physique, CTO). Verdicts : central : 4,1 % (A) contre 3,9 % (B) : quasi rien, comme attendu. Stress : 7,2 → 6,1 %. Broad-sample : 10,8 → 8,9 %. C'est ici, dans le siècle qui contient les stagflations, que l'or gagne sa place. §02 : le millésime 1966 passe de « épuisé à l'année 27 » à « traversé, amoché » ; 2000 quasi inchangé. Richesse médiane à 45 ans : −5 %. Décision type : B, avec la moitié de la poche convertie en linkers si le CTO est déjà chargé fiscalement : même ligne de défense, autre mécanisme. Et une ligne au plan : « or : 10 %, bandes ±4 points, ne se discute pas dans les creux ».
 :::
 
 ## L'essentiel à retenir
