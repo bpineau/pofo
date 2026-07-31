@@ -1,0 +1,19 @@
+# Stagflation Bunker -- a sleeve for the regime nobody covers
+# Idea: persistent inflation with weak growth is the regime that defeats
+#   both classic 60/40s and efficient-core builds (equities and NOMINAL
+#   bonds fall together in real terms; 2022 was the trailer). This sleeve
+#   holds only the assets research finds actually work there: trend (the
+#   most reliable, mainly via its commodity channel), broad commodities
+#   held directly, gold, and short linkers so the defensive leg cannot be
+#   inflated away. Not a standalone portfolio: a lab for the sleeve that
+#   the fire-* builds embed at ~30%, and a stress-test companion (compare
+#   it to your core over 2021-2022).
+# Inspired by: Neville, Draaisma, Funnell, Harvey & van Hemert, "The Best
+#   Strategies for Inflationary Times" (2021).
+#meta rebalance:180
+
+15    DBMFESIM        # Trend, replication engine (iMGP DBi EUR)
+15    KMLMSIM         # Trend, direct engine, commodity-heavy (buy Winton/AQR)
+20    IE00BDFL4P12    # Broad commodities (ICOM)
+25    XAUUSDSIM       # Gold (buy IGLN)
+25    LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN)
