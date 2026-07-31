@@ -29,10 +29,14 @@ func TestViewComposerMount(t *testing.T) {
 			t.Errorf("mount missing %q", want)
 		}
 	}
-	// A p= portfolio present: the panel opens.
-	if !strings.Contains(mount, "<details class=\"cmp\" id=\"composer\" data-caps") ||
-		!strings.Contains(mount, "open>") {
-		t.Error("mount must open when a p= portfolio is present")
+	// On a result page the charts are the content: the /view composer renders
+	// collapsed (its chip-bar summary shows, the editor is folded) regardless of
+	// the portfolios present. Expanding it is a user gesture.
+	if !strings.Contains(mount, "<details class=\"cmp\" id=\"composer\" data-caps") {
+		t.Error("mount must carry the composer details element")
+	}
+	if strings.Contains(mount, "open>") {
+		t.Error("the /view composer must render collapsed by default")
 	}
 	// The /view mount is unchanged: it never carries the hub's blank-boot or
 	// preset attributes (those belong to hubComposerMount alone).
