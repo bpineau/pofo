@@ -144,8 +144,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
 
 ### VI. Buffers et protections
-- [ ] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
-- [ ] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
+- [x] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
+- [x] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
 - [ ] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
 - [ ] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
 - [ ] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
