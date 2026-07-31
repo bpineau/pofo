@@ -108,6 +108,30 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 	return &cp, extrapolatedBefore, nil
 }
 
+// FXRate returns the multiplier turning an amount quoted in `from` into
+// `to` at the given time, using the same daily "<FROM><TO>=X" cross as
+// ConvertCurrency, forward-filled to the requested date (a weekend or
+// holiday uses the last quoted cross). It errors when the date predates
+// the available FX history; ConvertCurrency instead holds the earliest
+// rate flat there, which suits series conversion but would silently skew
+// a point-in-time quote.
+func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (float64, error) {
+	from = strings.ToUpper(strings.TrimSpace(from))
+	to = strings.ToUpper(strings.TrimSpace(to))
+	if from == to {
+		return 1, nil
+	}
+	fx, err := c.fxHistory(ctx, from, to, time.Time{})
+	if err != nil {
+		return 0, fmt.Errorf("FX rate %s→%s: %w", from, to, err)
+	}
+	rate, _, ok := fx.At(dayUTC(at))
+	if !ok {
+		return 0, fmt.Errorf("no %s→%s rate on or before %s", from, to, at.Format("2006-01-02"))
+	}
+	return rate, nil
+}
+
 // fxHistory returns the src→target daily FX cross from Yahoo. It always fetches
 // under a FIXED (zero) start so the cache key is constant across assets: the
 // caller passes each asset's own first date, which would otherwise miss the
