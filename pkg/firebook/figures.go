@@ -100,6 +100,7 @@ var figures = map[string]func() string{
 	"familles-information":   figFamillesInformation,
 	"pourcentage-lissages":   figPourcentageLissages,
 	"puma-interrupteur":      figPumaInterrupteur,
+	"frictions-enveloppes":   figFrictionsEnveloppes,
 	"borne-geometrique":      figBorneGeometrique,
 	"cape-depuis-1881":       figCapeDepuis1881,
 	"richesse-totale":        figRichesseTotale,
