@@ -1,0 +1,137 @@
+/* ============================================================================
+   pofo — shared visual identity ("risk desk tearsheet")
+   A quant tearsheet voice: cool paper, petrol ink, one burnt-amber counterpoint,
+   monospace for every figure and label, a neutral sans for prose. Dense, precise,
+   legible. Shared by the portfolio report and the FIRE explorer.
+   ========================================================================== */
+:root{
+  --paper:#EEF1F0;         /* cool off-white, faint green-grey (not cream)     */
+  --surface:#FBFCFB;       /* card / panel                                      */
+  --surface-2:#F3F6F5;     /* inset / zebra                                     */
+  --ink:#13232B;           /* deep petrol-ink, near-black                       */
+  --ink-soft:#54666E;      /* secondary text                                    */
+  --muted:#8A979C;         /* captions, de-emphasis                             */
+  --line:#DCE3E1;          /* hairline                                          */
+  --line-strong:#C2CECB;   /* structural rule                                   */
+  --accent:#0F766E;        /* petrol — primary, links, key figures              */
+  --accent-ink:#0B564F;    /* darker petrol for text-on-wash                    */
+  --accent-wash:#E2EEEC;   /* petrol tint fill                                  */
+  --warm:#B4531F;          /* burnt amber — the "you / your plan" counterpoint  */
+  --warm-wash:#F4E7DD;
+  --good:#2E7D5B;          /* risk scale: safe                                  */
+  --warn:#B9852A;          /*             caution                               */
+  --bad:#C1483C;           /*             danger                                */
+  --mono: ui-monospace, "SF Mono", "JetBrains Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --r:5px;                 /* corner radius, kept tight                         */
+  --pad:clamp(.9rem, 1.6vw, 1.5rem);
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  font-family:var(--sans);
+  color:var(--ink);
+  background:var(--paper);
+  margin:0;
+  line-height:1.5;
+  font-size:15px;
+  -webkit-font-smoothing:antialiased;
+}
+a{color:var(--accent-ink);text-underline-offset:2px}
+
+/* ---- page shell ---------------------------------------------------------- */
+.wrap{max-width:min(1500px,95vw);margin:0 auto;padding:0 clamp(.8rem,2vw,1.6rem) 4rem}
+
+/* ---- masthead: the shared identity band ---------------------------------- */
+.masthead{
+  display:flex;align-items:baseline;gap:.9rem;flex-wrap:wrap;
+  border-bottom:2px solid var(--ink);
+  padding:1rem 0 .6rem;margin-bottom:1.4rem;
+}
+.masthead .mark{
+  font-family:var(--mono);font-weight:700;font-size:1.05rem;letter-spacing:.02em;
+  color:var(--ink);
+}
+.masthead .mark b{color:var(--accent)}
+.masthead .ctx{
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-soft);
+}
+.masthead .spacer{flex:1}
+.masthead .stamp{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+
+/* ---- typography ---------------------------------------------------------- */
+h1{font-size:clamp(1.4rem,2.6vw,1.9rem);line-height:1.1;margin:.2rem 0 .3rem;letter-spacing:-.01em}
+h2{font-size:1.1rem;margin:0}
+h3{font-size:.92rem;margin:0}
+.eyebrow{
+  font-family:var(--mono);font-size:.68rem;font-weight:600;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--accent-ink);
+}
+.lede{color:var(--ink-soft);font-size:.9rem;max-width:74ch}
+.mono{font-family:var(--mono)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* section header: eyebrow index + title + rule, encodes order without decor */
+.section-head{display:flex;align-items:baseline;gap:.7rem;margin:2.2rem 0 .8rem;border-bottom:1px solid var(--line-strong);padding-bottom:.4rem}
+.section-head .idx{font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.section-head h2{letter-spacing:-.01em}
+.section-head .aside{margin-left:auto;font-family:var(--mono);font-size:.74rem;color:var(--ink-soft)}
+
+/* ---- cards & panels ------------------------------------------------------ */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:var(--pad)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.panel>.panel-h{
+  display:flex;align-items:center;gap:.6rem;
+  padding:.55rem .8rem;border-bottom:1px solid var(--line);
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);
+}
+.panel>.panel-b{padding:.7rem .8rem}
+
+/* ---- charts -------------------------------------------------------------- */
+svg{display:block;width:100%;height:auto}
+.chart-frame{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:.5rem .6rem}
+
+/* ---- tables (tearsheet grid) --------------------------------------------- */
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+thead th{
+  font-family:var(--mono);font-weight:600;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-soft);text-align:left;
+  border-bottom:1.5px solid var(--line-strong);padding:.4rem .55rem;white-space:nowrap;
+}
+tbody td{padding:.38rem .55rem;border-bottom:1px solid var(--line);vertical-align:baseline}
+tbody tr:nth-child(even){background:var(--surface-2)}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+td.best{background:var(--accent-wash);color:var(--accent-ink);font-weight:600}
+
+/* ---- badges & chips ------------------------------------------------------ */
+.badge{display:inline-block;font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;
+  padding:.08rem .4rem;border-radius:3px;border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
+.badge.good{color:var(--good);border-color:#bfe0cd;background:#eaf5ef}
+.badge.warn{color:#8a5f11;border-color:#e6d3a3;background:#f7efdb}
+.badge.bad{color:var(--bad);border-color:#e6c3bd;background:#f8e9e6}
+.badge.accent{color:var(--accent-ink);border-color:#bcdcd7;background:var(--accent-wash)}
+
+/* ---- risk scale (ruin / coverage), a shared 3-stop ramp ------------------ */
+.riskbar{position:relative;height:.7rem;border-radius:3px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.riskbar>span{display:block;height:100%}
+
+/* ---- disclosures --------------------------------------------------------- */
+details{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details>summary{cursor:pointer;padding:.5rem .75rem;font-weight:600;font-size:.85rem;list-style-position:inside}
+details>summary:hover{color:var(--accent-ink)}
+details[open]>summary{border-bottom:1px solid var(--line)}
+.disclosure-body{padding:.6rem .8rem;font-size:.84rem;color:var(--ink-soft)}
+
+/* ---- notes / warnings ---------------------------------------------------- */
+.note{color:var(--ink-soft);font-size:.82rem;margin:.3rem 0}
+.warn{color:#8a5f11;background:var(--warm-wash);border:1px solid #e6d3a3;border-radius:var(--r);
+  padding:.4rem .7rem;font-size:.82rem;margin:.4rem 0}
+
+/* ---- utilities ----------------------------------------------------------- */
+.grid{display:grid;gap:1rem}
+.muted{color:var(--muted)}
+.soft{color:var(--ink-soft)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}

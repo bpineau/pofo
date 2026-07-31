@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/bpineau/pofo/pkg/scenario"
+	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // Handler returns the decumulation UI: the embedded page at / and the
@@ -14,6 +15,12 @@ import (
 func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(mustSub())))
+	// The shared visual identity (webui.CSS) is served here so both HTML
+	// surfaces link the same stylesheet; the report inlines the same bytes.
+	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css; charset=utf-8")
+		_, _ = w.Write([]byte(webui.CSS))
+	})
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
 		meta := map[string]any{"labels": labels, "hasPanel": panel != nil}
 		if panel != nil {
