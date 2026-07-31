@@ -40,6 +40,8 @@ func All() []Recipe {
 		shyRecipe(),
 		scvwRecipe(),
 		dpgtRecipe(),
+		chsnRecipe(),
+		tip1eRecipe(),
 	}
 }
 
@@ -101,6 +103,51 @@ func scvwRecipe() Recipe {
 		Build:           composite("US small-cap value (DFSVX)", []Leg{{ID: "DFSVX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IE00BSPLC413",
 		SpliceReal:      "IE00BSPLC413",
+	}
+}
+
+// chsnRecipe backcasts the UBS Core Euro Inflation Linked 1-10 ETF
+// (LU1645380442, a brand-new 2025 EUR-acc share class) from the longer-running
+// iShares Euro Inflation Linked Govt Bond ETF (IBCI, Yahoo from 2009). IBCI
+// tracks the all-maturity euro-area linker index, so it is somewhat more
+// rate-sensitive than the 1-10 segment; it is nonetheless the same asset class
+// and currency (EUR), and the real CHSN quotes are grafted on top from 2025.
+func chsnRecipe() Recipe {
+	return Recipe{
+		ID:              "LU1645380442",
+		Name:            "UBS Core Euro Inflation Linked 1-10: euro govt linker proxy",
+		Method:          "IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker proxy, 2009->), real CHSN grafted from 2025",
+		Build:           composite("CHSN (euro inflation-linked proxy)", []Leg{{ID: "IBCI", Weight: 1}}, "", 0),
+		ValidateAgainst: "LU1645380442",
+		SpliceReal:      "LU1645380442",
+	}
+}
+
+// tip1eRecipe backcasts the UBS Core Bloomberg TIPS 1-10 EUR-hedged ETF
+// (LU1459801780, real from 2016) as US TIPS hedged to EUR: Vanguard's
+// Inflation-Protected Securities fund (VIPSX, US TIPS total return, 2000->)
+// financed at USD cash (^IRX) and re-earning EUR cash (bundled EURCASH-EUR money-
+// market index). This is the standard FX-hedge identity: a hedged foreign return
+// equals the local return plus the domestic (EUR) cash rate minus the foreign
+// (USD) cash rate, so the EUR investor pays the (usually negative, post-2015)
+// EUR-minus-USD carry on top of the TIPS return. VIPSX is all-maturity (duration
+// ~7), so it is held at 0.64x to match the 1-10 segment's shorter duration (~4.5,
+// the rest implicitly in the hedged EUR cash leg); this brought the validation
+// beta from 0.33 to ~0.5 and the overlap CAGR within ~0.1%/yr of the real fund.
+// The real fund is grafted on top from its 2016 inception. Daily correlation is
+// modest (~0.37) because VIPSX is a US-close mutual fund and the fund trades in
+// Zurich; the weekly correlation (~0.85) is the meaningful figure.
+func tip1eRecipe() Recipe {
+	return Recipe{
+		ID:     "LU1459801780",
+		Name:   "UBS Core BBG TIPS 1-10 (EUR-hedged): US TIPS hedged to EUR",
+		Method: "0.64×VIPSX (Vanguard Inflation-Protected, US TIPS TR, 2000->, duration-matched to 1-10) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged TIPS; real 42C0 grafted from 2016",
+		Build: composite("42C0 (EUR-hedged US TIPS)", []Leg{
+			{ID: "VIPSX", Weight: 0.64, Excess: true},
+			{ID: "EURCASH-EUR", Weight: 1},
+		}, "^IRX", 0),
+		ValidateAgainst: "LU1459801780",
+		SpliceReal:      "LU1459801780",
 	}
 }
 
