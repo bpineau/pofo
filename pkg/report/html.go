@@ -3,6 +3,8 @@ package report
 import (
 	"html/template"
 	"io"
+
+	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // AssetRow is one line of a portfolio composition table.
@@ -69,7 +71,31 @@ type Page struct {
 	PortfolioNames  []string
 	StatRows        []StatRow
 	Footnotes       []string
+
+	Theme template.CSS // shared webui identity, inlined into the document
 }
+
+// reportCSS holds the view-specific rules layered on the shared theme.
+const reportCSS = `
+.lede{margin:.1rem 0 0}
+.pies{display:flex;flex-wrap:wrap;gap:.4rem 1.4rem;justify-content:center;align-items:flex-start;margin:.8rem 0}
+.pies>svg{flex:0 1 auto;max-width:340px}
+.cov{margin:.9rem 0}
+.cov-title{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft);margin-bottom:.4rem}
+.cov-row{display:flex;align-items:center;gap:.7rem;margin:.2rem 0}
+.cov-label{width:8rem;color:var(--ink-soft);font-size:.8rem}
+.cov-track{flex:0 0 clamp(160px,30vw,300px);height:.7rem;border-radius:3px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.cov-fill{display:block;height:100%;background:var(--accent)}
+.cov-val{font-family:var(--mono);font-size:.76rem;color:var(--ink-soft)}
+.cov-val.gap{color:var(--warm)}
+details.pf{margin-top:.7rem}
+details.pf>summary{padding:.5rem .75rem}
+.pf-name{font-weight:600}
+.pf-sub{color:var(--muted);font-size:.82rem;margin-left:.5rem;font-family:var(--mono)}
+.pf-body{padding:.7rem .8rem 1rem}
+.legend .disclosure-body ul{margin:.3rem 0;padding-left:1.1rem;line-height:1.5}
+.stat-scroll{overflow-x:auto}
+`
 
 var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <html lang="en">
@@ -77,106 +103,97 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{.Title}}</title>
-<style>
-body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-       margin: 2rem auto; max-width: 1020px; padding: 0 1rem; color: #1a1a1a; background: #fff; }
-h1 { font-size: 1.5rem; margin-bottom: .2rem; }
-h2 { font-size: 1.15rem; margin-top: 2.4rem; border-bottom: 1px solid #ddd; padding-bottom: .3rem; }
-p.meta { color: #666; font-size: .9rem; margin-top: 0; }
-svg { max-width: 100%; height: auto; }
-table { border-collapse: collapse; margin: 1rem 0; font-size: .9rem; }
-th, td { border: 1px solid #ddd; padding: .35rem .6rem; text-align: left; }
-th { background: #f5f5f5; font-weight: 600; }
-td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
-td.best { background: #c9f2c9; font-weight: 600; }
-p.warn { color: #9a6700; font-size: .85rem; margin: .25rem 0; }
-p.note { color: #57606a; font-size: .85rem; margin: .25rem 0; }
-details.pf { margin-top: 1.4rem; border-bottom: 1px solid #ddd; padding-bottom: .4rem; }
-details.pf > summary { cursor: pointer; padding: .3rem 0; list-style-position: outside; }
-details.pf > summary:hover { color: #000; }
-.pf-name { font-size: 1.15rem; font-weight: 600; }
-.pf-sub { color: #666; font-size: .85rem; margin-left: .5rem; }
-ul.notes { color: #666; font-size: .8rem; line-height: 1.5; margin-top: .4rem; }
-details.legend { margin: .6rem 0; }
-details.legend > summary { cursor: pointer; color: #666; font-size: .85rem; }
-details.legend > summary:hover { color: #000; }
-.cov { margin: .7rem 0 1rem; font-size: .85rem; }
-.cov-title { font-weight: 600; margin-bottom: .3rem; }
-.cov-row { display: flex; align-items: center; gap: .5rem; margin: .15rem 0; }
-.cov-label { width: 5.5rem; color: #444; }
-.cov-track { flex: 0 0 240px; background: #eee; height: .7rem; border-radius: 3px; overflow: hidden; }
-.cov-fill { display: block; height: 100%; background: #4a8a5a; }
-.cov-val { color: #666; }
-.cov-val.gap { color: #9a6700; }
-.pies { display: flex; flex-wrap: wrap; gap: .3rem 1rem; justify-content: center; align-items: flex-start; margin: .6rem 0 1rem; }
-.pies > svg { flex: 0 1 auto; }
-</style>
+<style>{{.Theme}}</style>
+<style>{{.ReportCSS}}</style>
 </head>
 <body>
+<div class="wrap">
+
+<header class="masthead">
+  <span class="mark">pofo<b>/</b>report</span>
+  <span class="ctx">portfolio analysis</span>
+  <span class="spacer"></span>
+  <span class="stamp">{{.GeneratedAt}} · base 100 · rebalanced /{{.RebalanceDays}}d</span>
+</header>
+
 <h1>{{.Title}}</h1>
-<p class="meta">Generated on {{.GeneratedAt}}, base 100 at start, rebalanced every {{.RebalanceDays}} days.</p>
+<p class="lede soft">Growth of 100 over the common period, net of tax and fees where known. A comparison tool, not investment advice.</p>
+
 {{if .CompareSVG}}
-<section>
-<h2>{{.OverviewHeading}}</h2>
-{{.CompareSVG}}
-</section>
+<div class="section-head"><span class="idx">01</span><h2>{{.OverviewHeading}}</h2></div>
+<div class="chart-frame">{{.CompareSVG}}</div>
 {{end}}
-<section>
-<h2>Statistics, common period {{.CommonStart}} → {{.CommonEnd}}</h2>
+
+<div class="section-head"><span class="idx">02</span><h2>Statistics</h2><span class="aside">{{.CommonStart}} → {{.CommonEnd}}</span></div>
+<div class="stat-scroll">
 <table>
-<thead><tr><th>Metric</th>{{range .PortfolioNames}}<th class="num">{{.}}</th>{{end}}</tr></thead>
+<thead><tr><th>Metric</th>{{range .PortfolioNames}}<th class="n">{{.}}</th>{{end}}</tr></thead>
 <tbody>
 {{- range .StatRows}}
-<tr><td{{if .Hint}} title="{{.Hint}}"{{end}}>{{.Label}}</td>{{range .Cells}}<td class="num{{if .Best}} best{{end}}">{{.Text}}</td>{{end}}</tr>
+<tr><td{{if .Hint}} title="{{.Hint}}"{{end}}>{{.Label}}</td>{{range .Cells}}<td class="n{{if .Best}} best{{end}}">{{.Text}}</td>{{end}}</tr>
 {{- end}}
 </tbody>
 </table>
+</div>
 <details class="legend">
 <summary>Legend &amp; explanations</summary>
-<ul class="notes">
+<div class="disclosure-body">
+<ul>
 {{- range .Footnotes}}
 <li>{{.}}</li>
 {{- end}}
 </ul>
+</div>
 </details>
 {{if .UnderwaterSVG}}
-{{.UnderwaterSVG}}
+<div class="chart-frame" style="margin-top:1rem">{{.UnderwaterSVG}}</div>
 {{end}}
-</section>
+
+<div class="section-head"><span class="idx">03</span><h2>Portfolios</h2><span class="aside">composition &amp; coverage</span></div>
 {{range .Portfolios}}
 <details class="pf">
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
-{{.ChartSVG}}
+<div class="pf-body">
+<div class="chart-frame">{{.ChartSVG}}</div>
 {{if .Breakdowns}}<div class="pies">{{range .Breakdowns}}{{.}}{{end}}</div>{{end}}
 {{if .Coverage}}
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%{{if .Gap}};background:var(--warm){{end}}"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
 {{- end}}
 </div>
 {{end}}
+<div class="stat-scroll">
 <table>
-<thead><tr><th class="num">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="num">Fees</th><th>Currency</th><th>History</th><th>Note</th></tr></thead>
+<thead><tr><th class="n">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="n">Fees</th><th>Ccy</th><th>History</th><th>Note</th></tr></thead>
 <tbody>
 {{- range .Assets}}
-<tr><td class="num">{{.Weight}}</td><td>{{.ID}}</td><td>{{.Symbol}}</td><td>{{.Name}}</td><td>{{.Class}}</td><td>{{.UCITS}}</td><td class="num">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>
+<tr><td class="n">{{.Weight}}</td><td class="mono">{{.ID}}</td><td class="mono">{{.Symbol}}</td><td>{{.Name}}</td><td>{{.Class}}</td><td>{{.UCITS}}</td><td class="n">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>
 {{- end}}
 </tbody>
 </table>
+</div>
 {{- range .Notes}}
 <p class="note">{{.}}</p>
 {{- end}}
 {{- range .Warnings}}
 <p class="warn">⚠ {{.}}</p>
 {{- end}}
+</div>
 </details>
 {{end}}
+
+</div>
 </body>
 </html>
 `))
 
+// ReportCSS exposes the view-specific stylesheet to the template.
+func (Page) ReportCSS() template.CSS { return template.CSS(reportCSS) }
+
 // Render writes the HTML document for page to w.
 func Render(w io.Writer, page *Page) error {
+	page.Theme = template.CSS(webui.CSS)
 	return tpl.Execute(w, page)
 }
