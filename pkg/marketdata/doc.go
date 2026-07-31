@@ -33,7 +33,8 @@
 // # Sources
 //
 // Yahoo Finance (adjusted closes), Stooq (fallback for plain tickers,
-// major indices and major currency crosses), Financial
+// major indices and major currency crosses), the ECB reference rates
+// (second fallback for the currency crosses, daily since 1999), Financial
 // Times and Morningstar (NAVs of European funds). Downloads are cached on
 // disk (JSON, one file per instrument); a failed refresh serves the stale
 // data with a warning rather than failing.
