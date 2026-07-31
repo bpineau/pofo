@@ -66,6 +66,7 @@ var figures = map[string]func() string{
 	"horizon-flatten":        figHorizonFlatten,
 	"vol-drag":               figVolDrag,
 	"franc-decay":            figFrancDecay,
+	"flux-relatif-phases":    figFluxRelatifPhases,
 	"correl-sign":            figCorrelSign,
 	"risques-briques":        figRisquesBriques,
 	"buffer-flat":            figBufferFlat,

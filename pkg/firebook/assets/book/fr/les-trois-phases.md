@@ -8,6 +8,10 @@ Cette page décrit ce qui change à chaque phase, ce qu'il faut y optimiser, et 
 Une seule variable gouverne tout : le **sens** et la **taille** des flux entre vous et le portefeuille. En accumulation vous versez, et les krachs vous enrichissent, vous achetez bas. En retrait vous prélevez, et les krachs vous saignent, vous vendez bas ([[sequence-des-rendements]]). À la transition, les flux s'inversent. C'est là, mécaniquement, que le portefeuille est le plus gros par rapport aux flux. Chaque pour cent de baisse pèse alors le plus lourd en euros, et les erreurs sont les moins rattrapables. Même portefeuille, même marché : trois problèmes différents.
 :::
 
+::: figure flux-relatif-phases
+Projection déterministe sur les hypothèses de cet article (34 % d'épargne, 5 % puis 4 % de rendement réel, départ à 45 ans), et non une simulation. Le flux de l'année rapporté au portefeuille décroît pendant vingt-cinq ans, atteint son minimum le jour du départ, et change de signe.
+:::
+
 ## Phase 1 : l'accumulation, la décennie (ou deux) où tout est simple
 
 La bonne nouvelle de l'accumulation, c'est qu'elle est la phase la mieux comprise, et que presque tout ce qui la complique est du bruit. Les décisions par ordre d'impact réel :
