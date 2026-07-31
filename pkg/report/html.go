@@ -18,6 +18,7 @@ type AssetRow struct {
 	Fees     string // published TER, or "-" when unknown
 	Currency string
 	History  string
+	CWARP    string // per-asset CWARP vs the benchmark (as a 25 % overlay), or "-"
 	Note     string
 }
 
@@ -166,10 +167,10 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 {{end}}
 <div class="stat-scroll">
 <table>
-<thead><tr><th class="n">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="n">Fees</th><th>Ccy</th><th>History</th><th>Note</th></tr></thead>
+<thead><tr><th class="n">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="n">Fees</th><th>Ccy</th><th>History</th><th class="n">CWARP</th><th>Note</th></tr></thead>
 <tbody>
 {{- range .Assets}}
-<tr><td class="n">{{.Weight}}</td><td class="mono">{{.ID}}</td><td class="mono">{{.Symbol}}</td><td>{{.Name}}</td><td>{{.Class}}</td><td>{{.UCITS}}</td><td class="n">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>
+<tr><td class="n">{{.Weight}}</td><td class="mono">{{.ID}}</td><td class="mono">{{.Symbol}}</td><td>{{.Name}}</td><td>{{.Class}}</td><td>{{.UCITS}}</td><td class="n">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td class="n">{{.CWARP}}</td><td>{{.Note}}</td></tr>
 {{- end}}
 </tbody>
 </table>
