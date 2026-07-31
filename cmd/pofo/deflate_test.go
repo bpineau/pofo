@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"math"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 
@@ -83,5 +85,24 @@ func TestInflationSeriesCurrencyGate(t *testing.T) {
 	}
 	if _, ok := inflationSeries(context.Background(), nil, "", time.Time{}); ok {
 		t.Error("empty currency (native) should have no single deflator")
+	}
+}
+
+// A USD report deflates by the US CPI. The failing FRED stub exercises the
+// embedded ^CPI-US snapshot, so the test stays offline.
+func TestInflationSeriesUSD(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "fred down", http.StatusInternalServerError)
+	}))
+	defer srv.Close()
+	c := marketdata.NewClient("")
+	c.FredBase = srv.URL
+
+	s, ok := inflationSeries(context.Background(), c, "USD", time.Time{})
+	if !ok {
+		t.Fatal("USD should deflate by ^CPI-US")
+	}
+	if s.Symbol != "^CPI-US" || s.First().Date.Year() != 1913 {
+		t.Errorf("deflator = %s from %s, want ^CPI-US from 1913", s.Symbol, s.First().Date.Format("2006-01"))
 	}
 }
