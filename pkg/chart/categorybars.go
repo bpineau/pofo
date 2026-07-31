@@ -49,6 +49,15 @@ func CategoryBars(opt Options, bars []CatBar) string {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" fill="`+themeInkSoft+`" text-anchor="end">%s</text>`+"\n", labelW-10, y+14, esc(bar.Label))
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
 	}
+	// Table-view payload (no crosshair; per-mark titles carry the hover).
+	hm := hoverMeta{Kind: "cat"}
+	vals := hoverSeries{Name: "share"}
+	for _, bar := range bars {
+		hm.Rows = append(hm.Rows, bar.Label)
+		vals.Ys = append(vals.Ys, bar.Value)
+	}
+	hm.Series = append(hm.Series, vals)
+	b.WriteString(hoverBlock(hm))
 	b.WriteString("</svg>")
 	return finish(b.String())
 }
