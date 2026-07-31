@@ -154,16 +154,23 @@ func scvwRecipe() Recipe {
 
 // chsnRecipe backcasts the UBS Core Euro Inflation Linked 1-10 ETF
 // (LU1645380442, a brand-new 2025 EUR-acc share class) from the longer-running
-// iShares Euro Inflation Linked Govt Bond ETF (IBCI, Yahoo from 2009). IBCI
-// tracks the all-maturity euro-area linker index, so it is somewhat more
-// rate-sensitive than the 1-10 segment; it is nonetheless the same asset class
-// and currency (EUR), and the real CHSN quotes are grafted on top from 2025.
+// iShares Euro Inflation Linked Govt Bond ETF (IBCI, daily FT NAVs from its
+// 2005 inception). IBCI tracks the all-maturity euro-area linker index
+// (duration ~8) versus ~4.8 for the 1-10 segment, so it is held at 0.60x with
+// the rest in EUR cash (bundled EURCASH-EUR money-market index) to match
+// durations; same asset class and currency (EUR), no FX leg needed. The
+// scaling brought the validation beta from 0.53 to 0.85 and the tracking
+// error from 2.3 to 1.5%/yr, and the FT source moved the start from 2009
+// back to 2005. The real CHSN quotes are grafted on top from 2025.
 func chsnRecipe() Recipe {
 	return Recipe{
-		ID:              "LU1645380442",
-		Name:            "UBS Core Euro Inflation Linked 1-10: euro govt linker proxy",
-		Method:          "IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker proxy, 2009->), real CHSN grafted from 2025",
-		Build:           composite("CHSN (euro inflation-linked proxy)", []Leg{{ID: "IBCI", Weight: 1}}, "", 0),
+		ID:     "LU1645380442",
+		Name:   "UBS Core Euro Inflation Linked 1-10: euro govt linker proxy",
+		Method: "0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, duration-matched to 1-10) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025",
+		Build: composite("CHSN (euro inflation-linked proxy)", []Leg{
+			{ID: "IBCI", Weight: 0.60},
+			{ID: "EURCASH-EUR", Weight: 0.40},
+		}, "", 0),
 		ValidateAgainst: "LU1645380442",
 		SpliceReal:      "LU1645380442",
 	}
@@ -190,7 +197,7 @@ func tip1eRecipe() Recipe {
 		Method: "0.64×VIPSX (Vanguard Inflation-Protected, US TIPS TR, 2000->, duration-matched to 1-10) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged TIPS; real 42C0 grafted from 2016",
 		Build: composite("42C0 (EUR-hedged US TIPS)", []Leg{
 			{ID: "VIPSX", Weight: 0.64, Excess: true},
-			{ID: "EURCASH-EUR", Weight: 1},
+			{ID: "EURCASH-EUR", Weight: 0.35},
 		}, "^IRX", 0),
 		ValidateAgainst: "LU1459801780",
 		SpliceReal:      "LU1459801780",
