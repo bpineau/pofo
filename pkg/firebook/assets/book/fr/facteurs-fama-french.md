@@ -61,4 +61,4 @@ Plan : 1,5 M€, 51 000 €/an, 70 % actions monde / 30 % défensif. Variante : 
 - Fama & French, « The Cross-Section of Expected Stock Returns » (1992) et « A Five-Factor Asset Pricing Model » (2015) : les sources.
 - Larry Swedroe, *Your Complete Guide to Factor-Based Investing* : la synthèse praticienne honnête (critères, persistant, pervasif, robuste, investissable, intuitif).
 - Early Retirement Now, volet 62 (small-cap value en retrait) ([[serie-ern]]) ; McLean & Pontiff (2016) sur la décote post-publication.
-- Dans ce livre : [[allocation-actions-obligations]] (le contenu de la poche actions), [[regimes-de-marche]] (l'affinité de régime), [[etf-ucits-europeens]] (les véhicules), [[managed-futures]] (le momentum en série temporelle, son cousin plus puissant).
+- Dans ce livre : [[allocation-actions-obligations]] (le contenu de la poche actions), [[regimes-de-marche]] (l'affinité de régime), [[etf-ucits-europeens]] (les véhicules), [[managed-futures]] (le momentum en série temporelle, son cousin plus puissant), [[primes-de-risque]] (le cadre général des primes et leur devenir après publication).

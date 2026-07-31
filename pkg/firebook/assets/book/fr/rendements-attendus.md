@@ -95,4 +95,4 @@ Notez enfin ce que l'exercice prospectif **ne** remplace pas : la volatilité et
 - Research Affiliates, « Asset Allocation Interactive » : les espérances par pays et classes, recalculées en continu ; l'outil interactif le plus pédagogique.
 - John Bogle, « Investing in the 1990s » (1991) et *Common Sense on Mutual Funds* : la décomposition building-blocks originale (« Occam's razor »).
 - Antti Ilmanen (AQR), *Expected Returns* (2011) : la référence livre du sujet, exhaustive et lisible.
-- Dans ce livre : [[valorisations-et-cape]] (la brique actions en détail), [[rendements-arithmetiques-geometriques]] (les conversions), [[rendre-monte-carlo-pertinent]] (comment pofo mélange votre historique et les priors).
+- Dans ce livre : [[valorisations-et-cape]] (la brique actions en détail), [[rendements-arithmetiques-geometriques]] (les conversions), [[rendre-monte-carlo-pertinent]] (comment pofo mélange votre historique et les priors), [[primes-de-risque]] (pourquoi ces rendements existent et devraient persister).
