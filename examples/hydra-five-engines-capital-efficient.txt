@@ -277,10 +277,11 @@
 #   hydra-all-weather-balanced.txt (quadrant-balanced re-weighting; reads
 #   this file for the shared rationale and documents only its deltas).
 #meta rebalance:90
+#meta sim:on
 
-35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS)
-12    ZPRVSIM         # Engine 2, value factor: US small-cap value (ZPRV IE00BSPLC413, UCITS; global AVWS IE0003R87OG3)
-16    RSBTSIM         # Engine 3a, bonds + trend stacked 100/100 (RSBT US88636J1051, US-listed, no UCITS twin; unstacked route DBMFE LU2951555403)
-14    KMLMSIM         # Engine 3b, second trend model, no equity futures (KMLM, US-listed; UCITS route AQR MF LU1103257975 or Winton IE00BG382Q20)
-18    GDESIM          # Engine 4, gold stacked on equity 90/90 (GDE US97717Y5684, US-listed, no UCITS twin; fallback physical ETC IGLN IE00B4ND3602)
-5     ZROZSIM         # Engine 5, deep deflation duration (ZROZ, US-listed; UCITS route IDTL IE00BSKRJZ44 at ~1.6x, or EUR-hedged DTLE)
+35    NTSG            # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS)
+12    ZPRV            # Engine 2, value factor: US small-cap value (ZPRV IE00BSPLC413, UCITS; global AVWS IE0003R87OG3)
+16    RSBT            # Engine 3a, bonds + trend stacked 100/100 (RSBT US88636J1051, US-listed, no UCITS twin; unstacked route DBMFE LU2951555403)
+14    KMLM            # Engine 3b, second trend model, no equity futures (KMLM, US-listed; UCITS route AQR MF LU1103257975 or Winton IE00BG382Q20)
+18    GDE             # Engine 4, gold stacked on equity 90/90 (GDE US97717Y5684, US-listed, no UCITS twin; fallback physical ETC IGLN IE00B4ND3602)
+5     ZROZ            # Engine 5, deep deflation duration (ZROZ, US-listed; UCITS route IDTL IE00BSKRJZ44 at ~1.6x, or EUR-hedged DTLE)
