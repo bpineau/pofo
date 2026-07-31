@@ -94,11 +94,13 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .allocbar{position:relative;height:32px;border-radius:var(--r-sm);overflow:hidden;
   background:var(--surface);margin-top:.35rem;touch-action:none;user-select:none;border:1px solid var(--line)}
 .allocbar .seg{position:absolute;top:0;bottom:0;display:flex;flex-direction:column;justify-content:center;
-  align-items:center;color:#12100c;font-size:.64rem;line-height:1.05;overflow:hidden;white-space:nowrap;font-weight:600}
+  align-items:center;color:var(--ink);font-size:.64rem;line-height:1.05;overflow:hidden;white-space:nowrap;
+  font-weight:600;text-shadow:0 1px 2px rgba(8,6,4,.7)}
 .allocbar .seg b{font-family:var(--mono);font-size:.7rem}
 .allocbar .handle{position:absolute;top:-2px;bottom:-2px;width:16px;transform:translateX(-50%);cursor:ew-resize}
 .allocbar .handle::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:2px;transform:translateX(-50%);
-  background:rgba(239,231,214,.9)}
+  background:var(--accent);box-shadow:0 0 0 1px rgba(8,6,4,.55)}
+.allocbar .handle:hover::after{box-shadow:0 0 0 1px rgba(8,6,4,.55),0 0 6px rgba(245,166,35,.7)}
 .alloclegend{display:flex;flex-wrap:wrap;gap:.2rem .8rem;margin-top:.35rem;font-size:.68rem;color:var(--ink-soft);font-family:var(--mono)}
 .alloclegend i{display:inline-block;width:.7rem;height:.7rem;border-radius:3px;margin-right:.3rem;vertical-align:middle}
 
@@ -227,7 +229,9 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .solvehead{font-size:.85rem;margin-bottom:.6rem;color:var(--ink-soft)}
 .solvehead b{color:var(--ink)}
 .solveopts{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr}
+.solveopts.wide{grid-template-columns:1fr}
 @media (max-width:1080px){.solveopts{grid-template-columns:1fr}}
+.solveopts li span:last-child{text-wrap:pretty}
 .solveopts li{font-size:.82rem;color:var(--ink-soft);padding:.5rem .2rem;border-top:1px solid var(--line);
   display:flex;gap:.5rem;align-items:baseline}
 .solveopts .lev{font-family:var(--mono);font-size:.74rem;font-weight:600;color:var(--accent-ink);white-space:nowrap;flex:none;min-width:9.5rem}
