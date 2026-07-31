@@ -114,6 +114,8 @@ var figures = map[string]func() string{
 	"friction-derive-pmp":      figFrictionDerivePmp,
 	"horloges-enveloppes":      figHorlogesEnveloppes,
 	"immobilier-net-net":       figImmobilierNetNet,
+	"panier-contributions":     figPanierContributions,
+	"ecart-compose":            figEcartCompose,
 	"borne-geometrique":        figBorneGeometrique,
 	"cape-depuis-1881":         figCapeDepuis1881,
 	"richesse-totale":          figRichesseTotale,
