@@ -7,7 +7,7 @@ Le rétroviseur : « les actions ont fait 7 % réel depuis 1900, je mets 7 % ».
 Cette page explique pourquoi le rétroviseur est le pire des deux (surtout pour un rentier), comment les prévisions prospectives se fabriquent (vous saurez refaire le calcul vous-même, il tient sur une enveloppe), ce que disent les fourchettes actuelles, la précision qu'on peut en attendre (médiocre, mais bien meilleure que l'alternative), et comment injecter tout cela dans les curseurs de pofo sans empiler les prudences en double. À la fin, vous saurez produire et défendre **votre** μ.
 
 ::: cle Le renversement à opérer
-Le rendement passé d'un actif n'est pas son espérance ; c'est souvent son **inverse** partiel : une décennie exceptionnelle est en grande partie une expansion de valorisation, c'est-à-dire du rendement futur consommé par avance. À l'inverse, les obligations affichent littéralement leur espérance sur l'étiquette (le rendement à l'échéance), et les actions l'affichent à moitié (l'earnings yield, [[valorisations-et-cape]]). Estimer prospectivement, ce n'est pas prédire : c'est lire ce qui est déjà écrit dans les prix.
+Le rendement passé d'un actif n'est pas son espérance ; c'est souvent son **inverse** partiel : une décennie exceptionnelle est en grande partie une expansion de valorisation, c'est-à-dire du rendement futur consommé par avance. À l'inverse, les obligations affichent littéralement leur espérance sur l'étiquette (le rendement à l'échéance), et les actions l'affichent à moitié (l'earnings yield, [[valorisations-et-cape]]). Estimer prospectivement, ce n'est pas prédire. C'est lire ce qui est déjà écrit dans les prix.
 :::
 
 ## Pourquoi le rétroviseur trompe, et doublement pour un rentier
@@ -60,7 +60,7 @@ Les études rétrospectives sur les CMA (notamment celles de Morningstar sur ses
 
 La page FIRE vous donne quatre mécanismes qui touchent à l'espérance de rendement, et le piège le plus courant du planificateur consciencieux est de les **empiler** ([[utiliser-la-page-fire]]) :
 
-1. **Le μ ajusté sur votre historique**, mélangé automatiquement vers le prior mondial prudent (μ 4,5 %, σ 13, df 4) à proportion de l'horizon : c'est déjà une correction anti-rétroviseur.
+1. **Le μ ajusté sur votre historique**, mélangé automatiquement vers le prior mondial prudent (μ 4,5 %, σ 13, df 4) à proportion de l'horizon. C'est déjà une correction anti-rétroviseur.
 2. **La case « Broad-sample prior »**, qui réécrit les curseurs avec les hypothèses du siècle mondial (~3,5 % réel géométrique) : une deuxième couche de prudence, plus dure.
 3. **L'ancre CAPE**, qui remplace la seule moyenne par 1/CAPE : la correction prospective de cette page, appliquée à la brique actions.
 4. **La colonne broad-sample du tableau**, qui ignore vos curseurs et rejoue le siècle des 16 pays : la borne empirique, toujours visible quoi que vous fassiez.
