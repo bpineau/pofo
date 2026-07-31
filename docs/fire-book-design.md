@@ -1,0 +1,189 @@
+# The FIRE book: design
+
+Status: infrastructure shipped; writing in progress (see the ledger at the
+bottom, which is the authoritative progress tracker across sessions).
+
+## Goal
+
+An extremely complete, engaging FIRE/decumulation handbook, written in French
+(English translation later), cut into standalone articles so a reader can
+enter anywhere. Every page must be rich, long, practical and illustrated:
+examples, pro-tips, callouts, cross-links everywhere. The bar for total volume
+is the locador embedded doc (~90 articles, ~198k words); the target here is at
+least that, ideally more, with individual articles longer than locador's.
+
+The scientific state of the art must be mobilised throughout: the classics
+(Trinity, Bengen, Guyton-Klinger, Fama-French...) described and explicitly
+labelled as classic/dated where they are, and the current research (Anarkulova
+& Cederburg, ERN's SWR series, Morningstar's guardrails and annual SWR
+reports, Kitces, Pfau, pension-fund practice) given the leading role.
+
+## Architecture
+
+New package `pkg/firebook`, stdlib only:
+
+- `assets/book/<slug>.md`: the articles, French, `go:embed`ed.
+- `manifest.go`: the table of contents as data (category -> [slug, title,
+  blurb]). Single source of truth: the index page and navigation are generated
+  from it. It only lists articles that exist; the full planned TOC lives in
+  this design doc's ledger.
+- `render.go`: a mini Markdown-to-HTML engine (same dialect as locador's
+  docs.js, but in Go so pages are rendered server-side): ## / ### headings,
+  bold/italic/inline code, external links, wiki-links `[[slug]]` /
+  `[[slug|label]]`, `-` and `1.` lists, pipe tables, `>` quotes, `---` rules,
+  and callout blocks `::: type Title` ... `:::`.
+- `handler.go`: `func Handler() http.Handler` serving the index (sommaire) at
+  `/` and each article at `/<slug>`, as full HTML pages with an embedded
+  reading-oriented stylesheet (comfortable measure, generous line-height,
+  webui visual identity: petrol accent, same fonts).
+- Guard test: every file under `assets/book/` appears in the manifest and vice
+  versa; every `[[slug]]` in every article resolves to a manifest slug.
+
+Mounted in `pkg/decumul/web.Handler` under `/livre/`, and linked very
+discreetly (small link at the bottom of the "How this machine works" fold) in
+the fire page. Because the book is its own package with a self-contained
+handler, finador can mount the exact same book by importing `firebook`.
+
+Alternatives considered: copying locador's client-side docs.js engine into the
+fire SPA (duplicates a JS engine, couples the book to the fire page's app
+shell); pre-rendering at build time (needless build machinery). Server-side
+rendering in Go is testable, stdlib-only and reusable.
+
+## Writing conventions
+
+- French; no em-dash ever; numbers in French style in prose (4 %, 1 000 000).
+- Callout types: `cle` (the one idea to retain), `astuce` (pro-tip),
+  `attention` (trap), `exemple` (worked numbers), `encart` (side note),
+  `science` (what the research actually says, with references), `terrain`
+  (practitioner/FIRE-community experience and testimony).
+- Every article: 2 000 words minimum, most 2 500+; opens with a plain-language
+  paragraph stating what the reader will be able to DO after reading; dense
+  cross-linking `[[slug]]`; at least one worked example with numbers; a
+  "Pour aller plus loin" closing block with external references where relevant.
+- Classic vs state of the art: whenever a concept is a classic that research
+  has since qualified or superseded (Trinity, 4% rule, buckets...), say so
+  explicitly in the text, keep it (it is still interesting), and point to the
+  modern treatment.
+- External references: ERN's SWR series (earlyretirementnow.com) is a primary
+  source; also Morningstar's "State of Retirement Income" reports, Kitces,
+  Pfau, Bogleheads wiki, Anarkulova/Cederburg papers, AMF/impots.gouv for the
+  French tax pages. Cite by name and URL in "Pour aller plus loin".
+- French tax/social pages carry a dated-accuracy warning (rules move yearly).
+
+## Planned table of contents and progress ledger
+
+Mark `[x]` when an article is written, embedded and in the manifest.
+
+### I. Demarrer
+- [ ] fire-cest-quoi: Le FIRE, c'est quoi ? (histoire, variantes Lean/Fat/Barista/Coast, ordres de grandeur)
+- [ ] la-regle-des-4-pourcents: La regle des 4 % en dix minutes (et pourquoi ce n'est qu'un point de depart)
+- [ ] combien-il-vous-faut: Combien il vous faut (25x, 28x, 33x : du budget au capital cible)
+- [ ] les-trois-phases: Accumulation, transition, retrait : les trois vies d'un plan FIRE
+- [ ] utiliser-la-page-fire: Utiliser la page FIRE de pofo (chaque section, chaque controle)
+- [ ] erreurs-classiques-fire: Les dix erreurs qui ruinent un plan FIRE
+
+### II. La science du retrait
+- [ ] etude-trinity: Bengen, l'etude Trinity et la naissance du taux de retrait sur (classique)
+- [ ] sequence-des-rendements: Le risque de sequence : le vrai ennemi du retraite
+- [ ] ruine-et-probabilites: La probabilite de ruine : la lire, la choisir, ne pas la subir
+- [ ] rendements-arithmetiques-geometriques: Moyenne arithmetique, moyenne geometrique et volatility drag
+- [ ] anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
+- [ ] valorisations-et-cape: Les valorisations (CAPE) et ce qu'elles disent du taux de retrait
+- [ ] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
+- [ ] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
+- [ ] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
+
+### III. Modeliser : Monte-Carlo et autres machines
+- [ ] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
+- [ ] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
+- [ ] queues-epaisses: Queues epaisses, crises et Student-t
+- [ ] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
+- [ ] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
+- [ ] rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
+- [ ] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
+
+### IV. Les strategies de retrait
+- [ ] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
+- [ ] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
+- [ ] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
+- [ ] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
+- [ ] vpw: VPW, le retrait a pourcentage variable des Bogleheads
+- [ ] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
+- [ ] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
+- [ ] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
+- [ ] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
+- [ ] rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
+- [ ] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
+
+### V. Le portefeuille de retrait
+- [ ] allocation-actions-obligations: L'allocation actions/obligations en retrait
+- [ ] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
+- [ ] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
+- [ ] actifs-defensifs: Les actifs defensifs : panorama et roles
+- [ ] or-en-retrait: L'or dans un portefeuille de retrait
+- [ ] obligations-en-retrait: Les obligations en retrait : types, duree, role exact
+- [ ] obligations-indexees: Les obligations indexees sur l'inflation
+- [ ] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises
+- [ ] facteurs-fama-french: Les facteurs (Fama-French, value, momentum) en phase de retrait
+- [ ] diversification-internationale: La diversification internationale (et le biais domestique)
+- [ ] etf-ucits-europeens: Construire en UCITS : le portefeuille de retrait de l'investisseur europeen
+
+### VI. Buffers et protections
+- [ ] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
+- [ ] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
+- [ ] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
+- [ ] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
+- [ ] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
+- [ ] levier-et-marges: Levier, marge et lombard en retrait (avance)
+
+### VII. L'inflation
+- [ ] inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne
+- [ ] suivre-inflation: Suivre l'inflation : les indices, et la votre
+- [ ] inflation-et-taux-de-retrait: Inflation et taux de retrait : le lien exact
+- [ ] se-proteger-de-inflation: Se proteger de l'inflation : ce qui marche vraiment
+- [ ] hyperinflation-et-extremes: Hyperinflations et scenarios extremes
+
+### VIII. Fiscalite et cadre francais
+- [ ] enveloppes-francaises: PEA, assurance-vie, CTO : les enveloppes du rentier francais
+- [ ] flat-tax-et-imposition: PFU, bareme, abattements : l'imposition des retraits
+- [ ] taxe-puma: La taxe PUMa : le piege du rentier francais
+- [ ] retraite-legale: FIRE et retraite legale : trimestres, AGIRC-ARRCO, decote
+- [ ] sante-et-protection-sociale: Sante et protection sociale du rentier
+- [ ] succession-et-transmission: Succession et transmission
+- [ ] expatriation-fiscale: L'expatriation : fiscalite et protection sociale
+
+### IX. Le facteur humain
+- [ ] psychologie-du-retrait: La psychologie du retrait : pourquoi depenser est si dur
+- [ ] temoignages-fire: Ce que disent les vrais FIRE : temoignages et conseils
+- [ ] sens-et-identite: Sens, identite, structure : la vie apres le travail
+- [ ] couple-et-famille: FIRE en couple et en famille
+- [ ] flexibilite-realite: La flexibilite : mythe et realite (ce qu'elle peut vraiment absorber)
+- [ ] une-annee-de-plus: Le syndrome de l'annee de plus
+- [ ] retour-au-travail: Barista, coast, side income : le travail choisi
+
+### X. En pratique
+- [ ] construire-son-plan: Construire son plan pas a pas
+- [ ] revue-annuelle: La revue annuelle : la check-list du rentier
+- [ ] quand-s-inquieter: Quand s'inquieter, quand laisser courir
+- [ ] marche-baissier-en-retraite: Traverser un marche baissier en retraite : le playbook
+- [ ] revenus-complementaires: Pensions et revenus complementaires dans le plan
+- [ ] depenses-en-retraite: Les depenses reelles en retraite (retirement smile, Die With Zero)
+- [ ] cas-types: Trois plans complets, chiffres de bout en bout
+
+### XI. References
+- [ ] lexique: Lexique du FIRE et du retrait
+- [ ] bibliotheque: La bibliotheque : sites, papiers, livres, outils
+- [ ] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
+
+79 articles planned; at 2 500 words each the book lands around 200k words.
+
+## Writing plan (multi-session)
+
+Each session: pick the next unwritten articles (order of the ledger, but
+Demarrer + science first since everything links into them), research with
+live sources where needed (ERN, Morningstar, service-public/impots.gouv for
+the French pages), write, add to `manifest.go`, tick the ledger, `make check`,
+commit. Articles may link `[[slugs]]` that do not exist yet; the guard test
+only checks links against the PLANNED slug list above (kept as data in the
+test) so forward links are allowed before their targets are written, while
+typos are still caught.
