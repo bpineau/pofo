@@ -70,7 +70,7 @@ L'écart entre 25x et 33x représente typiquement 3 à 6 ans de travail supplém
 Le calcul complet tient en cinq lignes. Reprenons-le sur un cas réaliste.
 
 ::: exemple Le calcul de bout en bout
-Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans. Relevés de 24 mois : 3 400 €/mois de dépenses réelles, irrégulier annualisé compris. Vie visée : + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle : **3 970 €/mois, soit 47 600 €/an nets**. Friction fiscale estimée (PEA + AV mûres + CTO, PUMa comprise) : 12 % → **54 100 €/an bruts**. Revenus non financiers : aucun avant 65 ans ; pensions estimées à 2 100 €/mois pour le couple à 65-67 ans (info-retraite.fr), données au simulateur, pas soustraites. Multiple : horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort → **3,5 %, soit 28,6x**. **Cible : 54 100 × 28,6 ≈ 1 545 000 €**. Puis vérification dans pofo : à 1 550 000 € et 54 100 €/an avec pensions à 66 ans, ruine centrale ~5 % ; le même plan **sans** compter les pensions afficherait ~12 % et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail : voilà pourquoi on ne l'oublie pas.
+Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans. Relevés de 24 mois : 3 400 €/mois de dépenses réelles, irrégulier annualisé compris. Vie visée : + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle : **3 970 €/mois, soit 47 600 €/an nets**. Friction fiscale estimée (PEA + AV mûres + CTO, PUMa comprise) : 12 % → **54 100 €/an bruts**. Revenus non financiers : aucun avant 65 ans ; pensions estimées à 2 100 €/mois pour le couple à 65-67 ans ([info-retraite.fr](https://www.info-retraite.fr)), données au simulateur, pas soustraites. Multiple : horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort → **3,5 %, soit 28,6x**. **Cible : 54 100 × 28,6 ≈ 1 545 000 €**. Puis vérification dans pofo : à 1 550 000 € et 54 100 €/an avec pensions à 66 ans, ruine centrale ~5 % ; le même plan **sans** compter les pensions afficherait ~12 % et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail : voilà pourquoi on ne l'oublie pas.
 :::
 
 Le chiffre obtenu n'est pas une ligne d'arrivée sacrée : c'est le centre d'une fourchette. Stressez-le : ± 10 % sur les dépenses, ± 0,5 point sur le taux, pension décalée de deux ans. Si la conclusion (la date de départ, en pratique) survit à ces secousses, le plan est solide ; si elle bascule, vous savez quel paramètre travailler. La page FIRE fait ces bascules en un clic ([[utiliser-la-page-fire]]).
@@ -97,7 +97,7 @@ Le chiffre obtenu n'est pas une ligne d'arrivée sacrée : c'est le centre d'une
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series volet 2 (préservation vs consommation du capital) et volet 28 (l'outil de calcul) : earlyretirementnow.com ([[serie-ern]]).
-- info-retraite.fr : votre relevé de carrière et l'estimation officielle de vos pensions, l'entrée « revenus différés » de votre plan ([[retraite-legale]]).
+- Early Retirement Now, SWR Series volet 2 (préservation vs consommation du capital) et volet 28 (l'outil de calcul) : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
+- [info-retraite.fr](https://www.info-retraite.fr) : votre relevé de carrière et l'estimation officielle de vos pensions, l'entrée « revenus différés » de votre plan ([[retraite-legale]]).
 - Morningstar, *The State of Retirement Income* : les taux recommandés recalculés chaque année ([[guardrails-morningstar]]).
 - Le simulateur intégré : [[utiliser-la-page-fire]], et ce qu'il calcule exactement : [[la-machine-pofo]].

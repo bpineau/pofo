@@ -126,7 +126,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 ## Pour aller plus loin
 
 - Campbell & Shiller, « Stock Prices, Earnings, and Expected Dividends » (1988) ; Shiller, *Irrational Exuberance* (2000, rééditions avec l'ECY) : les sources.
-- Les données : le site de Robert Shiller (Yale) publie la série CAPE 1871-aujourd'hui, mise à jour mensuellement (c'est la série que pofo embarque, complétée en continu via multpl.com).
+- Les données : le site de Robert Shiller (Yale) publie la série CAPE 1871-aujourd'hui, mise à jour mensuellement (c'est la série que pofo embarque, complétée en continu via [multpl.com](https://www.multpl.com)).
 - Early Retirement Now, SWR Series volet 3 (CAPE et SAFEMAX), volet 18 et volet 54 (les règles CAPE-based) : la formalisation pour rentiers ([[serie-ern]]).
 - Michael Kitces, « Resolving the Paradox: Is the Safe Withdrawal Rate Sometimes Too Safe? » (2008) : le lien valorisation-retrait côté praticien.
 - Wade Pfau, « Can We Predict the Sustainable Withdrawal Rate for New Retirees? » (2011) : la régression SAFEMAX ~ CAPE.

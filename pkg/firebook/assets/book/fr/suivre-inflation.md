@@ -58,7 +58,7 @@ Denise (63 ans) et Paul (66 ans), propriétaires toit payé, 46 000 €/an. Leur
 
 ## Pour aller plus loin
 
-- insee.fr : l'IPC mensuel, les indices par fonction (COICOP) et le simulateur d'inflation personnalisée : les outils de la soirée de calcul.
+- [insee.fr](https://www.insee.fr) : l'IPC mensuel, les indices par fonction (COICOP) et le simulateur d'inflation personnalisée : les outils de la soirée de calcul.
 - Eurostat : l'IPCH par pays et le détail méthodologique (dont le dossier du logement du propriétaire, l'OOH).
 - Le Boskin Report (1996) et ses suites : le débat qualité/substitution, version documentée.
 - BLS, le CPI-E américain : la référence sur l'inflation des seniors.

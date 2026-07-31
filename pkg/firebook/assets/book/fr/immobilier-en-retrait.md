@@ -54,5 +54,5 @@ Yann, 51 ans, part dans deux ans : 1,1 M€ financiers + un T3 locatif parisien 
 
 - Early Retirement Now, volet 21 (le crédit en retraite) et volet 36 (l'immobilier locatif dans le plan) ([[serie-ern]]).
 - Les études Jorda-Schularick-Taylor (« The Rate of Return on Everything ») : le rendement séculaire comparé du logement : élevé, mais avant travail, frais et concentration.
-- impots.gouv.fr : abattements de plus-value immobilière et régimes locatifs (l'état du droit **avant** tout calcul) ([[flat-tax-et-imposition]]).
+- [impots.gouv.fr](https://www.impots.gouv.fr) : abattements de plus-value immobilière et régimes locatifs (l'état du droit **avant** tout calcul) ([[flat-tax-et-imposition]]).
 - Dans ce livre : [[revenus-complementaires]] (l'entrée des flux dans le plan), [[combien-il-vous-faut]] (le double comptage), [[levier-et-marges]] (le crédit comme levier), [[obligations-indexees]] (l'autre façon d'indexer le plancher).

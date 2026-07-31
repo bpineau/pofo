@@ -50,6 +50,6 @@ Couple, 57 et 59 ans, 2,1 M€ (dont résidence 500 k€), deux enfants, plan à
 
 ## Pour aller plus loin
 
-- service-public.fr et impots.gouv.fr : barèmes, abattements et dons familiaux à jour : les chiffres **avant** toute décision.
-- notaires.fr : les fiches transmission, démembrement et régimes matrimoniaux : et le rendez-vous qui va avec.
+- [service-public.fr](https://www.service-public.fr) et [impots.gouv.fr](https://www.impots.gouv.fr) : barèmes, abattements et dons familiaux à jour : les chiffres **avant** toute décision.
+- [notaires.fr](https://www.notaires.fr) : les fiches transmission, démembrement et régimes matrimoniaux : et le rendez-vous qui va avec.
 - Dans ce livre : [[enveloppes-francaises]] (l'AV et l'ordre de consommation), [[flat-tax-et-imposition]] (purges et donation-cession), [[couple-et-famille]] (le survivant et la gouvernance), [[amortissement-abw]] (le legs paramétré), [[depenses-en-retraite]] (donner de son vivant).

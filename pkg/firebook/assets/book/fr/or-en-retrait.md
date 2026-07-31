@@ -71,5 +71,5 @@ Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. A : 70 % actions / 30
 - Roy Jastram, *The Golden Constant* (1977, mis à jour) : le pouvoir d'achat de l'or sur quatre siècles.
 - Early Retirement Now, volet 34 (« Using Gold as a Hedge against Sequence Risk ») : la question exacte du rentier ([[serie-ern]]).
 - Erb & Harvey, « The Golden Dilemma » (2013) : la lecture académique sceptique, indispensable contrepoids.
-- portfoliocharts.com : l'or dans tous les mélanges, par pays.
+- [portfoliocharts.com](https://portfoliocharts.com) : l'or dans tous les mélanges, par pays.
 - Dans ce livre : [[actifs-defensifs]] (la table des rôles), [[obligations-indexees]] (l'autre moitié de la ligne inflation), [[portefeuilles-tous-temps]] (les doses historiques), [[hyperinflation-et-extremes]] (le rôle 2 au complet).
