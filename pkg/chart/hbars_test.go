@@ -17,10 +17,10 @@ func TestHBarsSignedColors(t *testing.T) {
 	if !strings.HasPrefix(svg, "<svg") {
 		t.Fatalf("not an SVG: %.20q", svg)
 	}
-	if !strings.Contains(svg, "#12B76A") {
+	if !strings.Contains(svg, "#0C8A47") {
 		t.Errorf("expected green for ruin-reducing (negative) bars")
 	}
-	if !strings.Contains(svg, "#D92D20") {
+	if !strings.Contains(svg, "#D2402F") {
 		t.Errorf("expected red for ruin-increasing (positive) bars")
 	}
 	if !strings.Contains(svg, "Spend -5k") || !strings.Contains(svg, "-3.2pp") {

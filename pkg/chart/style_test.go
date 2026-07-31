@@ -23,8 +23,8 @@ func TestLineZeroStyleUnchanged(t *testing.T) {
 	svg := Line(Options{Width: 640, Height: 300}, styleFixture())
 	for _, want := range []string{
 		`fill="#FFFFFF"`,               // background rect
-		`stroke="#E9EDF3"`,             // grid lines
-		`stroke="#C6CEDA"`,             // axes
+		`stroke="#EDF0F3"`,             // grid lines
+		`stroke="#CDD2DA"`,             // axes
 		`font-family="-apple-system, `, // default font
 		`stroke-width="1.8"`,           // default stroke
 	} {
@@ -49,7 +49,7 @@ func TestLineMinimalStyle(t *testing.T) {
 	if !strings.Contains(svg, "fill-opacity") {
 		t.Error("minimal style should fill under the first series")
 	}
-	if strings.Contains(svg, `stroke="#E9EDF3"`) || strings.Contains(svg, `stroke="#C6CEDA"`) {
+	if strings.Contains(svg, `stroke="#EDF0F3"`) || strings.Contains(svg, `stroke="#CDD2DA"`) {
 		t.Error("minimal style should draw neither grid nor axes")
 	}
 	if !strings.Contains(svg, "2020-01-01") {
