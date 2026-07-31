@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"math"
 	"testing"
 	"time"
@@ -77,10 +78,10 @@ func TestRealDrawdownDeeperThanNominal(t *testing.T) {
 // A currency without a wired CPI yields no deflator (real columns are omitted).
 // The gate returns before touching the client, so a nil client is safe here.
 func TestInflationSeriesCurrencyGate(t *testing.T) {
-	if _, ok := inflationSeries(nil, "JPY", time.Time{}); ok {
+	if _, ok := inflationSeries(context.Background(), nil, "JPY", time.Time{}); ok {
 		t.Error("JPY should have no wired inflation index (yet)")
 	}
-	if _, ok := inflationSeries(nil, "", time.Time{}); ok {
+	if _, ok := inflationSeries(context.Background(), nil, "", time.Time{}); ok {
 		t.Error("empty currency (native) should have no single deflator")
 	}
 }

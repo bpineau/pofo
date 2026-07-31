@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"bytes"
+	"context"
 	"crypto/tls"
 	"encoding/csv"
 	"fmt"
@@ -26,7 +27,7 @@ var fredHTTP = &http.Client{
 // extend ^HICP-FR. Best-effort with a short timeout, since it is a slow-changing
 // series fetched at most once per cache period. Rows with a missing value (".")
 // are skipped; dates are FRED's YYYY-MM-DD.
-func (c *Client) fetchFRED(id string) ([]Point, error) {
+func (c *Client) fetchFRED(ctx context.Context, id string) ([]Point, error) {
 	u := fmt.Sprintf("%s/graph/fredgraph.csv?id=%s", c.FredBase, url.QueryEscape(id))
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {

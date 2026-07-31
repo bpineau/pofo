@@ -1,6 +1,7 @@
 package simgen
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -15,9 +16,26 @@ import (
 // to be worth storing; callers should treat it as a documented skip.
 var ErrUnfaithful = errors.New("replication too unfaithful")
 
-// Fetcher provides price histories; *marketdata.Client satisfies it.
+// Fetcher provides price histories. A batch generator has no per-request
+// cancellation to gain, so the interface stays context-free: wrap a
+// *marketdata.Client with WithContext to satisfy it.
 type Fetcher interface {
 	Fetch(id string, from time.Time) (*marketdata.Series, error)
+}
+
+// WithContext adapts a marketdata.Client to the Fetcher interface, binding
+// every Fetch to ctx.
+func WithContext(ctx context.Context, c *marketdata.Client) Fetcher {
+	return ctxFetcher{ctx: ctx, c: c}
+}
+
+type ctxFetcher struct {
+	ctx context.Context
+	c   *marketdata.Client
+}
+
+func (f ctxFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
+	return f.c.Fetch(f.ctx, id, from)
 }
 
 // Recipe describes how to rebuild one asset's past.

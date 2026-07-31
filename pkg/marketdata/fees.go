@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -30,7 +31,7 @@ type feesEntry struct {
 // then the on-disk cache, then the FT tearsheets and justETF. ok is false
 // when no source knows the asset. Prices and NAVs are already net of these
 // fees: the figure is informational.
-func (c *Client) Fees(id string) (ter float64, ok bool) {
+func (c *Client) Fees(ctx context.Context, id string) (ter float64, ok bool) {
 	canonical := CanonicalID(id)
 	if e, found := catalogByID()[canonical]; found && e.Fees > 0 {
 		return e.Fees, true
@@ -38,7 +39,7 @@ func (c *Client) Fees(id string) (ter float64, ok bool) {
 	if e, found := c.feesLookup(canonical); found && time.Since(e.AsOf) < feesMaxAge {
 		return e.TER, e.TER >= 0
 	}
-	ter, src, err := c.fetchFees(canonical)
+	ter, src, err := c.fetchFees(ctx, canonical)
 	if err != nil {
 		c.Logf("fees unknown for %s (%v)", canonical, err)
 		c.saveFeesEntry(canonical, feesEntry{TER: -1, Source: "none", AsOf: time.Now()})
@@ -50,7 +51,7 @@ func (c *Client) Fees(id string) (ter float64, ok bool) {
 }
 
 // fetchFees tries every known fee source for a canonical identifier.
-func (c *Client) fetchFees(canonical string) (float64, string, error) {
+func (c *Client) fetchFees(ctx context.Context, canonical string) (float64, string, error) {
 	res, _ := c.loadResolution(canonical)
 	isin := ""
 	if IsISIN(canonical) {
@@ -64,12 +65,12 @@ func (c *Client) fetchFees(canonical string) (float64, string, error) {
 	if isin != "" {
 		// The FT funds tearsheet covers European mutual funds and many ETFs by ISIN.
 		for _, cur := range candidateCurrencies(currency, isin) {
-			if ter, err := c.ftTearsheetFees("funds", isin+":"+cur); err == nil {
+			if ter, err := c.ftTearsheetFees(ctx, "funds", isin+":"+cur); err == nil {
 				return ter, "FT", nil
 			}
 		}
 		errs = append(errs, "FT funds: not found")
-		if ter, err := c.justETFFees(isin); err == nil {
+		if ter, err := c.justETFFees(ctx, isin); err == nil {
 			return ter, "justETF", nil
 		} else {
 			errs = append(errs, fmt.Sprintf("justETF: %v", err))
@@ -78,11 +79,11 @@ func (c *Client) fetchFees(canonical string) (float64, string, error) {
 	// US-listed ETFs and mutual funds, by plain Yahoo symbol.
 	if sym := res.Symbol; sym != "" && !strings.ContainsAny(sym, ".^=") && res.Source == "yahoo" {
 		for _, mic := range []string{"PCQ", "NMQ", "NSQ"} {
-			if ter, err := c.ftTearsheetFees("etfs", sym+":"+mic+":USD"); err == nil {
+			if ter, err := c.ftTearsheetFees(ctx, "etfs", sym+":"+mic+":USD"); err == nil {
 				return ter, "FT", nil
 			}
 		}
-		if ter, err := c.ftTearsheetFees("funds", sym); err == nil {
+		if ter, err := c.ftTearsheetFees(ctx, "funds", sym); err == nil {
 			return ter, "FT", nil
 		}
 		errs = append(errs, "FT US etfs/funds: not found")
@@ -111,9 +112,9 @@ var (
 
 // ftTearsheetFees scrapes the ongoing charge from an FT tearsheet
 // (kind: "funds" or "etfs").
-func (c *Client) ftTearsheetFees(kind, symbol string) (float64, error) {
+func (c *Client) ftTearsheetFees(ctx context.Context, kind, symbol string) (float64, error) {
 	u := fmt.Sprintf("%s/data/%s/tearsheet/summary?s=%s", c.FTBase, kind, url.QueryEscape(symbol))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return 0, err
 	}
@@ -121,9 +122,9 @@ func (c *Client) ftTearsheetFees(kind, symbol string) (float64, error) {
 }
 
 // justETFFees scrapes the TER from a justETF profile page (UCITS ETFs only).
-func (c *Client) justETFFees(isin string) (float64, error) {
+func (c *Client) justETFFees(ctx context.Context, isin string) (float64, error) {
 	u := fmt.Sprintf("%s/en/etf-profile.html?isin=%s", c.JustETFBase, url.QueryEscape(isin))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return 0, err
 	}
