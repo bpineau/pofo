@@ -1,6 +1,6 @@
 # cape
 
-`shiller-cape.csv` — Robert Shiller's **CAPE** (PE10) monthly series,
+`shiller-cape.csv`: Robert Shiller's **CAPE** (PE10) monthly series,
 `date,cape`, 1881 onward. CAPE is the real S&P 500 price divided by the 10-year
 average of real earnings; its inverse (`1/CAPE`) is a first-order estimate of
 the next decade's real return.
