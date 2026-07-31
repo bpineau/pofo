@@ -1467,7 +1467,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
-		section.ContribSVG, section.RegimeSVG = contributionCharts(r)
+		section.ContribSVG, section.ContribMonthlySVG, section.RegimeSVG = contributionCharts(r)
 		section.Breakdowns = breakdownPies(r.p.Assets, meta)
 		if len(section.Breakdowns) > 0 {
 			section.Notes = append(section.Notes, compositionNotes(r.p.Assets, meta, r.currency)...)
@@ -1618,7 +1618,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}
 	if hasContrib {
 		page.Footnotes = append(page.Footnotes,
-			"Realized contribution charts (per portfolio): each day's portfolio return is decomposed as held weight × asset return. The timeline stacks each holding's trailing-12-month contribution around zero (bands above zero carried the year, bands below cost it; the black line is the portfolio's own 12m return, the net of the bands); hover for exact figures. The per-regime matrix groups the same monthly contributions by macro quadrant, annualized: it is the empirical mirror of the coverage bars (who actually delivered, vs who was supposed to). Regimes come from the embedded OECD panel (share of countries with accelerating industrial production × accelerating inflation, thresholded at one half), forward-filled at the panel's edges; contributions before a fund's listing read its backcast, and envelope fees (when any) are not attributed to holdings.")
+			"Realized contribution charts (per portfolio): each day's portfolio return is decomposed as held weight × asset return. The timeline stacks each holding's contribution around zero (bands above zero carried the period, bands below cost it; the black line is the portfolio's own return, the net of the bands); hover for exact figures. The 12m-rolling window reads regimes and trends but nets a crash against the year before it; switch to the monthly window for the anatomy of a single month (e.g. who drove and who cushioned March 2020). The per-regime matrix groups the same monthly contributions by macro quadrant, annualized: it is the empirical mirror of the coverage bars (who actually delivered, vs who was supposed to). Regimes come from the embedded OECD panel (share of countries with accelerating industrial production × accelerating inflation, thresholded at one half), forward-filled at the panel's edges; contributions before a fund's listing read its backcast, and envelope fees (when any) are not attributed to holdings.")
 	}
 	if hasBreakdowns {
 		page.Footnotes = append(page.Footnotes,
