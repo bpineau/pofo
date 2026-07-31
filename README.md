@@ -70,11 +70,16 @@ money rows (starting capital, total contributed/withdrawn, final value and
 a **money-weighted IRR**) follow the actual cash. Withdrawing a depleted
 portfolio is a ruin: the series stops and the report flags it.
 
-`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`, `cwarp`) lets
-the optimizer compute the weights instead of using the ones you wrote. It works
-out the long-only allocation that maximizes the Sharpe ratio, minimizes
-volatility, equalizes each asset's risk contribution, or maximizes CWARP (see
-below), over the period where all the assets quote. An optional cap diversifies
+`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`, `max-sortino`,
+`return-to-drawdown`, `cwarp`) lets the optimizer compute the weights instead of
+using the ones you wrote. It works out the long-only allocation that maximizes
+the Sharpe ratio, minimizes volatility, equalizes each asset's risk
+contribution, maximizes the portfolio's **Sortino** (return over downside
+deviation, which rewards non-correlation and positive skew) or its
+**return-to-max-drawdown**, or maximizes CWARP (see below), over the period
+where all the assets quote. `max-sortino` and `return-to-drawdown` are the
+downside-aware way to weight a portfolio's *own* assets; `cwarp` instead selects
+a diversifier of an external benchmark (see the warning below). An optional cap diversifies
 the result: `#meta optimize:max-sharpe,max-weight:40`. The report then shows
 **two portfolios side by side**: `name (as written)` and `name (max-sharpe)`,
 so the optimizer's choice is compared with your baseline; the computed
@@ -390,7 +395,8 @@ applications. Layout:
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
-pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity / cwarp
+pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity /
+                  max-sortino / return-to-drawdown / cwarp
 pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
 pkg/portfolio/    allocation file format + rebalanced simulation
