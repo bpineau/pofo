@@ -43,7 +43,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
-| `cmd/pofo` | CLI wiring only; each mode is a `run*` function in `main.go` |
+| `cmd/pofo` | CLI wiring only, one file per concern: `main.go` (flags + mode dispatch + terminal output), `fetch.go`, `page.go` (HTML report assembly), `composition.go` (pies/coverage), `contrib.go` (contribution charts), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go` |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`) |
 
@@ -126,16 +126,16 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
-  checkable; expose it in `report.StatRow` via `cmd/pofo/main.go`
+  checkable; expose it in `report.StatRow` via `cmd/pofo/page.go`
   (`buildStatRows`) if the CLI should show it.
 - Report per-portfolio blocks (composition pies, coverage bars, realized
   contribution charts): assembled in `cmd/pofo` (`breakdownPies`,
-  `coverageBars` in `main.go`; `contributionCharts` in `contrib.go`) from
+  `coverageBars` in `composition.go`; `contributionCharts` in `contrib.go`) from
   `pkg/suggest` composition splits, `SimResult.(Monthly)Contributions` and
   `permanent.Regime.Quadrant`; rendering primitives live in `pkg/chart`
   (`DivergingStack`, `BarMatrix`, `Pie`), the template and its instant-tooltip
   layer in `pkg/report/html.go`.
-- New CLI mode: a `run*` function in `cmd/pofo/main.go`, but push any
+- New CLI mode: a `run*` function in its own `cmd/pofo/<mode>.go` file, but push any
   reusable logic down into a `pkg/` package first (see `FetchExtended`
   and `portfolio.Build`, which were extracted exactly that way).
 - FIRE/decumulation work: read `docs/decumulation-fire-design.md` first;
