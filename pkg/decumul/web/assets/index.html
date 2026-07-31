@@ -20,8 +20,12 @@
      how much that answer depends on the lens. -->
 <section class="hero" id="hero">
   <div class="hero-verdict">
-    <div class="eyebrow">Plan verdict · central case</div>
-    <div id="verdict"></div>
+    <div class="eyebrow">Ruin probability · central case</div>
+    <div class="big"><span class="n" id="ruinBig">·</span><span class="u">of simulated futures fail</span></div>
+    <span class="chip" id="ruinChip" hidden></span>
+    <div class="gauge" data-help="Your central-case ruin probability on a 0-to-max scale; the dark tick marks the tolerance you accept."><div class="fill" id="gaugeFill"></div><div class="lim" id="gaugeLim"></div></div>
+    <div class="gauge-l"><span>0%</span><span id="gaugeTol"></span><span id="gaugeMax"></span></div>
+    <p id="verdict"></p>
     <div class="herobar">
       <label class="tgt" data-help="The failure probability you accept. Every safe-spend figure, the solver menu and the planning curves are solved against this target.">Acceptable ruin <input type="number" id="targetRuin" min="0.5" max="30" step="0.5" value="4"><span class="unit">%</span></label>
       <span id="confidence"></span>
