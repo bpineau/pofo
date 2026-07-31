@@ -55,3 +55,29 @@ func TestPieEmptyWhenNoPositiveValue(t *testing.T) {
 		t.Errorf("want empty string for a nil pie, got %q", got)
 	}
 }
+
+func TestPieHole(t *testing.T) {
+	slices := []Slice{{Label: "a", Value: 3}, {Label: "b", Value: 1}}
+	def := Pie(PieOptions{}, slices)
+	if !strings.Contains(def, "A70 70 0") || !strings.Contains(def, "A42 42 0") {
+		t.Fatalf("default geometry changed: %q", def)
+	}
+	wide := Pie(PieOptions{Hole: 0.9}, slices)
+	if !strings.Contains(wide, "A63 63 0") {
+		t.Errorf("Hole 0.9 should shrink the ring to innerR=63, got %q", wide)
+	}
+}
+
+func TestPieHideLegend(t *testing.T) {
+	slices := []Slice{{Label: "a", Value: 3, Color: "#111111"}, {Label: "b", Value: 1}}
+	svg := Pie(PieOptions{Width: 190, HideLegend: true}, slices)
+	if strings.Contains(svg, "<text") || strings.Contains(svg, "<rect") {
+		t.Error("legend-less pie should carry no text or swatches")
+	}
+	if !strings.Contains(svg, `viewBox="0 0 190 190"`) {
+		t.Errorf("legend-less pie should be square, got %q", svg)
+	}
+	if !strings.Contains(svg, "#111111") {
+		t.Error("caller colors should be honored")
+	}
+}
