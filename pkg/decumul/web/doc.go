@@ -9,6 +9,12 @@
 // a panel shorter than two years is treated as absent (Fit.Valid,
 // minPanelMonths) so a degenerate fit can never seed a doom model.
 //
+// Spending policies are exclusive in the rail. The kernel resolves clashes
+// by a fixed precedence (see the package comment of pkg/decumul), which is
+// invisible to a reader ticking two boxes, so claiming one policy clears the
+// controls of the others; a shared URL is left as it arrived, only dimmed,
+// so old links keep reproducing the run their sender saw.
+//
 // Beyond the model strip and the sweeps, the analysis endpoints serve the
 // sequence-risk decomposition (/api/decade), the deterministic replay of
 // infamous historical vintages through the user's plan (/api/vintages), the
