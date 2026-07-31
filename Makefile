@@ -69,6 +69,11 @@ cape: ## (Re)generate the bundled Shiller CAPE series (network) then rebuild
 	$(GO) run ./cmd/gen-cape
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: macropanel
+macropanel: ## (Re)generate the bundled OECD monthly macro panel (network) then rebuild
+	$(GO) run ./cmd/gen-macropanel
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt
