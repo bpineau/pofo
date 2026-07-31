@@ -61,7 +61,7 @@ var Categories = []Category{
 			{"lire-un-fan-chart", "Lire un fan chart et des percentiles sans se tromper", "L'anatomie du cône de richesse, sa géométrie qui parle, les cinq erreurs de lecture classiques et les autres éventails de la page."},
 			{"pieges-des-simulateurs", "Les pièges des simulateurs", "Pourquoi cinq outils rendent cinq verdicts pour le même plan : les dix pièges hiérarchisés, et la grille d'audit en dix questions."},
 			{"rendre-monte-carlo-pertinent", "Rendre un Monte-Carlo pertinent (blending, régimes, stress)", "Les six corrections qui transforment le générateur de nombres en instrument : du blending vers le prior mondial au plan réel simulé."},
-			{"regimes-de-marche", "Les régimes de marché : croissance × inflation, ours collants", "Les saisons des marchés, la grille à quatre quadrants, le cauchemar stagflationniste du rentier, et l'audit de portefeuille par régime."},
+			{"regimes-de-marche", "Les régimes de marché : croissance × inflation, sticky bears", "Les saisons des marchés, la grille à quatre quadrants, le cauchemar stagflationniste du rentier, et l'audit de portefeuille par régime."},
 		},
 	},
 	{
@@ -154,7 +154,7 @@ var Categories = []Category{
 			{"construire-son-plan", "Construire son plan pas à pas", "Les sept étapes dans l'ordre, le gabarit du plan d'une page à huit blocs, la recette de validation, et l'exécution du jour 1."},
 			{"revue-annuelle", "La revue annuelle : la check-list du rentier", "Une séance par an, sept blocs, le quiz inversé et la ligne non financière : la revue constate et exécute, elle ne re-conçoit pas."},
 			{"quand-s-inquieter", "Quand s'inquiéter, quand laisser courir", "Le taux courant en voyant central, le tri bruit/signal, la ruine qui prévient des années à l'avance, et le playbook à cinq paliers."},
-			{"marche-baissier-en-retraite", "Traverser un marché baissier en retraite : le playbook", "Trois ours, la semaine 1 du rien actif, les gestes mécaniques du creux (dont la récolte de moins-values), les interdits, et la sortie."},
+			{"marche-baissier-en-retraite", "Traverser un marché baissier en retraite : le playbook", "Trois marchés baissiers, la semaine 1 du rien actif, les gestes mécaniques du creux (dont la récolte de moins-values), les interdits, et la sortie."},
 			{"revenus-complementaires", "Pensions et revenus complémentaires dans le plan", "Trois catégories, trois traitements : les quatre mécanismes d'un flux, la saisie exacte dans pofo, et le test du plan trop adossé."},
 			{"depenses-en-retraite", "Les dépenses réelles en retraite (retirement smile, Die With Zero)", "Le sourire de Blanchett, les time buckets datés, le front-loading assumé du FIRE précoce, et l'ingénierie du budget à étages temporels."},
 			{"cas-types", "Trois plans complets, chiffrés de bout en bout", "Le solo précoce, le couple classique, le tardif au pont court : trois conceptions déroulées, validées, et leurs leçons croisées."},
