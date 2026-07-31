@@ -241,7 +241,7 @@ Options:
 		}
 		addSpec(spec)
 	}
-	for _, id := range strings.Split(*assetsList, ",") {
+	for id := range strings.SplitSeq(*assetsList, ",") {
 		if id = strings.TrimSpace(id); id != "" {
 			addSpec(portfolio.Single(id))
 		}
@@ -288,11 +288,11 @@ Options:
 	// Benchmark for Beta, best effort.
 	var bench *marketdata.Series
 	if opt.benchmark != "" {
-		b, err := client.Fetch(opt.benchmark, opt.start)
+		b, err := client.FetchExtended(opt.benchmark, marketdata.FetchOptions{
+			From: opt.start, NoSim: true, Currency: opt.currency,
+		})
 		if err != nil {
 			log.Printf("warning: benchmark %s unavailable (no Beta): %v", opt.benchmark, err)
-		} else if b, err = convertToBase(client, b, &opt); err != nil {
-			log.Printf("warning: benchmark %s conversion failed (no Beta): %v", opt.benchmark, err)
 		} else {
 			bench = b
 		}
@@ -345,14 +345,15 @@ Options:
 		return nil
 	}
 	for _, spec := range specs {
-		p := buildPortfolio(spec, seriesByID, feesFor, opt.currency)
-		if spec.Leverage {
-			p.Leverage = true
-			p.BorrowSpread = spec.BorrowSpread
-			if p.BorrowSpread < 0 {
-				p.BorrowSpread = 1.0 // default: cash + 1 %/yr
-			}
-			p.Cash = cashRate
+		p, err := portfolio.Build(spec, portfolio.BuildOptions{
+			Fetch:        func(id string) (*marketdata.Series, error) { return seriesByID[id], nil },
+			Fees:         feesFor,
+			Cash:         cashRate,
+			BorrowSpread: 1.0, // default: cash + 1 %/yr
+			BaseCurrency: opt.currency,
+		})
+		if err != nil {
+			return err
 		}
 		// An optimized portfolio is shown next to its written weights, so
 		// the optimizer's choice can be compared with the baseline.
@@ -917,10 +918,7 @@ func printCoverageBars(cov map[suggest.Category]float64, gaps []suggest.Category
 	}
 	for _, c := range fw.Categories {
 		pct := cov[c] * 100
-		bars := int(pct/5 + 0.5)
-		if bars > 20 {
-			bars = 20
-		}
+		bars := min(int(pct/5+0.5), 20)
 		mark := ""
 		if gapSet[c] {
 			mark = "   ← gap"
@@ -1123,89 +1121,16 @@ func runFire(opt *options, c *marketdata.Client, specs []*portfolio.Spec) error 
 // extends the uncovered period backwards: first with the permanent simulated
 // series (embedded datasets, or -simdata), then a known proxy; real
 // quotes always win wherever they exist.
+// fetchAsset runs the full library pipeline (SIM extension, currency
+// conversion, window) for one asset, from the CLI options.
 func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
-	from, allowSim := opt.start, !opt.noSim
-	base, wantSim := marketdata.SplitSim(id)
-	if !wantSim || !allowSim {
-		s, err := c.Fetch(base, from)
-		if err != nil {
-			return nil, err
-		}
-		s, err = convertToBase(c, s, opt)
-		if err != nil {
-			return nil, err
-		}
-		return trim(s, time.Time{}, opt.end), nil
-	}
-	canonical := marketdata.CanonicalID(base)
-	sim, simOK, simErr := marketdata.ReadSimdataFS(opt.simdata, canonical)
-	if simErr != nil {
-		log.Printf("warning: simdata %s unreadable: %v", canonical, simErr)
-	}
-	if simOK {
-		sim = trim(sim, from, time.Time{})
-		simOK = len(sim.Points) >= 2
-	}
-	s, err := c.Fetch(base, from)
-	if err != nil {
-		if simOK {
-			log.Printf("warning: %s unavailable (%v), using simulated data only", base, err)
-			sim.SimulatedBefore = sim.Last().Date
-			sim.ProxySymbol = "simdata"
-			return trim(sim, time.Time{}, opt.end), nil
-		}
-		return nil, err
-	}
-	// The client memoizes series by symbol: work on a copy so that the
-	// extension never leaks into the bare (real-data-only) variant of the
-	// same asset. ExtendBack allocates a fresh Points slice.
-	cp := *s
-	s = &cp
-	if simOK && marketdata.ExtendBack(s, sim) {
-		s.ProxySymbol = "simdata"
-		log.Printf("%s: history extended via simdata starting %s",
-			canonical, s.First().Date.Format("2006-01-02"))
-	}
-	// Only bother with a proxy when at least six months are missing.
-	if s.SimulatedBefore.IsZero() && s.First().Date.After(from.AddDate(0, 6, 0)) {
-		proxySym, ok := marketdata.ProxySymbol(canonical)
-		if !ok {
-			proxySym, ok = marketdata.ProxySymbol(s.Symbol)
-		}
-		if ok {
-			ps, perr := c.History(proxySym, from)
-			if perr != nil {
-				log.Printf("warning: proxy %s for %s unavailable: %v", proxySym, s.Symbol, perr)
-			} else if marketdata.ExtendBack(s, ps) {
-				log.Printf("%s: history extended via %s starting %s",
-					s.Symbol, proxySym, s.First().Date.Format("2006-01-02"))
-			}
-		}
-	}
-	s, err = convertToBase(c, s, opt)
-	if err != nil {
-		return nil, err
-	}
-	return trim(s, time.Time{}, opt.end), nil
-}
-
-// convertToBase converts a series into the base currency (-currency). A
-// series with an unknown currency passes through unchanged: the mixed-
-// currency warning downstream points it out.
-func convertToBase(c *marketdata.Client, s *marketdata.Series, opt *options) (*marketdata.Series, error) {
-	if opt.currency == "" || s.Currency == "" || s.Currency == opt.currency {
-		return s, nil
-	}
-	native := s.Currency
-	out, extrapolated, err := c.ConvertCurrency(s, opt.currency, opt.start)
-	if err != nil {
-		return nil, err
-	}
-	if !extrapolated.IsZero() {
-		log.Printf("warning: %s: FX rate %s→%s unavailable before %s, held constant earlier",
-			s.Symbol, native, opt.currency, extrapolated.Format("2006-01-02"))
-	}
-	return out, nil
+	return c.FetchExtended(id, marketdata.FetchOptions{
+		From:     opt.start,
+		To:       opt.end,
+		NoSim:    opt.noSim,
+		Simdata:  opt.simdata,
+		Currency: opt.currency,
+	})
 }
 
 // inflationSeries returns the consumer-price index used to deflate nominal
@@ -1255,51 +1180,6 @@ func deflate(dates []time.Time, values []float64, cpi *marketdata.Series) []floa
 		}
 	}
 	return out
-}
-
-func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Series, feesFor func(string) (float64, bool), baseCurrency string) *portfolio.Portfolio {
-	p := &portfolio.Portfolio{Name: spec.Name, Warnings: spec.Warnings}
-	if spec.EnvelopeFees > 0 {
-		p.EnvelopeFees = spec.EnvelopeFees
-	}
-	if spec.Capital > 0 {
-		p.Capital = spec.Capital
-	}
-	p.Contribute, p.Withdraw = spec.Contribute, spec.Withdraw
-	currencies := map[string]bool{}
-	for _, h := range spec.Holdings {
-		s := seriesByID[h.ID]
-		fees := h.Fees // the file column takes precedence
-		if fees < 0 && feesFor != nil {
-			if ter, ok := feesFor(h.ID); ok {
-				fees = ter
-			}
-		}
-		p.Assets = append(p.Assets, portfolio.Asset{
-			ID:     h.ID,
-			Symbol: s.Symbol,
-			Name:   s.Name,
-			Weight: h.Weight,
-			Fees:   fees,
-			Series: s,
-		})
-		if s.Currency != "" {
-			currencies[s.Currency] = true
-		} else if baseCurrency != "" {
-			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"%s: unknown currency, left unconverted", s.Symbol))
-		}
-	}
-	if len(currencies) > 1 {
-		list := make([]string, 0, len(currencies))
-		for c := range currencies {
-			list = append(list, c)
-		}
-		sort.Strings(list)
-		p.Warnings = append(p.Warnings, fmt.Sprintf(
-			"mixed currencies (%s), no FX conversion applied", strings.Join(list, ", ")))
-	}
-	return p
 }
 
 // optimizedPortfolio returns a copy of base whose weights are replaced by
@@ -1685,10 +1565,7 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw sug
 	bars := make([]report.CoverageBar, 0, len(fw.Categories))
 	for _, rg := range fw.Categories {
 		pct := int(cov[rg]*100 + 0.5)
-		width := pct
-		if width > 100 {
-			width = 100
-		}
+		width := min(pct, 100)
 		bars = append(bars, report.CoverageBar{Regime: string(rg), Pct: pct, Width: width, Gap: gapSet[rg]})
 	}
 	return bars
@@ -2000,26 +1877,6 @@ func window(dates []time.Time, from, to time.Time) (int, int) {
 	i := sort.Search(len(dates), func(k int) bool { return !dates[k].Before(from) })
 	j := sort.Search(len(dates), func(k int) bool { return dates[k].After(to) })
 	return i, j
-}
-
-// trim returns s restricted to [from, to]; zero bounds are open. The input
-// may be shared through memoization, so trimming always works on a copy; it
-// is returned as-is when nothing falls outside the bounds.
-func trim(s *marketdata.Series, from, to time.Time) *marketdata.Series {
-	if len(s.Points) == 0 ||
-		((from.IsZero() || !s.First().Date.Before(from)) &&
-			(to.IsZero() || !s.Last().Date.After(to))) {
-		return s
-	}
-	out := *s
-	out.Points = nil
-	for _, p := range s.Points {
-		if (!from.IsZero() && p.Date.Before(from)) || (!to.IsZero() && p.Date.After(to)) {
-			continue
-		}
-		out.Points = append(out.Points, p)
-	}
-	return &out
 }
 
 // rebase rescales a value slice so that it starts at 100.
