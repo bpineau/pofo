@@ -278,6 +278,45 @@ Options:
 		return runPermanent(ctx, &opt, client)
 	}
 
+	cmp, err := computeComparison(ctx, client, &opt, specs)
+	if err != nil {
+		return err
+	}
+	if opt.cli {
+		return renderCLI(cmp.results, &opt, cmp.commonStart, cmp.commonEnd, cmp.meta)
+	}
+	buf, err := renderPage(cmp, &opt)
+	if err != nil {
+		return err
+	}
+	outPath := opt.out
+	if outPath == "" {
+		outPath = fmt.Sprintf("/tmp/pofo-%s.html", time.Now().Format("20060102-150405"))
+	}
+	if err := os.WriteFile(outPath, buf, 0o644); err != nil {
+		return err
+	}
+	log.Printf("report written to %s", outPath)
+	if !opt.noOpen {
+		openBrowser(outPath)
+	}
+	return nil
+}
+
+// comparison is the outcome of the fetch -> build -> simulate -> stats
+// pipeline, ready for either renderer (HTML page or terminal).
+type comparison struct {
+	results     []*result
+	bench       *marketdata.Series
+	commonStart time.Time
+	commonEnd   time.Time
+	meta        map[string]suggest.Meta
+}
+
+// computeComparison runs the whole comparison pipeline for already-parsed
+// specs: quotes and benchmark fetches, portfolio builds, simulations, the
+// common window, and nominal/real statistics.
+func computeComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) (*comparison, error) {
 	// Download every distinct (currency, asset) once. A "#meta currencies"
 	// directive evaluates the same portfolio in several currencies.
 	seriesByCur := map[string]map[string]*marketdata.Series{}
@@ -299,9 +338,9 @@ Options:
 				if _, ok := m[fetchID]; ok {
 					continue
 				}
-				s, err := fetchAssetIn(ctx, client, fetchID, &opt, cur)
+				s, err := fetchAssetIn(ctx, client, fetchID, opt, cur)
 				if err != nil {
-					return fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
+					return nil, fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
 				}
 				m[fetchID] = s
 				// Surface what each identifier resolved to: a fuzzy source match
@@ -394,7 +433,7 @@ Options:
 				BaseCurrency: cur,
 			})
 			if err != nil {
-				return err
+				return nil, err
 			}
 			// Multi-currency: tag each column with its currency.
 			if len(spec.Currencies) > 0 {
@@ -406,20 +445,20 @@ Options:
 			if spec.Optimize != nil {
 				pOpt, note, err := optimizedPortfolio(p, spec, benchIn(cur))
 				if err != nil {
-					return fmt.Errorf("portfolio %s: %w", spec.Name, err)
+					return nil, fmt.Errorf("portfolio %s: %w", spec.Name, err)
 				}
 				p.Name = spec.Name + " (as written)"
 				if err := simulateInto(p, spec, cur); err != nil {
-					return err
+					return nil, err
 				}
 				if err := simulateInto(pOpt, spec, cur); err != nil {
-					return err
+					return nil, err
 				}
 				results[len(results)-1].note = note
 				continue
 			}
 			if err := simulateInto(p, spec, cur); err != nil {
-				return err
+				return nil, err
 			}
 		}
 	}
@@ -437,7 +476,7 @@ Options:
 		}
 	}
 	if !commonStart.Before(commonEnd) {
-		return errors.New("no common period across the portfolios")
+		return nil, errors.New("no common period across the portfolios")
 	}
 	// Consumer-price index per currency, memoized, to report drawdowns/TTR and
 	// real stats in purchasing-power terms alongside the nominal ones.
@@ -457,13 +496,13 @@ Options:
 	for _, r := range results {
 		i, j := window(r.sim.Dates, commonStart, commonEnd)
 		if j-i < 2 {
-			return fmt.Errorf("portfolio %s: too few points in the common window", r.p.Name)
+			return nil, fmt.Errorf("portfolio %s: too few points in the common window", r.p.Name)
 		}
 		r.winDates = r.sim.Dates[i:j]
 		r.winValues = rebase(r.sim.Index[i:j])
 		st, err := metrics.Compute(r.winDates, r.winValues)
 		if err != nil {
-			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
+			return nil, fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
 		if d, ok := deflatorIn(r.currency); ok {
 			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, d)); err == nil {
@@ -489,27 +528,31 @@ Options:
 		log.Printf("warning: asset metadata unavailable (%v), regime coverage omitted", err)
 	}
 
-	if opt.cli {
-		return renderCLI(results, &opt, commonStart, commonEnd, assetMeta)
-	}
+	return &comparison{results: results, bench: bench, commonStart: commonStart, commonEnd: commonEnd, meta: assetMeta}, nil
+}
 
-	page := buildPage(results, &opt, bench, commonStart, commonEnd, assetMeta)
+// renderPage renders a computed comparison to the HTML report bytes.
+func renderPage(cmp *comparison, opt *options) ([]byte, error) {
+	page := buildPage(cmp.results, opt, cmp.bench, cmp.commonStart, cmp.commonEnd, cmp.meta)
 	var buf bytes.Buffer
 	if err := report.Render(&buf, page); err != nil {
-		return err
+		return nil, err
 	}
-	outPath := opt.out
-	if outPath == "" {
-		outPath = fmt.Sprintf("/tmp/pofo-%s.html", time.Now().Format("20060102-150405"))
+	return buf.Bytes(), nil
+}
+
+// renderComparison runs the whole pipeline and renders the HTML report:
+// the single entry point the web server needs.
+//
+// report without writing a file); used once that mode lands.
+//
+//lint:ignore U1000 entry point for the forthcoming web server (renders a
+func renderComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) ([]byte, error) {
+	cmp, err := computeComparison(ctx, client, opt, specs)
+	if err != nil {
+		return nil, err
 	}
-	if err := os.WriteFile(outPath, buf.Bytes(), 0o644); err != nil {
-		return err
-	}
-	log.Printf("report written to %s", outPath)
-	if !opt.noOpen {
-		openBrowser(outPath)
-	}
-	return nil
+	return renderPage(cmp, opt)
 }
 
 // renderCLI prints the comparison curves and the summary table straight to
