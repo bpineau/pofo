@@ -20,6 +20,10 @@ Une protection contre l'inflation se juge sur **deux** questions, jamais une seu
 
 **Les actions mondiales, la protection lente** ([[allocation-actions-obligations]], [[diversification-internationale]]). Le point qui embrouille tout le monde mérite d'être dit une fois clairement. Pendant l'épisode, les actions **perdent** en réel (compression des multiples, 1973-74, 2022). Elles ne sont **pas** une couverture d'épisode. Mais à horizon de 5 à 15 ans, les entreprises réajustent leurs prix, car leurs revenus et leurs actifs sont réels. Les actions sont alors historiquement le **seul** actif productif qui rattrape puis dépasse l'inflation cumulée. Le moteur du plan est aussi sa protection de fond. Raison de plus pour ne jamais le sous-dimensionner par peur de l'inflation. C'est l'erreur de 1975, tout vendre pour du monétaire « sûr » et se faire éroder pendant la décennie de rattrapage.
 
+::: figure actions-rattrapent
+Le S&P 500 dividendes réinvestis, en dollars, déflaté par le CPI américain, base 100 fin décembre 1972. Le creux de septembre 1974 efface plus de la moitié du pouvoir d'achat, et l'indice ne repasse au-dessus qu'en janvier 1985. Mais il n'y est jamais redescendu depuis, et c'est notre définition du rattrapage durable.
+:::
+
 **Les dettes fixes que l'on doit** ([[immobilier-en-retrait]], [[levier-et-marges]]). C'est l'indexation négative. Un crédit à 1,5 % fixe pendant une inflation à 4 % se rembourse en monnaie fondue. Conserver une dette à taux fixe bas, c'est comptablement détenir un actif anti-inflation de la taille du capital restant dû. Le tout sous les conditions de prudence déjà posées.
 
 **Le facteur value, la demi-brique** ([[facteurs-fama-french]]). C'est l'inclinaison de la poche actions qui a le meilleur bulletin dans les régimes inflationnistes. Gratuite en espérance, à l'écart à l'indice près.
