@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
@@ -31,5 +32,19 @@ func TestSeriesAt(t *testing.T) {
 	var nilSeries *Series
 	if _, _, ok := nilSeries.At(d(1)); ok {
 		t.Error("nil series should not be ok")
+	}
+}
+
+func TestMergeDividends(t *testing.T) {
+	d := func(day int) time.Time { return time.Date(2024, 1, day, 0, 0, 0, 0, time.UTC) }
+	got := MergeDividends(nil, Dividend{Date: d(10), Amount: 1})
+	got = MergeDividends(got,
+		Dividend{Date: d(5), Amount: 2},    // insert before
+		Dividend{Date: d(10), Amount: 1.5}, // upsert existing
+		Dividend{Date: d(20), Amount: 3},   // append after
+	)
+	want := []Dividend{{Date: d(5), Amount: 2}, {Date: d(10), Amount: 1.5}, {Date: d(20), Amount: 3}}
+	if !reflect.DeepEqual(got, want) {
+		t.Fatalf("got %+v, want %+v", got, want)
 	}
 }

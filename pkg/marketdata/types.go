@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"slices"
 	"sort"
 	"time"
 )
@@ -23,6 +24,24 @@ type Point struct {
 type Dividend struct {
 	Date   time.Time
 	Amount float64
+}
+
+// MergeDividends upserts events into dst by ex-date (one event per date,
+// the newcomer wins) and returns dst sorted ascending. dst may be nil; the
+// natural building block for incremental dividend tracking alongside
+// Series.Dividends.
+func MergeDividends(dst []Dividend, events ...Dividend) []Dividend {
+	for _, ev := range events {
+		i, found := slices.BinarySearchFunc(dst, ev.Date, func(d Dividend, t time.Time) int {
+			return d.Date.Compare(t)
+		})
+		if found {
+			dst[i] = ev
+		} else {
+			dst = slices.Insert(dst, i, ev)
+		}
+	}
+	return dst
 }
 
 // Series is the price history of one asset, sorted by ascending date.
