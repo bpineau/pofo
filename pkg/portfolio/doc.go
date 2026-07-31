@@ -39,7 +39,7 @@
 //	spec, _ := portfolio.ParseFile("p.txt")
 //	p, _ := portfolio.Build(spec, portfolio.BuildOptions{
 //		Fetch: func(id string) (*marketdata.Series, error) {
-//			return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+//			return client.FetchExtended(ctx, id, marketdata.FetchOptions{Currency: "EUR"})
 //		},
 //	})
 //	sim, _ := portfolio.Simulate(p, 90)
