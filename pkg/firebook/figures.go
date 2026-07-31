@@ -110,6 +110,7 @@ var figures = map[string]func() string{
 	"vpw-test-de-perte":      figVpwTestDePerte,
 	"victimes-regimes":       figVictimesRegimes,
 	"cape-contracyclique":    figCapeContracyclique,
+	"cape-dix-ans":           figCapeDixAns,
 	"credits-mortalite":      figCreditsMortalite,
 	"arbre-decision":         figArbreDecision,
 	"deux-thermometres":      figDeuxThermometres,
