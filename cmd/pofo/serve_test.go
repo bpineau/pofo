@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"html"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -348,6 +350,47 @@ func TestServeHub(t *testing.T) {
 	// default).
 	if !strings.Contains(body, "#faf6ef") {
 		t.Error("hub missing the warm book skin")
+	}
+	// The examples catalog is now folded under the composer.
+	if !strings.Contains(body, `<details class="hub-examples"`) {
+		t.Error("hub examples must be folded into a <details>")
+	}
+}
+
+// TestServeHubComposer locks the composer-first front door: the empty composer
+// mount with its blank-boot and asset links, and the embedded presets (valid
+// JSON whose p= round-trips through adhocSpec, unforkable examples excluded).
+func TestServeHubComposer(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	body := serveGet(t, h, "/").Body.String()
+
+	for _, want := range []string{
+		`id="composer"`, `data-boot="blank"`, `data-globals=`,
+		`href="/composer.css"`, `src="/composer.js"`, `data-preset-count=`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("hub composer missing %q", want)
+		}
+	}
+
+	// Every embedded preset is valid JSON whose p= the server would accept.
+	re := regexp.MustCompile(`data-preset-\d+="([^"]*)"`)
+	matches := re.FindAllStringSubmatch(body, -1)
+	if len(matches) < 50 {
+		t.Fatalf("only %d presets embedded, want >= 50", len(matches))
+	}
+	for _, m := range matches {
+		var p composerPreset
+		if err := json.Unmarshal([]byte(html.UnescapeString(m[1])), &p); err != nil {
+			t.Fatalf("preset JSON %q: %v", m[1], err)
+		}
+		if holdings, _, _ := strings.Cut(p.P, "!"); holdings == "" {
+			t.Errorf("preset %q is unforkable and must have been excluded", p.Name)
+		}
+		if _, err := adhocSpec(p.P, 1); err != nil {
+			t.Errorf("preset %q p=%q does not round-trip through adhocSpec: %v", p.Name, p.P, err)
+		}
 	}
 }
 

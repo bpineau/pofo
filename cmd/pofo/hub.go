@@ -1,20 +1,28 @@
-// The hub: the constellation's front door and the examples catalog. It lists
-// every bundled portfolio file with a custom-styled checkbox, all inside one
-// pure-GET form that submits the ticked names, plus an explicit defaults row
-// (currency, rebalance, sim), to /view for a side-by-side backtest, and points
-// onward to the FIRE simulator and the FIRE book.
+// The hub: the constellation's front door. Its primary content is the live
+// composer (composer.go), booted empty so a visitor lands on one editable card
+// and builds up to six custom portfolios by hand or from a bundled build (the
+// "add preset" dropdown), then Runs one /view backtest comparing them; the
+// address bar is the shareable /view link the whole time.
 //
-// The defaults row is pre-filled from the pofo_prefs cookie (server defaults
-// otherwise); when a cookie exists, each row's "Open" link also carries the
-// stored prefs so a one-click path honors them while the URL stays fully
-// explicit. The cookie is read server-side only.
+// The bundled-examples catalog is secondary: folded under the composer in a
+// collapsed <details>, it lists every portfolio file with a custom-styled
+// checkbox inside one pure-GET form that submits the ticked names, plus a
+// defaults row (currency, rebalance, sim), to /view for a side-by-side backtest.
+//
+// The defaults row and the composer's globals row are both pre-filled from the
+// pofo_prefs cookie (server defaults otherwise); when a cookie exists, each
+// example row's "Open" link also carries the stored prefs so a one-click path
+// honors them while the URL stays fully explicit. The cookie is read
+// server-side only.
 //
 // The page is styled with the shared webui tokens (served from /theme.css and
 // /fonts.css) remapped to the FIRE book's warm paper-and-ink identity
 // (webui.WarmSkin), so the hub and the /view report read as the book's kin
-// while the FIRE simulator keeps the instrument look. Each row also offers to
-// send its portfolio straight to the simulator (/fire/e/<name>/). All CSS is
-// inline and self-contained; the page carries no JavaScript.
+// while the FIRE simulator keeps the instrument look. Each example row also
+// offers to send its portfolio straight to the simulator (/fire/e/<name>/).
+// The composer links /composer.css and /composer.js; the folded examples form
+// stays fully functional without JavaScript (progressive enhancement, the
+// composer simply not booting).
 package main
 
 import (
@@ -133,7 +141,20 @@ body.hub{background:
   font-weight:600;color:var(--ink);font-size:.98rem}
 .hub-dest .d-t .arw{font-family:var(--mono);color:var(--accent);font-weight:400}
 .hub-dest .d-b{display:block;color:var(--muted);font-size:.84rem;line-height:1.42;margin-top:.25rem}
-.hub-form{margin-top:2.7rem}
+/* the composer is the hero: strip its standalone centring/padding so it aligns
+   to the hub column, and keep it visually first */
+.hub .cmp{max-width:none;margin:2rem 0 0;padding:0}
+/* folded examples catalog */
+.hub-examples{margin-top:2.6rem;border-top:1px solid var(--line-strong);padding-top:1.5rem}
+.hub-exsum{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.hub-exsum::-webkit-details-marker{display:none}
+.hub-exsum::before{content:"\203A";font-family:var(--mono);color:var(--accent);font-size:1.15rem;
+  line-height:1;transition:transform .15s;display:inline-block;transform:translateY(.05rem)}
+.hub-examples[open] .hub-exsum::before{transform:translateY(.05rem) rotate(90deg)}
+.hub-exsum-t{font-family:var(--sans);font-weight:650;font-size:.98rem;color:var(--ink)}
+.hub-exsum-t b{font-family:var(--mono);color:var(--accent-ink);font-weight:600;margin-left:.3rem}
+.hub-exsum-h{color:var(--muted);font-size:.82rem}
+.hub-form{margin-top:1.3rem}
 .hub-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;
   justify-content:space-between;gap:.5rem 1rem;padding:.8rem 0;background:var(--bg);
   border-bottom:1px solid var(--line-strong)}
@@ -196,17 +217,22 @@ body.hub{background:
 <section class="hub-hero">
   <p class="hub-kicker">Portfolio lab</p>
   <h1>Put portfolios side by side.</h1>
-  <p class="hub-lede">These are the example builds bundled with pofo, from three-fund lazy portfolios
-  to capital-efficient return-stacked machines. Tick any number of them and compare them on one backtest.</p>
-  <nav class="hub-dest">
-    <a href="/fire/"><span class="d-t">FIRE simulator <span class="arw">&rarr;</span></span>
-      <span class="d-b">Model a withdrawal plan and its odds of lasting.</span></a>
-    <a href="/book/fr/"><span class="d-t">FIRE handbook <span class="arw">&rarr;</span></span>
-      <span class="d-b">The decumulation book, in French.</span></a>
-  </nav>
+  <p class="hub-lede">Build portfolios by hand or drop in a bundled build, put up to six on one backtest,
+  and share the link. Everything runs on this machine.</p>
 </section>
 
-<form class="hub-form" action="/view" method="get">
+{{.Composer}}
+
+<nav class="hub-dest">
+  <a href="/fire/"><span class="d-t">FIRE simulator <span class="arw">&rarr;</span></span>
+    <span class="d-b">Model a withdrawal plan and its odds of lasting.</span></a>
+  <a href="/book/fr/"><span class="d-t">FIRE handbook <span class="arw">&rarr;</span></span>
+    <span class="d-b">The decumulation book, in French.</span></a>
+</nav>
+
+<details class="hub-examples">
+  <summary class="hub-exsum"><span class="hub-exsum-t">Example portfolios <b>{{len .Items}}</b></span><span class="hub-exsum-h">bundled builds, ready to compare or fork into the composer</span></summary>
+  <form class="hub-form" action="/view" method="get">
   <div class="hub-bar">
     <p class="lbl">Example portfolios <b>{{len .Items}}</b></p>
     <div class="hub-defs">
@@ -241,7 +267,8 @@ body.hub{background:
     </span>
   </li>
   {{end}}</ul>
-</form>
+  </form>
+</details>
 
 <footer class="hub-foot">
   <span>Everything runs on this machine. No portfolio leaves it.</span>
@@ -278,9 +305,10 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_ = hubTmpl.Execute(w, struct {
 		Skin       template.CSS
+		Composer   template.HTML
 		Items      []hubItem
 		Prefs      hubPrefs
 		Currencies []string
 		Rebalances []int
-	}{template.CSS(webui.WarmSkin), hubItems(), prefs, currencies, rebalances})
+	}{template.CSS(webui.WarmSkin), hubComposerMount(prefs, s.presets), hubItems(), prefs, currencies, rebalances})
 }
