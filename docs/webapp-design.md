@@ -259,8 +259,14 @@ smallest lever first:
   the server render. No new server capability beyond the `/catalog.json`
   read-only endpoint, just a front end over the existing grammar. See "The live
   composer" above.
-- **M4: extract the report assembly into `pkg/`.** `/view` currently reaches
-  into `cmd/pofo`'s report-assembly path (`renderComparison` and friends).
-  Pushing that reusable pipeline down into a package (the way `FetchExtended`
-  and `portfolio.Build` were extracted) lets any server, not just this CLI,
-  render the comparison report, and shrinks `cmd/pofo` back to wiring.
+- **M4: extract the report assembly into `pkg/`.** Shipped (2026-07-20),
+  completing the ladder. The reusable pipeline moved into `pkg/compare` (the way
+  `FetchExtended` and `portfolio.Build` were extracted): `compare.Compute`
+  fetches, builds, simulates, aligns the common window and computes the
+  nominal/real statistics, and `Comparison.HTMLPage` assembles the report
+  `Page`. `/view` renders through it, so any server, not just this CLI, can
+  produce the comparison report. `renderComparison` in `cmd/pofo` is now a thin
+  mapper (`opt.compareOptions()` -> `compare.Compute` -> `HTMLPage(opt.decoration())`
+  -> `report.Render`); the web chrome (skin CSS, site nav, composer, FIRE href)
+  arrives through `compare.Decoration`, keeping the standalone CLI report
+  byte-identical. `cmd/pofo` is back to wiring.
