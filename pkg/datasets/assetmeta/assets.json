@@ -8026,7 +8026,9 @@
   {
     "id": "LU1662501532",
     "isin": "LU1662501532",
-    "aliases": [],
+    "aliases": [
+      "RAEF"
+    ],
     "name": "AQR Managed Futures UCITS Fund RAEF EUR (hedged, no perf fee)",
     "ucits": true,
     "eu_retail": true,
@@ -8052,9 +8054,41 @@
     ]
   },
   {
+    "id": "LU1103258197",
+    "isin": "LU1103258197",
+    "aliases": [],
+    "name": "AQR Managed Futures UCITS Fund B EUR Cap (legacy, hedged)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "535661342",
+    "currency": "EUR",
+    "fees": 0.73,
+    "since": "2015-03-17",
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "notes": "Legacy institutional-era B EUR class of the AQR Managed Futures UCITS fund (mgmt 0.60%, OCF ~0.73%): the real EUR-hedged donor for the RAEF (LU1662501532) backcast, continuous NAVs 2015-03 to 2021-12 then a ~2y hole (class emptied) before resuming 2023-10. Effectively closed to new retail money (legacy class); kept for resolution and the simdata recipe.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.fundsquare.net/fund-tree?idInstr=202658",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103258197:EUR"
+    ]
+  },
+  {
     "id": "LU1662499612",
     "isin": "LU1662499612",
-    "aliases": [],
+    "aliases": [
+      "IAE2F"
+    ],
     "name": "AQR Managed Futures UCITS Fund IAE2F EUR (hedged, no perf fee)",
     "ucits": true,
     "eu_retail": true,
