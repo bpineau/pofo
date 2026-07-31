@@ -1,6 +1,6 @@
-# Pinwheel Portfolio (Portfolio Charts) — modernized, UCITS
+# Pinwheel Portfolio (Portfolio Charts) -- modernized, UCITS
 # Idea: four equity quadrants (total / large value / small value / EM or intl)
-#   spun around a balanced bond+gold+REIT core — broad, diversified, mild tilts.
+#   spun around a balanced bond+gold+REIT core -- broad, diversified, mild tilts.
 # Inspired by: Portfolio Charts 'Pinwheel'.
 #   https://portfoliocharts.com/portfolio/pinwheel-portfolio/
 # UCITS.
