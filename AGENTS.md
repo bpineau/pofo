@@ -83,6 +83,10 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Asset TERs are ALREADY reflected in prices: `Simulate` never deducts
   them (informational). Envelope fees (`extra-fees`) are NOT in prices and
   are deducted daily.
+- Closes are ADJUSTED (total-return) by default; `Series.Dividends` +
+  adjusted closes double-counts income. Valuation consumers use
+  `FetchOptions.Raw` (unadjusted closes + dividends as cash); Raw + SIM
+  suffix is an error.
 - With external flows, `SimResult.Values` follows the money while
   `SimResult.Index` is the time-weighted series: compute statistics and
   comparisons on `Index`, money outcomes (IRR) on `Values` + flows.

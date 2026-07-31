@@ -37,9 +37,12 @@ func (c *Client) yahooGet(ctx context.Context, base, path string) ([]byte, error
 	return body, err
 }
 
-// fetchYahoo downloads daily history from the Yahoo Finance chart API.
-func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time) (*Series, error) {
-	path := fmt.Sprintf("/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d&includeAdjustedClose=true",
+// fetchYahoo downloads daily history from the Yahoo Finance chart API,
+// dividend events included. With raw it serves the unadjusted close column
+// (split-adjusted but not dividend-adjusted) instead of the default
+// adjusted one.
+func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, raw bool) (*Series, error) {
+	path := fmt.Sprintf("/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d&includeAdjustedClose=true&events=div",
 		url.PathEscape(symbol), from.Unix(), time.Now().Add(24*time.Hour).Unix())
 	body, err := c.yahooGet(ctx, c.ChartBase, path)
 	if err != nil {
@@ -54,7 +57,13 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time) 
 					LongName  string `json:"longName"`
 					ShortName string `json:"shortName"`
 				} `json:"meta"`
-				Timestamp  []int64 `json:"timestamp"`
+				Timestamp []int64 `json:"timestamp"`
+				Events    struct {
+					Dividends map[string]struct {
+						Amount float64 `json:"amount"`
+						Date   int64   `json:"date"`
+					} `json:"dividends"`
+				} `json:"events"`
 				Indicators struct {
 					Quote []struct {
 						Close []*float64 `json:"close"`
@@ -83,7 +92,7 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time) 
 
 	var closes []*float64
 	switch {
-	case len(r.Indicators.Adjclose) > 0 && len(r.Indicators.Adjclose[0].Adjclose) == len(r.Timestamp):
+	case !raw && len(r.Indicators.Adjclose) > 0 && len(r.Indicators.Adjclose[0].Adjclose) == len(r.Timestamp):
 		closes = r.Indicators.Adjclose[0].Adjclose
 	case len(r.Indicators.Quote) > 0 && len(r.Indicators.Quote[0].Close) == len(r.Timestamp):
 		closes = r.Indicators.Quote[0].Close
@@ -113,6 +122,13 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time) 
 		s.Points = append(s.Points, Point{Date: day, Close: *cl})
 	}
 	sort.Slice(s.Points, func(i, j int) bool { return s.Points[i].Date.Before(s.Points[j].Date) })
+	for _, ev := range r.Events.Dividends {
+		if ev.Amount <= 0 {
+			continue
+		}
+		s.Dividends = append(s.Dividends, Dividend{Date: dayUTC(time.Unix(ev.Date, 0).UTC()), Amount: ev.Amount})
+	}
+	sort.Slice(s.Dividends, func(i, j int) bool { return s.Dividends[i].Date.Before(s.Dividends[j].Date) })
 	return s, nil
 }
 

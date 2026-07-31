@@ -17,6 +17,14 @@ type Point struct {
 	Close float64   // adjusted close (dividends and splits reinvested when available)
 }
 
+// Dividend is one cash distribution of an asset: the ex-date (normalized to
+// 00:00 UTC like every Point) and the per-share amount in the series' quote
+// currency.
+type Dividend struct {
+	Date   time.Time
+	Amount float64
+}
+
 // Series is the price history of one asset, sorted by ascending date.
 type Series struct {
 	Symbol   string
@@ -24,6 +32,12 @@ type Series struct {
 	Currency string
 	Source   string // "yahoo", "stooq", "ft", "morningstar" or "simdata"
 	Points   []Point
+
+	// Dividends lists the cash distributions the source reported, sorted
+	// by ex-date. Beware of double counting: the default (adjusted) close
+	// series already reinvests them; pair Dividends with raw closes
+	// (FetchOptions.Raw) when accounting for income separately.
+	Dividends []Dividend
 
 	// SimulatedBefore is non-zero when points before that date were
 	// reconstructed from ProxySymbol instead of actual quotes.
