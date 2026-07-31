@@ -1,4 +1,4 @@
-# Dragon-decu -- dragon-lite re-tuned for the decumulation years.
+# Dragon-decumulation -- dragon-lite re-tuned for the decumulation years.
 #
 # STATUS: fully implementable today from an EU/French retail account (four
 #   UCITS lines plus one UCITS-eligible ETC), five trades to rebalance.
@@ -7,7 +7,7 @@
 #   decumulation optimum of its own design space, and it knows it". This
 #   is that optimum, kept at five lines. The family now reads: dragon-lite
 #   for the accumulation years, hydra-five-engines-ucits as the engineered
-#   all-rounder, dragon-decu for the years when the flows reverse.
+#   all-rounder, dragon-decumulation for the years when the flows reverse.
 #
 # Thesis in one line: same engines as dragon-lite, but tuned for a
 #   spending portfolio: a smaller growth core, the trend sleeve split
@@ -150,7 +150,7 @@
 #
 #   LENS A, the raw common window (2005-11 -> 2026-07 with IBCI; the
 #   2000-07 panel with the TIPS proxy for the ruin figures). In-sample,
-#   dragon-decu vs dragon-lite vs UCITS hydra: CAGR 7.9 / 9.4 / 8.6%,
+#   dragon-decumulation vs dragon-lite vs UCITS hydra: CAGR 7.9 / 9.4 / 8.6%,
 #   vol 9.9 / 13.0 / 11.0%, Sharpe 0.80 / 0.76 / 0.79, real max drawdown
 #   -19.5 / -21.6 / -21.1%, Ulcer 3.8 / 5.3 / 4.6, longest recovery 2.0 /
 #   2.9 / 2.7y. Decumulation check (monthly real bootstrap, 40y, rigid 4%
@@ -165,10 +165,10 @@
 #   at 5% ruin 2.54 / 2.23 / 2.33%, and the linkers sweep turns
 #   monotonically FAVORABLE (0% -> 20% linkers lifts the safe rate 2.38%
 #   -> 2.62%). This lens says: if the next decades pay valuation-
-#   compressed returns, the lowest-risk book wins and dragon-decu leads
+#   compressed returns, the lowest-risk book wins and dragon-decumulation leads
 #   the family. KNOWN BIAS: it hands every candidate the same forward
 #   mean, which flatters low-volatility mixes.
-#   WHAT SURVIVES BOTH LENSES: dragon-decu is never the worst; it owns
+#   WHAT SURVIVES BOTH LENSES: dragon-decumulation is never the worst; it owns
 #   the family's best drawdown depth, duration and Ulcer under lens A and
 #   its best safe rate under lens B; and dragon-lite reads worst under
 #   both decumulation lenses, confirming its own honesty note. What no
@@ -246,7 +246,7 @@
 # Siblings: claude-dragonlite.txt (the accumulation flagship this file
 #   descends from), hydra-five-engines-ucits.txt (the engineered
 #   all-rounder; add linkers to it and you get this file's big brother),
-#   dragon-decu-household.txt (this design deployed across French tax
+#   dragon-decumulationmulation-household.txt (this design deployed across French tax
 #   wrappers, PEA/PEA-PME section included), fire-liability-buffer.txt
 #   (the euro buffer this file assumes), dragon-portfolio-artemis.txt
 #   (the common ancestor).
