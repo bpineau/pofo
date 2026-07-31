@@ -328,6 +328,26 @@ func (p Plan) schedAt(year int) float64 {
 	return 1
 }
 
+// cashflowPV is the present value, discounted at r to year from, of every
+// cashflow between from (inclusive) and the horizon. The amortization rule
+// adds it to the portfolio's liquidation value so a future pension raises
+// today's sustainable budget, the TPAW treatment of retirement income.
+func (p Plan) cashflowPV(from int, r float64) float64 {
+	pv := 0.0
+	for j := from; j < p.Years; j++ {
+		cf := 0.0
+		for _, c := range p.Cashflows {
+			if j >= c.FromYear && (c.ToYear == 0 || j < c.ToYear) {
+				cf += c.Annual
+			}
+		}
+		if cf > 0 {
+			pv += cf / math.Pow(1+r, float64(j-from))
+		}
+	}
+	return pv
+}
+
 // netOf reduces a gross annual spend by the cashflows active in the year,
 // floored at 0. It lets the guardrails rule feed a dynamic spending level
 // through the same cashflow netting as the fixed NeedAnnual.
