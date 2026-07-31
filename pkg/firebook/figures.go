@@ -100,6 +100,7 @@ var figures = map[string]func() string{
 	"inflation-episode-derive": figInflationEpisodeDerive,
 	"actions-rattrapent":       figActionsRattrapent,
 	"bengen-falaise":           figBengenFalaise,
+	"buckets-allocation":       figBucketsAllocation,
 	"bengen-millesimes":        figBengenMillesimes,
 	"familles-information":     figFamillesInformation,
 	"pourcentage-lissages":     figPourcentageLissages,
