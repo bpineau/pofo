@@ -10,7 +10,7 @@ Concevez par les risques, pas par les actifs. Nommez les risques qui peuvent cas
 
 ## 1. Quels sont vos risques ?
 
-Commencez par nommer les ennemis du plan. Il y a d'abord les risques de marché, ceux que le portefeuille peut affronter. Le risque de séquence, l'ordre des rendements dans les premières années, est l'ennemi numéro un ([[sequence-des-rendements]]). Viennent le marché baissier prolongé (une décennie perdue), l'inflation persistante ([[inflation-et-taux-de-retrait]]), la déflation, et la crise de confiance monétaire ([[regimes-de-marche]] pour la grille croissance × inflation).
+Commencez par nommer les ennemis du plan. Il y a d'abord les risques de marché, ceux que le portefeuille peut affronter. Le risque de séquence, l'ordre des rendements dans les premières années, est l'ennemi numéro un ([[sequence-des-rendements]]). Viennent ensuite le marché baissier prolongé (une décennie perdue), l'inflation persistante ([[inflation-et-taux-de-retrait]]), la déflation, et la crise de confiance monétaire ([[regimes-de-marche]] pour la grille croissance × inflation).
 
 Il y a ensuite les risques que le portefeuille ne traite **pas**. La longévité ([[horizon-et-esperance-de-vie]]), la dépendance, le divorce, l'accident personnel. Nommez-les tous, car l'erreur classique est de défendre deux fois un risque de marché et d'oublier la longévité. Le portefeuille répond aux risques de marché. Le reste du plan répond aux autres, par les rentes, les provisions, la flexibilité et l'assurance.
 
@@ -22,9 +22,9 @@ Tout l'art est de choisir quelle queue de distribution assurer et laquelle accep
 
 ## 3. Quel est votre horizon ?
 
-L'horizon commande toutes les réponses. Un départ FIRE à 45 ans se planifie sur cinquante ans, un départ à 65 ans sur vingt-cinq ou trente. Plus l'horizon est long, plus le plan **a besoin** du moteur actions, car seules les actions battent l'inflation sur cinquante ans. Mais plus il est long, plus il expose à la séquence des premières années. La phase de pont, avant les pensions, est celle où le portefeuille porte tout et où la séquence fait ses dégâts ([[horizon-et-esperance-de-vie]]).
+L'horizon commande toutes les réponses. Un départ FIRE à 45 ans se planifie sur cinquante ans, un départ à 65 ans sur vingt-cinq ou trente. Plus l'horizon est long, plus le plan **a besoin** du moteur actions, car seules les actions battent l'inflation sur cinquante ans. Mais plus il est long, plus il vous expose à la séquence des premières années. La phase de pont, avant les pensions, est celle où le portefeuille porte tout et où la séquence fait ses dégâts ([[horizon-et-esperance-de-vie]]).
 
-L'horizon fixe aussi le quantile de survie sur lequel on planifie, un quantile prudent plutôt que la moyenne. Un horizon court accepte davantage de risque actions, car une décennie perdue pèse moins sur une courte durée. Un horizon long réclame à la fois plus d'actions **et** plus de défense de séquence. L'horizon est une donnée d'entrée de la conception, pas un détail.
+L'horizon fixe aussi le quantile de survie sur lequel on planifie, un quantile prudent plutôt que la moyenne. Un horizon court tolère moins de risque actions, car une décennie perdue pèse lourd sur une courte durée. Un horizon long réclame à la fois plus d'actions **et** plus de défense de séquence. L'horizon est une donnée d'entrée de la conception, pas un détail.
 
 ## 4. Quels revenus futurs ?
 
@@ -57,7 +57,7 @@ Rarement, et par règle, jamais sur l'actualité. Rééquilibrer mécaniquement 
 La thèse écrite de chaque brique, celle de la question 5, est précisément ce qui vous permet de **ne pas** changer sous le feu. Quand une brique déçoit, vous relisez sa thèse au lieu de la vendre la veille du jour où elle sert ([[psychologie-du-retrait]]). Un portefeuille reconçu à chaque crise n'a aucune conception.
 
 ::: exemple Une conception déroulée
-Léa et Marc, 50 ans, 1,3 M€, un pont de 15 ans avant deux pensions modestes mais sûres. Question 1, leurs risques : la séquence (le pont de 15 ans, dominant), l'inflation (leur cauchemar de régime), un krach long. La longévité et la santé se traitent hors portefeuille, par la flexibilité et une provision. Question 2 : ils acceptent le risque actions, leur moteur, et défendent la séquence et l'inflation. Question 3 : horizon de 45 ans, donc beaucoup d'actions nécessaires, mais les 15 premières années sont fragiles. Question 4 : les pensions futures sont une grosse obligation déjà au bilan, la poche liquide peut donc porter plus d'actions. Question 5, la carte : des actions monde (le moteur), un peu de duration et un matelas (la séquence), des linkers, de l'or et une pincée de trend (l'inflation). Le tout donne, disons, 65 % d'actions, 15 % d'obligations et linkers, 10 % d'or, 5 % de trend, 5 % de matelas. L'allocation n'était pas le point de départ, elle est tombée à la fin. Question 6 : testée sur 2000 et sur les blocs des années 1970, l'inclinaison inflation adoucit les pires millésimes pour un coût quasi nul sur la médiane. Question 7 : la carte ne bougera qu'à la confirmation des pensions ou au raccourcissement de l'horizon.
+Léa et Marc, 50 ans, 1,3 M€, un pont de 15 ans avant deux pensions modestes mais sûres. Question 1, leurs risques : la séquence (le pont de 15 ans, dominant), l'inflation (leur cauchemar de régime), un krach long. La longévité et la santé se traitent hors portefeuille, par la flexibilité et une provision. Question 2 : ils acceptent le risque actions, leur moteur, et défendent la séquence et l'inflation. Question 3 : horizon de 45 ans, donc beaucoup d'actions nécessaires, mais les 15 premières années sont fragiles. Question 4 : les pensions futures, même modestes, sont une obligation déjà au bilan, la poche liquide peut donc porter plus d'actions. Question 5, la carte : des actions monde (le moteur), un peu de duration et un matelas (la séquence), des linkers, de l'or et une pincée de trend (l'inflation). Le tout donne, disons, 65 % d'actions, 15 % d'obligations et linkers, 10 % d'or, 5 % de trend, 5 % de matelas. L'allocation n'était pas le point de départ, elle est tombée à la fin. Question 6 : testée sur 2000 et sur les blocs des années 1970, l'inclinaison inflation adoucit les pires millésimes pour un coût quasi nul sur la médiane. Question 7 : la carte ne bougera qu'à la confirmation des pensions ou au raccourcissement de l'horizon.
 :::
 
 ::: astuce Tester la conception, pas la deviner
@@ -70,7 +70,7 @@ La conception se juge sur les queues, jamais sur l'intuition. Un simulateur perm
 - Le portefeuille répond aux risques de marché (séquence, inflation, déflation, crise monétaire). Les autres risques, longévité, santé, divorce, se traitent ailleurs, par la flexibilité, les provisions et les rentes.
 - On ne défend pas tout. Le risque actions est le moteur, on le garde. On défend ce qui casse le plan sans payer, la séquence et l'inflation. Capacité et tolérance fixent la dose.
 - Vos revenus futurs sont des planchers déjà au bilan. Plus ils sont gros et sûrs, plus la poche liquide peut porter d'actions. Les années de pont, avant les planchers, dominent la conception.
-- Chaque brique doit répondre à « dans quel régime gagne-t-elle quand le reste perd ? ». Testez la conception sur les queues (millésimes 2000, stress, percentile 5), et ne la changez que quand un paramètre du plan change, par écrit, jamais sur l'actualité.
+- Chaque brique doit répondre à « dans quel régime gagne-t-elle quand le reste perd ? ». Testez la conception sur les queues (millésimes 1966 et 2000, stress, percentile 5), et ne la changez que quand un paramètre du plan change, par écrit, jamais sur l'actualité.
 
 ---
 
