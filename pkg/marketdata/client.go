@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"unicode"
 )
 
 const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
@@ -305,7 +306,10 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // ticker) and returns the series with the deepest usable history: each Yahoo
 // search candidate (same-ticker listings and fund entries first), then the
 // Financial Times when years remain uncovered, then a Morningstar fund id
-// obtained from Boursorama as a last resort.
+// obtained from Boursorama as a last resort. All three fallbacks are
+// full-text searches: a name-like query that does not match a candidate's
+// name is rejected (fuzzyMatchRelevant) so a stray fuzzy hit can never be
+// served in place of a real listing.
 // resolveBest returns the winning series and resolution, the per-source
 // failure summaries, and whether any candidate was rejected solely for
 // trading in another currency than spec demands (so callers can surface
@@ -396,28 +400,45 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		if name == "" {
 			name = s.Name
 		}
+		sameBase := matchesBase(q.Symbol)
+		if !sameBase && !fuzzyMatchRelevant(preferBase, name) {
+			failures = append(failures, fmt.Sprintf("yahoo %s: %q unrelated to %q", q.Symbol, name, preferBase))
+			continue
+		}
 		isFund := q.QuoteType == "ETF" || q.QuoteType == "MUTUALFUND"
-		consider(s, resolution{Source: "yahoo", Symbol: q.Symbol, Name: name}, isFund, matchesBase(q.Symbol))
+		consider(s, resolution{Source: "yahoo", Symbol: q.Symbol, Name: name}, isFund, sameBase)
 	}
 	if !covered() {
 		if res, ferr := c.ftSearch(ctx, query); ferr == nil {
-			if s, herr := c.historyFT(ctx, query, res, from, spec.raw); herr == nil {
-				if spec.currencyOK(s.Currency) {
-					consider(s, res, true, matchesBase(res.Symbol))
+			sameBase := matchesBase(res.Symbol)
+			switch {
+			case !sameBase && !fuzzyMatchRelevant(preferBase, res.Name):
+				failures = append(failures, fmt.Sprintf("ft %s: %q unrelated to %q", res.Symbol, res.Name, preferBase))
+			default:
+				if s, herr := c.historyFT(ctx, query, res, from, spec.raw); herr == nil {
+					if spec.currencyOK(s.Currency) {
+						consider(s, res, true, sameBase)
+					} else {
+						failures = append(failures, fmt.Sprintf("ft %s: quotes in %s, want %s",
+							res.Symbol, s.Currency, spec.wantCurrency))
+						offCurrency = true
+					}
 				} else {
-					failures = append(failures, fmt.Sprintf("ft %s: quotes in %s, want %s",
-						res.Symbol, s.Currency, spec.wantCurrency))
-					offCurrency = true
+					failures = append(failures, fmt.Sprintf("ft: %v", herr))
 				}
-			} else {
-				failures = append(failures, fmt.Sprintf("ft: %v", herr))
 			}
 		} else {
 			failures = append(failures, fmt.Sprintf("ft: %v", ferr))
 		}
 	}
 	if s, _ := preferred(); !goodFor(s, from) {
-		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr == nil {
+		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr != nil {
+			failures = append(failures, fmt.Sprintf("boursorama: %v", berr))
+		} else if !fuzzyMatchRelevant(preferBase, name) {
+			// Boursorama's search is full-text too: a name-like query must not
+			// adopt an unrelated fund found this way (see fuzzyMatchRelevant).
+			failures = append(failures, fmt.Sprintf("morningstar %s: %q unrelated to %q", msid, name, preferBase))
+		} else {
 			res := resolution{Source: "morningstar", Symbol: msid, Name: name}
 			if s, herr := c.historyMS(ctx, query, res, from, spec.raw); herr == nil {
 				if spec.currencyOK(s.Currency) {
@@ -430,8 +451,6 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			} else {
 				failures = append(failures, fmt.Sprintf("morningstar %s: %v", msid, herr))
 			}
-		} else {
-			failures = append(failures, fmt.Sprintf("boursorama: %v", berr))
 		}
 	}
 	best, bestRes := preferred()
@@ -458,6 +477,48 @@ func rankQuotes(quotes []searchQuote, preferBase string) []searchQuote {
 		}
 	}
 	return append(append(prio, funds...), others...)
+}
+
+// fuzzyMatchRelevant guards the full-text search fallbacks (FT and Yahoo)
+// against name-search noise. Those endpoints return a "best" fuzzy match for
+// any string, so a bare identifier with no real listing (e.g. "MSCIWORLD")
+// would otherwise adopt a wildly different instrument whose name merely
+// shares a word ("Fineco AM MSCI World Semiconductors …", symbol FAMMWS),
+// producing delirious statistics. A fuzzy candidate is kept only when every
+// word of the query also appears as a word of the instrument name; a
+// symbol-shaped query (a single token such as a ticker) therefore needs that
+// exact token in the name, not a loose overlap. Direct matches (the same base
+// ticker, an ISIN resolution) never reach this gate: their callers pass a
+// same-base candidate or an empty query, both of which are admitted.
+func fuzzyMatchRelevant(query, name string) bool {
+	// An ISIN-shaped query (empty for a real ISIN, or the raw code when an
+	// invalid check digit routed it through the ticker path) is resolved by
+	// identifier, not by name: a search hit is the instrument itself and its
+	// name never echoes the code, so the word gate must not apply.
+	if query == "" || isinPattern.MatchString(query) {
+		return true
+	}
+	q := searchWords(query)
+	if len(q) == 0 {
+		return true
+	}
+	have := make(map[string]bool, 8)
+	for _, w := range searchWords(name) {
+		have[w] = true
+	}
+	for _, w := range q {
+		if !have[w] {
+			return false
+		}
+	}
+	return true
+}
+
+// searchWords lowercases a label and splits it into alphanumeric tokens.
+func searchWords(s string) []string {
+	return strings.FieldsFunc(strings.ToLower(s), func(r rune) bool {
+		return !unicode.IsLetter(r) && !unicode.IsDigit(r)
+	})
 }
 
 // historyForResolution fetches the history of an already-resolved ISIN from
