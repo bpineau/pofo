@@ -22,11 +22,11 @@ func styleFixture() []Series {
 func TestLineZeroStyleUnchanged(t *testing.T) {
 	svg := Line(Options{Width: 640, Height: 300}, styleFixture())
 	for _, want := range []string{
-		`fill="#FFFFFF"`,               // background rect
-		`stroke="#EDF0F3"`,             // grid lines
-		`stroke="#CDD2DA"`,             // axes
+		`fill="#FFFFFF"`,                    // background rect
+		`stroke="#EDF0F3"`,                  // grid lines
+		`stroke="#CDD2DA"`,                  // axes
 		`font-family="'Spline Sans Mono', `, // default font
-		`stroke-width="1.8"`,           // default stroke
+		`stroke-width="1.8"`,                // default stroke
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("zero-style Line output lost %q", want)
