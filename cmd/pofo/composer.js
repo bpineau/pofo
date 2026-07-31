@@ -142,6 +142,7 @@
       "ex=claude-dragonlite&p=IWDA:60,IGLN:40",
       "ex=claude-dragonlite&currency=EUR&rebalance=90&sim=on&bench=IWDA&start=2010-01-01&end=2026-06-30",
       "p=IWDA:60,IGLN:40&p=AVUV:100", // a freshly added second portfolio serializes cleanly
+      "p=IWDASIM:60,IGLNSIM:40",      // SIM-suffixed ids survive the round trip intact
       ""
     ];
     var ok = 0;
@@ -160,8 +161,7 @@
   var CAP_PORTS = 6, CAP_HOLD = 20, CAP_BYTES = 2000; // overwritten from data-caps
   var state = { ports: [], globals: {} };
   var catalog = null;          // [{id,name,class,alt}] once /catalog.json loads
-  var known = null;            // Set of lower-cased ids and alts for validation
-  var byKey = null;            // lower-cased id/alt -> asset, for fill and name
+  var byKey = null;            // lower-cased id/alt -> asset, for fill, name and validation
   var panelEl = null;
 
   // commit rewrites the URL to the current state without a navigation.
@@ -183,6 +183,24 @@
 
   // fmtNum renders a weight without trailing zeros ("46", "33.33").
   function fmtNum(n) { return String(Number(n.toFixed(2))); }
+
+  // breaksSegment mirrors the server's breaksSegment (view.go): a value that
+  // carries the "!" delimiter or a control character cannot ride a p= segment.
+  // Such an edit is refused so the live link never serializes into a URL the
+  // server would 400 (a "!" in a name would split into a bogus "#meta").
+  function breaksSegment(s) { return /[!\x00-\x1f\x7f]/.test(s); }
+
+  // resolve returns the catalog asset for an id, mirroring SplitSim: an id
+  // longer than three chars ending in "sim" falls back to its base entry (the
+  // SIM suffix is a valid p= id and must not read as unknown). Null when the
+  // catalog has not loaded or the id is genuinely absent.
+  function resolve(id) {
+    if (!byKey) return null;
+    var v = id.trim().toLowerCase();
+    if (byKey[v]) return byKey[v];
+    if (v.length > 3 && v.slice(-3) === "sim" && byKey[v.slice(0, -3)]) return byKey[v.slice(0, -3)];
+    return null;
+  }
 
   // sumOf totals a port's weights (numbers, blanks as zero).
   function sumOf(port) {
@@ -306,19 +324,20 @@
 
   // ---- autocomplete + validation ------------------------------------------
 
-  // refreshName fills a row's readout with the id's catalog name once known.
+  // refreshName fills a row's readout with the id's catalog name once known
+  // (SIM-suffixed ids read their base entry's name via resolve).
   function refreshName(input, rn) {
     if (!byKey) { rn.textContent = ""; return; }
-    var a = byKey[input.value.trim().toLowerCase()];
+    var a = resolve(input.value);
     rn.textContent = a ? a.name : (input.value.trim() ? "unknown identifier" : "");
   }
 
   // validateId reds an id input whose value is not in the catalog (only once
   // the catalog has loaded; a failed fetch means no validation at all).
   function validateId(input) {
-    if (!known) { input.classList.remove("bad"); return; }
-    var v = input.value.trim().toLowerCase();
-    input.classList.toggle("bad", v !== "" && !known.has(v));
+    if (!byKey) { input.classList.remove("bad"); return; }
+    var v = input.value.trim();
+    input.classList.toggle("bad", v !== "" && !resolve(v));
   }
 
   var acBox = null, acInput = null, acPos = -1;
@@ -456,13 +475,24 @@
     l.textContent = label;
     var sel = document.createElement("select");
     sel.className = "field";
+    var matched = false;
     opts.forEach(function (o) {
       var opt = document.createElement("option");
       opt.value = o[0];
       opt.textContent = o[1];
-      if (o[0] === value) opt.selected = true;
+      if (o[0] === value) { opt.selected = true; matched = true; }
       sel.appendChild(opt);
     });
+    // A server-valid off-preset value (currency=SEK, rebalance=45) must not
+    // silently show "default" while the URL still carries it: synthesize the
+    // matching option rather than let the select lie about the state.
+    if (!matched && value !== "") {
+      var extra = document.createElement("option");
+      extra.value = value;
+      extra.textContent = value;
+      extra.selected = true;
+      sel.appendChild(extra);
+    }
     sel.addEventListener("change", function () {
       // The option values are already the canonical grammar tokens, "" among
       // them. Do NOT fold ""->native here: "" must omit the parameter so the
@@ -501,7 +531,10 @@
   function fork(port, payload) {
     var parsed = parsePValue(payload.p);
     if (parsed.kind !== "p") return;
-    if (payload.name) { parsed.name = payload.name; parsed.nameSet = true; }
+    // Re-check the name before applying: the server's specToP deliberately drops
+    // a name that breaksSegment, so its p= carries none; the payload still holds
+    // the raw name, which we must not re-introduce if it would break the URL.
+    if (payload.name && !breaksSegment(payload.name)) { parsed.name = payload.name; parsed.nameSet = true; }
     var el = port._el;
     // Swap the state port in place, keeping the DOM index alignment.
     for (var k in port) if (Object.prototype.hasOwnProperty.call(port, k)) delete port[k];
@@ -666,23 +699,28 @@
   // that would push a p= past the byte cap can be reverted (the input refused).
   var accepted = new WeakMap();
 
+  // refuse restores a field to its last accepted value and re-syncs, so an
+  // edit the grammar cannot carry (a "!"/control char) or that would blow the
+  // byte cap never reaches the live URL.
+  function refuse(t, port) {
+    if (accepted.has(t)) t.value = accepted.get(t);
+    syncCard(port);
+    refreshBudget();
+  }
+
   // wire attaches the delegated listeners once, after hydration.
   function wire() {
-    // Weight, id and name edits, refusing any edit past the byte cap.
+    // Weight, id and name edits, refusing anything the grammar cannot carry
+    // (a "!" or control char) or that would push the p= past the byte cap.
     panelEl.addEventListener("input", function (e) {
       var t = e.target;
       var port = portOf(t);
       if (!port || port.kind === "opaque") return; // opaque cards carry no editable fields
       var wasName = t.classList.contains("pname");
       if (wasName) port.nameSet = true;
+      if (breaksSegment(t.value)) { refuse(t, port); return; }
       syncCard(port);
-      if (overCap(port)) {
-        // Refuse: restore the field to its last accepted value.
-        if (accepted.has(t)) t.value = accepted.get(t);
-        syncCard(port);
-        refreshBudget();
-        return;
-      }
+      if (overCap(port)) { refuse(t, port); return; }
       accepted.set(t, t.value);
       if (t.classList.contains("id")) {
         validateId(t);
@@ -791,12 +829,10 @@
   function loadCatalog() {
     fetch("/catalog.json").then(function (r) { return r.json(); }).then(function (data) {
       catalog = data;
-      known = new Set();
       byKey = {};
       data.forEach(function (a) {
-        known.add(a.id.toLowerCase());
         byKey[a.id.toLowerCase()] = a;
-        (a.alt || []).forEach(function (alt) { known.add(alt.toLowerCase()); byKey[alt.toLowerCase()] = a; });
+        (a.alt || []).forEach(function (alt) { byKey[alt.toLowerCase()] = a; });
       });
       panelEl.querySelectorAll(".hrow").forEach(function (r) {
         var id = r.querySelector(".idbox .field");
