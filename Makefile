@@ -16,6 +16,10 @@ build: ## Build the ./pofo binary (pkg/datasets/ embedded)
 install: ## Install the pofo binary (go install → GOBIN or GOPATH/bin)
 	$(GO) install ./cmd/pofo
 
+.PHONY: docker-image
+docker-image: ## Build the Docker image (BuildKit; tag pofo:dev)
+	DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile -t pofo:dev .
+
 .PHONY: fmt
 fmt: ## Reformat all the code (gofmt -w)
 	gofmt -w .
