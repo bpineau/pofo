@@ -42,7 +42,11 @@ Chaque portefeuille devient un point : le rendement réel annualisé en abscisse
 
 **La duration longue.** Browne et Dalio veulent des obligations **longues**, pour la puissance déflationniste maximale, et 2022 en a montré la facture en régime inverse. Le compromis moderne est simple : une duration intermédiaire majoritaire, plus une part longue assumée comme « assurance déflation », au même titre que l'or joue l'« assurance inflation ».
 
-**L'écart à l'indice, la critique la plus sérieuse.** Par construction, un tous-temps fait +6 % l'année où le monde fait +25 %. Tenir cette « sous-performance » **des années** durant, en lisant partout que les actions s'envolent, est une épreuve comportementale documentée. La plupart des abandons de tous-temps ont lieu au sommet d'un bull actions, c'est-à-dire au pire moment ([[psychologie-du-retrait]]). Le tous-temps exige la même chose que le glidepath ([[glidepaths]]) : une adhésion écrite, pour des raisons écrites, relue quand ça démange ([[construire-son-plan]]).
+**L'écart à l'indice, la critique la plus sérieuse.** Par construction, un tous-temps fait +6 % l'année où le monde fait +25 %. L'épreuve se compte d'ailleurs en années et non en points, car sur les cinquante-trois ans reconstruits ici le Golden Butterfly compte trente-trois années de retard sur les actions, dont deux séries de six ans d'affilée. Tenir cette « sous-performance » **des années** durant, en lisant partout que les actions s'envolent, est une épreuve comportementale documentée. La plupart des abandons de tous-temps ont lieu au sommet d'un bull actions, c'est-à-dire au pire moment ([[psychologie-du-retrait]]). Le tous-temps exige la même chose que le glidepath ([[glidepaths]]) : une adhésion écrite, pour des raisons écrites, relue quand ça démange ([[construire-son-plan]]).
+
+::: figure tous-temps-ecart
+L'écart de rendement réel annuel entre le Golden Butterfly et 100 % actions, année après année (US, 1972-2024, en réel, rééquilibrage annuel). Les bandes grises marquent les séries d'au moins quatre années consécutives de retard : l'épreuve se mesure en durée, pas en points de rendement.
+:::
 
 ## L'usage recommandé : une dose de tous-temps, à calibrer
 
