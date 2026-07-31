@@ -90,7 +90,7 @@ demo: build ## Demo report on the example portfolios
 
 .PHONY: suggest
 suggest: build ## Demo the -suggest analysis on a catalog-based example
-	./pofo -suggest examples/world-equity.txt
+	./pofo -suggest examples/msci-world.txt
 
 .PHONY: verify
 verify: build ## Run the -verify-data doctor over the bundled catalog
