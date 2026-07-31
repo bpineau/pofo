@@ -131,8 +131,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
-- [ ] allocation-actions-obligations: L'allocation actions/obligations en retrait
-- [ ] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
+- [x] allocation-actions-obligations: L'allocation actions/obligations en retrait
+- [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
 - [ ] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
 - [ ] actifs-defensifs: Les actifs defensifs : panorama et roles
 - [ ] or-en-retrait: L'or dans un portefeuille de retrait
