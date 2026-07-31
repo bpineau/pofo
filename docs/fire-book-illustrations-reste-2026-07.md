@@ -5,8 +5,9 @@ line-by-line review (one reviewer per article; the prose fixes shipped as the
 "line review of ..." commit series). It gathers the illustration ideas for
 every part reviewed after the portfolio one: alternatives, buffers, inflation,
 French tax frame, human factor, references, withdrawal science and the starter
-part. Twenty ideas were built on 2026-07-30 and their entries have been removed
-from this file, so what remains is exactly what has NOT been built.
+part. Thirty-seven ideas were built over 2026-07-30 and 2026-07-31, figures and
+reference tables both, and their entries have been removed from this file, so
+what remains is exactly what has NOT been built.
 
 What is left is a pool of ideas to RE-EVALUATE when a figure is wanted, not a
 to-do list: several were written before their article had any illustration, and
@@ -71,22 +72,6 @@ saignée linéaire, deux pics de convexité 2008 et 2020). Elle couvre bien le
 « comment ça se comporte ». Ce qui reste purement verbal, ce sont les deux
 arguments qui décident vraiment de la réponse : la comparaison avec « détenir
 moins d'actions » (Israelov) et la division du travail avec le trend.
-
-## 1. « Détenir moins d'actions » domine la protection par puts (coût B)
-
-Nuage rendement réel / drawdown maximal pour la famille d'allocations
-actions-obligations, de 100/0 à 50/50 par pas de 5 points, chaque point
-étiqueté ; puis un point isolé, d'une autre couleur, pour « 100 % actions +
-put 5 % OTM permanent », placé aux coordonnées publiées (1,5 à 2,5 points de
-rendement en moins, drawdown à peine amélioré). Le point de la protection
-tombe visiblement à l'intérieur du nuage, dominé par un simple 65/35. C'est la
-conclusion d'Israelov, qui est la vraie réponse par défaut de l'article, et
-elle est aujourd'hui uniquement affirmée. Une figure la rend indiscutable en
-un coup d'œil, sans polémique sur les fonds.
-Coût **B** : les deux jambes du nuage se calculent dans le repo
-(`refdata/SP500-USD.csv` + `TREASURY-INT-USD.csv` + CPI, ou directement le
-60/40 réel de `pkg/replay`) ; le point « put permanent » se pose à la main
-depuis les chiffres PPUT déjà cités dans l'article, à annoter comme tel.
 
 ## 2. Krach rapide contre marché baissier lent : qui paie quoi (coût B)
 
@@ -360,19 +345,6 @@ problème n'est pas l'inflation anticipée mais sa dispersion, la bande.
 
 Coût : **A/B** (deux lignes de calcul, aucune série externe).
 
-## 4. La boîte à outils française du barreau (tableau, pas de figure)
-
-La section « pratique française » est une liste de véhicules avec leurs
-qualités et leurs manques : un tableau la rend consultable. Une ligne par
-véhicule (fonds euros, fonds à échéance État, fonds à échéance IG, OAT en
-direct, ETF linkers courts roulés, OAT€i en direct), colonnes horizon utile,
-indexé ou non, frais, accessibilité au détail. Le trou de l'offre, l'absence de
-fonds à échéance indexé euro, devient visible comme une case vide au lieu
-d'être une phrase.
-
-Coût : **C** (un tableau fait mieux qu'une figure ici).
-
-
 ## recharger-ou-pas
 
 Article aujourd'hui sans aucune figure, alors qu'il est le seul du livre à décrire
@@ -523,19 +495,6 @@ Coût **B** : le chemin du portefeuille existe, mais le durcissement des
 quotités en crise est une hypothèse à poser et à documenter en légende
 (60 % → 40 % par exemple), pas une donnée du repo.
 
-## 3. Le tableau des cinq instruments (coût C)
-
-La revue des instruments est une liste de paragraphes en gras qu'on ne peut
-pas relire en diagonale. Un tableau de cinq lignes (crédit immobilier
-conservé, avance d'assurance-vie, lombard bancaire, ETF à levier quotidien,
-marge de courtage) et cinq colonnes (appel de marge, coût, échéance,
-réversibilité, verdict) transforme la section en fiche de référence, et rend
-visible le vrai critère de tri du chapitre, qui est la colonne « appel de
-marge ».
-
-Coût **C** : pas de figure, un tableau. Tout le contenu est déjà dans les
-paragraphes de la section.
-
 ## 4. Le plateau des seuils d'ERN (coût B)
 
 Le volet 52 teste plusieurs seuils de déclenchement et le résultat a une forme
@@ -611,40 +570,6 @@ répression doit être renforcé pour lui-même.
 
 Article aujourd'hui sans aucune figure. Trois passages portent une thèse
 quantitative en prose pure et gagneraient à être vus.
-
-## 1. La soirée de calcul de Denise et Paul, en contributions (coût A)
-
-Barres horizontales, une par poste du panier (santé, services, alimentation,
-énergie-transport, loisirs, divers), longueur = contribution au total, soit
-poids × taux (0,63 / 0,66 / 0,36 / 0,30 / 0,48 / 0,20 point). Total empilé à
-2,6 %, et un repère vertical sur l'IPCH à 2,1 %. Le lecteur voit d'un coup que
-la santé, 14 % du budget seulement, fait à elle seule un quart de l'inflation
-du ménage et l'essentiel de l'écart à l'indice.
-
-Pourquoi ça vaut la place : le bloc `exemple` aligne aujourd'hui six couples
-poids-taux en prose, c'est-à-dire la forme la moins lisible pour une somme
-pondérée. La figure fait le calcul à la place du lecteur et lui donne le geste
-à reproduire sur son propre relevé.
-
-Données : entièrement dans l'article (poids et taux du bloc `exemple`).
-
-## 2. L'écart composé, en années de dépenses (coût A)
-
-Deux ou trois trajectoires de niveau de prix sur 30 ans (indice, indice +0,3,
-indice +0,5), le coin entre elles teinté, et l'annotation qui compte en
-ordonnée droite, non pas « +9 % » mais « 1,5 année de dépenses » et « 2,5
-années ». Un point d'ancrage à 10, 20 et 30 ans pour montrer que l'écart est
-invisible avant l'année 10 et cher après l'année 25.
-
-Pourquoi ça vaut la place : c'est la thèse centrale de l'introduction (« paraît
-petit chaque année, composé sur trente ans il vaut un point de taux de
-retrait ») et le seul argument qui fasse accepter le réglage de dérive. En
-prose, deux nombres. En figure, l'ouverture progressive du ciseau, qui est
-exactement ce que l'intuition rate.
-
-Données : arithmétique pure, aucun jeu de données nécessaire. Attention à
-étiqueter l'axe en années de dépenses, pas en points d'indice, sinon la figure
-ne dit rien de plus que le texte.
 
 ## 3. L'indice contre votre panier, poste par poste (coût B)
 
@@ -888,17 +813,6 @@ total, avec le lissage sur sa propre ligne clairement marquée « volontaire »,
 serait lisible en trois secondes et rendrait le recoupement possible pour le
 lecteur. Pas une figure, un tableau, et il gagnerait la place qu'il prend.
 
-## 4. La carte des deux taux de prélèvements sociaux (coût C)
-
-Depuis la LFSS 2026, un plan de retrait français croise deux taux de PS. Un
-petit tableau à deux colonnes (18,6 % / 17,2 %) listant les supports de chaque
-côté, avec les livrets exonérés en note, remplacerait avantageusement la longue
-énumération en prose et deviendrait la fiche de référence que le lecteur
-reviendra consulter. Y ajouter la date d'entrée en vigueur par ligne (revenus
-2025 pour les revenus du patrimoine, 1er janvier 2026 pour les produits de
-placement) réglerait la seule subtilité de calendrier de l'article.
-
-
 ## taxe-puma
 
 Article aujourd'hui sans aucune figure. Il porte une formule à deux entrées, donc
@@ -1091,18 +1005,6 @@ lignes ; aucune série de marché. Attention à afficher les deux routes du cas 
 préparé (conjoint en usufruit contre tout au second décès), elles diffèrent d'un
 facteur proche de 2 (~13 % contre ~21 % à 2 M€) et c'est précisément ce que
 recouvre la fourchette 10-20 %.
-
-## 4. Le barème de l'usufruit, en tableau
-
-L'article n'échantillonne le barème de l'art. 669 CGI qu'à un seul âge (40 %
-d'usufruit entre 61 et 70 ans). Un tableau de quatre ou cinq lignes (âge de
-l'usufruitier, valeur de l'usufruit, valeur de la nue-propriété, base taxable
-pour 100 donnés) rend le « démembrement jeune » immédiatement lisible et évite
-au lecteur d'aller chercher le barème ailleurs.
-
-Coût : **C**. Un tableau fait mieux qu'une figure ici, la donnée étant un
-barème par tranches et non une courbe.
-
 
 ## expatriation-fiscale
 
@@ -1571,26 +1473,6 @@ de pension à écrire, donc B pour elle seule. Utiliser la même forme de cascad
 que le livre emploie ailleurs est ici le bon choix, la question étant
 justement « d'où vient le total ».
 
-## 3. Le tableau des seuils en micro-entreprise (coût A, forme C)
-
-Pas une figure, un petit tableau de quatre lignes de chiffre d'affaires facturé
-(8, 11, 15, 20 k€ en services), avec pour chacune l'assiette après abattement,
-le nombre de trimestres validés, l'état de la CSM (due, décotée, éteinte) et le
-revenu net de cotisations. C'est le piège le plus coûteux du chapitre, celui
-qui fait croire que 10 k€ facturés suffisent aux deux effets, alors que les
-seuils se lisent après abattement.
-
-Le tableau bat la figure ici : le lecteur cherche sa propre ligne, pas une
-tendance. Coût A, tout est calculable de tête à partir des taux et seuils déjà
-cités (abattement services, ~21-26 % de cotisations, 1 803 € par trimestre,
-20 % du PASS).
-
-
----
-
-# References
-
-
 ## lexique
 
 Remarque de cadrage : un glossaire alphabétique n'a pas de « passage verbal
@@ -1600,26 +1482,6 @@ plaquer une. En revanche l'article promet deux choses dans son chapeau (« le
 lexique se lit aussi », « la table d'orientation du livre ») qu'il ne tient
 qu'à moitié, faute d'un accès autre qu'alphabétique. Les trois idées ci-dessous
 visent exactement ce manque.
-
-## 1. Le mémo chiffré du livre (tableau)
-
-Un tableau unique qui rassemble les ancres numériques déjà éparpillées dans les
-entrées, une ligne par chiffre : le nombre, ce qu'il mesure, le terme du
-lexique, le chapitre. Une vingtaine de lignes suffisent (SAFEMAX ~4 % / 30 ans
-et 3,25-3,5 % aux horizons FIRE, ~17 % d'échec du 4 % rigide en broad sample,
-0,5-1,5 point par marche de cascade, buffer 18-36 mois, corridor ±20 % et
-ajustements de 10 %, rebalancing premium 0,2-0,5 point, prime de variance 2-4
-points, CSM ~6,5 % au-delà de ~24 000 € avec extinction à ~9 600 € d'activité,
-4 trimestres dès ~7 200 €, sur-provision de 10-20 % du besoin constant, plateau
-50-80 % d'actions, prime actions 4-6 points, prime de terme 1-2 points, trend
-2-4 % réels bruts).
-
-Pourquoi ça vaut la place : c'est la seule page du livre où le lecteur peut
-vérifier d'un coup d'œil qu'il a retenu les bons ordres de grandeur, et c'est le
-service qu'on attend d'un lexique en fin d'ouvrage. Cela réduit aussi le risque
-d'incohérence future, puisqu'un chiffre qui bouge se corrige à un endroit
-visible. Coût : **A** (tout est déjà dans le livre), avec la discipline de ne
-citer que des valeurs déjà écrites ailleurs, jamais une valeur nouvelle.
 
 ## 2. La table d'orientation thématique (tableau ou encadré)
 
@@ -1656,23 +1518,6 @@ sont un travail de mise en page à part entière ; à ne tenter qu'après les id
 Article-annuaire. Une figure « graphique » y est presque toujours décorative, car
 le texte est déjà une liste structurée. Les deux meilleures idées sont donc un
 tableau et une mise en page ; une seule vraie figure mérite d'être discutée.
-
-## 1. Le calendrier de veille (tableau, coût C)
-
-Un tableau à trois colonnes : la publication récurrente, son mois de parution,
-le paramètre du plan qu'elle rafraîchit. Morningstar « State of Retirement
-Income » en décembre pour le taux de retrait, DMS Yearbook en février pour les
-primes séculaires, les CMA (Vanguard, JP Morgan, BlackRock, Research Affiliates)
-en début d'année pour le μ, le CAPE de Shiller en continu pour l'ancre de
-valorisation, info-retraite une fois l'an pour la pension, l'IPC INSEE au mois
-pour la dérive des dépenses.
-
-Ce que ça porte : la thèse enfouie du chapitre, à savoir que la partie « données
-vivantes » n'est pas une liste de liens mais l'agenda de la revue annuelle
-([[revue-annuelle]]). Aujourd'hui l'information est dispersée dans trois
-sections et le lecteur doit la reconstituer lui-même. Toutes les données sont
-dans l'article ; seuls les mois de parution demandent une vérification (celui de
-Morningstar est confirmé, début décembre).
 
 ## 2. La descente du taux publié, 1994-2025 (figure, coût B)
 
@@ -1956,18 +1801,6 @@ règle de conduite finale (« gardez les deux bornes affichées côte à côte �
 puisque la figure *est* les deux bornes côte à côte. Coût B, un balayage de
 taux sur les deux sources.
 
-## 3. Les trois échantillons, en tableau plutôt qu'en figure (coût C)
-
-L'article prévient d'une confusion réelle et la laisse en prose : le papier
-(38 pays, base GFD, mortalité réelle) n'est pas le modèle du simulateur
-(16 pays JST, blocs tirés dans un même pays, 60/40 domestique), qui n'est pas
-non plus l'histoire américaine. Un petit tableau à trois colonnes (pays,
-période, portefeuille simulé, horizon, chiffre publié) referme le piège en dix
-lignes, là où trois paragraphes dispersés le laissent ouvert. Une figure
-n'apporterait rien ici, un tableau oui. Coût C, tout le contenu est déjà dans
-l'article et dans le README de `pkg/datasets/broadsample`.
-
-
 ## valorisations-et-cape
 
 Figure déjà en place : `cape-swr` (taux de retrait soutenable en fonction du CAPE
@@ -2015,45 +1848,6 @@ dépend un peu du seuil retenu.
 
 Article aujourd'hui sans aucune figure, très dense en chiffres. Quatre idées,
 par ordre de priorité.
-
-## 1. Les briques, classe par classe (priorité 1, coût A)
-
-Barres empilées horizontales, une par classe d'actifs (actions US, actions hors
-US, obligations euro, cash, or), décomposant l'espérance réelle en ses briques :
-distribution, croissance réelle des bénéfices, terme de valorisation (segment
-négatif partant sous zéro pour les actions US), avec un repère de total à
-l'extrémité. Les obligations n'ont qu'une brique et demie (YTM moins inflation
-anticipée), ce qui rend visible d'un coup d'œil la phrase centrale de l'article :
-l'espérance obligataire est affichée sur l'étiquette, celle des actions se
-construit.
-
-Pourquoi elle vaut sa place : c'est le cœur méthodologique de la page
-(section « Comment se fabrique une prévision »), aujourd'hui purement verbal, et
-c'est la seule chose que le lecteur doit savoir refaire lui-même. Une planche
-rend le calcul reproductible sans relire le paragraphe.
-
-Coût A : tous les chiffres sont dans l'article (2,25 + 1,75 + 0 à -1,5 pour les
-États-Unis, ~3 + 1,75 + 0 à +1 hors US, YTM 3,2 moins point mort 2, cash ~0,5,
-or 0 à 1).
-
-## 2. L'escalier Morningstar, et ce qui le fait bouger (priorité 2, coût A)
-
-Escalier de cinq marches, le taux de retrait initial recommandé par millésime
-(3,3 en 2021, 3,8 en 2022, 4,0 en 2023, ~3,7 en 2024 et 2025), posé au-dessus
-d'une bande fine montrant les deux conditions d'entrée de chaque millésime : le
-CAPE de l'année et le rendement réel des obligations. Chaque marche porte en
-annotation courte la raison de son niveau (« marchés chers, taux nuls »,
-« valorisations dégonflées », « taux restaurés », « actions redevenues chères »).
-
-Pourquoi elle vaut sa place : elle démontre visuellement la thèse la plus forte
-de l'article, à savoir que le taux soutenable est une fonction des conditions
-d'entrée et non une constante. C'est aussi le pont avec [[valorisations-et-cape]]
-et la position 3 à 3,5 % du livre, qu'un lecteur peut situer sur la même échelle
-verticale par une ligne de repère.
-
-Coût A pour les taux (dans l'article) et pour le CAPE (`pkg/datasets/cape`,
-série Shiller mensuelle) ; la ligne « taux réel obligataire » demande une source
-de plus, à défaut la bande peut ne porter que le CAPE.
 
 ## 3. Prévu contre réalisé, à dix ans (priorité 3, coût B)
 
@@ -2210,22 +2004,6 @@ autre question (le taux conditionnel au prix d'entrée).
 L'article porte déjà la figure `cascade-4pct`, qui couvre la décomposition
 (4,0 → +1,8 → −1,8 → 4,0). Les idées ci-dessous complètent, elles ne
 redoublent pas : elles portent des passages aujourd'hui purement verbaux.
-
-## 1. Le clavier des leviers : ce que chaque hypothèse déplace (coût A)
-
-Le bloc « exemple » se termine par une rafale de sensibilités en une seule
-phrase (horizon 50 ans, échantillon mondial, CAPE élevé, 0,5 % de frais, règle
-flexible). C'est le passage le plus dense et le plus utile de l'article, et
-c'est celui qui se lit le moins bien en prose. Une barre horizontale signée par
-levier, partant toutes du même trait vertical à 4,0 %, dit d'un coup l'ordre de
-grandeur et le signe de chacun, et rend visible le fait central que l'article
-martèle : les leviers ne pèsent pas le même poids, et un débat sur « le vrai
-chiffre » porte toujours sur un seul d'entre eux.
-
-Tous les chiffres sont dans l'article (−1,1 horizon, −0,5 à −1 échantillon, −1
-CAPE, −0,5 frais, +0,3 à +0,5 flexibilité), donc aucune donnée à produire. Les
-leviers négatifs et positifs de part et d'autre de l'axe montrent aussi qu'on
-peut regagner du taux, pas seulement en perdre.
 
 ## 2. La fonte du bonus d'amortissement avec l'horizon (coût A)
 
@@ -2409,24 +2187,6 @@ tenir à deux marches seulement (4 % puis 3 à 3,5 %) pour ne rien inventer.
 Article aujourd'hui sans aucune figure, alors que c'est la porte d'entrée du
 livre sur le sujet. Trois idées, par ordre de valeur.
 
-## 1. Le taux soutenable, millésime par millésime (le « 4 » est un plancher)
-
-Une longue série annotée : pour chaque année de départ de 1926 à 1995, le taux
-de retrait initial maximal qu'un 50/50 américain aurait soutenu 30 ans. La
-courbe oscille entre 4 et 10 %, la médiane se pose vers 6,5 %, et un seul point
-touche le plancher, 1966 à 4,15 %, marqué et légendé. Deux repères horizontaux
-suffisent, la ligne 4 % et la médiane.
-
-Pourquoi elle vaut sa place : c'est la thèse centrale de la section « D'où
-viennent les chiffres », aujourd'hui purement verbale (« c'est le taux du pire
-cas, pas une moyenne, la moyenne supporte plus de 6 % »). Voir l'écart entre la
-médiane et l'unique point bas fait comprendre d'un coup à la fois la prudence
-de la règle et sa fragilité, puisque tout le chiffre repose sur un seul
-millésime.
-
-Coût : **B**. Les séries existent (S&P 500 long, Treasuries, CPI US dans
-`pkg/datasets`), mais le solveur de taux maximal par millésime est à écrire.
-
 ## 2. Ce que le retrait rigide fait vraiment, sur le millésime 1966
 
 Deux tracés superposés sur le même axe temporel, un millésime unique (1966, ou
@@ -2492,33 +2252,6 @@ hypothèse affichée sur la planche (taux d'épargne, rendement réel).
 Coût : **B**. Arithmétique simple à écrire (cible = dépenses/taux, puis temps
 d'accumulation), aucune donnée externe. La variante ruine (5 % contre 12 %)
 demanderait `pkg/decumul` et n'est pas nécessaire ici.
-
-## 2. La courbe qui explique pourquoi 33x est un plafond
-
-Capital cible en fonction du taux de retrait, de 5 % à 2,5 %, en multiples de
-dépenses. La convexité fait tout le travail : passer de 4 % à 3,5 % coûte 3,6x
-de dépenses, de 3,5 % à 3 % coûte 4,8x, de 3 % à 2,5 % coûte 6,7x, et sous
-2,5 % la courbe part à la verticale. Trois repères posés sur la courbe (25x,
-28,6x, 33x) plus une zone grisée au-delà de 33x étiquetée « on n'achète plus
-grand-chose ». La table de l'étape 4 donne trois points isolés ; la courbe
-montre pourquoi la ligne « > 33 : rarement rationnel » est une propriété
-mathématique et pas une opinion.
-
-Coût : **A**. La courbe est y = 1/x, tout est dans l'article.
-
-## 3. Du relevé bancaire au capital cible, en cascade
-
-Cascade verticale sur le cas Nadia et Marc : 3 400 €/mois observés, + 350
-voyages, + 220 mutuelle, passage en annuel, + 12 % de friction fiscale, × 28,6,
-puis une dernière barre négative pour le crédit pension (- 200 000 €), et la
-cible finale. Chaque marche porte le nom de la section qui la produit. L'intérêt
-est de rendre visible le rapport de forces : les deux marches « oubliées » par
-le calcul de comptoir (fiscalité et pension) sont d'un ordre de grandeur
-comparable au budget de loisirs, mais en sens opposé. Forme déjà présente
-ailleurs dans le livre, assumée ici car c'est la bonne : le calcul EST une
-chaîne de corrections signées.
-
-Coût : **A**. Tous les nombres sont dans le bloc exemple de l'étape 5.
 
 ## 4. Net vers brut, par enveloppe (tableau, pas figure)
 
