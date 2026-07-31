@@ -176,6 +176,20 @@
 #   benchmark. Expect the measured edge over that benchmark to shrink out
 #   of sample; the engine-level logic, and the ranges above, are the part
 #   built to survive. Anywhere inside those ranges is the same portfolio.
+#   RANGE CHECK (per-sleeve weight sweep, rest renormalized, 1988-2026 +
+#   bootstrap ruin at a 4% real WR over 40y). Empirically confirmed: ZPRV
+#   8-15 on both ends (worst-5y peaks near 8-12%, collapses past 16 while
+#   max drawdown deepens); the trend FLOOR at 20% (at 10-15% Sharpe drops
+#   to ~0.81 and ruin doubles; at 0% worst-5y goes negative); the gold
+#   FLOOR at 10% (below it worst-5y and ruin degrade sharply); the NTSG
+#   CEILING near 45% (beyond it worst-5y turns negative, recovery
+#   stretches 3.0 -> 4.8y, ruin quadruples); ZROZ 3-8 (0% costs a third
+#   of the worst-5y; past 8% drag shows up in ruin and median-5y). Still
+#   A PRIORI, deliberately: the trend CEILING (the backtest would happily
+#   hold 45% trend -- the exact in-sample flattery of the shared TSMOM
+#   backcast this note warns about) and the NTSG FLOOR (the window does
+#   not punish 15-25% NTSG because its diversifiers compounded like
+#   equities in-sample; forward-looking, the growth engine pays the plan).
 #
 # ## Measured profile (this toolkit, EUR, common window 1988-11 -> 2026-07)
 #   vs claude-dragonlite (60/25/15): CAGR 10.6% vs 10.2%, vol 12.3% vs
