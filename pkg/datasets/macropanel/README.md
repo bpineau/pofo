@@ -1,6 +1,6 @@
 # macropanel
 
-`oecd-monthly.csv` — a multi-country **monthly** macro panel, columns
+`oecd-monthly.csv` is a multi-country **monthly** macro panel, columns
 `iso,date,ip,cpi,shortrate,longrate,shareprice` for 30 advanced and large
 emerging economies. `date` is `YYYY-MM`; `ip`, `cpi` and `shareprice` are index
 levels; `shortrate` and `longrate` are per-cent yields. Cells are left empty
