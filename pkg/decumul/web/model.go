@@ -58,10 +58,12 @@ func (pr Params) age() float64 {
 	return float64(pr.Age)
 }
 
-// Card is one labelled summary figure shown above the charts.
+// Card is one labelled summary figure shown above the charts. Help, when
+// set, becomes the card's plain-language hover explanation.
 type Card struct {
 	Label string `json:"label"`
 	Value string `json:"value"`
+	Help  string `json:"help,omitempty"`
 }
 
 // Result is the JSON returned for one parameter set. Note carries a
@@ -69,10 +71,11 @@ type Card struct {
 // the cohorts model), empty when the result is fully usable. Cards is an
 // ordered list so the UI shows the figures in a stable, readable order.
 type Result struct {
-	Note         string `json:"note"`
-	Cards        []Card `json:"cards"`
-	ArbitrageSVG string `json:"arbitrageSvg"` // ruin % and terminal wealth vs buffer years (dual axis)
-	RecoverySVG  string `json:"recoverySvg"`
+	Note          string `json:"note"`
+	Cards         []Card `json:"cards"`
+	ArbitrageSVG  string `json:"arbitrageSvg"`  // ruin % vs buffer years
+	Arbitrage2SVG string `json:"arbitrage2Svg"` // median terminal wealth vs buffer years
+	RecoverySVG   string `json:"recoverySvg"`
 }
 
 // plan builds a decumul.Plan from the params, with a parametric source by
@@ -117,15 +120,23 @@ func (pr Params) plan() decumul.Plan {
 	// Partial annuitisation: spend a share of capital on a joint-life, real
 	// immediate annuity (1% real rate, 10% insurer load), hedging longevity. The
 	// premium leaves the portfolio; its lifelong income lowers the net need.
-	if pr.AnnuityShare > 0 && pr.Capital > 0 {
-		premium := pr.AnnuityShare * pr.Capital
-		income := decumul.AnnuityIncome(decumul.FrenchMortality, pr.age(), premium, 0.01, 0.90)
-		p.Capital -= premium
+	if income := pr.annuityIncome(); income > 0 {
+		p.Capital -= pr.AnnuityShare * pr.Capital
 		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, Annual: income})
 	}
 	p.SpendSchedule = pr.spendSchedule()
 	p.Envelopes = pr.envelopes()
 	return p
+}
+
+// annuityIncome is the lifelong yearly real income bought by the annuitised
+// share of capital (joint-life, 1% real rate, 10% insurer load); 0 when the
+// annuity option is off.
+func (pr Params) annuityIncome() float64 {
+	if pr.AnnuityShare <= 0 || pr.Capital <= 0 {
+		return 0
+	}
+	return decumul.AnnuityIncome(decumul.FrenchMortality, pr.age(), pr.AnnuityShare*pr.Capital, 0.01, 0.90)
 }
 
 // spendSchedule builds the per-year real spending multipliers from the drift
@@ -298,6 +309,12 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	// headline outcome and recovery distribution at the selected buffer.
 	e := p.Simulate(pr.NPaths, simWorkers, seed)
 	o := e.Outcome()
+	// The drawdown-shape detail stats are computed on the SURVIVING paths:
+	// with any ruin at all, the all-paths minima saturate at -100%/yr and a
+	// 100% drawdown, which restates "some paths ruin" (already the headline)
+	// and hides the useful figure, how rough the ride gets even when the plan
+	// works. Ruin itself stays computed on every path.
+	so := survivors(e).Outcome()
 	// Recovery-time distribution: keep the first years legible and fold the long
 	// tail into a single "12y+" bucket, rather than 45 unreadable slivers.
 	const recoveryCap = 12
@@ -327,21 +344,48 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		// withdrawal shown in the UI; these detail metrics are computed for the
 		// API response and the tests, not rendered on the page.
 		Cards: []Card{
-			{"Ruin", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
-			{"Withdrawal rate", fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100)},
-			{"Terminal wealth (p50)", fmt.Sprintf("%.0f k€", o.TerminalP50/1000)},
-			{"Terminal wealth (p5)", fmt.Sprintf("%.0f k€", o.TerminalP5/1000)},
-			{"Median years underwater", fmt.Sprintf("%.0f y", o.MedianYearsUnderwater)},
-			{"Worst 10y real CAGR (p5)", fmt.Sprintf("%.1f%%/yr", o.Worst10yP5*100)},
-			{"Worst 10y real CAGR (min)", fmt.Sprintf("%.1f%%/yr", o.Worst10yCAGR*100)},
-			{"Conditional drawdown (worst 5%)", fmt.Sprintf("%.1f%%", o.CDaR*100)},
-			{"Median cumulative tax", fmt.Sprintf("%.0f k€", o.MedianCumTax/1000)},
-			{"Effective tax rate", fmt.Sprintf("%.1f%%", o.EffectiveTaxRate*100)},
+			{Label: "Ruin", Value: fmt.Sprintf("%.1f%%", o.RuinProb*100)},
+			{Label: "Withdrawal rate", Value: fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100)},
+			{Label: "Terminal wealth (p50)", Value: fmtWealth(o.TerminalP50)},
+			{Label: "Terminal wealth (p5)", Value: fmtWealth(o.TerminalP5)},
+			{Label: "Median years underwater", Value: fmt.Sprintf("%.0f y", o.MedianYearsUnderwater)},
+			{Label: "Worst 10y real CAGR (surviving p5)", Value: fmt.Sprintf("%.1f%%/yr", so.Worst10yP5*100)},
+			{Label: "Worst drawdown (surviving 5%)", Value: fmt.Sprintf("%.1f%%", so.CDaR*100)},
+			{Label: "Median cumulative tax", Value: fmtWealth(o.MedianCumTax)},
+			{Label: "Effective tax rate", Value: fmt.Sprintf("%.1f%%", o.EffectiveTaxRate*100)},
 		},
-		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth", Width: 900, Height: 360},
-			"Buffer years", ruinSeries(sweep), terminalSeries(sweep)),
+		// Two single-axis panels sharing the x axis instead of a dual-axis
+		// chart: each curve gets its own honest scale, so the interior
+		// optimum in ruin and the growth drag on terminal wealth both show.
+		ArbitrageSVG: chart.MultiLine(chart.Options{Title: "Ruin % vs buffer years", Width: 720, Height: 300},
+			"Buffer years", "Ruin %", []chart.XYSeries{ruinSeries(sweep)},
+			chart.Marker{Axis: 'x', Value: pr.BufferYears, Label: "your buffer"}),
+		Arbitrage2SVG: chart.MultiLine(chart.Options{Title: "Median terminal wealth vs buffer years", Width: 720, Height: 300},
+			"Buffer years", "Terminal p50 M€", []chart.XYSeries{terminalSeries(sweep)},
+			chart.Marker{Axis: 'x', Value: pr.BufferYears, Label: "your buffer"}),
 		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 600, Height: 360}, bars),
 	}
+}
+
+// survivors filters an ensemble down to its non-ruined paths, for the detail
+// statistics that saturate meaninglessly once any path hits zero.
+func survivors(e decumul.Ensemble) decumul.Ensemble {
+	out := decumul.Ensemble{Years: e.Years}
+	for _, p := range e.Paths {
+		if !p.Ruined {
+			out.Paths = append(out.Paths, p)
+		}
+	}
+	return out
+}
+
+// fmtWealth renders a real-euro amount with a readable unit: M€ with two
+// decimals from a million up, k€ below.
+func fmtWealth(v float64) string {
+	if v >= 1e6 || v <= -1e6 {
+		return fmt.Sprintf("%.2f M€", v/1e6)
+	}
+	return fmt.Sprintf("%.0f k€", v/1000)
 }
 
 // SolveResult answers the two "solve" questions for a scenario: the capital
@@ -395,11 +439,11 @@ func ruinSeries(s []decumul.SweepPoint) chart.XYSeries {
 	return chart.XYSeries{Name: "Ruin %", Xs: xs, Ys: ys, Color: chart.PaletteColor(3)}
 }
 
-// terminalSeries is the median terminal-wealth curve (k€) against buffer years.
+// terminalSeries is the median terminal-wealth curve (M€) against buffer years.
 func terminalSeries(s []decumul.SweepPoint) chart.XYSeries {
 	xs, ys := make([]float64, len(s)), make([]float64, len(s))
 	for i, p := range s {
-		xs[i], ys[i] = p.Value, p.TerminalP50/1000
+		xs[i], ys[i] = p.Value, p.TerminalP50/1e6
 	}
-	return chart.XYSeries{Name: "Terminal wealth p50 (k€)", Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
+	return chart.XYSeries{Name: "Terminal wealth p50 (M€)", Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
 }
