@@ -24,7 +24,7 @@ Le terme σ²/2 est le **volatility drag** (traînée de volatilité). Il vient 
 
 Quelques ordres de grandeur pour calibrer l'intuition (drag = σ²/2) :
 
-| Actif | Volatilité annuelle | Volatility drag | Arithmétique 7 % devient... |
+| Actif | Volatilité | Volatility drag | Arithmétique 7 % devient... |
 |---|---|---|---|
 | Fonds monétaire | ~1 % | ~0,005 % | 7,0 % |
 | Portefeuille 60/40 | ~10 % | ~0,5 % | 6,5 % |

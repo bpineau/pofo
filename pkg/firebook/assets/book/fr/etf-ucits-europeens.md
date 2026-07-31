@@ -28,7 +28,7 @@ Le TER affiché (0,07 à 0,45 % pour les briques de ce livre) n'est que le premi
 
 Chaque article de cette partie a sa brique UCITS. Voici la correspondance, en types de produits plutôt qu'en noms commerciaux, car l'offre bouge alors que les critères restent : gros encours, écart de suivi propre, domicile IE pour l'américain, part Acc.
 
-| Brique du livre | Type de produit UCITS | Enveloppe naturelle | Points de contrôle |
+| Brique | Produit UCITS | Enveloppe naturelle | À vérifier |
 |---|---|---|---|
 | Actions monde ([[diversification-internationale]]) | ETF MSCI World / FTSE All-World, physique, Acc, IE | CTO (et AV en UC propre) | Tracking diff, encours > 1 Md€ |
 | Actions monde en PEA | ETF Monde **synthétique** éligible PEA | PEA | Qualité du swap, encours |

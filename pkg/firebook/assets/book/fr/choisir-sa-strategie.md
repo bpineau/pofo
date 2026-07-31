@@ -58,7 +58,7 @@ Remettons les ordres de grandeur en place, car ils dictent où investir votre at
 
 ## La table récapitulative du panorama
 
-| Règle | Ruine | Revenu | Consommation totale | Gouvernance | L'article |
+| Règle | Ruine | Revenu | Consommation | Gouvernance | Article |
 |---|---|---|---|---|---|
 | Bengen amendé | Possible (falaise prévisible) | Parfaitement stable | La plus basse | Triviale | [[retrait-fixe-bengen]] |
 | Pourcentage fixe lissé | Impossible (capital) | Variable lissé | Bonne | Simple | [[pourcentage-fixe]] |

@@ -20,7 +20,7 @@ Le cœur est la formule d'annuité, celle de toutes les mensualités de prêt. P
 
 Le VPW tabule ce ratio (retrait / capital) pour chaque âge, avec n qui court de l'âge courant à 100 ans. Le taux g, lui, est fixé une fois pour toutes par classe d'actifs. La table actuelle retient 5,0 % réel pour les actions mondiales et 1,9 % réel pour les obligations, combinés au prorata de votre allocation. Un 60/40 suppose donc environ 3,8 % réel. Voici un extrait de la logique de la table pour un 60/40 :
 
-| Âge | Années restantes (jusqu'à 100) | Pourcentage VPW approximatif |
+| Âge | Années restantes | % VPW |
 |---|---|---|
 | 40 | 60 | ~3,9 % |
 | 50 | 50 | ~4,1 % |

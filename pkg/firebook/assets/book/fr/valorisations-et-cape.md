@@ -23,7 +23,7 @@ Pourquoi dix ans ? Parce que les bénéfices d'une seule année font un très ma
 
 Quelques repères pour calibrer l'œil (S&P 500, données Shiller depuis 1871) :
 
-| Époque | CAPE | Ce qui a suivi (rendement réel actions, 10-15 ans) |
+| Époque | CAPE | Ce qui a suivi (réel, 10-15 ans) |
 |---|---|---|
 | Moyenne 1871-2025 | ~17 | ~6,5 %/an en moyenne de très long terme |
 | 1921 (plancher d'après-guerre) | ~5 | Les années folles : >15 %/an |
@@ -54,7 +54,7 @@ Venons-en au cœur du sujet pour un rentier. Le sort d'une retraite se joue surt
 
 Les ordres de grandeur qui ressortent de l'analyse d'ERN (retraites de 30 ans, portefeuille ~75/25, données mensuelles américaines 1871-2016, les seuils exacts variant d'une étude à l'autre, jamais la structure) :
 
-| CAPE au départ | Fréquence historique | SAFEMAX approximatif (30 ans) | Lecture |
+| CAPE au départ | Fréquence historique | SAFEMAX (30 ans) | Lecture |
 |---|---|---|---|
 | < 15 (marché bon marché) | ~1/3 du temps | 5,5 à 13 % | La règle des 4 % est très conservatrice |
 | 15 à 20 | ~1/4 du temps | ~4,5 à 5,5 % | Le 4 % a de la marge |
