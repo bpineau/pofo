@@ -159,7 +159,7 @@ func ToHTML(src string, titles map[string]string) string {
 				}
 				return parts
 			}
-			b.WriteString("<table><thead><tr>")
+			b.WriteString(`<div class="table-wrap"><table><thead><tr>`)
 			for _, c := range cells(rows[0]) {
 				fmt.Fprintf(&b, "<th>%s</th>", inline(c))
 			}
@@ -171,7 +171,7 @@ func ToHTML(src string, titles map[string]string) string {
 				}
 				b.WriteString("</tr>")
 			}
-			b.WriteString("</tbody></table>")
+			b.WriteString("</tbody></table></div>")
 			continue
 		}
 
