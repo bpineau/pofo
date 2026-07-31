@@ -78,7 +78,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Fonds euros** : le support d'assurance-vie garanti et lissé. Excellent buffer et tranche courte, victime désignée de la répression financière. Jamais une protection d'inflation. [[obligations-en-retrait]], [[enveloppes-francaises]]
 
-**Frontière de décumulation** : chaque règle de retrait comme un point (ruine ; variabilité du niveau de vie). La §06 la trace pour votre plan. [[panorama-strategies-retrait]]
+**Frontière de décumulation** : chaque règle de retrait posée comme un point dans le plan (risque de ruine ; variabilité du niveau de vie). Aucune ne gagne sur les deux axes à la fois, donc choisir sa règle revient à choisir sa place le long de la frontière. [[panorama-strategies-retrait]]
 
 **Glidepath** : faire varier l'allocation dans le temps. La version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
 
@@ -112,7 +112,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Moyenne géométrique** : le taux de croissance réellement composé. Toujours sous la moyenne arithmétique, d'environ σ²/2 (le volatility drag). Votre patrimoine vit en géométrique. [[rendements-arithmetiques-geometriques]]
 
-**μ (mu)** : la moyenne arithmétique réelle annualisée du moteur de rendement (curseur de la loi Student-t). Le rendement géométriquement vécu vaut ≈ μ − σ²/2. À saisir modeste et **réel**, jamais la moyenne d'une brochure. [[la-machine-pofo]], [[rendements-arithmetiques-geometriques]]
+**μ (mu)** : la moyenne arithmétique réelle annualisée du moteur de rendement (le paramètre de position de la loi Student-t). Le rendement géométriquement vécu vaut ≈ μ − σ²/2. À saisir modeste et **réel**, jamais la moyenne d'une brochure. [[la-machine-pofo]], [[rendements-arithmetiques-geometriques]]
 
 ## O-R
 
