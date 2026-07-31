@@ -1,0 +1,287 @@
+# Dragon-decu, household edition -- the whole-wealth build, wrappers included.
+#
+# STATUS: fully implementable today from a French retail setup. This is
+#   dragon-decu.txt expressed as a real household holds it: across a CTO
+#   AND the French tax shelters (PEA / PEA-PME), which by law can hold
+#   nothing but European-domiciled equity funds. The shelters are not a
+#   footnote; they reshape the build, and the reshaping turns out to be a
+#   measured upgrade, not a compromise. Nine lines, two sections below.
+#
+# Thesis in one line: dragon-decu's design (a smaller efficient core,
+#   trend split across two managers, gold, a contractual euro-inflation
+#   line), with the equity sleeve carved out of the 90/60 core and moved
+#   into the tax shelters as plain world equity plus a small-cap
+#   value/quality tilt, and the bond overlay lost in the carve-out
+#   rebuilt with a dedicated long-duration line.
+#
+# ## Lineage: Browne -> Cole -> dragon-lite/hydra -> dragon-decu -> here
+#
+#   The design philosophy is regime balancing, four generations on.
+#   Harry Browne's Permanent Portfolio (1981) planted the idea: hold one
+#   winner per economic season (growth, recession, inflation, deflation)
+#   and let rebalancing harvest the rotations, instead of forecasting.
+#   Chris Cole's Dragon (Artemis, 2020) rebuilt it for century-scale
+#   cycles: add trend and long volatility, size for survival. The family
+#   in this directory made it buyable: dragon-lite distilled it to three
+#   UCITS lines around a capital-efficient 90/60 core (Asness, "Why Not
+#   100% Equities", JPM 1996), the hydra engineered it into one head per
+#   return engine, and dragon-decu re-tuned it for decumulation, where
+#   sequence risk and a euro-inflation liability change what "optimal"
+#   means (see that file for the full argument).
+#   This edition adds the last real-world layer: TAXES AND WRAPPERS. A
+#   French household keeps part of its wealth in a PEA and a PEA-PME
+#   (gains taxed ~17.2% instead of ~30%), and those wrappers accept only
+#   European equity funds: no trend, no gold, no bonds, no linkers ever.
+#   The naive reading is a constraint; the correct reading is a division
+#   of labor. The shelters take the equity sleeve (they can hold nothing
+#   else, and equity is the sleeve with the largest expected gains, i.e.
+#   the most tax to shelter); the CTO takes everything the shelters
+#   cannot hold. Carving the equity out of NTSG then forces two edits
+#   that the hydra had already argued for on pure design grounds: a
+#   small-cap value tilt (the shelters' best funds are exactly that) and
+#   a dedicated long-duration line (to rebuild the bond overlay the
+#   carve-out removed). The constraint re-derives the engineering.
+#
+# ## What 100 EUR actually holds (the exposure ledger)
+#
+#   CTO section
+#   28 NTSG   -> 25.2 world equity + 16.8 sovereign futures (~7y)
+#    4 DTLE   ->  4   20+y US Treasuries, EUR-hedged (~17y duration,
+#                     ~9.7 points in 7y-equivalent terms)
+#   13 DBMFE  -> 13   trend (SG CTA replication, DBi)
+#   13 AQR MF -> 13   trend (direct multi-asset TSMOM, EUR-hedged)
+#   15 IGLN   -> 15   gold (physical ETC)
+#   13 IBCI   -> 13   euro inflation-linked sovereigns
+#   PEA / PEA-PME section (equity by law)
+#    5 WPEA   ->  5   world equity (synthetic swap inside the PEA)
+#    7 Indep. Europe Small  -> 7  European small value/quality
+#    2 Indep. France Small Mid -> 2  French small/mid value/quality
+#   ------------------------------------------------------------------
+#   Total: ~39 equity (of which 9 small value) + ~26.5 nominal duration
+#   (7y-equivalent) + 26 trend + 15 gold + 13 linkers  = ~119.5%
+#   exposure, all embedded leverage inside NTSG, no margin anywhere.
+#   The ledger lands on dragon-decu's targets almost exactly; only the
+#   internal composition of the equity sleeve differs (a 9-point
+#   small-value tilt instead of pure cap-weight).
+#
+# ## Regime map: what hurts a spending household, and which line answers
+#
+#   Growth boom            ~39 points of equity: presence. The small
+#                          value tilt diversifies the mega-cap-growth
+#                          concentration a world index carries.
+#   Disinflation/recession NTSG's futures + DTLE + trend rotating long
+#                          bonds; linkers hold their value.
+#   Deflation crash (2008) DTLE is the line bought for this: the long
+#                          end is what actually rallies in a flight to
+#                          quality. Caveat: the small-value tilt DEEPENS
+#                          this regime (small caps fell harder in 2008).
+#   Inflation, trending    Trend short bonds / long commodities (Neville,
+#                          Draaisma, Funnell, Harvey & van Hemert, JPM
+#                          2021) + linkers accruing the index by contract.
+#   Inflation, choppy      Gold + the linkers' accrual; historically
+#   (stagflation)          value tilts also weathered the 1970s better
+#                          than growth. The retiree-killer regime, and
+#                          the reason the linkers line exists.
+#   Prolonged equity bear  Trend crisis alpha (Hurst, Ooi & Pedersen,
+#                          JPM 2017); linkers and DTLE are what you
+#                          spend from while equities are underwater.
+#
+# ## Why the wrappers change behavior, not just taxes
+#
+#   Three consequences worth spelling out, because none shows up in a
+#   backtest. SPENDING ORDER: the shelters are the cheap spending pocket
+#   (~17.2% on gains vs ~30%), so a decumulating household drains them
+#   early; since they hold only equity, spending them first de-equitizes
+#   the early years and lets the equity share drift back up later. That
+#   is an implicit rising-equity glidepath (Kitces & Pfau, 2014), the
+#   sequence-friendly shape, obtained for free from tax logic.
+#   REBALANCING ASYMMETRY: money cannot move freely INTO the shelters
+#   (deposit ceilings) and cannot change asset class inside them, so all
+#   cross-sleeve rebalancing happens in the CTO section; inside the PEA
+#   the only trade is equity-for-equity. Set bands accordingly.
+#   CONTRIBUTION CEILINGS: the PEA block's weight is partly set by law,
+#   not by choice; treat its range as descriptive, and let the CTO
+#   absorb the drift.
+#
+# ## The lines: role, sane range, equivalent-quality alternatives
+#
+# CTO -- NTSG, equity + duration core (28%; sane range 24-35% HERE).
+#   Global Efficient Core 90/60 (IE00077IIPQ8). Its weight in this
+#   edition is a COMPLETION: NTSG's equity plus the PEA block must land
+#   household equity near 35-45%, so NTSG shrinks when the shelters
+#   grow. Euro-native variant NTSZ (IE000OV4XWA3) for part of the
+#   sleeve trades USD quotation for eurozone concentration.
+#
+# CTO -- DTLE, deflation duration (4%; sane range 3-6%).
+#   20+y US Treasuries EUR-hedged (IE00BD8PGZ49, the hedged share of
+#   IDTL). Pure arithmetic first: every euro of equity carved out of
+#   NTSG lost 0.60 EUR of ~7y bond overlay; at ~17y duration DTLE
+#   rebuilds that at about 2.4x, so ~4 points restore what ~10 points of
+#   overlay would have carried. It also patches the dragon family's
+#   thinnest quadrant (2008-style convexity). Alternative: IDTL
+#   (unhedged) if you prefer the crisis-USD kicker bundled in; the
+#   hedged share keeps the defensive sleeve in the liability currency.
+#
+# CTO -- trend, two models (13% + 13%; total sane range 20-30%).
+#   Same head, same reasoning, same vehicles as dragon-decu: DBMFE
+#   (LU2951555403, DBi replication) + AQR Managed Futures UCITS
+#   (RAEF EUR LU1662501532, direct TSMOM; fallbacks Winton IE00BG382Q20,
+#   Man AHL Trend LU0503879685). The 20% floor is empirical (ruin nearly
+#   doubles below); the split removes single-manager risk a spending
+#   household cannot earn back; the ~30% ceiling is behavioral.
+#
+# CTO -- gold, IGLN (15%; sane range 10-20%).
+#   Physically-backed ETC only (IE00B4ND3602, 0.12%; equal quality:
+#   Amundi GOLD FR0013416716, EUR-quoted, or Invesco SGLD). Never an
+#   ETN (unsecured bank debt inside the safe-haven line). The ~10% floor
+#   is the strongest empirical result of the family's range checks (at
+#   0% gold, modeled ruin roughly triples); the ceiling is a priori
+#   (zero expected real carry: Erb & Harvey, FAJ 2013).
+#
+# CTO -- euro linkers, IBCI (13%; sane range 10-15%, A PRIORI).
+#   iShares Euro Inflation Linked Govt (IE00B0M62X26, 0.09%): the only
+#   line whose cash flows are indexed on the household's own liability.
+#   Duration caveat (the 2022 lesson): IBCI is all-maturity (~7y), and
+#   long linkers can lose to rising REAL rates while inflation runs;
+#   duration-cleaner substitutes are UBS Euro Inflation Linked 1-10
+#   (LU1645380442) or UBS TIPS 1-10 EUR-hedged (LU1459801780, US-CPI
+#   basis, deepest backcast). Dose bought on the contract, not the
+#   chart: see the two-lens verdict.
+#
+# PEA -- WPEA, world equity (5%; sane range 3-8%).
+#   iShares MSCI World Swap PEA (IE0002XZSHO1, 0.20%): full world
+#   exposure inside a wrapper that legally holds only European funds,
+#   via a synthetic swap (the fund holds EU equities and swaps their
+#   return for the index's; collateralized and reset, a small
+#   counterparty exposure listed in the blind spots). Equal quality:
+#   Amundi CW8 (LU1681043599, older and a touch dearer) or EWLD. One
+#   world line per PEA is plenty; never hold cash-like assets here.
+#
+# PEA + PEA-PME -- Independance AM Europe Small (7%, held across both
+#   wrappers) and France Small Mid (2%); small sleeve sane range 8-15%.
+#   The equity tilt: European small-cap value/quality from a boutique
+#   with a three-decade record and a disciplined "value pere de famille"
+#   process. Design-wise this IS the hydra's small-value head (size and
+#   value premia: Fama & French 1992/93; junk-screened smalls: Asness,
+#   Frazzini, Israel, Moskowitz & Pedersen, JFE 2018), with two
+#   advantages over the hydra's ZPRV: it is European (diversifying an
+#   otherwise US-heavy book) and it is shelter-eligible (the premium
+#   compounds at 17.2% tax, not 30%). The France Small Mid line is a
+#   legacy overlap; folding it into Europe Small over time is fine.
+#   Above ~15% the sleeve stops diversifying and starts doubling down
+#   on equity beta. CTO-only alternatives: ZPRV (IE00BSPLC413), AVWS
+#   (IE0003R87OG3). Second-manager options inside a PEA-PME if the
+#   sleeve grows: Gay-Lussac Microcaps, HMG Decouvertes.
+#
+# ## The two-lens verdict (and what was actually measured)
+#
+#   Decumulation builds cannot be judged through one lens; the two
+#   available lenses are biased in opposite directions (the full
+#   argument lives in dragon-decu.txt). Measured on the toolkit's
+#   deep panels, with two declared proxies for the young lines (ZPRV
+#   stands in for the Independance sleeve, the TIPS-hEUR backcast for
+#   IBCI; window 2000/2005 -> 2026):
+#   LENS A, raw window (monthly real bootstrap, 40y, rigid 4% real
+#   withdrawal): ruin 3.1% vs 5.5% for pure dragon-decu and 2.1% for
+#   the hydra; safe rate at 5% ruin 4.17% vs 3.96% and 4.36%. The
+#   small-value and duration lines close most of dragon-decu's
+#   in-window gap to the hydra. Bias: resampling 2000-2026 crowns that
+#   window's winners.
+#   LENS B, valuation-anchored (central mean replaced by the CAPE-
+#   implied estimate, risk kept from the fitted weights): safe rate
+#   2.52% vs 2.54% (dragon-decu) and 2.33% (hydra). The low-risk book
+#   keeps the family lead. Bias: equal forward mean flatters low vol.
+#   WHAT SURVIVES BOTH: this edition is the family's best-of-both, at
+#   or near the top under each lens while pure dragon-decu wins only
+#   lens B and the hydra only lens A. What no lens can test: every
+#   linker series starts post-2000, so the 1970s, the regime the
+#   linkers exist for, sit outside every backcast. And the literal
+#   file's own common real-quote window is short (WPEA listed 2024,
+#   IBCI real quotes 2005): deep history runs through sim:on backcasts
+#   and the declared proxies above, so read levels skeptically and
+#   gaps comparatively, as always.
+#
+# ## Range check honesty (measured floors, believed ceilings)
+#
+#   EMPIRICAL: trend floor 20% and gold floor ~10% (the family's two
+#   strongest sweep results, stable across windows); small sleeve 8-15%
+#   (the hydra's sweep, and dragon-lite's own file measured that moving
+#   12 points of core into small value was its single best edit); NTSG
+#   plateau (flat across 24-35 here: pick the middle).
+#   ARITHMETIC: DTLE 3-6% (the duration-completion computation above).
+#   A PRIORI: the linkers dose 10-15% (liability matching; lens B
+#   supports it, lens A reads against it for stated in-sample reasons),
+#   the gold ceiling (~20%, zero-carry logic against a window that
+#   worships gold), the trend ceiling (~30%, behavioral).
+#
+# ## Blind spots (known, accepted, and the patch for each)
+#
+#   (a) MANAGER CONCENTRATION: ~9 points on one small boutique across
+#       two wrappers. Accepted at this weight for the record and the
+#       shelter eligibility; the patch is a second PEA-PME manager if
+#       the sleeve ever exceeds its range.
+#   (b) SMALL-CAP CYCLICALITY: the tilt deepens 2008-style liquidity
+#       crashes and can trail cap-weight for years (2015-2020). It is
+#       equity beta with a premium, not a hedge; DTLE and trend exist
+#       for the regime it worsens.
+#   (c) SWAP COUNTERPARTY inside WPEA/CW8: collateralized, reset, and
+#       small, but real; the price of world exposure inside a wrapper
+#       that bans it. Holding part of the world sleeve as physical ETFs
+#       on the CTO (via NTSG) already dilutes it.
+#   (d) DEFLATION CONVEXITY: improved by DTLE but still the modest
+#       quadrant; the family accepts this rather than pay negative
+#       carry for long-vol convexity (see dragon-decu and the hydra).
+#   (e) TREND WINTERS: 26 points can spend years flat while equities
+#       run; the cure is written rules, not weights.
+#   (f) CURRENCY: roughly half the book is USD-quoted unhedged (NTSG,
+#       IGLN), half feature (crisis USD), half bug; AQR and DTLE are
+#       EUR-hedged, IBCI and the liability are euro-native.
+#   (g) RECONSTRUCTION AND WINDOW LIMITS: shared TSMOM backcast for
+#       deep trend history; linkers post-2000 only; WPEA listed 2024.
+#       Regime-behavior study, not a promise.
+#   (h) NO BUFFER IN THE FILE: pair with 2-3 years of spending in euro
+#       liquidity held outside these weights (livrets, fonds euros,
+#       XEON; see fire-liability-buffer.txt), spent in drawdown years.
+#
+# ## Honesty note on the WEIGHTS
+#   28/5/7/2/4/13/13/15/13 are hand-rounded from dragon-decu's targets
+#   minus the wrapper carve-out arithmetic; nothing was optimizer-fit.
+#   The two-lens table is the full disclosure; expect measured edges to
+#   shrink out of sample. Anywhere inside the sane ranges is the same
+#   portfolio. The design carried across editions, a contractual
+#   inflation line plus split trend around a smaller efficient core,
+#   with the equity sleeve now living where the tax code pays for it,
+#   is the part built to survive.
+#
+# ## Practical notes
+#   - Shelter hygiene: one world line per PEA (consolidate duplicates),
+#     no cash parked inside, and never bend the shelters toward assets
+#     they cannot hold; the CTO exists for that.
+#   - Spending order: drain the shelters first in decumulation (17.2%
+#     vs 30% on gains); the implicit glidepath above is a feature.
+#   - Rebalance quarterly or on bands, executed in the CTO section;
+#     inside the shelters only equity-for-equity trades exist.
+#   - The AQR leg is a FUND, not an ETF: check platform availability
+#     (see dragon-decu.txt for the fallback ladder).
+#   - Pair with a floor-capped flexible withdrawal rule, not a rigid
+#     indexed one; the portfolio is half the machine.
+#
+# Siblings: dragon-decu.txt (the wrapper-free design this implements),
+#   claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
+#   accumulation flagship and the engineered all-rounder upstream),
+#   fire-liability-buffer.txt (the euro buffer this file assumes).
+#meta rebalance:90
+#meta sim:on
+
+# ---- CTO section (everything the shelters cannot hold) ----------------
+28	NTSG            # equity + duration core: Global Efficient Core 90/60 (IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
+4	DTLE            # deflation duration: iShares $ Treasury 20+y EUR-hedged (IE00BD8PGZ49; unhedged twin IDTL)
+13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
+13	LU1662501532    # trend, direct method: AQR Managed Futures UCITS EUR-hedged (fallback Winton IE00BG382Q20)
+15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
+13	IBCI            # euro linkers: iShares € Inflation Linked Govt (IE00B0M62X26; 1-10y alts LU1645380442, LU1459801780)
+
+# ---- PEA / PEA-PME section (tax-sheltered; equity-only by law) --------
+5	WPEA            # world equity via synthetic swap (IE0002XZSHO1; alts CW8 LU1681043599, EWLD)
+7	LU1832174962    # small value/quality tilt: Independance AM Europe Small, held across PEA and PEA-PME
+2	LU0131510165    # legacy overlap: Independance AM France Small Mid (fine to fold into Europe Small over time)
