@@ -124,6 +124,7 @@ var figures = map[string]func() string{
 	"cape-contracyclique":      figCapeContracyclique,
 	"cape-dix-ans":             figCapeDixAns,
 	"credits-mortalite":        figCreditsMortalite,
+	"vivant-ruine-parti":       figVivantRuineParti,
 	"arbre-decision":           figArbreDecision,
 	"deux-thermometres":        figDeuxThermometres,
 	"tous-temps-echange":       figTousTempsEchange,
