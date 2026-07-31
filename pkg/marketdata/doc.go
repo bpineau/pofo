@@ -41,7 +41,7 @@
 // data with a warning rather than failing. A few symbols additionally
 // carry a bundled snapshot served as a last resort when every source fails
 // and nothing is cached: ^VIX (daily, 1990→), the inflation indices (see
-// below) and the euro crosses (the long monthly ECU/EUR proxy, 1978→, the
+// below) and the euro crosses (the long daily ECU/DM/EUR proxy, 1971→, the
 // same one that extends a live cross back in time).
 //
 // Eurostat serves the Harmonised Index of Consumer Prices under the

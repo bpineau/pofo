@@ -50,13 +50,14 @@ func All() []Recipe {
 // international small-cap value mutual funds, the same shop and factor design,
 // blended 60/40 US / developed-ex-US, net of the 0.44% TER. The only market
 // quote is the LSE line in GBP, so the USD blend is re-expressed in GBP at the
-// GBP/USD spot rate (GBPUSD=X, ~2004→, sets the start) to match the real
-// series, which is grafted from inception.
+// GBP/USD spot rate (GBPUSD=X extended to 1971 by the daily FRED refdata, so
+// the start is set by DISVX ~1994) to match the real series, which is grafted
+// from inception.
 func dpgtRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000S67ID55",
 		Name:            "Dimensional Global Targeted Value: DFA small-cap value blend (GBP)",
-		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (~2004→), real DPGT grafted from 2025",
+		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (FRED daily refdata back to 1971), real DPGT grafted from 2025",
 		Build:           dpgtBuild,
 		ValidateAgainst: "IE000S67ID55",
 		SpliceReal:      "IE000S67ID55",
@@ -66,10 +67,13 @@ func dpgtRecipe() Recipe {
 // dpgtBuild builds the 60/40 DFA small-cap value blend in USD, then converts
 // each daily return into GBP via the GBP/USD spot rate (a GBP-denominated NAV
 // equals the USD NAV divided by the USD-per-GBP rate), so the simulated
-// history matches the GBP quote the real DPGT trades in.
+// history matches the GBP quote the real DPGT trades in. The cross is
+// forward-filled onto the blend's own trading calendar (see fxOnDates)
+// rather than joined into the frame, which would pollute the calendar with
+// the FX feed's weekend prints.
 func dpgtBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	legs := []Leg{{ID: "DFSVX", Weight: 0.60}, {ID: "DISVX", Weight: 0.40}}
-	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX", "GBPUSD=X"}, from)
+	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX"}, from)
 	if err != nil {
 		return nil, err
 	}
@@ -77,15 +81,57 @@ func dpgtBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	fx := fr.Returns["GBPUSD=X"] // daily return of USD per GBP
-	s := &marketdata.Series{Name: "DPGT (USD small-value blend expressed in GBP)", Source: "simdata"}
+	return convertDaily("DPGT (USD small-value blend expressed in GBP)",
+		extend(f), "GBPUSD=X", from, fr.Dates, usd)
+}
+
+// fxOnDates fetches a currency cross and forward-fills its level onto the
+// given trading calendar, so a conversion never adds the FX feed's own dates
+// (weekend prints, foreign holidays) to a strategy's frame. Dates before the
+// cross's history are dropped from the front: ok[i] reports coverage.
+func fxOnDates(f Fetcher, cross string, from time.Time, dates []time.Time) (levels []float64, covered []bool, err error) {
+	fx, err := f.Fetch(cross, from)
+	if err != nil {
+		return nil, nil, fmt.Errorf("FX cross %s: %w", cross, err)
+	}
+	if fx == nil || len(fx.Points) == 0 {
+		return nil, nil, fmt.Errorf("FX cross %s: empty history", cross)
+	}
+	levels = make([]float64, len(dates))
+	covered = make([]bool, len(dates))
+	for i, d := range dates {
+		if v, _, ok := fx.At(d); ok {
+			levels[i], covered[i] = v, true
+		}
+	}
+	return levels, covered, nil
+}
+
+// convertDaily re-expresses a USD strategy index in another currency at the
+// given cross (quoted as USD per unit of the target currency): a converted
+// NAV equals the USD NAV divided by the rate, so r = (1+rUSD)/(1+rFX) − 1
+// per step. The output starts at the first date the cross covers.
+func convertDaily(name string, f Fetcher, cross string, from time.Time, dates []time.Time, usd []float64) (*marketdata.Series, error) {
+	fx, covered, err := fxOnDates(f, cross, from, dates)
+	if err != nil {
+		return nil, err
+	}
+	s := &marketdata.Series{Name: name, Source: "simdata"}
 	val := 100.0
-	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[0], Close: val})
 	for i := 1; i < len(usd); i++ {
+		if !covered[i-1] || !covered[i] {
+			continue
+		}
+		if len(s.Points) == 0 {
+			s.Points = append(s.Points, marketdata.Point{Date: dates[i-1], Close: val})
+		}
 		rUSD := usd[i]/usd[i-1] - 1
-		rGBP := (1+rUSD)/(1+fx[i]) - 1
-		val *= 1 + rGBP
-		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[i], Close: val})
+		rFX := fx[i]/fx[i-1] - 1
+		val *= (1 + rUSD) / (1 + rFX)
+		s.Points = append(s.Points, marketdata.Point{Date: dates[i], Close: val})
+	}
+	if len(s.Points) < 2 {
+		return nil, fmt.Errorf("%s: no overlap between the strategy and %s", name, cross)
 	}
 	return s, nil
 }
@@ -537,13 +583,13 @@ func dbmfpaRecipe() Recipe {
 // re-expresses it in EUR at the EUR/USD spot rate (unhedged), so the EUR
 // investor also carries the USD/EUR currency move on top of the strategy. The
 // real DBMFE quotes are grafted from inception. EURUSD=X (Yahoo, ~2003→) is
-// extended back to 1978 by the bundled ECU/EUR proxy, so the start date is now
+// extended back to 1971 by the bundled ECU/DM/EUR proxy, so the start date is now
 // set by the strategy's own youngest leg, not the FX cross.
 func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMFE",
 		Name:            "iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR",
-		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (bundled ECU/EUR proxy back to 1978), real DBMFE grafted from 2025",
+		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
 		SpliceReal:      "DBMFE",
@@ -553,12 +599,13 @@ func dbmfeRecipe() Recipe {
 // dbmfeBuild runs the USD DBMF strategy and converts each daily return into an
 // unhedged EUR return via the EUR/USD spot rate: a EUR-denominated NAV equals
 // the USD NAV divided by the USD-per-EUR rate, so r_eur = (1+r_usd)/(1+r_fx)−1
-// where r_fx is the EURUSD (USD per EUR) daily change.
+// where r_fx is the EURUSD (USD per EUR) daily change. The cross is
+// forward-filled onto the strategy's own trading calendar (see fxOnDates)
+// rather than joined into the frame, which would pollute the calendar with
+// the FX feed's weekend prints.
 func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.10, 0.0085) // identical USD strategy to dbmfRecipe
-	ids := append([]string{cfg.CashID}, cfg.Markets...)
-	ids = append(ids, "EURUSD=X")
-	fr, err := BuildFrame(extend(f), ids, from)
+	fr, err := BuildFrame(extend(f), append([]string{cfg.CashID}, cfg.Markets...), from)
 	if err != nil {
 		return nil, err
 	}
@@ -566,18 +613,8 @@ func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	fx := fr.Returns["EURUSD=X"] // daily return of USD per EUR
-	s := &marketdata.Series{Name: "DBMFE (USD TSMOM converted to unhedged EUR)", Source: "simdata"}
-	val := 100.0
-	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start], Close: val})
-	for i := 1; i < len(usd); i++ {
-		k := start + i
-		rUSD := usd[i]/usd[i-1] - 1
-		rEUR := (1+rUSD)/(1+fx[k]) - 1
-		val *= 1 + rEUR
-		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
-	}
-	return s, nil
+	return convertDaily("DBMFE (USD TSMOM converted to unhedged EUR)",
+		extend(f), "EURUSD=X", from, fr.Dates[start:], usd)
 }
 
 // kmlmRecipe reconstructs KMLM from the same TSMOM engine at a higher vol

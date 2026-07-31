@@ -81,9 +81,9 @@ func TestHistoryFXFallsBackToECB(t *testing.T) {
 	if rate, _, ok := s.At(day); !ok || math.Abs(rate-1/1.1789) > 1e-9 {
 		t.Errorf("1999-01-04 rate = %v, %v; want %v", rate, ok, 1/1.1789)
 	}
-	// The bundled ECU/EUR anchors still extend the euro cross to 1978.
-	if first := s.First().Date; first.Year() != 1978 {
-		t.Errorf("series starts %s, want 1978 (bundled ECU/EUR splice)", first.Format("2006-01"))
+	// The bundled ECU/DM/EUR proxy still extends the euro cross to 1971.
+	if first := s.First().Date; first.Year() != 1971 {
+		t.Errorf("series starts %s, want 1971 (bundled ECU/DM/EUR splice)", first.Format("2006-01"))
 	}
 }
 
@@ -110,7 +110,7 @@ func TestHistoryFXCrossRateViaECB(t *testing.T) {
 
 func TestHistoryEuroCrossOfflineSnapshot(t *testing.T) {
 	// Every live source down and nothing cached: the euro crosses still
-	// answer from the bundled monthly ECU/EUR anchors (1978→).
+	// answer from the bundled daily ECU/DM/EUR proxy (1971→).
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "everything down", http.StatusInternalServerError)
@@ -125,13 +125,18 @@ func TestHistoryEuroCrossOfflineSnapshot(t *testing.T) {
 	if s.Currency != "EUR" {
 		t.Fatalf("currency = %q, want EUR: %+v", s.Currency, s)
 	}
-	if first := s.First().Date; first.Year() != 1978 {
-		t.Errorf("first = %s, want 1978 (bundled anchors)", first.Format("2006-01"))
+	if first := s.First().Date; first.Year() != 1971 {
+		t.Errorf("first = %s, want 1971 (bundled anchors)", first.Format("2006-01"))
 	}
-	// December 1978 EUR/USD anchor is 1.3773 USD per EUR: the USDEUR
-	// snapshot serves its reciprocal.
-	if got, want := s.Points[0].Close, 1/1.3773; math.Abs(got-want) > 1e-9 {
+	// The first proxy row (1971-01-04, rescaled daily DM fixing) is
+	// 0.731763 USD per EUR: the USDEUR snapshot serves its reciprocal.
+	if got, want := s.Points[0].Close, 1/0.731763; math.Abs(got-want) > 1e-9 {
 		t.Errorf("first close = %v, want %v", got, want)
+	}
+	// The December 1978 monthly ECU anchor (1.3773 USD per EUR) is
+	// preserved exactly by the anchors+shape blend.
+	if rate, _, ok := s.At(time.Date(1978, 12, 1, 0, 0, 0, 0, time.UTC)); !ok || math.Abs(rate-1/1.3773) > 1e-9 {
+		t.Errorf("1978-12 rate = %v, %v; want %v", rate, ok, 1/1.3773)
 	}
 }
 

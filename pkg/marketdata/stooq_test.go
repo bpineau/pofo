@@ -80,13 +80,13 @@ func TestHistoryFXFallsBackToStooq(t *testing.T) {
 		t.Errorf("last close = %v, want %v (inverted eurusd)", got, want)
 	}
 	// The synthetic pre-euro row is dropped; the vetted bundled ECU/EUR
-	// anchors take its place, so the series still reaches back to 1978.
+	// anchors take its place, so the series still reaches back to 1971.
 	for _, p := range s.Points {
 		if math.Abs(p.Close-1/9.99) < 1e-3 {
 			t.Errorf("synthetic pre-euro stooq row survived: %+v", p)
 		}
 	}
-	if first := s.First().Date; first.Year() != 1978 {
-		t.Errorf("series starts %s, want 1978 (bundled ECU/EUR splice)", first.Format("2006-01"))
+	if first := s.First().Date; first.Year() != 1971 {
+		t.Errorf("series starts %s, want 1971 (bundled ECU/DM/EUR splice)", first.Format("2006-01"))
 	}
 }
