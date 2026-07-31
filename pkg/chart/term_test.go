@@ -43,3 +43,52 @@ func TestTermColorUsesANSI(t *testing.T) {
 		t.Error("ANSI escapes expected with color")
 	}
 }
+
+func TestTermBraille(t *testing.T) {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	var dates []time.Time
+	var v []float64
+	for i := range 200 {
+		dates = append(dates, start.AddDate(0, 0, i))
+		v = append(v, 100+float64(i))
+	}
+	series := []Series{{Name: "up", Dates: dates, Values: v}}
+	out := Term(TermOptions{Width: 60, Height: 8, Braille: true}, series)
+	brailleRunes := 0
+	for _, r := range out {
+		if r >= 0x2801 && r <= 0x28FF {
+			brailleRunes++
+		}
+	}
+	if brailleRunes == 0 {
+		t.Fatalf("braille mode should emit braille runes:\n%s", out)
+	}
+	if !strings.Contains(out, "┤") || !strings.Contains(out, "└") {
+		t.Error("braille mode should keep the gutter and axis frame")
+	}
+	if !strings.Contains(out, "2020") {
+		t.Error("braille mode should keep the time labels")
+	}
+}
+
+func TestTermBrailleMultiSeries(t *testing.T) {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	var dates []time.Time
+	var a, b []float64
+	for i := range 100 {
+		dates = append(dates, start.AddDate(0, 0, i))
+		a = append(a, 100+float64(i))
+		b = append(b, 200-float64(i))
+	}
+	series := []Series{
+		{Name: "alpha", Dates: dates, Values: a},
+		{Name: "beta", Dates: dates, Values: b},
+	}
+	out := Term(TermOptions{Width: 60, Height: 8, Braille: true, Color: true}, series)
+	if !strings.Contains(out, "alpha") || !strings.Contains(out, "beta") {
+		t.Error("braille multi-series should keep the legend")
+	}
+	if !strings.Contains(out, "\x1b[38;5;") {
+		t.Error("Color should colorize braille cells")
+	}
+}
