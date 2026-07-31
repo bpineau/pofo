@@ -146,8 +146,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 ### VI. Buffers et protections
 - [x] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
 - [x] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
-- [ ] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
-- [ ] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
+- [x] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
+- [x] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
 - [ ] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
 - [ ] levier-et-marges: Levier, marge et lombard en retrait (avance)
 
