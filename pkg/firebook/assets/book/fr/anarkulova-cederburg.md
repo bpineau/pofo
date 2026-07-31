@@ -64,7 +64,7 @@ Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à
 - Anarkulova-Cederburg-O'Doherty (38 pays, bootstrap par blocs, mortalité réelle) : le 4 % rigide échoue ~17 % du temps, le taux à 5 % d'échec est vers 2,3 % pour un couple domestique 60/40 ; et les obligations domestiques protègent moins que la diversification internationale des actions.
 - Les critiques (guerres, Argentine, investisseur domestique, crises corrélées) sont sérieuses : la vérité d'un investisseur mondialisé est entre les deux bornes ; personne ne sait où.
 - En pratique : 3-3,5 % rigide pour dimensionner, la colonne broad-sample comme label de robustesse, la diversification internationale et les actifs anti-inflation comme réponses aux modes de défaillance qu'elle révèle.
-- Ces données sont dans votre outil : le modèle broad-sample de la page FIRE rejoue le panel JST 16 pays, 1870-2020 ([[la-machine-pofo]], [[utiliser-la-page-fire]]).
+- Ces données sont accessibles en simulation : le modèle broad-sample rejoue le panel JST 16 pays, 1870-2020 ([[la-machine-pofo]], [[utiliser-la-page-fire]]).
 
 ---
 
