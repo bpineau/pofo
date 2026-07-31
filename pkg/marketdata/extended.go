@@ -81,7 +81,7 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 		return nil, fmt.Errorf("%s: raw closes cannot be SIM-extended (simulated histories are total-return); set NoSim or drop Raw", id)
 	}
 	if !wantSim {
-		s, err := c.fetch(ctx, base, opt.From, opt.Raw)
+		s, err := c.fetch(ctx, base, opt.From, fetchSpec{raw: opt.Raw})
 		if err != nil {
 			return nil, err
 		}
