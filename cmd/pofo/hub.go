@@ -19,7 +19,7 @@
 // /fonts.css) remapped to the FIRE book's warm paper-and-ink identity
 // (webui.WarmSkin), so the hub and the /view report read as the book's kin
 // while the FIRE simulator keeps the instrument look. Each example row also
-// offers to send its portfolio straight to the simulator (/fire/e/<name>/).
+// offers to send its portfolio straight to the simulator (/firesimulator/e/<name>/).
 // The composer links /composer.css and /composer.js; the folded examples form
 // stays fully functional without JavaScript (progressive enhancement, the
 // composer simply not booting).
@@ -205,7 +205,7 @@ body.hub{background:
 <header class="hub-top">
   <span class="hub-mark">po<b>fo</b></span>
   <nav class="hub-nav">
-    <a href="/fire/">Simulator</a>
+    <a href="/firesimulator/">Simulator</a>
     <a href="/firebook/fr/">Book-fr</a>
   </nav>
 </header>
@@ -251,7 +251,7 @@ body.hub{background:
     </label>
     <span class="hub-links">
       <a href="/view?ex={{.Name}}{{$.Prefs.Query}}">Open</a>
-      <a href="/fire/e/{{.Name}}/">Simulate</a>
+      <a href="/firesimulator/e/{{.Name}}/">Simulate</a>
       <a href="/examples/{{.Name}}.txt">Source</a>
     </span>
   </li>
