@@ -10,6 +10,10 @@ Cet article suit un fil simple. D'abord la mécanique économique, avec les cré
 Mettez 100 retraités de 75 ans dans un pot commun qui verse 8 000 €/an à chaque survivant. Chaque année, quelques-uns décèdent et leur part finance les versements des autres. Les survivants touchent alors un rendement qu'aucun portefeuille ne peut égaler à risque comparable, car il vient d'une source décorrélée de tout marché : la mortalité du groupe. Ces « crédits de mortalité » sont faibles à 65 ans (~0,5-1 %/an) et explosent avec l'âge (3-5 %/an après 80 ans). Voilà pourquoi la rente est un mauvais produit de sexagénaire et un excellent produit d'octogénaire. Et voilà pourquoi aucune stratégie de retrait autofinancée ne peut la battre sur la toute fin de vie.
 :::
 
+::: figure credits-mortalite
+Le crédit de mortalité est la mortalité du groupe elle-même, ici sous une loi de Gompertz calée sur les rentiers (âge modal 91 ans). En face, ce que coûte l'opération : convertir un portefeuille de croissance en une promesse adossée à des obligations abandonne la prime de risque des actions, soit 2,5 à 3,5 points par an. Avant 77 ans, vous cédez plus que vous ne touchez. Après 81 ans, plus rien ne rivalise. La fenêtre d'achat classique ne vient pas d'une tradition commerciale, elle se lit sur ce croisement.
+:::
+
 ## L'économie du produit, sans le folklore
 
 Une rente viagère immédiate se décompose simplement. On prend votre capital, on le convertit au taux technique (proche des taux obligataires du moment), on l'étale sur votre espérance de vie (table de mortalité prudente, TGH/TGF-05 en France), puis on retire les chargements de l'assureur (8-15 % de la valeur actuarielle, tout compris). Il en sort un « taux de conversion », c'est-à-dire le revenu annuel en pourcentage du capital versé. Les ordres de grandeur français récents, pour une rente non indexée sur une tête : ~4-4,5 % à 65 ans, ~5,5-6 % à 75 ans, ~7-8 % à 85 ans.
