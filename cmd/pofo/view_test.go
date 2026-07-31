@@ -41,6 +41,24 @@ func TestViewComposerMount(t *testing.T) {
 	}
 }
 
+// TestViewComposerMountEscapesName locks the html/template escaping invariant:
+// a portfolio name carrying markup rides the mount as an inert data value, so
+// the raw "<script>" can never appear unescaped even though adhocSpec accepts
+// the string (it holds no control character or "!" separator).
+func TestViewComposerMountEscapesName(t *testing.T) {
+	// Encode what adhocSpec needs: the "!name:" delimiter stays literal, the
+	// payload is URL-encoded so it survives ParseQuery intact.
+	raw := "IWDA:100!name:" + url.QueryEscape(`"><script>alert(1)</script>`)
+	vr, err := parseViewQuery(mustQuery(t, "p="+raw), viewBase())
+	if err != nil {
+		t.Fatalf("adhocSpec rejected a control-char-free name: %v", err)
+	}
+	mount := string(composerMount(vr))
+	if strings.Contains(mount, "<script>alert") {
+		t.Error("portfolio name must be html-escaped in the composer mount")
+	}
+}
+
 // TestComposerMountUnforkable checks that an example with no locally
 // resolvable holding renders read-only, with no Fork affordance.
 func TestComposerMountUnforkable(t *testing.T) {
