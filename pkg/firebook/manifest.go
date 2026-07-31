@@ -92,10 +92,16 @@ var Categories = []Category{
 			{"or-en-retrait", "L'or dans un portefeuille de retrait", "Zéro réel séculaire, décorrélation qui survit aux crises : les trois rôles, la dose de chacun, la pratique française et les erreurs."},
 			{"obligations-en-retrait", "Les obligations en retrait : types, durée, rôle exact", "Prix et duration, YTM = espérance affichée, les trois services conditionnels au régime, les quatre décisions, et le fonds euros à sa place."},
 			{"obligations-indexees", "Les obligations indexées sur l'inflation", "Le seul contrat écrit en réel : le point mort, la leçon de 2022, l'échelle de linkers qui garantit ce que le 4 % espère, et la pratique française."},
-			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 			{"facteurs-fama-french", "Les facteurs (Fama-French, value, momentum) en phase de retrait", "Le noyau répliqué, le dossier du rentier (SCV, affinité value-inflation), la tracking error décennale, et le tilt optionnel bien dosé."},
 			{"diversification-internationale", "La diversification internationale (et le biais domestique)", "Le risque dominant est le décrochage de VOTRE pays : les destins nationaux chiffrés, le change qui amortit côté actions, et la cible en un ETF."},
 			{"etf-ucits-europeens", "Construire en UCITS : le portefeuille de retrait de l'investisseur européen", "Capitalisant, synthétique-PEA, domicile irlandais, tracking difference : les quatre choix, la table des briques, et vendre proprement."},
+		},
+	},
+	{
+		Title: "Les actifs alternatifs",
+		Blurb: "Au-delà des actions et des obligations : les briques qui diversifient vraiment, ce qu'elles coûtent, et comment les acheter proprement.",
+		Articles: []Article{
+			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 		},
 	},
 	{
@@ -209,6 +215,7 @@ var planned = []string{
 	"rendements-arithmetiques-geometriques", "anarkulova-cederburg",
 	"valorisations-et-cape", "rendements-attendus",
 	"horizon-et-esperance-de-vie", "serie-ern",
+	"les-maths-du-4-pourcent", "decider-sous-incertitude",
 	// III. Modéliser
 	"monte-carlo-forces-faiblesses", "historique-vs-parametrique",
 	"queues-epaisses", "lire-un-fan-chart", "pieges-des-simulateurs",
@@ -219,10 +226,13 @@ var planned = []string{
 	"amortissement-abw", "plancher-plafond", "rentes-et-annuites",
 	"choisir-sa-strategie",
 	// V. Le portefeuille de retrait
+	"primes-de-risque", "pourquoi-la-diversification-marche",
 	"allocation-actions-obligations", "glidepaths", "portefeuilles-tous-temps",
 	"actifs-defensifs", "or-en-retrait", "obligations-en-retrait",
-	"obligations-indexees", "managed-futures", "facteurs-fama-french",
+	"obligations-indexees", "facteurs-fama-french",
 	"diversification-internationale", "etf-ucits-europeens",
+	// V bis. Les actifs alternatifs
+	"managed-futures", "long-volatility", "global-macro", "return-stacking",
 	// VI. Buffers et protections
 	"cash-buffer", "strategie-buckets", "echelle-obligataire",
 	"recharger-ou-pas", "immobilier-en-retrait", "levier-et-marges",
