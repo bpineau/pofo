@@ -1071,6 +1071,44 @@
     }
   },
   {
+    "id": "IE000OV4XWA3",
+    "isin": "IE000OV4XWA3",
+    "aliases": [
+      "NTSZ"
+    ],
+    "name": "WisdomTree Eurozone Efficient Core UCITS ETF EUR Acc",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "NTSZ.DE",
+    "currency": "EUR",
+    "fees": 0.20,
+    "asset_class": "multi-asset",
+    "underlying": "90% eurozone large/mid-cap equities (ESG-screened) + 60% notional euro-denominated government bond futures",
+    "benchmark_index": "WisdomTree Eurozone Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "France": 34,
+      "Germany": 27,
+      "Netherlands": 12,
+      "Italy": 9,
+      "Spain": 8,
+      "Other eurozone": 10
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.5,
+    "notes": "Eurozone sibling of NTSX/NTSG; euro-native 90/60 leveraged 60/40 in a single fund; launched 2025-09; backcast to ~1986 via bundled euro-area refdata",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsz-wisdomtree-eurozone-efficient-core-ucits-etf---eur-acc"
+    ],
+    "since": "2025-09-30",
+    "exposures": {
+      "equity": 0.9,
+      "government-bond": 0.6
+    }
+  },
+  {
     "id": "IE000A89Y2G7",
     "isin": "IE000A89Y2G7",
     "aliases": [

@@ -43,6 +43,10 @@ import (
 //     USSCV-USD: Ken French value-weighted SMALL HiBM daily, cumulated, from
 //     1963-07), the size×value factor behind ZPRV/USSC. Real daily total-return
 //     levels, so no daily shape is needed.
+//   - EUNH.DE (iShares Core Euro Govt Bond, 2009) → euro-area government bond TR
+//     (refdata EUROGOV-EUR: OECD euro-area 10y yield through TreasuryTR, ~1970),
+//     carried at daily granularity from 2004 by the ECB daily yield-curve shape
+//     (EUROGOV-DAILY). The bond leg of the eurozone NTSZ recipe.
 var longBack = map[string]string{
 	"VTMGX":    "DEVEXUS-USD",
 	"VEIEX":    "EM-USD",
@@ -54,6 +58,7 @@ var longBack = map[string]string{
 	"^IRX":     "TBILL-3M",
 	"GBPUSD=X": "GBPUSD-DAILY",
 	"DFSVX":    "USSCV-USD",
+	"EUNH.DE":  "EUROGOV-EUR",
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same
@@ -71,6 +76,7 @@ var dailyShape = map[string]string{
 	"TREASURY-INT-USD":  "TREASURY-INT-DAILY",  // FRED DGS5 daily 5y CMT through TreasuryTR, 1962→1992
 	"TREASURY-LONG-USD": "TREASURY-LONG-DAILY", // FRED DGS20 daily 20y CMT through TreasuryTR, 1962→1986
 	"WTI-USD":           "WTI-DAILY",           // FRED DCOILWTICO daily WTI spot, 1986→2000
+	"EUROGOV-EUR":       "EUROGOV-DAILY",       // ECB daily euro-area 10y yield through TreasuryTR, 2004→
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
