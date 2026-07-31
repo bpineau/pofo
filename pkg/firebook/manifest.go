@@ -76,6 +76,9 @@ var Categories = []Category{
 			{"regles-cape", "Les règles CAPE : ajuster le retrait aux valorisations (ERN)", "Taux = a + b/CAPE : la double contra-cyclicité qui auto-lisse le revenu, les paramètres d'ERN, et la forme aboutie ABW + ancre CAPE."},
 			{"guardrails-morningstar", "Les guardrails modernes (Morningstar) : l'état de l'art", "Le juge honnête de Morningstar, le capteur par risque de Kitces-Tharp, et la version exécutable avec pofo en instrument."},
 			{"amortissement-abw", "Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle", "Le crédit inversé re-coté chaque année : richesse totale, quatre paramètres personnels, et le match final contre les guardrails."},
+			{"plancher-plafond", "Plancher-plafond et règles Vanguard : la flexibilité bornée", "Le corridor sur variation (+5 %/−2,5 %) : des glissements au lieu de chutes, une ruine redevenue honnête, deuxième partout."},
+			{"rentes-et-annuites", "Rentes, annuités et safety first : acheter un plancher", "Les crédits de mortalité, le cadre français (dont le rachat de trimestres, meilleure rente du marché), l'objection inflation, et quand annuitiser."},
+			{"choisir-sa-strategie", "Choisir sa stratégie : critères, comparatif, cas d'usage", "La procédure en cinq étapes : tests d'admissibilité, matrice profils-règles, hybrides par phases, et la page écrite qui conclut."},
 		},
 	},
 }

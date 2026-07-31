@@ -126,9 +126,9 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
 - [x] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
 - [x] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
-- [ ] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
-- [ ] rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
-- [ ] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
+- [x] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
+- [x] rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
+- [x] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
 - [ ] allocation-actions-obligations: L'allocation actions/obligations en retrait
