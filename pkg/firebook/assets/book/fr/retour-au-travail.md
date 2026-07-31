@@ -38,7 +38,18 @@ L'employabilité est un actif à forte **décroissance**. Les compétences techn
 
 Le cadre français, souvent maudit, est étonnamment bien équipé pour le travail à petite dose.
 
-**La micro-entreprise** est le statut du side income. Création en ligne en une heure, comptabilité réduite, cotisations proportionnelles au chiffre d'affaires (~21-26 % en services). Ces cotisations **valident** des trimestres et éteignent la PUMa, et c'est par elles que passe le quadruplé. Attention à l'assiette, car les deux seuils se mesurent sur le revenu après abattement, donc sur un chiffre d'affaires nettement plus élevé (environ 15 k€ facturés en services pour 10 k€ de revenu retenu). Franchise de TVA sous les seuils. C'est l'outil par défaut du FIRE facturant.
+**La micro-entreprise** est le statut du side income. Création en ligne en une heure, comptabilité réduite, cotisations proportionnelles au chiffre d'affaires (~21-26 % en services). Ces cotisations **valident** des trimestres et éteignent la PUMa, et c'est par elles que passe le quadruplé. Attention à l'assiette, car les deux seuils se lisent sur le revenu **après** abattement, donc sur un chiffre d'affaires nettement plus élevé. Franchise de TVA sous les seuils. C'est l'outil par défaut du FIRE facturant.
+
+Voici les quatre lignes qui comptent, pour du conseil facturé en micro-BNC. L'abattement est de 34 % et les cotisations de 25,6 % du chiffre d'affaires, aux taux de 2026. Un trimestre se valide à 1 803 € de revenu retenu, soit 150 fois le SMIC horaire de 12,02 €, et la PUMa s'éteint à 9 612 € de revenu retenu, soit 20 % du PASS. La colonne CSM suppose 60 000 € de revenus du capital réalisés, l'ordre de grandeur de [[taxe-puma]]. La dernière colonne est nette de cotisations et avant impôt sur le revenu.
+
+| CA facturé | Revenu retenu | Trimestres | CSM | Net |
+|---|---|---|---|---|
+| 8 000 € | 5 280 € | 2 | 1 054 € | 5 952 € |
+| 11 000 € | 7 260 € | 4 | 572 € | 8 184 € |
+| 15 000 € | 9 900 € | 4 | 0 € | 11 160 € |
+| 20 000 € | 13 200 € | 4 | 0 € | 14 880 € |
+
+Le piège se lit sur la première ligne. Facturer 8 000 € ne valide que deux trimestres et laisse la CSM courir. Il faut environ 10 900 € de chiffre d'affaires pour les quatre trimestres, et environ 14 600 € pour éteindre la cotisation.
 
 **Le portage salarial** vise les missions d'expertise. Il offre le statut salarié (mutuelle, prévoyance, droits au chômage) sans créer d'entreprise, pour des frais de 5-10 %. Il est pertinent pour les grosses missions ponctuelles.
 
