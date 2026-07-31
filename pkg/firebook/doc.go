@@ -21,4 +21,11 @@
 //
 // The pofo -fire web UI mounts Handler under /livre/; any other server (for
 // example finador) can mount the same book by importing this package.
+//
+// EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
+// pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,
+// one page per category with its articles nested beneath it in the table of
+// contents, and every article rendered through bookmd with wiki-links pointing
+// at "<slug>.xhtml" and figures kept as inline SVG. The bytes are deterministic
+// for a given modified time, so a serving route can hash them for an ETag.
 package firebook
