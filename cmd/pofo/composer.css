@@ -49,6 +49,7 @@
   border:1px solid var(--line-strong);color:var(--muted);background:var(--surface-2)}
 .kind.p{color:var(--accent-ink);border-color:#d9bf9a;background:var(--accent-wash)}
 .kind.ex{color:var(--good-ink);border-color:#bcd8c9;background:var(--good-wash)}
+.kind.lock{color:var(--muted)}
 .pname{font-family:var(--sans);font-weight:600;font-size:.9rem;color:var(--ink);
   border:none;background:transparent;padding:.1rem 0;
   border-bottom:1px dashed transparent;min-width:0}
@@ -108,11 +109,24 @@
 .note .note-x{border:none;background:transparent;color:var(--warn-ink);cursor:pointer;
   font-size:1rem;line-height:1;font-family:var(--mono);margin-left:auto}
 
+/* add-portfolio button (JS-injected at the foot of the stack) */
+.addport{font-family:var(--mono);font-size:.76rem;color:var(--accent-ink);background:transparent;
+  border:1px dashed var(--line-strong);border-radius:var(--r-sm);padding:.4rem .7rem;cursor:pointer}
+.addport:hover{border-color:var(--accent);background:var(--accent-wash)}
+.addport:disabled{color:var(--faint);border-color:var(--line);cursor:not-allowed;background:transparent}
+
 /* read-only ex= readout */
 .exlist{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);
   display:flex;flex-wrap:wrap;gap:.35rem .8rem}
 .exlist span b{color:var(--ink);font-weight:600}
 .exlist .g{color:var(--muted)}
+
+/* opaque (manual) read-only lock: a p= the editor cannot express */
+.opaque{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);background:var(--surface-2);
+  border:1px solid var(--line);border-radius:var(--r-sm);padding:.5rem .6rem;line-height:1.6;
+  word-break:break-word}
+.opaque .lk{color:var(--muted)}
+.opaque .g{color:var(--muted);font-size:.72rem}
 
 /* globals row */
 .globals{display:flex;flex-wrap:wrap;gap:.8rem 1.1rem;align-items:flex-end;
