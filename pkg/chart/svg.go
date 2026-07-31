@@ -24,12 +24,16 @@ type Options struct {
 	Style  Style
 }
 
-// defaultPalette is the pofo "warm study" series palette: a copper anchor and a
-// deep-teal counterpoint, then honey, plum, olive and slate — warm, legible on
-// the sand background, and distinct from the matplotlib default.
+// defaultPalette is the pofo "quant desk" series palette: an ultramarine
+// anchor (the brand accent) and a teal counterpoint, then amber, violet,
+// burnt orange, sky, pine and magenta. The slot order is deliberate: it
+// maximises the color distance between adjacent series under common color
+// vision deficiencies, so a two- or three-line chart stays readable for
+// everyone. Risk semantics (green/amber/red) use distinct steps, so a
+// series never impersonates a verdict.
 var defaultPalette = []string{
-	"#B25A34", "#2E6E63", "#C08A2D", "#7A4A63",
-	"#6E7A3A", "#3E5C7E", "#A8506A", "#8A5A2A",
+	"#2E4BE0", "#0E9384", "#E19000", "#7A5AF8",
+	"#E8622C", "#0BA5EC", "#067647", "#C11574",
 }
 
 // PaletteColor returns the i-th default series color (hex), cycling; the
@@ -136,12 +140,12 @@ func Line(opt Options, series []Series) string {
 	switch st.Background {
 	case "none":
 	case "":
-		fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
+		fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
 	default:
 		fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="%s"/>`+"\n", w, h, st.Background)
 	}
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="%d" font-weight="600" fill="#2A231F">%s</text>`+"\n", left, fontSize+4, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="%d" font-weight="600" fill="#101828">%s</text>`+"\n", left, fontSize+4, esc(opt.Title))
 	}
 
 	// Horizontal grid and y-axis labels.
@@ -149,9 +153,9 @@ func Line(opt Options, series []Series) string {
 	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
 		y := yAt(v)
 		if !st.HideGrid {
-			fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3"/>`+"\n", x0, y, x1, y)
+			fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#E9EDF3"/>`+"\n", x0, y, x1, y)
 		}
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="%d" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fontSize, tickFmt(v, step))
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="%d" fill="#667085" text-anchor="end">%s</text>`+"\n", x0-8, y, fontSize, tickFmt(v, step))
 	}
 	// X-axis labels (and vertical grid). Use the location of the first series
 	// point so intraday charts show exchange-local clock times; daily series
@@ -166,21 +170,21 @@ func Line(opt Options, series []Series) string {
 		if d := tto.Sub(tfrom); d > 0 && d <= 36*time.Hour {
 			layout = "15:04"
 		}
-		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#6E6157">%s</text>`+"\n", x0, y1+18, fontSize, tfrom.Format(layout))
-		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x1, y1+18, fontSize, tto.Format(layout))
+		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#667085">%s</text>`+"\n", x0, y1+18, fontSize, tfrom.Format(layout))
+		fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="%d" fill="#667085" text-anchor="end">%s</text>`+"\n", x1, y1+18, fontSize, tto.Format(layout))
 	} else {
 		for _, tk := range timeTicks(tfrom, tto) {
 			x := xAt(tk.t)
 			if !st.HideGrid {
-				fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#EAE1D3"/>`+"\n", x, y0, x, y1)
+				fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#E9EDF3"/>`+"\n", x, y0, x, y1)
 			}
-			fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="%d" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", x, y1+18, fontSize, esc(tk.label))
+			fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="%d" fill="#667085" text-anchor="middle">%s</text>`+"\n", x, y1+18, fontSize, esc(tk.label))
 		}
 	}
 	// Axes.
 	if !st.HideAxes {
-		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y1, x1, y1)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
+		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C6CEDA"/>`+"\n", x0, y1, x1, y1)
+		fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#C6CEDA"/>`+"\n", x0, y0, x0, y1)
 	}
 
 	// Area fill under the first series (finite stretches only).
@@ -232,7 +236,7 @@ func Line(opt Options, series []Series) string {
 		x := left
 		for _, s := range plot {
 			fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, x, s.Color)
-			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="%d" fill="#2A231F">%s</text>`+"\n", x+17, fontSize, esc(s.Name))
+			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="%d" fill="#101828">%s</text>`+"\n", x+17, fontSize, esc(s.Name))
 			x += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 		}
 	}
