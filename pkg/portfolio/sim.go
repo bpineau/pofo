@@ -68,6 +68,15 @@ type SimResult struct {
 	FlowDates   []time.Time
 	FlowAmounts []float64
 
+	// Contributions[i][k] is asset i's contribution to day k's
+	// time-weighted (Index) return, as a fraction of the previous day's
+	// portfolio value (held shares × price move / value). Summed over
+	// assets it reproduces each day's Index return, up to envelope fees
+	// and the leverage cash leg, which are deliberately not attributed to
+	// any asset. Contributions[i][0] is always 0. Asset order follows
+	// Portfolio.Assets.
+	Contributions [][]float64
+
 	// Contributed and Withdrawn are the totals of external flows.
 	Contributed float64
 	Withdrawn   float64
@@ -193,10 +202,17 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		dailyFee = p.EnvelopeFees / 100 / 252
 	}
 	res := &SimResult{}
+	contrib := make([][]float64, len(p.Assets))
+	for i := range contrib {
+		contrib[i] = make([]float64, len(dates))
+	}
 	contribKey := periodKey(dates[0], p.Contribute.Period)
 	withdrawKey := periodKey(dates[0], p.Withdraw.Period)
 	nextRebalance := dates[0].AddDate(0, 0, rebalanceDays)
 	for k := 1; k < len(dates); k++ {
+		for i := range shares {
+			contrib[i][k] = shares[i] * (prices[i][k] - prices[i][k-1]) / values[k-1]
+		}
 		cash *= (1 - dailyFee) * (1 + dailyCashRate(k))
 		v := cash
 		for i := range shares {
@@ -254,6 +270,9 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			nextRebalance = dates[k].AddDate(0, 0, rebalanceDays)
 		}
 	}
-	res.Dates, res.Values, res.Index = dates, values, index
+	for i := range contrib {
+		contrib[i] = contrib[i][:len(dates)]
+	}
+	res.Dates, res.Values, res.Index, res.Contributions = dates, values, index, contrib
 	return res, nil
 }
