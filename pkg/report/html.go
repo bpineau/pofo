@@ -94,6 +94,11 @@ type Page struct {
 	// its output is unchanged.
 	SkinCSS template.CSS
 	SiteNav template.HTML
+
+	// Composer is the web app's live composer panel, injected by -serve
+	// under the site nav; empty for the CLI so the standalone report is
+	// byte-identical (the SkinCSS pattern).
+	Composer template.HTML
 }
 
 // reportCSS holds the view-specific rules layered on the shared theme.
@@ -207,7 +212,7 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 .pf-fire:hover{text-decoration:underline}</style>{{end}}
 </head>
 <body>
-{{.SiteNav}}
+{{.SiteNav}}{{.Composer}}
 <div class="wrap">
 
 <header class="masthead">
