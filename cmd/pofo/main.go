@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/chart"
+	"github.com/bpineau/pofo/pkg/compare"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
-	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
 	"github.com/bpineau/pofo/pkg/suggest"
@@ -72,27 +72,6 @@ func frameworkFor(name string) (suggest.Framework, error) {
 	default:
 		return suggest.Framework{}, fmt.Errorf("unknown -framework %q (regimes or factors)", name)
 	}
-}
-
-// result holds everything computed for one portfolio.
-type result struct {
-	p             *portfolio.Portfolio
-	sim           *portfolio.SimResult
-	color         string
-	rebalanceDays int
-	currency      string // base currency this column was evaluated in
-	specName      string // the spec this column came from (p.Name may be decorated: currency tag, "as written")
-	note          string // informational line (e.g. optimizer choice)
-	// Common-window view, renormalized to 100, used for stats and comparison.
-	winDates  []time.Time
-	winValues []float64
-	stats     metrics.Stats
-	realStats metrics.Stats // stats on the inflation-adjusted (deflated) window
-	hasReal   bool
-	rel       metrics.Relative
-	hasRel    bool
-	vts       metrics.VolTermStructure // daily/monthly volatility term structure
-	hasVTS    bool
 }
 
 func run(ctx context.Context, argv []string) error {
@@ -301,22 +280,22 @@ Options:
 		return runPermanent(ctx, &opt, client)
 	}
 
-	cmp, err := computeComparison(ctx, client, &opt, specs)
+	cmp, err := compare.Compute(ctx, client, specs, opt.compareOptions())
 	if err != nil {
 		return err
 	}
 	if opt.cli {
-		return renderCLI(cmp.results, &opt, cmp.commonStart, cmp.commonEnd, cmp.meta)
+		return renderCLI(cmp, &opt)
 	}
-	buf, err := renderPage(cmp, &opt)
-	if err != nil {
+	var buf bytes.Buffer
+	if err := report.Render(&buf, cmp.HTMLPage(opt.decoration())); err != nil {
 		return err
 	}
 	outPath := opt.out
 	if outPath == "" {
 		outPath = fmt.Sprintf("/tmp/pofo-%s.html", time.Now().Format("20060102-150405"))
 	}
-	if err := os.WriteFile(outPath, buf, 0o644); err != nil {
+	if err := os.WriteFile(outPath, buf.Bytes(), 0o644); err != nil {
 		return err
 	}
 	log.Printf("report written to %s", outPath)
@@ -326,297 +305,64 @@ Options:
 	return nil
 }
 
-// comparison is the outcome of the fetch -> build -> simulate -> stats
-// pipeline, ready for either renderer (HTML page or terminal).
-type comparison struct {
-	results     []*result
-	bench       *marketdata.Series
-	commonStart time.Time
-	commonEnd   time.Time
-	meta        map[string]suggest.Meta
-}
-
-// computeComparison runs the whole comparison pipeline for already-parsed
-// specs: quotes and benchmark fetches, portfolio builds, simulations, the
-// common window, and nominal/real statistics.
-func computeComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) (*comparison, error) {
-	// Download every distinct (currency, asset) once. A "#meta currencies"
-	// directive evaluates the same portfolio in several currencies.
-	seriesByCur := map[string]map[string]*marketdata.Series{}
-	resolved := map[string]bool{} // report each id's resolved instrument once
-	for _, spec := range specs {
-		for _, cur := range effectiveCurrencies(spec, opt.currency) {
-			m := seriesByCur[cur]
-			if m == nil {
-				m = map[string]*marketdata.Series{}
-				seriesByCur[cur] = m
-			}
-			for _, h := range spec.Holdings {
-				// "#meta sim:on" backcasts every holding: fetch (and cache)
-				// its SIM variant, keyed by the same id Build will request.
-				// -no-simulate is honored downstream in FetchExtended (NoSim),
-				// which fetches real quotes for a SIM id, so the flag still
-				// wins over the meta with no extra handling here.
-				fetchID := portfolio.SimFetchID(h.ID, spec.Sim)
-				if _, ok := m[fetchID]; ok {
-					continue
-				}
-				s, err := fetchAssetIn(ctx, client, fetchID, opt, cur)
-				if err != nil {
-					return nil, fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
-				}
-				m[fetchID] = s
-				// Surface what each identifier resolved to: a fuzzy source match
-				// can return a wrong instrument (e.g. "SP500" -> an S&P sector
-				// sub-index), and a silent mismatch is how delirious numbers slip
-				// through. Show it once so the user can catch it.
-				if !resolved[h.ID] {
-					resolved[h.ID] = true
-					log.Printf("resolved %s -> %q [%s, %s]", h.ID, s.Name, s.Source, s.Currency)
-				}
-			}
-		}
-	}
-
-	// Benchmark for Beta/CWARP, best effort, memoized per currency. The chart's
-	// reference curve uses the default currency (benchIn(opt.currency)).
-	benchCache := map[string]*marketdata.Series{}
-	benchIn := func(cur string) *marketdata.Series {
-		if opt.benchmark == "" {
-			return nil
-		}
-		if b, ok := benchCache[cur]; ok {
-			return b
-		}
-		b, err := client.FetchExtended(ctx, opt.benchmark, marketdata.FetchOptions{
-			From: opt.start, NoSim: true, Currency: cur,
-		})
-		if err != nil {
-			log.Printf("warning: benchmark %s unavailable in %s (no Beta): %v", opt.benchmark, cur, err)
-			b = nil
-		}
-		benchCache[cur] = b
-		return b
-	}
-	bench := benchIn(opt.currency)
-
-	// Simulate each portfolio; a "#meta rebalance:N" directive overrides
-	// the CLI default for that portfolio only.
-	var feesFor func(string) (float64, bool)
-	if !opt.noFees {
-		feesFor = func(id string) (float64, bool) {
-			base, _ := marketdata.SplitSim(id)
-			return client.Fees(ctx, base)
-		}
-	}
-	// The financing rate (leverage) is only fetched when needed.
-	var cashRate *marketdata.Series
-	for _, spec := range specs {
-		if spec.Leverage {
-			cr, err := client.Fetch(ctx, "^IRX", opt.start)
-			if err != nil {
-				log.Printf("warning: financing rate ^IRX unavailable (%v), leverage financed at 0 %%", err)
-			} else {
-				cashRate = cr
-			}
-			break
-		}
-	}
-
-	results := make([]*result, 0, len(specs))
-	simulateInto := func(p *portfolio.Portfolio, spec *portfolio.Spec, currency string) error {
-		days := opt.rebalance
-		if spec.RebalanceDays >= 0 {
-			days = spec.RebalanceDays
-		}
-		sim, err := portfolio.Simulate(p, days)
-		if err != nil {
-			return fmt.Errorf("portfolio %s: %w", p.Name, err)
-		}
-		if sim.Ruined {
-			cause := "the leveraged exposure exhausted the net value"
-			if p.Withdraw.Active() && !p.Leverage {
-				cause = "withdrawals exhausted the capital"
-			}
-			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
-			log.Printf("warning: portfolio %s wiped out on %s, series truncated", p.Name, when)
-			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"capital wiped out on %s: %s; the series stops there", when, cause))
-		}
-		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days, currency: currency, specName: spec.Name})
-		return nil
-	}
-	for _, spec := range specs {
-		for _, cur := range effectiveCurrencies(spec, opt.currency) {
-			p, err := portfolio.Build(spec, portfolio.BuildOptions{
-				Fetch:        func(id string) (*marketdata.Series, error) { return seriesByCur[cur][id], nil },
-				Fees:         feesFor,
-				Cash:         cashRate,
-				BorrowSpread: 1.0, // default: cash + 1 %/yr
-				BaseCurrency: cur,
-			})
-			if err != nil {
-				return nil, err
-			}
-			// Multi-currency: tag each column with its currency.
-			if len(spec.Currencies) > 0 {
-				p.Name = fmt.Sprintf("%s (%s)", p.Name, cur)
-			}
-			// An optimized portfolio is shown next to its written weights, so
-			// the optimizer's choice can be compared with the baseline.
-			// (Optimize and currencies cannot be combined, so cur is unique here.)
-			if spec.Optimize != nil {
-				pOpt, note, err := optimizedPortfolio(p, spec, benchIn(cur))
-				if err != nil {
-					return nil, fmt.Errorf("portfolio %s: %w", spec.Name, err)
-				}
-				p.Name = spec.Name + " (as written)"
-				if err := simulateInto(p, spec, cur); err != nil {
-					return nil, err
-				}
-				if err := simulateInto(pOpt, spec, cur); err != nil {
-					return nil, err
-				}
-				results[len(results)-1].note = note
-				continue
-			}
-			if err := simulateInto(p, spec, cur); err != nil {
-				return nil, err
-			}
-		}
-	}
-
-	// Common window across portfolios: statistics and the comparison chart
-	// must cover the same period to be meaningful.
-	commonStart := results[0].sim.Dates[0]
-	commonEnd := results[0].sim.Dates[len(results[0].sim.Dates)-1]
-	for _, r := range results[1:] {
-		if f := r.sim.Dates[0]; f.After(commonStart) {
-			commonStart = f
-		}
-		if l := r.sim.Dates[len(r.sim.Dates)-1]; l.Before(commonEnd) {
-			commonEnd = l
-		}
-	}
-	if !commonStart.Before(commonEnd) {
-		return nil, errors.New("no common period across the portfolios")
-	}
-	// Consumer-price index per currency, memoized, to report drawdowns/TTR and
-	// real stats in purchasing-power terms alongside the nominal ones.
-	// Best-effort: a currency without a wired CPI simply has no real columns.
-	deflatorCache := map[string]*marketdata.Series{}
-	deflatorIn := func(cur string) (*marketdata.Series, bool) {
-		if s, ok := deflatorCache[cur]; ok {
-			return s, s != nil
-		}
-		s, ok := inflationSeries(ctx, client, cur, commonStart)
-		if !ok {
-			s = nil
-		}
-		deflatorCache[cur] = s
-		return s, s != nil
-	}
-	for _, r := range results {
-		i, j := window(r.sim.Dates, commonStart, commonEnd)
-		if j-i < 2 {
-			return nil, fmt.Errorf("portfolio %s: too few points in the common window", r.p.Name)
-		}
-		r.winDates = r.sim.Dates[i:j]
-		r.winValues = rebase(r.sim.Index[i:j])
-		st, err := metrics.Compute(r.winDates, r.winValues)
-		if err != nil {
-			return nil, fmt.Errorf("portfolio %s: %w", r.p.Name, err)
-		}
-		if d, ok := deflatorIn(r.currency); ok {
-			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, d)); err == nil {
-				r.realStats, r.hasReal = rs, true
-			}
-		}
-		if b := benchIn(r.currency); b != nil {
-			bd, bv := seriesSlices(b)
-			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, bd, bv); ok {
-				st.Beta, st.HasBeta = rel.Beta, true
-				r.rel, r.hasRel = rel, true
-			}
-			if c, ok := metrics.CWARPvs(r.winDates, r.winValues, bd, bv, metrics.CWARPParams{}); ok {
-				st.CWARP, st.HasCWARP = c, true
-			}
-		}
-		r.vts, r.hasVTS = metrics.VarianceRatio(r.winDates, r.winValues)
-		r.stats = st
-	}
-
-	assetMeta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
+// renderComparison runs the whole pipeline and renders the HTML report:
+// the single entry point the web server needs.
+func renderComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) ([]byte, error) {
+	cmp, err := compare.Compute(ctx, client, specs, opt.compareOptions())
 	if err != nil {
-		log.Printf("warning: asset metadata unavailable (%v), regime coverage omitted", err)
+		return nil, err
 	}
-
-	return &comparison{results: results, bench: bench, commonStart: commonStart, commonEnd: commonEnd, meta: assetMeta}, nil
-}
-
-// renderPage renders a computed comparison to the HTML report bytes.
-func renderPage(cmp *comparison, opt *options) ([]byte, error) {
-	page := buildPage(cmp.results, opt, cmp.bench, cmp.commonStart, cmp.commonEnd, cmp.meta)
 	var buf bytes.Buffer
-	if err := report.Render(&buf, page); err != nil {
+	if err := report.Render(&buf, cmp.HTMLPage(opt.decoration())); err != nil {
 		return nil, err
 	}
 	return buf.Bytes(), nil
 }
 
-// renderComparison runs the whole pipeline and renders the HTML report:
-// the single entry point the web server needs.
-func renderComparison(ctx context.Context, client *marketdata.Client, opt *options, specs []*portfolio.Spec) ([]byte, error) {
-	cmp, err := computeComparison(ctx, client, opt, specs)
-	if err != nil {
-		return nil, err
-	}
-	return renderPage(cmp, opt)
-}
-
 // renderCLI prints the comparison curves and the summary table straight to
 // the terminal, for quick checks without opening a browser. Per-portfolio
 // details are intentionally omitted.
-func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) error {
+func renderCLI(cmp *compare.Comparison, opt *options) error {
+	cols := cmp.Columns()
 	color := os.Getenv("NO_COLOR") == "" && isTerminal(os.Stdout)
-	names := make([]string, len(results))
-	cmp := make([]chart.Series, len(results))
-	for i, r := range results {
-		names[i] = r.p.Name
-		if len(results) == 1 {
-			cmp[i] = chart.Series{Name: r.p.Name, Dates: r.sim.Dates, Values: r.sim.Values}
+	names := make([]string, len(cols))
+	series := make([]chart.Series, len(cols))
+	for i, col := range cols {
+		names[i] = col.Name
+		if len(cols) == 1 {
+			series[i] = chart.Series{Name: col.Name, Dates: col.SimDates, Values: col.SimValues}
 		} else {
-			cmp[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: r.winValues}
+			series[i] = chart.Series{Name: col.Name, Dates: col.WinDates, Values: col.WinValues}
 		}
 	}
 	title := "Comparison (base 100"
-	if len(results) == 1 {
-		title = results[0].p.Name + " (base 100"
+	if len(cols) == 1 {
+		title = cols[0].Name + " (base 100"
 	}
-	title += " at " + cmp[0].Dates[0].Format("2006-01-02") + ")"
-	fmt.Print(chart.Term(chart.TermOptions{Title: title, Width: termWidth(opt.width), Color: color}, cmp))
+	title += " at " + series[0].Dates[0].Format("2006-01-02") + ")"
+	fmt.Print(chart.Term(chart.TermOptions{Title: title, Width: termWidth(opt.width), Color: color}, series))
 	fmt.Println()
 
 	page := &report.Page{
 		Title:          "Portfolios: " + strings.Join(names, ", "),
-		CommonStart:    commonStart.Format("2006-01-02"),
-		CommonEnd:      commonEnd.Format("2006-01-02"),
+		CommonStart:    cmp.CommonStart().Format("2006-01-02"),
+		CommonEnd:      cmp.CommonEnd().Format("2006-01-02"),
 		PortfolioNames: names,
-		StatRows:       buildStatRows(results, opt.benchmark),
+		StatRows:       cmp.StatRows(),
 	}
 	if err := report.RenderText(os.Stdout, page, color); err != nil {
 		return err
 	}
-	printCoverageCLI(results, meta, opt.fw)
+	printCoverageCLI(cmp)
 	return nil
 }
 
 // printCoverageCLI prints each portfolio's macro-regime coverage under the
 // CLI summary table (same data as the HTML report and -suggest).
-func printCoverageCLI(results []*result, meta map[string]suggest.Meta, fw suggest.Framework) {
+func printCoverageCLI(cmp *compare.Comparison) {
 	var lines []string
-	for _, r := range results {
-		bars := coverageBars(r.p.Assets, meta, fw)
+	for _, col := range cmp.Columns() {
+		bars := cmp.CoverageBars(col.Assets)
 		if bars == nil {
 			continue
 		}
@@ -627,7 +373,7 @@ func printCoverageCLI(results []*result, meta map[string]suggest.Meta, fw sugges
 				parts[i] += " (gap)"
 			}
 		}
-		lines = append(lines, "  "+r.p.Name+": "+strings.Join(parts, "   "))
+		lines = append(lines, "  "+col.Name+": "+strings.Join(parts, "   "))
 	}
 	if len(lines) == 0 {
 		return
