@@ -72,6 +72,7 @@ var figures = map[string]func() string{
 	"correlation-vol":        figCorrelationVol,
 	"primes-echelle":         figPrimesEchelle,
 	"longvol-profil":         figLongvolProfil,
+	"linkers-echelle":        figLinkersEchelle,
 	"carry-courbes":          figCarryCourbes,
 	"stacking-expo":          figStackingExpo,
 	"duration-choc":          figDurationChoc,
