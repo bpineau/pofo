@@ -36,6 +36,7 @@ type Params struct {
 	SideAnnual     float64   `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
 	SideUntilYear  int       `json:"sideUntilYear"`  // side income runs until this year, exclusive
 	Guardrails     bool      `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
+	GKFloor        float64   `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
 	Age            int       `json:"age"`            // age at year 0, for the mortality view (0 = 52)
 	PEACapital     float64   `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
 	AVCapital      float64   `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
@@ -97,10 +98,12 @@ func (pr Params) plan() decumul.Plan {
 	if pr.SideAnnual > 0 {
 		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, ToYear: pr.SideUntilYear, Annual: pr.SideAnnual})
 	}
-	// Guardrails band centred on the initial withdrawal rate (±20%).
+	// Guardrails band centred on the initial withdrawal rate (±20%), with an
+	// optional incompressible floor bounding the cut spiral.
 	if pr.Guardrails && pr.Capital > 0 {
 		wr0 := pr.NeedAnnual / pr.Capital
-		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10}
+		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10,
+			Floor: pr.GKFloor * pr.NeedAnnual}
 	}
 	// The written-rules cliquet (Kitces ratchet, Ben's §10 skeleton): +10% of
 	// the base spend per raise, only above 120% of the initial real capital,

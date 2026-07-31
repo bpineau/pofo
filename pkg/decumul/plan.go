@@ -1,6 +1,10 @@
 package decumul
 
-import "github.com/bpineau/pofo/pkg/scenario"
+import (
+	"math"
+
+	"github.com/bpineau/pofo/pkg/scenario"
+)
 
 // Cashflow is a real annual income (e.g. a pension or side income) received
 // from FromYear (0-based) until ToYear (exclusive); it reduces the net amount
@@ -119,14 +123,26 @@ func (r Ratchet) raise(level, total, capital0 float64, year, lastRaise int) (flo
 }
 
 // Guardrails is a Guyton-Klinger-style withdrawal rule: real spending starts at
-// NeedAnnual and is re-checked each year against the current withdrawal rate
+// NeedAnnual and is re-checked against the current withdrawal rate
 // (spending / portfolio). Above Upper it is cut by Cut, below Lower it is raised
 // by Raise, keeping spending inside a band as the portfolio moves. It is a
 // richer alternative to FlexRule (a single drawdown-triggered cut); when active
 // it replaces FlexRule. A zero rule is inactive.
+//
+// Floor, when set, is the yearly real spending level cuts never go below (the
+// household's incompressible standard, in euros). Without it, repeated cuts
+// compound geometrically in a persistent bear: the rule then trades nearly all
+// ruin risk for an unbounded lifestyle risk. A floor re-creates some ruin (the
+// floor itself can prove unsustainable) but bounds the descent.
+//
+// The annual kernel evaluates the rule yearly (Guyton-Klinger's own cadence);
+// the monthly kernel evaluates it every month at the pace-preserving step
+// (see stepped) so a persistent breach produces the same annual intensity
+// without the anniversary-date lottery of a once-a-year check.
 type Guardrails struct {
 	Upper, Lower float64 // withdrawal-rate guardrails, e.g. 0.06 and 0.03
 	Cut, Raise   float64 // proportional spending adjustments, e.g. 0.10 each
+	Floor        float64 // spending level cuts stop at (euros/yr); 0 = none
 }
 
 // active reports whether the guardrails band is set.
@@ -139,12 +155,28 @@ func (g Guardrails) adjust(spending, portfolio float64) float64 {
 	}
 	switch wr := spending / portfolio; {
 	case wr > g.Upper:
-		return spending * (1 - g.Cut)
+		spending *= 1 - g.Cut
+		if g.Floor > 0 && spending < g.Floor {
+			spending = g.Floor
+		}
 	case wr < g.Lower:
-		return spending * (1 + g.Raise)
-	default:
-		return spending
+		spending *= 1 + g.Raise
 	}
+	return spending
+}
+
+// stepped returns the rule with its moves rescaled to n evaluations per year,
+// so a breach persisting a full year compounds to the same annual adjustment:
+// (1-cut_n)^n == 1-Cut and (1+raise_n)^n == 1+Raise. The band and the floor
+// are levels, not rates, and stay unchanged.
+func (g Guardrails) stepped(n int) Guardrails {
+	if n <= 1 {
+		return g
+	}
+	inv := 1 / float64(n)
+	g.Cut = 1 - math.Pow(1-g.Cut, inv)
+	g.Raise = math.Pow(1+g.Raise, inv) - 1
+	return g
 }
 
 // Tax grosses up a net withdrawal taken by selling part of a growth sleeve
