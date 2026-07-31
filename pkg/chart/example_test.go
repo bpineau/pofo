@@ -30,6 +30,23 @@ func ExampleLine() {
 	// 2
 }
 
+// StyleMinimal renders the bare dialect: no background, no grid, no axes,
+// an area fill under the curve and the date range at the corners.
+func ExampleStyleMinimal() {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	var dates []time.Time
+	var v []float64
+	for i := range 90 {
+		dates = append(dates, start.AddDate(0, 0, i))
+		v = append(v, 100+float64(i%17))
+	}
+	opt := chart.Options{Width: 400, Height: 160, Style: chart.StyleMinimal()}
+	svg := chart.Line(opt, []chart.Series{{Name: "net", Dates: dates, Values: v}})
+	fmt.Println(strings.Contains(svg, "<rect"), strings.Contains(svg, "fill-opacity"))
+	// Output:
+	// false true
+}
+
 // Term plots the same series for the terminal: ANSI colors on a TTY,
 // distinct markers otherwise.
 func ExampleTerm() {
