@@ -2,6 +2,7 @@ package portfolio
 
 import (
 	"errors"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -146,6 +147,86 @@ func TestBuildErrors(t *testing.T) {
 	}
 	if err == nil || !strings.Contains(err.Error(), `asset "EQ"`) {
 		t.Errorf("the failing asset must be named, got %v", err)
+	}
+}
+
+// recordingFetch serves buildTestSeries for the ids it knows and records
+// every id it is asked for, in order.
+func recordingFetch(known map[string]bool, asked *[]string) func(string) (*marketdata.Series, error) {
+	return func(id string) (*marketdata.Series, error) {
+		*asked = append(*asked, id)
+		if known[id] {
+			return buildTestSeries(id, "EUR"), nil
+		}
+		return nil, errors.New("unknown asset")
+	}
+}
+
+func TestBuildSimMeta(t *testing.T) {
+	spec, err := Parse("sim", strings.NewReader("#meta sim:on\n60 NTSG\n40 XAUUSDSIM"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var asked []string
+	known := map[string]bool{"NTSGSIM": true, "XAUUSDSIM": true}
+	p, err := Build(spec, BuildOptions{Fetch: recordingFetch(known, &asked)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// The bare holding is fetched with the SIM suffix; the already-suffixed
+	// one is never double-suffixed.
+	want := []string{"NTSGSIM", "XAUUSDSIM"}
+	if !reflect.DeepEqual(asked, want) {
+		t.Errorf("fetched ids = %v, want %v", asked, want)
+	}
+	// The displayed identifiers stay exactly as written in the file.
+	if p.Assets[0].ID != "NTSG" || p.Assets[1].ID != "XAUUSDSIM" {
+		t.Errorf("Asset.ID must stay as written: %+v", p.Assets)
+	}
+	if len(p.Warnings) != 0 {
+		t.Errorf("no warnings expected when every backcast is served: %v", p.Warnings)
+	}
+}
+
+func TestBuildSimMetaFallback(t *testing.T) {
+	// The SIM id fails but the bare id is served: "#meta sim:on" must fall
+	// back to real quotes and warn instead of failing the portfolio.
+	spec, err := Parse("sim", strings.NewReader("#meta sim:on\n100 SP500"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var asked []string
+	known := map[string]bool{"SP500": true} // no SP500SIM backcast
+	p, err := Build(spec, BuildOptions{Fetch: recordingFetch(known, &asked)})
+	if err != nil {
+		t.Fatalf("the meta-added suffix must not fail the build: %v", err)
+	}
+	if want := []string{"SP500SIM", "SP500"}; !reflect.DeepEqual(asked, want) {
+		t.Errorf("expected a SIM try then a real fallback, got %v", asked)
+	}
+	if p.Assets[0].ID != "SP500" {
+		t.Errorf("Asset.ID must stay as written, got %q", p.Assets[0].ID)
+	}
+	if len(p.Warnings) != 1 || !strings.Contains(p.Warnings[0], "real quotes only") {
+		t.Errorf("expected a fallback warning, got %v", p.Warnings)
+	}
+}
+
+func TestBuildExplicitSimStaysStrict(t *testing.T) {
+	// An explicit user-written SIM suffix is NOT the lenient meta path: when
+	// its fetch fails, the error propagates (no silent real-quotes fallback).
+	spec, err := Parse("p", strings.NewReader("100 SP500SIM"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var asked []string
+	known := map[string]bool{"SP500": true} // only the bare id is serveable
+	_, err = Build(spec, BuildOptions{Fetch: recordingFetch(known, &asked)})
+	if err == nil {
+		t.Fatal("an explicit SIM suffix must keep failing when unserved")
+	}
+	if want := []string{"SP500SIM"}; !reflect.DeepEqual(asked, want) {
+		t.Errorf("no fallback fetch expected for an explicit suffix, got %v", asked)
 	}
 }
 

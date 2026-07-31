@@ -48,6 +48,15 @@ type Spec struct {
 	// negative cash position, below 100 % the residual sits in cash.
 	Leverage bool
 
+	// Sim, set by "#meta sim:on", asks Build to fetch every holding through
+	// its SIM (backcast-extended) variant, exactly as if each identifier
+	// carried the "SIM" suffix, so the file need not spell it out (and
+	// de-suffixing to share the file stays a one-liner). Identifiers already
+	// ending in "SIM" are left untouched (never double-suffixed), and a
+	// holding without any backcast falls back to its real quotes: the
+	// directive means "use the simulated history IF one exists". See Build.
+	Sim bool
+
 	// BorrowSpread is the yearly spread over the cash rate paid on
 	// borrowed money ("#meta borrow-spread:X", percent per year);
 	// negative when absent (callers apply their default).
@@ -336,6 +345,10 @@ func (s *Spec) applyMeta(directives string) error {
 			default:
 				return fmt.Errorf("#meta leverage: invalid %q (expected on or off)", val)
 			}
+		case "sim":
+			// "on" backcasts every holding (SIM variant); anything else,
+			// including "off", leaves the files' identifiers as written.
+			s.Sim = strings.EqualFold(val, "on")
 		case "borrow-spread":
 			f, err := parseNumber(val)
 			if err != nil || f < 0 || f > 10 {
