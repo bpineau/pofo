@@ -49,6 +49,8 @@ var figures = map[string]func() string{
 	"regime-grid":         figRegimeGrid,
 	"allocation-plateau":  figAllocationPlateau,
 	"withdrawal-frontier": figWithdrawalFrontier,
+	"fan-anatomy":         figFanAnatomy,
+	"fan-two-plans":       figFanTwoPlans,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
@@ -136,6 +138,132 @@ func figWithdrawalFrontier() string {
 	b.WriteString(txt(322, 312, 12, figMuted, "middle", "400", "variabilité du niveau de vie  →"))
 	b.WriteString(txt(322, 26, 13, figInk, "middle", "600", "On ne supprime pas le risque : on choisit sa forme"))
 	return svg(620, 340, b.String())
+}
+
+// fanArea builds a filled percentile band between lo[] and hi[] (data coords).
+func fanArea(m func(x, y float64) [2]float64, xs, lo, hi []float64, fill string) string {
+	var sb strings.Builder
+	for i := range xs {
+		p := m(xs[i], hi[i])
+		if i > 0 {
+			sb.WriteByte(' ')
+		}
+		fmt.Fprintf(&sb, "%.1f,%.1f", p[0], p[1])
+	}
+	for i := len(xs) - 1; i >= 0; i-- {
+		p := m(xs[i], lo[i])
+		fmt.Fprintf(&sb, " %.1f,%.1f", p[0], p[1])
+	}
+	return fmt.Sprintf(`<polygon points="%s" fill="%s"/>`, sb.String(), fill)
+}
+
+// fanLine maps a per-x data series to a themed polyline.
+func fanLine(m func(x, y float64) [2]float64, xs, ys []float64, stroke string, w float64, dash string) string {
+	pts := make([][2]float64, len(xs))
+	for i := range xs {
+		pts[i] = m(xs[i], ys[i])
+	}
+	return poly(pts, stroke, w, dash)
+}
+
+// band fills: translucent tints of the warm accent
+const (
+	figBandOuter = "rgba(180,120,60,.12)"
+	figBandInner = "rgba(180,120,60,.24)"
+)
+
+// --- 7. Anatomy of a wealth cone (fan chart) ---
+func figFanAnatomy() string {
+	xs := []float64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45}
+	p05 := []float64{1.00, 0.86, 0.77, 0.72, 0.70, 0.72, 0.77, 0.84, 0.93, 1.03}
+	p25 := []float64{1.00, 1.00, 1.03, 1.08, 1.14, 1.21, 1.30, 1.38, 1.46, 1.54}
+	p50 := []float64{1.00, 1.10, 1.22, 1.36, 1.50, 1.66, 1.83, 2.00, 2.18, 2.35}
+	p75 := []float64{1.00, 1.18, 1.35, 1.52, 1.68, 1.85, 2.02, 2.18, 2.34, 2.50}
+	p95 := []float64{1.00, 1.28, 1.55, 1.82, 2.08, 2.35, 2.60, 2.80, 2.95, 3.05}
+	green := []float64{1.00, 1.18, 1.42, 1.30, 1.58, 1.86, 2.10, 2.34, 2.55, 2.78}
+	red := []float64{1.00, 1.22, 1.10, 0.88, 0.68, 0.52, 0.37, 0.22, 0.10, 0.00}
+	m := mapper(0, 47, 0, 3.15, 62, 520, 300, 54)
+	var b strings.Builder
+	b.WriteString(fanArea(m, xs, p05, p95, figBandOuter))
+	b.WriteString(fanArea(m, xs, p25, p75, figBandInner))
+	// zero line (the only hard frontier)
+	z := m(0, 0)
+	b.WriteString(line(62, z[1], 520, z[1], figBad, 1.2))
+	b.WriteString(txt(66, z[1]-5, 11, figBad, "start", "600", "ruine (le zéro)"))
+	// example paths, then the median on top
+	b.WriteString(fanLine(m, xs, green, figGood, 2, ""))
+	b.WriteString(fanLine(m, xs, red, figBad, 2, ""))
+	rp := m(45, 0)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, rp[0], rp[1], figBad)
+	b.WriteString(fanLine(m, xs, p50, figDeep, 2.6, ""))
+	// right-edge direct labels
+	me := m(45, 2.35)
+	b.WriteString(txt(me[0]+6, me[1]+4, 12, figDeep, "start", "600", "médiane"))
+	ib := m(45, 2.02)
+	b.WriteString(txt(ib[0]-6, ib[1]+14, 11, figMuted, "end", "400", "25-75 %"))
+	ob := m(42, 2.86)
+	b.WriteString(txt(ob[0], ob[1], 11, figMuted, "middle", "400", "5-95 %"))
+	ge := m(45, 2.78)
+	b.WriteString(txt(ge[0]+6, ge[1]+3, 12, figGood, "start", "600", "prospère"))
+	re := m(45, 0.06)
+	b.WriteString(txt(re[0]+6, re[1]+3, 12, figBad, "start", "600", "finit ruiné"))
+	rmid := m(6, 1.22)
+	b.WriteString(txt(rmid[0]-2, rmid[1]-7, 10, figBad, "middle", "400", "(parti par le haut)"))
+	// axes ticks
+	for _, c := range []float64{0, 15, 30, 45} {
+		p := m(c, 0)
+		b.WriteString(txt(p[0], 316, 11, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	one := m(0, 1)
+	b.WriteString(line(62, one[1], 520, one[1], figRule, 1))
+	b.WriteString(txt(291, 336, 12, figMuted, "middle", "400", "années de retraite  →"))
+	b.WriteString(txt(44, 50, 11, figMuted, "start", "400", "× capital de départ"))
+	b.WriteString(txt(291, 30, 13, figInk, "middle", "600", "Une pile de distributions par date, pas un faisceau de chemins"))
+	return svg(560, 356, b.String())
+}
+
+// --- 8. Two cones: the first decade decides (defended vs tight plan) ---
+func figFanTwoPlans() string {
+	xs := []float64{0, 5, 10, 15, 20, 25, 30, 35, 40, 45}
+	// defended plan
+	dp05 := []float64{1.00, 0.85, 0.76, 0.71, 0.70, 0.72, 0.76, 0.82, 0.89, 0.97}
+	dp25 := []float64{1.00, 0.99, 1.00, 1.03, 1.07, 1.12, 1.18, 1.24, 1.30, 1.36}
+	dp50 := []float64{1.00, 1.08, 1.18, 1.28, 1.38, 1.48, 1.58, 1.66, 1.74, 1.82}
+	dp75 := []float64{1.00, 1.15, 1.28, 1.40, 1.51, 1.61, 1.70, 1.78, 1.85, 1.92}
+	dp95 := []float64{1.00, 1.24, 1.46, 1.66, 1.84, 2.00, 2.14, 2.25, 2.34, 2.42}
+	// tight plan
+	tp05 := []float64{1.00, 0.80, 0.58, 0.38, 0.22, 0.10, 0.03, 0.00, 0.00, 0.00}
+	tp25 := []float64{1.00, 0.93, 0.84, 0.74, 0.63, 0.52, 0.41, 0.31, 0.22, 0.14}
+	tp50 := []float64{1.00, 1.04, 1.06, 1.06, 1.04, 1.00, 0.95, 0.88, 0.80, 0.72}
+	tp75 := []float64{1.00, 1.10, 1.17, 1.21, 1.22, 1.21, 1.18, 1.14, 1.09, 1.04}
+	tp95 := []float64{1.00, 1.22, 1.40, 1.55, 1.66, 1.74, 1.80, 1.83, 1.85, 1.86}
+	panel := func(px0, px1 float64, p05, p25, p50, p75, p95 []float64, edge, title, note string) string {
+		m := mapper(0, 45, 0, 2.55, px0, px1, 290, 66)
+		var b strings.Builder
+		b.WriteString(fanArea(m, xs, p05, p95, figBandOuter))
+		b.WriteString(fanArea(m, xs, p25, p75, figBandInner))
+		z := m(0, 0)
+		b.WriteString(line(px0, z[1], px1, z[1], figRule, 1))
+		one := m(0, 1)
+		b.WriteString(line(px0, one[1], px1, one[1], figRule, 1))
+		b.WriteString(fanLine(m, xs, p50, figDeep, 1.8, ""))
+		// the 5th-percentile lower edge, emphasised in the panel's colour
+		b.WriteString(fanLine(m, xs, p05, edge, 2.4, ""))
+		b.WriteString(txt((px0+px1)/2, 54, 12, figInk, "middle", "600", title))
+		nx := m(22, 0.28)
+		b.WriteString(txt(nx[0], nx[1], 11, edge, "middle", "600", note))
+		for _, c := range []float64{0, 15, 30, 45} {
+			p := m(c, 0)
+			b.WriteString(txt(p[0], 306, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+		}
+		return b.String()
+	}
+	var b strings.Builder
+	b.WriteString(panel(66, 300, dp05, dp25, dp50, dp75, dp95, figGood, "Plan défendu", "le bas s'enfonce lentement"))
+	b.WriteString(panel(336, 570, tp05, tp25, tp50, tp75, tp95, figBad, "Plan tendu", "le 5e percentile pique à zéro"))
+	b.WriteString(txt(318, 328, 12, figMuted, "middle", "400", "années  →  (la pente du bas, sur la première décennie, est l'exposition à la séquence)"))
+	b.WriteString(txt(318, 30, 13, figInk, "middle", "600", "Le bas du cône, dans les dix premières années, décide"))
+	return svg(636, 344, b.String())
 }
 
 // svg wraps content in a responsive, theme-aware <svg>.
