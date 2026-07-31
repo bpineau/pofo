@@ -5,5 +5,5 @@
 #
 # to see catalog assets that would fill the inflation / deflation / crisis
 # gaps (gold, long bonds, managed futures…), validated out-of-sample.
-60 IWDA   # iShares Core MSCI World (IE00B4L5Y983)
+60 IWDASIM   # iShares Core MSCI World (IE00B4L5Y983)
 40 CSPX   # iShares Core S&P 500   (IE00B5BMR087)
