@@ -8,6 +8,16 @@ Puis la recherche moderne, ERN en tête, a rouvert le capot et trouvé le vice c
 Guyton-Klinger est un retrait fixe indexé qui se surveille lui-même. Tant que le taux de retrait courant (retrait / portefeuille) reste dans un corridor de ±20 % autour du taux initial, on vit comme sous Bengen. S'il sort par le haut, c'est que le portefeuille a trop baissé, et on coupe le retrait de 10 %. S'il sort par le bas, c'est que le portefeuille s'est envolé, et on l'augmente de 10 %. La grandeur du procédé est de transformer une flexibilité vague (« je ferai attention si ça va mal ») en mécanique écrite. Sa limite est que rien ne borne le **nombre** de coupes.
 :::
 
+::: admin Mode d'emploi
+- **Le capteur bouge, la bande est figée.** C'est la subtilité de la règle, et la source de presque toutes les répliques ratées. On calcule chaque année le taux **courant**, retrait prévu de l'année divisé par le portefeuille du jour, et on le compare à deux seuils fixés une fois pour toutes au départ, 1,2 × taux initial et 0,8 × taux initial. L'ajustement de ±10 % s'applique ensuite au **retrait courant**, pas au retrait initial, si bien que les coupes se composent : deux coupes font −19 %, trois font −27 %.
+- **Traduction physique de la bande.** ±20 % de taux n'est pas parlant. À dépense réelle inchangée, le garde-fou bas se déclenche quand le portefeuille réel est tombé à 83 % de sa valeur de départ, et le haut quand il est monté à 125 %. C'est la vraie grandeur que la règle surveille, et c'est sur celle-là qu'il faut se faire une opinion.
+- **Indexation.** Le montant se réindexe chaque année sur l'IPC, sauf l'année qui suit un rendement négatif du portefeuille lorsque le taux courant dépasse le taux initial (règle 2). L'article plafonne par ailleurs l'indexation à 6 % par an.
+- **Fréquence.** Annuelle, à date fixe. La date n'est pas neutre : avec une règle à seuils, deux ménages identiques qui contrôlent à deux mois d'écart ne prennent pas les mêmes décisions, et l'écart se mesure ([[revue-annuelle]]).
+- **Les seuils ne sont pas dérivés, ils sont calibrés.** L'article de 2006 ne justifie nulle part le 20 % ni le 10 %. Ce sont les valeurs retenues après simulation sur les données 1928-2004 et 1973-2004, trois allocations, horizons de 40 ans. Elles se déplacent donc légitimement : bande de ±15 % à ±25 %, ajustements de 5 à 10 %, la recherche penchant pour des marches plus petites et plus fréquentes.
+- **Plancher.** Indispensable, et ce n'est pas une option de confort : sans lui, le nombre de coupes n'est borné par rien, ce qui est exactement la pathologie décrite plus bas. Valeur de planification, 75-80 % du retrait initial.
+- **De tête.** Si retrait / portefeuille > 1,2 × taux initial, retrait × 0,9 sans descendre sous le plancher. Si < 0,8 × taux initial, retrait × 1,1. Sinon, rien.
+:::
+
 ## Les règles exactes, pour une fois
 
 L'article de 2006 (« Decision Rules and Maximum Initial Withdrawal Rates ») définit quatre règles, presque toujours tronquées dans les citations. Les voici complètes, car les détails font la stratégie.

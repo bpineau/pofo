@@ -8,6 +8,15 @@ Cet article la traite en stratégie opérationnelle, et non plus en objet histor
 Année 0 : fixez le retrait initial R = taux × capital. Le taux vient de votre analyse, 3 à 4 % selon l'horizon, les valorisations et les marges ([[combien-il-vous-faut]]). Chaque année suivante : R ← R × (1 + inflation constatée). On prélève quoi qu'aient fait les marchés, en vendant ce qui dépasse l'allocation cible, si bien que le prélèvement sert au rééquilibrage. C'est tout. La règle n'écoute rien : ni le portefeuille, ni les valorisations, ni votre humeur. C'est sa faiblesse statistique et sa force psychologique.
 :::
 
+::: admin Mode d'emploi
+- **Le taux ne s'applique qu'une fois, au capital du jour du départ.** C'est le malentendu le plus répandu du domaine, et il vaut d'être écrit noir sur blanc : les 4 % ne se recalculent **jamais** sur le portefeuille courant. L'année 1 fixe un **montant en euros**, et ce montant vit ensuite sa vie propre. Le rapport retrait / portefeuille de l'année en cours est un voyant de surveillance, jamais une entrée du calcul. Toutes les règles des articles suivants naissent précisément de ce constat : le taux courant contient de l'information, et le fixe refuse de la lire.
+- **Indexation.** Chaque année, montant ← montant × (1 + inflation constatée), sur l'IPC. C'est la seule mise à jour de la règle. La variante amendée saute cette ligne l'année qui suit un rendement négatif du portefeuille, et l'indexation se plafonne parfois à 6 % par an.
+- **Fréquence.** Le montant se recalcule une fois par an, à date fixe. Le prélèvement, lui, se fait mensuellement. Ce sont deux cadences différentes, et les confondre coûte cher ([[revue-annuelle]]).
+- **Seuils.** Aucun, c'est la définition même de la règle. Les amendements en introduisent : gel d'indexation après année rouge, cliquet de hausse (+10 % du montant quand le portefeuille réel dépasse 150 % de sa valeur initiale, au plus tous les trois ans, sous un plafond de hausse cumulée).
+- **Plancher.** Sans objet : le montant servi **est** le plancher. C'est toute la différence avec les règles qui suivent, où le plancher devient un paramètre à écrire soi-même.
+- **De tête.** R = taux × capital initial, une fois. Puis chaque année R ← R × (1 + inflation).
+:::
+
 ## La mécanique fine : trois détails qui pèsent
 
 La règle tient en deux lignes. Mais trois choix d'exécution, rarement explicités, déplacent réellement les résultats.

@@ -8,6 +8,15 @@ Ce pourcentage croissant n'est pas un bricolage. C'est la formule d'amortissemen
 Chaque année, le VPW retire le pourcentage qui épuiserait exactement le portefeuille sur les années restantes, en supposant les rendements futurs égaux à des valeurs de référence fixées d'avance. C'est la mensualité d'un crédit, recalculée chaque année sur le capital courant et l'horizon restant. Jeune, l'horizon est long et le pourcentage est bas. Âgé, l'horizon raccourcit et le pourcentage monte. Le portefeuille est consommé délibérément, jamais épuisé prématurément, jamais thésaurisé par accident.
 :::
 
+::: admin Mode d'emploi
+- **Le taux s'applique au portefeuille courant diminué du pont de pension.** Le pont, c'est-à-dire les annuités de pension manquantes actualisées et placées en obligations, se met de côté **avant** d'appliquer le pourcentage. C'est l'erreur d'implémentation la plus fréquente du VPW : appliquer la table au portefeuille entier, alors que celui-ci doit aussi fabriquer quinze ou vingt ans de pension. Le reste est un pourcentage ordinaire, sans mémoire du capital de départ.
+- **Indexation.** Aucune ligne à écrire, comme pour tout pourcentage du portefeuille courant.
+- **Fréquence.** Annuelle : une lecture de table, une multiplication.
+- **Paramètres.** Ce ne sont pas des seuils mais deux nombres. Le rendement supposé g (5,0 % réel pour les actions, 1,9 % pour les obligations, combinés au prorata de votre allocation) et l'horizon n (100 moins votre âge). Ils sont gravés par doctrine, ce qui est un choix assumé et non une négligence : la table ne se renégocie pas. La seule modulation défendable est de décoter g d'un point en marché cher.
+- **Plancher.** Externe et obligatoire, vérifié par le test de tolérance à la perte : le revenu servi sous l'hypothèse « actions −50 % » doit rester au-dessus du plancher.
+- **De tête.** w = g / (1 − (1+g) puissance −n), c'est-à-dire la mensualité d'un crédit. Une précision d'implémentation vaut d'être connue, car elle explique la plupart des écarts entre deux tables : selon que le retrait est pris en début ou en fin d'année, on divise ou non le résultat par (1 + g), ce qui déplace le taux d'environ 4 % en relatif. En pratique, lisez la table officielle plutôt que de la recalculer, mais savoir d'où elle sort permet de vérifier un chiffre douteux.
+:::
+
 ## D'où ça vient, et la philosophie
 
 Le VPW naît sur le forum Bogleheads au début des années 2010, œuvre du contributeur « longinvest ». Sa doctrine tient en trois refus, très dans l'esprit boglehead. Refus de la ruine, d'abord, donc pas de montant fixe ([[retrait-fixe-bengen]]). Refus du legs accidentel, ensuite, car le 4 % prudent meurt riche trois fois sur quatre, faute d'avoir vécu ([[depenses-en-retraite]]). Refus de la prévision, enfin : pas de rendements attendus recalculés chaque année, pas de CAPE, pas de paramètres à débattre, seulement une table unique, publiée, gravée. La stratégie s'accompagne d'un classeur (« VPW worksheet ») maintenu par la communauté, qui gère aussi les ponts de pension, nous y reviendrons. C'est l'un des outils gratuits les plus aboutis du monde FIRE.
