@@ -26,6 +26,10 @@ Tout l'étage 2 supposait un rendement constant. Les vrais rendements arrivent e
 
 Combien coûte-t-il ? C'est la découverte centrale de Bengen : sur l'histoire américaine, le pire millésime ne supportait qu'environ 4 %, alors que le calcul d'amortissement au rendement moyen en promettait 5,8 ; la pénalité de séquence historique vaut donc environ −1,8 point. Elle n'est pas une constante universelle : elle grandit avec la volatilité du portefeuille (un 100 % actions a à la fois un meilleur rendement moyen et une pénalité plus lourde, ce qui explique le plateau d'allocation, [[allocation-actions-obligations]]), et elle se réduit avec tout ce qui amortit les baisses → diversification et rééquilibrage (qui force à acheter bas pendant le krach, [[pourquoi-la-diversification-marche]]), et flexibilité du retrait (couper 10 % en année rouge rachète une partie de la pénalité, [[flexibilite-realite]]).
 
+::: figure cascade-4pct
+La cascade du 4 % : environ 4 % de rendement réel géométrique, plus le bonus d'amortissement, moins la pénalité de séquence. Les deux forces se compensent presque exactement, et c'est tout le « mystère » de la règle.
+:::
+
 ::: exemple La cascade complète, sur un coin de table
 60/40 historique, 30 ans, retrait fixe indexé. Rendement réel arithmétique ≈ 5 % → moins le volatility drag ≈ 4 % géométrique (étage 1) → plus le bonus d'amortissement 30 ans ≈ 5,8 % (étage 2) → moins la pénalité du pire ordre historique ≈ 4,0 % (étage 3). Voilà la règle, reconstruite. Maintenant, faites-la respirer : horizon 50 ans → le bonus fond, ~3,4 % ; échantillon mondial au lieu du seul cas américain ([[anarkulova-cederburg]]) → retirer 0,3-0,7 ; CAPE élevé au départ ([[valorisations-et-cape]]) → étage 1 raboté d'un point ; 0,5 % de frais → −0,5, presque un pour un ; règle flexible à plancher → +0,3-0,5. Chaque débat sur « le vrai chiffre » de la règle est un débat sur un seul étage de la cascade, et il se règle étage par étage, pas par slogans.
 :::
