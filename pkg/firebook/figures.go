@@ -51,6 +51,7 @@ var figures = map[string]func() string{
 	"withdrawal-frontier": figWithdrawalFrontier,
 	"fan-anatomy":         figFanAnatomy,
 	"fan-two-plans":       figFanTwoPlans,
+	"bond-tent":           figBondTent,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
@@ -262,6 +263,103 @@ func figFanTwoPlans() string {
 	b.WriteString(txt(318, 328, 12, figMuted, "middle", "400", "années  →  (la pente du bas, sur la première décennie, est l'exposition à la séquence)"))
 	b.WriteString(txt(318, 30, 13, figInk, "middle", "600", "Le bas du cône, dans les dix premières années, décide"))
 	return svg(636, 344, b.String())
+}
+
+// figSerif mirrors the book's display font (handler.go --serif), so a figure
+// title reads as part of the editorial object rather than a system chart.
+const figSerif = `Georgia,'Iowan Old Style',Palatino,'Times New Roman',serif`
+
+func titleTxt(x, y float64, s string) string {
+	return fmt.Sprintf(`<text x="%.1f" y="%.1f" font-size="14" fill="%s" text-anchor="middle" font-weight="600" font-family="%s">%s</text>`, x, y, figInk, figSerif, s)
+}
+
+// catmull turns a point list into a smooth SVG path (Catmull-Rom -> Bézier):
+// curves, not straight segments, are what separate a real chart from a sketch.
+func catmull(pts [][2]float64) string {
+	if len(pts) < 2 {
+		return ""
+	}
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "M %.1f,%.1f", pts[0][0], pts[0][1])
+	n := len(pts)
+	for i := 0; i < n-1; i++ {
+		p0, p1, p2, p3 := pts[max(0, i-1)], pts[i], pts[i+1], pts[min(n-1, i+2)]
+		c1x, c1y := p1[0]+(p2[0]-p0[0])/6, p1[1]+(p2[1]-p0[1])/6
+		c2x, c2y := p2[0]-(p3[0]-p1[0])/6, p2[1]-(p3[1]-p1[1])/6
+		fmt.Fprintf(&sb, " C %.1f,%.1f %.1f,%.1f %.1f,%.1f", c1x, c1y, c2x, c2y, p2[0], p2[1])
+	}
+	return sb.String()
+}
+
+func smoothStroke(pts [][2]float64, stroke string, w float64) string {
+	return fmt.Sprintf(`<path d="%s" fill="none" stroke="%s" stroke-width="%.1f" stroke-linecap="round" stroke-linejoin="round"/>`, catmull(pts), stroke, w)
+}
+
+func smoothAreaBelow(pts [][2]float64, baseY float64, fill string) string {
+	d := catmull(pts) + fmt.Sprintf(" L %.1f,%.1f L %.1f,%.1f Z", pts[len(pts)-1][0], baseY, pts[0][0], baseY)
+	return fmt.Sprintf(`<path d="%s" fill="%s"/>`, d, fill)
+}
+
+func dashLine(x1, y1, x2, y2 float64, stroke string, w float64, dash string) string {
+	return fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="%.1f" stroke-dasharray="%s"/>`, x1, y1, x2, y2, stroke, w, dash)
+}
+
+// --- 9. The bond tent: prudence concentrated on the fragile window ---
+func figBondTent() string {
+	eq := [][2]float64{{-8, 85}, {-6, 85}, {-4, 81}, {-2, 71}, {0, 57}, {2, 60}, {4, 67}, {6, 74}, {8, 81}, {10, 87}, {12, 90}, {15, 90}}
+	m := mapper(-8, 15, 0, 100, 72, 556, 300, 58)
+	px := make([][2]float64, len(eq))
+	for i, p := range eq {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	tl, br := m(-8, 100), m(15, 0)
+	// bonds fill the whole plot; equity area on top -> the bond band bulges at
+	// departure, and that bulge IS the "tent".
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="rgba(135,124,109,.13)"/>`, tl[0], tl[1], br[0]-tl[0], br[1]-tl[1])
+	b.WriteString(smoothAreaBelow(px, br[1], "rgba(180,120,60,.20)"))
+	// frame lines at 0 and 100 %
+	b.WriteString(line(tl[0], tl[1], br[0], tl[1], figRule, 1))
+	b.WriteString(line(tl[0], br[1], br[0], br[1], figRule, 1))
+	// departure marker
+	d0, d1 := m(0, 0), m(0, 100)
+	b.WriteString(dashLine(d0[0], d0[1], d1[0], d1[1], figSoft, 1.1, "4 3"))
+	b.WriteString(txt(d1[0], d1[1]-7, 11, figInk, "middle", "600", "départ"))
+	// equity boundary (the hero line) + trough dot
+	b.WriteString(smoothStroke(px, figDeep, 2.8))
+	tr := m(0, 57)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.6" fill="%s"/>`, tr[0], tr[1], figDeep)
+	// direct area labels
+	ea := m(-5, 36)
+	b.WriteString(txt(ea[0], ea[1], 13, figDeep, "middle", "600", "actions"))
+	oa := m(1.6, 82)
+	b.WriteString(txt(oa[0], oa[1], 13, figMuted, "middle", "600", "obligations"))
+	// y ticks
+	for _, v := range []struct {
+		p float64
+		s string
+	}{{100, "100 %"}, {50, "50 %"}, {0, "0"}} {
+		p := m(-8, v.p)
+		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", v.s))
+	}
+	// x ticks
+	for _, c := range []float64{-8, -4, 0, 4, 8, 12} {
+		p := m(c, 0)
+		lab := fmt.Sprintf("%+.0f", c)
+		if c == 0 {
+			lab = "0"
+		}
+		b.WriteString(txt(p[0], 313, 10, figMuted, "middle", "400", lab))
+	}
+	// fragile-window bracket under the axis
+	fl, fr := m(-2, 0), m(10, 0)
+	b.WriteString(line(fl[0], 322, fr[0], 322, figAccent, 1.4))
+	b.WriteString(line(fl[0], 322, fl[0], 318, figAccent, 1.4))
+	b.WriteString(line(fr[0], 322, fr[0], 318, figAccent, 1.4))
+	b.WriteString(txt((fl[0]+fr[0])/2, 336, 10, figAccent, "middle", "600", "fenêtre fragile (risque de séquence)"))
+	b.WriteString(txt(556, 336, 10, figMuted, "end", "400", "années · 0 = départ  →"))
+	b.WriteString(titleTxt(310, 30, "La tente obligataire : la prudence concentrée là où le danger est"))
+	return svg(620, 350, b.String())
 }
 
 // svg wraps content in a responsive, theme-aware <svg>.
