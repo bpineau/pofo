@@ -11,6 +11,9 @@
 //     per cell for a smoother curve);
 //   - Line and Term share the Series model and the default palette,
 //     accessible via PaletteColor to keep multiple charts consistent.
+//     The palette is the "instrument" identity set (petrol first); its
+//     slot order is validated for adjacent-pair distinctness under common
+//     color vision deficiencies and must not be permuted casually.
 //
 // Line labels sub-day spans with clock times (HH:MM), so the same
 // renderer draws both daily and intraday series without any extra
