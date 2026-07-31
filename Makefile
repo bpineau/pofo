@@ -64,6 +64,11 @@ broadsample: ## (Re)generate the bundled JST broad-sample panel (network) then r
 	$(GO) run ./cmd/gen-broadsample
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: cape
+cape: ## (Re)generate the bundled Shiller CAPE series (network) then rebuild
+	$(GO) run ./cmd/gen-cape
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt

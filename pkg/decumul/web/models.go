@@ -126,6 +126,13 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 // fit toward a believable middle rather than leaving the central case optimistic.
 func centralParams(pr Params, panel *scenario.Panel) (mu, sigma, df float64) {
 	mu, sigma, df = pr.Mu, pr.Sigma, pr.Df
+	// Anchor the central return to today's valuation: at a rich CAPE the next
+	// decade's real return is compressed, so the whole-horizon central mean is
+	// set to the CAPE-implied return rather than the fund's rosy history. This
+	// overrides the slider mean and the panel blend below.
+	if pr.CapeAdjust {
+		return capeAdjustedMu(sigma), sigma, df
+	}
 	if panel == nil || pr.Years <= 0 {
 		return
 	}
