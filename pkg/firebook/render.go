@@ -85,8 +85,11 @@ func mdInline(s string, titles map[string]string) string {
 		spans = append(spans, m)
 		return fmt.Sprintf("\x00%d\x00", len(spans)-1)
 	})
-	s = reBold.ReplaceAllString(s, "<strong>$1</strong>")
+	// Italic first, then bold: a bold span may wrap an italic (book titles,
+	// "**Auteur, *Titre* (an)**"), and reBold's [^*]+ cannot span the inner
+	// stars, so the italics must be resolved to <em> before bold runs.
 	s = reItalic.ReplaceAllString(s, "$1<em>$2</em>")
+	s = reBold.ReplaceAllString(s, "<strong>$1</strong>")
 	for i, span := range spans {
 		s = strings.Replace(s, fmt.Sprintf("\x00%d\x00", i), span, 1)
 	}
