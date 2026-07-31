@@ -42,7 +42,7 @@ Le cash ferme la marche : il est l'étalon (les primes se mesurent au-dessus de 
 
 ## L'audit de votre portefeuille, prime par prime
 
-La grille tient en trois questions par ligne : quelle prime cette position récolte-t-elle, qui la paie, et pourquoi le paiera-t-il encore dans vingt ans ? Voici les réponses pour les huit lignes que l'on rencontre le plus souvent chez un particulier. Les niveaux sont dans l'échelle plus haut ; ce qui compte ici est le payeur et la raison de durer, les deux choses qu'un prospectus ne dit jamais.
+La grille tient en trois questions par ligne : quelle prime cette position récolte-t-elle, qui la paie, et pourquoi le paiera-t-il encore dans vingt ans ? Voici les réponses pour les huit lignes que l'on rencontre le plus souvent chez un particulier. Les niveaux ont été donnés plus haut ; ce qui compte ici est le payeur et la raison de durer, les deux choses qu'un prospectus ne dit jamais.
 
 | La ligne | Quelle prime | Qui la paie | Pourquoi elle tient |
 |---|---|---|---|
