@@ -237,8 +237,21 @@ func parseViewGlobals(q url.Values, vr *viewRequest, base *options) error {
 	}
 	switch v := q.Get("sim"); v {
 	case "":
-	case "on", "off":
-		off := v == "off"
+	case "on":
+		// The web's global sim toggle is a POSITIVE control: turn the
+		// backcast on for every portfolio on the page. The CLI opts in per
+		// file with "#meta sim:on"; a composed p= card carries no such line,
+		// so without this the toggle could only ever turn sim off (noSim),
+		// never on, and a live portfolio would show no reconstructed history.
+		// Build fetches each holding's SIM variant; holdings with no backcast
+		// fall back to real quotes, so this is safe to apply uniformly.
+		off := false
+		vr.noSim = &off
+		for _, s := range vr.specs {
+			s.Sim = true
+		}
+	case "off":
+		off := true
 		vr.noSim = &off
 	default:
 		return fmt.Errorf("invalid sim value %q (on or off)", v)
