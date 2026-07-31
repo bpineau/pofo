@@ -12,7 +12,8 @@
 #meta capital:1000000
 #meta withdraw:40000/year
 #meta rebalance:180
+#meta sim:on
 
-50    IWDASIM         # World equity (UCITS: IWDA IE00B4L5Y983)
-40    IEFSIM          # 7-10y Treasuries (UCITS route: euro govt IEGA for a EUR investor)
-10    KMLMSIM         # Trend (UCITS buy-route: iMGP DBi LU2951555585)
+50    IWDA            # World equity (UCITS: IWDA IE00B4L5Y983)
+40    IEF             # 7-10y Treasuries (UCITS route: euro govt IEGA for a EUR investor)
+10    KMLM            # Trend (UCITS buy-route: iMGP DBi LU2951555585)

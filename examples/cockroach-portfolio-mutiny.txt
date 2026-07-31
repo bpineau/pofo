@@ -6,8 +6,9 @@
 #   https://mutinyfund.com/cockroach/
 # Trend via managed futures (UCITS buy-route: iMGP DBi).
 #meta rebalance:180
+#meta sim:on
 
-25    IWDASIM         # Equity (UCITS: IWDA)
-25    TLTSIM          # Long bonds (UCITS: IDTL)
-25    GOLDSIM         # Gold (UCITS: IGLN)
-25    KMLMSIM         # Managed futures (UCITS: iMGP DBi LU2951555585)
+25    IWDA            # Equity (UCITS: IWDA)
+25    TLT             # Long bonds (UCITS: IDTL)
+25    GOLD            # Gold (UCITS: IGLN)
+25    KMLM            # Managed futures (UCITS: iMGP DBi LU2951555585)

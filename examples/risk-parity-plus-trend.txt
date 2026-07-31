@@ -6,10 +6,11 @@
 # Inspired by: risk parity (Qian; AQR; Bridgewater) + the modern trend overlay.
 # Note: the written weights are ignored — '#meta optimize:risk-parity' computes them.
 #meta optimize:risk-parity
+#meta sim:on
 
-20    IWDASIM         # Equity
-20    TLTSIM          # Long bonds
-15    SHYSIM          # Short bonds
-15    GOLDSIM         # Gold
-15    ICOMSIM    # Broad commodities (ICOM)
-15    KMLMSIM         # Managed futures
+20    IWDA            # Equity
+20    TLT             # Long bonds
+15    SHY             # Short bonds
+15    GOLD            # Gold
+15    ICOM       # Broad commodities (ICOM)
+15    KMLM            # Managed futures
