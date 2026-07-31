@@ -24,19 +24,19 @@ La règle des 4 % est calibrée sur 30 ans, aux États-Unis, sans frais ni impô
 
 Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]) qui peut prélever ~6,5 % des revenus du capital. Friction totale typique : 8 à 20 %.
 
-**Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner (l'impôt, lui, n'est pas à ajouter à la main : le simulateur FIRE de pofo majore chaque vente de la fiscalité, via son groupe Taxes) ; organiser les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
+**Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner. Attention à ne pas compter la friction deux fois, car un simulateur qui modélise la fiscalité majore déjà chaque vente du prélèvement dû. Organiser aussi les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
 
 ## 4. Oublier ses propres pensions
 
 L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). L'effet sur la ruine est majeur, souvent l'équivalent de 0,3 à 0,7 point de taux de retrait.
 
-**Correction** : relevé sur [info-retraite.fr](https://www.info-retraite.fr), estimation prudente (décote comprise), et entrée « revenu différé » du simulateur ([[utiliser-la-page-fire]]).
+**Correction** : relevé sur [info-retraite.fr](https://www.info-retraite.fr), estimation prudente (décote comprise), puis saisie dans le plan comme un revenu différé, avec son âge de démarrage.
 
 ## 5. Confondre rendement moyen et rendement vécu
 
 Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui retire : l'ordre des rendements compte autant que leur moyenne ([[sequence-des-rendements]]), et la volatilité ampute la composition ([[rendements-arithmetiques-geometriques]]). C'est l'erreur conceptuelle centrale du sujet ; elle fait croire qu'un bon portefeuille d'accumulation est automatiquement un bon portefeuille de retrait.
 
-**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des marchés baissiers précoces (le modèle « sequence stress » existe pour ça) ; considérer les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
+**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des marchés baissiers précoces, ce à quoi sert un stress de séquence ; considérer les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
 
 ## 6. Le portefeuille mono-régime
 
@@ -52,9 +52,9 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 8. Se raconter le simulateur
 
-Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), pousser le curseur de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur devient alors un générateur de permission, pas un instrument ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
+Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur devient alors un générateur de permission, pas un instrument ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
-**Correction** : regarder les quatre modèles côte à côte (c'est le principe du simulateur FIRE de pofo), planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
+**Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre eux est l'information ([[historique-vs-parametrique]]). Planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
 
 ## 9. Négliger le facteur humain
 
