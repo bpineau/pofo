@@ -31,6 +31,7 @@ func All() []Recipe {
 		sp500IndexRecipe(),
 		wintonRecipe(),
 		zrozRecipe(),
+		dbxgRecipe(),
 		dbmfRecipe(),
 		dbmfpaRecipe(),
 		dbmfeRecipe(),
@@ -1195,6 +1196,63 @@ func (j injected) Fetch(id string, from time.Time) (*marketdata.Series, error) {
 		return s, nil
 	}
 	return j.inner.Fetch(id, from)
+}
+
+// dbxgFee is DBXG's 0.15 %/yr TER, deducted from the pre-inception proxy (the
+// real quotes grafted from 2007 already carry it).
+const dbxgFee = 0.0015
+
+// dbxgRecipe rebuilds the Xtrackers II Eurozone Government Bond 25+ UCITS ETF
+// (LU0290357846, EUR, real from 2007) from the bundled long euro-area government
+// bond total return (EUROGOV-LONG-EUR, ~1970, with the ECB daily 30-year shape
+// EUROGOV-LONG-DAILY from 2004), less the fund's TER. That reference is a
+// constant-maturity ~30-year par bond, modified duration ~19, matching the iBoxx
+// EUR Eurozone Sovereigns 25+ index DBXG tracks; it is a genuine long-bond
+// reconstruction (yield path through TreasuryTR) rather than a levered shorter
+// bond, so it neither overstates the return in a sustained bond bull nor needs a
+// financing leg. Euro-native throughout, no FX leg; real DBXG is grafted from
+// 2007. The pre-2004 tail is monthly and its long yield is synthesized from the
+// 10-year (the ECB curve only reaches 2004), a modest approximation next to the
+// two decades of real quotes the fund itself carries; see cmd/gen-euro-refdata.
+func dbxgRecipe() Recipe {
+	return Recipe{
+		ID:              "DBXG",
+		Name:            "Xtrackers Eurozone Govt 25+: long euro-gov bond",
+		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, ~30y constant maturity, modified duration ~19, ~1970 with the ECB daily 30y shape EUROGOV-LONG-DAILY from 2004) less 0.15%/yr TER; euro-native, real DBXG grafted from 2007",
+		Build:           dbxgBuild,
+		ValidateAgainst: "DBXG",
+		SpliceReal:      "DBXG",
+	}
+}
+
+// dbxgBuild is the long euro-area government bond reference (euroGovLongDaily)
+// net of the fund's TER: DBXG holds the 25+ bonds physically, so its return is
+// the long-bond total return less fees.
+func dbxgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	gov, err := euroGovLongDaily(f, from)
+	if err != nil {
+		return nil, err
+	}
+	return afterFee(gov, dbxgFee), nil
+}
+
+// euroGovLongDaily builds the long (25+ segment, ~30-year, duration ~19) euro-area
+// government bond total return at daily granularity: the bundled monthly
+// EUROGOV-LONG-EUR anchors (~1970) carrying the ECB daily 30-year shape
+// (EUROGOV-LONG-DAILY, 2004->) where it overlaps, the long-maturity twin of the
+// EUROGOV-EUR / EUROGOV-DAILY pair the NTSZ bond leg uses.
+func euroGovLongDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	anchors, err := f.Fetch("EUROGOV-LONG-EUR", from)
+	if err != nil {
+		return nil, err
+	}
+	if anchors == nil || len(anchors.Points) < 2 {
+		return nil, fmt.Errorf("EUROGOV-LONG-EUR: empty history")
+	}
+	if shape, serr := f.Fetch("EUROGOV-LONG-DAILY", from); serr == nil && shape != nil {
+		anchors = shapedSeries(anchors, shape)
+	}
+	return anchors, nil
 }
 
 // urthRecipe approximates the MSCI World as a fixed 60/40 US/developed-

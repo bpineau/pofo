@@ -22,6 +22,16 @@
 //     point run through the same TreasuryTR. Daily shape for
 //     EUROGOV-EUR, so the reconstruction stops feeding
 //     month-sized moves to daily statistics after 2004.
+//   - EUROGOV-LONG-EUR.csv   long euro-area government bond TR (25+ segment,
+//     modified duration ~17; monthly, ~1970): the OECD 10-year
+//     yield mapped to a 25-year yield (calibrated on the
+//     2004-2026 ECB curve) run through TreasuryTR at a 24-year
+//     par maturity (vol-matched to DBXG). Proxy behind the euro
+//     25+ govt ETF (DBXG).
+//   - EUROGOV-LONG-DAILY.csv long euro-area government bond TR at daily
+//     granularity (~2004): the ECB daily 25-year euro-area yield
+//     curve point run through the same TreasuryTR. Daily shape
+//     for EUROGOV-LONG-EUR.
 //   - DECASH-EUR.csv    German 3-month money-market accrual (monthly, ~1960):
 //     the pre-euro cash proxy (Germany was the anchor economy
 //     and the DM the reference currency), spliced under the
@@ -67,6 +77,28 @@ const netDivYield = 0.022
 // track and the intermediate-to-long duration of the fund's bond-futures ladder.
 const euroBondMaturity = 10.0
 
+// euroLongMaturity is the constant maturity (years) of the reconstructed LONG
+// euro government bond (EUROGOV-LONG-*), a proxy for the 25+ segment of the euro
+// sovereign curve behind DBXG. It is driven by the ECB 25-year yield-curve point
+// and priced at a slightly shorter 24-year par maturity (modified duration ~17),
+// calibrated so the daily reconstruction matches DBXG's ~14.4%/yr realized
+// volatility over 2007-2026: the fitted long curve is a touch more volatile than
+// the traded fund per year of maturity, so pricing at exactly the 25-year point
+// would overstate the risk. The deep monthly tail feeds the same maturity a
+// 25-year yield synthesized from the 10-year (below).
+const euroLongMaturity = 24.0
+
+// The deep monthly tail (~1970-2004) predates the ECB yield curve, so its long
+// yield is synthesized from the OECD 10-year benchmark as
+// euroLongIntercept + euroLongSlope*y10. Both are calibrated on the 2004-2026
+// ECB curve overlap, where the 25-year point regresses on the 10-year as
+// 25y = 0.571 + 0.962*10y: a ~0.5%/yr term premium and a slightly damped
+// (~0.96x) sensitivity, so the deep long bond carries the long end's own level
+// and volatility rather than the raw 10-year path. The real ECB 25-year yield
+// takes over from 2004 through the daily series.
+const euroLongIntercept = 0.571
+const euroLongSlope = 0.9615
+
 func main() {
 	base := flag.String("base", defaultBase, "DBnomics API base URL")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
@@ -81,6 +113,18 @@ func main() {
 	govDailyYield := fetch(*base, "ECB/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y")
 	govDaily := simgen.TreasuryTR("Euro-area government bond total return (10y benchmark, daily)", asSeries(govDailyYield), euroBondMaturity, 0)
 	report("EUROGOV-DAILY", govDaily.Points)
+
+	// Long euro-area government bond TR (25+ segment), monthly (~1970) and daily
+	// (~2004). The monthly tail synthesizes a 25-year yield from the OECD
+	// 10-year; the daily series uses the real ECB 25-year yield-curve point. Both
+	// are priced at euroLongMaturity (vol-matched to DBXG, see above).
+	longMonthlyYield := affine(asSeries(govYield), euroLongSlope, euroLongIntercept)
+	govLongMonthly := simgen.TreasuryTR("Long euro-area government bond total return (25+, monthly)", longMonthlyYield, euroLongMaturity, 0)
+	report("EUROGOV-LONG-EUR", govLongMonthly.Points)
+
+	govLongDailyYield := fetch(*base, "ECB/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y")
+	govLongDaily := simgen.TreasuryTR("Long euro-area government bond total return (25+, daily)", asSeries(govLongDailyYield), euroLongMaturity, 0)
+	report("EUROGOV-LONG-DAILY", govLongDaily.Points)
 
 	// Eurozone equity net TR, monthly (~1986).
 	price := fetch(*base, "OECD/MEI/EA19.SPASTT01.IXOB.M")
@@ -103,6 +147,10 @@ func main() {
 		"OECD MEI euro-area 10y benchmark yield EA19.IRLTLT01 (~1970) run through the constant-maturity reconstruction (TreasuryTR, 10y); via DBnomics. Proxy behind the euro-govt bond ETF.", govMonthly.Points)
 	write(*dir, "EUROGOV-DAILY", "Euro-area government bond total return (10-year benchmark, EUR, daily)",
 		"ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y (~2004) run through TreasuryTR (10y); via DBnomics. Daily shape for EUROGOV-EUR.", govDaily.Points)
+	write(*dir, "EUROGOV-LONG-EUR", "Long euro-area government bond total return (25+ segment, EUR, monthly)",
+		fmt.Sprintf("OECD MEI euro-area 10y benchmark yield EA19.IRLTLT01 (~1970) mapped to a 25y yield (%.3f+%.4f*10y, calibrated on the 2004-2026 ECB curve) run through TreasuryTR (%.0fy par, modified duration ~17, vol-matched to DBXG); via DBnomics. Proxy behind the euro 25+ govt ETF (DBXG).", euroLongIntercept, euroLongSlope, euroLongMaturity), govLongMonthly.Points)
+	write(*dir, "EUROGOV-LONG-DAILY", "Long euro-area government bond total return (25+ segment, EUR, daily)",
+		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
 	write(*dir, "DECASH-EUR", "German 3-month money-market accrual (EUR/DM, monthly)",
 		"OECD MEI German 3-month interbank rate DEU.IR3TIB01 (~1960) compounded into a money-market level; via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.", cash)
 }
@@ -176,6 +224,18 @@ func asSeries(o []obs) *marketdata.Series {
 		s.Points = append(s.Points, marketdata.Point{Date: p.date, Close: p.val})
 	}
 	return s
+}
+
+// affine returns a copy of a yield series with every level mapped to
+// slope*level + intercept (percent in, percent out), used to synthesize a
+// longer-maturity yield from a shorter benchmark over the deep tail.
+func affine(y *marketdata.Series, slope, intercept float64) *marketdata.Series {
+	out := &marketdata.Series{Name: y.Name, Source: y.Source}
+	out.Points = make([]marketdata.Point, len(y.Points))
+	for i, p := range y.Points {
+		out.Points[i] = marketdata.Point{Date: p.Date, Close: slope*p.Close + intercept}
+	}
+	return out
 }
 
 // grossUp turns a price index into a net-total-return level (base 100) by
