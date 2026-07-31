@@ -53,7 +53,8 @@ type options struct {
 	noFees     bool
 	currency   string
 	cli        bool
-	web        bool // rendered inside the -serve web app (warm skin + site nav)
+	web        bool              // rendered inside the -serve web app (warm skin + site nav)
+	fireHref   map[string]string // per-spec-name simulator links for the web report (opt.web only)
 	width      int
 	cacheAge   time.Duration
 	fw         suggest.Framework // classification used by coverage and -suggest
@@ -78,6 +79,7 @@ type result struct {
 	color         string
 	rebalanceDays int
 	currency      string // base currency this column was evaluated in
+	specName      string // the spec this column came from (p.Name may be decorated: currency tag, "as written")
 	note          string // informational line (e.g. optimizer choice)
 	// Common-window view, renormalized to 100, used for stats and comparison.
 	winDates  []time.Time
@@ -439,7 +441,7 @@ func computeComparison(ctx context.Context, client *marketdata.Client, opt *opti
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
 				"capital wiped out on %s: %s; the series stops there", when, cause))
 		}
-		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days, currency: currency})
+		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days, currency: currency, specName: spec.Name})
 		return nil
 	}
 	for _, spec := range specs {
