@@ -211,16 +211,7 @@ func render(src string, opt Options, used map[string]bool) string {
 				rows = append(rows, lines[i])
 				i++
 			}
-			cells := func(r string) []string {
-				r = strings.TrimSpace(r)
-				r = strings.TrimPrefix(r, "|")
-				r = strings.TrimSuffix(r, "|")
-				parts := strings.Split(r, "|")
-				for j := range parts {
-					parts[j] = strings.TrimSpace(parts[j])
-				}
-				return parts
-			}
+			cells := splitRow
 			b.WriteString(`<div class="table-wrap"><table><thead><tr>`)
 			for _, c := range cells(rows[0]) {
 				fmt.Fprintf(&b, "<th>%s</th>", inline(c))
@@ -285,4 +276,34 @@ func render(src string, opt Options, used map[string]bool) string {
 		}
 	}
 	return b.String()
+}
+
+// splitRow cuts one pipe-table row into its cells. It cannot be a plain
+// strings.Split on "|": a labelled wiki-link writes its label after a pipe
+// ("[[slug|Label]]"), so a naive split tears such a cell in two and leaves the
+// row with more cells than the header. Pipes inside [[...]] are therefore
+// skipped, which is the only construct of this dialect that carries one.
+func splitRow(row string) []string {
+	row = strings.TrimSuffix(strings.TrimPrefix(strings.TrimSpace(row), "|"), "|")
+	var cells []string
+	var cur strings.Builder
+	depth := 0
+	for i := 0; i < len(row); i++ {
+		switch {
+		case strings.HasPrefix(row[i:], "[["):
+			depth++
+			cur.WriteString("[[")
+			i++
+		case depth > 0 && strings.HasPrefix(row[i:], "]]"):
+			depth--
+			cur.WriteString("]]")
+			i++
+		case row[i] == '|' && depth == 0:
+			cells = append(cells, strings.TrimSpace(cur.String()))
+			cur.Reset()
+		default:
+			cur.WriteByte(row[i])
+		}
+	}
+	return append(cells, strings.TrimSpace(cur.String()))
 }
