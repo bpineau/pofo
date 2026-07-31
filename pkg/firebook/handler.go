@@ -211,11 +211,12 @@ func indexHTML(epubSize int) string {
 	b.WriteString(`<h1>` + siteName + `</h1>`)
 	b.WriteString(`<p class="book-lede">Vivre de son capital sans le survivre : la science du retrait, ` +
 		`les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, ` +
-		`l'inflation, la fiscalité française et le facteur humain.</p>`)
+		`l'inflation.`)
 	if epubSize > 0 {
-		fmt.Fprintf(&b, `<p class="book-epub"><a href="%s">Version EPUB</a> `+
-			`<span class="book-epub-size">(%s)</span></p>`, epubFileName, humanSize(epubSize))
+		fmt.Fprintf(&b, ` <span class="book-epub"><a href="%s">Version epub</a> `+
+			`<span class="book-epub-size">(%s)</span></span>`, epubFileName, humanSize(epubSize))
 	}
+	b.WriteString(`</p>`)
 	b.WriteString(`</header><main>`)
 	for _, cat := range Categories {
 		fmt.Fprintf(&b, `<section class="book-cat"><h2>%s</h2><p class="book-cat-blurb">%s</p><ul class="book-toc">`,
@@ -300,7 +301,7 @@ body.book ::selection{background:var(--accent-wash)}
 .book h1{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:2.1rem;line-height:1.13;
   margin:0 0 .7rem;letter-spacing:.005em}
 .book-lede{color:var(--ink-soft);font-size:1.05rem;line-height:1.62;margin:0;max-width:62ch}
-.book-epub{margin:1rem 0 0;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.book-epub{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
 .book-epub a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid var(--rule)}
 .book-epub a:hover{border-bottom-color:var(--accent)}
 .book-epub-size{color:var(--muted)}
