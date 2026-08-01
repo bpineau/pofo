@@ -33,9 +33,10 @@ func MultiLine(opt Options, xLabel, yLabel string, series []XYSeries, markers ..
 	var xs, ys [][]float64
 	named := 0
 	maxName := 0
+	pal := PaletteFor(len(series))
 	for i := range series {
 		if series[i].Color == "" {
-			series[i].Color = PaletteColor(i)
+			series[i].Color = pal[i]
 		}
 		xs = append(xs, series[i].Xs)
 		ys = append(ys, series[i].Ys)
