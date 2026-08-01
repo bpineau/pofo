@@ -1276,9 +1276,38 @@ function renderPortfolioGroup(meta) {
     box.appendChild(hint);
   } else {
     box.appendChild(buildExampleList(picker));
-    box.appendChild(buildMiniComposer(picker));
+    box.appendChild(buildMiniComposer(picker).el);
   }
   sim.parentElement.insertBefore(box, sim);
+}
+
+// renderChangePortfolio adds the same loader to a BOUND simulator, folded
+// away under its allocation bar. Loading a portfolio used to be a one-way
+// door: the mount is the portfolio, so the only way to another one was
+// editing the URL by hand or walking back to the hub. The fold seeds its
+// draft from the live holdings on first opening, so changing portfolio
+// starts from the one on screen rather than from nothing.
+function renderChangePortfolio(picker, box) {
+  if (!picker || !picker.base) return;
+  const fold = document.createElement("details");
+  fold.className = "pickfold";
+  const head = document.createElement("summary");
+  head.textContent = "change portfolio";
+  const chev = document.createElement("span");
+  chev.className = "chev";
+  chev.textContent = "▾";
+  head.appendChild(chev);
+  fold.appendChild(head);
+  const body = document.createElement("div");
+  body.className = "pickfold-body";
+  body.appendChild(buildExampleList(picker));
+  const composer = buildMiniComposer(picker);
+  body.appendChild(composer.el);
+  fold.appendChild(body);
+  fold.addEventListener("toggle", () => {
+    if (fold.open) composer.seed(labels, weights);
+  });
+  box.appendChild(fold);
 }
 
 // buildExampleList renders the bundled portfolios as a compact scrollable
@@ -1418,6 +1447,50 @@ function buildMiniComposer(picker) {
   } else {
     search.disabled = true;
     search.placeholder = "catalog unavailable";
+  }
+
+  // resolvable reports whether an identifier is one the server's catalog gate
+  // would accept, mirroring marketdata.SplitSim: an id longer than three
+  // characters ending in "SIM" is the backcast variant of its base and
+  // resolves through it.
+  function resolvable(id) {
+    if (!catalog) return false;
+    const v = String(id).trim().toLowerCase();
+    const base = v.length > 3 && v.endsWith("sim") ? v.slice(0, -3) : v;
+    return catalog.some(a => (a.id || "").toLowerCase() === v ||
+      (a.id || "").toLowerCase() === base ||
+      (a.alt || []).some(x => x.toLowerCase() === v || x.toLowerCase() === base));
+  }
+
+  // pcts converts arbitrary positive weights into integer percents summing to
+  // exactly 100 (largest remainder), the only units this draft and the p=
+  // grammar speak.
+  function pcts(ws) {
+    const total = ws.reduce((a, w) => a + (isFinite(w) && w > 0 ? w : 0), 0);
+    if (!(total > 0)) return ws.map(() => 0);
+    const exact = ws.map(w => (isFinite(w) && w > 0 ? w : 0) * 100 / total);
+    const out = exact.map(Math.floor);
+    let left = 100 - out.reduce((a, b) => a + b, 0);
+    exact.map((v, i) => [v - Math.floor(v), i])
+      .sort((a, b) => b[0] - a[0])
+      .forEach(pair => { if (left > 0) { out[pair[1]]++; left--; } });
+    return out;
+  }
+
+  // seed fills an empty draft from the portfolio the page is already running
+  // on, so "change portfolio" starts from the one in front of you. It waits
+  // for the catalog, because a p= spec only accepts identifiers the server can
+  // resolve locally and a portfolio file may name one the catalog does not
+  // carry: in that case the draft is left empty rather than pre-filled with a
+  // spec the mount would answer with a 400.
+  function seed(ids, ws) {
+    if (rows.length || !ids || !ids.length || !picker.catalogURL) return;
+    loadCatalog().then(() => {
+      if (rows.length || !catalog || !ids.every(resolvable)) return;
+      const pc = pcts(ws && ws.length === ids.length ? ws : ids.map(() => 1));
+      ids.forEach((id, i) => rows.push({id: String(id), w: pc[i]}));
+      renderRows();
+    });
   }
 
   // match ranks catalog entries by id, alternate identifier (ISIN, ticker,
@@ -1624,7 +1697,7 @@ function buildMiniComposer(picker) {
     gotoMount(picker.base + "/p/" + encP(spec()) + "/");
   });
   refresh();
-  return wrap;
+  return {el: wrap, seed};
 }
 
 // ---------------------------------------------------------------------------
@@ -1673,6 +1746,7 @@ fetch(apiURL("/api/meta")).then(r => r.json()).then(m => {
   ctl.appendChild(alloc.legend);
   // Allocation slots into the first column, under the situation and above
   // the simulation settings.
+  renderChangePortfolio(m.picker, box);
   const sim = document.getElementById("group-simulation");
   sim.parentElement.insertBefore(box, sim);
   alloc.render();
