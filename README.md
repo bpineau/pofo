@@ -387,6 +387,9 @@ library `Fetch`):
 | `^NDX`, `^DJI`, `^IXIC` | Nasdaq-100, Dow Jones, Nasdaq Composite | |
 | `^VIX` | CBOE Volatility Index (implied vol, percent points) | 1990→, bundled |
 | `^IRX`, `^FVX`, `^TNX`, `^TYX` | US Treasury yields: 13-week, 5, 10, 30-year | |
+| `^ESTR`, `^EURIBOR3M` | euro benchmark rates: ESTR overnight, Euribor 3-month (monthly) | 2019→ / 1994→ |
+| `^ECB-DFR`, `^ECB-MRO` | ECB policy rates: deposit facility, main refinancing | 1999→ |
+| `^SOFR`, `^FEDFUNDS`, `^FED-TARGET` | US benchmark and policy rates: SOFR, effective funds rate, FOMC target upper bound | 2018→ / 2000→ / 2008→ |
 | `^HICP-FR`, `^HICP-<geo>` | Eurostat inflation index (all-items HICP) | 1955→ (FR), bundled |
 | `^CPI-US` | US CPI-U inflation index (FRED) | 1913→, bundled |
 | `USDEUR=X`, any `<AAA><BBB>=X` | FX cross, quoted in the second currency | 1971→ (euro crosses), bundled |
@@ -395,6 +398,19 @@ library `Fetch`):
 
 For example, `pofo -cli -assets '^VIX'` charts the VIX, and
 `pofo -assets 'USDEUR=X,^CPI-US'` compares the dollar and US inflation.
+
+The rate symbols are LEVELS in annualized percent, not prices, and the euro
+ones went negative for eight years, so the portfolio machinery (`-assets`,
+which builds a 100 % position and computes returns) is meaningless on them.
+Chart them with the dedicated mode instead, which draws the levels and
+summarises last/min/max/average per symbol:
+
+```sh
+pofo -rates ^ESTR,^EURIBOR3M,^ECB-DFR -start 2015-01-01
+pofo -rates ^SOFR,^FED-TARGET,^IRX          # the dollar side
+pofo -rates list                            # what is available
+```
+
 "Bundled" means the binary embeds the history (full for `^VIX`, daily for
 the euro crosses, monthly anchors otherwise) and serves it as a last resort,
 so these chart offline.
