@@ -19,24 +19,6 @@ import (
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
-// epubFileName is both the download URL (relative, so the route works under any
-// mount) and the suggested filename in the Content-Disposition header.
-const epubFileName = "le-fire-tranquille.epub"
-
-// siteName is the book's title, shown in the <h1>, the <title> suffix and
-// the SEO metadata.
-const siteName = "Le FIRE tranquille"
-
-// siteDescription is the index page's meta description (SEO): a single, dense
-// sentence under ~160 characters summarizing the whole book.
-const siteDescription = "Vivre de son capital sans le survivre : la science du retrait, " +
-	"les stratégies et portefeuilles qui résistent, l'inflation, la fiscalité française et le facteur humain."
-
-// siteLede is the visible hero sentence, shared by the web index page (which
-// appends the epub download link) and the EPUB's title page.
-const siteLede = "Vivre de son capital sans le survivre : la science du retrait, " +
-	"les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, l'inflation."
-
 // NavLink is one entry of the optional site navigation bar.
 type NavLink struct{ Label, Href string }
 
@@ -53,11 +35,12 @@ type Option func(*handlerConfig)
 // the offline and -fire mounts rely on.
 func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
 
-// Handler serves the book: the sommaire at "/", one HTML page per article at
-// "/<slug>", and the shared identity stylesheets at "/theme.css" and
-// "/fonts.css" (relative URLs, so the handler can be mounted under any
-// prefix, e.g. http.StripPrefix("/firebook/fr", firebook.Handler())).
-func Handler(opts ...Option) http.Handler {
+// Handler serves the edition: the index at "/", one HTML page per article at
+// "/<slug>", the EPUB and its OPDS catalog, and the shared identity
+// stylesheets at "/theme.css" and "/fonts.css". Every URL it emits is
+// relative, so the handler can be mounted under any prefix, e.g.
+// http.StripPrefix("/firebook/fr", firebook.French.Handler()).
+func (e *Edition) Handler(opts ...Option) http.Handler {
 	var cfg handlerConfig
 	for _, o := range opts {
 		o(&cfg)
@@ -86,7 +69,7 @@ func Handler(opts ...Option) http.Handler {
 	build := func() ([]byte, string, error) {
 		once.Do(func() {
 			built = time.Now()
-			body, bErr = EPUB(built)
+			body, bErr = e.EPUB(built)
 			if bErr != nil {
 				log.Printf("firebook: EPUB build failed: %v", bErr)
 				return
@@ -96,10 +79,10 @@ func Handler(opts ...Option) http.Handler {
 		})
 		return body, etag, bErr
 	}
-	mux.HandleFunc("/"+epubFileName, func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/"+e.EPUBFileName, func(w http.ResponseWriter, r *http.Request) {
 		data, tag, err := build()
 		if err != nil {
-			http.Error(w, "EPUB indisponible", http.StatusInternalServerError)
+			http.Error(w, e.UI.EPUBUnavailable, http.StatusInternalServerError)
 			return
 		}
 		w.Header().Set("ETag", tag)
@@ -108,7 +91,7 @@ func Handler(opts ...Option) http.Handler {
 			return
 		}
 		w.Header().Set("Content-Type", "application/epub+zip")
-		w.Header().Set("Content-Disposition", `attachment; filename="`+epubFileName+`"`)
+		w.Header().Set("Content-Disposition", `attachment; filename="`+e.EPUBFileName+`"`)
 		_, _ = w.Write(data)
 	})
 
@@ -120,21 +103,21 @@ func Handler(opts ...Option) http.Handler {
 	mux.HandleFunc("/opds.xml", func(w http.ResponseWriter, r *http.Request) {
 		data, _, err := build()
 		if err != nil {
-			http.Error(w, "Catalogue indisponible", http.StatusInternalServerError)
+			http.Error(w, e.UI.CatalogUnavailable, http.StatusInternalServerError)
 			return
 		}
 		feed := &opds.Feed{
-			Title:   siteName,
-			ID:      epubIdentifier + ":catalog",
+			Title:   e.SiteName,
+			ID:      e.EPUBIdentifier + ":catalog",
 			Updated: built,
 			Self:    "opds.xml",
 			Entries: []opds.Entry{{
-				Title:   siteName,
+				Title:   e.SiteName,
 				Author:  "pofo",
-				Summary: siteLede,
-				ID:      epubIdentifier,
+				Summary: e.SiteLede,
+				ID:      e.EPUBIdentifier,
 				Updated: built,
-				Href:    epubFileName,
+				Href:    e.EPUBFileName,
 				Type:    "application/epub+zip",
 				Size:    int64(len(data)),
 			}},
@@ -151,23 +134,23 @@ func Handler(opts ...Option) http.Handler {
 			if err == nil {
 				size = len(data)
 			}
-			writePage(w, cfg.nav, siteName, siteDescription, indexHTML(size))
+			e.writePage(w, cfg.nav, e.SiteName, e.SiteDescription, e.indexHTML(size))
 			return
 		}
-		art, cat, ok := find(slug)
+		art, cat, ok := e.find(slug)
 		if !ok {
 			http.NotFound(w, r)
 			return
 		}
-		writePage(w, cfg.nav, art.Title, art.Blurb, articleHTML(art, cat))
+		e.writePage(w, cfg.nav, art.Title, art.Blurb, e.articleHTML(art, cat))
 	})
 	return mux
 }
 
-func writePage(w http.ResponseWriter, nav []NavLink, title, description, body string) {
+func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, title, description, body string) {
 	var bar strings.Builder
 	if len(nav) > 0 {
-		bar.WriteString(`<nav class="book-sitenav"><a href=".">Sommaire</a>`)
+		bar.WriteString(`<nav class="book-sitenav"><a href=".">` + e.UI.IndexLink + `</a>`)
 		for _, l := range nav {
 			fmt.Fprintf(&bar, `<a href="%s">%s</a>`, html.EscapeString(l.Href), html.EscapeString(l.Label))
 		}
@@ -176,17 +159,17 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, description, body st
 
 	// The index is the one page whose own title equals the site title; every
 	// other page is an article. This drives the <title> shape and og:type.
-	index := title == siteName
-	pageTitle := title + " · " + siteName
+	index := title == e.SiteName
+	pageTitle := title + " · " + e.SiteName
 	ogType := "article"
 	if index {
-		pageTitle = siteName
+		pageTitle = e.SiteName
 		ogType = "website"
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, `<!DOCTYPE html>
-<html lang="fr">
+<html lang="%s">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -194,7 +177,7 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, description, body st
 <meta name="description" content="%s">
 <meta name="robots" content="index, follow">
 <meta property="og:type" content="%s">
-<meta property="og:locale" content="fr_FR">
+<meta property="og:locale" content="%s">
 <meta property="og:site_name" content="%s">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
@@ -209,23 +192,28 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, description, body st
 %s%s
 <script>%s</script>
 </body>
-</html>`, html.EscapeString(pageTitle), html.EscapeString(description), ogType,
-		html.EscapeString(siteName), html.EscapeString(pageTitle), html.EscapeString(description),
-		jsonLD(title, description, index), bookCSS, bar.String(), body, bookJS)
+</html>`, e.Lang, html.EscapeString(pageTitle), html.EscapeString(description), ogType, e.OGLocale,
+		html.EscapeString(e.SiteName), html.EscapeString(pageTitle), html.EscapeString(description),
+		e.jsonLD(title, description, index), e.css(), bar.String(), body, bookJS)
 }
+
+// css is the page stylesheet of one edition: the shared book CSS around the
+// single edition-dependent literal it carries, the "link copied" toast of the
+// heading anchors (CSS cannot read it from anywhere else).
+func (e *Edition) css() string { return bookCSSHead + e.UI.LinkCopied + bookCSSTail }
 
 // jsonLD builds the schema.org structured-data blob for a page: a WebSite for
 // the index, an Article (part of the book) for each chapter. encoding/json
 // escapes "<", ">" and "&", so the result is safe to inline in the <script>.
-func jsonLD(title, description string, index bool) string {
+func (e *Edition) jsonLD(title, description string, index bool) string {
 	var data map[string]any
 	if index {
 		data = map[string]any{
 			"@context":    "https://schema.org",
 			"@type":       "WebSite",
-			"name":        siteName,
+			"name":        e.SiteName,
 			"description": description,
-			"inLanguage":  "fr",
+			"inLanguage":  e.Lang,
 		}
 	} else {
 		data = map[string]any{
@@ -233,8 +221,8 @@ func jsonLD(title, description string, index bool) string {
 			"@type":       "Article",
 			"headline":    title,
 			"description": description,
-			"inLanguage":  "fr",
-			"isPartOf":    map[string]any{"@type": "Book", "name": siteName},
+			"inLanguage":  e.Lang,
+			"isPartOf":    map[string]any{"@type": "Book", "name": e.SiteName},
 		}
 	}
 	b, err := json.Marshal(data)
@@ -247,26 +235,28 @@ func jsonLD(title, description string, index bool) string {
 // indexHTML renders the sommaire from the manifest. epubSize is the byte
 // length of the generated EPUB (0 when it could not be built): a non-zero
 // value adds a discreet "Version EPUB" download link with the file size.
-func indexHTML(epubSize int) string {
+func (e *Edition) indexHTML(epubSize int) string {
 	var b strings.Builder
 	b.WriteString(`<header class="book-hero">`)
 	b.WriteString(`<p class="book-kicker">pofo</p>`)
-	b.WriteString(`<h1>` + siteName + `</h1>`)
-	b.WriteString(`<p class="book-lede">` + siteLede)
+	b.WriteString(`<h1>` + e.SiteName + `</h1>`)
+	b.WriteString(`<p class="book-lede">` + e.SiteLede)
 	if epubSize > 0 {
-		fmt.Fprintf(&b, ` <span class="book-epub"><a href="%s">Version epub</a> `+
-			`<span class="book-epub-size">(%s)</span></span>`, epubFileName, humanSize(epubSize))
+		fmt.Fprintf(&b, ` <span class="book-epub"><a href="%s">%s</a> `+
+			`<span class="book-epub-size">(%s)</span></span>`,
+			e.EPUBFileName, e.UI.EPUBLink, e.UI.HumanSize(epubSize))
 	}
 	b.WriteString(`</p>`)
 	b.WriteString(`</header><main>`)
-	for _, cat := range Categories {
+	for _, cat := range e.Categories {
 		// The part title carries the same anchor affordance as an article
 		// heading, so a part of the sommaire can be linked to directly.
 		id := bookmd.HeadingID(cat.Title)
 		fmt.Fprintf(&b, `<section class="book-cat"><h2 id="%s">%s`+
-			`<a class="book-hanchor" href="#%s" aria-label="Lien direct vers cette partie">§</a></h2>`+
+			`<a class="book-hanchor" href="#%s" aria-label="%s">§</a></h2>`+
 			`<p class="book-cat-blurb">%s</p><ul class="book-toc">`,
-			id, html.EscapeString(cat.Title), id, html.EscapeString(cat.Blurb))
+			id, html.EscapeString(cat.Title), id, html.EscapeString(e.UI.PartAnchorLabel),
+			html.EscapeString(cat.Blurb))
 		for _, a := range cat.Articles {
 			fmt.Fprintf(&b, `<li><a href="%s">%s</a><span class="book-toc-blurb">%s</span></li>`,
 				a.Slug, html.EscapeString(a.Title), html.EscapeString(a.Blurb))
@@ -277,25 +267,12 @@ func indexHTML(epubSize int) string {
 	return b.String()
 }
 
-// humanSize formats a byte count as a compact, French-locale file size
-// ("312 Ko", "1,4 Mo"), the way the EPUB download link presents it.
-func humanSize(n int) string {
-	switch {
-	case n >= 1<<20:
-		return strings.Replace(fmt.Sprintf("%.1f Mo", float64(n)/(1<<20)), ".", ",", 1)
-	case n >= 1<<10:
-		return fmt.Sprintf("%d Ko", (n+512)/(1<<10))
-	default:
-		return fmt.Sprintf("%d o", n)
-	}
-}
-
 // articleHTML renders one article page: top bar, title, rendered body, and a
 // "same category" footer for lateral navigation.
-func articleHTML(art Article, cat Category) string {
-	raw, err := assets.ReadFile("assets/book/fr/" + art.Slug + ".md")
+func (e *Edition) articleHTML(art Article, cat Category) string {
+	raw, err := assets.ReadFile(e.AssetDir + "/" + art.Slug + ".md")
 	if err != nil {
-		return "<p>Article introuvable.</p>"
+		return "<p>" + html.EscapeString(e.UI.NotFound) + "</p>"
 	}
 	body := strings.TrimSpace(string(raw))
 	// Drop the in-file "# Title" front line: the shell renders the h1.
@@ -307,10 +284,11 @@ func articleHTML(art Article, cat Category) string {
 		}
 	}
 	var b strings.Builder
-	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← Sommaire</a>`+
+	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← %s</a>`+
 		`<a class="book-cat-tag" href="./#%s">%s</a></nav>`,
-		bookmd.HeadingID(cat.Title), html.EscapeString(cat.Title))
-	fmt.Fprintf(&b, `<article><h1>%s</h1>%s</article>`, html.EscapeString(art.Title), addHeadingAnchors(ToHTML(body, Titles())))
+		html.EscapeString(e.UI.IndexLink), bookmd.HeadingID(cat.Title), html.EscapeString(cat.Title))
+	fmt.Fprintf(&b, `<article><h1>%s</h1>%s</article>`,
+		html.EscapeString(art.Title), e.addHeadingAnchors(e.ToHTML(body, e.Titles())))
 	var others strings.Builder
 	for _, a := range cat.Articles {
 		if a.Slug == art.Slug {
@@ -319,7 +297,8 @@ func articleHTML(art Article, cat Category) string {
 		fmt.Fprintf(&others, `<li><a href="%s">%s</a></li>`, a.Slug, html.EscapeString(a.Title))
 	}
 	if others.Len() > 0 {
-		fmt.Fprintf(&b, `<footer class="book-more"><h2>Dans la même partie</h2><ul>%s</ul></footer>`, others.String())
+		fmt.Fprintf(&b, `<footer class="book-more"><h2>%s</h2><ul>%s</ul></footer>`,
+			html.EscapeString(e.UI.SameCategory), others.String())
 	}
 	return b.String()
 }
@@ -335,9 +314,10 @@ var reHeading = regexp.MustCompile(`(?s)<h([2-4]) id="([^"]+)">(.*?)</h[2-4]>`)
 // never the EPUB export (which renders its own body via articleEPUBBody).
 // The plain <a href="#id"> works without JavaScript; bookJS layers
 // copy-to-clipboard on top.
-func addHeadingAnchors(rendered string) string {
+func (e *Edition) addHeadingAnchors(rendered string) string {
 	return reHeading.ReplaceAllString(rendered,
-		`<h$1 id="$2">$3<a class="book-hanchor" href="#$2" aria-label="Lien direct vers cette section">§</a></h$1>`)
+		`<h$1 id="$2">$3<a class="book-hanchor" href="#$2" aria-label="`+
+			html.EscapeString(e.UI.SectionAnchorLabel)+`">§</a></h$1>`)
 }
 
 // bookJS upgrades the heading anchors: a click copies the section's full URL
@@ -358,9 +338,11 @@ setTimeout(function(){a.classList.remove("copied")},1400);
 });
 });`
 
-// bookCSS layers a reading-oriented layout over the shared webui identity:
-// a single comfortable measure, generous leading, and the callout boxes.
-const bookCSS = `
+// bookCSS layers a reading-oriented layout over the shared webui identity: a
+// single comfortable measure, generous leading, and the callout boxes. It is
+// split in two around its one edition-dependent literal, the "link copied"
+// toast of the heading anchors; (*Edition).css joins the halves.
+const bookCSSHead = `
 body.book{
   --paper:#faf6ef; --paper-2:#f2ebdd; --card:#fffdf9;
   --ink:#211c16; --ink-soft:#4c4438; --muted:#877c6d;
@@ -422,7 +404,9 @@ article h2[id],article h3[id],article h4[id],.book-cat h2[id]{scroll-margin-top:
 h2:hover .book-hanchor,h3:hover .book-hanchor,h4:hover .book-hanchor,
 .book-hanchor:focus-visible{opacity:.55}
 .book-hanchor:hover{opacity:1}
-.book-hanchor.copied::after{content:"lien copié";position:absolute;bottom:1.35em;left:50%;
+.book-hanchor.copied::after{content:"`
+
+const bookCSSTail = `";position:absolute;bottom:1.35em;left:50%;
   transform:translateX(-50%);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;
   text-transform:none;color:var(--accent-deep);background:var(--card);border:1px solid var(--rule);
   border-radius:6px;padding:.14em .55em;white-space:nowrap}

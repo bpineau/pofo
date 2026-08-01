@@ -284,18 +284,18 @@ func TestHandlerOPDS(t *testing.T) {
 	if err := xml.Unmarshal(body, &feed); err != nil {
 		t.Fatalf("opds: does not parse as XML: %v\n%s", err, body)
 	}
-	if feed.Title != siteName {
-		t.Errorf("opds: feed title %q, want %q", feed.Title, siteName)
+	if feed.Title != French.SiteName {
+		t.Errorf("opds: feed title %q, want %q", feed.Title, French.SiteName)
 	}
-	if feed.ID != epubIdentifier+":catalog" {
+	if feed.ID != French.EPUBIdentifier+":catalog" {
 		t.Errorf("opds: feed id %q", feed.ID)
 	}
 	if len(feed.Entries) != 1 {
 		t.Fatalf("opds: want 1 entry, got %d", len(feed.Entries))
 	}
 	e := feed.Entries[0]
-	if e.ID != epubIdentifier {
-		t.Errorf("opds: entry id %q, want %q", e.ID, epubIdentifier)
+	if e.ID != French.EPUBIdentifier {
+		t.Errorf("opds: entry id %q, want %q", e.ID, French.EPUBIdentifier)
 	}
 	if e.Link.Rel != "http://opds-spec.org/acquisition" {
 		t.Errorf("opds: link rel %q", e.Link.Rel)
@@ -303,8 +303,8 @@ func TestHandlerOPDS(t *testing.T) {
 	if e.Link.Type != "application/epub+zip" {
 		t.Errorf("opds: link type %q", e.Link.Type)
 	}
-	if e.Link.Href != epubFileName {
-		t.Errorf("opds: link href %q, want %q (relative)", e.Link.Href, epubFileName)
+	if e.Link.Href != French.EPUBFileName {
+		t.Errorf("opds: link href %q, want %q (relative)", e.Link.Href, French.EPUBFileName)
 	}
 }
 
