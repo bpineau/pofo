@@ -54,7 +54,7 @@ DELETED in Task 10.
   package-level forms; Task 3 keeps these working as wrappers, which is
   exactly what this test checks).
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 ```go
 package firebook
@@ -110,7 +110,7 @@ func TestFrozenFrenchRendering(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Record the baseline and verify stability**
+- [x] **Step 2: Record the baseline and verify stability**
 
 Run twice:
 `FIREBOOK_FROZEN=/tmp/firebook-frozen go test ./pkg/firebook -run TestFrozenFrenchRendering -v`
@@ -118,7 +118,7 @@ Expected: first run logs "recorded baseline", second run PASSes (digest
 stable). Keep `/tmp/firebook-frozen` for the whole M1 session; if it is
 lost, re-record from a clean `git stash` state.
 
-- [ ] **Step 3: Full check and commit**
+- [x] **Step 3: Full check and commit**
 
 ```bash
 make check
@@ -139,7 +139,7 @@ git add pkg/firebook/frozen_test.go && git commit -m "firebook: temporary frozen
   French `Callouts`); unknown types still degrade to the "encart" entry of
   the ACTIVE map. Task 3 consumes this via `Edition.Callouts`.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```go
 func TestCalloutLabelOverride(t *testing.T) {
@@ -162,20 +162,20 @@ func TestCalloutLabelOverride(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Run it, verify it fails** (`go test ./pkg/bookmd -run TestCalloutLabelOverride`)
+- [x] **Step 2: Run it, verify it fails** (`go test ./pkg/bookmd -run TestCalloutLabelOverride`)
 
-- [ ] **Step 3: Implement**
+- [x] **Step 3: Implement**
 
 Add to `Options`: `Callouts map[string]Callout // display labels; nil -> the built-in French Callouts`.
 In `ToHTML`, resolve once at the top: `callouts := opt.Callouts; if callouts == nil { callouts = Callouts }`,
 then use `callouts` where the code reads the package map (including the
 "unknown degrades to encart" lookup). Update `doc.go`'s Options paragraph.
 
-- [ ] **Step 4: Tests pass, French frozen digest unchanged**
+- [x] **Step 4: Tests pass, French frozen digest unchanged**
 
 `go test ./pkg/bookmd` then the FIREBOOK_FROZEN comparison run from Task 1.
 
-- [ ] **Step 5: Commit** (`bookmd: per-render callout label override (Options.Callouts)`)
+- [x] **Step 5: Commit** (`bookmd: per-render callout label override (Options.Callouts)`)
 
 ---
 
@@ -237,7 +237,7 @@ func (e *Edition) ToHTML(src string, titles map[string]string) string
   every French article and on EN-only articles). The French manifest
   literals DO NOT change (the field zero-values).
 
-- [ ] **Step 1: Write the regression test**
+- [x] **Step 1: Write the regression test**
 
 ```go
 // edition_test.go
@@ -270,9 +270,9 @@ func TestFrenchEditionWiring(t *testing.T) {
 }
 ```
 
-- [ ] **Step 2: Run it, verify it fails** (French/Edition undefined)
+- [x] **Step 2: Run it, verify it fails** (French/Edition undefined)
 
-- [ ] **Step 3: Implement the moves**
+- [x] **Step 3: Implement the moves**
 
 Mechanics, in order; each is a move, not a rewrite:
 1. `edition.go`: the two types, `French` populated from today's constants
@@ -294,7 +294,7 @@ Mechanics, in order; each is a move, not a rewrite:
 5. Package wrappers at the bottom of `edition.go`. `doc.go` gains an
    "Editions" paragraph.
 
-- [ ] **Step 4: Prove nothing moved**
+- [x] **Step 4: Prove nothing moved**
 
 ```bash
 make check
@@ -302,7 +302,7 @@ FIREBOOK_FROZEN=/tmp/firebook-frozen go test ./pkg/firebook -run TestFrozenFrenc
 cd ../finador && go test ./... && cd ../pofo
 ```
 
-- [ ] **Step 5: Commit** (`firebook: refactor around a per-language Edition value (French unchanged)`)
+- [x] **Step 5: Commit** (`firebook: refactor around a per-language Edition value (French unchanged)`)
 
 ---
 
@@ -327,7 +327,7 @@ cd ../finador && go test ./... && cd ../pofo
   `planned`), and with it the de facto FR->EN slug map used by every later
   translation.
 
-- [ ] **Step 1: Draft the complete EN slug list**
+- [x] **Step 1: Draft the complete EN slug list**
 
 Translate all ~90 French slugs (short, kebab-case, keyword-bearing US
 English; proper nouns stay: `vpw`, `guyton-klinger`,
@@ -343,7 +343,7 @@ Record the list as `plannedEN` (a `[]string` next to `planned` in the test
 file) plus a comment table `EN slug <- FR slug` so the translator finds
 targets without guessing.
 
-- [ ] **Step 2: Write English SiteDescription and SiteLede**
+- [x] **Step 2: Write English SiteDescription and SiteLede**
 
 One dense sentence each, mirroring the French intent (see `handler.go`'s
 current French values); mark both with a `// draft, review at M4` comment.
@@ -353,7 +353,7 @@ current French values); mark both with a `// draft, review at M4` comment.
 "The online edition, kept current, is published by pofo at %s.",
 and `HumanSize` producing "312 KB" / "1.4 MB" (point decimal).
 
-- [ ] **Step 3: Minimal wiring test**
+- [x] **Step 3: Minimal wiring test**
 
 ```go
 func TestEnglishEditionWiring(t *testing.T) {
@@ -369,7 +369,7 @@ func TestEnglishEditionWiring(t *testing.T) {
 }
 ```
 
-- [ ] **Step 4: `make check`, frozen digest still green, commit**
+- [x] **Step 4: `make check`, frozen digest still green, commit**
   (`firebook: English edition value, chrome strings and slug plan`)
 
 ---
