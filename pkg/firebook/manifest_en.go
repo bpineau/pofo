@@ -19,6 +19,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "The science of withdrawal",
 		Blurb: "What research really knows about the safe withdrawal rate, from the classics to recent work.",
+		Articles: []Article{
+			{Slug: "sequence-of-returns", Title: "Sequence of returns risk: the retiree's real enemy", Blurb: "Why the same returns in a different order ruin one retiree and enrich another, where the danger concentrates, and the full map of defenses.", Source: "sequence-des-rendements"},
+		},
 	},
 	{
 		Title: "Modeling: Monte Carlo and other machines",
