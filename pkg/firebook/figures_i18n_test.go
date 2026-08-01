@@ -45,7 +45,7 @@ func TestFigureSVGEnglish(t *testing.T) {
 		t.Error("the dictionary title did not reach the SVG")
 	}
 	for _, node := range figureTextNodes(en) {
-		if reFrenchDecimal.MatchString(node) {
+		if hasFrenchDecimal(node) {
 			t.Errorf("French decimal survived: %q", node)
 		}
 		if reFrenchPercent.MatchString(node) {
@@ -68,5 +68,19 @@ func TestEnglishEditionUsesTheFigurePass(t *testing.T) {
 	}
 	if English.Figure("vol-drag") != FigureSVGEnglish("vol-drag") {
 		t.Error("English.Figure is not the English pass")
+	}
+}
+
+func TestHasFrenchDecimal(t *testing.T) {
+	for _, s := range []string{"3,3 %", "27,0 k€", "a 4,6 M"} {
+		if !hasFrenchDecimal(s) {
+			t.Errorf("%q carries a French decimal", s)
+		}
+	}
+	// English thousands separators are commas between digits too.
+	for _, s := range []string{"EUR 1,243k", "1,000,000", "1966-1995", "no digits"} {
+		if hasFrenchDecimal(s) {
+			t.Errorf("%q is fine English", s)
+		}
 	}
 }
