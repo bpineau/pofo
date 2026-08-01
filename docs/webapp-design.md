@@ -208,6 +208,22 @@ adds no new fetch surface or concurrency beyond the visualizer's. The naked
 `/firesimulator/e/<name>` and `/firesimulator/p/<spec>` forms 301 to their trailing-slash
 canonical.
 
+Every FIRE mount also tells the page what it is running on, through two
+`pkg/decumul/web` options the front end reads back from `/api/meta`.
+`WithSourceLabel` names the market (the example name for `/e/<name>/`,
+"custom portfolio" for `/p/<spec>/`, the startup portfolio's name for the
+plain mount, the file's base name under `-fire`), which the top bar shows as a
+provenance pill: amber "generic market · load portfolio" when no panel is
+bound, green "market: <name>" when one is. `WithPicker` hands the front end
+the loader payload (`{base, catalogURL, examples:[{name,title,blurb}]}`, sent
+as `meta.picker`) that fills the drawer's empty state with the bundled builds
+and a small search-and-weigh composer; choosing one is pure navigation to
+`<base>/e/<name>/` or `<base>/p/<spec>!sim:on/`, carrying the page's current
+hash so the visitor's scenario survives the move. The examples arrive as plain
+data, so `pkg/decumul/web` never learns about `examples.List`; only `-serve`
+sets a picker, since only it owns those mounts and `/catalog.json`, and the
+standalone `-fire` page states the command-line route in that slot instead.
+
 Each `/view` report section then carries a **Simulate** link to the matching
 mount: an `ex=` section links `/firesimulator/e/<name>/`, a `p=` section links
 `/firesimulator/p/<escaped spec>/`. The link is optional in the report template (empty
