@@ -182,6 +182,42 @@ func TestHandlerNav(t *testing.T) {
 	}
 }
 
+func TestHandlerHomeKicker(t *testing.T) {
+	// Without the option: the kicker stays the plain text it always was
+	// (offline and standalone mounts).
+	plain := httptest.NewServer(Handler())
+	defer plain.Close()
+	if _, body := get(t, plain, "/"); !strings.Contains(body, `<p class="book-kicker">pofo</p>`) {
+		t.Error("plain kicker missing without WithHome")
+	}
+
+	// With it: the kicker is the two-tone wordmark, linked home.
+	site := httptest.NewServer(Handler(WithHome("/")))
+	defer site.Close()
+	if _, body := get(t, site, "/"); !strings.Contains(body,
+		`<p class="book-kicker"><a href="/">po<b>fo</b></a></p>`) {
+		t.Error("linked kicker missing with WithHome")
+	}
+}
+
+// A category with no written article yet is skipped by the index: the English
+// edition fills in as the translation campaign progresses, and an empty part
+// would read as a broken page.
+func TestHandlerEnglishIndexSkipsEmptyParts(t *testing.T) {
+	srv := httptest.NewServer(English.Handler())
+	defer srv.Close()
+	_, body := get(t, srv, "/")
+	for _, cat := range CategoriesEN {
+		want := strings.Contains(body, html.EscapeString(cat.Title))
+		if len(cat.Articles) == 0 && want {
+			t.Errorf("empty part %q rendered on the index", cat.Title)
+		}
+		if len(cat.Articles) > 0 && !want {
+			t.Errorf("written part %q missing from the index", cat.Title)
+		}
+	}
+}
+
 // The EPUB route is served by the Handler itself, so every mount gets the
 // download for free: correct status, MIME and attachment headers, a strong
 // ETag, cached identical bytes across requests, and a 304 on If-None-Match.

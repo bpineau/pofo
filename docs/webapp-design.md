@@ -24,13 +24,15 @@ running a command per comparison.
 
 | Route | Handler | What it serves |
 |---|---|---|
-| `/` | `hub` (`hub.go`) | the front door: the bundled example portfolios as a pure-GET checkbox form that submits ticked names to `/view`, plus links onward to the simulator and the book |
+| `/` | `landing` (`landing.go`) | the front door: a minimal English landing page, the two-tone pofo mark, one sentence, and four cards linking the sections (the two book editions, the visualizer, the simulator) |
+| `/visualizer` | `hub` (`hub.go`) | the portfolio visualizer's home ("Put portfolios side by side."): the live composer plus the bundled example portfolios as a pure-GET checkbox form that submits ticked names to `/view`; the trailing-slash form 301-redirects to the canonical path |
 | `/view` | `view` (`serve.go`, grammar in `view.go`) | the HTML comparison report the CLI writes, addressed by a query string (`ex=` / `p=` + global overrides) |
 | `/examples/<name>.txt` | `exampleFile` | one embedded portfolio file, raw text (the hub's "Source" link) |
 | `/firesimulator/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire`; the old `/firesimulator/` path 301-redirects here (sub-path and query preserved) |
 | `/firesimulator/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
 | `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
-| `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces; the old `/book/fr/` path 301-redirects here |
+| `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces and a home-linked kicker (`firebook.WithHome`); the old `/book/fr/` path 301-redirects here |
+| `/firebook/en/` | `firebook.English.Handler`, prefix-stripped | the English edition ("The Quiet FIRE"); its index lists only the parts with at least one translated article and grows with the translation campaign |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |

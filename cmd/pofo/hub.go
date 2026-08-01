@@ -1,4 +1,6 @@
-// The hub: the constellation's front door. Its primary content is the live
+// The hub, mounted at /visualizer: the portfolio visualizer's home page (the
+// constellation's front door is the landing page, landing.go). Its primary
+// content is the live
 // composer (composer.go), booted empty so a visitor lands on one editable card
 // and builds up to six custom portfolios by hand or from a bundled build (the
 // "add preset" dropdown), then Runs one /view backtest comparing them; the
@@ -114,7 +116,7 @@ func hubPrefsFrom(p prefs, opt *options) hubPrefs {
 var hubTmpl = template.Must(template.New("hub").Parse(versionedAssets(`<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pofo &middot; portfolio lab</title>
+<title>pofo &middot; portfolio visualizer</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
 <style>{{.Skin}}</style>
@@ -125,8 +127,9 @@ body.hub{background:
 .hub-shell{max-width:47rem;margin:0 auto;padding:2.4rem 1.3rem 4rem}
 .hub-top{display:flex;align-items:baseline;justify-content:space-between;gap:.6rem 1.4rem;flex-wrap:wrap;
   padding-bottom:1rem;margin-bottom:2.3rem;border-bottom:1px solid var(--line-strong)}
-.hub-mark{font-family:var(--mono);font-weight:600;font-size:1rem;letter-spacing:-.02em;color:var(--ink)}
+.hub-mark{font-family:var(--mono);font-weight:600;font-size:1rem;letter-spacing:-.02em;color:var(--ink);text-decoration:none}
 .hub-mark b{color:var(--accent);font-weight:600}
+.hub-mark:hover b{color:var(--accent-ink)}
 .hub-nav{display:flex;gap:1.4rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;
   letter-spacing:.1em;text-transform:uppercase}
 .hub-nav a{color:var(--muted);text-decoration:none;transition:color .15s}
@@ -204,10 +207,11 @@ body.hub{background:
 </head><body class="hub">
 <div class="hub-shell">
 <header class="hub-top">
-  <span class="hub-mark">po<b>fo</b></span>
+  <a class="hub-mark" href="/">po<b>fo</b></a>
   <nav class="hub-nav">
     <a href="/firesimulator/">Simulator</a>
     <a href="/firebook/fr/">Book-fr</a>
+    <a href="/firebook/en/">Book-en</a>
   </nav>
 </header>
 
@@ -266,14 +270,10 @@ body.hub{background:
 </div>
 </body></html>`)))
 
-// hub is the constellation's front door: the examples catalog and the links
-// on to the FIRE simulator and the FIRE book. It answers only "/" (the mux
-// routes every unmatched path here, so anything else is a 404) and only GET.
+// hub is the portfolio visualizer's home page at /visualizer: the composer,
+// the examples catalog and the links on to the rest of the constellation.
+// GET only.
 func (s *server) hub(w http.ResponseWriter, r *http.Request) {
-	if r.URL.Path != "/" {
-		http.NotFound(w, r)
-		return
-	}
 	if r.Method != http.MethodGet {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
