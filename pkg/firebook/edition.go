@@ -91,7 +91,8 @@ var French = &Edition{
 // English is the English edition, "The Quiet FIRE". It is a translation of
 // French, article by article, and never a fork: the only text it owns outright
 // is its US-framework part, which the French edition has no counterpart for.
-// It is not mounted yet; see docs/fire-book-en-edition-design.md.
+// It is mounted at /firebook/en/ and fills in as the translation campaign
+// progresses; see docs/fire-book-en-edition-design.md.
 var English = &Edition{
 	Lang:     "en",
 	OGLocale: "en_US",

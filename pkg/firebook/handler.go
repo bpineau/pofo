@@ -23,7 +23,10 @@ import (
 type NavLink struct{ Label, Href string }
 
 // handlerConfig collects Handler options.
-type handlerConfig struct{ nav []NavLink }
+type handlerConfig struct {
+	nav  []NavLink
+	home string
+}
 
 // Option configures Handler.
 type Option func(*handlerConfig)
@@ -34,6 +37,12 @@ type Option func(*handlerConfig)
 // in print. Without this option the book renders exactly as before, which
 // the offline and -fire mounts rely on.
 func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
+
+// WithHome turns the "pofo" kicker above the index title into a link to href,
+// rendered as the site's two-tone wordmark (po in ink, fo in the accent).
+// Only the -serve constellation passes it: on a standalone mount the kicker
+// stays the plain text it always was.
+func WithHome(href string) Option { return func(c *handlerConfig) { c.home = href } }
 
 // Handler serves the edition: the index at "/", one HTML page per article at
 // "/<slug>", the EPUB and its OPDS catalog, and the shared identity
@@ -134,7 +143,7 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 			if err == nil {
 				size = len(data)
 			}
-			e.writePage(w, cfg.nav, e.SiteName, e.SiteDescription, e.indexHTML(size))
+			e.writePage(w, cfg.nav, e.SiteName, e.SiteDescription, e.indexHTML(size, cfg.home))
 			return
 		}
 		art, cat, ok := e.find(slug)
@@ -235,10 +244,18 @@ func (e *Edition) jsonLD(title, description string, index bool) string {
 // indexHTML renders the sommaire from the manifest. epubSize is the byte
 // length of the generated EPUB (0 when it could not be built): a non-zero
 // value adds a discreet "Version EPUB" download link with the file size.
-func (e *Edition) indexHTML(epubSize int) string {
+// home, when non-empty (WithHome), makes the "pofo" kicker a two-tone link
+// there. A category without a written article yet is skipped entirely: the
+// English edition fills in as the translation campaign progresses, and an
+// empty part would read as a broken page, not a promise.
+func (e *Edition) indexHTML(epubSize int, home string) string {
 	var b strings.Builder
 	b.WriteString(`<header class="book-hero">`)
-	b.WriteString(`<p class="book-kicker">pofo</p>`)
+	if home != "" {
+		b.WriteString(`<p class="book-kicker"><a href="` + html.EscapeString(home) + `">po<b>fo</b></a></p>`)
+	} else {
+		b.WriteString(`<p class="book-kicker">pofo</p>`)
+	}
 	b.WriteString(`<h1>` + e.SiteName + `</h1>`)
 	b.WriteString(`<p class="book-lede">` + e.SiteLede)
 	if epubSize > 0 {
@@ -249,6 +266,9 @@ func (e *Edition) indexHTML(epubSize int) string {
 	b.WriteString(`</p>`)
 	b.WriteString(`</header><main>`)
 	for _, cat := range e.Categories {
+		if len(cat.Articles) == 0 {
+			continue
+		}
 		// The part title carries the same anchor affordance as an article
 		// heading, so a part of the sommaire can be linked to directly.
 		id := bookmd.HeadingID(cat.Title)
@@ -353,6 +373,9 @@ body.book ::selection{background:var(--accent-wash)}
 .book-hero{border-bottom:1px solid var(--rule);padding-bottom:1.3rem;margin-bottom:1.9rem}
 .book-kicker{font-family:var(--mono);font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
   color:var(--accent-deep);opacity:.85;margin:0 0 .55rem}
+.book-kicker a{color:var(--ink);text-decoration:none}
+.book-kicker a b{color:var(--accent);font-weight:inherit}
+.book-kicker a:hover b{color:var(--accent-deep)}
 .book h1{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:2.1rem;line-height:1.13;
   margin:0 0 .7rem;letter-spacing:.005em}
 .book-lede{color:var(--ink-soft);font-size:1.05rem;line-height:1.62;margin:0;max-width:62ch}

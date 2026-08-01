@@ -252,15 +252,17 @@ own package, `pkg/firebook`, mountable by any server.
 
 ## Web app
 
-`pofo -serve` starts the whole tool as one local web app, four surfaces on a
+`pofo -serve` starts the whole tool as one local web app, every surface on a
 single port:
 
 | URL | Surface |
 |---|---|
-| `/` | the **hub**: the bundled example portfolios, tick any and compare them |
-| `/view` | the **visualizer**: the same HTML comparison report the CLI writes, addressed by a shareable URL |
+| `/` | the **landing page**: the pofo mark, one sentence, and four cards linking the sections |
+| `/visualizer` | the **portfolio visualizer**: compose portfolios or tick bundled examples and compare them |
+| `/view` | the visualizer's report: the same HTML comparison the CLI writes, addressed by a shareable URL |
 | `/firesimulator/` | the **FIRE simulator** (`-fire`, mounted under a prefix; old `/fire/` redirects here) |
 | `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
+| `/firebook/en/` | the English edition ("The Quiet FIRE"), growing as articles are translated |
 
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/
@@ -306,7 +308,8 @@ same catalog gate and caps, so nothing you can compose escapes them.
 
 Each portfolio in a `/view` report carries a **Simulate** link that opens the
 FIRE simulator bound to that portfolio (`/firesimulator/p/<spec>/` for an ad-hoc
-composition, `/firesimulator/e/<name>/` for an example). The hub also remembers your
+composition, `/firesimulator/e/<name>/` for an example). The visualizer's home
+page also remembers your
 default currency, rebalance and sim settings in a cookie, so it opens where you
 left it; a `/view` link stays self-contained and reproduces the same report for
 anyone, cookie or not.
