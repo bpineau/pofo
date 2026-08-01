@@ -65,6 +65,61 @@ var figureDict = map[string]string{
 	"+11,4 %/an":                 "+11.4%/yr",
 	"Le portefeuille de 1966 a pourtant rapporté plus que le retrait. C'est l'ordre des années qui a tué le plan.":                  "The 1966 portfolio still earned more than it paid out. The order of the years is what killed the plan.",
 	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; retrait fixe, sans fiscalité.": "Real US 60/40 (S&amp;P 500, 5-year Treasuries, CPI-U deflated), reconstructed for this book; fixed withdrawal, no taxes.",
+
+	// Shared by several plates. An age tick reads "40 ans" in French and
+	// "age 40" in English, which is the same width.
+	"VPW":          "VPW",
+	"normal":       "normal",
+	"revenu":       "income",
+	"40 ans":       "age 40",
+	"47 ans":       "age 47",
+	"55 ans":       "age 55",
+	"57 ans":       "age 57",
+	"67 ans":       "age 67",
+	"70 ans":       "age 70",
+	"77 ans":       "age 77",
+	"85 ans":       "age 85",
+	"87 ans":       "age 87",
+	"95 ans":       "age 95",
+	"99 ans":       "age 99",
+	"pont":         "bridge",
+	"capital (k€)": "capital (EUR k)",
+
+	// vpw-table
+	"Le pourcentage monte avec l'âge, le capital fond exprès":    "The percentage rises with age, the capital melts on purpose",
+	"le taux de retrait de la table (% du portefeuille)":         "the table's withdrawal rate (% of portfolio)",
+	"le rendement supposé, 3,3 % réel : le plancher de la table": "the assumed return, 3.3% real: the table's floor",
+	"à 91 ans : 13 %, puis jusqu'à 100 %":                        "at 91: 13%, then up to 100%",
+	"vingt-cinq ans de quasi-pourcentage fixe":                   "twenty-five years of near-fixed percentage",
+	"le capital, consommé jusqu'à zéro":                          "the capital, spent down to zero",
+	"38,5 k€/an, plat":                                           "EUR 38.5k/yr, flat",
+	"krach de −30 % à 70 ans : 27,0 k€/an, sans retour":          "a −30% crash at 70: EUR 27.0k/yr, no way back",
+	"la vie que cette table produit, à partir de 40 ans avec 1 M€, si le marché sert les rendements supposés": "the life this table produces, from age 40 with EUR 1M, if the market delivers the assumed returns",
+	"Annuité inversée à g = 3,3 % réel constant, horizon jusqu'à 100 ans.":                                    "Reversed annuity at a constant g = 3.3% real, horizon out to age 100.",
+
+	// vpw-pont
+	"Le pont de pension : vingt ans de revenu qui n'existe pas encore":                  "The pension bridge: twenty years of income that does not exist yet",
+	"revenu réel servi (k€/an), ménage de 47 ans, 1,6 M€, pensions de 21,6 k€ à 67 ans": "real income served (EUR k/yr), household aged 47, EUR 1.6M, pensions of EUR 21.6k at 67",
+	"le pont : 21,6 k€/an,":                                            "the bridge: EUR 21.6k/yr,",
+	"prélevés sur 356 k€ d'obligations":                                "drawn from EUR 356k of bonds",
+	"la pension, enfin liquidée":                                       "the pension, finally running",
+	"le VPW sur les 1 243 k€ restants : 50,0 k€/an":                    "VPW on the remaining EUR 1,243k: EUR 50.0k/yr",
+	"71,6 k€/an":                                                       "EUR 71.6k/yr",
+	"67 ans : la pension prend le relais":                              "age 67: the pension takes over",
+	"test de tolérance, actions −50 % : 56,6 k€, le pont ne bouge pas": "tolerance test, stocks −50%: EUR 56.6k, the bridge holds",
+	"le plancher du ménage, 38 k€":                                     "the household floor, EUR 38k",
+	"Aux rendements supposés de la table (3,3 % réel pour la part VPW, 1,9 % pour actualiser le pont), sans fiscalité.": "At the table's assumed returns (3.3% real for the VPW sleeve, 1.9% to discount the bridge), no taxes.",
+
+	// vpw-test-de-perte
+	"LE TEST DE TOLÉRANCE À LA PERTE":               "THE LOSS TOLERANCE TEST",
+	"Le même choc, avec et sans le pont de pension": "The same shock, with and without the pension bridge",
+	"actions −50 %":                                 "stocks −50%",
+	"Avec le pont de pension":                       "With the pension bridge",
+	"le choc laisse le ménage au-dessus du confort": "the shock leaves the household above comfort",
+	"Sans le pont":                                  "Without the bridge",
+	"le même choc passe sous le confort":            "the same shock drops below comfort",
+	"un couple de 47 ans, 1,6 M€ en 60/40, pensions de 21,6 k€ à 67 ans ; revenu servi, k€ par an": "a couple aged 47, EUR 1.6M in 60/40, pensions of EUR 21.6k at 67; income served, EUR k a year",
+	"pointillé bleu : le confort visé, 52 ; pointillé brun : le plancher, 38":                      "blue dashes: target comfort, 52; brown dashes: the floor, 38",
 }
 
 var (
