@@ -87,9 +87,9 @@ Un fonds à échéance, ou fonds daté, détient un panier d'obligations qui arr
 
 **Ce que vous achetez à l'entrée.** Le jour de l'achat, le rendement actuariel du panier est connu et publié. Si vous conservez jusqu'à l'échéance, c'est votre rendement attendu, sous deux réserves qui ne sont pas des détails, les frais et les défauts. Entre les deux dates, la valeur liquidative bouge avec les taux et les spreads comme n'importe quel fonds obligataire ; cette volatilité intermédiaire ne vous concerne pas si, et seulement si, vous tenez jusqu'au bout.
 
-**Ce qui existe, et jusqu'où.** Deux familles partagent ce mécanisme, et elles se ressemblent beaucoup moins que leur principe commun ne le laisse croire. D'un côté les ETF à millésimes, un fonds par année d'échéance, avec deux gammes concurrentes en euro, chez iShares et chez Invesco. De l'autre les **fonds datés** des maisons de gestion françaises, ceux que votre conseiller propose en assurance-vie. Même promesse, deux produits différents.
+**Ce qui existe, et jusqu'où.** Deux familles partagent ce mécanisme, et elles se ressemblent beaucoup moins que leur principe commun ne le laisse croire. D'un côté les ETF à millésimes, un fonds par année d'échéance, avec deux gammes concurrentes en euro, les **iBonds** de iShares et les **BulletShares** d'Invesco. De l'autre les **fonds datés** des maisons de gestion françaises, ceux que votre conseiller propose en assurance-vie. Même promesse, deux produits différents.
 
-| | ETF à millésimes | Fonds daté français |
+| | ETF à millésimes (iBonds, BulletShares) | Fonds daté français |
 |---|---|---|
 | Contenu | crédit d'entreprise de qualité, quelques millésimes souverains | haut rendement ou crédit de qualité moyenne, le plus souvent |
 | Frais annuels | 0,10 à 0,12 % | 0,6 à 1,5 %, plus ceux du contrat |
@@ -107,7 +107,7 @@ Deux conséquences. L'écart de frais, sur un horizon de quatre ans, mange une p
 
 Hors ces deux cas, la version cotée l'emporte, et le reste de cette section la décrit.
 
-**Et jusqu'où ?** Les gammes publient un millésime par année civile, de l'année en cours jusqu'à six ou sept ans plus loin. C'est la limite à connaître avant de bâtir quoi que ce soit. **Il n'existe pas de millésime à quinze ou vingt ans.** Un fonds daté sait financer une dépense de la décennie qui vient, pas le plancher d'une retraite de trente ans, pour lequel il faut revenir aux titres vifs et à l'échelle construite à la main ([[echelle-obligataire]]).
+**Et jusqu'où ?** Les deux gammes publient un millésime par année civile, de l'année en cours jusqu'à six ou sept ans plus loin. C'est la limite à connaître avant de bâtir quoi que ce soit. **Il n'existe pas de millésime à quinze ou vingt ans.** Un fonds daté sait financer une dépense de la décennie qui vient, pas le plancher d'une retraite de trente ans, pour lequel il faut revenir aux titres vifs et à l'échelle construite à la main ([[echelle-obligataire]]).
 
 **Ce que la durée change au rendement.** Rien qui tienne au produit : tout vient de la courbe des taux. Le rendement d'un millésime est celui des obligations de son échéance, et la pente de la courbe décide seule de ce que rapporte un millésime lointain par rapport à un proche. Fin juillet 2026, la courbe souveraine de la zone euro donnait 2,62 % à un an, 2,86 % à cinq ans et 3,18 % à dix ans, plus un écart de crédit qui s'élargit lui aussi avec l'échéance : allonger de quatre ans achetait environ un quart de point. Et le signe s'inverse, c'est le vrai piège. Fin juillet 2023, la même courbe payait 3,42 % à un an contre 2,54 % à dix ans, si bien que le millésime le plus court était le mieux payé de toute la gamme.
 
