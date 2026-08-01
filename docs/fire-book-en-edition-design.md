@@ -1,6 +1,7 @@
 # The FIRE book, English edition: design
 
-Status: SPEC, not started. This document is the implementation brief for the
+Status: M1 (wiring) DONE 2026-08-01; M2, the translation campaign, is next.
+This document is the implementation brief for the
 English edition of the embedded FIRE book ("Le FIRE tranquille",
 `pkg/firebook`). Read `docs/fire-book-design.md` first: everything there
 (depth bar, callout types, figure system, guard-test discipline) applies to
@@ -357,5 +358,29 @@ M1 is a self-contained refactor PR-sized task; M2 is the bulk of the cost
    simulator page, whose UI is already in English, so only the prose needs
    translating (links and control names come out naturally).
 
-The M1 task-level plan for the implementing agent is
-`docs/fire-book-en-m1-plan.md` (transient; delete it once M1 ships).
+## M1, as shipped (2026-08-01)
+
+All of the machinery, none of the public surface: `/firebook/en/` is still
+unmounted. What landed, and the three places the implementation had to
+deviate from this document:
+
+- `bookmd.Options.Callouts` (nil keeps the French labels), the `Edition`
+  refactor with `French` and `English`, `manifest_en.go` (`CategoriesEN`,
+  `plannedEN` as the FR -> EN slug map, `taxOnlyFR`, `usFrameworkEN`),
+  `drift.go` (`Drift`, source stamps) behind `pofo -book-drift` and
+  `make book-drift`, `figures_i18n.go` (`FigureSVGEnglish` + `figureDict`),
+  the EN guard tests, `scripts/figure-audit.sh`, and two pilot translations
+  (`sequence-of-returns`, `vpw`). The French rendering was proven
+  byte-identical throughout by a temporary digest harness, since deleted.
+- DEVIATION: the French manifest used positional `Article` literals, so
+  adding `Source` forced all 91 of them to keyed form.
+- DEVIATION: `bookCSS` carried one edition-dependent literal (the "link
+  copied" toast); the const is split in two around it.
+- DEVIATION: the source stamp rendered as a visible paragraph. Body
+  preparation is now one `articleBody` helper shared by the web and EPUB
+  renderers, which drops the stamp; a guard test fails if it reaches a page.
+- `plannedEN` and the two slug lists live in `manifest_en.go`, not in the
+  test file, because the French `planned` they mirror is production code too.
+
+The M2 worklist is whatever `make book-drift` prints (82 untranslated
+today).
