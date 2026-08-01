@@ -242,13 +242,24 @@ pill** in the top bar names the market the figures come from (`WithSourceLabel`,
 read from `/api/meta`): amber "generic market · load portfolio" with no panel,
 green "market: <name>" with one. With no panel, the drawer slot that portfolio
 mode fills with the Allocation bar carries a **portfolio loader** instead
-(`WithPicker`): the bundled builds as a list and a small search-and-weigh
-composer over the `p=` grammar, both of which merely navigate to the matching
+(`WithPicker`): the bundled builds as a list and a search-and-weigh composer
+over the `p=` grammar, both of which merely navigate to the matching
 `/firesimulator/e/` or `/firesimulator/p/` mount, hash included. Without a
-picker (standalone `-fire`) the same slot states the command-line route. And on
-a demonstrably untouched load (default situation values, no defaults cookie, no
-hash) a **coach arrow** points at the parameters toggle for five seconds, since
-every number on a first visit is a plan the reader never entered.
+picker (standalone `-fire`) the same slot states the command-line route. A
+bound portfolio keeps the same loader, folded away under its allocation bar
+("change portfolio"), since the mount is the portfolio and there would
+otherwise be no way back out of it; the fold seeds its draft from the live
+holdings (integer percents, largest remainder), but only once every identifier
+resolves in the catalog, so it never pre-fills a spec the `p=` gate would
+refuse. And on a demonstrably untouched load (default situation values, no
+defaults cookie, no hash) a **coach arrow** points at the parameters toggle for
+ten seconds, since every number on a first visit is a plan the reader never
+entered.
+
+The composer is one component in both places, and the allocation bar is
+another: `allocBar` (weights in, weights out, `snapUnit` for the integer
+draft) drives the bound portfolio's dividers and the draft's alike, so a
+composition is re-weighted the same way before and after it is loaded.
 
 **One spending policy at a time.** The kernel applies exactly one withdrawal
 rule, in a fixed precedence (ABW > bounded > VPW > risk guardrails >
