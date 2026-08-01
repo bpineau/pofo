@@ -38,7 +38,11 @@ body.land{background:
 .land-card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .land-title{display:block;font-family:var(--sans);font-weight:650;font-size:1rem;color:var(--ink)}
 .land-blurb{display:block;color:var(--muted);font-size:.84rem;line-height:1.45;margin-top:.3rem}
-.land-foot{margin-top:2.6rem;color:var(--muted);font-size:.78rem}
+/* A section that is readable but still a draft: dimmed, and its blurb says so.
+   It stays a link, so the work in progress can be followed. */
+.land-card.soon{background:transparent;box-shadow:none;border-style:dashed}
+.land-card.soon .land-title{color:var(--muted)}
+.land-card.soon .land-blurb{color:var(--faint)}
 @media(max-width:540px){.land-grid{grid-template-columns:1fr}.land-shell{padding:2.6rem 1.1rem 3rem}}
 @media(prefers-reduced-motion:reduce){.land-card{transition:none}.land-card:hover{transform:none}}
 </style>
@@ -51,9 +55,9 @@ body.land{background:
     <span class="land-title">Fire Book (fr)</span>
     <span class="land-blurb">Le FIRE tranquille, the French handbook of living off your capital.</span>
   </a>
-  <a class="land-card" href="/firebook/en/">
+  <a class="land-card soon" href="/firebook/en/">
     <span class="land-title">Fire Book (en)</span>
-    <span class="land-blurb">The Quiet FIRE, the English edition. First chapters online.</span>
+    <span class="land-blurb">Coming soon</span>
   </a>
   <a class="land-card" href="/visualizer">
     <span class="land-title">Portfolio visualizer</span>
@@ -64,7 +68,6 @@ body.land{background:
     <span class="land-blurb">Stress-test a withdrawal plan against thousands of simulated futures.</span>
   </a>
 </nav>
-<footer class="land-foot">Everything runs here; no portfolio leaves the server.</footer>
 </main>
 </body></html>`)))
 

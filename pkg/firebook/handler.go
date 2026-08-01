@@ -464,11 +464,13 @@ article tr:last-child td{border-bottom:0}
 .book-more a:hover{text-decoration:underline}
 @media (max-width:640px){body.book{font-size:1rem;padding:1.6rem 1.1rem 4rem}
   .book h1{font-size:1.8rem}article h2{font-size:1.32rem}article table{font-size:.8rem}}
-.book-sitenav{display:flex;gap:1.15rem;margin:0 0 1.7rem;padding-bottom:.65rem;
+/* The index link anchors the left, the cross-navigation sits right: the way
+   back into the book and the way out of it never compete for the same edge. */
+.book-sitenav{display:flex;flex-wrap:wrap;gap:.5rem 1.15rem;margin:0 0 1.7rem;padding-bottom:.65rem;
   border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:.72rem;
   letter-spacing:.07em;text-transform:uppercase}
 .book-sitenav a{color:var(--muted);text-decoration:none}
 .book-sitenav a:hover{color:var(--accent-deep)}
-.book-sitenav a:first-child{color:var(--accent-deep)}
+.book-sitenav a:first-child{color:var(--accent-deep);margin-right:auto}
 @media print{.book-sitenav{display:none}}
 `
