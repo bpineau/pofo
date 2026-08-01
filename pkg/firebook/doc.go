@@ -41,8 +41,17 @@
 //
 // All writing, correction and upkeep happens in French first. A translated
 // edition pairs each of its articles with its French original (Article.Source
-// plus an in-file source stamp) and Drift reports what the translation owes.
-// The design is docs/fire-book-en-edition-design.md.
+// plus an in-file source stamp, dropped at render time) and Drift reports what
+// the translation owes: the articles whose original moved since, then the ones
+// nothing covers yet. "pofo -book-drift" prints that worklist.
+//
+// English is the second edition, "The Quiet FIRE": its own translated slugs,
+// its own EPUB identity, English chrome and callout labels, and the French tax
+// part replaced by a US-framework one. Its figures are not duplicated: the
+// plate generators stay French and single-source, and FigureSVGEnglish
+// translates the rendered SVG text through a dictionary (see figures_i18n.go;
+// scripts/figure-audit.sh checks that no translated label runs off its plate).
+// It is not mounted yet. The design is docs/fire-book-en-edition-design.md.
 //
 // EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
 // pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,
