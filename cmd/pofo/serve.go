@@ -90,6 +90,41 @@ var fireSiteNav = []web.NavLink{
 	{Label: "Book-fr", Href: "/firebook/fr/"},
 }
 
+// firePicker is the in-drawer portfolio loader offered by every -serve FIRE
+// mount: the bundled examples plus the catalog endpoint its little composer
+// searches. It exists only here because only this server owns the mounts
+// (/firesimulator/e/, /firesimulator/p/) and the /catalog.json route; the
+// standalone -fire binary has neither, so it gets no picker.
+var firePicker = sync.OnceValue(func() web.Picker {
+	infos := examples.List()
+	refs := make([]web.ExampleRef, 0, len(infos))
+	for _, in := range infos {
+		refs = append(refs, web.ExampleRef{Name: in.Name, Title: in.Title, Blurb: in.Blurb})
+	}
+	return web.Picker{Base: fireBase, CatalogURL: "/catalog.json", Examples: refs}
+})
+
+// fireOptions are the web.Handler options shared by every -serve FIRE mount:
+// the cross-navigation, the loader, and the label naming the market this
+// particular mount runs on (empty = the generic parametric market).
+func fireOptions(sourceLabel string) []web.Option {
+	return []web.Option{
+		web.WithNav(fireSiteNav),
+		web.WithPicker(firePicker()),
+		web.WithSourceLabel(sourceLabel),
+	}
+}
+
+// specsLabel names the portfolio a mount was started on, for the top bar's
+// provenance pill: the first spec's display name, or "" when the mount runs
+// on no portfolio at all.
+func specsLabel(specs []*portfolio.Spec) string {
+	if len(specs) == 0 {
+		return ""
+	}
+	return specs[0].Name
+}
+
 // server carries the constellation's shared state. render is a field so
 // tests can observe requests without running the real pipeline.
 type server struct {
@@ -102,6 +137,10 @@ type server struct {
 	// every /view mount through viewPresets (computed once: the examples are
 	// embedded and immutable).
 	presets []composerPreset
+	// sourceLabel names the portfolio the server was started on, shown by
+	// the default FIRE mount's provenance pill ("" = none, the generic
+	// parametric market).
+	sourceLabel string
 
 	// FIRE mounts: fireDefault is the plain /firesimulator/ app (the startup
 	// panel); fireByEx caches one app per example, built lazily the first time
@@ -141,7 +180,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 // handler assembles the constellation mux.
 func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
-	s.fireDefault = web.Handler(panel, labels, web.WithNav(fireSiteNav))
+	s.fireDefault = web.Handler(panel, labels, fireOptions(s.sourceLabel)...)
 	mux.HandleFunc("/", s.hub)
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
@@ -233,8 +272,10 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 		return err
 	}
 	fmt.Fprintf(os.Stderr, "pofo web app on http://%s/ (Ctrl-C to stop)\n", ln.Addr())
+	s := newServer(opt, client)
+	s.sourceLabel = specsLabel(specs)
 	srv := &http.Server{
-		Handler:           logAccess(os.Stdout, newServer(opt, client).handler(panel, labels)),
+		Handler:           logAccess(os.Stdout, s.handler(panel, labels)),
 		ReadHeaderTimeout: 10 * time.Second,
 		IdleTimeout:       120 * time.Second,
 	}
@@ -435,7 +476,7 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels, web.WithNav(fireSiteNav))
+	h = web.Handler(panel, labels, fireOptions("custom portfolio")...)
 	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
 		// The build is degraded or partial: serve this request but do NOT
 		// cache it, so a transient failure is not frozen into a permanently
@@ -485,7 +526,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
-	h = web.Handler(panel, labels, web.WithNav(fireSiteNav))
+	h = web.Handler(panel, labels, fireOptions(name)...)
 	if panelIncomplete(panel, labels, buildCtx, len(spec.Holdings)) {
 		// A degraded or partial build must not be cached, or a transient
 		// failure freezes this example into a permanently degraded or
