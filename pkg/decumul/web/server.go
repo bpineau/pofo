@@ -40,6 +40,11 @@ type Picker struct {
 	// (marketdata.LocalCatalog); the loader's search reads it. Empty
 	// disables the composer and leaves the example list.
 	CatalogURL string `json:"catalogURL,omitempty"`
+	// ViewURL is the comparison report's mount ("/view"), which reads the
+	// same p= grammar: the composer offers the draft there as a second
+	// reading (charted rather than retired on). Empty drops the link, since
+	// only the embedding server knows whether that surface exists.
+	ViewURL string `json:"viewURL,omitempty"`
 	// Examples are the bundled portfolios, in display order.
 	Examples []ExampleRef `json:"examples,omitempty"`
 }

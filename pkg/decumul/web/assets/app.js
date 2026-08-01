@@ -1124,54 +1124,91 @@ async function renderSolver(b, id) {
 }
 
 // ---------------------------------------------------------------------------
-// Allocation bar (portfolio mode): drag a divider to shift weight.
+// Allocation bar: the weights as one stacked bar with draggable dividers,
+// plus a legend. Shared by the bound portfolio's Allocation group and by the
+// composer's draft, so shifting weight feels the same whether the holdings
+// are already simulated or still being picked.
+//
+// The caller owns the numbers: read() hands over the current values in
+// whatever units it keeps them (fractions summing to 1 for a bound portfolio,
+// integer percents for a draft), the bar normalizes by their sum, and write()
+// receives them back in those same units with the total preserved (a drag
+// redistributes between two neighbours, it never rescales the whole bar).
+// snapUnit, when set, rounds the dragged divider to whole units of that
+// scale, which is what keeps a draft's percents integral.
 // ---------------------------------------------------------------------------
-function renderAlloc() {
-  const bar = document.getElementById("allocbar");
-  bar.innerHTML = "";
-  let cum = 0; const cums = [0];
-  for (const w of weights) { cum += w; cums.push(cum); }
-  weights.forEach((w, i) => {
-    const seg = document.createElement("div");
-    seg.className = "seg";
-    seg.style.left = (cums[i] * 100) + "%";
-    seg.style.width = (w * 100) + "%";
-    seg.style.background = PAL[i % PAL.length];
-    seg.innerHTML = `<span>${esc(labels[i])}</span><b>${Math.round(w * 100)}%</b>`;
-    bar.appendChild(seg);
-  });
-  for (let i = 0; i < weights.length - 1; i++) {
-    const h = document.createElement("div");
-    h.className = "handle";
-    h.style.left = (cums[i + 1] * 100) + "%";
-    h.addEventListener("pointerdown", ev => startDrag(ev, i));
-    bar.appendChild(h);
-  }
-  const leg = document.getElementById("alloclegend");
-  leg.innerHTML = labels.map((n, i) =>
-    `<span><i style="background:${PAL[i % PAL.length]}"></i>${esc(n)} ${Math.round(weights[i] * 100)}%</span>`).join("");
-}
+function allocBar(opts) {
+  const bar = document.createElement("div");
+  bar.className = "allocbar";
+  const legend = document.createElement("div");
+  legend.className = "alloclegend";
+  const sum = vs => vs.reduce((a, b) => a + b, 0);
+  const values = () => opts.read().map(v => (isFinite(v) && v > 0 ? v : 0));
 
-function startDrag(ev, i) {
-  ev.preventDefault();
-  const bar = document.getElementById("allocbar");
-  const rect = bar.getBoundingClientRect();
-  const left = weights.slice(0, i).reduce((a, b) => a + b, 0);
-  const pair = weights[i] + weights[i + 1];
-  function move(e) {
-    let x = (e.clientX - rect.left) / rect.width;
-    x = Math.max(left, Math.min(left + pair, x));
-    weights[i] = x - left;
-    weights[i + 1] = pair - (x - left);
-    renderAlloc();
-    schedule();
+  function render() {
+    const vs = values(), names = opts.labels(), total = sum(vs);
+    bar.textContent = "";
+    legend.textContent = "";
+    if (!vs.length || total <= 0) return;
+    let cum = 0;
+    const cums = [0];
+    for (const v of vs) { cum += v / total; cums.push(cum); }
+    vs.forEach((v, i) => {
+      const share = v / total;
+      const seg = document.createElement("div");
+      seg.className = "seg";
+      seg.style.left = (cums[i] * 100) + "%";
+      seg.style.width = (share * 100) + "%";
+      seg.style.background = PAL[i % PAL.length];
+      const name = document.createElement("span");
+      name.textContent = names[i] || "";
+      const pct = document.createElement("b");
+      pct.textContent = Math.round(share * 100) + "%";
+      seg.appendChild(name);
+      seg.appendChild(pct);
+      bar.appendChild(seg);
+      const item = document.createElement("span");
+      const key = document.createElement("i");
+      key.style.background = PAL[i % PAL.length];
+      item.appendChild(key);
+      item.appendChild(document.createTextNode(
+        (names[i] || "") + " " + Math.round(share * 100) + "%"));
+      legend.appendChild(item);
+    });
+    for (let i = 0; i < vs.length - 1; i++) {
+      const h = document.createElement("div");
+      h.className = "handle";
+      h.style.left = (cums[i + 1] * 100) + "%";
+      h.addEventListener("pointerdown", ev => startDrag(ev, i));
+      bar.appendChild(h);
+    }
   }
-  function up() {
-    window.removeEventListener("pointermove", move);
-    window.removeEventListener("pointerup", up);
+
+  function startDrag(ev, i) {
+    ev.preventDefault();
+    const rect = bar.getBoundingClientRect();
+    const vs = values(), total = sum(vs);
+    if (total <= 0) return;
+    const left = sum(vs.slice(0, i)), pair = vs[i] + vs[i + 1];
+    function move(e) {
+      let cut = ((e.clientX - rect.left) / rect.width) * total;
+      if (opts.snapUnit) cut = Math.round(cut / opts.snapUnit) * opts.snapUnit;
+      cut = Math.max(left, Math.min(left + pair, cut));
+      const out = vs.slice();
+      out[i] = cut - left;
+      out[i + 1] = pair - out[i];
+      opts.write(out);
+      render();
+      if (opts.onChange) opts.onChange();
+    }
+    function up() {
+      window.removeEventListener("pointermove", move);
+      window.removeEventListener("pointerup", up);
+    }
+    window.addEventListener("pointermove", move);
+    window.addEventListener("pointerup", up);
   }
-  window.addEventListener("pointermove", move);
-  window.addEventListener("pointerup", up);
+  return {bar, legend, render};
 }
 
 // ---------------------------------------------------------------------------
@@ -1203,7 +1240,7 @@ function renderMarketPill(meta) {
 
 // The /view p= grammar's byte cap and holdings limit, mirrored here so the
 // button can refuse early. The server stays authoritative on both.
-const PICK_MAXHOLDINGS = 20, PICK_MAXBYTES = 2000, PICK_MAXHITS = 8;
+const PICK_MAXHOLDINGS = 20, PICK_MAXBYTES = 2000, PICK_MAXHITS = 10;
 
 // encP encodes one spec the way the grammar is written by hand (mirrors the
 // composer's encP): ":" and "," stay literal, everything else percent-encodes.
@@ -1278,8 +1315,9 @@ function buildExampleList(picker) {
 }
 
 // buildMiniComposer renders the search-and-weigh editor over the same p=
-// grammar the report's composer writes: pick assets from the catalog, give
-// each an integer weight, load the result as <base>/p/<spec>/.
+// grammar the report's composer writes: pick assets from the catalog, weigh
+// them (by field or by dragging the dividers of the same allocation bar the
+// bound portfolio gets), load the result as <base>/p/<spec>/.
 function buildMiniComposer(picker) {
   const wrap = document.createElement("div");
   wrap.className = "pickblock";
@@ -1293,6 +1331,7 @@ function buildMiniComposer(picker) {
   search.className = "picksearch";
   search.placeholder = "search the catalog";
   search.setAttribute("aria-label", "Search the asset catalog");
+  search.setAttribute("autocomplete", "off");
   wrap.appendChild(search);
   const hits = document.createElement("div");
   hits.className = "pickhits";
@@ -1301,6 +1340,39 @@ function buildMiniComposer(picker) {
   const rowsEl = document.createElement("div");
   rowsEl.className = "pickrows";
   wrap.appendChild(rowsEl);
+
+  const rows = []; // [{id, w}], w in integer percent
+  // The draft's own allocation bar: the same component the bound portfolio
+  // uses, over the draft's integer percents (snapUnit 1 keeps them integral),
+  // so the fields and the dividers are two views of one number.
+  const draft = allocBar({
+    labels: () => rows.map(r => r.id),
+    read: () => rows.map(r => r.w),
+    write: ws => {
+      ws.forEach((v, i) => { if (rows[i]) rows[i].w = Math.max(0, Math.round(v)); });
+      syncFields();
+    },
+    onChange: refresh,
+    snapUnit: 1,
+  });
+  // No legend here: the weight rows above already carry the colour keys, and
+  // the segments are labelled, so a third listing would only crowd the rail.
+  wrap.appendChild(draft.bar);
+
+  const tools = document.createElement("div");
+  tools.className = "picktools";
+  const evenBtn = document.createElement("button");
+  evenBtn.type = "button";
+  evenBtn.className = "picktool";
+  evenBtn.textContent = "split evenly";
+  const normBtn = document.createElement("button");
+  normBtn.type = "button";
+  normBtn.className = "picktool";
+  normBtn.textContent = "normalize to 100%";
+  tools.appendChild(evenBtn);
+  tools.appendChild(normBtn);
+  wrap.appendChild(tools);
+
   const sumEl = document.createElement("div");
   sumEl.className = "picksum";
   wrap.appendChild(sumEl);
@@ -1313,12 +1385,23 @@ function buildMiniComposer(picker) {
   load.textContent = "Load into simulator";
   load.disabled = true;
   wrap.appendChild(load);
+  // The same draft is a valid /view query, so offer the other reading of it:
+  // the comparison report, where the composition is charted rather than
+  // retired on. Only where the caller named that surface.
+  let viewLink = null;
+  if (picker.viewURL) {
+    viewLink = document.createElement("a");
+    viewLink.className = "pickview";
+    viewLink.textContent = "open in the visualizer";
+    viewLink.hidden = true;
+    wrap.appendChild(viewLink);
+  }
   const why = document.createElement("div");
   why.className = "pickwhy";
   wrap.appendChild(why);
 
   let catalog = null, catalogFailed = false;
-  const rows = []; // [{id, w}]
+  let found = [], cursor = -1; // the live hit list and its keyboard highlight
 
   // The catalog is fetched on first use, not on page load: the simulator's
   // own charts get the connection first.
@@ -1357,25 +1440,53 @@ function buildMiniComposer(picker) {
     return out.slice(0, PICK_MAXHITS).map(x => x.a);
   }
 
+  // renderHits repaints the result list and keeps one row highlighted: the
+  // keyboard drives that highlight, the mouse ignores it.
   function renderHits() {
-    const found = match(search.value);
+    found = match(search.value);
+    cursor = found.length ? 0 : -1;
     hits.textContent = "";
     hits.hidden = found.length === 0;
-    for (const a of found) {
+    found.forEach((a, i) => {
       const b = document.createElement("button");
       b.type = "button";
-      b.className = "pickhit";
-      const i = document.createElement("span");
-      i.className = "pi";
-      i.textContent = a.id;
+      b.className = "pickhit" + (i === cursor ? " on" : "");
+      const id = document.createElement("span");
+      id.className = "pi";
+      id.textContent = a.id;
       const n = document.createElement("span");
       n.className = "pn";
-      n.textContent = a.name || a.class || "";
-      b.appendChild(i);
+      n.textContent = a.name || "";
+      b.appendChild(id);
       b.appendChild(n);
+      // The class is what tells two lookalike hits apart (an equity ETF from
+      // the gold ETC that shares its issuer's naming), so it rides along.
+      if (a.class) {
+        const cl = document.createElement("span");
+        cl.className = "pcl";
+        cl.textContent = a.class;
+        b.appendChild(cl);
+      }
       b.addEventListener("click", () => addRow(a.id));
       hits.appendChild(b);
-    }
+    });
+  }
+
+  // moveCursor walks the highlight, wrapping around, and scrolls it into view.
+  function moveCursor(delta) {
+    if (!found.length) return;
+    cursor = (cursor + delta + found.length) % found.length;
+    Array.from(hits.children).forEach((el, i) => {
+      el.className = "pickhit" + (i === cursor ? " on" : "");
+      if (i === cursor && el.scrollIntoView) el.scrollIntoView({block: "nearest"});
+    });
+  }
+
+  function clearHits() {
+    found = [];
+    cursor = -1;
+    hits.hidden = true;
+    hits.textContent = "";
   }
 
   // Adding a line splits the weights evenly; every field stays editable
@@ -1383,13 +1494,38 @@ function buildMiniComposer(picker) {
   function addRow(id) {
     if (rows.some(r => r.id === id) || rows.length >= PICK_MAXHOLDINGS) return;
     rows.push({id, w: 0});
-    const even = Math.floor(100 / rows.length);
-    rows.forEach((r, i) => { r.w = i === 0 ? 100 - even * (rows.length - 1) : even; });
+    splitEvenly();
     search.value = "";
-    hits.hidden = true;
-    hits.textContent = "";
+    clearHits();
     renderRows();
     search.focus();
+  }
+
+  // splitEvenly gives every line the same weight, the residue going to the
+  // first so the draft still sums to 100.
+  function splitEvenly() {
+    if (!rows.length) return;
+    const even = Math.floor(100 / rows.length);
+    rows.forEach((r, i) => { r.w = i === 0 ? 100 - even * (rows.length - 1) : even; });
+  }
+
+  // normalize rescales the lines proportionally to sum 100, the rounding
+  // residue landing on the first line. A draft that already sums to 100 is
+  // left untouched.
+  function normalize() {
+    const total = rows.reduce((a, r) => a + (isFinite(r.w) && r.w > 0 ? r.w : 0), 0);
+    if (!rows.length || total <= 0) return;
+    rows.forEach(r => { r.w = Math.round((isFinite(r.w) && r.w > 0 ? r.w : 0) * 100 / total); });
+    rows[0].w += 100 - rows.reduce((a, r) => a + r.w, 0);
+    if (rows[0].w < 0) rows[0].w = 0;
+  }
+
+  // syncFields writes the model's weights back into the number inputs, for
+  // the paths that change them without rebuilding the rows (a divider drag,
+  // the two utility buttons).
+  function syncFields() {
+    const fields = rowsEl.querySelectorAll(".pw");
+    rows.forEach((r, i) => { if (fields[i]) fields[i].value = String(r.w); });
   }
 
   function renderRows() {
@@ -1397,6 +1533,9 @@ function buildMiniComposer(picker) {
     rows.forEach((r, i) => {
       const row = document.createElement("div");
       row.className = "pickrow";
+      const key = document.createElement("i");
+      key.className = "pkey";
+      key.style.background = PAL[i % PAL.length];
       const id = document.createElement("span");
       id.className = "pid";
       id.textContent = r.id;
@@ -1410,6 +1549,7 @@ function buildMiniComposer(picker) {
       w.setAttribute("aria-label", "Weight of " + r.id + " in percent");
       w.addEventListener("input", () => {
         r.w = Math.round(parseFloat(w.value));
+        draft.render();
         refresh();
       });
       const pc = document.createElement("span");
@@ -1421,12 +1561,14 @@ function buildMiniComposer(picker) {
       del.textContent = "×";
       del.setAttribute("aria-label", "Remove " + r.id);
       del.addEventListener("click", () => { rows.splice(i, 1); renderRows(); });
+      row.appendChild(key);
       row.appendChild(id);
       row.appendChild(w);
       row.appendChild(pc);
       row.appendChild(del);
       rowsEl.appendChild(row);
     });
+    draft.render();
     refresh();
   }
 
@@ -1435,12 +1577,18 @@ function buildMiniComposer(picker) {
   // deepest past available, and real quotes alone are usually far too short.
   const spec = () => rows.map(r => r.id + ":" + r.w).join(",") + "!sim:on";
 
-  // refresh recomputes the weight sum, the spec echo and why the button is
-  // (or is not) live. The reasons mirror the server's gates; it re-checks.
+  // refresh recomputes the weight sum, the spec echo, the utility buttons and
+  // why the load button is (or is not) live. The reasons mirror the server's
+  // gates; it re-checks.
   function refresh() {
     const sum = rows.reduce((a, r) => a + (isFinite(r.w) ? r.w : 0), 0);
     sumEl.textContent = rows.length ? "weights sum to " + sum + "%" : "";
     sumEl.className = "picksum" + (rows.length && sum !== 100 ? " off" : "");
+    // One line has nothing to split and nothing to drag: the bar and the
+    // even-split button only mean something from two.
+    draft.bar.hidden = rows.length < 2;
+    tools.hidden = rows.length < 2;
+    normBtn.disabled = sum === 100 || sum <= 0;
     const s = spec();
     specEl.textContent = rows.length ? s : "";
     let reason = "";
@@ -1450,15 +1598,26 @@ function buildMiniComposer(picker) {
     else if (new TextEncoder().encode(s).length > PICK_MAXBYTES) reason = "this composition is too long to fit a link";
     load.disabled = reason !== "";
     why.textContent = reason;
+    if (viewLink) {
+      viewLink.hidden = load.disabled;
+      viewLink.href = picker.viewURL + "?p=" + encP(s);
+    }
   }
 
+  evenBtn.addEventListener("click", () => { splitEvenly(); syncFields(); draft.render(); refresh(); });
+  normBtn.addEventListener("click", () => { normalize(); syncFields(); draft.render(); refresh(); });
   search.addEventListener("input", renderHits);
   search.addEventListener("keydown", e => {
-    if (e.key === "Escape") { search.value = ""; renderHits(); return; }
+    if (e.key === "Escape") { search.value = ""; clearHits(); return; }
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      if (!found.length) return;
+      e.preventDefault();
+      moveCursor(e.key === "ArrowDown" ? 1 : -1);
+      return;
+    }
     if (e.key !== "Enter") return;
     e.preventDefault();
-    const found = match(search.value);
-    if (found.length) addRow(found[0].id);
+    if (cursor >= 0 && found[cursor]) addRow(found[cursor].id);
   });
   load.addEventListener("click", () => {
     if (load.disabled) return;
@@ -1500,13 +1659,23 @@ fetch(apiURL("/api/meta")).then(r => r.json()).then(m => {
   box.innerHTML = `<div class="group-h">Allocation</div>
     <div class="ctl span" data-help="Drag a divider to shift weight between adjacent holdings. Every model re-fits (μ/σ/df and the historical panel) from the live weights.">
       <span class="lab"><span>Drag a divider to shift weight</span></span>
-      <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>
     </div>`;
+  const alloc = allocBar({
+    labels: () => labels,
+    read: () => weights,
+    // The weights array is read by body() and syncURL(), so it is updated in
+    // place rather than replaced.
+    write: ws => { ws.forEach((w, i) => { weights[i] = w; }); },
+    onChange: schedule,
+  });
+  const ctl = box.querySelector(".ctl");
+  ctl.appendChild(alloc.bar);
+  ctl.appendChild(alloc.legend);
   // Allocation slots into the first column, under the situation and above
   // the simulation settings.
   const sim = document.getElementById("group-simulation");
   sim.parentElement.insertBefore(box, sim);
-  renderAlloc();
+  alloc.render();
   run();
   runSlow();
 });

@@ -91,17 +91,18 @@ var fireSiteNav = []web.NavLink{
 }
 
 // firePicker is the in-drawer portfolio loader offered by every -serve FIRE
-// mount: the bundled examples plus the catalog endpoint its little composer
-// searches. It exists only here because only this server owns the mounts
-// (/firesimulator/e/, /firesimulator/p/) and the /catalog.json route; the
-// standalone -fire binary has neither, so it gets no picker.
+// mount: the bundled examples, the catalog endpoint its composer searches and
+// the comparison report a draft can also be opened in. It exists only here
+// because only this server owns the mounts (/firesimulator/e/,
+// /firesimulator/p/), the /catalog.json route and /view; the standalone -fire
+// binary has none of them, so it gets no picker.
 var firePicker = sync.OnceValue(func() web.Picker {
 	infos := examples.List()
 	refs := make([]web.ExampleRef, 0, len(infos))
 	for _, in := range infos {
 		refs = append(refs, web.ExampleRef{Name: in.Name, Title: in.Title, Blurb: in.Blurb})
 	}
-	return web.Picker{Base: fireBase, CatalogURL: "/catalog.json", Examples: refs}
+	return web.Picker{Base: fireBase, CatalogURL: "/catalog.json", ViewURL: "/view", Examples: refs}
 })
 
 // fireOptions are the web.Handler options shared by every -serve FIRE mount:
