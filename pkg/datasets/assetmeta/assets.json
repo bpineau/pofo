@@ -8613,7 +8613,7 @@
     "id": "IE000Y2JPPS4",
     "isin": "IE000Y2JPPS4",
     "aliases": [
-      "CLOA"
+      "CLOAE"
     ],
     "name": "Invesco EUR AAA CLO UCITS ETF Acc",
     "ucits": true,
@@ -8636,7 +8636,7 @@
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "Invesco's euro AAA CLO ETF (inception 2025-02-10, EUR 246m at 2026-07), 0.25 %. Measured against the ESTR ETF over its own window: 3.35 %/yr against 2.08 %, so +127 bp net of fees, for 0.9 % volatility and a 0.56 % worst drawdown. The whole euro AAA CLO cohort (this one, EUCL, JCL0, LAAA) lands within ten basis points of each other, which is what a spread product looks like while nothing goes wrong: the differentiators are the fee, the AA/A- allowance and the wrapper, not the manager.",
+    "notes": "Invesco's euro AAA CLO ETF (inception 2025-02-10, EUR 246m at 2026-07), 0.25 %. Measured against the ESTR ETF over its own window: 3.35 %/yr against 2.08 %, so +127 bp net of fees, for 0.9 % volatility and a 0.56 % worst drawdown. The whole euro AAA CLO cohort (this one, EUCL, JCL0, LAAA) lands within ten basis points of each other, which is what a spread product looks like while nothing goes wrong: the differentiators are the fee, the AA/A- allowance and the wrapper, not the manager. ALIAS: CLOAE, not CLOA. The fund's FT symbol is CLOA, but that ticker belongs to BlackRock's US iShares AAA CLO Active ETF on Nasdaq; a catalog alias would shadow it and silently answer a US question with a euro fund.",
     "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000Y2JPPS4"
@@ -8673,6 +8673,68 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU2785470191",
       "https://www.etfstream.com/articles/fair-oaks-capital-launches-europe-s-first-clo-etf"
+    ]
+  },
+  {
+    "id": "AAA",
+    "isin": "",
+    "aliases": [],
+    "name": "Alternative Access First Priority CLO Bond ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "AAA",
+    "currency": "USD",
+    "fees": 0.19,
+    "since": "2020-09-09",
+    "asset_class": "corporate-bond",
+    "underlying": "USD first-priority (AAA) CLO tranches, floating rate over SOFR, actively selected",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The OLDEST genuine AAA CLO fund history available anywhere, by five weeks over JAAA: launched 2020-09-08 as the AAF First Priority CLO Bond ETF, and AAA CLO from day one, which is why it is in the catalog despite its size (USD 45m). The adviser changed twice (AXS, then Alternative Access Funds in March 2024) without a strategy change, and the calendar years read like the asset class throughout (+0.9 % in 2021, +0.1 % in 2022, +8.9 % in 2023). Small and thinly traded next to JAAA, so its tape is noisier: 3.4 % realised volatility in 2025 against 1.8 % for JAAA on the same spreads. Use JAAA as the reference series and this one to reach five weeks further back.",
+    "confidence": "medium",
+    "sources": [
+      "https://stockanalysis.com/etf/aaa/",
+      "https://www.aafetfs.com/"
+    ]
+  },
+  {
+    "id": "TRPA",
+    "isin": "",
+    "aliases": [],
+    "name": "Hartford AAA CLO ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "TRPA",
+    "currency": "USD",
+    "fees": 0.24,
+    "since": "2018-05-31",
+    "asset_class": "corporate-bond",
+    "underlying": "USD floating-rate CLO tranches rated AAA, any maturity, actively managed (since February 2024 only, see notes)",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "HISTORY TRAP, and the reason this record exists. The quotes start in 2018 and screeners therefore advertise the longest AAA CLO track record on the market. It is a repurposed shell: the fund was the Hartford Short Duration ETF (ticker HSRT) until 2024-02-12, when objective, managers, benchmark and fee changed, and the ticker only became TRPA on 2025-04-15. The pre-2024 series is a short-duration bond fund, and it shows: -4.4 % in 2022, the year AAA CLOs returned +0.1 to +0.5 % because their coupons float. Usable as AAA CLO from February 2024 only; for anything longer use AAA (2020-09) or JAAA (2020-10).",
+    "confidence": "high",
+    "sources": [
+      "https://stockanalysis.com/etf/trpa/",
+      "https://www.sec.gov/Archives/edgar/data/1501825/000119312523289592/d629734d8k.htm"
     ]
   }
 ]
