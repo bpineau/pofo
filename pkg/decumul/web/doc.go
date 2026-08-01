@@ -13,9 +13,12 @@
 // /api/meta: WithNav (cross-navigation to sibling surfaces),
 // WithSourceLabel (which market this mount runs on, shown as a provenance
 // pill in the top bar) and WithPicker (the in-drawer portfolio loader, whose
-// example list and catalog URL the caller supplies, since only the embedding
-// server knows the mounts and the catalog endpoint). Without a picker the
-// page states in one line how to bind a portfolio from the command line.
+// example list, catalog URL and comparison-report URL the caller supplies,
+// since only the embedding server knows those mounts and endpoints). The
+// loader fills the drawer where no portfolio is bound, and folds away under
+// the allocation bar where one is, so a loaded mount is not a dead end.
+// Without a picker the page states in one line how to bind a portfolio from
+// the command line.
 //
 // Spending policies are exclusive in the rail. The kernel resolves clashes
 // by a fixed precedence (see the package comment of pkg/decumul), which is
