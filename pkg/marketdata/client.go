@@ -35,6 +35,8 @@ type Client struct {
 	MorningstarBase string
 	EurostatBase    string
 	FredBase        string
+	DBnomicsBase    string
+	NYFedBase       string
 	ECBBase         string
 	CBOEBase        string
 	CookieBase      string // Yahoo cookie bootstrap host (fc.yahoo.com)
@@ -76,6 +78,8 @@ func NewClient(cacheDir string) *Client {
 		MorningstarBase: "https://tools.morningstar.fr",
 		EurostatBase:    "https://ec.europa.eu",
 		FredBase:        "https://fred.stlouisfed.org",
+		DBnomicsBase:    "https://api.db.nomics.world",
+		NYFedBase:       "https://markets.newyorkfed.org",
 		ECBBase:         "https://www.ecb.europa.eu",
 		CBOEBase:        "https://cdn.cboe.com",
 		CookieBase:      "https://fc.yahoo.com",
@@ -145,6 +149,8 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 		s, err = c.fetchHICP(ctx, canonical, geo, from)
 	case canonical == cpiUSSymbol:
 		s, err = c.fetchCPIUS(ctx, from)
+	case isPolicyRate(canonical):
+		s, err = c.fetchPolicyRate(ctx, canonical, from)
 	case isIndexAsset(canonical):
 		s, err = c.fetchIndexAsset(canonical, from, spec)
 	case IsISIN(canonical):

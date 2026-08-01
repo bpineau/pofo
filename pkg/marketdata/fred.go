@@ -28,6 +28,19 @@ var fredHTTP = &http.Client{
 // series fetched at most once per cache period. Rows with a missing value (".")
 // are skipped; dates are FRED's YYYY-MM-DD.
 func (c *Client) fetchFRED(ctx context.Context, id string) ([]Point, error) {
+	return c.fredSeries(ctx, id, false)
+}
+
+// fetchFREDRate is fetchFRED for a RATE series, where zero and negative values
+// are readings of the world rather than bad prints: the euro area policy rate
+// sat at -0.50 % for eight years, and the Fed target floor has been 0 twice.
+// An index level (CPI) keeps the positive-only filter, which protects it from
+// the provider's placeholder rows.
+func (c *Client) fetchFREDRate(ctx context.Context, id string) ([]Point, error) {
+	return c.fredSeries(ctx, id, true)
+}
+
+func (c *Client) fredSeries(ctx context.Context, id string, keepNonPositive bool) ([]Point, error) {
 	u := fmt.Sprintf("%s/graph/fredgraph.csv?id=%s", c.FredBase, url.QueryEscape(id))
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {
@@ -64,7 +77,7 @@ func (c *Client) fetchFRED(ctx context.Context, id string) ([]Point, error) {
 			continue
 		}
 		v, verr := strconv.ParseFloat(r[1], 64)
-		if verr != nil || v <= 0 {
+		if verr != nil || (v <= 0 && !keepNonPositive) {
 			continue
 		}
 		pts = append(pts, Point{Date: t, Close: v})
