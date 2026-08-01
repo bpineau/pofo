@@ -204,3 +204,23 @@ func TestTableKeepsLabelledWikiLinkInOneCell(t *testing.T) {
 		t.Errorf("body row has %d cells, want 3: %s", n, got)
 	}
 }
+
+func TestCalloutLabelOverride(t *testing.T) {
+	en := map[string]Callout{
+		"encart": {"❖", "Aside"},
+		"cle":    {"🔑", "The key idea"},
+	}
+	got := ToHTML("::: cle\nBody.\n:::", Options{Callouts: en})
+	if !strings.Contains(got, "The key idea") {
+		t.Errorf("override ignored: %s", got)
+	}
+	got = ToHTML("::: mystery\nBody.\n:::", Options{Callouts: en})
+	if !strings.Contains(got, "Aside") {
+		t.Errorf("unknown type must degrade to the override's encart: %s", got)
+	}
+	// The label goes through the inline escaper, hence the escaped apostrophe.
+	got = ToHTML("::: cle\nBody.\n:::", Options{})
+	if !strings.Contains(got, "L&#39;idée clé") {
+		t.Errorf("nil Callouts must keep the built-in French labels: %s", got)
+	}
+}
