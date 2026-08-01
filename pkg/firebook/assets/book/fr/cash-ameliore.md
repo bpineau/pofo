@@ -61,7 +61,13 @@ Le sigle fait peur (il sonne comme CDO, ces titrisations de crédits immobiliers
 Les quatre étages, mesurés et non promis. À droite, l'écart de rendement annualisé au monétaire. À gauche, la pire baisse subie sur la même fenêtre. Les deux barres n'ont pas la même nature, l'une est un flux annuel, l'autre un accident ponctuel, et c'est exactement l'arbitrage à trancher. La dernière ligne est en dollars : elle sert à voir un cycle de plus, pas à décrire ce qu'achète un Européen.
 :::
 
-**Ce qui peut mal se passer.** Ni le taux (coupon variable, duration presque nulle : 2022, l'année qui a ravagé l'obligataire à taux fixe, a été neutre pour ces tranches), ni le défaut, on vient de le voir. Le risque est le prix de marché, et l'histoire en donne la mesure. En 2009, des tranches AAA de première génération ont coté 70 à 80 % du pair avant d'être remboursées intégralement. En mars 2020, les écarts ont triplé en quelques semaines et les prix ont perdu plusieurs points. À l'automne 2022, les fonds de pension britanniques, pris dans la crise de leurs couvertures de taux, ont vendu leurs CLO en urgence pour lever du cash, et les tranches en euro ont décroché. Trois épisodes, une même leçon : cette ligne se vend au prix du jour, pas à sa valeur de remboursement, et le jour où l'on a besoin de vendre est rarement un bon jour.
+**Ce qui peut mal se passer.** Ni le taux (coupon variable, duration presque nulle : 2022, l'année qui a ravagé l'obligataire à taux fixe, a été neutre pour ces tranches), ni le défaut, on vient de le voir. Le risque est le prix de marché, et l'histoire en donne la mesure, avec à chaque fois le délai de retour à la normale.
+
+- **2009.** Des tranches AAA de première génération cotent 70 à 80 % du pair. Elles seront remboursées intégralement, mais il aura fallu attendre la reprise du marché du crédit, sur deux à trois ans, pour retrouver le pair sur les écrans.
+- **Mars 2020.** Les écarts passent d'environ 130 à plus de 500 points de base en quelques semaines, et les prix tombent de 100 à 85-90. Le retour au pair intervient au quatrième trimestre 2020, soit près de neuf mois plus tard, les défauts constatés (3,2 %) s'étant révélés très inférieurs aux 8 à 12 % que le marché redoutait.
+- **Automne 2022.** Les fonds de pension britanniques, pris dans la crise de leurs couvertures de taux, vendent leurs CLO en urgence pour lever du cash, et les tranches en euro décrochent. Sur l'ETF en dollars, le creux est à −2,6 % ; il est effacé en cinq mois, et le sommet précédent retrouvé un peu moins d'un an après avoir été quitté.
+
+Trois épisodes, une même leçon : cette ligne se vend au prix du jour, pas à sa valeur de remboursement, et le jour où l'on a besoin de vendre n'est pas forcément un bon jour. D'où la règle d'emploi plus bas, qui interdit d'y loger les dépenses des douze prochains mois.
 
 ## Sous la AAA : la mezzanine et l'equity
 
@@ -99,7 +105,7 @@ Un ménage dépense 30 000 € par an et garde trois ans de côté, soit 90 000 
 
 ## La règle d'assemblage
 
-Trois couches suffisent, et l'ordre compte.
+Le plan qui suit est celui d'un ménage en phase de retrait, qui vit de son capital et dont la poche courte a une mission précise : payer les factures sans jamais forcer la vente d'un actif risqué au mauvais moment ([[les-trois-phases]]). Un épargnant encore en activité, dont le salaire couvre les dépenses courantes, a une contrainte de liquidité bien plus légère et peut compresser les deux premières couches. Pour le rentier, trois couches suffisent, et l'ordre compte.
 
 - **Les six premiers mois** de dépenses sont intouchables et disponibles sur-le-champ. Livrets réglementés, éventuellement fonds euros. Aucun risque de marché, aucune exception.
 - **Les douze à dix-huit mois suivants** vont en ETF monétaire, ou en fonds euros si l'enveloppe s'y prête. C'est le cœur du matelas, celui qui finance une traversée de marché baissier sans vendre d'actifs risqués ([[marche-baissier-en-retraite]]).
