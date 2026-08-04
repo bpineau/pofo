@@ -6606,6 +6606,88 @@
     "since": "1969-12-01"
   },
   {
+    "id": "DTLETR",
+    "isin": "",
+    "aliases": [],
+    "name": "US Treasury 20+ hedged to EUR (total return reconstruction)",
+    "ucits": false,
+    "source": "index",
+    "symbol": "",
+    "xid": "",
+    "currency": "EUR",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "fees": 0.1,
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 20+ years to maturity, currency-hedged into EUR: local bond return financed at USD cash plus EUR cash earned on the hedged capital",
+    "benchmark_index": "ICE US Treasury 20+ Year Index (EUR hedged)",
+    "strategy": "index",
+    "geography": null,
+    "sectors": null,
+    "duration": 17.0,
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "TOTAL-RETURN view of the EUR-hedged US long-Treasury segment, served from its embedded reconstruction (~1962, no live symbol) because the tradable line cannot supply one: DTLE (IE00BD8PGZ49) is a DISTRIBUTING class whose public NAV series is a PRICE return, understating total return by the distribution yield (~3.1%/yr measured over 2017-2026). Use this id for any backtest or statistic on the segment, and DTLE only to price the actual holding. A French investor holding DTLE in a taxable account also pays income tax on those coupons every year, which an accumulating euro-native line (MTH LU1686832194) avoids; the hedge itself converts the USD yield into the EUR yield, so the hedged class is not a way to earn US rates.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/291770/",
+      "https://fred.stlouisfed.org/series/DGS20"
+    ]
+  },
+  {
+    "id": "ERESMONDEM",
+    "isin": "QS0009135623",
+    "aliases": [],
+    "name": "ERES Xtrackers Actions Monde M (FCPE, PEE)",
+    "ucits": false,
+    "source": "index",
+    "symbol": "",
+    "xid": "",
+    "currency": "EUR",
+    "fees": 0.5,
+    "since": "2024-03-05",
+    "asset_class": "equity",
+    "underlying": "World developed equity: feeder into two Xtrackers MSCI World trackers (75% the swap-replicated 1D class, 25% the physical 1D class)",
+    "benchmark_index": "MSCI World Index (Net TR)",
+    "strategy": "synthetic-swap",
+    "geography": {
+      "US": 72,
+      "Japan": 6,
+      "UK": 4,
+      "Canada": 3,
+      "Switzerland": 3,
+      "France": 2,
+      "Germany": 2,
+      "Australia": 2,
+      "Netherlands": 1,
+      "Other": 5
+    },
+    "sectors": {
+      "Information Technology": 30,
+      "Financials": 16,
+      "Industrials": 12,
+      "Consumer Discretionary": 9,
+      "Health Care": 9,
+      "Communication Services": 8,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "World-equity FCPE offered inside Eres employee-savings plans (PEE/PER), the shelter-side equivalent of a plain MSCI World tracker at a 0.50%/yr all-in charge. An FCPE has NO public quotation, so it is served from its embedded reconstruction (MSCI World net TR in EUR less the stated 0.50%, ~1971) rather than any live source; the share class itself only launched 2024-03-05, so even a feed would be too short to backtest. The reconstruction follows the tracker-recipe convention (TER only), so the swap leg's withholding recovery is not credited and the series is, if anything, slightly conservative.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.sicavonline.fr/index.cfm?action=fiche&code=0000X161074",
+      "https://citywire.com/fr/fund/eres-xtrackers-actions-monde/c930134"
+    ]
+  },
+  {
     "id": "SP500",
     "isin": "",
     "aliases": [
