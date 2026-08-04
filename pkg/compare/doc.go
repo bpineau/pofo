@@ -20,6 +20,14 @@
 //
 //	Compute(...) -> *Comparison -> HTMLPage / StatRows / Columns
 //
+// Each portfolio's detail section is assembled from three blocks that answer
+// three different questions about the same holdings: the composition pies say
+// where the MONEY sits (look-through geography, currency, sectors, asset
+// class), the coverage bars say which macro regimes it claims to cover a
+// priori, and the risk budget says where the RISK actually sits, next to the
+// capital and realized-return shares of the same classes. The three routinely
+// disagree, and that disagreement is the reason all three are shown.
+//
 // Comparison keeps its per-column compute records private; accessors
 // (CommonStart, CommonEnd, Columns) expose the narrow public view a caller
 // needs without leaking the internal record.
