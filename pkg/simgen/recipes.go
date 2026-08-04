@@ -58,6 +58,7 @@ func All() []Recipe {
 		chsnRecipe(),
 		tip1eRecipe(),
 		idtlRecipe(),
+		dtlaRecipe(),
 		dtleRecipe(),
 		eresMondeRecipe(),
 		ernaRecipe(),
@@ -162,6 +163,23 @@ func idtlRecipe() Recipe {
 		Build:           composite("IDTL (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IE00BSKRJZ44",
 		SpliceReal:      "IE00BSKRJZ44",
+	}
+}
+
+// dtlaRecipe is idtlRecipe for the ACCUMULATING share class of the same fund
+// (IE00BFM6TC58, DTLA, real from 2018): same bonds, same donor, and the class a
+// taxable euro holder actually wants, since the distributing twin turns the
+// coupon stream into yearly taxable income. Its quotes come from Yahoo, whose
+// closes are dividend-adjusted, so unlike the EUR-hedged DTLE the real series
+// is a genuine total return and can be grafted.
+func dtlaRecipe() Recipe {
+	return Recipe{
+		ID:              "DTLA",
+		Name:            "iShares $ Treasury 20+ Acc: VUSTX long Treasury",
+		Method:          "1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018",
+		Build:           composite("DTLA (long Treasury, accumulating)", []Leg{{ID: "VUSTX", Weight: longTreasuryGearing}}, "", 0),
+		ValidateAgainst: "DTLA",
+		SpliceReal:      "DTLA",
 	}
 }
 
@@ -1419,10 +1437,18 @@ func tltRecipe() Recipe {
 	}
 }
 
-// dtleDuration is the weight the US long-Treasury donor carries in dtleRecipe:
-// VUSTX is a 10-25 year fund (effective duration ~15) while DTLE tracks the
-// 20+ segment (~17), so the local leg is geared to the duration ratio.
-const dtleDuration = 17.0 / 15.0
+// longTreasuryGearing is the weight the VUSTX donor carries in the recipes that
+// target the 20+ Treasury segment (dtlaRecipe, dtleRecipe). VUSTX is a 10-25
+// year fund, effective duration ~15, against a ~17 target, so the donor is
+// geared to the duration ratio: the point of these lines is their rate
+// sensitivity, and a 12% shortfall in it would quietly understate the deflation
+// hedge they are bought for. The gearing is what the overlap measures support
+// (it halves the CAGR gap against the real DTLA, from 0.57 to 0.32 points a
+// year over 2018-2026); the reported beta cannot arbitrate it, being a
+// real-on-sim slope depressed by the US-close donor against a European listing.
+// The older idtlRecipe holds the same bonds ungeared and is left alone rather
+// than silently moved, so the distributing twin runs ~12% short on duration.
+const longTreasuryGearing = 17.0 / 15.0
 
 // dtleRecipe backcasts the iShares $ Treasury Bond 20+yr UCITS ETF EUR Hedged
 // (IE00BD8PGZ49, DTLE, real from 2017-09) as US long Treasuries hedged to EUR.
@@ -1461,7 +1487,7 @@ func dtleRecipe() Recipe {
 		Name:   "US long Treasuries hedged to EUR (total return, the DTLE segment)",
 		Method: "1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less 0.10%/yr TER; total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
 		Build: composite("DTLE (EUR-hedged US long Treasury)", []Leg{
-			{ID: "VUSTX", Weight: dtleDuration, Excess: true},
+			{ID: "VUSTX", Weight: longTreasuryGearing, Excess: true},
 			{ID: "EURCASH-EUR", Weight: 1},
 		}, "^IRX", 0.0010),
 		ValidateAgainst: "DTLE",
