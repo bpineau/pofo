@@ -92,6 +92,17 @@ rather than recomputing it (and drifting) on every run.
   rebuilt with a euro-native long-duration line (accumulating). Covers the wrapper logic
   (spending order as an implicit glidepath, rebalancing asymmetry) and
   measures as the family's best-of-both under the two lenses.
+- `risk-budget-decumulation`: the household edition one generation further,
+  sized by RISK rather than by capital symmetry. No risk is paid for without
+  a documented mechanism, so every weight is labelled derived / mechanism /
+  hedge / constraint: trend capped at 20 by the asymmetry of behavioral
+  errors (not by the risk budget, which it barely uses), gold at 15 for the
+  regime nothing else covers, the bond overlay rebuilt with two issuers
+  (euro 25+ plus an unhedged US 20+ as the crisis dollar, capped at 5), the
+  linkers dose derived by horizon immunization, and a defensive start meant
+  to melt into a rising equity glidepath. Carries its own risk-budget
+  reading (equity is 65% of the variance for 42 of capital), regime map,
+  sane ranges and blind-spot ledger.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
