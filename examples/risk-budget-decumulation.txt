@@ -93,7 +93,7 @@
 #   GOLD       zero real expected return (Erb & Harvey 2013). Not a
 #              premium, an insurance, and LOGICALLY THE SAME STATUS as
 #              long duration: held for its covariance with bad states of
-#              the world. Size it by the regime it covers (section 6),
+#              the world. Size it by the regime it covers (section 7),
 #              not by a "minimum polite allocation".
 #
 # ## 4. The risk budget, and the behavioral cap on trend
@@ -125,8 +125,8 @@
 #   Re-run the block after any weight change (it is the "Risk budget" row
 #   of the HTML report) rather than trusting the ex-ante figures above.
 #
-#   Unconstrained optimization would push trend toward 30-45 and gold
-#   lower. Refused, for two independent reasons:
+#   Within that budget, unconstrained optimization would push trend
+#   toward 30-45 and gold lower. Refused, for two independent reasons:
 #   (a) uncertainty on trend's NET premium (section 3): moving 14 points
 #       of risk budget onto the least certain input is optimization under
 #       another name;
@@ -177,9 +177,9 @@
 #      exactly when it is needed (2011 showed it again).
 #   2. Hedging pays nothing: a EUR-hedged US bond earns the euro rate. The
 #      carry buys the removal of currency variance, nothing else.
-#   3. The counterpart is small and BOUNDED: 5 points of dollar against an
-#      all-euro floor (linkers, euro long duration, the cash buffer, the
-#      hedged trend leg).
+#   3. The currency risk taken in exchange is small and BOUNDED: 5 points
+#      of dollar against an all-euro floor (linkers, euro long duration,
+#      the cash buffer, the hedged trend leg).
 #   CAVEAT, written for the future reader: the "crisis means USD and
 #   Treasuries rally together" playbook assumes a crisis NOT centered on
 #   the United States. The 2025 tariff episodes showed the dollar and long
@@ -206,8 +206,8 @@
 # ## 8. What 100 EUR holds
 #
 #   42 equity (of which 14 small value)
-#   + ~26.5 nominal duration in 7y-equivalent terms (5 euro 25+ and 5 US
-#     20+ each counting about 3-4x their weight)
+#   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
+#     ~20y duration counts ~2.9x its 5 points, the US 20+ at ~17y ~2.4x)
 #   + 20 trend + 15 gold + 13 linkers  = ~116% of exposure, no margin.
 #   Against a stacked-core build, equivalent duration is HIGHER (~26.5 vs
 #   ~16 points) and concentrated on the very long end: more convex per
@@ -262,7 +262,7 @@
 #     above 5). The total rebuilds the overlay lost with the stacked core;
 #     the split is issuer diversification, the cap is section 6.
 #   Small value 14 inside the 42 of equity (10-18). A contested mechanism
-#     gets a minority share of the sleeve, never more than a third.
+#     gets a minority share of the sleeve, about a third here.
 #
 # ## 11. Blind spots, stated rather than discovered later
 #
@@ -307,7 +307,7 @@
 #     `pofo -fire`, which resamples instead of replaying.
 #   ERESMONDEM is MSCI World net EUR minus 0.50%/yr, backcast from 1971.
 #   DTLA has a clean total-return backcast from 1962. Its EUR-hedged
-#     cousin DTLE is set aside twice over: a distributing class (coupons
+#     cousin DTLE (IE00BD8PGZ49) is set aside twice over: a distributing class (coupons
 #     taxed every year in a taxable account) whose public series is a
 #     PRICE return that ruins any backtest, and the hedge converts the US
 #     yield into the euro yield anyway. Use DTLETR to look at the hedged
@@ -352,11 +352,11 @@
 10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403) | MECHANISM, dose capped by error asymmetry (s. 4)
 10	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; siblings LU1662498721 perf-fee, LU2622190622 flat; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602) | HEDGE, the stagflation regime (s. 7); physical ETC only, never an ETN
-13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); not an all-maturity fund (real-duration bet)
+13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged
 
 # ---- Tax shelters (equity only by law) --------------------------------
-23	ERESMONDEM      # world equity, 0.50%/yr | MECHANISM; block sized by the equity budget, never by the tax edge
+23	ERESMONDEM      # world equity at 0.50%/yr fees (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1; alt CW8 LU1681043599) | MECHANISM + wrapper CONSTRAINT
 7	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelter that cannot hold a world fund) | CONSTRAINT + weak mechanism
 2	LU0131510165    # France small/mid value: Independance AM France Small Mid | CONSTRAINT; folding it into the Europe line is equivalent
