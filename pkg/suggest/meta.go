@@ -12,33 +12,20 @@ package suggest
 import (
 	"encoding/json"
 	"io"
+
+	"github.com/bpineau/portfodor/datasets"
 )
 
-// Meta is the factual metadata of one catalog asset — a full row of
-// datasets/assetmeta/assets.json. It is the structured, third-party-friendly
-// view of the bundled catalog (load it with LoadMeta over datasets.AssetMeta).
-type Meta struct {
-	ID           string             `json:"id"`
-	ISIN         string             `json:"isin"`
-	Name         string             `json:"name"`
-	UCITS        bool               `json:"ucits"` // UCITS-regulated fund/ETF
-	Fees         float64            `json:"fees"`  // published TER, percent per year; 0 = unknown
-	AssetClass   string             `json:"asset_class"`
-	Underlying   string             `json:"underlying"`
-	Benchmark    string             `json:"benchmark_index"`
-	Strategy     string             `json:"strategy"`
-	Geography    map[string]float64 `json:"geography"` // country/region → percent of holdings
-	Sectors      map[string]float64 `json:"sectors"`   // GICS sector → percent of holdings
-	Currency     string             `json:"currency"`
-	Distribution string             `json:"distribution"` // "accumulating" or "distributing"
-	Leverage     float64            `json:"leverage"`
-	Notes        string             `json:"notes"`
-	Confidence   string             `json:"confidence"`
-	Sources      []string           `json:"sources"`
-}
+// Meta is the factual metadata of one catalog asset. It is an alias for the
+// canonical datasets.Asset (a full row of datasets/assetmeta/assets.json):
+// load the bundled catalog directly with datasets.Catalog, or decode any
+// reader of the same JSON with LoadMeta.
+type Meta = datasets.Asset
 
-// LoadMeta parses the asset-metadata JSON (an array of Meta) into a map
-// keyed by both the catalog id and the ISIN, so either resolves.
+// LoadMeta decodes a JSON array of assets (e.g. datasets.AssetMeta) into a
+// map keyed by both the canonical id and the ISIN, so either resolves.
+// Resolve a ticker/alias to its id with marketdata.CanonicalID before
+// indexing the map.
 func LoadMeta(r io.Reader) (map[string]Meta, error) {
 	var list []Meta
 	if err := json.NewDecoder(r).Decode(&list); err != nil {
