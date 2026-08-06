@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: TLT
-# name: iShares 20+Y Treasury — VUSTX long Treasury
+# name: iShares 20+Y Treasury: VUSTX long Treasury
 # method: VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002
 # validation: corr=0.981 (weekly 0.989) beta=1.11 TE=3.1%/yr CAGR sim 3.78% vs real 3.72% (overlap 6005 d from 2002-07-30 to 2026-06-11) vs TLT
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 1986-05-19,9.183581
 1986-05-20,9.165224

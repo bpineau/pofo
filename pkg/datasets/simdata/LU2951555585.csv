@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: LU2951555585
-# name: iMGP DBi Managed Futures UCITS USD — TSMOM replication
+# name: iMGP DBi Managed Futures UCITS USD: TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025
 # validation: corr=0.306 (weekly 0.583) beta=0.25 TE=16.7%/yr CAGR sim 18.63% vs real 25.35% (overlap 312 d from 2025-03-10 to 2026-06-12) vs LU2951555585
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 2001-08-31,22.808577
 2001-09-04,22.616001

@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: IE00077IIPQ8
-# name: WisdomTree Global Efficient Core — global 90/60 replication
-# method: 0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees
+# name: WisdomTree Global Efficient Core: global 90/60 replication
+# method: 0.54×VFINX + 0.36×VTMGX (dev-intl, extended back with MSCI EAFE gross TR ~1970) + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees; start still limited by the VFITX treasury leg (~1991)
 # validation: corr=0.394 (weekly 0.861) beta=0.39 TE=16.1%/yr CAGR sim 20.03% vs real 15.30% (overlap 386 d from 2024-11-13 to 2026-06-11) vs IE00077IIPQ8
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 1999-08-17,100.000000
 1999-08-18,99.740105

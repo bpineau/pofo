@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: DBMFE
-# name: iMGP DBi Managed Futures EUR unhedged — TSMOM replication in EUR
+# name: iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR
 # method: 12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (~2003→), real DBMFE grafted from 2025
 # validation: corr=0.154 (weekly 0.320) beta=0.16 TE=21.9%/yr CAGR sim 14.33% vs real 21.67% (overlap 286 d from 2025-04-08 to 2026-06-24) vs DBMFE
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 2004-10-12,19.838567
 2004-10-13,19.701319
