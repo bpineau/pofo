@@ -9,64 +9,105 @@
 
 <header class="masthead">
   <span class="mark">pofo<b>/</b>fire</span>
-  <span class="ctx">decumulation explorer</span>
+  <span class="ctx">decumulation robustness explorer</span>
   <span class="spacer"></span>
   <span class="stamp">real €, net of tax — a model, not advice</span>
 </header>
 
-<div class="folds">
-<details class="caveat">
-<summary>Read the ruin figures with care — why they can look optimistic</summary>
-<div class="disclosure-body">
-<p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b> (e.g. Anarkulova, Cederburg &amp; O'Doherty, 2023, who find a fixed 4% rule fails far more often across a broad, century-long sample of developed markets). The main reasons, in rough order of impact:</p>
-<ul>
-<li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces the withdrawal in downturns, which roughly <i>halves</i> the ruin vs a true fixed 4% rule. It now defaults to 0 (the canonical fixed rule); raise it, or use the guardrails toggle, to model adaptive spending.</li>
-<li><b>Optimistic return inputs.</b> mu/sigma fitted from a fund's own history reflect a favourable, often US-heavy and post-2009 window. A broad sample has a lower real return, higher volatility and a fatter left tail (prolonged real bear markets like Japan 1990–). Tick <b>"Broad-sample prior"</b> to override the fit with cautious world-equity assumptions.</li>
-<li><b>Short history.</b> A 20–30-year series contains no independent 40–50-year retirement, so it cannot show the worst long-horizon sequences. A warning appears above when the sample is shorter than the horizon.</li>
-<li><b>I.i.d. parametric draws</b> miss the persistence (sequence risk) and negative skew of real returns; they under-produce the early-crash paths that actually cause ruin. Tick <b>"Sequence-risk stress"</b> to cluster bad years into prolonged drawdowns, and read the Lost-decade column for a Japan-style prolonged trough.</li>
-<li><b>Horizon.</b> Set it past your life expectancy: an early retirement can last 50–60 years, and ruin rises steeply with the horizon (≈40→50y nearly doubles it). The default is now 45 years.</li>
-</ul>
-<p>For a life plan, prefer the pessimistic end: flex off, a lower mu and higher sigma than the rosy fit, and a horizon past your life expectancy.</p>
-</div>
-</details>
-<details class="controls" id="controlsfold">
-<summary>Controls — allocation, spending, return model, taxes</summary>
-<div class="disclosure-body"><form id="controls"></form><p id="modelhelp"></p></div>
-</details>
-</div>
-
-<section class="hero">
+<!-- Hero: the live verdict and the epistemic range across return models. -->
+<section class="hero" id="hero">
   <div class="hero-verdict">
     <div class="eyebrow">Central-case verdict</div>
     <div id="verdict"></div>
     <div class="herobar">
-      <label class="tgt">Acceptable risk of ruin <input type="number" id="targetRuin" min="0.5" max="30" step="0.5" value="4">%</label>
+      <label class="tgt" data-help="The failure probability you accept. Every safe-spend figure, the solver menu and the planning curves are solved against this target.">Acceptable risk of ruin <input type="number" id="targetRuin" min="0.5" max="30" step="0.5" value="4">%</label>
       <span id="confidence"></span>
     </div>
   </div>
   <div class="hero-models">
-    <div class="eyebrow">Risk across return models · safe → catastrophic</div>
+    <div class="eyebrow">Risk across return models · optimistic → catastrophic</div>
     <div id="modelstrip"></div>
   </div>
   <div id="solvermenu"></div>
   <p class="anchor">Reference points: the classic US 4%/30y backtest ≈ 95% success; broad century-long developed-market samples give ≈ 75-85% for the same fixed 4% rule (Anarkulova, Cederburg &amp; O'Doherty), with a ~2.3% safe rate at 5% ruin. These models are i.i.d. (no mean reversion), so long FIRE horizons read a little stricter than history.</p>
 </section>
 
-<div class="section-head"><span class="idx">01</span><h2>Simulated wealth paths</h2><span class="aside">per planning model — the cone of futures</span></div>
-<div id="fansGrid"></div>
-
-<div class="section-head"><span class="idx">02</span><h2>Risk curves</h2><span class="aside">ruin vs spend · lever sensitivity</span></div>
-<div id="riskgrid">
-<div id="frontierSvg" class="chart-frame"></div>
-<div id="sensitivitySvg" class="chart-frame"></div>
+<!-- The plan bar: a condensed, sticky echo of the verdict so a slider's
+     consequence stays visible however deep the page is scrolled. -->
+<div id="planbar" hidden>
+  <span class="mark">pofo<b>/</b>fire</span>
+  <span id="planbar-verdict"></span>
+  <span class="spacer"></span>
+  <span id="planbar-beads" data-help="One bead per return model, coloured by its ruin probability at your planned spend (green safe → red catastrophic), in the same order as the hero table."></span>
 </div>
 
-<div class="section-head"><span class="idx">03</span><h2>Plan detail</h2><span class="aside">central Student-t, at your planned spend</span></div>
+<div class="deck">
+
+<!-- Left rail: everything the household controls or assumes, always visible. -->
+<aside id="rail">
+  <form id="controls"></form>
+</aside>
+
+<!-- Right column: the analysis, in reading order. -->
+<main id="analysis">
+
+<div class="section-head"><span class="idx">01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model — the cone of outcomes</span></div>
+<p class="section-lede">Each panel is the same plan under a different lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median; red paths are simulated ruins.</p>
+<div id="fansGrid"></div>
+
+<div class="section-head"><span class="idx">02</span><h2>The spending you actually live</h2><span class="aside">what the flex rules cost in lifestyle, not in statistics</span></div>
+<p class="section-lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths — how often the cut happens, how soon, how deep and for how long.</p>
+<div class="duo">
+  <div id="spendingSvg" class="chart-frame"></div>
+  <div id="spendingCards" class="cardcol"></div>
+</div>
+
+<div class="section-head"><span class="idx">03</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
+<p class="section-lede">A failure at 92 is not the same life event as a failure at 61. Crossing ruin timing with survival (INSEE-fitted Gompertz, couple) shows the risk that actually matters: being alive and out of money.</p>
+<div class="duo">
+  <div id="lifeSvg" class="chart-frame"></div>
+  <div class="stack">
+    <div id="lifecycleCards" class="cardrow"></div>
+    <div id="ruinYearSvg" class="chart-frame"></div>
+  </div>
+</div>
+
+<div class="section-head"><span class="idx">04</span><h2>What moves the risk</h2><span class="aside">frontier · levers · the price of time and lifestyle</span></div>
+<p class="section-lede">The frontier shows how fast ruin rises as you spend more, under every model at once. The levers chart ranks what improves the plan most. The two curves price a longer retirement and a bigger lifestyle in safe-rate and capital terms.</p>
+<div id="riskgrid">
+  <div id="frontierSvg" class="chart-frame"></div>
+  <div id="sensitivitySvg" class="chart-frame"></div>
+  <div id="horizonSvg" class="chart-frame"></div>
+  <div id="capitalSvg" class="chart-frame"></div>
+</div>
+
+<div class="section-head"><span class="idx">05</span><h2>Buffer &amp; recovery</h2><span class="aside">cash arbitrage · time underwater</span></div>
+<p class="section-lede">More cash cuts sequence risk up to a point, then drags on growth: the arbitrage is an interior optimum. The recovery histogram shows how long the portfolio typically stays below a prior high.</p>
+<div class="duo">
+  <div id="arbitrageSvg" class="chart-frame"></div>
+  <div id="recoverySvg" class="chart-frame"></div>
+</div>
+
+<div class="section-head"><span class="idx">06</span><h2>Plan detail</h2><span class="aside">central model, at your planned spend</span></div>
 <p id="note"></p>
 <div id="cards"></div>
-<div id="charts">
-<div id="arbitrageSvg" class="chart-frame"></div>
-<div id="recoverySvg" class="chart-frame"></div>
+
+<details class="caveat">
+<summary>Method &amp; honest caveats — why these figures can look optimistic</summary>
+<div class="disclosure-body">
+<p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b> (e.g. Anarkulova, Cederburg &amp; O'Doherty, who find a fixed 4% rule fails far more often across a broad, century-long sample of developed markets). The main reasons, in rough order of impact:</p>
+<ul>
+<li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 02 shows what enabling it costs in lived spending.</li>
+<li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable, often post-2009 window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case is automatically blended toward the broad-sample prior when the fund history is shorter than the horizon.</li>
+<li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean to expose that risk separately from the return level.</li>
+<li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the real French multi-envelope sequencing, which is materially cheaper.</li>
+<li><b>Mortality.</b> The ruin figures ignore death by default (a 45-year horizon is survived with certainty); section 03 shows the mortality-weighted picture, which is kinder — and more honest about late-life failures.</li>
+</ul>
+<p>For a life plan, read the pessimistic columns, keep the horizon past your life expectancy, and treat the ruin figures as ordinal (compare scenarios, don't trust decimals).</p>
+</div>
+</details>
+
+</main>
 </div>
 
 </div>

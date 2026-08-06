@@ -174,15 +174,14 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     to a per-value `Simulate`. (Sweep2D is no longer run; the heatmap was
     dropped, see item 6.)
 
-17. **STILL OPEN — Design pass on the `-fire` UI with the frontend-design skill.**
-    Note (2026-07-01): the usability rewrite rebuilt the explorer
-    (`pkg/decumul/web/assets/`) with a live hero strip, the multi-model table,
-    the fan / frontier / sensitivity charts and instant tooltips, but again
-    **functionally, not designed** — layout, typography, colour, chart styling,
-    visual hierarchy and mobile were not given a deliberate pass. Do it with the
-    `frontend-design` skill on the NEW UI (colour system across the model strip
-    cells and the per-model chart series, the allocation-bar styling, the dense
-    hero + tabs layout, and mobile). Highest-value cosmetic follow-up.
+17. ✅ **Done (2026-07-02), as part of the v3 enrichment.** Full
+    frontend-design pass on the new UI: the page is now a dense two-column
+    desk (sticky grouped control rail + numbered analysis column), with a
+    sticky "plan bar" echoing the live verdict and per-model ruin beads while
+    scrolled, preset chips (pension scenarios, ARE bridge), pervasive hover
+    help on every control, and the shared warm-study theme throughout. See
+    `decumulation-fire-v3-enrichment.md` for the whole feature drop (spending
+    reality, mortality view, planning curves, envelopes, written rules…).
 
 18. ✅ **Done (2026-06-29).** **Better charts for the buffer arbitrage and the
     recovery distribution.** Specific chart requirements (part of, or before,
