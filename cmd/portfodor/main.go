@@ -64,6 +64,8 @@ type result struct {
 	winDates  []time.Time
 	winValues []float64
 	stats     metrics.Stats
+	rel       metrics.Relative
+	hasRel    bool
 }
 
 func run(argv []string) error {
@@ -313,8 +315,9 @@ Options:
 			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
 		if bench != nil {
-			if beta, ok := metrics.Beta(r.winDates, r.winValues, benchDates, benchValues); ok {
-				st.Beta, st.HasBeta = beta, true
+			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, benchDates, benchValues); ok {
+				st.Beta, st.HasBeta = rel.Beta, true
+				r.rel, r.hasRel = rel, true
 			}
 		}
 		r.stats = st
@@ -732,6 +735,20 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 
 	page.StatRows = buildStatRows(results, opt.benchmark)
 
+	// Underwater plot: every portfolio's drawdown over the common period.
+	uw := make([]chart.Series, len(results))
+	for i, r := range results {
+		dd := metrics.Drawdowns(r.winValues)
+		for k := range dd {
+			dd[k] *= 100
+		}
+		uw[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: dd, Color: r.color}
+	}
+	page.UnderwaterSVG = template.HTML(chart.Line(chart.Options{
+		Title:  "Drawdowns (%) — common period",
+		Height: 300,
+	}, uw))
+
 	page.Footnotes = []string{
 		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs) — local cache in \"" + opt.dataDir + "\".",
 		fmt.Sprintf("Simulation: base 100, rebalanced to the target weights every %d calendar days by default (overridable per portfolio via \"#meta rebalance:N\"), with no fees or taxes.", opt.rebalance),
@@ -789,6 +806,50 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 					text += " (incomplete)"
 				}
 				return w, text
+			}, -1},
+		{"Worst rolling 5y CAGR", "lowest annualized return over any 5-year window of the common period",
+			func(r *result) (float64, string) {
+				worst, _, _, _, ok := metrics.RollingCAGR(r.winDates, r.winValues, 5)
+				if !ok {
+					return math.NaN(), "—"
+				}
+				return worst, fmtPct(worst)
+			}, +1},
+		{"Median rolling 5y CAGR", "median annualized return over all 5-year windows",
+			func(r *result) (float64, string) {
+				_, med, _, _, ok := metrics.RollingCAGR(r.winDates, r.winValues, 5)
+				if !ok {
+					return math.NaN(), "—"
+				}
+				return med, fmtPct(med)
+			}, +1},
+		{"Alpha (vs " + benchmark + ")", "annualized Jensen's alpha against the benchmark",
+			func(r *result) (float64, string) {
+				if !r.hasRel {
+					return math.NaN(), "—"
+				}
+				return r.rel.Alpha, fmtPct(r.rel.Alpha)
+			}, +1},
+		{"Information ratio", "mean active return / tracking error vs the benchmark",
+			func(r *result) (float64, string) {
+				if !r.hasRel {
+					return math.NaN(), "—"
+				}
+				return r.rel.InfoRatio, fmtNum(r.rel.InfoRatio)
+			}, +1},
+		{"Up capture", "participation in benchmark up days (>100 % = amplifies gains)",
+			func(r *result) (float64, string) {
+				if !r.hasRel || math.IsNaN(r.rel.UpCapture) {
+					return math.NaN(), "—"
+				}
+				return r.rel.UpCapture, fmtPct(r.rel.UpCapture)
+			}, +1},
+		{"Down capture", "participation in benchmark down days (<100 % = cushions losses)",
+			func(r *result) (float64, string) {
+				if !r.hasRel || math.IsNaN(r.rel.DownCapture) {
+					return math.NaN(), "—"
+				}
+				return r.rel.DownCapture, fmtPct(r.rel.DownCapture)
 			}, -1},
 		{"Beta (vs " + benchmark + ")", "sensitivity to benchmark moves",
 			func(r *result) (float64, string) {

@@ -48,6 +48,7 @@ type Page struct {
 	RebalanceDays  int
 	Portfolios     []PortfolioSection
 	CompareSVG     template.HTML // empty when there is a single portfolio
+	UnderwaterSVG  template.HTML // drawdown chart over the common period
 	CommonStart    string
 	CommonEnd      string
 	PortfolioNames []string
@@ -106,6 +107,9 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 <li>{{.}}</li>
 {{- end}}
 </ul>
+{{if .UnderwaterSVG}}
+{{.UnderwaterSVG}}
+{{end}}
 </section>
 {{range .Portfolios}}
 <details class="pf">
