@@ -24,11 +24,11 @@ func ExampleCoverage() {
 		{Weight: 0.6, HasMeta: true, Meta: suggest.Meta{AssetClass: "equity"}},
 		{Weight: 0.4, HasMeta: true, Meta: suggest.Meta{AssetClass: "gold"}},
 	}
-	cov, _ := suggest.Coverage(holdings)
+	cov, _ := suggest.Coverage(holdings, suggest.RegimeFramework())
 	fmt.Printf("growth %.0f%%  inflation %.0f%%  crisis %.0f%%  deflation %.0f%%\n",
 		cov[suggest.Growth]*100, cov[suggest.Inflation]*100, cov[suggest.Crisis]*100, cov[suggest.Deflation]*100)
 
-	gaps := suggest.Gaps(cov, 0.10)
+	gaps := suggest.Gaps(cov, suggest.RegimeFramework(), 0.10)
 	fmt.Println("gaps:", gaps)
 	// Output:
 	// growth 60%  inflation 40%  crisis 40%  deflation 0%
