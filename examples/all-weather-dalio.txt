@@ -1,0 +1,15 @@
+# All Weather (Ray Dalio / Bridgewater) — modernized for backtest
+# Idea: balance risk (not dollars) across the four macro regimes: 30% stocks,
+#   55% bonds (40% long + 15% intermediate), 7.5% gold, 7.5% commodities.
+#   Long-duration bonds carry as much risk as the smaller equity sleeve.
+# Inspired by: Dalio's All Weather, popularized by Tony Robbins, 'Money: Master the Game'.
+#   https://www.bridgewater.com/research-and-insights/the-all-weather-story
+# Backtest uses long US-treasury/gold history (SIM); UCITS buy-route: IDTL,
+#   IEF→IEGA, IGLN, ICOM.
+#meta rebalance:180
+
+30    IWDASIM         # World equity (UCITS: IWDA)
+40    TLTSIM          # Long US Treasuries (UCITS: IDTL)
+15    IEFSIM          # Intermediate US Treasuries (UCITS: IEGA)
+7.5   GOLDSIM         # Gold (UCITS: IGLN)
+7.5   IE00BDFL4P12    # Broad commodities (ICOM)
