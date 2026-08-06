@@ -12,10 +12,16 @@
 #   global tilt, or SPDR US Small Cap Value Weighted (ZPRV / IE00BSPLC413).
 #   The full portfolio's common window is still capped ~2015 by the momentum
 #   ETF's inception (IWMO); the value sleeve itself now spans 28 years.
+# Tuning note: weights nudged toward what the optimizer (risk-parity and a
+#   capped max-sharpe, run over 2014→) consistently favored — a little less
+#   emerging markets (a real, persistent drag this window) for more momentum
+#   and trend ballast. Tempered, not the raw in-sample weights; the result
+#   Pareto-beats the even split (higher return, lower vol and drawdown).
+#   Drop "#meta optimize:risk-parity" on top to re-run the comparison.
 #meta rebalance:180
 
 45    IE00B4L5Y983    # World core (IWDA)
-15    IE00BKM4GZ66    # Emerging Markets (EIMI)
+10    IE00BKM4GZ66    # Emerging Markets (EIMI)
 15    ZPRVSIM         # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
-15    IE00BP3QZ825    # World Momentum (IWMO)
-10    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)
+18    IE00BP3QZ825    # World Momentum (IWMO)
+12    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)
