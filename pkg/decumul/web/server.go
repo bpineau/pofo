@@ -55,5 +55,18 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(ComputeWithPanel(pr, panel))
 	})
+	mux.HandleFunc("/api/solve", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "POST only", http.StatusMethodNotAllowed)
+			return
+		}
+		var pr Params
+		if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(Solve(pr, panel))
+	})
 	return mux
 }
