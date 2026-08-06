@@ -59,6 +59,14 @@ simdata: build ## (Re)generate datasets/simdata/ then re-embed it into the binar
 demo: build ## Demo report on the example portfolios
 	./portfodor examples/*.txt
 
+.PHONY: suggest
+suggest: build ## Demo the -suggest analysis on a catalog-based example
+	./portfodor -suggest examples/world-equity.txt
+
+.PHONY: verify
+verify: build ## Run the -verify-data doctor over the bundled catalog
+	./portfodor -verify-data
+
 .PHONY: clean
 clean: ## Remove the binaries (not data/ nor datasets/)
 	rm -f $(BINARIES)
