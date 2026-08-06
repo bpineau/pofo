@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -22,6 +23,37 @@ func toResolution(r resolution) Resolution { return Resolution(r) }
 // resolution: deep enough that the multi-source search settles on the same
 // instrument it would for a real long-horizon request.
 func resolveFrom() time.Time { return time.Now().AddDate(-15, 0, 0) }
+
+// Search returns candidate instruments for a free-text query: a name
+// ("MSCI World"), a ticker or an ISIN. When the query canonicalizes to a
+// catalog-pinned asset, that resolution comes first (deterministic and
+// vetted); the Yahoo search candidates follow, deduplicated by symbol. No
+// price series is downloaded: pass a candidate's Symbol to Fetch (or the
+// original query to Resolve) to quote it. It errors when nothing at all
+// matches.
+func (c *Client) Search(ctx context.Context, query string) ([]Resolution, error) {
+	var out []Resolution
+	seen := map[string]bool{}
+	add := func(r Resolution) {
+		key := r.Source + "|" + r.Symbol + "|" + r.Xid
+		if seen[key] {
+			return
+		}
+		seen[key] = true
+		out = append(out, r)
+	}
+	if res, ok := catalogResolution(CanonicalID(query)); ok {
+		add(toResolution(res))
+	}
+	quotes, err := c.search(ctx, query)
+	if err != nil && len(out) == 0 {
+		return nil, fmt.Errorf("search %q: %w", query, err)
+	}
+	for _, q := range quotes {
+		add(Resolution{Source: "yahoo", Symbol: q.Symbol, Name: q.Name})
+	}
+	return out, nil
+}
 
 // Resolve returns the instrument pofo would quote for a user identifier
 // (ticker, ISIN or alias). It uses the bundled catalog and the on-disk
