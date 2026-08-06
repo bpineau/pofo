@@ -160,6 +160,8 @@ type Validation struct {
 	CAGRReal    float64
 }
 
+// String renders the validation as a one-line summary (daily/weekly
+// correlation, beta, tracking error, sim vs real CAGR, and overlap window).
 func (v Validation) String() string {
 	return fmt.Sprintf("corr=%.3f (weekly %.3f) beta=%.2f TE=%.1f%%/yr CAGR sim %.2f%% vs real %.2f%% (overlap %d d from %s to %s)",
 		v.Corr, v.WeeklyCorr, v.Beta, v.TrackingErr*100, v.CAGRSim*100, v.CAGRReal*100,

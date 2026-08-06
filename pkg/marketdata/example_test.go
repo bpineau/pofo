@@ -75,3 +75,11 @@ func ExampleVerify() {
 	// [warn] 2024-01-04: daily move of +243.1 % — missed split or bad point?
 	// [warn] 2024-01-05: daily move of -70.6 % — missed split or bad point?
 }
+
+// Lookup resolves a ticker, alias or ISIN to the asset's full catalog
+// metadata in one call.
+func ExampleLookup() {
+	a, ok := marketdata.Lookup("IWDA")
+	fmt.Println(ok, a.ID, a.AssetClass, a.Fees)
+	// Output: true IE00B4L5Y983 equity 0.2
+}
