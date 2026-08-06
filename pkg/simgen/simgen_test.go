@@ -243,27 +243,3 @@ func TestWithRefDataServesLocalFiles(t *testing.T) {
 		t.Fatalf("fallback: %+v, %v", s, err)
 	}
 }
-
-func TestRefImportAppliesFeeDrag(t *testing.T) {
-	dir := t.TempDir()
-	pts := []marketdata.Point{}
-	v := 100.0
-	for i := range 253 {
-		pts = append(pts, marketdata.Point{Date: day(i), Close: v})
-		v *= 1.001
-	}
-	if err := marketdata.WriteSimdata(dir, &marketdata.SimdataFile{ID: "REF-Y", Name: "Y", Points: pts}); err != nil {
-		t.Fatal(err)
-	}
-	build := refImport("REF-Y", "Y with fees", 0.0252) // 0.01%/day
-	s, err := build(WithRefData(os.DirFS(dir), nil), day(0))
-	if err != nil {
-		t.Fatal(err)
-	}
-	// net daily return = 0.001 − 0.0001
-	want := 100 * math.Pow(1.0009, 252)
-	got := s.Points[len(s.Points)-1].Close
-	if math.Abs(got-want)/want > 1e-6 { // tolerance: simdata CSVs round to 6 decimals
-		t.Errorf("fees misapplied: %v, want %v", got, want)
-	}
-}

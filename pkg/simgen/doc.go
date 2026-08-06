@@ -13,18 +13,17 @@
 //     lookback, vol target, leverage) for replicating trend strategies;
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
-//   - WithRefData serves local reference series (datasets/refdata/)
-//     before
-//     any network source; Validate measures daily and weekly correlation,
-//     beta, tracking error and CAGR against the real series;
-//   - the bundled recipes (All, Find) assemble these building blocks for
-//     NTSX, NTSG, URTH, IWDA, ZROZ, IEF, TLT, XAUUSD, DBMF, KMLM, CTA and
-//     the Winton Trend-Equity fund.
+//   - Validate measures daily and weekly correlation, beta, tracking error
+//     and CAGR against the real series; WithRefData optionally serves extra
+//     local reference CSVs (dev -refdata) before any network source;
+//   - the bundled recipes (All, Find) assemble these building blocks, from
+//     fetchable quotes only, for NTSX, NTSG, URTH, IWDA, VT, RSSB, ZPRV,
+//     SHY, IEF, TLT, ZROZ, DBMF, KMLM, CTA and the Winton Trend-Equity fund.
 //
 // # Units
 //
-// Beware of the unit conventions: fees passed to Composite, TSMOMConfig and
-// refImport recipes are FRACTIONS per year (0.0085 = 0.85 %/yr), as are
+// Beware of the unit conventions: fees passed to Composite and TSMOMConfig
+// are FRACTIONS per year (0.0085 = 0.85 %/yr), as are
 // volatility targets (0.10 = 10 %), whereas the portfolio package and
 // marketdata.Fees express fees in PERCENT per year (0.85 = 0.85 %/yr).
 // Rate series (^IRX, ^FVX, ^TNX, ^TYX) are annualized percent levels and

@@ -3,7 +3,7 @@
 # name: iShares MSCI World — 60/40 US/international replication
 # method: 0.60×VFINX + 0.40×VTMGX, 0.24%/yr fees
 # validation: corr=0.899 (weekly 0.965) beta=0.97 TE=7.5%/yr CAGR sim 12.32% vs real 12.18% (overlap 3623 d from 2012-01-12 to 2026-06-11) vs URTH
-# generated: 2026-06-12
+# generated: 2026-06-13
 date,close
 1999-08-17,100.000000
 1999-08-18,99.657481

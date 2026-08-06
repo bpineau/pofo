@@ -177,7 +177,7 @@ regime view stays the default.
 
 ## Simulated data (datasets/simdata/)
 
-Complex assets (90/60 funds, managed futures…) are rebuilt by `cmd/simgen`
+Complex assets (90/60 funds, managed futures…) are rebuilt by `pkg/simgen`
 from long-history building blocks, validated against their real quotes,
 then stored as self-documenting CSVs (method, validation, date) in
 `datasets/simdata/`:
@@ -187,37 +187,41 @@ then stored as self-documenting CSVs (method, validation, date) in
 ./portfodor -gen-simdata -dry NTSX         # validate without writing
 ```
 
-Bundled recipes and measured quality (daily/weekly correlation of returns
+Every series is built **only from quotes the tool itself can fetch**
+(Vanguard/Yahoo funds with decades of history, the `^IRX` cash rate, gold and
+oil futures) combined by the in-house composite, TSMOM trend, and regression
+backcast engines — no third-party data is bundled. External index series are
+used solely to cross-check quality during development, never shipped.
+
+Bundled recipes and measured quality (daily / weekly correlation of returns
 vs the real series; the real series is always grafted on top of the
 simulation wherever it exists):
 
-| Asset | Method | Validation |
+| Asset | Method (building blocks) | Validation (daily / weekly corr) |
 |---|---|---|
-| NTSX (UCITS) | 0.90×VFINX + 0.60×(VFITX−cash) + 0.10×cash (1991→) | corr 0.96 / weekly 0.99 vs NTSX US |
-| NTSG (UCITS) | global 60/40 US/intl variant | weekly 0.86 (thinly traded LSE listing) |
-| URTH, IWDA | 0.60×VFINX + 0.40×VTMGX (1999→) | corr 0.90 / weekly 0.97 |
-| ZROZ, IEF, TLT, SHY | imported refs derived from US yield curves (1962→) | corr 1.00 over 16–24 years of overlap |
-| XAUUSD (GOLD) | imported spot gold (1968→), real GC=F grafted | corr 1.00 |
-| KMLM | official MLM Index (1987→) + 0.90% ETF fees | corr 1.00 |
-| DBMF | official SG CTA Index (2000→) | corr 0.68 / weekly 0.75, beta 0.96 |
-| CTA | official SG Trend Index (2000→) | corr 0.54 — proprietary strategy, gap accepted |
-| Winton Trend-Equity | global equities + 0.5×Winton Trend fund (real 2019→, sim before) | weekly 0.92 |
-| VT, RSSB | imported third-party reconstructions (1969→) | corr 1.00 |
-| ZPRV (US small-cap value) | imported MSCI USA Small Cap Value Weighted index (1997→), real grafted from 2015 | weekly 0.94, CAGR matched |
-| CRRY | imported commodity-carry reconstruction (2008→) | corr 0.99 |
-| BTAL | imported anti-beta reconstruction (2001→) | weekly 1.00 (daily 0.73, noisy) |
+| NTSX (UCITS) | 0.90×VFINX + 0.60×(VFITX−cash) + 0.10×cash (1991→) | 0.96 / 0.99 |
+| NTSG (UCITS) | global 90/60 US/intl variant (1999→) | 0.39 / 0.86 (thin LSE listing, short overlap) |
+| URTH (MSCI World) | 0.60×VFINX + 0.40×VTMGX (1999→) | 0.90 / 0.97 |
+| IWDA (MSCI World) | 0.60×VFINX + 0.40×VTMGX (1999→) | 0.60 / 0.85 (GBP listing, short overlap) |
+| VT (total world) | 0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (1999→) | 0.98 / 0.99 |
+| RSSB (100/100 stocks+bonds) | VT composite + 1.0×(VFITX−cash) (1999→) | 0.95 / 0.99 |
+| ZPRV (US small-cap value, UCITS) | DFSVX (DFA US Small Cap Value, 1993→), real grafted 2015 | 0.67 / 0.91 |
+| SHY (1-3y Treasury) | VFISX short Treasury (1991→) | 0.81 / 0.89 |
+| IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
+| TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
+| ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
+| DBMF (managed futures) | 12-month TSMOM on a 7-market basket (2001→) | 0.52 / 0.55 |
+| KMLM (managed futures) | 12-month TSMOM, 15% target vol (2001→) | 0.35 / 0.32 |
+| CTA (managed futures) | 12-month TSMOM, 10% target vol (2001→) | 0.20 / 0.24 |
+| Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×TSMOM trend (2001→) | 0.65 / 0.84 |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
-Discretionary strategies cannot be honestly replicated with factors: rather
-than inventing data, the generator rejects them below an R² floor.
-
-## Reference data (datasets/refdata/)
-
-`datasets/refdata/` holds reference series imported once and for all
-(provenance and method at the top of each file): official SG Trend/SG CTA
-indices, MLM Index history, 7-10/20+/25+ treasuries derived from US yield
-curves since 1962, spot gold since 1968, Winton Trend fund.
-`cmd/simgen` consumes them first (`-refdata`), before any network source.
+Managed-futures correlations are modest: each fund runs a faster, partly
+discretionary strategy that a single 12-month TSMOM rule only approximates.
+The lower fidelity is accepted in exchange for full self-generation.
+Discretionary strategies that cannot be honestly replicated with factors are
+rejected below an R² floor rather than shipped as invented data; the matching
+`SIM` identifiers then simply fall back to the real (shorter) history.
 
 ## Using it as a library
 
@@ -237,7 +241,7 @@ pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
 cmd/              the portfodor binary (report, warmup, gen-simdata)
 datasets/         versioned data (embedded at build time) and its QA:
   simdata/          permanent simulated histories (spliced at runtime)
-  refdata/          imported reference series (official indices…)
+  assetmeta/        catalog asset metadata (classes, factors, regimes…)
   golden/           golden tests + frozen fixtures vs external references
 data/             old local cache (replaced by the user cache)
 ```
@@ -277,9 +281,9 @@ sim, _ := portfolio.Simulate(p, 90)
 - `chart` — pure-stdlib inline SVG charts.
 - `portfolio` — allocation file parsing and rebalanced simulation.
 - `report` — HTML report rendering.
-- `simgen` — reconstruction engine (linear composites, imported
-  references, TSMOM trend-following engine, regression backcasts) and
-  validated recipes.
+- `simgen` — reconstruction engine (linear composites, TSMOM
+  trend-following engine, regression backcasts) and validated recipes, all
+  built from fetchable quotes only.
 
 ## Known limitations
 
