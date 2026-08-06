@@ -5,6 +5,7 @@
 # validation: corr=0.965 (weekly 0.972) beta=1.00 TE=6.1%/yr CAGR sim 0.92% vs real 2.16% (overlap 4174 d from 2009-11-04 to 2026-06-11) vs ZROZ
 # generated: 2026-07-01
 date,close
+1962-01-01,19.848181
 1962-01-02,19.844672
 1962-01-03,19.841164
 1962-01-04,19.837617
