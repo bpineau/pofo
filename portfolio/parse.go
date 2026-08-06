@@ -31,6 +31,16 @@ type Spec struct {
 	// specify one (callers then apply their default).
 	RebalanceDays int
 
+	// Leverage, set by "#meta leverage:on", keeps the weights as written
+	// instead of normalizing them: a sum above 100 % is financed by a
+	// negative cash position, below 100 % the residual sits in cash.
+	Leverage bool
+
+	// BorrowSpread is the yearly spread over the cash rate paid on
+	// borrowed money ("#meta borrow-spread:X", percent per year);
+	// negative when absent (callers apply their default).
+	BorrowSpread float64
+
 	// EnvelopeFees is the additional yearly fee of the hosting envelope
 	// (assurance-vie, PER, mandat…) set by "#meta extra-fees:X" — fees
 	// applied on top of the WHOLE portfolio, in addition to the assets'
@@ -71,7 +81,7 @@ func ParseFile(path string) (*Spec, error) {
 // suffix. If the weights do not sum to 100 they are normalized and a
 // warning is recorded.
 func Parse(name string, r io.Reader) (*Spec, error) {
-	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1}
+	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1}
 	sc := bufio.NewScanner(r)
 	lineNo := 0
 	for sc.Scan() {
@@ -122,6 +132,29 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	sum := 0.0
 	for _, h := range spec.Holdings {
 		sum += h.RawWeight
+	}
+	if sum <= 0 {
+		return nil, fmt.Errorf("somme des poids nulle")
+	}
+	if spec.Leverage {
+		// Levier explicite: les poids sont des fractions du capital, tels
+		// qu'écrits; le résidu (100−somme) devient une position cash.
+		if sum > 500 {
+			return nil, fmt.Errorf("exposition totale %.4g %% au-delà du plafond de 500 %%", sum)
+		}
+		for i := range spec.Holdings {
+			spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / 100
+		}
+		if math.Abs(sum-100) > 0.5 {
+			spec.Warnings = append(spec.Warnings,
+				fmt.Sprintf("levier explicite : exposition totale %.4g %%, résidu en cash %.4g %%", sum, 100-sum))
+		}
+		return spec, nil
+	}
+	for _, h := range spec.Holdings {
+		if h.RawWeight > 100 {
+			return nil, fmt.Errorf("poids %.4g %% > 100 %% — ajoutez « #meta leverage:on » si l'exposition est volontaire", h.RawWeight)
+		}
 	}
 	if math.Abs(sum-100) > 0.5 {
 		spec.Warnings = append(spec.Warnings,
@@ -182,6 +215,21 @@ func (s *Spec) applyMeta(directives string) error {
 				return fmt.Errorf("#meta rebalance: %q n'est pas un nombre de jours valide", val)
 			}
 			s.RebalanceDays = n
+		case "leverage":
+			switch strings.ToLower(val) {
+			case "on":
+				s.Leverage = true
+			case "off":
+				s.Leverage = false
+			default:
+				return fmt.Errorf("#meta leverage: %q invalide (attendu on ou off)", val)
+			}
+		case "borrow-spread":
+			f, err := parseNumber(val)
+			if err != nil || f < 0 || f > 10 {
+				return fmt.Errorf("#meta borrow-spread: %q n'est pas un pourcentage annuel valide", val)
+			}
+			s.BorrowSpread = f
 		case "extra-fees", "envelope-fees":
 			// Frais additionnels appliqués à l'ensemble du portefeuille
 			// (enveloppe, mandat, courtier), en plus des TER des actifs.
@@ -204,8 +252,8 @@ func parseWeight(s string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("nombre attendu")
 	}
-	if w <= 0 || w > 100 {
-		return 0, fmt.Errorf("doit être compris entre 0 exclu et 100")
+	if w <= 0 || w > 500 {
+		return 0, fmt.Errorf("doit être compris entre 0 exclu et 500")
 	}
 	return w, nil
 }
