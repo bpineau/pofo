@@ -1,6 +1,6 @@
 /pofo
 /data/
-*.html
+pofo-*.html
 /TODO
 /my-portfolios/
 .claude/scheduled_tasks.lock
