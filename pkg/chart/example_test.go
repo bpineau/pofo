@@ -47,6 +47,28 @@ func ExampleStyleMinimal() {
 	// false true
 }
 
+// Braille mode packs 2x4 dots per terminal cell for a smoother curve.
+func ExampleTerm_braille() {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	var dates []time.Time
+	var v []float64
+	for i := range 120 {
+		dates = append(dates, start.AddDate(0, 0, i))
+		v = append(v, 100+float64(i))
+	}
+	out := chart.Term(chart.TermOptions{Width: 40, Height: 6, Braille: true},
+		[]chart.Series{{Name: "up", Dates: dates, Values: v}})
+	braille := false
+	for _, r := range out {
+		if r > 0x2800 && r <= 0x28FF {
+			braille = true
+		}
+	}
+	fmt.Println(braille)
+	// Output:
+	// true
+}
+
 // Sparkline packs a value trail into a bare inline curve for table cells.
 func ExampleSparkline() {
 	svg := chart.Sparkline(chart.SparkOptions{Width: 72, Height: 20, Color: "#2E6E63"},
