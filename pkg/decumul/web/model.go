@@ -189,12 +189,27 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	// headline outcome and recovery distribution at the selected buffer.
 	e := p.Simulate(pr.NPaths, simWorkers, seed)
 	o := e.Outcome()
+	// Recovery-time distribution: keep the first years legible and fold the long
+	// tail into a single "12y+" bucket, rather than 45 unreadable slivers.
+	const recoveryCap = 12
 	var bars []chart.Bar
+	var tail float64
 	for _, b := range e.RecoveryTimeDistribution() {
+		if b.Years <= recoveryCap {
+			bars = append(bars, chart.Bar{
+				Label: fmt.Sprintf("%dy", b.Years),
+				Value: b.Share * 100,
+				Text:  fmt.Sprintf("%.0f%%", b.Share*100),
+			})
+		} else {
+			tail += b.Share
+		}
+	}
+	if tail > 0 {
 		bars = append(bars, chart.Bar{
-			Label: fmt.Sprintf("%dy", b.Years),
-			Value: b.Share * 100,
-			Text:  fmt.Sprintf("%.0f%%", b.Share*100),
+			Label: fmt.Sprintf("%dy+", recoveryCap),
+			Value: tail * 100,
+			Text:  fmt.Sprintf("%.0f%%", tail*100),
 		})
 	}
 

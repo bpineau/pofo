@@ -212,10 +212,11 @@ document.addEventListener("mousemove", e => {
 document.addEventListener("mouseout", e => {
   if (e.target.closest("[data-help]")) tip.style.display = "none";
 });
-// Ruin colour: green (safe) through amber to red, saturating at 30%.
+// Ruin colour: a soft tearsheet ramp, green (safe) through amber to red,
+// saturating at 30%. Kept light so the monospace figure stays readable.
 function ruinColor(r) {
-  const x = Math.max(0, Math.min(r, 0.30));
-  return `hsl(${(120 * (1 - x / 0.30)).toFixed(0)},65%,88%)`;
+  const x = Math.max(0, Math.min(r, 0.30)) / 0.30;
+  return `hsl(${(150 - 142 * x).toFixed(0)},50%,${(91 - 5 * x).toFixed(0)}%)`;
 }
 async function renderModels(body) {
   const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
@@ -230,7 +231,12 @@ async function renderModels(body) {
   conf.className = r.confidence ? "conf-" + r.confidence.toLowerCase() : "";
   const ms = r.models || [];
   const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
-  const head = `<tr><th></th>${ms.map(m => `<th data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+  // Signature: a green→amber→red rail under the headers, encoding the models'
+  // optimistic→catastrophic ordering (left = central case, right = the tail).
+  const rail = i => ms.length < 2 ? "var(--accent)"
+    : `hsl(${(150 - 142 * i / (ms.length - 1)).toFixed(0)},55%,45%)`;
+  const head = `<tr><th></th>${ms.map((m, i) =>
+    `<th data-help="${esc(m.help)}" style="border-top-color:${rail(i)}">${m.name}</th>`).join("")}</tr>`;
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => (m.ruin * 100).toFixed(1) + "%", m => `style="background:${ruinColor(m.ruin)}"`) + `</tr>`;
   const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
