@@ -5,10 +5,17 @@
 #   equity-risk, designed to be held through, and bought into, for decades.
 # Inspired by: factor investing (Fama-French) + a light crisis-alpha overlay.
 # Pair with regular contributions (see dca-accumulation-demo.txt).
+# Backtest note: the small-cap-value sleeve uses ZPRVSIM (MSCI USA Small Cap
+#   Value Weighted, real ZPRV from 2015, simulated back to 1997) so the
+#   factor's long record — incl. the dot-com bust and 2008 — is visible. In
+#   practice buy the UCITS Avantis Global Small Cap Value (IE0003R87OG3) for a
+#   global tilt, or SPDR US Small Cap Value Weighted (ZPRV / IE00BSPLC413).
+#   The full portfolio's common window is still capped ~2015 by the momentum
+#   ETF's inception (IWMO); the value sleeve itself now spans 28 years.
 #meta rebalance:180
 
 45    IE00B4L5Y983    # World core (IWDA)
 15    IE00BKM4GZ66    # Emerging Markets (EIMI)
-15    IE0003R87OG3    # Global Small-Cap Value (AVWS)
+15    ZPRVSIM         # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 15    IE00BP3QZ825    # World Momentum (IWMO)
 10    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)
