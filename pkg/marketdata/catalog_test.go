@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -26,7 +27,7 @@ func TestCatalogPinsResolutionWithoutSearch(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.Fetch("VOO", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	s, err := c.Fetch(context.Background(), "VOO", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil {
 		t.Fatal(err)
 	}

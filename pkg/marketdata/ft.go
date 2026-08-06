@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -11,9 +12,9 @@ import (
 // ftSearch resolves an identifier (typically an ISIN) through the Financial
 // Times securities search. FT covers many European mutual funds that Yahoo
 // does not list.
-func (c *Client) ftSearch(query string) (resolution, error) {
+func (c *Client) ftSearch(ctx context.Context, query string) (resolution, error) {
 	u := fmt.Sprintf("%s/data/searchapi/searchsecurities?query=%s", c.FTBase, url.QueryEscape(query))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return resolution{}, err
 	}
@@ -68,7 +69,7 @@ func ftSymbolCurrency(symbol string) string {
 
 // fetchFT downloads a daily price series (fund NAVs, mostly) from the FT
 // chart API. The series is keyed by the original identifier (the ISIN).
-func (c *Client) fetchFT(id string, res resolution, from time.Time) (*Series, error) {
+func (c *Client) fetchFT(ctx context.Context, id string, res resolution, from time.Time) (*Series, error) {
 	days := max(int(time.Since(from).Hours()/24)+2, 2)
 	payload, err := json.Marshal(map[string]any{
 		"days":              days,
@@ -81,7 +82,7 @@ func (c *Client) fetchFT(id string, res resolution, from time.Time) (*Series, er
 	if err != nil {
 		return nil, err
 	}
-	body, err := c.post(c.FTBase+"/data/chartapi/series", "application/json", payload)
+	body, err := c.post(ctx, c.FTBase+"/data/chartapi/series", "application/json", payload)
 	if err != nil {
 		return nil, err
 	}

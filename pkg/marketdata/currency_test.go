@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"math"
 	"net/http"
@@ -24,7 +25,7 @@ func TestConvertCurrency(t *testing.T) {
 	for i, d := range days {
 		s.Points = append(s.Points, Point{Date: d, Close: 100 + float64(i)})
 	}
-	out, extrap, err := c.ConvertCurrency(s, "CHF", days[0])
+	out, extrap, err := c.ConvertCurrency(context.Background(), s, "CHF", days[0])
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,12 +46,12 @@ func TestConvertCurrency(t *testing.T) {
 		t.Error("input series mutated")
 	}
 	// Même devise: renvoyée telle quelle, sans requête FX.
-	if same, _, err := c.ConvertCurrency(s, "USD", days[0]); err != nil || same != s {
+	if same, _, err := c.ConvertCurrency(context.Background(), s, "USD", days[0]); err != nil || same != s {
 		t.Errorf("same-currency conversion should be identity: %v", err)
 	}
 	// GBp: division par 100 puis conversion… ici cible GBP = pas de FX.
 	pence := &Series{Symbol: "P", Currency: "GBp", Points: []Point{{Date: days[0], Close: 250}}}
-	gbp, _, err := c.ConvertCurrency(pence, "GBP", days[0])
+	gbp, _, err := c.ConvertCurrency(context.Background(), pence, "GBP", days[0])
 	if err != nil || gbp.Points[0].Close != 2.5 || gbp.Currency != "GBP" {
 		t.Errorf("GBp→GBP: %+v, %v", gbp, err)
 	}
@@ -124,10 +125,10 @@ func TestConvertCurrencyFetchesFXOncePerRun(t *testing.T) {
 	}
 
 	// Two USD assets with different first dates -> different caller `from`.
-	if _, _, err := c.ConvertCurrency(usdAsset("A", 0), "EUR", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+	if _, _, err := c.ConvertCurrency(context.Background(), usdAsset("A", 0), "EUR", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatal(err)
 	}
-	if _, _, err := c.ConvertCurrency(usdAsset("B", 5), "EUR", time.Date(2019, 6, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+	if _, _, err := c.ConvertCurrency(context.Background(), usdAsset("B", 5), "EUR", time.Date(2019, 6, 1, 0, 0, 0, 0, time.UTC)); err != nil {
 		t.Fatal(err)
 	}
 

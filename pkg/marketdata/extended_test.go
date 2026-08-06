@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"strings"
@@ -37,7 +38,7 @@ func TestFetchExtendedSplicesSimdata(t *testing.T) {
 	}
 	opt := FetchOptions{Simdata: simdataFS(simDays, simCloses)}
 
-	s, err := c.FetchExtended("VOOSIM", opt)
+	s, err := c.FetchExtended(context.Background(), "VOOSIM", opt)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -60,7 +61,7 @@ func TestFetchExtendedSplicesSimdata(t *testing.T) {
 	}
 
 	// The memoized bare series must stay unextended.
-	bare, err := c.FetchExtended("VOO", opt)
+	bare, err := c.FetchExtended(context.Background(), "VOO", opt)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -81,7 +82,7 @@ func TestFetchExtendedNoSim(t *testing.T) {
 
 	simDays := []time.Time{realDays[0].AddDate(0, 0, -2), realDays[0].AddDate(0, 0, -1)}
 	opt := FetchOptions{Simdata: simdataFS(simDays, []float64{50, 51}), NoSim: true}
-	s, err := c.FetchExtended("VOOSIM", opt)
+	s, err := c.FetchExtended(context.Background(), "VOOSIM", opt)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -100,7 +101,7 @@ func TestFetchExtendedSimdataOnlyFallback(t *testing.T) {
 	base := time.Date(2020, 1, 2, 0, 0, 0, 0, time.UTC)
 	simDays := []time.Time{base, base.AddDate(0, 0, 1), base.AddDate(0, 0, 2)}
 	opt := FetchOptions{Simdata: simdataFS(simDays, []float64{50, 51, 52})}
-	s, err := c.FetchExtended("VOOSIM", opt)
+	s, err := c.FetchExtended(context.Background(), "VOOSIM", opt)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -112,7 +113,7 @@ func TestFetchExtendedSimdataOnlyFallback(t *testing.T) {
 	}
 
 	// Without simulated data the original fetch error must surface.
-	if _, err := c.FetchExtended("VOOSIM", FetchOptions{Simdata: fstest.MapFS{}}); err == nil {
+	if _, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{Simdata: fstest.MapFS{}}); err == nil {
 		t.Error("expected an error when neither real nor simulated data exists")
 	}
 }
@@ -126,7 +127,7 @@ func TestFetchExtendedWindow(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	s, err := c.FetchExtended("VOO", FetchOptions{To: realDays[2]})
+	s, err := c.FetchExtended(context.Background(), "VOO", FetchOptions{To: realDays[2]})
 	if err != nil {
 		t.Fatal(err)
 	}

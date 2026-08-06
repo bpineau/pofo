@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -63,17 +64,17 @@ type FetchOptions struct {
 // Plain identifiers skip the extension: FetchExtended("VOO", …) behaves
 // like Fetch plus the window and currency handling, so it is safe to route
 // every asset of a portfolio through this single entry point.
-func (c *Client) FetchExtended(id string, opt FetchOptions) (*Series, error) {
+func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions) (*Series, error) {
 	base, wantSim := SplitSim(id)
 	if opt.NoSim {
 		wantSim = false
 	}
 	if !wantSim {
-		s, err := c.Fetch(base, opt.From)
+		s, err := c.Fetch(ctx, base, opt.From)
 		if err != nil {
 			return nil, err
 		}
-		if s, err = c.convertTo(s, opt.Currency, opt.From); err != nil {
+		if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
 			return nil, err
 		}
 		return Trim(s, time.Time{}, opt.To), nil
@@ -92,7 +93,7 @@ func (c *Client) FetchExtended(id string, opt FetchOptions) (*Series, error) {
 		sim = Trim(sim, opt.From, time.Time{})
 		simOK = len(sim.Points) >= 2
 	}
-	s, err := c.Fetch(base, opt.From)
+	s, err := c.Fetch(ctx, base, opt.From)
 	if err != nil {
 		if simOK {
 			c.Logf("warning: %s unavailable (%v), using simulated data only", base, err)
@@ -119,7 +120,7 @@ func (c *Client) FetchExtended(id string, opt FetchOptions) (*Series, error) {
 			proxySym, ok = ProxySymbol(s.Symbol)
 		}
 		if ok {
-			ps, perr := c.History(proxySym, opt.From)
+			ps, perr := c.History(ctx, proxySym, opt.From)
 			if perr != nil {
 				c.Logf("warning: proxy %s for %s unavailable: %v", proxySym, s.Symbol, perr)
 			} else if ExtendBack(s, ps) {
@@ -128,7 +129,7 @@ func (c *Client) FetchExtended(id string, opt FetchOptions) (*Series, error) {
 			}
 		}
 	}
-	if s, err = c.convertTo(s, opt.Currency, opt.From); err != nil {
+	if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
 		return nil, err
 	}
 	return Trim(s, time.Time{}, opt.To), nil
@@ -138,11 +139,11 @@ func (c *Client) FetchExtended(id string, opt FetchOptions) (*Series, error) {
 // when currency is empty, already the series' own, or when the series does
 // not report one (the caller may warn about the mix); FX rates missing at
 // the start of the window are held flat with a Logf warning.
-func (c *Client) convertTo(s *Series, currency string, from time.Time) (*Series, error) {
+func (c *Client) convertTo(ctx context.Context, s *Series, currency string, from time.Time) (*Series, error) {
 	if currency == "" || s.Currency == "" || s.Currency == currency {
 		return s, nil
 	}
-	out, extrapolated, err := c.ConvertCurrency(s, currency, from)
+	out, extrapolated, err := c.ConvertCurrency(ctx, s, currency, from)
 	if err != nil {
 		return nil, err
 	}

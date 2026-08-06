@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	_ "embed"
 	"fmt"
 	"strings"
@@ -54,7 +55,7 @@ func extendFXBack(symbol string, s *Series) {
 // When the FX history starts after the series does, earlier points use the
 // first known rate; extrapolatedBefore reports that date (zero when exact).
 // A series whose currency is empty or already the target is returned as-is.
-func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out *Series, extrapolatedBefore time.Time, err error) {
+func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, from time.Time) (out *Series, extrapolatedBefore time.Time, err error) {
 	target = strings.ToUpper(strings.TrimSpace(target))
 	if target == "" || s.Currency == "" || len(s.Points) == 0 {
 		return s, time.Time{}, nil
@@ -81,7 +82,7 @@ func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out 
 	if first := s.First().Date; first.Before(fxFrom) {
 		fxFrom = first
 	}
-	fx, err := c.fxHistory(src, target, fxFrom)
+	fx, err := c.fxHistory(ctx, src, target, fxFrom)
 	if err != nil {
 		return nil, time.Time{}, fmt.Errorf("FX rate %s→%s: %w", src, target, err)
 	}
@@ -114,6 +115,6 @@ func (c *Client) ConvertCurrency(s *Series, target string, from time.Time) (out 
 // small and covers every asset's range; the euro cross is additionally
 // extended back to 1978 by the bundled ECU/EUR proxy (see extendFXBack), and
 // dates before any cross starts are held constant by the caller.
-func (c *Client) fxHistory(src, target string, _ time.Time) (*Series, error) {
-	return c.History(src+target+"=X", time.Time{})
+func (c *Client) fxHistory(ctx context.Context, src, target string, _ time.Time) (*Series, error) {
+	return c.History(ctx, src+target+"=X", time.Time{})
 }

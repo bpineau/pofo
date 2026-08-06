@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/url"
@@ -15,10 +16,10 @@ const morningstarToken = "ok91jeenoo"
 // timeseries API using a Morningstar fund id (0P…, found via Boursorama).
 // NAVs are expressed in the share class currency, which the API does not
 // disclose, so Currency stays as recorded in the resolution (often empty).
-func (c *Client) fetchMorningstar(id string, res resolution, from time.Time) (*Series, error) {
+func (c *Client) fetchMorningstar(ctx context.Context, id string, res resolution, from time.Time) (*Series, error) {
 	u := fmt.Sprintf("%s/api/rest.svc/timeseries_price/%s?id=%s&idtype=Morningstar&frequency=daily&startDate=%s&outputType=COMPACTJSON",
 		c.MorningstarBase, morningstarToken, url.QueryEscape(res.Symbol), from.Format("2006-01-02"))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return nil, err
 	}

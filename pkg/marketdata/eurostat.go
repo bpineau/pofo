@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	_ "embed"
 	"encoding/json"
 	"fmt"
@@ -96,9 +97,9 @@ var hicpName = map[string]string{
 // live Eurostat API is preferred (and disk-cached like the other non-Yahoo
 // sources); if it is unreachable and no cached copy exists, a bundled snapshot
 // keeps the series available offline, at the cost of missing the latest months.
-func (c *Client) fetchHICP(symbol, geo string, from time.Time) (*Series, error) {
-	s, err := c.cachedHistory("eurostat", symbol, from, func() (*Series, error) {
-		return c.downloadHICP(symbol, geo)
+func (c *Client) fetchHICP(ctx context.Context, symbol, geo string, from time.Time) (*Series, error) {
+	s, err := c.cachedHistory(ctx, "eurostat", symbol, from, func() (*Series, error) {
+		return c.downloadHICP(ctx, symbol, geo)
 	})
 	if err != nil {
 		if anchors, ok := embeddedHICP(geo); ok {
@@ -127,10 +128,10 @@ func hicpSeries(symbol, geo string, monthly []Point) *Series {
 
 // downloadHICP fetches the monthly all-items HICP (2015=100) for geo from the
 // Eurostat dissemination API and interpolates it to a daily index.
-func (c *Client) downloadHICP(symbol, geo string) (*Series, error) {
+func (c *Client) downloadHICP(ctx context.Context, symbol, geo string) (*Series, error) {
 	u := fmt.Sprintf("%s/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"+
 		"?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=%s", c.EurostatBase, url.QueryEscape(geo))
-	body, err := c.get(u)
+	body, err := c.get(ctx, u)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +174,7 @@ func (c *Client) downloadHICP(symbol, geo string) (*Series, error) {
 	// 1970s-80s a long retirement backcast needs. Best-effort: on failure the
 	// series simply keeps its Eurostat start.
 	if geo == "FR" {
-		if older, ferr := c.fetchFRED("FRACPIALLMINMEI"); ferr == nil {
+		if older, ferr := c.fetchFRED(ctx, "FRACPIALLMINMEI"); ferr == nil {
 			monthly = extendMonthlyBack(monthly, older)
 		} else {
 			c.Logf("warning: FRED French CPI unavailable (%v); %s starts %s", ferr, symbol, monthly[0].Date.Format("2006-01"))

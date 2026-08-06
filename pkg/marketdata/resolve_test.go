@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"context"
 	"net/http"
 	"testing"
 )
@@ -17,7 +18,7 @@ func TestResolveFromCacheNoNetwork(t *testing.T) {
 		Source: "yahoo", Symbol: "AAPL", Name: "Apple Inc.", Currency: "USD",
 	})
 
-	got, err := c.Resolve("XX1234567890")
+	got, err := c.Resolve(context.Background(), "XX1234567890")
 	if err != nil {
 		t.Fatal(err)
 	}
