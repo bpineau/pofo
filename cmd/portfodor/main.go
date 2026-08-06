@@ -21,13 +21,13 @@ import (
 	"strings"
 	"time"
 
-	"portfodor/datasets"
-	"portfodor/pkg/chart"
-	"portfodor/pkg/marketdata"
-	"portfodor/pkg/metrics"
-	"portfodor/pkg/portfolio"
-	"portfodor/pkg/report"
-	"portfodor/pkg/simgen"
+	"github.com/bpineau/portfodor/datasets"
+	"github.com/bpineau/portfodor/pkg/chart"
+	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/portfolio"
+	"github.com/bpineau/portfodor/pkg/report"
+	"github.com/bpineau/portfodor/pkg/simgen"
 )
 
 func main() {

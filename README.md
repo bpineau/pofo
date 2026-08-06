@@ -171,14 +171,14 @@ Everything consumable as a library lives under `pkg/`; `cmd/` only contains
 the CLI wiring and `golden/` the golden test suite.
 
 Each package has its documentation page — calculation conventions included
-(`go doc portfodor/pkg/metrics`) — and runnable examples:
+(`go doc github.com/bpineau/portfodor/pkg/metrics`) — and runnable examples:
 
 ```go
 import (
-	"portfodor/pkg/chart"
-	"portfodor/pkg/marketdata"
-	"portfodor/pkg/metrics"
-	"portfodor/pkg/portfolio"
+	"github.com/bpineau/portfodor/pkg/chart"
+	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/portfolio"
 )
 
 // Fetch a price history (transparent resolution + caching).

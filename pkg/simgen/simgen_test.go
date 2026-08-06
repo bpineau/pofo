@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"portfodor/pkg/marketdata"
-	"portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/metrics"
 )
 
 // fakeFetcher serves canned series, no network.

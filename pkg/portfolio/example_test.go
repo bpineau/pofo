@@ -5,9 +5,9 @@ import (
 	"strings"
 	"time"
 
-	"portfodor/pkg/marketdata"
-	"portfodor/pkg/metrics"
-	"portfodor/pkg/portfolio"
+	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/portfolio"
 )
 
 // Parse reads a portfolio description: "<weight %> <identifier>
