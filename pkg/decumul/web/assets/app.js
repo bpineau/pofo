@@ -169,9 +169,10 @@ let run = async function(){
     pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
     sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear)};
   lastBody = body;
-  renderModels(body); // the multi-model hero strip, in parallel with the detail sim
-  renderPaths(body);  // the wealth fan chart for the selected model
-  renderSolver(body); // the per-lever menu to reach the acceptable ruin
+  renderModels(body);   // the multi-model hero strip, in parallel with the detail sim
+  renderPaths(body);    // the wealth fan chart for the selected model
+  renderSolver(body);   // the per-lever menu to reach the acceptable ruin
+  renderFrontier(body); // ruin vs withdrawal rate, per model
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",
@@ -246,6 +247,15 @@ async function renderPaths(body) {
   } catch (e) { /* leave the previous chart on failure */ }
 }
 document.getElementById("fanModel").addEventListener("change", () => { if (lastBody) renderPaths(lastBody); });
+
+// Ruin vs withdrawal-rate frontier, one curve per model.
+async function renderFrontier(body) {
+  try {
+    const r = await (await fetch("/api/frontier", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
+    document.getElementById("frontierSvg").innerHTML = r.frontierSvg || "";
+  } catch (e) { /* leave the previous chart on failure */ }
+}
 
 // --- solver menu: the equivalent ways to reach the acceptable ruin, one per
 // controllable lever (spend less, cut in downturns, hold a cash buffer). ---
