@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -507,5 +508,43 @@ func TestFetchCanceledContext(t *testing.T) {
 		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("Fetch did not honor the canceled context")
+	}
+}
+
+func TestCachelessClient(t *testing.T) {
+	days := []time.Time{dayUTC(time.Now().AddDate(0, 0, -3)), dayUTC(time.Now().AddDate(0, 0, -2))}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("VOO", days, []float64{100, 101}))
+	}))
+	defer srv.Close()
+
+	// Run from a scratch working directory so a bug writing relative
+	// paths would be caught by the directory staying empty.
+	dir := t.TempDir()
+	oldwd, _ := os.Getwd()
+	if err := os.Chdir(dir); err != nil {
+		t.Fatal(err)
+	}
+	defer os.Chdir(oldwd)
+
+	c := NewClient("")
+	stubAllBases(c, srv.URL)
+	s, err := c.Fetch(context.Background(), "VOO", time.Time{})
+	if err != nil || len(s.Points) != 2 {
+		t.Fatalf("cache-less Fetch: %v, %v", s, err)
+	}
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(entries) != 0 {
+		t.Fatalf("cache-less client wrote files: %v", entries)
+	}
+
+	// A second, fresh client must hit the network again (nothing cached).
+	c2 := NewClient("")
+	stubAllBases(c2, srv.URL)
+	if _, err := c2.Fetch(context.Background(), "VOO", time.Time{}); err != nil {
+		t.Fatalf("second cache-less Fetch: %v", err)
 	}
 }
