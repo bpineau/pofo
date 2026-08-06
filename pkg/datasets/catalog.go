@@ -1,6 +1,10 @@
 package datasets
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"strings"
+	"sync"
+)
 
 // Asset is one row of the bundled asset catalog
 // (pkg/datasets/assetmeta/assets.json): a fund, ETF, index or commodity with its
@@ -46,7 +50,7 @@ type Asset struct {
 }
 
 // Catalog parses the embedded asset metadata into the full list of catalog
-// assets — the structured, typed view of assets.json for library consumers.
+// assets, the structured, typed view of assets.json for library consumers.
 // For the raw bytes (to decode into your own type), use AssetMeta instead.
 //
 // It panics only if the bundled JSON is corrupt, which is impossible at
@@ -57,4 +61,40 @@ func Catalog() []Asset {
 		panic("datasets: cannot parse the embedded asset catalog: " + err.Error())
 	}
 	return assets
+}
+
+var (
+	indexOnce sync.Once
+	index     map[string]Asset
+)
+
+func buildIndex() {
+	assets := Catalog()
+	index = make(map[string]Asset, len(assets)*2)
+	put := func(key string, a Asset) {
+		if key == "" {
+			return
+		}
+		k := strings.ToUpper(strings.TrimSpace(key))
+		if _, exists := index[k]; !exists {
+			index[k] = a
+		}
+	}
+	for _, a := range assets {
+		put(a.ID, a)
+		put(a.ISIN, a)
+		for _, alias := range a.Aliases {
+			put(alias, a)
+		}
+	}
+}
+
+// Lookup returns the catalog asset for an identifier (its id, ISIN or any
+// alias, case-insensitive) and whether it was found. The index is built once
+// on first use. The first registration of a key wins, so a primary id is never
+// shadowed by another asset's alias.
+func Lookup(id string) (Asset, bool) {
+	indexOnce.Do(buildIndex)
+	a, ok := index[strings.ToUpper(strings.TrimSpace(id))]
+	return a, ok
 }
