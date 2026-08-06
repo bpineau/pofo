@@ -31,7 +31,9 @@
 // monthly all-items index (2015=100) is interpolated to a smooth daily curve,
 // so an inflation series behaves like any other (a chart, a CAGR that reads as
 // average inflation, drawdowns that mark deflation episodes, a deflator for
-// real-return work). It carries no currency.
+// real-return work). It carries no currency. A monthly snapshot is embedded in
+// the binary as an offline fallback (used only when the live API is unreachable
+// and nothing is cached), so an inflation series is always available.
 //
 // # Intraday
 //

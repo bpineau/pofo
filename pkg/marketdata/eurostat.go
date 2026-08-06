@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -10,6 +11,57 @@ import (
 	"strings"
 	"time"
 )
+
+// hicpFRSnapshot is a bundled offline fallback for ^HICP-FR: the monthly index
+// anchors, used when the live Eurostat API is unreachable. The live series is
+// always preferred, so this only needs refreshing occasionally to keep the
+// offline tail recent. Regenerate (requires curl + jq) with:
+//
+//	url='https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=FR'
+//	curl -s "$url" | jq -r '.dimension.time.category.index as $i | .value as $v |
+//	  ($i|to_entries|sort_by(.value)[]) | select($v[(.value|tostring)]!=null) |
+//	  "\(.key),\($v[(.value|tostring)])"' >> pkg/marketdata/data/hicp-fr.csv
+//
+// (keep the comment header at the top of the file).
+//
+//go:embed data/hicp-fr.csv
+var hicpFRSnapshot string
+
+// embeddedHICP returns the bundled monthly anchors for a geography, if any.
+func embeddedHICP(geo string) ([]Point, bool) {
+	switch geo {
+	case "FR":
+		return parseHICPSnapshot(hicpFRSnapshot), true
+	}
+	return nil, false
+}
+
+// parseHICPSnapshot reads "YYYY-MM,index" lines (ignoring blanks and #
+// comments), skipping any malformed row, sorted ascending by date.
+func parseHICPSnapshot(csv string) []Point {
+	var pts []Point
+	for _, line := range strings.Split(csv, "\n") {
+		line = strings.TrimSpace(line)
+		if line == "" || strings.HasPrefix(line, "#") {
+			continue
+		}
+		label, val, ok := strings.Cut(line, ",")
+		if !ok {
+			continue
+		}
+		t, err := time.ParseInLocation("2006-01", strings.TrimSpace(label), time.UTC)
+		if err != nil {
+			continue
+		}
+		v, err := strconv.ParseFloat(strings.TrimSpace(val), 64)
+		if err != nil || v <= 0 {
+			continue
+		}
+		pts = append(pts, Point{Date: t, Close: v})
+	}
+	sort.Slice(pts, func(i, j int) bool { return pts[i].Date.Before(pts[j].Date) })
+	return pts
+}
 
 // hicpPrefix marks the synthetic identifiers served from Eurostat's Harmonised
 // Index of Consumer Prices, e.g. "^HICP-FR" (France), "^HICP-EA" (euro area).
@@ -34,12 +86,37 @@ var hicpName = map[string]string{
 	"DE": "Germany",
 }
 
-// fetchHICP returns the daily-interpolated HICP index for a geography, cached
-// like the other non-Yahoo sources.
+// fetchHICP returns the daily-interpolated HICP index for a geography. The
+// live Eurostat API is preferred (and disk-cached like the other non-Yahoo
+// sources); if it is unreachable and no cached copy exists, a bundled snapshot
+// keeps the series available offline, at the cost of missing the latest months.
 func (c *Client) fetchHICP(symbol, geo string, from time.Time) (*Series, error) {
-	return c.cachedHistory("eurostat", symbol, from, func() (*Series, error) {
+	s, err := c.cachedHistory("eurostat", symbol, from, func() (*Series, error) {
 		return c.downloadHICP(symbol, geo)
 	})
+	if err != nil {
+		if anchors, ok := embeddedHICP(geo); ok {
+			c.Logf("warning: Eurostat unavailable (%v), using the embedded %s snapshot (ends %s)",
+				err, symbol, anchors[len(anchors)-1].Date.Format("2006-01"))
+			return hicpSeries(symbol, geo, anchors), nil
+		}
+		return nil, err
+	}
+	return s, nil
+}
+
+// hicpSeries packages monthly anchors as a daily-interpolated index series.
+func hicpSeries(symbol, geo string, monthly []Point) *Series {
+	name := geo
+	if n, ok := hicpName[geo]; ok {
+		name = n
+	}
+	return &Series{
+		Symbol: symbol,
+		Name:   fmt.Sprintf("HICP %s (all-items, 2015=100)", name),
+		Source: "eurostat",
+		Points: monthlyToDaily(monthly),
+	}
 }
 
 // downloadHICP fetches the monthly all-items HICP (2015=100) for geo from the
@@ -83,17 +160,7 @@ func (c *Client) downloadHICP(symbol, geo string) (*Series, error) {
 		return nil, fmt.Errorf("eurostat HICP %s: only %d monthly points", geo, len(monthly))
 	}
 	sort.Slice(monthly, func(i, j int) bool { return monthly[i].Date.Before(monthly[j].Date) })
-
-	name := geo
-	if n, ok := hicpName[geo]; ok {
-		name = n
-	}
-	return &Series{
-		Symbol: symbol,
-		Name:   fmt.Sprintf("HICP %s (all-items, 2015=100)", name),
-		Source: "eurostat",
-		Points: monthlyToDaily(monthly),
-	}, nil
+	return hicpSeries(symbol, geo, monthly), nil
 }
 
 // monthlyToDaily expands monthly index anchors into a daily series, spreading
