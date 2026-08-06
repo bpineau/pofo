@@ -30,16 +30,23 @@ type Params struct {
 	Model         string    `json:"model"` // "parametric" (default), "bootstrap", "cohorts"
 }
 
+// Card is one labelled summary figure shown above the charts.
+type Card struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
+}
+
 // Result is the JSON returned for one parameter set. Note carries a
 // user-facing caveat (e.g. a horizon longer than the available history for
-// the cohorts model), empty when the result is fully usable.
+// the cohorts model), empty when the result is fully usable. Cards is an
+// ordered list so the UI shows the figures in a stable, readable order.
 type Result struct {
-	Note         string            `json:"note"`
-	Cards        map[string]string `json:"cards"`
-	BufferSVG    string            `json:"bufferSvg"`
-	RuinCurveSVG string            `json:"ruinCurveSvg"`
-	SurfaceSVG   string            `json:"surfaceSvg"`
-	RecoverySVG  string            `json:"recoverySvg"`
+	Note         string `json:"note"`
+	Cards        []Card `json:"cards"`
+	BufferSVG    string `json:"bufferSvg"`
+	RuinCurveSVG string `json:"ruinCurveSvg"`
+	SurfaceSVG   string `json:"surfaceSvg"`
+	RecoverySVG  string `json:"recoverySvg"`
 }
 
 // plan builds a decumul.Plan from the params, with a parametric source by
@@ -133,11 +140,11 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	surf := p.Sweep2D(xParam, yParam, xs, ys, pr.NPaths/2+1, simWorkers, seed)
 
 	return Result{
-		Cards: map[string]string{
-			"ruin":         fmt.Sprintf("%.1f%%", o.RuinProb*100),
-			"withdrawRate": fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100),
-			"terminalP50":  fmt.Sprintf("%.0f k€", o.TerminalP50/1000),
-			"terminalP5":   fmt.Sprintf("%.0f k€", o.TerminalP5/1000),
+		Cards: []Card{
+			{"Ruin", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
+			{"Withdrawal rate", fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100)},
+			{"Terminal wealth (p50)", fmt.Sprintf("%.0f k€", o.TerminalP50/1000)},
+			{"Terminal wealth (p5)", fmt.Sprintf("%.0f k€", o.TerminalP5/1000)},
 		},
 		BufferSVG:    chart.Bars(chart.Options{Title: "Ruin % by buffer years"}, barsFromSweep(sweep)),
 		RuinCurveSVG: chart.Bars(chart.Options{Title: "Terminal wealth p50 (k€) by buffer"}, terminalBars(sweep)),
