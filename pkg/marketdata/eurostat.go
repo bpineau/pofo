@@ -13,16 +13,21 @@ import (
 )
 
 // hicpFRSnapshot is a bundled offline fallback for ^HICP-FR: the monthly index
-// anchors, used when the live Eurostat API is unreachable. The live series is
-// always preferred, so this only needs refreshing occasionally to keep the
-// offline tail recent. Regenerate (requires curl + jq) with:
+// anchors (long history, ~1955→), used when the live Eurostat API is
+// unreachable. It carries the same chain the live path builds — Eurostat HICP
+// from 1996 with the OECD French CPI (FRED FRACPIALLMINMEI) spliced before it —
+// so an offline run still deflates the high-inflation 1955-1990s a long
+// retirement backcast needs. The live series is always preferred; this only
+// needs refreshing occasionally to keep the recent tail current. Regenerate
+// (requires curl + jq) with:
 //
 //	url='https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=FR'
 //	curl -s "$url" | jq -r '.dimension.time.category.index as $i | .value as $v |
 //	  ($i|to_entries|sort_by(.value)[]) | select($v[(.value|tostring)]!=null) |
-//	  "\(.key),\($v[(.value|tostring)])"' >> pkg/marketdata/data/hicp-fr.csv
+//	  "\(.key),\($v[(.value|tostring)])"'
 //
-// (keep the comment header at the top of the file).
+// then prepend the rescaled FRED FRACPIALLMINMEI months before 1996 (chain at
+// the overlap, as extendMonthlyBack does), keeping the comment header.
 //
 //go:embed data/hicp-fr.csv
 var hicpFRSnapshot string
