@@ -202,6 +202,9 @@ simulation wherever it exists):
 | DBMF | official SG CTA Index (2000→) | corr 0.68 / weekly 0.75, beta 0.96 |
 | CTA | official SG Trend Index (2000→) | corr 0.54 — proprietary strategy, gap accepted |
 | Winton Trend-Equity | global equities + 0.5×Winton Trend fund (real 2019→, sim before) | weekly 0.92 |
+| VT, RSSB | imported third-party reconstructions (1969→) | corr 1.00 |
+| CRRY | imported commodity-carry reconstruction (2008→) | corr 0.99 |
+| BTAL | imported anti-beta reconstruction (2001→) | weekly 1.00 (daily 0.73, noisy) |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
 Discretionary strategies cannot be honestly replicated with factors: rather
