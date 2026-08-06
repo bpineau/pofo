@@ -4,8 +4,8 @@ const SLIDERS = [
   ["capital","Capital",800000,4000000,10000,1800000,"eur"],
   ["needAnnual","Net spending /yr",24000,84000,1000,48000,"eur"],
   ["bufferYears","Buffer (years)",0,10,1,3,"int"],
-  ["mu","Real growth return",0.01,0.12,0.005,0.04,"pct"],
-  ["sigma","Volatility",0.06,0.20,0.005,0.16,"pct"],
+  ["mu","Real growth return",0.01,0.12,0.005,0.05,"pct"],
+  ["sigma","Volatility (long-horizon)",0.06,0.20,0.005,0.11,"pct"],
   ["df","Tail df (low=fat)",3,30,1,5,"int"],
   ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
   ["years","Horizon (years from today)",20,60,1,45,"int"],
@@ -168,6 +168,7 @@ let run = async function(){
   const body = {...state, years: Math.round(state.years),
     pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
     sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear)};
+  renderModels(body); // the multi-model hero strip, in parallel with the detail sim
   // A/B: with a pinned baseline allocation, compare it against the current one.
   if (hasPanel && baseline) {
     const r = await (await fetch("/api/compare", {method:"POST",
@@ -191,6 +192,39 @@ let run = async function(){
   document.getElementById("cards").innerHTML = cardsHTML(r.cards);
   syncURL();
 };
+
+// --- multi-model hero strip: ruin / safe spend / median wealth per return
+// model, the epistemic-uncertainty view that replaces a single ruin figure. ---
+const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+// Ruin colour: green (safe) through amber to red, saturating at 30%.
+function ruinColor(r) {
+  const x = Math.max(0, Math.min(r, 0.30));
+  return `hsl(${(120 * (1 - x / 0.30)).toFixed(0)},65%,88%)`;
+}
+async function renderModels(body) {
+  const target = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
+  let r;
+  try {
+    r = await (await fetch("/api/models", {method: "POST",
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, targetRuin: target})})).json();
+  } catch (e) { return; }
+  document.getElementById("verdict").textContent = r.verdict || "";
+  const conf = document.getElementById("confidence");
+  conf.textContent = r.confidence ? `Confidence: ${r.confidence} · ${r.confNote}` : "";
+  conf.className = r.confidence ? "conf-" + r.confidence.toLowerCase() : "";
+  const ms = r.models || [];
+  const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
+  const head = `<tr><th></th>${ms.map(m => `<th title="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+  const ruinRow = `<tr><th title="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
+    cells(m => (m.ruin * 100).toFixed(1) + "%", m => `style="background:${ruinColor(m.ruin)}"`) + `</tr>`;
+  const spendRow = `<tr><th title="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
+    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub"> ${(m.safeWR * 100).toFixed(1)}%</span>`) + `</tr>`;
+  const wealthRow = `<tr><th title="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
+    cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
+  document.getElementById("modelstrip").innerHTML =
+    `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
+}
+document.getElementById("targetRuin").addEventListener("input", schedule);
 
 // --- solver: required capital for a target ruin, and the ruin-minimising
 // buffer at the current capital. ---
