@@ -77,16 +77,16 @@ func TestExtendIntlEquityWithBundledProxies(t *testing.T) {
 	}
 }
 
-// The US-equity leg (VFINX, 1976) is extended by the bundled US total-market TR
-// (USEQ-USD, ~1926) and the cash rate (^IRX) by the 3-month T-bill (TBILL-3M,
-// ~1934), removing the last US caps on NTSG/NTSX.
+// The US-equity leg (VFINX, 1976) is extended by the bundled S&P 500 total
+// return (SP500-USD, ~1871) and the cash rate (^IRX) by the 3-month T-bill
+// (TBILL-3M, ~1934), removing the last US caps on NTSG/NTSX.
 func TestExtendUSLegsWithBundledProxies(t *testing.T) {
 	for _, tc := range []struct {
 		leg   string
 		level float64
 		want  int
 	}{
-		{"VFINX", 100, 1930}, // US total market to ~1926
+		{"VFINX", 100, 1900}, // S&P 500 total return to ~1871
 		{"^IRX", 5, 1940},    // 3-month bill rate to ~1934 (a rate; realistic ~5% level)
 	} {
 		quotes := atSeries(tc.leg, 100, 50, tc.level)

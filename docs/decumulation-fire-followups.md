@@ -282,10 +282,11 @@ and on the currency conversion and fetch performance a EUR investor needs.
   `dpgtBuild`, `backcastBuild`) did not, so Winton stayed 2001 and a clean regen
   would have regressed DBMFE to ~2001. Every `BuildFrame` call site now uses
   `extend(f)`. Regenerate IE000O1VI174, DBMFE, GG00BQBFY362.
-- **US legs extended** (done): `longBack["VFINX"]` → `USEQ-USD.csv` (Ken French US
-  total market, ~1926); `longBack["^IRX"]` → `TBILL-3M.csv` (FRED TB3MS, ~1934,
-  a rate, rescaled ≈1 at the splice). NTSG's floor is now the dev-ex-US leg
-  (~1969); NTSX reaches ~1953.
+- **US legs extended** (done): `longBack["VFINX"]` → `SP500-USD.csv` (S&P 500 total
+  return, Shiller price + reinvested dividends, ~1871 — the index VFINX tracks;
+  replaced the earlier total-market proxy); `longBack["^IRX"]` → `TBILL-3M.csv`
+  (FRED TB3MS, ~1934, a rate, rescaled ≈1 at the splice). NTSG's floor is now the
+  dev-ex-US leg (~1969); NTSX reaches ~1953.
 - **^HICP-FR long history embedded** (done): `hicp-fr.csv` now carries the OECD
   French CPI (FRED FRACPIALLMINMEI) chained before Eurostat, ~1955→, so the
   offline fallback deflates the high-inflation decades too.
