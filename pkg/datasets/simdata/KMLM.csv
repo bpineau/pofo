@@ -3,7 +3,7 @@
 # name: KraneShares KMLM — TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), real KMLM grafted from 2020
 # validation: corr=0.348 (weekly 0.323) beta=0.23 TE=21.7%/yr CAGR sim 7.59% vs real 5.92% (overlap 1386 d from 2020-12-02 to 2026-06-11) vs KMLM
-# generated: 2026-06-13
+# generated: 2026-06-25
 date,close
 2001-08-31,3.544809
 2001-09-04,3.499716

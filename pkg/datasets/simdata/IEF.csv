@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: IEF
-# name: iShares 7-10Y Treasury — yield curves (imported ref.)
+# name: iShares 7-10Y Treasury — VFITX intermediate Treasury
 # method: VFITX (Vanguard Intermediate-Term Treasury, 1991→), real IEF grafted from 2002
 # validation: corr=0.945 (weekly 0.962) beta=1.33 TE=2.8%/yr CAGR sim 3.29% vs real 3.60% (overlap 6005 d from 2002-07-30 to 2026-06-11) vs IEF
-# generated: 2026-06-13
+# generated: 2026-06-25
 date,close
 1991-10-28,18.587896
 1991-10-29,18.755191
