@@ -8,7 +8,8 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 
 ## Correctness oddities (P1)
 
-1. **Ruin is tested on net need, not the grossed-up withdrawal.**
+1. ✅ **Done (2026-06-29).** **Ruin is tested on net need, not the grossed-up
+   withdrawal.**
    `Plan.RunPath` flags ruin with `if need > total` (net), but the money that
    must actually be liquidated is the *gross* (need + tax, and buffer refills).
    With the cost-basis `CTOFlatTax`, gross can substantially exceed net at high
@@ -17,19 +18,19 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
    ruin as "the gross required to deliver `need` exceeds available liquidity",
    computed consistently across the buffer-first and growth-first branches.
 
-2. **Partial-funding is silent.** `Tax.GrossUp` caps `gross` at `growth`, so a
+2. ✅ **Done (2026-06-29, with item 1).** **Partial-funding is silent.** `Tax.GrossUp` caps `gross` at `growth`, so a
    year that cannot fully fund `need` sells everything and delivers *less* net
    than needed, yet `RunPath` still does `Withdrawn += need` and may not latch
    ruin. The household "didn't get its money" without the path being marked.
    Fix together with (1): detect under-delivery (buffer drain + net deliverable
    from growth < need) and latch ruin; account the real net withdrawn.
 
-3. **`0` is overloaded as "unset" in `BufferSleeve`.** `DrawThreshold == 0`
+3. ✅ **Done (2026-06-29).** **`0` is overloaded as "unset" in `BufferSleeve`.** `DrawThreshold == 0`
    and `RefillCap == 0` are treated as "use the default" (0.10 / 0.50), so a
    user cannot intentionally set a 0 threshold or a no-refill policy. Use
    explicit defaults at construction, sentinel `-1`, or pointer fields.
 
-4. **`Sweep2D(_, Mu, …)` on a non-parametric plan is a silent no-op.**
+4. ✅ **Done (2026-06-29).** **`Sweep2D(_, Mu, …)` on a non-parametric plan is a silent no-op.**
    `Plan.set(Mu, …)` only mutates a `ParametricSource`; for bootstrap/cohort
    sources it does nothing, so the surface comes out flat with no error. The
    web layer dodges this by switching the y-axis, but the library API should
