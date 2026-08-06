@@ -171,13 +171,15 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     to a per-value `Simulate`. (Sweep2D is no longer run; the heatmap was
     dropped, see item 6.)
 
-17. **Redesign the `-fire` UI with the frontend-design skill (later).** The
-    current explorer (`pkg/decumul/web/assets/`) was built functionally, not
-    designed: layout, typography, colour, chart styling and the overall visual
-    hierarchy were never given a deliberate pass. Redo it with the
-    `frontend-design` skill for a distinctive, intentional look (and reconsider
-    chart rendering, the allocation bar styling, mobile layout, and surfacing
-    the hidden metrics from item 10 as part of the same pass).
+17. **STILL OPEN — Design pass on the `-fire` UI with the frontend-design skill.**
+    Note (2026-07-01): the usability rewrite rebuilt the explorer
+    (`pkg/decumul/web/assets/`) with a live hero strip, the multi-model table,
+    the fan / frontier / sensitivity charts and instant tooltips, but again
+    **functionally, not designed** — layout, typography, colour, chart styling,
+    visual hierarchy and mobile were not given a deliberate pass. Do it with the
+    `frontend-design` skill on the NEW UI (colour system across the model strip
+    cells and the per-model chart series, the allocation-bar styling, the dense
+    hero + tabs layout, and mobile). Highest-value cosmetic follow-up.
 
 18. ✅ **Done (2026-06-29).** **Better charts for the buffer arbitrage and the
     recovery distribution.** Specific chart requirements (part of, or before,
