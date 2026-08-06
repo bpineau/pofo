@@ -525,7 +525,7 @@ func kmlmRecipe() Recipe {
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), real KMLM grafted from 2020",
-		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.15, 0.0090)),
+		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.13, 0.0090)),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -537,8 +537,8 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real CTA grafted from 2022",
-		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.10, 0.0075)),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, high vol target ~ the fund's ~18%), real CTA grafted from 2022",
+		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.15, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
