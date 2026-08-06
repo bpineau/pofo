@@ -42,6 +42,23 @@ func Example_fetch() {
 		series.Name, len(series.Points), series.First().Date.Format("2006-01-02"))
 }
 
+// Example_fetchExtended shows the do-what-I-mean entry point: the SIM suffix
+// extends the fund's history with the bundled simulated series (real quotes
+// keeping priority), and the result is converted to euros. This is the exact
+// per-asset pipeline of the pofo CLI, in one call.
+// (Not run: requires the network.)
+func Example_fetchExtended() {
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+	series, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s: since %s (simulated before %s)\n", series.Name,
+		series.First().Date.Format("2006-01-02"),
+		series.SimulatedBefore.Format("2006-01-02"))
+}
+
 // Align merges trading calendars: the union of dates from start on, with
 // each series' level forward-filled across its own non-trading days.
 func ExampleAlign() {

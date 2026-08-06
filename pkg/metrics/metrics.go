@@ -103,8 +103,12 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 	return s, nil
 }
 
-// Returns computes simple daily returns between consecutive values.
+// Returns computes simple daily returns between consecutive values. It
+// returns nil for fewer than two values.
 func Returns(values []float64) []float64 {
+	if len(values) < 2 {
+		return nil
+	}
 	r := make([]float64, 0, len(values)-1)
 	for i := 1; i < len(values); i++ {
 		r = append(r, values[i]/values[i-1]-1)

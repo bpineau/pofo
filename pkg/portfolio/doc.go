@@ -32,7 +32,17 @@
 //	                      request in Spec.Optimize; the caller runs it.
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
-// caller's job; see marketdata.Client.Fetch and marketdata.SplitSim.
+// caller's job: Build turns a parsed Spec into a simulatable Portfolio
+// through a fetch callback, typically marketdata.Client.FetchExtended.
+// Parse → Build → Simulate is the whole pipeline in three calls:
+//
+//	spec, _ := portfolio.ParseFile("p.txt")
+//	p, _ := portfolio.Build(spec, portfolio.BuildOptions{
+//		Fetch: func(id string) (*marketdata.Series, error) {
+//			return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+//		},
+//	})
+//	sim, _ := portfolio.Simulate(p, 90)
 //
 // # Simulation
 //
@@ -42,6 +52,7 @@
 // back to the target weights every N calendar days and deducting envelope
 // fees daily. Asset TERs are never deducted: they are already reflected in
 // prices.
+//
 // # Units
 //
 // Holding.Weight and Asset.Weight are FRACTIONS (0.60 = 60 %); RawWeight,

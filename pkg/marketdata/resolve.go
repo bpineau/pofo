@@ -13,9 +13,7 @@ type Resolution struct {
 	Currency string
 }
 
-func toResolution(r resolution) Resolution {
-	return Resolution{Source: r.Source, Symbol: r.Symbol, Xid: r.Xid, Name: r.Name, Currency: r.Currency}
-}
+func toResolution(r resolution) Resolution { return Resolution(r) }
 
 // resolveFrom is the history depth Resolve fetches over when it must run a full
 // resolution: deep enough that the multi-source search settles on the same
