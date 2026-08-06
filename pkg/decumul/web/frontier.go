@@ -31,23 +31,23 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 	base := pr.plan()
 	base.Monthly = false
 
-	needs := make([]float64, len(frontierWRs))
-	for i, wr := range frontierWRs {
-		needs[i] = wr * pr.Capital
-	}
-
 	var series []chart.XYSeries
 	for i, ns := range modelSources(pr, panel) {
-		p := base
-		p.Source = ns.source
-		pts, err := p.Sweep1D(decumul.NeedAnnual, needs, pr.NPaths, simWorkers, 7)
-		if err != nil {
-			continue
-		}
-		xs := make([]float64, len(pts))
-		ys := make([]float64, len(pts))
-		for j, pt := range pts {
-			xs[j], ys[j] = frontierWRs[j]*100, pt.RuinProb*100
+		xs := make([]float64, len(frontierWRs))
+		ys := make([]float64, len(frontierWRs))
+		for j, wr := range frontierWRs {
+			p := base
+			p.Source = ns.source
+			p.NeedAnnual = wr * pr.Capital
+			// Under guardrails the spending band is centred on the initial
+			// withdrawal rate, so it must be re-anchored at each swept rate;
+			// otherwise every point keeps the band of the user's current spend
+			// and the whole curve barely moves when guardrails are toggled.
+			if pr.Guardrails {
+				p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
+			}
+			xs[j] = wr * 100
+			ys[j] = p.Simulate(pr.NPaths, simWorkers, 7).RuinProb() * 100
 		}
 		series = append(series, chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(i)})
 	}

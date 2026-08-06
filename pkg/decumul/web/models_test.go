@@ -4,11 +4,11 @@ import (
 	"testing"
 )
 
-// With no portfolio panel, Models returns the parametric family (Student-t,
-// Regime, Conservative). Sequence risk and the conservative prior must each be
-// at least as risky as the plain i.i.d. Student-t, and the conservative prior
-// must not exceed its safe withdrawal: this is the calibrated gradient that
-// replaces the single hypersensitive number.
+// With no portfolio panel, Models returns the synthetic family (Student-t,
+// Sequence stress, Broad-sample, Lost decade). Each stress must be at least as
+// risky as the plain i.i.d. Student-t, and the broad-sample prior must not
+// exceed its safe withdrawal: this is the calibrated gradient that replaces the
+// single hypersensitive number.
 func TestModelsParametricOrdering(t *testing.T) {
 	pr := Params{Capital: 1_500_000, NeedAnnual: 60000, Years: 30,
 		Mu: 0.05, Sigma: 0.11, Df: 5, TaxRate: 0.30, NPaths: 3000}
@@ -19,20 +19,23 @@ func TestModelsParametricOrdering(t *testing.T) {
 	for _, m := range res.Models {
 		by[m.Name] = m
 	}
-	for _, n := range []string{"Student-t", "Regime", "Conservative"} {
+	for _, n := range []string{"Student-t", "Sequence stress", "Broad-sample", "Lost decade"} {
 		if _, ok := by[n]; !ok {
 			t.Fatalf("missing model %q (have %v)", n, by)
 		}
 	}
-	st, rg, cons := by["Student-t"], by["Regime"], by["Conservative"]
+	st, rg, cons, lost := by["Student-t"], by["Sequence stress"], by["Broad-sample"], by["Lost decade"]
 	if rg.Ruin+1e-9 < st.Ruin {
-		t.Errorf("regime ruin %.3f should be >= student-t %.3f (sequence risk)", rg.Ruin, st.Ruin)
+		t.Errorf("sequence-stress ruin %.3f should be >= student-t %.3f (sequence risk)", rg.Ruin, st.Ruin)
 	}
 	if cons.Ruin+1e-9 < st.Ruin {
-		t.Errorf("conservative ruin %.3f should be >= student-t %.3f", cons.Ruin, st.Ruin)
+		t.Errorf("broad-sample ruin %.3f should be >= student-t %.3f", cons.Ruin, st.Ruin)
+	}
+	if lost.Ruin+1e-9 < st.Ruin {
+		t.Errorf("lost-decade ruin %.3f should be >= student-t %.3f", lost.Ruin, st.Ruin)
 	}
 	if cons.SafeWR > st.SafeWR+1e-9 {
-		t.Errorf("conservative safe WR %.4f should be <= student-t %.4f", cons.SafeWR, st.SafeWR)
+		t.Errorf("broad-sample safe WR %.4f should be <= student-t %.4f", cons.SafeWR, st.SafeWR)
 	}
 	for _, m := range res.Models {
 		if m.Ruin < 0 || m.Ruin > 1 {
@@ -65,7 +68,7 @@ func TestCentralShrinksTowardPriorOnShortHistory(t *testing.T) {
 	rawSafe := get(Models(pr, nil), "Student-t").SafeWR // no panel: the rosy fit, no shrink
 	withPanel := Models(pr, &panel)
 	blendedSafe := get(withPanel, "Student-t").SafeWR
-	consSafe := get(withPanel, "Conservative").SafeWR
+	consSafe := get(withPanel, "Broad-sample").SafeWR
 
 	if !(blendedSafe < rawSafe) {
 		t.Errorf("blended central safe WR %.3f should be below the raw fit %.3f (shrunk toward the prior)", blendedSafe, rawSafe)
@@ -88,7 +91,7 @@ func TestModelsWithPanelAddsHistorical(t *testing.T) {
 	for _, m := range res.Models {
 		names[m.Name] = true
 	}
-	for _, n := range []string{"Historical", "Block bootstrap", "Student-t", "Regime", "Conservative"} {
+	for _, n := range []string{"Historical windows", "Block bootstrap", "Student-t", "Sequence stress", "Broad-sample", "Lost decade"} {
 		if !names[n] {
 			t.Errorf("expected model %q with a panel", n)
 		}
