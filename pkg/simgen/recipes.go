@@ -67,7 +67,7 @@ func dpgtRecipe() Recipe {
 // history matches the GBP quote the real DPGT trades in.
 func dpgtBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	legs := []Leg{{ID: "DFSVX", Weight: 0.60}, {ID: "DISVX", Weight: 0.40}}
-	fr, err := BuildFrame(f, []string{"DFSVX", "DISVX", "GBPUSD=X"}, from)
+	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX", "GBPUSD=X"}, from)
 	if err != nil {
 		return nil, err
 	}
@@ -179,7 +179,7 @@ func wintonRecipe() Recipe {
 // overlay (the trend run as a pure excess strategy, no collateral).
 func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	ids := append([]string{"^IRX", "VFINX", "VTMGX"}, mfMarkets...)
-	fr, err := BuildFrame(f, ids, from)
+	fr, err := BuildFrame(extend(f), ids, from)
 	if err != nil {
 		return nil, err
 	}
@@ -496,7 +496,7 @@ func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.10, 0.0085) // identical USD strategy to dbmfRecipe
 	ids := append([]string{cfg.CashID}, cfg.Markets...)
 	ids = append(ids, "EURUSD=X")
-	fr, err := BuildFrame(f, ids, from)
+	fr, err := BuildFrame(extend(f), ids, from)
 	if err != nil {
 		return nil, err
 	}
@@ -549,7 +549,7 @@ func ctaRecipe() Recipe {
 // the systematic exposures survive.
 func backcastBuild(name, realID string, ids []string) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		fr, err := BuildFrame(f, ids, from)
+		fr, err := BuildFrame(extend(f), ids, from)
 		if err != nil {
 			return nil, err
 		}
