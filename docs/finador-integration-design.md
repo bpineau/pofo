@@ -59,11 +59,13 @@ shims.
   semantics), the right series for quantity-times-price valuation with
   dividends booked as cash. Stooq closes are already unadjusted; fund NAVs
   are their own raw price.
-- One Yahoo request already carries `close`, `adjclose` and dividend events:
-  the disk cache file gains `raw` and `dividends` columns so switching views
-  never refetches. Old cache files (no raw column) stay valid for adjusted
-  reads; a raw read refetches. Currency conversion applies to dividend
-  amounts too.
+- The disk cache file gains a `dividends` column. Raw series are cached as
+  their own entries (`SYMBOL~raw.json`): the price-cleaning passes
+  (`dropDropouts`, `mendScaleBreak`) drop and repair points, so a dual-column
+  cache would desynchronize; each view is fetched, cleaned and cached
+  independently (one extra download only for callers that want both views,
+  which neither pofo nor finador does). Old cache files stay valid for
+  adjusted reads. Currency conversion applies to dividend amounts too.
 - `Raw` combined with a SIM suffix is an error: simulated histories are
   total-return by construction.
 - Plain `Fetch` keeps returning adjusted closes, with `Dividends` attached
@@ -72,26 +74,31 @@ shims.
 
 ### 3. marketdata: point-in-time FX
 
-- `Client.FXCross(ctx, ccy string, from time.Time) (*Series, error)`
-  fetches the `CCYUSD=X` daily series (cached like any series).
-- `type FXTable` built via `NewFXTable(map[string]*Series)` (key: currency,
-  value: USD cross), with `Rate(from, to string, at time.Time)` and
-  `Convert(amount float64, from, to string, at time.Time)`: USD pivot,
-  forward-fill (earliest rate held flat before history starts), nil-safe.
-- `Client.FXRate(ctx, from, to string, at time.Time)` one-shot convenience.
-- `Client.ConvertCurrency` is rebuilt on FXTable (same behavior, golden-safe).
-- finador feeds FXTable from the FX series stored in its encrypted book, so
-  valuation works offline.
+- `Series.At(at time.Time) (value float64, on time.Time, ok bool)`:
+  forward-fill lookup by binary search (ok=false before the first point).
+- `Client.FXRate(ctx, from, to string, at time.Time) (float64, error)`:
+  point-in-time conversion rate using the same direct `FROMTO=X` daily cross
+  as `ConvertCurrency`, forward-filled via `Series.At`.
+- `ConvertCurrency` itself stays as is (direct crosses, golden-safe).
+- finador keeps its 50-line book-backed `Converter` (domain logic over the
+  encrypted book's stored FX series; wrapping it around pofo types would
+  convert storage formats on every valuation for no gain). Its FX refresh
+  fetches `CCYUSD=X` series through plain `Fetch`, which already works.
+  An `FXTable` abstraction was considered and dropped: no caller needs it.
 
 ### 4. marketdata: search, lookup, cache-less mode
 
 - `Client.Search(ctx, query string) ([]Resolution, error)`: free-text
   multi-candidate resolution (name, ticker or ISIN; catalog pin first, then
-  the existing multi-source search), no series download.
-- `Series.At(at time.Time) (value float64, on time.Time, ok bool)`:
-  forward-fill lookup by binary search.
+  the existing Yahoo search), no series download.
 - `NewClient("")` disables the disk cache entirely (loads nothing, saves
-  nothing); `DefaultCacheDir` documents the distinction.
+  nothing, including resolution and fees caches); `DefaultCacheDir`
+  documents the distinction.
+- `pkg/simgen` keeps its ctx-less `Fetcher` interface (a batch generator has
+  no cancellation granularity to gain); it gains
+  `WithContext(ctx, *marketdata.Client) Fetcher` so `cmd/pofo` can keep
+  passing the client. `portfolio.Build`'s fetch callback is unaffected (the
+  caller binds ctx in its closure).
 
 ### 5. metrics: flow-aware building blocks
 
@@ -154,12 +161,13 @@ shims.
 - `internal/market` keeps the `Source` interface and gains one pofo-backed
   adapter: `Resolve` via `Client.Search` (first candidate), `Daily` via
   `FetchExtended{From, NoSim: true, Raw: true}` (points + dividends mapped
-  to domain types), `Intraday` via `Client.Intraday`, FX refresh via
-  `FXCross`. The client is cache-less (`NewClient("")`) for privacy;
+  to domain types), `Intraday` via `Client.Intraday`; FX refresh keeps
+  fetching `CCYUSD=X` series, now through the same adapter. The client is
+  cache-less (`NewClient("")`) for privacy;
   finador's book stores the series and fetches incrementally, as today.
   yahoo.go, ft.go, morningstar.go, multi.go and their tests are deleted.
-- `internal/market/convert.go`'s Converter delegates to `marketdata.FXTable`
-  over the book's FX series.
+- `internal/market/convert.go`'s Converter stays: it is domain logic over
+  the book's stored FX series.
 - `internal/perf` keeps `Report`/periods (presentation) but delegates TWR,
   daily returns, vol, Sharpe, Sortino, CAGR, XIRR and max drawdown to pofo
   metrics (Date <-> time.Time adapters).
