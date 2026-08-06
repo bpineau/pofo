@@ -1390,7 +1390,9 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}
 	if bench != nil {
 		page.Footnotes = append(page.Footnotes,
-			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.")
+			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.",
+			"Information ratio: average active return (portfolio − benchmark) divided by its tracking error (the volatility of that active return) — how much benchmark-beating return is earned per unit of benchmark-relative risk. Higher is better; above ~0.5 is good, negative means the active bets cost return.",
+			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).")
 	}
 	for _, s := range page.Portfolios {
 		if len(s.Coverage) > 0 {
