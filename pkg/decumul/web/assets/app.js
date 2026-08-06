@@ -38,9 +38,10 @@ let run = async function(){
   const res = await fetch("/api/sim",{method:"POST",headers:{"Content-Type":"application/json"},
     body: JSON.stringify(body)});
   const r = await res.json();
+  document.getElementById("note").textContent = r.note || "";
   for (const id of ["bufferSvg","ruinCurveSvg","surfaceSvg","recoverySvg"])
-    document.getElementById(id).innerHTML = r[id];
-  document.getElementById("cards").innerHTML = Object.entries(r.cards)
+    document.getElementById(id).innerHTML = r[id] || "";
+  document.getElementById("cards").innerHTML = !r.cards ? "" : Object.entries(r.cards)
     .map(([k,v]) => `<div class="card"><div>${k}</div><div class="v">${v}</div></div>`).join("");
 };
 
