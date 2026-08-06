@@ -18,6 +18,45 @@ back decades; the UCITS you would actually buy is named in each line's
 comment. Modern, European and PEA models use real UCITS quotes. `SIM`
 histories before a fund's inception are simulated (see `datasets/simdata/`).
 
+## Using the optimizers
+
+Any portfolio can hand its weights to an optimizer with a single meta line.
+The report then shows two versions side by side — `name (as written)` and
+`name (objective)` — so you compare the optimizer's allocation against your
+baseline before adopting anything.
+
+```
+#meta optimize:risk-parity                 # equalize each asset's risk
+#meta optimize:min-volatility              # lowest-variance mix
+#meta optimize:max-sharpe,max-weight:35    # best in-sample Sharpe, capped at 35%
+```
+
+Pick the objective by what you trust:
+
+- **risk-parity** — every holding contributes the same share of total risk.
+  Uses only the covariance (not past returns), so it does not chase whatever
+  happened to win the backtest. The most robust choice and the natural one
+  for all-weather / diversified sleeves. `max-weight` is ignored here (the
+  weights follow from the equal-risk condition).
+- **min-volatility** — the calmest mix. Tends to pile into bonds / low-vol
+  assets; useful to anchor a withdrawal phase, but it ignores return
+  entirely, so cap it or it concentrates.
+- **max-sharpe** — the best risk-adjusted return *over the fitted window*.
+  This one overfits: it leans hard on the past winner. Always cap it
+  (`,max-weight:30`–`40`) and read the result as a hint, not a target.
+
+The weights are fitted **in-sample**, over the period where every asset has a
+quote, and the note under the optimized portfolio reports the in-sample
+expected return / volatility / Sharpe. Past-fitted figures are a starting
+point, not a promise — check that the common window (printed in the report)
+is long, and that the allocation makes economic sense, before moving real
+weights. `optimize` cannot be combined with `#meta leverage`.
+
+Workflow tip: keep your file's hand-written weights as the baseline and add
+an `optimize` line only while exploring. Once you have decided, write the
+tuned weights in directly, so the file documents your actual allocation
+rather than recomputing it (and drifting) on every run.
+
 ## Simple / lazy (accumulation-friendly)
 
 - `lazy-all-world` — 100% All-World, one fund (Bogleheads "VT and chill").
