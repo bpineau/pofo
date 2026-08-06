@@ -41,6 +41,13 @@ p.meta{color:#666;font-size:.85rem;margin-top:0}
 .modeltab td .sub{color:#7a8699;font-size:.74rem}
 .modeltab td:first-of-type,.modeltab th:first-child{text-align:left}
 
+#solvermenu{margin-top:.6rem;border-top:1px solid #e7ecf4;padding-top:.5rem;font-size:.83rem;color:#243}
+.solvehead{margin-bottom:.25rem}
+.solveopts{list-style:none;margin:.1rem 0 0;padding:0}
+.solveopts li{padding:.12rem 0}
+.solveopts li.no{color:#9aa3af}
+.solveopts .lev{font-weight:600;color:#10243f}
+
 #pathsbox{margin:.8rem 0}
 #pathsbox label{font-size:.82rem;color:#445}
 #pathsbox select{font-size:.82rem}
