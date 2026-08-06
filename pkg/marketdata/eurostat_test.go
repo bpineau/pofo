@@ -73,7 +73,7 @@ func TestParseHICPSnapshot(t *testing.T) {
 2006-03,bad
 2006-04,102.25
 `
-	pts := parseHICPSnapshot(csv)
+	pts := parseMonthlyAnchors(csv)
 	if len(pts) != 3 {
 		t.Fatalf("got %d points, want 3 (comments/blank/unparsable skipped)", len(pts))
 	}

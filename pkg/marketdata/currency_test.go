@@ -11,9 +11,11 @@ import (
 func TestConvertCurrency(t *testing.T) {
 	days := testDays(4)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v8/finance/chart/USDEUR=X", func(w http.ResponseWriter, r *http.Request) {
+	// CHF has no bundled long proxy, so this exercises the raw extrapolation
+	// path (the euro cross is separately backfilled, see TestExtendFXBack).
+	mux.HandleFunc("/v8/finance/chart/USDCHF=X", func(w http.ResponseWriter, r *http.Request) {
 		// FX disponible seulement à partir du 2e jour: extrapolation avant.
-		fmt.Fprint(w, chartJSON("USDEUR=X", days[1:], []float64{0.90, 0.92, 0.94}))
+		fmt.Fprint(w, chartJSON("USDCHF=X", days[1:], []float64{0.90, 0.92, 0.94}))
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
@@ -22,11 +24,11 @@ func TestConvertCurrency(t *testing.T) {
 	for i, d := range days {
 		s.Points = append(s.Points, Point{Date: d, Close: 100 + float64(i)})
 	}
-	out, extrap, err := c.ConvertCurrency(s, "EUR", days[0])
+	out, extrap, err := c.ConvertCurrency(s, "CHF", days[0])
 	if err != nil {
 		t.Fatal(err)
 	}
-	if out.Currency != "EUR" {
+	if out.Currency != "CHF" {
 		t.Errorf("currency = %s", out.Currency)
 	}
 	want := []float64{100 * 0.90, 101 * 0.90, 102 * 0.92, 103 * 0.94}
@@ -51,6 +53,47 @@ func TestConvertCurrency(t *testing.T) {
 	gbp, _, err := c.ConvertCurrency(pence, "GBP", days[0])
 	if err != nil || gbp.Points[0].Close != 2.5 || gbp.Currency != "GBP" {
 		t.Errorf("GBp→GBP: %+v, %v", gbp, err)
+	}
+}
+
+// TestExtendFXBack checks the bundled long EUR/USD proxy: it splices behind the
+// euro cross in both directions, reaches back to the late 1970s (ECU era), and
+// USDEUR is the exact reciprocal of EURUSD.
+func TestExtendFXBack(t *testing.T) {
+	eurusd, ok := eurusdLongCross("EURUSD=X")
+	if !ok || len(eurusd) == 0 {
+		t.Fatal("EURUSD=X has no bundled long proxy")
+	}
+	if first := eurusd[0].Date; first.Year() > 1979 {
+		t.Errorf("long EUR/USD starts %s, want the ECU era (≤1979)", first.Format("2006-01"))
+	}
+	for i := 1; i < len(eurusd); i++ {
+		if !eurusd[i].Date.After(eurusd[i-1].Date) {
+			t.Fatalf("proxy not strictly ascending at %s", eurusd[i].Date.Format("2006-01"))
+		}
+	}
+	usdeur, ok := eurusdLongCross("USDEUR=X")
+	if !ok || len(usdeur) != len(eurusd) {
+		t.Fatalf("USDEUR=X proxy len %d, want %d", len(usdeur), len(eurusd))
+	}
+	if got := usdeur[0].Close * eurusd[0].Close; math.Abs(got-1) > 1e-9 {
+		t.Errorf("USDEUR·EURUSD = %v, want 1 (reciprocal)", got)
+	}
+	if _, ok := eurusdLongCross("USDJPY=X"); ok {
+		t.Error("only the euro cross should carry a bundled proxy")
+	}
+
+	// Splice behind a short recent EURUSD=X: it gains the pre-quote history.
+	s := &Series{Symbol: "EURUSD=X", Points: []Point{
+		{Date: time.Date(2010, 1, 4, 0, 0, 0, 0, time.UTC), Close: 1.44},
+		{Date: time.Date(2010, 1, 5, 0, 0, 0, 0, time.UTC), Close: 1.43},
+	}}
+	extendFXBack("EURUSD=X", s)
+	if !s.First().Date.Before(time.Date(1980, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("after splice EURUSD=X starts %s, want pre-1980", s.First().Date.Format("2006-01"))
+	}
+	if s.SimulatedBefore.IsZero() {
+		t.Error("splice should mark SimulatedBefore")
 	}
 }
 
