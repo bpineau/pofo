@@ -5444,6 +5444,45 @@
     ]
   },
   {
+    "id": "FR0010405431",
+    "isin": "FR0010405431",
+    "aliases": [
+      "GRE"
+    ],
+    "name": "Amundi MSCI Greece UCITS ETF Dist",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "GRE.PA",
+    "currency": "EUR",
+    "fees": 0.55,
+    "asset_class": "equity",
+    "underlying": "~26 Greek large/mid/small-cap stocks, full physical replication; single-country emerging-Europe equity",
+    "benchmark_index": "MSCI Greece IMI + Coca-Cola 20/35 Net Total Return (EUR)",
+    "strategy": "physical-replication",
+    "geography": {
+      "Greece": 86,
+      "United Kingdom": 14
+    },
+    "sectors": {
+      "Communication Services": 4,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 15,
+      "Energy": 4,
+      "Financials": 51,
+      "Industrials": 8,
+      "Materials": 3,
+      "Real Estate": 1,
+      "Utilities": 6
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Single-country Greek equity (ex-Lyxor); bank-heavy (~51% financials) and concentrated; the 14% UK weight is Coca-Cola HBC (London-listed CDI, capped 20/35 in the index); high volatility; distributing annually; launched 2007",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0010405431"
+    ]
+  },
+  {
     "id": "XAUUSD",
     "isin": "",
     "aliases": [
