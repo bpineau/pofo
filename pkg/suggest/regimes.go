@@ -61,8 +61,12 @@ func FactorFramework() Framework {
 // framework's classifier).
 func Regimes(m Meta) []Category { return regimeClassify(m) }
 
+// hinter matches keywords against an asset's factual descriptors (underlying
+// and benchmark index). It deliberately ignores the free-text notes, whose
+// boilerplate ("distributes annual dividends") would trigger false factor
+// matches.
 func hinter(m Meta) func(...string) bool {
-	hint := strings.ToLower(m.Underlying + " " + m.Benchmark + " " + m.Notes)
+	hint := strings.ToLower(m.Underlying + " " + m.Benchmark)
 	return func(words ...string) bool {
 		for _, w := range words {
 			if strings.Contains(hint, w) {
@@ -85,7 +89,7 @@ func regimeClassify(m Meta) []Category {
 			return []Category{Inflation}
 		case has("energy", "oil", "commodit"):
 			return []Category{Growth, Inflation}
-		case has("value", "dividend", "high yield equity"):
+		case has("value", "high dividend", "dividend yield", "dividend leader"):
 			return []Category{Growth, Inflation}
 		default:
 			return []Category{Growth}
@@ -135,7 +139,7 @@ func factorClassify(m Meta) []Category {
 		if has("small cap", "small-cap", "smallcap") {
 			out = append(out, Size)
 		}
-		if has("value", "dividend", "high yield equity") {
+		if has("value", "high dividend", "dividend yield", "dividend leader") {
 			out = append(out, Value)
 		}
 		if has("momentum") {
