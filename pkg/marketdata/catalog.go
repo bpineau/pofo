@@ -15,7 +15,7 @@ import (
 // everything here resolves deterministically (no search APIs), has its TER
 // pinned when published, and is fully cached by a single --warmup. Entries
 // are addressable by ID, ISIN, Aliases and the tickers of the embedded fund
-// list — but never by quote Symbol, which may collide (e.g. US-listed NTSX
+// list, but never by quote Symbol, which may collide (e.g. US-listed NTSX
 // vs the NTSX UCITS).
 var catalog = datasets.Catalog()
 

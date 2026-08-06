@@ -1,6 +1,6 @@
 # pofo
 
-Go tool to visualize and compare investment portfolios over time — plus
+Go tool to visualize and compare investment portfolios over time, plus
 reusable libraries to fetch price histories, compute risk/return metrics
 and produce SVG charts.
 
@@ -9,7 +9,7 @@ Financial Times, Morningstar, Stooq), rebuilds the missing past (proxies and
 simulated data), simulates each portfolio with periodic rebalancing and
 generates a self-contained HTML report opened in the browser (comparison and
 statistics front and center; per-portfolio sections collapsed, each with a
-performance curve, three composition pies — geography, sector, asset type —
+performance curve, three composition pies (geography, sector, asset type)
 and its macro-regime coverage).
 
 ## Usage
@@ -29,7 +29,7 @@ quote cache lives in the standard user cache directory
 (`~/Library/Caches/pofo` on macOS, `~/.cache/pofo` on Linux).
 
 The `-assets` option treats each identifier as a portfolio invested 100% in
-it — handy for comparing ETFs against each other without writing a file. It
+it, handy for comparing ETFs against each other without writing a file. It
 can be combined with portfolio files.
 
 ## Portfolio file format
@@ -50,14 +50,14 @@ its extension.
 
 `#meta key:value` lines carry per-portfolio directives: `rebalance:N` (days
 between rebalances, `0` = never) and `extra-fees:X` (synonym
-`envelope-fees:X`) — **additional fees in %/yr applied to the whole
+`envelope-fees:X`), **additional fees in %/yr applied to the whole
 portfolio**, on top of the assets' individual TERs: life-insurance/pension
 wrappers, managed mandates, broker fees… Since they are not baked into the
 quotes (unlike TERs), they are **deducted** from the simulated performance.
 
 `#meta leverage:on` enables leveraged portfolios: weights are kept as
 written (sum up to 500%) and the residual `100−sum` becomes a cash
-position — earning the short rate (^IRX) if positive, **financed at the
+position, earning the short rate (^IRX) if positive, **financed at the
 rate + spread** if negative (`#meta borrow-spread:X`, default 1%/yr). A
 NAV that reaches zero is a ruin: the series stops and the report flags it.
 `#meta capital:10000` sets a starting amount, and unlocks periodic external
@@ -66,8 +66,8 @@ quarter or year) and `#meta withdraw:4%/year` (fixed amount, or a
 percentage of the current value). Flows are invested or sold pro rata on
 the first trading day of each new period. Statistics and comparison charts
 stay on a **time-weighted index** (flows don't distort returns), while the
-money rows — starting capital, total contributed/withdrawn, final value and
-a **money-weighted IRR** — follow the actual cash. Withdrawing a depleted
+money rows (starting capital, total contributed/withdrawn, final value and
+a **money-weighted IRR**) follow the actual cash. Withdrawing a depleted
 portfolio is a ruin: the series stops and the report flags it.
 
 `#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`) lets the
@@ -76,7 +76,7 @@ out the long-only allocation that maximizes the Sharpe ratio, minimizes
 volatility, or equalizes each asset's risk contribution, over the period
 where all the assets quote. An optional cap diversifies the result:
 `#meta optimize:max-sharpe,max-weight:40`. The report then shows **two
-portfolios side by side** — `name (as written)` and `name (max-sharpe)` —
+portfolios side by side**: `name (as written)` and `name (max-sharpe)`,
 so the optimizer's choice is compared with your baseline; the computed
 weights and their in-sample expected return/volatility/Sharpe appear as a
 note under the optimized portfolio. Those figures are fitted on the past,
@@ -97,7 +97,7 @@ embedded list (`IWDA`, `CSPX`, `CW8`…), an ISIN, or a built-in alias
 weights do not sum to 100, they are normalized with a warning.
 
 **SIM convention**: a bare identifier (`DBMF`, `NTSG`, `VOO`) uses only the
-asset's real quotes — the history starts at its inception date. The `SIM`
+asset's real quotes; the history starts at its inception date. The `SIM`
 suffix (`DBMFSIM`, `NTSGSIM`, `VOOSIM`…) additionally allows extending the
 uncovered period, via `pkg/datasets/simdata/` then the known proxies; real
 quotes always keep priority wherever they exist. `-no-simulate` ignores SIM
@@ -108,13 +108,13 @@ suffixes globally.
 `pofo -suggest portfolio.txt` analyses a portfolio's **macro-regime
 coverage** and recommends catalog assets to add that fill the gaps. The four
 regimes are the growth × inflation quadrants behind All-Weather- and
-Dragon-style portfolios — `growth`, `deflation`, `inflation`, `crisis` — and
+Dragon-style portfolios: `growth`, `deflation`, `inflation`, `crisis`, and
 each catalog asset is mapped to the regimes it helps in from its factual tags
 (asset class, strategy; see `pkg/datasets/assetmeta/`). A regime with little
 weight is a gap.
 
 It is **structure-first**: only assets that fill a gap are considered, and
-each is then validated **out-of-sample** — the candidate is added at a
+each is then validated **out-of-sample**: the candidate is added at a
 modest weight and a walk-forward checks that Sharpe and max-drawdown improve
 *consistently across periods*, not in one lucky stretch. Because adding an
 asset at a fixed weight fits nothing to the data, this measures robustness
@@ -122,21 +122,21 @@ rather than an over-fitted optimum. Suggestions are kept diverse (at most one
 per asset class) and reported with the gap they fill, a suggested weight,
 their correlation to the portfolio, and the out-of-sample win counts.
 
-`-suggest` also flags **redundancies** — holdings that move almost
+`-suggest` also flags **redundancies**: holdings that move almost
 identically and share an asset class (three S&P 500 trackers are one bet, not
 three). It prints to the terminal and exits, like `-verify-data`.
 
 For a quick, **offline** read, `pofo -coverage portfolio.txt` shows the
 same coverage chart and then, for each gap, lists the catalog assets that
-fill it (grouped by asset class) — no price downloads, no ranking, just the
+fill it (grouped by asset class), with no price downloads, no ranking, just the
 menu of options. Run `-suggest` afterwards to rank and validate them.
 
 By default coverage is organized by the four **macro regimes**.
 `-framework factors` switches to a **risk-factor** lens (market, size,
 value, momentum, quality, term, credit, alternative, cash) for both
-`-coverage` and `-suggest`. The factor mapping is coarser — this catalog
+`-coverage` and `-suggest`. The factor mapping is coarser: this catalog
 holds many diversifiers (gold, commodities, managed futures, volatility)
-that are not Fama-French factors and all land in *alternative* — so the
+that are not Fama-French factors and all land in *alternative*, so the
 regime view stays the default.
 
 ## Main options
@@ -155,7 +155,7 @@ regime view stays the default.
 | `-cli` | | curves and summary table in the terminal, no HTML |
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
-| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies — bad points, gaps, stale feeds — then exit |
+| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies (bad points, gaps, stale feeds), then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
@@ -219,7 +219,7 @@ then stored as self-documenting CSVs (method, validation, date) in
 Every series is built **only from quotes the tool itself can fetch**
 (Vanguard/Yahoo funds with decades of history, the `^IRX` cash rate, gold and
 oil futures) combined by the in-house composite, TSMOM trend, and regression
-backcast engines — no third-party data is bundled. External index series are
+backcast engines; no third-party data is bundled. External index series are
 used solely to cross-check quality during development, never shipped.
 
 Bundled recipes and measured quality (daily / weekly correlation of returns
@@ -275,12 +275,12 @@ cmd/              the pofo binary (report, warmup, gen-simdata)
 data/             old local cache (replaced by the user cache)
 ```
 
-Everything consumable as a library lives under `pkg/` — the bundled data
+Everything consumable as a library lives under `pkg/`, the bundled data
 (catalog and simulated histories) included, via `pkg/datasets`; `cmd/` only
 contains the CLI wiring.
 
-Each package has its documentation page — calculation conventions included
-(`go doc github.com/bpineau/pofo/pkg/metrics`) — and runnable examples:
+Each package has its documentation page, calculation conventions included
+(`go doc github.com/bpineau/pofo/pkg/metrics`), and runnable examples:
 
 ```go
 import (
@@ -323,18 +323,18 @@ iwda, ok := marketdata.Lookup("IWDA") // → (datasets.Asset, true)
 _ = iwda.Fees                         // 0.20  (percent/yr)
 ```
 
-- `datasets` — the versioned data embedded at build time; `Catalog()` returns
+- `datasets`: the versioned data embedded at build time; `Catalog()` returns
   the typed asset list (`Asset`), `AssetMeta()` the same data as raw JSON.
-- `marketdata` — resolution (aliases, ISIN, catalog), `Lookup` for an asset's
+- `marketdata`: resolution (aliases, ISIN, catalog), `Lookup` for an asset's
   full metadata, `Resolve` to inspect the resolved source/symbol, multi-source
   daily downloads, `Intraday` for the live 5-minute path, cache, simdata,
   proxies.
-- `suggest` — regime/factor coverage and gap-filling (consumes `datasets.Asset`).
-- `metrics` — statistics over value series (returns, drawdowns, Beta).
-- `chart` — pure-stdlib inline SVG charts.
-- `portfolio` — allocation file parsing and rebalanced simulation.
-- `report` — HTML report rendering.
-- `simgen` — reconstruction engine (linear composites, TSMOM
+- `suggest`: regime/factor coverage and gap-filling (consumes `datasets.Asset`).
+- `metrics`: statistics over value series (returns, drawdowns, Beta).
+- `chart`: pure-stdlib inline SVG charts.
+- `portfolio`: allocation file parsing and rebalanced simulation.
+- `report`: HTML report rendering.
+- `simgen`: reconstruction engine (linear composites, TSMOM
   trend-following engine, regression backcasts) and validated recipes, all
   built from fetchable quotes only.
 

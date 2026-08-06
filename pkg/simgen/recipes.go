@@ -43,15 +43,15 @@ func All() []Recipe {
 
 // dpgtRecipe rebuilds the Dimensional Global Targeted Value UCITS ETF
 // (IE000S67ID55, launched 2025) from Dimensional's own long-running US and
-// international small-cap value mutual funds — the same shop and factor design
-// — blended 60/40 US / developed-ex-US, net of the 0.44% TER. The only market
+// international small-cap value mutual funds, the same shop and factor design,
+// blended 60/40 US / developed-ex-US, net of the 0.44% TER. The only market
 // quote is the LSE line in GBP, so the USD blend is re-expressed in GBP at the
 // GBP/USD spot rate (GBPUSD=X, ~2004→, sets the start) to match the real
 // series, which is grafted from inception.
 func dpgtRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000S67ID55",
-		Name:            "Dimensional Global Targeted Value — DFA small-cap value blend (GBP)",
+		Name:            "Dimensional Global Targeted Value: DFA small-cap value blend (GBP)",
 		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (~2004→), real DPGT grafted from 2025",
 		Build:           dpgtBuild,
 		ValidateAgainst: "IE000S67ID55",
@@ -150,7 +150,7 @@ func vtRecipe() Recipe {
 func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
-		Name:   "iShares Core MSCI World — 60/40 US/international replication",
+		Name:   "iShares Core MSCI World: 60/40 US/international replication",
 		Method: "0.60×VFINX + 0.40×VTMGX, 0.20%/yr fees",
 		Build: composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
@@ -166,7 +166,7 @@ func iwdaRecipe() Recipe {
 func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
-		Name:            "Winton Trend-Enhanced Global Equity — equities + TSMOM overlay",
+		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
 		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend), 0.80%/yr fees (~2001→)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
@@ -214,7 +214,7 @@ func Find(id string) (Recipe, bool) {
 }
 
 // mfMarkets is the cross-asset futures basket traded by the managed-futures
-// trend reconstructions (equities, bonds, commodities; currencies omitted —
+// trend reconstructions (equities, bonds, commodities; currencies omitted;
 // no fetchable series). The youngest component (gold/oil futures, ~2000)
 // sets the start date.
 var mfMarkets = []string{"VFINX", "VTMGX", "VEIEX", "VFITX", "VUSTX", "GC=F", "CL=F"}
@@ -286,7 +286,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 func ntsxRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000KF370H3",
-		Name:   "WisdomTree US Efficient Core — 90/60 replication",
+		Name:   "WisdomTree US Efficient Core: 90/60 replication",
 		Method: "0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, daily rebalancing, 0.20%/yr fees",
 		Build: composite("NTSX (90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.90},
@@ -304,7 +304,7 @@ func ntsxRecipe() Recipe {
 func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
-		Name:   "WisdomTree Global Efficient Core — global 90/60 replication",
+		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
 		Method: "0.54×VFINX + 0.36×VTMGX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, 0.25%/yr fees",
 		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
@@ -321,7 +321,7 @@ func ntsgRecipe() Recipe {
 func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
-		Name:   "iShares MSCI World — 60/40 US/international replication",
+		Name:   "iShares MSCI World: 60/40 US/international replication",
 		Method: "0.60×VFINX + 0.40×VTMGX, 0.24%/yr fees",
 		Build: composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
@@ -336,7 +336,7 @@ func urthRecipe() Recipe {
 func iefRecipe() Recipe {
 	return Recipe{
 		ID:              "IEF",
-		Name:            "iShares 7-10Y Treasury — VFITX intermediate Treasury",
+		Name:            "iShares 7-10Y Treasury: VFITX intermediate Treasury",
 		Method:          "VFITX (Vanguard Intermediate-Term Treasury, 1991→), real IEF grafted from 2002",
 		Build:           composite("IEF (intermediate Treasury)", []Leg{{ID: "VFITX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IEF",
@@ -347,7 +347,7 @@ func iefRecipe() Recipe {
 func tltRecipe() Recipe {
 	return Recipe{
 		ID:              "TLT",
-		Name:            "iShares 20+Y Treasury — VUSTX long Treasury",
+		Name:            "iShares 20+Y Treasury: VUSTX long Treasury",
 		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002",
 		Build:           composite("TLT (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
 		ValidateAgainst: "TLT",
@@ -361,7 +361,7 @@ func tltRecipe() Recipe {
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
-		Name:            "PIMCO 25+Y zero-coupon — 1.65× long Treasury",
+		Name:            "PIMCO 25+Y zero-coupon: 1.65x long Treasury",
 		Method:          "1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
 		Build:           composite("ZROZ (1.65x long Treasury excess)", []Leg{{ID: "VUSTX", Weight: 1.65, Excess: true}}, "^IRX", 0),
 		ValidateAgainst: "ZROZ",
@@ -372,13 +372,13 @@ func zrozRecipe() Recipe {
 // dbmf/kmlm/cta reconstruct managed-futures trend from a generic 12-month
 // TSMOM on a cross-asset futures basket. Measured daily correlation vs the
 // real funds (self-generated, no official index): DBMF 0.52, KMLM 0.35, CTA
-// 0.20 — these funds run faster/idiosyncratic strategies a generic trend
+// 0.20; these funds run faster/idiosyncratic strategies a generic trend
 // model only partly captures, but it is a faithful "diversified trend"
 // proxy, and the real fund is grafted on top from its inception.
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMF",
-		Name:            "iMGP DBi Managed Futures — TSMOM replication",
+		Name:            "iMGP DBi Managed Futures: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF grafted from 2019",
 		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085)),
 		ValidateAgainst: "DBMF",
@@ -390,12 +390,12 @@ func dbmfRecipe() Recipe {
 // LU2951555585, Paris-listed, launched 2025-04-22) of the iMGP DBi
 // managed-futures fund: the same USD TSMOM replication as the US-listed DBMF,
 // with the real UCITS quotes grafted from inception. Same strategy and
-// currency (USD, unhedged) as DBMF — only a different (UCITS) wrapper, at the
+// currency (USD, unhedged) as DBMF, only a different (UCITS) wrapper, at the
 // UCITS 0.75% TER.
 func dbmfpaRecipe() Recipe {
 	return Recipe{
 		ID:              "LU2951555585",
-		Name:            "iMGP DBi Managed Futures UCITS USD — TSMOM replication",
+		Name:            "iMGP DBi Managed Futures UCITS USD: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real DBMF.PA grafted from 2025",
 		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.10, 0.0075)),
 		ValidateAgainst: "LU2951555585",
@@ -406,14 +406,14 @@ func dbmfpaRecipe() Recipe {
 // dbmfeRecipe reconstructs the *unhedged* EUR share class (DBMFE,
 // LU2951555403, Paris-listed, launched 2025-03-24) of the iMGP DBi
 // managed-futures fund. It runs the same USD TSMOM replication as DBMF, then
-// re-expresses it in EUR at the EUR/USD spot rate — unhedged, so the EUR
+// re-expresses it in EUR at the EUR/USD spot rate (unhedged), so the EUR
 // investor also carries the USD/EUR currency move on top of the strategy. The
 // real DBMFE quotes are grafted from inception. EURUSD=X (Yahoo, ~2003→) is
 // the youngest component and sets the start date.
 func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:              "DBMFE",
-		Name:            "iMGP DBi Managed Futures EUR unhedged — TSMOM replication in EUR",
+		Name:            "iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR",
 		Method:          "12-month TSMOM on a cross-asset futures basket, converted USD→EUR at EURUSD spot (~2003→), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
@@ -456,7 +456,7 @@ func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
-		Name:            "KraneShares KMLM — TSMOM replication",
+		Name:            "KraneShares KMLM: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), real KMLM grafted from 2020",
 		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.15, 0.0090)),
 		ValidateAgainst: "KMLM",
@@ -469,7 +469,7 @@ func kmlmRecipe() Recipe {
 func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
-		Name:            "Simplify CTA — TSMOM replication",
+		Name:            "Simplify CTA: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), real CTA grafted from 2022",
 		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.10, 0.0075)),
 		ValidateAgainst: "CTA",
@@ -478,7 +478,7 @@ func ctaRecipe() Recipe {
 }
 
 // backcastBuild wraps FitBackcast: the model is fitted on the asset's real
-// history, then projected over the whole frame. Honest but limited — only
+// history, then projected over the whole frame. Honest but limited: only
 // the systematic exposures survive.
 func backcastBuild(name, realID string, ids []string) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
@@ -507,7 +507,7 @@ func backcastBuild(name, realID string, ids []string) func(Fetcher, time.Time) (
 func amundiVolRecipe() Recipe {
 	return Recipe{
 		ID:              "LU0319687124",
-		Name:            "Amundi Volatility World — backcast on ^VIX",
+		Name:            "Amundi Volatility World: backcast on ^VIX",
 		Method:          "regression of the fund's daily returns on Δ^VIX and VFISX (2007→), replayed before 2007; residuals dropped",
 		Build:           backcastBuild("Amundi Volatility World", "LU0319687124", []string{"^VIX", "VFISX"}),
 		ValidateAgainst: "LU0319687124",
@@ -520,7 +520,7 @@ func amundiVolRecipe() Recipe {
 func bhmgRecipe() Recipe {
 	return Recipe{
 		ID:              "GG00BQBFY362",
-		Name:            "BH Macro — factor backcast",
+		Name:            "BH Macro: factor backcast",
 		Method:          "regression of daily returns on VUSTX, VFINX, GC=F (2007→), replayed before; residuals dropped",
 		Build:           backcastBuild("BH Macro", "GG00BQBFY362", []string{"VUSTX", "VFINX", "GC=F"}),
 		ValidateAgainst: "GG00BQBFY362",

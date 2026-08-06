@@ -6,8 +6,8 @@ import (
 	"sync"
 )
 
-// canonicalIndex maps every accepted identifier — catalog IDs, ISINs,
-// per-entry aliases and the embedded fund tickers — to the catalog entry ID
+// canonicalIndex maps every accepted identifier (catalog IDs, ISINs,
+// per-entry aliases and the embedded fund tickers) to the catalog entry ID
 // (or the ISIN itself for funds outside the catalog). Quote symbols are
 // deliberately NOT indexed: they may collide with user-facing identifiers
 // (e.g. the US-listed NTSX vs the NTSX UCITS share class).

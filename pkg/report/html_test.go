@@ -11,7 +11,7 @@ func TestRenderFoldsPortfolioSections(t *testing.T) {
 		Title:       "Test",
 		GeneratedAt: "01/01/2026 at 00:00",
 		Portfolios: []PortfolioSection{
-			{Name: "P1", Subtitle: "2000-01-01 → 2026-01-01 — rebalancing 30 d (#meta)", ChartSVG: "<svg></svg>"},
+			{Name: "P1", Subtitle: "2000-01-01 → 2026-01-01, rebalancing 30 d (#meta)", ChartSVG: "<svg></svg>"},
 			{Name: "P2", ChartSVG: "<svg></svg>"},
 		},
 		PortfolioNames: []string{"P1", "P2"},

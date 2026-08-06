@@ -13,7 +13,7 @@ type AssetRow struct {
 	Name     string
 	Class    string // catalog asset class (equity, gold…), empty when unknown
 	UCITS    string // "oui", "non" or "?" when undetermined
-	Fees     string // published TER, or — when unknown
+	Fees     string // published TER, or "-" when unknown
 	Currency string
 	History  string
 	Note     string
@@ -114,7 +114,7 @@ details.legend > summary:hover { color: #000; }
 </head>
 <body>
 <h1>{{.Title}}</h1>
-<p class="meta">Generated on {{.GeneratedAt}} — base 100 at start, rebalanced every {{.RebalanceDays}} days.</p>
+<p class="meta">Generated on {{.GeneratedAt}}, base 100 at start, rebalanced every {{.RebalanceDays}} days.</p>
 {{if .CompareSVG}}
 <section>
 <h2>{{.OverviewHeading}}</h2>
@@ -122,7 +122,7 @@ details.legend > summary:hover { color: #000; }
 </section>
 {{end}}
 <section>
-<h2>Statistics — common period {{.CommonStart}} → {{.CommonEnd}}</h2>
+<h2>Statistics, common period {{.CommonStart}} → {{.CommonEnd}}</h2>
 <table>
 <thead><tr><th>Metric</th>{{range .PortfolioNames}}<th class="num">{{.}}</th>{{end}}</tr></thead>
 <tbody>
@@ -152,7 +152,7 @@ details.legend > summary:hover { color: #000; }
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} — gap{{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
 {{- end}}
 </div>
 {{end}}

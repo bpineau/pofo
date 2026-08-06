@@ -46,7 +46,7 @@ func TestFundISINEmbeddedList(t *testing.T) {
 	for ticker, want := range cases {
 		got, ok := FundISIN(ticker)
 		if !ok || got != want {
-			t.Errorf("FundISIN(%q) = %q, %v — want %q", ticker, got, ok, want)
+			t.Errorf("FundISIN(%q) = %q, %v; want %q", ticker, got, ok, want)
 		}
 	}
 	if _, ok := FundISIN("AAPL"); ok {
@@ -94,7 +94,7 @@ func TestFundTickersCSVIntegrity(t *testing.T) {
 			}
 			m[tk] = parts[0]
 			if got, ok := FundISIN(tk); !ok || got != parts[0] {
-				t.Errorf("FundISIN(%s) = %q, %v — want %s", tk, got, ok, parts[0])
+				t.Errorf("FundISIN(%s) = %q, %v; want %s", tk, got, ok, parts[0])
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 // Solve computes the weights for an objective from the assets' aligned daily
-// returns. Here two uncorrelated assets — one volatile, one calm — are
+// returns. Here two uncorrelated assets (one volatile, one calm) are
 // balanced for minimum variance: the calmer asset gets the larger weight.
 func ExampleSolve() {
 	// Asset A swings ±2 %, asset B ±1 %, with zero covariance.

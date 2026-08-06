@@ -30,7 +30,7 @@ func (i Issue) String() string {
 // calendar gaps, long flat stretches (stale feed) and a stale last quote.
 // now anchors the staleness check (pass time.Now() outside tests).
 //
-// Findings are heuristics on real, sometimes wild, market data — review
+// Findings are heuristics on real, sometimes wild, market data; review
 // them rather than treating every warning as corruption.
 func Verify(s *Series, now time.Time) []Issue {
 	const (
@@ -64,7 +64,7 @@ func Verify(s *Series, now time.Time) []Issue {
 		}
 		if prev.Close > 0 {
 			if r := pt.Close/prev.Close - 1; math.Abs(r) > maxDailyMove {
-				warn(pt.Date, "daily move of %+.1f %% — missed split or bad point?", r*100)
+				warn(pt.Date, "daily move of %+.1f %%, missed split or bad point?", r*100)
 			}
 		}
 		if gap := pt.Date.Sub(prev.Date).Hours() / 24; gap > maxGapDays {
@@ -73,7 +73,7 @@ func Verify(s *Series, now time.Time) []Issue {
 		if pt.Close == prev.Close {
 			flatRun++
 			if flatRun == maxFlatRun {
-				warn(pt.Date, "price unchanged for %d sessions — stale feed?", maxFlatRun)
+				warn(pt.Date, "price unchanged for %d sessions, stale feed?", maxFlatRun)
 			}
 		} else {
 			flatRun = 1

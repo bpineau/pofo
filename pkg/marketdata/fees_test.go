@@ -21,7 +21,7 @@ func TestFeesFromFTFundsTearsheet(t *testing.T) {
 	// An ISIN unknown to the catalog: goes through the FT tearsheet (EUR first).
 	ter, ok := c.Fees("FR0000120271")
 	if !ok || ter != 1.49 {
-		t.Fatalf("Fees = %v, %v — want 1.49", ter, ok)
+		t.Fatalf("Fees = %v, %v; want 1.49", ter, ok)
 	}
 	// Second call: served from the disk cache, dead server.
 	srv.Close()
@@ -56,7 +56,7 @@ func TestFeesPinnedInCatalog(t *testing.T) {
 	for _, e := range catalog {
 		if e.Fees > 0 {
 			if ter, ok := c.Fees(e.ID); !ok || ter != e.Fees {
-				t.Errorf("Fees(%s) = %v, %v — want %v", e.ID, ter, ok, e.Fees)
+				t.Errorf("Fees(%s) = %v, %v; want %v", e.ID, ter, ok, e.Fees)
 			}
 			return
 		}

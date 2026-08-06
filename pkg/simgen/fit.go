@@ -12,7 +12,7 @@ import (
 // FitBackcast regresses the real asset's daily returns on the given
 // components' returns over their overlap (ordinary least squares with an
 // intercept), then rebuilds the whole frame period from the fitted linear
-// model — residuals are dropped, so the backcast captures only the
+// model; residuals are dropped, so the backcast captures only the
 // systematic part of the fund's behaviour. It returns the reconstructed
 // index, the in-sample R² and the fitted coefficients.
 func FitBackcast(fr *Frame, real *marketdata.Series, ids []string) ([]float64, float64, []float64, error) {

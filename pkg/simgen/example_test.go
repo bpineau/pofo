@@ -6,7 +6,7 @@ import (
 )
 
 // Composite builds a constant-weight base-100 index from arbitrary
-// components — here a 90/60 equities/bonds blend with an "excess" leg
+// components, here a 90/60 equities/bonds blend with an "excess" leg
 // (futures) financed at the cash rate and 0.20%/yr fees.
 func ExampleComposite() {
 	fetch := fakeFetcher{

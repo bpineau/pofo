@@ -20,7 +20,7 @@ type Stats struct {
 	Volatility  float64 // annualized standard deviation of daily returns (0.16 = 16 %/year)
 	Sharpe      float64 // annualized mean return / volatility, risk-free rate 0
 	Sortino     float64 // annualized mean return / downside deviation
-	Ulcer       float64 // Ulcer Index — in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
+	Ulcer       float64 // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
 	MaxDrawdown float64 // deepest peak-to-trough loss (-0.55 = −55 %)
 	TTRDays     int     // longest underwater stretch (peak to recovery), calendar days
 	TTROngoing  bool    // the longest stretch had not recovered by End

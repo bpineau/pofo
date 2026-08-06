@@ -32,7 +32,7 @@ func mkSeries(symbol string, n int, dailyGrowth float64) *marketdata.Series {
 	return s
 }
 
-// mkWobbly builds a series whose daily returns oscillate around drift —
+// mkWobbly builds a series whose daily returns oscillate around drift,
 // non-degenerate variance, deterministic.
 func mkWobbly(symbol string, n int, drift, amp float64) *marketdata.Series {
 	s := &marketdata.Series{Symbol: symbol}

@@ -32,7 +32,7 @@
 //	                      request in Spec.Optimize; the caller runs it.
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
-// caller's job — see marketdata.Client.Fetch and marketdata.SplitSim.
+// caller's job; see marketdata.Client.Fetch and marketdata.SplitSim.
 //
 // # Simulation
 //
@@ -47,5 +47,5 @@
 // Holding.Weight and Asset.Weight are FRACTIONS (0.60 = 60 %); RawWeight,
 // Fees, EnvelopeFees and BorrowSpread are PERCENT per year as written in
 // portfolio files. The simgen package uses fractions for its own fee
-// parameters — do not mix them up.
+// parameters; do not mix them up.
 package portfolio
