@@ -136,3 +136,32 @@ func TestConvertCurrencyFetchesFXOncePerRun(t *testing.T) {
 		t.Errorf("FX cross fetched %d times, want 1 (cached across assets)", fxRequests)
 	}
 }
+
+func TestFXRate(t *testing.T) {
+	days := []time.Time{
+		time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+		time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC),
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/GBPUSD=X", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("GBPUSD=X", days, []float64{1.26, 1.28}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	ctx := context.Background()
+
+	if r, err := c.FXRate(ctx, "EUR", "EUR", time.Now()); err != nil || r != 1 {
+		t.Errorf("same-currency rate: %v, %v", r, err)
+	}
+	// Forward fill: a Saturday uses Friday's cross.
+	at := time.Date(2024, 1, 6, 0, 0, 0, 0, time.UTC)
+	r, err := c.FXRate(ctx, "gbp", "usd", at)
+	if err != nil || r != 1.28 {
+		t.Errorf("forward-filled rate: %v, %v", r, err)
+	}
+	// Before the cross starts: an explicit error. (Not the euro cross,
+	// which the bundled ECU/EUR proxy extends back to 1978.)
+	if _, err := c.FXRate(ctx, "GBP", "USD", time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
+		t.Error("a date before the FX history should error")
+	}
+}

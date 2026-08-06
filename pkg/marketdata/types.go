@@ -1,6 +1,9 @@
 package marketdata
 
-import "time"
+import (
+	"sort"
+	"time"
+)
 
 // dayUTC truncates a time to its civil date at 00:00 UTC, the invariant
 // every Point.Date in this package respects.
@@ -26,6 +29,22 @@ type Series struct {
 	// reconstructed from ProxySymbol instead of actual quotes.
 	SimulatedBefore time.Time
 	ProxySymbol     string
+}
+
+// At returns the series value in force at the given time: the close of the
+// last point dated at or before it (forward fill). ok is false before the
+// first point or on an empty or nil series; on is the date of the point
+// actually used, so callers can judge the staleness of the fill.
+func (s *Series) At(at time.Time) (value float64, on time.Time, ok bool) {
+	if s == nil {
+		return 0, time.Time{}, false
+	}
+	i := sort.Search(len(s.Points), func(k int) bool { return s.Points[k].Date.After(at) })
+	if i == 0 {
+		return 0, time.Time{}, false
+	}
+	p := s.Points[i-1]
+	return p.Close, p.Date, true
 }
 
 // First returns the earliest point, or the zero Point if the series is empty.
