@@ -52,3 +52,30 @@ func TestLineSingleSeriesHasNoLegend(t *testing.T) {
 		t.Error("no legend expected for a single series")
 	}
 }
+
+func TestTimeTicksIntraday(t *testing.T) {
+	from := time.Date(2024, 3, 1, 9, 0, 0, 0, time.UTC)
+	to := from.Add(6 * time.Hour)
+	ticks := timeTicks(from, to)
+	if len(ticks) < 2 {
+		t.Fatalf("got %d ticks, want several", len(ticks))
+	}
+	if ticks[0].label != "09:00" {
+		t.Errorf("first label = %q, want 09:00 (clock time)", ticks[0].label)
+	}
+	for _, tk := range ticks {
+		if !strings.Contains(tk.label, ":") {
+			t.Errorf("intraday label %q is not a clock time", tk.label)
+		}
+	}
+}
+
+func TestTimeTicksDailyUnchanged(t *testing.T) {
+	from := time.Date(2018, 1, 1, 0, 0, 0, 0, time.UTC)
+	to := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, tk := range timeTicks(from, to) {
+		if strings.Contains(tk.label, ":") {
+			t.Errorf("multi-year label %q must be a year, not a clock time", tk.label)
+		}
+	}
+}

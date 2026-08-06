@@ -58,3 +58,22 @@ func ExamplePie() {
 	// Output:
 	// true true true
 }
+
+// Line renders an intraday path the same way as a daily one: feed it a series
+// of timestamps and prices spanning a single day, and the time axis switches
+// to clock-time labels.
+func ExampleLine_intraday() {
+	open := time.Date(2024, 3, 1, 9, 30, 0, 0, time.UTC)
+	var dates []time.Time
+	var v []float64
+	for i := range 78 { // a 6.5h session at 5-minute resolution
+		dates = append(dates, open.Add(time.Duration(i)*5*time.Minute))
+		v = append(v, 500+float64(i)*0.05)
+	}
+	svg := chart.Line(chart.Options{Title: "VOO today"}, []chart.Series{
+		{Name: "price USD", Dates: dates, Values: v},
+	})
+	fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(svg, ":"))
+	// Output:
+	// true true
+}
