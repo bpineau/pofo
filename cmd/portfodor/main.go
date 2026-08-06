@@ -375,14 +375,15 @@ Options:
 		r.stats = st
 	}
 
-	if opt.cli {
-		return renderCLI(results, &opt, commonStart, commonEnd)
-	}
-
 	assetMeta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
 		log.Printf("warning: asset metadata unavailable (%v) — regime coverage omitted", err)
 	}
+
+	if opt.cli {
+		return renderCLI(results, &opt, commonStart, commonEnd, assetMeta)
+	}
+
 	page := buildPage(results, &opt, bench, commonStart, commonEnd, assetMeta)
 	var buf bytes.Buffer
 	if err := report.Render(&buf, page); err != nil {
@@ -405,7 +406,7 @@ Options:
 // renderCLI prints the comparison curves and the summary table straight to
 // the terminal — quick checks without opening a browser. Per-portfolio
 // details are intentionally omitted.
-func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time) error {
+func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) error {
 	color := os.Getenv("NO_COLOR") == "" && isTerminal(os.Stdout)
 	names := make([]string, len(results))
 	cmp := make([]chart.Series, len(results))
@@ -435,17 +436,13 @@ func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time
 	if err := report.RenderText(os.Stdout, page, color); err != nil {
 		return err
 	}
-	printCoverageCLI(results)
+	printCoverageCLI(results, meta)
 	return nil
 }
 
 // printCoverageCLI prints each portfolio's macro-regime coverage under the
 // CLI summary table (same data as the HTML report and -suggest).
-func printCoverageCLI(results []*result) {
-	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
-	if err != nil {
-		return
-	}
+func printCoverageCLI(results []*result, meta map[string]suggest.Meta) {
 	var lines []string
 	for _, r := range results {
 		bars := coverageBars(r.p.Assets, meta)
