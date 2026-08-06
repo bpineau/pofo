@@ -409,7 +409,7 @@ func (c *Client) history(symbol string, from time.Time) (*Series, error) {
 		return c.staleFallback(symbol, from, fmt.Errorf("no quotes returned for %s", symbol))
 	}
 	c.saveCache(s, from)
-	c.Logf("%s — %s — %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
+	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
 }
 
@@ -421,7 +421,7 @@ func (c *Client) staleFallback(symbol string, from time.Time, cause error) (*Ser
 	if !ok {
 		return nil, cause
 	}
-	c.Logf("warning: refreshing %s failed (%v) — keeping cached data from %s (last quote %s)",
+	c.Logf("warning: refreshing %s failed (%v), keeping cached data from %s (last quote %s)",
 		symbol, cause, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
 	return s, nil
 }
@@ -467,7 +467,7 @@ func (c *Client) cachedHistory(source, id string, from time.Time, fetch func() (
 		return s, nil
 	}
 	c.saveCache(s, from)
-	c.Logf("%s — %s — %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
+	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	c.memoize(key, s)
 	return s, nil
 }
