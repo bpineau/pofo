@@ -160,7 +160,47 @@ func (c *Client) downloadHICP(symbol, geo string) (*Series, error) {
 		return nil, fmt.Errorf("eurostat HICP %s: only %d monthly points", geo, len(monthly))
 	}
 	sort.Slice(monthly, func(i, j int) bool { return monthly[i].Date.Before(monthly[j].Date) })
+
+	// Eurostat's harmonised index only starts in the mid-1990s. For France,
+	// extend it back with the OECD national CPI from FRED (monthly, 1955→),
+	// chained at the overlap, so real-return deflation covers the high-inflation
+	// 1970s-80s a long retirement backcast needs. Best-effort: on failure the
+	// series simply keeps its Eurostat start.
+	if geo == "FR" {
+		if older, ferr := c.fetchFRED("FRACPIALLMINMEI"); ferr == nil {
+			monthly = extendMonthlyBack(monthly, older)
+		} else {
+			c.Logf("warning: FRED French CPI unavailable (%v); %s starts %s", ferr, symbol, monthly[0].Date.Format("2006-01"))
+		}
+	}
 	return hicpSeries(symbol, geo, monthly), nil
+}
+
+// extendMonthlyBack prepends older's history, rescaled to base's level at the
+// splice month, before base's first date, chaining the two indices so the level
+// stays continuous. Both slices must be ascending. It is the monthly-index
+// analogue of ExtendBack.
+func extendMonthlyBack(base, older []Point) []Point {
+	if len(base) == 0 || len(older) == 0 {
+		return base
+	}
+	anchor := base[0]
+	i := sort.Search(len(older), func(i int) bool { return older[i].Date.After(anchor.Date) }) - 1
+	if i < 0 || older[i].Close <= 0 {
+		return base
+	}
+	scale := anchor.Close / older[i].Close
+	var pre []Point
+	for _, p := range older {
+		if !p.Date.Before(anchor.Date) {
+			break
+		}
+		pre = append(pre, Point{Date: p.Date, Close: p.Close * scale})
+	}
+	if len(pre) == 0 {
+		return base
+	}
+	return append(pre, base...)
 }
 
 // monthlyToDaily expands monthly index anchors into a daily series, spreading

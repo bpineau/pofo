@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: ZROZ
-# name: PIMCO 25+Y zero-coupon — 1.65× long Treasury
+# name: PIMCO 25+Y zero-coupon: 1.65× long Treasury
 # method: 1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009
 # validation: corr=0.965 (weekly 0.972) beta=1.00 TE=6.1%/yr CAGR sim 0.92% vs real 2.16% (overlap 4174 d from 2009-11-04 to 2026-06-11) vs ZROZ
-# generated: 2026-06-25
+# generated: 2026-07-01
 date,close
 1986-05-19,12.673778
 1986-05-20,12.626833
