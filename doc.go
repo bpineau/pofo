@@ -24,7 +24,14 @@
 //     and out-of-sample-validated gap-filling suggestions from the catalog.
 //   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
-//   - pkg/chart: dependency-free SVG and terminal charts (line, pie).
+//   - pkg/scenario: synthetic real-return path generation (parametric
+//     Student-t, block/stationary bootstrap, historical cohorts) behind one
+//     Source interface; the input to decumulation studies.
+//   - pkg/decumul: decumulation/FIRE engine over a scenario.Source: ruin
+//     probability, FIRE outcome metrics, capital/buffer sizing and sweeps,
+//     with a thin embedded live UI under pkg/decumul/web.
+//   - pkg/chart: dependency-free SVG and terminal charts (line, pie, bars,
+//     heatmap).
 //   - pkg/report: HTML and text rendering of a portfolio-comparison model.
 //
 // # Typical pipeline
