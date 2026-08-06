@@ -123,6 +123,19 @@ their correlation to the portfolio, and the out-of-sample win counts.
 identically and share an asset class (three S&P 500 trackers are one bet, not
 three). It prints to the terminal and exits, like `-verify-data`.
 
+For a quick, **offline** read, `portfodor -coverage portfolio.txt` shows the
+same coverage chart and then, for each gap, lists the catalog assets that
+fill it (grouped by asset class) — no price downloads, no ranking, just the
+menu of options. Run `-suggest` afterwards to rank and validate them.
+
+By default coverage is organized by the four **macro regimes**.
+`-framework factors` switches to a **risk-factor** lens (market, size,
+value, momentum, quality, term, credit, alternative, cash) for both
+`-coverage` and `-suggest`. The factor mapping is coarser — this catalog
+holds many diversifiers (gold, commodities, managed futures, volatility)
+that are not Fama-French factors and all land in *alternative* — so the
+regime view stays the default.
+
 ## Main options
 
 | Option | Default | Description |
@@ -141,6 +154,8 @@ three). It prints to the terminal and exits, like `-verify-data`.
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
 | `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies — bad points, gaps, stale feeds — then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
+| `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
+| `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
 
 ## Data
