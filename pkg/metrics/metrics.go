@@ -26,6 +26,8 @@ type Stats struct {
 	TTROngoing  bool    // the longest stretch had not recovered by End
 	Beta        float64
 	HasBeta     bool
+	Skew        float64 // skewness of daily returns (negative = longer left tail)
+	Kurtosis    float64 // excess kurtosis of daily returns (>0 = fatter tails than normal)
 }
 
 // Compute derives Stats from a value series. dates must be ascending and
@@ -68,6 +70,8 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if downDev := math.Sqrt(downSq/float64(len(r))) * math.Sqrt(tradingDaysPerYear); downDev > 0 {
 		s.Sortino = mean * tradingDaysPerYear / downDev
 	}
+	s.Skew = Skewness(r)
+	s.Kurtosis = ExcessKurtosis(r)
 
 	// Drawdown-derived statistics.
 	peak, peakDate := values[0], dates[0]
