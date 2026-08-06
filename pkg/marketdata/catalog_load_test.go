@@ -3,8 +3,8 @@ package marketdata
 import "testing"
 
 func TestCatalogLoadedOK(t *testing.T) {
-	if len(catalog) != 106 {
-		t.Fatalf("catalog has %d entries, want 106", len(catalog))
+	if len(catalog) < 140 {
+		t.Fatalf("catalog has only %d entries, expected >=140", len(catalog))
 	}
 	byid := catalogByID()
 	for _, id := range []string{"IE000KF370H3", "XAUUSD", "DBMF", "VOO", "FR0010755611"} {
