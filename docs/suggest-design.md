@@ -104,7 +104,7 @@ Suggestions (fill the gaps, validated out-of-sample):
     walk-forward robustness.
   - tests with closed forms / synthetic correlated series.
 - `datasets.AssetMeta() []byte` embeds `assets.json` (done).
-- `cmd/portfodor`: `-suggest` flag; metadata-filter candidates, fetch only
+- `cmd/pofo`: `-suggest` flag; metadata-filter candidates, fetch only
   those, render the terminal block, then exit. Reuses `fetchAsset`,
   `metrics.Compute`, `marketdata` catalog.
 

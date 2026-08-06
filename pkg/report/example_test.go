@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/bpineau/portfodor/pkg/report"
+	"github.com/bpineau/pofo/pkg/report"
 )
 
 // Render assembles a self-contained HTML document from a Page model. The

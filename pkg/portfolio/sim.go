@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
 // Asset is a resolved portfolio constituent, ready for simulation.

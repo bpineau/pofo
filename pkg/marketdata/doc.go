@@ -29,7 +29,7 @@
 // # Simulated data
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
-// (datasets/simdata/) produced by the simgen package; ExtendBack splices
+// (pkg/datasets/simdata/) produced by the simgen package; ExtendBack splices
 // those series — or a proxy (ProxySymbol) — in front of the real quotes.
 // The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
 // decoded by SplitSim.

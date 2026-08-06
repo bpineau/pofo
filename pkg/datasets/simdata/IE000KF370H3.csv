@@ -1,4 +1,4 @@
-# portfodor simdata v1
+# pofo simdata v1
 # id: IE000KF370H3
 # name: WisdomTree US Efficient Core — 90/60 replication
 # method: 0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, daily rebalancing, 0.20%/yr fees

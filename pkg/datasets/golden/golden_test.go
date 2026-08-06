@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/bpineau/portfodor/pkg/marketdata"
-	"github.com/bpineau/portfodor/pkg/metrics"
-	"github.com/bpineau/portfodor/pkg/portfolio"
+	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
+	"github.com/bpineau/pofo/pkg/portfolio"
 )
 
 // External references (established and validated on 2026-06-12):

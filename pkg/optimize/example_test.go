@@ -3,7 +3,7 @@ package optimize_test
 import (
 	"fmt"
 
-	"github.com/bpineau/portfodor/pkg/optimize"
+	"github.com/bpineau/pofo/pkg/optimize"
 )
 
 // Solve computes the weights for an objective from the assets' aligned daily

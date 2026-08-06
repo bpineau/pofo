@@ -17,7 +17,7 @@ import (
 // an asset's history before its real quotes begin. Files live in a simdata
 // directory, one CSV per canonical identifier, with self-describing headers:
 //
-//	# portfodor simdata v1
+//	# pofo simdata v1
 //	# id: IE000KF370H3
 //	# name: WisdomTree US Efficient Core (90/60 replication)
 //	# method: 0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, fees 0.20 %/yr
@@ -110,7 +110,7 @@ func WriteSimdata(dir string, sf *SimdataFile) error {
 		return err
 	}
 	var b strings.Builder
-	b.WriteString("# portfodor simdata v1\n")
+	b.WriteString("# pofo simdata v1\n")
 	fmt.Fprintf(&b, "# id: %s\n", CanonicalID(sf.ID))
 	if sf.Name != "" {
 		fmt.Fprintf(&b, "# name: %s\n", sf.Name)

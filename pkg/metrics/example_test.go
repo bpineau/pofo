@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Compute derives every statistic from a series of dated values.

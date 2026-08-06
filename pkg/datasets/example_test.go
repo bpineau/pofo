@@ -3,7 +3,7 @@ package datasets_test
 import (
 	"fmt"
 
-	"github.com/bpineau/portfodor/datasets"
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 // Catalog returns the bundled assets as typed datasets.Asset records (use

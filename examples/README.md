@@ -6,17 +6,17 @@ file's header gives the name, the idea and a link to the source. Run any of
 them:
 
 ```sh
-./portfodor examples/all-weather-dalio.txt          # HTML report
-./portfodor -cli examples/dragon-portfolio-artemis.txt
-./portfodor -coverage examples/cockroach-portfolio-mutiny.txt   # regime coverage, offline
-./portfodor examples/*.txt                           # compare them all
+./pofo examples/all-weather-dalio.txt          # HTML report
+./pofo -cli examples/dragon-portfolio-artemis.txt
+./pofo -coverage examples/cockroach-portfolio-mutiny.txt   # regime coverage, offline
+./pofo examples/*.txt                           # compare them all
 ```
 
 **Conventions.** Classic American models (All Weather, Permanent, Dragon…)
 use their US building blocks with the `SIM` suffix so the backtest reaches
 back decades; the UCITS you would actually buy is named in each line's
 comment. Modern, European and PEA models use real UCITS quotes. `SIM`
-histories before a fund's inception are simulated (see `datasets/simdata/`).
+histories before a fund's inception are simulated (see `pkg/datasets/simdata/`).
 
 ## Using the optimizers
 
