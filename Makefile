@@ -38,7 +38,7 @@ test: ## Tests unitaires + exemples (hors réseau)
 
 .PHONY: golden
 golden: ## Tests étalon (calculs vs références externes)
-	$(GO) test -v ./golden/
+	$(GO) test -v ./datasets/golden/
 
 .PHONY: cover
 cover: ## Tests avec couverture
@@ -52,7 +52,7 @@ warmup: build ## Précharge le cache (cotations + frais) du catalogue
 	./portfodor -warmup
 
 .PHONY: simdata
-simdata: build ## (Re)génère les historiques simulés validés dans simdata/
+simdata: build ## (Re)génère les historiques simulés validés dans datasets/simdata/
 	./simgen-bin
 
 .PHONY: demo
@@ -60,7 +60,7 @@ demo: build ## Rapport de démonstration sur les portefeuilles d'exemple
 	./portfodor examples/*.txt
 
 .PHONY: clean
-clean: ## Supprime les binaires (pas les caches data/ ni simdata/)
+clean: ## Supprime les binaires (pas data/ ni datasets/)
 	rm -f $(BINARIES)
 
 .PHONY: help
