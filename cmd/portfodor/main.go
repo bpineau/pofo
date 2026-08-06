@@ -1280,6 +1280,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
+		section.Breakdowns = breakdownPies(r.p.Assets, meta)
 		section.Coverage = coverageBars(r.p.Assets, meta, opt.fw)
 		if len(section.Coverage) > 0 {
 			section.CoverageLabel = "Macro-regime coverage (by weight)"
@@ -1395,6 +1396,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).")
 	}
 	for _, s := range page.Portfolios {
+		if s.Breakdowns != "" {
+			page.Footnotes = append(page.Footnotes,
+				"Composition pies (per portfolio): geography, sector and asset type, each holding's published breakdown weighted by its portfolio weight. Holdings without a geography or sector split (bonds, gold, managed futures…) are pooled into a neutral \"Other\" wedge, so each pie still totals the whole portfolio.")
+			break
+		}
+	}
+	for _, s := range page.Portfolios {
 		if len(s.Coverage) > 0 {
 			page.Footnotes = append(page.Footnotes,
 				"Macro-regime coverage: weight of the assets that help in each growth/inflation environment (an asset can span several); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
@@ -1402,6 +1410,141 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		}
 	}
 	return page
+}
+
+// breakdownPies builds the row of three composition pies (geography, sector,
+// asset type) for a portfolio's detail section, each holding's split weighted
+// by its portfolio weight. Holdings whose catalog metadata lacks a geography
+// or sector split (bonds, gold, managed futures…) fall into a single
+// "Other / N/A" wedge so every pie still sums to the whole portfolio. Returns
+// "" when no metadata is available at all.
+func breakdownPies(assets []portfolio.Asset, meta map[string]suggest.Meta) template.HTML {
+	if len(meta) == 0 {
+		return ""
+	}
+	const naLabel = "Other / N/A"
+	geo := map[string]float64{}
+	sec := map[string]float64{}
+	cls := map[string]float64{}
+	for _, a := range assets {
+		if a.Weight <= 0 {
+			continue
+		}
+		m, _, ok := metaFor(meta, a.ID)
+		if !ok {
+			geo[naLabel] += a.Weight
+			sec[naLabel] += a.Weight
+			cls["Unknown"] += a.Weight
+			continue
+		}
+		addBreakdown(geo, m.Geography, a.Weight, naLabel, canonRegion)
+		addBreakdown(sec, m.Sectors, a.Weight, naLabel, nil)
+		if m.AssetClass != "" {
+			cls[prettyClass(m.AssetClass)] += a.Weight
+		} else {
+			cls["Unknown"] += a.Weight
+		}
+	}
+	pies := []string{
+		chart.Pie(chart.PieOptions{Title: "Geography"}, breakdownSlices(geo, naLabel, 8)),
+		chart.Pie(chart.PieOptions{Title: "Sector"}, breakdownSlices(sec, naLabel, 9)),
+		chart.Pie(chart.PieOptions{Title: "Asset type"}, breakdownSlices(cls, "Unknown", 8)),
+	}
+	var b strings.Builder
+	b.WriteString(`<div class="pies">`)
+	any := false
+	for _, p := range pies {
+		if p != "" {
+			b.WriteString(p)
+			any = true
+		}
+	}
+	b.WriteString(`</div>`)
+	if !any {
+		return ""
+	}
+	return template.HTML(b.String())
+}
+
+// addBreakdown adds weight w split over an asset's percentage map (values
+// summing to ~100); an empty map sends the whole weight to the N/A wedge.
+// norm, when set, canonicalizes keys so synonymous labels merge.
+func addBreakdown(agg, split map[string]float64, w float64, naLabel string, norm func(string) string) {
+	if len(split) == 0 {
+		agg[naLabel] += w
+		return
+	}
+	for k, v := range split {
+		if norm != nil {
+			k = norm(k)
+		}
+		agg[k] += w * v / 100
+	}
+}
+
+// canonRegion merges the obvious country-label synonyms used inconsistently
+// across the catalog (the granular regions like "North America" are kept).
+func canonRegion(s string) string {
+	switch strings.ToLower(strings.TrimSpace(s)) {
+	case "united states", "usa", "u.s.", "u.s.a.", "united states of america":
+		return "US"
+	case "united kingdom", "u.k.", "great britain":
+		return "UK"
+	}
+	return s
+}
+
+// breakdownSlices turns an aggregation map into pie slices: largest first,
+// wedges below 3 % (and the explicit N/A bucket) merged into a trailing
+// neutral "Other" slice, capped at maxSlices entries. A pie that would carry
+// only the neutral slice (no real composition) returns nil so it is omitted.
+func breakdownSlices(agg map[string]float64, naLabel string, maxSlices int) []chart.Slice {
+	total := 0.0
+	for _, v := range agg {
+		total += v
+	}
+	if total <= 0 {
+		return nil
+	}
+	type kv struct {
+		k string
+		v float64
+	}
+	items := make([]kv, 0, len(agg))
+	other := 0.0
+	for k, v := range agg {
+		if k == naLabel {
+			other += v
+			continue
+		}
+		items = append(items, kv{k, v})
+	}
+	sort.Slice(items, func(i, j int) bool { return items[i].v > items[j].v })
+	slices := make([]chart.Slice, 0, maxSlices)
+	for _, it := range items {
+		if it.v/total < 0.03 || len(slices) >= maxSlices-1 {
+			other += it.v
+			continue
+		}
+		slices = append(slices, chart.Slice{Label: it.k, Value: it.v})
+	}
+	if other > 0 {
+		slices = append(slices, chart.Slice{Label: "Other", Value: other, Color: chart.NeutralColor})
+	}
+	if len(slices) == 1 && slices[0].Color == chart.NeutralColor {
+		return nil // only "Other" — nothing to show
+	}
+	return slices
+}
+
+// prettyClass turns a catalog asset_class slug ("aggregate-bond") into a
+// display label ("Aggregate bond").
+func prettyClass(s string) string {
+	s = strings.ReplaceAll(s, "-", " ")
+	if s == "" {
+		return s
+	}
+	return strings.ToUpper(s[:1]) + s[1:]
 }
 
 // coverageBars computes a portfolio's macro-regime coverage for the report.
