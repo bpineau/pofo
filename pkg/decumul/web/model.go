@@ -104,13 +104,10 @@ func (pr Params) source(panel *scenario.Panel) scenario.Source {
 		}
 	}
 	if pr.Regime {
-		// Stress regimes: a two-state Markov source (annual) where bad years
-		// cluster. The bear state is derived from the calm mu/sigma sliders.
-		return scenario.MarkovRegime{
-			CalmMu: pr.Mu, CalmSigma: pr.Sigma,
-			BearMu: pr.Mu - 2*pr.Sigma, BearSigma: pr.Sigma * 1.5,
-			StayCalm: 0.92, StayBear: 0.65, Df: pr.Df, Periods: pr.Years,
-		}
+		// Stress regimes: a mean-preserving two-state Markov source (annual)
+		// where bad years cluster, preserving the target long-run mean so the
+		// stress measures sequence risk only, not a secretly lower expected return.
+		return scenario.NewMarkovRegime(pr.Mu, pr.Sigma, pr.Df, pr.Years)
 	}
 	if pr.Monthly {
 		// Monthly i.i.d. parametric draws that compound to the annual mu/sigma.
