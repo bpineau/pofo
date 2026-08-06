@@ -18,10 +18,9 @@ import (
 // USD, homogeneous with the component they extend:
 //
 //   - VTMGX (Vanguard Developed Markets, 1999) → developed-ex-US equity TR
-//     (refdata DEVEXUS-USD: Ken French developed-ex-US from 1990, MSCI World
-//     before, ~1969).
+//     (refdata DEVEXUS-USD: MSCI World ex USA gross TR via Curvo, ~1969).
 //   - VEIEX (Vanguard Emerging Markets, 1994) → emerging-market equity TR
-//     (refdata EM-USD: Ken French emerging, ~1989).
+//     (refdata EM-USD: MSCI Emerging Markets gross TR via Curvo, ~1988).
 //   - GC=F (COMEX gold futures, 2000) → monthly London/LBMA gold fix
 //     (refdata XAUUSD-LBMA, ~1968).
 //   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
