@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
@@ -29,6 +30,7 @@ type Params struct {
 	Weights       []float64 `json:"weights"`
 	Model         string    `json:"model"`      // "parametric" (default), "bootstrap", "cohorts"
 	TargetRuin    float64   `json:"targetRuin"` // solve target (fraction), used by /api/solve
+	Monthly       bool      `json:"monthly"`    // step the kernel monthly (salary-like withdrawals)
 }
 
 // Card is one labelled summary figure shown above the charts.
@@ -59,6 +61,7 @@ func (pr Params) plan() decumul.Plan {
 		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
+		Monthly:    pr.Monthly,
 	}
 	if pr.PensionAnnual > 0 {
 		p.Cashflows = []decumul.Cashflow{{FromYear: pr.PensionYear, Annual: pr.PensionAnnual}}
@@ -71,16 +74,26 @@ func (pr Params) plan() decumul.Plan {
 // the live weights and compounds to annual; otherwise it falls back to the
 // annual parametric source.
 func (pr Params) source(panel *scenario.Panel) scenario.Source {
+	months := pr.Years * 12
 	if panel != nil && pr.Weights != nil {
-		months := pr.Years * 12
+		var inner scenario.Source
 		switch pr.Model {
 		case "bootstrap":
-			inner := scenario.StationaryBootstrap{Panel: *panel, Weights: pr.Weights, MeanBlock: 24, Periods: months}
-			return scenario.Compounded{Inner: inner, Group: 12}
+			inner = scenario.StationaryBootstrap{Panel: *panel, Weights: pr.Weights, MeanBlock: 24, Periods: months}
 		case "cohorts":
-			inner := scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: months}
+			inner = scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: months}
+		}
+		if inner != nil {
+			if pr.Monthly {
+				return inner // the monthly kernel consumes the monthly source directly
+			}
 			return scenario.Compounded{Inner: inner, Group: 12}
 		}
+	}
+	if pr.Monthly {
+		// Monthly i.i.d. parametric draws that compound to the annual mu/sigma.
+		return scenario.ParametricSource{
+			Mu: math.Pow(1+pr.Mu, 1.0/12) - 1, Sigma: pr.Sigma / math.Sqrt(12), Df: pr.Df, Periods: months}
 	}
 	return scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}
 }

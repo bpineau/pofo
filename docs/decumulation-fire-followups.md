@@ -100,7 +100,18 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     capital (`CapitalForRuin`) and the ruin-minimising buffer, and a Solve panel
     in the UI (target-ruin input + button + result line).
 
-13. **Monthly withdrawal kernel (stated requirement, P2-ish).** Ben's real
+13. ✅ **Done (2026-06-29).** Implemented `RunPathMonthly` (steps monthly,
+    withdraws NeedAnnual/12, evaluates drawdown/flex/bucket monthly, applies one
+    monthly real return; buffer years / horizon / cashflow years stay
+    year-valued; buffer return applied as its 12th root; Wealth reported at
+    annual granularity). A `Plan.Monthly` flag + `runPath` dispatcher route
+    `Simulate`/sweeps through it while the annual `RunPath` stays the validated
+    golden reference. The web exposes a "Monthly withdrawals" toggle: historical
+    models feed the monthly source directly (no Compounded wrapper), parametric
+    draws monthly i.i.d. shocks that compound to the annual mu/sigma. Below is
+    the original note.
+
+    **Monthly withdrawal kernel (stated requirement, P2-ish).** Ben's real
     use case is a **monthly** withdrawal, like a salary, and the buffer-vs-cut
     re-evaluation ("tap the buffer or cut this month's spend 25%?") is also a
     **monthly** decision. So the kernel should step monthly: withdraw
