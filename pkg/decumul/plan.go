@@ -54,10 +54,13 @@ func (t CTOFlatTax) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid 
 		gross = net / (1 - eff)
 	}
 	if gross > growth {
-		gross = growth
+		gross = growth // sale capped at the available market value
 	}
 	newCost = cost * (1 - gross/growth)
-	return gross, newCost, gross - net
+	// Tax is the effective rate on the gross actually sold; deriving it from
+	// the requested net (gross - net) would misstate it, even turning negative,
+	// when the sale was capped and delivers less than net.
+	return gross, newCost, gross * eff
 }
 
 // Plan is a full decumulation scenario.

@@ -22,6 +22,28 @@ func TestRunPathDepletion(t *testing.T) {
 	}
 }
 
+// When embedded gains make the gross-up exceed the available growth, the year
+// under-delivers: it must latch ruin and account only the net actually
+// withdrawn (with a non-negative tax), not the full requested need.
+func TestRunPathUnderDelivery(t *testing.T) {
+	p := Plan{Capital: 100000, NeedAnnual: 70000, Years: 2, Tax: CTOFlatTax{Rate: 0.5}}
+	res := p.RunPath(scenario.Sequence{1.0, 0})
+	if !res.Ruined {
+		t.Errorf("expected ruin: year 2 cannot gross up 70k net from 60k of growth")
+	}
+	// Year 1 delivers 70k (no gain yet); year 2 caps at 60k gross, 15k tax,
+	// so only 45k net reaches the household: 70k + 45k = 115k withdrawn.
+	if math.Abs(res.Withdrawn-115000) > 1 {
+		t.Errorf("Withdrawn = %.0f, want 115000 (real net, not the requested 140000)", res.Withdrawn)
+	}
+	if res.TaxPaid < 0 {
+		t.Errorf("TaxPaid = %.0f, must never be negative", res.TaxPaid)
+	}
+	if math.Abs(res.TaxPaid-15000) > 1 {
+		t.Errorf("TaxPaid = %.0f, want 15000", res.TaxPaid)
+	}
+}
+
 // A high enough capital with positive returns survives.
 func TestRunPathSurvives(t *testing.T) {
 	p := Plan{Capital: 1_000_000, NeedAnnual: 20000, Years: 10, Tax: CTOFlatTax{Rate: 0}}
