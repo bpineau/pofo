@@ -65,14 +65,14 @@ against both the parametric and the portfolio (`-fire <file>`) modes.
   defaults follow the written rules: 1.2× trigger, +10% steps, 1.2× cap,
   2-year cooldown, 2.2% MaxWR).
 - **Sensitivity** gained four levers: pension +500 €/m, side income
-  12 k€×8 y (the ARE bridge), the WR-trigger cut, and the ratchet (the one
-  lever that *raises* ruin — it prices the lifestyle option).
+  12 k€×8 y, the WR-trigger cut, and the ratchet (the one lever that
+  *raises* ruin — it prices the lifestyle option).
 
 ## UI (`pkg/decumul/web/assets`) — the frontend-design pass (backlog #17)
 
 Two-column desk on the shared warm-study theme: a **sticky control rail**
 (grouped fieldsets: situation, pension & side income with **preset chips**
-for the three pension scenarios and the ARE bridge, spending policy, market
+for the three pension scenarios, spending policy, market
 model, cash buffer, taxes & envelopes, simulation) and a long **numbered
 analysis column**: 01 simulated futures (fans), 02 the spending you actually
 live, 03 alive-broke-or-gone, 04 what moves the risk (frontier, levers, the
