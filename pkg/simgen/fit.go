@@ -5,8 +5,8 @@ import (
 	"math"
 	"time"
 
-	"portfodor/pkg/marketdata"
-	"portfodor/pkg/metrics"
+	"github.com/bpineau/portfodor/pkg/marketdata"
+	"github.com/bpineau/portfodor/pkg/metrics"
 )
 
 // FitBackcast regresses the real asset's daily returns on the given

@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"portfodor/pkg/chart"
+	"github.com/bpineau/portfodor/pkg/chart"
 )
 
 // Line produces a self-contained SVG document, embeddable as-is in an HTML
