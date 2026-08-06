@@ -45,8 +45,8 @@ func NewClient(cacheDir string) *Client {
 		HTTP:            &http.Client{Timeout: 30 * time.Second},
 		CacheDir:        cacheDir,
 		MaxAge:          30 * 24 * time.Hour,
-		ChartBase:       "https://query1.finance.yahoo.com",
-		SearchBase:      "https://query1.finance.yahoo.com",
+		ChartBase:       yahooHost2, // query2 first; yahooGet falls back to query1
+		SearchBase:      yahooHost2,
 		StooqBase:       "https://stooq.com",
 		FTBase:          "https://markets.ft.com",
 		JustETFBase:     "https://www.justetf.com",
