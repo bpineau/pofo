@@ -200,8 +200,8 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 
 	return Result{
 		// The hero strip (/api/models) carries the multi-model ruin and safe
-		// withdrawal; these cards keep the single-model ruin (also used for the
-		// A/B allocation comparison) plus the secondary detail metrics.
+		// withdrawal shown in the UI; these detail metrics are computed for the
+		// API response and the tests, not rendered on the page.
 		Cards: []Card{
 			{"Ruin", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
 			{"Withdrawal rate", fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100)},
@@ -217,34 +217,6 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth"},
 			"Buffer years", ruinSeries(sweep), terminalSeries(sweep)),
 		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)"}, bars),
-	}
-}
-
-// CompareResult holds two allocations evaluated side by side: a pinned baseline
-// and the current variant (the "60/25/15 vs 20/20/…" question).
-type CompareResult struct {
-	Baseline Result `json:"baseline"`
-	Variant  Result `json:"variant"`
-}
-
-// computeAllocation evaluates one allocation. In portfolio mode each allocation
-// is re-fitted from the panel so the comparison is fair (its own mu/sigma/df),
-// matching what the interactive path does client-side on a weight change.
-func computeAllocation(pr Params, weights []float64, panel *scenario.Panel) Result {
-	pr.Weights = weights
-	if panel != nil && weights != nil {
-		f := FitParametric(*panel, weights)
-		pr.Mu, pr.Sigma, pr.Df = f.Mu, f.Sigma, f.Df
-	}
-	return ComputeWithPanel(pr, panel)
-}
-
-// Compare evaluates the pinned baseline allocation and the current variant
-// (pr.Weights) side by side, each under the same non-allocation parameters.
-func Compare(pr Params, baselineWeights []float64, panel *scenario.Panel) CompareResult {
-	return CompareResult{
-		Baseline: computeAllocation(pr, baselineWeights, panel),
-		Variant:  computeAllocation(pr, pr.Weights, panel),
 	}
 }
 
