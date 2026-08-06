@@ -84,9 +84,9 @@ var catalog = []CatalogEntry{
 	{ID: "IE00BJ0KDQ92", ISIN: "IE00BJ0KDQ92", Name: "Xtrackers MSCI World UCITS ETF 1C", Source: "yahoo", Symbol: "XDWD.L", Currency: "USD", Fees: 0.12, UCITS: true},
 	{ID: "IE00BFY0GT14", ISIN: "IE00BFY0GT14", Name: "State Street SPDR MSCI World UCITS ETF", Source: "yahoo", Symbol: "SPPW.DE", Currency: "EUR", Fees: 0.12, UCITS: true},
 	{ID: "IE00B4X9L533", ISIN: "IE00B4X9L533", Name: "HSBC MSCI World UCITS ETF", Source: "yahoo", Symbol: "HMWD.L", Currency: "USD", Fees: 0.15, UCITS: true},
-	{ID: "IE00B6R52259", ISIN: "IE00B6R52259", Name: "iShares MSCI ACWI UCITS ETF USD Acc", Source: "yahoo", Symbol: "SSAC.L", Currency: "GBp", Fees: 0.20, UCITS: true},
-	{ID: "IE00B44Z5B48", ISIN: "IE00B44Z5B48", Name: "State Street SPDR MSCI All Country World UCITS ETF", Source: "yahoo", Symbol: "SPYY.DE", Currency: "EUR", Fees: 0.12, UCITS: true},
-	{ID: "IE00B3YLTY66", ISIN: "IE00B3YLTY66", Name: "State Street SPDR MSCI All Country World Investable Market UCITS ETF", Source: "yahoo", Symbol: "SPYI.DE", Currency: "EUR", Fees: 0.17, UCITS: true},
+	{ID: "IE00B6R52259", ISIN: "IE00B6R52259", Name: "iShares MSCI ACWI UCITS ETF USD Acc", Source: "ft", Symbol: "ISAC", Xid: "39134732", Currency: "USD", Fees: 0.20, UCITS: true},                                  // Yahoo SSAC.L has corrupt 2011 points
+	{ID: "IE00B44Z5B48", ISIN: "IE00B44Z5B48", Name: "State Street SPDR MSCI All Country World UCITS ETF", Source: "ft", Symbol: "SPYY", Xid: "34107089", Currency: "EUR", Fees: 0.12, UCITS: true},                   // Yahoo SPYY.DE has corrupt 2011 points
+	{ID: "IE00B3YLTY66", ISIN: "IE00B3YLTY66", Name: "State Street SPDR MSCI All Country World Investable Market UCITS ETF", Source: "ft", Symbol: "SPYI", Xid: "34107101", Currency: "EUR", Fees: 0.17, UCITS: true}, // Yahoo SPYI.DE has corrupt 2011 points
 	{ID: "IE000716YHJ7", ISIN: "IE000716YHJ7", Name: "Invesco FTSE All-World UCITS ETF USD Accumalation", Source: "ft", Symbol: "FWRA", Xid: "808530603", Currency: "USD", Fees: 0.15, UCITS: true},
 	{ID: "LU2655993207", ISIN: "LU2655993207", Name: "Amundi Index Solutions - Amundi MSCI World Swap UCITS ETF EUR Dist", Source: "yahoo", Symbol: "EWLD.PA", Currency: "EUR", Fees: 0.38, UCITS: true},
 	{ID: "IE00BKX55T58", ISIN: "IE00BKX55T58", Name: "Vanguard FTSE Developed World UCITS ETF USD Distributing", Source: "yahoo", Symbol: "VEVE.L", Currency: "GBP", Fees: 0.12, UCITS: true},
@@ -103,10 +103,10 @@ var catalog = []CatalogEntry{
 	{ID: "IE0031442068", ISIN: "IE0031442068", Name: "iShares Core S&P 500 UCITS ETF USD Dist", Source: "ft", Symbol: "IDUS", Xid: "5495140", Currency: "USD", Fees: 0.07, UCITS: true},
 	{ID: "IE00B3XXRP09", ISIN: "IE00B3XXRP09", Name: "Vanguard S&P 500 UCITS ETF", Source: "yahoo", Symbol: "VUSA.L", Currency: "GBP", Fees: 0.07, UCITS: true},
 	{ID: "IE00BFMXXD54", ISIN: "IE00BFMXXD54", Name: "Vanguard S&P 500 UCITS ETF USD Accumulation", Source: "yahoo", Symbol: "VUAA.L", Currency: "USD", Fees: 0.07, UCITS: true},
-	{ID: "IE000XZSV718", ISIN: "IE000XZSV718", Name: "State Street SPDR S&P 500 UCITS ETF USD Acc", Source: "yahoo", Symbol: "SPYL.L", Currency: "USD", Fees: 0.03, UCITS: true},
+	{ID: "IE000XZSV718", ISIN: "IE000XZSV718", Name: "State Street SPDR S&P 500 UCITS ETF USD Acc", Source: "ft", Symbol: "SPYL", Xid: "843010685", Currency: "USD", Fees: 0.03, UCITS: true}, // Yahoo SPYL.L has a bad 2023 point
 	{ID: "IE00B6YX5C33", ISIN: "IE00B6YX5C33", Name: "State Street SPDR S&P 500 UCITS ETF", Source: "yahoo", Symbol: "SPY5.DE", Currency: "EUR", Fees: 0.03, UCITS: true},
 	{ID: "LU0496786574", ISIN: "LU0496786574", Name: "Amundi Core S&P 500 Swap UCITS ETF EUR Dist", Source: "yahoo", Symbol: "LYPS.DE", Currency: "EUR", Fees: 0.05, UCITS: true},
-	{ID: "IE00B3WJKG14", ISIN: "IE00B3WJKG14", Name: "iShares S&P 500 Information Technology Sector UCITS ETF USD (Acc)", Source: "yahoo", Symbol: "IITU.L", Currency: "GBp", Fees: 0.15, UCITS: true},
+	{ID: "IE00B3WJKG14", ISIN: "IE00B3WJKG14", Name: "iShares S&P 500 Information Technology Sector UCITS ETF USD (Acc)", Source: "ft", Symbol: "IUIT", Xid: "93233034", Currency: "USD", Fees: 0.15, UCITS: true}, // Yahoo IITU.L has a bad 2015 point
 	{ID: "IE0032077012", ISIN: "IE0032077012", Name: "Invesco EQQQ NASDAQ-100 UCITS ETF", Source: "yahoo", Symbol: "EQQQ.MI", Currency: "EUR", Fees: 0.30, UCITS: true},
 	{ID: "IE00B53SZB19", ISIN: "IE00B53SZB19", Name: "iShares VII PLC - iShares NASDAQ 100 UCITS ETF", Source: "yahoo", Symbol: "CSNDX.SW", Currency: "USD", Fees: 0.30, UCITS: true},
 	{ID: "LU1681038243", ISIN: "LU1681038243", Name: "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc", Source: "yahoo", Symbol: "ANX.PA", Currency: "EUR", Fees: 0.23},
@@ -114,7 +114,7 @@ var catalog = []CatalogEntry{
 	{ID: "IE00BGV5VN51", ISIN: "IE00BGV5VN51", Name: "Xtrackers Artificial Intelligence & Big Data UCITS ETF 1C", Source: "ft", Symbol: "XAIX", Xid: "515873934", Currency: "EUR", Fees: 0.35, UCITS: true},
 	{ID: "LU0908500753", ISIN: "LU0908500753", Name: "Amundi Core Stoxx Europe 600 UCITS ETF Acc", Source: "ft", Symbol: "MEUD", Xid: "57210679", Currency: "EUR", Fees: 0.07, UCITS: true},
 	{ID: "LU0328475792", ISIN: "LU0328475792", Name: "Xtrackers Stoxx Europe 600 UCITS ETF 1C", Source: "yahoo", Symbol: "XSX6.DE", Currency: "EUR", Fees: 0.20, UCITS: true},
-	{ID: "IE00B4K48X80", ISIN: "IE00B4K48X80", Name: "iShares Core MSCI Europe UCITS ETF EUR (Acc)", Source: "yahoo", Symbol: "IMEA.SW", Currency: "CHF", Fees: 0.12, UCITS: true},
+	{ID: "IE00B4K48X80", ISIN: "IE00B4K48X80", Name: "iShares Core MSCI Europe UCITS ETF EUR (Acc)", Source: "ft", Symbol: "IMAE", Xid: "21213176", Currency: "EUR", Fees: 0.12, UCITS: true}, // Yahoo IMEA.SW has a 360-day gap
 	{ID: "IE00B945VV12", ISIN: "IE00B945VV12", Name: "Vanguard FTSE Developed Europe UCITS ETF", Source: "yahoo", Symbol: "VEUR.AS", Currency: "EUR", Fees: 0.10, UCITS: true},
 	{ID: "IE00B52VJ196", ISIN: "IE00B52VJ196", Name: "iShares MSCI Europe SRI UCITS ETF EUR (Acc)", Source: "yahoo", Symbol: "IESG.L", Currency: "GBp", Fees: 0.20, UCITS: true},
 	{ID: "DE0005933931", ISIN: "DE0005933931", Name: "iShares Core DAX® UCITS ETF (DE) EUR (Acc)", Source: "ft", Symbol: "EXS1", Xid: "136514", Currency: "EUR", Fees: 0.16, UCITS: true},
@@ -144,7 +144,7 @@ var catalog = []CatalogEntry{
 	{ID: "IE00BMVB5R75", ISIN: "IE00BMVB5R75", Name: "Vanguard LifeStrategy 80% Equity UCITS ETF (EUR) Accumulating", Source: "ft", Symbol: "V80A", Xid: "633103242", Currency: "EUR", Fees: 0.25, UCITS: true},
 	{ID: "IE00BMVB5P51", ISIN: "IE00BMVB5P51", Name: "Vanguard LifeStrategy 60% Equity UCITS ETF (EUR) Accumulating", Source: "ft", Symbol: "V60A", Xid: "633308512", Currency: "EUR", Fees: 0.25, UCITS: true},
 	{ID: "IE00B1XNHC34", ISIN: "IE00B1XNHC34", Name: "iShares Global Clean Energy Transition UCITS ETF USD (Dist)", Source: "ft", Symbol: "IQQH", Xid: "9155309", Currency: "EUR", Fees: 0.65, UCITS: true},
-	{ID: "FR0010755611", ISIN: "FR0010755611", Name: "Amundi MSCI USA Daily (2x) Leveraged UCITS ETF Acc", Source: "yahoo", Symbol: "CL2.PA", Currency: "EUR", Fees: 0.50, UCITS: true},
+	{ID: "FR0010755611", ISIN: "FR0010755611", Name: "Amundi MSCI USA Daily (2x) Leveraged UCITS ETF Acc", Source: "ft", Symbol: "CL2", Xid: "19712277", Currency: "EUR", Fees: 0.50, UCITS: true}, // Yahoo CL2.PA mixes price units
 	{ID: "FR0010342592", ISIN: "FR0010342592", Name: "Amundi Nasdaq-100 Daily (2x) Leveraged UCITS ETF Acc", Source: "ft", Symbol: "LQQ", Xid: "5082783", Currency: "EUR", Fees: 0.60, UCITS: true},
 
 	// US-listed twins, used by simgen for validation; the bare tickers map
