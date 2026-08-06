@@ -1,8 +1,8 @@
 // Package datasets embeds the repository's versioned data into the binary:
-// the permanent simulated histories (simdata/) and the imported reference
-// series (refdata/). The binary can therefore run from any directory; after
-// a regeneration (-gen-simdata), a recompilation is needed to re-embed the
-// files.
+// the permanent simulated histories (simdata/), the imported reference
+// series (refdata/) and the catalog asset metadata (assetmeta/). The binary
+// can therefore run from any directory; after a regeneration (-gen-simdata),
+// a recompilation is needed to re-embed the files.
 package datasets
 
 import (
@@ -10,7 +10,7 @@ import (
 	"io/fs"
 )
 
-//go:embed simdata refdata
+//go:embed simdata refdata assetmeta/assets.json
 var bundle embed.FS
 
 // Simdata returns the embedded simulated-history files.
@@ -29,4 +29,14 @@ func Refdata() fs.FS {
 		panic(err)
 	}
 	return sub
+}
+
+// AssetMeta returns the embedded asset-metadata JSON (the factual tags for
+// the bundled catalog used by the -suggest analysis).
+func AssetMeta() []byte {
+	b, err := bundle.ReadFile("assetmeta/assets.json")
+	if err != nil {
+		panic(err) // broken repository layout: impossible at runtime
+	}
+	return b
 }
