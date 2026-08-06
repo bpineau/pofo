@@ -11,6 +11,15 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 > [`decumulation-fire-realism-spec.md`](decumulation-fire-realism-spec.md)
 > (default flex off, honest return defaults + conservative prior, sequence-risk
 > capture, longevity horizon).
+>
+> **Usability rewrite (2026-06-30):** the explorer is being rebuilt around a
+> multi-model comparison, visible simulated markets, and an actionable safe-WR
+> headline. Spec: [`decumulation-fire-rewrite-spec.md`](decumulation-fire-rewrite-spec.md)
+> (synthesis of Ben's brief, a ChatGPT thread, and Claude's analysis in
+> [`decumulation-fire-usability-proposals.md`](decumulation-fire-usability-proposals.md)).
+> The regime mean-tanking bug it identified is already fixed (commit d96e4a1).
+> Deferred to phase 2: bundle a broad-sample century-long real-return panel
+> under `pkg/datasets/` so the historical models see 1900s-2020s regimes.
 
 ## Correctness oddities (P1)
 
