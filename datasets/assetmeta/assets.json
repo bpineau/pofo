@@ -30,7 +30,8 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
-    ]
+    ],
+    "since": "2007-04-03"
   },
   {
     "id": "BTAL",
@@ -56,7 +57,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US00110G4082"
-    ]
+    ],
+    "since": "2011-09-13"
   },
   {
     "id": "CL=F",
@@ -82,7 +84,8 @@
     "confidence": "high",
     "sources": [
       "https://www.cmegroup.com/markets/energy/crude-oil/light-sweet-crude.html"
-    ]
+    ],
+    "since": null
   },
   {
     "id": "CTA",
@@ -105,7 +108,8 @@
     "confidence": "high",
     "sources": [
       "https://www.simplify.us/etfs/cta-simplify-managed-futures-strategy-etf"
-    ]
+    ],
+    "since": "2022-03-07"
   },
   {
     "id": "DBMF",
@@ -128,7 +132,8 @@
     "confidence": "medium",
     "sources": [
       "https://stockanalysis.com/etf/dbmf/holdings/"
-    ]
+    ],
+    "since": "2019-05-07"
   },
   {
     "id": "DE0002635307",
@@ -174,7 +179,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/ch/individual/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund"
-    ]
+    ],
+    "since": "2004-04-13"
   },
   {
     "id": "DE0005933931",
@@ -214,7 +220,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/de/individual/de/products/251770/"
-    ]
+    ],
+    "since": "2000-04-05"
   },
   {
     "id": "DE000A0S9GB0",
@@ -238,7 +245,8 @@
     "confidence": "high",
     "sources": [
       "https://www.xetra-gold.com/en/"
-    ]
+    ],
+    "since": "2007-12-06"
   },
   {
     "id": "EEMA",
@@ -279,7 +287,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.ishares.com/us/products/239629/ishares-msci-emerging-markets-asia-etf"
-    ]
+    ],
+    "since": "2012-02-08"
   },
   {
     "id": "FR0007052782",
@@ -320,7 +329,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.co.uk/en/professional/products/equity/amundi-cac-40-ucits-etf-dist/fr0007052782"
-    ]
+    ],
+    "since": "2001-01-22"
   },
   {
     "id": "FR0010315770",
@@ -364,7 +374,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ii-ucits-etf-dist/fr0010315770"
-    ]
+    ],
+    "since": "2005-12-30"
   },
   {
     "id": "FR0010342592",
@@ -398,7 +409,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/professional/products/equity/amundi-nasdaq100-daily-2x-leveraged-ucits-etf-acc/fr0010342592"
-    ]
+    ],
+    "since": "2007-01-19"
   },
   {
     "id": "FR0010510800",
@@ -424,7 +436,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010510800"
-    ]
+    ],
+    "since": "2008-06-10"
   },
   {
     "id": "FR0010755611",
@@ -450,7 +463,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010755611"
-    ]
+    ],
+    "since": "2009-09-25"
   },
   {
     "id": "FR0011147594",
@@ -476,7 +490,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.flornoyferri.com/nos_fonds/omnibond/"
-    ]
+    ],
+    "since": "2011-12-16"
   },
   {
     "id": "FR0011550185",
@@ -513,7 +528,8 @@
     "confidence": "high",
     "sources": [
       "https://www.bnpparibas-am.com/en-sk/fundsheet/equity/bnp-paribas-easy-sp-500-ucits-etf-eur-c-c-fr0011550185/"
-    ]
+    ],
+    "since": "2013-11-12"
   },
   {
     "id": "FR0011871110",
@@ -548,7 +564,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.be/en/professional/products/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110"
-    ]
+    ],
+    "since": "2014-06-25"
   },
   {
     "id": "FR0011871128",
@@ -585,7 +602,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.be/en/professional/products/equity/amundi-pea-sp-500-ucits-etf-acc/fr0011871128"
-    ]
+    ],
+    "since": "2014-06-25"
   },
   {
     "id": "FR0012336683",
@@ -616,7 +634,8 @@
     "confidence": "high",
     "sources": [
       "https://funds360.fefundinfo.com/opcvm/fiche/amundi-actions-or-part-p-c"
-    ]
+    ],
+    "since": "2015-04-27"
   },
   {
     "id": "FR0013412020",
@@ -657,7 +676,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0013412020"
-    ]
+    ],
+    "since": "2018-04-16"
   },
   {
     "id": "FR0013412038",
@@ -699,7 +719,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-msci-europe-ucits-etf-acc/fr0013412038"
-    ]
+    ],
+    "since": "2018-04-16"
   },
   {
     "id": "FR0013412285",
@@ -736,7 +757,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-sp-500-screened-ucits-etf-acc/fr0013412285"
-    ]
+    ],
+    "since": "2018-04-16"
   },
   {
     "id": "FR001400U5Q4",
@@ -780,7 +802,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR001400U5Q4"
-    ]
+    ],
+    "since": "2025-03-04"
   },
   {
     "id": "GG00BQBFY362",
@@ -806,7 +829,8 @@
     "confidence": "high",
     "sources": [
       "https://bhmacro.com/"
-    ]
+    ],
+    "since": "2007-03-14"
   },
   {
     "id": "IE0003R87OG3",
@@ -847,7 +871,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/"
-    ]
+    ],
+    "since": "2024-09-25"
   },
   {
     "id": "IE0003XJA0J9",
@@ -894,7 +919,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-prime-all-country-world-ucits-etf-acc/ie0003xja0j9"
-    ]
+    ],
+    "since": "2024-06-05"
   },
   {
     "id": "IE0006WW1TQ4",
@@ -934,7 +960,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4"
-    ]
+    ],
+    "since": "2024-03-06"
   },
   {
     "id": "IE000716YHJ7",
@@ -978,7 +1005,8 @@
     "confidence": "high",
     "sources": [
       "https://www.invesco.com/uk/en/invesco-ftse-all-world-ucits-etf.html"
-    ]
+    ],
+    "since": "2023-06-26"
   },
   {
     "id": "IE00077IIPQ8",
@@ -1010,7 +1038,8 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc"
-    ]
+    ],
+    "since": "2024-11-05"
   },
   {
     "id": "IE000A89Y2G7",
@@ -1045,7 +1074,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000A89Y2G7"
-    ]
+    ],
+    "since": "2025-05-09"
   },
   {
     "id": "IE000EPX8KB7",
@@ -1071,7 +1101,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000EPX8KB7"
-    ]
+    ],
+    "since": "2023-02-21"
   },
   {
     "id": "IE000KF370H3",
@@ -1106,7 +1137,8 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsx-wisdomtree-us-efficient-core-ucits-etf---usd-acc"
-    ]
+    ],
+    "since": "2023-10-10"
   },
   {
     "id": "IE000O1VI174",
@@ -1134,7 +1166,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.wintonucits.com/portable-alpha"
-    ]
+    ],
+    "since": "2025-03-27"
   },
   {
     "id": "IE000RHYOR04",
@@ -1163,7 +1196,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000RHYOR04"
-    ]
+    ],
+    "since": "2022-04-27"
   },
   {
     "id": "IE000WIQIPT2",
@@ -1191,7 +1225,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000WIQIPT2"
-    ]
+    ],
+    "since": "2022-04-06"
   },
   {
     "id": "IE000XZSV718",
@@ -1230,7 +1265,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy"
-    ]
+    ],
+    "since": "2023-10-31"
   },
   {
     "id": "IE0031442068",
@@ -1270,7 +1306,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0031442068"
-    ]
+    ],
+    "since": "2003-05-19"
   },
   {
     "id": "IE0032077012",
@@ -1304,7 +1341,8 @@
     "confidence": "high",
     "sources": [
       "https://www.invesco.com/uk/en/financial-products/etfs/invesco-eqqq-nasdaq-100-ucits-etf-dist.html"
-    ]
+    ],
+    "since": "2002-11-05"
   },
   {
     "id": "IE0032895942",
@@ -1333,7 +1371,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0032895942"
-    ]
+    ],
+    "since": "2003-05-07"
   },
   {
     "id": "IE00B0M62X26",
@@ -1365,7 +1404,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26"
-    ]
+    ],
+    "since": "2005-11-15"
   },
   {
     "id": "IE00B0M63284",
@@ -1400,7 +1440,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M63284"
-    ]
+    ],
+    "since": "2006-02-20"
   },
   {
     "id": "IE00B1FZS350",
@@ -1437,7 +1478,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS350"
-    ]
+    ],
+    "since": "2007-11-08"
   },
   {
     "id": "IE00B1FZS467",
@@ -1474,7 +1516,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS467"
-    ]
+    ],
+    "since": "2007-11-08"
   },
   {
     "id": "IE00B1FZS913",
@@ -1506,7 +1549,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS913"
-    ]
+    ],
+    "since": "2007-11-08"
   },
   {
     "id": "IE00B1FZSC47",
@@ -1534,7 +1578,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZSC47"
-    ]
+    ],
+    "since": "2007-11-08"
   },
   {
     "id": "IE00B1XNHC34",
@@ -1572,7 +1617,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/251911/ishares-global-clean-energy-ucits-etf"
-    ]
+    ],
+    "since": "2007-11-08"
   },
   {
     "id": "IE00B2NPKV68",
@@ -1603,7 +1649,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B2NPKV68"
-    ]
+    ],
+    "since": "2008-03-18"
   },
   {
     "id": "IE00B3DKXQ41",
@@ -1632,7 +1679,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
-    ]
+    ],
+    "since": "2009-03-06"
   },
   {
     "id": "IE00B3F81R35",
@@ -1661,7 +1709,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3F81R35"
-    ]
+    ],
+    "since": "2009-04-07"
   },
   {
     "id": "IE00B3RBWM25",
@@ -1707,7 +1756,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3RBWM25"
-    ]
+    ],
+    "since": "2012-05-22"
   },
   {
     "id": "IE00B3VTMJ91",
@@ -1739,7 +1789,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91"
-    ]
+    ],
+    "since": "2010-04-14"
   },
   {
     "id": "IE00B3VVMM84",
@@ -1785,7 +1836,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9455/ftse-emerging-markets-ucits-etf-usd-distributing"
-    ]
+    ],
+    "since": "2012-06-22"
   },
   {
     "id": "IE00B3WJKG14",
@@ -1815,7 +1867,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/280510/ishares-sp-500-information-technology-sector-ucits-etf"
-    ]
+    ],
+    "since": "2010-06-10"
   },
   {
     "id": "IE00B3XXRP09",
@@ -1854,7 +1907,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9503/sp-500-ucits-etf-usd-distributing"
-    ]
+    ],
+    "since": "2012-05-22"
   },
   {
     "id": "IE00B3YCGJ38",
@@ -1891,7 +1945,8 @@
     "confidence": "high",
     "sources": [
       "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B3YCGJ38_factsheet_en.pdf"
-    ]
+    ],
+    "since": "2010-05-20"
   },
   {
     "id": "IE00B3YLTY66",
@@ -1935,7 +1990,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/de/en_gb/intermediary/etfs/spdr-msci-all-country-world-investable-market-ucits-etf-acc-spyi-gy"
-    ]
+    ],
+    "since": "2011-05-13"
   },
   {
     "id": "IE00B44Z5B48",
@@ -1981,7 +2037,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-all-country-world-ucits-etf-acc-spyy-gy"
-    ]
+    ],
+    "since": "2011-05-13"
   },
   {
     "id": "IE00B4K48X80",
@@ -2028,7 +2085,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/intermediaries/products/251861/ishares-msci-europe-ucits-etf-acc-fund"
-    ]
+    ],
+    "since": "2009-07-30"
   },
   {
     "id": "IE00B4L5Y983",
@@ -2070,7 +2128,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983"
-    ]
+    ],
+    "since": "2009-09-25"
   },
   {
     "id": "IE00B4NCWG09",
@@ -2094,7 +2153,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4NCWG09"
-    ]
+    ],
+    "since": "2009-09-24"
   },
   {
     "id": "IE00B4ND3602",
@@ -2118,7 +2178,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602"
-    ]
+    ],
+    "since": "2009-12-11"
   },
   {
     "id": "IE00B4WXJJ64",
@@ -2150,7 +2211,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4WXJJ64"
-    ]
+    ],
+    "since": "2009-09-24"
   },
   {
     "id": "IE00B4X9L533",
@@ -2196,7 +2258,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/uk/etf-profile.html?isin=IE00B4X9L533"
-    ]
+    ],
+    "since": "2010-08-19"
   },
   {
     "id": "IE00B52MJY50",
@@ -2233,7 +2296,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B52MJY50"
-    ]
+    ],
+    "since": "2010-10-20"
   },
   {
     "id": "IE00B52VJ196",
@@ -2278,7 +2342,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B52VJ196"
-    ]
+    ],
+    "since": "2010-11-11"
   },
   {
     "id": "IE00B53SZB19",
@@ -2312,7 +2377,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/ch/individual/en/products/253741/ishares-nasdaq-100-ucits-etf"
-    ]
+    ],
+    "since": "2010-03-25"
   },
   {
     "id": "IE00B579F325",
@@ -2335,7 +2401,8 @@
     "confidence": "high",
     "sources": [
       "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B579F325_factsheet_en.pdf"
-    ]
+    ],
+    "since": "2009-04-27"
   },
   {
     "id": "IE00B5BMR087",
@@ -2374,7 +2441,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund"
-    ]
+    ],
+    "since": "2010-05-19"
   },
   {
     "id": "IE00B5M4WH52",
@@ -2405,7 +2473,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B5M4WH52"
-    ]
+    ],
+    "since": "2011-01-27"
   },
   {
     "id": "IE00B66F4759",
@@ -2434,7 +2503,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B66F4759"
-    ]
+    ],
+    "since": "2010-02-25"
   },
   {
     "id": "IE00B67B7N93",
@@ -2463,7 +2533,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B67B7N93"
-    ]
+    ],
+    "since": "2009-03-05"
   },
   {
     "id": "IE00B6R52259",
@@ -2510,7 +2581,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B6R52259"
-    ]
+    ],
+    "since": "2011-10-13"
   },
   {
     "id": "IE00B6SPMN59",
@@ -2547,7 +2619,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B6SPMN59"
-    ]
+    ],
+    "since": "2012-10-30"
   },
   {
     "id": "IE00B6YX5C33",
@@ -2585,7 +2658,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/uk/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-dist-spy5-gy"
-    ]
+    ],
+    "since": "2012-04-03"
   },
   {
     "id": "IE00B8FHGS14",
@@ -2623,7 +2697,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B8FHGS14"
-    ]
+    ],
+    "since": "2012-04-11"
   },
   {
     "id": "IE00B8GF1M35",
@@ -2654,7 +2729,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B8GF1M35"
-    ]
+    ],
+    "since": "2012-10-30"
   },
   {
     "id": "IE00B8GKDB10",
@@ -2689,7 +2765,8 @@
     "confidence": "high",
     "sources": [
       "https://www.nl.vanguard/professional/product/etf/equity/9506/ftse-all-world-high-dividend-yield-ucits-etf-usd-distributing"
-    ]
+    ],
+    "since": "2013-05-21"
   },
   {
     "id": "IE00B945VV12",
@@ -2735,7 +2812,8 @@
     "confidence": "high",
     "sources": [
       "https://www.nl.vanguard/professional/product/etf/equity/9520/ftse-developed-europe-ucits-etf-eur-distributing"
-    ]
+    ],
+    "since": "2014-02-06"
   },
   {
     "id": "IE00B9CQXS71",
@@ -2773,7 +2851,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B9CQXS71"
-    ]
+    ],
+    "since": "2013-05-30"
   },
   {
     "id": "IE00BD6FTQ80",
@@ -2799,7 +2878,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BD6FTQ80"
-    ]
+    ],
+    "since": "2017-06-07"
   },
   {
     "id": "IE00BDBRDM35",
@@ -2828,7 +2908,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
-    ]
+    ],
+    "since": "2017-11-02"
   },
   {
     "id": "IE00BDFL4P12",
@@ -2854,7 +2935,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDFL4P12"
-    ]
+    ],
+    "since": "2017-07-13"
   },
   {
     "id": "IE00BDQYWQ65",
@@ -2882,7 +2964,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDQYWQ65"
-    ]
+    ],
+    "since": "2017-10-05"
   },
   {
     "id": "IE00BDT6FP91",
@@ -2913,7 +2996,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDT6FP91"
-    ]
+    ],
+    "since": "2017-11-30"
   },
   {
     "id": "IE00BF0BCP69",
@@ -2939,7 +3023,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BF0BCP69"
-    ]
+    ],
+    "since": "2018-01-09"
   },
   {
     "id": "IE00BF3N7102",
@@ -2968,7 +3053,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BF3N7102"
-    ]
+    ],
+    "since": "2018-01-16"
   },
   {
     "id": "IE00BF4RFH31",
@@ -3009,7 +3095,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/individual/products/296576/ishares-msci-world-small-cap-ucits-etf"
-    ]
+    ],
+    "since": "2018-01-23"
   },
   {
     "id": "IE00BFMXXD54",
@@ -3048,7 +3135,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9694/sp-500-ucits-etf-usd-accumulating"
-    ]
+    ],
+    "since": "2019-03-19"
   },
   {
     "id": "IE00BFY0GT14",
@@ -3094,7 +3182,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/it/en_gb/intermediary/etfs/state-street-spdr-msci-world-ucits-etf-sppw-gy"
-    ]
+    ],
+    "since": "2019-06-04"
   },
   {
     "id": "IE00BG8BCY43",
@@ -3123,7 +3212,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BG8BCY43"
-    ]
+    ],
+    "since": "2018-11-15"
   },
   {
     "id": "IE00BGCSB447",
@@ -3152,7 +3242,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BGCSB447"
-    ]
+    ],
+    "since": "2019-03-21"
   },
   {
     "id": "IE00BGSF1X88",
@@ -3177,7 +3268,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/307243/"
-    ]
+    ],
+    "since": "2019-02-20"
   },
   {
     "id": "IE00BGV5VN51",
@@ -3213,7 +3305,8 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-lu/IE00BGV5VN51-artificial-intelligence-big-data-ucits-etf-1c/"
-    ]
+    ],
+    "since": "2019-09-24"
   },
   {
     "id": "IE00BJ0KDQ92",
@@ -3259,7 +3352,8 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/IE00BJ0KDQ92-msci-world-ucits-etf-1c/"
-    ]
+    ],
+    "since": "2014-06-17"
   },
   {
     "id": "IE00BJ5JP097",
@@ -3295,7 +3389,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP097"
-    ]
+    ],
+    "since": "2021-05-18"
   },
   {
     "id": "IE00BJ5JP105",
@@ -3330,7 +3425,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP105"
-    ]
+    ],
+    "since": "2019-10-17"
   },
   {
     "id": "IE00BJ5JP329",
@@ -3365,7 +3461,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP329"
-    ]
+    ],
+    "since": "2019-10-17"
   },
   {
     "id": "IE00BJRCLL96",
@@ -3408,7 +3505,8 @@
     "confidence": "high",
     "sources": [
       "https://am.jpmorgan.com/gb/en/asset-management/adv/products/jpm-global-equity-multi-factor-ucits-etf-usd-acc-ie00bjrcll96"
-    ]
+    ],
+    "since": "2019-07-09"
   },
   {
     "id": "IE00BK5BQT80",
@@ -3454,7 +3552,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BK5BQT80"
-    ]
+    ],
+    "since": "2019-07-23"
   },
   {
     "id": "IE00BK5BQV03",
@@ -3497,7 +3596,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9675/ftse-developed-world-ucits-etf-usd-accumulating"
-    ]
+    ],
+    "since": "2019-07-23"
   },
   {
     "id": "IE00BK5BR733",
@@ -3543,7 +3643,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9527/ftse-emerging-markets-ucits-etf-usd-accumulating"
-    ]
+    ],
+    "since": "2019-07-23"
   },
   {
     "id": "IE00BKM4GZ66",
@@ -3589,7 +3690,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/264659/"
-    ]
+    ],
+    "since": "2014-05-30"
   },
   {
     "id": "IE00BKX55T58",
@@ -3632,7 +3734,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vanguard.co.uk/professional/product/etf/equity/9675/ftse-developed-world-ucits-etf-usd-accumulating"
-    ]
+    ],
+    "since": "2019-05-30"
   },
   {
     "id": "IE00BLNMYC90",
@@ -3668,7 +3771,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BLNMYC90"
-    ]
+    ],
+    "since": "2020-02-27"
   },
   {
     "id": "IE00BMC38736",
@@ -3697,7 +3801,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vaneck.com/es/en/semiconductor-etf/"
-    ]
+    ],
+    "since": "2015-10-22"
   },
   {
     "id": "IE00BMVB5P51",
@@ -3738,7 +3843,8 @@
     "confidence": "high",
     "sources": [
       "https://fund-docs.vanguard.com/LifeStrategy_60_Equity_UCITS_ETF_EUR_Accumulating_9494_EU_INT_EN.pdf"
-    ]
+    ],
+    "since": "2018-11-15"
   },
   {
     "id": "IE00BMVB5R75",
@@ -3779,7 +3885,8 @@
     "confidence": "high",
     "sources": [
       "https://fund-docs.vanguard.com/LifeStrategy_80_Equity_UCITS_ETF_EUR_Accumulating_9496_EU_INT_EN.pdf"
-    ]
+    ],
+    "since": "2018-11-15"
   },
   {
     "id": "IE00BP3QZ601",
@@ -3818,7 +3925,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/270054/ishares-msci-world-quality-factor-ucits-etf"
-    ]
+    ],
+    "since": "2014-09-30"
   },
   {
     "id": "IE00BP3QZ825",
@@ -3857,7 +3965,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/intermediaries/products/270051/ishares-msci-world-momentum-factor-ucits-etf"
-    ]
+    ],
+    "since": "2014-09-30"
   },
   {
     "id": "IE00BP3QZB59",
@@ -3899,7 +4008,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BP3QZB59"
-    ]
+    ],
+    "since": "2014-09-30"
   },
   {
     "id": "IE00BSKRJZ44",
@@ -3924,7 +4034,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/284433/"
-    ]
+    ],
+    "since": "2020-10-09"
   },
   {
     "id": "IE00BSPLC298",
@@ -3965,7 +4076,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/lu/en_gb/intermediary/etfs/spdr-msci-europe-small-cap-value-weighted-ucits-etf-zprx-gy"
-    ]
+    ],
+    "since": "2015-02-18"
   },
   {
     "id": "IE00BSPLC413",
@@ -4003,7 +4115,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy"
-    ]
+    ],
+    "since": "2015-02-18"
   },
   {
     "id": "IE00BTJRMP35",
@@ -4049,7 +4162,8 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/IE00BTJRMP35-msci-emerging-markets-ucits-etf-1c/"
-    ]
+    ],
+    "since": "2017-05-25"
   },
   {
     "id": "IE00BYYHSQ67",
@@ -4087,7 +4201,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BYYHSQ67"
-    ]
+    ],
+    "since": "2009-04-23"
   },
   {
     "id": "IEF",
@@ -4115,7 +4230,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin="
-    ]
+    ],
+    "since": "2002-07-22"
   },
   {
     "id": "IVV",
@@ -4152,7 +4268,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/us/individual/products/239726/ishares-core-sp-500-etf"
-    ]
+    ],
+    "since": "2000-05-15"
   },
   {
     "id": "JE00B1VS3333",
@@ -4178,7 +4295,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3333"
-    ]
+    ],
+    "since": "2007-11-28"
   },
   {
     "id": "JE00B1VS3770",
@@ -4202,7 +4320,8 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/products/physical-precious-metals/wisdomtree-physical-gold"
-    ]
+    ],
+    "since": "2007-11-28"
   },
   {
     "id": "JE00B1VS3W29",
@@ -4226,7 +4345,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3W29"
-    ]
+    ],
+    "since": "2007-11-28"
   },
   {
     "id": "KMLM",
@@ -4249,7 +4369,8 @@
     "confidence": "high",
     "sources": [
       "https://kraneshares.com/kmlm/"
-    ]
+    ],
+    "since": "2020-12-01"
   },
   {
     "id": "LU0131510165",
@@ -4284,7 +4405,8 @@
     "confidence": "high",
     "sources": [
       "https://www.independance-am.com/en/our-funds/france-small/"
-    ]
+    ],
+    "since": "2002-07-08"
   },
   {
     "id": "LU0171307068",
@@ -4314,7 +4436,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/intermediaries/products/229337/blackrock-world-healthscience-a2-eur-fund"
-    ]
+    ],
+    "since": "2003-01-09"
   },
   {
     "id": "LU0171310443",
@@ -4344,7 +4467,8 @@
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/individual/literature/fact-sheet/bgf-world-technology-fund-class-a2-eur-factsheet-lu0171310443-lu-en-individual.pdf"
-    ]
+    ],
+    "since": "2003-01-09"
   },
   {
     "id": "LU0274211480",
@@ -4384,7 +4508,8 @@
     "confidence": "high",
     "sources": [
       "https://www.xtrackers.com/en/products/etf/equity/lu0274211480"
-    ]
+    ],
+    "since": "2007-10-01"
   },
   {
     "id": "LU0280435461",
@@ -4419,7 +4544,8 @@
     "confidence": "high",
     "sources": [
       "https://www.finect.com/fondos-inversion/LU0280435461-Pictetclean_energy_r_eur"
-    ]
+    ],
+    "since": "2007-12-05"
   },
   {
     "id": "LU0290358497",
@@ -4443,7 +4569,8 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
-    ]
+    ],
+    "since": "2007-12-11"
   },
   {
     "id": "LU0319687124",
@@ -4470,7 +4597,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.amundi.com/globaldistributor/product/view/LU0319687124"
-    ]
+    ],
+    "since": "2008-11-03"
   },
   {
     "id": "LU0328475792",
@@ -4515,7 +4643,8 @@
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/LU0328475792-stoxx-europe-600-ucits-etf-1c/"
-    ]
+    ],
+    "since": "2008-01-22"
   },
   {
     "id": "LU0496786574",
@@ -4552,7 +4681,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-core-sp-500-swap-ucits-etf-eur-dist/lu0496786574"
-    ]
+    ],
+    "since": "2010-09-27"
   },
   {
     "id": "LU0908500753",
@@ -4598,7 +4728,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-core-stoxx-europe-600-ucits-etf-acc/lu0908500753"
-    ]
+    ],
+    "since": "2013-02-19"
   },
   {
     "id": "LU1563454310",
@@ -4627,7 +4758,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1563454310"
-    ]
+    ],
+    "since": "2017-04-18"
   },
   {
     "id": "LU1681038243",
@@ -4661,7 +4793,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243"
-    ]
+    ],
+    "since": "2017-07-18"
   },
   {
     "id": "LU1681043599",
@@ -4706,7 +4839,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599"
-    ]
+    ],
+    "since": "2017-07-18"
   },
   {
     "id": "LU1681045370",
@@ -4752,7 +4886,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-emerging-markets-swap-ucits-etf-eur-acc/lu1681045370"
-    ]
+    ],
+    "since": "2017-07-18"
   },
   {
     "id": "LU1832174962",
@@ -4790,7 +4925,8 @@
     "confidence": "high",
     "sources": [
       "https://www.independance-am.com/en/our-funds/europe-small/"
-    ]
+    ],
+    "since": "2018-11-13"
   },
   {
     "id": "LU2655993207",
@@ -4833,7 +4969,8 @@
     "confidence": "high",
     "sources": [
       "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-dist/lu2655993207"
-    ]
+    ],
+    "since": "2024-03-15"
   },
   {
     "id": "LU2798962978",
@@ -4874,7 +5011,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.independance-am.com/en/our-funds/independance-europe-mid/"
-    ]
+    ],
+    "since": "2024-09-30"
   },
   {
     "id": "LU2951555585",
@@ -4898,7 +5036,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU2951555585"
-    ]
+    ],
+    "since": "2025-04-22"
   },
   {
     "id": "LU3024069877",
@@ -4922,7 +5061,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU3024069877"
-    ]
+    ],
+    "since": "2025-03-28"
   },
   {
     "id": "NL0011683594",
@@ -4963,7 +5103,8 @@
     "confidence": "high",
     "sources": [
       "https://www.vaneck.com/nl/en/investments/dividend-etf/"
-    ]
+    ],
+    "since": "2015-10-07"
   },
   {
     "id": "NTSX-US",
@@ -5001,7 +5142,8 @@
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx"
-    ]
+    ],
+    "since": "2018-08-02"
   },
   {
     "id": "PFIX",
@@ -5027,7 +5169,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US82889N8552"
-    ]
+    ],
+    "since": "2021-05-10"
   },
   {
     "id": "PFOCX",
@@ -5054,7 +5197,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.pimco.com/us/en/investments/mutual-fund/preferred-and-capital-securities-fund/c"
-    ]
+    ],
+    "since": "2008-04-30"
   },
   {
     "id": "QNZIX",
@@ -5078,7 +5222,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US00191K3100"
-    ]
+    ],
+    "since": "2021-12-16"
   },
   {
     "id": "RSBT",
@@ -5104,7 +5249,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051"
-    ]
+    ],
+    "since": "2023-02-07"
   },
   {
     "id": "RSSB",
@@ -5130,7 +5276,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042"
-    ]
+    ],
+    "since": "2023-12-04"
   },
   {
     "id": "RSST",
@@ -5156,7 +5303,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J8163"
-    ]
+    ],
+    "since": "2023-09-06"
   },
   {
     "id": "SHY",
@@ -5184,7 +5332,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US4642874576"
-    ]
+    ],
+    "since": "2002-07-22"
   },
   {
     "id": "SPEA",
@@ -5222,7 +5371,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/ch/professionals/en/products/342916/ishares-s-p-500-swap-pea-ucits-etf"
-    ]
+    ],
+    "since": "2025-05-29"
   },
   {
     "id": "TLT",
@@ -5250,7 +5400,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin="
-    ]
+    ],
+    "since": "2002-07-22"
   },
   {
     "id": "URTH",
@@ -5292,7 +5443,8 @@
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/us/products/239691/ishares-msci-world-etf"
-    ]
+    ],
+    "since": "2012-01-10"
   },
   {
     "id": "VBMFX",
@@ -5317,7 +5469,8 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/mutual-funds/profile/vbmfx"
-    ]
+    ],
+    "since": "1986-12-11"
   },
   {
     "id": "VOO",
@@ -5354,7 +5507,8 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/voo"
-    ]
+    ],
+    "since": "2010-09-07"
   },
   {
     "id": "VT",
@@ -5395,7 +5549,8 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/vt"
-    ]
+    ],
+    "since": "2008-06-24"
   },
   {
     "id": "WPEA",
@@ -5441,7 +5596,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0002XZSHO1"
-    ]
+    ],
+    "since": "2024-03-26"
   },
   {
     "id": "FR0010405431",
@@ -5480,7 +5636,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010405431"
-    ]
+    ],
+    "since": "2007-01-05"
   },
   {
     "id": "IE00BD4TXW66",
@@ -5522,7 +5679,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXW66"
-    ]
+    ],
+    "since": "2025-08-05"
   },
   {
     "id": "IE000Z9SJA06",
@@ -5564,7 +5722,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000Z9SJA06"
-    ]
+    ],
+    "since": "2022-06-08"
   },
   {
     "id": "IE000BI8OT95",
@@ -5609,7 +5768,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000BI8OT95"
-    ]
+    ],
+    "since": "2024-01-17"
   },
   {
     "id": "IE00BD4TXV59",
@@ -5655,7 +5815,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXV59"
-    ]
+    ],
+    "since": "2019-06-07"
   },
   {
     "id": "IE000UQND7H4",
@@ -5701,7 +5862,8 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000UQND7H4"
-    ]
+    ],
+    "since": "2022-06-28"
   },
   {
     "id": "XAUUSD",
@@ -5727,7 +5889,8 @@
     "confidence": "high",
     "sources": [
       "https://www.gold.org/goldhub/data/gold-prices"
-    ]
+    ],
+    "since": null
   },
   {
     "id": "XS3022291473",
@@ -5753,7 +5916,8 @@
     "confidence": "medium",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etps/unleveraged-etps/wisdomtree-enhanced-commodity-carry"
-    ]
+    ],
+    "since": "2025-04-24"
   },
   {
     "id": "ZROZ",
@@ -5778,7 +5942,8 @@
     "confidence": "high",
     "sources": [
       "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd"
-    ]
+    ],
+    "since": "2009-10-30"
   },
   {
     "id": "GDE",
@@ -5815,7 +5980,8 @@
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/alternatives/gde",
       "https://stockanalysis.com/etf/gde/"
-    ]
+    ],
+    "since": "2022-03-17"
   },
   {
     "id": "GDMN",
@@ -5850,7 +6016,8 @@
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/alternatives/gdmn",
       "https://stockanalysis.com/etf/gdmn/"
-    ]
+    ],
+    "since": "2021-12-16"
   },
   {
     "id": "NTSI",
@@ -5891,7 +6058,8 @@
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntsi",
       "https://stockanalysis.com/etf/ntsi/"
-    ]
+    ],
+    "since": "2021-05-20"
   },
   {
     "id": "NTSE",
@@ -5932,7 +6100,8 @@
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntse",
       "https://stockanalysis.com/etf/ntse/"
-    ]
+    ],
+    "since": "2021-05-20"
   },
   {
     "id": "PSLDX",
@@ -5968,7 +6137,8 @@
     "sources": [
       "https://www.pimco.com/us/en/investments/mutual-fund/stocksplus-long-duration-fund",
       "https://www.optimizedportfolio.com/psldx/"
-    ]
+    ],
+    "since": "2007-08-31"
   },
   {
     "id": "QSPRX",
@@ -5995,7 +6165,8 @@
     "sources": [
       "https://funds.aqr.com/en/funds/alternatives/aqr-style-premia-alternative-fund/qsprx",
       "https://stockanalysis.com/quote/mutf/QSPRX/"
-    ]
+    ],
+    "since": "2014-09-02"
   },
   {
     "id": "IE00BG382Q20",
@@ -6019,7 +6190,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BG382Q20",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=IE00BG382Q20:GBP"
-    ]
+    ],
+    "since": "2018-07-02"
   },
   {
     "id": "LU1103257975",
@@ -6043,7 +6215,8 @@
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103257975:USD"
-    ]
+    ],
+    "since": "2015-05-03"
   },
   {
     "id": "LU0503879685",
@@ -6067,6 +6240,7 @@
     "sources": [
       "https://www.man.com/strategy/ahl-trend-alternative",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0503879685:USD"
-    ]
+    ],
+    "since": "2010-08-10"
   }
 ]
