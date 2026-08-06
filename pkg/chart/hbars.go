@@ -26,7 +26,7 @@ func HBars(opt Options, bars []Bar) string {
 	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
 	fmt.Fprintf(&sb, `<rect width="%d" height="%d" fill="#ffffff"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&sb, `<text x="8" y="22" font-size="14" font-weight="600" fill="#222">%s</text>`+"\n", esc(opt.Title))
+		fmt.Fprintf(&sb, `<text x="8" y="22" font-size="14" font-weight="600" fill="#14232B">%s</text>`+"\n", esc(opt.Title))
 	}
 	if len(bars) == 0 {
 		sb.WriteString("</svg>")
@@ -50,26 +50,26 @@ func HBars(opt Options, bars []Bar) string {
 	barH := math.Min(rowH*0.6, 20)
 
 	// Zero axis.
-	fmt.Fprintf(&sb, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%.1f" stroke="#999"/>`+"\n", zero, padT-4, zero, float64(h)-padB)
+	fmt.Fprintf(&sb, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%.1f" stroke="#AEB9B8"/>`+"\n", zero, padT-4, zero, float64(h)-padB)
 
 	for i, b := range bars {
 		cy := padT + (float64(i)+0.5)*rowH
 		x := xAt(b.Value)
 		left := math.Min(zero, x)
 		width := math.Abs(x - zero)
-		color := "#2ca02c" // negative: reduces ruin (good)
+		color := "#2E7D5B" // negative: reduces ruin (good)
 		anchor, tx := "start", x+4
 		if b.Value > 0 {
-			color = "#d62728" // positive: increases ruin
+			color = "#C1483C" // positive: increases ruin
 		} else {
 			anchor, tx = "end", x-4
 		}
 		fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="2" fill="%s"/>`+"\n",
 			left, cy-barH/2, width, barH, color)
-		fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="11" fill="#555" text-anchor="end">%s</text>`+"\n",
+		fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="12" fill="#55666E" text-anchor="end">%s</text>`+"\n",
 			x0-8, cy, esc(b.Label))
 		if b.Text != "" {
-			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="11" fill="#333" text-anchor="%s">%s</text>`+"\n",
+			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="12" fill="#14232B" text-anchor="%s">%s</text>`+"\n",
 				tx, cy, anchor, esc(b.Text))
 		}
 	}
