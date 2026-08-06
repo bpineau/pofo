@@ -256,10 +256,14 @@ Each package has its documentation page — calculation conventions included
 
 ```go
 import (
+	"bytes"
+
+	"github.com/bpineau/portfodor/datasets"
 	"github.com/bpineau/portfodor/pkg/chart"
 	"github.com/bpineau/portfodor/pkg/marketdata"
 	"github.com/bpineau/portfodor/pkg/metrics"
 	"github.com/bpineau/portfodor/pkg/portfolio"
+	"github.com/bpineau/portfodor/pkg/suggest"
 )
 
 // Fetch a price history (transparent resolution + caching).
@@ -275,8 +279,21 @@ svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1"
 // Parse and simulate a portfolio (N-day rebalancing).
 spec, _ := portfolio.ParseFile("p.txt")
 sim, _ := portfolio.Simulate(p, 90)
+
+// Read the bundled asset catalog (name, TER, UCITS, geography, sectors,
+// asset class…). The map is keyed by canonical id and ISIN; resolve a
+// ticker/alias first with marketdata.CanonicalID. datasets.AssetMeta() also
+// returns the same data as raw JSON if you prefer your own struct.
+meta, _ := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
+iwda := meta[marketdata.CanonicalID("IWDA")] // or meta["IE00B4L5Y983"]
+_ = iwda.Fees                                // 0.20  (percent/yr)
+_ = iwda.Geography                           // map[US:68 Japan:6 …]
 ```
 
+- `datasets` — the versioned data embedded at build time; `AssetMeta()`
+  exposes the full asset catalog as JSON for third-party use.
+- `suggest` — regime/factor coverage and gap-filling; `LoadMeta` decodes the
+  catalog into the typed `Meta` (the structured view of `assets.json`).
 - `marketdata` — resolution (aliases, ISIN, catalog), multi-source
   downloads, cache, simdata, proxies.
 - `metrics` — statistics over value series (returns, drawdowns, Beta).
