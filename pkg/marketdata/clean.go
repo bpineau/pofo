@@ -8,6 +8,19 @@ package marketdata
 // so removing them never discards real data.
 const dropoutRatio = 0.25
 
+// isRateSymbol reports whether a symbol is a yield series quoted in annualized
+// percent (Yahoo's ^IRX, ^TNX, …) rather than a price. Such series legitimately
+// visit near-zero levels (e.g. ^IRX at ~0.003 % when the Fed cut to zero in
+// March 2020), so the dropout filter must not touch them: a real low rate is
+// not a bad print. Mirrors simgen.isRate.
+func isRateSymbol(symbol string) bool {
+	switch symbol {
+	case "^IRX", "^FVX", "^TNX", "^TYX":
+		return true
+	}
+	return false
+}
+
 // dropDropouts removes obvious bad prints from a sorted daily series:
 //
 //   - a leading run of placeholder points before the price first jumps up (>=4x)
