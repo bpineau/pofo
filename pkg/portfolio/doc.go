@@ -24,6 +24,11 @@
 //	                      quarter or year), e.g. contribute:500/month
 //	#meta withdraw:A/P    take A (or A% of the value: withdraw:4%/year)
 //	                      out every period P
+//	#meta optimize:OBJ    compute the weights instead of using the written
+//	                      ones; OBJ is max-sharpe, min-volatility or
+//	                      risk-parity, with an optional ",max-weight:40"
+//	                      cap (see pkg/optimize). Parse only records the
+//	                      request in Spec.Optimize; the caller runs it.
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
 // caller's job — see marketdata.Fetch and marketdata.SplitSim.

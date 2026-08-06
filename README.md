@@ -67,6 +67,20 @@ money rows — starting capital, total contributed/withdrawn, final value and
 a **money-weighted IRR** — follow the actual cash. Withdrawing a depleted
 portfolio is a ruin: the series stops and the report flags it.
 
+`#meta optimize:max-sharpe` (or `min-volatility`, `risk-parity`) lets the
+optimizer compute the weights instead of using the ones you wrote. It works
+out the long-only allocation that maximizes the Sharpe ratio, minimizes
+volatility, or equalizes each asset's risk contribution, over the period
+where all the assets quote. An optional cap diversifies the result:
+`#meta optimize:max-sharpe,max-weight:40`. The report then shows **two
+portfolios side by side** — `name (as written)` and `name (max-sharpe)` —
+so the optimizer's choice is compared with your baseline; the computed
+weights and their in-sample expected return/volatility/Sharpe appear as a
+note under the optimized portfolio. Those figures are fitted on the past,
+so treat them as a starting point, not a promise. `max-weight` does not
+apply to `risk-parity` (its weights follow from the equal-risk condition),
+and `optimize` cannot be combined with `leverage`.
+
 Without `#meta leverage:on`, a weight > 100% is rejected (with a hint) and sums
 ≠ 100% are normalized as before.
 An optional third numeric column declares an asset's TER
@@ -170,7 +184,8 @@ applications. Layout:
 ```
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
-pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta…)
+pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, IRR…)
+pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity
 pkg/chart/        SVG charts (Line) and terminal (Term), shared palette
 pkg/portfolio/    allocation file format + rebalanced simulation
 pkg/report/       HTML and text rendering of the comparison model
