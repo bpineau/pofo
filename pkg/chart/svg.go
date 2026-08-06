@@ -118,7 +118,14 @@ func Line(opt Options, series []Series) string {
 		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="11" fill="#555" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
 	}
 	// Vertical grid and x-axis labels.
-	for _, tk := range timeTicks(time.Unix(tmin, 0).UTC(), time.Unix(tmax, 0).UTC()) {
+	// Use the location of the first series point so intraday charts show
+	// exchange-local clock times; daily series use UTC-midnight dates, so
+	// this is a no-op for them.
+	loc := time.UTC
+	if len(series) > 0 && len(series[0].Dates) > 0 {
+		loc = series[0].Dates[0].Location()
+	}
+	for _, tk := range timeTicks(time.Unix(tmin, 0).In(loc), time.Unix(tmax, 0).In(loc)) {
 		x := xAt(tk.t)
 		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#efefef"/>`+"\n", x, y0, x, y1)
 		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="11" fill="#555" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
