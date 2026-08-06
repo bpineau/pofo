@@ -31,7 +31,7 @@
 //	                      request in Spec.Optimize; the caller runs it.
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
-// caller's job — see marketdata.Fetch and marketdata.SplitSim.
+// caller's job — see marketdata.Client.Fetch and marketdata.SplitSim.
 //
 // # Simulation
 //
