@@ -67,7 +67,7 @@ monthlyCtl.querySelector("input").addEventListener("change", e => { state.monthl
 // sequence risk and fatter left tail that i.i.d. draws miss (annual steps).
 state.regime = false;
 const regimeCtl = document.createElement("label"); regimeCtl.className = "ctl span chk";
-regimeCtl.innerHTML = `<input type="checkbox" id="regime"> <span>Stress regimes: cluster bad years (sequence risk)</span>`;
+regimeCtl.innerHTML = `<input type="checkbox" id="regime"> <span>Sequence-risk stress: cluster bad years into drawdowns</span>`;
 form.appendChild(regimeCtl);
 regimeCtl.querySelector("input").addEventListener("change", e => { state.regime = e.target.checked; schedule(); });
 
@@ -89,7 +89,7 @@ const DEFAULT = Object.fromEntries(SLIDERS.map(([k, , , , , def]) => [k, def]));
 function applyReturns(src) { for (const k of ["mu", "sigma", "df"]) setSliderVal(k, src[k]); }
 state.conservative = false;
 const consCtl = document.createElement("label"); consCtl.className = "ctl span chk";
-consCtl.innerHTML = `<input type="checkbox" id="conservative"> <span>Conservative broad-sample prior (override the fit)</span>`;
+consCtl.innerHTML = `<input type="checkbox" id="conservative"> <span>Broad-sample prior (override the fit)</span>`;
 form.appendChild(consCtl);
 consCtl.querySelector("input").addEventListener("change", e => {
   state.conservative = e.target.checked;
@@ -102,7 +102,6 @@ consCtl.querySelector("input").addEventListener("change", e => {
 // --- shareable scenarios: the whole slider/model/allocation state round-trips
 // through the URL hash, so a configuration can be bookmarked or shared. ---
 const shared = new URLSearchParams(location.hash.slice(1));
-const sharedModel = shared.get("model");
 const sharedWeights = shared.has("w")
   ? shared.get("w").split(",").map(Number).filter(x => !isNaN(x)) : null;
 // Apply any shared slider values up front (portfolio-mode seeding re-applies
@@ -169,10 +168,11 @@ let run = async function(){
   }
   const body = {...state, years: Math.round(state.years),
     pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths),
-    sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear)};
+    sideUntilYear: Math.round(state.sideUntilYear), bufferStopYear: Math.round(state.bufferStopYear),
+    targetRuin: (parseFloat(document.getElementById("targetRuin").value) || 5) / 100};
   lastBody = body;
   renderModels(body);   // the multi-model hero strip, in parallel with the detail sim
-  renderPaths(body);    // the wealth fan chart for the selected model
+  renderPaths(body);    // the wealth fan charts, one per planning model
   renderSolver(body);   // the per-lever menu to reach the acceptable ruin
   renderFrontier(body); // ruin vs withdrawal rate, per model
   renderSensitivity(body); // change in ruin per controllable lever
@@ -196,7 +196,10 @@ let run = async function(){
   document.getElementById("note").textContent = r.note || "";
   for (const id of ["arbitrageSvg","recoverySvg"])
     document.getElementById(id).innerHTML = r[id] || "";
-  document.getElementById("cards").innerHTML = cardsHTML(r.cards);
+  // The per-model hero strip already carries ruin, safe spend and median wealth,
+  // so the single-scenario metric cards would be redundant here; they are only
+  // shown as the A/B comparison above, when a baseline allocation is pinned.
+  document.getElementById("cards").innerHTML = "";
   syncURL();
 };
 
@@ -253,26 +256,20 @@ async function renderModels(body) {
     cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
-  // Keep the fan-chart model picker in sync with the available models.
-  const sel = document.getElementById("fanModel");
-  if (sel && ms.length) {
-    const cur = sel.value;
-    sel.innerHTML = ms.map(m => `<option value="${m.name}">${m.name}</option>`).join("");
-    sel.value = ms.some(m => m.name === cur) ? cur : "Student-t";
-  }
 }
 document.getElementById("targetRuin").addEventListener("input", schedule);
 
-// Wealth fan chart: the picture of the simulated market for the chosen model.
+// Wealth fan charts: one picture of the simulated market per planning model,
+// laid out two per row so the central case and the successive stresses can be
+// compared side by side.
 async function renderPaths(body) {
-  const model = document.getElementById("fanModel").value || "";
   try {
     const r = await (await fetch("/api/paths", {method: "POST",
-      headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, fanModel: model})})).json();
-    document.getElementById("fanSvg").innerHTML = r.fanSvg || "";
-  } catch (e) { /* leave the previous chart on failure */ }
+      headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})).json();
+    document.getElementById("fansGrid").innerHTML =
+      (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
+  } catch (e) { /* leave the previous charts on failure */ }
 }
-document.getElementById("fanModel").addEventListener("change", () => { if (lastBody) renderPaths(lastBody); });
 
 // Ruin vs withdrawal-rate frontier, one curve per model.
 async function renderFrontier(body) {
@@ -303,9 +300,8 @@ async function renderSolver(body) {
     m = await (await fetch("/api/solvemenu", {method: "POST",
       headers: {"Content-Type": "application/json"}, body: JSON.stringify({...body, targetRuin: target})})).json();
   } catch (e) { return; }
-  const met = m.currentRuin <= m.targetRuin;
-  const head = met
-    ? `<b>Your plan meets the target</b> (ruin ${(m.currentRuin * 100).toFixed(1)}% ≤ ${(m.targetRuin * 100).toFixed(1)}%). Room to spare, or tighten the target.`
+  const head = m.met
+    ? `<b>Your plan meets the target</b> (ruin ${(m.currentRuin * 100).toFixed(1)}% ≤ ${(m.targetRuin * 100).toFixed(1)}%):`
     : `<b>To get ruin down to ${(m.targetRuin * 100).toFixed(1)}%</b> (now ${(m.currentRuin * 100).toFixed(1)}%), any one of:`;
   const items = (m.options || []).map(o =>
     `<li class="${o.ok ? "" : "no"}">${o.ok ? "" : "✗ "}<span class="lev">${o.lever}:</span> ${o.text}</li>`).join("");
