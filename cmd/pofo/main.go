@@ -85,6 +85,8 @@ type result struct {
 	winDates  []time.Time
 	winValues []float64
 	stats     metrics.Stats
+	realStats metrics.Stats // stats on the inflation-adjusted (deflated) window
+	hasReal   bool
 	rel       metrics.Relative
 	hasRel    bool
 	vts       metrics.VolTermStructure // daily/monthly volatility term structure
@@ -387,6 +389,10 @@ Options:
 	if bench != nil {
 		benchDates, benchValues = seriesSlices(bench)
 	}
+	// Consumer-price index of the base currency, to report drawdowns/TTR in real
+	// (purchasing-power) terms alongside the nominal ones. Best-effort: absent it,
+	// the real columns are simply omitted.
+	deflator, hasDeflator := inflationSeries(client, opt.currency, commonStart)
 	for _, r := range results {
 		i, j := window(r.sim.Dates, commonStart, commonEnd)
 		if j-i < 2 {
@@ -397,6 +403,11 @@ Options:
 		st, err := metrics.Compute(r.winDates, r.winValues)
 		if err != nil {
 			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
+		}
+		if hasDeflator {
+			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, deflator)); err == nil {
+				r.realStats, r.hasReal = rs, true
+			}
 		}
 		if bench != nil {
 			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, benchDates, benchValues); ok {
@@ -1190,6 +1201,55 @@ func convertToBase(c *marketdata.Client, s *marketdata.Series, opt *options) (*m
 	return out, nil
 }
 
+// inflationSeries returns the consumer-price index used to deflate nominal
+// returns into real (purchasing-power) ones for the base currency, and whether
+// one is available. The euro is deflated by French HICP (^HICP-FR, the long
+// bundled series, ~1955→); other currencies have no wired CPI yet, so their
+// real drawdown/TTR columns are simply omitted.
+func inflationSeries(c *marketdata.Client, currency string, from time.Time) (*marketdata.Series, bool) {
+	sym := ""
+	switch strings.ToUpper(strings.TrimSpace(currency)) {
+	case "EUR":
+		sym = "^HICP-FR"
+	}
+	if sym == "" {
+		return nil, false
+	}
+	s, err := c.Fetch(sym, from)
+	if err != nil || s == nil || len(s.Points) < 2 {
+		if err != nil {
+			log.Printf("warning: inflation index %s unavailable (%v); real drawdowns omitted", sym, err)
+		}
+		return nil, false
+	}
+	return s, true
+}
+
+// deflate converts a nominal value series into real terms (base-date purchasing
+// power): real_t = nominal_t × CPI_base / CPI_t, with CPI forward-filled on the
+// value dates. Dates before the CPI history hold its first level (no deflation),
+// so early points degrade gracefully rather than break.
+func deflate(dates []time.Time, values []float64, cpi *marketdata.Series) []float64 {
+	out := make([]float64, len(values))
+	j, rate := 0, cpi.Points[0].Close
+	var base float64
+	for k, d := range dates {
+		for j < len(cpi.Points) && !cpi.Points[j].Date.After(d) {
+			rate = cpi.Points[j].Close
+			j++
+		}
+		if k == 0 {
+			base = rate
+		}
+		if rate > 0 {
+			out[k] = values[k] * base / rate
+		} else {
+			out[k] = values[k]
+		}
+	}
+	return out
+}
+
 func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Series, feesFor func(string) (float64, bool), baseCurrency string) *portfolio.Portfolio {
 	p := &portfolio.Portfolio{Name: spec.Name, Warnings: spec.Warnings}
 	if spec.EnvelopeFees > 0 {
@@ -1437,6 +1497,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		"Monthly volatility and variance ratio (Lo-MacKinlay): the monthly figure annualizes the standard deviation of month-end returns, and the ratio divides the monthly annualized variance by the daily one. It exposes the autocorrelation the single-frequency stats hide: ≈1 means returns are serially uncorrelated (daily vol is faithful), below 1 means they mean-revert (daily vol overstates the risk realized over months), above 1 means they trend (daily vol understates it). Read it as complementary to the rolling-CAGR and drawdown columns, and note the small-sample caveat: a month-end series holds only ~12 points per year, so over short common periods the monthly figures are noisier point estimates than the daily ones.",
 		"Max Drawdown, Ulcer and TTR on daily closes, harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
 		"TTR: duration of the longest stretch spent below a previous peak (peak to recovery).",
+		"Real Max Drawdown / TTR real: the same measured on the inflation-adjusted series (nominal deflated by French HICP, ^HICP-FR), i.e. in purchasing power. Inflation deepens drawdowns and lengthens recoveries; the nominal figures understate the pain a spender actually feels. Shown for EUR reports only.",
 	}...)
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
@@ -1715,8 +1776,22 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			num(func(s metrics.Stats) float64 { return s.Ulcer }), -1},
 		{"Max Drawdown", "worst decline from a peak",
 			pct(func(s metrics.Stats) float64 { return s.MaxDrawdown }), +1},
+		{"Max Drawdown (real)", "worst decline from a peak in real terms (deflated by the base-currency CPI): the loss of purchasing power",
+			func(r *result) (float64, string) {
+				if !r.hasReal {
+					return math.NaN(), "-"
+				}
+				return r.realStats.MaxDrawdown, fmtPct(r.realStats.MaxDrawdown)
+			}, +1},
 		{"TTR (longest recovery)", "duration of the longest stretch below a peak",
 			func(r *result) (float64, string) { return float64(r.stats.TTRDays), fmtTTR(r.stats) }, -1},
+		{"TTR real (longest recovery)", "longest stretch below a peak in real terms; inflation lengthens it (e.g. S&P 500 dot-com: ~6y nominal vs ~13y real)",
+			func(r *result) (float64, string) {
+				if !r.hasReal {
+					return math.NaN(), "-"
+				}
+				return float64(r.realStats.TTRDays), fmtTTR(r.realStats)
+			}, -1},
 		{"Weighted ongoing charges", "Σ weight × published TER, plus the extra-fees applied to the whole portfolio (only the latter are deducted from the simulation); \"(i)\" means some component TER is unknown, so the figure is incomplete",
 			func(r *result) (float64, string) {
 				w, incomplete := weightedFees(r.p)
