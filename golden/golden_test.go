@@ -10,9 +10,9 @@ import (
 	"testing"
 	"time"
 
-	"portfodor/marketdata"
-	"portfodor/metrics"
-	"portfodor/portfolio"
+	"portfodor/pkg/marketdata"
+	"portfodor/pkg/metrics"
+	"portfodor/pkg/portfolio"
 )
 
 // Références externes (établies et validées le 2026-06-12) :

@@ -19,8 +19,8 @@ import (
 	"os"
 	"time"
 
-	"portfodor/marketdata"
-	"portfodor/simgen"
+	"portfodor/pkg/marketdata"
+	"portfodor/pkg/simgen"
 )
 
 func main() {

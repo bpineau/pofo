@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"portfodor/portfolio"
+	"portfodor/pkg/portfolio"
 )
 
 // Parse lit une description de portefeuille: « <poids %> <identifiant>

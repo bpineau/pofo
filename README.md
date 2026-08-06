@@ -149,22 +149,32 @@ Le dépôt est aussi une trousse à outils pour écrire d'autres applications de
 traitement de portefeuilles. Plan :
 
 ```
-marketdata/   données: résolution (aliases, ISIN, catalogue), sources multi-
-              fournisseurs, cache, frais, simdata, alignement de calendriers
-metrics/      statistiques (CAGR, Sharpe, Sortino, drawdowns, Beta…)
-chart/        graphes SVG (Line) et terminal (Term), palette partagée
-portfolio/    format des fichiers d'allocation + simulation rebalancée
-report/       rendu HTML et texte du modèle de comparaison
-simgen/       reconstruction d'historiques (composites, TSMOM, backcasts)
-golden/       tests étalon contre références externes
-cmd/          les deux binaires (portfodor, simgen)
+pkg/marketdata/   données: résolution (aliases, ISIN, catalogue), sources
+                  multi-fournisseurs, cache, frais, simdata, alignement
+pkg/metrics/      statistiques (CAGR, Sharpe, Sortino, drawdowns, Beta…)
+pkg/chart/        graphes SVG (Line) et terminal (Term), palette partagée
+pkg/portfolio/    format des fichiers d'allocation + simulation rebalancée
+pkg/report/       rendu HTML et texte du modèle de comparaison
+pkg/simgen/       reconstruction d'historiques (composites, TSMOM, backcasts)
+cmd/              les deux binaires (portfodor, simgen)
+golden/           tests étalon contre références externes
 data/ simdata/ refdata/   caches réseau / historiques simulés / références
 ```
 
+Tout ce qui est consommable comme bibliothèque vit sous `pkg/` ; `cmd/` ne
+contient que le câblage CLI et `golden/` la suite de tests étalon.
+
 Chaque package a sa page de documentation — conventions de calcul comprises
-(`go doc portfodor/metrics`) — et des exemples exécutables :
+(`go doc portfodor/pkg/metrics`) — et des exemples exécutables :
 
 ```go
+import (
+	"portfodor/pkg/chart"
+	"portfodor/pkg/marketdata"
+	"portfodor/pkg/metrics"
+	"portfodor/pkg/portfolio"
+)
+
 // Récupérer un historique (résolution + cache transparents).
 client := marketdata.NewClient("data")
 series, err := client.Fetch("IWDA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
