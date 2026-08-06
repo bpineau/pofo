@@ -1137,6 +1137,63 @@
     ]
   },
   {
+    "id": "IE000RHYOR04",
+    "isin": "IE000RHYOR04",
+    "aliases": [
+      "ERNX"
+    ],
+    "name": "iShares EUR Ultrashort Bond UCITS ETF EUR (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ERNX.DE",
+    "currency": "EUR",
+    "fees": 0.09,
+    "asset_class": "money-market",
+    "underlying": "EUR investment-grade corporate bonds with ultrashort maturity (near-cash)",
+    "benchmark_index": "Markit iBoxx EUR Liquid Investment Grade Ultrashort Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Europe": 70,
+      "Other": 30
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR near-cash liquidity sleeve earning IG credit spreads with negligible duration",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000RHYOR04"
+    ]
+  },
+  {
+    "id": "IE000WIQIPT2",
+    "isin": "IE000WIQIPT2",
+    "aliases": [
+      "CBUL"
+    ],
+    "name": "iShares $ TIPS 0-5 UCITS ETF EUR Hedged (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "CBUL.DE",
+    "currency": "EUR",
+    "fees": 0.12,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "Short-maturity US TIPS hedged to EUR",
+    "benchmark_index": "ICE US Treasury Inflation-Linked Bond 0-5 Years (EUR Hedged)",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "EUR-hedged short-duration TIPS; US inflation protection without USD/EUR FX risk",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000WIQIPT2"
+    ]
+  },
+  {
     "id": "IE000XZSV718",
     "isin": "IE000XZSV718",
     "name": "State Street SPDR S&P 500 UCITS ETF USD Acc",
@@ -2380,6 +2437,35 @@
     ]
   },
   {
+    "id": "IE00B67B7N93",
+    "isin": "IE00B67B7N93",
+    "aliases": [
+      "MINT"
+    ],
+    "name": "PIMCO US Dollar Short Maturity UCITS ETF Dist",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "MINT.L",
+    "currency": "USD",
+    "fees": 0.35,
+    "asset_class": "money-market",
+    "underlying": "Actively managed USD investment-grade ultra-short fixed income (Treasuries, corporates, ABS/MBS)",
+    "benchmark_index": "ICE BofA US 3-Month Treasury Bill Index",
+    "strategy": "active",
+    "geography": {
+      "US": 85,
+      "Other": 15
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "PIMCO's flagship USD cash-management ETF; near-cash liquidity sleeve with active credit selection",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B67B7N93"
+    ]
+  },
+  {
     "id": "IE00B6R52259",
     "isin": "IE00B6R52259",
     "name": "iShares MSCI ACWI UCITS ETF USD Acc",
@@ -2771,6 +2857,34 @@
     ]
   },
   {
+    "id": "IE00BDQYWQ65",
+    "isin": "IE00BDQYWQ65",
+    "aliases": [
+      "TIP5"
+    ],
+    "name": "iShares $ TIPS 0-5 UCITS ETF USD (Dist)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "TIP5.L",
+    "currency": "USD",
+    "fees": 0.1,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "Short-maturity (0-5yr) US Treasury Inflation-Protected Securities",
+    "benchmark_index": "ICE US Treasury Inflation-Linked Bond 0-5 Years Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Short-duration TIPS; inflation protection with low rate risk (duration ~2.3y)",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BDQYWQ65"
+    ]
+  },
+  {
     "id": "IE00BDT6FP91",
     "isin": "IE00BDT6FP91",
     "aliases": [
@@ -2980,6 +3094,64 @@
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/it/en_gb/intermediary/etfs/state-street-spdr-msci-world-ucits-etf-sppw-gy"
+    ]
+  },
+  {
+    "id": "IE00BG8BCY43",
+    "isin": "IE00BG8BCY43",
+    "aliases": [
+      "JPSA"
+    ],
+    "name": "JPMorgan USD Ultra-Short Income UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "JPSA.L",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "money-market",
+    "underlying": "Actively managed USD short-term investment-grade debt, duration <1yr",
+    "benchmark_index": "ICE BofA 3-Month US Treasury Bill Index",
+    "strategy": "active",
+    "geography": {
+      "US": 75,
+      "Other": 25
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "UCITS analog of the US JPST; USD cash sleeve, accumulating",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BG8BCY43"
+    ]
+  },
+  {
+    "id": "IE00BGCSB447",
+    "isin": "IE00BGCSB447",
+    "aliases": [
+      "ERNA"
+    ],
+    "name": "iShares USD Ultrashort Bond UCITS ETF USD (Acc)",
+    "ucits": true,
+    "source": "yahoo",
+    "symbol": "ERNA.L",
+    "currency": "USD",
+    "fees": 0.09,
+    "asset_class": "money-market",
+    "underlying": "USD investment-grade corporate bonds with ultrashort maturity (near-cash)",
+    "benchmark_index": "iBoxx USD Liquid Investment Grade Ultrashort Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 75,
+      "Other": 25
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "USD near-cash liquidity sleeve earning IG credit spreads with minimal duration",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BGCSB447"
     ]
   },
   {
@@ -4885,6 +5057,30 @@
     ]
   },
   {
+    "id": "QNZIX",
+    "isin": "US00191K3100",
+    "aliases": [],
+    "name": "AQR Trend Total Return Fund Class I",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "QNZIX",
+    "currency": "USD",
+    "fees": 1.33,
+    "asset_class": "managed-futures",
+    "underlying": "Long/short trend-following across equities, bonds, currencies and commodities; ~0.5 equity beta anchor",
+    "benchmark_index": "50% S&P 500 + 50% 3-Month T-Bill (benchmark)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "notes": "AQR systematic trend fund (managed futures with an equity anchor); crisis-alpha diversifier",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US00191K3100"
+    ]
+  },
+  {
     "id": "RSBT",
     "isin": "US88636J1051",
     "aliases": [
@@ -4960,6 +5156,34 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J8163"
+    ]
+  },
+  {
+    "id": "SHY",
+    "isin": "US4642874576",
+    "aliases": [
+      "SHY"
+    ],
+    "name": "iShares 1-3 Year Treasury Bond ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "SHY",
+    "currency": "USD",
+    "fees": 0.15,
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 1-3 years to maturity",
+    "benchmark_index": "ICE US Treasury 1-3 Year Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Short-duration US treasuries; cash-like defensive ballast, low rate risk",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=US4642874576"
     ]
   },
   {
