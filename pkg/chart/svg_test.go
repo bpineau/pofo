@@ -79,3 +79,19 @@ func TestTimeTicksDailyUnchanged(t *testing.T) {
 		}
 	}
 }
+
+func TestLineIntradayUsesSeriesTimeZone(t *testing.T) {
+	// Use a fixed-offset zone so the test has no dependency on the tz database.
+	loc := time.FixedZone("ET", -5*3600)
+	open := time.Date(2024, 3, 1, 9, 30, 0, 0, loc) // 09:30 ET = 14:30 UTC
+	var dates []time.Time
+	var v []float64
+	for i := range 8 {
+		dates = append(dates, open.Add(time.Duration(i)*30*time.Minute))
+		v = append(v, 100+float64(i))
+	}
+	svg := Line(Options{}, []Series{{Name: "x", Dates: dates, Values: v}})
+	if !strings.Contains(svg, ">09:30<") {
+		t.Errorf("expected a 09:30 local-time axis label, got none in:\n%s", svg)
+	}
+}
