@@ -41,3 +41,19 @@ func Example_fetch() {
 	fmt.Printf("%s — %d quotes since %s\n",
 		series.Name, len(series.Points), series.First().Date.Format("2006-01-02"))
 }
+
+// Align merges trading calendars: the union of dates from start on, with
+// each series' level forward-filled across its own non-trading days.
+func ExampleAlign() {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	a := &marketdata.Series{Symbol: "A", Points: []marketdata.Point{
+		{Date: day(0), Close: 10}, {Date: day(1), Close: 11}, {Date: day(2), Close: 12},
+	}}
+	b := &marketdata.Series{Symbol: "B", Points: []marketdata.Point{
+		{Date: day(0), Close: 100}, {Date: day(2), Close: 102}, // no quote on day 1
+	}}
+	dates, levels := marketdata.Align([]*marketdata.Series{a, b}, day(0), time.Time{})
+	fmt.Println(len(dates), levels[0], levels[1])
+	// Output:
+	// 3 [10 11 12] [100 100 102]
+}
