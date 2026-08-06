@@ -29,6 +29,17 @@ type VolTermStructure struct {
 	MonthlyVol float64 // annualized stdev of monthly returns (stdev·√12)
 	Ratio      float64 // monthly annualized variance / daily annualized variance
 	MonthlyN   int     // number of monthly returns behind MonthlyVol
+
+	// Sharpe and Sortino recomputed from the same monthly returns (risk-free
+	// rate 0), i.e. annualized mean monthly return over MonthlyVol (resp. over
+	// the annualized downside deviation). They are the risk-adjusted twins of
+	// the daily-based Stats.Sharpe/Stats.Sortino: where the variance ratio
+	// differs from 1 they diverge from the daily figures, so a mean-reverting
+	// series scores a higher monthly Sharpe (its realized risk is lower than the
+	// daily volatility implies) and a trending one a lower monthly Sharpe. Read
+	// with the small-sample caveat above (MonthlyN points).
+	MonthlySharpe  float64
+	MonthlySortino float64
 }
 
 // VarianceRatio resamples values to calendar month-end closes and returns the
@@ -58,6 +69,23 @@ func VarianceRatio(dates []time.Time, values []float64) (vt VolTermStructure, ok
 	vt.MonthlyVol = monthStd * math.Sqrt(monthsPerYear)
 	vt.Ratio = (monthStd * monthStd * monthsPerYear) / (dayStd * dayStd * tradingDaysPerYear)
 	vt.MonthlyN = len(monthReturns)
+
+	// Monthly-sampled Sharpe/Sortino, same rf=0 convention as Stats: the
+	// annualized mean over the annualized (downside) deviation. Downside
+	// deviation divides by n (target semideviation), matching Compute.
+	monthMean := Mean(monthReturns)
+	var downSq float64
+	for _, x := range monthReturns {
+		if x < 0 {
+			downSq += x * x
+		}
+	}
+	if vt.MonthlyVol > 0 {
+		vt.MonthlySharpe = monthMean * monthsPerYear / vt.MonthlyVol
+	}
+	if downDev := math.Sqrt(downSq/float64(len(monthReturns))) * math.Sqrt(monthsPerYear); downDev > 0 {
+		vt.MonthlySortino = monthMean * monthsPerYear / downDev
+	}
 	return vt, true
 }
 

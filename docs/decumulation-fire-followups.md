@@ -78,10 +78,13 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
    "annual" returns are not Jan–Dec. Statistically fine; document it so it is
    not mistaken for a bug. Documented on `scenario.Annualize`.
 
-8. **Common-window alignment truncates to the last N months/returns** assuming
-   the month grids line up across holdings. Dense simdata-extended series make
-   this safe in practice, but a holding with internal gaps could misalign. A
-   date-keyed alignment (intersect on month keys) would be robust.
+8. ✅ **Done (2026-07-01, obsolete).** **Common-window alignment truncates to
+   the last N months/returns** assuming the month grids line up across holdings.
+   Resolved by the monthly-panel migration (item 13): the only panel builder now
+   is `web.BuildMonthlyPanel`, which aligns on the intersection of dense month
+   keys (`monthKey`), keeps only calendar-consecutive one-month returns, and
+   drops returns that span a gap. There is no positional-tail aligner left; a
+   holding with internal gaps stays column-aligned. Nothing to do.
 
 9. ✅ **Done (2026-06-29).** **`FitParametric` does not fit `df`** and estimates
    annual sigma from ~20 annualised points (noisy). Consider deriving annual vol
@@ -202,7 +205,14 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     size), and surfaced two new rows in the comparison table ("Volatility
     (monthly, annualised)" and "Variance ratio (monthly/daily)") with an
     explanatory footnote covering the interpretation and the small-sample caveat.
-    The FIRE-seeding / monthly-Sharpe reuse (the last sub-bullet) is still open.
+    ✅ **Monthly-Sharpe reuse done (2026-07-01):** `VolTermStructure` gained
+    `MonthlySharpe`/`MonthlySortino` (annualised, rf 0, from the same month-end
+    returns as the variance ratio, matching `Stats`' convention), surfaced as
+    "Sharpe (monthly)" and "Sortino (monthly)" rows next to the daily ones. The
+    FIRE-seeding reconcile is effectively closed too: `FitParametric.Sigma` is
+    already `σ_m·√12` (item 9), i.e. the monthly-horizon dispersion, the same
+    quantity as the report's `MonthlyVol`, so both now express risk at the
+    monthly horizon rather than the daily-annualised one.
     The report currently ranks portfolios by **daily-annualised** volatility
     (and Sharpe/Sortino built on it), which over/understates the dispersion an
     investor actually realises at a multi-year horizon: it overstates when
@@ -310,15 +320,42 @@ and on the currency conversion and fetch performance a EUR investor needs.
   environments (verified AAPL + CSPX).
 
 **Open:**
-- **Reference-validation pass (planned)**: cross-check both the bundled data and
-  the calc algorithms (CAGR, vol, max drawdown, TTR nominal+real, Sharpe/Sortino)
-  against pre-computed reference values found online, over several different
-  periods, using the three easy-to-reference assets: XAUUSD(SIM) (gold/LBMA),
-  MSCI World (MSCIWORLD-USD / IWDA-URTH), and S&P 500 (SP500-USD / VFINX). Now
-  feasible in-session since Yahoo fetch works again (query2 fallback).
-- **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
-  `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
-  the default / make it auto = earliest available) to see the long backcast.
+- **Cache expiry — resolved by analysis (2026-07-01), no code change.** The
+  premise "old history never changes" does NOT hold for the dividend-adjusted
+  close series pofo fetches: Yahoo retro-adjusts every prior close on each new
+  dividend, so an incremental append (keep the deep history, fetch only the
+  recent delta) would silently accumulate adjustment drift and bias exactly the
+  long-run CAGR this tool is precise about. A full re-download is therefore the
+  correct default. The lever for "refresh less often" already exists: the
+  `-cache-age` flag (`MaxAge`, default 30d) can be raised. If bandwidth ever
+  becomes the constraint, the only safe incremental design is delta-fetch +
+  periodic full refresh to bound the drift; not worth it at present.
+
+**Done (2026-07-01):**
+- **Reference-validation pass (done).** New golden tests validate the bundled
+  backcast series against public references over several December-to-December
+  windows: `pkg/datasets/golden/refdata_test.go` covers SP500-USD (S&P 500 TR
+  decade returns: 1970s 5.9%, 1980s 17.6%, 1990s 18.2%, 2000s −0.9%, 2010s 13.6%
+  — all within ~0.35pt), XAUUSD-LBMA (gold 2000s ~14.9%, since-1971 ~8%; the
+  datahub monthly *average* reads a touch below the year-end fixes at the
+  volatile 1979/80 boundary, validated on the smoother windows), and
+  MSCIWORLD-USD. **Finding: MSCIWORLD-USD (and the sibling Curvo exports
+  DEVEXUS-USD, EM-USD) are NET total-return indices, not gross** as the CSV
+  headers and recipe `Method` strings claimed. Verified numerically: the bundled
+  Dec2012→Dec2024 CAGR is 10.82%/yr and Dec2014→Dec2024 is 9.95%/yr, matching
+  MSCI World NET USD exactly, while the official GROSS figures are 11.41% and
+  10.52% (the withholding drag). This is the *correct* proxy for an Irish-
+  domiciled UCITS World ETF (IWDA/URTH are benchmarked against the net index) and
+  the recipe only deducts the TER on top, so the reconstruction was already
+  right; only the "gross" wording was wrong and has been corrected in the CSV
+  headers, the recipe strings (`recipes.go`, `extend.go`) and the two generated
+  simdata headers (URTH, IE00B4L5Y983 — data rows unchanged, no regen needed).
+  The daily calc algorithms (vol/Sharpe/Sortino/TTR conventions) stay validated
+  by the existing SPY/URTH daily fixtures.
+- **Report window (done).** `-start` now defaults to empty = *earliest
+  available* (zero time), so a plain `pofo` run surfaces the full backcast
+  instead of clipping at 2006; the common window still aligns on the youngest
+  holding's inception. Pass an explicit `-start` to clip.
 - **Pre-1978 EUR/USD**: the ECU series starts 1978-12; earlier still needs a DM
   or EUA proxy. 1978 already covers a 45-year backcast, so deferred.
 - **FX granularity pre-2003 is monthly** (the bundled ECU/EUR proxy). The uniform
@@ -326,10 +363,9 @@ and on the currency conversion and fetch performance a EUR investor needs.
   conversion with a `# currency:` tag before `ExtendBack`, letting the EUR MSCI
   World Curvo export be used directly without double-counting FX) is still open
   but no longer blocking a long backcast.
-- **Cache expiry**: `MaxAge` (30d) re-downloads the WHOLE historical series when
-  stale, though old history never changes. Add an incremental cache (keep the
-  history, fetch only the recent delta) or a long/never expiry for stable
-  historical series; only recent quotes need refreshing.
+- **Cache expiry**: resolved by analysis, see the "Cache expiry" item under the
+  reorganised Open/Done lists above (Yahoo retro-adjusts, so a full refresh is
+  correct; `-cache-age` already tunes the cadence).
 - **Sandbox note**: market-data providers are unreachable from the Claude Code
   sandbox (Yahoo 429, Stooq PoW); FRED is reachable but flaky. Regeneration and
   timing must be validated on Ben's machine.
@@ -348,6 +384,9 @@ via Curvo / MSCI-EM via Curvo (equity); datahub gold-prices (XAUUSD-LBMA) and
 s-and-p-500 (SP500-USD, Shiller TR); FRED WTISPLC (crude), EXUSEC+EXUSEU (EUR),
 TB3MS (^IRX), FRACPIALLMINMEI (HICP-FR). See the header of each refdata CSV.
 
-**Next up:** the reference-validation pass (see the Open item) — cross-check data
-and calc algorithms against online references for XAUUSD/MSCI World/S&P 500 over
-several periods.
+**Next up:** the reference-validation pass is done (golden `refdata_test.go`; it
+found and fixed the MSCI-World net-vs-gross mislabel). The only remaining
+non-frontend backlog items are deliberately deferred (pre-1978 EUR/USD, per-
+segment FX conversion) or resolved-by-analysis (cache expiry). The highest-value
+open work is the `frontend-design` pass on the `-fire` UI (item 17), left for a
+dedicated session.

@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: EM-USD
 # name: Emerging markets equity total return (MSCI Emerging Markets, USD, monthly)
-# source: MSCI Emerging Markets gross total return via curvo.eu/backtest (MSCI-derived), USD, index base 1987-12. Proxy behind VEIEX.
+# source: MSCI Emerging Markets net total return via curvo.eu/backtest (MSCI-derived; curvo uses NET indices), USD, index base 1987-12. Proxy behind VEIEX.
 1987-12-01,10000.000000
 1988-01-01,10983.800000
 1988-02-01,11021.100000

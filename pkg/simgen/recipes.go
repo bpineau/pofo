@@ -153,7 +153,7 @@ func iwdaRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00B4L5Y983",
 		Name:   "iShares Core MSCI World: MSCI World total return (1969 with -refdata)",
-		Method: "real MSCI World gross TR (via -refdata MSCIWORLD-USD, monthly 1969→), net 0.20%/yr; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Method: "real MSCI World net TR (via -refdata MSCIWORLD-USD, monthly 1969→), less 0.20%/yr TER; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
 		Build: longIndexOr("MSCIWORLD-USD", 0.0020, composite("IWDA (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},
@@ -274,8 +274,8 @@ func longIndexOr(symbol string, annualFee float64, fallback func(Fetcher, time.T
 	}
 }
 
-// afterFee returns a copy of s with a continuous annual fee applied, so a gross
-// index level becomes an after-cost investable one.
+// afterFee returns a copy of s with a continuous annual fee applied, so a
+// pre-fee index level becomes an after-cost investable one.
 func afterFee(s *marketdata.Series, annual float64) *marketdata.Series {
 	if annual <= 0 || len(s.Points) == 0 {
 		return s
@@ -356,7 +356,7 @@ func urthRecipe() Recipe {
 	return Recipe{
 		ID:     "URTH",
 		Name:   "iShares MSCI World: MSCI World total return (1969 with -refdata)",
-		Method: "real MSCI World gross TR (via -refdata MSCIWORLD-USD, monthly 1969→), net 0.24%/yr; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
+		Method: "real MSCI World net TR (via -refdata MSCIWORLD-USD, monthly 1969→), less 0.24%/yr TER; without the file falls back to 0.60×VFINX+0.40×VTMGX (1999)",
 		Build: longIndexOr("MSCIWORLD-USD", 0.0024, composite("URTH (MSCI World replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.40},

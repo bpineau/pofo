@@ -78,9 +78,18 @@ func TestVarianceRatioKnownSeries(t *testing.T) {
 
 	// Independent expectations.
 	monthCloses := []float64{100, 110, 105, 115}
-	expMonthlyVol := sampleStd(Returns(monthCloses)) * math.Sqrt(12)
+	monthRets := Returns(monthCloses)
+	expMonthlyVol := sampleStd(monthRets) * math.Sqrt(12)
 	expDailyVol := sampleStd(Returns(values)) * math.Sqrt(tradingDaysPerYear)
 	expRatio := (expMonthlyVol * expMonthlyVol) / (expDailyVol * expDailyVol)
+	expMonthlySharpe := Mean(monthRets) * 12 / expMonthlyVol
+	var downSq float64
+	for _, x := range monthRets {
+		if x < 0 {
+			downSq += x * x
+		}
+	}
+	expMonthlySortino := Mean(monthRets) * 12 / (math.Sqrt(downSq/float64(len(monthRets))) * math.Sqrt(12))
 
 	vr, ok := VarianceRatio(dates, values)
 	if !ok {
@@ -98,6 +107,12 @@ func TestVarianceRatioKnownSeries(t *testing.T) {
 	}
 	if math.Abs(vr.Ratio-expRatio) > eps {
 		t.Errorf("Ratio = %v, want %v", vr.Ratio, expRatio)
+	}
+	if math.Abs(vr.MonthlySharpe-expMonthlySharpe) > eps {
+		t.Errorf("MonthlySharpe = %v, want %v", vr.MonthlySharpe, expMonthlySharpe)
+	}
+	if math.Abs(vr.MonthlySortino-expMonthlySortino) > eps {
+		t.Errorf("MonthlySortino = %v, want %v", vr.MonthlySortino, expMonthlySortino)
 	}
 }
 
