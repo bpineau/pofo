@@ -7,8 +7,8 @@ import (
 	"math"
 	"time"
 
-	"github.com/bpineau/portfodor/pkg/marketdata"
-	"github.com/bpineau/portfodor/pkg/metrics"
+	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // ErrUnfaithful marks reconstructions whose fit against reality is too poor

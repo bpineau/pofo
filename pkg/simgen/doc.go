@@ -1,6 +1,6 @@
 // Package simgen rebuilds the missing past of complex assets (90/60 funds,
 // managed futures, …) and validates each reconstruction against real
-// quotes. Results are stored as permanent "simdata" files that portfodor
+// quotes. Results are stored as permanent "simdata" files that pofo
 // splices in front of the real histories.
 //
 // # Toolbox
