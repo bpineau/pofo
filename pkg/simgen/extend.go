@@ -11,24 +11,26 @@ import (
 // longBack maps a short-history component to a longer real proxy whose
 // (rescaled) history is spliced in before the component's own inception, so a
 // reconstruction covers each period with the most reliable real series
-// available for it. The proxies are authoritative long index series:
+// available for it. Every proxy is a bundled refdata series (go:embed via
+// datasets.Refdata), so the splices work offline and reproducibly; Yahoo's
+// long MSCI index symbols (^990300-USD-STRD etc.) return nothing to the client
+// and are deliberately not used. All proxies are total-return / spot levels in
+// USD, homogeneous with the component they extend:
 //
-//   - VTMGX (Vanguard Developed Markets, 1999) is extended with the MSCI EAFE
-//     gross total-return index (Yahoo ^990300-USD-STRD, ~1970), the standard
-//     long developed-ex-US series.
-//   - GC=F (COMEX gold futures, 2000) is extended with the bundled monthly
-//     London/LBMA gold fix (refdata XAUUSD-LBMA, ~1968).
-//   - CL=F (NYMEX WTI futures, 2000) is extended with the bundled monthly WTI
-//     spot price (refdata WTI-USD, ~1946).
-//   - VFITX (Vanguard Intermediate-Term Treasury, 1991) and VUSTX (Long-Term,
-//     1986) are extended with a bundled constant-maturity Treasury total-return
-//     reconstruction (refdata TREASURY-INT-USD / TREASURY-LONG-USD, from FRED
-//     CMT yields via simgen.TreasuryTR, ~1953).
-//
-// All proxies are total-return / spot levels in USD, so the splice is
-// homogeneous with the component it extends.
+//   - VTMGX (Vanguard Developed Markets, 1999) → developed-ex-US equity TR
+//     (refdata DEVEXUS-USD: Ken French developed-ex-US from 1990, MSCI World
+//     before, ~1969).
+//   - VEIEX (Vanguard Emerging Markets, 1994) → emerging-market equity TR
+//     (refdata EM-USD: Ken French emerging, ~1989).
+//   - GC=F (COMEX gold futures, 2000) → monthly London/LBMA gold fix
+//     (refdata XAUUSD-LBMA, ~1968).
+//   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
+//   - VFITX (Intermediate-Term Treasury, 1991) and VUSTX (Long-Term, 1986) →
+//     constant-maturity Treasury total-return reconstructions (refdata
+//     TREASURY-INT-USD / TREASURY-LONG-USD, from FRED CMT yields, ~1953).
 var longBack = map[string]string{
-	"VTMGX": "^990300-USD-STRD",
+	"VTMGX": "DEVEXUS-USD",
+	"VEIEX": "EM-USD",
 	"GC=F":  "XAUUSD-LBMA",
 	"CL=F":  "WTI-USD",
 	"VFITX": "TREASURY-INT-USD",
