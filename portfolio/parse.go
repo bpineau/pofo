@@ -1,5 +1,3 @@
-// Package portfolio parses portfolio description files and simulates their
-// value over time.
 package portfolio
 
 import (

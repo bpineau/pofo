@@ -137,7 +137,24 @@ courbes de taux US depuis 1962, or spot depuis 1968, fonds Winton Trend.
 
 ## Utilisation comme bibliothèque
 
-Les packages sont indépendants du CLI et documentés (`go doc portfodor/...`) :
+Le dépôt est aussi une trousse à outils pour écrire d'autres applications de
+traitement de portefeuilles. Plan :
+
+```
+marketdata/   données: résolution (aliases, ISIN, catalogue), sources multi-
+              fournisseurs, cache, frais, simdata, alignement de calendriers
+metrics/      statistiques (CAGR, Sharpe, Sortino, drawdowns, Beta…)
+chart/        graphes SVG (Line) et terminal (Term), palette partagée
+portfolio/    format des fichiers d'allocation + simulation rebalancée
+report/       rendu HTML et texte du modèle de comparaison
+simgen/       reconstruction d'historiques (composites, TSMOM, backcasts)
+golden/       tests étalon contre références externes
+cmd/          les deux binaires (portfodor, simgen)
+data/ simdata/ refdata/   caches réseau / historiques simulés / références
+```
+
+Chaque package a sa page de documentation — conventions de calcul comprises
+(`go doc portfodor/metrics`) — et des exemples exécutables :
 
 ```go
 // Récupérer un historique (résolution + cache transparents).

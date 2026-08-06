@@ -28,5 +28,17 @@
 // ReadSimdata/WriteSimdata lisent et écrivent les historiques simulés
 // permanents (répertoire simdata/) produits par le package simgen;
 // ExtendBack recolle ces séries — ou un proxy (ProxySymbol) — devant les
-// cotations réelles.
+// cotations réelles. La convention « suffixe SIM » (DBMFSIM = DBMF avec
+// extension simulée) est décodée par SplitSim.
+//
+// # Boîte à outils
+//
+//   - Align fusionne les calendriers de cotation de plusieurs séries
+//     (union des dates, cours forward-fillés) ;
+//   - Fees renvoie le TER publié d'un actif (catalogue épinglé, cache
+//     disque, sinon tearsheets FT et justETF) ;
+//   - UCITSFlag/GuessUCITS et LooksDistributing qualifient les fonds ;
+//   - CanonicalID normalise tout identifiant accepté (alias, ISIN, ticker
+//     de la liste embarquée) vers sa forme canonique ;
+//   - IsISIN valide un ISIN, clé de contrôle comprise.
 package marketdata

@@ -1,4 +1,3 @@
-// Package metrics computes risk and return statistics on value series.
 package metrics
 
 import (
