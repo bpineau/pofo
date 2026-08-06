@@ -134,6 +134,45 @@ wraps a `Fetcher` to serve CSVs (simdata format) from a directory before falling
 back to the network; the CLI exposes it via `-refdata`. A throwaway script can
 read any benchmark CSV the same way with `marketdata.ReadSimdata`.
 
+## Inflation series for Level 4
+
+Level 4 measures the longest stretch where DBMFE's trailing CAGR falls below an
+inflation floor (real-return drought). The floor is **HICP France** (IPCH),
+which is the relevant cost-of-living measure for a French FIRE investor.
+
+Data: Eurostat `prc_hicp_midx`, France (geo=FR), monthly index base 2015=100,
+public and free with no API key, available from **1996-01** so 2000-01-01 is
+comfortably covered. (INSEE's national IPC via the BDM API is a defensible
+alternative; HICP is chosen for EU comparability and a one-line CSV export.)
+
+Granularity caveat: price indices are **monthly**; there is no realized daily
+inflation (daily inflation swaps/breakevens are market *expectations*, not
+realized). "Daily inflation" is therefore an interpolation. Use the **geometric
+accrual** that matches pofo's existing rate handling (`BuildFrame` already turns
+annualized rate levels into daily accruals): spread each month's inflation evenly
+across its calendar days,
+
+    daily_factor = (HICP[m] / HICP[m-1]) ^ (1 / days_in_month)
+
+producing a smooth daily deflator that compounds cleanly against the assets'
+daily returns (no month-boundary steps).
+
+Tiered effort (do tier 1 now, defer tier 2):
+
+- **Tier 1 (this campaign, throwaway, ~half a day):** download the HICP France
+  CSV once, bundle it under `docs/` like the SG CTA file, and convert it to a
+  base-100 daily-accrual deflator in a throwaway script. Historical inflation is
+  effectively fixed once published, so a static snapshot is sufficient for a
+  one-off validation. This is all Level 4 needs.
+- **Tier 2 (deferred to the FIRE engine spec):** a proper `eurostat.go` fetcher
+  in `pkg/marketdata` (modeled on `stooq.go`, wired through `Client.cachedHistory`
+  so caching/stale-fallback come for free), an identifier/alias (e.g.
+  `^HICP-FR`) treated as a currency-less index, and a daily-accrual conversion in
+  the rate path (or a `DailyInflationAccrual` primitive) with godoc + tests. The
+  FIRE engine needs this anyway for real-return decumulation (inflation-indexed
+  withdrawals, real terminal wealth, real ruin probability). Not required to
+  validate DBMFE now.
+
 ## Execution policy: build vs. throwaway vs. by-hand
 
 Per the owner's instruction, this is a one-off, so default to the cheapest
@@ -236,9 +275,10 @@ which must show up as a depressed rolling Sharpe. If the proxy is smooth where
 SG Trend was miserable, the sleeve is overstated. THIS is the falsification core.
 
 ### Level 4. Regime validation: longest underperformance  -> L + C
-Longest consecutive span where trailing CAGR < cash (`^IRX`), < a fixed
-inflation proxy (e.g. 2%), and < MSCI World (URTH). Use contribution 5. Compare
-reconstruction vs real DBMF / SG Trend.
+Longest consecutive span where trailing CAGR < cash (`^IRX`), < HICP France
+inflation (see "Inflation series for Level 4"; tier-1 bundled deflator), and
+< MSCI World (URTH). Use contribution 5. Compare reconstruction vs real DBMF /
+SG CTA.
 Judge: the reconstruction must contain multi-year "deserts". If its longest
 underperformance is materially shorter than SG Trend's real one, it is too kind.
 
@@ -352,7 +392,9 @@ whole point of doing this.
    (`docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv`, USD, 1999->2023-05).
    Used as the winter/regime benchmark against the USD layer. See ground-truth
    source 2 for the format caveats.
-2. Inflation series for Level 4: a fixed 2% floor, French/EU HICP, or US CPI?
+2. RESOLVED: inflation floor for Level 4 is **HICP France** (IPCH), Eurostat
+   series `prc_hicp_midx` (base 2015=100, monthly, 1996->, free, no API key).
+   See "Inflation series for Level 4" below for the tiered approach.
 3. Confirm the pass/fail thresholds above (especially the Level 9 stability bar,
    which drives the final recommendation).
 4. Currency basis for Level 8 portfolios: EUR investor throughout (convert
