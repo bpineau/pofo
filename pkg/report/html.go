@@ -56,17 +56,18 @@ type StatRow struct {
 
 // Page is the full document model.
 type Page struct {
-	Title          string
-	GeneratedAt    string
-	RebalanceDays  int
-	Portfolios     []PortfolioSection
-	CompareSVG     template.HTML // empty when there is a single portfolio
-	UnderwaterSVG  template.HTML // drawdown chart over the common period
-	CommonStart    string
-	CommonEnd      string
-	PortfolioNames []string
-	StatRows       []StatRow
-	Footnotes      []string
+	Title           string
+	GeneratedAt     string
+	RebalanceDays   int
+	Portfolios      []PortfolioSection
+	CompareSVG      template.HTML // top overview curve (comparison, or the single portfolio)
+	OverviewHeading string        // heading for the overview chart section
+	UnderwaterSVG   template.HTML // drawdown chart over the common period
+	CommonStart     string
+	CommonEnd       string
+	PortfolioNames  []string
+	StatRows        []StatRow
+	Footnotes       []string
 }
 
 var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
@@ -110,7 +111,7 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 <p class="meta">Generated on {{.GeneratedAt}} — base 100 at start, rebalanced every {{.RebalanceDays}} days.</p>
 {{if .CompareSVG}}
 <section>
-<h2>Comparison — base 100 at {{.CommonStart}}</h2>
+<h2>{{.OverviewHeading}}</h2>
 {{.CompareSVG}}
 </section>
 {{end}}
