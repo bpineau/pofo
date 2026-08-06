@@ -129,3 +129,62 @@ func VsBenchmark(dates []time.Time, values []float64, benchDates []time.Time, be
 	r.DownCapture = capture(downP, downB, nDown)
 	return r, true
 }
+
+// LongestUnderperformance measures the longest consecutive calendar span over
+// which a series trails a benchmark, i.e. the longest stretch where the
+// value/benchmark ratio stays below a level it had previously reached. It is
+// the relative-performance analogue of a drawdown duration: pass cash, an
+// inflation index, or an equity benchmark to find the longest "desert" where
+// holding the series instead of that alternative would have lost ground.
+//
+// Series are matched on their common dates. days is the length of the longest
+// spell in calendar days; peak and trough mark its start and the point of
+// worst relative shortfall; ongoing is true when that spell had not recovered
+// by the last common date. ok is false when fewer than two dates overlap.
+func LongestUnderperformance(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) (days int, peak, trough time.Time, ongoing bool, ok bool) {
+	if len(dates) != len(values) || len(benchDates) != len(benchValues) {
+		return 0, time.Time{}, time.Time{}, false, false
+	}
+	bench := make(map[time.Time]float64, len(benchDates))
+	for i, d := range benchDates {
+		bench[d] = benchValues[i]
+	}
+	var cd []time.Time
+	var ratio []float64
+	for i, d := range dates {
+		if b, found := bench[d]; found && b > 0 {
+			cd = append(cd, d)
+			ratio = append(ratio, values[i]/b)
+		}
+	}
+	if len(ratio) < 2 {
+		return 0, time.Time{}, time.Time{}, false, false
+	}
+	// Longest underwater spell of the ratio series: peak to recovery, counted
+	// only when the ratio actually dipped below the prior relative high.
+	calDays := func(a, b time.Time) int { return int(math.Round(b.Sub(a).Hours() / 24)) }
+	refVal, refDate := ratio[0], cd[0]
+	low, lowDate := ratio[0], cd[0]
+	var best int
+	for i, r := range ratio {
+		if r >= refVal { // back to (or above) the prior relative high
+			if low < refVal {
+				if spell := calDays(refDate, cd[i]); spell > best {
+					best, peak, trough, ongoing = spell, refDate, lowDate, false
+				}
+			}
+			refVal, refDate = r, cd[i]
+			low, lowDate = r, cd[i]
+			continue
+		}
+		if r < low {
+			low, lowDate = r, cd[i]
+		}
+	}
+	if low < refVal { // still underwater at the last common date
+		if spell := calDays(refDate, cd[len(cd)-1]); spell > best {
+			best, peak, trough, ongoing = spell, refDate, lowDate, true
+		}
+	}
+	return best, peak, trough, ongoing, true
+}
