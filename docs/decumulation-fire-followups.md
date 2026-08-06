@@ -48,14 +48,19 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 
 ## Clarity / API (P2)
 
-6. **2D surface y-axis silently changes meaning** (real CAGR for parametric,
-   spending floor for the historical models). The heatmap title says "scenario
-   axis (y)" generically; label the axis dynamically and state the unit.
+6. ✅ **Obsolete (2026-06-29).** **2D surface y-axis silently changes meaning**
+   (real CAGR for parametric, spending floor for the historical models). The
+   heatmap title says "scenario axis (y)" generically; label the axis
+   dynamically and state the unit. The web heatmap was dropped in commit
+   `fd5a75b`; `chart.Heatmap`/`Sweep2D` are no longer rendered anywhere, and the
+   Mu-on-non-parametric ambiguity is now a loud library error (item 4). No
+   surface axis remains to label.
 
-7. **Monthly→annual compounding is rolling-from-window-start, not calendar
-   years.** For cohorts a 15y window compounds months `[0..11], [12..23], …`
-   from the cohort start, so the "annual" returns are not Jan–Dec. Statistically
-   fine; document it so it is not mistaken for a bug.
+7. ✅ **Done (2026-06-29).** **Monthly→annual compounding is
+   rolling-from-window-start, not calendar years.** For cohorts a 15y window
+   compounds months `[0..11], [12..23], …` from the cohort start, so the
+   "annual" returns are not Jan–Dec. Statistically fine; document it so it is
+   not mistaken for a bug. Documented on `scenario.Annualize`.
 
 8. **Common-window alignment truncates to the last N months/returns** assuming
    the month grids line up across holdings. Dense simdata-extended series make
