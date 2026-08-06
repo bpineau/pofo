@@ -266,18 +266,33 @@ and on the currency conversion and fetch performance a EUR investor needs.
   → a constant-maturity par-bond total-return reconstruction (`simgen.TreasuryTR`,
   exact monthly repricing) bundled at `TREASURY-INT-USD.csv` (GS5, 5y) and
   `TREASURY-LONG-USD.csv` (GS20, 20y), 1953→. Stats: intermediate 5.12%/yr @
-  4.3% vol, long 5.04%/yr @ 11.3% vol. NTSG's start is now the US-equity leg
-  VFINX (~1976); DBMF is capped only by the EM leg.
+  4.3% vol, long 5.04%/yr @ 11.3% vol.
+- **The real NTSG/DBMF cap was the intl-equity legs** (done). `BuildFrame` starts
+  the frame at its YOUNGEST leg (`start = max` of first quotes), so extending the
+  others is invisible. VTMGX (dev-ex-US) and VEIEX (EM) were capped at 1999/1994
+  because their proxies were dead Yahoo MSCI symbols (`^990300-USD-STRD`,
+  `^891800-USD-STRD`, which return no usable history). Fixed with bundled series:
+  `DEVEXUS-USD.csv` (Ken French dev-ex-US 1990→, MSCI World before, ~1969) →
+  `longBack["VTMGX"]`; `EM-USD.csv` (Ken French emerging, ~1989) →
+  `longBack["VEIEX"]`. Now NTSG's start is VFINX (~1976), DBMF's is EM (~1989).
+  `frame_start_test.go` reproduces the old 1999 cap and proves the fix.
 
 **Open:**
-- **DBMF EM leg (VEIEX, 1994)** is now the sole remaining cap on the managed-
-  futures basket. Need MSCI EM long (Yahoo `^891800-USD-STRD` ~1988, blocked from
-  the sandbox) as a bundled export (like the MSCI World Curvo file) → would take
-  DBMF to ~1976. Ben action (export), then `longBack["VEIEX"]`.
+- **Upgrade the intl-equity proxies to true MSCI** (Ben Curvo export, like World):
+  overwrite `DEVEXUS-USD.csv` with MSCI EAFE (correct ex-US universe pre-1990, to
+  1969) and `EM-USD.csv` with MSCI EM (to 1988). The French series are honest
+  interim proxies (dev-ex-US market / emerging market, USD) but EAFE pre-1990 is
+  World-approximated. Same file, same format as `MSCIWORLD-USD.csv`; drop in and
+  regenerate.
+- **US-equity leg VFINX (1976)** is now NTSG's floor. To go earlier, extend VFINX
+  with a long US series (Ken French US market, 1926, is sandbox-reachable; or
+  S&P 500 TR) → `longBack["VFINX"]`. ~1976 is already a 50-year backcast, so low
+  priority.
 - **Short rate (^IRX) for the excess/cash legs**: `VFITX` (excess) and the cash
-  leg subtract `^IRX`; if Yahoo `^IRX` does not reach as far back as the now-1953
-  treasury proxy, the composite frame is capped there. If so, extend `^IRX` with
-  a FRED short bill (`TB3MS`, 1934). Verify at regen.
+  leg subtract `^IRX`; if Yahoo `^IRX` does not reach ~1976, the composite frame
+  is capped there instead of at VFINX. If the regen shows NTSG starting later than
+  1976, extend `^IRX` with a FRED short bill (`TB3MS`, 1934) — mind that it is a
+  rate (`isRate`), so splice its percent levels, not price returns. Verify at regen.
 - **Report window**: the `-start` flag defaults to `2006-01-01`, so a plain
   `pofo` run hides all the extended history. Pass `-start 1970-01-01` (or lower
   the default / make it auto = earliest available) to see the long backcast.
