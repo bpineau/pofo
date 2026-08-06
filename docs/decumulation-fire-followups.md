@@ -104,6 +104,14 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     paths across the sweep evaluations (as `CapitalForRuin` already does) to cut
     the per-request cost, especially at higher path counts.
 
+17. **Redesign the `-fire` UI with the frontend-design skill (later).** The
+    current explorer (`pkg/decumul/web/assets/`) was built functionally, not
+    designed: layout, typography, colour, chart styling and the overall visual
+    hierarchy were never given a deliberate pass. Redo it with the
+    `frontend-design` skill for a distinctive, intentional look (and reconsider
+    chart rendering, the allocation bar styling, mobile layout, and surfacing
+    the hidden metrics from item 10 as part of the same pass).
+
 ## Portfolio analysis / report (not FIRE-specific)
 
 17. **Volatility term structure in the comparison table (approved direction).**
