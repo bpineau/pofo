@@ -101,13 +101,27 @@ not anchor conclusions on it. Use, in order of usefulness:
 1. **Real DBMF (USD parent), 2019->**, daily, fetchable via pofo
    (`marketdata.Client.Fetch("DBMF", ...)`). Same USD strategy as DBMFE before
    FX. Best available daily real benchmark; covers 2020 and 2022 crisis alpha.
-2. **SG Trend Index** (Societe Generale), monthly (and daily for SG CTA), 2000->.
-   The industry-standard trend-following benchmark and the right yardstick for
-   the long-winter / regime questions. NOT currently fetchable by pofo.
-   OPEN QUESTION (operator): can the executing session obtain SG Trend / SG CTA
-   history (CSV from the SG index site, or a vendor)? If yes, drop it into
-   `-refdata` (see below) as a CSV in simdata format. If no, fall back to real
-   DBMF + KMLM + CTA reals as a noisy multi-fund proxy for the benchmark shape.
+2. **SG CTA Index** (Societe Generale), daily, 1999-12-31 -> 2023-05-09,
+   AVAILABLE in the repo at
+   `docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv`. The industry-standard
+   managed-futures benchmark and the right yardstick for the long-winter /
+   regime questions. Caveats the executing session must handle:
+   - Format is `date,daily_return` (simple returns), NO header, NOT pofo's
+     simdata format. Cumulate to a base-100 level series before feeding it to
+     any value-series tool (`level[0]=100; level[k]=level[k-1]*(1+r[k])`).
+     Optionally emit a simdata-format CSV (`# pofo simdata v1` header,
+     `date,close`) into a `-refdata` dir so it loads via `marketdata.ReadSimdata`.
+   - It is **USD**. Compare it against the **USD layer** of the construction
+     (real DBMF, and/or the pre-FX TSMOM index), NOT against the EUR-converted
+     DBMFE: that keeps the trend-shape validation clean and isolates the EURUSD
+     overlay as its own check (pofo-specific check 4). For an EUR view, convert
+     SG CTA to EUR with the same EURUSD path, but treat that as secondary.
+   - It is the broad **SG CTA** index (trend plus some non-trend managers),
+     marginally broader than the pure SG Trend sub-index; fine as the benchmark,
+     just note the nuance.
+   - It **ends 2023-05-09**, so 2024-2025 (incl. the 2023-24 trend chop tail and
+     2025) are not covered. The long-winter (2011-2019), 2008, 2020 and 2022
+     events that matter most ARE covered.
 3. **Real KMLM (2020->) and CTA (2022->)** as secondary real managed-futures
    reals for triangulation (already bundled as recipes).
 4. Global equity benchmark for correlation / crisis-alpha tests: **URTH** or
@@ -272,11 +286,21 @@ then DBMF modeling precision is *critical* and conclusions must be hedged. If
 the weight is stable, confidence rises a lot. This result should headline the
 final report.
 
-### Level 10. FIRE engine  -> deferred
+### Level 10. FIRE engine  -> deferred (separate future spec)
 Probability of ruin, terminal wealth, 5th-percentile terminal wealth, years
 underwater, failure rate, on spliced vs real-only. The FIRE engine does not
-exist yet. Out of scope here; note that contributions 2-5 are exactly the
-primitives that engine will reuse, so building them now is not wasted.
+exist yet and is the subject of its own future spec (decumulation / withdrawal
+ruin risk over multiple parameters). Out of scope here.
+
+Note on Monte-Carlo, to avoid confusion with the framing above: the simdata
+*generation* layer is and stays a single deterministic path (no ensemble). The
+FIRE engine is a *consumption*-layer tool and is exactly where Monte-Carlo
+belongs: it will draw many decumulation paths (historical bootstrap and/or
+parametric) from the validated return series to estimate ruin probability. The
+two are different layers; this validation campaign concerns only the generation
+layer's faithfulness. Contributions 2-5 (rolling stats, drawdown episodes,
+recovery distribution) are exactly the primitives that engine will reuse, so
+building them now is not wasted.
 
 ## pofo-specific checks ChatGPT could not know to ask  -> S + C (do these too)
 
@@ -305,7 +329,8 @@ These are arguably higher priority than re-running the generic battery.
 ## Pass / fail thresholds (OPEN, propose then confirm with operator)
 
 Suggested defaults; the executing session should propose these and the operator
-confirms before drawing conclusions:
+confirms before drawing conclusions. Benchmark for the winter/tail bars is SG
+CTA (USD), compared against the USD layer (real DBMF / pre-FX TSMOM):
 
 - Shape: reconstruction vs real DBMF daily corr >= 0.45, beta in [0.3, 0.7],
   rolling 12m equity correlation centered near 0 and rarely above +0.3.
@@ -323,8 +348,10 @@ whole point of doing this.
 
 ## Open questions for the operator
 
-1. SG Trend / SG CTA Index history: obtainable for the executing session? (Sets
-   whether Levels 3-6 use the gold-standard benchmark or fall back to real DBMF.)
+1. RESOLVED: SG CTA daily history is in the repo
+   (`docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv`, USD, 1999->2023-05).
+   Used as the winter/regime benchmark against the USD layer. See ground-truth
+   source 2 for the format caveats.
 2. Inflation series for Level 4: a fixed 2% floor, French/EU HICP, or US CPI?
 3. Confirm the pass/fail thresholds above (especially the Level 9 stability bar,
    which drives the final recommendation).
@@ -336,7 +363,8 @@ whole point of doing this.
 1. pofo-specific checks 1-2 (seam + DBMF shortfall decomposition): cheapest, and
    if the seam is broken or the shape is wrong, stop and fix the recipe first.
 2. Library contributions 1-5 with TDD (they unblock Levels 1-7).
-3. Levels 1, 3, 4, 5, 7 against real DBMF (and SG Trend if available).
+3. Levels 1, 3, 4, 5, 7 against real DBMF and SG CTA (USD layer; cumulate the SG
+   CTA returns CSV to a base-100 level first).
 4. Crisis-alpha check 3 + Level 8 (real-only vs spliced).
 5. Level 9 stress/sensitivity study (headline result).
 6. Write findings back into a `dbmfe-simdata-validation-results.md`, and if any
@@ -356,3 +384,5 @@ whole point of doing this.
 - `cmd/pofo/main.go` - `-gen-simdata`, `-refdata`, `-simdata` wiring;
   `genOne` shows the build/validate/splice flow.
 - `examples/*.txt` - portfolio file format for Level 8.
+- `docs/SG-CTA-Index-Daily-Returns-since-1999-12-31.csv` - SG CTA benchmark
+  (USD daily returns, no header; cumulate to base-100 before use).
