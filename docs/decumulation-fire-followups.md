@@ -131,6 +131,12 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 ## Portfolio analysis / report (not FIRE-specific)
 
 17. **Volatility term structure in the comparison table (approved direction).**
+    ✅ **Done (2026-06-29):** added `metrics.VarianceRatio` (Lo-MacKinlay) returning
+    a `VolTermStructure` (daily vol, monthly-annualised vol, the ratio, sample
+    size), and surfaced two new rows in the comparison table ("Volatility
+    (monthly, annualised)" and "Variance ratio (monthly/daily)") with an
+    explanatory footnote covering the interpretation and the small-sample caveat.
+    The FIRE-seeding / monthly-Sharpe reuse (the last sub-bullet) is still open.
     The report currently ranks portfolios by **daily-annualised** volatility
     (and Sharpe/Sortino built on it), which over/understates the dispersion an
     investor actually realises at a multi-year horizon: it overstates when
