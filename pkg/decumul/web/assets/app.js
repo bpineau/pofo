@@ -2,9 +2,9 @@
 // unit drives how the live value is shown: pct (×100, "%"), eur, or int.
 const SLIDERS = [
   ["capital","Capital",800000,4000000,10000,1800000,"eur"],
-  ["needAnnual","Spending floor /yr",24000,84000,1000,48000,"eur"],
+  ["needAnnual","Net spending /yr",24000,84000,1000,48000,"eur"],
   ["bufferYears","Buffer (years)",0,10,1,3,"int"],
-  ["mu","Real growth return",0.01,0.07,0.005,0.045,"pct"],
+  ["mu","Real growth return",0.01,0.12,0.005,0.045,"pct"],
   ["sigma","Volatility",0.06,0.20,0.005,0.12,"pct"],
   ["df","Tail df (low=fat)",3,30,1,6,"int"],
   ["bufferReturn","Buffer real return",-0.01,0.05,0.005,0.005,"pct"],
@@ -77,8 +77,16 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
     <option value="bootstrap">historical bootstrap</option>
     <option value="cohorts">historical cohorts</option></select>`;
   form.prepend(sel);
-  sel.querySelector("select").addEventListener("change", e=>{state.model=e.target.value;schedule();});
+  const MODEL_HELP = {
+    parametric: "Draws i.i.d. annual real returns from the mu/sigma sliders above (fat-tailed Student-t). Sliders are seeded from this portfolio's historical ANNUAL real-return dispersion, which is usually below the report's daily-annualised volatility (vol drag / trending); raise sigma toward that headline figure for a more conservative test.",
+    bootstrap: "Resamples 2-year blocks of this portfolio's actual monthly real returns (2006→), preserving regimes and cross-asset correlations. Optimistic by construction: anchored to that one favourable historical window.",
+    cohorts: "Replays every actual historical start month, no resampling. The most faithful but limited to the available history length, so long horizons may be unavailable.",
+  };
+  const help = document.getElementById("modelhelp");
+  const setHelp = m => { help.textContent = MODEL_HELP[m] || ""; };
+  sel.querySelector("select").addEventListener("change", e=>{state.model=e.target.value;setHelp(state.model);schedule();});
   state.model = "parametric";
+  setHelp("parametric");
   labels.forEach((name,i)=>{
     const d=document.createElement("label"); d.className="ctl";
     d.innerHTML=`<span class="lab"><span>${name}</span><span class="val" id="w_${i}">${Math.round(weights[i]*100)}%</span></span>

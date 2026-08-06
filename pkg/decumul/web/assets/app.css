@@ -2,6 +2,7 @@ body{font-family:-apple-system,system-ui,sans-serif;margin:1.2rem auto;max-width
 h1{font-size:1.4rem;margin-bottom:.1rem}
 p.meta{color:#666;font-size:.85rem;margin-top:0}
 #note:not(:empty){color:#9a6700;background:#fff8e1;border:1px solid #f0e0a0;border-radius:6px;padding:.5rem .8rem;font-size:.85rem;margin:.5rem 0}
+#modelhelp:not(:empty){color:#445;background:#f3f6fb;border:1px solid #d7e0ee;border-radius:6px;padding:.45rem .8rem;font-size:.82rem;margin:.5rem 0}
 
 /* compact 3-column control grid: label and value on one line, slider below */
 #controls{display:grid;grid-template-columns:repeat(3,1fr);gap:.35rem .9rem;margin:.8rem 0}
