@@ -49,7 +49,16 @@ let weights = null, labels = [];
 fetch("/api/meta").then(r=>r.json()).then(m=>{
   if(!m.hasPanel) { run(); return; }
   labels = m.labels;
-  weights = labels.map(()=>1/labels.length);
+  weights = (m.weights && m.weights.length === labels.length) ? m.weights.slice()
+    : labels.map(()=>1/labels.length);
+  // seed the return assumptions from the portfolio's own history.
+  for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma]]) {
+    if (typeof v === "number") {
+      state[k] = v;
+      const s = document.getElementById("s_"+k);
+      if (s) { s.value = v; document.getElementById("v_"+k).textContent = v.toFixed(3); }
+    }
+  }
   const sel = document.createElement("label"); sel.className="ctl";
   sel.innerHTML = `Return model:
     <select id="model"><option value="parametric">parametric</option>
