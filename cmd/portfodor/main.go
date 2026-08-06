@@ -19,11 +19,11 @@ import (
 	"strings"
 	"time"
 
-	"portfodor/chart"
-	"portfodor/marketdata"
-	"portfodor/metrics"
-	"portfodor/portfolio"
-	"portfodor/report"
+	"portfodor/pkg/chart"
+	"portfodor/pkg/marketdata"
+	"portfodor/pkg/metrics"
+	"portfodor/pkg/portfolio"
+	"portfodor/pkg/report"
 )
 
 func main() {
