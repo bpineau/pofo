@@ -6,10 +6,11 @@ import (
 )
 
 func TestPieRendersWedgesAndLegend(t *testing.T) {
+	const customColor = "#cbcbcb"
 	svg := Pie(PieOptions{Title: "Geo <x> & co"}, []Slice{
 		{Label: "US", Value: 60},
 		{Label: "Japan & co", Value: 30},
-		{Label: "Other", Value: 10, Color: NeutralColor},
+		{Label: "Other", Value: 10, Color: customColor},
 	})
 	if !strings.HasPrefix(svg, "<svg") || !strings.HasSuffix(svg, "</svg>") {
 		t.Fatal("malformed SVG document")
@@ -33,8 +34,8 @@ func TestPieRendersWedgesAndLegend(t *testing.T) {
 			t.Errorf("missing legend percentage %q", want)
 		}
 	}
-	if !strings.Contains(svg, NeutralColor) {
-		t.Error("the neutral slice color must be used")
+	if !strings.Contains(svg, customColor) {
+		t.Error("an explicit slice color must be honored")
 	}
 }
 

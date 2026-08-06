@@ -34,9 +34,9 @@ type PortfolioSection struct {
 	Name          string
 	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG      template.HTML
-	Breakdowns    template.HTML // row of composition pies (geography, sector, asset type); empty to omit
-	CoverageLabel string        // heading for the coverage chart
-	Coverage      []CoverageBar // macro-regime or factor coverage; empty to omit
+	Breakdowns    []template.HTML // composition pies (geography, sector, asset type) as SVGs; empty to omit
+	CoverageLabel string          // heading for the coverage chart
+	Coverage      []CoverageBar   // macro-regime or factor coverage; empty to omit
 	Assets        []AssetRow
 	Notes         []string // informational lines (e.g. optimizer choices)
 	Warnings      []string
@@ -147,7 +147,7 @@ details.legend > summary:hover { color: #000; }
 <details class="pf">
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
 {{.ChartSVG}}
-{{if .Breakdowns}}{{.Breakdowns}}{{end}}
+{{if .Breakdowns}}<div class="pies">{{range .Breakdowns}}{{.}}{{end}}</div>{{end}}
 {{if .Coverage}}
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
