@@ -199,6 +199,9 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	}
 
 	return Result{
+		// The hero strip (/api/models) carries the multi-model ruin and safe
+		// withdrawal; these cards keep the single-model ruin (also used for the
+		// A/B allocation comparison) plus the secondary detail metrics.
 		Cards: []Card{
 			{"Ruin", fmt.Sprintf("%.1f%%", o.RuinProb*100)},
 			{"Withdrawal rate", fmt.Sprintf("%.2f%%", pr.NeedAnnual/pr.Capital*100)},
