@@ -46,3 +46,16 @@ func ExampleBeta() {
 	// Output:
 	// beta=2.0 ok=true
 }
+
+// IRR weighs each cash flow by its date: money invested early counts more
+// than money added late. Flows are signed from the investor's standpoint
+// (negative going in, positive coming out).
+func ExampleIRR() {
+	d0 := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	dates := []time.Time{d0, d0.AddDate(1, 0, 0)}
+	flows := []float64{-1000, -1000} // initial capital, then one contribution
+	irr, ok := metrics.IRR(dates, flows, d0.AddDate(2, 0, 0), 2200)
+	fmt.Printf("ok=%v IRR=%.1f %%/yr\n", ok, irr*100)
+	// Output:
+	// ok=true IRR=6.5 %/yr
+}
