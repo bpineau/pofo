@@ -1407,7 +1407,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	}
 	if hasCoverage {
 		page.Footnotes = append(page.Footnotes,
-			"Macro-regime coverage: weight of the assets that help in each growth/inflation environment (an asset can span several); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
+			"Macro-regime coverage: notional exposure to each growth/inflation environment (an asset can span several; leveraged stacked funds count each leg's notional, so bars can exceed 100%); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
 	}
 	return page
 }
