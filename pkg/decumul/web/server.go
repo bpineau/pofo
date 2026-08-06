@@ -17,10 +17,11 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
 		meta := map[string]any{"labels": labels, "hasPanel": panel != nil}
 		if panel != nil {
-			mu, sigma := FitParametric(*panel, panel.Weights)
+			f := FitParametric(*panel, panel.Weights)
 			meta["weights"] = panel.Weights
-			meta["mu"] = mu
-			meta["sigma"] = sigma
+			meta["mu"] = f.Mu
+			meta["sigma"] = f.Sigma
+			meta["df"] = f.Df
 		}
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(meta)
@@ -37,9 +38,9 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		mu, sigma := FitParametric(*panel, body.Weights)
+		f := FitParametric(*panel, body.Weights)
 		w.Header().Set("Content-Type", "application/json")
-		_ = json.NewEncoder(w).Encode(map[string]float64{"mu": mu, "sigma": sigma})
+		_ = json.NewEncoder(w).Encode(map[string]float64{"mu": f.Mu, "sigma": f.Sigma, "df": f.Df})
 	})
 	mux.HandleFunc("/api/sim", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
