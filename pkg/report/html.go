@@ -11,11 +11,20 @@ type AssetRow struct {
 	ID       string
 	Symbol   string
 	Name     string
+	Class    string // catalog asset class (equity, gold…), empty when unknown
 	UCITS    string // "oui", "non" or "?" when undetermined
 	Fees     string // published TER, or — when unknown
 	Currency string
 	History  string
 	Note     string
+}
+
+// CoverageBar is one macro-regime row of a portfolio's coverage chart.
+type CoverageBar struct {
+	Regime string
+	Pct    int  // coverage as a percent of portfolio weight (can exceed 100)
+	Width  int  // bar width, the percent capped at 100
+	Gap    bool // true when the regime is under-covered
 }
 
 // PortfolioSection groups everything shown for one portfolio. Sections are
@@ -24,6 +33,7 @@ type PortfolioSection struct {
 	Name     string
 	Subtitle string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG template.HTML
+	Coverage []CoverageBar // macro-regime coverage; empty to omit
 	Assets   []AssetRow
 	Notes    []string // informational lines (e.g. optimizer choices)
 	Warnings []string
@@ -83,6 +93,14 @@ details.pf > summary:hover { color: #000; }
 .pf-name { font-size: 1.15rem; font-weight: 600; }
 .pf-sub { color: #666; font-size: .85rem; margin-left: .5rem; }
 ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
+.cov { margin: .7rem 0 1rem; font-size: .85rem; }
+.cov-title { font-weight: 600; margin-bottom: .3rem; }
+.cov-row { display: flex; align-items: center; gap: .5rem; margin: .15rem 0; }
+.cov-label { width: 5.5rem; color: #444; }
+.cov-track { flex: 0 0 240px; background: #eee; height: .7rem; border-radius: 3px; overflow: hidden; }
+.cov-fill { display: block; height: 100%; background: #4a8a5a; }
+.cov-val { color: #666; }
+.cov-val.gap { color: #9a6700; }
 </style>
 </head>
 <body>
@@ -117,11 +135,19 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 <details class="pf">
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
 {{.ChartSVG}}
+{{if .Coverage}}
+<div class="cov">
+<div class="cov-title">Macro-regime coverage (by weight)</div>
+{{- range .Coverage}}
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} — gap{{end}}</span></div>
+{{- end}}
+</div>
+{{end}}
 <table>
-<thead><tr><th class="num">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>UCITS</th><th class="num">Fees</th><th>Currency</th><th>History</th><th>Note</th></tr></thead>
+<thead><tr><th class="num">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="num">Fees</th><th>Currency</th><th>History</th><th>Note</th></tr></thead>
 <tbody>
 {{- range .Assets}}
-<tr><td class="num">{{.Weight}}</td><td>{{.ID}}</td><td>{{.Symbol}}</td><td>{{.Name}}</td><td>{{.UCITS}}</td><td class="num">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>
+<tr><td class="num">{{.Weight}}</td><td>{{.ID}}</td><td>{{.Symbol}}</td><td>{{.Name}}</td><td>{{.Class}}</td><td>{{.UCITS}}</td><td class="num">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>
 {{- end}}
 </tbody>
 </table>

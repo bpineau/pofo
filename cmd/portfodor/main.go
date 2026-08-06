@@ -379,7 +379,11 @@ Options:
 		return renderCLI(results, &opt, commonStart, commonEnd)
 	}
 
-	page := buildPage(results, &opt, bench, commonStart, commonEnd)
+	assetMeta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
+	if err != nil {
+		log.Printf("warning: asset metadata unavailable (%v) — regime coverage omitted", err)
+	}
+	page := buildPage(results, &opt, bench, commonStart, commonEnd, assetMeta)
 	var buf bytes.Buffer
 	if err := report.Render(&buf, page); err != nil {
 		return err
@@ -1092,7 +1096,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portf
 	return &cp, note, nil
 }
 
-func buildPage(results []*result, opt *options, bench *marketdata.Series, commonStart, commonEnd time.Time) *report.Page {
+func buildPage(results []*result, opt *options, bench *marketdata.Series, commonStart, commonEnd time.Time, meta map[string]suggest.Meta) *report.Page {
 	names := make([]string, len(results))
 	for i, r := range results {
 		names[i] = r.p.Name
@@ -1141,6 +1145,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
+		section.Coverage = coverageBars(r.p.Assets, meta)
 		for _, a := range r.p.Assets {
 			var notes []string
 			if !a.Series.SimulatedBefore.IsZero() {
@@ -1171,11 +1176,16 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			if u, known := marketdata.GuessUCITS(base, a.Name); known {
 				ucitsText = map[bool]string{true: "yes", false: "no"}[u]
 			}
+			assetClass := ""
+			if m, _, ok := metaFor(meta, a.ID); ok {
+				assetClass = m.AssetClass
+			}
 			section.Assets = append(section.Assets, report.AssetRow{
 				Weight:   fmt.Sprintf("%.4g %%", a.Weight*100),
 				ID:       a.ID,
 				Symbol:   a.Symbol,
 				Name:     a.Name,
+				Class:    assetClass,
 				UCITS:    ucitsText,
 				Fees:     feesText,
 				Currency: a.Series.Currency,
@@ -1236,7 +1246,44 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		page.Footnotes = append(page.Footnotes,
 			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.")
 	}
+	for _, s := range page.Portfolios {
+		if len(s.Coverage) > 0 {
+			page.Footnotes = append(page.Footnotes,
+				"Macro-regime coverage: weight of the assets that help in each growth/inflation environment (an asset can span several); a low bar is a gap. Run \"-suggest\" for assets to fill it.")
+			break
+		}
+	}
 	return page
+}
+
+// coverageBars computes a portfolio's macro-regime coverage for the report.
+// It returns nil when no asset carries metadata (nothing meaningful to show).
+func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta) []report.CoverageBar {
+	holdings := make([]suggest.Holding, len(assets))
+	anyMeta := false
+	for i, a := range assets {
+		m, _, ok := metaFor(meta, a.ID)
+		holdings[i] = suggest.Holding{ID: a.ID, Weight: a.Weight, Meta: m, HasMeta: ok}
+		anyMeta = anyMeta || ok
+	}
+	if !anyMeta {
+		return nil
+	}
+	cov, _ := suggest.Coverage(holdings)
+	gapSet := map[suggest.Regime]bool{}
+	for _, g := range suggest.Gaps(cov, suggest.DefaultOptions().GapThreshold) {
+		gapSet[g] = true
+	}
+	bars := make([]report.CoverageBar, 0, len(suggest.AllRegimes))
+	for _, rg := range suggest.AllRegimes {
+		pct := int(cov[rg]*100 + 0.5)
+		width := pct
+		if width > 100 {
+			width = 100
+		}
+		bars = append(bars, report.CoverageBar{Regime: string(rg), Pct: pct, Width: width, Gap: gapSet[rg]})
+	}
+	return bars
 }
 
 func buildStatRows(results []*result, benchmark string) []report.StatRow {
