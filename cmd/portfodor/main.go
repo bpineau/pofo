@@ -118,6 +118,12 @@ File format — one line per asset:
         #meta leverage:on    weights kept as written: sum > 100 %%
                              financed at the cash rate (^IRX) + spread
         #meta borrow-spread:X  borrowing spread in %%/yr (default 1.0)
+        #meta capital:X      starting amount (required for flows; money
+                             rows and IRR appear in the statistics)
+        #meta contribute:A/P add A every period P in {week, month,
+                             quarter, year}, e.g. contribute:500/month
+        #meta withdraw:A/P   take out A, or A%% of the current value
+                             (withdraw:4%%/year), every period P
 
 Example:
     #meta rebalance:30
