@@ -119,6 +119,22 @@ func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
 	}
 }
 
+// Monthly mode must yield a monthly source (Years*12 periods) and a plan that
+// steps monthly; the default stays annual.
+func TestMonthlySourceAndPlan(t *testing.T) {
+	pr := Params{Capital: 1e6, NeedAnnual: 40000, Years: 30, Mu: 0.04, Sigma: 0.12, Df: 6, Monthly: true}
+	if got := pr.source(nil).Len(); got != 30*12 {
+		t.Errorf("monthly parametric source Len = %d, want %d", got, 30*12)
+	}
+	if !pr.plan().Monthly {
+		t.Error("plan should be marked Monthly")
+	}
+	pr.Monthly = false
+	if got := pr.source(nil).Len(); got != 30 {
+		t.Errorf("annual parametric source Len = %d, want 30", got)
+	}
+}
+
 // Compare must evaluate the two allocations independently, re-fitting each from
 // the panel, so clearly different allocations yield clearly different outcomes.
 func TestCompareAllocationsDiffer(t *testing.T) {

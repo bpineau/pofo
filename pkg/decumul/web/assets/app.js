@@ -52,6 +52,14 @@ function setSliderVal(k, v) {
   if (s) { s.value = v; document.getElementById("v_" + k).textContent = fmtVal(k, v); }
 }
 
+// Monthly-withdrawal toggle: step the kernel monthly (salary-like) instead of
+// once a year.
+state.monthly = false;
+const monthlyCtl = document.createElement("label"); monthlyCtl.className = "ctl span chk";
+monthlyCtl.innerHTML = `<input type="checkbox" id="monthly"> <span>Monthly withdrawals (salary-like)</span>`;
+form.appendChild(monthlyCtl);
+monthlyCtl.querySelector("input").addEventListener("change", e => { state.monthly = e.target.checked; schedule(); });
+
 // --- shareable scenarios: the whole slider/model/allocation state round-trips
 // through the URL hash, so a configuration can be bookmarked or shared. ---
 const shared = new URLSearchParams(location.hash.slice(1));
@@ -65,10 +73,15 @@ function applySharedSliders() {
     if (shared.has(k)) { const v = parseFloat(shared.get(k)); if (!isNaN(v)) setSliderVal(k, v); }
 }
 applySharedSliders();
+if (shared.get("monthly") === "1") {
+  state.monthly = true;
+  monthlyCtl.querySelector("input").checked = true;
+}
 function syncURL() {
   const p = new URLSearchParams();
   for (const [k] of SLIDERS) p.set(k, state[k]);
   if (state.model) p.set("model", state.model);
+  if (state.monthly) p.set("monthly", "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
