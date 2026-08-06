@@ -329,7 +329,7 @@ import (
 // "…SIM" identifiers and converts the currency, exactly like the CLI;
 // Fetch is the raw real-quotes-only building block underneath.
 client := marketdata.NewClient(marketdata.DefaultCacheDir())
-series, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
+series, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 
 // Compute CAGR, Sharpe, Sortino, Ulcer, MaxDD, TTR, Beta…
 stats, err := metrics.Compute(dates, values)
@@ -343,7 +343,7 @@ svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1"
 spec, _ := portfolio.ParseFile("p.txt")
 p, _ := portfolio.Build(spec, portfolio.BuildOptions{
 	Fetch: func(id string) (*marketdata.Series, error) {
-		return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+		return client.FetchExtended(ctx, id, marketdata.FetchOptions{Currency: "EUR"})
 	},
 })
 sim, _ := portfolio.Simulate(p, 90)
