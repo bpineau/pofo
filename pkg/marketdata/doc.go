@@ -26,6 +26,18 @@
 // disk (JSON, one file per instrument); a failed refresh serves the stale
 // data with a warning rather than failing.
 //
+// # Intraday
+//
+// Client.Intraday fetches the current trading day's price path for an
+// instrument. The call is live and stateless: the client performs no
+// intraday caching, so the caller is responsible for throttling and
+// storing results when needed. Yahoo Finance is the only intraday source;
+// if the identifier does not resolve to a Yahoo symbol, Intraday returns
+// ErrNotCovered (check with errors.Is). The mapping from an IntradaySeries
+// to a chart is caller-side: iterate IntradaySeries.Points and copy
+// Point.Time into Dates and Point.Close into Values on a chart.Series
+// before passing it to chart.Line.
+//
 // # Simulated data
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
@@ -43,5 +55,14 @@
 //   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
 //   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker
 //     from the embedded list) to its canonical form;
-//   - IsISIN validates an ISIN, check digit included.
+//   - IsISIN validates an ISIN, check digit included;
+//   - Client.ConvertCurrency reprices a whole Series into a target currency
+//     using daily Yahoo FX crosses; the earliest known rate is held flat
+//     before the FX history starts;
+//   - Client.Resolve returns a Resolution describing the instrument pofo
+//     would quote for an identifier (ticker, ISIN or alias), using the catalog and
+//     on-disk cache first, then the same multi-source search Fetch uses;
+//     calling Resolve before Fetch lets callers inspect the resolved
+//     source and symbol, and the result is cached so a subsequent Fetch
+//     reuses the same work.
 package marketdata
