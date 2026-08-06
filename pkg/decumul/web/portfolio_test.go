@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
@@ -116,6 +117,36 @@ func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
 		if math.Abs(panel.Returns[1][k]-wantB[k]) > 1e-9 {
 			t.Errorf("asset B month %d = %.4f, want %.4f", k, panel.Returns[1][k], wantB[k])
 		}
+	}
+}
+
+// The richer-policy params map onto the plan: glidepath stop year, bounded side
+// income, and guardrails banded around the initial withdrawal rate.
+func TestPlanRicherPolicies(t *testing.T) {
+	pr := Params{Capital: 1_000_000, NeedAnnual: 40000, Years: 30,
+		PensionYear: 12, PensionAnnual: 18000,
+		SideAnnual: 6000, SideUntilYear: 5, BufferStopYear: 7, Guardrails: true,
+		BufferYears: 2}
+	p := pr.plan()
+	if p.Buffer.RefillStopYear != 7 {
+		t.Errorf("RefillStopYear = %d, want 7", p.Buffer.RefillStopYear)
+	}
+	if len(p.Cashflows) != 2 {
+		t.Fatalf("cashflows = %d, want 2 (pension + side income)", len(p.Cashflows))
+	}
+	// Side income is the bounded one.
+	var side decumul.Cashflow
+	for _, c := range p.Cashflows {
+		if c.ToYear != 0 {
+			side = c
+		}
+	}
+	if side.Annual != 6000 || side.ToYear != 5 {
+		t.Errorf("side income = %+v, want {0 5 6000}", side)
+	}
+	// Guardrails band centred on the 4% initial withdrawal rate.
+	if p.Guard.Upper != 0.04*1.2 || p.Guard.Lower != 0.04*0.8 {
+		t.Errorf("guard band = [%.4f, %.4f], want [%.4f, %.4f]", p.Guard.Lower, p.Guard.Upper, 0.032, 0.048)
 	}
 }
 
