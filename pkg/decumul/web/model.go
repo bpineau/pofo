@@ -36,6 +36,22 @@ type Params struct {
 	SideAnnual     float64   `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
 	SideUntilYear  int       `json:"sideUntilYear"`  // side income runs until this year, exclusive
 	Guardrails     bool      `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
+	Age            int       `json:"age"`            // age at year 0, for the mortality view (0 = 52)
+	PEACapital     float64   `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
+	AVCapital      float64   `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
+	GainFrac       float64   `json:"gainFrac"`       // embedded unrealised gain fraction at start
+	Ratchet        bool      `json:"ratchet"`        // only-up spending rule (the written-rules cliquet)
+	WRTrigger      float64   `json:"wrTrigger"`      // flex also cuts above this current WR (0 = off)
+	SpendDrift     float64   `json:"spendDrift"`     // real spending drift per year (health costs)
+	Smile          bool      `json:"smile"`          // Blanchett retirement-smile spending shape
+}
+
+// age resolves the mortality age, defaulting to 52 (an early retiree).
+func (pr Params) age() float64 {
+	if pr.Age <= 0 {
+		return 52
+	}
+	return float64(pr.Age)
 }
 
 // Card is one labelled summary figure shown above the charts.
@@ -63,7 +79,7 @@ func (pr Params) plan() decumul.Plan {
 		NeedAnnual: pr.NeedAnnual,
 		Years:      pr.Years,
 		Buffer:     decumul.BufferSleeve{Years: pr.BufferYears, RealReturn: pr.BufferReturn, RefillStopYear: pr.BufferStopYear},
-		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut},
+		Flex:       decumul.FlexRule{Threshold: 0.20, Cut: pr.FlexCut, WRThreshold: pr.WRTrigger},
 		Tax:        decumul.CTOFlatTax{Rate: pr.TaxRate},
 		Source:     scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years},
 		Monthly:    pr.Monthly && !pr.Regime, // the regime source is annual
@@ -79,7 +95,82 @@ func (pr Params) plan() decumul.Plan {
 		wr0 := pr.NeedAnnual / pr.Capital
 		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10}
 	}
+	// The written-rules cliquet (Kitces ratchet, Ben's §10 skeleton): +10% of
+	// the base spend per raise, only above 120% of the initial real capital,
+	// at most every two years, capped at 120% of the base spend, and only
+	// while the current rate stays comfortable (< 2.2%).
+	if pr.Ratchet && pr.NeedAnnual > 0 {
+		p.Ratchet = decumul.Ratchet{
+			Trigger: 1.2, Step: 0.10 * pr.NeedAnnual, Cap: 1.2 * pr.NeedAnnual,
+			Cooldown: 2, MaxWR: 0.022,
+		}
+	}
+	p.SpendSchedule = pr.spendSchedule()
+	p.Envelopes = pr.envelopes()
 	return p
+}
+
+// spendSchedule builds the per-year real spending multipliers from the drift
+// and smile options; nil when spending is constant.
+func (pr Params) spendSchedule() []float64 {
+	if pr.SpendDrift == 0 && !pr.Smile {
+		return nil
+	}
+	s := make([]float64, pr.Years)
+	for k := range s {
+		m := math.Pow(1+pr.SpendDrift, float64(k))
+		if pr.Smile {
+			m *= smileAt(k)
+		}
+		s[k] = m
+	}
+	return s
+}
+
+// smileAt approximates the Blanchett retirement-spending smile: real spending
+// drifts down through the go-go and slow-go years (about -1%/yr to year 15),
+// plateaus, then climbs back with late-life health costs.
+func smileAt(k int) float64 {
+	switch {
+	case k <= 15:
+		return 1 - 0.010*float64(k)
+	case k <= 25:
+		return 0.85
+	default:
+		return math.Min(0.85+0.012*float64(k-25), 1.05)
+	}
+}
+
+// envelopes translates the PEA/AV sliders into the ordered tax pockets, CTO
+// first (the classic French drain order), with the shared embedded-gain
+// fraction. It returns nil when the plan is the legacy single CTO sleeve.
+func (pr Params) envelopes() []decumul.Envelope {
+	if pr.PEACapital <= 0 && pr.AVCapital <= 0 && pr.GainFrac <= 0 {
+		return nil
+	}
+	growth := pr.Capital - math.Min(pr.BufferYears*pr.NeedAnnual, pr.Capital)
+	out := []decumul.Envelope{{
+		Name:     "CTO",
+		Amount:   math.Max(0, growth-pr.PEACapital-pr.AVCapital),
+		GainFrac: pr.GainFrac,
+		Tax:      decumul.CTOFlatTax{Rate: pr.TaxRate},
+	}}
+	if pr.PEACapital > 0 {
+		out = append(out, decumul.Envelope{
+			Name: "PEA", Amount: pr.PEACapital, GainFrac: pr.GainFrac,
+			// Past 5 years, PEA withdrawals only pay social levies on gains.
+			Tax: decumul.CTOFlatTax{Rate: 0.172},
+		})
+	}
+	if pr.AVCapital > 0 {
+		out = append(out, decumul.Envelope{
+			Name: "AV", Amount: pr.AVCapital, GainFrac: pr.GainFrac,
+			// Past 8 years: 9 200 €/yr of gains tax-free (couple), then
+			// 7.5% + 17.2% social levies on the excess.
+			Tax: decumul.AVTax{Rate: 0.247, Allowance: 9200},
+		})
+	}
+	return out
 }
 
 // source picks the return model. With a non-nil (monthly) panel and a
