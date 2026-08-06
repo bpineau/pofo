@@ -8,11 +8,39 @@ import (
 	"time"
 )
 
+// Yahoo serves the same data from two interchangeable API hosts, rate-limited
+// independently: when one returns 429 the other usually still answers.
+const (
+	yahooHost1 = "https://query1.finance.yahoo.com"
+	yahooHost2 = "https://query2.finance.yahoo.com"
+)
+
+// yahooGet fetches an absolute Yahoo API path (e.g. "/v8/finance/chart/AAPL?…")
+// from base, retrying on the twin query1/query2 host so a per-host rate limit
+// does not fail the run. A non-Yahoo base (a test server) is used on its own.
+func (c *Client) yahooGet(base, path string) ([]byte, error) {
+	hosts := []string{base}
+	switch base {
+	case yahooHost1:
+		hosts = append(hosts, yahooHost2)
+	case yahooHost2:
+		hosts = append(hosts, yahooHost1)
+	}
+	var body []byte
+	var err error
+	for _, h := range hosts {
+		if body, err = c.get(h + path); err == nil {
+			return body, nil
+		}
+	}
+	return body, err
+}
+
 // fetchYahoo downloads daily history from the Yahoo Finance chart API.
 func (c *Client) fetchYahoo(symbol string, from time.Time) (*Series, error) {
-	u := fmt.Sprintf("%s/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d&includeAdjustedClose=true",
-		c.ChartBase, url.PathEscape(symbol), from.Unix(), time.Now().Add(24*time.Hour).Unix())
-	body, err := c.get(u)
+	path := fmt.Sprintf("/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d&includeAdjustedClose=true",
+		url.PathEscape(symbol), from.Unix(), time.Now().Add(24*time.Hour).Unix())
+	body, err := c.yahooGet(c.ChartBase, path)
 	if err != nil {
 		return nil, err
 	}
@@ -91,9 +119,8 @@ func (c *Client) fetchYahoo(symbol string, from time.Time) (*Series, error) {
 // Yahoo Finance chart API. It returns ErrNotCovered when Yahoo serves no
 // intraday result for the symbol.
 func (c *Client) fetchYahooIntraday(symbol string) (*IntradaySeries, error) {
-	u := fmt.Sprintf("%s/v8/finance/chart/%s?interval=5m&range=1d",
-		c.ChartBase, url.PathEscape(symbol))
-	body, err := c.get(u)
+	path := fmt.Sprintf("/v8/finance/chart/%s?interval=5m&range=1d", url.PathEscape(symbol))
+	body, err := c.yahooGet(c.ChartBase, path)
 	if err != nil {
 		return nil, err
 	}
@@ -160,9 +187,9 @@ type searchQuote struct {
 // search queries the Yahoo Finance search API and returns every candidate
 // symbol matching the query (typically an ISIN).
 func (c *Client) search(query string) ([]searchQuote, error) {
-	u := fmt.Sprintf("%s/v1/finance/search?q=%s&quotesCount=10&newsCount=0&listsCount=0",
-		c.SearchBase, url.QueryEscape(query))
-	body, err := c.get(u)
+	path := fmt.Sprintf("/v1/finance/search?q=%s&quotesCount=10&newsCount=0&listsCount=0",
+		url.QueryEscape(query))
+	body, err := c.yahooGet(c.SearchBase, path)
 	if err != nil {
 		return nil, err
 	}
