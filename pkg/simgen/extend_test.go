@@ -50,6 +50,24 @@ func TestExtendCLFWithBundledWTI(t *testing.T) {
 	}
 }
 
+// The intermediate-treasury leg (VFITX, 1991) is extended by the bundled
+// constant-maturity Treasury total-return reconstruction (~1953).
+func TestExtendVFITXWithBundledTreasury(t *testing.T) {
+	vfitx := atSeries("VFITX", 100, 50, 120) // recent fund quotes only
+	f := extend(WithRefData(datasets.Refdata(), fakeFetcher{"VFITX": vfitx}))
+
+	got, err := f.Fetch("VFITX", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := time.Date(1960, 1, 1, 0, 0, 0, 0, time.UTC); !got.First().Date.Before(want) {
+		t.Errorf("extended treasury starts %s, want the 1950s CMT reconstruction", got.First().Date.Format("2006-01"))
+	}
+	if got.SimulatedBefore.IsZero() {
+		t.Error("expected SimulatedBefore after splicing TREASURY-INT-USD")
+	}
+}
+
 // Without a fetchable daily quote, xauusdBuild returns the bundled monthly fix
 // on its own rather than failing.
 func TestXAUUSDBuildFallsBackToBundledLBMA(t *testing.T) {
