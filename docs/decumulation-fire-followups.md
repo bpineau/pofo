@@ -366,9 +366,15 @@ and on the currency conversion and fetch performance a EUR investor needs.
 - **Cache expiry**: resolved by analysis, see the "Cache expiry" item under the
   reorganised Open/Done lists above (Yahoo retro-adjusts, so a full refresh is
   correct; `-cache-age` already tunes the cadence).
-- **Sandbox note**: market-data providers are unreachable from the Claude Code
-  sandbox (Yahoo 429, Stooq PoW); FRED is reachable but flaky. Regeneration and
-  timing must be validated on Ben's machine.
+- **Sandbox reachability (verified 2026-07-01, in-session):** Yahoo IS reachable
+  from the Claude Code sandbox and fetch works — don't assume otherwise, TEST it.
+  Verified this session: `./pofo -assets AAPL` and `URTHSIM` fetch live, and
+  `./pofo -gen-simdata URTH IE00B4L5Y983` regenerates and validates end-to-end
+  (sim CAGR 11.42% vs real URTH 11.73%). So reports, `-fire`, and `make simdata`
+  all run here. Only FRED is flaky (the deep French-CPI extension can time out;
+  it falls back to Eurostat 1996 gracefully, non-fatal). Stooq is PoW-gated but
+  unused. If Yahoo ever 429s, the client falls back query1↔query2 (yahoo.go);
+  check BOTH hosts before concluding it's blocked.
 
 **Handover state (2026-07-01):** all the above is committed and pushed; the
 embedded simdata is current with the refdata/recipes (regenerated after each
