@@ -25,6 +25,7 @@ type PortfolioSection struct {
 	Subtitle string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG template.HTML
 	Assets   []AssetRow
+	Notes    []string // informational lines (e.g. optimizer choices)
 	Warnings []string
 }
 
@@ -75,6 +76,7 @@ th { background: #f5f5f5; font-weight: 600; }
 td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
 td.best { background: #c9f2c9; font-weight: 600; }
 p.warn { color: #9a6700; font-size: .85rem; margin: .25rem 0; }
+p.note { color: #57606a; font-size: .85rem; margin: .25rem 0; }
 details.pf { margin-top: 1.4rem; border-bottom: 1px solid #ddd; padding-bottom: .4rem; }
 details.pf > summary { cursor: pointer; padding: .3rem 0; list-style-position: outside; }
 details.pf > summary:hover { color: #000; }
@@ -123,6 +125,9 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 {{- end}}
 </tbody>
 </table>
+{{- range .Notes}}
+<p class="note">{{.}}</p>
+{{- end}}
 {{- range .Warnings}}
 <p class="warn">⚠ {{.}}</p>
 {{- end}}
