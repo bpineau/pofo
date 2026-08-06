@@ -1,30 +1,30 @@
-# Makefile de portfodor — `make help` pour la liste des cibles.
+# portfodor Makefile — `make help` for the list of targets.
 
 GO        ?= go
 BINARIES  := portfodor
 PKGS      := ./...
-# staticcheck local s'il existe, sinon version épinglée via `go run`.
+# Local staticcheck if available, otherwise a pinned version via `go run`.
 STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2025.1")
 
 .DEFAULT_GOAL := build
 
 .PHONY: build
-build: ## Compile le binaire ./portfodor (datasets/ embarqués)
+build: ## Build the ./portfodor binary (datasets/ embedded)
 	$(GO) build -o portfodor ./cmd/portfodor
 
 .PHONY: fmt
-fmt: ## Reformate tout le code (gofmt -w)
+fmt: ## Reformat all the code (gofmt -w)
 	gofmt -w .
 
 .PHONY: fmt-check
-fmt-check: ## Échoue si du code n'est pas au format gofmt
+fmt-check: ## Fail if any code is not gofmt-formatted
 	@out="$$(gofmt -l .)"; \
 	if [ -n "$$out" ]; then \
-		echo "fichiers non formatés:"; echo "$$out"; exit 1; \
+		echo "unformatted files:"; echo "$$out"; exit 1; \
 	fi
 
 .PHONY: vet
-vet: ## go vet sur tous les paquets
+vet: ## go vet on all packages
 	$(GO) vet $(PKGS)
 
 .PHONY: lint
@@ -32,38 +32,38 @@ lint: vet ## vet + staticcheck
 	$(STATICCHECK) $(PKGS)
 
 .PHONY: test
-test: ## Tests unitaires + exemples (hors réseau)
+test: ## Unit tests + examples (no network)
 	$(GO) test $(PKGS)
 
 .PHONY: golden
-golden: ## Tests étalon (calculs vs références externes)
+golden: ## Golden tests (computations vs external references)
 	$(GO) test -v ./datasets/golden/
 
 .PHONY: cover
-cover: ## Tests avec couverture
+cover: ## Tests with coverage
 	$(GO) test -cover $(PKGS)
 
 .PHONY: check
-check: fmt-check lint test ## Tout: format, lint, tests (cible CI)
+check: fmt-check lint test ## Everything: format, lint, tests (CI target)
 
 .PHONY: warmup
-warmup: build ## Précharge le cache (cotations + frais) du catalogue
+warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 	./portfodor -warmup
 
 .PHONY: simdata
-simdata: build ## (Re)génère datasets/simdata/ puis ré-embarque dans le binaire
+simdata: build ## (Re)generate datasets/simdata/ then re-embed it into the binary
 	./portfodor -gen-simdata
 	$(GO) build -o portfodor ./cmd/portfodor
 
 .PHONY: demo
-demo: build ## Rapport de démonstration sur les portefeuilles d'exemple
+demo: build ## Demo report on the example portfolios
 	./portfodor examples/*.txt
 
 .PHONY: clean
-clean: ## Supprime les binaires (pas data/ ni datasets/)
+clean: ## Remove the binaries (not data/ nor datasets/)
 	rm -f $(BINARIES)
 
 .PHONY: help
-help: ## Affiche cette aide
+help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*## ' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*## "}; {printf "  \033[36m%-10s\033[0m %s\n", $$1, $$2}'

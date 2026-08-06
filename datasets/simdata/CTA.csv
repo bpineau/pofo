@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: CTA
 # name: Simplify CTA — SG Trend Index
-# method: réf. SG-TREND (indice officiel, 2000→), réel CTA greffé depuis 2022
-# validation: corr=0.535 (hebdo 0.544) beta=0.81 TE=14.2%/an CAGR sim 4.52% vs réel 9.50% (overlap 1066 j de 2022-03-08 à 2026-06-08) vs CTA
+# method: ref. SG-TREND (official index, 2000→), real CTA grafted from 2022
+# validation: corr=0.535 (weekly 0.544) beta=0.81 TE=14.2%/yr CAGR sim 4.52% vs real 9.50% (overlap 1066 d from 2022-03-08 to 2026-06-08) vs CTA
 # generated: 2026-06-12
 date,close
 2000-01-01,5.561082

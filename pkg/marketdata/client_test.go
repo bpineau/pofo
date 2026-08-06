@@ -17,7 +17,7 @@ func chartJSON(symbol string, days []time.Time, closes []float64) string {
 			ts += ","
 			cl += ","
 		}
-		// 14:30 UTC, comme une clôture américaine.
+		// 14:30 UTC, like a US close.
 		ts += fmt.Sprint(days[i].Add(14*time.Hour + 30*time.Minute).Unix())
 		cl += fmt.Sprint(closes[i])
 	}
@@ -69,29 +69,29 @@ func TestHistoryFetchParseAndCache(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Name != "Test Fund VOO" || s.Currency != "USD" || len(s.Points) != 3 {
-		t.Fatalf("série mal lue: %+v", s)
+		t.Fatalf("series misread: %+v", s)
 	}
 	if !s.Points[0].Date.Equal(days[0]) {
-		t.Errorf("date non normalisée à minuit UTC: %v", s.Points[0].Date)
+		t.Errorf("date not normalized to midnight UTC: %v", s.Points[0].Date)
 	}
 	if s.Points[2].Close != 99 {
-		t.Errorf("clôture: %v", s.Points[2].Close)
+		t.Errorf("close: %v", s.Points[2].Close)
 	}
 
-	// Un second client (sans mémo) pointant vers un serveur mort doit servir
-	// la même série depuis le cache disque, sans aucune requête réseau.
+	// A second client (without the memo) pointing at a dead server must
+	// serve the same series from the disk cache, with no network request.
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	s2, err := c2.History("VOO", from)
 	if err != nil {
-		t.Fatalf("le cache aurait dû répondre: %v", err)
+		t.Fatalf("the cache should have answered: %v", err)
 	}
 	if len(s2.Points) != 3 || s2.Points[1].Close != 101.5 {
-		t.Fatalf("cache corrompu: %+v", s2.Points)
+		t.Fatalf("corrupted cache: %+v", s2.Points)
 	}
 	if requests != 1 {
-		t.Errorf("1 seule requête attendue, comptées: %d", requests)
+		t.Errorf("expected exactly 1 request, counted: %d", requests)
 	}
 }
 
@@ -111,7 +111,7 @@ func TestHistoryCacheExpiry(t *testing.T) {
 	if _, err := c.History("SPY", from); err != nil {
 		t.Fatal(err)
 	}
-	// Avec MaxAge négatif, le cache est toujours périmé: nouvelle requête.
+	// With a negative MaxAge the cache is always stale: a new request.
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	c2.MaxAge = -time.Second
@@ -119,7 +119,7 @@ func TestHistoryCacheExpiry(t *testing.T) {
 		t.Fatal(err)
 	}
 	if requests != 2 {
-		t.Errorf("2 requêtes attendues, comptées: %d", requests)
+		t.Errorf("expected 2 requests, counted: %d", requests)
 	}
 }
 
@@ -146,31 +146,31 @@ func TestHistoryStaleCacheFallback(t *testing.T) {
 	if _, err := c.History("SPY", from); err != nil {
 		t.Fatal(err)
 	}
-	// Cache périmé + refresh en échec: la donnée périmée doit être servie
-	// avec un avertissement, jamais perdue.
+	// Stale cache + failed refresh: the stale data must be served with a
+	// warning, never lost.
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	c2.MaxAge = -time.Second
 	warned := false
 	c2.Logf = func(format string, args ...any) {
-		if strings.Contains(fmt.Sprintf(format, args...), "rafraîchissement de SPY impossible") {
+		if strings.Contains(fmt.Sprintf(format, args...), "refreshing SPY failed") {
 			warned = true
 		}
 	}
 	s, err := c2.History("SPY", from)
 	if err != nil {
-		t.Fatalf("le cache périmé aurait dû être servi: %v", err)
+		t.Fatalf("the stale cache should have been served: %v", err)
 	}
 	if len(s.Points) != 3 || s.Points[2].Close != 12 {
-		t.Fatalf("données périmées altérées: %+v", s.Points)
+		t.Fatalf("stale data altered: %+v", s.Points)
 	}
 	if !warned {
-		t.Error("un avertissement stderr était attendu")
+		t.Error("a stderr warning was expected")
 	}
 }
 
 func TestFetchISINViaYahoo(t *testing.T) {
-	// 100 points: assez profond pour que la résolution soit jugée fiable.
+	// 100 points: deep enough for the resolution to be deemed reliable.
 	days := testDays(100)
 	closes := make([]float64, len(days))
 	for i := range closes {
@@ -181,7 +181,7 @@ func TestFetchISINViaYahoo(t *testing.T) {
 	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
 		searches++
 		if q := r.URL.Query().Get("q"); q != "FR0000120271" {
-			t.Errorf("requête de recherche inattendue: %q", q)
+			t.Errorf("unexpected search query: %q", q)
 		}
 		fmt.Fprint(w, `{"quotes":[{"symbol":"IWDA.AS","longname":"iShares Core MSCI World UCITS ETF","quoteType":"ETF"}]}`)
 	})
@@ -197,18 +197,18 @@ func TestFetchISINViaYahoo(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "IWDA.AS" || s.Source != "yahoo" || len(s.Points) != 100 {
-		t.Fatalf("série mal résolue: %+v", s)
+		t.Fatalf("series resolved incorrectly: %+v", s)
 	}
-	// Résolution et historique sont en cache disque: un nouveau client
-	// pointant vers un serveur mort doit fonctionner sans réseau.
+	// Resolution and history are cached on disk: a new client pointing at
+	// a dead server must work without the network.
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	if s2, err := c2.Fetch("FR0000120271", from); err != nil || s2.Symbol != "IWDA.AS" {
-		t.Errorf("résolution depuis le cache: %+v, %v", s2, err)
+		t.Errorf("resolution from the cache: %+v, %v", s2, err)
 	}
 	if searches != 1 {
-		t.Errorf("1 seule recherche attendue, comptées: %d", searches)
+		t.Errorf("expected exactly 1 search, counted: %d", searches)
 	}
 }
 
@@ -220,19 +220,19 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 		ftCloses = append(ftCloses, fmt.Sprintf("%g", 10.5+float64(i)))
 	}
 	mux := http.NewServeMux()
-	// Yahoo ne connaît pas ce fonds.
+	// Yahoo does not know this fund.
 	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `{"quotes":[]}`)
 	})
 	mux.HandleFunc("/data/searchapi/searchsecurities", func(w http.ResponseWriter, r *http.Request) {
 		if q := r.URL.Query().Get("query"); q != "DE0007164600" {
-			t.Errorf("recherche FT inattendue: %q", q)
+			t.Errorf("unexpected FT search: %q", q)
 		}
 		fmt.Fprint(w, `{"data":{"security":[{"name":"BGF World Technology A2","symbol":"DE0007164600:EUR","xid":"28295854","isPrimary":true}]}}`)
 	})
 	mux.HandleFunc("/data/chartapi/series", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
-			t.Errorf("méthode FT inattendue: %s", r.Method)
+			t.Errorf("unexpected FT method: %s", r.Method)
 		}
 		var req struct {
 			Elements []struct {
@@ -240,7 +240,7 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 			} `json:"elements"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil || len(req.Elements) != 1 || req.Elements[0].Symbol != "28295854" {
-			t.Errorf("corps de requête FT inattendu: %+v (%v)", req, err)
+			t.Errorf("unexpected FT request body: %+v (%v)", req, err)
 		}
 		fmt.Fprintf(w, `{"Dates":[%s],"Elements":[{"Currency":"EUR","ComponentSeries":[{"Type":"Open","Values":[%s]},{"Type":"Close","Values":[%s]}]}]}`,
 			strings.Join(ftDates, ","), strings.Join(ftCloses, ","), strings.Join(ftCloses, ","))
@@ -254,24 +254,24 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "DE0007164600" || s.Source != "ft" || s.Currency != "EUR" || s.Name != "BGF World Technology A2" {
-		t.Fatalf("série FT mal lue: %+v", s)
+		t.Fatalf("FT series misread: %+v", s)
 	}
 	if len(s.Points) != 80 || s.Points[0].Close != 10.5 || !s.Points[0].Date.Equal(days[0]) {
-		t.Fatalf("points FT: %d points, premier %+v", len(s.Points), s.Points[0])
+		t.Fatalf("FT points: %d points, first %+v", len(s.Points), s.Points[0])
 	}
-	// La résolution FT est en cache: plus aucune requête nécessaire.
+	// The FT resolution is cached: no further requests needed.
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	if s2, err := c2.Fetch("DE0007164600", from); err != nil || s2.Source != "ft" || len(s2.Points) != 80 {
-		t.Errorf("rechargement FT depuis le cache: %+v, %v", s2, err)
+		t.Errorf("FT reload from the cache: %+v, %v", s2, err)
 	}
 }
 
 func TestFetchISINPicksDeepestCandidate(t *testing.T) {
-	// Le premier candidat (cotation de bourse moribonde) n'a qu'un point;
-	// le second (entrée « fonds » Morningstar) a un historique profond et
-	// doit être retenu même s'il arrive après dans le classement initial.
+	// The first candidate (a moribund exchange listing) has only one point;
+	// the second (a Morningstar "fund" entry) has a deep history and must
+	// be picked even though it comes later in the initial ranking.
 	deep := testDays(90)
 	deepCloses := make([]float64, len(deep))
 	for i := range deepCloses {
@@ -297,13 +297,13 @@ func TestFetchISINPicksDeepestCandidate(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "0P0000VHO6.F" || len(s.Points) != 90 {
-		t.Fatalf("le candidat le plus profond devait gagner: %s (%d points)", s.Symbol, len(s.Points))
+		t.Fatalf("the deepest candidate should have won: %s (%d points)", s.Symbol, len(s.Points))
 	}
 }
 
 func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
-	// Yahoo et FT ne trouvent rien par ISIN; Boursorama fournit l'identifiant
-	// Morningstar, et l'API timeseries Morningstar porte l'historique.
+	// Yahoo and FT find nothing by ISIN; Boursorama supplies the Morningstar
+	// identifier, and the Morningstar timeseries API carries the history.
 	deep := testDays(70)
 	var rows []string
 	for i, d := range deep {
@@ -318,13 +318,13 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 	})
 	mux.HandleFunc("/recherche/ajax", func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("X-Requested-With") != "XMLHttpRequest" {
-			t.Error("en-tête XMLHttpRequest attendu")
+			t.Error("expected XMLHttpRequest header")
 		}
 		fmt.Fprint(w, `<a href="/bourse/opcvm/cours/0P0000VHO6/" class="search__list-link"><span class="search__item-title">BGF World Healthscience A2 </span></a>`)
 	})
 	mux.HandleFunc("/api/rest.svc/timeseries_price/"+morningstarToken, func(w http.ResponseWriter, r *http.Request) {
 		if id := r.URL.Query().Get("id"); id != "0P0000VHO6" {
-			t.Errorf("identifiant morningstar inattendu: %q", id)
+			t.Errorf("unexpected morningstar identifier: %q", id)
 		}
 		fmt.Fprintf(w, "[%s]", strings.Join(rows, ","))
 	})
@@ -337,27 +337,27 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "US0378331005" || s.Source != "morningstar" || len(s.Points) != 70 {
-		t.Fatalf("pont Boursorama→Morningstar: %+v (%d points)", s, len(s.Points))
+		t.Fatalf("Boursorama→Morningstar bridge: %+v (%d points)", s, len(s.Points))
 	}
 	if s.Name != "BGF World Healthscience A2" {
-		t.Errorf("nom extrait du HTML: %q", s.Name)
+		t.Errorf("name extracted from the HTML: %q", s.Name)
 	}
 	if !s.Points[0].Date.Equal(deep[0]) || s.Points[0].Close != 8 {
-		t.Errorf("premier point: %+v", s.Points[0])
+		t.Errorf("first point: %+v", s.Points[0])
 	}
-	// Résolution et historique en cache: rejouable sans réseau.
+	// Resolution and history cached: replayable without the network.
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	if s2, err := c2.Fetch("US0378331005", from); err != nil || s2.Source != "morningstar" || len(s2.Points) != 70 {
-		t.Errorf("rechargement Morningstar depuis le cache: %v", err)
+		t.Errorf("Morningstar reload from the cache: %v", err)
 	}
 }
 
 func TestFetchTickerFallsBackToSearch(t *testing.T) {
-	// NTSG n'existe pas tel quel sur Yahoo (404): la résolution par recherche
-	// doit trouver la cotation européenne du même ticker (NTSG.MI), en la
-	// préférant à un fonds homonyme plus profond mais d'un autre ticker.
+	// NTSG does not exist as such on Yahoo (404): the search-based resolution
+	// must find the European listing of the same ticker (NTSG.MI), preferring
+	// it over a deeper namesake fund under a different ticker.
 	days := testDays(100)
 	closes := make([]float64, len(days))
 	for i := range closes {
@@ -371,7 +371,7 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
 		searches++
 		fmt.Fprint(w, `{"quotes":[
-			{"symbol":"OTHER.F","longname":"Fonds sans rapport","quoteType":"MUTUALFUND"},
+			{"symbol":"OTHER.F","longname":"Unrelated fund","quoteType":"MUTUALFUND"},
 			{"symbol":"QQZZ.MI","longname":"WisdomTree Global Efficient Core UCITS ETF","quoteType":"ETF"}]}`)
 	})
 	mux.HandleFunc("/v8/finance/chart/QQZZ.MI", func(w http.ResponseWriter, r *http.Request) {
@@ -386,17 +386,17 @@ func TestFetchTickerFallsBackToSearch(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "QQZZ.MI" || len(s.Points) != 100 {
-		t.Fatalf("résolution du ticker: %s (%d points)", s.Symbol, len(s.Points))
+		t.Fatalf("ticker resolution: %s (%d points)", s.Symbol, len(s.Points))
 	}
-	// La résolution est en cache: rejouable sans réseau.
+	// The resolution is cached: replayable without the network.
 	srv.Close()
 	c2 := NewClient(dir)
 	stubAllBases(c2, srv.URL)
 	if s2, err := c2.Fetch("QQZZ", from); err != nil || s2.Symbol != "QQZZ.MI" {
-		t.Errorf("résolution du ticker depuis le cache: %+v, %v", s2, err)
+		t.Errorf("ticker resolution from the cache: %+v, %v", s2, err)
 	}
 	if searches != 1 {
-		t.Errorf("1 seule recherche attendue, comptées: %d", searches)
+		t.Errorf("expected exactly 1 search, counted: %d", searches)
 	}
 }
 
@@ -410,7 +410,7 @@ func TestFetchTickerUppercases(t *testing.T) {
 	defer srv.Close()
 	s, err := c.Fetch("voo", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
 	if err != nil || s.Symbol != "VOO" {
-		t.Errorf("ticker en minuscules: %+v, %v", s, err)
+		t.Errorf("lowercase ticker: %+v, %v", s, err)
 	}
 }
 
@@ -421,7 +421,7 @@ func TestHistoryFallsBackToStooq(t *testing.T) {
 	})
 	mux.HandleFunc("/q/d/l/", func(w http.ResponseWriter, r *http.Request) {
 		if s := r.URL.Query().Get("s"); s != "xyz.us" {
-			t.Errorf("symbole stooq inattendu: %q", s)
+			t.Errorf("unexpected stooq symbol: %q", s)
 		}
 		fmt.Fprint(w, "Date,Open,High,Low,Close,Volume\n2020-01-06,1,1,1,42.5,100\n2020-01-07,1,1,1,43,100\n")
 	})
@@ -434,13 +434,13 @@ func TestHistoryFallsBackToStooq(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Source != "stooq" || len(s.Points) != 2 || s.Points[0].Close != 42.5 {
-		t.Fatalf("fallback stooq: %+v", s)
+		t.Fatalf("stooq fallback: %+v", s)
 	}
 }
 
 func TestFetchTickerPrefersFundOverNamesakeStock(t *testing.T) {
-	// Une action homonyme à l'historique profond (Saipem sous SPEA.MU) ne
-	// doit pas voler la résolution d'un jeune ETF du même ticker (SPEA.PA).
+	// A namesake stock with a deep history (Saipem under SPEA.MU) must not
+	// steal the resolution of a young ETF with the same ticker (SPEA.PA).
 	deepStock := testDays(500)
 	stockCloses := make([]float64, len(deepStock))
 	for i := range stockCloses {
@@ -474,6 +474,6 @@ func TestFetchTickerPrefersFundOverNamesakeStock(t *testing.T) {
 		t.Fatal(err)
 	}
 	if s.Symbol != "SPEA.PA" {
-		t.Fatalf("l'ETF du même ticker devait gagner, obtenu %s (%s)", s.Symbol, s.Name)
+		t.Fatalf("the same-ticker ETF should have won, got %s (%s)", s.Symbol, s.Name)
 	}
 }

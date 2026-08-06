@@ -13,7 +13,7 @@ import (
 
 // ErrUnfaithful marks reconstructions whose fit against reality is too poor
 // to be worth storing; callers should treat it as a documented skip.
-var ErrUnfaithful = errors.New("réplication trop infidèle")
+var ErrUnfaithful = errors.New("replication too unfaithful")
 
 // Fetcher provides price histories; *marketdata.Client satisfies it.
 type Fetcher interface {
@@ -54,10 +54,10 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 	for _, id := range ids {
 		s, err := f.Fetch(id, from)
 		if err != nil {
-			return nil, fmt.Errorf("composant %s: %w", id, err)
+			return nil, fmt.Errorf("component %s: %w", id, err)
 		}
 		if len(s.Points) < 2 {
-			return nil, fmt.Errorf("composant %s: historique vide", id)
+			return nil, fmt.Errorf("component %s: empty history", id)
 		}
 		series[id] = s
 		if fd := s.Points[0].Date; fd.After(start) {
@@ -77,7 +77,7 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 	}
 	dates, levels := marketdata.Align(ordered, start, time.Time{})
 	if len(dates) < 2 {
-		return nil, fmt.Errorf("pas assez de dates communes")
+		return nil, fmt.Errorf("not enough common dates")
 	}
 
 	fr := &Frame{Dates: dates, Returns: make(map[string][]float64, len(uniqueIDs))}
@@ -123,10 +123,10 @@ func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float
 	cash := fr.Returns[cashID]
 	for _, l := range legs {
 		if _, ok := fr.Returns[l.ID]; !ok {
-			return nil, fmt.Errorf("composant %s absent du cadre", l.ID)
+			return nil, fmt.Errorf("component %s missing from frame", l.ID)
 		}
 		if l.Excess && cash == nil {
-			return nil, fmt.Errorf("cashID requis pour la jambe excess %s", l.ID)
+			return nil, fmt.Errorf("cashID required for excess leg %s", l.ID)
 		}
 	}
 	values := make([]float64, len(fr.Dates))
@@ -160,7 +160,7 @@ type Validation struct {
 }
 
 func (v Validation) String() string {
-	return fmt.Sprintf("corr=%.3f (hebdo %.3f) beta=%.2f TE=%.1f%%/an CAGR sim %.2f%% vs réel %.2f%% (overlap %d j de %s à %s)",
+	return fmt.Sprintf("corr=%.3f (weekly %.3f) beta=%.2f TE=%.1f%%/yr CAGR sim %.2f%% vs real %.2f%% (overlap %d d from %s to %s)",
 		v.Corr, v.WeeklyCorr, v.Beta, v.TrackingErr*100, v.CAGRSim*100, v.CAGRReal*100,
 		v.Overlap, v.Start.Format("2006-01-02"), v.End.Format("2006-01-02"))
 }
@@ -181,7 +181,7 @@ func Validate(sim, real *marketdata.Series) (Validation, error) {
 		}
 	}
 	if len(sv) < 60 {
-		return Validation{}, fmt.Errorf("overlap insuffisant (%d points communs)", len(sv))
+		return Validation{}, fmt.Errorf("insufficient overlap (%d common points)", len(sv))
 	}
 	var v Validation
 	v.Overlap = len(sv) - 1

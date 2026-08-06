@@ -1,8 +1,8 @@
 # portfodor refdata v1 (format simdata)
 # id: SG-CTA
 # name: SG CTA Index
-# method: indice officiel Société Générale (20 plus gros CTA), net de frais des fonds
-# source: serveur MCP « portfolio » (tiers), importé le 2026-06-12
+# method: official Société Générale index (20 largest CTAs), net of fund fees
+# source: third-party "portfolio" MCP server, imported on 2026-06-12
 date,close
 2000-01-01,100.000000
 2000-01-03,99.670000

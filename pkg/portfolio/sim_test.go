@@ -35,14 +35,14 @@ func TestSimulateStaggeredStartAndConstantPrices(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !sim.Dates[0].Equal(day(2)) {
-		t.Errorf("début attendu au jour 2, trouvé %v", sim.Dates[0])
+		t.Errorf("expected start on day 2, got %v", sim.Dates[0])
 	}
 	if last := sim.Dates[len(sim.Dates)-1]; !last.Equal(day(7)) {
-		t.Errorf("fin attendue au jour 7, trouvé %v", last)
+		t.Errorf("expected end on day 7, got %v", last)
 	}
 	for i, v := range sim.Values {
 		if math.Abs(v-100) > 1e-9 {
-			t.Errorf("prix constants: valeur[%d] = %v, attendu 100", i, v)
+			t.Errorf("constant prices: value[%d] = %v, want 100", i, v)
 		}
 	}
 }
@@ -77,13 +77,13 @@ func TestSimulateRebalancingTrimsWinner(t *testing.T) {
 	endReb := reb.Values[len(reb.Values)-1]
 	wantHold := 50 + 50*math.Pow(1.01, float64(n-1))
 	if math.Abs(endHold-wantHold) > 1e-6 {
-		t.Errorf("buy-and-hold: %v, attendu %v", endHold, wantHold)
+		t.Errorf("buy-and-hold: %v, want %v", endHold, wantHold)
 	}
 	if endReb >= endHold {
-		t.Errorf("le rebalancement devrait freiner B: rebalancé %v >= buy-and-hold %v", endReb, endHold)
+		t.Errorf("rebalancing should hold B back: rebalanced %v >= buy-and-hold %v", endReb, endHold)
 	}
 	if reb.Values[50] != hold.Values[50] {
-		t.Errorf("avant le premier rebalancement les deux doivent coïncider")
+		t.Errorf("before the first rebalancing both must coincide")
 	}
 }
 
@@ -93,6 +93,6 @@ func TestSimulateNoOverlap(t *testing.T) {
 		{Symbol: "B", Weight: 0.5, Series: constSeries("B", 10, 5, 10)},
 	}}
 	if _, err := Simulate(p, 90); err == nil {
-		t.Fatal("erreur attendue sans période commune")
+		t.Fatal("expected error without a common period")
 	}
 }

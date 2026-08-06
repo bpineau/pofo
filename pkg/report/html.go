@@ -11,8 +11,8 @@ type AssetRow struct {
 	ID       string
 	Symbol   string
 	Name     string
-	UCITS    string // "oui", "non" ou "?" si indéterminé
-	Fees     string // TER publié, ou — si inconnu
+	UCITS    string // "oui", "non" or "?" when undetermined
+	Fees     string // published TER, or — when unknown
 	Currency string
 	History  string
 	Note     string
@@ -56,7 +56,7 @@ type Page struct {
 }
 
 var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -84,17 +84,17 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 </head>
 <body>
 <h1>{{.Title}}</h1>
-<p class="meta">Généré le {{.GeneratedAt}} — base 100 au départ, rebalancement tous les {{.RebalanceDays}} jours.</p>
+<p class="meta">Generated on {{.GeneratedAt}} — base 100 at start, rebalanced every {{.RebalanceDays}} days.</p>
 {{if .CompareSVG}}
 <section>
-<h2>Comparaison — base 100 au {{.CommonStart}}</h2>
+<h2>Comparison — base 100 at {{.CommonStart}}</h2>
 {{.CompareSVG}}
 </section>
 {{end}}
 <section>
-<h2>Statistiques — période commune {{.CommonStart}} → {{.CommonEnd}}</h2>
+<h2>Statistics — common period {{.CommonStart}} → {{.CommonEnd}}</h2>
 <table>
-<thead><tr><th>Métrique</th>{{range .PortfolioNames}}<th class="num">{{.}}</th>{{end}}</tr></thead>
+<thead><tr><th>Metric</th>{{range .PortfolioNames}}<th class="num">{{.}}</th>{{end}}</tr></thead>
 <tbody>
 {{- range .StatRows}}
 <tr><td{{if .Hint}} title="{{.Hint}}"{{end}}>{{.Label}}</td>{{range .Cells}}<td class="num{{if .Best}} best{{end}}">{{.Text}}</td>{{end}}</tr>
@@ -112,7 +112,7 @@ ul.notes { color: #666; font-size: .8rem; line-height: 1.5; }
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
 {{.ChartSVG}}
 <table>
-<thead><tr><th class="num">Poids</th><th>Identifiant</th><th>Symbole</th><th>Nom</th><th>UCITS</th><th class="num">Frais</th><th>Devise</th><th>Historique</th><th>Note</th></tr></thead>
+<thead><tr><th class="num">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>UCITS</th><th class="num">Fees</th><th>Currency</th><th>History</th><th>Note</th></tr></thead>
 <tbody>
 {{- range .Assets}}
 <tr><td class="num">{{.Weight}}</td><td>{{.ID}}</td><td>{{.Symbol}}</td><td>{{.Name}}</td><td>{{.UCITS}}</td><td class="num">{{.Fees}}</td><td>{{.Currency}}</td><td>{{.History}}</td><td>{{.Note}}</td></tr>

@@ -1,23 +1,23 @@
-// Package simgen reconstruit le passé manquant des actifs complexes (fonds
-// 90/60, managed futures, …) et valide chaque reconstruction contre les
-// cotations réelles. Les résultats sont stockés en fichiers « simdata »
-// permanents que portfodor recolle devant les historiques réels.
+// Package simgen rebuilds the missing past of complex assets (90/60 funds,
+// managed futures, …) and validates each reconstruction against real
+// quotes. Results are stored as permanent "simdata" files that portfodor
+// splices in front of the real histories.
 //
-// # Boîte à outils
+// # Toolbox
 //
-//   - BuildFrame aligne les rendements quotidiens de plusieurs composants
-//     (les séries de taux comme ^IRX sont converties en accrual) ;
-//   - Composite compose un indice base 100 à poids constants, jambes
-//     « excess » (futures) et frais annuels compris ;
-//   - TSMOM est un moteur time-series momentum paramétrable (marchés,
-//     lookback, vol cible, levier) pour répliquer des stratégies trend ;
-//   - FitBackcast régresse un actif sur des facteurs et rejoue le modèle
-//     sur tout l'historique (refusé sous un R² plancher : ErrUnfaithful) ;
-//   - WithRefData sert des séries de référence locales (datasets/refdata/)
-//     avant
-//     toute source réseau ; Validate mesure corrélation quotidienne et
-//     hebdomadaire, beta, tracking error et CAGR contre le réel ;
-//   - les recettes livrées (All, Find) assemblent ces briques pour NTSX,
-//     NTSG, URTH, IWDA, ZROZ, IEF, TLT, XAUUSD, DBMF, KMLM, CTA et le
-//     fonds Winton Trend-Equity.
+//   - BuildFrame aligns the daily returns of several components (rate
+//     series such as ^IRX are converted to accrual);
+//   - Composite builds a base-100 index from constant weights, including
+//     "excess" legs (futures) and annual fees;
+//   - TSMOM is a configurable time-series momentum engine (markets,
+//     lookback, vol target, leverage) for replicating trend strategies;
+//   - FitBackcast regresses an asset on factors and replays the model
+//     over the whole history (rejected under an R² floor: ErrUnfaithful);
+//   - WithRefData serves local reference series (datasets/refdata/)
+//     before
+//     any network source; Validate measures daily and weekly correlation,
+//     beta, tracking error and CAGR against the real series;
+//   - the bundled recipes (All, Find) assemble these building blocks for
+//     NTSX, NTSG, URTH, IWDA, ZROZ, IEF, TLT, XAUUSD, DBMF, KMLM, CTA and
+//     the Winton Trend-Equity fund.
 package simgen

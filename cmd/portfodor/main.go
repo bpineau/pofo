@@ -41,10 +41,10 @@ type options struct {
 	out        string
 	dataDir    string
 	simdataDir string
-	simdata    iofs.FS // source des historiques simulés (embarqué ou -simdata)
+	simdata    iofs.FS // source of the simulated histories (embedded or -simdata)
 	rebalance  int
 	start      time.Time
-	end        time.Time // zéro = jusqu'à aujourd'hui
+	end        time.Time // zero = up to today
 	benchmark  string
 	noOpen     bool
 	noSim      bool
@@ -70,59 +70,59 @@ func run(argv []string) error {
 	fs := flag.NewFlagSet("portfodor", flag.ContinueOnError)
 	var opt options
 	var startStr string
-	fs.StringVar(&opt.out, "out", "", "fichier HTML de sortie (défaut: /tmp/portfodor-<horodatage>.html)")
-	fs.StringVar(&opt.dataDir, "data", defaultDataDir(), "répertoire de cache des cotations")
-	fs.StringVar(&opt.simdataDir, "simdata", "", "répertoire des historiques simulés (défaut: embarqués dans le binaire)")
-	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalancement tous les N jours calendaires (0 = jamais)")
-	fs.StringVar(&startStr, "start", "2006-01-01", "date de début souhaitée (AAAA-MM-JJ)")
+	fs.StringVar(&opt.out, "out", "", "output HTML file (default: /tmp/portfodor-<timestamp>.html)")
+	fs.StringVar(&opt.dataDir, "data", defaultDataDir(), "quote cache directory")
+	fs.StringVar(&opt.simdataDir, "simdata", "", "directory of simulated histories (default: embedded in the binary)")
+	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalance every N calendar days (0 = never)")
+	fs.StringVar(&startStr, "start", "2006-01-01", "desired start date (YYYY-MM-DD)")
 	var endStr string
-	fs.StringVar(&endStr, "end", "", "date de fin (AAAA-MM-JJ, défaut: dernière cotation disponible)")
-	fs.StringVar(&opt.benchmark, "benchmark", "^GSPC", "symbole de référence pour le Beta (vide = pas de Beta)")
-	fs.BoolVar(&opt.noOpen, "no-open", false, "ne pas ouvrir le rapport dans le navigateur")
-	fs.BoolVar(&opt.noSim, "no-simulate", false, "ignorer les suffixes SIM: données réelles uniquement")
-	fs.BoolVar(&opt.noFees, "no-fees", false, "ne pas récupérer les frais courants (TER) des actifs")
-	fs.BoolVar(&opt.cli, "cli", false, "affichage dans le terminal (courbes + tableau récapitulatif), sans HTML")
-	fs.IntVar(&opt.width, "width", 0, "largeur du graphe en mode -cli, en colonnes (défaut: $COLUMNS, sinon 100)")
-	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "retélécharger les cotations plus vieilles que cette durée")
-	warmup := fs.Bool("warmup", false, "précharger le cache pour le catalogue d'actifs intégré, puis s'arrêter")
-	genSimdata := fs.Bool("gen-simdata", false, "(re)générer les historiques simulés (recettes en arguments, défaut: toutes) puis s'arrêter; recompilez ensuite pour les ré-embarquer")
-	dry := fs.Bool("dry", false, "avec -gen-simdata: valider sans écrire")
-	refdataDir := fs.String("refdata", "", "répertoire des séries de référence pour -gen-simdata (défaut: embarquées)")
-	assetsList := fs.String("assets", "", "liste de tickers/ISIN séparés par des virgules, chacun comparé comme un portefeuille investi à 100 % dessus")
+	fs.StringVar(&endStr, "end", "", "end date (YYYY-MM-DD, default: last available quote)")
+	fs.StringVar(&opt.benchmark, "benchmark", "^GSPC", "reference symbol for Beta (empty = no Beta)")
+	fs.BoolVar(&opt.noOpen, "no-open", false, "do not open the report in the browser")
+	fs.BoolVar(&opt.noSim, "no-simulate", false, "ignore SIM suffixes: real data only")
+	fs.BoolVar(&opt.noFees, "no-fees", false, "do not fetch the assets' ongoing charges (TER)")
+	fs.BoolVar(&opt.cli, "cli", false, "render in the terminal (curves + summary table), no HTML")
+	fs.IntVar(&opt.width, "width", 0, "chart width in -cli mode, in columns (default: $COLUMNS, else 100)")
+	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "re-download quotes older than this duration")
+	warmup := fs.Bool("warmup", false, "pre-fetch the cache for the bundled asset catalog, then stop")
+	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
+	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
+	refdataDir := fs.String("refdata", "", "directory of reference series for -gen-simdata (default: embedded)")
+	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), `Usage: portfodor [options] portefeuille.txt [portefeuille2.txt …]
+		fmt.Fprintf(fs.Output(), `Usage: portfodor [options] portfolio.txt [portfolio2.txt …]
        portfodor [options] -assets VOO,IWDA,NTSG
 
-Sans fichier, -assets A,B,C compare chaque actif comme un portefeuille
-investi à 100 %% dessus (cumulable avec des fichiers).
+Without files, -assets A,B,C compares each asset as a portfolio
+100 %% invested in it (can be combined with files).
 
-Format des fichiers — une ligne par actif :
+File format — one line per asset:
 
-    <poids en %%> <identifiant> [frais en %%/an] [texte libre]
+    <weight in %%> <identifier> [fees in %%/yr] [free text]
 
-  - Tout ce qui suit un # est un commentaire ; lignes vides ignorées.
-  - Identifiant : ticker US (VOO), ticker européen de la liste embarquée
-    (IWDA, CW8, CSPX…), ISIN, ou alias du catalogue (GOLD, NTSG, BHMG…).
-  - Suffixe SIM (VOOSIM, DBMFSIM…) : étend l'historique avant la première
-    cotation réelle via datasets/simdata/ ou un proxy ; nu = réel seul.
-  - 3e colonne numérique optionnelle : TER de l'actif en %%/an (prime sur
-    la récupération automatique) ; non numérique = texte libre.
-  - Directives par portefeuille :
-        #meta rebalance:N    rebalancement tous les N jours (0 = jamais)
-        #meta extra-fees:X   frais d'enveloppe en %%/an, déduits de la
-                             performance (synonyme: envelope-fees)
-        #meta leverage:on    poids gardés tels qu'écrits: somme > 100 %%
-                             financée au taux cash (^IRX) + spread
-        #meta borrow-spread:X  spread d'emprunt en %%/an (défaut 1.0)
+  - Everything after a # is a comment; blank lines are ignored.
+  - Identifier: US ticker (VOO), European ticker from the bundled list
+    (IWDA, CW8, CSPX…), ISIN, or catalog alias (GOLD, NTSG, BHMG…).
+  - SIM suffix (VOOSIM, DBMFSIM…): extends the history before the first
+    real quote via datasets/simdata/ or a proxy; bare = real data only.
+  - Optional numeric 3rd column: the asset's TER in %%/yr (overrides
+    the automatic lookup); non-numeric = free text.
+  - Per-portfolio directives:
+        #meta rebalance:N    rebalance every N days (0 = never)
+        #meta extra-fees:X   envelope fees in %%/yr, deducted from the
+                             performance (synonym: envelope-fees)
+        #meta leverage:on    weights kept as written: sum > 100 %%
+                             financed at the cash rate (^IRX) + spread
+        #meta borrow-spread:X  borrowing spread in %%/yr (default 1.0)
 
-Exemple :
+Example:
     #meta rebalance:30
     #meta extra-fees:0.5
-    60   VTI           actions US
-    25,5 IE00B4L5Y983  # ISIN ; virgule décimale acceptée
-    14.5 GOLDSIM       or, historique étendu avant la 1re cotation
+    60   VTI           US equities
+    25,5 IE00B4L5Y983  # ISIN; decimal comma accepted
+    14.5 GOLDSIM       gold, history extended before the first quote
 
-Options :
+Options:
 `)
 		fs.PrintDefaults()
 	}
@@ -135,22 +135,37 @@ Options :
 	files := fs.Args()
 	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata {
 		fs.Usage()
-		return errors.New("aucun fichier de portefeuille ni option -assets")
+		return errors.New("no portfolio file and no -assets option")
 	}
 	start, err := time.ParseInLocation("2006-01-02", startStr, time.UTC)
 	if err != nil {
-		return fmt.Errorf("option -start invalide: %w", err)
+		return fmt.Errorf("invalid -start option: %w", err)
 	}
 	opt.start = start
 	if endStr != "" {
 		end, err := time.ParseInLocation("2006-01-02", endStr, time.UTC)
 		if err != nil {
-			return fmt.Errorf("option -end invalide: %w", err)
+			return fmt.Errorf("invalid -end option: %w", err)
 		}
 		if !end.After(opt.start) {
-			return errors.New("-end doit être postérieure à -start")
+			return errors.New("-end must be after -start")
 		}
 		opt.end = end
+	}
+
+	if opt.simdataDir != "" {
+		opt.simdata = os.DirFS(opt.simdataDir)
+	} else {
+		opt.simdata = datasets.Simdata()
+	}
+
+	// Generation mode consumes positional args as recipe ids, not files —
+	// dispatch before any portfolio parsing.
+	if *genSimdata {
+		genClient := marketdata.NewClient(opt.dataDir)
+		genClient.MaxAge = opt.cacheAge
+		genClient.Logf = log.Printf
+		return runGenSimdata(genClient, &opt, *refdataDir, fs.Args(), *dry)
 	}
 
 	// Parse every portfolio file, disambiguating duplicate names, then add
@@ -177,13 +192,7 @@ Options :
 		}
 	}
 	if len(specs) == 0 && !*warmup {
-		return errors.New("l'option -assets ne contient aucun identifiant")
-	}
-
-	if opt.simdataDir != "" {
-		opt.simdata = os.DirFS(opt.simdataDir)
-	} else {
-		opt.simdata = datasets.Simdata()
+		return errors.New("the -assets option contains no identifier")
 	}
 
 	client := marketdata.NewClient(opt.dataDir)
@@ -192,9 +201,6 @@ Options :
 
 	if *warmup {
 		return runWarmup(client, &opt)
-	}
-	if *genSimdata {
-		return runGenSimdata(client, &opt, *refdataDir, fs.Args(), *dry)
 	}
 
 	// Download every distinct asset once.
@@ -206,7 +212,7 @@ Options :
 			}
 			s, err := fetchAsset(client, h.ID, &opt)
 			if err != nil {
-				return fmt.Errorf("portefeuille %s, actif %q: %w", spec.Name, h.ID, err)
+				return fmt.Errorf("portfolio %s, asset %q: %w", spec.Name, h.ID, err)
 			}
 			seriesByID[h.ID] = s
 		}
@@ -217,7 +223,7 @@ Options :
 	if opt.benchmark != "" {
 		b, err := client.Fetch(opt.benchmark, opt.start)
 		if err != nil {
-			log.Printf("avertissement: benchmark %s indisponible (pas de Beta): %v", opt.benchmark, err)
+			log.Printf("warning: benchmark %s unavailable (no Beta): %v", opt.benchmark, err)
 		} else {
 			bench = b
 		}
@@ -232,13 +238,13 @@ Options :
 			return client.Fees(base)
 		}
 	}
-	// Le taux de financement (levier) n'est récupéré qu'au besoin.
+	// The financing rate (leverage) is only fetched when needed.
 	var cashRate *marketdata.Series
 	for _, spec := range specs {
 		if spec.Leverage {
 			cr, err := client.Fetch("^IRX", opt.start)
 			if err != nil {
-				log.Printf("avertissement: taux de financement ^IRX indisponible (%v) — levier financé à 0 %%", err)
+				log.Printf("warning: financing rate ^IRX unavailable (%v) — leverage financed at 0 %%", err)
 			} else {
 				cashRate = cr
 			}
@@ -253,7 +259,7 @@ Options :
 			p.Leverage = true
 			p.BorrowSpread = spec.BorrowSpread
 			if p.BorrowSpread < 0 {
-				p.BorrowSpread = 1.0 // défaut: cash + 1 %/an
+				p.BorrowSpread = 1.0 // default: cash + 1 %/yr
 			}
 			p.Cash = cashRate
 		}
@@ -263,13 +269,13 @@ Options :
 		}
 		sim, err := portfolio.Simulate(p, days)
 		if err != nil {
-			return fmt.Errorf("portefeuille %s: %w", spec.Name, err)
+			return fmt.Errorf("portfolio %s: %w", spec.Name, err)
 		}
 		if sim.Ruined {
-			log.Printf("avertissement: portefeuille %s ruiné le %s (levier) — série tronquée",
+			log.Printf("warning: portfolio %s wiped out on %s (leverage) — series truncated",
 				spec.Name, sim.Dates[len(sim.Dates)-1].Format("2006-01-02"))
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"capital anéanti le %s : l'exposition à levier a épuisé la valeur nette ; la série s'arrête là",
+				"capital wiped out on %s: the leveraged exposure exhausted the net value; the series stops there",
 				sim.Dates[len(sim.Dates)-1].Format("2006-01-02")))
 		}
 		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(i), rebalanceDays: days})
@@ -288,7 +294,7 @@ Options :
 		}
 	}
 	if !commonStart.Before(commonEnd) {
-		return errors.New("pas de période commune entre les portefeuilles")
+		return errors.New("no common period across the portfolios")
 	}
 	var benchDates []time.Time
 	var benchValues []float64
@@ -298,13 +304,13 @@ Options :
 	for _, r := range results {
 		i, j := window(r.sim.Dates, commonStart, commonEnd)
 		if j-i < 2 {
-			return fmt.Errorf("portefeuille %s: trop peu de points sur la période commune", r.p.Name)
+			return fmt.Errorf("portfolio %s: too few points in the common window", r.p.Name)
 		}
 		r.winDates = r.sim.Dates[i:j]
 		r.winValues = rebase(r.sim.Values[i:j])
 		st, err := metrics.Compute(r.winDates, r.winValues)
 		if err != nil {
-			return fmt.Errorf("portefeuille %s: %w", r.p.Name, err)
+			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
 		if bench != nil {
 			if beta, ok := metrics.Beta(r.winDates, r.winValues, benchDates, benchValues); ok {
@@ -330,7 +336,7 @@ Options :
 	if err := os.WriteFile(outPath, buf.Bytes(), 0o644); err != nil {
 		return err
 	}
-	log.Printf("rapport écrit dans %s", outPath)
+	log.Printf("report written to %s", outPath)
 	if !opt.noOpen {
 		openBrowser(outPath)
 	}
@@ -352,16 +358,16 @@ func renderCLI(results []*result, opt *options, commonStart, commonEnd time.Time
 			cmp[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: r.winValues}
 		}
 	}
-	title := "Comparaison (base 100"
+	title := "Comparison (base 100"
 	if len(results) == 1 {
 		title = results[0].p.Name + " (base 100"
 	}
-	title += " au " + cmp[0].Dates[0].Format("2006-01-02") + ")"
+	title += " at " + cmp[0].Dates[0].Format("2006-01-02") + ")"
 	fmt.Print(chart.Term(chart.TermOptions{Title: title, Width: termWidth(opt.width), Color: color}, cmp))
 	fmt.Println()
 
 	page := &report.Page{
-		Title:          "Portefeuilles : " + strings.Join(names, ", "),
+		Title:          "Portfolios: " + strings.Join(names, ", "),
 		CommonStart:    commonStart.Format("2006-01-02"),
 		CommonEnd:      commonEnd.Format("2006-01-02"),
 		PortfolioNames: names,
@@ -391,7 +397,7 @@ func termWidth(flag int) int {
 }
 
 // defaultDataDir picks the standard per-user cache location
-// (~/Library/Caches/portfodor sur macOS, ~/.cache/portfodor sur Linux),
+// (~/Library/Caches/portfodor on macOS, ~/.cache/portfodor on Linux),
 // falling back to a local directory when the home is unknown.
 func defaultDataDir() string {
 	if c, err := os.UserCacheDir(); err == nil {
@@ -411,7 +417,7 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 		for _, id := range ids {
 			r, ok := simgen.Find(id)
 			if !ok {
-				return fmt.Errorf("aucune recette pour %q", id)
+				return fmt.Errorf("no recipe for %q", id)
 			}
 			recipes = append(recipes, r)
 		}
@@ -430,17 +436,17 @@ func runGenSimdata(client *marketdata.Client, opt *options, refdataDir string, i
 		err := genOne(client, fetcher, outDir, r, dry)
 		switch {
 		case errors.Is(err, simgen.ErrUnfaithful):
-			log.Printf("⚠ %-14s ignoré: %v", r.ID, err)
+			log.Printf("⚠ %-14s skipped: %v", r.ID, err)
 		case err != nil:
 			log.Printf("✗ %-14s %v", r.ID, err)
 			failures++
 		}
 	}
 	if failures > 0 {
-		return fmt.Errorf("%d recette(s) en échec", failures)
+		return fmt.Errorf("%d recipe(s) failed", failures)
 	}
 	if !dry {
-		log.Printf("recompilez (make build) pour ré-embarquer datasets/simdata dans le binaire")
+		log.Printf("rebuild (make build) to re-embed datasets/simdata into the binary")
 	}
 	return nil
 }
@@ -450,11 +456,11 @@ func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r sim
 	if err != nil {
 		return err
 	}
-	validation := "non validé (pas de série réelle)"
+	validation := "not validated (no real series)"
 	if r.ValidateAgainst != "" {
 		real, err := client.Fetch(r.ValidateAgainst, simgen.ComponentsFrom)
 		if err != nil {
-			return fmt.Errorf("série réelle %s: %w", r.ValidateAgainst, err)
+			return fmt.Errorf("real series %s: %w", r.ValidateAgainst, err)
 		}
 		v, err := simgen.Validate(sim, real)
 		if err != nil {
@@ -465,7 +471,7 @@ func genOne(client *marketdata.Client, fetcher simgen.Fetcher, dir string, r sim
 	if r.SpliceReal != "" {
 		real, err := client.Fetch(r.SpliceReal, simgen.ComponentsFrom)
 		if err != nil {
-			return fmt.Errorf("série à greffer %s: %w", r.SpliceReal, err)
+			return fmt.Errorf("series to splice %s: %w", r.SpliceReal, err)
 		}
 		sim = simgen.Splice(real, sim)
 	}
@@ -492,11 +498,11 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 	var failed []string
 	for i, id := range ids {
 		if i > 0 {
-			time.Sleep(300 * time.Millisecond) // ménage les sources
+			time.Sleep(300 * time.Millisecond) // go easy on the sources
 		}
 		s, err := fetchAsset(c, id, opt)
 		if err != nil {
-			log.Printf("ÉCHEC %s: %v", id, err)
+			log.Printf("FAIL  %s: %v", id, err)
 			failed = append(failed, id)
 			continue
 		}
@@ -506,13 +512,13 @@ func runWarmup(c *marketdata.Client, opt *options) error {
 				feesText = fmt.Sprintf("  TER %.2f %%", ter)
 			}
 		}
-		log.Printf("OK    %-24s %s → %s  (%d cotations)%s %s", id,
+		log.Printf("OK    %-24s %s → %s  (%d quotes)%s %s", id,
 			s.First().Date.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"),
 			len(s.Points), feesText, s.Name)
 	}
-	log.Printf("warmup terminé: %d/%d actifs en cache", len(ids)-len(failed), len(ids))
+	log.Printf("warmup done: %d/%d assets cached", len(ids)-len(failed), len(ids))
 	if len(failed) > 0 {
-		log.Printf("en échec: %s", strings.Join(failed, ", "))
+		log.Printf("failed: %s", strings.Join(failed, ", "))
 	}
 	return nil
 }
@@ -536,7 +542,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 	canonical := marketdata.CanonicalID(base)
 	sim, simOK, simErr := marketdata.ReadSimdataFS(opt.simdata, canonical)
 	if simErr != nil {
-		log.Printf("avertissement: simdata %s illisible: %v", canonical, simErr)
+		log.Printf("warning: simdata %s unreadable: %v", canonical, simErr)
 	}
 	if simOK {
 		sim = trim(sim, from, time.Time{})
@@ -545,7 +551,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 	s, err := c.Fetch(base, from)
 	if err != nil {
 		if simOK {
-			log.Printf("avertissement: %s indisponible (%v) — utilisation des seules données simulées", base, err)
+			log.Printf("warning: %s unavailable (%v) — using simulated data only", base, err)
 			sim.SimulatedBefore = sim.Last().Date
 			sim.ProxySymbol = "simdata"
 			return trim(sim, time.Time{}, opt.end), nil
@@ -559,7 +565,7 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 	s = &cp
 	if simOK && marketdata.ExtendBack(s, sim) {
 		s.ProxySymbol = "simdata"
-		log.Printf("%s: historique étendu via simdata à partir du %s",
+		log.Printf("%s: history extended via simdata starting %s",
 			canonical, s.First().Date.Format("2006-01-02"))
 	}
 	// Only bother with a proxy when at least six months are missing.
@@ -571,9 +577,9 @@ func fetchAsset(c *marketdata.Client, id string, opt *options) (*marketdata.Seri
 		if ok {
 			ps, perr := c.History(proxySym, from)
 			if perr != nil {
-				log.Printf("avertissement: proxy %s pour %s indisponible: %v", proxySym, s.Symbol, perr)
+				log.Printf("warning: proxy %s for %s unavailable: %v", proxySym, s.Symbol, perr)
 			} else if marketdata.ExtendBack(s, ps) {
-				log.Printf("%s: historique étendu via %s à partir du %s",
+				log.Printf("%s: history extended via %s starting %s",
 					s.Symbol, proxySym, s.First().Date.Format("2006-01-02"))
 			}
 		}
@@ -589,7 +595,7 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 	currencies := map[string]bool{}
 	for _, h := range spec.Holdings {
 		s := seriesByID[h.ID]
-		fees := h.Fees // la colonne du fichier prime
+		fees := h.Fees // the file column takes precedence
 		if fees < 0 && feesFor != nil {
 			if ter, ok := feesFor(h.ID); ok {
 				fees = ter
@@ -614,7 +620,7 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 		}
 		sort.Strings(list)
 		p.Warnings = append(p.Warnings, fmt.Sprintf(
-			"devises mélangées (%s) — aucune conversion de change n'est appliquée", strings.Join(list, ", ")))
+			"mixed currencies (%s) — no FX conversion applied", strings.Join(list, ", ")))
 	}
 	return p
 }
@@ -625,8 +631,8 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		names[i] = r.p.Name
 	}
 	page := &report.Page{
-		Title:          "Portefeuilles : " + strings.Join(names, ", "),
-		GeneratedAt:    time.Now().Format("02/01/2006 à 15:04"),
+		Title:          "Portfolios: " + strings.Join(names, ", "),
+		GeneratedAt:    time.Now().Format("2006-01-02 15:04"),
 		RebalanceDays:  opt.rebalance,
 		CommonStart:    commonStart.Format("2006-01-02"),
 		CommonEnd:      commonEnd.Format("2006-01-02"),
@@ -638,26 +644,26 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		first := r.sim.Dates[0].Format("2006-01-02")
 		last := r.sim.Dates[len(r.sim.Dates)-1].Format("2006-01-02")
 		svg := chart.Line(chart.Options{
-			Title: fmt.Sprintf("%s — base 100 du %s au %s", r.p.Name, first, last),
+			Title: fmt.Sprintf("%s — base 100 from %s to %s", r.p.Name, first, last),
 		}, []chart.Series{{Name: r.p.Name, Dates: r.sim.Dates, Values: r.sim.Values, Color: r.color}})
 
 		subtitle := fmt.Sprintf("%s → %s", first, last)
 		if r.rebalanceDays != opt.rebalance {
 			if r.rebalanceDays == 0 {
-				subtitle += " — jamais rebalancé (#meta)"
+				subtitle += " — never rebalanced (#meta)"
 			} else {
-				subtitle += fmt.Sprintf(" — rebalancement %d j (#meta)", r.rebalanceDays)
+				subtitle += fmt.Sprintf(" — rebalanced every %d d (#meta)", r.rebalanceDays)
 			}
 		}
 		if r.p.EnvelopeFees > 0 {
-			subtitle += fmt.Sprintf(" — frais d'enveloppe %.2f %%/an déduits", r.p.EnvelopeFees)
+			subtitle += fmt.Sprintf(" — %.2f %%/yr envelope fees deducted", r.p.EnvelopeFees)
 		}
 		if r.p.Leverage {
 			expo := 0.0
 			for _, a := range r.p.Assets {
 				expo += a.Weight
 			}
-			subtitle += fmt.Sprintf(" — exposition %.4g %%, financement cash + %.2g %%/an (#meta leverage)", expo*100, r.p.BorrowSpread)
+			subtitle += fmt.Sprintf(" — exposure %.4g %%, financed at cash + %.2g %%/yr (#meta leverage)", expo*100, r.p.BorrowSpread)
 		}
 		section := report.PortfolioSection{
 			Name:     r.p.Name,
@@ -669,7 +675,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			var notes []string
 			if !a.Series.SimulatedBefore.IsZero() {
 				anySimulated = true
-				notes = append(notes, fmt.Sprintf("simulé avant le %s via %s",
+				notes = append(notes, fmt.Sprintf("simulated before %s via %s",
 					a.Series.SimulatedBefore.Format("2006-01-02"), a.Series.ProxySymbol))
 			}
 			switch a.Series.Source {
@@ -678,13 +684,13 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 				if a.Series.Source == "morningstar" {
 					src = "Morningstar"
 				}
-				note := "source : " + src + " (VL)"
+				note := "source: " + src + " (NAV)"
 				if marketdata.LooksDistributing(a.Series.Name) {
-					note += " — part distribuante : dividendes non réinvestis dans cette série"
+					note += " — distributing share class: dividends not reinvested in this series"
 				}
 				notes = append(notes, note)
 			case "stooq":
-				notes = append(notes, "source : Stooq (non ajusté des dividendes)")
+				notes = append(notes, "source: Stooq (not dividend-adjusted)")
 			}
 			feesText := "—"
 			if a.Fees >= 0 {
@@ -693,7 +699,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			base, _ := marketdata.SplitSim(a.ID)
 			ucitsText := "?"
 			if u, known := marketdata.GuessUCITS(base, a.Name); known {
-				ucitsText = map[bool]string{true: "oui", false: "non"}[u]
+				ucitsText = map[bool]string{true: "yes", false: "no"}[u]
 			}
 			section.Assets = append(section.Assets, report.AssetRow{
 				Weight:   fmt.Sprintf("%.4g %%", a.Weight*100),
@@ -706,7 +712,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 				History: fmt.Sprintf("%s → %s",
 					a.Series.First().Date.Format("2006-01-02"),
 					a.Series.Last().Date.Format("2006-01-02")),
-				Note: strings.Join(notes, " ; "),
+				Note: strings.Join(notes, "; "),
 			})
 		}
 		page.Portfolios = append(page.Portfolios, section)
@@ -718,7 +724,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			cmp[i] = chart.Series{Name: r.p.Name, Dates: r.winDates, Values: r.winValues, Color: r.color}
 		}
 		svg := chart.Line(chart.Options{
-			Title:  "Comparaison des portefeuilles — base 100 au " + page.CommonStart,
+			Title:  "Portfolio comparison — base 100 at " + page.CommonStart,
 			Height: 480,
 		}, cmp)
 		page.CompareSVG = template.HTML(svg)
@@ -727,20 +733,20 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	page.StatRows = buildStatRows(results, opt.benchmark)
 
 	page.Footnotes = []string{
-		"Sources : Yahoo Finance (clôtures ajustées, dividendes et splits réinvestis), Financial Times et Morningstar (valeurs liquidatives des fonds) — cache local dans « " + opt.dataDir + " ».",
-		fmt.Sprintf("Simulation : base 100, rebalancement vers les poids cibles tous les %d jours calendaires par défaut (surchargeable par portefeuille via « #meta rebalance:N »), sans frais ni fiscalité.", opt.rebalance),
-		"Statistiques calculées sur la période commune à tous les portefeuilles ; volatilité et ratios annualisés sur 252 jours de bourse, taux sans risque nul pour Sharpe et Sortino (convention Curvo ; PortfolioVisualizer/LazyPortfolio utilisent les T-bills et des données mensuelles — leurs volatilités et drawdowns sortent donc plus faibles).",
-		"Frais : TER publiés (sources FT/justETF), déjà inclus dans les cours et VL — colonne informative ; seuls les frais additionnels de portefeuille « #meta extra-fees:X » (enveloppe, mandat…) sont déduits de la performance simulée.",
-		"Max Drawdown, Ulcer et TTR sur clôtures quotidiennes — plus sévères que les références en pas mensuel (ex. COVID 2020 : −33.7 % en quotidien, −20 % en clôtures mensuelles).",
-		"TTR : durée de la plus longue période passée sous un précédent sommet (du pic au retour au pic).",
+		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs) — local cache in \"" + opt.dataDir + "\".",
+		fmt.Sprintf("Simulation: base 100, rebalanced to the target weights every %d calendar days by default (overridable per portfolio via \"#meta rebalance:N\"), with no fees or taxes.", opt.rebalance),
+		"Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data — their volatilities and drawdowns therefore come out lower).",
+		"Fees: published TERs (FT/justETF sources), already included in prices and NAVs — informational column; only the additional portfolio fees \"#meta extra-fees:X\" (envelope, mandate…) are deducted from the simulated performance.",
+		"Max Drawdown, Ulcer and TTR on daily closes — harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).",
+		"TTR: duration of the longest stretch spent below a previous peak (peak to recovery).",
 	}
 	if anySimulated {
 		page.Footnotes = append(page.Footnotes,
-			"Historiques étendus avant la création de certains fonds : par proxy (indices ou fonds plus anciens — les indices de prix n'incluent pas les dividendes) ou par données simulées permanentes (fichiers datasets/simdata/<id>.csv générés par cmd/simgen, méthodologie et qualité de réplication en tête de chaque fichier).")
+			"Histories extended before some funds' inception: via a proxy (older indices or funds — price indices do not include dividends) or via permanent simulated data (datasets/simdata/<id>.csv files generated by cmd/simgen, methodology and replication quality at the top of each file).")
 	}
 	if bench != nil {
 		page.Footnotes = append(page.Footnotes,
-			"Beta : régression des rendements quotidiens contre "+bench.Symbol+" sur la période commune.")
+			"Beta: regression of daily returns against "+bench.Symbol+" over the common window.")
 	}
 	return page
 }
@@ -761,30 +767,30 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 		return func(r *result) (float64, string) { v := get(r.stats); return v, fmtNum(v) }
 	}
 	defs := []def{
-		{"CAGR (rendement annualisé)", "taux de croissance annuel moyen",
+		{"CAGR (annualized return)", "compound annual growth rate",
 			pct(func(s metrics.Stats) float64 { return s.CAGR }), +1},
-		{"Volatilité (annualisée)", "écart-type des rendements quotidiens, annualisé",
+		{"Volatility (annualized)", "standard deviation of daily returns, annualized",
 			pct(func(s metrics.Stats) float64 { return s.Volatility }), -1},
-		{"Sharpe", "rendement annualisé / volatilité (taux sans risque 0)",
+		{"Sharpe", "annualized return / volatility (risk-free rate 0)",
 			num(func(s metrics.Stats) float64 { return s.Sharpe }), +1},
-		{"Sortino", "rendement annualisé / volatilité des seuls jours de baisse",
+		{"Sortino", "annualized return / volatility of down days only",
 			num(func(s metrics.Stats) float64 { return s.Sortino }), +1},
-		{"Ulcer Index", "profondeur et durée moyennes des drawdowns (plus bas = mieux)",
+		{"Ulcer Index", "average depth and duration of drawdowns (lower is better)",
 			num(func(s metrics.Stats) float64 { return s.Ulcer }), -1},
-		{"Max Drawdown", "pire baisse depuis un sommet",
+		{"Max Drawdown", "worst decline from a peak",
 			pct(func(s metrics.Stats) float64 { return s.MaxDrawdown }), +1},
-		{"TTR (récupération la plus longue)", "durée de la plus longue période sous un sommet",
+		{"TTR (longest recovery)", "duration of the longest stretch below a peak",
 			func(r *result) (float64, string) { return float64(r.stats.TTRDays), fmtTTR(r.stats) }, -1},
-		{"Frais courants pondérés", "Σ poids × TER publié, plus les extra-fees appliqués à tout le portefeuille (seuls ces derniers sont déduits de la simulation)",
+		{"Weighted ongoing charges", "Σ weight × published TER, plus the extra-fees applied to the whole portfolio (only the latter are deducted from the simulation)",
 			func(r *result) (float64, string) {
 				w, incomplete := weightedFees(r.p)
 				text := fmtPct(w / 100)
 				if incomplete && !math.IsNaN(w) {
-					text += " (incomplet)"
+					text += " (incomplete)"
 				}
 				return w, text
 			}, -1},
-		{"Beta (vs " + benchmark + ")", "sensibilité aux variations du benchmark",
+		{"Beta (vs " + benchmark + ")", "sensitivity to benchmark moves",
 			func(r *result) (float64, string) {
 				if !r.stats.HasBeta {
 					return math.NaN(), "—"
@@ -872,12 +878,12 @@ func fmtTTR(s metrics.Stats) string {
 	if s.TTRDays <= 0 {
 		return "—"
 	}
-	out := fmt.Sprintf("%d j", s.TTRDays)
+	out := fmt.Sprintf("%d d", s.TTRDays)
 	if s.TTRDays >= 365 {
-		out = fmt.Sprintf("%.1f ans (%d j)", float64(s.TTRDays)/365.25, s.TTRDays)
+		out = fmt.Sprintf("%.1f y (%d d)", float64(s.TTRDays)/365.25, s.TTRDays)
 	}
 	if s.TTROngoing {
-		out += " (en cours)"
+		out += " (ongoing)"
 	}
 	return out
 }
@@ -936,10 +942,10 @@ func openBrowser(path string) {
 	case "linux":
 		cmd = exec.Command("xdg-open", path)
 	default:
-		log.Printf("ouvrez %s manuellement", path)
+		log.Printf("open %s manually", path)
 		return
 	}
 	if err := cmd.Start(); err != nil {
-		log.Printf("impossible d'ouvrir le navigateur: %v", err)
+		log.Printf("could not open the browser: %v", err)
 	}
 }

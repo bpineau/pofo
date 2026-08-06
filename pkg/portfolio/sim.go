@@ -58,11 +58,11 @@ type SimResult struct {
 // Prices are forward-filled across each asset's non-trading days.
 func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	if len(p.Assets) == 0 {
-		return nil, fmt.Errorf("portefeuille vide")
+		return nil, fmt.Errorf("empty portfolio")
 	}
 	for _, a := range p.Assets {
 		if len(a.Series.Points) == 0 {
-			return nil, fmt.Errorf("aucune cotation pour %s", a.Symbol)
+			return nil, fmt.Errorf("no quotes for %s", a.Symbol)
 		}
 	}
 
@@ -78,7 +78,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		}
 	}
 	if !start.Before(end) {
-		return nil, fmt.Errorf("pas de période commune entre les actifs du portefeuille")
+		return nil, fmt.Errorf("no common period between the portfolio's assets")
 	}
 
 	// Union of trading dates inside the window, prices forward-filled.
@@ -103,7 +103,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		sumW += a.Weight
 	}
 	if sumW <= 0 {
-		return nil, fmt.Errorf("somme des poids nulle")
+		return nil, fmt.Errorf("weights sum to zero")
 	}
 	norm := sumW
 	if p.Leverage {
@@ -155,7 +155,7 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			v += shares[i] * prices[i][k]
 		}
 		if p.Leverage && v <= 0 {
-			// Capital anéanti: la série s'arrête là.
+			// Capital wiped out: the series stops here.
 			dates, values, ruined = dates[:k], values[:k], true
 			break
 		}

@@ -1,8 +1,8 @@
-// Package golden contient les tests « étalon » de portfodor : ils rejouent
-// la simulation et les métriques sur des données réelles gelées (testdata/)
-// et comparent les résultats à des références externes validées à la main
-// (rendements annuels officiels S&P 500 TR, drawdowns canoniques,
-// statistiques publiées par LazyPortfolioETF). Toute dérive des calculs —
-// CAGR, volatilité, Sharpe, Sortino, Ulcer, Max Drawdown, TTR — au-delà des
-// tolérances fait échouer la suite.
+// Package golden contains portfodor's golden tests: they replay the
+// simulation and the metrics on frozen real data (testdata/) and compare
+// the results against hand-validated external references (official S&P 500
+// TR annual returns, canonical drawdowns, statistics published by
+// LazyPortfolioETF). Any drift in the computations — CAGR, volatility,
+// Sharpe, Sortino, Ulcer, Max Drawdown, TTR — beyond the tolerances fails
+// the suite.
 package golden

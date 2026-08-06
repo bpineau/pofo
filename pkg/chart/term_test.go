@@ -16,23 +16,23 @@ func TestTermRendersSeriesWithoutANSI(t *testing.T) {
 		b = append(b, 100-float64(i)*0.02)
 	}
 	out := Term(TermOptions{Title: "Test", Width: 80, Height: 12, Color: false}, []Series{
-		{Name: "Hausse", Dates: dates, Values: a},
-		{Name: "Baisse", Dates: dates, Values: b},
+		{Name: "Rising", Dates: dates, Values: a},
+		{Name: "Falling", Dates: dates, Values: b},
 	})
 	if strings.Contains(out, "\x1b[") {
-		t.Error("pas d'échappements ANSI attendus sans couleur")
+		t.Error("no ANSI escapes expected without color")
 	}
 	if !strings.Contains(out, "•") || !strings.Contains(out, "+") {
-		t.Error("chaque série doit avoir son marqueur distinct")
+		t.Error("each series must have its own distinct marker")
 	}
-	if !strings.Contains(out, "Hausse") || !strings.Contains(out, "Baisse") {
-		t.Error("légende manquante")
+	if !strings.Contains(out, "Rising") || !strings.Contains(out, "Falling") {
+		t.Error("missing legend")
 	}
 	if !strings.Contains(out, "2020") {
-		t.Error("graduation temporelle manquante")
+		t.Error("missing time tick")
 	}
 	if lines := strings.Count(out, "\n"); lines < 14 || lines > 18 {
-		t.Errorf("hauteur inattendue: %d lignes", lines)
+		t.Errorf("unexpected height: %d lines", lines)
 	}
 }
 
@@ -40,6 +40,6 @@ func TestTermColorUsesANSI(t *testing.T) {
 	dates := []time.Time{time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC)}
 	out := Term(TermOptions{Color: true}, []Series{{Name: "X", Dates: dates, Values: []float64{100, 120}}})
 	if !strings.Contains(out, "\x1b[38;5;") {
-		t.Error("échappements ANSI attendus en couleur")
+		t.Error("ANSI escapes expected with color")
 	}
 }

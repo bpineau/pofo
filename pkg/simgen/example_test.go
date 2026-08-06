@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-// Composite assemble un indice base 100 à poids constants à partir de
-// composants quelconques — ici un 90/60 actions/obligations avec jambe
-// « excess » (futures) financée au taux cash et 0,20 %/an de frais.
+// Composite builds a constant-weight base-100 index from arbitrary
+// components — here a 90/60 equities/bonds blend with an "excess" leg
+// (futures) financed at the cash rate and 0.20%/yr fees.
 func ExampleComposite() {
 	fetch := fakeFetcher{
 		"ACTIONS": mkSeries("ACTIONS", 300, 0.0008),
 		"OBLIG":   mkSeries("OBLIG", 300, 0.0002),
-		"^IRX":    mkLevels("^IRX", 300, 3.0), // taux annualisé en %
+		"^IRX":    mkLevels("^IRX", 300, 3.0), // annualized rate in %
 	}
 	fr, err := BuildFrame(fetch, []string{"ACTIONS", "OBLIG", "^IRX"}, day(0))
 	if err != nil {
@@ -31,10 +31,10 @@ func ExampleComposite() {
 	// 300 points, base 100
 }
 
-// TSMOM rejoue une stratégie time-series momentum paramétrable sur un
-// panier de marchés. (Exemple d'API ; non exécuté.)
+// TSMOM replays a configurable time-series momentum strategy on a basket
+// of markets. (API example; not executed.)
 func Example_tsmom() {
-	var fetch Fetcher // p.ex. marketdata.NewClient("data")
+	var fetch Fetcher // e.g. marketdata.NewClient("data")
 	fr, _ := BuildFrame(fetch, []string{"^IRX", "VFINX", "GC=F"}, time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
 	values, start, _ := TSMOM(fr, TSMOMConfig{
 		Markets:  []string{"VFINX", "GC=F"},

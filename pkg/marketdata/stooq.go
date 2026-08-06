@@ -41,7 +41,7 @@ func stooqSymbol(symbol string) string {
 func (c *Client) fetchStooq(symbol string, from time.Time) (*Series, error) {
 	ss := stooqSymbol(symbol)
 	if ss == "" {
-		return nil, fmt.Errorf("pas d'équivalent stooq pour %s", symbol)
+		return nil, fmt.Errorf("no stooq equivalent for %s", symbol)
 	}
 	u := fmt.Sprintf("%s/q/d/l/?s=%s&i=d&d1=%s&d2=%s", c.StooqBase, url.QueryEscape(ss),
 		from.Format("20060102"), time.Now().Format("20060102"))
@@ -50,14 +50,14 @@ func (c *Client) fetchStooq(symbol string, from time.Time) (*Series, error) {
 		return nil, err
 	}
 	if !bytes.HasPrefix(body, []byte("Date,")) {
-		return nil, fmt.Errorf("stooq: pas de données pour %s", ss)
+		return nil, fmt.Errorf("stooq: no data for %s", ss)
 	}
 	rows, err := csv.NewReader(bytes.NewReader(body)).ReadAll()
 	if err != nil {
-		return nil, fmt.Errorf("CSV stooq illisible: %w", err)
+		return nil, fmt.Errorf("unreadable stooq CSV: %w", err)
 	}
 	if len(rows) < 2 || len(rows[0]) < 5 {
-		return nil, fmt.Errorf("stooq: pas de données pour %s", ss)
+		return nil, fmt.Errorf("stooq: no data for %s", ss)
 	}
 	s := &Series{Symbol: symbol, Name: symbol, Source: "stooq"}
 	switch {
@@ -66,11 +66,11 @@ func (c *Client) fetchStooq(symbol string, from time.Time) (*Series, error) {
 	}
 	switch ss {
 	case "xauusd":
-		s.Name = "Or (spot XAU/USD)"
+		s.Name = "Gold (XAU/USD spot)"
 	case "xagusd":
-		s.Name = "Argent (spot XAG/USD)"
+		s.Name = "Silver (XAG/USD spot)"
 	case "cl.f":
-		s.Name = "Pétrole brut WTI (futures continus)"
+		s.Name = "WTI crude oil (continuous futures)"
 	}
 	for _, row := range rows[1:] {
 		if len(row) < 5 {

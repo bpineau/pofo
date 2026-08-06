@@ -1,8 +1,8 @@
 # portfodor simdata v1
 # id: XAUUSD
-# name: Or XAU/USD — spot 1968→
-# method: réf. XAUUSD-SPOT (fixings importés, 1968→), réel GC=F greffé depuis 2000
-# validation: corr=1.000 (hebdo 1.000) beta=1.00 TE=0.0%/an CAGR sim 11.23% vs réel 11.23% (overlap 6466 j de 2000-08-30 à 2026-06-09) vs XAUUSD
+# name: Gold XAU/USD — spot 1968→
+# method: ref. XAUUSD-SPOT (imported fixings, 1968→), real GC=F grafted from 2000
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.0%/yr CAGR sim 11.23% vs real 11.23% (overlap 6466 d from 2000-08-30 to 2026-06-09) vs XAUUSD
 # generated: 2026-06-12
 date,close
 1968-04-01,37.782765
