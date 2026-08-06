@@ -35,11 +35,16 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
    web layer dodges this by switching the y-axis, but the library API should
    either return an error or document the constraint loudly.
 
-5. **`worst10y` uses a `-1` sentinel** to mean "hit zero within the window",
-   then aggregates by `min`, so a single ruined path drives `Worst10yCAGR` to
-   −100%. Arguably correct but the sentinel conflates "−100% realised" with
-   "undefined"; revisit the representation (e.g. report separately the share of
-   paths with a sub-`-x%` decade).
+5. ✅ **Done (2026-06-29).** **`worst10y` uses a `-1` sentinel** to mean "hit
+   zero within the window", then aggregates by `min`, so a single ruined path
+   drives `Worst10yCAGR` to −100%. Arguably correct but the sentinel conflates
+   "−100% realised" with "undefined"; revisit the representation (e.g. report
+   separately the share of paths with a sub-`-x%` decade).
+   Fixed: `worst10y` now returns `(cagr, ok)`, treating a decade that *ends* at
+   zero as its realised −100% and *skipping* windows that *start* after ruin
+   (the conflated case); `Outcome` keeps the honest min `Worst10yCAGR` and adds
+   a robust `Worst10yP5` (5th-percentile of paths' worst decade) so one ruined
+   path no longer defines the headline.
 
 ## Clarity / API (P2)
 
