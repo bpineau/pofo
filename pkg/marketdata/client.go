@@ -40,7 +40,12 @@ type Client struct {
 	fees       map[string]feesEntry // TER cache, lazily loaded from fees.json
 }
 
-// NewClient returns a Client caching downloads under cacheDir.
+// NewClient returns a Client caching downloads under cacheDir. An empty
+// cacheDir disables the disk cache entirely (series, resolutions and fees
+// live only in the process memory): every fresh client refetches, which
+// suits privacy-sensitive callers that keep their own store and do not
+// want plaintext quote files revealing their holdings. DefaultCacheDir
+// returns the standard shared location.
 func NewClient(cacheDir string) *Client {
 	return &Client{
 		HTTP:            &http.Client{Timeout: 30 * time.Second},
@@ -370,6 +375,9 @@ func (c *Client) loadResolution(isin string) (resolution, bool) {
 		return res, true
 	}
 	var res resolution
+	if c.CacheDir == "" {
+		return res, false
+	}
 	data, err := os.ReadFile(c.resolutionPath(isin))
 	if err != nil || json.Unmarshal(data, &res) != nil {
 		return res, false
