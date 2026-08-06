@@ -16,10 +16,15 @@ type Slice struct {
 }
 
 // PieOptions controls a Pie's rendering. Width defaults to 300px; the height
-// is derived from the legend length.
+// is derived from the legend length. Hole is the donut hole as a fraction of
+// the outer radius, in (0, 1); 0 keeps the default 0.6. HideLegend drops the
+// legend (and the title row) and renders a bare square donut sized
+// Width x Width, for callers laying out their own labels.
 type PieOptions struct {
-	Title string
-	Width int
+	Title      string
+	Width      int
+	Hole       float64
+	HideLegend bool
 }
 
 // Pie renders a donut chart with a title and a legend beneath it. Slices of
@@ -47,15 +52,24 @@ func Pie(opt PieOptions, slices []Slice) string {
 		return ""
 	}
 
+	hole := opt.Hole
+	if hole <= 0 || hole >= 1 {
+		hole = 0.6
+	}
 	cx := float64(w) / 2
-	cy, outerR, innerR := 100.0, 70.0, 42.0
+	cy, outerR := 100.0, 70.0
 	legendY := 184.0
 	const rowH = 17.0
 	h := int(legendY + float64(len(clean))*rowH + 6)
+	if opt.HideLegend {
+		cy, outerR = cx, float64(w)/2-2
+		h = w
+	}
+	innerR := math.Round(outerR * hole)
 
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif">`, w, h, w, h)
-	if opt.Title != "" {
+	if opt.Title != "" && !opt.HideLegend {
 		fmt.Fprintf(&b, `<text x="%g" y="16" text-anchor="middle" font-size="13" font-weight="600" fill="#2A231F">%s</text>`, cx, esc(opt.Title))
 	}
 
@@ -72,6 +86,10 @@ func Pie(opt PieOptions, slices []Slice) string {
 	}
 
 	// Legend: swatch + "Label 42%".
+	if opt.HideLegend {
+		b.WriteString(`</svg>`)
+		return b.String()
+	}
 	y := legendY
 	for _, s := range clean {
 		fmt.Fprintf(&b, `<rect x="6" y="%g" width="10" height="10" rx="2" fill="%s"/>`, y-9, s.Color)
