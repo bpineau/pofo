@@ -87,6 +87,69 @@ func (c *Client) fetchYahoo(symbol string, from time.Time) (*Series, error) {
 	return s, nil
 }
 
+// fetchYahooIntraday downloads the current day's 5-minute price path from the
+// Yahoo Finance chart API. It returns ErrNotCovered when Yahoo serves no
+// intraday result for the symbol.
+func (c *Client) fetchYahooIntraday(symbol string) (*IntradaySeries, error) {
+	u := fmt.Sprintf("%s/v8/finance/chart/%s?interval=5m&range=1d",
+		c.ChartBase, url.PathEscape(symbol))
+	body, err := c.get(u)
+	if err != nil {
+		return nil, err
+	}
+	var resp struct {
+		Chart struct {
+			Result []struct {
+				Meta struct {
+					Currency             string `json:"currency"`
+					ExchangeTimezoneName string `json:"exchangeTimezoneName"`
+					LongName             string `json:"longName"`
+					ShortName            string `json:"shortName"`
+				} `json:"meta"`
+				Timestamp  []int64 `json:"timestamp"`
+				Indicators struct {
+					Quote []struct {
+						Close []*float64 `json:"close"`
+					} `json:"quote"`
+				} `json:"indicators"`
+			} `json:"result"`
+			Error *struct {
+				Description string `json:"description"`
+			} `json:"error"`
+		} `json:"chart"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("unreadable yahoo intraday response: %w", err)
+	}
+	if resp.Chart.Error != nil {
+		return nil, fmt.Errorf("yahoo intraday: %s", resp.Chart.Error.Description)
+	}
+	if len(resp.Chart.Result) == 0 {
+		return nil, fmt.Errorf("%s: %w", symbol, ErrNotCovered)
+	}
+	r := resp.Chart.Result[0]
+	loc, err := time.LoadLocation(r.Meta.ExchangeTimezoneName)
+	if err != nil {
+		loc = time.UTC
+	}
+	name := r.Meta.LongName
+	if name == "" {
+		name = r.Meta.ShortName
+	}
+	s := &IntradaySeries{Symbol: symbol, Name: name, Currency: r.Meta.Currency, Source: "yahoo"}
+	var closes []*float64
+	if len(r.Indicators.Quote) > 0 {
+		closes = r.Indicators.Quote[0].Close
+	}
+	for i, ts := range r.Timestamp {
+		if i >= len(closes) || closes[i] == nil || *closes[i] <= 0 {
+			continue
+		}
+		s.Points = append(s.Points, IntradayPoint{Time: time.Unix(ts, 0).In(loc), Close: *closes[i]})
+	}
+	return s, nil
+}
+
 // searchQuote is one candidate instrument returned by the Yahoo search API.
 type searchQuote struct {
 	Symbol    string
