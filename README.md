@@ -68,7 +68,7 @@ poids ne fait pas 100, ils sont normalisés avec avertissement.
 **Convention SIM** : un identifiant nu (`DBMF`, `NTSG`, `VOO`) utilise les
 seules cotations réelles de l'actif — l'historique commence à sa date de
 création. Le suffixe `SIM` (`DBMFSIM`, `NTSGSIM`, `VOOSIM`…) autorise en plus
-l'extension de la période non couverte, via les fichiers `simdata/` puis les
+l'extension de la période non couverte, via `datasets/simdata/` puis les
 proxys connus ; les cotations réelles gardent toujours la priorité là où
 elles existent. `-no-simulate` ignore les suffixes SIM globalement.
 
@@ -98,16 +98,16 @@ elles existent. `-no-simulate` ignore les suffixes SIM globalement.
   périmée** avec un avertissement stderr (les graphes peuvent s'arrêter avant
   aujourd'hui), et n'efface jamais rien.
 - **Extension d'historique** (identifiants `…SIM` uniquement) : d'abord les
-  fichiers `simdata/` (ci-dessous), sinon un proxy connu (VOO→^GSPC,
+  fichiers `datasets/simdata/` (ci-dessous), sinon un proxy connu (VOO→^GSPC,
   BND→VBMFX, …), recalé sur la première cotation réelle. Le rapport signale
   chaque portion simulée.
 
-## Données simulées (simdata/)
+## Données simulées (datasets/simdata/)
 
 Les actifs complexes (fonds 90/60, managed futures…) sont reconstruits par
 `cmd/simgen` à partir de briques à long historique, validés contre leurs
 cotations réelles, puis stockés en CSV auto-documentés (méthode, validation,
-date) dans `simdata/` :
+date) dans `datasets/simdata/` :
 
 ```sh
 go build ./cmd/simgen && ./simgen          # régénère tout
@@ -135,9 +135,9 @@ Les stratégies discrétionnaires ne se répliquent pas honnêtement par
 facteurs : plutôt que d'inventer des données, le générateur les refuse sous
 un R² plancher.
 
-## Données de référence (refdata/)
+## Données de référence (datasets/refdata/)
 
-`refdata/` contient des séries de référence importées une fois pour toutes
+`datasets/refdata/` contient des séries de référence importées une fois pour toutes
 (provenance et méthode en tête de chaque fichier) : indices officiels SG
 Trend/SG CTA, historique de l'indice MLM, treasuries 7-10/20+/25+ dérivés des
 courbes de taux US depuis 1962, or spot depuis 1968, fonds Winton Trend.
@@ -157,8 +157,11 @@ pkg/portfolio/    format des fichiers d'allocation + simulation rebalancée
 pkg/report/       rendu HTML et texte du modèle de comparaison
 pkg/simgen/       reconstruction d'historiques (composites, TSMOM, backcasts)
 cmd/              les deux binaires (portfodor, simgen)
-golden/           tests étalon contre références externes
-data/ simdata/ refdata/   caches réseau / historiques simulés / références
+datasets/         données versionnées et leur contrôle qualité :
+  simdata/          historiques simulés permanents (recollés au runtime)
+  refdata/          séries de référence importées (indices officiels…)
+  golden/           tests étalon + fixtures gelées vs références externes
+data/             cache réseau (jetable, non versionné)
 ```
 
 Tout ce qui est consommable comme bibliothèque vit sous `pkg/` ; `cmd/` ne
@@ -210,11 +213,11 @@ sim, _ := portfolio.Simulate(p, 90)
 
 ## Tests étalon (golden)
 
-`golden/` rejoue la simulation sur des données réelles gelées (SPY 2006-2025,
+`datasets/golden/` rejoue la simulation sur des données réelles gelées (SPY 2006-2025,
 URTH 2012-2025) et compare CAGR, volatilité, Sharpe, Sortino, Ulcer, Max
 Drawdown et TTR à des références externes validées (rendements annuels
 officiels S&P 500 TR, drawdowns canoniques GFC/COVID, LazyPortfolioETF).
-Toute dérive de calcul au-delà des tolérances fait échouer `go test ./golden`.
+Toute dérive de calcul au-delà des tolérances fait échouer `go test ./datasets/golden`.
 
 ## Développement
 
