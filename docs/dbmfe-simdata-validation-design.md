@@ -157,21 +157,16 @@ across its calendar days,
 producing a smooth daily deflator that compounds cleanly against the assets'
 daily returns (no month-boundary steps).
 
-Tiered effort (do tier 1 now, defer tier 2):
+IMPLEMENTED (2026-06-28): `^HICP-FR` is now a first-class fetchable series
+(`pkg/marketdata/eurostat.go`): `Client.Fetch("^HICP-FR", from)` returns the
+daily-interpolated HICP France index (1996->), cached like every other source,
+currency-less. Other geographies follow the `^HICP-<geo>` pattern (e.g.
+`^HICP-EA`). Level 4 should fetch it directly; no bundled CSV needed. The same
+series doubles as the real-return deflator the future FIRE engine will reuse.
 
-- **Tier 1 (this campaign, throwaway, ~half a day):** download the HICP France
-  CSV once, bundle it under `docs/` like the SG CTA file, and convert it to a
-  base-100 daily-accrual deflator in a throwaway script. Historical inflation is
-  effectively fixed once published, so a static snapshot is sufficient for a
-  one-off validation. This is all Level 4 needs.
-- **Tier 2 (deferred to the FIRE engine spec):** a proper `eurostat.go` fetcher
-  in `pkg/marketdata` (modeled on `stooq.go`, wired through `Client.cachedHistory`
-  so caching/stale-fallback come for free), an identifier/alias (e.g.
-  `^HICP-FR`) treated as a currency-less index, and a daily-accrual conversion in
-  the rate path (or a `DailyInflationAccrual` primitive) with godoc + tests. The
-  FIRE engine needs this anyway for real-return decumulation (inflation-indexed
-  withdrawals, real terminal wealth, real ruin probability). Not required to
-  validate DBMFE now.
+(Historical note on what was considered: a tier-1 throwaway bundled CSV was the
+fallback if a fetcher proved too costly; it turned out cheap enough to build the
+proper fetcher straight away.)
 
 ## Execution policy: build vs. throwaway vs. by-hand
 
@@ -276,9 +271,8 @@ SG Trend was miserable, the sleeve is overstated. THIS is the falsification core
 
 ### Level 4. Regime validation: longest underperformance  -> L + C
 Longest consecutive span where trailing CAGR < cash (`^IRX`), < HICP France
-inflation (see "Inflation series for Level 4"; tier-1 bundled deflator), and
-< MSCI World (URTH). Use contribution 5. Compare reconstruction vs real DBMF /
-SG CTA.
+inflation (fetch `^HICP-FR`, see "Inflation series for Level 4"), and < MSCI
+World (URTH). Use contribution 5. Compare reconstruction vs real DBMF / SG CTA.
 Judge: the reconstruction must contain multi-year "deserts". If its longest
 underperformance is materially shorter than SG Trend's real one, it is too kind.
 

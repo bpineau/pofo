@@ -166,6 +166,11 @@ regime view stays the default.
 - **Resolution**: aliases → embedded ticker→ISIN list (European ETFs/funds)
   → built-in catalog of pinned resolutions → multi-source search
   (Yahoo, FT, Morningstar via Boursorama), the deepest series winning.
+- **Inflation**: `^HICP-FR` (and `^HICP-<geo>`, e.g. `^HICP-EA`) fetch the
+  Eurostat Harmonised Index of Consumer Prices (monthly, 1996→), interpolated
+  to a smooth daily curve. It charts like any asset: the CAGR reads as average
+  inflation, drawdowns mark deflation episodes; it also serves as the deflator
+  for real-return analysis.
 - **Currency**: every series is converted to the `-currency` (default EUR)
   using daily Yahoo FX crosses, so USD ETFs and EUR funds compare fairly;
   the earliest known rate is held flat before the FX history starts (with a
