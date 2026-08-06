@@ -10,12 +10,12 @@ import (
 	"github.com/bpineau/pofo/pkg/portfolio"
 )
 
-// Parse reads a portfolio description: "<weight %> <identifier>
-// [free text]", everything after a # being a comment.
+// Parse reads a portfolio description: "<weight %> <identifier> [TER %/year]",
+// everything after a # being a comment.
 func ExampleParse() {
 	spec, err := portfolio.Parse("my-portfolio", strings.NewReader(`
 # Comment lines and blank lines are ignored.
-60   VTI    US stocks       # free text accepted
+60   VTI    0.03            # optional TER, then a free-text comment
 25,5 IE00B4L5Y983           # decimal comma accepted
 14.5 GLD
 `))

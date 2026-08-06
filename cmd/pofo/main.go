@@ -122,15 +122,16 @@ Without files, -assets A,B,C compares each asset as a portfolio
 
 File format — one line per asset:
 
-    <weight in %%> <identifier> [fees in %%/yr] [free text]
+    <weight in %%> <identifier> [fees in %%/yr]
 
-  - Everything after a # is a comment; blank lines are ignored.
+  - Everything after a # is a comment, and nothing else may follow the
+    optional fee column; blank lines are ignored.
   - Identifier: US ticker (VOO), European ticker from the bundled list
     (IWDA, CW8, CSPX…), ISIN, or catalog alias (GOLD, NTSG, BHMG…).
   - SIM suffix (VOOSIM, DBMFSIM…): extends the history before the first
     real quote via pkg/datasets/simdata/ or a proxy; bare = real data only.
-  - Optional numeric 3rd column: the asset's TER in %%/yr (overrides
-    the automatic lookup); non-numeric = free text.
+  - Optional 3rd column: the asset's TER in %%/yr (overrides the automatic
+    lookup); use a # comment for any other free text.
   - Per-portfolio directives:
         #meta rebalance:N    rebalance every N days (0 = never)
         #meta extra-fees:X   envelope fees in %%/yr, deducted from the
