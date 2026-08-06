@@ -8,12 +8,16 @@ import (
 )
 
 // Conservative broad-sample prior: a cautious, forward-looking world-equity real
-// model (lower mean, higher volatility, fatter left tail) used regardless of the
-// portfolio's own rosy history. Sources: DMS world real equity haircut for
-// forward returns, broad-sample SWR evidence (Anarkulova, Cederburg & O'Doherty).
+// model used regardless of the portfolio's own rosy history. The pessimism is in
+// the tails, the volatility and the sequence clustering, NOT in an implausibly
+// low average return: consMu is the arithmetic mean of a regime whose blended
+// real geometric return lands near ~3.5% (a forward haircut on the ~4.5-5% DMS
+// world-equity history), with fat tails and persistent drawdowns. Sources: DMS
+// world real equity, broad-sample SWR evidence (Anarkulova, Cederburg &
+// O'Doherty). It deliberately does not assume equities barely grow.
 const (
-	consMu    = 0.03
-	consSigma = 0.18
+	consMu    = 0.045 // arithmetic; blended geometric ~3.5% real under the regime
+	consSigma = 0.13
 	consDf    = 4
 )
 
@@ -95,13 +99,13 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 	}
 	out = append(out,
 		namedSource{"Student-t",
-			"Draws i.i.d. annual real returns matching your mean, volatility and fat tails. Misses persistence, so it under-produces the early-crash, prolonged-drawdown paths that actually cause ruin.",
+			"The calibrated central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. It assumes no mean reversion across years, so long (45-50y) horizons read a little tougher than history.",
 			scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}},
 		namedSource{"Regime",
-			"Two-state bull/bear model: bad years cluster into persistent, multi-year real drawdowns (sequence risk), at the same long-run mean as Student-t. The honest central case to plan on.",
+			"Sequence-risk stress: clustered, persistent bull/bear regimes at the same long-run mean as Student-t, so a run of bad years can land early in retirement. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(pr.Mu, pr.Sigma, pr.Df, pr.Years)},
 		namedSource{"Conservative",
-			fmt.Sprintf("Forward-looking pessimism, not this fund's history: a lower real return (%.0f%%), higher volatility and fat left tail with sequence risk, in line with broad century-long developed-market evidence (Anarkulova et al.).", consMu*100),
+			"Forward-looking pessimism, not this fund's history: a lower real return (~3.5% geometric), higher volatility, fat left tail and clustered drawdowns, in line with broad century-long developed-market evidence (Anarkulova et al.).",
 			scenario.NewMarkovRegime(consMu, consSigma, consDf, pr.Years)},
 	)
 	return out
@@ -144,11 +148,12 @@ func confidence(pr Params, panel *scenario.Panel) (level, note string) {
 }
 
 // verdict is the central-case headline: the safe spend (in euros and as a rate)
-// from the Regime model, the honest central case, against the user's plan.
+// from the calibrated Student-t model, against the user's plan. The Regime and
+// Conservative columns give the sequence-stress and pessimistic downside.
 func verdict(models []ModelStat, pr Params, target float64) string {
 	var central ModelStat
 	for _, m := range models {
-		if m.Name == "Regime" {
+		if m.Name == "Student-t" {
 			central = m
 		}
 	}

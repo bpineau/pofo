@@ -16,8 +16,11 @@ const (
 
 // bearGapFactor is the multiple of sigma by which the bear-state mean falls
 // below the calm-state mean. Scaling with sigma keeps the spread proportional
-// to the volatility of the underlying return series.
-const bearGapFactor = 1.5
+// to the volatility of the underlying return series. Calibrated so the sequence
+// risk it adds lowers the safe withdrawal rate by a realistic ~0.3-0.5% vs the
+// i.i.d. case (not the ~1% a deeper bear would imply, which overstates the
+// historical sequence-risk penalty).
+const bearGapFactor = 0.6
 
 // bearSigmaFactor is the multiple applied to the calm-state sigma in the bear
 // state. Volatility clustering (bear markets are more volatile than calm

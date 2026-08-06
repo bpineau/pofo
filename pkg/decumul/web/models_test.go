@@ -11,7 +11,7 @@ import (
 // replaces the single hypersensitive number.
 func TestModelsParametricOrdering(t *testing.T) {
 	pr := Params{Capital: 1_500_000, NeedAnnual: 60000, Years: 30,
-		Mu: 0.04, Sigma: 0.16, Df: 5, TaxRate: 0.30, NPaths: 3000}
+		Mu: 0.05, Sigma: 0.11, Df: 5, TaxRate: 0.30, NPaths: 3000}
 
 	res := Models(pr, nil)
 
