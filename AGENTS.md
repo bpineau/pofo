@@ -47,13 +47,14 @@ Root `doc.go` describes the layering and the typical pipeline.
 ## The core pipeline (library)
 
 ```go
-client := marketdata.NewClient(marketdata.DefaultCacheDir())
+ctx := context.Background()
+client := marketdata.NewClient(marketdata.DefaultCacheDir()) // "" = no disk cache
 spec, _ := portfolio.ParseFile("p.txt")
 p, _ := portfolio.Build(spec, portfolio.BuildOptions{
     Fetch: func(id string) (*marketdata.Series, error) {
-        return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+        return client.FetchExtended(ctx, id, marketdata.FetchOptions{Currency: "EUR"})
     },
-    Fees: func(id string) (float64, bool) { base, _ := marketdata.SplitSim(id); return client.Fees(base) },
+    Fees: func(id string) (float64, bool) { base, _ := marketdata.SplitSim(id); return client.Fees(ctx, base) },
 })
 sim, _ := portfolio.Simulate(p, 90)          // rebalance every 90 days
 stats, _ := metrics.Compute(sim.Dates, sim.Index)
