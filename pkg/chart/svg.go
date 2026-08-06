@@ -22,12 +22,12 @@ type Options struct {
 	Height int // pixels, defaults to 420
 }
 
-// defaultPalette is the pofo "risk desk" series palette: a deep petrol anchor,
-// a burnt-amber counterpoint, then supporting instrument hues, all legible on
-// the cool-paper background and distinct from the matplotlib default.
+// defaultPalette is the pofo "warm study" series palette: a copper anchor and a
+// deep-teal counterpoint, then honey, plum, olive and slate — warm, legible on
+// the sand background, and distinct from the matplotlib default.
 var defaultPalette = []string{
-	"#0F766E", "#B4531F", "#3A5A8C", "#2E7D5B",
-	"#6D5A9C", "#9C6B3F", "#B0476B", "#227C9D",
+	"#B25A34", "#2E6E63", "#C08A2D", "#7A4A63",
+	"#6E7A3A", "#3E5C7E", "#A8506A", "#8A5A2A",
 }
 
 // PaletteColor returns the i-th default series color (hex), cycling; the
@@ -108,17 +108,17 @@ func Line(opt Options, series []Series) string {
 
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
-	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#ffffff"/>`+"\n", w, h)
+	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFDF9"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#14232B">%s</text>`+"\n", left, esc(opt.Title))
+		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#2A231F">%s</text>`+"\n", left, esc(opt.Title))
 	}
 
 	// Horizontal grid and y-axis labels.
 	step := niceStep(vmax-vmin, 6)
 	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
 		y := yAt(v)
-		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#E8ECEA"/>`+"\n", x0, y, x1, y)
-		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#55666E" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
+		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="#EAE1D3"/>`+"\n", x0, y, x1, y)
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="#6E6157" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
 	}
 	// Vertical grid and x-axis labels.
 	// Use the location of the first series point so intraday charts show
@@ -130,12 +130,12 @@ func Line(opt Options, series []Series) string {
 	}
 	for _, tk := range timeTicks(time.Unix(tmin, 0).In(loc), time.Unix(tmax, 0).In(loc)) {
 		x := xAt(tk.t)
-		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#E8ECEA"/>`+"\n", x, y0, x, y1)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="12" fill="#55666E" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
+		fmt.Fprintf(&b, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%g" stroke="#EAE1D3"/>`+"\n", x, y0, x, y1)
+		fmt.Fprintf(&b, `<text x="%.1f" y="%g" font-size="12" fill="#6E6157" text-anchor="middle">%s</text>`+"\n", x, y1+18, esc(tk.label))
 	}
 	// Axes.
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#AEB9B8"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#AEB9B8"/>`+"\n", x0, y0, x0, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y1, x1, y1)
+	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="#CBBFAE"/>`+"\n", x0, y0, x0, y1)
 
 	// Series lines.
 	for _, s := range plot {
@@ -163,7 +163,7 @@ func Line(opt Options, series []Series) string {
 		x := left
 		for _, s := range plot {
 			fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, x, s.Color)
-			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#14232B">%s</text>`+"\n", x+17, esc(s.Name))
+			fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="#2A231F">%s</text>`+"\n", x+17, esc(s.Name))
 			x += 17 + 7.2*float64(len([]rune(s.Name))) + 18
 		}
 	}
