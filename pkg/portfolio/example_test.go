@@ -73,7 +73,7 @@ func ExampleSimulate() {
 func ExampleSimulate_flows() {
 	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 	s := &marketdata.Series{Symbol: "FLAT"}
-	for i := 0; i < 95; i++ {
+	for i := range 95 {
 		s.Points = append(s.Points, marketdata.Point{Date: start.AddDate(0, 0, i), Close: 10})
 	}
 	p := &portfolio.Portfolio{
@@ -90,4 +90,40 @@ func ExampleSimulate_flows() {
 		sim.Contributed, sim.Values[len(sim.Values)-1], sim.Index[len(sim.Index)-1])
 	// Output:
 	// contributed 300, final value 1300, index 100
+}
+
+// Build turns a parsed Spec into a simulatable Portfolio through a fetch
+// callback. Against live data the callback is one line on a
+// marketdata.Client: client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"});
+// here it serves synthetic series so the example runs offline.
+func ExampleBuild() {
+	spec, err := portfolio.Parse("demo", strings.NewReader(`
+#meta rebalance:30
+60 EQ
+40 BD 0.15
+`))
+	if err != nil {
+		panic(err)
+	}
+	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	fetch := func(id string) (*marketdata.Series, error) {
+		s := &marketdata.Series{Symbol: id, Currency: "EUR"}
+		for i := range 60 {
+			s.Points = append(s.Points, marketdata.Point{Date: start.AddDate(0, 0, i), Close: 100 + float64(i)})
+		}
+		return s, nil
+	}
+	p, err := portfolio.Build(spec, portfolio.BuildOptions{Fetch: fetch, BaseCurrency: "EUR"})
+	if err != nil {
+		panic(err)
+	}
+	days := spec.RebalanceDays // -1 would mean "apply your own default"
+	sim, err := portfolio.Simulate(p, days)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s: %d assets, %d points, final index %.1f\n",
+		p.Name, len(p.Assets), len(sim.Index), sim.Index[len(sim.Index)-1])
+	// Output:
+	// demo: 2 assets, 60 points, final index 159.0
 }

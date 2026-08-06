@@ -306,7 +306,6 @@ pkg/datasets/     versioned data (embedded at build time) and its QA:
   simdata/          permanent simulated histories (spliced at runtime)
   golden/           golden tests + frozen fixtures vs external references
 cmd/              the pofo binary (report, warmup, gen-simdata)
-data/             old local cache (replaced by the user cache)
 ```
 
 Everything consumable as a library lives under `pkg/`, the bundled data
@@ -325,9 +324,12 @@ import (
 	"github.com/bpineau/pofo/pkg/portfolio"
 )
 
-// Fetch a price history (transparent resolution + caching).
-client := marketdata.NewClient("data")
-series, err := client.Fetch("IWDA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+// Fetch a price history (transparent resolution + caching). FetchExtended
+// is the do-what-I-mean variant: it also splices simulated history behind
+// "…SIM" identifiers and converts the currency, exactly like the CLI;
+// Fetch is the raw real-quotes-only building block underneath.
+client := marketdata.NewClient(marketdata.DefaultCacheDir())
+series, err := client.FetchExtended("NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 
 // Compute CAGR, Sharpe, Sortino, Ulcer, MaxDD, TTR, Beta…
 stats, err := metrics.Compute(dates, values)
@@ -335,15 +337,15 @@ stats, err := metrics.Compute(dates, values)
 // Render a standalone SVG.
 svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1", Dates: dates, Values: values}})
 
-// Parse a portfolio file, fetch each holding, then simulate (N-day
-// rebalancing). The CLI additionally converts currencies and extends SIM
-// histories; this is the core path.
+// The core path in three calls: parse a portfolio file, build it (each
+// holding fetched through the callback), then simulate with 90-day
+// rebalancing. Statistics chain on sim.Index via metrics.Compute.
 spec, _ := portfolio.ParseFile("p.txt")
-p := &portfolio.Portfolio{Name: spec.Name}
-for _, h := range spec.Holdings {
-	s, _ := client.Fetch(h.ID, time.Time{})
-	p.Assets = append(p.Assets, portfolio.Asset{ID: h.ID, Weight: h.Weight, Fees: h.Fees, Series: s})
-}
+p, _ := portfolio.Build(spec, portfolio.BuildOptions{
+	Fetch: func(id string) (*marketdata.Series, error) {
+		return client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"})
+	},
+})
 sim, _ := portfolio.Simulate(p, 90)
 
 // Read the bundled asset catalog as typed datasets.Asset records (name, TER,
@@ -362,11 +364,12 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 - `marketdata`: resolution (aliases, ISIN, catalog), `Lookup` for an asset's
   full metadata, `Resolve` to inspect the resolved source/symbol, multi-source
   daily downloads, `Intraday` for the live 5-minute path, cache, simdata,
-  proxies.
+  proxies; `FetchExtended` bundles the whole per-asset pipeline in one call.
 - `suggest`: regime/factor coverage and gap-filling (consumes `datasets.Asset`).
 - `metrics`: statistics over value series (returns, drawdowns, Beta).
 - `chart`: pure-stdlib inline SVG charts.
-- `portfolio`: allocation file parsing and rebalanced simulation.
+- `portfolio`: allocation file parsing, `Build` (spec + fetch callback →
+  simulatable portfolio) and rebalanced simulation.
 - `report`: HTML report rendering.
 - `simgen`: reconstruction engine (linear composites, TSMOM
   trend-following engine, regression backcasts) and validated recipes, all
@@ -374,11 +377,11 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 
 ## Known limitations
 
-- No currency conversion: mixing currencies triggers a warning, returns
-  stay in each asset's own currency.
 - Price-index proxies (^GSPC, ^NDX…) omit dividends over the simulated
   portion; managed-futures replications (corr ≈ 0.3–0.5) reflect those
   strategies' regime, not their daily positions.
+- Assets whose quote currency cannot be determined are left unconverted
+  (flagged in the report warnings).
 
 ## Golden tests
 
@@ -392,8 +395,10 @@ Any calculation drift beyond the tolerances fails `go test ./pkg/datasets/golden
 ## Development
 
 ```sh
-go test ./...   # unit tests + examples, no network
-go vet ./...
+make check      # gofmt check + vet + staticcheck + tests (no network)
+make help       # every other target (build, golden, simdata, demo…)
 ```
 
-No external dependencies: standard library only.
+No external dependencies: standard library only. `AGENTS.md` is the
+contributor/AI-agent quick map: repository layout, unit conventions and
+traps, house rules and common tasks.
