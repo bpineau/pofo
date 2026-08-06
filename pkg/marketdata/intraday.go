@@ -3,13 +3,9 @@ package marketdata
 import (
 	"errors"
 	"fmt"
-	"regexp"
-	"strings"
 	"time"
 	_ "time/tzdata" // exchange time zones, without depending on the host OS
 )
-
-var isinPatternStr = regexp.MustCompile(`^[A-Z]{2}[A-Z0-9]{9}[0-9]$`)
 
 // ErrNotCovered reports that a request cannot be served for an identifier,
 // for example intraday data for an instrument quoted only by a fund source.
@@ -74,11 +70,14 @@ func (c *Client) Intraday(id string) (*IntradaySeries, error) {
 // cached or catalog resolution already points at Yahoo.
 func (c *Client) yahooSymbol(id string) (string, bool) {
 	canonical := CanonicalID(id)
-	if isinPatternStr.MatchString(canonical) {
+	// Match the ISIN shape directly rather than calling IsISIN: an ISIN-shaped
+	// identifier must route to the resolution path even when its check digit is
+	// invalid, so it is never mistaken for a ticker and fetched as one.
+	if isinPattern.MatchString(canonical) {
 		if res, ok := c.loadResolution(canonical); ok && res.Source == "yahoo" && res.Symbol != "" {
 			return res.Symbol, true
 		}
 		return "", false
 	}
-	return strings.ToUpper(strings.TrimSpace(canonical)), true
+	return canonical, true
 }
