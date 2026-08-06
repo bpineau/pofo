@@ -43,21 +43,46 @@ var allFactors = []Category{Market, Size, Value, Momentum, Quality, Term, Credit
 
 // Framework is a way to classify assets into categories a portfolio should
 // cover: the macro regimes (RegimeFramework) or the risk factors
-// (FactorFramework).
+// (FactorFramework). Classify returns the set of categories an asset helps in;
+// leg classifies a single asset_class in isolation and drives the
+// exposure-weighted Contribution for stacked funds.
 type Framework struct {
 	Name       string
 	Categories []Category
 	Classify   func(Meta) []Category
+	leg        func(Meta) []Category
 }
 
 // RegimeFramework is the default: the four macro regimes.
 func RegimeFramework() Framework {
-	return Framework{Name: "regimes", Categories: AllRegimes, Classify: regimeClassify}
+	return Framework{Name: "regimes", Categories: AllRegimes, Classify: regimeClassify, leg: regimeLeg}
 }
 
 // FactorFramework is the alternative: the risk factors.
 func FactorFramework() Framework {
-	return Framework{Name: "factors", Categories: allFactors, Classify: factorClassify}
+	return Framework{Name: "factors", Categories: allFactors, Classify: factorClassify, leg: factorLeg}
+}
+
+// Contribution returns, per category, the notional weight a single unit of the
+// asset contributes. A plain asset contributes 1 to each category it helps in.
+// A stacked / efficient-core fund (one with an explicit Exposures breakdown)
+// contributes each leg's notional weight to that leg's categories, so a
+// leveraged 90/60 fund counts 0.9 toward its equity categories and 0.6 toward
+// its bond ones — the economic exposure, not a flat 1.
+func (fw Framework) Contribution(m Meta) map[Category]float64 {
+	out := map[Category]float64{}
+	if len(m.Exposures) > 0 && fw.leg != nil {
+		for class, notional := range m.Exposures {
+			for _, c := range fw.leg(Meta{AssetClass: class}) {
+				out[c] += notional
+			}
+		}
+		return out
+	}
+	for _, c := range fw.Classify(m) {
+		out[c] += 1
+	}
+	return out
 }
 
 // Regimes maps an asset to the macro regimes it helps in (the default
@@ -248,10 +273,12 @@ func equityFactors(factors []string) []Category {
 	return out
 }
 
-// Coverage returns the total weight of the holdings that help in each
-// category of the framework (an asset helping in several contributes its
-// full weight to each), plus the weight of holdings with no metadata.
-// Coverage values are not normalized and can exceed 1.
+// Coverage returns the total notional exposure of the holdings to each
+// category of the framework, plus the weight of holdings with no metadata. A
+// plain asset contributes its full weight to every category it helps in; a
+// stacked / efficient-core fund contributes each leg's notional weight (so a
+// leveraged 90/60 fund counts more than its position weight). Coverage values
+// are not normalized and can exceed 1.
 func Coverage(holdings []Holding, fw Framework) (cov map[Category]float64, unclassified float64) {
 	cov = map[Category]float64{}
 	for _, c := range fw.Categories {
@@ -262,8 +289,8 @@ func Coverage(holdings []Holding, fw Framework) (cov map[Category]float64, uncla
 			unclassified += h.Weight
 			continue
 		}
-		for _, c := range fw.Classify(h.Meta) {
-			cov[c] += h.Weight
+		for c, frac := range fw.Contribution(h.Meta) {
+			cov[c] += h.Weight * frac
 		}
 	}
 	return cov, unclassified
