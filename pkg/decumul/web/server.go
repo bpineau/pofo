@@ -25,6 +25,22 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(meta)
 	})
+	mux.HandleFunc("/api/fit", func(w http.ResponseWriter, r *http.Request) {
+		if panel == nil {
+			http.Error(w, "no portfolio", http.StatusBadRequest)
+			return
+		}
+		var body struct {
+			Weights []float64 `json:"weights"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		mu, sigma := FitParametric(*panel, body.Weights)
+		w.Header().Set("Content-Type", "application/json")
+		_ = json.NewEncoder(w).Encode(map[string]float64{"mu": mu, "sigma": sigma})
+	})
 	mux.HandleFunc("/api/sim", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "POST only", http.StatusMethodNotAllowed)

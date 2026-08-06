@@ -24,6 +24,10 @@ const FMT = {
 const UNIT = {};
 for (const [k, , , , , , unit] of SLIDERS) UNIT[k] = unit;
 const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
+const PAL = ["#1f77b4","#ff7f0e","#2ca02c","#d62728","#9467bd","#8c564b","#e377c2","#17becf"];
+
+// portfolio-mode state, set once /api/meta resolves.
+let weights = null, labels = [], hasPanel = false, lastFitW = null;
 
 const form = document.getElementById("controls");
 const state = {};
@@ -39,39 +43,111 @@ for (const [k, label, min, max, step, def] of SLIDERS) {
     schedule();
   });
 }
+function setSliderVal(k, v) {
+  state[k] = v;
+  const s = document.getElementById("s_" + k);
+  if (s) { s.value = v; document.getElementById("v_" + k).textContent = fmtVal(k, v); }
+}
+
 let timer = null;
 function schedule(){ clearTimeout(timer); timer = setTimeout(run, 200); }
 
+function weightsChanged() {
+  if (!weights || !lastFitW || lastFitW.length !== weights.length) return true;
+  return weights.some((w, i) => Math.abs(w - lastFitW[i]) > 1e-9);
+}
+
 let run = async function(){
-  if (weights) { state.weights = weights; }
+  // In portfolio mode the parametric model reads mu/sigma, not the weights,
+  // so a weight change must re-fit mu/sigma from the panel before computing,
+  // otherwise dragging the allocation would not move the parametric result.
+  if (weights) {
+    state.weights = weights;
+    if (hasPanel && weightsChanged()) {
+      try {
+        const resp = await fetch("/api/fit", {method:"POST",
+          headers:{"Content-Type":"application/json"}, body: JSON.stringify({weights})});
+        const f = await resp.json();
+        if (typeof f.mu === "number") setSliderVal("mu", f.mu);
+        if (typeof f.sigma === "number") setSliderVal("sigma", f.sigma);
+      } catch (e) { /* keep the current mu/sigma on failure */ }
+      lastFitW = weights.slice();
+    }
+  }
   const body = {...state, years: Math.round(state.years),
     pensionYear: Math.round(state.pensionYear), nPaths: Math.round(state.nPaths)};
   const res = await fetch("/api/sim",{method:"POST",headers:{"Content-Type":"application/json"},
     body: JSON.stringify(body)});
   const r = await res.json();
   document.getElementById("note").textContent = r.note || "";
-  for (const id of ["bufferSvg","ruinCurveSvg","surfaceSvg","recoverySvg"])
+  for (const id of ["bufferSvg","ruinCurveSvg","recoverySvg"])
     document.getElementById(id).innerHTML = r[id] || "";
   document.getElementById("cards").innerHTML = (r.cards || [])
     .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");
 };
 
-// Portfolio mode: fetch holdings, add a model toggle and allocation sliders.
-let weights = null, labels = [];
+// --- allocation bar: drag a divider to move weight between two adjacent
+// assets; the total stays at 100 % by construction. ---
+function renderAlloc() {
+  const bar = document.getElementById("allocbar");
+  bar.innerHTML = "";
+  let cum = 0; const cums = [0];
+  for (const w of weights) { cum += w; cums.push(cum); }
+  weights.forEach((w, i) => {
+    const seg = document.createElement("div");
+    seg.className = "seg";
+    seg.style.left = (cums[i] * 100) + "%";
+    seg.style.width = (w * 100) + "%";
+    seg.style.background = PAL[i % PAL.length];
+    seg.innerHTML = `<span>${labels[i]}</span><b>${Math.round(w * 100)}%</b>`;
+    bar.appendChild(seg);
+  });
+  for (let i = 0; i < weights.length - 1; i++) {
+    const h = document.createElement("div");
+    h.className = "handle";
+    h.style.left = (cums[i + 1] * 100) + "%";
+    h.addEventListener("pointerdown", ev => startDrag(ev, i));
+    bar.appendChild(h);
+  }
+  const leg = document.getElementById("alloclegend");
+  leg.innerHTML = labels.map((n, i) =>
+    `<span><i style="background:${PAL[i % PAL.length]}"></i>${n} ${Math.round(weights[i] * 100)}%</span>`).join("");
+}
+
+function startDrag(ev, i) {
+  ev.preventDefault();
+  const bar = document.getElementById("allocbar");
+  const rect = bar.getBoundingClientRect();
+  const left = weights.slice(0, i).reduce((a, b) => a + b, 0);
+  const pair = weights[i] + weights[i + 1];
+  function move(e) {
+    let x = (e.clientX - rect.left) / rect.width;
+    x = Math.max(left, Math.min(left + pair, x));
+    weights[i] = x - left;
+    weights[i + 1] = pair - (x - left);
+    renderAlloc();
+    schedule();
+  }
+  function up() {
+    window.removeEventListener("pointermove", move);
+    window.removeEventListener("pointerup", up);
+  }
+  window.addEventListener("pointermove", move);
+  window.addEventListener("pointerup", up);
+}
+
+// Portfolio mode: fetch holdings, add a model toggle, help and the bar.
 fetch("/api/meta").then(r=>r.json()).then(m=>{
   if(!m.hasPanel) { run(); return; }
+  hasPanel = true;
   labels = m.labels;
   weights = (m.weights && m.weights.length === labels.length) ? m.weights.slice()
     : labels.map(()=>1/labels.length);
-  // seed the return assumptions from the portfolio's own history.
-  for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma]]) {
-    if (typeof v === "number") {
-      state[k] = v;
-      const s = document.getElementById("s_"+k);
-      if (s) { s.value = v; document.getElementById("v_"+k).textContent = fmtVal(k, v); }
-    }
-  }
-  const sel = document.createElement("label"); sel.className="ctl";
+  lastFitW = weights.slice(); // mu/sigma already seeded below; avoid a redundant refit
+  for (const [k, v] of [["mu", m.mu], ["sigma", m.sigma]])
+    if (typeof v === "number") setSliderVal(k, v);
+
+  const sel = document.createElement("label"); sel.className="ctl span";
   sel.innerHTML = `<span class="lab"><span>Return model</span></span>
     <select id="model"><option value="parametric">parametric</option>
     <option value="bootstrap">historical bootstrap</option>
@@ -83,18 +159,15 @@ fetch("/api/meta").then(r=>r.json()).then(m=>{
     cohorts: "Replays every actual historical start month, no resampling. The most faithful but limited to the available history length, so long horizons may be unavailable.",
   };
   const help = document.getElementById("modelhelp");
-  const setHelp = m => { help.textContent = MODEL_HELP[m] || ""; };
+  const setHelp = mdl => { help.textContent = MODEL_HELP[mdl] || ""; };
   sel.querySelector("select").addEventListener("change", e=>{state.model=e.target.value;setHelp(state.model);schedule();});
   state.model = "parametric";
   setHelp("parametric");
-  labels.forEach((name,i)=>{
-    const d=document.createElement("label"); d.className="ctl";
-    d.innerHTML=`<span class="lab"><span>${name}</span><span class="val" id="w_${i}">${Math.round(weights[i]*100)}%</span></span>
-      <input type="range" min="0" max="100" step="1" value="${Math.round(weights[i]*100)}" id="al_${i}">`;
-    form.appendChild(d);
-    d.querySelector("input").addEventListener("input",e=>{
-      weights[i]=parseFloat(e.target.value)/100;
-      document.getElementById("w_"+i).textContent=e.target.value+"%"; schedule();});
-  });
+
+  const alloc = document.createElement("div"); alloc.className = "ctl span";
+  alloc.innerHTML = `<span class="lab"><span>Allocation — drag a divider to shift weight</span></span>
+    <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>`;
+  form.prepend(alloc);
+  renderAlloc();
   run();
 });
