@@ -40,6 +40,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 	res := PathResult{Wealth: make([]float64, p.Years+1)}
 	res.Wealth[0] = p.Capital
 	peak := p.Capital
+	spending := p.NeedAnnual // dynamic spending level for the guardrails rule
 
 	sellGrowth := func(want float64) float64 {
 		if want <= 0 || growth <= 0 {
@@ -62,6 +63,11 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 
 	ruined := false
 	for k := 0; k < p.Years && !ruined; k++ {
+		// Guardrails are a yearly decision: adjust the spending level at the
+		// start of each year against the current withdrawal rate.
+		if p.Guard.active() {
+			spending = p.Guard.adjust(spending, growth+buffer)
+		}
 		for m := range 12 {
 			total := growth + buffer
 			if total <= 0 {
@@ -73,9 +79,14 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 			}
 			dd := 1 - total/peak
 
-			need := p.needAt(k) / 12
-			if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
-				need *= 1 - p.Flex.Cut
+			var need float64
+			if p.Guard.active() {
+				need = p.netOf(spending, k) / 12
+			} else {
+				need = p.needAt(k) / 12
+				if p.Flex.Cut > 0 && dd > p.Flex.Threshold {
+					need *= 1 - p.Flex.Cut
+				}
 			}
 
 			// Deliver the month's net need, each source falling back to the
@@ -87,7 +98,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 			} else {
 				delivered = sellGrowth(need)
 				delivered += drawBuffer(need - delivered)
-				if refill := target - buffer; refill > 0 && growth > 0 {
+				if refill := target - buffer; refill > 0 && growth > 0 && p.Buffer.refillsAt(k) {
 					if cap := growth * refillCap / 12; refill > cap {
 						refill = cap
 					}

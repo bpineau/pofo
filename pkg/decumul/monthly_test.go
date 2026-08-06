@@ -79,8 +79,8 @@ func TestRunPathMonthlySurvives(t *testing.T) {
 func TestSimulateMonthly(t *testing.T) {
 	p := Plan{
 		Capital: 1_000_000, NeedAnnual: 45000, Years: 30, Buffer: BufferSleeve{Years: 2},
-		Tax:     CTOFlatTax{Rate: 0.30}, Monthly: true,
-		Source:  scenario.ParametricSource{Mu: 0.003, Sigma: 0.035, Df: 6, Periods: 30 * 12},
+		Tax: CTOFlatTax{Rate: 0.30}, Monthly: true,
+		Source: scenario.ParametricSource{Mu: 0.003, Sigma: 0.035, Df: 6, Periods: 30 * 12},
 	}
 	o := p.Simulate(3000, 4, 7).Outcome()
 	if o.RuinProb < 0 || o.RuinProb > 1 {
@@ -88,6 +88,23 @@ func TestSimulateMonthly(t *testing.T) {
 	}
 	if len(p.Simulate(10, 1, 1).Paths[0].Wealth) != 31 {
 		t.Errorf("monthly path wealth should be annual-granular (Years+1 points)")
+	}
+}
+
+// Guardrails are a yearly decision in the monthly kernel too: a market drop
+// pushes the withdrawal rate up and cuts the monthly spending.
+func TestRunPathMonthlyGuardrails(t *testing.T) {
+	base := Plan{Capital: 100000, NeedAnnual: 6000, Years: 3, Tax: CTOFlatTax{Rate: 0}}
+	seq := make(scenario.Sequence, 36)
+	for i := 0; i < 12; i++ {
+		seq[i] = -0.03 // a deep first year pushes the withdrawal rate up
+	}
+	fixed := base.RunPathMonthly(seq)
+	guarded := base
+	guarded.Guard = Guardrails{Upper: 0.06, Lower: 0.03, Cut: 0.10, Raise: 0.10}
+	got := guarded.RunPathMonthly(seq)
+	if !(got.Withdrawn < fixed.Withdrawn) {
+		t.Errorf("monthly guardrails should cut spending after the drop: guarded=%.0f fixed=%.0f", got.Withdrawn, fixed.Withdrawn)
 	}
 }
 
