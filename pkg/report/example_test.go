@@ -38,7 +38,7 @@ func ExampleRender() {
 	}
 	html := b.String()
 	fmt.Println(strings.Contains(html, `<details class="pf">`)) // folded sections
-	fmt.Println(strings.Contains(html, `class="num best"`))     // highlighted best cell
+	fmt.Println(strings.Contains(html, `class="n best"`))       // highlighted best cell
 	// Output:
 	// true
 	// true
