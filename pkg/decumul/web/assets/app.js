@@ -81,7 +81,7 @@ let run = async function(){
     body: JSON.stringify(body)});
   const r = await res.json();
   document.getElementById("note").textContent = r.note || "";
-  for (const id of ["bufferSvg","ruinCurveSvg","recoverySvg"])
+  for (const id of ["arbitrageSvg","recoverySvg"])
     document.getElementById(id).innerHTML = r[id] || "";
   document.getElementById("cards").innerHTML = (r.cards || [])
     .map(c => `<div class="card"><div class="k">${c.label}</div><div class="v">${c.value}</div></div>`).join("");

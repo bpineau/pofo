@@ -135,21 +135,18 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
     chart rendering, the allocation bar styling, mobile layout, and surfacing
     the hidden metrics from item 10 as part of the same pass).
 
-18. **Better charts for the buffer arbitrage and the recovery distribution.**
-    Specific chart requirements (part of, or before, item 17):
-    - Replace the two separate bar charts ("Ruin %% by buffer years" and
-      "Terminal wealth p50 by buffer") with a SINGLE dual-axis line chart, as
-      the claude.ai prototype did: buffer years on the x-axis, one line on a
-      LEFT y-axis for ruin %, a second line on a RIGHT y-axis for median
-      terminal wealth. Lines, not bars; the two curves together ARE the
-      arbitrage and read far better superimposed. Needs a dual-axis line
-      primitive in `pkg/chart` (extend `chart.Line` with an optional secondary
-      series/right axis, or add a small `chart.LineDual`).
-    - The recovery-time distribution bars badly need readable numbers:
-      add y-axis gridlines/ticks with labels (share %), and/or value labels on
-      the bars. Right now there is no scale to read the heights against. This
-      applies to `chart.Bars` generally (add optional y-axis ticks + value
-      labels).
+18. ✅ **Done (2026-06-29).** **Better charts for the buffer arbitrage and the
+    recovery distribution.** Specific chart requirements (part of, or before,
+    item 17):
+    - Replace the two separate bar charts with a SINGLE dual-axis line chart:
+      buffer years on x, ruin % on the LEFT y-axis, median terminal wealth on
+      the RIGHT y-axis. Done via a new `chart.LineDual` primitive; the web shows
+      one "Buffer arbitrage" chart instead of two bar charts.
+    - The recovery-time distribution bars need readable numbers: add y-axis
+      gridlines/ticks with labels and value labels on the bars. Done: `chart.Bars`
+      now draws y-axis gridlines + tick labels and an optional per-bar value
+      label (`Bar.Text`); the recovery chart passes shares as % with "NN%"
+      labels.
 
 ## Portfolio analysis / report (not FIRE-specific)
 
