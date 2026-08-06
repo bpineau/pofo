@@ -14,11 +14,17 @@
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error
-//     and CAGR against the real series; WithRefData optionally serves extra
-//     local reference CSVs (dev -refdata) before any network source;
-//   - the bundled recipes (All, Find) assemble these building blocks, from
-//     fetchable quotes only, for NTSX, NTSG, URTH, IWDA, VT, RSSB, ZPRV,
-//     SHY, IEF, TLT, ZROZ, DBMF, KMLM, CTA and the Winton Trend-Equity fund.
+//     and CAGR against the real series; WithRefData serves the bundled
+//     reference series (datasets.Refdata, e.g. MSCIWORLD-USD, SP500-USD) and
+//     any extra local CSVs (dev -refdata) before the network;
+//   - extend/longBack splice a long real proxy behind a short component leg
+//     (VFINX→S&P 500 ~1871, VTMGX→MSCI World ex-US ~1969, VEIEX→MSCI EM ~1988,
+//     VFITX/VUSTX→constant-maturity Treasury TR ~1953, GC=F→LBMA gold ~1968,
+//     CL=F→WTI ~1946, ^IRX→3-month T-bill ~1934), so a multi-leg reconstruction
+//     reaches back to its youngest leg's first quote (BuildFrame's start);
+//   - the bundled recipes (All, Find) assemble these building blocks for
+//     NTSX, NTSG, URTH, IWDA, VT, RSSB, XAUUSD, ZPRV, SHY, IEF, TLT, ZROZ,
+//     DBMF, DBMFE, KMLM, CTA and the Winton Trend-Equity fund, among others.
 //
 // # Units
 //
