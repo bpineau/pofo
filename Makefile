@@ -1,7 +1,7 @@
 # Makefile de portfodor — `make help` pour la liste des cibles.
 
 GO        ?= go
-BINARIES  := portfodor simgen-bin
+BINARIES  := portfodor
 PKGS      := ./...
 # staticcheck local s'il existe, sinon version épinglée via `go run`.
 STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2025.1")
@@ -9,9 +9,8 @@ STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run hon
 .DEFAULT_GOAL := build
 
 .PHONY: build
-build: ## Compile les binaires (./portfodor et ./simgen-bin)
+build: ## Compile le binaire ./portfodor (datasets/ embarqués)
 	$(GO) build -o portfodor ./cmd/portfodor
-	$(GO) build -o simgen-bin ./cmd/simgen
 
 .PHONY: fmt
 fmt: ## Reformate tout le code (gofmt -w)
@@ -52,8 +51,9 @@ warmup: build ## Précharge le cache (cotations + frais) du catalogue
 	./portfodor -warmup
 
 .PHONY: simdata
-simdata: build ## (Re)génère les historiques simulés validés dans datasets/simdata/
-	./simgen-bin
+simdata: build ## (Re)génère datasets/simdata/ puis ré-embarque dans le binaire
+	./portfodor -gen-simdata
+	$(GO) build -o portfodor ./cmd/portfodor
 
 .PHONY: demo
 demo: build ## Rapport de démonstration sur les portefeuilles d'exemple
