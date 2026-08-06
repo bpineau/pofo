@@ -100,6 +100,29 @@ uncovered period, via `datasets/simdata/` then the known proxies; real
 quotes always keep priority wherever they exist. `-no-simulate` ignores SIM
 suffixes globally.
 
+## Suggesting assets to add
+
+`portfodor -suggest portfolio.txt` analyses a portfolio's **macro-regime
+coverage** and recommends catalog assets to add that fill the gaps. The four
+regimes are the growth × inflation quadrants behind All-Weather- and
+Dragon-style portfolios — `growth`, `deflation`, `inflation`, `crisis` — and
+each catalog asset is mapped to the regimes it helps in from its factual tags
+(asset class, strategy; see `datasets/assetmeta/`). A regime with little
+weight is a gap.
+
+It is **structure-first**: only assets that fill a gap are considered, and
+each is then validated **out-of-sample** — the candidate is added at a
+modest weight and a walk-forward checks that Sharpe and max-drawdown improve
+*consistently across periods*, not in one lucky stretch. Because adding an
+asset at a fixed weight fits nothing to the data, this measures robustness
+rather than an over-fitted optimum. Suggestions are kept diverse (at most one
+per asset class) and reported with the gap they fill, a suggested weight,
+their correlation to the portfolio, and the out-of-sample win counts.
+
+`-suggest` also flags **redundancies** — holdings that move almost
+identically and share an asset class (three S&P 500 trackers are one bet, not
+three). It prints to the terminal and exits, like `-verify-data`.
+
 ## Main options
 
 | Option | Default | Description |
@@ -117,6 +140,7 @@ suffixes globally.
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
 | `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies — bad points, gaps, stale feeds — then exit |
+| `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
 
 ## Data
@@ -186,6 +210,7 @@ pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, IRR…)
 pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity
+pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
 pkg/chart/        SVG charts (Line) and terminal (Term), shared palette
 pkg/portfolio/    allocation file format + rebalanced simulation
 pkg/report/       HTML and text rendering of the comparison model
