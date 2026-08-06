@@ -835,7 +835,12 @@ func Find(id string) (Recipe, bool) {
 var mfMarkets = []string{"VFINX", "VTMGX", "VEIEX", "VFITX", "VUSTX", "GC=F", "CL=F"}
 
 // mfConfig is the standard 12-month time-series-momentum configuration, with
-// a per-fund volatility target and fee.
+// a per-fund volatility target and fee. The engine realizes the target it is
+// given (its risk model rescales daily, see TSMOMConfig), so each target is
+// simply the volatility the fund itself realized over the window where both
+// exist: DBMF 11.5 %, KMLM 14 %, CTA 16 %, AQR 9 %. Read them as measured
+// anchors, not as the funds' stated targets, which are rounder and mostly
+// unpublished.
 func mfConfig(targetVol, annualFee float64) TSMOMConfig {
 	return TSMOMConfig{
 		Markets:     mfMarkets,
@@ -1579,7 +1584,7 @@ func dbmfRecipe() Recipe {
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (gold→LBMA fix ~1968, crude→WTI spot ~1946, dev-ex-US→DEVEXUS-USD ~1969, EM→EM-USD ~1989, treasuries→CMT TR ~1953; start now set by the EM leg ~1989), IR-pinned to the SG CTA Index, real DBMF grafted from 2019",
-		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.10, 0.0085), sgCTAInfoRatio),
+		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.115, 0.0085), sgCTAInfoRatio),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
@@ -1596,7 +1601,7 @@ func dbmfpaRecipe() Recipe {
 		ID:              "LU2951555585",
 		Name:            "iMGP DBi Managed Futures UCITS USD: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), IR-pinned to the SG CTA Index, real DBMF.PA grafted from 2025",
-		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.10, 0.0075), sgCTAInfoRatio),
+		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.115, 0.0075), sgCTAInfoRatio),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
 	}
@@ -1629,7 +1634,7 @@ func dbmfeRecipe() Recipe {
 // rather than joined into the frame, which would pollute the calendar with
 // the FX feed's weekend prints.
 func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	cfg := mfConfig(0.10, 0.0085) // identical USD strategy to dbmfRecipe
+	cfg := mfConfig(0.115, 0.0085) // identical USD strategy to dbmfRecipe
 	fr, err := BuildFrame(extend(f), append([]string{cfg.CashID}, cfg.Markets...), from)
 	if err != nil {
 		return nil, err
@@ -1650,8 +1655,8 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, higher vol target), IR-pinned to the KFA MLM Index, real KMLM grafted from 2020",
-		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.13, 0.0090), mlmInfoRatio),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, 14% vol target ~ the fund's realized 14.7%), IR-pinned to the KFA MLM Index, real KMLM grafted from 2020",
+		Build:           tsmom("KMLM (TSMOM replication)", mfConfig(0.14, 0.0090), mlmInfoRatio),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -1662,9 +1667,10 @@ func kmlmRecipe() Recipe {
 // on top. AQR's multi-horizon trend model is genuinely distinct from the
 // SG/DBi replication that RSBT and DBMF track, and its live record (2015→) has
 // materially outrun the MLM index (KMLM), so it is the better real-world pick
-// for the "second, independent trend method" slot. The proxy vol target (~11%)
-// matches AQR's realized full-volatility programme, between DBMF (10%) and
-// KMLM (13%). USD native, so no FX leg (the fetch layer converts to view).
+// for the "second, independent trend method" slot. The proxy vol target (9%)
+// matches the volatility the class itself realized over its live window
+// (9.3%), below DBMF (11.5%) and KMLM (14%). USD native, so no FX leg (the
+// fetch layer converts to view).
 //
 // The 0.79 %/yr fee charged to the reconstruction is class A's BASE cost only
 // (mgmt 0.60% + 0.18% expense cap + 0.01% subscription tax, per the prospectus
@@ -1681,8 +1687,8 @@ func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1103257975",
 		Name:            "AQR Managed Futures UCITS: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), IR-pinned to AQR's realized managed-futures record, charged class A's 0.79% base fee only (its 10% performance fee is left to the IR pin), real AQR grafted from 2015",
-		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.11, 0.0079), aqrTrendInfoRatio),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, 9% vol target ~ the class's realized 9.3%), IR-pinned to AQR's realized managed-futures record, charged class A's 0.79% base fee only (its 10% performance fee is left to the IR pin), real AQR grafted from 2015",
+		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.09, 0.0079), aqrTrendInfoRatio),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
 	}
@@ -1734,7 +1740,7 @@ func aqrmfHedgedRecipe() Recipe {
 // measured-drift rationale). When the donor is unavailable (offline builds)
 // the reconstruction stands alone.
 func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	cfg := mfConfig(0.11, 0.0079)
+	cfg := mfConfig(0.09, 0.0079)
 	ids := append([]string{cfg.CashID, "EURCASH-EUR"}, cfg.Markets...)
 	fr, err := BuildFrame(extend(f), ids, from)
 	if err != nil {
@@ -1796,8 +1802,8 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, high vol target ~ the fund's ~18%), IR-pinned to the SG Trend Index, real CTA grafted from 2022",
-		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.15, 0.0075), sgTrendInfoRatio),
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, 16% vol target ~ the fund's realized 16.9%), IR-pinned to the SG Trend Index, real CTA grafted from 2022",
+		Build:           tsmom("CTA (TSMOM replication)", mfConfig(0.16, 0.0075), sgTrendInfoRatio),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
