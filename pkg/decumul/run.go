@@ -33,14 +33,8 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	growth := p.Capital - buffer
 	cost := growth // initial cost basis = invested amount
 
-	drawTh := p.Buffer.DrawThreshold
-	if drawTh == 0 {
-		drawTh = 0.10
-	}
-	refillCap := p.Buffer.RefillCap
-	if refillCap == 0 {
-		refillCap = 0.50
-	}
+	drawTh := p.Buffer.drawThreshold()
+	refillCap := p.Buffer.refillCap()
 
 	res := PathResult{Wealth: make([]float64, p.Years+1)}
 	res.Wealth[0] = p.Capital
