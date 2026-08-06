@@ -5779,5 +5779,294 @@
     "sources": [
       "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd"
     ]
+  },
+  {
+    "id": "GDE",
+    "isin": "US97717Y5684",
+    "aliases": [
+      "GDE"
+    ],
+    "name": "WisdomTree Efficient Gold Plus Equity Strategy Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "GDE",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "multi-asset",
+    "underlying": "90% S&P 500-type US large-cap equity + 90% notional gold futures overlay (capital-efficient 90/90)",
+    "benchmark_index": "WisdomTree Efficient Gold Plus Equity Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Technology": 31,
+      "Financials": 11,
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Health Care": 8,
+      "Industrials": 7,
+      "Other": 23
+    },
+    "distribution": "distributing",
+    "leverage": 1.8,
+    "notes": "Capital-efficient 90/90 equity+gold in one ticker; S&P 500 beta plus a gold hedge for inflation / equity-stress regimes",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.com/investments/etfs/alternatives/gde",
+      "https://stockanalysis.com/etf/gde/"
+    ]
+  },
+  {
+    "id": "GDMN",
+    "isin": "US97717Y5502",
+    "aliases": [
+      "GDMN"
+    ],
+    "name": "WisdomTree Efficient Gold Plus Gold Miners Strategy Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "GDMN",
+    "currency": "USD",
+    "fees": 0.45,
+    "asset_class": "multi-asset",
+    "underlying": "90% global gold-miners equity + 90% notional gold futures overlay (capital-efficient 90/90)",
+    "benchmark_index": "WisdomTree Efficient Gold Plus Gold Miners Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Canada": 50,
+      "US": 17,
+      "South Africa": 16,
+      "Australia": 10,
+      "Other": 7
+    },
+    "sectors": {
+      "Materials": 100
+    },
+    "distribution": "distributing",
+    "leverage": 1.8,
+    "notes": "Capital-efficient 90/90 gold miners + bullion; amplified gold-complex play for inflation / real-asset regimes",
+    "confidence": "medium",
+    "sources": [
+      "https://www.wisdomtree.com/investments/etfs/alternatives/gdmn",
+      "https://stockanalysis.com/etf/gdmn/"
+    ]
+  },
+  {
+    "id": "NTSI",
+    "isin": "US97717Y6344",
+    "aliases": [
+      "NTSI"
+    ],
+    "name": "WisdomTree International Efficient Core Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "NTSI",
+    "currency": "USD",
+    "fees": 0.26,
+    "asset_class": "multi-asset",
+    "underlying": "90% developed ex-US large/mid-cap equity + 60% notional US Treasury bond futures overlay (capital-efficient 90/60)",
+    "benchmark_index": "WisdomTree International Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Europe": 63,
+      "Japan": 23,
+      "Asia-Pacific ex-Japan": 8,
+      "Other": 6
+    },
+    "sectors": {
+      "Financials": 25,
+      "Industrials": 17,
+      "Technology": 12,
+      "Health Care": 10,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 7,
+      "Materials": 6,
+      "Other": 15
+    },
+    "distribution": "distributing",
+    "leverage": 1.5,
+    "notes": "Capital-efficient 90/60 international-developed equity + US Treasuries; ex-US diversifier with a built-in bond cushion",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntsi",
+      "https://stockanalysis.com/etf/ntsi/"
+    ]
+  },
+  {
+    "id": "NTSE",
+    "isin": "US97717Y6427",
+    "aliases": [
+      "NTSE"
+    ],
+    "name": "WisdomTree Emerging Markets Efficient Core Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "NTSE",
+    "currency": "USD",
+    "fees": 0.32,
+    "asset_class": "multi-asset",
+    "underlying": "90% emerging-markets equity + 60% notional US Treasury bond futures overlay (capital-efficient 90/60)",
+    "benchmark_index": "WisdomTree Emerging Markets Efficient Core Index",
+    "strategy": "futures-overlay",
+    "geography": {
+      "Taiwan": 25,
+      "China": 23,
+      "India": 18,
+      "South Korea": 11,
+      "Brazil": 5,
+      "Other": 18
+    },
+    "sectors": {
+      "Technology": 39,
+      "Financials": 17,
+      "Consumer Discretionary": 10,
+      "Communication Services": 8,
+      "Materials": 6,
+      "Other": 20
+    },
+    "distribution": "distributing",
+    "leverage": 1.5,
+    "notes": "Capital-efficient 90/60 emerging-markets equity + US Treasuries; EM growth exposure with a bond stabiliser",
+    "confidence": "high",
+    "sources": [
+      "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntse",
+      "https://stockanalysis.com/etf/ntse/"
+    ]
+  },
+  {
+    "id": "PSLDX",
+    "isin": "US72201F4330",
+    "aliases": [
+      "PSLDX"
+    ],
+    "name": "PIMCO StocksPLUS Long Duration Fund (Institutional)",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "PSLDX",
+    "currency": "USD",
+    "fees": 0.59,
+    "asset_class": "multi-asset",
+    "underlying": "S&P 500 exposure (swaps/futures) over an actively-managed long-duration US bond portfolio (~100% stocks + ~100% long bonds, capital-efficient)",
+    "benchmark_index": "S&P 500 + Bloomberg Long-Term Gov/Credit (blended)",
+    "strategy": "futures-overlay",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Technology": 33,
+      "Financials": 13,
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Health Care": 10,
+      "Other": 24
+    },
+    "distribution": "distributing",
+    "leverage": 2.0,
+    "notes": "Capital-efficient ~100/100 S&P 500 + long-duration Treasuries; high distributions, best held tax-sheltered; net ER 0.59% (gross far higher incl. financing). Yahoo adj-close mishandles its large distribution dates (spurious daily spikes) — treat return-based metrics with care",
+    "confidence": "medium",
+    "sources": [
+      "https://www.pimco.com/us/en/investments/mutual-fund/stocksplus-long-duration-fund",
+      "https://www.optimizedportfolio.com/psldx/"
+    ]
+  },
+  {
+    "id": "QSPRX",
+    "isin": "US00191K8493",
+    "aliases": [
+      "QSPRX"
+    ],
+    "name": "AQR Style Premia Alternative Fund Class R6",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "QSPRX",
+    "currency": "USD",
+    "fees": 1.42,
+    "asset_class": "other",
+    "underlying": "Market-neutral long/short across value, momentum, carry and defensive styles in equities, bonds, currencies and commodities",
+    "benchmark_index": "active (no index; ~0 market beta)",
+    "strategy": "other",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Market-neutral multi-style alternative (AQR); ~0 equity beta, returns independent of stocks and bonds; gross ER ~6% incl. short-financing, management ~1.4%",
+    "confidence": "medium",
+    "sources": [
+      "https://funds.aqr.com/en/funds/alternatives/aqr-style-premia-alternative-fund/qsprx",
+      "https://stockanalysis.com/quote/mutf/QSPRX/"
+    ]
+  },
+  {
+    "id": "IE00BG382Q20",
+    "isin": "IE00BG382Q20",
+    "name": "Winton Trend Fund (UCITS) I GBP Acc",
+    "ucits": true,
+    "source": "ft",
+    "xid": "119073344",
+    "currency": "GBP",
+    "fees": 1.05,
+    "asset_class": "managed-futures",
+    "underlying": "Pure systematic trend-following (CTA): long/short across equities, bonds, currencies and commodities via futures and forwards",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Winton flagship trend-following UCITS (GBP-hedged accumulating class); crisis-alpha diversifier uncorrelated to equities",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BG382Q20",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=IE00BG382Q20:GBP"
+    ]
+  },
+  {
+    "id": "LU1103257975",
+    "isin": "LU1103257975",
+    "name": "AQR Managed Futures UCITS Fund A USD",
+    "ucits": true,
+    "source": "ft",
+    "xid": "129525344",
+    "currency": "USD",
+    "fees": 0.79,
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "AQR managed-futures UCITS; multi-horizon trend signals; crisis-alpha diversifier",
+    "confidence": "high",
+    "sources": [
+      "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103257975:USD"
+    ]
+  },
+  {
+    "id": "LU0503879685",
+    "isin": "LU0503879685",
+    "name": "Man AHL Trend Alternative IN USD Acc",
+    "ucits": true,
+    "source": "ft",
+    "xid": "129519741",
+    "currency": "USD",
+    "fees": 1.66,
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following (Man AHL): long/short across equities, bonds, currencies, commodities and credit via futures and forwards",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Man AHL flagship trend UCITS; fast/medium/slow momentum; crisis-alpha diversifier (performance fee may apply)",
+    "confidence": "high",
+    "sources": [
+      "https://www.man.com/strategy/ahl-trend-alternative",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0503879685:USD"
+    ]
   }
 ]
