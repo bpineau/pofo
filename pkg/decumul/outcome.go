@@ -17,6 +17,8 @@ type Outcome struct {
 	Worst10yCAGR          float64 // worst (min) rolling 10-year real CAGR across all paths
 	Worst10yP5            float64 // 5th-percentile of paths' worst 10-year real CAGR (robust)
 	CDaR                  float64 // mean of the worst 5% path drawdowns (0.30 = 30%)
+	MedianCumTax          float64 // median cumulative tax paid over a path
+	EffectiveTaxRate      float64 // median per-path tax / gross withdrawn (0.15 = 15%)
 }
 
 // Outcome computes the bundle.
@@ -28,6 +30,8 @@ func (e Ensemble) Outcome() Outcome {
 	terminals := make([]float64, len(e.Paths))
 	underwater := make([]float64, len(e.Paths))
 	maxDDs := make([]float64, len(e.Paths))
+	taxes := make([]float64, len(e.Paths))
+	taxRates := make([]float64, len(e.Paths))
 	worsts := make([]float64, 0, len(e.Paths))
 	ruined, worst := 0, 0.0
 	for i, p := range e.Paths {
@@ -37,6 +41,10 @@ func (e Ensemble) Outcome() Outcome {
 		}
 		underwater[i] = float64(yearsUnderwater(p.Wealth))
 		maxDDs[i] = pathMaxDD(p.Wealth)
+		taxes[i] = p.TaxPaid
+		if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
+			taxRates[i] = p.TaxPaid / gross
+		}
 		if c, ok := worst10y(p.Wealth); ok {
 			worsts = append(worsts, c)
 			if c < worst {
@@ -52,6 +60,8 @@ func (e Ensemble) Outcome() Outcome {
 	if len(worsts) > 0 {
 		o.Worst10yP5 = metrics.Quantiles(worsts, 0.05)[0]
 	}
+	o.MedianCumTax = metrics.Quantiles(taxes, 0.50)[0]
+	o.EffectiveTaxRate = metrics.Quantiles(taxRates, 0.50)[0]
 	o.CDaR = conditionalTail(maxDDs, 0.05)
 	return o
 }

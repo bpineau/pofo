@@ -78,10 +78,13 @@ picked up. Priority: **P1** correctness, **P2** clarity/API, **P3** features.
 
 ## Features / "most useful FIRE info" (P3)
 
-10. **Surface the computed-but-hidden metrics.** `Outcome` already produces
-    median years underwater, worst-10y real CAGR and CDaR (and the recovery
-    histogram is shown); add cards/panels for the rest, plus median cumulative
-    tax and effective tax rate.
+10. ✅ **Done (2026-06-29).** **Surface the computed-but-hidden metrics.**
+    `Outcome` already produces median years underwater, worst-10y real CAGR and
+    CDaR (and the recovery histogram is shown); add cards/panels for the rest,
+    plus median cumulative tax and effective tax rate. Done: `Outcome` gained
+    `MedianCumTax` and `EffectiveTaxRate`, and the web UI now shows cards for
+    median years underwater, worst-10y real CAGR (both the robust p5 and the
+    min), CDaR, median cumulative tax and the effective tax rate.
 
 11. **Allocation A/B comparison.** Pin a baseline allocation and show a variant
     side by side (the original motivating question: "60/25/15 vs 20/20/…"),
