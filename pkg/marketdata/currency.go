@@ -75,6 +75,10 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 		for i, p := range s.Points {
 			out.Points[i] = Point{Date: p.Date, Close: p.Close * scale}
 		}
+		out.Dividends = make([]Dividend, len(s.Dividends))
+		for i, d := range s.Dividends {
+			out.Dividends[i] = Dividend{Date: d.Date, Amount: d.Amount * scale}
+		}
 		return &out, time.Time{}, nil
 	}
 
@@ -104,6 +108,16 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 			extrapolatedBefore = fx.Points[0].Date
 		}
 		cp.Points[i] = Point{Date: p.Date, Close: p.Close * scale * rate}
+	}
+	// Dividends convert at their ex-date with the same forward-filled
+	// crosses (the first rate extrapolated backward, like points).
+	cp.Dividends = make([]Dividend, len(s.Dividends))
+	for i, d := range s.Dividends {
+		rate, _, ok := fx.At(d.Date)
+		if !ok {
+			rate = fx.Points[0].Close
+		}
+		cp.Dividends[i] = Dividend{Date: d.Date, Amount: d.Amount * scale * rate}
 	}
 	return &cp, extrapolatedBefore, nil
 }
