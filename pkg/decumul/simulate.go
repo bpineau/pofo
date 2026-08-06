@@ -34,6 +34,25 @@ func (p Plan) Simulate(nPaths, workers int, seed uint64) Ensemble {
 	return Ensemble{Paths: paths, Years: p.Years}
 }
 
+// CapitalForRuin returns the smallest starting capital in [lo, hi] whose
+// ruin probability is at most target, by ~18 bisection steps. The same seed
+// is reused at every capital so Monte-Carlo noise does not break
+// monotonicity. Buffer.Years scales with NeedAnnual, not with capital, so
+// only Capital varies between evaluations.
+func (p Plan) CapitalForRuin(target, lo, hi float64, nPaths, workers int, seed uint64) float64 {
+	for i := 0; i < 18; i++ {
+		mid := (lo + hi) / 2
+		q := p
+		q.Capital = mid
+		if q.Simulate(nPaths, workers, seed).RuinProb() > target {
+			lo = mid
+		} else {
+			hi = mid
+		}
+	}
+	return (lo + hi) / 2
+}
+
 // RuinProb is the fraction of paths that ran out of money.
 func (e Ensemble) RuinProb() float64 {
 	if len(e.Paths) == 0 {
