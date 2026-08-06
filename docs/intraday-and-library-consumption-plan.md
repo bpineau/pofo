@@ -726,7 +726,7 @@ Expected: tests PASS, vet clean, `gofmt -l` prints nothing.
 
 - [ ] **Step 4: Check the new docs introduced no em-dashes**
 
-Run: `cd /Users/ben/projects/pofo && git diff --cached -U0 -- '*.go' README.md | grep '^+' | grep -c '(em-dash)'`
+Run: `cd /Users/ben/projects/pofo && git diff --cached -U0 -- '*.go' README.md | grep '^+' | grep -c "$(printf '\xe2\x80\x94')"`
 Expected: `0`. (Run after `git add` in Step 5 if needed, or use `git diff` against the working tree.)
 
 - [ ] **Step 5: Commit**
@@ -752,7 +752,7 @@ Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>"
 
 - [ ] **Step 1: List the affected files**
 
-Run: `cd /Users/ben/projects/pofo && grep -rl '(em-dash)' --include='*.go' --include='*.md' .`
+Run: `cd /Users/ben/projects/pofo && grep -rl "$(printf '\xe2\x80\x94')" --include='*.go' --include='*.md' .`
 Expected: a list of roughly 40 files. Record it.
 
 - [ ] **Step 2: Replace em-dashes file by file, preserving meaning**
@@ -766,7 +766,7 @@ Keep code identifiers and string literals untouched if a literal em-dash is ever
 
 - [ ] **Step 3: Verify zero em-dashes remain**
 
-Run: `cd /Users/ben/projects/pofo && grep -rc '(em-dash)' --include='*.go' --include='*.md' . | grep -v ':0$' || echo "clean"`
+Run: `cd /Users/ben/projects/pofo && grep -rc "$(printf '\xe2\x80\x94')" --include='*.go' --include='*.md' . | grep -v ':0$' || echo "clean"`
 Expected: `clean`.
 
 - [ ] **Step 4: Verify nothing else changed**

@@ -361,7 +361,7 @@ func tltRecipe() Recipe {
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
-		Name:            "PIMCO 25+Y zero-coupon: 1.65x long Treasury",
+		Name:            "PIMCO 25+Y zero-coupon: 1.65× long Treasury",
 		Method:          "1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
 		Build:           composite("ZROZ (1.65x long Treasury excess)", []Leg{{ID: "VUSTX", Weight: 1.65, Excess: true}}, "^IRX", 0),
 		ValidateAgainst: "ZROZ",
