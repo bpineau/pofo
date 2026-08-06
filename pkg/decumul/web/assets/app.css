@@ -41,6 +41,11 @@ p.meta{color:#666;font-size:.85rem;margin-top:0}
 .modeltab td .sub{color:#7a8699;font-size:.74rem}
 .modeltab td:first-of-type,.modeltab th:first-child{text-align:left}
 
+#pathsbox{margin:.8rem 0}
+#pathsbox label{font-size:.82rem;color:#445}
+#pathsbox select{font-size:.82rem}
+#fanSvg{margin-top:.3rem}
+
 #solve{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:.6rem 0;font-size:.85rem}
 #solve input{width:3.4rem}
 #solve button{padding:.25rem .8rem;cursor:pointer}

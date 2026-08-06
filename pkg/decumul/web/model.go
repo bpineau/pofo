@@ -36,6 +36,7 @@ type Params struct {
 	SideAnnual     float64 `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
 	SideUntilYear  int     `json:"sideUntilYear"`  // side income runs until this year, exclusive
 	Guardrails     bool    `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
+	FanModel       string  `json:"fanModel"`       // which model's paths the fan chart shows (default: central Student-t)
 }
 
 // Card is one labelled summary figure shown above the charts.
