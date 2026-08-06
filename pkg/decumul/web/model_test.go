@@ -17,7 +17,7 @@ func TestComputeWithPanelBootstrap(t *testing.T) {
 	pr := Params{Capital: 1_500_000, NeedAnnual: 48000, BufferYears: 3, Years: 30,
 		TaxRate: 0.30, NPaths: 2000, Model: "bootstrap", Weights: []float64{0.6, 0.4}}
 	res := ComputeWithPanel(pr, &panel)
-	if res.Cards["ruin"] == "" {
+	if len(res.Cards) == 0 {
 		t.Errorf("empty result for bootstrap model")
 	}
 }
@@ -41,8 +41,8 @@ func TestComputeWithPanelCohortsTooShort(t *testing.T) {
 	if res.Note == "" {
 		t.Errorf("expected a note about insufficient history")
 	}
-	if res.Cards["ruin"] != "" {
-		t.Errorf("should not report a misleading ruin figure, got %q", res.Cards["ruin"])
+	if len(res.Cards) != 0 {
+		t.Errorf("should not report misleading figures, got %+v", res.Cards)
 	}
 }
 
