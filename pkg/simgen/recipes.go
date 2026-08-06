@@ -37,6 +37,18 @@ func All() []Recipe {
 		rssbRecipe(),
 		vtRecipe(),
 		shyRecipe(),
+		scvwRecipe(),
+	}
+}
+
+func scvwRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00BSPLC413",
+		Name:            "SPDR MSCI USA Small Cap Value Weighted",
+		Method:          "ref. SCVW-REF (MSCI USA Small Cap Value Weighted index, 1997→), real ZPRV grafted from 2015",
+		Build:           refImport("SCVW-REF", "US small-cap value (index ref.)", 0.0030),
+		ValidateAgainst: "IE00BSPLC413",
+		SpliceReal:      "IE00BSPLC413",
 	}
 }
 
