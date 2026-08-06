@@ -106,7 +106,7 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 				Currency             string   `json:"currency"`
 				ExchangeTimezoneName string   `json:"exchangeTimezoneName"`
 				RegularMarketPrice   *float64 `json:"regularMarketPrice"`
-				RegularMarketTime    int64    `json:"regularMarketTime"`
+				RegularMarketTime    *int64   `json:"regularMarketTime"`
 			} `json:"result"`
 		} `json:"quoteResponse"`
 	}
@@ -115,7 +115,10 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 		return
 	}
 	for _, r := range resp.QuoteResponse.Result {
-		if r.RegularMarketPrice == nil || *r.RegularMarketPrice <= 0 {
+		// A price with no timestamp is not a quote: dated at the Unix epoch it
+		// splices a 1970 point into the caller's series, and nothing ever
+		// removes it. Yahoo omits the field on some halted and OTC lines.
+		if r.RegularMarketPrice == nil || *r.RegularMarketPrice <= 0 || r.RegularMarketTime == nil {
 			continue
 		}
 		loc, err := time.LoadLocation(r.ExchangeTimezoneName)
@@ -124,7 +127,7 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 		}
 		out[r.Symbol] = Quote{
 			Price:    *r.RegularMarketPrice,
-			Time:     time.Unix(r.RegularMarketTime, 0).In(loc),
+			Time:     time.Unix(*r.RegularMarketTime, 0).In(loc),
 			Currency: r.Currency,
 			Symbol:   r.Symbol,
 			Source:   "yahoo",

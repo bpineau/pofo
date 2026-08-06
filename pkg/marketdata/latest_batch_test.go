@@ -100,3 +100,37 @@ func TestLatestBatchCrumbRenewal(t *testing.T) {
 		t.Fatalf("crumb served %d times, want 2 (stale then fresh)", n)
 	}
 }
+
+// A price with no timestamp is not a quote. Dated at the Unix epoch it would
+// splice a 1970 point into the caller's persisted series, where nothing ever
+// removes it - and a series that suddenly starts in 1970 also defeats every
+// "have I already back-filled this?" test built on its first point.
+func TestLatestBatchSkipsQuotesWithoutTime(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
+		http.SetCookie(w, &http.Cookie{Name: "A3", Value: "ck"})
+		w.WriteHeader(http.StatusNotFound)
+	})
+	mux.HandleFunc("/v1/test/getcrumb", func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte("crumb1"))
+	})
+	mux.HandleFunc("/v7/finance/quote", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, `{"quoteResponse":{"result":[
+		 {"symbol":"AAPL","currency":"USD","exchangeTimezoneName":"America/New_York","regularMarketPrice":308.63,"regularMarketTime":1782999000},
+		 {"symbol":"HALTED","currency":"USD","exchangeTimezoneName":"America/New_York","regularMarketPrice":12.5}]}}`)
+	})
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	c := NewClient(t.TempDir())
+	c.CookieBase, c.ChartBase, c.SearchBase = srv.URL, srv.URL, srv.URL
+
+	got := c.LatestBatchLive(context.Background(), []string{"AAPL", "HALTED"})
+
+	if _, ok := got["HALTED"]; ok {
+		t.Fatalf("a timestampless price must not become a quote: %+v", got["HALTED"])
+	}
+	if q := got["AAPL"]; q.Price != 308.63 {
+		t.Fatalf("AAPL quote: %+v", q)
+	}
+}

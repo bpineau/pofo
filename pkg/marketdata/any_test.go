@@ -141,3 +141,66 @@ func constant(n int, v float64) []float64 {
 	}
 	return out
 }
+
+// liveVsCloseMux serves an ISIN that only the daily-close path can answer
+// (its resolved twin publishes history but no regular-market field) next to
+// a ticker with a live spot: the shape of a security whose ISIN is quoted
+// nowhere live while its own listing trades.
+func liveVsCloseMux(t *testing.T, resolved string, spot float64, at time.Time) *http.ServeMux {
+	t.Helper()
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprintf(w, `{"quotes":[{"symbol":%q,"longname":"Resolved Fund","quoteType":"ETF"}]}`, resolved)
+	})
+	mux.HandleFunc("/v8/finance/chart/"+resolved, func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, chartJSON(resolved, testDays(200), linear(200, 50)))
+	})
+	mux.HandleFunc("/v8/finance/chart/LIVE", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, spotJSON("USD", "America/New_York", spot, at))
+	})
+	return mux
+}
+
+// A live quote outranks id order: the ISIN comes first and answers, but only
+// with yesterday's close, while the ticker has a real market price. Taking
+// the first answer is what left a -20% session invisible for hours.
+func TestLatestAnyPrefersLiveOverEarlierClose(t *testing.T) {
+	at := time.Date(2024, 3, 1, 18, 0, 0, 0, time.UTC)
+	c, srv := newTestClient(t, t.TempDir(), liveVsCloseMux(t, "TWIN.US", 501.25, at))
+	defer srv.Close()
+
+	q, err := c.LatestAny(t.Context(), []string{"LU0000000009", "LIVE"}, QuoteOptions{Currency: "USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !q.Live || q.Price != 501.25 || q.Symbol != "LIVE" {
+		t.Fatalf("want the live ticker quote, got %+v", q)
+	}
+}
+
+// With no live answer anywhere, authority decides again: the first id keeps
+// the quote. A bare ticker can resolve to a same-currency twin listing of the
+// real instrument, so promoting it on liveness grounds alone would silently
+// price the wrong fund.
+func TestLatestAnyKeepsFirstCloseWhenNothingIsLive(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, `{"quotes":[{"symbol":"AUTH.US","longname":"Authoritative Fund","quoteType":"ETF"}]}`)
+	})
+	mux.HandleFunc("/v8/finance/chart/AUTH.US", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, chartJSON("AUTH.US", testDays(200), linear(200, 50)))
+	})
+	mux.HandleFunc("/v8/finance/chart/TWIN", func(w http.ResponseWriter, _ *http.Request) {
+		fmt.Fprint(w, chartJSON("TWIN", testDays(200), linear(200, 900)))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	q, err := c.LatestAny(t.Context(), []string{"LU0000000009", "TWIN"}, QuoteOptions{Currency: "USD"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q.Live || q.Symbol != "AUTH.US" {
+		t.Fatalf("want the authoritative ISIN close, got %+v", q)
+	}
+}
