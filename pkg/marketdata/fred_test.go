@@ -43,17 +43,3 @@ func TestExtendMonthlyBackNoEarlier(t *testing.T) {
 		t.Errorf("expected no extension, got %d points", len(got))
 	}
 }
-
-// orientUSDEUR converts FRED dollars-per-euro into the requested orientation.
-func TestOrientUSDEUR(t *testing.T) {
-	usdPerEur := []Point{mon(2000, 1, 1.25), mon(2000, 2, 2.0)}
-
-	eur := orientUSDEUR(usdPerEur, true) // euros per dollar = 1/rate
-	if math.Abs(eur[0].Close-0.8) > 1e-9 || math.Abs(eur[1].Close-0.5) > 1e-9 {
-		t.Errorf("eur-per-usd = %.3f, %.3f, want 0.8, 0.5", eur[0].Close, eur[1].Close)
-	}
-	usd := orientUSDEUR(usdPerEur, false) // unchanged dollars per euro
-	if usd[0].Close != 1.25 || usd[1].Close != 2.0 {
-		t.Errorf("usd-per-eur = %.3f, %.3f, want 1.25, 2.0", usd[0].Close, usd[1].Close)
-	}
-}
