@@ -1,0 +1,14 @@
+# Aggressive Accumulation (UCITS, my curated build)
+# Idea: built for the wealth-building phase — a heavy global-equity engine with
+#   evidence-based factor tilts (small-cap value, momentum) and a thin managed-
+#   futures ballast so the inevitable equity crashes hurt a little less. ~90%
+#   equity-risk, designed to be held through, and bought into, for decades.
+# Inspired by: factor investing (Fama-French) + a light crisis-alpha overlay.
+# Pair with regular contributions (see dca-accumulation-demo.txt).
+#meta rebalance:180
+
+45    IE00B4L5Y983    # World core (IWDA)
+15    IE00BKM4GZ66    # Emerging Markets (EIMI)
+15    IE0003R87OG3    # Global Small-Cap Value (AVWS)
+15    IE00BP3QZ825    # World Momentum (IWMO)
+10    KMLMSIM         # Managed futures ballast (UCITS: iMGP DBi)

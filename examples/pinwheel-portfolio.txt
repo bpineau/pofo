@@ -1,0 +1,15 @@
+# Pinwheel Portfolio (Portfolio Charts) — modernized, UCITS
+# Idea: four equity quadrants (total / large value / small value / EM or intl)
+#   spun around a balanced bond+gold+REIT core — broad, diversified, mild tilts.
+# Inspired by: Portfolio Charts 'Pinwheel'.
+#   https://portfoliocharts.com/portfolio/pinwheel-portfolio/
+# UCITS.
+
+15    IE00B4L5Y983    # World (IWDA)
+10    IE00BP3QZB59    # World Value (IWVL)
+10    IE0003R87OG3    # Global SC Value (AVWS)
+10    IE00BKM4GZ66    # Emerging Markets (EIMI)
+15    IE00B4WXJJ64    # € Govt Bond (IEGA)
+15    IE00B1FZSC47    # TIPS (ITPS)
+15    IE00B4ND3602    # Gold (IGLN)
+10    IE00B1FZS350    # Global REITs (IWDP)

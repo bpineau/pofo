@@ -1,0 +1,8 @@
+# Aggressive 80/20 — world equity + global bonds
+# Idea: keep 80% in global equity for growth, 20% in bonds to soften the
+#   worst drawdowns without giving up much long-run return.
+# Inspired by: the classic 80/20 'growth' allocation (e.g. Vanguard LifeStrategy 80).
+# UCITS, accumulation-leaning.
+
+80    IE00BK5BQT80    # All-World (VWRA)
+20    IE00BDBRDM35    # Global Aggregate Bond EUR-H (AGGH)

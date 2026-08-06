@@ -1,0 +1,8 @@
+# Developed World + Emerging Markets (cap-weighted ACWI, built cheaply)
+# Idea: replicate MSCI ACWI with two cheaper building blocks (World ~88%,
+#   EM ~12%) — broad equity beta at a lower blended fee.
+# Inspired by: the classic Bogleheads two-ETF world equity build.
+# UCITS, accumulating, 100% equity.
+
+88    IE00B4L5Y983    # iShares Core MSCI World (IWDA)
+12    IE00BKM4GZ66    # iShares Core MSCI EM IMI (EIMI)

@@ -1,0 +1,13 @@
+# Return Stacking — stocks + bonds + managed futures (capital-efficient)
+# Idea: stack uncorrelated return streams on top of each other. RSSB gives
+#   $1 stocks + $1 bonds per $1; adding a managed-futures stack layers in
+#   crisis-alpha trend without selling down equities. ~200% notional, one
+#   balanced-but-diversified package.
+# Inspired by: Return Stacked ETFs (Newfound/ReSolve); Corey Hoffstein.
+#   https://www.returnstackedetfs.com/
+# US-listed (no UCITS equivalent yet); history extended via simulation.
+#meta rebalance:90
+
+60    RSSBSIM         # Return Stacked Global Stocks & Bonds (RSSB)
+25    RSST            # Return Stacked US Stocks & Managed Futures (RSST)
+15    GOLDSIM         # Gold (UCITS: IGLN)

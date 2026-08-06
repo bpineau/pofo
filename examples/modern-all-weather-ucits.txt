@@ -1,0 +1,16 @@
+# Modern All-Weather (UCITS-first, curated)
+# Idea: an all-weather that a European investor can actually buy today — World
+#   equity, long Treasuries, TIPS, gold, broad commodities, managed futures and
+#   a slice of long volatility — risk spread across growth, deflation, inflation
+#   and crisis. My own blend, leaning UCITS where a UCITS exists.
+# Inspired by: Dalio All-Weather + Artemis Dragon, made investable in UCITS.
+# Trend/long-history sleeves use SIM where the UCITS is young; buy-routes noted.
+#meta rebalance:180
+
+30    IE00B4L5Y983    # World equity (IWDA)
+20    IE00BSKRJZ44    # $ Treasury 20+yr (IDTL)
+10    IE00B1FZSC47    # TIPS (ITPS)
+12    IE00B4ND3602    # Gold (IGLN)
+8     IE00BDFL4P12    # Broad commodities (ICOM)
+12    KMLMSIM         # Managed futures (UCITS: iMGP DBi LU2951555585)
+8     LU0319687124    # Long volatility (Amundi Volatility World)

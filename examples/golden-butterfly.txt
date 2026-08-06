@@ -1,0 +1,13 @@
+# Golden Butterfly (Tyler / Portfolio Charts) — modernized, UCITS-route
+# Idea: the Permanent Portfolio with an extra small-cap-value growth wing —
+#   20% each total-market equity, small-cap value, long bonds, short bonds, gold.
+# Inspired by: Tyler, Portfolio Charts.
+#   https://portfoliocharts.com/portfolio/golden-butterfly/
+# Backtest via long US history (SIM); UCITS: IWDA, ZPRV, IDTL, IB01/SHY, IGLN.
+#meta rebalance:365
+
+20    IWDASIM         # Total-market equity (UCITS: IWDA)
+20    IE00BSPLC413    # US Small-Cap Value (ZPRV)
+20    TLTSIM          # Long US Treasuries (UCITS: IDTL)
+20    SHYSIM          # Short US Treasuries (UCITS: IB01)
+20    GOLDSIM         # Gold (UCITS: IGLN)
