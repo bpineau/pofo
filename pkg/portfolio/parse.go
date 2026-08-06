@@ -31,6 +31,17 @@ type Spec struct {
 	// specify one (callers then apply their default).
 	RebalanceDays int
 
+	// Capital is the starting amount in base currency ("#meta
+	// capital:10000"); negative when absent (simulations then run on a
+	// relative base-100 index). Required when Contribute or Withdraw is
+	// set, so absolute flows have a meaningful scale.
+	Capital float64
+
+	// Contribute and Withdraw are periodic external flows
+	// ("#meta contribute:500/month", "#meta withdraw:4%/year").
+	Contribute Flow
+	Withdraw   Flow
+
 	// Leverage, set by "#meta leverage:on", keeps the weights as written
 	// instead of normalizing them: a sum above 100 % is financed by a
 	// negative cash position, below 100 % the residual sits in cash.
@@ -81,7 +92,7 @@ func ParseFile(path string) (*Spec, error) {
 // suffix. If the weights do not sum to 100 they are normalized and a
 // warning is recorded.
 func Parse(name string, r io.Reader) (*Spec, error) {
-	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1}
+	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1, Capital: -1}
 	sc := bufio.NewScanner(r)
 	lineNo := 0
 	for sc.Scan() {
@@ -136,6 +147,9 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	if sum <= 0 {
 		return nil, fmt.Errorf("weights sum to zero")
 	}
+	if (spec.Contribute.Active() || spec.Withdraw.Active()) && spec.Capital <= 0 {
+		return nil, fmt.Errorf("#meta contribute/withdraw need a starting amount: add \"#meta capital:<amount>\"")
+	}
 	if spec.Leverage {
 		// Explicit leverage: weights are fractions of the capital, as
 		// written; the residual (100−sum) becomes a cash position.
@@ -179,6 +193,59 @@ func Single(id string) *Spec {
 	}
 }
 
+// Flow is a periodic external cash flow: a fixed amount, or a percentage
+// of the current value when Percent is true, applied once per Period.
+type Flow struct {
+	Amount  float64 // absolute amount, or percent of value when Percent
+	Percent bool
+	Period  Period
+}
+
+// Active reports whether the flow is set.
+func (f Flow) Active() bool { return f.Amount > 0 }
+
+// Period is a calendar flow frequency.
+type Period string
+
+// Supported flow periods.
+const (
+	Weekly    Period = "week"
+	Monthly   Period = "month"
+	Quarterly Period = "quarter"
+	Yearly    Period = "year"
+)
+
+// parseFlow reads "500/month" or, when percentAllowed, "4%/year".
+func parseFlow(val string, percentAllowed bool) (Flow, error) {
+	amountStr, periodStr, found := strings.Cut(val, "/")
+	if !found {
+		return Flow{}, fmt.Errorf("%q: expected <amount>[%%]/<week|month|quarter|year>", val)
+	}
+	var f Flow
+	if strings.HasSuffix(amountStr, "%") {
+		if !percentAllowed {
+			return Flow{}, fmt.Errorf("%q: percentages are not supported here", val)
+		}
+		f.Percent = true
+		amountStr = strings.TrimSuffix(amountStr, "%")
+	}
+	amount, err := parseNumber(amountStr)
+	if err != nil || amount <= 0 {
+		return Flow{}, fmt.Errorf("%q: invalid amount", val)
+	}
+	if f.Percent && amount >= 100 {
+		return Flow{}, fmt.Errorf("%q: percentage out of range", val)
+	}
+	f.Amount = amount
+	switch Period(strings.ToLower(periodStr)) {
+	case Weekly, Monthly, Quarterly, Yearly:
+		f.Period = Period(strings.ToLower(periodStr))
+	default:
+		return Flow{}, fmt.Errorf("%q: unknown period (week, month, quarter or year)", val)
+	}
+	return f, nil
+}
+
 // metaDirective reports whether a trimmed line is a "#meta" directive and
 // returns its content, comment stripped.
 func metaDirective(line string) (bool, string) {
@@ -215,6 +282,24 @@ func (s *Spec) applyMeta(directives string) error {
 				return fmt.Errorf("#meta rebalance: %q is not a valid number of days", val)
 			}
 			s.RebalanceDays = n
+		case "capital":
+			f, err := parseNumber(val)
+			if err != nil || f <= 0 {
+				return fmt.Errorf("#meta capital: %q is not a valid amount", val)
+			}
+			s.Capital = f
+		case "contribute":
+			fl, err := parseFlow(val, false)
+			if err != nil {
+				return fmt.Errorf("#meta contribute: %v", err)
+			}
+			s.Contribute = fl
+		case "withdraw":
+			fl, err := parseFlow(val, true)
+			if err != nil {
+				return fmt.Errorf("#meta withdraw: %v", err)
+			}
+			s.Withdraw = fl
 		case "leverage":
 			switch strings.ToLower(val) {
 			case "on":

@@ -260,7 +260,7 @@ Options:
 
 	results := make([]*result, 0, len(specs))
 	for i, spec := range specs {
-		p := buildPortfolio(spec, seriesByID, feesFor)
+		p := buildPortfolio(spec, seriesByID, feesFor, opt.currency)
 		if spec.Leverage {
 			p.Leverage = true
 			p.BorrowSpread = spec.BorrowSpread
@@ -278,11 +278,14 @@ Options:
 			return fmt.Errorf("portfolio %s: %w", spec.Name, err)
 		}
 		if sim.Ruined {
-			log.Printf("warning: portfolio %s wiped out on %s (leverage) — series truncated",
-				spec.Name, sim.Dates[len(sim.Dates)-1].Format("2006-01-02"))
+			cause := "the leveraged exposure exhausted the net value"
+			if p.Withdraw.Active() && !p.Leverage {
+				cause = "withdrawals exhausted the capital"
+			}
+			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
+			log.Printf("warning: portfolio %s wiped out on %s — series truncated", spec.Name, when)
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"capital wiped out on %s: the leveraged exposure exhausted the net value; the series stops there",
-				sim.Dates[len(sim.Dates)-1].Format("2006-01-02")))
+				"capital wiped out on %s: %s; the series stops there", when, cause))
 		}
 		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(i), rebalanceDays: days})
 	}
@@ -313,7 +316,7 @@ Options:
 			return fmt.Errorf("portfolio %s: too few points in the common window", r.p.Name)
 		}
 		r.winDates = r.sim.Dates[i:j]
-		r.winValues = rebase(r.sim.Values[i:j])
+		r.winValues = rebase(r.sim.Index[i:j])
 		st, err := metrics.Compute(r.winDates, r.winValues)
 		if err != nil {
 			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
@@ -621,11 +624,15 @@ func convertToBase(c *marketdata.Client, s *marketdata.Series, opt *options) (*m
 	return out, nil
 }
 
-func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Series, feesFor func(string) (float64, bool)) *portfolio.Portfolio {
+func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Series, feesFor func(string) (float64, bool), baseCurrency string) *portfolio.Portfolio {
 	p := &portfolio.Portfolio{Name: spec.Name, Warnings: spec.Warnings}
 	if spec.EnvelopeFees > 0 {
 		p.EnvelopeFees = spec.EnvelopeFees
 	}
+	if spec.Capital > 0 {
+		p.Capital = spec.Capital
+	}
+	p.Contribute, p.Withdraw = spec.Contribute, spec.Withdraw
 	currencies := map[string]bool{}
 	for _, h := range spec.Holdings {
 		s := seriesByID[h.ID]
@@ -645,6 +652,9 @@ func buildPortfolio(spec *portfolio.Spec, seriesByID map[string]*marketdata.Seri
 		})
 		if s.Currency != "" {
 			currencies[s.Currency] = true
+		} else if baseCurrency != "" {
+			p.Warnings = append(p.Warnings, fmt.Sprintf(
+				"%s: unknown currency — left unconverted", s.Symbol))
 		}
 	}
 	if len(currencies) > 1 {
@@ -818,6 +828,53 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 	num := func(get func(metrics.Stats) float64) func(*result) (float64, string) {
 		return func(r *result) (float64, string) { v := get(r.stats); return v, fmtNum(v) }
 	}
+	// Money rows only appear when a portfolio declares a starting capital
+	// ("#meta capital:"). They describe the whole simulated span (not the
+	// common window) and follow the money: contributions and withdrawals
+	// included, unlike the time-weighted rows above them.
+	anyCapital := false
+	for _, r := range results {
+		if r.p.Capital > 0 {
+			anyCapital = true
+			break
+		}
+	}
+	money := func(get func(r *result) (float64, bool)) func(*result) (float64, string) {
+		return func(r *result) (float64, string) {
+			if r.p.Capital <= 0 {
+				return math.NaN(), "—"
+			}
+			v, ok := get(r)
+			if !ok {
+				return math.NaN(), "—"
+			}
+			return v, fmtAmount(v)
+		}
+	}
+	moneyDefs := []def{
+		{"Starting capital", "from \"#meta capital:\"",
+			money(func(r *result) (float64, bool) { return r.p.Capital, true }), 0},
+		{"Total contributed", "external money added over the whole simulated span",
+			money(func(r *result) (float64, bool) { return r.sim.Contributed, true }), 0},
+		{"Total withdrawn", "money taken out over the whole simulated span",
+			money(func(r *result) (float64, bool) { return r.sim.Withdrawn, true }), 0},
+		{"Final value", "worth at the end of the simulated span, flows included",
+			money(func(r *result) (float64, bool) { return r.sim.Values[len(r.sim.Values)-1], true }), 0},
+		{"IRR (money-weighted)", "annual rate weighting each contribution and withdrawal by its date",
+			func(r *result) (float64, string) {
+				if r.p.Capital <= 0 {
+					return math.NaN(), "—"
+				}
+				dates := append([]time.Time{r.sim.Dates[0]}, r.sim.FlowDates...)
+				flows := append([]float64{-r.p.Capital}, negate(r.sim.FlowAmounts)...)
+				irr, ok := metrics.IRR(dates, flows,
+					r.sim.Dates[len(r.sim.Dates)-1], r.sim.Values[len(r.sim.Values)-1])
+				if !ok {
+					return math.NaN(), "—"
+				}
+				return irr, fmtPct(irr)
+			}, +1},
+	}
 	defs := []def{
 		{"CAGR (annualized return)", "compound annual growth rate",
 			pct(func(s metrics.Stats) float64 { return s.CAGR }), +1},
@@ -895,6 +952,9 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			}, 0},
 	}
 
+	if anyCapital {
+		defs = append(defs, moneyDefs...)
+	}
 	rows := make([]report.StatRow, 0, len(defs))
 	for _, d := range defs {
 		row := report.StatRow{Label: d.label, Hint: d.hint}
@@ -954,6 +1014,34 @@ func markBest(cells []report.StatCell, vals []float64, better int) {
 			cells[i].Best = true
 		}
 	}
+}
+
+// fmtAmount renders a money amount with thin-space thousands separators.
+func fmtAmount(v float64) string {
+	s := fmt.Sprintf("%.0f", v)
+	neg := strings.HasPrefix(s, "-")
+	s = strings.TrimPrefix(s, "-")
+	var parts []string
+	for len(s) > 3 {
+		parts = append([]string{s[len(s)-3:]}, parts...)
+		s = s[:len(s)-3]
+	}
+	parts = append([]string{s}, parts...)
+	out := strings.Join(parts, "\u202f")
+	if neg {
+		out = "-" + out
+	}
+	return out
+}
+
+// negate returns a sign-flipped copy: portfolio flows (contributions
+// positive) become investor flows (money out of pocket negative).
+func negate(xs []float64) []float64 {
+	out := make([]float64, len(xs))
+	for i, x := range xs {
+		out[i] = -x
+	}
+	return out
 }
 
 func fmtPct(x float64) string {
