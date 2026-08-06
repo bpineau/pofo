@@ -60,16 +60,20 @@ func (pr Params) plan() decumul.Plan {
 	return p
 }
 
-// source picks the return model. With a non-nil panel and a non-parametric
-// Model, it resamples that panel under the live weights; otherwise it falls
-// back to the parametric source.
+// source picks the return model. With a non-nil (monthly) panel and a
+// non-parametric Model, it resamples that panel at monthly frequency under
+// the live weights and compounds to annual; otherwise it falls back to the
+// annual parametric source.
 func (pr Params) source(panel *scenario.Panel) scenario.Source {
 	if panel != nil && pr.Weights != nil {
+		months := pr.Years * 12
 		switch pr.Model {
 		case "bootstrap":
-			return scenario.BlockBootstrap{Panel: *panel, Weights: pr.Weights, BlockLen: 5, Periods: pr.Years}
+			inner := scenario.StationaryBootstrap{Panel: *panel, Weights: pr.Weights, MeanBlock: 24, Periods: months}
+			return scenario.Compounded{Inner: inner, Group: 12}
 		case "cohorts":
-			return scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: pr.Years}
+			inner := scenario.HistoricalCohorts{Panel: *panel, Weights: pr.Weights, Periods: months}
+			return scenario.Compounded{Inner: inner, Group: 12}
 		}
 	}
 	return scenario.ParametricSource{Mu: pr.Mu, Sigma: pr.Sigma, Df: pr.Df, Periods: pr.Years}
@@ -93,11 +97,15 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 	}
 	// The cohorts model cannot extrapolate beyond the available history:
 	// report the limit honestly instead of producing all-zero (certain-ruin)
-	// paths.
-	if hc, ok := p.Source.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
+	// paths. The historical source is wrapped in a Compounded, so unwrap it.
+	src := p.Source
+	if c, ok := src.(scenario.Compounded); ok {
+		src = c.Inner
+	}
+	if hc, ok := src.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
 		return Result{Note: fmt.Sprintf(
 			"Not enough history for a %d-year horizon under the cohorts model (only %d years of aligned data). Use the bootstrap or parametric model, or shorten the horizon.",
-			pr.Years, p.Source.(scenario.HistoricalCohorts).Panel.Periods())}
+			pr.Years, hc.Panel.Periods()/12)}
 	}
 	seed := uint64(7)
 
