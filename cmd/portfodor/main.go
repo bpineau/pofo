@@ -1509,12 +1509,12 @@ func buildStatRows(results []*result, benchmark string) []report.StatRow {
 			pct(func(s metrics.Stats) float64 { return s.MaxDrawdown }), +1},
 		{"TTR (longest recovery)", "duration of the longest stretch below a peak",
 			func(r *result) (float64, string) { return float64(r.stats.TTRDays), fmtTTR(r.stats) }, -1},
-		{"Weighted ongoing charges", "Σ weight × published TER, plus the extra-fees applied to the whole portfolio (only the latter are deducted from the simulation)",
+		{"Weighted ongoing charges", "Σ weight × published TER, plus the extra-fees applied to the whole portfolio (only the latter are deducted from the simulation); \"(i)\" means some component TER is unknown, so the figure is incomplete",
 			func(r *result) (float64, string) {
 				w, incomplete := weightedFees(r.p)
 				text := fmtPct(w / 100)
 				if incomplete && !math.IsNaN(w) {
-					text += " (incomplete)"
+					text += " (i)"
 				}
 				return w, text
 			}, -1},
