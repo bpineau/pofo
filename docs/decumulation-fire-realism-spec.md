@@ -101,7 +101,17 @@ documented and round-tripped through the URL hash.
 
 **Priority: P1.**
 
-### W3 — Capture sequence risk and the fat left tail
+### W3 — Capture sequence risk and the fat left tail ✅ Done (2026-06-29)
+
+Implemented the synthetic route (the bundled-dataset option was avoided given
+the stdlib-only / embedded-data and licensing constraints): a new
+`scenario.MarkovRegime` two-state source (calm/bear, sticky bear, stationary
+start) where bad years cluster into prolonged real drawdowns. Validated to
+produce a markedly worse 5th-percentile worst-5y return than i.i.d. at the same
+calm parameters. Exposed as a "Stress regimes" toggle (annual; bear state
+derived from the mu/sigma sliders), round-tripped through the URL hash. A
+bundled broad-sample historical panel (the highest-fidelity variant) remains a
+possible future enhancement.
 
 **Problem.** I.i.d. symmetric Student-t draws have no autocorrelation and no
 skew, so they under-produce the early-crash, prolonged-real-drawdown paths that
