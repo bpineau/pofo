@@ -92,16 +92,16 @@ func (c *Client) saveCache(s *Series, from time.Time) {
 // writeCacheFile writes data atomically, creating the cache directory on demand.
 func (c *Client) writeCacheFile(path string, data []byte) {
 	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
-		c.Logf("avertissement: répertoire de cache inutilisable: %v", err)
+		c.Logf("warning: cache directory unusable: %v", err)
 		return
 	}
 	tmp := path + ".tmp"
 	if err := os.WriteFile(tmp, data, 0o644); err != nil {
-		c.Logf("avertissement: écriture du cache: %v", err)
+		c.Logf("warning: cache write failed: %v", err)
 		return
 	}
 	if err := os.Rename(tmp, path); err != nil {
-		c.Logf("avertissement: écriture du cache: %v", err)
+		c.Logf("warning: cache write failed: %v", err)
 	}
 }
 

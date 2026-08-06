@@ -2,43 +2,43 @@
 // prices (daily closes) from public sources, addressed by ticker, ISIN or
 // alias.
 //
-// # Résolution
+// # Resolution
 //
-// Un identifiant passe par les étapes suivantes (voir ResolveCanonical):
+// An identifier goes through the following steps (see ResolveCanonical):
 //
-//  1. les aliases intégrés (GOLD → XAUUSD, BHMG → GG00BQBFY362, …);
-//  2. la liste embarquée ticker → ISIN des ETF/OPCVM européens (FundISIN);
-//  3. le catalogue intégré de résolutions épinglées (Catalog), qui rend les
-//     actifs courants déterministes et indépendants des moteurs de recherche;
-//  4. sinon, une résolution multi-sources: chaque candidat de la recherche
-//     Yahoo (entrées « fonds » d'abord), puis le Financial Times, puis
-//     l'identifiant Morningstar découvert via Boursorama — la série à
-//     l'historique le plus profond gagne, et la résolution est mise en cache.
+//  1. the built-in aliases (GOLD → XAUUSD, BHMG → GG00BQBFY362, …);
+//  2. the embedded ticker → ISIN list of European ETFs and mutual funds
+//     (FundISIN);
+//  3. the built-in catalog of pinned resolutions (Catalog), which makes
+//     common assets deterministic and independent of search engines;
+//  4. otherwise, a multi-source resolution: every candidate from the Yahoo
+//     search ("fund" entries first), then the Financial Times, then the
+//     Morningstar identifier discovered via Boursorama — the series with
+//     the deepest history wins, and the resolution is cached.
 //
 // # Sources
 //
-// Yahoo Finance (clôtures ajustées), Stooq (secours tickers), Financial
-// Times et Morningstar (valeurs liquidatives des fonds européens). Les
-// téléchargements sont mis en cache sur disque (JSON, un fichier par
-// instrument); un rafraîchissement en échec sert la donnée périmée avec un
-// avertissement plutôt que d'échouer.
+// Yahoo Finance (adjusted closes), Stooq (ticker fallback), Financial
+// Times and Morningstar (NAVs of European funds). Downloads are cached on
+// disk (JSON, one file per instrument); a failed refresh serves the stale
+// data with a warning rather than failing.
 //
-// # Données simulées
+// # Simulated data
 //
-// ReadSimdata/WriteSimdata lisent et écrivent les historiques simulés
-// permanents (datasets/simdata/) produits par le package simgen;
-// ExtendBack recolle ces séries — ou un proxy (ProxySymbol) — devant les
-// cotations réelles. La convention « suffixe SIM » (DBMFSIM = DBMF avec
-// extension simulée) est décodée par SplitSim.
+// ReadSimdata/WriteSimdata read and write the permanent simulated histories
+// (datasets/simdata/) produced by the simgen package; ExtendBack splices
+// those series — or a proxy (ProxySymbol) — in front of the real quotes.
+// The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
+// decoded by SplitSim.
 //
-// # Boîte à outils
+// # Toolbox
 //
-//   - Align fusionne les calendriers de cotation de plusieurs séries
-//     (union des dates, cours forward-fillés) ;
-//   - Fees renvoie le TER publié d'un actif (catalogue épinglé, cache
-//     disque, sinon tearsheets FT et justETF) ;
-//   - UCITSFlag/GuessUCITS et LooksDistributing qualifient les fonds ;
-//   - CanonicalID normalise tout identifiant accepté (alias, ISIN, ticker
-//     de la liste embarquée) vers sa forme canonique ;
-//   - IsISIN valide un ISIN, clé de contrôle comprise.
+//   - Align merges the trading calendars of several series (union of
+//     dates, forward-filled prices);
+//   - Fees returns an asset's published TER (pinned catalog, disk cache,
+//     otherwise FT tearsheets and justETF);
+//   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
+//   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker
+//     from the embedded list) to its canonical form;
+//   - IsISIN validates an ISIN, check digit included.
 package marketdata

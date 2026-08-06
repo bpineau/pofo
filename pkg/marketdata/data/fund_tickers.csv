@@ -1,10 +1,10 @@
-# Correspondance ticker → ISIN pour les ETF/OPCVM européens courants chez les
-# investisseurs individuels (Finary, r/vosfinances, r/eupersonalfinance…).
-# Format: ISIN;nom;tickers (séparés par des espaces, toutes places confondues)
-# Les tickers US n'y figurent pas: ils se résolvent directement sur Yahoo.
-# Chaque ISIN a été validé contre l'API de recherche du Financial Times.
+# Ticker → ISIN mapping for the European ETFs and mutual funds common among
+# retail investors (Finary, r/vosfinances, r/eupersonalfinance…).
+# Format: ISIN;name;tickers (space-separated, all exchanges combined)
+# US tickers are not listed: they resolve directly on Yahoo.
+# Each ISIN has been validated against the Financial Times search API.
 #
-# — Monde / All-Country —
+# — World / All-Country —
 IE00B4L5Y983;iShares Core MSCI World UCITS ETF USD Acc;IWDA SWDA EUNL
 IE00BK5BQT80;Vanguard FTSE All-World UCITS ETF USD Acc;VWCE VWRA
 IE00B3RBWM25;Vanguard FTSE All-World UCITS ETF USD Dist;VWRL VWRD
@@ -35,7 +35,7 @@ FR0013412020;Amundi PEA Émergents ESG UCITS ETF Acc;PAEEM
 FR0013412038;Amundi PEA MSCI Europe UCITS ETF Acc;PCEU
 FR0007052782;Amundi CAC 40 UCITS ETF Dist;CAC
 #
-# — S&P 500 / actions US —
+# — S&P 500 / US equities —
 IE00B5BMR087;iShares Core S&P 500 UCITS ETF USD Acc;CSPX CSP1 SXR8
 IE0031442068;iShares Core S&P 500 UCITS ETF USD Dist;IUSA
 IE00B3XXRP09;Vanguard S&P 500 UCITS ETF USD Dist;VUSA VUSD
@@ -63,27 +63,27 @@ IE00B52VJ196;iShares MSCI Europe SRI UCITS ETF EUR Acc;IESE
 DE0005933931;iShares Core DAX UCITS ETF (DE);EXS1
 LU0274211480;Xtrackers DAX UCITS ETF 1C;DBXD
 #
-# — Émergents —
+# — Emerging markets —
 IE00BKM4GZ66;iShares Core MSCI EM IMI UCITS ETF USD Acc;EIMI EMIM IS3N
 IE00B3VVMM84;Vanguard FTSE Emerging Markets UCITS ETF USD Dist;VFEM
 IE00BK5BR733;Vanguard FTSE Emerging Markets UCITS ETF USD Acc;VFEA
 LU1681045370;Amundi MSCI Emerging Markets Swap UCITS ETF EUR Acc;AEEM
 IE00BTJRMP35;Xtrackers MSCI Emerging Markets UCITS ETF 1C;XMME
 #
-# — Obligations / monétaire —
+# — Bonds / money market —
 LU0290358497;Xtrackers II EUR Overnight Rate Swap UCITS ETF 1C;XEON
 IE00BDBRDM35;iShares Core Global Aggregate Bond UCITS ETF USD Dist;AGGG
 IE00B3DKXQ41;iShares € Aggregate Bond ESG SRI UCITS ETF EUR Dist;IEAG
 IE00BGSF1X88;iShares $ Treasury Bond 0-1yr UCITS ETF USD Acc;IB01
 IE00BSKRJZ44;iShares $ Treasury Bond 20+yr UCITS ETF USD Dist;IDTL DTLA
 #
-# — Or / matières premières —
+# — Gold / commodities —
 IE00B579F325;Invesco Physical Gold ETC;SGLD 8PSG
 JE00B1VS3770;WisdomTree Physical Gold ETC;PHAU PHGP
 DE000A0S9GB0;Xetra-Gold ETC;4GLD
 IE00B4ND3602;iShares Physical Gold ETC;IGLN
 #
-# — Facteurs / dividendes / small caps —
+# — Factors / dividends / small caps —
 IE00B8GKDB10;Vanguard FTSE All-World High Dividend Yield UCITS ETF Dist;VHYL
 NL0011683594;VanEck Morningstar Developed Dividend Leaders UCITS ETF;TDIV
 IE00BSPLC413;SPDR MSCI USA Small Cap Value Weighted UCITS ETF;ZPRV
@@ -94,7 +94,7 @@ IE00BP3QZB59;iShares Edge MSCI World Value Factor UCITS ETF USD Acc;IWVL
 IE0003R87OG3;Avantis Global Small Cap Value UCITS ETF USD Acc;AVWS
 IE00BJRCLL96;JPM Global Equity Multi-Factor UCITS ETF USD Acc;JPGL
 #
-# — Allocations / thématiques / leviers —
+# — Allocations / thematics / leveraged —
 IE00BMVB5R75;Vanguard LifeStrategy 80% Equity UCITS ETF EUR Acc;VNGA80
 IE00BMVB5P51;Vanguard LifeStrategy 60% Equity UCITS ETF EUR Acc;VNGA60
 IE00B1XNHC34;iShares Global Clean Energy Transition UCITS ETF USD Dist;INRG

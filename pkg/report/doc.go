@@ -1,12 +1,12 @@
-// Package report met en forme les résultats de comparaison de portefeuilles
-// à partir d'un modèle unique (Page) :
+// Package report formats portfolio comparison results from a single model
+// (Page):
 //
-//   - Render écrit un document HTML autonome — graphes SVG embarqués,
-//     comparaison et tableau de statistiques en tête, sections détaillées
-//     par portefeuille repliées (<details>), sans JavaScript ;
-//   - RenderText écrit le résumé pour le terminal (tableau aligné,
-//     meilleures cellules en vert ou étoilées).
+//   - Render writes a self-contained HTML document — embedded SVG charts,
+//     comparison and statistics table up top, detailed per-portfolio
+//     sections folded (<details>), no JavaScript;
+//   - RenderText writes the summary for the terminal (aligned table,
+//     best cells in green or starred).
 //
-// Les cellules marquées Best sont surlignées ; les libellés et notes sont
-// fournis par l'appelant, le paquet ne fait aucun calcul.
+// Cells marked Best are highlighted; labels and notes are supplied by the
+// caller, the package does no computation.
 package report

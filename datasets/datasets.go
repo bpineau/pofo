@@ -1,8 +1,8 @@
-// Package datasets embarque dans le binaire les données versionnées du
-// dépôt : les historiques simulés permanents (simdata/) et les séries de
-// référence importées (refdata/). Le binaire peut ainsi tourner depuis
-// n'importe quel répertoire ; après une régénération (-gen-simdata), une
-// recompilation est nécessaire pour ré-embarquer les fichiers.
+// Package datasets embeds the repository's versioned data into the binary:
+// the permanent simulated histories (simdata/) and the imported reference
+// series (refdata/). The binary can therefore run from any directory; after
+// a regeneration (-gen-simdata), a recompilation is needed to re-embed the
+// files.
 package datasets
 
 import (
@@ -17,7 +17,7 @@ var bundle embed.FS
 func Simdata() fs.FS {
 	sub, err := fs.Sub(bundle, "simdata")
 	if err != nil {
-		panic(err) // structure du dépôt cassée: impossible au runtime
+		panic(err) // broken repository layout: impossible at runtime
 	}
 	return sub
 }

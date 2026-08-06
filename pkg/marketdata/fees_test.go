@@ -18,48 +18,48 @@ func TestFeesFromFTFundsTearsheet(t *testing.T) {
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 
-	// LU… inconnu du catalogue: passe par le tearsheet FT (EUR d'abord).
+	// An ISIN unknown to the catalog: goes through the FT tearsheet (EUR first).
 	ter, ok := c.Fees("FR0000120271")
 	if !ok || ter != 1.49 {
-		t.Fatalf("Fees = %v, %v — attendu 1.49", ter, ok)
+		t.Fatalf("Fees = %v, %v — want 1.49", ter, ok)
 	}
-	// Second appel: servi par le cache disque, serveur mort.
+	// Second call: served from the disk cache, dead server.
 	srv.Close()
 	c2 := NewClient(c.CacheDir)
 	stubAllBases(c2, srv.URL)
 	if ter, ok := c2.Fees("FR0000120271"); !ok || ter != 1.49 {
-		t.Fatalf("Fees depuis le cache = %v, %v", ter, ok)
+		t.Fatalf("Fees from the cache = %v, %v", ter, ok)
 	}
 }
 
 func TestFeesMissRecorded(t *testing.T) {
-	mux := http.NewServeMux() // aucune source ne répond
+	mux := http.NewServeMux() // no source responds
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 	if _, ok := c.Fees("FR0000120271"); ok {
-		t.Fatal("frais inattendus")
+		t.Fatal("unexpected fees")
 	}
-	// L'échec est mémorisé: pas de nouvelle requête.
+	// The miss is recorded: no new request.
 	srv.Close()
 	c2 := NewClient(c.CacheDir)
 	stubAllBases(c2, srv.URL)
 	if _, ok := c2.Fees("FR0000120271"); ok {
-		t.Fatal("le miss devait être en cache")
+		t.Fatal("the miss should have been cached")
 	}
 }
 
 func TestFeesPinnedInCatalog(t *testing.T) {
-	// Une entrée du catalogue avec frais épinglés ne déclenche aucun appel.
+	// A catalog entry with pinned fees triggers no network call.
 	mux := http.NewServeMux()
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 	for _, e := range catalog {
 		if e.Fees > 0 {
 			if ter, ok := c.Fees(e.ID); !ok || ter != e.Fees {
-				t.Errorf("Fees(%s) = %v, %v — attendu %v", e.ID, ter, ok, e.Fees)
+				t.Errorf("Fees(%s) = %v, %v — want %v", e.ID, ter, ok, e.Fees)
 			}
 			return
 		}
 	}
-	t.Skip("aucune entrée du catalogue n'a encore de frais épinglés")
+	t.Skip("no catalog entry has pinned fees yet")
 }

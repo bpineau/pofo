@@ -10,63 +10,63 @@ import (
 
 func TestParseBasic(t *testing.T) {
 	in := `
-# commentaire
+# comment
 60   VOO    Vanguard S&P 500
-40	BND  obligations US
+40	BND  US bonds
 `
 	spec, err := Parse("test", strings.NewReader(in))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(spec.Holdings) != 2 {
-		t.Fatalf("attendu 2 lignes, trouvé %d", len(spec.Holdings))
+		t.Fatalf("want 2 lines, got %d", len(spec.Holdings))
 	}
 	h := spec.Holdings[0]
 	if h.ID != "VOO" || math.Abs(h.Weight-0.60) > 1e-12 || h.Note != "Vanguard S&P 500" {
-		t.Errorf("ligne 1 mal lue: %+v", h)
+		t.Errorf("line 1 misread: %+v", h)
 	}
 	h = spec.Holdings[1]
-	if h.ID != "BND" || math.Abs(h.Weight-0.40) > 1e-12 || h.Note != "obligations US" {
-		t.Errorf("ligne 2 mal lue: %+v", h)
+	if h.ID != "BND" || math.Abs(h.Weight-0.40) > 1e-12 || h.Note != "US bonds" {
+		t.Errorf("line 2 misread: %+v", h)
 	}
 	if len(spec.Warnings) != 0 {
-		t.Errorf("pas de warning attendu, trouvé %v", spec.Warnings)
+		t.Errorf("no warning expected, got %v", spec.Warnings)
 	}
 }
 
 func TestParseInlineComments(t *testing.T) {
 	in := `
-# Portefeuille de test
-# https://exemple.invalid/doc
+# Test portfolio
+# https://example.invalid/doc
 
-60 VOO  note utile # le S&P 500
-40 BND# collé au ticker
+60 VOO  useful note # the S&P 500
+40 BND# glued to the ticker
 `
 	spec, err := Parse("t", strings.NewReader(in))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(spec.Holdings) != 2 {
-		t.Fatalf("2 lignes attendues, trouvé %d", len(spec.Holdings))
+		t.Fatalf("want 2 lines, got %d", len(spec.Holdings))
 	}
-	if h := spec.Holdings[0]; h.ID != "VOO" || h.Note != "note utile" {
-		t.Errorf("commentaire mal retiré: %+v", h)
+	if h := spec.Holdings[0]; h.ID != "VOO" || h.Note != "useful note" {
+		t.Errorf("comment not stripped: %+v", h)
 	}
 	if h := spec.Holdings[1]; h.ID != "BND" || h.Note != "" {
-		t.Errorf("commentaire collé mal retiré: %+v", h)
+		t.Errorf("glued comment not stripped: %+v", h)
 	}
 }
 
 func TestParseDecimalCommaAndPercent(t *testing.T) {
-	spec, err := Parse("t", strings.NewReader("33,5% IWDA.AS\n66.5 IE00B4L5Y983 monde"))
+	spec, err := Parse("t", strings.NewReader("33,5% IWDA.AS\n66.5 IE00B4L5Y983 world"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if math.Abs(spec.Holdings[0].RawWeight-33.5) > 1e-12 {
-		t.Errorf("virgule décimale: %v", spec.Holdings[0].RawWeight)
+		t.Errorf("decimal comma: %v", spec.Holdings[0].RawWeight)
 	}
 	if math.Abs(spec.Holdings[1].RawWeight-66.5) > 1e-12 {
-		t.Errorf("point décimal: %v", spec.Holdings[1].RawWeight)
+		t.Errorf("decimal point: %v", spec.Holdings[1].RawWeight)
 	}
 }
 
@@ -76,16 +76,16 @@ func TestParseNormalizesWeights(t *testing.T) {
 		t.Fatal(err)
 	}
 	if len(spec.Warnings) != 1 {
-		t.Fatalf("warning de normalisation attendu, trouvé %v", spec.Warnings)
+		t.Fatalf("normalization warning expected, got %v", spec.Warnings)
 	}
 	if math.Abs(spec.Holdings[0].Weight-1.0/3) > 1e-12 || math.Abs(spec.Holdings[1].Weight-2.0/3) > 1e-12 {
-		t.Errorf("poids non normalisés: %+v", spec.Holdings)
+		t.Errorf("weights not normalized: %+v", spec.Holdings)
 	}
 }
 
 func TestParseMetaRebalance(t *testing.T) {
 	in := `
-#meta rebalance:30   # commentaire toléré
+#meta rebalance:30   # comment tolerated
 60 VOO
 40 BND
 `
@@ -94,105 +94,105 @@ func TestParseMetaRebalance(t *testing.T) {
 		t.Fatal(err)
 	}
 	if spec.RebalanceDays != 30 {
-		t.Errorf("RebalanceDays = %d, attendu 30", spec.RebalanceDays)
+		t.Errorf("RebalanceDays = %d, want 30", spec.RebalanceDays)
 	}
 	if spec.Meta["rebalance"] != "30" {
-		t.Errorf("Meta brut: %+v", spec.Meta)
+		t.Errorf("raw Meta: %+v", spec.Meta)
 	}
 
-	// Sans directive: -1 (le défaut de l'appelant s'applique).
+	// Without a directive: -1 (the caller's default applies).
 	spec, err = Parse("t", strings.NewReader("100 VOO"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if spec.RebalanceDays != -1 {
-		t.Errorf("RebalanceDays sans directive = %d, attendu -1", spec.RebalanceDays)
+		t.Errorf("RebalanceDays without directive = %d, want -1", spec.RebalanceDays)
 	}
 
-	// rebalance:0 = jamais rebalancer (distinct de non spécifié).
+	// rebalance:0 = never rebalance (distinct from unspecified).
 	spec, err = Parse("t", strings.NewReader("#meta rebalance:0"+"\n"+"100 VOO"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if spec.RebalanceDays != 0 {
-		t.Errorf("RebalanceDays = %d, attendu 0", spec.RebalanceDays)
+		t.Errorf("RebalanceDays = %d, want 0", spec.RebalanceDays)
 	}
 
-	// Clé inconnue: avertissement, pas d'erreur.
+	// Unknown key: warning, not an error.
 	spec, err = Parse("t", strings.NewReader("#meta fancy:yes"+"\n"+"100 VOO"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(spec.Warnings) != 1 {
-		t.Errorf("warning attendu pour clé inconnue: %v", spec.Warnings)
+		t.Errorf("warning expected for unknown key: %v", spec.Warnings)
 	}
 
-	// "#metadata" n'est pas une directive, juste un commentaire.
+	// "#metadata" is not a directive, just a comment.
 	if _, err := Parse("t", strings.NewReader("#metadata blabla"+"\n"+"100 VOO")); err != nil {
-		t.Errorf("#metadata doit rester un commentaire: %v", err)
+		t.Errorf("#metadata must stay a comment: %v", err)
 	}
 
-	// Valeur invalide: erreur explicite.
-	if _, err := Parse("t", strings.NewReader("#meta rebalance:souvent"+"\n"+"100 VOO")); err == nil {
-		t.Error("erreur attendue pour une valeur non numérique")
+	// Invalid value: explicit error.
+	if _, err := Parse("t", strings.NewReader("#meta rebalance:often"+"\n"+"100 VOO")); err == nil {
+		t.Error("expected error for a non-numeric value")
 	}
 }
 
 func TestParseFeesColumnAndEnvelope(t *testing.T) {
 	in := `
-#meta extra-fees:0,60  # enveloppe assurance-vie
-60 VOO 0.03  S&P 500     # 3e colonne numérique = TER
-40 BND       sans frais déclarés
+#meta extra-fees:0,60  # life-insurance envelope
+60 VOO 0.03  S&P 500     # 3rd numeric column = TER
+40 BND       no declared fees
 `
 	spec, err := Parse("t", strings.NewReader(in))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if spec.EnvelopeFees != 0.60 {
-		t.Errorf("EnvelopeFees = %v, attendu 0.60", spec.EnvelopeFees)
+		t.Errorf("EnvelopeFees = %v, want 0.60", spec.EnvelopeFees)
 	}
 	if h := spec.Holdings[0]; h.Fees != 0.03 || h.Note != "S&P 500" {
-		t.Errorf("frais colonne: %+v", h)
+		t.Errorf("fees column: %+v", h)
 	}
-	if h := spec.Holdings[1]; h.Fees != -1 || h.Note != "sans frais déclarés" {
-		t.Errorf("frais absents: %+v", h)
+	if h := spec.Holdings[1]; h.Fees != -1 || h.Note != "no declared fees" {
+		t.Errorf("absent fees: %+v", h)
 	}
-	// Frais hors limites: erreur.
+	// Fees out of range: error.
 	if _, err := Parse("t", strings.NewReader("60 VOO 25 note")); err == nil {
-		t.Error("erreur attendue pour des frais de 25 %/an")
+		t.Error("expected error for 25 %/year fees")
 	}
-	// Point décimal (convention par défaut) avec suffixe %.
+	// Decimal point (default convention) with a % suffix.
 	sp2bis, err := Parse("t", strings.NewReader("100 VOO 0.25% note"))
 	if err != nil || sp2bis.Holdings[0].Fees != 0.25 {
-		t.Errorf("frais 0.25%%: %+v, %v", sp2bis.Holdings, err)
+		t.Errorf("fees 0.25%%: %+v, %v", sp2bis.Holdings, err)
 	}
-	// Virgule décimale et suffixe %% acceptés en 3e colonne.
+	// Decimal comma and %% suffix accepted in the 3rd column.
 	sp2, err := Parse("t", strings.NewReader("100 VOO 0,25% note"))
 	if err != nil || sp2.Holdings[0].Fees != 0.25 || sp2.Holdings[0].Note != "note" {
-		t.Errorf("frais 0,25%%: %+v, %v", sp2.Holdings, err)
+		t.Errorf("fees 0,25%%: %+v, %v", sp2.Holdings, err)
 	}
-	// Une 3e colonne commençant par un chiffre mais non numérique = texte.
-	sp2, err = Parse("t", strings.NewReader("100 VOO 3a-objectif long terme"))
-	if err != nil || sp2.Holdings[0].Fees != -1 || !strings.HasPrefix(sp2.Holdings[0].Note, "3a-objectif") {
-		t.Errorf("3e colonne textuelle: %+v, %v", sp2.Holdings, err)
+	// A 3rd column starting with a digit but non-numeric = text.
+	sp2, err = Parse("t", strings.NewReader("100 VOO 3a-long-term goal"))
+	if err != nil || sp2.Holdings[0].Fees != -1 || !strings.HasPrefix(sp2.Holdings[0].Note, "3a-long-term") {
+		t.Errorf("textual 3rd column: %+v, %v", sp2.Holdings, err)
 	}
-	// Synonyme accepté.
+	// Accepted synonym.
 	sp, err := Parse("t", strings.NewReader("#meta envelope-fees:1"+"\n"+"100 VOO"))
 	if err != nil || sp.EnvelopeFees != 1 {
 		t.Errorf("envelope-fees: %+v, %v", sp, err)
 	}
-	// L'ancienne clé française n'existe plus: clé inconnue = simple warning.
+	// The old French key no longer exists: unknown key = plain warning.
 	sp, err = Parse("t", strings.NewReader("#meta frais:1"+"\n"+"100 VOO"))
 	if err != nil || sp.EnvelopeFees != -1 || len(sp.Warnings) != 1 {
-		t.Errorf("frais doit être une clé inconnue: %+v, %v", sp, err)
+		t.Errorf("frais must be an unknown key: %+v, %v", sp, err)
 	}
 }
 
 func TestSimulateEnvelopeFees(t *testing.T) {
-	n := 253 // ~1 an de bourse
+	n := 253 // ~1 trading year
 	p := &Portfolio{
 		Name:         "t",
-		EnvelopeFees: 2.52, // 0.01 %/jour de bourse
+		EnvelopeFees: 2.52, // 0.01 %/trading day
 		Assets: []Asset{
 			{Symbol: "A", Weight: 1, Series: constSeries("A", 0, n, 100)},
 		},
@@ -204,36 +204,36 @@ func TestSimulateEnvelopeFees(t *testing.T) {
 	want := 100 * math.Pow(1-0.0001, float64(n-1))
 	got := sim.Values[len(sim.Values)-1]
 	if math.Abs(got-want) > 1e-9 {
-		t.Errorf("valeur finale avec frais d'enveloppe: %v, attendu %v", got, want)
+		t.Errorf("final value with envelope fees: %v, want %v", got, want)
 	}
 }
 
 func TestParseLeverage(t *testing.T) {
-	// Sans leverage:on, somme > 100 avec poids > 100: erreur avec indice.
+	// Without leverage:on, sum > 100 with a weight > 100: error with a hint.
 	if _, err := Parse("t", strings.NewReader("150 SPY")); err == nil || !strings.Contains(err.Error(), "leverage:on") {
-		t.Errorf("erreur avec indice leverage attendue, eu: %v", err)
+		t.Errorf("expected error with leverage hint, got: %v", err)
 	}
-	// Avec leverage:on: poids gardés tels quels (fractions de capital).
+	// With leverage:on: weights kept as written (fractions of capital).
 	spec, err := Parse("t", strings.NewReader("#meta leverage:on\n#meta borrow-spread:0.5\n90 SPY\n60 IEF"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !spec.Leverage || spec.BorrowSpread != 0.5 {
-		t.Errorf("meta levier: %+v", spec)
+		t.Errorf("leverage meta: %+v", spec)
 	}
 	if spec.Holdings[0].Weight != 0.90 || spec.Holdings[1].Weight != 0.60 {
-		t.Errorf("poids non normalisés attendus: %+v", spec.Holdings)
+		t.Errorf("non-normalized weights expected: %+v", spec.Holdings)
 	}
-	if len(spec.Warnings) != 1 || !strings.Contains(spec.Warnings[0], "exposition totale 150") {
-		t.Errorf("warning d'exposition attendu: %v", spec.Warnings)
+	if len(spec.Warnings) != 1 || !strings.Contains(spec.Warnings[0], "total exposure 150") {
+		t.Errorf("exposure warning expected: %v", spec.Warnings)
 	}
-	// Plafond.
+	// Cap.
 	if _, err := Parse("t", strings.NewReader("#meta leverage:on\n400 SPY\n200 IEF")); err == nil {
-		t.Error("erreur de plafond 500 % attendue")
+		t.Error("expected 500 % cap error")
 	}
-	// Valeur invalide.
-	if _, err := Parse("t", strings.NewReader("#meta leverage:peut-etre\n100 SPY")); err == nil {
-		t.Error("erreur leverage invalide attendue")
+	// Invalid value.
+	if _, err := Parse("t", strings.NewReader("#meta leverage:maybe\n100 SPY")); err == nil {
+		t.Error("expected invalid leverage error")
 	}
 }
 
@@ -242,10 +242,10 @@ func TestSimulateLeverage(t *testing.T) {
 	flat := constSeries("A", 0, n, 100)
 	rate := &marketdata.Series{Symbol: "^IRX"}
 	for i := range n {
-		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 2.52}) // 0.01 %/jour
+		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 2.52}) // 0.01 %/day
 	}
-	// 150 % d'un actif plat, financé à 2.52 % + spread 2.52 %: la dette de
-	// 50 se compose à 0.02 %/jour, la NAV s'érode d'autant.
+	// 150 % of a flat asset, financed at 2.52 % + 2.52 % spread: the debt of
+	// 50 compounds at 0.02 %/day, eroding the NAV by as much.
 	p := &Portfolio{
 		Name: "t", Leverage: true, BorrowSpread: 2.52, Cash: rate,
 		Assets: []Asset{{Symbol: "A", Weight: 1.5, Series: flat}},
@@ -258,9 +258,9 @@ func TestSimulateLeverage(t *testing.T) {
 	want := 150 - wantDebt
 	got := sim.Values[len(sim.Values)-1]
 	if math.Abs(got-want) > 1e-9 {
-		t.Errorf("NAV avec financement: %v, attendu %v", got, want)
+		t.Errorf("NAV with financing: %v, want %v", got, want)
 	}
-	// Amplification sans frais: actif +1 %/j à levier 1.5, taux nul.
+	// Amplification without fees: asset +1 %/day at 1.5x leverage, zero rate.
 	up := &marketdata.Series{Symbol: "B"}
 	v := 100.0
 	for i := range 50 {
@@ -274,9 +274,9 @@ func TestSimulateLeverage(t *testing.T) {
 	}
 	want2 := 150*math.Pow(1.01, 49) - 50
 	if got2 := sim2.Values[len(sim2.Values)-1]; math.Abs(got2-want2) > 1e-9 {
-		t.Errorf("amplification: %v, attendu %v", got2, want2)
+		t.Errorf("amplification: %v, want %v", got2, want2)
 	}
-	// Ruine: levier 3 sur un actif qui s'effondre.
+	// Ruin: 3x leverage on a collapsing asset.
 	down := &marketdata.Series{Symbol: "C"}
 	v = 100.0
 	for i := range 60 {
@@ -289,10 +289,10 @@ func TestSimulateLeverage(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !sim3.Ruined {
-		t.Error("la ruine devait être détectée")
+		t.Error("ruin should have been detected")
 	}
 	if len(sim3.Values) >= 60 {
-		t.Error("la série devait être tronquée")
+		t.Error("the series should have been truncated")
 	}
 }
 
@@ -309,16 +309,16 @@ func TestSingle(t *testing.T) {
 
 func TestParseErrors(t *testing.T) {
 	for _, in := range []string{
-		"", // vide
-		"# que des commentaires",
-		"VOO",     // pas de poids
-		"abc VOO", // poids non numérique
-		"0 VOO",   // poids nul
-		"150 VOO", // poids > 100
-		"60",      // pas d'identifiant
+		"", // empty
+		"# only comments",
+		"VOO",     // no weight
+		"abc VOO", // non-numeric weight
+		"0 VOO",   // zero weight
+		"150 VOO", // weight > 100
+		"60",      // no identifier
 	} {
 		if _, err := Parse("t", strings.NewReader(in)); err == nil {
-			t.Errorf("erreur attendue pour %q", in)
+			t.Errorf("expected error for %q", in)
 		}
 	}
 }

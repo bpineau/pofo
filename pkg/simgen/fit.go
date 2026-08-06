@@ -37,7 +37,7 @@ func FitBackcast(fr *Frame, real *marketdata.Series, ids []string) ([]float64, f
 		y = append(y, r)
 	}
 	if len(y) < 120 {
-		return nil, 0, nil, fmt.Errorf("overlap insuffisant pour la régression (%d points)", len(y))
+		return nil, 0, nil, fmt.Errorf("insufficient overlap for the regression (%d points)", len(y))
 	}
 	coef, err := ols(X, y)
 	if err != nil {
@@ -96,7 +96,7 @@ func ols(X [][]float64, y []float64) ([]float64, error) {
 		}
 		a[col], a[pivot] = a[pivot], a[col]
 		if math.Abs(a[col][col]) < 1e-12 {
-			return nil, fmt.Errorf("matrice singulière (régresseurs colinéaires ?)")
+			return nil, fmt.Errorf("singular matrix (collinear regressors?)")
 		}
 		for r := range k {
 			if r == col {

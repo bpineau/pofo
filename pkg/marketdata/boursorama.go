@@ -32,5 +32,5 @@ func (c *Client) boursoramaMorningstarID(isin string) (id, name string, err erro
 	if m := morningstarIDRe.FindStringSubmatch(page); m != nil {
 		return m[1], "", nil
 	}
-	return "", "", fmt.Errorf("aucun identifiant Morningstar pour %s", isin)
+	return "", "", fmt.Errorf("no Morningstar identifier for %s", isin)
 }
