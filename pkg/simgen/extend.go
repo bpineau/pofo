@@ -18,12 +18,15 @@ import (
 //     long developed-ex-US series.
 //   - GC=F (COMEX gold futures, 2000) is extended with the bundled monthly
 //     London/LBMA gold fix (refdata XAUUSD-LBMA, ~1968).
+//   - CL=F (NYMEX WTI futures, 2000) is extended with the bundled monthly WTI
+//     spot price (refdata WTI-USD, ~1946).
 //
-// Both proxies are total-return / spot levels in USD, so the splice is
+// All proxies are total-return / spot levels in USD, so the splice is
 // homogeneous with the component it extends.
 var longBack = map[string]string{
 	"VTMGX": "^990300-USD-STRD",
 	"GC=F":  "XAUUSD-LBMA",
+	"CL=F":  "WTI-USD",
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced

@@ -32,6 +32,24 @@ func TestXAUUSDBuildSplicesBundledLBMA(t *testing.T) {
 	}
 }
 
+// The managed-futures crude leg (CL=F, ~2000) is extended by the bundled
+// monthly WTI spot (WTI-USD, ~1946) through the standard longBack splice.
+func TestExtendCLFWithBundledWTI(t *testing.T) {
+	clf := atSeries("CL=F", 100, 50, 30) // recent daily quote only
+	f := extend(WithRefData(datasets.Refdata(), fakeFetcher{"CL=F": clf}))
+
+	got, err := f.Fetch("CL=F", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := time.Date(1950, 1, 1, 0, 0, 0, 0, time.UTC); !got.First().Date.Before(want) {
+		t.Errorf("extended crude starts %s, want the 1940s WTI spot", got.First().Date.Format("2006-01"))
+	}
+	if got.SimulatedBefore.IsZero() {
+		t.Error("expected SimulatedBefore after splicing WTI-USD")
+	}
+}
+
 // Without a fetchable daily quote, xauusdBuild returns the bundled monthly fix
 // on its own rather than failing.
 func TestXAUUSDBuildFallsBackToBundledLBMA(t *testing.T) {
