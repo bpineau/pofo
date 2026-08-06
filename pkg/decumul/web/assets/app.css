@@ -22,6 +22,11 @@ p.meta{color:#666;font-size:.85rem;margin-top:0}
 .alloclegend{display:flex;flex-wrap:wrap;gap:.1rem .8rem;margin-top:.25rem;font-size:.72rem;color:#555}
 .alloclegend i{display:inline-block;width:.7rem;height:.7rem;border-radius:2px;margin-right:.25rem;vertical-align:middle}
 
+.caveat{margin:.6rem 0;font-size:.82rem;color:#444;background:#fff8e6;border:1px solid #e8d9a8;border-radius:6px;padding:.5rem .7rem}
+.caveat summary{cursor:pointer;font-weight:600;color:#7a5d00}
+.caveat ul{margin:.4rem 0 .2rem;padding-left:1.1rem}
+.caveat li{margin:.2rem 0}
+
 #solve{display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:.6rem 0;font-size:.85rem}
 #solve input{width:3.4rem}
 #solve button{padding:.25rem .8rem;cursor:pointer}

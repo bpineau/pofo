@@ -150,6 +150,23 @@ func TestPlanRicherPolicies(t *testing.T) {
 	}
 }
 
+// A historical sample shorter than the horizon must raise the reliability
+// caveat; an adequate sample or the parametric model must not.
+func TestReliabilityCaveat(t *testing.T) {
+	short := &scenario.Panel{Returns: [][]float64{make([]float64, 27*12)}, Weights: []float64{1}}
+	long := &scenario.Panel{Returns: [][]float64{make([]float64, 60*12)}, Weights: []float64{1}}
+
+	if c := reliabilityCaveat(Params{Model: "bootstrap", Years: 40}, short); c == "" {
+		t.Error("27y sample, 40y horizon: expected a caveat")
+	}
+	if c := reliabilityCaveat(Params{Model: "bootstrap", Years: 40}, long); c != "" {
+		t.Errorf("60y sample, 40y horizon: unexpected caveat %q", c)
+	}
+	if c := reliabilityCaveat(Params{Model: "parametric", Years: 40}, short); c != "" {
+		t.Errorf("parametric model: unexpected caveat %q", c)
+	}
+}
+
 // Monthly mode must yield a monthly source (Years*12 periods) and a plan that
 // steps monthly; the default stays annual.
 func TestMonthlySourceAndPlan(t *testing.T) {
