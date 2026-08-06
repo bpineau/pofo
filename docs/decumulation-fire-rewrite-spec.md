@@ -1,6 +1,7 @@
 # FIRE explorer — rewrite spec
 
-Status: spec, ready for brainstorm → plan (2026-06-30).
+Status: **largely implemented (2026-07-01)**, all on master, `go test ./...`
+green. See "Implementation status" below for what shipped and what remains.
 
 Supersedes the UX direction in `decumulation-fire-realism-spec.md` and
 `decumulation-fire-usability-proposals.md`; keeps their engine analysis. This is
@@ -8,6 +9,37 @@ the synthesis of three inputs: Ben's brief and objections, a ChatGPT thread
 (shared 2026-06-30), and Claude's code-level analysis
 (`decumulation-fire-usability-proposals.md`). Read those for the long-form
 rationale; this document is the build target.
+
+## Implementation status (2026-07-01)
+
+**Shipped** (all committed to master, `go test ./...` green):
+
+- Engine: mean-preserving `scenario.NewMarkovRegime` (bearGapFactor 0.6, fixes
+  the ruin-tanking bug); `decumul.Solve` multi-lever root-find (withdrawal /
+  capital / flex-cut); `decumul.Ensemble.Fan` (percentile bands + sample paths).
+- Chart primitives: `chart.Fan`, `chart.MultiLine` (+ markers), `chart.HBars`
+  (signed greeks).
+- Web endpoints: `/api/models` (multi-model strip with history-aware
+  **shrinkage** central), `/api/paths` (wealth fan), `/api/frontier`
+  (ruin-vs-WR per model), `/api/sensitivity` (greeks), `/api/solvemenu`
+  (per-lever menu).
+- UI: live hero strip (verdict + colour-graded model table + acceptable-ruin
+  control + confidence badge + literature reference line), fan/frontier/
+  sensitivity charts, per-lever solver menu, **instant** custom tooltips; the
+  parametric/bootstrap/cohorts model dropdown was removed (the strip shows all).
+- Calibration anchor tests (`pkg/decumul/calibration_test.go`): Trinity ~5% at
+  4%/30y; broad-sample conservative materially higher; the two bracket.
+- Resolved defaults (§11): plan 60k, target ruin 4%, central μ5%/σ11%/df5
+  (verdict source), conservative μ4.5%/σ13%/df4; i.i.d. stance.
+
+**Remaining** (next sessions):
+
+- Frontend-design polish pass (backlog #17) and phase-2 views ("Why it fails"
+  ruin-cause attribution, risk decomposition, pofo integration).
+- Long real history for the panel and the pre-1999 FX: see the "Data history &
+  performance" section in `decumulation-fire-followups.md` (MSCI World to 1969
+  done for IWDA/URTH; NTSG/DBMF still capped; per-segment currency for pre-1999
+  FX; incremental cache).
 
 The engine lives in `pkg/scenario` (return models), `pkg/decumul` (the
 withdrawal kernel + outcomes), `pkg/decumul/web` (server + assets), `pkg/chart`
