@@ -458,12 +458,15 @@ func figCorrelSign() string {
 	b.WriteString(line(76, zp[1], 556, zp[1], figRule, 1.2))
 	b.WriteString(txt(80, zp[1]-4, 10, figMuted, "start", "400", "corrélation 0"))
 	b.WriteString(smoothStroke(px, figInk, 2.6))
-	// band labels (right)
-	b.WriteString(txt(552, m(1963, 0.5)[1]+4, 11, figBad, "end", "600", "positive : tombent ensemble"))
+	// top pair: same size, baseline-aligned
+	yTop := m(1963, 0.5)[1] + 4
+	b.WriteString(txt(m(1976, 0)[0], yTop, 11, figSoft, "middle", "600", "ère inflationniste"))
+	b.WriteString(txt(552, yTop, 11, figBad, "end", "600", "positive : tombent ensemble"))
+	// bottom band label + the golden-age era label (kept off the curve)
 	b.WriteString(txt(552, m(1963, -0.5)[1]+4, 11, figGood, "end", "600", "négative : les obligations amortissent"))
-	// era annotations
-	b.WriteString(txt(m(1976, 0)[0], m(1976, 0.52)[1], 10, figSoft, "middle", "600", "ère inflationniste"))
-	b.WriteString(txt(m(2012, 0)[0], m(2012, -0.13)[1], 10, figSoft, "middle", "600", "l'âge d'or du 60/40 (2000-2021)"))
+	b.WriteString(txt(m(2010, 0)[0], m(2010, -0.13)[1], 11, figSoft, "middle", "600", "l'âge d'or du 60/40"))
+	// the 2022 flip, pointing at the rise from clear space to its left
+	b.WriteString(txt(m(2021.3, 0)[0], m(2021.3, 0.12)[1], 11, figSoft, "end", "600", "retour 2022 →"))
 	// y ticks
 	for _, v := range []float64{-0.5, 0.5} {
 		p := m(1963, v)
