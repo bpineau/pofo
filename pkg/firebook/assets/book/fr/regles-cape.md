@@ -34,7 +34,7 @@ Ce simple déplacement (consommer une estimation plutôt qu'une constante) achè
 
 ## La mise en œuvre, du tableur à pofo
 
-**À la main** : la règle tient dans une cellule de tableur. Chaque 1er janvier : lire le CAPE (site de Shiller, multpl.com), calculer a + b/CAPE, multiplier par le portefeuille, diviser par douze : le « salaire » de l'année. La gouvernance est celle d'un pourcentage : simple, auditable, exécutable par le conjoint ([[revue-annuelle]]).
+**À la main** : la règle tient dans une cellule de tableur. Chaque 1er janvier : lire le CAPE (site de Shiller, [multpl.com](https://www.multpl.com)), calculer a + b/CAPE, multiplier par le portefeuille, diviser par douze : le « salaire » de l'année. La gouvernance est celle d'un pourcentage : simple, auditable, exécutable par le conjoint ([[revue-annuelle]]).
 
 **Dans pofo, la voie propre : l'ABW ancré au CAPE.** pofo n'implémente pas la formule a + b/CAPE comme règle de dépense nommée, et c'est un choix réfléchi : il implémente mieux. Cochez « Amortize over the horizon (ABW/TPAW) » et l'ancre CAPE (« Anchor return to today's valuation ») : l'amortissement calcule alors chaque année le paiement qui épuise le portefeuille sur l'horizon restant **au rendement impliqué par le** CAPE ([[amortissement-abw]], [[utiliser-la-page-fire]]). C'est exactement l'esprit de la règle CAPE (consommer ce que les valorisations promettent), avec deux raffinements que la formule linéaire n'a pas : l'horizon restant exact (a + b/CAPE suppose implicitement un horizon long constant) et l'actualisation des pensions futures. La règle d'ERN est la version « dos d'enveloppe » géniale ; l'ABW-CAPE en est la forme actuarielle complète : même famille, même information, mécanique aboutie.
 
@@ -61,6 +61,6 @@ Le profil règle CAPE recoupe celui du VPW ([[vpw]]) : plancher couvert ou budge
 ## Pour aller plus loin
 
 - Early Retirement Now, volet 18 (les règles flexibles CAPE) et surtout volet 54 (« Dynamic Withdrawal Rates Based on the Shiller CAPE ») : la formalisation, les régressions et les paramètres ([[serie-ern]]).
-- Les données CAPE : le site de Robert Shiller ; multpl.com pour la lecture du jour ; Barclays et Research Affiliates pour les CAPE par pays.
+- Les données CAPE : le site de Robert Shiller ; [multpl.com](https://www.multpl.com) pour la lecture du jour ; Barclays et Research Affiliates pour les CAPE par pays.
 - Kitces, « Should Equity Valuation Impact Safe Withdrawal Rates? » : la version praticien du débat.
 - Dans ce livre : [[valorisations-et-cape]] (l'indicateur et ses critiques), [[amortissement-abw]] (la forme actuarielle complète), [[choisir-sa-strategie]] (l'arbitrage final).

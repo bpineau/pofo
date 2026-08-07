@@ -87,5 +87,5 @@ Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ �
 
 - William Bengen, « Determining Withdrawal Rates Using Historical Data », *Journal of Financial Planning*, octobre 1994 (en libre accès sur le site du FPA) ; et *Conserving Client Portfolios During Retirement* (2006) pour la synthèse.
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, février 1998, et ses mises à jour (2011).
-- Early Retirement Now, SWR Series volet 1 et volet 8 (l'appendice technique de la méthode) : earlyretirementnow.com ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 1 et volet 8 (l'appendice technique de la méthode) : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
 - Wade Pfau, « An International Perspective on Safe Withdrawal Rates » (2010) : la première grande sortie du cadre américain, prélude à [[anarkulova-cederburg]].

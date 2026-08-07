@@ -48,7 +48,7 @@ Yann et Inès, 54 ans, 2 M€ organisés, 62 k€/an, tentés par l'Italie du Su
 
 ## Pour aller plus loin
 
-- impots.gouv.fr, l'espace « international » et les conventions fiscales bilatérales : les textes qui priment tous les forums d'expatriés.
-- La CFE (cfe.fr) : les formules et tarifs de la continuité santé.
+- [impots.gouv.fr](https://www.impots.gouv.fr), l'espace « international » et les conventions fiscales bilatérales : les textes qui priment tous les forums d'expatriés.
+- La CFE ([cfe.fr](https://www.cfe.fr)) : les formules et tarifs de la continuité santé.
 - Les analyses datées des régimes NHR/Italie/Grèce par les cabinets spécialisés : à re-vérifier **chaque** année de projet.
 - Dans ce livre : [[flat-tax-et-imposition]] (la friction française réelle à battre), [[sante-et-protection-sociale]] (ce qu'on quitte), [[succession-et-transmission]] (ce qui suit), [[couple-et-famille]] et [[sens-et-identite]] (l'équation principale).

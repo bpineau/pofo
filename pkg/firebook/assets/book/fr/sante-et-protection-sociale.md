@@ -54,7 +54,7 @@ Karim et Léa, départ à 47 et 45 ans, un enfant de 12 ans. Leur matinée d'inv
 
 ## Pour aller plus loin
 
-- ameli.fr : la PUMa, les ALD, les taux de remboursement : la source de la couverture de base.
+- [ameli.fr](https://www.ameli.fr) : la PUMa, les ALD, les taux de remboursement : la source de la couverture de base.
 - La DREES : les études sur les restes à charge en EHPAD et la dépendance : les chiffres du provisionnement.
 - Les comparateurs indépendants de mutuelles et le dispositif 100 % santé : pour l'arbitrage triennal.
 - Dans ce livre : [[taxe-puma]] (le financement de la couverture), [[depenses-en-retraite]] (le sourire et la fin de vie), [[immobilier-en-retrait]] (la résidence-provision), [[couple-et-famille]] (la prévoyance du survivant).
