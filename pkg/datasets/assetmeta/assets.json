@@ -7021,7 +7021,7 @@
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103257975:USD"
     ],
-    "since": "2015-05-03"
+    "since": "2015-03-05"
   },
   {
     "id": "LU0503879685",
@@ -8153,6 +8153,34 @@
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662502183:EUR"
+    ]
+  },
+  {
+    "id": "AQMIX",
+    "isin": "US00203H8593",
+    "aliases": [],
+    "name": "AQR Managed Futures Strategy Fund Class I",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "AQMIX",
+    "currency": "USD",
+    "fees": 1.25,
+    "since": "2010-01-06",
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following across commodities, currencies, equities and fixed income, on several hundred futures, forwards and swaps, long and short; signals read both price and fundamental trends; commodity exposure held through a Cayman subsidiary",
+    "benchmark_index": "active (no index; secondary benchmark ICE BofA US 3-Month T-Bill)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "The LONGEST real AQR managed-futures record available: continuous daily NAVs from 2010-01-06, about five years deeper than any AQR UCITS class, and quoted within a day or two (the UCITS classes lag ten days or more). US 40-Act fund, so not buyable from the EU: this is a HISTORY and research vehicle, and the buyable equivalent is the UCITS (RAEF LU1662501532 in EUR-hedged form, LU1103257975 in USD). It is a faithful proxy for them at the horizons that matter, weekly correlation 0.90 and monthly 0.93 with beta 1.0 since 2015; the daily correlation of 0.73 is an artefact of the two wrappers striking NAV at different cutoffs, not a strategy difference. Adviser targets 5% to 13% annualized volatility (realized 9.6% since inception), turnover 412%/yr, USD 3.2bn. FEES need care: the 1.25% pin is the advisory and operating cost (mgmt 1.05% + 0.19% other under a 0.25% specified-expense cap + 0.01% acquired fund fees). The headline 3.09% total in the prospectus adds 1.84% of dividends on short sales and interest expense, which is the financing cost of the physical short book rather than an advisory fee, and it jumped only because the fund moved from equity derivatives to physical shorts in 2024. Class R6 (AQMRX) is ~0.08 pts cheaper but starts 2014-09; QMHIX is the same strategy at roughly 1.5x the volatility target (14.7% realized) from 2013-07.",
+    "confidence": "high",
+    "sources": [
+      "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-strategy-fund/aqmix",
+      "https://www.sec.gov/Archives/edgar/data/1444822/000119312526198087/d24166d497k.htm",
+      "https://stockanalysis.com/quote/mutf/AQMIX/"
     ]
   },
   {
