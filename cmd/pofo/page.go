@@ -73,6 +73,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 	if opt.web {
 		page.SkinCSS = template.CSS(webui.WarmSkin + siteNavCSS)
 		page.SiteNav = siteNavHTML
+		page.Composer = opt.composer
 	}
 
 	anySimulated := false

@@ -108,6 +108,18 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	}
 	mux.HandleFunc("/theme.css", css(webui.CSS))
 	mux.HandleFunc("/fonts.css", css(webui.FontsCSS))
+	mux.HandleFunc("/composer.css", css(composerCSS))
+	js := func(body string) http.HandlerFunc {
+		return func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet {
+				http.Error(w, "GET only", http.StatusMethodNotAllowed)
+				return
+			}
+			w.Header().Set("Content-Type", "text/javascript; charset=utf-8")
+			_, _ = w.Write([]byte(body))
+		}
+	}
+	mux.HandleFunc("/composer.js", js(composerJS))
 	// The local catalog, serialized once: the composer's autocomplete and
 	// inline validation read it; the server-side gates stay authoritative.
 	catalogJSON, err := json.Marshal(marketdata.LocalCatalog())

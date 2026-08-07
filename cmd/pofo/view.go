@@ -63,6 +63,7 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 		o.noSim = *vr.noSim
 	}
 	o.fireHref = vr.fireHrefs
+	o.composer = composerMount(vr)
 	return &o
 }
 
