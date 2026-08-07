@@ -44,7 +44,7 @@ func Bars(opt Options, bars []Bar) string {
 	n := len(bars)
 	if n == 0 {
 		sb.WriteString(`</svg>`)
-		return sb.String()
+		return finish(sb.String())
 	}
 	yAt := func(v float64) float64 { return float64(padT+plotH) - v/max*float64(plotH) }
 	// Y-axis gridlines and tick labels, from 0 to the largest value.
@@ -66,5 +66,5 @@ func Bars(opt Options, bars []Bar) string {
 		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
 	}
 	sb.WriteString(`</svg>`)
-	return sb.String()
+	return finish(sb.String())
 }

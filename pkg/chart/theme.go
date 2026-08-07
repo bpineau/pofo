@@ -59,6 +59,10 @@ var darkReplacer = strings.NewReplacer(
 	themeWarn, "#D98A2E",
 	themeBad, "#D2503F",
 	themeDead, "#6B6250",
+	// Caller-passed lifecycle (Rich/Broke/Dead) series colors -> dark set.
+	"#12B76A", "#34A46E", // funded
+	"#D92D20", "#D2503F", // broke
+	"#D5DBE5", "#6B6250", // gone
 )
 
 // Darken rewrites a chart SVG from the light theme to the terminal-dark theme by
@@ -67,3 +71,19 @@ var darkReplacer = strings.NewReplacer(
 // colors a caller passes in explicitly (e.g. stacked-area layers) are not chrome
 // and pass through unchanged, so the caller supplies dark-ready series colors.
 func Darken(svg string) string { return darkReplacer.Replace(svg) }
+
+// darkMode makes finish apply Darken to every chart this process renders.
+var darkMode bool
+
+// SetDark selects the terminal dark theme for every chart rendered afterwards.
+// The FIRE UI calls SetDark(true) at startup; the standalone report leaves it
+// off. Process-global, set once before rendering.
+func SetDark(on bool) { darkMode = on }
+
+// finish applies the active theme to a freshly rendered light-theme SVG.
+func finish(svg string) string {
+	if darkMode {
+		return Darken(svg)
+	}
+	return svg
+}

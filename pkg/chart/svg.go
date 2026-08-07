@@ -242,7 +242,7 @@ func Line(opt Options, series []Series) string {
 		}
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }
 
 type tick struct {

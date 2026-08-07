@@ -57,5 +57,5 @@ func Gauge(opt Options, value, caption, left, right string, frac float64) string
 	fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="11" fill="`+themeMuted+`">%s</text>`+"\n", lx, ly+20, esc(left))
 	fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="11" fill="`+themeMuted+`">%s</text>`+"\n", rx, ry+20, esc(right))
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }

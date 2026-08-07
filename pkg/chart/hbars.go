@@ -37,7 +37,7 @@ func HBars(opt Options, bars []Bar) string {
 	}
 	if len(bars) == 0 {
 		sb.WriteString("</svg>")
-		return sb.String()
+		return finish(sb.String())
 	}
 
 	ext := 0.0
@@ -81,5 +81,5 @@ func HBars(opt Options, bars []Bar) string {
 		}
 	}
 	sb.WriteString("</svg>")
-	return sb.String()
+	return finish(sb.String())
 }
