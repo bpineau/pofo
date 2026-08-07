@@ -97,6 +97,7 @@ var figures = map[string]func() string{
 	"corridor-borne":         figCorridorBorne,
 	"vpw-pont":               figVpwPont,
 	"weimar-reel":            figWeimarReel,
+	"actions-rattrapent":     figActionsRattrapent,
 	"bengen-falaise":         figBengenFalaise,
 	"bengen-millesimes":      figBengenMillesimes,
 	"familles-information":   figFamillesInformation,
