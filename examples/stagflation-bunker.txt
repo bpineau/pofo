@@ -14,6 +14,6 @@
 
 15    DBMFESIM        # Trend, replication engine (iMGP DBi EUR)
 15    KMLMSIM         # Trend, direct engine, commodity-heavy (buy Winton/AQR)
-20    ICOM    # Broad commodities (ICOM)
+20    ICOMSIM    # Broad commodities (ICOM)
 25    XAUUSDSIM       # Gold (buy IGLN)
 25    CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN)
