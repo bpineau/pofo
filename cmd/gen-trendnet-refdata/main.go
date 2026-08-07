@@ -53,6 +53,8 @@ import (
 	"slices"
 	"strings"
 	"time"
+
+	"github.com/bpineau/pofo/cmd/internal/xls"
 )
 
 const defaultSrc = "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi?dump=excel&prog_cod=BTOP50"
@@ -76,7 +78,11 @@ func main() {
 	if err != nil {
 		log.Fatalf("download: %v", err)
 	}
-	months, err := parse(raw)
+	cells, err := xls.Sheet(raw)
+	if err != nil {
+		log.Fatalf("read workbook: %v", err)
+	}
+	months, err := parse(cells)
 	if err != nil {
 		log.Fatalf("parse: %v", err)
 	}
@@ -147,27 +153,15 @@ func download(url string) ([]byte, error) {
 // does not cover is simply absent. A second block below repeats the same
 // history as a level index and is ignored: the two are checked against each
 // other at the source, and returns are what this generator needs.
-func parse(raw []byte) ([]point, error) {
-	streams, err := ole2Streams(raw)
-	if err != nil {
-		return nil, err
-	}
-	wb, ok := streams["Workbook"]
-	if !ok {
-		wb, ok = streams["Book"]
-	}
-	if !ok {
-		return nil, fmt.Errorf("no workbook stream (found %d others)", len(streams))
-	}
-
+func parse(cells []xls.Cell) ([]point, error) {
 	type key struct{ row, col int }
-	grid := make(map[key]cell)
+	grid := make(map[key]xls.Cell)
 	header, lastRow := -1, 0
-	for _, c := range biffCells(wb) {
-		grid[key{c.row, c.col}] = c
-		lastRow = max(lastRow, c.row)
-		if header < 0 && c.isText && c.col < 14 && strings.Contains(c.text, "ROR") {
-			header = c.row
+	for _, c := range cells {
+		grid[key{c.Row, c.Col}] = c
+		lastRow = max(lastRow, c.Row)
+		if header < 0 && c.IsText && c.Col < 14 && strings.Contains(c.Text, "ROR") {
+			header = c.Row
 		}
 	}
 	if header < 0 {
@@ -177,18 +171,18 @@ func parse(raw []byte) ([]point, error) {
 	var out []point
 	for row := header + 2; row <= lastRow; row++ { // +2: the header, then the month names
 		y, ok := grid[key{row, 0}]
-		if !ok || y.isText || y.num < 1900 || y.num > 2200 {
+		if !ok || y.IsText || y.Num < 1900 || y.Num > 2200 {
 			break // the block ends where the year column stops
 		}
 		for m := 1; m <= 12; m++ {
 			c, ok := grid[key{row, m}]
-			if !ok || c.isText {
+			if !ok || c.IsText {
 				continue
 			}
-			if math.Abs(c.num) > 0.6 {
-				return nil, fmt.Errorf("%d-%02d: %.4f is not a monthly return", int(y.num), m, c.num)
+			if math.Abs(c.Num) > 0.6 {
+				return nil, fmt.Errorf("%d-%02d: %.4f is not a monthly return", int(y.Num), m, c.Num)
 			}
-			out = append(out, point{monthEndOf(int(y.num), time.Month(m)), c.num})
+			out = append(out, point{monthEndOf(int(y.Num), time.Month(m)), c.Num})
 		}
 	}
 	slices.SortFunc(out, func(a, b point) int { return a.date.Compare(b.date) })
