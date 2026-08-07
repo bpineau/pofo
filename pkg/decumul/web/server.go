@@ -26,7 +26,7 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		_, _ = w.Write([]byte(webui.FontsCSS))
 	})
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
-		meta := map[string]any{"labels": labels, "hasPanel": panel != nil}
+		meta := map[string]any{"labels": labels, "hasPanel": panel != nil, "cape": capeSnapshot()}
 		if panel != nil {
 			f := FitParametric(*panel, panel.Weights)
 			meta["weights"] = panel.Weights
