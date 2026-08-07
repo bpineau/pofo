@@ -1,0 +1,63 @@
+# Hydra (all-weather balanced) -- the macro-balanced sibling of the
+# capital-efficient hydra. Same engine philosophy (diversify across independent
+# return ENGINES, size by risk not capital, express each through the most
+# capital-efficient instrument), but re-weighted to EVEN OUT the four-quadrant
+# growth x inflation regime coverage instead of maximising growth-consistency.
+# Read examples/hydra-five-engines-capital-efficient.txt first for the full
+# rationale and the reference list; this file only documents the deltas.
+#
+# What changed vs the capital-efficient parent, and why (macro-first):
+#   - Added a broad COMMODITY head (ICOM, iShares Diversified Commodity, the
+#     Bloomberg Commodity TR index, ~1991). The parent's inflation quadrant
+#     leaned on gold + trend only; gold is a monetary/debasement hedge, weak in
+#     a supply-shock inflation (energy 2022), and trend was doing double duty
+#     (inflation AND crisis). A broad, energy-heavy commodity sleeve is the
+#     one distinct supply-shock lever the parent lacked, and it lets trend stop
+#     carrying the inflation quadrant alone.
+#   - Bumped ZROZ 5 -> 8. Deflation was the parent's weakest quadrant (42% of
+#     weight vs 58-60% for growth/inflation); more deep-duration convexity is
+#     the cheapest way to shore up the deflation-crash corner.
+#   - Trimmed the fund: gold 18 -> 12 (it overlaps commodities on inflation),
+#     trend 14 -> 12 (commodities now share the inflation load), NTSG 35 -> 34.
+#
+# Result: a FLATTER regime profile -- growth 53 / deflation 44 / inflation 57
+#   / crisis 53 (range 13pt) vs the parent's 60 / 42 / 58 / 51 (range 18pt) --
+#   with a lower drawdown and lower beta. It is more genuinely "all-weather"
+#   and less growth-tilted than the parent.
+#
+# HONESTY note -- this is a lateral move on the frontier, not a free lunch.
+#   Over the common 1991->2026 window, EUR, vs the parent:
+#     - better: max drawdown -28.3% vs -29.8%, vol 13.4% vs 14.0%, down-capture
+#       57% vs 62%, beta 0.54 vs 0.59.
+#     - ~equal: Sharpe 0.91 vs 0.92, Sortino 1.31 vs 1.32.
+#     - WORSE: CAGR 12.10% vs 12.86%, and especially worst rolling 5y CAGR
+#       0.88% vs 1.66% and median 5y 9.75% vs 10.65%.
+#   The worst-5y cost is structural: broad commodities had a brutal lost decade
+#   (2011-2020) that deepens the portfolio's worst rolling 5-year window, and
+#   the coarse regime model barely credits commodities for inflation (they
+#   largely duplicate gold there). So this variant buys a smoother, more
+#   balanced ride and a shallower drawdown by giving up growth-consistency and
+#   ~0.75pt of CAGR. Choose it if you weight regime balance and drawdown over
+#   the rolling-5y consistency the parent optimises for; otherwise keep the
+#   parent. The engine-level logic, not the exact split, is the durable part.
+#
+# UCITS/PRIIPs note: same caveat as the parent -- a research portfolio, not a
+#   buy-list. ICOM, NTSG and ZPRV are UCITS, but RSBT, GDE, ZROZ and KMLM are
+#   US-listed with no PRIIPs KID, so a French/EU retail account cannot buy them
+#   directly; the per-sleeve comments give the UCITS routes where they exist,
+#   and the realistic euro version lands a little short.
+#
+# Backtest profile over 1991->2026, EUR: CAGR 12.10%, vol 13.4% (monthly
+#   10.8%), Sharpe 0.91, Sortino 1.31, max drawdown -28.3% with a 2.8y worst
+#   recovery, worst rolling 5y CAGR +0.88% and median 5y 9.75%, beta 0.54,
+#   down-capture 57%, and an even regime coverage (growth 53%, inflation 57%,
+#   crisis 53%, deflation 44%).
+#meta rebalance:90
+
+34    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413, or global Avantis IE0003R87OG3)
+16    RSBTSIM         # Engine 3a, trend replication (iMGP DBi EUR, LU2951555585)
+12    KMLMSIM         # Engine 3b, second independent trend model (buy AQR MF UCITS LU1103257975, best live record; KMLM here is the backtest proxy)
+12    GDESIM          # Engine 4, gold (buy a physical ETC: IGLN IE00B4ND3602)
+6     ICOMSIM         # Engine 5, broad commodities: Bloomberg Commodity TR (ICOM, IE00BDFL4P12, UCITS) -- the supply-shock inflation lever
+8     ZROZSIM         # Engine 6, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~1.6x the weight)
