@@ -738,7 +738,9 @@ func eresMondeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // afterAnnualFee returns a copy of s with a continuous annual fee deducted:
 // each daily step keeps its own return less the fee accrued over the days
 // elapsed, so the drag compounds on the calendar rather than on quote count
-// (holidays and weekends carry fees too).
+// (holidays and weekends carry fees too). A NEGATIVE annual is an uplift, for
+// a donor share class measured to carry a cost the target class does not (see
+// aqrBEURFeeWedge).
 func afterAnnualFee(name string, s *marketdata.Series, annual float64) *marketdata.Series {
 	out := *s
 	out.Name = name
@@ -1808,27 +1810,58 @@ func aqrmfRecipe() Recipe {
 	}
 }
 
+// aqrBEURFeeWedge is the annualized return the B EUR donor class
+// (LU1103258197) gives up to the flat-fee RAEF class (LU1662501532) in a trend
+// DROUGHT, added back to the donor segment of the backcast. It is the low end
+// of the wedge measured on the four disjoint windows where both classes have
+// real NAVs (RAEF CAGR minus B EUR CAGR, common dates only):
+//
+//	2021-04-01..2021-12-21  176 d  RAEF -10.74%/yr  +0.45 pts/yr
+//	2023-10-20..2024-12-31  288 d  RAEF  +1.75%/yr  +0.61 pts/yr
+//	2025-01-01..2025-12-31  237 d  RAEF +13.83%/yr  +1.58 pts/yr
+//	2026-01-01..2026-07-15  128 d  RAEF +13.75%/yr  +1.91 pts/yr
+//
+// The sign is the same on all four and the magnitude tracks the fund's own
+// return, which is the signature of the 10% performance fee class B pays over
+// an EUR STR hurdle and RAEF does not: folding the post-gap window by month,
+// class B lags RAEF by 1.92 pts/yr in the months RAEF gains and leads it by
+// 0.11 pts/yr in the months RAEF loses. A constant is therefore the wrong
+// shape for the fee, and the only defensible constant is the smallest one.
+//
+// 0.45 pts/yr is also the regime-matched one: it comes from the single window
+// in which the fund was losing money, and the donor segment it corrects
+// (2015-03 to 2021-12) is a drought throughout, the class compounding at
+// -4.45%/yr over it. In any better regime the correction is too small rather
+// than too large, so the backcast stays conservative where trend earns its
+// keep.
+const aqrBEURFeeWedge = 0.0045
+
 // aqrmfHedgedRecipe backcasts the EUR-hedged retail share class of the AQR
 // Managed Futures UCITS fund (LU1662501532 "RAEF", flat fee / no performance
 // fee, real from 2021-04). Before RAEF's inception the fund itself already
 // existed, so the backcast prefers a REAL sister share class over any
 // reconstruction: the legacy B EUR class (LU1103258197, EUR-hedged) carries
 // continuous real NAVs from 2015-03 until its class was emptied in 2021-12.
-// The donor is used RAW: its published OCF (0.73%) would suggest draining
-// returns by the 0.58 %/yr fee gap to RAEF's 1.31%, but on both real overlap
-// windows (2021 and 2023-2026) B tracks RAEF with corr 1.000 while LAGGING
-// it by 0.4-1.2 pts/yr, so any drag would double-penalize; the raw donor
-// leaves the backcast slightly conservative instead.
 //
-// The audited accounts name what the published OCF misses. Class B carries a
-// 10% PERFORMANCE fee over the EUR STR hurdle, high-on-high, crystallised each
-// 31 March, that RAEF does not: it cost class B 2.03 points of average class
-// NAV in the year to 31 March 2026. So the donor's lag is not a constant, it is
-// a fee that bites only in strong trend years, and the raw splice makes the
-// backcast conservative precisely in the years trend-followers earn their keep.
-// Modelling the fee back out (10% of the excess over EUR STR above a running
-// high-water mark) is the obvious refinement; it is not done here because the
-// crystallisation path per share class is not observable from daily NAVs alone.
+// It is the same trade in the same wrapper, and it measures like it: on the
+// 2021 overlap the two classes agree at a daily correlation of 1.000, and on
+// the post-gap overlap (2023-10-20 to 2026-07-15, 655 common days) at 0.999
+// daily and 0.999 monthly. Nothing else comes close. The manager's own US fund
+// hedged into EUR, which is what the pre-2015 leg falls back on, reaches only
+// 0.957 and 0.963 monthly on those same two windows, so the sister class keeps
+// the 2015-2021 slot.
+//
+// What separates the two classes is cost, not strategy: class B carries a 10%
+// PERFORMANCE fee over the EUR STR hurdle, high-on-high, crystallised each
+// 31 March, that RAEF does not (2.03 points of average class NAV in the year
+// to 31 March 2026, per the audited accounts). The donor segment is therefore
+// lifted by a constant aqrBEURFeeWedge (0.45 %/yr), the low end of the wedge
+// measured on four disjoint windows and the one measured in a drought like the
+// donor's own; see that constant for the table and for why a constant cannot
+// be the whole answer. Modelling the fee properly (10% of the excess over EUR
+// STR above a running high-water mark) is the remaining refinement; it is not
+// done here because the crystallisation path per share class is not observable
+// from daily NAVs alone.
 //
 // Only before 2015-03 does the series fall back to the TSMOM reconstruction (same engine
 // and IR pin as aqrmfRecipe), re-expressed EUR-hedged via the standard
@@ -1840,7 +1873,7 @@ func aqrmfHedgedRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1662501532",
 		Name:            "AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast",
-		Method:          "real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps, the donor's 10% performance fee over EUR STR being what the published OCF misses) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
+		Method:          "real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
 		Build:           aqrHedgedBuild,
 		ValidateAgainst: "LU1662501532",
 		SpliceReal:      "LU1662501532",
@@ -1849,10 +1882,18 @@ func aqrmfHedgedRecipe() Recipe {
 
 // aqrHedgedBuild builds the EUR-hedged AQR series: the TSMOM reconstruction
 // hedged to EUR (r_eur = r_usd − usd_cash + eur_cash, accruals from the
-// strategy's own frame), then the real B EUR sister class spliced over it
-// raw, truncated at its first long NAV gap (see aqrmfHedgedRecipe for the
-// measured-drift rationale). When the donor is unavailable (offline builds)
-// the reconstruction stands alone.
+// strategy's own frame), then the real B EUR sister class spliced over it,
+// lifted by aqrBEURFeeWedge and truncated at its first long NAV gap (see
+// aqrmfHedgedRecipe for the measured rationale of both). When the donor is
+// unavailable (offline builds) the reconstruction stands alone.
+//
+// The truncation is load bearing beyond ending the segment where the class was
+// emptied. The donor's own NAV history resumes on 2023-10-19 with one stale
+// print at its pre-gap level (113.91) before the re-seeded class prints 99.70
+// the next day: read as a return, that single artefact is a -12.5% day, and it
+// alone drags the post-gap daily correlation with RAEF from 0.999 to 0.777.
+// Nothing downstream needs those NAVs anyway, since real RAEF quotes cover
+// 2021-04 onward, so the head of the series is the only part kept.
 func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.09, 0.0079)
 	// The USD leg is the same donor chain the unhedged class uses: the
@@ -1893,7 +1934,8 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return hedged, nil
 	}
 	donor = truncateAtGap(donor, 30)
-	donor.Name = "AQR Managed Futures B EUR (real donor)"
+	donor = afterAnnualFee("AQR Managed Futures B EUR (real donor, performance fee added back)",
+		donor, -aqrBEURFeeWedge)
 	return Splice(donor, hedged), nil
 }
 
