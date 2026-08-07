@@ -8,6 +8,10 @@ Ce chapitre chiffre tout. Pourquoi la flexibilité bute sur la **durée** des ma
 L'intuition voit la flexibilité comme un amortisseur de **krach** : un an ou deux de ceinture serrée pendant que ça remonte. Les mauvaises passes réelles ne ressemblent pas à ça. Les millésimes qui tuent durent 10 à 15 ans en termes réels ([[regimes-de-marche]], [[etude-trinity]], 1966, 2000). Une coupe de 15 % se tient dix-huit mois avec du moral, cinq ans avec effort, jamais douze ans. La vie continue : les dents, la chaudière, l'usure du renoncement. La flexibilité réaliste est **profonde ou longue**, jamais les deux. Or les scénarios qui menacent le plan exigent les deux. Voilà pourquoi elle vaut un demi-point, pas un point et demi.
 :::
 
+::: figure coupe-exigee-tenable
+Millésime 1966, plan de trente ans sur un 60/40 américain réel : la coupe minimale qui évite la ruine, selon le nombre d'années pendant lesquelles on la tient, pour un plan à 4,5 % puis pour le même plan à 4,0 %. La zone tenable (15 % au plus, douze ans au plus) est l'affirmation de ce chapitre, pas une mesure.
+:::
+
 ## Le chiffrage : ce que dit la recherche
 
 Voici le résultat d'ERN (volets 23-25, « Flexibility Myths »), reproduit depuis par tous ceux qui ont refait le calcul. Prenez un plan à 4,5-5 % de retrait initial, le plan « sauvé par la flexibilité », et simulez les règles flexibles réalistes sur les mauvais millésimes. Pour éviter la ruine, les coupes nécessaires atteignent 30-45 % du train de vie, **maintenues** 10-20 **ans**. Autrement dit, « le plan à 5 % flexible » est en réalité un plan à 3-3,5 % qui s'ignore, avec l'incertitude et l'angoisse en plus. La flexibilité n'a pas sauvé le taux tendu. Elle a rétroactivement avoué le taux prudent.
