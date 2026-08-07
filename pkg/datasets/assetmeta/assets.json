@@ -8736,5 +8736,65 @@
       "https://stockanalysis.com/etf/trpa/",
       "https://www.sec.gov/Archives/edgar/data/1501825/000119312523289592/d629734d8k.htm"
     ]
+  },
+  {
+    "id": "BKLN",
+    "isin": "",
+    "aliases": [],
+    "name": "Invesco Senior Loan ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "BKLN",
+    "currency": "USD",
+    "fees": 0.65,
+    "since": "2011-03-03",
+    "asset_class": "corporate-bond",
+    "underlying": "Morningstar LSTA US Leveraged Loan 100: the hundred largest US senior secured floating-rate corporate loans, the collateral a CLO is built on",
+    "benchmark_index": "Morningstar LSTA US Leveraged Loan 100",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The COLLATERAL of a CLO in tradable form (USD 6.7bn, 0.65 %), catalogued as the proxy for a question the CLO ETFs cannot answer: how the underlying loan market behaves across regimes. Read it as the stress the tranches sit above, never as a substitute for a CLO tranche: this is the whole loan pool, first loss included, where a AAA tranche is the senior claim on it. Drawdowns measured in USD: -24.2 % in the March 2020 liquidity panic and -7.3 % in 2022, against -2.6 % for the AAA CLO ETF (JAAA) in the same 2022 episode. Starts 2011, so it misses 2008: use OOSAX for that.",
+    "confidence": "medium",
+    "sources": [
+      "https://stockanalysis.com/etf/bkln/"
+    ]
+  },
+  {
+    "id": "OOSAX",
+    "isin": "",
+    "aliases": [],
+    "name": "Invesco Senior Floating Rate Fund A",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "OOSAX",
+    "currency": "USD",
+    "fees": 0,
+    "since": "1999-09-02",
+    "asset_class": "corporate-bond",
+    "underlying": "Actively managed portfolio of US senior secured floating-rate corporate loans (the CLO collateral), one of the oldest retail loan funds",
+    "benchmark_index": "active (Morningstar LSTA US Leveraged Loan index as the reference)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The DEEP leveraged-loan history, 1999, and the reason it is here: no CLO fund of any tranche existed before 2020, so this is the only way to see the collateral cross 2008. Total-return drawdowns in USD: -32.1 % from mid-2007 to December 2008, -21.8 % in March 2020, -6.1 % in 2022. Set against what AAA CLO tranches did in the same episodes (quoted at 70-80 % of par in 2009, then repaid in full), it gives the honest reading of the structure: the senior tranche is protected in OUTCOME, much less in PRICE during a liquidity panic. Ongoing charges are not pinned (a US class-A retail fund, load and fee schedule outside the catalog's scope); treat its level as indicative and use BKLN for anything fee-sensitive.",
+    "confidence": "medium",
+    "sources": [
+      "https://finance.yahoo.com/quote/OOSAX/"
+    ]
   }
 ]
