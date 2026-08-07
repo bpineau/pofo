@@ -169,11 +169,13 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
 - Managed-futures / trend reconstructions: read
-  `docs/trend-reconstruction-design.md` first. The monthly path comes from the
-  bundled `TREND-TSMOM-USD` reference (`AnchorTrend`), the daily texture from
-  the TSMOM engine, the level from a per-fund information-ratio pin. Touching
-  the CTA series breaks two FIRE-book plates (their tests recompute from
-  `pkg/datasets` and say so).
+  `docs/trend-reconstruction-design.md` first. Real NAVs of the closest
+  programmes come first (`DonorChain`, back to 1996; a weekly-dealing donor is
+  projected onto the engine's daily calendar), and only what they cannot reach
+  is reconstructed: the monthly path from the bundled `TREND-TSMOM-USD`
+  reference (`AnchorTrend`), the daily texture from the TSMOM engine, the level
+  from a per-fund information-ratio pin. Touching the CTA series breaks two
+  FIRE-book plates (their tests recompute from `pkg/datasets` and say so).
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.

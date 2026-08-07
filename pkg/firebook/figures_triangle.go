@@ -62,10 +62,10 @@ var triRows = []triSeries{
 // correlation of every pair. figures_triangle_test.go recomputes the whole
 // triangle from pkg/datasets and fails if the plate and the data disagree.
 //
-// The window starts in January 2001 because that is where the trend leg's
-// reconstruction is calibrated (the same start as the rolling-correlation
-// plate of the managed-futures article), and THE TREND LEG IS A
-// RECONSTRUCTION before 2022, not a live track record: the plate says so.
+// The window starts in January 2001, the same start as the rolling-correlation
+// plate of the managed-futures article. Over it the trend leg is made of REAL
+// net asset values throughout: the fund's own from 2022, other managers'
+// programmes before it, back to 1996; the plate says so.
 //
 // Two cells are worth reading exactly, since the plate rounds to two decimals:
 // S&P 500 against the whole US market is 0,9955, and MSCI World against the
@@ -77,7 +77,7 @@ var triCorr = [][]float64{
 	{0.94, 0.85, 0.86},
 	{-0.12, -0.13, -0.13, -0.09},
 	{0.13, 0.06, 0.07, 0.23, 0.23},
-	{-0.16, -0.19, -0.19, -0.12, 0.10, 0.10},
+	{-0.15, -0.18, -0.18, -0.11, 0.07, 0.13},
 }
 
 // triEquityRows is the number of leading rows that are equity funds: the block
@@ -297,7 +297,7 @@ func figTriangleCorrelations() string {
 
 	for i, s := range []string{
 		"Sept séries en dollars : MSCI World, S&amp;P 500, marché américain toutes tailles, développés hors US (Ken French),",
-		"Treasuries 20 ans et plus, or au comptant, programme de suivi de tendance (reconstruction avant 2022).",
+		"Treasuries 20 ans et plus, or au comptant, programme de suivi de tendance (valeurs liquidatives réelles, le fonds lui-même depuis 2022).",
 		"Prendre des actions vraiment différentes n'y change rien : le small value américain reste à 0,79 du fonds monde.",
 		"Ces corrélations sont des moyennes de période : par tranches de dix ans, la paire actions monde / obligations longues va de −0,42 à +0,58.",
 	} {
