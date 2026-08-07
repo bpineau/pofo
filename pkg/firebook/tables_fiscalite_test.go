@@ -73,15 +73,6 @@ func fiscTable(t *testing.T, slug, firstHeader string) [][]string {
 	return rows
 }
 
-func fiscArticle(t *testing.T, slug string) string {
-	t.Helper()
-	raw, err := assets.ReadFile("assets/book/fr/" + slug + ".md")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(raw)
-}
-
 // The map of the two social-levy rates. Every rate cell must be one of the two
 // dated constants the plates already use, and the calendar column must follow
 // the split the LFSS 2026 actually draws: the revenus du patrimoine of art.
@@ -135,7 +126,7 @@ func TestTableauPrelevementsSociaux(t *testing.T) {
 		}
 	}
 
-	article := fiscArticle(t, "flat-tax-et-imposition")
+	article := bookArticle(t, "flat-tax-et-imposition")
 	// The exempt livrets belong to the note under the table, never to a row.
 	if !strings.Contains(article, "Les livrets défiscalisés (A, LDDS, LEP) restent hors de tout cela.") {
 		t.Error("la note des livrets exonérés a disparu sous le tableau")
@@ -198,7 +189,7 @@ func TestTableauBaremeUsufruit(t *testing.T) {
 		}
 	}
 
-	article := fiscArticle(t, "succession-et-transmission")
+	article := bookArticle(t, "succession-et-transmission")
 	// The couple's four allowances, read through the 61-70 bracket. The article
 	// states 400 000 € of allowances elsewhere, and this is that number
 	// demembered, so the two cannot drift apart.
@@ -264,7 +255,7 @@ func TestTableauSeuilsMicroEntreprise(t *testing.T) {
 
 	// The two turnover thresholds the paragraph under the table quotes, both of
 	// them the after-abattement threshold read back through the abattement.
-	article := fiscArticle(t, "retour-au-travail")
+	article := bookArticle(t, "retour-au-travail")
 	for _, tc := range []struct {
 		retenu float64
 		what   string
