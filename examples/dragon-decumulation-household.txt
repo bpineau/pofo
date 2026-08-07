@@ -51,7 +51,7 @@
 #   13 DBMFE  -> 13   trend (SG CTA replication, DBi)
 #   13 AQR MF -> 13   trend (direct multi-asset TSMOM, EUR-hedged)
 #   15 IGLN   -> 15   gold (physical ETC)
-#   13 IBCI   -> 13   euro inflation-linked sovereigns
+#   13 ILB 1-10 -> 13 euro inflation-linked sovereigns (UBS 1-10y)
 #   PEA / PEA-PME section (equity by law)
 #    5 WPEA   ->  5   world equity (synthetic swap inside the PEA)
 #    7 Indep. Europe Small  -> 7  European small value/quality
@@ -90,12 +90,20 @@
 # ## Why the wrappers change behavior, not just taxes
 #
 #   Three consequences worth spelling out, because none shows up in a
-#   backtest. SPENDING ORDER: the shelters are the cheap spending pocket
-#   (~18.6% on gains vs ~31.4%), so a decumulating household drains them
-#   early; since they hold only equity, spending them first de-equitizes
-#   the early years and lets the equity share drift back up later. That
-#   is an implicit rising-equity glidepath (Kitces & Pfau, 2014), the
-#   sequence-friendly shape, obtained for free from tax logic.
+#   backtest. SPENDING ORDER: the instantaneous rates (18.6% vs 31.4%
+#   on gains) are a trap; they tax gains already accrued, due whichever
+#   year they are realized. What the order controls is the rate on
+#   FUTURE growth: a euro left in the shelters compounds at 18.6% for
+#   good, the same euro in the CTO at 31.4%. So the household drains
+#   the CTO first and keeps the shelters as the greenhouse, emptied
+#   last. Measured on this file's 14-point shelter block, shelters-last
+#   finishes ahead in every tested case: ~+0.5-1% of final net wealth
+#   by year 15, +2-3% by year 30-40, growing with the horizon. The
+#   price is a forgone implicit rising-equity glidepath (Kitces & Pfau,
+#   2014) from spending the equity-only shelters early; it is cheap,
+#   because band rebalancing unwinds most of that de-equitization
+#   anyway, and at this family's withdrawal rates sequence risk is thin
+#   enough that the certain tax edge outweighs the shape.
 #   REBALANCING ASYMMETRY: money cannot move freely INTO the shelters
 #   (deposit ceilings) and cannot change asset class inside them, so all
 #   cross-sleeve rebalancing happens in the CTO section; inside the PEA
@@ -146,12 +154,26 @@
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
 #   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
 #   (LU2951555403, DBi replication) + AQR Managed Futures UCITS
-#   (RAEF EUR LU1662501532, direct TSMOM; fallbacks Winton IE00BG382Q20,
-#   Man AHL Trend LU0503879685; for 100k+ tickets the same fund's flat I
-#   class IAE2F LU1662499612 at OCF ~0.88% vs 1.31% saves ~0.43 pts/yr,
-#   minimum and KID eligibility to verify). The 20% floor is empirical (ruin nearly
-#   doubles below); the split removes single-manager risk a spending
-#   household cannot earn back; the ~30% ceiling is behavioral.
+#   (RAEF EUR LU1662501532, direct TSMOM). RAEF is the class to hold,
+#   not the cheapest pin: flat fee, no performance fee, EUR-hedged,
+#   100k minimum via platforms, and it has beaten every cheaper-on-
+#   paper sibling (catalog notes; audited-NAV goldens). Sibling classes
+#   seen on retail platforms, for ACCESS only, neither an economic
+#   upgrade: IAET (LU1662498721, 0.78% pin BUT a 10% performance fee
+#   that costs ~2 pts of NAV in a strong trend year) and IAE1FT
+#   (LU2622190622, flat ~1.26%, launched 2026-05). The institutional
+#   IAE2F (LU1662499612) is NOT the cheap way in: EUR 80m minimum, and
+#   it has trailed RAEF by 0.6-0.7 pts/yr since 2023-11. Fund-level
+#   fallbacks: Winton (IE00BG382Q20), Man AHL Trend (LU0503879685); if
+#   no AQR class is reachable, FOLOW (BNP Paribas Easy Managed Futures
+#   UCITS ETF, LU3307218399, 0.60%, swap on an in-house systematic
+#   index, launched 2026-05 and still tiny) is the ETF-format stand-in,
+#   to size with care until it has a record. The 20% floor is empirical
+#   (ruin nearly doubles below) but in-sample: every panel that
+#   measures it includes trend's best decades, so treat it as strong
+#   evidence, not physics; anywhere in 20-26 is the same portfolio.
+#   The split removes single-manager risk a spending household cannot
+#   earn back; the ~30% ceiling is behavioral.
 #
 # CTO -- gold, IGLN (15%; sane range 10-20%).
 #   Physically-backed ETC only (IE00B4ND3602, 0.12%; equal quality:
@@ -161,23 +183,27 @@
 #   0% gold, modeled ruin roughly triples); the ceiling is a priori
 #   (zero expected real carry: Erb & Harvey, FAJ 2013).
 #
-# CTO -- euro linkers, IBCI (13%; sane range 10-15%, A PRIORI).
-#   iShares Euro Inflation Linked Govt (IE00B0M62X26, 0.09%): the only
-#   line whose cash flows are indexed on the household's own liability.
-#   Duration caveat (the 2022 lesson): IBCI is all-maturity (~7y), and
-#   long linkers can lose to rising REAL rates while inflation runs;
-#   duration-cleaner substitutes are UBS Euro Inflation Linked 1-10
-#   (LU1645380442) or UBS TIPS 1-10 EUR-hedged (LU1459801780, US-CPI
-#   basis, deepest backcast). DEEP-WINDOW TIP: IBCI's 2005 quotes are
-#   what bounds this file's panel; to visualise the build through the
-#   2000-02 crash (report curves or the FIRE explorer), temporarily
-#   swap this line for LU1459801780, whose backcast reaches 2000-06.
-#   Same role, known biases: US-CPI-hedged basis and milder duration
-#   (vol 3.9% vs 5.7%, CAGR 1.70% vs 1.99% on 2005-2026, monthly corr
-#   ~0.6, so it understates IBCI's real-rate risk). Visualisation
-#   stand-in only: the held line stays IBCI, the liability basis.
-#   Dose bought on the contract, not the
-#   chart: see the two-lens verdict.
+# CTO -- euro linkers 1-10 (13%; sane range 10-15%, A PRIORI).
+#   UBS Core BBG Euro Inflation Linked 1-10 EUR acc (LU1645380442,
+#   0.08%, real duration ~4.8): euro-HICP sovereign linkers, the only
+#   line whose cash flows are indexed on the household's own liability,
+#   held at the maturity segment where the indexation dominates the
+#   price. The segment IS the design (the 2022 lesson): an all-maturity
+#   fund (IBCI IE00B0M62X26, ~7y) can lose double digits to rising
+#   REAL rates in the exact year this line is supposed to be spendable.
+#   Holding IBCI instead is a real-duration bet, to be counted in the
+#   duration budget next to MTH, never in the insurance budget. Caveat,
+#   stated: the acc share class is young (2025-07) on an older fund;
+#   check it has gathered assets before sizing, with IBCI as the liquid
+#   fallback, counted as above. DEEP-WINDOW TIP: this line's backcast
+#   starts 2005-11 and bounds the file's panel; to visualise the build
+#   through the 2000-02 crash (report curves or the FIRE explorer),
+#   temporarily swap it for UBS TIPS 1-10 EUR-hedged (LU1459801780),
+#   whose backcast reaches 2000-06. Same segment, one known bias: the
+#   US-CPI-hedged basis (CAGR 1.70% vs 1.75%, vol 3.9% vs 3.4% on
+#   2005-2026, monthly corr ~0.6). Visualisation stand-in only: the
+#   held line stays the euro fund, the liability basis. Dose bought on
+#   the contract, not the chart: see the two-lens verdict.
 #
 # PEA -- WPEA, world equity (5%; sane range 3-8%).
 #   iShares MSCI World Swap PEA (IE0002XZSHO1, 0.20%): full world
@@ -210,7 +236,7 @@
 #   available lenses are biased in opposite directions. Measured on the toolkit's
 #   deep panels, with two declared proxies for the young lines (ZPRV
 #   stands in for the Independance sleeve, the TIPS-hEUR backcast for
-#   IBCI; window 2000/2005 -> 2026):
+#   the linkers line; window 2000/2005 -> 2026):
 #   LENS A, raw window (monthly real bootstrap, 40y, rigid 4% real
 #   withdrawal): ruin 3.1% vs 5.5% for pure dragon-decumulation and 2.1% for
 #   the hydra; safe rate at 5% ruin 4.17% vs 3.96% and 4.36%. The
@@ -228,8 +254,9 @@
 #   linkers exist for, sit outside every backcast. Every non-linker
 #   line now carries a sim:on backcast (WPEA to 1971, MTH to 1970, the
 #   Independance sleeve to 1990 via its France sibling), so the file's
-#   panel reaches IBCI's 2005 start, the deepest any euro-linker book
-#   can go. Mind the window when comparing with siblings fitted on
+#   panel reaches the euro 1-10 line's 2005-11 backcast start, the
+#   deepest any euro-linker book can go. Mind the window when comparing
+#   with siblings fitted on
 #   1988+ panels: same plan, different window, different verdict is a
 #   simulator artifact, not a portfolio property; on an identical
 #   panel this build matches or beats them (the tables above; to see it
@@ -267,16 +294,21 @@
 #       quadrant; the family accepts this rather than pay negative
 #       carry for long-vol convexity (see dragon-decumulation and the hydra).
 #   (e) TREND WINTERS: 26 points can spend years flat while equities
-#       run; the cure is written rules, not weights.
+#       run; the cure is written rules, not weights. The rule, written:
+#       the trend sleeve moves only on band rebalancing at a scheduled
+#       review, never in reaction to a flat or losing stretch, however
+#       long; cutting below the 20% floor is a design change that
+#       starts with editing this file, not a trade.
 #   (f) CURRENCY: roughly half the book is USD-quoted unhedged (NTSG,
 #       IGLN), half feature (crisis USD), half bug; the AQR leg is
-#       EUR-hedged, MTH, IBCI and the liability are euro-native.
+#       EUR-hedged, MTH, the linkers and the liability are euro-native.
 #   (g) RECONSTRUCTION AND WINDOW LIMITS: shared TSMOM backcast for
 #       deep trend history; every non-linker line is backcast far past
 #       its listing (WPEA to 1971, MTH to 1970, the Independance
 #       sleeve to 1990 via its France sibling), so the panel binder is
-#       the linkers line: 2005 with IBCI, 2000-06 with its LU1459801780
-#       stand-in (see the linkers head), and nothing earlier anywhere,
+#       the linkers line: 2005-11 with the euro 1-10 fund, 2000-06
+#       with its LU1459801780 stand-in (see the linkers head), and
+#       nothing earlier anywhere,
 #       because inflation-linked markets did not exist (first linkers:
 #       UK 1981, TIPS 1997, OATi 1998, euro ~2003).
 #       Regime-behavior study, not a promise.
@@ -298,8 +330,10 @@
 #   - Shelter hygiene: one world line per PEA (consolidate duplicates),
 #     no cash parked inside, and never bend the shelters toward assets
 #     they cannot hold; the CTO exists for that.
-#   - Spending order: drain the shelters first in decumulation (18.6%
-#     vs 31.4% on gains); the implicit glidepath above is a feature.
+#   - Spending order: CTO first, shelters last (the greenhouse rule
+#     above: the order buys the low rate on future growth, not on gains
+#     already banked). Low-TMI years still get consumed
+#     opportunistically on the CTO side via the barème option.
 #   - Rebalance quarterly or on bands, executed in the CTO section;
 #     inside the shelters only equity-for-equity trades exist.
 #   - The AQR leg is a FUND, not an ETF: check platform availability.
@@ -316,9 +350,9 @@
 28	NTSG            # equity + duration core: Global Efficient Core 90/60 (IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 4	MTH             # deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194; alts DBXG LU0290357846, DTLE IE00BD8PGZ49)
 13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
-13	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; fallback Winton IE00BG382Q20)
+13	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; platform siblings LU1662498721 perf-fee, LU2622190622 flat; ETF fallback FOLOW)
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
-13	IBCI            # euro linkers: iShares € Inflation Linked Govt (IE00B0M62X26; 1-10y alts LU1645380442, LU1459801780)
+13	LU1645380442    # euro linkers 1-10: UBS Core BBG Euro Inflation Linked EUR acc (0.08%; all-maturity IBCI IE00B0M62X26 = a real-duration bet; deep-window stand-in LU1459801780)
 
 # ---- PEA / PEA-PME section (tax-sheltered; equity-only by law) --------
 5	WPEA            # world equity via synthetic swap (IE0002XZSHO1; alts CW8 LU1681043599, EWLD)
