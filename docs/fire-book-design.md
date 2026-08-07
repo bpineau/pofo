@@ -146,8 +146,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
 - [x] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
 - [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
-- [ ] les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
-- [ ] decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
+- [x] les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
+- [x] decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
 
 ### III. Modeliser : Monte-Carlo et autres machines
 - [x] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
@@ -172,8 +172,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
 
 ### V. Le portefeuille de retrait
-- [ ] primes-de-risque: D'ou viennent les rendements : les primes de risque (actions, terme, credit, et pourquoi l'or ne rapporte rien)
-- [ ] pourquoi-la-diversification-marche: Pourquoi la diversification fonctionne : correlation, rebalancing premium, volatility harvesting
+- [x] primes-de-risque: D'ou viennent les rendements : les primes de risque (actions, terme, credit, et pourquoi l'or ne rapporte rien)
+- [x] pourquoi-la-diversification-marche: Pourquoi la diversification fonctionne : correlation, rebalancing premium, volatility harvesting
 - [x] allocation-actions-obligations: L'allocation actions/obligations en retrait
 - [x] glidepaths: Les glidepaths : bond tent, rising equity et la fenetre fragile
 - [x] portefeuilles-tous-temps: Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon
@@ -187,9 +187,9 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 
 ### V bis. Les actifs alternatifs
 - [x] managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises (moved here 2026-07-17)
-- [ ] long-volatility: Long volatility et tail hedging : payer pour les krachs
-- [ ] global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
-- [ ] return-stacking: Return stacking, overlays et portable alpha : empiler les primes
+- [x] long-volatility: Long volatility et tail hedging : payer pour les krachs
+- [x] global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
+- [x] return-stacking: Return stacking, overlays et portable alpha : empiler les primes
 
 ### VI. Buffers et protections
 - [x] cash-buffer: Le matelas de liquidites : taille, cout, vrai role
