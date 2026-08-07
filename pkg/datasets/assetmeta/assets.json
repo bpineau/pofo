@@ -2179,7 +2179,6 @@
   {
     "id": "IE00B4L5Y983",
     "isin": "IE00B4L5Y983",
-    "aliases": ["MSCIWORLD", "MSCI-WORLD"],
     "name": "iShares Core MSCI World UCITS ETF USD (Acc)",
     "ucits": true,
     "source": "yahoo",
@@ -3219,7 +3218,6 @@
   {
     "id": "IE00BFMXXD54",
     "isin": "IE00BFMXXD54",
-    "aliases": ["SP500", "SP-500"],
     "name": "Vanguard S&P 500 UCITS ETF USD Accumulation",
     "ucits": true,
     "source": "yahoo",
@@ -6128,6 +6126,56 @@
       "https://www.justetf.com/en/etf-profile.html?isin=IE000UQND7H4"
     ],
     "since": "2022-06-28"
+  },
+  {
+    "id": "MSCIWORLD",
+    "isin": "",
+    "aliases": ["MSCI-WORLD"],
+    "name": "MSCI World Net Total Return (index, fee-free)",
+    "ucits": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "USD",
+    "fees": 0,
+    "asset_class": "equity",
+    "underlying": "MSCI World Net TR index: large- and mid-cap equities across 23 developed markets, dividends net of withholding tax reinvested",
+    "benchmark_index": "MSCI World Index (Net TR)",
+    "strategy": "index",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1969). The investable UCITS trackers are IWDA (IE00B4L5Y983) and URTH.",
+    "confidence": "high",
+    "sources": [
+      "https://www.msci.com/end-of-day-history?index=990100"
+    ],
+    "since": "1969-12-01"
+  },
+  {
+    "id": "SP500",
+    "isin": "",
+    "aliases": ["SP-500"],
+    "name": "S&P 500 Total Return (index, fee-free)",
+    "ucits": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "USD",
+    "fees": 0,
+    "asset_class": "equity",
+    "underlying": "S&P 500 Total Return index: 500 large-cap US stocks, dividends reinvested",
+    "benchmark_index": "S&P 500 (Total Return)",
+    "strategy": "index",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1871). The investable UCITS tracker is VUAA (IE00BFMXXD54).",
+    "confidence": "high",
+    "sources": [
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
+    ],
+    "since": "1871-01-01"
   },
   {
     "id": "XAUUSD",
