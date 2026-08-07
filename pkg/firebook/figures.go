@@ -96,6 +96,7 @@ var figures = map[string]func() string{
 	"vpw-table":                figVpwTable,
 	"corridor-borne":           figCorridorBorne,
 	"coupe-exigee-tenable":     figCoupeExigeeTenable,
+	"cout-des-erreurs":         figCoutDesErreurs,
 	"vpw-pont":                 figVpwPont,
 	"weimar-reel":              figWeimarReel,
 	"inflation-episode-derive": figInflationEpisodeDerive,
