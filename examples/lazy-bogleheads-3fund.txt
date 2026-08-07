@@ -5,6 +5,7 @@
 #   https://www.bogleheads.org/wiki/Three-fund_portfolio
 # UCITS. 80/20 here — tilt the bond sleeve up as your horizon shortens.
 
-70    IWDASIM    # World (IWDA)
-10    EIMISIM    # EM (EIMI)
+#meta sim:on
+70    IWDA       # World (IWDA)
+10    EIMI       # EM (EIMI)
 20    IE00BDBRDM35    # iShares Global Aggregate Bond EUR-H (AGGH)

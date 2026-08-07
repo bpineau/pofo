@@ -11,9 +11,10 @@
 # Inspired by: Neville, Draaisma, Funnell, Harvey & van Hemert, "The Best
 #   Strategies for Inflationary Times" (2021).
 #meta rebalance:180
+#meta sim:on
 
-15    DBMFESIM        # Trend, replication engine (iMGP DBi EUR)
-15    KMLMSIM         # Trend, direct engine, commodity-heavy (buy Winton/AQR)
-20    ICOMSIM    # Broad commodities (ICOM)
-25    XAUUSDSIM       # Gold (buy IGLN)
-25    CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN)
+15    DBMFE           # Trend, replication engine (iMGP DBi EUR)
+15    KMLM            # Trend, direct engine, commodity-heavy (buy Winton/AQR)
+20    ICOM       # Broad commodities (ICOM)
+25    XAUUSD          # Gold (buy IGLN)
+25    CHSN    # Euro inflation-linked 1-10y (UBS CHSN)

@@ -11,9 +11,10 @@
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90
+#meta sim:on
 
-56    NTSGSIM         # Global Efficient Core 90/60 (sim to 1969)
-10    DBMFESIM        # Trend leg A: CTA replication (sim to 1988)
-8     KMLMSIM         # Trend leg B: MLM index (sim to 1988)
-12    XAUUSDSIM       # Gold (sim to 1968)
-14    SHYSIM          # Short Treasuries, the buffer stand-in (sim to 1991; live: euro linkers + cash)
+56    NTSG            # Global Efficient Core 90/60 (sim to 1969)
+10    DBMFE           # Trend leg A: CTA replication (sim to 1988)
+8     KMLM            # Trend leg B: MLM index (sim to 1988)
+12    XAUUSD          # Gold (sim to 1968)
+14    SHY             # Short Treasuries, the buffer stand-in (sim to 1991; live: euro linkers + cash)

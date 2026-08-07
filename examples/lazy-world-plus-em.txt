@@ -4,5 +4,6 @@
 # Inspired by: the classic Bogleheads two-ETF world equity build.
 # UCITS, accumulating, 100% equity.
 
-88    IWDASIM    # iShares Core MSCI World (IWDA)
-12    EIMISIM    # iShares Core MSCI EM IMI (EIMI)
+#meta sim:on
+88    IWDA       # iShares Core MSCI World (IWDA)
+12    EIMI       # iShares Core MSCI EM IMI (EIMI)

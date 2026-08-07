@@ -12,11 +12,12 @@
 #meta capital:600000
 #meta withdraw:4%/year
 #meta rebalance:180
+#meta sim:on
 
-28    IWDASIM    # World equity (IWDA)
+28    IWDA       # World equity (IWDA)
 10    VHYL    # High-dividend world (VHYL)
 8     IWDP    # Global REITs (IWDP)
 20    IEGA    # € Government Bond (IEGA)
 12    ITPS    # TIPS (ITPS)
-12    GOLDSIM    # Gold (IGLN)
-10    ERNASIM    # Cash / ultrashort (ERNA)
+12    GOLD       # Gold (IGLN)
+10    ERNA       # Cash / ultrashort (ERNA)

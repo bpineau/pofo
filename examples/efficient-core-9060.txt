@@ -6,5 +6,6 @@
 #   https://www.wisdomtree.eu/en-gb/etfs/efficient-core
 # 100% UCITS, global (NTSG) + US (NTSX) tilt.
 
-50    NTSGSIM    # Global Efficient Core 90/60 (NTSG)
-50    NTSXSIM    # US Efficient Core 90/60 (NTSX)
+#meta sim:on
+50    NTSG       # Global Efficient Core 90/60 (NTSG)
+50    NTSX       # US Efficient Core 90/60 (NTSX)

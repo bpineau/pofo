@@ -6,8 +6,9 @@
 #   https://www.paulmerriman.com/ultimate-buy-and-hold-strategy
 # UCITS, 100% equity.
 
-40    IWDASIM    # World core (IWDA)
+#meta sim:on
+40    IWDA       # World core (IWDA)
 20    IWVL    # World Value (IWVL)
-20    ZPRVSIM         # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
+20    ZPRV            # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
 10    ZPRX    # Europe Small-Cap Value (ZPRX)
-10    EIMISIM    # Emerging Markets (EIMI)
+10    EIMI       # Emerging Markets (EIMI)

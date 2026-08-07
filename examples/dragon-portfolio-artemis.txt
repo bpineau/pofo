@@ -7,9 +7,10 @@
 #   https://www.artemiscapital.com/research
 # Long-vol via an actively managed UCITS vol fund; trend via managed futures.
 #meta rebalance:180
+#meta sim:on
 
-24    IWDASIM         # Equity (UCITS: IWDA)
-18    TLTSIM          # Long bonds (UCITS: IDTL)
-19    GOLDSIM         # Gold (UCITS: IGLN)
-18    KMLMSIM         # Managed futures / commodity trend (UCITS: iMGP DBi LU2951555585)
-21    AMUNDI-VOLATILITYSIM  # Long volatility (Amundi Volatility World)
+24    IWDA            # Equity (UCITS: IWDA)
+18    TLT             # Long bonds (UCITS: IDTL)
+19    GOLD            # Gold (UCITS: IGLN)
+18    KMLM            # Managed futures / commodity trend (UCITS: iMGP DBi LU2951555585)
+21    AMUNDI-VOLATILITY     # Long volatility (Amundi Volatility World)

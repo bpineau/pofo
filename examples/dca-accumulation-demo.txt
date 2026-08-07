@@ -7,5 +7,6 @@
 # Edit the capital/contribution to your situation.
 #meta capital:10000
 #meta contribute:1000/month
+#meta sim:on
 
-100   VWRASIM    # All-World (VWRA)
+100   VWRA       # All-World (VWRA)

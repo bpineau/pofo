@@ -1,4 +1,4 @@
 # 100 % US equities portfolio (S&P 500)
-# The SIM suffix allows extending the history before the ETF's inception.
+# The '#meta sim:on' directive extends the history before the ETF's inception.
 #meta sim:on
 100  VFINX

@@ -12,7 +12,8 @@
 #   2022 dip shown here is roughly TWICE what a 1-10y fund would have taken.
 #   Read the pre-2025 drawdowns as a pessimistic bound.
 #meta rebalance:180
+#meta sim:on
 
-30    XEONSIM    # EUR overnight cash (XEON)
-47    CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN, LU1645380442)
-23    TIP1ESIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E, LU1459801780) -- non-euro sovereign diversification
+30    XEON       # EUR overnight cash (XEON)
+47    CHSN    # Euro inflation-linked 1-10y (UBS CHSN, LU1645380442)
+23    TIP1E    # $ TIPS 1-10 EUR-hedged (UBS TIP1E, LU1459801780) -- non-euro sovereign diversification
