@@ -22,7 +22,13 @@ data ends, CVD-validated series trio (amber #b4783c / blue #3a6db4 / red
 New figures should follow this system, not the first-batch style (the v1
 look was judged amateur); always screenshot through the real page CSS (headless
 Chrome on a harness that inlines fonts.css/theme.css) and check for label
-overlaps before committing. Decision: the 12 pre-depth-bar articles (the early batches of
+overlaps before committing (a headless-Chrome pass over the plate's `<text>`
+nodes, comparing `getComputedTextLength` against the viewBox, catches the
+silent right-edge clipping the eye misses). Where a plate carries numbers that
+this repository can compute, compute them: `mc-entrees-vs-tirages`
+(2026-07-24, monte-carlo-forces-faiblesses) plots ruin probabilities produced
+by `decumul.Plan` over a `scenario.ParametricSource` (400 000 paths) rather
+than illustrative values, and states the plan and the model in a footnote. Decision: the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
