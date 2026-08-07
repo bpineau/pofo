@@ -67,6 +67,17 @@ h2{margin:0;font-weight:600;text-wrap:balance}
 @media (max-width:1080px){#controls{grid-template-columns:1fr 1fr}}
 @media (max-width:620px){#controls{grid-template-columns:1fr}}
 
+/* Personal-defaults footer: spans every column below the control groups. */
+.rail-foot{grid-column:1/-1;display:flex;align-items:center;gap:.6rem;
+  margin-top:1.2rem;padding-top:1rem;border-top:1px solid var(--line)}
+.save-defaults{font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;
+  color:var(--accent);background:transparent;border:1px solid var(--line-strong);
+  border-radius:5px;padding:.28rem .7rem;cursor:pointer}
+.save-defaults:hover{background:var(--accent-wash);border-color:var(--accent)}
+.save-defaults:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.saved-note{font-family:var(--mono);font-size:.68rem;color:var(--ink-soft)}
+.saved-note[hidden]{display:none}
+
 .group{display:flex;flex-direction:column;gap:.5rem;min-width:0}
 .group .group-h{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.12em;
   text-transform:uppercase;color:var(--accent);padding-bottom:.35rem;border-bottom:1px solid var(--line)}

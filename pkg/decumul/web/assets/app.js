@@ -13,20 +13,20 @@ const c = (key, label, help) => ({kind: "check", key, label, help});
 
 const GROUPS = [
   {title: "Your situation", col: 0, items: [
-    r("capital", "Deployed capital", 600000, 6000000, 10000, 1800000, "eur",
+    r("capital", "Deployed capital", 600000, 6000000, 10000, 600000, "eur",
       "Liquid capital deployed for the retirement, excluding your home and the emergency fund."),
-    r("age", "Age at retirement", 20, 60, 1, 52, "int",
+    r("age", "Age at retirement", 20, 60, 1, 40, "int",
       "Age in year 0. Drives the mortality view (section 05): being broke at 61 and at 92 are different life events."),
-    r("years", "Horizon (years)", 20, 60, 1, 45, "int",
+    r("years", "Horizon (years)", 20, 60, 1, 42, "int",
       "Plan past your life expectancy: ruin rises steeply with the horizon (40→50y nearly doubles it)."),
-    r("needAnnual", "Net spending /yr", 12000, 240000, 1000, 60000, "eur",
-      "Real (inflation-indexed) net-of-tax household spending. 60 k€/yr = 5 000 €/month."),
+    r("needAnnual", "Net spending /yr", 12000, 240000, 1000, 24000, "eur",
+      "Real (inflation-indexed) net-of-tax household spending. 24 k€/yr = 2 000 €/month."),
   ]},
   {title: "Pension & side income", col: 1, items: [
     r("pensionAnnual", "Pension /yr (net real)", 0, 60000, 600, 12000, "eur",
       "Net real pension once it starts. Simulations show this is the plan's second-biggest sensitivity."),
-    r("pensionYear", "Pension starts in year", 0, 40, 1, 15, "int",
-      "Years from retirement to the pension. Retiring at 52 with a pension at 67 = year 15."),
+    r("pensionYear", "Pension starts in year", 0, 40, 1, 25, "int",
+      "Years from retirement to the pension. Retiring at 42 with a pension at 67 = year 25."),
     r("sideAnnual", "Side income /yr", 0, 100000, 1000, 0, "eur",
       "Temporary net real income (rental, activity…) subtracted from the need while it lasts. Income covering the early years is the best sequence-risk insurance there is."),
     r("sideUntilYear", "Side income until year", 0, 40, 1, 0, "int",
@@ -144,6 +144,13 @@ function renderRail() {
     for (const it of g.items) box.appendChild(buildControl(it, gi === 0));
     cols[g.col || 0].appendChild(box);
   });
+  // A full-width footer to persist the personal-defaults subset to a cookie.
+  const foot = document.createElement("div");
+  foot.className = "rail-foot";
+  foot.setAttribute("data-help",
+    "Save your capital, age, horizon, net spending and pension figures as personal defaults in a cookie on this browser, so you land on them next time. Click again to update them. It changes nothing you can share: the page URL always reproduces the exact scenario for anyone, cookie or not.");
+  foot.innerHTML = `<button type="button" id="saveDefaults" class="save-defaults">Save as my defaults</button><span class="saved-note" id="savedNote" hidden>saved</span>`;
+  form.appendChild(foot);
 }
 
 function buildControl(it, ruler) {
@@ -209,6 +216,13 @@ function setSliderVal(k, v) {
 renderRail();
 refreshAges();
 document.getElementById("s_age").addEventListener("input", refreshAges);
+document.getElementById("saveDefaults").addEventListener("click", () => {
+  saveDefaults();
+  const note = document.getElementById("savedNote");
+  note.hidden = false;
+  clearTimeout(note._t);
+  note._t = setTimeout(() => { note.hidden = true; }, 1800);
+});
 
 // Broad-sample prior: override the fitted mu/sigma/df with cautious values
 // matching the server's Broad-sample column, or restore the fit/defaults.
@@ -222,6 +236,35 @@ function applyConservative() {
 }
 
 // ---------------------------------------------------------------------------
+// Personal defaults: a chosen subset of the situation sliders, saved to a
+// cookie on demand (the "Save as my defaults" button) so a regular visitor
+// lands on their own figures instead of the generic ones. The cookie seeds
+// ONLY these keys, and a shared #hash always overrides it (applied after), so
+// a link reproduces the sender's exact scenario for anyone, cookie or not.
+// ---------------------------------------------------------------------------
+const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear"];
+const PREF_COOKIE = "fire_defaults";
+function readCookie(name) {
+  const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
+  return m ? decodeURIComponent(m[1]) : "";
+}
+function applySavedDefaults() {
+  const raw = readCookie(PREF_COOKIE);
+  if (!raw) return;
+  const p = new URLSearchParams(raw);
+  for (const k of SAVEKEYS)
+    if (p.has(k)) { const v = parseFloat(p.get(k)); if (!isNaN(v)) setSliderVal(k, v); }
+}
+function saveDefaults() {
+  const p = new URLSearchParams();
+  for (const k of SAVEKEYS) p.set(k, state[k]);
+  // A year, path-wide, readable by this script (not sensitive; it only seeds
+  // the sliders). Re-saving overwrites it.
+  document.cookie = PREF_COOKIE + "=" + encodeURIComponent(p.toString()) +
+    ";path=/;max-age=31536000;samesite=lax";
+}
+
+// ---------------------------------------------------------------------------
 // Shareable scenarios: the whole state round-trips through the URL hash.
 // ---------------------------------------------------------------------------
 const CHECKKEYS = Object.keys(checkEls);
@@ -232,7 +275,8 @@ function applySharedSliders() {
   for (const k of Object.keys(UNIT))
     if (shared.has(k)) { const v = parseFloat(shared.get(k)); if (!isNaN(v)) setSliderVal(k, v); }
 }
-applySharedSliders();
+applySavedDefaults();  // cookie over the generic defaults...
+applySharedSliders();  // ...then a shared #hash overrides everything it names
 for (const k of CHECKKEYS) {
   if (shared.get(k) === "1") { state[k] = true; checkEls[k].checked = true; }
 }
