@@ -3,7 +3,7 @@
 # name: iShares 20+Y Treasury: VUSTX long Treasury
 # method: VUSTX (Vanguard Long-Term Treasury, 1986→), real TLT grafted from 2002
 # validation: corr=0.981 (weekly 0.989) beta=1.11 TE=3.1%/yr CAGR sim 3.78% vs real 3.72% (overlap 6005 d from 2002-07-30 to 2026-06-11) vs TLT
-# generated: 2026-07-08
+# generated: 2026-07-11
 date,close
 1962-01-01,2.242256
 1962-01-02,2.242256

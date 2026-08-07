@@ -3,7 +3,7 @@
 # name: Winton Trend-Enhanced Global Equity: equities + TSMOM overlay
 # method: 0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend), 0.80%/yr fees (~2001→)
 # validation: corr=0.625 (weekly 0.816) beta=0.57 TE=15.0%/yr CAGR sim 35.22% vs real 39.88% (overlap 276 d from 2025-04-30 to 2026-06-30) vs IE000O1VI174
-# generated: 2026-07-08
+# generated: 2026-07-11
 date,close
 1988-11-17,100.000000
 1988-11-18,100.705444

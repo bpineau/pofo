@@ -3,7 +3,7 @@
 # name: WisdomTree Efficient Gold Plus Equity: 90/90 replication
 # method: 0.90×VFINX + 0.90×(GC=F gold − cash ^IRX) overlay + 0.10×cash, daily rebalancing, 0.20%/yr fees, real GDE grafted from 2022
 # validation: corr=0.906 (weekly 0.982) beta=0.98 TE=11.2%/yr CAGR sim 27.32% vs real 26.25% (overlap 1075 d from 2022-03-17 to 2026-07-01) vs GDE
-# generated: 2026-07-09
+# generated: 2026-07-11
 date,close
 1968-04-01,0.045240
 1968-04-02,0.044805
