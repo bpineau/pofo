@@ -2,7 +2,7 @@
 
 FIRE : *Financial Independence, Retire Early*. Indépendance financière, retraite précoce.
 
-Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page pose la carte du sujet : d'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire.
+Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page pose la carte du sujet. D'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire.
 
 À la fin, vous saurez situer votre propre projet sur cette carte et par quel article continuer.
 
@@ -42,9 +42,9 @@ Le mouvement a produit un vocabulaire pour désigner des projets très différen
 
 Deux remarques importantes sur ce tableau.
 
-D'abord, **la difficulté n'est pas linéaire**. Passer de Lean à Fat ne multiplie pas seulement le capital cible par trois : cela change la nature du problème. Un Lean FIRE à 20 000 €/an dispose de leviers énormes (géo-arbitrage, retour ponctuel au travail, [[retour-au-travail]]) parce qu'un SMIC couvre ses dépenses. Un Fat FIRE à 100 000 €/an ne peut pas « se rattraper » par un petit boulot : sa sécurité doit être entièrement dans le plan.
+D'abord, **la difficulté n'est pas linéaire**. Passer de Lean à Fat ne multiplie pas seulement le capital cible par trois. Cela change la nature du problème. Un Lean FIRE à 20 000 €/an dispose de leviers énormes (géo-arbitrage, retour ponctuel au travail, [[retour-au-travail]]) parce qu'un SMIC couvre ses dépenses. Un Fat FIRE à 100 000 €/an ne peut pas « se rattraper » par un petit boulot : sa sécurité doit être entièrement dans le plan.
 
-Ensuite, **Barista et Coast sont des amortisseurs de risque de séquence**, pas seulement des styles de vie. Quelques années de revenus partiels au début de la retraite réduisent drastiquement les retraits pendant la fenêtre la plus dangereuse ([[sequence-des-rendements]]) : c'est mathématiquement l'un des outils les plus puissants du sujet, on y reviendra dans [[revenus-complementaires]].
+Ensuite, **Barista et Coast sont des amortisseurs de risque de séquence**, pas seulement des styles de vie. Quelques années de revenus partiels au début de la retraite réduisent drastiquement les retraits pendant la fenêtre la plus dangereuse ([[sequence-des-rendements]]). C'est mathématiquement l'un des outils les plus puissants du sujet, on y reviendra dans [[revenus-complementaires]].
 
 ## L'arithmétique qui rend le FIRE possible
 
@@ -77,7 +77,7 @@ Quelques mises au point que la première vague du mouvement a parfois laissées 
 
 **Ce n'est pas réservé aux ingénieurs américains à 200 000 $ par an.** Le cadre s'applique à tout niveau de dépenses ; c'est le délai qui change. Et le lecteur français dispose d'atouts spécifiques (des enveloppes fiscales efficaces, [[enveloppes-francaises]], une retraite légale qui finira par arriver en soutien, [[retraite-legale]]) et de pièges spécifiques ([[taxe-puma]]).
 
-**Ce n'est pas de la privation.** Le mouvement a une aile ascétique, mais la version durable du FIRE optimise le coût de la vie *que vous voulez vivre*, pas la vie la moins chère possible. Un plan bâti sur des dépenses artificiellement écrasées échoue de la façon la plus humaine qui soit : on ne le tient pas ([[psychologie-du-retrait]]).
+**Ce n'est pas de la privation.** Le mouvement a une aile ascétique, mais la version durable du FIRE optimise le coût de la vie *que vous voulez vivre*, pas la vie la moins chère possible. Un plan bâti sur des dépenses artificiellement écrasées échoue de la façon la plus humaine qui soit. On ne le tient pas ([[psychologie-du-retrait]]).
 
 ## Les trois nombres qui gouvernent tout
 
