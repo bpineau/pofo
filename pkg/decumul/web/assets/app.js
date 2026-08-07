@@ -337,6 +337,7 @@ function renderCape(cape) {
     (pct < 74 || pct > 82 ? `<span style="left:50%">median ${cape.median.toFixed(1)}</span>` : ``) +
     (pct < 90 ? `<span class="now" style="left:${pct}%">today</span>` : `<span class="now" style="right:2%;left:auto;transform:none">today</span>`) +
     (pct < 88 ? `<span style="left:96%">rich</span>` : ``) +
+    `</div>` +
     `<div class="vbig"><span class="n">${(cape.impliedReal * 100).toFixed(1)}%</span>` +
     `<span class="lbl">implied 10y real return · 1/CAPE</span></div>` +
     `<div class="vnote">Rich valuations compress the first decade — this is why the central case sits at <b>μ5/σ11</b>, not a rosy fit. Enable <b>anchor to CAPE</b> to plan on it.</div>`;
