@@ -3,6 +3,7 @@ package marketdata
 import (
 	"errors"
 	"fmt"
+	"math"
 	"net/http"
 	"testing"
 	"time"
@@ -107,6 +108,34 @@ func TestLatestSurvivesYahooOutage(t *testing.T) {
 	}
 	if q.Live || q.Source != "stooq" || q.Price != 43 {
 		t.Fatalf("quote should degrade to the last stooq close: %+v", q)
+	}
+}
+
+func TestLatestFXSurvivesYahooOutage(t *testing.T) {
+	mux := http.NewServeMux()
+	// Yahoo down across the board: the spot step fails and the daily-close
+	// fallback rides the Stooq FX leg, inverting the conventional listing.
+	mux.HandleFunc("/v8/finance/chart/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "yahoo down", http.StatusInternalServerError)
+	})
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "yahoo down", http.StatusInternalServerError)
+	})
+	mux.HandleFunc("/q/d/l/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, "Date,Open,High,Low,Close,Volume\n2020-01-06,1.11,1.12,1.10,1.1194,0\n2020-01-07,1.11,1.12,1.10,1.1025,0\n")
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	q, err := c.Latest(t.Context(), "USDEUR=X")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if q.Live || q.Source != "stooq" || q.Currency != "EUR" {
+		t.Fatalf("quote should degrade to the stooq daily close: %+v", q)
+	}
+	if want := 1 / 1.1025; math.Abs(q.Price-want) > 1e-9 {
+		t.Errorf("price = %v, want %v (inverted eurusd close)", q.Price, want)
 	}
 }
 
