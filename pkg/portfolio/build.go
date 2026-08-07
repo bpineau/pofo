@@ -47,6 +47,14 @@ type BuildOptions struct {
 // (unknown or mixed currencies) accumulate in Portfolio.Warnings. Build
 // fails on the first holding Fetch cannot serve.
 //
+// When spec.Sim is set ("#meta sim:on"), Build fetches each holding through
+// SimFetchID, i.e. its SIM (backcast-extended) variant, so a file need not
+// suffix every line. A holding whose SIM fetch fails then falls back to its
+// real quotes with a note in Portfolio.Warnings (see SimFetchID); explicit
+// user-written "SIM" suffixes keep the stricter behavior of failing the
+// build. The Asset.ID stays exactly as written in the file either way, so
+// reports display the identifier the owner typed.
+//
 // Two spec fields intentionally stay with the caller: Spec.RebalanceDays
 // (pass it, or a default when negative, to Simulate) and Spec.Optimize
 // (run pkg/optimize and re-weight a copy if desired).
@@ -72,7 +80,20 @@ func Build(spec *Spec, opt BuildOptions) (*Portfolio, error) {
 	}
 	currencies := map[string]bool{}
 	for _, h := range spec.Holdings {
-		s, err := opt.Fetch(h.ID)
+		fetchID := SimFetchID(h.ID, spec.Sim)
+		s, err := opt.Fetch(fetchID)
+		if err != nil && fetchID != h.ID {
+			// "#meta sim:on" added the SIM suffix; the directive means "use
+			// the backcast IF it exists", so a holding without one must not
+			// fail the portfolio. Fall back to the asset's real quotes and
+			// note it. Explicit user-written suffixes (fetchID == h.ID) keep
+			// the stricter behavior: their error propagates.
+			if real, rerr := opt.Fetch(h.ID); rerr == nil {
+				s, err = real, nil
+				p.Warnings = append(p.Warnings, fmt.Sprintf(
+					"%s: no simulated history, using real quotes only", h.ID))
+			}
+		}
 		if err != nil {
 			return nil, fmt.Errorf("portfolio %s, asset %q: %w", spec.Name, h.ID, err)
 		}
@@ -107,4 +128,20 @@ func Build(spec *Spec, opt BuildOptions) (*Portfolio, error) {
 			"mixed currencies (%s), no FX conversion applied", strings.Join(list, ", ")))
 	}
 	return p, nil
+}
+
+// SimFetchID returns the identifier Build fetches for a holding written as
+// id. With sim set ("#meta sim:on") it appends the "SIM" suffix so the
+// backcast-extended history is spliced in, unless id already carries the
+// suffix (marketdata.SplitSim detects it, so it is never double-suffixed).
+// With sim false it returns id unchanged. Callers that pre-fetch series (the
+// pofo CLI) key their cache by this same value so Build finds them.
+func SimFetchID(id string, sim bool) string {
+	if !sim {
+		return id
+	}
+	if _, already := marketdata.SplitSim(id); already {
+		return id
+	}
+	return id + "SIM"
 }

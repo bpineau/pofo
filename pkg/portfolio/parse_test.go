@@ -273,6 +273,49 @@ func TestParseLeverage(t *testing.T) {
 	}
 }
 
+func TestParseSim(t *testing.T) {
+	// "on" sets the flag; the holdings themselves are untouched.
+	spec, err := Parse("t", strings.NewReader("#meta sim:on\n60 NTSG\n40 XAUUSDSIM"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !spec.Sim {
+		t.Errorf("sim:on must set Spec.Sim, got %+v", spec)
+	}
+	if spec.Holdings[0].ID != "NTSG" || spec.Holdings[1].ID != "XAUUSDSIM" {
+		t.Errorf("identifiers must be kept verbatim: %+v", spec.Holdings)
+	}
+	// Anything other than "on" (including "off") leaves Sim false, like the
+	// leverage meta.
+	for _, val := range []string{"off", "yes", "true", "1"} {
+		sp, err := Parse("t", strings.NewReader("#meta sim:"+val+"\n100 VOO"))
+		if err != nil {
+			t.Fatalf("sim:%s should parse, got %v", val, err)
+		}
+		if sp.Sim {
+			t.Errorf("sim:%s must leave Sim false", val)
+		}
+	}
+}
+
+func TestSimFetchID(t *testing.T) {
+	cases := []struct {
+		id   string
+		sim  bool
+		want string
+	}{
+		{"NTSG", false, "NTSG"},          // no meta: verbatim
+		{"NTSG", true, "NTSGSIM"},        // meta: suffix appended
+		{"XAUUSDSIM", true, "XAUUSDSIM"}, // already SIM: never double-suffixed
+		{"NTSGSIM", true, "NTSGSIM"},     // idem, upper-case suffix
+	}
+	for _, c := range cases {
+		if got := SimFetchID(c.id, c.sim); got != c.want {
+			t.Errorf("SimFetchID(%q, %v) = %q, want %q", c.id, c.sim, got, c.want)
+		}
+	}
+}
+
 func TestSimulateLeverage(t *testing.T) {
 	n := 253
 	flat := constSeries("A", 0, n, 100)
