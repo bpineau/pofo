@@ -31,7 +31,7 @@ Bengen baptisera plus tard **SAFEMAX** le taux maximal qui survit à tous les mi
 Ses articles suivants (1996-2006) complètent le cadre. L'allocation optimale se situe entre 50 et 75 % d'actions, car descendre plus bas **abaisse** le taux sûr : les obligations seules ne résistent pas à l'inflation. Ajouter des petites capitalisations (small caps) remonte le SAFEMAX, à 4,3 % en 1997 avec 30 % de la poche actions en small caps, puis à 4,5 % en 2006 avec une palette d'actifs plus large. Et l'horizon compte, ~4,15 % pour 30 ans, mais ~3,5 % seulement pour du très long.
 
 ::: encart Pourquoi cette méthode était géniale, et ce qu'elle vaut encore
-Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, l'une des trois grandes familles de modèles que déroulent les simulateurs de décumulation. Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
+Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, l'une des trois grandes familles de modèles que déroulent les simulateurs de décumulation. Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]] ; par convention, ce renvoi couvre aussi le modèle broad-sample des simulateurs, rejoué sur 16 pays du panel JST, cousin pratique du papier à 38 pays), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
 :::
 
 ## Trinity 1998 : du plancher à la probabilité
@@ -43,11 +43,11 @@ Un extrait de la grille (chiffres de la mise à jour de 2011, retraits indexés 
 | Taux initial | 100 % actions, 30 ans | 75/25, 30 ans | 50/50, 30 ans | 25/75, 30 ans |
 |---|---|---|---|---|
 | 3 % | 100 % | 100 % | 100 % | 100 % |
-| 4 % | 98 % | 98 % | 96 % | 71 % |
-| 5 % | 80 % | 82 % | 67 % | 27 % |
-| 6 % | 62 % | 60 % | 51 % | 20 % |
+| 4 % | 98 % | 100 % | 96 % | 80 % |
+| 5 % | 80 % | 82 % | 67 % | 31 % |
+| 6 % | 62 % | 60 % | 51 % | 22 % |
 
-Trois enseignements durables sortent de cette grille. D'abord la **falaise**. Entre 4 et 5 %, le succès s'effondre : le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue près d'une fois sur trois là où le 75/25 ne faiblit presque jamais). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
+Trois enseignements durables sortent de cette grille. D'abord la **falaise**. Entre 4 et 5 %, le succès s'effondre : le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue une fois sur cinq là où le 75/25 n'a jamais failli). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
 
 ::: attention Ce que « 95 % de succès » veut dire chez Trinity, et ne veut pas dire
 Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du seul marché américain : « 95 % » signifie « 95 % des départs entre 1926 et 1980 auraient tenu », pas « votre plan a 95 % de chances de réussir ». Le « succès » lui-même se compte au sens le plus faible qui soit, un solde encore positif au dernier jour, fût-il d'un euro. Les fenêtres partagent leurs années (le krach de 1929 apparaît dans des dizaines de fenêtres), l'échantillon indépendant est minuscule, et le futur n'est pas tiré de cette urne. Les probabilités affichées par les simulateurs modernes ont des limites cousines ([[pieges-des-simulateurs]], [[lire-un-fan-chart]]) ; la parade est toujours la même, croiser plusieurs modèles et garder des marges.

@@ -10,7 +10,7 @@ La question n'est pas « que ferai-je de mon temps ? ». Le temps se remplit tou
 
 ## Ce que la recherche sait
 
-La psychologie de la retraite classique et les premières études des cohortes FIRE convergent sur quelques résultats robustes. Le bien-être post-retraite suit une **courbe en U**. Euphorie initiale, puis un creux (6-24 mois, le mur, [[temoignages-fire]]), puis la remontée pour la majorité. Cette remontée tient à trois prédicteurs qui écrasent tous les autres : la santé, le lien social et le sentiment d'utilité. L'argent, au-delà du seuil de sécurité, prédit peu ([[psychologie-du-retrait]]) ; il donne la permission, pas le contenu.
+La psychologie de la retraite classique et les premières études des cohortes FIRE convergent sur quelques résultats robustes. Le bien-être post-retraite ne suit pas une trajectoire unique. La séquence classique lune de miel, désenchantement, réorientation vient du modèle par phases d'Atchley (1976). Les données longitudinales de Wang (2007) y ajoutent une nuance décisive : environ 70 % des retraités maintiennent leur niveau de bien-être, et un quart passe par une **courbe en U**, un creux vers 6-24 mois (le mur, [[temoignages-fire]]) suivi d'une remontée. Cette remontée tient à trois prédicteurs qui écrasent tous les autres : la santé, le lien social et le sentiment d'utilité. L'argent, au-delà du seuil de sécurité, prédit peu ([[psychologie-du-retrait]]) ; il donne la permission, pas le contenu.
 
 Le départ volontaire et préparé protège. Les retraites subies font les creux les plus profonds, et le candidat FIRE part avec cet avantage. Mais le départ précoce a ses fragilités propres. À 45 ans, la société n'a pas de case pour vous : pas de club de retraités, pas de pairs disponibles, une identité sociale à inventer contre le courant. Et l'autonomie totale, ce fantasme d'avant le départ, se révèle une charge. Décider chaque jour de sa journée est un travail, et la « fatigue décisionnelle » du rentier revient sans cesse dans les récits.
 
@@ -73,6 +73,6 @@ Sarah, 44 ans, avait prototypé. Un an de 4/5e consacré à tester la céramique
 ## Pour aller plus loin
 
 - Ernie Zelinski, *How to Retire Happy, Wild, and Free* : le classique du « vers quoi », recommandé par tous les vétérans.
-- Les travaux sur la courbe en U du bien-être en retraite et l'adaptation hédonique (la recherche en psychologie de la retraite, Wang, « Profiling retirees ») : les fondations.
+- Les travaux sur les trajectoires du bien-être en retraite et l'adaptation hédonique (Atchley, *The Sociology of Retirement*, 1976 ; Wang, « Profiling retirees », 2007) : les fondations.
 - Viktor Frankl, *Découvrir un sens à sa vie* : le fond du chantier 4, hors finance.
 - Dans ce livre : [[temoignages-fire]] (le terrain), [[retour-au-travail]] (le travail choisi), [[couple-et-famille]] (le huis clos et l'équipe), [[les-trois-phases]] (le prototypage).
