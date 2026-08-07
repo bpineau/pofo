@@ -86,13 +86,13 @@ rather than recomputing it (and drifting) on every run.
 - `claude-dragonlite`: the Dragon distilled to three buyable UCITS lines
   (NTSG/trend/gold, no long vol, growth-heavier than Cole); the family's
   simplicity flagship, with its own design notes and honest range check.
-- `dragon-decu`: dragon-lite re-tuned for decumulation (45 NTSG, trend split
+- `dragon-decumulation`: dragon-lite re-tuned for decumulation (45 NTSG, trend split
   across two managers, gold, and a new euro-linkers head): the answer to
   dragon-lite's own honesty note. Carries the family's best drawdown depth,
   duration and Ulcer, a contractual euro-inflation line, and a two-lens
   measured verdict (in-window vs valuation-anchored) with the biases of
   each lens spelled out.
-- `dragon-decu-household`: dragon-decu deployed across French tax wrappers:
+- `dragon-decumulation-household`: dragon-decumulation deployed across French tax wrappers:
   the equity sleeve carved out of the 90/60 core into a PEA/PEA-PME section
   (world swap ETF + small-value boutique funds), the lost bond overlay
   rebuilt with an EUR-hedged long-duration line. Covers the wrapper logic
