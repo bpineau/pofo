@@ -103,7 +103,8 @@
 #   model can decay, close, or drift, so the sleeve is split across two
 #   genuinely different methods -- DBi's CTA-replication (DBMFE,
 #   LU2951555403) and AQR's direct multi-asset trend (AQR Managed Futures
-#   UCITS, LU1103257975), the standout LIVE record among UCITS trend funds:
+#   UCITS, EUR-hedged flat "RAEF" share LU1662501532), the standout LIVE
+#   record among UCITS trend funds:
 #   over 2022-2026 it ran Sharpe ~0.75 with a -20% max drawdown while the
 #   US-listed KMLM (the research build's second leg) did Sharpe ~0 and
 #   -42%. Below ~20% total the sleeve no longer moves the needle in a
@@ -153,12 +154,15 @@
 #   (a) A FAST joint stock/bond selloff that whipsaws trend before it can
 #       flip short: gold is then the only working head. 2022 was slow
 #       enough for trend; a faster rerun would bite harder.
-#   (b) Currency: every line is USD-quoted and unhedged for a EUR
+#   (b) Currency: most lines are USD-quoted and unhedged for a EUR
 #       investor, so EUR/USD vol (~8-10%/yr) partly feeds the portfolio
 #       vol. It is half feature (USD rallies in global crises), half bug
-#       (a dollar-debasement decade drags everything at once). Patches:
-#       swap part of NTSG to NTSZ, prefer DTLE for the duration leg, use
-#       the EUR share class of the AQR fund for trend.
+#       (a dollar-debasement decade drags everything at once). One patch is
+#       already applied here: the AQR trend leg (13%) uses the EUR-hedged
+#       RAEF share, so its return carries the strategy without the EUR/USD
+#       spot move (paying only the small EUR-minus-USD carry; pofo models it
+#       with the FX-hedge identity, not a naive USD conversion). Further
+#       patches: swap part of NTSG to NTSZ, prefer DTLE for the duration leg.
 #   (c) Euro-area inflation is only hedged INDIRECTLY (gold, trend,
 #       commodities via trend). A EUR retiree's liability is euro
 #       inflation: approaching decumulation, add 7-15% of liquid euro

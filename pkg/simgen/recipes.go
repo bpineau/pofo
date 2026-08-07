@@ -35,6 +35,7 @@ func All() []Recipe {
 		dbmfeRecipe(),
 		kmlmRecipe(),
 		aqrmfRecipe(),
+		aqrmfHedgedRecipe(),
 		ctaRecipe(),
 		amundiVolRecipe(),
 		bhmgRecipe(),
@@ -1346,6 +1347,73 @@ func aqrmfRecipe() Recipe {
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
 	}
+}
+
+// aqrmfHedgedRecipe backcasts the EUR-hedged retail share class of the AQR
+// Managed Futures UCITS fund (LU1662501532, "R" EURHDG, flat fee / no
+// performance fee, real from 2025). It reuses the USD AQR reconstruction (same
+// TSMOM engine and IR pin as aqrmfRecipe, with the real USD AQR quotes grafted
+// from 2015 so the hedged series carries AQR's real record), then re-expresses
+// it EUR-hedged via the standard FX-hedge identity used by the EUR-hedged TIPS
+// recipe (tip1eRecipe): a hedged foreign return equals the local (USD) return
+// minus the USD cash rate (^IRX) plus the EUR cash rate (EURCASH-EUR), so the
+// EUR investor earns the strategy return without the EUR/USD spot move, paying
+// the (currently negative) EUR-minus-USD carry. Real LU1662501532 quotes are
+// grafted on top from the class's 2025 inception.
+func aqrmfHedgedRecipe() Recipe {
+	return Recipe{
+		ID:              "LU1662501532",
+		Name:            "AQR Managed Futures UCITS (EUR-hedged): TSMOM replication hedged to EUR",
+		Method:          "USD AQR managed-futures backcast (12-month TSMOM, IR-pinned; real AQR USD LU1103257975 grafted from 2015) re-expressed EUR-hedged via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR), real LU1662501532 grafted from 2025",
+		Build:           aqrHedgedBuild,
+		ValidateAgainst: "LU1662501532",
+		SpliceReal:      "LU1662501532",
+	}
+}
+
+// aqrHedgedBuild builds the USD AQR strategy (reconstruction spliced with the
+// real USD fund) and hedges it to EUR: r_eur = r_usd − usd_cash + eur_cash. The
+// cash accruals come from the same frame the strategy is built on, so the hedge
+// stays on the strategy's own calendar.
+func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	cfg := mfConfig(0.11, 0.0079)
+	ids := append([]string{cfg.CashID, "EURCASH-EUR"}, cfg.Markets...)
+	fr, err := BuildFrame(extend(f), ids, from)
+	if err != nil {
+		return nil, err
+	}
+	values, start, err := TSMOM(fr, cfg)
+	if err != nil {
+		return nil, err
+	}
+	values = pinTrendIR(values, fr.Dates[start:], fr.Returns[cfg.CashID][start:], aqrTrendInfoRatio)
+	recon := &marketdata.Series{Name: "AQR MF USD (reconstruction)", Source: "simdata"}
+	for i, v := range values {
+		recon.Points = append(recon.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
+	}
+	// Graft the real USD AQR fund so the hedged series carries the real 2015+
+	// record, not only the proxy, before applying the currency hedge. When the
+	// real fund is unavailable (offline builds), fall back to the reconstruction.
+	usd := recon
+	if realUSD, err := f.Fetch("LU1103257975", from); err == nil && realUSD != nil && len(realUSD.Points) > 0 {
+		usd = Splice(realUSD, recon)
+	}
+
+	// Per-date EUR-minus-USD daily carry from the strategy's own frame.
+	carry := make(map[time.Time]float64, len(fr.Dates))
+	irx, eur := fr.Returns[cfg.CashID], fr.Returns["EURCASH-EUR"]
+	for k := range fr.Dates {
+		carry[fr.Dates[k]] = eur[k] - irx[k]
+	}
+	out := &marketdata.Series{Name: "AQR Managed Futures (EUR-hedged replication)", Source: "simdata"}
+	val := 100.0
+	out.Points = append(out.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
+	for i := 1; i < len(usd.Points); i++ {
+		rUSD := usd.Points[i].Close/usd.Points[i-1].Close - 1
+		val *= 1 + rUSD + carry[usd.Points[i].Date] // carry is 0 for any off-calendar date
+		out.Points = append(out.Points, marketdata.Point{Date: usd.Points[i].Date, Close: val})
+	}
+	return out, nil
 }
 
 // ctaRecipe reconstructs Simplify CTA from the same TSMOM engine, real CTA
