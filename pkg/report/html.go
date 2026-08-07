@@ -141,12 +141,14 @@ if(!hd||!hd.series||hd.kind!=="stack"){hide();return;}
 var r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
 var px=(e.clientX-r.left)*vb.width/r.width;
 if(px<hd.x0-8||px>hd.x1+8){hide();return;}
-var i=Math.round(Math.min(Math.max((px-hd.x0)/(hd.x1-hd.x0)*(hd.xmax-hd.xmin)+hd.xmin,0),hd.xmax));
+var xmin=hd.xmin||0,xmax=hd.xmax||0;
+if(!(xmax>xmin)){hide();return;}
+var i=Math.round(Math.min(Math.max((px-hd.x0)/(hd.x1-hd.x0)*(xmax-xmin)+xmin,0),xmax));
 if(!cross||cross.ownerSVGElement!==svg){if(cross)cross.remove();
 cross=document.createElementNS("http://www.w3.org/2000/svg","line");
 cross.setAttribute("stroke","#CDD2DA");cross.setAttribute("stroke-dasharray","2 3");
 cross.setAttribute("pointer-events","none");svg.appendChild(cross);}
-var cx=hd.x0+(i-hd.xmin)/(hd.xmax-hd.xmin)*(hd.x1-hd.x0);
+var cx=hd.x0+(i-xmin)/(xmax-xmin)*(hd.x1-hd.x0);
 cross.setAttribute("x1",cx);cross.setAttribute("x2",cx);
 cross.setAttribute("y1",hd.y0);cross.setAttribute("y2",hd.y1);
 tip.textContent="";
