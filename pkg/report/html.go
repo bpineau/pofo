@@ -54,6 +54,7 @@ type PortfolioSection struct {
 	Assets            []AssetRow
 	Notes             []string // informational lines (e.g. optimizer choices)
 	Warnings          []string
+	FireHref          string // link to the FIRE simulator pre-loaded with this portfolio; empty to omit (the CLI report)
 }
 
 // StatCell is one value of the statistics table; Best cells are highlighted.
@@ -202,7 +203,8 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <title>{{.Title}}</title>
 <style>{{.Theme}}</style>
 <style>{{.ReportCSS}}</style>
-{{if .SkinCSS}}<style>{{.SkinCSS}}</style>{{end}}
+{{if .SkinCSS}}<style>{{.SkinCSS}}</style>{{end}}{{if .HasFireLinks}}<style>.pf-fire{float:right;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-ink);text-decoration:none;margin-left:1rem}
+.pf-fire:hover{text-decoration:underline}</style>{{end}}
 </head>
 <body>
 {{.SiteNav}}
@@ -251,7 +253,7 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <div class="section-head"><span class="idx">03</span><h2>Portfolios</h2><span class="aside">composition &amp; coverage</span></div>
 {{range .Portfolios}}
 <details class="pf">
-<summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
+<summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}{{if .FireHref}}<a class="pf-fire" href="{{.FireHref}}">Simulate &rarr;</a>{{end}}</summary>
 <div class="pf-body">
 <div class="chart-frame">{{.ChartSVG}}</div>
 {{if .ContribSVG}}<div class="chart-frame" style="margin-top:1rem">
@@ -304,6 +306,18 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 
 // ReportCSS exposes the view-specific stylesheet to the template.
 func (Page) ReportCSS() template.CSS { return template.CSS(reportCSS) }
+
+// HasFireLinks reports whether any section carries a FireHref. The template
+// gates the .pf-fire styling on it, so a report without simulator links (the
+// CLI path) stays byte-for-byte identical to before the links existed.
+func (p Page) HasFireLinks() bool {
+	for _, s := range p.Portfolios {
+		if s.FireHref != "" {
+			return true
+		}
+	}
+	return false
+}
 
 // ReportJS exposes the interaction layer (instant tooltips, crosshair) to
 // the template.
