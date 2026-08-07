@@ -72,6 +72,16 @@ rendering in Go is testable, stdlib-only and reusable.
 ## Writing conventions
 
 - French; no em-dash ever; numbers in French style in prose (4 %, 1 000 000).
+- PROSE STYLE (Ben, 2026-07-17): clear, simple, engaging, readable, pleasant,
+  fluid, good French. Hard rule: **no sentence may contain more than one French
+  colon ` : `.** The colon-chain "A : B : C" reads clumsy ("claquee au sol") and
+  hard to parse. Keep the announcing colon; make the second a period + new
+  sentence, or a comma / "car" / "tandis que", or parentheses for `[[link]]`
+  refs, or an arrow "→" for stat readouts. This applies to ALL new text from now
+  on (do not introduce new double-colon sentences). A one-off book-wide cleanup
+  of the pre-existing ~1100 offenders is in progress and paused; see the
+  `firebook-no-double-colon` note. Do NOT add an enforcing guard test until that
+  cleanup finishes (it would fail on the backlog).
 - Callout types: `cle` (the one idea to retain), `astuce` (pro-tip),
   `attention` (trap), `exemple` (worked numbers), `encart` (side note),
   `science` (what the research actually says, with references), `terrain`
