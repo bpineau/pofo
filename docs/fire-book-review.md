@@ -13,9 +13,17 @@
 - **Dé-gras des mots-outils** : 284 emphases injustifiées retirées (articles,
   prépositions, conjonctions faibles, copules, pronoms faibles), les
   emphases porteuses gardées (« jamais », « sans », « votre »...).
-- **Chaînes de « : » allégées** : 1069 « : » internes aux parenthèses passés
-  en virgules (phrases à 4+ deux-points : 390 → 213) + réécriture manuelle du
-  récit le plus lourd. Les énumérations inline (listes structurées) restent.
+- **Chaînes de « : » allégées** (2 passes) : 1069 « : » internes aux
+  parenthèses passés en virgules, puis 738 « : + démarreur de proposition »
+  (« : c'est », « : et », « : il/elle », « : mais », « : d'où »...) devenus des
+  points avec des débuts de phrase variés (les faux positifs « étiquette :
+  explication » détectés et rétablis) ; les phrases à 4+ deux-points passent
+  de 390 à ~127. Les énumérations étiquetées les plus pédagogiques (l'échelle
+  Vert/Orange/Rouge, les six colonnes du modèle) converties en listes à puces.
+  Restent des exemples chiffrés denses (calculs) où le « : » liste est
+  légitime.
+- **Terminologie** : fini les calques ridicules — « ours collants » → « sticky
+  bears » (terme consacré), « ours » → « marché baissier » (français standard).
 - **Illustrations** : support `::: figure` ajouté au moteur ; 4 diagrammes SVG
   thématisés (risque de séquence, CAPE→taux sûr, sourire des dépenses, grille
   croissance × inflation). Extensible (voir `figures.go`).
