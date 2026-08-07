@@ -86,6 +86,7 @@ var Categories = []Category{
 		Blurb: "De quoi vivre 40 ans : l'allocation, la dimension temporelle, et les briques qui résistent à tous les régimes.",
 		Articles: []Article{
 			{"primes-de-risque", "D'où viennent les rendements : les primes de risque", "Pourquoi les actions paient, qui paie la prime, pourquoi elle survit à sa célébrité, et pourquoi l'or ne rapporte rien sans que ce soit un défaut."},
+			{"pourquoi-la-diversification-marche", "Pourquoi la diversification fonctionne", "Le seul repas gratuit démonté : corrélations, rebalancing premium, l'effet doublé en décumulation, et la fausse diversification à débusquer."},
 			{"allocation-actions-obligations", "L'allocation actions/obligations en retrait", "Le plateau 50-80 % qui plonge des deux côtés, les trois curseurs pour s'y placer, et le débat 100 % actions remis à sa place."},
 			{"glidepaths", "Les glidepaths : bond tent, rising equity et la fenêtre fragile", "La prudence comme dépense temporaire : les résultats Kitces-Pfau et ERN, l'exécution automatique par les retraits, et le match contre le buffer."},
 			{"portefeuilles-tous-temps", "Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon", "Un gagnant par saison : compositions exactes, chiffres qui comptent pour un rentier, critiques honnêtes, et la dose plutôt que le dogme."},
