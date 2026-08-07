@@ -799,8 +799,13 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	// The overlay runs as a pure excess strategy (EarnCash=false), so its own
-	// return is the excess; pin its information ratio to the SG Trend Index with
-	// a zero cash reference, as for the other trend reconstructions.
+	// return is the excess; anchor its monthly path on the bundled trend
+	// reference, then pin its information ratio to the SG Trend Index with a
+	// zero cash reference, as for the other trend reconstructions.
+	trend, err = AnchorTrend(f, fr.Dates[start:], trend, make([]float64, len(trend)), cfg.TargetVol, cfg.EarnCash)
+	if err != nil {
+		return nil, err
+	}
 	trend = pinTrendIR(trend, fr.Dates[start:], make([]float64, len(trend)), sgTrendInfoRatio)
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
 	const feeDaily = 0.0080 / 252
@@ -874,7 +879,12 @@ func tsmom(name string, cfg TSMOMConfig, trendIR float64) func(Fetcher, time.Tim
 		if err != nil {
 			return nil, err
 		}
-		values = pinTrendIR(values, fr.Dates[start:], fr.Returns[cfg.CashID][start:], trendIR)
+		dates, cash := fr.Dates[start:], fr.Returns[cfg.CashID][start:]
+		values, err = AnchorTrend(f, dates, values, cash, cfg.TargetVol, cfg.EarnCash)
+		if err != nil {
+			return nil, err
+		}
+		values = pinTrendIR(values, dates, cash, trendIR)
 		s := &marketdata.Series{Name: name, Source: "simdata"}
 		for i, v := range values {
 			s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
@@ -924,9 +934,21 @@ func pinTrendIR(values []float64, dates []time.Time, cash []float64, targetIR fl
 // and cross-checked against the fund's own grafted real quotes:
 //   - sgTrendInfoRatio (SG Trend Index, ~0.24): RSST/RSBT overlays and the
 //     Simplify CTA fund (broad systematic trend at a high vol target).
-//   - sgCTAInfoRatio (SG CTA Index, ~0.25): the iMGP DBi family (DBMF, DBMF.PA,
-//     DBMFE), which replicates the SG CTA Hedge Fund Index. The live DBMF record
-//     (IR ~0.5 over its strong 2019+ window) sets a generous upper bound.
+//   - dbiReplicationInfoRatio (~0.50): the iMGP DBi family (DBMF, DBMF.PA,
+//     DBMFE). The SG CTA Hedge Fund Index those funds replicate is measured NET
+//     of the underlying managers' 2-and-20, while DBi copies their positions and
+//     charges 0.85 % flat: pinning the family to the index's own 0.25 would take
+//     that fee off twice, which is precisely the "fee alpha" the funds exist to
+//     capture. Adding the ~3.5 points a 2/20 structure costs back to the index's
+//     ~2.75 % excess at ~11 % volatility lands at an information ratio near 0.55;
+//     the live DBMF record (9.2 %/yr at 12.4 % volatility over ~2.5 % cash since
+//     2019, IR 0.54) lands at the same place from an independent direction. 0.50
+//     keeps a margin under both. Note that even so the reconstruction stays 6
+//     points a year under the live fund: DBMF genuinely beat trend following
+//     over its own window, which no honest reconstruction of the strategy can
+//     reproduce.
+//   - sgCTAInfoRatio (SG CTA Index, ~0.25) is kept for anything measured against
+//     the index as published, fees of the underlying managers included.
 //   - mlmInfoRatio (KFA MLM Index, ~0.30): KMLM. The Mount Lucas index carries a
 //     genuinely richer crisis-alpha profile (2000 +38 %, 2008 +40 %, 2022 +45 %,
 //     ~15 % target vol) than the SG family, so it earns a higher pin; the live
@@ -935,10 +957,11 @@ func pinTrendIR(values []float64, dates []time.Time, cash []float64, targetIR fl
 //     AQMIX has realized only ~3.4 %/yr (IR ~0.15) over 2015-2026, a winter-heavy
 //     span; 0.20 credits the strong pre-2008 trend era the backcast also covers.
 const (
-	sgTrendInfoRatio  = 0.24
-	sgCTAInfoRatio    = 0.25
-	mlmInfoRatio      = 0.30
-	aqrTrendInfoRatio = 0.20
+	sgTrendInfoRatio        = 0.24
+	sgCTAInfoRatio          = 0.25
+	dbiReplicationInfoRatio = 0.50
+	mlmInfoRatio            = 0.30
+	aqrTrendInfoRatio       = 0.20
 )
 
 // stackedTrend backcasts a Return Stacked fund: a funded core (coreID, an equity
@@ -961,6 +984,10 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 			return nil, err
 		}
 		trend, start, err := TSMOM(fr, cfg)
+		if err != nil {
+			return nil, err
+		}
+		trend, err = AnchorTrend(f, fr.Dates[start:], trend, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
 		if err != nil {
 			return nil, err
 		}
@@ -1584,7 +1611,7 @@ func dbmfRecipe() Recipe {
 		ID:              "DBMF",
 		Name:            "iMGP DBi Managed Futures: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (gold→LBMA fix ~1968, crude→WTI spot ~1946, dev-ex-US→DEVEXUS-USD ~1969, EM→EM-USD ~1989, treasuries→CMT TR ~1953; start now set by the EM leg ~1989), IR-pinned to the SG CTA Index, real DBMF grafted from 2019",
-		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.115, 0.0085), sgCTAInfoRatio),
+		Build:           tsmom("DBMF (TSMOM replication)", mfConfig(0.115, 0.0085), dbiReplicationInfoRatio),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
@@ -1601,7 +1628,7 @@ func dbmfpaRecipe() Recipe {
 		ID:              "LU2951555585",
 		Name:            "iMGP DBi Managed Futures UCITS USD: TSMOM replication",
 		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→), IR-pinned to the SG CTA Index, real DBMF.PA grafted from 2025",
-		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.115, 0.0075), sgCTAInfoRatio),
+		Build:           tsmom("DBMF.PA (TSMOM replication)", mfConfig(0.115, 0.0075), dbiReplicationInfoRatio),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
 	}
@@ -1643,8 +1670,12 @@ func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
+	usd, err = AnchorTrend(f, fr.Dates[start:], usd, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
+	if err != nil {
+		return nil, err
+	}
 	// Pin the USD strategy to the SG CTA Index (as DBMF) before the FX leg.
-	usd = pinTrendIR(usd, fr.Dates[start:], fr.Returns[cfg.CashID][start:], sgCTAInfoRatio)
+	usd = pinTrendIR(usd, fr.Dates[start:], fr.Returns[cfg.CashID][start:], dbiReplicationInfoRatio)
 	return convertDaily("DBMFE (USD TSMOM converted to unhedged EUR)",
 		extend(f), "EURUSD=X", from, fr.Dates[start:], usd)
 }
@@ -1747,6 +1778,10 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	values, start, err := TSMOM(fr, cfg)
+	if err != nil {
+		return nil, err
+	}
+	values, err = AnchorTrend(f, fr.Dates[start:], values, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
 	if err != nil {
 		return nil, err
 	}

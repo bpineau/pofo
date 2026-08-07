@@ -88,6 +88,11 @@ sp500-refdata: ## (Re)generate the month-end SP500-USD reference series (network
 	$(GO) run ./cmd/gen-sp500-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: trend-refdata
+trend-refdata: ## (Re)generate the monthly trend reference the managed-futures reconstructions are anchored on (network); run `make simdata` after
+	$(GO) run ./cmd/gen-trend-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: book-drift
 book-drift: build ## What the FIRE book's translations owe their French source
 	./pofo -book-drift
