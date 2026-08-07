@@ -100,6 +100,8 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"LU0131510165": indepFr,
 		"EZU":          ezu, "EUNH.DE": eunh,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
+		"^EONIA":   mkLevels("^EONIA", n, 1.5),
+		"^ESTR":    mkLevels("^ESTR", n/2, 1.4),
 		"^VIX":     vix,
 		"EURUSD=X": eurusd, "GBPUSD=X": gbpusd,
 		// Real iShares Core MSCI World that wpeaBuild grafts over the mid-period:
