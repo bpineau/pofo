@@ -155,6 +155,12 @@ cash). The stages are meant to be compared side by side:
   Winton, AQR, MLM index); a correlation lab against engine-doubling.
 - `miller-50-40-10`: the 2017 paper build that justifies the trend sleeve:
   50 stocks / 40 bonds / 10 trend, drawn at 4%/yr.
+- `ern-75-25-jeske`: the opposite thesis, and the benchmark to beat: plain
+  75/25 US equity/Treasuries drawn at the CAPE-implied rate (~2.7%), from
+  the Early Retirement Now SWR series. Its notes carry the case against
+  gold/trend/risk-parity sleeves, the window and horizon caveats that case
+  depends on, and the small-value variant the series itself prefers. Run it
+  next to `miller-50-40-10` and `golden-butterfly` to see the disagreement.
 - `stagflation-bunker`: only what works in persistent inflation (trend,
   commodities, gold, short linkers); the regime lab (Neville et al. 2021).
 
