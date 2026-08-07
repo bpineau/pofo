@@ -22,6 +22,7 @@ make euro-refdata # regenerate the euro-area reference series (network) then reb
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
+make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
 make book-drift # what the FIRE book's translations owe their French source
 ```
 
