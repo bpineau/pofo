@@ -190,6 +190,20 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		}
 	}
 	mux.HandleFunc("/composer.js", js(composerJS))
+	// The tab icon: one SVG for every surface. Browsers auto-request
+	// /favicon.ico; the heads also link /favicon.svg for crispness. Both serve
+	// the same bytes (modern browsers render SVG at either path).
+	favicon := func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "GET only", http.StatusMethodNotAllowed)
+			return
+		}
+		w.Header().Set("Content-Type", "image/svg+xml")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		_, _ = w.Write([]byte(webui.FaviconSVG))
+	}
+	mux.HandleFunc("/favicon.svg", favicon)
+	mux.HandleFunc("/favicon.ico", favicon)
 	// The local catalog, serialized once: the composer's autocomplete and
 	// inline validation read it; the server-side gates stay authoritative.
 	catalogJSON, err := json.Marshal(marketdata.LocalCatalog())
@@ -498,6 +512,7 @@ var errorTmpl = template.Must(template.New("err").Parse(versionedAssets(`<!DOCTY
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pofo · error</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
 </head><body>
 <main style="max-width:38rem;margin:4rem auto;padding:0 1.2rem">

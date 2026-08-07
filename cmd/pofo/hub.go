@@ -115,6 +115,7 @@ var hubTmpl = template.Must(template.New("hub").Parse(versionedAssets(`<!DOCTYPE
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>pofo &middot; portfolio lab</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
 <style>{{.Skin}}</style>
 <style>
