@@ -12,7 +12,7 @@ Un seul chiffre de ruine est une opinion de modèle ([[ruine-et-probabilites]]).
 
 **`pofo -fire` seul** ouvre le mode paramétrique : vous décrivez le marché par trois curseurs (rendement réel μ, volatilité σ, épaisseur des queues df). C'est le mode « bac à sable », parfait pour comprendre les mécanismes et dimensionner grossièrement.
 
-**`pofo -fire`** est le mode portefeuille : pofo reconstruit l'historique réel long de **vos** lignes (via les extensions `SIM`), le déflate en euros constants, et en tire à la fois les paramètres du modèle central (μ/σ/df ajustés sur vos fonds, puis prudemment mélangés vers un prior mondial, voir plus bas) et deux modèles supplémentaires purement historiques : les fenêtres historiques et le bootstrap par blocs ([[historique-vs-parametrique]]). Vous pouvez aussi faire glisser le poids de chaque ligne et voir la ruine se recalculer en direct.
+**`pofo -fire portfolio.txt`** est le mode portefeuille : pofo reconstruit l'historique réel long de **vos** lignes (via les extensions `SIM`), le déflate en euros constants, et en tire à la fois les paramètres du modèle central (μ/σ/df ajustés sur vos fonds, puis prudemment mélangés vers un prior mondial, voir plus bas) et deux modèles supplémentaires purement historiques : les fenêtres historiques et le bootstrap par blocs ([[historique-vs-parametrique]]). Vous pouvez aussi faire glisser le poids de chaque ligne et voir la ruine se recalculer en direct.
 
 Tous les montants sont **réels** (pouvoir d'achat constant, inflation déjà retirée) et nets : 60 000 €/an, c'est 5 000 €/mois de dépenses d'aujourd'hui, pour toujours ([[rendements-arithmetiques-geometriques]]).
 
