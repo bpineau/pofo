@@ -64,6 +64,7 @@ type Params struct {
 	Guardrails                   bool    `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
 	RiskGuard                    bool    `json:"riskGuard"`      // risk-based guardrails (Kitces/Morningstar): the band tracks the safe rate of the remaining horizon
 	GKFloor                      float64 `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
+	GKRaiseCap                   float64 `json:"gkRaiseCap"`     // risk-guardrail raise ceiling, fraction of the planned spend (0 = default 1 = protective only)
 	ABW                          bool    `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
 	Bounded                      bool    `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
 	Central                      string  `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
@@ -142,7 +143,7 @@ func (pr Params) plan() decumul.Plan {
 	if pr.RiskGuard && pr.Capital > 0 {
 		p.RiskGuard = decumul.RiskGuardrails{
 			SafeWR: pr.safeRateTable(), Band: 0.20, Cut: 0.10, Raise: 0.10,
-			Floor: pr.GKFloor * pr.NeedAnnual, Cap: 1.5 * pr.NeedAnnual, PVRate: pr.pvRate(),
+			Floor: pr.GKFloor * pr.NeedAnnual, Cap: pr.raiseCap(), PVRate: pr.pvRate(),
 		}
 	}
 	// The written-rules cliquet (Kitces ratchet, Ben's §10 skeleton): +10% of
