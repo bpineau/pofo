@@ -6,5 +6,5 @@
 # UCITS. 80/20 here — tilt the bond sleeve up as your horizon shortens.
 
 70    IWDASIM    # World (IWDA)
-10    EIMI    # EM (EIMI)
+10    EIMISIM    # EM (EIMI)
 20    IE00BDBRDM35    # iShares Global Aggregate Bond EUR-H (AGGH)
