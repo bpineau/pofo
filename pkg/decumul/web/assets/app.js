@@ -51,6 +51,8 @@ const GROUPS = [
       "Structural real drift of the need: health insurance and care costs drift upward faster than inflation (+0.3-0.5%/yr is a common planning value)."),
     c("smile", "Retirement smile (down, plateau, up late)",
       "Blanchett's observed shape: real spending drifts down through the go-go years, plateaus, then climbs back with late-life health costs."),
+    r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
+      "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier; overrides the fixed need and the flex/guardrails/ratchet rules."),
   ]},
   {title: "Market model", items: [
     r("mu", "Real growth return", 0.01, 0.12, 0.005, 0.05, "pct",
