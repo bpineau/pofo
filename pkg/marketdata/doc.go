@@ -62,9 +62,10 @@
 //
 // # Policy and money-market rates
 //
-// A last family carries the rates that SET the yields above: "^ESTR" and
-// "^EURIBOR3M" on the euro side, "^ECB-DFR" and "^ECB-MRO" for the ECB's own
-// policy rates, "^SOFR", "^FEDFUNDS" and "^FED-TARGET" on the dollar side. They
+// A last family carries the rates that SET the yields above: "^ESTR", its
+// discontinued predecessor "^EONIA" and "^EURIBOR3M" on the euro side,
+// "^ECB-DFR" and "^ECB-MRO" for the ECB's own policy rates, "^SOFR",
+// "^FEDFUNDS" and "^FED-TARGET" on the dollar side. They
 // come from the institution that publishes each one (the ECB Data Portal
 // through DBnomics, the New York Fed, FRED), carry no currency, and are
 // annualized percent LEVELS that may be zero or negative. Like the yield

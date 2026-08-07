@@ -393,9 +393,9 @@ library `Fetch`):
 | `^NDX`, `^DJI`, `^IXIC` | Nasdaq-100, Dow Jones, Nasdaq Composite | |
 | `^VIX` | CBOE Volatility Index (implied vol, percent points) | 1990→, bundled |
 | `^IRX`, `^FVX`, `^TNX`, `^TYX` | US Treasury yields: 13-week, 5, 10, 30-year | |
-| `^ESTR`, `^EURIBOR3M` | euro benchmark rates: ESTR overnight, Euribor 3-month (monthly) | 2019→ / 1994→ |
+| `^ESTR`, `^EONIA`, `^EURIBOR3M` | euro benchmark rates: ESTR overnight, its discontinued predecessor EONIA, Euribor 3-month (monthly) | 2019→ / 1999-2021 / 1994→ |
 | `^ECB-DFR`, `^ECB-MRO` | ECB policy rates: deposit facility, main refinancing | 1999→ |
-| `^SOFR`, `^FEDFUNDS`, `^FED-TARGET` | US benchmark and policy rates: SOFR, effective funds rate, FOMC target upper bound | 2018→ / 2000→ / 2008→ |
+| `^SOFR`, `^FEDFUNDS`, `^FED-TARGET` | US benchmark and policy rates: SOFR, effective funds rate, FOMC target upper bound | 2018→ / 1954→ / 2008→ |
 | `^HICP-FR`, `^HICP-<geo>` | Eurostat inflation index (all-items HICP) | 1955→ (FR), bundled |
 | `^CPI-US` | US CPI-U inflation index (FRED) | 1913→, bundled |
 | `USDEUR=X`, any `<AAA><BBB>=X` | FX cross, quoted in the second currency | 1971→ (euro crosses), bundled |

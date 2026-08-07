@@ -221,20 +221,32 @@ func ernxRecipe() Recipe {
 }
 
 // xeonRecipe backcasts the Xtrackers II EUR Overnight Rate Swap UCITS ETF
-// (LU0290358497, EUR, real from 2007) from the same EUR money-market index as
-// ERNX, less the fund's 0.10%/yr TER. EURCASH-EUR compounds the 3-month
-// interbank rate, which runs above the overnight ESTR the fund tracks by a
-// term premium (~0.2%/yr on average over the overlap); the TER deduction only
-// partly offsets it, so the proxy sits ~0.2%/yr above the real fund. That
-// residual is immaterial for a cash sleeve and, since real XEON is grafted from
-// 2007, only touches the pre-2007 tail. The real quotes take over from 2007.
+// (LU0290358497, EUR, real from 2007), which tracks a euro OVERNIGHT accrual
+// index, from the euro overnight rates themselves (eurOvernightDaily) less the
+// fund's 0.10%/yr TER.
+//
+// It used to be rebuilt from the 3-month interbank index the ERNX recipe uses,
+// and a 3-month rate is not an overnight rate: measured over 1999-2025 on the
+// two compounded paths, the 3-month index earns 1.585 %/yr against the
+// overnight's 1.426, a term premium of 0.16 points a year that a 0.10 % TER
+// deduction cannot absorb. On the fund's own overlap (2007-06 to 2025-12,
+// 4695 days) that showed as a reconstruction sitting 0.19 points a year above
+// the fund; the overnight path takes the gap to -0.01, with no correlation
+// lost (daily 0.000 -> 0.013, weekly 0.538 -> 0.544).
+//
+// One caveat survives either construction, and it should. The fund's series is
+// an exchange-listed NAV that carries microstructure noise, while any accrual
+// index is smooth by construction: the daily correlation between them is ~0.01
+// and would be near zero however well the level were rebuilt. It is not a
+// grading failure, it is two different objects, and no reconstruction of a cash
+// sleeve should try to reproduce a bid-ask bounce. Read this line on its level.
 func xeonRecipe() Recipe {
 	return Recipe{
 		ID:     "LU0290358497",
 		Name:   "Xtrackers EUR Overnight Rate Swap: EUR overnight cash",
-		Method: "EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->, interpolated to business days) less 0.10%/yr TER; sits ~0.2%/yr above ESTR (3M-vs-overnight term premium only partly offset); real XEON grafted from 2007",
+		Method: "euro overnight rate compounded ACT/360 (ESTR from 2019-10, EONIA 1999-01 before it) less 0.10%/yr TER, extended by the 3-month EURCASH-EUR money-market index before the euro (1994->); real XEON grafted from 2007",
 		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-			s, err := eurCashDaily(f, from)
+			s, err := eurOvernightDaily(f, from)
 			if err != nil {
 				return nil, err
 			}
@@ -243,6 +255,66 @@ func xeonRecipe() Recipe {
 		ValidateAgainst: "LU0290358497",
 		SpliceReal:      "LU0290358497",
 	}
+}
+
+// eurOvernightDaily compounds the euro overnight rate into a total-return
+// accrual index, ACT/360 over the calendar days between two publications, as
+// the published compounded indices do (so a Friday rate accrues the weekend).
+//
+// The euro area has TWO overnight rates and they must be taken in this order:
+// ESTR from its 2019-10-01 start, EONIA before. Over their overlap EONIA was
+// DEFINED as ESTR plus 8.5 basis points, and the two series bundled here
+// reproduce that constant to the fourth decimal on all 579 common days, which
+// is the check that the splice joins the right pair.
+//
+// Before the euro, the 3-month money-market index carries the tail
+// (eurCashDaily): it is the wrong tenor, but a 1994-1999 stub of a cash sleeve
+// is not worth a second data source. If neither overnight rate answers, that
+// index stands alone and the build says so rather than failing.
+func eurOvernightDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	deep, derr := eurCashDaily(f, from)
+	rate := overnightEUR(f, from)
+	if rate == nil || len(rate.Points) < 2 {
+		fmt.Fprintf(os.Stderr, "eurOvernight: no euro overnight rate available, the 3-month index stands alone\n")
+		return deep, derr
+	}
+	idx := &marketdata.Series{Name: "EUR overnight accrual (ESTR, EONIA before)", Source: "simdata", Currency: "EUR"}
+	level := 100.0
+	idx.Points = append(idx.Points, marketdata.Point{Date: rate.Points[0].Date, Close: level})
+	for i := 1; i < len(rate.Points); i++ {
+		days := rate.Points[i].Date.Sub(rate.Points[i-1].Date).Hours() / 24
+		level *= 1 + rate.Points[i-1].Close/100*days/360
+		idx.Points = append(idx.Points, marketdata.Point{Date: rate.Points[i].Date, Close: level})
+	}
+	if derr == nil && deep != nil {
+		marketdata.ExtendBack(idx, deep)
+	}
+	return idx, nil
+}
+
+// overnightEUR splices ^ESTR over ^EONIA. Both are annualized percent levels,
+// so the splice is a plain concatenation at ESTR's first date: a rate is a
+// rate. A source that does not answer is skipped, leaving the other to cover
+// what it can.
+func overnightEUR(f Fetcher, from time.Time) *marketdata.Series {
+	out := &marketdata.Series{Symbol: "^ESTR"}
+	estr, serr := f.Fetch("^ESTR", from)
+	eonia, oerr := f.Fetch("^EONIA", from)
+	if oerr == nil && eonia != nil {
+		out.Points = append(out.Points, eonia.Points...)
+	}
+	if serr != nil || estr == nil || len(estr.Points) < 2 {
+		return out
+	}
+	cut := estr.First().Date
+	kept := out.Points[:0]
+	for _, p := range out.Points {
+		if p.Date.Before(cut) {
+			kept = append(kept, p)
+		}
+	}
+	out.Points = append(kept, estr.Points...)
+	return out
 }
 
 // eurCashDaily fetches the bundled EUR money-market index (EURCASH-EUR, the
