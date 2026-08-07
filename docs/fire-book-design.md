@@ -181,8 +181,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] revue-annuelle: La revue annuelle : la check-list du rentier
 - [x] quand-s-inquieter: Quand s'inquieter, quand laisser courir
 - [x] marche-baissier-en-retraite: Traverser un marche baissier en retraite : le playbook
-- [ ] revenus-complementaires: Pensions et revenus complementaires dans le plan
-- [ ] depenses-en-retraite: Les depenses reelles en retraite (retirement smile, Die With Zero)
+- [x] revenus-complementaires: Pensions et revenus complementaires dans le plan
+- [x] depenses-en-retraite: Les depenses reelles en retraite (retirement smile, Die With Zero)
 - [ ] cas-types: Trois plans complets, chiffres de bout en bout
 
 ### XI. References
