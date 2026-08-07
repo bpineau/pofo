@@ -54,7 +54,18 @@ Remplir le gabarit n'est pas de la paperasse. C'est le test final de conception.
 Le passage à l'acte est mécanique. Les **virements** automatiques d'abord (le salaire mensuel du plan, [[psychologie-du-retrait]]). Les **ordres** de mise en place ensuite, soit la migration douce vers le portefeuille cible, par les flux et les enveloppes fiscalement indolores d'abord, en étalant les ventes taxables ([[flat-tax-et-imposition]]). Le buffer constitué ([[cash-buffer]]). La micro-entreprise ouverte, même dormante ([[retour-au-travail]]). Les papiers (clauses bénéficiaires relues, lettre d'instructions, mandat, [[succession-et-transmission]]). Et le premier rendez-vous de revue inscrit au calendrier. Le plan est vivant.
 
 ::: exemple Un plan complet, condensé
-Le plan v1 d'Aline et Thomas (46/48 ans, départ dans 2 ans), tel qu'écrit. Les chiffres d'abord. Dépenses de 54 k€ confort et 41 k€ plancher (testé). Pensions de 26 k€ à 67 ans (décotées 15 %). Horizon de 52 ans. Patrimoine de 1,75 M€ (PEA 2 × 150 k€ pleins, AV 480 k€, CTO 880 k€, livrets 90 k€). Cible et taux à 3,5 % avec marges, validé. Le portefeuille est en 68/32 (Monde PEA 17 %, All-World CTO 34 %, SCV 8 %, État euro 5-8 ans 12 %, linkers courts 8 %, or ETC 5 %, trend UCITS 5 %, fonds euros 11 %), avec une tente de 58→80 % sur 10 ans par retraits obligataires. La règle tient en guardrails par risque (cible 5 % de ruine centrale, coupe −10 % si >13 % deux revues, hausse +10 % si <1 %, plancher de coupe 78 %) pendant le pont, puis VPW ensuite. Retrait auto de 4 500 €/mois. Panachage AV-abattement plus PEA plus CTO au barème. Côté protections, un buffer de 26 mois en fonds euros (drawdown 18 %, extinction année 10), un gel d'indexation, une échelle d'études 2029-2033 pour les enfants. Les seuils sont posés (vert <4,3 %, orange 4,3-5,2, rouge au-delà). Validation faite, central 4,6 %, broad-sample 9,1 % (échecs tardifs adossés), 1966 et 2000 traversés, pire quartile à deux coupes max, plancher jamais percé. Marges nommées, les missions de Thomas (~12 k€/an possibles), la maison (dépendance), des donations différables. Une page. Deux ans avant le départ, le chantier des critères est déjà derrière eux.
+Le plan v1 d'Aline et Thomas (46/48 ans, départ dans 2 ans), tel qu'écrit, dans l'ordre du gabarit.
+
+- **Les chiffres** → dépenses de 54 k€ confort et 41 k€ plancher (testé) ; pensions de 26 k€ à 67 ans (décotées 15 %) ; horizon de 52 ans ; patrimoine de 1,75 M€ (PEA 2 × 150 k€ pleins, AV 480 k€, CTO 880 k€, livrets 90 k€) ; cible et taux à 3,5 % avec marges, validé.
+- **Le portefeuille** → 68/32 (Monde PEA 17 %, All-World CTO 34 %, SCV 8 %, État euro 5-8 ans 12 %, linkers courts 8 %, or ETC 5 %, trend UCITS 5 %, fonds euros 11 %), avec une tente de 58→80 % sur 10 ans par retraits obligataires.
+- **La règle** → des guardrails par risque (cible 5 % de ruine centrale, coupe −10 % si >13 % deux revues, hausse +10 % si <1 %, plancher de coupe 78 %) pendant le pont, puis VPW ensuite ; retrait auto de 4 500 €/mois ; panachage AV-abattement plus PEA plus CTO au barème.
+- **Les protections** → un buffer de 26 mois en fonds euros (drawdown 18 %, extinction année 10), un gel d'indexation, une échelle d'études 2029-2033 pour les enfants.
+- **Les seuils** → vert <4,3 %, orange 4,3-5,2, rouge au-delà.
+- **Les marges** → les missions de Thomas (~12 k€/an possibles), la maison (dépendance), des donations différables.
+
+Validation faite, ruine centrale de 4,6 %, broad-sample à 9,1 % (échecs tardifs adossés), 1966 et 2000 traversés, pire quartile à deux coupes max, plancher jamais percé.
+
+Une page. Deux ans avant le départ, le chantier des critères est déjà derrière eux.
 :::
 
 ## L'essentiel à retenir

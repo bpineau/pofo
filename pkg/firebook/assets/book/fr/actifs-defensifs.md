@@ -37,7 +37,14 @@ Les stratégies **optionnelles** (puts, tail hedging) offrent la seule vraie con
 Enfin, les fonds **global macro** et multi-primes partagent la promesse du trend, gagner dans les régimes hostiles, sans en avoir l'indice réplicable ni la transparence. Leur procès équitable est dans [[global-macro]].
 
 ::: attention La galerie des faux défensifs
-Quatre produits se **vendent** comme défensifs sans remplir le cahier des charges. Les **actions à dividendes** d'abord : ce sont des actions, au bêta de 0,8 à 0,9. Elles baissent avec le marché, et le dividende n'est pas un coupon. Il se coupe en crise (2008-2009, −25 % de dividendes sur le S&P). C'est le « yield illusion », l'illusion du rendement, démontée par ERN (volets 29-31 et 40, [[serie-ern]]). Le **high yield** est un hybride action-obligation dont les défauts surviennent exactement dans les krachs, avec une corrélation aux actions d'environ 0,7 en crise. Il n'amortit rien. Les **produits structurés** « à capital protégé » achètent leur protection en vendant le potentiel de hausse (l'upside) et en payant des marges opaques. Presque toujours, la combinaison simple obligations + actions, que vous montez vous-même, fait mieux. Les fonds **min-vol** ou « low volatility » sont de vraies actions un peu moins volatiles : un choix de style légitime dans la poche actions, pas un défensif. Le test infaillible : demandez « qu'a fait ce produit en 2008 et en 2022 ? ». Un vrai défensif présente un bon bulletin dans **au moins** l'un des deux, sans catastrophe dans l'autre. Le dossier complet, covered calls, aristocrates, REIT, private equity et crypto compris, est dans [[faux-actifs-defensifs]].
+Quatre produits se **vendent** comme défensifs sans remplir le cahier des charges.
+
+- Les **actions à dividendes** sont des actions, au bêta de 0,8 à 0,9. Elles baissent avec le marché, et le dividende n'est pas un coupon. Il se coupe en crise (2008-2009, −25 % de dividendes sur le S&P). C'est le « yield illusion », l'illusion du rendement, démontée par ERN (volets 29-31 et 40, [[serie-ern]]).
+- Le **high yield** est un hybride action-obligation dont les défauts surviennent exactement dans les krachs, avec une corrélation aux actions d'environ 0,7 en crise. Il n'amortit rien.
+- Les **produits structurés** « à capital protégé » achètent leur protection en vendant le potentiel de hausse (l'upside) et en payant des marges opaques. Presque toujours, la combinaison simple obligations + actions, que vous montez vous-même, fait mieux.
+- Les fonds **min-vol** ou « low volatility » sont de vraies actions un peu moins volatiles. Un choix de style légitime dans la poche actions, pas un défensif.
+
+Le test infaillible : demandez « qu'a fait ce produit en 2008 et en 2022 ? ». Un vrai défensif présente un bon bulletin dans **au moins** l'un des deux, sans catastrophe dans l'autre. Le dossier complet, covered calls, aristocrates, REIT, private equity et crypto compris, est dans [[faux-actifs-defensifs]].
 :::
 
 ## L'assemblage : diversifier la défense elle-même

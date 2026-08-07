@@ -31,7 +31,15 @@ Consolidons ce que les chapitres précédents ont établi par morceaux.
 **Et l'effet psychologique**, non chiffrable et unanime. Le rentier qui **sait** pouvoir regagner dort mieux et dépense mieux (la permission, [[psychologie-du-retrait]]). Il traverse les krachs en spectateur plutôt qu'en otage.
 
 ::: attention La vérité désagréable : l'option fond
-L'employabilité est un actif à forte **décroissance**. Les compétences techniques se périment (3-5 ans dans le numérique, plus lentement ailleurs). Le réseau s'évapore, car les contacts changent de poste et les recommandations datent. Et la discrimination par l'âge est réelle. Le retour salarié classique après 50-55 ans, hors expertise rare, est difficile, et les récits le confirment. La conséquence pour la planification est nette. L'option « retour au travail » vaut **beaucoup** pendant les dix premières années du plan, et de moins en moins ensuite. C'est exactement le profil du buffer fondant ([[recharger-ou-pas]]). C'est une marge de **première décennie**, à ne jamais invoquer pour rassurer un plan de 70 ans. Comme tout actif, elle s'**entretient** si l'on veut la garder. Les vétérans qui l'ont conservée décrivent le même entretien minimal. Une pratique qui maintient la compétence visible (la mission annuelle, la contribution open source, la formation, l'article). Un réseau nourri (les deux déjeuners par trimestre qui entretiennent une présence professionnelle). Et un statut administratif **prêt** (la micro-entreprise ouverte, même dormante, pour facturer sous huit jours). Deux à quatre semaines d'équivalent temps plein par an. C'est la prime d'assurance du meilleur actif défensif du livre, à payer sciemment, ou à laisser expirer sciemment. Mais pas par défaut.
+L'employabilité est un actif à forte **décroissance**. Les compétences techniques se périment (3-5 ans dans le numérique, plus lentement ailleurs). Le réseau s'évapore, car les contacts changent de poste et les recommandations datent. Et la discrimination par l'âge est réelle. Le retour salarié classique après 50-55 ans, hors expertise rare, est difficile, et les récits le confirment.
+
+La conséquence pour la planification est nette. L'option « retour au travail » vaut **beaucoup** pendant les dix premières années du plan, et de moins en moins ensuite. C'est exactement le profil du buffer fondant ([[recharger-ou-pas]]). C'est une marge de **première décennie**, à ne jamais invoquer pour rassurer un plan de 70 ans. Comme tout actif, elle s'**entretient** si l'on veut la garder. Les vétérans qui l'ont conservée décrivent le même entretien minimal.
+
+- Une pratique qui maintient la compétence visible (la mission annuelle, la contribution open source, la formation, l'article).
+- Un réseau nourri (les deux déjeuners par trimestre qui entretiennent une présence professionnelle).
+- Un statut administratif **prêt** (la micro-entreprise ouverte, même dormante, pour facturer sous huit jours).
+
+Deux à quatre semaines d'équivalent temps plein par an. C'est la prime d'assurance du meilleur actif défensif du livre, à payer sciemment, ou à laisser expirer sciemment. Mais pas par défaut.
 :::
 
 ## La boîte à outils française du travail dosé
@@ -70,7 +78,16 @@ Trois postures cohérentes s'offrent à vous, à choisir explicitement ([[constr
 Le test de cohérence est simple. Votre taux de retrait, votre plancher et votre entretien d'employabilité doivent raconter la **même** histoire. Le plan à 4,2 % « parce que je pourrai toujours retravailler », avec une employabilité laissée à l'abandon, est l'incohérence la plus répandue du mouvement.
 
 ::: exemple Le pont de Sam, version travail choisi
-Sam (version C, [[taxe-puma]]) part à 47 ans, avec un plan qui tient seul à 3,7 %. Il prend une décision de conception, le FIRE à option entretenue, avec un socle réel. Il vise ~15 k€/an de missions de conseil facturées en micro-entreprise ouverte avant le départ (six semaines par an, choisies), soit ~10 k€ de revenu retenu après abattement. Le bilan encaissé chaque année du pont est clair. Les 10 k€ font passer les retraits à 40 k€, soit un taux courant de 3,0 %. La PUMa s'éteint (~1,8 k€). 4 trimestres se valident, et la pension à 67 ans grossit à chaque revue M@REL. Le réseau reste vivant, avec deux clients récurrents. Il garde l'option de monter à 30 k€/an de missions si une mauvaise décennie l'exigeait, l'assurance-séquence dont il connaît le prix d'exercice. Le coût vécu tient en six semaines par an d'un travail qu'il aime à cette dose. Il l'a d'ailleurs testé à double dose l'année du prototype, pour connaître sa limite. Dans un simulateur, un side income de 10 k€ jusqu'à l'année 15 ramène la ruine centrale à 2,1 %. Le plan le plus solide du livre n'est pas le plus gros. C'est le mieux adossé.
+Sam (version C, [[taxe-puma]]) part à 47 ans, avec un plan qui tient seul à 3,7 %. Il prend une décision de conception, le FIRE à option entretenue, avec un socle réel. Il vise ~15 k€/an de missions de conseil facturées en micro-entreprise ouverte avant le départ (six semaines par an, choisies), soit ~10 k€ de revenu retenu après abattement.
+
+Le bilan encaissé chaque année du pont est clair.
+
+- Les 10 k€ font passer les retraits à 40 k€, soit un taux courant de 3,0 %.
+- La PUMa s'éteint (~1,8 k€).
+- 4 trimestres se valident, et la pension à 67 ans grossit à chaque revue M@REL.
+- Le réseau reste vivant, avec deux clients récurrents.
+
+Il garde l'option de monter à 30 k€/an de missions si une mauvaise décennie l'exigeait, l'assurance-séquence dont il connaît le prix d'exercice. Le coût vécu tient en six semaines par an d'un travail qu'il aime à cette dose. Il l'a d'ailleurs testé à double dose l'année du prototype, pour connaître sa limite. Dans un simulateur, un side income de 10 k€ jusqu'à l'année 15 ramène la ruine centrale à 2,1 %. Le plan le plus solide du livre n'est pas le plus gros. C'est le mieux adossé.
 :::
 
 ## L'essentiel à retenir
