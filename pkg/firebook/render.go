@@ -18,13 +18,13 @@ import (
 type calloutMeta struct{ glyph, label string }
 
 var callouts = map[string]calloutMeta{
-	"encart":    {"§", "En passant"},
-	"cle":       {"◆", "L'idée clé"},
-	"astuce":    {"✦", "Astuce"},
-	"attention": {"!", "Attention"},
-	"exemple":   {"≡", "Exemple"},
-	"science":   {"⌂", "Ce que dit la recherche"},
-	"terrain":   {"⚑", "Retour de terrain"},
+	"encart":    {"❖", "En passant"},
+	"cle":       {"🔑", "L'idée clé"},
+	"astuce":    {"💡", "Astuce"},
+	"attention": {"⚠", "Point de vigilance"},
+	"exemple":   {"🧮", "Exemple chiffré"},
+	"science":   {"🔬", "Ce que dit la recherche"},
+	"terrain":   {"🗣", "Retour de terrain"},
 }
 
 var (
