@@ -521,13 +521,16 @@ Managed-futures correlations are modest: each fund runs a faster, partly
 discretionary strategy that a single 12-month TSMOM rule only approximates.
 Those daily correlations understate the fidelity, because a seven-market
 engine cannot reproduce a fifty-market programme day by day. What a
-reconstruction owes its user is the right MONTH: the bundled trend reference
+reconstruction owes its user is the right MONTH: a bundled monthly reference
 supplies the month-to-month path (monthly agreement with the real funds 0.60
-to 0.72), the engine supplies the daily texture, and a per-fund information
-ratio pin sets the level. Each vol target is the volatility the fund itself
-realized: DBMF 12.2 % against 12.4 % real, KMLM 14.8 against 14.7, CTA 16.7
-against 16.9, AQR 9.5 against 9.3. The construction, its measurements and its
-open drawdown problem are in `docs/trend-reconstruction-design.md`.
+to 0.72) and the engine supplies the daily texture. For a diversified
+managed-futures fund that reference is a net composite of real programmes,
+which settles the level too; for a sleeve replicating a gross trend index it
+is the gross factor, levelled afterwards by an information-ratio pin. Each vol
+target is the volatility the fund itself realized: DBMF 12.2 % against 12.4 %
+real, KMLM 14.8 against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. The
+construction, its measurements and what it leaves open are in
+`docs/trend-reconstruction-design.md`.
 The lower fidelity is accepted in exchange for full self-generation.
 Discretionary strategies that cannot be honestly replicated with factors are
 rejected below an R² floor rather than shipped as invented data; the matching
