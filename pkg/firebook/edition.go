@@ -124,6 +124,7 @@ var English = &Edition{
 		HumanSize:          humanSizeEN,
 	},
 	Callouts: calloutsEN,
+	Figure:   FigureSVGEnglish,
 }
 
 // calloutsEN heads the ::: blocks in English. The block TOKENS are syntax and
