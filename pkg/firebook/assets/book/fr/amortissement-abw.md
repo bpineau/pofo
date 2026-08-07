@@ -16,6 +16,10 @@ La formule est celle du VPW ([[vpw]]) : retrait = W × g / (1 − (1+g)^(−n)).
 
 **W n'est pas le portefeuille. C'est la richesse totale.** L'ABW ajoute au portefeuille la **valeur actualisée de tous les flux futurs** : les pensions à venir ([[retraite-legale]]) et les revenus d'appoint programmés, moins les dépenses exceptionnelles prévues. Prenons un couple de 47 ans, avec 1,4 M€ de portefeuille et 20 000 €/an de pensions à partir de 67 ans. Sa richesse totale vaut donc 1,4 M€ plus les ~350 000 € que pèse cette pension une fois actualisée. C'est sur ce total que la rente se calcule. La conséquence est précieuse. Le « pont de pension » bricolé du VPW devient un simple terme de la formule, et le retrait est plus élevé avant la pension, car on consomme par anticipation une richesse certaine. C'est le lissage de consommation que les économistes prescrivent depuis Modigliani.
 
+::: figure richesse-totale
+La pension est un actif, même si aucun relevé ne l'affiche. L'ajouter change le retrait de l'année de 14 %, et le legs cesse d'être ce qui restera par accident pour devenir une somme mise de côté d'avance. Les deux barres décrivent le même ménage au même instant : seule la définition de sa richesse change.
+:::
+
 **g n'est pas gravé. C'est le rendement attendu du moment.** Là où le VPW fige 5 % réel pour l'éternité, l'ABW branche l'estimation courante, les rendements prospectifs ([[rendements-attendus]]). Dans sa meilleure version, il l'ancre aux valorisations (g actions ≈ 1/CAPE, [[regles-cape]], [[valorisations-et-cape]]). En marché cher, la rente se calcule sur 3 % et la règle dépense prudemment d'elle-même. En marché purgé, elle se calcule sur 5,5 % et elle ose davantage. C'est la ligne de partage avec le VPW, déjà discutée : la justesse conditionnelle contre la robustesse d'une table gravée.
 
 **n n'est pas « jusqu'à 100 ans par convention ». C'est votre horizon choisi**, au quantile prudent du dernier survivant ([[horizon-et-esperance-de-vie]]). Le paramètre de legs, décrit plus bas, peut ensuite le prolonger ou le raccourcir.

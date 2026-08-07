@@ -24,6 +24,10 @@ Chaque courbe fine joint les couples portefeuille-taux qui servent le même reve
 
 **La cohérence temporelle.** Le paradoxe des deux voisins ([[la-regle-des-4-pourcents]], partis à un an d'écart avec le même portefeuille, des retraits différents à jamais) disparaît : la règle CAPE donne le même retrait à tout détenteur du même portefeuille au même moment, quelle que soit son histoire. C'est la marque des règles « sans mémoire morte » : seul l'état présent compte, comme pour l'ABW ([[amortissement-abw]]).
 
+::: figure cape-depuis-1881
+Cent quarante-cinq millésimes, et un taux qui n'est jamais deux fois le même. Le lecteur qui cherche « le » taux sûr trouve ici la réponse honnête : il n'y en a pas, il y a un prix payé et un rendement qui en découle. Notez au passage le défaut de la formule, visible à l'œil nu en 1921 : linéaire en 1 / CAPE, elle n'a aucune borne haute et propose 11,5 % à qui part au fond d'un krach. Personne ne devrait la suivre là. C'est l'argument des versions bornées et des recalibrages d'ERN lui-même.
+:::
+
 ## Les difficultés honnêtes
 
 **Le niveau du CAPE se discute.** Tout le débat de [[valorisations-et-cape]] (dérive comptable, rachats d'actions, taux, le CAPE moderne qui « vaut » 3-8 points de moins qu'en comparaison naïve) frappe une règle qui consomme le niveau, pas seulement le rang. Avec les paramètres historiques d'ERN, un CAPE structurellement plus haut qu'autrefois donne des taux structurellement plus bas : prudent, mais peut-être trop. Deux parades. On peut utiliser un CAPE ajusté, en rendement total, ou passer par l'écart entre le rendement des bénéfices et le taux réel sans risque (excess CAPE yield), qui intègre le niveau des taux. On peut aussi recalibrer a en conséquence, car ERN lui-même a publié des variantes. Il faut enfin accepter qu'une règle fondée sur une estimation hérite des incertitudes de cette estimation.
