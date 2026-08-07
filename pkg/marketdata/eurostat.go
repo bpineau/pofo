@@ -15,8 +15,8 @@ import (
 
 // hicpFRSnapshot is a bundled offline fallback for ^HICP-FR: the monthly index
 // anchors (long history, ~1955→), used when the live Eurostat API is
-// unreachable. It carries the same chain the live path builds — Eurostat HICP
-// from 1996 with the OECD French CPI (FRED FRACPIALLMINMEI) spliced before it —
+// unreachable. It carries the same chain the live path builds (Eurostat HICP
+// from 1996 with the OECD French CPI (FRED FRACPIALLMINMEI) spliced before it)
 // so an offline run still deflates the high-inflation 1955-1990s a long
 // retirement backcast needs. The live series is always preferred; this only
 // needs refreshing occasionally to keep the recent tail current. Regenerate
