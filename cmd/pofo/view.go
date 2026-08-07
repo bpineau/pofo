@@ -1,7 +1,7 @@
 // /view URL parsing: translating a shareable query string into portfolio
 // specs plus overrides for the server's default options. Each parsed
 // portfolio section also carries a Simulate link to its FIRE mount
-// (/fire/e/<name>/ for an example, /fire/p/<spec>/ for a p= spec).
+// (/firesimulator/e/<name>/ for an example, /firesimulator/p/<spec>/ for a p= spec).
 //
 // Under -serve the live composer (composer.go) is a front end that edits
 // exactly this grammar in-page, keeping the URL equal to the edited state.
@@ -36,8 +36,9 @@ type viewRequest struct {
 	bench      *string
 	noSim      *bool
 	// fireHrefs maps each spec's (deduplicated) name to its FIRE simulator
-	// link: /fire/e/<name>/ for an embedded example, /fire/p/<escaped spec>/
-	// for an ad-hoc p= portfolio. Only the web report consumes it.
+	// link: /firesimulator/e/<name>/ for an embedded example,
+	// /firesimulator/p/<escaped spec>/ for an ad-hoc p= portfolio. Only the
+	// web report consumes it.
 	fireHrefs map[string]string
 }
 
@@ -74,8 +75,8 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 // parsing is delegated to pkg/portfolio by rebuilding the file text form,
 // so the URL grammar can never drift from the file grammar. Each parsed
 // portfolio also gets a FIRE simulator link recorded in fireHrefs, keyed by
-// its final (deduplicated) name: /fire/e/<name>/ for an embedded example,
-// /fire/p/<escaped spec>/ for an ad-hoc p= portfolio. The rendered /view
+// its final (deduplicated) name: /firesimulator/e/<name>/ for an embedded
+// example, /firesimulator/p/<escaped spec>/ for an ad-hoc p= portfolio. The rendered /view
 // report surfaces these as per-section "Simulate" links.
 func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 	vr := &viewRequest{fireHrefs: map[string]string{}}
@@ -105,7 +106,7 @@ func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 			return nil, fmt.Errorf("example %s: %w", name, err)
 		}
 		add(spec)
-		vr.fireHrefs[spec.Name] = "/fire/e/" + name + "/"
+		vr.fireHrefs[spec.Name] = fireBase + "/e/" + name + "/"
 	}
 	for i, raw := range ps {
 		spec, err := adhocSpec(raw, i+1)
@@ -113,7 +114,7 @@ func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 			return nil, err
 		}
 		add(spec)
-		vr.fireHrefs[spec.Name] = "/fire/p/" + url.PathEscape(raw) + "/"
+		vr.fireHrefs[spec.Name] = fireBase + "/p/" + url.PathEscape(raw) + "/"
 	}
 	if err := parseViewGlobals(q, vr, base); err != nil {
 		return nil, err

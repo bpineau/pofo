@@ -248,7 +248,7 @@ single port:
 |---|---|
 | `/` | the **hub**: the bundled example portfolios, tick any and compare them |
 | `/view` | the **visualizer**: the same HTML comparison report the CLI writes, addressed by a shareable URL |
-| `/fire/` | the **FIRE simulator** (`-fire`, mounted under a prefix) |
+| `/firesimulator/` | the **FIRE simulator** (`-fire`, mounted under a prefix; old `/fire/` redirects here) |
 | `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
 
 ```sh
@@ -294,8 +294,8 @@ the link is always the current state, and Run renders it. It stays within the
 same catalog gate and caps, so nothing you can compose escapes them.
 
 Each portfolio in a `/view` report carries a **Simulate** link that opens the
-FIRE simulator bound to that portfolio (`/fire/p/<spec>/` for an ad-hoc
-composition, `/fire/e/<name>/` for an example). The hub also remembers your
+FIRE simulator bound to that portfolio (`/firesimulator/p/<spec>/` for an ad-hoc
+composition, `/firesimulator/e/<name>/` for an example). The hub also remembers your
 default currency, rebalance and sim settings in a cookie, so it opens where you
 left it; a `/view` link stays self-contained and reproduces the same report for
 anyone, cookie or not.

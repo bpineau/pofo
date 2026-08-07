@@ -60,14 +60,14 @@ type server struct {
 	// once (the examples are embedded and immutable).
 	presets []composerPreset
 
-	// FIRE mounts: fireDefault is the plain /fire/ app (the startup panel);
-	// fireByEx caches one app per example, built lazily the first time a
-	// /fire/e/<name>/ URL is hit so "Simulate this portfolio" needs no
-	// restart. Guarded by fireMu; the build itself runs unlocked (it fetches).
+	// FIRE mounts: fireDefault is the plain /firesimulator/ app (the startup
+	// panel); fireByEx caches one app per example, built lazily the first time
+	// a /firesimulator/e/<name>/ URL is hit so "Simulate this portfolio" needs
+	// no restart. Guarded by fireMu; the build itself runs unlocked (it fetches).
 	fireDefault http.Handler
 	fireMu      sync.Mutex
 	fireByEx    map[string]http.Handler
-	// fireBySpec caches one app per ad-hoc composed spec (/fire/p/<spec>/).
+	// fireBySpec caches one app per ad-hoc composed spec (/firesimulator/p/<spec>/).
 	// Unlike fireByEx (at most one entry per bundled example) it must be
 	// bounded: anonymous visitors can mint unlimited distinct specs.
 	fireBySpec map[string]http.Handler
@@ -102,10 +102,20 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.HandleFunc("/", s.hub)
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
-	mux.HandleFunc("/fire/", s.fire)
+	mux.HandleFunc(fireBase+"/", s.fire)
+	// The simulator moved from /fire/ to /firesimulator/; keep the old path
+	// working with a permanent redirect so existing bookmarks, shared /view
+	// links and search results do not break.
+	mux.HandleFunc("/fire/", func(w http.ResponseWriter, r *http.Request) {
+		target := fireBase + strings.TrimPrefix(r.URL.EscapedPath(), "/fire")
+		if r.URL.RawQuery != "" {
+			target += "?" + r.URL.RawQuery
+		}
+		http.Redirect(w, r, target, http.StatusMovedPermanently)
+	})
 	nav := []firebook.NavLink{
 		{Label: "Portefeuilles", Href: "/"},
-		{Label: "Simulateur", Href: "/fire/"},
+		{Label: "Simulateur", Href: fireBase + "/"},
 	}
 	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.Handler(firebook.WithNav(nav))))
 	// The book moved from /book/ to /firebook/; keep the old path working with
@@ -181,21 +191,27 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	return nil
 }
 
-// fire serves the FIRE simulator. A plain /fire/... path gets the default
-// app (the startup panel); /fire/e/<name>/... gets an app bound to that
-// example's historical panel; /fire/p/<spec>/... gets an app built from an
-// ad-hoc composed portfolio, <spec> being exactly the /view p= grammar
-// carried as one path segment. Naked forms redirect to the directory form:
-// the front end resolves /api and asset URLs against document.baseURI.
+// fireBase is the public mount of the FIRE simulator. Everything the app
+// reaches (its /api and assets) is resolved against document.baseURI, so the
+// prefix is a pure routing choice; the legacy /fire/ path 301-redirects here.
+const fireBase = "/firesimulator"
+
+// fire serves the FIRE simulator. A plain /firesimulator/... path gets the
+// default app (the startup panel); /firesimulator/e/<name>/... gets an app
+// bound to that example's historical panel; /firesimulator/p/<spec>/... gets
+// an app built from an ad-hoc composed portfolio, <spec> being exactly the
+// /view p= grammar carried as one path segment. Naked forms redirect to the
+// directory form: the front end resolves /api and asset URLs against
+// document.baseURI.
 func (s *server) fire(w http.ResponseWriter, r *http.Request) {
-	if rest, ok := strings.CutPrefix(r.URL.Path, "/fire/e/"); ok {
+	if rest, ok := strings.CutPrefix(r.URL.Path, fireBase+"/e/"); ok {
 		name, _, slash := strings.Cut(rest, "/")
 		if _, known := s.examples[name]; !known {
 			s.errorPage(w, http.StatusNotFound, "unknown example: "+name)
 			return
 		}
 		if !slash {
-			http.Redirect(w, r, "/fire/e/"+name+"/", http.StatusMovedPermanently)
+			http.Redirect(w, r, fireBase+"/e/"+name+"/", http.StatusMovedPermanently)
 			return
 		}
 		h := s.fireForExample(r.Context(), name)
@@ -203,14 +219,14 @@ func (s *server) fire(w http.ResponseWriter, r *http.Request) {
 			s.errorPage(w, http.StatusNotFound, "unknown example: "+name)
 			return
 		}
-		http.StripPrefix("/fire/e/"+name, h).ServeHTTP(w, r)
+		http.StripPrefix(fireBase+"/e/"+name, h).ServeHTTP(w, r)
 		return
 	}
-	if enc, ok := strings.CutPrefix(r.URL.EscapedPath(), "/fire/p/"); ok {
+	if enc, ok := strings.CutPrefix(r.URL.EscapedPath(), fireBase+"/p/"); ok {
 		s.fireComposed(w, r, enc)
 		return
 	}
-	http.StripPrefix("/fire", s.fireDefault).ServeHTTP(w, r)
+	http.StripPrefix(fireBase, s.fireDefault).ServeHTTP(w, r)
 }
 
 // fireComposed serves the simulator for an ad-hoc composed portfolio. It
@@ -230,7 +246,7 @@ func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string
 		return
 	}
 	if !slash {
-		http.Redirect(w, r, "/fire/p/"+seg+"/", http.StatusMovedPermanently)
+		http.Redirect(w, r, fireBase+"/p/"+seg+"/", http.StatusMovedPermanently)
 		return
 	}
 	h := s.fireForSpec(r.Context(), raw, spec)

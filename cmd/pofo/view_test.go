@@ -78,7 +78,7 @@ func TestComposerMountUnforkable(t *testing.T) {
 			Name:     "opaque",
 			Holdings: []portfolio.Holding{{ID: "NOSUCHFUND", RawWeight: 100}},
 		}},
-		fireHrefs: map[string]string{"opaque": "/fire/e/opaque/"},
+		fireHrefs: map[string]string{"opaque": "/firesimulator/e/opaque/"},
 	}
 	mount := string(composerMount(vr))
 	if strings.Contains(mount, "data-fork-0") {
@@ -262,11 +262,11 @@ func TestViewFireHrefs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := vr.fireHrefs["claude-dragonlite"]; got != "/fire/e/claude-dragonlite/" {
+	if got := vr.fireHrefs["claude-dragonlite"]; got != "/firesimulator/e/claude-dragonlite/" {
 		t.Errorf("example href = %q", got)
 	}
 	adhoc := vr.specs[1].Name
-	want := "/fire/p/" + url.PathEscape("IWDA:60,IGLN:40!sim:on") + "/"
+	want := "/firesimulator/p/" + url.PathEscape("IWDA:60,IGLN:40!sim:on") + "/"
 	if got := vr.fireHrefs[adhoc]; got != want {
 		t.Errorf("adhoc href = %q, want %q", got, want)
 	}

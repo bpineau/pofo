@@ -76,7 +76,7 @@ func composerMount(vr *viewRequest) template.HTML {
 	}
 	for i, spec := range vr.specs {
 		card := composerCard{Index: i, Name: spec.Name}
-		isEx := strings.HasPrefix(vr.fireHrefs[spec.Name], "/fire/e/")
+		isEx := strings.HasPrefix(vr.fireHrefs[spec.Name], fireBase+"/e/")
 		p, dropped := specToP(spec)
 		if isEx {
 			card.Kind, card.KindLabel, card.ReadOnly = "ex", "ex=", true

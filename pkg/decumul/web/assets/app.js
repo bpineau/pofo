@@ -260,7 +260,7 @@ function schedule() {
 // apiURL maps an absolute "/api/…" route onto the document's base URL so
 // the app reaches its own backend whether it is served at the site root
 // (pofo -fire) or mounted under a sub-path (pofo -serve serves it at
-// /fire/, where document.baseURI ends in "/fire/").
+// /firesimulator/, where document.baseURI ends in "/firesimulator/").
 const apiURL = p => new URL(p.replace(/^\//, ""), document.baseURI).href;
 const post = (url, body) =>
   fetch(apiURL(url), {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)})
