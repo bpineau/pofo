@@ -31,6 +31,12 @@
 //     donor that does not quote daily is projected onto the engine's calendar
 //     first. The file starts at the deepest donor and nothing is shipped behind
 //     it;
+//   - financed serves the USD overnight financing rate (usdOvernight: ^SOFR
+//     from 2018-04, effective fed funds from 1954, the T-bill rate before), the
+//     rate a FUTURES-based leg pays. Two rates run through these
+//     reconstructions and they are not interchangeable: an overlay finances at
+//     the overnight rate, a collateral sleeve earns the bill rate, and the two
+//     have differed by 0.02 to 1.15 points a year depending on the decade;
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error
@@ -58,6 +64,7 @@
 // are FRACTIONS per year (0.0085 = 0.85 %/yr), as are
 // volatility targets (0.10 = 10 %), whereas the portfolio package and
 // marketdata.Fees express fees in PERCENT per year (0.85 = 0.85 %/yr).
-// Rate series (^IRX, ^FVX, ^TNX, ^TYX) are annualized percent levels and
+// Rate series (^IRX, ^FVX, ^TNX, ^TYX, the policy and money-market family of
+// marketdata.RateSymbols, and usdOvernight) are annualized percent levels and
 // are converted to daily accruals by BuildFrame.
 package simgen
