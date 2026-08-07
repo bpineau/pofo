@@ -4,10 +4,14 @@ L'article précédent a établi **où** se placer sur l'axe actions/obligations 
 
 D'où l'idée du glidepath (« sentier de descente », le terme vient des fonds à date cible) : faire **varier** l'allocation dans le temps, prudente quand le danger est maximal, croissante en actions à mesure que la fenêtre se referme. La forme complète s'appelle le bond tent (la « tente obligataire » de Michael Kitces) : monter la poche obligataire à l'**approche** du départ, la redescendre pendant la première décennie de retraite : un sommet de prudence exactement sur la zone rouge. C'est l'une des rares idées du domaine validée par tous les camps (Kitces-Pfau 2014, ERN volets 19-20 et 43, la pratique institutionnelle), à condition d'en connaître les vraies proportions : le bénéfice est **ciblé** (les pires cas), pas gratuit, et l'exécution demande d'acheter des actions pendant des années où plus personne n'en veut.
 
-Cet article donne les résultats chiffrés, la mécanique d'exécution des deux versants, les critiques honnêtes, la comparaison avec l'alternative (le buffer), et le test dans pofo, qui implémente le versant montant nativement.
+Cet article donne les résultats chiffrés, la mécanique d'exécution des deux versants, les critiques honnêtes, la comparaison avec l'alternative (le buffer), et des simulations.
 
 ::: cle L'idée en une phrase
 Puisque le sort du plan se joue dans la première décennie, la prudence doit être une **dépense temporaire** concentrée sur cette décennie, pas une taxe perpétuelle : partir prudent (50-60 % d'actions au jour J) puis **remonter** méthodiquement vers l'allocation de croisière (70-100 %) sur 10-15 ans capte l'essentiel de la protection d'une allocation prudente permanente, pour une fraction de son coût en rendement.
+:::
+
+::: figure bond-tent
+La part d'actions descend avant le départ (on dé-risque par les flux), touche son minimum au jour J, puis **remonte** pendant la première décennie (on rachète des actions au fil des retraits). La poche obligataire, la bande haute, forme ainsi une **tente** dont le sommet coïncide avec la fenêtre fragile : prudence maximale exactement là où le risque de séquence est maximal, et nulle part ailleurs.
 :::
 
 ## Les résultats fondateurs, chiffrés
@@ -40,7 +44,7 @@ Le glidepath et le matelas de liquidités ([[cash-buffer]]) visent le même risq
 | Gouvernance | Automatique via les retraits ; demande de **tenir** la pente | Très intuitive (« je vis sur le cash ») ; demande des règles de consommation/recharge ([[recharger-ou-pas]]) |
 | Valeur psychologique | Faible (invisible) | Très élevée (dormir) |
 
-La lecture honnête, confirmée par les arbitrages de la §07 de pofo : quantitativement, les deux se valent à peu près et leurs bénéfices se **recouvrent** largement (un gros buffer **plus** une tente profonde, c'est payer deux fois la même assurance) ; qualitativement, le glidepath gagne sur l'exécution automatique, le buffer sur la psychologie. La combinaison raisonnable : une tente modérée (60 → 85 % sur 10 ans) plus un buffer modeste (18-24 mois), plutôt que le maximum des deux ([[choisir-sa-strategie]], la prudence est un budget).
+La lecture honnête, confirmée par les arbitrages avec un simulateur : quantitativement, les deux se valent à peu près et leurs bénéfices se **recouvrent** largement (un gros buffer **plus** une tente profonde, c'est payer deux fois la même assurance) ; qualitativement, le glidepath gagne sur l'exécution automatique, le buffer sur la psychologie. La combinaison raisonnable : une tente modérée (60 → 85 % sur 10 ans) plus un buffer modeste (18-24 mois), plutôt que le maximum des deux ([[choisir-sa-strategie]], la prudence est un budget).
 
 ## Les nuances de l'état de l'art
 
@@ -50,10 +54,12 @@ La lecture honnête, confirmée par les arbitrages de la §07 de pofo : quantita
 
 **L'interaction avec la pension.** La remontée d'actions du versant montant est encore plus défendable quand une pension arrive en cours de route ([[revenus-complementaires]]) : la pension actualisée est une position obligataire qui **grossit** en s'approchant ([[amortissement-abw]]) : remonter les actions du portefeuille visible ne fait alors que maintenir le risque **total** constant. Le retraité français à pension dans 15 ans a une double raison de suivre la pente.
 
-**Dans pofo** : la case « Rising-equity glidepath (bond tent) » du groupe Market model applique le versant montant au portefeuille simulé ; testez-la en A/B sur les colonnes stress et broad-sample (c'est là que son bénéfice vit, [[historique-vs-parametrique]]), et regardez la §03 : la sensibilité de la ruine à la première décennie doit visiblement s'adoucir. En mode portefeuille, l'exécution réelle (prélever sur les obligations) se répète ensuite dans la vraie vie, à la revue annuelle ([[revue-annuelle]]).
+::: astuce Le tester dans pofo
+La case « Rising-equity glidepath (bond tent) » (groupe Market model) applique le versant montant au portefeuille simulé : testez-la en A/B sur les colonnes stress et broad-sample, là où son bénéfice vit ([[historique-vs-parametrique]]), et regardez la section « décennie décisive » (§03) : la sensibilité de la ruine à la première décennie doit visiblement s'adoucir. L'arbitrage glidepath contre buffer de cet article, lui, se lit dans la section §07 (la courbe ruine/années de buffer et l'histogramme des années sous l'eau) : c'est elle qui montre, chiffres en main, que les deux protections se recouvrent. Et en mode portefeuille, l'exécution réelle (prélever sur les obligations pendant la remontée) se répète ensuite dans la vraie vie, à la revue annuelle ([[revue-annuelle]]).
+:::
 
 ::: exemple Une tente dimensionnée, de bout en bout
-Iris, 44 ans, cible à 49 ans, CAPE au-dessus de 30 : la tente complète se justifie. Versant descendant (44-49 ans) : allocation actuelle 85/15 ; toute l'épargne nouvelle (2 800 €/mois) va aux obligations intermédiaires et aux linkers, plus 24 mois de dépenses en monétaire la dernière année : au départ, 58/34/8 (actions/obligations/cash), zéro vente, zéro frottement fiscal. Versant montant (49-61 ans) : plan écrit : « tous les retraits sur la poche obligataire jusqu'à 85 % d'actions, puis rééquilibrage à bandes ; pente suspendue par **aucun** événement de marché ». Simulation pofo : au taux de 3,6 % avec guardrails, la tente réduit la ruine stress de 8 % à 6 % et la broad-sample de 12 % à 10 % ; la §03 montre le pire décile de première décennie nettement moins létal. Coût : ~0,15 point d'espérance pendant douze ans. Iris signe. C'est exactement le prix d'une assurance dont elle est le sinistre type.
+Iris, 44 ans, cible à 49 ans, CAPE au-dessus de 30 : la tente complète se justifie. Versant descendant (44-49 ans) : allocation actuelle 85/15 ; toute l'épargne nouvelle (2 800 €/mois) va aux obligations intermédiaires et aux linkers, plus 24 mois de dépenses en monétaire la dernière année : au départ, 58/34/8 (actions/obligations/cash), zéro vente, zéro frottement fiscal. Versant montant (49-61 ans) : plan écrit : « tous les retraits sur la poche obligataire jusqu'à 85 % d'actions, puis rééquilibrage à bandes ; pente suspendue par **aucun** événement de marché ». Dans un simulateur : au taux de 3,6 % avec guardrails, la tente réduit la ruine stress de 8 % à 6 % et la broad-sample de 12 % à 10 % ; la §03 montre le pire décile de première décennie nettement moins létal. Coût : ~0,15 point d'espérance pendant douze ans. Iris signe. C'est exactement le prix d'une assurance dont elle est le sinistre type.
 :::
 
 ## L'essentiel à retenir
@@ -61,7 +67,7 @@ Iris, 44 ans, cible à 49 ans, CAPE au-dessus de 30 : la tente complète se just
 - Le risque étant concentré sur la première décennie, la prudence doit l'être aussi : partir à 50-60 % d'actions et remonter vers la croisière sur 10-15 ans (le versant montant), après avoir réduit par les flux sur les 5 ans d'avant (le versant descendant) : la tente de Kitces, sommet au jour J.
 - Le bénéfice est ciblé : +0,1-0,3 point de SWR dans les pires millésimes, ~0 en médiane, **maximal** quand le CAPE de départ est haut. C'est une assurance à prime négative dans les marchés chers, pas un alpha.
 - L'exécution du versant montant est automatique si l'on prélève tout sur les obligations pendant la remontée : aucun ordre contre-intuitif à passer. Et c'est la parade à sa vraie faiblesse, comportementale (la pente suspendue au premier krach).
-- Glidepath et buffer couvrent le même risque : combinaison modérée des deux plutôt que maximum de l'un et l'autre ; la §07 et le mode A/B de pofo chiffrent l'arbitrage sur votre plan.
+- Glidepath et buffer couvrent le même risque : combinaison modérée des deux plutôt que maximum de l'un et l'autre.
 - Anti-modèle à éviter : le fonds à date cible qui descend pour toujours et laisse un octogénaire sous le plateau d'allocation, exposé à l'érosion ([[allocation-actions-obligations]]).
 
 ---
