@@ -1,6 +1,10 @@
-40	FR0011147594  # Obligataire - Omnibond
-12	LU0171310443  # BGF World Technology
-12	LU0171307068  # BGF World Healthscience
-12	LU0280435461  # Pictet Clean Energy
-12	IWDASIM  # Shares Core MSCI World UCITS ETF USD (Acc), remplace "FR00140022T5  Aleph Monde" avec plus d'historique
-12	FR0012336683  # Amundi Actions Or
+# Predictis -- French assurance-vie unit-linked allocation
+# Idea: a real Predictis (French life-insurance) contract mapped to pofo: a
+#   40% bond core with thematic and world-equity satellites plus a gold-miner
+#   sleeve. IWDASIM stands in for the Aleph Monde unit to add backtest history.
+40	FR0011147594    # Bond core: Omnibond
+12	LU0171310443    # BGF World Technology (thematic equity)
+12	LU0171307068    # BGF World HealthScience (thematic equity)
+12	LU0280435461    # Pictet Clean Energy (thematic equity)
+12	IWDASIM         # World equity: iShares Core MSCI World (Acc); stands in for "FR00140022T5 Aleph Monde" with longer history
+12	FR0012336683    # Amundi Actions Or (gold-miner equity)

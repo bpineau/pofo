@@ -1,2 +1,6 @@
+# NTSX -- WisdomTree US Efficient Core 90/60, single fund
+# Idea: one line holding ~90% S&P 500 plus a ~60% US Treasury futures overlay
+#   -- a capital-efficient 60/40 at ~1.5x notional. '#meta sim:on' extends the
+#   history before the fund's inception.
 #meta sim:on
-100	NTSX
+100	NTSX            # US Efficient Core 90/60 (WisdomTree NTSX, IE000KF370H3)

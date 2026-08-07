@@ -1,4 +1,4 @@
-# PEA — World equity, 100% (accumulation)
+# PEA -- World equity, 100% (accumulation)
 # Idea: maximum-simplicity PEA accumulation: a single PEA-eligible MSCI World
 #   swap ETF inside the French tax-advantaged equity wrapper.
 # Inspired by: French personal-finance consensus (avenuedesinvestisseurs, r/vosfinances).

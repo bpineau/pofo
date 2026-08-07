@@ -1,5 +1,6 @@
-# Let the optimizer pick the weights: maximize the Sharpe ratio, with no
-# single asset above 40%. The report compares it with the weights below.
+# Optimizer max-Sharpe -- optimal weights, no single asset above 40%
+# Idea: let '#meta optimize' choose the weights instead of setting them by hand;
+#   the report compares the optimized mix with the equal 25% split below.
 #meta optimize:max-sharpe,max-weight:40
 #meta sim:on
 25 VTI      # US equities

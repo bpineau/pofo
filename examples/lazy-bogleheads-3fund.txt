@@ -1,9 +1,9 @@
-# Bogleheads three-fund — world equity + EM + global bonds
+# Bogleheads three-fund -- world equity + EM + global bonds
 # Idea: the canonical low-cost lazy portfolio: total world stock plus an
 #   investment-grade global bond anchor for ballast.
 # Inspired by: Bogleheads three-fund portfolio.
 #   https://www.bogleheads.org/wiki/Three-fund_portfolio
-# UCITS. 80/20 here — tilt the bond sleeve up as your horizon shortens.
+# UCITS. 80/20 here -- tilt the bond sleeve up as your horizon shortens.
 
 #meta sim:on
 70    IWDA       # World (IWDA)

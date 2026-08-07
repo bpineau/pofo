@@ -1,8 +1,14 @@
+# Alt Dragon -- Dragon-style all-weather on an NTSX efficient-core base
+# Idea: a five-engine Dragon variant built on a capital-efficient 90/60 core
+#   (NTSX carries the stock+bond engine) so the diversifiers stack on top:
+#   long volatility, two trend engines, discretionary macro, gold and
+#   long-duration Treasuries. Several legs are US-listed (DBMF, ZROZ, BHMG),
+#   so treat this as a research build rather than an EU-retail buy list.
 #meta sim:on
-33	NTSX    # WisdomTree US Efficient Core UCITS
-15	GOLD
-10	AMUNDI-VOLATILITY
-17	DBMF
-7	BHMG
-10	ZROZ
-8	KMLM
+33	NTSX                    # Stock + bond engine: US Efficient Core 90/60 (WisdomTree NTSX)
+15	GOLD                    # Gold (UCITS buy-route: IGLN)
+10	AMUNDI-VOLATILITY       # Long volatility (Amundi Volatility World)
+17	DBMF                    # Managed futures / trend (iMGP DBi, US-listed)
+7	BHMG                    # Discretionary macro (BH Macro, listed Brevan Howard feeder)
+10	ZROZ                    # Long-duration Treasury STRIPS (deflation hedge)
+8	KMLM                    # Managed futures / commodity trend (KFA MLM index)

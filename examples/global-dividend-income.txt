@@ -1,6 +1,6 @@
-# Global Dividend Income — balanced, withdrawal-friendly
+# Global Dividend Income -- balanced, withdrawal-friendly
 # Idea: a diversified income core (high-dividend + quality-dividend +
-#   aristocrats + REITs) over a bond and gold cushion — built to pay a steady,
+#   aristocrats + REITs) over a bond and gold cushion -- built to pay a steady,
 #   rising distribution through a gentle decumulation.
 # Inspired by: dividend-growth / 'income floor' retirement approaches.
 # UCITS. Tilt to quality dividends to limit value traps.

@@ -1,4 +1,4 @@
-# All Weather (Ray Dalio / Bridgewater) — modernized for backtest
+# All Weather (Ray Dalio / Bridgewater) -- modernized for backtest
 # Idea: balance risk (not dollars) across the four macro regimes: 30% stocks,
 #   55% bonds (40% long + 15% intermediate), 7.5% gold, 7.5% commodities.
 #   Long-duration bonds carry as much risk as the smaller equity sleeve.

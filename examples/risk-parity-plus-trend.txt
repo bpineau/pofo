@@ -1,10 +1,10 @@
 # Risk-parity core + trend overlay (optimizer-weighted)
 # Idea: a broadly diversified set (equity, long & short bonds, gold,
-#   commodities, managed futures) left to the RISK-PARITY optimizer to weight —
+#   commodities, managed futures) left to the RISK-PARITY optimizer to weight --
 #   every sleeve contributes a similar share of risk. Run it and read the
 #   computed weights in the report.
 # Inspired by: risk parity (Qian; AQR; Bridgewater) + the modern trend overlay.
-# Note: the written weights are ignored — '#meta optimize:risk-parity' computes them.
+# Note: the written weights are ignored -- '#meta optimize:risk-parity' computes them.
 #meta optimize:risk-parity
 #meta sim:on
 

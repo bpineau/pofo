@@ -1,4 +1,4 @@
-# Return Stacking — stocks + bonds + managed futures (capital-efficient)
+# Return Stacking -- stocks + bonds + managed futures (capital-efficient)
 # Idea: stack uncorrelated return streams on top of each other. RSSB gives
 #   $1 stocks + $1 bonds per $1; adding a managed-futures stack layers in
 #   crisis-alpha trend without selling down equities. ~200% notional, one

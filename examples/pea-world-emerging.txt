@@ -1,4 +1,4 @@
-# PEA — World + Emerging Markets
+# PEA -- World + Emerging Markets
 # Idea: a PEA accumulation that adds an emerging-markets sleeve to the World
 #   core for a closer-to-ACWI geographic spread, all inside the PEA.
 # Inspired by: PEA 'monde + émergents' two-ETF builds.
