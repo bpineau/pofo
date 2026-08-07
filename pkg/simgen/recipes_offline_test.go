@@ -57,6 +57,8 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	vustx := mkWave("VUSTX", n, 2e-4, 0.007, 0.9, 2.3)
 	vfisx := mkWave("VFISX", n, 1e-4, 0.001, 2.1, 1.1)
 	vipsx := mkWave("VIPSX", n, 2e-4, 0.004, 1.1, 2.9)
+	tip := mkWave("TIP", n, 2e-4, 0.004, 1.15, 2.8)
+	stip := mkWave("STIP", n, 1e-4, 0.002, 1.25, 2.5)
 	gold := mkWave("GC=F", n, 3e-4, 0.011, 0.5, 0.8)
 	crude := mkWave("CL=F", n, 2e-4, 0.020, 1.9, 2.2)
 	bcom := mkWave("^BCOM", n, 2e-4, 0.012, 1.6, 0.9)
@@ -92,6 +94,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"IE0000360275": ahl,
 		"VFINX":        vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
+		"TIP": tip, "STIP": stip,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
 		"LU0131510165": indepFr,
