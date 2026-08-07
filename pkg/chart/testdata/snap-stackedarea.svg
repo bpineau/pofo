@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">
+<rect width="640" height="360" fill="#FFFFFF"/>
+<text x="64" y="24" font-size="16" font-weight="600" fill="#16181D">Snap</text>
+<polygon points="64.0,312.0 344.0,312.0 624.0,312.0 624.0,170.3 344.0,134.9 64.0,99.4" fill="#12B76A" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="1"/>
+<polygon points="64.0,99.4 344.0,134.9 624.0,170.3 624.0,81.7 344.0,64.0 64.0,64.0" fill="#D92D20" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="1"/>
+<line x1="64" y1="312.0" x2="624" y2="312.0" stroke="#EDF0F3" stroke-opacity="0.6"/>
+<text x="56" y="312.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">0</text>
+<line x1="64" y1="241.1" x2="624" y2="241.1" stroke="#EDF0F3" stroke-opacity="0.6"/>
+<text x="56" y="241.1" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">20</text>
+<line x1="64" y1="170.3" x2="624" y2="170.3" stroke="#EDF0F3" stroke-opacity="0.6"/>
+<text x="56" y="170.3" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">40</text>
+<line x1="64" y1="99.4" x2="624" y2="99.4" stroke="#EDF0F3" stroke-opacity="0.6"/>
+<text x="56" y="99.4" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">60</text>
+<text x="64.0" y="328.0" font-size="12" fill="#7A8294" text-anchor="middle">0</text>
+<text x="344.0" y="328.0" font-size="12" fill="#7A8294" text-anchor="middle">1</text>
+<text x="624.0" y="328.0" font-size="12" fill="#7A8294" text-anchor="middle">2</text>
+<text x="344.0" y="346.0" font-size="12" fill="#7A8294" text-anchor="middle">t</text>
+<text x="14" y="188.0" font-size="12" fill="#7A8294" text-anchor="middle" transform="rotate(-90 14 188.0)">%</text>
+<line x1="64" y1="312" x2="624" y2="312" stroke="#CDD2DA"/>
+<line x1="64" y1="64" x2="64" y2="312" stroke="#CDD2DA"/>
+<rect x="64.0" y="36" width="12" height="12" rx="2" fill="#12B76A" fill-opacity="0.75"/><text x="81.0" y="46" font-size="12" fill="#16181D">f</text>
+<rect x="106.2" y="36" width="12" height="12" rx="2" fill="#D92D20" fill-opacity="0.75"/><text x="123.2" y="46" font-size="12" fill="#16181D">b</text>
+</svg>
