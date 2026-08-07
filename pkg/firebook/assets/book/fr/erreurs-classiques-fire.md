@@ -66,7 +66,7 @@ Le plan financier parfait d'une vie qu'on n'a pas préparée : identité, struct
 
 Deux symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché cher ([[valorisations-et-cape]]), sans avoir vérifié que le plan survivrait à un krach immédiat de 40 %. Et l'inverse, plus sournois : « une année de plus » répétée cinq fois ([[une-annee-de-plus]]), parce qu'aucun chiffre ne semble jamais assez sûr, alors que chaque année de vie active en bonne santé est le seul actif strictement non renouvelable du plan.
 
-**Correction** : des critères de départ écrits à L'**avance** (cible atteinte à X %, ruine sous Y % dans les modèles pessimistes, plancher tenable, projet de vie prototypé), puis s'y tenir dans les deux sens.
+**Correction** : des critères de départ écrits à l'**avance** (cible atteinte à X %, ruine sous Y % dans les modèles pessimistes, plancher tenable, projet de vie prototypé), puis s'y tenir dans les deux sens.
 
 ## La check-list anti-erreurs
 
