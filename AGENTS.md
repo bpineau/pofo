@@ -61,8 +61,9 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM, regression backcasts) into simdata files |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
+| `pkg/compare` | compute the comparison model (fetch, build, simulate, common window, nominal/real stats) and assemble the HTML report `Page`; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
-| `cmd/pofo` | CLI wiring only, one file per concern: `main.go` (flags + mode dispatch + terminal output), `fetch.go`, `page.go` (HTML report assembly), `composition.go` (pies/coverage), `contrib.go` (contribution charts), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go`; the `-serve` web constellation is `serve.go` (mux + lifecycle), `hub.go` (the front-door catalog page), `view.go` (the shareable `/view` URL grammar), `prefs.go` (the settings cookie) and `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) |
+| `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go` (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `hub.go` (the front-door catalog page), `view.go` (the shareable `/view` URL grammar), `prefs.go` (the settings cookie) and `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
 
@@ -151,10 +152,10 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
-  checkable; expose it in `report.StatRow` via `cmd/pofo/page.go`
+  checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.
 - Report per-portfolio blocks (composition pies, coverage bars, realized
-  contribution charts): assembled in `cmd/pofo` (`breakdownPies`,
+  contribution charts): assembled in `pkg/compare` (`breakdownPies`,
   `coverageBars` in `composition.go`; `contributionCharts` in `contrib.go`) from
   `pkg/suggest` composition splits, `SimResult.(Monthly)Contributions` and
   `permanent.Regime.Quadrant`; rendering primitives live in `pkg/chart`
