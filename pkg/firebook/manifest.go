@@ -129,6 +129,8 @@ var Categories = []Category{
 			{"flat-tax-et-imposition", "PFU, barème, abattements : l'imposition des retraits", "La part de gain au PMP, l'arbitrage annuel PFU/barème, le lissage des tranches basses, et les purges de fin de partie."},
 			{"taxe-puma", "La taxe PUMa : le piège du rentier français", "La cotisation qui vise le rentier d'avant la pension : formule, seuils, zones grises, et les quatre mitigations dont l'interrupteur d'activité."},
 			{"retraite-legale", "FIRE et retraite légale : trimestres, AGIRC-ARRCO, décote", "L'actif négligé du plan : ce qu'une carrière écourtée produit, le taux plein automatique à 67 ans, les trimestres à bas coût, et la méthode M@REL."},
+			{"sante-et-protection-sociale", "Santé et protection sociale du rentier", "PUMa et ALD comme socle, la mutuelle à charge pleine et sa dérive, le trou de prévoyance du pont, et la dépendance provisionnée."},
+			{"succession-et-transmission", "Succession et transmission", "Conjoint exonéré, abattements rechargeables, AV avant 70 ans, démembrement : les six outils dans l'ordre, et la règle d'or qui prime tout."},
 		},
 	},
 }
