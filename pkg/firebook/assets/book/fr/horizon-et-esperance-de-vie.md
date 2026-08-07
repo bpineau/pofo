@@ -53,7 +53,7 @@ Trois corollaires pratiques de cette asymptote :
 
 **« Je pars à 40 ans » n'est pas deux fois plus dur que « je pars à 60 ans ».** C'est environ 0,6-0,8 point de taux de retrait plus dur (4 % → ~3,3 %), soit un multiple de 30x au lieu de 25x ([[combien-il-vous-faut]]). L'écart est substantiel, mais fini. Il est largement compensable par les marges spécifiques du jeune retraité (employabilité, pension à venir, flexibilité, [[flexibilite-realite]]).
 
-**L'incertitude sur votre longévité est un problème de second ordre pour le portefeuille.** Entre planifier 50 ou 60 ans, la différence de taux est de ~0,1 point. Vous pouvez donc prendre le quantile très prudent sans surcoût réel. C'est une excellente nouvelle. L'inconnue la plus angoissante du plan (combien de temps vivrai-je ?) est celle qui coûte le moins cher à couvrir, côté portefeuille. Côté **dépenses** de fin de vie, c'est une autre histoire ([[depenses-en-retraite]]).
+**L'incertitude sur votre longévité est un problème de second ordre pour le portefeuille.** Entre planifier 50 et 60 ans, la différence de taux est de ~0,1 point. Vous pouvez donc prendre le quantile très prudent sans surcoût réel. C'est une excellente nouvelle. L'inconnue la plus angoissante du plan (combien de temps vivrai-je ?) est celle qui coûte le moins cher à couvrir, côté portefeuille. Côté **dépenses** de fin de vie, c'est une autre histoire ([[depenses-en-retraite]]).
 
 **Le « capital préservé » est presque gratuit au-delà de 45 ans d'horizon.** À ~3,25 %, le portefeuille se maintient en termes réels dans la plupart des mondes. Viser la préservation plutôt que l'épuisement ne renchérit alors un plan long que marginalement, qu'on le fasse pour transmettre ([[succession-et-transmission]]) ou par simple sécurité. ERN appelle ça la convergence entre « capital depletion » et « capital preservation » aux horizons FIRE.
 
@@ -63,7 +63,7 @@ L'erreur symétrique existe, et elle est plus grave. Prenez le retraité de 65 a
 
 ## La ruine pondérée par la mortalité : la vue qui remet les chiffres à leur place
 
-La probabilité de ruine standard traite la mortalité comme une insulte. Elle suppose que vous êtes vivant pour constater la faillite à 99 ans ([[ruine-et-probabilites]]). Or la question réelle est conjointe. **Quelle est la probabilité d'être un jour vivant ET ruiné ?** C'est ce que calcule la section §05 de la page FIRE (« Alive, broke or gone »). À chaque année de chaque scénario, elle distingue trois états possibles, vivant et solvable, vivant et ruiné, ou décédé. Les probabilités de décès viennent des tables d'un couple français.
+La probabilité de ruine standard fait comme si vous ne mouriez jamais. Elle suppose que vous êtes vivant pour constater la faillite à 99 ans ([[ruine-et-probabilites]]). Or la question réelle est conjointe. **Quelle est la probabilité d'être un jour vivant et ruiné ?** C'est ce que calcule la section §05 de la page FIRE (« Alive, broke or gone »). À chaque année de chaque scénario, elle distingue trois états possibles, vivant et solvable, vivant et ruiné, ou décédé. Les probabilités de décès viennent des tables d'un couple français.
 
 L'effet de cette pondération est systématiquement apaisant, et c'est justifié. Une ruine « à 40 ans de plan » (à 87-92 ans pour notre couple type) n'est subie que si quelqu'un est encore là, ce qui n'arrive que dans une fraction des cas. En pratique, la ruine mortalité-pondérée ressort typiquement à la **moitié** ou au **tiers** de la ruine brute pour des plans dont les échecs sont tardifs, et proche de la ruine brute pour des plans dont les échecs sont précoces. C'est donc aussi un excellent révélateur du **profil** temporel de votre risque. Si la pondération mortalité ne réduit presque rien, c'est que vos échecs arrivent tôt, et c'est un signal sérieux ([[sequence-des-rendements]]).
 
@@ -98,6 +98,6 @@ Les FIRE en cours de route le disent souvent. Reformulez « mon plan doit tenir 
 ## Pour aller plus loin
 
 - INSEE : tables de mortalité françaises ([insee.fr](https://www.insee.fr), « tables de mortalité des années N ») et études sur les écarts d'espérance de vie par catégorie sociale ; les tables prospectives TGH-05/TGF-05 pour la vision assureur.
-- Early Retirement Now, SWR Series volets 1-2 (les SAFEMAX par horizon, dépletion vs préservation) et volet 56 (rentes et Sécurité sociale dans le plan) ([[serie-ern]]).
+- Early Retirement Now, SWR Series volets 1-2 (les SAFEMAX par horizon, déplétion vs préservation) et volet 56 (rentes et Sécurité sociale dans le plan) ([[serie-ern]]).
 - Moshe Milevsky, *The 7 Most Important Equations for Your Retirement* : la formalisation actuarielle accessible (dont l'équation de Fibonacci de la longévité et la logique de l'annuitisation).
 - Dans un simulateur, le curseur d'horizon, l'âge (qui pilote §05) et « Annuitise % of capital » ([[utiliser-la-page-fire]]). Pour la mécanique interne, voir [[la-machine-pofo]].
