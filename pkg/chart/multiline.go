@@ -3,6 +3,7 @@ package chart
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 )
 
@@ -28,17 +29,30 @@ func MultiLine(opt Options, xLabel, yLabel string, series []XYSeries, markers ..
 		h = 420
 	}
 	marginL, marginR, top, bottom := 64.0, 16.0, 64.0, 48.0
-	x0, x1 := marginL, float64(w)-marginR
-	y0, y1 := top, float64(h)-bottom
 
 	var xs, ys [][]float64
+	named := 0
+	maxName := 0
 	for i := range series {
 		if series[i].Color == "" {
 			series[i].Color = PaletteColor(i)
 		}
 		xs = append(xs, series[i].Xs)
 		ys = append(ys, series[i].Ys)
+		if series[i].Name != "" {
+			named++
+			maxName = max(maxName, len([]rune(series[i].Name)))
+		}
 	}
+	// Direct end labels (2-4 named series): each curve is named at its right
+	// end in its own ink, so identity never relies on the legend alone. The
+	// right margin grows to hold the longest name.
+	endLabels := named >= 2 && named <= 4
+	if endLabels {
+		marginR += 10 + 6.6*float64(maxName)
+	}
+	x0, x1 := marginL, float64(w)-marginR
+	y0, y1 := top, float64(h)-bottom
 	xmin, xmax := spanBounds(xs...)
 	if xmin == xmax {
 		xmax = xmin + 1
@@ -108,15 +122,45 @@ func MultiLine(opt Options, xLabel, yLabel string, series []XYSeries, markers ..
 	}
 	b.WriteString(hoverBlock(hm))
 
-	// Legend.
+	// Legend: line-style keys (a short stroke, mirroring the mark), since a
+	// filled box is a bar's key, not a line's.
 	lx := x0
 	for _, s := range series {
 		if s.Name == "" {
 			continue
 		}
-		fmt.Fprintf(&b, `<rect x="%.1f" y="36" width="12" height="12" rx="2" fill="%s"/>`, lx, s.Color)
-		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", lx+17, esc(s.Name))
-		lx += 17 + 7.2*float64(len([]rune(s.Name))) + 18
+		fmt.Fprintf(&b, `<rect x="%.1f" y="40" width="14" height="3" rx="1.5" fill="%s"/>`, lx, s.Color)
+		fmt.Fprintf(&b, `<text x="%.1f" y="46" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", lx+19, esc(s.Name))
+		lx += 19 + 7.2*float64(len([]rune(s.Name))) + 18
+	}
+	// Direct end labels, deconflicted vertically like the scatter's.
+	if endLabels {
+		type lbl struct {
+			y     float64
+			color string
+			text  string
+		}
+		var labels []lbl
+		for _, s := range series {
+			if s.Name == "" || len(s.Ys) == 0 {
+				continue
+			}
+			labels = append(labels, lbl{y: yAt(s.Ys[len(s.Ys)-1]), color: s.Color, text: s.Name})
+		}
+		sort.Slice(labels, func(i, j int) bool { return labels[i].y < labels[j].y })
+		const rowH = 14.0
+		for i := 1; i < len(labels); i++ {
+			if labels[i].y-labels[i-1].y < rowH {
+				labels[i].y = labels[i-1].y + rowH
+			}
+		}
+		for _, l := range labels {
+			y := math.Min(l.y, y1)
+			// A colored key stroke carries the identity; the name stays in ink
+			// (text never wears a series color).
+			fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="10" height="3" rx="1.5" fill="%s"/>`+"\n", x1+6, y-1.5, l.color)
+			fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="11" fill="`+themeInkSoft+`">%s</text>`+"\n", x1+20, y, esc(l.text))
+		}
 	}
 	b.WriteString("</svg>")
 	return finish(b.String())

@@ -410,8 +410,122 @@ function weightsChanged() {
 
 function setSVG(elId, svg) {
   const el = document.getElementById(elId);
-  if (el && svg) el.innerHTML = svg;
+  if (el && svg) {
+    el.innerHTML = svg;
+    enhanceChart(el);
+  }
 }
+
+// enhanceChart makes a freshly rendered chart keyboard-usable: the container
+// becomes focusable (arrow keys drive the crosshair, T opens the data table)
+// and gains a small "data" button. Idempotent per render, since setSVG wipes
+// the container's children.
+function enhanceChart(el) {
+  const svg = el.querySelector("svg");
+  if (!svg || !svg.querySelector("metadata.hover")) return;
+  el.tabIndex = 0;
+  if (!el.__keys) {
+    el.__keys = true;
+    el.addEventListener("keydown", chartKeydown);
+    el.addEventListener("blur", hideCrosshair);
+  }
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "databtn";
+  btn.textContent = "\u2317 data";
+  btn.setAttribute("aria-label", "Show this chart's data as a table");
+  btn.title = "Show the data as a table (T when the chart is focused)";
+  btn.addEventListener("click", ev => {
+    ev.stopPropagation();
+    showTable(el.querySelector("svg"));
+  });
+  el.appendChild(btn);
+}
+
+// chartKeydown drives the crosshair from the keyboard: left/right step
+// through the x positions, T (or Enter) opens the table, Escape clears.
+function chartKeydown(e) {
+  const el = e.currentTarget;
+  const svg = el.querySelector("svg");
+  const hd = svg ? hoverData(svg) : null;
+  if (!hd) return;
+  if (e.key === "t" || e.key === "T" || e.key === "Enter") {
+    e.preventDefault();
+    showTable(svg);
+    return;
+  }
+  if (e.key === "Escape") { hideCrosshair(); return; }
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  if (!["line", "fan", "stack"].includes(hd.kind)) return; // discrete marks: table only
+  e.preventDefault();
+  let steps = 2;
+  for (const s of hd.series) steps = Math.max(steps, (s.xs || s.ys).length);
+  const unit = (hd.xmax - hd.xmin) / (steps - 1);
+  if (svg.__kx === undefined) svg.__kx = hd.xmin + (hd.xmax - hd.xmin) / 2;
+  svg.__kx += e.key === "ArrowRight" ? unit : -unit;
+  svg.__kx = Math.min(Math.max(svg.__kx, hd.xmin), hd.xmax);
+  // Anchor the tooltip at the crosshair position inside the chart.
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const cx = hd.x0 + (svg.__kx - hd.xmin) / (hd.xmax - hd.xmin) * (hd.x1 - hd.x0);
+  showCrosshair(svg, hd, svg.__kx,
+    rect.left + cx / vb.width * rect.width,
+    rect.top + (hd.y0 + hd.y1) / 2 / vb.height * rect.height);
+}
+
+// showTable renders the chart's embedded data as an HTML table in a modal
+// overlay: the always-reachable, hover-free reading of every chart.
+function showTable(svg) {
+  const hd = svg ? hoverData(svg) : null;
+  if (!hd) return;
+  dtable.textContent = "";
+  const box = document.createElement("div");
+  box.className = "dtable-box";
+  const table = document.createElement("table");
+  const discrete = hd.rows && hd.rows.length;
+  const thead = document.createElement("tr");
+  for (const name of [discrete ? "" : (hd.xlabel || "x"), ...hd.series.map(s => s.name || hd.ylabel || "value")]) {
+    const th = document.createElement("th");
+    th.textContent = name;
+    thead.appendChild(th);
+  }
+  table.appendChild(thead);
+  let n = 0;
+  for (const s of hd.series) n = Math.max(n, s.ys.length);
+  if (discrete) n = hd.rows.length;
+  for (let i = 0; i < n; i++) {
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td");
+    // Row key: the category label, the series' own x, or the plain index.
+    const xs0 = hd.series[0].xs;
+    td0.textContent = discrete ? hd.rows[i] : String(xs0 ? (xs0[i] ?? "") : i);
+    tr.appendChild(td0);
+    for (const s of hd.series) {
+      const td = document.createElement("td");
+      const v = s.ys[i]; // series shorter than the table leave blanks
+      td.textContent = v === undefined ? "" : fmtHV(v);
+      tr.appendChild(td);
+    }
+    table.appendChild(tr);
+  }
+  box.appendChild(table);
+  dtable.appendChild(box);
+  dtable.hidden = false;
+  document.body.classList.add("noscroll");
+}
+const dtable = document.createElement("div");
+dtable.id = "dtable";
+dtable.hidden = true;
+document.body.appendChild(dtable);
+function closeTable() {
+  dtable.hidden = true;
+  dtable.textContent = "";
+  document.body.classList.remove("noscroll");
+}
+dtable.addEventListener("click", closeTable);
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && !dtable.hidden) closeTable();
+});
 // cardsHTML renders summary cards; a help field becomes the hover, and a
 // verdict-shaped value (vintage replays) is graded good/bad by its outcome.
 const cardGrade = v =>
@@ -491,7 +605,7 @@ function hideCrosshair() {
 document.addEventListener("pointermove", e => {
   const svg = e.target.closest ? e.target.closest("svg") : null;
   const hd = svg ? hoverData(svg) : null;
-  if (!hd || !hd.series || !hd.series.length) { hideCrosshair(); return; }
+  if (!hd || !hd.series || !hd.series.length || !["line", "fan", "stack"].includes(hd.kind)) { hideCrosshair(); return; }
 
   // Pointer position in viewBox coordinates.
   const rect = svg.getBoundingClientRect();
@@ -499,7 +613,12 @@ document.addEventListener("pointermove", e => {
   const px = (e.clientX - rect.left) * vb.width / rect.width;
   if (px < hd.x0 - 10 || px > hd.x1 + 10) { hideCrosshair(); return; }
   const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
+  showCrosshair(svg, hd, xdom, e.clientX, e.clientY);
+});
 
+// showCrosshair snaps the hairline to the nearest x and fills the tooltip:
+// the shared engine behind both the pointer and the keyboard paths.
+function showCrosshair(svg, hd, xdom, clientX, clientY) {
   // Snap per series to its nearest x; indexed charts snap to the index.
   const rows = [];
   let snapX = null;
@@ -559,12 +678,12 @@ document.addEventListener("pointermove", e => {
   }
   xtip.style.display = "block";
   const pad = 14, tw = xtip.offsetWidth, th = xtip.offsetHeight;
-  let tx = e.clientX + pad, ty = e.clientY + pad;
-  if (tx + tw > innerWidth) tx = e.clientX - pad - tw;
-  if (ty + th > innerHeight) ty = e.clientY - pad - th;
+  let tx = clientX + pad, ty = clientY + pad;
+  if (tx + tw > innerWidth) tx = clientX - pad - tw;
+  if (ty + th > innerHeight) ty = clientY - pad - th;
   xtip.style.left = tx + "px";
   xtip.style.top = ty + "px";
-});
+}
 document.addEventListener("pointerleave", hideCrosshair);
 
 // ---------------------------------------------------------------------------
@@ -689,6 +808,7 @@ async function renderPaths(b, id) {
     if (!fresh(id)) return;
     document.getElementById("fansGrid").innerHTML =
       (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
+    for (const el of document.querySelectorAll("#fansGrid .fan")) enhanceChart(el);
   } catch (e) { /* keep the previous charts */ }
 }
 
@@ -699,6 +819,7 @@ async function renderMarket(b, id) {
     if (!fresh(id)) return;
     document.getElementById("marketGrid").innerHTML =
       (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
+    for (const el of document.querySelectorAll("#marketGrid .fan")) enhanceChart(el);
   } catch (e) { /* keep the previous charts */ }
 }
 
@@ -888,6 +1009,7 @@ fetch("/api/meta").then(r => r.json()).then(m => {
   run();
   runSlow();
 });
+
 
 
 

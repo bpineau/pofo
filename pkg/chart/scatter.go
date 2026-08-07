@@ -133,6 +133,17 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 	for _, l := range labels {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n", l.x, l.y, l.anchor, esc(l.text))
 	}
+	// Table-view payload: one row per point, x and y as two columns.
+	hm := hoverMeta{Kind: "scatter", XLabel: xlab, YLabel: ylab}
+	xsCol := hoverSeries{Name: xlab}
+	ysCol := hoverSeries{Name: ylab}
+	for _, p := range pts {
+		hm.Rows = append(hm.Rows, p.Label)
+		xsCol.Ys = append(xsCol.Ys, p.X)
+		ysCol.Ys = append(ysCol.Ys, p.Y)
+	}
+	hm.Series = append(hm.Series, xsCol, ysCol)
+	b.WriteString(hoverBlock(hm))
 	b.WriteString("</svg>")
 	return finish(b.String())
 }

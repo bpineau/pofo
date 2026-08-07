@@ -22,5 +22,5 @@
 <text x="344.0" y="62" font-size="11" fill="#A8AEBC" text-anchor="middle">plan</text>
 <path d="M64.0 304.1L344.0 249.0L624.0 75.8" fill="none" stroke="#0880A8" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="64.0" cy="304.1" r="2.6" fill="#0880A8"/><circle cx="344.0" cy="249.0" r="2.6" fill="#0880A8"/><circle cx="624.0" cy="75.8" r="2.6" fill="#0880A8"/><metadata class="hover">{"kind":"line","x0":64,"x1":624,"y0":64,"y1":312,"xmin":2,"xmax":4,"xlabel":"wr","ylabel":"ruin","series":[{"name":"m","color":"#0880A8","xs":[2,3,4],"ys":[1,8,30]}]}</metadata>
-<rect x="64.0" y="36" width="12" height="12" rx="2" fill="#0880A8"/><text x="81.0" y="46" font-size="12" fill="#16181D">m</text>
+<rect x="64.0" y="40" width="14" height="3" rx="1.5" fill="#0880A8"/><text x="83.0" y="46" font-size="12" fill="#16181D">m</text>
 </svg>
