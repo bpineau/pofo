@@ -3,7 +3,7 @@
 # name: iShares USD Ultrashort Bond: USD cash (T-bill)
 # method: USD cash ^IRX (13-week T-bill, daily; extended TBILL-3M to the 1930s) compounded, IG credit spread omitted pre-inception; real ERNA grafted from 2018
 # validation: corr=0.084 (weekly 0.168) beta=0.97 TE=1.5%/yr CAGR sim 2.68% vs real 3.10% (overlap 1963 d from 2018-06-29 to 2026-07-01) vs IE00BGCSB447
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 1962-01-01,0.370456
 1962-01-02,0.370495
