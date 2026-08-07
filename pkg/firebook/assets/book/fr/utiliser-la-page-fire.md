@@ -48,7 +48,7 @@ La règle de décision suggérée : planifiez entre le central et le broad-sampl
 
 **§07 Buffer & recovery** : l'arbitrage du matelas de liquidités (ruine et richesse finale en fonction des années de buffer, [[cash-buffer]]) et la distribution des « années sous l'eau » : combien de temps durent les traversées du désert que le buffer doit couvrir.
 
-**§08 Plan detail** et **§09 Reaching your target** : le détail chiffré du plan sous le modèle sélectionné, et le menu du solveur : les mouvements équivalents (capital en plus, dépenses en moins, année de plus, pension...) qui ramèneraient chacun votre ruine sous votre seuil. C'est la section « négociation avec soi-même » : elle chiffre le prix de chaque marge ([[une-annee-de-plus]]).
+**§08 Plan detail** et **§09 Reaching your target** : le détail chiffré du plan sous le modèle sélectionné, et le menu du solveur : les mouvements équivalents (capital en plus, dépenses en moins, année de plus, pension...) qui ramèneraient chacun votre ruine sous votre seuil. C'est la section « négociation avec soi-même ». Elle chiffre le prix de chaque marge ([[une-annee-de-plus]]).
 
 ## Le tiroir de paramètres, groupe par groupe
 

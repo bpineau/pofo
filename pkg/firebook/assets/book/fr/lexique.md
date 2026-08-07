@@ -36,7 +36,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Cascade (des rendements)** : arithmétique > géométrique > réel > net > soutenable : chaque marche coûte 0,5-1,5 point : la démystification de la règle des 4 %. [[rendements-arithmetiques-geometriques]]
 
-**Coast FIRE** : le capital suffira à terme par sa seule composition : on cesse d'épargner et on travaille pour ses dépenses courantes. [[fire-cest-quoi]], [[retour-au-travail]]
+**Coast FIRE** : le capital suffira à terme par sa seule composition. On cesse d'épargner et on travaille pour ses dépenses courantes. [[fire-cest-quoi]], [[retour-au-travail]]
 
 **Cohortes / millésimes** : les dates de départ rejouées une à une sur l'histoire : la méthode de Bengen : le pire millésime américain est 1966, pas 1929. [[etude-trinity]]
 
@@ -114,7 +114,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Probabilité de ruine** : la fraction des futurs simulés où le portefeuille s'épuise avant l'horizon, sous une règle mécanique : une propriété du couple plan + modèle : se lit en intervalle et en ordinal. [[ruine-et-probabilites]]
 
-**PUMa** : la Protection Universelle Maladie : la couverture santé de tout résident stable : et, par métonymie, la cotisation (CSM) qui la finance chez le rentier. [[taxe-puma]], [[sante-et-protection-sociale]]
+**PUMa** : la Protection Universelle Maladie : la couverture santé de tout résident stable. Et, par métonymie, la cotisation (CSM) qui la finance chez le rentier. [[taxe-puma]], [[sante-et-protection-sociale]]
 
 **Quadruplé (français)** : les quatre bénéfices d'une petite activité de rentier : le revenu, la PUMa éteinte (~9,5 k€), les 4 trimestres (~7,2 k€), la séquence amortie. [[retour-au-travail]]
 

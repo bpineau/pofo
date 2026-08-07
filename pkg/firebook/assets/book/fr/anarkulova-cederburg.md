@@ -1,6 +1,6 @@
 # Au-delà des États-Unis : Anarkulova, Cederburg et l'échantillon mondial
 
-Toute la tradition du taux de retrait sûr, de Bengen à Trinity et à la quasi-totalité des simulateurs en ligne, repose sur un seul jeu de données : les marchés américains depuis 1926 ([[etude-trinity]]). Or les États-Unis du XXe siècle ne sont pas un échantillon neutre : c'est le pays qui a gagné le siècle.
+Toute la tradition du taux de retrait sûr, de Bengen à Trinity et à la quasi-totalité des simulateurs en ligne, repose sur un seul jeu de données : les marchés américains depuis 1926 ([[etude-trinity]]). Or les États-Unis du XXe siècle ne sont pas un échantillon neutre. C'est le pays qui a gagné le siècle.
 
 Depuis les années 2010, une lignée de travaux, Dimson-Marsh-Staunton, Wade Pfau, puis surtout Aizhan Anarkulova, Scott Cederburg et Michael o'Doherty, a refait les calculs sur l'expérience **complète** des pays développés, et les résultats dérangent : le taux de retrait « sûr » mondial est nettement sous 4 %, et les portefeuilles obligataires protègent moins qu'on ne le croyait. Cette page explique ces travaux, leurs chiffres, les critiques qu'on peut leur faire, et comment pofo les met littéralement à votre disposition : le modèle « broad sample » de la page FIRE est construit sur ces données.
 
@@ -10,7 +10,7 @@ Si vous admettez que la France, le Japon, l'Allemagne ou l'Italie de 1900-2020 s
 
 ## Le biais du survivant géographique
 
-Commençons par le problème. Les données Ibbotson démarrent en 1926 à New York : elles contiennent la Grande Dépression et la stagflation, mais **aussi** un pays jamais envahi, jamais en défaut sur sa dette intérieure, dont la monnaie est devenue la réserve mondiale, et dont le marché actions a été le grand gagnant du siècle. Choisir ce pays comme unique échantillon, c'est calibrer son plan sur le billet gagnant de la loterie.
+Commençons par le problème. Les données Ibbotson démarrent en 1926 à New York. Elles contiennent la Grande Dépression et la stagflation, mais **aussi** un pays jamais envahi, jamais en défaut sur sa dette intérieure, dont la monnaie est devenue la réserve mondiale, et dont le marché actions a été le grand gagnant du siècle. Choisir ce pays comme unique échantillon, c'est calibrer son plan sur le billet gagnant de la loterie.
 
 Ce que l'échantillon américain ne contient pas, et que le XXe siècle développé a pourtant produit en abondance : des marchés actions fermés ou spoliés (Allemagne 1948, Japon 1946), des hyperinflations qui pulvérisent les obligations ([[hyperinflation-et-extremes]]), des décennies perdues profondes (Japon post-1990, les actions sous leur sommet réel pendant plus de trente ans), des défauts et des répressions financières. Un rentier allemand, japonais, français ou italien parti en 1900-1960 avec un plan « à l'américaine » a, dans une fraction non négligeable des cas, été ruiné non par malchance de séquence mais parce que son **pays** a traversé l'histoire.
 
@@ -48,9 +48,9 @@ La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'
 
 ## Ce que ça change pour votre plan
 
-**Le taux rigide de dimensionnement.** Si vous dimensionnez sans marges ([[combien-il-vous-faut]]), l'existence de la borne mondiale justifie 3-3,5 % plutôt que 4 %, et interdit de considérer 4 % comme « scientifiquement sûr » sur 45 ans. En revanche, viser 2,3 % (43 fois les dépenses !) par littéralisme serait sur-réagir : c'est la borne domestique-catastrophiste, que vos marges réelles (pension, flexibilité, diversification) dominent largement.
+**Le taux rigide de dimensionnement.** Si vous dimensionnez sans marges ([[combien-il-vous-faut]]), l'existence de la borne mondiale justifie 3-3,5 % plutôt que 4 %, et interdit de considérer 4 % comme « scientifiquement sûr » sur 45 ans. En revanche, viser 2,3 % (43 fois les dépenses !) par littéralisme serait sur-réagir. C'est la borne domestique-catastrophiste, que vos marges réelles (pension, flexibilité, diversification) dominent largement.
 
-**La lecture de la page FIRE.** La colonne broad-sample de pofo n'**est pas** votre portefeuille : c'est un 60/40 domestique rejoué à travers le siècle des 16 pays, curseurs ignorés. Si votre plan tient dans cette colonne, il tient dans le pire monde développé documenté : c'est le meilleur label de robustesse disponible. S'il n'y tient pas, regardez **où** échouent les scénarios (souvent, blocs inflationnistes, [[inflation-et-taux-de-retrait]]) et ce qui manque à votre portefeuille pour ces régimes ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+**La lecture de la page FIRE.** La colonne broad-sample de pofo n'**est pas** votre portefeuille. C'est un 60/40 domestique rejoué à travers le siècle des 16 pays, curseurs ignorés. Si votre plan tient dans cette colonne, il tient dans le pire monde développé documenté. C'est le meilleur label de robustesse disponible. S'il n'y tient pas, regardez **où** échouent les scénarios (souvent, blocs inflationnistes, [[inflation-et-taux-de-retrait]]) et ce qui manque à votre portefeuille pour ces régimes ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
 **Le portefeuille.** Deux leçons directes : la diversification internationale des actions n'est pas un raffinement, c'est la protection contre le risque dominant de l'échantillon (le décrochage d'un pays, fût-il le vôtre) ; et les obligations nominales domestiques ne sont pas l'actif sûr du long horizon : leur pire ennemi (l'inflation soutenue) est aussi celui du rentier ([[obligations-indexees]], [[or-en-retrait]]).
 
