@@ -172,3 +172,45 @@ func TestDropDropouts(t *testing.T) {
 		})
 	}
 }
+
+func TestDropFXSpikes(t *testing.T) {
+	tests := []struct {
+		name string
+		in   []float64
+		want []float64
+	}{
+		{
+			// The real EURUSD=X case: Yahoo printed 1.4918 on 2008-12-08
+			// between 1.2717 and 1.2926 (+17% then -13%, near-cancelling).
+			name: "isolated self-cancelling spike dropped",
+			in:   []float64{1.2774, 1.2717, 1.4918, 1.2926, 1.3014},
+			want: []float64{1.2774, 1.2717, 1.2926, 1.3014},
+		},
+		{
+			// A genuine devaluation (2015 CHF depeg style): the move does
+			// not revert, so it must be kept.
+			name: "persistent shock kept",
+			in:   []float64{1.20, 1.20, 0.99, 1.02, 1.04},
+			want: []float64{1.20, 1.20, 0.99, 1.02, 1.04},
+		},
+		{
+			// A whipsaw below the 8% threshold is ordinary volatility.
+			name: "small whipsaw kept",
+			in:   []float64{1.30, 1.35, 1.31, 1.32},
+			want: []float64{1.30, 1.35, 1.31, 1.32},
+		},
+		{
+			name: "clean series untouched",
+			in:   []float64{1.10, 1.11, 1.12, 1.11},
+			want: []float64{1.10, 1.11, 1.12, 1.11},
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := closes(dropFXSpikes(pts(tc.in...)))
+			if !eq(got, tc.want...) {
+				t.Errorf("dropFXSpikes(%v) = %v, want %v", tc.in, got, tc.want)
+			}
+		})
+	}
+}

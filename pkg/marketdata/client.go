@@ -469,6 +469,9 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 		s.Points = dropDropouts(s.Points)   // strip provider placeholders/bad prints
 		s.Points = mendScaleBreak(s.Points) // repair a single denomination break
 	}
+	if strings.HasSuffix(symbol, "=X") {
+		s.Points = dropFXSpikes(s.Points) // strip isolated self-cancelling FX prints
+	}
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil

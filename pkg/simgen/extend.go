@@ -37,15 +37,18 @@ import (
 //   - ^IRX (13-week T-bill rate) → the 3-month T-bill rate (refdata TBILL-3M:
 //     FRED TB3MS, ~1934). A rate, not a price: rescaled by a ≈1 factor at the
 //     splice (^IRX ≈ TB3MS there), then read as an isRate series.
+//   - GBPUSD=X (Yahoo, ~2003) → the real daily FRED noon GBP/USD rate
+//     (refdata GBPUSD-DAILY: DEXUSUK, 1971→), for the GBP-quoted recipes.
 var longBack = map[string]string{
-	"VTMGX": "DEVEXUS-USD",
-	"VEIEX": "EM-USD",
-	"GC=F":  "XAUUSD-LBMA",
-	"CL=F":  "WTI-USD",
-	"VFITX": "TREASURY-INT-USD",
-	"VUSTX": "TREASURY-LONG-USD",
-	"VFINX": "SP500-USD",
-	"^IRX":  "TBILL-3M",
+	"VTMGX":    "DEVEXUS-USD",
+	"VEIEX":    "EM-USD",
+	"GC=F":     "XAUUSD-LBMA",
+	"CL=F":     "WTI-USD",
+	"VFITX":    "TREASURY-INT-USD",
+	"VUSTX":    "TREASURY-LONG-USD",
+	"VFINX":    "SP500-USD",
+	"^IRX":     "TBILL-3M",
+	"GBPUSD=X": "GBPUSD-DAILY",
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same
@@ -62,6 +65,7 @@ var dailyShape = map[string]string{
 	"SP500-USD":         "^GSPC",               // S&P 500 daily price index (Yahoo, 1927-12→)
 	"TREASURY-INT-USD":  "TREASURY-INT-DAILY",  // FRED DGS5 daily 5y CMT through TreasuryTR, 1962→1992
 	"TREASURY-LONG-USD": "TREASURY-LONG-DAILY", // FRED DGS20 daily 20y CMT through TreasuryTR, 1962→1986
+	"WTI-USD":           "WTI-DAILY",           // FRED DCOILWTICO daily WTI spot, 1986→2000
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced

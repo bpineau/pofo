@@ -8,10 +8,14 @@ import (
 	"time"
 )
 
-// eurusdLongCSV is the bundled long monthly EUR/USD (USD per EUR) history:
-// ECU/USD before 1999 chained 1:1 to the euro after, used to extend the
-// fetchable EURUSD=X cross (Yahoo, ~2003→) back to 1978 so a EUR-investor
-// backcast and the EUR share-class reconstructions cover a long retirement.
+// eurusdLongCSV is the bundled long DAILY EUR/USD (USD per EUR) history:
+// the FRED noon rate (DEXUSEU) from 1999, monthly ECU/USD anchors (chained
+// 1:1 to the euro) carrying the real daily shape of the Bundesbank
+// Frankfurt DM/USD fixing for 1979-1998, and the rescaled daily DM fixing
+// alone before the ECU existed (1971-1978). It extends the fetchable
+// EURUSD=X cross (Yahoo, ~2003→) back to 1971 so a EUR-investor backcast
+// and the EUR share-class reconstructions cover a long retirement at daily
+// granularity throughout; see the file header for regeneration.
 //
 //go:embed data/eurusd-long.csv
 var eurusdLongCSV string
@@ -21,7 +25,7 @@ var eurusdLongCSV string
 // as the reciprocal. ok is false for any other symbol, so the splice only ever
 // touches the euro cross.
 func eurusdLongCross(symbol string) (proxy []Point, ok bool) {
-	anchors := parseMonthlyAnchors(eurusdLongCSV)
+	anchors := parseAnchors(eurusdLongCSV, "2006-01-02", "2006-01")
 	switch symbol {
 	case "EURUSD=X":
 		return anchors, true
@@ -37,9 +41,10 @@ func eurusdLongCross(symbol string) (proxy []Point, ok bool) {
 	return nil, false
 }
 
-// extendFXBack splices the bundled long monthly EUR/USD history behind a
-// freshly fetched euro cross so USD↔EUR conversion (and the EUR reconstructions
-// that read the cross) reach back to 1978. Any other symbol is left untouched.
+// extendFXBack splices the bundled long daily EUR/USD history behind a
+// freshly fetched euro cross so USD↔EUR conversion (and the EUR
+// reconstructions that read the cross) reach back to 1971. Any other symbol
+// is left untouched.
 func extendFXBack(symbol string, s *Series) {
 	if s == nil {
 		return
@@ -153,7 +158,7 @@ func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (flo
 // caller passes each asset's own first date, which would otherwise miss the
 // cache and refetch the FX series once per converted asset. The full cross is
 // small and covers every asset's range; the euro cross is additionally
-// extended back to 1978 by the bundled ECU/EUR proxy (see extendFXBack), and
+// extended back to 1971 by the bundled ECU/EUR proxy (see extendFXBack), and
 // dates before any cross starts are held constant by the caller.
 func (c *Client) fxHistory(ctx context.Context, src, target string, _ time.Time) (*Series, error) {
 	return c.History(ctx, src+target+"=X", time.Time{})

@@ -43,13 +43,15 @@ func embeddedHICP(geo string) ([]Point, bool) {
 }
 
 // parseMonthlyAnchors reads "YYYY-MM,value" lines; it backs every bundled
-// monthly series (HICP and CPI indices, the long EUR/USD proxy).
+// monthly series (HICP and CPI indices).
 func parseMonthlyAnchors(csv string) []Point { return parseAnchors(csv, "2006-01") }
 
-// parseAnchors reads "date,value" lines whose date matches the given layout
-// (ignoring blanks and # comments), skipping any malformed row, sorted
-// ascending by date. It backs every bundled snapshot series.
-func parseAnchors(csv, layout string) []Point {
+// parseAnchors reads "date,value" lines whose date matches one of the given
+// layouts (ignoring blanks and # comments), skipping any malformed row,
+// sorted ascending by date. It backs every bundled snapshot series; a series
+// may mix cadences (e.g. monthly anchors then daily rates) by listing both
+// layouts.
+func parseAnchors(csv string, layouts ...string) []Point {
 	var pts []Point
 	for _, line := range strings.Split(csv, "\n") {
 		line = strings.TrimSpace(line)
@@ -60,7 +62,13 @@ func parseAnchors(csv, layout string) []Point {
 		if !ok {
 			continue
 		}
-		t, err := time.ParseInLocation(layout, strings.TrimSpace(label), time.UTC)
+		var t time.Time
+		err := errNoLayout
+		for _, layout := range layouts {
+			if t, err = time.ParseInLocation(layout, strings.TrimSpace(label), time.UTC); err == nil {
+				break
+			}
+		}
 		if err != nil {
 			continue
 		}
@@ -73,6 +81,10 @@ func parseAnchors(csv, layout string) []Point {
 	sort.Slice(pts, func(i, j int) bool { return pts[i].Date.Before(pts[j].Date) })
 	return pts
 }
+
+// errNoLayout is parseAnchors' sentinel for a row matching none of the
+// requested date layouts.
+var errNoLayout = fmt.Errorf("date matches no layout")
 
 // hicpPrefix marks the synthetic identifiers served from Eurostat's Harmonised
 // Index of Consumer Prices, e.g. "^HICP-FR" (France), "^HICP-EA" (euro area).
