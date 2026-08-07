@@ -22,7 +22,10 @@ reports, Kitces, Pfau, pension-fund practice) given the leading role.
 
 New package `pkg/firebook`, stdlib only:
 
-- `assets/book/<slug>.md`: the articles, French, `go:embed`ed.
+- `assets/book/fr/<slug>.md`: the articles, French, `go:embed`ed. The
+  language directory leaves room for the planned English translation
+  (`assets/book/en/`), and pofo's technical URLs stay English: the book is
+  mounted at `/book/fr/`.
 - `manifest.go`: the table of contents as data (category -> [slug, title,
   blurb]). Single source of truth: the index page and navigation are generated
   from it. It only lists articles that exist; the full planned TOC lives in
@@ -39,9 +42,9 @@ New package `pkg/firebook`, stdlib only:
 - Guard test: every file under `assets/book/` appears in the manifest and vice
   versa; every `[[slug]]` in every article resolves to a manifest slug.
 
-Mounted in `pkg/decumul/web.Handler` under `/livre/`, and linked very
-discreetly (small link at the bottom of the "How this machine works" fold) in
-the fire page. Because the book is its own package with a self-contained
+Mounted in `pkg/decumul/web.Handler` under `/book/fr/`, and linked very
+discreetly (small `book` link at the bottom of the "How this machine works"
+fold) in the fire page. Because the book is its own package with a self-contained
 handler, finador can mount the exact same book by importing `firebook`.
 
 Alternatives considered: copying locador's client-side docs.js engine into the
@@ -56,10 +59,22 @@ rendering in Go is testable, stdlib-only and reusable.
   `attention` (trap), `exemple` (worked numbers), `encart` (side note),
   `science` (what the research actually says, with references), `terrain`
   (practitioner/FIRE-community experience and testimony).
-- Every article: 2 000 words minimum, most 2 500+; opens with a plain-language
-  paragraph stating what the reader will be able to DO after reading; dense
-  cross-linking `[[slug]]`; at least one worked example with numbers; a
-  "Pour aller plus loin" closing block with external references where relevant.
+- DEPTH IS THE BAR (Ben's review of the first batches, 2026-07-12): the style
+  (clear, airy, illustrated, practical) is right, but the first-batch length
+  (~2 000 words) only passes for the introductory pages. Every non-intro
+  article must be AT LEAST TWICE as long (target 4 000-5 000 words), deeper
+  and more detailed: the book must consign ALL the important FIRE knowledge,
+  with special weight on the transition into retirement and the
+  decumulation/after phase. Concretely: full mechanisms (not summaries),
+  the actual numbers and tables from the research, multiple worked examples,
+  parameter choices and edge cases, objections and counter-arguments, and
+  the how-to-apply-in-France angle. The 12 articles written before this bar
+  was set (batches 1-3) are due a deepening pass, lowest priority for the
+  intro ones.
+- Every article opens with a plain-language paragraph stating what the reader
+  will be able to DO after reading; dense cross-linking `[[slug]]`; worked
+  examples with numbers throughout; a "Pour aller plus loin" closing block
+  with external references where relevant.
 - Classic vs state of the art: whenever a concept is a classic that research
   has since qualified or superseded (Trinity, 4% rule, buckets...), say so
   explicitly in the text, keep it (it is still interesting), and point to the

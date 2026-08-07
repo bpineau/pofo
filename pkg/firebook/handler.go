@@ -12,7 +12,7 @@ import (
 // Handler serves the book: the sommaire at "/", one HTML page per article at
 // "/<slug>", and the shared identity stylesheets at "/theme.css" and
 // "/fonts.css" (relative URLs, so the handler can be mounted under any
-// prefix, e.g. http.StripPrefix("/livre", firebook.Handler())).
+// prefix, e.g. http.StripPrefix("/book/fr", firebook.Handler())).
 func Handler() http.Handler {
 	mux := http.NewServeMux()
 	css := func(body string) http.HandlerFunc {
@@ -84,7 +84,7 @@ func indexHTML() string {
 // articleHTML renders one article page: top bar, title, rendered body, and a
 // "same category" footer for lateral navigation.
 func articleHTML(art Article, cat Category) string {
-	raw, err := assets.ReadFile("assets/book/" + art.Slug + ".md")
+	raw, err := assets.ReadFile("assets/book/fr/" + art.Slug + ".md")
 	if err != nil {
 		return "<p>Article introuvable.</p>"
 	}

@@ -3,7 +3,7 @@
 // withdrawal strategies, resilient portfolios, buffers, French taxation, the
 // human side), written as standalone cross-linked articles.
 //
-// The articles live under assets/book/<slug>.md in a small Markdown dialect
+// The articles live under assets/book/fr/<slug>.md in a small Markdown dialect
 // shared with locador's embedded documentation: ## / ### headings, pipe
 // tables, lists, blockquotes, [[slug]] wiki-links and ::: callout blocks
 // (cle, astuce, attention, exemple, encart, science, terrain). ToHTML renders
