@@ -4,7 +4,7 @@ C'est la protection la plus intuitive de toute la décumulation : garder deux ou
 
 Alors, gadget ? Non. Mais son vrai rôle n'est pas là où on le croit.
 
-Cet article démonte le dossier complet : pourquoi l'intuition est juste et l'effet net quand même modeste, ce qui distingue un buffer **utile** d'un buffer décoratif (les règles de consommation et de recharge font tout), la taille et le placement corrects pour un Français (le fonds euros change un peu la donne), la comparaison avec le glidepath, et la vraie valeur du matelas : comportementale et de gouvernance : qui justifie amplement sa place à condition de le payer au juste prix.
+Cet article démonte le dossier complet : pourquoi l'intuition est juste et l'effet net quand même modeste, ce qui distingue un buffer **utile** d'un buffer décoratif (les règles de consommation et de recharge font tout), la taille et le placement corrects pour un Français (le fonds euros change un peu la donne), la comparaison avec le glidepath, et la vraie valeur du matelas, comportementale et de gouvernance, qui justifie amplement sa place à condition de le payer au juste prix.
 
 ::: cle Le paradoxe du buffer, en une phrase
 Chaque euro mis au matelas est un euro retiré du moteur : la protection contre les **mauvaises** séquences se paie d'un manque à gagner dans **toutes** les autres. Et comme les bonnes séquences sont majoritaires, le net quantitatif est proche de zéro (±0,5 point de ruine selon les règles). Le buffer ne se justifie donc pas par les statistiques. Il se justifie par ce qu'il fait de vous : un rentier qui dort, n'improvise pas dans les krachs, et exécute sa règle : ce qui, en pratique, vaut plus que bien des points de simulation ([[psychologie-du-retrait]]).

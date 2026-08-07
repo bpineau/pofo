@@ -28,7 +28,7 @@ Il existe une famille de distributions faite exactement pour ce problème : la *
 
 Ce que df change **concrètement**, à volatilité annuelle identique (σ = 12 %, μ = 4 % réel ; ordres de grandeur d'une année « catastrophique » à −30 % réel, soit un événement à presque 3 écarts-types) :
 
-| df | Le monde qu'il décrit | Fréquence approximative de l'année à −30 % réel | Sur une retraite de 45 ans |
+| df | Le monde qu'il décrit | Fréquence de l'année à −30 % réel | Sur une retraite de 45 ans |
 |---|---|---|---|
 | 30+ (≈ normale) | Le monde des manuels | ~1 année sur 400 | Probablement jamais |
 | 10 | Queues modérées | ~1 sur 150 | Peut-être une fois |
