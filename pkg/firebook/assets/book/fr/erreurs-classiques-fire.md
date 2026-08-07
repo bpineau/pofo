@@ -93,4 +93,4 @@ Les récits d'échec publiés sur les forums FIRE ont une constante frappante : 
 
 - Early Retirement Now, volet 26 et volet 50 (« Ten Things the Makers of the 4% Rule / of FIRE Don't Want You to Know ») : les angles morts du mouvement par son meilleur analyste ([[serie-ern]]).
 - La construction de la cible, poste par poste : [[combien-il-vous-faut]].
-- La revue annuelle qui maintient le plan honnête : [[revue-annuelle]] ; et quand s'inquiéter vraiment : [[quand-s-inquieter]].
+- La revue annuelle qui maintient le plan honnête ([[revue-annuelle]]) ; et quand s'inquiéter vraiment ([[quand-s-inquieter]]).
