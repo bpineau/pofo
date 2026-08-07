@@ -177,8 +177,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] retour-au-travail: Barista, coast, side income : le travail choisi
 
 ### X. En pratique
-- [ ] construire-son-plan: Construire son plan pas a pas
-- [ ] revue-annuelle: La revue annuelle : la check-list du rentier
+- [x] construire-son-plan: Construire son plan pas a pas
+- [x] revue-annuelle: La revue annuelle : la check-list du rentier
 - [ ] quand-s-inquieter: Quand s'inquieter, quand laisser courir
 - [ ] marche-baissier-en-retraite: Traverser un marche baissier en retraite : le playbook
 - [ ] revenus-complementaires: Pensions et revenus complementaires dans le plan
