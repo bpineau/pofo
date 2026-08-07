@@ -1502,12 +1502,21 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			}
 			base, _ := marketdata.SplitSim(a.ID)
 			ucitsText := "?"
-			if u, known := marketdata.GuessUCITS(base, a.Name); known {
-				ucitsText = map[bool]string{true: "yes", false: "no"}[u]
+			ucits, ucitsKnown := marketdata.GuessUCITS(base, a.Name)
+			if ucitsKnown {
+				ucitsText = map[bool]string{true: "yes", false: "no"}[ucits]
 			}
 			assetClass := ""
 			if m, _, ok := metaFor(meta, a.ID); ok {
 				assetClass = m.AssetClass
+				// A gold ETC or a listed closed-end fund cannot be a
+				// UCITS fund, yet is freely buyable by an EU retail
+				// investor (PRIIPs KID). A bare "no" reads as "not
+				// buyable": name the wrapper instead.
+				if ucitsKnown && !ucits && m.EURetail {
+					ucitsText = "no (KID)"
+					notes = append(notes, "not a UCITS fund but EU-retail-buyable: an EU-listed wrapper (ETC, closed-end fund) with a PRIIPs KID")
+				}
 			}
 			row := report.AssetRow{
 				Weight:   fmt.Sprintf("%.4g %%", a.Weight*100),
