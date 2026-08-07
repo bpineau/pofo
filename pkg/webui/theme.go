@@ -28,3 +28,12 @@ var CSS string
 //
 //go:embed warmskin.css
 var WarmSkin string
+
+// FaviconSVG is the pofo mark: a lowercase "p" in the petrol brand color on a
+// rounded tile, legible down to 16px. Served at /favicon.svg (and /favicon.ico)
+// and linked from every HTML head, so all surfaces share one tab icon. SVG
+// keeps it crisp at any density with no rasterization step, matching the
+// all-embedded, stdlib-only build.
+//
+//go:embed favicon.svg
+var FaviconSVG string

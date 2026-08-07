@@ -32,6 +32,7 @@ running a command per comparison.
 | `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces; the old `/book/fr/` path 301-redirects here |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
+| `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
 
