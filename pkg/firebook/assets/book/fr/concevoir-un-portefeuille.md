@@ -63,7 +63,15 @@ Rarement, et par règle, jamais sur l'actualité. Rééquilibrer mécaniquement 
 La thèse écrite de chaque brique, celle de la question 5, est précisément ce qui vous permet de **ne pas** changer sous le feu. Quand une brique déçoit, vous relisez sa thèse au lieu de la vendre la veille du jour où elle sert ([[psychologie-du-retrait]]). Un portefeuille reconçu à chaque crise n'a aucune conception.
 
 ::: exemple Une conception déroulée
-Léa et Marc, 50 ans, 1,3 M€, un pont de 15 ans avant deux pensions modestes mais sûres. Question 1, leurs risques : la séquence (le pont de 15 ans, dominant), l'inflation (leur cauchemar de régime), un krach long. La longévité et la santé se traitent hors portefeuille, par la flexibilité et une provision. Question 2 : ils acceptent le risque actions, leur moteur, et défendent la séquence et l'inflation. Question 3 : horizon de 45 ans, donc beaucoup d'actions nécessaires, mais les 15 premières années sont fragiles. Question 4 : les pensions futures, même modestes, sont une obligation déjà au bilan, la poche liquide peut donc porter plus d'actions. Question 5, la carte : des actions monde (le moteur), un peu de duration et un matelas (la séquence), des linkers, de l'or et une pincée de trend (l'inflation). Le tout donne, disons, 65 % d'actions, 15 % d'obligations et linkers, 10 % d'or, 5 % de trend, 5 % de matelas. L'allocation n'était pas le point de départ, elle est tombée à la fin. Question 6 : testée sur 2000 et sur les blocs des années 1970, l'inclinaison inflation adoucit les pires millésimes pour un coût quasi nul sur la médiane. Question 7 : la carte ne bougera qu'à la confirmation des pensions ou au raccourcissement de l'horizon.
+Léa et Marc, 50 ans, 1,3 M€, un pont de 15 ans avant deux pensions modestes mais sûres.
+
+1. **Quels sont vos risques ?** La séquence (le pont de 15 ans, dominant), l'inflation (leur cauchemar de régime), un krach long. La longévité et la santé se traitent hors portefeuille, par la flexibilité et une provision.
+2. **Lesquels acceptez-vous ?** Ils acceptent le risque actions, leur moteur, et défendent la séquence et l'inflation.
+3. **Quel est votre horizon ?** 45 ans, donc beaucoup d'actions nécessaires, mais les 15 premières années sont fragiles.
+4. **Quels revenus futurs ?** Les pensions futures, même modestes, sont une obligation déjà au bilan, la poche liquide peut donc porter plus d'actions.
+5. **Quels actifs répondent à chaque risque ?** La carte : des actions monde (le moteur), un peu de duration et un matelas (la séquence), des linkers, de l'or et une pincée de trend (l'inflation). Le tout donne, disons, 65 % d'actions, 15 % d'obligations et linkers, 10 % d'or, 5 % de trend, 5 % de matelas. L'allocation n'était pas le point de départ, elle est tombée à la fin.
+6. **Comment tester ?** Testée sur 2000 et sur les blocs des années 1970, l'inclinaison inflation adoucit les pires millésimes pour un coût quasi nul sur la médiane.
+7. **Quand changer ?** La carte ne bougera qu'à la confirmation des pensions ou au raccourcissement de l'horizon.
 :::
 
 ::: astuce Tester la conception, pas la deviner
