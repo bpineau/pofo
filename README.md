@@ -528,7 +528,11 @@ managed-futures fund that reference is a net composite of real programmes,
 which settles the level too; for a sleeve replicating a gross trend index it
 is the gross factor, levelled afterwards by an information-ratio pin. Each vol
 target is the volatility the fund itself realized: DBMF 12.2 % against 12.4 %
-real, KMLM 14.8 against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. The
+real, KMLM 14.8 against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. Each
+donor segment also carries the fund's fee load rather than its own, lifted by
+the difference between the two published fee tables (the donors are 1.3 to
+2.7 %/yr vehicles standing in for 0.75 to 0.90 % funds); what remains of the
+gap is the manager's own edge, and it is left open. The
 construction, its measurements and what it leaves open are in
 `docs/trend-reconstruction-design.md`.
 The lower fidelity is accepted in exchange for full self-generation.

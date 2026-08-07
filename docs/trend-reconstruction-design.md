@@ -13,8 +13,9 @@ reconstruction agrees with the fund it replicates at a monthly correlation
 near 0.6; the NAV of another real managed-futures fund agrees at 0.7 to 0.97.
 `DonorChain` therefore splices real NAVs behind each fund for as far back as
 they go, nearest trade first, each volatility-matched to the fund over their
-common window. The reconstruction below only covers what no real NAV reaches,
-which for this family means before 1996-03.
+common window and lifted to the fund's own fee load (below). The reconstruction
+below only covers what no real NAV reaches, which for this family means before
+1996-03.
 
 | Fund | Real from | Donors, nearest first | Reconstruction only before |
 |---|---|---|---|
@@ -36,21 +37,97 @@ back cannot move them: they are what the chain bought over 2007-2019, and the
 
 | Fund | Before | After |
 |---|---|---|
-| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.69 / 0.75, 9.7 %, -4.2 pts** |
-| DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.65 / 0.85, 10.0 %, +0.1 pt** |
-| DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.36 / 0.71, 17.3 %, -0.3 pt** |
+| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.69 / 0.75, 9.7 %, -3.5 pts** |
+| DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.65 / 0.85, 10.0 %, +0.2 pt** |
+| DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.36 / 0.71, 17.3 %, -0.2 pt** |
 | AQR UCITS A | 0.37 / 0.55, 10.6 %, -4.8 pts | **0.73 / 0.92, 6.8 %, +0.1 pt** |
-| KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -2.3 pts** |
-| Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.44 / 0.45, 17.9 %, -4.6 pts** |
+| KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -1.7 pts** |
+| Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.44 / 0.45, 17.9 %, -3.4 pts** |
 
 The euro-hedged AQR class runs the same chain and hedges it day by day, the
 carry read off the two cash series themselves rather than off a frame: a donor
 keeps its own trading calendar, and a date the frame does not hold would
 otherwise be silently left unhedged (17 % of them, measured).
 
-The donor brings its own manager and fee load with it, which is the honest
-price: the reconstruction is no longer "what this fund would have done" but
-"what this trade actually paid, run by the closest managers we can observe".
+The donor brings its own manager with it, which is the honest price: the
+reconstruction is no longer "what this fund would have done" but "what this
+trade actually paid, run by the closest managers we can observe". It no longer
+brings its own FEE load, which was never honest, only inherited (below).
+
+### Every donor is fee-aligned, from price lists only (2026-08)
+
+A donor is spliced for its returns, and those returns are net of ITS price
+list. The donors of this family are old-school 1940-Act funds and one offshore
+vehicle charging 1.3 to 2.7 %/yr; the funds they stand in for are modern ETFs
+and UCITS classes at 0.75 to 0.90 %. Left alone, every donor segment runs about
+a point a year colder than the fund it covers for, and that cold belongs to the
+wrapper, not to the trade.
+
+Each donor segment is therefore lifted by a constant equal to the donor's
+MANAGEMENT-AND-EXPENSE load minus the target's, floored at zero. The loads are
+read off published fee tables and NEVER off an observed return gap: a gap
+between two managers contains their skill, and this family has a lot of it
+(DBi beats every peer over its own live window by about six points a year), so
+a "fee" constant fitted to a wedge would quietly grant that alpha to the
+backcast.
+
+| vehicle | load | source |
+|---|---|---|
+| ASFYX, Virtus AlphaSimplex class I | 1.45 % | 1.59 % total, 1.45 % after the contractual cap running to 2027 (summary prospectus, 2026-04) |
+| RYMFX, Guggenheim class P | 1.99 % | 2.18 % total, 1.99 % after waiver (summary prospectus, 2026) |
+| AHLPX, American Beacon AHL Investor | 1.91 % | 1.91 % total, no waiver in force (prospectus supplement, 2025-08) |
+| AQMIX, AQR Managed Futures class I | 1.29 % | 1.29 % total and after reimbursement (summary prospectus, 2024-05) |
+| Man AHL Diversified plc, USD acc | 2.74 % | ongoing charge for the ISIN (fund database, 2026) |
+| DBMF | 0.85 % | fund page, 2026 |
+| DBi UCITS classes | 0.75 % | fund pages, 2026 |
+| KMLM | 0.90 % | fund page, 2026 |
+| Simplify CTA | 0.75 % | fund page, 2026 |
+| AQR UCITS class A | 0.79 % + 1.58 % | 0.60 % management + 0.18 % expense cap + 0.01 % subscription tax (prospectus supplement), plus a 10 % performance fee over the T-bill hurdle worth 1.58 points of average class NAV in the year to 31 March 2026 (audited accounts) |
+
+Performance fees enter asymmetrically, and both directions are deliberately
+conservative, meaning both can only make the uplift too SMALL:
+
+- the DONOR's performance fee is ignored. Man AHL's audited accounts add a
+  1.00 %/yr introducing broker fee and a 20 % performance fee on net new
+  profits to the 2.74 % above, and Guggenheim's swap counterparties charge
+  their own management and performance fees inside the swap returns, outside
+  the fee table. None of that is claimed back.
+- the TARGET's performance fee is subtracted, because the target's own record
+  is already net of it and the donor owes only the DIFFERENCE. That is what
+  keeps the AQR chain honest: class A's base list is 0.50 points under AQMIX's,
+  but class A also pays a performance fee AQMIX does not, so the aligned uplift
+  is zero rather than half a point. Measurement agrees, the AQMIX chain already
+  tracking class A's live CAGR to within 0.1 point.
+
+Applied, per chain (nearest donor first, the one that governs each fund's own
+validation window):
+
+| chain | nearest | then | then | deepest (Man AHL) |
+|---|---|---|---|---|
+| DBMF | ASFYX +0.60 | RYMFX +1.14 | | +1.89 |
+| DBMF UCITS USD, DBMF UCITS EUR | DBMF +0.10 | ASFYX +0.70 | RYMFX +1.24 | +1.99 |
+| KMLM | ASFYX +0.55 | RYMFX +1.09 | | +1.84 |
+| Simplify CTA | AHLPX +1.16 | ASFYX +0.70 | RYMFX +1.24 | +1.99 |
+| AQR UCITS A, and the USD leg of RAEF | AQMIX 0 | RYMFX 0 | | +0.37 |
+
+What it moves, on each fund's own live overlap (CAGR gap, reconstruction minus
+fund):
+
+| Fund | before | after |
+|---|---|---|
+| DBMF | -4.2 pts | **-3.5 pts** |
+| DBMF UCITS USD | +0.1 pt | **+0.2 pt** |
+| DBMF UCITS EUR | -0.3 pt | **-0.2 pt** |
+| KMLM | -2.3 pts | **-1.7 pts** |
+| Simplify CTA | -4.6 pts | **-3.4 pts** |
+| AQR UCITS A | +0.1 pt | **+0.1 pt** (unchanged, uplift 0) |
+| AQR RAEF EUR | -0.04 pt | **-0.04 pt** (unchanged, see below) |
+
+The three funds whose donor is another manager close a little; the three whose
+nearest donor is the same manager and nearly the same price list barely move,
+which is the test that the correction is a fee correction and not a fudge. No
+gap crosses zero: what remains negative is the managers' own edge, and it stays
+open.
 
 ### The deepest donor deals weekly, so the engine draws the days (measured, 2026-08)
 
@@ -377,11 +454,11 @@ the CAGR gap (reconstruction minus fund) over the overlap.
 
 | Fund | window | daily | weekly | monthly | TE | CAGR gap |
 |---|---|---|---|---|---|---|
-| DBMF | 7.2 y | 0.69 | 0.75 | 0.81 | 9.7 % | -4.2 pts |
-| DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.1 pt |
-| DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.3 pt |
-| KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -2.3 pts |
-| Simplify CTA | 4.4 y | 0.44 | 0.45 | 0.39 | 17.9 % | -4.6 pts |
+| DBMF | 7.2 y | 0.69 | 0.75 | 0.81 | 9.7 % | -3.5 pts |
+| DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.2 pt |
+| DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.2 pt |
+| KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -1.7 pts |
+| Simplify CTA | 4.4 y | 0.44 | 0.45 | 0.39 | 17.9 % | -3.4 pts |
 | AQR UCITS A | 11.4 y | 0.73 | 0.92 | 0.93 | 6.8 % | +0.1 pt |
 | AQR RAEF EUR | 0.7 y | none independent | | | 0.1 % | -0.04 pt |
 | RSST (overlay) | 2.9 y | 0.90 | 0.90 | 0.88 | 11.8 % | -3.0 pts |
@@ -502,9 +579,10 @@ must preserve. Every one of these was learned by breaking it.
    down to the replicated index's realized information ratio.
 5. **Donor chain** (`DonorChain`). For each fund, volatility-match every real
    donor NAV to the fund on their common window (excess-over-cash returns,
-   scale factor clamped to [0.5, 2], at least 120 common days), then splice
-   nearest-first with `ExtendBack`, which rescales the incoming segment to
-   the junction level. A donor whose median spacing exceeds three calendar
+   scale factor clamped to [0.5, 2], at least 120 common days), lift each
+   segment by its documented fee uplift (`feeAligned`, donor load minus target
+   load, performance fees only ever subtracted), then splice nearest-first with
+   `ExtendBack`, which rescales the incoming segment to the junction level. A donor whose median spacing exceeds three calendar
    days is first projected onto the engine's daily calendar (`densify`, via
    `anchorShape`): its NAVs are anchors, the engine is texture. NEVER splice
    a weekly series raw into a daily file; per-observation statistics will
@@ -518,7 +596,9 @@ must preserve. Every one of these was learned by breaking it.
    understating a sleeve's risk is the expensive error in portfolio work.
    The RAEF donor uplift (+0.45 %/yr) and the DBi fee-alpha reasoning are
    measured constants with their derivations in the recipe comments; they do
-   not generalize.
+   not generalize. The donor fee uplifts (`trendFeeLoad`, `trendPerfFee`) are
+   the opposite: published prices, not measurements, and a new donor must have
+   one before it may be spliced (`feeLoad` panics otherwise).
 
 Units traps inherited from the repo at large: fees in `simgen` are FRACTIONS
 per year; `TrendAnchor` vol targets likewise; `portfolio`/`marketdata.Fees`
@@ -587,6 +667,18 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
   anchor, a wedge on an already-lagging donor) is the single easiest way to
   quietly lose several points a year. Every fee decision here carries its
   measurement next to it; keep that discipline.
+  The rule for a donor segment is fixed and lives in `feeAligned`: lift it by
+  the donor's management-and-expense load minus the target's, floored at zero,
+  both read off published fee tables (`trendFeeLoad`) and never off an observed
+  return gap, which would bake a manager's alpha into a "fee". Performance fees
+  move the number in one direction only: the donor's are ignored, the target's
+  are subtracted (`trendPerfFee`), so the uplift errs small. Applied today:
+  ASFYX +0.60/+0.70/+0.55 into DBMF/the UCITS classes and CTA/KMLM, RYMFX
+  +1.14/+1.24/+1.09, AHLPX +1.16 into CTA, DBMF +0.10 into its UCITS classes,
+  Man AHL +1.84 to +1.99 everywhere except the AQR chain (+0.37), and 0 for
+  AQMIX into AQR UCITS A, whose own performance fee already covers the gap.
+  The RAEF B EUR donor is corrected by its own measured wedge and takes no
+  uplift, or it would be corrected twice.
 - Index composites finalize late. The net reference's recent months revise
   for one to two years before freezing (measured against point-in-time
   archive captures), and its last one or two months are flagged estimated at
