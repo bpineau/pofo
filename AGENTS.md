@@ -32,6 +32,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) |
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage) |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp |
+| `pkg/permanent` | tactical Permanent Portfolio 2.0 (Darcet): reads `datasets.MacroPanel` into a growth×inflation + monetary regime, quadratically-damped four-sleeve allocation, monthly-real backtest; see `docs/darcet-permanent-portfolio-design.md` |
 | `pkg/suggest` | macro-regime/factor coverage, redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
 | `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; `web/` = embedded live UI |
