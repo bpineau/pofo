@@ -50,6 +50,22 @@ func sourceStamp(body []byte) (frSlug, hash string, ok bool) {
 	return string(m[1]), string(m[2]), true
 }
 
+// articleBody prepares one article's markdown for rendering: it drops the
+// in-file "# Title" line (the page shell renders the h1) and the source stamp,
+// which is metadata for Drift and never content. French articles carry no
+// stamp, so for them this is exactly the old title-stripping behavior.
+func articleBody(raw []byte) string {
+	body := strings.TrimSpace(string(raw))
+	if strings.HasPrefix(body, "# ") {
+		_, rest, found := strings.Cut(body, "\n")
+		if !found {
+			return ""
+		}
+		body = rest
+	}
+	return strings.TrimSpace(reSourceStamp.ReplaceAllString(body, ""))
+}
+
 // SourceHash is the stamp value of a French article's bytes: the first 12 hex
 // digits of their sha256. A translator writes it into the stamp; Drift
 // recomputes it to detect the French article moving on.

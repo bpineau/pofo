@@ -274,15 +274,7 @@ func (e *Edition) articleHTML(art Article, cat Category) string {
 	if err != nil {
 		return "<p>" + html.EscapeString(e.UI.NotFound) + "</p>"
 	}
-	body := strings.TrimSpace(string(raw))
-	// Drop the in-file "# Title" front line: the shell renders the h1.
-	if strings.HasPrefix(body, "# ") {
-		if _, rest, found := strings.Cut(body, "\n"); found {
-			body = rest
-		} else {
-			body = ""
-		}
-	}
+	body := articleBody(raw)
 	var b strings.Builder
 	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← %s</a>`+
 		`<a class="book-cat-tag" href="./#%s">%s</a></nav>`,
