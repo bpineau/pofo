@@ -176,10 +176,11 @@ func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
 // Two parameters carry attacker-shaped identifiers that would otherwise reach
 // an outbound fetch on behalf of an anonymous visitor, so both are gated:
 //
-//   - currency: absent leaves the server default; "native" (any case) keeps
-//     each series in its native currency; otherwise a three-letter ISO code
-//     (validCurrency). Anything else is a 400, so no arbitrary bytes reach an
-//     FX fetch URL or mint an unbounded cache file.
+//   - currency: absent leaves the server default; "native" (any case) or a
+//     present-but-empty value keeps each series in its native currency;
+//     otherwise a three-letter ISO code (validCurrency). Anything else is a
+//     400, so no arbitrary bytes reach an FX fetch URL or mint an unbounded
+//     cache file.
 //   - bench: empty explicitly disables Beta; otherwise it must be a locally
 //     resolvable identifier (marketdata.KnownLocal) or the exact server
 //     default benchmark (a quote symbol like ^GSPC, which is not "local"), so

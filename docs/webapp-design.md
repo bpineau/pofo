@@ -62,7 +62,8 @@ source of truth; edit both together):
   count, `0` = never), `currency`, `bench`, `sim` (`on` / `off`). Two of these
   carry attacker-shaped identifiers and are gated before they can reach an
   outbound fetch: `currency` accepts a three-letter ISO code or the sentinel
-  `native` (keep each series in its own currency); `bench` accepts an empty
+  `native` (keep each series in its own currency; a present-but-empty
+  `currency=` reads the same way); `bench` accepts an empty
   value (disable Beta), any locally resolvable identifier (`KnownLocal`), or
   the exact server-default benchmark symbol (`^GSPC`, which is not "local");
   anything else is a 400, so no arbitrary bytes mint an FX cache file or
