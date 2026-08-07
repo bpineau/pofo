@@ -115,6 +115,7 @@ var figures = map[string]func() string{
 	"arbre-decision":         figArbreDecision,
 	"deux-thermometres":      figDeuxThermometres,
 	"tous-temps-echange":     figTousTempsEchange,
+	"tous-temps-ecart":       figTousTempsEcart,
 	"tous-temps-saisons":     figTousTempsSaisons,
 	"replay-marche-1973":     figReplayMarche1973,
 	"replay-revenus-1973":    figReplayRevenus1973,
