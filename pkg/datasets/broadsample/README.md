@@ -1,6 +1,6 @@
 # broadsample
 
-`country-real.csv` — per-country **real** annual total returns (fractions) for
+`country-real.csv`: per-country **real** annual total returns (fractions) for
 18 advanced economies, 1870-2020, columns `iso,year,equity,bond,bill`. Each
 country's nominal returns are deflated by its own CPI.
 
