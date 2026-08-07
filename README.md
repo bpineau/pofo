@@ -204,7 +204,7 @@ and sweeps), with the thin web layer under `pkg/decumul/web`.
 - **Currency**: every series is converted to the `-currency` (default EUR)
   using daily FX crosses (Yahoo, with Stooq then the ECB reference rates as
   fallbacks), so USD ETFs and EUR funds compare fairly; the euro crosses
-  reach back to 1978 via a bundled monthly ECU/EUR proxy, the earliest known
+  reach back to 1971 via a bundled daily ECU/DM/EUR proxy, the earliest known
   rate is held flat before the FX history starts (with a warning), and
   unconverted (unknown-currency) assets are flagged. For library consumers,
   `Client.ConvertCurrency` reprices any `Series` into a target currency via
@@ -231,14 +231,15 @@ library `Fetch`):
 | `^IRX`, `^FVX`, `^TNX`, `^TYX` | US Treasury yields: 13-week, 5, 10, 30-year | |
 | `^HICP-FR`, `^HICP-<geo>` | Eurostat inflation index (all-items HICP) | 1955→ (FR), bundled |
 | `^CPI-US` | US CPI-U inflation index (FRED) | 1913→, bundled |
-| `USDEUR=X`, any `<AAA><BBB>=X` | FX cross, quoted in the second currency | 1978→ (euro crosses), bundled |
+| `USDEUR=X`, any `<AAA><BBB>=X` | FX cross, quoted in the second currency | 1971→ (euro crosses), bundled |
 | `XAUUSD` (alias `GOLD`), `XAGUSD` | gold / silver spot (via futures) | `GOLDSIM` reaches 1968 |
 | `CL=F` | WTI crude oil continuous futures | |
 
 For example, `pofo -cli -assets '^VIX'` charts the VIX, and
 `pofo -assets 'USDEUR=X,^CPI-US'` compares the dollar and US inflation.
-"Bundled" means the binary embeds the history (full for `^VIX`, monthly
-anchors otherwise) and serves it as a last resort, so these chart offline.
+"Bundled" means the binary embeds the history (full for `^VIX`, daily for
+the euro crosses, monthly anchors otherwise) and serves it as a last resort,
+so these chart offline.
 
 Mind the units: the yields, `^VIX` and the inflation indices are LEVELS, not
 prices. They chart fine and their long histories make good regime context,

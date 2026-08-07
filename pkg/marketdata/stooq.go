@@ -89,7 +89,7 @@ func fxCross(symbol string) (base, quote string, ok bool) {
 
 // euroInception is the euro's first trading year. Provider rows on a euro
 // cross dated before it are synthetic backcasts of unknown provenance and
-// are dropped: the bundled ECU/EUR anchors (FRED, see extendFXBack) cover
+// are dropped: the bundled daily ECU/DM/EUR proxy (FRED + Bundesbank, see
 // that era instead.
 var euroInception = time.Date(1999, 1, 1, 0, 0, 0, 0, time.UTC)
 
