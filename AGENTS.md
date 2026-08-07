@@ -171,21 +171,22 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
 - Managed-futures / trend reconstructions: read
-  `docs/trend-reconstruction-design.md` first. Real NAVs of the closest
-  programmes come first (`DonorChain`, back to 1996; a weekly-dealing donor is
-  projected onto the engine's daily calendar, and every donor segment is lifted
-  to the target's published fee load by `feeAligned`, never to close a measured
-  return gap), and only what they cannot reach
-  is reconstructed: the monthly path from a bundled reference (`AnchorTrend`)
-  and the daily texture from the TSMOM engine. Two references, not one: the
-  diversified funds anchor on the NET composite of real programmes
-  (`TREND-NET-USD`, a funded total return, level included, no pin), the
-  pure-trend overlays (RSST, RSBT, Winton) on the GROSS factor
-  (`TREND-TSMOM-USD`, an excess index) plus an information-ratio pin
-  (`pinTrendIR`). Touching the CTA series breaks two FIRE-book plates (their
-  tests recompute from `pkg/datasets` and say so) even when only the pre-1996
-  tail moves, because the 1996-2007 weekly donor is projected onto that same
-  reconstruction.
+  `docs/trend-reconstruction-design.md` first. RELIABILITY BOUNDS LENGTH is the
+  standing decision: every file stops where its evidence stops, the donor chains
+  at their deepest real NAV (1996-03) and the overlays at their reference's
+  first day (2000-01), and no engine tail is shipped in front of either. Real
+  NAVs of the closest programmes come first (`DonorChain`; a weekly-dealing
+  donor is projected onto the engine's daily calendar, and every donor segment
+  is lifted to the target's published fee load by `feeAligned`, never to close a
+  measured return gap); the engine supplies only the daily texture, and a
+  bundled reference the monthly path AND the level (`AnchorTrend`, no pin
+  anywhere any more): the diversified funds read the NET all-styles composite
+  (`TREND-NET-USD`, monthly), the overlays (RSST, RSBT, Winton) the NET
+  pure-trend one (`TREND-PURE-NET-USD`, daily, `cmd/gen-sgtrend-refdata`), both
+  funded total returns. `TREND-TSMOM-USD` is the gross academic factor, kept as
+  a shape yardstick and anchoring nothing. Touching the donor era or the texture
+  breaks two FIRE-book plates (their tests recompute from `pkg/datasets` and say
+  so), because the 1996-2007 weekly donor is projected onto that texture.
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.

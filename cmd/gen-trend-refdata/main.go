@@ -24,9 +24,11 @@
 // 2012, kept current by its authors and published as a monthly spreadsheet at
 // the URL in -src below. It is a gross academic factor: it carries no fee, no
 // slippage and no capacity limit, and realizes an information ratio near 0.9
-// where investable programmes deliver 0.25 to 0.4. The recipes therefore keep
-// their information-ratio pin, which is what turns this path into a plausible
-// fund; only the SHAPE of the month-to-month record is taken from here.
+// where investable programmes deliver 0.25 to 0.4. Nothing anchors on it any
+// more: every reconstruction now takes its months AND its level from a
+// composite of real programmes already net of their managers' fees
+// (cmd/gen-trendnet-refdata, cmd/gen-sgtrend-refdata). This series stays
+// bundled as the SHAPE yardstick a gross factor is good for.
 //
 // The CSV holds a month-end level index (base 100) of those excess returns, so
 // simgen can rescale it to any volatility target and add its own cash leg.
