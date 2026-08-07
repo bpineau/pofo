@@ -41,12 +41,12 @@ Pour les rares profils qui retiennent un usage, voici cinq règles écrites.
 
 ## Modéliser le levier, et un exemple
 
-**La modélisation.** Un simulateur de portefeuille gère nativement le levier, avec un poids supérieur à 100 % et un coût d'emprunt paramétrable. On teste donc proprement l'A/B d'un cœur stacké côté portefeuille. Le simulateur FIRE de pofo, lui, simule le plan sur le portefeuille agrégé. Le pont lombard s'y approxime par un matelas, avec les mêmes flux et un rendement de matelas rendu négatif. Le stack, lui, se reflète via le panel du portefeuille testé ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+**La modélisation.** Chiffrer un plan à levier demande deux outils distincts, et la première erreur est de leur poser la même question. L'étage du portefeuille d'abord. Un simulateur d'allocation rejoue votre portefeuille ligne par ligne sur l'historique, et les outils complets y acceptent des poids dont la somme dépasse 100 %, avec un coût d'emprunt déduit sur la part financée. C'est là, et seulement là, que se fait la comparaison honnête entre un cœur classique et un cœur stacké, frais de financement compris. L'étage du plan ensuite. Un moteur de décumulation ne voit plus les lignes, il déroule les retraits sur le portefeuille agrégé ([[la-machine-pofo]] en décrit un en détail). Le levier y entre donc en amont, par les rendements du portefeuille une fois stacké, soit l'historique du fonds capital-efficient lui-même, soit une moyenne et une volatilité relevées à la main. Le pont lombard, lui, s'y approxime par un matelas de sécurité aux mêmes flux, mais dont le rendement est rendu négatif à hauteur du coût de la ligne. Les deux étages dans cet ordre, jamais le second sans le premier.
 
 ::: exemple Deux usages, deux verdicts
 Cas A, le pont. Mireille, 58 ans, 1,8 M€ dont 600 k€ d'assurance-vie, plancher couvert aux deux tiers par une pension proche. Elle remplace son projet de matelas de 36 mois par 12 mois de fonds euros et une avance d'assurance-vie documentée, à taux fixé et quotité 60 %, tirée seulement si le drawdown dépasse 20 %. Résultat de la simulation : ruine inchangée et environ 0,25 % par an de coût d'opportunité rendus au moteur. Adopté, avec la règle de remboursement écrite.
 
-Cas B, le levier de rendement. Bruno, 52 ans, plan **tendu** à 4,2 % de retrait, veut « compenser » par un cœur ×1,5. La simulation est sans appel : la ruine en stress double, car le levier amplifie précisément les chemins qui le tuent. Refusé. Son problème est le taux de retrait, pas l'outillage ([[combien-il-vous-faut]]). Le levier aide parfois les plans riches, il achève les plans pauvres. C'est sa seule loi fiable.
+Cas B, le levier de rendement. Bruno, 52 ans, plan **tendu** à 4,2 % de retrait, veut « compenser » par un cœur ×1,5. La simulation est sans appel. Sous un stress de séquence, la ruine double, car le levier amplifie précisément les chemins qui le tuent. Refusé. Son problème est le taux de retrait, pas l'outillage ([[combien-il-vous-faut]]). Le levier aide parfois les plans riches, il achève les plans pauvres. C'est sa seule loi fiable.
 :::
 
 ## L'essentiel à retenir
@@ -55,7 +55,7 @@ Cas B, le levier de rendement. Bruno, 52 ans, plan **tendu** à 4,2 % de retrait
 - Trois usages défendables, et trois seulement. Le **pont** de liquidité : lombard ou avance d'assurance-vie en creux déclenché, le matelas sans coût d'opportunité, pour profils quantitatifs. L'**efficacité** de capital : le 90/60 qui finance des diversifiants, levier de 1,2 à 1,3 au plus, sans appel de marge. Le **contracyclique** d'ERN : emprunter au creux plutôt que vendre, pour optimiser des plans déjà sûrs.
 - Les interdits : ETF à levier quotidien où le frein broie, marge de courtage sur le cœur avec sa liquidation forcée, et tout levier au service d'un plan **tendu**. Le levier aide les riches et achève les pauvres.
 - Cinq règles en cas d'usage : LTV inférieur à 20-25 % du maximum prévu, zéro liquidation forcée possible, spread connu et retesté, sortie datée, test du conjoint.
-- Un simulateur chiffre le levier côté portefeuille, avec un poids supérieur à 100 % et un coût d'emprunt, et approxime le pont par un matelas côté plan. Chiffrez avant, comme tout le reste. C'est la différence entre un instrument et un pari.
+- Le levier se chiffre à deux étages. Côté portefeuille, avec des poids qui dépassent 100 % et un coût d'emprunt explicite, pour comparer un cœur stacké à un cœur classique. Côté plan, sur le portefeuille agrégé, où le pont se représente par un matelas au rendement négatif. Chiffrez avant, comme tout le reste. C'est la différence entre un instrument et un pari.
 
 ---
 
