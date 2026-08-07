@@ -111,6 +111,7 @@ var Categories = []Category{
 			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 			{"long-volatility", "Long volatility et tail hedging : payer pour les krachs", "La convexité qui explose dans les krachs rapides, la prime de variance qui la facture trop cher, les véhicules toxiques, et les rares usages légitimes."},
 			{"global-macro", "Global macro et primes alternatives", "Les paris macro qui gagnent dans les régimes hostiles, le catalogue des primes (dont le commodity carry), la purge des fonds ARP, et la grille en cinq questions."},
+			{"primes-d-assurance", "Les primes d'assurance : cat bonds et arbitrage de fusions", "Se faire payer pour porter l'ouragan ou la fusion ratée : décorrélation causale, le piège du collatéral en euros, et ce que dix points changent vraiment (peu)."},
 			{"return-stacking", "Return stacking, overlays et portable alpha", "Empiler les diversifiants sur le cœur au lieu de les financer en le vendant : la mécanique, le coût du cash, la leçon 2022, et les règles de dose."},
 		},
 	},
@@ -119,6 +120,7 @@ var Categories = []Category{
 		Blurb: "Les amortisseurs du plan : le matelas et ses règles, les buckets démystifiés, l'échelle, et les protections patrimoniales.",
 		Articles: []Article{
 			{"cash-buffer", "Le matelas de liquidités : taille, coût, vrai rôle", "L'intuition juste, l'arithmétique têtue (±0,5 point), et la vraie valeur : anti-panique, permission de dépenser, gouvernance."},
+			{"cash-ameliore", "Le cash amélioré : monétaire, CLO AAA, fonds euros", "Avec quoi remplir la poche courte : les étages mesurés, les CLO AAA expliqués, et la règle d'assemblage en trois couches."},
 			{"strategie-buckets", "Les buckets : la stratégie des seaux, promesse et critique", "Une allocation déguisée plus des flux qui sont du rééquilibrage ou du timing : le procès équitable, et la version propre."},
 			{"echelle-obligataire", "Les échelles d'obligations (et l'échelle de linkers)", "L'appariement qui annule le risque de taux : le pont vers la pension, le plancher adossé, et la pratique française des fonds à échéance."},
 			{"recharger-ou-pas", "Consommer et recharger un buffer : les règles qui marchent", "Le déclencheur de drawdown, la recharge en terrain calme, l'interdiction absolue, et le buffer fondant qui domine le perpétuel."},
@@ -243,9 +245,10 @@ var planned = []string{
 	"obligations-en-retrait", "obligations-indexees", "facteurs-fama-french",
 	"diversification-internationale", "etf-ucits-europeens",
 	// V bis. Les actifs alternatifs
-	"managed-futures", "long-volatility", "global-macro", "return-stacking",
+	"managed-futures", "long-volatility", "global-macro", "primes-d-assurance",
+	"return-stacking",
 	// VI. Buffers et protections
-	"cash-buffer", "strategie-buckets", "echelle-obligataire",
+	"cash-buffer", "cash-ameliore", "strategie-buckets", "echelle-obligataire",
 	"recharger-ou-pas", "immobilier-en-retrait", "levier-et-marges",
 	// VII. L'inflation
 	"inflation-histoire", "suivre-inflation", "inflation-et-taux-de-retrait",

@@ -8373,5 +8373,202 @@
       "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx",
       "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
     ]
+  },
+  {
+    "id": "IE000UWJUW87",
+    "isin": "IE000UWJUW87",
+    "aliases": [
+      "CATB"
+    ],
+    "name": "KRC Cat Bond UCITS ETF USD Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "C47B",
+    "xid": "1034001072",
+    "currency": "EUR",
+    "fees": 1.28,
+    "since": "2025-12-03",
+    "asset_class": "other",
+    "underlying": "Actively managed book of ~55 catastrophe bonds: insurance-linked securities that pay a spread over collateral (T-bills / money market funds) and lose principal when a defined natural catastrophe exceeds its trigger",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "Europe's first cat bond UCITS ETF (King Ridge Capital / HANetf, listed 2025-12-03 Xetra + Borsa Italiana as C47B/CATB, London 2026-01). The risk factor is physical (US hurricane, US and Japan quake, European windstorm, flood, wildfire), so the decorrelation to equities is causal, not statistical: NOT a crisis hedge, and a loss year comes from the weather, not from the cycle. Three practical caveats: 1.28% TER, an unhedged USD share class (the EUR-converted series is dominated by USD/EUR, ~10% annualized vol since launch against ~2-4% for the underlying asset), and USD 17m of assets at 2026-07, small enough that closure or a wide spread is a real risk. Use LU0951570927 (EUR-hedged, 2013) for any statistic on the asset class itself.",
+    "confidence": "medium",
+    "sources": [
+      "https://hanetf.com/fund/catb-cat-bond-etf/",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000UWJUW87",
+      "https://www.artemis.bm/news/king-ridge-cat-bond-ucits-etf-launches-as-first-cat-bond-fund-with-lead-market-maker/"
+    ]
+  },
+  {
+    "id": "LU0951570927",
+    "isin": "LU0951570927",
+    "aliases": [
+      "CATBOND"
+    ],
+    "name": "Schroder GAIA Cat Bond IF Acc EUR Hedged",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "129534954",
+    "currency": "EUR",
+    "fees": 1.32,
+    "since": "2013-10-21",
+    "asset_class": "other",
+    "underlying": "Diversified portfolio of catastrophe bonds and tradable insurance-linked securities (mostly US wind and quake, European windstorm, Japan quake), collateral in short-term instruments",
+    "benchmark_index": "active (no index; Swiss Re Global Cat Bond TR as the reference)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "The long-history ILS reference of the catalog: EUR-hedged share class, weekly NAVs since 2013-10 (748 points), so the series is the insurance risk premium itself, without the USD/EUR noise that swamps the unhedged IE000UWJUW87. Schroders' GAIA Cat Bond passed USD 4bn in 2025. Read the drawdowns as event losses, not as market beta: the asset class prices a season, not a cycle. Weekly granularity means daily-frequency statistics (variance ratio, daily vol) are not meaningful on it.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.morningstar.co.uk/uk/funds/snapshot/snapshot.aspx?id=F00000QKZD",
+      "https://www.artemis.bm/news/schroders-gaia-cat-bond-fund-surpasses-4bn-in-assets-under-management/"
+    ]
+  },
+  {
+    "id": "LU2585801256",
+    "isin": "LU2585801256",
+    "aliases": [
+      "MERGERARB"
+    ],
+    "name": "Carmignac Portfolio Merger Arbitrage Plus A EUR Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "796709155",
+    "currency": "EUR",
+    "fees": 1.81,
+    "since": "2023-04-14",
+    "asset_class": "other",
+    "underlying": "Long the targets of publicly announced mergers, short the acquirers or an index hedge: the return is the deal spread that closes when a transaction completes, plus the collateral's cash rate",
+    "benchmark_index": "active (no index; ESTR as the hurdle)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "Event-driven premium, structurally cash-plus: equity beta near zero (0.03 vs the S&P 500 since launch) and realized volatility around 1.5-2%, because the payoff is a spread that closes on a legal calendar rather than a market path. 'Plus' is the levered-risk version of the same book. Fees are the real objection: 1.81% management plus 0.23% transaction costs plus a 20% performance fee over the hurdle. The tail is regulatory, not macro: an antitrust block or a financing failure kills a spread instantly, and deal breaks cluster when credit tightens, so this is NOT a crisis asset. Live since 2023-04 only, in an unusually calm arbitrage regime; use MNA (2009) for a track record covering 2011, 2015-16 and 2020.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.carmignac.com/en/our-funds/carmignac-portfolio-merger-arbitrage-plus-LU2585801256-a-eur-acc",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2585801256:EUR"
+    ]
+  },
+  {
+    "id": "MNA",
+    "isin": "",
+    "aliases": [],
+    "name": "NYLI Merger Arbitrage ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "MNA",
+    "currency": "USD",
+    "fees": 0.77,
+    "since": "2009-11-17",
+    "asset_class": "other",
+    "underlying": "IQ Merger Arbitrage Index: long the targets of announced developed-market deals, with a short global-equity index hedge",
+    "benchmark_index": "IQ Merger Arbitrage Index",
+    "strategy": "other",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The long track record of the merger-arbitrage premium (2009-11), the reason it is in the catalog: it covers the 2011 and 2015-16 deal-break waves and the 2020 shock, which no European UCITS share class does. Rules-based and cheap (0.77%) but a weaker version of the strategy than an active book: it takes the announced-deal universe wholesale, including the spreads that are wide because the deal deserves to fail. Not buyable by an EU retail investor (no PRIIPs KID): use LU2585801256 for the investable version.",
+    "confidence": "medium",
+    "sources": [
+      "https://stockanalysis.com/etf/mna/",
+      "https://www.newyorklifeinvestments.com/"
+    ]
+  },
+  {
+    "id": "JAAA",
+    "isin": "",
+    "aliases": [],
+    "name": "Janus Henderson AAA CLO ETF",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "JAAA",
+    "currency": "USD",
+    "fees": 0.2,
+    "since": "2020-10-19",
+    "asset_class": "corporate-bond",
+    "underlying": "Actively selected AAA tranches of US collateralised loan obligations: the senior claim on a diversified pool of senior secured leveraged loans, floating-rate over SOFR",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The USD reference for the AAA CLO sleeve (USD 29bn, 0.20%), the long-history sibling of the euro LU2941599081. What the series shows, measured in USD: 4.4%/yr against 3.0% for T-bills (BIL) since 2020-10, for 1.6% volatility and a 2.6% worst drawdown. The spread is compensation for liquidity and complexity, not for rate duration (near zero) nor, historically, for default: no AAA CLO tranche has ever defaulted across ~7,000 tranches rated 1993-2022. The risk that does show up is mark-to-market in a liquidity squeeze, which is exactly when a retiree sells.",
+    "confidence": "medium",
+    "sources": [
+      "https://stockanalysis.com/etf/jaaa/",
+      "https://www.lsta.org/news-resources/clo-aaas-credit-losses-and-cave-living/"
+    ]
+  },
+  {
+    "id": "XS2353177293",
+    "isin": "XS2353177293",
+    "aliases": [
+      "CO2"
+    ],
+    "name": "SparkChange Physical Carbon EUA ETC",
+    "ucits": false,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "CO2.L",
+    "currency": "EUR",
+    "fees": 0.89,
+    "since": "2021-10-18",
+    "asset_class": "broad-commodity",
+    "underlying": "EU Emission Allowances (EUAs) held physically in a Union Registry account, one allowance per unit: the permit to emit one tonne of CO2 in the EU ETS",
+    "benchmark_index": "EUA spot",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "Single-commodity, not a diversified basket: the composition views count it under commodities, which is directionally right (real asset, inflation-side) but overstates its breadth. Physically backed, so no roll cost and no curve exposure, unlike futures-based carbon ETPs. The price driver is European policy (the supply of allowances is legislated down, the market stability reserve absorbs surplus), which makes the drift structural and the drawdowns political; volatility is equity-like. Held in a Union Registry account by SparkChange, listed via HANetf with a PRIIPs KID, so an EU retail investor can actually buy it (0.89%).",
+    "confidence": "medium",
+    "sources": [
+      "https://hanetf.com/fund/co2-sparkchange-physical-carbon-eua-etc/",
+      "https://www.justetf.com/en/etf-profile.html?isin=XS2353177293"
+    ]
   }
 ]
