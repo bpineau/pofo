@@ -42,7 +42,13 @@ Maintenant, et seulement maintenant, la carte. Un risque, une réponse, la moins
 - Crise monétaire : l'or, et une devise refuge (l'exposition dollar déjà présente dans un ETF monde non couvert, [[diversification-internationale]]).
 - Le moteur (croissance de long terme, longévité) : les actions mondiales ([[primes-de-risque]]).
 
+Un risque de la question 1 n'a volontairement aucune ligne dans cette carte, le marché baissier prolongé. C'est le risque actions lui-même, celui qu'on est payé pour porter (question 2). On l'accepte donc par écrit, on ne l'assure pas, sous peine d'assurer son propre moteur.
+
 Deux règles gouvernent cette carte. D'abord, chaque brique doit gagner sa place par une seule question, « dans quel régime cette brique gagne-t-elle quand le reste perd ? » ([[pourquoi-la-diversification-marche]]). Pas de réponse, pas de diversification, seulement des frais. Ensuite, méfiez-vous du déguisement, car beaucoup de produits ont l'air défensifs sans l'être ([[faux-actifs-defensifs]]). Choisissez la brique la moins chère qui répond à un risque **défendu**, sans empiler des briques corrélées entre elles. L'allocation tombe ici, comme la somme des réponses, pondérée par l'intensité avec laquelle vous défendez chaque risque.
+
+::: figure risques-briques
+La carte est celle de l'article lui-même, les risques nommés à la question 1 à gauche et les briques choisies à la question 5 à droite. L'épaisseur des liens est une lecture éditoriale de l'intensité de la défense, pas une mesure.
+:::
 
 ## 6. Comment tester ?
 
