@@ -172,7 +172,9 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Managed-futures / trend reconstructions: read
   `docs/trend-reconstruction-design.md` first. Real NAVs of the closest
   programmes come first (`DonorChain`, back to 1996; a weekly-dealing donor is
-  projected onto the engine's daily calendar), and only what they cannot reach
+  projected onto the engine's daily calendar, and every donor segment is lifted
+  to the target's published fee load by `feeAligned`, never to close a measured
+  return gap), and only what they cannot reach
   is reconstructed: the monthly path from a bundled reference (`AnchorTrend`)
   and the daily texture from the TSMOM engine. Two references, not one: the
   diversified funds anchor on the NET composite of real programmes

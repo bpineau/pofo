@@ -1692,19 +1692,137 @@ const ahlDiversified = "IE0000360275"
 
 var dbiDonors = []string{"ASFYX", "RYMFX", ahlDiversified}
 
+// trendFeeLoad is the documented MANAGEMENT-AND-EXPENSE load of every vehicle
+// in the managed-futures family, donors and targets alike, as a fraction per
+// year. Performance fees are NOT in it (trendPerfFee holds the one that is
+// documented), and neither is anything a fund pays out of the trade itself:
+// this is the price list, not the record.
+//
+// The donors of this family are old-school 1940-Act funds and an offshore
+// vehicle charging 1.3 to 2.7 %/yr; the funds they stand in for are modern
+// ETFs and UCITS classes at 0.75 to 0.90 %. A donor segment therefore runs
+// roughly a point a year colder than the fund it covers for, and that cold
+// belongs to the wrapper, not to the trade.
+//
+// Every figure is a net expense ratio (after contractual waivers) from the
+// vehicle's own current fee table unless said otherwise:
+//
+//	ASFYX  1.45 %  Virtus AlphaSimplex Managed Futures Strategy, class I:
+//	               1.59 % total, 1.45 % after the contractual cap running to
+//	               2027 (summary prospectus, 2026-04-28)
+//	RYMFX  1.99 %  Guggenheim Managed Futures Strategy, class P: 2.18 %
+//	               total, 1.99 % after waiver (summary prospectus, 2026);
+//	               its swap counterparties' own management and performance
+//	               fees are embedded in the swap returns and excluded from
+//	               that table, so 1.99 % understates what the shareholder pays
+//	AHLPX  1.91 %  American Beacon AHL Managed Futures Strategy, Investor
+//	               class: 1.91 % total, no waiver in force (prospectus
+//	               supplement effective 2025-08-25)
+//	AQMIX  1.29 %  AQR Managed Futures Strategy, class I: 1.29 % total and
+//	               after reimbursement (summary prospectus dated 2024-05-01)
+//	AHL    2.74 %  Man AHL Diversified plc, the USD accumulating class: the
+//	               ongoing charge a fund database reports for this ISIN
+//	               (2026). The company's own audited accounts are harsher
+//	               still: a 3.00 %/yr investment management fee on class A, a
+//	               1.00 %/yr introducing broker fee and a 20 % performance fee
+//	               on net new profits (semi-annual financial statements to
+//	               2016-12-26, note 8), so 2.74 % is the conservative reading
+//	DBMF   0.85 %  iMGP DBi Managed Futures Strategy ETF (fund page, 2026);
+//	               it is a donor to the UCITS classes and a target itself
+//	UCITS  0.75 %  the DBi UCITS share classes LU2951555585 and DBMFE
+//	KMLM   0.90 %  KraneShares Mount Lucas Managed Futures Index Strategy ETF
+//	CTA    0.75 %  Simplify Managed Futures Strategy ETF
+//	AQR A  0.79 %  AQR Managed Futures UCITS class A base cost: 0.60 %
+//	               management + 0.18 % expense cap + 0.01 % subscription tax
+//	               (prospectus supplement); see trendPerfFee for the rest
+var trendFeeLoad = map[string]float64{
+	"ASFYX":        0.0145,
+	"RYMFX":        0.0199,
+	"AHLPX":        0.0191,
+	"AQMIX":        0.0129,
+	ahlDiversified: 0.0274,
+	"DBMF":         0.0085,
+	"LU2951555585": 0.0075,
+	"DBMFE":        0.0075,
+	"KMLM":         0.0090,
+	"CTA":          0.0075,
+	"LU1103257975": 0.0079,
+}
+
+// trendPerfFee is the documented performance fee a TARGET pays and its donors
+// do not, as a fraction per year. Only one fund of the family has one that is
+// both charged and measured: AQR Managed Futures UCITS class A pays 10 % of
+// the excess over the ML 3-Month T-Bill hurdle, which the audited accounts put
+// at 1.58 points of average class NAV in the year to 31 March 2026. The
+// flat-fee classes and every US ETF here pay none.
+var trendPerfFee = map[string]float64{"LU1103257975": 0.0158}
+
+// feeAligned pairs each donor with the uplift that makes it carry the target's
+// fee load instead of its own: the donor's management-and-expense load minus
+// the target's, floored at zero.
+//
+// The uplift is read off published fee schedules and NEVER off an observed
+// return gap. A gap between two managers contains their skill, and this family
+// has a lot of it: DBi beats every peer and index over its own live window by
+// about six points a year. Closing that with a "fee" constant would grant the
+// manager's alpha to the backcast, which is curve fitting. Only the price list
+// is transferable.
+//
+// Performance fees enter asymmetrically, and both directions are deliberately
+// conservative, meaning both can only make the uplift too small:
+//
+//   - the DONOR's performance fee is ignored. Man AHL's 20 % of net new
+//     profits and Guggenheim's embedded swap fees are real money the donor's
+//     shareholders never saw, and leaving them out keeps the corrected segment
+//     colder than the truth.
+//   - the TARGET's performance fee is subtracted, because the target's own
+//     record is already net of it and the donor owes only the DIFFERENCE. This
+//     is what keeps the AQR chain honest: class A's base list is 0.50 points
+//     under AQMIX's, but class A also pays a performance fee AQMIX does not,
+//     so the aligned uplift is zero rather than half a point. Measurement
+//     agrees, the AQMIX chain already tracking class A's live CAGR to within
+//     0.1 point.
+//
+// A vehicle with no entry in trendFeeLoad is a programming error, not a free
+// donor: the whole point is that no segment is spliced without a documented
+// price.
+func feeAligned(target string, donors []string) []Donor {
+	out := make([]Donor, len(donors))
+	for i, id := range donors {
+		uplift := feeLoad(id) - feeLoad(target) - trendPerfFee[target]
+		if uplift < 0 {
+			uplift = 0
+		}
+		out[i] = Donor{ID: id, Uplift: uplift}
+	}
+	return out
+}
+
+// feeLoad is trendFeeLoad's lookup, and it panics on a miss: a donor or target
+// whose price list nobody looked up would otherwise be silently aligned
+// against zero.
+func feeLoad(id string) float64 {
+	fee, ok := trendFeeLoad[id]
+	if !ok {
+		panic("simgen: no documented fee load for " + id)
+	}
+	return fee
+}
+
 // chainedTrend builds a managed-futures history the way the evidence says it
 // should be built: real NAVs of the closest programmes for as far back as they
 // go, then the futures reconstruction for the deep past only. calibrate names
 // the fund the donors are volatility-matched to (the fund itself, or the twin
-// it is a share class of), and donors is the chain nearest first. The deep tail
-// takes its level from the net trend reference rather than from a pin (see
+// it is a share class of), and donors is the chain nearest first, each carrying
+// the fee uplift that puts it on the target's price list (feeAligned). The deep
+// tail takes its level from the net trend reference rather than from a pin (see
 // tsmom), so nothing in this family is levelled by hand any more.
 //
 // The reconstruction is built first because it serves twice: behind the chain,
 // and inside it as the daily texture a sparsely-dealing donor is projected onto
 // (see DonorChain). The oldest donors are weekly-dealing funds, and only the
 // engine can say what a trend book did between two of their NAVs.
-func chainedTrend(name, calibrate string, donors []string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
+func chainedTrend(name, calibrate string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		deep, err := tsmom(name+" (deep reconstruction)", cfg)(f, from)
 		if err != nil {
@@ -1724,7 +1842,7 @@ func chainedTrend(name, calibrate string, donors []string, cfg TSMOMConfig) func
 
 // dbiChain is chainedTrend for the DBi family, all volatility-matched to the
 // US-listed ETF.
-func dbiChain(name string, donors []string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
+func dbiChain(name string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return chainedTrend(name, "DBMF", donors, cfg)
 }
 
@@ -1732,9 +1850,9 @@ func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
-		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it (Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→, its weekly NAVs projected onto the reconstruction's daily calendar), " +
+		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it and lifted to its own 0.85%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.60%/yr, Guggenheim 2007-02→ +1.14%/yr, Man AHL Diversified 1996-03→ +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), " +
 			"then the 12-month TSMOM reconstruction for 1989-1996, its monthly path from the bundled net trend reference and its level with it, real DBMF grafted from 2019",
-		Build:           dbiChain("DBMF (donor chain)", dbiDonors, mfConfig(0.115, 0.0085)),
+		Build:           dbiChain("DBMF (donor chain)", feeAligned("DBMF", dbiDonors), mfConfig(0.115, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
 	}
@@ -1750,9 +1868,9 @@ func dbmfpaRecipe() Recipe {
 	return Recipe{
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
-		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, " +
-			"real NAVs of other managed-futures programmes behind it (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, real DBMF.PA grafted from 2025",
-		Build:           dbiChain("DBMF.PA (donor chain)", append([]string{"DBMF"}, dbiDonors...), mfConfig(0.115, 0.0075)),
+		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, " +
+			"real NAVs of other managed-futures programmes behind it, fee-aligned the same way (2010-08 +0.70%/yr, 2007-02 +1.24%/yr, Man AHL Diversified 1996-03 +1.99%/yr), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, real DBMF.PA grafted from 2025",
+		Build:           dbiChain("DBMF.PA (donor chain)", feeAligned("LU2951555585", append([]string{"DBMF"}, dbiDonors...)), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
 	}
@@ -1770,7 +1888,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMFE",
 		Name: "iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR",
-		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, " +
+		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it, each lifted to the UCITS class's 0.75%/yr fee load (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, " +
 			"the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
@@ -1787,7 +1905,7 @@ func dbmfeRecipe() Recipe {
 // the FX feed's weekend prints.
 func dbmfeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.115, 0.0085) // identical USD strategy to dbmfRecipe
-	usd, err := dbiChain("DBMFE (USD donor chain)", append([]string{"DBMF"}, dbiDonors...), cfg)(f, from)
+	usd, err := dbiChain("DBMFE (USD donor chain)", feeAligned("DBMFE", append([]string{"DBMF"}, dbiDonors...)), cfg)(f, from)
 	if err != nil {
 		return nil, err
 	}
@@ -1806,8 +1924,8 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund (Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→), then 12-month TSMOM on a cross-asset futures basket (14% vol target ~ the fund's realized 14.7%) on the bundled net trend reference, real KMLM grafted from 2020",
-		Build:           chainedTrend("KMLM (donor chain)", "KMLM", []string{"ASFYX", "RYMFX", ahlDiversified}, mfConfig(0.14, 0.0090)),
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.55%/yr, Guggenheim 2007-02→ +1.09%/yr, Man AHL Diversified 1996-03→ +1.84%/yr), then 12-month TSMOM on a cross-asset futures basket (14% vol target ~ the fund's realized 14.7%) on the bundled net trend reference, real KMLM grafted from 2020",
+		Build:           chainedTrend("KMLM (donor chain)", "KMLM", feeAligned("KMLM", []string{"ASFYX", "RYMFX", ahlDiversified}), mfConfig(0.14, 0.0090)),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -1834,13 +1952,16 @@ func kmlmRecipe() Recipe {
 // consequence is that the reconstructed pre-2015 leg carries an industry fee
 // load rather than this class's own; prefer the flat-fee EUR class
 // (LU1662501532, aqrmfHedgedRecipe) when the cost of a strong decade matters.
+//
+// That same performance fee is why the AQMIX donor takes no fee uplift although
+// its own list price sits 0.50 points above this class's base: see feeAligned.
 func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:   "LU1103257975",
 		Name: "AQR Managed Futures UCITS: TSMOM replication",
-		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03), " +
+		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap, no fee uplift since the class's own performance fee already covers the difference) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03 +0.37%/yr), " +
 			"then the 12-month TSMOM reconstruction for 1989-1996 at a 9% vol target ~ the class's realized 9.3%, on the bundled net trend reference, real AQR grafted from 2015",
-		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", []string{"AQMIX", "RYMFX", ahlDiversified}, mfConfig(0.09, 0.0079)),
+		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", feeAligned("LU1103257975", []string{"AQMIX", "RYMFX", ahlDiversified}), mfConfig(0.09, 0.0079)),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
 	}
@@ -1935,8 +2056,11 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	// The USD leg is the same donor chain the unhedged class uses: the
 	// manager's own US fund from 2010, another manager's programme behind it,
 	// and the reconstruction only for what neither reaches.
+	// Fee-aligned as class A, because it IS the class A chain: only the pre-2015
+	// leg of it survives here, and the B EUR donor spliced over that carries its
+	// own measured wedge (aqrBEURFeeWedge) instead.
 	usd, err := chainedTrend("AQR MF USD (donor chain)", "LU1103257975",
-		[]string{"AQMIX", "RYMFX", ahlDiversified}, cfg)(f, from)
+		feeAligned("LU1103257975", []string{"AQMIX", "RYMFX", ahlDiversified}), cfg)(f, from)
 	if err != nil {
 		return nil, err
 	}
@@ -1994,8 +2118,8 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund (Man AHL US 2014-08→, Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→), then 12-month TSMOM on a cross-asset futures basket (16% vol target ~ the fund's realized 16.9%) on the bundled net trend reference, real CTA grafted from 2022",
-		Build:           chainedTrend("CTA (donor chain)", "CTA", []string{"AHLPX", "ASFYX", "RYMFX", ahlDiversified}, mfConfig(0.16, 0.0075)),
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.75%/yr fee load (Man AHL US 2014-08→ +1.16%/yr, Virtus AlphaSimplex 2010-08→ +0.70%/yr, Guggenheim 2007-02→ +1.24%/yr, Man AHL Diversified 1996-03→ +1.99%/yr), then 12-month TSMOM on a cross-asset futures basket (16% vol target ~ the fund's realized 16.9%) on the bundled net trend reference, real CTA grafted from 2022",
+		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{"AHLPX", "ASFYX", "RYMFX", ahlDiversified}), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
