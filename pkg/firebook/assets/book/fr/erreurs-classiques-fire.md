@@ -10,7 +10,7 @@ Neuf de ces dix erreurs partagent une racine : confondre la sortie d'un modèle 
 
 ## 1. Sous-estimer ses dépenses
 
-L'erreur numéro un, de loin, parce qu'elle est amplifiée par le multiple de 25 à 33 ([[combien-il-vous-faut]]) : 250 €/mois oubliés, c'est ~90 000 € de cible en moins. Les oublis récurrents : la mutuelle santé à charge pleine, l'irrégulier (voiture, travaux, dents, vétérinaire), les impôts sur les retraits, et les dépenses de la vie **visée** (voyages, loisirs du temps libéré) plutôt que de la vie actuelle.
+C'est l'erreur numéro un, de loin. Le multiple de 25 à 33 l'amplifie ([[combien-il-vous-faut]]) : 250 €/mois oubliés, c'est ~90 000 € de cible en moins. Les oublis récurrents : la mutuelle santé à charge pleine, l'irrégulier (voiture, travaux, dents, vétérinaire), les impôts sur les retraits, et les dépenses de la vie **visée** (voyages, loisirs du temps libéré) plutôt que de la vie actuelle.
 
 **Signe avant-coureur** : votre budget de rentier est inférieur à vos dépenses actuelles « parce qu'on fera attention ». **Correction** : 24 mois de relevés, irrégulier annualisé, et le budget en trois étages (plancher, confort, rêve).
 
@@ -40,13 +40,13 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 6. Le portefeuille mono-régime
 
-100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]) : le tout-actions encaisse des décennies perdues réelles (Japon 1990, monde 2000-2009) au pire moment, le tout-obligataire se fait dévorer par une décennie d'inflation (1970s, 2022). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues réelles (Japon 1990, monde 2000-2009) au pire moment. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
 **Correction** : diversification par régime (actions mondiales, duration, or et/ou linkers, éventuellement managed futures [[managed-futures]]), et un test explicite contre inflation persistante et décennie perdue.
 
 ## 7. Tout miser sur la flexibilité
 
-« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné : la recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, parce que les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget.
+« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné. La recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, car les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget.
 
 **Correction** : chiffrer le plancher réel (celui qu'on tient **cinq** ans, moral compris), et l'inscrire dans une règle décidée à l'avance ([[plancher-plafond]], [[guardrails-morningstar]]) plutôt que dans une intention.
 
@@ -54,7 +54,7 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), pousser le curseur de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur devient alors un générateur de permission, pas un instrument ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
-**Correction** : regarder les quatre modèles côte à côte (c'est le design de la page FIRE), planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être survivable, pas improbable.
+**Correction** : regarder les quatre modèles côte à côte (c'est le principe de la page FIRE), planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
 
 ## 9. Négliger le facteur humain
 
@@ -78,7 +78,7 @@ Deux symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché ch
 - [ ] Taux de retrait cohérent avec l'horizon (3-3,5 % rigide au-delà de 40 ans, ou marges explicites)
 - [ ] Portefeuille testé contre les quatre régimes, pas seulement le scénario central
 - [ ] Plancher de dépenses chiffré et réaliste ; règle d'ajustement écrite
-- [ ] Ruine acceptable même dans le modèle broad-sample ; décennie perdue survivable
+- [ ] Ruine acceptable même dans le modèle broad-sample ; décennie perdue tenable
 - [ ] Buffer de liquidités dimensionné et règles de consommation/recharge décidées ([[cash-buffer]], [[recharger-ou-pas]])
 - [ ] Projet de vie prototypé ; accord du conjoint sur le budget et sur la vie
 - [ ] Critères de départ écrits, avec date de revue
