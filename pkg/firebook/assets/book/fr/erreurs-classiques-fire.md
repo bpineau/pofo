@@ -36,7 +36,7 @@ L'erreur « prudente » qui coûte des années : dimensionner comme si la retrai
 
 Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui retire : l'ordre des rendements compte autant que leur moyenne ([[sequence-des-rendements]]), et la volatilité ampute la composition ([[rendements-arithmetiques-geometriques]]). C'est l'erreur conceptuelle centrale du sujet ; elle fait croire qu'un bon portefeuille d'accumulation est automatiquement un bon portefeuille de retrait.
 
-**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des ours précoces (le modèle « sequence stress » de pofo existe pour ça) ; considérer les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
+**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des marchés baissiers précoces (le modèle « sequence stress » de pofo existe pour ça) ; considérer les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
 
 ## 6. Le portefeuille mono-régime
 
