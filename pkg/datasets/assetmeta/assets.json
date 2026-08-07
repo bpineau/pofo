@@ -98,7 +98,7 @@
     "currency": "USD",
     "fees": 0.75,
     "asset_class": "managed-futures",
-    "underlying": "50+ futures markets — commodities, currencies, fixed income; systematic managed futures",
+    "underlying": "50+ futures markets: commodities, currencies, fixed income; systematic managed futures",
     "benchmark_index": "SG CTA Index (reference benchmark)",
     "strategy": "trend-following",
     "geography": null,
@@ -461,7 +461,19 @@
     "geography": {
       "US": 100
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 9,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "accumulating",
     "leverage": 2,
     "notes": "Tactical 2x daily leveraged US equity instrument; subject to volatility drag; suited for short-term directional bets, not long-term holding",
@@ -482,7 +494,7 @@
     "source": "ft",
     "xid": "121432102",
     "currency": "EUR",
-    "fees": 0,
+    "fees": 1.1,
     "asset_class": "aggregate-bond",
     "underlying": "Flexible multi-segment EUR bonds (government, corporate, high-yield, EM debt, convertibles); unconstrained duration [0-7]",
     "benchmark_index": "ESTR + 100 bps",
@@ -890,12 +902,12 @@
   {
     "id": "IE0003XJA0J9",
     "isin": "IE0003XJA0J9",
-    "name": "Amundi Prime All Country World UCITS ETF USD Dist",
+    "name": "Amundi Prime All Country World UCITS ETF Acc",
     "ucits": true,
     "source": "ft",
     "symbol": "WEBN",
     "xid": "894306203",
-    "currency": "MUN",
+    "currency": "EUR",
     "fees": 0.07,
     "asset_class": "equity",
     "underlying": "Solactive GBS Global Markets Large & Mid Cap Index (~3,400 stocks, developed + emerging markets)",
@@ -1172,7 +1184,7 @@
     "source": "ft",
     "xid": "989556146",
     "currency": "USD",
-    "fees": 0,
+    "fees": 1.1,
     "asset_class": "multi-asset",
     "underlying": "100% MSCI World Total Return exposure + 100% Winton Major-Market Trend Strategy (systematic futures CTA across commodities, FX, fixed income, equity indices)",
     "benchmark_index": null,
@@ -1290,7 +1302,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "SPDR physical S&P 500 UCITS ETF accumulating (SPYL); TER 0.03% — cheapest S&P 500 UCITS",
+    "notes": "SPDR physical S&P 500 UCITS ETF accumulating (SPYL); TER 0.03%; cheapest S&P 500 UCITS",
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy"
@@ -4343,7 +4355,7 @@
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S&P 500 Index — ~503 large-cap US stocks",
+    "underlying": "S&P 500 Index: ~503 large-cap US stocks",
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
@@ -4458,7 +4470,7 @@
     "currency": "USD",
     "fees": 0.9,
     "asset_class": "managed-futures",
-    "underlying": "22 liquid futures contracts — 11 commodities, 6 currencies, 5 global bond futures",
+    "underlying": "22 liquid futures contracts: 11 commodities, 6 currencies, 5 global bond futures",
     "benchmark_index": "KFA MLM Index",
     "strategy": "trend-following",
     "geography": null,
@@ -4521,7 +4533,7 @@
     "source": "morningstar",
     "symbol": "0P0000VHO6",
     "currency": "USD",
-    "fees": 0,
+    "fees": 1.81,
     "asset_class": "equity",
     "underlying": "Global healthcare equities (>=70% in healthcare, pharma, medtech, biotech; 70-120 holdings)",
     "benchmark_index": "MSCI World Health Care Index",
@@ -4627,7 +4639,7 @@
     "fees": 2.7,
     "asset_class": "equity",
     "underlying": "Global clean energy transition equities (renewables, energy efficiency, smart grid, electrification; ~98% equities)",
-    "benchmark_index": "MSCI AC World Index (NR USD) — reference only, not tracked",
+    "benchmark_index": "MSCI AC World Index (NR USD); reference only, not tracked",
     "strategy": "active",
     "geography": {
       "Europe": 41,
@@ -4670,7 +4682,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "EUR cash-equivalent (XEON); tracks overnight ESTR rate — used as a liquidity sleeve or short-term cash parking vehicle",
+    "notes": "EUR cash-equivalent (XEON); tracks overnight ESTR rate; used as a liquidity sleeve or short-term cash parking vehicle",
     "confidence": "high",
     "sources": [
       "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
@@ -5160,7 +5172,7 @@
     "source": "ft",
     "xid": "936737322",
     "currency": "EUR",
-    "fees": 0,
+    "fees": 2.11,
     "asset_class": "equity",
     "underlying": "European mid-cap equities (developed Europe ex UK, active quality-value stock-picking)",
     "benchmark_index": "STOXX Europe ex UK Mid NR",
@@ -5689,7 +5701,7 @@
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S&P 500 Index — 503 large-cap US stocks",
+    "underlying": "S&P 500 Index: 503 large-cap US stocks",
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
@@ -5859,7 +5871,7 @@
     "currency": "EUR",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S&P 500 — 500 large-cap US stocks, full physical replication",
+    "underlying": "S&P 500: 500 large-cap US stocks, full physical replication",
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
@@ -5902,7 +5914,7 @@
     "currency": "EUR",
     "fees": 0.03,
     "asset_class": "equity",
-    "underlying": "S&P 500 — 500 large-cap US stocks, full physical replication",
+    "underlying": "S&P 500: 500 large-cap US stocks, full physical replication",
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
@@ -5945,7 +5957,7 @@
     "currency": "EUR",
     "fees": 0.12,
     "asset_class": "equity",
-    "underlying": "MSCI World — ~1,400 large/mid-cap stocks across 23 developed markets, full physical replication",
+    "underlying": "MSCI World: ~1,400 large/mid-cap stocks across 23 developed markets, full physical replication",
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
@@ -5992,7 +6004,7 @@
     "currency": "EUR",
     "fees": 0.06,
     "asset_class": "equity",
-    "underlying": "MSCI World — ~1,400 large/mid-cap developed-market stocks, full physical replication",
+    "underlying": "MSCI World: ~1,400 large/mid-cap developed-market stocks, full physical replication",
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
@@ -6039,7 +6051,7 @@
     "currency": "USD",
     "fees": 0.15,
     "asset_class": "equity",
-    "underlying": "MSCI World — ~1,400 large/mid-cap developed-market stocks, optimised physical sampling",
+    "underlying": "MSCI World: ~1,400 large/mid-cap developed-market stocks, optimised physical sampling",
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
@@ -6356,7 +6368,7 @@
     },
     "distribution": "distributing",
     "leverage": 2.0,
-    "notes": "Capital-efficient ~100/100 S&P 500 + long-duration Treasuries; high distributions, best held tax-sheltered; net ER 0.59% (gross far higher incl. financing). Yahoo adj-close mishandles its large distribution dates (spurious daily spikes) — treat return-based metrics with care",
+    "notes": "Capital-efficient ~100/100 S&P 500 + long-duration Treasuries; high distributions, best held tax-sheltered; net ER 0.59% (gross far higher incl. financing). Yahoo adj-close mishandles its large distribution dates (spurious daily spikes); treat return-based metrics with care",
     "confidence": "medium",
     "sources": [
       "https://www.pimco.com/us/en/investments/mutual-fund/stocksplus-long-duration-fund",
@@ -6488,11 +6500,23 @@
     "underlying": "Developed-market large-cap equity (defensive, lower-volatility selection) with a written out-of-the-money index call overlay (equity-linked notes) for monthly option premium",
     "benchmark_index": "active (MSCI World reference)",
     "strategy": "covered-call overlay",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "France": 5,
+      "Germany": 4,
+      "Japan": 11,
+      "Other": 20,
+      "United States": 60
+    },
+    "sectors": {
+      "Communication Services": 11,
+      "Financials": 12,
+      "Health Care": 13,
+      "Other": 41,
+      "Technology": 23
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Covered-call income: lower equity beta and higher yield, but the call overlay caps upside — trades equity convexity for premium",
+    "notes": "Covered-call income: lower equity beta and higher yield, but the call overlay caps upside; trades equity convexity for premium",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000WX7BVB0"
@@ -6520,7 +6544,7 @@
     "distribution": "accumulating",
     "leverage": 1.0,
     "duration": 0.25,
-    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash — a cash-plus building block, not a duration hedge",
+    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081"
@@ -6549,7 +6573,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price — equity risk plus amplified gold sensitivity",
+    "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price; equity risk plus amplified gold sensitivity",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84"
@@ -6604,8 +6628,20 @@
     "underlying": "Developed-market equity tracking MSCI World closely, with small fundamental-research over/underweights at tightly controlled tracking error",
     "benchmark_index": "MSCI World",
     "strategy": "research-enhanced index",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Canada": 3,
+      "Japan": 5,
+      "Other": 21,
+      "United Kingdom": 3,
+      "United States": 68
+    },
+    "sectors": {
+      "Consumer Discretionary": 10,
+      "Financials": 13,
+      "Industrials": 10,
+      "Other": 36,
+      "Technology": 31
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "notes": "Enhanced indexing: MSCI World beta plus modest stock-selection alpha at low tracking error and near-passive cost",
@@ -6622,7 +6658,7 @@
       "IFSW",
       "FSWD"
     ],
-    "name": "iShares Edge MSCI World Multifactor UCITS ETF USD Acc",
+    "name": "iShares STOXX World Equity Multifactor UCITS ETF USD Acc",
     "ucits": true,
     "source": "yahoo",
     "symbol": "IFSW.L",
@@ -6632,8 +6668,20 @@
     "underlying": "Developed-market equity selected for joint exposure to value, quality, momentum and smaller size",
     "benchmark_index": "STOXX Developed World Equity Factor Screened",
     "strategy": "multi-factor",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Canada": 4,
+      "Ireland": 3,
+      "Japan": 9,
+      "Other": 25,
+      "United States": 59
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 11,
+      "Financials": 19,
+      "Other": 32,
+      "Technology": 30
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
@@ -6666,8 +6714,20 @@
     "underlying": "Global developed quality companies with growing dividends, weighted by quality and earnings-growth screens",
     "benchmark_index": "WisdomTree Global Developed Quality Dividend Growth",
     "strategy": "fundamentally-weighted",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "France": 4,
+      "Japan": 8,
+      "Other": 24,
+      "United Kingdom": 5,
+      "United States": 59
+    },
+    "sectors": {
+      "Consumer Discretionary": 15,
+      "Health Care": 14,
+      "Industrials": 17,
+      "Other": 31,
+      "Technology": 23
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
@@ -6700,10 +6760,16 @@
     "geography": {
       "United States": 100
     },
-    "sectors": null,
+    "sectors": {
+      "Consumer Discretionary": 12,
+      "Health Care": 13,
+      "Industrials": 13,
+      "Other": 39,
+      "Technology": 23
+    },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "US covered-call income: defensive equity plus option premium, lower beta and capped upside. Distributing — the NAV price series excludes payouts, so total return is understated; prefer for income, not growth",
+    "notes": "US covered-call income: defensive equity plus option premium, lower beta and capped upside. Distributing: the NAV price series excludes payouts, so total return is understated; prefer for income, not growth",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000U5MJOZ6"
@@ -6727,8 +6793,21 @@
     "underlying": "Broad developed-market equity tilted toward smaller-cap, lower-valuation and higher-profitability stocks (systematic Fama-French style)",
     "benchmark_index": "active (developed market universe)",
     "strategy": "systematic factor tilt",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Canada": 3,
+      "Japan": 7,
+      "Other": 22,
+      "United Kingdom": 4,
+      "United States": 64
+    },
+    "sectors": {
+      "Consumer Discretionary": 11,
+      "Financials": 17,
+      "Health Care": 9,
+      "Industrials": 13,
+      "Other": 28,
+      "Technology": 22
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
@@ -6761,8 +6840,21 @@
     "underlying": "Developed-market small and mid-cap stocks with a strong tilt to low valuations and high profitability",
     "benchmark_index": "active (developed small/mid-cap value universe)",
     "strategy": "systematic factor tilt",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Canada": 5,
+      "Japan": 11,
+      "Other": 19,
+      "United Kingdom": 5,
+      "United States": 60
+    },
+    "sectors": {
+      "Consumer Discretionary": 14,
+      "Energy": 8,
+      "Financials": 25,
+      "Industrials": 21,
+      "Materials": 9,
+      "Other": 23
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
