@@ -16,9 +16,9 @@ La bonne nouvelle de l'accumulation, c'est qu'elle est la phase la mieux compris
 
 **2. L'automatisation bat la discipline.** Virement automatique le jour de paie, investissement programmé, et le budget se débrouille avec le reste. La volonté est une ressource épuisable ; l'architecture de vos flux n'en consomme pas.
 
-**3. Le portefeuille peut être agressif, parce que les flux vous protègent.** 80 à 100 % d'actions mondiales se défend tant que l'horizon du premier retrait dépasse 10-15 ans. Un krach précoce est une aubaine d'acheteur, et l'ordre des rendements est indifférent tant qu'on n'a pas encore de retraits ([[rendements-arithmetiques-geometriques]]). L'erreur classique ici n'est pas l'agressivité, c'est l'infidélité : changer de stratégie à chaque mode, vendre dans les baisses, collectionner les produits.
+**3. Le portefeuille peut être agressif, parce que les flux vous protègent.** 80 à 100 % d'actions mondiales se défend tant que l'horizon du premier retrait dépasse 10-15 ans. Un krach précoce est une aubaine d'acheteur, et l'ordre des rendements ne joue jamais contre vous tant qu'on n'a pas encore de retraits ([[rendements-arithmetiques-geometriques]]). L'erreur classique ici n'est pas l'agressivité, c'est l'infidélité : changer de stratégie au gré des modes, vendre dans les baisses, collectionner les produits.
 
-**4. Les enveloppes se préparent dès maintenant.** Les compteurs fiscaux français sont des compteurs de **temps**. Dater un PEA et une assurance-vie tôt, même avec 100 €, fait courir les horloges des 5 et 8 ans. Leur plafond, lui, se remplit sur des années ([[enveloppes-francaises]]). Le rentier de 45 ans hérite des choix d'enveloppe du trentenaire.
+**4. Les enveloppes se préparent dès maintenant.** Les compteurs fiscaux français sont des compteurs de **temps**. Dater un PEA et une assurance-vie tôt, même avec 100 €, fait courir les horloges des 5 et 8 ans. Le plafond du PEA, lui, se remplit sur des années ([[enveloppes-francaises]]). Le rentier de 45 ans hérite des choix d'enveloppe du trentenaire.
 
 **5. Suivre peu, mais bien.** Un point annuel suffit : taux d'épargne réalisé, patrimoine investi, distance à la cible ([[combien-il-vous-faut]]). Le pilotage fin est un outil de la phase 3 ; en phase 1, il fabrique surtout de l'anxiété et des transactions.
 
@@ -30,7 +30,7 @@ Tenez deux chiffres à jour, pas vingt : votre multiple actuel (patrimoine inves
 
 De « cible atteinte moins deux ans » à « départ plus trois ans » s'étend la zone rouge du plan. Le portefeuille y est au maximum de sa taille relative. La fenêtre fragile du risque de séquence s'ouvre ([[sequence-des-rendements]]). Et des décisions irréversibles se prennent, quitter un poste, un statut, un niveau de revenu. Ce que la recherche et la pratique recommandent d'y faire :
 
-**Dé-risquer le portefeuille, temporairement.** C'est ici que se construit le « bond tent », cette bosse obligataire temporaire autour du départ. On réduit l'exposition actions à l'approche du départ, vers 50-60 %. Puis on la **remonte** progressivement une fois la fenêtre fragile traversée ([[glidepaths]]). La prudence perpétuelle coûte trop cher en rendement. La prudence concentrée sur les années dangereuses capte l'essentiel de la protection pour une fraction du coût. C'est aussi le moment de constituer le matelas de liquidités ([[cash-buffer]]) : deux à trois ans de dépenses, accumulés en cash ou fonds monétaire pendant les dernières années de salaire, plutôt qu'en vendant des actions au départ.
+**Dé-risquer le portefeuille, temporairement.** C'est ici que se construit le « bond tent », la tente obligataire de Kitces, cette bosse temporaire autour du départ. On réduit l'exposition actions à l'approche du départ, vers 50-60 %. Puis on la **remonte** progressivement une fois la fenêtre fragile traversée ([[glidepaths]]). La prudence perpétuelle coûte trop cher en rendement. La prudence concentrée sur les années dangereuses capte l'essentiel de la protection pour une fraction du coût. C'est aussi le moment de constituer le matelas de liquidités ([[cash-buffer]]) : deux à trois ans de dépenses, accumulés en cash ou fonds monétaire pendant les dernières années de salaire, plutôt qu'en vendant des actions au départ.
 
 **Basculer la comptabilité en mode retrait.** Le budget en trois étages (plancher, confort, rêve), la friction fiscale estimée, les pensions futures documentées : tout l'appareillage de [[combien-il-vous-faut]] se construit et se teste maintenant, sur les vraies dépenses des deux dernières années.
 
@@ -59,16 +59,16 @@ Le jour du premier retrait, vous changez de métier : d'épargnant (accumuler, i
 **Laisser la phase évoluer.** Le retrait n'est pas homogène. La fenêtre fragile des premières années demande la vigilance maximale. Passé dix ans sans accident majeur, la partie est statistiquement gagnée et le pilotage s'allège. L'arrivée des pensions ([[revenus-complementaires]]) change encore la donne, souvent au point de refermer définitivement la question de la ruine.
 
 ::: exemple La même personne, trois métiers
-Inès, 36 ans, 34 % d'épargne, 90 % actions : son travail est d'automatiser et de ne pas regarder. Inès, 44 ans, cible à 90 %. Elle descend à 55 % d'actions, met 30 mois de dépenses en monétaire, teste un 4/5e, écrit sa règle de retrait, et fixe ses critères de départ. Inès, 47 ans, partie depuis deux ans dans un marché médiocre : taux courant 4,8 %, vigilance. Elle applique sa règle (confort − 8 %), consomme le buffer plutôt que de vendre des actions, et ne touche à rien d'autre. Trois photos, trois métiers, un seul plan.
+Inès, 36 ans, 34 % d'épargne, 90 % actions : son travail est d'automatiser et de ne pas regarder. Inès, 44 ans, à 90 % de sa cible. Elle descend à 55 % d'actions, met 30 mois de dépenses en monétaire, teste un 4/5e, écrit sa règle de retrait et fixe ses critères de départ. Inès, 47 ans, partie depuis deux ans dans un marché médiocre : taux courant 4,8 %, vigilance. Elle applique sa règle (confort − 8 %), consomme le buffer plutôt que de vendre des actions, et ne touche à rien d'autre. Trois photos, trois métiers, un seul plan.
 :::
 
 ## L'essentiel à retenir
 
 - Trois phases, trois métiers : accumuler (le taux d'épargne domine, l'agressivité se défend), transiter (dé-risquer temporairement, tout écrire, prototyper la vie), retirer (exécuter, piloter des ratios, un point par an).
 - La transition est la zone rouge : portefeuille au maximum relatif, fenêtre fragile devant, décisions irréversibles ; c'est là que se gagnent ou se perdent les plans.
-- Le piège structurel : la cible s'atteint au sommet, donc à valorisations chères ; parades dans [[glidepaths]], [[cash-buffer]], [[regles-cape]].
+- Le piège structurel : la cible s'atteint au sommet, donc à valorisations élevées ; parades dans [[glidepaths]], [[cash-buffer]], [[regles-cape]].
 - Les réflexes d'une phase sont toxiques dans une autre : l'agressivité en transition, la prudence perpétuelle en accumulation, l'improvisation en retrait.
-- Presque chaque article de ce livre équipe une de ces trois phases ; les deux lectures suivantes naturelles sont [[sequence-des-rendements]] et [[construire-son-plan]].
+- Presque chaque article de ce livre équipe une de ces trois phases ; les deux lectures à enchaîner sont [[sequence-des-rendements]] et [[construire-son-plan]].
 
 ---
 
