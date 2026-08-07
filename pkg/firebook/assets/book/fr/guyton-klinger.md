@@ -16,7 +16,7 @@ L'article de 2006 (« Decision Rules and Maximum Initial Withdrawal Rates ») d�
 
 **2. La règle de retenue d'inflation (Withdrawal Rule).** L'indexation inflation est **sautée** les années qui suivent un rendement négatif du portefeuille, si le taux de retrait courant dépasse le taux initial. C'est exactement le « gel après année rouge » ([[retrait-fixe-bengen]]), en version conditionnelle ; l'article plafonne par ailleurs l'indexation à 6 % par an.
 
-**3. La règle de préservation du capital (Capital Preservation Rule), le garde-fou bas.** Si le taux de retrait courant dépasse 120 % du taux initial (exemple : taux initial 5 %, courant > 6 %), le retrait est **coupé** de 10 %. Ne s'applique plus dans les quinze dernières années de l'horizon (couper à 82 ans pour protéger un portefeuille qui n'a plus que dix ans à tenir n'a pas de sens).
+**3. La règle de préservation du capital (Capital Preservation Rule), le garde-fou bas.** Si le taux de retrait courant dépasse 120 % du taux initial (exemple, taux initial 5 %, courant > 6 %), le retrait est **coupé** de 10 %. Ne s'applique plus dans les quinze dernières années de l'horizon (couper à 82 ans pour protéger un portefeuille qui n'a plus que dix ans à tenir n'a pas de sens).
 
 **4. La règle de prospérité (Prosperity Rule), le garde-fou haut.** Si le taux courant descend sous 80 % du taux initial (le portefeuille s'est envolé), le retrait est **augmenté** de 10 %. C'est la sœur du cliquet de Kitces, mais réversible : la hausse pourra être reprise par une coupe future.
 
@@ -46,7 +46,7 @@ La postérité a réparé Guyton-Klinger de trois façons, du patch au remplacem
 
 ## Si vous l'utilisez : les paramètres défendables
 
-Pour un plan FIRE long qui choisit la famille guardrails version 2006 (pour sa simplicité de calcul à la main : le guardrail par risque exige un simulateur), la configuration que la littérature post-ERN soutient :
+Pour un plan FIRE long qui choisit la famille guardrails version 2006 (pour sa simplicité de calcul à la main, le guardrail par risque exige un simulateur), la configuration que la littérature post-ERN soutient :
 
 - **Taux initial : 4 à 4,5 %**, pas 5,5 : la flexibilité achète ~0,5 point au-dessus du fixe équivalent, pas davantage ([[flexibilite-realite]]).
 - **Corridor ±20 %, ajustements de 10 %** (le standard), ou ±15 %/5 % pour la version douce.
@@ -56,14 +56,14 @@ Pour un plan FIRE long qui choisit la famille guardrails version 2006 (pour sa s
 - **La revue est annuelle, à date fixe** : la règle se calcule le 1er janvier, pas à chaque frayeur ([[revue-annuelle]]).
 
 ::: exemple La cascade, avec et sans plancher
-Plan : 1,3 M€, taux initial 4,3 % (55 900 €), corridor ±20 % (seuils : 3,44 %/5,16 %), coupes de 10 %. Régime hostile : le portefeuille réel glisse à 950 000 € en trois ans. Année 3 : taux courant 5,9 % > 5,16 % : coupe à 50 300 €. Années 4-5 : l'ours colle, deux nouvelles coupes : 40 700 € (−27 %). **Sans** plancher, le scénario 1966 continuerait : cinq coupes, revenu à ~33 000 € (−41 %) pendant une décennie. Avec plancher à 78 % (43 600 €), la troisième coupe s'arrête au plancher : le revenu passe la traversée à −22 %, et la ruine du plan remonte de ~1 % à ~4 % : c'est le prix, honnête et visible, d'avoir refusé la diète illimitée. La §04 de pofo montre exactement cette comparaison pour votre plan : cochez guardrails, bougez le plancher, regardez la vie vécue changer de forme.
+Plan : 1,3 M€, taux initial 4,3 % (55 900 €), corridor ±20 % (seuils, 3,44 %/5,16 %), coupes de 10 %. Régime hostile : le portefeuille réel glisse à 950 000 € en trois ans. Année 3 : taux courant 5,9 % > 5,16 % : coupe à 50 300 €. Années 4-5 : l'ours colle, deux nouvelles coupes : 40 700 € (−27 %). **Sans** plancher, le scénario 1966 continuerait : cinq coupes, revenu à ~33 000 € (−41 %) pendant une décennie. Avec plancher à 78 % (43 600 €), la troisième coupe s'arrête au plancher : le revenu passe la traversée à −22 %, et la ruine du plan remonte de ~1 % à ~4 % : c'est le prix, honnête et visible, d'avoir refusé la diète illimitée. La §04 de pofo montre exactement cette comparaison pour votre plan : cochez guardrails, bougez le plancher, regardez la vie vécue changer de forme.
 :::
 
 ## L'essentiel à retenir
 
 - Les quatre règles de 2006 : ordre des ventes, gel d'indexation conditionnel, coupe de 10 % quand le taux courant dépasse 120 % de l'initial, hausse de 10 % sous 80 % : une mécanique exécutable qui a inventé les guardrails.
 - La promesse (5,2-5,6 % initial, 99 % de succès) reposait sur un vice : des coupes illimitées dont les mauvais millésimes abusent : revenu réel à −35/−45 % pendant des décennies. Le taux de succès de GK ne se compare **jamais** à celui d'une règle fixe sans lire le revenu servi.
-- Les correctifs : un plancher à 75-80 % (qui recrée de la ruine honnête : c'est le but), des ajustements plus doux et plus fréquents, et, en remplacement conceptuel, les guardrails par risque de Kitces-Tharp-Morningstar ([[guardrails-morningstar]]).
+- Les correctifs : un plancher à 75-80 % (qui recrée de la ruine honnête, c'est le but), des ajustements plus doux et plus fréquents, et, en remplacement conceptuel, les guardrails par risque de Kitces-Tharp-Morningstar ([[guardrails-morningstar]]).
 - Paramètres défendables aujourd'hui : taux initial 4-4,5 %, corridor ±20 %, coupes 10 %, plancher aligné sur le plancher réel, gel d'indexation conservé, revue annuelle à date fixe.
 - Dans pofo : case guardrails (corridor ±20 %, ajustements ±10 %) + curseur de plancher ; jugez **toujours** sur la §04 (la vie vécue) et la frontière §06, jamais sur la seule ruine.
 

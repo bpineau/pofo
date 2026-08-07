@@ -23,7 +23,7 @@ Le multiple amplifie tout : 200 € par mois oubliés, c'est 60 000 à 80 000 �
 **Pensez en paliers d'âge.** Les études sur les dépenses réelles des retraités montrent un « sourire » : actives et voyageuses au début, plus calmes ensuite, remontant en fin de vie avec la santé et la dépendance ([[depenses-en-retraite]]). Pour le dimensionnement initial, une bonne approximation est de planifier le plateau haut du début, en sachant que la pente naturelle joue pour vous.
 
 ::: astuce Trois budgets, pas un
-Établissez trois chiffres : le budget **plancher** (l'incompressible : logement, alimentation, santé, assurances, impôts), le budget **confort** (la vie visée) et le budget **rêve** (avec les extras). L'écart entre plancher et confort est votre flexibilité mobilisable en cas de mauvaise décennie ([[flexibilite-realite]]) ; les stratégies modernes de retrait en font un paramètre explicite ([[plancher-plafond]]). Un plan dont le plancher est à 90 % du confort est fragile ; à 70 %, il est robuste.
+Établissez trois chiffres : le budget **plancher** (l'incompressible, logement, alimentation, santé, assurances, impôts), le budget **confort** (la vie visée) et le budget **rêve** (avec les extras). L'écart entre plancher et confort est votre flexibilité mobilisable en cas de mauvaise décennie ([[flexibilite-realite]]) ; les stratégies modernes de retrait en font un paramètre explicite ([[plancher-plafond]]). Un plan dont le plancher est à 90 % du confort est fragile ; à 70 %, il est robuste.
 :::
 
 ## Étape 2 : la correction fiscale, l'oubli qui coûte le plus cher

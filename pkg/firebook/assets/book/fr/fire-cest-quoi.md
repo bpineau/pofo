@@ -48,7 +48,7 @@ Ensuite, **Barista et Coast sont des amortisseurs de risque de séquence**, pas 
 
 ## L'arithmétique qui rend le FIRE possible
 
-Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation et abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache (hypothèses : 5 % de rendement réel, retrait à 4 %, départ de zéro) :
+Le moteur du FIRE n'est pas le rendement, c'est le **taux d'épargne**, pour une raison à double détente : épargner plus accélère l'accumulation et abaisse la cible (vous prouvez que vous vivez avec moins). D'où le tableau célèbre popularisé par Mr. Money Mustache (hypothèses, 5 % de rendement réel, retrait à 4 %, départ de zéro) :
 
 | Taux d'épargne | Années de travail avant l'indépendance |
 |---|---|

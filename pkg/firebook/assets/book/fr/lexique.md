@@ -72,7 +72,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Frontière de décumulation** : chaque règle de retrait comme un point (ruine ; variabilité du niveau de vie) : la §06 de pofo la trace pour votre plan. [[panorama-strategies-retrait]]
 
-**Glidepath** : faire varier l'allocation dans le temps : la version retrait (rising equity : remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
+**Glidepath** : faire varier l'allocation dans le temps : la version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
 
 **Golden Butterfly** : Browne plus une aile small-cap value : le meilleur couple SWR/drawdown de la famille tous-temps sur l'échantillon disponible. [[portefeuilles-tous-temps]]
 
@@ -138,7 +138,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Sourire (retirement smile)** : la forme des dépenses réelles : hautes au début, déclinantes vingt ans, remontant à la fin (santé) : le besoin constant sur-provisionne de 10-20 %. [[depenses-en-retraite]]
 
-**Student-t (df)** : la loi à queues épaisses du modèle central de pofo : df règle la fréquence des années extrêmes (df 5 : ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]]
+**Student-t (df)** : la loi à queues épaisses du modèle central de pofo : df règle la fréquence des années extrêmes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]]
 
 **SWR (Safe Withdrawal Rate)** : le taux de retrait « sûr » : jamais une constante : une fonction du cadre (horizon, échantillon, valorisations, marges). [[la-regle-des-4-pourcents]]
 
