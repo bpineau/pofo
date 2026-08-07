@@ -42,7 +42,128 @@ func All() []Recipe {
 		dpgtRecipe(),
 		chsnRecipe(),
 		tip1eRecipe(),
+		idtlRecipe(),
+		ernaRecipe(),
+		ernxRecipe(),
+		xeonRecipe(),
 	}
+}
+
+// idtlRecipe extends the iShares $ Treasury Bond 20+yr UCITS ETF
+// (IE00BSKRJZ44, USD, real from 2015) with the same long-Treasury proxy as its
+// US-listed twin TLT: Vanguard Long-Term Treasury (VUSTX, 1986->), carried
+// further back by the constant-maturity Treasury total-return reconstruction
+// (TREASURY-LONG, daily from 1962, monthly from 1953). Same asset (US
+// Treasuries 20+yr, duration ~17) and currency (USD, the fund's own quote
+// line), so no FX leg is needed; the real IDTL quotes are grafted from
+// inception.
+func idtlRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00BSKRJZ44",
+		Name:            "iShares $ Treasury 20+yr: VUSTX long Treasury",
+		Method:          "VUSTX (Vanguard Long-Term Treasury, 1986->, extended TREASURY-LONG daily from 1962), real IDTL grafted from 2015",
+		Build:           composite("IDTL (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
+		ValidateAgainst: "IE00BSKRJZ44",
+		SpliceReal:      "IE00BSKRJZ44",
+	}
+}
+
+// ernaRecipe backcasts the iShares USD Ultrashort Bond UCITS ETF
+// (IE00BGCSB447, USD money-market, real from 2018) as USD cash: the 13-week
+// T-bill rate (^IRX, daily; extended by the FRED 3-month T-bill TBILL-3M back
+// to the 1930s) compounded into a money-market index. The fund earns a small
+// investment-grade credit spread over bills that the pre-inception proxy omits
+// (the grafted real quotes carry it); with duration ~0 the bill rate is the
+// faithful cash-equivalent backcast.
+func ernaRecipe() Recipe {
+	return Recipe{
+		ID:              "IE00BGCSB447",
+		Name:            "iShares USD Ultrashort Bond: USD cash (T-bill)",
+		Method:          "USD cash ^IRX (13-week T-bill, daily; extended TBILL-3M to the 1930s) compounded, IG credit spread omitted pre-inception; real ERNA grafted from 2018",
+		Build:           composite("ERNA (USD cash)", []Leg{{ID: "^IRX", Weight: 1}}, "^IRX", 0),
+		ValidateAgainst: "IE00BGCSB447",
+		SpliceReal:      "IE00BGCSB447",
+	}
+}
+
+// ernxRecipe backcasts the iShares EUR Ultrashort Bond UCITS ETF
+// (IE000RHYOR04, EUR money-market) as EUR cash: the bundled EUR money-market
+// index (EURCASH-EUR) rendered at business-day granularity by eurCashDaily.
+// Like ERNA it omits the fund's small IG credit spread pre-inception (the
+// grafted real quotes carry it); same currency (EUR), so no FX leg.
+func ernxRecipe() Recipe {
+	return Recipe{
+		ID:     "IE000RHYOR04",
+		Name:   "iShares EUR Ultrashort Bond: EUR cash (money-market)",
+		Method: "EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->) interpolated to business days, IG credit spread omitted pre-inception; real ERNX grafted from inception",
+		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+			return eurCashDaily(f, from)
+		},
+		ValidateAgainst: "IE000RHYOR04",
+		SpliceReal:      "IE000RHYOR04",
+	}
+}
+
+// xeonRecipe backcasts the Xtrackers II EUR Overnight Rate Swap UCITS ETF
+// (LU0290358497, EUR, real from 2007) from the same EUR money-market index as
+// ERNX, less the fund's 0.10%/yr TER. EURCASH-EUR compounds the 3-month
+// interbank rate, which runs above the overnight ESTR the fund tracks by a
+// term premium (~0.2%/yr on average over the overlap); the TER deduction only
+// partly offsets it, so the proxy sits ~0.2%/yr above the real fund. That
+// residual is immaterial for a cash sleeve and, since real XEON is grafted from
+// 2007, only touches the pre-2007 tail. The real quotes take over from 2007.
+func xeonRecipe() Recipe {
+	return Recipe{
+		ID:     "LU0290358497",
+		Name:   "Xtrackers EUR Overnight Rate Swap: EUR overnight cash",
+		Method: "EUR money-market index EURCASH-EUR (3-month interbank compounded, 1994->, interpolated to business days) less 0.10%/yr TER; sits ~0.2%/yr above ESTR (3M-vs-overnight term premium only partly offset); real XEON grafted from 2007",
+		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+			s, err := eurCashDaily(f, from)
+			if err != nil {
+				return nil, err
+			}
+			return afterFee(s, 0.0010), nil
+		},
+		ValidateAgainst: "LU0290358497",
+		SpliceReal:      "LU0290358497",
+	}
+}
+
+// eurCashDaily fetches the bundled EUR money-market index (EURCASH-EUR, the
+// FRED 3-month interbank rate compounded, monthly from 1994) and expands it to
+// business-day granularity by geometric interpolation between the monthly
+// anchors. A money-market accrual index grows by a near-constant daily rate
+// within each month, so unlike a risk asset it carries no real intramonth
+// variation to lose: the interpolation is faithful and yields a genuinely
+// daily series (rather than feeding month-sized steps to daily statistics),
+// with no external data. The last anchor is appended as-is so the series ends
+// exactly on a real EURCASH-EUR level.
+func eurCashDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	m, err := f.Fetch("EURCASH-EUR", from)
+	if err != nil {
+		return nil, err
+	}
+	if m == nil || len(m.Points) < 2 {
+		return nil, fmt.Errorf("EURCASH-EUR: empty history")
+	}
+	s := &marketdata.Series{Name: "EUR cash (money-market, daily)", Source: "simdata"}
+	for i := 0; i+1 < len(m.Points); i++ {
+		t0, t1 := m.Points[i].Date, m.Points[i+1].Date
+		l0, l1 := m.Points[i].Close, m.Points[i+1].Close
+		span := t1.Sub(t0).Hours() / 24
+		if span <= 0 || l0 <= 0 || l1 <= 0 {
+			continue
+		}
+		for d := t0; d.Before(t1); d = d.AddDate(0, 0, 1) {
+			if wd := d.Weekday(); wd == time.Saturday || wd == time.Sunday {
+				continue
+			}
+			frac := d.Sub(t0).Hours() / 24 / span
+			s.Points = append(s.Points, marketdata.Point{Date: d, Close: l0 * math.Pow(l1/l0, frac)})
+		}
+	}
+	s.Points = append(s.Points, m.Points[len(m.Points)-1])
+	return s, nil
 }
 
 // dpgtRecipe rebuilds the Dimensional Global Targeted Value UCITS ETF
