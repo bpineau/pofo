@@ -97,6 +97,7 @@ var figures = map[string]func() string{
 	"etages-du-plancher":     figEtagesDuPlancher,
 	"hierarchie-attention":   figHierarchieAttention,
 	"vpw-test-de-perte":      figVpwTestDePerte,
+	"victimes-regimes":       figVictimesRegimes,
 	"cape-contracyclique":    figCapeContracyclique,
 	"credits-mortalite":      figCreditsMortalite,
 	"arbre-decision":         figArbreDecision,
