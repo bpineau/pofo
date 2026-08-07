@@ -111,6 +111,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			ChartSVG: template.HTML(svg),
 			Warnings: r.p.Warnings,
 		}
+		section.FireHref = opt.fireHref[r.specName]
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}

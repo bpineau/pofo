@@ -111,6 +111,29 @@ func TestParseViewQueryErrors(t *testing.T) {
 	}
 }
 
+func TestViewFireHrefs(t *testing.T) {
+	vr, err := parseViewQuery(url.Values{
+		"ex": {"claude-dragonlite"},
+		"p":  {"IWDA:60,IGLN:40!sim:on"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := vr.fireHrefs["claude-dragonlite"]; got != "/fire/e/claude-dragonlite/" {
+		t.Errorf("example href = %q", got)
+	}
+	adhoc := vr.specs[1].Name
+	want := "/fire/p/" + url.PathEscape("IWDA:60,IGLN:40!sim:on") + "/"
+	if got := vr.fireHrefs[adhoc]; got != want {
+		t.Errorf("adhoc href = %q, want %q", got, want)
+	}
+	// The hrefs ride into the render options only for the web app.
+	o := vr.serverOptions(&options{})
+	if o.fireHref[adhoc] != want {
+		t.Errorf("serverOptions fireHref = %q", o.fireHref[adhoc])
+	}
+}
+
 func TestParseViewQueryEmpty(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t, ""))
 	if err != nil {
