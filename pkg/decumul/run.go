@@ -112,26 +112,34 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		// spent with no flex cut and no guardrails move. Delivering less
 		// counts the year as "cut" (cutAt), whatever the cause.
 		var need, uncut float64
+		// Every rule below sets the HOUSEHOLD budget for the year; pensions
+		// and side income fund it first (netOf) and the portfolio delivers
+		// the remainder, exactly like the fixed rule. Without the netting,
+		// the wealth-based rules would silently withdraw the pension's share
+		// on top of it, making them incomparable in the model strip.
 		if p.Amortize {
 			// Amortization-based (ABW/TPAW): the actuarial payment exhausting
-			// the AFTER-TAX liquidation value over the remaining horizon (the
-			// gross wealth is not net-deliverable, so amortizing it would
-			// manufacture a fake final-years shortfall). uncut stays the
-			// fixed reference standard, so lean years count as lived cuts.
+			// the AFTER-TAX liquidation value plus the present value of the
+			// future cashflows over the remaining horizon (the gross wealth
+			// is not net-deliverable, so amortizing it would manufacture a
+			// fake final-years shortfall; ignoring a future pension would
+			// understate today's sustainable budget). uncut stays the fixed
+			// reference standard, so lean years count as lived cuts.
 			wNet := pks.liquidationNet() + buffer
-			need = math.Min(pmt(wNet, p.AmortReturn, p.Years-k), wNet*(1-1e-9))
+			budget := pmt(wNet+p.cashflowPV(k, p.AmortReturn), p.AmortReturn, p.Years-k)
+			need = math.Min(p.netOf(budget, k), wNet*(1-1e-9))
 			uncut = p.needAt(k)
 		} else if p.Bounded.active() {
 			// Bounded percent-of-portfolio (Vanguard dynamic spending): target
 			// a share of wealth, move at most Up/Down from last year's level.
 			bounded = p.Bounded.clampStep(p.Bounded.Pct*total, bounded)
-			need = bounded
+			need = p.netOf(bounded, k)
 			uncut = p.needAt(k)
 		} else if p.Percent > 0 {
 			// Percentage-of-portfolio (VPW): spend a fixed share of current
 			// wealth. uncut stays the fixed reference standard, so years where the
 			// rule delivers less than that count as a lived cut.
-			need = p.Percent * total
+			need = p.netOf(p.Percent*total, k)
 			uncut = p.needAt(k)
 		} else if p.Guard.active() {
 			spending = p.Guard.adjust(spending, total)

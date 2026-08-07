@@ -51,8 +51,7 @@ func SolveMenu(pr Params, panel *scenario.Panel) SolverMenu {
 
 	base := pr.plan()
 	base.Monthly = false
-	cMu, cSigma, cDf := centralParams(pr, panel)
-	base.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
+	base.Source = pr.detailSource(panel, pr.Years)
 
 	menu := SolverMenu{TargetRuin: target}
 	menu.CurrentRuin = base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
