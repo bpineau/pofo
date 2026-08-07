@@ -250,7 +250,7 @@ func jsonLD(title, description string, index bool) string {
 func indexHTML(epubSize int) string {
 	var b strings.Builder
 	b.WriteString(`<header class="book-hero">`)
-	b.WriteString(`<p class="book-kicker">pofo · référence</p>`)
+	b.WriteString(`<p class="book-kicker">pofo</p>`)
 	b.WriteString(`<h1>` + siteName + `</h1>`)
 	b.WriteString(`<p class="book-lede">` + siteLede)
 	if epubSize > 0 {
