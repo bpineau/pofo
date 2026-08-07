@@ -377,6 +377,14 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		resols      [slotCount]resolution
 	)
 	consider := func(s *Series, res resolution, fund, sameBase bool) {
+		// Clean before judging: FT, Morningstar and Stooq candidates bypass
+		// history(), so this is where they get the hygiene a direct Yahoo
+		// symbol already had. It also matters for the comparison itself,
+		// since dropping a leading placeholder changes a candidate's depth.
+		// Cleaning is idempotent, so the already-clean Yahoo ones are safe.
+		if s != nil {
+			s.Points = cleanQuotes(query, s.Points)
+		}
 		i := slotOther
 		switch {
 		case preferBase == "": // ISIN: only depth matters

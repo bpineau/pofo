@@ -8796,5 +8796,38 @@
     "sources": [
       "https://finance.yahoo.com/quote/OOSAX/"
     ]
+  },
+  {
+    "id": "FR0000288946",
+    "isin": "FR0000288946",
+    "aliases": [
+      "AXACT"
+    ],
+    "name": "AXA Court Terme AC",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "535666183",
+    "currency": "EUR",
+    "fees": 0,
+    "since": "1984-05-16",
+    "asset_class": "money-market",
+    "underlying": "Classic French money market SICAV: short-dated euro paper, the fund-form sibling of an overnight-rate ETF",
+    "benchmark_index": "active (ESTR as the reference)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.1,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "The DEEPEST euro cash series in the catalog, quoted since 1984, which is why a 40-year-old money fund is here at all: it shows what the short rate paid across four regimes where the ETFs only cover the last one. Measured on the mended series: +2.88 %/yr from 1999 to 2010, -0.05 %/yr from 2010 to 2022 (the negative-rate decade, when a money fund lost money after fees), +2.33 %/yr since 2022, and a worst day of -0.01 % over the whole euro era. TWO CAVEATS. The quotes run in francs until the 1999 changeover and in euros after, a 6.55957 cliff that pofo now mends automatically (the repair was missing on a first fetch until 2026-08). And the pre-1999 segment behaves like a DISTRIBUTING share class, with dozens of NAV drops too large for a money fund (down to -7 %), so it understates the total return of the franc era: treat 1999 as the start of the usable series and the earlier part as an order of magnitude.",
+    "confidence": "medium",
+    "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=FR0000288946:EUR"
+    ]
   }
 ]
