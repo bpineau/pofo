@@ -2,7 +2,7 @@
 
 Status: v1 COMPLETE and accepted (2026-07-13): all 79 planned articles
 written. EXTENSION 2026-07-17 (Ben, after an external review of the TOC):
-8 new articles, bringing the plan to 87. A new category "Les actifs
+7 new articles, bringing the plan to 86. A new category "Les actifs
 alternatifs" (Ben's must-have) hosts long-volatility, global-macro and
 return-stacking, and managed-futures moves into it from "Le portefeuille
 de retrait" (slug and URL unchanged; categories are only index grouping).
@@ -238,8 +238,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] bibliotheque: La bibliotheque : sites, papiers, livres, outils
 - [x] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
-87 articles planned (79 v1 + 8 of the 2026-07-17 extension); at 2 500 words
-each the book lands around 220k words.
+86 articles planned (79 v1 + 7 of the 2026-07-17 extension); at 2 500 words
+each the book lands around 215k words.
 
 ## Writing plan (multi-session)
 
