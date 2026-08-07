@@ -20,6 +20,19 @@ type Episode struct {
 	Ongoing      bool
 }
 
+// MaxDrawdown returns the deepest drawdown episode of a value series, or
+// the zero Episode when the series never declines. Equal depths keep the
+// earlier episode.
+func MaxDrawdown(dates []time.Time, values []float64) Episode {
+	var worst Episode
+	for _, ep := range DrawdownEpisodes(dates, values) {
+		if ep.Depth < worst.Depth {
+			worst = ep
+		}
+	}
+	return worst
+}
+
 // DrawdownEpisodes returns every drawdown of a value series, in chronological
 // order: an episode opens when the series falls below its running peak and
 // closes when it regains that peak. The last episode is marked Ongoing when
