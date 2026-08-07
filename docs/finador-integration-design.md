@@ -1,5 +1,12 @@
 # Finador integration: market data, metrics and chart enrichment
 
+Status: DONE (2026-07-02). pofo gained the ctx-aware client, dividends/raw
+closes, cache-less mode, Search, FXRate/Series.At, flow-aware metrics and
+the chart style system; finador's market/perf/chart layers now delegate to
+pofo (finador commits 006981d, 564b19b, 12811aa). Validated end to end
+against live data (resolution, refresh, valuation, perf, braille and web
+charts).
+
 Design for enriching pofo so that the sibling finador project (a personal
 encrypted wealth tracker, `../finador`) can drop its own market-data,
 performance-math and chart code and consume pofo instead. Every addition is
