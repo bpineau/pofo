@@ -35,7 +35,7 @@ La cascade du 4 % : environ 4 % de rendement réel géométrique, plus le bonus 
 :::
 
 ::: figure clavier-leviers
-Chaque hypothèse déplacée seule, à partir du plan de référence de la cascade : 60/40 historique, 30 ans, retrait fixe indexé, soit 4,0 %. Les fourchettes sont celles de l'article, et l'ordre des barres dit l'essentiel : un débat sur « le vrai chiffre » de la règle porte presque toujours sur un seul de ces leviers.
+Chaque hypothèse déplacée seule, à partir du plan de référence de la cascade : 60/40 historique, 30 ans, retrait fixe indexé, soit 4,0 %. Les fourchettes sont celles de l'article, et le signe de chaque barre dit dans quel sens le levier joue.
 :::
 
 ## Pourquoi c'est si robuste (et ce qui le casserait)
