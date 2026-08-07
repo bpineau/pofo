@@ -107,7 +107,8 @@ func TestMSCIWorldBlendsDailyShape(t *testing.T) {
 
 func TestShapedSeriesTruncatedShapeKeepsAnchors(t *testing.T) {
 	// A shape that stops short of the anchors' end must not silently drop
-	// the recent anchors: the series stays monthly.
+	// the recent anchors. With no second anchor boundary inside the shape
+	// there is nothing to blend: the series stays monthly.
 	anchors := &marketdata.Series{Points: []marketdata.Point{
 		pt(2020, 1, 1, 100), pt(2020, 2, 1, 110), pt(2020, 3, 1, 99),
 	}}
@@ -117,6 +118,37 @@ func TestShapedSeriesTruncatedShapeKeepsAnchors(t *testing.T) {
 	got := shapedSeries(anchors, shape)
 	if len(got.Points) != 3 || got.Points[2].Close != 99 {
 		t.Errorf("truncated shape: got %+v, want the anchors unchanged", got.Points)
+	}
+}
+
+func TestShapedSeriesKeepsAnchorsAfterShapeEnd(t *testing.T) {
+	// A shape covering only the early era (like the daily Treasury yields,
+	// which only matter before the real fund starts) blends that era and
+	// appends the remaining anchors at their own cadence, continuing the
+	// same index level seamlessly.
+	anchors := &marketdata.Series{Points: []marketdata.Point{
+		pt(2020, 1, 1, 100), pt(2020, 2, 1, 110), pt(2020, 3, 1, 99), pt(2020, 4, 1, 105),
+	}}
+	shape := &marketdata.Series{Points: []marketdata.Point{
+		pt(2020, 1, 2, 50), pt(2020, 1, 10, 52), pt(2020, 1, 20, 47), pt(2020, 2, 3, 50),
+	}}
+	got := shapedSeries(anchors, shape)
+	// The January anchor spliced back in front + blended January (4 shape
+	// dates) + the March and April anchors.
+	if len(got.Points) != 7 {
+		t.Fatalf("len = %d, want 7: %+v", len(got.Points), got.Points)
+	}
+	if p := got.Points[0]; p.Close != 100 || !p.Date.Equal(pt(2020, 1, 1, 0).Date) {
+		t.Errorf("front = %+v, want the January anchor 100 at 2020-01-01", p)
+	}
+	if p := got.Points[4]; p.Close != 110 || !p.Date.Equal(pt(2020, 2, 3, 0).Date) {
+		t.Errorf("blend end = %+v, want the February anchor level 110 at 2020-02-03", p)
+	}
+	if p := got.Points[5]; p.Close != 99 || !p.Date.Equal(pt(2020, 3, 1, 0).Date) {
+		t.Errorf("first kept anchor = %+v, want 99 at 2020-03-01", p)
+	}
+	if p := got.Points[6]; p.Close != 105 {
+		t.Errorf("last kept anchor = %+v, want 105", p)
 	}
 }
 
