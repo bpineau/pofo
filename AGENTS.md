@@ -62,9 +62,9 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
-| `cmd/pofo` | CLI wiring only, one file per concern: `main.go` (flags + mode dispatch + terminal output), `fetch.go`, `page.go` (HTML report assembly), `composition.go` (pies/coverage), `contrib.go` (contribution charts), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go` |
+| `cmd/pofo` | CLI wiring only, one file per concern: `main.go` (flags + mode dispatch + terminal output), `fetch.go`, `page.go` (HTML report assembly), `composition.go` (pies/coverage), `contrib.go` (contribution charts), `suggest.go`, `simdata.go`, `optimize.go`, `fire.go`, `permanent.go`; the `-serve` web constellation is `serve.go` (mux + lifecycle), `hub.go` (the front-door catalog page) and `view.go` (the shareable `/view` URL grammar) |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
-| `examples/` | portfolio files for the CLI (also exercised by `make demo`) |
+| `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
 
 Root `doc.go` describes the layering and the typical pipeline.
 
@@ -163,6 +163,10 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New CLI mode: a `run*` function in its own `cmd/pofo/<mode>.go` file, but push any
   reusable logic down into a `pkg/` package first (see `FetchExtended`
   and `portfolio.Build`, which were extracted exactly that way).
+- Web app (`-serve`) work: read `docs/webapp-design.md` first (route map, the
+  `/view` URL grammar and its guardrails, the design decisions, the M2-M4
+  ladder). The `/view` grammar is authoritatively `view.go`'s godoc; keep the
+  doc and the godoc in sync when either changes.
 - FIRE/decumulation work: read `docs/decumulation-fire-design.md` first;
   the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`.
 - Tactical Permanent Portfolio / Darcet / growth-inflation-regime work: read
