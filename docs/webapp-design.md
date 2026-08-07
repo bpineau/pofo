@@ -152,10 +152,11 @@ serialize round-trip self-test in the browser console (the repo is stdlib-only
 and carries no JS test harness, so the self-test plus the live smoke stand in
 for a unit suite).
 
-One benign edge remains: a freshly added, still-empty portfolio serializes as
-`p=:` until an id is entered, and Run at that exact instant would 400. It
-resolves the moment a holding id is filled in, which is the next action the
-row invites.
+One benign edge remains: any blank or half-filled holding row (a freshly added,
+still-empty portfolio serializes as `p=:`, an id typed with no weight yet as
+`p=IWDA:`, and so on) rides into the live URL, and Run at that exact instant
+would 400. Each resolves the moment the row is completed, which is the next
+action the row invites.
 
 ## The composed simulator and the prefs cookie
 
