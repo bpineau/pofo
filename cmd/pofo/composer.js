@@ -188,7 +188,7 @@
   var byKey = null;            // lower-cased id/alt -> asset, for fill, name and validation
   var panelEl = null;
   var bootBlank = false;       // hub front door: booted empty, guard the URL until real content
-  var presets = [];            // bundled builds for the "add preset" dropdown (hub only)
+  var presets = [];            // bundled builds for the "add preset" dropdown
 
   // hasPortfolioContent reports whether the state carries anything worth a URL:
   // an ex=/opaque port, or a p= port with at least one non-empty id. The hub
@@ -229,10 +229,11 @@
   }
 
   // refreshCount syncs the summary's portfolio-count chip with the live state,
-  // pluralized. Hub only (the blank boot changes the count); the /view mount
-  // stays as the server rendered it (already pluralized there too).
+  // pluralized: the collapsed bar is the only readout of a folded composer, so
+  // it must not still claim "2 portfolios" after a clone (or the hub's blank
+  // boot card).
   function refreshCount() {
-    if (!bootBlank || !panelEl) return;
+    if (!panelEl) return;
     var chip = panelEl.querySelector(".cmp-sum .chip");
     if (!chip) return;
     var n = state.ports.length;
@@ -366,8 +367,8 @@
     body.appendChild(add);
   }
 
-  // enhanceHead adds the live sum badge, the Normalize button and a remove
-  // control to an editable card head (the server renders the plain head).
+  // enhanceHead adds the live sum badge, the Normalize and Clone buttons and a
+  // remove control to an editable card head (the server renders the plain head).
   function enhanceHead(port) {
     var head = port._el.querySelector(".pcard-head");
     if (!head || head.querySelector(".bal")) return;
@@ -377,6 +378,11 @@
     norm.className = "norm";
     norm.type = "button";
     norm.textContent = "Normalize to 100";
+    var dup = document.createElement("button");
+    dup.className = "pclone";
+    dup.type = "button";
+    dup.title = "Duplicate this portfolio below";
+    dup.textContent = "Clone";
     var drop = document.createElement("button");
     drop.className = "pdrop";
     drop.type = "button";
@@ -384,6 +390,7 @@
     drop.textContent = "×";
     head.appendChild(bal);
     head.appendChild(norm);
+    head.appendChild(dup);
     head.appendChild(drop);
     refreshBadge(port);
   }
@@ -746,6 +753,44 @@
     commit();
   }
 
+  // clonePort duplicates an editable card and inserts the copy right below the
+  // original. Comparing a build against itself with one holding swapped (three
+  // small-value ETFs, say) is the common editing move, and retyping every row
+  // for it is the tedious part; the copy is a plain deep copy of the port
+  // (holdings and metas included), so the variant is one edit away.
+  //
+  // The copy's name gets a " copy" suffix when the original carries one: the
+  // server would otherwise dedup two identical names into "X" and "X (2)",
+  // which reads worse in the report than a name the visitor can then edit. The
+  // suffix is skipped when it would push the p= past the byte cap.
+  function clonePort(port) {
+    if (port.kind !== "p" || state.ports.length >= CAP_PORTS) return;
+    syncCard(port);
+    var copy = {
+      kind: "p", raw: "",
+      name: port.name, nameSet: port.nameSet,
+      holdings: port.holdings.map(function (h) { return { id: h.id, w: h.w }; }),
+      metas: {}
+    };
+    Object.keys(port.metas).forEach(function (k) { copy.metas[k] = port.metas[k]; });
+    if (copy.nameSet && copy.name !== "") {
+      var probe = { kind: "p", holdings: copy.holdings, metas: copy.metas, name: copy.name + " copy", nameSet: true };
+      if (!overCap(probe)) copy.name = probe.name;
+    }
+    var i = state.ports.indexOf(port);
+    state.ports.splice(i < 0 ? state.ports.length : i + 1, 0, copy);
+    var card = buildShell();
+    port._el.parentNode.insertBefore(card, port._el.nextSibling);
+    copy._el = card;
+    card.__cmpPort = copy;
+    var nameInput = card.querySelector(".pname");
+    if (nameInput) nameInput.value = copy.nameSet ? copy.name : "";
+    renderBody(copy);
+    enhanceHead(copy);
+    refreshAddPortState();
+    commit();
+  }
+
   // isPristine reports an untouched editable card: no id, no weight, no name
   // typed. The hub's blank boot card is pristine until the visitor edits it, so
   // a preset fills that empty slot in place (testfol-style) instead of stacking
@@ -805,14 +850,15 @@
     commit();
   }
 
-  // refreshAddPortState disables the add-portfolio and add-preset buttons at
-  // the port cap.
+  // refreshAddPortState disables everything that would create a portfolio (add,
+  // add-preset, and every card's Clone) at the port cap.
   function refreshAddPortState() {
     var full = state.ports.length >= CAP_PORTS;
     var add = panelEl.querySelector(".addport");
     if (add) add.disabled = full;
     var pre = panelEl.querySelector(".addpreset");
     if (pre) pre.disabled = full;
+    panelEl.querySelectorAll(".pclone").forEach(function (b) { b.disabled = full; });
   }
 
   // renderOpaque locks a card whose p= the editor cannot express: the raw value
@@ -915,6 +961,7 @@
       if (t.classList.contains("rm") && port) { removeHolding(port, t.closest(".hrow")); return; }
       if (t.classList.contains("add") && port) { addHolding(port); return; }
       if (t.classList.contains("norm") && port) { normalize(port); return; }
+      if (t.classList.contains("pclone") && port) { clonePort(port); return; }
       if (t.classList.contains("pdrop") && port) { removePort(port); return; }
       if (t.classList.contains("fork") && port && port._fork) { fork(port, port._fork); return; }
       if (t.classList.contains("addport")) { addPortfolio(); return; }
@@ -997,8 +1044,8 @@
     loadCatalog();
   }
 
-  // mountActions appends the foot action row (add portfolio, and, when presets
-  // are available, add preset) to the card stack. The row is a stable anchor:
+  // mountActions appends the foot action row (add portfolio, and, when the
+  // server embedded any, add preset) to the card stack. It is a stable anchor:
   // addPortfolio and insertPreset splice new cards in ahead of it.
   function mountActions() {
     var stack = panelEl.querySelector(".stack");
@@ -1128,7 +1175,7 @@
   }
 
   // readPresets collects the bundled builds the server embedded as
-  // data-preset-<i> JSON payloads (hub only; absent on /view).
+  // data-preset-<i> JSON payloads (both the hub and every /view mount).
   function readPresets(panel) {
     var n = parseInt(panel.getAttribute("data-preset-count") || "0", 10);
     var out = [];

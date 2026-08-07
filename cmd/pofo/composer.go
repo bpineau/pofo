@@ -12,6 +12,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/bpineau/pofo/examples"
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -49,6 +50,10 @@ type composerCaps struct {
 // it only to tweak and re-Run. The hub's primary compose surface stays open
 // (hubComposerMount).
 //
+// It carries the same data-preset-<i> payloads as the hub, so "add preset" is
+// reachable from a result page too: unfolding the composer to add a bundled
+// build next to what is on screen must not mean going back to the front door.
+//
 // Each ex= card is read-only. If its spec has at least one locally resolvable
 // holding it carries a Fork affordance and a data-fork-<i> payload (the
 // specToP serialization the editor forks into an editable p= portfolio);
@@ -73,6 +78,7 @@ func composerMount(vr *viewRequest) template.HTML {
 		Count:    len(vr.specs),
 		MaxBytes: maxViewSpecLen,
 		Globals:  composerGlobals(vr),
+		Presets:  presetAttrs(viewPresets()),
 	}
 	for i, spec := range vr.specs {
 		card := composerCard{Index: i, Name: spec.Name}
@@ -110,9 +116,8 @@ func composerMount(vr *viewRequest) template.HTML {
 
 // hubComposerMount builds the composer panel for the hub's front door: the
 // same skeleton as composerMount but with zero portfolio cards, the globals
-// row prefilled from the cookie-derived effective preferences, a data-boot
-// attribute telling the front end to create the first empty card client-side,
-// and one data-preset-<i> payload per bundled example the composer can express.
+// row prefilled from the cookie-derived effective preferences and a data-boot
+// attribute telling the front end to create the first empty card client-side.
 //
 // The panel opens on the hub (it is the primary content). The presets let the
 // front end insert any bundled build as an editable p= card; unforkable
@@ -136,16 +141,6 @@ func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
 	if err != nil {
 		return ""
 	}
-	attrs := make([]presetAttr, 0, len(presets))
-	for _, p := range presets {
-		b, err := json.Marshal(p)
-		if err != nil {
-			continue
-		}
-		// Index off the running length, not the source loop: a skipped marshal
-		// must not gap the data-preset-<i> sequence readPresets walks.
-		attrs = append(attrs, presetAttr{Index: len(attrs), JSON: string(b)})
-	}
 	data := composerData{
 		Caps:        string(capsJSON),
 		Count:       0,
@@ -154,7 +149,7 @@ func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
 		Boot:        "blank",
 		GlobalsSeed: string(seedJSON),
 		Globals:     g,
-		Presets:     attrs,
+		Presets:     presetAttrs(presets),
 	}
 	var buf bytes.Buffer
 	if err := composerTmpl.Execute(&buf, data); err != nil {
@@ -173,10 +168,10 @@ type composerData struct {
 	GlobalsSeed string // encoding/json of globalsSeed, for the data-globals attribute (hub only)
 	Globals     composerGlobal
 	Cards       []composerCard
-	Presets     []presetAttr // hub only: one data-preset-<i> payload per bundled build
+	Presets     []presetAttr // one data-preset-<i> payload per bundled build
 }
 
-// composerPreset is one bundled build offered by the hub's "add preset"
+// composerPreset is one bundled build offered by the composer's "add preset"
 // dropdown: its file name, its human title (for the filter), and the p= grammar
 // the front end parses into an editable card, plus what could not ride it.
 type composerPreset struct {
@@ -228,6 +223,26 @@ func buildPresets() []composerPreset {
 		out = append(out, composerPreset{Name: in.Name, Title: in.Title, P: p, Dropped: dropped})
 	}
 	return out
+}
+
+// viewPresets is buildPresets memoized. The examples it reads are embedded and
+// immutable, so the translation runs once per process even though both mounts
+// (and every /view render) ask for it.
+var viewPresets = sync.OnceValue(buildPresets)
+
+// presetAttrs marshals each preset into its data-preset-<i> attribute payload.
+func presetAttrs(presets []composerPreset) []presetAttr {
+	attrs := make([]presetAttr, 0, len(presets))
+	for _, p := range presets {
+		b, err := json.Marshal(p)
+		if err != nil {
+			continue
+		}
+		// Index off the running length, not the source loop: a skipped marshal
+		// must not gap the data-preset-<i> sequence readPresets walks.
+		attrs = append(attrs, presetAttr{Index: len(attrs), JSON: string(b)})
+	}
+	return attrs
 }
 
 // composerCard is one portfolio row of the stack.

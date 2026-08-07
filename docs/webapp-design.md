@@ -130,9 +130,10 @@ The design rests on a few decisions:
 
 - **The URL is the live state.** Every edit rewrites the query string in place
   via `history.replaceState`, so the address bar is always a faithful,
-  copyable link to the current composition, with no server round trip. The
-  panel opens automatically when the page already has an editable `p=`
-  portfolio; an `ex=`-only page keeps it collapsed to a chip bar.
+  copyable link to the current composition, with no server round trip. On a
+  result page the charts are the content, so the panel renders collapsed to its
+  chip bar (which tracks the live portfolio count) and expanding it is a user
+  gesture; the hub's compose surface, being the primary content there, opens.
 - **Run, not live compute.** Editing never triggers a fetch or a render.
   Run (or Enter) navigates to the rewritten URL and the server renders the
   report, so the composer adds no compute or fetch surface beyond the existing
@@ -159,6 +160,17 @@ The design rests on a few decisions:
   `currencies`, and any name or meta whose text would break the `!` segment
   grammar). An example whose holdings all drop is not composable and shows no
   Fork button.
+- **Presets and Clone, the two ways not to retype a portfolio.** The bundled
+  examples the grammar can express ride every mount (hub and `/view` alike) as
+  `data-preset-<i>` payloads, so "add preset" drops a whole bundled build in as
+  an editable card without a detour through the front door; `viewPresets`
+  memoizes the translation, and the payloads add about 9 kB to a page that
+  already carries its charts. **Clone** duplicates one editable card in place,
+  right below the original, holdings and metas included: comparing a build
+  against itself with a single holding swapped (three candidate small-value
+  ETFs, say) is the common editing move, and it should not cost a retype. The
+  copy's name takes a " copy" suffix when the original has one, so the report
+  labels the pair rather than leaning on the server's `X` / `X (2)` dedup.
 - **Opaque rows pass through verbatim.** A `p=` value the front end cannot
   parse is not discarded or rewritten: it renders as a locked, read-only
   "manual" row and is passed through unchanged, so a hand-authored or
