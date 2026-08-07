@@ -81,6 +81,14 @@ var Categories = []Category{
 			{"choisir-sa-strategie", "Choisir sa stratégie : critères, comparatif, cas d'usage", "La procédure en cinq étapes : tests d'admissibilité, matrice profils-règles, hybrides par phases, et la page écrite qui conclut."},
 		},
 	},
+	{
+		Title: "Le portefeuille de retrait",
+		Blurb: "De quoi vivre 40 ans : l'allocation, la dimension temporelle, et les briques qui résistent à tous les régimes.",
+		Articles: []Article{
+			{"allocation-actions-obligations", "L'allocation actions/obligations en retrait", "Le plateau 50-80 % qui plonge des deux côtés, les trois curseurs pour s'y placer, et le débat 100 % actions remis à sa place."},
+			{"glidepaths", "Les glidepaths : bond tent, rising equity et la fenêtre fragile", "La prudence comme dépense temporaire : les résultats Kitces-Pfau et ERN, l'exécution automatique par les retraits, et le match contre le buffer."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
