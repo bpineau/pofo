@@ -120,6 +120,11 @@ func (c *Comparison) HTMLPage(d Decoration) *report.Page {
 				section.CoverageLabel = "Risk-factor coverage (by weight)"
 			}
 		}
+		section.RiskBudget = riskBudgetRows(r, meta)
+		if len(section.RiskBudget) > 0 {
+			section.Notes = append(section.Notes,
+				riskBudgetNote(commonStart.Format("2006-01-02"), commonEnd.Format("2006-01-02")))
+		}
 		for _, a := range r.p.Assets {
 			var notes []string
 			if !a.Series.SimulatedBefore.IsZero() {

@@ -13,8 +13,11 @@ performance curve, a realized-contribution timeline (who carried the trailing
 12 months, stacked around zero under a macro-regime strip), four look-through
 composition pies (geography, currency exposure, equity sectors, asset type
 with stacked funds opened into their legs), its macro-regime coverage with
-each bar split by contributing holding, and the per-regime realized
-contributions that mirror it; hover any chart for exact figures).
+each bar split by contributing holding, a risk budget showing what share of
+the variance each asset class actually carries next to its share of capital
+(the two commonly differ by a factor of three: a "balanced" allocation is
+usually balanced in capital only), and the per-regime realized contributions
+that mirror it; hover any chart for exact figures).
 
 ## Usage
 
