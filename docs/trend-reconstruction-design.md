@@ -24,7 +24,7 @@ which for this family means before 2007.
 | AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02 | 2007-02 |
 | KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02 | 2007-02 |
 | Simplify CTA | 2022-03 | AHL 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02 | 2007-02 |
-| AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03, then the AQR chain hedged to EUR | 2007-02 |
+| AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03 (1.000, same fund, +0.45 %/yr fee uplift), then the AQR chain hedged to EUR | 2007-02 |
 
 Measured effect on the reconstruction, before and after (daily / weekly
 correlation with the fund, tracking error, CAGR gap):
@@ -46,6 +46,50 @@ otherwise be silently left unhedged (17 % of them, measured).
 The donor brings its own manager and fee load with it, which is the honest
 price: the reconstruction is no longer "what this fund would have done" but
 "what this trade actually paid, run by the closest managers we can observe".
+
+### The one donor whose fee load is worth correcting (measured, 2026-08)
+
+The rule has an exception, and the euro-hedged AQR class is it. Its donor is
+not another manager's fund but ANOTHER SHARE CLASS OF ITSELF, the legacy B EUR
+class (LU1103258197): same portfolio, same hedge, same NAV cutoff. What
+separates them is a price list. Class B pays a 10 % performance fee over an
+EUR STR hurdle, high-on-high, crystallised each 31 March, that the flat-fee
+RAEF class does not, and the audited accounts put it at 2.03 points of average
+class NAV in the year to 31 March 2026.
+
+Because it is the same trade, the wedge is measurable rather than inferred.
+Both classes have real NAVs on four disjoint windows (RAEF CAGR minus B EUR
+CAGR, common dates only):
+
+| window | days | RAEF | wedge | daily corr |
+|---|---|---|---|---|
+| 2021-04-01 .. 2021-12-21 | 176 | -10.74 %/yr | +0.45 pts/yr | 1.000 |
+| 2023-10-20 .. 2024-12-31 | 288 | +1.75 %/yr | +0.61 pts/yr | 0.999 |
+| 2025-01-01 .. 2025-12-31 | 237 | +13.83 %/yr | +1.58 pts/yr | 0.999 |
+| 2026-01-01 .. 2026-07-15 | 128 | +13.75 %/yr | +1.91 pts/yr | 0.999 |
+
+The sign never changes and the magnitude tracks the fund's own return, which
+is the fee's signature rather than a drift: folding the post-gap window by
+month, class B lags RAEF by 1.92 pts/yr in the months RAEF gains and LEADS it
+by 0.11 pts/yr in the months RAEF loses. A constant is the wrong shape for a
+performance fee, so the donor segment is lifted by the smallest of the four,
+0.45 pts/yr, which is also the only one measured while the fund was losing
+money and therefore the one that matches the regime the donor segment covers
+(2015-03 to 2021-12, a drought throughout, the class compounding at
+-4.45 %/yr). The correction is deliberately too small in any better regime.
+On the 2021 overlap it takes the reconstruction's CAGR gap against the real
+class from 0.44 points to 0.04.
+
+Two other candidates were measured and rejected. Extending the donor past its
+2021-12 hole buys nothing, since real RAEF quotes cover everything after
+2021-04, and it would import an artefact: the class resumes on 2023-10-19 with
+one stale print at its pre-gap level before the re-seeded class prints 99.70
+the next day, a -12.5 % day that by itself drags the post-gap daily
+correlation from 0.999 to 0.777. Swapping the 2015-2021 donor for the same
+manager's US fund hedged into EUR was tested against the criterion that it
+must track RAEF better by at least 0.05 of monthly correlation: it tracks
+WORSE, 0.957 against 1.000 on the 2021 overlap and 0.963 against 0.999 on the
+2023-2026 one. The sister class keeps the slot.
 
 ### The EUR class's daily correlation is only partly a valuation convention (measured, 2026-08)
 
