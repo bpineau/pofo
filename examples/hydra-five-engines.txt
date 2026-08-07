@@ -1,11 +1,48 @@
 # Hydra (five engines) -- a diversified build that outruns the dragon-lite
-# Idea: one head per return engine, sized so no single engine can kill the
-#   portfolio: world equity with a 60% bond-futures overlay (NTSG), a US
-#   small-cap-value factor tilt, deep Treasury duration (ZROZ), trend split
-#   over two DISTINCT engines (CTA replication + MLM index), and gold.
-# Construction note: weights are hand-tempered from what the max-sharpe
-#   (capped) and risk-parity optimizers agreed on over 1993->2026; the raw
-#   max-sharpe mix was discarded (it piled 35% into one trend fund).
+# Idea: one head per return engine, each backed by its own literature, sized
+#   so no single engine can kill the portfolio. The frame is risk-parity
+#   thinking (Qian; Bridgewater's All Weather: balance exposures across
+#   macro regimes, not capital across tickers) executed with the most
+#   capital-efficient instrument available for each sleeve, in the spirit
+#   of return stacking (Hoffstein; WisdomTree Efficient Core).
+#
+# Why each head:
+#   - NTSG (equity + duration engine): levering a balanced stock/bond mix
+#     beats concentrating in equities at equal risk (Asness, "Why Not 100%
+#     Equities", 1996). 35% of NTSG carries ~31% world equity AND ~21%
+#     Treasury-futures duration in one line.
+#   - US small-cap value (the ZPRV/USSC.L line): the size and value premia
+#     (Fama & French 1992/1993), in the value-WEIGHTED small-cap form that
+#     sidesteps the small-growth lottery corner. Also the factor with the
+#     longest clean daily backcast here (DFSVX chain, 1993). It diversifies
+#     the mega-cap-growth concentration a world index carries; buy the
+#     global version (Avantis IE0003R87OG3) or ZPRV (IE00BSPLC413).
+#   - Trend, TWO engines: time-series momentum is the best-documented
+#     crisis alpha (Moskowitz, Ooi & Pedersen 2012; Hurst, Ooi & Pedersen,
+#     "A Century of Evidence on Trend-Following", 2017) and the most
+#     reliable inflation-regime asset (Neville, Draaisma, Funnell, Harvey
+#     & van Hemert 2021). Split across two genuinely different methods
+#     (DBi CTA replication vs the rules-based MLM index, which trades no
+#     equity futures) so one model's decay does not take the sleeve down.
+#   - Gold: near-zero expected real return alone (Erb & Harvey, "The
+#     Golden Dilemma", 2013) but a debasement/geopolitical hedge nothing
+#     else replicates, and the complement to trend in stagflation, where
+#     trend can whipsaw (Neville et al. 2021).
+#   - ZROZ (deep duration): the deflation-crash head. A 25+y zero-coupon
+#     fund carries ~27y duration per euro vs ~17 for TLT, so 5% of ZROZ
+#     buys the flight-to-quality convexity of ~8% of TLT and frees capital
+#     for the other engines: capital efficiency applied to the defensive
+#     sleeve. NTSG's overlay is intermediate duration; this is the long
+#     end, which is what actually rallies in a 2008.
+#
+# Honesty note on the WEIGHTS: the sleeves and their roles are theory-
+#   first, but the exact percentages are backtest-informed. They started
+#   from where the risk-parity and capped max-sharpe optimizers agreed
+#   over 1993->2026, were hand-tempered (the raw max-sharpe mix piled 35%
+#   into one trend fund and was discarded), and were tuned against one
+#   named benchmark. Expect the edge over that benchmark to shrink out of
+#   sample; the engine-level logic is the part built to survive.
+#
 # Backtest vs claude-dragonlite (60/25/15) over 1993->2026, EUR: higher
 #   CAGR (10.3% vs 10.0%), lower vol (12.7% vs 13.6%), higher Sharpe
 #   (0.83 vs 0.77), recovery 2.9y vs 4.9y, worst rolling 5y CAGR +1.0% vs
