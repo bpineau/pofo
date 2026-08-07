@@ -11,9 +11,10 @@
 //     the curated asset catalog (assetmeta/assets.json, typed as
 //     datasets.Asset) and the permanent simulated histories (simdata/).
 //     This is the single source of truth other packages read from.
-//   - pkg/marketdata: fetches, caches and post-processes daily and intraday
-//     prices from public sources, addressed by ticker, ISIN or alias; resolves
-//     identifiers against the embedded catalog and aligns trading calendars.
+//   - pkg/marketdata: fetches, caches and post-processes daily, intraday and
+//     latest (real-time) prices from public sources, addressed by ticker, ISIN
+//     or alias; resolves identifiers against the embedded catalog and aligns
+//     trading calendars.
 //   - pkg/metrics: risk/return statistics (CAGR, volatility, Sharpe,
 //     Sortino, Ulcer, max drawdown, time-to-recovery, Beta, IRR).
 //   - pkg/optimize: long-only weights for an objective (max-sharpe,
