@@ -118,9 +118,14 @@
 #   NTSG lost 0.60 EUR of ~7y bond overlay; at ~17y duration DTLE
 #   rebuilds that at about 2.4x, so ~4 points restore what ~10 points of
 #   overlay would have carried. It also patches the dragon family's
-#   thinnest quadrant (2008-style convexity). Alternative: IDTL
-#   (unhedged) if you prefer the crisis-USD kicker bundled in; the
-#   hedged share keeps the defensive sleeve in the liability currency.
+#   thinnest quadrant (2008-style convexity). Share-class trade-off with
+#   no perfect answer: every EUR-hedged long-Treasury UCITS is
+#   DISTRIBUTING (DTLE here; Amundi Long Dated LU1407890976 likewise),
+#   and the only accumulating share is unhedged (DTLA IE00BFM6TC58, or
+#   IDTL). At ~4% weight the distribution tax drag is a few basis points
+#   of the whole book, and a decumulating household spends the coupons
+#   anyway; pick DTLE for the liability currency, DTLA/IDTL if you
+#   prefer Acc plus the crisis-USD kicker bundled in.
 #
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
 #   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
