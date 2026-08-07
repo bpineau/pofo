@@ -148,8 +148,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
 - [x] echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
 - [x] recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
-- [ ] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
-- [ ] levier-et-marges: Levier, marge et lombard en retrait (avance)
+- [x] immobilier-en-retrait: L'immobilier dans un plan FIRE (residence, locatif)
+- [x] levier-et-marges: Levier, marge et lombard en retrait (avance)
 
 ### VII. L'inflation
 - [ ] inflation-histoire: L'inflation sur les dernieres decennies : ce que 1970-2025 enseigne

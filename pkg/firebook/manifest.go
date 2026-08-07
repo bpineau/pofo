@@ -106,6 +106,8 @@ var Categories = []Category{
 			{"strategie-buckets", "Les buckets : la stratégie des seaux, promesse et critique", "Une allocation déguisée plus des flux qui sont du rééquilibrage ou du timing : le procès équitable, et la version propre."},
 			{"echelle-obligataire", "Les échelles d'obligations (et l'échelle de linkers)", "L'appariement qui annule le risque de taux : le pont vers la pension, le plancher adossé, et la pratique française des fonds à échéance."},
 			{"recharger-ou-pas", "Consommer et recharger un buffer : les règles qui marchent", "Le déclencheur de drawdown, la recharge en terrain calme, l'interdiction absolue, et le buffer fondant qui domine le perpétuel."},
+			{"immobilier-en-retrait", "L'immobilier dans un plan FIRE (résidence, locatif)", "Le loyer fantôme et le double comptage, le locatif compté en flux décoté, l'arbitrage vendre-ou-garder, SCPI et viager à leur place."},
+			{"levier-et-marges", "Levier, marge et lombard en retrait (avancé)", "Pourquoi le levier change de signe à la retraite, les trois seuls usages défendables, et les cinq règles non négociables."},
 		},
 	},
 }
