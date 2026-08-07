@@ -15,15 +15,6 @@ import (
 // worked example must land inside those bands, or the reader who compares the
 // grid and the example finds the book contradicting itself.
 
-func bondsArticle(t *testing.T, slug string) string {
-	t.Helper()
-	raw, err := assets.ReadFile("assets/book/fr/" + slug + ".md")
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(raw)
-}
-
 // bondsTable returns the rows of the first pipe table that follows probe, header
 // row included, each row split into trimmed cells.
 func bondsTable(t *testing.T, article, probe string) [][]string {
@@ -73,7 +64,7 @@ func bondsPct(t *testing.T, article, what string) float64 {
 }
 
 func TestPocheObligataireExampleObeysItsOwnBands(t *testing.T) {
-	article := bondsArticle(t, "obligations-en-retrait")
+	article := bookArticle(t, "obligations-en-retrait")
 
 	fondsEuros := bondsPct(t, article, "fonds euros")
 	coeur := bondsPct(t, article, "obligations d'État euro 5-8 ans")
@@ -114,7 +105,7 @@ func TestPocheObligataireExampleObeysItsOwnBands(t *testing.T) {
 }
 
 func TestPocheObligataireGridIsWellFormed(t *testing.T) {
-	article := bondsArticle(t, "obligations-en-retrait")
+	article := bookArticle(t, "obligations-en-retrait")
 	rows := bondsTable(t, article, "## Le cahier des charges, en une grille")
 
 	want := []string{"Brique", "Service", "Duration", "Ce qui la casse", "Part"}
@@ -149,7 +140,7 @@ func TestPocheObligataireGridIsWellFormed(t *testing.T) {
 }
 
 func TestEchelleToolboxShowsTheHoleAsAnEmptyRow(t *testing.T) {
-	article := bondsArticle(t, "echelle-obligataire")
+	article := bookArticle(t, "echelle-obligataire")
 	rows := bondsTable(t, article, "## La pratique française")
 
 	want := []string{"Véhicule", "Horizon utile", "Indexé", "Frais", "Accès"}
@@ -202,7 +193,7 @@ func TestBondTablesStayNarrow(t *testing.T) {
 		{"obligations-en-retrait", "## Le cahier des charges, en une grille"},
 		{"echelle-obligataire", "## La pratique française"},
 	} {
-		article := bondsArticle(t, tc.slug)
+		article := bookArticle(t, tc.slug)
 		rows := bondsTable(t, article, tc.probe)
 		for _, h := range rows[0] {
 			if len([]rune(h)) > 16 {
