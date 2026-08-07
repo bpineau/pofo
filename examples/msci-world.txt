@@ -1,3 +1,4 @@
 # MSCI World — 100% equity base
 # The SIM suffix allows extending the history before the ETF's inception.
-100	IWDASIM  # iShares Core MSCI World UCITS ETF USD (Acc), history-extended
+#meta sim:on
+100	IWDA     # iShares Core MSCI World UCITS ETF USD (Acc), history-extended
