@@ -82,6 +82,7 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
 	bounded := p.NeedAnnual          // last delivered level for the bounded-percent rule
 	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
+	ratchetActive := p.Ratchet.active()
 
 	// drawBuffer takes up to want euros from the buffer (no tax), returning the
 	// amount actually taken.
@@ -146,7 +147,9 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 			need = p.netOf(spending*p.schedAt(k), k)
 			uncut = p.needAt(k)
 		} else {
-			level, lastRaise = p.Ratchet.raise(level, total, p.Capital, k, lastRaise)
+			if ratchetActive {
+				level, lastRaise = p.Ratchet.raise(level, total, p.Capital, k, lastRaise)
+			}
 			need = p.netOf(level*p.schedAt(k), k)
 			uncut = need
 			if p.Flex.Cut > 0 && p.Flex.triggered(dd, need, total) {

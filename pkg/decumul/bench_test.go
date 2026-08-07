@@ -77,3 +77,23 @@ func BenchmarkSweepShared(b *testing.B) {
 		}
 	}
 }
+
+// benchAmortizePlan exercises the amortization branch with a future pension, so
+// cashflowPV runs every year (the quadratic-Pow hotspot the profile flagged).
+func benchAmortizePlan() Plan {
+	p := benchPlan()
+	p.Amortize, p.AmortReturn = true, 0.03
+	p.Cashflows = []Cashflow{{FromYear: 15, Annual: 18000}}
+	return p
+}
+
+// BenchmarkRunPathAmortize measures one amortization path, where cashflowPV is
+// called once per year.
+func BenchmarkRunPathAmortize(b *testing.B) {
+	p, rng := benchAmortizePlan(), rand.New(rand.NewPCG(1, 2))
+	seq := p.Source.Draw(rng)
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		_ = p.RunPath(seq)
+	}
+}
