@@ -3,6 +3,7 @@ package simgen
 import (
 	"fmt"
 	"math"
+	"os"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -470,31 +471,98 @@ func chsnRecipe() Recipe {
 }
 
 // tip1eRecipe backcasts the UBS Core Bloomberg TIPS 1-10 EUR-hedged ETF
-// (LU1459801780, real from 2016) as US TIPS hedged to EUR: Vanguard's
-// Inflation-Protected Securities fund (VIPSX, US TIPS total return, 2000->)
-// financed at USD cash (^IRX) and re-earning EUR cash (bundled EURCASH-EUR money-
-// market index). This is the standard FX-hedge identity: a hedged foreign return
-// equals the local return plus the domestic (EUR) cash rate minus the foreign
-// (USD) cash rate, so the EUR investor pays the (usually negative, post-2015)
-// EUR-minus-USD carry on top of the TIPS return. VIPSX is all-maturity (duration
-// ~7), so it is held at 0.64x to match the 1-10 segment's shorter duration (~4.5,
-// the rest implicitly in the hedged EUR cash leg); this brought the validation
-// beta from 0.33 to ~0.5 and the overlap CAGR within ~0.1%/yr of the real fund.
-// The real fund is grafted on top from its 2016 inception. Daily correlation is
-// modest (~0.37) because VIPSX is a US-close mutual fund and the fund trades in
-// Zurich; the weekly correlation (~0.85) is the meaningful figure.
+// (LU1459801780, real from 2016) as US TIPS hedged to EUR, through the standard
+// FX-hedge identity: a hedged foreign return equals the local return less the
+// foreign (USD) cash rate plus the domestic (EUR) cash rate, so the EUR
+// investor collects the EUR-minus-USD carry (deeply negative over 2015-2022, so
+// most of the live overlap) on top of the TIPS return.
+//
+// The local leg is two REAL TIPS ETFs rather than the all-maturity mutual fund
+// that used to carry it alone: 0.60 TIP (all maturities) + 0.40 STIP (0-5
+// years), both with market prices, blended so the pair's own risk lands on the
+// fund's. Before STIP's 2010-12 start the geared VIPSX path takes over
+// (tipsTailGearing), spliced.
+//
+// Measured on the fund's own live overlap (2016-09 to 2026-07, 2403 days), the
+// swap earns its slot on all three criteria of its adoption bar, monthly
+// correlation, volatility and level:
+//
+//	shipped 0.64×VIPSX     monthly 0.926, monthly vol 82 % of the fund's, CAGR gap -0.62 pt
+//	0.60 TIP + 0.40 STIP   monthly 0.941, monthly vol 101 %,               CAGR gap +0.23 pt
+//
+// Two thirds of that level move belong to a plain bug rather than to the donor.
+// A fully hedged position earns the domestic cash rate on its WHOLE capital,
+// and the recipe was earning it on 0.35 of it, the same fraction as the leg it
+// was not holding in TIPS. Fixing that alone takes the old construction's gap
+// from -0.62 to -0.13; the hedged sibling dtleBuild always had it right.
+//
+// Volatility is read MONTHLY here, and deliberately. The fund's daily quotes
+// carry exchange noise a reconstruction cannot and should not reproduce: its
+// daily volatility is 4.93 % against 3.84 % monthly, a 1.28 ratio where the
+// reconstruction's is 1.11, and matching the daily figure would buy a longer
+// duration than the fund holds. The blend's implied duration (~5.0 against the
+// 1-10 index's ~4.4) is already at the long end, which is the side to err on.
+//
+// Two variants were measured and rejected. TIP alone, rescaled to 0.66, matches
+// the level best of all (gap -0.03) and does NOT improve the months (0.927), so
+// it fails the bar's first clause: a single all-maturity fund cannot reproduce
+// what the short end does on its own. And serving the EUR cash leg at
+// business-day granularity (eurCashDaily, as ERNX and XEON do) costs weekly
+// correlation, 0.809 against 0.846, because it adds to the frame the days the
+// US bond market does not trade; the monthly index stays.
+//
+// Daily correlation stays modest (~0.38) for the reason it always did: the
+// legs are US-close series and the fund is struck in Europe. The weekly (0.85)
+// and monthly (0.94) figures are the meaningful ones.
+//
+// The validation line's beta and tracking error move the "wrong" way (0.52 to
+// 0.42 and 4.9 to 5.2 %/yr) and that is arithmetic, not damage. Beta is
+// corr × sigma_real / sigma_sim, so with a daily correlation pinned near 0.38
+// by the clock, beta only reaches 1 for a reconstruction carrying two fifths
+// of the fund's risk. Both statistics reward under-risking here; the file
+// refuses to buy them that way.
 func tip1eRecipe() Recipe {
 	return Recipe{
-		ID:     "LU1459801780",
-		Name:   "UBS Core BBG TIPS 1-10 (EUR-hedged): US TIPS hedged to EUR",
-		Method: "0.64×VIPSX (Vanguard Inflation-Protected, US TIPS TR, 2000->, duration-matched to 1-10) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged TIPS; real 42C0 grafted from 2016",
-		Build: composite("42C0 (EUR-hedged US TIPS)", []Leg{
-			{ID: "VIPSX", Weight: 0.64, Excess: true},
-			{ID: "EURCASH-EUR", Weight: 0.35},
-		}, "^IRX", 0),
+		ID:              "LU1459801780",
+		Name:            "UBS Core BBG TIPS 1-10 (EUR-hedged): US TIPS hedged to EUR",
+		Method:          "0.60×TIP + 0.40×STIP (real US TIPS ETFs, 2010-12->, risk-matched to the fund) financed at USD cash ^IRX and earning EUR cash (EURCASH-EUR) on the whole capital = EUR-hedged TIPS; 0.76×VIPSX on the same identity before STIP exists (2000->); real 42C0 grafted from 2016",
+		Build:           tip1eBuild,
 		ValidateAgainst: "LU1459801780",
 		SpliceReal:      "LU1459801780",
 	}
+}
+
+// tipsTailGearing is the weight the VIPSX donor carries before the ETF blend
+// starts. It is the ratio of the blend's monthly volatility to hedged VIPSX's
+// over their whole common window (2010-12 to 2026-07, 188 months): 3.77 %
+// against 4.93 %. Splicing an ungeared VIPSX, or the 0.64 the recipe used to
+// carry, would leave the pre-2010 decade running a fifth colder in risk than
+// the era after it, which is the one thing a spliced file must not do.
+const tipsTailGearing = 0.76
+
+// tip1eBuild assembles the hedged TIPS series: the ETF blend where both ETFs
+// quote, the geared VIPSX path on the identical hedge identity behind it. If
+// the ETFs are unreachable the VIPSX path stands alone, which is also what an
+// offline build gets.
+func tip1eBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	tail, err := composite("42C0 (EUR-hedged US TIPS, VIPSX era)", []Leg{
+		{ID: "VIPSX", Weight: tipsTailGearing, Excess: true},
+		{ID: "EURCASH-EUR", Weight: 1.00},
+	}, "^IRX", 0)(f, from)
+	if err != nil {
+		return nil, err
+	}
+	blend, berr := composite("42C0 (EUR-hedged US TIPS)", []Leg{
+		{ID: "TIP", Weight: 0.60, Excess: true},
+		{ID: "STIP", Weight: 0.40, Excess: true},
+		{ID: "EURCASH-EUR", Weight: 1.00},
+	}, "^IRX", 0)(f, from)
+	if berr != nil {
+		fmt.Fprintf(os.Stderr, "tip1e: TIP/STIP blend unavailable (%v), the VIPSX path stands alone\n", berr)
+		return tail, nil
+	}
+	marketdata.ExtendBack(blend, tail)
+	return blend, nil
 }
 
 func rssbRecipe() Recipe {
