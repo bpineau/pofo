@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -87,6 +88,36 @@ func TestServeRoutes(t *testing.T) {
 	// manual smoke test, not here).
 	if rec := serveGet(t, h, "/fire/e/nope/"); rec.Code != 404 {
 		t.Errorf("unknown fire example: code=%d, want 404", rec.Code)
+	}
+}
+
+func TestServeCatalogJSON(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	rec := serveGet(t, h, "/catalog.json")
+	if rec.Code != 200 ||
+		!strings.HasPrefix(rec.Header().Get("Content-Type"), "application/json") ||
+		rec.Header().Get("Cache-Control") != "public, max-age=3600" {
+		t.Fatalf("catalog.json: code=%d type=%q cache=%q", rec.Code,
+			rec.Header().Get("Content-Type"), rec.Header().Get("Cache-Control"))
+	}
+	var entries []struct {
+		ID   string   `json:"id"`
+		Name string   `json:"name"`
+		Alt  []string `json:"alt"`
+	}
+	if err := json.Unmarshal(rec.Body.Bytes(), &entries); err != nil {
+		t.Fatalf("not JSON: %v", err)
+	}
+	if len(entries) < 50 {
+		t.Fatalf("suspiciously small: %d entries", len(entries))
+	}
+
+	rec2 := httptest.NewRecorder()
+	h.ServeHTTP(rec2, httptest.NewRequest(http.MethodPost, "/catalog.json", nil))
+	if rec2.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST catalog.json: code=%d, want 405", rec2.Code)
 	}
 }
 
