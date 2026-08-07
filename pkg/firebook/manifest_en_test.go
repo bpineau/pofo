@@ -126,11 +126,16 @@ func figureIDsOf(t *testing.T, path string) map[string]bool {
 // existing French file, and must use exactly the plates its original uses: a
 // translation never silently drops or adds a figure.
 func TestPairedArticlesEN(t *testing.T) {
+	sources := map[string]string{}
 	for _, cat := range English.Categories {
 		for _, a := range cat.Articles {
 			if a.Source == "" {
 				continue // an article the English edition writes for itself
 			}
+			if prev, dup := sources[a.Source]; dup {
+				t.Errorf("%s and %s both claim %q as their French source", prev, a.Slug, a.Source)
+			}
+			sources[a.Source] = a.Slug
 			raw, err := assets.ReadFile(English.AssetDir + "/" + a.Slug + ".md")
 			if err != nil {
 				continue // TestManifestENMatchesFiles already reported it
@@ -193,6 +198,21 @@ func TestFigureDictionaryCoversEN(t *testing.T) {
 			if reFrenchPercent.MatchString(payload) {
 				t.Errorf("figure %q: French percent spacing survives translation: %q", id, payload)
 			}
+		}
+	}
+}
+
+// Dictionary values land verbatim inside SVG text nodes, so they must be
+// XML-safe: a bare "&" or a "<" from a careless entry would corrupt every
+// page and EPUB showing the plate, without failing any other test.
+func TestFigureDictValuesAreXMLSafe(t *testing.T) {
+	reEntity := regexp.MustCompile(`&(amp|lt|gt|quot|apos|#\d+);`)
+	for fr, en := range figureDict {
+		if strings.Contains(en, "<") {
+			t.Errorf("figureDict[%q]: value %q contains a raw '<'", fr, en)
+		}
+		if strings.ContainsRune(reEntity.ReplaceAllString(en, ""), '&') {
+			t.Errorf("figureDict[%q]: value %q carries a bare '&'; write &amp;", fr, en)
 		}
 	}
 }

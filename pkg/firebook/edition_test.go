@@ -1,11 +1,14 @@
 package firebook
 
 import (
+	"archive/zip"
+	"bytes"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestFrenchEditionWiring(t *testing.T) {
@@ -80,5 +83,41 @@ func TestPlannedENIsWellFormed(t *testing.T) {
 		if !seen[slug] {
 			t.Errorf("plannedEN is missing the US-part article %q", slug)
 		}
+	}
+}
+
+// The English EPUB assembles the whole translated tree through the figure
+// pass and epub.Normalize; nothing else builds it before M4, so a bad
+// dictionary entry or a malformed translation would otherwise ship silently.
+func TestEnglishEPUBBuilds(t *testing.T) {
+	blob, err := English.EPUB(time.Unix(0, 0).UTC())
+	if err != nil {
+		t.Fatal(err)
+	}
+	zr, err := zip.NewReader(bytes.NewReader(blob), int64(len(blob)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := map[string]bool{}
+	for _, f := range zr.File {
+		got[f.Name] = true
+	}
+	if !got["OEBPS/titlepage.xhtml"] {
+		t.Error("missing the title page")
+	}
+	for _, cat := range English.Categories {
+		for _, a := range cat.Articles {
+			if !got["OEBPS/"+a.Slug+".xhtml"] {
+				t.Errorf("missing chapter %s.xhtml", a.Slug)
+			}
+		}
+	}
+	// Deterministic for a fixed modified time, like the French one.
+	again, err := English.EPUB(time.Unix(0, 0).UTC())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !bytes.Equal(blob, again) {
+		t.Error("English EPUB is not deterministic")
 	}
 }
