@@ -839,3 +839,264 @@ func figMcEntreesVsTirages() string {
 		"1 M€, 32 k€/an réels (3,2 %), 35 ans, Student-t σ 11 %, df 5. Barres : erreur d'échantillonnage à 95 %."))
 	return svg(640, 372, b.String())
 }
+
+// mc1966 is the calendar-year real return sequence of a US 60/40 (S&P 500 total
+// return, 5-year Treasuries, deflated by CPI-U) starting in 1966, the canonical
+// hostile vintage of the withdrawal literature. It is the common ground of the
+// withdrawal-rule plates: the same thirty years, one rule at a time, so the
+// reader compares lives and not model assumptions. Built from the repository's
+// own bundled reference series (pkg/datasets/refdata + the CPI-U snapshot).
+//
+// The spending series each plate plots come from running decumul.Plan.RunPath
+// over exactly this sequence, 1 M EUR of capital, no tax and no cash buffer.
+
+// figCorridor1966 puts three spending rules through that vintage: the fixed
+// real withdrawal (flat, then the cliff), the pure percentage (the served
+// income copies the market) and Vanguard's bounded corridor (the same
+// correction, delivered in glides no steeper than 2.5 % a year).
+func figCorridor1966() string {
+	fixe := []float64{40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 39.6, 0}
+	pct := []float64{40.0, 35.7, 38.0, 37.7, 32.2, 32.1, 33.3, 34.7, 28.3, 21.0, 23.7, 25.6, 22.2, 20.5, 19.4, 20.1, 17.9, 20.9, 22.3, 22.6, 26.5, 29.6, 28.3, 29.1, 32.9, 30.6, 35.5, 35.6, 36.4, 33.7}
+	bnd := []float64{40.0, 39.0, 38.0, 37.5, 36.6, 35.7, 34.8, 34.1, 33.3, 32.4, 31.6, 30.8, 30.1, 29.3, 28.6, 27.9, 27.2, 26.5, 25.8, 25.2, 24.6, 23.9, 23.3, 22.8, 23.9, 23.3, 24.5, 25.7, 27.0, 26.3}
+	x := func(i int) float64 { return 74 + float64(i)/29*(576-74) }
+	y := func(v float64) float64 { return 320 - v/45*(320-74) }
+	toPx := func(vs []float64) [][2]float64 {
+		out := make([][2]float64, len(vs))
+		for i, v := range vs {
+			out[i] = [2]float64{x(i), y(v)}
+		}
+		return out
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("plancher-plafond", "Trois façons de traverser le millésime 1966"))
+	for _, g := range []float64{0, 10, 20, 30, 40} {
+		b.WriteString(line(74, y(g), 576, y(g), figGrid, 1))
+		b.WriteString(mTxt(66, y(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(sTxt(74, 62, 10.5, figMuted, "start", "400", "revenu réel servi (k€/an), capital de départ 1 M€"))
+	b.WriteString(line(74, y(0), 576, y(0), figRule, 1))
+	for i, yr := range []int{1966, 1975, 1985, 1995} {
+		idx := []int{0, 9, 19, 29}[i]
+		b.WriteString(mTxt(x(idx), 338, 10, figMuted, "middle", "400", fmt.Sprintf("%d", yr)))
+	}
+
+	b.WriteString(poly(toPx(pct), figBlue, 1.8, ""))
+	b.WriteString(poly(toPx(bnd), figAccent, 2.6, ""))
+	b.WriteString(poly(toPx(fixe), figMuted, 1.8, "5 4"))
+	// the fixed rule's cliff: the portfolio is gone in year 29
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, x(29), y(0), figBad)
+	b.WriteString(sTxt(x(29)-6, y(0)-9, 10.5, figBad, "end", "600", "ruine"))
+
+	b.WriteString(sTxt(x(4)+6, y(40)-9, 10.5, figMuted, "start", "600", "fixe indexé : 40 k€ jusqu'au mur"))
+	b.WriteString(sTxt(x(16), y(17.9)+17, 10.5, figBlue, "middle", "600", "% pur : −55 % au creux"))
+	b.WriteString(sTxt(x(11), y(30.8)-10, 10.5, figDeep, "middle", "600", "corridor +5 / −2,5"))
+	b.WriteString(mTxt(x(29)+8, y(33.7)+3.5, 10, figBlue, "start", "600", "33,7"))
+	b.WriteString(mTxt(x(29)+8, y(26.3)+3.5, 10, figDeep, "start", "600", "26,3"))
+	b.WriteString(sTxt(74, 358, 10.5, figMuted, "start", "400",
+		"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), retrait de 4 %, sans fiscalité."))
+	return svg(640, 374, b.String())
+}
+
+// figGkCascade1966 shows the Guyton-Klinger pathology and its one cure: run
+// over the same 1966 vintage, the unfloored rule cuts five times and parks the
+// household 57 % below its starting income for a decade, while the portfolio
+// finishes richer than it started. The floored variant stops the descent at
+// 78 % and pays for it in capital, which is the honest trade.
+func figGkCascade1966() string {
+	gk := []float64{43.0, 43.0, 43.0, 43.0, 38.7, 38.7, 38.7, 38.7, 34.8, 31.3, 28.2, 28.2, 25.4, 22.9, 20.6, 20.6, 18.5, 18.5, 18.5, 18.5, 20.4, 22.4, 22.4, 22.4, 24.6, 24.6, 27.1, 27.1, 29.8, 29.8}
+	fl := []float64{43.0, 43.0, 43.0, 43.0, 38.7, 38.7, 38.7, 38.7, 34.8, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5, 33.5}
+	x := func(i int) float64 { return 74 + float64(i)/29*(576-74) }
+	y := func(v float64) float64 { return 300 - v/48*(300-72) }
+	step := func(vs []float64) [][2]float64 { // a spending rule holds its level all year
+		var out [][2]float64
+		for i, v := range vs {
+			out = append(out, [2]float64{x(i), y(v)})
+			if i < len(vs)-1 {
+				out = append(out, [2]float64{x(i + 1), y(v)})
+			}
+		}
+		return out
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("guyton-klinger", "La cascade de coupes, et ce qu'un plancher change"))
+	for _, g := range []float64{0, 10, 20, 30, 40} {
+		b.WriteString(line(74, y(g), 576, y(g), figGrid, 1))
+		b.WriteString(mTxt(66, y(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(sTxt(74, 62, 10.5, figMuted, "start", "400", "revenu réel servi (k€/an), taux initial 4,3 % sur 1 M€"))
+	b.WriteString(line(74, y(0), 576, y(0), figRule, 1))
+	for i, yr := range []int{1966, 1975, 1985, 1995} {
+		idx := []int{0, 9, 19, 29}[i]
+		b.WriteString(mTxt(x(idx), 318, 10, figMuted, "middle", "400", fmt.Sprintf("%d", yr)))
+	}
+	// the floor, and the two lives
+	b.WriteString(dashLine(74, y(33.5), 576, y(33.5), figGood, 1.2, "5 4"))
+	b.WriteString(poly(step(fl), figGood, 2.4, ""))
+	b.WriteString(poly(step(gk), figBad, 2.2, ""))
+	// mark each cut of the unfloored rule
+	for i := 1; i < len(gk); i++ {
+		if gk[i] < gk[i-1]-0.01 {
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.2" fill="%s"/>`, x(i), y(gk[i]), figBad)
+		}
+	}
+	b.WriteString(sTxt(x(9)+6, y(33.5)-10, 10.5, figGood, "start", "600", "avec plancher à 78 % : la descente s'arrête à −22 %"))
+	b.WriteString(sTxt(x(17), y(18.5)+18, 10.5, figBad, "middle", "600", "sans plancher : cinq coupes, −57 %"))
+	b.WriteString(sTxt(x(6)+4, y(43)-9, 10.5, figMuted, "start", "400", "43 k€ pendant quatre ans"))
+	b.WriteString(sTxt(74, 342, 10.5, figSoft, "start", "600",
+		"Le portefeuille, lui, s'en sort : 886 k€ sans plancher, 313 k€ avec. La diète a payé la survie du capital."))
+	b.WriteString(sTxt(74, 360, 10.5, figMuted, "start", "400",
+		"Millésime 1966, 60/40 américain réel ; règles 3 et 4 seules (corridor ±20 %, ajustements ±10 %), sans fiscalité."))
+	return svg(640, 376, b.String())
+}
+
+// figAbw1966 is the ABW parcours over the same 1966 vintage, against the fixed
+// real withdrawal: two panels sharing one timeline, wealth above and served
+// income below. The point is the pair of properties no other family has at
+// once. The capital lands on zero the year the horizon ends, by construction,
+// where the fixed rule empties it a year early; and the income never falls off
+// a cliff, though it does breathe hard in a bad decade, which is why the
+// doctrine adds discounted pensions and a display smoothing on top.
+func figAbw1966() string {
+	abwW := []float64{1000, 883, 929, 907, 764, 751, 765, 781, 623, 452, 497, 523, 440, 392, 358, 357, 302, 336, 339, 323, 353, 363, 317, 291, 290, 230, 219, 169, 118, 56, 0}
+	fixW := []float64{1000, 893, 946, 934, 797, 787, 807, 832, 672, 489, 528, 550, 460, 403, 358, 344, 281, 293, 282, 256, 264, 260, 219, 191, 179, 134, 114, 77, 40, 0, 0}
+	abwS := []float64{50.7, 45.7, 49.1, 49.1, 42.4, 42.7, 44.7, 47.0, 38.7, 29.0, 33.0, 36.0, 31.5, 29.3, 28.0, 29.4, 26.3, 31.0, 33.4, 34.2, 40.6, 45.6, 44.1, 45.7, 52.3, 49.0, 57.4, 58.0, 60.0, 56.0}
+	fixS := []float64{40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 40, 39.6, 0}
+	x := func(i float64) float64 { return 84 + i/30*(586-84) }
+	yw := func(v float64) float64 { return 208 - v/1050*(208-72) } // wealth panel, k€
+	ys := func(v float64) float64 { return 372 - v/66*(372-256) }  // income panel, k€
+	px := func(vs []float64, y func(float64) float64) [][2]float64 {
+		out := make([][2]float64, len(vs))
+		for i, v := range vs {
+			out[i] = [2]float64{x(float64(i)), y(v)}
+		}
+		return out
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("amortissement (abw)", "Atterrir à zéro le jour prévu, plutôt que s'écraser avant"))
+
+	// -- wealth panel --
+	b.WriteString(sTxt(84, 62, 10.5, figMuted, "start", "400", "le capital réel restant (k€)"))
+	for _, g := range []float64{0, 500, 1000} {
+		b.WriteString(line(84, yw(g), 586, yw(g), figGrid, 1))
+		b.WriteString(mTxt(76, yw(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(poly(px(fixW, yw), figMuted, 1.8, "5 4"))
+	b.WriteString(poly(px(abwW, yw), figAccent, 2.4, ""))
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="%s"/>`, x(29), yw(0), figBad)
+	b.WriteString(sTxt(x(28.6), 226, 10.5, figBad, "end", "600", "le fixe s'épuise un an trop tôt"))
+	b.WriteString(sTxt(x(12), yw(700), 10.5, figDeep, "start", "600", "ABW : le capital fond exprès, jamais par accident"))
+
+	// -- income panel --
+	b.WriteString(sTxt(84, 240, 10.5, figMuted, "start", "400", "le revenu réel servi (k€/an)"))
+	for _, g := range []float64{0, 30, 60} {
+		b.WriteString(line(84, ys(g), 586, ys(g), figGrid, 1))
+		b.WriteString(mTxt(76, ys(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(poly(px(fixS, ys), figMuted, 1.8, "5 4"))
+	b.WriteString(poly(px(abwS, ys), figAccent, 2.4, ""))
+	b.WriteString(mTxt(x(0)+7, ys(50.7)-8, 10.5, figDeep, "start", "600", "50,7"))
+	b.WriteString(mTxt(x(16), ys(26.3)-9, 10.5, figDeep, "middle", "600", "26,3"))
+	b.WriteString(mTxt(x(28), ys(60)-8, 10.5, figDeep, "end", "600", "60,0"))
+	b.WriteString(sTxt(x(9)+8, ys(9), 10.5, figBad, "start", "600", "1974 : marché à −22,7 %, rente à −25 %"))
+
+	// shared timeline
+	b.WriteString(line(84, ys(0), 586, ys(0), figRule, 1))
+	for i, yr := range []int{1966, 1975, 1985, 1995} {
+		idx := []float64{0, 9, 19, 29}[i]
+		b.WriteString(mTxt(x(idx), 390, 10, figMuted, "middle", "400", fmt.Sprintf("%d", yr)))
+	}
+	b.WriteString(sTxt(84, 414, 10.5, figSoft, "start", "600",
+		"Total consommé : 1 260 k€ sous ABW, 1 160 k€ sous fixe. Plus de vie servie, et pas de mur."))
+	b.WriteString(sTxt(84, 432, 10.5, figMuted, "start", "400",
+		"Millésime 1966, 60/40 américain réel, 1 M€, horizon 30 ans, rente recalculée à 3,2 % réel, sans fiscalité."))
+	return svg(640, 448, b.String())
+}
+
+// vpwRate is the inverted-annuity withdrawal rate: the share of capital that,
+// paid every year, exhausts it exactly over n remaining years at a real return
+// g. It is the whole of VPW (and of ABW, with a g that is re-estimated instead
+// of engraved).
+func vpwRate(g float64, n int) float64 {
+	return g / (1 - math.Pow(1+g, -float64(n)))
+}
+
+// figVpwTable draws the rule from both ends: the rate that climbs with age
+// (top), and the life that rate produces at the assumed returns (bottom, a
+// flat income and a capital melting on purpose), with a crash showing what
+// "the income follows the portfolio" costs, once and for good.
+func figVpwTable() string {
+	const g = 0.033 // real, the 60/40 the book's table describes
+	x := func(age float64) float64 { return 92 + (age-40)/(99-40)*(556-92) }
+	yr := func(v float64) float64 { return 214 - v/14*(214-76) }    // rate panel, %
+	yk := func(v float64) float64 { return 392 - v/1050*(392-268) } // money panel, k€ (income x10)
+	var b strings.Builder
+	b.WriteString(plateHead("vpw", "Le pourcentage monte avec l'âge, le capital fond exprès"))
+
+	// -- rate panel --
+	b.WriteString(sTxt(92, 64, 10.5, figMuted, "start", "400", "le taux de retrait de la table (% du portefeuille)"))
+	for _, gr := range []float64{0, 4, 8, 12} {
+		b.WriteString(line(92, yr(gr), 556, yr(gr), figGrid, 1))
+		b.WriteString(mTxt(84, yr(gr)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", gr)))
+	}
+	b.WriteString(dashLine(92, yr(g*100), 556, yr(g*100), figMuted, 1, "3 4"))
+	b.WriteString(sTxt(x(56), yr(g*100)+15, 10.5, figMuted, "start", "400", "le rendement supposé, 3,3 % réel : le plancher de la table"))
+	// the curve stops where it leaves the panel; the last years run to 100 %
+	var curve [][2]float64
+	last := 40.0
+	for age := 40.0; age <= 99; age += 0.5 {
+		r := vpwRate(g, int(100-age)) * 100
+		if r > 13.6 {
+			break
+		}
+		curve = append(curve, [2]float64{x(age), yr(r)})
+		last = age
+	}
+	b.WriteString(poly(curve, figAccent, 2.4, ""))
+	b.WriteString(sTxt(x(last)-8, yr(11.4), 10.5, figDeep, "end", "600", fmt.Sprintf("à %.0f ans : %.0f %%, puis jusqu'à 100 %%", last, vpwRate(g, int(100-last))*100)))
+	for _, age := range []float64{40, 65, 85} {
+		r := vpwRate(g, int(100-age)) * 100
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, x(age), yr(r), figDeep)
+		b.WriteString(mTxt(x(age)+7, yr(r)-7, 10.5, figDeep, "start", "600", fmt.Sprintf("%.1f %%", r)))
+	}
+	b.WriteString(sTxt(x(44), yr(6.4), 10.5, figSoft, "start", "400", "vingt-cinq ans de quasi-pourcentage fixe"))
+
+	// -- money panel: the plan the table produces, returns exactly as assumed.
+	// Two scales, capital on the left and yearly income on the right (a tenth
+	// of it), so the flat income and the melting capital share one picture.
+	b.WriteString(sTxt(92, 250, 10.5, figMuted, "start", "400", "la vie que cette table produit, à partir de 40 ans avec 1 M€, si le marché sert les rendements supposés"))
+	for _, gr := range []float64{0, 500, 1000} {
+		b.WriteString(line(92, yk(gr), 556, yk(gr), figGrid, 1))
+		b.WriteString(mTxt(84, yk(gr)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", gr)))
+		b.WriteString(mTxt(564, yk(gr)+3.5, 10, figMuted, "start", "400", fmt.Sprintf("%.0f", gr/10)))
+	}
+	b.WriteString(sTxt(84, 266, 9.5, figMuted, "end", "400", "capital (k€)"))
+	b.WriteString(sTxt(564, 266, 9.5, figMuted, "start", "400", "revenu"))
+	var capital, income [][2]float64
+	c := 1000.0
+	for age := 40; age <= 99; age++ {
+		// The payment is the annuity's, taken at year end (the convention the
+		// formula is written in), so the income comes out exactly level and the
+		// capital lands exactly on zero.
+		w := c * vpwRate(g, 100-age)
+		capital = append(capital, [2]float64{x(float64(age)), yk(c)})
+		income = append(income, [2]float64{x(float64(age)), yk(w * 10)})
+		c = c*(1+g) - w
+	}
+	capital = append(capital, [2]float64{x(99), yk(0)})
+	b.WriteString(poly(capital, figAccent, 2.4, ""))
+	b.WriteString(poly(income, figGreen, 2.2, ""))
+	flat := vpwRate(g, 60) * 1000 * 10
+	lvl := yk(flat * 0.7)
+	b.WriteString(line(x(70), yk(flat), x(70), lvl, figGreen, 1.6))
+	b.WriteString(dashLine(x(70), lvl, x(99), lvl, figGreen, 1.6, "5 4"))
+	b.WriteString(sTxt(x(82), yk(820), 10.5, figDeep, "start", "600", "le capital, consommé jusqu'à zéro"))
+	b.WriteString(mTxt(x(41), yk(flat)-9, 10.5, figGreen, "start", "600", "38,5 k€/an, plat"))
+	b.WriteString(sTxt(x(71), lvl+15, 10.5, figGreen, "start", "600", "krach de −30 % à 70 ans : 27,0 k€/an, sans retour"))
+	b.WriteString(line(92, yk(0), 556, yk(0), figRule, 1))
+	for _, age := range []float64{40, 55, 70, 85, 99} {
+		b.WriteString(mTxt(x(age), 410, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f ans", age)))
+	}
+	b.WriteString(sTxt(92, 434, 10.5, figMuted, "start", "400",
+		"Annuité inversée à g = 3,3 % réel constant, horizon jusqu'à 100 ans."))
+	return svg(640, 450, b.String())
+}
