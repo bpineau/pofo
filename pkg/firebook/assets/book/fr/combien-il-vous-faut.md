@@ -57,6 +57,10 @@ Le multiple est l'inverse du taux de retrait ([[la-regle-des-4-pourcents]]). Le 
 | 33 (3 %) | 3,0 % | Horizon très long sans aucune marge, budget déjà au plancher, forte aversion au risque, ou foi dans l'échantillon mondial pessimiste |
 | > 33 | < 3 % | Rarement rationnel : à ce stade, le risque dominant n'est plus la ruine, c'est de mourir riche en ayant travaillé des années de trop ([[une-annee-de-plus]]) |
 
+::: figure cible-convexite
+Les trois lignes du tableau posées sur la courbe qui les relie. Le multiple étant l'inverse exact du taux, chaque demi-point de prudence coûte plus cher que le précédent, et la ligne « > 33 » est une propriété de cette courbe, pas une opinion.
+:::
+
 Deux forces tirent ce choix en sens contraires, et il faut les nommer pour arbitrer honnêtement. Vers le bas (multiple haut) : horizon long, valorisations de départ élevées ([[valorisations-et-cape]]), monde plus large que l'échantillon américain, frais et fiscalité. Vers le haut (multiple bas) : flexibilité réelle des dépenses, revenus futurs (pension !), capacité de retour au travail, stratégie de retrait adaptative ([[choisir-sa-strategie]]). Il faut y ajouter un fait souvent oublié. Le « succès » binaire du simulateur est une mesure trop brutale. La plupart des « échecs » historiques du 3,5 % sont des trajectoires où l'on aurait vu venir le problème dix ans à l'avance ([[quand-s-inquieter]]).
 
 ::: science Le multiple n'est pas un choix de précision, c'est un choix de posture
@@ -69,6 +73,10 @@ Le calcul complet tient en cinq lignes. Reprenons-le sur un cas réaliste.
 
 ::: exemple Le calcul de bout en bout
 Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans. Relevés de 24 mois : 3 400 €/mois de dépenses réelles, irrégulier annualisé compris. Vie visée : + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle, soit **3 970 €/mois, ou 47 600 €/an nets**. Friction fiscale estimée (PEA + AV mûres + CTO, PUMa comprise) : 12 % → **54 100 €/an bruts**. Revenus non financiers : aucun avant 65 ans. Pensions estimées à 2 100 €/mois pour le couple à 65-67 ans ([info-retraite.fr](https://www.info-retraite.fr)), données au simulateur et non soustraites. Multiple : horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort → **3,5 %, soit 28,6x**. **Cible : 54 100 × 28,6 ≈ 1 547 000 €.** Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 %, sous la zone de travail des 10-20 % ([[ruine-et-probabilites]]) par construction, puisque la pension est comptée et le multiple déjà prudent. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
+:::
+
+::: figure cible-cascade
+Le même calcul, marche par marche, en euros de capital. Les deux corrections que le calcul de comptoir oublie, la friction fiscale et la retraite légale, pèsent chacune plus lourd que le budget voyages, et en sens opposés.
 :::
 
 Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une fourchette. Stressez-le : ± 10 % sur les dépenses, ± 0,5 point sur le taux, pension décalée de deux ans. Si la conclusion (la date de départ, en pratique) survit à ces secousses, le plan est solide. Si elle bascule, vous savez quel paramètre travailler. Rejouer le plan sous ces quelques variantes est l'usage le plus rentable d'un simulateur, bien plus utile que de contempler le premier verdict obtenu.
