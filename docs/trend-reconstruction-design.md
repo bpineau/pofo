@@ -368,6 +368,190 @@ documents. Two unanchored weeks at the start of a thirty-eight-year file.
 
 From 1996 on, these files are real fund NAVs and none of this applies.
 
+## The error budget on the live overlaps
+
+What agreement to EXPECT from these series, measured on each fund's own real
+window (the only place a reconstruction can be graded), as of 2026-08. Columns:
+daily, weekly and monthly return correlation, annualized tracking error, and
+the CAGR gap (reconstruction minus fund) over the overlap.
+
+| Fund | window | daily | weekly | monthly | TE | CAGR gap |
+|---|---|---|---|---|---|---|
+| DBMF | 7.2 y | 0.69 | 0.75 | 0.81 | 9.7 % | -4.2 pts |
+| DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.1 pt |
+| DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.3 pt |
+| KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -2.3 pts |
+| Simplify CTA | 4.4 y | 0.44 | 0.45 | 0.39 | 17.9 % | -4.6 pts |
+| AQR UCITS A | 11.4 y | 0.73 | 0.92 | 0.93 | 6.8 % | +0.1 pt |
+| AQR RAEF EUR | 0.7 y | none independent | | | 0.1 % | -0.04 pt |
+| RSST (overlay) | 2.9 y | 0.90 | 0.90 | 0.88 | 11.8 % | -3.0 pts |
+| RSBT (overlay) | 3.5 y | 0.49 | 0.50 | 0.54 | 12.7 % | +1.2 pts |
+| Winton (overlay) | 1.2 y | 0.62 | 0.80 | 0.96 | 14.6 % | -7.1 pts |
+
+How to read it, because each row's residual has a KNOWN decomposition:
+
+- **The monthly column is the honest one** for a sleeve held for years. Daily
+  and weekly figures are dominated by intra-month texture that no seven-market
+  engine, and no donor of another manager, can match tick for tick.
+- **A negative CAGR gap on DBMF, KMLM, CTA is not an error to fix.** Those
+  funds beat the trade they run over their own live windows (DBMF by six
+  points a year against every peer and index). Closing that gap would mean
+  granting the manager's alpha to the backcast, which is curve fitting.
+  Conversely DBMF UCITS USD, DBMFE and AQR sit within 0.3 pt because their
+  nearest donor is the same manager running the same book.
+- **The DBMFE daily 0.36 has a measured ceiling of 0.46** (the
+  valuation-convention section below): four fifths of its daily residual is
+  the UCITS wrapper's own positions and cash. Judge that class on weekly and
+  monthly only.
+- **Simplify CTA is the structurally worst fit and will stay so**: it tracks
+  a pure-trend index at a 16 % vol target while every available donor and the
+  net anchor are all-styles composites near 9-13 %. Its level is right to
+  about 4.6 pts and its months only agree at 0.39.
+- **Windows under two years** (both UCITS DBi classes, Winton, RAEF) make the
+  CAGR-gap column mostly noise; the sub-year figures are reported because they
+  are all there is, not because they are stable.
+- London-listed funds measured against US-close donors (the bond twins, but
+  also AHLPX inside the CTA chain) show daily correlation far under weekly for
+  pure clock reasons; a weekly figure far above the daily one is the signature
+  of a timing artefact, not of a bad reconstruction.
+
+## The data that exists, and the data that does not (surveyed live, 2026-08)
+
+The binding constraint of this whole file is data availability. The survey
+below is what a full day of hunting established; re-verify before relying on
+it, but do not re-run the dead ends blind.
+
+**Fetchable today, used:**
+
+- Real managed-futures fund NAVs through the client's own sources, reaching
+  1996: the donor tables above. The deepest, Man AHL Diversified plc
+  (IE0000360275, FT, weekly until 2016), reproduces its manager's published
+  thirty-year cumulative to two decimals. The next-oldest candidates found
+  (a 1995 EUR futures fund, a 1991 offshore multi-strategy vehicle) were
+  REJECTED: the first for a bad programme (IR 0.11 full-period, -52 % maximum
+  drawdown, monthly cadence), the second for a +102 % single print at a share
+  restructuring and multi-strategy drift. Nothing older than RYMFX (2007)
+  exists among US 1940-Act funds: it was the first of its kind.
+- The gross academic trend factor, monthly 1985+ (cmd/gen-trend-refdata).
+- The net industry composite, monthly 1987+ (cmd/gen-trendnet-refdata). Its
+  publisher also serves a DAILY version from 2010, so far unused (see
+  improvements).
+- Annual (only) figures for the broader CTA index of the same publisher,
+  1980-2017, recovered from a public web archive: the deep tail's independent
+  calendar-year check.
+
+**Exists but rejected, keep the reasons:**
+
+- A rule-based futures index, monthly 1961-2003, recovered from a 2003 web
+  archive of its sponsor's site (the archive is the only public copy; the
+  live site went behind a login in 2003). Gross, fully collateralized (its
+  returns INCLUDE T-bill interest, most of its 14 %/yr CAGR is 1960s-80s cash
+  yield), the 1961-1988 segment is the sponsor's own backtest, and it
+  correlates only 0.35 monthly with the net composite. Usable at most as a
+  shape cross-check for KMLM's tail, whose benchmark descends from it.
+
+**Walled or nonexistent, verified, do not chase blind:**
+
+- The SG index family (Trend, CTA): public endpoints clip to five years by
+  licence. Useful as a live cross-check of the overlay pins, nothing more.
+- The broader CTA index's MONTHLY history: a paid product, always was.
+- The bank-run liquid managed-futures index (1994+): the platform died with
+  its owner's sale; every archived capture already redirected to a login.
+- The crowdsourced CTA database: registration wall, bulk data at four
+  figures a year, and it starts too late anyway.
+- The academic "century of trend, net of fees" series: never published. The
+  sitemap and the archive of the publisher's dataset directory were both
+  enumerated; the absence is real, not a blocked probe.
+- SEC EDGAR full-text search: clean public JSON, fully scriptable, and the
+  right idea for pre-2001 partnership NAVs, EXCEPT full-text coverage starts
+  in 2001 and the one ideal filing found prints "[To Come]" in place of every
+  table. A composite of 1980s public futures partnerships remains possible
+  through per-filing document retrieval, at high extraction cost and with
+  worse survivorship than the net composite. Fallback only.
+
+## Rebuilding it from scratch
+
+The pipeline, in dependency order, with the invariants a re-implementation
+must preserve. Every one of these was learned by breaking it.
+
+1. **Legs.** Fetch the seven markets, extend each behind its long proxy
+   (`extend`, `longBack`). Rates are annualized percent LEVELS converted to
+   daily accruals (`BuildFrame`); a futures price return is ALREADY an excess
+   return, a funded total return is not; mixing those two conventions
+   double-charges financing.
+2. **Engine** (`TSMOM`). Twelve-month sign signal per market, refreshed every
+   21 trading days; inverse-vol weights; the whole book rescaled EVERY DAY to
+   the volatility target against an EWMA covariance (half-life 23 days,
+   RiskMetrics recursion, seeded from a flat 63-day window). The signal and
+   the risk run on different clocks ON PURPOSE: sizing monthly off a flat
+   window is how the book once lost 12.6 % in a day against a 10 % target
+   (2020-03-12). A leg whose raw returns moved on under half the window's
+   days is stale (a forward-filled proxy) and stays flat, or its zeros
+   poison the covariance.
+3. **Anchor** (`AnchorTrend`). Rewrite each calendar month of the engine's
+   output so its total matches the reference month, rescaled to the target
+   vol; spread the correction geometrically over the month's days. The
+   reference can be an EXCESS factor or a FUNDED total return
+   (`TrendAnchor.Funded`): strip the cash leg before rescaling a funded one
+   and re-add it after, or the tail gains a phantom cash leg worth six points
+   a year in the 1990s. Months the reference does not cover keep the engine's
+   own returns.
+4. **Level.** Nothing more for the deep tails (the net anchor carries its own
+   level). For the overlay builds only, a constant daily drag
+   (`pinTrendIR`/`trendDrag`) calibrated on 2000+ brings the gross anchor
+   down to the replicated index's realized information ratio.
+5. **Donor chain** (`DonorChain`). For each fund, volatility-match every real
+   donor NAV to the fund on their common window (excess-over-cash returns,
+   scale factor clamped to [0.5, 2], at least 120 common days), then splice
+   nearest-first with `ExtendBack`, which rescales the incoming segment to
+   the junction level. A donor whose median spacing exceeds three calendar
+   days is first projected onto the engine's daily calendar (`densify`, via
+   `anchorShape`): its NAVs are anchors, the engine is texture. NEVER splice
+   a weekly series raw into a daily file; per-observation statistics will
+   read the cadence as volatility (31.9 % measured where the truth was 12.5).
+6. **Real quotes last** (`SpliceReal` in the recipe): the fund's own NAVs are
+   grafted over everything from inception, byte-exact.
+7. **Per-family constants.** Vol targets are the fund's own REALIZED
+   volatility on the live overlap (measured anchors, not stated targets); do
+   not re-tune them to minimize tracking error, because with correlation near
+   0.5 the TE-minimizing reconstruction under-risks by that factor, and
+   understating a sleeve's risk is the expensive error in portfolio work.
+   The RAEF donor uplift (+0.45 %/yr) and the DBi fee-alpha reasoning are
+   measured constants with their derivations in the recipe comments; they do
+   not generalize.
+
+Units traps inherited from the repo at large: fees in `simgen` are FRACTIONS
+per year; `TrendAnchor` vol targets likewise; `portfolio`/`marketdata.Fees`
+are percent. Dates are 00:00 UTC and matched by exact equality.
+
+## Improvements worth attempting, ranked
+
+1. **Validate the engine's daily texture against the net composite's DAILY
+   series (2010+).** Free at the same endpoint (the daily dump), never yet
+   used. The engine's texture is the one layer with no external check at all;
+   this is the cheapest missing validation in the file.
+2. **KMLM's deep tail on its own ancestor index.** The archived 1961-2003
+   rule-based index is closer kin to KMLM's benchmark than the all-styles
+   composite (which it correlates with at only 0.35): anchoring KMLM's
+   1988-1996 stub on it (collateral stripped, level checked against the
+   composite) might fit that one fund better. Measure before believing.
+3. **Repair the third NAV fallback.** The Morningstar timeseries endpoint
+   currently answers empty for every id, which narrows donor hunting to two
+   sources; if it revives, re-run the 1990s donor survey, the rejected
+   candidates deserve a second look through a second source.
+4. **The EUR class's valuation convention** (a = 0.75 on the US session, ECB
+   fixing): measured, real, and under the adoption bar because it buys only
+   +0.08 of a daily correlation nobody consumes. Revisit only if the daily
+   texture of the pre-2025 EUR tail ever starts to matter.
+5. **A net PURE-TREND record for the overlays.** The overlay builds still pin
+   a gross factor because the pure-trend index they replicate is only public
+   for five years. If a long net record ever surfaces, the same funded-anchor
+   swap applies and `pinTrendIR` retires completely.
+6. **The first fortnight.** The reconstructions start 1988-11-17; the anchor
+   governs whole months, so the stub to 1988-11-30 keeps raw engine returns.
+   Two weeks out of thirty-eight years; fix only if the file's start date
+   ever moves earlier, where the problem would grow.
+
 ## Traps
 
 - The shipped `simdata` files graft the real quotes wherever they exist
@@ -395,3 +579,29 @@ From 1996 on, these files are real fund NAVs and none of this applies.
   around a two-decimal literal) is finer than the series' own stability under
   any change to the reconstruction, so expect a handful of cells to need
   refreezing whenever this file is touched.
+- Fee structures are the largest silent lever in this file. A performance fee
+  shows up as a wedge that GROWS with the fund's own return and vanishes in
+  down months (the RAEF/B EUR tables above); a composite "net of fees" means
+  net of its constituents' 2-and-20, so a flat-fee replicator should sit
+  ABOVE it, not on it; and correcting a fee twice (a drag on an already-net
+  anchor, a wedge on an already-lagging donor) is the single easiest way to
+  quietly lose several points a year. Every fee decision here carries its
+  measurement next to it; keep that discipline.
+- Index composites finalize late. The net reference's recent months revise
+  for one to two years before freezing (measured against point-in-time
+  archive captures), and its last one or two months are flagged estimated at
+  the source, which is why the generator drops them. A regeneration that
+  shifts recent tail months by a few basis points is revision, not breakage.
+- Share classes get emptied and re-seeded. The B EUR donor resumes after its
+  two-year hole with one stale print at the pre-gap level followed by a
+  re-seeded NAV, a spurious -12.5 % day; `truncateAtGap` exists because of
+  it. Any donor with a NAV gap needs its resumption inspected before use.
+- FT NAVs carry occasional bad prints (the distributing bond class printed
+  -13.1 % on a day its twin moved -5.6 %) and forward-filled stales; drop
+  zero-return days before fitting anything to an FT series, and never graft
+  a distributing class's price-only NAV into a total-return series.
+- An unknown ISIN used to adopt an unrelated FT security through fuzzy
+  search (a real case served a US media company's prices as an Austrian
+  fund); the client now rejects FT hits whose symbol does not contain the
+  queried ISIN. If a donor probe ever shows a delirious series, check the
+  resolution line first and clear the cache entry.
