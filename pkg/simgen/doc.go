@@ -23,6 +23,14 @@
 //     the level as well as the path, and a build that takes its level from a
 //     reference stops where that reference does (AnchorStart). See
 //     docs/trend-reconstruction-design.md;
+//   - DonorChain assembles a young fund's past out of REAL records of the same
+//     trade instead of a reconstruction, nearest first: another manager's fund
+//     NAVs, or, for a fund whose whole programme replicates a published index,
+//     that index itself. Each donor is volatility-matched to the target and
+//     lifted to the target's own fee load (see feeAligned in the recipes); a
+//     donor that does not quote daily is projected onto the engine's calendar
+//     first. The file starts at the deepest donor and nothing is shipped behind
+//     it;
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error
