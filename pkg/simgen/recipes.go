@@ -26,6 +26,7 @@ func All() []Recipe {
 		ntszRecipe(),
 		urthRecipe(),
 		iwdaRecipe(),
+		wpeaRecipe(),
 		msciworldIndexRecipe(),
 		sp500IndexRecipe(),
 		wintonRecipe(),
@@ -607,6 +608,66 @@ func msciworldIndexRecipe() Recipe {
 		}, "", 0)),
 		ValidateAgainst: "IE00B4L5Y983",
 	}
+}
+
+// wpeaRecipe backcasts the iShares MSCI World Swap PEA UCITS ETF
+// (IE0002XZSHO1, WPEA, EUR Acc, real from 2024-03-26): the PEA-eligible
+// synthetic MSCI World, expressed in EUR. WPEA carries the same 0.20%/yr TER as
+// the iShares Core MSCI World (IWDA, IE00B4L5Y983) and tracks the same index, so
+// its history is that fund's net total-return path re-expressed in EUR: real
+// IWDA quotes from 2009, the IWDA/URTH monthly reconstruction before that
+// (MSCIWORLD-USD refdata from 1969, ^990100-USD-STRD daily shape from 1972),
+// all converted USD->EUR at the EUR/USD spot (extended to 1971 by the bundled
+// ECU/DM/EUR proxy, as for the DBMFE/Avantis euro legs), with real WPEA quotes
+// grafted from 2024. A EUR investor's MSCI World carries the unhedged USD/EUR
+// currency move, so this series differs from the USD IWDA view by exactly that
+// FX path. Leaning on real IWDA for 2009-2024, rather than the coarse monthly
+// anchor, keeps the recent decade faithful; the 0.20% TER is the headline charge
+// only, the swap's substitute-basket cost is not modelled separately (the
+// TER-only convention of every tracker recipe).
+func wpeaRecipe() Recipe {
+	return Recipe{
+		ID:              "WPEA",
+		Name:            "iShares MSCI World Swap PEA: MSCI World net TR in EUR (1971 with -refdata)",
+		Method:          "iShares Core MSCI World net TR in USD (real IWDA from 2009, MSCIWORLD-USD refdata + ^990100-USD-STRD daily shape before, 0.20%/yr TER) converted USD->EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971); real WPEA grafted from 2024",
+		Build:           wpeaBuild,
+		ValidateAgainst: "WPEA",
+		SpliceReal:      "WPEA",
+	}
+}
+
+// wpeaBuild builds the USD net-TR MSCI World that WPEA tracks, then converts each
+// daily return into an unhedged EUR return so the simulated history matches the
+// EUR quote WPEA trades in. The USD leg is real iShares Core MSCI World
+// (IE00B4L5Y983, USD, 2009->, already net of the same 0.20% TER) with the
+// IWDA/URTH monthly reconstruction (also carrying 0.20%) extended behind it, so
+// the mid-period rides real MSCI World rather than the coarse anchor while the
+// equal TERs keep the blend uniformly net-of-fee. The USD->EUR step mirrors
+// avantisBuild/dbmfeBuild: a EUR-denominated NAV equals the USD NAV divided by
+// the USD-per-EUR rate, so r_eur = (1+r_usd)/(1+r_fx)-1.
+func wpeaBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	recon, err := msciWorld(0.0020, composite("WPEA (MSCI World replication)", []Leg{
+		{ID: "VFINX", Weight: 0.60},
+		{ID: "VTMGX", Weight: 0.40},
+	}, "", 0.0020))(f, from)
+	if err != nil {
+		return nil, err
+	}
+	// Ride real iShares Core MSCI World over the mid-period when reachable; if
+	// it is not, the reconstruction alone still yields a valid EUR MSCI World.
+	usd := recon
+	if real, rerr := f.Fetch("IE00B4L5Y983", from); rerr == nil && real != nil && len(real.Points) > 300 {
+		grafted := *real
+		marketdata.ExtendBack(&grafted, recon)
+		usd = &grafted
+	}
+	dates := make([]time.Time, len(usd.Points))
+	lvl := make([]float64, len(usd.Points))
+	for i, p := range usd.Points {
+		dates[i], lvl[i] = p.Date, p.Close
+	}
+	return convertDaily("WPEA (MSCI World net TR expressed in EUR)",
+		extend(f), "EURUSD=X", from, dates, lvl)
 }
 
 // sp500IndexRecipe is the pure S&P 500 Total Return benchmark: SP500-USD
