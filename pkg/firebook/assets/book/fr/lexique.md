@@ -146,7 +146,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Régimes de marché** : les saisons persistantes croisant croissance et inflation. Le 60/40 n'en couvre que deux. La stagflation est le cauchemar du rentier. [[regimes-de-marche]]
 
-**Règle CAPE** : taux de retrait = a + b × (1/CAPE) sur le portefeuille courant. Le pourcentage devenu conscient des valorisations. Auto-lissé par sa double contra-cyclicité. [[regles-cape]]
+**Règle CAPE** : taux de retrait = a + b × (1/CAPE) sur le portefeuille courant. Le pourcentage devenu conscient des valorisations. Auto-lissé par sa double contracyclicité. [[regles-cape]]
 
 **Répression financière** : maintenir les taux servis à l'épargne sous l'inflation pendant des années. La sortie de dette historiquement préférée des États. Le régime qui érode sans alarme. [[inflation-histoire]]
 

@@ -1,8 +1,8 @@
 # Choisir sa stratégie : critères, comparatif, cas d'usage
 
-Dix articles ont détaillé les règles une à une, et un onzième les a rejouées côte à côte sur trois retraites qui ont réellement eu lieu ([[sept-facons-de-vivre]]). Reste la décision. Elle est moins technique qu'on ne le croit à ce stade. Les bonnes règles modernes, bien paramétrées, produisent des résultats plus proches qu'on ne le craint. L'écart entre deux bonnes règles est presque toujours plus petit que celui d'une erreur d'entrée, comme des dépenses sous-estimées ou une pension oubliée ([[erreurs-classiques-fire]]).
+Neuf articles ont détaillé les règles une à une, et un dixième les a rejouées côte à côte sur trois retraites qui ont réellement eu lieu ([[sept-facons-de-vivre]]). Reste la décision. Elle est moins technique qu'on ne le croit à ce stade. Les bonnes règles modernes, bien paramétrées, produisent des résultats plus proches qu'on ne le craint. L'écart entre deux bonnes règles est presque toujours plus petit que celui d'une erreur d'entrée, comme des dépenses sous-estimées ou une pension oubliée ([[erreurs-classiques-fire]]).
 
-Mais « proche » n'est pas « identique ». Les règles diffèrent par la **forme** du risque qu'elles font vivre, et par ce qu'elles exigent de leur exécutant. C'est là-dessus que le choix se joue, sur le tempérament, le plancher et la gouvernance. Cet article déroule la procédure de décision complète : les cinq étapes dans l'ordre, la matrice profils-règles, les hybrides légitimes, la table récapitulative du panorama et un cas déroulé de bout en bout en simulation. Le plus important des hybrides, ce sont des règles différentes par phase du plan. Les critères de jugement eux-mêmes sont posés ailleurs, comme le percentile 5 préféré à la moyenne, ou ce que valent le regret et la robustesse ([[decider-sous-incertitude]]).
+Mais « proche » n'est pas « identique ». Les règles diffèrent par la **forme** du risque qu'elles font vivre, et par ce qu'elles exigent de leur exécutant. C'est là-dessus que le choix se joue, sur le tempérament, le plancher et la gouvernance. Cet article déroule la procédure de décision complète : les cinq étapes dans l'ordre, la matrice profils-règles, les hybrides légitimes, la table récapitulative du panorama et un cas déroulé de bout en bout en simulation. Le plus important de ces hybrides est aussi le plus négligé, une règle différente par phase du plan. Les critères de jugement eux-mêmes sont posés ailleurs, comme le percentile 5 préféré à la moyenne, ou ce que valent le regret et la robustesse ([[decider-sous-incertitude]]).
 
 À la fin, vous aurez une règle écrite, calibrée, testée : la vôtre.
 
@@ -40,9 +40,9 @@ Parmi les familles admissibles, le tempérament et la gouvernance tranchent. Les
 | « Transmettre est central » | Fixe prudent + cliquet, ou ABW avec legs paramétré | Le legs choisi plutôt que résiduel ([[succession-et-transmission]]) |
 | « Anxieux du grand âge plus que des marchés » | Safety-first : rente/rachats de trimestres au plancher + n'importe quelle règle sur le reste ([[rentes-et-annuites]]) | Le risque redouté est couvert par le bon instrument, pas par la règle |
 
-Deux lectures de cette matrice. D'abord, le **tempérament** à considérer est celui des mauvaises années, pas celui du questionnaire. Les gens se découvrent moins flexibles qu'annoncé quand la coupe devient réelle ([[flexibilite-realite]], [[psychologie-du-retrait]]). En cas de doute, choisissez la ligne au-dessus, la plus stable. Ensuite, la **gouvernance** est un critère de premier rang, pas une note de bas de page. La meilleure règle est celle qui sera encore appliquée dans vingt ans, par la personne survivante, dans une mauvaise décennie ([[couple-et-famille]]). Une règle « sous-optimale » exécutée bat toujours une règle optimale abandonnée.
+Deux lectures de cette matrice. D'abord, le **tempérament** à considérer est celui des mauvaises années, pas celui du questionnaire. Les gens se découvrent moins flexibles qu'annoncé quand la coupe devient réelle ([[flexibilite-realite]], [[psychologie-du-retrait]]). En cas de doute, prenez la plus stable des deux règles en lice. Ensuite, la **gouvernance** est un critère de premier rang, pas une note de bas de page. La meilleure règle est celle qui sera encore appliquée dans vingt ans, par la personne survivante, dans une mauvaise décennie ([[couple-et-famille]]). Une règle « sous-optimale » exécutée bat toujours une règle optimale abandonnée.
 
-## Étape 4 : les hybrides légitimes, dont le grand oublié : les phases
+## Étape 4 : les hybrides légitimes, à commencer par le grand oublié
 
 Trois assemblages reviennent chez les praticiens sérieux, et le troisième est souvent la bonne réponse pour un plan FIRE.
 
@@ -65,8 +65,8 @@ Remettons les ordres de grandeur en place, car ils dictent où investir votre at
 | Corridor Vanguard | Faible, honnête | Glissements ±2,5-5 %/an | Bonne | Triviale | [[plancher-plafond]] |
 | Guyton-Klinger + plancher | Faible, honnête | Stable avec marches −10 % | Bonne | Moyenne | [[guyton-klinger]] |
 | Guardrails par risque | Pilotée (cible écrite) | Stable avec marches rares | Très bonne | Exigeante (outil) | [[guardrails-morningstar]] |
-| VPW | Impossible (capital) | Variable | Très bonne, datée âge | Simple (table) | [[vpw]] |
-| Règle CAPE | Impossible (capital) | Variable auto-lissé | Très bonne, datée prix | Simple (formule) | [[regles-cape]] |
+| VPW | Impossible (capital) | Variable | Très bonne, datée par l'âge | Simple (table) | [[vpw]] |
+| Règle CAPE | Impossible (capital) | Variable auto-lissé | Très bonne, datée par les prix | Simple (formule) | [[regles-cape]] |
 | ABW/TPAW | Structurellement ~nulle | Respire ±3-8 %/an | La plus haute | Exigeante (outil) | [[amortissement-abw]] |
 | Safety-first (rente au plancher) | Déplacée hors marché | Plancher garanti + reste | Selon la règle du reste | Une décision, puis simple | [[rentes-et-annuites]] |
 
