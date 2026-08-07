@@ -87,6 +87,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"allocation-actions-obligations", "L'allocation actions/obligations en retrait", "Le plateau 50-80 % qui plonge des deux côtés, les trois curseurs pour s'y placer, et le débat 100 % actions remis à sa place."},
 			{"glidepaths", "Les glidepaths : bond tent, rising equity et la fenêtre fragile", "La prudence comme dépense temporaire : les résultats Kitces-Pfau et ERN, l'exécution automatique par les retraits, et le match contre le buffer."},
+			{"portefeuilles-tous-temps", "Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon", "Un gagnant par saison : compositions exactes, chiffres qui comptent pour un rentier, critiques honnêtes, et la dose plutôt que le dogme."},
+			{"actifs-defensifs", "Les actifs défensifs : panorama et rôles", "Défendre contre quoi ? Le cahier des charges, la revue candidat par candidat, la galerie des faux défensifs, et l'assemblage."},
 		},
 	},
 }
