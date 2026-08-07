@@ -176,10 +176,11 @@
 # and its own inflation; the gap between columns IS the currency risk.
 # #meta currencies:USD,EUR
 #meta rebalance:90
+#meta sim:on
 
-60	NTSGSIM         # Head 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS; euro-native variant NTSZ IE000OV4XWA3)
-25	DBMFSIM         # Head 2, trend: iMGP DBi Managed Futures (buy the UCITS EUR share DBMFE, LU2951555403; best upgrade: split with AQR MF UCITS LU1103257975)
-15	XAUUSDSIM       # Head 3, gold (buy a physical ETC: IGLN IE00B4ND3602)
+60	NTSG            # Head 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS; euro-native variant NTSZ IE000OV4XWA3)
+25	DBMF            # Head 2, trend: iMGP DBi Managed Futures (buy the UCITS EUR share DBMFE, LU2951555403; best upgrade: split with AQR MF UCITS LU1103257975)
+15	XAUUSD          # Head 3, gold (buy a physical ETC: IGLN IE00B4ND3602)
 
 # Approaching decumulation: 7-15% of capital (3-3.5 years of spending) in
 # liquid euro assets, funded from NTSG; the "wide buffer" version replaces

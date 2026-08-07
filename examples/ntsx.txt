@@ -1,1 +1,2 @@
-100	NTSXSIM
+#meta sim:on
+100	NTSX

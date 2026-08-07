@@ -1,1 +1,2 @@
-100	NTSGSIM
+#meta sim:on
+100	NTSG
