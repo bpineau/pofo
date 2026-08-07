@@ -9,11 +9,31 @@ import (
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
+// NavLink is one entry of the optional site navigation bar.
+type NavLink struct{ Label, Href string }
+
+// handlerConfig collects Handler options.
+type handlerConfig struct{ nav []NavLink }
+
+// Option configures Handler.
+type Option func(*handlerConfig)
+
+// WithNav prepends a slim, constant navigation bar to every page: a
+// "Sommaire" link back to the book index, then the given links. The bar
+// is chrome, not content: articles are untouched, and the bar disappears
+// in print. Without this option the book renders exactly as before, which
+// the offline and -fire mounts rely on.
+func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
+
 // Handler serves the book: the sommaire at "/", one HTML page per article at
 // "/<slug>", and the shared identity stylesheets at "/theme.css" and
 // "/fonts.css" (relative URLs, so the handler can be mounted under any
 // prefix, e.g. http.StripPrefix("/book/fr", firebook.Handler())).
-func Handler() http.Handler {
+func Handler(opts ...Option) http.Handler {
+	var cfg handlerConfig
+	for _, o := range opts {
+		o(&cfg)
+	}
 	mux := http.NewServeMux()
 	css := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
@@ -26,7 +46,7 @@ func Handler() http.Handler {
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.Trim(r.URL.Path, "/")
 		if slug == "" {
-			writePage(w, "Le livre FIRE", indexHTML())
+			writePage(w, cfg.nav, "Le livre FIRE", indexHTML())
 			return
 		}
 		art, cat, ok := find(slug)
@@ -34,12 +54,20 @@ func Handler() http.Handler {
 			http.NotFound(w, r)
 			return
 		}
-		writePage(w, art.Title, articleHTML(art, cat))
+		writePage(w, cfg.nav, art.Title, articleHTML(art, cat))
 	})
 	return mux
 }
 
-func writePage(w http.ResponseWriter, title, body string) {
+func writePage(w http.ResponseWriter, nav []NavLink, title, body string) {
+	var bar strings.Builder
+	if len(nav) > 0 {
+		bar.WriteString(`<nav class="book-sitenav"><a href=".">Sommaire</a>`)
+		for _, l := range nav {
+			fmt.Fprintf(&bar, `<a href="%s">%s</a>`, html.EscapeString(l.Href), html.EscapeString(l.Label))
+		}
+		bar.WriteString("</nav>\n")
+	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, `<!DOCTYPE html>
 <html lang="fr">
@@ -52,9 +80,9 @@ func writePage(w http.ResponseWriter, title, body string) {
 <style>%s</style>
 </head>
 <body class="book">
-%s
+%s%s
 </body>
-</html>`, html.EscapeString(title), bookCSS, body)
+</html>`, html.EscapeString(title), bookCSS, bar.String(), body)
 }
 
 // indexHTML renders the sommaire from the manifest.
@@ -201,4 +229,11 @@ article tr:last-child td{border-bottom:0}
 .book-more a:hover{text-decoration:underline}
 @media (max-width:640px){body.book{font-size:1rem;padding:1.6rem 1.1rem 4rem}
   .book h1{font-size:1.8rem}article h2{font-size:1.32rem}article table{font-size:.8rem}}
+.book-sitenav{display:flex;gap:1.15rem;margin:0 0 1.7rem;padding-bottom:.65rem;
+  border-bottom:1px solid var(--rule-soft);font-family:var(--mono);font-size:.72rem;
+  letter-spacing:.07em;text-transform:uppercase}
+.book-sitenav a{color:var(--muted);text-decoration:none}
+.book-sitenav a:hover{color:var(--accent-deep)}
+.book-sitenav a:first-child{color:var(--accent-deep)}
+@media print{.book-sitenav{display:none}}
 `

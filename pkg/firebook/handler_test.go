@@ -63,6 +63,35 @@ func TestHandler(t *testing.T) {
 	}
 }
 
+func TestHandlerNav(t *testing.T) {
+	// Without the option: no navbar anywhere (offline/print contract).
+	plain := httptest.NewServer(Handler())
+	defer plain.Close()
+	// The .book-sitenav CSS rule ships in bookCSS unconditionally (inert when
+	// no bar is emitted); the offline/print contract is that no <nav> element
+	// is rendered, so assert on the element, not the stylesheet substring.
+	if _, body := get(t, plain, "/"); strings.Contains(body, `class="book-sitenav"`) {
+		t.Error("navbar present without WithNav")
+	}
+
+	nav := []NavLink{{Label: "Portefeuilles", Href: "/"}, {Label: "Simulateur", Href: "/fire/"}}
+	site := httptest.NewServer(Handler(WithNav(nav)))
+	defer site.Close()
+	slug := Categories[0].Articles[0].Slug
+	for _, path := range []string{"/", "/" + slug} {
+		_, body := get(t, site, path)
+		if !strings.Contains(body, `class="book-sitenav"`) {
+			t.Errorf("%s: navbar missing", path)
+		}
+		if !strings.Contains(body, `>Sommaire</a>`) || !strings.Contains(body, `>Simulateur</a>`) {
+			t.Errorf("%s: navbar links missing", path)
+		}
+	}
+	if _, body := get(t, site, "/"); !strings.Contains(body, "@media print{.book-sitenav{display:none}}") {
+		t.Error("navbar not hidden in print")
+	}
+}
+
 // The handler must work behind a prefix, the way pofo -fire mounts it.
 func TestHandlerUnderPrefix(t *testing.T) {
 	mux := http.NewServeMux()
