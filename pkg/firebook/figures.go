@@ -89,7 +89,7 @@ var figures = map[string]func() string{
 	"trend-smile":              figTrendSmile,
 	"trend-annees":             figTrendAnnees,
 	"trend-correlation":        figTrendCorrelation,
-	"guardrails-capteur":       figGuardrailsCapteur,
+	"guardrails-indicateur":    figGuardrailsIndicateur,
 	"mc-entrees-vs-tirages":    figMcEntreesVsTirages,
 	"or-decennies":             figOrDecennies,
 	"millesimes-1966-1982":     figMillesimes1966Vs1982,

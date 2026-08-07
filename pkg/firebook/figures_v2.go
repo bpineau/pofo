@@ -686,21 +686,21 @@ func figTrendAnnees() string {
 	return svg(640, 352, b.String())
 }
 
-// --- 29. Risk-based guardrails: the sensor decides, the income follows ---
-func figGuardrailsCapteur() string {
+// --- 29. Risk-based guardrails: the indicator decides, the income follows ---
+func figGuardrailsIndicateur() string {
 	xr := func(rev float64) float64 { return 96 + (rev-1)*(596-96)/6.5 }
 	// top panel: success probability, 70..103 % over py 200..70
 	ys := func(v float64) float64 { return 200 - (v-70)/33*130 }
 	// bottom panel: income, 42..57 k€ over py 380..240
 	yi := func(v float64) float64 { return 380 - (v-42)/15*140 }
 	var b strings.Builder
-	b.WriteString(plateHead("guardrails par risque", "Le capteur décide, le revenu suit"))
+	b.WriteString(plateHead("guardrails par risque", "L'indicateur décide, le revenu suit"))
 	// vertical guides at the two confirmed decisions, spanning both panels
 	for _, r := range []float64{3, 7} {
 		b.WriteString(dashLine(xr(r), 70, xr(r), 380, figMuted, 1, "2 4"))
 	}
 	// -- top panel --
-	b.WriteString(sTxt(96, 60, 10.5, figMuted, "start", "400", "le capteur : probabilité de succès recalculée (%)"))
+	b.WriteString(sTxt(96, 60, 10.5, figMuted, "start", "400", "l'indicateur : probabilité de succès recalculée (%)"))
 	// corridor wash between the two guardrails
 	fmt.Fprintf(&b, `<rect x="96" y="%.1f" width="500" height="%.1f" fill="%s"/>`, ys(99), ys(85)-ys(99), figWash)
 	b.WriteString(sTxt(160, ys(96), 10.5, figMuted, "start", "400", "le corridor : on ne touche à rien"))
@@ -712,7 +712,7 @@ func figGuardrailsCapteur() string {
 	for _, g := range []float64{70, 85, 99} {
 		b.WriteString(mTxt(88, ys(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
 	}
-	// the sensor path
+	// the indicator path
 	vals := []float64{93, 82, 76, 88, 91, 99.2, 99.4}
 	pts := make([][2]float64, len(vals))
 	for i, v := range vals {
