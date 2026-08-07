@@ -69,7 +69,7 @@ type Params struct {
 	Bounded                      bool    `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
 	Central                      string  `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
 	Age                          int     `json:"age"`            // age at year 0, for the mortality view (0 = 52)
-	PEACapital                   float64 `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
+	PEACapital                   float64 `json:"peaCapital"`     // euros held in the PEA envelope (18.6% on gains)
 	AVCapital                    float64 `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
 	GainFrac                     float64 `json:"gainFrac"`       // embedded unrealised gain fraction at start
 	Ratchet                      bool    `json:"ratchet"`        // only-up spending rule (the written-rules cliquet)
@@ -258,14 +258,16 @@ func (pr Params) envelopes() []decumul.Envelope {
 		out = append(out, decumul.Envelope{
 			Name: "PEA", Amount: pr.PEACapital, GainFrac: pr.GainFrac,
 			// Past 5 years, PEA withdrawals only pay social levies on gains.
-			Tax: decumul.CTOFlatTax{Rate: 0.172},
+			// 18.6% since the 2026 CSG rise (was 17.2%).
+			Tax: decumul.CTOFlatTax{Rate: 0.186},
 		})
 	}
 	if pr.AVCapital > 0 {
 		out = append(out, decumul.Envelope{
 			Name: "AV", Amount: pr.AVCapital, GainFrac: pr.GainFrac,
 			// Past 8 years: 9 200 €/yr of gains tax-free (couple), then
-			// 7.5% + 17.2% social levies on the excess.
+			// 7.5% + 17.2% social levies on the excess (assurance-vie was
+			// carved out of the 2026 CSG rise, unlike the PEA and the CTO).
 			Tax: decumul.AVTax{Rate: 0.247, Allowance: 9200},
 		})
 	}

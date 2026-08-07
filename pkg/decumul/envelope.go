@@ -33,7 +33,8 @@ type YearlyTax interface {
 // AVTax models the French assurance-vie taxation after 8 years: each year the
 // first Allowance euros of realised gain are tax-free (4 600 € per person,
 // 9 200 € for a couple), and the excess gain is taxed at Rate (7.5% + 17.2%
-// social levies ≈ 24.7% below the 150 k€ premium threshold). The gain share of
+// social levies ≈ 24.7% below the 150 k€ premium threshold; assurance-vie was
+// carved out of the 2026 CSG rise, so it stays at 17.2%). The gain share of
 // a sale follows the same cost-basis pro-rata as CTOFlatTax.
 //
 // AVTax is a stateless template: the kernel derives per-path state through
