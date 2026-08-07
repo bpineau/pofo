@@ -329,13 +329,25 @@ rules on them; `cape-depuis-1881` freezes 146 CAPE readings and applies the
 formula), which keeps the rule under study readable next to the picture it
 produces.
 
-Twelve of those plates shipped on 2026-07-29 in two batches, from the candidate
-list in `fire-book-illustrations-2026-07.md`. One candidate is blocked there and
-worth knowing about: replaying Guyton-Klinger at four initial rates contradicts
-a sourced sentence of `guyton-klinger.md`, and `pkg/replay`'s GK is only the
-corridor, without the indexation freeze or the last-fifteen-years suspension, so
-it is not faithful enough to overturn the literature. Do not ship a figure that
-argues with its own article.
+Fourteen of those plates shipped on 2026-07-29, from the candidate list in
+`fire-book-illustrations-2026-07.md`, which is now closed: six candidates were
+dropped on purpose and each carries its reason there. Two of the reasons are
+worth knowing outside that file.
+
+Replaying Guyton-Klinger at four initial rates contradicts a sourced sentence of
+`guyton-klinger.md`, and `pkg/replay`'s GK is only the corridor, without the
+indexation freeze or the last-fifteen-years suspension, so it is not faithful
+enough to overturn the literature. Do not ship a figure that argues with its own
+article.
+
+And `rentes-et-annuites.md` claims that annuitising can raise the headline ruin
+while improving the worst late-life outcomes. A sweep over ages 60-75 and rates
+3.5-5.5 % could not reproduce it: the two readings always move together. The
+cause is structural rather than a calibration problem, and it is a limitation of
+the engine worth remembering: `decumul` runs a FIXED horizon, so the risk an
+annuity insures against (outliving the plan) does not exist inside it, and
+`LifeCurve` applying mortality after the fact cannot recreate it. Evaluating
+annuities properly would need a stochastic-lifetime kernel.
 
 ## Adding articles
 

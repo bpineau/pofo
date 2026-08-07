@@ -168,3 +168,51 @@ func TestCapeJanuariesMatchTheDataset(t *testing.T) {
 		t.Errorf("2000 would have quoted %.1f %%, the caption says 2,9 %%", got)
 	}
 }
+
+// The vintage plate freezes one number per forty-year window of the record;
+// recompute all of them.
+func TestBengenVintagesMatchTheEngine(t *testing.T) {
+	ref, err := replay.Reference()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if ref.Years[0] != bengenVintageFirst {
+		t.Fatalf("the record opens in %d, the plate assumes %d", ref.Years[0], bengenVintageFirst)
+	}
+	last := ref.Years[len(ref.Years)-1]
+	var got []float64
+	for start := ref.Years[0]; start+39 <= last; start++ {
+		r, err := replay.Run(replay.Setup{
+			Start: start, Capital: 600000, Spend: 24000, Years: 40,
+			Mu: 0.045, Sigma: 0.10, Df: 5, TargetRuin: 0.05, RaiseCap: 1.5,
+		})
+		if err != nil {
+			t.Fatal(err)
+		}
+		if r.Partial {
+			continue
+		}
+		got = append(got, r.Rules[0].Final/1000)
+	}
+	if len(got) != len(bengenVintages) {
+		t.Fatalf("the record holds %d complete vintages, the plate freezes %d", len(got), len(bengenVintages))
+	}
+	for i, want := range bengenVintages {
+		if math.Abs(got[i]-want) > 0.5 {
+			t.Errorf("vintage %d: engine %.0f k, plate %.0f k", bengenVintageFirst+i, got[i], want)
+		}
+	}
+	// The caption counts, which must not drift either.
+	ruined, rich := 0, 0
+	for _, v := range bengenVintages {
+		switch {
+		case v == 0:
+			ruined++
+		case v > 1800:
+			rich++
+		}
+	}
+	if ruined != 6 || rich != 12 {
+		t.Errorf("%d ruined and %d rich, the caption says 6 and 12", ruined, rich)
+	}
+}

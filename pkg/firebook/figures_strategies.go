@@ -3,6 +3,7 @@ package firebook
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 )
 
@@ -1053,4 +1054,190 @@ func figVpwTestDePerte() string {
 	b.WriteString(sTxt(480, yBase+52, 10.5, figBad, "middle", "600", "le même choc passe sous le confort"))
 	b.WriteString(line(340, 96, 340, yBase+56, figRule, 1))
 	return svg(640, int(yBase)+66, b.String())
+}
+
+// --- The fixed rule's two pathologies, over every vintage the record holds ---
+
+// bengenVintages is what the book's reference household had left after forty
+// years, for every complete forty-year window of the bundled record: 600 k EUR,
+// 24 k EUR a year (4.0 %) indexed and never adjusted, in k EUR of constant
+// purchasing power. Zero means the money ran out.
+// figures_strategies_test.go recomputes all of them from pkg/replay.
+var bengenVintages = []float64{
+	1885, 789, 457, 622, 1328, 542, 486, 512, 0, 277, 0, 0, 0, 71, 0, 0, 333,
+	359, 201, 19, 951, 2887, 2104, 1628, 2748, 3187, 4176, 4422, 5690, 3544,
+	3524, 3829, 3032,
+}
+
+const bengenVintageFirst = 1954
+
+func figBengenMillesimes() string {
+	const (
+		x0, x1     = 76.0, 500.0
+		yTop, yBot = 100.0, 280.0
+		vMax       = 6000.0
+		start      = 600.0
+	)
+	n := len(bengenVintages) - 1
+	x := func(i int) float64 { return x0 + float64(i)/float64(n)*(x1-x0) }
+	y := func(v float64) float64 { return yBot - v/vMax*(yBot-yTop) }
+
+	var b strings.Builder
+	b.WriteString(plateHead("le legs qu'on ne choisit pas",
+		"Trente-trois départs, deux pathologies opposées, une seule règle"))
+	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+		"600 000 € et 24 000 € par an indexés, tenus quarante ans : ce qui restait à l'arrivée, en k€ réels"))
+	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
+		"un point par année de départ, de 1954 à 1986, sur le 60/40 américain du livre"))
+
+	for _, g := range []float64{0, 2000, 4000, 6000} {
+		gy := y(g)
+		col := figGrid
+		if g == 0 {
+			col = figRule
+		}
+		b.WriteString(line(x0, gy, x1, gy, col, 1))
+		b.WriteString(mTxt(x0-8, gy+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g/1000)))
+	}
+	b.WriteString(mTxt(x0-8, yTop-8, 9.5, figMuted, "end", "400", "M€"))
+
+	// The capital the household started with, the line that separates dying
+	// poorer from dying richer than one began.
+	b.WriteString(dashLine(x0, y(start), x1, y(start), figDeep, 1.2, "4 3"))
+	b.WriteString(sTxt(x0+4, y(start)-6, 9.5, figDeep, "start", "400", "la mise de départ, 600 k€"))
+
+	ruined, rich := 0, 0
+	for i, v := range bengenVintages {
+		px, py := x(i), y(v)
+		switch {
+		case v == 0:
+			ruined++
+			b.WriteString(line(px-4, py-4, px+4, py+4, figBad, 1.8))
+			b.WriteString(line(px-4, py+4, px+4, py-4, figBad, 1.8))
+		case v > 3*start:
+			rich++
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, px, py, figAccent)
+		default:
+			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="none" stroke="%s" stroke-width="1.6"/>`,
+				px, py, figSoft)
+		}
+	}
+	for _, yr := range []int{1954, 1960, 1966, 1972, 1978, 1986} {
+		b.WriteString(mTxt(x(yr-bengenVintageFirst), 298, 10, figMuted, "middle", "400", fmt.Sprintf("%d", yr)))
+	}
+	b.WriteString(sTxt((x0+x1)/2, 318, 11, figMuted, "middle", "400", "année du départ à la retraite"))
+
+	// The same thirty-three numbers, read as a distribution rather than as a
+	// history: the right margin is the marginal of the scatter.
+	const mx = 552.0
+	b.WriteString(line(mx, yTop, mx, yBot, figRule, 1))
+	b.WriteString(sTxt(mx-8, yTop-10, 10, figMuted, "end", "400", "la même chose, triée"))
+	sorted := append([]float64(nil), bengenVintages...)
+	sort.Float64s(sorted)
+	for _, v := range sorted {
+		col, w := figSoft, 14.0
+		if v == 0 {
+			col, w = figBad, 20
+		} else if v > 3*start {
+			col = figAccent
+		}
+		b.WriteString(line(mx, y(v), mx+w, y(v), col, 1.6))
+	}
+	med := sorted[len(sorted)/2]
+	b.WriteString(line(mx-6, y(med), mx+26, y(med), figDeep, 2))
+	b.WriteString(mTxt(mx+32, y(med)+3.5, 10.5, figDeep, "start", "600", frNum(med, 0)))
+	b.WriteString(sTxt(mx+32, y(med)+16, 10, figDeep, "start", "400", "le médian"))
+
+	b.WriteString(sTxt(24, 344, 10.5, figMuted, "start", "400", fmt.Sprintf(
+		"%d départs sur %d finissent à zéro, et ils sont tous voisins : c'est la même mauvaise décennie.", ruined, len(bengenVintages))))
+	b.WriteString(sTxt(24, 360, 10.5, figMuted, "start", "400", fmt.Sprintf(
+		"%d autres laissent plus de trois fois la mise, jusqu'à neuf fois. Le médian, lui, rend le capital intact.", rich)))
+	b.WriteString(sTxt(24, 376, 10.5, figSoft, "start", "600",
+		"La règle ne choisit pas entre ses deux pathologies, et vous non plus : c'est le tirage qui décide."))
+	return svg(640, 390, b.String())
+}
+
+// --- The five families, ordered by the information they agree to listen to ---
+
+func figFamillesInformation() string {
+	type family struct {
+		name  string
+		rules string
+		hears [4]int // 0 = no, 1 = some rules of the family, 2 = yes
+		gov   int    // 1 to 4
+	}
+	fams := []family{
+		{"Fixe", "Bengen et ses amendements", [4]int{0, 0, 0, 0}, 1},
+		{"Proportionnelle", "pourcentage fixe, VPW", [4]int{2, 1, 0, 0}, 2},
+		{"À garde-fous", "Guyton-Klinger, corridor Vanguard, guardrails par risque", [4]int{2, 1, 0, 1}, 3},
+		{"Actuarielle", "ABW, TPAW, règles CAPE", [4]int{2, 2, 2, 2}, 4},
+	}
+	cols := []string{"le portefeuille", "l'horizon restant", "les valorisations", "les flux futurs"}
+
+	const (
+		lx   = 24.0  // where the family name starts
+		cx0  = 250.0 // first information column
+		step = 74.0
+		gx   = 560.0 // the governance gauge
+	)
+	var b strings.Builder
+	b.WriteString(plateHead("la carte des familles",
+		"Plus une règle écoute, mieux elle se place, plus elle exige de vous"))
+	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+		"cercle plein quand toute la famille l'écoute, demi-cercle quand certaines règles seulement, vide sinon"))
+
+	for i, c := range cols {
+		l1, l2 := wrapTwo(c, 12)
+		b.WriteString(sTxt(cx0+float64(i)*step, 96, 10, figMuted, "middle", "400", l1))
+		if l2 != "" {
+			b.WriteString(sTxt(cx0+float64(i)*step, 108, 10, figMuted, "middle", "400", l2))
+		}
+	}
+	b.WriteString(sTxt(gx, 96, 10, figMuted, "middle", "400", "gouvernance"))
+	b.WriteString(sTxt(gx, 108, 10, figMuted, "middle", "400", "exigée"))
+
+	for i, f := range fams {
+		y := 138.0 + float64(i)*44
+		b.WriteString(line(lx, y+22, 600, y+22, figGrid, 1))
+		b.WriteString(sTxt(lx, y, 11.5, figInk, "start", "600", f.name))
+		b.WriteString(sTxt(lx, y+14, 10, figMuted, "start", "400", f.rules))
+		for k, h := range f.hears {
+			cx := cx0 + float64(k)*step
+			switch h {
+			case 2:
+				fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`, cx, y+2, figAccent)
+			case 1:
+				fmt.Fprintf(&b, `<path d="M %.1f,%.1f A 6,6 0 0,1 %.1f,%.1f Z" fill="%s"/>`,
+					cx, y-4, cx, y+8, figAccent)
+				fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="none" stroke="%s" stroke-width="1.4"/>`,
+					cx, y+2, figAccent)
+			default:
+				fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="none" stroke="%s" stroke-width="1.4"/>`,
+					cx, y+2, figRule)
+			}
+		}
+		for k := 0; k < 4; k++ {
+			col := figRule
+			if k < f.gov {
+				col = figDeep
+			}
+			fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="7" height="14" rx="1.5" fill="%s"/>`,
+				gx-18+float64(k)*10, y-5, col)
+		}
+	}
+
+	// The fifth family does not sit on the same ladder, and the article says so.
+	const y5 = 320.0
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="52" rx="6" fill="%s"/>`,
+		lx, y5-18, 600-lx, figWash)
+	b.WriteString(sTxt(lx+14, y5, 11.5, figInk, "start", "600", "Par plancher garanti"))
+	b.WriteString(sTxt(lx+14, y5+14, 10, figMuted, "start", "400", "rentes viagères, échelle de linkers, rachats de trimestres"))
+	b.WriteString(sTxt(lx+14, y5+28, 10.5, figDeep, "start", "600",
+		"n'écoute rien non plus, mais sort le plancher du portefeuille : elle change de terrain, pas de place sur la carte"))
+
+	b.WriteString(sTxt(24, 396, 10.5, figMuted, "start", "400",
+		"Les colonnes se remplissent de haut en bas, et la jauge de droite avec elles. C'est tout l'arbitrage de la partie :"))
+	b.WriteString(sTxt(24, 412, 10.5, figMuted, "start", "400",
+		"le gain de position se mesure, le coût se paie en discipline, et une règle abandonnée ne vaut plus rien."))
+	return svg(640, 426, b.String())
 }

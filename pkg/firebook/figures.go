@@ -88,6 +88,8 @@ var figures = map[string]func() string{
 	"corridor-borne":         figCorridorBorne,
 	"vpw-pont":               figVpwPont,
 	"bengen-falaise":         figBengenFalaise,
+	"bengen-millesimes":      figBengenMillesimes,
+	"familles-information":   figFamillesInformation,
 	"pourcentage-lissages":   figPourcentageLissages,
 	"borne-geometrique":      figBorneGeometrique,
 	"cape-depuis-1881":       figCapeDepuis1881,
