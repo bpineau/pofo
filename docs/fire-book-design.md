@@ -79,7 +79,7 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] la-regle-des-4-pourcents: La regle des 4 % en dix minutes (et pourquoi ce n'est qu'un point de depart)
 - [x] combien-il-vous-faut: Combien il vous faut (25x, 28x, 33x : du budget au capital cible)
 - [x] les-trois-phases: Accumulation, transition, retrait : les trois vies d'un plan FIRE
-- [ ] utiliser-la-page-fire: Utiliser la page FIRE de pofo (chaque section, chaque controle)
+- [x] utiliser-la-page-fire: Utiliser la page FIRE de pofo (chaque section, chaque controle)
 - [x] erreurs-classiques-fire: Les dix erreurs qui ruinent un plan FIRE
 
 ### II. La science du retrait
@@ -87,11 +87,11 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] sequence-des-rendements: Le risque de sequence : le vrai ennemi du retraite
 - [x] ruine-et-probabilites: La probabilite de ruine : la lire, la choisir, ne pas la subir
 - [x] rendements-arithmetiques-geometriques: Moyenne arithmetique, moyenne geometrique et volatility drag
-- [ ] anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
+- [x] anarkulova-cederburg: Au-dela des Etats-Unis : Anarkulova, Cederburg et l'echantillon mondial (etat de l'art)
 - [ ] valorisations-et-cape: Les valorisations (CAPE) et ce qu'elles disent du taux de retrait
 - [ ] rendements-attendus: Les rendements attendus prospectifs (Morningstar, Vanguard, banques d'investissement)
 - [ ] horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
-- [ ] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
+- [x] serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
 
 ### III. Modeliser : Monte-Carlo et autres machines
 - [ ] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
