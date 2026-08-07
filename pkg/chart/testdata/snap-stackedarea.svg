@@ -18,7 +18,7 @@
 <text x="14" y="188.0" font-size="12" fill="#7A8294" text-anchor="middle" transform="rotate(-90 14 188.0)">%</text>
 <line x1="64" y1="312" x2="624" y2="312" stroke="#CDD2DA"/>
 <line x1="64" y1="64" x2="64" y2="312" stroke="#CDD2DA"/>
-<metadata class="hover">{"kind":"stack","x0":64,"x1":624,"y0":64,"y1":312,"xmax":2,"xlabel":"t","ylabel":"%","series":[{"name":"b","color":"#D92D20","ys":[10,20,25]},{"name":"f","color":"#12B76A","ys":[60,50,40]}]}</metadata>
+<metadata class="hover">{"kind":"stack","x0":64,"x1":624,"y0":64,"y1":312,"xmin":0,"xmax":2,"xlabel":"t","ylabel":"%","series":[{"name":"b","color":"#D92D20","ys":[10,20,25]},{"name":"f","color":"#12B76A","ys":[60,50,40]}]}</metadata>
 <rect x="64.0" y="36" width="12" height="12" rx="2" fill="#12B76A" fill-opacity="0.75"/><text x="81.0" y="46" font-size="12" fill="#16181D">f</text>
 <rect x="106.2" y="36" width="12" height="12" rx="2" fill="#D92D20" fill-opacity="0.75"/><text x="123.2" y="46" font-size="12" fill="#16181D">b</text>
 </svg>
