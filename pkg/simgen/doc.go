@@ -10,7 +10,9 @@
 //   - Composite builds a base-100 index from constant weights, including
 //     "excess" legs (futures) and annual fees;
 //   - TSMOM is a configurable time-series momentum engine (markets,
-//     lookback, vol target, leverage) for replicating trend strategies;
+//     lookback, vol target, leverage) for replicating trend strategies: the
+//     signal is refreshed every Rebalance days, risk is rescaled every day
+//     against an exponentially weighted covariance (CovHalfLife);
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error

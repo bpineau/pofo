@@ -243,3 +243,86 @@ func TestWithRefDataServesLocalFiles(t *testing.T) {
 		t.Fatalf("fallback: %+v, %v", s, err)
 	}
 }
+
+// mkRegimes builds a deterministic path with three regimes: a long calm
+// uptrend (so the trend signal is long), a fortnight of rising volatility,
+// then one crash day. It is the shape of every real volatility explosion,
+// and the one the risk model has to react to.
+func mkRegimes(symbol string, n, rampFrom, crash int, calm, hot, drop float64) *marketdata.Series {
+	s := &marketdata.Series{Symbol: symbol}
+	v := 100.0
+	for i := range n {
+		s.Points = append(s.Points, marketdata.Point{Date: day(i), Close: v})
+		var r float64
+		switch {
+		case i == crash:
+			r = drop
+		case i >= rampFrom:
+			r = hot
+			if i%2 == 0 {
+				r = -hot
+			}
+		default:
+			r = calm
+			if i%2 == 0 {
+				r = -calm * 0.5 // calm regime drifts up
+			}
+		}
+		v *= 1 + r
+	}
+	return s
+}
+
+// TestTSMOMCutsRiskIntoAVolatilitySpike pins the risk model down: when
+// volatility explodes for a fortnight before a crash day, the book must be
+// materially smaller by the time the crash lands. The counterfactual is run
+// in the same breath, a risk model so slow it never updates (CovHalfLife far
+// beyond the sample), which is what sizing once a month off a flat trailing
+// window amounted to: that is how the engine used to lose 12 % in a day
+// against a 10 % volatility target while the funds it replicates lost 3 to 4.
+func TestTSMOMCutsRiskIntoAVolatilitySpike(t *testing.T) {
+	const n, rampFrom, crash = 400, 339, 352
+	f := fakeFetcher{
+		"A":    mkRegimes("A", n, rampFrom, crash, 0.004, 0.02, -0.08),
+		"B":    mkRegimes("B", n, rampFrom, crash, 0.003, 0.02, -0.08),
+		"^IRX": mkLevels("^IRX", n, 0),
+	}
+	fr, err := BuildFrame(f, []string{"A", "B", "^IRX"}, day(0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg := TSMOMConfig{
+		Markets:     []string{"A", "B"},
+		CashID:      "^IRX",
+		Lookback:    252,
+		VolWindow:   63,
+		Rebalance:   21,
+		TargetVol:   0.10,
+		MaxLeverage: 2,
+	}
+	worstDay := func(cfg TSMOMConfig) float64 {
+		values, _, err := TSMOM(fr, cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
+		worst := 0.0
+		for i := 1; i < len(values); i++ {
+			worst = min(worst, values[i]/values[i-1]-1)
+		}
+		return worst
+	}
+	frozen := cfg
+	frozen.CovHalfLife = 100000
+	reactive, stale := worstDay(cfg), worstDay(frozen)
+	t.Logf("worst day: reactive %.2f%%, frozen risk model %.2f%%", reactive*100, stale*100)
+
+	if reactive < stale/2 {
+		t.Errorf("the book was not cut into the volatility spike: worst day %.2f%% against %.2f%% with a frozen risk model, want at most half",
+			reactive*100, stale*100)
+	}
+	// And in absolute terms: a 10 %/yr book moves 0.63 % on an average day,
+	// so anything past eight of those is a tail the model failed to see.
+	if reactive < -8*0.10/math.Sqrt(252) {
+		t.Errorf("worst day %.2f%% is more than eight daily sigmas of the volatility target", reactive*100)
+	}
+}

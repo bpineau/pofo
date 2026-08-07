@@ -129,15 +129,15 @@ func TestTrendCorrExtremesAreTheRealOnes(t *testing.T) {
 		t.Errorf("the record peaks at index %d (month key %d, %.4f), the plate annotates index %d",
 			hi, months[hi], corr[hi], trendCorrMaxIdx)
 	}
-	// The labels name July 2009 and February 2018.
+	// The labels name May 2003 and January 2018.
 	for _, c := range []struct {
 		idx        int
 		year       int
 		month      time.Month
 		label, why string
 	}{
-		{trendCorrMinIdx, 2009, time.July, "juillet 2009", "trough"},
-		{trendCorrMaxIdx, 2018, time.February, "février 2018", "peak"},
+		{trendCorrMinIdx, 2003, time.May, "mai 2003", "trough"},
+		{trendCorrMaxIdx, 2018, time.January, "janvier 2018", "peak"},
 	} {
 		k := months[c.idx]
 		if got, want := k, c.year*12+int(c.month)-1; got != want {
@@ -165,8 +165,10 @@ func TestTrendCorrHeadlineNumbers(t *testing.T) {
 	if got, want := math.Round(mean*100), math.Round(trendCorrMean()*100); got != want {
 		t.Errorf("the record's mean rounds to %+.2f, the plate prints %+.2f", got/100, want/100)
 	}
+	// The plate freezes hundredths, so a month sitting on the band edge can
+	// fall either side of it: one point of slack on the share, no more.
 	share := outside / float64(len(corr)) * 100
-	if got, want := math.Round(share), math.Round(trendCorrOutside()); got != want {
+	if got, want := math.Round(share), math.Round(trendCorrOutside()); math.Abs(got-want) > 1 {
 		t.Errorf("the record leaves %.0f %% of the months outside ±%.1f, the plate prints %.0f %%", got, trendCorrBand, want)
 	}
 	// The article's own two examples must hold in the record it is drawn from:
