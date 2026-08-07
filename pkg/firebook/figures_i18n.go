@@ -34,6 +34,37 @@ var figureDict = map[string]string{
 	"volatil : +27 % / −13 % (même moyenne)":                "volatile: +27% / −13% (same average)",
 	"années  →":                      "years  →",
 	"richesse (× capital de départ)": "wealth (× starting capital)",
+
+	// sequence-risk
+	"Deux séquences, même rendement moyen, retraits identiques": "Two sequences, same average return, identical withdrawals",
+	"krach précoce : ruine": "early crash: ruin",
+	"krach tardif : survit": "late crash: survives",
+	"années de retraite  →": "years of retirement  →",
+	"capital de départ":     "starting capital",
+
+	// millesimes-1966-1982
+	"MILLÉSIME 1966 CONTRE MILLÉSIME 1982":           "1966 VINTAGE AGAINST 1982 VINTAGE",
+	"Le même plan, deux dates de départ":             "The same plan, two starting dates",
+	"capital réel restant, en millions d'euros":      "real capital left, in millions of euros",
+	"années écoulées depuis le départ à la retraite": "years since retirement began",
+	"même plan des deux côtés : 1 M€, 40 k€ retirés chaque année, indexés sur l'inflation, jamais ajustés": "same plan on both sides: EUR 1M, EUR 40k a year, indexed to inflation, never adjusted",
+	"sous la mise de départ":     "below the starting stake",
+	"départ en 1966":             "starting in 1966",
+	"départ en 1982":             "starting in 1982",
+	"millésime 1966":             "1966 vintage",
+	"millésime 1982":             "1982 vintage",
+	"réel, dix premières années": "real, first ten years",
+	"réel, trente ans":           "real, thirty years",
+	"à l'arrivée":                "at the finish",
+	"zéro en 1994, l'année 29":   "zero in 1994, year 29",
+	"zéro":                       "zero",
+	"4,6 M€":                     "EUR 4.6M",
+	"−1,2 %/an":                  "−1.2%/yr",
+	"+4,2 %/an":                  "+4.2%/yr",
+	"+7,0 %/an":                  "+7.0%/yr",
+	"+11,4 %/an":                 "+11.4%/yr",
+	"Le portefeuille de 1966 a pourtant rapporté plus que le retrait. C'est l'ordre des années qui a tué le plan.":                  "The 1966 portfolio still earned more than it paid out. The order of the years is what killed the plan.",
+	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; retrait fixe, sans fiscalité.": "Real US 60/40 (S&amp;P 500, 5-year Treasuries, CPI-U deflated), reconstructed for this book; fixed withdrawal, no taxes.",
 }
 
 var (
@@ -53,10 +84,27 @@ var (
 	reNeutral = regexp.MustCompile(`^[\d\s\p{Zs}%×+.,:;()'’/\-−–]+$`)
 	reDigit   = regexp.MustCompile(`\d`)
 
+	reThousandsGroup = regexp.MustCompile(`(\d),(\d\d\d)`)
+
 	reDecimalComma = regexp.MustCompile(`(\d),(\d)`)
 	reThousands    = regexp.MustCompile(`(\d)[\x{00a0}\x{202f} ](\d\d\d)`)
 	rePercentSpace = regexp.MustCompile(`(\d)[\x{00a0}\x{202f} ]?%`)
 )
+
+// hasFrenchDecimal reports whether a payload still carries a French decimal
+// comma. English thousands separators ("EUR 1,243k") are commas between digits
+// too, so they are folded away first; a comma left between digits after that
+// is a decimal separator that escaped the translation.
+func hasFrenchDecimal(s string) bool {
+	for {
+		next := reThousandsGroup.ReplaceAllString(s, "$1$2")
+		if next == s {
+			break
+		}
+		s = next
+	}
+	return reFrenchDecimal.MatchString(s)
+}
 
 // isNeutralPayload reports whether a text payload carries numbers and symbols
 // only, so anglicizeNumbers alone can translate it.

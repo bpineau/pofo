@@ -1,6 +1,9 @@
 package firebook
 
 import (
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"regexp"
 	"strings"
@@ -184,7 +187,7 @@ func TestFigureDictionaryCoversEN(t *testing.T) {
 			}
 		}
 		for _, payload := range figureTextNodes(FigureSVGEnglish(id)) {
-			if reFrenchDecimal.MatchString(payload) {
+			if hasFrenchDecimal(payload) {
 				t.Errorf("figure %q: French decimal survives translation: %q", id, payload)
 			}
 			if reFrenchPercent.MatchString(payload) {
@@ -211,6 +214,25 @@ func TestEnglishEditionIsComplete(t *testing.T) {
 	for slug := range French.Titles() {
 		if !taxOnlyFR[slug] && !covered[slug] {
 			t.Errorf("%s has no English counterpart", slug)
+		}
+	}
+}
+
+// The source stamp is metadata, never content: it must not reach the page.
+func TestStampNeverRenders(t *testing.T) {
+	srv := httptest.NewServer(English.Handler())
+	defer srv.Close()
+	for _, cat := range English.Categories {
+		for _, a := range cat.Articles {
+			res, err := http.Get(srv.URL + "/" + a.Slug)
+			if err != nil {
+				t.Fatal(err)
+			}
+			body, _ := io.ReadAll(res.Body)
+			res.Body.Close()
+			if strings.Contains(string(body), "source:") {
+				t.Errorf("%s: the source stamp leaks into the page", a.Slug)
+			}
 		}
 	}
 }

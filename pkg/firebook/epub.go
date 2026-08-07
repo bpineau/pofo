@@ -110,14 +110,7 @@ func (e *Edition) articleEPUBBody(a Article, href func(string) string, titles ma
 	if err != nil {
 		return "", fmt.Errorf("firebook: reading %s: %w", a.Slug, err)
 	}
-	body := strings.TrimSpace(string(raw))
-	if strings.HasPrefix(body, "# ") {
-		if _, rest, found := strings.Cut(body, "\n"); found {
-			body = rest
-		} else {
-			body = ""
-		}
-	}
+	body := articleBody(raw)
 	rendered := bookmd.ToHTML(body, bookmd.Options{
 		Titles: titles, Href: href, Figure: e.Figure, Callouts: e.Callouts})
 	return fmt.Sprintf(`<h1>%s</h1>%s`, html.EscapeString(a.Title), epub.Normalize(rendered)), nil
