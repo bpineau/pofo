@@ -2,12 +2,12 @@
 
 Neuf articles ont détaillé les règles une à une ; reste la décision. Elle est moins technique qu'on ne le croit à ce stade : les bonnes règles modernes, bien paramétrées, produisent des résultats plus proches entre eux que ne le laisse craindre l'ampleur du débat, et l'écart entre deux bonnes règles est presque toujours plus petit que l'écart créé par une erreur d'entrée (dépenses sous-estimées, pension oubliée, [[erreurs-classiques-fire]]).
 
-Mais « proche » n'est pas « identique » : les règles diffèrent radicalement par la **forme** du risque qu'elles vous font vivre et par ce qu'elles exigent de leur exécutant, et c'est là-dessus, tempérament, plancher, gouvernance, que le choix se joue. Cet article est la procédure de décision complète : les cinq étapes dans l'ordre, la matrice profils-règles, les hybrides légitimes (dont le plus important, des règles **différentes** par phase du plan), la table récapitulative de tout le panorama, et un cas déroulé de bout en bout avec pofo.
+Mais « proche » n'est pas « identique » : les règles diffèrent radicalement par la **forme** du risque qu'elles vous font vivre et par ce qu'elles exigent de leur exécutant, et c'est là-dessus, tempérament, plancher, gouvernance, que le choix se joue. Cet article est la procédure de décision complète : les cinq étapes dans l'ordre, la matrice profils-règles, les hybrides légitimes (dont le plus important, des règles **différentes** par phase du plan), la table récapitulative de tout le panorama, et un cas déroulé de bout en bout en simulation.
 
 À la fin, vous aurez une règle écrite, calibrée, testée : la vôtre.
 
 ::: cle Le principe de la décision
-On ne choisit pas « la meilleure règle ». On choisit la forme de risque qu'on préfère subir (faillite rare / ajustements bornés / variabilité continue), sous la contrainte de son plancher réel, exécutable par la personne qui tiendra le stylo dans vingt ans. Trois questions, dans cet ordre : que **puis**-je encaisser (le plancher) ? que **veux**-je vivre (le tempérament) ? qui **exécutera** (la gouvernance) ? La technique vient après, et pofo la règle en une séance.
+On ne choisit pas « la meilleure règle ». On choisit la forme de risque qu'on préfère subir (faillite rare / ajustements bornés / variabilité continue), sous la contrainte de son plancher réel, exécutable par la personne qui tiendra le stylo dans vingt ans. Trois questions, dans cet ordre : que **puis**-je encaisser (le plancher) ? que **veux**-je vivre (le tempérament) ? qui **exécutera** (la gouvernance) ? La technique vient après, et se règle en une séance.
 :::
 
 ## Étape 1 : le socle, avant toute règle
@@ -81,7 +81,7 @@ Claire (51 ans) et Idris (53 ans) : 1,7 M€, plancher 45 000 €, confort 58 00
 ## L'essentiel à retenir
 
 - On choisit une **forme** de risque sous contrainte de plancher, exécutable par l'exécutant réel : tempérament des mauvaises années, gouvernance, puis technique : dans cet ordre.
-- Chaque famille a son test éliminatoire (taux ≤ 3,5 % pour le fixe, « actions −50 % ≥ plancher » pour les proportionnelles, borne basse composée pour le corridor, plancher aligné pour les guardrails, outil-à-vie pour l'ABW) : vingt minutes de pofo.
+- Chaque famille a son test éliminatoire (taux ≤ 3,5 % pour le fixe, « actions −50 % ≥ plancher » pour les proportionnelles, borne basse composée pour le corridor, plancher aligné pour les guardrails, outil-à-vie pour l'ABW) : vingt minutes.
 - Les hybrides sont légitimes et souvent optimaux, surtout le grand oublié : deux règles pour deux phases (prudence pilotée à découvert, générosité proportionnelle une fois adossé).
 - Les écarts entre bonnes règles sont du second ordre face aux erreurs d'entrées et au taux initial : investissez votre attention dans cet ordre, et choisissez ensuite sereinement.
 - Le produit final est **une page écrite** : règle, paramètres, seuils, revue, phase suivante, conditions de changement : sans elle, vous n'avez pas une stratégie, vous avez une intention.

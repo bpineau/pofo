@@ -2,7 +2,7 @@
 
 Toute la tradition du taux de retrait sûr, de Bengen à Trinity et à la quasi-totalité des simulateurs en ligne, repose sur un seul jeu de données : les marchés américains depuis 1926 ([[etude-trinity]]). Or les États-Unis du XXe siècle ne sont pas un échantillon neutre. C'est le pays qui a gagné le siècle.
 
-Depuis les années 2010, une lignée de travaux, Dimson-Marsh-Staunton, Wade Pfau, puis surtout Aizhan Anarkulova, Scott Cederburg et Michael O'Doherty, a refait les calculs sur l'expérience **complète** des pays développés, et les résultats dérangent : le taux de retrait « sûr » mondial est nettement sous 4 %, et les portefeuilles obligataires protègent moins qu'on ne le croyait. Cette page explique ces travaux, leurs chiffres, les critiques qu'on peut leur faire, et comment pofo les met littéralement à votre disposition : le modèle « broad sample » de la page FIRE est construit sur ces données.
+Depuis les années 2010, une lignée de travaux, Dimson-Marsh-Staunton, Wade Pfau, puis surtout Aizhan Anarkulova, Scott Cederburg et Michael O'Doherty, a refait les calculs sur l'expérience **complète** des pays développés, et les résultats dérangent : le taux de retrait « sûr » mondial est nettement sous 4 %, et les portefeuilles obligataires protègent moins qu'on ne le croyait. Cette page explique ces travaux, leurs chiffres, les critiques qu'on peut leur faire, et comment la page FIRE les met à votre disposition : le modèle « broad sample » est construit sur ces données.
 
 ::: cle L'idée en une phrase
 Si vous admettez que la France, le Japon, l'Allemagne ou l'Italie de 1900-2020 sont des futurs **possibles** pour un investisseur développé d'aujourd'hui, alors le risque de long horizon est plus élevé que ce que l'histoire américaine seule laisse croire : sur l'échantillon mondial, la règle des 4 % rigide échoue nettement plus souvent, et le « taux à 5 % d'échec » d'un couple de 65 ans est plutôt vers 2,3-2,7 % selon les hypothèses. Ce n'est pas la seule lecture possible du monde, mais c'est la borne prudente la mieux documentée dont on dispose.
@@ -22,7 +22,7 @@ Les travaux d'Anarkulova, Cederburg et O'Doherty (« The Safe Withdrawal Rate: E
 
 **Les données** : la base la plus propre disponible sur les pays développés (construite sur le référentiel GFD et les travaux académiques de long terme), 38 pays développés, environ 2 500 années-pays de rendements réels actions, obligations et monétaire, avec un soin particulier contre les biais de survie et d'anticipation (un pays entre dans l'échantillon quand il est développé à l'**époque**, pas rétrospectivement, l'Argentine de 1900, alors riche, y figure ; c'est le point qui fâche, on y revient).
 
-**La méthode** : plutôt que rejouer des fenêtres d'un seul pays, un **bootstrap par blocs** : on tire des blocs de dix ans (pour préserver les grappes, tendances et régimes, [[sequence-des-rendements]]) dans l'ensemble pays × époques, et on assemble des retraites synthétiques de la durée voulue. Chaque retraite simulée vit donc l'histoire d'un pays développé cohérent, morceau par morceau, catastrophes comprises. C'est très exactement ce que fait le modèle « broad sample » de pofo, qui embarque le panel académique Jorda-Schularick-Taylor (16 pays, 1870-2020) et le rejoue en blocs par pays sur un portefeuille 60/40 domestique ([[la-machine-pofo]]).
+**La méthode** : plutôt que rejouer des fenêtres d'un seul pays, un **bootstrap par blocs** : on tire des blocs de dix ans (pour préserver les grappes, tendances et régimes, [[sequence-des-rendements]]) dans l'ensemble pays × époques, et on assemble des retraites synthétiques de la durée voulue. Chaque retraite simulée vit donc l'histoire d'un pays développé cohérent, morceau par morceau, catastrophes comprises. C'est très exactement ce que fait le modèle « broad sample » de la page FIRE, construit sur le panel académique Jorda-Schularick-Taylor (16 pays, 1870-2020) et rejoué en blocs par pays sur un portefeuille 60/40 domestique ([[la-machine-pofo]]).
 
 **La mortalité** : au lieu d'un horizon fixe de 30 ans, un couple de 65 ans avec les vraies tables de mortalité, ce qui donne des retraites de durée aléatoire, parfois 35 ans et plus.
 
@@ -44,13 +44,13 @@ Ces travaux ont leurs contradicteurs sérieux (ERN en tête, qui y a consacré p
 
 **Le chevauchement des blocs** et la taille effective de l'échantillon : 2 500 années-pays semblent beaucoup, mais les crises sont mondiales et corrélées (1929, 1973, 2008 frappent tout le monde) ; l'échantillon de désastres **indépendants** reste petit. L'incertitude sur ces chiffres est donc elle-même large.
 
-La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'aujourd'hui se situe quelque part entre l'histoire américaine et l'échantillon mondial domestique, sans qu'on sache où précisément. D'où la conception de pofo : les deux bornes affichées côte à côte, en permanence.
+La synthèse raisonnable : le « vrai » risque d'un investisseur mondialisé d'aujourd'hui se situe quelque part entre l'histoire américaine et l'échantillon mondial domestique, sans qu'on sache où précisément. D'où le parti pris retenu ici : les deux bornes affichées côte à côte, en permanence.
 
 ## Ce que ça change pour votre plan
 
 **Le taux rigide de dimensionnement.** Si vous dimensionnez sans marges ([[combien-il-vous-faut]]), l'existence de la borne mondiale justifie 3-3,5 % plutôt que 4 %, et interdit de considérer 4 % comme « scientifiquement sûr » sur 45 ans. En revanche, viser 2,3 % (43 fois les dépenses !) par littéralisme serait sur-réagir. C'est la borne domestique-catastrophiste, que vos marges réelles (pension, flexibilité, diversification) dominent largement.
 
-**La lecture de la page FIRE.** La colonne broad-sample de pofo n'**est pas** votre portefeuille. C'est un 60/40 domestique rejoué à travers le siècle des 16 pays, curseurs ignorés. Si votre plan tient dans cette colonne, il tient dans le pire monde développé documenté. C'est le meilleur label de robustesse disponible. S'il n'y tient pas, regardez **où** échouent les scénarios (souvent, blocs inflationnistes, [[inflation-et-taux-de-retrait]]) et ce qui manque à votre portefeuille pour ces régimes ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+**La lecture de la page FIRE.** La colonne broad-sample n'**est pas** votre portefeuille. C'est un 60/40 domestique rejoué à travers le siècle des 16 pays, curseurs ignorés. Si votre plan tient dans cette colonne, il tient dans le pire monde développé documenté. C'est le meilleur label de robustesse disponible. S'il n'y tient pas, regardez **où** échouent les scénarios (souvent, blocs inflationnistes, [[inflation-et-taux-de-retrait]]) et ce qui manque à votre portefeuille pour ces régimes ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
 **Le portefeuille.** Deux leçons directes : la diversification internationale des actions n'est pas un raffinement, c'est la protection contre le risque dominant de l'échantillon (le décrochage d'un pays, fût-il le vôtre) ; et les obligations nominales domestiques ne sont pas l'actif sûr du long horizon : leur pire ennemi (l'inflation soutenue) est aussi celui du rentier ([[obligations-indexees]], [[or-en-retrait]]).
 
@@ -63,7 +63,7 @@ Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à
 - L'histoire américaine est le billet gagnant du siècle : calibrer un plan dessus, c'est hériter de son biais optimiste ; le monde développé complet raconte une histoire plus dure.
 - Anarkulova-Cederburg-O'Doherty (38 pays, bootstrap par blocs, mortalité réelle) : le 4 % rigide échoue ~17 % du temps, le taux à 5 % d'échec est vers 2,3 % pour un couple domestique 60/40 ; et les obligations domestiques protègent moins que la diversification internationale des actions.
 - Les critiques (guerres, Argentine, investisseur domestique, crises corrélées) sont sérieuses : la vérité d'un investisseur mondialisé est entre les deux bornes ; personne ne sait où.
-- En pratique : 3-3,5 % rigide pour dimensionner, la colonne broad-sample de pofo comme label de robustesse, la diversification internationale et les actifs anti-inflation comme réponses aux modes de défaillance qu'elle révèle.
+- En pratique : 3-3,5 % rigide pour dimensionner, la colonne broad-sample comme label de robustesse, la diversification internationale et les actifs anti-inflation comme réponses aux modes de défaillance qu'elle révèle.
 - Ces données sont dans votre outil : le modèle broad-sample de la page FIRE rejoue le panel JST 16 pays, 1870-2020 ([[la-machine-pofo]], [[utiliser-la-page-fire]]).
 
 ---
@@ -74,4 +74,4 @@ Plan : 1,4 M€, 45 000 €/an rigides (3,2 %), 45 ans, pension 15 000 €/an à
 - Dimson, Marsh & Staunton, *Triumph of the Optimists* (2002) et le *Global Investment Returns Yearbook* (annuel, UBS) : le siècle mondial en chiffres.
 - Wade Pfau, « An International Perspective on Safe Withdrawal Rates » (2010) : le précurseur.
 - Early Retirement Now sur ces études (critiques Parts consacrées) : la contradiction argumentée ([[serie-ern]]).
-- Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 » : le panel académique que pofo embarque.
+- Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 » : le panel académique du modèle broad-sample.

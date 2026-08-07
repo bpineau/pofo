@@ -30,7 +30,7 @@ La règle a deux actes fondateurs, détaillés dans [[etude-trinity]].
 
 **Bengen, 1994.** William Bengen rejoue toutes les retraites américaines possibles depuis 1926 : départ en 1926, en 1927, en 1928... Pour chaque « millésime », il calcule combien d'années un portefeuille 50/50 actions/obligations aurait tenu sous un retrait indexé donné. Résultat : le pire millésime de l'histoire (départ en 1966, dans les dents du marché plat et de l'inflation des années 1970) supportait un retrait initial d'environ 4,15 % sur 30 ans. Bengen appelle ce plancher SAFEMAX. Le chiffre rond « 4 % » vient de là. C'est le taux du **pire** cas historique américain, pas une moyenne (la moyenne des millésimes supporte plus de 6 %).
 
-**Trinity, 1998.** Trois professeurs de la Trinity University (Cooley, Hubbard, Walz) transforment l'approche en grille de probabilités : pour chaque taux de retrait, allocation et horizon, quel pourcentage des fenêtres historiques a survécu ? La cellule restée célèbre : 4 %, portefeuille 50/50, 30 ans, 95 à 100 % de succès selon les mises à jour. C'est de cette étude que vient l'idée de « probabilité de succès » qui structure encore tous les simulateurs, y compris pofo ([[ruine-et-probabilites]]).
+**Trinity, 1998.** Trois professeurs de la Trinity University (Cooley, Hubbard, Walz) transforment l'approche en grille de probabilités : pour chaque taux de retrait, allocation et horizon, quel pourcentage des fenêtres historiques a survécu ? La cellule restée célèbre : 4 %, portefeuille 50/50, 30 ans, 95 à 100 % de succès selon les mises à jour. C'est de cette étude que vient l'idée de « probabilité de succès » qui structure encore tous les simulateurs ([[ruine-et-probabilites]]).
 
 ::: encart La règle inversée : le multiple de 25
 « Retirer 4 % » se retourne en « accumuler 25 fois ses dépenses » (1/0,04 = 25). C'est la même règle vue du côté accumulation, et c'est son usage le plus utile : transformer un budget en cible de capital. 3 % correspond à 33 fois, 3,5 % à environ 29 fois. Le détail du passage budget → cible, fiscalité comprise, est dans [[combien-il-vous-faut]].
@@ -61,7 +61,7 @@ Trente ans de recherche ont précisé le tableau. Les résultats convergent sur 
 
 **2. Pour un horizon long, 4 % est trop haut en régime rigide.** C'est le résultat central de la série d'Early Retirement Now ([[serie-ern]]) : sur 50 à 60 ans, le taux qui aurait survécu à tous les millésimes américains tombe vers 3,25 à 3,5 %. La probabilité d'échec du 4 % rigide sur 50 ans, mesurée sur l'histoire américaine, est de l'ordre de 10 à 20 % selon l'allocation, trop pour un plan de vie.
 
-**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » que pofo embarque, 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 % : la France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
+**3. Hors des États-Unis, c'est pire.** Sur l'échantillon mondial (le « broad sample » de 16 pays développés depuis 1870, [[anarkulova-cederburg]]), le taux « sûr » d'un portefeuille 60/40 domestique est nettement sous 4 % : la France, le Japon, l'Allemagne ou l'Italie du XXe siècle ont infligé aux rentiers des séquences que l'histoire américaine ne contient tout simplement pas. Un investisseur mondialisé d'aujourd'hui se situe quelque part entre ces deux mondes.
 
 **4. Les valorisations de départ déplacent le taux.** Partir quand les marchés sont chers (CAPE élevé) a historiquement toujours donné les pires millésimes. Les règles modernes conditionnent donc le taux initial aux valorisations ([[valorisations-et-cape]], [[regles-cape]]). C'est l'une des améliorations les mieux établies.
 
@@ -86,7 +86,7 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
-Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles de pofo (page FIRE, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 € /mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
+Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles (page FIRE, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 € /mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
 :::
 
 ## L'essentiel à retenir
