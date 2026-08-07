@@ -2,6 +2,7 @@ package firebook
 
 import (
 	"bytes"
+	"encoding/xml"
 	"html"
 	"io"
 	"net/http"
@@ -165,6 +166,67 @@ func TestHandlerEPUB(t *testing.T) {
 	}
 	if len(body3) != 0 {
 		t.Errorf("epub: 304 response carried a body (%d bytes)", len(body3))
+	}
+}
+
+// The OPDS route serves a valid one-entry acquisition catalog with the correct
+// content type and a relative acquisition link, so an e-book reader (KOReader)
+// can add the feed once and download or refresh the same book file.
+func TestHandlerOPDS(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+
+	resp, err := srv.Client().Get(srv.URL + "/opds.xml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	body, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("opds: status %d", resp.StatusCode)
+	}
+	const wantType = "application/atom+xml;profile=opds-catalog;kind=acquisition"
+	if ct := resp.Header.Get("Content-Type"); ct != wantType {
+		t.Errorf("opds: Content-Type %q, want %q", ct, wantType)
+	}
+
+	var feed struct {
+		ID      string `xml:"id"`
+		Title   string `xml:"title"`
+		Entries []struct {
+			ID   string `xml:"id"`
+			Link struct {
+				Rel  string `xml:"rel,attr"`
+				Type string `xml:"type,attr"`
+				Href string `xml:"href,attr"`
+			} `xml:"link"`
+		} `xml:"entry"`
+	}
+	if err := xml.Unmarshal(body, &feed); err != nil {
+		t.Fatalf("opds: does not parse as XML: %v\n%s", err, body)
+	}
+	if feed.Title != siteName {
+		t.Errorf("opds: feed title %q, want %q", feed.Title, siteName)
+	}
+	if feed.ID != epubIdentifier+":catalog" {
+		t.Errorf("opds: feed id %q", feed.ID)
+	}
+	if len(feed.Entries) != 1 {
+		t.Fatalf("opds: want 1 entry, got %d", len(feed.Entries))
+	}
+	e := feed.Entries[0]
+	if e.ID != epubIdentifier {
+		t.Errorf("opds: entry id %q, want %q", e.ID, epubIdentifier)
+	}
+	if e.Link.Rel != "http://opds-spec.org/acquisition" {
+		t.Errorf("opds: link rel %q", e.Link.Rel)
+	}
+	if e.Link.Type != "application/epub+zip" {
+		t.Errorf("opds: link type %q", e.Link.Type)
+	}
+	if e.Link.Href != epubFileName {
+		t.Errorf("opds: link href %q, want %q (relative)", e.Link.Href, epubFileName)
 	}
 }
 
