@@ -13,7 +13,7 @@ const c = (key, label, help) => ({kind: "check", key, label, help});
 const chips = (label, help, items) => ({kind: "chips", label, help, items});
 
 const GROUPS = [
-  {title: "Your situation", items: [
+  {title: "Your situation", col: 0, items: [
     r("capital", "Deployed capital", 800000, 4000000, 10000, 1800000, "eur",
       "Liquid capital deployed for the retirement, excluding your home and the emergency fund."),
     r("age", "Age at retirement", 40, 70, 1, 52, "int",
@@ -23,7 +23,7 @@ const GROUPS = [
     r("needAnnual", "Net spending /yr", 24000, 84000, 1000, 60000, "eur",
       "Real (inflation-indexed) net-of-tax household spending. 60 k€/yr = 5 000 €/month."),
   ]},
-  {title: "Pension & side income", items: [
+  {title: "Pension & side income", col: 1, items: [
     chips("Pension scenario",
       "Three pension levels: a politically-stressed 1 000 €/m, the acquired-rights central ~1 700 €/m, and the official-simulator ~2 250 €/m (net real).",
       [["Stress 12k", {pensionAnnual: 12000}],
@@ -38,7 +38,7 @@ const GROUPS = [
     r("sideUntilYear", "Side income until year", 0, 20, 1, 0, "int",
       "The side income runs from year 0 up to (excluding) this year."),
   ]},
-  {title: "Spending policy", items: [
+  {title: "Spending policy", col: 2, items: [
     r("flexCut", "Cut in downturns (0 = fixed rule)", 0, 0.40, 0.05, 0, "pct",
       "Reversible spending cut while the portfolio drawdown exceeds 20%. The single most powerful lever: 15% roughly halves ruin. Section 04 shows its lived cost."),
     r("wrTrigger", "Also cut above this WR (0 = off)", 0, 0.06, 0.002, 0, "pct",
@@ -62,7 +62,7 @@ const GROUPS = [
     r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
       "Spend this share of capital on a joint-life, inflation-linked annuity (1% real rate, 10% insurer load): a guaranteed lifelong income floor that hedges longevity. It converts growth assets into lower guaranteed income, so headline ruin (failing the FULL need) can rise even as the worst late-life outcomes improve; its value is the floor, not the average."),
   ]},
-  {title: "Market model", items: [
+  {title: "Market model", col: 3, items: [
     r("mu", "Real growth return", 0.01, 0.12, 0.005, 0.05, "pct",
       "Arithmetic mean annual real return of the growth sleeve. Geometric ≈ μ − σ²/2, so 5%/11% ≈ 4.4% real compounding."),
     r("sigma", "Volatility (long-horizon)", 0.06, 0.20, 0.005, 0.11, "pct",
@@ -78,7 +78,7 @@ const GROUPS = [
     c("monthly", "Monthly withdrawals (salary-like)",
       "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month. Only the plan-detail and buffer sections (§07-§08) honour it; the model strip and the analysis sections always compare annual kernels, for speed and comparability. The effect is small by design (a refinement, not a lever)."),
   ]},
-  {title: "Cash buffer", items: [
+  {title: "Cash buffer", col: 1, items: [
     r("bufferYears", "Buffer (years of spending)", 0, 10, 1, 3, "int",
       "Low-volatility pocket (cash + short euro linkers) drained when the portfolio is down >10%. Statistically the arbitrage is flat past 2-3 years; its value is behavioural and inflation matching."),
     r("bufferReturn", "Buffer real return", -0.01, 0.05, 0.005, 0.005, "pct",
@@ -86,11 +86,11 @@ const GROUPS = [
     r("bufferStopYear", "Buffer refill stops in year (0 = never)", 0, 20, 1, 0, "int",
       "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down — a bond-tent glidepath."),
   ]},
-  {title: "Taxes", items: [
+  {title: "Taxes", col: 1, items: [
     r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.314, "pct",
       "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts — e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
   ]},
-  {title: "Simulation", items: [
+  {title: "Simulation", col: 0, id: "group-simulation", items: [
     r("nPaths", "Simulated paths", 1000, 10000, 500, 4000, "int",
       "Monte-Carlo paths per model. At 2000 the ruin figure wobbles by roughly ±0.7 point run to run (pure sampling noise); 4000 halves the wobble, 8000 halves it again. Raise it if the figures dance when nothing changed; the engine is fast."),
   ]},
@@ -131,13 +131,24 @@ const state = {};
 const checkEls = {};
 
 function renderRail() {
+  // Four explicit columns (deterministic bin-packing): the situation and the
+  // simulation size on the left, income and the money pockets next, then the
+  // two tall rule groups each get a full column.
+  const cols = [];
+  for (let i = 0; i < 4; i++) {
+    const c = document.createElement("div");
+    c.className = "ctlcol";
+    form.appendChild(c);
+    cols.push(c);
+  }
   GROUPS.forEach((g, gi) => {
     const box = document.createElement("div");
     box.className = "group";
+    if (g.id) box.id = g.id;
     box.innerHTML = `<div class="group-h">${g.title}</div>`;
     // The plan-defining sliders (first group) get a ruler of ticks.
     for (const it of g.items) box.appendChild(buildControl(it, gi === 0));
-    form.appendChild(box);
+    cols[g.col || 0].appendChild(box);
   });
 }
 
@@ -869,10 +880,14 @@ fetch("/api/meta").then(r => r.json()).then(m => {
       <span class="lab"><span>Drag a divider to shift weight</span></span>
       <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>
     </div>`;
-  form.insertBefore(box, form.children[1] || null);
+  // Allocation slots into the first column, under the situation and above
+  // the simulation settings.
+  const sim = document.getElementById("group-simulation");
+  sim.parentElement.insertBefore(box, sim);
   renderAlloc();
   run();
   runSlow();
 });
+
 
 
