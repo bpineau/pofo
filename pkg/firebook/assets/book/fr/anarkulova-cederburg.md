@@ -16,6 +16,10 @@ Le XXe siècle développé a pourtant produit en abondance ce que l'échantillon
 
 Dimson, Marsh et Staunton (le « triumvirat de la London Business School », auteurs du *Global Investment Returns Yearbook*) ont chiffré l'écart dès 2002. Rendement réel des actions sur 1900-2020 → ~6,5 %/an aux États-Unis contre ~4,5 % pour le monde hors États-Unis. Quant aux obligations d'État, dans la moitié des pays, elles ont fait **pire** que 0 % réel sur de longues périodes. Wade Pfau applique dès 2010 la méthode de Bengen à 17 pays. Le SAFEMAX à 30 ans, ~4 % aux États-Unis, tombe sous 3 % dans la majorité des pays et sous 1,5 % dans les pires (France comprise, plombée par ses inflations d'après-guerre).
 
+::: figure safemax-pays
+Panel Jorda-Schularick-Taylor, seize pays développés, 1870-2020 : le taux de retrait initial qu'un 60/40 domestique aurait tenu 30 ans dans le pire millésime de chaque pays, calculé ici sur 59 à 121 fenêtres selon la profondeur des données du pays. Les SAFEMAX de Pfau et d'Anarkulova-Cederburg cités plus haut viennent d'autres bases : les niveaux ne coïncident pas au dixième de point, seul le classement est comparable.
+:::
+
 ## Anarkulova, Cederburg, O'Doherty : la méthode moderne
 
 Les travaux d'Anarkulova, Cederburg et O'Doherty (« The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets », 2023, cosigné avec Sias, et la série d'articles sœurs dont « Beyond the Status Quo », 2023) modernisent la question sur trois plans.

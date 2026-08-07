@@ -100,6 +100,7 @@ var figures = map[string]func() string{
 	"cout-des-erreurs":         figCoutDesErreurs,
 	"vpw-pont":                 figVpwPont,
 	"weimar-reel":              figWeimarReel,
+	"safemax-pays":             figSafemaxPays,
 	"inflation-episode-derive": figInflationEpisodeDerive,
 	"actions-rattrapent":       figActionsRattrapent,
 	"bengen-falaise":           figBengenFalaise,
