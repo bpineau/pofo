@@ -21,6 +21,10 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Content-Type", "text/css; charset=utf-8")
 		_, _ = w.Write([]byte(webui.CSS))
 	})
+	mux.HandleFunc("/fonts.css", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/css; charset=utf-8")
+		_, _ = w.Write([]byte(webui.FontsCSS))
+	})
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
 		meta := map[string]any{"labels": labels, "hasPanel": panel != nil}
 		if panel != nil {

@@ -192,8 +192,9 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 // ReportCSS exposes the view-specific stylesheet to the template.
 func (Page) ReportCSS() template.CSS { return template.CSS(reportCSS) }
 
-// Render writes the HTML document for page to w.
+// Render writes the HTML document for page to w. The embedded identity
+// fonts ride along with the theme so the document stays self-contained.
 func Render(w io.Writer, page *Page) error {
-	page.Theme = template.CSS(webui.CSS)
+	page.Theme = template.CSS(webui.FontsCSS + webui.CSS)
 	return tpl.Execute(w, page)
 }

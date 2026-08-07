@@ -52,6 +52,16 @@ func TestAPISolve(t *testing.T) {
 	}
 }
 
+func TestServesFontsCSS(t *testing.T) {
+	req := httptest.NewRequest(http.MethodGet, "/fonts.css", nil)
+	rec := httptest.NewRecorder()
+	Handler(nil, nil).ServeHTTP(rec, req)
+	if rec.Code != 200 || rec.Header().Get("Content-Type") != "text/css; charset=utf-8" ||
+		!bytes.Contains(rec.Body.Bytes(), []byte("Instrument Sans")) {
+		t.Errorf("fonts.css not served: %d %q", rec.Code, rec.Header().Get("Content-Type"))
+	}
+}
+
 func TestServesIndex(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
