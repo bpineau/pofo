@@ -121,6 +121,14 @@ var Categories = []Category{
 			{"hyperinflation-et-extremes", "Hyperinflations et scénarios extrêmes", "Weimar à Chypre : ce qui survit, la couverture structurelle quasi gratuite déjà en place, et le piège symétrique du prepper."},
 		},
 	},
+	{
+		Title: "Fiscalité et cadre français",
+		Blurb: "Le rentier dans le droit français : enveloppes, imposition des retraits, PUMa, retraite légale, santé, transmission.",
+		Articles: []Article{
+			{"enveloppes-francaises", "PEA, assurance-vie, CTO : les enveloppes du rentier français", "Chaque enveloppe vue de la décumulation, les horloges à dater tôt, et l'ordre de consommation qui est un panachage annuel."},
+			{"flat-tax-et-imposition", "PFU, barème, abattements : l'imposition des retraits", "La part de gain au PMP, l'arbitrage annuel PFU/barème, le lissage des tranches basses, et les purges de fin de partie."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
