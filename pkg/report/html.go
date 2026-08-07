@@ -42,18 +42,18 @@ type CoverageBar struct {
 // PortfolioSection groups everything shown for one portfolio. Sections are
 // rendered folded (<details>) so the report opens on the comparison.
 type PortfolioSection struct {
-	Name          string
-	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
+	Name              string
+	Subtitle          string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG          template.HTML
-	ContribSVG        template.HTML // realized-contribution timeline, trailing-12m window; empty to omit
-	ContribMonthlySVG template.HTML // same timeline, raw monthly window (toggled with ContribSVG)
-	Breakdowns    []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
-	CoverageLabel string          // heading for the coverage chart
-	Coverage      []CoverageBar   // macro-regime or factor coverage; empty to omit
-	RegimeSVG     template.HTML   // realized contribution per regime (bar matrix); empty to omit
-	Assets        []AssetRow
-	Notes         []string // informational lines (e.g. optimizer choices)
-	Warnings      []string
+	ContribSVG        template.HTML   // realized-contribution timeline, trailing-12m window; empty to omit
+	ContribMonthlySVG template.HTML   // same timeline, raw monthly window (toggled with ContribSVG)
+	Breakdowns        []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
+	CoverageLabel     string          // heading for the coverage chart
+	Coverage          []CoverageBar   // macro-regime or factor coverage; empty to omit
+	RegimeSVG         template.HTML   // realized contribution per regime (bar matrix); empty to omit
+	Assets            []AssetRow
+	Notes             []string // informational lines (e.g. optimizer choices)
+	Warnings          []string
 }
 
 // StatCell is one value of the statistics table; Best cells are highlighted.
