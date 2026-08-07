@@ -1,6 +1,6 @@
 # Lexique du FIRE et du retrait
 
-Tous les termes du livre (et du jargon des forums), définis en quelques phrases, avec le renvoi vers le chapitre qui les traite : le lexique se consulte, mais il se **lit** aussi. Parcouru d'un trait, il forme un résumé du livre en ordre alphabétique.
+Tous les termes du livre (et du jargon des forums), définis en quelques phrases, avec le renvoi vers le chapitre qui les traite : le lexique se consulte, mais il se **lit** aussi. Parcouru d'un trait, il forme un résumé du livre en ordre alphabétique. La dernière section rassemble à part les quinze nombres qui reviennent partout, pour vérifier ses ordres de grandeur d'un coup d'œil.
 
 ## A-B
 
@@ -188,9 +188,30 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **VPW (Variable Percentage Withdrawal)** : le pourcentage croissant avec l'âge des Bogleheads (l'annuité inversée à table gravée). Jamais de ruine du capital, consommation délibérée, test de tolérance à la perte obligatoire. [[vpw]]
 
+## Le mémo chiffré
+
+Quinze nombres traversent tout le livre. Les voici rassemblés, avec le terme qui les porte et le chapitre qui les établit. Aucun n'est nouveau ici, et c'est justement le service rendu. Un chiffre de votre plan qui ne ressemble à aucun de ceux-là mérite une explication avant d'être retenu.
+
+| Repère | Ce qu'il mesure | Terme | Chapitre |
+|---|---|---|---|
+| ~4 % sur 30 ans | Le taux rigide qui passe le pire millésime américain | SAFEMAX | Trinity |
+| 3,25-3,5 % | Le même taux à un horizon FIRE de 45-55 ans | SAFEMAX | ERN |
+| ~17 % | L'échec du 4 % rigide sur l'échantillon mondial | Broad sample | Échantillon mondial |
+| 0,5-1,5 point | Ce que coûte chaque marche de la cascade | Cascade | Les deux moyennes |
+| 50-80 % d'actions | La largeur du plateau d'allocation | Allocation d'actifs | Allocation |
+| 4-6 points | La prime actions historique au-dessus du cash | Prime de risque | Primes de risque |
+| 1-2 points | La prime de terme, la plus instable du catalogue | Prime de risque | Primes de risque |
+| 0,2-0,5 point/an | Le gain propre d'un panier décorrélé et rééquilibré | Rebalancing premium | Diversification |
+| 2-4 points | L'écart moyen entre volatilité implicite et réalisée | Prime de variance | Long volatility |
+| 2-4 % réels bruts | L'espérance moderne d'un programme de trend | Managed futures | Trend |
+| 18-36 mois | La taille utile du matelas de liquidités | Buffer | Matelas |
+| ±20 %, coupes de 10 % | Le corridor et l'ajustement standard | Guardrails | Guyton-Klinger |
+| 10-20 % | Ce que sur-provisionne un plan à besoin constant | Sourire | Dépenses |
+| ~6,5 % au-delà de ~24 k€ | La cotisation du rentier sans activité | CSM | Taxe PUMa |
+| ~7,2 k€ puis ~9,6 k€ | L'activité qui valide 4 trimestres, puis celle qui éteint la CSM | Quadruplé | Barista |
+
 ---
 
 ## Pour aller plus loin
 
-- Chaque entrée renvoie à son chapitre : le lexique est aussi la table d'orientation du livre.
 - Les termes anglais des forums non listés ici se trouvent dans le wiki Bogleheads et le glossaire d'ERN ([[serie-ern]], [[bibliotheque]]).
