@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">
+<rect width="640" height="360" fill="#FFFFFF"/>
+<text x="64" y="24" font-size="16" font-weight="600" fill="#16181D">Snap</text>
+<line x1="64" y1="326.0" x2="626" y2="326.0" stroke="#EDF0F3"/>
+<text x="56" y="326.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">95</text>
+<line x1="64" y1="276.0" x2="626" y2="276.0" stroke="#EDF0F3"/>
+<text x="56" y="276.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">100</text>
+<line x1="64" y1="226.0" x2="626" y2="226.0" stroke="#EDF0F3"/>
+<text x="56" y="226.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">105</text>
+<line x1="64" y1="176.0" x2="626" y2="176.0" stroke="#EDF0F3"/>
+<text x="56" y="176.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">110</text>
+<line x1="64" y1="126.0" x2="626" y2="126.0" stroke="#EDF0F3"/>
+<text x="56" y="126.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">115</text>
+<line x1="64" y1="76.0" x2="626" y2="76.0" stroke="#EDF0F3"/>
+<text x="56" y="76.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">120</text>
+<line x1="64.0" y1="64" x2="64.0" y2="328" stroke="#EDF0F3"/>
+<text x="64.0" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-01</text>
+<line x1="176.4" y1="64" x2="176.4" y2="328" stroke="#EDF0F3"/>
+<text x="176.4" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-01</text>
+<line x1="288.8" y1="64" x2="288.8" y2="328" stroke="#EDF0F3"/>
+<text x="288.8" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-02</text>
+<line x1="401.2" y1="64" x2="401.2" y2="328" stroke="#EDF0F3"/>
+<text x="401.2" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-02</text>
+<line x1="513.6" y1="64" x2="513.6" y2="328" stroke="#EDF0F3"/>
+<text x="513.6" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-03</text>
+<line x1="626.0" y1="64" x2="626.0" y2="328" stroke="#EDF0F3"/>
+<text x="626.0" y="346" font-size="12" fill="#7A8294" text-anchor="middle">2020-03</text>
+<line x1="64" y1="328" x2="626" y2="328" stroke="#CDD2DA"/>
+<line x1="64" y1="64" x2="64" y2="328" stroke="#CDD2DA"/>
+<path d="M64.0 276.0L251.3 196.0L438.7 246.0L626.0 76.0" fill="none" stroke="#0880A8" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M64.0 276.0L251.3 316.0L438.7 266.0L626.0 286.0" fill="none" stroke="#C2452B" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+<rect x="64.0" y="36" width="12" height="12" rx="2" fill="#0880A8"/><text x="81.0" y="46" font-size="12" fill="#16181D">a</text>
+<rect x="106.2" y="36" width="12" height="12" rx="2" fill="#C2452B"/><text x="123.2" y="46" font-size="12" fill="#16181D">b</text>
+</svg>

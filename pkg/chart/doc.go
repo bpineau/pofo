@@ -26,4 +26,11 @@
 // tick formatter (see Compact), stroke width and date labelling. The zero
 // Style is the default pofo look; StyleMinimal is a bare dialect for
 // dense pages embedding many small charts.
+//
+// The "chrome" colors and fonts every chart draws with (grids, axes, labels,
+// backgrounds, the semantic good/warn/bad/accent hues) live in one place,
+// theme.go: that file is the reskin surface, mirroring pkg/webui/theme.css.
+// Change a token there to restyle every chart at once, then re-run the chart
+// snapshot golden (TestChartSnapshots with UPDATE_SNAPSHOTS=1). A guard test
+// keeps new charts from scattering hardcoded hex again.
 package chart
