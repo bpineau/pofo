@@ -2,6 +2,7 @@ package golden
 
 import (
 	"math"
+	"strconv"
 	"testing"
 	"time"
 
@@ -157,4 +158,117 @@ func TestGoldenGold(t *testing.T) {
 		{name: "2000-2020", y0: 1999, y1: 2020, cagr: 9.4, ctol: 1.0},
 		{name: "1971-2024", y0: 1971, y1: 2024, cagr: 8.0, ctol: 1.0, minDD: -55},
 	})
+}
+
+// yearRet is the December-to-December total return (%) of calendar year y,
+// for the monthly first-of-month refdata convention (see refWindow).
+func yearRet(t *testing.T, s *marketdata.Series, y int) float64 {
+	t.Helper()
+	_, values := refWindow(t, s, y-1, y)
+	return (values[len(values)-1]/values[0] - 1) * 100
+}
+
+// TestGoldenTreasuries validates the constant-maturity Treasury total-return
+// reconstructions (TREASURY-INT-USD from GS5, TREASURY-LONG-USD from GS20,
+// both via simgen.TreasuryTR) against the published Ibbotson SBBI yearly
+// returns for intermediate- and long-term government bonds: 1969 (IT -0.7 %,
+// LT -5.1 %), 1982 (IT +29.1 %, LT +40.4 %), 1994 (IT -5.1 %, LT -7.8 %) and
+// 1995 (IT +16.8 %, LT +31.7 %). A 5-year (resp. 20-year) constant-maturity
+// par-bond reconstruction is not the SBBI portfolio, so a couple of points of
+// tolerance is expected, but the fit is tight enough to catch any unit,
+// day-count or repricing regression.
+func TestGoldenTreasuries(t *testing.T) {
+	ti := loadRefdata(t, "TREASURY-INT-USD")
+	tl := loadRefdata(t, "TREASURY-LONG-USD")
+	for _, c := range []struct {
+		year         int
+		intRef, ltol float64
+		longRef      float64
+		itol         float64
+	}{
+		{year: 1969, intRef: -0.7, itol: 1.5, longRef: -5.1, ltol: 2.0},
+		{year: 1982, intRef: 29.1, itol: 2.5, longRef: 40.4, ltol: 4.0},
+		{year: 1994, intRef: -5.1, itol: 1.5, longRef: -7.8, ltol: 2.0},
+		{year: 1995, intRef: 16.8, itol: 1.5, longRef: 31.7, ltol: 2.5},
+	} {
+		within(t, "INT "+strconv.Itoa(c.year), yearRet(t, ti, c.year), c.intRef, c.itol)
+		within(t, "LONG "+strconv.Itoa(c.year), yearRet(t, tl, c.year), c.longRef, c.ltol)
+	}
+	// Long-run sanity: intermediate treasuries ~6 %/yr and long treasuries
+	// ~7 %/yr over 1972-2021 (SBBI-era figures).
+	runRefCases(t, ti, []refCase{{name: "1972-2021", y0: 1971, y1: 2021, cagr: 6.4, ctol: 0.8, volLo: 3, volHi: 7}})
+	runRefCases(t, tl, []refCase{{name: "1972-2021", y0: 1971, y1: 2021, cagr: 7.6, ctol: 1.0, volLo: 9, volHi: 14}})
+}
+
+// TestGoldenTreasuryDailyShapes validates the DAILY shape series behind the
+// monthly Treasury refdata (TREASURY-INT-DAILY from DGS5, TREASURY-LONG-DAILY
+// from DGS20). Their levels are never authoritative (anchorShape re-anchors
+// them monthly), so the checks are looser: calendar-year returns near the
+// SBBI anchors, daily density, and an annualized daily volatility in the
+// historically documented band for the 1980-1985 rate shock (long treasuries
+// realized ~13-15 % then).
+func TestGoldenTreasuryDailyShapes(t *testing.T) {
+	for _, c := range []struct {
+		id           string
+		y1969, y1982 float64
+		tol          float64
+		volLo, volHi float64
+	}{
+		{id: "TREASURY-INT-DAILY", y1969: -0.7, y1982: 29.1, tol: 4.0, volLo: 5, volHi: 10},
+		{id: "TREASURY-LONG-DAILY", y1969: -5.1, y1982: 40.4, tol: 6.0, volLo: 11, volHi: 17},
+	} {
+		s := loadRefdata(t, c.id)
+		last := func(cut time.Time) float64 {
+			v := math.NaN()
+			for _, p := range s.Points {
+				if p.Date.After(cut) {
+					break
+				}
+				v = p.Close
+			}
+			return v
+		}
+		dyear := func(y int) float64 {
+			a := last(time.Date(y-1, 12, 31, 0, 0, 0, 0, time.UTC))
+			b := last(time.Date(y, 12, 31, 0, 0, 0, 0, time.UTC))
+			return (b/a - 1) * 100
+		}
+		within(t, c.id+" 1969", dyear(1969), c.y1969, c.tol)
+		within(t, c.id+" 1982", dyear(1982), c.y1982, c.tol)
+
+		// Daily density: ~250 points per year, every year covered.
+		days := 0
+		for _, p := range s.Points {
+			if p.Date.Year() == 1975 {
+				days++
+			}
+		}
+		if days < 230 {
+			t.Errorf("%s: 1975 carries %d points, want daily density", c.id, days)
+		}
+		// Annualized daily vol over the 1980-1985 rate shock.
+		var lr []float64
+		var prev float64
+		for _, p := range s.Points {
+			if p.Date.Year() >= 1980 && p.Date.Year() <= 1985 {
+				if prev > 0 {
+					lr = append(lr, math.Log(p.Close/prev))
+				}
+				prev = p.Close
+			}
+		}
+		m := 0.0
+		for _, x := range lr {
+			m += x
+		}
+		m /= float64(len(lr))
+		v := 0.0
+		for _, x := range lr {
+			v += (x - m) * (x - m)
+		}
+		vol := math.Sqrt(v/float64(len(lr)-1)) * math.Sqrt(252) * 100
+		if vol < c.volLo || vol > c.volHi {
+			t.Errorf("%s: 1980-1985 daily vol = %.1f %%, expected within [%.1f, %.1f]", c.id, vol, c.volLo, c.volHi)
+		}
+	}
 }
