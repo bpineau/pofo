@@ -511,9 +511,9 @@ simulation wherever it exists):
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
 | TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
 | ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
-| DBMF (managed futures) | real managed-futures NAVs, back to the deepest one (1996-03→) | 0.69 / 0.75 |
-| KMLM (managed futures) | same chain, 14% target vol (1996-03→) | 0.63 / 0.65 |
-| CTA (managed futures) | same chain, 16% target vol (1996-03→) | 0.44 / 0.45 |
+| DBMF (managed futures) | the net all-styles composite it replicates, then real NAVs back to the deepest donor (1996-03→) | 0.68 / 0.75 |
+| KMLM (managed futures) | real managed-futures NAVs, 14% target vol (1996-03→) | 0.63 / 0.65 |
+| CTA (managed futures) | the net pure-trend composite it benchmarks against, then the same deepest donor, 16% target vol (1996-03→) | 0.54 / 0.54 |
 | RSST (100% stocks + trend) | VFINX + 1.0×(trend−cash) overlay on a net pure-trend reference (2000→) | 0.88 / 0.89 |
 | RSBT (100% bonds + trend) | VFITX + 1.0×(trend−cash), same overlay (2000→) | 0.50 / 0.47 |
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (2000→) | 0.62 / 0.84 |
@@ -528,13 +528,16 @@ the month-to-month path (monthly agreement with the real funds 0.60 to 0.97)
 and the engine supplies the daily texture. Both references are composites of
 REAL programmes, net of their managers' fees, so each settles the level as well
 as the path and nothing is levelled by hand: a diversified fund reads the
-all-styles one, a trend overlay the pure-trend one. Each vol target is the
+all-styles one, a trend overlay the pure-trend one. The two funds that exist to
+replicate a published index take that index itself as their pre-inception donor,
+which fits them better than any other manager's fund does. Each vol target is the
 volatility the fund itself realized: DBMF 12.2 % against 12.4 % real, KMLM 14.8
 against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. Each donor segment
 also carries the fund's fee load rather than its own, lifted by the difference
 between the two published fee tables (the donors are 1.3 to 2.7 %/yr vehicles
-standing in for 0.75 to 0.90 % funds); what remains of the gap is the manager's
-own edge, and it is left open.
+standing in for 0.75 to 0.90 % funds, and an index of funds carries its
+constituents' 2 %); what remains of the gap is the manager's own edge, and it is
+left open.
 
 These histories are shorter than they used to be, on purpose: each stops where
 its evidence stops, the chains at their deepest real donor NAV (1996-03) and

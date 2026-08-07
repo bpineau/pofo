@@ -28,36 +28,41 @@ not a description of what ships.
 
 ## The rule that comes first
 
-**Where a real NAV of the same trade exists, use it.** A futures-price
+**Where a real record of the same trade exists, use it.** A futures-price
 reconstruction agrees with the fund it replicates at a monthly correlation
-near 0.6; the NAV of another real managed-futures fund agrees at 0.7 to 0.97.
-`DonorChain` therefore splices real NAVs behind each fund for as far back as
+near 0.6; the NAV of another real managed-futures fund agrees at 0.7 to 0.97,
+and for a fund built to reproduce a published index, that index agrees at 0.85.
+`DonorChain` therefore splices real records behind each fund for as far back as
 they go, nearest trade first, each volatility-matched to the fund over their
-common window and lifted to the fund's own fee load (below). Where no real NAV
-reaches, the file ends.
+common window and lifted to the fund's own fee load (below). Where no real
+record reaches, the file ends.
 
 | Fund | Real from | Donors, nearest first | File starts |
 |---|---|---|---|
-| DBMF | 2019-05 | AlphaSimplex 2010-08 (0.81), Guggenheim 2007-02 (0.72), Man AHL Diversified 1996-03 (0.77) | 1996-03-26 |
+| DBMF | 2019-05 | the all-styles composite it replicates 2000-01 (0.85), Man AHL Diversified 1996-03 (0.77) | 1996-03-26 |
 | DBMF UCITS USD | 2025-03 | DBMF 2019-05 (0.97), then as above | 1996-03-26 |
 | DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 1996-03-26 |
 | AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02, Man AHL 1996-03 (0.71) | 1996-03-26 |
 | KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02, Man AHL 1996-03 (0.57) | 1996-03-26 |
-| Simplify CTA | 2022-03 | AHL US 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02, Man AHL 1996-03 (0.48) | 1996-03-26 |
+| Simplify CTA | 2022-03 | the pure-trend composite it benchmarks against 2000-01 (0.58), Man AHL 1996-03 | 1996-03-26 |
 | AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03 (1.000, same fund, +0.45 %/yr fee uplift), then the AQR chain hedged to EUR | 1996-03-26 |
 
-Correlations are monthly, measured on each pair's own overlap.
+Correlations are monthly, measured on each pair's own overlap. Two funds take a
+published INDEX rather than another manager's fund over the era the index
+covers, and only two: they are the two whose programme sets out to reproduce
+that index, which is why it tracks them better than any single peer does. The
+measurement that decided it is below.
 
 Full-period statistics of the shipped files after the truncation (daily
 returns, the fund's own real quotes included from its inception):
 
 | File | window | CAGR | volatility | max drawdown |
 |---|---|---|---|---|
-| DBMF | 1996-03-26 .. 2026-07-31 | 9.66 % | 11.8 % | -24.9 % |
-| DBMF UCITS USD | 1996-03-26 .. 2026-07-30 | 9.75 % | 11.9 % | -24.6 % |
-| DBMF UCITS EUR | 1996-03-26 .. 2026-08-03 | 10.01 % | 15.5 % | -30.3 % |
+| DBMF | 1996-03-26 .. 2026-07-31 | 9.20 % | 11.9 % | -21.5 % |
+| DBMF UCITS USD | 1996-03-26 .. 2026-07-30 | 9.29 % | 11.9 % | -21.3 % |
+| DBMF UCITS EUR | 1996-03-26 .. 2026-08-03 | 9.55 % | 15.3 % | -29.2 % |
 | KMLM | 1996-03-26 .. 2026-07-31 | 9.88 % | 13.9 % | -31.0 % |
-| Simplify CTA | 1996-03-26 .. 2026-07-31 | 12.49 % | 16.2 % | -25.3 % |
+| Simplify CTA | 1996-03-26 .. 2026-07-31 | 11.52 % | 19.4 % | -32.8 % |
 | AQR UCITS A | 1996-03-26 .. 2026-07-31 | 7.04 % | 9.0 % | -21.7 % |
 | AQR RAEF EUR | 1996-03-26 .. 2026-07-15 | 6.89 % | 9.2 % | -27.6 % |
 | RSST | 2000-01-03 .. 2026-07-31 | 10.11 % | 22.1 % | -48.8 % |
@@ -75,12 +80,12 @@ back cannot move them: they are what the chain bought over 2007-2019, and the
 
 | Fund | Before | After |
 |---|---|---|
-| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.69 / 0.75, 9.7 %, -3.5 pts** |
+| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.68 / 0.75, 10.0 %, -2.0 pts** |
 | DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.65 / 0.85, 10.0 %, +0.2 pt** |
 | DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.36 / 0.71, 17.3 %, -0.2 pt** |
 | AQR UCITS A | 0.37 / 0.55, 10.6 %, -4.8 pts | **0.73 / 0.92, 6.8 %, +0.1 pt** |
 | KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -1.7 pts** |
-| Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.44 / 0.45, 17.9 %, -3.4 pts** |
+| Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.54 / 0.54, 16.3 %, -3.2 pts** |
 
 The euro-hedged AQR class runs the same chain and hedges it day by day, the
 carry read off the two cash series themselves rather than off a frame: a donor
@@ -113,7 +118,7 @@ backcast.
 |---|---|---|
 | ASFYX, Virtus AlphaSimplex class I | 1.45 % | 1.59 % total, 1.45 % after the contractual cap running to 2027 (summary prospectus, 2026-04) |
 | RYMFX, Guggenheim class P | 1.99 % | 2.18 % total, 1.99 % after waiver (summary prospectus, 2026) |
-| AHLPX, American Beacon AHL Investor | 1.91 % | 1.91 % total, no waiver in force (prospectus supplement, 2025-08) |
+| AHLPX, American Beacon AHL Investor | 1.91 % | 1.91 % total, no waiver in force (prospectus supplement, 2025-08). Priced but spliced nowhere since 2026-08: it held Simplify CTA's 2014-2022 slot until the index donor took the whole era, and stays in the table so restoring it needs no fresh research |
 | AQMIX, AQR Managed Futures class I | 1.29 % | 1.29 % total and after reimbursement (summary prospectus, 2024-05) |
 | Man AHL Diversified plc, USD acc | 2.74 % | ongoing charge for the ISIN (fund database, 2026) |
 | DBMF | 0.85 % | fund page, 2026 |
@@ -121,6 +126,21 @@ backcast.
 | KMLM | 0.90 % | fund page, 2026 |
 | Simplify CTA | 0.75 % | fund page, 2026 |
 | AQR UCITS class A | 0.79 % + 1.58 % | 0.60 % management + 0.18 % expense cap + 0.01 % subscription tax (prospectus supplement), plus a 10 % performance fee over the T-bill hurdle worth 1.58 points of average class NAV in the year to 31 March 2026 (audited accounts) |
+| the two index donors | 2.00 % | ESTIMATED, the only entry that is. See below |
+
+The index entry is the one number in this table that is not read off a price
+list, and it is flagged as such in the code. An index of funds levies nothing
+itself, but every return in it arrives net of a constituent manager's fees, so
+what it carries as a load is its CONSTITUENTS' management fee. Those are private
+programmes and publish no schedule. Two independent readings put the standard
+for the era and the vehicles at 2 %: it is the industry's own convention (the
+2-and-20 the whole managed-futures literature quotes), and it is what the donors
+in this very table charge (1.29 to 2.74 %, mean 1.85 %). The same conservative
+rule as everywhere else then applies: the constituents' PERFORMANCE fees, worth
+another one to three points a year in a good decade, are ignored. So the uplift
+gives a fund back its wrapper's difference and never the manager's cut, and what
+remains reads as the replicator's edge over the index it replicates, which is
+what it is.
 
 Performance fees enter asymmetrically, and both directions are deliberately
 conservative, meaning both can only make the uplift too SMALL:
@@ -140,13 +160,13 @@ conservative, meaning both can only make the uplift too SMALL:
 Applied, per chain (nearest donor first, the one that governs each fund's own
 validation window):
 
-| chain | nearest | then | then | deepest (Man AHL) |
-|---|---|---|---|---|
-| DBMF | ASFYX +0.60 | RYMFX +1.14 | | +1.89 |
-| DBMF UCITS USD, DBMF UCITS EUR | DBMF +0.10 | ASFYX +0.70 | RYMFX +1.24 | +1.99 |
-| KMLM | ASFYX +0.55 | RYMFX +1.09 | | +1.84 |
-| Simplify CTA | AHLPX +1.16 | ASFYX +0.70 | RYMFX +1.24 | +1.99 |
-| AQR UCITS A, and the USD leg of RAEF | AQMIX 0 | RYMFX 0 | | +0.37 |
+| chain | nearest | then | deepest (Man AHL) |
+|---|---|---|---|
+| DBMF | all-styles index +1.15 | | +1.89 |
+| DBMF UCITS USD, DBMF UCITS EUR | DBMF +0.10 | all-styles index +1.25 | +1.99 |
+| KMLM | ASFYX +0.55 | RYMFX +1.09 | +1.84 |
+| Simplify CTA | pure-trend index +1.25 | | +1.99 |
+| AQR UCITS A, and the USD leg of RAEF | AQMIX 0 | RYMFX 0 | +0.37 |
 
 What it moves, on each fund's own live overlap (CAGR gap, reconstruction minus
 fund):
@@ -160,6 +180,11 @@ fund):
 | Simplify CTA | -4.6 pts | **-3.4 pts** |
 | AQR UCITS A | +0.1 pt | **+0.1 pt** (unchanged, uplift 0) |
 | AQR RAEF EUR | -0.04 pt | **-0.04 pt** (unchanged, see below) |
+
+Those two columns are the fee alignment's own effect on the chains it was
+applied to. The DBMF and Simplify CTA rows describe the single-fund chains those
+two funds carried at the time; both now stand on an index donor, which moves
+their level again (-2.0 and -3.2 pts, next section but one).
 
 The three funds whose donor is another manager close a little; the three whose
 nearest donor is the same manager and nearly the same price list barely move,
@@ -178,7 +203,8 @@ Man AHL Diversified (IE0000360275, USD accumulating, real net NAVs from
 thirty years.
 
 It also deals WEEKLY until 2016 and daily only after, and the whole segment the
-chains keep of it (1996-03 to 2007-02) falls in the weekly era. Spliced as it
+chains keep of it (1996-03 to 2007-02 then, 1996-03 to 2000-01 for the two
+chains that now stand on an index donor) falls in the weekly era. Spliced as it
 stands, that segment ships week-sized steps inside a daily file, and every
 statistic that annualizes per observation reads them as a fund five times more
 volatile than it is: the raw DBi chain reports 31.9 % annualized volatility over
@@ -199,10 +225,10 @@ against each fund's own volatility target:
 
 | File | target | before | after |
 |---|---|---|---|
-| DBMF, DBMF UCITS USD | 11.5 % | 11.9 % | **12.5 %** |
-| DBMF UCITS EUR | 11.5 % + FX | 14.6 % | **15.1 %** |
+| DBMF, DBMF UCITS USD | 11.5 % | 11.9 % | **12.8 %** |
+| DBMF UCITS EUR | 11.5 % + FX | 14.6 % | **14.9 %** |
 | KMLM | 14 % | 14.5 % | **15.1 %** |
-| Simplify CTA | 16 % | 16.6 % | **17.4 %** |
+| Simplify CTA | 16 % | 16.6 % | **22.9 %** |
 | AQR UCITS A | 9 % | 9.3 % | **9.4 %** |
 
 The "before" column is the previous reconstruction, which had no cadence problem
@@ -210,11 +236,104 @@ because it was daily by construction; the point of the table is that replacing a
 decade of it with real NAVs left the daily texture where it was, and 31.9 % is
 what the same decade would have read without the projection.
 
+Simplify CTA is the exception in that column and its cause is not cadence, it is
+the index donor's own era (see the arbitration below). A donor is
+volatility-matched to the fund on their COMMON window, and the pure-trend
+composite realized 10.7 % over that window (2022-2026) against 16.0 % over
+2000-2006: the industry's own realized volatility fell by a third between the
+two eras, and a constant match carries the recent, calm calibration back into a
+hot decade. The consequence is a file that runs about 40 % hotter than the fund's
+target over 1997-2006 and 19.4 % over its whole length, against a fund that
+realizes 16.9 %. It is left as it stands and not retuned: the same paragraph of
+this file that forbids fitting vol targets to minimize tracking error says why,
+understating a sleeve's risk is the expensive error in portfolio work. The
+all-styles composite does not have the problem (8.96 % over 2000-2006 against
+8.79 % over 2022-2026), which is why the DBMF column barely moves.
+
 What the decade's LEVEL does change, and should: over 1997-2006 the DBMF file
-now compounds at 14.6 %/yr where the pinned reconstruction had 19.5 %/yr (KMLM
-16.5 against 19.5, Simplify CTA 18.4 against 20.5, the AQR class 11.4 against
-12.7). That is a real programme's record, fees and all, in place of an
-information-ratio pin, and it is lower.
+compounds at 13.8 %/yr where its single-fund chain had 16.8 % and the pinned
+reconstruction 19.5 % (KMLM 18.6 against 19.5, Simplify CTA 16.6 against 20.7
+and 20.5, the AQR class 11.8 against 12.7). That is a real record, fees and all,
+in place of an information-ratio pin, and it is lower.
+
+### The index is the better donor for the funds that track it (measured, 2026-08)
+
+Two funds of this family stayed stubbornly badly fitted after everything above:
+DBMF at a monthly correlation of 0.81 against its nearest single-fund donor for
+a CAGR gap of -3.5 points, and Simplify CTA at 0.39 for -3.4. Both are
+REPLICATION funds: they do not run a discretionary programme of their own, they
+set out to reproduce a published index. The obvious donor for such a fund is
+that index, and the reason it was not used until now is simply that the daily
+history was believed to be walled (it is not, see the survey).
+
+Both published composites were graded against both funds, each vol-matched to
+the fund and lifted by the index fee uplift, on the fund's own live window. The
+criterion is out-of-window STABILITY of the level, not its size: the window is
+split into two disjoint halves and the candidate whose CAGR gap swings less
+between them wins, correlation breaking a tie. A gap that holds still is a gap
+that can be extrapolated over two decades of donor era; a small gap that is
+small by luck cannot.
+
+DBMF, live 2019-05 to 2026-07, split at the end of 2022:
+
+| candidate | half 1 (3.65 y) | half 2 (3.57 y) | swing | full window |
+|---|---|---|---|---|
+| all-styles composite | 0.889, **+0.77 pts** | 0.817, **-4.43 pts** | **5.20** | 0.853, -1.97 pts |
+| pure-trend composite | 0.878, +2.76 pts | 0.816, -2.85 pts | 5.61 | 0.849, -0.16 pts |
+
+The all-styles composite wins, and the margin is thin enough that it was checked
+rather than taken: repeating the split at every month of the middle third of the
+window, it wins at 25 of 29 split points, always by two tenths to one and a half
+points of swing. The tie-break agrees in the same direction everywhere (daily
+0.675 against 0.664, monthly 0.853 against 0.849, tracking error 10.0 % against
+10.1 %). Two facts outside the arithmetic point the same way. It is the index
+DBi's programme is built to reproduce, where the pure-trend one is not. And its
+residual gap is the one with a NAME: DBi copies the constituents' positions at
+0.85 % flat while the index arrives net of those constituents' 2-and-20, and the
+uplift only claims back the 2, so a reconstruction sitting about two points a
+year under the fund is exactly what an unclaimed performance fee looks like. The
+pure-trend candidate's -0.16 has no such story, and a reconstruction that
+reproduces a replicator's live CAGR to a sixth of a point is claiming the
+manager has no edge over the trade, which everything else in this file
+contradicts.
+
+Simplify CTA, live 2022-03 to 2026-07, split at the end of April 2024:
+
+| candidate | half 1 (2.15 y) | half 2 (2.25 y) | swing | full window |
+|---|---|---|---|---|
+| pure-trend composite | 0.706, **+0.68 pts** | 0.363, **-6.03 pts** | 6.71 | 0.575, -3.22 pts |
+| all-styles composite | 0.768, -1.79 pts | 0.409, -7.83 pts | 6.04 | 0.630, -5.45 pts |
+
+Here the criterion is NOT followed, deliberately, and the reasons are three. The
+pure-trend index is the benchmark this fund names; a four-year window split in
+two decides nothing at a 16 % tracking error (the standard error of either half's
+gap is about 11 points, twice the swing being compared); and the all-styles
+candidate would have to be levered 1.89 times to reach the fund's volatility,
+against 1.55, which is close to the point at which `volMatch` stops believing two
+series are the same trade at all. A correlation bought by levering the wrong
+index nearly twofold is not a better donor, and the level agrees: all-styles
+leaves the reconstruction a further two points a year cold.
+
+What the swap bought, on each fund's own live window (daily / weekly / monthly
+correlation, tracking error, CAGR gap):
+
+| fund | single-fund chain | index donor |
+|---|---|---|
+| DBMF | 0.69 / 0.75 / 0.81, 9.7 %, -3.5 pts | **0.68 / 0.75 / 0.85, 10.0 %, -2.0 pts** |
+| Simplify CTA | 0.44 / 0.45 / 0.39, 17.9 %, -3.4 pts | **0.54 / 0.54 / 0.58, 16.3 %, -3.2 pts** |
+
+The monthly column, the honest one for a sleeve held for years, improves on both
+and transformationally on Simplify CTA. DBMF's daily figure gives up a hundredth,
+which is the price of a donor that is an average of programmes rather than one
+programme, and is not a statistic anyone consumes on a file whose real quotes are
+grafted from inception. The two UCITS classes chain through DBMF, so their own
+validation lines are unchanged to the digit: their live windows start in 2025,
+inside the era DBMF itself covers.
+
+KMLM was measured the same way and gains nothing: the pure-trend composite
+reaches 0.684 monthly against its live window where its existing chain already
+reaches 0.691. It keeps its single-fund donors, which is the check that this
+section is a finding about replication funds and not a preference for indices.
 
 ### The one donor whose fee load is worth correcting (measured, 2026-08)
 
@@ -344,17 +463,23 @@ a book of real programmes actually paid its investors. It is the daily
 texture's monthly anchor inside the donor chains, and it is the independent
 cross-check the chains are read against.
 
-**The net pure-trend composite**, bundled as `TREND-PURE-NET-USD` (see
-`cmd/gen-sgtrend-refdata` for its provenance, its two sources, its licence
-restriction and how to regenerate it), is the same kind of record for the
-narrower trade an overlay runs: a published composite of the largest
-trend-following programmes open to new investment, each net of its own
-manager's fees, DAILY since 2000-01-03, at 13.3 %/yr volatility for a funded
-excess-over-T-bill information ratio of 0.26 over the whole period. The overlay
-builds take both their months and their level from it, and it is why they no
-longer pin anything.
+**The two daily net composites of the other publisher**, bundled as
+`TREND-PURE-NET-USD` and `TREND-ALLSTYLES-NET-USD` (see `cmd/gen-sgtrend-refdata`
+for their provenance, their two channels each, their licence restriction and how
+to regenerate them), are the same kind of record served DAILY since 2000-01-03.
+The pure-trend one takes only the largest programmes that follow trends and
+nothing else, 12.6 %/yr volatility for a funded excess-over-T-bill information
+ratio of 0.26; the all-styles one takes the largest managed-futures programmes
+whatever they trade, 8.2 %/yr for a ratio of 0.27. The overlay builds take both
+their months and their level from the pure-trend one, which is why they no longer
+pin anything, and each is also the pre-inception DONOR of the fund whose
+programme replicates it (the arbitration above).
 
-The two net records are FUNDED total returns: they earn cash on their
+Two all-styles composites, from two publishers, is not redundancy: the bundled
+monthly one reaches 1987 and anchors the engine, the daily one starts in 2000 and
+is spliced as a donor. Nothing reads both for the same purpose.
+
+The net records are FUNDED total returns: they earn cash on their
 collateral, where the gross factor is published as an excess over cash.
 `AnchorTrend` therefore strips the cash leg before rescaling one to a
 volatility target and funds it again afterwards, or not, depending on whether
@@ -517,7 +642,7 @@ stayed open on top of it, and neither had a fix:
 Given the choice between eight more years of that and a file that is real
 throughout, the maintainer took the shorter file (see the decision at the top).
 The engine that produced the tail is still built and still matters: it is the
-daily texture the weekly-dealing 1996-2007 donor is projected onto.
+daily texture the weekly-dealing deepest donor is projected onto.
 
 ## The error budget on the live overlaps
 
@@ -528,11 +653,11 @@ the CAGR gap (reconstruction minus fund) over the overlap.
 
 | Fund | window | daily | weekly | monthly | TE | CAGR gap |
 |---|---|---|---|---|---|---|
-| DBMF | 7.2 y | 0.69 | 0.75 | 0.81 | 9.7 % | -3.5 pts |
+| DBMF | 7.2 y | 0.68 | 0.75 | 0.85 | 10.0 % | -2.0 pts |
 | DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.2 pt |
 | DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.2 pt |
 | KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -1.7 pts |
-| Simplify CTA | 4.4 y | 0.44 | 0.45 | 0.39 | 17.9 % | -3.4 pts |
+| Simplify CTA | 4.4 y | 0.54 | 0.54 | 0.58 | 16.3 % | -3.2 pts |
 | AQR UCITS A | 11.4 y | 0.73 | 0.92 | 0.93 | 6.8 % | +0.1 pt |
 | AQR RAEF EUR | 0.7 y | none independent | | | 0.1 % | -0.04 pt |
 | RSST (overlay) | 2.9 y | 0.88 | 0.89 | 0.96 | 11.7 % | -1.3 pts |
@@ -545,20 +670,24 @@ How to read it, because each row's residual has a KNOWN decomposition:
   and weekly figures are dominated by intra-month texture that no seven-market
   engine, and no donor of another manager, can match tick for tick.
 - **A negative CAGR gap on DBMF, KMLM, CTA is not an error to fix.** Those
-  funds beat the trade they run over their own live windows (DBMF by 3.5
-  points a year against its fee-aligned nearest donor, and by more against
-  every index). Closing that gap would mean granting the manager's alpha to
-  the backcast, which is curve fitting.
+  funds beat the trade they run over their own live windows (DBMF by 2.0
+  points a year against the fee-aligned index its programme replicates, which
+  is about what the constituents' unclaimed performance fee is worth).
+  Closing that gap would mean granting the manager's alpha to the backcast,
+  which is curve fitting.
   Conversely DBMF UCITS USD, DBMFE and AQR sit within 0.3 pt because their
   nearest donor is the same manager running the same book.
 - **The DBMFE daily 0.36 has a measured ceiling of 0.46** (the
   valuation-convention section below): four fifths of its daily residual is
   the UCITS wrapper's own positions and cash. Judge that class on weekly and
   monthly only.
-- **Simplify CTA is the structurally worst fit and will stay so**: it tracks
-  a pure-trend index at a 16 % vol target while every available donor is an
-  all-styles vehicle near 9-13 %. Its level is right to about 3.4 pts after
-  fee alignment and its months only agree at 0.39.
+- **Simplify CTA is still the worst fit, though no longer by a mile**: its
+  months agreed at 0.39 while its donors were other managers' all-styles funds
+  and reach 0.58 now that the donor is the pure-trend index it benchmarks
+  against. Its level is right to about 3.2 pts. What it pays for that donor is
+  risk realism in the far past: the index is levered 1.55 times to reach the
+  fund's volatility, on a match calibrated in a calm era, so the file runs hot
+  before 2007 (see the cadence section).
 - **The three overlay rows are the newest and the best-behaved monthly fits**
   (0.84 to 0.97), because their reference is a record of the very trade their
   sleeve runs rather than an all-styles composite. Their daily columns stay
@@ -569,9 +698,9 @@ How to read it, because each row's residual has a KNOWN decomposition:
   RSBT at 3.5 years and a 12.6 % tracking error: its gap carries a standard
   error near 7 points.
 - London-listed funds measured against US-close donors (the bond twins, but
-  also AHLPX inside the CTA chain) show daily correlation far under weekly for
-  pure clock reasons; a weekly figure far above the daily one is the signature
-  of a timing artefact, not of a bad reconstruction.
+  also AHLPX, while it was inside the CTA chain) show daily correlation far
+  under weekly for pure clock reasons; a weekly figure far above the daily one
+  is the signature of a timing artefact, not of a bad reconstruction.
 
 ## The data that exists, and the data that does not (surveyed live, 2026-08)
 
@@ -599,15 +728,25 @@ it, but do not re-run the dead ends blind.
   closed. Two independent channels serve it: the calculation agent's own
   full-precision dump (six decimals, one POST) and the publisher's dashboard
   copy (two decimals). They are not copies of one another and they agree on
-  every one of 6921 common daily returns to within 2 bp, worst gap 1.16 bp,
-  mean 0.16 bp, which is what rounding a level to two decimals costs; the
-  generator refuses to write unless that still holds over at least 6500 days.
+  every one of 6926 common daily returns to within 2 bp, worst gap 1.11 bp,
+  which is what rounding a level to two decimals costs; the generator refuses
+  to write unless that still holds over at least 6500 days.
   Its calendar years were reconciled against six independent publications of
   them, the oldest an archived 2010 capture, and the index has never been
   restated by more than 5 bp, on 2018 alone. Its publisher attaches an EU
   Benchmarks Regulation restriction to it (not to be used as a benchmark by a
   financial product); it is bundled as a reference series for a research
   reconstruction, which is not that use.
+- The same publisher's ALL-STYLES composite, DAILY 2000-01-03+, from the same
+  endpoint under another code and the same dashboard file under another column;
+  bundled since 2026-08 by the same generator. It is the donor of the DBi
+  family. Its two channels are looser than its sibling's and the generator says
+  so with its own tolerances: five of 6923 common days differ by more than 2 bp
+  (four in the unrevised live tail, worst 15.6 bp) and every month of calendar
+  2024 differs by 1 to 6 bp, 25 bp compounded over that year, which is a
+  restatement in one channel rather than rounding. Over the whole window the two
+  still compound to within 23 bp of each other, and that aggregate is the gate
+  that guards the level.
 - Annual (only) figures for the broader CTA index of the same publisher,
   1980-2017, recovered from a public web archive: an independent
   calendar-year check.
@@ -690,8 +829,8 @@ must preserve. Every one of these was learned by breaking it.
    A build that takes its level from a reference must not ship a day in front
    of it either: `trimToAnchor`/`AnchorStart` cut the overlays at their
    reference's first date.
-5. **Donor chain** (`DonorChain`). For each fund, volatility-match every real
-   donor NAV to the fund on their common window (excess-over-cash returns,
+5. **Donor chain** (`DonorChain`). For each fund, volatility-match every donor
+   to the fund on their common window (excess-over-cash returns,
    scale factor clamped to [0.5, 2], at least 120 common days), lift each
    segment by its documented fee uplift (`feeAligned`, donor load minus target
    load, performance fees only ever subtracted), then splice nearest-first with
@@ -701,7 +840,10 @@ must preserve. Every one of these was learned by breaking it.
    a weekly series raw into a daily file; per-observation statistics will
    read the cadence as volatility (31.9 % measured where the truth was 12.5).
    The chain is where the file STARTS: nothing is spliced behind the deepest
-   donor.
+   donor. A donor is normally another fund's real NAVs; for the two funds whose
+   programme replicates a published index, the nearest donor is that index
+   itself, which goes through the identical machinery (it is daily, so nothing
+   densifies it).
 6. **Real quotes last** (`SpliceReal` in the recipe): the fund's own NAVs are
    grafted over everything from inception, byte-exact.
 7. **Per-family constants.** Vol targets are the fund's own REALIZED
@@ -713,7 +855,10 @@ must preserve. Every one of these was learned by breaking it.
    measured constants with their derivations in the recipe comments; they do
    not generalize. The donor fee uplifts (`trendFeeLoad`, `trendPerfFee`) are
    the opposite: published prices, not measurements, and a new donor must have
-   one before it may be spliced (`feeLoad` panics otherwise).
+   one before it may be spliced (`feeLoad` panics otherwise). The two INDEX
+   donors are the single exception and are flagged in the table: their
+   constituents publish no schedule, so their 2 % load is the era's documented
+   standard, performance fees deliberately excluded.
 
 Units traps inherited from the repo at large: fees in `simgen` are FRACTIONS
 per year; `TrendAnchor` vol targets likewise; `portfolio`/`marketdata.Fees`
@@ -721,12 +866,12 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
 
 ## Improvements worth attempting, ranked
 
-1. **Validate the engine's daily texture against a daily reference.** Two are
-   now available: the all-styles composite's daily version (2010+, free at the
-   same endpoint, never used) and the bundled pure-trend one (2000+, already in
-   the repo). The engine's texture is the one layer with no external check at
-   all, and it is now the layer that carries the whole 1996-2007 donor era
-   between its weekly NAVs. This is the cheapest missing validation in the file.
+1. **Validate the engine's daily texture against a daily reference.** Both daily
+   composites are now bundled, and the engine's texture is still the one layer
+   with no external check at all. It carries less than it did: the weekly-dealing
+   donor's era now ends in 2000-01 rather than 2007-02, so the texture bridges
+   four years of NAVs instead of eleven. This remains the cheapest missing
+   validation in the file.
 2. **Repair the third NAV fallback.** The Morningstar timeseries endpoint
    currently answers empty for every id, which narrows donor hunting to two
    sources; if it revives, re-run the 1990s donor survey, the rejected
@@ -743,9 +888,21 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    listed in the survey; the SEC EDGAR route is the one that was never fully
    walked.
 
-Two entries retired here rather than being solved: the pure-trend record the
-overlays needed was found (survey above), and the unanchored fortnight at the
-start of the engine tail went with the tail.
+Three entries retired here rather than being solved: the pure-trend record the
+overlays needed was found (survey above), the unanchored fortnight at the start
+of the engine tail went with the tail, and "find a nearer donor for DBMF and
+Simplify CTA" was answered by the index each of them replicates rather than by
+another fund.
+
+One new entry is worth stating, since it is the cost of that answer:
+**a volatility match calibrated on a calm window and applied to a hot decade.**
+The Simplify CTA chain levers its index donor 1.55 times on a 2022-2026
+calibration and carries that constant back to 2000, where the same index ran
+half again as volatile; the file reads 22.9 % over 1997-2006 against a 16 %
+target. A time-varying match (a rolling volatility ratio, or a match on the
+donor's own era) would fix it and would also let a donor's level drift, which is
+the reason `volMatch` uses a constant today. Whoever attempts it must show that
+the donor era's LEVEL survives the change, not only its volatility.
 
 ## Traps
 
@@ -763,7 +920,7 @@ start of the engine tail went with the tail.
   six points a year since 2019). No honest reconstruction of trend
   following reproduces that, and chasing it would be curve fitting.
 - The engine is still in the shipped files even though its own tail is not:
-  it is the daily texture the weekly-dealing 1996-2007 donor is projected onto.
+  it is the daily texture the weekly-dealing deepest donor is projected onto.
   A change that seems to touch only a level therefore still moves
   daily-frequency statistics over 1996-2007, at the third decimal, and that is
   enough to break a literal frozen to two decimals.
@@ -771,8 +928,13 @@ start of the engine tail went with the tail.
   drift, at a tolerance (0.005 around a two-decimal literal) finer than the
   series' own stability. They read 2001 onward, so a change confined to the
   pre-1996 tail or to the overlays leaves them alone: the 2026-08 truncation
-  and anchor swap moved no plate cell. A change to the donor era or to the
-  texture will, and then expect a handful of cells to need refreezing.
+  and anchor swap moved no plate cell. A change to the donor era will move a
+  lot: the index-donor swap rewrote all 306 readings of the rolling-correlation
+  ribbon, moved its annotated peak from February 2006 to May 2010, and shifted
+  six cells of the correlation triangle. Both plates were refrozen, their
+  annotated extremes and their two headline numbers with them, and re-rendered
+  and eyeballed before the commit. Budget for that whenever the CTA donor era
+  moves.
 - Fee structures are the largest silent lever in this file. A performance fee
   shows up as a wedge that GROWS with the fund's own return and vanishes in
   down months (the RAEF/B EUR tables above); a composite "net of fees" means
@@ -787,10 +949,11 @@ start of the engine tail went with the tail.
   return gap, which would bake a manager's alpha into a "fee". Performance fees
   move the number in one direction only: the donor's are ignored, the target's
   are subtracted (`trendPerfFee`), so the uplift errs small. Applied today:
-  ASFYX +0.60/+0.70/+0.55 into DBMF/the UCITS classes and CTA/KMLM, RYMFX
-  +1.14/+1.24/+1.09, AHLPX +1.16 into CTA, DBMF +0.10 into its UCITS classes,
-  Man AHL +1.84 to +1.99 everywhere except the AQR chain (+0.37), and 0 for
-  AQMIX into AQR UCITS A, whose own performance fee already covers the gap.
+  the all-styles index +1.15 into DBMF and +1.25 into its UCITS classes, the
+  pure-trend index +1.25 into Simplify CTA, ASFYX +0.55 and RYMFX +1.09 into
+  KMLM, DBMF +0.10 into its UCITS classes, Man AHL +1.84 to +1.99 everywhere
+  except the AQR chain (+0.37), and 0 for AQMIX into AQR UCITS A, whose own
+  performance fee already covers the gap.
   The RAEF B EUR donor is corrected by its own measured wedge and takes no
   uplift, or it would be corrected twice.
 - Index composites finalize late. The net reference's recent months revise

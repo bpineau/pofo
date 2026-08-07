@@ -184,9 +184,13 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   (`TREND-NET-USD`, monthly), the overlays (RSST, RSBT, Winton) the NET
   pure-trend one (`TREND-PURE-NET-USD`, daily, `cmd/gen-sgtrend-refdata`), both
   funded total returns. `TREND-TSMOM-USD` is the gross academic factor, kept as
-  a shape yardstick and anchoring nothing. Touching the donor era or the texture
-  breaks two FIRE-book plates (their tests recompute from `pkg/datasets` and say
-  so), because the 1996-2007 weekly donor is projected onto that texture.
+  a shape yardstick and anchoring nothing. The two REPLICATION funds also take a
+  published index as their nearest DONOR rather than another manager's fund:
+  DBMF and its UCITS classes the daily all-styles composite
+  (`TREND-ALLSTYLES-NET-USD`, same generator), Simplify CTA the daily pure-trend
+  one. Touching the donor era or the texture breaks two FIRE-book plates (their
+  tests recompute from `pkg/datasets` and say so), because the weekly donor is
+  projected onto that texture.
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.

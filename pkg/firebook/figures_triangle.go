@@ -36,7 +36,7 @@ type triSeries struct {
 //	DEVEXUS-DAILY developed markets ex-US, Ken French's daily market return
 //	TLT           Treasuries 20 years and over
 //	XAUUSD        gold spot, USD
-//	CTA           a diversified trend programme, TSMOM reconstruction
+//	CTA           a diversified trend programme, real net asset values
 //
 // Every series is measured in USD, so no currency effect enters a correlation.
 var triRows = []triSeries{
@@ -77,7 +77,7 @@ var triCorr = [][]float64{
 	{0.94, 0.85, 0.86},
 	{-0.12, -0.13, -0.13, -0.09},
 	{0.13, 0.06, 0.07, 0.23, 0.23},
-	{-0.15, -0.18, -0.18, -0.11, 0.07, 0.13},
+	{-0.08, -0.10, -0.10, -0.05, 0.11, 0.16},
 }
 
 // triEquityRows is the number of leading rows that are equity funds: the block

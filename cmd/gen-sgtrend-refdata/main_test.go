@@ -148,7 +148,7 @@ func TestCrossCheckAcceptsADifferentBase(t *testing.T) {
 	for i, p := range a {
 		b[i] = point{p.date, p.level / 10} // the same index, published on a tenth of the base
 	}
-	msg, err := crossCheck(a, b)
+	msg, err := crossCheck(pureTrend, a, b)
 	if err != nil {
 		t.Fatalf("crossCheck: %v", err)
 	}
@@ -166,10 +166,10 @@ func TestCrossCheckRejects(t *testing.T) {
 			diverging[i].level *= 1.0005
 		}
 	}
-	if _, err := crossCheck(a, diverging); err == nil {
+	if _, err := crossCheck(pureTrend, a, diverging); err == nil {
 		t.Fatal("accepted two channels that disagree by 5 bp")
 	}
-	if _, err := crossCheck(a, a[:100]); err == nil {
+	if _, err := crossCheck(pureTrend, a, a[:100]); err == nil {
 		t.Fatal("accepted an overlap of 100 days")
 	}
 }
@@ -193,7 +193,7 @@ func TestTrimPartialMonth(t *testing.T) {
 }
 
 func TestSanityAcceptsAPlausibleIndex(t *testing.T) {
-	if err := sanity(index(), flatCash(2.0)); err != nil {
+	if err := sanity(pureTrend, index(), flatCash(2.0)); err != nil {
 		t.Fatalf("rejected a plausible pure-trend index: %v", err)
 	}
 }
@@ -225,7 +225,7 @@ func TestSanityRejects(t *testing.T) {
 		{"a series that never pays", index(), flatCash(12), "information ratio"},
 	} {
 		t.Run(c.name, func(t *testing.T) {
-			err := sanity(c.days, c.cash)
+			err := sanity(pureTrend, c.days, c.cash)
 			if err == nil {
 				t.Fatalf("accepted %s", c.name)
 			}
@@ -244,7 +244,7 @@ func TestSanityRejectsAStaleDownload(t *testing.T) {
 	for cut > 0 && days[cut-1].date.After(time.Now().UTC().AddDate(-2, 0, 0)) {
 		cut--
 	}
-	if err := sanity(days[:cut], flatCash(2)); err == nil || !strings.Contains(err.Error(), "behind today") {
+	if err := sanity(pureTrend, days[:cut], flatCash(2)); err == nil || !strings.Contains(err.Error(), "behind today") {
 		t.Fatalf("accepted a two-year-old download: %v", err)
 	}
 }
@@ -320,8 +320,49 @@ func TestIndexFixtureIsInsideTheBands(t *testing.T) {
 	vol := annualVol(returns(days), 252)
 	ir := annualGeoMean(excessReturns(monthEnds(days), flatCash(2)), 12) /
 		annualVol(excessReturns(monthEnds(days), flatCash(2)), 12)
-	if vol < minVol || vol > maxVol || ir < minIR || ir > maxIR {
+	if vol < pureTrend.minVol || vol > pureTrend.maxVol || ir < pureTrend.minIR || ir > pureTrend.maxIR {
 		t.Errorf("fixture: vol %.1f%%, IR %.2f, outside the gates %v",
-			vol*100, ir, fmt.Sprintf("[%.0f, %.0f]%% and [%.2f, %.2f]", minVol*100, maxVol*100, minIR, maxIR))
+			vol*100, ir, fmt.Sprintf("[%.0f, %.0f]%% and [%.2f, %.2f]", pureTrend.minVol*100, pureTrend.maxVol*100, pureTrend.minIR, pureTrend.maxIR))
+	}
+}
+
+// A slow restatement is invisible day by day and fatal in aggregate: every
+// common return agrees well inside the per-day gate, and the two channels still
+// end a third of a point apart.
+func TestCrossCheckRejectsASlowDrift(t *testing.T) {
+	a := walk(minCommonDays+10, 0.0002, 0.008)
+	drifting := make([]point, len(a))
+	k := 1.0
+	for i, p := range a {
+		k *= 1 + 5e-7 // 0.005 bp a day, a fortieth of the per-day gate
+		drifting[i] = point{p.date, p.level * k}
+	}
+	if _, err := crossCheck(pureTrend, a, drifting); err == nil ||
+		!strings.Contains(err.Error(), "compound") {
+		t.Fatalf("accepted two channels drifting apart: %v", err)
+	}
+}
+
+// The two shipped series must be two series: one wrong constant and this
+// generator writes the same index twice under two names.
+func TestShippedSeriesAreDistinct(t *testing.T) {
+	if len(shipped) != 2 {
+		t.Fatalf("%d shipped series, want 2", len(shipped))
+	}
+	for _, f := range []func(series) string{
+		func(s series) string { return s.outID },
+		func(s series) string { return s.progCode },
+		func(s series) string { return s.checkColumn },
+		func(s series) string { return s.name },
+		func(s series) string { return s.source },
+	} {
+		if f(shipped[0]) == f(shipped[1]) {
+			t.Errorf("both series share %q", f(shipped[0]))
+		}
+	}
+	for _, s := range shipped {
+		if s.maxReturnGap <= 0 || s.maxDrift <= 0 || s.minVol >= s.maxVol || s.minIR >= s.maxIR {
+			t.Errorf("%s: unusable gates %+v", s.outID, s)
+		}
 	}
 }

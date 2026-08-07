@@ -99,7 +99,7 @@ trendnet-refdata: ## (Re)generate the monthly NET managed-futures reference the 
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: sgtrend-refdata
-sgtrend-refdata: ## (Re)generate the daily NET pure-trend reference the trend overlays are anchored on (network); run `make simdata` after
+sgtrend-refdata: ## (Re)generate the two daily NET managed-futures references (pure trend, all styles) the overlays and the fund donor chains use (network); run `make simdata` after
 	$(GO) run ./cmd/gen-sgtrend-refdata
 	$(GO) build -o pofo ./cmd/pofo
 

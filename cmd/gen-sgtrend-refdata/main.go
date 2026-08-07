@@ -1,10 +1,18 @@
-// Command gen-sgtrend-refdata rebuilds
-// pkg/datasets/refdata/TREND-PURE-NET-USD.csv, the DAILY net pure-trend
-// reference the trend OVERLAY reconstructions (RSST, RSBT and the Winton trend
-// sleeve) take their monthly path and their level from.
+// Command gen-sgtrend-refdata rebuilds the two DAILY net managed-futures
+// references this repository bundles from one publisher:
+//
+//   - pkg/datasets/refdata/TREND-PURE-NET-USD.csv, the PURE-TREND composite the
+//     trend OVERLAY reconstructions (RSST, RSBT and the Winton trend sleeve)
+//     take their monthly path and their level from, and the pre-inception donor
+//     of the fund that names it as its benchmark (Simplify CTA);
+//   - pkg/datasets/refdata/TREND-ALLSTYLES-NET-USD.csv, the ALL-STYLES
+//     composite, which is the pre-inception donor of the DBi family: those
+//     funds replicate this very index, and a fund's own index tracks it better
+//     than any other manager's single fund does (measured, see
+//     docs/trend-reconstruction-design.md).
 //
 // It runs at data-generation time only (network); the pofo binary embeds the
-// CSV and never fetches anything.
+// CSVs and never fetches anything.
 //
 // # Why this exists
 //
@@ -16,57 +24,67 @@
 // record that is already investable (cmd/gen-trendnet-refdata); the overlays
 // could not, because the pure-trend index they replicate was only public for
 // five years. It is not: the whole daily history is served, free and at full
-// precision, by the index's calculation agent.
+// precision, by the index's calculation agent. The same endpoint serves the
+// publisher's all-styles index on the same terms, and the fund reconstructions
+// use both.
 //
-// # The series
+// # The two series
 //
-// The SG Trend Index (NEIXCTAT), published by SG Prime Services. It is an
-// equally weighted composite of the ten largest trend-following CTA programmes
-// open to new investment, reconstituted and rebalanced each January, each
-// constituent entering NET of its own manager's fees; the index itself levies
-// none. It is a FUNDED total return (the programmes earn cash on their
-// collateral), daily since 2000-01-03, and it is the very index the Return
-// Stacked funds name on their trend sleeve.
+// The SG Trend Index (NEIXCTAT) and the SG CTA Index (NEIXCTA), both published
+// by SG Prime Services, both daily since 2000-01-03, both USD, both FUNDED
+// total returns (the constituent programmes earn cash on their collateral).
+// Each is an equally weighted composite reconstituted and rebalanced every
+// January, each constituent entering NET of its own manager's fees, the index
+// itself levying none. They differ in what they admit: the trend index takes
+// the ten largest programmes that follow trends and nothing else, the CTA index
+// takes the twenty largest managed-futures programmes whatever they trade. The
+// trend index is the one the Return Stacked funds name on their trend sleeve;
+// the CTA index is the one the DBi replication funds set out to reproduce.
 //
 // # Two channels, and why both are fetched
 //
 // The full-precision channel is the calculation agent's own daily dump, a
 // legacy BIFF8 workbook (Dstamp as an Excel serial, ROR and VAMI at six
-// decimals, VAMI base 1000 on 1999-12-31), obtained by one POST:
+// decimals, VAMI base 1000 on 1999-12-31), obtained by one POST per index:
 //
 //	https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi
-//	dump=excelDaily  prog_cod=FT90004127  return_option=since_inception
+//	dump=excelDaily  prog_cod=FT90004127 (trend) or calyon (CTA)
+//	return_option=since_inception
 //
 // The second channel is the publisher's own dashboard file, plain CSV with the
-// daily levels rounded to two decimals:
+// daily levels of both indices rounded to two decimals:
 //
 //	https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv
 //
 // Neither is a copy of the other, and a silent layout change in either would
 // otherwise ship as data, so this generator downloads both and refuses to write
-// unless every common daily return agrees to within two basis points over at
-// least minCommonDays days.
+// a series unless every common daily return agrees to within that series' own
+// tolerance over at least minCommonDays days, AND the disagreement compounded
+// over the whole common window stays under its drift gate. The two tolerances
+// are not the same, and the difference is a finding rather than a convenience:
+// see the series table.
 //
 // # What was checked before this was trusted
 //
-// The index's calendar years were reconciled against six independent
+// The trend index's calendar years were reconciled against six independent
 // publications of them (the two channels above, the publisher's index website,
 // its historical spreadsheet, its monthly report PDFs, and two archived
 // captures of the calculation agent's own pages, the oldest from 2010). They
-// agree everywhere; the index has never been restated by more than 5 bp, on
+// agree everywhere; that index has never been restated by more than 5 bp, on
 // 2018 alone. Over 2000-2026 it realizes about 13 % annualized volatility for a
 // funded excess-over-T-bill information ratio near 0.27, which is the level a
-// real trend programme delivers and the whole reason the overlays now anchor
-// on it.
+// real trend programme delivers and the whole reason the overlays anchor on it.
+// The CTA index realizes about 8 % for a near-identical ratio, and its two
+// channels agree less tightly (see allStyles).
 //
-// # A note on what it is, and is not, licensed for
+// # A note on what they are, and are not, licensed for
 //
 // The publisher's methodology carries an EU Benchmarks Regulation disclaimer:
-// the index is not to be used as a benchmark by financial products. pofo
-// bundles it as a reference series for a research reconstruction of fund
+// the indices are not to be used as a benchmark by financial products. pofo
+// bundles them as reference series for a research reconstruction of fund
 // histories, which is not that use.
 //
-// Usage: gen-sgtrend-refdata [-src URL] [-check URL] [-dir path] [-dry]
+// Usage: gen-sgtrend-refdata [-src URL] [-check URL] [-dir path] [-dry] [-only ID]
 package main
 
 import (
@@ -94,129 +112,196 @@ import (
 const (
 	// defaultSrc answers the POST below with the legacy workbook.
 	defaultSrc = "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi"
-	// progCode names the pure-trend index in the calculation agent's catalog.
-	progCode = "FT90004127"
 	// defaultCheck is the publisher's own dashboard copy, the second channel.
 	defaultCheck = "https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv"
-	// checkColumn is the dashboard column holding this index (the file also
-	// carries the publisher's broader CTA index, its transparent trend model
-	// and an equity benchmark).
-	checkColumn = "SG Trend Index"
 	// browserUA is what the calculation agent's gateway expects; a bare Go
 	// user agent is answered with an error page.
 	browserUA = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
 		"(KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
 
-	// outID is the neutral bundled identifier: the reference is a published net
-	// pure-trend composite, and the recipes name it as that and nothing else.
-	outID = "TREND-PURE-NET-USD"
 	// cashID is the bundled T-bill rate the funded excess is measured over.
 	cashID = "TBILL-3M"
-)
 
-// The gates. Each one is a layout change, a truncated download or a wrong
-// index caught before it becomes a bundled file.
-const (
-	// firstMonth is the index's inception month: anything later means a
-	// truncated dump, anything earlier means the wrong series.
+	// firstMonth is the inception month both indices are known to have:
+	// anything later means a truncated dump, anything earlier the wrong series.
 	firstMonth = "2000-01"
 	// minCommonDays is the overlap the two channels must share before their
-	// agreement means anything. The full history holds about 6900 days.
+	// agreement means anything. Each full history holds about 6900 days.
 	minCommonDays = 6500
-	// maxReturnGap is how far a common daily return may differ between the two
-	// channels. The dashboard copy is rounded to two decimals on a level
-	// between 100 and 450, which is worth about a basis point at the start of
-	// the history and a fifth of one at its end.
-	maxReturnGap = 2e-4
-	// The realized character a pure-trend composite must have. Outside these
-	// bands the file is not the index it claims to be.
-	minVol = 0.08
-	maxVol = 0.20
-	minIR  = 0.10
-	maxIR  = 0.60
 )
+
+// series is one index this generator ships: where each channel serves it, what
+// the CSV says it is, and the gates it has to pass. The gates are per series
+// because the two indices are not equally well behaved, and pretending
+// otherwise would either wave one through or block the other.
+type series struct {
+	outID       string // the neutral bundled identifier
+	progCode    string // the index's code in the calculation agent's catalog
+	checkColumn string // the dashboard column holding the same index
+	name        string // the CSV's name header
+	source      string // the CSV's provenance header
+
+	// maxReturnGap is how far a common DAILY return may differ between the two
+	// channels, and maxDrift how far their disagreement may compound over the
+	// whole common window. The first catches a layout change or a wrong column,
+	// the second a slow restatement neither day would reveal on its own.
+	maxReturnGap float64
+	maxDrift     float64
+
+	// The realized character the composite must have, on daily volatility and
+	// on the funded excess-over-T-bill information ratio. Outside these bands
+	// the file is not the index it claims to be.
+	minVol, maxVol float64
+	minIR, maxIR   float64
+}
+
+// shipped is what this generator writes, in output order.
+var shipped = []series{pureTrend, allStyles}
+
+// pureTrend is the composite of the ten largest trend-following programmes.
+// Its two channels are as close as two independent publications of one index
+// ever get: every one of ~6920 common daily returns agrees to within 2 bp,
+// worst 1.16 bp, mean 0.16 bp, which is what rounding a level to two decimals
+// costs and nothing more.
+var pureTrend = series{
+	outID:        "TREND-PURE-NET-USD",
+	progCode:     "FT90004127",
+	checkColumn:  "SG Trend Index",
+	name:         "pure trend following, daily net composite index (USD)",
+	source:       pureSource,
+	maxReturnGap: 2e-4,
+	maxDrift:     2e-3,
+	minVol:       0.08,
+	maxVol:       0.20,
+	minIR:        0.10,
+	maxIR:        0.60,
+}
+
+// allStyles is the broader composite: the largest managed-futures programmes
+// whatever they trade, which is the index the DBi replication funds set out to
+// reproduce and therefore their donor.
+//
+// Its channels agree less tightly than the trend index's, and the tolerances
+// say so rather than hide it. Measured 2026-08 over 6923 common days: five days
+// past 2 bp, four of them in the unrevised live tail (worst 15.6 bp) and one in
+// 2024; and every month of calendar 2024 differs by 1 to 6 bp, 25 bp compounded
+// over that year, which is a restatement in one channel and not rounding. Over
+// the whole 2000-2026 window the two still compound to within 23 bp of each
+// other, so the drift gate is the binding one and it is set at ten times what
+// is measured, where the per-day gate is set to let a revising tail through.
+var allStyles = series{
+	outID:        "TREND-ALLSTYLES-NET-USD",
+	progCode:     "calyon",
+	checkColumn:  "SG CTA Index",
+	name:         "all-styles managed futures, daily net composite index (USD)",
+	source:       allStylesSource,
+	maxReturnGap: 2e-3,
+	maxDrift:     2e-2,
+	minVol:       0.05,
+	maxVol:       0.13,
+	minIR:        0.10,
+	maxIR:        0.60,
+}
 
 func main() {
 	src := flag.String("src", defaultSrc, "daily index dump (POST endpoint)")
 	check := flag.String("check", defaultCheck, "second channel, cross-checked against the first")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output directory")
 	dry := flag.Bool("dry", false, "report without writing")
+	only := flag.String("only", "", "rebuild this bundled id only (default: all)")
 	flag.Parse()
-
-	raw, err := post(*src, url.Values{
-		"dump":          {"excelDaily"},
-		"prog_cod":      {progCode},
-		"return_option": {"since_inception"},
-	})
-	if err != nil {
-		log.Fatalf("download: %v", err)
-	}
-	cells, err := xls.Sheet(raw)
-	if err != nil {
-		log.Fatalf("read workbook: %v", err)
-	}
-	days, err := parseDaily(cells)
-	if err != nil {
-		log.Fatalf("parse: %v", err)
-	}
-	log.Printf("full-precision channel: %d days, %s to %s", len(days),
-		days[0].date.Format("2006-01-02"), days[len(days)-1].date.Format("2006-01-02"))
 
 	other, err := download(*check)
 	if err != nil {
 		log.Fatalf("cross-check download: %v", err)
 	}
-	second, err := parseDashboard(other, checkColumn)
-	if err != nil {
-		log.Fatalf("cross-check parse: %v", err)
-	}
-	log.Printf("cross-check channel: %d days, %s to %s", len(second),
-		second[0].date.Format("2006-01-02"), second[len(second)-1].date.Format("2006-01-02"))
-	agreement, err := crossCheck(days, second)
-	if err != nil {
-		log.Fatalf("the two channels disagree: %v", err)
-	}
-	log.Printf("%s", agreement)
-
-	kept, dropped := trimPartialMonth(days)
-	if len(dropped) > 0 {
-		log.Printf("dropped %d days of the incomplete month %s",
-			len(dropped), dropped[0].date.Format("2006-01"))
-	}
-	days = kept
-
 	cash, err := cashRates()
 	if err != nil {
 		log.Fatalf("cash reference %s: %v", cashID, err)
 	}
-	if err := sanity(days, cash); err != nil {
-		log.Fatalf("sanity: %v", err)
+	for _, s := range shipped {
+		if *only != "" && *only != s.outID {
+			continue
+		}
+		if err := build(s, *src, other, cash, *dir, *dry); err != nil {
+			log.Fatalf("%s: %v", s.outID, err)
+		}
+	}
+	if !*dry {
+		log.Printf("rebuild (make simdata) to re-anchor the trend overlays and the fund donor chains")
+	}
+}
+
+// build fetches one index from the calculation agent, grades it against the
+// dashboard copy already downloaded, and writes it.
+func build(s series, src string, dashboard []byte, cash []point, dir string, dry bool) error {
+	raw, err := post(src, url.Values{
+		"dump":          {"excelDaily"},
+		"prog_cod":      {s.progCode},
+		"return_option": {"since_inception"},
+	})
+	if err != nil {
+		return fmt.Errorf("download: %w", err)
+	}
+	cells, err := xls.Sheet(raw)
+	if err != nil {
+		return fmt.Errorf("read workbook: %w", err)
+	}
+	days, err := parseDaily(cells)
+	if err != nil {
+		return fmt.Errorf("parse: %w", err)
+	}
+	log.Printf("%s: full-precision channel: %d days, %s to %s", s.outID, len(days),
+		days[0].date.Format("2006-01-02"), days[len(days)-1].date.Format("2006-01-02"))
+
+	second, err := parseDashboard(dashboard, s.checkColumn)
+	if err != nil {
+		return fmt.Errorf("cross-check parse: %w", err)
+	}
+	log.Printf("%s: cross-check channel: %d days, %s to %s", s.outID, len(second),
+		second[0].date.Format("2006-01-02"), second[len(second)-1].date.Format("2006-01-02"))
+	agreement, err := crossCheck(s, days, second)
+	if err != nil {
+		return fmt.Errorf("the two channels disagree: %w", err)
+	}
+	log.Printf("%s: %s", s.outID, agreement)
+
+	kept, dropped := trimPartialMonth(days)
+	if len(dropped) > 0 {
+		log.Printf("%s: dropped %d days of the incomplete month %s",
+			s.outID, len(dropped), dropped[0].date.Format("2006-01"))
+	}
+	days = kept
+
+	if err := sanity(s, days, cash); err != nil {
+		return fmt.Errorf("sanity: %w", err)
 	}
 
 	var b bytes.Buffer
-	fmt.Fprintf(&b, "# pofo simdata v1\n# id: %s\n", outID)
-	fmt.Fprintf(&b, "# name: pure trend following, daily net composite index (USD)\n")
-	fmt.Fprintf(&b, "# source: %s\n", sourceNote)
+	fmt.Fprintf(&b, "# pofo simdata v1\n# id: %s\n", s.outID)
+	fmt.Fprintf(&b, "# name: %s\n", s.name)
+	fmt.Fprintf(&b, "# source: %s\n", s.source)
 	fmt.Fprintf(&b, "date,close\n")
 	for _, p := range days {
 		fmt.Fprintf(&b, "%s,%.6f\n", p.date.Format("2006-01-02"), p.level)
 	}
-	if *dry {
-		log.Printf("dry run: %d bytes, %d points, final level %.2f", b.Len(), len(days), days[len(days)-1].level)
-		return
+	if dry {
+		log.Printf("%s: dry run: %d bytes, %d points, final level %.2f",
+			s.outID, b.Len(), len(days), days[len(days)-1].level)
+		return nil
 	}
-	out := filepath.Join(*dir, outID+".csv")
+	out := filepath.Join(dir, s.outID+".csv")
 	if err := os.WriteFile(out, b.Bytes(), 0o644); err != nil {
-		log.Fatalf("write: %v", err)
+		return fmt.Errorf("write: %w", err)
 	}
 	log.Printf("wrote %s (%d points)", out, len(days))
-	log.Printf("rebuild (make simdata) to re-anchor the trend overlays")
+	return nil
 }
 
-// sourceNote is the provenance the CSV carries: what the series is, where both
-// channels come from, what was checked, and the one licence restriction its
-// publisher attaches to it.
-const sourceNote = "daily levels of the SG Trend Index (NEIXCTAT, SG Prime Services), an equally weighted composite of " +
+// pureSource and allStylesSource are the provenance each CSV carries: what the
+// series is, where both channels come from, what was checked, and the one
+// licence restriction the publisher attaches to them.
+const pureSource = "daily levels of the SG Trend Index (NEIXCTAT, SG Prime Services), an equally weighted composite of " +
 	"the ten largest trend-following CTA programmes open to new investment, reconstituted each January, each " +
 	"constituent NET of its own manager's fees and the index levying none; a funded total return, published as a " +
 	"VAMI with base 1000 on 1999-12-31 and shipped here as published. Fetched at full precision from the index's " +
@@ -227,6 +312,21 @@ const sourceNote = "daily levels of the SG Trend Index (NEIXCTAT, SG Prime Servi
 	"independent publications of them, the oldest an archived 2010 capture; the index has never been restated by " +
 	"more than 5 bp, on 2018 alone. The publisher's methodology carries an EU Benchmarks Regulation disclaimer (not " +
 	"to be used as a benchmark by financial products); it is bundled here as a reference series for a research " +
+	"reconstruction of fund histories. Regenerate with cmd/gen-sgtrend-refdata."
+
+const allStylesSource = "daily levels of the SG CTA Index (NEIXCTA, SG Prime Services), an equally weighted composite " +
+	"of the twenty largest managed-futures programmes open to new investment whatever they trade, reconstituted " +
+	"each January, each constituent NET of its own manager's fees and the index levying none; a funded total " +
+	"return, published as a VAMI with base 1000 on 1999-12-31 and shipped here as published. Fetched at full " +
+	"precision from the index's calculation agent (POST " +
+	"https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi with dump=excelDaily, prog_cod=calyon, " +
+	"return_option=since_inception) and cross-checked day by day against the publisher's own dashboard copy " +
+	"(https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv). This index " +
+	"revises where its pure-trend sibling does not: measured 2026-08 over 6923 common days, five days differ by " +
+	"more than 2 bp (four in the unrevised live tail, worst 15.6 bp) and every month of calendar 2024 differs by " +
+	"1 to 6 bp, 25 bp compounded over that year. Over the whole window the two channels still compound to within " +
+	"23 bp of each other. The publisher's methodology carries an EU Benchmarks Regulation disclaimer (not to be " +
+	"used as a benchmark by financial products); it is bundled here as a reference series for a research " +
 	"reconstruction of fund histories. Regenerate with cmd/gen-sgtrend-refdata."
 
 // point is one day of the index: a date and the level it closed at.
@@ -364,7 +464,7 @@ func parseDashboard(raw []byte, column string) ([]point, error) {
 // share. Levels are not comparable (the two are published on different bases,
 // and one is rounded), returns are, and a return is also what the reference is
 // consumed for. It reports the agreement it found, or refuses it.
-func crossCheck(a, b []point) (string, error) {
+func crossCheck(s series, a, b []point) (string, error) {
 	byDate := make(map[time.Time]float64, len(b))
 	for _, p := range b {
 		byDate[p.date] = p.level
@@ -382,23 +482,33 @@ func crossCheck(a, b []point) (string, error) {
 	for _, p := range a {
 		levelA[p.date] = p.level
 	}
-	worst, worstDay := 0.0, common[0]
+	worst, worstDay, over := 0.0, common[0], 0
+	drift := 1.0
 	for i := 1; i < len(common); i++ {
 		prev, cur := common[i-1], common[i]
 		ra := levelA[cur]/levelA[prev] - 1
 		rb := byDate[cur]/byDate[prev] - 1
-		if gap := math.Abs(ra - rb); gap > worst {
+		drift *= (1 + ra) / (1 + rb)
+		gap := math.Abs(ra - rb)
+		if gap > s.maxReturnGap {
+			over++
+		}
+		if gap > worst {
 			worst, worstDay = gap, cur
 		}
 	}
-	if worst > maxReturnGap {
-		return "", fmt.Errorf("%s: daily returns differ by %.1f bp, over the %.0f bp allowed",
-			worstDay.Format("2006-01-02"), worst*1e4, maxReturnGap*1e4)
+	if worst > s.maxReturnGap {
+		return "", fmt.Errorf("%s: daily returns differ by %.1f bp, over the %.0f bp allowed (%d such days)",
+			worstDay.Format("2006-01-02"), worst*1e4, s.maxReturnGap*1e4, over)
+	}
+	if d := math.Abs(drift - 1); d > s.maxDrift {
+		return "", fmt.Errorf("the channels compound %.2f%% apart over %d days, over the %.1f%% allowed",
+			d*100, len(common), s.maxDrift*100)
 	}
 	return fmt.Sprintf("the two channels agree over %d common days (%s to %s): "+
-		"worst daily-return gap %.2f bp, on %s", len(common),
+		"worst daily-return gap %.2f bp, on %s; compounded %.2f%% apart", len(common),
 		common[0].Format("2006-01-02"), common[len(common)-1].Format("2006-01-02"),
-		worst*1e4, worstDay.Format("2006-01-02")), nil
+		worst*1e4, worstDay.Format("2006-01-02"), (drift-1)*100), nil
 }
 
 // trimPartialMonth drops the tail of a month the index has not finished. A
@@ -431,11 +541,11 @@ func sameMonth(a, b time.Time) bool {
 }
 
 // sanity refuses to ship a series that is not the index it claims to be: an
-// unbroken run of months from the inception the index is known to have, at a
-// pure-trend volatility, earning what a real trend programme earns over cash.
-// Anything outside these bands means the wrong column, the wrong index or a
-// truncated download.
-func sanity(days []point, cash []point) error {
+// unbroken run of months from the inception both indices are known to have, at
+// the volatility this composite realizes, earning what a real managed-futures
+// programme earns over cash. Anything outside these bands means the wrong
+// column, the wrong index or a truncated download.
+func sanity(s series, days []point, cash []point) error {
 	if got := days[0].date.Format("2006-01"); got != firstMonth {
 		return fmt.Errorf("starts %s, want %s", got, firstMonth)
 	}
@@ -454,16 +564,16 @@ func sanity(days []point, cash []point) error {
 	vol := annualVol(returns(days), 252)
 	excess := excessReturns(months, cash)
 	ir := annualGeoMean(excess, 12) / annualVol(excess, 12)
-	log.Printf("%d days over %d months, %s to %s, CAGR %.2f%%/yr, volatility %.1f%%/yr "+
+	log.Printf("%s: %d days over %d months, %s to %s, CAGR %.2f%%/yr, volatility %.1f%%/yr "+
 		"(monthly %.1f%%), funded excess information ratio %.2f, max drawdown %.1f%%",
-		len(days), len(months), days[0].date.Format("2006-01-02"),
+		s.outID, len(days), len(months), days[0].date.Format("2006-01-02"),
 		days[len(days)-1].date.Format("2006-01-02"), cagr(days)*100, vol*100,
 		annualVol(returns(months), 12)*100, ir, maxDrawdown(days)*100)
-	if vol < minVol || vol > maxVol {
-		return fmt.Errorf("volatility %.1f%%/yr outside [%.0f, %.0f]", vol*100, minVol*100, maxVol*100)
+	if vol < s.minVol || vol > s.maxVol {
+		return fmt.Errorf("volatility %.1f%%/yr outside [%.0f, %.0f]", vol*100, s.minVol*100, s.maxVol*100)
 	}
-	if ir < minIR || ir > maxIR {
-		return fmt.Errorf("funded excess information ratio %.2f outside [%.2f, %.2f]", ir, minIR, maxIR)
+	if ir < s.minIR || ir > s.maxIR {
+		return fmt.Errorf("funded excess information ratio %.2f outside [%.2f, %.2f]", ir, s.minIR, s.maxIR)
 	}
 	return nil
 }
