@@ -88,6 +88,35 @@ func TestExtendFXBack(t *testing.T) {
 	if _, _, ok := longFXCross("USDSEK=X"); ok {
 		t.Error("only bundled crosses should carry a proxy")
 	}
+	if _, _, ok := longFXCross("GBPSEK=X"); ok {
+		t.Error("a pair with an unbundled leg should carry no proxy")
+	}
+
+	// Cross-euro pairs triangulate through the dollar: GBPEUR = GBP/USD ÷
+	// EUR/USD, reaching 1971, and EURGBP is its reciprocal on shared dates
+	// (the two grids only fully coincide once both legs are FRED H.10, so
+	// reciprocity is checked on the latest common date, not by index).
+	for _, ccy := range []string{"GBP", "JPY", "CHF"} {
+		xeur, _, ok := longFXCross(ccy + "EUR=X")
+		if !ok || len(xeur) == 0 {
+			t.Fatalf("%sEUR=X has no triangulated proxy", ccy)
+		}
+		if first := xeur[0].Date; first.Year() > 1971 {
+			t.Errorf("long %s/EUR starts %s, want 1971", ccy, first.Format("2006-01"))
+		}
+		eurx, _, ok := longFXCross("EUR" + ccy + "=X")
+		if !ok || len(eurx) == 0 {
+			t.Fatalf("EUR%s=X has no triangulated proxy", ccy)
+		}
+		last := (&Series{Points: xeur}).Last()
+		recip, _, found := (&Series{Points: eurx}).At(last.Date)
+		if !found {
+			t.Fatalf("EUR%s missing %s", ccy, last.Date.Format("2006-01-02"))
+		}
+		if got := last.Close * recip; math.Abs(got-1) > 1e-9 {
+			t.Errorf("%sEUR·EUR%s on %s = %v, want 1 (reciprocal)", ccy, ccy, last.Date.Format("2006-01-02"), got)
+		}
+	}
 
 	// Splice behind a short recent EURUSD=X: it gains the pre-quote history.
 	s := &Series{Symbol: "EURUSD=X", Points: []Point{
