@@ -294,6 +294,7 @@ let run = async function() {
   renderPaths(b, id);
   renderSolver(b, id);
   renderFrontier(b, id);
+  renderPolicyFrontier(b, id);
   renderSensitivity(b, id);
   renderSpending(b, id);
   renderLifecycle(b, id);
@@ -464,6 +465,13 @@ async function renderFrontier(b, id) {
   try {
     const r = await post("/api/frontier", b);
     if (fresh(id)) setSVG("frontierSvg", r.frontierSvg);
+  } catch (e) { /* keep the previous chart */ }
+}
+
+async function renderPolicyFrontier(b, id) {
+  try {
+    const r = await post("/api/policyfrontier", b);
+    if (fresh(id)) setSVG("policyFrontierSvg", r.policyFrontierSvg);
   } catch (e) { /* keep the previous chart */ }
 }
 
