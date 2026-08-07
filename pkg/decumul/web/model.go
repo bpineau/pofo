@@ -292,6 +292,9 @@ func Compute(pr Params) Result { return ComputeWithPanel(pr, nil) }
 // ComputeWithPanel is Compute with an optional historical panel for the
 // bootstrap/cohort models and live re-weighting.
 func ComputeWithPanel(pr Params, panel *scenario.Panel) Result {
+	if note := cohortsNote(pr, panel); note != "" {
+		return Result{Note: note}
+	}
 	p := pr.plan()
 	p.Source = pr.source(panel)
 	res := computeFrom(pr, p)
@@ -321,17 +324,25 @@ func reliabilityCaveat(pr Params, panel *scenario.Panel) string {
 		histYears, pr.Years)
 }
 
-// cohortsNote returns a user-facing caveat when the plan's source is a cohorts
-// model with too little history for the horizon, otherwise an empty string.
-func cohortsNote(pr Params, p decumul.Plan) string {
-	src := p.Source
-	if c, ok := src.(scenario.Compounded); ok {
-		src = c.Inner // the historical source is wrapped in a Compounded
+// cohortsNote returns a user-facing caveat when the selected model is the
+// historical-windows one but the panel holds too little history for the
+// horizon, otherwise an empty string. The check runs on the parameters, not
+// the built source: detailSource quietly falls back to the central case in
+// that situation, and silently answering with a different model than the one
+// the user selected is exactly what this note exists to prevent.
+func cohortsNote(pr Params, panel *scenario.Panel) string {
+	if pr.central() != "hist" || panel == nil {
+		return ""
 	}
-	if hc, ok := src.(scenario.HistoricalCohorts); ok && hc.Count() == 0 {
+	w := pr.Weights
+	if w == nil {
+		w = panel.Weights
+	}
+	hc := scenario.HistoricalCohorts{Panel: *panel, Weights: w, Periods: pr.Years * 12}
+	if hc.Count() == 0 {
 		return fmt.Sprintf(
 			"Not enough history for a %d-year horizon under the cohorts model (only %d years of aligned data). Use the bootstrap or parametric model, or shorten the horizon.",
-			pr.Years, hc.Panel.Periods()/12)
+			pr.Years, panel.Periods()/12)
 	}
 	return ""
 }
@@ -340,9 +351,6 @@ func cohortsNote(pr Params, p decumul.Plan) string {
 func computeFrom(pr Params, p decumul.Plan) Result {
 	if pr.NPaths == 0 {
 		pr.NPaths = 5000
-	}
-	if note := cohortsNote(pr, p); note != "" {
-		return Result{Note: note}
 	}
 	seed := uint64(7)
 
@@ -461,11 +469,11 @@ func Solve(pr Params, panel *scenario.Panel) SolveResult {
 	if target <= 0 {
 		target = 0.05
 	}
-	p := pr.plan()
-	p.Source = pr.source(panel)
-	if note := cohortsNote(pr, p); note != "" {
+	if note := cohortsNote(pr, panel); note != "" {
 		return SolveResult{Note: note}
 	}
+	p := pr.plan()
+	p.Source = pr.source(panel)
 	seed := uint64(7)
 	years, ruin, err := p.BestBuffer([]float64{0, 1, 2, 3, 4, 5, 6, 8, 10}, pr.NPaths, simWorkers, seed)
 	if err != nil {
