@@ -2,7 +2,11 @@
 
 Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par des erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
 
-Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
+Cette page dresse la liste des dix plus meurtrières, dans l'ordre où on les rencontre en construisant un plan, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Six d'entre elles se chiffrent, et l'ordre du coût n'est pas celui de la liste. La figure ci-dessous les classe. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
+
+::: figure cout-des-erreurs
+Le coût mesuré des six erreurs chiffrables, sur un même plan de référence (1 M€, 3,5 % rigide, 50 ans, pension à partir de l'année 20, 60/40) et un même modèle empirique (16 pays, 1870-2020, 200 000 tirages). Les deux plus chères ajoutent à elles seules 36,8 points de ruine, contre 33,9 pour les quatre autres réunies, et ce ne sont pas les deux premières de la liste.
+:::
 
 ::: cle Le fil conducteur
 Neuf de ces dix erreurs partagent une racine : confondre la sortie d'un modèle avec une promesse, et l'optimisme avec un plan. L'antidote est toujours le même : des entrées auditées, plusieurs modèles ([[pieges-des-simulateurs]]), des marges nommées, et une règle d'ajustement décidée à l'avance ([[panorama-strategies-retrait]]).
@@ -28,7 +32,7 @@ Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe 
 
 ## 4. Oublier ses propres pensions
 
-L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). Compter la pension divise souvent la ruine par 2 à 4.
+L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). Compter la pension divise souvent la ruine par 2 à 4. Sur le plan de référence de la figure d'ouverture, l'oublier ajoute 9 points de ruine.
 
 **Correction** : relevé sur [info-retraite.fr](https://www.info-retraite.fr), estimation prudente (décote comprise), puis saisie dans le plan comme un revenu différé, avec son âge de démarrage.
 
@@ -40,13 +44,13 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 6. Le portefeuille mono-régime
 
-100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues en termes réels (Japon 1990, monde 2000-2009) au pire moment. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Variante déguisée du même piège, le portefeuille « qui vit de ses dividendes » n'est pas plus sûr, car un dividende se coupe en crise et reste de toute façon un retrait forcé sur votre propre capital ([[faux-actifs-defensifs]]). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues en termes réels (Japon 1990, monde 2000-2009) au pire moment. Sur cinquante ans il ne ruine pas plus souvent que le 60/40, mais il impose trois années de budget coupé de plus, et ces années-là se vivent. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Variante déguisée du même piège, le portefeuille « qui vit de ses dividendes » n'est pas plus sûr, car un dividende se coupe en crise et reste de toute façon un retrait forcé sur votre propre capital ([[faux-actifs-defensifs]]). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
 **Correction** : diversification par régime (actions mondiales, duration, or et/ou linkers, éventuellement des [[managed-futures|managed futures]]), et un test explicite contre inflation persistante et décennie perdue.
 
 ## 7. Tout miser sur la flexibilité
 
-« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné. La recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, car les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget.
+« Si ça va mal, on dépensera moins. » Vrai, utile, mais borné. La recherche ([[flexibilite-realite]], ERN volets 23-25) montre que la flexibilité réaliste (10-20 % de baisse, tenable quelques années) vaut environ 0,3 à 0,5 point de taux de retrait, pas davantage, car les mauvaises séquences durent parfois plus de dix ans. Une flexibilité de 40 % « sur le papier » n'existe pas si le plancher est en réalité à 90 % du budget. Mesurée, cette erreur est l'une des deux plus chères de la page, parce qu'elle sert à justifier un taux de retrait plus élevé, et que ce taux, lui, est bien réel.
 
 **Correction** : chiffrer le plancher réel (celui qu'on tient **cinq** ans, moral compris), et l'inscrire dans une règle décidée à l'avance ([[plancher-plafond]], [[guardrails-morningstar]]) plutôt que dans une intention.
 
