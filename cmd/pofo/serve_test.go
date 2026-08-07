@@ -67,6 +67,12 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/fire/"); rec.Code != 200 {
 		t.Errorf("fire mount: code=%d", rec.Code)
 	}
+	// A per-example FIRE mount for an unknown name 404s before any panel
+	// build (the known-name build path fetches quotes and is exercised by the
+	// manual smoke test, not here).
+	if rec := serveGet(t, h, "/fire/e/nope/"); rec.Code != 404 {
+		t.Errorf("unknown fire example: code=%d, want 404", rec.Code)
+	}
 }
 
 func TestServeView(t *testing.T) {
@@ -106,10 +112,16 @@ func TestServeHub(t *testing.T) {
 		`name="ex" value="dragon-decumulation-household"`,
 		`href="/examples/dragon-decumulation-household.txt"`,
 		`href="/view?ex=dragon-decumulation-household"`,
+		`href="/fire/e/dragon-decumulation-household/"`,
 		`href="/fire/"`, `href="/book/fr/"`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("hub missing %q", want)
 		}
+	}
+	// The warm book skin is applied (a book paper token, not the instrument
+	// default).
+	if !strings.Contains(body, "#faf6ef") {
+		t.Error("hub missing the warm book skin")
 	}
 }

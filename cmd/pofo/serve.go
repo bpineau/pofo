@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/bpineau/pofo/examples"
@@ -45,6 +46,14 @@ type server struct {
 	render   func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
 	sem      chan struct{}
 	examples map[string]examples.Info
+
+	// FIRE mounts: fireDefault is the plain /fire/ app (the startup panel);
+	// fireByEx caches one app per example, built lazily the first time a
+	// /fire/e/<name>/ URL is hit so "Simulate this portfolio" needs no
+	// restart. Guarded by fireMu; the build itself runs unlocked (it fetches).
+	fireDefault http.Handler
+	fireMu      sync.Mutex
+	fireByEx    map[string]http.Handler
 }
 
 func newServer(opt *options, client *marketdata.Client) *server {
@@ -53,6 +62,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 		client:   client,
 		sem:      make(chan struct{}, viewParallel),
 		examples: knownExamples(),
+		fireByEx: map[string]http.Handler{},
 	}
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return renderComparison(ctx, s.client, o, specs)
@@ -63,10 +73,11 @@ func newServer(opt *options, client *marketdata.Client) *server {
 // handler assembles the constellation mux.
 func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
+	s.fireDefault = web.Handler(panel, labels)
 	mux.HandleFunc("/", s.hub)
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
-	mux.Handle("/fire/", http.StripPrefix("/fire", web.Handler(panel, labels)))
+	mux.HandleFunc("/fire/", s.fire)
 	nav := []firebook.NavLink{
 		{Label: "Portefeuilles", Href: "/"},
 		{Label: "Simulateur", Href: "/fire/"},
@@ -111,6 +122,62 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 		return err
 	}
 	return nil
+}
+
+// fire serves the FIRE simulator. A plain /fire/... path gets the default
+// app (the startup panel); a /fire/e/<name>/... path gets an app bound to
+// that example's historical panel, so a portfolio picked on the hub opens
+// pre-loaded. The FIRE front-end resolves its /api and asset URLs against the
+// page's base, so it works unchanged at either mount depth.
+func (s *server) fire(w http.ResponseWriter, r *http.Request) {
+	if rest, ok := strings.CutPrefix(r.URL.Path, "/fire/e/"); ok {
+		name, _, _ := strings.Cut(rest, "/")
+		h := s.fireForExample(r.Context(), name)
+		if h == nil {
+			s.errorPage(w, http.StatusNotFound, "unknown example: "+name)
+			return
+		}
+		http.StripPrefix("/fire/e/"+name, h).ServeHTTP(w, r)
+		return
+	}
+	http.StripPrefix("/fire", s.fireDefault).ServeHTTP(w, r)
+}
+
+// fireForExample returns the FIRE app bound to the named example's panel,
+// building and caching it on first use. It returns nil for an unknown name.
+// The panel build (which fetches quotes) runs outside the lock so distinct
+// examples build in parallel; a rare double build of the same name is
+// harmless, the last writer wins.
+func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
+	if _, ok := s.examples[name]; !ok {
+		return nil
+	}
+	s.fireMu.Lock()
+	h, ok := s.fireByEx[name]
+	s.fireMu.Unlock()
+	if ok {
+		return h
+	}
+	raw, err := examples.FS.ReadFile(name + ".txt")
+	if err != nil {
+		return nil
+	}
+	spec, err := portfolio.Parse(name, strings.NewReader(string(raw)))
+	if err != nil {
+		return nil
+	}
+	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
+	defer cancel()
+	panel, labels := firePanel(buildCtx, s.opt, s.client, []*portfolio.Spec{spec})
+	h = web.Handler(panel, labels)
+	s.fireMu.Lock()
+	if existing, ok := s.fireByEx[name]; ok {
+		h = existing
+	} else {
+		s.fireByEx[name] = h
+	}
+	s.fireMu.Unlock()
+	return h
 }
 
 // view renders the comparison page for the portfolios encoded in the URL.
