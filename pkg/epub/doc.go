@@ -5,7 +5,7 @@
 //
 // # OCF layout
 //
-// Write emits the reglementary Open Container Format layout, in a fixed order:
+// Write emits the regulatory Open Container Format layout, in a fixed order:
 //
 //	mimetype                 stored (uncompressed), first, no extra field
 //	META-INF/container.xml   points at OEBPS/content.opf
