@@ -157,7 +157,9 @@ func (b *Book) validate() error {
 	if b.Cover != nil && !strings.HasPrefix(string(b.Cover), "\x89PNG") {
 		return fmt.Errorf("epub: Cover is not a PNG (missing \\x89PNG magic)")
 	}
-	seen := map[string]bool{}
+	// Reserve the container's own file names: a chapter shadowing one of
+	// them would emit a duplicate zip entry and a corrupt EPUB.
+	seen := map[string]bool{"nav.xhtml": true, "cover.xhtml": true}
 	var check func(cs []Chapter, depth int) error
 	check = func(cs []Chapter, depth int) error {
 		for _, c := range cs {
