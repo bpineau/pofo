@@ -254,7 +254,7 @@ Existant : une figure, `buffer-flat` (ruine ~plate en fonction de la taille du
 matelas). Elle porte bien la thèse quantitative centrale. Ce qui reste
 purement verbal, et qui vaudrait une image, tient en trois points.
 
-## 1. Les durées de traversée contre la portée du matelas (coût A)
+## 1. Les durées de traversée contre la portée du matelas (coût A) [FAIT 2026-07-30, `traversees-matelas`]
 
 Ce qu'elle montre : la distribution des durées passées sous le dernier sommet
 réel, épisode par épisode, sur le 60/40 réel américain de `pkg/replay`
@@ -933,7 +933,7 @@ fait mieux qu'un graphique ici, puisque les cases sont des verdicts, pas des
 nombres. Attention à ne pas doubler la « grille de régimes » du livre : ce
 n'est pas un tableau de rendements, c'est une matrice de survie.
 
-## 2. Weimar en termes réels : la créance à zéro, l'action seulement amochée
+## 2. Weimar en termes réels : la créance à zéro, l'action seulement amochée [FAIT 2026-07-30, `weimar-reel`]
 
 Deux courbes cumulées en termes réels, base 100 en 1913, échelle
 logarithmique, sur 1914-1926 : actions allemandes contre obligations d'État
