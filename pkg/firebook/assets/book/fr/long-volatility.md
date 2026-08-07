@@ -52,7 +52,7 @@ C'est ici que l'article devient une mise en garde, car l'écart entre le concept
 **L'alternative honnête, pour presque tout le monde.** La conclusion d'Israelov reste la meilleure réponse par défaut : si vous voulez moins souffrir dans les krachs, détenez moins d'actions. Passer de 70/30 à 60/40 protège de façon certaine, sans prime de variance, sans options à rouler et sans risque de véhicule. Le bond tent des années fragiles ([[glidepaths]]) et le buffer ([[cash-buffer]]) offrent la même défense contre le même risque de séquence, en instruments que vous possédez déjà.
 
 ::: figure puts-domines
-L'échelle actions / obligations recalculée ici (S&P 500 et Treasuries intermédiaires, valeurs de fin de mois, rééquilibrage annuel) contre la protection permanente par puts, sur la fenêtre publiée de l'indice PPUT, juin 1986 - décembre 2018. À pire drawdown égal, un simple 80/20 rend 2,8 points de plus par an. Le point PPUT est posé à ses coordonnées publiées, il n'est pas recalculé ici.
+L'échelle actions / obligations recalculée ici (S&P 500 et Treasuries intermédiaires, valeurs de fin de mois, rééquilibrage annuel) contre la protection permanente par puts, sur la fenêtre publiée de l'indice PPUT, juin 1986 - décembre 2018. À pire drawdown égal, un simple 80/20 rend 2,9 points de plus par an. Le point PPUT est posé à ses coordonnées publiées, il n'est pas recalculé ici.
 :::
 
 ::: exemple Le tail hedge à l'épreuve de trois crises

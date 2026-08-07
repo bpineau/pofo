@@ -497,17 +497,6 @@ func tip1eRecipe() Recipe {
 	}
 }
 
-func shyRecipe() Recipe {
-	return Recipe{
-		ID:              "SHY",
-		Name:            "iShares 1-3 Year Treasury Bond ETF",
-		Method:          "VFISX (Vanguard Short-Term Treasury, 1991→), real SHY grafted from 2002",
-		Build:           composite("SHY (short Treasury)", []Leg{{ID: "VFISX", Weight: 1}}, "", 0),
-		ValidateAgainst: "SHY",
-		SpliceReal:      "SHY",
-	}
-}
-
 func rssbRecipe() Recipe {
 	return Recipe{
 		ID:     "RSSB",
@@ -1398,14 +1387,83 @@ func urthRecipe() Recipe {
 
 // iefRecipe and tltRecipe extend the treasury ETFs (2002) with their
 // long-running Vanguard equivalents (VFITX 1991→, VUSTX 1986→).
+//
+// VFITX is a 5-10 year fund and IEF holds the 7-10 segment, so the donor is
+// short of the target's duration and the file used to say so loudly: 4.81 %
+// annualized volatility against the fund's 6.80 over their whole 2002-2026
+// overlap, a fifth of the rate sensitivity the sleeve is bought for simply
+// missing. It is geared by intTreasuryGearing, over collateral earning the
+// bill rate as zrozRecipe does, since IEF owns its bonds outright and the cash
+// term is only the arithmetic residue of writing g × bond as
+// cash + g × (bond − cash).
+//
+// One caveat travels with the deep tail: before VFITX's own 1991 start the leg
+// is the 5-year constant-maturity reconstruction (TREASURY-INT-USD), shorter
+// still than VFITX, so 1.41 leaves the 1953-1991 segment under-durated rather
+// than over. The error keeps its sign, which is the sign worth keeping.
 func iefRecipe() Recipe {
 	return Recipe{
-		ID:              "IEF",
-		Name:            "iShares 7-10Y Treasury: VFITX intermediate Treasury",
-		Method:          "VFITX (Vanguard Intermediate-Term Treasury, 1991→), real IEF grafted from 2002",
-		Build:           composite("IEF (intermediate Treasury)", []Leg{{ID: "VFITX", Weight: 1}}, "", 0),
+		ID:     "IEF",
+		Name:   "iShares 7-10Y Treasury: VFITX intermediate Treasury",
+		Method: "cash + 1.41×(VFITX − cash) (Vanguard Intermediate-Term Treasury, 1991→, geared to the 7-10 segment's duration), real IEF grafted from 2002",
+		Build: composite("IEF (intermediate Treasury)", []Leg{
+			{ID: "VFITX", Weight: intTreasuryGearing, Excess: true},
+			{ID: "^IRX", Weight: 1},
+		}, "^IRX", 0),
 		ValidateAgainst: "IEF",
 		SpliceReal:      "IEF",
+	}
+}
+
+// intTreasuryGearing and shortTreasuryGearing put the two Vanguard Treasury
+// donors on the segment their target ETF actually holds. Both are the donor's
+// own volatility ratio against the fund, measured on the whole 2002-2026
+// overlap (6030 common days) and nothing else:
+//
+//	IEF on VFITX   6.80 % against 4.81 %   ratio 1.412, beta 1.333, corr 0.945
+//	SHY on VFISX   1.52 % against 2.03 %   ratio 0.751, beta 0.609, corr 0.812
+//
+// A volatility ratio is the right instrument here because these are two
+// Treasury funds on the same curve: what separates them is duration, and for
+// the same yield factor volatility is proportional to it. The same measurement
+// reproduces the long-bond gearing this file already carries from a duration
+// table, which is the check that the two instruments agree: TLT on VUSTX gives
+// 1.131 over the same window against longTreasuryGearing's 17/15 = 1.133.
+//
+// The TE-minimizing gearing is lower in both cases (1.35 for IEF, and the beta
+// is lower still at 1.33), and it is deliberately not used: with correlation
+// under one, minimizing tracking error under-risks the sleeve by that factor,
+// and understating rate sensitivity is the expensive error for a line held as
+// a deflation hedge.
+//
+// What each gearing bought, on the fund's own overlap (correlation is
+// invariant under a scalar, so it is the beta, the tracking error and the
+// volatility that move):
+//
+//	IEF  beta 1.33 -> 0.95, TE 2.75 -> 2.26 %/yr, vol 4.81 -> 6.79 % against 6.80, CAGR gap -0.29 -> +0.28 pt
+//	SHY  beta 0.61 -> 0.81, TE 1.19 -> 0.93 %/yr, vol 2.03 -> 1.52 % against 1.52, CAGR gap +0.19 -> +0.08 pt
+const (
+	intTreasuryGearing   = 1.41
+	shortTreasuryGearing = 0.75
+)
+
+// shyRecipe extends the 1-3 year Treasury ETF with Vanguard's short-Treasury
+// fund, geared DOWN: VFISX runs longer than the 1-3 segment (2.03 % annualized
+// volatility against SHY's 1.52 over their 2002-2026 overlap), so the donor is
+// held at shortTreasuryGearing over collateral, the mirror image of what IEF
+// needs. See that constant for the measurements and for why the ratio rather
+// than the beta sets it.
+func shyRecipe() Recipe {
+	return Recipe{
+		ID:     "SHY",
+		Name:   "iShares 1-3 Year Treasury Bond ETF",
+		Method: "cash + 0.75×(VFISX − cash) (Vanguard Short-Term Treasury, 1991→, geared down to the 1-3 segment's duration), real SHY grafted from 2002",
+		Build: composite("SHY (short Treasury)", []Leg{
+			{ID: "VFISX", Weight: shortTreasuryGearing, Excess: true},
+			{ID: "^IRX", Weight: 1},
+		}, "^IRX", 0),
+		ValidateAgainst: "SHY",
+		SpliceReal:      "SHY",
 	}
 }
 
