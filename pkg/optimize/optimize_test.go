@@ -112,6 +112,72 @@ func TestMaxWeightCap(t *testing.T) {
 	}
 }
 
+// The uncapped max-sharpe answer must be the GLOBAL optimum, not a good local
+// one: Schaible's transformation is what buys that, so check it against a
+// brute-force sweep of the whole simplex on a correlated three-asset problem.
+func TestMaxSharpeIsGlobalOptimum(t *testing.T) {
+	mu := []float64{0.09, 0.06, 0.04}
+	cov := [][]float64{
+		{0.0400, 0.0120, -0.0020},
+		{0.0120, 0.0225, 0.0030},
+		{-0.0020, 0.0030, 0.0100},
+	}
+	r, err := solve(mu, cov, Spec{Objective: MaxSharpe})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sharpe := func(w []float64) float64 {
+		v := quad(cov, w)
+		if v <= 0 {
+			return 0
+		}
+		return dot(mu, w) / math.Sqrt(v)
+	}
+	const steps = 200
+	bestGrid, bestW := 0.0, []float64{}
+	for i := 0; i <= steps; i++ {
+		for j := 0; i+j <= steps; j++ {
+			w := []float64{float64(i) / steps, float64(j) / steps, float64(steps-i-j) / steps}
+			if s := sharpe(w); s > bestGrid {
+				bestGrid, bestW = s, w
+			}
+		}
+	}
+	if r.Sharpe < bestGrid-1e-6 {
+		t.Fatalf("max-sharpe %.6f (%v) is below the grid best %.6f (%v)",
+			r.Sharpe, r.Weights, bestGrid, bestW)
+	}
+	approx(t, r.Sharpe, sharpe(r.Weights), 1e-12, "reported Sharpe")
+}
+
+// tangencyQP has no feasible point when every mean is negative (muᵀy = 1 is
+// unreachable with y ≥ 0); the solver must then fall back to its other
+// starting points instead of returning garbage.
+func TestMaxSharpeAllNegativeMeans(t *testing.T) {
+	mu := []float64{-0.02, -0.05}
+	cov := [][]float64{{0.04, 0}, {0, 0.01}}
+	if _, ok := tangencyQP(mu, cov); ok {
+		t.Fatal("tangencyQP should report no feasible point when every mean is negative")
+	}
+	r, err := solve(mu, cov, Spec{Objective: MaxSharpe})
+	if err != nil {
+		t.Fatal(err)
+	}
+	sum := 0.0
+	for _, w := range r.Weights {
+		if w < -1e-12 {
+			t.Fatalf("negative weight: %v", r.Weights)
+		}
+		sum += w
+	}
+	approx(t, sum, 1, 1e-9, "weights sum")
+	// The best available Sharpe is the least negative one: asset 0 loses
+	// 2%/yr at 20% vol (-0.10) against asset 1's 5% at 10% vol (-0.50).
+	if r.Weights[0] <= r.Weights[1] {
+		t.Errorf("expected the least-negative Sharpe to dominate, got %v", r.Weights)
+	}
+}
+
 func TestStatsConsistency(t *testing.T) {
 	mu := []float64{0.10, 0.05}
 	cov := [][]float64{{0.04, 0}, {0, 0.01}}
