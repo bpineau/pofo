@@ -1,36 +1,38 @@
 /* ============================================================================
-   pofo — shared visual identity ("warm study")
-   A rich, cosy reading-room feel: warm sand paper, espresso ink, a copper accent
-   with a deep-teal counterpoint, soft floating cards, generous space, and a
-   friendly humanist sans (no monospace to squint at). Full width, big charts.
-   Shared by the portfolio report and the FIRE explorer; all embedded, plain
-   `go build`.
+   pofo — shared visual identity ("quant desk")
+   A modern fintech analytics surface: cool paper, white panels ruled by
+   hairlines, deep slate ink, one ultramarine accent, and every figure set in
+   monospace. Green / amber / red are reserved for risk semantics and never
+   used decoratively. Shared by the portfolio report and the FIRE explorer;
+   all embedded, plain `go build`.
    ========================================================================== */
 :root{
-  --bg:#EFE7DA;            /* warm sand                                         */
-  --bg-tint:#F5EEE3;       /* lighter warm wash for bands                       */
-  --surface:#FFFDF9;       /* card / panel (warm white)                         */
-  --surface-2:#F7F0E4;     /* inset / zebra                                     */
-  --ink:#2A231F;           /* espresso, warm near-black                         */
-  --ink-soft:#6E6157;      /* warm taupe, secondary text                        */
-  --muted:#9C8C7C;         /* captions                                          */
-  --line:#E4D9C8;          /* hairline                                          */
-  --line-strong:#D3C4AE;   /* structural rule                                   */
-  --accent:#B25A34;        /* copper — primary, links, key figures              */
-  --accent-ink:#8F4526;    /* darker copper for text-on-wash                    */
-  --accent-wash:#F3E4D8;   /* copper tint                                       */
-  --teal:#2E6E63;          /* deep teal — cool counterpoint for data            */
-  --teal-wash:#E1EDE9;
-  --gold:#C08A2D;          /* honey highlight                                   */
-  --good:#3F8A5F;          /* risk scale: safe                                  */
-  --warn:#C08A2D;          /*             caution                               */
-  --bad:#C0492F;           /*             danger / ruin                         */
-  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", Roboto, Helvetica, Arial, sans-serif;
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-  --r:14px;                /* generous cosy radius                              */
-  --r-sm:9px;
-  --sh:0 1px 2px rgba(42,35,31,.05), 0 10px 30px -18px rgba(42,35,31,.35);
-  --sh-soft:0 1px 2px rgba(42,35,31,.05), 0 4px 14px -10px rgba(42,35,31,.28);
+  --bg:#F4F5F8;            /* cool paper                                       */
+  --surface:#FFFFFF;       /* card / panel                                     */
+  --surface-2:#F2F4F8;     /* inset / zebra                                    */
+  --ink:#101828;           /* deep slate, near-black                           */
+  --ink-soft:#475467;      /* secondary text                                   */
+  --muted:#667085;         /* captions, axis-grade text                        */
+  --faint:#98A2B3;         /* placeholders, tertiary                           */
+  --line:#E7EAF0;          /* hairline                                         */
+  --line-strong:#D2D8E2;   /* structural rule                                  */
+  --accent:#2E4BE0;        /* ultramarine — the one brand color                */
+  --accent-ink:#2743C7;    /* accent tuned for text on white                   */
+  --accent-wash:#EEF1FD;   /* accent tint for selected / highlighted surfaces  */
+  --good:#12B76A;          /* risk scale: safe (marks, dots)                   */
+  --good-ink:#067647;      /*             safe, text grade                     */
+  --good-wash:#EAF7F0;
+  --warn:#F79009;          /*             caution                              */
+  --warn-ink:#B54708;
+  --warn-wash:#FFF6E6;
+  --bad:#D92D20;           /*             danger / ruin                        */
+  --bad-ink:#B42318;
+  --bad-wash:#FDECEA;
+  --sans:-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --mono:ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+  --r:10px;
+  --r-sm:6px;
+  --sh:0 1px 2px rgba(16,24,40,.06);
 }
 
 *{box-sizing:border-box}
@@ -38,85 +40,93 @@ html{-webkit-text-size-adjust:100%}
 body{
   font-family:var(--sans);
   color:var(--ink);
-  background:
-    radial-gradient(1200px 420px at 78% -8%, rgba(178,90,52,.10), transparent 60%),
-    radial-gradient(1000px 460px at 8% -6%, rgba(46,110,99,.09), transparent 62%),
-    var(--bg);
-  background-attachment:fixed;
-  margin:0;line-height:1.55;font-size:15.5px;
+  background:var(--bg);
+  margin:0;line-height:1.5;font-size:14px;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
-a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(143,69,38,.4)}
+a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(39,67,199,.35)}
 
 /* ---- full-width shell (no wasted side bands) ----------------------------- */
-.wrap{width:100%;max-width:1720px;margin:0 auto;padding:0 clamp(1rem,2.4vw,2.2rem) 4rem}
+.wrap{width:100%;max-width:1760px;margin:0 auto;padding:0 clamp(1rem,2vw,2rem) 4rem}
 
-/* ---- masthead ------------------------------------------------------------ */
-.masthead{display:flex;align-items:baseline;gap:.8rem 1.1rem;flex-wrap:wrap;padding:1.3rem 0 1rem}
-.masthead .mark{font-weight:800;font-size:1.15rem;letter-spacing:-.01em;color:var(--ink)}
-.masthead .mark b{color:var(--accent);font-weight:800}
-.masthead .ctx{font-size:.82rem;color:var(--ink-soft);font-weight:600;letter-spacing:.02em}
+/* ---- masthead: a slim product bar ----------------------------------------- */
+.masthead{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
+  padding:.85rem 0;border-bottom:1px solid var(--line-strong);margin-bottom:1.4rem}
+.masthead .mark{font-family:var(--mono);font-weight:700;font-size:.95rem;
+  letter-spacing:-.02em;color:var(--ink)}
+.masthead .mark b{color:var(--accent);font-weight:700}
+.masthead .ctx{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);padding-left:.9rem;border-left:1px solid var(--line-strong)}
 .masthead .spacer{flex:1}
-.masthead .stamp{font-size:.78rem;color:var(--muted)}
+.masthead .stamp{font-family:var(--mono);font-size:.7rem;color:var(--faint)}
 
-/* ---- typography ---------------------------------------------------------- */
-h1{font-family:var(--serif);font-weight:600;font-size:clamp(1.7rem,3vw,2.4rem);line-height:1.08;
-  margin:.1rem 0 .35rem;letter-spacing:-.005em}
-h2{font-size:1.2rem;margin:0;letter-spacing:-.01em}
-h3{font-size:.95rem;margin:0}
-.lede{color:var(--ink-soft);font-size:1rem;max-width:70ch;margin:.1rem 0 0}
-.eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.11em;text-transform:uppercase;color:var(--accent-ink)}
-.num{font-variant-numeric:tabular-nums}
+/* ---- typography ----------------------------------------------------------- */
+h1{font-weight:650;font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.15;
+  margin:.1rem 0 .3rem;letter-spacing:-.02em}
+h2{font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:0}
+h3{font-size:.9rem;margin:0}
+.lede{color:var(--ink-soft);font-size:.92rem;max-width:78ch;margin:.1rem 0 0}
+.eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
-.section-head{display:flex;align-items:center;gap:.7rem;margin:2.4rem 0 1rem}
-.section-head .idx{font-family:var(--serif);font-size:1.15rem;color:var(--accent);font-weight:600;
-  width:1.9rem;height:1.9rem;display:grid;place-items:center;border-radius:50%;
-  background:var(--accent-wash);flex:none}
-.section-head h2{font-weight:650}
-.section-head .aside{margin-left:auto;font-size:.82rem;color:var(--ink-soft)}
+/* Section heads: an index in mono, an uppercase title, a rule filling the
+   gap to the right-aligned aside. The rule is structure, not decoration:
+   it separates analysis blocks on a dense page. */
+.section-head{display:flex;align-items:baseline;gap:.7rem;margin:2.1rem 0 .8rem}
+.section-head .idx{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--accent)}
+.section-head h2{color:var(--ink);white-space:nowrap}
+.section-head::after{content:"";flex:1;border-top:1px solid var(--line-strong);
+  align-self:center;order:3}
+.section-head .aside{order:4;font-size:.76rem;color:var(--muted);white-space:nowrap}
 
-/* ---- cards & panels ------------------------------------------------------ */
+/* ---- cards & panels -------------------------------------------------------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  box-shadow:var(--sh-soft);padding:clamp(1rem,1.6vw,1.4rem)}
+  box-shadow:var(--sh);padding:.85rem 1rem}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
 
-/* ---- charts sit in warm floating frames --------------------------------- */
+/* ---- charts sit in flat white frames -------------------------------------- */
 svg{display:block;width:100%;height:auto}
 .chart-frame{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
-  box-shadow:var(--sh-soft);padding:.7rem .85rem}
+  box-shadow:var(--sh);padding:.6rem .7rem}
 
-/* ---- tables -------------------------------------------------------------- */
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-thead th{font-weight:650;font-size:.74rem;letter-spacing:.03em;color:var(--ink-soft);text-align:left;
-  border-bottom:2px solid var(--line-strong);padding:.5rem .6rem;white-space:nowrap}
-tbody td{padding:.45rem .6rem;border-bottom:1px solid var(--line);vertical-align:baseline}
-tbody tr:nth-child(even){background:var(--surface-2)}
-tbody tr:hover{background:var(--teal-wash)}
-td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-td.best{background:var(--teal-wash);color:var(--teal);font-weight:700;border-radius:0}
+/* ---- tables ---------------------------------------------------------------- */
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+thead th{font-weight:650;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-align:left;border-bottom:1px solid var(--line-strong);
+  padding:.45rem .6rem;white-space:nowrap}
+tbody td{padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:baseline}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--surface-2)}
+td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;
+  font-size:.8rem;white-space:nowrap}
+td.best{color:var(--accent-ink);font-weight:700;background:var(--accent-wash)}
+td.mono{font-family:var(--mono);font-size:.8rem}
 
-/* ---- badges -------------------------------------------------------------- */
-.badge{display:inline-block;font-size:.72rem;font-weight:600;padding:.12rem .5rem;border-radius:999px;
-  border:1px solid var(--line-strong);color:var(--ink-soft);background:var(--surface)}
-.badge.good{color:var(--good);border-color:#bfe0cd;background:#eaf5ef}
-.badge.warn{color:#8a5f11;border-color:#e6d3a3;background:#f7efdb}
-.badge.bad{color:var(--bad);border-color:#e6c3bd;background:#f8e7e3}
-.badge.accent{color:var(--accent-ink);border-color:#e3c9b8;background:var(--accent-wash)}
+/* ---- badges ---------------------------------------------------------------- */
+.badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;
+  padding:.1rem .5rem;border-radius:999px;border:1px solid var(--line-strong);
+  color:var(--ink-soft);background:var(--surface)}
+.badge.good{color:var(--good-ink);border-color:#BFE5D2;background:var(--good-wash)}
+.badge.warn{color:var(--warn-ink);border-color:#F2D9AC;background:var(--warn-wash)}
+.badge.bad{color:var(--bad-ink);border-color:#F0C5C0;background:var(--bad-wash)}
+.badge.accent{color:var(--accent-ink);border-color:#C7D0F5;background:var(--accent-wash)}
 
-/* ---- disclosures --------------------------------------------------------- */
-details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh-soft)}
-details>summary{cursor:pointer;padding:.7rem .95rem;font-weight:650;font-size:.92rem;list-style:none;
-  display:flex;align-items:center;gap:.5rem}
-details>summary::before{content:"▸";color:var(--accent);font-size:.8rem;transition:transform .15s}
-details[open]>summary::before{transform:rotate(90deg)}
-details[open]>summary{border-bottom:1px solid var(--line)}
-.disclosure-body{padding:.85rem 1rem;font-size:.9rem;color:var(--ink-soft)}
+/* ---- disclosures ------------------------------------------------------------ */
+details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
+details>summary{cursor:pointer;padding:.65rem .95rem;font-weight:600;font-size:.85rem;list-style:none;
+  display:flex;align-items:center;gap:.55rem;color:var(--ink-soft)}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"+";font-family:var(--mono);color:var(--accent);
+  font-size:.85rem;width:.8rem;text-align:center}
+details[open]>summary::before{content:"−"}
+details[open]>summary{border-bottom:1px solid var(--line);color:var(--ink)}
+.disclosure-body{padding:.85rem 1rem;font-size:.86rem;color:var(--ink-soft)}
 .disclosure-body b{color:var(--ink)}
 
-/* ---- notes / warnings ---------------------------------------------------- */
-.note{color:var(--ink-soft);font-size:.85rem;margin:.3rem 0}
-.warn{color:#8a5f11;background:#f7efdb;border:1px solid #e6d3a3;border-radius:var(--r-sm);
-  padding:.5rem .8rem;font-size:.85rem;margin:.5rem 0}
+/* ---- notes / warnings -------------------------------------------------------- */
+.note{color:var(--ink-soft);font-size:.82rem;margin:.3rem 0}
+.warn{color:var(--warn-ink);background:var(--warn-wash);border:1px solid #F2D9AC;
+  border-radius:var(--r-sm);padding:.5rem .8rem;font-size:.82rem;margin:.5rem 0}
 
 .muted{color:var(--muted)}.soft{color:var(--ink-soft)}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px}

@@ -54,7 +54,7 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 		{"Spending floor (p5, year 10)", floorText(bands, 10)},
 	}
 	svg := chart.Fan(
-		chart.Options{Title: "Household real spending €/yr, incl. pension & side income (central model)"},
+		chart.Options{Title: "Household real spending €/yr, incl. pension & side income (central model)", Width: 720, Height: 420},
 		"Year", bands, nil)
 	return SpendingResult{SVG: svg, Cards: cards}
 }
