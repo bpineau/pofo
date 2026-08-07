@@ -44,7 +44,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Anarkulova, Cederburg & O'Doherty (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions. Les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
 
-**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[la-machine-pofo]]
+**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[historique-vs-parametrique]]
 
 **Kitces & Pfau (2014), « Reducing Retirement Risk with a Rising Equity Glide Path »** : le glidepath montant, source primaire. [[glidepaths]]
 
@@ -68,7 +68,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives. La calibration annuelle de μ. [[rendements-attendus]]
 
-**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour. Celui affiché en §00. [[valorisations-et-cape]]
+**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour, l'ancre de valorisation à relever une fois l'an. [[valorisations-et-cape]]
 
 **Le SG Trend Index** : le référentiel des programmes de trend. Le contrôle de tout véhicule. [[managed-futures]]
 
@@ -86,7 +86,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les outils
 
-**pofo (le simulateur FIRE de pofo que ce livre habite)** : le laboratoire multi-modèles du plan. Quatre lentilles, les règles simulables, le solveur en équivalences. Le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
+**pofo** : le simulateur FIRE qui accompagne ce livre. Un laboratoire multi-modèles (fenêtres historiques, bootstrap, paramétrique, stress de séquence), les règles de retrait simulables et un solveur en mouvements équivalents. Le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
 
 **TPAW Planner ([tpawplanner.com](https://tpawplanner.com))** : l'ABW/TPAW complet, gratuit. La référence de la famille actuarielle. [[amortissement-abw]]
 
@@ -97,14 +97,14 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], et le simulateur FIRE de pofo ouverte à côté.
+**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], un simulateur ouvert à côté.
 :::
 
 ## L'essentiel à retenir
 
 - Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles, Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
 - Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee. La veille du plan est là.
-- Les outils se croisent (pofo en laboratoire principal, TPAW et les simulateurs historiques en seconds avis) : jamais un seul verdict ([[pieges-des-simulateurs]]).
+- Les outils se croisent : un simulateur multi-modèles en laboratoire principal, TPAW et les simulateurs historiques en seconds avis, jamais un seul verdict ([[pieges-des-simulateurs]]).
 - Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti. Et ce livre est conçu pour servir de carte au milieu.
 
 ---
