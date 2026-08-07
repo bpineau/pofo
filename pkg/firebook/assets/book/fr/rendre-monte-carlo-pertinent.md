@@ -52,7 +52,7 @@ Chaque correction a sa généalogie académique : le shrinkage des estimations d
 
 Suivons un même plan à travers les corrections, pour voir ce que chacune coûte ou révèle. Plan : 1,4 M€, 50 000 €/an, 45 ans, portefeuille mondial avec 18 ans d'historique favorable (μ ajusté brut, 6,5 % réel, σ 11 %, kurtosis mensuel 8).
 
-| Étape | Modèle | Ruine | Ce que l'étape apporte |
+| Étape | Modèle | Ruine | Apport |
 |---|---|---|---|
 | 0 | Gaussien i.i.d., μ historique brut, plan rigide sans pension | ~1 % | Le chiffre de brochure |
 | 1 | + blending vers le prior mondial (μ 5,5 %, df 4 au plafond 50/50) | ~4 % | La fenêtre favorable cesse de faire loi |

@@ -40,7 +40,7 @@ Trois arguments reviennent. Le premier est la **cohérence**. C'est la seule fam
 
 Les deux familles gagnantes du panorama ([[panorama-strategies-retrait]]) méritent une comparaison directe, critère par critère :
 
-| Critère | Guardrails modernes ([[guardrails-morningstar]]) | ABW/TPAW |
+| Critère | [[guardrails-morningstar|Guardrails]] | ABW/TPAW |
 |---|---|---|
 | Revenu au quotidien | **Stable** entre les franchissements (le confort du fixe) | Variable chaque année (amorti, mais variable) |
 | Forme des ajustements | Marches de ±10 %, rares, après franchissement | Petites touches continues (±3-6 %) |

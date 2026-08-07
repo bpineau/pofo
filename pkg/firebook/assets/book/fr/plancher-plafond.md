@@ -22,7 +22,7 @@ L'asymétrie des bornes n'est pas décorative. Elle encode une préférence huma
 
 Rien ne vaut un déroulé. Plan : 1,4 M€, w = 4 %, retrait initial 56 000 €.
 
-| Année | Portefeuille (réel) | Cible 4 % | Bornes (vs an dernier, réel) | Retrait servi |
+| Année | Portefeuille (réel) | Cible 4 % | Bornes (réel) | Retrait servi |
 |---|---|---|---|---|
 | 1 | 1 400 000 | 56 000 | (référence) | 56 000 |
 | 2 | 1 190 000 (−15 %) | 47 600 | ≥ 54 600 | **54 600** (plancher −2,5 %) |

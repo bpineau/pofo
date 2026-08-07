@@ -12,9 +12,9 @@ Troisième piège. L'horizon d'un plan FIRE n'est pas homogène. Il contient une
 
 ## L'espérance de vie, correctement
 
-**Erreur n° 1 : l'espérance à la naissance.** « L'espérance de vie est de 80 ans (hommes) / 86 ans (femmes) » : ces chiffres INSEE incluent les décès précoces. Or vous avez déjà survécu jusqu'à aujourd'hui : l'espérance **conditionnelle** à votre âge est nettement plus haute, et elle monte à mesure que vous vieillissez. Ordres de grandeur des tables françaises récentes (INSEE, arrondis) :
+**Erreur n° 1 : l'espérance à la naissance.** « L'espérance de vie est de 80 ans (hommes) / 86 ans (femmes) » : ces chiffres INSEE incluent les décès précoces. Or vous avez déjà survécu jusqu'à aujourd'hui : l'espérance **conditionnelle** à votre âge est nettement plus haute, et elle monte à mesure que vous vieillissez. Ordres de grandeur des tables françaises récentes (INSEE, arrondis ; âge moyen atteint) :
 
-| À l'âge de... | Homme : vivra en moyenne jusqu'à | Femme : vivra en moyenne jusqu'à |
+| À l'âge de... | Homme | Femme |
 |---|---|---|
 | Naissance | ~80 ans | ~86 ans |
 | 45 ans | ~82 ans | ~87 ans |
@@ -35,7 +35,7 @@ Léa (44 ans) et Sam (46 ans), cadres, départ prévu à 47/49 ans. Pour le dern
 
 Passons au deuxième piège, le plus contre-intuitif et le plus libérateur. Voici, en ordres de grandeur, le taux de retrait rigide qui aurait survécu à tous les millésimes américains (le SAFEMAX de Bengen, [[etude-trinity]]), en fonction de l'horizon, tel que la série d'ERN l'a systématisé sur données mensuelles ([[serie-ern]]) :
 
-| Horizon | SAFEMAX approximatif (60-75 % actions) | Baisse vs ligne précédente |
+| Horizon | SAFEMAX (60-75 % actions) | Baisse |
 |---|---|---|
 | 30 ans | ~4,0-4,15 % | (référence) |
 | 40 ans | ~3,5-3,6 % | −0,5 point |

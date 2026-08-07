@@ -32,7 +32,7 @@ Le FIRE de 2026 n'est plus celui de 2012. La première vague vendait une certitu
 
 Le mouvement a produit un vocabulaire pour désigner des projets très différents qui partagent la même mécanique.
 
-| Variante | L'idée | Ordre de grandeur (dépenses) | Le profil type |
+| Variante | Idée | Dépenses | Profil type |
 |---|---|---|---|
 | **Lean FIRE** | Frugalité assumée, capital minimal | 15 000 à 25 000 €/an | Célibataire ou couple sobre, logement payé ou pays à bas coût |
 | **FIRE « classique »** | Vie normale sans travail | 25 000 à 45 000 €/an | Ménage médian discipliné |
@@ -101,7 +101,7 @@ Le livre est découpé en articles autonomes, densément liés entre eux : prene
 - **Vous voulez comprendre la science** : la partie « La science du retrait » se lit dans l'ordre, de [[etude-trinity]] à [[serie-ern]] ; le pivot conceptuel est [[sequence-des-rendements]].
 - **Vous êtes proche du départ** : les stratégies de retrait ([[panorama-strategies-retrait]]), le portefeuille ([[allocation-actions-obligations]], [[portefeuilles-tous-temps]]) et les protections ([[cash-buffer]], [[strategie-buckets]]) sont vos chapitres.
 - **Vous êtes français** : la partie fiscale ([[enveloppes-francaises]], [[taxe-puma]], [[retraite-legale]]) est écrite pour vous, ce qui est rare dans une littérature massivement américaine.
-- **Vous utilisez pofo** : [[utiliser-la-page-fire]] explique chaque contrôle de la page FIRE, et [[la-machine-pofo]] ce qui se passe sous le capot.
+- **Vous utilisez pofo** : [[utiliser-la-page-fire]] explique chaque contrôle de la page FIRE, et [[la-machine-pofo]] ce qui se passe sous le capot. Ce livre évoque parfois pofo parce qu'il a été conçu pendant l'écriture du livre et qu'il est en accès libre, mais d'autres excellents simulateurs (tels que FICalc, cFIREsim ou TPAW Planner) pourraient aussi vous intéresser.
 
 ::: terrain Le conseil le plus répété par ceux qui l'ont fait
 Interrogez des FIRE effectifs (forums, blogs, meetups) et un conseil revient plus que tout autre : « j'aurais dû passer moins de temps à optimiser mon taux de retrait au dixième de point, et plus de temps à préparer ce que j'allais faire de mes journées ». La mécanique financière est la partie facile ; la partie difficile est humaine ([[temoignages-fire]], [[sens-et-identite]]). Ce livre traite les deux, dans cet ordre, mais ne sautez pas la seconde.
