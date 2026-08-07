@@ -10,11 +10,11 @@ Une enveloppe se juge sur **quatre** critères en décumulation : le taux effect
 
 ## Le PEA : l'enveloppe reine des actions, une fois mûre
 
-**La mécanique.** Plafond de versements 150 000 € (plus 225 000 € en PEA-PME cumulé), univers restreint aux actions européennes : restriction contournée par les ETF synthétiques Monde éligibles ([[etf-ucits-europeens]]) : et **la** règle qui fait tout : après 5 ans, les retraits sont exonérés d'impôt sur le revenu : ne restent que les prélèvements sociaux (17,2 %) sur la **part de gain** du retrait : et les retraits partiels n'entraînent plus la clôture (on peut même continuer à verser). Un PEA mûr est ainsi la source de flux actions la moins taxée de France : taux effectif d'un retrait = 17,2 % × la fraction de plus-value : pour un PEA qui a doublé, ~8,6 % de friction sur le flux : imbattable.
+**La mécanique.** Plafond de versements 150 000 € (plus 225 000 € en PEA-PME cumulé), univers restreint aux actions européennes : restriction contournée par les ETF synthétiques Monde éligibles ([[etf-ucits-europeens]]) : et la règle qui fait tout : après 5 ans, les retraits sont exonérés d'impôt sur le revenu : ne restent que les prélèvements sociaux (17,2 %) sur la **part de gain** du retrait : et les retraits partiels n'entraînent plus la clôture (on peut même continuer à verser). Un PEA mûr est ainsi la source de flux actions la moins taxée de France : taux effectif d'un retrait = 17,2 % × la fraction de plus-value : pour un PEA qui a doublé, ~8,6 % de friction sur le flux : imbattable.
 
 **Pour le rentier** : c'est le robinet **actions** de la décumulation : la poche monde du plan y vit et s'y consomme en priorité pour la part actions des retraits. Ses limites : le plafond (150 k€ versés : même triplés, une fraction d'un gros plan), l'univers (pas d'or, de linkers, de trend : le CTO reste indispensable), et la succession : le PEA meurt avec son titulaire (clôture, purge de l'IR : les PS restent dus) : neutre, sans plus.
 
-**La préparation** : **ouvrir tôt** (la date d'ouverture, pas les versements, démarre l'horloge des 5 ans : un PEA ouvert à 100 € à 25 ans est mûr pour toujours), remplir régulièrement, et n'y loger **que** des actions (y garer du monétaire gaspille le mètre carré fiscal le plus précieux du système).
+**La préparation** : **ouvrir tôt** (la date d'ouverture, pas les versements, démarre l'horloge des 5 ans : un PEA ouvert à 100 € à 25 ans est mûr pour toujours), remplir régulièrement, et n'y loger que des actions (y garer du monétaire gaspille le mètre carré fiscal le plus précieux du système).
 
 ## L'assurance-vie : le couteau suisse, à condition de choisir le bon contrat
 

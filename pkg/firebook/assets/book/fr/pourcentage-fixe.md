@@ -18,7 +18,7 @@ Il faut quand même créditer la règle de deux vertus réelles derrière sa gar
 
 ## Le vrai risque, chiffré : votre revenu a la volatilité de votre portefeuille
 
-Le revenu étant w × portefeuille, sa volatilité **est** celle du portefeuille : 11 % de volatilité de portefeuille = un train de vie qui bouge de ±11 % les années ordinaires, et qui suit les drawdowns dans toute leur profondeur. Les ordres de grandeur à intérioriser, pour un 60/40 mondial :
+Le revenu étant w × portefeuille, sa volatilité est celle du portefeuille : 11 % de volatilité de portefeuille = un train de vie qui bouge de ±11 % les années ordinaires, et qui suit les drawdowns dans toute leur profondeur. Les ordres de grandeur à intérioriser, pour un 60/40 mondial :
 
 | Épisode | Drawdown réel du portefeuille | Votre revenu sous pourcentage fixe |
 |---|---|---|
@@ -50,7 +50,7 @@ Quel pourcentage ? La théorie donne une borne claire : à long terme, le portef
 
 **Les bons profils.** Le pourcentage fixe (lissé !) convient à trois situations : le plancher couvert par ailleurs (pension, rente : le portefeuille ne finance que le compressible : le profil de la retraite française installée) ; les budgets naturellement élastiques (dépenses discrétionnaires dominantes, capacité réelle à voyager moins les mauvaises années, [[flexibilite-realite]]) ; et l'objectif perpétuel (transmettre un capital réel intact : la logique de dotation, [[succession-et-transmission]]). Il est contre-indiqué en phase à découvert d'un FIRE tendu (plancher élevé financé à 100 % par le portefeuille) : c'est là que sa ruine de train de vie mord exactement comme la vraie.
 
-**Dans pofo** : le curseur « Spend % of portfolio (VPW) » du tiroir Spending policy applique le pourcentage fixe pur (il écrase le besoin fixe et les règles flex/guardrails/ratchet) ; la frontière §06 le positionne contre les autres règles pour **votre** plan, et la §04 montre la distribution du revenu servi : c'est **elle** qui dit si la règle est admissible pour vous. La ruine affichée sera ~0 : vous savez maintenant que ce zéro ne se lit pas seul ([[utiliser-la-page-fire]]). Pour approcher un Yale lissé, la règle bornée de Vanguard (case « Bounded % of portfolio ») en est le cousin direct simulable nativement ([[plancher-plafond]]).
+**Dans pofo** : le curseur « Spend % of portfolio (VPW) » du tiroir Spending policy applique le pourcentage fixe pur (il écrase le besoin fixe et les règles flex/guardrails/ratchet) ; la frontière §06 le positionne contre les autres règles pour **votre** plan, et la §04 montre la distribution du revenu servi : c'est elle qui dit si la règle est admissible pour vous. La ruine affichée sera ~0 : vous savez maintenant que ce zéro ne se lit pas seul ([[utiliser-la-page-fire]]). Pour approcher un Yale lissé, la règle bornée de Vanguard (case « Bounded % of portfolio ») en est le cousin direct simulable nativement ([[plancher-plafond]]).
 
 ::: exemple Le même régime hostile, brut contre lissé
 Portefeuille 1,4 M€, w = 4 % (56 000 €). Scénario type 1973-1974 : −40 % réel en deux ans, reprise lente ensuite. Pourcentage fixe brut : revenu 56 000 → 44 000 → 34 000 € en deux ans (−39 %), remontée au rythme du marché : sept ans sous 45 000 €. Règle de Yale (70/30) : 56 000 → 52 900 → 48 600 € (−13 % en deux ans), plancher vers 44 000 € en année 4, remontée entamée avant même le retour du marché. Même portefeuille, même « garantie » anti-ruine, mais la version lissée transforme une chute libre en pente douce : dans un budget avec 25 % de compressible, la première est une crise de plan, la seconde une gestion courante. Le lissage n'est pas un raffinement : il est la condition d'admissibilité de toute la famille proportionnelle.
@@ -69,6 +69,6 @@ Portefeuille 1,4 M€, w = 4 % (56 000 €). Scénario type 1973-1974 : −40 % 
 ## Pour aller plus loin
 
 - James Tobin et la règle de dépense des dotations (« spending rule » de Yale) : les rapports annuels du Yale Endowment en décrivent la version en vigueur.
-- Early Retirement Now, Part 10 (le pourcentage fixe face à Guyton-Klinger) et Part 11 (les critères) ([[serie-ern]]).
+- Early Retirement Now, volet 10 (le pourcentage fixe face à Guyton-Klinger) et volet 11 (les critères) ([[serie-ern]]).
 - Bogleheads wiki, « Variable percentage withdrawal » : la généalogie proportionnelle → actuarielle ([[vpw]]).
 - Dans ce livre : [[plancher-plafond]] (le corridor industrialisé), [[amortissement-abw]] (le pourcentage rendu conscient de l'horizon), et [[flexibilite-realite]] (ce que « vivre la variabilité » veut dire).

@@ -54,7 +54,7 @@ Le jour du premier retrait, vous changez de métier : d'épargnant (accumuler, i
 
 **Piloter les voyants, pas le solde.** Le solde du portefeuille effraie ou euphorise ; les bons instruments sont des ratios : le taux de retrait courant (dépenses / portefeuille, le voyant principal), la distance au plancher, les années de buffer restantes. Des seuils types : taux courant sous 4,5 %, tout va bien ; 4,5-5,5 %, vigilance et petites économies ; au-delà, la règle d'ajustement s'applique ([[quand-s-inquieter]]).
 
-**Ne pas oublier de dépenser.** Le risque symétrique de la ruine, statistiquement plus probable chez ceux qui ont réussi à accumuler : mourir sur une montagne d'argent après des décennies de privation par prudence ([[psychologie-du-retrait]], [[depenses-en-retraite]]). Les stratégies à plafond **et** plancher existent pour autoriser les bonnes années, pas seulement pour couper les mauvaises.
+**Ne pas oublier de dépenser.** Le risque symétrique de la ruine, statistiquement plus probable chez ceux qui ont réussi à accumuler : mourir sur une montagne d'argent après des décennies de privation par prudence ([[psychologie-du-retrait]], [[depenses-en-retraite]]). Les stratégies à plafond et plancher existent pour autoriser les bonnes années, pas seulement pour couper les mauvaises.
 
 **Laisser la phase évoluer.** Le retrait n'est pas homogène : la fenêtre fragile des premières années demande la vigilance maximale ; passé dix ans sans accident majeur, la partie est statistiquement gagnée et le pilotage s'allège ; l'arrivée des pensions ([[revenus-complementaires]]) change la donne une fois encore, souvent au point de refermer définitivement la question de la ruine.
 
@@ -74,7 +74,7 @@ Inès, 36 ans, 34 % d'épargne, 90 % actions : son travail est d'automatiser et 
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series Parts 19-20 et 43 (glidepaths autour du départ) et Part 42 (« The Effect of One More Year ») ([[serie-ern]]).
+- Early Retirement Now, SWR Series volets 19-20 et 43 (glidepaths autour du départ) et volet 42 (« The Effect of One More Year ») ([[serie-ern]]).
 - Kitces & Pfau, « Reducing Retirement Risk with a Rising Equity Glide Path » (2014) : l'article fondateur du bond tent ([[glidepaths]]).
 - Vicki Robin & Joe Dominguez, *Your Money or Your Life* : la transition comme changement de vie, pas seulement de flux.
 - Dans pofo : tester chaque phase du plan (accumulation comprise, via la vue lifecycle) sur la page FIRE ([[utiliser-la-page-fire]]).

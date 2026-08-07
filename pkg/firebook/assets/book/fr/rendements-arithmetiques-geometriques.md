@@ -54,7 +54,7 @@ Quand on vous annonce un rendement, posez systématiquement les trois questions 
 
 **1. Calibrer un simulateur.** Les curseurs de la page FIRE de pofo travaillent en **réel** : le μ demandé est un rendement réel espéré, et le moteur applique la volatilité σ pour générer les trajectoires, donc le drag émerge tout seul dans les résultats ([[la-machine-pofo]]). Le piège classique consiste à entrer un μ arithmétique nominal (« 8 % ») : vous venez de fabriquer un monde de rêve. Repère : pour un portefeuille diversifié mondial, un μ réel de 4 à 5 % avec σ 12-15 % est la zone raisonnable ; pofo le pré-remplit depuis l'historique de vos fonds puis le tire vers un prior prudent, précisément pour vous éviter cette erreur ([[rendre-monte-carlo-pertinent]], [[rendements-attendus]]).
 
-**2. Juger un portefeuille de retrait.** Deux portefeuilles de même espérance arithmétique ne se valent pas : le moins volatil compose mieux **et** résiste mieux à la séquence, double dividende. C'est pourquoi les portefeuilles de retrait sérieux sacrifient de la moyenne pour de la régularité (obligations, or, diversification de régimes, [[allocation-actions-obligations]], [[portefeuilles-tous-temps]]) et pourquoi le « 100 % actions, c'est optimal à long terme » de l'accumulation ne survit pas au premier retrait ([[erreurs-classiques-fire]]).
+**2. Juger un portefeuille de retrait.** Deux portefeuilles de même espérance arithmétique ne se valent pas : le moins volatil compose mieux et résiste mieux à la séquence, double dividende. C'est pourquoi les portefeuilles de retrait sérieux sacrifient de la moyenne pour de la régularité (obligations, or, diversification de régimes, [[allocation-actions-obligations]], [[portefeuilles-tous-temps]]) et pourquoi le « 100 % actions, c'est optimal à long terme » de l'accumulation ne survit pas au premier retrait ([[erreurs-classiques-fire]]).
 
 **3. Lire ses propres performances.** Votre relevé annuel moyen « +9 % sur 5 ans » est probablement arithmétique. Le seul chiffre honnête pour vous-même : (valeur finale / valeur initiale)^(1/n) − 1, corrigé des apports (pofo calcule le TRI et le CAGR proprement sur vos flux réels). Beaucoup d'investisseurs découvrent que leur performance composée réelle est 2 à 3 points sous leur impression, la différence part en drag, frais et mauvais timing des apports.
 
@@ -67,14 +67,14 @@ Sans formalisme : le logarithme d'un rendement, ln(1+r), est ce qui s'additionne
 - Deux moyennes : l'arithmétique (l'année typique) et la géométrique (la croissance vécue) ; votre capital vit en géométrique, le marketing parle en arithmétique.
 - L'écart est le volatility drag ≈ σ²/2 : la volatilité est un coût de composition, même sans krach et même en moyenne nulle.
 - La cascade plaquette → vivable : − drag, − inflation, − frais, − prime de séquence ; il reste 3-3,5 % de retrait rigide soutenable, la règle des 4 % démystifiée.
-- Diversifier augmente la géométrique à arithmétique égale : c'est **la** justification mathématique du portefeuille de retrait diversifié ; le levier fait l'inverse.
+- Diversifier augmente la géométrique à arithmétique égale : c'est la justification mathématique du portefeuille de retrait diversifié ; le levier fait l'inverse.
 - Trois questions réflexes devant tout chiffre : composé ? réel ? net ? Et pour vos simulateurs : μ **réel** et modeste, jamais la moyenne de la plaquette.
 
 ---
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series Part 8 (l'appendice technique) et Part 33 (calculer un taux de retrait sans simulation) : la cascade formalisée ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 8 (l'appendice technique) et volet 33 (calculer un taux de retrait sans simulation) : la cascade formalisée ([[serie-ern]]).
 - William Bernstein, *The Intelligent Asset Allocator*, chapitre 1 : la meilleure introduction écrite aux deux moyennes.
 - Markowitz (1952) et la lecture moderne « geometric mean maximization » (Kelly, Latané) : pourquoi maximiser la géométrique, pas l'arithmétique.
 - La suite logique dans ce livre : [[sequence-des-rendements]] (la marche suivante de la cascade) et [[rendements-attendus]] (quelles valeurs de μ sont défendables aujourd'hui).

@@ -5,7 +5,7 @@ Les études de taux de retrait raisonnent hors impôt ([[etude-trinity]]) ; votr
 Même avertissement que pour tout le chapitre : **chiffres à jour de 2026, à re-vérifier chaque année : les structures de raisonnement, elles, survivent aux lois de finances.**
 
 ::: cle Les deux mécanismes qui dominent tout
-**Un** : on n'est jamais taxé sur ce qu'on retire, mais sur la **part de gain** de ce qu'on vend (calculée au prix moyen pondéré d'acquisition) : un retrait de 50 000 € sur une ligne gainée à 30 % ne déclenche l'impôt que sur 15 000 € : la friction réelle d'un flux est (taux) × (fraction de gain) : elle démarre basse et monte avec les années. **Deux** : le choix PFU/barème se refait **chaque** année, et la TMI d'un rentier précoce sans salaire est souvent 0 ou 11 % : les années de pont sont des années d'or fiscal : les gaspiller à ne rien réaliser est l'erreur silencieuse la plus chère de la décumulation française.
+Un : on n'est jamais taxé sur ce qu'on retire, mais sur la **part de gain** de ce qu'on vend (calculée au prix moyen pondéré d'acquisition) : un retrait de 50 000 € sur une ligne gainée à 30 % ne déclenche l'impôt que sur 15 000 € : la friction réelle d'un flux est (taux) × (fraction de gain) : elle démarre basse et monte avec les années. **Deux** : le choix PFU/barème se refait **chaque** année, et la TMI d'un rentier précoce sans salaire est souvent 0 ou 11 % : les années de pont sont des années d'or fiscal : les gaspiller à ne rien réaliser est l'erreur silencieuse la plus chère de la décumulation française.
 :::
 
 ## Le PFU, et l'option barème : l'arbitrage annuel

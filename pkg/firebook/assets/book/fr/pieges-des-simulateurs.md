@@ -34,10 +34,10 @@ Tous les pièges ne pèsent pas pareil. Par ordre d'impact typique sur la ruine 
 
 **Piège 9 : le succès binaire.** « 95 % de succès » traite pareil l'échec à 71 ans et l'échec à 94 ans avec pension acquise, le succès qui finit à 40 fois la mise et celui qui finit à 3 000 € ([[ruine-et-probabilites]]). Effet : des décisions absurdes aux marges (travailler trois ans de plus pour passer de 94 à 97 %, alors que les échecs étaient tous tardifs et bénins). Réponse pofo : la date et la cause des échecs (§05), la richesse finale distribuée (bequest), la ruine croisée avec la mortalité, le niveau de vie servi (§04) : le binaire est déplié.
 
-**Piège 10 : l'utilisateur qui optimise le verdict.** Le p-hacking de scénarios : pousser μ « parce que mon fonds a fait mieux », relancer jusqu'au chiffre confortable, choisir **la** colonne verte, arrondir 7 % à « environ 5 % ». C'est le piège terminal, et aucun logiciel ne peut l'empêcher : il peut seulement le rendre **visible**. Réponse pofo, par conception : les quatre modèles toujours côte à côte, les ancres de rappel (CAPE, broad-sample prior), les aides au survol qui expliquent chaque curseur, et le solveur §09 qui reformule tout écart en prix concret (euros, années, flexibilité) plutôt qu'en débat de curseurs. Réponse comportementale : les huit règles du bon usage ([[monte-carlo-forces-faiblesses]]) et la revue annuelle à entrées auditées ([[revue-annuelle]]).
+**Piège 10 : l'utilisateur qui optimise le verdict.** Le p-hacking de scénarios : pousser μ « parce que mon fonds a fait mieux », relancer jusqu'au chiffre confortable, choisir la colonne verte, arrondir 7 % à « environ 5 % ». C'est le piège terminal, et aucun logiciel ne peut l'empêcher : il peut seulement le rendre **visible**. Réponse pofo, par conception : les quatre modèles toujours côte à côte, les ancres de rappel (CAPE, broad-sample prior), les aides au survol qui expliquent chaque curseur, et le solveur §09 qui reformule tout écart en prix concret (euros, années, flexibilité) plutôt qu'en débat de curseurs. Réponse comportementale : les huit règles du bon usage ([[monte-carlo-forces-faiblesses]]) et la revue annuelle à entrées auditées ([[revue-annuelle]]).
 
 ::: attention Le piège commercial, en une remarque
-Les simulateurs ne naissent pas neutres. Un outil de gestionnaire d'actifs a intérêt à des projections engageantes (on collecte sur l'espoir) ; un outil de vendeur de rentes a intérêt à des ruines effrayantes (on vend de la peur) ; un planificateur payé à l'heure a intérêt à la complexité. Ce n'est pas du complot, c'est de la microéconomie : demandez toujours **qui** a construit l'outil et ce qu'il vend. Les outils sans produit à vendre (cFIREsim, FICalc, la toolbox d'ERN, pofo) ne sont pas forcément meilleurs techniquement, mais leur erreur n'a pas de direction préférée.
+Les simulateurs ne naissent pas neutres. Un outil de gestionnaire d'actifs a intérêt à des projections engageantes (on collecte sur l'espoir) ; un outil de vendeur de rentes a intérêt à des ruines effrayantes (on vend de la peur) ; un planificateur payé à l'heure a intérêt à la complexité. Ce n'est pas du complot, c'est de la microéconomie : demandez toujours qui a construit l'outil et ce qu'il vend. Les outils sans produit à vendre (cFIREsim, FICalc, la toolbox d'ERN, pofo) ne sont pas forcément meilleurs techniquement, mais leur erreur n'a pas de direction préférée.
 :::
 
 ## La grille d'audit complète
@@ -47,7 +47,7 @@ Les dix questions à poser à tout simulateur, avec le piège associé :
 | # | Question d'audit | Piège testé |
 |---|---|---|
 | 1 | Quelles données, quel pays, quelle profondeur ? | Biais américain/survivant |
-| 2 | D'où viennent les hypothèses de **mes** actifs ? | Survivant au carré, backfill |
+| 2 | D'où viennent les hypothèses de mes actifs ? | Survivant au carré, backfill |
 | 3 | Que se passe-t-il si l'historique < horizon ? | Fenêtre courte |
 | 4 | Les mauvaises années peuvent-elles s'enchaîner ? | i.i.d. |
 | 5 | Quelle probabilité pour une année à −30 % réel ? | Gaussianité |
@@ -75,7 +75,7 @@ Plan : 1,2 M€, 45 000 €/an, 50 ans. Simulateur A (gaussien, données US, bru
 
 ## Pour aller plus loin
 
-- Early Retirement Now, Part 26 (les non-dits du 4 %) et la critique des simulateurs de la série ([[serie-ern]]).
+- Early Retirement Now, volet 26 (les non-dits du 4 %) et la critique des simulateurs de la série ([[serie-ern]]).
 - Anarkulova, Cederburg & O'Doherty (2023) : l'ampleur chiffrée du piège n° 1 ([[anarkulova-cederburg]]).
 - Kitces.com : « Does Monte Carlo Analysis Actually Overstate Tail Risk In Retirement Projections? » : le contrepoint intelligent (le retour de valorisation resserre les cônes longs), utile pour ne pas basculer dans le catastrophisme systématique.
 - Dans ce livre : [[monte-carlo-forces-faiblesses]] (la machine), [[historique-vs-parametrique]] (les familles), [[rendre-monte-carlo-pertinent]] (les corrections implémentées), [[la-machine-pofo]] (la plomberie exacte de pofo, piège par piège).

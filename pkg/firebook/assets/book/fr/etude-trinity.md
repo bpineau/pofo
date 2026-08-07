@@ -31,7 +31,7 @@ Bengen nomme **SAFEMAX** le taux maximal qui survit à tous les millésimes sur 
 Ses articles suivants (1996-2006) complètent le cadre : l'allocation optimale se situe entre 50 et 75 % d'actions (moins d'actions **abaisse** le taux sûr : les obligations seules ne survivent pas à l'inflation) ; ajouter des petites capitalisations remonte le SAFEMAX ; et l'horizon compte, ~4,3 % pour 25 ans, ~4,1 % pour 30, ~3,5 % pour du très long.
 
 ::: encart Pourquoi cette méthode était géniale, et ce qu'elle vaut encore
-Le rejeu historique (« historical windows » dans pofo) reste, trente ans après, l'un des quatre modèles de référence de la page FIRE ([[la-machine-pofo]]). Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient **que** le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
+Le rejeu historique (« historical windows » dans pofo) reste, trente ans après, l'un des quatre modèles de référence de la page FIRE ([[la-machine-pofo]]). Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
 :::
 
 ## Trinity 1998 : du plancher à la probabilité
@@ -67,7 +67,7 @@ Aucun de ces points n'est une réfutation. La méthode des millésimes est toujo
 
 ## Refaire Bengen vous-même
 
-C'est l'un des grands mérites pédagogiques de la méthode : elle se refait. La page FIRE de pofo contient un mode « fenêtres historiques » qui rejoue exactement la logique des millésimes sur l'historique de **votre** portefeuille, et une section « millésimes » (vintages) qui montre, départ par départ, où votre plan aurait tenu ou cassé ([[utiliser-la-page-fire]]). L'exercice vaut la peine : voir **son** plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
+C'est l'un des grands mérites pédagogiques de la méthode : elle se refait. La page FIRE de pofo contient un mode « fenêtres historiques » qui rejoue exactement la logique des millésimes sur l'historique de **votre** portefeuille, et une section « millésimes » (vintages) qui montre, départ par départ, où votre plan aurait tenu ou cassé ([[utiliser-la-page-fire]]). L'exercice vaut la peine : voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
 
 ::: exemple Lire un millésime
 Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et une arrivée à 30 ans essoufflée mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
@@ -87,5 +87,5 @@ Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ �
 
 - William Bengen, « Determining Withdrawal Rates Using Historical Data », *Journal of Financial Planning*, octobre 1994 (en libre accès sur le site du FPA) ; et *Conserving Client Portfolios During Retirement* (2006) pour la synthèse.
 - Cooley, Hubbard & Walz, « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable », *AAII Journal*, février 1998, et ses mises à jour (2011).
-- Early Retirement Now, SWR Series Part 1 et Part 8 (l'appendice technique de la méthode) : earlyretirementnow.com ([[serie-ern]]).
+- Early Retirement Now, SWR Series volet 1 et volet 8 (l'appendice technique de la méthode) : earlyretirementnow.com ([[serie-ern]]).
 - Wade Pfau, « An International Perspective on Safe Withdrawal Rates » (2010) : la première grande sortie du cadre américain, prélude à [[anarkulova-cederburg]].
