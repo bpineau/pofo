@@ -501,7 +501,7 @@ if (drawerToggle && drawerEl)
 // instant the drawer opens, and fades away by itself after a few seconds:
 // never a thing to dismiss.
 // ---------------------------------------------------------------------------
-const COACH_DELAY = 600, COACH_LIFE = 5000, COACH_FADE = 450;
+const COACH_DELAY = 600, COACH_LIFE = 10000, COACH_FADE = 450;
 let coachEl = null, coachDone = false;
 
 // coachDue: a load on the generic defaults, with no saved defaults and no
@@ -543,16 +543,18 @@ function showCoach() {
   label.className = "clab";
   label.textContent = "start here: your capital, spend, horizon";
   el.appendChild(label);
-  // An angular chevron, drawn like the charts: no shadow, no gradient.
+  // An angular chevron, drawn like the charts: no shadow, no gradient. Big
+  // and thick on purpose: a hairline glyph in the corner of a dense page is
+  // read as decoration, so this one carries the weight of a chart stroke.
   el.insertAdjacentHTML("beforeend",
-    `<svg viewBox="0 0 34 40" width="34" height="40" aria-hidden="true">` +
-    `<path d="M17 38 V10"/><path d="M8 19 L17 10 L26 19"/></svg>`);
+    `<svg viewBox="0 0 56 64" width="56" height="64" aria-hidden="true">` +
+    `<path d="M28 61 V15"/><path d="M13 30 L28 15 L43 30"/></svg>`);
   document.body.appendChild(el);
   // Anchor under the toggle so the arrow tip lines up with it, then clamp
   // into the viewport: on a narrow screen the label slides left rather than
   // off the edge. ARROW_MID is the arrow's centre measured from the box's
-  // right edge (half of the 34px SVG, which sits last in the row).
-  const ARROW_MID = 17;
+  // right edge (half of the 56px SVG, which sits last in the row).
+  const ARROW_MID = 28;
   const w = el.offsetWidth;
   el.style.top = (r.bottom + 10) + "px";
   el.style.left = Math.max(8, Math.min(innerWidth - w - 8,
