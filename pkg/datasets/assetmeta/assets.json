@@ -3597,6 +3597,10 @@
   {
     "id": "IE00BK5BQT80",
     "isin": "IE00BK5BQT80",
+    "aliases": [
+      "VWRA",
+      "VWCE"
+    ],
     "name": "Vanguard FTSE All-World UCITS ETF",
     "ucits": true,
     "source": "yahoo",
@@ -6868,5 +6872,524 @@
       "https://www.justetf.com/en/etf-profile.html?isin=IE000S67ID55"
     ],
     "since": "2025-11-12"
+  },
+  {
+    "id": "SPY",
+    "isin": "US78462F1030",
+    "name": "SPDR S&P 500 ETF Trust",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "SPY",
+    "currency": "USD",
+    "fees": 0.09,
+    "asset_class": "equity",
+    "underlying": "S&P 500 Index: 503 large-cap US stocks",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Communication Services": 11,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 12,
+      "Health Care": 10,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "The oldest and most traded US ETF (1993); the default S&P 500 reference in model portfolios and academic studies; VOO/IVV are cheaper for buy-and-hold",
+    "confidence": "high",
+    "sources": [
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
+    ],
+    "since": "1993-01-22"
+  },
+  {
+    "id": "QQQ",
+    "isin": "US46090E1038",
+    "name": "Invesco QQQ Trust",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "QQQ",
+    "currency": "USD",
+    "fees": 0.2,
+    "asset_class": "equity",
+    "underlying": "Nasdaq-100 Index: 100 largest non-financial companies listed on Nasdaq, heavy mega-cap technology tilt",
+    "benchmark_index": "Nasdaq-100",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 97,
+      "Other": 3
+    },
+    "sectors": {
+      "Communication Services": 16,
+      "Consumer Discretionary": 13,
+      "Consumer Staples": 4,
+      "Health Care": 5,
+      "Industrials": 5,
+      "Information Technology": 52,
+      "Materials": 1,
+      "Utilities": 1,
+      "Other": 3
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "US mega-cap growth/technology exposure; the standard growth sleeve in model portfolios; concentrated, higher beta and drawdowns than the S&P 500",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/qqq-etf/en/home.html"
+    ],
+    "since": "1999-03-10"
+  },
+  {
+    "id": "VTI",
+    "isin": "US9229087690",
+    "name": "Vanguard Total Stock Market ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VTI",
+    "currency": "USD",
+    "fees": 0.03,
+    "asset_class": "equity",
+    "underlying": "CRSP US Total Market Index: ~3,600 US stocks across all capitalizations (large to micro)",
+    "benchmark_index": "CRSP US Total Market Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 4,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 10,
+      "Industrials": 9,
+      "Information Technology": 32,
+      "Materials": 2,
+      "Real Estate": 3,
+      "Utilities": 2
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Whole-US-market building block of the Bogleheads three-fund portfolio; behaves like the S&P 500 plus a small mid/small-cap completion tilt",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vti"
+    ],
+    "since": "2001-05-24"
+  },
+  {
+    "id": "VXUS",
+    "isin": "",
+    "name": "Vanguard Total International Stock ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VXUS",
+    "currency": "USD",
+    "fees": 0.05,
+    "asset_class": "equity",
+    "underlying": "FTSE Global All Cap ex US Index: ~8,500 developed and emerging market stocks outside the United States",
+    "benchmark_index": "FTSE Global All Cap ex US Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Canada": 8,
+      "Emerging markets": 26,
+      "Europe developed": 39,
+      "Pacific developed": 25,
+      "Other": 2
+    },
+    "sectors": {
+      "Communication Services": 6,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 6,
+      "Energy": 5,
+      "Financials": 23,
+      "Health Care": 8,
+      "Industrials": 14,
+      "Information Technology": 14,
+      "Materials": 7,
+      "Real Estate": 3,
+      "Utilities": 4
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "The ex-US leg of the Bogleheads three-fund portfolio; one-ticket international diversification (developed + emerging, all caps)",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vxus"
+    ],
+    "since": "2011-01-26"
+  },
+  {
+    "id": "VEA",
+    "isin": "US9219438580",
+    "name": "Vanguard FTSE Developed Markets ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VEA",
+    "currency": "USD",
+    "fees": 0.03,
+    "asset_class": "equity",
+    "underlying": "FTSE Developed All Cap ex US Index: ~3,900 developed-market stocks outside the United States (Europe, Japan, Canada, Australia)",
+    "benchmark_index": "FTSE Developed All Cap ex US Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Canada": 11,
+      "Europe developed": 53,
+      "Japan": 21,
+      "Other Pacific": 13,
+      "Other": 2
+    },
+    "sectors": {
+      "Communication Services": 5,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 7,
+      "Energy": 5,
+      "Financials": 23,
+      "Health Care": 9,
+      "Industrials": 16,
+      "Information Technology": 11,
+      "Materials": 7,
+      "Real Estate": 3,
+      "Utilities": 4
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Developed ex-US equity staple; cheapest broad international developed sleeve, often paired with VWO instead of holding VXUS",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vea"
+    ],
+    "since": "2007-07-20"
+  },
+  {
+    "id": "VWO",
+    "isin": "US9220428588",
+    "name": "Vanguard FTSE Emerging Markets ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VWO",
+    "currency": "USD",
+    "fees": 0.06,
+    "asset_class": "equity",
+    "underlying": "FTSE Emerging Markets All Cap China A Inclusion Index: ~6,000 emerging-market stocks (China, India, Taiwan, Brazil...); excludes South Korea",
+    "benchmark_index": "FTSE Emerging Markets All Cap China A Inclusion Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "Brazil": 4,
+      "China": 27,
+      "India": 22,
+      "Other": 25,
+      "Taiwan": 22
+    },
+    "sectors": {
+      "Communication Services": 5,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 4,
+      "Energy": 4,
+      "Financials": 22,
+      "Health Care": 4,
+      "Industrials": 8,
+      "Information Technology": 27,
+      "Materials": 6,
+      "Real Estate": 2,
+      "Utilities": 3,
+      "Other": 3
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Emerging-market equity staple (FTSE flavour: no South Korea, includes China A-shares); the EM sleeve of countless model portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vwo"
+    ],
+    "since": "2005-03-04"
+  },
+  {
+    "id": "IWM",
+    "isin": "US4642876555",
+    "name": "iShares Russell 2000 ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "IWM",
+    "currency": "USD",
+    "fees": 0.19,
+    "asset_class": "equity",
+    "underlying": "Russell 2000 Index: ~2,000 US small-cap stocks",
+    "benchmark_index": "Russell 2000",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Communication Services": 2,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 3,
+      "Energy": 4,
+      "Financials": 19,
+      "Health Care": 16,
+      "Industrials": 17,
+      "Information Technology": 14,
+      "Materials": 4,
+      "Real Estate": 6,
+      "Utilities": 3,
+      "Other": 2
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "The reference US small-cap instrument (and the most traded small-cap options complex); higher beta, cyclical tilt versus the S&P 500",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf"
+    ],
+    "since": "2000-05-22"
+  },
+  {
+    "id": "SCHD",
+    "isin": "US8085247976",
+    "name": "Schwab U.S. Dividend Equity ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "SCHD",
+    "currency": "USD",
+    "fees": 0.06,
+    "asset_class": "equity",
+    "underlying": "Dow Jones U.S. Dividend 100 Index: 100 US stocks screened for 10+ years of dividends, quality fundamentals and yield",
+    "benchmark_index": "Dow Jones U.S. Dividend 100",
+    "strategy": "fundamentally-weighted",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Communication Services": 5,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 18,
+      "Energy": 11,
+      "Financials": 14,
+      "Health Care": 14,
+      "Industrials": 12,
+      "Information Technology": 10,
+      "Materials": 4,
+      "Real Estate": 1,
+      "Utilities": 3
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "factors": [
+      "quality"
+    ],
+    "notes": "The most referenced US dividend-quality ETF; value/quality tilt, lower beta than the market; income-oriented model-portfolio staple",
+    "confidence": "high",
+    "sources": [
+      "https://www.schwabassetmanagement.com/products/schd"
+    ],
+    "since": "2011-10-20"
+  },
+  {
+    "id": "VNQ",
+    "isin": "US9229085538",
+    "name": "Vanguard Real Estate ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VNQ",
+    "currency": "USD",
+    "fees": 0.13,
+    "asset_class": "real-estate",
+    "underlying": "MSCI US Investable Market Real Estate 25/50 Index: ~150 US REITs and real-estate companies",
+    "benchmark_index": "MSCI US IMI Real Estate 25/50",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "The default US REIT sleeve in model portfolios (e.g. Swensen); equity-like risk with rate sensitivity, imperfect inflation hedge",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/etfs/profile/vnq"
+    ],
+    "since": "2004-09-23"
+  },
+  {
+    "id": "TIP",
+    "isin": "US4642871762",
+    "name": "iShares TIPS Bond ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "TIP",
+    "currency": "USD",
+    "fees": 0.18,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "US Treasury inflation-protected securities with 1+ year to maturity, market-value weighted",
+    "benchmark_index": "Bloomberg US TIPS Index (Series-L)",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "The reference US TIPS instrument; real-rate duration ~6.5y, protects against realized US inflation but not against rising real rates",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/us/products/239467/ishares-tips-bond-etf"
+    ],
+    "since": "2003-12-04",
+    "duration": 6.5
+  },
+  {
+    "id": "GLD",
+    "isin": "US78463V1070",
+    "name": "SPDR Gold Shares",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "GLD",
+    "currency": "USD",
+    "fees": 0.4,
+    "asset_class": "gold",
+    "underlying": "Physical gold bullion held in trust (LBMA gold price)",
+    "benchmark_index": "LBMA Gold Price",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "The iconic US gold trust (largest and most referenced); pricier than modern alternatives (GLDM, IAUM) but the standard in US model portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://www.spdrgoldshares.com/"
+    ],
+    "since": "2004-11-18"
+  },
+  {
+    "id": "DBC",
+    "isin": "",
+    "name": "Invesco DB Commodity Index Tracking Fund",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "DBC",
+    "currency": "USD",
+    "fees": 0.84,
+    "asset_class": "broad-commodity",
+    "underlying": "DBIQ Optimum Yield Diversified Commodity Index: futures on 14 commodities (energy-heavy) with roll-optimized contract selection",
+    "benchmark_index": "DBIQ Optimum Yield Diversified Commodity Index Excess Return",
+    "strategy": "futures-overlay",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Long-standing US broad-commodity sleeve (energy-tilted); classic inflation/supply-shock diversifier in model portfolios",
+    "confidence": "high",
+    "sources": [
+      "https://www.invesco.com/us/financial-products/etfs/product-detail?productId=DBC"
+    ],
+    "since": "2006-02-03"
+  },
+  {
+    "id": "AVUV",
+    "isin": "US0250727031",
+    "name": "Avantis U.S. Small Cap Value ETF",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "AVUV",
+    "currency": "USD",
+    "fees": 0.25,
+    "asset_class": "equity",
+    "underlying": "US small-cap stocks with low valuations and high profitability, systematically selected and weighted (Fama-French style)",
+    "benchmark_index": "active (Russell 2000 Value reference)",
+    "strategy": "systematic factor tilt",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Consumer Discretionary": 14,
+      "Energy": 9,
+      "Financials": 28,
+      "Industrials": 20,
+      "Information Technology": 7,
+      "Materials": 7,
+      "Other": 15
+    },
+    "distribution": "distributing",
+    "leverage": 1,
+    "factors": [
+      "size",
+      "value",
+      "quality"
+    ],
+    "notes": "The de-facto standard small-cap-value factor sleeve in US factor portfolios (Ben Felix et al.); concentrated value + profitability tilt",
+    "confidence": "high",
+    "sources": [
+      "https://www.avantisinvestors.com/avantis-investments/avuv"
+    ],
+    "since": "2019-09-24"
+  },
+  {
+    "id": "UPRO",
+    "isin": "",
+    "name": "ProShares UltraPro S&P 500",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "UPRO",
+    "currency": "USD",
+    "fees": 0.89,
+    "asset_class": "equity",
+    "underlying": "Three-times daily leveraged exposure to the S&P 500 via swaps and futures",
+    "benchmark_index": "S&P 500 (3x daily)",
+    "strategy": "leveraged-3x",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 3,
+    "notes": "3x daily S&P 500; half of the well-known HFEA (Hedgefundie) leveraged pair with TMF; severe volatility drag in choppy markets, not a passive hold",
+    "confidence": "high",
+    "sources": [
+      "https://www.proshares.com/our-etfs/leveraged-and-inverse/upro"
+    ],
+    "since": "2009-06-25",
+    "exposures": {
+      "equity": 3.0
+    }
+  },
+  {
+    "id": "TMF",
+    "isin": "",
+    "name": "Direxion Daily 20+ Year Treasury Bull 3X Shares",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "TMF",
+    "currency": "USD",
+    "fees": 0.9,
+    "asset_class": "government-bond",
+    "underlying": "Three-times daily leveraged exposure to 20+ year US Treasury bonds (ICE US Treasury 20+ Year index) via swaps",
+    "benchmark_index": "ICE US Treasury 20+ Year Bond Index (3x daily)",
+    "strategy": "leveraged-3x",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 3,
+    "notes": "3x daily long-duration treasuries; the bond half of the HFEA (Hedgefundie) pair with UPRO; ~3x the ~18y underlying duration, extreme rate sensitivity plus volatility drag",
+    "confidence": "high",
+    "sources": [
+      "https://www.direxion.com/product/daily-20-year-treasury-bull-bear-3x-etfs"
+    ],
+    "since": "2009-04-16",
+    "duration": 18.0,
+    "exposures": {
+      "government-bond": 3.0
+    }
   }
 ]
