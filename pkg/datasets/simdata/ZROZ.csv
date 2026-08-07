@@ -3,7 +3,7 @@
 # name: PIMCO 25+Y zero-coupon: 1.65× long Treasury
 # method: cash + 1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009
 # validation: corr=0.963 (weekly 0.971) beta=1.01 TE=6.2%/yr CAGR sim 2.34% vs real 2.06% (overlap 4185 d from 2009-11-04 to 2026-07-01) vs ZROZ
-# generated: 2026-07-03
+# generated: 2026-07-05
 date,close
 1962-01-01,1.422104
 1962-01-02,1.422005
