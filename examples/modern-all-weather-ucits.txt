@@ -13,4 +13,4 @@
 12    GOLDSIM    # Gold (IGLN)
 8     ICOM    # Broad commodities (ICOM)
 12    KMLMSIM         # Managed futures (UCITS: iMGP DBi LU2951555585)
-8     AMUNDI-VOLATILITY    # Long volatility (Amundi Volatility World)
+8     AMUNDI-VOLATILITYSIM    # Long volatility (Amundi Volatility World)

@@ -4,7 +4,7 @@
 # (a) une stagflation en dents de scie qui fait whipsawer le trend ; l'or reste alors le seul backstop
 # (b) la protection du plancher reste probabiliste, ce qui plaide pour renforcer la brique linkers (ici 5 %) à l'approche de la décumulation
 # (c) le risque de change n'est pas traité : NTSG etc sont quotés USD sans hedge ; la vol EUR/USD (~8-10 %/an) se retrouve en partie (pas linéairement) dans celle du portefeuille
-# (d) protection faible contre une inflation euro modérée mais persistante : l'essentiel de la poche réelle est US, seuls 3 % de linkers euro
+# (d) protection faible contre une inflation euro modérée mais persistante : l'essentiel de la poche réelle est US (meme si on ajoute un petit % de linkers euro)
 # (e) peu efficace contre les lost decades à la japonaise (cf. la brique macro discrétionnaire en bas de fichier)
 # NB : on obtient des perfs très proches avec juste NTSGSIM + DBMFSIM + XAUUSDSIM ; cette version est juste plus complète (pour documenter).
 
