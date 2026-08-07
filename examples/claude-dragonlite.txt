@@ -8,6 +8,11 @@
 # (e) peu efficace contre les lost decades à la japonaise (cf. la brique macro discrétionnaire en bas de fichier)
 # NB : on obtient des perfs très proches avec juste NTSGSIM + DBMFSIM + XAUUSDSIM ; cette version est juste plus complète (pour documenter).
 
+# Décommenter pour comparer le vécu d'un investisseur USD et d'un investisseur EUR
+# (angle mort (c) ci-dessus) : une colonne par devise, avec son propre numéraire et
+# sa propre inflation. L'écart entre colonnes mesure le risque de change.
+# #meta currencies:USD,EUR
+
 # NTSG : 90 % actions Monde développées (filtre ESG) + ~60 % de futures souverains (US, Allemagne, UK, Japon), duration intermédiaire (~7 ans).
 # À 60 % du portefeuille, la contribution effective est ~54 % actions + ~36 % obligations.
 60	NTSGSIM

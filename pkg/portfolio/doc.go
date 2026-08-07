@@ -30,6 +30,9 @@
 //	                      risk-parity, with an optional ",max-weight:40"
 //	                      cap (see pkg/optimize). Parse only records the
 //	                      request in Spec.Optimize; the caller runs it.
+//	#meta currencies:C,D  evaluate the portfolio in several base currencies
+//	                      (Spec.Currencies); the caller builds one column per
+//	                      currency. Cannot be combined with optimize.
 //
 // Interpreting identifiers (tickers, ISIN, aliases, SIM suffix) is the
 // caller's job: Build turns a parsed Spec into a simulatable Portfolio
