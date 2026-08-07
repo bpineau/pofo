@@ -184,6 +184,17 @@
 <li><span class="kbd">monthly withdrawals</span> refines the kernel's granularity and is visible only in sections 07-08; the model strip and analysis sections always compare annual kernels, for speed and comparability.</li>
 </ul>
 
+<p><b>The withdrawal rules, one by one</b> (every rule answers the same question — how much to take out this year — and they all sit on one trade-off: certainty of income versus certainty of never running out):</p>
+<ul>
+<li><b>Fixed real</b> (the 4%-rule shape): take the same inflation-adjusted amount every year, whatever happens. Maximum lifestyle certainty, all the risk lands on ruin. The benchmark everything else is measured against.</li>
+<li><b>Flex cut</b>: fixed real, but cut a bounded slice (say 10-20%) while the portfolio is in a deep drawdown, restore it after. The mildest adaptive rule: a known, capped sacrifice in bad years roughly halves ruin.</li>
+<li><b>Guyton-Klinger guardrails</b>: ±10% spending moves whenever the current withdrawal rate leaves a ±20% band around the initial one. Powerful but unbounded downward — in a persistent bear the cuts compound (60k → 54k → 49k → …), which is exactly where its spectacular ruin reduction comes from. The floor slider bounds that descent at your incompressible standard.</li>
+<li><b>Ratchet</b>: only-up moves — raise the standard when wealth is well above start, never cut. Prices the lifestyle option; slightly raises ruin.</li>
+<li><b>VPW (percent of portfolio)</b>: spend a fixed share of whatever remains. Mathematically cannot run out, but income swings one-for-one with the market.</li>
+<li><b>Bounded % (Vanguard dynamic spending)</b>: VPW smoothed — the yearly change in real spending is capped at +5%/-2.5%. Livable income path; some ruin risk returns because the descent is capped.</li>
+<li><b>ABW / TPAW (amortization)</b>: each year, the actuarial payment that exhausts current wealth exactly over the remaining horizon at the expected return — a reverse mortgage re-quoted yearly. Never ruins early, never strands wealth, adjusts in small continuous steps; income tracks the market. The rule much of the recent literature converges on; pairs naturally with an annuity floor for the incompressible part.</li>
+</ul>
+
 <p><b>Mechanics worth knowing:</b></p>
 <ul>
 <li><b>The cash buffer is carved out of the starting capital</b> (buffer = years × spending, the growth sleeve gets the rest), not added on top. Displayed wealth is always growth + buffer.</li>

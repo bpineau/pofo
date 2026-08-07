@@ -31,12 +31,8 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 	// each policy below is applied to the same fixed starting point on the same
 	// central return model.
 	bare := func() decumul.Plan {
-		p := pr.plan()
+		p := fixedRule(pr.plan())
 		p.Monthly = false
-		p.Flex = decumul.FlexRule{}
-		p.Guard = decumul.Guardrails{}
-		p.Ratchet = decumul.Ratchet{}
-		p.Percent = 0
 		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		return p
 	}
@@ -51,6 +47,12 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		{"Flex -10%", "#C77E17", func(p *decumul.Plan) { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.10} }},
 		{"Guardrails", "#0C8A47", func(p *decumul.Plan) {
 			p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
+		}},
+		{"Bounded %", "#BE185D", func(p *decumul.Plan) {
+			p.Bounded = decumul.BoundedPct{Pct: wr, Up: 0.05, Down: 0.025}
+		}},
+		{"ABW", "#6D28D9", func(p *decumul.Plan) {
+			p.Amortize, p.AmortReturn = true, pr.abwReturn()
 		}},
 		{"VPW", "#0B7285", func(p *decumul.Plan) { p.Percent = wr }},
 	}
@@ -75,6 +77,6 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{
 		SVG:  svg,
-		Note: "Same plan, four spending rules, on the central model. Up and left is safe but rigid; down and right never runs out but the standard of living swings. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
+		Note: "Same plan, six spending rules, on the central model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
 	}
 }
