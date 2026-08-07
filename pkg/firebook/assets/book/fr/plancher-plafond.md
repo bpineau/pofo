@@ -31,6 +31,10 @@ Rien ne vaut un déroulé. Plan : 1,4 M€, w = 4 %, retrait initial 56 000 €.
 | 5 | 1 240 000 (+14 %) | 49 600 | ≤ 54 499 / ≥ 50 606 | **50 606** (plancher) |
 | 6 | 1 400 000 (+13 %) | 56 000 | ≤ 53 136 | **53 136** (plafond +5 %) |
 
+::: figure corridor-1966
+Le même millésime hostile, trois règles, un seul capital de 1 M€. Le fixe indexé sert 40 k€ sans broncher, jusqu'au mur : le portefeuille est vide en 1994. Le pourcentage pur ne ruine jamais, mais il fait vivre la crise en direct, jusqu'à −55 % de revenu au creux de 1982. Le corridor Vanguard opère la même correction de fond, en glissements de 2,5 % l'an au pire : le revenu descend de 40 à 22,8 k€, mais sur vingt-trois ans, sans jamais imposer de saut. **C'est le produit de la règle : la même adaptation, étalée jusqu'à devenir vivable.**
+:::
+
 Lisez bien les années 4-6. Le portefeuille remonte, mais le retrait continue de glisser vers le bas un moment, car la cible 4 % est encore loin en dessous ; il remonte ensuite au rythme plafonné. En six ans de traversée sévère (−28 % au creux), le revenu n'a jamais bougé de plus de 2,5 % par an, pour un sacrifice cumulé maximal de ~10 %. La même séquence sous pourcentage pur aurait servi −28 % en deux ans. Voilà le produit : des glissements à la place des chutes.
 
 Le prix se lit dans la même table. Aux années 3-5, on prélève 5,0-5,3 % d'un portefeuille amputé : la descente plafonnée « emprunte » au capital pendant les crises. Dans les scénarios ordinaires, le portefeuille rembourse à la reprise. Dans un régime vraiment long et hostile ([[regimes-de-marche]]), l'emprunt s'accumule et la ruine redevient possible. C'est le point clé à comprendre. Les bornes revendent une partie de la garantie anti-ruine du pourcentage pour acheter de la stabilité. La règle Vanguard se place donc entre le fixe et le pourcentage sur la frontière ([[panorama-strategies-retrait]]). Sa ruine, faible mais non nulle, est un vrai chiffre, comparable à celui du fixe. C'est là toute sa différence avec le 0 % creux du pourcentage pur, ou avec le chiffre incomparable du Guyton-Klinger sans plancher ([[guyton-klinger]]).
