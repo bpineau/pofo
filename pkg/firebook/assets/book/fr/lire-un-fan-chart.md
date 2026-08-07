@@ -60,8 +60,8 @@ L'erreur conceptuelle la plus profonde du fan chart mérite son encart, et la fi
 
 **Erreur 5 : compter les pixels plutôt que les probabilités.** La surface visuelle de la zone « ruine » dépend du nombre de chemins tracés, de l'épaisseur des traits, de l'écrêtage : rien de tout cela n'est une probabilité. Correction : le cône donne la **forme** du risque (quand, comment, avec quelle brutalité) ; les **chiffres** viennent de la jauge de ruine et du tableau chiffré. Les deux se lisent ensemble, jamais l'un pour l'autre.
 
-::: encart Le cas de pofo : quatre cônes, un par modèle
-La page FIRE de pofo pousse l'erreur 3 à sa conclusion : sa section « futurs simulés » affiche **quatre** cônes côte à côte, même échelle, même plan, un par famille de modèle : le rejeu de l'historique de vos fonds, le paramétrique central, le stress de séquence, et le siècle des 16 pays développés (broad-sample). L'idée de conception est que l'information utile n'est pas dans un cône mais dans **l'écart** entre eux : si vos quatre cônes se ressemblent, votre plan est robuste au choix de modèle ; s'ils divergent, cet écart est votre vrai risque, et il faut décider dans les colonnes pessimistes. Le détail des modèles est dans [[la-machine-pofo]] ; le mode d'emploi complet dans [[utiliser-la-page-fire]].
+::: encart Le cas : quatre cônes, un par modèle
+La page FIRE pousse l'erreur 3 à sa conclusion : sa section « futurs simulés » affiche **quatre** cônes côte à côte, même échelle, même plan, un par famille de modèle : le rejeu de l'historique de vos fonds, le paramétrique central, le stress de séquence, et le siècle des 16 pays développés (broad-sample). L'idée de conception est que l'information utile n'est pas dans un cône mais dans **l'écart** entre eux : si vos quatre cônes se ressemblent, votre plan est robuste au choix de modèle ; s'ils divergent, cet écart est votre vrai risque, et il faut décider dans les colonnes pessimistes. Le détail des modèles est dans [[la-machine-pofo]] ; le mode d'emploi complet dans [[utiliser-la-page-fire]].
 :::
 
 ## Au-delà de la richesse : les autres éventails

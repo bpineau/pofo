@@ -34,7 +34,7 @@ Le même matelas peut être un instrument ou un totem ; quatre choix font la dif
 
 **4. Le placement : rémunéré, liquide, insensible.** Le matelas français idéal n'est pas le compte courant. C'est le **fonds euros** (capital garanti, rendement obligataire lissé, disponible en jours, le véhicule qui réduit réellement le coût d'opportunité du buffer de moitié, [[obligations-en-retrait]], [[enveloppes-francaises]]) et/ou le monétaire €STR en CTO, plus les livrets réglementés pour la première tranche. Ce que le matelas n'est **jamais** : investi en obligations longues (il doit être insensible aux taux, c'est sa définition) ni, évidemment, en actions.
 
-::: attention La convention de pofo, à connaître pour lire la §07
+::: attention La convention, à connaître pour lire la §07
 Dans pofo, le buffer est **prélevé** sur le capital de départ, pas ajouté par-dessus : « 3 ans de buffer » sur un plan à 1,5 M€ signifie ~150 k€ au matelas et 1,35 M€ au moteur : la richesse affichée est toujours la somme des deux. C'est la convention honnête (celle qui fait payer au buffer son coût d'opportunité), et c'est pourquoi la courbe d'arbitrage de la §07 peut **monter** à droite : trop de buffer appauvrit le moteur plus qu'il ne protège. Les deux autres réglages : le rendement réel du matelas (« Buffer real return », calez-le sur votre fonds euros net, ~0,5-1 % réel) et l'année d'arrêt de la recharge (« refill stops in year », utile pour modéliser un buffer de première décennie seulement, cohérent avec la concentration du risque, [[sequence-des-rendements]]).
 :::
 
@@ -56,11 +56,11 @@ Plan : 1,5 M€, 52 000 €/an, corridor Vanguard. Matelas : 130 k€ (30 mois) 
 
 ## L'essentiel à retenir
 
-- L'intuition (ne jamais vendre au creux) est juste ; l'arithmétique est têtue : le coût d'opportunité du cash rend à peu près ce que la protection rapporte : net quantitatif ±0,5 point : la courbe §07 de pofo l'affiche sans fard, buffer **prélevé** sur le capital.
+- L'intuition (ne jamais vendre au creux) est juste ; l'arithmétique est têtue : le coût d'opportunité du cash rend à peu près ce que la protection rapporte : net quantitatif ±0,5 point : la courbe §07 l'affiche sans fard, buffer **prélevé** sur le capital.
 - Un buffer utile a quatre attributs : déclencheur de consommation écrit (drawdown > 15-20 %), règle de recharge aux sommets ([[recharger-ou-pas]]), taille 18-36 mois, placement en fonds euros/monétaire (jamais de duration).
 - Sa vraie valeur est hors simulation : l'anti-panique (le désastre comportemental coûte 10 fois tous les débats de taille), la permission de dépenser, la gouvernance du ménage : trois services qui s'achètent au minimum efficace, pas au maximum rassurant.
 - Les traversées durent 2-7 ans : le matelas couvre la première moitié, le reste appartient à la flexibilité, au rééquilibrage et aux actifs de régime : un buffer de 5-10 ans achète trois fois trop cher.
-- Buffer et glidepath couvrent le même risque : combinaison modérée plutôt que maximum de l'un ; et le buffer de pofo se règle finement (rendement réel, année d'arrêt de recharge) pour simuler **votre** version, pas la caricature.
+- Buffer et glidepath couvrent le même risque : combinaison modérée plutôt que maximum de l'un ; et le buffer se règle finement (rendement réel, année d'arrêt de recharge) pour simuler **votre** version, pas la caricature.
 
 ---
 

@@ -44,7 +44,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Anarkulova, Cederburg & O'Doherty (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions : les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
 
-**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays : la matière première du broad-sample de pofo. [[la-machine-pofo]]
+**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays : la matière première du broad-sample. [[la-machine-pofo]]
 
 **Kitces & Pfau (2014), « Reducing Retirement Risk with a Rising Equity Glide Path »** : le glidepath montant, source primaire. [[glidepaths]]
 
@@ -68,7 +68,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives : la calibration annuelle de μ. [[rendements-attendus]]
 
-**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour : celui que pofo affiche en §00. [[valorisations-et-cape]]
+**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour : celui affiché en §00. [[valorisations-et-cape]]
 
 **Le SG Trend Index** : le référentiel des programmes de trend : le contrôle de tout véhicule. [[managed-futures]]
 

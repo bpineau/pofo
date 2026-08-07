@@ -2,7 +2,7 @@
 
 Il existe un prélèvement que la plupart des candidats FIRE français découvrent trop tard, souvent par un courrier de l'URSSAF deux ans après leur départ : la cotisation subsidiaire maladie (CSM), dite « taxe PUMa ». Son principe tient en une phrase qui vise **exactement** le profil de ce livre : celui qui vit de son capital sans activité professionnelle ni pension doit cotiser à l'assurance maladie sur ses revenus du capital : environ 6,5 % par an sur l'essentiel des revenus du patrimoine, **par-dessus** toute la fiscalité du chapitre précédent ([[flat-tax-et-imposition]]).
 
-Pour un rentier précoce en phase de pont, c'est fréquemment plusieurs milliers d'euros par an : l'équivalent de 0,2 à 0,4 point de taux de retrait. Et, bonne nouvelle au milieu du piège, c'est aussi l'un des prélèvements les plus **pilotables** du système : ses seuils, son assiette annuelle et son interrupteur (une petite activité l'éteint intégralement) en font un cas d'école d'optimisation légale de plan. Cet article démonte tout : l'histoire et la logique du dispositif, la formule exacte et ses seuils, qui est touché et qui y échappe, l'assiette (avec ses zones grises, nommées comme telles), les quatre stratégies de mitigation classées par efficacité, et l'intégration au plan et à pofo.
+Pour un rentier précoce en phase de pont, c'est fréquemment plusieurs milliers d'euros par an : l'équivalent de 0,2 à 0,4 point de taux de retrait. Et, bonne nouvelle au milieu du piège, c'est aussi l'un des prélèvements les plus **pilotables** du système : ses seuils, son assiette annuelle et son interrupteur (une petite activité l'éteint intégralement) en font un cas d'école d'optimisation légale de plan. Cet article démonte tout : l'histoire et la logique du dispositif, la formule exacte et ses seuils, qui est touché et qui y échappe, l'assiette (avec ses zones grises, nommées comme telles), les quatre stratégies de mitigation classées par efficacité, et l'intégration au plan et au simulateur.
 
 Avertissement redoublé ici : **le dispositif a déjà changé deux fois (2016, 2019) et reste politiquement instable : chiffres à jour de 2026, vérification annuelle obligatoire.**
 
@@ -35,7 +35,7 @@ Notez la philosophie du zigzag : le dispositif initial de 2016 (8 % sur une assi
 **4. La provision (le minimum vital).** Si vous ne faites rien d'autre : budgétez-la : ~6,5 % des revenus du capital réalisés au-delà de la franchise, dans les dépenses du plan. C'est l'option « je paie pour la simplicité », légitime aussi ([[combien-il-vous-faut]], la majoration de friction de 10-15 % du budget la contenait déjà).
 :::
 
-## L'intégration au plan, et à pofo
+## L'intégration au plan, et au simulateur
 
 **Dans le dimensionnement** : la CSM est une friction sur les revenus réalisés de la phase de pont : pour un plan organisé (enveloppes capitalisantes, rachats dosés), elle ressort typiquement à 0,5-2 k€/an ; pour un plan naïf (gros CTO distribuant, grosses ventes annuelles), 3-8 k€/an : l'écart est un argument d'organisation de plus. **Dans pofo** : le curseur fiscal unique ([[utiliser-la-page-fire]]) l'approxime : son défaut de 31,4 % correspond peu ou prou à « PFU + une CSM moyenne » : si vous avez calibré votre taux mixte ([[flat-tax-et-imposition]]), ajoutez-y l'équivalent CSM de **votre** structure (la part des revenus réalisés dans vos flux × 6,5 %, au-delà de la franchise). Et souvenez-vous que la CSM s'éteint à la pension : le taux mixte de la phase adossée est plus bas : une raison de plus pour laquelle le plan français type s'améliore tout seul avec l'âge ([[horizon-et-esperance-de-vie]]).
 
@@ -50,7 +50,7 @@ Léa et Sam, phase de pont de 12 ans, besoin 50 000 €/an, patrimoine organisé
 - La CSM (« taxe PUMa ») vise exactement le rentier d'avant la pension : ~6,5 % des revenus du capital au-delà d'une franchise (~0,5 PASS ≈ 23,7 k€), si les revenus d'activité sont sous ~0,2 PASS (≈ 9,5 k€) : assiette plafonnée, appel en N+1, formule retouchée deux fois depuis 2016 : veille annuelle obligatoire.
 - Salariés, indépendants, chômeurs indemnisés et **pensionnés** y échappent. Elle ne concerne que la phase de pont. Et s'éteint à vie à la première pension liquidée.
 - Quatre mitigations, par efficacité : l'interrupteur d'activité (~9,5 k€ réels d'activité = zéro CSM, l'argument fiscal du Barista), le pilotage d'assiette (capitaliser, doser les rachats, étaler les PV, l'optimum conjoint avec le lissage fiscal réalise jusqu'à la franchise, pas au-delà), la liquidation calculée, la provision budgétée.
-- Ordre de grandeur : 0,5-2 k€/an pour un plan organisé, 3-8 k€ pour un plan naïf : soit 0,2-0,4 point de taux de retrait : à intégrer au taux mixte de pofo (le défaut 31,4 % l'approxime), en le baissant pour la phase adossée.
+- Ordre de grandeur : 0,5-2 k€/an pour un plan organisé, 3-8 k€ pour un plan naïf : soit 0,2-0,4 point de taux de retrait : à intégrer au taux mixte (le défaut 31,4 % l'approxime), en le baissant pour la phase adossée.
 - Réflexes de gouvernance : simulateur URSSAF chaque année, provision l'année de réalisation, veille sur chaque loi de financement. C'est le prélèvement instable du plan français.
 
 ---

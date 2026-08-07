@@ -42,7 +42,7 @@ Dépenses visées : 36 000 €/an nets. Portefeuille réparti entre PEA mûr, as
 
 Le portefeuille n'a pas à financer ce que d'autres revenus financeront. Trois catégories, à traiter différemment.
 
-**La retraite légale.** Même parti à 42 ans, un Français a validé des trimestres et touchera une pension, réduite mais réelle, à 64-67 ans ([[retraite-legale]]). L'ignorer est l'erreur conservatrice la plus courante ; elle coûte cher en années de travail superflues. La bonne façon de la compter n'est pas de la soustraire du budget (elle n'arrive que dans 20 ou 25 ans) mais de la donner au simulateur comme revenu différé : la page FIRE de pofo a un contrôle dédié ([[utiliser-la-page-fire]]), et l'effet sur la probabilité de ruine est souvent spectaculaire, car la pension arrive précisément dans les scénarios longs où le portefeuille s'épuise.
+**La retraite légale.** Même parti à 42 ans, un Français a validé des trimestres et touchera une pension, réduite mais réelle, à 64-67 ans ([[retraite-legale]]). L'ignorer est l'erreur conservatrice la plus courante ; elle coûte cher en années de travail superflues. La bonne façon de la compter n'est pas de la soustraire du budget (elle n'arrive que dans 20 ou 25 ans) mais de la donner au simulateur comme revenu différé : la page FIRE a un contrôle dédié ([[utiliser-la-page-fire]]), et l'effet sur la probabilité de ruine est souvent spectaculaire, car la pension arrive précisément dans les scénarios longs où le portefeuille s'épuise.
 
 **Les revenus quasi certains** : loyers d'un bien détenu ([[immobilier-en-retrait]]), pension déjà liquidée, rente d'assurance. Soustrayez-les des dépenses, en gardant une décote de prudence (vacance locative, fiscalité propre).
 
@@ -79,7 +79,7 @@ Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une 
 
 **« Je prends mes dépenses actuelles » .** Presque toujours faux dans les deux sens : trop haut (crédit immobilier qui s'éteint, enfants qui partent, frais professionnels) et trop bas (mutuelle, santé, loisirs du temps libéré, entretien du logement repoussé). Faites le vrai travail de l'étape 1.
 
-**« Le simulateur dit 97 %, donc c'est bon. »** Un simulateur ne vaut que par ses entrées et son modèle ([[pieges-des-simulateurs]]). 97 % sur des fenêtres historiques américaines avec des dépenses sous-estimées de 15 %, c'est un faux confort. La bonne pratique : plusieurs modèles (c'est le principe de la page FIRE de pofo, qui en affiche quatre côte à côte), des entrées auditées, et de la marge.
+**« Le simulateur dit 97 %, donc c'est bon. »** Un simulateur ne vaut que par ses entrées et son modèle ([[pieges-des-simulateurs]]). 97 % sur des fenêtres historiques américaines avec des dépenses sous-estimées de 15 %, c'est un faux confort. La bonne pratique : plusieurs modèles (c'est le principe de la page FIRE, qui en affiche quatre côte à côte), des entrées auditées, et de la marge.
 
 **« J'ajoute l'immobilier de résidence à mon capital. »** Votre résidence principale réduit vos dépenses (pas de loyer), elle ne produit pas de retraits. La compter dans le capital cible double-compte son effet. Elle reste une réserve de dernier recours (vente, viager, [[immobilier-en-retrait]]), c'est-à-dire une marge, pas un actif du plan.
 
