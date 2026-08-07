@@ -316,9 +316,10 @@ const msciWorldShapeID = "^990100-USD-STRD"
 // refdata (1969→) sets the levels, the daily price index supplies the
 // intra-month shape from 1972, and the tracker's TER is deducted last.
 // The refdata file stays embedded/local, so without it everything falls
-// back to the given fetchable proxy Build; without the daily shape, or
-// when it stops short of the refdata's end (a truncated fetch must not
-// silently drop the recent anchors), the backcast simply stays monthly.
+// back to the given fetchable proxy Build; without the daily shape the
+// backcast simply stays monthly, and a shape that stops short (a
+// truncated fetch) blends what it covers while the later anchors keep
+// their monthly cadence (shapedSeries never drops them).
 // The >300-point guards distinguish the real long series from an
 // accidental short fetch of the same symbol.
 func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
