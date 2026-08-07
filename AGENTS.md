@@ -51,7 +51,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | Path | What lives there |
 |---|---|
 | `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; data doctor (`Verify`) |
-| `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) |
+| `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions) |
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp |
 | `pkg/permanent` | tactical Permanent Portfolio 2.0 (Darcet): reads `datasets.MacroPanel` into a growth×inflation + monetary regime, quadratically-damped four-sleeve allocation, monthly-real backtest, coarse `Regime.Quadrant` view (used by the report's regime strip); see `docs/darcet-permanent-portfolio-design.md` |
@@ -170,9 +170,10 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.
-- Report per-portfolio blocks (composition pies, coverage bars, realized
-  contribution charts): assembled in `pkg/compare` (`breakdownPies`,
-  `coverageBars` in `composition.go`; `contributionCharts` in `contrib.go`) from
+- Report per-portfolio blocks (composition pies, coverage bars, risk budget,
+  realized contribution charts): assembled in `pkg/compare` (`breakdownPies`,
+  `coverageBars` in `composition.go`; `riskBudgetRows` in `riskbudget.go`, over
+  `metrics.Attribute`; `contributionCharts` in `contrib.go`) from
   `pkg/suggest` composition splits, `SimResult.(Monthly)Contributions` and
   `permanent.Regime.Quadrant`; rendering primitives live in `pkg/chart`
   (`DivergingStack`, `BarMatrix`, `Pie`), the template and its instant-tooltip

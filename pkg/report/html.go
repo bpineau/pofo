@@ -48,6 +48,25 @@ type CoverageBar struct {
 	Detail   string        // compact contributor line, e.g. "NTSG 25 · WPEA 5"
 }
 
+// RiskRow is one asset class of the risk-budget block: what share of the
+// portfolio's capital, variance and realized return it accounts for.
+//
+// The three are deliberately not given equal visual weight, because they do
+// not deserve equal trust. Risk is drawn as the bar (it is the finding, and
+// covariances estimate well out of sample), capital as a reference tick on the
+// same track (the decision the bar is measured against), and the return share
+// as a figure only: means are the hardest quantity to estimate, and a sleeve
+// held as insurance is MEANT to show a small or negative return share.
+type RiskRow struct {
+	Label       string
+	Capital     string  // formatted share of capital, e.g. "40.0 %"
+	Risk        string  // formatted share of variance
+	Return      string  // formatted share of realized return
+	RiskWidth   float64 // bar width as a percent of the track (0 when the share is negative)
+	CapitalMark float64 // reference tick position as a percent of the track
+	Negative    bool    // risk share below zero: the class offsets the rest of the book
+}
+
 // PortfolioSection groups everything shown for one portfolio. Sections are
 // rendered folded (<details>) so the report opens on the comparison.
 type PortfolioSection struct {
@@ -59,6 +78,7 @@ type PortfolioSection struct {
 	Breakdowns        []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
 	CoverageLabel     string          // heading for the coverage chart
 	Coverage          []CoverageBar   // macro-regime or factor coverage; empty to omit
+	RiskBudget        []RiskRow       // capital / risk / return share per asset class; empty to omit
 	RegimeSVG         template.HTML   // realized contribution per regime (bar matrix); empty to omit
 	Assets            []AssetRow
 	Notes             []string // informational lines (e.g. optimizer choices)
@@ -123,6 +143,16 @@ const reportCSS = `
 .cov-val{font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
 .cov-val.gap{color:var(--warn-ink)}
 .cov-detail{margin:-.1rem 0 .4rem 9.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.rb-head{display:flex;align-items:center;gap:.8rem;margin:.1rem 0 .35rem}
+.rb-track{flex:0 0 clamp(180px,34vw,340px);height:.55rem;position:relative;border-radius:999px;background:var(--surface-2);border:1px solid var(--line)}
+.rb-fill{position:absolute;left:0;top:0;height:100%;border-radius:999px;background:var(--accent)}
+.rb-fill.neg{background:var(--warn-ink)}
+.rb-mark{position:absolute;top:-.18rem;width:2px;height:calc(100% + .36rem);background:var(--ink-soft);transform:translateX(-1px)}
+.rb-vals{display:flex;gap:.9rem;font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.rb-vals span{min-width:3.6rem;text-align:right}
+.rb-vals .risk{font-weight:700;color:var(--ink)}
+.rb-vals .ret{color:var(--muted)}
+.rb-key{margin:.15rem 0 .5rem 9.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
 .tabs{display:flex;gap:.4rem;margin:0 0 .6rem}
 .tbtn{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:.18rem .75rem;cursor:pointer}
 .tbtn.on{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
@@ -290,6 +320,16 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <div class="cov-detail">{{.Detail}}</div>
 {{- end}}
 {{- end}}
+</div>
+{{end}}
+{{if .RiskBudget}}
+<div class="cov">
+<div class="cov-title">Risk budget</div>
+<div class="rb-key">bar = share of variance · tick = share of capital</div>
+{{- range .RiskBudget}}
+<div class="rb-head"><span class="cov-label">{{.Label}}</span><span class="rb-track"><span class="rb-fill{{if .Negative}} neg{{end}}" style="width:{{.RiskWidth}}%"></span><span class="rb-mark" style="left:{{.CapitalMark}}%"></span></span><span class="rb-vals"><span class="risk">{{.Risk}}</span><span>{{.Capital}}</span><span class="ret">{{.Return}}</span></span></div>
+{{- end}}
+<div class="rb-key">risk · capital · return</div>
 </div>
 {{end}}
 {{if .RegimeSVG}}<div class="chart-frame" style="margin-top:1rem">{{.RegimeSVG}}</div>{{end}}

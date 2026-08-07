@@ -44,6 +44,18 @@
 // out the underwater-robustness measures, behind the min-ulcer and
 // max-worst-5y objectives that matter most in decumulation.
 //
+// # Attribution
+//
+// Attribute splits a portfolio's risk and realized return across its holdings,
+// from the per-holding contribution series a simulation produces
+// (portfolio.SimResult.Contributions). The return share is a plain sum; the
+// risk share is the Euler decomposition of variance, Cov(c_i, r_p)/Var(r_p),
+// so the shares sum to one without normalization and a holding that moves
+// against the book can legitimately take a negative one. Reading the two
+// together is the point: a sleeve's share of risk routinely differs from its
+// share of capital by a factor of three, and an insurance sleeve is meant to
+// show a small return share against a real risk share.
+//
 // # External flows
 //
 // When a series carries external contributions and withdrawals (a savings
