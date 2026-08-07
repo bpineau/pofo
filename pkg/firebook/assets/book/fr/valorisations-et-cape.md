@@ -8,6 +8,10 @@ L'instrument de mesure standard de cette cherté est le CAPE de Shiller, et cett
 Le prix que vous payez pour un flux de bénéfices détermine le rendement que ce flux pourra vous servir : acheter cher, c'est accepter des rendements futurs plus bas. Pour un rentier, dont le sort se joue dans la première décennie ([[sequence-des-rendements]]), partir quand le marché est cher signifie que la décennie décisive a une espérance de rendement comprimée et un risque de correction accru : la double peine. Le CAPE ne prédit pas les krachs ; il mesure la taille de la promesse que le marché peut tenir.
 :::
 
+::: figure cape-swr
+Le taux de retrait qui aurait survécu à tous les millésimes, en fonction du CAPE au départ (ordres de grandeur, données américaines). Partir cher comprime le taux soutenable ; partir bon marché l'élargit.
+:::
+
 ## Le CAPE : définition, calcul, origine
 
 CAPE signifie *Cyclically Adjusted Price-to-Earnings ratio* : le ratio cours/bénéfices ajusté du cycle. La recette, proposée par Robert Shiller et John Campbell en 1988 (et inspirée de Graham et Dodd, 1934, qui recommandaient déjà de moyenner les bénéfices « sur cinq à dix ans, de préférence dix ») :
