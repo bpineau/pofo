@@ -134,6 +134,14 @@ var Categories = []Category{
 			{"expatriation-fiscale", "L'expatriation : fiscalité et protection sociale", "Le joker mental du rentier passé au calcul froid : résidence réelle, régimes datés, les attaches qui suivent, et le solde souvent proche de zéro."},
 		},
 	},
+	{
+		Title: "Le facteur humain",
+		Blurb: "La partie difficile : dépenser, vivre, durer : ce que les modèles ne voient pas et que les vétérans racontent.",
+		Articles: []Article{
+			{"psychologie-du-retrait", "La psychologie du retrait : pourquoi dépenser est si dur", "La sous-consommation chronique et la panique du krach : quatre mécanismes, les biais nommés, et la boîte à outils qui équipe tout."},
+			{"temoignages-fire", "Ce que disent les vrais FIRE : témoignages et conseils", "Six constats du corpus (l'argent marche, le mur des 18 mois, le regret n° 1 : pas parti assez tôt) et la liste canonique des vétérans."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
