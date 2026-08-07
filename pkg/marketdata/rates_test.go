@@ -187,3 +187,26 @@ func TestPolicyRateFromNYFed(t *testing.T) {
 		t.Errorf("target upper bound = %v, want 3.75", target.Points[0].Close)
 	}
 }
+
+// FRED answers a browser User-Agent over HTTP/1.1 by hanging until the client
+// times out, which had silently emptied every FRED-backed series (measured
+// 2026-08, see fredUserAgent). The requests must therefore carry a plain agent
+// of our own rather than the client's browser one.
+func TestFREDRequestsCarryAPlainUserAgent(t *testing.T) {
+	var seen string
+	mux := http.NewServeMux()
+	mux.HandleFunc("/graph/fredgraph.csv", func(w http.ResponseWriter, r *http.Request) {
+		seen = r.Header.Get("User-Agent")
+		fmt.Fprint(w, "observation_date,SOFR\n2026-07-29,2.20\n2026-07-30,2.185\n")
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	c.UserAgent = "Mozilla/5.0 (Macintosh) Chrome/124.0 Safari/537.36"
+
+	if _, err := c.Fetch(context.Background(), "^SOFR", time.Time{}); err != nil {
+		t.Fatalf("fetch: %v", err)
+	}
+	if seen != fredUserAgent {
+		t.Errorf("User-Agent = %q, want the plain %q", seen, fredUserAgent)
+	}
+}
