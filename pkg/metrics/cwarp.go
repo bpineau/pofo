@@ -57,8 +57,8 @@ func CWARP(asset, replacement []float64, p CWARPParams) (float64, bool) {
 
 	sRepl := Sortino(replacement, p.RiskFree)
 	sNew := Sortino(newRet, p.RiskFree)
-	mRepl, okR := returnToMaxDrawdown(replacement, p.RiskFree)
-	mNew, okN := returnToMaxDrawdown(newRet, p.RiskFree)
+	mRepl, okR := ReturnToMaxDrawdown(replacement, p.RiskFree)
+	mNew, okN := ReturnToMaxDrawdown(newRet, p.RiskFree)
 	if math.IsNaN(sRepl) || math.IsNaN(sNew) || !okR || !okN {
 		return 0, false
 	}
@@ -107,11 +107,13 @@ func cwarpScore(sortinoRepl, sortinoNew, rtmddRepl, rtmddNew float64) (float64, 
 	return (math.Sqrt(prod) - 1) * 100, true
 }
 
-// returnToMaxDrawdown returns (CAGR - rfAnnual) / |maxDrawdown| for a daily
-// return series, annualizing the compound growth by the number of periods
-// (252 per year, matching the rest of the package). ok is false when the path
-// wipes out or never draws down (the ratio is then undefined).
-func returnToMaxDrawdown(returns []float64, rfAnnual float64) (float64, bool) {
+// ReturnToMaxDrawdown returns (CAGR - rfAnnual) / |maxDrawdown| for a daily
+// return series (the Calmar-style return-to-drawdown ratio), annualizing the
+// compound growth by the number of periods (252 per year, matching the rest of
+// the package). Higher is better: return earned per unit of worst peak-to-
+// trough loss. ok is false when the path wipes out or never draws down (the
+// ratio is then undefined).
+func ReturnToMaxDrawdown(returns []float64, rfAnnual float64) (float64, bool) {
 	if len(returns) < 1 {
 		return 0, false
 	}

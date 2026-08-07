@@ -36,7 +36,10 @@
 // positive means the overlay lifts the portfolio, negative means it hurts.
 // Because both denominators are measured on the combined series, CWARP
 // rewards non-correlation and skew that the Sharpe ratio ignores. The
-// replacement is typically equity beta or a 60/40 blend.
+// replacement is typically equity beta or a 60/40 blend. Sortino and
+// ReturnToMaxDrawdown, its two building blocks, are exported on their own:
+// they are the downside-aware quantities pkg/optimize maximizes for the
+// max-sortino and return-to-drawdown objectives.
 //
 // # External flows
 //

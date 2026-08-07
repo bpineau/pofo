@@ -17,6 +17,13 @@ const (
 	MaxSharpe     Objective = "max-sharpe"
 	MinVolatility Objective = "min-volatility"
 	RiskParity    Objective = "risk-parity"
+	// MaxSortino maximizes the portfolio's own annualized Sortino ratio
+	// (return over downside deviation), rewarding assets that cut the
+	// downside, i.e. non-correlation and positive skew.
+	MaxSortino Objective = "max-sortino"
+	// ReturnToDrawdown maximizes the portfolio's own return-to-maximum-
+	// drawdown (a Calmar-style ratio), rewarding shallow drawdowns.
+	ReturnToDrawdown Objective = "return-to-drawdown"
 	// CWARP maximizes the portfolio's Cole Wins Above Replacement Portfolio
 	// score against a replacement/benchmark series; solved by SolveCWARP,
 	// which needs that extra series, not Solve.
@@ -37,7 +44,12 @@ type Result struct {
 	Return     float64   // expected annualized return
 	Volatility float64   // expected annualized volatility
 	Sharpe     float64   // expected annualized Sharpe ratio (risk-free 0)
-	CWARP      float64   // achieved CWARP vs the replacement (SolveCWARP only)
+
+	// Achieved values of the path-dependent objectives, set by the solver
+	// that targets them (zero otherwise).
+	Sortino       float64 // annualized Sortino ratio (MaxSortino)
+	ReturnToMaxDD float64 // return-to-maximum-drawdown (ReturnToDrawdown)
+	CWARP         float64 // CWARP vs the replacement (SolveCWARP)
 }
 
 // ParseSpec reads a "#meta optimize:" value: an objective optionally
@@ -47,9 +59,9 @@ func ParseSpec(s string) (Spec, error) {
 	tokens := strings.Split(s, ",")
 	obj := Objective(strings.ToLower(strings.TrimSpace(tokens[0])))
 	switch obj {
-	case MaxSharpe, MinVolatility, RiskParity, CWARP:
+	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, CWARP:
 	default:
-		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity or cwarp)", tokens[0])
+		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown or cwarp)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
 	for _, tok := range tokens[1:] {
@@ -88,8 +100,70 @@ func Solve(returns [][]float64, spec Spec) (Result, error) {
 			return Result{}, fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
 		}
 	}
+	switch spec.Objective {
+	case MaxSortino, ReturnToDrawdown:
+		return solveSeries(returns, spec)
+	}
 	mu, cov := meanCov(returns)
 	return solve(mu, cov, spec)
+}
+
+// blend writes the weighted daily returns of the portfolio into out (len equal
+// to each asset's return series).
+func blend(returns [][]float64, w, out []float64) {
+	for k := range out {
+		s := 0.0
+		for i := range w {
+			s += w[i] * returns[i][k]
+		}
+		out[k] = s
+	}
+}
+
+// maximizeSimplex maximizes score over the capped simplex by multi-start
+// projected descent with a numerical gradient. score reports the value to
+// maximize and whether it is defined; undefined points get a large penalty so
+// the search steers away from them. It is the shared engine for the objectives
+// that are non-convex and non-smooth (Sortino, return-to-drawdown, CWARP),
+// mirroring maxSharpe's multi-start pattern.
+func maximizeSimplex(n int, maxW float64, score func([]float64) (float64, bool)) []float64 {
+	neg := func(w []float64) float64 {
+		if v, ok := score(w); ok {
+			return -v
+		}
+		return 1e6
+	}
+	if n == 1 {
+		return []float64{1}
+	}
+	// Forward-difference gradient: projected descent only needs a descent
+	// direction, and the projection restores the simplex after each step.
+	grad := func(w []float64) []float64 {
+		const h = 1e-5
+		base := neg(w)
+		g := make([]float64, n)
+		for i := range w {
+			wp := append([]float64(nil), w...)
+			wp[i] += h
+			g[i] = (neg(wp) - base) / h
+		}
+		return g
+	}
+	starts := [][]float64{equalStart(n, maxW)}
+	for i := 0; i < n; i++ {
+		s := make([]float64, n)
+		s[i] = 1
+		starts = append(starts, projectCappedSimplex(s, maxW))
+	}
+	var best []float64
+	bestVal := math.Inf(1)
+	for _, s := range starts {
+		w := minimizeSimplex(neg, grad, maxW, s)
+		if v := neg(w); v < bestVal {
+			bestVal, best = v, w
+		}
+	}
+	return best
 }
 
 // meanCov returns the annualized mean vector and covariance matrix of the

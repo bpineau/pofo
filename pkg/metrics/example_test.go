@@ -45,6 +45,23 @@ func ExampleCWARP() {
 	// improves the portfolio: true
 }
 
+// ReturnToMaxDrawdown is the Calmar-style ratio of annualized growth to the
+// worst peak-to-trough loss, the return-to-drawdown building block CWARP and
+// the optimizer reuse.
+func ExampleReturnToMaxDrawdown() {
+	returns := make([]float64, 250)
+	for i := range returns {
+		returns[i] = 0.002 // steady gains…
+		if i >= 100 && i < 110 {
+			returns[i] = -0.02 // …interrupted by a drawdown
+		}
+	}
+	r, ok := metrics.ReturnToMaxDrawdown(returns, 0)
+	fmt.Printf("defined: %v, positive: %v\n", ok, r > 0)
+	// Output:
+	// defined: true, positive: true
+}
+
 // Beta regresses a series' daily returns on a benchmark's, matching
 // observations by date.
 func ExampleBeta() {
