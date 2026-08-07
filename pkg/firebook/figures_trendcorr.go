@@ -29,8 +29,9 @@ const (
 )
 
 // trendCorrStart is the month key (year*12 + month - 1) of the first plotted
-// window END, January 2001: the first month end whose trailing 252 trading days
-// fall in the window the SG Trend pin of the reconstruction was calibrated on.
+// window END, January 2001: the quarter century the article argues over, and far
+// enough inside the trend leg's real net asset values (1996 on) that every
+// trailing 252-day window is made of them.
 const trendCorrStart = 2001*12 + 0
 
 // trendCorrBand is the half-width of the "near zero" band, the correlation a
@@ -41,8 +42,8 @@ const trendCorrBand = 0.2
 // the period's most negative and most positive readings: April 2003 (the twelve
 // months that contain the 2002 crash, the programme short equities) and February
 // 2006 (twelve months of a steady bull market, the programme long equities). The
-// trough is a plateau, not a spike: July 2009, the 2008 window, reads within a
-// hundredth of it, which is the point the article makes.
+// trough is a plateau, not a spike: the six readings from January to June 2003
+// all sit within four hundredths of it, which is the point the article makes.
 const (
 	trendCorrMinIdx = 27
 	trendCorrMaxIdx = 61
@@ -54,8 +55,8 @@ const (
 // 2001 to June 2026 (306 windows), each dated by the month that CLOSES it.
 //
 // Reproduce: read the bundled CTA (Simplify CTA, a diversified trend programme:
-// a daily TSMOM reconstruction pinned to the SG Trend Index information ratio,
-// with the fund's real quotes grafted from 2022) and SP500 (S&P 500 total
+// real net asset values of trend programmes over the whole plotted window, the
+// fund's own quotes from 2022) and SP500 (S&P 500 total
 // return) with marketdata.ReadSimdataFS(datasets.Simdata(), id); keep the days
 // both series quote; take simple daily returns; then at every month end from
 // January 2001, excluding the final incomplete month, compute the Pearson
@@ -63,17 +64,19 @@ const (
 // recomputes all 306 values from pkg/datasets and fails if the plate and the
 // record disagree.
 //
-// THE TREND LEG IS A RECONSTRUCTION before 2022, not a live track record: the
-// plate's caption says so, as the article's own data callout already does.
+// The trend leg is made of REAL net asset values across the whole plotted
+// window: the fund itself from 2022, and the net asset values of other managers'
+// programmes before it, back to 1996. The futures-price reconstruction only
+// covers what those cannot reach, which is earlier than this plate starts.
 var trendCorrPoints = []float64{
-	0.02, -0.05, -0.21, -0.41, -0.53, -0.55, -0.58, -0.60, -0.66, -0.70, -0.68, -0.67,
-	-0.65, -0.65, -0.65, -0.60, -0.63, -0.66, -0.71, -0.70, -0.70, -0.73, -0.76, -0.76,
-	-0.78, -0.78, -0.79, -0.79, -0.79, -0.78, -0.70, -0.66, -0.59, -0.48, -0.42, -0.36,
-	-0.26, -0.17, 0.09, 0.20, 0.31, 0.40, 0.44, 0.44, 0.47, 0.44, 0.49, 0.48,
-	0.53, 0.51, 0.49, 0.53, 0.53, 0.52, 0.50, 0.52, 0.51, 0.56, 0.57, 0.59,
-	0.62, 0.64, 0.63, 0.62, 0.60, 0.63, 0.63, 0.60, 0.62, 0.60, 0.60, 0.60,
-	0.57, 0.53, 0.49, 0.47, 0.45, 0.37, 0.30, 0.27, 0.21, 0.19, 0.07, 0.03,
-	-0.04, -0.07, -0.04, -0.07, -0.08, -0.09, -0.13, -0.11, -0.04, -0.24, -0.32, -0.34,
+	-0.01, -0.07, -0.22, -0.40, -0.49, -0.50, -0.51, -0.54, -0.59, -0.62, -0.60, -0.61,
+	-0.60, -0.59, -0.58, -0.52, -0.57, -0.61, -0.65, -0.67, -0.66, -0.70, -0.72, -0.72,
+	-0.73, -0.74, -0.75, -0.76, -0.74, -0.72, -0.65, -0.58, -0.53, -0.43, -0.37, -0.33,
+	-0.23, -0.14, 0.14, 0.23, 0.29, 0.35, 0.36, 0.32, 0.31, 0.24, 0.29, 0.28,
+	0.33, 0.32, 0.30, 0.34, 0.37, 0.37, 0.36, 0.41, 0.41, 0.52, 0.53, 0.54,
+	0.57, 0.58, 0.57, 0.56, 0.55, 0.57, 0.55, 0.52, 0.56, 0.53, 0.53, 0.53,
+	0.47, 0.44, 0.40, 0.39, 0.37, 0.29, 0.27, 0.24, 0.17, 0.16, 0.05, 0.01,
+	-0.05, -0.07, -0.04, -0.07, -0.08, -0.09, -0.13, -0.11, -0.04, -0.24, -0.32, -0.34,
 	-0.36, -0.38, -0.42, -0.42, -0.39, -0.34, -0.31, -0.31, -0.33, -0.26, -0.10, -0.00,
 	0.11, 0.18, 0.37, 0.44, 0.43, 0.28, 0.18, 0.11, 0.07, 0.12, 0.17, 0.19,
 	0.17, 0.25, 0.29, 0.31, 0.33, 0.42, 0.48, 0.45, 0.33, 0.18, 0.07, 0.04,
@@ -186,9 +189,11 @@ func figTrendCorrelation() string {
 	// The two records, annotated where they happen.
 	lx, lv := x(trendCorrMaxIdx), trendCorrPoints[trendCorrMaxIdx]
 	b.WriteString(dot(lx, y(lv), figDeep))
-	b.WriteString(sTxt(lx-12, 106, 11, figSoft, "end", "600", "février 2006, douze mois de hausse"))
-	b.WriteString(mTxt(lx-12, 120, 11, figDeep, "end", "600", "+"+frNum(lv, 2)))
-	b.WriteString(sTxt(lx-52, 120, 10.5, figAccent, "end", "400", "acheteur d'actions"))
+	// The peak sits in the first fifth of the plate, so its label reads to the
+	// RIGHT of the dot: anchored the other way it runs off the left edge.
+	b.WriteString(sTxt(lx+12, 106, 11, figSoft, "start", "600", "février 2006, douze mois de hausse"))
+	b.WriteString(mTxt(lx+12, 120, 11, figDeep, "start", "600", "+"+frNum(lv, 2)))
+	b.WriteString(sTxt(lx+52, 120, 10.5, figAccent, "start", "400", "acheteur d'actions"))
 
 	tx, tv := x(trendCorrMinIdx), trendCorrPoints[trendCorrMinIdx]
 	b.WriteString(dot(tx, y(tv), figBlue))
@@ -204,7 +209,7 @@ func figTrendCorrelation() string {
 	for i, s := range []string{
 		fmt.Sprintf("Moyenne de la période : +%s. Et pourtant %s %% des mois tombent hors de la bande ±%s, celle qu'un gérant lirait comme plate.",
 			frNum(mean, 2), frNum(trendCorrOutside(), 0), frNum(trendCorrBand, 1)),
-		"Trend : reconstruction quotidienne recalée sur le SG Trend Index. Actions : S&amp;P 500 total return.",
+		"Trend : valeurs liquidatives réelles de programmes de suivi de tendance, dont le fonds lui-même depuis 2022. Actions : S&amp;P 500 total return.",
 	} {
 		b.WriteString(sTxt(24, 358+float64(i)*13, 9.5, figMuted, "start", "400", s))
 	}

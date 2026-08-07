@@ -148,8 +148,8 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 	if got := len(triBrickPairs()); got != 6 {
 		t.Fatalf("the four bricks hold %d pairs, the plate says six", got)
 	}
-	if brLo != -0.16 || brHi != 0.23 {
-		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,16 to +0,23", brLo, brHi)
+	if brLo != -0.15 || brHi != 0.23 {
+		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,15 to +0,23", brLo, brHi)
 	}
 	if brLo < -0.3 || brHi > 0.3 {
 		t.Errorf("the bricks leave the −0,3 / +0,3 band the article claims (%+.2f to %+.2f)", brLo, brHi)
@@ -160,7 +160,7 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 		t.Errorf("the blocks overlap: equity floor %+.2f, brick ceiling %+.2f", eqLo, brHi)
 	}
 	svg := figTriangleCorrelations()
-	for _, want := range []string{"+0,85 à +1,00", "−0,16 à +0,23"} {
+	for _, want := range []string{"+0,85 à +1,00", "−0,15 à +0,23"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer prints %q", want)
 		}
@@ -225,7 +225,7 @@ func TestTrianglePlateRespectsTheHouseRules(t *testing.T) {
 	}
 	for _, want := range []string{
 		"DIVERSIFICATION", "fonds monde", "obligations longues", "trend",
-		"reconstruction avant 2022", "Ken French", "corrélation des rendements mensuels",
+		"valeurs liquidatives réelles", "Ken French", "corrélation des rendements mensuels",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer carries %q", want)

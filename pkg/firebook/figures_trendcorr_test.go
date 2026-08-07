@@ -174,7 +174,7 @@ func TestTrendCorrHeadlineNumbers(t *testing.T) {
 	// The article's own two examples must hold in the record it is drawn from:
 	// short equities at the end of 2008, long equities at the end of 2021. The
 	// bar sits at a third rather than a half: the trend leg is real fund NAVs
-	// from 2007 on, and a real programme is never as cleanly positioned as a
+	// throughout, and a real programme is never as cleanly positioned as a
 	// reconstruction that holds one signal.
 	if v := trendCorrPoints[(2008-2001)*12+11]; v > -0.3 {
 		t.Errorf("end of 2008 reads %+.2f: the article claims a clearly negative correlation", v)
@@ -196,7 +196,7 @@ func TestTrendCorrPlateRespectsTheHouseRules(t *testing.T) {
 			t.Errorf("the plate uses %q, banned in the book's figures", banned)
 		}
 	}
-	for _, want := range []string{"MANAGED FUTURES", "moyenne", "acheteur d'actions", "vendeur d'actions", "SG Trend Index"} {
+	for _, want := range []string{"MANAGED FUTURES", "moyenne", "acheteur d'actions", "vendeur d'actions", "valeurs liquidatives réelles"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer carries %q", want)
 		}

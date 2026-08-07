@@ -14,20 +14,25 @@ near 0.6; the NAV of another real managed-futures fund agrees at 0.7 to 0.97.
 `DonorChain` therefore splices real NAVs behind each fund for as far back as
 they go, nearest trade first, each volatility-matched to the fund over their
 common window. The reconstruction below only covers what no real NAV reaches,
-which for this family means before 2007.
+which for this family means before 1996-03.
 
 | Fund | Real from | Donors, nearest first | Reconstruction only before |
 |---|---|---|---|
-| DBMF | 2019-05 | AlphaSimplex 2010-08 (0.81), Guggenheim 2007-02 (0.72) | 2007-02 |
-| DBMF UCITS USD | 2025-03 | DBMF 2019-05 (0.97), then as above | 2007-02 |
-| DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 2007-02 |
-| AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02 | 2007-02 |
-| KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02 | 2007-02 |
-| Simplify CTA | 2022-03 | AHL 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02 | 2007-02 |
-| AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03 (1.000, same fund, +0.45 %/yr fee uplift), then the AQR chain hedged to EUR | 2007-02 |
+| DBMF | 2019-05 | AlphaSimplex 2010-08 (0.81), Guggenheim 2007-02 (0.72), Man AHL Diversified 1996-03 (0.77) | 1996-03 |
+| DBMF UCITS USD | 2025-03 | DBMF 2019-05 (0.97), then as above | 1996-03 |
+| DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 1996-03 |
+| AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02, Man AHL 1996-03 (0.71) | 1996-03 |
+| KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02, Man AHL 1996-03 (0.57) | 1996-03 |
+| Simplify CTA | 2022-03 | AHL US 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02, Man AHL 1996-03 (0.48) | 1996-03 |
+| AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03 (1.000, same fund, +0.45 %/yr fee uplift), then the AQR chain hedged to EUR | 1996-03 |
 
-Measured effect on the reconstruction, before and after (daily / weekly
-correlation with the fund, tracking error, CAGR gap):
+Correlations are monthly, measured on each pair's own overlap.
+
+Measured effect of the chain on the reconstruction, before and after (daily /
+weekly correlation with the fund, tracking error, CAGR gap). These figures are
+measured on each fund's own live window, so a donor that only reaches further
+back cannot move them: they are what the chain bought over 2007-2019, and the
+1996 donor is graded separately below.
 
 | Fund | Before | After |
 |---|---|---|
@@ -46,6 +51,55 @@ otherwise be silently left unhedged (17 % of them, measured).
 The donor brings its own manager and fee load with it, which is the honest
 price: the reconstruction is no longer "what this fund would have done" but
 "what this trade actually paid, run by the closest managers we can observe".
+
+### The deepest donor deals weekly, so the engine draws the days (measured, 2026-08)
+
+Man AHL Diversified (IE0000360275, USD accumulating, real net NAVs from
+1996-03-26) is the oldest donor of the family and the only one that reaches the
+1990s. It is a real record, not a reconstruction of one: over 1996-03-26 to
+2026-02-27 it compounds to +1649.50 % against the manager's own published
++1649.47 %, and its crisis years are the ones the trend literature describes,
+1998 +41 %, 2008 +33 %, 2022 +12 %, for a maximum drawdown of -32 % across
+thirty years.
+
+It also deals WEEKLY until 2016 and daily only after, and the whole segment the
+chains keep of it (1996-03 to 2007-02) falls in the weekly era. Spliced as it
+stands, that segment ships week-sized steps inside a daily file, and every
+statistic that annualizes per observation reads them as a fund five times more
+volatile than it is: the raw DBi chain reports 31.9 % annualized volatility over
+1997-2006 where the donor's own monthly record says 18.0 %.
+
+The fix keeps every NAV and borrows nothing else. A donor segment whose median
+spacing exceeds three calendar days is projected onto the daily calendar of the
+reconstruction that already stands behind it, through the same `anchorShape`
+that blends a monthly index with a daily one: the donor's NAVs are the anchors,
+the reconstruction is the shape. The output passes exactly through every real
+NAV, so the weekly and monthly truth is untouched, and takes its day-to-day
+moves from the engine, which is the only thing here that can say what a trend
+book did between two Wednesdays. Sparse donors carry the level, the engine
+carries the texture.
+
+Measured on the shipped files, annualized daily volatility over 1997-2006,
+against each fund's own volatility target:
+
+| File | target | before | after |
+|---|---|---|---|
+| DBMF, DBMF UCITS USD | 11.5 % | 11.9 % | **12.5 %** |
+| DBMF UCITS EUR | 11.5 % + FX | 14.6 % | **15.1 %** |
+| KMLM | 14 % | 14.5 % | **15.1 %** |
+| Simplify CTA | 16 % | 16.6 % | **17.4 %** |
+| AQR UCITS A | 9 % | 9.3 % | **9.4 %** |
+
+The "before" column is the previous reconstruction, which had no cadence problem
+because it was daily by construction; the point of the table is that replacing a
+decade of it with real NAVs left the daily texture where it was, and 31.9 % is
+what the same decade would have read without the projection.
+
+What the decade's LEVEL does change, and should: over 1997-2006 the DBMF file
+now compounds at 14.6 %/yr where the pinned reconstruction had 19.5 %/yr (KMLM
+16.5 against 19.5, Simplify CTA 18.4 against 20.5, the AQR class 11.4 against
+12.7). That is a real programme's record, fees and all, in place of an
+information-ratio pin, and it is lower.
 
 ### The one donor whose fee load is worth correcting (measured, 2026-08)
 
@@ -225,26 +279,38 @@ family: the SG CTA index is measured net of the underlying managers'
 family to the index would deduct the fee twice (see the constants block in
 `recipes.go` for the full argument and the two independent routes to 0.50).
 
-**The open problem.** A constant drag reproduces an index's information
-ratio but not its drawdown. Pinning a path whose gross information ratio is
-0.9 down to 0.24 costs about eleven points a year at a 17 % volatility
-target, which turns the 2011-2021 trend drought into a long bleed: the
-Simplify CTA reconstruction draws down 57 % where the SG Trend index it
-tracks never went past about 18 %. The arithmetic is unavoidable in that
-form (at a fixed volatility target, only a constant can move the
-information ratio), so the honest fix is not another drag formula but an
-anchor that is already investable, that is, a real CTA index. None could be
-sourced: the SG, BarclayHedge and Mount Lucas records are all behind
-registration walls. Until one is, read the deep past of these series as
-right in shape and conservative in level, with drawdowns deeper than the
-industry's own indices.
+**The open problem, now a small one.** A constant drag reproduces an index's
+information ratio but not its drawdown. Pinning a path whose gross information
+ratio is 0.9 down to 0.24 costs about eleven points a year at a 17 % volatility
+target, which turns a long drought into a long bleed. That defect used to govern
+everything before 2007 and it produced the drawdowns this section warned about.
+It now governs 1988-1996 only, eight years at the very back of the files, since
+real NAVs cover everything after. Measured on the shipped files, the maximum
+drawdown of the whole history is DBMF and DBMF UCITS USD -26.5 % (2018), DBMF
+UCITS EUR -32.0 % (2018), KMLM -31.0 % (2025), Simplify CTA -27.4 % (2012), the
+AQR class -21.7 % and its EUR-hedged sister -27.6 % (both 2021): every one of
+them falls inside the donor segment, not the reconstruction, and every one is
+of the order the industry's own indices lived through.
+
+The arithmetic is still unavoidable in that form (at a fixed volatility target,
+only a constant can move the information ratio), so the honest fix would still
+be an anchor that is already investable, that is, a real CTA index. None could
+be sourced: the SG, BarclayHedge and Mount Lucas records are all behind
+registration walls. Until one is, read 1988-1996 as right in shape and
+conservative in level; from 1996 on, these files are real fund NAVs.
 
 ## Traps
 
 - The shipped `simdata` files graft the real quotes wherever they exist
   (100 % identical from each fund's inception), so a portfolio simulation
-  only ever runs the reconstruction BEFORE inception. A validation figure
-  measured on the overlap describes the engine, not what a user sees.
+  only ever runs the chain and the reconstruction BEFORE inception. A
+  validation figure measured on the overlap describes the engine, not what a
+  user sees, and no donor older than the fund can move it: adding the 1996
+  donor left every `-gen-simdata` validation line unchanged, to the digit.
+- A donor is not required to quote daily, and the deepest one does not.
+  Anything spliced into a daily file must be projected onto a daily calendar
+  first (`densify`), or per-observation statistics will read its cadence as
+  volatility.
 - The funds beat the strategy over their own live windows (DBMF by about
   six points a year since 2019). No honest reconstruction of trend
   following reproduces that, and chasing it would be curve fitting.

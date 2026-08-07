@@ -3,6 +3,7 @@ package simgen
 import (
 	"fmt"
 	"math"
+	"slices"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -30,7 +31,18 @@ import (
 // grafts them on top afterwards (Recipe.SpliceReal), which leaves the chain
 // itself measurable against them (Validate). calibrate names the fund the
 // donors are volatility-matched to, normally that same fund.
-func DonorChain(f Fetcher, cashID, calibrate string, donors []string, from time.Time) (*marketdata.Series, error) {
+//
+// A donor need not quote daily, and the oldest ones do not: a fund that dealt
+// WEEKLY until 2016 would otherwise contribute a decade of week-sized steps to
+// a daily file, and statistics that annualize per observation read that as
+// roughly sqrt(5) times the fund's real volatility. texture, when given, fixes
+// that without touching a single NAV: a sparse donor segment is projected onto
+// the texture's daily calendar with anchorShape, the donor's own NAVs as the
+// anchors and the texture as the shape. The result passes exactly through
+// every real NAV and takes its day-to-day moves from the texture in between.
+// Sparse donors therefore carry the level, and the engine carries the texture.
+// A nil texture leaves every donor as it stands.
+func DonorChain(f Fetcher, cashID, calibrate string, donors []string, from time.Time, texture *marketdata.Series) (*marketdata.Series, error) {
 	ref, err := f.Fetch(calibrate, from)
 	if err != nil {
 		return nil, fmt.Errorf("donor chain %s: %w", calibrate, err)
@@ -54,20 +66,57 @@ func DonorChain(f Fetcher, cashID, calibrate string, donors []string, from time.
 			continue
 		}
 		if out == nil {
-			out = scaled
+			out = densify(scaled, texture, time.Time{})
 			continue
 		}
 		if !d.First().Date.Before(out.First().Date) {
 			continue // adds no history
 		}
+		start := out.First().Date
 		out.SimulatedBefore = time.Time{} // let ExtendBack splice one more segment
-		marketdata.ExtendBack(out, scaled)
+		marketdata.ExtendBack(out, densify(scaled, texture, start))
 	}
 	if out == nil {
 		return nil, fmt.Errorf("donor chain %s: no usable donor", calibrate)
 	}
 	out.SimulatedBefore = time.Time{}
 	return out, nil
+}
+
+// sparseSpacing is the median spacing, in calendar days, above which a donor
+// segment is too coarse to be spliced into a daily file as it stands. It sits
+// just above a daily calendar's own worst case (a long weekend) and well under
+// a weekly dealing cycle, which is the cadence actually met in the wild.
+const sparseSpacing = 3
+
+// densify projects a sparse donor segment onto texture's calendar, leaving a
+// daily one alone. before bounds the segment the chain will actually keep of
+// this donor (its points strictly before that date); the zero time means all
+// of them. See DonorChain for why, and shapedSeries/anchorShape for how.
+func densify(donor, texture *marketdata.Series, before time.Time) *marketdata.Series {
+	if texture == nil || !sparse(donor, before) {
+		return donor
+	}
+	return shapedSeries(donor, texture)
+}
+
+// sparse reports whether the donor's points before the given date (all of them
+// when it is zero) are spaced by more than sparseSpacing calendar days at the
+// median. A handful of points cannot tell a cadence from a gap, so a segment
+// shorter than half a year of weekly dealing is left alone.
+func sparse(donor *marketdata.Series, before time.Time) bool {
+	var gaps []float64
+	for i := 1; i < len(donor.Points); i++ {
+		if !before.IsZero() && !donor.Points[i].Date.Before(before) {
+			break
+		}
+		gaps = append(gaps, donor.Points[i].Date.Sub(donor.Points[i-1].Date).Hours()/24)
+	}
+	if len(gaps) < 26 {
+		return false
+	}
+	slices.Sort(gaps)
+	return gaps[len(gaps)/2] > sparseSpacing
 }
 
 // volMatch rebuilds donor with its excess-over-cash returns scaled so that,
