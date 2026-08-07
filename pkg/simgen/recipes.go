@@ -32,12 +32,14 @@ func All() []Recipe {
 		wintonRecipe(),
 		zrozRecipe(),
 		dbxgRecipe(),
+		mthRecipe(),
 		dbmfRecipe(),
 		dbmfpaRecipe(),
 		dbmfeRecipe(),
 		kmlmRecipe(),
 		aqrmfRecipe(),
 		aqrmfHedgedRecipe(),
+		indepEuropeRecipe(),
 		ctaRecipe(),
 		amundiVolRecipe(),
 		bhmgRecipe(),
@@ -1234,6 +1236,63 @@ func dbxgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	return afterFee(gov, dbxgFee), nil
+}
+
+// mthFee is MTH's 0.07 %/yr TER, deducted from the pre-inception proxy (the
+// real quotes grafted from 2017 already carry it).
+const mthFee = 0.0007
+
+// mthRecipe rebuilds the Amundi Euro Government Bond 25+Y UCITS ETF Acc
+// (MTH, LU1686832194, EUR, real from 2017) from the same long euro-area
+// government bond total return as dbxgRecipe: the two funds track
+// near-identical eurozone 25+ sovereign indexes, so they share one
+// reconstruction and differ only by TER and inception date.
+func mthRecipe() Recipe {
+	return Recipe{
+		ID:              "MTH",
+		Name:            "Amundi Euro Govt Bond 25+Y: long euro-gov bond",
+		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, ~30y constant maturity, ~1970, with the ECB daily 30y shape EUROGOV-LONG-DAILY from 2004) less 0.07%/yr TER; euro-native, real MTH grafted from 2017",
+		Build:           mthBuild,
+		ValidateAgainst: "MTH",
+		SpliceReal:      "MTH",
+	}
+}
+
+// mthBuild is the long euro-gov reference net of MTH's TER, exactly like
+// dbxgBuild with the cheaper fee.
+func mthBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	gov, err := euroGovLongDaily(f, from)
+	if err != nil {
+		return nil, err
+	}
+	return afterFee(gov, mthFee), nil
+}
+
+// indepEuropeRecipe backcasts Independance AM Europe Small (LU1832174962,
+// real from 2018) with its older sibling, Independance AM France Small & Mid
+// (LU0131510165, same manager and process since the 1990s): on their
+// 2018-2026 overlap the two funds' monthly returns correlate at ~0.95, which
+// makes the sibling the best available proxy for the strategy's BEHAVIOR.
+// The LEVEL is another matter: the graft carries the France fund's record,
+// and France smalls both outperformed Europe before 2018 (the manager's
+// golden era) and underperformed after, so read the backcast as regime
+// shape, not as what a Europe fund would have earned. Both A(C) share
+// classes carry ~2.15%/yr of fees inside the NAV: no fee adjustment.
+func indepEuropeRecipe() Recipe {
+	return Recipe{
+		ID:              "LU1832174962",
+		Name:            "Independance AM Europe Small: France sibling graft",
+		Method:          "Independance AM France Small & Mid NAV (LU0131510165, same manager and process, monthly correlation ~0.95 on the 2018-2026 overlap; fees already in NAV, no adjustment) as the pre-inception proxy; real LU1832174962 grafted from 2018",
+		Build:           indepEuropeBuild,
+		ValidateAgainst: "LU1832174962",
+		SpliceReal:      "LU1832174962",
+	}
+}
+
+// indepEuropeBuild is the sibling fund's NAV, unchanged: same manager, same
+// process, fees baked into both NAVs.
+func indepEuropeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	return f.Fetch("LU0131510165", from)
 }
 
 // euroGovLongDaily builds the long (25+ segment, ~30-year, duration ~19) euro-area
