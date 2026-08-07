@@ -2,6 +2,7 @@ package firebook
 
 import (
 	"fmt"
+	"math"
 	"sort"
 	"strings"
 )
@@ -52,6 +53,8 @@ var figures = map[string]func() string{
 	"fan-anatomy":         figFanAnatomy,
 	"fan-two-plans":       figFanTwoPlans,
 	"bond-tent":           figBondTent,
+	"wr-signal":           figWrSignal,
+	"fat-tails":           figFatTails,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
@@ -302,6 +305,129 @@ func smoothAreaBelow(pts [][2]float64, baseY float64, fill string) string {
 
 func dashLine(x1, y1, x2, y2 float64, stroke string, w float64, dash string) string {
 	return fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="%.1f" stroke-dasharray="%s"/>`, x1, y1, x2, y2, stroke, w, dash)
+}
+
+// --- 11. Fat tails: Normal vs Student-t density, same mean and variance ---
+func figFatTails() string {
+	mu, sigma, nu := 4.0, 15.0, 5.0
+	s := sigma * math.Sqrt((nu-2)/nu) // scale so the t variable has std = sigma
+	tc := math.Gamma((nu+1)/2) / (math.Sqrt(nu*math.Pi) * math.Gamma(nu/2)) / s
+	normPdf := func(x float64) float64 {
+		z := (x - mu) / sigma
+		return math.Exp(-z*z/2) / (sigma * math.Sqrt(2*math.Pi))
+	}
+	tPdf := func(x float64) float64 {
+		z := (x - mu) / s
+		return tc * math.Pow(1+z*z/nu, -(nu+1)/2)
+	}
+	m := mapper(-44, 52, 0, 0.035, 70, 556, 288, 60)
+	var nPts, tPts [][2]float64
+	for x := -44.0; x <= 52.0001; x += 2 {
+		nPts = append(nPts, m(x, normPdf(x)))
+		tPts = append(tPts, m(x, tPdf(x)))
+	}
+	var b strings.Builder
+	// baseline
+	base := m(0, 0)[1]
+	b.WriteString(line(70, base, 556, base, figRule, 1))
+	// fat left-tail fill under the t curve, beyond -30 %
+	var tail [][2]float64
+	for x := -44.0; x <= -30.0001; x += 1 {
+		tail = append(tail, m(x, tPdf(x)))
+	}
+	var sb strings.Builder
+	for i, p := range tail {
+		if i > 0 {
+			sb.WriteByte(' ')
+		}
+		fmt.Fprintf(&sb, "%.1f,%.1f", p[0], p[1])
+	}
+	last, first := m(-30, 0), m(-44, 0)
+	fmt.Fprintf(&b, `<polygon points="%s %.1f,%.1f %.1f,%.1f" fill="rgba(192,101,91,.22)"/>`, sb.String(), last[0], last[1], first[0], first[1])
+	// the two densities
+	b.WriteString(poly(nPts, figMuted, 1.8, "5 4"))
+	b.WriteString(smoothStroke(tPts, figDeep, 2.6))
+	// -30 % marker (label at the top of the marker, clear of the x-axis ticks)
+	mk := m(-30, 0)
+	top := m(-30, 0.024)
+	b.WriteString(dashLine(mk[0], mk[1], mk[0], top[1], figBad, 1, "3 3"))
+	b.WriteString(txt(mk[0], top[1]-5, 10, figBad, "middle", "600", "−30 % réel"))
+	// fat-tail annotation in the empty upper-left, anchored start (never clipped)
+	an := m(-43, 0.020)
+	b.WriteString(txt(an[0], an[1], 11, figBad, "start", "600", "la queue épaisse"))
+	b.WriteString(txt(an[0], an[1]+14, 10, figBad, "start", "400", "~10× plus d'années à −30 %"))
+	// direct curve labels, in open space off the curves
+	sl := m(23, 0.019)
+	b.WriteString(txt(sl[0], sl[1], 12, figDeep, "start", "600", "Student-t (df 5)"))
+	nl := m(32, 0.0075)
+	b.WriteString(txt(nl[0], nl[1], 11, figMuted, "start", "400", "loi normale"))
+	pk := m(4, 0.0345)
+	b.WriteString(txt(pk[0], pk[1], 10, figMuted, "middle", "400", "les années ordinaires se ressemblent"))
+	// x ticks
+	for _, c := range []float64{-30, -15, 0, 15, 30, 45} {
+		p := m(c, 0)
+		lab := fmt.Sprintf("%+.0f", c)
+		if c == 0 {
+			lab = "0"
+		}
+		b.WriteString(txt(p[0], base+16, 10, figMuted, "middle", "400", lab))
+	}
+	b.WriteString(txt(313, base+34, 11, figMuted, "middle", "400", "rendement réel annuel (%)  →"))
+	b.WriteString(txt(52, 56, 10, figMuted, "start", "400", "densité"))
+	b.WriteString(titleTxt(313, 30, "À volatilité égale, deux mondes : la cloche et ses queues"))
+	return svg(620, 344, b.String())
+}
+
+// --- 10. Current withdrawal rate as a green/amber/red traffic light ---
+func figWrSignal() string {
+	m := mapper(0, 30, 2.2, 5.8, 66, 556, 300, 56)
+	var b strings.Builder
+	// zone bands
+	band := func(lo, hi float64, fill string) {
+		p0, p1 := m(0, hi), m(30, lo)
+		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, p0[0], p0[1], p1[0]-p0[0], p1[1]-p0[1], fill)
+	}
+	band(2.2, 4.3, "rgba(63,143,111,.13)")
+	band(4.3, 5.2, "rgba(180,120,60,.16)")
+	band(5.2, 5.8, "rgba(192,101,91,.16)")
+	// threshold rules
+	for _, t := range []float64{4.3, 5.2} {
+		p := m(0, t)
+		b.WriteString(line(66, p[1], 556, p[1], figRule, 1))
+	}
+	// the current-WR trajectory
+	wr := [][2]float64{{0, 3.6}, {3, 3.8}, {5, 4.4}, {7, 5.05}, {8, 5.3}, {10, 4.9}, {12, 4.4}, {14, 3.85}, {17, 3.4}, {21, 3.0}, {25, 2.7}, {30, 2.5}}
+	px := make([][2]float64, len(wr))
+	for i, p := range wr {
+		px[i] = m(p[0], p[1])
+	}
+	b.WriteString(smoothStroke(px, figInk, 2.8))
+	// event dots
+	peak := m(8, 5.3)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.6" fill="%s"/>`, peak[0], peak[1], figBad)
+	b.WriteString(txt(peak[0], peak[1]-9, 10, figBad, "middle", "600", "2 points de suite → coupe"))
+	back := m(13.4, 4.3)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.2" fill="%s"/>`, back[0], back[1], figGood)
+	b.WriteString(txt(back[0]+6, back[1]+14, 10, figGood, "start", "600", "coupe levée"))
+	// right-edge zone action labels (the paliers)
+	zg, zo, zr := m(30, 3.65), m(30, 4.78), m(30, 5.55)
+	b.WriteString(txt(zg[0]-6, zg[1]+4, 11, figGood, "end", "600", "vert · rien"))
+	b.WriteString(txt(zo[0]-6, zo[1]+4, 11, figDeep, "end", "600", "orange · vigilance"))
+	b.WriteString(txt(zr[0]-6, zr[1]+4, 11, figBad, "end", "600", "rouge · coupe écrite"))
+	// y ticks
+	for _, v := range []float64{3, 4, 5} {
+		p := m(0, v)
+		b.WriteString(txt(62, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.0f %%", v)))
+	}
+	// x ticks
+	for _, c := range []float64{0, 10, 20, 30} {
+		p := m(c, 2.2)
+		b.WriteString(txt(p[0], 316, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(311, 336, 11, figMuted, "middle", "400", "années de retraite  →"))
+	b.WriteString(txt(46, 52, 10, figMuted, "start", "400", "taux courant"))
+	b.WriteString(titleTxt(311, 30, "Le taux de retrait courant : le voyant qu'on pilote"))
+	return svg(620, 350, b.String())
 }
 
 // --- 9. The bond tent: prudence concentrated on the fragile window ---

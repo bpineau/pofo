@@ -4,10 +4,14 @@ Le 19 octobre 1987, le marché américain a perdu 20 % en une séance. Sous la l
 
 Il s'est produit, et 2008, 2020, 1929, 1973 racontent la même histoire à l'échelle annuelle : **les marchés font des extrêmes bien plus souvent que la courbe en cloche ne le permet** : c'est ce qu'on appelle les queues épaisses (fat tails), et pour un rentier ce n'est pas une curiosité statistique : la ruine d'un plan de retraite vit précisément dans les queues, là où la loi normale ne regarde pas.
 
-Cette page explique le phénomène (d'où viennent les queues, comment on les mesure), l'outil que pofo utilise pour les modéliser (la distribution de Student-t et son paramètre df, le curseur le plus mystérieux de la page FIRE), ce que les queues changent concrètement à un plan de retrait, et les limites honnêtes de cette modélisation. À la fin, le curseur « Tail df » ne sera plus un réglage ésotérique mais ce qu'il est : le bouton qui décide à quelle fréquence votre simulateur a le droit de produire 2008.
+Cette page explique le phénomène (d'où viennent les queues, comment on les mesure), l'outil standard pour les modéliser, la distribution de Student-t et son paramètre df, ce que les queues changent concrètement à un plan de retrait, et les limites honnêtes de cette modélisation. À la fin, le curseur « Tail df » ne sera plus un réglage ésotérique mais ce qu'il est : le bouton qui décide à quelle fréquence votre simulateur a le droit de produire 2008.
 
 ::: cle L'idée en une phrase
 À volatilité **identique**, deux mondes peuvent différer du tout au tout par la fréquence de leurs années extrêmes : dans le monde gaussien, l'année à −30 % réel est un événement de légende ; dans le monde réel (df ≈ 4-6), elle arrive une à deux fois par retraite. La volatilité σ mesure l'agitation **ordinaire** ; le paramètre de queue df mesure la propension aux **catastrophes**. Un simulateur qui n'a que σ est aveugle à la moitié du risque qui compte.
+:::
+
+::: figure fat-tails
+Deux lois de **même moyenne et même volatilité**, mais des queues opposées. Au centre, les années ordinaires se ressemblent. Dans la queue, tout change : sous la loi normale, l'année à −30 % réel est un événement de légende ; sous une Student-t à df 5 (calibrée sur les données réelles), elle est environ **dix fois** plus fréquente. Le paramètre df ne déplace pas le centre, il règle la fréquence des catastrophes.
 :::
 
 ## Pourquoi la loi normale séduit, et où elle casse

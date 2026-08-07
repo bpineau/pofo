@@ -6,11 +6,15 @@ Entre deux revues annuelles, le rentier vit avec une question de fond : « et l�
 On pilote des **ratios**, jamais des soldes : le solde du portefeuille effraie ou euphorise sans rien dire (il n'a de sens que rapporté aux dépenses et à l'horizon) : le **taux de retrait courant** (dépenses annuelles / portefeuille du moment) dit tout en un chiffre : où en est le plan, quelle que soit la cause (marché, dépenses, inflation). Il se calcule de tête, par n'importe qui ([[couple-et-famille]], le voyant du quiz inversé), et il a des seuils calibrables. C'est le voyant central : le reste est du complément.
 :::
 
+::: figure wr-signal
+Le taux de retrait courant (dépenses / portefeuille) dérive lentement à travers trois zones. Tant qu'il reste **vert**, on ne fait rien ; en **orange**, gestes doux et surveillance rapprochée ; en **rouge** confirmé (deux points espacés, l'hystérésis anti-fausse-alerte), la coupe écrite s'applique, puis se lève au retour sous le seuil. Les vrais signaux sont lents : on a le temps de dérouler les paliers dans l'ordre.
+:::
+
 ## Le voyant central : le taux courant et son échelle
 
 **Pourquoi lui.** Le taux courant agrège les trois menaces en un chiffre (un marché qui baisse, des dépenses qui dérivent, une inflation qui gonfle les retraits, tout le fait monter, [[inflation-et-taux-de-retrait]]) ; il est l'entrée des règles à garde-fous ([[guyton-klinger]]) ; et il a une interprétation absolue robuste : durablement au-dessus de ~5,5-6 %, **peu** de plans de pont survivent sans ajustement ; durablement sous 3,5 %, presque tous prospèrent ([[la-regle-des-4-pourcents]], l'arithmétique du soutenable). Sa limite connue : il ignore l'horizon restant et les pensions à venir. C'est pourquoi le guardrail **par risque** le remplace à la revue ([[guardrails-morningstar]], la re-simulation annuelle). Mais entre les revues, sa simplicité gagne : le tableau de bord intra-année n'a pas besoin d'un simulateur. Il a besoin d'un chiffre lisible un dimanche soir d'octobre 2008.
 
-**L'échelle, calibrée sur votre plan** (les valeurs types d'un plan de pont à 3,6 % initial ; les vôtres se calibrent au solveur, [[construire-son-plan]], bloc 5 du gabarit) :
+**L'échelle, calibrée sur votre plan** (les valeurs types d'un plan de pont à 3,6 % initial ; les vôtres se calibrent avec un simulateur, [[construire-son-plan]], bloc 5 du gabarit) :
 
 - **Vert** (< ~4,3 %, jusqu'à ~20 % au-dessus de l'initial) : le régime normal. Toutes les baisses de marché ordinaires vivent ici, et la réponse est : rien. Littéralement rien : le cône du plan contenait ce chemin ([[lire-un-fan-chart]]).
 - **Orange** (~4,3-5,2 %) : la zone de vigilance. Les gestes doux (économies indolores, gel d'indexation si la règle le prévoit, le buffer qui fait son travail selon ses seuils, [[recharger-ou-pas]]) et la surveillance rapprochée (le point mensuel remplace le trimestriel). Pas de coupe, pas de changement de portefeuille.
@@ -45,5 +49,5 @@ Reprenons Aline et Thomas dans leur mauvaise passe ([[revue-annuelle]]). Mi-2033
 ## Pour aller plus loin
 
 - Early Retirement Now, volet 37 (les marchés baissiers en retraite) et volet 47 (« When to Worry, When to Wing It ») : les fondations du playbook ([[serie-ern]]).
-- Dans pofo : le taux courant se lit d'un regard (dépenses/portefeuille), et la re-simulation des seuils appartient à la revue ([[revue-annuelle]], [[guardrails-morningstar]]).
+- Le taux courant se calcule de tête (dépenses / portefeuille) ; la re-simulation des seuils, elle, appartient à la revue annuelle ([[revue-annuelle]], [[guardrails-morningstar]]).
 - Dans ce livre : [[marche-baissier-en-retraite]] (la traversée détaillée), [[flexibilite-realite]] (les paliers 1-2), [[retour-au-travail]] (le palier 3), [[ruine-et-probabilites]] (pourquoi la ruine prévient).
