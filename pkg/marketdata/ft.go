@@ -11,7 +11,9 @@ import (
 
 // ftSearch resolves an identifier (typically an ISIN) through the Financial
 // Times securities search. FT covers many European mutual funds that Yahoo
-// does not list.
+// does not list. An ISIN-shaped query only accepts a hit whose own symbol
+// carries that ISIN, so an unknown code falls through to the other sources
+// instead of adopting whatever the full-text search felt closest to.
 func (c *Client) ftSearch(ctx context.Context, query string) (resolution, error) {
 	u := fmt.Sprintf("%s/data/searchapi/searchsecurities?query=%s", c.FTBase, url.QueryEscape(query))
 	body, err := c.get(ctx, u)
@@ -32,6 +34,20 @@ func (c *Client) ftSearch(ctx context.Context, query string) (resolution, error)
 		return resolution{}, fmt.Errorf("unreadable FT search response: %w", err)
 	}
 	secs := resp.Data.Security
+	// An ISIN query is answered by identifier, not by name, so the hit must
+	// carry the code it was asked about. FT's search is full-text and always
+	// answers something: an ISIN no listing carries came back as an unrelated
+	// stock (AT0000979794 returned "Adeia Inc.", symbol 0M2A:LSE), whose prices
+	// would then have been served, and cached, as the fund's own.
+	if q := strings.ToUpper(query); isinPattern.MatchString(q) {
+		kept := secs[:0]
+		for _, s := range secs {
+			if strings.Contains(strings.ToUpper(s.Symbol), q) {
+				kept = append(kept, s)
+			}
+		}
+		secs = kept
+	}
 	// Prefer a listing not quoted in pence (GBX); fall back to any match.
 	best := -1
 	for i, s := range secs {

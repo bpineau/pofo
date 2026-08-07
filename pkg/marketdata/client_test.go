@@ -277,6 +277,58 @@ func TestFetchISINFallsBackToFT(t *testing.T) {
 	}
 }
 
+func TestFTSearchISINMustMatchTheHitSymbol(t *testing.T) {
+	// Regression: FT's securities search is full-text and always answers
+	// something, so an ISIN no listing carries came back as a completely
+	// unrelated security (probing AT0000979794 resolved to "Adeia Inc.",
+	// symbol 0M2A:LSE) whose prices were then served, and cached, as the
+	// queried fund's own. A genuine hit carries the ISIN in its own symbol.
+	days := testDays(80)
+	var ftDates, ftCloses []string
+	for i, d := range days {
+		ftDates = append(ftDates, fmt.Sprintf("%q", d.Format("2006-01-02T15:04:05")))
+		ftCloses = append(ftCloses, fmt.Sprintf("%g", 10.5+float64(i)))
+	}
+	serve := func(hit string) *http.ServeMux {
+		mux := http.NewServeMux()
+		mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, `{"quotes":[]}`) // Yahoo knows neither.
+		})
+		mux.HandleFunc("/data/searchapi/searchsecurities", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{"data":{"security":[%s]}}`, hit)
+		})
+		mux.HandleFunc("/data/chartapi/series", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprintf(w, `{"Dates":[%s],"Elements":[{"Currency":"USD","ComponentSeries":[{"Type":"Close","Values":[%s]}]}]}`,
+				strings.Join(ftDates, ","), strings.Join(ftCloses, ","))
+		})
+		mux.HandleFunc("/recherche/ajax", func(w http.ResponseWriter, r *http.Request) {}) // Boursorama neither.
+		return mux
+	}
+	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	t.Run("stranger rejected", func(t *testing.T) {
+		c, srv := newTestClient(t, t.TempDir(), serve(
+			`{"name":"Adeia Inc.","symbol":"0M2A:LSE","xid":"449940151","isPrimary":true}`))
+		defer srv.Close()
+		if s, err := c.Fetch(context.Background(), "AT0000979794", from); err == nil {
+			t.Fatalf("adopted %q (%s) with %d points", s.Name, s.Symbol, len(s.Points))
+		}
+	})
+
+	t.Run("the ISIN's own listing accepted", func(t *testing.T) {
+		c, srv := newTestClient(t, t.TempDir(), serve(
+			`{"name":"Man AHL Diversified DN USD","symbol":"IE0000360275:USD","xid":"449940152","isPrimary":true}`))
+		defer srv.Close()
+		s, err := c.Fetch(context.Background(), "IE0000360275", from)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if s.Source != "ft" || s.Currency != "USD" || len(s.Points) != 80 {
+			t.Fatalf("FT series misread: %+v (%d points)", s, len(s.Points))
+		}
+	})
+}
+
 func TestFetchISINPicksDeepestCandidate(t *testing.T) {
 	// The first candidate (a moribund exchange listing) has only one point;
 	// the second (a Morningstar "fund" entry) has a deep history and must
