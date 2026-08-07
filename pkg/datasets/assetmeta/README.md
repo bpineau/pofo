@@ -24,7 +24,7 @@ Resolution fields (consumed by `pkg/marketdata`):
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
 | `eu_retail` | `true` when an EU/French retail investor can actually buy it: every UCITS fund, plus EU-listed products with a PRIIPs KID (gold/commodity ETCs, listed closed-end funds like BH Macro). `false` for US-listed funds without a KID. Omitted for non-tradable series (`index` benchmarks, spot, futures). This is the buyability flag; `ucits` alone understates it (no gold product can be UCITS, yet ETCs are freely buyable) |
-| `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, or `index` (non-investable benchmark served from its embedded reconstruction, no live symbol) |
+| `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, or `index` (served from its embedded reconstruction, no live symbol: a non-investable benchmark like `MSCIWORLD`, an instrument with no public quotation at all like the `ERESMONDEM` FCPE, or the total-return view of one whose only public series is unusable, like `DTLETR` for the distributing `DTLE`) |
 | `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT and `index` |
 | `xid` | FT internal id; empty otherwise |
 | `fees` | pinned ongoing charge (TER), percent per year; `0` = unknown, or genuinely fee-free for an `index` benchmark |
