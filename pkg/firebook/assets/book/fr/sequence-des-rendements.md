@@ -34,7 +34,11 @@ Prenons trois années de rendements réels : +20 %, +10 %, −25 %. Moyenne géo
 | 2 | 720 000 | 680 000 | +10 % | 748 000 |
 | 3 | 748 000 | 708 000 | +20 % | 849 600 |
 
-Mêmes rendements, même moyenne, mêmes retraits : 887 400 € contre 849 600 €. Presque 38 000 € d'écart, un retrait annuel entier, en trois ans seulement. Étirez ce mécanisme sur une décennie entière de marché baissier au départ. Ajoutez des retraits qui pèsent chaque année un pourcentage croissant d'un capital qui fond. Vous obtenez alors la différence entre les millésimes 1966 et 1982 de l'histoire américaine. Le premier est ruiné avant la fin de son horizon, le second finit opulent, pour des rendements de long terme comparables ([[etude-trinity]]).
+Mêmes rendements, même moyenne, mêmes retraits : 887 400 € contre 849 600 €. Presque 38 000 € d'écart, un retrait annuel entier, en trois ans seulement. Étirez ce mécanisme sur une décennie entière de marché baissier au départ. Ajoutez des retraits qui pèsent chaque année un pourcentage croissant d'un capital qui fond. Vous obtenez alors la différence entre les millésimes 1966 et 1982 de l'histoire américaine. Le premier est ruiné avant la fin de son horizon, le second finit avec plusieurs fois sa mise. Or le premier n'a pas manqué de rendement : son portefeuille a composé à 4,2 % par an en réel sur trente ans, davantage que les 4 % qu'il retirait. Tout s'est joué sur l'ordre, une première décennie à −1,2 % par an contre +11,4 % pour celle de 1982 ([[etude-trinity]]).
+
+::: figure millesimes-1966-1982
+Le même plan (1 M€, 40 k€ par an indexés sur l'inflation) déroulé sur le 60/40 américain réel, une fois à partir de 1966, une fois à partir de 1982, les deux courbes ramenées au jour du départ. Reconstruction du livre à partir du S&P 500, des Treasuries 5 ans et du CPI-U.
+:::
 
 Voici l'intuition à retenir. En accumulation, un krach précoce est une aubaine, car vous achetez bas pendant des années. En retrait, c'est une hémorragie, car vous vendez bas pendant des années. Le même événement change de signe selon le sens des flux. C'est pourquoi votre glorieux historique d'épargnant, « j'ai traversé 2008 et 2020 sans broncher », ne prouve rien sur votre exposition de rentier. Vous étiez simplement du bon côté des flux.
 
