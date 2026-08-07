@@ -3,7 +3,7 @@
 # name: SPDR MSCI USA Small Cap Value Weighted
 # method: Ken French small-value factor (USSCV-USD, daily 1963-07→) spliced before DFSVX (DFA US Small Cap Value, 1993→); real ZPRV grafted from 2015
 # validation: corr=0.670 (weekly 0.908) beta=0.64 TE=18.6%/yr CAGR sim 9.94% vs real 10.47% (overlap 2805 d from 2015-02-18 to 2026-07-01) vs IE00BSPLC413
-# generated: 2026-07-06
+# generated: 2026-07-08
 date,close
 1963-07-01,0.016347
 1963-07-02,0.016463

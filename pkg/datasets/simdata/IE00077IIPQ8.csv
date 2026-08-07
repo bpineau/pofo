@@ -3,7 +3,7 @@
 # name: WisdomTree Global Efficient Core: global 90/60 replication
 # method: 0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − cash ^IRX, both extended: CMT Treasury TR ~1953, T-bill ~1934) + 0.10×cash, 0.25%/yr fees; start now set by the dev-ex-US leg (~1969)
 # validation: corr=0.395 (weekly 0.862) beta=0.39 TE=15.9%/yr CAGR sim 19.62% vs real 17.25% (overlap 399 d from 2024-11-13 to 2026-07-01) vs IE00077IIPQ8
-# generated: 2026-07-05
+# generated: 2026-07-08
 date,close
 1969-12-01,100.000000
 1969-12-02,99.533881
