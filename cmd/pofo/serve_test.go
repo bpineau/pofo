@@ -277,7 +277,7 @@ func TestServeFireMetaSourceAndPicker(t *testing.T) {
 		if !ok {
 			t.Fatalf("%s: no picker in meta", path)
 		}
-		if p["base"] != fireBase || p["catalogURL"] != "/catalog.json" {
+		if p["base"] != fireBase || p["catalogURL"] != "/catalog.json" || p["viewURL"] != "/view" {
 			t.Errorf("%s: picker mount = %v", path, p)
 		}
 		exs, _ := p["examples"].([]any)
