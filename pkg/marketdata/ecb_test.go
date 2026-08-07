@@ -88,22 +88,28 @@ func TestHistoryFXFallsBackToECB(t *testing.T) {
 }
 
 func TestHistoryFXCrossRateViaECB(t *testing.T) {
-	c, srv := newTestClient(t, t.TempDir(), newECBOutageMux(t, ecbHistCSV))
+	// SEK carries no bundled proxy, so the ECB-derived cross stands alone
+	// (EUR/GBP/JPY/CHF would each be spliced back to 1971 instead).
+	const sekCSV = "Date,USD,SEK,\n" +
+		"2020-01-07,1.1025,10.45,\n" +
+		"2020-01-06,1.1194,10.50,\n" +
+		"1999-01-04,1.1789,N/A,\n"
+	c, srv := newTestClient(t, t.TempDir(), newECBOutageMux(t, sekCSV))
 	defer srv.Close()
 
-	s, err := c.History(context.Background(), "GBPUSD=X", time.Time{})
+	s, err := c.History(context.Background(), "SEKUSD=X", time.Time{})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if s.Source != "ecb" || s.Currency != "USD" {
 		t.Fatalf("source/currency misread: %+v", s)
 	}
-	// GBPUSD = (EUR→USD)/(EUR→GBP); the N/A GBP row must be skipped, so
-	// only the two 2020 rows survive (no bundled splice off the euro).
+	// SEKUSD = (EUR→USD)/(EUR→SEK); the N/A SEK row must be skipped, so
+	// only the two 2020 rows survive.
 	if len(s.Points) != 2 {
 		t.Fatalf("points = %d, want 2 (N/A row skipped): %+v", len(s.Points), s.Points)
 	}
-	if got, want := s.Last().Close, 1.1025/0.85005; math.Abs(got-want) > 1e-9 {
+	if got, want := s.Last().Close, 1.1025/10.45; math.Abs(got-want) > 1e-9 {
 		t.Errorf("last close = %v, want %v", got, want)
 	}
 }

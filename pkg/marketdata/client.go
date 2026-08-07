@@ -533,7 +533,7 @@ func (c *Client) historyView(ctx context.Context, symbol string, from time.Time,
 	if err != nil {
 		return nil, err
 	}
-	extendFXBack(symbol, s) // splice the bundled long EUR/USD behind the euro cross
+	extendFXBack(symbol, s) // splice the bundled long history behind EUR/GBP/JPY/CHF crosses
 	c.memoize(key, s)
 	return s, nil
 }
