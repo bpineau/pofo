@@ -31,12 +31,12 @@ Sur 1972-2024 (séries américaines, reconstruction indépendante recoupée avec
 
 | Portefeuille | Rendement | Drawdown max | SWR 30 ans |
 |---|---|---|---|
-| 60/40 | 5,4 % | −37 % | ~4 % |
+| 60/40 | 5,6 % | −38 % | ~4 % |
 | Permanent | 4,4 % | −22 % | ~4,5-5 % |
 | Golden Butterfly | 6,0 % | −22 % | ~5,5 % |
 | All-Weather | 5,0 % | −29 % (2022 compris) | ~4,5 % |
 
-La leçon robuste tient en trois constats. À rendement égal, le pire chemin est deux fois moins profond, le Golden Butterfly rendant comme un 80/20 pour un plongeon de moitié. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −29 %. Et c'est le pire chemin qui fixe le taux de retrait.
+La leçon robuste tient en trois constats. À rendement égal, le pire chemin est deux fois moins profond, le Golden Butterfly rendant comme un 70/30 pour un plongeon de moitié. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −34 %. Et c'est le pire chemin qui fixe le taux de retrait.
 
 Les limites sont tout aussi robustes. On travaille sur **un seul** échantillon de 50 ans, dominé par un marché obligataire haussier séculaire et un or parti de prix administrés en 1972. Sa décennie 1970 à +1 300 % nominal est un événement de libération, pas une propriété permanente de l'actif ([[or-en-retrait]]). Hors États-Unis, les répliques donnent la même **forme**, des queues courtes, avec des niveaux plus modestes. La prudence s'impose : retenir la structure, décoter les niveaux, tester sur le siècle mondial.
 

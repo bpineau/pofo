@@ -36,22 +36,22 @@ type tousTempsPoint struct {
 var (
 	tousTempsFamily = []tousTempsPoint{
 		{"Browne 4 × 25", 4.41, -22.2},
-		{"All-Weather *", 4.95, -28.7},
-		{"Golden Butterfly", 6.02, -21.6},
+		{"All-Weather *", 5.01, -28.7},
+		{"Golden Butterfly", 6.00, -21.6},
 	}
 	// tousTempsLadder runs from 100 % intermediate Treasuries to 100 %
 	// equities, by steps of 10 points of equities.
 	tousTempsLadder = []tousTempsPoint{
-		{"0/100", 2.31, -35.4},
-		{"10/90", 2.91, -31.2},
-		{"20/80", 3.48, -29.9},
-		{"30/70", 4.01, -29.5},
-		{"40/60", 4.51, -29.4},
-		{"50/50", 4.98, -32.7},
-		{"60/40", 5.42, -36.8},
-		{"70/30", 5.82, -40.7},
-		{"80/20", 6.18, -44.6},
-		{"90/10", 6.51, -48.3},
+		{"0/100", 2.66, -41.2},
+		{"10/90", 3.23, -38.8},
+		{"20/80", 3.77, -36.9},
+		{"30/70", 4.27, -35.4},
+		{"40/60", 4.74, -34.5},
+		{"50/50", 5.18, -33.8},
+		{"60/40", 5.58, -37.6},
+		{"70/30", 5.94, -41.3},
+		{"80/20", 6.27, -45.0},
+		{"90/10", 6.55, -48.5},
 		{"100/0", 6.80, -54.0},
 	}
 )
@@ -120,10 +120,10 @@ func figTousTempsEchange() string {
 	b.WriteString(sTxt(last[0], last[1]+17, 10.5, figBlue, "middle", "400", "100 % actions"))
 
 	// the ladder's own floor, named where the eye already sees the curve turn
-	floor := tousTempsLadder[4] // 40 % equities, 60 % intermediate Treasuries
+	floor := tousTempsLadder[5] // 50 % equities, 50 % intermediate Treasuries
 	fp := m(floor.cagr, floor.drawdn)
 	b.WriteString(dashLine(300, 250, fp[0]-3, fp[1]+8, figMuted, 1, "2 3"))
-	b.WriteString(sTxt(140, 262, 10.5, figSoft, "start", "600", "le moins profond de toute l'échelle, vers 40 % d'actions"))
+	b.WriteString(sTxt(140, 262, 10.5, figSoft, "start", "600", "le moins profond de toute l'échelle, vers 50 % d'actions"))
 	b.WriteString(mTxt(140, 278, 10.5, figSoft, "start", "600", ttNum(floor.drawdn, 0)+" %"))
 
 	// the Golden Butterfly read against the ladder at its own return
