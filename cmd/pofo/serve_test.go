@@ -2,12 +2,14 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
 	"github.com/bpineau/pofo/pkg/portfolio"
+	"github.com/bpineau/pofo/pkg/scenario"
 )
 
 // testServer returns a server whose render function is a recording fake:
@@ -19,6 +21,9 @@ func testServer(t *testing.T) (*server, *[][]*portfolio.Spec) {
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		calls = append(calls, specs)
 		return []byte("<html>fake report</html>"), nil
+	}
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+		return nil, nil // parametric-only app; no fetching in tests
 	}
 	return s, &calls
 }
@@ -72,6 +77,71 @@ func TestServeRoutes(t *testing.T) {
 	// manual smoke test, not here).
 	if rec := serveGet(t, h, "/fire/e/nope/"); rec.Code != 404 {
 		t.Errorf("unknown fire example: code=%d, want 404", rec.Code)
+	}
+}
+
+func TestServeFireComposed(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	// A valid composed spec mounts the simulator app shell.
+	rec := serveGet(t, h, "/fire/p/IWDA:60,IGLN:40!sim:on/")
+	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "<html") {
+		t.Fatalf("composed fire: code=%d", rec.Code)
+	}
+
+	// The handler is cached under the raw spec key.
+	if len(s.fireBySpec) != 1 {
+		t.Errorf("cache size = %d, want 1", len(s.fireBySpec))
+	}
+	serveGet(t, h, "/fire/p/IWDA:60,IGLN:40!sim:on/")
+	if len(s.fireBySpec) != 1 {
+		t.Errorf("cache size after rehit = %d, want 1", len(s.fireBySpec))
+	}
+
+	// Naked (no trailing slash): redirect to the directory form, no build.
+	if rec := serveGet(t, h, "/fire/p/IWDA:100"); rec.Code != 301 ||
+		rec.Header().Get("Location") != "/fire/p/IWDA:100/" {
+		t.Errorf("naked composed: code=%d loc=%q", rec.Code, rec.Header().Get("Location"))
+	}
+
+	// Catalog gate and grammar errors: 400, never a panel build.
+	if rec := serveGet(t, h, "/fire/p/ZZZNOTANID:100/"); rec.Code != 400 ||
+		!strings.Contains(rec.Body.String(), "not in the local catalog") {
+		t.Errorf("catalog gate: code=%d", rec.Code)
+	}
+	if rec := serveGet(t, h, "/fire/p/garbage/"); rec.Code != 400 {
+		t.Errorf("malformed spec: code=%d", rec.Code)
+	}
+
+	// A percent-encoded slash cannot cross the segment boundary: the spec
+	// grammar has no "/" so it must 400 as a malformed holding, not route.
+	req := httptest.NewRequest(http.MethodGet, "/fire/p/IWDA:100%2Fapi/", nil)
+	rec2 := httptest.NewRecorder()
+	h.ServeHTTP(rec2, req)
+	if rec2.Code != 400 {
+		t.Errorf("escaped slash: code=%d, want 400", rec2.Code)
+	}
+
+	// The cache is bounded: distinct specs evict, never grow past the cap.
+	for i := 0; i <= fireSpecCacheMax+3; i++ {
+		serveGet(t, h, fmt.Sprintf("/fire/p/IWDA:%d,IGLN:%d/", 50+i, 50-i))
+	}
+	if len(s.fireBySpec) > fireSpecCacheMax {
+		t.Errorf("cache size = %d, want <= %d", len(s.fireBySpec), fireSpecCacheMax)
+	}
+}
+
+func TestServeFireExampleNakedRedirect(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	if rec := serveGet(t, h, "/fire/e/claude-dragonlite"); rec.Code != 301 ||
+		rec.Header().Get("Location") != "/fire/e/claude-dragonlite/" {
+		t.Errorf("naked example: code=%d loc=%q", rec.Code, rec.Header().Get("Location"))
+	}
+	// Unknown names still 404, redirect or not.
+	if rec := serveGet(t, h, "/fire/e/nope"); rec.Code != 404 {
+		t.Errorf("naked unknown example: code=%d, want 404", rec.Code)
 	}
 }
 
