@@ -2,6 +2,7 @@ package metrics_test
 
 import (
 	"fmt"
+	"math"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/metrics"
@@ -23,6 +24,25 @@ func ExampleCompute() {
 	// Output:
 	// MaxDrawdown: -10.0 %
 	// TTR: 3 days (ongoing: true)
+}
+
+// CWARP scores whether overlaying an asset on a replacement portfolio (here
+// equity beta) improves its risk-adjusted returns. An anti-correlated sleeve
+// with positive carry scores above zero.
+func ExampleCWARP() {
+	equity := make([]float64, 250)
+	diversifier := make([]float64, 250)
+	for i := range equity {
+		equity[i] = 0.001 + 0.006*math.Sin(float64(i)*0.3)
+		if i >= 100 && i < 115 {
+			equity[i] = -0.010 // a drawdown
+		}
+		diversifier[i] = -equity[i] + 0.0007 // hedge plus carry
+	}
+	score, ok := metrics.CWARP(diversifier, equity, metrics.CWARPParams{})
+	fmt.Printf("improves the portfolio: %v\n", ok && score > 0)
+	// Output:
+	// improves the portfolio: true
 }
 
 // Beta regresses a series' daily returns on a benchmark's, matching
