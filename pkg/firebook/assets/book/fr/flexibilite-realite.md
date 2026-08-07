@@ -60,7 +60,7 @@ La flexibilité a fait exactement son travail : transformer un bon plan en plan 
 
 ## L'essentiel à retenir
 
-- La flexibilité réaliste vaut 0,3-0,5 point de taux de retrait, précieuse et réelle, et trois fois moins que ce que la phrase magique lui fait porter. Le mécanisme : les mauvaises passes durent 10-15 ans, les coupes se tiennent 3-5 ans, la durée bat la profondeur.
+- La flexibilité réaliste vaut 0,3-0,5 point de taux de retrait, précieuse et réelle, et trois fois moins que ce que la phrase magique lui fait porter. Le mécanisme : les mauvaises passes qui tuent un plan durent 10-15 ans, les coupes se tiennent 3-5 ans, la durée bat la profondeur.
 - Les six formes par valeur : revenus d'appoint (la vraie soupape, décroissante avec l'âge), gel d'indexation (le meilleur rapport), coupe bornée à seuil (le standard, 0,3-0,5 pt), report des grosses dépenses (une fois), géo-arbitrage temporaire (pour les mobiles), coupe de survie (jamais comptée).
 - Votre capacité est votre plancher, mesuré (le test des cinq ans, le trimestre d'essai vécu), pas déclaré : à 90 % du confort vous n'êtes pas flexible ; à 70-75 % la coupe est crédible.
 - La flexibilité se vit (le prix se lit dans le niveau de vie servi du pire quartile, profondeur et durée des coupes) et ne compte qu'**écrite** (seuil, ampleur, levée) : l'intention vaut zéro dans le simulateur et pire dans la tempête.

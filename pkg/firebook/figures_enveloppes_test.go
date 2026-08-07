@@ -104,7 +104,9 @@ func TestEnvelopeHouseholdExample(t *testing.T) {
 	}
 
 	// Organisation B: 20 000 € of assurance-vie (zero income tax, but 1 548 € of
-	// social levies), 28 000 € of PEA, 10 000 € of CTO at a 20 % gain share.
+	// social levies), 28 000 € of PEA, 11 600 € of CTO at a 20 % gain share. The
+	// CTO leg is what closes the household's need: B must NET the same 55 000 €
+	// that A nets, so its gross sale follows from its own friction.
 	avTax := avFriction(gainShare, 20000, avAllowanceCouple) * 20000
 	if math.Abs(avTax-1550) > 5 {
 		t.Errorf("rachat d'assurance-vie: %.0f € d'impôt, l'article dit 1 550 €", avTax)
@@ -113,19 +115,19 @@ func TestEnvelopeHouseholdExample(t *testing.T) {
 		t.Errorf("la quote-part imposable à l'IR vaut %.0f €, l'article la dit nulle", ir)
 	}
 	peaTax := 28000 * gainShare * peaSlope
-	ctoTax := 10000 * 0.20 * ctoSlope
-	if math.Abs(peaTax-2300) > 100 || math.Abs(ctoTax-600) > 50 {
-		t.Errorf("PEA %.0f € et CTO %.0f € d'impôt, l'article dit 2 300 € et 600 €", peaTax, ctoTax)
+	ctoTax := 11600 * 0.20 * ctoSlope
+	if math.Abs(peaTax-2300) > 100 || math.Abs(ctoTax-730) > 50 {
+		t.Errorf("PEA %.0f € et CTO %.0f € d'impôt, l'article dit 2 300 € et 730 €", peaTax, ctoTax)
 	}
 	taxB := avTax + peaTax + ctoTax
-	if math.Abs(taxB-4500) > 100 {
-		t.Errorf("organisation B: %.0f € d'impôt, l'article dit 4 500 €", taxB)
+	if math.Abs(taxB-4600) > 100 {
+		t.Errorf("organisation B: %.0f € d'impôt, l'article dit 4 600 €", taxB)
 	}
-	if got := taxB / 58000; math.Abs(got-0.078) > 2e-3 {
-		t.Errorf("friction totale de B: %.4f, l'article dit 7,8 %% des 58 000 € vendus", got)
+	if got := taxB / 59600; math.Abs(got-0.078) > 2e-3 {
+		t.Errorf("friction totale de B: %.4f, l'article dit 7,8 %% des 59 600 € vendus", got)
 	}
-	if gap := taxA - taxB; math.Abs(gap-4500) > 200 {
-		t.Errorf("l'écart annuel vaut %.0f €, l'article dit 4 500 €", gap)
+	if gap := taxA - taxB; math.Abs(gap-4400) > 200 {
+		t.Errorf("l'écart annuel vaut %.0f €, l'article dit 4 400 €", gap)
 	}
 	// "Capitalisé sur 30 ans de retraite, il équivaut à 180 000 € de capital
 	// environ", the future value of that yearly gap at 2 % real.

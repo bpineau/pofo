@@ -65,7 +65,7 @@ Portefeuille : 70 % actions mondiales, 30 % obligations d'État euro nominales 7
 
 Au-delà du portefeuille et du modèle, trois conséquences de pilotage.
 
-**Les traversées se comptent en années, budgétez-les ainsi.** Un coussin de liquidités (cash buffer) dimensionné pour « un krach » (18 mois) est dimensionné pour le mauvais objet : les épisodes hostiles durent de 16 mois à plus de 10 ans, retour au sommet réel compris, avec une médiane autour de 32 mois sur le 60/40 réel américain. C'est l'ordre de grandeur qui doit calibrer le coussin et les règles de flexibilité ([[cash-buffer]], [[recharger-ou-pas]], [[flexibilite-realite]]). Il faut tenir un régime, pas amortir une secousse.
+**Les traversées se comptent en années, budgétez-les ainsi.** Un coussin de liquidités (cash buffer) dimensionné pour « un krach » (18 mois) est dimensionné pour le mauvais objet : sur le 60/40 réel américain, la traversée médiane dure 32 mois, et les quatre pires depuis 1953 ont toutes dépassé trois ans, jusqu'à plus de dix ans pour la stagflation des années 1970. C'est l'ordre de grandeur qui doit calibrer le coussin et les règles de flexibilité ([[cash-buffer]], [[recharger-ou-pas]], [[flexibilite-realite]]). Il faut tenir un régime, pas amortir une secousse.
 
 **Le régime d'entrée en retraite mérite un regard, pas une obsession.** Partir en fin de prospérité euphorique (valorisations chères, [[valorisations-et-cape]]) ou au creux d'un bust purgé n'expose pas au même risque de séquence. D'où l'utilité de situer d'abord le point de départ, valorisations du jour replacées dans leur siècle, avant de dérouler la moindre projection. Mais on ne choisit pas son régime de départ, on choisit ses marges ([[les-trois-phases]]).
 
