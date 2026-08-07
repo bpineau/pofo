@@ -234,10 +234,26 @@ func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Sp
 	case <-ctx.Done():
 		return nil
 	}
+	// Re-check under the lock now that we hold a build slot: a double-clicked
+	// cold link would otherwise build twice and occupy both shared slots.
+	s.fireMu.Lock()
+	h, ok = s.fireBySpec[key]
+	s.fireMu.Unlock()
+	if ok {
+		return h
+	}
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
 	h = web.Handler(panel, labels)
+	if panel == nil {
+		// The build degraded (context canceled mid-fetch, every holding
+		// skipped): serve this request the parametric-only app but do NOT
+		// cache it, so a transient failure is not frozen into a permanently
+		// degraded simulator. A later visit rebuilds; the semaphore keeps
+		// those retries bounded.
+		return h
+	}
 	s.fireMu.Lock()
 	if existing, ok := s.fireBySpec[key]; ok {
 		h = existing
@@ -281,6 +297,13 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	defer cancel()
 	panel, labels := s.buildPanel(buildCtx, spec)
 	h = web.Handler(panel, labels)
+	if panel == nil {
+		// A degraded build (context canceled mid-fetch, every holding skipped)
+		// must not be cached, or a transient failure freezes this example into
+		// a permanently parametric-only simulator. Serve it once, rebuild next
+		// time.
+		return h
+	}
 	s.fireMu.Lock()
 	if existing, ok := s.fireByEx[name]; ok {
 		h = existing
