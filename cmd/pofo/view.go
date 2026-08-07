@@ -107,10 +107,17 @@ func parseViewQuery(q url.Values) (*viewRequest, error) {
 // The '!' meta delimiter keeps a shareable link hand-typable (a raw ';'
 // is invalid in a Go query string). It rebuilds the portfolio file text
 // and feeds portfolio.Parse; only locally-resolvable identifiers are
-// accepted (no network on behalf of anonymous visitors).
+// accepted (no network on behalf of anonymous visitors). Control
+// characters (notably a URL-decoded newline) are rejected up front:
+// since the rebuilt text is line-based, a smuggled newline would inject
+// an extra holding line that bypasses both the catalog gate and the
+// holdings-count limit below.
 func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
 	if len(raw) > maxViewSpecLen {
 		return nil, fmt.Errorf("p parameter too long (%d bytes, max %d)", len(raw), maxViewSpecLen)
+	}
+	if strings.IndexFunc(raw, func(r rune) bool { return r < 0x20 || r == 0x7f }) >= 0 {
+		return nil, fmt.Errorf("control characters in p parameter")
 	}
 	segments := strings.Split(raw, "!")
 	name := fmt.Sprintf("adhoc-%d", n)

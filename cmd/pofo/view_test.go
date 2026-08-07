@@ -100,6 +100,8 @@ func TestParseViewQueryErrors(t *testing.T) {
 		{"end before start", "ex=claude-dragonlite&start=2020-01-01&end=2019-01-01", "after"},
 		{"bad rebalance", "ex=claude-dragonlite&rebalance=x", "rebalance"},
 		{"bad sim", "ex=claude-dragonlite&sim=maybe", "sim"},
+		{"newline injection", "p=NTSG:100!rebalance:30%0A50%20BADIDXYZ", "control character"},
+		{"carriage return", "p=NTSG:100%0D:1", "control character"},
 	}
 	for _, c := range cases {
 		_, err := parseViewQuery(mustQuery(t, c.raw))
