@@ -1,8 +1,10 @@
 # broadsample
 
 `country-real.csv`: per-country **real** annual total returns (fractions) for
-18 advanced economies, 1870-2020, columns `iso,year,equity,bond,bill`. Each
-country's nominal returns are deflated by its own CPI.
+16 advanced economies, 1870-2020, columns `iso,year,equity,bond,bill`. Each
+country's nominal returns are deflated by its own CPI. The JST source covers
+18 countries; Canada and Ireland drop out for lack of an equity total-return
+series.
 
 The FIRE explorer (`pkg/decumul/web`) pool-bootstraps single-market runs from
 this table (see `scenario.PooledBootstrap`), so national disasters survive at
