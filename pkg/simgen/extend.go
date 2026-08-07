@@ -39,6 +39,10 @@ import (
 //     splice (^IRX ≈ TB3MS there), then read as an isRate series.
 //   - GBPUSD=X (Yahoo, ~2003) → the real daily FRED noon GBP/USD rate
 //     (refdata GBPUSD-DAILY: DEXUSUK, 1971→), for the GBP-quoted recipes.
+//   - DFSVX (DFA US Small Cap Value, 1993) → US small-cap value TR (refdata
+//     USSCV-USD: Ken French value-weighted SMALL HiBM daily, cumulated, from
+//     1963-07), the size×value factor behind ZPRV/USSC. Real daily total-return
+//     levels, so no daily shape is needed.
 var longBack = map[string]string{
 	"VTMGX":    "DEVEXUS-USD",
 	"VEIEX":    "EM-USD",
@@ -49,6 +53,7 @@ var longBack = map[string]string{
 	"VFINX":    "SP500-USD",
 	"^IRX":     "TBILL-3M",
 	"GBPUSD=X": "GBPUSD-DAILY",
+	"DFSVX":    "USSCV-USD",
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same
