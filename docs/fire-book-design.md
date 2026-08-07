@@ -28,7 +28,15 @@ silent right-edge clipping the eye misses). Where a plate carries numbers that
 this repository can compute, compute them: `mc-entrees-vs-tirages`
 (2026-07-24, monte-carlo-forces-faiblesses) plots ruin probabilities produced
 by `decumul.Plan` over a `scenario.ParametricSource` (400 000 paths) rather
-than illustrative values, and states the plan and the model in a footnote. Decision: the 12 pre-depth-bar articles (the early batches of
+than illustrative values, and states the plan and the model in a footnote.
+The withdrawal-rule plates of the same day (`corridor-1966`, `corridor-borne`,
+`gk-cascade-1966`, `abw-1966`, `vpw-table`) go further and share one ground:
+the 1966 US 60/40 real sequence rebuilt from the bundled reference series
+(SP500-USD + TREASURY-INT-USD deflated by the `^CPI-US` snapshot), run through
+`decumul.Plan.RunPath` one rule at a time with 1 M EUR and no tax, so the
+plates compare lives and not model assumptions. The scratch program that
+produced the series is not kept; the series are inlined in the plate with a
+comment stating exactly how to reproduce them. Decision: the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.

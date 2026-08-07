@@ -1100,3 +1100,67 @@ func figVpwTable() string {
 		"Annuité inversée à g = 3,3 % réel constant, horizon jusqu'à 100 ans."))
 	return svg(640, 450, b.String())
 }
+
+// figCorridorBorne is the admissibility test the bounded-corridor rule asks
+// for and readers skip: composed year after year, the lower bound is not a
+// small number. It draws the three usual bounds against a household floor, and
+// puts the 1966 corridor run of figCorridor1966 on the same picture, because
+// the textbook "six bad years" is not what a real hostile vintage delivers.
+func figCorridorBorne() string {
+	x := func(n float64) float64 { return 92 + n/24*(556-92) }
+	y := func(pct float64) float64 { return 300 - (pct-50)/50*(300-76) }
+	curve := func(d float64) [][2]float64 {
+		var out [][2]float64
+		for n := 0.0; n <= 24; n++ {
+			out = append(out, [2]float64{x(n), y(100 * math.Pow(1-d, n))})
+		}
+		return out
+	}
+	var b strings.Builder
+	b.WriteString(plateHead("plancher-plafond", "Le test que personne ne fait : la borne basse, composée"))
+	for _, g := range []float64{50, 60, 70, 80, 90, 100} {
+		b.WriteString(line(92, y(g), 556, y(g), figGrid, 1))
+		b.WriteString(mTxt(84, y(g)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", g)))
+	}
+	b.WriteString(sTxt(92, 64, 10.5, figMuted, "start", "400", "revenu réel, en % du niveau de départ, après n années de baisse consécutive"))
+	b.WriteString(line(92, y(50), 556, y(50), figRule, 1))
+	for _, n := range []float64{0, 6, 12, 18, 24} {
+		b.WriteString(mTxt(x(n), 318, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", n)))
+	}
+	b.WriteString(sTxt(324, 340, 10.5, figMuted, "middle", "400", "années de baisse consécutive"))
+
+	// the household floor of the article's worked example (41 k€ sur 50 k€)
+	b.WriteString(dashLine(92, y(82), 556, y(82), figBad, 1.4, "5 4"))
+	b.WriteString(sTxt(552, y(82)-9, 10.5, figBad, "end", "600", "le plancher du ménage : 41 k€ sur 50 k€, soit 82 %"))
+
+	bounds := []struct {
+		d     float64
+		color string
+		label string
+	}{
+		{0.02, figGreen, "−2 % par an"},
+		{0.025, figAccent, "−2,5 % (le standard Vanguard)"},
+		{0.04, figBlue, "−4 % par an"},
+	}
+	for i, bd := range bounds {
+		b.WriteString(poly(curve(bd.d), bd.color, 2.2, ""))
+		n := math.Log(0.82) / math.Log(1-bd.d)
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, x(n), y(82), bd.color)
+		// stagger the crossing labels: 7,8 and 9,8 years are two years apart
+		off := 17.0
+		if i == 1 {
+			off = 32
+		}
+		b.WriteString(mTxt(x(n), y(82)+off, 10.5, bd.color, "middle", "600", fmt.Sprintf("%.1f ans", n)))
+	}
+	b.WriteString(sTxt(x(24), y(63), 10.5, figGreen, "end", "600", "−2 %"))
+	b.WriteString(sTxt(x(24), y(56)+4, 10.5, figDeep, "end", "600", "−2,5 %"))
+	b.WriteString(sTxt(x(21), y(39.5)+4, 10.5, figBlue, "end", "600", "−4 %"))
+
+	// what the 1966 vintage actually asked of the standard bound
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.6" fill="none" stroke="%s" stroke-width="2"/>`, x(23), y(57), figDeep)
+	b.WriteString(mTxt(x(22.6), y(57)+17, 10, figDeep, "end", "600", "1966"))
+	b.WriteString(sTxt(92, 362, 10.5, figSoft, "start", "600",
+		"Le millésime 1966 (cercle) a demandé vingt-trois ans de glisse d'affilée, jusqu'à 57 % du revenu de départ."))
+	return svg(640, 378, b.String())
+}
