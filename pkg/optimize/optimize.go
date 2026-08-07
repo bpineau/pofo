@@ -24,6 +24,14 @@ const (
 	// ReturnToDrawdown maximizes the portfolio's own return-to-maximum-
 	// drawdown (a Calmar-style ratio), rewarding shallow drawdowns.
 	ReturnToDrawdown Objective = "return-to-drawdown"
+	// MinUlcer minimizes the portfolio's Ulcer Index (root-mean-square
+	// drawdown), which grows with both the depth and the duration of
+	// underwater periods: the smooth way to shorten and shallow the stretches
+	// that are hard to sit through.
+	MinUlcer Objective = "min-ulcer"
+	// MaxWorst5y maximizes the worst rolling five-year return, the robust
+	// worst-case medium-term outcome (measured over 5*252 trading days).
+	MaxWorst5y Objective = "max-worst-5y"
 	// CWARP maximizes the portfolio's Cole Wins Above Replacement Portfolio
 	// score against a replacement/benchmark series; solved by SolveCWARP,
 	// which needs that extra series, not Solve.
@@ -49,6 +57,8 @@ type Result struct {
 	// that targets them (zero otherwise).
 	Sortino       float64 // annualized Sortino ratio (MaxSortino)
 	ReturnToMaxDD float64 // return-to-maximum-drawdown (ReturnToDrawdown)
+	Ulcer         float64 // Ulcer Index in percent points (MinUlcer)
+	Worst5y       float64 // worst rolling five-year return (MaxWorst5y)
 	CWARP         float64 // CWARP vs the replacement (SolveCWARP)
 }
 
@@ -59,9 +69,9 @@ func ParseSpec(s string) (Spec, error) {
 	tokens := strings.Split(s, ",")
 	obj := Objective(strings.ToLower(strings.TrimSpace(tokens[0])))
 	switch obj {
-	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, CWARP:
+	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y, CWARP:
 	default:
-		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown or cwarp)", tokens[0])
+		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y or cwarp)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
 	for _, tok := range tokens[1:] {
@@ -101,7 +111,7 @@ func Solve(returns [][]float64, spec Spec) (Result, error) {
 		}
 	}
 	switch spec.Objective {
-	case MaxSortino, ReturnToDrawdown:
+	case MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y:
 		return solveSeries(returns, spec)
 	}
 	mu, cov := meanCov(returns)
