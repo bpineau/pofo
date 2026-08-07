@@ -61,7 +61,7 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	if pr.SideAnnual > 0 && pr.SideUntilYear > 0 && pr.SideUntilYear < pr.Years {
 		markers = append(markers, chart.Marker{Axis: 'x', Value: float64(pr.SideUntilYear), Label: "side income ends"})
 	}
-	svg := chart.Fan(
+	svg := darkFan(
 		chart.Options{Title: "Household real spending €/yr, incl. pension & side income (central model)", Width: 900, Height: 360},
 		"Year", bands, nil, markers...)
 	return SpendingResult{SVG: svg, Cards: cards}

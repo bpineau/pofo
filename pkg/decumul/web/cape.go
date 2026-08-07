@@ -28,7 +28,7 @@ func capeHistory() string {
 		ys[i] = p.cape
 	}
 	snap := capeSnapshot()
-	return chart.MultiLine(
+	return darkMultiLine(
 		chart.Options{Width: 760, Height: 300},
 		"", "CAPE (PE10)",
 		[]chart.XYSeries{{Name: "CAPE", Xs: xs, Ys: ys, Color: "#0B7285"}},
