@@ -1,5 +1,33 @@
 # FIRE book: revue (2026-07-13)
 
+## Passe 2 (retours de Ben) : appliquée
+
+- **Bug de rendu corrigé** : le gras pouvait contenir de l'italique
+  (`**Auteur, *Titre* (an)**`) — les `**` restaient bruts dans toute la
+  section Livres de la bibliothèque. Résolu (italique avant gras) + test.
+- **Références externes en liens** : impots.gouv.fr, info-retraite.fr,
+  urssaf.fr, earlyretirementnow.com, portfoliocharts.com, bogleheads.org,
+  kitces.com, tpawplanner.com, morningstar.com, r/financialindependence, etc.
+  (68 liens ; aucune URL inventée).
+- **« au Part 54 » → « au volet 54 »** (135 renvois ERN, anglicisme corrigé).
+- **Dé-gras des mots-outils** : 284 emphases injustifiées retirées (articles,
+  prépositions, conjonctions faibles, copules, pronoms faibles), les
+  emphases porteuses gardées (« jamais », « sans », « votre »...).
+- **Chaînes de « : » allégées** : 1069 « : » internes aux parenthèses passés
+  en virgules (phrases à 4+ deux-points : 390 → 213) + réécriture manuelle du
+  récit le plus lourd. Les énumérations inline (listes structurées) restent.
+- **Illustrations** : support `::: figure` ajouté au moteur ; 4 diagrammes SVG
+  thématisés (risque de séquence, CAPE→taux sûr, sourire des dépenses, grille
+  croissance × inflation). Extensible (voir `figures.go`).
+- Reste possible : étendre la passe « phrases courtes » aux énumérations
+  inline (les convertir en vraies listes markdown), et ajouter d'autres
+  diagrammes (plateau d'allocation, courbe taux-horizon, frontière des règles,
+  fan chart annoté).
+
+---
+
+## Passe 1 (revue initiale)
+
 Note de revue du livre FIRE (`pkg/firebook`, servi à `/book/fr/`). Elle liste
 ce qui a été corrigé dans cette passe, le style qui reste à travailler, et
 surtout les MANQUES de contenu et les clarifications souhaitables.
