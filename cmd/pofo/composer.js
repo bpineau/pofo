@@ -163,16 +163,57 @@
   var catalog = null;          // [{id,name,class,alt}] once /catalog.json loads
   var byKey = null;            // lower-cased id/alt -> asset, for fill, name and validation
   var panelEl = null;
+  var bootBlank = false;       // hub front door: booted empty, guard the URL until real content
+  var presets = [];            // bundled builds for the "add preset" dropdown (hub only)
 
-  // commit rewrites the URL to the current state without a navigation.
-  function commit() {
-    history.replaceState(null, "", "/view?" + serialize(state));
-    refreshBudget();
+  // hasPortfolioContent reports whether the state carries anything worth a URL:
+  // an ex=/opaque port, or a p= port with at least one non-empty id. The hub
+  // boots one blank card, which is NOT content: the address bar must stay "/"
+  // until the visitor actually builds something.
+  function hasPortfolioContent() {
+    return state.ports.some(function (p) {
+      if (p.kind === "ex" || p.kind === "opaque") return true;
+      return p.holdings.some(function (h) { return h.id.trim() !== ""; });
+    });
   }
 
-  // run navigates to the freshly serialized comparison.
+  // inert reports the guarded hub state: booted blank with nothing built yet.
+  // On /view (no blank boot) it is always false, so the guard is a no-op there.
+  function inert() {
+    return bootBlank && !hasPortfolioContent();
+  }
+
+  // commit rewrites the URL to the current state without a navigation. While the
+  // hub is still inert (only the blank boot card, no content) it leaves the
+  // address bar at "/" rather than a portfolio-less /view the server redirects.
+  function commit() {
+    if (!inert()) history.replaceState(null, "", "/view?" + serialize(state));
+    refreshBudget();
+    refreshCount();
+    refreshRunState();
+  }
+
+  // run navigates to the freshly serialized comparison, a no-op while inert
+  // (never a portfolio-less /view the server would 400 or bounce).
   function run() {
+    if (inert()) return;
     location.assign("/view?" + serialize(state));
+  }
+
+  // refreshCount syncs the summary's portfolio-count chip with the live state.
+  // Hub only (the blank boot changes the count); the /view mount stays static.
+  function refreshCount() {
+    if (!bootBlank || !panelEl) return;
+    var b = panelEl.querySelector(".cmp-sum .chip b");
+    if (b) b.textContent = String(state.ports.length);
+  }
+
+  // refreshRunState disables the Run button while inert, so the hub's empty
+  // boot never offers a dead click.
+  function refreshRunState() {
+    if (!panelEl) return;
+    var btn = panelEl.querySelector(".btn-run");
+    if (btn) btn.disabled = inert();
   }
 
   // portOf climbs from an event target to the state port its card carries.
@@ -637,8 +678,7 @@
     state.ports.push(port);
     var card = buildShell();
     var stack = panelEl.querySelector(".stack");
-    var addBtn = stack.querySelector(".addport");
-    stack.insertBefore(card, addBtn);
+    stack.insertBefore(card, stack.querySelector(".stack-actions"));
     port._el = card;
     card.__cmpPort = port;
     renderBody(port);
@@ -648,10 +688,43 @@
     commit();
   }
 
-  // refreshAddPortState disables the add-portfolio button at the port cap.
+  // insertPreset adds a bundled build as a fresh editable p= card, named after
+  // the preset and carrying a dismissible note for anything the grammar dropped.
+  // Same shape as addPortfolio, then Fork's payload handling. Gated on the cap.
+  function insertPreset(preset) {
+    if (state.ports.length >= CAP_PORTS) return;
+    var parsed = parsePValue(preset.p);
+    if (parsed.kind !== "p") { // impossible: the server emitted specToP output
+      if (window.console) console.warn("preset " + preset.name + " failed to parse");
+      return;
+    }
+    // parsePValue already names the card after the build (specToP emits its
+    // !name:), so it stays consistent with Fork; the dropdown shows the human
+    // title for discovery, some of which are long degraded first-line prose.
+    state.ports.push(parsed);
+    var card = buildShell();
+    var stack = panelEl.querySelector(".stack");
+    stack.insertBefore(card, stack.querySelector(".stack-actions"));
+    parsed._el = card;
+    card.__cmpPort = parsed;
+    var nameInput = card.querySelector(".pname");
+    if (nameInput) nameInput.value = parsed.nameSet ? parsed.name : "";
+    renderBody(parsed);
+    enhanceHead(parsed);
+    if (preset.dropped && preset.dropped.length) addNote(card, preset.dropped);
+    panelEl.open = true;
+    refreshAddPortState();
+    commit();
+  }
+
+  // refreshAddPortState disables the add-portfolio and add-preset buttons at
+  // the port cap.
   function refreshAddPortState() {
-    var btn = panelEl.querySelector(".addport");
-    if (btn) btn.disabled = state.ports.length >= CAP_PORTS;
+    var full = state.ports.length >= CAP_PORTS;
+    var add = panelEl.querySelector(".addport");
+    if (add) add.disabled = full;
+    var pre = panelEl.querySelector(".addpreset");
+    if (pre) pre.disabled = full;
   }
 
   // renderOpaque locks a card whose p= the editor cannot express: the raw value
@@ -757,6 +830,7 @@
       if (t.classList.contains("pdrop") && port) { removePort(port); return; }
       if (t.classList.contains("fork") && port && port._fork) { fork(port, port._fork); return; }
       if (t.classList.contains("addport")) { addPortfolio(); return; }
+      if (t.classList.contains("addpreset")) { togglePP(t); return; }
       if (t.classList.contains("btn-run")) { run(); return; }
     });
 
@@ -790,7 +864,10 @@
     CAP_HOLD = caps.holdings || CAP_HOLD;
     CAP_BYTES = caps.bytes || CAP_BYTES;
     panelEl = panel;
+    bootBlank = panel.getAttribute("data-boot") === "blank";
+    presets = readPresets(panel);
     state = parseSearch(location.search);
+    if (bootBlank) seedGlobals(panel); // the hub carries no URL globals; seed them
     var cards = panel.querySelectorAll(".pcard");
     for (var i = 0; i < state.ports.length && i < cards.length; i++) {
       var port = state.ports[i];
@@ -805,23 +882,168 @@
         f.card.__cmpPort._forkAttr = "data-fork-" + f.index;
       }
     });
-    mountAddPortfolio();
+    mountActions();
     buildGlobals();
     wire();
     refreshBudget();
+    // The hub boots empty: give the visitor an editable first card. The commit
+    // it triggers is inert (no content yet), so the address bar stays "/".
+    if (bootBlank && state.ports.length === 0) addPortfolio();
+    refreshRunState();
     loadCatalog();
   }
 
-  // mountAddPortfolio appends the add-portfolio button to the card stack.
-  function mountAddPortfolio() {
+  // mountActions appends the foot action row (add portfolio, and, when presets
+  // are available, add preset) to the card stack. The row is a stable anchor:
+  // addPortfolio and insertPreset splice new cards in ahead of it.
+  function mountActions() {
     var stack = panelEl.querySelector(".stack");
-    if (!stack || stack.querySelector(".addport")) return;
-    var btn = document.createElement("button");
-    btn.className = "addport";
-    btn.type = "button";
-    btn.textContent = "+ add portfolio";
-    stack.appendChild(btn);
+    if (!stack || stack.querySelector(".stack-actions")) return;
+    var row = document.createElement("div");
+    row.className = "stack-actions";
+    var add = document.createElement("button");
+    add.className = "addport";
+    add.type = "button";
+    add.textContent = "+ add portfolio";
+    row.appendChild(add);
+    if (presets.length) {
+      var wrap = document.createElement("div");
+      wrap.className = "addpreset-wrap";
+      var pre = document.createElement("button");
+      pre.className = "addpreset";
+      pre.type = "button";
+      pre.textContent = "+ add preset";
+      wrap.appendChild(pre);
+      row.appendChild(wrap);
+    }
+    stack.appendChild(row);
     refreshAddPortState();
+  }
+
+  // ---- add-preset dropdown ------------------------------------------------
+
+  var ppBox = null, ppDoc = null;
+
+  // closePP dismisses the preset dropdown and its outside-click watcher.
+  function closePP() {
+    if (ppDoc) { document.removeEventListener("mousedown", ppDoc); ppDoc = null; }
+    if (ppBox && ppBox.parentNode) ppBox.parentNode.removeChild(ppBox);
+    ppBox = null;
+  }
+
+  // togglePP opens or closes the preset dropdown under its button.
+  function togglePP(btn) {
+    if (ppBox) { closePP(); return; }
+    openPP(btn.closest(".addpreset-wrap"));
+  }
+
+  // openPP shows a filterable list of the bundled presets anchored to the
+  // add-preset button: an input filters by title/name, keyboard and mouse both
+  // select, and a click outside dismisses it.
+  function openPP(wrap) {
+    closePP();
+    if (!wrap) return;
+    ppBox = document.createElement("div");
+    ppBox.className = "ppick";
+    var inp = document.createElement("input");
+    inp.className = "field ppq";
+    inp.setAttribute("autocomplete", "off");
+    inp.setAttribute("spellcheck", "false");
+    inp.placeholder = "filter presets";
+    var list = document.createElement("div");
+    list.className = "pplist";
+    ppBox.appendChild(inp);
+    ppBox.appendChild(list);
+    wrap.appendChild(ppBox);
+    renderPPList(list, "");
+    inp.addEventListener("input", function () { renderPPList(list, inp.value.trim().toLowerCase()); });
+    inp.addEventListener("keydown", function (e) { ppKey(e, list); });
+    inp.focus();
+    ppDoc = function (e) { if (ppBox && !ppBox.contains(e.target) && !wrap.contains(e.target)) closePP(); };
+    document.addEventListener("mousedown", ppDoc);
+  }
+
+  // ppKey drives the dropdown from the filter input: arrows move the highlight,
+  // Enter inserts it, Escape closes.
+  function ppKey(e, list) {
+    var rows = list.querySelectorAll(".pprow");
+    if (e.key === "Escape") { e.preventDefault(); closePP(); return; }
+    if (!rows.length) return;
+    var cur = -1;
+    for (var i = 0; i < rows.length; i++) if (rows[i].classList.contains("on")) cur = i;
+    if (e.key === "ArrowDown") { e.preventDefault(); ppHighlight(rows, (cur + 1 + rows.length) % rows.length); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); ppHighlight(rows, (cur - 1 + rows.length) % rows.length); }
+    else if (e.key === "Enter") {
+      e.preventDefault();
+      var row = rows[cur < 0 ? 0 : cur];
+      if (row && row.__preset) { insertPreset(row.__preset); closePP(); }
+    }
+  }
+
+  // ppHighlight moves the highlighted preset row and scrolls it into view.
+  function ppHighlight(rows, i) {
+    for (var k = 0; k < rows.length; k++) rows[k].classList.toggle("on", k === i);
+    if (rows[i]) rows[i].scrollIntoView({ block: "nearest" });
+  }
+
+  // renderPPList repaints the filtered preset rows (title + a short holdings
+  // readout). The first row is pre-highlighted so Enter picks it.
+  function renderPPList(list, q) {
+    list.textContent = "";
+    var hits = presets.filter(function (p) {
+      return q === "" || (p.title + " " + p.name).toLowerCase().indexOf(q) >= 0;
+    });
+    if (!hits.length) {
+      var empty = document.createElement("div");
+      empty.className = "ppempty";
+      empty.textContent = "no matching preset";
+      list.appendChild(empty);
+      return;
+    }
+    hits.forEach(function (p, i) {
+      var row = document.createElement("div");
+      row.className = "pprow" + (i === 0 ? " on" : "");
+      var t = document.createElement("span");
+      t.className = "pt";
+      t.textContent = p.title || p.name;
+      var d = document.createElement("span");
+      d.className = "pd";
+      d.textContent = ppSummary(p.p);
+      row.appendChild(t);
+      row.appendChild(d);
+      row.__preset = p;
+      row.addEventListener("mousedown", function (e) { e.preventDefault(); insertPreset(p); closePP(); });
+      list.appendChild(row);
+    });
+  }
+
+  // ppSummary renders a preset's holdings segment for the dropdown row.
+  function ppSummary(p) {
+    var holdings = p.split("!")[0];
+    return holdings.length > 44 ? holdings.slice(0, 42) + "…" : holdings;
+  }
+
+  // readPresets collects the bundled builds the server embedded as
+  // data-preset-<i> JSON payloads (hub only; absent on /view).
+  function readPresets(panel) {
+    var n = parseInt(panel.getAttribute("data-preset-count") || "0", 10);
+    var out = [];
+    for (var i = 0; i < n; i++) {
+      var p = readJSON(panel, "data-preset-" + i);
+      if (p && p.p) out.push(p);
+    }
+    return out;
+  }
+
+  // seedGlobals fills state.globals from the hub's data-globals payload so the
+  // blank boot carries the visitor's stored preferences (they ride into the URL
+  // as soon as the first portfolio exists).
+  function seedGlobals(panel) {
+    var g = readJSON(panel, "data-globals");
+    if (!g) return;
+    ["currency", "rebalance", "sim", "bench", "start", "end"].forEach(function (k) {
+      if (g[k]) state.globals[k] = g[k];
+    });
   }
 
   // loadCatalog fetches /catalog.json and lights up autocomplete and inline id

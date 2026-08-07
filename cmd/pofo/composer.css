@@ -109,11 +109,32 @@
 .note .note-x{border:none;background:transparent;color:var(--warn-ink);cursor:pointer;
   font-size:1rem;line-height:1;font-family:var(--mono);margin-left:auto}
 
-/* add-portfolio button (JS-injected at the foot of the stack) */
-.addport{font-family:var(--mono);font-size:.76rem;color:var(--accent-ink);background:transparent;
+/* foot action row: add-portfolio + add-preset (JS-injected at the foot) */
+.stack-actions{display:flex;gap:.5rem;flex-wrap:wrap;align-items:center}
+.addport,.addpreset{font-family:var(--mono);font-size:.76rem;color:var(--accent-ink);background:transparent;
   border:1px dashed var(--line-strong);border-radius:var(--r-sm);padding:.4rem .7rem;cursor:pointer}
-.addport:hover{border-color:var(--accent);background:var(--accent-wash)}
-.addport:disabled{color:var(--faint);border-color:var(--line);cursor:not-allowed;background:transparent}
+.addport:hover,.addpreset:hover{border-color:var(--accent);background:var(--accent-wash)}
+.addport:disabled,.addpreset:disabled{color:var(--faint);border-color:var(--line);cursor:not-allowed;background:transparent}
+.addpreset-wrap{position:relative;display:inline-flex}
+
+/* add-preset dropdown */
+.ppick{position:absolute;top:calc(100% + 4px);left:0;z-index:30;width:320px;max-width:86vw;
+  background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--r-sm);
+  box-shadow:var(--sh);overflow:hidden;display:flex;flex-direction:column}
+.ppick .ppq{margin:.5rem;width:auto}
+.pplist{max-height:min(300px,52vh);overflow-y:auto;border-top:1px solid var(--line)}
+.pprow{display:flex;flex-direction:column;gap:.1rem;padding:.4rem .65rem;cursor:pointer;
+  border-top:1px solid var(--line)}
+.pprow:first-child{border-top:none}
+.pprow:hover,.pprow.on{background:var(--accent-wash)}
+.pprow .pt{font-family:var(--sans);font-size:.82rem;font-weight:600;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pprow .pd{font-family:var(--mono);font-size:.68rem;color:var(--muted);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ppempty{padding:.55rem .65rem;color:var(--muted);font-size:.78rem}
+
+/* the Run button goes inert while the hub composer is still empty */
+.cmp .btn-run:disabled{opacity:.45;cursor:not-allowed;background:var(--accent);color:#fff}
 
 /* read-only ex= readout */
 .exlist{font-family:var(--mono);font-size:.78rem;color:var(--ink-soft);

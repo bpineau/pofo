@@ -34,6 +34,13 @@ func TestViewComposerMount(t *testing.T) {
 		!strings.Contains(mount, "open>") {
 		t.Error("mount must open when a p= portfolio is present")
 	}
+	// The /view mount is unchanged: it never carries the hub's blank-boot or
+	// preset attributes (those belong to hubComposerMount alone).
+	for _, unwanted := range []string{"data-boot", "data-globals", "data-preset"} {
+		if strings.Contains(mount, unwanted) {
+			t.Errorf("/view mount must not carry %q", unwanted)
+		}
+	}
 	// The mount rides into the render options for the web app only.
 	o := vr.serverOptions(viewBase())
 	if o.composer == "" {

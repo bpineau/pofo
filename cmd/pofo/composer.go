@@ -13,6 +13,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/bpineau/pofo/examples"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
 )
@@ -105,14 +106,124 @@ func composerMount(vr *viewRequest) template.HTML {
 	return template.HTML(buf.String())
 }
 
+// hubComposerMount builds the composer panel for the hub's front door: the
+// same skeleton as composerMount but with zero portfolio cards, the globals
+// row prefilled from the cookie-derived effective preferences, a data-boot
+// attribute telling the front end to create the first empty card client-side,
+// and one data-preset-<i> payload per bundled example the composer can express.
+//
+// The panel opens on the hub (it is the primary content). The presets let the
+// front end insert any bundled build as an editable p= card; unforkable
+// examples (all holdings drop out of the grammar) are omitted from the slice
+// its caller builds, so they never appear here.
+func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
+	caps := composerCaps{Ports: maxViewPortfolios, Holdings: maxViewHoldings, Bytes: maxViewSpecLen}
+	capsJSON, err := json.Marshal(caps)
+	if err != nil {
+		return "" // constant shape; cannot fail
+	}
+	// The hub renders the effective preferences explicitly (native as the
+	// "native" token, never an empty string), so the front end seeds them into
+	// the live state and submitted URLs stay fully explicit.
+	cur := prefs.Currency
+	if cur == "" {
+		cur = "native"
+	}
+	g := composerGlobal{Currency: cur, Rebalance: strconv.Itoa(prefs.Rebalance), Sim: prefs.Sim}
+	seedJSON, err := json.Marshal(globalsSeed{Currency: cur, Rebalance: strconv.Itoa(prefs.Rebalance), Sim: prefs.Sim})
+	if err != nil {
+		return ""
+	}
+	attrs := make([]presetAttr, 0, len(presets))
+	for i, p := range presets {
+		b, err := json.Marshal(p)
+		if err != nil {
+			continue
+		}
+		attrs = append(attrs, presetAttr{Index: i, JSON: string(b)})
+	}
+	data := composerData{
+		Caps:        string(capsJSON),
+		Count:       0,
+		Open:        true,
+		MaxBytes:    maxViewSpecLen,
+		Boot:        "blank",
+		GlobalsSeed: string(seedJSON),
+		Globals:     g,
+		Presets:     attrs,
+	}
+	var buf bytes.Buffer
+	if err := composerTmpl.Execute(&buf, data); err != nil {
+		return ""
+	}
+	return template.HTML(buf.String())
+}
+
 // composerData is the composerTmpl model.
 type composerData struct {
-	Caps     string // encoding/json of composerCaps, for the data-caps attribute
-	Count    int
-	Open     bool // render the panel expanded (an editable p= portfolio is present)
-	MaxBytes int
-	Globals  composerGlobal
-	Cards    []composerCard
+	Caps        string // encoding/json of composerCaps, for the data-caps attribute
+	Count       int
+	Open        bool // render the panel expanded (an editable p= portfolio is present)
+	MaxBytes    int
+	Boot        string // "blank" on the hub: the front end creates the first card
+	GlobalsSeed string // encoding/json of globalsSeed, for the data-globals attribute (hub only)
+	Globals     composerGlobal
+	Cards       []composerCard
+	Presets     []presetAttr // hub only: one data-preset-<i> payload per bundled build
+}
+
+// composerPreset is one bundled build offered by the hub's "add preset"
+// dropdown: its file name, its human title (for the filter), and the p= grammar
+// the front end parses into an editable card, plus what could not ride it.
+type composerPreset struct {
+	Name    string   `json:"name"`
+	Title   string   `json:"title"`
+	P       string   `json:"p"`
+	Dropped []string `json:"dropped,omitempty"`
+}
+
+// presetAttr carries one preset's marshaled JSON with its stable index, for the
+// data-preset-<i> attribute the front end reads back.
+type presetAttr struct {
+	Index int
+	JSON  string
+}
+
+// globalsSeed is the data-globals payload: the effective global preferences the
+// hub seeds into the live state on a blank boot. Its JSON keys match the front
+// end's state.globals object exactly.
+type globalsSeed struct {
+	Currency  string `json:"currency"`
+	Rebalance string `json:"rebalance"`
+	Sim       string `json:"sim"`
+	Bench     string `json:"bench"`
+	Start     string `json:"start"`
+	End       string `json:"end"`
+}
+
+// buildPresets translates every bundled example into a composerPreset, dropping
+// those the grammar cannot express (an example whose holdings all resolve to
+// non-local ids yields an empty leading segment and would fork into a
+// holding-less card). It is pure over the embedded, immutable examples, so the
+// server computes it once at startup.
+func buildPresets() []composerPreset {
+	out := make([]composerPreset, 0, len(examples.List()))
+	for _, in := range examples.List() {
+		raw, err := examples.FS.ReadFile(in.Name + ".txt")
+		if err != nil {
+			continue
+		}
+		spec, err := portfolio.Parse(in.Name, strings.NewReader(string(raw)))
+		if err != nil {
+			continue
+		}
+		p, dropped := specToP(spec)
+		if holdings, _, _ := strings.Cut(p, "!"); holdings == "" {
+			continue // unforkable: every holding dropped out of the grammar
+		}
+		out = append(out, composerPreset{Name: in.Name, Title: in.Title, P: p, Dropped: dropped})
+	}
+	return out
 }
 
 // composerCard is one portfolio row of the stack.
@@ -224,7 +335,7 @@ func localNames() map[string]string {
 // is a text input (the /view grammar accepts any locally known id), not the
 // mock's select.
 var composerTmpl = template.Must(template.New("composer").Parse(`<link rel="stylesheet" href="/composer.css">
-<details class="cmp" id="composer" data-caps="{{.Caps}}"{{if .Open}} open{{end}}>
+<details class="cmp" id="composer" data-caps="{{.Caps}}"{{if .Boot}} data-boot="{{.Boot}}"{{end}}{{if .GlobalsSeed}} data-globals="{{.GlobalsSeed}}"{{end}}{{if .Presets}} data-preset-count="{{len .Presets}}"{{end}}{{range .Presets}} data-preset-{{.Index}}="{{.JSON}}"{{end}}{{if .Open}} open{{end}}>
 <summary class="cmp-bar">
 <span class="eyebrow">Composer</span>
 <div class="cmp-sum"><span class="chip"><b>{{.Count}}</b> portfolios</span>{{with .Globals.Currency}}<span class="chip">{{.}}</span>{{end}}{{with .Globals.Rebalance}}<span class="chip">rebalance <b>{{.}}d</b></span>{{end}}{{with .Globals.Sim}}<span class="chip">sim {{.}}</span>{{end}}</div>

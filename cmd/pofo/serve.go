@@ -48,6 +48,9 @@ type server struct {
 	render   func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
 	sem      chan struct{}
 	examples map[string]examples.Info
+	// presets are the bundled builds the hub's composer offers, precomputed
+	// once (the examples are embedded and immutable).
+	presets []composerPreset
 
 	// FIRE mounts: fireDefault is the plain /fire/ app (the startup panel);
 	// fireByEx caches one app per example, built lazily the first time a
@@ -71,6 +74,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 		client:     client,
 		sem:        make(chan struct{}, viewParallel),
 		examples:   knownExamples(),
+		presets:    buildPresets(),
 		fireByEx:   map[string]http.Handler{},
 		fireBySpec: map[string]http.Handler{},
 	}
