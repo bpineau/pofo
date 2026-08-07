@@ -104,6 +104,7 @@ var figures = map[string]func() string{
 	"credits-mortalite":      figCreditsMortalite,
 	"arbre-decision":         figArbreDecision,
 	"deux-thermometres":      figDeuxThermometres,
+	"tous-temps-echange":     figTousTempsEchange,
 	"replay-marche-1973":     figReplayMarche1973,
 	"replay-revenus-1973":    figReplayRevenus1973,
 	"replay-marche-1985":     figReplayMarche1985,
