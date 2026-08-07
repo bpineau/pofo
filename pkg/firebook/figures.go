@@ -356,7 +356,7 @@ func figHorizonFlatten() string {
 
 // --- 13. Volatility drag: same arithmetic mean, opposite wealth ---
 func figVolDrag() string {
-	m := mapper(0, 30, 0, 8, 72, 548, 292, 58)
+	m := mapper(0, 30, 0, 8.6, 72, 548, 292, 58)
 	var A, B [][2]float64
 	for t := 0; t <= 30; t++ {
 		A = append(A, m(float64(t), math.Pow(1.07, float64(t))))
@@ -379,28 +379,28 @@ func figVolDrag() string {
 	ea, eb := m(30, math.Pow(1.07, 30)), m(30, v)
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, ea[0], ea[1], figDeep)
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, eb[0], eb[1], figBad)
-	b.WriteString(txt(ea[0]+6, ea[1]+4, 11, figDeep, "start", "600", "× 7,6"))
-	b.WriteString(txt(eb[0]+6, eb[1]+4, 11, figBad, "start", "600", "× 4,5"))
+	b.WriteString(txt(ea[0]+6, ea[1]+4, 11, figDeep, "start", "600", "7,6×"))
+	b.WriteString(txt(eb[0]+6, eb[1]+4, 11, figBad, "start", "600", "4,5×"))
 	// concept label in the empty upper-left
-	an := m(1.5, 7.4)
+	an := m(1.5, 7.7)
 	b.WriteString(txt(an[0], an[1], 11, figSoft, "start", "600", "le volatility drag"))
 	b.WriteString(txt(an[0], an[1]+14, 10, figMuted, "start", "400", "même moyenne, richesse en moins"))
 	// curve labels
-	la := m(21, math.Pow(1.07, 21)+0.5)
+	la := m(15.5, 5.7)
 	b.WriteString(txt(la[0], la[1], 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
 	lb := m(17, 1.4)
 	b.WriteString(txt(lb[0], lb[1], 11, figBad, "middle", "600", "+27 % / −13 % — même moyenne 7 %"))
 	// y ticks
 	for _, v := range []float64{2, 4, 6, 8} {
 		p := m(0, v)
-		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("×%.0f", v)))
+		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.0f×", v)))
 	}
 	for _, c := range []float64{0, 10, 20, 30} {
 		p := m(c, 0)
 		b.WriteString(txt(p[0], 308, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
 	}
 	b.WriteString(txt(310, 330, 11, figMuted, "middle", "400", "années  →"))
-	b.WriteString(txt(54, 54, 10, figMuted, "start", "400", "× capital"))
+	b.WriteString(txt(52, 52, 10, figMuted, "start", "400", "richesse (× capital de départ)"))
 	b.WriteString(titleTxt(310, 30, "Même moyenne arithmétique, richesses opposées"))
 	return svg(620, 344, b.String())
 }
