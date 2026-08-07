@@ -92,6 +92,12 @@ rather than recomputing it (and drifting) on every run.
   duration and Ulcer, a contractual euro-inflation line, and a two-lens
   measured verdict (in-window vs valuation-anchored) with the biases of
   each lens spelled out.
+- `dragon-decu-household`: dragon-decu deployed across French tax wrappers:
+  the equity sleeve carved out of the 90/60 core into a PEA/PEA-PME section
+  (world swap ETF + small-value boutique funds), the lost bond overlay
+  rebuilt with an EUR-hedged long-duration line. Covers the wrapper logic
+  (spending order as an implicit glidepath, rebalancing asymmetry) and
+  measures as the family's best-of-both under the two lenses.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).

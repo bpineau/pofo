@@ -246,8 +246,10 @@
 # Siblings: claude-dragonlite.txt (the accumulation flagship this file
 #   descends from), hydra-five-engines-ucits.txt (the engineered
 #   all-rounder; add linkers to it and you get this file's big brother),
-#   fire-liability-buffer.txt (the euro buffer this file assumes),
-#   dragon-portfolio-artemis.txt (the common ancestor).
+#   dragon-decu-household.txt (this design deployed across French tax
+#   wrappers, PEA/PEA-PME section included), fire-liability-buffer.txt
+#   (the euro buffer this file assumes), dragon-portfolio-artemis.txt
+#   (the common ancestor).
 #meta rebalance:90
 #meta sim:on
 
