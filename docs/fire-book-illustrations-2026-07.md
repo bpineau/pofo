@@ -32,7 +32,7 @@ revenu, encore une fois ».
 ## 1. panorama-strategies-retrait
 *Existant : `withdrawal-frontier`.*
 
-**1.1 La carte des cinq familles, par information écoutée (A)**
+**1.1 La carte des cinq familles, par information écoutée (A). LIVRÉE : `familles-information`**
 La frontière montre les résultats ; il manque les entrées. Cinq bandes
 empilées, de « n'écoute rien » à « externalise », chaque bande portant ses
 règles en pastilles. À droite, deux jauges qui montent ensemble : place sur la
@@ -46,7 +46,7 @@ opposées (ruine à gauche, consommation totale à droite), plus un point pour l
 pire quartile. On voit d'un coup que ruine et consommation ne se classent pas
 dans le même ordre, ce qui est toute la leçon.
 
-**1.3 La grille des six critères (C)**
+**1.3 La grille des six critères (C). FONDUE dans `familles-information`**
 Six critères en lignes, cinq familles en colonnes, ●/◐/○. Remplace une prose
 qui énumère. Se lit en dix secondes.
 
@@ -63,7 +63,7 @@ monte, 4 → 6 → 8 → 12 %. Une bande marque la zone 8-10 %, et une verticale
 des années à l'avance » ; ici on le voit. Et le lecteur repart avec le voyant
 qu'il doit surveiller chaque janvier.
 
-**2.2 Le luxe non consommé (A)**
+**2.2 Le luxe non consommé (A). LIVRÉE : `bengen-millesimes`**
 Distribution du patrimoine terminal du fixe prudent, avec le capital de départ
 en repère. Le message « legs médian énorme » est aujourd'hui une affirmation.
 Sur les trois millésimes de `pkg/replay`, 1985 donne 3,83 M€ laissés pour un
@@ -105,7 +105,7 @@ dans son couloir (3,44 % / 5,16 %), avec les franchissements marqués et la
 coupe qui en découle. La figure existante montre les conséquences ; celle-ci
 montre l'instrument. Complémentaire, pas redondante.
 
-**4.2 Le taux initial était le coupable (B). BLOQUÉE : le moteur contredit l'article**
+**4.2 Le taux initial était le coupable (B). ABANDONNÉE le 2026-07-29**
 Le vrai apport possible. Même millésime, quatre taux initiaux (4,0 / 4,3 / 5,0
 / 5,5 %), et pour chacun : nombre de coupes, revenu au creux, années sous le
 plan. Un petit tableau-graphique 4 lignes. L'encadré `::: attention` l'affirme,
@@ -119,7 +119,8 @@ phrase « les mêmes règles avec un taux initial de 4-4,5 % coupent rarement, e
 brièvement », qui vient de la littérature. Le GK de `pkg/replay` n'implémente que
 le corridor, sans le gel d'indexation ni la suspension des quinze dernières
 années, donc il n'est pas assez fidèle pour renverser une affirmation sourcée.
-À trancher avec un GK complet, ou à laisser tomber.
+Décision prise : on laisse tomber. L'article garde sa formulation sourcée, et
+on ne construira pas un GK complet pour une seule figure.
 
 ---
 
@@ -203,10 +204,20 @@ Un empilement plancher / confort avec, en face, qui le finance (pension, rente,
 portefeuille). C'est la doctrine safety-first en une image, et elle est
 réutilisable telle quelle dans `choisir-sa-strategie`.
 
-**10.3 La ruine qui monte alors que tout va mieux (B)**
+**10.3 La ruine qui monte alors que tout va mieux (B). ABANDONNÉE le 2026-07-29**
 Le piège que l'article annonce. Deux panneaux : à gauche la ruine du besoin
 total qui augmente après annuitisation, à droite la ruine pondérée par la
 mortalité qui s'effondre. La démonstration que le chiffre unique ment.
+
+Calculée le 2026-07-29 et abandonnée. Balayage (`pkg/decumul`, rente réelle au
+taux 1 %, chargement 12 %, un tiers du capital annuitisé, âges 60 à 75, taux de
+retrait 3,5 à 5,5 %) : les deux sorties bougent TOUJOURS dans le même sens.
+Quand la ruine du besoin total monte, la ruine « vivant et ruiné » monte aussi,
+et vice versa. La raison est structurelle : le noyau de `decumul` court sur un
+horizon FIXE, donc le risque que la rente assure, survivre à son plan, n'y
+existe pas ; `LifeCurve` applique la mortalité après coup et ne peut pas le
+recréer. La figure demanderait un noyau à durée de vie aléatoire. Piste pour le
+moteur, pas pour le livre.
 
 ---
 
@@ -265,5 +276,30 @@ quatre bandes d'instrument lues côte à côte.
    une flèche sans échelle pour l'abandon en panique.
 7. **5.1** `vpw-test-de-perte` : le choc, avec et sans pont de pension.
 
-Restent sur la table : 1.1, 1.2, 2.2, 2.3, 4.1, 8.2, 10.3, plus 4.2 bloquée et
-les deux idées en coût C, qui restent des tableaux.
+### Le 2026-07-29, troisième fournée
+
+1. **2.2** `bengen-millesimes` : les trente-trois millésimes complets du record,
+   en nuage chronologique plus la marginale triée à droite. Six zéros voisins,
+   douze fortunes, un médian qui rend exactement la mise.
+2. **1.1 + 1.3** `familles-information` : les cinq familles en échelle, colonnes
+   d'information écoutée et jauge de gouvernance qui se remplissent ensemble.
+
+## Ce qui reste, et ce qui est écarté
+
+Écartées à dessein, avec leur raison :
+
+- **1.2** les quatre règles du cas travaillé : trop proche de
+  `withdrawal-frontier`, déjà dans le même article.
+- **2.3** les trois amendements en cascade : ce serait un waterfall, forme déjà
+  prise par `cascade-4pct`. Voir [[dataviz-invent-dont-repeat]].
+- **4.1** le corridor vu du pilote : troisième série temporelle à corridor du
+  livre après `guardrails-capteur` et `deux-thermometres`. `guyton-klinger` est
+  déjà servi par `gk-cascade-1966`.
+- **8.2** le legs comme paramètre : la charge est déjà portée par
+  `richesse-totale`, livrée dans le même article.
+- **7.2** la série Morningstar : un mini-tableau fait mieux, c'était le verdict
+  d'origine.
+- **4.2** et **10.3** : abandonnées, raisons ci-dessus.
+
+Il ne reste donc rien à construire. Ce fichier peut être supprimé une fois cette
+décision digérée.

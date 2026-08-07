@@ -40,6 +40,10 @@ Voici le zoo, rangé en cinq familles selon l'information que chaque règle éco
 | **Actuarielle / par amortissement** | Le portefeuille, l'horizon restant et le rendement attendu | ABW, TPAW, les RMD américains, les règles CAPE dynamiques d'ERN | [[amortissement-abw]], [[regles-cape]] |
 | **Par plancher garanti** (safety-first) | Rien : elle sort le plancher du portefeuille | Rentes viagères, échelle de linkers pour l'essentiel + portefeuille pour le reste | [[rentes-et-annuites]], [[echelle-obligataire]] |
 
+::: figure familles-information
+Le tableau ci-dessus, relu comme une échelle. Les colonnes se remplissent de haut en bas, et la jauge de gouvernance monte avec elles, ce qui est exactement l'arbitrage de toute la partie. Notez la cinquième ligne, détachée à dessein : elle n'écoute rien non plus, comme la première, et pourtant elle ne lui ressemble en rien. C'est le signe qu'elle ne joue pas au même jeu.
+:::
+
 Trois observations structurent ce tableau.
 
 **Plus une règle écoute d'information, mieux elle se place sur la frontière, et plus elle exige de gouvernance.** Le fixe n'exige rien (et n'apprend rien) ; les garde-fous exigent d'appliquer des coupes décidées à froid au pire moment émotionnel ; l'amortissement exige un recalcul annuel et l'acceptation d'un revenu officiellement variable. Le gain de position sur la frontière est réel et mesurable ; le coût est comportemental, et il est réel aussi ([[psychologie-du-retrait]]).
