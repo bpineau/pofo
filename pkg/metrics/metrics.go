@@ -26,6 +26,8 @@ type Stats struct {
 	TTROngoing  bool    // the longest stretch had not recovered by End
 	Beta        float64
 	HasBeta     bool
+	CWARP       float64 // Cole Wins Above Replacement Portfolio vs the benchmark, in percent (+ improves, - hurts)
+	HasCWARP    bool
 	Skew        float64 // skewness of daily returns (negative = longer left tail)
 	Kurtosis    float64 // excess kurtosis of daily returns (>0 = fatter tails than normal)
 }
