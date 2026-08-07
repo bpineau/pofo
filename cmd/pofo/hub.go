@@ -146,7 +146,7 @@ body.hub{background:
 .hub .cmp{max-width:none;margin:2rem 0 0;padding:0}
 /* folded examples catalog */
 .hub-examples{margin-top:2.6rem;border-top:1px solid var(--line-strong);padding-top:1.5rem}
-.hub-exsum{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap}
+.hub-exsum{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:.6rem;flex-wrap:wrap;padding:.7rem .95rem}
 .hub-exsum::-webkit-details-marker{display:none}
 .hub-exsum::before{content:"\203A";font-family:var(--mono);color:var(--accent);font-size:1.15rem;
   line-height:1;transition:transform .15s;display:inline-block;transform:translateY(.05rem)}
@@ -154,7 +154,7 @@ body.hub{background:
 .hub-exsum-t{font-family:var(--sans);font-weight:650;font-size:.98rem;color:var(--ink)}
 .hub-exsum-t b{font-family:var(--mono);color:var(--accent-ink);font-weight:600;margin-left:.3rem}
 .hub-exsum-h{color:var(--muted);font-size:.82rem}
-.hub-form{margin-top:1.3rem}
+.hub-form{margin-top:1.3rem;padding:0 .95rem 1.1rem}
 .hub-bar{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;align-items:center;
   justify-content:space-between;gap:.5rem 1rem;padding:.8rem 0;background:var(--bg);
   border-bottom:1px solid var(--line-strong)}
