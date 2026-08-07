@@ -194,6 +194,56 @@ func (c *Client) fetchYahooIntraday(ctx context.Context, symbol string) (*Intrad
 	return s, nil
 }
 
+// fetchYahooSpot reads the live regular-market price from the Yahoo chart meta.
+// It returns ErrNotCovered when Yahoo serves no usable price for the symbol, so
+// Latest can fall back to the last daily close.
+func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, error) {
+	path := fmt.Sprintf("/v8/finance/chart/%s?interval=1d&range=1d", url.PathEscape(symbol))
+	body, err := c.yahooGet(ctx, c.ChartBase, path)
+	if err != nil {
+		return nil, err
+	}
+	var resp struct {
+		Chart struct {
+			Result []struct {
+				Meta struct {
+					Currency             string   `json:"currency"`
+					ExchangeTimezoneName string   `json:"exchangeTimezoneName"`
+					RegularMarketPrice   *float64 `json:"regularMarketPrice"`
+					RegularMarketTime    int64    `json:"regularMarketTime"`
+				} `json:"meta"`
+			} `json:"result"`
+			Error *struct {
+				Description string `json:"description"`
+			} `json:"error"`
+		} `json:"chart"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("unreadable yahoo spot response: %w", err)
+	}
+	if resp.Chart.Error != nil {
+		return nil, fmt.Errorf("yahoo spot: %s", resp.Chart.Error.Description)
+	}
+	if len(resp.Chart.Result) == 0 {
+		return nil, fmt.Errorf("%s: %w", symbol, ErrNotCovered)
+	}
+	m := resp.Chart.Result[0].Meta
+	if m.RegularMarketPrice == nil || *m.RegularMarketPrice <= 0 {
+		return nil, fmt.Errorf("%s: %w", symbol, ErrNotCovered)
+	}
+	loc, err := time.LoadLocation(m.ExchangeTimezoneName)
+	if err != nil {
+		loc = time.UTC
+	}
+	return &Quote{
+		Price:    *m.RegularMarketPrice,
+		Time:     time.Unix(m.RegularMarketTime, 0).In(loc),
+		Currency: m.Currency,
+		Source:   "yahoo",
+		Live:     true,
+	}, nil
+}
+
 // searchQuote is one candidate instrument returned by the Yahoo search API.
 type searchQuote struct {
 	Symbol    string
