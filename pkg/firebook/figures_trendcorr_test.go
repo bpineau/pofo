@@ -129,7 +129,7 @@ func TestTrendCorrExtremesAreTheRealOnes(t *testing.T) {
 		t.Errorf("the record peaks at index %d (month key %d, %.4f), the plate annotates index %d",
 			hi, months[hi], corr[hi], trendCorrMaxIdx)
 	}
-	// The labels name April 2003 and February 2006.
+	// The labels name April 2003 and May 2010.
 	for _, c := range []struct {
 		idx        int
 		year       int
@@ -137,7 +137,7 @@ func TestTrendCorrExtremesAreTheRealOnes(t *testing.T) {
 		label, why string
 	}{
 		{trendCorrMinIdx, 2003, time.April, "avril 2003", "trough"},
-		{trendCorrMaxIdx, 2006, time.February, "février 2006", "peak"},
+		{trendCorrMaxIdx, 2010, time.May, "mai 2010", "peak"},
 	} {
 		k := months[c.idx]
 		if got, want := k, c.year*12+int(c.month)-1; got != want {
