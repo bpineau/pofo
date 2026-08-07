@@ -88,11 +88,13 @@ var Categories = []Category{
 		Blurb: "De quoi vivre 40 ans : l'allocation, la dimension temporelle, et les briques qui résistent à tous les régimes.",
 		Articles: []Article{
 			{"primes-de-risque", "D'où viennent les rendements : les primes de risque", "Pourquoi les actions paient, qui paie la prime, pourquoi elle survit à sa célébrité, et pourquoi l'or ne rapporte rien sans que ce soit un défaut."},
-			{"pourquoi-la-diversification-marche", "Pourquoi la diversification fonctionne", "Le free lunch démonté : corrélations, rebalancing premium, l'effet doublé en décumulation, et la fausse diversification à débusquer."},
+			{"pourquoi-la-diversification-marche", "Pourquoi la diversification fonctionne", "Le free lunch démonté : corrélations, rebalancing premium, volatility harvesting, l'effet doublé en décumulation, et la fausse diversification à débusquer."},
+			{"concevoir-un-portefeuille", "Concevoir un portefeuille : la méthode, pas le modèle", "La conception par les risques plutôt que par les actifs : les sept questions dans l'ordre, et l'allocation qui tombe à la fin comme un résultat."},
 			{"allocation-actions-obligations", "L'allocation actions/obligations en retrait", "Le plateau 50-80 % qui plonge des deux côtés, les trois curseurs pour s'y placer, et le débat 100 % actions remis à sa place."},
 			{"glidepaths", "Les glidepaths : bond tent, rising equity et la fenêtre fragile", "La prudence comme dépense temporaire : les résultats Kitces-Pfau et ERN, l'exécution automatique par les retraits, et le match contre le buffer."},
 			{"portefeuilles-tous-temps", "Les portefeuilles tous-temps : Browne, All-Weather, Golden Butterfly, Dragon", "Un gagnant par saison : compositions exactes, chiffres qui comptent pour un rentier, critiques honnêtes, et la dose plutôt que le dogme."},
 			{"actifs-defensifs", "Les actifs défensifs : panorama et rôles", "Défendre contre quoi ? Le cahier des charges, la revue candidat par candidat, la galerie des faux défensifs, et l'assemblage."},
+			{"faux-actifs-defensifs", "Les faux actifs défensifs : ce qui en a l'air sans en être", "Low vol, dividendes, covered calls, REIT, high yield, private equity, crypto : pourquoi ils semblent défensifs, et pourquoi ils lâchent au test de 2008 et 2022."},
 			{"or-en-retrait", "L'or dans un portefeuille de retrait", "Zéro réel séculaire, décorrélation qui survit aux crises : les trois rôles, la dose de chacun, la pratique française et les erreurs."},
 			{"obligations-en-retrait", "Les obligations en retrait : types, durée, rôle exact", "Prix et duration, YTM = espérance affichée, les trois services conditionnels au régime, les quatre décisions, et le fonds euros à sa place."},
 			{"obligations-indexees", "Les obligations indexées sur l'inflation", "Le seul contrat écrit en réel : le point mort, la leçon de 2022, l'échelle de linkers qui garantit ce que le 4 % espère, et la pratique française."},
@@ -234,9 +236,10 @@ var planned = []string{
 	"choisir-sa-strategie",
 	// V. Le portefeuille de retrait
 	"primes-de-risque", "pourquoi-la-diversification-marche",
+	"concevoir-un-portefeuille",
 	"allocation-actions-obligations", "glidepaths", "portefeuilles-tous-temps",
-	"actifs-defensifs", "or-en-retrait", "obligations-en-retrait",
-	"obligations-indexees", "facteurs-fama-french",
+	"actifs-defensifs", "faux-actifs-defensifs", "or-en-retrait",
+	"obligations-en-retrait", "obligations-indexees", "facteurs-fama-french",
 	"diversification-internationale", "etf-ucits-europeens",
 	// V bis. Les actifs alternatifs
 	"managed-futures", "long-volatility", "global-macro", "return-stacking",
