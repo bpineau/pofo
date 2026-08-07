@@ -1527,12 +1527,16 @@ func zrozRecipe() Recipe {
 	}
 }
 
-// dbmf/kmlm/cta reconstruct managed-futures trend from a generic 12-month
-// TSMOM on a cross-asset futures basket. Measured daily correlation vs the
-// real funds (self-generated, no official index): DBMF 0.52, KMLM 0.35, CTA
-// 0.20; these funds run faster/idiosyncratic strategies a generic trend
-// model only partly captures, but it is a faithful "diversified trend"
-// proxy, and the real fund is grafted on top from its inception.
+// dbmf/kmlm/cta reconstruct managed-futures trend out of REAL records of the
+// same trade, spliced behind each fund nearest first and each fee-aligned to
+// it: the published composite the fund replicates where there is one, the
+// closest single funds otherwise, and Man AHL Diversified at the bottom, where
+// every file starts (1996-03). The 12-month TSMOM engine on a cross-asset
+// futures basket is still built and still matters, but only as the daily
+// texture the weekly-dealing deepest donor is projected onto; it is no longer
+// shipped in front of the chain. See docs/trend-reconstruction-design.md for
+// what each layer is worth, and DonorChain for how they are joined.
+
 // xauusdRecipe snapshots gold: XAU/USD spot has decades of real history (~1968),
 // so the "reconstruction" is simply the real spot series, embedded so the long
 // history is available offline and as the gold proxy for other builds.
@@ -1584,25 +1588,44 @@ func iglnRecipe() Recipe {
 	}
 }
 
-// dbiDonors are the real managed-futures NAVs spliced behind the DBi family,
-// nearest trade first. Measured against DBMF on their common window (monthly
-// correlation, the honest yardstick for a sleeve held for years): the Virtus
-// AlphaSimplex fund 0.81 from 2010-08, the Guggenheim fund 0.72 from 2007-02,
-// Man AHL Diversified 0.77 from 1996-03. The futures-price reconstruction
-// manages 0.60 over the same window, so real quotes of another manager's
-// programme beat it and are used wherever they exist; the reconstruction only
-// covers what they cannot reach, which since AHL joined means before 1996-03.
+// The two bundled daily net composites, offered to a chain as donors rather
+// than as anchors. Both are published records of what a book of REAL programmes
+// paid its investors, each constituent net of its own manager's fees, daily
+// from 2000-01-03 (cmd/gen-sgtrend-refdata holds their provenance).
+//
+// A composite is a strange thing to splice behind a single fund, and it earns
+// the slot only where it beats every single fund available: it is diversified
+// where the target is one manager, so its months are smoother, and it must be
+// levered to the target's volatility, which levers its drawdowns with it. Two
+// funds of this family nonetheless track their own index better than they track
+// any other manager's NAV, and for the same reason in both cases: they are
+// built to reproduce it. See docs/trend-reconstruction-design.md for the
+// arbitration.
+const (
+	allStylesIndex = "TREND-ALLSTYLES-NET-USD" // the index the DBi family replicates
+	pureTrendIndex = "TREND-PURE-NET-USD"      // the index Simplify CTA names as its benchmark
+)
+
+// dbiDonors are the records spliced behind the DBi family, nearest trade first.
+// Measured against DBMF over its own live window (monthly correlation, the
+// honest yardstick for a sleeve held for years): the all-styles composite 0.85
+// from 2000-01, Man AHL Diversified 0.77 from 1996-03. The single funds that
+// held the 2000-2019 slot until 2026-08 (the Virtus AlphaSimplex fund 0.81 from
+// 2010-08 and the Guggenheim fund 0.72 from 2007-02) are gone from this chain:
+// the index covers their whole era and tracks the fund better than either,
+// which is unsurprising given that reproducing that index is what DBi's
+// programme does.
 //
 // ahlDiversified is the deepest donor of the family and the one that made the
 // sparse-cadence handling necessary: the fund dealt WEEKLY until 2016, so the
-// whole segment it contributes (1996-03 to 2007-02) arrives one NAV a week and
+// whole segment it contributes (1996-03 to 2000-01) arrives one NAV a week and
 // is projected onto the reconstruction's daily calendar (see DonorChain). Its
 // record reproduces the manager's published one (+1649.5 % from 1996-03-26 to
 // 2026-02-27 against a published +1649.47 %) and its crisis years are the real
 // thing: 1998 +41 %, 2008 +33 %, 2022 +12 %.
 const ahlDiversified = "IE0000360275"
 
-var dbiDonors = []string{"ASFYX", "RYMFX", ahlDiversified}
+var dbiDonors = []string{allStylesIndex, ahlDiversified}
 
 // trendFeeLoad is the documented MANAGEMENT-AND-EXPENSE load of every vehicle
 // in the managed-futures family, donors and targets alike, as a fraction per
@@ -1629,7 +1652,10 @@ var dbiDonors = []string{"ASFYX", "RYMFX", ahlDiversified}
 //	               that table, so 1.99 % understates what the shareholder pays
 //	AHLPX  1.91 %  American Beacon AHL Managed Futures Strategy, Investor
 //	               class: 1.91 % total, no waiver in force (prospectus
-//	               supplement effective 2025-08-25)
+//	               supplement effective 2025-08-25). It is priced here and
+//	               spliced nowhere: it held the Simplify CTA chain's 2014-2022
+//	               slot until the index donor took the whole era, and stays in
+//	               the table so restoring it needs no fresh research
 //	AQMIX  1.29 %  AQR Managed Futures Strategy, class I: 1.29 % total and
 //	               after reimbursement (summary prospectus dated 2024-05-01)
 //	AHL    2.74 %  Man AHL Diversified plc, the USD accumulating class: the
@@ -1647,12 +1673,27 @@ var dbiDonors = []string{"ASFYX", "RYMFX", ahlDiversified}
 //	AQR A  0.79 %  AQR Managed Futures UCITS class A base cost: 0.60 %
 //	               management + 0.18 % expense cap + 0.01 % subscription tax
 //	               (prospectus supplement); see trendPerfFee for the rest
+//
+// One entry is ESTIMATED rather than read off a price list, and it is the only
+// one: the two INDEX donors. An index of funds levies nothing itself, but every
+// return in it arrives net of a constituent manager's own fees, so what it
+// carries as a load is its constituents'. Those are private programmes and
+// publish no schedule; 2 % management is the industry standard for the era and
+// the vehicles they run, and it is what the donors of this very file charge
+// (1.3 to 2.7 %, mean 1.85 %). The house rule keeps it conservative in the same
+// direction as everywhere else: the constituents' PERFORMANCE fees, worth
+// another 1 to 3 points a year in a good decade, are ignored, so the uplift
+// gives a fund back its wrapper's difference and never the manager's cut. The
+// residual is deliberately left in the reconstruction, where it reads as the
+// replicator's edge over the index it replicates, which is what it is.
 var trendFeeLoad = map[string]float64{
 	"ASFYX":        0.0145,
 	"RYMFX":        0.0199,
-	"AHLPX":        0.0191,
+	"AHLPX":        0.0191, // priced but no longer spliced, see above
 	"AQMIX":        0.0129,
 	ahlDiversified: 0.0274,
+	allStylesIndex: 0.0200, // estimated, see above
+	pureTrendIndex: 0.0200, // estimated, see above
 	"DBMF":         0.0085,
 	"LU2951555585": 0.0075,
 	"DBMFE":        0.0075,
@@ -1760,12 +1801,25 @@ func dbiChain(name string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.T
 	return chainedTrend(name, "DBMF", donors, cfg)
 }
 
+// dbmfRecipe reconstructs the iMGP DBi Managed Futures ETF behind the very
+// index its programme sets out to replicate: the published net ALL-STYLES
+// composite, daily from 2000-01, in place of the two single funds of other
+// managers that held that era until 2026-08.
+//
+// It measures better on the fund's own live window (monthly correlation 0.85
+// against the nearest single fund's 0.81, and a CAGR gap that swings less
+// across two disjoint halves of that window), and the residual level gap has a
+// name for once. DBi copies the index constituents' positions at 0.85 % flat
+// where the index arrives net of those constituents' 2-and-20, and the uplift
+// only claims back the 2, so the reconstruction is expected to sit under the
+// fund by roughly what a performance fee costs. It does: about two points a
+// year. Closing the rest would mean granting DBi's own edge to the backcast.
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
-		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it and lifted to its own 0.85%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.60%/yr, Guggenheim 2007-02→ +1.14%/yr, Man AHL Diversified 1996-03→ +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), " +
-			"the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
+		Method: "the published net all-styles managed-futures composite the fund replicates, spliced behind it from 2000-01, volatility-matched to it and lifted +1.15%/yr to put its constituents' 2%/yr management load on the fund's own 0.85%, " +
+			"then real NAVs of Man AHL Diversified (1996-03, +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
 		Build:           dbiChain("DBMF (donor chain)", feeAligned("DBMF", dbiDonors), mfConfig(0.115, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
@@ -1783,7 +1837,7 @@ func dbmfpaRecipe() Recipe {
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
 		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, " +
-			"real NAVs of other managed-futures programmes behind it, fee-aligned the same way (2010-08 +0.70%/yr, 2007-02 +1.24%/yr, Man AHL Diversified 1996-03 +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
+			"then the net all-styles composite the fund replicates (2000-01, +1.25%/yr) and Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
 		Build:           dbiChain("DBMF.PA (donor chain)", feeAligned("LU2951555585", append([]string{"DBMF"}, dbiDonors...)), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
@@ -1802,7 +1856,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMFE",
 		Name: "iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR",
-		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it, each lifted to the UCITS class's 0.75%/yr fee load (2010-08, 2007-02, Man AHL Diversified 1996-03), the file starting at that deepest donor's own first NAV, " +
+		Method: "the US-listed DBMF itself from 2019, then the net all-styles composite the fund replicates (2000-01) and Man AHL Diversified (1996-03), each lifted to the UCITS class's 0.75%/yr fee load, the file starting at that deepest donor's own first NAV, " +
 			"the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
@@ -2026,14 +2080,30 @@ func truncateAtGap(s *marketdata.Series, maxDays int) *marketdata.Series {
 	return s
 }
 
-// ctaRecipe reconstructs Simplify CTA from the same TSMOM engine, real CTA
-// quotes grafted on top (see dbmf/kmlm/cta note above).
+// ctaRecipe reconstructs Simplify CTA behind the pure-trend composite the fund
+// names as its own benchmark, real CTA quotes grafted on top (see dbmf/kmlm/cta
+// note above).
+//
+// The index is the donor here for the reason it is one for the DBi family: a
+// fund tracks the index it is built to track better than it tracks another
+// manager's fund. The four single funds that held these two decades until
+// 2026-08 reached 0.39 monthly against CTA's live window between them; the
+// pure-trend composite reaches 0.58, and closes the level gap from -3.4 to
+// about -3.2 points a year.
+//
+// The broader all-styles composite correlates better still on this fund's short
+// window (0.63) and is NOT used. It is not the index this fund follows, it runs
+// at half the fund's volatility so the chain would have to lever it 1.9 times
+// (against 1.5 for the pure-trend one), close to the point where volMatch stops
+// believing two series are the same trade, and it leaves the level a further
+// two points a year colder. A correlation bought by levering the wrong index is
+// not the trade this file wants.
 func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.75%/yr fee load (Man AHL US 2014-08→ +1.16%/yr, Virtus AlphaSimplex 2010-08→ +0.70%/yr, Guggenheim 2007-02→ +1.24%/yr, Man AHL Diversified 1996-03→ +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
-		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{"AHLPX", "ASFYX", "RYMFX", ahlDiversified}), mfConfig(0.16, 0.0075)),
+		Method:          "the published net pure-trend composite the fund names as its benchmark, spliced behind it from 2000-01 and lifted +1.25%/yr to put its constituents' 2%/yr management load on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
+		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{pureTrendIndex, ahlDiversified}), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
