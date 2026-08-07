@@ -3,6 +3,8 @@ package decumul
 import (
 	"math"
 	"testing"
+
+	"github.com/bpineau/pofo/pkg/scenario"
 )
 
 func TestCTOFlatTaxGrossUp(t *testing.T) {
@@ -73,5 +75,72 @@ func TestNeedAtBoundedCashflow(t *testing.T) {
 	}
 	if got := p.needAt(5); math.Abs(got-48000) > 1e-9 {
 		t.Errorf("needAt(5) = %.0f, want 48000 (side income ended)", got)
+	}
+}
+
+// A guardrails floor bounds the cut spiral: in a relentless bear, spending
+// steps down 10% a year but never below the floor.
+func TestGuardrailsFloor(t *testing.T) {
+	crash := make(scenario.Sequence, 20)
+	for i := range crash {
+		crash[i] = -0.15 // a persistent bear: the upper guardrail stays breached
+	}
+	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: 20,
+		Guard: Guardrails{Upper: 0.048, Lower: 0.032, Cut: 0.10, Raise: 0.10, Floor: 30000}}
+	res := p.RunPath(crash)
+	minSpend := res.Spend[0]
+	for k, s := range res.Spend {
+		if res.Ruined && k >= res.RuinYear {
+			break // after depletion nothing is delivered
+		}
+		if s < minSpend {
+			minSpend = s
+		}
+	}
+	if minSpend < 30000-1 {
+		t.Errorf("spending fell below the floor: %.0f", minSpend)
+	}
+	// Same plan without a floor must go materially below it.
+	p.Guard.Floor = 0
+	res = p.RunPath(crash)
+	below := false
+	for k, s := range res.Spend {
+		if res.Ruined && k >= res.RuinYear {
+			break
+		}
+		if s < 25000 {
+			below = true
+		}
+	}
+	if !below {
+		t.Errorf("floorless guardrails should cut below 25k in a relentless bear")
+	}
+}
+
+// The monthly kernel evaluates guardrails monthly at the pace-preserving
+// step: after one fully-breached year, the level lands near the annual
+// kernel's single -10% (not -72%), without waiting for an anniversary.
+func TestGuardrailsMonthlyStepped(t *testing.T) {
+	months := make(scenario.Sequence, 240)
+	for i := range months {
+		months[i] = -0.02 // ~-21%/yr: breached from the start, every month
+	}
+	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: 20, Monthly: true,
+		Guard: Guardrails{Upper: 0.048, Lower: 0.032, Cut: 0.10, Raise: 0.10}}
+	res := p.RunPathMonthly(months)
+	y0 := res.Spend[0]
+	if y0 > 40000+1 || y0 < 36000 {
+		t.Errorf("first-year delivered spending %.0f: monthly steps should land between the full level and one annual cut", y0)
+	}
+	if res.Spend[1] >= y0 {
+		t.Errorf("second year should keep stepping down in a persistent bear (%.0f then %.0f)", y0, res.Spend[1])
+	}
+	// The stepped rule preserves the annual intensity exactly.
+	g := Guardrails{Cut: 0.10, Raise: 0.10, Upper: 1, Lower: 0.5}.stepped(12)
+	if got := math.Pow(1-g.Cut, 12); math.Abs(got-0.9) > 1e-9 {
+		t.Errorf("12 monthly cuts compound to %.4f, want 0.90", got)
+	}
+	if got := math.Pow(1+g.Raise, 12); math.Abs(got-1.1) > 1e-9 {
+		t.Errorf("12 monthly raises compound to %.4f, want 1.10", got)
 	}
 }
