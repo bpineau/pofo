@@ -278,9 +278,10 @@ holdings each.
 
 `p=` identifiers are **catalog-only**: the tool resolves them from the
 embedded catalog (ids, ISINs, aliases, bundled fund tickers, the `SIM` suffix
-allowed) and never hits the network on behalf of an anonymous visitor, so a
-raw quote symbol or an unknown identifier is rejected. `ex=` files carry no
-such limit; they are the vetted builds shipped in the binary.
+allowed) and never fetches an arbitrary or unknown identifier on behalf of an
+anonymous visitor, so a raw quote symbol outside the catalog is rejected
+before any network call. `ex=` files carry no such limit; they are the vetted
+builds shipped in the binary.
 
 Everything runs on the machine that started it, and the default bind is
 loopback. To reach the app from your phone or another device, put it behind
