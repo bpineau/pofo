@@ -85,6 +85,14 @@ type Page struct {
 	Footnotes       []string
 
 	Theme template.CSS // shared webui identity, inlined into the document
+
+	// SkinCSS and SiteNav are set only when the report is served inside the
+	// web app (-serve): SkinCSS remaps the theme to the book-warm identity so
+	// /view matches the hub and the book; SiteNav is a slim bar linking back
+	// to the other surfaces. Both are empty for the standalone CLI report, so
+	// its output is unchanged.
+	SkinCSS template.CSS
+	SiteNav template.HTML
 }
 
 // reportCSS holds the view-specific rules layered on the shared theme.
@@ -194,8 +202,10 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <title>{{.Title}}</title>
 <style>{{.Theme}}</style>
 <style>{{.ReportCSS}}</style>
+{{if .SkinCSS}}<style>{{.SkinCSS}}</style>{{end}}
 </head>
 <body>
+{{.SiteNav}}
 <div class="wrap">
 
 <header class="masthead">
