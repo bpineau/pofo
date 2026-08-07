@@ -125,3 +125,50 @@ func TestServeHub(t *testing.T) {
 		t.Error("hub missing the warm book skin")
 	}
 }
+
+func TestServeViewSetsPrefsCookie(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	// Explicit globals set the cookie.
+	rec := serveGet(t, h, "/view?ex=claude-dragonlite&currency=USD&rebalance=30")
+	cookies := rec.Result().Cookies()
+	var got *http.Cookie
+	for _, c := range cookies {
+		if c.Name == prefsCookie {
+			got = c
+		}
+	}
+	if got == nil {
+		t.Fatal("no pofo_prefs cookie set")
+	}
+	if !strings.Contains(got.Value, "currency=USD") || !strings.Contains(got.Value, "rebalance=30") {
+		t.Errorf("cookie value = %q", got.Value)
+	}
+
+	// A partial URL merges with the stored cookie instead of erasing it.
+	req := httptest.NewRequest(http.MethodGet, "/view?ex=claude-dragonlite&sim=off", nil)
+	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: got.Value})
+	rec2 := httptest.NewRecorder()
+	h.ServeHTTP(rec2, req)
+	var merged *http.Cookie
+	for _, c := range rec2.Result().Cookies() {
+		if c.Name == prefsCookie {
+			merged = c
+		}
+	}
+	if merged == nil {
+		t.Fatal("no merged cookie set")
+	}
+	for _, want := range []string{"currency=USD", "rebalance=30", "sim=off"} {
+		if !strings.Contains(merged.Value, want) {
+			t.Errorf("merged cookie %q missing %q", merged.Value, want)
+		}
+	}
+
+	// No explicit globals: no Set-Cookie at all.
+	rec3 := serveGet(t, h, "/view?ex=claude-dragonlite")
+	if len(rec3.Result().Cookies()) != 0 {
+		t.Error("bare /view must not set a cookie")
+	}
+}
