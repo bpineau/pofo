@@ -69,7 +69,7 @@ Plan : 1,2 M€, 45 000 €/an, 50 ans. Simulateur A (gaussien, données US, bru
 - Les pièges de données (américain, survivant, fenêtre courte) dominent tout : demandez **toujours** sur quoi la machine a appris avant de regarder son verdict.
 - Les pièges de moteur (i.i.d., gaussien, pas annuel) se testent en une question : « quelle est la probabilité d'une année à −30 % réel, et peut-elle être suivie d'une autre ? ».
 - Les pièges de périmètre (frais, impôts, dépenses idéalisées) valent 0,5 à 1,5 point de retrait : un taux de succès brut de tout est un chiffre de brochure.
-- Le dernier piège est l'utilisateur : aucune machine n'empêche le p-hacking de scénarios ; la parade est procédurale (entrées auditées, multi-modèles, décision sur les colonnes dures, revue annuelle). C'est exactement la conception de la page FIRE.
+- Le dernier piège est l'utilisateur : aucune machine n'empêche le p-hacking de scénarios ; la parade est procédurale (entrées auditées, multi-modèles, décision sur les colonnes dures, revue annuelle). C'est exactement la conception du simulateur FIRE de pofo.
 
 ---
 

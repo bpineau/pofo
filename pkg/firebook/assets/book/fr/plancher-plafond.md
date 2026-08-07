@@ -57,7 +57,7 @@ Le test d'admissibilité, en une image. Chaque courbe est votre revenu après n 
 
 **L'interaction avec les revenus externes.** Comme toute la famille proportionnelle, la règle s'applique au portefeuille seul. En phase à découvert d'un FIRE, le pont de pension se provisionne à part ([[vpw]], [[horizon-et-esperance-de-vie]]). Une fois la pension au plancher, le corridor sur le portefeuille résiduel devient presque sans risque.
 
-::: astuce La règle sur la page FIRE
+::: astuce La règle dans le simulateur FIRE de pofo
 La case « Bounded % of portfolio (Vanguard-style) » implémente exactement la règle : cible = pourcentage initial du portefeuille courant, variations réelles bornées à +5 %/−2,5 %, prime sur les règles flex, guardrails et ratchet. Deux lectures sont utiles. La §04 donne la distribution du revenu, où vous vérifiez le test de la borne basse composée. La frontière §06 vous la montre assise entre le fixe et le VPW. L'aide au survol rappelle honnêtement que la descente plafonnée peut laisser filer un effondrement : « unlike VPW/ABW this rule can still run out » ([[utiliser-la-page-fire]]).
 :::
 

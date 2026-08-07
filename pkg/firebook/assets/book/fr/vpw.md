@@ -2,7 +2,7 @@
 
 Le VPW (« Variable Percentage Withdrawal ») est la réponse de la communauté Bogleheads à une question précise : comment consommer un portefeuille sans prévision, sans risque de ruine, et sans mourir sur un tas d'or ? Sa solution tient en une idée. On retire un pourcentage du portefeuille, comme le pourcentage fixe ([[pourcentage-fixe]]), mais ce pourcentage augmente avec l'âge selon une table calculée une fois pour toutes. Il vaut environ 3,8 % à 40 ans, 4,8 % à 65 ans, 7 % à 80 ans, jusqu'à 100 % la dernière année.
 
-Ce pourcentage croissant n'est pas un bricolage. C'est la formule d'amortissement d'un prêt, appliquée à l'envers à votre portefeuille. Le VPW est le pont historique entre la famille proportionnelle et la famille actuarielle ([[amortissement-abw]]), et l'une des stratégies les plus utilisées du monde FIRE réel. Cet article en détaille la mécanique exacte, de quoi recalculer la table vous-même. Il expose ses choix de conception assumés et discutables, à commencer par des rendements supposés fixes. Il décrit ses propriétés remarquables et sa pathologie, la même volatilité de train de vie que tout pourcentage, plus une bosse de fin de vie. Il présente enfin le garde-fou que ses auteurs imposent, le test de tolérance à la perte, trop souvent sauté, puis sa place face à l'ABW moderne et sur la page FIRE.
+Ce pourcentage croissant n'est pas un bricolage. C'est la formule d'amortissement d'un prêt, appliquée à l'envers à votre portefeuille. Le VPW est le pont historique entre la famille proportionnelle et la famille actuarielle ([[amortissement-abw]]), et l'une des stratégies les plus utilisées du monde FIRE réel. Cet article en détaille la mécanique exacte, de quoi recalculer la table vous-même. Il expose ses choix de conception assumés et discutables, à commencer par des rendements supposés fixes. Il décrit ses propriétés remarquables et sa pathologie, la même volatilité de train de vie que tout pourcentage, plus une bosse de fin de vie. Il présente enfin le garde-fou que ses auteurs imposent, le test de tolérance à la perte, trop souvent sauté, puis sa place face à l'ABW moderne et dans le simulateur FIRE de pofo.
 
 ::: cle L'idée en une phrase
 Chaque année, le VPW retire le pourcentage qui épuiserait exactement le portefeuille sur les années restantes, en supposant les rendements futurs égaux à des valeurs de référence fixées d'avance. C'est la mensualité d'un crédit, recalculée chaque année sur le capital courant et l'horizon restant. Jeune, l'horizon est long et le pourcentage est bas. Âgé, l'horizon raccourcit et le pourcentage monte. Le portefeuille est consommé délibérément, jamais épuisé prématurément, jamais thésaurisé par accident.
@@ -59,7 +59,7 @@ Le profil idéal du VPW cumule trois traits : un plancher couvert hors portefeui
 
 En phase à découvert d'un FIRE précoce, le VPW demande deux aménagements. Le premier est le pont de pension du classeur, et il est obligatoire. Sans lui, le pourcentage s'applique à un capital qui doit aussi fabriquer quinze ans de pension, et le test de perte échoue presque toujours. Le second, en marché cher, est une décote manuelle de g : utiliser 4 % au lieu de 5 % pour les actions revient à intégrer grossièrement l'ancre CAPE, sans trahir l'esprit de la table.
 
-::: astuce Sur la page FIRE
+::: astuce Dans le simulateur FIRE de pofo
 Le curseur « Spend % of portfolio (VPW) » applique un pourcentage constant. C'est le VPW d'un horizon encore long, la zone plate de la table, et l'approximation est excellente avant 60-65 ans. Pour la dynamique complète, avec pourcentage croissant, horizon exact et flux futurs actualisés, la case « Amortize over the horizon (ABW/TPAW) » est la généralisation. Cochez-la pour voir votre plan sous l'annuité inversée intégrale, aux rendements centraux, et avec le CAPE si l'ancre est active. C'est le VPW moderne ([[utiliser-la-page-fire]]). La frontière §06 positionne les deux contre le reste, tandis que la §04 montre, comme toujours, la vie vécue.
 :::
 
@@ -73,7 +73,7 @@ Nora et Malik, 47 ans, 1,6 M€, 60/40, pensions estimées 21 600 €/an à 67 a
 - Il hérite du pourcentage fixe (jamais de ruine du capital, contra-cyclique, auto-correcteur) et y ajoute la conscience de l'horizon : consommation délibérée, legs quasi nul, et la consommation moyenne la plus généreuse du panorama.
 - Ses exigences : le test de tolérance à la perte (revenu sous « actions −50 % » ≥ plancher, à ne jamais sauter), le pont de pension en phase à découvert, et l'annuitisation vers 80 ans pour la longévité au-delà de la table.
 - Sa ligne de partage avec l'ABW : table gravée (robustesse comportementale) contre rendements courants (justesse conditionnelle). Même formule, deux paris sur celui qui l'exécute.
-- Sur la page FIRE : le curseur % (VPW à horizon long) et la case ABW (le VPW dynamique complet). Jugez sur la §04 et la frontière, et en marché cher, décotez g d'un point.
+- Dans le simulateur FIRE de pofo : le curseur % (VPW à horizon long) et la case ABW (le VPW dynamique complet). Jugez sur la §04 et la frontière, et en marché cher, décotez g d'un point.
 
 ---
 

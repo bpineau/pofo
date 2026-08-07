@@ -4,7 +4,7 @@ Un Monte-Carlo naïf (tirages gaussiens indépendants, paramètres copiés de l'
 
 La bonne nouvelle : chacun de ses défauts a une correction connue, documentée par la recherche, et implémentable. Cette page présente les six corrections qui transforment le générateur de nombres en instrument de planification, dans l'ordre où elles s'appliquent : calibrer les entrées sans hériter du biais de sa propre fenêtre (le « blending », l'idée la plus importante et la moins connue), épaissir les queues, réintroduire la mémoire des marchés (les régimes), ancrer aux valorisations, confronter aux données brutes, et simuler le vrai plan plutôt que sa caricature.
 
-C'est très exactement la liste de construction du modèle central, et cette page sert donc aussi de justification de conception : pourquoi la page FIRE calcule ce qu'elle calcule ([[la-machine-pofo]] donne la plomberie ; ici, le pourquoi).
+C'est très exactement la liste de construction du modèle central, et cette page sert donc aussi de justification de conception : pourquoi le simulateur FIRE de pofo calcule ce qu'elle calcule ([[la-machine-pofo]] donne la plomberie ; ici, le pourquoi).
 
 ::: cle Le principe directeur
 Il n'existe pas de « meilleur modèle » ; il existe un modèle **central** honnête (calibré, corrigé, tiré vers la prudence là où l'information manque) et des **bornes** qui l'encadrent (l'optimiste, vos données rejouées ; les pessimistes, stress, siècle mondial, décennie perdue). Rendre un Monte-Carlo pertinent, ce n'est pas trouver la vérité. C'est construire ce faisceau, et décider dedans. Toute la suite détaille la fabrication du faisceau.
@@ -16,7 +16,7 @@ Le problème fondamental de la calibration : les paramètres de votre portefeuil
 
 La réponse statistique classique s'appelle le rétrécissement (shrinkage), l'intuition de James-Stein. Quand une estimation individuelle est bruitée, on améliore toujours la prévision en la tirant vers une moyenne de référence plus large. Ici, cela revient à mélanger les paramètres ajustés sur vos fonds avec un **prior** issu d'un échantillon immensément plus profond, l'expérience mondiale de long terme (μ ≈ 4,5 % arithmétique réel, σ ≈ 13 %, df ≈ 4, les valeurs prudentes que suggère le siècle développé, [[anarkulova-cederburg]]).
 
-Reste à choisir le poids du mélange, et la page FIRE applique ici une règle simple : **le poids du prior croît avec ce que l'horizon dépasse l'historique**, plafonné à 50/50. La logique est directe. Si vous avez 20 ans de données pour un plan de 20 ans, vos données parlent d'expérience. Pour un plan de 45 ans, elles n'ont rien observé des 25 années au-delà de leur fenêtre, et c'est le prior qui doit parler pour l'inconnu. Concrètement, avec 20 ans d'historique et 45 ans d'horizon, le mélange est au plafond : moitié vos fonds, moitié le siècle. Votre portefeuille atteint alors le modèle central par ses statistiques, jamais par sa séquence particulière. Ses vertus mesurables (diversification, volatilité contenue) sont créditées, mais pas sa chance de fenêtre.
+Reste à choisir le poids du mélange, et le simulateur FIRE de pofo applique ici une règle simple : **le poids du prior croît avec ce que l'horizon dépasse l'historique**, plafonné à 50/50. La logique est directe. Si vous avez 20 ans de données pour un plan de 20 ans, vos données parlent d'expérience. Pour un plan de 45 ans, elles n'ont rien observé des 25 années au-delà de leur fenêtre, et c'est le prior qui doit parler pour l'inconnu. Concrètement, avec 20 ans d'historique et 45 ans d'horizon, le mélange est au plafond : moitié vos fonds, moitié le siècle. Votre portefeuille atteint alors le modèle central par ses statistiques, jamais par sa séquence particulière. Ses vertus mesurables (diversification, volatilité contenue) sont créditées, mais pas sa chance de fenêtre.
 
 Deux remarques d'usage. D'abord, le blending s'applique à μ, σ et df : la prudence porte aussi sur les queues. Ensuite, il est automatique mais pas tyrannique. Les curseurs restent les maîtres, et vous pouvez saisir à la main votre μ par briques (building-blocks, [[rendements-attendus]]). Le blending n'est que le défaut raisonnable pour qui ne veut pas trancher.
 
@@ -30,7 +30,7 @@ La variante extrême complète l'arsenal : « Lost decade », un régime de marc
 
 ## Correction 4 : les ancres, ou l'information du présent
 
-Le blending corrige le passé, c'est-à-dire votre fenêtre. Il reste aveugle au présent : où en sont les valorisations aujourd'hui ? Un même portefeuille n'a pas la même espérance à CAPE 20 et à CAPE 38 ([[valorisations-et-cape]]), et aucune moyenne historique, si bien mélangée soit-elle, ne porte cette information. D'où les deux ancres de la page FIRE, deux boutons qui réécrivent les paramètres avec une information extérieure :
+Le blending corrige le passé, c'est-à-dire votre fenêtre. Il reste aveugle au présent : où en sont les valorisations aujourd'hui ? Un même portefeuille n'a pas la même espérance à CAPE 20 et à CAPE 38 ([[valorisations-et-cape]]), et aucune moyenne historique, si bien mélangée soit-elle, ne porte cette information. D'où les deux ancres du simulateur FIRE de pofo, deux boutons qui réécrivent les paramètres avec une information extérieure :
 
 **L'ancre CAPE** remplace la seule moyenne du central par l'estimation qu'implique le CAPE du jour (~1/CAPE pour la brique actions), en laissant σ et df à leurs valeurs ajustées. C'est la correction prospective : le modèle central cesse de supposer que la décennie décisive ressemblera à la moyenne des décennies, et suppose qu'elle ressemblera à ce que les prix actuels permettent. En marché cher, elle est la plus dure des corrections. C'est normal, c'est elle qui porte la mauvaise nouvelle.
 
@@ -79,5 +79,5 @@ La trajectoire 1 % → 9 % → 3,5 % raconte toute la philosophie : le naïf fla
 - Jorion, « Bayes-Stein Estimation for Portfolio Analysis » (1986) : le shrinkage appliqué aux rendements.
 - Hamilton, « A New Approach to the Economic Analysis of Nonstationary Time Series » (1989) : les régimes de Markov.
 - Early Retirement Now, volet 54 (les règles CAPE) et volet 15 (la mesure du risque de séquence) ([[serie-ern]]).
-- Le volet « How this machine works » de la page FIRE : chaque correction, curseur par curseur ([[utiliser-la-page-fire]]) ; et [[la-machine-pofo]] pour l'implémentation.
+- Le volet « How this machine works » du simulateur FIRE de pofo : chaque correction, curseur par curseur ([[utiliser-la-page-fire]]) ; et [[la-machine-pofo]] pour l'implémentation.
 - La suite : [[regimes-de-marche]] (le fondement économique des sticky bears et des quatre saisons macro).
