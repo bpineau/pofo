@@ -110,8 +110,10 @@ func run(ctx context.Context, argv []string) error {
 	fs.StringVar(&opt.simdataDir, "simdata", "", "directory of simulated histories (default: embedded in the binary)")
 	fs.IntVar(&opt.rebalance, "rebalance", 90, "rebalance every N calendar days (0 = never)")
 	fs.StringVar(&startStr, "start", "", "desired start date (YYYY-MM-DD, default: earliest available)")
+	fs.StringVar(&startStr, "s", "", "shorthand for -start")
 	var endStr string
 	fs.StringVar(&endStr, "end", "", "end date (YYYY-MM-DD, default: last available quote)")
+	fs.StringVar(&endStr, "e", "", "shorthand for -end")
 	fs.StringVar(&opt.benchmark, "benchmark", "^GSPC", "reference symbol for Beta (empty = no Beta)")
 	fs.BoolVar(&opt.noOpen, "no-open", false, "do not open the report in the browser")
 	fs.BoolVar(&opt.noSim, "no-simulate", false, "ignore SIM suffixes: real data only")
@@ -131,6 +133,7 @@ func run(ctx context.Context, argv []string) error {
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
 	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
+	fs.StringVar(assetsList, "a", "", "shorthand for -assets")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: pofo [options] portfolio.txt [portfolio2.txt …]
        pofo [options] -assets VOO,IWDA,NTSG
