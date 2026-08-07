@@ -153,6 +153,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"construire-son-plan", "Construire son plan pas à pas", "Les sept étapes dans l'ordre, le gabarit du plan d'une page à huit blocs, la recette de validation, et l'exécution du jour 1."},
 			{"revue-annuelle", "La revue annuelle : la check-list du rentier", "Une séance par an, sept blocs, le quiz inversé et la ligne non financière : la revue constate et exécute, elle ne re-conçoit pas."},
+			{"quand-s-inquieter", "Quand s'inquiéter, quand laisser courir", "Le taux courant en voyant central, le tri bruit/signal, la ruine qui prévient des années à l'avance, et le playbook à cinq paliers."},
+			{"marche-baissier-en-retraite", "Traverser un marché baissier en retraite : le playbook", "Trois ours, la semaine 1 du rien actif, les gestes mécaniques du creux (dont la récolte de moins-values), les interdits, et la sortie."},
 		},
 	},
 }
