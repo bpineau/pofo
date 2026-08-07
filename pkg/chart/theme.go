@@ -1,20 +1,21 @@
 package chart
 
+import "strings"
+
 // Chart theme: the single source of truth for the "chrome" colors and fonts
-// every chart in this package draws with (grids, axes, labels, backgrounds and
-// the semantic good/warn/bad/accent hues). Series colors are separate, see
-// defaultPalette.
+// every chart draws with (grids, axes, labels, backgrounds and the semantic
+// good/warn/bad/accent hues). Series colors are separate, see defaultPalette.
 //
-// THIS IS THE RESKIN SURFACE. To restyle every chart at once, change the values
-// here and re-run `make golden` (the frozen SVG fixtures will move; that is
-// expected for a deliberate reskin). The values mirror pkg/webui/theme.css so
-// the standalone report SVGs and the embedded web UI share one look; keep them
-// in sync. Charts emit these as literal hex (the standalone report has no CSS
-// variables), so a token must be a compile-time constant, not a CSS var().
+// THIS IS THE RESKIN SURFACE. The tokens are the light "instrument" look
+// (mirroring pkg/webui/theme.css), emitted as literal hex because the standalone
+// report has no CSS variables. They are constants, so the light output stays
+// byte-identical (a snapshot golden depends on it) and `fmt` format strings stay
+// constant.
 //
-// A guard test (theme_test.go) fails if a chart source hardcodes a chrome color
-// outside this registry, so new charts are pushed to reuse the tokens rather
-// than reintroduce scattered hex.
+// A dark theme is provided not by swapping these constants (which would break
+// the report and the golden) but by Darken, a final light->dark hex substitution
+// the terminal FIRE UI applies to each rendered SVG. A guard test (theme_test.go)
+// fails if a chart hardcodes a chrome color outside this registry.
 const (
 	themeInk     = "#16181D" // primary ink: median/needle strokes, value text
 	themeInkSoft = "#4A5160" // secondary text
@@ -34,8 +35,35 @@ const (
 )
 
 // Fonts. The mono face carries every numeric/axis label; the sans face titles
-// and the newer instrument-style charts. They mirror the webui theme's stacks.
+// and the instrument-style charts. Theme-independent.
 const (
 	themeMono = "'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace"
 	themeSans = "'Instrument Sans',system-ui,sans-serif"
 )
+
+// darkChrome maps each light chrome hex to its terminal-dark counterpart (amber
+// phosphor on warm charcoal). The semantic hues are the dataviz-validated dark
+// set (validate_palette.js, all six checks pass on the #17130D surface); accent
+// is the deep amber chart mark. Darken applies this substitution.
+var darkReplacer = strings.NewReplacer(
+	themeInk, "#EFE7D6",
+	themeInkSoft, "#B4A991",
+	themeMuted, "#7E7458",
+	themeFaint, "#5B5340",
+	themeGrid, "#2B2317",
+	themeWell, "#221B11",
+	themeAxis, "#3C3121",
+	themeSurface, "#17130D",
+	themeAccent, "#C4820F",
+	themeGood, "#34A46E",
+	themeWarn, "#D98A2E",
+	themeBad, "#D2503F",
+	themeDead, "#6B6250",
+)
+
+// Darken rewrites a chart SVG from the light theme to the terminal-dark theme by
+// substituting each chrome color. The FIRE terminal UI wraps every rendered SVG
+// with it; the standalone report leaves the light output untouched. Series
+// colors a caller passes in explicitly (e.g. stacked-area layers) are not chrome
+// and pass through unchanged, so the caller supplies dark-ready series colors.
+func Darken(svg string) string { return darkReplacer.Replace(svg) }
