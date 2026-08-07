@@ -63,6 +63,8 @@ const GROUPS = [
       "Two-state Markov source at the SAME long-run mean: bad years cluster into multi-year bears, the risk i.i.d. draws miss. The strip's Sequence-stress column always shows it; this makes it the active model for the detail charts."),
     c("conservative", "Broad-sample prior (override the fit)",
       "Replace the fitted μ/σ/df with cautious world-equity assumptions (~3.5% real geometric, fat tails): what broad century-long samples suggest, not this fund's history."),
+    c("capeAdjust", "Anchor return to today's valuation (CAPE)",
+      "Set the central real return to the CAPE-implied estimate (1/CAPE): today's rich valuation compresses the next decade, the years that make or break a retirement. Overrides the return slider."),
     c("monthly", "Monthly withdrawals (salary-like)",
       "Step the kernel monthly instead of annually: withdrawals, drawdown checks and the bucket rule run every month."),
   ]},
