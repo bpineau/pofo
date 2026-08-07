@@ -51,6 +51,10 @@ Trois décisions, dans l'ordre d'importance.
 
 **Le couple de bornes.** (+5/−2,5) est le standard. Deux variantes sont utiles : (+4/−2) pour les budgets plus rigides, avec une descente encore plus douce et une ruine un peu plus haute ; (+6/−4) pour les budgets élastiques qui veulent suivre la cible de plus près. La règle de cohérence est simple : la borne basse doit rester tenable une fois composée sur plusieurs années. Une descente de −2,5 %/an pendant six ans fait −14 %, est-ce au-dessus de votre plancher réel ? C'est le test d'admissibilité de la famille, à vérifier sur la §04.
 
+::: figure corridor-borne
+Le test d'admissibilité, en une image. Chaque courbe est votre revenu après n années de baisse consécutive à la borne basse ; la ligne rouge est le plancher du ménage de l'exemple ci-dessous. Le standard Vanguard tient 7,8 ans avant de croiser ce plancher, la variante douce presque dix, la variante élastique moins de cinq. Le cercle rappelle ce que le millésime 1966 a réellement demandé au corridor : vingt-trois années de glisse d'affilée, jusqu'à 57 % du revenu de départ. **Testez la borne sur la durée d'un vrai régime hostile, pas sur six ans de politesse.**
+:::
+
 **L'interaction avec les revenus externes.** Comme toute la famille proportionnelle, la règle s'applique au portefeuille seul. En phase à découvert d'un FIRE, le pont de pension se provisionne à part ([[vpw]], [[horizon-et-esperance-de-vie]]). Une fois la pension au plancher, le corridor sur le portefeuille résiduel devient presque sans risque.
 
 ::: astuce La règle sur la page FIRE
