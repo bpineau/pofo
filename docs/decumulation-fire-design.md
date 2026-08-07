@@ -213,6 +213,29 @@ one css file; `cmd/pofo` only wires it.
   is one small file: read sliders → debounced POST → swap `innerHTML`. The
   engine stays entirely in Go.
 
+**The rules replayed on real history (`pkg/replay`).** The simulator answers
+"how often does this fail". A reader asks first what a rule is like to LIVE ON,
+and no Monte-Carlo summary can answer that. `pkg/replay` therefore runs the same
+seven rules deterministically over the years as they happened, on a bundled real
+US 60/40 (S&P 500 + 5-year Treasuries, rebalanced yearly, CPI-deflated, 1954→),
+and reports portraits rather than probabilities: mean income, its coefficient of
+variation, the leanest year, the years spent below plan, the estate left.
+
+- **It owns the canonical rule list** (names FR/EN, narrow tags, colours, plan
+  mutations, and a generic scale-invariant safe-rate table for the risk-based
+  guardrail), so a rule looks and reads the same in the simulator's
+  ruin-versus-lifestyle frontier and in the book.
+- **The horizon is the plan, not the data.** `Setup.Years` stays whole even
+  where the record stops earlier, and the replay reports the covered prefix. A
+  path is causal, so this is identical to a shorter run except the horizon-aware
+  rules (ABW, risk guardrails) now face the horizon the household actually has.
+  Their forward assumptions are deliberately generic (4.5 % arithmetic real,
+  10 % vol), never the era's realised returns.
+- **Consumers.** `pkg/decumul/web` for the policy frontier, and the FIRE book's
+  `sept-facons-de-vivre` article, whose plates carry frozen numbers guarded by a
+  test that recomputes them from the engine (`figures_replay_test.go`) and reads
+  the article's tables back out of the markdown.
+
 **One spending policy at a time.** The kernel applies exactly one withdrawal
 rule, in a fixed precedence (ABW > bounded > VPW > risk guardrails >
 Guyton-Klinger > the fixed rule with its flex cut and ratchet). The rail

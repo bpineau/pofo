@@ -3,6 +3,7 @@ package web
 import (
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
+	"github.com/bpineau/pofo/pkg/replay"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -40,36 +41,19 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 	base := bare()
 	seqs := base.DrawPaths(min(pr.NPaths, shapePaths), simWorkers, 7)
 
-	policies := []struct {
-		name  string
-		color string
-		apply func(*decumul.Plan)
-	}{
-		{"Fixed", "#D2402F", func(p *decumul.Plan) {}},
-		{"Flex -10%", "#C77E17", func(p *decumul.Plan) { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.10} }},
-		{"Guardrails", "#0C8A47", func(p *decumul.Plan) {
-			p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
-		}},
-		{"Risk guardrails", "#15803D", func(p *decumul.Plan) {
-			// The same family, hence the neighbouring green: only the sensor
-			// changes, from a band around the initial rate to one that tracks
-			// the safe rate of the remaining horizon.
-			p.RiskGuard = decumul.RiskGuardrails{SafeWR: pr.safeRateTable(),
-				Band: 0.20, Cut: 0.10, Raise: 0.10, Cap: pr.raiseCap(), PVRate: pr.pvRate()}
-		}},
-		{"Bounded %", "#BE185D", func(p *decumul.Plan) {
-			p.Bounded = decumul.BoundedPct{Pct: wr, Up: 0.05, Down: 0.025}
-		}},
-		{"ABW", "#6D28D9", func(p *decumul.Plan) {
-			p.Amortize, p.AmortReturn = true, pr.abwReturn()
-		}},
-		{"VPW", "#0B7285", func(p *decumul.Plan) { p.Percent = wr }},
-	}
+	// The seven rules, their names and their colours live in pkg/replay, so a
+	// rule reads the same here and in the book's historical replays. Note the
+	// two neighbouring greens: the guardrails family, where only the sensor
+	// changes.
+	policies := replay.Policies(replay.PolicyConfig{
+		WR: wr, SafeWR: pr.safeRateTable(), RaiseCap: pr.raiseCap(),
+		PVRate: pr.pvRate(), AmortReturn: pr.abwReturn(),
+	})
 
 	pts := make([]chart.LabeledPoint, 0, len(policies))
 	for _, pol := range policies {
 		p := base
-		pol.apply(&p)
+		pol.Apply(&p)
 		e := p.SimulateOn(seqs, simWorkers)
 		// Lifestyle volatility on the SURVIVING paths only: post-ruin zeros
 		// would inflate the fixed rule's CV with what is really ruin, the
@@ -78,8 +62,8 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		pts = append(pts, chart.LabeledPoint{
 			X:     survivors(e).SpendCV() * 100,
 			Y:     e.RuinProb() * 100,
-			Label: pol.name,
-			Color: pol.color,
+			Label: pol.Name,
+			Color: pol.Color,
 		})
 	}
 	svg := darkScatter(chart.Options{Width: 720, Height: 360},
