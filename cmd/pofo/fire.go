@@ -40,7 +40,11 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 	// main() routes SIGINT/SIGTERM into ctx (signal.NotifyContext), which
 	// replaces the default die-on-Ctrl-C behavior, so the server must watch
 	// the context and shut down when it fires.
-	srv := &http.Server{Handler: web.Handler(panel, labels)}
+	// No picker here: the loader's mounts (/firesimulator/e/, /p/) and the
+	// catalog endpoint it searches only exist under -serve. The page then
+	// states how to bind a portfolio from the command line instead. The
+	// source label still rides, so a file argument names the market.
+	srv := &http.Server{Handler: web.Handler(panel, labels, web.WithSourceLabel(specsLabel(specs)))}
 	go func() {
 		<-ctx.Done()
 		shutCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

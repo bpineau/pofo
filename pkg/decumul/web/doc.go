@@ -9,6 +9,14 @@
 // a panel shorter than two years is treated as absent (Fit.Valid,
 // minPanelMonths) so a degenerate fit can never seed a doom model.
 //
+// Three options tune the chrome, all surfaced to the front end through
+// /api/meta: WithNav (cross-navigation to sibling surfaces),
+// WithSourceLabel (which market this mount runs on, shown as a provenance
+// pill in the top bar) and WithPicker (the in-drawer portfolio loader, whose
+// example list and catalog URL the caller supplies, since only the embedding
+// server knows the mounts and the catalog endpoint). Without a picker the
+// page states in one line how to bind a portfolio from the command line.
+//
 // Spending policies are exclusive in the rail. The kernel resolves clashes
 // by a fixed precedence (see the package comment of pkg/decumul), which is
 // invisible to a reader ticking two boxes, so claiming one policy clears the

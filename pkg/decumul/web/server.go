@@ -18,8 +18,38 @@ import (
 // NavLink is one entry of the optional cross-navigation shown in the top bar.
 type NavLink struct{ Label, Href string }
 
+// ExampleRef is one bundled portfolio the drawer's loader offers. It is a
+// plain data record so this package never imports the CLI's example
+// collection; the caller (the -serve wiring) translates its own list.
+type ExampleRef struct {
+	Name  string `json:"name"`            // URL segment: <Base>/e/<Name>/
+	Title string `json:"title"`           // human label
+	Blurb string `json:"blurb,omitempty"` // one-line description, may be empty
+}
+
+// Picker describes the portfolio loader the page offers when it runs on no
+// portfolio at all. It is only meaningful where the mounts it links to exist
+// (the -serve web app), which is why it arrives as an option rather than
+// being assumed.
+type Picker struct {
+	// Base is the simulator's mount prefix, without a trailing slash
+	// ("/firesimulator"): the loader navigates to <Base>/e/<name>/ for a
+	// bundled example and <Base>/p/<spec>/ for a composed one.
+	Base string `json:"base"`
+	// CatalogURL serves the composable-asset catalog as JSON
+	// (marketdata.LocalCatalog); the loader's search reads it. Empty
+	// disables the composer and leaves the example list.
+	CatalogURL string `json:"catalogURL,omitempty"`
+	// Examples are the bundled portfolios, in display order.
+	Examples []ExampleRef `json:"examples,omitempty"`
+}
+
 // handlerConfig collects Handler options.
-type handlerConfig struct{ nav []NavLink }
+type handlerConfig struct {
+	nav         []NavLink
+	sourceLabel string
+	picker      *Picker
+}
 
 // Option configures Handler.
 type Option func(*handlerConfig)
@@ -29,6 +59,21 @@ type Option func(*handlerConfig)
 // when served inside the -serve web app, so the option is set there and left
 // off for the standalone -fire mount, where the bar stays clean.
 func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
+
+// WithSourceLabel names the market this mount runs on (an example name, a
+// portfolio file's base name, "custom portfolio"), for the top bar's
+// provenance pill. Left empty the pill reports the generic parametric
+// market, which is what an unbound mount really is.
+func WithSourceLabel(label string) Option {
+	return func(c *handlerConfig) { c.sourceLabel = label }
+}
+
+// WithPicker enables the in-drawer portfolio loader: with no panel the page
+// otherwise gives no hint that portfolio mode exists at all. The loader only
+// builds URLs (<Base>/e/<name>/ or <Base>/p/<spec>/) and navigates to them,
+// carrying the current location hash so the visitor's scenario survives the
+// move; it adds no server capability here.
+func WithPicker(p Picker) Option { return func(c *handlerConfig) { c.picker = &p } }
 
 // renderTopnav builds the top-bar cross-navigation, or "" when there is none
 // (so the index page's placeholder simply vanishes).
@@ -48,8 +93,9 @@ func renderTopnav(links []NavLink) string {
 // Handler returns the decumulation UI: the embedded page at / and the
 // simulation endpoint at POST /api/sim. A non-nil panel enables the
 // portfolio models (bootstrap/cohorts) and live allocation sliders; labels
-// names the holdings for the allocation UI. Options (e.g. WithNav) tune the
-// chrome.
+// names the holdings for the allocation UI. Options (WithNav,
+// WithSourceLabel, WithPicker) tune the chrome; the front end reads them
+// back from /api/meta.
 func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handler {
 	var cfg handlerConfig
 	for _, o := range opts {
@@ -109,7 +155,14 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	mux.HandleFunc("/favicon.svg", favicon)
 	mux.HandleFunc("/favicon.ico", favicon)
 	mux.HandleFunc("/api/meta", func(w http.ResponseWriter, r *http.Request) {
-		meta := map[string]any{"labels": labels, "hasPanel": panel != nil, "cape": capeSnapshot(), "capeHistory": capeHistory()}
+		meta := map[string]any{
+			"labels": labels, "hasPanel": panel != nil,
+			"sourceLabel": cfg.sourceLabel,
+			"cape":        capeSnapshot(), "capeHistory": capeHistory(),
+		}
+		if cfg.picker != nil {
+			meta["picker"] = cfg.picker
+		}
 		if panel != nil {
 			meta["weights"] = panel.Weights
 			meta["panelMonths"] = panel.Periods()

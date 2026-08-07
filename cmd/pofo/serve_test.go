@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/bpineau/pofo/examples"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
@@ -239,6 +240,50 @@ func TestServeFireComposed(t *testing.T) {
 	}
 	if len(s.fireBySpec) > fireSpecCacheMax {
 		t.Errorf("cache size = %d, want <= %d", len(s.fireBySpec), fireSpecCacheMax)
+	}
+}
+
+// Every -serve FIRE mount announces where it runs and how to load a
+// portfolio: the provenance pill and the drawer's loader are both built from
+// /api/meta, so the wiring is asserted there.
+func TestServeFireMetaSourceAndPicker(t *testing.T) {
+	s, _ := testServer(t)
+	s.sourceLabel = "startup-portfolio"
+	h := s.handler(nil, nil)
+
+	meta := func(path string) map[string]any {
+		t.Helper()
+		rec := serveGet(t, h, path)
+		if rec.Code != 200 {
+			t.Fatalf("%s: code=%d", path, rec.Code)
+		}
+		var m map[string]any
+		if err := json.Unmarshal(rec.Body.Bytes(), &m); err != nil {
+			t.Fatalf("%s: bad json: %v", path, err)
+		}
+		return m
+	}
+
+	for path, want := range map[string]string{
+		"/firesimulator/api/meta":                          "startup-portfolio",
+		"/firesimulator/e/claude-dragonlite/api/meta":      "claude-dragonlite",
+		"/firesimulator/p/IWDA:60,IGLN:40!sim:on/api/meta": "custom portfolio",
+	} {
+		m := meta(path)
+		if m["sourceLabel"] != want {
+			t.Errorf("%s: sourceLabel = %v, want %q", path, m["sourceLabel"], want)
+		}
+		p, ok := m["picker"].(map[string]any)
+		if !ok {
+			t.Fatalf("%s: no picker in meta", path)
+		}
+		if p["base"] != fireBase || p["catalogURL"] != "/catalog.json" {
+			t.Errorf("%s: picker mount = %v", path, p)
+		}
+		exs, _ := p["examples"].([]any)
+		if len(exs) != len(examples.List()) {
+			t.Errorf("%s: %d examples, want %d", path, len(exs), len(examples.List()))
+		}
 	}
 }
 

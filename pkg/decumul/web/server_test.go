@@ -62,6 +62,66 @@ func TestServesFontsCSS(t *testing.T) {
 	}
 }
 
+// metaOf reads /api/meta off a handler built with the given options.
+func metaOf(t *testing.T, opts ...Option) map[string]any {
+	t.Helper()
+	rec := httptest.NewRecorder()
+	Handler(nil, nil, opts...).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/api/meta", nil))
+	if rec.Code != 200 {
+		t.Fatalf("status = %d", rec.Code)
+	}
+	var meta map[string]any
+	if err := json.Unmarshal(rec.Body.Bytes(), &meta); err != nil {
+		t.Fatalf("bad json: %v", err)
+	}
+	return meta
+}
+
+// The bare mount announces a generic market and no loader: the front end
+// then shows the "generic market" pill and the static command-line hint.
+func TestMetaWithoutPickerOrLabel(t *testing.T) {
+	meta := metaOf(t)
+	if got, ok := meta["sourceLabel"].(string); !ok || got != "" {
+		t.Errorf("sourceLabel = %v, want an empty string", meta["sourceLabel"])
+	}
+	if _, ok := meta["picker"]; ok {
+		t.Errorf("picker present without WithPicker: %v", meta["picker"])
+	}
+	if meta["hasPanel"] != false {
+		t.Errorf("hasPanel = %v, want false", meta["hasPanel"])
+	}
+}
+
+// A -serve mount carries both its provenance label and the loader payload
+// the drawer's empty state is built from.
+func TestMetaWithPickerAndLabel(t *testing.T) {
+	meta := metaOf(t,
+		WithSourceLabel("dragon-decumulation-household"),
+		WithPicker(Picker{
+			Base:       "/firesimulator",
+			CatalogURL: "/catalog.json",
+			Examples:   []ExampleRef{{Name: "all-weather-dalio", Title: "All Weather", Blurb: "modernized"}},
+		}))
+	if meta["sourceLabel"] != "dragon-decumulation-household" {
+		t.Errorf("sourceLabel = %v", meta["sourceLabel"])
+	}
+	p, ok := meta["picker"].(map[string]any)
+	if !ok {
+		t.Fatalf("picker = %v, want an object", meta["picker"])
+	}
+	if p["base"] != "/firesimulator" || p["catalogURL"] != "/catalog.json" {
+		t.Errorf("picker mount = %v", p)
+	}
+	exs, ok := p["examples"].([]any)
+	if !ok || len(exs) != 1 {
+		t.Fatalf("examples = %v", p["examples"])
+	}
+	ex := exs[0].(map[string]any)
+	if ex["name"] != "all-weather-dalio" || ex["title"] != "All Weather" || ex["blurb"] != "modernized" {
+		t.Errorf("example = %v", ex)
+	}
+}
+
 func TestServesIndex(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
