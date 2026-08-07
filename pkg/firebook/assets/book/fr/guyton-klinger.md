@@ -50,7 +50,7 @@ La postérité a réparé Guyton-Klinger de trois façons, du simple correctif a
 
 ## Si vous l'utilisez : les paramètres défendables
 
-Pour un plan FIRE long qui retient la famille guardrails version 2006 (choisie pour sa simplicité de calcul à la main, car le guardrail par risque exige un simulateur), voici la configuration que soutient la littérature post-ERN :
+Pour un plan FIRE long qui retient la famille guardrails version 2006, choisie pour sa simplicité de calcul à la main là où le guardrail par risque demande un simulateur (la page FIRE en a un en natif, [[guardrails-morningstar]]), voici la configuration que soutient la littérature post-ERN :
 
 - **Taux initial de 4 à 4,5 %**, pas 5,5. La flexibilité achète environ 0,5 point au-dessus du fixe équivalent, pas davantage ([[flexibilite-realite]]).
 - **Corridor ±20 %, ajustements de 10 %** (le standard), ou ±15 %/5 % pour la version douce.
@@ -69,7 +69,7 @@ Plan : 1,3 M€, taux initial 4,3 % (55 900 €), corridor ±20 % (seuils à 3,4
 - La promesse (5,2-5,6 % initial, 99 % de succès) reposait sur un vice : des coupes illimitées dont les mauvais millésimes abusent, jusqu'à un revenu réel amputé de 35 à 45 % pendant des décennies. Le taux de succès de GK ne se compare jamais à celui d'une règle fixe sans lire le revenu servi.
 - Les correctifs : un plancher à 75-80 % (qui recrée de la ruine honnête, c'est le but), des ajustements plus doux et plus fréquents, et, en remplacement conceptuel, les guardrails par risque de Kitces-Tharp-Morningstar ([[guardrails-morningstar]]).
 - Paramètres défendables aujourd'hui : taux initial 4-4,5 %, corridor ±20 %, coupes 10 %, plancher aligné sur le plancher réel, gel d'indexation conservé, revue annuelle à date fixe.
-- Dans la page FIRE : case guardrails (corridor ±20 %, ajustements ±10 %) plus curseur de plancher. Jugez toujours sur la §04 (la vie vécue) et la frontière §06, jamais sur la seule ruine.
+- Dans la page FIRE : case guardrails (corridor ±20 %, ajustements ±10 %) plus curseur de plancher, et juste à côté la version par risque si vous préférez le bon capteur ([[guardrails-morningstar]]). Jugez toujours sur la §04 (la vie vécue) et la frontière §06, jamais sur la seule ruine.
 
 ---
 

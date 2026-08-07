@@ -29,44 +29,56 @@ const shapePaths = 1000
 // Params is the slider state posted by the browser. Weights is nil in
 // parametric mode and holds per-holding fractions in portfolio mode.
 type Params struct {
-	Capital        float64   `json:"capital"`
-	NeedAnnual     float64   `json:"needAnnual"`
-	BufferYears    float64   `json:"bufferYears"`
-	Mu             float64   `json:"mu"`
-	Sigma          float64   `json:"sigma"`
-	Df             float64   `json:"df"`
-	BufferReturn   float64   `json:"bufferReturn"`
-	Years          int       `json:"years"`
-	PensionYear    int       `json:"pensionYear"`
-	PensionAnnual  float64   `json:"pensionAnnual"`
-	FlexCut        float64   `json:"flexCut"`
-	TaxRate        float64   `json:"taxRate"`
-	NPaths         int       `json:"nPaths"`
-	Weights        []float64 `json:"weights"`
-	Model          string    `json:"model"`          // "parametric" (default), "bootstrap", "cohorts"
-	TargetRuin     float64   `json:"targetRuin"`     // solve target (fraction), used by /api/solve
-	Monthly        bool      `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
-	Regime         bool      `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
-	BufferStopYear int       `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
-	SideAnnual     float64   `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
-	SideUntilYear  int       `json:"sideUntilYear"`  // side income runs until this year, exclusive
-	Guardrails     bool      `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
-	GKFloor        float64   `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
-	ABW            bool      `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
-	Bounded        bool      `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
-	Central        string    `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
-	Age            int       `json:"age"`            // age at year 0, for the mortality view (0 = 52)
-	PEACapital     float64   `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
-	AVCapital      float64   `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
-	GainFrac       float64   `json:"gainFrac"`       // embedded unrealised gain fraction at start
-	Ratchet        bool      `json:"ratchet"`        // only-up spending rule (the written-rules cliquet)
-	WRTrigger      float64   `json:"wrTrigger"`      // flex also cuts above this current WR (0 = off)
-	SpendDrift     float64   `json:"spendDrift"`     // real spending drift per year (health costs)
-	Smile          bool      `json:"smile"`          // Blanchett retirement-smile spending shape
-	CapeAdjust     bool      `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
-	Percent        float64   `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
-	Glidepath      bool      `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
-	AnnuityShare   float64   `json:"annuityShare"`   // share of capital annuitized (joint-life real income); 0 = none
+	Capital       float64   `json:"capital"`
+	NeedAnnual    float64   `json:"needAnnual"`
+	BufferYears   float64   `json:"bufferYears"`
+	Mu            float64   `json:"mu"`
+	Sigma         float64   `json:"sigma"`
+	Df            float64   `json:"df"`
+	BufferReturn  float64   `json:"bufferReturn"`
+	Years         int       `json:"years"`
+	PensionYear   int       `json:"pensionYear"`
+	PensionAnnual float64   `json:"pensionAnnual"`
+	FlexCut       float64   `json:"flexCut"`
+	TaxRate       float64   `json:"taxRate"`
+	NPaths        int       `json:"nPaths"`
+	Weights       []float64 `json:"weights"`
+
+	// tableMu/tableSigma/tableDf are the central assumptions the risk-based
+	// guardrail's safe-rate table is solved on: the blended, CAPE-anchored
+	// values centralParams derives once the portfolio panel is known, stamped
+	// by the handler (withCentral). A zero tableSigma means no panel context,
+	// and the table falls back to the raw sliders. panel is that same
+	// server-side context, so the table can be solved under the return model
+	// the reader selected in the strip. Unexported on purpose: they are
+	// server-side context, never part of the posted state.
+	tableMu, tableSigma, tableDf float64
+	panel                        *scenario.Panel
+	Model                        string  `json:"model"`          // "parametric" (default), "bootstrap", "cohorts"
+	TargetRuin                   float64 `json:"targetRuin"`     // solve target (fraction), used by /api/solve
+	Monthly                      bool    `json:"monthly"`        // step the kernel monthly (salary-like withdrawals)
+	Regime                       bool    `json:"regime"`         // stress: cluster bad years (Markov regime source, annual)
+	BufferStopYear               int     `json:"bufferStopYear"` // glidepath: stop refilling the buffer from this year (0 = never)
+	SideAnnual                   float64 `json:"sideAnnual"`     // temporary side income /yr (rental/activity)
+	SideUntilYear                int     `json:"sideUntilYear"`  // side income runs until this year, exclusive
+	Guardrails                   bool    `json:"guardrails"`     // Guyton-Klinger guardrails (replaces the flex cut)
+	RiskGuard                    bool    `json:"riskGuard"`      // risk-based guardrails (Kitces/Morningstar): the band tracks the safe rate of the remaining horizon
+	GKFloor                      float64 `json:"gkFloor"`        // guardrails cut floor, fraction of the initial spend (0 = none)
+	ABW                          bool    `json:"abw"`            // amortization-based withdrawal (ABW/TPAW family)
+	Bounded                      bool    `json:"bounded"`        // bounded percent-of-portfolio (Vanguard dynamic spending)
+	Central                      string  `json:"central"`        // strip column driving the detail sections: "" (central), "stress", "broad", "lost", "hist", "boot"
+	Age                          int     `json:"age"`            // age at year 0, for the mortality view (0 = 52)
+	PEACapital                   float64 `json:"peaCapital"`     // euros held in the PEA envelope (17.2% on gains)
+	AVCapital                    float64 `json:"avCapital"`      // euros held in assurance-vie (9 200 €/yr allowance)
+	GainFrac                     float64 `json:"gainFrac"`       // embedded unrealised gain fraction at start
+	Ratchet                      bool    `json:"ratchet"`        // only-up spending rule (the written-rules cliquet)
+	WRTrigger                    float64 `json:"wrTrigger"`      // flex also cuts above this current WR (0 = off)
+	SpendDrift                   float64 `json:"spendDrift"`     // real spending drift per year (health costs)
+	Smile                        bool    `json:"smile"`          // Blanchett retirement-smile spending shape
+	CapeAdjust                   bool    `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
+	Percent                      float64 `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
+	Glidepath                    bool    `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
+	AnnuityShare                 float64 `json:"annuityShare"`   // share of capital annuitized (joint-life real income); 0 = none
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).
@@ -122,6 +134,16 @@ func (pr Params) plan() decumul.Plan {
 		wr0 := pr.NeedAnnual / pr.Capital
 		p.Guard = decumul.Guardrails{Upper: wr0 * 1.2, Lower: wr0 * 0.8, Cut: 0.10, Raise: 0.10,
 			Floor: pr.GKFloor * pr.NeedAnnual}
+	}
+	// Risk-based guardrails (Kitces & Tharp, Morningstar): the same +-10% moves,
+	// but the band follows the safe rate of the REMAINING horizon and the rate
+	// is read on total wealth, discounted pensions included. It takes
+	// precedence over the 2006 rule when both are ticked.
+	if pr.RiskGuard && pr.Capital > 0 {
+		p.RiskGuard = decumul.RiskGuardrails{
+			SafeWR: pr.safeRateTable(), Band: 0.20, Cut: 0.10, Raise: 0.10,
+			Floor: pr.GKFloor * pr.NeedAnnual, Cap: 1.5 * pr.NeedAnnual, PVRate: pr.pvRate(),
+		}
 	}
 	// The written-rules cliquet (Kitces ratchet, Ben's §10 skeleton): +10% of
 	// the base spend per raise, only above 120% of the initial real capital,

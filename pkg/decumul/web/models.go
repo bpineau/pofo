@@ -229,8 +229,8 @@ func evalModel(base decumul.Plan, ns namedSource, capital, target float64, nPath
 	}
 }
 
-// fixedRule strips every adaptive spending rule (flex cut, guardrails,
-// ratchet, VPW, ABW, bounded percent) so the plan withdraws a fixed real
+// fixedRule strips every adaptive spending rule (flex cut, guardrails both
+// flavours, ratchet, VPW, ABW, bounded percent) so the plan withdraws a fixed real
 // amount. A safe-withdrawal solve must run on the fixed rule: the adaptive
 // rules rebase spending on wealth or on the initial withdrawal rate, which
 // makes ruin non-monotonic (or identically zero) in the withdrawal and the
@@ -239,6 +239,7 @@ func fixedRule(p decumul.Plan) decumul.Plan {
 	p.Flex = decumul.FlexRule{}
 	p.Guard = decumul.Guardrails{}
 	p.Ratchet = decumul.Ratchet{}
+	p.RiskGuard = decumul.RiskGuardrails{}
 	p.Percent = 0
 	p.Amortize = false
 	p.Bounded = decumul.BoundedPct{}

@@ -226,7 +226,11 @@ type Plan struct {
 	Tax        Tax
 	Source     scenario.Source
 	Guard      Guardrails // optional Guyton-Klinger spending rule (replaces Flex when active)
-	Ratchet    Ratchet    // optional only-up spending rule (ignored while Guard is active)
+	// RiskGuard is the risk-based guardrail (Kitces/Morningstar). It is the
+	// same architecture as Guard with a horizon-aware sensor, and it takes
+	// precedence over Guard, Flex and Ratchet when active.
+	RiskGuard RiskGuardrails
+	Ratchet   Ratchet // optional only-up spending rule (ignored while Guard is active)
 	// Percent, when > 0, switches to a percentage-of-portfolio (VPW-style)
 	// withdrawal: each year the household spends Percent of current total real
 	// wealth instead of a fixed real need. It cannot ruin (spending is always a
@@ -278,6 +282,99 @@ func (p Plan) runPath(seq scenario.Sequence) PathResult {
 		return p.RunPathMonthly(seq)
 	}
 	return p.RunPath(seq)
+}
+
+// RiskGuardrails is the risk-based guardrail (Kitces & Tharp, industrialised
+// by Morningstar): the Guyton-Klinger architecture with a better sensor.
+//
+// The 2006 rule compares the current withdrawal rate to a band around the
+// INITIAL rate, a sensor blind to everything that has happened since: it does
+// not know that the horizon has shortened, nor that a pension is about to
+// start. It therefore cuts a 78-year-old whose remaining horizon makes 6 %
+// perfectly sustainable, and stays silent on a 52-year-old drifting toward
+// trouble. Here the band tracks the rate that is still SAFE for the remaining
+// horizon (SafeWR, one entry per year, solved by the caller under a return
+// model), and the rate is measured on total wealth: the portfolio plus the
+// discounted value of the cashflows still to come, the same total-wealth view
+// the amortization rule takes.
+//
+// Everything else is Guyton-Klinger: leaving the band by the top cuts spending
+// by Cut, leaving it by the bottom raises it by Raise, and Floor bounds the
+// descent (without it, repeated cuts compound into an unbounded lifestyle
+// risk, which is the pathology the 2006 rule is known for).
+type RiskGuardrails struct {
+	// SafeWR is the band's moving centre: the sustainable withdrawal rate for
+	// the horizon remaining at each year index, as a fraction of total wealth.
+	// It is a planning table, computed once by the caller (a solve per horizon
+	// under its return model), never re-derived inside the path.
+	SafeWR []float64
+	Band   float64 // relative half-width around SafeWR (0.20 = the classic ±20 %)
+	Cut    float64 // proportional cut when the rate leaves the band by the top
+	Raise  float64 // proportional raise when it leaves by the bottom
+	Floor  float64 // spending level cuts stop at (euros/yr); 0 = none
+	// Cap is the spending level raises never exceed (euros/yr; 0 = none), and
+	// it is not optional in practice. The band's centre runs away as the
+	// horizon shortens (a five-year horizon is "safe" at 20 % a year), so an
+	// uncapped rule keeps raising every year until the household is spending a
+	// liquidation rate it cannot fund, which the kernel then counts as ruin.
+	// Capping the ratchet keeps the raise a lifestyle decision rather than a
+	// terminal countdown, exactly as the practitioners' implementations do.
+	Cap float64
+	// PVRate discounts the future cashflows into the sensor's wealth. Use the
+	// plan's expected real return, as the amortization rule does.
+	PVRate float64
+}
+
+// active reports whether the risk-based rule is set.
+func (g RiskGuardrails) active() bool {
+	return len(g.SafeWR) > 0 && g.Band > 0 && (g.Cut > 0 || g.Raise > 0)
+}
+
+// safeAt is the band's centre for year k, holding the last tabulated rate for
+// any year past the table (a horizon extended beyond what the caller solved).
+func (g RiskGuardrails) safeAt(k int) float64 {
+	switch {
+	case k < 0:
+		k = 0
+	case k >= len(g.SafeWR):
+		k = len(g.SafeWR) - 1
+	}
+	return g.SafeWR[k]
+}
+
+// adjust moves spending toward the band, given total wealth (portfolio plus
+// the discounted cashflows to come) and the year index.
+func (g RiskGuardrails) adjust(spending, wealth float64, k int) float64 {
+	safe := g.safeAt(k)
+	if wealth <= 0 || safe <= 0 {
+		return spending
+	}
+	switch wr := spending / wealth; {
+	case wr > safe*(1+g.Band):
+		spending *= 1 - g.Cut
+		if g.Floor > 0 && spending < g.Floor {
+			spending = g.Floor
+		}
+	case wr < safe*(1-g.Band):
+		spending *= 1 + g.Raise
+		if g.Cap > 0 && spending > g.Cap {
+			spending = g.Cap
+		}
+	}
+	return spending
+}
+
+// stepped rescales the moves to n evaluations per year, exactly like
+// Guardrails.stepped: a breach persisting a full year compounds to the same
+// annual adjustment. The band, the table and the floor are levels, not rates.
+func (g RiskGuardrails) stepped(n int) RiskGuardrails {
+	if n <= 1 {
+		return g
+	}
+	inv := 1 / float64(n)
+	g.Cut = 1 - math.Pow(1-g.Cut, inv)
+	g.Raise = math.Pow(1+g.Raise, inv) - 1
+	return g
 }
 
 // BoundedPct parametrises the bounded percent-of-portfolio rule: target Pct
