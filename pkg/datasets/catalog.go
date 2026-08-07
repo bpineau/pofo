@@ -20,8 +20,8 @@ type Asset struct {
 	Aliases  []string `json:"aliases"`         // alternative identifiers accepted on input
 	Name     string   `json:"name"`            // full asset / share-class name
 	UCITS    bool     `json:"ucits"`           // UCITS-regulated fund or ETF
-	Source   string   `json:"source"`          // quote source: "yahoo", "ft", "morningstar" or "stooq"
-	Symbol   string   `json:"symbol"`          // Yahoo/Stooq symbol or Morningstar id; empty for ft
+	Source   string   `json:"source"`          // quote source: "yahoo", "ft", "morningstar", "stooq", or "index" (served from the embedded reconstruction, no live symbol)
+	Symbol   string   `json:"symbol"`          // Yahoo/Stooq symbol or Morningstar id; empty for ft and index
 	Xid      string   `json:"xid"`             // FT internal id; empty otherwise
 	Currency string   `json:"currency"`        // quote currency (ISO 4217)
 	Fees     float64  `json:"fees"`            // published TER, percent per year; 0 = unknown
