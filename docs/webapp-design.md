@@ -215,13 +215,17 @@ Every FIRE mount also tells the page what it is running on, through two
 plain mount, the file's base name under `-fire`), which the top bar shows as a
 provenance pill: amber "generic market · load portfolio" when no panel is
 bound, green "market: <name>" when one is. `WithPicker` hands the front end
-the loader payload (`{base, catalogURL, examples:[{name,title,blurb}]}`, sent
-as `meta.picker`) that fills the drawer's empty state with the bundled builds
-and a small search-and-weigh composer; choosing one is pure navigation to
+the loader payload (`{base, catalogURL, viewURL,
+examples:[{name,title,blurb}]}`, sent as `meta.picker`) that fills the drawer's
+empty state with the bundled builds and a search-and-weigh composer, and that a
+bound mount folds away under its allocation bar ("change portfolio", its draft
+seeded from the live holdings). Choosing one is pure navigation to
 `<base>/e/<name>/` or `<base>/p/<spec>!sim:on/`, carrying the page's current
-hash so the visitor's scenario survives the move. The examples arrive as plain
-data, so `pkg/decumul/web` never learns about `examples.List`; only `-serve`
-sets a picker, since only it owns those mounts and `/catalog.json`, and the
+hash so the visitor's scenario survives the move; `viewURL` adds the other
+reading of a draft, a link to `/view?p=<spec>`, the same grammar this
+visualizer's own composer writes. The examples arrive as plain data, so
+`pkg/decumul/web` never learns about `examples.List`; only `-serve` sets a
+picker, since only it owns those mounts, `/catalog.json` and `/view`, and the
 standalone `-fire` page states the command-line route in that slot instead.
 
 Each `/view` report section then carries a **Simulate** link to the matching
