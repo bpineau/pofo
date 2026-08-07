@@ -72,6 +72,7 @@ var figures = map[string]func() string{
 	"buffer-flat":              figBufferFlat,
 	"traversees-matelas":       figTraverseesMatelas,
 	"cascade-4pct":             figCascade4pct,
+	"clavier-leviers":          figClavierLeviers,
 	"utilite-ce":               figUtiliteCE,
 	"correlation-vol":          figCorrelationVol,
 	"primes-echelle":           figPrimesEchelle,
