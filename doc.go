@@ -21,7 +21,8 @@
 //     min-volatility, risk-parity, max-sortino, return-to-drawdown,
 //     min-ulcer, max-worst-5y, cwarp) from the assets' historical returns.
 //   - pkg/portfolio: the allocation file format and the rebalanced,
-//     fee-aware simulation that replays a portfolio over time.
+//     fee-aware simulation that replays a portfolio over time, attributing
+//     each day's return to its holdings.
 //   - pkg/suggest: structure-first analysis: regime coverage, look-through
 //     composition splits (asset classes, geography, currency, sectors,
 //     duration), redundancy and out-of-sample-validated gap-filling

@@ -60,6 +60,12 @@
 // fees daily. Asset TERs are never deducted: they are already reflected in
 // prices.
 //
+// Along the way it attributes each day's time-weighted return to its
+// holdings (SimResult.Contributions: held shares x price move / value;
+// envelope fees and the leverage cash leg stay unattributed).
+// SimResult.MonthlyContributions folds the attribution into calendar
+// months, the input for contribution timelines and per-regime views.
+//
 // # Units
 //
 // Holding.Weight and Asset.Weight are FRACTIONS (0.60 = 60 %); RawWeight,

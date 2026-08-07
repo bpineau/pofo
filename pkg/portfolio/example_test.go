@@ -152,3 +152,34 @@ func ExampleBuild() {
 	// Output:
 	// demo: 2 assets, 60 points, final index 159.0
 }
+
+// Simulate attributes each day's return to its holdings
+// (SimResult.Contributions); MonthlyContributions folds them into calendar
+// months, the input for contribution timelines and per-regime aggregations.
+func ExampleSimResult_MonthlyContributions() {
+	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	mk := func(symbol string, daily float64) *marketdata.Series {
+		s := &marketdata.Series{Symbol: symbol}
+		v := 100.0
+		for i := range 90 {
+			s.Points = append(s.Points, marketdata.Point{Date: start.AddDate(0, 0, i), Close: v})
+			v *= 1 + daily
+		}
+		return s
+	}
+	p := &portfolio.Portfolio{Name: "p", Assets: []portfolio.Asset{
+		{ID: "EQ", Symbol: "EQ", Weight: 0.6, Fees: -1, Series: mk("EQ", 0.001)},
+		{ID: "BD", Symbol: "BD", Weight: 0.4, Fees: -1, Series: mk("BD", 0)},
+	}}
+	sim, err := portfolio.Simulate(p, 90)
+	if err != nil {
+		panic(err)
+	}
+	months, mc := sim.MonthlyContributions()
+	fmt.Printf("%d months from %s\n", len(months), months[0].Format("2006-01"))
+	fmt.Printf("EQ %+.1f pts in %s, BD %+.1f\n",
+		mc[0][0]*100, months[0].Format("2006-01"), mc[1][0]*100)
+	// Output:
+	// 3 months from 2024-01
+	// EQ +1.8 pts in 2024-01, BD +0.0
+}

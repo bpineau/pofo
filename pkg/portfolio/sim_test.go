@@ -158,3 +158,43 @@ func TestSimulateContributionsEnvelopeFees(t *testing.T) {
 		}
 	}
 }
+
+func TestMonthlyContributions(t *testing.T) {
+	// 70 daily points span three calendar months from 2020-01-01.
+	p := &Portfolio{Name: "t", Assets: []Asset{
+		{Symbol: "A", Weight: 0.5, Series: rampSeries("A", 0, 70, 100, 1)},
+		{Symbol: "B", Weight: 0.5, Series: constSeries("B", 0, 70, 200)},
+	}}
+	sim, err := Simulate(p, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	months, mc := sim.MonthlyContributions()
+	if len(months) != 3 || len(mc) != 2 {
+		t.Fatalf("%d months, %d assets", len(months), len(mc))
+	}
+	for _, m := range months {
+		if m.Day() != 1 || m.Location() != time.UTC {
+			t.Fatalf("month %v not normalized to the first, UTC", m)
+		}
+	}
+	if !months[0].Equal(time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Fatalf("first month %v", months[0])
+	}
+	// Monthly sums must conserve the daily totals, asset by asset.
+	for i := range mc {
+		daily, monthly := 0.0, 0.0
+		for _, c := range sim.Contributions[i] {
+			daily += c
+		}
+		for _, c := range mc[i] {
+			monthly += c
+		}
+		if math.Abs(daily-monthly) > 1e-12 {
+			t.Fatalf("asset %d: monthly sum %v != daily sum %v", i, monthly, daily)
+		}
+	}
+	if mc[1][0] != 0 {
+		t.Fatalf("flat asset contributed %v", mc[1][0])
+	}
+}

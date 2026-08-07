@@ -74,3 +74,44 @@ func ExampleCurrencySplit() {
 	// USD 0.42  JPY 0.06  Other 0.12  None 0.40
 	// unhedged foreign 60% (top USD 42%), non-fiat 40%
 }
+
+// Contributors decomposes Coverage per holding: for each regime, who covers
+// it and with how much notional weight (stacked funds count each leg's).
+func ExampleContributors() {
+	holdings := []suggest.Holding{
+		{ID: "NTSX", Weight: 0.5, HasMeta: true, Meta: suggest.Meta{
+			AssetClass: "multi-asset",
+			Exposures:  map[string]float64{"equity": 0.9, "government-bond": 0.6},
+		}},
+		{ID: "GOLD", Weight: 0.5, HasMeta: true, Meta: suggest.Meta{AssetClass: "gold"}},
+	}
+	contrib := suggest.Contributors(holdings, suggest.RegimeFramework())
+	for _, c := range contrib[suggest.Growth] {
+		fmt.Printf("growth: %s %.0f%%\n", c.ID, c.Weight*100)
+	}
+	for _, c := range contrib[suggest.Crisis] {
+		fmt.Printf("crisis: %s %.0f%%\n", c.ID, c.Weight*100)
+	}
+	// Output:
+	// growth: NTSX 45%
+	// crisis: GOLD 50%
+}
+
+// DurationSplit tallies look-through interest-rate duration: a stacked
+// fund's bond leg counts its notional times the fund's Duration figure.
+func ExampleDurationSplit() {
+	holdings := []suggest.Holding{
+		{ID: "NTSX", Weight: 0.4, HasMeta: true, Meta: suggest.Meta{
+			AssetClass: "multi-asset",
+			Exposures:  map[string]float64{"equity": 0.9, "government-bond": 0.6},
+			Duration:   7,
+		}},
+		{ID: "LINKER", Weight: 0.2, HasMeta: true, Meta: suggest.Meta{
+			AssetClass: "inflation-linked-bond", Duration: 8,
+		}},
+	}
+	led := suggest.DurationSplit(holdings)
+	fmt.Printf("nominal %.2f y, real %.2f y\n", led.Nominal, led.Real)
+	// Output:
+	// nominal 1.68 y, real 1.60 y
+}

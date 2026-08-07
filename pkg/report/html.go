@@ -26,7 +26,7 @@ type AssetRow struct {
 type CoverageSeg struct {
 	Width float64 // segment width as a percent of the track
 	Color string  // fill color (stable per holding across the rows)
-	Title string  // tooltip, e.g. "NTSG 25%"
+	Tip   string  // instant-tooltip text (data-tip), e.g. "NTSG 25%"
 }
 
 // CoverageBar is one category row (a macro regime or a risk factor) of a
@@ -258,7 +258,7 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track">{{range .Segments}}<span class="cov-seg" style="width:{{.Width}}%;background:{{.Color}}"{{if .Title}} data-tip="{{.Title}}"{{end}}></span>{{end}}</span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track">{{range .Segments}}<span class="cov-seg" style="width:{{.Width}}%;background:{{.Color}}"{{if .Tip}} data-tip="{{.Tip}}"{{end}}></span>{{end}}</span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
 {{- if .Detail}}
 <div class="cov-detail">{{.Detail}}</div>
 {{- end}}
