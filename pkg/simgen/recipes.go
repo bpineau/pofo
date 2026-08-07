@@ -1656,11 +1656,22 @@ func iglnRecipe() Recipe {
 // dbiDonors are the real managed-futures NAVs spliced behind the DBi family,
 // nearest trade first. Measured against DBMF on their common window (monthly
 // correlation, the honest yardstick for a sleeve held for years): the Virtus
-// AlphaSimplex fund 0.81 from 2010-08, the Guggenheim fund 0.72 from 2007-02.
-// The futures-price reconstruction manages 0.60 over the same window, so real
-// quotes of another manager's programme beat it and are used wherever they
-// exist; the reconstruction only covers what they cannot reach.
-var dbiDonors = []string{"ASFYX", "RYMFX"}
+// AlphaSimplex fund 0.81 from 2010-08, the Guggenheim fund 0.72 from 2007-02,
+// Man AHL Diversified 0.77 from 1996-03. The futures-price reconstruction
+// manages 0.60 over the same window, so real quotes of another manager's
+// programme beat it and are used wherever they exist; the reconstruction only
+// covers what they cannot reach, which since AHL joined means before 1996-03.
+//
+// ahlDiversified is the deepest donor of the family and the one that made the
+// sparse-cadence handling necessary: the fund dealt WEEKLY until 2016, so the
+// whole segment it contributes (1996-03 to 2007-02) arrives one NAV a week and
+// is projected onto the reconstruction's daily calendar (see DonorChain). Its
+// record reproduces the manager's published one (+1649.5 % from 1996-03-26 to
+// 2026-02-27 against a published +1649.47 %) and its crisis years are the real
+// thing: 1998 +41 %, 2008 +33 %, 2022 +12 %.
+const ahlDiversified = "IE0000360275"
+
+var dbiDonors = []string{"ASFYX", "RYMFX", ahlDiversified}
 
 // chainedTrend builds a managed-futures history the way the evidence says it
 // should be built: real NAVs of the closest programmes for as far back as they
@@ -1668,18 +1679,23 @@ var dbiDonors = []string{"ASFYX", "RYMFX"}
 // the fund the donors are volatility-matched to (the fund itself, or the twin
 // it is a share class of), donors is the chain nearest first, and trendIR the
 // pin the deep tail is levelled to.
+//
+// The reconstruction is built first because it serves twice: behind the chain,
+// and inside it as the daily texture a sparsely-dealing donor is projected onto
+// (see DonorChain). The oldest donors are weekly-dealing funds, and only the
+// engine can say what a trend book did between two of their NAVs.
 func chainedTrend(name, calibrate string, donors []string, cfg TSMOMConfig, trendIR float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		chain, err := DonorChain(f, cfg.CashID, calibrate, donors, from)
+		deep, err := tsmom(name+" (deep reconstruction)", cfg, trendIR)(f, from)
+		if err != nil {
+			return nil, err
+		}
+		chain, err := DonorChain(f, cfg.CashID, calibrate, donors, from, deep)
 		if err != nil {
 			return nil, err
 		}
 		chain.Name = name
 		chain.Source = "simdata"
-		deep, err := tsmom(name+" (deep reconstruction)", cfg, trendIR)(f, from)
-		if err != nil {
-			return nil, err
-		}
 		marketdata.ExtendBack(chain, deep)
 		chain.SimulatedBefore = time.Time{}
 		return chain, nil
@@ -1696,8 +1712,8 @@ func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
-		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it (Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→), " +
-			"then the 12-month TSMOM reconstruction for 1989-2007 (monthly path from the bundled trend reference), IR-pinned to the DBi replication ratio, real DBMF grafted from 2019",
+		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it (Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→, its weekly NAVs projected onto the reconstruction's daily calendar), " +
+			"then the 12-month TSMOM reconstruction for 1989-1996 (monthly path from the bundled trend reference), IR-pinned to the DBi replication ratio, real DBMF grafted from 2019",
 		Build:           dbiChain("DBMF (donor chain)", dbiDonors, mfConfig(0.115, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
@@ -1715,7 +1731,7 @@ func dbmfpaRecipe() Recipe {
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
 		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, " +
-			"real NAVs of other managed-futures programmes behind it (2010-08, 2007-02), then the TSMOM reconstruction for 1989-2007, real DBMF.PA grafted from 2025",
+			"real NAVs of other managed-futures programmes behind it (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996, real DBMF.PA grafted from 2025",
 		Build:           dbiChain("DBMF.PA (donor chain)", append([]string{"DBMF"}, dbiDonors...), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
@@ -1734,7 +1750,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMFE",
 		Name: "iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR",
-		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it (2010-08, 2007-02), then the TSMOM reconstruction for 1989-2007, " +
+		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996, " +
 			"the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
@@ -1770,8 +1786,8 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, 14% vol target ~ the fund's realized 14.7%), IR-pinned to the KFA MLM Index, real KMLM grafted from 2020",
-		Build:           chainedTrend("KMLM (donor chain)", "KMLM", []string{"ASFYX", "RYMFX"}, mfConfig(0.14, 0.0090), mlmInfoRatio),
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund (Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→), then 12-month TSMOM on a cross-asset futures basket (14% vol target ~ the fund's realized 14.7%), IR-pinned to the KFA MLM Index, real KMLM grafted from 2020",
+		Build:           chainedTrend("KMLM (donor chain)", "KMLM", []string{"ASFYX", "RYMFX", ahlDiversified}, mfConfig(0.14, 0.0090), mlmInfoRatio),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
 	}
@@ -1802,9 +1818,9 @@ func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:   "LU1103257975",
 		Name: "AQR Managed Futures UCITS: TSMOM replication",
-		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap) from 2010, real NAVs of other managed-futures programmes behind it (2007-02), " +
-			"then the 12-month TSMOM reconstruction for 1989-2007 at a 9% vol target ~ the class's realized 9.3%, IR-pinned to AQR's realized record, real AQR grafted from 2015",
-		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", []string{"AQMIX", "RYMFX"}, mfConfig(0.09, 0.0079), aqrTrendInfoRatio),
+		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03), " +
+			"then the 12-month TSMOM reconstruction for 1989-1996 at a 9% vol target ~ the class's realized 9.3%, IR-pinned to AQR's realized record, real AQR grafted from 2015",
+		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", []string{"AQMIX", "RYMFX", ahlDiversified}, mfConfig(0.09, 0.0079), aqrTrendInfoRatio),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
 	}
@@ -1873,7 +1889,7 @@ func aqrmfHedgedRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1662501532",
 		Name:            "AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast",
-		Method:          "real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
+		Method:          "real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, then the IR-pinned 12-month TSMOM backcast) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
 		Build:           aqrHedgedBuild,
 		ValidateAgainst: "LU1662501532",
 		SpliceReal:      "LU1662501532",
@@ -1900,7 +1916,7 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	// manager's own US fund from 2010, another manager's programme behind it,
 	// and the reconstruction only for what neither reaches.
 	usd, err := chainedTrend("AQR MF USD (donor chain)", "LU1103257975",
-		[]string{"AQMIX", "RYMFX"}, cfg, aqrTrendInfoRatio)(f, from)
+		[]string{"AQMIX", "RYMFX", ahlDiversified}, cfg, aqrTrendInfoRatio)(f, from)
 	if err != nil {
 		return nil, err
 	}
@@ -1958,8 +1974,8 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, 16% vol target ~ the fund's realized 16.9%), IR-pinned to the SG Trend Index, real CTA grafted from 2022",
-		Build:           chainedTrend("CTA (donor chain)", "CTA", []string{"AHLPX", "ASFYX", "RYMFX"}, mfConfig(0.16, 0.0075), sgTrendInfoRatio),
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund (Man AHL US 2014-08→, Virtus AlphaSimplex 2010-08→, Guggenheim 2007-02→, Man AHL Diversified 1996-03→), then 12-month TSMOM on a cross-asset futures basket (16% vol target ~ the fund's realized 16.9%), IR-pinned to the SG Trend Index, real CTA grafted from 2022",
+		Build:           chainedTrend("CTA (donor chain)", "CTA", []string{"AHLPX", "ASFYX", "RYMFX", ahlDiversified}, mfConfig(0.16, 0.0075), sgTrendInfoRatio),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
 	}
