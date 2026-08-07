@@ -103,6 +103,7 @@ func run(ctx context.Context, argv []string) error {
 	fireFlag := fs.Bool("fire", false, "open the decumulation/FIRE explorer (local web UI; optionally for a portfolio file), then serve until stopped")
 	serveFlag := fs.Bool("serve", false, "serve the web app (hub, visualizer, FIRE simulator, book) until stopped; portfolio file args feed the FIRE historical models")
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
+	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
@@ -271,9 +272,15 @@ Options:
 		return runCoverage(specs, &opt)
 	}
 	if *serveFlag {
+		if *pprofAddr != "" {
+			startPprof(*pprofAddr)
+		}
 		return runServe(ctx, &opt, client, specs, *listenAddr)
 	}
 	if *fireFlag {
+		if *pprofAddr != "" {
+			startPprof(*pprofAddr)
+		}
 		return runFire(ctx, &opt, client, specs)
 	}
 	if *permanentFlag {
