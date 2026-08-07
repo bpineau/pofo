@@ -7788,6 +7788,37 @@
     "xid": "7140102"
   },
   {
+    "id": "MTH",
+    "isin": "LU1686832194",
+    "name": "Amundi Euro Government Bond 25+Y UCITS ETF Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "xid": "85564769",
+    "currency": "EUR",
+    "fees": 0.07,
+    "asset_class": "government-bond",
+    "underlying": "euro-denominated sovereign bonds with 25+ years to maturity (eurozone governments)",
+    "benchmark_index": "Bloomberg Euro Treasury 25+ Year Bond Index",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 40,
+      "Italy": 22,
+      "Germany": 15,
+      "Spain": 13,
+      "Other eurozone": 10
+    },
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1,
+    "duration": 20.0,
+    "notes": "euro-native long-duration line, accumulating, cheapest and largest of the eurozone 25+ ETFs; deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists)",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1686832194"
+    ]
+  },
+  {
     "id": "VFINX",
     "isin": "",
     "name": "Vanguard 500 Index Fund Investor Shares",
