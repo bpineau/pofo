@@ -4,51 +4,51 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les séries et blogs de référence
 
-**Early Retirement Now : la « Safe Withdrawal Rate Series » (Karsten Jeske)** : la référence quantitative du sujet : 60+ volets, simulations reproductibles, honnêteté systématique : le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les volets 1 et 26 ; le guide de lecture complet est [[serie-ern]].
+**Early Retirement Now, la « Safe Withdrawal Rate Series » (Karsten Jeske)** : la référence quantitative du sujet. 60+ volets, simulations reproductibles, honnêteté systématique. Le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les volets 1 et 26 ; le guide de lecture complet est [[serie-ern]].
 
-**Kitces.com (Michael Kitces)** : le blog du métier de conseiller américain : la source des guardrails par risque, du bond tent, du ratcheting : technique, nuancé, prolifique. Chercher par sujet plutôt que suivre le flux. [[guardrails-morningstar]], [[glidepaths]]
+**Kitces.com (Michael Kitces)** : le blog du métier de conseiller américain. La source des guardrails par risque, du bond tent, du ratcheting. Technique, nuancé, prolifique. Chercher par sujet plutôt que suivre le flux. [[guardrails-morningstar]], [[glidepaths]]
 
-**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel : le wiki est une encyclopédie tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
+**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel. Le wiki est une encyclopédie tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
 
-**Portfolio Charts (Tyler)** : les portefeuilles types (Permanent, Golden Butterfly...) testés par pays avec SWR et drawdowns : l'outil visuel de la partie portefeuille. [[portefeuilles-tous-temps]]
+**Portfolio Charts (Tyler)** : les portefeuilles types (Permanent, Golden Butterfly...) testés par pays avec SWR et drawdowns. L'outil visuel de la partie portefeuille. [[portefeuilles-tous-temps]]
 
-**Mr. Money Mustache** : le fondateur culturel du mouvement : à lire pour l'arithmétique du taux d'épargne et l'énergie : pas pour la science du retrait, qui a progressé depuis. [[fire-cest-quoi]]
+**Mr. Money Mustache** : le fondateur culturel du mouvement. À lire pour l'arithmétique du taux d'épargne et l'énergie, pas pour la science du retrait, qui a progressé depuis. [[fire-cest-quoi]]
 
-**[r/vosfinances](https://www.reddit.com/r/vosfinances) et les forums patrimoniaux français** : la communauté française : plus petite, précieuse pour les spécificités locales (PUMa, enveloppes, cas vécus). [[taxe-puma]], [[temoignages-fire]]
+**[r/vosfinances](https://www.reddit.com/r/vosfinances) et les forums patrimoniaux français** : la communauté française. Plus petite, précieuse pour les spécificités locales (PUMa, enveloppes, cas vécus). [[taxe-puma]], [[temoignages-fire]]
 
 ## Les livres
 
-**Vicki Robin & Joe Dominguez, *Your Money or Your Life* (1992)** : le socle philosophique du mouvement (l'argent comme énergie vitale) : daté sur la technique, intact sur le fond. [[fire-cest-quoi]]
+**Vicki Robin & Joe Dominguez, *Your Money or Your Life* (1992)** : le socle philosophique du mouvement (l'argent comme énergie vitale). Daté sur la technique, intact sur le fond. [[fire-cest-quoi]]
 
-**Wade Pfau, *Retirement Planning Guidebook*** : le manuel praticien le plus complet du retrait américain : les deux écoles (probability-based / safety-first) traitées à égalité : la référence « métier ». [[panorama-strategies-retrait]], [[rentes-et-annuites]]
+**Wade Pfau, *Retirement Planning Guidebook*** : le manuel praticien le plus complet du retrait américain. Les deux écoles (probability-based / safety-first) y sont traitées à égalité. La référence « métier ». [[panorama-strategies-retrait]], [[rentes-et-annuites]]
 
-**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : la référence sur ce que chaque classe d'actifs paie et pourquoi : le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
+**Antti Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022)** : la référence sur ce que chaque classe d'actifs paie et pourquoi. Le fond théorique de toute la partie portefeuille. [[rendements-attendus]], [[actifs-defensifs]]
 
 **William Bernstein, *The Intelligent Asset Allocator* et *The Four Pillars of Investing*** : la meilleure pédagogie écrite des deux moyennes, de la diversification et de l'histoire des marchés. [[rendements-arithmetiques-geometriques]]
 
-**Harry Browne, *Fail-Safe Investing* (1999)** : l'archétype tous-temps par son inventeur : court, radical, structurant même si l'on n'adopte pas les quatre quarts. [[portefeuilles-tous-temps]]
+**Harry Browne, *Fail-Safe Investing* (1999)** : l'archétype tous-temps par son inventeur. Court, radical, structurant même si l'on n'adopte pas les quatre quarts. [[portefeuilles-tous-temps]]
 
-**Bill Perkins, *Die With Zero* (2020)** : le plaidoyer pour dépenser et donner du vivant : à lire avec les garde-fous du chapitre dédié. [[depenses-en-retraite]], [[psychologie-du-retrait]]
+**Bill Perkins, *Die With Zero* (2020)** : le plaidoyer pour dépenser et donner du vivant. À lire avec les garde-fous du chapitre dédié. [[depenses-en-retraite]], [[psychologie-du-retrait]]
 
-**Ernie Zelinski, *How to Retire Happy, Wild, and Free*** : le classique **non** financier que les vétérans recommandent le plus : le « vers quoi ». [[sens-et-identite]]
+**Ernie Zelinski, *How to Retire Happy, Wild, and Free*** : le classique **non** financier que les vétérans recommandent le plus. Le « vers quoi ». [[sens-et-identite]]
 
-**Kahneman, *Système 1 / Système 2* ; Thaler, *Misbehaving*** : les fondations comportementales : les biais du rentier y sont tous. [[psychologie-du-retrait]]
+**Kahneman, *Système 1 / Système 2* ; Thaler, *Misbehaving*** : les fondations comportementales. Les biais du rentier y sont tous. [[psychologie-du-retrait]]
 
-**Adam Fergusson, *When Money Dies* ; Barton Biggs, *Wealth, War and Wisdom*** : les extrêmes vécus (Weimar ; la Seconde Guerre patrimoine par patrimoine) : la partie inflation en version récit. [[hyperinflation-et-extremes]], [[inflation-histoire]]
+**Adam Fergusson, *When Money Dies* ; Barton Biggs, *Wealth, War and Wisdom*** : les extrêmes vécus (Weimar ; la Seconde Guerre patrimoine par patrimoine). La partie inflation en version récit. [[hyperinflation-et-extremes]], [[inflation-histoire]]
 
-**JL Collins, *The Simple Path to Wealth*** : la porte d'entrée accumulation la plus lisible : à offrir au débutant : la décumulation y est sommaire (ce livre prend le relais).
+**JL Collins, *The Simple Path to Wealth*** : la porte d'entrée accumulation la plus lisible. À offrir au débutant. La décumulation y est sommaire (ce livre prend le relais).
 
 ## Les papiers académiques et études clés
 
-**Bengen (1994), « Determining Withdrawal Rates Using Historical Data » ; Cooley-Hubbard-Walz (1998, l'étude Trinity)** : les fondations : courtes, lisibles, en libre accès. [[etude-trinity]]
+**Bengen (1994), « Determining Withdrawal Rates Using Historical Data » ; Cooley-Hubbard-Walz (1998, l'étude Trinity)** : les fondations. Courtes, lisibles, en libre accès. [[etude-trinity]]
 
-**Anarkulova, Cederburg & O'Doherty (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions : les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
+**Anarkulova, Cederburg & O'Doherty (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions. Les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
 
-**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays : la matière première du broad-sample. [[la-machine-pofo]]
+**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[la-machine-pofo]]
 
 **Kitces & Pfau (2014), « Reducing Retirement Risk with a Rising Equity Glide Path »** : le glidepath montant, source primaire. [[glidepaths]]
 
-**Guyton & Klinger (2006), « Decision Rules and Maximum Initial Withdrawal Rates »** : les guardrails originaux : à lire en connaissant la critique. [[guyton-klinger]]
+**Guyton & Klinger (2006), « Decision Rules and Maximum Initial Withdrawal Rates »** : les guardrails originaux. À lire en connaissant la critique. [[guyton-klinger]]
 
 **Blanchett (2013), « Estimating the True Cost of Retirement »** : le sourire des dépenses. [[depenses-en-retraite]]
 
@@ -60,23 +60,23 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Reinhart & Sbrancia (2011), « The Liquidation of Government Debt »** : la répression financière documentée. [[inflation-histoire]]
 
-**Dimson, Marsh & Staunton, *Global Investment Returns Yearbook* (annuel, UBS)** : le siècle mondial en chiffres, pays par pays, mis à jour chaque année : le rapport annuel à lire. [[diversification-internationale]]
+**Dimson, Marsh & Staunton, *Global Investment Returns Yearbook* (annuel, UBS)** : le siècle mondial en chiffres, pays par pays, mis à jour chaque année. Le rapport annuel à lire. [[diversification-internationale]]
 
 ## Les rapports annuels et données vivantes
 
-**Morningstar, *The State of Retirement Income* (chaque décembre)** : le taux recommandé recalculé aux rendements prospectifs + le comparatif des règles : le « second avis » annuel gratuit du plan. [[guardrails-morningstar]], [[rendements-attendus]]
+**Morningstar, *The State of Retirement Income* (chaque décembre)** : le taux recommandé recalculé aux rendements prospectifs + le comparatif des règles. Le « second avis » annuel gratuit du plan. [[guardrails-morningstar]], [[rendements-attendus]]
 
-**Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives : la calibration annuelle de μ. [[rendements-attendus]]
+**Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives. La calibration annuelle de μ. [[rendements-attendus]]
 
-**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour : celui affiché en §00. [[valorisations-et-cape]]
+**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour. Celui affiché en §00. [[valorisations-et-cape]]
 
-**Le SG Trend Index** : le référentiel des programmes de trend : le contrôle de tout véhicule. [[managed-futures]]
+**Le SG Trend Index** : le référentiel des programmes de trend. Le contrôle de tout véhicule. [[managed-futures]]
 
 ## Les sources officielles françaises
 
-**[info-retraite.fr](https://www.info-retraite.fr) (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan : l'audit d'une heure le plus rentable du livre. [[retraite-legale]]
+**[info-retraite.fr](https://www.info-retraite.fr) (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan. L'audit d'une heure le plus rentable du livre. [[retraite-legale]]
 
-**[impots.gouv.fr](https://www.impots.gouv.fr) et le BOFiP ; [service-public.fr](https://www.service-public.fr)** : les textes fiscaux à jour : priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
+**[impots.gouv.fr](https://www.impots.gouv.fr) et le BOFiP ; [service-public.fr](https://www.service-public.fr)** : les textes fiscaux à jour. Ils priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
 
 **[urssaf.fr](https://www.urssaf.fr) (la CSM et son simulateur)** : le poste de veille du rentier de pont. [[taxe-puma]]
 
@@ -86,11 +86,11 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les outils
 
-**pofo (la page FIRE que ce livre habite)** : le laboratoire multi-modèles du plan : quatre lentilles, les règles simulables, le solveur en équivalences : le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
+**pofo (la page FIRE que ce livre habite)** : le laboratoire multi-modèles du plan. Quatre lentilles, les règles simulables, le solveur en équivalences. Le mode d'emploi est [[utiliser-la-page-fire]], la plomberie [[la-machine-pofo]].
 
-**TPAW Planner ([tpawplanner.com](https://tpawplanner.com))** : l'ABW/TPAW complet, gratuit : la référence de la famille actuarielle. [[amortissement-abw]]
+**TPAW Planner ([tpawplanner.com](https://tpawplanner.com))** : l'ABW/TPAW complet, gratuit. La référence de la famille actuarielle. [[amortissement-abw]]
 
-**Portfolio Charts ; cFIREsim ; FICalc** : les simulateurs historiques gratuits : de bons seconds avis (avec leurs biais d'échantillon en tête, [[pieges-des-simulateurs]]).
+**Portfolio Charts ; cFIREsim ; FICalc** : les simulateurs historiques gratuits. De bons seconds avis (avec leurs biais d'échantillon en tête, [[pieges-des-simulateurs]]).
 
 **Le VPW worksheet (Bogleheads) ; [tipsladder.com](https://www.tipsladder.com)** : le classeur VPW (pont de pension compris) et l'échelle TIPS américaine (le modèle conceptuel de l'échelle euro). [[vpw]], [[echelle-obligataire]]
 
@@ -103,7 +103,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 ## L'essentiel à retenir
 
 - Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles, Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
-- Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee : la veille du plan est là.
+- Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee. La veille du plan est là.
 - Les outils se croisent (pofo en laboratoire principal, TPAW et les simulateurs historiques en seconds avis) : jamais un seul verdict ([[pieges-des-simulateurs]]).
 - Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti. Et ce livre est conçu pour servir de carte au milieu.
 
