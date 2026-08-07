@@ -126,6 +126,45 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 	return out
 }
 
+// detailSource is the return model behind every detail section (fans aside,
+// which always show the four lenses): the strip column the user clicked
+// (Params.Central), or the calibrated central case. Data-driven selections
+// ("hist", "boot") fall back to the central case when no adequate panel
+// exists; the central default honours the glidepath toggle via centralSource.
+func (pr Params) detailSource(panel *scenario.Panel, years int) scenario.Source {
+	if panel != nil && panel.Periods() < minPanelMonths {
+		panel = nil
+	}
+	cMu, cSigma, cDf := centralParams(pr, panel)
+	months := years * 12
+	w := pr.Weights
+	if panel != nil && w == nil {
+		w = panel.Weights
+	}
+	switch pr.central() {
+	case "stress":
+		return scenario.NewMarkovRegime(cMu, cSigma, cDf, years)
+	case "broad":
+		return broadSampleSource(years)
+	case "lost":
+		return scenario.NewLostDecadeRegime(cMu, cSigma, cDf, years)
+	case "hist":
+		if panel != nil {
+			c := scenario.HistoricalCohorts{Panel: *panel, Weights: w, Periods: months}
+			if c.Count() > 0 {
+				return scenario.Compounded{Inner: c, Group: 12}
+			}
+		}
+	case "boot":
+		if panel != nil {
+			return scenario.Compounded{
+				Inner: scenario.StationaryBootstrap{Panel: *panel, Weights: w, MeanBlock: 24, Periods: months},
+				Group: 12}
+		}
+	}
+	return centralSource(pr, cMu, cSigma, cDf, years)
+}
+
 // centralSource is the central-case return model shared by the verdict and the
 // detail views: the calibrated Student-t, or a rising-equity glidepath (bond
 // tent) blending the central equity assumptions with a fixed bond sleeve when

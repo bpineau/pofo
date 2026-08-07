@@ -56,7 +56,7 @@ const GROUPS = [
     r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
       "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier; overrides the fixed need and the flex/guardrails/ratchet rules."),
     c("abw", "Amortize over the horizon (ABW / TPAW)",
-      "Amortization-Based Withdrawal, the rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth exactly over the REMAINING years, assuming the central expected return — a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market — after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
+      "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return — a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market — after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
     c("bounded", "Bounded % of portfolio (Vanguard-style)",
       "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out — it sits between the fixed rule and VPW on the frontier. Overrides flex/guardrails/ratchet."),
     r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
@@ -69,8 +69,6 @@ const GROUPS = [
       "Long-horizon annual volatility (variance-ratio-consistent), lower than the 1-year headline vol. Vol matters almost as much as return: 10→12% nearly doubles ruin."),
     r("df", "Tail df (low = fat)", 3, 30, 1, 5, "int",
       "How much more often EXTREME years happen than a bell curve allows, at the same volatility. At df 5 a catastrophic year (say -30% real, a 3-sigma event) is roughly ten times more likely than at df 30 (≈ normal law); ordinary years barely change. Low df = crash-prone world. In portfolio mode it is seeded from the holdings' monthly kurtosis."),
-    c("regime", "Sequence-risk stress (cluster bad years)",
-      "NOT a replay of a bad historical sequence: a synthetic model where bad years cluster into multi-year bears (about 19% of years, runs of ~3) at the SAME long-run mean, so only the ORDERING is stressed. Roughly one simulated future in five starts inside a bear. The strip's Sequence-stress column always shows it; this checkbox makes it the active model for the detail charts. The real named worst cases are section 02."),
     c("conservative", "Broad-sample prior (override the fit)",
       "Rewrites the three μ/σ/df sliders with cautious world-equity assumptions (~3.5% real geometric, fat tails): what broad century-long samples suggest, not this fund's history. Sliders only: the data-driven columns (Historical, Block bootstrap, Broad-sample) never read the sliders and are untouched."),
     c("capeAdjust", "Anchor return to today's valuation (CAPE)",
@@ -88,19 +86,13 @@ const GROUPS = [
     r("bufferStopYear", "Buffer refill stops in year (0 = never)", 0, 20, 1, 0, "int",
       "The melting buffer: stop refilling after the sequence-risk window (e.g. year 8) and let it run down — a bond-tent glidepath."),
   ]},
-  {title: "Taxes & envelopes", items: [
-    r("taxRate", "CTO flat tax on gains", 0, 0.35, 0.01, 0.314, "pct",
-      "French flat tax (PFU + CEHR) on the gain share of every CTO sale. The effective rate starts low and drifts up as unrealised gains compound."),
-    r("peaCapital", "PEA envelope", 0, 400000, 5000, 0, "eur",
-      "Capital held in a PEA (>5y): withdrawals only pay 17.2% social levies on gains. Drained after the CTO."),
-    r("avCapital", "Assurance-vie envelope", 0, 500000, 5000, 0, "eur",
-      "Capital held in assurance-vie (>8y): 9 200 €/yr of realised gains tax-free for a couple, then 24.7%. Drained last."),
-    r("gainFrac", "Embedded gain at start", 0, 0.9, 0.05, 0, "pct",
-      "Unrealised gain share of the portfolio on day one. High embedded gains make every early sale taxable — set >0 for a portfolio carrying years of appreciation."),
+  {title: "Taxes", items: [
+    r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.314, "pct",
+      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts — e.g. ~30-34% for a plain French taxable account, less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
   ]},
   {title: "Simulation", items: [
-    r("nPaths", "Simulated paths", 500, 5000, 500, 2000, "int",
-      "Monte-Carlo paths per model. More paths = smoother figures, slower updates."),
+    r("nPaths", "Simulated paths", 1000, 10000, 500, 4000, "int",
+      "Monte-Carlo paths per model. At 2000 the ruin figure wobbles by roughly ±0.7 point run to run (pure sampling noise); 4000 halves the wobble, 8000 halves it again. Raise it if the figures dance when nothing changed; the engine is fast."),
   ]},
 ];
 
@@ -121,6 +113,15 @@ const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replac
 
 // portfolio-mode state, set once /api/meta resolves.
 let weights = null, labels = [], hasPanel = false, lastFitW = null;
+
+// The strip is the model selector: clicking a column runs every detail
+// section (spending, lifecycle, risk, buffer…) under that lens. MODELKEY
+// maps column names to the server's Central parameter; "" = the calibrated
+// central case (Student-t / glidepath).
+const MODELKEY = {
+  "Historical windows": "hist", "Block bootstrap": "boot", "Student-t": "",
+  "Sequence stress": "stress", "Broad-sample": "broad", "Lost decade": "lost",
+};
 
 // ---------------------------------------------------------------------------
 // Build the rail.
@@ -255,11 +256,12 @@ if (state.conservative) applyReturns(PRIOR);
 function syncURL() {
   const p = new URLSearchParams();
   for (const k of Object.keys(UNIT)) p.set(k, state[k]);
-  if (state.model) p.set("model", state.model);
+  if (state.central) p.set("central", state.central);
   for (const k of CHECKKEYS) if (state[k]) p.set(k, "1");
   if (weights) p.set("w", weights.map(x => x.toFixed(4)).join(","));
   history.replaceState(null, "", "#" + p.toString());
 }
+state.central = shared.get("central") || "";
 
 // ---------------------------------------------------------------------------
 // Scheduling: a fast lane for the live views, a slow lane for the two
@@ -281,6 +283,7 @@ function body() {
   const b = {...state};
   for (const k of INTKEYS) b[k] = Math.round(b[k]);
   b.targetRuin = (parseFloat(document.getElementById("targetRuin").value) || 5) / 100;
+  b.central = state.central || "";
   if (weights) b.weights = weights;
   return b;
 }
@@ -323,7 +326,8 @@ function updateCmd() {
   if (!el) return;
   const rule = state.abw ? "abw" : state.bounded ? "bounded%" : state.percent > 0 ? "vpw"
     : state.guardrails ? "guardrails" : state.flexCut > 0 ? "flex" : "fixed·real";
-  const model = state.conservative ? "broad-sample" : state.regime ? "seq-stress" : state.capeAdjust ? "cape" : "student-t";
+  const model = {hist: "historical", boot: "bootstrap", stress: "seq-stress", broad: "broad-sample", lost: "lost-decade"}[state.central]
+    || (state.conservative ? "prior" : state.capeAdjust ? "cape" : "student-t");
   const f = (k) => fmtVal(k, state[k]).replace(/\s?€/, "").replace(/\s/g, "");
   el.innerHTML =
     `<span class="flag">plan</span> <span class="flag">--capital</span> <span class="val">${f("capital")}€</span>` +
@@ -360,12 +364,19 @@ function renderCape(cape) {
 }
 
 // Settings drawer: fold the controls away to run the analysis full-width.
+// Opening from deep in the page scrolls back up to the drawer, otherwise the
+// click appears to do nothing (the drawer unfolds above the viewport).
 (function () {
   const t = document.getElementById("drawerToggle"), d = document.getElementById("drawer");
   if (!t || !d) return;
   t.addEventListener("click", () => {
     const open = d.hasAttribute("hidden");
-    if (open) { d.removeAttribute("hidden"); } else { d.setAttribute("hidden", ""); }
+    if (open) {
+      d.removeAttribute("hidden");
+      window.scrollTo({top: 0, behavior: "smooth"});
+    } else {
+      d.setAttribute("hidden", "");
+    }
     t.setAttribute("aria-expanded", String(open));
     t.textContent = open ? "parameters ▴" : "parameters ▾";
   });
@@ -593,12 +604,17 @@ async function renderModels(b, id) {
   if (r.confNote) conf.setAttribute("data-help", r.confNote);
   else conf.removeAttribute("data-help");
   const ms = r.models || [];
-  const central = ms.findIndex(m => m.name === "Student-t");
+  // The selected column drives the hero readout and every detail section;
+  // Student-t (the calibrated central case) when nothing is selected.
+  let central = ms.findIndex(m => MODELKEY[m.name] === (state.central || ""));
+  if (central < 0) central = ms.findIndex(m => m.name === "Student-t");
   renderReadout(central >= 0 ? ms[central].ruin : NaN, r.targetRuin || 0.05);
+  const eyebrow = document.querySelector(".hero-verdict .eyebrow");
+  if (eyebrow && central >= 0) eyebrow.textContent = "Ruin probability · " + ms[central].name;
   const sel = i => (i === central ? ` class="sel"` : "");
   const cells = fn => ms.map((m, i) => `<td${sel(i)}>${fn(m)}</td>`).join("");
   const head = `<tr><th></th>${ms.map((m, i) =>
-    `<th${sel(i)} data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+    `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)} — CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
@@ -608,6 +624,14 @@ async function renderModels(b, id) {
     cells(m => fmtW(m.medianWealth)) + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
+  for (const th of document.querySelectorAll(".modeltab th[data-model]")) {
+    th.addEventListener("click", () => {
+      const key = MODELKEY[th.getAttribute("data-model")];
+      if (key === undefined) return;
+      state.central = key;
+      schedule();
+    });
+  }
 
   // Plan bar echo: verdict condensed + one ruin bead per model.
   document.getElementById("planbar-verdict").textContent = r.verdict || "";
@@ -838,10 +862,6 @@ fetch("/api/meta").then(r => r.json()).then(m => {
   applySharedSliders(); // a shared mu/sigma/df overrides the historical seed
   if (state.conservative) applyReturns(PRIOR); // the prior wins over the fit
 
-  // The hero strip evaluates every return model side by side; the detail
-  // charts below use the central parametric one.
-  state.model = "parametric";
-
   const box = document.createElement("div");
   box.className = "group";
   box.innerHTML = `<div class="group-h">Allocation</div>
@@ -854,4 +874,5 @@ fetch("/api/meta").then(r => r.json()).then(m => {
   run();
   runSlow();
 });
+
 
