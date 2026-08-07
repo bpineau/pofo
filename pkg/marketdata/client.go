@@ -32,6 +32,7 @@ type Client struct {
 	EurostatBase    string
 	FredBase        string
 	ECBBase         string
+	CBOEBase        string
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
@@ -62,6 +63,7 @@ func NewClient(cacheDir string) *Client {
 		EurostatBase:    "https://ec.europa.eu",
 		FredBase:        "https://fred.stlouisfed.org",
 		ECBBase:         "https://www.ecb.europa.eu",
+		CBOEBase:        "https://cdn.cboe.com",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
 		retryDelay:      time.Second,
@@ -102,6 +104,8 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, raw bool)
 	case isHICP(canonical):
 		geo, _ := hicpGeo(canonical)
 		s, err = c.fetchHICP(ctx, canonical, geo, from)
+	case canonical == cpiUSSymbol:
+		s, err = c.fetchCPIUS(ctx, from)
 	case IsISIN(canonical):
 		s, err = c.fetchISIN(ctx, canonical, from, raw)
 	default:
@@ -471,11 +475,17 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 }
 
 // staleFallback serves the expired cache of symbol when a refresh fails:
-// charts then simply stop at the last cached date. The original error is
-// returned only when no cache exists at all.
+// charts then simply stop at the last cached date. With no cache at all, a
+// bundled snapshot answers for the few symbols that carry one (see
+// embeddedHistory); the original error is returned only when neither exists.
 func (c *Client) staleFallback(ctx context.Context, symbol string, from time.Time, cause error) (*Series, error) {
 	s, fetchedAt, ok := c.loadCacheAnyAge(symbol, from)
 	if !ok {
+		if emb, embOK := embeddedHistory(symbol); embOK {
+			c.Logf("warning: %v; using the embedded %s snapshot (ends %s)",
+				cause, symbol, emb.Last().Date.Format("2006-01-02"))
+			return emb, nil
+		}
 		return nil, cause
 	}
 	c.Logf("warning: refreshing %s failed (%v), keeping cached data from %s (last quote %s)",

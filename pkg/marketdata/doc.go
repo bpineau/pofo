@@ -34,10 +34,15 @@
 //
 // Yahoo Finance (adjusted closes), Stooq (fallback for plain tickers,
 // major indices and major currency crosses), the ECB reference rates
-// (second fallback for the currency crosses, daily since 1999), Financial
+// (second fallback for the currency crosses, daily since 1999), CBOE
+// (fallback for ^VIX, full official history since 1990), Financial
 // Times and Morningstar (NAVs of European funds). Downloads are cached on
 // disk (JSON, one file per instrument); a failed refresh serves the stale
-// data with a warning rather than failing.
+// data with a warning rather than failing. A few symbols additionally
+// carry a bundled snapshot served as a last resort when every source fails
+// and nothing is cached: ^VIX (daily, 1990→), the inflation indices (see
+// below) and the euro crosses (the long monthly ECU/EUR proxy, 1978→, the
+// same one that extends a live cross back in time).
 //
 // Eurostat serves the Harmonised Index of Consumer Prices under the
 // "^HICP-<geo>" identifiers (^HICP-FR France, ^HICP-EA euro area, …): the
@@ -47,6 +52,10 @@
 // real-return work). It carries no currency. A monthly snapshot is embedded in
 // the binary as an offline fallback (used only when the live API is unreachable
 // and nothing is cached), so an inflation series is always available.
+//
+// "^CPI-US" is the dollar sibling: the US CPI-U all-items index (1982-84=100,
+// monthly since 1913), served live from FRED with the same daily interpolation
+// and the same embedded-snapshot fallback.
 //
 // # Dividends and raw closes
 //
