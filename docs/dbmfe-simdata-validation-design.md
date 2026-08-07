@@ -182,7 +182,7 @@ faithful method. Three modes:
 - **S (script):** a throwaway program under `scratchpad/` (or a `cmd/`-style
   one-file main kept out of the build) that wires pofo primitives + the chosen
   benchmark and prints a table/CSV. Not committed to the library surface.
-- **C (Claude):** computed and judged directly by the executing model from CSVs
+- **C (executing model):** computed and judged directly by the executing model from CSVs
   / tool output, no committed code, when the check is a one-line stat or a
   visual/qualitative read.
 

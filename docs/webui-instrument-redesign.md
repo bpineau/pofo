@@ -1,14 +1,14 @@
 # Web UI redesign: the "instrument" identity
 
-Status: approved (Ben, 2026-07-03) from mock direction C of three
+Status: approved (2026-07-03) from mock direction C of three
 (instrument / research note / terminal). Mocks:
 https://claude.ai/code/artifact/f0db4eb5-0e71-4748-b57b-592d37609a0d
 
 ## Why the previous themes failed
 
 Two identities were rejected in a row ("warm study", then "quant desk",
-commit 0be7d89). The post-mortem, confirmed against locador (a reference
-Ben rates highly, ../locador/server/assets/style.css): the failures were
+commit 0be7d89). The post-mortem, confirmed against locador (the house
+reference, ../locador/server/assets/style.css): the failures were
 never the palette family but the execution. Quant-desk shipped the system
 font stack, a recognizable free-UI-kit palette (Untitled UI grays), and
 native `accent-color` range sliders. Locador ships embedded web fonts,
