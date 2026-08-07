@@ -81,6 +81,7 @@ var figures = map[string]func() string{
 	"trend-annees":           figTrendAnnees,
 	"guardrails-capteur":     figGuardrailsCapteur,
 	"mc-entrees-vs-tirages":  figMcEntreesVsTirages,
+	"millesimes-1966-1982":   figMillesimes1966Vs1982,
 	"corridor-1966":          figCorridor1966,
 	"gk-cascade-1966":        figGkCascade1966,
 	"abw-1966":               figAbw1966,
