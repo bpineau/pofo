@@ -28,6 +28,10 @@ La dispersion des inflations personnelles autour de l'indice est documentée. L'
 
 L'ordre de grandeur qui en sort est cohérent avec les études étrangères sur les indices « seniors ». Le CPI-E américain court +0,2-0,3 point/an au-dessus du CPI général sur longue période. L'inflation d'un ménage retraité dépasse ainsi l'indice de ~0,2 à 0,5 point par an, davantage aux grands âges. Composé sur trente ans, +0,3 point vaut ~9-10 % de pouvoir d'achat d'écart, soit une année et demie de dépenses. Ce n'est pas un raffinement, c'est un poste du plan.
 
+::: figure ecart-compose
+Ce qu'une indexation sur le seul indice ne paie pas, cumulé année après année et compté en années de dépenses d'aujourd'hui (arithmétique de composition, sur 30 ans). Au bout du chemin, le niveau de prix n'a divergé que de 9 à 16 %, mais une à deux années entières de dépenses n'ont jamais été financées.
+:::
+
 **Estimer la vôtre en une soirée.** Reprenez vos 12-24 mois de relevés déjà classés ([[combien-il-vous-faut]]). Pondérez vos catégories réelles. Croisez-les avec les indices INSEE par fonction, services, alimentation, énergie, tous publiés, et prenez vos propres cotisations pour la santé. La moyenne pondérée est votre inflation rétrospective, et le simulateur d'inflation personnalisée de l'INSEE fait le calcul en ligne. L'objectif n'est pas la décimale. C'est de savoir si vous êtes un ménage « indice », « indice +0,3 » ou « indice +0,6 », et de le donner au plan.
 
 ::: astuce Les points morts : la seule prévision qui engage de l'argent
@@ -43,7 +47,11 @@ Où lire ce que « le marché » anticipe ? Dans les **points morts** d'inflatio
 **Et rappelez-vous ce qu'un simulateur fait déjà.** Il travaille en **réel** de bout en bout, avec des séries déflatées par l'IPCH et des retraits en pouvoir d'achat constant ([[la-machine-pofo]]). L'inflation **moyenne** est donc dans la machine par construction. Ce que les curseurs ajoutent, c'est **votre** écart à la moyenne, la dérive. Et ce que les modèles de régime testent, c'est le **risque** d'épisode ([[inflation-et-taux-de-retrait]] pour la mécanique complète).
 
 ::: exemple L'inflation personnelle de Denise et Paul
-Denise (63 ans) et Paul (66 ans) sont propriétaires toit payé, avec 46 000 €/an de dépenses. Voici leur soirée de calcul. Santé et mutuelle pèsent 14 % du budget (indice perso de la catégorie, +4,5 %/an). Services, aide et assurances font 22 % (+3 %). L'alimentation fait 18 % (+2 %). L'énergie et le transport font 12 % (+2,5 % volatil). Les loisirs et voyages font 24 % (+2 %). Le divers fait 10 % (+2 %). L'inflation personnelle pondérée ressort à ~2,6 % quand l'IPCH fait 2,1 %. L'écart est de +0,5, dont l'essentiel vient de la santé, cohérent avec leur âge. Côté réglage du plan, ils indexent les retraits sur l'IPC (contractuel), fixent le spendDrift à +0,4 %, et activent le sourire (la dérive santé nette du ralentissement des voyages après 80 ans). La simulation bouge, la ruine centrale passe de 3,9 à 4,8 %. C'est le vrai prix de leur panier, qu'aucun indice national ne leur aurait facturé. Et il vaut mieux le connaître à 63 ans qu'à 83.
+Denise (63 ans) et Paul (66 ans) sont propriétaires toit payé, avec 46 000 €/an de dépenses. Voici leur soirée de calcul. Six postes, chacun avec son poids dans le budget et son propre taux : services, aide et assurances 22 % à +3 %/an, santé et mutuelle 14 % à +4,5 %, loisirs et voyages 24 % à +2 %, alimentation 18 % à +2 %, énergie et transport 12 % à +2,5 %, divers 10 % à +2 %. L'inflation personnelle pondérée ressort à ~2,6 % quand l'IPCH fait 2,1 %. L'écart est de +0,5, dont l'essentiel vient de la santé, cohérent avec leur âge. Côté réglage du plan, ils indexent les retraits sur l'IPC (contractuel), fixent le spendDrift à +0,4 %, et activent le sourire (la dérive santé nette du ralentissement des voyages après 80 ans). La simulation bouge, la ruine centrale passe de 3,9 à 4,8 %. C'est le vrai prix de leur panier, qu'aucun indice national ne leur aurait facturé. Et il vaut mieux le connaître à 63 ans qu'à 83.
+:::
+
+::: figure panier-contributions
+La soirée de calcul de Denise et Paul : chaque poste contribue à hauteur de son poids multiplié par la hausse de ses prix, et les six s'empilent jusqu'à 2,63 % quand l'IPCH publie 2,1 %. Le geste se refait tel quel sur n'importe quel relevé déjà classé.
 :::
 
 ## L'essentiel à retenir
