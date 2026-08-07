@@ -33,11 +33,8 @@ func TestParseViewQueryExamples(t *testing.T) {
 }
 
 func TestParseViewQueryAdhoc(t *testing.T) {
-	// Semicolons must be percent-encoded in a URL query: url.ParseQuery
-	// (and http.Request.URL.Query) reject a raw ';' as a separator since
-	// Go 1.17, so a shareable /view link encodes the p= meta delimiters.
 	vr, err := parseViewQuery(mustQuery(t,
-		"p=NTSG:60,IGLN:20,IBCI:20%3Brebalance:30%3Bsim:on%3Bname:essai"))
+		"p=NTSG:60,IGLN:20,IBCI:20!rebalance:30!sim:on!name:essai"))
 	if err != nil {
 		t.Fatal(err)
 	}

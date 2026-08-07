@@ -103,15 +103,16 @@ func parseViewQuery(q url.Values) (*viewRequest, error) {
 	return vr, nil
 }
 
-// adhocSpec parses one p= value: "ID:WEIGHT,ID:WEIGHT[;meta:value]...".
-// It rebuilds the portfolio file text and feeds portfolio.Parse; only
-// locally-resolvable identifiers are accepted (no network on behalf of
-// anonymous visitors).
+// adhocSpec parses one p= value: "ID:WEIGHT,ID:WEIGHT[!meta:value]...".
+// The '!' meta delimiter keeps a shareable link hand-typable (a raw ';'
+// is invalid in a Go query string). It rebuilds the portfolio file text
+// and feeds portfolio.Parse; only locally-resolvable identifiers are
+// accepted (no network on behalf of anonymous visitors).
 func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
 	if len(raw) > maxViewSpecLen {
 		return nil, fmt.Errorf("p parameter too long (%d bytes, max %d)", len(raw), maxViewSpecLen)
 	}
-	segments := strings.Split(raw, ";")
+	segments := strings.Split(raw, "!")
 	name := fmt.Sprintf("adhoc-%d", n)
 	var text strings.Builder
 	for _, meta := range segments[1:] {
