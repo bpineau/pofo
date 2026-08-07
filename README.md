@@ -511,9 +511,9 @@ simulation wherever it exists):
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
 | TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
 | ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
-| DBMF (managed futures) | monthly trend record + 12-month TSMOM texture, 11.5% target vol (1989→) | 0.55 / 0.58 |
-| KMLM (managed futures) | same, 14% target vol (1989→) | 0.37 / 0.44 |
-| CTA (managed futures) | same, 16% target vol (1989→) | 0.19 / 0.24 |
+| DBMF (managed futures) | real managed-futures NAVs from 2007, reconstruction before (1989→) | 0.69 / 0.75 |
+| KMLM (managed futures) | same chain, 14% target vol (1989→) | 0.63 / 0.65 |
+| CTA (managed futures) | same chain, 16% target vol (1989→) | 0.44 / 0.45 |
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (1989→) | 0.62 / 0.80 |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
