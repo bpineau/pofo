@@ -18,7 +18,7 @@ type TermOptions struct {
 }
 
 // ansiPalette mirrors defaultPalette with ANSI-256 codes.
-var ansiPalette = []int{27, 36, 172, 99, 166, 39, 28, 162}
+var ansiPalette = []int{31, 166, 62, 130, 93, 28, 162, 39}
 
 // plainMarkers distinguishes series when colors are disabled.
 var plainMarkers = []rune{'•', '+', '×', 'o', '#', '@', '*', '%'}

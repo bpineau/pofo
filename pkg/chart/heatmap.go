@@ -62,7 +62,7 @@ func heatColor(v float64) string {
 	if v > 1 {
 		v = 1
 	}
-	// #12B76A (safe) -> #F79009 (caution) -> #D92D20 (danger).
+	// #0C8A47 (safe) -> #C77E17 (caution) -> #D2402F (danger).
 	lerp := func(a, b int, t float64) int { return a + int(t*float64(b-a)) }
 	var r, g, b int
 	if v < 0.5 {
