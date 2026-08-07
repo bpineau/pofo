@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -84,6 +85,11 @@ type resolution struct {
 	Currency string `json:"currency"`
 }
 
+// ErrWrongCurrency reports that no source could serve the instrument
+// natively in the requested currency (FetchOptions.Currency combined with
+// NoConvert, or QuoteOptions likewise). Detect it with errors.Is.
+var ErrWrongCurrency = errors.New("no native quote line in the requested currency")
+
 // fetchSpec carries the per-request constraints threaded through the
 // internal fetch path (fetch, fetchISIN/fetchTicker, resolveBest). The
 // public option surface stays FetchOptions; this is its internal shadow,
@@ -92,6 +98,14 @@ type fetchSpec struct {
 	raw          bool   // unadjusted closes (FetchOptions.Raw)
 	wantCurrency string // restrict resolution to this quote currency; "" = unconstrained
 	nativeOnly   bool   // only meaningful with wantCurrency (FetchOptions.NoConvert)
+}
+
+// currencyOK reports whether a quote currency satisfies the constraint:
+// empty on either side always passes (a source that does not report its
+// currency cannot be judged), comparison is case-insensitive.
+func (spec fetchSpec) currencyOK(currency string) bool {
+	return !spec.nativeOnly || spec.wantCurrency == "" || currency == "" ||
+		strings.EqualFold(currency, spec.wantCurrency)
 }
 
 // Fetch returns the price history for a user-supplied identifier, after
@@ -187,8 +201,12 @@ func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time, spe
 	if s, ok := c.cachedResolutionHistory(ctx, isin, from, spec); ok {
 		return s, nil
 	}
-	s, res, failures := c.resolveBest(ctx, isin, from, "", spec)
+	s, res, failures, offCurrency := c.resolveBest(ctx, isin, from, "", spec)
 	if s == nil {
+		if offCurrency {
+			return nil, fmt.Errorf("ISIN %s: %w (%s)",
+				isin, ErrWrongCurrency, strings.Join(failures, "; "))
+		}
 		return nil, fmt.Errorf("ISIN %s: no usable source (%s)", isin, strings.Join(failures, "; "))
 	}
 	c.adoptResolution(isin, res)
@@ -203,16 +221,29 @@ func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time,
 		return s, nil
 	}
 	direct, directErr := c.historyView(ctx, ticker, from, spec.raw)
+	offCurrency := false
+	if directErr == nil && !spec.currencyOK(direct.Currency) {
+		// The direct line trades in another currency: under the native
+		// constraint it must never be served, but a listing of the same
+		// ticker on another exchange may still satisfy it.
+		directErr = fmt.Errorf("%s: quotes in %s, want %s", ticker, direct.Currency, spec.wantCurrency)
+		direct, offCurrency = nil, true
+	}
 	if directErr == nil && goodFor(direct, from) {
 		return direct, nil
 	}
-	resolved, res, failures := c.resolveBest(ctx, ticker, from, ticker, spec)
+	resolved, res, failures, resolveOffCcy := c.resolveBest(ctx, ticker, from, ticker, spec)
+	offCurrency = offCurrency || resolveOffCcy
 	if directErr != nil {
 		failures = append([]string{directErr.Error()}, failures...)
 	}
 	if !deeper(direct, resolved, from) {
 		if direct != nil {
 			return direct, nil
+		}
+		if offCurrency {
+			return nil, fmt.Errorf("ticker %s: %w (%s)",
+				ticker, ErrWrongCurrency, strings.Join(failures, "; "))
 		}
 		return nil, fmt.Errorf("ticker %s: no usable source (%s)", ticker, strings.Join(failures, "; "))
 	}
@@ -227,7 +258,18 @@ func (c *Client) cachedResolutionHistory(ctx context.Context, id string, from ti
 	if !ok {
 		return nil, false
 	}
+	if !spec.currencyOK(res.Currency) {
+		c.Logf("cached resolution for %s is quoted in %s, want %s: resolving again…",
+			id, res.Currency, spec.wantCurrency)
+		return nil, false
+	}
 	s, err := c.historyForResolution(ctx, id, res, from, spec.raw)
+	if err == nil && goodFor(s, from) && !spec.currencyOK(s.Currency) {
+		// A legacy resolution file may lack the currency; the series knows.
+		c.Logf("cached history for %s is quoted in %s, want %s: resolving again…",
+			id, s.Currency, spec.wantCurrency)
+		return nil, false
+	}
 	if err == nil && goodFor(s, from) {
 		return s, true
 	}
@@ -257,7 +299,11 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // search candidate (same-ticker listings and fund entries first), then the
 // Financial Times when years remain uncovered, then a Morningstar fund id
 // obtained from Boursorama as a last resort.
-func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string, spec fetchSpec) (*Series, resolution, []string) {
+// resolveBest returns the winning series and resolution, the per-source
+// failure summaries, and whether any candidate was rejected solely for
+// trading in another currency than spec demands (so callers can surface
+// ErrWrongCurrency rather than a generic miss).
+func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string, spec fetchSpec) (*Series, resolution, []string, bool) {
 	// Candidates compete in tiered slots so that the right instrument beats
 	// the deep one: a young same-ticker ETF must win against a namesake
 	// stock (SPEA the PEA ETF vs Saipem SpA) and against a fuzzy-matched
@@ -271,9 +317,10 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		slotCount
 	)
 	var (
-		failures []string
-		series   [slotCount]*Series
-		resols   [slotCount]resolution
+		failures    []string
+		offCurrency bool
+		series      [slotCount]*Series
+		resols      [slotCount]resolution
 	)
 	consider := func(s *Series, res resolution, fund, sameBase bool) {
 		i := slotOther
@@ -332,6 +379,12 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			failures = append(failures, fmt.Sprintf("yahoo %s: %v", q.Symbol, herr))
 			continue
 		}
+		if !spec.currencyOK(s.Currency) {
+			failures = append(failures, fmt.Sprintf("%s: quotes in %s, want %s",
+				q.Symbol, s.Currency, spec.wantCurrency))
+			offCurrency = true
+			continue
+		}
 		name := q.Name
 		if name == "" {
 			name = s.Name
@@ -342,7 +395,13 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	if !covered() {
 		if res, ferr := c.ftSearch(ctx, query); ferr == nil {
 			if s, herr := c.historyFT(ctx, query, res, from, spec.raw); herr == nil {
-				consider(s, res, true, matchesBase(res.Symbol))
+				if spec.currencyOK(s.Currency) {
+					consider(s, res, true, matchesBase(res.Symbol))
+				} else {
+					failures = append(failures, fmt.Sprintf("ft %s: quotes in %s, want %s",
+						res.Symbol, s.Currency, spec.wantCurrency))
+					offCurrency = true
+				}
 			} else {
 				failures = append(failures, fmt.Sprintf("ft: %v", herr))
 			}
@@ -354,7 +413,13 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr == nil {
 			res := resolution{Source: "morningstar", Symbol: msid, Name: name}
 			if s, herr := c.historyMS(ctx, query, res, from, spec.raw); herr == nil {
-				consider(s, res, true, false)
+				if spec.currencyOK(s.Currency) {
+					consider(s, res, true, false)
+				} else {
+					failures = append(failures, fmt.Sprintf("morningstar %s: quotes in %s, want %s",
+						msid, s.Currency, spec.wantCurrency))
+					offCurrency = true
+				}
 			} else {
 				failures = append(failures, fmt.Sprintf("morningstar %s: %v", msid, herr))
 			}
@@ -363,7 +428,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		}
 	}
 	best, bestRes := preferred()
-	return best, bestRes, failures
+	return best, bestRes, failures, offCurrency
 }
 
 // rankQuotes orders Yahoo search candidates: listings of the searched ticker
