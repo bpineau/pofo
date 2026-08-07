@@ -19,6 +19,13 @@
 // as plain text until the target exists, and a guard test keeps files,
 // manifest and links consistent.
 //
+// Every heading carries a hover-revealed "§" anchor that copies a direct link
+// to that section, on article pages and on the index alike (there the part
+// titles get it, so "Les stratégies de retrait" can be pointed at directly,
+// and an article's top bar links back to its own part). The ids come from one
+// rule, bookmd.HeadingID, so the index and the articles cannot drift apart.
+// It is web chrome only: the EPUB export never carries it.
+//
 // The pofo -fire web UI mounts Handler under /livre/; any other server (for
 // example finador) can mount the same book by importing this package.
 //
