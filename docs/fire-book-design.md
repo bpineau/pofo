@@ -38,7 +38,8 @@ plates compare lives and not model assumptions. The scratch program that
 produced the series is not kept; the series are inlined in the plate with a
 comment stating exactly how to reproduce them. Decision: the 12 pre-depth-bar articles (the early batches of
 parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
-later English translation, and continuous upkeep of the dated French
+later English translation (designed in `fire-book-en-edition-design.md`,
+not started), and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
 
 Illustration campaign 2026-07-30, 29 new v2 plates. Selected from the two
