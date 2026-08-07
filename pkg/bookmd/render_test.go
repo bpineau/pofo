@@ -187,3 +187,20 @@ func TestHeadingID(t *testing.T) {
 		t.Errorf("ToHTML heading id disagrees with HeadingID (want %s in %s)", want, html)
 	}
 }
+
+// A labelled wiki-link carries a pipe of its own, so a pipe-table row must not
+// be cut on it: the cell would split in two and the row would outgrow the
+// header. amortissement-abw's comparison table hit exactly that.
+func TestTableKeepsLabelledWikiLinkInOneCell(t *testing.T) {
+	src := "| Critère | [[cible|Guardrails]] | ABW |\n|---|---|---|\n| Revenu | Stable | Variable |\n"
+	got := ToHTML(src, Options{Titles: map[string]string{"cible": "Cible"}})
+	if n := strings.Count(got, "<th>"); n != 3 {
+		t.Errorf("header has %d cells, want 3: %s", n, got)
+	}
+	if !strings.Contains(got, `<th><a href="cible" class="doc-link">Guardrails</a></th>`) {
+		t.Errorf("the labelled link did not survive as one cell: %s", got)
+	}
+	if n := strings.Count(got, "<td>"); n != 3 {
+		t.Errorf("body row has %d cells, want 3: %s", n, got)
+	}
+}
