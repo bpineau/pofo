@@ -1,20 +1,11 @@
-package main
-
-// A minimal reader for the legacy Excel format the source still serves: an
-// OLE2 compound file (magic D0 CF 11 E0) whose "Workbook" stream is a BIFF8
-// record stream. Nothing else in the toolkit needs it, and the stdlib has no
-// equivalent of archive/zip for OLE2, so the two layers live here.
-//
-// Only what a values-only dump needs is implemented: sector chains, the
-// directory, the mini stream, and the five cell records that can hold a number
-// or a string. Formatting, formulas, charts and everything else are skipped
-// silently, which is exactly what a data feed asks for.
+package xls
 
 import (
 	"encoding/binary"
 	"fmt"
 	"math"
 	"strings"
+	"time"
 	"unicode/utf16"
 )
 
@@ -25,11 +16,11 @@ var oleMagic = [8]byte{0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1}
 // terminator (end of chain, free, FAT, DIFAT), never a readable sector.
 const maxRegSect = 0xFFFFFFFA
 
-// ole2Streams returns the named streams of an OLE2 compound file. The file is
+// Streams returns the named streams of an OLE2 compound file. The file is
 // a little filesystem: a sector-allocation table (FAT) chains fixed-size
 // sectors into streams, a directory names them, and streams under a cutoff
 // live packed inside a "mini stream" with an allocation table of their own.
-func ole2Streams(data []byte) (map[string][]byte, error) {
+func Streams(data []byte) (map[string][]byte, error) {
 	if len(data) < 512 || [8]byte(data[:8]) != oleMagic {
 		return nil, fmt.Errorf("not an OLE2 compound file")
 	}
@@ -207,12 +198,13 @@ const (
 	substreamWKS = 0x0010 // a BOF that opens a worksheet, not the globals
 )
 
-// cell is one value of the sheet, either a number or a string.
-type cell struct {
-	row, col int
-	num      float64
-	text     string
-	isText   bool
+// Cell is one value of the sheet, either a number or a string: Text carries
+// the string and IsText says which of the two Num and Text hold.
+type Cell struct {
+	Row, Col int
+	Num      float64
+	Text     string
+	IsText   bool
 }
 
 type record struct {
@@ -220,9 +212,35 @@ type record struct {
 	body []byte
 }
 
-// biffCells returns the values of the workbook's FIRST worksheet, in the order
+// Sheet is the whole read in one call: the OLE2 container is opened, its
+// workbook stream located, and the values of the first worksheet returned.
+func Sheet(data []byte) ([]Cell, error) {
+	streams, err := Streams(data)
+	if err != nil {
+		return nil, err
+	}
+	wb, ok := streams["Workbook"]
+	if !ok {
+		wb, ok = streams["Book"] // the pre-BIFF8 name, still met in the wild
+	}
+	if !ok {
+		return nil, fmt.Errorf("no workbook stream (found %d others)", len(streams))
+	}
+	return Cells(wb), nil
+}
+
+// SerialDate turns an Excel serial number into the date it stands for, at
+// 00:00 UTC. The 1900 date system counts days from an epoch of 1899-12-30,
+// two days before 1900-01-01, which absorbs the leap year the format believes
+// 1900 to have been.
+func SerialDate(serial float64) time.Time {
+	epoch := time.Date(1899, time.December, 30, 0, 0, 0, 0, time.UTC)
+	return epoch.AddDate(0, 0, int(serial))
+}
+
+// Cells returns the values of the workbook's FIRST worksheet, in the order
 // the file stores them. Cells the sheet leaves empty are simply absent.
-func biffCells(wb []byte) []cell {
+func Cells(wb []byte) []Cell {
 	var recs []record
 	for pos := 0; pos+4 <= len(wb); {
 		id := binary.LittleEndian.Uint16(wb[pos:])
@@ -236,7 +254,7 @@ func biffCells(wb []byte) []cell {
 	sst := sharedStrings(recs)
 
 	sheet := -1
-	var out []cell
+	var out []Cell
 	for _, r := range recs {
 		if r.id == recBOF {
 			if len(r.body) >= 4 && binary.LittleEndian.Uint16(r.body[2:]) == substreamWKS {
@@ -251,19 +269,19 @@ func biffCells(wb []byte) []cell {
 		case r.id == recLABELSST && len(r.body) >= 10:
 			row, col := int(binary.LittleEndian.Uint16(r.body)), int(binary.LittleEndian.Uint16(r.body[2:]))
 			if i := int(binary.LittleEndian.Uint32(r.body[6:])); i < len(sst) {
-				out = append(out, cell{row: row, col: col, text: sst[i], isText: true})
+				out = append(out, Cell{Row: row, Col: col, Text: sst[i], IsText: true})
 			}
 		case r.id == recNUMBER && len(r.body) >= 14:
 			row, col := int(binary.LittleEndian.Uint16(r.body)), int(binary.LittleEndian.Uint16(r.body[2:]))
-			out = append(out, cell{row: row, col: col, num: math.Float64frombits(binary.LittleEndian.Uint64(r.body[6:]))})
+			out = append(out, Cell{Row: row, Col: col, Num: math.Float64frombits(binary.LittleEndian.Uint64(r.body[6:]))})
 		case r.id == recRK && len(r.body) >= 10:
 			row, col := int(binary.LittleEndian.Uint16(r.body)), int(binary.LittleEndian.Uint16(r.body[2:]))
-			out = append(out, cell{row: row, col: col, num: rkValue(binary.LittleEndian.Uint32(r.body[6:]))})
+			out = append(out, Cell{Row: row, Col: col, Num: rkValue(binary.LittleEndian.Uint32(r.body[6:]))})
 		case r.id == recMULRK && len(r.body) >= 6:
 			row, col := int(binary.LittleEndian.Uint16(r.body)), int(binary.LittleEndian.Uint16(r.body[2:]))
 			for k := 0; 4+k*6+6 <= len(r.body)-2; k++ {
 				rk := binary.LittleEndian.Uint32(r.body[4+k*6+2:])
-				out = append(out, cell{row: row, col: col + k, num: rkValue(rk)})
+				out = append(out, Cell{Row: row, Col: col + k, Num: rkValue(rk)})
 			}
 		case r.id == recFormula && len(r.body) >= 20:
 			// Only the cached result is kept, and only when it is a number:
@@ -272,7 +290,7 @@ func biffCells(wb []byte) []cell {
 				continue
 			}
 			row, col := int(binary.LittleEndian.Uint16(r.body)), int(binary.LittleEndian.Uint16(r.body[2:]))
-			out = append(out, cell{row: row, col: col, num: math.Float64frombits(binary.LittleEndian.Uint64(r.body[6:]))})
+			out = append(out, Cell{Row: row, Col: col, Num: math.Float64frombits(binary.LittleEndian.Uint64(r.body[6:]))})
 		}
 	}
 	return out

@@ -98,6 +98,11 @@ trendnet-refdata: ## (Re)generate the monthly NET managed-futures reference the 
 	$(GO) run ./cmd/gen-trendnet-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: sgtrend-refdata
+sgtrend-refdata: ## (Re)generate the daily NET pure-trend reference the trend overlays are anchored on (network); run `make simdata` after
+	$(GO) run ./cmd/gen-sgtrend-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: book-drift
 book-drift: build ## What the FIRE book's translations owe their French source
 	./pofo -book-drift
