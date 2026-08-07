@@ -100,6 +100,7 @@ func TestMetaWithPickerAndLabel(t *testing.T) {
 		WithPicker(Picker{
 			Base:       "/firesimulator",
 			CatalogURL: "/catalog.json",
+			ViewURL:    "/view",
 			Examples:   []ExampleRef{{Name: "all-weather-dalio", Title: "All Weather", Blurb: "modernized"}},
 		}))
 	if meta["sourceLabel"] != "dragon-decumulation-household" {
@@ -109,7 +110,7 @@ func TestMetaWithPickerAndLabel(t *testing.T) {
 	if !ok {
 		t.Fatalf("picker = %v, want an object", meta["picker"])
 	}
-	if p["base"] != "/firesimulator" || p["catalogURL"] != "/catalog.json" {
+	if p["base"] != "/firesimulator" || p["catalogURL"] != "/catalog.json" || p["viewURL"] != "/view" {
 		t.Errorf("picker mount = %v", p)
 	}
 	exs, ok := p["examples"].([]any)
