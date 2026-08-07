@@ -126,6 +126,40 @@ func TestServeHub(t *testing.T) {
 	}
 }
 
+func TestServeHubPrefs(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	// Without a cookie: server defaults selected, bare Open links.
+	body := serveGet(t, h, "/").Body.String()
+	for _, want := range []string{
+		`name="currency"`, `name="rebalance"`, `name="sim"`,
+		`value="EUR" selected`, `value="90" selected`, `value="on" selected`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("hub defaults missing %q", want)
+		}
+	}
+	if !strings.Contains(body, `href="/view?ex=claude-dragonlite"`) {
+		t.Error("bare Open link expected without a cookie")
+	}
+
+	// With a cookie: controls pre-selected and Open links carry the prefs.
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: "currency=USD&rebalance=30&sim=off"})
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, req)
+	body = rec.Body.String()
+	for _, want := range []string{
+		`value="USD" selected`, `value="30" selected`, `value="off" selected`,
+		`href="/view?ex=claude-dragonlite&amp;currency=USD&amp;rebalance=30&amp;sim=off"`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("hub with cookie missing %q", want)
+		}
+	}
+}
+
 func TestServeViewSetsPrefsCookie(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)

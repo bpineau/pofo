@@ -1,7 +1,13 @@
 // The hub: the constellation's front door and the examples catalog. It lists
 // every bundled portfolio file with a custom-styled checkbox, all inside one
-// pure-GET form that submits the ticked names to /view for a side-by-side
-// backtest, and points onward to the FIRE simulator and the FIRE book.
+// pure-GET form that submits the ticked names, plus an explicit defaults row
+// (currency, rebalance, sim), to /view for a side-by-side backtest, and points
+// onward to the FIRE simulator and the FIRE book.
+//
+// The defaults row is pre-filled from the pofo_prefs cookie (server defaults
+// otherwise); when a cookie exists, each row's "Open" link also carries the
+// stored prefs so a one-click path honors them while the URL stays fully
+// explicit. The cookie is read server-side only.
 //
 // The page is styled with the shared webui tokens (served from /theme.css and
 // /fonts.css) remapped to the FIRE book's warm paper-and-ink identity
@@ -14,6 +20,8 @@ package main
 import (
 	"html/template"
 	"net/http"
+	"net/url"
+	"strconv"
 
 	"github.com/bpineau/pofo/examples"
 	"github.com/bpineau/pofo/pkg/webui"
@@ -43,6 +51,49 @@ func hubItems() []hubItem {
 		})
 	}
 	return items
+}
+
+// hubPrefs is the defaults row's view model: the effective value of each
+// control (stored pref if any, else the server default) plus, when a cookie
+// exists, the query fragment appended to each row's Open link so one-click
+// paths honor the preference while the URL stays fully explicit.
+type hubPrefs struct {
+	Currency  string // "" = keep native currencies
+	Rebalance int
+	Sim       string       // "on" or "off"
+	Query     template.URL // "&currency=...&rebalance=...&sim=...", or ""
+}
+
+func hubPrefsFrom(p prefs, opt *options) hubPrefs {
+	hp := hubPrefs{Currency: opt.currency, Rebalance: opt.rebalance, Sim: "on"}
+	if opt.noSim {
+		hp.Sim = "off"
+	}
+	stored := false
+	if p.currency != nil {
+		hp.Currency, stored = *p.currency, true
+	}
+	if p.rebalance != nil {
+		hp.Rebalance, stored = *p.rebalance, true
+	}
+	if p.sim != nil {
+		stored = true
+		if !*p.sim {
+			hp.Sim = "off"
+		} else {
+			hp.Sim = "on"
+		}
+	}
+	if stored {
+		v := url.Values{}
+		v.Set("currency", hp.Currency)
+		v.Set("rebalance", strconv.Itoa(hp.Rebalance))
+		v.Set("sim", hp.Sim)
+		// Values are validated on read (validCurrency, integer, on/off), so
+		// this bypasses html/template's URL escaping safely.
+		hp.Query = template.URL("&" + v.Encode())
+	}
+	return hp
 }
 
 var hubTmpl = template.Must(template.New("hub").Parse(`<!DOCTYPE html>
@@ -86,6 +137,13 @@ body.hub{background:
   border:none;border-radius:var(--r-sm);padding:.5rem 1rem;cursor:pointer;box-shadow:var(--sh);
   transition:background .15s}
 .hub-go:hover{background:var(--accent-ink)}
+.hub-defs{display:flex;gap:.9rem;align-items:center;flex-wrap:wrap}
+.hub-defs label{display:flex;gap:.4rem;align-items:center;font-family:var(--mono);
+  font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.hub-defs select{appearance:none;-webkit-appearance:none;font-family:var(--mono);font-size:.78rem;
+  color:var(--ink);background:var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23847a6a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right .5rem center/9px;
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);padding:.28rem 1.4rem .28rem .55rem;cursor:pointer}
+.hub-defs select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .hub-list{list-style:none;margin:.7rem 0 0;padding:0;border:1px solid var(--line);border-radius:var(--r);
   background:var(--surface);box-shadow:var(--sh);overflow:hidden}
 .hub-list li{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .9rem;
@@ -146,6 +204,18 @@ body.hub{background:
 <form class="hub-form" action="/view" method="get">
   <div class="hub-bar">
     <p class="lbl">Example portfolios <b>{{len .Items}}</b></p>
+    <div class="hub-defs">
+      <label>currency <select name="currency">
+        {{range $c := .Currencies}}<option value="{{$c}}"{{if eq $c $.Prefs.Currency}} selected{{end}}>{{if $c}}{{$c}}{{else}}native{{end}}</option>{{end}}
+      </select></label>
+      <label>rebalance <select name="rebalance">
+        {{range $d := .Rebalances}}<option value="{{$d}}"{{if eq $d $.Prefs.Rebalance}} selected{{end}}>{{if $d}}{{$d}} d{{else}}never{{end}}</option>{{end}}
+      </select></label>
+      <label>sim <select name="sim">
+        <option value="on"{{if eq $.Prefs.Sim "on"}} selected{{end}}>on</option>
+        <option value="off"{{if eq $.Prefs.Sim "off"}} selected{{end}}>off</option>
+      </select></label>
+    </div>
     <button class="hub-go" type="submit">Compare selected</button>
   </div>
   <ul class="hub-list">
@@ -161,7 +231,7 @@ body.hub{background:
       </span>
     </label>
     <span class="hub-links">
-      <a href="/view?ex={{.Name}}">Open</a>
+      <a href="/view?ex={{.Name}}{{$.Prefs.Query}}">Open</a>
       <a href="/fire/e/{{.Name}}/">Simulate</a>
       <a href="/examples/{{.Name}}.txt">Source</a>
     </span>
@@ -190,7 +260,11 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	_ = hubTmpl.Execute(w, struct {
-		Skin  template.CSS
-		Items []hubItem
-	}{template.CSS(webui.WarmSkin), hubItems()})
+		Skin       template.CSS
+		Items      []hubItem
+		Prefs      hubPrefs
+		Currencies []string
+		Rebalances []int
+	}{template.CSS(webui.WarmSkin), hubItems(), hubPrefsFrom(readPrefs(r), s.opt),
+		[]string{"EUR", "USD", "GBP", "CHF", ""}, []int{30, 90, 180, 365, 0}})
 }
