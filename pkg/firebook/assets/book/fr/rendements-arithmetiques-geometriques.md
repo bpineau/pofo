@@ -24,7 +24,7 @@ La lettre grecque σ (sigma) est la notation universelle de la **volatilité**, 
 
 Le terme σ²/2 est le **volatility drag** (traînée de volatilité). Il vient d'une asymétrie que tout le monde connaît sans en tirer les conséquences. Après −20 %, il faut +25 % pour revenir. Après −50 %, il faut +100 %. Les pertes pèsent mécaniquement plus lourd que les gains de même taille, et plus les oscillations sont amples, plus la composition en souffre.
 
-Le calcul se refait sur n'importe quelle ligne de votre portefeuille, puisque les deux ingrédients sont affichés côte à côte dans un visualisateur de portefeuille comme pofo. Sur les dix dernières années, le MSCI World y montre un CAGR de 13,0 % et une volatilité de 15,4 % (en dollars, nominal). Le drag vaut donc 0,154² / 2 ≈ 1,2 point : la moyenne arithmétique de ces dix années tournait autour de 14,2 %, alors que le capital, lui, n'a composé qu'à 13,0 %. L'écart de 1,2 point n'est allé nulle part. Il n'a simplement jamais existé ailleurs que dans la moyenne.
+Le calcul se refait sur n'importe quelle ligne de votre portefeuille, puisque les deux ingrédients sont affichés côte à côte dans un outil de visualisation de portefeuille comme pofo. Sur les dix dernières années, le MSCI World y montre un CAGR de 13,0 % et une volatilité de 15,4 % (en dollars, nominal). Le drag vaut donc 0,154² / 2 ≈ 1,2 point : la moyenne arithmétique de ces dix années tournait autour de 14,2 %, alors que le capital, lui, n'a composé qu'à 13,0 %. L'écart de 1,2 point n'est allé nulle part. Il n'a simplement jamais existé ailleurs que dans la moyenne.
 
 Quelques ordres de grandeur pour calibrer l'intuition (drag = σ²/2) :
 
@@ -61,7 +61,7 @@ Vérification par la formule : le drag vaut σ²/2 = 0,20² / 2 = 0,02, soit 2 p
 Le volatility drag est la première marche d'une cascade qui mène du chiffre marketing au chiffre vivable. Suivons « les actions font 10 % » jusqu'au taux de retrait, étape par étape :
 
 1. **10 % arithmétique nominal** : la moyenne des années, celle des brochures et des manuels.
-2. **− drag (~1,1 % à 15 % de vol)** → ~8,9 % géométrique nominal : ce que compose un capital investi. C'est cette moyenne-là que les visualisateurs de portefeuilles affichent sous le nom CAGR, jamais l'arithmétique.
+2. **− drag (~1,1 % à 15 % de vol)** → ~8,9 % géométrique nominal : ce que compose un capital investi. C'est cette moyenne-là que les outils de visualisation de portefeuille affichent sous le nom CAGR, jamais l'arithmétique.
 3. **− inflation (~2,5 %)** → **~6,4 % géométrique réel** : la seule monnaie qui compte sur 40 ans ([[inflation-et-taux-de-retrait]]). Historiquement, les actions mondiales ont livré ~5 % géométrique réel ; les portefeuilles diversifiés 60/40, plutôt 3,5 à 4,5 %.
 4. **− frais et fiscalité** (0,3 à 1,5 % selon vos enveloppes et véhicules, [[etf-ucits-europeens]], [[flat-tax-et-imposition]]).
 5. **− prime de séquence** : même le géométrique réel net n'est retirable que si les rendements arrivent sans désordre ; leur irrégularité face à des retraits fixes coûte encore 1 à 1,5 point ([[sequence-des-rendements]]).
