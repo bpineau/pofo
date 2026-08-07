@@ -77,4 +77,4 @@ Inès, 36 ans, 34 % d'épargne, 90 % actions : son travail est d'automatiser et 
 - Early Retirement Now, SWR Series volets 19-20 et 43 (glidepaths autour du départ) et volet 42 (« The Effect of One More Year ») ([[serie-ern]]).
 - Kitces & Pfau, « Reducing Retirement Risk with a Rising Equity Glide Path » (2014) : l'article fondateur du bond tent ([[glidepaths]]).
 - Vicki Robin & Joe Dominguez, *Your Money or Your Life* : la transition comme changement de vie, pas seulement de flux.
-- Dans un simulateur : tester chaque phase du plan, accumulation comprise, dans le simulateur FIRE de pofo ([[utiliser-la-page-fire]]).
+- Le simulateur FIRE de pofo, pour éprouver chaque phase du plan, accumulation comprise ([[utiliser-la-page-fire]]).

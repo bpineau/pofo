@@ -40,7 +40,7 @@ Dépenses visées : 36 000 €/an nets. Portefeuille réparti entre PEA mûr, as
 
 Le portefeuille n'a pas à financer ce que d'autres revenus financeront. Trois catégories, à traiter différemment.
 
-**La retraite légale.** Même parti à 42 ans, un Français a généralement validé des trimestres. Il touchera une pension, réduite mais réelle, à 64-67 ans ([[retraite-legale]]). L'ignorer est l'erreur conservatrice la plus courante, et elle coûte cher en années de travail superflues. La bonne façon de la compter n'est pas de la soustraire du budget, car elle n'arrive que dans 20 ou 25 ans. On la donne plutôt au simulateur comme revenu différé (le simulateur FIRE de pofo a un contrôle dédié, [[utiliser-la-page-fire]]). L'effet sur la probabilité de ruine est souvent spectaculaire, car la pension arrive précisément dans les scénarios longs où le portefeuille s'épuise.
+**La retraite légale.** Même parti à 42 ans, un Français a généralement validé des trimestres. Il touchera une pension, réduite mais réelle, à 64-67 ans ([[retraite-legale]]). L'ignorer est l'erreur conservatrice la plus courante, et elle coûte cher en années de travail superflues. La bonne façon de la compter n'est pas de la soustraire du budget, car elle n'arrive que dans 20 ou 25 ans. On la modélise plutôt comme un revenu différé, c'est-à-dire un flux daté, exprimé en euros constants, qui vient alléger les retraits à partir de son année de démarrage. Tout simulateur sérieux sait recevoir un tel flux. L'effet sur la probabilité de ruine est souvent spectaculaire, car la pension arrive précisément dans les scénarios longs où le portefeuille s'épuise.
 
 **Les revenus quasi certains** : loyers d'un bien détenu ([[immobilier-en-retrait]]), pension déjà liquidée, rente d'assurance. Soustrayez-les des dépenses, en gardant une décote de prudence (vacance locative, fiscalité propre).
 
@@ -71,13 +71,13 @@ Le calcul complet tient en cinq lignes. Reprenons-le sur un cas réaliste.
 Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans. Relevés de 24 mois : 3 400 €/mois de dépenses réelles, irrégulier annualisé compris. Vie visée : + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle, soit **3 970 €/mois, ou 47 600 €/an nets**. Friction fiscale estimée (PEA + AV mûres + CTO, PUMa comprise) : 12 % → **54 100 €/an bruts**. Revenus non financiers : aucun avant 65 ans. Pensions estimées à 2 100 €/mois pour le couple à 65-67 ans ([info-retraite.fr](https://www.info-retraite.fr)), données au simulateur et non soustraites. Multiple : horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort → **3,5 %, soit 28,6x**. **Cible : 54 100 × 28,6 ≈ 1 545 000 €.** Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 %. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
 :::
 
-Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une fourchette. Stressez-le : ± 10 % sur les dépenses, ± 0,5 point sur le taux, pension décalée de deux ans. Si la conclusion (la date de départ, en pratique) survit à ces secousses, le plan est solide. Si elle bascule, vous savez quel paramètre travailler. Le simulateur FIRE de pofo fait ces bascules en un clic ([[utiliser-la-page-fire]]).
+Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une fourchette. Stressez-le : ± 10 % sur les dépenses, ± 0,5 point sur le taux, pension décalée de deux ans. Si la conclusion (la date de départ, en pratique) survit à ces secousses, le plan est solide. Si elle bascule, vous savez quel paramètre travailler. Rejouer le plan sous ces quelques variantes est l'usage le plus rentable d'un simulateur, bien plus utile que de contempler le premier verdict obtenu.
 
 ## Les raccourcis qui trompent
 
 **« Je prends mes dépenses actuelles ».** Presque toujours faux dans les deux sens : trop haut (crédit immobilier qui s'éteint, enfants qui partent, frais professionnels) et trop bas (mutuelle, santé, loisirs du temps libéré, entretien du logement repoussé). Faites le vrai travail de l'étape 1.
 
-**« Le simulateur dit 97 %, donc c'est bon. »** Un simulateur ne vaut que par ses entrées et son modèle ([[pieges-des-simulateurs]]). 97 % sur des fenêtres historiques américaines avec des dépenses sous-estimées de 15 %, c'est un faux confort. La bonne pratique : plusieurs modèles (c'est le principe du simulateur FIRE de pofo, qui en affiche quatre côte à côte), des entrées auditées, et de la marge.
+**« Le simulateur dit 97 %, donc c'est bon. »** Un simulateur ne vaut que par ses entrées et son modèle ([[pieges-des-simulateurs]]). 97 % sur des fenêtres historiques américaines avec des dépenses sous-estimées de 15 %, c'est un faux confort. La bonne pratique : plusieurs modèles lus côte à côte ([[historique-vs-parametrique]]), des entrées auditées, et de la marge.
 
 **« J'ajoute l'immobilier de résidence à mon capital. »** Votre résidence principale réduit vos dépenses (pas de loyer), mais elle ne produit pas de retraits. La compter dans le capital cible double-compte son effet. Elle reste une réserve de dernier recours (vente, viager, [[immobilier-en-retrait]]), c'est-à-dire une marge, pas un actif du plan.
 
@@ -98,4 +98,4 @@ Le chiffre obtenu n'est pas une ligne d'arrivée sacrée. C'est le centre d'une 
 - Early Retirement Now, SWR Series volet 2 (préservation vs consommation du capital) et volet 28 (l'outil de calcul) : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
 - [info-retraite.fr](https://www.info-retraite.fr) : votre relevé de carrière et l'estimation officielle de vos pensions, l'entrée « revenus différés » de votre plan ([[retraite-legale]]).
 - Morningstar, *The State of Retirement Income* : les taux recommandés recalculés chaque année ([[guardrails-morningstar]]).
-- Le simulateur intégré ([[utiliser-la-page-fire]]), et ce qu'il calcule exactement ([[la-machine-pofo]]).
+- Le simulateur FIRE de pofo ([[utiliser-la-page-fire]]), et ce qu'il calcule exactement ([[la-machine-pofo]]).
