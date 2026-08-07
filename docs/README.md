@@ -20,7 +20,7 @@ of truth for everything current.
 | `fire-book-illustrations-portefeuille-2026-07.md` | ACTIVE figure backlog for the portfolio part: the fourteen reviewers' candidate figures with cost tags, awaiting selection; delete once shipped or dropped |
 | `fire-book-illustrations-reste-2026-07.md` | ACTIVE figure backlog for every other part (alternatives, buffers, inflation, tax, human factor, references, science, starter): the 48 reviewers' candidate figures with cost tags, awaiting selection; delete once shipped or dropped |
 | `index-benchmarks-design.md` | why `MSCIWORLD`/`SP500` are fee-free long-history index benchmarks with bare ids and no SIM variant |
-| `trend-reconstruction-design.md` | how the managed-futures histories are built (engine / monthly anchor / level pin), what widening the basket was measured to cost, and the drawdown problem the constant drag leaves open |
+| `trend-reconstruction-design.md` | the managed-futures field guide: donor chains over reconstruction, the two anchors, the measured dead ends, the data survey (fetchable, walled, nonexistent), the per-fund error budget on live overlaps, and the rebuild-from-scratch pipeline spec |
 | `ntsz-eurozone-efficient-core-design.md` | euro-native Efficient Core backcasts and the deep euro reference series (DBXG/MTH long sleeve, equity-leg caveats), with their epistemic ledger |
 | `suggest-design.md` | `-suggest`/`-coverage` classification and out-of-sample validation design (`pkg/suggest` godoc points here) |
 | `webapp-design.md` | the `-serve` web constellation: route map, the `/view` URL grammar and its guardrails, catalog-only identifiers, style layering, the M2-M4 ladder (`cmd/pofo/serve.go`/`hub.go`/`view.go`) |
