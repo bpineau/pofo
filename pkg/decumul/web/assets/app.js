@@ -476,21 +476,33 @@ function renderCape(cape) {
 // Settings drawer: fold the controls away to run the analysis full-width.
 // Opening from deep in the page scrolls back up to the drawer, otherwise the
 // click appears to do nothing (the drawer unfolds above the viewport).
-(function () {
-  const t = document.getElementById("drawerToggle"), d = document.getElementById("drawer");
-  if (!t || !d) return;
-  t.addEventListener("click", () => {
-    const open = d.hasAttribute("hidden");
-    if (open) {
-      d.removeAttribute("hidden");
-      window.scrollTo({top: 0, behavior: "smooth"});
-    } else {
-      d.setAttribute("hidden", "");
-    }
-    t.setAttribute("aria-expanded", String(open));
-    t.textContent = open ? "parameters ▴" : "parameters ▾";
-  });
-})();
+const drawerToggle = document.getElementById("drawerToggle");
+const drawerEl = document.getElementById("drawer");
+function setDrawer(open) {
+  if (!drawerToggle || !drawerEl) return;
+  if (open) {
+    drawerEl.removeAttribute("hidden");
+    window.scrollTo({top: 0, behavior: "smooth"});
+  } else {
+    drawerEl.setAttribute("hidden", "");
+  }
+  drawerToggle.setAttribute("aria-expanded", String(open));
+  drawerToggle.textContent = open ? "parameters ▴" : "parameters ▾";
+}
+if (drawerToggle && drawerEl)
+  drawerToggle.addEventListener("click", () => setDrawer(drawerEl.hasAttribute("hidden")));
+
+// flashGroup outlines one control group for a moment, so a click that opens
+// the drawer says where in it to look.
+function flashGroup(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove("flash");
+  void el.offsetWidth; // restart the animation on a repeated click
+  el.classList.add("flash");
+  clearTimeout(el._flash);
+  el._flash = setTimeout(() => el.classList.remove("flash"), 1600);
+}
 
 async function runSlow() {
   const id = runId;
@@ -1088,12 +1100,314 @@ function startDrag(ev, i) {
 }
 
 // ---------------------------------------------------------------------------
+// Market provenance: which market the page runs on (top-bar pill), and, when
+// it runs on none, how to load one (the drawer's Portfolio group). Loading is
+// pure navigation: the portfolio-bound simulators are their own mounts
+// (<base>/e/<name>/ and <base>/p/<spec>/), so the loader only builds a URL and
+// carries the current hash along, keeping the visitor's scenario intact.
+// ---------------------------------------------------------------------------
+const GENERIC_HELP = "This page is running on a generic parametric market: every return is drawn from the mu/sigma/df sliders, not from assets you own. Load a portfolio and the historical models (windows, block bootstrap) and the allocation controls wake up.";
+
+function renderMarketPill(meta) {
+  const pill = document.getElementById("marketPill");
+  if (!pill) return;
+  pill.hidden = false;
+  if (meta.hasPanel) {
+    pill.className = "pill market loaded";
+    pill.textContent = "market: " + (meta.sourceLabel || "your portfolio");
+    pill.setAttribute("data-help",
+      "The historical models and the allocation bar run on this portfolio's own monthly real returns. Click to open the parameters and re-weight it.");
+    pill.addEventListener("click", () => { setDrawer(true); flashGroup("group-allocation"); });
+    return;
+  }
+  pill.className = "pill market generic";
+  pill.textContent = "generic market · load portfolio";
+  pill.setAttribute("data-help", GENERIC_HELP + " Click to open the loader.");
+  pill.addEventListener("click", () => { setDrawer(true); flashGroup("group-portfolio"); });
+}
+
+// The /view p= grammar's byte cap and holdings limit, mirrored here so the
+// button can refuse early. The server stays authoritative on both.
+const PICK_MAXHOLDINGS = 20, PICK_MAXBYTES = 2000, PICK_MAXHITS = 8;
+
+// encP encodes one spec the way the grammar is written by hand (mirrors the
+// composer's encP): ":" and "," stay literal, everything else percent-encodes.
+const encP = v => encodeURIComponent(v).replace(/%3A/g, ":").replace(/%2C/g, ",");
+
+// go navigates to a portfolio-bound mount, carrying the live scenario hash so
+// every slider the visitor already moved survives the move.
+const gotoMount = href => location.assign(href + location.hash);
+
+// renderPortfolioGroup builds the drawer's Portfolio group, in the slot the
+// Allocation group occupies in portfolio mode. Without a picker (standalone
+// pofo -fire, which has neither the mounts nor the catalog endpoint) it is one
+// line of command-line instructions.
+function renderPortfolioGroup(meta) {
+  const sim = document.getElementById("group-simulation");
+  if (!sim) return;
+  const box = document.createElement("div");
+  box.className = "group";
+  box.id = "group-portfolio";
+  const head = document.createElement("div");
+  head.className = "group-h";
+  head.textContent = "Portfolio";
+  box.appendChild(head);
+  const lede = document.createElement("p");
+  lede.className = "pick-lede";
+  lede.textContent = "No portfolio bound: returns come from the sliders alone. Load one and the historical models and the allocation bar wake up.";
+  box.appendChild(lede);
+  const picker = meta.picker;
+  if (!picker || !picker.base) {
+    const hint = document.createElement("p");
+    hint.className = "pick-hint";
+    hint.innerHTML = `<span class="pick-prompt">$</span> <span class="mono">pofo -fire your-portfolio.txt</span>`;
+    box.appendChild(hint);
+  } else {
+    box.appendChild(buildExampleList(picker));
+    box.appendChild(buildMiniComposer(picker));
+  }
+  sim.parentElement.insertBefore(box, sim);
+}
+
+// buildExampleList renders the bundled portfolios as a compact scrollable
+// list; a click mounts that example's simulator.
+function buildExampleList(picker) {
+  const wrap = document.createElement("div");
+  wrap.className = "pickblock";
+  const cap = document.createElement("div");
+  cap.className = "pickcap";
+  cap.textContent = "bundled builds";
+  wrap.appendChild(cap);
+  const list = document.createElement("div");
+  list.className = "picklist";
+  for (const ex of picker.examples || []) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "pickex";
+    const n = document.createElement("span");
+    n.className = "pn";
+    n.textContent = ex.title || ex.name;
+    b.appendChild(n);
+    if (ex.blurb) {
+      const d = document.createElement("span");
+      d.className = "pb";
+      d.textContent = ex.blurb;
+      b.appendChild(d);
+    }
+    b.addEventListener("click", () =>
+      gotoMount(picker.base + "/e/" + encodeURIComponent(ex.name) + "/"));
+    list.appendChild(b);
+  }
+  wrap.appendChild(list);
+  return wrap;
+}
+
+// buildMiniComposer renders the search-and-weigh editor over the same p=
+// grammar the report's composer writes: pick assets from the catalog, give
+// each an integer weight, load the result as <base>/p/<spec>/.
+function buildMiniComposer(picker) {
+  const wrap = document.createElement("div");
+  wrap.className = "pickblock";
+  const cap = document.createElement("div");
+  cap.className = "pickcap";
+  cap.textContent = "or compose one";
+  wrap.appendChild(cap);
+
+  const search = document.createElement("input");
+  search.type = "text";
+  search.className = "picksearch";
+  search.placeholder = "search the catalog";
+  search.setAttribute("aria-label", "Search the asset catalog");
+  wrap.appendChild(search);
+  const hits = document.createElement("div");
+  hits.className = "pickhits";
+  hits.hidden = true;
+  wrap.appendChild(hits);
+  const rowsEl = document.createElement("div");
+  rowsEl.className = "pickrows";
+  wrap.appendChild(rowsEl);
+  const sumEl = document.createElement("div");
+  sumEl.className = "picksum";
+  wrap.appendChild(sumEl);
+  const specEl = document.createElement("div");
+  specEl.className = "pickspec";
+  wrap.appendChild(specEl);
+  const load = document.createElement("button");
+  load.type = "button";
+  load.className = "pickload";
+  load.textContent = "Load into simulator";
+  load.disabled = true;
+  wrap.appendChild(load);
+  const why = document.createElement("div");
+  why.className = "pickwhy";
+  wrap.appendChild(why);
+
+  let catalog = null, catalogFailed = false;
+  const rows = []; // [{id, w}]
+
+  // The catalog is fetched on first use, not on page load: the simulator's
+  // own charts get the connection first.
+  function loadCatalog() {
+    if (catalog || catalogFailed) return Promise.resolve();
+    return fetch(picker.catalogURL).then(r => r.json()).then(j => { catalog = j || []; })
+      .catch(() => {
+        catalogFailed = true;
+        why.textContent = "the asset catalog did not load; reload the page to search it";
+      });
+  }
+  if (picker.catalogURL) {
+    search.addEventListener("focus", loadCatalog, {once: true});
+  } else {
+    search.disabled = true;
+    search.placeholder = "catalog unavailable";
+  }
+
+  // match ranks catalog entries by id, alternate identifier (ISIN, ticker,
+  // alias) and name, prefix hits first, capped to a readable few.
+  function match(q) {
+    q = q.trim().toLowerCase();
+    if (!q || !catalog) return [];
+    const out = [];
+    for (const a of catalog) {
+      const id = (a.id || "").toLowerCase(), name = (a.name || "").toLowerCase();
+      const alt = (a.alt || []).map(x => x.toLowerCase());
+      let rank = -1;
+      if (id.startsWith(q)) rank = 0;
+      else if (alt.some(x => x.startsWith(q))) rank = 1;
+      else if (name.startsWith(q)) rank = 2;
+      else if (id.includes(q) || name.includes(q) || alt.some(x => x.includes(q))) rank = 3;
+      if (rank >= 0) out.push({rank, a});
+    }
+    out.sort((x, y) => x.rank - y.rank || x.a.id.localeCompare(y.a.id));
+    return out.slice(0, PICK_MAXHITS).map(x => x.a);
+  }
+
+  function renderHits() {
+    const found = match(search.value);
+    hits.textContent = "";
+    hits.hidden = found.length === 0;
+    for (const a of found) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "pickhit";
+      const i = document.createElement("span");
+      i.className = "pi";
+      i.textContent = a.id;
+      const n = document.createElement("span");
+      n.className = "pn";
+      n.textContent = a.name || a.class || "";
+      b.appendChild(i);
+      b.appendChild(n);
+      b.addEventListener("click", () => addRow(a.id));
+      hits.appendChild(b);
+    }
+  }
+
+  // Adding a line splits the weights evenly; every field stays editable
+  // afterwards and nothing is ever re-normalized behind the visitor's back.
+  function addRow(id) {
+    if (rows.some(r => r.id === id) || rows.length >= PICK_MAXHOLDINGS) return;
+    rows.push({id, w: 0});
+    const even = Math.floor(100 / rows.length);
+    rows.forEach((r, i) => { r.w = i === 0 ? 100 - even * (rows.length - 1) : even; });
+    search.value = "";
+    hits.hidden = true;
+    hits.textContent = "";
+    renderRows();
+    search.focus();
+  }
+
+  function renderRows() {
+    rowsEl.textContent = "";
+    rows.forEach((r, i) => {
+      const row = document.createElement("div");
+      row.className = "pickrow";
+      const id = document.createElement("span");
+      id.className = "pid";
+      id.textContent = r.id;
+      const w = document.createElement("input");
+      w.type = "number";
+      w.className = "pw";
+      w.min = "0";
+      w.max = "100";
+      w.step = "1";
+      w.value = String(r.w);
+      w.setAttribute("aria-label", "Weight of " + r.id + " in percent");
+      w.addEventListener("input", () => {
+        r.w = Math.round(parseFloat(w.value));
+        refresh();
+      });
+      const pc = document.createElement("span");
+      pc.className = "ppc";
+      pc.textContent = "%";
+      const del = document.createElement("button");
+      del.type = "button";
+      del.className = "pdel";
+      del.textContent = "×";
+      del.setAttribute("aria-label", "Remove " + r.id);
+      del.addEventListener("click", () => { rows.splice(i, 1); renderRows(); });
+      row.appendChild(id);
+      row.appendChild(w);
+      row.appendChild(pc);
+      row.appendChild(del);
+      rowsEl.appendChild(row);
+    });
+    refresh();
+  }
+
+  // spec is the p= value: the holdings, then "!sim:on" so the panel splices
+  // each holding's reconstructed history. A retirement-length model wants the
+  // deepest past available, and real quotes alone are usually far too short.
+  const spec = () => rows.map(r => r.id + ":" + r.w).join(",") + "!sim:on";
+
+  // refresh recomputes the weight sum, the spec echo and why the button is
+  // (or is not) live. The reasons mirror the server's gates; it re-checks.
+  function refresh() {
+    const sum = rows.reduce((a, r) => a + (isFinite(r.w) ? r.w : 0), 0);
+    sumEl.textContent = rows.length ? "weights sum to " + sum + "%" : "";
+    sumEl.className = "picksum" + (rows.length && sum !== 100 ? " off" : "");
+    const s = spec();
+    specEl.textContent = rows.length ? s : "";
+    let reason = "";
+    if (!rows.length) reason = "pick at least one asset above";
+    else if (rows.some(r => !isFinite(r.w) || r.w <= 0)) reason = "every line needs a weight above zero";
+    else if (rows.length > PICK_MAXHOLDINGS) reason = "at most " + PICK_MAXHOLDINGS + " holdings";
+    else if (new TextEncoder().encode(s).length > PICK_MAXBYTES) reason = "this composition is too long to fit a link";
+    load.disabled = reason !== "";
+    why.textContent = reason;
+  }
+
+  search.addEventListener("input", renderHits);
+  search.addEventListener("keydown", e => {
+    if (e.key === "Escape") { search.value = ""; renderHits(); return; }
+    if (e.key !== "Enter") return;
+    e.preventDefault();
+    const found = match(search.value);
+    if (found.length) addRow(found[0].id);
+  });
+  load.addEventListener("click", () => {
+    if (load.disabled) return;
+    gotoMount(picker.base + "/p/" + encP(spec()) + "/");
+  });
+  refresh();
+  return wrap;
+}
+
+// ---------------------------------------------------------------------------
 // Portfolio mode bootstrap: fetch holdings, seed the fit, add the bar.
 // ---------------------------------------------------------------------------
 fetch(apiURL("/api/meta")).then(r => r.json()).then(m => {
   renderCape(m.cape);
   setSVG("capeHistory", m.capeHistory);
-  if (!m.hasPanel) { run(); runSlow(); return; }
+  renderMarketPill(m);
+  if (!m.hasPanel) {
+    // Nothing on the page would otherwise reveal that portfolio mode exists:
+    // the drawer's Allocation slot gets the loader instead.
+    renderPortfolioGroup(m);
+    run();
+    runSlow();
+    return;
+  }
   hasPanel = true;
   labels = m.labels;
   weights = (sharedWeights && sharedWeights.length === labels.length) ? sharedWeights.slice()
@@ -1107,6 +1421,7 @@ fetch(apiURL("/api/meta")).then(r => r.json()).then(m => {
 
   const box = document.createElement("div");
   box.className = "group";
+  box.id = "group-allocation";
   box.innerHTML = `<div class="group-h">Allocation</div>
     <div class="ctl span" data-help="Drag a divider to shift weight between adjacent holdings. Every model re-fits (μ/σ/df and the historical panel) from the live weights.">
       <span class="lab"><span>Drag a divider to shift weight</span></span>
