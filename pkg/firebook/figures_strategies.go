@@ -590,7 +590,7 @@ func figPourcentageLissages() string {
 		dy    float64 // where the end label sits, the three ends being close
 	}
 	all := []series{
-		{corridor, figBlue, "corridor borné", "corridor", -2},
+		{corridor, figBlue, "corridor borné", "corridor", -12},
 		{yale, figAccent, "règle de Yale", "Yale", 14},
 		{raw, figBad, "pourcentage brut", "brut", -16},
 	}
