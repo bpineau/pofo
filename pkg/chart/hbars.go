@@ -18,7 +18,14 @@ func HBars(opt Options, bars []Bar) string {
 	if h == 0 {
 		h = 60 + 28*len(bars) // height grows with the row count
 	}
-	const labelW, padR, padT, padB = 150.0, 60.0, 40.0, 16.0
+	const padR, padT, padB = 60.0, 40.0, 16.0
+	// The label gutter fits the longest row label (12px mono runs ~7.3px per
+	// glyph), within a third of the chart so the bars keep the floor space.
+	labelW := 150.0
+	for _, b := range bars {
+		labelW = math.Max(labelW, float64(len(b.Label))*7.3+16)
+	}
+	labelW = math.Min(labelW, float64(w)/3)
 	x0, x1 := labelW, float64(w)-padR
 	zero := (x0 + x1) / 2
 

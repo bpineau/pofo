@@ -34,20 +34,23 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 	cMu, cSigma, cDf := centralParams(pr, panel)
 
 	// Safe WR vs horizon, central Student-t and broad-sample regime curves.
+	// slot pins each model to its hero-strip palette slot (Student-t 0,
+	// Broad-sample 2) so a model keeps its color across every chart.
 	type curveModel struct {
 		name   string
+		slot   int
 		source func(years int) scenario.Source
 	}
 	models := []curveModel{
-		{"Central (Student-t)", func(years int) scenario.Source {
+		{"Central (Student-t)", 0, func(years int) scenario.Source {
 			return scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: years}
 		}},
-		{"Broad-sample", func(years int) scenario.Source {
+		{"Broad-sample", 2, func(years int) scenario.Source {
 			return scenario.NewMarkovRegime(consMu, consSigma, consDf, years)
 		}},
 	}
 	var series []chart.XYSeries
-	for i, m := range models {
+	for _, m := range models {
 		xs := make([]float64, len(curveHorizons))
 		ys := make([]float64, len(curveHorizons))
 		for j, years := range curveHorizons {
@@ -58,7 +61,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 			safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
 			xs[j], ys[j] = float64(years), safe/pr.Capital*100
 		}
-		series = append(series, chart.XYSeries{Name: m.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(i)})
+		series = append(series, chart.XYSeries{Name: m.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(m.slot)})
 	}
 	horizonSVG := chart.MultiLine(
 		chart.Options{Title: "Safe withdrawal rate vs horizon (at your target ruin)", Width: 720, Height: 360},

@@ -201,6 +201,15 @@
   box-shadow:0 24px 70px -24px rgba(22,24,29,.55);padding:.6rem}
 body.noscroll{overflow:hidden}
 
+/* ---- small screens: shed the nowrap ornaments, keep the analysis ------------- */
+@media (max-width:720px){
+  .section-head .aside,.masthead .stamp{display:none}
+  .section-head h2{white-space:normal}
+  .masthead .ctx{white-space:normal}
+  .hero-models{max-width:100%}
+  .herobar{row-gap:.4rem}
+}
+
 /* ---- tooltip ------------------------------------------------------------------ */
 #tip{position:fixed;display:none;z-index:50;max-width:26rem;padding:.55rem .7rem;border-radius:8px;
   background:var(--ink);color:#F0F2F6;font-size:.78rem;line-height:1.45;pointer-events:none;
