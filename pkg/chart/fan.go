@@ -32,15 +32,14 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 		steps = max(steps, len(s))
 	}
 
-	// Scale the y-axis to the percentile bands only: a single lucky sample path
-	// can reach many times the p95 over a long horizon and would otherwise
-	// squash the informative bands. Sample lines are clipped to this range.
-	scaleBands := bands
-	if len(bands) > 2 {
-		scaleBands = bands[:len(bands)-1] // drop the outermost (p95) so the low region breathes
-	}
+	// Scale the y-axis to the percentile bands (a single lucky sample path can
+	// reach many times the p95 and would squash everything), then cap it at
+	// 10x the starting wealth: over long horizons the upper cone compounds to
+	// many times the start, and an uncapped axis crushes the region that
+	// matters (the start and the zero line) into the bottom pixels. Anything
+	// above the axis range is drawn clamped and the clip is flagged.
 	var scale []float64
-	for _, b := range scaleBands {
+	for _, b := range bands {
 		scale = append(scale, b...)
 	}
 	if len(scale) == 0 {
@@ -49,7 +48,25 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 		}
 	}
 	vmin, vmax := axisBounds(scale) // starts at 0 for non-negative wealth
+	if start := fanStart(bands, samples); start > 0 && vmax > 10*start {
+		vmax = 10 * start
+	}
+	clipped := false
+	for _, vs := range append(append([][]float64{}, bands...), samples...) {
+		for _, v := range vs {
+			if v > vmax {
+				clipped = true
+			}
+		}
+	}
 	clamp := func(v float64) float64 { return math.Max(vmin, math.Min(v, vmax)) }
+	clampAll := func(vs []float64) []float64 {
+		out := make([]float64, len(vs))
+		for i, v := range vs {
+			out[i] = clamp(v)
+		}
+		return out
+	}
 
 	xmax := float64(max(steps-1, 1))
 	xAt := func(i int) float64 { return x0 + float64(i)/xmax*(x1-x0) }
@@ -83,43 +100,59 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="`+themeBad+`">ruin · 0</text>`+"\n", x0+5, y1-4)
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y0, x0, y1)
 
-	// Shaded bands, outermost first so inner pairs paint on top.
+	// Shaded bands, outermost first so inner pairs paint on top, values
+	// clamped to the (possibly capped) axis range.
 	const bandFill = themeAccent
 	n := len(bands)
 	for i := 0; i < n/2; i++ {
 		opacity := 0.10 + 0.10*float64(i) // inner pairs a touch more opaque
 		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="%.2f" stroke="none"/>`+"\n",
-			bandPolygon(bands[i], bands[n-1-i], xAt, yAt), bandFill, opacity)
+			bandPolygon(clampAll(bands[i]), clampAll(bands[n-1-i]), xAt, yAt), bandFill, opacity)
 	}
 
-	// Individual sample paths (clipped to the band range). Ruin paths (ending at
-	// or below 0) are drawn thicker and saturated so failures stand out; the rest
-	// are faint grey context.
+	// Individual sample paths (clipped to the axis range). Ruin paths (ending
+	// at or below 0) are drawn thicker and saturated so failures stand out;
+	// the rest are faint grey context.
 	for _, s := range samples {
 		color, width, op := themeFaint, "1", "0.55"
 		if len(s) > 0 && s[len(s)-1] <= 0 {
 			color, width, op = themeBad, "1.8", "0.9"
 		}
-		clipped := make([]float64, len(s))
-		for i, v := range s {
-			clipped[i] = clamp(v)
-		}
 		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="%s" stroke-width="%s" stroke-opacity="%s" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
-			linePath(clipped, xAt, yAt), color, width, op)
+			linePath(clampAll(s), xAt, yAt), color, width, op)
 	}
 
 	// Median line: the central band when the percentile count is odd, finished
 	// with an emphasized endpoint so the eye lands on the expected outcome.
 	if n%2 == 1 {
-		med := bands[n/2]
+		med := clampAll(bands[n/2])
 		fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="`+themeInk+`" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>`+"\n",
 			linePath(med, xAt, yAt))
 		if k := len(med) - 1; k >= 0 {
 			fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3" fill="`+themeInk+`"/>`+"\n", xAt(k), yAt(med[k]))
 		}
 	}
+	if clipped {
+		fmt.Fprintf(&b, `<text x="%g" y="%.1f" font-size="11" fill="`+themeMuted+`" text-anchor="end">upside clipped ↑</text>`+"\n", x1, y0+12)
+	}
 	b.WriteString("</svg>")
 	return finish(b.String())
+}
+
+// fanStart is the common starting wealth of the fan (every band and sample
+// begins at the deployed capital); 0 when nothing is drawn.
+func fanStart(bands, samples [][]float64) float64 {
+	for _, b := range bands {
+		if len(b) > 0 {
+			return b[0]
+		}
+	}
+	for _, s := range samples {
+		if len(s) > 0 {
+			return s[0]
+		}
+	}
+	return 0
 }
 
 // bandPolygon builds the closed polygon between a lower and an upper band: along
