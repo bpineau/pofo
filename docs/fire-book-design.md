@@ -124,8 +124,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
 - [x] vpw: VPW, le retrait a pourcentage variable des Bogleheads
 - [x] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
-- [ ] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
-- [ ] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
+- [x] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
+- [x] amortissement-abw: Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle
 - [ ] plancher-plafond: Plancher-plafond et regles Vanguard : la flexibilite bornee
 - [ ] rentes-et-annuites: Rentes, annuites et safety first : acheter un plancher
 - [ ] choisir-sa-strategie: Choisir sa strategie : criteres, comparatif, cas d'usage
