@@ -1271,7 +1271,11 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		spec.Optimize.Objective, start.Format("2006-01-02"), end.Format("2006-01-02"),
 		strings.Join(parts, ", "), res.Return*100, res.Volatility*100, res.Sharpe)
 	if cwarpObj {
-		note += fmt.Sprintf(", achieved CWARP %+.1f vs %s", res.CWARP, bench.Symbol)
+		note += fmt.Sprintf(", achieved CWARP %+.1f vs %s. Note: these are the best diversifier "+
+			"of %s to overlay on top of equity beta, not a standalone portfolio; its own CAGR / "+
+			"volatility / drawdown below will look weak by design (that is the point) — the value is "+
+			"the +CWARP it adds when layered on the benchmark",
+			res.CWARP, bench.Symbol, bench.Symbol)
 	}
 	if spec.Optimize.Objective == optimize.RiskParity && spec.Optimize.MaxWeight > 0 {
 		note += " (max-weight does not apply to risk-parity)"
