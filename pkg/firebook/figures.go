@@ -126,6 +126,8 @@ var figures = map[string]func() string{
 	"cape-dix-ans":             figCapeDixAns,
 	"credits-mortalite":        figCreditsMortalite,
 	"vivant-ruine-parti":       figVivantRuineParti,
+	"cible-convexite":          figCibleConvexite,
+	"cible-cascade":            figCibleCascade,
 	"arbre-decision":           figArbreDecision,
 	"deux-thermometres":        figDeuxThermometres,
 	"tous-temps-echange":       figTousTempsEchange,
