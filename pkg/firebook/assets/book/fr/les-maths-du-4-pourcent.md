@@ -58,5 +58,5 @@ La cascade n'est pas qu'un outil pédagogique. Elle se vérifie terme à terme. 
 
 - William Bengen, « Determining Withdrawal Rates Using Historical Data » (1994) : l'article original, où la cascade est implicite dans les tables.
 - Early Retirement Now, série SWR (notamment les volets sur le CAPE et l'horizon) : la cascade recalculée sur données modernes ([[serie-ern]]).
-- Blanchett, « Exploring the Retirement Consumption Puzzle » et les rapports State of Retirement Income de Morningstar : le bonus d'amortissement dans les taux par âge.
+- Blanchett, Kowara & Chen, « Optimal Withdrawal Strategy for Retirement Income Portfolios » (2012) et les rapports State of Retirement Income de Morningstar : le bonus d'amortissement dans les taux par âge.
 - Dans ce livre : [[rendements-arithmetiques-geometriques]] (l'étage 1 en détail), [[amortissement-abw]] (l'étage 2 érigé en stratégie), [[sequence-des-rendements]] (l'étage 3), [[la-regle-des-4-pourcents]] (la règle racontée) et [[etude-trinity]] (la règle mesurée).

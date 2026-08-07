@@ -99,5 +99,5 @@ Les FIRE en cours de route le disent souvent. Reformulez « mon plan doit tenir 
 
 - INSEE : tables de mortalité françaises ([insee.fr](https://www.insee.fr), « tables de mortalité des années N ») et études sur les écarts d'espérance de vie par catégorie sociale ; les tables prospectives TGH-05/TGF-05 pour la vision assureur.
 - Early Retirement Now, SWR Series volets 1-2 (les SAFEMAX par horizon, déplétion vs préservation) et volet 56 (rentes et Sécurité sociale dans le plan) ([[serie-ern]]).
-- Moshe Milevsky, *The 7 Most Important Equations for Your Retirement* : la formalisation actuarielle accessible (dont l'équation de Fibonacci de la longévité et la logique de l'annuitisation).
+- Moshe Milevsky, *The 7 Most Important Equations for Your Retirement* : la formalisation actuarielle accessible (dont l'équation de Gompertz pour la longévité, celle de Fibonacci pour la durée de vie du capital, et la logique de l'annuitisation).
 - Un simulateur qui pondère la ruine par la mortalité doit dire sur quelles tables il s'appuie, et si elles sont prospectives. Le détail de ce calcul tel que pofo l'implémente est dans [[la-machine-pofo]].
