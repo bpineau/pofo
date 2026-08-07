@@ -50,6 +50,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Décumulation** : la phase où l'on vit du capital : l'objet de ce livre : un problème différent de l'accumulation (l'ordre des rendements s'y met à compter). [[les-trois-phases]]
 
+**df (degrés de liberté)** : le paramètre de queues de la loi Student-t du modèle central : plus df est bas, plus les années extrêmes sont fréquentes (df 5, ~10 fois plus d'années catastrophiques qu'en loi normale). [[queues-epaisses]], [[la-machine-pofo]]
+
 **Die With Zero** : la thèse de Perkins : mourir riche est un échec : version raisonnable : time buckets datés, générosité du vivant, appliquée à l'excédent d'un plan sûr. [[depenses-en-retraite]]
 
 **Drawdown** : la baisse depuis le dernier sommet : en réel pour un rentier : le déclencheur standard du buffer (15-20 %). [[recharger-ou-pas]]
@@ -82,6 +84,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Hystérésis** : déclencher à un seuil, désarmer à un autre plus bas : l'anti-fausse-alerte de tous les voyants du plan. [[quand-s-inquieter]]
 
+**i.i.d. (indépendants et identiquement distribués)** : des tirages sans mémoire, chaque période indépendante et tirée de la même loi : le Monte-Carlo naïf : sous-représente les longues séquences médiocres (pas de grappes, pas de retour de valorisation), d'où les moteurs à mémoire. [[monte-carlo-forces-faiblesses]], [[rendre-monte-carlo-pertinent]]
+
 **IPCH (HICP)** : l'indice des prix harmonisé européen : la cible de la BCE et le déflateur de pofo (`^HICP-FR`). [[suivre-inflation]]
 
 **Lean / Fat FIRE** : les variantes sobre (~15-25 k€/an) et confortable (60 k€+) : la difficulté n'est pas linéaire entre les deux. [[fire-cest-quoi]]
@@ -95,6 +99,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 **Monte-Carlo** : dérouler le plan dans des milliers de futurs tirés d'un modèle : un théorème conditionnel (« si le monde tire dans cette urne... »), jamais une prédiction. [[monte-carlo-forces-faiblesses]]
 
 **Moyenne géométrique** : le taux de croissance réellement composé : toujours sous la moyenne arithmétique, d'environ σ²/2 (le volatility drag) : votre patrimoine vit en géométrique. [[rendements-arithmetiques-geometriques]]
+
+**μ (mu)** : la moyenne arithmétique réelle annualisée du moteur de rendement (curseur de la loi Student-t) : le rendement géométriquement vécu vaut ≈ μ − σ²/2 : à saisir modeste et **réel**, jamais la moyenne d'une brochure. [[la-machine-pofo]], [[rendements-arithmetiques-geometriques]]
 
 ## O-R
 
@@ -135,6 +141,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 **Safety-first** : l'école de l'adossement : garantir le plancher par des revenus à vie (pension, rente, échelle), risquer seulement le confort. [[rentes-et-annuites]], [[panorama-strategies-retrait]]
 
 **Séquence stress** : le modèle de pofo à sticky bears (Markov, moyenne préservée) : l'écart avec le central mesure le prix de l'ordre dans votre plan. [[rendre-monte-carlo-pertinent]], [[la-machine-pofo]]
+
+**σ (sigma)** : la volatilité annualisée (écart-type des rendements) du moteur : sa traînée σ²/2 sépare moyenne arithmétique et géométrique (le volatility drag) : plus basse que la vol « une année » des brochures. [[rendements-arithmetiques-geometriques]], [[queues-epaisses]]
 
 **Sourire (retirement smile)** : la forme des dépenses réelles : hautes au début, déclinantes vingt ans, remontant à la fin (santé) : le besoin constant sur-provisionne de 10-20 %. [[depenses-en-retraite]]
 

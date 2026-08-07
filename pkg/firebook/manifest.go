@@ -43,7 +43,7 @@ var Categories = []Category{
 			{"etude-trinity", "Bengen, l'étude Trinity et la naissance du taux de retrait sûr", "Les études fondatrices de 1994-1998 : ce qu'elles ont montré, et ce qu'on leur fait dire à tort."},
 			{"sequence-des-rendements", "Le risque de séquence : le vrai ennemi du retraité", "Pourquoi deux retraités avec le même rendement moyen finissent l'un riche, l'autre ruiné."},
 			{"ruine-et-probabilites", "La probabilité de ruine : la lire, la choisir, ne pas la subir", "Ce que mesure vraiment le chiffre des simulateurs, comment choisir son seuil, et pourquoi les décimales mentent."},
-			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des plaquettes ne sont pas vivables, et la cascade qui mène au taux de retrait."},
+			{"rendements-arithmetiques-geometriques", "Moyenne arithmétique, moyenne géométrique et volatility drag", "Pourquoi les rendements des brochures ne sont pas vivables, et la cascade qui mène au taux de retrait."},
 			{"anarkulova-cederburg", "Au-delà des États-Unis : Anarkulova, Cederburg et l'échantillon mondial", "Le taux de retrait recalculé sur le siècle entier des pays développés, ses chiffres qui dérangent, et ses critiques."},
 			{"valorisations-et-cape", "Les valorisations (CAPE) et ce qu'elles disent du taux de retrait", "Le meilleur prédicteur connu du sort d'un millésime : définition, chiffres, critiques, et les quatre usages légitimes dans un plan."},
 			{"rendements-attendus", "Les rendements attendus prospectifs", "Construire un μ défendable : building blocks, les fourchettes de Vanguard à GMO, la précision réelle, et comment ne pas empiler les prudences."},
