@@ -88,6 +88,10 @@ sp500-refdata: ## (Re)generate the month-end SP500-USD reference series (network
 	$(GO) run ./cmd/gen-sp500-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: book-drift
+book-drift: build ## What the FIRE book's translations owe their French source
+	./pofo -book-drift
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt
