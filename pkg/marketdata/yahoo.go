@@ -239,6 +239,7 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 		Price:    *m.RegularMarketPrice,
 		Time:     time.Unix(m.RegularMarketTime, 0).In(loc),
 		Currency: m.Currency,
+		Symbol:   symbol,
 		Source:   "yahoo",
 		Live:     true,
 	}, nil
