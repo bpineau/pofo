@@ -41,14 +41,24 @@ func List() []Info {
 // titleOf extracts the title line: the first line stripped of its comment
 // marker, split on the " -- " separator (a few older files use an em-dash
 // variant, matched via its escape so the character never appears in this
-// source file).
+// source file). It returns ("", "") when the first line is not a genuine
+// title, i.e. when the file has no leading comment line at all, or when
+// that comment line is a "#meta ..." directive rather than prose; callers
+// then fall back to Title = Name.
 func titleOf(file string) (title, blurb string) {
 	raw, err := FS.ReadFile(file)
 	if err != nil {
 		return "", ""
 	}
 	line, _, _ := strings.Cut(string(raw), "\n")
-	line = strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(line), "#"))
+	line = strings.TrimSpace(line)
+	if !strings.HasPrefix(line, "#") {
+		return "", ""
+	}
+	line = strings.TrimSpace(strings.TrimPrefix(line, "#"))
+	if line == "meta" || strings.HasPrefix(line, "meta ") {
+		return "", ""
+	}
 	for _, sep := range []string{" -- ", " \u2014 "} {
 		if t, b, found := strings.Cut(line, sep); found {
 			return strings.TrimSpace(t), strings.TrimSuffix(strings.TrimSpace(b), ".")
