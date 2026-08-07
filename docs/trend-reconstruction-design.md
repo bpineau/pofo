@@ -47,6 +47,48 @@ The donor brings its own manager and fee load with it, which is the honest
 price: the reconstruction is no longer "what this fund would have done" but
 "what this trade actually paid, run by the closest managers we can observe".
 
+### The EUR class's daily correlation is only partly a valuation convention (measured, 2026-08)
+
+The unhedged EUR share class validates at a daily correlation of 0.36 against
+the real FT NAV where its weekly figure is 0.71 and its monthly one is above
+0.9. The natural suspicion is a valuation convention rather than an economic
+error: a UCITS NAV is struck at a European valuation point with its own FX
+fixing, so part of day t's US move should print in NAV t+1, and the FX leg
+should be a fixing, not a Yahoo close. That was measured and found real but too
+small to act on.
+
+The test fits the real EUR return against `a * r_DBMF(t) + (1-a) * r_DBMF(t-1)`
+divided by an FX return, over the live overlap only (2025-04-08 to 2026-07-31,
+305 common dates, 287 consecutive-session pairs once two forward-filled FT
+prints are dropped), with `a` on a 0.05 grid and four FX candidates (Yahoo
+EURUSD close on t and on t-1, ECB reference fixing on t and on t-1).
+
+| convention | daily | R2 | weekly | monthly |
+|---|---|---|---|---|
+| shipped (a = 1, Yahoo close on t) | 0.364 | -0.06 | 0.657 | 0.904 |
+| a = 1, ECB fixing on t | 0.417 | 0.03 | 0.682 | 0.905 |
+| best of the grid: a = 0.75, ECB fixing on t | 0.439 | 0.15 | 0.751 | 0.931 |
+| both legs blended at a = 0.70, ECB fixing | 0.459 | 0.20 | 0.750 | 0.934 |
+| unconstrained OLS on the four regressors | 0.460 | 0.21 | | |
+
+Both effects exist and point the way theory says. About a quarter to a third of
+a US session lands in the next EUR NAV print, and the ECB 16:00 CET fixing
+beats the Yahoo close by itself (0.417 against 0.364). But the last row is the
+one that decides: a free regression on the same four regressors reaches a
+multiple correlation of 0.460, so no convention of this family, tuned or not,
+can do better than about +0.10 over what is shipped, and the best constrained
+one gains +0.095. That is at or under the adoption bar this was measured
+against, for a statistic no user reads (real quotes are grafted from
+inception, so the daily convention only ever governs the pre-2025 tail, where
+no FT NAV exists to be right about). The same-day convention was kept.
+
+The residual is the real finding: even the best convention explains a fifth of
+the daily variance. It is not NAV rounding, which prints two decimals on a
+level near 100 to 125, worth 0.4 % of the class's 1.07 % daily standard
+deviation. What is left belongs to the fund, not to the clock: the UCITS
+wrapper holds its own positions and cash, and its NAV is not a repackaged DBMF
+close.
+
 ## The three layers
 
 What is left to the reconstruction is assembled in three separable layers, each answering a
