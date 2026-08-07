@@ -136,7 +136,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   365.25-day years. Comparisons with PortfolioVisualizer et al. differ for
   documented reasons (see `pkg/metrics/doc.go`).
 - Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`), the policy/money-market
-  family (`^ESTR`, `^EURIBOR3M`, `^ECB-DFR`, `^ECB-MRO`, `^SOFR`, `^FEDFUNDS`,
+  family (`^ESTR`, `^EONIA`, `^EURIBOR3M`, `^ECB-DFR`, `^ECB-MRO`, `^SOFR`, `^FEDFUNDS`,
   `^FED-TARGET`, registry in `pkg/marketdata/rates.go`) and `^VIX` are
   annualized percent LEVELS, not prices; `^HICP-<geo>` and `^CPI-US` are index
   levels; all chart fine but never belong in a return computation directly.

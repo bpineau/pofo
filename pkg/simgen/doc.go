@@ -67,4 +67,33 @@
 // Rate series (^IRX, ^FVX, ^TNX, ^TYX, the policy and money-market family of
 // marketdata.RateSymbols, and usdOvernight) are annualized percent levels and
 // are converted to daily accruals by BuildFrame.
+//
+// # Three rules that keep coming back
+//
+// Every recipe here is its own measurement, but three corrections have now
+// been made often enough to state once (each recipe's comment carries its own
+// numbers):
+//
+//   - A DONOR OF THE WRONG DURATION is geared by the ratio of its volatility
+//     to the target's, measured on their whole overlap and at MONTHLY
+//     frequency when the target's daily quotes carry exchange noise. For two
+//     bond series on the same curve, what separates them is duration and
+//     volatility is proportional to it, so the ratio is the duration ratio:
+//     TLT on VUSTX measures 1.131 where the shipped gearing read off a
+//     duration table is 1.133. Never gear to minimize tracking error instead
+//     (it is always lower, because with correlation under one it pays to
+//     under-risk), and never read the beta of a validation line as a target:
+//     beta is correlation times the volatility ratio, so it too rewards
+//     under-risking.
+//   - AN FX-HEDGED SHARE CLASS earns the domestic cash rate on its WHOLE
+//     capital, not on the fraction its duration weight leaves over: the hedge
+//     covers the position, not the leftover. A hedged leg is
+//     w × (local − foreign cash) + 1.00 × domestic cash.
+//   - A RATE IS NOT INTERCHANGEABLE WITH ANOTHER RATE of a different tenor or
+//     security. A futures overlay finances overnight (usdOvernight) and a
+//     collateral sleeve earns the bill rate; a fund tracking an overnight
+//     accrual is not rebuilt from a 3-month interbank index (0.16 points a
+//     year apart over 1999-2025). Splicing rate levels needs no rescaling,
+//     only the right order (ESTR before EONIA, which was defined as ESTR plus
+//     8.5 bp).
 package simgen

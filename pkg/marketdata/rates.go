@@ -28,12 +28,17 @@ import (
 // Fed plus FRED for the American ones. The sources are tried in order, so a
 // throttled provider costs a retry, not a hole.
 //
-// Two depth caveats worth knowing. ^FEDFUNDS reaches 1954 from FRED but only
+// Three depth caveats worth knowing. ^FEDFUNDS reaches 1954 from FRED but only
 // 2000 from the New York Fed, so a series fetched while FRED was unreachable is
-// shorter (delete its cache entry to deepen it later). And ^ECB-MRO is the
+// shorter (delete its cache entry to deepen it later). ^ECB-MRO is the
 // FIXED-rate tender level, which the ECB did not publish between June 2000 and
 // October 2008, when the operations ran as variable-rate tenders: that
-// eight-year hole is in the data, not in the fetch.
+// eight-year hole is in the data, not in the fetch. And the euro area has TWO
+// overnight rates rather than one: ^EONIA runs 1999-01 to its discontinuation
+// on 2022-01-03, ^ESTR starts 2019-10-01, and over the overlap EONIA was
+// DEFINED as ESTR plus a fixed 8.5 basis points, so a series that needs one
+// euro overnight rate across the whole period should take ESTR where it exists
+// and EONIA before, never the reverse.
 const (
 	rateFRED     = "fred"
 	rateDBnomics = "dbnomics"
@@ -61,6 +66,10 @@ var policyRates = map[string]rateSpec{
 	"^ESTR": {
 		sources: []rateSource{{rateDBnomics, "ECB/EST/B.EU000A2X2A25.WT", ""}},
 		name:    "Euro short-term rate (ESTR, overnight)",
+	},
+	"^EONIA": {
+		sources: []rateSource{{rateDBnomics, "ECB/EON/D.EONIA_TO.RATE", ""}},
+		name:    "Euro overnight index average (EONIA, discontinued 2022-01)",
 	},
 	"^ECB-DFR": {
 		sources: []rateSource{{rateDBnomics, "ECB/FM/D.U2.EUR.4F.KR.DFR.LEV", ""}, {rateFRED, "ECBDFR", ""}},
