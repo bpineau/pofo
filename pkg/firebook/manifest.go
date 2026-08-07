@@ -157,6 +157,7 @@ var Categories = []Category{
 			{"marche-baissier-en-retraite", "Traverser un marché baissier en retraite : le playbook", "Trois ours, la semaine 1 du rien actif, les gestes mécaniques du creux (dont la récolte de moins-values), les interdits, et la sortie."},
 			{"revenus-complementaires", "Pensions et revenus complémentaires dans le plan", "Trois catégories, trois traitements : les quatre mécanismes d'un flux, la saisie exacte dans pofo, et le test du plan trop adossé."},
 			{"depenses-en-retraite", "Les dépenses réelles en retraite (retirement smile, Die With Zero)", "Le sourire de Blanchett, les time buckets datés, le front-loading assumé du FIRE précoce, et l'ingénierie du budget à étages temporels."},
+			{"cas-types", "Trois plans complets, chiffrés de bout en bout", "Le solo précoce, le couple classique, le tardif au pont court : trois conceptions déroulées, validées, et leurs leçons croisées."},
 		},
 	},
 }
