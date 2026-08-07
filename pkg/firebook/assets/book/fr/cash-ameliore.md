@@ -24,7 +24,9 @@ La troisième question élimine plus de produits que les deux autres réunies.
 
 **L'obligataire ultra-court** y ajoute du crédit d'entreprise à très courte échéance. Le supplément mesuré est réel mais modeste, environ 27 points de base par an, pour une pire baisse d'une vingtaine de points de base. Un étage honnête, sans surprise.
 
-**Les fonds à échéance**, ou fonds datés, forment un étage à part, ni tout à fait de la trésorerie ni tout à fait de l'obligataire classique. Ils ont leur section plus bas.
+**Le CLO AAA** occupe le dernier étage, le plus rémunérateur : environ 130 points de base au-dessus du monétaire, contre un risque de prix les mauvaises années. C'est aussi le moins connu du lot, et le plus mal-aimé à cause de son sigle, si bien qu'il mérite d'être démonté pièce par pièce. C'est l'objet de la section suivante.
+
+**Les fonds à échéance**, ou fonds datés, forment enfin un étage à part, ni tout à fait de la trésorerie ni tout à fait de l'obligataire classique. Ils ont leur section plus bas.
 
 ## Le CLO, démonté pièce par pièce
 
@@ -63,7 +65,7 @@ Les quatre étages, mesurés et non promis. À droite, l'écart de rendement ann
 
 **Ce qui peut mal se passer.** Ni le taux (coupon variable, duration presque nulle : 2022, l'année qui a ravagé l'obligataire à taux fixe, a été neutre pour ces tranches), ni le défaut, on vient de le voir. Le risque est le prix de marché, et l'histoire en donne la mesure, avec à chaque fois le délai de retour à la normale.
 
-- **2009.** Des tranches AAA de première génération cotent 70 à 80 % du pair. Elles seront remboursées intégralement, mais il aura fallu attendre la reprise du marché du crédit, sur deux à trois ans, pour retrouver le pair sur les écrans.
+- **2009.** Des tranches AAA de première génération cotent 70 à 80 % du **pair**, la valeur de remboursement du titre (100 % du nominal). Elles seront toutes remboursées à 100, mais les cotations ont mis deux à trois ans, le temps que le marché du crédit se rétablisse, à y remonter.
 - **Mars 2020.** Les écarts passent d'environ 130 à plus de 500 points de base en quelques semaines, et les prix tombent de 100 à 85-90. Le retour au pair intervient au quatrième trimestre 2020, soit près de neuf mois plus tard, les défauts constatés (3,2 %) s'étant révélés très inférieurs aux 8 à 12 % que le marché redoutait.
 - **Automne 2022.** Les fonds de pension britanniques, pris dans la crise de leurs couvertures de taux, vendent leurs CLO en urgence pour lever du cash, et les tranches en euro décrochent. Sur l'ETF en dollars, le creux est à −2,6 % ; il est effacé en cinq mois, et le sommet précédent retrouvé un peu moins d'un an après avoir été quitté.
 
