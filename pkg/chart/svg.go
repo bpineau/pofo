@@ -58,7 +58,7 @@ func Line(opt Options, series []Series) string {
 	st := opt.Style
 	font := st.Font
 	if font == "" {
-		font = "-apple-system, Segoe UI, Helvetica, Arial, sans-serif"
+		font = "'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace"
 	}
 	fontSize := st.FontSize
 	if fontSize == 0 {

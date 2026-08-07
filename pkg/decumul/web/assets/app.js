@@ -102,7 +102,7 @@ for (const g of GROUPS) for (const it of g.items) if (it.kind === "range") {
 }
 const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
 // Series palette, mirrors chart.PaletteColor so page and SVG stay consistent.
-const PAL = ["#2E4BE0","#0E9384","#E19000","#7A5AF8","#E8622C","#0BA5EC","#067647","#C11574"];
+const PAL = ["#0880A8","#C2452B","#4C63D2","#B45309","#6D28D9","#35803B","#BE185D","#2B9BD0"];
 const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // portfolio-mode state, set once /api/meta resolves.
@@ -116,16 +116,17 @@ const state = {};
 const checkEls = {};
 
 function renderRail() {
-  for (const g of GROUPS) {
+  GROUPS.forEach((g, gi) => {
     const box = document.createElement("div");
     box.className = "group";
     box.innerHTML = `<div class="group-h">${g.title}</div>`;
-    for (const it of g.items) box.appendChild(buildControl(it));
+    // The plan-defining sliders (first group) get a ruler of ticks.
+    for (const it of g.items) box.appendChild(buildControl(it, gi === 0));
     form.appendChild(box);
-  }
+  });
 }
 
-function buildControl(it) {
+function buildControl(it, ruler) {
   if (it.kind === "check") {
     state[it.key] = false;
     const d = document.createElement("label");
@@ -167,13 +168,25 @@ function buildControl(it) {
   d.className = "ctl";
   if (it.help) d.setAttribute("data-help", it.help);
   d.innerHTML = `<span class="lab"><span>${it.label}</span><span class="val" id="v_${it.key}">${fmtVal(it.key, it.def)}</span></span>
-    <input type="range" min="${it.min}" max="${it.max}" step="${it.step}" value="${it.def}" id="s_${it.key}">`;
-  d.querySelector("input").addEventListener("input", e => {
+    <input type="range" min="${it.min}" max="${it.max}" step="${it.step}" value="${it.def}" id="s_${it.key}">` +
+    (ruler ? `<div class="ticks"></div>` : ``);
+  const input = d.querySelector("input");
+  paintFill(input);
+  input.addEventListener("input", e => {
     state[it.key] = parseFloat(e.target.value);
+    paintFill(e.target);
     refreshVal(it.key);
     schedule();
   });
   return d;
+}
+
+// paintFill keeps the slider track's accent fill in sync with its value
+// (the theme's track is a two-stop gradient split at --fill).
+function paintFill(s) {
+  const min = parseFloat(s.min), max = parseFloat(s.max);
+  const p = max > min ? (100 * (parseFloat(s.value) - min)) / (max - min) : 0;
+  s.style.setProperty("--fill", p.toFixed(2) + "%");
 }
 
 // refreshVal renders a slider's live value, with contextual extras (ages).
@@ -189,7 +202,7 @@ function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); }
 function setSliderVal(k, v) {
   state[k] = v;
   const s = document.getElementById("s_" + k);
-  if (s) { s.value = v; refreshVal(k); }
+  if (s) { s.value = v; paintFill(s); refreshVal(k); }
   if (k === "age") refreshAges();
 }
 
@@ -379,9 +392,12 @@ async function renderModels(b, id) {
   if (r.confNote) conf.setAttribute("data-help", r.confNote);
   else conf.removeAttribute("data-help");
   const ms = r.models || [];
-  const cells = fn => ms.map(m => `<td>${fn(m)}</td>`).join("");
-  const head = `<tr><th></th>${ms.map(m =>
-    `<th data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+  const central = ms.findIndex(m => m.name === "Student-t");
+  renderReadout(central >= 0 ? ms[central].ruin : NaN, r.targetRuin || 0.05);
+  const sel = i => (i === central ? ` class="sel"` : "");
+  const cells = fn => ms.map((m, i) => `<td${sel(i)}>${fn(m)}</td>`).join("");
+  const head = `<tr><th></th>${ms.map((m, i) =>
+    `<th${sel(i)} data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
     cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
@@ -398,6 +414,29 @@ async function renderModels(b, id) {
     `<i title="${esc(m.name)} ${(m.ruin * 100).toFixed(1)}%" style="background:${beadColor(m.ruin)}"></i>`).join("");
 }
 document.getElementById("targetRuin").addEventListener("input", schedule);
+
+// renderReadout paints the hero instrument: the big central-case ruin figure,
+// the tolerance chip, and the gauge (value fill + tolerance tick) on a scale
+// stretching to max(10%, 2.5x tolerance) so the tick sits inside the dial.
+function renderReadout(ruin, target) {
+  const big = document.getElementById("ruinBig");
+  const chip = document.getElementById("ruinChip");
+  if (!isFinite(ruin)) { big.textContent = "·"; chip.hidden = true; return; }
+  big.innerHTML = `${(ruin * 100).toFixed(1)}<span class="pct">%</span>`;
+  const grade = ruin <= target ? "good" : ruin <= 1.5 * target ? "warn" : "bad";
+  chip.hidden = false;
+  chip.className = "chip " + grade;
+  chip.textContent = grade === "good"
+    ? `inside your ${(target * 100).toFixed(1).replace(/\.0$/, "")}% tolerance`
+    : `above your ${(target * 100).toFixed(1).replace(/\.0$/, "")}% tolerance`;
+  const scale = Math.max(0.10, 2.5 * target);
+  document.getElementById("gaugeFill").style.width = (100 * Math.min(1, ruin / scale)).toFixed(1) + "%";
+  document.getElementById("gaugeFill").className = "fill " + grade;
+  document.getElementById("gaugeLim").style.left = (100 * target / scale).toFixed(1) + "%";
+  document.getElementById("gaugeTol").textContent = `tolerance ${(target * 100).toFixed(1).replace(/\.0$/, "")}%`;
+  document.getElementById("gaugeTol").style.left = (100 * target / scale).toFixed(1) + "%";
+  document.getElementById("gaugeMax").textContent = (scale * 100).toFixed(0) + "%";
+}
 
 // Show the plan bar only while the hero is out of view.
 const planbar = document.getElementById("planbar");

@@ -320,9 +320,9 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 			{"Median cumulative tax", fmt.Sprintf("%.0f k€", o.MedianCumTax/1000)},
 			{"Effective tax rate", fmt.Sprintf("%.1f%%", o.EffectiveTaxRate*100)},
 		},
-		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth", Width: 720, Height: 400},
+		ArbitrageSVG: chart.LineDual(chart.Options{Title: "Buffer arbitrage: ruin vs terminal wealth", Width: 900, Height: 360},
 			"Buffer years", ruinSeries(sweep), terminalSeries(sweep)),
-		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 480, Height: 300}, bars),
+		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 600, Height: 360}, bars),
 	}
 }
 

@@ -52,7 +52,7 @@ func Paths(pr Params, panel *scenario.Panel) PathsResult {
 		p.Source = ns.source
 		fan := p.Simulate(pr.NPaths, simWorkers, 7).Fan(fanPercentiles, 8)
 		svg := chart.Fan(
-			chart.Options{Title: "Simulated wealth, real € (" + ns.name + ")", Width: 640, Height: 380},
+			chart.Options{Title: "Simulated wealth, real € (" + ns.name + ")", Width: 640, Height: 360},
 			"Year", fan.Bands, sampleLines(fan.Samples))
 		res.Fans = append(res.Fans, Fan{Name: ns.name, SVG: svg})
 	}

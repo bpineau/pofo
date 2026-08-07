@@ -25,7 +25,7 @@ func TestLineZeroStyleUnchanged(t *testing.T) {
 		`fill="#FFFFFF"`,               // background rect
 		`stroke="#EDF0F3"`,             // grid lines
 		`stroke="#CDD2DA"`,             // axes
-		`font-family="-apple-system, `, // default font
+		`font-family="'Spline Sans Mono', `, // default font
 		`stroke-width="1.8"`,           // default stroke
 	} {
 		if !strings.Contains(svg, want) {

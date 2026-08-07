@@ -49,7 +49,7 @@ func MultiLine(opt Options, xLabel, yLabel string, series []XYSeries, markers ..
 	yAt := func(v float64) float64 { return y1 - (v-ymin)/(ymax-ymin)*(y1-y0) }
 
 	var b strings.Builder
-	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="-apple-system, Segoe UI, Helvetica, Arial, sans-serif">`+"\n", w, h, w, h)
+	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">`+"\n", w, h, w, h)
 	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="#FFFFFF"/>`+"\n", w, h)
 	if opt.Title != "" {
 		fmt.Fprintf(&b, `<text x="%g" y="24" font-size="16" font-weight="600" fill="#16181D">%s</text>`+"\n", x0, esc(opt.Title))
