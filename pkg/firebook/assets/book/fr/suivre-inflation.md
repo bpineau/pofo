@@ -1,6 +1,6 @@
 # Suivre l'inflation : les indices, et la vôtre
 
-Tout le plan vit en euros constants. Les retraits s'indexent, les simulations tournent en réel, le plancher est un pouvoir d'achat ([[la-machine-pofo]]). Mais constants par rapport à **quoi** ?
+Tout le plan vit en euros constants. Les retraits s'indexent, les simulations tournent en réel, le plancher est un pouvoir d'achat ([[inflation-et-taux-de-retrait]]). Mais constants par rapport à **quoi** ?
 
 « L'inflation » n'est pas un fait brut. C'est une mesure construite, avec un panier qui n'est pas le vôtre. L'écart entre l'indice officiel et **votre** inflation personnelle paraît petit chaque année. Composé sur trente ans, il peut valoir autant qu'un point de taux de retrait. Cet article est le manuel de mesure. Il déroule d'abord les indices qui comptent pour un Français, l'IPC et l'IPCH, celui qui sert de déflateur, leur construction et leurs angles morts, dont le plus important, le logement du propriétaire. Il pèse ensuite le débat honnête sur leur fiabilité. Il aborde la question centrale de l'inflation **personnelle**, pourquoi celle d'un retraité dérive au-dessus de l'indice et comment estimer la vôtre en une soirée. Il lit les anticipations de marché, les points morts, la seule « prévision » d'inflation qui engage de l'argent. Il finit par la traduction opérationnelle, sur quoi indexer ses retraits et comment régler la dérive de dépenses dans un simulateur.
 
@@ -52,7 +52,7 @@ Denise (63 ans) et Paul (66 ans) sont propriétaires toit payé, avec 46 000 €
 - Les indices européens sont sérieux, mais ils moyennent un panier qui n'est pas le vôtre. L'angle mort principal est le logement du propriétaire, quasi absent de l'IPCH. Un toit payé adoucit **votre** inflation, l'indice ne le sait pas.
 - L'écart composé compte. +0,3 point/an sur 30 ans ≈ 10 % de pouvoir d'achat, soit un an et demi de dépenses. Estimez votre panier en une soirée (relevés × indices INSEE par fonction, ou le simulateur INSEE).
 - Le tableau de bord annuel tient en trois chiffres : IPCH 12 mois, votre inflation rétrospective, le breakeven 10 ans (la seule anticipation qui engage de l'argent, un étalonnage, jamais un signal de timing).
-- Le réglage propre du plan tient en une ligne. Indexer sur l'IPC et budgéter la dérive (spendDrift +0,3-0,5 %, sourire activé). Un plan de 45 ans sans dérive suppose un panier moyen éternel, c'est l'optimisme le mieux déguisé du sujet.
+- Le réglage propre du plan tient en une ligne. Indexer sur l'IPC et budgéter la dérive (une pente de +0,3 à +0,5 %/an, plus le profil en sourire). Un plan de 45 ans sans dérive suppose un panier moyen éternel, c'est l'optimisme le mieux déguisé du sujet.
 
 ---
 
