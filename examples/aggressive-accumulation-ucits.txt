@@ -4,7 +4,7 @@
 #   futures ballast so the inevitable equity crashes hurt a little less. ~90%
 #   equity-risk, designed to be held through, and bought into, for decades.
 # Inspired by: factor investing (Fama-French) + a light crisis-alpha overlay.
-# Pair with regular contributions (see dca-accumulation-demo.txt).
+# Pair with regular contributions (monthly DCA) over a long horizon.
 # Backtest note: the small-cap-value sleeve uses ZPRVSIM (MSCI USA Small Cap
 #   Value Weighted, real ZPRV from 2015, simulated back to 1997) so the
 #   factor's long record -- incl. the dot-com bust and 2008 -- is visible. In

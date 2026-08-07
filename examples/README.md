@@ -86,13 +86,7 @@ rather than recomputing it (and drifting) on every run.
 - `claude-dragonlite`: the Dragon distilled to three buyable UCITS lines
   (NTSG/trend/gold, no long vol, growth-heavier than Cole); the family's
   simplicity flagship, with its own design notes and honest range check.
-- `dragon-decumulation`: dragon-lite re-tuned for decumulation (45 NTSG, trend split
-  across two managers, gold, and a new euro-linkers head): the answer to
-  dragon-lite's own honesty note. Carries the family's best drawdown depth,
-  duration and Ulcer, a contractual euro-inflation line, and a two-lens
-  measured verdict (in-window vs valuation-anchored) with the biases of
-  each lens spelled out.
-- `dragon-decumulation-household`: dragon-decumulation deployed across French tax wrappers:
+- `dragon-decumulation-household`: dragon-lite re-tuned for decumulation and deployed across French tax wrappers:
   the equity sleeve carved out of the 90/60 core into a PEA/PEA-PME section
   (world swap ETF + small-value boutique funds), the lost bond overlay
   rebuilt with a euro-native long-duration line (accumulating). Covers the wrapper logic
@@ -115,7 +109,6 @@ rather than recomputing it (and drifting) on every run.
 
 ## Capital-efficient / return-stacking (modern)
 
-- `efficient-core-9060`: WisdomTree NTSX/NTSG 90/60 efficient core.
 - `return-stacked-modern`: stacked stocks + bonds + managed futures (RSSB/RSST).
 - `ntsx-all-weather`: efficient core + gold/commodities/trend diversifiers.
 
@@ -165,19 +158,9 @@ cash). The stages are meant to be compared side by side:
 - `stagflation-bunker`: only what works in persistent inflation (trend,
   commodities, gold, short linkers); the regime lab (Neville et al. 2021).
 
-## NTSG contingency plans
-
-- `ntsg-plan-b-diy`: rebuild the 90/60 with two plain ETFs and
-  `#meta leverage:on`; run against `ntsg.txt` to see the tracking.
-- `ntsg-plan-b-winton-stack`: substitute via Winton's equity+trend stack,
-  with duration re-added separately (substitute at constant engines).
-
 ## PEA-eligible (French equity wrapper)
 
-- `pea-all-world-100`: single World PEA ETF.
 - `pea-aggressive-growth`: World + S&P 500 + Nasdaq, PEA.
-- `pea-world-emerging`: World + emerging markets, PEA.
-- `pea-core-satellite`: World core + US tech + Europe satellites, PEA.
 
 ## Curated (built here)
 
@@ -187,8 +170,7 @@ cash). The stages are meant to be compared side by side:
 
 ## Phase mechanics demos
 
-- `dca-accumulation-demo`: starting capital + monthly contributions.
 - `balanced-decumulation-demo`: starting capital + 4%/yr withdrawal.
 
 Older simple examples also live here: `tradi-60-40`, `permanent`,
-`sp500`, `world-equity`, `optimized`.
+`sp500`, `msci-world`, `optimized`.
