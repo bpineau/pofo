@@ -9,6 +9,22 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
+// Donor is one real fund NAV offered to a chain, with the annualized return
+// that must be added back to it before it may stand in for the target.
+//
+// A donor is spliced for its returns, and those returns are net of ITS price
+// list, not the target's. Where the two differ, the difference is a wrapper
+// cost, not a strategy result, and Uplift removes it: a constant fraction per
+// year added to that donor's segment and to no other. Zero leaves the donor
+// exactly as its manager published it. The uplift belongs to the caller,
+// which is the only layer that knows what either vehicle charges; see
+// feeAligned in the recipes for how this family derives it, and why it is
+// derived from published fee schedules rather than from observed return gaps.
+type Donor struct {
+	ID     string
+	Uplift float64 // fraction per year, e.g. 0.006 = +0.60 %/yr
+}
+
 // DonorChain assembles a fund's history out of real quotes for as long as real
 // quotes of something close enough exist: the fund itself, then the nearest
 // sibling behind it, then the next one, each spliced in front of the last.
@@ -23,9 +39,11 @@ import (
 // Donors are given nearest first (same strategy and manager before same
 // strategy and another manager). Each is rescaled to the volatility the chain
 // realizes over their common window, on excess-over-cash returns so the cash
-// leg is not stretched with it, and spliced with marketdata.ExtendBack, which
-// pins its level at the junction. A donor that starts no earlier than the
-// chain, or overlaps it too briefly to calibrate, is skipped.
+// leg is not stretched with it, lifted by its own Uplift so it carries the
+// target's fee load rather than its own, and spliced with
+// marketdata.ExtendBack, which pins its level at the junction. A donor that
+// starts no earlier than the chain, or overlaps it too briefly to calibrate,
+// is skipped.
 //
 // The fund's own quotes are deliberately NOT part of the chain: the recipe
 // grafts them on top afterwards (Recipe.SpliceReal), which leaves the chain
@@ -42,7 +60,7 @@ import (
 // every real NAV and takes its day-to-day moves from the texture in between.
 // Sparse donors therefore carry the level, and the engine carries the texture.
 // A nil texture leaves every donor as it stands.
-func DonorChain(f Fetcher, cashID, calibrate string, donors []string, from time.Time, texture *marketdata.Series) (*marketdata.Series, error) {
+func DonorChain(f Fetcher, cashID, calibrate string, donors []Donor, from time.Time, texture *marketdata.Series) (*marketdata.Series, error) {
 	ref, err := f.Fetch(calibrate, from)
 	if err != nil {
 		return nil, fmt.Errorf("donor chain %s: %w", calibrate, err)
@@ -56,14 +74,17 @@ func DonorChain(f Fetcher, cashID, calibrate string, donors []string, from time.
 	}
 
 	var out *marketdata.Series
-	for _, id := range donors {
-		d, err := f.Fetch(id, from)
+	for _, donor := range donors {
+		d, err := f.Fetch(donor.ID, from)
 		if err != nil || d == nil || len(d.Points) < 30 {
 			continue
 		}
 		scaled, ok := volMatch(ref, d, cash)
 		if !ok {
 			continue
+		}
+		if donor.Uplift != 0 {
+			scaled = afterAnnualFee(scaled.Name+" (fee-aligned)", scaled, -donor.Uplift)
 		}
 		if out == nil {
 			out = densify(scaled, texture, time.Time{})
