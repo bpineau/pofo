@@ -1,6 +1,10 @@
 # Combien il vous faut
 
-« Il vous faut 25 fois vos dépenses annuelles. » La formule tient sur une ligne, et pourtant presque tout le monde se trompe en l'appliquant, parce que l'erreur ne se loge pas dans la multiplication : elle se loge dans les deux termes. Quelles dépenses, exactement ? Et quel multiple, pour votre horizon, votre portefeuille, votre fiscalité, vos autres revenus ? Cette page déroule le calcul complet, du relevé bancaire au capital cible, avec les corrections que la version de comptoir oublie. À la fin, vous saurez produire **votre** chiffre, avec une fourchette honnête plutôt qu'une fausse précision.
+« Il vous faut 25 fois vos dépenses annuelles. » La formule tient sur une ligne, et pourtant presque tout le monde se trompe en l'appliquant, parce que l'erreur ne se loge pas dans la multiplication : elle se loge dans les deux termes. Quelles dépenses, exactement ?
+
+Et quel multiple, pour votre horizon, votre portefeuille, votre fiscalité, vos autres revenus ? Cette page déroule le calcul complet, du relevé bancaire au capital cible, avec les corrections que la version de comptoir oublie.
+
+À la fin, vous saurez produire **votre** chiffre, avec une fourchette honnête plutôt qu'une fausse précision.
 
 ::: cle La vraie formule
 Capital cible = (dépenses annuelles brutes de la vie visée, impôts sur les retraits compris, moins les revenus non financiers actualisés) × un multiple entre 25 et 33 choisi selon l'horizon, le portefeuille et la flexibilité. Chaque terme de cette phrase fait l'objet d'une section ci-dessous.
