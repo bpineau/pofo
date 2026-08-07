@@ -166,7 +166,15 @@
 #   long linkers can lose to rising REAL rates while inflation runs;
 #   duration-cleaner substitutes are UBS Euro Inflation Linked 1-10
 #   (LU1645380442) or UBS TIPS 1-10 EUR-hedged (LU1459801780, US-CPI
-#   basis, deepest backcast). Dose bought on the contract, not the
+#   basis, deepest backcast). DEEP-WINDOW TIP: IBCI's 2005 quotes are
+#   what bounds this file's panel; to visualise the build through the
+#   2000-02 crash (report curves or the FIRE explorer), temporarily
+#   swap this line for LU1459801780, whose backcast reaches 2000-06.
+#   Same role, known biases: US-CPI-hedged basis and milder duration
+#   (vol 3.9% vs 5.7%, CAGR 1.70% vs 1.99% on 2005-2026, monthly corr
+#   ~0.6, so it understates IBCI's real-rate risk). Visualisation
+#   stand-in only: the held line stays IBCI, the liability basis.
+#   Dose bought on the contract, not the
 #   chart: see the two-lens verdict.
 #
 # PEA -- WPEA, world equity (5%; sane range 3-8%).
@@ -261,7 +269,13 @@
 #       IGLN), half feature (crisis USD), half bug; the AQR leg is
 #       EUR-hedged, MTH, IBCI and the liability are euro-native.
 #   (g) RECONSTRUCTION AND WINDOW LIMITS: shared TSMOM backcast for
-#       deep trend history; linkers post-2000 only; WPEA listed 2024.
+#       deep trend history; every non-linker line is backcast far past
+#       its listing (WPEA to 1971, MTH to 1970, the Independance
+#       sleeve to 1990 via its France sibling), so the panel binder is
+#       the linkers line: 2005 with IBCI, 2000-06 with its LU1459801780
+#       stand-in (see the linkers head), and nothing earlier anywhere,
+#       because inflation-linked markets did not exist (first linkers:
+#       UK 1981, TIPS 1997, OATi 1998, euro ~2003).
 #       Regime-behavior study, not a promise.
 #   (h) NO BUFFER IN THE FILE: pair with 2-3 years of spending in euro
 #       liquidity held outside these weights (livrets, fonds euros,
