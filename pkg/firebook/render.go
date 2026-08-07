@@ -111,6 +111,22 @@ func ToHTML(src string, titles map[string]string) string {
 
 		if g := reCallout.FindStringSubmatch(line); g != nil && strings.HasPrefix(line, ":::") {
 			typ := strings.ToLower(g[1])
+			// Figure block: "::: figure <id>" + caption lines + ":::".
+			// The SVG is generated in Go (figures.go), themed to the book,
+			// so diagrams stay editable, testable and network-free.
+			if typ == "figure" {
+				id := strings.TrimSpace(g[2])
+				var cap []string
+				i++
+				for i < len(lines) && strings.TrimSpace(lines[i]) != ":::" {
+					cap = append(cap, lines[i])
+					i++
+				}
+				i++ // closing :::
+				fmt.Fprintf(&b, `<figure class="book-fig">%s<figcaption>%s</figcaption></figure>`,
+					figureSVG(id), inline(strings.TrimSpace(strings.Join(cap, " "))))
+				continue
+			}
 			meta, ok := callouts[typ]
 			if !ok {
 				typ, meta = "encart", callouts["encart"]

@@ -10,6 +10,10 @@ C'est le risque de séquence des rendements (« sequence of returns risk »), et
 Sans retraits, l'ordre des rendements est indifférent : +30 % puis −20 % ou −20 % puis +30 % donnent le même capital (l'addition des logarithmes commute). Avec des retraits, l'ordre devient déterminant : chaque euro retiré pendant un creux est un euro vendu au pire prix, définitivement soustrait au rebond. Le retraité transforme des pertes temporaires en pertes permanentes, à hauteur exacte de ses retraits. Voilà pourquoi le même portefeuille est bien plus risqué en phase de retrait qu'en phase d'accumulation.
 :::
 
+::: figure sequence-risk
+Deux retraités, même rendement moyen sur trente ans et retraits identiques : celui qui subit le krach tôt s'épuise, celui qui le subit tard survit. Seul l'ordre des rendements diffère.
+:::
+
 ## Le mécanisme, sur un exemple qu'on n'oublie pas
 
 Prenons trois années de rendements réels : +20 %, +10 %, −25 %. Moyenne géométrique : peu ou prou nulle (1,20 × 1,10 × 0,75 = 0,99). Capital de départ : 1 000 000 €, retrait de 40 000 € en début de chaque année.
