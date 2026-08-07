@@ -7,14 +7,14 @@ La bonne nouvelle : chacun de ses défauts a une correction connue, documentée 
 C'est très exactement la liste de construction du modèle central de pofo, et cette page sert donc aussi de justification de conception : pourquoi la page FIRE calcule ce qu'elle calcule ([[la-machine-pofo]] donne la plomberie ; ici, le pourquoi).
 
 ::: cle Le principe directeur
-Il n'existe pas de « meilleur modèle » ; il existe un modèle **central** honnête (calibré, corrigé, tiré vers la prudence là où l'information manque) et des **bornes** qui l'encadrent (l'optimiste : vos données rejouées ; les pessimistes : stress, siècle mondial, décennie perdue). Rendre un Monte-Carlo pertinent, ce n'est pas trouver la vérité : c'est construire ce faisceau, et décider dedans. Toute la suite détaille la fabrication du faisceau.
+Il n'existe pas de « meilleur modèle » ; il existe un modèle **central** honnête (calibré, corrigé, tiré vers la prudence là où l'information manque) et des **bornes** qui l'encadrent (l'optimiste, vos données rejouées ; les pessimistes, stress, siècle mondial, décennie perdue). Rendre un Monte-Carlo pertinent, ce n'est pas trouver la vérité : c'est construire ce faisceau, et décider dedans. Toute la suite détaille la fabrication du faisceau.
 :::
 
 ## Correction 1 : le blending, ou comment ne pas croire sa propre fenêtre
 
 Le problème fondamental de la calibration : les paramètres de **votre** portefeuille (μ, σ, df) ne peuvent être estimés que sur son historique, disons vingt ans. Or vingt ans, statistiquement, c'est presque rien pour une moyenne : l'erreur type sur μ est d'environ σ/√n, soit ±2,5 points avec σ = 11 % : l'estimation « 6,8 % réel » signifie « quelque part entre 4 et 9 % ». Et ce n'est pas qu'imprécis, c'est **biaisé** : votre fenêtre est celle qui vous a mené à la cible, donc probablement favorable ; et elle ne contient qu'un ou deux régimes de marché sur les quatre possibles ([[regimes-de-marche]]).
 
-La réponse statistique classique s'appelle le rétrécissement (« shrinkage », l'intuition de James-Stein) : quand une estimation individuelle est bruitée, on améliore **toujours** la prévision en la tirant vers une moyenne de référence plus large. Appliqué ici : mélanger les paramètres ajustés sur vos fonds avec un **prior** issu d'un échantillon immensément plus profond, l'expérience mondiale de long terme (μ ≈ 4,5 % arithmétique réel, σ ≈ 13 %, df ≈ 4 : les valeurs prudentes que suggère le siècle développé, [[anarkulova-cederburg]]).
+La réponse statistique classique s'appelle le rétrécissement (« shrinkage », l'intuition de James-Stein) : quand une estimation individuelle est bruitée, on améliore **toujours** la prévision en la tirant vers une moyenne de référence plus large. Appliqué ici : mélanger les paramètres ajustés sur vos fonds avec un **prior** issu d'un échantillon immensément plus profond, l'expérience mondiale de long terme (μ ≈ 4,5 % arithmétique réel, σ ≈ 13 %, df ≈ 4, les valeurs prudentes que suggère le siècle développé, [[anarkulova-cederburg]]).
 
 Reste à choisir le **poids** du mélange, et c'est là que pofo a une règle élégante : **le poids du prior croît avec ce que l'horizon excède l'historique**, plafonné à 50/50. La logique : si vous avez 20 ans de données pour un plan de 20 ans, vos données parlent d'expérience ; pour un plan de 45 ans, elles n'ont **rien** observé des 25 années au-delà de leur fenêtre, et c'est le prior qui doit parler pour l'inconnu. Concrètement, avec 20 ans d'historique et 45 ans d'horizon, le mélange est au plafond : moitié vos fonds, moitié le siècle. Votre portefeuille atteint ainsi le modèle central par ses **statistiques**, jamais par sa séquence particulière : ses vertus mesurables (diversification, volatilité contenue) sont créditées, sa chance de fenêtre ne l'est pas.
 
@@ -50,7 +50,7 @@ Chaque correction a sa généalogie académique : le shrinkage des estimations d
 
 ## Le tout assemblé : une montée en pertinence, chiffrée
 
-Suivons un même plan à travers les corrections, pour voir ce que chacune coûte ou révèle. Plan : 1,4 M€, 50 000 €/an, 45 ans, portefeuille mondial avec 18 ans d'historique favorable (μ ajusté brut : 6,5 % réel, σ 11 %, kurtosis mensuel 8).
+Suivons un même plan à travers les corrections, pour voir ce que chacune coûte ou révèle. Plan : 1,4 M€, 50 000 €/an, 45 ans, portefeuille mondial avec 18 ans d'historique favorable (μ ajusté brut, 6,5 % réel, σ 11 %, kurtosis mensuel 8).
 
 | Étape | Modèle | Ruine | Ce que l'étape apporte |
 |---|---|---|---|
