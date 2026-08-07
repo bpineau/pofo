@@ -93,8 +93,8 @@ finador's tests after the refactor).
 The EN publication UUID is generated once at implementation time and
 hardcoded, exactly like the French one; the two editions are two distinct
 publications to e-readers (annotations, refresh identity), so they MUST NOT
-share an identifier. The EN EPUB file name follows the EN title (see
-"Decisions reserved to the author" below).
+share an identifier. The EN title is "The Quiet FIRE" and the EPUB file is
+`the-quiet-fire.epub` (settled 2026-08-01).
 
 ### bookmd change
 
@@ -189,10 +189,14 @@ RENDERED SVG:
      French-to-English number reformat: decimal comma to point, narrow-space
      thousands to comma, "6,6 %" to "6.6%";
   3. otherwise it is left untouched, and the guard test fails.
-- The guard test renders every plate, extracts every text payload and
-  asserts it is dictionary-covered or neutral. Consequence: changing a label
-  in a plate breaks `make test` until the dictionary entry is updated IN THE
-  SAME COMMIT. Figures get the hard guard (they change rarely, and the
+- The guard test renders every plate referenced from `assets/book/en/`
+  (scanning `::: figure` blocks), extracts every text payload and asserts it
+  is dictionary-covered or neutral. The covered set grows with the
+  translation campaign and equals all plates once the edition is complete;
+  the dictionary never has to be filled ahead of the articles that need it.
+  Consequence: changing a label in a plate used by a translated article
+  breaks `make test` until the dictionary entry is updated IN THE SAME
+  COMMIT. Figures get the hard guard (they change rarely, and the
   dictionary lives next to the code); prose gets the soft drift report.
 - `English.Figure` = FigureSVG then translateFigure; `French.Figure` =
   FigureSVG unchanged.
@@ -343,13 +347,15 @@ slips mechanically.
 M1 is a self-contained refactor PR-sized task; M2 is the bulk of the cost
 (~91 articles, ~220k French words) and is embarrassingly parallel after M1.
 
-## Decisions reserved to the author (defaults apply until overridden)
+## Decisions settled 2026-08-01
 
-1. The English title. Working default: "The Quiet FIRE" (epub file
-   `the-quiet-fire.epub`). Confirm or replace before M4; the EPUB
-   identifier is independent of the title and can be minted at M1.
-2. The generalize-vs-adapt default for France-specific passages (this spec
-   defaults to generalize, with the three named escalations).
-3. Whether `utiliser-la-page-fire` (the simulator manual) is translated
-   as-is or trimmed: the EN default here is translate as-is, since the
-   simulator UI is already English.
+1. The English title is "The Quiet FIRE" (epub file `the-quiet-fire.epub`).
+2. France-specific passages default to GENERALIZE, with the three named
+   adapt escalations (etf-ucits-europeens, rentes-et-annuites,
+   or-en-retrait).
+3. `utiliser-la-page-fire` is translated as-is: it documents the FIRE
+   simulator page, whose UI is already in English, so only the prose needs
+   translating (links and control names come out naturally).
+
+The M1 task-level plan for the implementing agent is
+`docs/fire-book-en-m1-plan.md` (transient; delete it once M1 ships).
