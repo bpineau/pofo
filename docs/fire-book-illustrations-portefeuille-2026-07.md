@@ -1,10 +1,17 @@
 # Firebook: figure backlog for « Le portefeuille de retrait »
 
-Status: ACTIVE backlog, opened 2026-07-30 during the line-by-line review of the
-fourteen articles of the portfolio part (one reviewer per article; the prose
-fixes shipped as the "line review of ..." commit series ending at this one).
-Nothing here is implemented; the ideas await selection. Delete this file once
-the retained figures are shipped or the list is dropped (docs/ stays curated).
+Status: RESIDUAL backlog, opened 2026-07-30 during the line-by-line review of
+the fourteen articles of the portfolio part (one reviewer per article; the
+prose fixes shipped as the "line review of ..." commit series). Nine ideas were
+built on 2026-07-30 and their entries have been removed from this file, so what
+remains is exactly what has NOT been built: `tous-temps-saisons`,
+`tous-temps-echange`, `tous-temps-ecart`, `duration-vehicules`, `or-decennies`,
+`linkers-echelle`, `scv-ecart-10ans`, `risques-briques` and `safemax-pays`
+(the last one placed in [[anarkulova-cederburg]] with a cross-reference here).
+
+What is left is a pool of ideas to RE-EVALUATE when a figure is wanted, not a
+to-do list: several were written before their article had any illustration, and
+some are weak or superseded. Delete this file once the pool stops being useful.
 
 Figures, when built, follow the v2 plate system and the frozen-array +
 guard-test pattern recorded in `fire-book-design.md`. Costs: **A** = data
@@ -142,27 +149,6 @@ thèse et gagneraient beaucoup à être vus : la carte risques -> briques
 (question 5) et l'arbitrage pires chemins / médiane (question 6). Trois idées,
 classées par valeur.
 
-## 1. La carte bipartite « un risque, une réponse » (coût A)
-
-Deux colonnes reliées par des liens : à gauche les risques nommés à la question
-1 (séquence, marché baissier prolongé, inflation persistante, déflation, crise
-monétaire, plus longévité et santé en gris, hors portefeuille), à droite les
-briques de la question 5 (actions monde, duration d'État, matelas, linkers, or,
-trend, flexibilité des dépenses). Chaque lien porte l'épaisseur de l'intensité
-de défense ; les risques acceptés restent à gauche sans lien sortant.
-
-Elle porte exactement la thèse du chapitre, que l'allocation est la somme des
-réponses et non un point de départ, et elle rend visibles les deux pathologies
-que le texte décrit sans les montrer : la brique sans lien entrant (« pas de
-réponse, pas de diversification, seulement des frais ») et le risque défendu
-deux fois pendant qu'un autre reste nu. Diagnostic supplémentaire, elle exhibe
-le trou de l'article lui-même, le marché baissier prolongé n'ayant aucune ligne
-dans la carte du texte.
-
-Coût A : toute la matière est dans l'article. Forme neuve dans le livre (aucun
-graphe bipartite / de liens existant). Piège : garder les libellés horizontaux
-des deux côtés, pas de texte le long des liens.
-
 ## 2. La fiche de thèse d'une brique (coût C, encadré ou tableau)
 
 La question 7 fait reposer toute la discipline sur « la thèse écrite de chaque
@@ -205,26 +191,6 @@ Contexte : l'article porte déjà quatre plates (`allocation-plateau`, `duration
 le rendement par espèce et le comportement par régime sont donc couverts. Il ne reste
 qu'un seul passage à thèse forte encore entièrement verbal, la section « le véhicule
 change la donne ». Le reste tient très bien en prose et une figure de plus alourdirait.
-
-## 1. Le profil de duration des trois véhicules (coût A, recommandée) [FAIT 2026-07-30, `duration-vehicules`]
-
-Une plate à trois tracés, abscisse = années de détention (0 à 12), ordonnée = duration
-restante du véhicule. L'ETF roulant « 7-10 ans » trace une horizontale plate à 8 : il
-n'arrive jamais à échéance. Le fonds à maturité datée descend de 8 à 0 et s'arrête net
-l'année de liquidation. Le zéro-coupon 12 ans descend en droite de 12 à 0. Trois
-étiquettes en bout de tracé, aucune légende.
-
-Ce qu'elle porte : la thèse de la section, à savoir que le véhicule décide du service
-rendu, alors qu'aujourd'hui elle est énoncée trois fois en prose (« duration à peu près
-constante », « duration décroissante, valeur finale à peu près connue », « sa duration
-égale sa maturité »). Elle rend visible d'un coup l'argument le plus contre-intuitif du
-chapitre, le fonds obligataire qui n'échoit jamais, donc l'illusion du « je tiens à
-échéance ». Elle explique aussi, sans un mot de plus, pourquoi l'échelle se fait en
-titres ou en fonds datés et pourquoi la poche rééquilibrée se fait en ETF.
-
-Coût A : arithmétique pure, aucune donnée à chercher. Forme neuve dans le livre (aucune
-plate n'a la duration en ordonnée ni la durée de détention en abscisse) et sans parenté
-avec `duration-choc`, qui est un diagramme de sensibilité en barres.
 
 ## 2. La grille de tri de la poche défensive (coût C, tableau)
 
@@ -350,59 +316,6 @@ Valeurs mesurées, utiles comme garde-fou d'implémentation :
 | 60/40 | 5,4 % | 9,4 % | 1974, −23 % | −37 % (1972-12 → 1974-09) |
 | 80/20 | 6,2 % | 12,2 % | 1974, −29 % | −45 % (1972-12 → 1974-09) |
 | 100 % actions | 6,8 % | 15,3 % | 2008, −37 % | −54 % (2000-08 → 2009-02) |
-
-## 1. La grille des régimes, recette par recette (coût A)
-
-Barres horizontales empilées, une ligne par portefeuille (60/40 en ligne de
-référence, puis Browne, All-Weather, Golden Butterfly, Dragon), segments
-coloriés non pas par actif mais par **saison couverte** (prospérité,
-inflation, déflation, récession/liquidité). Chaque composition de l'article
-devient une ligne, et la thèse « ce sont des cousins qui appliquent la même
-grille » se lit d'un coup d'œil, tout comme le trou du 60/40 sur la ligne
-inflation.
-
-Elle vaut sa place parce que l'article égrène aujourd'hui quatre listes de
-pourcentages dans quatre paragraphes, que personne ne peut comparer de tête.
-C'est aussi la figure qui rend visible le lien avec `regimes-de-marche`.
-Coût A : tous les poids sont dans l'article, le seul travail est la table de
-correspondance actif → saison (elle existe déjà en prose dans le paragraphe
-Browne). Attention à la poche long volatility du Dragon, à marquer comme non
-implémentable (hachure ou libellé), sinon la figure vend un portefeuille
-inaccessible.
-
-## 2. L'échange, vu comme un nuage rendement / pire chemin (coût A) [FAIT 2026-07-30, `tous-temps-echange`]
-
-Nuage à deux axes, espérance réelle en x, pire drawdown réel en y, un point
-par portefeuille (les six du tableau ci-dessus), famille tous-temps dans une
-couleur, échelle actions/obligations dans une autre, étiquettes horizontales
-aux points. On voit alors que la famille occupe un coin que l'échelle
-actions/obligations n'atteint jamais, à mi-chemin de rendement mais à
-drawdown deux fois plus court.
-
-C'est littéralement le bloc `science` de l'article, aujourd'hui écrit en une
-phrase de six nombres séparés par des points-virgules, que le lecteur ne
-retiendra pas. Le nuage porte en plus la phrase clé « à rendement égal ou
-inférieur, les pires chemins sont deux fois moins profonds », qui devient
-vérifiable à l'œil. Coût A (chiffres du tableau ci-dessus). Deux précautions,
-annoter le point All-Weather comme dépendant de la jambe matières premières
-retenue, et rappeler « US, 1972-2024 » dans le sous-titre puisque tout
-l'article insiste sur la décote à appliquer.
-
-## 3. L'écart à l'indice, année après année (coût A)
-
-Barres annuelles de l'écart de rendement réel entre un tous-temps (Golden
-Butterfly ou Browne) et 100 % actions, 1972-2024, avec les longues séries
-négatives grisées en fond (1995-1999, 2013-2019, 2023-2024) et le nombre
-d'années consécutives de retard écrit dans chaque bande.
-
-L'article appelle l'écart à l'indice « la critique la plus sérieuse » et la
-traite en cinq lignes sans un seul chiffre. Or c'est la raison n° 1 des
-abandons, et une figure qui montre cinq ou sept barres rouges d'affilée fait
-exactement le travail qu'un paragraphe ne fait pas, préparer le lecteur à la
-durée de l'épreuve. Coût A, les deux séries sont déjà calculées ; la seule
-décision de forme est de ne pas empiler une courbe de cumul par-dessus, qui
-brouillerait le message (le sujet est la longueur des séquences, pas le
-total).
 
 ## 4. Le curseur, du 100 % croissance au tous-temps complet (coût B)
 
@@ -576,21 +489,6 @@ L'article n'a aucune figure aujourd'hui, et deux de ses passages centraux sont
 purement verbaux (l'alternance de régimes, et l'A/B or contre pas-d'or). Quatre
 idées, par ordre de priorité.
 
-## 1. Les décennies de l'or, en réel (barres signées, une par décennie glissante) [FAIT 2026-07-30, `or-decennies`]
-
-Une barre par décennie de détention (1970-79, 1980-89, ... ou décennies
-glissantes tous les cinq ans), hauteur = rendement réel total de l'or sur la
-période, plus un trait horizontal à la moyenne (~0 %). Le lecteur voit d'un
-coup les deux moitiés de la thèse de l'article : l'espérance est nulle, et
-pourtant aucune décennie ne ressemble à zéro, de +250 % réel à −70 %. C'est
-l'argument « dormant puis explosif, par régimes » et l'argument « qui le juge
-en solo le rejettera toujours » dans une seule image, là où le paragraphe
-actuel enchaîne cinq épisodes en liste.
-
-Coût : **A**. `pkg/datasets/simdata/XAUUSD.csv` (quotidien, depuis 1968) et le
-déflateur `^CPI-US` déjà embarqué (voir `pkg/replay/reference.go`,
-`referenceCPI`). Une simple déflation et des agrégats par décennie.
-
 ## 2. L'A/B or contre pas-d'or, modèle par modèle (barres appariées ou dumbbell)
 
 Quatre lignes, une par modèle de marché (central, stress de séquence, inflation
@@ -738,24 +636,6 @@ L'article n'a aucune figure aujourd'hui, alors qu'il porte deux passages
 purement verbaux très visuels : le résultat de l'échelle (bloc `science`) et la
 décomposition de 2022. Trois idées, par ordre de valeur.
 
-## 1. Ce que finance une échelle de linkers, selon le taux réel et l'horizon [FAIT 2026-07-30, `linkers-echelle`]
-
-**Ce qu'elle montre.** Trois courbes du taux de retrait garanti par une échelle
-qui se consomme entièrement, `r / (1 − (1+r)^−N)`, pour N = 20, 30 et 40 ans, en
-fonction du taux réel de marché de −1 % à +3 %. Une horizontale à 4 % (la règle)
-et quatre repères pointés sur la courbe 30 ans : 0 % réel → 3,3 %, 1 % (euro) →
-3,9 %, 2 % → 4,5 %, plus le niveau TIPS du moment (~2,3 % → ~4,7 %). C'est la
-figure qui porte toute la thèse du bloc `science` : l'échelle bat la règle des
-4 % dans une fenêtre de taux réels, et seulement là. La courbe 40 ans dit
-visuellement pourquoi un candidat FIRE ne peut pas s'en contenter (à 1 % réel,
-elle ne finance que ~3,0 %), ce que le texte affirme sans le chiffrer. Elle
-remplace aussi les trois chiffres épars de l'article (3,3 / 3,9 / 4,5) par un
-seul objet lisible.
-
-**Coût : A/B.** Formule fermée, aucune donnée externe ; quelques lignes de
-calcul dans le générateur de figures, plus le taux réel courant à citer en
-annotation datée.
-
 ## 2. 2022, les deux moteurs d'un linker, par duration
 
 **Ce qu'elle montre.** Une cascade par bucket de duration (2, 5, 8, 12) avec
@@ -803,34 +683,6 @@ L'article n'a aucune figure et porte deux thèses très visuelles : « le tilt n
 donne pas plus, il donne d'autres décennies perdues » et « le prix d'entrée,
 c'est dix ans d'écart à l'indice ». Trois idées, par ordre de priorité.
 
-## 1. L'écart glissant sur dix ans : SCV moins marché large (coût A) [FAIT 2026-07-30, `scv-ecart-10ans`]
-
-Une seule courbe, l'écart de CAGR réel sur dix ans glissants entre le
-small-cap value américain et le S&P 500, de 1973 à aujourd'hui (fenêtres de
-dix ans à partir de 1963), en aire divergente autour de zéro. Au-dessus de
-zéro, les décennies où le tilt a payé (la fenêtre qui se termine vers 2010,
-sommet du dossier de l'an 2000) ; en dessous, les décennies de honte, dont
-2010-2020, la plus longue et la plus profonde. Trois annotations horizontales
-suffisent : « décennie perdue du marché large », « purgatoire de la value »,
-« 1999 ».
-
-C'est la figure qui porte le bloc-clé (« pas les mêmes décennies perdues »),
-l'encadré du prix d'entrée et le verdict, aujourd'hui tous les trois purement
-verbaux. Elle montre aussi, sans le dire, que l'aire au-dessus et l'aire en
-dessous s'équilibrent à peu près : exactement la thèse « déplacement, pas
-supplément ».
-
-Coût A : tout est embarqué. `pkg/datasets/refdata/USSCV-USD.csv` est le
-portefeuille small × high book-to-market de Ken French en quotidien depuis
-1963-07, `refdata/SP500-USD.csv` le S&P 500 total return en fin de mois, et le
-déflateur CPI est celui que `pkg/replay/reference.go` utilise déjà. Repli en
-mensuel pour les deux, puis fenêtres de 120 mois.
-
-Variante si l'aire divergente paraît trop abstraite : les deux CAGR réels
-glissants en courbes qui se croisent, avec la zone entre elles remplie selon le
-signe. Plus lisible pour un lecteur non technique, mais deux fois plus d'encre
-pour la même information.
-
 ## 2. Le verdict d'ERN en quatre nombres (coût C, un tableau)
 
 Pièce 2 repose maintenant sur quatre nombres du volet 62 (taux sûr moyen
@@ -872,29 +724,6 @@ n'est qu'un ajustement rétrospectif.
 
 L'article n'a aucune figure et il est pourtant le plus « chiffré » de la partie
 portefeuille. Quatre idées, par ordre de valeur décroissante.
-
-## 1. Le SAFEMAX du destin national, pays par pays, contre celui du monde
-
-Barres horizontales classées : pour chacun des 18 pays du panel JST, le taux de
-retrait maximal soutenable sur 30 ans d'un 50/50 domestique (le pire millésime
-du pays), et une règle verticale unique pour le même calcul sur un panier
-mondial équipondéré. Le lecteur voit d'un coup que la moitié des pays est sous
-2 %, que la France y est, et que la barre mondiale se pose vers 3-3,5 %.
-
-C'est LA figure de l'article, parce que le paragraphe « L'effet sur les taux de
-retrait » est aujourd'hui la thèse centrale entièrement en prose, et parce
-qu'elle transforme un argument moral (« diversifiez ») en écart chiffré et
-comparable. Elle sert aussi de charnière vers [[anarkulova-cederburg]].
-
-Coût : **B**. Les données sont dans le repo (`pkg/datasets/broadsample/country-real.csv`,
-rendements réels actions/obligations annuels par pays) et la mécanique de
-retrait existe (`pkg/decumul`, `pkg/replay`) ; il reste à écrire le panier
-mondial équipondéré et la boucle SAFEMAX par pays. Pièges : dire dans la
-légende que les SAFEMAX de Pfau cités dans le texte viennent d'une autre base,
-donc que les valeurs ne coïncideront pas au dixième ; et le panel JST donne un
-rendement réel français de −0,1 %/an sur 1900-2020, bien pire que les 3,3 % de
-Dimson-Marsh-Staunton cités plus haut dans l'article, écart à assumer
-explicitement sous la figure.
 
 ## 2. Trente ans sous l'eau, quatre destins
 

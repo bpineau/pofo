@@ -41,6 +41,48 @@ parts I-II) need NO deepening pass; they stand as-is. Remaining work: the
 later English translation, and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
 
+Illustration campaign 2026-07-30, 29 new v2 plates. Selected from the two
+figure backlogs opened at the close of the line-by-line review
+(`docs/fire-book-illustrations-*`), priority to ideas whose data was already
+bundled and to the ones carrying a thesis the article could only assert. One
+plate per commit, each with its guard test. The rule that made the batch worth
+its cost: WHERE THE REPOSITORY CAN COMPUTE THE NUMBER, THE PLATE COMPUTES IT
+AND THE ARTICLE MUST AGREE WITH THE ENGINE. Ten articles lost a number or a
+claim to that rule, and those corrections matter more than the drawings:
+
+  - enveloppes-francaises treated the 4 600 / 9 200 EUR life-insurance
+    allowance as a near-exemption. It only erases income tax; social levies
+    fall on the whole redeemed gain. The worked example's friction went from
+    5 % to 7,8 % and its capitalised gap from 240 k to 180 k EUR.
+  - valorisations-et-cape claimed the CAPE explains 40 to 60 % of the variance
+    of ten-year real returns. Measured on the earnings yield it is 0,29, and
+    0,28 on Shiller's own series from 1881, so it is not a window artefact.
+  - horizon-et-esperance-de-vie claimed mortality weighting cuts ruin to a half
+    or a third. For a couple retiring at 47 it removes a fifth (17,7 % gross
+    against 14,1 % lived); the discount is a property of the reader's age, not
+    of the plan.
+  - erreurs-classiques-fire announced its ten sections were ordered by cost.
+    Measured, the two dearest are sections 6 and 7, together outweighing the
+    other four chiffrable ones combined.
+  - the book-wide "les traversées durent 2 à 7 ans" anchor was wrong at both
+    ends (16 months to more than ten years, median 32), corrected in
+    cash-buffer, regimes-de-marche and strategie-buckets.
+  - also corrected: the French monetary leg of 1973-1985 (+6,6 % real, not
+    "perd peu") and the ranking of inflation's victims in inflation-histoire;
+    the all-weather `science` block in portefeuilles-tous-temps; gold's 2022 in
+    dollars and its volatility band in or-en-retrait; "des rendements de long
+    terme comparables" for 1966 against 1982 in sequence-des-rendements;
+    "mourir à trois fois sa mise" in psychologie-du-retrait; and the reload
+    doubling claim in succession-et-transmission.
+
+Three plates carry an explicitly editorial object, labelled as such on the
+plate itself rather than passed off as measurement: the link thickness of
+`risques-briques`, the tolerance zone of `coupe-exigee-tenable`, and the
+season attribution of `tous-temps-saisons`. Two traps cost a round trip each
+and are worth knowing: a raw ampersand in SVG text breaks the EPUB XHTML guard
+(write `S&amp;amp;P`), and a Monte Carlo recipe must freeze its worker count,
+since DrawPaths splits per worker and NumCPU makes a plate machine-dependent.
+
 Style-finishing pass done 2026-07-16 (full line-by-line read of all 79 FR
 articles): rewrote the telegraphic `cas-types` into prose and broke the worst
 colon-cascade sentences elsewhere (couple-et-famille, plancher-plafond,
