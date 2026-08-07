@@ -31,7 +31,7 @@ Bengen nomme **SAFEMAX** le taux maximal qui survit à tous les millésimes sur 
 Ses articles suivants (1996-2006) complètent le cadre. L'allocation optimale se situe entre 50 et 75 % d'actions, car descendre plus bas **abaisse** le taux sûr : les obligations seules ne résistent pas à l'inflation. Ajouter des petites capitalisations (small caps) remonte le SAFEMAX. Et l'horizon compte, ~4,3 % pour 25 ans, ~4,1 % pour 30 ans, ~3,5 % pour du très long.
 
 ::: encart Pourquoi cette méthode était géniale, et ce qu'elle vaut encore
-Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, l'un des quatre modèles de référence du simulateur FIRE de pofo ([[la-machine-pofo]]). Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
+Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, l'une des trois grandes familles de modèles que déroulent les simulateurs de décumulation. Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
 :::
 
 ## Trinity 1998 : du plancher à la probabilité
@@ -58,7 +58,7 @@ Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du 
 Lire Bengen et Trinity aujourd'hui, c'est admirer la méthode et mesurer le chemin parcouru depuis. Les angles morts, tous traités ailleurs dans ce livre, dessinent le programme de la recherche moderne :
 
 - **L'horizon FIRE.** 30 ans était l'horizon du retraité de 65 ans. À 45-55 ans d'horizon, le SAFEMAX américain descend vers 3,25-3,5 % ([[serie-ern]]) et la grille de Trinity ne s'applique plus telle quelle ([[horizon-et-esperance-de-vie]]).
-- **Le biais du survivant géographique.** Les données Ibbotson commencent en 1926 aux États-Unis, le pays qui a gagné deux guerres mondiales sur le sol des autres avant de finir superpuissance. L'échantillon mondial (16 pays, 1870-2020) raconte une histoire plus dure ([[anarkulova-cederburg]]). Il est repris comme modèle « broad sample ».
+- **Le biais du survivant géographique.** Les données Ibbotson commencent en 1926 aux États-Unis, le pays qui a gagné deux guerres mondiales sur le sol des autres avant de finir superpuissance. L'échantillon mondial (16 pays, 1870-2020) raconte une histoire plus dure ([[anarkulova-cederburg]]). C'est ce panel que rejouent les modèles dits « broad sample ».
 - **Les valorisations.** Bengen note dès 2006 le lien entre niveaux de marché au départ et SAFEMAX ; la formalisation (CAPE → taux initial) viendra après ([[valorisations-et-cape]], [[regles-cape]]).
 - **La rigidité du retrait.** Le retraité de Bengen exécute sa règle 30 ans sans regarder. Toute la génération suivante de stratégies (Guyton-Klinger [[guyton-klinger]], guardrails modernes [[guardrails-morningstar]], amortissement [[amortissement-abw]]) part de l'idée inverse : réagir à l'information.
 - **Frais, impôts, dépenses réelles** : hors champ chez les fondateurs, de premier ordre dans la vraie vie ([[combien-il-vous-faut]]).
@@ -67,10 +67,10 @@ Aucun de ces points n'est une réfutation. La méthode des millésimes est toujo
 
 ## Refaire Bengen vous-même
 
-C'est l'un des grands mérites pédagogiques de la méthode. Elle se refait. Le simulateur FIRE de pofo propose un mode « fenêtres historiques » qui rejoue exactement la logique des millésimes sur l'historique de **votre** portefeuille. Une vue « millésimes » (vintages) montre alors, départ par départ, où votre plan aurait tenu ou cassé ([[utiliser-la-page-fire]]). Les simulateurs historiques classiques (FICalc, cFIREsim) font le même exercice, sur des indices plutôt que sur vos fonds. L'exercice vaut la peine : voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
+C'est l'un des grands mérites pédagogiques de la méthode. Elle se refait. Les simulateurs historiques classiques, FICalc et cFIREsim en tête, rejouent la logique des millésimes sur les indices américains longs, taux de retrait par taux de retrait. Les outils qui savent lire un portefeuille réel, comme pofo, la rejouent sur l'historique de **vos** propres lignes et rendent le verdict départ par départ. Dans les deux cas, l'exercice vaut la peine. Voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
 
 ::: exemple Lire un millésime
-Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et une arrivée à 30 ans essoufflée mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
+Plan : 1 M€, 60/40, retrait 4 % indexé. Rejoué millésime par millésime, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et une arrivée à 30 ans essoufflée mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
 :::
 
 ## L'essentiel à retenir
@@ -79,7 +79,7 @@ Plan : 1 M€, 60/40, retrait 4 % indexé. Dans la vue millésimes, le départ �
 - Trinity (1998) transforme le plancher en grille de probabilités de succès et installe le langage de la ruine ; sa grille montre la falaise entre 4 et 5 % et le danger des portefeuilles trop peu actions.
 - Le pire ennemi identifié n'est pas le krach mais l'érosion réelle prolongée (millésime 1966) : inflation et marché plat.
 - Les angles morts (horizon FIRE, biais américain, valorisations, rigidité, frais et impôts) définissent la recherche moderne. C'est l'objet du reste de cette partie.
-- La méthode se refait sur votre propre plan, dans le simulateur FIRE de pofo : faites-le, un millésime vécu vaut mille probabilités.
+- La méthode se refait sur votre propre plan, avec n'importe quel simulateur de rejeu historique : faites-le, un millésime vécu vaut mille probabilités.
 
 ---
 
