@@ -5,7 +5,7 @@ import (
 	"io/fs"
 )
 
-//go:embed simdata assetmeta/assets.json refdata broadsample/country-real.csv cape/shiller-cape.csv
+//go:embed simdata assetmeta/assets.json refdata broadsample/country-real.csv cape/shiller-cape.csv macropanel/oecd-monthly.csv
 var bundle embed.FS
 
 // Simdata returns the embedded simulated-history files.
@@ -45,6 +45,18 @@ func BroadSample() []byte {
 // Regenerate with "make cape".
 func CAPE() []byte {
 	b, err := bundle.ReadFile("cape/shiller-cape.csv")
+	if err != nil {
+		panic(err) // broken repository layout: impossible at runtime
+	}
+	return b
+}
+
+// MacroPanel returns the embedded multi-country monthly macro panel
+// (date,iso,ip,cpi,shortrate,longrate,shareprice from OECD MEI, 30 economies):
+// the growth/inflation and short/long-rate drivers behind macro-regime analysis
+// and the growth x inflation breadth model. Regenerate with "make macropanel".
+func MacroPanel() []byte {
+	b, err := bundle.ReadFile("macropanel/oecd-monthly.csv")
 	if err != nil {
 		panic(err) // broken repository layout: impossible at runtime
 	}
