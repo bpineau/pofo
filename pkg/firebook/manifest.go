@@ -160,6 +160,15 @@ var Categories = []Category{
 			{"cas-types", "Trois plans complets, chiffrés de bout en bout", "Le solo précoce, le couple classique, le tardif au pont court : trois conceptions déroulées, validées, et leurs leçons croisées."},
 		},
 	},
+	{
+		Title: "Références",
+		Blurb: "Le lexique, la bibliothèque annotée, et la machine qui calcule le livre.",
+		Articles: []Article{
+			{"lexique", "Lexique du FIRE et du retrait", "Tous les termes du livre et du jargon des forums, définis et reliés à leur chapitre : parcouru d'un trait, un résumé alphabétique."},
+			{"bibliotheque", "La bibliothèque : sites, papiers, livres, outils", "Chaque référence annotée (pourquoi la lire, par où la prendre), les sources officielles françaises, et trois parcours de lecture."},
+			{"la-machine-pofo", "Sous le capot : comment pofo calcule ce livre", "Les données, le pipeline du modèle central, les six colonnes, le noyau mensuel, les limites assumées, et comment vérifier soi-même."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the

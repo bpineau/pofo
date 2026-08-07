@@ -1,7 +1,9 @@
 # The FIRE book: design
 
-Status: infrastructure shipped; writing in progress (see the ledger at the
-bottom, which is the authoritative progress tracker across sessions).
+Status: v1 COMPLETE: all 79 planned articles written (2026-07-13). Remaining
+work: the deepening pass on the 12 pre-depth-bar articles (the early batches
+of parts I-II), the later English translation, and continuous upkeep of the
+dated French tax/social chapters. The ledger below tracks per-article state.
 
 ## Goal
 
@@ -186,9 +188,9 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 - [x] cas-types: Trois plans complets, chiffres de bout en bout
 
 ### XI. References
-- [ ] lexique: Lexique du FIRE et du retrait
-- [ ] bibliotheque: La bibliotheque : sites, papiers, livres, outils
-- [ ] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
+- [x] lexique: Lexique du FIRE et du retrait
+- [x] bibliotheque: La bibliotheque : sites, papiers, livres, outils
+- [x] la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
 79 articles planned; at 2 500 words each the book lands around 200k words.
 
