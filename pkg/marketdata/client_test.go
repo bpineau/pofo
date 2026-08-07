@@ -680,3 +680,37 @@ func TestFetchTickerShortWindowSkipsSearch(t *testing.T) {
 		t.Fatal("a complete short-window direct answer must not trigger the search fallback")
 	}
 }
+
+// A long-lived process must not serve the series it first downloaded forever:
+// the memo key pins the window to the day, so only MemoTTL makes a served UI
+// or a daemon see a price move without restarting.
+func TestMemoTTLExpires(t *testing.T) {
+	var downloads int
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, _ *http.Request) {
+		downloads++
+		fmt.Fprint(w, chartJSON("VOO", testDays(3), []float64{100, 101, 102}))
+	})
+	c, srv := newTestClient(t, "", mux) // no disk cache: the memo is the only shield
+	defer srv.Close()
+	from := testDays(1)[0]
+
+	c.MemoTTL = time.Hour
+	for range 2 {
+		if _, err := c.Fetch(t.Context(), "VOO", from); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if downloads != 1 {
+		t.Fatalf("within the TTL: %d downloads, want 1 (the memo must still dedupe)", downloads)
+	}
+
+	c.MemoTTL = time.Nanosecond
+	memoized := downloads
+	if _, err := c.Fetch(t.Context(), "VOO", from); err != nil {
+		t.Fatal(err)
+	}
+	if downloads == memoized {
+		t.Fatal("past the TTL the memo must expire, but nothing was downloaded again")
+	}
+}

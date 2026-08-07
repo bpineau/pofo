@@ -50,9 +50,17 @@ type Client struct {
 	// downloads them inline.
 	RefreshInflation bool
 
+	// MemoTTL bounds how long the per-process memoization keeps a series.
+	// The memo exists to dedupe the same series inside one computation, not
+	// to freeze it: its key pins the request window to the day, so without a
+	// TTL a long-lived process (a served web UI, a daemon) would replay the
+	// series it first downloaded until it exits, however often it asks. Zero
+	// means no expiry, for callers that want a stable snapshot.
+	MemoTTL time.Duration
+
 	retryDelay time.Duration
 	mu         sync.Mutex
-	memo       map[string]*Series
+	memo       map[string]memoEntry
 	fees       map[string]feesEntry // TER cache, lazily loaded from fees.json
 	authMu     sync.Mutex
 	auth       *yahooAuth // cached Yahoo cookie+crumb, nil until first use
@@ -85,8 +93,9 @@ func NewClient(cacheDir string) *Client {
 		CookieBase:      "https://fc.yahoo.com",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
+		MemoTTL:         15 * time.Minute,
 		retryDelay:      time.Second,
-		memo:            make(map[string]*Series),
+		memo:            make(map[string]memoEntry),
 	}
 }
 
@@ -788,17 +797,31 @@ func (c *Client) embeddedHistory(ctx context.Context, source, id string, from ti
 	return c.cachedHistory(ctx, source, id, from, false, live)
 }
 
+// memoEntry is a memoized series and when it was stored, so MemoTTL can
+// expire it.
+type memoEntry struct {
+	series *Series
+	at     time.Time
+}
+
 func (c *Client) memoized(key string) (*Series, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	s, ok := c.memo[key]
-	return s, ok
+	e, ok := c.memo[key]
+	if !ok {
+		return nil, false
+	}
+	if c.MemoTTL > 0 && time.Since(e.at) > c.MemoTTL {
+		delete(c.memo, key)
+		return nil, false
+	}
+	return e.series, true
 }
 
 func (c *Client) memoize(key string, s *Series) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
-	c.memo[key] = s
+	c.memo[key] = memoEntry{series: s, at: time.Now()}
 }
 
 func (c *Client) get(ctx context.Context, rawURL string) ([]byte, error) {

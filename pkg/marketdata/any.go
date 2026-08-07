@@ -51,32 +51,52 @@ type QuoteOptions struct {
 	NoConvert bool
 }
 
-// LatestAny returns the freshest price for the first identifier that
-// answers, tried in order (most authoritative first). See FetchAny for
-// the native-first currency contract; unlike a series, an off-currency
-// quote converts at its own timestamp, which suits spot valuations (the
-// next real close overwrites the point). When every id fails, the errors
-// are joined so no cause is masked.
+// LatestAny returns the freshest price the identifiers can produce, tried
+// in order (most authoritative first). See FetchAny for the native-first
+// currency contract; unlike a series, an off-currency quote converts at its
+// own timestamp, which suits spot valuations (the next real close overwrites
+// the point). When every id fails, the errors are joined so no cause is
+// masked.
+//
+// Liveness outranks id order, authority settles the rest. An ISIN can never
+// be a Yahoo symbol, so it answers through the daily-close path: taking the
+// first answer would hand back yesterday's close while the caller's own
+// ticker had a live market price one call away - the whole point of asking
+// for the latest. So a live answer wins immediately, and only if no id is
+// live does the most authoritative close win. That order matters both ways:
+// a ticker may resolve to a twin listing of the real instrument (an
+// EU-domiciled clone of a US fund, same currency, different price), and
+// preferring the first close keeps the authoritative id in charge whenever
+// freshness is not at stake.
 func (c *Client) LatestAny(ctx context.Context, ids []string, opt QuoteOptions) (*Quote, error) {
 	if len(ids) == 0 {
 		return nil, errors.New("LatestAny: no identifier")
 	}
 	var errs []error
-	var offCurrency *Quote
+	var offCurrency, lastClose *Quote
 	for _, id := range ids {
 		q, err := c.Latest(ctx, id)
 		if err != nil {
 			errs = append(errs, err)
 			continue
 		}
-		if opt.Currency == "" || q.Currency == "" || strings.EqualFold(q.Currency, opt.Currency) {
+		if opt.Currency != "" && q.Currency != "" && !strings.EqualFold(q.Currency, opt.Currency) {
+			if offCurrency == nil {
+				offCurrency = q
+			}
+			errs = append(errs, fmt.Errorf("%s: %w: got %s, want %s",
+				id, ErrWrongCurrency, q.Currency, opt.Currency))
+			continue
+		}
+		if q.Live {
 			return q, nil
 		}
-		if offCurrency == nil {
-			offCurrency = q
+		if lastClose == nil {
+			lastClose = q
 		}
-		errs = append(errs, fmt.Errorf("%s: %w: got %s, want %s",
-			id, ErrWrongCurrency, q.Currency, opt.Currency))
+	}
+	if lastClose != nil {
+		return lastClose, nil
 	}
 	if offCurrency != nil && !opt.NoConvert {
 		rate, err := c.FXRate(ctx, offCurrency.Currency, opt.Currency, offCurrency.Time)
