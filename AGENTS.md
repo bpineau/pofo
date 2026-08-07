@@ -20,6 +20,7 @@ make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
+make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make book-drift # what the FIRE book's translations owe their French source
 ```
 
@@ -167,6 +168,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Add a ticker alias: `pkg/marketdata/aliases.go`.
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
+- Managed-futures / trend reconstructions: read
+  `docs/trend-reconstruction-design.md` first. The monthly path comes from the
+  bundled `TREND-TSMOM-USD` reference (`AnchorTrend`), the daily texture from
+  the TSMOM engine, the level from a per-fund information-ratio pin. Touching
+  the CTA series breaks two FIRE-book plates (their tests recompute from
+  `pkg/datasets` and say so).
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.

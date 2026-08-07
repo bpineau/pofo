@@ -13,6 +13,10 @@
 //     lookback, vol target, leverage) for replicating trend strategies: the
 //     signal is refreshed every Rebalance days, risk is rescaled every day
 //     against an exponentially weighted covariance (CovHalfLife);
+//   - AnchorTrend puts a trend reconstruction's month-to-month path back on
+//     the bundled reference record (TrendAnchorID) while the engine keeps
+//     supplying the daily texture, which lifts the monthly agreement with the
+//     real funds from ~0.4 to ~0.7 (see docs/trend-reconstruction-design.md);
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error

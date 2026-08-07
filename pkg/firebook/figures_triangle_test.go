@@ -148,11 +148,11 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 	if got := len(triBrickPairs()); got != 6 {
 		t.Fatalf("the four bricks hold %d pairs, the plate says six", got)
 	}
-	if brLo != -0.12 || brHi != 0.23 {
-		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,12 to +0,23", brLo, brHi)
+	if brLo != -0.24 || brHi != 0.23 {
+		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,24 to +0,23", brLo, brHi)
 	}
-	if brLo < -0.2 || brHi > 0.3 {
-		t.Errorf("the bricks leave the −0,2 / +0,3 band the article claims (%+.2f to %+.2f)", brLo, brHi)
+	if brLo < -0.3 || brHi > 0.3 {
+		t.Errorf("the bricks leave the −0,3 / +0,3 band the article claims (%+.2f to %+.2f)", brLo, brHi)
 	}
 	// Not one equity pair may be as loose as the loosest brick pair: that gap
 	// is the whole plate.
@@ -160,7 +160,7 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 		t.Errorf("the blocks overlap: equity floor %+.2f, brick ceiling %+.2f", eqLo, brHi)
 	}
 	svg := figTriangleCorrelations()
-	for _, want := range []string{"+0,85 à +1,00", "−0,12 à +0,23"} {
+	for _, want := range []string{"+0,85 à +1,00", "−0,24 à +0,23"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer prints %q", want)
 		}
