@@ -63,6 +63,20 @@ button.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .drawer-toggle:hover,.drawer-toggle[aria-expanded="true"]{background:var(--accent-wash)}
 .drawer-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
+/* coach arrow: the one-off gesture toward the parameters toggle on a first,
+   untouched visit. Part of the instrument (angular stroke, mono label, no
+   shadow, no gradient), never a marketing bubble, and never in the way. */
+#coach{position:fixed;z-index:55;display:flex;align-items:center;gap:.45rem;
+  pointer-events:none;color:var(--accent);opacity:.55;transition:opacity .45s ease-out;
+  animation:coachpulse 1.2s ease-in-out infinite}
+/* the shared theme stretches every svg to its box (charts); this one is
+   a glyph, so it keeps its intrinsic size */
+#coach svg{flex:none;width:34px;height:40px;overflow:visible}
+#coach path{fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:square;stroke-linejoin:miter}
+#coach .clab{font-family:var(--mono);font-size:.66rem;letter-spacing:.03em;white-space:nowrap}
+@keyframes coachpulse{0%,100%{opacity:.55}50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){#coach{animation:none}}
+
 /* ---- settings drawer -------------------------------------------------------- */
 .drawer{border-bottom:1px solid var(--line-strong);background:linear-gradient(#1a150e,#141009)}
 .drawer[hidden]{display:none}

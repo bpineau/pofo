@@ -483,6 +483,7 @@ function setDrawer(open) {
   if (open) {
     drawerEl.removeAttribute("hidden");
     window.scrollTo({top: 0, behavior: "smooth"});
+    killCoach(); // the invitation was taken; never show it again
   } else {
     drawerEl.setAttribute("hidden", "");
   }
@@ -491,6 +492,78 @@ function setDrawer(open) {
 }
 if (drawerToggle && drawerEl)
   drawerToggle.addEventListener("click", () => setDrawer(drawerEl.hasAttribute("hidden")));
+
+// ---------------------------------------------------------------------------
+// Coach arrow. Every number on this page is a plan the visitor never entered:
+// a first visit lands on generic defaults, and the one control that lets them
+// enter their own is a small toggle in the far corner. So on a first, untouched
+// load, one quiet gesture points at it. It shows once per page load, dies the
+// instant the drawer opens, and fades away by itself after a few seconds:
+// never a thing to dismiss.
+// ---------------------------------------------------------------------------
+const COACH_DELAY = 600, COACH_LIFE = 5000, COACH_FADE = 450;
+let coachEl = null, coachDone = false;
+
+// coachDue: a load on the generic defaults, with no saved defaults and no
+// shared scenario in the hash, is a visitor who has configured nothing yet.
+function coachDue() {
+  if (location.hash.slice(1)) return false;
+  if (readCookie(PREF_COOKIE)) return false;
+  return ["capital", "age", "years", "needAnnual"].every(k => state[k] === DEFOF[k]);
+}
+
+// killCoach removes the arrow at once (the drawer opened, so the point is
+// made) and bars it from ever coming back in this page load.
+function killCoach() {
+  coachDone = true;
+  if (!coachEl) return;
+  const el = coachEl;
+  coachEl = null;
+  el.remove();
+}
+
+// fadeCoach is the timed exit: stop the pulse, fade, then remove.
+function fadeCoach() {
+  if (!coachEl) return;
+  const el = coachEl;
+  coachEl = null;
+  coachDone = true;
+  el.style.animation = "none";
+  el.style.opacity = "0";
+  setTimeout(() => el.remove(), COACH_FADE);
+}
+
+function showCoach() {
+  if (coachDone || !drawerToggle || !drawerEl || !drawerEl.hasAttribute("hidden")) return;
+  const r = drawerToggle.getBoundingClientRect();
+  if (!r.width) return;
+  const el = document.createElement("div");
+  el.id = "coach";
+  const label = document.createElement("span");
+  label.className = "clab";
+  label.textContent = "start here: your capital, spend, horizon";
+  el.appendChild(label);
+  // An angular chevron, drawn like the charts: no shadow, no gradient.
+  el.insertAdjacentHTML("beforeend",
+    `<svg viewBox="0 0 34 40" width="34" height="40" aria-hidden="true">` +
+    `<path d="M17 38 V10"/><path d="M8 19 L17 10 L26 19"/></svg>`);
+  document.body.appendChild(el);
+  // Anchor under the toggle so the arrow tip lines up with it, then clamp
+  // into the viewport: on a narrow screen the label slides left rather than
+  // off the edge. ARROW_MID is the arrow's centre measured from the box's
+  // right edge (half of the 34px SVG, which sits last in the row).
+  const ARROW_MID = 17;
+  const w = el.offsetWidth;
+  el.style.top = (r.bottom + 10) + "px";
+  el.style.left = Math.max(8, Math.min(innerWidth - w - 8,
+    r.left + r.width / 2 - w + ARROW_MID)) + "px";
+  coachEl = el;
+  setTimeout(fadeCoach, COACH_LIFE);
+  // A resize invalidates the anchor: drop the arrow rather than let it drift
+  // away from the button it points at.
+  addEventListener("resize", fadeCoach, {once: true});
+}
+if (coachDue()) setTimeout(showCoach, COACH_DELAY);
 
 // flashGroup outlines one control group for a moment, so a click that opens
 // the drawer says where in it to look.
