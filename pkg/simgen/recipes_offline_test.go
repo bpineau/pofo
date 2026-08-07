@@ -66,12 +66,15 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	vix := mkWave("^VIX", n, 0, 0.030, 0.6, 0.5)
 	eurusd := mkWave("EURUSD=X", n, 0, 0.005, 1.4, 2.6)
 	gbpusd := mkWave("GBPUSD=X", n, 0, 0.005, 0.4, 1.2)
+	ezu := mkWave("EZU", n, 3e-4, 0.011, 1.1, 0.9)
+	eunh := mkWave("EUNH.DE", n, 2e-4, 0.003, 1.6, 0.5)
 
 	f := fakeFetcher{
 		"VFINX": vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
+		"EZU": ezu, "EUNH.DE": eunh,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
 		"^VIX":     vix,
 		"EURUSD=X": eurusd, "GBPUSD=X": gbpusd,
