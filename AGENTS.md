@@ -173,10 +173,16 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `docs/trend-reconstruction-design.md` first. Real NAVs of the closest
   programmes come first (`DonorChain`, back to 1996; a weekly-dealing donor is
   projected onto the engine's daily calendar), and only what they cannot reach
-  is reconstructed: the monthly path from the bundled `TREND-TSMOM-USD`
-  reference (`AnchorTrend`), the daily texture from the TSMOM engine, the level
-  from a per-fund information-ratio pin. Touching the CTA series breaks two
-  FIRE-book plates (their tests recompute from `pkg/datasets` and say so).
+  is reconstructed: the monthly path from a bundled reference (`AnchorTrend`)
+  and the daily texture from the TSMOM engine. Two references, not one: the
+  diversified funds anchor on the NET composite of real programmes
+  (`TREND-NET-USD`, a funded total return, level included, no pin), the
+  pure-trend overlays (RSST, RSBT, Winton) on the GROSS factor
+  (`TREND-TSMOM-USD`, an excess index) plus an information-ratio pin
+  (`pinTrendIR`). Touching the CTA series breaks two FIRE-book plates (their
+  tests recompute from `pkg/datasets` and say so) even when only the pre-1996
+  tail moves, because the 1996-2007 weekly donor is projected onto that same
+  reconstruction.
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
   checkable; expose it in `report.StatRow` via `pkg/compare/page.go`
   (`buildStatRows`) if the CLI should show it.
