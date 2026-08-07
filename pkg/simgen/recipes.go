@@ -37,6 +37,8 @@ func All() []Recipe {
 		bhmgRecipe(),
 		rssbRecipe(),
 		gdeRecipe(),
+		rsstRecipe(),
+		rsbtRecipe(),
 		vtRecipe(),
 		xauusdRecipe(),
 		shyRecipe(),
@@ -477,6 +479,42 @@ func gdeRecipe() Recipe {
 	}
 }
 
+// rsstRecipe backcasts the Return Stacked US Stocks & Managed Futures ETF (RSST,
+// US-listed, real from 2023): for every dollar, ~100 % large-cap US equity held
+// as the funded core plus a ~100 % managed-futures overlay. It mirrors the GDE
+// method, swapping the gold overlay for trend: the equity leg (VFINX) earns its
+// full return, and the trend leg (KMLM, the deepest pure-trend backcast here,
+// no equity of its own) is stacked as excess over cash, since a managed-futures
+// program is run on collateral that already earns the T-bill rate. The floor is
+// set by the trend leg. Real RSST quotes are grafted from inception; same
+// currency (USD), no FX leg.
+func rsstRecipe() Recipe {
+	return Recipe{
+		ID:              "RSST",
+		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
+		Method:          "1.00×VFINX + 1.00×(deep TSMOM trend − cash ^IRX) overlay (~1989→), 0.96%/yr fees, real RSST grafted from 2023",
+		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", mfConfig(0.10, 0), 0.0096),
+		ValidateAgainst: "RSST",
+		SpliceReal:      "RSST",
+	}
+}
+
+// rsbtRecipe backcasts the Return Stacked Bonds & Managed Futures ETF (RSBT,
+// US-listed, real from 2023): ~100 % core US bonds as the funded core plus a
+// ~100 % managed-futures overlay. Same construction as rsstRecipe with the
+// intermediate Treasury proxy (VFITX, as in rssbRecipe) standing in for the
+// fund's core bond sleeve, and KMLM stacked as the trend excess over cash.
+func rsbtRecipe() Recipe {
+	return Recipe{
+		ID:              "RSBT",
+		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
+		Method:          "1.00×VFITX + 1.00×(deep TSMOM trend − cash ^IRX) overlay (~1989→), 0.97%/yr fees, real RSBT grafted from 2023",
+		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", mfConfig(0.10, 0), 0.0097),
+		ValidateAgainst: "RSBT",
+		SpliceReal:      "RSBT",
+	}
+}
+
 func vtRecipe() Recipe {
 	return Recipe{
 		ID:     "VT",
@@ -595,6 +633,42 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 		values, start, err := TSMOM(fr, cfg)
 		if err != nil {
 			return nil, err
+		}
+		s := &marketdata.Series{Name: name, Source: "simdata"}
+		for i, v := range values {
+			s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
+		}
+		return s, nil
+	}
+}
+
+// stackedTrend backcasts a Return Stacked fund: a funded core (coreID, an equity
+// or bond index deep via refdata) plus a 100 % managed-futures overlay stacked
+// on top. The overlay is the same deep TSMOM replication used for KMLM/DBMF/CTA
+// (cfg), reconstructed from the underlying futures back to ~1989, which a plain
+// composite leg (limited to the real fund's 2020s inception) cannot reach. The
+// TSMOM index earns cash on its collateral (cfg.EarnCash), so its excess over
+// cash is the pure trend overlay: r = coreReturn + (trendReturn − cash) − fee.
+func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+		ids := append([]string{coreID, cfg.CashID}, cfg.Markets...)
+		fr, err := BuildFrame(extend(f), ids, from)
+		if err != nil {
+			return nil, err
+		}
+		trend, start, err := TSMOM(fr, cfg)
+		if err != nil {
+			return nil, err
+		}
+		core, cash := fr.Returns[coreID], fr.Returns[cfg.CashID]
+		feeDaily := annualFee / 252
+		values := make([]float64, len(trend))
+		values[0] = 100
+		for i := 1; i < len(trend); i++ {
+			k := start + i
+			trendRet := trend[i]/trend[i-1] - 1
+			r := core[k] + (trendRet - cash[k]) - feeDaily
+			values[i] = values[i-1] * (1 + r)
 		}
 		s := &marketdata.Series{Name: name, Source: "simdata"}
 		for i, v := range values {
