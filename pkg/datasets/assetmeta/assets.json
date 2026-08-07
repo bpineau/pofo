@@ -7442,5 +7442,110 @@
     "exposures": {
       "government-bond": 3.0
     }
+  },
+  {
+    "id": "DBMFE",
+    "isin": "LU2951555403",
+    "aliases": [],
+    "name": "iMGP DBi Managed Futures R EUR ETF",
+    "ucits": true,
+    "source": "ft",
+    "xid": "975922878",
+    "currency": "EUR",
+    "fees": 0.75,
+    "since": "2025-03-31",
+    "asset_class": "managed-futures",
+    "underlying": "Long/short global futures across equities, bonds, commodities and currencies (CTA replication)",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Euro-denominated (unhedged) share class of the iMGP DBi Managed Futures UCITS ETF (sibling of the USD LU2951555585); the EUR trend sleeve for the dragon/hydra/fire builds; managed-futures crisis-alpha diversifier",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2951555403",
+      "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
+    ]
+  },
+  {
+    "id": "LU1662502183",
+    "isin": "LU1662502183",
+    "aliases": [],
+    "name": "AQR Managed Futures UCITS Fund RAE EUR",
+    "ucits": true,
+    "source": "ft",
+    "xid": "971387891",
+    "currency": "EUR",
+    "fees": 0.91,
+    "asset_class": "managed-futures",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "Euro (RAE) share class of the AQR Managed Futures UCITS fund (sibling of the USD LU1103257975); crisis-alpha diversifier",
+    "confidence": "medium",
+    "sources": [
+      "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662502183:EUR"
+    ]
+  },
+  {
+    "id": "DTLE",
+    "isin": "IE00BD8PGZ49",
+    "name": "iShares $ Treasury Bond 20+yr UCITS ETF EUR Hedged (Dist)",
+    "ucits": true,
+    "source": "ft",
+    "xid": "428571269",
+    "currency": "EUR",
+    "fees": 0.1,
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 20+ years to maturity, currency-hedged to EUR",
+    "benchmark_index": "ICE US Treasury 20+ Year Bond Index (EUR Hedged)",
+    "strategy": "physical-replication",
+    "geography": {
+      "United States": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1,
+    "duration": 17.0,
+    "notes": "EUR-hedged share class of IDTL (IE00BSKRJZ44); strips the USD FX from the long-duration Treasury sleeve; deflation/recession hedge",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/291773/"
+    ]
+  },
+  {
+    "id": "VFINX",
+    "isin": "",
+    "name": "Vanguard 500 Index Fund Investor Shares",
+    "ucits": false,
+    "source": "yahoo",
+    "symbol": "VFINX",
+    "currency": "USD",
+    "fees": 0.14,
+    "since": "1976-08-31",
+    "asset_class": "equity",
+    "underlying": "US large-cap equity tracking the S&P 500 index",
+    "benchmark_index": "S&P 500",
+    "strategy": "physical-replication",
+    "geography": {
+      "US": 100
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1,
+    "notes": "Vanguard 500 Investor mutual fund; deep daily history from 1976 makes it the backtest S&P 500 total-return proxy used by the simdata recipes (VTI/GDE/RSST/SP500), not an EU-retail buyable ETF",
+    "confidence": "high",
+    "sources": [
+      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx"
+    ]
   }
 ]
