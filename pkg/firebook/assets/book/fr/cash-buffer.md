@@ -20,7 +20,13 @@ Chaque euro mis au matelas est un euro retiré du moteur. La protection contre l
 La probabilité de ruine en fonction de la taille du matelas (allure typique). La courbe est presque plate. Sur toute la plage, moins d'un point de ruine sépare la meilleure taille de la pire. Il existe un optimum mou vers 2-3 ans, mais au-delà la courbe remonte, car trop de buffer appauvrit le moteur plus qu'il ne protège. Le matelas est donc à peu près neutre quantitativement. Sa vraie valeur est comportementale.
 :::
 
-**Pourquoi si peu, alors que l'intuition est si forte ?** Deux raisons profondes. La première est l'arithmétique des durées. Les traversées du désert durent 2 à 7 ans, retour au sommet réel compris ([[regimes-de-marche]]). En simulation, cette durée se lit sur la distribution du temps passé sous le dernier sommet réel, trajectoire par trajectoire, et c'est elle qu'il faut regarder pour dimensionner un matelas. Un matelas de 2-3 ans ne couvre que la première moitié des vraies traversées. Il déplace les ventes au creux, il ne les supprime pas toutes. La seconde raison est que le rééquilibrage fait déjà la moitié du travail. Un portefeuille 70/30 rééquilibré prélève naturellement sur les obligations pendant les krachs d'actions ([[retrait-fixe-bengen]], [[obligations-en-retrait]]). Le buffer explicite ajoute donc une couche à un mécanisme largement présent, d'où des rendements décroissants.
+**Pourquoi si peu, alors que l'intuition est si forte ?** Deux raisons profondes. La première est l'arithmétique des durées. Une traversée du désert se compte en années, retour au sommet réel compris ([[regimes-de-marche]]). Sur le 60/40 réel américain, les neuf épisodes qui ont dépassé 10 % de baisse depuis 1953 ont duré de 16 mois à plus de 10 ans, avec une médiane de 32 mois. En simulation, la même durée se lit sur la distribution du temps passé sous le dernier sommet réel, trajectoire par trajectoire, et c'est elle qu'il faut regarder pour dimensionner un matelas. Un matelas de 2 ans couvre la moitié des mois passés sous l'eau, un matelas de 3 ans les deux tiers. Il déplace les ventes au creux, il ne les supprime pas toutes.
+
+::: figure traversees-matelas
+Les neuf épisodes du 60/40 réel américain (S&P 500 + Treasuries 5 ans, rééquilibré chaque janvier, CPI-déflaté, 1953-2026) dont la baisse réelle a dépassé 10 %, du sommet jusqu'au retour à ce sommet. Le seuil de 10 % est celui du déclencheur de consommation écrit plus bas, car en deçà le matelas ne bouge pas. Cinq traversées sur neuf tiennent dans 36 mois, les quatre autres laissent 136 mois sous l'eau à découvert.
+:::
+
+La seconde raison est que le rééquilibrage fait déjà la moitié du travail. Un portefeuille 70/30 rééquilibré prélève naturellement sur les obligations pendant les krachs d'actions ([[retrait-fixe-bengen]], [[obligations-en-retrait]]). Le buffer explicite ajoute donc une couche à un mécanisme largement présent, d'où des rendements décroissants.
 
 ## Ce qui sépare un buffer utile d'un buffer décoratif
 
@@ -59,7 +65,7 @@ Plan de 1,5 M€, 52 000 €/an, corridor Vanguard. Le matelas fait 130 k€ (30
 - L'intuition (ne jamais vendre au creux) est juste, mais l'arithmétique est têtue. Le coût d'opportunité du cash reprend à peu près ce que la protection rapporte, pour un net quantitatif de ±0,5 point. Le balayage de la taille du matelas l'affiche sans fard, à condition de prélever le buffer sur le capital de départ.
 - Un buffer utile a quatre attributs : déclencheur de consommation écrit (drawdown > 10-20 %), règle de recharge aux sommets ([[recharger-ou-pas]]), taille de 18-36 mois, placement en fonds euros ou monétaire (jamais de duration).
 - Sa vraie valeur est hors simulation, avec l'anti-panique (le désastre comportemental pèse bien plus lourd que tous les débats de taille), la permission de dépenser et la gouvernance du ménage. Trois services qui s'achètent au minimum efficace, pas au maximum rassurant.
-- Les traversées durent 2-7 ans, et le matelas couvre la première moitié. Le reste appartient à la flexibilité, au rééquilibrage et aux actifs de régime. Un buffer de 5-10 ans paie ces services trois fois trop cher.
+- Les traversées se comptent en années (médiane de 32 mois sur le 60/40 réel américain, plus de 10 ans dans le pire cas), et un matelas de 2 ans en couvre la moitié des mois sous l'eau. Le reste appartient à la flexibilité, au rééquilibrage et aux actifs de régime. Un buffer de 5-10 ans paie ces services trois fois trop cher.
 - Buffer et glidepath couvrent le même risque, d'où une combinaison modérée plutôt que le maximum de l'un. Un matelas se modélise finement (rendement réel du support, année d'arrêt de la recharge) pour éprouver votre version, pas la caricature.
 
 ---
