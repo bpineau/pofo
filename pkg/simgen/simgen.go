@@ -75,7 +75,7 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 		if err != nil {
 			return nil, fmt.Errorf("component %s: %w", id, err)
 		}
-		if len(s.Points) < 2 {
+		if s == nil || len(s.Points) < 2 {
 			return nil, fmt.Errorf("component %s: empty history", id)
 		}
 		series[id] = s
