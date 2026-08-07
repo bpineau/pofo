@@ -213,6 +213,14 @@ one css file; `cmd/pofo` only wires it.
   is one small file: read sliders → debounced POST → swap `innerHTML`. The
   engine stays entirely in Go.
 
+**One spending policy at a time.** The kernel applies exactly one withdrawal
+rule, in a fixed precedence (ABW > bounded > VPW > risk guardrails >
+Guyton-Klinger > the fixed rule with its flex cut and ratchet). The rail
+therefore treats them as an exclusive choice: claiming one clears the controls
+the kernel would have ignored, and the two shared parameters (the guardrails
+floor, the raise ceiling) dim when their owning rule is off. Inbound URLs are
+never rewritten, so a link shared before the change still reproduces its run.
+
 **Generic chart additions.** `chart.Heatmap` (the 2D ruin surface) and
 `chart.Bars` (the recovery-time histogram) are added as small, dependency-free
 SVG primitives reusable elsewhere, matching the existing `Line`/`Pie` style.

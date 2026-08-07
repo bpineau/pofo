@@ -37,10 +37,10 @@ const GROUPS = [
       "Reversible spending cut while the portfolio drawdown exceeds 20%. The single most powerful lever: 15% roughly halves ruin. Section 04 shows its lived cost."),
     r("wrTrigger", "Also cut above this WR (0 = off)", 0, 0.06, 0.002, 0, "pct",
       "Second trigger from the written rules: cut whenever the current withdrawal rate (spend / portfolio) exceeds this, e.g. 3.6%."),
-    c("guardrails", "Guyton-Klinger guardrails (replaces the cut)",
+    c("guardrails", "Guyton-Klinger guardrails",
       "Adjust spending ±10% whenever the current withdrawal rate leaves a ±20% band around the initial rate. It trades ruin risk for LIFESTYLE risk: cuts repeat while the portfolio keeps underperforming, so in the bad tail income decays step after step (section 04 shows the lived cost; the frontier in section 06 shows the trade). The guardrails ruin figure is therefore not comparable to the fixed rule's: it means 'even cutting without limit was not enough'. Set a floor below to bound the descent."),
     c("riskGuard", "Risk-based guardrails (Kitces / Morningstar)",
-      "The state of the art of the guardrails family, and the same machinery as the line above with a better sensor. Guyton-Klinger compares your withdrawal rate to a band around the rate you STARTED at, a sensor blind to everything since: it cuts a 78-year-old whose remaining horizon makes 6% perfectly sustainable, and stays quiet on a 52-year-old drifting into trouble. Here the band follows the rate that is still safe for the horizon you have LEFT, and the rate is read on total wealth, so the pension you are owed counts before it starts, discounted. Same +-20% band, same +-10% moves, same floor slider, and it takes precedence over the 2006 rule when both are ticked; raises stop at 150% of your planned spending, so the rule cannot ratchet a lifestyle you never asked for. TWO THINGS TO KNOW. The safe-rate table is solved under the model SELECTED in the strip above and then lived with, so planning on a rosy fitted history buys a permissive table that a harsher column will then catch out: that gap is the model risk, shown rather than hidden. And late in the horizon the band opens wide on purpose, because a plan that ends at the horizon is meant to be spent, which is the ABW behaviour arriving through the guardrails door."),
+      "The state of the art of the guardrails family, and the same machinery as the line above with a better sensor. Guyton-Klinger compares your withdrawal rate to a band around the rate you STARTED at, a sensor blind to everything since: it cuts a 78-year-old whose remaining horizon makes 6% perfectly sustainable, and stays quiet on a 52-year-old drifting into trouble. Here the band follows the rate that is still safe for the horizon you have LEFT, and the rate is read on total wealth, so the pension you are owed counts before it starts, discounted. Same +-20% band, same +-10% moves, same floor slider; raises stop at 150% of your planned spending, so the rule cannot ratchet a lifestyle you never asked for. TWO THINGS TO KNOW. The safe-rate table is solved under the model SELECTED in the strip above and then lived with, so planning on a rosy fitted history buys a permissive table that a harsher column will then catch out: that gap is the model risk, shown rather than hidden. And late in the horizon the band opens wide on purpose, because a plan that ends at the horizon is meant to be spent, which is the ABW behaviour arriving through the guardrails door."),
     r("gkRaiseCap", "Risk-guardrail raise ceiling (x planned spend)", 1, 2, 0.05, 1, "mult",
       "How far the risk-based rule may ratchet your spending UP when the sensor says you have room. The default is 1.00, protective only: it cuts when the plan drifts into trouble and never raises, which is the setting that makes its ruin figure comparable to the fixed rule's, since both then deliver the same lifestyle until something breaks. Above 1.00 the rule also spends the good news, and its ruin figure then measures a RICHER life: 1.50 means it may work its way up to half again your planned spending, so comparing that ruin to the fixed rule's is the same category error as comparing Guyton-Klinger's to Bengen's. Section 04 shows which lifestyle each number is actually buying. Only applies while the risk-based guardrails are on."),
     r("gkFloor", "Guardrails floor (% of initial, 0 = none)", 0, 0.9, 0.05, 0, "pct",
@@ -52,11 +52,11 @@ const GROUPS = [
     c("smile", "Retirement smile (down, plateau, up late)",
       "Blanchett's observed shape: real spending drifts down through the go-go years, plateaus, then climbs back with late-life health costs."),
     r("percent", "Spend % of portfolio (VPW, 0 = off)", 0, 0.08, 0.005, 0, "pct",
-      "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier; overrides the fixed need and the flex/guardrails/ratchet rules."),
+      "Percentage-of-portfolio (VPW) rule: each year spend this share of the current portfolio instead of a fixed amount. It never runs out, but the standard of living swings with the market. The other end of the decumulation frontier. Only one spending rule runs at a time, so raising it clears the fixed need's flex cut, guardrails and ratchet."),
     c("abw", "Amortize over the horizon (ABW / TPAW)",
-      "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return, a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market; after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Overrides every other spending rule."),
+      "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return, a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market; after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Only one spending rule runs at a time, so ticking it clears the others."),
     c("bounded", "Bounded % of portfolio (Vanguard-style)",
-      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Overrides flex/guardrails/ratchet."),
+      "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Only one spending rule runs at a time, so ticking it clears the others."),
     r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
       "Spend this share of capital on a joint-life, inflation-linked annuity (1% real rate, 10% insurer load): a guaranteed lifelong income floor that hedges longevity. It converts growth assets into lower guaranteed income, so headline ruin (failing the FULL need) can rise even as the worst late-life outcomes improve; its value is the floor, not the average."),
   ]},
@@ -128,6 +128,7 @@ const MODELKEY = {
 const form = document.getElementById("controls");
 const state = {};
 const checkEls = {};
+const ctlEls = {};
 
 function renderRail() {
   // Four explicit columns (deterministic bin-packing): the situation and the
@@ -167,9 +168,12 @@ function buildControl(it, ruler) {
     d.innerHTML = `<input type="checkbox" id="c_${it.key}"> <span>${it.label}</span>`;
     const input = d.querySelector("input");
     checkEls[it.key] = input;
+    ctlEls[it.key] = d;
     input.addEventListener("change", e => {
       state[it.key] = e.target.checked;
       if (it.key === "conservative") applyConservative();
+      if (e.target.checked) claimPolicy(it.key);
+      syncPolicy();
       schedule();
     });
     return d;
@@ -183,11 +187,14 @@ function buildControl(it, ruler) {
     <input type="range" min="${it.min}" max="${it.max}" step="${it.step}" value="${it.def}" id="s_${it.key}">` +
     (ruler ? `<div class="ticks"></div>` : ``);
   const input = d.querySelector("input");
+  ctlEls[it.key] = d;
   paintFill(input);
   input.addEventListener("input", e => {
     state[it.key] = parseFloat(e.target.value);
     paintFill(e.target);
     refreshVal(it.key);
+    if (state[it.key] !== it.def) claimPolicy(it.key);
+    syncPolicy();
     schedule();
   });
   return d;
@@ -216,6 +223,60 @@ function setSliderVal(k, v) {
   const s = document.getElementById("s_" + k);
   if (s) { s.value = v; paintFill(s); refreshVal(k); }
   if (k === "age") refreshAges();
+}
+function setCheckVal(k, v) {
+  state[k] = v;
+  if (checkEls[k]) checkEls[k].checked = v;
+}
+
+// ---------------------------------------------------------------------------
+// Spending policies are mutually exclusive. The kernel applies exactly one,
+// in a fixed precedence (ABW > bounded > VPW > risk guardrails >
+// Guyton-Klinger > the fixed rule and its flex cut / ratchet), so leaving
+// every box tickable let a reader believe rules combine when the extra ones
+// were silently ignored. Touching a control now claims its policy and clears
+// the others; a shared URL is left as it arrived, only masked, so old links
+// keep reproducing the exact run their sender saw.
+// ---------------------------------------------------------------------------
+const POLICIES = [
+  {id: "abw", trigger: ["abw"], owns: ["abw"]},
+  {id: "bounded", trigger: ["bounded"], owns: ["bounded"]},
+  {id: "percent", trigger: ["percent"], owns: ["percent"]},
+  {id: "riskGuard", trigger: ["riskGuard"], owns: ["riskGuard", "gkRaiseCap", "gkFloor"]},
+  {id: "guardrails", trigger: ["guardrails"], owns: ["guardrails", "gkFloor"]},
+  {id: "fixed", trigger: ["flexCut", "wrTrigger", "ratchet"],
+    owns: ["flexCut", "wrTrigger", "ratchet"]},
+];
+const POLICYOF = {};
+for (const p of POLICIES) for (const k of p.trigger) POLICYOF[k] = p.id;
+const DEFOF = {};
+for (const g of GROUPS) for (const it of g.items) DEFOF[it.key] = it.kind === "check" ? false : it.def;
+
+// claimPolicy resets every control owned by the policies that k displaces.
+// Controls shared with the claiming policy (the guardrails floor) survive.
+function claimPolicy(k) {
+  const mine = POLICIES.find(p => p.id === POLICYOF[k]);
+  if (!mine) return;
+  for (const p of POLICIES) {
+    if (p.id === mine.id) continue;
+    for (const key of p.owns) {
+      if (mine.owns.includes(key) || state[key] === DEFOF[key]) continue;
+      if (checkEls[key]) setCheckVal(key, false); else setSliderVal(key, DEFOF[key]);
+    }
+  }
+}
+// syncPolicy dims the parameters whose owning rule is off, so the rail never
+// offers a live-looking control that the kernel is ignoring.
+function syncPolicy() {
+  const dim = (key, on) => {
+    const el = ctlEls[key];
+    if (!el) return;
+    el.classList.toggle("masked", !on);
+    const input = el.querySelector("input");
+    if (input) input.disabled = !on;
+  };
+  dim("gkFloor", state.guardrails || state.riskGuard);
+  dim("gkRaiseCap", state.riskGuard);
 }
 
 renderRail();
@@ -286,6 +347,7 @@ for (const k of CHECKKEYS) {
   if (shared.get(k) === "1") { state[k] = true; checkEls[k].checked = true; }
 }
 if (state.conservative) applyReturns(PRIOR);
+syncPolicy();
 
 function syncURL() {
   const p = new URLSearchParams();
