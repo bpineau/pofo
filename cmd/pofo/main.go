@@ -85,6 +85,7 @@ type result struct {
 	sim           *portfolio.SimResult
 	color         string
 	rebalanceDays int
+	currency      string // base currency this column was evaluated in
 	note          string // informational line (e.g. optimizer choice)
 	// Common-window view, renormalized to 100, used for stats and comparison.
 	winDates  []time.Time
@@ -276,33 +277,50 @@ Options:
 		return runFire(ctx, &opt, client, specs)
 	}
 
-	// Download every distinct asset once.
-	seriesByID := map[string]*marketdata.Series{}
+	// Download every distinct (currency, asset) once. A "#meta currencies"
+	// directive evaluates the same portfolio in several currencies.
+	seriesByCur := map[string]map[string]*marketdata.Series{}
 	for _, spec := range specs {
-		for _, h := range spec.Holdings {
-			if _, ok := seriesByID[h.ID]; ok {
-				continue
+		for _, cur := range effectiveCurrencies(spec, opt.currency) {
+			m := seriesByCur[cur]
+			if m == nil {
+				m = map[string]*marketdata.Series{}
+				seriesByCur[cur] = m
 			}
-			s, err := fetchAsset(ctx, client, h.ID, &opt)
-			if err != nil {
-				return fmt.Errorf("portfolio %s, asset %q: %w", spec.Name, h.ID, err)
+			for _, h := range spec.Holdings {
+				if _, ok := m[h.ID]; ok {
+					continue
+				}
+				s, err := fetchAssetIn(ctx, client, h.ID, &opt, cur)
+				if err != nil {
+					return fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
+				}
+				m[h.ID] = s
 			}
-			seriesByID[h.ID] = s
 		}
 	}
 
-	// Benchmark for Beta, best effort.
-	var bench *marketdata.Series
-	if opt.benchmark != "" {
+	// Benchmark for Beta/CWARP, best effort, memoized per currency. The chart's
+	// reference curve uses the default currency (benchIn(opt.currency)).
+	benchCache := map[string]*marketdata.Series{}
+	benchIn := func(cur string) *marketdata.Series {
+		if opt.benchmark == "" {
+			return nil
+		}
+		if b, ok := benchCache[cur]; ok {
+			return b
+		}
 		b, err := client.FetchExtended(ctx, opt.benchmark, marketdata.FetchOptions{
-			From: opt.start, NoSim: true, Currency: opt.currency,
+			From: opt.start, NoSim: true, Currency: cur,
 		})
 		if err != nil {
-			log.Printf("warning: benchmark %s unavailable (no Beta): %v", opt.benchmark, err)
-		} else {
-			bench = b
+			log.Printf("warning: benchmark %s unavailable in %s (no Beta): %v", opt.benchmark, cur, err)
+			b = nil
 		}
+		benchCache[cur] = b
+		return b
 	}
+	bench := benchIn(opt.currency)
 
 	// Simulate each portfolio; a "#meta rebalance:N" directive overrides
 	// the CLI default for that portfolio only.
@@ -328,7 +346,7 @@ Options:
 	}
 
 	results := make([]*result, 0, len(specs))
-	simulateInto := func(p *portfolio.Portfolio, spec *portfolio.Spec) error {
+	simulateInto := func(p *portfolio.Portfolio, spec *portfolio.Spec, currency string) error {
 		days := opt.rebalance
 		if spec.RebalanceDays >= 0 {
 			days = spec.RebalanceDays
@@ -347,39 +365,46 @@ Options:
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
 				"capital wiped out on %s: %s; the series stops there", when, cause))
 		}
-		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days})
+		results = append(results, &result{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days, currency: currency})
 		return nil
 	}
 	for _, spec := range specs {
-		p, err := portfolio.Build(spec, portfolio.BuildOptions{
-			Fetch:        func(id string) (*marketdata.Series, error) { return seriesByID[id], nil },
-			Fees:         feesFor,
-			Cash:         cashRate,
-			BorrowSpread: 1.0, // default: cash + 1 %/yr
-			BaseCurrency: opt.currency,
-		})
-		if err != nil {
-			return err
-		}
-		// An optimized portfolio is shown next to its written weights, so
-		// the optimizer's choice can be compared with the baseline.
-		if spec.Optimize != nil {
-			pOpt, note, err := optimizedPortfolio(p, spec, bench)
+		for _, cur := range effectiveCurrencies(spec, opt.currency) {
+			p, err := portfolio.Build(spec, portfolio.BuildOptions{
+				Fetch:        func(id string) (*marketdata.Series, error) { return seriesByCur[cur][id], nil },
+				Fees:         feesFor,
+				Cash:         cashRate,
+				BorrowSpread: 1.0, // default: cash + 1 %/yr
+				BaseCurrency: cur,
+			})
 			if err != nil {
-				return fmt.Errorf("portfolio %s: %w", spec.Name, err)
-			}
-			p.Name = spec.Name + " (as written)"
-			if err := simulateInto(p, spec); err != nil {
 				return err
 			}
-			if err := simulateInto(pOpt, spec); err != nil {
+			// Multi-currency: tag each column with its currency.
+			if len(spec.Currencies) > 0 {
+				p.Name = fmt.Sprintf("%s (%s)", p.Name, cur)
+			}
+			// An optimized portfolio is shown next to its written weights, so
+			// the optimizer's choice can be compared with the baseline.
+			// (Optimize and currencies cannot be combined, so cur is unique here.)
+			if spec.Optimize != nil {
+				pOpt, note, err := optimizedPortfolio(p, spec, benchIn(cur))
+				if err != nil {
+					return fmt.Errorf("portfolio %s: %w", spec.Name, err)
+				}
+				p.Name = spec.Name + " (as written)"
+				if err := simulateInto(p, spec, cur); err != nil {
+					return err
+				}
+				if err := simulateInto(pOpt, spec, cur); err != nil {
+					return err
+				}
+				results[len(results)-1].note = note
+				continue
+			}
+			if err := simulateInto(p, spec, cur); err != nil {
 				return err
 			}
-			results[len(results)-1].note = note
-			continue
-		}
-		if err := simulateInto(p, spec); err != nil {
-			return err
 		}
 	}
 
@@ -398,15 +423,21 @@ Options:
 	if !commonStart.Before(commonEnd) {
 		return errors.New("no common period across the portfolios")
 	}
-	var benchDates []time.Time
-	var benchValues []float64
-	if bench != nil {
-		benchDates, benchValues = seriesSlices(bench)
+	// Consumer-price index per currency, memoized, to report drawdowns/TTR and
+	// real stats in purchasing-power terms alongside the nominal ones.
+	// Best-effort: a currency without a wired CPI simply has no real columns.
+	deflatorCache := map[string]*marketdata.Series{}
+	deflatorIn := func(cur string) (*marketdata.Series, bool) {
+		if s, ok := deflatorCache[cur]; ok {
+			return s, s != nil
+		}
+		s, ok := inflationSeries(ctx, client, cur, commonStart)
+		if !ok {
+			s = nil
+		}
+		deflatorCache[cur] = s
+		return s, s != nil
 	}
-	// Consumer-price index of the base currency, to report drawdowns/TTR in real
-	// (purchasing-power) terms alongside the nominal ones. Best-effort: absent it,
-	// the real columns are simply omitted.
-	deflator, hasDeflator := inflationSeries(ctx, client, opt.currency, commonStart)
 	for _, r := range results {
 		i, j := window(r.sim.Dates, commonStart, commonEnd)
 		if j-i < 2 {
@@ -418,17 +449,18 @@ Options:
 		if err != nil {
 			return fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
-		if hasDeflator {
-			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, deflator)); err == nil {
+		if d, ok := deflatorIn(r.currency); ok {
+			if rs, err := metrics.Compute(r.winDates, deflate(r.winDates, r.winValues, d)); err == nil {
 				r.realStats, r.hasReal = rs, true
 			}
 		}
-		if bench != nil {
-			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, benchDates, benchValues); ok {
+		if b := benchIn(r.currency); b != nil {
+			bd, bv := seriesSlices(b)
+			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, bd, bv); ok {
 				st.Beta, st.HasBeta = rel.Beta, true
 				r.rel, r.hasRel = rel, true
 			}
-			if c, ok := metrics.CWARPvs(r.winDates, r.winValues, benchDates, benchValues, metrics.CWARPParams{}); ok {
+			if c, ok := metrics.CWARPvs(r.winDates, r.winValues, bd, bv, metrics.CWARPParams{}); ok {
 				st.CWARP, st.HasCWARP = c, true
 			}
 		}
@@ -1144,15 +1176,30 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 // series (embedded datasets, or -simdata), then a known proxy; real
 // quotes always win wherever they exist.
 // fetchAsset runs the full library pipeline (SIM extension, currency
-// conversion, window) for one asset, from the CLI options.
+// conversion, window) for one asset, in the CLI's base currency.
 func fetchAsset(ctx context.Context, c *marketdata.Client, id string, opt *options) (*marketdata.Series, error) {
+	return fetchAssetIn(ctx, c, id, opt, opt.currency)
+}
+
+// fetchAssetIn is fetchAsset with an explicit target currency, used when a
+// portfolio is evaluated in several currencies ("#meta currencies").
+func fetchAssetIn(ctx context.Context, c *marketdata.Client, id string, opt *options, currency string) (*marketdata.Series, error) {
 	return c.FetchExtended(ctx, id, marketdata.FetchOptions{
 		From:     opt.start,
 		To:       opt.end,
 		NoSim:    opt.noSim,
 		Simdata:  opt.simdata,
-		Currency: opt.currency,
+		Currency: currency,
 	})
+}
+
+// effectiveCurrencies is the list of base currencies a spec expands into:
+// its "#meta currencies" list when set, otherwise the single CLI default.
+func effectiveCurrencies(spec *portfolio.Spec, def string) []string {
+	if len(spec.Currencies) > 0 {
+		return spec.Currencies
+	}
+	return []string{def}
 }
 
 // inflationSeries returns the consumer-price index used to deflate nominal
@@ -1467,9 +1514,17 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		Height: 300,
 	}, uw))
 
-	if opt.currency != "" {
+	curSet := map[string]bool{}
+	var curs []string
+	for _, r := range results {
+		if r.currency != "" && !curSet[r.currency] {
+			curSet[r.currency] = true
+			curs = append(curs, r.currency)
+		}
+	}
+	if len(curs) > 0 {
 		page.Footnotes = append(page.Footnotes, fmt.Sprintf(
-			"All series converted to %s (daily Yahoo FX crosses; the earliest known rate is held constant before the FX history starts).", opt.currency))
+			"Series converted to %s (daily Yahoo FX crosses; the earliest known rate is held constant before the FX history starts). Columns tagged with a currency show the same portfolio through that currency's numeraire and CPI.", strings.Join(curs, ", ")))
 	}
 	page.Footnotes = append(page.Footnotes, []string{
 		"Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs).",
