@@ -75,18 +75,27 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 	}
 	fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="`+themeAxis+`" stroke-width="1.5" stroke-dasharray="4 4"/>`+"\n", path.String())
 
-	// Points and labels.
+	// Points.
 	for _, p := range pts {
 		col := p.Color
 		if col == "" {
 			col = themeAccent
 		}
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`+"\n", xAt(p.X), yAt(p.Y), col)
+	}
+	// Labels, deconflicted: policies often land on the same spot (e.g. two
+	// rules with near-identical ruin and volatility), and overlapping text is
+	// unreadable. Place each label away from the plot centre, then push any
+	// label that collides with an already-placed one downward row by row.
+	type label struct {
+		x, y   float64
+		anchor string
+		text   string
+	}
+	mid := (x0 + x1) / 2
+	labels := make([]label, 0, len(pts))
+	for _, p := range pts {
 		px, py := xAt(p.X), yAt(p.Y)
-		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`+"\n", px, py, col)
-		// Label placed away from the plot centre so clustered points don't collide:
-		// points on the left half get a right-hand label, points on the right a
-		// left-hand one, each nudged vertically toward the nearer edge.
-		mid := (x0 + x1) / 2
 		lx, anchor := px+11, "start"
 		if px > mid {
 			lx, anchor = px-11, "end"
@@ -95,7 +104,31 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 		if py < (y0+y1)/2 {
 			dy = 16.0
 		}
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n", lx, py+dy, anchor, esc(p.Label))
+		labels = append(labels, label{x: lx, y: py + dy, anchor: anchor, text: p.Label})
+	}
+	const rowH, charW = 15.0, 7.2
+	span := func(l label) (lo, hi float64) {
+		w := charW * float64(len(l.text))
+		if l.anchor == "end" {
+			return l.x - w, l.x
+		}
+		return l.x, l.x + w
+	}
+	sort.SliceStable(labels, func(i, j int) bool { return labels[i].y < labels[j].y })
+	for i := range labels {
+		for j := range i {
+			ilo, ihi := span(labels[i])
+			jlo, jhi := span(labels[j])
+			if ilo < jhi && jlo < ihi && math.Abs(labels[i].y-labels[j].y) < rowH {
+				labels[i].y = labels[j].y + rowH
+			}
+		}
+		if bottom := float64(h) - 16; labels[i].y > bottom {
+			labels[i].y = bottom
+		}
+	}
+	for _, l := range labels {
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n", l.x, l.y, l.anchor, esc(l.text))
 	}
 	b.WriteString("</svg>")
 	return finish(b.String())

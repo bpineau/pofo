@@ -253,6 +253,11 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .caveat .disclosure-body{border-top:1px solid var(--line);padding-top:.6rem}
 .caveat .disclosure-body ul{margin:.5rem 0 .2rem;padding-left:1.15rem}
 .caveat .disclosure-body li{margin:.3rem 0}
+/* the "what feeds each model" wiring table */
+.feedtab{border-collapse:collapse;margin:.4rem 0 .8rem;font-size:.76rem}
+.feedtab th,.feedtab td{border:1px solid var(--line);padding:.35rem .6rem;text-align:left;vertical-align:top}
+.feedtab th{font-family:var(--mono);font-size:.64rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.feedtab td:first-child{font-family:var(--mono);white-space:nowrap;color:var(--ink)}
 .caveat b{color:var(--ink)}
 
 /* ---- chart lightbox --------------------------------------------------------- */
