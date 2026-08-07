@@ -100,7 +100,7 @@ var Categories = []Category{
 	},
 	{
 		Title: "Buffers et protections",
-		Blurb: "Les amortisseurs du plan : le matelas et ses règles, les seaux démystifiés, l'échelle, et les protections patrimoniales.",
+		Blurb: "Les amortisseurs du plan : le matelas et ses règles, les buckets démystifiés, l'échelle, et les protections patrimoniales.",
 		Articles: []Article{
 			{"cash-buffer", "Le matelas de liquidités : taille, coût, vrai rôle", "L'intuition juste, l'arithmétique têtue (±0,5 point), et la vraie valeur : anti-panique, permission de dépenser, gouvernance."},
 			{"strategie-buckets", "Les buckets : la stratégie des seaux, promesse et critique", "Une allocation déguisée plus des flux qui sont du rééquilibrage ou du timing : le procès équitable, et la version propre."},
