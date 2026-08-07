@@ -60,6 +60,17 @@
 // monthly since 1913), embedded and served offline-first the same way, with the
 // live FRED series fetched only on refresh.
 //
+// # Policy and money-market rates
+//
+// A last family carries the rates that SET the yields above: "^ESTR" and
+// "^EURIBOR3M" on the euro side, "^ECB-DFR" and "^ECB-MRO" for the ECB's own
+// policy rates, "^SOFR", "^FEDFUNDS" and "^FED-TARGET" on the dollar side. They
+// come from the institution that publishes each one (the ECB Data Portal
+// through DBnomics, the New York Fed, FRED), carry no currency, and are
+// annualized percent LEVELS that may be zero or negative. Like the yield
+// symbols they chart fine and never belong in a return computation; see
+// rates.go for the registry and "pofo -rates" for the reader.
+//
 // # Dividends and raw closes
 //
 // Series.Dividends lists the cash distributions the source reported

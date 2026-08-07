@@ -93,6 +93,7 @@ func run(ctx context.Context, argv []string) error {
 	fs.BoolVar(&opt.noFees, "no-fees", false, "do not fetch the assets' ongoing charges (TER)")
 	fs.StringVar(&opt.currency, "currency", "EUR", "convert every series to this currency (empty: keep native currencies)")
 	fs.BoolVar(&opt.cli, "cli", false, "render in the terminal (curves + summary table), no HTML")
+	ratesFlag := fs.String("rates", "", "chart interest-rate levels in the terminal (comma-separated symbols, e.g. ^ESTR,^EURIBOR3M; \"list\" prints what is available), then exit")
 	fs.IntVar(&opt.width, "width", 0, "chart width in -cli mode, in columns (default: $COLUMNS, else 100)")
 	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "re-download quotes older than this duration")
 	warmup := fs.Bool("warmup", false, "pre-fetch the cache for the bundled asset catalog, then stop")
@@ -178,7 +179,7 @@ Options:
 		return runExportEpub(*exportEpub)
 	}
 
-	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -225,6 +226,15 @@ Options:
 				return fmt.Errorf("-serve cannot be combined with %s", name)
 			}
 		}
+	}
+
+	// Rate charting takes symbols on its own flag and never builds a
+	// portfolio: dispatch before any portfolio parsing.
+	if *ratesFlag != "" {
+		rateClient := marketdata.NewClient(opt.dataDir)
+		rateClient.MaxAge = opt.cacheAge
+		rateClient.Logf = log.Printf
+		return runRates(ctx, &opt, rateClient, *ratesFlag)
 	}
 
 	// Generation mode consumes positional args as recipe ids, not files;

@@ -125,9 +125,14 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Annualization: 252 trading days, zero risk-free rate, CAGR over
   365.25-day years. Comparisons with PortfolioVisualizer et al. differ for
   documented reasons (see `pkg/metrics/doc.go`).
-- Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`) and `^VIX` are annualized
-  percent LEVELS, not prices; `^HICP-<geo>` and `^CPI-US` are index levels;
-  all chart fine but never belong in a return computation directly.
+- Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`), the policy/money-market
+  family (`^ESTR`, `^EURIBOR3M`, `^ECB-DFR`, `^ECB-MRO`, `^SOFR`, `^FEDFUNDS`,
+  `^FED-TARGET`, registry in `pkg/marketdata/rates.go`) and `^VIX` are
+  annualized percent LEVELS, not prices; `^HICP-<geo>` and `^CPI-US` are index
+  levels; all chart fine but never belong in a return computation directly.
+  The policy family can be ZERO or NEGATIVE, so `-assets` (which builds a
+  portfolio and computes returns) is meaningless on it: read it with
+  `pofo -rates <symbols>` instead.
 - A surprising CAGR/vol is usually a RESOLUTION bug, not a math bug: read the
   "resolved X -> name" log line first (a fuzzy search may have matched and
   cached an unrelated fund; delete that cache entry).
