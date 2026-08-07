@@ -20,7 +20,9 @@ func TestSensitivityRendersSignedBars(t *testing.T) {
 			t.Errorf("missing lever %q", label)
 		}
 	}
-	if !strings.Contains(res.SVG, "#0C8A47") {
+	// The FIRE UI renders dark (see theme.go), so the ruin-reducing bars use
+	// the dark-theme green (#0C8A47 darkened), not the light one.
+	if !strings.Contains(res.SVG, "#34A46E") {
 		t.Errorf("expected at least one ruin-reducing (green) bar")
 	}
 }

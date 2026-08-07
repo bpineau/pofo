@@ -82,7 +82,7 @@ func Vintages(pr Params, _ *scenario.Panel) VintagesResult {
 		note += " Paths stop where the record ends (2020)."
 	}
 	return VintagesResult{
-		SVG: chart.MultiLine(
+		SVG: darkMultiLine(
 			chart.Options{Title: "Your plan through the worst retirements on record (real wealth, M€)", Width: 1180, Height: 400},
 			"Years into retirement", "Real wealth M€", series),
 		Cards: cards,

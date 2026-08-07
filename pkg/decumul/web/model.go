@@ -414,13 +414,13 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		// Two single-axis panels sharing the x axis instead of a dual-axis
 		// chart: each curve gets its own honest scale, so the interior
 		// optimum in ruin and the growth drag on terminal wealth both show.
-		ArbitrageSVG: chart.MultiLine(chart.Options{Title: "Ruin % vs buffer years", Width: 720, Height: 300},
+		ArbitrageSVG: darkMultiLine(chart.Options{Title: "Ruin % vs buffer years", Width: 720, Height: 300},
 			"Buffer years", "Ruin %", []chart.XYSeries{ruinSeries(sweep)},
 			chart.Marker{Axis: 'x', Value: pr.BufferYears, Label: "your buffer"}),
-		Arbitrage2SVG: chart.MultiLine(chart.Options{Title: "Median terminal wealth vs buffer years", Width: 720, Height: 300},
+		Arbitrage2SVG: darkMultiLine(chart.Options{Title: "Median terminal wealth vs buffer years", Width: 720, Height: 300},
 			"Buffer years", "Terminal p50 M€", []chart.XYSeries{terminalSeries(sweep)},
 			chart.Marker{Axis: 'x', Value: pr.BufferYears, Label: "your buffer"}),
-		RecoverySVG: chart.Bars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 600, Height: 360}, bars),
+		RecoverySVG: darkBars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 600, Height: 360}, bars),
 	}
 }
 

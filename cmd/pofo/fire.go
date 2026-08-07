@@ -11,7 +11,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul/web"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
@@ -24,7 +23,10 @@ import (
 // switch to the bootstrap/cohort models and re-weight allocations live. It
 // blocks, serving until interrupted.
 func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
-	chart.SetDark(true) // the FIRE explorer renders in the terminal dark theme
+	// The charts render dark through the web package's own wrappers
+	// (pkg/decumul/web/theme.go), not the chart process-global, so the FIRE
+	// UI stays dark whether it runs alone (-fire) or beside the light /view
+	// report (-serve).
 	panel, labels := firePanel(ctx, opt, c, specs)
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {

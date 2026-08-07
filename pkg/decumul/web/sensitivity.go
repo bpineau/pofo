@@ -71,7 +71,7 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	// Most ruin-reducing levers first (most negative at the top).
 	sort.SliceStable(bars, func(i, j int) bool { return bars[i].Value < bars[j].Value })
 
-	svg := chart.HBars(chart.Options{Title: "Sensitivity: change in ruin (pp)", Width: 720, Height: 360}, bars)
+	svg := darkHbars(chart.Options{Title: "Sensitivity: change in ruin (pp)", Width: 720, Height: 360}, bars)
 	return SensitivityResult{SVG: svg}
 }
 

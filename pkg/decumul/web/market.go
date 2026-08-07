@@ -90,7 +90,7 @@ func marketFan(ns namedSource, years int) string {
 	title := fmt.Sprintf("Market alone, growth of 1 real € (%s)", ns.name)
 	// A market index at zero is a wipeout year the model admits (an extreme
 	// fat-tail draw), not a plan ruin: label the baseline accordingly.
-	svg := chart.Fan(chart.Options{Title: title, Width: 640, Height: 320,
+	svg := darkFan(chart.Options{Title: title, Width: 640, Height: 320,
 		Style: chart.Style{ZeroLabel: "wipeout · 0"}}, "Year", bands, samples)
 	// The bear texture: the typical draw's worst bear and the 1-in-20 draw's.
 	sort.Float64s(depths)

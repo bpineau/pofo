@@ -63,7 +63,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		}
 		series = append(series, chart.XYSeries{Name: m.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(m.slot)})
 	}
-	horizonSVG := chart.MultiLine(
+	horizonSVG := darkMultiLine(
 		chart.Options{Title: "Safe withdrawal rate vs horizon (at your target ruin)", Width: 720, Height: 360},
 		"Horizon (years)", "Safe WR %", series,
 		chart.Marker{Axis: 'x', Value: float64(pr.Years), Label: "your horizon"},
@@ -82,7 +82,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), pr.NPaths, simWorkers, seed)
 		xs[j], ys[j] = spend/1000, cap/1e6
 	}
-	capitalSVG := chart.MultiLine(
+	capitalSVG := darkMultiLine(
 		chart.Options{Title: "Capital required vs spending (central model, target ruin)", Width: 720, Height: 360},
 		"Net spending k€/yr", "Required capital M€",
 		[]chart.XYSeries{{Name: "", Xs: xs, Ys: ys, Color: chart.PaletteColor(0)}},
