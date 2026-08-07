@@ -518,7 +518,7 @@ func figDeuxThermometres() string {
 	b.WriteString(sTxt(24, 378, 10.5, figMuted, "start", "400",
 		"Le ratio brut ignore les deux ans de pont du premier ménage, et le prix payé pour les actions par le second."))
 	b.WriteString(sTxt(24, 394, 10.5, figMuted, "start", "400",
-		"Le capteur par risque voit les deux. Valeurs illustratives."))
+		"L'indicateur par risque voit les deux. Valeurs illustratives."))
 	return svg(640, 408, b.String())
 }
 

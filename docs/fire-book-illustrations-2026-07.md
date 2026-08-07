@@ -153,7 +153,7 @@ arbitraire.
 ---
 
 ## 7. guardrails-morningstar
-*Existant : `guardrails-capteur` (les sept revues).*
+*Existant : `guardrails-indicateur` (les sept revues).*
 
 **7.1 Deux thermomètres sur le même plan (B, prioritaire). LIVRÉE : `deux-thermometres`**
 Le cœur de l'article. Le retraité de 62 ans dont la pension arrive à 64 : le
@@ -293,7 +293,7 @@ quatre bandes d'instrument lues côte à côte.
 - **2.3** les trois amendements en cascade : ce serait un waterfall, forme déjà
   prise par `cascade-4pct`. Voir [[dataviz-invent-dont-repeat]].
 - **4.1** le corridor vu du pilote : troisième série temporelle à corridor du
-  livre après `guardrails-capteur` et `deux-thermometres`. `guyton-klinger` est
+  livre après `guardrails-indicateur` et `deux-thermometres`. `guyton-klinger` est
   déjà servi par `gk-cascade-1966`.
 - **8.2** le legs comme paramètre : la charge est déjà portée par
   `richesse-totale`, livrée dans le même article.
