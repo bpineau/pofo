@@ -60,6 +60,7 @@ its extension.
 | `contribute:A/P` | add a fixed amount A every period P ∈ {`week`, `month`, `quarter`, `year`} |
 | `withdraw:A/P` | take out A, or `A%` of the current value, every period P |
 | `optimize:OBJ[,max-weight:C]` | let the optimizer choose the weights for objective `OBJ` (table below), optionally capping each asset at C% |
+| `currencies:USD,EUR` | evaluate the portfolio in several base currencies at once; each becomes a comparison column with its own numeraire and CPI deflator (nominal **and** real stats), so the gap between columns is the currency risk. Cannot be combined with `optimize` |
 
 Flows are invested or sold pro rata on the first trading day of each new
 period. Statistics and comparison charts stay on a **time-weighted index**
