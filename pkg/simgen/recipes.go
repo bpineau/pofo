@@ -23,6 +23,7 @@ func All() []Recipe {
 		iefRecipe(),
 		tltRecipe(),
 		ntsgRecipe(),
+		ntszRecipe(),
 		urthRecipe(),
 		iwdaRecipe(),
 		wintonRecipe(),
@@ -682,6 +683,131 @@ func ntsgRecipe() Recipe {
 		}, "^IRX", 0.0025),
 		ValidateAgainst: "IE00077IIPQ8",
 	}
+}
+
+// ntszRecipe is the eurozone variant (NTSZ UCITS, WisdomTree Eurozone Efficient
+// Core, launched 2025-09): 90% eurozone equities + 60% euro government bond
+// futures, all EUR-denominated. Unlike NTSX/NTSG, whose deep past leans on
+// long-running US index funds and USD refdata, every leg here is euro-native, so
+// each is extended by a bundled euro-area reference series (gen-euro-refdata):
+//
+//   - equity: the real MSCI Eurozone (EZU, USD, 2000->) expressed in EUR, then
+//     extended back with EMU-EUR (euro-area equity net TR, ~1986). This is the
+//     deep floor of the composite, so it starts ~1986.
+//   - bond: the real iShares Core Euro Govt Bond (EUNH.DE, EUR, 2009->) extended
+//     by EUROGOV-EUR (euro-area 10y government bond TR, ~1970, with the ECB daily
+//     shape EUROGOV-DAILY from 2004), run as a futures overlay financed at EUR
+//     cash.
+//   - cash: the euro money-market index (EURCASH-EUR, 1994->) carried to daily
+//     granularity and extended before the euro by DECASH-EUR (the German 3-month
+//     money-market accrual, ~1960).
+//
+// The real NTSZ quotes are grafted on top from inception; the overlap is short
+// (the fund is months old), so the validation is thin and the value is the deep
+// reconstruction, not a tight tracking claim.
+func ntszRecipe() Recipe {
+	return Recipe{
+		ID:     "IE000OV4XWA3",
+		Name:   "WisdomTree Eurozone Efficient Core: eurozone 90/60 replication",
+		Method: "0.90×EZU (MSCI Eurozone, USD→EUR, extended EMU-EUR euro-area equity net TR ~1986) + 0.60×(EUNH.DE euro govt bond − EUR cash, extended EUROGOV-EUR ~1970 with ECB daily shape) + 0.10×EUR cash (EURCASH-EUR extended DECASH-EUR German money-market ~1960), 0.20%/yr fees; start now set by the equity leg (~1986)",
+		Build:  ntszBuild,
+		// The real fund is months old (2025-09): the overlap barely clears the
+		// 60-point floor, so treat the validation as indicative only.
+		ValidateAgainst: "IE000OV4XWA3",
+		SpliceReal:      "IE000OV4XWA3",
+	}
+}
+
+// ntszBuild assembles NTSZ from euro-native legs. The equity leg (EZU in EUR,
+// extended by EMU-EUR) and the deep EUR cash leg (EURCASH-EUR extended by
+// DECASH-EUR) are pre-built here and served to the frame under synthetic ids;
+// the bond leg (EUNH.DE) reaches back through the standard extend() splice.
+func ntszBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	eq, err := ntszEquityEUR(f, from)
+	if err != nil {
+		return nil, err
+	}
+	cash, err := eurCashDeep(f, from)
+	if err != nil {
+		return nil, err
+	}
+	inj := injected{inner: extend(f), have: map[string]*marketdata.Series{
+		"NTSZ-EQ":   eq,
+		"NTSZ-CASH": cash,
+	}}
+	legs := []Leg{
+		{ID: "NTSZ-EQ", Weight: 0.90},
+		{ID: "EUNH.DE", Weight: 0.60, Excess: true},
+		{ID: "NTSZ-CASH", Weight: 0.10},
+	}
+	fr, err := BuildFrame(inj, []string{"NTSZ-CASH", "NTSZ-EQ", "EUNH.DE"}, from)
+	if err != nil {
+		return nil, err
+	}
+	values, err := Composite(fr, legs, "NTSZ-CASH", 0.0020)
+	if err != nil {
+		return nil, err
+	}
+	return SeriesFromFrame("NTSZ (eurozone 90/60 replication)", fr, values), nil
+}
+
+// ntszEquityEUR builds the eurozone equity leg: the real MSCI Eurozone ETF (EZU,
+// USD) re-expressed in EUR at the EURUSD spot (like the unhedged DBMFE leg),
+// then extended before EZU's history with the euro-area equity net-TR proxy
+// (EMU-EUR, ~1986). EZU is US-listed, so the fetcher returns it in USD; the
+// proxy is already EUR, hence the conversion happens before the splice.
+func ntszEquityEUR(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	ezu, err := f.Fetch("EZU", from)
+	if err != nil {
+		return nil, err
+	}
+	if ezu == nil || len(ezu.Points) < 2 {
+		return nil, fmt.Errorf("EZU: empty history")
+	}
+	dates := make([]time.Time, len(ezu.Points))
+	usd := make([]float64, len(ezu.Points))
+	for i, p := range ezu.Points {
+		dates[i], usd[i] = p.Date, p.Close
+	}
+	eur, err := convertDaily("EZU (MSCI Eurozone) in EUR", extend(f), "EURUSD=X", from, dates, usd)
+	if err != nil {
+		return nil, err
+	}
+	if proxy, perr := f.Fetch("EMU-EUR", from); perr == nil && proxy != nil {
+		marketdata.ExtendBack(eur, proxy)
+	}
+	return eur, nil
+}
+
+// eurCashDeep extends the daily EUR money-market series (eurCashDaily over
+// EURCASH-EUR, 1994->) before the euro with the German 3-month money-market
+// accrual (DECASH-EUR, ~1960), the natural pre-euro cash proxy. Germany was the
+// anchor economy and the DM the reference currency, so its short rate stands in
+// for euro cash before EURCASH-EUR begins.
+func eurCashDeep(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	cash, err := eurCashDaily(f, from)
+	if err != nil {
+		return nil, err
+	}
+	if deep, derr := f.Fetch("DECASH-EUR", from); derr == nil && deep != nil {
+		marketdata.ExtendBack(cash, deep)
+	}
+	return cash, nil
+}
+
+// injected serves pre-built component series by id and delegates every other
+// fetch to the wrapped fetcher, so a composite can mix synthetic legs (built in
+// code) with the standard extend()-spliced components.
+type injected struct {
+	inner Fetcher
+	have  map[string]*marketdata.Series
+}
+
+func (j injected) Fetch(id string, from time.Time) (*marketdata.Series, error) {
+	if s, ok := j.have[id]; ok {
+		return s, nil
+	}
+	return j.inner.Fetch(id, from)
 }
 
 // urthRecipe approximates the MSCI World as a fixed 60/40 US/developed-
