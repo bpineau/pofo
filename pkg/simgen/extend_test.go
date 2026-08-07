@@ -179,11 +179,11 @@ func TestExtendingFetcherLeavesOthersUnchanged(t *testing.T) {
 	}
 }
 
-// longIndexOr uses the long refdata series when present (net of fee) and does
-// not touch the fallback.
-func TestLongIndexOrPrefersRefdata(t *testing.T) {
+// msciWorld uses the long refdata series when present (net of fee) and does
+// not touch the fallback; without the daily shape the backcast stays monthly.
+func TestMSCIWorldPrefersRefdata(t *testing.T) {
 	f := fakeFetcher{"MSCIWORLD-USD": atSeries("MSCIWORLD-USD", 0, 400, 100)}
-	b := longIndexOr("MSCIWORLD-USD", 0, func(Fetcher, time.Time) (*marketdata.Series, error) {
+	b := msciWorld(0, func(Fetcher, time.Time) (*marketdata.Series, error) {
 		t.Fatal("fallback must not run when the refdata series is present")
 		return nil, nil
 	})
@@ -193,10 +193,10 @@ func TestLongIndexOrPrefersRefdata(t *testing.T) {
 	}
 }
 
-// Without the refdata series, longIndexOr falls back to the proxy Build.
-func TestLongIndexOrFallsBack(t *testing.T) {
+// Without the refdata series, msciWorld falls back to the proxy Build.
+func TestMSCIWorldFallsBack(t *testing.T) {
 	called := false
-	b := longIndexOr("MSCIWORLD-USD", 0, func(Fetcher, time.Time) (*marketdata.Series, error) {
+	b := msciWorld(0, func(Fetcher, time.Time) (*marketdata.Series, error) {
 		called = true
 		return atSeries("proxy", 0, 10, 1), nil
 	})
