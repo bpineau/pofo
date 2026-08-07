@@ -1,14 +1,14 @@
 # La bibliothèque : sites, papiers, livres, outils
 
-Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), organisée par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent). Et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
+Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour continuer seul : chaque référence annotée d'une ou deux phrases (**pourquoi** la lire, et par où la prendre), l'ensemble classé par nature, avec le chapitre du livre qui s'appuie dessus. Les liens sont donnés par nom (les URL changent, les noms restent). Et la section finale propose des parcours de lecture, car une bibliothèque sans ordre de lecture est un tas.
 
 ## Les séries et blogs de référence
 
-**Early Retirement Now, la « Safe Withdrawal Rate Series » (Karsten Jeske)** : la référence quantitative du sujet. 60+ volets, simulations reproductibles, honnêteté systématique. Le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les volets 1 et 26 ; le guide de lecture complet est [[serie-ern]].
+**Early Retirement Now, la « Safe Withdrawal Rate Series » (Karsten Jeske)** : la référence quantitative du sujet. Plus de 60 volets, simulations reproductibles, honnêteté systématique. Le complément naturel de ce livre (il pousse les simulations américaines plus loin ; nous couvrons le cadre français et l'outillage). Commencer par les volets 1 et 26 ; le guide de lecture complet est [[serie-ern]].
 
 **Kitces.com (Michael Kitces)** : le blog du métier de conseiller américain. La source des guardrails par risque, du bond tent, du ratcheting. Technique, nuancé, prolifique. Chercher par sujet plutôt que suivre le flux. [[guardrails-morningstar]], [[glidepaths]]
 
-**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel. Le wiki est une encyclopédie tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
+**Bogleheads (wiki + forum)** : la communauté de l'investissement indiciel. Le wiki est une encyclopédie bien tenue (VPW, ABW, EU investing pour nous), le forum abrite les fils TPAW et les journaux au long cours. [[vpw]], [[amortissement-abw]], [[etf-ucits-europeens]]
 
 **Portfolio Charts (Tyler)** : les portefeuilles types (Permanent, Golden Butterfly...) testés par pays avec SWR et drawdowns. L'outil visuel de la partie portefeuille. [[portefeuilles-tous-temps]]
 
@@ -28,25 +28,25 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Harry Browne, *Fail-Safe Investing* (1999)** : l'archétype tous-temps par son inventeur. Court, radical, structurant même si l'on n'adopte pas les quatre quarts. [[portefeuilles-tous-temps]]
 
-**Bill Perkins, *Die With Zero* (2020)** : le plaidoyer pour dépenser et donner du vivant. À lire avec les garde-fous du chapitre dédié. [[depenses-en-retraite]], [[psychologie-du-retrait]]
+**Bill Perkins, *Die With Zero* (2020)** : le plaidoyer pour dépenser et donner de son vivant. À lire avec les garde-fous du chapitre dédié. [[depenses-en-retraite]], [[psychologie-du-retrait]]
 
-**Ernie Zelinski, *How to Retire Happy, Wild, and Free*** : le classique **non** financier que les vétérans recommandent le plus. Le « vers quoi ». [[sens-et-identite]]
+**Ernie Zelinski, *How to Retire Happy, Wild, and Free* (2004)** : le classique **non** financier que les vétérans recommandent le plus. Le « vers quoi ». [[sens-et-identite]]
 
 **Kahneman, *Système 1 / Système 2* ; Thaler, *Misbehaving*** : les fondations comportementales. Les biais du rentier y sont tous. [[psychologie-du-retrait]]
 
 **Adam Fergusson, *When Money Dies* ; Barton Biggs, *Wealth, War and Wisdom*** : les extrêmes vécus (Weimar ; la Seconde Guerre patrimoine par patrimoine). La partie inflation en version récit. [[hyperinflation-et-extremes]], [[inflation-histoire]]
 
-**JL Collins, *The Simple Path to Wealth*** : la porte d'entrée accumulation la plus lisible. À offrir au débutant. La décumulation y est sommaire (ce livre prend le relais).
+**JL Collins, *The Simple Path to Wealth*** : la porte d'entrée la plus lisible sur l'accumulation. À offrir au débutant. La décumulation y est sommaire (ce livre prend le relais).
 
 ## Les papiers académiques et études clés
 
 **Bengen (1994), « Determining Withdrawal Rates Using Historical Data » ; Cooley-Hubbard-Walz (1998, l'étude Trinity)** : les fondations. Courtes, lisibles, en libre accès. [[etude-trinity]]
 
-**Anarkulova, Cederburg & O'Doherty (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions. Les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
+**Anarkulova, Cederburg, O'Doherty & Sias (2023), « The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets » ; Cederburg et al., « Beyond the Status Quo »** : l'échantillon mondial et le débat 100 % actions. Les bornes prudentes modernes (SSRN, libre accès). [[anarkulova-cederburg]], [[allocation-actions-obligations]]
 
-**Jorda, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[historique-vs-parametrique]]
+**Jorda, Knoll, Kuvshinov, Schularick & Taylor, « The Rate of Return on Everything, 1870-2015 »** : le panel académique de rendements longs multi-pays. La matière première du broad-sample. [[historique-vs-parametrique]]
 
-**Kitces & Pfau (2014), « Reducing Retirement Risk with a Rising Equity Glide Path »** : le glidepath montant, source primaire. [[glidepaths]]
+**Pfau & Kitces (2014), « Reducing Retirement Risk with a Rising Equity Glide Path »** : le glidepath montant, source primaire. [[glidepaths]]
 
 **Guyton & Klinger (2006), « Decision Rules and Maximum Initial Withdrawal Rates »** : les guardrails originaux. À lire en connaissant la critique. [[guyton-klinger]]
 
@@ -54,7 +54,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Campbell & Shiller (1988) ; Shiller, *Irrational Exuberance*** : le CAPE, sources primaires ; les données sur le site de Shiller (Yale). [[valorisations-et-cape]]
 
-**Moskowitz, Ooi & Pedersen (2012), « Time Series Momentum » ; Hurst, Ooi & Pedersen, « A Century of Evidence on Trend-Following »** : le trend, preuves. [[managed-futures]]
+**Moskowitz, Ooi & Pedersen (2012), « Time Series Momentum » ; Hurst, Ooi & Pedersen (2017), « A Century of Evidence on Trend-Following Investing »** : le trend, les preuves. [[managed-futures]]
 
 **Neville, Draaisma, Funnell, Harvey & Van Hemert (2021), « The Best Strategies for Inflationary Times »** : ce qui a réellement marché dans huit épisodes d'inflation. [[se-proteger-de-inflation]]
 
@@ -64,13 +64,13 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les rapports annuels et données vivantes
 
-**Morningstar, *The State of Retirement Income* (chaque décembre)** : le taux recommandé recalculé aux rendements prospectifs + le comparatif des règles. Le « second avis » annuel gratuit du plan. [[guardrails-morningstar]], [[rendements-attendus]]
+**Morningstar, *The State of Retirement Income* (chaque décembre)** : le taux recommandé recalculé sur des rendements prospectifs, et le comparatif des règles. Le « second avis » annuel gratuit du plan. [[guardrails-morningstar]], [[rendements-attendus]]
 
-**Vanguard « Economic and Market Outlook » ; JP Morgan et BlackRock « Long-Term Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives. La calibration annuelle de μ. [[rendements-attendus]]
+**Vanguard « Economic and Market Outlook » ; JP Morgan « Long-Term Capital Market Assumptions » et BlackRock « Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives. La calibration annuelle de μ. [[rendements-attendus]]
 
 **Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour, l'ancre de valorisation à relever une fois l'an. [[valorisations-et-cape]]
 
-**Le SG Trend Index** : le référentiel des programmes de trend. Le contrôle de tout véhicule. [[managed-futures]]
+**Le SG Trend Index** : le référentiel des programmes de trend. L'étalon auquel comparer tout véhicule. [[managed-futures]]
 
 ## Les sources officielles françaises
 
@@ -97,7 +97,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], un simulateur ouvert à côté.
+**Le débutant complet** : ce livre, parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], un simulateur ouvert à côté.
 :::
 
 ## L'essentiel à retenir
