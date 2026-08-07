@@ -33,6 +33,7 @@ type Client struct {
 	FredBase        string
 	ECBBase         string
 	CBOEBase        string
+	CookieBase      string // Yahoo cookie bootstrap host (fc.yahoo.com)
 	UserAgent       string
 	Logf            func(format string, args ...any)
 
@@ -40,6 +41,8 @@ type Client struct {
 	mu         sync.Mutex
 	memo       map[string]*Series
 	fees       map[string]feesEntry // TER cache, lazily loaded from fees.json
+	authMu     sync.Mutex
+	auth       *yahooAuth // cached Yahoo cookie+crumb, nil until first use
 }
 
 // NewClient returns a Client caching downloads under cacheDir. An empty
@@ -64,6 +67,7 @@ func NewClient(cacheDir string) *Client {
 		FredBase:        "https://fred.stlouisfed.org",
 		ECBBase:         "https://www.ecb.europa.eu",
 		CBOEBase:        "https://cdn.cboe.com",
+		CookieBase:      "https://fc.yahoo.com",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
 		retryDelay:      time.Second,
