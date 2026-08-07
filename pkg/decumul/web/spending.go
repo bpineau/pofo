@@ -47,11 +47,11 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	}
 
 	cards := []Card{
-		{"Paths ever cut", fmt.Sprintf("%.0f%%", s.EverCutShare*100)},
-		{"First cut (median year)", firstCutText(s.EverCutShare, s.FirstCutMedian)},
-		{"Years lived cut (median)", cutYearsText(s.EverCutShare, s.CutYearsMedian)},
-		{"Years lived cut (p90)", cutYearsText(s.EverCutShare, s.CutYearsP90)},
-		{"Spending floor (p5, year 10)", floorText(bands, 10)},
+		{Label: "Paths ever cut", Value: fmt.Sprintf("%.0f%%", s.EverCutShare*100)},
+		{Label: "First cut (median year)", Value: firstCutText(s.EverCutShare, s.FirstCutMedian)},
+		{Label: "Years lived cut (median)", Value: cutYearsText(s.EverCutShare, s.CutYearsMedian)},
+		{Label: "Years lived cut (p90)", Value: cutYearsText(s.EverCutShare, s.CutYearsP90)},
+		{Label: "Spending floor (p5, year 10)", Value: floorText(bands, 10)},
 	}
 	svg := chart.Fan(
 		chart.Options{Title: "Household real spending €/yr, incl. pension & side income (central model)", Width: 900, Height: 360},
@@ -59,10 +59,10 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	return SpendingResult{SVG: svg, Cards: cards}
 }
 
-// cashflowAt is the deterministic income (pension, side income) active in a
-// year, mirroring the plan's cashflow construction.
+// cashflowAt is the deterministic income (pension, side income, annuity)
+// active in a year, mirroring the plan's cashflow construction.
 func (pr Params) cashflowAt(year int) float64 {
-	total := 0.0
+	total := pr.annuityIncome() // lifelong, from year 0
 	if pr.PensionAnnual > 0 && year >= pr.PensionYear {
 		total += pr.PensionAnnual
 	}

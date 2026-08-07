@@ -33,6 +33,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 	monthlyNeedCap := p.NeedAnnual / 12
 
 	res := newPathResult(p.Capital, p.Years)
+	res.Ret10 = firstDecadeReturn(returns, min(120, p.Years*12), 12)
 	peak := p.Capital
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)

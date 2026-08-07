@@ -1,6 +1,10 @@
 package decumul
 
-import "github.com/bpineau/pofo/pkg/scenario"
+import (
+	"math"
+
+	"github.com/bpineau/pofo/pkg/scenario"
+)
 
 // PathResult is the outcome of one simulated decumulation path. Wealth has
 // Years+1 points: Wealth[0] is the starting capital and Wealth[k] is total
@@ -22,6 +26,7 @@ type PathResult struct {
 	CutYears  int
 	TaxPaid   float64
 	Withdrawn float64
+	Ret10     float64 // annualized real market return of the first decade (sequence risk)
 }
 
 // ruinAt latches ruin at year k, keeping the first occurrence.
@@ -71,6 +76,7 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 	refillCap := p.Buffer.refillCap()
 
 	res := newPathResult(p.Capital, p.Years)
+	res.Ret10 = firstDecadeReturn(returns, min(10, p.Years), 1)
 	peak := p.Capital
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
 	level := p.NeedAnnual            // ratcheted spending level (fixed/flex policy)
@@ -170,4 +176,26 @@ func ret(s scenario.Sequence, k int) float64 {
 		return s[k]
 	}
 	return 0
+}
+
+// firstDecadeReturn annualizes the compounded market return of the first n
+// periods of a sequence, with perYear periods per year (1 for the annual
+// kernel, 12 for the monthly one). It measures the sequence-of-returns luck a
+// retirement is dealt in its decisive first decade, independent of the
+// withdrawal policy. Returns 0 for an empty window.
+func firstDecadeReturn(s scenario.Sequence, n, perYear int) float64 {
+	if n > len(s) {
+		n = len(s)
+	}
+	if n <= 0 {
+		return 0
+	}
+	growth := 1.0
+	for k := 0; k < n; k++ {
+		growth *= 1 + s[k]
+	}
+	if growth <= 0 {
+		return -1
+	}
+	return math.Pow(growth, float64(perYear)/float64(n)) - 1
 }

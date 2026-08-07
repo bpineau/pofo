@@ -102,6 +102,12 @@ type Fit struct {
 	Df    float64 // Student-t dof seeded from the monthly excess kurtosis
 }
 
+// Valid reports whether the fit carries usable estimates. A panel shorter
+// than about two years yields the zero Fit; seeding the UI sliders with
+// µ=0/σ=0 turns the central case into a certain-doom model, so callers must
+// keep their defaults when a fit is not Valid.
+func (f Fit) Valid() bool { return f.Sigma > 0 }
+
 // FitParametric estimates the parametric annual model from a monthly panel.
 //
 //   - Mu is the arithmetic mean of the realised annual real returns.

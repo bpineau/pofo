@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/datasets"
@@ -55,6 +56,7 @@ type CapeSnapshot struct {
 	Percentile  float64 `json:"percentile"`  // 0-100 rank in the full history
 	Median      float64 `json:"median"`      // historical median CAPE
 	ImpliedReal float64 `json:"impliedReal"` // 1/CAPE, geometric real, as a fraction
+	Stale       bool    `json:"stale"`       // observation older than a year: warn, never present as "now"
 }
 
 // capeSeries is the bundled Shiller CAPE history, ascending by date, parsed once.
@@ -92,7 +94,19 @@ func capeSnapshot() CapeSnapshot {
 		Percentile:  100 * float64(below) / float64(len(s)),
 		Median:      median,
 		ImpliedReal: 1 / last.cape,
+		Stale:       capeIsStale(last.date, time.Now()),
 	}
+}
+
+// capeIsStale reports whether the latest bundled observation is more than a
+// year old. A three-year-old reading once shipped as "Valuation now"; the UI
+// must be told so it can say "as of <month>" with a warning instead.
+func capeIsStale(date string, now time.Time) bool {
+	t, err := time.Parse("2006-01-02", date)
+	if err != nil {
+		return true
+	}
+	return now.Sub(t) > 366*24*time.Hour
 }
 
 // capeAdjustedMu returns the central arithmetic mean to plan on when the user
