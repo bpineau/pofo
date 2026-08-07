@@ -21,6 +21,18 @@ var fredHTTP = &http.Client{
 	Transport: &http.Transport{TLSNextProto: map[string]func(string, *tls.Conn) http.RoundTripper{}},
 }
 
+// fredUserAgent is the one place the client does NOT send its browser
+// User-Agent, and the exception is measured. FRED's edge answers a browser
+// User-Agent over HTTP/1.1 by accepting the connection and then never sending
+// headers: the request hangs until the timeout, on every attempt (2026-08).
+// The same request with any non-browser agent answers in under 100 ms, and the
+// browser agent over HTTP/2 fails the other way (the INTERNAL_ERROR above), so
+// HTTP/1.1 plus a plain agent is the only combination that works. Left
+// unfixed, this silently emptied every FRED-backed series: the effective
+// federal funds rate fell back to the New York Fed's copy and lost its
+// 1954-2000 history, and the CPI fallbacks were unreachable.
+const fredUserAgent = "pofo/1 (+https://github.com/bpineau/pofo)"
+
 // fetchFRED downloads a monthly (or daily) series from the FRED CSV endpoint,
 // a free, key-less source. It is used for long macro histories the market-data
 // providers do not carry, chiefly French consumer prices (monthly, 1955→) that
@@ -46,7 +58,7 @@ func (c *Client) fredSeries(ctx context.Context, id string, keepNonPositive bool
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", c.UserAgent)
+	req.Header.Set("User-Agent", fredUserAgent)
 	req.Header.Set("Accept", "text/csv,*/*")
 	resp, err := fredHTTP.Do(req)
 	if err != nil {
