@@ -1,0 +1,58 @@
+/* Le FIRE tranquille - EPUB stylesheet.
+ *
+ * Theme-neutral by design: no page-wide color, background or font-family, so
+ * the reader's own theme (night mode, chosen typeface) always wins. Only
+ * structure and accent borders (the web palette hexes) are set here.
+ */
+
+h1, h2, h3, h4 { line-height: 1.2; }
+h1 { border-bottom: 2px solid #b4783c; padding-bottom: 0.3rem; }
+
+.subtitle { font-size: 1.15em; font-style: italic; }
+.edition { font-size: 0.9em; }
+
+blockquote {
+  margin: 1.1rem 0;
+  padding: 0.2rem 0 0.2rem 1rem;
+  border-left: 3px solid #b4783c;
+  font-style: italic;
+}
+
+hr { border: 0; border-top: 1px solid #999; margin: 2rem 0; }
+
+code { font-family: monospace; font-size: 0.9em; }
+
+/* Tables: bordered and collapsed, accent header rule. */
+table { border-collapse: collapse; width: 100%; }
+th, td {
+  border: 1px solid #999;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+thead th { border-bottom: 2px solid #b4783c; }
+
+/* Callout boxes: bordered blocks, bold head, per-type accent border. */
+.doc-box {
+  margin: 1.4rem 0;
+  padding: 0.7rem 1rem;
+  border: 1px solid #999;
+  border-left: 3px solid #b4783c;
+}
+.doc-box-h { font-weight: bold; margin-bottom: 0.3rem; }
+.doc-box-glyph { margin-right: 0.3rem; }
+.doc-box--cle { border-left-color: #b4783c; }
+.doc-box--astuce { border-left-color: #3f8f6f; }
+.doc-box--attention { border-left-color: #c0655b; }
+.doc-box--exemple { border-left-color: #8a5526; }
+.doc-box--science { border-left-color: #4a6da0; }
+.doc-box--terrain { border-left-color: #8a6a1c; }
+.doc-box--admin { border-left-color: #4a6da0; }
+
+/* Figures: centered, small italic caption; SVG scales to the reader width. */
+figure.book-fig { margin: 1.6rem 0; text-align: center; }
+figure.book-fig svg { max-width: 100%; height: auto; }
+figure.book-fig figcaption { font-size: 0.85em; font-style: italic; margin-top: 0.5rem; }
+
+/* Task-list items: the glyph carries the checkbox state, so drop the bullet. */
+li.task { list-style: none; }
