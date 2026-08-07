@@ -77,7 +77,7 @@ var triCorr = [][]float64{
 	{0.94, 0.85, 0.86},
 	{-0.12, -0.13, -0.13, -0.09},
 	{0.13, 0.06, 0.07, 0.23, 0.23},
-	{-0.03, -0.06, -0.06, 0.01, 0.15, 0.22},
+	{-0.24, -0.26, -0.25, -0.21, 0.20, 0.13},
 }
 
 // triEquityRows is the number of leading rows that are equity funds: the block
