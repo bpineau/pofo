@@ -57,6 +57,15 @@ for the full critique. Highlights:
   died 2023-09); bundle now 2026-07 (CAPE 42.2); `Stale` flag + UI chip.
 - Dual-axis buffer chart split into two single-axis panels; M€ formatting;
   survivor-conditioned detail stats; largest-remainder cause shares.
+- **Broad-sample column moved to the literature's 60/40 (2026-07-12).** The
+  pool was 100% single-market equity while the anchor it cites (Anarkulova
+  ~2.26% SWR) is a 60/40 domestic mix: the column silently stressed the
+  allocation on top of the data. Now `broadSampleMixed`: within-country
+  60/40 real returns, contiguous runs split at the bond record's war gaps.
+  Measured (fixed rule, no tax, 1M, 30y): geo 4.31%->3.71%, 4%-rule ruin
+  27.1%->22.7%, SWR@5% 1.59%->1.69%. Still stricter than Anarkulova (fixed
+  horizon, JST-16 disaster-heavy pool); anchors locked in
+  `broadsample_test.go`. Vintages (§02) stay pure equity, labelled.
 
 ## Remaining
 
