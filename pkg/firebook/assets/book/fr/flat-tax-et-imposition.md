@@ -36,7 +36,7 @@ Ces deux mécanismes font de la détention CTO longue une stratégie de transmis
 
 ## Les couches annexes, en bref
 
-**La CEHR** (contribution exceptionnelle sur les hauts revenus) vaut 3 % au-delà de 250 k€ de revenu fiscal de référence (célibataire ; 500 k€ pour un couple), puis 4 % au-delà du double. Elle frappe les **années** à gros revenus réalisés, une raison de plus de lisser, car une grosse vente unique peut la déclencher là où trois ventes étalées y échappent.
+**La CEHR** (contribution exceptionnelle sur les hauts revenus) vaut 3 % au-delà de 250 k€ de revenu fiscal de référence (célibataire ; 500 k€ pour un couple), puis 4 % au-delà du double. Elle frappe les **années** à gros revenus réalisés, une raison de plus de lisser, car une grosse vente unique peut la déclencher là où trois ventes étalées y échappent. Sa cousine, **la CDHR** (contribution différentielle sur les hauts revenus, art. 224 CGI, pérennisée par la LFI 2026), impose aux mêmes seuils de RFR un plancher d'imposition de 20 % ; elle mord précisément quand une grosse plus-value au PFU ferait descendre le taux moyen sous ce plancher, et l'étalement est là encore la parade.
 
 **L'IFI** est l'impôt sur la fortune **immobilière** seulement, avec un seuil de 1,3 M€ de patrimoine immobilier net. Le portefeuille financier n'y est pas soumis. C'est un argument de structure pour le rentier financier, à connaître sans en faire un dogme ([[immobilier-en-retrait]]).
 
