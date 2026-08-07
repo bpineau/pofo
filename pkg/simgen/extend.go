@@ -18,10 +18,12 @@ import (
 // USD, homogeneous with the component they extend:
 //
 //   - VTMGX (Vanguard Developed Markets, 1999) → developed-ex-US equity TR
-//     (refdata DEVEXUS-USD: MSCI World ex USA net TR via Curvo, ~1969).
+//     (refdata DEVEXUS-USD: MSCI World ex USA net TR via Curvo, monthly
+//     ~1969, carried at daily granularity from 1990-07 by the Ken French
+//     daily shape, see dailyShape).
 //   - VEIEX (Vanguard Emerging Markets, 1994) → emerging-market equity TR
 //     (refdata EM-USD: MSCI Emerging Markets net TR via Curvo, ~1988).
-//   - GC=F (COMEX gold futures, 2000) → monthly London/LBMA gold fix
+//   - GC=F (COMEX gold futures, 2000) → daily London/LBMA PM gold fix
 //     (refdata XAUUSD-LBMA, ~1968).
 //   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
 //   - VFITX (Intermediate-Term Treasury, 1991) and VUSTX (Long-Term, 1986) →
@@ -41,6 +43,16 @@ var longBack = map[string]string{
 	"VUSTX": "TREASURY-LONG-USD",
 	"VFINX": "SP500-USD",
 	"^IRX":  "TBILL-3M",
+}
+
+// dailyShape maps a monthly longBack proxy to a bundled daily series of the
+// same market whose LEVELS are not authoritative (a close but not identical
+// universe, gross of withholding) but whose day-to-day moves are real. The
+// proxy's monthly anchors keep setting the levels and the shape supplies
+// the daily granularity in between (see shapedSeries), so reconstructions
+// stop feeding month-sized moves to daily-frequency statistics.
+var dailyShape = map[string]string{
+	"DEVEXUS-USD": "DEVEXUS-DAILY", // Ken French developed-ex-US market TR, daily 1990-07→
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
@@ -66,6 +78,11 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 	// Diagnostics to stderr (gen-simdata only): a silent skip hides why a
 	// backcast did not lengthen, so report the proxy fetch and splice outcome.
 	p, perr := e.inner.Fetch(pid, from)
+	if sid, shaped := dailyShape[pid]; shaped && perr == nil && p != nil {
+		if sh, serr := e.inner.Fetch(sid, from); serr == nil {
+			p = shapedSeries(p, sh)
+		}
+	}
 	switch {
 	case perr != nil:
 		fmt.Fprintf(os.Stderr, "extend: %s: proxy %s fetch failed: %v\n", id, pid, perr)

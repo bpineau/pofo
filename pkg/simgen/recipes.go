@@ -328,12 +328,8 @@ func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata
 			return fallback(f, from)
 		}
 		out := net
-		if shape, serr := f.Fetch(msciWorldShapeID, from); serr == nil && shape != nil &&
-			len(shape.Points) > 300 && !shape.Last().Date.Before(net.Last().Date) {
-			blended := *net
-			blended.Points = anchorShape(net.Points, shape.Points)
-			marketdata.ExtendBack(&blended, net) // pre-shape months (1969→1972) in front
-			out = &blended
+		if shape, serr := f.Fetch(msciWorldShapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
+			out = shapedSeries(net, shape)
 		}
 		return afterFee(out, annualFee), nil
 	}
@@ -481,14 +477,14 @@ func xauusdRecipe() Recipe {
 	return Recipe{
 		ID:              "XAUUSD",
 		Name:            "Gold (XAU/USD spot)",
-		Method:          "real gold spot (XAU/USD daily, ~2000→) extended back with the monthly London/LBMA gold fix (bundled refdata XAUUSD-LBMA, 1968→)",
+		Method:          "real gold spot (XAU/USD daily, ~2000→) extended back with the daily London/LBMA PM gold fix (bundled refdata XAUUSD-LBMA, 1968→)",
 		Build:           xauusdBuild,
 		ValidateAgainst: "XAUUSD",
 	}
 }
 
 // xauusdBuild returns the gold spot series: the fetchable daily XAU/USD quote
-// (~2000→) with the bundled monthly London/LBMA gold fix (XAUUSD-LBMA, 1968→)
+// (~2000→) with the bundled daily London/LBMA PM gold fix (XAUUSD-LBMA, 1968→)
 // spliced behind it, so a gold sleeve covers the whole post-Bretton-Woods
 // floating era. If the daily quote is unavailable the monthly fix stands alone.
 func xauusdBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {

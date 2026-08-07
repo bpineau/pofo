@@ -179,6 +179,62 @@ func TestExtendingFetcherLeavesOthersUnchanged(t *testing.T) {
 	}
 }
 
+// A proxy with a configured daily-shape series is blended before splicing:
+// the extended component gets daily granularity where the shape covers the
+// proxy, exact proxy levels at the anchors, and the untouched monthly proxy
+// before that.
+func TestExtendingFetcherShapesProxy(t *testing.T) {
+	// Component: daily from 2000-01-01. Proxy anchors: monthly 1990->2000,
+	// level 100 flat then a jump. Shape: daily 1995->2000 with wiggle.
+	comp := &marketdata.Series{Symbol: "VTMGX"}
+	cd := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	for i := range 30 {
+		comp.Points = append(comp.Points, marketdata.Point{Date: cd.AddDate(0, 0, i), Close: 20})
+	}
+	proxy := &marketdata.Series{Symbol: "DEVEXUS-USD"}
+	pd := time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)
+	v := 100.0
+	for range 121 { // through 2000-01
+		proxy.Points = append(proxy.Points, marketdata.Point{Date: pd, Close: v})
+		pd = pd.AddDate(0, 1, 0)
+		v *= 1.005
+	}
+	shape := &marketdata.Series{Symbol: "DEVEXUS-DAILY"}
+	sd := time.Date(1995, 1, 2, 0, 0, 0, 0, time.UTC)
+	for i := range 1900 { // daily through 2000-03
+		shape.Points = append(shape.Points, marketdata.Point{Date: sd.AddDate(0, 0, i), Close: 50 + float64(i%7)})
+	}
+	f := extend(fakeFetcher{"VTMGX": comp, "DEVEXUS-USD": proxy, "DEVEXUS-DAILY": shape})
+
+	got, err := f.Fetch("VTMGX", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if first := got.First().Date; !first.Equal(time.Date(1990, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("first = %s, want the proxy's 1990-01 start", first.Format("2006-01-02"))
+	}
+	// Daily density in the shape era: 1996 must hold ~365 points, not 12.
+	days := 0
+	for _, p := range got.Points {
+		if p.Date.Year() == 1996 {
+			days++
+		}
+	}
+	if days < 300 {
+		t.Errorf("1996 carries %d points, want daily density from the shape", days)
+	}
+	// And monthly density before the shape starts.
+	months := 0
+	for _, p := range got.Points {
+		if p.Date.Year() == 1992 {
+			months++
+		}
+	}
+	if months != 12 {
+		t.Errorf("1992 carries %d points, want the 12 monthly proxy anchors", months)
+	}
+}
+
 // msciWorld uses the long refdata series when present (net of fee) and does
 // not touch the fallback; without the daily shape the backcast stays monthly.
 func TestMSCIWorldPrefersRefdata(t *testing.T) {
