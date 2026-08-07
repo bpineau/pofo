@@ -1,0 +1,24 @@
+# FIRE Core + discretionary macro leg (BH Macro)
+# Idea: fire-decumulation-core with a third alternative engine: a small
+#   discretionary-macro position (BH Macro, the listed Brevan Howard feeder)
+#   CARVED OUT of the trend budget, never added on top. The buy case: crisis
+#   convexity (positive months in most of the worst equity months since
+#   2007, spectacular in 2022) that fires FASTER than trend in sharp crashes.
+#   The case against: 2/20-style fees, a black-box strategy, and a listed
+#   wrapper whose discount can widen exactly when you want to sell.
+# Rule of engagement if held: max 3-4%, buy only at a wide discount (>8%),
+#   review the thesis yearly. Compare with fire-decumulation-core to see
+#   what the leg adds; if the difference does not convince you, keep the
+#   simpler two-engine build.
+#meta capital:2000000
+#meta withdraw:60000/year
+#meta rebalance:90
+
+56    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+9     DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR)
+6     KMLMSIM         # Trend leg B: direct trend (buy Winton or AQR UCITS)
+3     GG00BQBFY362    # Macro leg C: BH Macro (BHMG, GBP line, unhedged)
+12    XAUUSDSIM       # Gold (buy IGLN)
+8     LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN)
+3     LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E)
+3     LU0290358497    # EUR overnight cash (XEON)

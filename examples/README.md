@@ -99,6 +99,48 @@ rather than recomputing it (and drifting) on every run.
 - `global-dividend-income`: diversified income core for a gentle drawdown.
 - `yield-shield-decumulation`: income-tilted, drawn at 4%/yr (`#meta withdraw`).
 
+## FIRE glidepath (curated, EUR-liability aware)
+
+A coherent family for a European early retiree withdrawing ~3%/yr real:
+one capital-efficient engine (NTSG), a two-engine trend sleeve, gold, and
+a defensive pocket matched to a real-euro liability (short euro linkers +
+cash). The stages are meant to be compared side by side:
+
+```sh
+./pofo examples/fire-bond-tent-departure.txt examples/fire-decumulation-core.txt examples/fire-glidepath-late.txt
+./pofo -fire examples/fire-core-longhist.txt    # ruin-probability explorer
+```
+
+- `fire-accumulation-runway`: the last high-risk years before the switch
+  (efficient core + small-value tilt + starter trend/gold, monthly DCA).
+- `fire-bond-tent-departure`: year-0 build, defensive tent inflated to ~20%
+  for the sequence-risk window (Kitces/Pfau bond tent).
+- `fire-decumulation-core`: the cruise allocation (56/18/12/14 across
+  equity+bonds / trend / gold / linkers+cash), drawn at 3%/yr.
+- `fire-glidepath-late`: years ~8+, the tent consumed, equity drifted up
+  (rising equity glidepath endpoint).
+- `fire-core-longhist`: same cruise mix, every leg reaching the late 1980s;
+  feed this one to `pofo -fire` so bootstrap/cohorts have real depth.
+- `fire-macro-leg-bhmg`: the core plus a small discretionary-macro leg
+  (BH Macro) carved out of the trend budget; compare and decide.
+- `fire-simple-no-leverage`: the control group; plain unleveraged bricks
+  only, so you can see what the complexity above actually buys.
+- `fire-liability-buffer`: the defensive tent alone (cash + short euro
+  linkers + hedged short TIPS); run it to trust it.
+- `fire-trend-sleeve-lab`: one leg per trend ENGINE (DBi replication,
+  Winton, AQR, MLM index); a correlation lab against engine-doubling.
+- `miller-50-40-10`: the 2017 paper build that justifies the trend sleeve:
+  50 stocks / 40 bonds / 10 trend, drawn at 4%/yr.
+- `stagflation-bunker`: only what works in persistent inflation (trend,
+  commodities, gold, short linkers); the regime lab (Neville et al. 2021).
+
+## NTSG contingency plans
+
+- `ntsg-plan-b-diy`: rebuild the 90/60 with two plain ETFs and
+  `#meta leverage:on`; run against `ntsg.txt` to see the tracking.
+- `ntsg-plan-b-winton-stack`: substitute via Winton's equity+trend stack,
+  with duration re-added separately (substitute at constant engines).
+
 ## PEA-eligible (French equity wrapper)
 
 - `pea-all-world-100`: single World PEA ETF.

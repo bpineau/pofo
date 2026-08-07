@@ -1,0 +1,18 @@
+# Miller 50/40/10 -- the paper that put trend into retirement portfolios
+# Idea: Andrew Miller's 2017 result: replacing 10 points of a 60/40 with
+#   trend-following managed futures (50% stocks / 40% bonds / 10% trend)
+#   materially raises the withdrawal rate a retiree can sustain, because
+#   trend earns its keep in exactly the long bear markets that kill
+#   withdrawal plans (2000-02, 2008, 2022). The simplest evidence-based
+#   upgrade to the classic retirement 60/40.
+# Inspired by: Miller, "Using Trend-Following Managed Futures to Increase
+#   Expected Withdrawal Rates" (SSRN 3048332, 2017).
+# Drawn at the classic 4% here, on purpose: compare its money path with
+#   classique-60-40 plus '#meta withdraw' to see the trend leg pay.
+#meta capital:1000000
+#meta withdraw:40000/year
+#meta rebalance:180
+
+50    IWDASIM         # World equity (UCITS: IWDA IE00B4L5Y983)
+40    IEFSIM          # 7-10y Treasuries (UCITS route: euro govt IEGA for a EUR investor)
+10    KMLMSIM         # Trend (UCITS buy-route: iMGP DBi LU2951555585)
