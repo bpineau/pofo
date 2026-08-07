@@ -14,7 +14,7 @@
     "benchmark_index": "Bloomberg US Aggregate Float Adjusted Index",
     "strategy": "physical-replication",
     "geography": {
-      "Foreign (USD-denominated)": 4,
+      "Other": 4,
       "US": 96
     },
     "sectors": {
@@ -27,13 +27,16 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios",
+    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios; currency_exposure = 100% USD (the small foreign sleeve is USD-denominated)",
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
     ],
     "since": "2007-04-03",
-    "duration": 6.0
+    "duration": 6.0,
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "BTAL",
@@ -164,10 +167,9 @@
       "Other Europe": 28,
       "Sweden": 6,
       "Switzerland": 12,
-      "United Kingdom": 20
+      "UK": 20
     },
     "sectors": {
-      "Basic Materials": 6,
       "Communication Services": 3,
       "Consumer Discretionary": 7,
       "Consumer Staples": 8,
@@ -175,8 +177,9 @@
       "Financials": 23,
       "Health Care": 8,
       "Industrials": 18,
+      "Information Technology": 8,
+      "Materials": 6,
       "Real Estate": 1,
-      "Technology": 8,
       "Utilities": 5
     },
     "distribution": "distributing",
@@ -209,7 +212,6 @@
       "Other": 1
     },
     "sectors": {
-      "Basic Materials": 5,
       "Communication Services": 2,
       "Consumer Discretionary": 7,
       "Consumer Staples": 4,
@@ -217,8 +219,9 @@
       "Financials": 21,
       "Health Care": 7,
       "Industrials": 35,
+      "Information Technology": 13,
+      "Materials": 5,
       "Real Estate": 1,
-      "Technology": 13,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -273,7 +276,7 @@
     "geography": {
       "China": 36,
       "India": 14,
-      "Other EM Asia": 13,
+      "Other emerging": 13,
       "South Korea": 15,
       "Taiwan": 22
     },
@@ -363,8 +366,8 @@
       "Japan": 6,
       "Other": 7,
       "Switzerland": 3,
-      "United Kingdom": 4,
-      "United States": 74
+      "UK": 4,
+      "US": 74
     },
     "sectors": {
       "Communication Services": 9,
@@ -405,15 +408,15 @@
     "strategy": "leveraged-2x",
     "geography": {
       "Other": 2,
-      "United States": 98
+      "US": 98
     },
     "sectors": {
       "Communication Services": 16,
       "Consumer Discretionary": 14,
       "Health Care": 6,
       "Industrials": 5,
-      "Other": 4,
-      "Technology": 55
+      "Information Technology": 55,
+      "Other": 4
     },
     "distribution": "accumulating",
     "leverage": 2,
@@ -425,6 +428,9 @@
     "since": "2007-01-19",
     "exposures": {
       "equity": 2.0
+    },
+    "currency_exposure": {
+      "USD": 200
     }
   },
   {
@@ -497,6 +503,9 @@
     "since": "2009-09-25",
     "exposures": {
       "equity": 2.0
+    },
+    "currency_exposure": {
+      "USD": 200
     }
   },
   {
@@ -514,8 +523,8 @@
     "benchmark_index": "ESTR + 100 bps",
     "strategy": "active",
     "geography": {
-      "Europe": 80,
-      "Global": 20
+      "Other": 20,
+      "Other Europe": 80
     },
     "sectors": null,
     "distribution": "accumulating",
@@ -526,7 +535,10 @@
       "https://www.flornoyferri.com/nos_fonds/omnibond/"
     ],
     "since": "2011-12-16",
-    "duration": 6.0
+    "duration": 6.0,
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "FR0011550185",
@@ -543,7 +555,7 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 10,
@@ -582,7 +594,7 @@
     "benchmark_index": "Nasdaq-100",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 16,
@@ -619,10 +631,9 @@
     "benchmark_index": "S&P 500 Net Total Return Index",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
-      "Basic Materials": 2,
       "Communication Services": 11,
       "Consumer Discretionary": 10,
       "Consumer Staples": 5,
@@ -630,8 +641,9 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 38,
+      "Materials": 2,
       "Real Estate": 2,
-      "Technology": 38,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -658,11 +670,12 @@
     "benchmark_index": "NYSE Arca Gold Miners TR USD",
     "strategy": "active",
     "geography": {
-      "Africa": 10,
       "Australia": 15,
-      "Europe": 8,
-      "North America": 60,
-      "Other": 7
+      "Canada": 45,
+      "Other": 7,
+      "Other Europe": 8,
+      "South Africa": 10,
+      "US": 15
     },
     "sectors": {
       "Materials": 100
@@ -693,7 +706,7 @@
     "geography": {
       "China": 24,
       "India": 12,
-      "Other emerging markets": 20,
+      "Other emerging": 20,
       "South Korea": 19,
       "Taiwan": 25
     },
@@ -739,7 +752,7 @@
       "Netherlands": 9,
       "Other Europe": 26,
       "Switzerland": 14,
-      "United Kingdom": 22
+      "UK": 22
     },
     "sectors": {
       "Communication Services": 3,
@@ -778,7 +791,7 @@
     "benchmark_index": "S&P 500 Scored & Screened+",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 14,
@@ -822,8 +835,8 @@
       "Japan": 6,
       "Other": 7,
       "Switzerland": 3,
-      "United Kingdom": 4,
-      "United States": 74
+      "UK": 4,
+      "US": 74
     },
     "sectors": {
       "Communication Services": 9,
@@ -892,12 +905,13 @@
     "benchmark_index": "active (MSCI World Small Cap Value as comparison)",
     "strategy": "active",
     "geography": {
-      "Asia Pacific ex-Japan": 8,
-      "Europe ex-UK": 15,
+      "Canada": 4,
       "Japan": 18,
-      "North America": 40,
       "Other": 11,
-      "UK": 8
+      "Other Europe": 15,
+      "Other developed": 8,
+      "UK": 8,
+      "US": 36
     },
     "sectors": {
       "Consumer Discretionary": 19,
@@ -906,9 +920,9 @@
       "Financials": 23,
       "Health Care": 4,
       "Industrials": 15,
+      "Information Technology": 8,
       "Materials": 10,
-      "Other": 3,
-      "Technology": 8
+      "Other": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -947,8 +961,8 @@
       "Japan": 6,
       "Other": 18,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 58
+      "UK": 3,
+      "US": 58
     },
     "sectors": {
       "Communication Services": 9,
@@ -958,9 +972,9 @@
       "Financials": 15,
       "Health Care": 8,
       "Industrials": 10,
+      "Information Technology": 29,
       "Materials": 4,
       "Real Estate": 2,
-      "Technology": 29,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -1000,9 +1014,9 @@
     },
     "sectors": {
       "Financials": 21,
-      "Industrials": 17,
-      "Technology": 11,
       "Health Care": 11,
+      "Industrials": 17,
+      "Information Technology": 11,
       "Other": 40
     },
     "distribution": "accumulating",
@@ -1035,8 +1049,8 @@
       "Japan": 6,
       "Other": 20,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 62
+      "UK": 3,
+      "US": 62
     },
     "sectors": {
       "Communication Services": 8,
@@ -1084,18 +1098,43 @@
       "UK": 3,
       "US": 69
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes",
+    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes; bond leg is a 2/5/10/30y govt-futures ladder (~7y effective duration); currency_exposure = MSCI World country weights x0.9 equity notional + USD collateral",
     "confidence": "high",
     "sources": [
-      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc"
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc",
+      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2024-11-05",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
+    },
+    "currency_exposure": {
+      "AUD": 2,
+      "CAD": 3,
+      "CHF": 3,
+      "EUR": 8,
+      "GBP": 4,
+      "JPY": 5,
+      "SEK": 1,
+      "USD": 74
     }
   },
   {
@@ -1123,15 +1162,29 @@
       "Spain": 8,
       "Other eurozone": 10
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 4,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 6,
+      "Energy": 4,
+      "Financials": 25,
+      "Health Care": 6,
+      "Industrials": 21,
+      "Information Technology": 14,
+      "Materials": 4,
+      "Utilities": 7
+    },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Eurozone sibling of NTSX/NTSG; euro-native 90/60 leveraged 60/40 in a single fund; launched 2025-09; backcast to ~1986 via bundled euro-area refdata",
+    "notes": "Eurozone sibling of NTSX/NTSG; euro-native 90/60 leveraged 60/40 in a single fund; launched 2025-09; backcast to ~1986 via bundled euro-area refdata; sectors = MSCI EMU; duration = euro govt-futures ladder ~7y; fiat exposure ~100% EUR so no currency_exposure override needed",
     "confidence": "high",
     "sources": [
-      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsz-wisdomtree-eurozone-efficient-core-ucits-etf---eur-acc"
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsz-wisdomtree-eurozone-efficient-core-ucits-etf---eur-acc",
+      "https://www.msci.com/resources/factsheets/index_fact_sheet/msci-emu-index.pdf",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2025-09-30",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
@@ -1225,19 +1278,28 @@
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 11,
-      "Financials": 12,
-      "Other": 31,
-      "Technology": 36
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 11,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1.5,
     "notes": "Capital-efficient 90/60 structure delivering equity+bond diversification in one position; bonds cushion equity drawdowns",
     "confidence": "high",
     "sources": [
-      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsx-wisdomtree-us-efficient-core-ucits-etf---usd-acc"
+      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsx-wisdomtree-us-efficient-core-ucits-etf---usd-acc",
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2023-10-10",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
@@ -1261,20 +1323,53 @@
     "benchmark_index": null,
     "strategy": "trend-following",
     "geography": {
-      "Global developed": 100
+      "Australia": 2,
+      "Canada": 3,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other": 5,
+      "Switzerland": 3,
+      "UK": 4,
+      "US": 72
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "accumulating",
     "leverage": 2,
-    "notes": "Portable alpha structure: equity beta + CTA overlay; diversifying in trending/crisis regimes; launched March 2025",
+    "notes": "Portable alpha structure: equity beta + CTA overlay; diversifying in trending/crisis regimes; launched March 2025; equity leg = MSCI World (sectors/geography/currency); managed-futures leg is Dynamic; levered notional sums to 200",
     "confidence": "medium",
     "sources": [
-      "https://www.wintonucits.com/portable-alpha"
+      "https://www.wintonucits.com/portable-alpha",
+      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf"
     ],
     "since": "2025-03-27",
     "exposures": {
       "equity": 1.0,
       "managed-futures": 1.0
+    },
+    "currency_exposure": {
+      "AUD": 2,
+      "CAD": 3,
+      "CHF": 3,
+      "Dynamic": 100,
+      "EUR": 8,
+      "GBP": 4,
+      "JPY": 6,
+      "SEK": 2,
+      "USD": 72
     }
   },
   {
@@ -1295,19 +1390,22 @@
     "benchmark_index": "Markit iBoxx EUR Liquid Investment Grade Ultrashort Index",
     "strategy": "physical-replication",
     "geography": {
-      "Europe": 70,
-      "Other": 30
+      "Other": 30,
+      "Other Europe": 70
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR near-cash liquidity sleeve earning IG credit spreads with negligible duration",
+    "notes": "EUR near-cash liquidity sleeve earning IG credit spreads with negligible duration; EUR-denominated near-cash: currency_exposure = 100% EUR (geography is issuer domicile, not FX)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000RHYOR04"
     ],
     "since": "2022-04-27",
-    "duration": 0.4
+    "duration": 0.4,
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "IE000WIQIPT2",
@@ -1359,7 +1457,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
-      "United States": 95
+      "US": 95
     },
     "sectors": {
       "Communication Services": 10,
@@ -1400,7 +1498,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
-      "United States": 95
+      "US": 95
     },
     "sectors": {
       "Communication Services": 11,
@@ -1441,7 +1539,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 7,
-      "United States": 93
+      "US": 93
     },
     "sectors": {
       "Communication Services": 15,
@@ -1485,13 +1583,16 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Flagship UCITS USD IG corporate ETF; credit-spread exposure at investment-grade quality",
+    "notes": "Flagship UCITS USD IG corporate ETF; credit-spread exposure at investment-grade quality; currency_exposure = 100% USD (USD-denominated bonds incl. foreign issuers)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0032895942"
     ],
     "since": "2003-05-07",
-    "duration": 7.0
+    "duration": 7.0,
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "IE00B0M62X26",
@@ -1513,10 +1614,10 @@
     "strategy": "physical-replication",
     "geography": {
       "France": 35,
-      "Italy": 30,
       "Germany": 15,
-      "Spain": 12,
-      "Other": 8
+      "Italy": 30,
+      "Other eurozone": 8,
+      "Spain": 12
     },
     "sectors": null,
     "distribution": "accumulating",
@@ -1584,9 +1685,10 @@
     "benchmark_index": "FTSE EPRA/NAREIT Developed Dividend+ Index",
     "strategy": "physical-replication",
     "geography": {
-      "North America": 60,
-      "Asia Pacific": 24,
-      "Europe": 16
+      "Canada": 6,
+      "Other Europe": 16,
+      "Other developed": 24,
+      "US": 54
     },
     "sectors": {
       "Diversified REITs": 18,
@@ -1623,17 +1725,18 @@
     "benchmark_index": "FTSE Global Core Infrastructure Index",
     "strategy": "physical-replication",
     "geography": {
-      "North America": 54,
-      "Europe": 26,
-      "Oceania": 12,
-      "Asia": 7,
-      "Latin America": 1
+      "Australia": 12,
+      "Canada": 5,
+      "Other": 7,
+      "Other Europe": 26,
+      "Other emerging": 1,
+      "US": 49
     },
     "sectors": {
-      "Utilities": 41,
-      "Transportation": 40,
-      "Industrial/Energy": 18,
-      "Other": 1
+      "Energy": 18,
+      "Industrials": 40,
+      "Other": 1,
+      "Utilities": 41
     },
     "distribution": "distributing",
     "leverage": 1.0,
@@ -1726,19 +1829,18 @@
     "benchmark_index": "S&P Global Clean Energy Transition Index",
     "strategy": "physical-replication",
     "geography": {
-      "Asia Pacific ex-Japan": 10,
       "Brazil": 6,
       "China": 19,
       "Denmark": 5,
-      "Europe ex-UK": 14,
-      "Other": 14,
-      "United States": 32
+      "Other": 24,
+      "Other Europe": 14,
+      "US": 32
     },
     "sectors": {
       "Energy": 1,
       "Industrials": 33,
+      "Information Technology": 17,
       "Other": 15,
-      "Technology": 17,
       "Utilities": 34
     },
     "distribution": "distributing",
@@ -1768,21 +1870,22 @@
     "benchmark_index": "J.P. Morgan EMBI Global Core Index",
     "strategy": "physical-replication",
     "geography": {
-      "Latin America": 30,
-      "Middle East & Africa": 25,
-      "Asia": 25,
-      "Eastern Europe": 20
+      "Other": 25,
+      "Other emerging": 75
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Benchmark EM hard-currency sovereign ETF; high carry; benefits in EM risk-on / commodity booms",
+    "notes": "Benchmark EM hard-currency sovereign ETF; high carry; benefits in EM risk-on / commodity booms; USD hard-currency EM sovereigns: currency_exposure = 100% USD despite EM issuer geography",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B2NPKV68"
     ],
     "since": "2008-03-18",
-    "duration": 7.0
+    "duration": 7.0,
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "IE00B3DKXQ41",
@@ -1808,13 +1911,16 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "EUR-denominated investment-grade aggregate bonds (SEAG) with ESG/SRI screening; core EUR rate exposure with green bond tilt",
+    "notes": "EUR-denominated investment-grade aggregate bonds (SEAG) with ESG/SRI screening; core EUR rate exposure with green bond tilt; GBP-quoted share class of a euro-aggregate fund: currency_exposure = 100% EUR (holdings are euro-denominated)",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
     ],
     "since": "2009-03-06",
-    "duration": 6.5
+    "duration": 6.5,
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "IE00B3F81R35",
@@ -1834,8 +1940,8 @@
     "benchmark_index": "Bloomberg Euro Corporate Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "Europe": 88,
-      "Other": 12
+      "Other": 12,
+      "Other Europe": 88
     },
     "sectors": null,
     "distribution": "distributing",
@@ -1846,7 +1952,10 @@
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B3F81R35"
     ],
     "since": "2009-04-07",
-    "duration": 4.5
+    "duration": 4.5,
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "IE00B3RBWM25",
@@ -1871,8 +1980,8 @@
       "Japan": 6,
       "Other": 19,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 57
+      "UK": 3,
+      "US": 57
     },
     "sectors": {
       "Communication Services": 9,
@@ -1882,9 +1991,9 @@
       "Financials": 16,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 29,
       "Materials": 4,
       "Real Estate": 2,
-      "Technology": 29,
       "Utilities": 3
     },
     "distribution": "distributing",
@@ -1958,7 +2067,6 @@
       "Thailand": 2
     },
     "sectors": {
-      "Basic Materials": 7,
       "Communication Services": 6,
       "Consumer Discretionary": 10,
       "Consumer Staples": 6,
@@ -1966,8 +2074,9 @@
       "Financials": 19,
       "Health Care": 5,
       "Industrials": 7,
+      "Information Technology": 28,
+      "Materials": 7,
       "Real Estate": 4,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "distributing",
@@ -1996,7 +2105,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 6,
-      "United States": 94
+      "US": 94
     },
     "sectors": {
       "Information Technology": 96,
@@ -2027,7 +2136,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
-      "United States": 95
+      "US": 95
     },
     "sectors": {
       "Communication Services": 11,
@@ -2067,10 +2176,9 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
-      "Basic Materials": 2,
       "Communication Services": 11,
       "Consumer Discretionary": 10,
       "Consumer Staples": 5,
@@ -2078,8 +2186,9 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 38,
+      "Materials": 2,
       "Real Estate": 2,
-      "Technology": 38,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -2112,8 +2221,8 @@
       "Japan": 6,
       "Other": 23,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 59
+      "UK": 3,
+      "US": 59
     },
     "sectors": {
       "Communication Services": 8,
@@ -2160,8 +2269,8 @@
       "Japan": 5,
       "Other": 15,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 64
+      "UK": 3,
+      "US": 64
     },
     "sectors": {
       "Communication Services": 8,
@@ -2210,7 +2319,7 @@
       "Spain": 4,
       "Sweden": 5,
       "Switzerland": 12,
-      "United Kingdom": 20
+      "UK": 20
     },
     "sectors": {
       "Communication Services": 2,
@@ -2263,10 +2372,10 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 4,
       "Other": 2,
       "Real Estate": 3,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -2388,8 +2497,8 @@
       "Netherlands": 1,
       "Other": 10,
       "Switzerland": 3,
-      "United Kingdom": 3,
-      "United States": 68
+      "UK": 3,
+      "US": 68
     },
     "sectors": {
       "Communication Services": 9,
@@ -2399,9 +2508,9 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 3,
       "Real Estate": 2,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "distributing",
@@ -2475,10 +2584,9 @@
       "Spain": 4,
       "Sweden": 6,
       "Switzerland": 17,
-      "United Kingdom": 11
+      "UK": 11
     },
     "sectors": {
-      "Basic Materials": 5,
       "Communication Services": 3,
       "Consumer Discretionary": 8,
       "Consumer Staples": 9,
@@ -2486,8 +2594,9 @@
       "Financials": 23,
       "Health Care": 9,
       "Industrials": 19,
+      "Information Technology": 11,
+      "Materials": 5,
       "Real Estate": 4,
-      "Technology": 11,
       "Utilities": 6
     },
     "distribution": "accumulating",
@@ -2515,7 +2624,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 8,
-      "United States": 92
+      "US": 92
     },
     "sectors": {
       "Communication Services": 15,
@@ -2577,10 +2686,9 @@
     "geography": {
       "Ireland": 1,
       "Other": 2,
-      "United States": 97
+      "US": 97
     },
     "sectors": {
-      "Basic Materials": 2,
       "Communication Services": 11,
       "Consumer Discretionary": 10,
       "Consumer Staples": 5,
@@ -2588,8 +2696,9 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 38,
+      "Materials": 2,
       "Real Estate": 2,
-      "Technology": 38,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -2619,21 +2728,31 @@
     "benchmark_index": "J.P. Morgan GBI-EM Global Diversified Index",
     "strategy": "physical-replication",
     "geography": {
-      "Asia": 30,
-      "Latin America": 28,
-      "Eastern Europe": 22,
-      "Middle East & Africa": 20
+      "Other": 30,
+      "Other emerging": 70
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Local-currency EM bonds with FX carry; diversifies vs USD EM bonds",
-    "confidence": "high",
+    "notes": "Local-currency EM bonds with FX carry; diversifies vs USD EM bonds; currency_exposure = representative JPM GBI-EM Global Diversified local-currency weights (medium confidence; drifts with index)",
+    "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B5M4WH52"
     ],
     "since": "2011-01-27",
-    "duration": 5.0
+    "duration": 5.0,
+    "currency_exposure": {
+      "BRL": 11,
+      "CNY": 12,
+      "CZK": 8,
+      "IDR": 11,
+      "INR": 11,
+      "MXN": 11,
+      "MYR": 9,
+      "PLN": 8,
+      "THB": 9,
+      "ZAR": 10
+    }
   },
   {
     "id": "IE00B66F4759",
@@ -2653,8 +2772,8 @@
     "benchmark_index": "iBoxx EUR Liquid High Yield Index",
     "strategy": "physical-replication",
     "geography": {
-      "Europe": 90,
-      "Other": 10
+      "Other": 10,
+      "Other Europe": 90
     },
     "sectors": null,
     "distribution": "distributing",
@@ -2665,7 +2784,10 @@
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B66F4759"
     ],
     "since": "2010-02-25",
-    "duration": 3.0
+    "duration": 3.0,
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "IE00B67B7N93",
@@ -2723,8 +2845,8 @@
       "Japan": 5,
       "Other": 17,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 60
+      "UK": 3,
+      "US": 60
     },
     "sectors": {
       "Communication Services": 9,
@@ -2734,9 +2856,9 @@
       "Financials": 15,
       "Health Care": 8,
       "Industrials": 10,
+      "Information Technology": 29,
       "Materials": 4,
       "Real Estate": 2,
-      "Technology": 29,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -2772,10 +2894,10 @@
       "Other": 4
     },
     "sectors": {
-      "Technology": 31,
+      "Consumer Staples": 10,
       "Financials": 15,
       "Health Care": 13,
-      "Consumer Staples": 10,
+      "Information Technology": 31,
       "Other": 31
     },
     "distribution": "accumulating",
@@ -2806,7 +2928,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
-      "United States": 95
+      "US": 95
     },
     "sectors": {
       "Communication Services": 10,
@@ -2855,10 +2977,10 @@
       "Other": 18
     },
     "sectors": {
-      "Technology": 22,
-      "Health Care": 14,
-      "Financials": 13,
       "Communication Services": 12,
+      "Financials": 13,
+      "Health Care": 14,
+      "Information Technology": 22,
       "Other": 39
     },
     "distribution": "accumulating",
@@ -2889,10 +3011,11 @@
     "benchmark_index": "Dow Jones Global Select Real Estate Securities Index",
     "strategy": "physical-replication",
     "geography": {
-      "North America": 64,
-      "Asia Pacific": 20,
-      "Europe": 12,
-      "Other": 4
+      "Canada": 6,
+      "Other": 4,
+      "Other Europe": 12,
+      "Other developed": 20,
+      "US": 58
     },
     "sectors": {
       "Real Estate": 100
@@ -2924,8 +3047,8 @@
       "Canada": 4,
       "Japan": 9,
       "Other": 44,
-      "United Kingdom": 6,
-      "United States": 37
+      "UK": 6,
+      "US": 37
     },
     "sectors": {
       "Energy": 9,
@@ -2970,10 +3093,9 @@
       "Spain": 4,
       "Sweden": 5,
       "Switzerland": 12,
-      "United Kingdom": 20
+      "UK": 20
     },
     "sectors": {
-      "Basic Materials": 4,
       "Communication Services": 3,
       "Consumer Discretionary": 10,
       "Consumer Staples": 9,
@@ -2981,8 +3103,9 @@
       "Financials": 23,
       "Health Care": 14,
       "Industrials": 18,
+      "Information Technology": 8,
+      "Materials": 4,
       "Real Estate": 2,
-      "Technology": 8,
       "Utilities": 4
     },
     "distribution": "distributing",
@@ -3081,11 +3204,11 @@
     "benchmark_index": "Bloomberg Global Aggregate Bond (EUR Hedged)",
     "strategy": "physical-replication",
     "geography": {
-      "Asia": 25,
-      "Europe": 34,
-      "North America": 38,
-      "Oceania": 2,
-      "Other": 1
+      "Canada": 3,
+      "Other": 26,
+      "Other Europe": 34,
+      "Other developed": 2,
+      "US": 35
     },
     "sectors": null,
     "distribution": "accumulating",
@@ -3177,15 +3300,17 @@
     "benchmark_index": "Refinitiv Qualified Global Convertible (EUR Hedged) Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 50,
-      "Europe": 25,
-      "Asia": 20,
-      "Other": 5
+      "Other": 25,
+      "Other Europe": 25,
+      "US": 50
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Hybrid bond/equity with convex payoff; rises with equities, has a bond floor",
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "Hybrid bond/equity with convex payoff; rises with equities, has a bond floor; EUR-hedged global convertibles: currency_exposure = 100% EUR",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDT6FP91"
@@ -3274,8 +3399,8 @@
       "Canada": 3,
       "Japan": 12,
       "Other": 29,
-      "United Kingdom": 4,
-      "United States": 52
+      "UK": 4,
+      "US": 52
     },
     "sectors": {
       "Communication Services": 5,
@@ -3318,7 +3443,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 5,
-      "United States": 95
+      "US": 95
     },
     "sectors": {
       "Communication Services": 11,
@@ -3366,8 +3491,8 @@
       "Netherlands": 1,
       "Other": 10,
       "Switzerland": 3,
-      "United Kingdom": 3,
-      "United States": 68
+      "UK": 3,
+      "US": 68
     },
     "sectors": {
       "Communication Services": 9,
@@ -3377,9 +3502,9 @@
       "Financials": 14,
       "Health Care": 9,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 3,
       "Real Estate": 2,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -3470,7 +3595,7 @@
     "benchmark_index": "IDC US Treasury Short Term Index (0-1 year)",
     "strategy": "physical-replication",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": null,
     "distribution": "accumulating",
@@ -3503,7 +3628,7 @@
       "Germany": 2,
       "Other": 10,
       "South Korea": 13,
-      "United States": 73
+      "US": 73
     },
     "sectors": {
       "Communication Services": 14,
@@ -3544,8 +3669,8 @@
       "Netherlands": 1,
       "Other": 10,
       "Switzerland": 3,
-      "United Kingdom": 3,
-      "United States": 68
+      "UK": 3,
+      "US": 68
     },
     "sectors": {
       "Communication Services": 9,
@@ -3555,9 +3680,9 @@
       "Financials": 14,
       "Health Care": 9,
       "Industrials": 10,
+      "Information Technology": 30,
       "Materials": 3,
       "Real Estate": 2,
-      "Technology": 30,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -3595,7 +3720,7 @@
     },
     "sectors": {
       "Financials": 88,
-      "Technology": 8,
+      "Information Technology": 8,
       "Other": 4
     },
     "distribution": "distributing",
@@ -3698,11 +3823,11 @@
     "strategy": "physical-replication",
     "geography": {
       "Canada": 11,
-      "Europe ex-UK": 15,
       "Japan": 6,
-      "North America": 55,
       "Other": 9,
-      "UK": 4
+      "Other Europe": 15,
+      "UK": 4,
+      "US": 55
     },
     "sectors": {
       "Communication Services": 6,
@@ -3712,9 +3837,9 @@
       "Financials": 11,
       "Health Care": 12,
       "Industrials": 10,
+      "Information Technology": 10,
       "Materials": 8,
       "Real Estate": 8,
-      "Technology": 10,
       "Utilities": 9
     },
     "distribution": "accumulating",
@@ -3758,8 +3883,8 @@
       "Japan": 6,
       "Other": 19,
       "Taiwan": 3,
-      "United Kingdom": 3,
-      "United States": 57
+      "UK": 3,
+      "US": 57
     },
     "sectors": {
       "Communication Services": 9,
@@ -3769,9 +3894,9 @@
       "Financials": 16,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 29,
       "Materials": 4,
       "Real Estate": 2,
-      "Technology": 29,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -3802,8 +3927,8 @@
       "Japan": 6,
       "Other": 15,
       "South Korea": 3,
-      "United Kingdom": 4,
-      "United States": 69
+      "UK": 4,
+      "US": 69
     },
     "sectors": {
       "Communication Services": 8,
@@ -3855,7 +3980,6 @@
       "Thailand": 2
     },
     "sectors": {
-      "Basic Materials": 7,
       "Communication Services": 6,
       "Consumer Discretionary": 10,
       "Consumer Staples": 6,
@@ -3863,8 +3987,9 @@
       "Financials": 19,
       "Health Care": 5,
       "Industrials": 7,
+      "Information Technology": 28,
+      "Materials": 7,
       "Real Estate": 4,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -3903,7 +4028,6 @@
       "Taiwan": 24
     },
     "sectors": {
-      "Basic Materials": 6,
       "Communication Services": 6,
       "Consumer Discretionary": 9,
       "Consumer Staples": 6,
@@ -3911,8 +4035,9 @@
       "Financials": 17,
       "Health Care": 4,
       "Industrials": 7,
+      "Information Technology": 35,
+      "Materials": 6,
       "Real Estate": 3,
-      "Technology": 35,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -3943,8 +4068,8 @@
       "Japan": 6,
       "Other": 15,
       "South Korea": 3,
-      "United Kingdom": 4,
-      "United States": 69
+      "UK": 4,
+      "US": 69
     },
     "sectors": {
       "Communication Services": 8,
@@ -3992,10 +4117,10 @@
       "Other": 7
     },
     "sectors": {
-      "Industrials": 14,
       "Financials": 14,
-      "Technology": 17,
       "Health Care": 10,
+      "Industrials": 14,
+      "Information Technology": 17,
       "Other": 45
     },
     "distribution": "accumulating",
@@ -4027,7 +4152,7 @@
     "geography": {
       "Netherlands": 8,
       "Taiwan": 8,
-      "United States": 84
+      "US": 84
     },
     "sectors": {
       "Information Technology": 100
@@ -4058,29 +4183,48 @@
     "strategy": "physical-replication",
     "geography": {
       "China": 2,
-      "Europe ex-UK": 15,
       "Japan": 4,
       "Other": 42,
-      "United Kingdom": 3,
-      "United States": 34
+      "Other Europe": 15,
+      "UK": 3,
+      "US": 34
     },
     "sectors": {
-      "Communication Services": 5,
-      "Consumer Discretionary": 6,
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
       "Consumer Staples": 5,
-      "Energy": 3,
-      "Financials": 9,
-      "Health Care": 8,
-      "Industrials": 6,
-      "Other": 51,
-      "Technology": 12
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Balanced moderate allocation (V60A, 60/40 eq/bond); bond sleeve EUR-hedged; lower volatility than 80/20 sibling",
+    "duration": 6.5,
+    "exposures": {
+      "aggregate-bond": 0.4,
+      "equity": 0.6
+    },
+    "currency_exposure": {
+      "AUD": 2,
+      "CAD": 2,
+      "CHF": 1,
+      "CNY": 2,
+      "EUR": 45,
+      "GBP": 2,
+      "INR": 2,
+      "JPY": 3,
+      "USD": 41
+    },
+    "notes": "Balanced moderate allocation (V60A, 60/40 eq/bond); bond sleeve EUR-hedged; lower volatility than 80/20 sibling; 60/40 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; currency_exposure = equity currencies x0.6 + EUR bonds; duration ~6.5y global agg",
     "confidence": "high",
     "sources": [
-      "https://fund-docs.vanguard.com/LifeStrategy_60_Equity_UCITS_ETF_EUR_Accumulating_9494_EU_INT_EN.pdf"
+      "https://fund-docs.vanguard.com/LifeStrategy_60_Equity_UCITS_ETF_EUR_Accumulating_9494_EU_INT_EN.pdf",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5P51"
     ],
     "since": "2018-11-15"
   },
@@ -4101,29 +4245,49 @@
     "strategy": "physical-replication",
     "geography": {
       "China": 3,
-      "Europe ex-UK": 20,
       "Japan": 5,
       "Other": 24,
-      "United Kingdom": 3,
-      "United States": 45
+      "Other Europe": 20,
+      "UK": 3,
+      "US": 45
     },
     "sectors": {
-      "Communication Services": 7,
-      "Consumer Discretionary": 8,
-      "Consumer Staples": 6,
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 11,
-      "Health Care": 10,
-      "Industrials": 8,
-      "Other": 30,
-      "Technology": 16
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Balanced growth allocation (V80A, 80/20 eq/bond); bond sleeve EUR-hedged; one-ticket diversified portfolio",
+    "duration": 6.5,
+    "exposures": {
+      "aggregate-bond": 0.2,
+      "equity": 0.8
+    },
+    "currency_exposure": {
+      "AUD": 3,
+      "CAD": 2,
+      "CHF": 2,
+      "CNY": 3,
+      "EUR": 26,
+      "GBP": 3,
+      "INR": 2,
+      "JPY": 4,
+      "KRW": 3,
+      "USD": 52
+    },
+    "notes": "Balanced growth allocation (V80A, 80/20 eq/bond); bond sleeve EUR-hedged; one-ticket diversified portfolio; 80/20 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; currency_exposure = equity currencies x0.8 + EUR bonds; duration ~6.5y global agg",
     "confidence": "high",
     "sources": [
-      "https://fund-docs.vanguard.com/LifeStrategy_80_Equity_UCITS_ETF_EUR_Accumulating_9496_EU_INT_EN.pdf"
+      "https://fund-docs.vanguard.com/LifeStrategy_80_Equity_UCITS_ETF_EUR_Accumulating_9496_EU_INT_EN.pdf",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5R75"
     ],
     "since": "2018-11-15"
   },
@@ -4143,12 +4307,13 @@
     "benchmark_index": "MSCI World Sector Neutral Quality Index",
     "strategy": "physical-replication",
     "geography": {
-      "Asia Pacific ex-Japan": 2,
-      "Europe ex-UK": 15,
+      "Canada": 5,
       "Japan": 3,
-      "North America": 67,
       "Other": 10,
-      "UK": 3
+      "Other Europe": 15,
+      "Other developed": 2,
+      "UK": 3,
+      "US": 62
     },
     "sectors": {
       "Communication Services": 9,
@@ -4156,8 +4321,8 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 11,
-      "Other": 20,
-      "Technology": 32
+      "Information Technology": 32,
+      "Other": 20
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -4187,12 +4352,13 @@
     "benchmark_index": "MSCI World Momentum Index",
     "strategy": "physical-replication",
     "geography": {
-      "Asia Pacific ex-Japan": 5,
-      "Europe ex-UK": 20,
+      "Canada": 4,
       "Japan": 12,
-      "North America": 53,
       "Other": 5,
-      "UK": 5
+      "Other Europe": 20,
+      "Other developed": 5,
+      "UK": 5,
+      "US": 49
     },
     "sectors": {
       "Communication Services": 7,
@@ -4200,8 +4366,8 @@
       "Financials": 20,
       "Health Care": 7,
       "Industrials": 21,
-      "Other": 9,
-      "Technology": 30
+      "Information Technology": 30,
+      "Other": 9
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -4245,9 +4411,9 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 34,
       "Materials": 3,
       "Real Estate": 2,
-      "Technology": 34,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -4277,7 +4443,7 @@
     "benchmark_index": "ICE US Treasury 20+ Year Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": null,
     "distribution": "distributing",
@@ -4309,7 +4475,7 @@
       "Germany": 10,
       "Other": 49,
       "Sweden": 7,
-      "United Kingdom": 23
+      "UK": 23
     },
     "sectors": {
       "Communication Services": 6,
@@ -4353,7 +4519,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Other": 1,
-      "United States": 99
+      "US": 99
     },
     "sectors": {
       "Communication Services": 3,
@@ -4408,7 +4574,6 @@
       "Taiwan": 24
     },
     "sectors": {
-      "Basic Materials": 5,
       "Communication Services": 6,
       "Consumer Discretionary": 9,
       "Consumer Staples": 5,
@@ -4416,8 +4581,9 @@
       "Financials": 17,
       "Health Care": 4,
       "Industrials": 6,
+      "Information Technology": 39,
+      "Materials": 5,
       "Real Estate": 2,
-      "Technology": 39,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -4454,10 +4620,10 @@
       "Other": 32
     },
     "sectors": {
-      "Technology": 34,
       "Financials": 17,
       "Health Care": 12,
       "Industrials": 11,
+      "Information Technology": 34,
       "Other": 26
     },
     "distribution": "distributing",
@@ -4666,15 +4832,15 @@
       "France": 100
     },
     "sectors": {
-      "Basic Materials": 8,
       "Communication Services": 7,
       "Consumer Discretionary": 8,
       "Consumer Staples": 3,
       "Energy": 9,
       "Financials": 15,
       "Industrials": 36,
-      "Other": 2,
-      "Technology": 12
+      "Information Technology": 12,
+      "Materials": 8,
+      "Other": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -4705,9 +4871,9 @@
     "benchmark_index": "MSCI World Health Care Index",
     "strategy": "active",
     "geography": {
-      "Europe": 20,
       "Japan": 5,
       "Other": 8,
+      "Other Europe": 20,
       "US": 67
     },
     "sectors": {
@@ -4737,9 +4903,9 @@
     "benchmark_index": "MSCI All Country World Information Technology Net Return Index",
     "strategy": "active",
     "geography": {
-      "Asia Pacific": 10,
-      "Europe": 7,
       "Other": 5,
+      "Other Europe": 7,
+      "Other developed": 10,
       "US": 78
     },
     "sectors": {
@@ -4775,7 +4941,6 @@
       "Other": 1
     },
     "sectors": {
-      "Basic Materials": 5,
       "Communication Services": 2,
       "Consumer Discretionary": 7,
       "Consumer Staples": 4,
@@ -4783,8 +4948,9 @@
       "Financials": 21,
       "Health Care": 7,
       "Industrials": 35,
+      "Information Technology": 13,
+      "Materials": 5,
       "Real Estate": 1,
-      "Technology": 13,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -4811,17 +4977,18 @@
     "benchmark_index": "MSCI AC World Index (NR USD); reference only, not tracked",
     "strategy": "active",
     "geography": {
-      "Europe": 41,
-      "North America": 55,
+      "Canada": 5,
       "Other": 2,
-      "South & Central America": 2
+      "Other Europe": 41,
+      "Other emerging": 2,
+      "US": 50
     },
     "sectors": {
-      "Basic Materials": 5,
       "Energy": 11,
       "Industrials": 22,
+      "Information Technology": 42,
+      "Materials": 5,
       "Other": 3,
-      "Technology": 42,
       "Utilities": 17
     },
     "distribution": "accumulating",
@@ -4912,7 +5079,7 @@
       "Spain": 4,
       "Sweden": 5,
       "Switzerland": 12,
-      "United Kingdom": 20
+      "UK": 20
     },
     "sectors": {
       "Communication Services": 2,
@@ -4951,7 +5118,7 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 11,
@@ -4999,7 +5166,7 @@
       "Spain": 4,
       "Sweden": 5,
       "Switzerland": 12,
-      "United Kingdom": 20
+      "UK": 20
     },
     "sectors": {
       "Communication Services": 2,
@@ -5074,21 +5241,28 @@
     "benchmark_index": "Solactive Green Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "Europe": 45,
-      "US": 35,
-      "Asia": 12,
-      "Other": 8
+      "Other": 20,
+      "Other Europe": 45,
+      "US": 35
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Investment-grade green-labelled bond allocation; aggregate-style diversification with ESG screen",
-    "confidence": "high",
+    "notes": "Investment-grade green-labelled bond allocation; aggregate-style diversification with ESG screen; unhedged global green bonds: currency_exposure ~EUR/USD-led (medium confidence; verify hedging on refresh)",
+    "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1563454310"
     ],
     "since": "2017-04-18",
-    "duration": 7.0
+    "duration": 7.0,
+    "currency_exposure": {
+      "CAD": 2,
+      "CNY": 3,
+      "EUR": 55,
+      "GBP": 3,
+      "JPY": 4,
+      "USD": 33
+    }
   },
   {
     "id": "LU1645380442",
@@ -5141,7 +5315,7 @@
     "strategy": "synthetic-swap",
     "geography": {
       "Other": 8,
-      "United States": 92
+      "US": 92
     },
     "sectors": {
       "Communication Services": 15,
@@ -5182,9 +5356,9 @@
       "Canada": 3,
       "France": 3,
       "Japan": 5,
-      "Other Developed": 12,
-      "United Kingdom": 3,
-      "United States": 74
+      "Other developed": 12,
+      "UK": 3,
+      "US": 74
     },
     "sectors": {
       "Communication Services": 9,
@@ -5235,7 +5409,6 @@
       "Taiwan": 20
     },
     "sectors": {
-      "Basic Materials": 6,
       "Communication Services": 8,
       "Consumer Discretionary": 10,
       "Consumer Staples": 6,
@@ -5243,8 +5416,9 @@
       "Financials": 24,
       "Health Care": 5,
       "Industrials": 7,
+      "Information Technology": 24,
+      "Materials": 6,
       "Real Estate": 2,
-      "Technology": 24,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -5271,28 +5445,38 @@
     "benchmark_index": "STOXX Europe Small ex UK NR",
     "strategy": "active",
     "geography": {
-      "France": 22,
-      "Germany": 9,
-      "Italy": 17,
-      "Netherlands": 8,
-      "Other Europe ex-UK": 26,
-      "Spain": 11,
-      "Sweden": 7
+      "France": 32,
+      "Greece": 7,
+      "Italy": 23,
+      "Netherlands": 7,
+      "Other Europe": 18,
+      "Spain": 13
     },
     "sectors": {
-      "Consumer Discretionary": 15,
-      "Financials": 7,
-      "Industrials": 57,
-      "Materials": 7,
-      "Other": 8,
-      "Technology": 6
+      "Communication Services": 2,
+      "Consumer Discretionary": 10,
+      "Energy": 6,
+      "Financials": 1,
+      "Health Care": 3,
+      "Industrials": 58,
+      "Information Technology": 2,
+      "Materials": 15,
+      "Other": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active European small/mid-cap value fund (ex-UK) since 2018; Quality Value ESG-integrated strategy; high industrials concentration",
+    "currency_exposure": {
+      "CHF": 2,
+      "DKK": 4,
+      "EUR": 88,
+      "NOK": 3,
+      "SEK": 3
+    },
+    "notes": "Active European small/mid-cap value fund (ex-UK) since 2018; Quality Value ESG-integrated strategy; high industrials concentration; geography/sectors from the Dec 2025 monthly reporting (page 2 pie + sector table); currency_exposure ~90% EUR with a Nordic/Swiss tail (DKK/SEK/NOK/CHF)",
     "confidence": "high",
     "sources": [
-      "https://www.independance-am.com/en/our-funds/europe-small/"
+      "https://www.independance-am.com/en/our-funds/europe-small/",
+      "https://www.independance-am.com/wp-content/uploads/2026/01/251231-reporting-europe-small-x-eur-c2-fr-fr.pdf"
     ],
     "since": "2018-11-13",
     "factors": [
@@ -5321,8 +5505,8 @@
       "Japan": 6,
       "Other": 7,
       "Switzerland": 3,
-      "United Kingdom": 4,
-      "United States": 74
+      "UK": 4,
+      "US": 74
     },
     "sectors": {
       "Communication Services": 9,
@@ -5376,8 +5560,8 @@
       "Financials": 9,
       "Health Care": 1,
       "Industrials": 51,
+      "Information Technology": 4,
       "Materials": 4,
-      "Technology": 4,
       "Utilities": 1
     },
     "distribution": "accumulating",
@@ -5464,8 +5648,8 @@
       "France": 10,
       "Germany": 7,
       "Other": 50,
-      "United Kingdom": 9,
-      "United States": 24
+      "UK": 9,
+      "US": 24
     },
     "sectors": {
       "Communication Services": 9,
@@ -5506,7 +5690,7 @@
     "benchmark_index": "WisdomTree US Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 11,
@@ -5516,20 +5700,22 @@
       "Financials": 12,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 34,
       "Materials": 2,
       "Other": 2,
       "Real Estate": 2,
-      "Technology": 34,
       "Utilities": 2
     },
     "distribution": "distributing",
     "leverage": 1.5,
-    "notes": "US version of NTSX (US ticker); capital-efficient 90/60 US equity/Treasury overlay (~1.5x a 60/40); US-only",
+    "notes": "US version of NTSX (US ticker); capital-efficient 90/60 US equity/Treasury overlay (~1.5x a 60/40); US-only; duration = 2/5/10/30y Treasury-futures ladder effective ~7y",
     "confidence": "high",
     "sources": [
-      "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx"
+      "https://www.wisdomtree.com/investments/etfs/capital-efficient/ntsx",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2018-08-02",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
@@ -5578,8 +5764,8 @@
     "benchmark_index": "ICE BofA US All Capital Securities Index",
     "strategy": "active",
     "geography": {
-      "Europe": 20,
       "Other": 10,
+      "Other Europe": 20,
       "US": 70
     },
     "sectors": null,
@@ -5591,7 +5777,10 @@
       "https://www.pimco.com/us/en/investments/mutual-fund/preferred-and-capital-securities-fund/c"
     ],
     "since": "2008-04-30",
-    "duration": 4.0
+    "duration": 4.0,
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "QNZIX",
@@ -5640,15 +5829,21 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income",
+    "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income; bond leg tracks Bloomberg US Aggregate (~6y duration); currency_exposure = USD bonds + Dynamic managed-futures book",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051"
+      "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051",
+      "https://www.returnstackedetfs.com/rsbt-return-stacked-bonds-managed-futures/"
     ],
     "since": "2023-02-07",
+    "duration": 6.0,
     "exposures": {
       "aggregate-bond": 1.0,
       "managed-futures": 1.0
+    },
+    "currency_exposure": {
+      "Dynamic": 100,
+      "USD": 100
     }
   },
   {
@@ -5668,19 +5863,61 @@
     "underlying": "$1 global equity + $1 US Treasury futures exposure per $1 invested (capital-efficient)",
     "benchmark_index": "active (no index)",
     "strategy": "futures-overlay",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Australia": 2,
+      "Canada": 3,
+      "China": 3,
+      "France": 2,
+      "Germany": 2,
+      "India": 2,
+      "Japan": 5,
+      "Other developed": 5,
+      "Other emerging": 6,
+      "Switzerland": 2,
+      "Taiwan": 2,
+      "UK": 3,
+      "US": 63
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity",
-    "confidence": "high",
+    "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity; equity leg ~MSCI ACWI (sectors/geography/currency approximated); bond leg ~US core (~6y)",
+    "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042"
+      "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042",
+      "https://www.returnstackedetfs.com/rsbt-return-stacked-bonds-managed-futures/"
     ],
     "since": "2023-12-04",
+    "duration": 6.0,
     "exposures": {
       "equity": 1.0,
       "government-bond": 1.0
+    },
+    "currency_exposure": {
+      "AUD": 2,
+      "CAD": 3,
+      "CHF": 2,
+      "CNY": 3,
+      "EUR": 9,
+      "GBP": 3,
+      "HKD": 2,
+      "INR": 2,
+      "JPY": 5,
+      "KRW": 2,
+      "TWD": 2,
+      "USD": 65
     }
   },
   {
@@ -5701,10 +5938,22 @@
     "benchmark_index": "active (no index)",
     "strategy": "futures-overlay",
     "geography": null,
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 11,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Return-stacked 100/100 equities+CTA; trend diversification without cutting equity",
+    "notes": "Return-stacked 100/100 equities+CTA; trend diversification without cutting equity; currency_exposure = 100% USD equity + Dynamic managed-futures book (levered notional sums to 200)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=US88636J8163"
@@ -5713,6 +5962,10 @@
     "exposures": {
       "equity": 1.0,
       "managed-futures": 1.0
+    },
+    "currency_exposure": {
+      "Dynamic": 100,
+      "USD": 100
     }
   },
   {
@@ -5762,7 +6015,7 @@
     "benchmark_index": "S&P 500 Index",
     "strategy": "synthetic-swap",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Communication Services": 11,
@@ -5835,7 +6088,7 @@
       "Canada": 3,
       "France": 3,
       "Japan": 5,
-      "Other Developed": 13,
+      "Other developed": 13,
       "UK": 4,
       "US": 72
     },
@@ -5943,11 +6196,12 @@
     "benchmark_index": "FTSE Global All Cap Index",
     "strategy": "physical-replication",
     "geography": {
-      "Emerging Markets": 10,
-      "Europe": 15,
-      "North America": 63,
+      "Canada": 6,
       "Other": 1,
-      "Pacific": 11
+      "Other Europe": 15,
+      "Other developed": 11,
+      "Other emerging": 10,
+      "US": 57
     },
     "sectors": {
       "Communication Services": 8,
@@ -5994,8 +6248,8 @@
       "Netherlands": 2,
       "Other": 4,
       "Switzerland": 3,
-      "United Kingdom": 4,
-      "United States": 72
+      "UK": 4,
+      "US": 72
     },
     "sectors": {
       "Communication Services": 9,
@@ -6038,7 +6292,7 @@
     "strategy": "physical-replication",
     "geography": {
       "Greece": 86,
-      "United Kingdom": 14
+      "UK": 14
     },
     "sectors": {
       "Communication Services": 4,
@@ -6080,10 +6334,9 @@
     "geography": {
       "Ireland": 1,
       "Other": 2,
-      "United States": 97
+      "US": 97
     },
     "sectors": {
-      "Basic Materials": 2,
       "Communication Services": 11,
       "Consumer Discretionary": 10,
       "Consumer Staples": 5,
@@ -6091,8 +6344,9 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 38,
+      "Materials": 2,
       "Real Estate": 2,
-      "Technology": 38,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -6124,10 +6378,9 @@
     "geography": {
       "Ireland": 1,
       "Other": 2,
-      "United States": 97
+      "US": 97
     },
     "sectors": {
-      "Basic Materials": 2,
       "Communication Services": 11,
       "Consumer Discretionary": 10,
       "Consumer Staples": 5,
@@ -6135,8 +6388,9 @@
       "Financials": 11,
       "Health Care": 8,
       "Industrials": 8,
+      "Information Technology": 38,
+      "Materials": 2,
       "Real Estate": 2,
-      "Technology": 38,
       "Utilities": 2
     },
     "distribution": "accumulating",
@@ -6180,10 +6434,10 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 4,
       "Other": 2,
       "Real Estate": 3,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -6228,10 +6482,10 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 4,
       "Other": 2,
       "Real Estate": 3,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -6276,10 +6530,10 @@
       "Financials": 14,
       "Health Care": 8,
       "Industrials": 11,
+      "Information Technology": 28,
       "Materials": 4,
       "Other": 2,
       "Real Estate": 3,
-      "Technology": 28,
       "Utilities": 3
     },
     "distribution": "accumulating",
@@ -6307,14 +6561,38 @@
     "underlying": "MSCI World Net TR index: large- and mid-cap equities across 23 developed markets, dividends net of withholding tax reinvested",
     "benchmark_index": "MSCI World Index (Net TR)",
     "strategy": "index",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "Australia": 2,
+      "Canada": 3,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other": 5,
+      "Switzerland": 3,
+      "UK": 4,
+      "US": 72
+    },
+    "sectors": {
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
+      "Financials": 16,
+      "Health Care": 9,
+      "Industrials": 12,
+      "Information Technology": 30,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "n/a",
     "leverage": 1,
-    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1969). The investable UCITS trackers are IWDA (IE00B4L5Y983) and URTH.",
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1969). The investable UCITS trackers are IWDA (IE00B4L5Y983) and URTH.; sector and country weights from the MSCI World index factsheet (Jun 2026)",
     "confidence": "high",
     "sources": [
-      "https://www.msci.com/end-of-day-history?index=990100"
+      "https://www.msci.com/end-of-day-history?index=990100",
+      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf"
     ],
     "since": "1969-12-01"
   },
@@ -6334,11 +6612,25 @@
     "underlying": "S&P 500 Total Return index: 500 large-cap US stocks, dividends reinvested",
     "benchmark_index": "S&P 500 (Total Return)",
     "strategy": "index",
-    "geography": null,
-    "sectors": null,
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 11,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "n/a",
     "leverage": 1,
-    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1871). The investable UCITS tracker is VUAA (IE00BFMXXD54).",
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1871). The investable UCITS tracker is VUAA (IE00BFMXXD54).; sector weights approximate the S&P 500 GICS breakdown (2026)",
     "confidence": "high",
     "sources": [
       "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
@@ -6449,12 +6741,12 @@
       "US": 100
     },
     "sectors": {
-      "Technology": 31,
-      "Financials": 11,
       "Communication Services": 10,
       "Consumer Discretionary": 10,
+      "Financials": 11,
       "Health Care": 8,
       "Industrials": 7,
+      "Information Technology": 31,
       "Other": 23
     },
     "distribution": "distributing",
@@ -6500,7 +6792,7 @@
     },
     "distribution": "distributing",
     "leverage": 1.8,
-    "notes": "Capital-efficient 90/90 gold miners + bullion; amplified gold-complex play for inflation / real-asset regimes",
+    "notes": "Capital-efficient 90/90 gold miners + bullion; amplified gold-complex play for inflation / real-asset regimes; currency_exposure = gold-miner equity currencies (CAD-heavy) + USD collateral; gold-futures overlay adds no fiat",
     "confidence": "medium",
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/alternatives/gdmn",
@@ -6510,6 +6802,13 @@
     "exposures": {
       "equity": 0.9,
       "gold": 0.9
+    },
+    "currency_exposure": {
+      "AUD": 10,
+      "CAD": 45,
+      "GBP": 6,
+      "USD": 25,
+      "ZAR": 14
     }
   },
   {
@@ -6530,33 +6829,46 @@
     "benchmark_index": "WisdomTree International Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
-      "Europe": 63,
       "Japan": 23,
-      "Asia-Pacific ex-Japan": 8,
-      "Other": 6
+      "Other": 6,
+      "Other Europe": 63,
+      "Other developed": 8
     },
     "sectors": {
-      "Financials": 25,
-      "Industrials": 17,
-      "Technology": 12,
-      "Health Care": 10,
       "Consumer Discretionary": 8,
       "Consumer Staples": 7,
+      "Financials": 25,
+      "Health Care": 10,
+      "Industrials": 17,
+      "Information Technology": 12,
       "Materials": 6,
       "Other": 15
     },
     "distribution": "distributing",
     "leverage": 1.5,
-    "notes": "Capital-efficient 90/60 international-developed equity + US Treasuries; ex-US diversifier with a built-in bond cushion",
+    "notes": "Capital-efficient 90/60 international-developed equity + US Treasuries; ex-US diversifier with a built-in bond cushion; currency_exposure = MSCI EAFE country weights x0.9 + USD collateral; duration = US Treasury-futures ladder ~7y",
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntsi",
-      "https://stockanalysis.com/etf/ntsi/"
+      "https://stockanalysis.com/etf/ntsi/",
+      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2021-05-20",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
+    },
+    "currency_exposure": {
+      "AUD": 6,
+      "CHF": 9,
+      "DKK": 3,
+      "EUR": 36,
+      "GBP": 14,
+      "JPY": 20,
+      "SEK": 2,
+      "USD": 10
     }
   },
   {
@@ -6585,25 +6897,39 @@
       "Other": 18
     },
     "sectors": {
-      "Technology": 39,
-      "Financials": 17,
-      "Consumer Discretionary": 10,
       "Communication Services": 8,
+      "Consumer Discretionary": 10,
+      "Financials": 17,
+      "Information Technology": 39,
       "Materials": 6,
       "Other": 20
     },
     "distribution": "distributing",
     "leverage": 1.5,
-    "notes": "Capital-efficient 90/60 emerging-markets equity + US Treasuries; EM growth exposure with a bond stabiliser",
-    "confidence": "high",
+    "notes": "Capital-efficient 90/60 emerging-markets equity + US Treasuries; EM growth exposure with a bond stabiliser; currency_exposure approximates MSCI EM local currencies x0.9 + USD collateral (representative, not point-in-time)",
+    "confidence": "medium",
     "sources": [
       "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntse",
-      "https://stockanalysis.com/etf/ntse/"
+      "https://stockanalysis.com/etf/ntse/",
+      "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2021-05-20",
+    "duration": 7.0,
     "exposures": {
       "equity": 0.9,
       "government-bond": 0.6
+    },
+    "currency_exposure": {
+      "BRL": 5,
+      "CNY": 22,
+      "IDR": 3,
+      "INR": 16,
+      "KRW": 10,
+      "MXN": 3,
+      "SAR": 4,
+      "TWD": 22,
+      "USD": 10,
+      "ZAR": 5
     }
   },
   {
@@ -6739,14 +7065,14 @@
       "Germany": 4,
       "Japan": 11,
       "Other": 20,
-      "United States": 60
+      "US": 60
     },
     "sectors": {
       "Communication Services": 11,
       "Financials": 12,
       "Health Care": 13,
-      "Other": 41,
-      "Technology": 23
+      "Information Technology": 23,
+      "Other": 41
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -6779,6 +7105,9 @@
     "distribution": "accumulating",
     "leverage": 1.0,
     "duration": 0.25,
+    "currency_exposure": {
+      "EUR": 100
+    },
     "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge",
     "confidence": "high",
     "sources": [
@@ -6834,16 +7163,21 @@
     "benchmark_index": "Shiller Barclays CAPE US Sector Value Net TR",
     "strategy": "rules-based value rotation",
     "geography": {
-      "United States": 100
+      "US": 100
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 25,
+      "Consumer Staples": 25,
+      "Energy": 25,
+      "Health Care": 25
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
       "value"
     ],
-    "notes": "CAPE quant: systematic US sector value tilt driven by cyclically-adjusted valuations rather than market cap",
-    "confidence": "high",
+    "notes": "CAPE quant: systematic US sector value tilt driven by cyclically-adjusted valuations rather than market cap; sectors are a rotating snapshot: the strategy holds the 4 cheapest-CAPE S&P 500 sectors at 25% each, reselected monthly",
+    "confidence": "low",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1079841513"
     ],
@@ -6870,15 +7204,15 @@
       "Canada": 3,
       "Japan": 5,
       "Other": 21,
-      "United Kingdom": 3,
-      "United States": 68
+      "UK": 3,
+      "US": 68
     },
     "sectors": {
       "Consumer Discretionary": 10,
       "Financials": 13,
       "Industrials": 10,
-      "Other": 36,
-      "Technology": 31
+      "Information Technology": 31,
+      "Other": 36
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -6912,14 +7246,14 @@
       "Ireland": 3,
       "Japan": 9,
       "Other": 25,
-      "United States": 59
+      "US": 59
     },
     "sectors": {
       "Communication Services": 8,
       "Consumer Discretionary": 11,
       "Financials": 19,
-      "Other": 32,
-      "Technology": 30
+      "Information Technology": 30,
+      "Other": 32
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -6958,15 +7292,15 @@
       "France": 4,
       "Japan": 8,
       "Other": 24,
-      "United Kingdom": 5,
-      "United States": 59
+      "UK": 5,
+      "US": 59
     },
     "sectors": {
       "Consumer Discretionary": 15,
       "Health Care": 14,
       "Industrials": 17,
-      "Other": 31,
-      "Technology": 23
+      "Information Technology": 23,
+      "Other": 31
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -6999,14 +7333,14 @@
     "benchmark_index": "active (S&P 500 reference)",
     "strategy": "covered-call overlay",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": {
       "Consumer Discretionary": 12,
       "Health Care": 13,
       "Industrials": 13,
-      "Other": 39,
-      "Technology": 23
+      "Information Technology": 23,
+      "Other": 39
     },
     "distribution": "distributing",
     "leverage": 1.0,
@@ -7039,16 +7373,16 @@
       "Canada": 3,
       "Japan": 7,
       "Other": 22,
-      "United Kingdom": 4,
-      "United States": 64
+      "UK": 4,
+      "US": 64
     },
     "sectors": {
       "Consumer Discretionary": 11,
       "Financials": 17,
       "Health Care": 9,
       "Industrials": 13,
-      "Other": 28,
-      "Technology": 22
+      "Information Technology": 22,
+      "Other": 28
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -7087,8 +7421,8 @@
       "Canada": 5,
       "Japan": 11,
       "Other": 19,
-      "United Kingdom": 5,
-      "United States": 60
+      "UK": 5,
+      "US": 60
     },
     "sectors": {
       "Consumer Discretionary": 14,
@@ -7244,10 +7578,10 @@
     "strategy": "physical-replication",
     "geography": {
       "Canada": 8,
-      "Emerging markets": 26,
-      "Europe developed": 39,
-      "Pacific developed": 25,
-      "Other": 2
+      "Other": 2,
+      "Other Europe": 39,
+      "Other developed": 25,
+      "Other emerging": 26
     },
     "sectors": {
       "Communication Services": 6,
@@ -7287,10 +7621,10 @@
     "strategy": "physical-replication",
     "geography": {
       "Canada": 11,
-      "Europe developed": 53,
       "Japan": 21,
-      "Other Pacific": 13,
-      "Other": 2
+      "Other": 2,
+      "Other Europe": 53,
+      "Other developed": 13
     },
     "sectors": {
       "Communication Services": 5,
@@ -7602,17 +7936,33 @@
     "geography": {
       "US": 100
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 11,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "distributing",
     "leverage": 3,
-    "notes": "3x daily S&P 500; half of the well-known HFEA (Hedgefundie) leveraged pair with TMF; severe volatility drag in choppy markets, not a passive hold",
+    "notes": "3x daily S&P 500; half of the well-known HFEA (Hedgefundie) leveraged pair with TMF; severe volatility drag in choppy markets, not a passive hold; sectors = S&P 500; currency_exposure = 3x USD notional (levered sums above 100 are intended)",
     "confidence": "high",
     "sources": [
-      "https://www.proshares.com/our-etfs/leveraged-and-inverse/upro"
+      "https://www.proshares.com/our-etfs/leveraged-and-inverse/upro",
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
     ],
     "since": "2009-06-25",
     "exposures": {
       "equity": 3.0
+    },
+    "currency_exposure": {
+      "USD": 300
     }
   },
   {
@@ -7744,7 +8094,7 @@
     "benchmark_index": "ICE US Treasury 20+ Year Bond Index (EUR Hedged)",
     "strategy": "physical-replication",
     "geography": {
-      "United States": 100
+      "US": 100
     },
     "sectors": null,
     "distribution": "distributing",
@@ -7836,13 +8186,26 @@
     "geography": {
       "US": 100
     },
-    "sectors": null,
+    "sectors": {
+      "Communication Services": 10,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 5,
+      "Energy": 3,
+      "Financials": 13,
+      "Health Care": 11,
+      "Industrials": 9,
+      "Information Technology": 33,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 2
+    },
     "distribution": "distributing",
     "leverage": 1,
     "notes": "Vanguard 500 Investor mutual fund; deep daily history from 1976 makes it the backtest S&P 500 total-return proxy used by the simdata recipes (VTI/GDE/RSST/SP500), not an EU-retail buyable ETF",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx"
+      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx",
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
     ]
   }
 ]
