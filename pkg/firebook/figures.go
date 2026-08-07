@@ -279,13 +279,6 @@ func titleTxt(x, y float64, s string) string {
 	return fmt.Sprintf(`<text x="%.1f" y="%.1f" font-size="14" fill="%s" text-anchor="middle" font-weight="600" font-family="%s">%s</text>`, x, y, figInk, figSerif, s)
 }
 
-// rotTxt sets a label rotated by angle (degrees) about its own anchor, so it can
-// ride along a sloped line instead of floating away from it.
-func rotTxt(x, y, angle float64, size int, color, anchor, weight, s string) string {
-	return fmt.Sprintf(`<text x="%.1f" y="%.1f" transform="rotate(%.2f %.1f %.1f)" font-size="%d" fill="%s" text-anchor="%s" font-weight="%s" font-family="ui-sans-serif,system-ui,sans-serif">%s</text>`,
-		x, y, angle, x, y, size, color, anchor, weight, s)
-}
-
 // catmull turns a point list into a smooth SVG path (Catmull-Rom -> Bézier):
 // curves, not straight segments, are what separate a real chart from a sketch.
 func catmull(pts [][2]float64) string {
@@ -332,7 +325,7 @@ func figHorizonFlatten() string {
 	// asymptote
 	asy := m(25, 3.25)
 	b.WriteString(dashLine(72, asy[1], 556, asy[1], figMuted, 1, "5 4"))
-	b.WriteString(txt(553, asy[1]-5, 10, figMuted, "end", "400", "≈ perpétuité (~3,25 %)"))
+	b.WriteString(txt(553, asy[1]-16, 10, figMuted, "end", "400", "≈ perpétuité (~3,25 %)"))
 	// curve
 	b.WriteString(smoothStroke(px, figDeep, 2.8))
 	for _, p := range px {
@@ -388,21 +381,12 @@ func figVolDrag() string {
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, eb[0], eb[1], figBad)
 	b.WriteString(txt(ea[0]+6, ea[1]+4, 11, figDeep, "start", "600", "7,6×"))
 	b.WriteString(txt(eb[0]+6, eb[1]+4, 11, figBad, "start", "600", "4,5×"))
-	// concept label in the empty upper-left
-	an := m(1.5, 7.7)
-	b.WriteString(txt(an[0], an[1], 11, figSoft, "start", "600", "le volatility drag"))
-	b.WriteString(txt(an[0], an[1]+14, 10, figMuted, "start", "400", "même moyenne, richesse en moins"))
-	// curve labels: the steady one rides just above its curve at the local slope
-	x0 := 22.0
-	cp := m(x0, math.Pow(1.07, x0))
-	ang := math.Atan2(math.Pow(1.07, x0)*math.Log(1.07)*(58.0-292)/8.6, (548.0-72)/30) * 180 / math.Pi
-	b.WriteString(rotTxt(cp[0], cp[1]-10, ang, 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
-	// the volatile one rides just below its geometric trend, clear of the zigzag
-	rx := 19.5
-	rt := math.Pow(1.05114, rx)
-	rp := m(rx, rt)
-	rang := math.Atan2(rt*math.Log(1.05114)*(58.0-292)/8.6, (548.0-72)/30) * 180 / math.Pi
-	b.WriteString(rotTxt(rp[0], rp[1]+16, rang, 11, figBad, "middle", "600", "+27 % / −13 % (même moyenne 7 %)"))
+	// legend, top-left in the open area (no labels riding the curves)
+	lgx := 96.0
+	b.WriteString(line(lgx, 70, lgx+22, 70, figDeep, 2.6))
+	b.WriteString(txt(lgx+30, 74, 11, figSoft, "start", "600", "régulier : +7 % chaque année"))
+	b.WriteString(line(lgx, 90, lgx+22, 90, figBad, 2.0))
+	b.WriteString(txt(lgx+30, 94, 11, figSoft, "start", "600", "volatil : +27 % / −13 % (même moyenne)"))
 	// y ticks
 	for _, v := range []float64{2, 4, 6, 8} {
 		p := m(0, v)
@@ -414,7 +398,7 @@ func figVolDrag() string {
 	}
 	b.WriteString(txt(310, 330, 11, figMuted, "middle", "400", "années  →"))
 	b.WriteString(txt(52, 52, 10, figMuted, "start", "400", "richesse (× capital de départ)"))
-	b.WriteString(titleTxt(310, 30, "Même moyenne arithmétique, richesses opposées"))
+	b.WriteString(titleTxt(310, 30, "Le volatility drag : même moyenne, richesses opposées"))
 	return svg(620, 344, b.String())
 }
 
