@@ -4817,6 +4817,9 @@
   {
     "id": "LU0131510165",
     "isin": "LU0131510165",
+    "aliases": [
+      "IAMFS"
+    ],
     "name": "Ind\u00e9pendance AM - France Small & Mid A (C)",
     "ucits": true,
     "eu_retail": true,
@@ -5433,6 +5436,9 @@
   {
     "id": "LU1832174962",
     "isin": "LU1832174962",
+    "aliases": [
+      "IAMES"
+    ],
     "name": "Ind\u00e9pendance AM - Europe Small A (C)",
     "ucits": true,
     "eu_retail": true,
