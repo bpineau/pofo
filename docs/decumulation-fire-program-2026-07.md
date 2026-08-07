@@ -84,6 +84,16 @@ for the full critique. Highlights:
   table, toggle scopes, mechanics FAQ), rewritten df/monthly/stress hovers,
   fan axis capped at 10x start, M€ formats, 60/40 broad-sample column.
 
+## Shipped (2026-07-12, guardrails session)
+
+- **Guardrails floor** (`Guardrails.Floor`, gkFloor slider): bounds the cut
+  spiral at an incompressible standard; honestly re-creates ruin. Measured
+  at 3%/broad-sample: floorless p5 income decays 60k->5k->0; 75% floor
+  holds p5 at 45k and brings broad-sample ruin back to ~18%.
+- **Monthly-stepped guardrails** in the monthly kernel
+  (`Guardrails.stepped`): monthly evaluation at (1-c)^12 == 1-Cut, no
+  anniversary-date lottery. Annual kernel keeps the yearly G-K cadence.
+
 ## Remaining
 
 - **E (remaining) — chart-system reskin.** The older charts (Fan,
@@ -93,6 +103,13 @@ for the full critique. Highlights:
 - Keyboard-focus parity for the chart tooltips (hover-only today); a table
   view of the chart data for the accessibility-strict reading of the
   dataviz spec.
+- **State-of-the-art withdrawal rules, proposed to Ben (not approved yet):**
+  amortization-based withdrawals (ABW/TPAW: yearly actuarial PMT over the
+  remaining horizon, never ruins, smoother than G-K) and a CAPE-conditioned
+  spending rule (WR = a + b/CAPE, forward-looking); possibly Vanguard's
+  bounded percent-of-portfolio (ceiling/floor on the yearly change). These
+  complete the policy frontier with the rules the literature now prefers
+  over Guyton-Klinger.
 
 ## Design mock
 
