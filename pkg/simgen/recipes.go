@@ -1503,11 +1503,18 @@ const longTreasuryGearing = 17.0 / 15.0
 // have spliced that price series over the recent decade and silently corrupted
 // it, and every SIM consumer would have inherited the mix. The overlap check
 // against the real fund is kept for the shape, and its CAGR gap is the finding
-// rather than an error: the reconstruction beats the quotes by roughly the
-// distribution yield (~3.1%/yr over 2017-2026). Beta below 1 and a daily
-// correlation near 0.7 (weekly ~0.89) have the same two causes as tip1eRecipe,
-// a US-close mutual-fund donor against a European listing, plus that same
-// price/total-return mismatch.
+// rather than an error: the reconstruction beats the quotes by the coupons the
+// price series drops, ~1.7%/yr over 2017-2026, which is what a EUR-hedged US
+// long-bond sleeve distributes once the hedge has paid away the dollar-euro
+// rate gap. Taking the local leg from the accumulating twin rather than from a
+// US mutual fund also removed the timing mismatch that used to cost most of
+// the daily agreement: 0.91 daily and 0.93 weekly against 0.70 and 0.89
+// before, beta 0.95 against 0.79, tracking error 6.5%/yr against 12.2%.
+//
+// One caveat on the reference itself: the FT NAV prints -13.1% on 2020-03-12
+// where the accumulating twin, holding the same bonds, moves -5.6%. Nothing
+// is grafted from DTLE, so the print only costs a little of the measured
+// agreement.
 //
 // Read it as the total-return view of the EUR-hedged US 20+ segment, which is
 // what a backtest needs; the tradable line stays DTLE, and a French investor
@@ -1515,15 +1522,53 @@ const longTreasuryGearing = 17.0 / 15.0
 // before holding it in a taxable account.
 func dtleRecipe() Recipe {
 	return Recipe{
-		ID:     "DTLETR",
-		Name:   "US long Treasuries hedged to EUR (total return, the DTLE segment)",
-		Method: "1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less 0.10%/yr TER; total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
-		Build: composite("DTLE (EUR-hedged US long Treasury)", []Leg{
-			{ID: "VUSTX", Weight: longTreasuryGearing, Excess: true},
-			{ID: "EURCASH-EUR", Weight: 1},
-		}, "^IRX", 0.0010),
+		ID:   "DTLETR",
+		Name: "US long Treasuries hedged to EUR (total return, the DTLE segment)",
+		Method: "the accumulating USD twin's own total return (real DTLA from 2018, 1.13×VUSTX geared to the 20+ duration before, extended TREASURY-LONG daily from 1962) " +
+			"financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less 0.10%/yr TER; total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
+		Build:           dtleBuild,
 		ValidateAgainst: "DTLE",
 	}
+}
+
+// dtleBuild hedges the USD 20+ Treasury segment into EUR: the local leg earns
+// its excess over USD cash, the hedge gives back EUR cash, and the TER comes
+// off. From 2018 the local leg is the REAL accumulating USD twin (DTLA), which
+// holds the same bonds and prices on the same London close as DTLE itself, so
+// the timing mismatch that a US mutual-fund donor carries disappears over the
+// whole window the comparison is made on; before it, the geared VUSTX
+// reconstruction stands, as it does inside DTLA's own history.
+func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	fr, err := BuildFrame(extend(f), []string{"^IRX", "VUSTX", "EURCASH-EUR"}, from)
+	if err != nil {
+		return nil, err
+	}
+	irx, vustx, eur := fr.Returns["^IRX"], fr.Returns["VUSTX"], fr.Returns["EURCASH-EUR"]
+
+	twin := map[time.Time]float64{}
+	if real, err := f.Fetch("DTLA", from); err == nil && real != nil {
+		for i := 1; i < len(real.Points); i++ {
+			if real.Points[i-1].Close > 0 {
+				twin[real.Points[i].Date] = real.Points[i].Close/real.Points[i-1].Close - 1
+			}
+		}
+	}
+
+	const feeDaily = 0.0010 / 252
+	s := &marketdata.Series{
+		Name: "DTLE (EUR-hedged US long Treasury, total return)", Source: "simdata", Currency: "EUR",
+	}
+	v := 100.0
+	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[0], Close: v})
+	for k := 1; k < len(fr.Dates); k++ {
+		excess := longTreasuryGearing * (vustx[k] - irx[k])
+		if r, ok := twin[fr.Dates[k]]; ok {
+			excess = r - irx[k]
+		}
+		v *= 1 + excess + eur[k] - feeDaily
+		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: v})
+	}
+	return s, nil
 }
 
 // zrozRecipe approximates 25+ year zero-coupon STRIPS by leveraging the long
@@ -1810,38 +1855,34 @@ func aqrmfHedgedRecipe() Recipe {
 // the reconstruction stands alone.
 func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	cfg := mfConfig(0.09, 0.0079)
-	ids := append([]string{cfg.CashID, "EURCASH-EUR"}, cfg.Markets...)
-	fr, err := BuildFrame(extend(f), ids, from)
+	// The USD leg is the same donor chain the unhedged class uses: the
+	// manager's own US fund from 2010, another manager's programme behind it,
+	// and the reconstruction only for what neither reaches.
+	usd, err := chainedTrend("AQR MF USD (donor chain)", "LU1103257975",
+		[]string{"AQMIX", "RYMFX"}, cfg, aqrTrendInfoRatio)(f, from)
 	if err != nil {
 		return nil, err
-	}
-	values, start, err := TSMOM(fr, cfg)
-	if err != nil {
-		return nil, err
-	}
-	values, err = AnchorTrend(f, fr.Dates[start:], values, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
-	if err != nil {
-		return nil, err
-	}
-	values = pinTrendIR(values, fr.Dates[start:], fr.Returns[cfg.CashID][start:], aqrTrendInfoRatio)
-	usd := &marketdata.Series{Name: "AQR MF USD (reconstruction)", Source: "simdata"}
-	for i, v := range values {
-		usd.Points = append(usd.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
 	}
 
-	// Per-date EUR-minus-USD daily carry from the strategy's own frame.
-	carry := make(map[time.Time]float64, len(fr.Dates))
-	irx, eur := fr.Returns[cfg.CashID], fr.Returns["EURCASH-EUR"]
-	for k := range fr.Dates {
-		carry[fr.Dates[k]] = eur[k] - irx[k]
+	// EUR-minus-USD carry, read off the two cash series themselves rather than
+	// off a frame: the donor chain keeps the donors' own trading calendar, and
+	// a date the frame happens not to hold would otherwise be left unhedged.
+	irxLvl, err := extend(f).Fetch(cfg.CashID, from)
+	if err != nil {
+		return nil, err
 	}
-	hedged := &marketdata.Series{Name: "AQR Managed Futures (EUR-hedged replication)", Source: "simdata"}
+	eurIdx, err := f.Fetch("EURCASH-EUR", from)
+	if err != nil {
+		return nil, err
+	}
+	hedged := &marketdata.Series{Name: "AQR Managed Futures (EUR-hedged)", Source: "simdata", Currency: "EUR"}
 	val := 100.0
 	hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
 	for i := 1; i < len(usd.Points); i++ {
+		prev, cur := usd.Points[i-1].Date, usd.Points[i].Date
 		rUSD := usd.Points[i].Close/usd.Points[i-1].Close - 1
-		val *= 1 + rUSD + carry[usd.Points[i].Date] // carry is 0 for any off-calendar date
-		hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[i].Date, Close: val})
+		val *= 1 + rUSD + eurCashReturn(eurIdx, prev, cur) - cashAccrual(irxLvl, prev, cur)
+		hedged.Points = append(hedged.Points, marketdata.Point{Date: cur, Close: val})
 	}
 
 	// Prefer the real B EUR sister class over the reconstruction wherever it
