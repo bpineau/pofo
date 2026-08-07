@@ -47,6 +47,37 @@ func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 	return &out
 }
 
+// alignMonthEnd re-dates each monthly anchor point onto the last shape date in
+// the same calendar month. The anchor levels are month-END values (see the
+// SP500-USD / MSCIWORLD-USD headers); anchorShape pins each to the first shape
+// date ON OR AFTER the anchor's date, so an anchor dated on a calendar month-end
+// that falls on a weekend or holiday would pin to the next month's first trading
+// day and slip the whole reconstruction by a few days (up to ~1.5 %/yr on a
+// volatile December, the trap that first showed up rebuilding a EUR MSCI World).
+// Snapping the date to the shape's own last trading day of the month removes
+// that slip and is a no-op for an anchor already dated on a trading day (e.g.
+// SP500-USD, dated from ^GSPC). Anchor months the shape does not reach keep
+// their date; month order is preserved, so the result stays ascending.
+func alignMonthEnd(anchor, shape *marketdata.Series) *marketdata.Series {
+	if shape == nil || len(shape.Points) == 0 {
+		return anchor
+	}
+	last := make(map[string]time.Time, len(shape.Points)/20)
+	for _, p := range shape.Points {
+		last[p.Date.Format("2006-01")] = p.Date // shape ascending: keeps the month's last date
+	}
+	out := *anchor
+	out.Points = make([]marketdata.Point, len(anchor.Points))
+	for i, p := range anchor.Points {
+		d := p.Date
+		if sd, ok := last[p.Date.Format("2006-01")]; ok {
+			d = sd
+		}
+		out.Points[i] = marketdata.Point{Date: d, Close: p.Close}
+	}
+	return &out
+}
+
 func anchorShape(anchors, shape []marketdata.Point) []marketdata.Point {
 	// Boundary of anchor j: the first shape point on or after its date.
 	// Several anchors falling before one shape point collapse to the

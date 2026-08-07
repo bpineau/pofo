@@ -3,7 +3,7 @@
 # name: iMGP DBi Managed Futures EUR unhedged: TSMOM replication in EUR
 # method: 12-month TSMOM on a cross-asset futures basket (IR-pinned to the SG CTA Index), converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025
 # validation: corr=0.160 (weekly 0.194) beta=0.22 TE=19.7%/yr CAGR sim 13.24% vs real 21.19% (overlap 285 d from 2025-04-08 to 2026-07-02) vs DBMFE
-# generated: 2026-07-15
+# generated: 2026-07-18
 date,close
 1988-11-17,11.191269
 1988-11-18,11.420229

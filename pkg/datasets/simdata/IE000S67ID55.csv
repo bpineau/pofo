@@ -3,7 +3,7 @@
 # name: Dimensional Global Targeted Value: DFA small-cap value blend (GBP)
 # method: 0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (FRED daily refdata back to 1971), real DPGT grafted from 2025
 # validation: corr=0.537 (weekly 0.850) beta=0.38 TE=13.4%/yr CAGR sim 33.45% vs real 30.16% (overlap 145 d from 2025-11-24 to 2026-07-01) vs IE000S67ID55
-# generated: 2026-07-11
+# generated: 2026-07-18
 date,close
 1994-12-29,0.859336
 1994-12-30,0.861880

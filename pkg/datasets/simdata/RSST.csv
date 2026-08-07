@@ -3,7 +3,7 @@
 # name: Return Stacked US Stocks & Managed Futures: 100/100 replication
 # method: 1.00×VFINX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.96%/yr fees, real RSST grafted from 2023
 # validation: corr=0.872 (weekly 0.876) beta=0.87 TE=12.4%/yr CAGR sim 24.14% vs real 19.71% (overlap 706 d from 2023-09-06 to 2026-07-01) vs RSST
-# generated: 2026-07-15
+# generated: 2026-07-18
 date,close
 1988-11-17,0.321950
 1988-11-18,0.325982

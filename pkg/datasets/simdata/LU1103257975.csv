@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS: TSMOM replication
 # method: 12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), IR-pinned to AQR's realized managed-futures record, real AQR grafted from 2015
 # validation: corr=0.293 (weekly 0.365) beta=0.19 TE=14.3%/yr CAGR sim 0.11% vs real 3.39% (overlap 2740 d from 2015-03-05 to 2026-06-30) vs LU1103257975
-# generated: 2026-07-15
+# generated: 2026-07-18
 date,close
 1988-11-17,13.944072
 1988-11-18,14.030700
