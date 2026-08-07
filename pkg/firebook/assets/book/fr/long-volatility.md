@@ -40,6 +40,15 @@ C'est ici que l'article devient une mise en garde, car l'écart entre le concept
 
 **Praticable mais exigeant : les puts en direct.** Un CTO avec accès aux options permet la version artisanale, par exemple des puts sur un ETF ou un indice, 10 à 20 % hors de la monnaie, échéance 3 à 12 mois, renouvelés régulièrement, budget de prime fixé à l'avance (0,5 à 1,5 % du portefeuille par an). C'est fiscalement frottant, opérationnellement réel (rouler des options à 70 ans passés, pendant dix ou trente ans), et cela n'échappe pas à l'arithmétique de la prime de variance. La seule variante qui se défend économiquement est le **collar** : financer le put par la vente d'un call (renoncer aux hausses au-delà d'un seuil pour se protéger sous un seuil), qui borne le portefeuille dans un tunnel à coût quasi nul. C'est une manière déguisée de réduire l'exposition actions, et c'est précisément pour cela que ça fonctionne.
 
+| Véhicule | Convexité réelle | Coût de portage | Verdict |
+|---|---|---|---|
+| ETP sur futures VIX | oui, quelques jours | 40-70 %/an (contango) | interdit de séjour |
+| Fonds « volatilité » grand public | rarement | 1-2 %/an | décevant, vérifier la stratégie |
+| Produits structurés « protégés » | plafonnée | marges opaques | dominé par obligations + actions |
+| Puts en direct (10-20 % OTM) | oui | 0,5-1,5 %/an de prime | praticable, discipline exigée |
+| Collar (put financé par un call) | bornée des deux côtés | ~0 | le seul économiquement propre |
+| Fonds tail risk institutionnels | oui, gérée | variable | fermés au particulier européen |
+
 **L'alternative honnête, pour presque tout le monde.** La conclusion d'Israelov reste la meilleure réponse par défaut : si vous voulez moins souffrir dans les krachs, détenez moins d'actions. Passer de 70/30 à 60/40 protège de façon certaine, sans prime de variance, sans options à rouler et sans risque de véhicule. Le bond tent des années fragiles ([[glidepaths]]) et le buffer ([[cash-buffer]]) offrent la même défense contre le même risque de séquence, en instruments que vous possédez déjà.
 
 ::: exemple Le tail hedge à l'épreuve de trois crises
