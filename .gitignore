@@ -5,3 +5,4 @@ pofo-*.html
 /my-portfolios/
 .claude/scheduled_tasks.lock
 /docs/superpowers/
+/.figure-audit.*
