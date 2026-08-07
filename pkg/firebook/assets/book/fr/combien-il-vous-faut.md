@@ -72,7 +72,17 @@ L'écart entre 25x et 33x représente typiquement 3 à 6 ans de travail supplém
 Le calcul complet tient en cinq lignes. Reprenons-le sur un cas réaliste.
 
 ::: exemple Le calcul de bout en bout
-Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans. Relevés de 24 mois : 3 400 €/mois de dépenses réelles, irrégulier annualisé compris. Vie visée : + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle, soit **3 970 €/mois, ou 47 600 €/an nets**. Friction fiscale estimée (PEA + AV mûres + CTO, PUMa comprise) : 12 % → **54 100 €/an bruts**. Revenus non financiers : aucun avant 65 ans. Pensions estimées à 2 100 €/mois pour le couple à 65-67 ans ([info-retraite.fr](https://www.info-retraite.fr)), données au simulateur et non soustraites. Multiple : horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort → **3,5 %, soit 28,6x**. **Cible : 54 100 × 28,6 ≈ 1 547 000 €.** Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 %, sous la zone de travail des 10-20 % ([[ruine-et-probabilites]]) par construction, puisque la pension est comptée et le multiple déjà prudent. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
+Nadia et Marc, 41 et 43 ans, visent l'arrêt à 48 ans.
+
+1. **Relevés de 24 mois** → 3 400 €/mois de dépenses réelles, irrégulier annualisé compris.
+2. **Vie visée** → + 350 €/mois de voyages et loisirs, + 220 €/mois de mutuelle, soit **3 970 €/mois, ou 47 600 €/an nets**.
+3. **Friction fiscale estimée** → 12 % (PEA + AV mûres + CTO, PUMa comprise), soit **54 100 €/an bruts**.
+4. **Revenus non financiers** → aucun avant 65 ans. Pensions estimées à 2 100 €/mois pour le couple à 65-67 ans ([info-retraite.fr](https://www.info-retraite.fr)), données au simulateur et non soustraites.
+5. **Multiple** → horizon 45 ans, portefeuille mondial 70/30, plancher à 75 % du confort, d'où **3,5 %, soit 28,6x**.
+
+**Cible : 54 100 × 28,6 ≈ 1 547 000 €.**
+
+Vérification en simulation, à 1 550 000 € et 54 100 €/an avec pensions à 66 ans : ruine centrale ~5 %, sous la zone de travail des 10-20 % ([[ruine-et-probabilites]]) par construction, puisque la pension est comptée et le multiple déjà prudent. Le même plan **sans** les pensions afficherait ~12 %, et aurait exigé ~200 000 € de plus. La pension légale « vaut » ici quatre ans de travail. Voilà pourquoi on ne l'oublie pas.
 :::
 
 ::: figure cible-cascade
