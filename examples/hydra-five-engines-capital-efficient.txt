@@ -29,9 +29,11 @@
 #     crisis alpha (Moskowitz, Ooi & Pedersen 2012; Hurst, Ooi & Pedersen,
 #     "A Century of Evidence on Trend-Following", 2017) and the most
 #     reliable inflation-regime asset (Neville, Draaisma, Funnell, Harvey
-#     & van Hemert 2021). Split across two genuinely different methods
-#     (DBi CTA replication vs the rules-based MLM index, which trades no
-#     equity futures) so one model's decay does not take the sleeve down.
+#     & van Hemert 2021). Split across two genuinely different trend models
+#     (RSBT's SG/DBi CTA replication vs, for the real holding, AQR's
+#     multi-horizon program) so one model's decay does not take the sleeve
+#     down. See the wider-universe note below on why AQR beats the MLM index
+#     (KMLM) live even though the two are indistinguishable in the backcast.
 #   - Gold: near-zero expected real return alone (Erb & Harvey, "The
 #     Golden Dilemma", 2013) but a debasement/geopolitical hedge nothing
 #     else replicates, and the complement to trend in stagflation, where
@@ -71,6 +73,35 @@
 #   STRIPS). The stacked instruments are used where stacking helps -- the
 #   growth, duration and gold cores -- not on the crisis diversifiers.
 #
+# Wider-universe search on the same three sleeves (not just stacked, and not
+#   just the funds named in this file), all keeping the sleeve weights:
+#   - Long duration (ZROZ) vs EURO government bonds: on 2008->2026 (the euro
+#     long-govt real start) the USD 25+y zero-coupon still wins -- higher CAGR
+#     (11.74% vs 11.49%), Sharpe (0.85 vs 0.83), worst 5y (1.70% vs 1.43%) and
+#     a shallower drawdown than the iShares euro 15-30y govt (IE00B1FZS913).
+#     Euro govt has ~16y duration vs ZROZ's ~27, so less crisis convexity, and
+#     the EUR investor loses the USD flight-to-quality kick that helped in 2008
+#     and 2020. USD 20+ (IDTL) lands between the two. ZROZ stays.
+#   - Small caps (ZPRV) vs a broad, no-tilt small-cap index: on 2018->2026
+#     (iShares MSCI World Small Cap real start) dropping the value tilt LOSES
+#     (CAGR 11.13% vs 11.61%, Sharpe 0.85 vs 0.88, worst 5y 7.04% vs 7.90%).
+#     The size+value combination is doing the work; broad small cap is not an
+#     upgrade. Deepening the GLOBAL SCV backcast below ~1994 is not honest:
+#     international small-VALUE return data is thin before then, so a deeper
+#     series would have to proxy non-US with US and lose the very geographic
+#     diversification that was the point. ZPRV (US SCV, clean to 1963) stays.
+#   - Trend (KMLM) vs AQR / Man AHL / Winton: over the ~40y backtest the trend
+#     model barely matters, because every managed-futures backcast here shares
+#     one deep TSMOM proxy before its real quotes (KMLM->AQR is a wash: Sharpe
+#     0.87 either way, a touch less vol and CAGR). But the LIVE record does
+#     separate them, and it favours AQR sharply: over 2022->2026 KMLM was the
+#     WORST of the group (Sharpe ~0, drawdown -42%) while AQR Managed Futures
+#     UCITS ran Sharpe 0.75, vol 13%, drawdown -20% (and best-in-class low vol
+#     over 2015->2026 too); Man AHL and Winton lagged. So for the real-world
+#     Engine 3b holding, prefer AQR (LU1103257975) -- now backtestable in this
+#     toolkit -- over the US-listed MLM index. KMLMSIM stays as the backtest
+#     proxy only because the two are indistinguishable across the deep history.
+#
 # Honesty note on the WEIGHTS: the sleeves and their roles are theory-
 #   first, but the exact percentages are backtest-informed. They started
 #   from where the risk-parity and capped max-sharpe optimizers agreed
@@ -92,6 +123,6 @@
 35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
 12    ZPRVSIM         # Engine 2, value factor: US small-cap value (buy ZPRV IE00BSPLC413, or global Avantis IE0003R87OG3)
 16    RSBTSIM         # Engine 3a, trend replication (iMGP DBi EUR, LU2951555585)
-14    KMLMSIM         # Engine 3b, direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR UCITS)
+14    KMLMSIM         # Engine 3b, second independent trend model (buy AQR MF UCITS LU1103257975, best live record; KMLM here is the backtest proxy)
 18    GDESIM          # Engine 4, gold (buy a physical ETC: IGLN IE00B4ND3602)
 5     ZROZSIM         # Engine 5, deep deflation duration (US fund; UCITS route: IDTL IE00BSKRJZ44 at ~1.6x the weight)
