@@ -226,7 +226,7 @@ body.hub{background:
 <nav class="hub-dest">
   <a href="/fire/"><span class="d-t">FIRE simulator <span class="arw">&rarr;</span></span>
     <span class="d-b">Model a withdrawal plan and its odds of lasting.</span></a>
-  <a href="/book/fr/"><span class="d-t">FIRE handbook <span class="arw">&rarr;</span></span>
+  <a href="/firebook/fr/"><span class="d-t">Le FIRE tranquille <span class="arw">&rarr;</span></span>
     <span class="d-b">The decumulation book, in French.</span></a>
 </nav>
 
