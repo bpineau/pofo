@@ -113,3 +113,24 @@ func TestSplitSim(t *testing.T) {
 		}
 	}
 }
+
+func TestKnownLocal(t *testing.T) {
+	cases := []struct {
+		id   string
+		want bool
+	}{
+		{"NTSG", true},         // catalog id
+		{" ntsg ", true},       // normalization
+		{"IE00B0M62X26", true}, // catalog ISIN (IBCI)
+		{"GOLDSIM", true},      // SIM suffix on a catalog alias
+		{"IWDA", true},         // embedded European ticker
+		{"ZZZNOTANID", false},  // unknown
+		{"^GSPC", false},       // quote symbols are deliberately not local
+		{"", false},
+	}
+	for _, c := range cases {
+		if got := KnownLocal(c.id); got != c.want {
+			t.Errorf("KnownLocal(%q) = %v, want %v", c.id, got, c.want)
+		}
+	}
+}
