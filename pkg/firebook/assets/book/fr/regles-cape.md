@@ -8,6 +8,16 @@ C'est la stratégie que Karsten Jeske (ERN) a formalisée pour lui-même au vole
 Chaque année, taux de retrait = a + b × (1/CAPE), appliqué au portefeuille courant. 1/CAPE est le rendement des bénéfices (earnings yield), l'estimation du rendement réel des actions que les prix du moment permettent ([[valorisations-et-cape]]). b est la part de ce rendement que vous consommez (~0,5). a est le socle indépendant des valorisations (~1,5-2 %). À CAPE 20 → 1,75 + 0,5 × 5 = 4,25 %. À CAPE 33 → 1,75 + 0,5 × 3 = 3,27 %. À CAPE 12 → 5,9 %. Le taux respire avec les prix. C'est un pourcentage fixe devenu conscient du monde.
 :::
 
+::: admin Mode d'emploi
+- **Le taux s'applique au portefeuille courant**, comme tout pourcentage, et sans aucune mémoire du capital de départ ni du retrait de l'an dernier. Ce qui change d'une année sur l'autre, c'est le taux lui-même, recalculé sur le CAPE du jour.
+- **Indexation.** Rien à indexer.
+- **Fréquence.** Annuelle : une lecture de CAPE, une addition, une multiplication.
+- **Paramètres.** a ≈ 1,75 et b ≈ 0,5 pour un horizon de 60 ans, a ≈ 2 et b ≈ 0,5 pour 30 ans. Contrairement aux seuils des garde-fous, ceux-là sont **estimés** et non choisis : ils sortent de régressions sur les données mensuelles 1871-2016. Ils ont donc un intervalle de confiance, et non une simple tradition. b est la fraction du rendement des bénéfices que vous acceptez de consommer, a le socle qui ne dépend pas des actions.
+- **Une borne haute est obligatoire.** La formule est linéaire en 1/CAPE et n'a aucun plafond, si bien qu'elle propose 11,5 % à qui part au fond d'un krach. Écrivez donc un plafond de taux, de l'ordre de 5 à 5,5 %, au même titre qu'un plancher. C'est le seul paramètre que la formule publiée ne vous donne pas.
+- **Plancher.** Externe, comme pour toute la famille proportionnelle.
+- **De tête.** w en pourcentage = a + b × 100 / CAPE. À CAPE 30, w = 1,75 + 0,5 × 3,33 = 3,4 %. À CAPE 20, w = 4,25 %. À CAPE 12, w = 5,9 %, plafonné.
+:::
+
 ## La logique : consommer le rendement estimé, pas un chiffre gravé
 
 Relisons la formule comme un raisonnement économique. À tout instant, un portefeuille diversifié offre un rendement réel soutenable approximatif : le rendement des bénéfices pour la poche actions, le taux réel courant pour les obligations, plus la croissance des bénéfices ([[rendements-attendus]]). La règle CAPE dit simplement de consommer une fraction prudente de cette estimation, réévaluée chaque année. Le terme a agrège ce qui ne dépend pas du CAPE : la croissance réelle des bénéfices (~1,5-2 points) et la contribution des autres poches. Le terme b × (1/CAPE) fait respirer la part actions avec les prix. Les paramètres d'ERN (a = 1,75, b = 0,5 pour un horizon de 60 ans avec préservation partielle du capital ; a = 2, b = 0,5 pour 30 ans) sortent de régressions sur les données mensuelles 1871-2016. Ce sont les valeurs qui auraient maintenu le pouvoir d'achat du capital à travers tous les millésimes, queues comprises.
