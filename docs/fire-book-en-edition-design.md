@@ -288,6 +288,13 @@ so the choice stays revisable:
   Adapted passages still live under the same stamp: a French edit flags the
   EN article stale, and the translator re-derives the adapted passage.
 
+The ledger, opened with the M1 pilots:
+
+| FR slug | EN slug | Decision | Note |
+|---|---|---|---|
+| sequence-des-rendements | sequence-of-returns | generalize | Nothing France-specific; a straight translation. |
+| vpw | vpw | generalize | The pension-bridge passage pointed at `retraite-legale`, a tax-part article with no EN counterpart. Neutralized to "before your pensions start" with NO replacement pointer: a cross-link there earns little, and a reader who wants the local rules will find the US part on their own. The "phase adossée d'un plan FIRE français" aside became locale-neutral. |
+
 Rejected: keeping "in France, ..." passages verbatim as curiosities (dead
 weight for the target reader), and conditional markers in shared sources
 (see Synchronization).
