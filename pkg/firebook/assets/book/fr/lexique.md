@@ -80,7 +80,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Frontière de décumulation** : chaque règle de retrait posée comme un point dans le plan (risque de ruine ; variabilité du niveau de vie). Aucune ne gagne sur les deux axes à la fois, donc choisir sa règle revient à choisir sa place le long de la frontière. [[panorama-strategies-retrait]]
 
-**Glidepath** : faire varier l'allocation dans le temps. La version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Kitces-Pfau et ERN. [[glidepaths]]
+**Glidepath** : faire varier l'allocation dans le temps. La version retrait (rising equity, remonter les actions en sortant de la fenêtre fragile) est validée par Pfau-Kitces et ERN. [[glidepaths]]
 
 **Global macro** : les fonds qui parient sur les grandes forces économiques (taux, devises, matières premières) plutôt que sur des titres. Corrélation basse et bons millésimes de crise, mais dispersion entre gérants énorme et grands fonds fermés au particulier. [[global-macro]]
 
