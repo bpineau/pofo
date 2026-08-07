@@ -113,14 +113,24 @@
     return s;
   }
 
+  // portHasHolding reports whether a p port carries at least one non-empty id.
+  // A card with none (the hub's untouched boot card, or one the user cleared)
+  // must never reach the URL: it would serialize as "p=:" and 400 on Run.
+  function portHasHolding(port) {
+    return (port.holdings || []).some(function (h) { return String(h.id).trim() !== ""; });
+  }
+
   // serialize is the exact inverse of parseSearch for non-opaque state: ports
   // in order (ex= then p=), then any set globals in a fixed order. Empty
-  // globals are left out so the server default applies.
+  // globals are left out so the server default applies, and a p= card with no
+  // non-empty holding is dropped from the link (kept in the DOM, absent from
+  // the URL) so the server never sees a "p=:".
   function serialize(state) {
     var parts = [];
     state.ports.forEach(function (port) {
-      if (port.kind === "ex") parts.push("ex=" + encP(port.name));
-      else parts.push("p=" + encP(serializeP(port)));
+      if (port.kind === "ex") { parts.push("ex=" + encP(port.name)); return; }
+      if (port.kind === "opaque") { parts.push("p=" + encP(port.raw)); return; }
+      if (portHasHolding(port)) parts.push("p=" + encP(serializeP(port)));
     });
     var g = state.globals;
     if (g.currency) parts.push("currency=" + encP(g.currency));
@@ -145,15 +155,29 @@
       "p=IWDASIM:60,IGLNSIM:40",      // SIM-suffixed ids survive the round trip intact
       ""
     ];
-    var ok = 0;
+    var ok = 0, total = cases.length;
     cases.forEach(function (x) {
       var got = serialize(parseSearch(x));
       var pass = got === x;
       if (pass) ok++;
       console.log((pass ? "PASS" : "FAIL") + " " + JSON.stringify(x) + (pass ? "" : " -> " + JSON.stringify(got)));
     });
-    console.log("composerSelfTest: " + ok + "/" + cases.length + " passed");
-    return ok === cases.length;
+    // A card with no non-empty holding (the hub's untouched boot card) is
+    // dropped from the URL, while a filled sibling survives: guards the primary
+    // "boot -> add preset -> Run" flow against a "p=:" the server 400s.
+    total++;
+    var pruned = serialize({
+      ports: [
+        { kind: "p", name: "", nameSet: false, holdings: [{ id: "", w: "" }], metas: {} },
+        { kind: "p", name: "", nameSet: false, holdings: [{ id: "IWDA", w: "60" }], metas: {} }
+      ],
+      globals: {}
+    });
+    var prunePass = pruned === "p=IWDA:60";
+    if (prunePass) ok++;
+    console.log((prunePass ? "PASS" : "FAIL") + " prune-empty-port -> " + JSON.stringify(pruned));
+    console.log("composerSelfTest: " + ok + "/" + total + " passed");
+    return ok === total;
   }
 
   // ---- DOM layer ----------------------------------------------------------
@@ -172,8 +196,7 @@
   // until the visitor actually builds something.
   function hasPortfolioContent() {
     return state.ports.some(function (p) {
-      if (p.kind === "ex" || p.kind === "opaque") return true;
-      return p.holdings.some(function (h) { return h.id.trim() !== ""; });
+      return p.kind === "ex" || p.kind === "opaque" || portHasHolding(p);
     });
   }
 
@@ -200,12 +223,19 @@
     location.assign("/view?" + serialize(state));
   }
 
-  // refreshCount syncs the summary's portfolio-count chip with the live state.
-  // Hub only (the blank boot changes the count); the /view mount stays static.
+  // refreshCount syncs the summary's portfolio-count chip with the live state,
+  // pluralized. Hub only (the blank boot changes the count); the /view mount
+  // stays as the server rendered it (already pluralized there too).
   function refreshCount() {
     if (!bootBlank || !panelEl) return;
-    var b = panelEl.querySelector(".cmp-sum .chip b");
-    if (b) b.textContent = String(state.ports.length);
+    var chip = panelEl.querySelector(".cmp-sum .chip");
+    if (!chip) return;
+    var n = state.ports.length;
+    chip.textContent = "";
+    var b = document.createElement("b");
+    b.textContent = String(n);
+    chip.appendChild(b);
+    chip.appendChild(document.createTextNode(" " + (n === 1 ? "portfolio" : "portfolios")));
   }
 
   // refreshRunState disables the Run button while inert, so the hub's empty
@@ -688,11 +718,22 @@
     commit();
   }
 
-  // insertPreset adds a bundled build as a fresh editable p= card, named after
-  // the preset and carrying a dismissible note for anything the grammar dropped.
-  // Same shape as addPortfolio, then Fork's payload handling. Gated on the cap.
+  // isPristine reports an untouched editable card: no id, no weight, no name
+  // typed. The hub's blank boot card is pristine until the visitor edits it, so
+  // a preset fills that empty slot in place (testfol-style) instead of stacking
+  // a fresh card beside a dead one.
+  function isPristine(port) {
+    return port.kind === "p" && !port.nameSet && (port.name || "") === "" &&
+      port.holdings.every(function (h) {
+        return String(h.id).trim() === "" && String(h.w).trim() === "";
+      });
+  }
+
+  // insertPreset adds a bundled build as an editable p= card, reusing a pristine
+  // card (the boot slot) when one exists rather than appending. It carries a
+  // dismissible note for anything the grammar dropped. Gated on the cap only
+  // when it must append (reuse costs no new slot).
   function insertPreset(preset) {
-    if (state.ports.length >= CAP_PORTS) return;
     var parsed = parsePValue(preset.p);
     if (parsed.kind !== "p") { // impossible: the server emitted specToP output
       if (window.console) console.warn("preset " + preset.name + " failed to parse");
@@ -701,16 +742,35 @@
     // parsePValue already names the card after the build (specToP emits its
     // !name:), so it stays consistent with Fork; the dropdown shows the human
     // title for discovery, some of which are long degraded first-line prose.
-    state.ports.push(parsed);
-    var card = buildShell();
-    var stack = panelEl.querySelector(".stack");
-    stack.insertBefore(card, stack.querySelector(".stack-actions"));
-    parsed._el = card;
-    card.__cmpPort = parsed;
+    var reuse = null;
+    for (var i = 0; i < state.ports.length; i++) {
+      if (isPristine(state.ports[i])) { reuse = state.ports[i]; break; }
+    }
+    if (!reuse && state.ports.length >= CAP_PORTS) return;
+
+    var card;
+    if (reuse) {
+      card = reuse._el;
+      // Swap the port's content in place, keeping the DOM card (and its already
+      // enhanced head): the same move as fork.
+      for (var k in reuse) if (Object.prototype.hasOwnProperty.call(reuse, k)) delete reuse[k];
+      Object.assign(reuse, parsed);
+      reuse._el = card;
+      card.__cmpPort = reuse;
+      parsed = reuse;
+    } else {
+      state.ports.push(parsed);
+      card = buildShell();
+      var stack = panelEl.querySelector(".stack");
+      stack.insertBefore(card, stack.querySelector(".stack-actions"));
+      parsed._el = card;
+      card.__cmpPort = parsed;
+      enhanceHead(parsed);
+    }
     var nameInput = card.querySelector(".pname");
     if (nameInput) nameInput.value = parsed.nameSet ? parsed.name : "";
     renderBody(parsed);
-    enhanceHead(parsed);
+    refreshBadge(parsed);
     if (preset.dropped && preset.dropped.length) addNote(card, preset.dropped);
     panelEl.open = true;
     refreshAddPortState();

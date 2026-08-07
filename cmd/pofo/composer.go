@@ -135,12 +135,14 @@ func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
 		return ""
 	}
 	attrs := make([]presetAttr, 0, len(presets))
-	for i, p := range presets {
+	for _, p := range presets {
 		b, err := json.Marshal(p)
 		if err != nil {
 			continue
 		}
-		attrs = append(attrs, presetAttr{Index: i, JSON: string(b)})
+		// Index off the running length, not the source loop: a skipped marshal
+		// must not gap the data-preset-<i> sequence readPresets walks.
+		attrs = append(attrs, presetAttr{Index: len(attrs), JSON: string(b)})
 	}
 	data := composerData{
 		Caps:        string(capsJSON),
@@ -338,7 +340,7 @@ var composerTmpl = template.Must(template.New("composer").Parse(`<link rel="styl
 <details class="cmp" id="composer" data-caps="{{.Caps}}"{{if .Boot}} data-boot="{{.Boot}}"{{end}}{{if .GlobalsSeed}} data-globals="{{.GlobalsSeed}}"{{end}}{{if .Presets}} data-preset-count="{{len .Presets}}"{{end}}{{range .Presets}} data-preset-{{.Index}}="{{.JSON}}"{{end}}{{if .Open}} open{{end}}>
 <summary class="cmp-bar">
 <span class="eyebrow">Composer</span>
-<div class="cmp-sum"><span class="chip"><b>{{.Count}}</b> portfolios</span>{{with .Globals.Currency}}<span class="chip">{{.}}</span>{{end}}{{with .Globals.Rebalance}}<span class="chip">rebalance <b>{{.}}d</b></span>{{end}}{{with .Globals.Sim}}<span class="chip">sim {{.}}</span>{{end}}</div>
+<div class="cmp-sum"><span class="chip"><b>{{.Count}}</b> {{if eq .Count 1}}portfolio{{else}}portfolios{{end}}</span>{{with .Globals.Currency}}<span class="chip">{{.}}</span>{{end}}{{with .Globals.Rebalance}}<span class="chip">rebalance <b>{{.}}d</b></span>{{end}}{{with .Globals.Sim}}<span class="chip">sim {{.}}</span>{{end}}</div>
 <span class="grow"></span>
 <span class="btn btn-ghost cmp-toggle"></span>
 </summary>
