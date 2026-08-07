@@ -319,11 +319,11 @@
 28	NTSG            # equity + duration core: Global Efficient Core 90/60 (IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 4	MTH             # deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194; alts DBXG LU0290357846, DTLE IE00BD8PGZ49)
 13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
-13	LU1662501532    # trend, direct method: AQR Managed Futures UCITS EUR-hedged (fallback Winton IE00BG382Q20)
+13	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; fallback Winton IE00BG382Q20)
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
 13	IBCI            # euro linkers: iShares € Inflation Linked Govt (IE00B0M62X26; 1-10y alts LU1645380442, LU1459801780)
 
 # ---- PEA / PEA-PME section (tax-sheltered; equity-only by law) --------
 5	WPEA            # world equity via synthetic swap (IE0002XZSHO1; alts CW8 LU1681043599, EWLD)
-7	LU1832174962    # small value/quality tilt: Independance AM Europe Small, held across PEA and PEA-PME
-2	LU0131510165    # legacy overlap: Independance AM France Small Mid (fine to fold into Europe Small over time)
+7	IAMES           # small value/quality tilt: Independance AM Europe Small (LU1832174962), held across PEA and PEA-PME
+2	IAMFS           # legacy overlap: Independance AM France Small Mid (LU0131510165; fine to fold into Europe Small over time)
