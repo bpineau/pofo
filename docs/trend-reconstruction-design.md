@@ -24,6 +24,7 @@ which for this family means before 2007.
 | AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02 | 2007-02 |
 | KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02 | 2007-02 |
 | Simplify CTA | 2022-03 | AHL 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02 | 2007-02 |
+| AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03, then the AQR chain hedged to EUR | 2007-02 |
 
 Measured effect on the reconstruction, before and after (daily / weekly
 correlation with the fund, tracking error, CAGR gap):
@@ -36,6 +37,11 @@ correlation with the fund, tracking error, CAGR gap):
 | AQR UCITS A | 0.37 / 0.55, 10.6 %, -4.8 pts | **0.73 / 0.92, 6.8 %, +0.1 pt** |
 | KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -2.3 pts** |
 | Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.44 / 0.45, 17.9 %, -4.6 pts** |
+
+The euro-hedged AQR class runs the same chain and hedges it day by day, the
+carry read off the two cash series themselves rather than off a frame: a donor
+keeps its own trading calendar, and a date the frame does not hold would
+otherwise be silently left unhedged (17 % of them, measured).
 
 The donor brings its own manager and fee load with it, which is the honest
 price: the reconstruction is no longer "what this fund would have done" but

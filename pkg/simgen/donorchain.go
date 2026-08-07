@@ -132,6 +132,20 @@ func cashAccrual(cash *marketdata.Series, from, to time.Time) float64 {
 	return lvl / 100 * to.Sub(from).Hours() / 24 / 365.25
 }
 
+// eurCashReturn is the return of a money-market INDEX between two dates (the
+// euro cash leg is an index level, not a rate: cashAccrual would misread it).
+func eurCashReturn(idx *marketdata.Series, from, to time.Time) float64 {
+	if idx == nil {
+		return 0
+	}
+	a, _, okA := idx.At(from)
+	b, _, okB := idx.At(to)
+	if !okA || !okB || a <= 0 {
+		return 0
+	}
+	return b/a - 1
+}
+
 func stdev(xs []float64) float64 {
 	if len(xs) < 2 {
 		return 0
