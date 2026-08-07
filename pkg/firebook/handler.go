@@ -1,14 +1,23 @@
 package firebook
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/webui"
 )
+
+// epubFileName is both the download URL (relative, so the route works under any
+// mount) and the suggested filename in the Content-Disposition header.
+const epubFileName = "le-fire-tranquille.epub"
 
 // siteName is the book's title, shown in the <h1>, the <title> suffix and
 // the SEO metadata.
@@ -53,10 +62,54 @@ func Handler(opts ...Option) http.Handler {
 	}
 	mux.HandleFunc("/theme.css", css(webui.CSS))
 	mux.HandleFunc("/fonts.css", css(webui.FontsCSS))
+
+	// The whole book as a single EPUB, built once on first demand (the book is
+	// embedded, so it cannot change while the process runs) and cached with a
+	// strong ETag. build() is shared by the download route and the index page
+	// (whose download link shows the file size).
+	var (
+		once sync.Once
+		body []byte
+		etag string
+		bErr error
+	)
+	build := func() ([]byte, string, error) {
+		once.Do(func() {
+			body, bErr = EPUB(time.Now())
+			if bErr != nil {
+				log.Printf("firebook: EPUB build failed: %v", bErr)
+				return
+			}
+			sum := sha256.Sum256(body)
+			etag = `"` + hex.EncodeToString(sum[:16]) + `"`
+		})
+		return body, etag, bErr
+	}
+	mux.HandleFunc("/"+epubFileName, func(w http.ResponseWriter, r *http.Request) {
+		data, tag, err := build()
+		if err != nil {
+			http.Error(w, "EPUB indisponible", http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("ETag", tag)
+		if r.Header.Get("If-None-Match") == tag {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Content-Type", "application/epub+zip")
+		w.Header().Set("Content-Disposition", `attachment; filename="`+epubFileName+`"`)
+		_, _ = w.Write(data)
+	})
+
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.Trim(r.URL.Path, "/")
 		if slug == "" {
-			writePage(w, cfg.nav, siteName, siteDescription, indexHTML())
+			data, _, err := build()
+			var size int
+			if err == nil {
+				size = len(data)
+			}
+			writePage(w, cfg.nav, siteName, siteDescription, indexHTML(size))
 			return
 		}
 		art, cat, ok := find(slug)
@@ -148,8 +201,10 @@ func jsonLD(title, description string, index bool) string {
 	return string(b)
 }
 
-// indexHTML renders the sommaire from the manifest.
-func indexHTML() string {
+// indexHTML renders the sommaire from the manifest. epubSize is the byte
+// length of the generated EPUB (0 when it could not be built): a non-zero
+// value adds a discreet "Version EPUB" download link with the file size.
+func indexHTML(epubSize int) string {
 	var b strings.Builder
 	b.WriteString(`<header class="book-hero">`)
 	b.WriteString(`<p class="book-kicker">pofo · référence</p>`)
@@ -157,6 +212,10 @@ func indexHTML() string {
 	b.WriteString(`<p class="book-lede">Vivre de son capital sans le survivre : la science du retrait, ` +
 		`les modèles et leurs pièges, les stratégies, les portefeuilles qui résistent, les buffers, ` +
 		`l'inflation, la fiscalité française et le facteur humain.</p>`)
+	if epubSize > 0 {
+		fmt.Fprintf(&b, `<p class="book-epub"><a href="%s">Version EPUB</a> `+
+			`<span class="book-epub-size">(%s)</span></p>`, epubFileName, humanSize(epubSize))
+	}
 	b.WriteString(`</header><main>`)
 	for _, cat := range Categories {
 		fmt.Fprintf(&b, `<section class="book-cat"><h2>%s</h2><p class="book-cat-blurb">%s</p><ul class="book-toc">`,
@@ -169,6 +228,19 @@ func indexHTML() string {
 	}
 	b.WriteString(`</main>`)
 	return b.String()
+}
+
+// humanSize formats a byte count as a compact, French-locale file size
+// ("312 Ko", "1,4 Mo"), the way the EPUB download link presents it.
+func humanSize(n int) string {
+	switch {
+	case n >= 1<<20:
+		return strings.Replace(fmt.Sprintf("%.1f Mo", float64(n)/(1<<20)), ".", ",", 1)
+	case n >= 1<<10:
+		return fmt.Sprintf("%d Ko", (n+512)/(1<<10))
+	default:
+		return fmt.Sprintf("%d o", n)
+	}
 }
 
 // articleHTML renders one article page: top bar, title, rendered body, and a
@@ -228,6 +300,10 @@ body.book ::selection{background:var(--accent-wash)}
 .book h1{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:2.1rem;line-height:1.13;
   margin:0 0 .7rem;letter-spacing:.005em}
 .book-lede{color:var(--ink-soft);font-size:1.05rem;line-height:1.62;margin:0;max-width:62ch}
+.book-epub{margin:1rem 0 0;font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+.book-epub a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid var(--rule)}
+.book-epub a:hover{border-bottom-color:var(--accent)}
+.book-epub-size{color:var(--muted)}
 .book-cat{margin:2.4rem 0}
 .book-cat h2{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:1.35rem;margin:0 0 .2rem}
 .book-cat-blurb{color:var(--muted);font-size:.9rem;margin:0 0 .9rem}

@@ -1,6 +1,7 @@
 package firebook
 
 import (
+	"bytes"
 	"html"
 	"io"
 	"net/http"
@@ -99,6 +100,85 @@ func TestHandlerNav(t *testing.T) {
 	}
 	if _, body := get(t, site, "/"); !strings.Contains(body, "@media print{.book-sitenav{display:none}}") {
 		t.Error("navbar not hidden in print")
+	}
+}
+
+// The EPUB route is served by the Handler itself, so every mount gets the
+// download for free: correct status, MIME and attachment headers, a strong
+// ETag, cached identical bytes across requests, and a 304 on If-None-Match.
+func TestHandlerEPUB(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+
+	resp, err := srv.Client().Get(srv.URL + "/le-fire-tranquille.epub")
+	if err != nil {
+		t.Fatal(err)
+	}
+	first, _ := io.ReadAll(resp.Body)
+	resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("epub: status %d", resp.StatusCode)
+	}
+	if ct := resp.Header.Get("Content-Type"); ct != "application/epub+zip" {
+		t.Errorf("epub: Content-Type %q", ct)
+	}
+	if cd := resp.Header.Get("Content-Disposition"); cd != `attachment; filename="le-fire-tranquille.epub"` {
+		t.Errorf("epub: Content-Disposition %q", cd)
+	}
+	etag := resp.Header.Get("ETag")
+	if len(etag) < 3 || etag[0] != '"' || etag[len(etag)-1] != '"' {
+		t.Errorf("epub: ETag %q is not a strong quoted tag", etag)
+	}
+	if len(first) == 0 {
+		t.Fatal("epub: empty body")
+	}
+	// EPUB is a zip; the first bytes are the local file header signature "PK".
+	if !strings.HasPrefix(string(first), "PK") {
+		t.Errorf("epub: body is not a zip (no PK signature)")
+	}
+
+	// A second request serves byte-identical, cached content with the same ETag.
+	resp2, err := srv.Client().Get(srv.URL + "/le-fire-tranquille.epub")
+	if err != nil {
+		t.Fatal(err)
+	}
+	second, _ := io.ReadAll(resp2.Body)
+	resp2.Body.Close()
+	if !bytes.Equal(first, second) {
+		t.Error("epub: second request returned different bytes")
+	}
+	if resp2.Header.Get("ETag") != etag {
+		t.Error("epub: ETag changed between requests")
+	}
+
+	// If-None-Match with the current ETag -> 304, no body.
+	req, _ := http.NewRequest(http.MethodGet, srv.URL+"/le-fire-tranquille.epub", nil)
+	req.Header.Set("If-None-Match", etag)
+	resp3, err := srv.Client().Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	body3, _ := io.ReadAll(resp3.Body)
+	resp3.Body.Close()
+	if resp3.StatusCode != http.StatusNotModified {
+		t.Errorf("epub: If-None-Match got status %d, want 304", resp3.StatusCode)
+	}
+	if len(body3) != 0 {
+		t.Errorf("epub: 304 response carried a body (%d bytes)", len(body3))
+	}
+}
+
+// The index page carries a discreet, relative EPUB download link.
+func TestHandlerIndexEPUBLink(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+
+	_, body := get(t, srv, "/")
+	if !strings.Contains(body, `href="le-fire-tranquille.epub"`) {
+		t.Error("index misses the relative EPUB download link")
+	}
+	if !strings.Contains(body, "Version EPUB") {
+		t.Error("index misses the 'Version EPUB' link label")
 	}
 }
 

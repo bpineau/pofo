@@ -106,6 +106,7 @@ func run(ctx context.Context, argv []string) error {
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
+	exportEpub := fs.String("export-epub", "", "write the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
 	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
@@ -170,6 +171,13 @@ Options:
 		return err
 	}
 	files := fs.Args()
+
+	// -export-epub writes the embedded book and exits; it needs no portfolio,
+	// quote cache or date window, so dispatch it before any of that.
+	if *exportEpub != "" {
+		return runExportEpub(*exportEpub)
+	}
+
 	if len(files) == 0 && *assetsList == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
