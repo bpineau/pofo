@@ -1,0 +1,18 @@
+# FIRE Accumulation Runway -- the last high-risk years before the switch
+# Idea: the build for the final accumulation stretch (0-5 years before
+#   decumulation) when income still covers spending and full equity risk is
+#   acceptable: a levered efficient-core engine doing the heavy lifting, a
+#   small-cap-value tilt for the long factor premium, and starter positions
+#   in the trend and gold sleeves the decumulation portfolio will need
+#   anyway (so the switch is a rebalance, not a rebuild). Surplus income is
+#   dripped in monthly.
+# Inspired by: lifecycle investing (risk belongs where human capital still
+#   pays the bills) + the fire-decumulation-core it is designed to become.
+#meta capital:300000
+#meta contribute:4000/month
+#meta rebalance:180
+
+70    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+12    ZPRVSIM         # Small-cap value tilt (buy Avantis Global SCV IE0003R87OG3 or ZPRV)
+10    DBMFESIM        # Trend starter (iMGP DBi EUR, LU2951555585)
+8     XAUUSDSIM       # Gold starter (buy IGLN)
