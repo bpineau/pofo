@@ -111,8 +111,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 ### III. Modeliser : Monte-Carlo et autres machines
 - [x] monte-carlo-forces-faiblesses: Monte-Carlo : forces, faiblesses, bon usage
 - [x] historique-vs-parametrique: Fenetres historiques, bootstrap, parametrique : trois familles de modeles
-- [ ] queues-epaisses: Queues epaisses, crises et Student-t
-- [ ] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
+- [x] queues-epaisses: Queues epaisses, crises et Student-t
+- [x] lire-un-fan-chart: Lire un fan chart et des percentiles sans se tromper
 - [ ] pieges-des-simulateurs: Les pieges des simulateurs (independance, biais americain, survivant...)
 - [ ] rendre-monte-carlo-pertinent: Rendre un Monte-Carlo pertinent (blending, regimes, stress)
 - [ ] regimes-de-marche: Les regimes de marche (croissance x inflation, ours collants) et pourquoi ils comptent
