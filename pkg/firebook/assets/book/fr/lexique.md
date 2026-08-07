@@ -78,7 +78,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Golden Butterfly** : Browne plus une aile small-cap value : le meilleur couple SWR/drawdown de la famille tous-temps sur l'échantillon disponible. [[portefeuilles-tous-temps]]
 
-**Guardrails** : les règles à garde-fous : un retrait stable ajusté de ±10 % quand un capteur sort de son corridor : le capteur moderne est la probabilité de succès re-simulée (Kitces-Tharp, Morningstar). [[guyton-klinger]], [[guardrails-morningstar]]
+**Guardrails** : les règles à garde-fous : un retrait stable ajusté de ±10 % quand un indicateur sort de son corridor : l'indicateur moderne est la probabilité de succès re-simulée (Kitces-Tharp, Morningstar). [[guyton-klinger]], [[guardrails-morningstar]]
 
 ## H-M
 

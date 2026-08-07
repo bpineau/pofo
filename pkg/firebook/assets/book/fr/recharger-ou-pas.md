@@ -16,7 +16,7 @@ Le déclencheur décide de tout ; passons les candidats en revue.
 
 **L'année négative (acceptable, plus fruste).** « Après une année de rendement négatif, l'année suivante se finance sur le buffer. » Simple, exécutable de tête, mais binaire (une année à −2 % déclenche, un krach de −18 % en cours d'année ne déclenche qu'en janvier) : le drawdown continu fait mieux pour le même effort.
 
-**Le taux de retrait courant (à réserver au pilotage global).** « Buffer si le taux courant dépasse 4,5 %. » Ce capteur-là appartient à la règle de retrait et aux guardrails ([[quand-s-inquieter]], [[guardrails-morningstar]]) : l'utiliser **aussi** pour le buffer mélange deux étages de décision : gardez les instruments séparés.
+**Le taux de retrait courant (à réserver au pilotage global).** « Buffer si le taux courant dépasse 4,5 %. » Cet indicateur-là appartient à la règle de retrait et aux guardrails ([[quand-s-inquieter]], [[guardrails-morningstar]]) : l'utiliser **aussi** pour le buffer mélange deux étages de décision : gardez les instruments séparés.
 
 **La discrétion (à proscrire).** « Je verrai bien ». C'est la variante qui transforme le matelas en totem ([[strategie-buckets]]) : sous stress, l'humain consomme trop tôt (la correction de 8 % « fait peur ») ou refuse de consommer du tout : le réflexe paradoxal, très documenté, de **protéger** le buffer (« c'est ma sécurité, n'y touchons pas ! ») et de vendre des actions au creux à la place : l'instrument exact retourné contre son usage.
 
@@ -53,7 +53,7 @@ Le plan de Salomé, 49 ans, phase à découvert de 15 ans : « Buffer : 24 mois 
 ## L'essentiel à retenir
 
 - La valeur d'un buffer est dans ses flux, pas dans sa taille : déclencheur écrit, recharge disciplinée, extinction programmée : sans règles, c'est un compte d'attente coûteux ou un totem qu'on protège en vendant des actions au creux.
-- **Consommer** : sur drawdown réel de 10-20 % (avec hystérésis, éventuellement en deux paliers) : jamais à l'humeur, jamais sur un capteur qui appartient à un autre étage (le taux courant pilote la règle de retrait, pas le buffer).
+- **Consommer** : sur drawdown réel de 10-20 % (avec hystérésis, éventuellement en deux paliers) : jamais à l'humeur, jamais sur un indicateur qui appartient à un autre étage (le taux courant pilote la règle de retrait, pas le buffer).
 - **Recharger** : hors drawdown, progressivement (une fraction des ventes mensuelles), aux sommets pour les stricts, par les excédents toujours. Et **jamais** en baisse : un buffer vide après une traversée a servi, il se reconstituera au calme.
 - Le buffer **fondant** (recharge stoppée après l'année 8-12) aligne le coût sur la fenêtre fragile et domine généralement le perpétuel. C'est un curseur natif de pofo, et le défaut recommandé en phase à découvert.
 - Orchestration : buffer en première ligne, prélèvement-rééquilibrage en seconde, actions en dernier ; avec une règle flexible, réduisez la taille (18-24 mois) : la flexibilité est déjà du matelas.

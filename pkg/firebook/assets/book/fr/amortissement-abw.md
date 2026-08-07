@@ -47,7 +47,7 @@ Les deux familles gagnantes du panorama ([[panorama-strategies-retrait]]) mérit
 | Falaise / cascade | Possibles si mal bornés (plancher obligatoire) | Impossibles par construction |
 | Consommation totale | Bonne | La plus élevée du panorama |
 | Legs | Résiduel, dispersé | Choisi, paramétré |
-| Pensions, valorisations | Via le capteur par risque (bien) | Natives dans la formule (mieux) |
+| Pensions, valorisations | Via l'indicateur par risque (bien) | Natives dans la formule (mieux) |
 | Gouvernance | Trois seuils écrits, revue annuelle | Un outil à faire tourner, des hypothèses à assumer |
 | Profil psychologique servi | « Je veux mon revenu, touchez-y le moins possible » | « Je veux consommer juste, j'accepte que ça respire » |
 
