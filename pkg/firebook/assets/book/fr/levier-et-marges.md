@@ -12,7 +12,7 @@ En accumulation, un jeune épargnant à flux entrants peut rationnellement s'end
 
 ## La revue des instruments, du légitime au toxique
 
-Six instruments, du plus doux au plus douteux. Un seul critère de tri décide vraiment, la possibilité d'un appel de marge, alors lisez la deuxième colonne avant les autres.
+Six instruments, du plus doux au plus douteux. Un seul critère décide vraiment, la possibilité d'un appel de marge, alors lisez la deuxième colonne avant les autres.
 
 | Instrument | Appel de marge | Coût | Durée | Verdict |
 |---|---|---|---|---|
