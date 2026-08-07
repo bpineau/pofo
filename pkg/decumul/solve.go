@@ -56,11 +56,11 @@ func FlexCutAxis(lo, hi float64) SolveAxis {
 // least needed to reach it (e.g. the required capital, or the downturn cut that
 // brings ruin down to target).
 func (p Plan) Solve(target float64, axis SolveAxis, nPaths, workers int, seed uint64) float64 {
-	shared := p.drawPaths(nPaths, workers, seed)
+	shared := p.DrawPaths(nPaths, workers, seed)
 	lo, hi := axis.Lo, axis.Hi
 	for range solveSteps {
 		mid := (lo + hi) / 2
-		ruin := axis.Apply(p, mid).simulateOn(shared, workers).RuinProb()
+		ruin := axis.Apply(p, mid).SimulateOn(shared, workers).RuinProb()
 		// Move the bound that keeps the crossing bracketed: for an increasing
 		// axis an over-target ruin means mid is too high (pull hi down); the
 		// XOR-style equality folds both monotonicity directions into one test.

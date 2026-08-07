@@ -28,7 +28,14 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	base := pr.plan()
 	base.Monthly = false
 	base.Source = pr.detailSource(panel, pr.Years)
-	baseRuin := base.Simulate(pr.NPaths, simWorkers, seed).RuinProb()
+	// Every nudge below keeps the same Source (they move capital, horizon, a
+	// spending rule or a cashflow, never the return model), so the paths drawn
+	// from base serve the baseline and all nudges: draw once, replay per lever.
+	// Sharing the paths also makes each ruin delta a paired difference, so the
+	// common Monte-Carlo noise cancels out of the bars.
+	paths := min(pr.NPaths, shapePaths)
+	seqs := base.DrawPaths(paths, simWorkers, seed)
+	baseRuin := base.SimulateOn(seqs, simWorkers).RuinProb()
 
 	// Each nudge is a single-lever change. The source's path length (Periods) is
 	// at least Years, so shortening the horizon needs no source rebuild.
@@ -64,7 +71,7 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 
 	bars := make([]chart.Bar, 0, len(nudges))
 	for _, n := range nudges {
-		ruin := n.apply(base).Simulate(pr.NPaths, simWorkers, seed).RuinProb()
+		ruin := n.apply(base).SimulateOn(seqs, simWorkers).RuinProb()
 		d := (ruin - baseRuin) * 100
 		bars = append(bars, chart.Bar{Label: n.label, Value: d, Text: signedPP(d)})
 	}

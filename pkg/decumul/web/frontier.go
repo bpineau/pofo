@@ -30,14 +30,20 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 	}
 	base := pr.plan()
 	base.Monthly = false
+	paths := min(pr.NPaths, shapePaths)
 
 	var series []chart.XYSeries
 	for i, ns := range modelSources(pr, panel) {
+		// Only NeedAnnual (and the guardrails band) vary along a model's curve;
+		// the Source is fixed, so draw its paths once and replay them at every
+		// withdrawal rate instead of re-sampling eleven times.
+		mp := base
+		mp.Source = ns.source
+		seqs := mp.DrawPaths(paths, simWorkers, 7)
 		xs := make([]float64, len(frontierWRs))
 		ys := make([]float64, len(frontierWRs))
 		for j, wr := range frontierWRs {
-			p := base
-			p.Source = ns.source
+			p := mp
 			p.NeedAnnual = wr * pr.Capital
 			// Under guardrails the spending band is centred on the initial
 			// withdrawal rate, so it must be re-anchored at each swept rate;
@@ -47,7 +53,7 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 				p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
 			}
 			xs[j] = wr * 100
-			ys[j] = p.Simulate(pr.NPaths, simWorkers, 7).RuinProb() * 100
+			ys[j] = p.SimulateOn(seqs, simWorkers).RuinProb() * 100
 		}
 		series = append(series, chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(i)})
 	}

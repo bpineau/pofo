@@ -3,13 +3,28 @@ package web
 import (
 	"fmt"
 	"math"
+	"runtime"
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-const simWorkers = 8
+// simWorkers is the goroutine count each Monte-Carlo simulation fans out to.
+// It tracks the number of usable CPUs rather than a fixed 8: the page fires a
+// dozen analysis endpoints at once, so on a low-core machine (a small laptop
+// in production) a hardcoded 8-per-request would oversubscribe the cores and
+// add scheduling and cache-thrash overhead for no throughput gain.
+var simWorkers = runtime.GOMAXPROCS(0)
+
+// shapePaths caps the path count of the multi-simulation "shape" endpoints
+// (frontier, policy frontier, sensitivity, solve curves). Those read the shape
+// of a curve, a paired ruin delta or a moment, never a raw tail quantile, so a
+// thousand paths is visually and statistically indistinguishable from the
+// headline count while costing a fraction: each of them runs dozens of full
+// simulations per render. Below the cap they match the headline (so lowering
+// the slider for speed still speeds them up); above it they stay bounded.
+const shapePaths = 1000
 
 // Params is the slider state posted by the browser. Weights is nil in
 // parametric mode and holds per-holding fractions in portfolio mode.
