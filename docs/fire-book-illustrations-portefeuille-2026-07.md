@@ -206,7 +206,7 @@ le rendement par espèce et le comportement par régime sont donc couverts. Il n
 qu'un seul passage à thèse forte encore entièrement verbal, la section « le véhicule
 change la donne ». Le reste tient très bien en prose et une figure de plus alourdirait.
 
-## 1. Le profil de duration des trois véhicules (coût A, recommandée)
+## 1. Le profil de duration des trois véhicules (coût A, recommandée) [FAIT 2026-07-30, `duration-vehicules`]
 
 Une plate à trois tracés, abscisse = années de détention (0 à 12), ordonnée = duration
 restante du véhicule. L'ETF roulant « 7-10 ans » trace une horizontale plate à 8 : il
@@ -370,7 +370,7 @@ Browne). Attention à la poche long volatility du Dragon, à marquer comme non
 implémentable (hachure ou libellé), sinon la figure vend un portefeuille
 inaccessible.
 
-## 2. L'échange, vu comme un nuage rendement / pire chemin (coût A)
+## 2. L'échange, vu comme un nuage rendement / pire chemin (coût A) [FAIT 2026-07-30, `tous-temps-echange`]
 
 Nuage à deux axes, espérance réelle en x, pire drawdown réel en y, un point
 par portefeuille (les six du tableau ci-dessus), famille tous-temps dans une
@@ -738,7 +738,7 @@ L'article n'a aucune figure aujourd'hui, alors qu'il porte deux passages
 purement verbaux très visuels : le résultat de l'échelle (bloc `science`) et la
 décomposition de 2022. Trois idées, par ordre de valeur.
 
-## 1. Ce que finance une échelle de linkers, selon le taux réel et l'horizon
+## 1. Ce que finance une échelle de linkers, selon le taux réel et l'horizon [FAIT 2026-07-30, `linkers-echelle`]
 
 **Ce qu'elle montre.** Trois courbes du taux de retrait garanti par une échelle
 qui se consomme entièrement, `r / (1 − (1+r)^−N)`, pour N = 20, 30 et 40 ans, en

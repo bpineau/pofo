@@ -75,6 +75,7 @@ var figures = map[string]func() string{
 	"carry-courbes":          figCarryCourbes,
 	"stacking-expo":          figStackingExpo,
 	"duration-choc":          figDurationChoc,
+	"duration-vehicules":     figDurationVehicules,
 	"obligations-rendements": figObligationsRendements,
 	"obligations-regimes":    figObligationsRegimes,
 	"trend-smile":            figTrendSmile,
