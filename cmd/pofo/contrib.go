@@ -98,16 +98,17 @@ func monthQuadrants(months []monthKey) []suggest.Category {
 	return out
 }
 
-// contributionCharts renders the two realized-contribution blocks for one
-// portfolio, or empty strings when the simulated window is too short (under
-// two years) to carry a trailing-12m view.
-func contributionCharts(r *result) (timeline, matrix template.HTML) {
+// contributionCharts renders the realized-contribution blocks for one
+// portfolio: the timeline in its two windows (trailing-12m and monthly,
+// toggled in the report) and the per-regime matrix. Empty when the simulated
+// window is too short (under two years).
+func contributionCharts(r *result) (timeline, monthly, matrix template.HTML) {
 	if r.sim == nil || len(r.sim.Contributions) == 0 {
-		return "", ""
+		return "", "", ""
 	}
 	months, mc := monthlyContributions(r)
 	if len(months) < 24 {
-		return "", ""
+		return "", "", ""
 	}
 	labels := make([]string, len(r.p.Assets))
 	colors := make([]string, len(r.p.Assets))
@@ -117,16 +118,19 @@ func contributionCharts(r *result) (timeline, matrix template.HTML) {
 		colors[i] = chart.PaletteColor(i)
 	}
 	quads := monthQuadrants(months)
-	return template.HTML(contribTimeline(months, mc, quads, labels, colors)),
+	return template.HTML(contribTimeline(months, mc, quads, labels, colors, 12)),
+		template.HTML(contribTimeline(months, mc, quads, labels, colors, 1)),
 		template.HTML(contribMatrix(months, mc, quads, labels, colors))
 }
 
-// contribTimeline builds the trailing-12m diverging stacked chart. Series
-// keep one stable color per holding (the coverage-bar assignment) but stack
-// in the palette's CVD-safe order, not holding order.
-func contribTimeline(months []monthKey, mc [][]float64, quads []suggest.Category, labels, colors []string) string {
+// contribTimeline builds the diverging stacked contribution chart over a
+// trailing window of `window` months (12 = the smoothed year view, 1 = the
+// raw monthly view that reads a crash month by month). Series keep one
+// stable color per holding (the coverage-bar assignment) but stack in the
+// palette's CVD-safe order, not holding order.
+func contribTimeline(months []monthKey, mc [][]float64, quads []suggest.Category, labels, colors []string, window int) string {
 	nA := len(labels)
-	first := 11 // the first month with a full trailing year behind it
+	first := window - 1 // the first month with a full trailing window behind it
 	n := len(months) - first
 
 	series := make([]chart.DivergingStackSeries, nA)
@@ -158,14 +162,20 @@ func contribTimeline(months []monthKey, mc [][]float64, quads []suggest.Category
 		}
 	}
 
+	title := "Realized contribution, trailing 12 months (pts of return)"
+	ylabel, totalName := "pts / 12m", "portfolio 12m"
+	if window == 1 {
+		title = "Realized contribution, month by month (pts of return)"
+		ylabel, totalName = "pts / month", "portfolio month"
+	}
 	opt := chart.DivergingStackOptions{
-		Title:     "Realized contribution, trailing 12 months (pts of return)",
+		Title:     title,
 		XLabels:   xlabels,
 		XTips:     xtips,
 		XLabel:    "month",
-		YLabel:    "pts / 12m",
+		YLabel:    ylabel,
 		Total:     total,
-		TotalName: "portfolio 12m",
+		TotalName: totalName,
 	}
 	if quads != nil {
 		opt.StripName = "regime"
