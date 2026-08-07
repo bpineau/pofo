@@ -18,7 +18,7 @@ Dimson, Marsh et Staunton (le « triumvirat de la London Business School », aut
 
 ## Anarkulova, Cederburg, O'Doherty : la méthode moderne
 
-Les travaux d'Anarkulova, Cederburg et O'Doherty (« The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets », 2023, et la série d'articles sœurs dont « Beyond the Status Quo », 2023) modernisent la question sur trois plans.
+Les travaux d'Anarkulova, Cederburg et O'Doherty (« The Safe Withdrawal Rate: Evidence from a Broad Sample of Developed Markets », 2023, cosigné avec Sias, et la série d'articles sœurs dont « Beyond the Status Quo », 2023) modernisent la question sur trois plans.
 
 **Les données.** La base la plus propre disponible sur les pays développés, construite sur le référentiel GFD et les travaux académiques de long terme. Elle couvre 38 pays développés et environ 2 500 années-pays de rendements réels en actions, obligations et monétaire. Le soin porté aux biais de survie et d'anticipation y est inhabituel : un pays entre dans l'échantillon quand il est développé à l'**époque**, pas rétrospectivement. L'Argentine de 1900, alors riche, y figure donc. C'est le point qui fâche, et on y revient.
 

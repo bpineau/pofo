@@ -58,7 +58,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Die With Zero** : la thèse de Perkins. Mourir riche est un échec. Dans sa version raisonnable, des time buckets datés et de la générosité du vivant, appliqués à l'excédent d'un plan sûr. [[depenses-en-retraite]]
 
-**Drawdown** : la baisse depuis le dernier sommet. En réel pour un rentier. Le déclencheur standard du buffer (15-20 %). [[recharger-ou-pas]]
+**Drawdown** : la baisse depuis le dernier sommet. En réel pour un rentier. Le déclencheur standard du buffer (10-20 %). [[recharger-ou-pas]]
 
 **Duration** : la sensibilité d'une obligation aux taux (≈ % de perte par point de hausse) et l'horizon auquel son rendement est verrouillé. [[obligations-en-retrait]]
 

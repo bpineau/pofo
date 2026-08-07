@@ -26,7 +26,7 @@ La probabilité de ruine en fonction de la taille du matelas (allure typique). L
 
 Le même matelas peut être un instrument ou un totem. Quatre choix font la différence.
 
-**1. La règle de consommation, écrite.** Le buffer décoratif n'a pas de règle. On « sent » quand l'utiliser, autrement dit on improvise sous stress. Trop tôt, à la première correction de 10 %, en gaspillant le matelas avant le vrai creux. Ou trop tard. Le buffer utile a un déclencheur quantitatif, par exemple « les retraits basculent sur le matelas quand le portefeuille est en drawdown réel de plus de 15-20 %, et ils y restent jusqu'à retour sous ce seuil ». Simple, mécanique, exécutable par le conjoint ([[quand-s-inquieter]], [[couple-et-famille]]).
+**1. La règle de consommation, écrite.** Le buffer décoratif n'a pas de règle. On « sent » quand l'utiliser, autrement dit on improvise sous stress. Trop tôt, à la première correction de 10 %, en gaspillant le matelas avant le vrai creux. Ou trop tard. Le buffer utile a un déclencheur quantitatif, par exemple « les retraits basculent sur le matelas quand le portefeuille est en drawdown réel de plus de 10-20 %, et ils y restent jusqu'à retour sous ce seuil ». Simple, mécanique, exécutable par le conjoint ([[quand-s-inquieter]], [[couple-et-famille]]).
 
 **2. La règle de recharge.** Le sujet est assez riche pour mériter son propre article ([[recharger-ou-pas]]). Retenons ici le principe. Un matelas consommé se reconstitue aux sommets, jamais au creux, car recharger en vendant des actions déprimées annule tout le bénéfice. Et un matelas qui ne se recharge jamais devient une simple tranche de dépenses prépayées. C'est légitime aussi, mais c'est un autre objet, le « pont » des premières années, cousin de l'échelle ([[echelle-obligataire]]).
 
@@ -57,7 +57,7 @@ Plan de 1,5 M€, 52 000 €/an, corridor Vanguard. Le matelas fait 130 k€ (30
 ## L'essentiel à retenir
 
 - L'intuition (ne jamais vendre au creux) est juste, mais l'arithmétique est têtue. Le coût d'opportunité du cash reprend à peu près ce que la protection rapporte, pour un net quantitatif de ±0,5 point. Le balayage de la taille du matelas l'affiche sans fard, à condition de prélever le buffer sur le capital de départ.
-- Un buffer utile a quatre attributs : déclencheur de consommation écrit (drawdown > 15-20 %), règle de recharge aux sommets ([[recharger-ou-pas]]), taille de 18-36 mois, placement en fonds euros ou monétaire (jamais de duration).
+- Un buffer utile a quatre attributs : déclencheur de consommation écrit (drawdown > 10-20 %), règle de recharge aux sommets ([[recharger-ou-pas]]), taille de 18-36 mois, placement en fonds euros ou monétaire (jamais de duration).
 - Sa vraie valeur est hors simulation, avec l'anti-panique (le désastre comportemental pèse bien plus lourd que tous les débats de taille), la permission de dépenser et la gouvernance du ménage. Trois services qui s'achètent au minimum efficace, pas au maximum rassurant.
 - Les traversées durent 2-7 ans, et le matelas couvre la première moitié. Le reste appartient à la flexibilité, au rééquilibrage et aux actifs de régime. Un buffer de 5-10 ans paie ces services trois fois trop cher.
 - Buffer et glidepath couvrent le même risque, d'où une combinaison modérée plutôt que le maximum de l'un. Un matelas se modélise finement (rendement réel du support, année d'arrêt de la recharge) pour éprouver votre version, pas la caricature.
