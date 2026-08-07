@@ -44,8 +44,9 @@ type CoverageBar struct {
 type PortfolioSection struct {
 	Name          string
 	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
-	ChartSVG      template.HTML
-	ContribSVG    template.HTML   // realized-contribution timeline (diverging stack); empty to omit
+	ChartSVG          template.HTML
+	ContribSVG        template.HTML // realized-contribution timeline, trailing-12m window; empty to omit
+	ContribMonthlySVG template.HTML // same timeline, raw monthly window (toggled with ContribSVG)
 	Breakdowns    []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
 	CoverageLabel string          // heading for the coverage chart
 	Coverage      []CoverageBar   // macro-regime or factor coverage; empty to omit
@@ -99,6 +100,9 @@ const reportCSS = `
 .cov-val{font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
 .cov-val.gap{color:var(--warn-ink)}
 .cov-detail{margin:-.1rem 0 .4rem 9.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.tabs{display:flex;gap:.4rem;margin:0 0 .6rem}
+.tbtn{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:.18rem .75rem;cursor:pointer}
+.tbtn.on{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
 .overview,.stat-scroll{overflow-x:auto}
 details.pf{margin-top:.8rem}
 .pf-name{font-weight:650}
@@ -168,6 +172,17 @@ place(e.clientX,e.clientY);
 });
 document.addEventListener("pointerleave",hide);
 addEventListener("scroll",hide,{passive:true});
+document.addEventListener("click",function(e){
+var btn=e.target.closest?e.target.closest(".tbtn"):null;
+if(!btn)return;
+var box=btn.closest(".chart-frame");
+if(!box)return;
+var idx=+btn.getAttribute("data-pane");
+var btns=box.querySelectorAll(".tbtn"),panes=box.querySelectorAll(".tpane");
+for(var i=0;i<btns.length;i++)btns[i].classList.toggle("on",btns[i]===btn);
+for(var j=0;j<panes.length;j++)panes[j].hidden=j!==idx;
+hide();
+});
 })();
 `
 
@@ -229,7 +244,15 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
 <div class="pf-body">
 <div class="chart-frame">{{.ChartSVG}}</div>
-{{if .ContribSVG}}<div class="chart-frame" style="margin-top:1rem">{{.ContribSVG}}</div>{{end}}
+{{if .ContribSVG}}<div class="chart-frame" style="margin-top:1rem">
+{{- if .ContribMonthlySVG}}
+<div class="tabs"><button class="tbtn on" data-pane="0">12m rolling</button><button class="tbtn" data-pane="1">monthly</button></div>
+<div class="tpane">{{.ContribSVG}}</div>
+<div class="tpane" hidden>{{.ContribMonthlySVG}}</div>
+{{- else}}
+{{.ContribSVG}}
+{{- end}}
+</div>{{end}}
 {{if .Breakdowns}}<div class="pies">{{range .Breakdowns}}{{.}}{{end}}</div>{{end}}
 {{if .Coverage}}
 <div class="cov">
