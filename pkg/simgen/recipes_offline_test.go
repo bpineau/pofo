@@ -75,13 +75,22 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	mf := func(name string, amp, freq, phase float64) *marketdata.Series {
 		return mkWave(name, n, 2e-4, amp, freq, phase)
 	}
+	// The deepest donor of every trend chain deals WEEKLY and starts before
+	// the others, which is what the chain's sparse-cadence projection exists
+	// for: keep the offline stand-in shaped that way so the recipes exercise
+	// it (densify) rather than a daily fiction.
+	ahl := &marketdata.Series{Symbol: "IE0000360275"}
+	for i, v := -350, 100.0; i < n; i, v = i+7, v*(1+14e-4+0.008*math.Sin(1.05*float64(i)+0.7)) {
+		ahl.Points = append(ahl.Points, marketdata.Point{Date: day(i), Close: v})
+	}
 
 	f := fakeFetcher{
 		"DBMF": mf("DBMF", 0.008, 1.05, 0.3), "ASFYX": mf("ASFYX", 0.009, 1.05, 0.35),
 		"RYMFX": mf("RYMFX", 0.007, 1.05, 0.4), "AHLPX": mf("AHLPX", 0.010, 1.05, 0.45),
 		"AQMIX": mf("AQMIX", 0.008, 1.05, 0.5), "KMLM": mf("KMLM", 0.010, 1.05, 0.55),
 		"CTA": mf("CTA", 0.012, 1.05, 0.6), "LU1103257975": mf("LU1103257975", 0.007, 1.05, 0.65),
-		"VFINX": vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
+		"IE0000360275": ahl,
+		"VFINX":        vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
