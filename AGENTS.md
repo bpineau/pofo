@@ -17,6 +17,7 @@ make lint      # go vet + staticcheck
 make check     # fmt-check + lint + test: run this before any commit
 make golden    # computation goldens vs frozen external references
 make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
+make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 ```
 
 Tests never touch the network: HTTP sources are faked with `httptest`
@@ -37,7 +38,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM, regression backcasts) into simdata files |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
-| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `golden/` (frozen-fixture tests) |
+| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `golden/` (frozen-fixture tests) |
 | `cmd/pofo` | CLI wiring only; each mode is a `run*` function in `main.go` |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`) |
