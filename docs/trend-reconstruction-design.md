@@ -545,9 +545,10 @@ How to read it, because each row's residual has a KNOWN decomposition:
   and weekly figures are dominated by intra-month texture that no seven-market
   engine, and no donor of another manager, can match tick for tick.
 - **A negative CAGR gap on DBMF, KMLM, CTA is not an error to fix.** Those
-  funds beat the trade they run over their own live windows (DBMF by six
-  points a year against every peer and index). Closing that gap would mean
-  granting the manager's alpha to the backcast, which is curve fitting.
+  funds beat the trade they run over their own live windows (DBMF by 3.5
+  points a year against its fee-aligned nearest donor, and by more against
+  every index). Closing that gap would mean granting the manager's alpha to
+  the backcast, which is curve fitting.
   Conversely DBMF UCITS USD, DBMFE and AQR sit within 0.3 pt because their
   nearest donor is the same manager running the same book.
 - **The DBMFE daily 0.36 has a measured ceiling of 0.46** (the
@@ -555,9 +556,9 @@ How to read it, because each row's residual has a KNOWN decomposition:
   the UCITS wrapper's own positions and cash. Judge that class on weekly and
   monthly only.
 - **Simplify CTA is the structurally worst fit and will stay so**: it tracks
-  a pure-trend index at a 16 % vol target while every available donor and the
-  net anchor are all-styles composites near 9-13 %. Its level is right to
-  about 4.6 pts and its months only agree at 0.39.
+  a pure-trend index at a 16 % vol target while every available donor is an
+  all-styles vehicle near 9-13 %. Its level is right to about 3.4 pts after
+  fee alignment and its months only agree at 0.39.
 - **The three overlay rows are the newest and the best-behaved monthly fits**
   (0.84 to 0.97), because their reference is a record of the very trade their
   sleeve runs rather than an all-styles composite. Their daily columns stay
