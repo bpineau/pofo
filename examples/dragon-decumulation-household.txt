@@ -352,7 +352,7 @@
 13	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
 13	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; platform siblings LU1662498721 perf-fee, LU2622190622 flat; ETF fallback FOLOW)
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602); physical ETC only, never an ETN
-13	LU1645380442    # euro linkers 1-10: UBS Core BBG Euro Inflation Linked EUR acc (0.08%; all-maturity IBCI IE00B0M62X26 = a real-duration bet; deep-window stand-in LU1459801780)
+13	CHSN		# LU1645380442, euro linkers 1-10: UBS Core BBG Euro Inflation Linked EUR acc (0.08%; all-maturity IBCI IE00B0M62X26 = a real-duration bet; deep-window stand-in LU1459801780)
 
 # ---- PEA / PEA-PME section (tax-sheltered; equity-only by law) --------
 5	WPEA            # world equity via synthetic swap (IE0002XZSHO1; alts CW8 LU1681043599, EWLD)
