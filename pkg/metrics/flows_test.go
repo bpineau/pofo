@@ -61,8 +61,33 @@ func TestFlowReturnsDropsWeekendsAndAdjusts(t *testing.T) {
 	if len(got) != 1 {
 		t.Fatalf("returns = %v, want exactly the Monday return", got)
 	}
-	if math.Abs(got[0]-0.10) > 1e-12 {
-		t.Fatalf("Monday return = %v, want 0.10 (121 minus the 11 deposit)", got[0])
+	want := 121.0/111 - 1 // 121 over the 100+11 start-of-day base
+	if math.Abs(got[0]-want) > 1e-12 {
+		t.Fatalf("Monday return = %v, want %v", got[0], want)
+	}
+}
+
+// TestTWRLargeFlowOnTinyBase pins the start-of-day convention against the
+// pathology that motivated it: a small account funded with a large same-day
+// contribution. The end-of-day formula (V-F)/V0 divides the flow's first-day
+// P/L by the tiny pre-flow value and can even go negative, detonating the
+// chain; the start-of-day base keeps the day's return at its true, tiny size.
+func TestTWRLargeFlowOnTinyBase(t *testing.T) {
+	// 100 sits a week, then 318000 arrives and is invested; it closes the
+	// day 68.71 below cost - a ~-0.02% move on the funded base, nothing more.
+	dates := []time.Time{fday(0), fday(1)}
+	values := []float64{100, 317931.29}
+	flows := []Flow{{Date: fday(1), Amount: 318000}}
+	got, ok := TWR(dates, values, flows)
+	if !ok {
+		t.Fatal("TWR not ok")
+	}
+	want := 317931.29/318100 - 1 // ≈ -0.00053, not -1.69
+	if math.Abs(got-want) > 1e-12 {
+		t.Fatalf("TWR = %v, want %v (start-of-day base, no blow-up)", got, want)
+	}
+	if got < -0.01 {
+		t.Fatalf("TWR = %v: a large same-day flow detonated the chain", got)
 	}
 }
 
