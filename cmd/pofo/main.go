@@ -160,10 +160,10 @@ File format: one line per asset:
         #meta withdraw:A/P   take out A, or A%% of the current value
                              (withdraw:4%%/year), every period P
         #meta optimize:OBJ   compute the weights: OBJ is max-sharpe,
-                             min-volatility or risk-parity, with an
-                             optional ",max-weight:40" cap. The report
-                             shows the optimized weights next to the
-                             written ones.
+                             min-volatility, risk-parity or cwarp (maximize
+                             CWARP vs the benchmark), with an optional
+                             ",max-weight:40" cap. The report shows the
+                             optimized weights next to the written ones.
 
 Example:
     #meta rebalance:30
@@ -363,7 +363,7 @@ Options:
 		// An optimized portfolio is shown next to its written weights, so
 		// the optimizer's choice can be compared with the baseline.
 		if spec.Optimize != nil {
-			pOpt, note, err := optimizedPortfolio(p, spec)
+			pOpt, note, err := optimizedPortfolio(p, spec, bench)
 			if err != nil {
 				return fmt.Errorf("portfolio %s: %w", spec.Name, err)
 			}
@@ -1209,7 +1209,7 @@ func deflate(dates []time.Time, values []float64, cpi *marketdata.Series) []floa
 // optimizedPortfolio returns a copy of base whose weights are replaced by
 // the optimizer's, computed over the period where every asset has a quote.
 // The original (base) keeps the weights written in the file.
-func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portfolio.Portfolio, string, error) {
+func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *marketdata.Series) (*portfolio.Portfolio, string, error) {
 	list := make([]*marketdata.Series, len(base.Assets))
 	start := base.Assets[0].Series.First().Date
 	end := base.Assets[0].Series.Last().Date
@@ -1225,12 +1225,34 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portf
 	if !start.Before(end) {
 		return nil, "", errors.New("optimize: the assets have no period in common")
 	}
-	_, prices := marketdata.Align(list, start, end)
+	// CWARP scores the blend against a replacement portfolio, so its solver
+	// also needs the benchmark's returns on the very same dates: align it
+	// alongside the assets and split it back off.
+	cwarpObj := spec.Optimize.Objective == optimize.CWARP
+	if cwarpObj && bench == nil {
+		return nil, "", errors.New("optimize: cwarp needs a benchmark (see -benchmark)")
+	}
+	alignList := list
+	if cwarpObj {
+		alignList = append(append([]*marketdata.Series{}, list...), bench)
+	}
+	_, prices := marketdata.Align(alignList, start, end)
+	var benchReturns []float64
+	if cwarpObj {
+		benchReturns = metrics.Returns(prices[len(prices)-1])
+		prices = prices[:len(prices)-1]
+	}
 	returns := make([][]float64, len(prices))
 	for i, px := range prices {
 		returns[i] = metrics.Returns(px)
 	}
-	res, err := optimize.Solve(returns, *spec.Optimize)
+	var res optimize.Result
+	var err error
+	if cwarpObj {
+		res, err = optimize.SolveCWARP(returns, benchReturns, *spec.Optimize)
+	} else {
+		res, err = optimize.Solve(returns, *spec.Optimize)
+	}
 	if err != nil {
 		return nil, "", fmt.Errorf("optimize: %w", err)
 	}
@@ -1248,6 +1270,9 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec) (*portf
 		"weights computed by the optimizer (%s) over %s→%s: %s, in-sample expected return %.1f %%/yr, volatility %.1f %%, Sharpe %.2f",
 		spec.Optimize.Objective, start.Format("2006-01-02"), end.Format("2006-01-02"),
 		strings.Join(parts, ", "), res.Return*100, res.Volatility*100, res.Sharpe)
+	if cwarpObj {
+		note += fmt.Sprintf(", achieved CWARP %+.1f vs %s", res.CWARP, bench.Symbol)
+	}
 	if spec.Optimize.Objective == optimize.RiskParity && spec.Optimize.MaxWeight > 0 {
 		note += " (max-weight does not apply to risk-parity)"
 	}
