@@ -22,7 +22,19 @@ Voici le barème en ligne directe, après l'abattement de 100 k€. Les taux mon
 Cumul transmis en franchise totale de droits par un couple avec deux enfants majeurs, selon l'âge de la première vague de donations. Abattements de l'art. 779 CGI et dons familiaux de l'art. 790 G, montants 2026, rappel fiscal de quinze ans de l'art. 784 CGI.
 :::
 
-**3. Le démembrement.** Il consiste à donner la **nue-propriété** en gardant l'usufruit. Les droits ne portent alors que sur la valeur de la nue-propriété. Selon le barème fiscal de l'usufruit, entre 61 et 70 ans l'usufruit vaut 40 %. On transmet donc 100 en n'étant taxé que sur 60. Et au décès, l'usufruit rejoint la nue-propriété **sans** droits. C'est l'outil roi de l'immobilier de rapport et de la résidence secondaire, car le donateur garde les loyers ou l'usage à vie ([[immobilier-en-retrait]]).
+**3. Le démembrement.** Il consiste à donner la **nue-propriété** en gardant l'usufruit. Les droits ne portent alors que sur la valeur de la nue-propriété, et le barème de l'article 669 du CGI la fixe par tranches de dix ans d'âge du donateur. Plus on donne tôt, plus l'usufruit gardé pèse lourd, donc moins la base taxable est grosse. Et au décès, l'usufruit rejoint la nue-propriété **sans** droits. C'est l'outil roi de l'immobilier de rapport et de la résidence secondaire, car le donateur garde les loyers ou l'usage à vie ([[immobilier-en-retrait]]).
+
+Le barème est un escalier fixe, inchangé depuis 2004. La dernière colonne donne la valeur en pleine propriété qu'un seul abattement de 100 000 € laisse passer, donc pour un parent et un enfant.
+
+| Âge du donateur | Usufruit | Nue-propriété | Donné sous 100 k€ |
+|---|---|---|---|
+| 41 à 50 ans | 60 % | 40 % | 250 000 € |
+| 51 à 60 ans | 50 % | 50 % | 200 000 € |
+| 61 à 70 ans | 40 % | 60 % | 166 700 € |
+| 71 à 80 ans | 30 % | 70 % | 142 900 € |
+| 81 à 90 ans | 20 % | 80 % | 125 000 € |
+
+L'escalier continue aux deux bouts, de 90 % d'usufruit avant 21 ans à 10 % après 91 ans. Appliqué aux quatre abattements d'un couple avec deux enfants, le barème de 61 à 70 ans laisse passer 666 700 € de pleine propriété au lieu de 400 000 €.
 
 **4. La donation-cession** ([[flat-tax-et-imposition]]). Donner des titres **avant** de les vendre purge la plus-value latente. La combinaison est simple, une donation dans les abattements (zéro droits) puis une cession par le donataire (PV purgée, zéro IR). C'est le circuit à friction quasi nulle pour financer les enfants adultes, dans les règles (donation réelle, antérieure, non fictive).
 

@@ -44,7 +44,21 @@ Ces deux mécanismes font de la détention CTO longue une stratégie de transmis
 
 **L'IFI** est l'impôt sur la fortune **immobilière** seulement, avec un seuil de 1,3 M€ de patrimoine immobilier net. Le portefeuille financier n'y est pas soumis. C'est un argument de structure pour le rentier financier, à connaître sans en faire un dogme ([[immobilier-en-retrait]]).
 
-**Les prélèvements sociaux** sont la couche incompressible de presque tout, sauf les livrets défiscalisés (A, LDDS, LEP). Depuis la loi de financement de la Sécurité sociale pour 2026, leur taux est de **18,6 %** sur les revenus financiers (dividendes, intérêts, plus-values mobilières, PEA, crypto, location meublée), la CSG étant passée de 9,2 à 10,6 points. Le taux de **17,2 %** survit pour l'assurance-vie et la capitalisation, les revenus fonciers nus et les SCPI, les plus-values immobilières des particuliers et les anciens PEL, CEL et PEP. Une nuance de calendrier vaut pour la déclaration en cours. La hausse frappe les plus-values mobilières, la crypto et le meublé dès les revenus 2025, mais les dividendes, intérêts et retraits de PEA seulement à partir des encaissements du 1er janvier 2026. Un plan de retrait français croise donc désormais deux taux, et l'assurance-vie y gagne un avantage relatif. La CSG n'est déductible qu'en cas d'option barème, un des termes de l'arbitrage.
+**Les prélèvements sociaux** sont la couche incompressible de presque tout. La loi de financement de la Sécurité sociale pour 2026 a porté la CSG du capital de 9,2 à 10,6 points, donc les prélèvements de 17,2 à **18,6 %**. Mais elle a épargné toute une famille de supports, et elle ne mord pas partout à la même date. Les revenus du patrimoine de l'article L. 136-6 du code de la Sécurité sociale sont touchés dès les revenus 2025. Les produits de placement de l'article L. 136-7 ne le sont qu'à partir des encaissements du 1er janvier 2026. Voici la carte, aux taux de la LFSS 2026 (loi du 30 décembre 2025, art. 12).
+
+| Support | PS | Application |
+|---|---|---|
+| Plus-values mobilières (CTO) | 18,6 % | revenus 2025 |
+| Crypto | 18,6 % | revenus 2025 |
+| Location meublée | 18,6 % | revenus 2025 |
+| Dividendes et intérêts | 18,6 % | encaissements 2026 |
+| Gains de PEA à la sortie | 18,6 % | encaissements 2026 |
+| Assurance-vie et capitalisation | 17,2 % | hausse écartée |
+| Foncier nu et SCPI | 17,2 % | hausse écartée |
+| Plus-values immobilières | 17,2 % | hausse écartée |
+| PEL, CEL et PEP anciens | 17,2 % | hausse écartée |
+
+Les livrets défiscalisés (A, LDDS, LEP) restent hors de tout cela. Un plan de retrait français croise donc désormais deux taux, et l'assurance-vie y gagne un avantage relatif. La CSG n'est déductible qu'en cas d'option barème, un des termes de l'arbitrage.
 
 **La PUMa**, enfin, est la couche spécifique du rentier sans activité, assez importante pour mériter son chapitre entier ([[taxe-puma]]).
 
