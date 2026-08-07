@@ -1,6 +1,7 @@
 package bookmd
 
 import (
+	"regexp"
 	"strings"
 	"testing"
 )
@@ -102,6 +103,55 @@ func TestHrefHook(t *testing.T) {
 	got = ToHTML("voir [[cible]]", Options{Titles: opt.Titles})
 	if !strings.Contains(got, `<a href="cible" class="doc-link">La cible</a>`) {
 		t.Errorf("nil Href should keep bare slug: %q", got)
+	}
+}
+
+// TestHeadingIDUniqueness covers per-document heading-id uniquification: the
+// first occurrence keeps its natural slug, later collisions get -2, -3, ...,
+// and generated suffixes never collide with a natural slug.
+func TestHeadingIDUniqueness(t *testing.T) {
+	// (a) three identical headings -> id, id-2, id-3.
+	got := ToHTML("## Titre\n\n## Titre\n\n## Titre", Options{})
+	for _, want := range []string{`id="titre"`, `id="titre-2"`, `id="titre-3"`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("triple heading missing %q: %q", want, got)
+		}
+	}
+	if strings.Count(got, `id="titre"`) != 1 {
+		t.Errorf("id=titre should appear once: %q", got)
+	}
+
+	// (b) a natural "titre-2" heading colliding with a generated suffix ->
+	// no duplicate ids anywhere.
+	got = ToHTML("## Titre\n\n## Titre\n\n## Titre 2", Options{})
+	for _, want := range []string{`id="titre"`, `id="titre-2"`, `id="titre-2-2"`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("collision case missing %q: %q", want, got)
+		}
+	}
+	assertNoDuplicateIDs(t, got)
+
+	// (c) a heading inside a callout shares the document's seen-set.
+	got = ToHTML("## Titre\n\n::: encart\n## Titre\n:::", Options{})
+	for _, want := range []string{`id="titre"`, `id="titre-2"`} {
+		if !strings.Contains(got, want) {
+			t.Errorf("nested-heading case missing %q: %q", want, got)
+		}
+	}
+	assertNoDuplicateIDs(t, got)
+}
+
+var reIDAttr = regexp.MustCompile(`\bid="([^"]*)"`)
+
+// assertNoDuplicateIDs fails if any id= value repeats in the HTML.
+func assertNoDuplicateIDs(t *testing.T, htmlOut string) {
+	t.Helper()
+	seen := map[string]bool{}
+	for _, m := range reIDAttr.FindAllStringSubmatch(htmlOut, -1) {
+		if seen[m[1]] {
+			t.Errorf("duplicate id %q in %q", m[1], htmlOut)
+		}
+		seen[m[1]] = true
 	}
 }
 
