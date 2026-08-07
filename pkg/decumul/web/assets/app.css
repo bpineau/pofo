@@ -34,6 +34,11 @@ h2{margin:0;font-weight:600;text-wrap:balance}
   background:rgba(16,14,10,.88);backdrop-filter:blur(9px);border-bottom:1px solid var(--line-strong)}
 .brand{font-family:var(--mono);font-weight:600;font-size:.95rem;letter-spacing:.02em;color:var(--ink);white-space:nowrap}
 .brand b{color:var(--accent)}
+/* cross-navigation to the sibling surfaces, matching the report/hub site-nav:
+   quiet mono caps that defer to the terminal brand, accent on hover */
+.topnav{display:flex;gap:1.1rem;flex-wrap:wrap;font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase}
+.topnav a{color:var(--muted);text-decoration:none;transition:color .12s;white-space:nowrap}
+.topnav a:hover,.topnav a:focus-visible{color:var(--accent-ink)}
 .brand .cursor{display:inline-block;width:7px;height:14px;background:var(--accent);margin-left:3px;
   vertical-align:-2px;animation:blink 1.2s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
