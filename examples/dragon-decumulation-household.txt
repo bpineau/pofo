@@ -1,20 +1,20 @@
 # Dragon-decu, household edition -- the whole-wealth build, wrappers included.
 #
 # STATUS: fully implementable today from a French retail setup. This is
-#   dragon-decu.txt expressed as a real household holds it: across a CTO
+#   dragon-decumulationmulation.txt expressed as a real household holds it: across a CTO
 #   AND the French tax shelters (PEA / PEA-PME), which by law can hold
 #   nothing but European-domiciled equity funds. The shelters are not a
 #   footnote; they reshape the build, and the reshaping turns out to be a
 #   measured upgrade, not a compromise. Nine lines, two sections below.
 #
-# Thesis in one line: dragon-decu's design (a smaller efficient core,
+# Thesis in one line: dragon-decumulation's design (a smaller efficient core,
 #   trend split across two managers, gold, a contractual euro-inflation
 #   line), with the equity sleeve carved out of the 90/60 core and moved
 #   into the tax shelters as plain world equity plus a small-cap
 #   value/quality tilt, and the bond overlay lost in the carve-out
 #   rebuilt with a dedicated long-duration line.
 #
-# ## Lineage: Browne -> Cole -> dragon-lite/hydra -> dragon-decu -> here
+# ## Lineage: Browne -> Cole -> dragon-lite/hydra -> dragon-decumulation -> here
 #
 #   The design philosophy is regime balancing, four generations on.
 #   Harry Browne's Permanent Portfolio (1981) planted the idea: hold one
@@ -25,7 +25,7 @@
 #   in this directory made it buyable: dragon-lite distilled it to three
 #   UCITS lines around a capital-efficient 90/60 core (Asness, "Why Not
 #   100% Equities", JPM 1996), the hydra engineered it into one head per
-#   return engine, and dragon-decu re-tuned it for decumulation, where
+#   return engine, and dragon-decumulation re-tuned it for decumulation, where
 #   sequence risk and a euro-inflation liability change what "optimal"
 #   means (see that file for the full argument).
 #   This edition adds the last real-world layer: TAXES AND WRAPPERS. A
@@ -60,7 +60,7 @@
 #   Total: ~39 equity (of which 9 small value) + ~26.5 nominal duration
 #   (7y-equivalent) + 26 trend + 15 gold + 13 linkers  = ~119.5%
 #   exposure, all embedded leverage inside NTSG, no margin anywhere.
-#   The ledger lands on dragon-decu's targets almost exactly; only the
+#   The ledger lands on dragon-decumulation's targets almost exactly; only the
 #   internal composition of the equity sleeve differs (a 9-point
 #   small-value tilt instead of pure cap-weight).
 #
@@ -123,7 +123,7 @@
 #   hedged share keeps the defensive sleeve in the liability currency.
 #
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
-#   Same head, same reasoning, same vehicles as dragon-decu: DBMFE
+#   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
 #   (LU2951555403, DBi replication) + AQR Managed Futures UCITS
 #   (RAEF EUR LU1662501532, direct TSMOM; fallbacks Winton IE00BG382Q20,
 #   Man AHL Trend LU0503879685). The 20% floor is empirical (ruin nearly
@@ -177,22 +177,22 @@
 #
 #   Decumulation builds cannot be judged through one lens; the two
 #   available lenses are biased in opposite directions (the full
-#   argument lives in dragon-decu.txt). Measured on the toolkit's
+#   argument lives in dragon-decumulationmulation.txt). Measured on the toolkit's
 #   deep panels, with two declared proxies for the young lines (ZPRV
 #   stands in for the Independance sleeve, the TIPS-hEUR backcast for
 #   IBCI; window 2000/2005 -> 2026):
 #   LENS A, raw window (monthly real bootstrap, 40y, rigid 4% real
-#   withdrawal): ruin 3.1% vs 5.5% for pure dragon-decu and 2.1% for
+#   withdrawal): ruin 3.1% vs 5.5% for pure dragon-decumulation and 2.1% for
 #   the hydra; safe rate at 5% ruin 4.17% vs 3.96% and 4.36%. The
-#   small-value and duration lines close most of dragon-decu's
+#   small-value and duration lines close most of dragon-decumulation's
 #   in-window gap to the hydra. Bias: resampling 2000-2026 crowns that
 #   window's winners.
 #   LENS B, valuation-anchored (central mean replaced by the CAPE-
 #   implied estimate, risk kept from the fitted weights): safe rate
-#   2.52% vs 2.54% (dragon-decu) and 2.33% (hydra). The low-risk book
+#   2.52% vs 2.54% (dragon-decumulation) and 2.33% (hydra). The low-risk book
 #   keeps the family lead. Bias: equal forward mean flatters low vol.
 #   WHAT SURVIVES BOTH: this edition is the family's best-of-both, at
-#   or near the top under each lens while pure dragon-decu wins only
+#   or near the top under each lens while pure dragon-decumulation wins only
 #   lens B and the hydra only lens A. What no lens can test: every
 #   linker series starts post-2000, so the 1970s, the regime the
 #   linkers exist for, sit outside every backcast. And the literal
@@ -230,7 +230,7 @@
 #       on the CTO (via NTSG) already dilutes it.
 #   (d) DEFLATION CONVEXITY: improved by DTLE but still the modest
 #       quadrant; the family accepts this rather than pay negative
-#       carry for long-vol convexity (see dragon-decu and the hydra).
+#       carry for long-vol convexity (see dragon-decumulation and the hydra).
 #   (e) TREND WINTERS: 26 points can spend years flat while equities
 #       run; the cure is written rules, not weights.
 #   (f) CURRENCY: roughly half the book is USD-quoted unhedged (NTSG,
@@ -244,7 +244,7 @@
 #       XEON; see fire-liability-buffer.txt), spent in drawdown years.
 #
 # ## Honesty note on the WEIGHTS
-#   28/5/7/2/4/13/13/15/13 are hand-rounded from dragon-decu's targets
+#   28/5/7/2/4/13/13/15/13 are hand-rounded from dragon-decumulation's targets
 #   minus the wrapper carve-out arithmetic; nothing was optimizer-fit.
 #   The two-lens table is the full disclosure; expect measured edges to
 #   shrink out of sample. Anywhere inside the sane ranges is the same
@@ -262,11 +262,11 @@
 #   - Rebalance quarterly or on bands, executed in the CTO section;
 #     inside the shelters only equity-for-equity trades exist.
 #   - The AQR leg is a FUND, not an ETF: check platform availability
-#     (see dragon-decu.txt for the fallback ladder).
+#     (see dragon-decumulationmulation.txt for the fallback ladder).
 #   - Pair with a floor-capped flexible withdrawal rule, not a rigid
 #     indexed one; the portfolio is half the machine.
 #
-# Siblings: dragon-decu.txt (the wrapper-free design this implements),
+# Siblings: dragon-decumulationmulation.txt (the wrapper-free design this implements),
 #   claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
 #   accumulation flagship and the engineered all-rounder upstream),
 #   fire-liability-buffer.txt (the euro buffer this file assumes).
