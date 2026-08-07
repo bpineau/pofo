@@ -49,6 +49,14 @@ h2{margin:0;font-weight:600;text-wrap:balance}
 .cmd .flag{color:var(--muted)} .cmd .val{color:var(--ink)}
 .pill{font-family:var(--mono);font-size:.64rem;color:var(--good-ink);border:1px solid #2f5b43;
   border-radius:4px;padding:.16rem .5rem;background:var(--good-wash);white-space:nowrap}
+/* provenance pill: which market the figures come from. A button (it opens the
+   loader), so every browser default it would inherit is reset here. */
+button.pill{margin:0;line-height:inherit;cursor:pointer;font-family:var(--mono)}
+.pill.generic{color:var(--warn-ink);border-color:#5a4620;background:var(--warn-wash)}
+.pill.generic:hover{border-color:var(--warn);color:var(--accent)}
+.pill.loaded{color:var(--good-ink);border-color:#2f5b43;background:var(--good-wash)}
+.pill.market[hidden]{display:none}
+button.pill:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .drawer-toggle{font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;color:var(--accent);
   background:transparent;border:1px solid var(--amber-dim);border-radius:5px;padding:.36rem .8rem;
   cursor:pointer;white-space:nowrap}
@@ -81,6 +89,65 @@ h2{margin:0;font-weight:600;text-wrap:balance}
 .group{display:flex;flex-direction:column;gap:.5rem;min-width:0}
 .group .group-h{font-family:var(--mono);font-size:.62rem;font-weight:600;letter-spacing:.12em;
   text-transform:uppercase;color:var(--accent);padding-bottom:.35rem;border-bottom:1px solid var(--line)}
+
+/* a group pointed at from elsewhere (the provenance pill) announces itself
+   once, then goes quiet */
+@keyframes groupflash{0%,64%{outline-color:var(--accent)}100%{outline-color:transparent}}
+.group.flash{outline:1px solid transparent;outline-offset:6px;border-radius:var(--r-sm);
+  animation:groupflash 1.5s ease-out}
+@media (prefers-reduced-motion:reduce){.group.flash{animation:none;outline-color:var(--accent)}}
+
+/* ---- portfolio loader (drawer, empty state) --------------------------------- */
+.pick-lede{margin:.1rem 0 .2rem;font-size:.72rem;color:var(--ink-soft);line-height:1.45}
+.pick-hint{margin:.2rem 0 0;font-family:var(--mono);font-size:.72rem;color:var(--ink);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:.4rem .55rem}
+.pick-prompt{color:var(--accent)}
+.pickblock{display:flex;flex-direction:column;gap:.3rem;margin-top:.35rem}
+.pickcap{font-family:var(--mono);font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.picklist{display:flex;flex-direction:column;max-height:11.5rem;overflow-y:auto;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);
+  scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+.picklist::-webkit-scrollbar{width:7px}
+.picklist::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:4px}
+.pickex{display:block;width:100%;text-align:left;background:transparent;border:0;
+  border-bottom:1px solid var(--line);padding:.3rem .5rem;cursor:pointer;font-family:inherit}
+.pickex:last-child{border-bottom:0}
+.pickex:hover,.pickex:focus-visible{background:var(--accent-wash);outline:none}
+.pickex .pn{display:block;font-size:.72rem;color:var(--ink)}
+.pickex:hover .pn{color:var(--accent)}
+.pickex .pb{display:block;font-size:.66rem;color:var(--muted);line-height:1.35}
+.picksearch{width:100%;background:var(--surface);color:var(--ink);border:1px solid var(--line-strong);
+  border-radius:var(--r-sm);font-family:var(--mono);font-size:.72rem;padding:.32rem .45rem}
+.picksearch::placeholder{color:var(--faint)}
+.picksearch:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.pickhits{display:flex;flex-direction:column;background:var(--surface-2);
+  border:1px solid var(--line-strong);border-radius:var(--r-sm);overflow:hidden}
+.pickhits[hidden]{display:none}
+.pickhit{display:flex;gap:.5rem;align-items:baseline;width:100%;text-align:left;background:transparent;
+  border:0;padding:.26rem .5rem;cursor:pointer;font-family:inherit}
+.pickhit:hover,.pickhit:focus-visible{background:var(--accent-wash);outline:none}
+.pickhit .pi{font-family:var(--mono);font-size:.7rem;color:var(--accent);flex:none;min-width:6.4rem}
+.pickhit .pn{font-size:.66rem;color:var(--ink-soft);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow{display:flex;align-items:center;gap:.4rem;padding:.15rem 0}
+.pickrow .pid{flex:1;font-family:var(--mono);font-size:.72rem;color:var(--ink);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow .pw{width:3.4rem;text-align:right}
+.pickrow .ppc{font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.pdel{background:transparent;border:1px solid var(--line);border-radius:4px;color:var(--muted);
+  font-family:var(--mono);font-size:.72rem;line-height:1;padding:.1rem .32rem;cursor:pointer}
+.pdel:hover{color:var(--bad-ink);border-color:#5a2b22}
+.pdel:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.picksum{font-family:var(--mono);font-size:.66rem;color:var(--muted)}
+.picksum.off{color:var(--warn-ink)}
+.picksum:empty,.pickspec:empty,.pickwhy:empty{display:none}
+.pickspec{font-family:var(--mono);font-size:.62rem;color:var(--faint);word-break:break-all;line-height:1.35}
+.pickload{font-family:var(--mono);font-size:.72rem;letter-spacing:.03em;color:var(--accent);
+  background:transparent;border:1px solid var(--amber-dim);border-radius:5px;padding:.3rem .7rem;
+  cursor:pointer;align-self:flex-start}
+.pickload:hover:not(:disabled){background:var(--accent-wash)}
+.pickload:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pickload:disabled{color:var(--faint);border-color:var(--line);cursor:not-allowed}
+.pickwhy{font-family:var(--mono);font-size:.64rem;color:var(--muted)}
 
 .ctl{display:flex;flex-direction:column;font-size:.74rem;color:var(--ink-soft);gap:.2rem}
 .ctl .lab{display:flex;justify-content:space-between;align-items:center;gap:.5rem}
@@ -342,6 +409,7 @@ body.noscroll{overflow:hidden}
 svg rect:has(>title):hover,svg circle:has(>title):hover{opacity:.82;cursor:default}
 
 @media (max-width:720px){
-  .shead .aside,.cmd,.pill{display:none}
+  /* the market pill survives: it is the only route to portfolio mode */
+  .shead .aside,.cmd,#statusPill{display:none}
   .shead h2{white-space:normal}
 }
