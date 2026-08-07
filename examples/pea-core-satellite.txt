@@ -8,5 +8,5 @@
 #   equivalents (IWDA, CSPX, EQQQ). These files are allocation guides for the PEA.
 
 70    WPEA            # World PEA (WPEA)
-15    FR0011871110    # Nasdaq-100 PEA (PUST)
-15    FR0013412038    # MSCI Europe PEA (PCEU)
+15    PUST    # Nasdaq-100 PEA (PUST)
+15    PCEU    # MSCI Europe PEA (PCEU)

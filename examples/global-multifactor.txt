@@ -6,4 +6,4 @@
 #   https://www.pwlcapital.com/factor-investing/
 # UCITS, 100% equity.
 
-100   IE00BJRCLL96    # JPM Global Equity Multi-Factor (JPGL)
+100   JPGL    # JPM Global Equity Multi-Factor (JPGL)

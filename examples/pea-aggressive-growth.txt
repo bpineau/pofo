@@ -9,4 +9,4 @@
 
 55    WPEA            # World PEA (WPEA)
 25    SPEA            # S&P 500 PEA (SPEA)
-20    FR0011871110    # Nasdaq-100 PEA (PUST)
+20    PUST    # Nasdaq-100 PEA (PUST)
