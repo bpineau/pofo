@@ -64,9 +64,11 @@ type Frame struct {
 }
 
 // BuildFrame fetches every id and aligns daily returns on the union of
-// trading dates from the latest first-quote on. The rate ids ^IRX, ^FVX, ^TNX and
-// ^TYX are treated as annualized percent levels and converted to daily
-// accruals instead of price returns.
+// trading dates from the latest first-quote on. Rate ids (the Yahoo yield
+// symbols ^IRX, ^FVX, ^TNX and ^TYX, the policy and money-market family of
+// marketdata.RateSymbols, and the spliced financing rate usdOvernight) are
+// treated as annualized percent levels and converted to daily accruals instead
+// of price returns.
 func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 	series := make(map[string]*marketdata.Series, len(ids))
 	start := from
@@ -119,13 +121,15 @@ func BuildFrame(f Fetcher, ids []string, from time.Time) (*Frame, error) {
 }
 
 // isRate reports whether an identifier is a yield series quoted in
-// annualized percent (Yahoo's ^IRX, ^TNX, …) rather than a price.
+// annualized percent (Yahoo's ^IRX, ^TNX, …) rather than a price. The policy
+// and money-market symbols answer through marketdata's own registry rather
+// than a second list here, so a rate added there is never read as a price.
 func isRate(id string) bool {
 	switch id {
-	case "^IRX", "^FVX", "^TNX", "^TYX":
+	case "^IRX", "^FVX", "^TNX", "^TYX", usdOvernight:
 		return true
 	}
-	return false
+	return marketdata.RateName(id) != ""
 }
 
 // Leg is one exposure of a linear composite.
