@@ -70,6 +70,8 @@ var Categories = []Category{
 		Articles: []Article{
 			{"panorama-strategies-retrait", "Panorama des stratégies de retrait : la carte avant le territoire", "Le triangle impossible, les deux extrêmes qui bornent tout, les cinq familles, et les six critères pour les noter honnêtement."},
 			{"retrait-fixe-bengen", "Le retrait fixe indexé (Bengen) : le classique de référence", "La règle fondatrice en stratégie opérationnelle : la mécanique fine, la falaise silencieuse, et les trois amendements quasi gratuits."},
+			{"pourcentage-fixe", "Le pourcentage fixe du portefeuille : increvable mais inconfortable", "La ruine impossible et la ruine de train de vie, le lissage des dotations (règle de Yale), et le choix du pourcentage."},
+			{"guyton-klinger", "Guyton-Klinger : les guardrails historiques, grandeur et limites", "Les quatre règles exactes de 2006, la cascade de coupes des mauvais millésimes, et les correctifs modernes, plancher en tête."},
 		},
 	},
 }

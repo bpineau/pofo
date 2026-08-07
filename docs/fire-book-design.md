@@ -120,8 +120,8 @@ Mark `[x]` when an article is written, embedded and in the manifest.
 ### IV. Les strategies de retrait
 - [x] panorama-strategies-retrait: Panorama des strategies de retrait : la carte avant le territoire
 - [x] retrait-fixe-bengen: Le retrait fixe indexe (Bengen) : le classique de reference
-- [ ] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
-- [ ] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
+- [x] pourcentage-fixe: Le pourcentage fixe du portefeuille : increvable mais inconfortable
+- [x] guyton-klinger: Guyton-Klinger : les guardrails historiques, grandeur et limites
 - [ ] vpw: VPW, le retrait a pourcentage variable des Bogleheads
 - [ ] regles-cape: Les regles CAPE : ajuster le retrait aux valorisations (ERN)
 - [ ] guardrails-morningstar: Les guardrails modernes (Morningstar) : l'etat de l'art
