@@ -43,10 +43,99 @@ func FigureIDs() []string {
 }
 
 var figures = map[string]func() string{
-	"sequence-risk":    figSequenceRisk,
-	"cape-swr":         figCapeSWR,
-	"retirement-smile": figSmile,
-	"regime-grid":      figRegimeGrid,
+	"sequence-risk":       figSequenceRisk,
+	"cape-swr":            figCapeSWR,
+	"retirement-smile":    figSmile,
+	"regime-grid":         figRegimeGrid,
+	"allocation-plateau":  figAllocationPlateau,
+	"withdrawal-frontier": figWithdrawalFrontier,
+}
+
+// --- 5. The equity-allocation plateau: safe rate vs % equities ---
+func figAllocationPlateau() string {
+	m := mapper(0, 100, 2.4, 4.3, 66, 582, 286, 44)
+	pts := [][2]float64{{0, 2.5}, {20, 3.05}, {30, 3.35}, {40, 3.7}, {50, 3.9}, {60, 4.0}, {70, 4.05}, {80, 4.0}, {90, 3.88}, {100, 3.66}}
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	// plateau wash (50-80 % equities)
+	pl0, pl1 := m(50, 4.3), m(80, 2.4)
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, pl0[0], pl0[1], pl1[0]-pl0[0], pl1[1]-pl0[1], figWash)
+	// axes
+	b.WriteString(line(66, 44, 66, 286, figRule, 1))
+	b.WriteString(line(66, 286, 582, 286, figRule, 1))
+	// 4 % reference line
+	four := m(0, 4.0)
+	b.WriteString(line(66, four[1], 582, four[1], figRule, 1))
+	b.WriteString(txt(70, four[1]-5, 11, figMuted, "start", "400", "règle des 4 %"))
+	b.WriteString(poly(px, figAccent, 2.6, ""))
+	for _, p := range px {
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3" fill="%s"/>`, p[0], p[1], figDeep)
+	}
+	// zone labels
+	left := m(16, 2.75)
+	b.WriteString(txt(left[0], left[1], 12, figBad, "middle", "600", "trop peu :"))
+	b.WriteString(txt(left[0], left[1]+16, 12, figBad, "middle", "400", "l'érosion"))
+	plat := m(65, 4.18)
+	b.WriteString(txt(plat[0], plat[1], 12, figGood, "middle", "600", "le plateau"))
+	right := m(97, 3.35)
+	b.WriteString(txt(right[0], right[1], 12, figBad, "end", "600", "trop de vol :"))
+	b.WriteString(txt(right[0], right[1]+16, 12, figBad, "end", "400", "le drag coûte"))
+	// x ticks
+	for _, c := range []float64{0, 25, 50, 75, 100} {
+		p := m(c, 2.4)
+		b.WriteString(txt(p[0], 300, 11, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(322, 320, 12, figMuted, "middle", "400", "part d'actions (%)  →"))
+	b.WriteString(txt(46, 40, 11, figMuted, "start", "400", "taux sûr"))
+	b.WriteString(txt(322, 24, 13, figInk, "middle", "600", "Le taux soutenable plonge des deux côtés du plateau"))
+	return svg(620, 340, b.String())
+}
+
+// --- 6. The decumulation frontier: ruin vs lived-spending variability ---
+func figWithdrawalFrontier() string {
+	m := mapper(0, 10, 0, 10, 78, 566, 288, 48)
+	var b strings.Builder
+	// axes
+	b.WriteString(line(78, 40, 78, 288, figRule, 1))
+	b.WriteString(line(78, 288, 566, 288, figRule, 1))
+	// the frontier arc (Bengen -> % fixe), bowed toward the ideal corner
+	arc := [][2]float64{{1.2, 8.6}, {2.2, 5.2}, {3.4, 3.2}, {5.2, 2.1}, {7.2, 1.3}, {9, 0.8}}
+	apx := make([][2]float64, len(arc))
+	for i, p := range arc {
+		apx[i] = m(p[0], p[1])
+	}
+	b.WriteString(poly(apx, figMuted, 1.6, "5 4"))
+	// ideal corner marker (bottom-left = low ruin, low variability)
+	ideal := m(0.6, 0.7)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.5" fill="none" stroke="%s" stroke-width="1.4"/>`, ideal[0], ideal[1], figGood)
+	b.WriteString(txt(ideal[0]+10, ideal[1]+4, 11, figGood, "start", "600", "l'idéal (inatteignable)"))
+	// named rules
+	type pt struct {
+		x, y   float64
+		label  string
+		anchor string
+		dx, dy float64
+		col    string
+	}
+	rules := []pt{
+		{1.2, 8.6, "Bengen (fixe)", "start", 9, 4, figDeep},
+		{3.4, 3.2, "guardrails", "start", 9, -8, figAccent},
+		{4.3, 2.65, "ABW / TPAW", "end", -10, 16, figAccent},
+		{9, 0.8, "% fixe", "end", -10, -8, figDeep},
+	}
+	for _, r := range rules {
+		p := m(r.x, r.y)
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, p[0], p[1], r.col)
+		b.WriteString(txt(p[0]+r.dx, p[1]+r.dy, 12, r.col, r.anchor, "600", r.label))
+	}
+	// axis labels
+	b.WriteString(txt(88, 44, 11, figMuted, "start", "400", "probabilité de ruine ↑"))
+	b.WriteString(txt(322, 312, 12, figMuted, "middle", "400", "variabilité du niveau de vie  →"))
+	b.WriteString(txt(322, 26, 13, figInk, "middle", "600", "On ne supprime pas le risque : on choisit sa forme"))
+	return svg(620, 340, b.String())
 }
 
 // svg wraps content in a responsive, theme-aware <svg>.
