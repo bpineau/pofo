@@ -553,16 +553,16 @@ func gdeRecipe() Recipe {
 // US-listed, real from 2023): for every dollar, ~100 % large-cap US equity held
 // as the funded core plus a ~100 % managed-futures overlay. It mirrors the GDE
 // method, swapping the gold overlay for trend: the equity leg (VFINX) earns its
-// full return, and the trend leg (KMLM, the deepest pure-trend backcast here,
-// no equity of its own) is stacked as excess over cash, since a managed-futures
-// program is run on collateral that already earns the T-bill rate. The floor is
-// set by the trend leg. Real RSST quotes are grafted from inception; same
+// full return, and the trend leg is stacked as excess over cash, since a
+// managed-futures programme is run on collateral that already earns the T-bill
+// rate. The floor is set by the trend leg's reference, which begins in 2000
+// (see stackedTrend). Real RSST quotes are grafted from inception; same
 // currency (USD), no FX leg.
 func rsstRecipe() Recipe {
 	return Recipe{
 		ID:              "RSST",
 		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFINX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.96%/yr fees, real RSST grafted from 2023",
+		Method:          "1.00×VFINX + 1.00×(TSMOM trend − cash ^IRX) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees, real RSST grafted from 2023",
 		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", mfConfig(0.10, 0), 0.0096),
 		ValidateAgainst: "RSST",
 		SpliceReal:      "RSST",
@@ -578,7 +578,7 @@ func rsbtRecipe() Recipe {
 	return Recipe{
 		ID:              "RSBT",
 		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFITX + 1.00×(deep TSMOM trend − cash ^IRX, IR-pinned to the SG Trend Index) overlay (~1989→), 0.97%/yr fees, real RSBT grafted from 2023",
+		Method:          "1.00×VFITX + 1.00×(TSMOM trend − cash ^IRX) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees, real RSBT grafted from 2023",
 		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", mfConfig(0.10, 0), 0.0097),
 		ValidateAgainst: "RSBT",
 		SpliceReal:      "RSBT",
@@ -780,7 +780,7 @@ func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend, IR-pinned to the SG Trend Index), 0.80%/yr fees (~2001→)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees (2000→, where that reference begins)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
@@ -801,16 +801,16 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	// The overlay runs as a pure excess strategy (EarnCash=false), so its own
-	// return is the excess; anchor its monthly path on the GROSS trend factor
-	// and pin its information ratio to the SG Trend Index with a zero cash
-	// reference. This fund's sleeve replicates a pure-trend index, which is
-	// what that factor measures, so it keeps both the factor and the pin where
-	// the diversified managed-futures reconstructions have dropped them.
-	trend, err = AnchorTrend(f, GrossTrendAnchor, fr.Dates[start:], trend, make([]float64, len(trend)), cfg.TargetVol, cfg.EarnCash)
+	// return is the excess. Anchor its monthly path AND its level on the net
+	// pure-trend reference, which is the record of the trade this sleeve
+	// replicates: the reference is funded, so its own cash leg is stripped
+	// (TrendAnchor.Funded) against the frame's real cash accruals before it is
+	// rescaled, and not added back, since the output is an overlay.
+	cash := fr.Returns[cfg.CashID][start:]
+	trend, err = AnchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, cash, cfg.TargetVol, cfg.EarnCash)
 	if err != nil {
 		return nil, err
 	}
-	trend = pinTrendIR(trend, fr.Dates[start:], make([]float64, len(trend)), sgTrendInfoRatio)
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
 	const feeDaily = 0.0080 / 252
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
@@ -823,7 +823,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		val *= 1 + rEq + 0.5*rTrend - feeDaily
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
 	}
-	return s, nil
+	return trimToAnchor(f, PureTrendAnchor, s)
 }
 
 // Find returns the recipe whose ID or validation target matches id.
@@ -872,14 +872,13 @@ func mfConfig(targetVol, annualFee float64) TSMOMConfig {
 //
 // There is no information-ratio pin here, and that is the point. The engine
 // earns an in-sample IR of ~0.5-0.85 that no real managed-futures programme has
-// sustained, and the pin existed to take it away; but the anchor now carries a
+// sustained, and a pin existed to take it away; but the anchor carries a
 // composite of real programmes already NET of their managers' fees, so the
-// level it imposes is an investable one. Draging it further would charge the
+// level it imposes is an investable one. Dragging it further would charge the
 // fee twice, and a constant drag is in any case the wrong instrument for the
 // job: it reproduces an index's information ratio while deepening every
-// drought into a bleed. The overlay builds (stackedTrend, wintonBuild) keep
-// both the gross factor and the pin, because they replicate a pure-trend index
-// measured the same gross way.
+// drought into a bleed. The overlay builds (stackedTrend, wintonBuild) reason
+// the same way on their own narrower reference (PureTrendAnchor).
 func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		fr, err := BuildFrame(extend(f), append([]string{cfg.CashID}, cfg.Markets...), from)
@@ -903,100 +902,33 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 	}
 }
 
-// pinTrendIR rescales a standalone trend-strategy index so that, over the SG-
-// Trend-comparable window (2000 onward, where the anchors are measured), its
-// excess-over-cash realizes the target information ratio. It is what turns the
-// GROSS trend factor into an investable level, and only the overlay builds
-// still need it: the diversified funds are anchored on a net reference instead
-// (see tsmom). It subtracts the
-// constant daily drag from trendDrag (which leaves volatility, correlation and
-// drawdown timing untouched: the 2008 and 2022 crisis-alpha spikes survive at
-// the same relative size, only the average level drops) and recompounds. cash[i]
-// is the cash return aligned to the index's date i.
-func pinTrendIR(values []float64, dates []time.Time, cash []float64, targetIR float64) []float64 {
-	excess := make([]float64, len(values))
-	for i := 1; i < len(values); i++ {
-		excess[i] = (values[i]/values[i-1] - 1) - cash[i]
-	}
-	drag := trendDrag(excess, dates, targetIR)
-	out := make([]float64, len(values))
-	out[0] = values[0]
-	for i := 1; i < len(values); i++ {
-		out[i] = out[i-1] * (1 + (values[i]/values[i-1] - 1) - drag)
-	}
-	return out
-}
-
-// sgTrendInfoRatio pins the managed-futures overlay to the realized experience
-// of the Société Générale Trend Index (NEIXCTAT), the very index the Return
-// Stacked funds replicate on their trend sleeve. Since its 2000 inception the SG
-// Trend Index has earned about 4.9 %/yr at ~13.6 % volatility against a ~1.6 %
-// cash rate, i.e. an excess-over-cash information ratio of roughly 0.24. The bare
-// 12-month TSMOM reconstruction (cfg) instead earns an in-sample IR near 0.7 over
-// the same window: idealized signals, frictionless execution, no capacity limit,
-// and a short clean basket that dodges the 2011-2019 trend drought the real index
-// lived through. Grafting that hot overlay onto the funded core overstated the
-// backcast return by ~4 %/yr (RSBT 2000-2022 came out near 10 % where a
-// component reconstruction against SG Trend lands at ~5.7 %). We keep the
-// reconstruction's volatility, correlation and drawdown timing but pin its
-// information ratio to the SG Trend Index. See docs and the memory note.
+// No reconstruction in this file is levelled by hand any more. Every one of
+// them takes its level from an anchor that is already investable: the
+// diversified funds from a net managed-futures composite (NetTrendAnchor), the
+// overlays from a net pure-trend one (PureTrendAnchor). A drag on top of a net
+// record would charge the constituent managers' fees twice.
 //
-// Only the OVERLAY builds still pin (stackedTrend, wintonBuild), because only
-// they replicate a pure-trend index measured gross. The diversified
-// managed-futures funds stopped: their deep tail now takes its monthly path
-// from a composite of real programmes already net of their managers' fees
-// (NetTrendAnchor), and a drag on top of that would charge the fee twice.
-//
-// The other ratios below are no longer applied anywhere. They are kept because
-// they are the measured record of what each index earns, which is what any
-// future claim about these funds' level has to be argued against; each was
-// triangulated from the index's public long-run record and cross-checked
-// against the fund's own grafted real quotes.
-//   - sgTrendInfoRatio (SG Trend Index, ~0.24): the RSST/RSBT overlays and the
-//     Winton trend sleeve (broad systematic trend at a high vol target). The
-//     only one still in force.
-//   - dbiReplicationInfoRatio (~0.50): the iMGP DBi family (DBMF, DBMF.PA,
-//     DBMFE). The SG CTA Hedge Fund Index those funds replicate is measured NET
-//     of the underlying managers' 2-and-20, while DBi copies their positions and
-//     charges 0.85 % flat: pinning the family to the index's own 0.25 would take
-//     that fee off twice, which is precisely the "fee alpha" the funds exist to
-//     capture. Adding the ~3.5 points a 2/20 structure costs back to the index's
-//     ~2.75 % excess at ~11 % volatility lands at an information ratio near 0.55;
-//     the live DBMF record (9.2 %/yr at 12.4 % volatility over ~2.5 % cash since
-//     2019, IR 0.54) lands at the same place from an independent direction. 0.50
-//     keeps a margin under both. Note that even so the reconstruction stays 6
-//     points a year under the live fund: DBMF genuinely beat trend following
-//     over its own window, which no honest reconstruction of the strategy can
-//     reproduce.
-//   - sgCTAInfoRatio (SG CTA Index, ~0.25) is kept for anything measured against
-//     the index as published, fees of the underlying managers included.
-//   - mlmInfoRatio (KFA MLM Index, ~0.30), the index KMLM tracks. The Mount
-//     Lucas index carries a genuinely richer crisis-alpha profile (2000 +38 %,
-//     2008 +40 %, 2022 +45 %, ~15 % target vol) than the SG family, so it earned
-//     a higher pin; the live ETF window (2020+, IR ~0.19) is weak and set a floor.
-//   - aqrTrendInfoRatio (AQR Managed Futures, ~0.20), the manager's own record.
-//     AQMIX has realized only ~3.4 %/yr (IR ~0.15) over 2015-2026, a winter-heavy
-//     span; 0.20 credited the strong pre-2008 trend era the backcast also covers.
-const (
-	sgTrendInfoRatio        = 0.24
-	sgCTAInfoRatio          = 0.25
-	dbiReplicationInfoRatio = 0.50
-	mlmInfoRatio            = 0.30
-	aqrTrendInfoRatio       = 0.20
-)
+// The information ratios that used to do that levelling, and the measurement
+// behind each of them, are recorded in docs/trend-reconstruction-design.md:
+// they are what any future claim about these funds' level has to be argued
+// against, and they are a measurement rather than a computation, so that is
+// where they live.
 
 // stackedTrend backcasts a Return Stacked fund: a funded core (coreID, an equity
 // or bond index deep via refdata) plus a 100 % managed-futures overlay stacked
-// on top. The overlay is the same deep TSMOM replication used for KMLM/DBMF/CTA
-// (cfg), reconstructed from the underlying futures back to ~1989, which a plain
-// composite leg (limited to the real fund's 2020s inception) cannot reach. The
-// TSMOM index earns cash on its collateral (cfg.EarnCash), so its excess over
-// cash is the raw trend overlay. That raw overlay carries a far higher Sharpe
-// than the SG Trend Index the fund actually tracks, so its excess-over-cash is
-// levelled by a constant daily drag calibrated on the 2000+ window to the SG
-// Trend information ratio (sgTrendInfoRatio): this preserves the overlay's
-// volatility and shape while removing the in-sample alpha the real index never
-// earned. The stacked return is r = coreReturn + (trendExcess − drag) − fee.
+// on top. The overlay is the same TSMOM engine used for KMLM/DBMF/CTA (cfg),
+// which a plain composite leg (limited to the real fund's 2020s inception)
+// cannot reach. The engine earns cash on its collateral (cfg.EarnCash), so its
+// excess over cash is the trend overlay, and the stacked return is
+// r = coreReturn + trendExcess − fee.
+//
+// Both the overlay's months and its LEVEL come from the net pure-trend
+// reference (PureTrendAnchor), which is a published record of the trade this
+// sleeve replicates, already net of the constituent managers' fees. Nothing
+// levels it afterwards: it is already an investable level, and the engine's own
+// in-sample information ratio never reaches the output. The price of that is
+// length, and it is the price this family accepts: the file starts where the
+// reference does rather than at the engine's own 1989 floor (trimToAnchor).
 func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		ids := append([]string{coreID, cfg.CashID}, cfg.Markets...)
@@ -1008,68 +940,48 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 		if err != nil {
 			return nil, err
 		}
-		trend, err = AnchorTrend(f, GrossTrendAnchor, fr.Dates[start:], trend, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
+		trend, err = AnchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
 		if err != nil {
 			return nil, err
 		}
 		core, cash := fr.Returns[coreID], fr.Returns[cfg.CashID]
 
-		// Daily overlay excess-over-cash of the raw reconstruction.
+		// Daily overlay excess-over-cash of the anchored reconstruction.
 		overlay := make([]float64, len(trend))
 		for i := 1; i < len(trend); i++ {
 			overlay[i] = (trend[i]/trend[i-1] - 1) - cash[start+i]
 		}
-		drag := trendDrag(overlay, fr.Dates[start:], sgTrendInfoRatio)
 
 		feeDaily := annualFee / 252
 		values := make([]float64, len(trend))
 		values[0] = 100
 		for i := 1; i < len(trend); i++ {
 			k := start + i
-			r := core[k] + (overlay[i] - drag) - feeDaily
+			r := core[k] + overlay[i] - feeDaily
 			values[i] = values[i-1] * (1 + r)
 		}
 		s := &marketdata.Series{Name: name, Source: "simdata"}
 		for i, v := range values {
 			s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start+i], Close: v})
 		}
-		return s, nil
+		return trimToAnchor(f, PureTrendAnchor, s)
 	}
 }
 
-// trendDrag returns the constant daily return to subtract from a trend overlay's
-// excess-over-cash series so that, over the SG-Trend-comparable window (2000
-// onward, where the anchor is measured), the overlay's realized annualized
-// excess equals targetIR times its realized volatility. Subtracting a constant
-// leaves volatility, correlation and drawdown timing untouched and only lowers
-// the mean, mapping the in-sample-hot reconstruction onto the realized
-// information ratio of the index the fund tracks. The calibration ignores the
-// pre-2000 dates (kept in the output at the same absolute drag) because the SG
-// Trend anchor does not extend before its 2000 inception.
-func trendDrag(overlay []float64, dates []time.Time, targetIR float64) float64 {
-	anchor := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
-	var sum, sumSq float64
-	var n int
-	for i := 1; i < len(overlay); i++ {
-		if dates[i].Before(anchor) {
-			continue
-		}
-		sum += overlay[i]
-		sumSq += overlay[i] * overlay[i]
-		n++
+// trimToAnchor cuts a reconstruction back to the first date its reference
+// covers. Reliability bounds length here: what stands in front of the reference
+// is the engine alone, unanchored and unlevelled, and a shorter history that is
+// worth reading beats a longer one that is not.
+func trimToAnchor(f Fetcher, ref TrendAnchor, s *marketdata.Series) (*marketdata.Series, error) {
+	start, err := AnchorStart(f, ref)
+	if err != nil {
+		return nil, err
 	}
-	if n < 2 {
-		return 0
+	out := marketdata.Trim(s, start, time.Time{})
+	if len(out.Points) < 250 {
+		return nil, fmt.Errorf("%s: only %d points from %s", ref.ID, len(out.Points), start.Format("2006-01-02"))
 	}
-	mean := sum / float64(n)
-	variance := (sumSq - float64(n)*mean*mean) / float64(n-1)
-	if variance <= 0 {
-		return 0
-	}
-	// Target daily mean so annualized excess (mean·252) equals targetIR times
-	// annualized vol (sd·√252): targetMean = targetIR·sd/√252.
-	targetMean := targetIR * math.Sqrt(variance) / math.Sqrt(252)
-	return mean - targetMean
+	return out, nil
 }
 
 // msciWorldShapeID is the Yahoo daily MSCI World PRICE index (1972→). Its
@@ -1809,32 +1721,34 @@ func feeLoad(id string) float64 {
 	return fee
 }
 
-// chainedTrend builds a managed-futures history the way the evidence says it
-// should be built: real NAVs of the closest programmes for as far back as they
-// go, then the futures reconstruction for the deep past only. calibrate names
-// the fund the donors are volatility-matched to (the fund itself, or the twin
-// it is a share class of), and donors is the chain nearest first, each carrying
-// the fee uplift that puts it on the target's price list (feeAligned). The deep
-// tail takes its level from the net trend reference rather than from a pin (see
-// tsmom), so nothing in this family is levelled by hand any more.
+// chainedTrend builds a managed-futures history out of real NAVs of the
+// closest programmes, for as far back as they go and NO FURTHER. calibrate
+// names the fund the donors are volatility-matched to (the fund itself, or the
+// twin it is a share class of), and donors is the chain nearest first, each
+// carrying the fee uplift that puts it on the target's price list (feeAligned).
+// The file therefore starts at the deepest donor's own first NAV, 1996-03 for
+// this family.
 //
-// The reconstruction is built first because it serves twice: behind the chain,
-// and inside it as the daily texture a sparsely-dealing donor is projected onto
-// (see DonorChain). The oldest donors are weekly-dealing funds, and only the
-// engine can say what a trend book did between two of their NAVs.
+// The reconstruction is still built, and it still matters: it is the daily
+// texture a sparsely-dealing donor is projected onto (see DonorChain). The
+// oldest donors are weekly-dealing funds, and only the engine can say what a
+// trend book did between two of their NAVs. What it no longer does is stand in
+// front of the chain as shipped history. A reconstruction anchored on a monthly
+// composite is a decent account of a decade in aggregate and a poor one of any
+// month a reader might look up, and a history that is worth reading throughout
+// beats a longer one that is not (see docs/trend-reconstruction-design.md).
 func chainedTrend(name, calibrate string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		deep, err := tsmom(name+" (deep reconstruction)", cfg)(f, from)
+		texture, err := tsmom(name+" (daily texture)", cfg)(f, from)
 		if err != nil {
 			return nil, err
 		}
-		chain, err := DonorChain(f, cfg.CashID, calibrate, donors, from, deep)
+		chain, err := DonorChain(f, cfg.CashID, calibrate, donors, from, texture)
 		if err != nil {
 			return nil, err
 		}
 		chain.Name = name
 		chain.Source = "simdata"
-		marketdata.ExtendBack(chain, deep)
 		chain.SimulatedBefore = time.Time{}
 		return chain, nil
 	}
@@ -1851,7 +1765,7 @@ func dbmfRecipe() Recipe {
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
 		Method: "real NAVs of other managed-futures programmes spliced behind the fund, volatility-matched to it and lifted to its own 0.85%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.60%/yr, Guggenheim 2007-02→ +1.14%/yr, Man AHL Diversified 1996-03→ +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), " +
-			"then the 12-month TSMOM reconstruction for 1989-1996, its monthly path from the bundled net trend reference and its level with it, real DBMF grafted from 2019",
+			"the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
 		Build:           dbiChain("DBMF (donor chain)", feeAligned("DBMF", dbiDonors), mfConfig(0.115, 0.0085)),
 		ValidateAgainst: "DBMF",
 		SpliceReal:      "DBMF",
@@ -1869,7 +1783,7 @@ func dbmfpaRecipe() Recipe {
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
 		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, " +
-			"real NAVs of other managed-futures programmes behind it, fee-aligned the same way (2010-08 +0.70%/yr, 2007-02 +1.24%/yr, Man AHL Diversified 1996-03 +1.99%/yr), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, real DBMF.PA grafted from 2025",
+			"real NAVs of other managed-futures programmes behind it, fee-aligned the same way (2010-08 +0.70%/yr, 2007-02 +1.24%/yr, Man AHL Diversified 1996-03 +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
 		Build:           dbiChain("DBMF.PA (donor chain)", feeAligned("LU2951555585", append([]string{"DBMF"}, dbiDonors...)), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
 		SpliceReal:      "LU2951555585",
@@ -1888,7 +1802,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMFE",
 		Name: "iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR",
-		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it, each lifted to the UCITS class's 0.75%/yr fee load (2010-08, 2007-02, Man AHL Diversified 1996-03), then the TSMOM reconstruction for 1989-1996 on the bundled net trend reference, " +
+		Method: "the US-listed DBMF itself from 2019, real NAVs of other managed-futures programmes behind it, each lifted to the UCITS class's 0.75%/yr fee load (2010-08, 2007-02, Man AHL Diversified 1996-03), the file starting at that deepest donor's own first NAV, " +
 			"the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Build:           dbmfeBuild,
 		ValidateAgainst: "DBMFE",
@@ -1924,7 +1838,7 @@ func kmlmRecipe() Recipe {
 	return Recipe{
 		ID:              "KMLM",
 		Name:            "KraneShares KMLM: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.55%/yr, Guggenheim 2007-02→ +1.09%/yr, Man AHL Diversified 1996-03→ +1.84%/yr), then 12-month TSMOM on a cross-asset futures basket (14% vol target ~ the fund's realized 14.7%) on the bundled net trend reference, real KMLM grafted from 2020",
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.55%/yr, Guggenheim 2007-02→ +1.09%/yr, Man AHL Diversified 1996-03→ +1.84%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (14% vol target ~ the fund's realized 14.7%) supplies the daily texture the weekly-dealing donor is projected onto; real KMLM grafted from 2020",
 		Build:           chainedTrend("KMLM (donor chain)", "KMLM", feeAligned("KMLM", []string{"ASFYX", "RYMFX", ahlDiversified}), mfConfig(0.14, 0.0090)),
 		ValidateAgainst: "KMLM",
 		SpliceReal:      "KMLM",
@@ -1960,7 +1874,7 @@ func aqrmfRecipe() Recipe {
 		ID:   "LU1103257975",
 		Name: "AQR Managed Futures UCITS: TSMOM replication",
 		Method: "the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap, no fee uplift since the class's own performance fee already covers the difference) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03 +0.37%/yr), " +
-			"then the 12-month TSMOM reconstruction for 1989-1996 at a 9% vol target ~ the class's realized 9.3%, on the bundled net trend reference, real AQR grafted from 2015",
+			"the file starting at that deepest donor's own first NAV, at a 9% vol target ~ the class's realized 9.3%, real AQR grafted from 2015",
 		Build:           chainedTrend("AQR Managed Futures (donor chain)", "LU1103257975", feeAligned("LU1103257975", []string{"AQMIX", "RYMFX", ahlDiversified}), mfConfig(0.09, 0.0079)),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
@@ -2030,7 +1944,7 @@ func aqrmfHedgedRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1662501532",
 		Name:            "AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast",
-		Method:          "real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, then the 12-month TSMOM backcast on the bundled net trend reference) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
+		Method:          "real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, where the file starts) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
 		Build:           aqrHedgedBuild,
 		ValidateAgainst: "LU1662501532",
 		SpliceReal:      "LU1662501532",
@@ -2118,7 +2032,7 @@ func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.75%/yr fee load (Man AHL US 2014-08→ +1.16%/yr, Virtus AlphaSimplex 2010-08→ +0.70%/yr, Guggenheim 2007-02→ +1.24%/yr, Man AHL Diversified 1996-03→ +1.99%/yr), then 12-month TSMOM on a cross-asset futures basket (16% vol target ~ the fund's realized 16.9%) on the bundled net trend reference, real CTA grafted from 2022",
+		Method:          "real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.75%/yr fee load (Man AHL US 2014-08→ +1.16%/yr, Virtus AlphaSimplex 2010-08→ +0.70%/yr, Guggenheim 2007-02→ +1.24%/yr, Man AHL Diversified 1996-03→ +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
 		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{"AHLPX", "ASFYX", "RYMFX", ahlDiversified}), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",

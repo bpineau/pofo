@@ -157,6 +157,45 @@ func TestAnchorTrendExcessOverlay(t *testing.T) {
 	}
 }
 
+// A reference may be published daily, and what is anchored is still a month.
+// The same index served day by day and month-end by month-end must therefore
+// anchor identically: read the daily one as it stands and the anchor would take
+// the FIRST day of each month for the month itself, which is a different index.
+func TestAnchorTrendReadsADailyReferenceAtItsMonthEnds(t *testing.T) {
+	refReturn := func(i int) float64 { return 0.02 - 0.005*float64(i%5) }
+	monthly, dates, values, cash := anchorFixture(refReturn)
+
+	// The same month ends, with a wild intra-month path between them.
+	daily := &marketdata.Series{Symbol: "REF"}
+	for i, p := range monthly.Points {
+		if i > 0 {
+			prev := monthly.Points[i-1]
+			for d := prev.Date.AddDate(0, 0, 1); d.Before(p.Date); d = d.AddDate(0, 0, 1) {
+				wobble := 1.0 + 0.1*float64(d.Day()%3-1)
+				daily.Points = append(daily.Points, marketdata.Point{Date: d, Close: prev.Close * wobble})
+			}
+		}
+		daily.Points = append(daily.Points, p)
+	}
+
+	want, err := AnchorTrend(fakeFetcher{"REF": monthly}, TrendAnchor{ID: "REF", Funded: true},
+		dates, values, cash, 0.1, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := AnchorTrend(fakeFetcher{"REF": daily}, TrendAnchor{ID: "REF", Funded: true},
+		dates, values, cash, 0.1, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := range want {
+		if math.Abs(got[i]-want[i]) > 1e-9 {
+			t.Fatalf("day %d (%s): daily reference gives %.9f, month-end one %.9f",
+				i, dates[i].Format("2006-01-02"), got[i], want[i])
+		}
+	}
+}
+
 func TestAnchorTrendRejectsMismatchedInputs(t *testing.T) {
 	ref, dates, values, cash := anchorFixture(func(i int) float64 { return 0.01 })
 	f := fakeFetcher{"REF": ref}
