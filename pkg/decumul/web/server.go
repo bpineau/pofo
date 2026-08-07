@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/bpineau/pofo/pkg/firebook"
 	"github.com/bpineau/pofo/pkg/scenario"
 	"github.com/bpineau/pofo/pkg/webui"
 )
@@ -15,6 +16,9 @@ import (
 func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
 	mux.Handle("/", http.FileServer(http.FS(mustSub())))
+	// The FIRE book (pkg/firebook), linked discreetly from the page's
+	// "How this machine works" fold.
+	mux.Handle("/livre/", http.StripPrefix("/livre", firebook.Handler()))
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {
