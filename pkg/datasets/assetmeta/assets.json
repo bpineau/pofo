@@ -8156,6 +8156,66 @@
     ]
   },
   {
+    "id": "LU2392538067",
+    "isin": "LU2392538067",
+    "aliases": [
+      "AQRALT"
+    ],
+    "name": "AQR Alternative Trends UCITS Fund IAU1 USD Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "xid": "786515385",
+    "currency": "USD",
+    "fees": 1.75,
+    "since": "2023-02-14",
+    "asset_class": "managed-futures",
+    "underlying": "Trend-following applied ONLY to alternative markets: credit (IG, high yield, emerging), developed and emerging rates and currencies, alternative commodities (agriculturals, metals, power, emissions), volatility futures, and proprietary long/short equity factor books",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "The alternative-markets complement to classic trend, not a substitute: it deliberately excludes the equity-index and developed-government-bond futures that dominate a standard managed-futures book, and has run at only 0.66 daily correlation with the AQR Managed Futures UCITS fund (LU1103257975) since launch. USD reference class of a sub-fund launched 2023-02-14, USD 1.68bn at 31 March 2026. EXPENSIVE by design: the 1.75% pin is the base schedule (mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, so the KID ongoing charge runs a little above it) and every class also pays a performance fee, 20% over the ML 3-Month T-Bill hurdle here, high-on-high, crystallised each 31 March, which took 2.24 pts of average class NAV in the year to 31 March 2026: roughly 4% all-in that year. Minimum initial subscription USD 100,000. Average notional leverage 4327% over that year (sum-of-notionals, inflated by FX forwards and short-rate futures), absolute VaR averaging 3.23% against a 20% limit. Short live history (2023-02) and no backcast, so treat every statistic as a 3-year sample from an unusually good stretch.",
+    "confidence": "high",
+    "sources": [
+      "https://ucits.aqr.com/",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2392538067:USD"
+    ]
+  },
+  {
+    "id": "LU2392538224",
+    "isin": "LU2392538224",
+    "aliases": [
+      "AQRALTE"
+    ],
+    "name": "AQR Alternative Trends UCITS Fund IAE1 EUR Acc (hedged)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "xid": "796335182",
+    "currency": "EUR",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "fees": 1.75,
+    "since": "2023-03-31",
+    "asset_class": "managed-futures",
+    "underlying": "Trend-following applied ONLY to alternative markets: credit (IG, high yield, emerging), developed and emerging rates and currencies, alternative commodities (agriculturals, metals, power, emissions), volatility futures, and proprietary long/short equity factor books, EUR-hedged",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-hedged accumulating class of the AQR Alternative Trends UCITS fund, the euro vehicle for the exposure described on LU2392538067 (measured: beta 0.00 on EURUSD, 0.98 on the USD class's local returns). Same schedule as the USD class, with the hurdle in EUR STR: mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, PLUS a 20% performance fee that took 2.27 pts of average class NAV in the year to 31 March 2026. Minimum initial subscription EUR 100,000. Two cheaper EUR classes exist and both come with a catch: IAE2 (mgmt 1.20%) needs EUR 80 million, and IDE3 (LU2574380825, mgmt 0.90%, expense cap 0.14%, performance fee only 10%, EUR 100,000 minimum, KID ongoing charge 1.14%) is DISTRIBUTING, so its quoted NAV is not a total-return series and it is left out of the catalog on purpose.",
+    "confidence": "high",
+    "sources": [
+      "https://ucits.aqr.com/",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2392538224:EUR"
+    ]
+  },
+  {
     "id": "DTLE",
     "isin": "IE00BD8PGZ49",
     "name": "iShares $ Treasury Bond 20+yr UCITS ETF EUR Hedged (Dist)",
