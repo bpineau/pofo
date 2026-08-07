@@ -64,6 +64,14 @@ var Categories = []Category{
 			{"regimes-de-marche", "Les régimes de marché : croissance × inflation, ours collants", "Les saisons des marchés, la grille à quatre quadrants, le cauchemar stagflationniste du rentier, et l'audit de portefeuille par régime."},
 		},
 	},
+	{
+		Title: "Les stratégies de retrait",
+		Blurb: "Selon quelle règle prélever : le triangle impossible, chaque stratégie en détail, et comment choisir la vôtre.",
+		Articles: []Article{
+			{"panorama-strategies-retrait", "Panorama des stratégies de retrait : la carte avant le territoire", "Le triangle impossible, les deux extrêmes qui bornent tout, les cinq familles, et les six critères pour les noter honnêtement."},
+			{"retrait-fixe-bengen", "Le retrait fixe indexé (Bengen) : le classique de référence", "La règle fondatrice en stratégie opérationnelle : la mécanique fine, la falaise silencieuse, et les trois amendements quasi gratuits."},
+		},
+	},
 }
 
 // Titles maps every written article's slug to its display title; it is the
