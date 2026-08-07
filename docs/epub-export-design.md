@@ -138,7 +138,7 @@ func (b *Book) Write(w io.Writer) error
 - `OEBPS/style.css`, `OEBPS/cover.png` + `OEBPS/cover.xhtml` when present.
 - One `OEBPS/<FileName>` per chapter: fixed XHTML5 shell
   (`<?xml version="1.0" encoding="utf-8"?><!DOCTYPE html><html
-  xmlns="http://www.w3.org/2000/xhtml" xmlns:epub="...">`) wrapping
+  xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="...">`) wrapping
   `Body`.
 
 Output is deterministic: fixed entry order, zip headers carry `Modified`,
