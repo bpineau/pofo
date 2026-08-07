@@ -9,9 +9,9 @@
 #meta withdraw:4%/year
 #meta rebalance:180
 
-30    IE00B8GKDB10    # High-dividend world (VHYL)
-10    IE00B1FZS350    # Global REITs (IWDP)
-30    IE00B4WXJJ64    # € Government Bond (IEGA)
-10    IE00B1FZSC47    # TIPS (ITPS)
+30    VHYL    # High-dividend world (VHYL)
+10    IWDP    # Global REITs (IWDP)
+30    IEGA    # € Government Bond (IEGA)
+10    ITPS    # TIPS (ITPS)
 10    GOLDSIM    # Gold (IGLN)
-10    IE00BGCSB447SIM    # Cash / ultrashort (ERNA)
+10    ERNASIM    # Cash / ultrashort (ERNA)
