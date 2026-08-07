@@ -28,6 +28,12 @@ var plainMarkers = []rune{'•', '+', '×', 'o', '#', '@', '*', '%'}
 // With Braille, each cell packs 2x4 dots (U+2800 block) for a smoother
 // curve; overlapping series are told apart by color when Color is set.
 func Term(opt TermOptions, series []Series) string {
+	// Same set-aware slot choice as the SVG charts, so a terminal comparison
+	// and its HTML twin name the series with the same hues.
+	slots := paletteSlots(len(series))
+	if len(slots) == 0 {
+		slots = []int{0}
+	}
 	width := opt.Width
 	if width <= 0 {
 		width = 100
@@ -99,7 +105,7 @@ func Term(opt TermOptions, series []Series) string {
 
 	paint := func(si int8, glyph rune) string {
 		if opt.Color {
-			return fmt.Sprintf("\x1b[38;5;%dm%c\x1b[0m", ansiPalette[int(si)%len(ansiPalette)], glyph)
+			return fmt.Sprintf("\x1b[38;5;%dm%c\x1b[0m", ansiPalette[slots[int(si)%len(slots)]], glyph)
 		}
 		return string(glyph)
 	}

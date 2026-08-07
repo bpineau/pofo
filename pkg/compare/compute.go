@@ -135,7 +135,7 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 			p.Warnings = append(p.Warnings, fmt.Sprintf(
 				"capital wiped out on %s: %s; the series stops there", when, cause))
 		}
-		results = append(results, &column{p: p, sim: sim, color: chart.PaletteColor(len(results)), rebalanceDays: days, currency: currency, specName: spec.Name})
+		results = append(results, &column{p: p, sim: sim, rebalanceDays: days, currency: currency, specName: spec.Name})
 		return nil
 	}
 	for _, spec := range specs {
@@ -182,6 +182,13 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 	// only with at least one spec today, but the guard keeps the API safe.
 	if len(results) == 0 {
 		return nil, errors.New("no portfolios to compare")
+	}
+	// Identity colors are assigned once the count is known: the palette picks
+	// the n hues that stay apart from each other (chart.PaletteFor), which a
+	// running index cannot do since column four decides what column one needs.
+	pal := chart.PaletteFor(len(results))
+	for i, r := range results {
+		r.color = pal[i]
 	}
 
 	// Common window across portfolios: statistics and the comparison chart
