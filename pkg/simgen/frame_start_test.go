@@ -83,17 +83,20 @@ func TestCompositeUnlockedWhenYoungestLegExtended(t *testing.T) {
 }
 
 // Custom builders (not just the shared composite/tsmom) must route their legs
-// through extend() too, otherwise their intl-equity legs stay short and cap the
-// recipe near 2000. wintonBuild reaches back to the EM proxy (~1989) plus the
-// TSMOM warm-up once its frame is extended; without extend() it would stop near
-// 1994. VFINX/^IRX are daily from 1985 to give the frame daily dates.
+// through extend() too, otherwise their commodity and intl-equity legs stay
+// short and cap the recipe at their own inception. Here the trend legs quote
+// only from 2005 and their bundled proxies reach the 1980s, so an extended
+// frame is capped by the equity/cash legs (2003) plus the TSMOM warm-up; an
+// un-extended one would not start before 2005. The dates stay well after the
+// trend reference's own 2000 start, so this measures the routing and not the
+// truncation, which the next test covers.
 func TestWintonBuilderExtendsItsLegs(t *testing.T) {
 	fake := fakeFetcher{
-		"VFINX": dailyFrom("VFINX", 1985, 1, 1, 9200),
-		"^IRX":  dailyFrom("^IRX", 1985, 1, 1, 9200),
+		"VFINX": dailyFrom("VFINX", 2003, 1, 1, 8400),
+		"^IRX":  dailyFrom("^IRX", 2003, 1, 1, 8400),
 	}
 	for _, id := range []string{"VTMGX", "VEIEX", "VFITX", "VUSTX", "GC=F", "CL=F"} {
-		fake[id] = dailyFrom(id, 1994, 1, 1, 5900)
+		fake[id] = dailyFrom(id, 2005, 1, 1, 7600)
 	}
 	f := WithRefData(datasets.Refdata(), fake)
 
@@ -101,8 +104,53 @@ func TestWintonBuilderExtendsItsLegs(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := s.First().Date.Year(); got > 1991 {
-		t.Errorf("Winton starts %s, want ≤1991 (its legs must be extended via extend())", s.First().Date.Format("2006-01"))
+	if got := s.First().Date.Year(); got > 2004 {
+		t.Errorf("Winton starts %s, want ≤2004 (its legs must be extended via extend())", s.First().Date.Format("2006-01"))
+	}
+}
+
+// The overlay builds take their LEVEL from the pure-trend reference, so they
+// must not ship a day in front of it however deep their legs reach: what stands
+// there is the engine alone. Same fixture as the extension test but with legs
+// running back to the 1980s, where the truncation is what binds.
+func TestOverlayBuildsStopWhereTheirReferenceDoes(t *testing.T) {
+	fake := fakeFetcher{
+		"VFINX": dailyFrom("VFINX", 1985, 1, 1, 15100),
+		"VFITX": dailyFrom("VFITX", 1985, 1, 1, 15100),
+		"^IRX":  dailyFrom("^IRX", 1985, 1, 1, 15100),
+	}
+	for _, id := range []string{"VTMGX", "VEIEX", "VUSTX", "GC=F", "CL=F"} {
+		fake[id] = dailyFrom(id, 1994, 1, 1, 11800)
+	}
+	f := WithRefData(datasets.Refdata(), fake)
+	want, err := AnchorStart(f, PureTrendAnchor)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	for _, c := range []struct {
+		name  string
+		build func(Fetcher, time.Time) (*marketdata.Series, error)
+	}{
+		{"Winton", wintonBuild},
+		{"RSST", stackedTrend("RSST", "VFINX", mfConfig(0.10, 0), 0.0096)},
+		{"RSBT", stackedTrend("RSBT", "VFITX", mfConfig(0.10, 0), 0.0097)},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			s, err := c.build(f, ComponentsFrom)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := s.First().Date; got.Before(want) {
+				t.Errorf("starts %s, before the reference's own %s",
+					got.Format("2006-01-02"), want.Format("2006-01-02"))
+			}
+			if got := s.First().Date; got.After(want.AddDate(0, 0, 7)) {
+				t.Errorf("starts %s, a week or more after the reference's own %s: "+
+					"the truncation is not what binds and this test proves nothing",
+					got.Format("2006-01-02"), want.Format("2006-01-02"))
+			}
+		})
 	}
 }
 
