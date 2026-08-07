@@ -310,15 +310,16 @@ TRANSPOSED (rules as rows, statistics as columns): a book page and an e-reader
 cannot carry a year x rule matrix without horizontal scrolling, and the
 year-by-year detail belongs in a figure anyway.
 
-`figures_strategies.go` (2026-07-29) applies the same pattern to five plates
-of the withdrawal-strategies part, and adds a second rule: no two of them share
-a form. A figure earns its page by fitting ITS question, so the set runs a
-warning light climbing over nineteen years (`bengen-falaise`, frozen from
-`pkg/replay`), a plane of constant incomes crossed two different ways
-(`cape-contracyclique`), two curves swapping rank at a nameable age
-(`credits-mortalite`), a narrowing five-step procedure (`arbre-decision`) and
-four instrument strips read side by side (`deux-thermometres`). Reusing a form
-that worked elsewhere is the failure mode to avoid, not the shortcut to take.
+`figures_strategies.go` (2026-07-29) applies the same pattern to the plates
+of the withdrawal-strategies part, with a taste rather than a rule: a figure
+earns its page by fitting ITS question, which in that batch happened to give
+every plate a different form (a warning light climbing over nineteen years in
+`bengen-falaise`, a plane of constant incomes crossed two ways in
+`cape-contracyclique`, two curves swapping rank at a nameable age in
+`credits-mortalite`, a narrowing procedure in `arbre-decision`, four
+instrument strips in `deux-thermometres`). Reusing an existing form is fine
+whenever it is the right one; what is avoided is defaulting to a past figure
+as a template. This is deliberately NOT a "never repeat a form" rule.
 Where a plate carries a closed-form model rather than a replayed series (the
 CAPE rule, the Gompertz mortality law, the geometric bound), the model lives in
 the plate as a small pure function and the guard test checks it against the
