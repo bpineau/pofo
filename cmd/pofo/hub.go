@@ -170,8 +170,6 @@ body.hub{background:
 .hub-titlerow{display:flex;align-items:baseline;gap:.5rem;flex-wrap:wrap}
 .hub-title{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:1rem;line-height:1.3;overflow-wrap:anywhere}
 .hub-title.id{font-family:var(--mono);font-weight:500;font-size:.9rem;letter-spacing:-.01em}
-.hub-code{font-family:var(--mono);font-size:.68rem;color:var(--muted);overflow-wrap:anywhere;
-  background:var(--surface-2);border-radius:5px;padding:.05rem .38rem}
 .hub-blurb{display:block;color:var(--ink-soft);font-size:.84rem;line-height:1.4;margin-top:.12rem}
 .hub-links{flex:0 0 auto;display:flex;gap:1rem;font-family:var(--mono);font-size:.7rem;
   letter-spacing:.05em;text-transform:uppercase}
@@ -232,7 +230,6 @@ body.hub{background:
       <span class="hub-body">
         <span class="hub-titlerow">
           <span class="hub-title{{if .Untitled}} id{{end}}">{{.Label}}</span>
-          {{if not .Untitled}}<span class="hub-code">{{.Name}}</span>{{end}}
         </span>
         {{if .Blurb}}<span class="hub-blurb">{{.Blurb}}</span>{{end}}
       </span>
