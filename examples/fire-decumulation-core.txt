@@ -21,4 +21,4 @@
 12    XAUUSDSIM       # Gold (buy a physical ETC: IGLN IE00B4ND3602)
 8     LU1645380442SIM # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability
 3     LU1459801780SIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E) -- diversifies the sovereign linker risk
-3     LU0290358497    # EUR overnight cash (XEON) -- the withdrawal float
+3     LU0290358497SIM    # EUR overnight cash (XEON) -- the withdrawal float

@@ -13,5 +13,5 @@
 10    IE00B1FZS350    # Global REITs (IWDP)
 30    IE00B4WXJJ64    # € Government Bond (IEGA)
 10    IE00B1FZSC47    # TIPS (ITPS)
-10    IE00B4ND3602    # Gold (IGLN)
-10    IE00BGCSB447    # Cash / ultrashort (ERNA)
+10    GOLDSIM    # Gold (IGLN)
+10    IE00BGCSB447SIM    # Cash / ultrashort (ERNA)
