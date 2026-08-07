@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -54,18 +55,29 @@ type server struct {
 	fireDefault http.Handler
 	fireMu      sync.Mutex
 	fireByEx    map[string]http.Handler
+	// fireBySpec caches one app per ad-hoc composed spec (/fire/p/<spec>/).
+	// Unlike fireByEx (at most one entry per bundled example) it must be
+	// bounded: anonymous visitors can mint unlimited distinct specs.
+	fireBySpec map[string]http.Handler
+	// buildPanel builds a FIRE panel for one spec; a field so tests can
+	// stub the fetch-heavy build. Defaults to firePanel.
+	buildPanel func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string)
 }
 
 func newServer(opt *options, client *marketdata.Client) *server {
 	s := &server{
-		opt:      opt,
-		client:   client,
-		sem:      make(chan struct{}, viewParallel),
-		examples: knownExamples(),
-		fireByEx: map[string]http.Handler{},
+		opt:        opt,
+		client:     client,
+		sem:        make(chan struct{}, viewParallel),
+		examples:   knownExamples(),
+		fireByEx:   map[string]http.Handler{},
+		fireBySpec: map[string]http.Handler{},
 	}
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return renderComparison(ctx, s.client, o, specs)
+	}
+	s.buildPanel = func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string) {
+		return firePanel(ctx, s.opt, s.client, []*portfolio.Spec{spec})
 	}
 	return s
 }
@@ -125,13 +137,22 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 }
 
 // fire serves the FIRE simulator. A plain /fire/... path gets the default
-// app (the startup panel); a /fire/e/<name>/... path gets an app bound to
-// that example's historical panel, so a portfolio picked on the hub opens
-// pre-loaded. The FIRE front-end resolves its /api and asset URLs against the
-// page's base, so it works unchanged at either mount depth.
+// app (the startup panel); /fire/e/<name>/... gets an app bound to that
+// example's historical panel; /fire/p/<spec>/... gets an app built from an
+// ad-hoc composed portfolio, <spec> being exactly the /view p= grammar
+// carried as one path segment. Naked forms redirect to the directory form:
+// the front end resolves /api and asset URLs against document.baseURI.
 func (s *server) fire(w http.ResponseWriter, r *http.Request) {
 	if rest, ok := strings.CutPrefix(r.URL.Path, "/fire/e/"); ok {
-		name, _, _ := strings.Cut(rest, "/")
+		name, _, slash := strings.Cut(rest, "/")
+		if _, known := s.examples[name]; !known {
+			s.errorPage(w, http.StatusNotFound, "unknown example: "+name)
+			return
+		}
+		if !slash {
+			http.Redirect(w, r, "/fire/e/"+name+"/", http.StatusMovedPermanently)
+			return
+		}
 		h := s.fireForExample(r.Context(), name)
 		if h == nil {
 			s.errorPage(w, http.StatusNotFound, "unknown example: "+name)
@@ -140,7 +161,97 @@ func (s *server) fire(w http.ResponseWriter, r *http.Request) {
 		http.StripPrefix("/fire/e/"+name, h).ServeHTTP(w, r)
 		return
 	}
+	if enc, ok := strings.CutPrefix(r.URL.EscapedPath(), "/fire/p/"); ok {
+		s.fireComposed(w, r, enc)
+		return
+	}
 	http.StripPrefix("/fire", s.fireDefault).ServeHTTP(w, r)
+}
+
+// fireComposed serves the simulator for an ad-hoc composed portfolio. It
+// works on the escaped path so a percent-encoded "/" cannot cross the
+// segment boundary, and validates the spec (grammar, byte cap, catalog
+// gate, all via adhocSpec) before any redirect or panel build.
+func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string) {
+	seg, tail, slash := strings.Cut(enc, "/")
+	raw, err := url.PathUnescape(seg)
+	if err != nil {
+		s.errorPage(w, http.StatusBadRequest, "malformed portfolio spec")
+		return
+	}
+	spec, err := adhocSpec(raw, 1)
+	if err != nil {
+		s.errorPage(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	if !slash {
+		http.Redirect(w, r, "/fire/p/"+seg+"/", http.StatusMovedPermanently)
+		return
+	}
+	h := s.fireForSpec(r.Context(), raw, spec)
+	if h == nil { // client gone while queued for a build slot
+		return
+	}
+	// Serve the app under its mount: hand it the sub-path past the segment
+	// (StripPrefix cannot be used verbatim, the escaped prefix would have
+	// to match the decoded Path).
+	r2 := new(http.Request)
+	*r2 = *r
+	u := *r.URL
+	r2.URL = &u
+	p, err := url.PathUnescape("/" + tail)
+	if err != nil {
+		http.NotFound(w, r)
+		return
+	}
+	u.Path, u.RawPath = p, ""
+	if p != "/"+tail {
+		u.RawPath = "/" + tail
+	}
+	h.ServeHTTP(w, r2)
+}
+
+// fireSpecCacheMax bounds the composed-panel cache. Eviction is arbitrary
+// (map order); the worst case is a rebuild, and sixteen covers a personal
+// server's realistic working set.
+const fireSpecCacheMax = 16
+
+// fireForSpec returns the FIRE app for one composed spec, building and
+// caching it on first use. Same locking pattern as fireForExample: the
+// fetch-heavy build runs unlocked, a rare double build is harmless, the
+// first writer wins. Builds share the /view render semaphore so a burst of
+// distinct specs cannot stack unbounded quote fetches.
+func (s *server) fireForSpec(ctx context.Context, key string, spec *portfolio.Spec) http.Handler {
+	s.fireMu.Lock()
+	h, ok := s.fireBySpec[key]
+	s.fireMu.Unlock()
+	if ok {
+		return h
+	}
+	select {
+	case s.sem <- struct{}{}:
+		defer func() { <-s.sem }()
+	case <-ctx.Done():
+		return nil
+	}
+	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
+	defer cancel()
+	panel, labels := s.buildPanel(buildCtx, spec)
+	h = web.Handler(panel, labels)
+	s.fireMu.Lock()
+	if existing, ok := s.fireBySpec[key]; ok {
+		h = existing
+	} else {
+		if len(s.fireBySpec) >= fireSpecCacheMax {
+			for k := range s.fireBySpec {
+				delete(s.fireBySpec, k)
+				break
+			}
+		}
+		s.fireBySpec[key] = h
+	}
+	s.fireMu.Unlock()
+	return h
 }
 
 // fireForExample returns the FIRE app bound to the named example's panel,
@@ -168,7 +279,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	}
 	buildCtx, cancel := context.WithTimeout(ctx, 90*time.Second)
 	defer cancel()
-	panel, labels := firePanel(buildCtx, s.opt, s.client, []*portfolio.Spec{spec})
+	panel, labels := s.buildPanel(buildCtx, spec)
 	h = web.Handler(panel, labels)
 	s.fireMu.Lock()
 	if existing, ok := s.fireByEx[name]; ok {
