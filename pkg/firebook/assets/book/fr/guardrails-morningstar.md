@@ -22,7 +22,7 @@ L'honnêteté oblige à répéter le garde-fou de lecture : ce classement porte 
 
 Le second chantier attaque le défaut résiduel de toute la famille : le taux de retrait courant est un **mauvais** thermomètre. Il ignore l'horizon restant (6 % de taux courant à 85 ans est sain ; à 52 ans, il est grave), les flux futurs (le même 6 % deux ans avant la liquidation des pensions est bénin, [[revenus-complementaires]]), l'allocation et les valorisations. Résultat : le guardrail de 2006 coupe des retraités qui n'en avaient pas besoin et rassure des plans déjà condamnés.
 
-La proposition de Kitces et Tharp (développée sur [kitces.com](https://www.kitces.com) et industrialisée dans des outils comme Income Lab) : **surveiller directement la probabilité de succès du plan complet**, recalculée avec un simulateur, et poser les garde-fous dessus. L'architecture type :
+La proposition de Kitces et Tharp (développée sur [kitces.com](https://www.kitces.com) et industrialisée dans des outils comme Income Lab) : **surveiller directement la probabilité de succès du plan complet**, recalculée avec un simulateur, et poser les garde-fous dessus. C'est, au fond, une mise à jour bayésienne du plan : chaque année de marchés et de dépenses vécus révise la croyance sur sa réussite, et la règle agit sur la croyance révisée plutôt que sur un chiffre figé à l'an 1. L'architecture type :
 
 - **La cible** : maintenir le plan autour de ~80-90 % de succès (soit 10-20 % de ruine simulée, la zone de travail praticienne, [[ruine-et-probabilites]]).
 - **Le garde-fou bas** : si la probabilité de succès tombe sous ~70-75 % (le portefeuille a souffert, ou les hypothèses se sont dégradées), couper les dépenses de ~10 %, ce qui la remonte au-dessus de la cible.
