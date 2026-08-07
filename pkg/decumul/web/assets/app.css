@@ -243,6 +243,7 @@ input[type=number]{background:var(--surface);color:var(--ink);border:1px solid v
 .chart-frame:hover .databtn,.chart-frame:focus-within .databtn,
 .fan:hover .databtn,.fan:focus-within .databtn{opacity:1}
 .databtn:hover{color:var(--accent-ink);border-color:var(--amber-dim)}
+.helpbtn{right:4.6rem}
 #lightbox .databtn{display:none}
 
 /* the data-table overlay */

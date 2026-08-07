@@ -461,6 +461,18 @@ function enhanceChart(el) {
     el.addEventListener("keydown", chartKeydown);
     el.addEventListener("blur", hideCrosshair);
   }
+  const help = el.getAttribute("data-help");
+  if (help) {
+    // Over an instrumented chart the crosshair tooltip wins, so the frame's
+    // explanation would only surface on its border: give it its own affordance.
+    const hb = document.createElement("button");
+    hb.type = "button";
+    hb.className = "databtn helpbtn";
+    hb.textContent = "? what this says";
+    hb.setAttribute("aria-label", "What this chart says");
+    hb.setAttribute("data-help", help);
+    el.appendChild(hb);
+  }
   const btn = document.createElement("button");
   btn.type = "button";
   btn.className = "databtn";
@@ -780,7 +792,7 @@ async function renderModels(b, id) {
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, VPW, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.">Ruin</th>` +
     cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
-  const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.">Safe spend</th>` +
+  const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.">Safe spend, no flex</th>` +
     cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%</span>`) + `</tr>`;
   const wealthRow = `<tr><th data-help="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
     cells(m => fmtW(m.medianWealth)) + `</tr>`;
