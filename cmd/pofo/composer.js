@@ -206,11 +206,16 @@
     return bootBlank && !hasPortfolioContent();
   }
 
-  // commit rewrites the URL to the current state without a navigation. While the
-  // hub is still inert (only the blank boot card, no content) it leaves the
-  // address bar at "/" rather than a portfolio-less /view the server redirects.
+  // commit rewrites the URL to the current state without a navigation. On /view
+  // the address is the live report (/view?<state>). On the hub it must stay on
+  // the hub PATH (/?<state>), never /view: Run then navigates to a genuinely
+  // different URL, so it pushes a history entry and Back returns to the hub with
+  // the composition intact, instead of replacing the hub entry with the very
+  // /view URL Run reloads (which drops the visitor out of pofo entirely). While
+  // the hub is still inert (only the blank boot card, no content) it leaves the
+  // address bar at "/" rather than a portfolio-less URL the server redirects.
   function commit() {
-    if (!inert()) history.replaceState(null, "", "/view?" + serialize(state));
+    if (!inert()) history.replaceState(null, "", (bootBlank ? "/?" : "/view?") + serialize(state));
     refreshBudget();
     refreshCount();
     refreshRunState();
@@ -271,6 +276,26 @@
     if (byKey[v]) return byKey[v];
     if (v.length > 3 && v.slice(-3) === "sim" && byKey[v.slice(0, -3)]) return byKey[v.slice(0, -3)];
     return null;
+  }
+
+  // isISIN reports whether s has the ISIN shape (2 letters, 9 alphanumerics,
+  // one check digit): the identifiers a human would rather not read or type.
+  function isISIN(s) { return /^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/.test(s); }
+
+  // preferredId is the friendliest identifier for an asset: its canonical id
+  // unless that id is an ISIN and a non-ISIN alternate (a ticker) exists, in
+  // which case the shortest such ticker wins. So typing "RAEF" inserts RAEF,
+  // not the LU… ISIN it canonicalises to. Both resolve to the same asset and
+  // pass the server's catalog gate, but the ticker reads at a glance in the
+  // portfolio and the report. Deterministic: shortest, then lexicographic.
+  function preferredId(a) {
+    if (!isISIN(a.id)) return a.id;
+    var best = null;
+    (a.alt || []).forEach(function (t) {
+      if (isISIN(t)) return;
+      if (best === null || t.length < best.length || (t.length === best.length && t < best)) best = t;
+    });
+    return best || a.id;
   }
 
   // sumOf totals a port's weights (numbers, blanks as zero).
@@ -433,8 +458,8 @@
       if (hay.indexOf(q) >= 0) hits.push(a);
     }
     hits.sort(function (x, y) {
-      var sx = x.id.toLowerCase().indexOf(q) === 0 ? 0 : 1;
-      var sy = y.id.toLowerCase().indexOf(q) === 0 ? 0 : 1;
+      var sx = (x.id.toLowerCase().indexOf(q) === 0 || preferredId(x).toLowerCase().indexOf(q) === 0) ? 0 : 1;
+      var sy = (y.id.toLowerCase().indexOf(q) === 0 || preferredId(y).toLowerCase().indexOf(q) === 0) ? 0 : 1;
       return sx - sy;
     });
     if (hits.length === 0) return;
@@ -445,7 +470,7 @@
       if (i === 0) d.className = "on";
       var t = document.createElement("span");
       t.className = "t";
-      t.textContent = a.id;
+      t.textContent = preferredId(a);
       var dd = document.createElement("span");
       dd.className = "d";
       dd.textContent = a.name || "";
@@ -469,7 +494,7 @@
 
   // pickAC fills the input with a catalog id, refreshes the row and commits.
   function pickAC(input, asset) {
-    input.value = asset.id;
+    input.value = preferredId(asset);
     var row = input.closest(".hrow");
     refreshName(input, row.querySelector(".rn"));
     validateId(input);
@@ -927,12 +952,17 @@
     bootBlank = panel.getAttribute("data-boot") === "blank";
     presets = readPresets(panel);
     state = parseSearch(location.search);
-    if (bootBlank) seedGlobals(panel); // the hub carries no URL globals; seed them
+    if (bootBlank) seedGlobals(panel); // fill globals the URL did not carry from prefs
+    var stack = panel.querySelector(".stack");
     var cards = panel.querySelectorAll(".pcard");
-    for (var i = 0; i < state.ports.length && i < cards.length; i++) {
+    for (var i = 0; i < state.ports.length; i++) {
       var port = state.ports[i];
-      port._el = cards[i];
-      cards[i].__cmpPort = port;
+      // The server renders a fixed number of cards (one blank boot card on the
+      // hub); a state carrying more portfolios (returning to the hub via Back,
+      // or a shared /?<multi-card> link) needs the extra cards built here.
+      var card = cards[i] || stack.appendChild(buildShell());
+      port._el = card;
+      card.__cmpPort = port;
       if (port.kind === "p") { renderBody(port); enhanceHead(port); }
       else if (port.kind === "opaque") { renderOpaque(port); }
     }
@@ -1102,7 +1132,7 @@
     var g = readJSON(panel, "data-globals");
     if (!g) return;
     ["currency", "rebalance", "sim", "bench", "start", "end"].forEach(function (k) {
-      if (g[k]) state.globals[k] = g[k];
+      if (g[k] && !state.globals[k]) state.globals[k] = g[k]; // URL wins over prefs
     });
   }
 
