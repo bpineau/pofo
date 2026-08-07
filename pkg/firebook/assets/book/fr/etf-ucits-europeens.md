@@ -76,5 +76,5 @@ La cible de Karim et Léa ([[diversification-internationale]]), 1,6 M€, 65/35,
 
 - justETF et TrackingDifferences.com : la sélection et le contrôle des fonds (tracking difference historique par part).
 - Bogleheads wiki, sections « eu investing » et « Non-US investor » : le corpus de référence de l'investisseur UCITS.
-- L'AMF (amf-france.org) : les documents d'information clé (DIC) et la pédagogie officielle des ETF.
+- L'AMF ([amf-france.org](https://www.amf-france.org)) : les documents d'information clé (DIC) et la pédagogie officielle des ETF.
 - Dans ce livre : [[enveloppes-francaises]] (la mécanique fiscale des trois enveloppes), [[flat-tax-et-imposition]] (le calcul des ventes), et chaque brique dans son article de la partie V.

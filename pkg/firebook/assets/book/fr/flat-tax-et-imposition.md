@@ -52,6 +52,6 @@ Couple, 55 et 57 ans, besoin 54 000 €, aucun salaire, pensions dans 10 ans. Le
 
 ## Pour aller plus loin
 
-- impots.gouv.fr : le simulateur officiel (l'arbitrage PFU/barème s'y teste en dix minutes) et le BOFiP pour les régimes fins (donation-cession, abattements de durée).
+- [impots.gouv.fr](https://www.impots.gouv.fr) : le simulateur officiel (l'arbitrage PFU/barème s'y teste en dix minutes) et le BOFiP pour les régimes fins (donation-cession, abattements de durée).
 - Les notices 2074/2042 : la mécanique déclarative des PV : aride et instructive.
 - Dans ce livre : [[enveloppes-francaises]] (les robinets et leur ordre), [[taxe-puma]] (la couche du rentier), [[succession-et-transmission]] (les purges en stratégie), [[utiliser-la-page-fire]] (le curseur fiscal de pofo).

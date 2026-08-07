@@ -65,5 +65,5 @@ Portefeuille de départ : 65 % actions mondiales non couvertes, 35 % fonds euros
 
 - Ilmanen, *Expected Returns* (2011) et *Investing Amid Low Expected Returns* (2022) : les primes et coûts de portage de chaque candidat, chiffrés.
 - Early Retirement Now, volets 29-31 et 40 (le yield illusion), volet 34 (l'or comme couverture de séquence) ([[serie-ern]]).
-- portfoliocharts.com (les briques testées dans tous les mélanges) ; l'AQR library pour les managed futures et le portage des couvertures optionnelles.
+- [portfoliocharts.com](https://portfoliocharts.com) (les briques testées dans tous les mélanges) ; l'AQR library pour les managed futures et le portage des couvertures optionnelles.
 - Dans ce livre : la grille fondatrice [[regimes-de-marche]], et chaque brique dans son article dédié.

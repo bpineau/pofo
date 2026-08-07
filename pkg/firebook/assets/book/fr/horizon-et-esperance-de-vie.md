@@ -93,7 +93,7 @@ Les FIRE en cours de route le disent souvent : reformuler « mon plan doit tenir
 
 ## Pour aller plus loin
 
-- INSEE : tables de mortalité françaises (insee.fr, « tables de mortalité des années N ») et études sur les écarts d'espérance de vie par catégorie sociale ; les tables prospectives TGH-05/TGF-05 pour la vision assureur.
+- INSEE : tables de mortalité françaises ([insee.fr](https://www.insee.fr), « tables de mortalité des années N ») et études sur les écarts d'espérance de vie par catégorie sociale ; les tables prospectives TGH-05/TGF-05 pour la vision assureur.
 - Early Retirement Now, SWR Series volets 1-2 (les SAFEMAX par horizon, dépletion vs préservation) et volet 56 (rentes et Sécurité sociale dans le plan) ([[serie-ern]]).
 - Moshe Milevsky, *The 7 Most Important Equations for Your Retirement* : la formalisation actuarielle accessible (dont l'équation de Fibonacci de la longévité et la logique de l'annuitisation).
 - Dans pofo : le curseur d'horizon, l'âge (qui pilote §05) et « Annuitise % of capital » ([[utiliser-la-page-fire]]) ; la mécanique interne : [[la-machine-pofo]].

@@ -30,7 +30,7 @@ Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe 
 
 L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). L'effet sur la ruine est majeur, souvent l'équivalent de 0,3 à 0,7 point de taux de retrait.
 
-**Correction** : relevé sur info-retraite.fr, estimation prudente (décote comprise), et entrée « revenu différé » du simulateur ([[utiliser-la-page-fire]]).
+**Correction** : relevé sur [info-retraite.fr](https://www.info-retraite.fr), estimation prudente (décote comprise), et entrée « revenu différé » du simulateur ([[utiliser-la-page-fire]]).
 
 ## 5. Confondre rendement moyen et rendement vécu
 

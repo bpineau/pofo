@@ -49,7 +49,7 @@ Compilation des fils « conseils aux candidats » : les dix qui reviennent toujo
 
 ## Le corpus, où le lire
 
-Les sources durables, pour prolonger : les journaux au long cours (LivingAFI, « The Drawdown » : le récit de décumulation le plus honnête du web, retour au travail compris ; les bilans annuels d'Early Retirement Now depuis 2018 : la version quantitative, [[serie-ern]]) ; les vétérans à quinze ans de recul (Mr. Money Mustache et sa génération : lire les billets **récents**, pas les fondateurs) ; les forums à fil long (r/financialindependence et ses « FIRE update » annuels votés ; le forum MMM, section post-FIRE ; côté français : r/vosfinances et les files FIRE des forums patrimoniaux : une communauté plus petite, précieuse pour les spécificités locales, [[taxe-puma]], [[retraite-legale]]) ; et les études qualitatives naissantes (la recherche académique commence à interviewer des cohortes FIRE : à suivre). Le filtre de lecture, toujours : au fil de l'eau > rétrospectif, chiffré > narratif, échecs activement recherchés.
+Les sources durables, pour prolonger : les journaux au long cours (LivingAFI, « The Drawdown » : le récit de décumulation le plus honnête du web, retour au travail compris ; les bilans annuels d'Early Retirement Now depuis 2018 : la version quantitative, [[serie-ern]]) ; les vétérans à quinze ans de recul (Mr. Money Mustache et sa génération : lire les billets **récents**, pas les fondateurs) ; les forums à fil long ([r/financialindependence](https://www.reddit.com/r/financialindependence) et ses « FIRE update » annuels votés ; le forum MMM, section post-FIRE ; côté français : [r/vosfinances](https://www.reddit.com/r/vosfinances) et les files FIRE des forums patrimoniaux : une communauté plus petite, précieuse pour les spécificités locales, [[taxe-puma]], [[retraite-legale]]) ; et les études qualitatives naissantes (la recherche académique commence à interviewer des cohortes FIRE : à suivre). Le filtre de lecture, toujours : au fil de l'eau > rétrospectif, chiffré > narratif, échecs activement recherchés.
 
 ## L'essentiel à retenir
 
@@ -65,6 +65,6 @@ Les sources durables, pour prolonger : les journaux au long cours (LivingAFI, «
 
 - LivingAFI, « The Drawdown Chronicles » : le journal de décumulation de référence, échecs compris.
 - Early Retirement Now, les bilans post-retraite annuels de Karsten Jeske ([[serie-ern]]).
-- r/financialindependence (les « annual updates »), le forum Mr. Money Mustache (section post-FIRE), r/vosfinances pour la France.
+- [r/financialindependence](https://www.reddit.com/r/financialindependence) (les « annual updates »), le forum Mr. Money Mustache (section post-FIRE), [r/vosfinances](https://www.reddit.com/r/vosfinances) pour la France.
 - Ernie Zelinski, *How to Retire Happy, Wild, and Free* : le classique non financier que les vétérans recommandent le plus.
 - Dans ce livre : [[psychologie-du-retrait]], [[sens-et-identite]], [[couple-et-famille]], [[une-annee-de-plus]] : les quatre chapitres que ce terrain valide.

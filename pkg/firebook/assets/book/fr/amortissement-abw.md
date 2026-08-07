@@ -73,7 +73,7 @@ Solène et Marc, 49 ans, horizon jusqu'à 99 ans (50 ans), portefeuille 1,55 M�
 
 ## Pour aller plus loin
 
-- Ben Mathew, le planificateur TPAW (tpawplanner.com, gratuit) et le fil « Total portfolio allocation and withdrawal » sur Bogleheads : la doctrine complète et l'outil.
+- Ben Mathew, le planificateur TPAW ([tpawplanner.com](https://tpawplanner.com), gratuit) et le fil « Total portfolio allocation and withdrawal » sur Bogleheads : la doctrine complète et l'outil.
 - Merton, « Lifetime Portfolio Selection under Uncertainty » (1969) et Samuelson (1969) : les fondations ; Irlam (aacalc) pour les versions numériques modernes.
 - Bogleheads wiki, « Amortization based withdrawal formulas » : les formules et variantes.
 - Early Retirement Now sur les règles actuarielles et la critique de « Die With Zero » (volet 60) ([[serie-ern]]).

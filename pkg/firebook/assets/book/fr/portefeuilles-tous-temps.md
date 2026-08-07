@@ -60,5 +60,5 @@ Plan : 1,5 M€, 51 000 €/an (3,4 %) avec corridor Vanguard, 45 ans, pension a
 
 - Harry Browne, *Fail-Safe Investing* (1999) ; Rowland & Lawson, *The Permanent Portfolio* (2012) : l'archétype et son manuel.
 - Bridgewater, « The All Weather Story » (bridgewater.com) ; Chris Cole (Artemis), « The Allegory of the Hawk and Serpent » (2020) : les versions institutionnelles.
-- portfoliocharts.com : les historiques, SWR et drawdowns de toute la famille, par pays : l'outil de référence gratuit.
+- [portfoliocharts.com](https://portfoliocharts.com) : les historiques, SWR et drawdowns de toute la famille, par pays : l'outil de référence gratuit.
 - Dans ce livre : [[regimes-de-marche]] (la grille fondatrice), [[or-en-retrait]], [[obligations-indexees]], [[managed-futures]] (les briques une à une), [[actifs-defensifs]] (le panorama des rôles).

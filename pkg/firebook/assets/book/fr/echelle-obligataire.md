@@ -62,7 +62,7 @@ Reprenons le couple de [[choisir-sa-strategie]] : plancher 45 000 €, pensions 
 
 ## Pour aller plus loin
 
-- Allan Roth et les outils d'échelle TIPS (tipsladder.com) : la version aboutie américaine, le modèle à transposer.
+- Allan Roth et les outils d'échelle TIPS ([tipsladder.com](https://www.tipsladder.com)) : la version aboutie américaine, le modèle à transposer.
 - Les gammes de fonds à échéance UCITS (iBonds et équivalents) : les fiches produits, pour la construction concrète.
 - Wade Pfau, *Safety-First Retirement Planning* : l'adossement des passifs comme doctrine ([[rentes-et-annuites]]).
 - Dans ce livre : [[obligations-indexees]] (le barreau réel et le résultat de l'échelle garantie), [[obligations-en-retrait]] (fonds contre titres, le vrai débat), [[strategie-buckets]] (le seau 2 rendu contractuel), [[cash-buffer]] (les barreaux zéro et un).

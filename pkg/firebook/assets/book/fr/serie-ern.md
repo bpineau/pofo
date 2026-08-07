@@ -52,7 +52,7 @@ La série a durablement changé la conversation FIRE : « quel est ton SWR ? » 
 
 ## L'essentiel à retenir
 
-- La série SWR d'ERN (earlyretirementnow.com, 60+ volets depuis 2016) est la référence moderne du retrait de long horizon : méthodique, reproductible, gratuite.
+- La série SWR d'ERN ([earlyretirementnow.com](https://earlyretirementnow.com), 60+ volets depuis 2016) est la référence moderne du retrait de long horizon : méthodique, reproductible, gratuite.
 - Ses résultats structurants : 3,25-3,5 % rigide pour 50-60 ans, le rôle dominant de la séquence et des valorisations, la flexibilité surestimée (elle déplace la douleur), les buckets démystifiés, les glidepaths validés.
 - Ses partis pris : données américaines (chiffres plutôt optimistes), exigence de pire cas (recommandations plutôt prudentes) : les deux biais se compensent partiellement, sachez-le en la lisant.
 - Depuis la France : gardez les mécanismes, adaptez les chiffres, ignorez le chapitre fiscal américain ; ce livre fait la jonction.
