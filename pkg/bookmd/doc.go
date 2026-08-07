@@ -8,7 +8,7 @@
 // --- rules, ::: callout blocks, ::: figure blocks, and inline bold / italic
 // / code / [label](url) links / [[slug]] and [[slug|label]] wiki-links.
 //
-// ToHTML renders one article body. Options tunes three host-specific points
+// ToHTML renders one article body. Options tunes four host-specific points
 // without forking the renderer:
 //
 //   - Titles maps the slugs of WRITTEN articles to their display titles and
@@ -18,7 +18,12 @@
 //     (the web default). An EPUB export, for example, sets it to slug+".xhtml".
 //   - Figure supplies the payload of a "::: figure <id>" block (in firebook an
 //     inline SVG generated in Go); nil drops the figure block entirely.
+//   - Callouts overrides the display labels of the ::: block types; nil keeps
+//     the built-in French ones. The ::: TOKENS are syntax, not content, so a
+//     translated edition of a book keeps the same sources line for line and
+//     only swaps the map.
 //
 // The built-in callout types are in Callouts (encart, cle, astuce, attention,
-// exemple, science, terrain, admin); an unknown ::: type degrades to encart.
+// exemple, science, terrain, admin); an unknown ::: type degrades to the
+// encart entry of the ACTIVE map.
 package bookmd

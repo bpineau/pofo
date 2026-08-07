@@ -25,12 +25,14 @@ var Callouts = map[string]Callout{
 }
 
 // Options tunes rendering. The zero value renders wiki-links as plain text
-// (Titles nil), keeps href="<slug>" (Href nil) and drops figure blocks
-// entirely (Figure nil).
+// (Titles nil), keeps href="<slug>" (Href nil), drops figure blocks entirely
+// (Figure nil) and heads callouts with the built-in French labels
+// (Callouts nil).
 type Options struct {
-	Titles map[string]string        // written slugs -> display titles
-	Href   func(slug string) string // wiki-link target; nil -> the slug itself
-	Figure func(id string) string   // ::: figure payload; nil -> figure block dropped entirely
+	Titles   map[string]string        // written slugs -> display titles
+	Href     func(slug string) string // wiki-link target; nil -> the slug itself
+	Figure   func(id string) string   // ::: figure payload; nil -> figure block dropped entirely
+	Callouts map[string]Callout       // ::: block display labels; nil -> the built-in French Callouts
 }
 
 var (
@@ -135,6 +137,9 @@ func uniqueID(base string, used map[string]bool) string {
 // drives [[slug]] links (see wikiLink). The zero Options renders wiki-links
 // as plain text, keeps href="<slug>" and drops ::: figure blocks.
 func ToHTML(src string, opt Options) string {
+	if opt.Callouts == nil {
+		opt.Callouts = Callouts
+	}
 	return render(src, opt, map[string]bool{})
 }
 
@@ -170,9 +175,9 @@ func render(src string, opt Options, used map[string]bool) string {
 					opt.Figure(id), inline(strings.TrimSpace(strings.Join(cap, " "))))
 				continue
 			}
-			meta, ok := Callouts[typ]
+			meta, ok := opt.Callouts[typ]
 			if !ok {
-				typ, meta = "encart", Callouts["encart"]
+				typ, meta = "encart", opt.Callouts["encart"]
 			}
 			title := strings.TrimSpace(g[2])
 			if title == "" {
