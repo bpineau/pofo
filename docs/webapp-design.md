@@ -59,7 +59,14 @@ source of truth; edit both together):
   line past the catalog gate and the holdings-count limit.
 - **Global overrides**, each mirroring the matching CLI flag, layered on the
   server's default options: `start` / `end` (`YYYY-MM-DD`), `rebalance` (day
-  count, `0` = never), `currency`, `bench`, `sim` (`on` / `off`).
+  count, `0` = never), `currency`, `bench`, `sim` (`on` / `off`). Two of these
+  carry attacker-shaped identifiers and are gated before they can reach an
+  outbound fetch: `currency` accepts a three-letter ISO code or the sentinel
+  `native` (keep each series in its own currency); `bench` accepts an empty
+  value (disable Beta), any locally resolvable identifier (`KnownLocal`), or
+  the exact server-default benchmark symbol (`^GSPC`, which is not "local");
+  anything else is a 400, so no arbitrary bytes mint an FX cache file or
+  poison the shared quote cache.
 
 Both `ex=` and `p=` build a `portfolio.Spec` by rebuilding the file text form
 and feeding `portfolio.Parse`, so the URL grammar can never drift from the file
@@ -121,6 +128,14 @@ explicit, valid `currency` / `rebalance` / `sim` parameters (merge semantics)
 but **never reads** it: a `/view` URL is state entirely on its own, so a shared
 link reproduces the same report for everyone regardless of their cookie. The
 URL-as-state invariant is preserved.
+
+The "keep native currencies" choice travels end to end as the sentinel
+`currency=native`: the hub's native `<option>` submits it, `/view` maps it to
+an empty (non-nil) currency override, and the cookie stores it as the empty ISO
+code (the codec's internal form). A stored preference that falls outside the
+hub's option lists (an ISO code or rebalance cadence the row does not hardcode)
+is appended as its own selected option, so the select never silently rewrites
+it on submit.
 
 ## Style layering
 

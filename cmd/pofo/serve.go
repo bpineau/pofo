@@ -297,7 +297,7 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
-	vr, err := parseViewQuery(r.URL.Query())
+	vr, err := parseViewQuery(r.URL.Query(), s.opt)
 	if err != nil {
 		s.errorPage(w, http.StatusBadRequest, err.Error())
 		return
