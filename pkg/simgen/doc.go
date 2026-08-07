@@ -27,8 +27,9 @@
 //     shape supplies the day-to-day variance), so long backcasts stay honest
 //     at daily-statistics frequency;
 //   - the bundled recipes (All, Find) assemble these building blocks for
-//     NTSX, NTSG, URTH, IWDA, VT, RSSB, XAUUSD, ZPRV, SHY, IEF, TLT, ZROZ,
-//     DBMF, DBMFE, KMLM, CTA and the Winton Trend-Equity fund, among others.
+//     NTSX, NTSG, URTH, IWDA, VT, RSSB, GDE, XAUUSD, ZPRV, SHY, IEF, TLT,
+//     ZROZ, DBMF, DBMFE, KMLM, CTA and the Winton Trend-Equity fund, among
+//     others.
 //
 // # Units
 //
