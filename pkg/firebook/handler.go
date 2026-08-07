@@ -13,6 +13,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/bookmd"
+
 	"github.com/bpineau/pofo/pkg/opds"
 	"github.com/bpineau/pofo/pkg/webui"
 )
@@ -258,8 +260,13 @@ func indexHTML(epubSize int) string {
 	b.WriteString(`</p>`)
 	b.WriteString(`</header><main>`)
 	for _, cat := range Categories {
-		fmt.Fprintf(&b, `<section class="book-cat"><h2>%s</h2><p class="book-cat-blurb">%s</p><ul class="book-toc">`,
-			html.EscapeString(cat.Title), html.EscapeString(cat.Blurb))
+		// The part title carries the same anchor affordance as an article
+		// heading, so a part of the sommaire can be linked to directly.
+		id := bookmd.HeadingID(cat.Title)
+		fmt.Fprintf(&b, `<section class="book-cat"><h2 id="%s">%s`+
+			`<a class="book-hanchor" href="#%s" aria-label="Lien direct vers cette partie">§</a></h2>`+
+			`<p class="book-cat-blurb">%s</p><ul class="book-toc">`,
+			id, html.EscapeString(cat.Title), id, html.EscapeString(cat.Blurb))
 		for _, a := range cat.Articles {
 			fmt.Fprintf(&b, `<li><a href="%s">%s</a><span class="book-toc-blurb">%s</span></li>`,
 				a.Slug, html.EscapeString(a.Title), html.EscapeString(a.Blurb))
@@ -300,8 +307,9 @@ func articleHTML(art Article, cat Category) string {
 		}
 	}
 	var b strings.Builder
-	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← Sommaire</a><span class="book-cat-tag">%s</span></nav>`,
-		html.EscapeString(cat.Title))
+	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← Sommaire</a>`+
+		`<a class="book-cat-tag" href="./#%s">%s</a></nav>`,
+		bookmd.HeadingID(cat.Title), html.EscapeString(cat.Title))
 	fmt.Fprintf(&b, `<article><h1>%s</h1>%s</article>`, html.EscapeString(art.Title), addHeadingAnchors(ToHTML(body, Titles())))
 	var others strings.Builder
 	for _, a := range cat.Articles {
@@ -337,7 +345,7 @@ func addHeadingAnchors(rendered string) string {
 // address bar without scrolling. Without JavaScript, or when the clipboard
 // API is unavailable (non-secure origins), the anchor still navigates and
 // puts the shareable URL in the address bar.
-const bookJS = `document.querySelectorAll("article .book-hanchor").forEach(function(a){
+const bookJS = `document.querySelectorAll(".book-hanchor").forEach(function(a){
 a.addEventListener("click",function(e){
 if(!navigator.clipboard||!navigator.clipboard.writeText)return;
 e.preventDefault();
@@ -391,7 +399,9 @@ body.book ::selection{background:var(--accent-wash)}
 .book-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:1.9rem;font-size:.9rem}
 .book-top a{color:var(--accent-deep);text-decoration:none}
 .book-top a:hover{text-decoration:underline}
-.book-cat-tag{font-family:var(--sans);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.book-cat-tag{font-family:var(--sans);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);text-decoration:none;border-bottom:0}
+.book-cat-tag:hover{color:var(--accent-deep)}
 article h1{padding-bottom:.55rem;border-bottom:2px solid var(--accent);margin-bottom:1.15rem}
 article h2{font-family:var(--serif);font-weight:600;color:var(--ink);font-size:1.5rem;line-height:1.2;margin:2.1rem 0 .7rem}
 article h3{font-family:var(--sans);font-weight:600;color:var(--ink);font-size:1.12rem;margin:1.7rem 0 .45rem}
@@ -405,17 +415,18 @@ article li.task{list-style:none;margin-left:-1.1rem}
 article code{font-family:var(--mono);font-size:.85em;background:var(--paper-2);padding:.08em .35em;border-radius:4px;color:var(--ink)}
 article a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid var(--rule)}
 article a:hover{border-bottom-color:var(--accent)}
-article h2[id],article h3[id],article h4[id]{scroll-margin-top:1rem}
-article .book-hanchor{margin-left:.45em;font-family:var(--sans);font-weight:400;font-size:.72em;
-  color:var(--accent-deep);border-bottom:0;opacity:0;transition:opacity .15s ease;position:relative}
-article h2:hover .book-hanchor,article h3:hover .book-hanchor,article h4:hover .book-hanchor,
-article .book-hanchor:focus-visible{opacity:.55}
-article .book-hanchor:hover{opacity:1}
-article .book-hanchor.copied::after{content:"lien copié";position:absolute;bottom:1.35em;left:50%;
+article h2[id],article h3[id],article h4[id],.book-cat h2[id]{scroll-margin-top:1rem}
+.book-hanchor{margin-left:.45em;font-family:var(--sans);font-weight:400;font-size:.72em;
+  color:var(--accent-deep);border-bottom:0;text-decoration:none;opacity:0;
+  transition:opacity .15s ease;position:relative}
+h2:hover .book-hanchor,h3:hover .book-hanchor,h4:hover .book-hanchor,
+.book-hanchor:focus-visible{opacity:.55}
+.book-hanchor:hover{opacity:1}
+.book-hanchor.copied::after{content:"lien copié";position:absolute;bottom:1.35em;left:50%;
   transform:translateX(-50%);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;
   text-transform:none;color:var(--accent-deep);background:var(--card);border:1px solid var(--rule);
   border-radius:6px;padding:.14em .55em;white-space:nowrap}
-@media (hover:none){article .book-hanchor{opacity:.3}}
+@media (hover:none){.book-hanchor{opacity:.3}}
 article blockquote{margin:1.1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--accent);color:var(--muted);font-style:italic}
 article hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 .book-fig{margin:1.7rem 0}
