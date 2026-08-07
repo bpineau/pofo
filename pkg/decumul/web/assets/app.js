@@ -4,38 +4,32 @@
 // fetches and DOM.
 
 // ---------------------------------------------------------------------------
-// Control definitions. r() is a slider, c() a checkbox, chips() a preset row.
+// Control definitions. r() is a slider, c() a checkbox.
 // Every control carries a plain-language data-help hover.
 // ---------------------------------------------------------------------------
 const r = (key, label, min, max, step, def, unit, help) =>
   ({kind: "range", key, label, min, max, step, def, unit, help});
 const c = (key, label, help) => ({kind: "check", key, label, help});
-const chips = (label, help, items) => ({kind: "chips", label, help, items});
 
 const GROUPS = [
   {title: "Your situation", col: 0, items: [
-    r("capital", "Deployed capital", 800000, 4000000, 10000, 1800000, "eur",
+    r("capital", "Deployed capital", 600000, 6000000, 10000, 1800000, "eur",
       "Liquid capital deployed for the retirement, excluding your home and the emergency fund."),
-    r("age", "Age at retirement", 40, 70, 1, 52, "int",
+    r("age", "Age at retirement", 20, 60, 1, 52, "int",
       "Age in year 0. Drives the mortality view (section 05): being broke at 61 and at 92 are different life events."),
     r("years", "Horizon (years)", 20, 60, 1, 45, "int",
       "Plan past your life expectancy: ruin rises steeply with the horizon (40→50y nearly doubles it)."),
-    r("needAnnual", "Net spending /yr", 24000, 84000, 1000, 60000, "eur",
+    r("needAnnual", "Net spending /yr", 12000, 240000, 1000, 60000, "eur",
       "Real (inflation-indexed) net-of-tax household spending. 60 k€/yr = 5 000 €/month."),
   ]},
   {title: "Pension & side income", col: 1, items: [
-    chips("Pension scenario",
-      "Three pension levels: a politically-stressed 1 000 €/m, the acquired-rights central ~1 700 €/m, and the official-simulator ~2 250 €/m (net real).",
-      [["Stress 12k", {pensionAnnual: 12000}],
-       ["Central 20.4k", {pensionAnnual: 20400}],
-       ["Official 27k", {pensionAnnual: 27000}]]),
-    r("pensionAnnual", "Pension /yr (net real)", 0, 36000, 600, 12000, "eur",
+    r("pensionAnnual", "Pension /yr (net real)", 0, 60000, 600, 12000, "eur",
       "Net real pension once it starts. Simulations show this is the plan's second-biggest sensitivity."),
-    r("pensionYear", "Pension starts in year", 5, 25, 1, 15, "int",
+    r("pensionYear", "Pension starts in year", 0, 40, 1, 15, "int",
       "Years from retirement to the pension. Retiring at 52 with a pension at 67 = year 15."),
-    r("sideAnnual", "Side income /yr", 0, 40000, 1000, 0, "eur",
+    r("sideAnnual", "Side income /yr", 0, 100000, 1000, 0, "eur",
       "Temporary net real income (rental, activity…) subtracted from the need while it lasts. Income covering the early years is the best sequence-risk insurance there is."),
-    r("sideUntilYear", "Side income until year", 0, 20, 1, 0, "int",
+    r("sideUntilYear", "Side income until year", 0, 40, 1, 0, "int",
       "The side income runs from year 0 up to (excluding) this year."),
   ]},
   {title: "Spending policy", col: 2, items: [
@@ -166,26 +160,6 @@ function buildControl(it, ruler) {
       if (it.key === "conservative") applyConservative();
       schedule();
     });
-    return d;
-  }
-  if (it.kind === "chips") {
-    const d = document.createElement("div");
-    d.className = "ctl chips";
-    if (it.help) d.setAttribute("data-help", it.help);
-    d.innerHTML = `<span class="lab"><span>${it.label}</span></span>`;
-    const row = document.createElement("div");
-    row.className = "chiprow";
-    for (const [text, sets] of it.items) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = text;
-      b.addEventListener("click", () => {
-        for (const [k, v] of Object.entries(sets)) setSliderVal(k, v);
-        schedule();
-      });
-      row.appendChild(b);
-    }
-    d.appendChild(row);
     return d;
   }
   // range slider
