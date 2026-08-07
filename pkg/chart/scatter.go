@@ -83,7 +83,19 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 		}
 		px, py := xAt(p.X), yAt(p.Y)
 		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`+"\n", px, py, col)
-		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.32em" font-size="12" fill="`+themeInk+`">%s</text>`+"\n", px+11, py, esc(p.Label))
+		// Label placed away from the plot centre so clustered points don't collide:
+		// points on the left half get a right-hand label, points on the right a
+		// left-hand one, each nudged vertically toward the nearer edge.
+		mid := (x0 + x1) / 2
+		lx, anchor := px+11, "start"
+		if px > mid {
+			lx, anchor = px-11, "end"
+		}
+		dy := -10.0
+		if py < (y0+y1)/2 {
+			dy = 16.0
+		}
+		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n", lx, py+dy, anchor, esc(p.Label))
 	}
 	b.WriteString("</svg>")
 	return finish(b.String())

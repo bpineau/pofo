@@ -2,6 +2,7 @@ package web
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/decumul"
@@ -17,6 +18,7 @@ type LifecycleResult struct {
 	LifeSVG     string `json:"lifeSvg"`
 	RuinYearSVG string `json:"ruinYearSvg"`
 	CausesSVG   string `json:"causesSvg"`
+	BequestSVG  string `json:"bequestSvg"`
 	Cards       []Card `json:"cards"`
 	Note        string `json:"note"`
 }
@@ -82,8 +84,58 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 			{Label: "Longevity", Value: rt.Late, Text: fmt.Sprintf("%.0f%%", rt.Late*100), Color: "#9AA2B1"},
 		})
 
+	// What you leave behind: the distribution of terminal real wealth across
+	// paths (0 for the ruined). It shows the upside the broke/dead view hides:
+	// most futures end far richer than they started, a few end with nothing.
+	bequestSVG := chart.Bars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 1200, Height: 300}, bequestBuckets(e))
+
 	cards := lifecycleCards(e, age)
-	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, Cards: cards}
+	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}
+}
+
+// bequestBuckets buckets each path's terminal real wealth into readable bands
+// and returns their share of all paths.
+func bequestBuckets(e decumul.Ensemble) []chart.Bar {
+	type band struct {
+		label  string
+		lo, hi float64
+	}
+	bands := []band{
+		{"0 (ruined)", -1, 1},
+		{"<0.5M", 1, 0.5e6},
+		{"0.5-1M", 0.5e6, 1e6},
+		{"1-2M", 1e6, 2e6},
+		{"2-4M", 2e6, 4e6},
+		{"4-8M", 4e6, 8e6},
+		{"8M+", 8e6, 1e18},
+	}
+	counts := make([]int, len(bands))
+	for _, p := range e.Paths {
+		w := 0.0
+		if len(p.Wealth) > 0 {
+			w = p.Wealth[len(p.Wealth)-1]
+		}
+		for i, b := range bands {
+			if (i == 0 && w < 1) || (w >= b.lo && w < b.hi) {
+				counts[i]++
+				break
+			}
+		}
+	}
+	n := float64(max(len(e.Paths), 1))
+	bars := make([]chart.Bar, 0, len(bands))
+	for i, b := range bands {
+		share := 100 * float64(counts[i]) / n
+		bars = append(bars, chart.Bar{Label: b.label, Value: share, Text: fmtPctShare(share)})
+	}
+	return bars
+}
+
+func fmtPctShare(v float64) string {
+	if v < 0.05 {
+		return "0%"
+	}
+	return strconv.FormatFloat(v, 'f', 1, 64) + "%"
 }
 
 // lifecycleCards summarises the mortality-adjusted risk: the classic ruin
