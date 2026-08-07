@@ -1,6 +1,6 @@
 # Les dix erreurs qui ruinent un plan FIRE
 
-Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
+Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par des erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
 
 Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
 
@@ -10,7 +10,7 @@ Neuf de ces dix erreurs partagent une racine : confondre la sortie d'un modèle 
 
 ## 1. Sous-estimer ses dépenses
 
-C'est l'erreur numéro un, de loin. Le multiple de 25 à 33 l'amplifie ([[combien-il-vous-faut]]) : 250 €/mois oubliés, c'est ~90 000 € de cible en moins. Les oublis récurrents : la mutuelle santé à charge pleine, l'irrégulier (voiture, travaux, dents, vétérinaire), les impôts sur les retraits, et les dépenses de la vie **visée** (voyages, loisirs du temps libéré) plutôt que de la vie actuelle.
+C'est l'erreur numéro un, de loin. Le multiple de 25 à 33 l'amplifie ([[combien-il-vous-faut]]) : 250 €/mois oubliés, c'est une cible sous-estimée de ~90 000 €. Les oublis récurrents : la mutuelle santé à charge pleine, l'irrégulier (voiture, travaux, dents, vétérinaire), les impôts sur les retraits, et les dépenses de la vie **visée** (voyages, loisirs du temps libéré) plutôt que de la vie actuelle.
 
 **Signe avant-coureur** : votre budget de rentier est inférieur à vos dépenses actuelles « parce qu'on fera attention ». **Correction** : 24 mois de relevés, irrégulier annualisé, et le budget en trois étages (plancher, confort, rêve).
 
@@ -22,27 +22,27 @@ La règle des 4 % est calibrée sur 30 ans, aux États-Unis, sans frais ni impô
 
 ## 3. Ignorer la fiscalité et la PUMa
 
-Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]) qui peut prélever ~6,5 % des revenus du capital. Friction totale typique : 8 à 20 %.
+Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]), qui peut prélever ~6,5 % des revenus du capital. Friction totale typique : 8 à 20 %.
 
 **Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner. Attention à ne pas compter la friction deux fois, car un simulateur qui modélise la fiscalité majore déjà chaque vente du prélèvement dû. Organiser aussi les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
 
 ## 4. Oublier ses propres pensions
 
-L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). L'effet sur la ruine est majeur, souvent l'équivalent de 0,3 à 0,7 point de taux de retrait.
+L'erreur « prudente » qui coûte des années : dimensionner comme si la retraite légale n'existait pas. Même une carrière écourtée à 45 ans produit une pension à 64-67 ans, qui arrive exactement dans les scénarios où le portefeuille fatigue ([[retraite-legale]]). Compter la pension divise souvent la ruine par 2 à 4.
 
 **Correction** : relevé sur [info-retraite.fr](https://www.info-retraite.fr), estimation prudente (décote comprise), puis saisie dans le plan comme un revenu différé, avec son âge de démarrage.
 
 ## 5. Confondre rendement moyen et rendement vécu
 
-Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui retire : l'ordre des rendements compte autant que leur moyenne ([[sequence-des-rendements]]), et la volatilité ampute la composition ([[rendements-arithmetiques-geometriques]]). C'est l'erreur conceptuelle centrale du sujet ; elle fait croire qu'un bon portefeuille d'accumulation est automatiquement un bon portefeuille de retrait.
+Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui retire : l'ordre des rendements compte autant que leur moyenne ([[sequence-des-rendements]]), et le frein de volatilité ampute le rendement composé ([[rendements-arithmetiques-geometriques]]). C'est l'erreur conceptuelle centrale du sujet ; elle fait croire qu'un bon portefeuille d'accumulation est automatiquement un bon portefeuille de retrait.
 
-**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des marchés baissiers précoces, ce à quoi sert un stress de séquence ; considérer les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
+**Correction** : penser en séquences, pas en moyennes ; tester son plan contre des marchés baissiers précoces, ce à quoi sert un stress de séquence ; envisager les protections spécifiques à la fenêtre fragile ([[glidepaths]], [[cash-buffer]]).
 
 ## 6. Le portefeuille mono-régime
 
-100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues réelles (Japon 1990, monde 2000-2009) au pire moment. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
+100 % actions parce que « à long terme ça monte toujours », ou l'inverse, 60 % de fonds euros parce que « c'est sûr ». Les deux ignorent que les régimes de marché existent ([[regimes-de-marche]]). Le tout-actions encaisse des décennies perdues en termes réels (Japon 1990, monde 2000-2009) au pire moment. Le tout-obligataire, lui, se fait dévorer par une décennie d'inflation (années 1970, 2022). Variante déguisée du même piège, le portefeuille « qui vit de ses dividendes » n'est pas plus sûr, car un dividende se coupe en crise et reste de toute façon un retrait forcé sur votre propre capital ([[faux-actifs-defensifs]]). Un portefeuille de retrait doit survivre aux **quatre** régimes croissance/inflation, pas au plus probable ([[portefeuilles-tous-temps]], [[actifs-defensifs]]).
 
-**Correction** : diversification par régime (actions mondiales, duration, or et/ou linkers, éventuellement managed futures [[managed-futures]]), et un test explicite contre inflation persistante et décennie perdue.
+**Correction** : diversification par régime (actions mondiales, duration, or et/ou linkers, éventuellement des [[managed-futures|managed futures]]), et un test explicite contre inflation persistante et décennie perdue.
 
 ## 7. Tout miser sur la flexibilité
 
@@ -52,9 +52,9 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 ## 8. Se raconter le simulateur
 
-Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur cesse alors d'être un instrument pour devenir une machine à se donner raison ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
+Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée, souvent le plus optimiste (le backtest historique de son propre portefeuille), relever l'hypothèse de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur cesse alors d'être un instrument pour devenir une machine à se donner raison ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
-**Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre eux est l'information ([[historique-vs-parametrique]]). Planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
+**Correction** : lire plusieurs modèles côte à côte, et d'abord ceux qui vous déplaisent. Un modèle seul n'est qu'une opinion, l'écart entre plusieurs est l'information ([[historique-vs-parametrique]]). Planifier entre le central et le broad-sample, et traiter la décennie perdue comme un scénario à tenir, pas comme un scénario improbable.
 
 ## 9. Négliger le facteur humain
 
@@ -64,7 +64,7 @@ Le plan financier parfait d'une vie qu'on n'a pas préparée : identité, struct
 
 ## 10. Le départ irréversible mal daté
 
-Deux symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché cher ([[valorisations-et-cape]]), sans avoir vérifié que le plan survivrait à un krach immédiat de 40 %. Et l'inverse, plus sournois : « une année de plus » répétée cinq fois ([[une-annee-de-plus]]), parce qu'aucun chiffre ne semble jamais assez sûr, alors que chaque année de vie active en bonne santé est le seul actif strictement non renouvelable du plan.
+Deux erreurs symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché cher ([[valorisations-et-cape]]), sans avoir vérifié qu'il survivrait à un krach immédiat de 40 %. Et l'inverse, plus sournois : « une année de plus » répétée cinq fois ([[une-annee-de-plus]]), parce qu'aucun chiffre ne semble jamais assez sûr, alors que chaque année de vie active en bonne santé est le seul actif strictement non renouvelable du plan.
 
 **Correction** : des critères de départ écrits à l'**avance** (cible atteinte à X %, ruine sous Y % dans les modèles pessimistes, plancher tenable, projet de vie prototypé), puis s'y tenir dans les deux sens.
 
@@ -75,7 +75,7 @@ Deux symétriques. Partir trop tôt sur un plan tendu, au sommet d'un marché ch
 - [ ] Dépenses fondées sur 24 mois de relevés, irrégulier annualisé, mutuelle comprise
 - [ ] Fiscalité et PUMa intégrées (majoration 10-15 % ou calcul précis)
 - [ ] Pensions légales estimées et données au simulateur en revenu différé
-- [ ] Taux de retrait cohérent avec l'horizon (3-3,5 % rigide au-delà de 40 ans, ou marges explicites)
+- [ ] Taux de retrait cohérent avec l'horizon (3-3,5 % rigide au-delà de 40 ans d'horizon, ou marges explicites)
 - [ ] Portefeuille testé contre les quatre régimes, pas seulement le scénario central
 - [ ] Plancher de dépenses chiffré et réaliste ; règle d'ajustement écrite
 - [ ] Ruine acceptable même dans le modèle broad-sample ; décennie perdue tenable
