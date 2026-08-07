@@ -120,7 +120,15 @@ decumulation portfolios, in the order they would pay:
 4. **Direct-trend UCITS (Winton IE00BG382Q20 2018→, AQR LU1103257975
    2014→).** The `fire-trend-sleeve-lab` legs. The SG CTA daily CSV above
    (or the SG Trend index) is the obvious splice source; same modeling
-   caveat as follow-up (1).
+   caveat as follow-up (1). Precedent: the Return Stacked overlays
+   (`stackedTrend`, RSBT/RSST) now pin the raw 12-month TSMOM overlay's
+   information ratio to the SG Trend Index (`sgTrendInfoRatio` = 0.24, its
+   realized 2000+ excess-over-cash IR) via a constant return drag that keeps
+   the reconstruction's vol and shape. The un-pinned overlay earned an
+   in-sample IR near 0.7 and overstated the RSBT backcast by ~4 %/yr
+   (2000-2022 came out ~10 % vs a component reconstruction's ~5.7 %). If the
+   real SG Trend daily series is ever spliced in, it supersedes this pin over
+   its live window.
 5. **Euro linkers before 2009 (LU1645380442 sims via IBCI, 2009→).** Caps
    the whole fire-* family at 2009. Hard: no free daily euro-linker series
    before IBCI's inception; French OATi index data would be needed. Low
