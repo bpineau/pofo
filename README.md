@@ -511,9 +511,9 @@ simulation wherever it exists):
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
 | TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
 | ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
-| DBMF (managed futures) | 12-month TSMOM on a 7-market basket, 10% target vol (1989→) | 0.55 / 0.57 |
-| KMLM (managed futures) | 12-month TSMOM, 13% target vol (1989→) | 0.35 / 0.37 |
-| CTA (managed futures) | 12-month TSMOM, 15% target vol (1989→) | 0.19 / 0.22 |
+| DBMF (managed futures) | 12-month TSMOM on a 7-market basket, 11.5% target vol (1989→) | 0.55 / 0.57 |
+| KMLM (managed futures) | 12-month TSMOM, 14% target vol (1989→) | 0.35 / 0.37 |
+| CTA (managed futures) | 12-month TSMOM, 16% target vol (1989→) | 0.19 / 0.22 |
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×TSMOM trend (1989→) | 0.63 / 0.81 |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
@@ -521,7 +521,10 @@ Managed-futures correlations are modest: each fund runs a faster, partly
 discretionary strategy that a single 12-month TSMOM rule only approximates.
 The trend engine refreshes its signal monthly but rescales risk **every day**
 against an exponentially weighted covariance, so the book shrinks as a
-volatility storm builds instead of riding it out at its pre-storm size.
+volatility storm builds instead of riding it out at its pre-storm size. Each
+vol target is the volatility the fund itself realized over the overlap, which
+the engine now delivers: DBMF 12.2 % against 12.4 % real, KMLM 14.8 against
+14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3.
 The lower fidelity is accepted in exchange for full self-generation.
 Discretionary strategies that cannot be honestly replicated with factors are
 rejected below an R² floor rather than shipped as invented data; the matching
