@@ -39,10 +39,10 @@ func TestRuinTimingNoRuin(t *testing.T) {
 func TestRuinShapes(t *testing.T) {
 	mk := func(ws ...float64) PathResult { return PathResult{Ruined: true, RuinYear: len(ws) - 1, Wealth: ws} }
 	e := Ensemble{Years: 30, Paths: []PathResult{
-		mk(100, 60, 45, 30, 10, 0),                    // halved at year 2: crash
-		mk(100, 95, 90, 80, 70, 60, 55, 50, 45, 20, 0), // halved year 8 (<=10): crash
-		{Ruined: false, Wealth: []float64{100, 200}},   // survivor: ignored
-		mk(100, 98, 96, 94, 92, 90, 88, 86, 84, 82, 80, 70, 60, 45, 30, 0), // halved year 13, peak 100: grind
+		mk(100, 60, 45, 30, 10, 0),                                                                                // halved at year 2: crash
+		mk(100, 95, 90, 80, 70, 60, 55, 50, 45, 20, 0),                                                            // halved year 8 (<=10): crash
+		{Ruined: false, Wealth: []float64{100, 200}},                                                              // survivor: ignored
+		mk(100, 98, 96, 94, 92, 90, 88, 86, 84, 82, 80, 70, 60, 45, 30, 0),                                        // halved year 13, peak 100: grind
 		mk(100, 110, 125, 140, 150, 148, 140, 132, 124, 116, 108, 100, 92, 84, 76, 68, 60, 52, 49, 35, 20, 10, 0), // peak 150, halved only at year 18: longevity
 	}}
 	s := e.RuinShapes()
