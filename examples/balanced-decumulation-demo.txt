@@ -1,4 +1,4 @@
-# Decumulation demo — balanced 50/30/20, 4%/yr withdrawal
+# Decumulation demo -- balanced 50/30/20, 4%/yr withdrawal
 # Idea: shows the withdrawal mechanics on a diversified balanced portfolio,
 #   drawn at 4% a year. Compare its IRR and final value with the yield-shield
 #   and all-weather decumulation files.

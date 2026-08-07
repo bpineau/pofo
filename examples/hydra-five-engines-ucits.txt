@@ -1,6 +1,6 @@
-# Hydra (five engines), UCITS edition -- diversify across return ENGINES,
-# not tickers, with every line buyable today from an EU/French retail
-# account (UCITS funds plus one UCITS-eligible ETC, all with PRIIPs KIDs).
+# Hydra (five engines), UCITS edition -- diversify across return engines, not tickers
+# Every line is buyable today from an EU/French retail account (UCITS funds
+# plus one UCITS-eligible ETC, all with PRIIPs KIDs).
 #
 # Thesis in one line: five independent, well-documented sources of return,
 #   each answering a different macro regime, sized by risk contribution
