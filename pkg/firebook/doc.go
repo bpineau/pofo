@@ -29,6 +29,21 @@
 // The pofo -fire web UI mounts Handler under /livre/; any other server (for
 // example finador) can mount the same book by importing this package.
 //
+// # Editions
+//
+// One Edition value carries everything a language needs: its manifest, its
+// chrome strings, its EPUB identity and its figure renderer. French is the
+// source edition and the package-level API is a thin wrapper over it, so
+// firebook.Handler() and firebook.EPUB(t) keep meaning "the French book":
+//
+//	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.French.Handler()))
+//	blob, err := firebook.French.EPUB(time.Now())
+//
+// All writing, correction and upkeep happens in French first. A translated
+// edition pairs each of its articles with its French original (Article.Source
+// plus an in-file source stamp) and Drift reports what the translation owes.
+// The design is docs/fire-book-en-edition-design.md.
+//
 // EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
 // pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,
 // one page per category with its articles nested beneath it in the table of

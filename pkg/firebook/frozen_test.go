@@ -22,10 +22,10 @@ func TestFrozenFrenchRendering(t *testing.T) {
 		t.Skip("set FIREBOOK_FROZEN=<file> to record or compare the French rendering digest")
 	}
 	h := sha256.New()
-	_, _ = io.WriteString(h, indexHTML(0))
+	_, _ = io.WriteString(h, French.indexHTML(0))
 	for _, cat := range Categories {
 		for _, a := range cat.Articles {
-			_, _ = io.WriteString(h, articleHTML(a, cat))
+			_, _ = io.WriteString(h, French.articleHTML(a, cat))
 		}
 	}
 	epubBytes, err := EPUB(time.Unix(0, 0).UTC())
