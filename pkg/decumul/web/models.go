@@ -103,7 +103,7 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 	out = append(out,
 		namedSource{"Student-t",
 			"The central case to plan on: i.i.d. annual real returns at your mean, long-horizon volatility and tails. No mean reversion across years, so long horizons read a touch tougher than history; and when your history is shorter than the horizon it leans toward the broad-sample prior (a short window cannot show long-horizon tail and sequence risk).",
-			scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}},
+			centralSource(pr, cMu, cSigma, cDf, pr.Years)},
 		namedSource{"Sequence stress",
 			"Sequence-of-returns stress: clustered, persistent bull/bear regimes at the SAME long-run mean as Student-t, so a run of bad years can land early in retirement. The expected return is unchanged; only the ordering is stressed. Read it as the downside if the sequence is unlucky.",
 			scenario.NewMarkovRegime(cMu, cSigma, cDf, pr.Years)},
@@ -115,6 +115,24 @@ func modelSources(pr Params, panel *scenario.Panel) []namedSource {
 			scenario.NewLostDecadeRegime(cMu, cSigma, cDf, pr.Years)},
 	)
 	return out
+}
+
+// centralSource is the central-case return model shared by the verdict and the
+// detail views: the calibrated Student-t, or a rising-equity glidepath (bond
+// tent) blending the central equity assumptions with a fixed bond sleeve when
+// the glidepath option is on. The glidepath keeps the sequence-risk danger zone
+// (the first years) bond-heavy, climbing to mostly equity later. Note it trades
+// return for sequence protection: with a wide equity-bond gap the drag can raise
+// ruin, which is itself a useful thing for the user to see (Cederburg et al.).
+func centralSource(pr Params, mu, sigma, df float64, periods int) scenario.Source {
+	if pr.Glidepath {
+		return scenario.Glidepath{
+			EquityMu: mu, EquitySigma: sigma, Df: df,
+			BondMu: 0.015, BondSigma: 0.06, Corr: 0.15,
+			StartEquity: 0.30, EndEquity: 0.75, Periods: periods,
+		}
+	}
+	return scenario.ParametricSource{Mu: mu, Sigma: sigma, Df: df, Periods: periods}
 }
 
 // centralParams blends the fitted (slider) parameters toward the broad-sample

@@ -30,7 +30,7 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	base := pr.plan()
 	base.Monthly = false
 	cMu, cSigma, cDf := centralParams(pr, panel)
-	base.Source = scenario.ParametricSource{Mu: cMu, Sigma: cSigma, Df: cDf, Periods: pr.Years}
+	base.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 	e := base.Simulate(pr.NPaths, simWorkers, 7)
 
 	age := pr.age()
