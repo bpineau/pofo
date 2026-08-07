@@ -50,5 +50,5 @@ func CategoryBars(opt Options, bars []CatBar) string {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
 	}
 	b.WriteString("</svg>")
-	return b.String()
+	return finish(b.String())
 }
