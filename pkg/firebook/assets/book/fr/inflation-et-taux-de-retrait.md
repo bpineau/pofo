@@ -2,6 +2,10 @@
 
 Tout le monde sait que « l'inflation est mauvaise pour les retraités ». Presque personne ne sait dire **par où** elle attaque un plan de retrait. Un épisode de cinq ans à 8 % est pourtant incomparablement plus destructeur que trente ans à un point de plus que prévu, alors que la perte de pouvoir d'achat cumulée est la même.
 
+::: figure inflation-episode-derive
+Déroulé déterministe sur le ménage de référence du livre (600 000 €, 24 000 € par an indexés sur les prix, 30 ans), avec le même rendement nominal des actifs dans les deux mondes : seule la forme de l'inflation change, et les deux chemins de prix finissent au même niveau. Le voyant du plan entre pourtant dans la zone d'alerte dès l'année 19 sous l'épisode, contre l'année 29 sous la dérive.
+:::
+
 Cet article établit le lien exact, mécanisme par mécanisme. D'abord l'effet ciseaux : les retraits indexés montent **pendant** que les actifs nominaux stagnent, et le plan est attaqué par les deux bouts. Ensuite la compression des rendements réels pendant les épisodes, où presque tout perd en réel **en même temps** ; c'est cette corrélation qui fait des épisodes d'inflation les pires millésimes de l'histoire, 1966 devant 1929. Viennent alors les chiffres conditionnels, c'est-à-dire ce que valent les taux de retrait selon le régime d'inflation de départ, une question que la série d'ERN a mesurée. On en tire enfin un audit : l'**inventaire d'indexation** de votre plan, qui distingue ce qui suit les prix, ce qui ne les suit pas et ce qui les suit en négatif, pour lire la vraie exposition nette. Reste à voir ce que les simulations en réel contiennent déjà, et ce qu'il faut leur demander en plus.
 
 ::: cle Le point technique central
