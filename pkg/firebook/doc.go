@@ -6,8 +6,10 @@
 // The articles live under assets/book/fr/<slug>.md in a small Markdown dialect
 // shared with locador's embedded documentation: ## / ### headings, pipe
 // tables, lists, blockquotes, [[slug]] wiki-links and ::: callout blocks
-// (cle, astuce, attention, exemple, encart, science, terrain). ToHTML renders
-// that dialect; Handler serves the whole book as self-contained HTML pages
+// (cle, astuce, attention, exemple, encart, science, terrain). That dialect
+// is rendered by the neutral pkg/bookmd package; firebook.ToHTML is a thin
+// wrapper over it wired with the book's figure generator (FigureSVG). Handler
+// serves the whole book as self-contained HTML pages
 // (index plus one page per article) styled with the shared pkg/webui identity.
 //
 // The table of contents is data (Categories); the index page and the
