@@ -82,9 +82,10 @@ rather than recomputing it (and drifting) on every run.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
 - `hydra-five-engines`: one head per return engine (efficient core, small
-  value, two trends, gold, deep duration); over 1993-2026 it beats the
+  value, two trends, gold, deep duration); over 1988-2026 it beats the
   dragon-lite blend on CAGR, vol, Sharpe, recovery time, worst rolling 5y
-  and every stress window (2000-02, 2008, 2022).
+  and every stress window (2000-02, 2008, 2022). The file doubles as the
+  design document: regime map, references, weight ranges, UCITS routes.
 - `hydra-five-engines-levered`: the same at 108% notional
   (`#meta leverage:on`); buys the bull-market CAGR back at unchanged vol.
   Accumulation-phase build.
