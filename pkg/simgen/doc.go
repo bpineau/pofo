@@ -14,12 +14,15 @@
 //     signal is refreshed every Rebalance days, risk is rescaled every day
 //     against an exponentially weighted covariance (CovHalfLife);
 //   - AnchorTrend puts a trend reconstruction's month-to-month path back on a
-//     bundled monthly record while the engine keeps supplying the daily
-//     texture, which lifts the monthly agreement with the real funds from ~0.4
-//     to ~0.7; there are two such records, the gross trend factor
-//     (GrossTrendAnchor) for an overlay that replicates a gross index and the net
-//     managed-futures composite (NetTrendAnchor) for a fund, which also
-//     settles its level (see docs/trend-reconstruction-design.md);
+//     bundled record while the engine keeps supplying the daily texture, which
+//     lifts the monthly agreement with the real funds from ~0.4 to ~0.7. Three
+//     such records are bundled: the net managed-futures composite
+//     (NetTrendAnchor) for a diversified fund, the net pure-trend composite
+//     (PureTrendAnchor) for a trend overlay, and the gross academic factor
+//     (GrossTrendAnchor), kept as a shape yardstick. The two net ones settle
+//     the level as well as the path, and a build that takes its level from a
+//     reference stops where that reference does (AnchorStart). See
+//     docs/trend-reconstruction-design.md;
 //   - FitBackcast regresses an asset on factors and replays the model
 //     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error

@@ -18,26 +18,51 @@ type TrendAnchor struct {
 	Funded bool
 }
 
-// The two references, which answer different questions and are not
+// The three references, which answer different questions and are not
 // interchangeable.
 //
 //   - GrossTrendAnchor is the academic time-series-momentum factor (see
 //     cmd/gen-trend-refdata): a pure-trend rule with no fee, no slippage and no
-//     capacity limit, published as an excess over cash. It is the right path
-//     for an overlay that replicates a pure-trend INDEX, which is measured the
-//     same way, and its level has to be pinned down afterwards (pinTrendIR)
-//     because no investable programme keeps what it earns.
+//     capacity limit, published as an excess over cash. It has the right SHAPE
+//     and the wrong LEVEL, so a reconstruction anchored on it has to be brought
+//     down to an investable level by other means. Nothing does that any more,
+//     and it is kept as the shape yardstick it is.
 //   - NetTrendAnchor is a monthly composite of REAL managed-futures
 //     programmes, each already net of its own manager's fees (see
 //     cmd/gen-trendnet-refdata). It is the right path for a reconstruction of a
-//     diversified managed-futures FUND, and it needs no pin at all: an
-//     investable level is what it already is. It is a funded total return, and
-//     mistaking it for an excess index hands the deep tail a second cash leg,
-//     worth six points a year in the 1990s.
+//     diversified managed-futures FUND, and it needs no level correction at
+//     all: an investable level is what it already is.
+//   - PureTrendAnchor is the daily net PURE-TREND composite (see
+//     cmd/gen-sgtrend-refdata), the same kind of record for the narrower trade
+//     a trend OVERLAY replicates. Same reasoning, same absence of a correction.
+//
+// The last two are FUNDED total returns: they earn cash on their collateral
+// where the factor is published as an excess over it. Mistaking one for an
+// excess index hands the reconstruction a second cash leg, worth six points a
+// year in the 1990s.
 var (
 	GrossTrendAnchor = TrendAnchor{ID: "TREND-TSMOM-USD"}
 	NetTrendAnchor   = TrendAnchor{ID: "TREND-NET-USD", Funded: true}
+	PureTrendAnchor  = TrendAnchor{ID: "TREND-PURE-NET-USD", Funded: true}
 )
+
+// AnchorStart is the first date a reference covers.
+//
+// A reconstruction that takes its LEVEL from a reference, and not only its
+// path, has nothing to say before that date: what is left in front of it is
+// the engine's own unanchored opinion, at an information ratio no real
+// programme has sustained. Such a build truncates its output here rather than
+// shipping it, which is why this is exported.
+func AnchorStart(f Fetcher, ref TrendAnchor) (time.Time, error) {
+	index, err := f.Fetch(ref.ID, time.Time{})
+	if err != nil {
+		return time.Time{}, fmt.Errorf("anchor %s: %w", ref.ID, err)
+	}
+	if index == nil || len(index.Points) == 0 {
+		return time.Time{}, fmt.Errorf("anchor %s: no points", ref.ID)
+	}
+	return index.First().Date, nil
+}
 
 // AnchorTrend rewrites a trend reconstruction so that its return over every
 // anchored month equals the reference's, rescaled to the book's volatility
@@ -72,6 +97,11 @@ func AnchorTrend(f Fetcher, ref TrendAnchor, dates []time.Time, values, cash []f
 	if err != nil {
 		return nil, fmt.Errorf("anchor %s: %w", anchorID, err)
 	}
+	// What is anchored is a month, so a reference is read at its month ends
+	// whatever cadence it is published at. For a monthly index this keeps every
+	// point it has; for a daily one it is the difference between anchoring on
+	// the month's return and anchoring on its first day's.
+	index = monthEnds(index)
 	if index == nil || len(index.Points) < 60 {
 		return nil, fmt.Errorf("anchor %s: too short", anchorID)
 	}
@@ -161,6 +191,24 @@ func AnchorTrend(f Fetcher, ref TrendAnchor, dates []time.Time, values, cash []f
 		out[i] = out[i-1] * (1 + rets[i])
 	}
 	return out, nil
+}
+
+// monthEnds keeps the last point of every calendar month, which is what an
+// index's monthly return is measured between. It is the identity on a series
+// that already holds one point per month.
+func monthEnds(s *marketdata.Series) *marketdata.Series {
+	if s == nil {
+		return nil
+	}
+	out := *s
+	out.Points = nil
+	for i, p := range s.Points {
+		next := i + 1
+		if next == len(s.Points) || s.Points[next].Date.Format("2006-01") != p.Date.Format("2006-01") {
+			out.Points = append(out.Points, p)
+		}
+	}
+	return &out
 }
 
 // monthlyVol is the annualized volatility of a monthly index's returns.

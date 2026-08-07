@@ -511,29 +511,36 @@ simulation wherever it exists):
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
 | TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
 | ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
-| DBMF (managed futures) | real managed-futures NAVs from 1996, reconstruction before (1989→) | 0.69 / 0.75 |
-| KMLM (managed futures) | same chain, 14% target vol (1989→) | 0.63 / 0.65 |
-| CTA (managed futures) | same chain, 16% target vol (1989→) | 0.44 / 0.45 |
-| Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (1989→) | 0.62 / 0.80 |
+| DBMF (managed futures) | real managed-futures NAVs, back to the deepest one (1996-03→) | 0.69 / 0.75 |
+| KMLM (managed futures) | same chain, 14% target vol (1996-03→) | 0.63 / 0.65 |
+| CTA (managed futures) | same chain, 16% target vol (1996-03→) | 0.44 / 0.45 |
+| RSST (100% stocks + trend) | VFINX + 1.0×(trend−cash) overlay on a net pure-trend reference (2000→) | 0.88 / 0.89 |
+| RSBT (100% bonds + trend) | VFITX + 1.0×(trend−cash), same overlay (2000→) | 0.50 / 0.47 |
+| Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (2000→) | 0.62 / 0.84 |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
 Managed-futures correlations are modest: each fund runs a faster, partly
 discretionary strategy that a single 12-month TSMOM rule only approximates.
 Those daily correlations understate the fidelity, because a seven-market
 engine cannot reproduce a fifty-market programme day by day. What a
-reconstruction owes its user is the right MONTH: a bundled monthly reference
-supplies the month-to-month path (monthly agreement with the real funds 0.60
-to 0.72) and the engine supplies the daily texture. For a diversified
-managed-futures fund that reference is a net composite of real programmes,
-which settles the level too; for a sleeve replicating a gross trend index it
-is the gross factor, levelled afterwards by an information-ratio pin. Each vol
-target is the volatility the fund itself realized: DBMF 12.2 % against 12.4 %
-real, KMLM 14.8 against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. Each
-donor segment also carries the fund's fee load rather than its own, lifted by
-the difference between the two published fee tables (the donors are 1.3 to
-2.7 %/yr vehicles standing in for 0.75 to 0.90 % funds); what remains of the
-gap is the manager's own edge, and it is left open. The
-construction, its measurements and what it leaves open are in
+reconstruction owes its user is the right MONTH: a bundled reference supplies
+the month-to-month path (monthly agreement with the real funds 0.60 to 0.97)
+and the engine supplies the daily texture. Both references are composites of
+REAL programmes, net of their managers' fees, so each settles the level as well
+as the path and nothing is levelled by hand: a diversified fund reads the
+all-styles one, a trend overlay the pure-trend one. Each vol target is the
+volatility the fund itself realized: DBMF 12.2 % against 12.4 % real, KMLM 14.8
+against 14.7, CTA 16.7 against 16.9, AQR 9.5 against 9.3. Each donor segment
+also carries the fund's fee load rather than its own, lifted by the difference
+between the two published fee tables (the donors are 1.3 to 2.7 %/yr vehicles
+standing in for 0.75 to 0.90 % funds); what remains of the gap is the manager's
+own edge, and it is left open.
+
+These histories are shorter than they used to be, on purpose: each stops where
+its evidence stops, the chains at their deepest real donor NAV (1996-03) and
+the overlays at their reference's first day (2000-01). A very reliable
+twenty-plus-year backcast is worth more than a heavily simulated forty-year
+one. The construction, its measurements and what it leaves open are in
 `docs/trend-reconstruction-design.md`.
 The lower fidelity is accepted in exchange for full self-generation.
 Discretionary strategies that cannot be honestly replicated with factors are
