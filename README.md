@@ -202,10 +202,15 @@ regime view stays the default.
 `pofo -fire` opens a local web explorer that simulates a withdrawal
 (retirement) phase and shows the **probability of ruin** as you drag sliders
 for capital, spending floor, cash-buffer years, real return, volatility, tail
-df, horizon, pension and the flat tax on gains. Charts show the buffer
-arbitrage (ruin vs buffer years), the terminal-wealth trade-off, the
-recovery-time distribution and a 2D ruin surface (buffer × expected return).
-The engine runs in Go (parallel Monte-Carlo); the page only renders.
+df, horizon, pension, spending rules and the French taxes. The dashboard
+reads top to bottom as one argument: the same plan under every return model
+(Student-t, sequence stress, JST broad-sample, lost decade), today's
+valuation (live Shiller CAPE), the simulated wealth fans, the plan replayed
+through the **worst retirements on record** (USA 1929/1966/2000, Japan 1990),
+ruin decomposed by the **first decade's return** (sequence risk), the
+delivered spending and its funding mix, mortality-crossed ruin
+("alive, broke or gone"), the risk levers, and the buffer arbitrage. The
+engine runs in Go (parallel Monte-Carlo); the page only renders.
 
 `pofo -fire portfolio.txt` seeds the model from a real portfolio: it derives
 the return assumptions and a historical real-return panel from the holdings

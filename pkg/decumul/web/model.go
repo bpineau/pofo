@@ -430,20 +430,22 @@ func Solve(pr Params, panel *scenario.Panel) SolveResult {
 	}
 }
 
-// ruinSeries is the ruin-probability curve (%) against buffer years.
+// ruinSeries is the ruin-probability curve (%) against buffer years. The name
+// stays empty: the panel title carries it, so no one-entry legend is drawn.
 func ruinSeries(s []decumul.SweepPoint) chart.XYSeries {
 	xs, ys := make([]float64, len(s)), make([]float64, len(s))
 	for i, p := range s {
 		xs[i], ys[i] = p.Value, p.RuinProb*100
 	}
-	return chart.XYSeries{Name: "Ruin %", Xs: xs, Ys: ys, Color: chart.PaletteColor(3)}
+	return chart.XYSeries{Xs: xs, Ys: ys, Color: chart.PaletteColor(3)}
 }
 
-// terminalSeries is the median terminal-wealth curve (M€) against buffer years.
+// terminalSeries is the median terminal-wealth curve (M€) against buffer
+// years; unnamed for the same one-series-no-legend reason as ruinSeries.
 func terminalSeries(s []decumul.SweepPoint) chart.XYSeries {
 	xs, ys := make([]float64, len(s)), make([]float64, len(s))
 	for i, p := range s {
 		xs[i], ys[i] = p.Value, p.TerminalP50/1e6
 	}
-	return chart.XYSeries{Name: "Terminal wealth p50 (M€)", Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
+	return chart.XYSeries{Xs: xs, Ys: ys, Color: chart.PaletteColor(2)}
 }
