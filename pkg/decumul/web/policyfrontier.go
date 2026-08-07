@@ -55,7 +55,7 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 			// changes, from a band around the initial rate to one that tracks
 			// the safe rate of the remaining horizon.
 			p.RiskGuard = decumul.RiskGuardrails{SafeWR: pr.safeRateTable(),
-				Band: 0.20, Cut: 0.10, Raise: 0.10, Cap: 1.5 * pr.NeedAnnual, PVRate: pr.pvRate()}
+				Band: 0.20, Cut: 0.10, Raise: 0.10, Cap: pr.raiseCap(), PVRate: pr.pvRate()}
 		}},
 		{"Bounded %", "#BE185D", func(p *decumul.Plan) {
 			p.Bounded = decumul.BoundedPct{Pct: wr, Up: 0.05, Down: 0.025}

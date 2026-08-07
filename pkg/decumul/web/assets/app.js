@@ -41,6 +41,8 @@ const GROUPS = [
       "Adjust spending ±10% whenever the current withdrawal rate leaves a ±20% band around the initial rate. It trades ruin risk for LIFESTYLE risk: cuts repeat while the portfolio keeps underperforming, so in the bad tail income decays step after step (section 04 shows the lived cost; the frontier in section 06 shows the trade). The guardrails ruin figure is therefore not comparable to the fixed rule's: it means 'even cutting without limit was not enough'. Set a floor below to bound the descent."),
     c("riskGuard", "Risk-based guardrails (Kitces / Morningstar)",
       "The state of the art of the guardrails family, and the same machinery as the line above with a better sensor. Guyton-Klinger compares your withdrawal rate to a band around the rate you STARTED at, a sensor blind to everything since: it cuts a 78-year-old whose remaining horizon makes 6% perfectly sustainable, and stays quiet on a 52-year-old drifting into trouble. Here the band follows the rate that is still safe for the horizon you have LEFT, and the rate is read on total wealth, so the pension you are owed counts before it starts, discounted. Same +-20% band, same +-10% moves, same floor slider, and it takes precedence over the 2006 rule when both are ticked; raises stop at 150% of your planned spending, so the rule cannot ratchet a lifestyle you never asked for. TWO THINGS TO KNOW. The safe-rate table is solved under the model SELECTED in the strip above and then lived with, so planning on a rosy fitted history buys a permissive table that a harsher column will then catch out: that gap is the model risk, shown rather than hidden. And late in the horizon the band opens wide on purpose, because a plan that ends at the horizon is meant to be spent, which is the ABW behaviour arriving through the guardrails door."),
+    r("gkRaiseCap", "Risk-guardrail raise ceiling (x planned spend)", 1, 2, 0.05, 1, "mult",
+      "How far the risk-based rule may ratchet your spending UP when the sensor says you have room. The default is 1.00, protective only: it cuts when the plan drifts into trouble and never raises, which is the setting that makes its ruin figure comparable to the fixed rule's, since both then deliver the same lifestyle until something breaks. Above 1.00 the rule also spends the good news, and its ruin figure then measures a RICHER life: 1.50 means it may work its way up to half again your planned spending, so comparing that ruin to the fixed rule's is the same category error as comparing Guyton-Klinger's to Bengen's. Section 04 shows which lifestyle each number is actually buying. Only applies while the risk-based guardrails are on."),
     r("gkFloor", "Guardrails floor (% of initial, 0 = none)", 0, 0.9, 0.05, 0, "pct",
       "The incompressible standard: guardrails cuts never push spending below this share of the initial level. Bounding the descent re-creates some ruin (the floor itself can prove unsustainable), which is the honest trade; 70-80% is a common planning value. Applies to both guardrails flavours."),
     c("ratchet", "Ratchet lifestyle up when rich",
@@ -94,6 +96,7 @@ const GROUPS = [
 
 const FMT = {
   pct: v => (v * 100).toFixed(1).replace(/\.0$/, "") + "%",
+  mult: v => "x" + v.toFixed(2),
   eur: v => Math.round(v).toLocaleString("fr-FR") + " €",
   int: v => String(Math.round(v)),
 };

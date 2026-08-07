@@ -160,6 +160,23 @@ func interpRate(horizons []int, rates []float64, n int) float64 {
 	return rates[len(rates)-1]
 }
 
+// raiseCap is the spending level the risk guardrail's raises stop at, as a
+// multiple of the planned spend. It defaults to 1, i.e. protective only: the
+// rule cuts when the plan drifts into trouble and recovers afterwards, but
+// never ratchets the household above the spending it asked for. That default is
+// deliberate. A raise side is doctrine (the prosperity rule), but a rule that
+// answers "you can afford more" by spending more produces a ruin figure that
+// measures a RICHER life, which readers then compare to the fixed rule's as if
+// the two delivered the same thing. Above 1 the rule spends the good news too,
+// and section 04 is where that trade becomes visible.
+func (pr Params) raiseCap() float64 {
+	m := pr.GKRaiseCap
+	if m <= 0 {
+		m = 1
+	}
+	return m * pr.NeedAnnual
+}
+
 // pvRate is the real rate the risk-based sensor discounts future cashflows
 // with: the central geometric return, kept inside sane bounds so an extreme
 // slider cannot turn a pension into a fortune or a rounding error.
