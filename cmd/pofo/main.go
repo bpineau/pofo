@@ -1467,6 +1467,7 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
+		section.ContribSVG, section.RegimeSVG = contributionCharts(r)
 		section.Breakdowns = breakdownPies(r.p.Assets, meta)
 		if len(section.Breakdowns) > 0 {
 			section.Notes = append(section.Notes, compositionNotes(r.p.Assets, meta, r.currency)...)
@@ -1609,10 +1610,15 @@ func buildPage(results []*result, opt *options, bench *marketdata.Series, common
 			"Up / Down capture: the portfolio's average return on the benchmark's up (resp. down) days, as a % of the benchmark's own average on those days. Up capture above 100 % amplifies rallies; Down capture below 100 % cushions losses. The ideal profile is high up / low down (e.g. 95 % / 70 %).",
 			"CWARP (Cole Wins Above Replacement Portfolio, Artemis Capital): the geometric average of the improvements a 25 %-of-notional overlay makes to the benchmark's Sortino ratio and return-to-max-drawdown, in percent (positive helps, negative hurts). Unlike Sharpe it rewards non-correlation and skew, since both denominators are measured on the combined series. The statistics row scores the whole portfolio as the overlay; the per-holding CWARP column scores each sleeve on its own, revealing which ones actually diversify "+bench.Symbol+" (typically gold, long duration and trend, not more equity).")
 	}
-	var hasBreakdowns, hasCoverage bool
+	var hasBreakdowns, hasCoverage, hasContrib bool
 	for _, s := range page.Portfolios {
 		hasBreakdowns = hasBreakdowns || len(s.Breakdowns) > 0
 		hasCoverage = hasCoverage || len(s.Coverage) > 0
+		hasContrib = hasContrib || s.ContribSVG != "" || s.RegimeSVG != ""
+	}
+	if hasContrib {
+		page.Footnotes = append(page.Footnotes,
+			"Realized contribution charts (per portfolio): each day's portfolio return is decomposed as held weight × asset return. The timeline stacks each holding's trailing-12-month contribution around zero (bands above zero carried the year, bands below cost it; the black line is the portfolio's own 12m return, the net of the bands); hover for exact figures. The per-regime matrix groups the same monthly contributions by macro quadrant, annualized: it is the empirical mirror of the coverage bars (who actually delivered, vs who was supposed to). Regimes come from the embedded OECD panel (share of countries with accelerating industrial production × accelerating inflation, thresholded at one half), forward-filled at the panel's edges; contributions before a fund's listing read its backcast, and envelope fees (when any) are not attributed to holdings.")
 	}
 	if hasBreakdowns {
 		page.Footnotes = append(page.Footnotes,
