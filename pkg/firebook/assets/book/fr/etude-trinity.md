@@ -7,7 +7,7 @@ William Bengen, puis l'étude Trinity, ont démontré pourquoi cette réponse ru
 C'est un article d'histoire des idées autant que de technique : les concepts introduits ici (millésime, SAFEMAX, taux de succès) servent dans tout le reste du livre.
 
 ::: cle Le renversement fondateur
-L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. La moyenne des retraites américaines historiques supportait plus de 6 % ; le millésime 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
+L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le taux de retrait soutenable ne dépend **pas** du rendement moyen, mais du pire enchaînement de rendements et d'inflation que le retraité traverse, surtout dans ses dix premières années. Le millésime américain moyen supportait plus de 6 % ; celui de 1966 ne supportait que ~4 %. Planifier, c'est planifier pour la queue de distribution, pas pour la moyenne. Tout le sujet moderne découle de ce renversement ([[sequence-des-rendements]]).
 :::
 
 ## Le contexte : pourquoi la réponse « rendement moyen » ruine
@@ -28,7 +28,7 @@ Le résultat tient dans un graphique resté célèbre : la durée de survie du p
 
 Bengen nomme **SAFEMAX** le taux maximal qui survit à tous les millésimes sur l'horizon choisi : environ 4,15 % pour 30 ans en 50/50. Et il identifie les trois pires époques pour partir : 1929 (déflation et krach), 1937, et surtout **1966**, non pas le pire krach, mais la pire **combinaison**, quinze ans de marché réel nul avec une inflation qui gonfle les retraits. Leçon capitale : l'ennemi du rentier n'est pas le krach spectaculaire, c'est l'érosion réelle prolongée ([[inflation-et-taux-de-retrait]]).
 
-Ses articles suivants (1996-2006) complètent le cadre. L'allocation optimale se situe entre 50 et 75 % d'actions, car descendre plus bas **abaisse** le taux sûr : les obligations seules ne résistent pas à l'inflation. Ajouter des petites capitalisations (small caps) remonte le SAFEMAX. Et l'horizon compte, ~4,3 % pour 25 ans, ~4,1 % pour 30 ans, ~3,5 % pour du très long.
+Ses articles suivants (1996-2006) complètent le cadre. L'allocation optimale se situe entre 50 et 75 % d'actions, car descendre plus bas **abaisse** le taux sûr : les obligations seules ne résistent pas à l'inflation. Ajouter des petites capitalisations (small caps) remonte le SAFEMAX, à 4,3 % en 1997 avec 30 % de la poche actions en small caps, puis à 4,5 % en 2006 avec une palette d'actifs plus large. Et l'horizon compte, ~4,15 % pour 30 ans, mais ~3,5 % seulement pour du très long.
 
 ::: encart Pourquoi cette méthode était géniale, et ce qu'elle vaut encore
 Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, l'une des trois grandes familles de modèles que déroulent les simulateurs de décumulation. Sa force : il préserve tout ce que les modèles synthétiques peinent à capturer, les enchaînements réels (krach **puis** inflation **puis** reprise), les corrélations actions-obligations changeantes, les longues mémoires. Sa faiblesse : il ne contient que le passé américain, un échantillon d'un seul pays, béni entre tous, où les fenêtres se chevauchent (il n'y a que 3 ou 4 périodes de 30 ans réellement indépendantes depuis 1926). D'où les correctifs modernes : échantillon mondial ([[anarkulova-cederburg]]), bootstrap et modèles paramétriques ([[historique-vs-parametrique]]).
@@ -38,19 +38,19 @@ Le rejeu historique (les « fenêtres historiques ») reste, trente ans après, 
 
 Quatre ans plus tard, trois professeurs de finance de la Trinity University (Texas), Philip Cooley, Carl Hubbard et Daniel Walz, publient « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable ». Même méthode de rejeu, mais un déplacement conceptuel : au lieu du taux plancher qui survit à **tout** (le SAFEMAX de Bengen), ils publient une **grille de taux de succès**. Pour chaque combinaison taux de retrait × allocation × horizon, elle donne le pourcentage des fenêtres historiques où le portefeuille finit avec un solde positif.
 
-Extrait de la logique de la grille (chiffres de l'étude actualisée, retraits indexés sur l'inflation, données 1926-2009) :
+Un extrait de la grille (chiffres de la mise à jour de 2011, retraits indexés sur l'inflation, données 1926-2009) :
 
 | Taux initial | 100 % actions, 30 ans | 75/25, 30 ans | 50/50, 30 ans | 25/75, 30 ans |
 |---|---|---|---|---|
 | 3 % | 100 % | 100 % | 100 % | 100 % |
-| 4 % | 98 % | 100 % | 96 % | 71 % |
+| 4 % | 98 % | 98 % | 96 % | 71 % |
 | 5 % | 80 % | 82 % | 67 % | 27 % |
 | 6 % | 62 % | 60 % | 51 % | 20 % |
 
-Trois enseignements durables sortent de cette grille. D'abord la **falaise**. Entre 4 et 5 %, le succès s'effondre : le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue une fois sur trois là où le 75/25 ne faiblit pas). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
+Trois enseignements durables sortent de cette grille. D'abord la **falaise**. Entre 4 et 5 %, le succès s'effondre : le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue près d'une fois sur trois là où le 75/25 ne faiblit presque jamais). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
 
 ::: attention Ce que « 95 % de succès » veut dire chez Trinity, et ne veut pas dire
-Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du seul marché américain : « 95 % » signifie « 95 % des départs entre 1926 et 1980 auraient tenu », pas « votre plan a 95 % de chances de réussir ». Les fenêtres partagent leurs années (le krach de 1929 apparaît dans des dizaines de fenêtres), l'échantillon indépendant est minuscule, et le futur n'est pas tiré de cette urne. Les probabilités affichées par les simulateurs modernes ont des limites cousines ([[pieges-des-simulateurs]], [[lire-un-fan-chart]]) ; la parade est toujours la même, croiser plusieurs modèles et garder des marges.
+Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du seul marché américain : « 95 % » signifie « 95 % des départs entre 1926 et 1980 auraient tenu », pas « votre plan a 95 % de chances de réussir ». Le « succès » lui-même se compte au sens le plus faible qui soit, un solde encore positif au dernier jour, fût-il d'un euro. Les fenêtres partagent leurs années (le krach de 1929 apparaît dans des dizaines de fenêtres), l'échantillon indépendant est minuscule, et le futur n'est pas tiré de cette urne. Les probabilités affichées par les simulateurs modernes ont des limites cousines ([[pieges-des-simulateurs]], [[lire-un-fan-chart]]) ; la parade est toujours la même, croiser plusieurs modèles et garder des marges.
 :::
 
 ## Ce que les fondateurs n'avaient pas (encore) vu
@@ -63,14 +63,14 @@ Lire Bengen et Trinity aujourd'hui, c'est admirer la méthode et mesurer le chem
 - **La rigidité du retrait.** Le retraité de Bengen exécute sa règle 30 ans sans regarder. Toute la génération suivante de stratégies (Guyton-Klinger [[guyton-klinger]], guardrails modernes [[guardrails-morningstar]], amortissement [[amortissement-abw]]) part de l'idée inverse : réagir à l'information.
 - **Frais, impôts, dépenses réelles** : hors champ chez les fondateurs, de premier ordre dans la vraie vie ([[combien-il-vous-faut]]).
 
-Aucun de ces points n'est une réfutation. La méthode des millésimes est toujours debout ; ce sont ses entrées et son cadre qu'on a élargis. Bengen lui-même n'a cessé d'actualiser son chiffre, à la hausse pour le retraité américain classique de 65 ans avec un portefeuille plus diversifié, tout en rappelant que le chiffre dépend du cadre. Quand vous entendez « la règle des 4 % est morte » ou « le 4 % est trop timide », la bonne question est toujours : dans quel cadre, pour quel horizon, avec quelles marges ?
+Aucun de ces points n'est une réfutation. La méthode des millésimes est toujours debout ; ce sont ses entrées et son cadre qu'on a élargis. Bengen lui-même n'a cessé d'actualiser son chiffre, à la hausse pour le retraité américain classique de 65 ans avec un portefeuille plus diversifié, tout en rappelant qu'il dépend du cadre. Quand vous entendez « la règle des 4 % est morte » ou « le 4 % est trop timide », la bonne question est toujours : dans quel cadre, pour quel horizon, avec quelles marges ?
 
 ## Refaire Bengen vous-même
 
 C'est l'un des grands mérites pédagogiques de la méthode. Elle se refait. Les simulateurs historiques classiques, FICalc et cFIREsim en tête, rejouent la logique des millésimes sur les indices américains longs, taux de retrait par taux de retrait. Les outils qui savent lire un portefeuille réel, comme pofo, la rejouent sur l'historique de **vos** propres lignes et rendent le verdict départ par départ. Dans les deux cas, l'exercice vaut la peine. Voir son plan traverser 1966 ou 2000 rend le risque de séquence plus concret que n'importe quelle probabilité.
 
 ::: exemple Lire un millésime
-Plan : 1 M€, 60/40, retrait 4 % indexé. Rejoué millésime par millésime, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et une arrivée à 30 ans essoufflée mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
+Plan : 1 M€, 60/40, retrait 4 % indexé. Rejoué millésime par millésime, le départ « janvier 2000 » montre la trajectoire type d'un mauvais cru : deux krachs dans la première décennie, le portefeuille réel divisé par deux vers 2009, une remontée qui ne rattrape jamais la trajectoire des bons millésimes, et un capital toujours sous la moitié de sa valeur initiale un quart de siècle plus tard, essoufflé mais solvable. Le départ « 2009 », lui, plane loin au-dessus. Même règle, même portefeuille, même moyenne de long terme : seule la **date** de départ diffère. C'est le risque de séquence rendu visible, et la meilleure introduction possible à [[sequence-des-rendements]].
 :::
 
 ## L'essentiel à retenir
