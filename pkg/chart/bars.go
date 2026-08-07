@@ -59,7 +59,7 @@ func Bars(opt Options, bars []Bar) string {
 	for i, b := range bars {
 		x := float64(padL) + float64(i)*gap + (gap-bw)/2
 		y := yAt(b.Value)
-		fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, x, y, bw, float64(padT+plotH)-y, PaletteColor(0))
+		fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="3" fill="%s"/>`, x, y, bw, float64(padT+plotH)-y, PaletteColor(0))
 		if b.Text != "" {
 			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" fill="%s">%s</text>`, x+bw/2, y-4, themeInk, esc(b.Text))
 		}
