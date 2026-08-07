@@ -31,6 +31,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		target = 0.05
 	}
 	const seed = uint64(7)
+	paths := min(pr.NPaths, shapePaths)
 	cMu, cSigma, cDf := centralParams(pr, panel)
 
 	// Safe WR vs horizon, central Student-t and broad-sample regime curves.
@@ -58,7 +59,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 			p.Monthly = false
 			p.Years = years
 			p.Source = m.source(years)
-			safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), pr.NPaths, simWorkers, seed)
+			safe := p.Solve(target, decumul.WithdrawalAxis(0, pr.Capital*0.15), paths, simWorkers, seed)
 			xs[j], ys[j] = float64(years), safe/pr.Capital*100
 		}
 		series = append(series, chart.XYSeries{Name: m.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(m.slot)})
@@ -79,7 +80,7 @@ func Curves(pr Params, panel *scenario.Panel) CurvesResult {
 		p.NeedAnnual = spend
 		p.Source = centralSource(pr, cMu, cSigma, cDf, pr.Years)
 		// Ruin falls as capital rises: the smallest capital meeting the target.
-		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), pr.NPaths, simWorkers, seed)
+		cap := p.Solve(target, decumul.CapitalAxis(solveLo, solveHi), paths, simWorkers, seed)
 		xs[j], ys[j] = spend/1000, cap/1e6
 	}
 	capitalSVG := darkMultiLine(
