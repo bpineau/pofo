@@ -35,7 +35,7 @@ Voici l'outil pratique central de l'article. Puisque l'ennemi attaque par l'éca
 | Élément du plan | Indexation | Note |
 |---|---|---|
 | Dépenses / retraits | **Indexés** (le contrat du plan) | Plus la dérive personnelle ([[suivre-inflation]]) |
-| Pension légale | **Indexée** (sur l'IPC, par la loi) | L'actif anti-inflation n° 1 du plan français, avec des revalorisations parfois décalées ou gelées politiquement ([[retraite-legale]]) |
+| Pension légale | **Indexée** (la base sur l'IPC par la loi, la complémentaire par accord) | L'actif anti-inflation n° 1 du plan français, avec des revalorisations parfois décalées ou gelées politiquement ([[retraite-legale]]) |
 | Rentes privées | **Non** (revalorisation discrétionnaire) | La grande faiblesse française du produit ([[rentes-et-annuites]]) |
 | Linkers / échelle indexée | **Indexés** (contractuel) | La couverture propre ([[obligations-indexees]]) |
 | Loyers perçus | **Quasi** (IRL, plafonnements politiques possibles) | Le linker vivant, avec risque réglementaire ([[immobilier-en-retrait]]) |
