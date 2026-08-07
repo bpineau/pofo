@@ -10,6 +10,15 @@ Cet article la traite à fond. D'abord la mécanique, le crédit immobilier à l
 Un crédit immobilier calcule la mensualité qui rembourse exactement un capital sur une durée, à un taux donné. L'ABW retourne la formule. Votre portefeuille est le « prêt » que la vie vous a consenti, et le retrait de l'année est la mensualité qui l'épuiserait **exactement** sur vos années restantes, au rendement attendu du moment. Cette mensualité se recalcule chaque 1er janvier, sur le capital réel, avec l'horizon raccourci d'un an et les attentes du moment. Tout ce qui arrive (krach, boom, inflation, une année de plus) est absorbé en douceur par le calcul suivant. C'est un plan qui se replanifie tout seul, indéfiniment.
 :::
 
+::: admin Mode d'emploi
+- **Le taux ne s'applique pas au portefeuille, mais à la richesse totale.** Portefeuille, plus la valeur actualisée des pensions et revenus futurs, moins la valeur actualisée du legs visé et des grosses dépenses programmées. C'est la différence de fond avec toutes les règles précédentes, et elle explique pourquoi l'ABW sert davantage avant la pension : il consomme par anticipation une richesse déjà acquise, simplement pas encore versée.
+- **Indexation.** Rien à indexer, la re-cotation annuelle absorbe l'inflation. À une condition d'implémentation stricte : travailler en euros constants d'un bout à l'autre du calcul, le rendement g comme le taux d'actualisation des pensions.
+- **Fréquence.** Annuelle, et pas davantage : l'horizon se décrémente en années, donc la règle n'a pas de version mensuelle qui ait un sens.
+- **Paramètres.** g (le rendement réel attendu, décoté de 0,5 à 1 point), n (l'horizon au quantile prudent), le legs visé et la pente de consommation. Aucun seuil de déclenchement : la règle est continue, il n'y a rien à franchir, donc rien à calibrer de ce côté.
+- **Plancher.** La règle ne peut pas épuiser le portefeuille avant l'horizon, mais elle peut parfaitement servir un revenu trop bas. Le plancher reste donc à vérifier, sur la distribution du revenu servi et non sur la ruine, qui vaut zéro par construction.
+- **De tête.** Non, et c'est assumé : il faut un tableur ou un outil. La formule est celle du VPW appliquée à la richesse totale, R = W × g / (1 − (1+g) puissance −n), mais les trois lettres demandent chacune un calcul préalable.
+:::
+
 ## La mécanique, pas à pas
 
 La formule est celle du VPW ([[vpw]]) : retrait = W × g / (1 − (1+g)^(−n)). Ce qui change, c'est le contenu des trois lettres. Et chaque changement est un gain de réalisme.

@@ -455,6 +455,8 @@ article tr:last-child td{border-bottom:0}
 .doc-box--science .doc-box-h{color:var(--admin)}
 .doc-box--terrain{background:var(--gold-wash);border-color:rgba(180,140,50,.32)}
 .doc-box--terrain .doc-box-h{color:#8a6a1c}
+.doc-box--admin{background:var(--card);border-color:var(--rule);border-left:3px solid var(--admin)}
+.doc-box--admin .doc-box-h{color:var(--admin)}
 .book-more{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--rule)}
 .book-more h2{font-family:var(--sans);font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0}
 .book-more ul{list-style:none;padding:0;margin:.5rem 0 0}

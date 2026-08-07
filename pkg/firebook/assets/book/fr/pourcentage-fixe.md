@@ -8,6 +8,15 @@ Cet article la démonte pièce par pièce. Pourquoi elle ne peut pas ruiner, et 
 Chaque année, le retrait vaut w × portefeuille courant, avec w fixé une fois pour toutes, par exemple 4 %. La ruine est impossible par construction : w % de quelque chose n'est jamais tout. Le portefeuille tend vers zéro sans jamais l'atteindre. Mais relisez la phrase. C'est le **portefeuille** qui ne meurt pas. Votre revenu, lui, suit chaque soubresaut. La règle ne supprime pas le risque, elle le déplace intégralement du capital vers la vie quotidienne. C'est le pôle opposé à Bengen, le point le plus à gauche et le plus haut de la frontière de décumulation.
 :::
 
+::: admin Mode d'emploi
+- **Le taux s'applique au portefeuille courant, intégralement et sans mémoire.** Aucune référence au capital de départ, aucune au retrait de l'an dernier. Deux ménages qui détiennent le même portefeuille le même jour retirent le même montant, quelle que soit leur histoire. C'est l'exact opposé de Bengen, et la propriété qui fait disparaître le paradoxe des deux voisins partis à un an d'écart.
+- **Indexation.** Rien à indexer, et c'est un piège d'implémentation classique : si vous calculez sur le portefeuille en euros courants, l'inflation est déjà dans le résultat, et la réindexer serait la compter deux fois. La règle de Yale fait exception, puisque sa part de mémoire, elle, doit bel et bien être réindexée.
+- **Fréquence.** Annuelle. C'est la seule famille où accélérer la cadence dégrade le confort au lieu de l'améliorer : retirer un douzième du portefeuille chaque mois transmet directement la volatilité mensuelle au revenu. Si vous voulez lisser, lissez le portefeuille et non la date, en prélevant w × la moyenne des douze derniers trimestres.
+- **Seuils.** Il n'y en a pas, et c'est tout l'intérêt de la règle. Le seul paramètre est w, et il a une borne théorique, non calibrée pour une fois : le rendement réel **géométrique** attendu du portefeuille. Au-dessus, le revenu s'érode structurellement ; en dessous, il croît doucement.
+- **Plancher.** La règle n'en a pas et ne peut pas en avoir, puisque son revenu suit le portefeuille jusqu'en bas. Le plancher doit donc venir de l'extérieur, d'une pension ou d'une rente. C'est sa condition d'admissibilité, pas un raffinement.
+- **De tête.** R = w × portefeuille. Règle de Yale : R = 0,7 × (R de l'an dernier réindexé sur l'inflation) + 0,3 × (w × portefeuille).
+:::
+
 ## Pourquoi elle ne peut pas ruiner, et ce que ça vaut vraiment
 
 La preuve tient en une ligne. Après retrait et rendement r, le portefeuille vaut P × (1 − w) × (1 + r), un produit de facteurs strictement positifs, donc jamais nul. L'intuition économique est plus parlante : la règle vend toujours une **fraction**, jamais un montant. Quand le portefeuille fond de moitié, le prélèvement fond de moitié aussi, et la pression sur le capital reste constante. Le mécanisme de ciseaux qui tue la règle fixe, ce retrait qui monte pendant que le portefeuille baisse ([[retrait-fixe-bengen]]), est ainsi désamorcé à la racine.
