@@ -130,21 +130,39 @@ func isHICP(symbol string) bool { _, ok := hicpGeo(symbol); return ok }
 // the hope of finding a deeper history.
 const minGoodPoints = 60
 
-// goodSeries reports whether a series is solid enough to settle on.
-func goodSeries(s *Series) bool { return s != nil && len(s.Points) >= minGoodPoints }
+// minGoodWindow is the request span below which depth cannot judge a
+// series: a few days can never contain minGoodPoints trading days, so any
+// quote inside the window is a complete answer. The typical case is an
+// incremental refresh restarting from the last known close.
+const minGoodWindow = 90 * 24 * time.Hour
 
-// deeper reports whether b offers a deeper usable history than a.
-func deeper(a, b *Series) bool {
-	if b == nil || len(b.Points) < 2 {
+// goodFor reports whether a series is solid enough to settle on for a
+// request starting at from: minGoodPoints quotes, or any quote at all when
+// the requested window is shorter than minGoodWindow.
+func goodFor(s *Series, from time.Time) bool {
+	if s == nil || len(s.Points) == 0 {
 		return false
 	}
-	if a == nil || len(a.Points) < 2 {
+	return len(s.Points) >= minGoodPoints || time.Since(from) < minGoodWindow
+}
+
+// deeper reports whether b offers a deeper usable history than a, for a
+// request starting at from.
+func deeper(a, b *Series, from time.Time) bool {
+	floor := 2
+	if time.Since(from) < minGoodWindow {
+		floor = 1 // a short window legitimately holds a single quote
+	}
+	if b == nil || len(b.Points) < floor {
+		return false
+	}
+	if a == nil || len(a.Points) < floor {
 		return true
 	}
 	switch {
-	case goodSeries(a) && !goodSeries(b):
+	case goodFor(a, from) && !goodFor(b, from):
 		return false
-	case goodSeries(b) && !goodSeries(a):
+	case goodFor(b, from) && !goodFor(a, from):
 		return true
 	case b.First().Date.Before(a.First().Date):
 		return true
@@ -174,14 +192,14 @@ func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time,
 		return s, nil
 	}
 	direct, directErr := c.historyView(ctx, ticker, from, raw)
-	if directErr == nil && goodSeries(direct) {
+	if directErr == nil && goodFor(direct, from) {
 		return direct, nil
 	}
 	resolved, res, failures := c.resolveBest(ctx, ticker, from, ticker, raw)
 	if directErr != nil {
 		failures = append([]string{directErr.Error()}, failures...)
 	}
-	if !deeper(direct, resolved) {
+	if !deeper(direct, resolved, from) {
 		if direct != nil {
 			return direct, nil
 		}
@@ -199,7 +217,7 @@ func (c *Client) cachedResolutionHistory(ctx context.Context, id string, from ti
 		return nil, false
 	}
 	s, err := c.historyForResolution(ctx, id, res, from, raw)
-	if err == nil && goodSeries(s) {
+	if err == nil && goodFor(s, from) {
 		return s, true
 	}
 	if err != nil {
@@ -258,7 +276,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		case fund:
 			i = slotFund
 		}
-		if deeper(series[i], s) {
+		if deeper(series[i], s, from) {
 			series[i], resols[i] = s, res
 		}
 	}
@@ -274,7 +292,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	// reached: no other source could meaningfully improve on it.
 	covered := func() bool {
 		s, _ := preferred()
-		return goodSeries(s) && !s.First().Date.After(from.AddDate(1, 0, 0))
+		return goodFor(s, from) && !s.First().Date.After(from.AddDate(1, 0, 0))
 	}
 	matchesBase := func(symbol string) bool {
 		return preferBase != "" &&
@@ -321,7 +339,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			failures = append(failures, fmt.Sprintf("ft: %v", ferr))
 		}
 	}
-	if s, _ := preferred(); !goodSeries(s) {
+	if s, _ := preferred(); !goodFor(s, from) {
 		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr == nil {
 			res := resolution{Source: "morningstar", Symbol: msid, Name: name}
 			if s, herr := c.historyMS(ctx, query, res, from, raw); herr == nil {

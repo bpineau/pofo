@@ -550,3 +550,58 @@ func TestCachelessClient(t *testing.T) {
 		t.Fatalf("second cache-less Fetch: %v", err)
 	}
 }
+
+// TestFetchISINShortWindowSettlesOnSparseSeries: an incremental refresh
+// (from = a few days back) can never yield minGoodPoints quotes; the single
+// NAV the FT serves inside the window must be accepted, not discarded as
+// degenerate (which used to end in "no usable source").
+func TestFetchISINShortWindowSettlesOnSparseSeries(t *testing.T) {
+	lastNAV := time.Now().AddDate(0, 0, -2)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"quotes":[]}`) // Yahoo does not know this fund
+	})
+	mux.HandleFunc("/data/searchapi/searchsecurities", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"data":{"security":[{"name":"Independance Europe Small","symbol":"LU1832174962:EUR","xid":"77","isPrimary":true}]}}`)
+	})
+	mux.HandleFunc("/data/chartapi/series", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, `{"Dates":[%q],"Elements":[{"Currency":"EUR","ComponentSeries":[{"Type":"Close","Values":[244.53]}]}]}`,
+			lastNAV.Format("2006-01-02T15:04:05"))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.Fetch(context.Background(), "LU1832174962", time.Now().AddDate(0, 0, -3))
+	if err != nil {
+		t.Fatalf("short-window ISIN fetch: %v", err)
+	}
+	if s.Source != "ft" || len(s.Points) != 1 || s.Points[0].Close != 244.53 {
+		t.Fatalf("series: %+v", s)
+	}
+}
+
+// TestFetchTickerShortWindowSkipsSearch: a direct ticker answer inside a
+// short window is complete; falling back to the search-based resolution
+// would waste a search round-trip on every incremental refresh.
+func TestFetchTickerShortWindowSkipsSearch(t *testing.T) {
+	days := []time.Time{time.Now().AddDate(0, 0, -2), time.Now().AddDate(0, 0, -1)}
+	searched := false
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/TT", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("TT", days, []float64{10, 11}))
+	})
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+		searched = true
+		fmt.Fprint(w, `{"quotes":[]}`)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.Fetch(context.Background(), "TT", time.Now().AddDate(0, 0, -3))
+	if err != nil || len(s.Points) != 2 {
+		t.Fatalf("short-window ticker fetch: %+v, %v", s, err)
+	}
+	if searched {
+		t.Fatal("a complete short-window direct answer must not trigger the search fallback")
+	}
+}
