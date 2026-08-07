@@ -7007,17 +7007,18 @@
     "currency": "USD",
     "fees": 0.79,
     "asset_class": "managed-futures",
-    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities",
+    "underlying": "Systematic trend-following / managed futures: long/short across equity, currency, fixed-income, credit and volatility futures, commodities through commodity-linked notes, plus single-stock long/short baskets for alternative-market trend",
     "benchmark_index": "active (no index)",
     "strategy": "trend-following",
     "geography": null,
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "AQR managed-futures UCITS; multi-horizon trend signals; crisis-alpha diversifier",
+    "notes": "USD reference class of the AQR Managed Futures UCITS sub-fund (USD 1.36bn at 31 March 2026); multi-horizon trend signals, crisis-alpha diversifier. The 0.79% pin is the BASE cost only (mgmt 0.60% + 0.18% expense cap + 0.01% subscription tax): class A also pays a 10% performance fee over the ML 3-Month T-Bill hurdle, high-on-high, crystallised each 31 March, which took 1.58 pts of average class NAV in the year to 31 March 2026 (all-in ~2.4% that year). Compare costs against a flat-fee class (RAEF LU1662501532) rather than against this pin. Average notional leverage 1778% over that year (sum-of-notionals, inflated by short-rate futures and FX forwards), absolute VaR averaging 4.04% against a 20% limit.",
     "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103257975:USD"
     ],
     "since": "2015-05-03"
@@ -8052,10 +8053,11 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-hedged flat-fee 'R' share class (no performance fee; mgmt 1.00%, OCF ~1.31%) of the AQR Managed Futures UCITS fund. For 100k+ tickets the institutional flat class IAE2F LU1662499612 (OCF ~0.88%) is the same fund ~0.43 pts/yr cheaper; catalogued for comparison.",
-    "confidence": "medium",
+    "notes": "EUR-hedged FLAT-fee class of the AQR Managed Futures UCITS fund and the reference EUR vehicle here: mgmt 1.00%, NO performance fee, 0.24% expense cap, 0.05% subscription tax, EUR 100,000 minimum initial subscription (a 'selected retail' class, reached through platforms). Its high headline fee is misleading: it has beaten every cheaper-on-paper EUR-hedged sibling. The institutional IAE2F (LU1662499612, mgmt 0.75%) needs EUR 80m and has returned 0.6 to 0.7 pts/yr LESS in every quarter since 2023-11; the 0.60% classes B and RAE give up ~2 pts to their 10% performance fee in strong trend years (2.03 and 2.07 pts of average class NAV in the year to 31 March 2026). Its 31 March NAVs match the audited annual report to the cent, see pkg/datasets/golden/aqrmf_test.go.",
+    "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662501532:EUR"
     ]
   },
@@ -8082,10 +8084,11 @@
     "leverage": 1.0,
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "notes": "Legacy institutional-era B EUR class of the AQR Managed Futures UCITS fund (mgmt 0.60%, OCF ~0.73%): the real EUR-hedged donor for the RAEF (LU1662501532) backcast, continuous NAVs 2015-03 to 2021-12 then a ~2y hole (class emptied) before resuming 2023-10. Effectively closed to new retail money (legacy class); kept for resolution and the simdata recipe.",
-    "confidence": "medium",
+    "notes": "Legacy institutional-era B EUR class of the AQR Managed Futures UCITS fund (mgmt 0.60%, OCF ~0.73%): the real EUR-hedged donor for the RAEF (LU1662501532) backcast, continuous NAVs 2015-03 to 2021-12 then a ~2y hole (class emptied) before resuming 2023-10. It also carries a 10% performance fee over the EUR STR hurdle, high-on-high, crystallised each 31 March: that fee took 2.03 pts of average class NAV in the year to 31 March 2026 and is why this donor trails the flat-fee RAEF in strong trend years, so the backcast splices it raw rather than draining it further. Effectively closed to new retail money (legacy class); kept for resolution and the simdata recipe.",
+    "confidence": "high",
     "sources": [
       "https://www.fundsquare.net/fund-tree?idInstr=202658",
+      "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103258197:EUR"
     ]
   },
@@ -8114,10 +8117,11 @@
     "leverage": 1.0,
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "notes": "Institutional flat-fee 'I' EUR share class (no performance fee; mgmt 0.75%, OCF ~0.88%) of the same AQR Managed Futures UCITS fund as RAEF LU1662501532: identical strategy and hedging, ~0.43 pts/yr cheaper, but an I-class minimum subscription (~100k, verify on the KID and with the broker). Real NAV history since 2017-11 but with a 3-year gap (2020-02 to 2023-05: the class was emptied then re-seeded; the 2020 annual report lists no shares outstanding), so prefer RAEF/DBMFE series for analysis and this class as the cheap purchase vehicle. The even cheaper IAE3F (LU1775565218, 0.74%) and legacy E EUR (LU1103258437, 0.63%) classes have FROZEN NAV series (2022-01 and 2025-01): dormant or closed, do not use.",
-    "confidence": "medium",
+    "notes": "Institutional flat-fee 'I' EUR share class (no performance fee; mgmt 0.75%, 0.18% expense cap, 0.01% subscription tax, OCF ~0.88%) of the same AQR Managed Futures UCITS fund as RAEF LU1662501532. NOT the cheap way in, on two counts the prospectus and the audited NAVs settle: its minimum initial subscription is EUR 80 MILLION (not a retail 100k), and despite the lower headline fee it has returned 0.6 to 0.7 pts/yr LESS than RAEF in every quarter since 2023-11 (same beta on the USD class, same full EUR hedge, so it is a cost-side gap the published schedules do not explain). Real NAV history since 2017-11 but with a 3-year gap (2020-02 to 2023-05: the class was emptied then re-seeded; the 2020 annual report lists no shares outstanding). Use RAEF for both analysis and purchase; keep this class as the institutional cross-check. The even cheaper IAE3F (LU1775565218, mgmt 0.55%, EUR 280m minimum) and legacy E EUR (LU1103258437) classes have FROZEN NAV series (2022-01 and 2025-01): dormant or closed, do not use.",
+    "confidence": "high",
     "sources": [
       "https://www.fundsquare.net/fund-tree?idInstr=202658",
+      "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662499612:EUR"
     ]
   },
@@ -8125,25 +8129,29 @@
     "id": "LU1662502183",
     "isin": "LU1662502183",
     "aliases": [],
-    "name": "AQR Managed Futures UCITS Fund RAE EUR",
+    "name": "AQR Managed Futures UCITS Fund RAE EUR (hedged, perf fee)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
     "xid": "971387891",
     "currency": "EUR",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
     "fees": 0.91,
+    "since": "2025-03-05",
     "asset_class": "managed-futures",
-    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities",
+    "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
     "benchmark_index": "active (no index)",
     "strategy": "trend-following",
     "geography": null,
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Euro (RAE) share class of the AQR Managed Futures UCITS fund (sibling of the USD LU1103257975); crisis-alpha diversifier",
-    "confidence": "medium",
+    "notes": "Retail EUR class of the AQR Managed Futures UCITS fund (sibling of the USD LU1103257975), EUR-hedged like every other EUR class of the sub-fund (measured: beta 0.00 on EURUSD, 0.95 on the USD class's local returns). Mgmt 0.60%, 0.24% expense cap, 0.05% subscription tax, EUR 100,000 minimum, PLUS a 10% performance fee over the EUR STR hurdle, high-on-high, crystallised each 31 March: that fee took 2.07 pts of average class NAV in the year to 31 March 2026, so the 0.91% pin understates the cost of a good year by roughly a factor of three. Prefer the flat-fee RAEF (LU1662501532). Usable NAV history only from 2025-03 (the class held no shares at 31 March 2024).",
+    "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
+      "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662502183:EUR"
     ]
   },

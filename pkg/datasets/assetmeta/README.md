@@ -153,6 +153,41 @@ URL actually used, and its `notes` line the interpretation hint.
   collateral currency for the margin pocket; bond FUTURES legs add no FX; a gold
   leg is `None` (shortfall); a managed-futures leg is `Dynamic` for its notional.
 
+### Fee schedules of SICAV share classes (and their traps)
+A Luxembourg SICAV publishes two documents that settle, for free, what a data
+aggregator only approximates. Read both before pinning `fees` on any share
+class of a multi-class fund.
+
+- The **prospectus supplement** for the sub-fund carries a "Summary of Shares,
+  Fees and Expenses" table, one column per share class: investment management
+  fee, performance fee rate and hurdle, expense cap, `taxe d'abonnement` and
+  minimum initial subscription. `fees` pins the TER, so it is the management
+  fee plus the expense cap plus the subscription tax (the cap is a maximum, so
+  a published OCF slightly below it is normal, and slightly above it is also
+  normal because trading-related expenses sit outside the cap).
+- The **audited annual report** carries, in "Statistical Information", the net
+  asset value per share for each class at each of the last three financial year
+  ends, and in the fees note the performance fee actually charged per class,
+  expressed as a percent of average class NAV.
+
+Three traps this combination catches, all of them live in the AQR Managed
+Futures classes (LU1662501532 and siblings):
+
+1. **A performance fee is invisible in the TER.** The 0.60% classes of that
+   fund pay 10% of the excess over a cash hurdle: 1.5 to 2.1 points of average
+   class NAV in the year to 31 March 2026, i.e. three times the pinned `fees`.
+   Say so in `notes`; the pin stays the base TER.
+2. **A low headline fee can hide a huge minimum.** The 0.75% institutional
+   class of that fund requires EUR 80 million, not the six figures an
+   aggregator's "institutional" label suggests.
+3. **Cheaper on paper is not cheaper in the NAV.** Compare classes on the
+   audited year-end NAVs, not on the schedules: over 2023-2026 the 1.00% flat
+   class out-returned the 0.75% one by 0.6 to 0.7 points a year, every quarter.
+
+The audited year-end NAVs are also the cheapest identifier check there is: see
+`pkg/datasets/golden/aqrmf_test.go`, which pins three consecutive year ends of
+two classes to the cent.
+
 ### Time sinks and dead ends
 - Independance factsheets are image-only PDFs: read as PDF, not HTML.
 - justETF / Boursorama / Morningstar fund pages and the spglobal sector

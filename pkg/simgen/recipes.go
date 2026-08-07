@@ -1524,11 +1524,23 @@ func kmlmRecipe() Recipe {
 // for the "second, independent trend method" slot. The proxy vol target (~11%)
 // matches AQR's realized full-volatility programme, between DBMF (10%) and
 // KMLM (13%). USD native, so no FX leg (the fetch layer converts to view).
+//
+// The 0.79 %/yr fee charged to the reconstruction is class A's BASE cost only
+// (mgmt 0.60% + 0.18% expense cap + 0.01% subscription tax, per the prospectus
+// supplement). Class A also pays a 10% performance fee over the ML 3-Month
+// T-Bill hurdle, which the audited accounts put at 1.58 points of average class
+// NAV for the year to 31 March 2026. That fee is deliberately NOT modelled: it
+// only bites in strong trend years, and the IR pin (aqrTrendInfoRatio) is
+// already calibrated on AQR's realized, performance-fee-bearing record, so
+// charging it again would double-count. The consequence is that the
+// reconstructed pre-2015 leg is gross of a performance fee the real class would
+// have paid in its good years; prefer the flat-fee EUR class (LU1662501532,
+// aqrmfHedgedRecipe) when the cost of a strong decade matters.
 func aqrmfRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1103257975",
 		Name:            "AQR Managed Futures UCITS: TSMOM replication",
-		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), IR-pinned to AQR's realized managed-futures record, real AQR grafted from 2015",
+		Method:          "12-month TSMOM on a cross-asset futures basket (~2001→, ~11% vol target), IR-pinned to AQR's realized managed-futures record, charged class A's 0.79% base fee only (its 10% performance fee is left to the IR pin), real AQR grafted from 2015",
 		Build:           tsmom("AQR Managed Futures (TSMOM replication)", mfConfig(0.11, 0.0079), aqrTrendInfoRatio),
 		ValidateAgainst: "LU1103257975",
 		SpliceReal:      "LU1103257975",
@@ -1544,10 +1556,20 @@ func aqrmfRecipe() Recipe {
 // The donor is used RAW: its published OCF (0.73%) would suggest draining
 // returns by the 0.58 %/yr fee gap to RAEF's 1.31%, but on both real overlap
 // windows (2021 and 2023-2026) B tracks RAEF with corr 1.000 while LAGGING
-// it by 0.4-1.2 pts/yr (a legacy fee structure the published OCF does not
-// capture), so any drag would double-penalize; the raw donor leaves the
-// backcast slightly conservative instead. Only before
-// 2015-03 does the series fall back to the TSMOM reconstruction (same engine
+// it by 0.4-1.2 pts/yr, so any drag would double-penalize; the raw donor
+// leaves the backcast slightly conservative instead.
+//
+// The audited accounts name what the published OCF misses. Class B carries a
+// 10% PERFORMANCE fee over the EUR STR hurdle, high-on-high, crystallised each
+// 31 March, that RAEF does not: it cost class B 2.03 points of average class
+// NAV in the year to 31 March 2026. So the donor's lag is not a constant, it is
+// a fee that bites only in strong trend years, and the raw splice makes the
+// backcast conservative precisely in the years trend-followers earn their keep.
+// Modelling the fee back out (10% of the excess over EUR STR above a running
+// high-water mark) is the obvious refinement; it is not done here because the
+// crystallisation path per share class is not observable from daily NAVs alone.
+//
+// Only before 2015-03 does the series fall back to the TSMOM reconstruction (same engine
 // and IR pin as aqrmfRecipe), re-expressed EUR-hedged via the standard
 // FX-hedge identity used by the EUR-hedged TIPS recipe (tip1eRecipe): a
 // hedged foreign return equals the local (USD) return minus the USD cash
@@ -1557,7 +1579,7 @@ func aqrmfHedgedRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1662501532",
 		Name:            "AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast",
-		Method:          "real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
+		Method:          "real B EUR sister class (LU1103258197, same fund, used raw: measured 0.4-1.2 pts/yr conservative vs RAEF on both overlaps, the donor's 10% performance fee over EUR STR being what the published OCF misses) from 2015-03 to its 2021-12 NAV gap; before that a 12-month TSMOM backcast (IR-pinned) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception",
 		Build:           aqrHedgedBuild,
 		ValidateAgainst: "LU1662501532",
 		SpliceReal:      "LU1662501532",
