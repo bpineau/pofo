@@ -103,6 +103,7 @@ var Categories = []Category{
 		Articles: []Article{
 			{"managed-futures", "Managed futures et suivi de tendance", "Le seul défensif à espérance positive : un siècle de preuves, le crisis alpha des régimes longs, la mise en œuvre UCITS, et l'hiver à traverser."},
 			{"long-volatility", "Long volatility et tail hedging : payer pour les krachs", "La convexité qui explose dans les krachs rapides, la prime de variance qui la facture trop cher, les véhicules toxiques, et les rares usages légitimes."},
+			{"global-macro", "Global macro et primes alternatives", "Les paris macro qui gagnent dans les régimes hostiles, le catalogue des primes (dont le commodity carry), la purge des fonds ARP, et la grille en cinq questions."},
 		},
 	},
 	{
