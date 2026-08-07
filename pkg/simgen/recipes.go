@@ -512,13 +512,13 @@ func rssbRecipe() Recipe {
 	return Recipe{
 		ID:     "RSSB",
 		Name:   "Return Stacked Global Stocks & Bonds",
-		Method: "100% world equity + 100% (VFITX − cash) Treasury stack (1999→), real RSSB grafted from 2023",
+		Method: "100% world equity + 100% (VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) Treasury stack (1999→), real RSSB grafted from 2023",
 		Build: composite("RSSB (100/100 stocks+bonds replication)", []Leg{
 			{ID: "VFINX", Weight: 0.60},
 			{ID: "VTMGX", Weight: 0.30},
 			{ID: "VEIEX", Weight: 0.10},
 			{ID: "VFITX", Weight: 1.00, Excess: true},
-		}, "^IRX", 0),
+		}, usdOvernight, 0),
 		ValidateAgainst: "RSSB",
 		SpliceReal:      "RSSB",
 	}
@@ -529,21 +529,22 @@ func rssbRecipe() Recipe {
 // held as the funded core plus a ~90 % gold overlay run through futures, with
 // the residual cash as collateral. It mirrors the NTSX efficient-core method,
 // swapping the Treasury overlay for gold: the equity leg earns its full return,
-// the gold leg earns the spot excess over cash (gold futures ~= spot financed at
-// the T-bill rate, no carry yield), and 0.10 of NAV sits in cash. Every leg is
-// deep (VFINX -> S&P 500 TR, XAUUSD gold ~1968, ^IRX T-bill), so the composite
-// reaches back to the gold leg's floor. Real GDE quotes are grafted from
-// inception; same currency (USD), no FX leg.
+// the gold leg earns the spot excess over its FINANCING (gold futures ~= spot
+// financed at the overnight rate, no carry yield), and 0.10 of NAV sits in
+// bills. Every leg is deep (VFINX -> S&P 500 TR, XAUUSD gold ~1968, the
+// financing rate ~1934 through the T-bill), so the composite reaches back to
+// the gold leg's floor. Real GDE quotes are grafted from inception; same
+// currency (USD), no FX leg.
 func gdeRecipe() Recipe {
 	return Recipe{
 		ID:     "GDE",
 		Name:   "WisdomTree Efficient Gold Plus Equity: 90/90 replication",
-		Method: "0.90×VFINX + 0.90×(GC=F gold − cash ^IRX) overlay + 0.10×cash, daily rebalancing, 0.20%/yr fees, real GDE grafted from 2022",
+		Method: "0.90×VFINX + 0.90×(GC=F gold − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay + 0.10×cash ^IRX, daily rebalancing, 0.20%/yr fees, real GDE grafted from 2022",
 		Build: composite("GDE (90/90 gold+equity replication)", []Leg{
 			{ID: "VFINX", Weight: 0.90},
 			{ID: "GC=F", Weight: 0.90, Excess: true},
 			{ID: "^IRX", Weight: 0.10},
-		}, "^IRX", 0.0020),
+		}, usdOvernight, 0.0020),
 		ValidateAgainst: "GDE",
 		SpliceReal:      "GDE",
 	}
@@ -562,7 +563,7 @@ func rsstRecipe() Recipe {
 	return Recipe{
 		ID:              "RSST",
 		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFINX + 1.00×(TSMOM trend − cash ^IRX) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees, real RSST grafted from 2023",
+		Method:          "1.00×VFINX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees, real RSST grafted from 2023",
 		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", mfConfig(0.10, 0), 0.0096),
 		ValidateAgainst: "RSST",
 		SpliceReal:      "RSST",
@@ -578,7 +579,7 @@ func rsbtRecipe() Recipe {
 	return Recipe{
 		ID:              "RSBT",
 		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFITX + 1.00×(TSMOM trend − cash ^IRX) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees, real RSBT grafted from 2023",
+		Method:          "1.00×VFITX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees, real RSBT grafted from 2023",
 		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", mfConfig(0.10, 0), 0.0097),
 		ValidateAgainst: "RSBT",
 		SpliceReal:      "RSBT",
@@ -780,7 +781,7 @@ func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees (2000→, where that reference begins)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees (2000→, where that reference begins)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
@@ -789,8 +790,8 @@ func wintonRecipe() Recipe {
 // wintonBuild blends a 60/40 equity core with a half-weighted TSMOM trend
 // overlay (the trend run as a pure excess strategy, no collateral).
 func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	ids := append([]string{"^IRX", "VFINX", "VTMGX"}, mfMarkets...)
-	fr, err := BuildFrame(extend(f), ids, from)
+	ids := append([]string{"^IRX", usdOvernight, "VFINX", "VTMGX"}, mfMarkets...)
+	fr, err := BuildFrame(financed(extend(f)), ids, from)
 	if err != nil {
 		return nil, err
 	}
@@ -812,6 +813,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
+	fin := fr.Returns[usdOvernight]
 	const feeDaily = 0.0080 / 252
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
 	val := 100.0
@@ -819,7 +821,11 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	for i := 1; i < len(trend); i++ {
 		k := start + i
 		rEq := 0.6*vfinx[k] + 0.4*vtmgx[k]
-		rTrend := trend[i]/trend[i-1] - 1
+		// The overlay is already an excess over the bill rate (EarnCash=false
+		// above), and a stack pays the overnight financing rate rather than
+		// that bill rate, so it gives back the difference. Same convention as
+		// stackedTrend, written on an excess rather than a funded record.
+		rTrend := trend[i]/trend[i-1] - 1 - (fin[k] - cash[i])
 		val *= 1 + rEq + 0.5*rTrend - feeDaily
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: val})
 	}
@@ -931,8 +937,8 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 // reference does rather than at the engine's own 1989 floor (trimToAnchor).
 func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		ids := append([]string{coreID, cfg.CashID}, cfg.Markets...)
-		fr, err := BuildFrame(extend(f), ids, from)
+		ids := append([]string{coreID, cfg.CashID, usdOvernight}, cfg.Markets...)
+		fr, err := BuildFrame(financed(extend(f)), ids, from)
 		if err != nil {
 			return nil, err
 		}
@@ -944,12 +950,18 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 		if err != nil {
 			return nil, err
 		}
-		core, cash := fr.Returns[coreID], fr.Returns[cfg.CashID]
+		core, fin := fr.Returns[coreID], fr.Returns[usdOvernight]
 
-		// Daily overlay excess-over-cash of the anchored reconstruction.
+		// Daily overlay of the anchored reconstruction: a FUNDED trend record
+		// (cfg.EarnCash) less what the stack pays to carry that notional, which
+		// is the overnight financing rate and not the bill rate the programme's
+		// own collateral earns. The two rates part company by 0.01 to 0.15
+		// points a year on these funds' live windows (see usdOvernight); the
+		// engine and the anchor keep reading cfg.CashID, because the reference
+		// they work on is a funded record of a book that holds bills.
 		overlay := make([]float64, len(trend))
 		for i := 1; i < len(trend); i++ {
-			overlay[i] = (trend[i]/trend[i-1] - 1) - cash[start+i]
+			overlay[i] = (trend[i]/trend[i-1] - 1) - fin[start+i]
 		}
 
 		feeDaily := annualFee / 252
@@ -1064,7 +1076,10 @@ func afterFee(s *marketdata.Series, annual float64) *marketdata.Series {
 	return &out
 }
 
-// composite is the shared Build for constant-weight linear recipes.
+// composite is the shared Build for constant-weight linear recipes. cashID is
+// the rate the Excess legs FINANCE at, not the rate a cash leg earns: a
+// collateral sleeve is an ordinary leg of its own (see usdOvernight for why the
+// two are different rates).
 func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		var ids []string
@@ -1074,7 +1089,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 		for _, l := range legs {
 			ids = append(ids, l.ID)
 		}
-		fr, err := BuildFrame(extend(f), ids, from)
+		fr, err := BuildFrame(financed(extend(f)), ids, from)
 		if err != nil {
 			return nil, err
 		}
@@ -1087,20 +1102,23 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 }
 
 // ntsxRecipe rebuilds the WisdomTree US Efficient Core (90 % US equities +
-// 60 % treasury futures ladder) from Vanguard index funds and the T-bill
-// rate. The simdata file extends the UCITS share class (IE000KF370H3); the
-// validation runs against the US-listed twin NTSX, which has traded since
-// 2018 with the exact same strategy.
+// 60 % treasury futures ladder) from Vanguard index funds and two rates: the
+// Treasury overlay FINANCES at the USD overnight rate (usdOvernight, what a
+// future's implied repo costs) while the 10 % collateral sleeve EARNS the
+// T-bill rate (^IRX, what the fund's own bills pay). The simdata file extends
+// the UCITS share class (IE000KF370H3); the validation runs against the
+// US-listed twin NTSX, which has traded since 2018 with the exact same
+// strategy.
 func ntsxRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000KF370H3",
 		Name:   "WisdomTree US Efficient Core: 90/60 replication",
-		Method: "0.90×VFINX + 0.60×(VFITX − cash ^IRX) + 0.10×cash, daily rebalancing, 0.20%/yr fees",
+		Method: "0.90×VFINX + 0.60×(VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) + 0.10×cash ^IRX, daily rebalancing, 0.20%/yr fees",
 		Build: composite("NTSX (90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.90},
 			{ID: "VFITX", Weight: 0.60, Excess: true},
 			{ID: "^IRX", Weight: 0.10},
-		}, "^IRX", 0.0020),
+		}, usdOvernight, 0.0020),
 		ValidateAgainst: "NTSX-US",
 		SpliceReal:      "NTSX-US",
 	}
@@ -1113,13 +1131,13 @@ func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − cash ^IRX, both extended: CMT Treasury TR ~1953, T-bill ~1934) + 0.10×cash, 0.25%/yr fees; start now set by the dev-ex-US leg (~1969)",
+		Method: "0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − overnight financing, both extended: CMT Treasury TR ~1953, effective fed funds ~1954 then T-bill ~1934) + 0.10×cash ^IRX, 0.25%/yr fees; start now set by the dev-ex-US leg (~1969)",
 		Build: composite("NTSG (global 90/60 replication)", []Leg{
 			{ID: "VFINX", Weight: 0.54},
 			{ID: "VTMGX", Weight: 0.36},
 			{ID: "VFITX", Weight: 0.60, Excess: true},
 			{ID: "^IRX", Weight: 0.10},
-		}, "^IRX", 0.0025),
+		}, usdOvernight, 0.0025),
 		ValidateAgainst: "IE00077IIPQ8",
 	}
 }
