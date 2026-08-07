@@ -55,6 +55,9 @@ var figures = map[string]func() string{
 	"bond-tent":           figBondTent,
 	"wr-signal":           figWrSignal,
 	"fat-tails":           figFatTails,
+	"horizon-flatten":     figHorizonFlatten,
+	"vol-drag":            figVolDrag,
+	"franc-decay":         figFrancDecay,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
@@ -305,6 +308,139 @@ func smoothAreaBelow(pts [][2]float64, baseY float64, fill string) string {
 
 func dashLine(x1, y1, x2, y2 float64, stroke string, w float64, dash string) string {
 	return fmt.Sprintf(`<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="%s" stroke-width="%.1f" stroke-dasharray="%s"/>`, x1, y1, x2, y2, stroke, w, dash)
+}
+
+// --- 12. Safe rate vs horizon: the curve that flattens ---
+func figHorizonFlatten() string {
+	pts := [][2]float64{{25, 4.35}, {30, 4.05}, {35, 3.72}, {40, 3.55}, {45, 3.44}, {50, 3.37}, {55, 3.32}, {60, 3.29}, {66, 3.27}}
+	m := mapper(25, 66, 3.05, 4.5, 72, 556, 292, 60)
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	// steep-drop wash (30-40 ans)
+	s0, s1 := m(30, 4.5), m(40, 3.05)
+	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s"/>`, s0[0], s0[1], s1[0]-s0[0], s1[1]-s0[1], figWash)
+	// asymptote
+	asy := m(25, 3.25)
+	b.WriteString(dashLine(72, asy[1], 556, asy[1], figMuted, 1, "5 4"))
+	b.WriteString(txt(553, asy[1]-5, 10, figMuted, "end", "400", "≈ perpétuité (~3,25 %)"))
+	// curve
+	b.WriteString(smoothStroke(px, figDeep, 2.8))
+	for _, p := range px {
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="2.8" fill="%s"/>`, p[0], p[1], figDeep)
+	}
+	// annotations
+	sa := m(35, 4.22)
+	b.WriteString(txt(sa[0], sa[1], 11, figAccent, "middle", "600", "chute rapide"))
+	b.WriteString(txt(sa[0], sa[1]+14, 10, figAccent, "middle", "400", "(30 → 40 ans)"))
+	fa := m(55, 3.62)
+	b.WriteString(txt(fa[0], fa[1], 11, figGood, "middle", "600", "au-delà, quasi plat"))
+	b.WriteString(txt(fa[0], fa[1]+14, 10, figGood, "middle", "400", "un plan qui tient 40 ans tient (presque) toujours"))
+	// y ticks
+	for _, v := range []float64{3.5, 4.0, 4.5} {
+		p := m(25, v)
+		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.1f %%", v)))
+	}
+	// x ticks
+	for _, c := range []float64{30, 40, 50, 60} {
+		p := m(c, 3.05)
+		b.WriteString(txt(p[0], 308, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(314, 330, 11, figMuted, "middle", "400", "horizon du plan (années)  →"))
+	b.WriteString(txt(54, 56, 10, figMuted, "start", "400", "taux sûr"))
+	b.WriteString(titleTxt(314, 30, "Le taux soutenable par horizon : la courbe qui s'aplatit"))
+	return svg(620, 344, b.String())
+}
+
+// --- 13. Volatility drag: same arithmetic mean, opposite wealth ---
+func figVolDrag() string {
+	m := mapper(0, 30, 0, 8, 72, 548, 292, 58)
+	var A, B [][2]float64
+	for t := 0; t <= 30; t++ {
+		A = append(A, m(float64(t), math.Pow(1.07, float64(t))))
+	}
+	v := 1.0
+	B = append(B, m(0, 1))
+	for t := 1; t <= 30; t++ {
+		if t%2 == 1 {
+			v *= 1.27
+		} else {
+			v *= 0.87
+		}
+		B = append(B, m(float64(t), v))
+	}
+	var b strings.Builder
+	b.WriteString(line(72, m(0, 0)[1], 548, m(0, 0)[1], figRule, 1))
+	b.WriteString(poly(B, figBad, 1.8, ""))
+	b.WriteString(smoothStroke(A, figDeep, 2.6))
+	// endpoints
+	ea, eb := m(30, math.Pow(1.07, 30)), m(30, v)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, ea[0], ea[1], figDeep)
+	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.4" fill="%s"/>`, eb[0], eb[1], figBad)
+	b.WriteString(txt(ea[0]+6, ea[1]+4, 11, figDeep, "start", "600", "× 7,6"))
+	b.WriteString(txt(eb[0]+6, eb[1]+4, 11, figBad, "start", "600", "× 4,5"))
+	// concept label in the empty upper-left
+	an := m(1.5, 7.4)
+	b.WriteString(txt(an[0], an[1], 11, figSoft, "start", "600", "le volatility drag"))
+	b.WriteString(txt(an[0], an[1]+14, 10, figMuted, "start", "400", "même moyenne, richesse en moins"))
+	// curve labels
+	la := m(21, math.Pow(1.07, 21)+0.5)
+	b.WriteString(txt(la[0], la[1], 11, figDeep, "middle", "600", "+7 % chaque année (régulier)"))
+	lb := m(17, 1.4)
+	b.WriteString(txt(lb[0], lb[1], 11, figBad, "middle", "600", "+27 % / −13 % — même moyenne 7 %"))
+	// y ticks
+	for _, v := range []float64{2, 4, 6, 8} {
+		p := m(0, v)
+		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("×%.0f", v)))
+	}
+	for _, c := range []float64{0, 10, 20, 30} {
+		p := m(c, 0)
+		b.WriteString(txt(p[0], 308, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(310, 330, 11, figMuted, "middle", "400", "années  →"))
+	b.WriteString(txt(54, 54, 10, figMuted, "start", "400", "× capital"))
+	b.WriteString(titleTxt(310, 30, "Même moyenne arithmétique, richesses opposées"))
+	return svg(620, 344, b.String())
+}
+
+// --- 14. Purchasing power of the franc, 1914-1958 ---
+func figFrancDecay() string {
+	pts := [][2]float64{{1914, 100}, {1917, 58}, {1920, 25}, {1923, 27}, {1926, 20}, {1930, 23}, {1935, 25}, {1938, 18}, {1941, 11}, {1944, 6}, {1947, 2.4}, {1950, 1.0}, {1954, 0.8}, {1958, 0.7}}
+	m := mapper(1913, 1959, 0, 105, 74, 556, 292, 60)
+	px := make([][2]float64, len(pts))
+	for i, p := range pts {
+		px[i] = m(p[0], p[1])
+	}
+	var b strings.Builder
+	b.WriteString(line(74, m(1913, 0)[1], 556, m(1913, 0)[1], figRule, 1))
+	b.WriteString(smoothAreaBelow(px, m(1913, 0)[1], "rgba(180,120,60,.18)"))
+	b.WriteString(smoothStroke(px, figDeep, 2.6))
+	// episode annotations
+	e1 := m(1917, 74)
+	b.WriteString(txt(e1[0], e1[1], 10, figSoft, "middle", "600", "Grande Guerre"))
+	b.WriteString(txt(e1[0], e1[1]+13, 9, figMuted, "middle", "400", "1914-1920"))
+	e2 := m(1931, 40)
+	b.WriteString(txt(e2[0], e2[1], 10, figSoft, "middle", "600", "entre-deux-guerres"))
+	e3 := m(1948, 40)
+	b.WriteString(txt(e3[0], e3[1], 10, figSoft, "middle", "600", "guerre et après"))
+	b.WriteString(txt(e3[0], e3[1]+13, 9, figMuted, "middle", "400", "1940-1948"))
+	// end label
+	en := m(1958, 0.7)
+	b.WriteString(txt(en[0]-4, en[1]-6, 10, figBad, "end", "600", "≈ 0,7 : plus de 99 % perdu"))
+	// y ticks
+	for _, v := range []float64{0, 50, 100} {
+		p := m(1913, v)
+		b.WriteString(txt(70, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.0f", v)))
+	}
+	for _, c := range []float64{1920, 1930, 1940, 1950} {
+		p := m(c, 0)
+		b.WriteString(txt(p[0], 308, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", c)))
+	}
+	b.WriteString(txt(315, 330, 11, figMuted, "middle", "400", "pouvoir d'achat de 100 francs de 1914, en francs constants"))
+	b.WriteString(titleTxt(315, 30, "Le franc, 1914-1958 : la ruine silencieuse du rentier obligataire"))
+	return svg(620, 344, b.String())
 }
 
 // --- 11. Fat tails: Normal vs Student-t density, same mean and variance ---
