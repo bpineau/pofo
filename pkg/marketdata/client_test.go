@@ -53,6 +53,7 @@ func stubAllBases(c *Client, base string) {
 	c.JustETFBase = base
 	c.EurostatBase = base
 	c.FredBase = base
+	c.ECBBase = base
 	c.retryDelay = time.Millisecond
 }
 

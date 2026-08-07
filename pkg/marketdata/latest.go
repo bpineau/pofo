@@ -17,7 +17,7 @@ type Quote struct {
 	Price    float64   // in Currency
 	Time     time.Time // when this price was observed
 	Currency string    // ISO 4217 quote currency
-	Source   string    // "yahoo", "ft", "morningstar" or "stooq"
+	Source   string    // "yahoo", "ft", "morningstar", "stooq" or "ecb"
 	Live     bool      // true: real-time market field; false: last daily close
 }
 
@@ -38,8 +38,8 @@ func latestFrom() time.Time { return time.Now().AddDate(-1, 0, 0) }
 // serve (outage, throttling past the built-in retries and the query1/query2
 // host fallback, missing field) falls through to the daily-close path, which
 // inherits the whole Fetch resilience: the Stooq fallback for US tickers,
-// major indices and major currency crosses, re-resolution through the
-// Financial Times and Morningstar,
+// major indices and major currency crosses, the ECB reference rates for a
+// currency cross, re-resolution through the Financial Times and Morningstar,
 // and the on-disk cache, whose stale data still answers when every source is
 // unreachable. Quote.Live, Quote.Time and Quote.Source report what the caller
 // actually got.

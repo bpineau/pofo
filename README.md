@@ -5,7 +5,7 @@ reusable libraries to fetch price histories, compute risk/return metrics
 and produce SVG charts.
 
 The CLI reads allocation files, downloads price histories (Yahoo Finance,
-Financial Times, Morningstar, Stooq), rebuilds the missing past (proxies and
+Financial Times, Morningstar, Stooq, ECB), rebuilds the missing past (proxies and
 simulated data), simulates each portfolio with periodic rebalancing and
 generates a self-contained HTML report opened in the browser (comparison and
 statistics front and center; per-portfolio sections collapsed, each with a
@@ -244,7 +244,7 @@ market price (`Quote.Live == true`); any other instrument (an FT or Morningstar
 fund, whose last NAV close is its latest price) yields its last daily close
 (`Quote.Live == false`). When Yahoo is down or throttled, the call degrades
 instead of failing: retries and a second Yahoo host first, then the daily-close
-path with its Stooq/FT/Morningstar fallbacks and, last, the stale on-disk
+path with its Stooq/ECB/FT/Morningstar fallbacks and, last, the stale on-disk
 cache, so it answers for every asset and even offline.
 
 ```go
