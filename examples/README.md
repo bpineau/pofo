@@ -89,6 +89,13 @@ rather than recomputing it (and drifting) on every run.
 - `hydra-five-engines-levered`: the same at 108% notional
   (`#meta leverage:on`); buys the bull-market CAGR back at unchanged vol.
   Accumulation-phase build.
+- `hydra-five-engines-capital-efficient`: the frontier build (~148% notional
+  via stacked funds: RSBT, GDE); +1.5 pts of CAGR over the buyable hydra but
+  US-listed pieces an EU retail investor cannot buy. Research file, exposure
+  ledger, and UCITS watch list; the canonical rationale for the hydra family.
+- `hydra-all-weather-balanced`: the capital-efficient book re-weighted to
+  even out the four growth x inflation quadrants (adds a broad-commodity
+  head); documents only its deltas vs the capital-efficient parent.
 
 ## Capital-efficient / return-stacking (modern)
 
