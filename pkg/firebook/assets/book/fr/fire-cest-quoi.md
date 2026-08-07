@@ -1,6 +1,10 @@
 # Le FIRE, c'est quoi ?
 
-FIRE : *Financial Independence, Retire Early*. Indépendance financière, retraite précoce. Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page pose la carte du sujet : d'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire. À la fin, vous saurez situer votre propre projet sur cette carte et par quel article continuer.
+FIRE : *Financial Independence, Retire Early*. Indépendance financière, retraite précoce.
+
+Derrière l'acronyme, une idée simple et ancienne : accumuler un capital suffisant pour que son rendement couvre vos dépenses, puis vivre de ce capital, avec ou sans travail, à l'âge que vous choisissez plutôt qu'à celui que fixe la loi. Cette page pose la carte du sujet : d'où vient le mouvement, ce que recouvrent ses variantes (Lean, Fat, Barista, Coast), les ordres de grandeur qui structurent tout le reste, et ce que ce livre va vous apprendre à faire.
+
+À la fin, vous saurez situer votre propre projet sur cette carte et par quel article continuer.
 
 ::: cle Le principe en une phrase
 Quand votre patrimoine investi atteint environ 25 à 33 fois vos dépenses annuelles, son rendement réel (après inflation) peut, avec une forte probabilité mais jamais une certitude, financer votre vie indéfiniment. Tout le reste du sujet, et tout ce livre, consiste à comprendre, affiner, sécuriser et vivre cette phrase.

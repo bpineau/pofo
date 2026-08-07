@@ -1,6 +1,8 @@
 # La probabilité de ruine : la lire, la choisir, ne pas la subir
 
-Tous les simulateurs de retraite, pofo compris, résument leur verdict en un chiffre : la probabilité de ruine (ou son complément, le « taux de succès »). C'est le chiffre le plus regardé du sujet, et le plus mal compris : on le lit comme une météo (« 5 % de risque, ça va »), on le compare entre outils qui ne mesurent pas la même chose, on lui demande une précision qu'il n'a pas, et on oublie qu'il décrit un monde où personne ne réagit jamais. Cette page apprend à lire ce chiffre en professionnel : ce qu'il mesure exactement, comment choisir **son** seuil acceptable, pourquoi 2 % et 8 % sont souvent indiscernables, et ce que la ruine simulée a de très différent d'une ruine réelle.
+Tous les simulateurs de retraite, pofo compris, résument leur verdict en un chiffre : la probabilité de ruine (ou son complément, le « taux de succès »). C'est le chiffre le plus regardé du sujet, et le plus mal compris : on le lit comme une météo (« 5 % de risque, ça va »), on le compare entre outils qui ne mesurent pas la même chose, on lui demande une précision qu'il n'a pas, et on oublie qu'il décrit un monde où personne ne réagit jamais.
+
+Cette page apprend à lire ce chiffre en professionnel : ce qu'il mesure exactement, comment choisir **son** seuil acceptable, pourquoi 2 % et 8 % sont souvent indiscernables, et ce que la ruine simulée a de très différent d'une ruine réelle.
 
 ::: cle La définition, sans raccourci
 La probabilité de ruine d'un plan est la fraction des futurs simulés (ou des fenêtres historiques rejouées) dans lesquels le portefeuille atteint zéro **avant** la fin de l'horizon, sous une règle de retrait appliquée mécaniquement, sans aucune réaction humaine. C'est une propriété du **couple** plan + modèle, jamais du plan seul : changer de modèle change le chiffre, parfois du simple au triple, sans que votre plan ait bougé ([[historique-vs-parametrique]]).
