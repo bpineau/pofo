@@ -12,7 +12,7 @@ La probabilité de ruine d'un plan est la fraction des futurs simulés (ou des f
 
 Décomposons la définition, terme à terme, parce que chaque terme cache un piège.
 
-**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par un modèle. Le modèle change tout. S'il tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]). S'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]). S'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai ». C'est pourquoi la page FIRE affiche le même plan sous quatre modèles côte à côte, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, pas une colonne.
+**« La fraction des futurs simulés ».** Le chiffre est une fréquence dans une population de scénarios générés par un modèle. Le modèle change tout. S'il tire les années indépendamment, il sous-estime les grappes de mauvaises années ([[sequence-des-rendements]]). S'il rejoue l'histoire américaine, il hérite de son biais optimiste ([[etude-trinity]], [[pieges-des-simulateurs]]). S'il rejoue l'échantillon mondial, il inclut des pays et des époques peut-être plus durs que votre futur plausible ([[anarkulova-cederburg]]). Aucun n'est « le vrai ». C'est pourquoi le simulateur FIRE de pofo affiche le même plan sous quatre modèles côte à côte, et pourquoi la bonne lecture est l'**intervalle** qu'ils dessinent, pas une colonne.
 
 **« Le portefeuille atteint zéro ».** La ruine du simulateur est binaire et terminale. Elle ne distingue pas l'échec à 71 ans de l'échec à 94 ans, ni le scénario qui finit à zéro de celui qui finit à 5 000 € (échec) ou 15 000 € (succès !). Deux plans à 5 % de ruine peuvent cacher des réalités très différentes : l'un échoue tôt et brutalement, l'autre s'essouffle en toute fin de parcours avec la pension légale en soutien. D'où l'intérêt des vues complémentaires : **quand** surviennent les échecs, et quelle richesse médiane en fin d'horizon ([[lire-un-fan-chart]]).
 
@@ -38,7 +38,7 @@ Les planificateurs financiers sérieux (Kitces en tête) convergent vers une fou
 
 Le simulateur affiche « 4,7 % » et l'esprit enregistre une précision d'orfèvre. Elle n'existe pas, pour trois raisons cumulées.
 
-**Le bruit d'échantillonnage** est la moindre. Avec 5 000 trajectoires, un vrai 5 % s'affiche entre 4,4 et 5,6 %. Gênant, mais borné.
+**Le bruit d'échantillonnage** est la moindre. Avec une simulation de Monte-Carlo à 5 000 trajectoires, un vrai 5 % s'affiche entre 4,4 et 5,6 %. Gênant, mais borné.
 
 **La sensibilité aux paramètres** est bien pire. Baisser le rendement réel espéré de 0,5 point (bien en deçà de ce que quiconque sait estimer, [[rendements-attendus]]) peut doubler la ruine. L'épaisseur des queues (le df de Student, [[queues-epaisses]]) la déplace encore. Vos paramètres sont incertains, donc votre ruine l'est au moins autant.
 

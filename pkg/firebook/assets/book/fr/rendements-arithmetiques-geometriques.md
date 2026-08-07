@@ -11,31 +11,49 @@ La moyenne **arithmétique** additionne les rendements et divise : (+50 − 50) 
 :::
 
 ::: figure vol-drag
-Deux placements de **même moyenne arithmétique** (7 %/an) : l'un régulier (+7 % chaque année), l'autre volatil (+27 % / −13 % en alternance). Après 30 ans, le régulier vaut ×7,6, le volatil ×4,5, pour la même moyenne annoncée. L'écart est le volatility drag. La volatilité seule, sans le moindre krach, ampute la croissance composée d'environ σ²/2.
+Deux placements de **même moyenne arithmétique** (7 %/an) : l'un régulier (+7 % chaque année), l'autre volatil (+27 % / −13 % en alternance, soit une volatilité σ de 20 points). Après 30 ans, le régulier vaut ×7,6, le volatil ×4,5, pour la même moyenne annoncée. L'écart est le volatility drag. La volatilité seule, sans le moindre krach, ampute la croissance composée d'environ σ²/2, ici 2 points par an.
 :::
 
 ## Le volatility drag : la volatilité est un coût
 
 L'écart entre les deux moyennes obéit à une approximation célèbre et remarquablement précise :
 
-> rendement géométrique ≈ rendement arithmétique − volatilité² / 2
+> rendement géométrique ≈ rendement arithmétique − σ² / 2
+
+La lettre grecque σ (sigma) est la notation universelle de la **volatilité**, c'est-à-dire l'écart-type des rendements annuels. Elle s'écrit en fraction, et c'est là que le calcul se rate le plus souvent : 15 % de volatilité, c'est σ = 0,15, donc σ²/2 = 0,011, soit 1,1 point de rendement annuel envolé. Pas 15² / 2.
 
 Le terme σ²/2 est le **volatility drag** (traînée de volatilité). Il vient d'une asymétrie que tout le monde connaît sans en tirer les conséquences. Après −20 %, il faut +25 % pour revenir. Après −50 %, il faut +100 %. Les pertes pèsent mécaniquement plus lourd que les gains de même taille, et plus les oscillations sont amples, plus la composition en souffre.
 
+Le calcul se refait sur n'importe quelle ligne de votre portefeuille, puisque les deux ingrédients sont affichés côte à côte dans un rapport pofo. Sur les dix dernières années, le MSCI World y montre un CAGR de 13,0 % et une volatilité de 15,4 % (en dollars, nominal). Le drag vaut donc 0,154² / 2 ≈ 1,2 point : la moyenne arithmétique de ces dix années tournait autour de 14,2 %, alors que le capital, lui, n'a composé qu'à 13,0 %. L'écart de 1,2 point n'est allé nulle part. Il n'a simplement jamais existé ailleurs que dans la moyenne.
+
 Quelques ordres de grandeur pour calibrer l'intuition (drag = σ²/2) :
 
-| Actif | Volatilité | Volatility drag | Arithmétique 7 % devient... |
+| Actif | Volatilité | Volatility drag | Géométrique obtenue |
 |---|---|---|---|
 | Fonds monétaire | ~1 % | ~0,005 % | 7,0 % |
 | Portefeuille 60/40 | ~10 % | ~0,5 % | 6,5 % |
 | Actions mondiales | ~15 % | ~1,1 % | 5,9 % |
+| Empilement 90/60 (type NTSG) | ~15 % | ~1,1 % | 5,9 % |
 | Actions émergentes | ~22 % | ~2,4 % | 4,6 % |
 | Actions à levier ×2 | ~30 % | ~4,5 % | ~2,5 % (avant frais de levier !) |
 
-La dernière ligne explique un phénomène qui surprend tous les débutants. Un ETF à levier quotidien ×2 sur un indice volatil peut faire **moins** bien que l'indice sur longue période, alors qu'il double fidèlement chaque journée. Le levier double l'arithmétique mais quadruple la variance. Dès que 2 × drag dépasse le rendement gagné, le levier détruit ([[levier-et-marges]]). La même mécanique éclaire pourquoi la diversification est le seul « free lunch » (le seul repas gratuit de la finance). Combiner des actifs décorrélés baisse σ sans baisser la moyenne arithmétique, donc augmente la géométrique. La diversification ne promet pas de meilleures années moyennes. Elle promet une meilleure composition. Le mécanisme complet, prime de rééquilibrage (rebalancing premium) comprise, est dans [[pourquoi-la-diversification-marche]] ; l'assemblage dans [[portefeuilles-tous-temps]] et [[actifs-defensifs]].
+La dernière colonne part chaque fois de 7 % arithmétique, pour isoler le seul effet de la volatilité.
+
+Comparez les deux lignes à levier, elles disent tout. L'empilement 90/60 porte 150 % d'exposition, et sa volatilité reste pourtant celle des actions nues : le levier est étalé sur deux moteurs peu corrélés et roulé sur des contrats à terme longs, jamais remis à zéro chaque soir ([[return-stacking]]). Le ×2 quotidien, lui, empile son levier sur un seul actif et le réinitialise chaque jour : il double l'arithmétique mais quadruple la variance.
+
+D'où un phénomène qui surprend tous les débutants : un ETF à levier quotidien ×2 sur un indice volatil peut faire **moins** bien que l'indice sur longue période, alors qu'il double fidèlement chaque journée. Dès que 2 × drag dépasse le rendement gagné, le levier détruit ([[levier-et-marges]]). La même mécanique éclaire pourquoi la diversification est le seul « free lunch » (le seul repas gratuit de la finance). Combiner des actifs décorrélés baisse σ sans baisser la moyenne arithmétique, donc augmente la géométrique. La diversification ne promet pas de meilleures années moyennes. Elle promet un meilleur effet des intérêts composés. Le mécanisme complet, prime de rééquilibrage (rebalancing premium) comprise, est dans [[pourquoi-la-diversification-marche]] ; l'assemblage dans [[portefeuilles-tous-temps]] et [[actifs-defensifs]].
 
 ::: exemple Vérifiez sur deux lignes
-Actif A : +7 % chaque année, sans variation. Actif B : alternance +27 % / −13 %, même moyenne arithmétique de 7 %, volatilité 20 points. Après 30 ans : A × 7,61 ; B × (1,27 × 0,87)^15 = 1,1049^15 ≈ × 4,47. Même « moyenne », 70 % de richesse finale d'écart. Le drag prédit : 7 % − 0,20²/2 = 5 % ; et 1,05^30 ≈ 4,32, très proche du 4,47 exact. L'approximation σ²/2 est un excellent outil de coin de table.
+Actif A : +7 % chaque année, sans varier. Actif B : alternance +27 % / −13 %. Sa moyenne arithmétique est (27 − 13) / 2 = 7 %, exactement celle de A, et chacune de ses années s'écarte de 20 points de cette moyenne : σ = 20 points.
+
+Sur 30 ans, le capital fait :
+
+- **A** : 1,07 puissance 30 = **×7,61**.
+- **B** : ses années vont par paires, une hausse puis une baisse, soit 1,27 × 0,87 = 1,1049 tous les deux ans. Trente ans font quinze paires, d'où 1,1049 puissance 15 = **×4,47**.
+
+A finit 70 % plus riche que B, pour la même moyenne annoncée. Le 7 % n'apparaît pas dans le calcul de B parce qu'il n'y est jamais entré : c'est une moyenne d'années, pas un taux de croissance.
+
+Vérification par la formule : le drag vaut σ²/2 = 0,20² / 2 = 0,02, soit 2 points. La géométrique prévue pour B est donc 7 − 2 = 5 %, et 1,05 puissance 30 = ×4,32, tout près du ×4,47 exact. L'approximation σ²/2 est un excellent outil de coin de table.
 :::
 
 ## La cascade : de la brochure au taux de retrait
@@ -43,7 +61,7 @@ Actif A : +7 % chaque année, sans variation. Actif B : alternance +27 % / −13
 Le volatility drag est la première marche d'une cascade qui mène du chiffre marketing au chiffre vivable. Suivons « les actions font 10 % » jusqu'au taux de retrait, étape par étape :
 
 1. **10 % arithmétique nominal** : la moyenne des années, celle des brochures et des manuels.
-2. **− drag (~1,1 % à 15 % de vol)** → ~8,9 % géométrique nominal : ce que compose un capital investi.
+2. **− drag (~1,1 % à 15 % de vol)** → ~8,9 % géométrique nominal : ce que compose un capital investi. C'est cette moyenne-là que pofo affiche sous le nom CAGR dans ses rapports de portefeuille, jamais l'arithmétique.
 3. **− inflation (~2,5 %)** → **~6,4 % géométrique réel** : la seule monnaie qui compte sur 40 ans ([[inflation-et-taux-de-retrait]]). Historiquement, les actions mondiales ont livré ~5 % géométrique réel ; les portefeuilles diversifiés 60/40, plutôt 3,5 à 4,5 %.
 4. **− frais et fiscalité** (0,3 à 1,5 % selon vos enveloppes et véhicules, [[etf-ucits-europeens]], [[flat-tax-et-imposition]]).
 5. **− prime de séquence** : même le géométrique réel net n'est retirable que si les rendements arrivent sans désordre ; leur irrégularité face à des retraits fixes coûte encore 1 à 1,5 point ([[sequence-des-rendements]]).
@@ -51,14 +69,14 @@ Le volatility drag est la première marche d'une cascade qui mène du chiffre ma
 Arrivée : 3 à 3,5 % de taux de retrait rigide soutenable pour un horizon long, exactement la fourchette que la recherche moderne trouve par des chemins indépendants ([[la-regle-des-4-pourcents]], [[serie-ern]]). Ce n'est pas une coïncidence : la règle des 4 % n'est pas mystérieuse, elle est l'aboutissement comptable de cette cascade. Mémorisez la hiérarchie : **arithmétique > géométrique > géométrique réel > taux de retrait soutenable**, avec 0,5 à 1,5 point perdu à chaque marche.
 
 ::: attention Le test du vendeur
-Quand on vous annonce un rendement, posez systématiquement les trois questions de la cascade : arithmétique ou géométrique (composé) ? Nominal ou réel ? Brut ou net de frais ? « 8 % » peut signifier 6,9 % composé, 4,4 % réel, 3,4 % net : moins de la moitié du chiffre annoncé, sans aucun mensonge formel. Les rétro-projections de produits structurés et les moyennes de fonds affichent presque toujours le coin le plus flatteur du tableau. Un professionnel qui ne sait pas répondre à ces trois questions n'a pas compris son propre produit.
+Quand on vous annonce un rendement, posez systématiquement les trois questions de la cascade : arithmétique ou géométrique (composé) ? Nominal ou réel (net d'inflation) ? Brut ou net de frais ? « 8 % » peut signifier 6,9 % composé, 4,4 % réel, 3,4 % net : moins de la moitié du chiffre annoncé, sans aucun mensonge formel. Les rétro-projections de produits structurés et les moyennes de fonds affichent presque toujours le coin le plus flatteur du tableau. Un professionnel qui ne sait pas répondre à ces trois questions n'a pas compris son propre produit.
 :::
 
 ## Trois applications directes au FIRE
 
-**1. Calibrer un simulateur.** Les curseurs de la page FIRE travaillent en réel. Le μ demandé est un rendement réel espéré, et le moteur applique la volatilité σ pour générer les trajectoires. Le drag émerge alors tout seul dans les résultats ([[la-machine-pofo]]). Le piège classique consiste à entrer un μ arithmétique nominal (« 8 % ») : vous venez de fabriquer un monde de rêve. Repère : pour un portefeuille diversifié mondial, un μ réel de 4 à 5 % avec σ 12-15 % est la zone raisonnable. Le simulateur le pré-remplit depuis l'historique de vos fonds puis le tire vers un prior prudent, précisément pour vous éviter cette erreur ([[rendre-monte-carlo-pertinent]], [[rendements-attendus]]).
+**1. Calibrer un simulateur.** Les curseurs du simulateur FIRE de pofo travaillent en réel. Le μ demandé est un rendement réel espéré, et le moteur applique la volatilité σ pour générer les trajectoires. Le drag émerge alors tout seul dans les résultats ([[la-machine-pofo]]). Le piège classique consiste à entrer un μ arithmétique nominal (« 8 % ») : vous venez de fabriquer un monde de rêve. Repère : pour un portefeuille diversifié mondial, un μ réel de 4 à 5 % avec σ 12-15 % est la zone raisonnable. Le simulateur le pré-remplit depuis l'historique de vos fonds puis le tire vers un prior prudent (un prior est l'hypothèse retenue avant de regarder ses propres données, ici celle que suggère le siècle des marchés développés), précisément pour vous éviter cette erreur ([[rendre-monte-carlo-pertinent]], [[rendements-attendus]]).
 
-**2. Juger un portefeuille de retrait.** Deux portefeuilles de même espérance arithmétique ne se valent pas : le moins volatil compose mieux et résiste mieux à la séquence, double dividende. C'est pourquoi les portefeuilles de retrait sérieux sacrifient de la moyenne pour de la régularité (obligations, or, diversification de régimes, [[allocation-actions-obligations]], [[portefeuilles-tous-temps]]) et pourquoi le « 100 % actions, c'est optimal à long terme » de l'accumulation ne survit pas au premier retrait ([[erreurs-classiques-fire]]).
+**2. Juger un portefeuille de retrait.** Deux portefeuilles de même espérance arithmétique ne se valent pas : le moins volatil compose mieux et résiste mieux à la séquence, double avantage. C'est pourquoi les portefeuilles de retrait sérieux sacrifient de la moyenne pour de la régularité (obligations, or, diversification de régimes, [[allocation-actions-obligations]], [[portefeuilles-tous-temps]]) et pourquoi le « 100 % actions, c'est optimal à long terme » de l'accumulation ne survit pas au premier retrait ([[erreurs-classiques-fire]]).
 
 **3. Lire ses propres performances.** Votre relevé annuel moyen « +9 % sur 5 ans » est probablement arithmétique. Le seul chiffre honnête pour vous-même : (valeur finale / valeur initiale)^(1/n) − 1, corrigé des apports (un bon simulateur calcule le TRI et le CAGR proprement sur vos flux réels). Beaucoup d'investisseurs découvrent que leur performance composée réelle est 2 à 3 points sous leur impression. La différence part en drag, frais et mauvais timing des apports.
 

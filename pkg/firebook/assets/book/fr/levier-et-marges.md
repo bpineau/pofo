@@ -41,7 +41,7 @@ Pour les rares profils qui retiennent un usage, voici cinq règles écrites.
 
 ## Modéliser le levier, et un exemple
 
-**La modélisation.** Un simulateur de portefeuille gère nativement le levier, avec un poids supérieur à 100 % et un coût d'emprunt paramétrable. On teste donc proprement l'A/B d'un cœur stacké côté portefeuille. La page FIRE, elle, simule le plan sur le portefeuille agrégé. Le pont lombard s'y approxime par un matelas, avec les mêmes flux et un rendement de matelas rendu négatif. Le stack, lui, se reflète via le panel du portefeuille testé ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+**La modélisation.** Un simulateur de portefeuille gère nativement le levier, avec un poids supérieur à 100 % et un coût d'emprunt paramétrable. On teste donc proprement l'A/B d'un cœur stacké côté portefeuille. Le simulateur FIRE de pofo, lui, simule le plan sur le portefeuille agrégé. Le pont lombard s'y approxime par un matelas, avec les mêmes flux et un rendement de matelas rendu négatif. Le stack, lui, se reflète via le panel du portefeuille testé ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
 
 ::: exemple Deux usages, deux verdicts
 Cas A, le pont. Mireille, 58 ans, 1,8 M€ dont 600 k€ d'assurance-vie, plancher couvert aux deux tiers par une pension proche. Elle remplace son projet de matelas de 36 mois par 12 mois de fonds euros et une avance d'assurance-vie documentée, à taux fixé et quotité 60 %, tirée seulement si le drawdown dépasse 20 %. Résultat de la simulation : ruine inchangée et environ 0,25 % par an de coût d'opportunité rendus au moteur. Adopté, avec la règle de remboursement écrite.

@@ -42,7 +42,7 @@ Voici l'intuition à retenir. En accumulation, un krach précoce est une aubaine
 
 Le risque de séquence n'est pas uniformément réparti dans le temps. Il se concentre massivement sur le début de la retraite, pour une raison mécanique. C'est là que le capital est le plus gros en proportion des retraits restants, et que la trajectoire a le plus d'années devant elle pour diverger. Un krach à l'année 25 d'une retraite de 30 ans est presque indolore : l'essentiel des retraits est derrière, et le capital requis pour finir est faible. Le même krach à l'année 2 gouverne tout le reste de la trajectoire.
 
-La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, le sort d'une retraite de 40 ans se joue **aux trois quarts dans sa première décennie**. La page FIRE consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]). Elle montre la dispersion des issues finales, conditionnée au rendement des dix premières années de chaque scénario.
+La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, le sort d'une retraite de 40 ans se joue **aux trois quarts dans sa première décennie**. Le simulateur FIRE de pofo consacre une section entière à cette « décennie décisive » ([[utiliser-la-page-fire]]). Elle montre la dispersion des issues finales, conditionnée au rendement des dix premières années de chaque scénario.
 
 Trois conséquences pratiques découlent de cette concentration temporelle.
 
@@ -53,7 +53,7 @@ Trois conséquences pratiques découlent de cette concentration temporelle.
 **3. Les premières années d'un plan se surveillent différemment.** Un plan qui traverse sa première décennie sans accroc majeur a, statistiquement, gagné la partie ; la vigilance peut décroître. Les seuils d'alerte utiles sont donc datés, pas uniformes ([[quand-s-inquieter]]).
 
 ::: science Mesurer le risque de séquence chez vous
-Deux lectures dans la page FIRE rendent votre exposition visible. La première, la section « décennie décisive ». Si les scénarios dont la première décennie tombe dans le pire quartile finissent presque tous ruinés, votre plan est un pari sur la séquence ; s'ils survivent abîmés, il est robuste. La seconde, le modèle « sequence stress ». Il garde la même moyenne de long terme que le modèle central, mais les mauvaises années y arrivent en grappes, à la façon des marchés baissiers persistants (chaînes de Markov), au lieu d'être saupoudrées indépendamment. L'écart de ruine entre les deux colonnes est, précisément, le prix de la séquence dans votre plan ([[la-machine-pofo]]). Un écart faible signale un plan naturellement bien défendu, par un retrait bas, de la flexibilité ou des revenus. Un écart de plusieurs points signale que les parades ci-dessous méritent votre attention.
+Deux lectures dans le simulateur FIRE de pofo rendent votre exposition visible. La première, la section « décennie décisive ». Si les scénarios dont la première décennie tombe dans le pire quartile finissent presque tous ruinés, votre plan est un pari sur la séquence ; s'ils survivent abîmés, il est robuste. La seconde, le modèle « sequence stress ». Il garde la même moyenne de long terme que le modèle central, mais les mauvaises années y arrivent en grappes, à la façon des marchés baissiers persistants (chaînes de Markov), au lieu d'être saupoudrées indépendamment. L'écart de ruine entre les deux colonnes est, précisément, le prix de la séquence dans votre plan ([[la-machine-pofo]]). Un écart faible signale un plan naturellement bien défendu, par un retrait bas, de la flexibilité ou des revenus. Un écart de plusieurs points signale que les parades ci-dessous méritent votre attention.
 :::
 
 ## Pourquoi les moyennes vous mentent
@@ -63,7 +63,7 @@ Le risque de séquence explique un paradoxe qui déroute tous les débutants : c
 Non, pour deux raisons qui s'empilent. La première est le frein de la volatilité (volatility drag). La croissance composée d'un portefeuille volatil est inférieure à sa moyenne arithmétique, d'environ la moitié de la variance ([[rendements-arithmetiques-geometriques]]). Un « 5 % de moyenne » assorti de 15 % de volatilité compose en réalité à ~3,9 %. La seconde raison est la séquence. Même le rendement géométrique n'est « retirable » que si les rendements arrivent régulièrement. Leur irrégularité, combinée à des retraits fixes, consomme une prime supplémentaire. Le taux de retrait sûr est donc structurellement inférieur au rendement géométrique espéré, lui-même inférieur à la moyenne arithmétique qu'affichent les brochures. Retenez la hiérarchie : **moyenne arithmétique > moyenne géométrique > taux de retrait soutenable**. Chaque marche coûte typiquement 0,5 à 1,5 point.
 
 ::: attention Le simulateur trop lisse
-Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central) sous-estime légèrement le risque de séquence : les vrais marchés font des grappes, des tendances, des décennies perdues, pas des tirages de loterie ([[pieges-des-simulateurs]]). C'est pourquoi la page FIRE affiche, à côté du modèle central, un « sequence stress » et le rejeu de l'échantillon mondial ([[anarkulova-cederburg]]). La règle est nette : si votre plan n'est acceptable que dans la colonne centrale, il ne l'est pas ([[rendre-monte-carlo-pertinent]]).
+Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central) sous-estime légèrement le risque de séquence : les vrais marchés font des grappes, des tendances, des décennies perdues, pas des tirages de loterie ([[pieges-des-simulateurs]]). C'est pourquoi le simulateur FIRE de pofo affiche, à côté du modèle central, un « sequence stress » et le rejeu de l'échantillon mondial ([[anarkulova-cederburg]]). La règle est nette : si votre plan n'est acceptable que dans la colonne centrale, il ne l'est pas ([[rendre-monte-carlo-pertinent]]).
 :::
 
 ## La carte des parades
@@ -101,7 +101,7 @@ Plan de base : 1 M€, 60/40, 40 000 €/an rigides, 45 ans d'horizon ; ruine «
 - Le danger se concentre sur les 5-10 premières années : la « fenêtre fragile » ; un plan qui la traverse bien a statistiquement gagné.
 - Hiérarchie à mémoriser : moyenne arithmétique > géométrique > taux soutenable ; les brochures vous vendent la première, vous vivez du troisième.
 - Toutes les grandes protections du sujet sont des armes anti-séquence, chacune avec son coût ; la flexibilité encadrée offre le meilleur rapport protection/coût pour la plupart des plans.
-- Mesurez votre exposition : sections « décennie décisive » et modèle « sequence stress » de la page FIRE, et lisez ensuite [[ruine-et-probabilites]] pour interpréter les chiffres.
+- Mesurez votre exposition : sections « décennie décisive » et modèle « sequence stress » du simulateur FIRE de pofo, et lisez ensuite [[ruine-et-probabilites]] pour interpréter les chiffres.
 
 ---
 
@@ -111,4 +111,4 @@ Plan de base : 1 M€, 60/40, 40 000 €/an rigides, 45 ans d'horizon ; ruine «
 - Kitces & Pfau, « Reducing Retirement Risk with a Rising Equity Glide Path », *Journal of Financial Planning*, 2014 : la parade par l'allocation ([[glidepaths]]).
 - Moshe Milevsky, « Retirement Ruin and the Sequencing of Returns » : la formalisation actuarielle.
 - Dans ce livre : [[les-maths-du-4-pourcent]] (la pénalité de séquence chiffrée, ~1,8 point dans la cascade du 4 %) et [[pourquoi-la-diversification-marche]] (la diversification comme remède au même risque).
-- Dans la page FIRE : la section « décennie décisive » et le modèle « sequence stress » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+- Dans le simulateur FIRE de pofo : la section « décennie décisive » et le modèle « sequence stress » ([[utiliser-la-page-fire]], [[la-machine-pofo]]).

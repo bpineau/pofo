@@ -66,7 +66,7 @@ Elles tiennent en quatre lignes. Le levier global du plan (exposition totale sur
 
 ## Pour aller plus loin
 
-- Corey Hoffstein (Newfound Research) et ReSolve AM : les papiers fondateurs « Return Stacking: Strategies for Overcoming a Low Return Environment » (2021) et le site returnstacked.com.
+- Corey Hoffstein (Newfound Research) et ReSolve AM : les papiers fondateurs « Return Stacking: Strategies for Overcoming a Low Return Environment » (2021) et le site [returnstacked.com](https://www.returnstacked.com).
 - WisdomTree : la documentation des fonds Efficient Core (le 90/60 originel et ses déclinaisons UCITS).
 - PIMCO : l'histoire de StocksPLUS et la littérature portable alpha ; AQR, « Why Not 100% Equities » (Asness, 1996), l'argument académique du 60/40 levé.
 - Dans ce livre : [[levier-et-marges]] (les règles non négociables, qui s'appliquent toutes ici), [[managed-futures]] (l'étage le plus souvent empilé), [[rendements-arithmetiques-geometriques]] (le volatility drag), [[portefeuilles-tous-temps]] (le cousin sans levier).

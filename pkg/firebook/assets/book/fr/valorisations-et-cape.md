@@ -2,7 +2,7 @@
 
 Après le risque de séquence, voici le fait empirique le plus important du sujet. Il tient en une phrase. Tous les pires millésimes de départ à la retraite de l'histoire, 1929, 1966, 2000, le Japon 1990, ont un point commun. Ce n'est pas la malchance. C'est que le marché était historiquement cher au moment du départ. Le niveau de valorisation au jour du premier retrait est le meilleur prédicteur connu du taux de retrait qu'un millésime pourra soutenir.
 
-L'instrument standard pour mesurer cette cherté est le CAPE de Shiller. Cette page en fait le tour complet. Ce que c'est et comment il se calcule. Pourquoi et dans quelle mesure il prédit les rendements. La relation chiffrée entre CAPE et taux de retrait que la recherche a établie. Les critiques sérieuses de l'indicateur, car il y en a. Et surtout les quatre façons concrètes de s'en servir dans un plan, dont l'ancre CAPE intégrée à la page FIRE. À la fin, vous saurez lire le CAPE du jour comme un rentier, pas comme un trader. La question n'est pas « faut-il vendre ? », mais « que puis-je promettre à mon plan ? ».
+L'instrument standard pour mesurer cette cherté est le CAPE de Shiller. Cette page en fait le tour complet. Ce que c'est et comment il se calcule. Pourquoi et dans quelle mesure il prédit les rendements. La relation chiffrée entre CAPE et taux de retrait que la recherche a établie. Les critiques sérieuses de l'indicateur, car il y en a. Et surtout les quatre façons concrètes de s'en servir dans un plan, dont l'ancre CAPE intégrée au simulateur FIRE de pofo. À la fin, vous saurez lire le CAPE du jour comme un rentier, pas comme un trader. La question n'est pas « faut-il vendre ? », mais « que puis-je promettre à mon plan ? ».
 
 ::: cle L'idée en une phrase
 Le prix que vous payez pour un flux de bénéfices détermine le rendement que ce flux pourra vous servir. Acheter cher, c'est accepter des rendements futurs plus bas. Le sort d'un rentier se joue dans la première décennie ([[sequence-des-rendements]]). Partir quand le marché est cher signifie donc que la décennie décisive a une espérance de rendement comprimée et un risque de correction accru, la double peine. Le CAPE ne prédit pas les krachs. Il mesure la taille de la promesse que le marché peut tenir.
@@ -34,7 +34,7 @@ Quelques repères pour calibrer l'œil (S&P 500, données Shiller depuis 1871) :
 | 2009 (creux de la crise financière) | ~13 | ~12 %/an réel sur la décennie suivante |
 | Zone 2024-2026 | 33-38 | À écrire ; historiquement, cette zone n'a jamais offert mieux que ~4 % réel sur 10 ans |
 
-La page FIRE affiche le CAPE du jour en tête de page (section §00, « Where we are in the cycle »), replacé sur son siècle d'histoire. Chaque session de planification commence ainsi par ce constat de position ([[utiliser-la-page-fire]]).
+Le simulateur FIRE de pofo affiche le CAPE du jour en tête de page (section §00, « Where we are in the cycle »), replacé sur son siècle d'histoire. Chaque session de planification commence ainsi par ce constat de position ([[utiliser-la-page-fire]]).
 
 ## Pourquoi ça prédit, et ce que ça ne prédit pas
 
@@ -93,7 +93,7 @@ Le mésusage le plus répandu tient dans cette phrase. « Le CAPE est au-dessus 
 
 ## Les quatre usages dans un plan, du plus sûr au plus risqué
 
-**Usage 1 : calibrer l'espérance de rendement du plan (recommandé, intégré au simulateur).** C'est l'usage le plus direct et le moins contestable. Puisque 1/CAPE estime la composante centrale du rendement réel actions de la décennie à venir, injectez-le dans le modèle. La case « Anchor return to today's valuation (CAPE) » de la page FIRE fait exactement cela. Elle remplace la seule moyenne du modèle central par l'estimation impliquée par le CAPE du jour, en laissant volatilité et queues à leurs valeurs ajustées ([[utiliser-la-page-fire]], [[la-machine-pofo]]). En marché cher, l'effet typique est net. La ruine centrale monte de plusieurs points, ce qui est une information, pas une punition. C'est le prix du point d'entrée rendu visible. Un plan qui ne tient qu'avec l'ancre CAPE décochée est un plan qui parie sur « cette fois c'est différent ».
+**Usage 1 : calibrer l'espérance de rendement du plan (recommandé, intégré au simulateur).** C'est l'usage le plus direct et le moins contestable. Puisque 1/CAPE estime la composante centrale du rendement réel actions de la décennie à venir, injectez-le dans le modèle. La case « Anchor return to today's valuation (CAPE) » du simulateur FIRE de pofo fait exactement cela. Elle remplace la seule moyenne du modèle central par l'estimation impliquée par le CAPE du jour, en laissant volatilité et queues à leurs valeurs ajustées ([[utiliser-la-page-fire]], [[la-machine-pofo]]). En marché cher, l'effet typique est net. La ruine centrale monte de plusieurs points, ce qui est une information, pas une punition. C'est le prix du point d'entrée rendu visible. Un plan qui ne tient qu'avec l'ancre CAPE décochée est un plan qui parie sur « cette fois c'est différent ».
 
 **Usage 2 : dimensionner le taux initial (recommandé).** Au moment de fixer votre multiple ([[combien-il-vous-faut]]), consultez la zone CAPE. En zone > 30, dimensionnez sur 3-3,5 % rigide ou prévoyez des marges explicites. En zone < 20 (typiquement, vous partez après un grand marché baissier, félicitations), 4 % et plus se défend historiquement. C'est un usage à grosses mailles, robuste à toutes les critiques ci-dessus.
 
@@ -123,7 +123,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 - Tous les pires millésimes de retraite partent à CAPE élevé. Le « taux de retrait sûr » est une fonction du prix d'entrée. À CAPE > 30 et horizon long, la zone historique est 3,0-3,25 % rigide, à CAPE < 15 elle dépasse 5 %.
 - Les critiques (comptabilité, buybacks, taux, secteurs) déplacent les seuils, pas la pente. Usage ordinal et par zones, jamais au dixième. Lisez le rang dans les 30-40 dernières années, pas l'écart à la moyenne de 1871.
 - Quatre usages légitimes, par ordre de sûreté : calibrer l'espérance du modèle (l'ancre CAPE), dimensionner le taux initial, piloter le retrait ([[regles-cape]]), moduler (un peu, avec une borne datée) la date de départ. Un usage interdit : le timing binaire du portefeuille.
-- Le réflexe de session : regardez le §00 de la page FIRE, cochez l'ancre CAPE, et si le plan ne tient plus, le solveur §09 vous dit le prix de votre point d'entrée, en euros, en années ou en flexibilité.
+- Le réflexe de session : regardez le §00 du simulateur FIRE de pofo, cochez l'ancre CAPE, et si le plan ne tient plus, le solveur §09 vous dit le prix de votre point d'entrée, en euros, en années ou en flexibilité.
 
 ---
 

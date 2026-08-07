@@ -86,12 +86,12 @@ La garder, mais à sa place. La règle des 4 % excelle dans trois rôles et éch
 :::
 
 ::: exemple La règle des 4 % à l'épreuve d'un vrai cas
-Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles (page FIRE, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 €/mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
+Reprenons Camille : 1 M€, 60/40 mondial, départ à 45 ans, 40 000 €/an indexés. Ce que disent les modèles (simulateur FIRE de pofo, [[utiliser-la-page-fire]]) sur 45 ans : le modèle central calibré donne typiquement une ruine de l'ordre de 10 à 15 %, le rejeu de l'échantillon mondial davantage, les fenêtres historiques du portefeuille moins. À 3,4 % (34 000 €/an), la ruine centrale passe sous 5 % ; à 4 % avec 800 €/mois de retraite légale à partir de 67 ans, elle repasse aussi sous 5 %. Voilà la règle bien utilisée : un point de départ, trois leviers testés, une décision informée.
 :::
 
 ## L'essentiel à retenir
 
-- La règle : 4 % du capital initial, puis le même montant indexé sur l'inflation ; historiquement imbattu sur 30 ans aux États-Unis.
+- La règle : 4 % du capital initial, puis le même montant indexé sur l'inflation ; jamais mise en défaut sur 30 ans aux États-Unis.
 - Le « 4 » vient du pire millésime américain (1966), pas d'une moyenne ; c'était déjà un chiffre prudent... dans son cadre.
 - Hors de son cadre (horizon long, monde entier, frais, impôts, valorisations élevées), le taux rigide équivalent est plutôt 3 à 3,5 %.
 - Inversée en « multiple de 25 », c'est le meilleur réflexe mental du sujet.

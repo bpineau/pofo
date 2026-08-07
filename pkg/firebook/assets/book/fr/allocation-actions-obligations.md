@@ -101,7 +101,7 @@ Cinq espèces, deux chocs, aucun gagnant double (rendements nominaux stylisés s
 Tout ce qui précède se vérifie en direct. En mode portefeuille, les poids de chaque ligne se déplacent au curseur et **toute** la page se recalcule : ruine sous les quatre modèles, cônes et décennie décisive compris ([[utiliser-la-page-fire]]). Voici la séance type « allocation ». Partez de votre allocation réelle. Faites glisser la part actions de 40 à 90 % par pas de 10, et notez à chaque pas la ruine centrale et la ruine broad-sample. Vous **verrez** votre plateau, souvent plus plat qu'attendu, et ses deux bords. Fixez ensuite la part admissible par vos deux tests, creux vivable et règle. Vérifiez enfin la §03, la décennie décisive, qui départage les hauts du plateau, et la §02, les millésimes réels : le 80/20 dans 1966 et 2000 est à regarder en face avant de signer. Une nuance de lecture : les colonnes historiques rejouent **votre** fenêtre, favorable aux actions récentes, tandis que le broad-sample juge l'allocation sur le siècle. L'arbitrage entre les deux est le même que partout ([[historique-vs-parametrique]]).
 
 ::: astuce Ouvrir la page sur son portefeuille
-Dans pofo, `pofo -fire portfolio.txt` ouvre la page FIRE directement sur votre portefeuille réel, chaque ligne pilotable au curseur.
+Dans pofo, `pofo -fire portfolio.txt` ouvre le simulateur FIRE de pofo directement sur votre portefeuille réel, chaque ligne pilotable au curseur.
 :::
 
 ::: exemple Un plateau rendu visible

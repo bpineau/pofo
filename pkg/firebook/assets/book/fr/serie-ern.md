@@ -16,13 +16,13 @@ Deux partis pris sont à connaître pour la lire correctement. Le premier tient 
 
 ## Les résultats majeurs, partie par partie
 
-**Le socle : 4 % n'est pas fait pour vous (volets 1-3, 26).** C'est le résultat fondateur de la série. La règle des 4 % tient sur 30 ans. Mais un horizon de 50-60 ans exige plutôt 3,25-3,5 % en rigide, et le taux sûr dépend fortement des valorisations de départ (volet 3). À CAPE élevé, au-dessus de 20, les SAFEMAX historiques tombent, tous horizons confondus. Le volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») est le meilleur résumé grand public ([[la-regle-des-4-pourcents]], [[valorisations-et-cape]]).
+**Le socle : 4 % n'est pas fait pour vous (volets 1-3, 26).** C'est le résultat fondateur de la série. La règle des 4 % tient sur 30 ans. Mais un horizon de 50-60 ans exige plutôt 3,25-3,5 % en rigide (c'est-à-dire sans aucune flexibilité sur le montant des retraits), et le taux sûr dépend fortement des valorisations de départ (volet 3). À CAPE élevé, au-dessus de 20, les SAFEMAX historiques tombent, tous horizons confondus. Le volet 26 (« Ten Things the Makers of the 4% Rule Don't Want You to Know ») est le meilleur résumé grand public ([[la-regle-des-4-pourcents]], [[valorisations-et-cape]]).
 
 **La séquence explique tout (volets 14-15).** La série y démontre, chiffres à l'appui, que le rendement moyen sur 30 ans compte moins que le rendement des 5-10 premières années. C'est le cœur de [[sequence-des-rendements]]. Corollaire du volet 53, l'épargnant et le rentier ont des expositions opposées à la séquence.
 
 **La flexibilité est surestimée (volets 9-11, 23-25, 58).** C'est la série la plus contrariante, et la plus utile. Les règles de Guyton-Klinger (volets 9-10) affichent des taux de « succès » flatteurs. Mais dans les mauvais millésimes, elles les paient par des décennies de dépenses amputées de 30-45 %. La ruine est simplement remplacée par une pauvreté prolongée qu'aucun tableau de taux de succès ne montre ([[guyton-klinger]]). Les volets 23-25 et 58 généralisent le constat. Toute flexibilité réaliste, bornée et tenable, vaut quelques dixièmes de point de taux de retrait, pas la magie annoncée ([[flexibilite-realite]]). C'est ce résultat qui a poussé tout le domaine à afficher le niveau de vie vécu, pas seulement la survie du portefeuille (c'est l'objet de la §04).
 
-**Le CAPE comme règle, pas comme peur (volets 18, 54).** C'est la proposition constructive de la série. Des règles de retrait fondées sur le CAPE, où le taux initial et courant s'ajuste aux valorisations, formalisées au volet 54. C'est l'ancêtre direct de l'ancre CAPE de la page FIRE ([[regles-cape]]).
+**Le CAPE comme règle, pas comme peur (volets 18, 54).** C'est la proposition constructive de la série. Des règles de retrait fondées sur le CAPE, où le taux initial et courant s'ajuste aux valorisations, formalisées au volet 54. C'est l'ancêtre direct de l'ancre CAPE du simulateur FIRE de pofo ([[regles-cape]]).
 
 **Les buckets et le cash ne font pas ce qu'on croit (volets 12, 48, 55).** C'est une analyse à contre-courant du dogme des buckets. Un matelas de cash consommé puis rechargé mécaniquement améliore peu la ruine, car le cash coûte en rendement ce qu'il économise en séquence. Et les stratégies de buckets populaires sont souvent du market timing déguisé, sans règle claire ([[cash-buffer]], [[strategie-buckets]], [[recharger-ou-pas]]). La nuance est importante. Une simulation trouve le même ordre de grandeur, l'arbitrage buffer de la §07 étant généralement plat. Cela n'enlève rien à la valeur psychologique et de gouvernance du buffer ([[psychologie-du-retrait]]).
 
@@ -56,13 +56,13 @@ La série a durablement changé la conversation FIRE. « Quel est ton SWR ? » a
 - Ses résultats structurants : 3,25-3,5 % rigide pour 50-60 ans, le rôle dominant de la séquence et des valorisations, la flexibilité surestimée (elle déplace la douleur), les buckets démystifiés, les glidepaths validés.
 - Ses partis pris : données américaines (chiffres plutôt optimistes), exigence de pire cas (recommandations plutôt prudentes). Les deux biais se compensent partiellement, sachez-le en la lisant.
 - Depuis la France : gardez les mécanismes, adaptez les chiffres, ignorez le chapitre fiscal américain. Ce livre fait la jonction.
-- Beaucoup de concepts de la page FIRE (ancre CAPE, niveau de vie vécu, stress de séquence, arbitrage buffer) sont en dialogue direct avec cette série ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
+- Beaucoup de concepts du simulateur FIRE de pofo (ancre CAPE, niveau de vie vécu, stress de séquence, arbitrage buffer) sont en dialogue direct avec cette série ([[utiliser-la-page-fire]], [[la-machine-pofo]]).
 
 ---
 
 ## Pour aller plus loin
 
-- Le point d'entrée : earlyretirementnow.com/safe-withdrawal-rate-series/ (la table des matières complète et tenue à jour de la série).
+- Le point d'entrée : [earlyretirementnow.com/safe-withdrawal-rate-series/](https://earlyretirementnow.com/safe-withdrawal-rate-series/) (la table des matières complète et tenue à jour de la série).
 - La toolbox (volet 28) : le classeur de simulation public, pour refaire les calculs.
 - Karsten Jeske en podcast (ChooseFI, Rational Reminder, Bogleheads) : la version orale, souvent plus accessible, des mêmes résultats.
 - Les contrepoints dans ce livre : [[anarkulova-cederburg]] (l'échantillon au-delà des États-Unis) et [[guardrails-morningstar]] (la lecture praticienne, moins pire-cas).

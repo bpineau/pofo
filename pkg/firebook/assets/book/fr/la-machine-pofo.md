@@ -1,6 +1,6 @@
 # Sous le capot : comment pofo calcule ce livre
 
-Ce livre cite la page FIRE de pofo à chaque chapitre. Le dernier article lui rend la politesse : voici, sans boîte noire, ce que la machine calcule exactement. Nous verrons d'où viennent ses données (les historiques reconstruits, le panel du siècle, le CAPE vivant). Puis comment le modèle central se fabrique, du portefeuille de vos lignes aux paramètres ajustés puis mélangés. Ce que chaque colonne du tableau tire des données, dans le récapitulatif technique des six lentilles. Comment le noyau de simulation déroule un plan mois par mois : règles de dépense, fiscalité qui majore les ventes, buffer et ses seuils, flux. Et ce que chaque section de la page calcule. Dans l'esprit de tout le livre, nous assumerons enfin les **limites** de l'ensemble. Un outil dont on ne connaît pas les simplifications est un oracle, et ce livre a assez écrit contre les oracles ([[pieges-des-simulateurs]], [[monte-carlo-forces-faiblesses]]). Ce chapitre est aussi le plus « versionné » du livre, car la machine évolue. Le volet « How this machine works » de la page elle-même fait foi pour l'état exact du moment ([[utiliser-la-page-fire]]).
+Ce livre cite le simulateur FIRE de pofo à chaque chapitre. Le dernier article lui rend la politesse : voici, sans boîte noire, ce que la machine calcule exactement. Nous verrons d'où viennent ses données (les historiques reconstruits, le panel du siècle, le CAPE vivant). Puis comment le modèle central se fabrique, du portefeuille de vos lignes aux paramètres ajustés puis mélangés. Ce que chaque colonne du tableau tire des données, dans le récapitulatif technique des six lentilles. Comment le noyau de simulation déroule un plan mois par mois : règles de dépense, fiscalité qui majore les ventes, buffer et ses seuils, flux. Et ce que chaque section du simulateur calcule. Dans l'esprit de tout le livre, nous assumerons enfin les **limites** de l'ensemble. Un outil dont on ne connaît pas les simplifications est un oracle, et ce livre a assez écrit contre les oracles ([[pieges-des-simulateurs]], [[monte-carlo-forces-faiblesses]]). Ce chapitre est aussi le plus « versionné » du livre, car la machine évolue. Le volet « How this machine works » de la page elle-même fait foi pour l'état exact du moment ([[utiliser-la-page-fire]]).
 
 ::: cle La philosophie de conception, en trois choix
 **Un** : tout en **réel**. Les séries sont déflatées par l'IPCH et les retraits fixés en pouvoir d'achat constant. L'inflation moyenne entre ainsi dans la machine par construction, et le risque d'un épisode inflationniste dans les colonnes de régimes ([[inflation-et-taux-de-retrait]]). **Deux** : le **faisceau** plutôt que le verdict. Quatre familles de modèles tournent côte à côte, dont deux que vos curseurs ne peuvent pas influencer ; les données restent juges ([[historique-vs-parametrique]]). **Trois** : le **plan réel** plutôt que la caricature. On simule les vraies règles de dépense, la vraie fiscalité de vente, le vrai buffer. La complexité du plan est gratuite en simulation, alors elle est servie ([[rendre-monte-carlo-pertinent]]).
@@ -12,7 +12,7 @@ Ce livre cite la page FIRE de pofo à chaque chapitre. Le dernier article lui re
 
 **Le siècle des seize pays.** Le modèle broad-sample embarque le panel académique Jorda-Schularick-Taylor (rendements réels annuels actions/obligations de 16 pays développés, 1870-2020) : la matière du rejeu « destins nationaux » ([[anarkulova-cederburg]]).
 
-**Le CAPE vivant.** La série de Shiller (1871-aujourd'hui) est complétée en continu. Le §00 de la page et l'ancre CAPE s'en nourrissent ([[valorisations-et-cape]]).
+**Le CAPE vivant.** La série de Shiller (1871-aujourd'hui) est complétée en continu. Le §00 du simulateur et l'ancre CAPE s'en nourrissent ([[valorisations-et-cape]]).
 
 ## Le pipeline du modèle central
 
@@ -87,6 +87,6 @@ La machine s'audite de trois façons. D'abord, le moteur est du code Go inspecta
 
 ## Pour aller plus loin
 
-- Le volet « How this machine works » et le volet « Method & honest caveats » de la page FIRE : l'état exact et à jour de la machine.
+- Le volet « How this machine works » et le volet « Method & honest caveats » du simulateur FIRE de pofo : l'état exact et à jour de la machine.
 - Le mode d'emploi : [[utiliser-la-page-fire]]. Les fondements de chaque choix : [[rendre-monte-carlo-pertinent]], [[historique-vs-parametrique]], [[queues-epaisses]].
 - Jorda-Schularick-Taylor (le panel du broad-sample) et le site de Shiller (le CAPE) : les données publiques que la machine embarque ([[bibliotheque]]).

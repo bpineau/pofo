@@ -10,7 +10,7 @@ Une seule variable gouverne tout : le **sens** et la **taille** des flux entre v
 
 ## Phase 1 : l'accumulation, la décennie (ou deux) où tout est simple
 
-La bonne nouvelle de l'accumulation. C'est la phase la mieux comprise, et presque tout ce qui la complique est du bruit. Les décisions par ordre d'impact réel :
+La bonne nouvelle de l'accumulation, c'est qu'elle est la phase la mieux comprise, et que presque tout ce qui la complique est du bruit. Les décisions par ordre d'impact réel :
 
 **1. Le taux d'épargne domine tout** ([[fire-cest-quoi]]). Passer de 20 à 35 % d'épargne avance l'indépendance de plus de dix ans ; aucune décision de portefeuille n'approche cet effet. Les gains se font sur les trois gros postes (logement, transport, alimentation), pas sur les abonnements.
 
@@ -48,7 +48,7 @@ Statistiquement, vous atteindrez votre cible pendant un marché haussier (c'est 
 
 Le jour du premier retrait, vous changez de métier : d'épargnant (accumuler, ignorer le bruit) à gérant de rente (servir un revenu stable à partir d'un actif instable). Les règles du métier :
 
-**Exécuter une stratégie, pas des humeurs.** La stratégie de retrait choisie en phase 2 ([[panorama-strategies-retrait]]) s'applique mécaniquement : montants, dates, seuils d'ajustement. L'improvisation est presque toujours procyclique. On dépense large au sommet, on panique au creux, exactement l'inverse de l'optimal.
+**Exécuter une stratégie, pas des humeurs.** La stratégie de retrait choisie en phase 2 ([[panorama-strategies-retrait]]) s'applique mécaniquement : montants, dates, seuils d'ajustement. L'improvisation est presque toujours procyclique. On dépense large au sommet, on panique au creux. L'inverse ne vaudrait pas mieux : dépenser large pendant un creux entame le capital au pire moment. Ce qui protège, c'est une règle qui décide à votre place, dans les deux sens et par petits pas.
 
 **Le rythme de croisière : un vrai point par an.** La revue annuelle ([[revue-annuelle]]) recalcule le taux de retrait courant, vérifie les seuils, rééquilibre le portefeuille, recharge ou consomme le buffer selon les règles ([[recharger-ou-pas]]), met à jour pensions et fiscalité. Entre deux revues : rien, sauf franchissement d'un seuil écrit. Regarder tous les jours n'améliore aucune décision et détériore toutes les émotions.
 
@@ -77,4 +77,4 @@ Inès, 36 ans, 34 % d'épargne, 90 % actions : son travail est d'automatiser et 
 - Early Retirement Now, SWR Series volets 19-20 et 43 (glidepaths autour du départ) et volet 42 (« The Effect of One More Year ») ([[serie-ern]]).
 - Kitces & Pfau, « Reducing Retirement Risk with a Rising Equity Glide Path » (2014) : l'article fondateur du bond tent ([[glidepaths]]).
 - Vicki Robin & Joe Dominguez, *Your Money or Your Life* : la transition comme changement de vie, pas seulement de flux.
-- Dans un simulateur : tester chaque phase du plan, accumulation comprise, sur la page FIRE ([[utiliser-la-page-fire]]).
+- Dans un simulateur : tester chaque phase du plan, accumulation comprise, dans le simulateur FIRE de pofo ([[utiliser-la-page-fire]]).

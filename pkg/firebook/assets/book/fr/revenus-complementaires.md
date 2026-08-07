@@ -2,7 +2,7 @@
 
 Presque aucun plan réel n'est un portefeuille seul contre le monde. Il y a la pension légale, qui arrivera un jour ([[retraite-legale]]). Parfois des loyers ([[immobilier-en-retrait]]). Une activité dosée ([[retour-au-travail]]). Une rente, et peut-être un héritage lointain. Or la façon de **compter** ces flux dans le plan pèse plus lourd que la plupart des choix de portefeuille. Les analyses de sensibilité classent d'ailleurs la pension au deuxième rang des variables du plan, juste derrière les dépenses.
 
-Ce chapitre est le manuel de comptabilité de ces revenus. Il pose d'abord la taxonomie : garantis, quasi sûrs, espérés, trois traitements distincts que l'on confond à ses dépens. Il détaille ensuite les mécanismes par lesquels un flux transforme un plan. Un flux ne fait pas que réduire les retraits ; il raccourcit l'horizon à risque, écrase la queue de longévité et vaut une allocation obligataire implicite. Vient la modélisation concrète sur la page FIRE (pension, revenus d'appoint, curseurs, presets et pièges de saisie), puis les cas particuliers (loyers, rentes, héritages délicats, revenus du conjoint). Enfin la contre-vérification, car un plan peut aussi être **trop** adossé. Quand les flux promis dominent tout, c'est leur risque propre (politique, locatif, santé de l'activité) qui devient le risque du plan.
+Ce chapitre est le manuel de comptabilité de ces revenus. Il pose d'abord la taxonomie : garantis, quasi sûrs, espérés, trois traitements distincts que l'on confond à ses dépens. Il détaille ensuite les mécanismes par lesquels un flux transforme un plan. Un flux ne fait pas que réduire les retraits ; il raccourcit l'horizon à risque, écrase la queue de longévité et vaut une allocation obligataire implicite. Vient la modélisation concrète dans le simulateur FIRE de pofo (pension, revenus d'appoint, curseurs, presets et pièges de saisie), puis les cas particuliers (loyers, rentes, héritages délicats, revenus du conjoint). Enfin la contre-vérification, car un plan peut aussi être **trop** adossé. Quand les flux promis dominent tout, c'est leur risque propre (politique, locatif, santé de l'activité) qui devient le risque du plan.
 
 ::: cle La taxonomie qui décide de tout
 **Trois** catégories, trois traitements.
@@ -28,9 +28,9 @@ Un revenu de 15 k€/an dans un plan à 50 k€ de dépenses ne « réduit pas l
 
 **4. Il constitue une allocation obligataire implicite.** C'est la lecture TPAW ([[amortissement-abw]]). Une pension de 20 k€/an, actualisée, « pèse » 300-450 k€ d'obligation d'État indexée dans le patrimoine total. À risque global égal, le portefeuille **visible** peut donc porter plus d'actions ([[allocation-actions-obligations]], le curseur « couverture du plancher »). Le quinquagénaire à pension future qui garde 40 % d'obligations par prudence est souvent, en réalité, sous-investi. La prudence était déjà dans sa pension.
 
-## La modélisation sur la page FIRE : les curseurs et leurs pièges
+## La modélisation dans le simulateur FIRE de pofo : les curseurs et leurs pièges
 
-La page FIRE a deux entrées de flux, et leur bon usage fait la qualité du plan simulé ([[utiliser-la-page-fire]]).
+Le simulateur FIRE de pofo a deux entrées de flux, et leur bon usage fait la qualité du plan simulé ([[utiliser-la-page-fire]]).
 
 **La pension** (« Pension /yr » plus « starts in year ») modélise un flux viager, réel et net. Réel, car indexé : la convention colle à la pension française. Y entrent la pension légale décotée, les rentes viagères et la réversion pondérée. Les presets stress, central et officiel encodent la fourchette M@REL ([[retraite-legale]]). Trois pièges de saisie guettent. D'abord le **montant brut** recopié du relevé : entrez plutôt le net décoté. Ensuite l'**année** trop optimiste : pour une carrière courte, comptez 67 ans plutôt que 64, sauf calcul contraire. Enfin l'oubli de la **deuxième** pension du couple : sommez les flux du ménage, chacun à sa date, quitte à pondérer l'écart d'années par une entrée moyenne.
 
@@ -66,7 +66,7 @@ Les résultats parlent. La ruine centrale tombe à 3,9 %, contre 10,8 % en ignor
 
 - Trois catégories, trois traitements : garantis (comptés, décotés 10-20 %), quasi sûrs (comptés, décotés 15-25 %), espérés (**jamais** comptés, marges nommées et cultivées). La confusion entre les trois est l'erreur structurante du dimensionnement.
 - Un flux fait quatre choses : réduire les retraits à sa date, raccourcir l'horizon à risque (le plan devient un pont), écraser la queue de longévité (s'il est viager), et constituer de l'allocation obligataire implicite (le portefeuille visible peut oser davantage).
-- Sur la page FIRE : la pension est un flux viager, réel, net et décoté (sommé pour le couple, calé sur la bonne année) ; le side income est un flux temporaire et réel (loyers datés, activité **structurelle**, chômage de transition). Et jamais les espérés : un simulateur complaisant est un simulateur mort.
+- Dans le simulateur FIRE de pofo : la pension est un flux viager, réel, net et décoté (sommé pour le couple, calé sur la bonne année) ; le side income est un flux temporaire et réel (loyers datés, activité **structurelle**, chômage de transition). Et jamais les espérés : un simulateur complaisant est un simulateur mort.
 - Les héritages ne se comptent jamais ; le salaire du conjoint est un side income daté à risque propre ; les loyers gardent leur décote et leur date de vente.
 - La contre-vérification ferme le chapitre : le plan privé de chaque flux, un par un, doit rester **rattrapable**. Le flux dont la perte est irrécupérable n'est pas une marge. Il est le plan, et se gère comme tel.
 

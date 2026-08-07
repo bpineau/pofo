@@ -2,7 +2,7 @@
 
 Les plans FIRE échouent rarement par malchance pure : les marchés hostiles sont dans les modèles, et un plan bien construit les encaisse. Ils échouent par erreurs de construction, presque toujours les mêmes, documentées par vingt ans de forums, de blogs post-mortem et de littérature.
 
-Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Lisez-la deux fois : avant de construire votre plan, et une fois par an ensuite ([[revue-annuelle]]).
+Cette page dresse la liste des dix plus meurtrières, dans l'ordre approximatif du coût, avec pour chacune le mécanisme, le signe avant-coureur et la correction. Elle se lit deux fois : avant de construire son plan, et pendant sa mise en œuvre ([[revue-annuelle]]).
 
 ::: cle Le fil conducteur
 Neuf de ces dix erreurs partagent une racine : confondre la sortie d'un modèle avec une promesse, et l'optimisme avec un plan. L'antidote est toujours le même : des entrées auditées, plusieurs modèles ([[pieges-des-simulateurs]]), des marges nommées, et une règle d'ajustement décidée à l'avance ([[panorama-strategies-retrait]]).
@@ -24,7 +24,7 @@ La règle des 4 % est calibrée sur 30 ans, aux États-Unis, sans frais ni impô
 
 Les retraits ne sont pas nets : PFU ou prélèvements sociaux selon l'enveloppe ([[flat-tax-et-imposition]]), et pour le rentier français sans activité, la cotisation subsidiaire maladie ([[taxe-puma]]) qui peut prélever ~6,5 % des revenus du capital. Friction totale typique : 8 à 20 %.
 
-**Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner ; organiser les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
+**Correction** : majorer les dépenses cibles de 10-15 % par défaut, puis affiner (l'impôt, lui, n'est pas à ajouter à la main : le simulateur FIRE de pofo majore chaque vente de la fiscalité, via son groupe Taxes) ; organiser les enveloppes des années à l'avance ([[enveloppes-francaises]]), car la hiérarchie PEA/AV/CTO se prépare pendant l'accumulation.
 
 ## 4. Oublier ses propres pensions
 
@@ -54,7 +54,7 @@ Un portefeuille « à 7 % en moyenne » ne donne pas 7 % à un retraité qui ret
 
 Toutes les variantes du même biais : choisir le modèle qui donne la réponse désirée (les fenêtres historiques de son propre portefeuille, souvent le plus optimiste), pousser le curseur de rendement « parce que le S&P a fait 10 % », arrondir la ruine de 8 % à « environ zéro », relancer jusqu'à obtenir un bon chiffre. Le simulateur devient alors un générateur de permission, pas un instrument ([[monte-carlo-forces-faiblesses]], [[lire-un-fan-chart]]).
 
-**Correction** : regarder les quatre modèles côte à côte (c'est le principe de la page FIRE), planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
+**Correction** : regarder les quatre modèles côte à côte (c'est le principe du simulateur FIRE de pofo), planifier entre le central et le broad-sample, et traiter le scénario « décennie perdue » comme devant être tenable, pas improbable.
 
 ## 9. Négliger le facteur humain
 
