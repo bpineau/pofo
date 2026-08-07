@@ -147,7 +147,9 @@
 #   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
 #   (LU2951555403, DBi replication) + AQR Managed Futures UCITS
 #   (RAEF EUR LU1662501532, direct TSMOM; fallbacks Winton IE00BG382Q20,
-#   Man AHL Trend LU0503879685). The 20% floor is empirical (ruin nearly
+#   Man AHL Trend LU0503879685; for 100k+ tickets the same fund's flat I
+#   class IAE2F LU1662499612 at OCF ~0.88% vs 1.31% saves ~0.43 pts/yr,
+#   minimum and KID eligibility to verify). The 20% floor is empirical (ruin nearly
 #   doubles below); the split removes single-manager risk a spending
 #   household cannot earn back; the ~30% ceiling is behavioral.
 #

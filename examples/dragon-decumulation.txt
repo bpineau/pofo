@@ -229,7 +229,9 @@
 #
 # ## Practical notes
 #   - AQR MF UCITS is a FUND, not an ETF: check platform availability and
-#     the EUR share class (RAEF, LU1662501532). Unavailable? Winton or
+#     the EUR share class (RAEF, LU1662501532; for 100k+ tickets the flat
+#     I class IAE2F LU1662499612, OCF ~0.88% vs 1.31%, same fund, minimum
+#     to verify). Unavailable? Winton or
 #     Man AHL Trend, or fall back to 26% DBMFE and accept single-model
 #     risk knowingly.
 #   - None of these lines is PEA-eligible. If part of the household
