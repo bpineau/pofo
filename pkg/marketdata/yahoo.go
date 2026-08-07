@@ -210,7 +210,7 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 					Currency             string   `json:"currency"`
 					ExchangeTimezoneName string   `json:"exchangeTimezoneName"`
 					RegularMarketPrice   *float64 `json:"regularMarketPrice"`
-					RegularMarketTime    int64    `json:"regularMarketTime"`
+					RegularMarketTime    *int64   `json:"regularMarketTime"`
 				} `json:"meta"`
 			} `json:"result"`
 			Error *struct {
@@ -228,7 +228,9 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 		return nil, fmt.Errorf("%s: %w", symbol, ErrNotCovered)
 	}
 	m := resp.Chart.Result[0].Meta
-	if m.RegularMarketPrice == nil || *m.RegularMarketPrice <= 0 {
+	// No price, or a price with no timestamp: not a usable spot. Dating it at
+	// the Unix epoch would splice a 1970 point into the caller's series.
+	if m.RegularMarketPrice == nil || *m.RegularMarketPrice <= 0 || m.RegularMarketTime == nil {
 		return nil, fmt.Errorf("%s: %w", symbol, ErrNotCovered)
 	}
 	loc, err := time.LoadLocation(m.ExchangeTimezoneName)
@@ -237,7 +239,7 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 	}
 	return &Quote{
 		Price:    *m.RegularMarketPrice,
-		Time:     time.Unix(m.RegularMarketTime, 0).In(loc),
+		Time:     time.Unix(*m.RegularMarketTime, 0).In(loc),
 		Currency: m.Currency,
 		Symbol:   symbol,
 		Source:   "yahoo",
