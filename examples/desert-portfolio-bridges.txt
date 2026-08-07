@@ -1,4 +1,4 @@
-# The Desert Portfolio (Gyroscopic Investing / Bridges) -- UCITS
+# The Desert Portfolio -- Gyroscopic Investing / Bridges (UCITS)
 # Idea: a deceptively simple 30/60/10 -- a little equity, a lot of
 #   intermediate bonds, a pinch of gold -- built to survive long dry spells
 #   with low volatility and few deep drawdowns.

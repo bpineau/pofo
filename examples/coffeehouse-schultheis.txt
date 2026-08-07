@@ -1,4 +1,4 @@
-# The Coffeehouse Portfolio (Bill Schultheis) -- modernized, UCITS
+# The Coffeehouse Portfolio -- Bill Schultheism modernized, UCITS
 # Idea: a value/small/REIT-tilted equity core (60%) over a high-quality bond
 #   anchor (40%) -- simple, balanced, slow-and-steady.
 # Inspired by: Bill Schultheis, 'The Coffeehouse Investor'.

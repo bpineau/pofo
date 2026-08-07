@@ -1,4 +1,4 @@
-# PEA -- aggressive growth (World + S&P 500 + Nasdaq)
+# PEA aggressive growth -- World + S&P 500 + Nasdaq
 # Idea: a PEA accumulation tilted to US large-cap and tech growth on top of a
 #   World base -- higher expected return and higher volatility, for a long horizon.
 # Inspired by: common French PEA 'croissance' builds.

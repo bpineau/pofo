@@ -1,4 +1,4 @@
-# The Larry Portfolio (Larry Swedroe) -- modernized, UCITS-route
+# The Larry Portfolio -- Larry Swedroe, modernized, UCITS-route
 # Idea: take equity risk efficiently -- a SMALL slice of high-expected-return
 #   small-cap value (~30%) paired with a LARGE safe-bond anchor (~70%). Same
 #   expected return as a plain stock/bond mix, with shallower drawdowns.
