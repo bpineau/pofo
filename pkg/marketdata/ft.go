@@ -58,13 +58,29 @@ func (c *Client) ftSearch(ctx context.Context, query string) (resolution, error)
 }
 
 // ftSymbolCurrency extracts the currency, the last segment of an FT symbol
-// like "LU0171310443:EUR" or "NTSG:GER:EUR".
+// like "LU0171310443:EUR" or "NTSG:GER:EUR". Some FT symbols end on an
+// exchange code instead ("WEBN:MUN" is the Munich listing, currency
+// unstated), so the segment only counts when it is a known currency code;
+// callers fall back to the currency the FT chart API reports.
 func ftSymbolCurrency(symbol string) string {
 	parts := strings.Split(symbol, ":")
 	if len(parts) < 2 {
 		return ""
 	}
-	return parts[len(parts)-1]
+	last := parts[len(parts)-1]
+	if !ftCurrencies[last] {
+		return ""
+	}
+	return last
+}
+
+// ftCurrencies are the quote currencies observed on FT listings; anything
+// else in the last symbol segment is an exchange code, not a currency.
+var ftCurrencies = map[string]bool{
+	"EUR": true, "USD": true, "GBP": true, "GBX": true, "GBp": true,
+	"CHF": true, "JPY": true, "SEK": true, "NOK": true, "DKK": true,
+	"CAD": true, "AUD": true, "NZD": true, "SGD": true, "HKD": true,
+	"PLN": true, "CZK": true, "HUF": true, "ILS": true, "ZAR": true,
 }
 
 // fetchFT downloads a daily price series (fund NAVs, mostly) from the FT
