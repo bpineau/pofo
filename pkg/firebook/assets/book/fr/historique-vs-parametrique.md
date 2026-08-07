@@ -38,15 +38,20 @@ Le second défaut, l'absence de mémoire, donne naissance à la sous-famille des
 
 **Les pièges.** Ils sont le miroir des forces. Tout repose sur trois nombres que personne ne connaît, et la sensibilité aux entrées de [[monte-carlo-forces-faiblesses]] est ici maximale. La structure choisie (i.i.d., ou Markov à deux états) reste une caricature du réel : pas de retour de valorisation, pas de corrélation stochastique entre actifs (le portefeuille est agrégé avant tirage), et une inflation implicite (tout est en réel). Le paramétrique est un instrument de laboratoire : parfait pour les expériences contrôlées, à ne jamais confondre avec le monde.
 
-::: astuce Mise en pratique : retrouver les trois familles dans un simulateur
-Dans pofo, les six modèles du tableau principal sont exactement ces familles déclinées :
+## Les trois familles chez les simulateurs courants
 
-- **Fenêtres historiques** : famille 1, sur l'historique de vos fonds.
-- **Bootstrap par blocs** (vos fonds) et **broad-sample** (le siècle des 16 pays) : famille 2.
-- **Student-t central**, **stress de séquence** et **décennie perdue** : famille 3.
+Ce repérage change la façon d'utiliser n'importe quel outil, car un verdict ne se lit qu'en sachant quelle famille l'a produit. L'inventaire qui suit décrit les modèles mis en œuvre par les simulateurs les plus utilisés, tels que leur documentation les présente au moment où ce livre s'écrit (les outils évoluent, vérifiez la leur). C'est un inventaire, pas un classement. Un outil mono-famille excellent rend plus de services qu'un fourre-tout, et une famille absente signale un choix de conception, pas un défaut. Une transparence est due au lecteur : pofo accompagne ce livre et son auteur n'est pas neutre à son sujet, raison de plus pour croiser ses verdicts avec un outil indépendant.
 
-Les curseurs μ, σ et df ne pilotent que la famille 3 ; les modèles de données les ignorent. Ailleurs, cFIREsim et FICalc déroulent la famille 1 sur les données américaines longues, et Portfolio Visualizer propose les familles 2 et 3. Comparer deux outils sur le même plan est un excellent exercice de la grille ci-dessous.
-:::
+| Outil | Familles | À savoir |
+|---|---|---|
+| cFIREsim | 1 (rejeu US depuis 1871) | Gratuit. Données Shiller actions/obligations/or, plans de dépense paramétrables. La référence de la simplicité. |
+| FI Calc | 1 (rejeu US depuis 1871) | Gratuit. Le plus riche en règles de retrait prêtes à l'emploi (une douzaine, guardrails et VPW compris), pédagogie soignée. |
+| pofo | 1, 2 et 3 (fenêtres mensuelles de vos fonds ; bootstrap de vos fonds et broad-sample du siècle des 16 pays ; Student-t calibrée, stress de séquence, décennie perdue) | L'outil de ce livre. Le plus jeune de la liste, fiscalité réduite à un taux mixte global, pas de modèle à volatilité persistante. |
+| Portfolio Visualizer | 2 et 3 (tirage d'années historiques, sans blocs ; normale, Student-t, GARCH, espérances prévisionnelles) | Le GARCH capture les grappes de volatilité, chose rare. Le tirage historique est année par année, donc sans mémoire. Une bonne partie des fonctions est devenue payante. |
+| Rich, Broke or Dead | 1 (cycles US depuis 1871) | Gratuit. Croise chaque cycle avec les tables de mortalité : la visualisation « riche, ruiné ou mort » la plus parlante du genre. |
+| TPAW Planner | 1 et 2 (séquences historiques, et tirages historiques recentrés sur les espérances du jour, 1/CAPE et taux réels) | Gratuit. L'implémentation de référence de l'amortissement (ABW), et le seul de la liste à ancrer d'office ses espérances sur les valorisations. |
+
+Trois remarques pour se servir de ce tableau. D'abord, identifiez la famille avant de lire le verdict. Un outil purement famille 1 sur données américaines rend la borne optimiste du faisceau, ni plus ni moins, et c'est déjà beaucoup. Ensuite, rappelez-vous que les paramètres μ, σ et df ne pilotent que la famille 3 ; les modèles de données les ignorent, et un réglage qui « ne fait rien » n'est pas un bug. Enfin, le faisceau multi-modèles se reconstitue très bien à la main : le même plan saisi dans deux outils de familles différentes vaut un tableau de bord. Notez au passage que tous les rejoueurs cités travaillent sur l'histoire américaine ; le siècle multi-pays reste, à ce jour, la denrée rare de l'inventaire.
 
 ## La grille de lecture combinée
 
