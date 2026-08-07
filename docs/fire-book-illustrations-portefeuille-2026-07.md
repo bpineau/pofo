@@ -576,7 +576,7 @@ L'article n'a aucune figure aujourd'hui, et deux de ses passages centraux sont
 purement verbaux (l'alternance de régimes, et l'A/B or contre pas-d'or). Quatre
 idées, par ordre de priorité.
 
-## 1. Les décennies de l'or, en réel (barres signées, une par décennie glissante)
+## 1. Les décennies de l'or, en réel (barres signées, une par décennie glissante) [FAIT 2026-07-30, `or-decennies`]
 
 Une barre par décennie de détention (1970-79, 1980-89, ... ou décennies
 glissantes tous les cinq ans), hauteur = rendement réel total de l'or sur la
@@ -803,7 +803,7 @@ L'article n'a aucune figure et porte deux thèses très visuelles : « le tilt n
 donne pas plus, il donne d'autres décennies perdues » et « le prix d'entrée,
 c'est dix ans d'écart à l'indice ». Trois idées, par ordre de priorité.
 
-## 1. L'écart glissant sur dix ans : SCV moins marché large (coût A)
+## 1. L'écart glissant sur dix ans : SCV moins marché large (coût A) [FAIT 2026-07-30, `scv-ecart-10ans`]
 
 Une seule courbe, l'écart de CAGR réel sur dix ans glissants entre le
 small-cap value américain et le S&P 500, de 1973 à aujourd'hui (fenêtres de
