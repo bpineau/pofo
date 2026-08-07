@@ -42,10 +42,23 @@ Le cash ferme la marche : il est l'étalon (les primes se mesurent au-dessus de 
 
 ## L'audit de votre portefeuille, prime par prime
 
-La grille tient en trois questions par ligne : quelle prime cette position récolte-t-elle, qui la paie, et pourquoi le paiera-t-il encore dans vingt ans ? Trois réponses types montrent la méthode. « ETF monde » → prime actions, payée par l'économie réelle via les profits, persistante car adossée au risque macro : la réponse parfaite, c'est le cœur du plan. « Fonds thématique intelligence artificielle » → aucune prime identifiable au-delà de la prime actions déjà détenue, un pari sectoriel payé plus cher en frais : la ligne double un risque existant sans salaire supplémentaire. « Produit structuré à capital protégé » → le porteur vend de la convexité et achète du risque de crédit bancaire, primes négatives des deux côtés une fois les marges prélevées : la grille vient de vous économiser des années de rendement.
+La grille tient en trois questions par ligne : quelle prime cette position récolte-t-elle, qui la paie, et pourquoi le paiera-t-il encore dans vingt ans ? Voici les réponses pour les huit lignes que l'on rencontre le plus souvent chez un particulier. Les niveaux sont dans l'échelle plus haut ; ce qui compte ici est le payeur et la raison de durer, les deux choses qu'un prospectus ne dit jamais.
+
+| La ligne | Quelle prime | Qui la paie | Pourquoi elle tient |
+|---|---|---|---|
+| ETF monde | Prime actions | L'économie réelle, par les profits | Personne ne peut arbitrer les récessions |
+| Obligations d'État longues | Prime de terme | L'emprunteur qui veut de la dette longue | Tient quand la pente est là, la plus instable |
+| Obligations indexées (linkers) | Prime de terme, sans le pari d'inflation | L'État, qui garde le risque d'inflation | Un contrat indexé ne se périme pas |
+| Or | Aucune | Personne, il n'y a aucun flux | Rien à arbitrer, on achète une corrélation |
+| Trend | Prime comportementale | Ceux qui sous-réagissent et les gérants contraints | Comprimée par la publication, pas éteinte |
+| Fonds thématique | Aucune au-delà des actions déjà détenues | Vous, en frais | Rien à tenir, la ligne double un risque déjà porté |
+| Produit structuré à capital protégé | Convexité vendue, crédit bancaire acheté | Vous, par les marges de l'émetteur | Deux primes négatives ne s'arrangent pas |
+| SCPI ou private equity grand public | Prime d'illiquidité | En théorie le vendeur pressé, en pratique vous | Réelle en théorie, mangée par les frais |
+
+Les trois dernières lignes sont le vrai rendement de l'exercice. Aucune ne récolte de prime nette pour vous, toutes se vendent très bien, et les repérer une fois pour toutes économise des années de performance.
 
 ::: exemple Le portefeuille du chapitre, audité
-Le portefeuille type de ce livre (60 % actions monde, 25 % obligations dont linkers, 7,5 % or, 7,5 % trend) se lit ainsi. Actions → prime actions, 3-4 points réels attendus au-dessus du cash, le moteur. Obligations → prime de terme (positive à nouveau) + le contrat réel des linkers ([[obligations-indexees]]), l'amortisseur des récessions désinflationnistes. Or → aucune prime, achat de corrélation pour les régimes monétaires hostiles. Trend → prime comportementale documentée sur un siècle, comprimée mais vivante, l'assurance à espérance positive des régimes longs. Chaque ligne nomme sa prime ou son rôle, aucune ne double une autre au même moment de douleur. C'est exactement ce que « diversifié » veut dire, et la suite logique se lit dans [[pourquoi-la-diversification-marche]].
+Le portefeuille type de ce livre (60 % actions monde, 25 % obligations dont linkers, 7,5 % or, 7,5 % trend) passe la grille sans trou. Quatre lignes, quatre réponses différentes, et une seule vraie prime de rendement, celle des actions, dosée à 3-4 points réels attendus au-dessus du cash. Les obligations achètent l'amortisseur des récessions désinflationnistes et le contrat réel des linkers ([[obligations-indexees]]), l'or achète une corrélation, le trend achète une assurance à espérance positive dans les régimes longs. Chaque ligne nomme sa prime ou son rôle, aucune ne double une autre au même moment de douleur. C'est exactement ce que « diversifié » veut dire, et la suite logique se lit dans [[pourquoi-la-diversification-marche]].
 :::
 
 ## L'essentiel à retenir
