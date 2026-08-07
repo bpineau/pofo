@@ -27,7 +27,8 @@ running a command per comparison.
 | `/` | `hub` (`hub.go`) | the front door: the bundled example portfolios as a pure-GET checkbox form that submits ticked names to `/view`, plus links onward to the simulator and the book |
 | `/view` | `view` (`serve.go`, grammar in `view.go`) | the HTML comparison report the CLI writes, addressed by a query string (`ex=` / `p=` + global overrides) |
 | `/examples/<name>.txt` | `exampleFile` | one embedded portfolio file, raw text (the hub's "Source" link) |
-| `/fire/` | `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator, identical to `-fire` |
+| `/fire/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire` |
+| `/fire/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
 | `/book/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book, with a chrome nav bar back to the other surfaces |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts |
 
@@ -88,13 +89,22 @@ anything outside it is a CLI or portfolio-file job, not an anonymous web one.
 
 `pkg/webui` owns the shared "instrument" identity (tokens, embedded fonts,
 chart chrome; see `docs/webui-instrument-redesign.md`). `-serve` serves those
-tokens once from `/theme.css` and `/fonts.css`, and every surface links them:
+tokens once from `/theme.css` and `/fonts.css`, and every surface links them.
+The reading surfaces then remap the tokens to the book's warm paper-and-ink
+palette with `webui.WarmSkin` (one CSS file, variable overrides only), so the
+constellation reads as the book's kin while the simulator keeps the cool
+instrument look:
 
-- The **hub** is styled from the tokens directly (inline, no JavaScript): the
-  book's calm reading rhythm rendered in the instrument palette, so it reads as
-  its own surface, neither report nor book.
-- The **report** and the **simulator** keep their existing layers on top of the
-  same tokens; they are unchanged from the CLI / `-fire` renderings.
+- The **hub** links the tokens, then inlines `webui.WarmSkin` and sets its
+  headings in the book's serif: the book's calm reading rhythm in the book's
+  own palette, no JavaScript.
+- The **report** gets the same warm skin under `-serve` only, through the
+  optional `report.Page.SkinCSS`/`SiteNav` fields (empty for the CLI, so the
+  standalone report is byte-for-byte unchanged), plus a slim cross-nav bar.
+- The **simulator** keeps its instrument-dark layer. It darkens each chart
+  through `pkg/decumul/web`'s own wrappers (`theme.go`), not the `chart`
+  process-global, so it stays dark even sharing a process with the light
+  report under `-serve`.
 - The **book** keeps its own reading layer. Its default `Handler()` stays
   chrome-free for offline and `-fire` use; under `-serve` it is mounted with
   `firebook.WithNav`, which adds a **print-hidden** nav bar (chrome, not
@@ -116,11 +126,13 @@ user's explicit choice, not the default.
 The web app shipped as a read-mostly constellation. The planned follow-ups,
 smallest lever first:
 
-- **M2: per-request FIRE panel + a user-settings cookie.** Today the FIRE panel
-  is built once at startup from the CLI's file arguments. M2 lets `/view` (or a
-  dedicated route) build a panel from the just-composed portfolios per request,
-  and remembers a visitor's non-sensitive preferences (base currency, default
-  rebalance, sim on/off) in a cookie, so the composer opens where they left it.
+- **M2: per-request FIRE panel + a user-settings cookie.** A first slice
+  shipped: `/fire/e/<name>/` builds a panel per bundled example on demand
+  (lazily cached), so the hub's "Simulate" opens the simulator pre-loaded.
+  The rest of M2 generalizes this to an arbitrary composed portfolio (a panel
+  from a `p=` spec, not only a named example) and remembers a visitor's
+  non-sensitive preferences (base currency, default rebalance, sim on/off) in
+  a cookie, so the composer opens where they left it.
 - **M3: a live composer that writes the URL.** A small in-page editor for the
   `p=` spec (add/remove holdings, drag weights, toggle meta) that updates the
   query string as you go, so the shareable link is always the current state.
