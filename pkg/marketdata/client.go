@@ -463,24 +463,32 @@ func rankQuotes(quotes []searchQuote, preferBase string) []searchQuote {
 // historyForResolution fetches the history of an already-resolved ISIN from
 // the source recorded in the resolution.
 func (c *Client) historyForResolution(ctx context.Context, isin string, res resolution, from time.Time, raw bool) (*Series, error) {
+	var s *Series
+	var err error
 	switch res.Source {
 	case "ft":
-		return c.historyFT(ctx, isin, res, from, raw)
+		s, err = c.historyFT(ctx, isin, res, from, raw)
 	case "morningstar":
-		return c.historyMS(ctx, isin, res, from, raw)
+		s, err = c.historyMS(ctx, isin, res, from, raw)
 	case "stooq":
-		return c.cachedHistory(ctx, "Stooq", isin, from, raw, func() (*Series, error) {
+		s, err = c.cachedHistory(ctx, "Stooq", isin, from, raw, func() (*Series, error) {
 			return c.fetchStooq(ctx, res.Symbol, from)
 		})
 	default:
-		s, err := c.historyView(ctx, res.Symbol, from, raw)
+		s, err = c.historyView(ctx, res.Symbol, from, raw)
 		// The curated resolution name beats source metadata (e.g. Yahoo
 		// labels continuous futures with their front-month contract).
 		if err == nil && res.Name != "" {
 			s.Name = res.Name
 		}
-		return s, err
+		return s, err // historyView already ran cleanQuotes
 	}
+	// FT / Morningstar / Stooq bypass history(), so clean here: a resolved ISIN
+	// must get the same scale-break / dropout hygiene as a direct symbol.
+	if err == nil && s != nil {
+		s.Points = cleanQuotes(isin, s.Points)
+	}
+	return s, err
 }
 
 func (c *Client) resolutionPath(isin string) string {
@@ -570,13 +578,7 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	if len(s.Points) == 0 {
 		return c.staleFallback(ctx, cacheID, from, fmt.Errorf("no quotes returned for %s", symbol))
 	}
-	if !isRateSymbol(symbol) {
-		s.Points = dropDropouts(s.Points)   // strip provider placeholders/bad prints
-		s.Points = mendScaleBreak(s.Points) // repair a single denomination break
-	}
-	if strings.HasSuffix(symbol, "=X") {
-		s.Points = dropFXSpikes(s.Points) // strip isolated self-cancelling FX prints
-	}
+	s.Points = cleanQuotes(symbol, s.Points)
 	c.saveCacheAs(cacheID, s, from)
 	c.Logf("%s: %s, %d quotes since %s", s.Symbol, s.Name, len(s.Points), s.First().Date.Format("2006-01-02"))
 	return s, nil
