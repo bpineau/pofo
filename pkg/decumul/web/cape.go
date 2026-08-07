@@ -1,7 +1,6 @@
 package web
 
 import (
-	"fmt"
 	"sort"
 	"strconv"
 	"strings"
@@ -11,18 +10,40 @@ import (
 	"github.com/bpineau/pofo/pkg/datasets"
 )
 
-// capeGauge renders the current valuation reading as a half-circle gauge: the
-// needle at today's CAPE percentile, the value and the implied real return at
-// the centre. Static (it does not depend on the sliders), so it is served with
-// the page metadata.
-func capeGauge() string {
-	s := capeSnapshot()
-	if s.Value == 0 {
+// capeHistory renders the Shiller CAPE series since 1881 as a single-axis line
+// (no dual axis: the implied return is a readout, not a second scale), with the
+// historical median marked and today's value emphasised at the right end. The
+// accent-coloured line darkens to amber in the terminal theme. Static, so it is
+// served with the page metadata.
+func capeHistory() string {
+	s := capeSeries()
+	if len(s) == 0 {
 		return ""
 	}
-	caption := fmt.Sprintf("CAPE %s · %.1f%% implied real", s.AsOf, s.ImpliedReal*100)
-	return chart.Gauge(chart.Options{Width: 380, Height: 214},
-		strconv.FormatFloat(s.Value, 'f', 1, 64), caption, "cheap", "rich", s.Percentile/100)
+	xs := make([]float64, len(s))
+	ys := make([]float64, len(s))
+	for i, p := range s {
+		xs[i] = capeYear(p.date)
+		ys[i] = p.cape
+	}
+	snap := capeSnapshot()
+	return chart.MultiLine(
+		chart.Options{Width: 760, Height: 300},
+		"", "CAPE (PE10)",
+		[]chart.XYSeries{{Name: "CAPE", Xs: xs, Ys: ys, Color: "#0B7285"}},
+		chart.Marker{Axis: 'y', Value: snap.Median, Label: "median"},
+		chart.Marker{Axis: 'x', Value: xs[len(xs)-1], Label: "today"},
+	)
+}
+
+// capeYear turns a "YYYY-MM-DD" date into a fractional year for the x-axis.
+func capeYear(date string) float64 {
+	y, m := 0, 1
+	if len(date) >= 7 {
+		y, _ = strconv.Atoi(date[:4])
+		m, _ = strconv.Atoi(date[5:7])
+	}
+	return float64(y) + (float64(m)-0.5)/12
 }
 
 // CapeSnapshot summarises where equity valuations stand today, the single best

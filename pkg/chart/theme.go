@@ -63,6 +63,16 @@ var darkReplacer = strings.NewReplacer(
 	"#12B76A", "#34A46E", // funded
 	"#D92D20", "#D2503F", // broke
 	"#D5DBE5", "#6B6250", // gone
+	// Series palette (defaultPalette / PaletteColor) light -> dark categorical,
+	// slot for slot, so a series keeps its identity across charts on dark.
+	"#0880A8", "#1B95B4",
+	"#C2452B", "#BE4E6C",
+	"#4C63D2", "#7A5FC0",
+	"#B45309", "#C4820F",
+	"#6D28D9", "#9A6FD0",
+	"#35803B", "#2F9463",
+	"#BE185D", "#C24E86",
+	"#2B9BD0", "#2FA0B8",
 )
 
 // Darken rewrites a chart SVG from the light theme to the terminal-dark theme by

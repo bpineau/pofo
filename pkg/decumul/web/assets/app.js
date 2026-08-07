@@ -110,7 +110,7 @@ for (const g of GROUPS) for (const it of g.items) if (it.kind === "range") {
 }
 const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
 // Series palette, mirrors chart.PaletteColor so page and SVG stay consistent.
-const PAL = ["#0880A8","#C2452B","#4C63D2","#B45309","#6D28D9","#35803B","#BE185D","#2B9BD0"];
+const PAL = ["#1B95B4","#BE4E6C","#7A5FC0","#C4820F","#9A6FD0","#2F9463","#C24E86","#2FA0B8"];
 const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // portfolio-mode state, set once /api/meta resolves.
@@ -303,8 +303,56 @@ let run = async function() {
   renderSpending(b, id);
   renderLifecycle(b, id);
   renderSim(b, id);
+  updateCmd();
   syncURL();
 };
+
+// The top-bar command echo mirrors the live plan, terminal-style.
+function updateCmd() {
+  const el = document.getElementById("cmdEcho");
+  if (!el) return;
+  const rule = state.percent > 0 ? "vpw" : state.guardrails ? "guardrails" : state.flexCut > 0 ? "flex" : "fixed·real";
+  const model = state.conservative ? "broad-sample" : state.regime ? "seq-stress" : state.capeAdjust ? "cape" : "student-t";
+  const f = (k) => fmtVal(k, state[k]).replace(/\s?€/, "").replace(/\s/g, "");
+  el.innerHTML =
+    `<span class="flag">plan</span> <span class="flag">--capital</span> <span class="val">${f("capital")}€</span>` +
+    ` <span class="flag">--spend</span> <span class="val">${f("needAnnual")}€</span>` +
+    ` <span class="flag">--horizon</span> <span class="val">${state.years}y</span>` +
+    ` <span class="flag">--rule</span> <span class="val">${rule}</span>` +
+    ` <span class="flag">--model</span> <span class="val">${model}</span>`;
+}
+
+// The valuation strip: a cheap→rich scale with the median tick and today's
+// marker, plus the implied real return, built from the CAPE snapshot.
+function renderCape(cape) {
+  const el = document.getElementById("capeStrip");
+  if (!el || !cape || !cape.value) return;
+  const pct = Math.max(2, Math.min(98, cape.percentile));
+  el.innerHTML =
+    `<div class="vbig"><span class="n">CAPE ${cape.value.toFixed(1)}</span>` +
+    `<span class="lbl">${Math.round(cape.percentile)}th percentile since 1881</span></div>` +
+    `<div class="vstrip" title="cheap on the left, rich on the right">` +
+    `<span class="tick" style="left:50%"></span><span class="now" style="left:${pct}%"></span></div>` +
+    `<div class="vstrip-labels"><span style="left:4%">cheap</span>` +
+    (pct < 74 || pct > 82 ? `<span style="left:50%">median ${cape.median.toFixed(1)}</span>` : ``) +
+    (pct < 90 ? `<span class="now" style="left:${pct}%">today</span>` : `<span class="now" style="right:2%;left:auto;transform:none">today</span>`) +
+    (pct < 88 ? `<span style="left:96%">rich</span>` : ``) +
+    `<div class="vbig"><span class="n">${(cape.impliedReal * 100).toFixed(1)}%</span>` +
+    `<span class="lbl">implied 10y real return · 1/CAPE</span></div>` +
+    `<div class="vnote">Rich valuations compress the first decade — this is why the central case sits at <b>μ5/σ11</b>, not a rosy fit. Enable <b>anchor to CAPE</b> to plan on it.</div>`;
+}
+
+// Settings drawer: fold the controls away to run the analysis full-width.
+(function () {
+  const t = document.getElementById("drawerToggle"), d = document.getElementById("drawer");
+  if (!t || !d) return;
+  t.addEventListener("click", () => {
+    const open = d.hasAttribute("hidden");
+    if (open) { d.removeAttribute("hidden"); } else { d.setAttribute("hidden", ""); }
+    t.setAttribute("aria-expanded", String(open));
+    t.textContent = open ? "parameters ▴" : "parameters ▾";
+  });
+})();
 
 async function runSlow() {
   const id = runId;
@@ -586,7 +634,8 @@ function startDrag(ev, i) {
 // Portfolio mode bootstrap: fetch holdings, seed the fit, add the bar.
 // ---------------------------------------------------------------------------
 fetch("/api/meta").then(r => r.json()).then(m => {
-  setSVG("capeGauge", m.capeGauge);
+  renderCape(m.cape);
+  setSVG("capeHistory", m.capeHistory);
   if (!m.hasPanel) { run(); runSlow(); return; }
   hasPanel = true;
   labels = m.labels;

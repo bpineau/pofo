@@ -1,29 +1,45 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>pofo · FIRE decumulation</title>
+<title>pofo/fire · decumulation terminal</title>
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="app.css"></head>
 <body>
-<div class="wrap">
 
-<header class="masthead">
-  <span class="mark">pofo<b>/</b>fire</span>
-  <span class="ctx">decumulation robustness explorer</span>
-  <span class="spacer"></span>
-  <span class="stamp">real €, net of tax · a model, not advice</span>
+<!-- Terminal top bar: brand, a command-echo of the live plan, and the toggle
+     that folds the whole control set into a drawer so the analysis runs
+     full-width. -->
+<header class="topbar">
+  <span class="brand">pofo<b>/</b>fire<span class="cursor"></span></span>
+  <span class="cmd" id="cmdEcho"></span>
+  <span class="pill" id="statusPill">real € · net of tax</span>
+  <button class="drawer-toggle" id="drawerToggle" type="button" aria-expanded="false">parameters ▾</button>
 </header>
 
-<!-- Hero: the live verdict on the left, the epistemic range across return
-     models on the right. Two panels, one reading: what the plan does, and
-     how much that answer depends on the lens. -->
+<!-- Settings drawer: the grouped controls, folded away by default. -->
+<div class="drawer" id="drawer" hidden>
+  <form id="controls"></form>
+</div>
+
+<!-- Sticky plan bar: the live verdict follows you down the page. -->
+<div id="planbar" hidden>
+  <span class="brand">pofo<b>/</b>fire</span>
+  <span id="planbar-verdict"></span>
+  <span class="spacer"></span>
+  <span id="planbar-beads" data-help="One bead per return model, coloured by its ruin probability at your planned spend (green safe → red catastrophic), in the same order as the hero table."></span>
+</div>
+
+<main class="page">
+
+<!-- Hero: the live verdict readout on the left, the epistemic range across
+     return models on the right. -->
 <section class="hero" id="hero">
   <div class="hero-verdict">
     <div class="eyebrow">Ruin probability · central case</div>
-    <div class="big"><span class="n" id="ruinBig">·</span><span class="u">of simulated futures fail</span></div>
+    <div class="big"><span class="n" id="ruinBig">·</span><span class="u">of futures fail</span></div>
     <span class="chip" id="ruinChip" hidden></span>
-    <div class="gauge" data-help="Your central-case ruin probability on a 0-to-max scale; the dark tick marks the tolerance you accept."><div class="fill" id="gaugeFill"></div><div class="lim" id="gaugeLim"></div></div>
+    <div class="gauge" data-help="Your central-case ruin probability on a 0-to-max scale; the tick marks the tolerance you accept."><div class="fill" id="gaugeFill"></div><div class="lim" id="gaugeLim"></div></div>
     <div class="gauge-l"><span>0%</span><span id="gaugeTol"></span><span id="gaugeMax"></span></div>
     <p id="verdict"></p>
     <div class="herobar">
@@ -32,79 +48,79 @@
     </div>
   </div>
   <div class="hero-models">
-    <div class="eyebrow">The same plan under every return model · columns ordered optimistic → catastrophic</div>
+    <div class="eyebrow">The same plan under every return model · optimistic → catastrophic</div>
     <div id="modelstrip"></div>
   </div>
 </section>
 
-<!-- The plan bar: a condensed, sticky echo of the verdict so a slider's
-     consequence stays visible however deep the page is scrolled. -->
-<div id="planbar" hidden>
-  <span class="mark">pofo<b>/</b>fire</span>
-  <span id="planbar-verdict"></span>
-  <span class="spacer"></span>
-  <span id="planbar-beads" data-help="One bead per return model, coloured by its ruin probability at your planned spend (green safe → red catastrophic), in the same order as the hero table."></span>
-</div>
-
-<div class="deck">
-
-<!-- Left rail: everything the household controls or assumes, always visible. -->
-<aside id="rail">
-  <form id="controls"></form>
-</aside>
-
-<!-- Right column: the analysis, in reading order. -->
-<main id="analysis">
-
-<div class="section-head"><span class="idx">00</span><h2>Where we are in the cycle</h2><span class="aside">today's valuation sets the decisive first decade</span></div>
-<p class="section-lede">The starting valuation is the single best predictor of the next decade's real return, the years that make or break a retirement. Tick "Anchor return to today's valuation (CAPE)" to plan on the implied return rather than a long-run average.</p>
-<div id="capeGauge" class="chart-frame" style="max-width:420px"></div>
-
-<div class="section-head"><span class="idx">01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model · the cone of outcomes</span></div>
-<p class="section-lede">Each panel is the same plan under a different lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median; red paths are simulated ruins.</p>
-<div id="fansGrid"></div>
-
-<div class="section-head"><span class="idx">02</span><h2>The spending you actually live</h2><span class="aside">what the flex rules cost in lifestyle, not in statistics</span></div>
-<p class="section-lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths: how often the cut happens, how soon, how deep and for how long.</p>
-<div class="duo">
-  <div id="spendingSvg" class="chart-frame"></div>
-  <div id="spendingCards" class="cardcol"></div>
-</div>
-
-<div class="section-head"><span class="idx">03</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
-<p class="section-lede">A failure at 92 is not the same life event as a failure at 61. Crossing ruin timing with survival (INSEE-fitted Gompertz, couple) shows the risk that actually matters: being alive and out of money.</p>
-<div class="duo">
-  <div id="lifeSvg" class="chart-frame"></div>
-  <div class="stack">
-    <div id="lifecycleCards" class="cardrow"></div>
-    <div id="ruinYearSvg" class="chart-frame"></div>
-    <div id="causesSvg" class="chart-frame" data-help="Of the futures that run out, when they failed stands in for why: an early crash (bad returns just after retiring), a lost decade of flat real returns, or simply outliving the money."></div>
+<section class="section">
+  <div class="shead"><span class="code">§00</span><h2>Where we are in the cycle</h2><span class="aside">valuation → the decisive first decade</span></div>
+  <p class="lede">The starting valuation is the single best predictor of the next decade's real return, the years that make or break a retirement. Enable <span class="kbd">anchor to CAPE</span> in the parameters to plan on the implied return rather than a long-run average.</p>
+  <div class="grid-cycle">
+    <div class="card"><div class="ctitle">Valuation now · Shiller CAPE</div><div id="capeStrip"></div></div>
+    <div class="card"><div class="ctitle">CAPE since 1881 · today in context</div><div id="capeHistory" class="chart-frame"></div></div>
   </div>
-</div>
+</section>
 
-<div class="section-head"><span class="idx">04</span><h2>What moves the risk</h2><span class="aside">frontier · levers · the price of time and lifestyle</span></div>
-<p class="section-lede">The frontier shows how fast ruin rises as you spend more, under every model at once. The levers chart ranks what improves the plan most. The two curves price a longer retirement and a bigger lifestyle in safe-rate and capital terms.</p>
-<div id="riskgrid">
-  <div id="frontierSvg" class="chart-frame"></div>
-  <div id="policyFrontierSvg" class="chart-frame" data-help="Each withdrawal rule as one point: ruin against how much the standard of living swings. Fixed is safe-but-rigid; VPW never runs out but spending moves with the market."></div>
-  <div id="sensitivitySvg" class="chart-frame"></div>
-  <div id="horizonSvg" class="chart-frame"></div>
-  <div id="capitalSvg" class="chart-frame"></div>
-</div>
+<section class="section">
+  <div class="shead"><span class="code">§01</span><h2>Simulated futures</h2><span class="aside">wealth fans per planning model · the cone of outcomes</span></div>
+  <p class="lede">The same plan under each lens, from the calibrated central case to the grimmest stress. Bands are the 5-95 and 25-75 percentile ranges; the dark line is the median; red paths are simulated ruins.</p>
+  <div id="fansGrid"></div>
+</section>
 
-<div class="section-head"><span class="idx">05</span><h2>Buffer &amp; recovery</h2><span class="aside">cash arbitrage · time underwater</span></div>
-<p class="section-lede">More cash cuts sequence risk up to a point, then drags on growth: the arbitrage is an interior optimum. The recovery histogram shows how long the portfolio typically stays below a prior high.</p>
-<div class="duo">
-  <div id="arbitrageSvg" class="chart-frame"></div>
-  <div id="recoverySvg" class="chart-frame"></div>
-</div>
+<section class="section">
+  <div class="shead"><span class="code">§02</span><h2>The spending you actually live</h2><span class="aside">what the flex rules cost in lifestyle, not statistics</span></div>
+  <p class="lede">Adaptive rules buy survival by cutting the discretionary slice in bad markets. This is the delivered real spending across paths: how often the cut happens, how soon, how deep and for how long.</p>
+  <div class="duo">
+    <div id="spendingSvg" class="chart-frame"></div>
+    <div id="spendingCards" class="cardcol"></div>
+  </div>
+</section>
 
-<div class="section-head"><span class="idx">06</span><h2>Plan detail</h2><span class="aside">central model, at your planned spend</span></div>
-<p id="note"></p>
-<div id="cards"></div>
+<section class="section">
+  <div class="shead"><span class="code">§03</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
+  <p class="lede">A failure at 92 is not the same life event as a failure at 61. Crossing ruin timing with survival (INSEE-fitted Gompertz, couple) shows the risk that actually matters: being alive and out of money.</p>
+  <div class="duo">
+    <div id="lifeSvg" class="chart-frame"></div>
+    <div class="stack">
+      <div id="lifecycleCards" class="cardrow"></div>
+      <div id="ruinYearSvg" class="chart-frame"></div>
+      <div id="causesSvg" class="chart-frame" data-help="Of the futures that run out, when they failed stands in for why: an early crash, a lost decade of flat real returns, or simply outliving the money."></div>
+    </div>
+  </div>
+</section>
 
-<div class="section-head"><span class="idx">07</span><h2>Reaching your target</h2><span class="aside">equivalent single moves, solved at your acceptable ruin</span></div>
-<div id="solvermenu" class="panel"></div>
+<section class="section">
+  <div class="shead"><span class="code">§04</span><h2>What moves the risk</h2><span class="aside">frontier · trade-off · levers · the price of time &amp; lifestyle</span></div>
+  <p class="lede">The frontier shows how fast ruin rises as you spend more, under every model at once. The trade-off plots each withdrawal rule as ruin versus lifestyle volatility. The levers rank what improves the plan most; the two curves price a longer retirement and a bigger lifestyle.</p>
+  <div id="riskgrid">
+    <div id="frontierSvg" class="chart-frame"></div>
+    <div id="policyFrontierSvg" class="chart-frame" data-help="Each withdrawal rule as one point: ruin against how much the standard of living swings. Fixed is safe-but-rigid; VPW never runs out but spending moves with the market."></div>
+    <div id="sensitivitySvg" class="chart-frame"></div>
+    <div id="horizonSvg" class="chart-frame"></div>
+    <div id="capitalSvg" class="chart-frame"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shead"><span class="code">§05</span><h2>Buffer &amp; recovery</h2><span class="aside">cash arbitrage · time underwater</span></div>
+  <p class="lede">More cash cuts sequence risk up to a point, then drags on growth: the arbitrage is an interior optimum. The recovery histogram shows how long the portfolio typically stays below a prior high.</p>
+  <div class="duo">
+    <div id="arbitrageSvg" class="chart-frame"></div>
+    <div id="recoverySvg" class="chart-frame"></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="shead"><span class="code">§06</span><h2>Plan detail</h2><span class="aside">central model, at your planned spend</span></div>
+  <p id="note"></p>
+  <div id="cards"></div>
+</section>
+
+<section class="section">
+  <div class="shead"><span class="code">§07</span><h2>Reaching your target</h2><span class="aside">equivalent single moves, at your acceptable ruin</span></div>
+  <div id="solvermenu" class="panel"></div>
+</section>
 
 <details class="caveat">
 <summary>Method &amp; honest caveats · why these figures can look optimistic</summary>
@@ -113,18 +129,15 @@
 <p>These results are model-based and tend to be <b>more optimistic than the empirical safe-withdrawal evidence</b>. The main reasons, in rough order of impact:</p>
 <ul>
 <li><b>Dynamic spending.</b> The "spending cut in downturns" (flex) reduces withdrawals in bad markets, which roughly <i>halves</i> ruin vs a true fixed rule. It defaults to 0 (the canonical fixed rule); section 02 shows what enabling it costs in lived spending.</li>
-<li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable, often post-2009 window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case is automatically blended toward the broad-sample prior when the fund history is shorter than the horizon.</li>
-<li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean to expose that risk separately from the return level.</li>
-<li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the real French multi-envelope sequencing, which is materially cheaper.</li>
-<li><b>Mortality.</b> The ruin figures ignore death by default (a 45-year horizon is survived with certainty); section 03 shows the mortality-weighted picture, which is kinder, and more honest about late-life failures.</li>
+<li><b>Optimistic return inputs.</b> A μ/σ fitted from a fund's own history reflects a favourable window. The Broad-sample and Lost-decade columns supply the deep-past counterpoint; the central case blends toward the broad-sample prior when the fund history is shorter than the horizon.</li>
+<li><b>I.i.d. draws</b> miss the persistence of real returns; the Sequence-stress column clusters bad years at the same long-run mean.</li>
+<li><b>Taxes.</b> The single-CTO default grosses up every sale at the flat rate on gains; the PEA/AV envelope sliders model the cheaper French multi-envelope sequencing.</li>
+<li><b>Mortality.</b> The ruin figures ignore death by default; section 03 shows the mortality-weighted picture.</li>
 </ul>
 <p>For a life plan, read the pessimistic columns, keep the horizon past your life expectancy, and treat the ruin figures as ordinal (compare scenarios, don't trust decimals).</p>
 </div>
 </details>
 
 </main>
-</div>
-
-</div>
 <script src="app.js"></script>
 </body></html>
