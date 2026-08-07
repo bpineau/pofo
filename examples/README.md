@@ -102,8 +102,8 @@ rather than recomputing it (and drifting) on every run.
   worst rolling 5y and every stress window (2000-02, 2008, 2022). The file
   doubles as the design document: regime map, references, weight ranges,
   blind spots.
-- `hydra-five-engines-capital-efficient`: the frontier build (~148% notional
-  via stacked funds: RSBT, GDE); +1.9 pts of CAGR over the buyable hydra but
+- `hydra-five-engines-capital-efficient`: the frontier build (~146% notional
+  via stacked funds: RSBT, GDE); +1.6 pts of CAGR over the buyable hydra but
   US-listed pieces an EU retail investor cannot buy. Research file, exposure
   ledger, alternatives-considered ledger, and UCITS watch list.
 

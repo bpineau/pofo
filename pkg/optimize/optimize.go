@@ -247,8 +247,11 @@ func solve(mu []float64, cov [][]float64, spec Spec) (Result, error) {
 }
 
 // maxSharpe maximizes the Sharpe ratio (risk-free 0) over the capped
-// simplex. The objective is not convex, so several deterministic starting
-// points are tried and the best feasible Sharpe is kept.
+// simplex. The ratio is not concave in the weights, so several deterministic
+// starting points are tried and the best feasible Sharpe is kept. One of them
+// is the EXACT uncapped tangency portfolio (tangencyQP): without a cap that
+// seed is already the global optimum, and with one it starts the search in
+// the right neighbourhood.
 func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 	n := len(mu)
 	neg := func(x []float64) float64 {
@@ -288,6 +291,11 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 		}
 	}
 	starts = append(starts, projectCappedSimplex(iv, maxW))
+	// The exact uncapped tangency portfolio: the global optimum itself when
+	// no cap binds, and the best available seed when one does.
+	if qp, ok := tangencyQP(mu, cov); ok {
+		starts = append(starts, projectCappedSimplex(qp, maxW))
+	}
 
 	var best []float64
 	bestVal := math.Inf(1)
@@ -298,6 +306,79 @@ func maxSharpe(mu []float64, cov [][]float64, maxW float64) []float64 {
 		}
 	}
 	return best
+}
+
+// tangencyQP returns the exact long-only tangency portfolio (risk-free 0),
+// reporting ok=false when no asset has a positive mean, which leaves the
+// transformation below without a feasible point.
+//
+// Maximizing muᵀw/√(wᵀΣw) over the simplex is not a concave program, but
+// Schaible's transformation makes it one: substituting y = w/(muᵀw) turns it
+// into
+//
+//	minimize yᵀΣy   subject to   muᵀy = 1, y ≥ 0
+//
+// which is convex (Σ is positive semi-definite over a polyhedron), so
+// projected gradient descent on it reaches the GLOBAL minimum; w = y/Σyᵢ maps
+// the solution back. See Cornuejols & Tutuncu, "Optimization Methods in
+// Finance", chapter 8.
+func tangencyQP(mu []float64, cov [][]float64) ([]float64, bool) {
+	best := math.Inf(-1)
+	for _, m := range mu {
+		best = math.Max(best, m)
+	}
+	if best <= 0 {
+		return nil, false // muᵀy = 1 unreachable with y ≥ 0
+	}
+	y := projectedGradient(
+		func(y []float64) float64 { return quad(cov, y) },
+		func(y []float64) []float64 { return scale(matVec(cov, y), 2) },
+		func(y []float64) []float64 { return projectMuPlane(y, mu) },
+		projectMuPlane(equalStart(len(mu), 1), mu))
+	sum := 0.0
+	for _, v := range y {
+		sum += v
+	}
+	if sum <= 0 || math.IsNaN(sum) || math.IsInf(sum, 0) {
+		return nil, false
+	}
+	w := make([]float64, len(y))
+	for i, v := range y {
+		w[i] = v / sum
+	}
+	return w, true
+}
+
+// projectMuPlane returns the Euclidean projection of v onto
+// {y : muᵀy = 1, y ≥ 0}, which is yᵢ = max(vᵢ + λ·muᵢ, 0) for the λ solving
+// muᵀy = 1. That sum is non-decreasing in λ (its slope is the sum of the
+// muᵢ² still off the floor), so a bisection finds λ. The caller must have
+// checked that some muᵢ is positive, otherwise no feasible point exists.
+func projectMuPlane(v, mu []float64) []float64 {
+	at := func(lam float64) []float64 {
+		y := make([]float64, len(v))
+		for i := range v {
+			y[i] = math.Max(v[i]+lam*mu[i], 0)
+		}
+		return y
+	}
+	sum := func(lam float64) float64 { return dot(mu, at(lam)) }
+	lo, hi := -1.0, 1.0
+	for sum(lo) > 1 {
+		lo *= 2
+	}
+	for sum(hi) < 1 {
+		hi *= 2
+	}
+	for i := 0; i < 200; i++ {
+		mid := (lo + hi) / 2
+		if sum(mid) < 1 {
+			lo = mid
+		} else {
+			hi = mid
+		}
+	}
+	return at((lo + hi) / 2)
 }
 
 // riskParity returns the long-only portfolio whose assets contribute equal
