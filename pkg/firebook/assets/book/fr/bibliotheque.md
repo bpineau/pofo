@@ -64,11 +64,21 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 ## Les rapports annuels et données vivantes
 
-**Morningstar, *The State of Retirement Income* (chaque décembre)** : le taux recommandé recalculé sur des rendements prospectifs, et le comparatif des règles. Le « second avis » annuel gratuit du plan. [[guardrails-morningstar]], [[rendements-attendus]]
+Cette section n'est pas une liste de liens, c'est le calendrier de votre revue annuelle ([[revue-annuelle]]). Chaque ligne rafraîchit un paramètre précis du plan. Une seule, la dernière, n'a pas de date imposée, et c'est la vôtre. Les mois donnés sont ceux des éditions 2025 et 2026, à revérifier de temps en temps.
 
-**Vanguard « Economic and Market Outlook » ; JP Morgan « Long-Term Capital Market Assumptions » et BlackRock « Capital Market Assumptions » ; Research Affiliates « Asset Allocation Interactive »** : les espérances prospectives. La calibration annuelle de μ. [[rendements-attendus]]
+| Publication | Parution | Ce qu'elle rafraîchit |
+|---|---|---|
+| JP Morgan, *Long-Term Capital Market Assumptions* | Octobre | Le μ prospectif, à dix ou quinze ans |
+| Vanguard, *Economic and Market Outlook* | Décembre | Le μ prospectif, en second avis |
+| Morningstar, *The State of Retirement Income* | Décembre | Le taux de retrait initial et le classement des règles |
+| Dimson-Marsh-Staunton, *Yearbook* (UBS) | Début mars | Les primes séculaires, pays par pays |
+| BlackRock, *Capital Market Assumptions* | Chaque trimestre | Le μ prospectif, en troisième avis |
+| Research Affiliates, *Asset Allocation Interactive* | Chaque mois | Le μ par classe d'actifs et par devise |
+| Shiller et [multpl.com](https://www.multpl.com) | En continu | L'ancre de valorisation |
+| INSEE, indice des prix | Chaque mois | La dérive de vos dépenses |
+| [info-retraite.fr](https://www.info-retraite.fr) | À votre date de revue | Le montant et la date de la pension |
 
-**Le site de Robert Shiller (données CAPE) et [multpl.com](https://www.multpl.com)** : le CAPE du jour, l'ancre de valorisation à relever une fois l'an. [[valorisations-et-cape]]
+Chaque source a son chapitre d'usage, [[rendements-attendus|le μ prospectif]], [[guardrails-morningstar|les guardrails]], [[diversification-internationale|les primes par pays]], [[valorisations-et-cape|le CAPE]], [[suivre-inflation|l'inflation]] et [[retraite-legale|la pension]]. Une seule règle de discipline les accompagne. Relevez ces valeurs une fois par an, à date fixe, et surtout pas au fil des titres de presse. Un μ recalibré en pleine baisse n'est plus une prévision, c'est une décision de marché déguisée ([[psychologie-du-retrait]]).
 
 **Le SG Trend Index** : le référentiel des programmes de trend. L'étalon auquel comparer tout véhicule. [[managed-futures]]
 
@@ -103,7 +113,7 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 ## L'essentiel à retenir
 
 - Quatre étages de bibliothèque : les séries vivantes (ERN, Kitces, Bogleheads), les livres de fond (Pfau, Ilmanen, Bernstein, et les non-financiers Zelinski/Perkins), les papiers sources (courts et lisibles, Bengen et Trinity se lisent en une soirée), et les rapports annuels (Morningstar, DMS, les CMA) qui font la veille.
-- Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee. La veille du plan est là.
+- Les sources officielles françaises priment tout blog sur leur domaine, chaque année : info-retraite, impots.gouv, urssaf, ameli, insee. Elles règlent le droit applicable, le calendrier ci-dessus règle les dates.
 - Les outils se croisent : un simulateur multi-modèles en laboratoire principal, TPAW et les simulateurs historiques en seconds avis, jamais un seul verdict ([[pieges-des-simulateurs]]).
 - Un parcours vaut mieux qu'un tas : les trois proposés couvrent le débutant, le quantitatif et le presque-parti. Et ce livre est conçu pour servir de carte au milieu.
 
