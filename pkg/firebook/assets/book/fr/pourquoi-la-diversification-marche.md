@@ -12,6 +12,10 @@ Quand deux actifs ne chutent pas en même temps, leur mélange a une volatilité
 
 Prenez deux actifs de même rendement attendu (disons 5 %) et de même volatilité (disons 20 %). Le portefeuille 50/50 a un rendement attendu de 5 %, toujours, quelle que soit leur relation. Sa volatilité, elle, dépend entièrement de la **corrélation** ρ entre les deux → ρ = 1 (ils bougent ensemble) donne 20 %, rien n'a changé ; ρ = 0,5 donne 17,3 % ; ρ = 0 (indépendants) donne 14,1 % ; ρ = −0,5 donne 10 %. La formule générale (la volatilité du panier vaut la racine de w²σ² + w'²σ'² + 2ww'σσ'ρ) dit tout : le seul levier est ρ, et chaque cran de corrélation en moins retire du risque gratuitement.
 
+::: figure correlation-vol
+Deux actifs de même rendement attendu et de même volatilité (20 %), mélangés à 50/50 : la volatilité du panier ne dépend que de leur corrélation. Le rendement moyen, lui, ne bouge pas d'un millimètre.
+:::
+
 D'où la première conclusion pratique, qui vaut audit : la diversification ne se compte pas en nombre de lignes, elle se compte en **corrélations basses**. Trente fonds actions ne font qu'un seul actif (corrélations 0,85-0,95 entre eux, la trentaine de noms ne dilue à peu près rien). À l'inverse, quatre briques bien choisies (actions mondiales, obligations longues, or, trend) affichent des corrélations croisées entre −0,2 et +0,3, et font plus de travail que les trente fonds ([[actifs-defensifs]], [[portefeuilles-tous-temps]]). Le bénéfice marginal s'effondre vite : passer de 1 à 4 briques décorrélées transforme le portefeuille, passer de 8 à 20 ne change presque rien et multiplie les frais et les erreurs de suivi.
 
 ## Le supplément caché : le rebalancing premium
