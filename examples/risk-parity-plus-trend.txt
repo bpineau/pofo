@@ -1,4 +1,4 @@
-# Risk-parity core + trend overlay (optimizer-weighted)
+# Risk-parity Trend -- Risk parity core + trend overlay (optimizer-weighted)
 # Idea: a broadly diversified set (equity, long & short bonds, gold,
 #   commodities, managed futures) left to the RISK-PARITY optimizer to weight --
 #   every sleeve contributes a similar share of risk. Run it and read the
