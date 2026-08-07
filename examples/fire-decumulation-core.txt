@@ -14,11 +14,12 @@
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90
+#meta sim:on
 
-56    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
-10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR, LU2951555403)
-8     KMLMSIM         # Trend leg B: direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR LU1103257975)
-12    XAUUSDSIM       # Gold (buy a physical ETC: IGLN IE00B4ND3602)
-8     CHSNSIM # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability
-3     TIP1ESIM # $ TIPS 1-10 EUR-hedged (UBS TIP1E) -- diversifies the sovereign linker risk
-3     XEONSIM    # EUR overnight cash (XEON) -- the withdrawal float
+56    NTSG            # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+10    DBMFE           # Trend leg A: CTA replication (iMGP DBi EUR, LU2951555403)
+8     KMLM            # Trend leg B: direct trend, no equity futures (buy Winton IE00BG382Q20 or AQR LU1103257975)
+12    XAUUSD          # Gold (buy a physical ETC: IGLN IE00B4ND3602)
+8     CHSN    # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability
+3     TIP1E    # $ TIPS 1-10 EUR-hedged (UBS TIP1E) -- diversifies the sovereign linker risk
+3     XEON       # EUR overnight cash (XEON) -- the withdrawal float

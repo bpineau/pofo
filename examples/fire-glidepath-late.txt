@@ -8,10 +8,11 @@
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90
+#meta sim:on
 
-62    NTSGSIM         # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
-10    DBMFESIM        # Trend leg A: CTA replication (iMGP DBi EUR)
-8     KMLMSIM         # Trend leg B: direct trend (buy Winton or AQR UCITS)
-12    XAUUSDSIM       # Gold (buy IGLN)
-4     CHSNSIM # Euro inflation-linked 1-10y (residual buffer)
-4     XEONSIM    # EUR overnight cash (XEON)
+62    NTSG            # Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
+10    DBMFE           # Trend leg A: CTA replication (iMGP DBi EUR)
+8     KMLM            # Trend leg B: direct trend (buy Winton or AQR UCITS)
+12    XAUUSD          # Gold (buy IGLN)
+4     CHSN    # Euro inflation-linked 1-10y (residual buffer)
+4     XEON       # EUR overnight cash (XEON)
