@@ -75,19 +75,19 @@ func vixSeries(pts []Point) *Series {
 // embeddedHistory returns the bundled last-resort snapshot of a symbol, if
 // any: it answers only when every live source failed and nothing is cached,
 // so a chart still renders offline at the cost of missing the latest days.
-// ^VIX serves its full daily snapshot; the euro crosses serve the long
-// long ECU/DM/EUR proxy (daily, 1971→) that normally only extends a live cross,
-// so USD↔EUR conversion keeps working offline, at monthly granularity.
+// ^VIX serves its full daily snapshot; the bundled FX crosses (EUR, GBP, JPY,
+// CHF) serve their long daily FRED proxy (1971→) that normally only extends a
+// live cross, so USD↔<CCY> conversion keeps working offline.
 func embeddedHistory(symbol string) (*Series, bool) {
 	switch symbol {
 	case vixSymbol:
 		return vixSeries(parseAnchors(vixSnapshot, "2006-01-02")), true
 	}
-	if proxy, ok := eurusdLongCross(symbol); ok {
+	if proxy, _, ok := longFXCross(symbol); ok {
 		base, quote, _ := fxCross(symbol)
 		return &Series{
 			Symbol:   symbol,
-			Name:     base + "/" + quote + " (bundled monthly proxy)",
+			Name:     base + "/" + quote + " (bundled long proxy)",
 			Currency: quote,
 			Source:   "fred",
 			Points:   proxy,
