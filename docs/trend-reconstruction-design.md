@@ -6,9 +6,44 @@ fund, and the trend overlay inside RSST and RSBT) are built, what was
 measured, and what is still open. Read this before touching
 `pkg/simgen/tsmom.go`, `pkg/simgen/trendanchor.go` or the trend recipes.
 
+## The rule that comes first
+
+**Where a real NAV of the same trade exists, use it.** A futures-price
+reconstruction agrees with the fund it replicates at a monthly correlation
+near 0.6; the NAV of another real managed-futures fund agrees at 0.7 to 0.97.
+`DonorChain` therefore splices real NAVs behind each fund for as far back as
+they go, nearest trade first, each volatility-matched to the fund over their
+common window. The reconstruction below only covers what no real NAV reaches,
+which for this family means before 2007.
+
+| Fund | Real from | Donors, nearest first | Reconstruction only before |
+|---|---|---|---|
+| DBMF | 2019-05 | AlphaSimplex 2010-08 (0.81), Guggenheim 2007-02 (0.72) | 2007-02 |
+| DBMF UCITS USD | 2025-03 | DBMF 2019-05 (0.97), then as above | 2007-02 |
+| DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 2007-02 |
+| AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02 | 2007-02 |
+| KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02 | 2007-02 |
+| Simplify CTA | 2022-03 | AHL 2014-08, AlphaSimplex 2010-08, Guggenheim 2007-02 | 2007-02 |
+
+Measured effect on the reconstruction, before and after (daily / weekly
+correlation with the fund, tracking error, CAGR gap):
+
+| Fund | Before | After |
+|---|---|---|
+| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.69 / 0.75, 9.7 %, -4.2 pts** |
+| DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.65 / 0.85, 10.0 %, +0.1 pt** |
+| DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.36 / 0.71, 17.3 %, -0.3 pt** |
+| AQR UCITS A | 0.37 / 0.55, 10.6 %, -4.8 pts | **0.73 / 0.92, 6.8 %, +0.1 pt** |
+| KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -2.3 pts** |
+| Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.44 / 0.45, 17.9 %, -4.6 pts** |
+
+The donor brings its own manager and fee load with it, which is the honest
+price: the reconstruction is no longer "what this fund would have done" but
+"what this trade actually paid, run by the closest managers we can observe".
+
 ## The three layers
 
-A reconstruction is assembled in three separable layers, each answering a
+What is left to the reconstruction is assembled in three separable layers, each answering a
 different question, each validated on its own.
 
 | Layer | What it decides | Where |

@@ -70,7 +70,17 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	ezu := mkWave("EZU", n, 3e-4, 0.011, 1.1, 0.9)
 	eunh := mkWave("EUNH.DE", n, 2e-4, 0.003, 1.6, 0.5)
 
+	// The real managed-futures NAVs the trend recipes chain behind their
+	// funds (DonorChain): the fund calibrated on, then its donors.
+	mf := func(name string, amp, freq, phase float64) *marketdata.Series {
+		return mkWave(name, n, 2e-4, amp, freq, phase)
+	}
+
 	f := fakeFetcher{
+		"DBMF": mf("DBMF", 0.008, 1.05, 0.3), "ASFYX": mf("ASFYX", 0.009, 1.05, 0.35),
+		"RYMFX": mf("RYMFX", 0.007, 1.05, 0.4), "AHLPX": mf("AHLPX", 0.010, 1.05, 0.45),
+		"AQMIX": mf("AQMIX", 0.008, 1.05, 0.5), "KMLM": mf("KMLM", 0.010, 1.05, 0.55),
+		"CTA": mf("CTA", 0.012, 1.05, 0.6), "LU1103257975": mf("LU1103257975", 0.007, 1.05, 0.65),
 		"VFINX": vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
