@@ -227,12 +227,12 @@ cross-asset correlations, then compound to the annual withdrawal cycle.
 Everything is in real euros; the model is a fat-tailed hypothesis-exploration
 tool, **not investment advice**.
 
-The explorer also embeds **the FIRE book** at `/book/fr/` (a small `book`
-link sits at the bottom of the "How this machine works" fold): a
-French-language handbook of decumulation, withdrawal strategies, resilient
-portfolios, buffers and French taxation, written as cross-linked articles
-and served straight from the binary (`pkg/firebook`; an English translation
-will join at `/book/en/` later).
+The explorer also embeds **the FIRE book** ("Le FIRE tranquille") at
+`/firebook/fr/` (a small link sits at the bottom of the "How this machine
+works" fold): a French-language handbook of decumulation, withdrawal
+strategies, resilient portfolios, buffers and French taxation, written as
+cross-linked articles and served straight from the binary (`pkg/firebook`;
+an English translation will join at `/firebook/en/` later).
 
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
@@ -249,7 +249,7 @@ single port:
 | `/` | the **hub**: the bundled example portfolios, tick any and compare them |
 | `/view` | the **visualizer**: the same HTML comparison report the CLI writes, addressed by a shareable URL |
 | `/fire/` | the **FIRE simulator** (`-fire`, mounted under a prefix) |
-| `/book/fr/` | the **FIRE book**, with a small nav bar back to the other surfaces |
+| `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
 
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/

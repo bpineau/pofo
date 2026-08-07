@@ -18,8 +18,8 @@ func Handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux.Handle("/", http.FileServer(http.FS(mustSub())))
 	// The FIRE book (pkg/firebook), linked discreetly from the page's
 	// "How this machine works" fold. The language segment leaves room for
-	// the planned English translation at /book/en/.
-	mux.Handle("/book/fr/", http.StripPrefix("/book/fr", firebook.Handler()))
+	// the planned English translation at /firebook/en/.
+	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.Handler()))
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {

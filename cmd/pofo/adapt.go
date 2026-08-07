@@ -19,7 +19,7 @@ const siteNavCSS = `.site-nav{display:flex;gap:1.2rem;align-items:baseline;max-w
 	`.site-nav a:first-child{color:var(--accent-ink)}`
 
 var siteNavHTML = template.HTML(`<nav class="site-nav">` +
-	`<a href="/">Portfolios</a><a href="/fire/">FIRE simulator</a><a href="/book/fr/">FIRE book</a>` +
+	`<a href="/">Portfolios</a><a href="/fire/">FIRE simulator</a><a href="/firebook/fr/">Le FIRE tranquille</a>` +
 	`</nav>`)
 
 // compareOptions maps the CLI options onto the pkg/compare inputs.

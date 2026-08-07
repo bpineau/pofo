@@ -57,7 +57,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/suggest` | macro-regime/factor coverage, look-through composition splits (asset classes, geography, currency exposure, equity sectors, duration), redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
 | `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; `web/` = embedded live UI |
-| `pkg/firebook` | the FIRE book: embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler), served by the fire UI at `/book/fr/`; plan, depth conventions and progress ledger in `docs/fire-book-design.md` |
+| `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); plan, depth conventions and progress ledger in `docs/fire-book-design.md` |
 | `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM, regression backcasts) into simdata files |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |

@@ -1,6 +1,6 @@
 // The -serve mode: the pofo web constellation on one local port: the hub
 // and /view visualizer (this file and hub.go), the FIRE explorer under
-// /fire/, and the FIRE book under /book/fr/.
+// /fire/, and the FIRE book under /firebook/fr/.
 package main
 
 import (
@@ -99,7 +99,12 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		{Label: "Portefeuilles", Href: "/"},
 		{Label: "Simulateur", Href: "/fire/"},
 	}
-	mux.Handle("/book/fr/", http.StripPrefix("/book/fr", firebook.Handler(firebook.WithNav(nav))))
+	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.Handler(firebook.WithNav(nav))))
+	// The book moved from /book/ to /firebook/; keep the old path working with
+	// a permanent redirect so existing bookmarks and links do not break.
+	mux.HandleFunc("/book/fr/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/firebook"+strings.TrimPrefix(r.URL.Path, "/book"), http.StatusMovedPermanently)
+	})
 	css := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodGet {
