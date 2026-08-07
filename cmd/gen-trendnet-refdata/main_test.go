@@ -5,7 +5,66 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/cmd/internal/xls"
 )
+
+// sheet is the published layout in the form the workbook reader hands over: a
+// header cell naming the rate-of-return block, a row of month names, then one
+// row per year holding the year and its monthly returns. Months the index does
+// not cover are simply absent, as they are in the real file.
+func sheet(header string) []xls.Cell {
+	return []xls.Cell{
+		{Row: 0, Col: 5, Text: header, IsText: true},
+		{Row: 1, Col: 1, Text: "Jan", IsText: true},
+		{Row: 2, Col: 0, Num: 1987},
+		{Row: 2, Col: 1, Num: 0.11},
+		{Row: 2, Col: 2, Num: -0.02},
+		{Row: 2, Col: 3, Num: 0.03},
+		{Row: 3, Col: 0, Num: 1988},
+		{Row: 3, Col: 1, Num: 0.05},
+		{Row: 3, Col: 2, Num: -0.07},
+	}
+}
+
+func TestParseSheet(t *testing.T) {
+	months, err := parse(sheet("TEST Index Historical Data ROR"))
+	if err != nil {
+		t.Fatalf("parse: %v", err)
+	}
+	want := []point{
+		{monthEndOf(1987, time.January), 0.11},
+		{monthEndOf(1987, time.February), -0.02},
+		{monthEndOf(1987, time.March), 0.03},
+		{monthEndOf(1988, time.January), 0.05},
+		{monthEndOf(1988, time.February), -0.07},
+	}
+	if len(months) != len(want) {
+		t.Fatalf("got %d months, want %d: %v", len(months), len(want), months)
+	}
+	for i, w := range want {
+		if !months[i].date.Equal(w.date) || math.Abs(months[i].ret-w.ret) > 1e-12 {
+			t.Errorf("month %d = %s %.4f, want %s %.4f",
+				i, months[i].date.Format("2006-01"), months[i].ret, w.date.Format("2006-01"), w.ret)
+		}
+	}
+}
+
+func TestParseWithoutBlockHeader(t *testing.T) {
+	// The same sheet, but the header cell no longer says "ROR".
+	if _, err := parse(sheet("TEST Index Historical Data VAMI")); err == nil {
+		t.Fatal("parsed a sheet with no rate-of-return block")
+	}
+}
+
+// A level where a return belongs is the layout having moved under the
+// generator, not a wild month: it must stop rather than ship it.
+func TestParseRejectsALevel(t *testing.T) {
+	cells := append(sheet("TEST Index Historical Data ROR"), xls.Cell{Row: 3, Col: 3, Num: 1234.5})
+	if _, err := parse(cells); err == nil {
+		t.Fatal("parsed a level as a monthly return")
+	}
+}
 
 // series builds n consecutive months from 1987-01, each returning ret with an
 // alternating swing of amp around it, which is enough to give the sanity gates
