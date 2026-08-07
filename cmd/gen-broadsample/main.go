@@ -5,7 +5,9 @@
 //
 // Source: O. Jorda, M. Schularick, A. M. Taylor, "Macrofinancial History and
 // the New Business Cycle Facts", NBER Macroeconomics Annual 2016. Database R6,
-// 18 advanced economies, 1870-2020, free to use with citation.
+// 18 advanced economies, 1870-2020, free to use with citation. Countries with
+// no equity total-return series (Canada, Ireland) drop out, leaving 16 in the
+// output panel.
 //
 // Method: for each country-year, nominal total returns (eq_tr, bond_tr) and the
 // bill rate are deflated by that country's CPI to real returns. The output is a
@@ -261,7 +263,11 @@ func realReturns(rows []map[string]string) ([]record, error) {
 
 func writeCSV(path, url string, recs []record) error {
 	var b strings.Builder
-	fmt.Fprintf(&b, "# Per-country real annual total returns (fractions), 18 advanced economies.\n")
+	byISO := map[string]bool{}
+	for _, r := range recs {
+		byISO[r.ISO] = true
+	}
+	fmt.Fprintf(&b, "# Per-country real annual total returns (fractions), %d advanced economies.\n", len(byISO))
 	fmt.Fprintf(&b, "# Source: Jorda-Schularick-Taylor Macrohistory Database R6\n")
 	fmt.Fprintf(&b, "# (%s), each series deflated by its own CPI. Cite JST when reusing.\n", url)
 	fmt.Fprintf(&b, "# The FIRE explorer pool-bootstraps single-market runs from this table, so\n")
