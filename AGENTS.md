@@ -137,8 +137,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
   the macro drivers live in `pkg/datasets/macropanel`.
-- Eurozone Efficient Core (NTSZ) / euro-native backcasts: read
+- Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
+  govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
-  series (`EMU-EUR`, `EUROGOV-EUR`, `EUROGOV-DAILY`, `DECASH-EUR`) come from
-  DBnomics via `cmd/gen-euro-refdata` (`make euro-refdata`); note the equity-leg
-  daily-vol/FX caveat there.
+  series (`EMU-EUR`, `EUROGOV-EUR{,-DAILY}`, `EUROGOV-LONG-EUR{,-DAILY}` for the
+  25+ segment, `DECASH-EUR`) come from DBnomics via `cmd/gen-euro-refdata`
+  (`make euro-refdata`); note the equity-leg daily-vol/FX caveat there, and that
+  the long sleeve is a real `TreasuryTR` long-bond reconstruction (never a
+  levered short bond, which overstates a bond bull).

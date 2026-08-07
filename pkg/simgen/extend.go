@@ -78,6 +78,7 @@ var dailyShape = map[string]string{
 	"TREASURY-LONG-USD": "TREASURY-LONG-DAILY", // FRED DGS20 daily 20y CMT through TreasuryTR, 1962→1986
 	"WTI-USD":           "WTI-DAILY",           // FRED DCOILWTICO daily WTI spot, 1986→2000
 	"EUROGOV-EUR":       "EUROGOV-DAILY",       // ECB daily euro-area 10y yield through TreasuryTR, 2004→
+	"EUROGOV-LONG-EUR":  "EUROGOV-LONG-DAILY",  // ECB daily euro-area 30y yield through TreasuryTR, 2004→
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
