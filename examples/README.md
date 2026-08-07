@@ -78,6 +78,9 @@ rather than recomputing it (and drifting) on every run.
 ## Tail-risk / trend (anti-fragile)
 
 - `dragon-portfolio-artemis`: Chris Cole's Dragon (equity/bonds/gold/trend/long-vol).
+- `claude-dragonlite`: the Dragon distilled to three buyable UCITS lines
+  (NTSG/trend/gold, no long vol, growth-heavier than Cole); the family's
+  simplicity flagship, with its own design notes and honest range check.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
