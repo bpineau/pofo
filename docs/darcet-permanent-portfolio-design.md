@@ -15,7 +15,7 @@ our reconstruction or our empirical result.
 
 ## 1. Epistemic tags (READ THIS FIRST)
 
-Ben's first requirement: never confuse what was *described in advance* (more
+Cardinal rule of this document: never confuse what was *described in advance* (more
 reliable) with what we *found by fitting data* (overfit risk). Every claim below
 carries one tag:
 

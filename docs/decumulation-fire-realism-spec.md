@@ -1,4 +1,4 @@
-# Decumulation / FIRE — realism & conservatism spec
+# Decumulation / FIRE: realism & conservatism spec
 
 Status: DONE (2026-06-29). W1 (flex cut off by default), W2 (honest return
 defaults + conservative-prior toggle), W3 (sequence risk + fat left tail) and
@@ -53,7 +53,7 @@ Already shipped (honesty only, numbers unchanged): a short-history warning
 
 ## 3. Workstreams
 
-### W1 — Default the flex cut OFF (highest impact) ✅ Done (2026-06-29)
+### W1: Default the flex cut OFF (highest impact) ✅ Done (2026-06-29)
 
 **Problem.** `flexCut` defaults to 0.25, so the headline is "4% *and I cut 25%
 in a crash*", which roughly halves ruin vs the fixed 4% rule everyone means.
@@ -70,7 +70,7 @@ fixed-withdrawal figure; turning flex on visibly lowers ruin.
 
 **Priority: P1.**
 
-### W2 — More honest return defaults + a "conservative prior" toggle ✅ Done (2026-06-29)
+### W2: More honest return defaults + a "conservative prior" toggle ✅ Done (2026-06-29)
 
 Implemented: default sliders raised to mu 0.04 / sigma 0.16 / df 5 (from
 0.045 / 0.12 / 6), and a "Conservative broad-sample prior" toggle that overrides
@@ -95,7 +95,7 @@ from a short favourable window are optimistic: low vol, high mean, thin tails.
   prior rather than only the (thin) fitted sample.
 
 **Files.** `pkg/decumul/web/assets/app.js` (SLIDERS, a toggle), `model.go`
-(apply the prior when set), `portfolio.go` (`FitParametric` — optionally blend
+(apply the prior when set), `portfolio.go` (`FitParametric`: optionally blend
 toward the prior, or expose both fitted and prior values).
 
 **Acceptance.** The toggle moves the headline up to the broad-sample regime;
@@ -103,7 +103,7 @@ documented and round-tripped through the URL hash.
 
 **Priority: P1.**
 
-### W3 — Capture sequence risk and the fat left tail ✅ Done (2026-06-29)
+### W3: Capture sequence risk and the fat left tail ✅ Done (2026-06-29)
 
 Implemented the synthetic route (the bundled-dataset option was avoided given
 the stdlib-only / embedded-data and licensing constraints): a new
@@ -138,7 +138,7 @@ within a stated tolerance.
 
 **Priority: P2** (larger; the highest-fidelity item).
 
-### W4 — Horizon / longevity nudge ✅ Done (2026-06-29)
+### W4: Horizon / longevity nudge ✅ Done (2026-06-29)
 
 Implemented: the horizon slider now defaults to 45 (from 40), allows up to 60,
 and is relabelled "Horizon (years from today)", with a caveat note to set it
