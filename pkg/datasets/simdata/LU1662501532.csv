@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS (EUR-hedged): TSMOM replication hedged to EUR
 # method: USD AQR managed-futures backcast (12-month TSMOM, IR-pinned; real AQR USD LU1103257975 grafted from 2015) re-expressed EUR-hedged via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR), real LU1662501532 grafted from 2025
 # validation: corr=0.998 (weekly 0.998) beta=1.05 TE=0.9%/yr CAGR sim 6.70% vs real 8.94% (overlap 1265 d from 2021-04-01 to 2026-06-30) vs LU1662501532
-# generated: 2026-07-16
+# generated: 2026-07-18
 date,close
 1994-12-19,17.957057
 1994-12-20,17.795006

@@ -96,9 +96,11 @@ func TestMSCIWorldBlendsDailyShape(t *testing.T) {
 		t.Errorf("first = %+v, want the 1969-12 anchor at 100", p)
 	}
 	// A shape-era anchor keeps its exact net-TR level (fee 0 here): March
-	// 1990 is 243 months after 1969-12.
+	// 1990 is 243 months after 1969-12. alignMonthEnd snaps the monthly anchor
+	// onto the shape's last day of the month, so the level lands on 1990-03-31,
+	// not the anchor's own first-of-month label.
 	want := 100 * math.Pow(1.01, 243)
-	at := time.Date(1990, 3, 1, 0, 0, 0, 0, time.UTC)
+	at := time.Date(1990, 3, 31, 0, 0, 0, 0, time.UTC)
 	rate, _, ok := got.At(at)
 	if !ok || math.Abs(rate-want)/want > 1e-9 {
 		t.Errorf("1990-03 level = %v, want %v (net anchor preserved)", rate, want)

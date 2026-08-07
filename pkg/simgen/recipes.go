@@ -974,6 +974,14 @@ func sp500Index(annualFee float64, fallback func(Fetcher, time.Time) (*marketdat
 // shapedSeries never drops anchors a truncated shape fails to cover. The
 // >300-point guards distinguish the real long series from a short fetch of
 // the same symbol.
+//
+// The anchor levels are month-END total returns (a point for month M is that
+// month's closing level); alignMonthEnd snaps each onto the shape's own last
+// trading day of the month first, so the monthly level is pinned to the real
+// month-end close and the daily shape fills the days between. Skip that step and
+// a calendar-month-end anchor whose end lands on a weekend pins one trading day
+// into the next month, sliding the whole reconstruction (this is exactly how a
+// naive blend understated the 2022 drawdown by ten points).
 func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		anchor, err := f.Fetch(anchorID, from)
@@ -982,7 +990,7 @@ func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetc
 		}
 		out := anchor
 		if shape, serr := f.Fetch(shapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
-			out = shapedSeries(anchor, shape)
+			out = shapedSeries(alignMonthEnd(anchor, shape), shape)
 		}
 		return afterFee(out, annualFee), nil
 	}
