@@ -326,3 +326,67 @@ func TestTSMOMCutsRiskIntoAVolatilitySpike(t *testing.T) {
 		t.Errorf("worst day %.2f%% is more than eight daily sigmas of the volatility target", reactive*100)
 	}
 }
+
+// TestDensifySparseDonorKeepsTheNAVsAndTheTexture is the weekly-donor trap in
+// miniature: a fund that deals once a week would otherwise contribute
+// week-sized steps to a daily file, and metrics, which annualize per
+// observation, would read them as roughly sqrt(5) times the fund's real
+// volatility. The projection must keep every NAV to the cent and take the
+// day-to-day moves from the engine.
+func TestDensifySparseDonorKeepsTheNAVsAndTheTexture(t *testing.T) {
+	const n = 700
+	texture := mkWobbly("TEXTURE", n, 2e-4, 0.008)
+
+	// A weekly donor with a path of its own: same dates as every 5th texture
+	// point, so each NAV must be reproduced exactly.
+	donor := &marketdata.Series{Symbol: "WEEKLY"}
+	v := 50.0
+	for i := 0; i < n; i += 5 {
+		donor.Points = append(donor.Points, marketdata.Point{Date: day(i), Close: v})
+		v *= 1 + 0.001 + 0.02*math.Cos(float64(i)/7)
+	}
+
+	if !sparse(donor, time.Time{}) {
+		t.Fatal("a one-a-week donor must read as sparse")
+	}
+	if sparse(texture, time.Time{}) {
+		t.Fatal("a daily series must not read as sparse")
+	}
+
+	out := densify(donor, texture, time.Time{})
+	if len(out.Points) < n-10 {
+		t.Fatalf("projection returned %d points, want a daily calendar of about %d", len(out.Points), n)
+	}
+	// Every real NAV survives, at its own date and to the cent.
+	scale := out.Points[0].Close / donor.Points[0].Close
+	for _, a := range donor.Points {
+		got, _, ok := out.At(a.Date)
+		if !ok {
+			t.Fatalf("NAV of %s lost", a.Date.Format("2006-01-02"))
+		}
+		if math.Abs(got/(a.Close*scale)-1) > 1e-9 {
+			t.Errorf("NAV of %s: %v, want %v", a.Date.Format("2006-01-02"), got, a.Close*scale)
+		}
+	}
+	// The realized daily volatility is the texture's, not the cadence's. Read
+	// as daily observations, the raw weekly donor annualizes far above it.
+	got := annualVol(out.Points)
+	want := annualVol(texture.Points)
+	if got > 2*want {
+		t.Errorf("projected daily volatility %.1f %%, texture %.1f %%: the cadence is still showing", got*100, want*100)
+	}
+	if raw := annualVol(donor.Points); raw < 2*want {
+		t.Fatalf("the fixture is too tame to be a test: raw weekly volatility %.1f %% against %.1f %%", raw*100, want*100)
+	}
+}
+
+// annualVol is the standard deviation of a series' point-to-point returns,
+// annualized the way pkg/metrics does it (252 observations a year), which is
+// exactly the convention a sparse donor would mislead.
+func annualVol(ps []marketdata.Point) float64 {
+	var rs []float64
+	for i := 1; i < len(ps); i++ {
+		rs = append(rs, ps[i].Close/ps[i-1].Close-1)
+	}
+	return stdev(rs) * math.Sqrt(252)
+}
