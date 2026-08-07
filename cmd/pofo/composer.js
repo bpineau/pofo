@@ -141,6 +141,7 @@
       "p=40%20VUAA,30%20IB01",
       "ex=claude-dragonlite&p=IWDA:60,IGLN:40",
       "ex=claude-dragonlite&currency=EUR&rebalance=90&sim=on&bench=IWDA&start=2010-01-01&end=2026-06-30",
+      "p=IWDA:60,IGLN:40&p=AVUV:100", // a freshly added second portfolio serializes cleanly
       ""
     ];
     var ok = 0;
@@ -320,12 +321,12 @@
     input.classList.toggle("bad", v !== "" && !known.has(v));
   }
 
-  var acBox = null, acInput = null, acItems = [], acPos = -1;
+  var acBox = null, acInput = null, acPos = -1;
 
   // closeAC dismisses the autocomplete dropdown.
   function closeAC() {
     if (acBox && acBox.parentNode) acBox.parentNode.removeChild(acBox);
-    acBox = null; acInput = null; acItems = []; acPos = -1;
+    acBox = null; acInput = null; acPos = -1;
   }
 
   // openAC shows catalog matches for the focused id input: a case-insensitive
@@ -349,7 +350,6 @@
     if (hits.length === 0) return;
     acBox = document.createElement("div");
     acBox.className = "ac";
-    acItems = hits;
     hits.forEach(function (a, i) {
       var d = document.createElement("div");
       if (i === 0) d.className = "on";
@@ -464,7 +464,11 @@
       sel.appendChild(opt);
     });
     sel.addEventListener("change", function () {
-      state.globals[key] = key === "currency" ? normCurrency(sel.value) : sel.value;
+      // The option values are already the canonical grammar tokens, "" among
+      // them. Do NOT fold ""->native here: "" must omit the parameter so the
+      // server default stays reachable (normCurrency is a parse-time concern,
+      // guarded there by q.has("currency")).
+      state.globals[key] = sel.value;
       commit();
     });
     f.appendChild(l);
@@ -504,7 +508,9 @@
     Object.assign(port, parsed);
     port._el = el;
     el.__cmpPort = port;
-    el.removeAttribute("data-fork-" + indexOfPort(port));
+    // Use the attribute name captured at hydrate time: state.ports.indexOf
+    // would go stale after a preceding removePort shifts the indices.
+    if (port._forkAttr) el.removeAttribute(port._forkAttr);
 
     var kind = el.querySelector(".kind");
     if (kind) { kind.textContent = "p="; kind.className = "kind p"; }
@@ -517,11 +523,6 @@
     enhanceHead(port);
     if (payload.dropped && payload.dropped.length) addNote(el, payload.dropped);
     commit();
-  }
-
-  // indexOfPort returns a port's position (its data-fork index).
-  function indexOfPort(port) {
-    return state.ports.indexOf(port);
   }
 
   // addNote shows the dropped-content list under a forked card, dismissible.
@@ -566,7 +567,97 @@
     var i = state.ports.indexOf(port);
     if (i >= 0) state.ports.splice(i, 1);
     if (port._el && port._el.parentNode) port._el.parentNode.removeChild(port._el);
+    refreshAddPortState();
     commit();
+  }
+
+  // buildShell creates a bare editable p= card matching the server template
+  // structure, so the delegated handlers and selectors work on it unchanged.
+  function buildShell() {
+    var card = document.createElement("div");
+    card.className = "pcard";
+    var head = document.createElement("div");
+    head.className = "pcard-head";
+    var kind = document.createElement("span");
+    kind.className = "kind p";
+    kind.textContent = "p=";
+    var name = document.createElement("input");
+    name.className = "pname";
+    name.placeholder = "name";
+    var grow = document.createElement("span");
+    grow.className = "grow";
+    head.appendChild(kind);
+    head.appendChild(name);
+    head.appendChild(grow);
+    var body = document.createElement("div");
+    body.className = "pcard-body";
+    card.appendChild(head);
+    card.appendChild(body);
+    return card;
+  }
+
+  // addPortfolio appends a fresh editable p= card within the port cap (which
+  // counts ex= rows too), opens the panel and rewrites the URL.
+  function addPortfolio() {
+    if (state.ports.length >= CAP_PORTS) return;
+    var port = { kind: "p", raw: "", name: "", nameSet: false, holdings: [{ id: "", w: "" }], metas: {} };
+    state.ports.push(port);
+    var card = buildShell();
+    var stack = panelEl.querySelector(".stack");
+    var addBtn = stack.querySelector(".addport");
+    stack.insertBefore(card, addBtn);
+    port._el = card;
+    card.__cmpPort = port;
+    renderBody(port);
+    enhanceHead(port);
+    panelEl.open = true;
+    refreshAddPortState();
+    commit();
+  }
+
+  // refreshAddPortState disables the add-portfolio button at the port cap.
+  function refreshAddPortState() {
+    var btn = panelEl.querySelector(".addport");
+    if (btn) btn.disabled = state.ports.length >= CAP_PORTS;
+  }
+
+  // renderOpaque locks a card whose p= the editor cannot express: the raw value
+  // is shown read-only with a note and no editable fields (serialization passes
+  // it through verbatim). Removal stays allowed. This closes the silent
+  // data-loss path where a server-accepted p= the parser reads as opaque would
+  // otherwise bind an editable card to an opaque port and drop the edits.
+  function renderOpaque(port) {
+    var el = port._el;
+    var kind = el.querySelector(".kind");
+    if (kind) { kind.textContent = "manual"; kind.className = "kind lock"; }
+    var name = el.querySelector(".pname");
+    if (name) name.readOnly = true;
+    var body = el.querySelector(".pcard-body");
+    body.textContent = "";
+    var box = document.createElement("div");
+    box.className = "opaque";
+    var lk = document.createElement("span");
+    lk.className = "lk";
+    lk.textContent = "\u{1F512}";
+    var raw = document.createElement("span");
+    raw.textContent = " " + port.raw;
+    var note = document.createElement("span");
+    note.className = "g";
+    note.textContent = "Carries options the editor cannot show. Locked as text; remove it to drop it.";
+    box.appendChild(lk);
+    box.appendChild(raw);
+    box.appendChild(document.createElement("br"));
+    box.appendChild(note);
+    body.appendChild(box);
+    var head = el.querySelector(".pcard-head");
+    if (head && !head.querySelector(".pdrop")) {
+      var drop = document.createElement("button");
+      drop.className = "pdrop";
+      drop.type = "button";
+      drop.title = "Remove this portfolio";
+      drop.textContent = "×";
+      head.appendChild(drop);
+    }
   }
 
   // ---- wiring -------------------------------------------------------------
@@ -581,7 +672,7 @@
     panelEl.addEventListener("input", function (e) {
       var t = e.target;
       var port = portOf(t);
-      if (!port) return;
+      if (!port || port.kind === "opaque") return; // opaque cards carry no editable fields
       var wasName = t.classList.contains("pname");
       if (wasName) port.nameSet = true;
       syncCard(port);
@@ -627,6 +718,7 @@
       if (t.classList.contains("norm") && port) { normalize(port); return; }
       if (t.classList.contains("pdrop") && port) { removePort(port); return; }
       if (t.classList.contains("fork") && port && port._fork) { fork(port, port._fork); return; }
+      if (t.classList.contains("addport")) { addPortfolio(); return; }
       if (t.classList.contains("btn-run")) { run(); return; }
     });
 
@@ -667,14 +759,31 @@
       port._el = cards[i];
       cards[i].__cmpPort = port;
       if (port.kind === "p") { renderBody(port); enhanceHead(port); }
+      else if (port.kind === "opaque") { renderOpaque(port); }
     }
     forks.forEach(function (f) {
-      if (f.card.__cmpPort) f.card.__cmpPort._fork = f.fork;
+      if (f.card.__cmpPort) {
+        f.card.__cmpPort._fork = f.fork;
+        f.card.__cmpPort._forkAttr = "data-fork-" + f.index;
+      }
     });
+    mountAddPortfolio();
     buildGlobals();
     wire();
     refreshBudget();
     loadCatalog();
+  }
+
+  // mountAddPortfolio appends the add-portfolio button to the card stack.
+  function mountAddPortfolio() {
+    var stack = panelEl.querySelector(".stack");
+    if (!stack || stack.querySelector(".addport")) return;
+    var btn = document.createElement("button");
+    btn.className = "addport";
+    btn.type = "button";
+    btn.textContent = "+ add portfolio";
+    stack.appendChild(btn);
+    refreshAddPortState();
   }
 
   // loadCatalog fetches /catalog.json and lights up autocomplete and inline id
