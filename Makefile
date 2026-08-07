@@ -59,6 +59,11 @@ simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the b
 	./pofo -gen-simdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: broadsample
+broadsample: ## (Re)generate the bundled JST broad-sample panel (network) then rebuild
+	$(GO) run ./cmd/gen-broadsample
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
 	./pofo examples/*.txt
