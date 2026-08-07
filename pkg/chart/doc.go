@@ -20,6 +20,14 @@
 //     The palette is the "instrument" identity set (petrol first); its
 //     slot order is validated for adjacent-pair distinctness under common
 //     color vision deficiencies and must not be permuted casually.
+//     For a chart that draws n series at once, prefer PaletteFor(n): it
+//     picks WHICH n hues to use so the least distinguishable pair of the
+//     set is as far apart as possible (measured in OKLab, for normal
+//     vision and for the three common deficiencies). Taking the first n
+//     slots instead pairs rust with ochre from four series on, the
+//     palette's closest pair. PaletteColor stays the right call for fixed
+//     vocabularies (asset classes, regimes), where an entity's color must
+//     not depend on how many others are on screen.
 //
 // Line labels sub-day spans with clock times (HH:MM), so the same
 // renderer draws both daily and intraday series without any extra

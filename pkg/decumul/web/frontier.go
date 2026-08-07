@@ -33,7 +33,11 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 	paths := min(pr.NPaths, shapePaths)
 
 	var series []chart.XYSeries
-	for i, ns := range modelSources(pr, panel) {
+	models := modelSources(pr, panel)
+	// One color per model, chosen as a set so the curves stay tellable apart
+	// (chart.PaletteFor), not as a running index into the palette.
+	pal := chart.PaletteFor(len(models))
+	for i, ns := range models {
 		// Only NeedAnnual (and the guardrails band) vary along a model's curve;
 		// the Source is fixed, so draw its paths once and replay them at every
 		// withdrawal rate instead of re-sampling eleven times.
@@ -55,7 +59,7 @@ func Frontier(pr Params, panel *scenario.Panel) FrontierResult {
 			xs[j] = wr * 100
 			ys[j] = p.SimulateOn(seqs, simWorkers).RuinProb() * 100
 		}
-		series = append(series, chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: chart.PaletteColor(i)})
+		series = append(series, chart.XYSeries{Name: ns.name, Xs: xs, Ys: ys, Color: pal[i]})
 	}
 
 	target := pr.TargetRuin

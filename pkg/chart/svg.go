@@ -120,13 +120,14 @@ func Line(opt Options, series []Series) string {
 
 	// Decimate long series and compute global bounds.
 	plot := make([]Series, len(series))
+	pal := PaletteFor(len(series))
 	var tmin, tmax int64 = math.MaxInt64, math.MinInt64
 	vmin, vmax := math.Inf(1), math.Inf(-1)
 	for i, s := range series {
 		d, v := decimate(s.Dates, s.Values)
 		color := s.Color
 		if color == "" {
-			color = defaultPalette[i%len(defaultPalette)]
+			color = pal[i]
 		}
 		plot[i] = Series{Name: s.Name, Dates: d, Values: v, Color: color}
 		for j := range d {

@@ -85,11 +85,10 @@ func contributionCharts(r *column) (timeline, monthly, matrix template.HTML) {
 		return "", "", ""
 	}
 	labels := make([]string, len(r.p.Assets))
-	colors := make([]string, len(r.p.Assets))
+	colors := chart.PaletteFor(len(r.p.Assets))
 	for i, a := range r.p.Assets {
 		base, _ := marketdata.SplitSim(a.ID)
 		labels[i] = base
-		colors[i] = chart.PaletteColor(i)
 	}
 	quads := monthQuadrants(months)
 	return template.HTML(contribTimeline(months, mc, quads, labels, colors, 12)),

@@ -46,6 +46,9 @@ func Vintages(pr Params, _ *scenario.Panel) VintagesResult {
 		byISO[c.ISO] = c
 	}
 	var series []chart.XYSeries
+	// Set-aware colors: five or six vintages on one chart need hues chosen
+	// together, not the palette's first five slots (chart.PaletteFor).
+	pal := chart.PaletteFor(len(vintageList))
 	var cards []Card
 	truncated := false
 	for i, v := range vintageList {
@@ -72,7 +75,7 @@ func Vintages(pr Params, _ *scenario.Panel) VintagesResult {
 		for k := range res.Wealth {
 			xs[k], ys[k] = float64(k), res.Wealth[k]/1e6
 		}
-		series = append(series, chart.XYSeries{Name: v.label, Xs: xs, Ys: ys, Color: chart.PaletteColor(i)})
+		series = append(series, chart.XYSeries{Name: v.label, Xs: xs, Ys: ys, Color: pal[i]})
 
 		cards = append(cards, Card{v.label, vintageVerdict(res.Ruined, res.RuinYear, years, pr.Years,
 			res.Wealth[len(res.Wealth)-1]), v.story})

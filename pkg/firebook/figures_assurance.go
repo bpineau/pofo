@@ -172,7 +172,7 @@ func figEchelleDuCash() string {
 	fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="1" height="%.1f" fill="%s"/>`,
 		midX, top-20, float64(len(rungs))*rowH-8, figGrid)
 	b.WriteString(sTxt(24, 300, 10.5, figMuted, "start", "400",
-		"Les deux barres n'ont pas la même unité de temps : le gain est annuel, la perte est un accident."))
+		"Les deux barres n'ont pas la même unité de temps : le gain est annuel, la perte est un accident bref."))
 	b.WriteString(sTxt(24, 316, 10.5, figMuted, "start", "400",
 		"Le dollar occupe la dernière ligne pour son historique plus long, pas pour un investisseur en euros."))
 	return svg(640, 332, b.String())
