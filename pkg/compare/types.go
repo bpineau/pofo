@@ -22,7 +22,7 @@ type Options struct {
 	End       time.Time
 	Rebalance int   // rebalancing period in days
 	NoSim     bool  // ignore SIM-suffixed simulated history extension
-	NoFees    bool  // ignore envelope fees
+	NoFees    bool  // do not fetch the assets' ongoing charges (TER); envelope fees still apply
 	Simdata   fs.FS // optional filesystem of simulated-history CSVs
 	Framework suggest.Framework
 }
