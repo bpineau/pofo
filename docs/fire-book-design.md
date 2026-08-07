@@ -338,10 +338,12 @@ update both when adding an article.
 - managed-futures: Managed futures et suivi de tendance : la diversification qui travaille dans les crises (moved here 2026-07-17)
 - long-volatility: Long volatility et tail hedging : payer pour les krachs
 - global-macro: Global macro et strategies de primes alternatives (dont commodity carry)
+- primes-d-assurance: Les primes d'assurance : cat bonds et arbitrage de fusions (added 2026-08-01)
 - return-stacking: Return stacking, overlays et portable alpha : empiler les primes
 
 ### VI. Buffers et protections
 - cash-buffer: Le matelas de liquidites : taille, cout, vrai role
+- cash-ameliore: Le cash ameliore : monetaire, CLO AAA, fonds euros (added 2026-08-01)
 - strategie-buckets: Les buckets : la strategie des seaux, promesse et critique
 - echelle-obligataire: Les echelles d'obligations (et l'echelle de linkers)
 - recharger-ou-pas: Consommer et recharger un buffer : les regles qui marchent
@@ -387,8 +389,9 @@ update both when adding an article.
 - bibliotheque: La bibliotheque : sites, papiers, livres, outils
 - la-machine-pofo: Sous le capot : comment pofo calcule ce livre
 
-87 articles planned (79 v1 + 7 of the 2026-07-17 extension + sept-facons-de-vivre,
-added 2026-07-29); at 2 500 words each the book lands around 218k words.
+89 articles planned (79 v1 + 7 of the 2026-07-17 extension + sept-facons-de-vivre,
+added 2026-07-29, + primes-d-assurance and cash-ameliore, added 2026-08-01);
+at 2 500 words each the book lands around 222k words.
 
 ### Data-backed articles
 
@@ -403,6 +406,15 @@ of quietly leaving a wrong chart in the book. Its summary tables are also
 TRANSPOSED (rules as rows, statistics as columns): a book page and an e-reader
 cannot carry a year x rule matrix without horizontal scrolling, and the
 year-by-year detail belongs in a figure anyway.
+
+`figures_assurance.go` (2026-08-01) carries the two plates of the insurance
+premia and cash-ladder articles. Its monthly arrays are FROZEN measurements,
+not a recomputable engine output: they come from live quotes (a EUR-hedged cat
+bond fund, world equity) deflated by French HICP, which the offline test suite
+cannot reproduce. The guard tests therefore check the CLAIMS the plates and the
+prose make about those arrays (which months are the sleeve's worst, how many
+months see both rows fall, that the cash ladder pays more only by risking more),
+so a refreshed dataset that breaks a sentence in the article breaks the build.
 
 `figures_strategies.go` (2026-07-29) applies the same pattern to the plates
 of the withdrawal-strategies part, with a taste rather than a rule: a figure
