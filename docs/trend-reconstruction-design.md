@@ -196,20 +196,46 @@ different question, each validated on its own.
 |---|---|---|
 | Engine | the daily texture: how a trend book moves inside a month | `TSMOM` |
 | Anchor | the monthly path: which months trend paid and which it did not | `AnchorTrend` |
-| Pin | the level: what an investable programme keeps of it | `pinTrendIR` |
+| Pin | the level, for the OVERLAY builds only (RSST, RSBT, Winton) | `pinTrendIR` |
 
 Keeping them separate is the point. A criticism of the level is not a
 criticism of the path, and the two are fixed in different places.
 
-## The measuring stick
+The third layer used to apply to everything. It no longer does: the
+diversified managed-futures funds take their level from their anchor, because
+their anchor is already an investable one (below). Only the funds whose trend
+sleeve replicates a pure-trend INDEX still pin, since that index is published
+gross and has to be brought down to what an investor keeps.
 
-Every claim below is measured against a published monthly record of the
-trend premium, bundled as the `TREND-TSMOM-USD` reference series (see
-`cmd/gen-trend-refdata` for what it is, its terms, and how to regenerate
-it). It is a gross academic factor: no fee, no slippage, no capacity
-limit, and an information ratio near 0.9 where investable programmes
-deliver 0.25 to 0.5. It is the right yardstick for SHAPE and the wrong one
-for LEVEL, which is exactly how it is used here.
+## The measuring sticks
+
+There are two published monthly records here, and they are not
+interchangeable.
+
+**The gross factor**, bundled as `TREND-TSMOM-USD` (see
+`cmd/gen-trend-refdata` for what it is, its terms, and how to regenerate it),
+is an academic trend premium: no fee, no slippage, no capacity limit, and an
+information ratio near 0.9 where investable programmes deliver 0.25 to 0.5. It
+is the right yardstick for SHAPE and the wrong one for LEVEL. The overlay
+builds anchor on it, because they replicate an index measured the same gross
+way, and pin its level afterwards.
+
+**The net composite**, bundled as `TREND-NET-USD` (see
+`cmd/gen-trendnet-refdata` for its provenance and terms), is a published
+monthly composite of real managed-futures programmes, each entering NET of its
+own manager's fees, monthly since 1987 at 9.3 %/yr volatility for an
+information ratio of 0.74 over the whole period. It is not a factor: it is what
+a book of real programmes actually paid its investors. The deep tails of the
+diversified funds anchor on it, and take their level from it too.
+
+The net composite is a FUNDED total return: it earns cash on its collateral,
+where the gross factor is published as an excess over cash. `AnchorTrend`
+therefore strips its cash leg before rescaling it to a fund's volatility target
+and funds it again afterwards (`TrendAnchor.Funded`). Reading it as an excess
+index instead hands the deep tail a second cash leg, which in the 1990s is
+worth six points a year: the DBMF reconstruction came out at 18 %/yr over
+1988-1996 where the industry earned 8. Two unit tests hold that arithmetic in
+place.
 
 ## What the engine can and cannot do
 
@@ -258,7 +284,9 @@ is given one. `AnchorTrend` rewrites each month so its return equals the
 reference's, rescaled to the book's volatility target, spreading the
 correction evenly across the days of that month: the daily texture, the
 intra-month drawdown shape and the crisis timing all still come from the
-engine, only the month's total is pinned.
+engine, only the month's total is fixed. Which reference it is decides
+whether the level comes with the path (the net composite) or has to be pinned
+separately afterwards (the gross factor).
 
 Measured against the real funds, monthly correlation before and after:
 
@@ -269,35 +297,76 @@ Measured against the real funds, monthly correlation before and after:
 | Simplify CTA | 51 | 0.27 | 0.41 |
 | AQR UCITS | 135 | 0.43 | 0.72 |
 
-## The pin, and what is still open
+## The level, and what is left open (measured, 2026-08)
 
-The level is set by a constant daily drag calibrated so the reconstruction
-realizes a target information ratio over the 2000+ window. The targets are
-the realized record of the index each fund tracks, except for the iMGP DBi
-family: the SG CTA index is measured net of the underlying managers'
-2-and-20 while DBi copies their positions for 0.85 % flat, so pinning that
-family to the index would deduct the fee twice (see the constants block in
-`recipes.go` for the full argument and the two independent routes to 0.50).
+The level of the deep tail used to be set by a constant daily drag calibrated
+so the reconstruction realized a target information ratio over the 2000+
+window. A constant drag reproduces an index's information ratio but not its
+drawdown: pinning a path whose gross information ratio is 0.9 down to 0.24
+costs about eleven points a year at a 17 % volatility target, which turns a
+long drought into a long bleed. The honest fix was always an anchor that is
+already investable, and this section used to close by saying no such record
+could be sourced. One could.
 
-**The open problem, now a small one.** A constant drag reproduces an index's
-information ratio but not its drawdown. Pinning a path whose gross information
-ratio is 0.9 down to 0.24 costs about eleven points a year at a 17 % volatility
-target, which turns a long drought into a long bleed. That defect used to govern
-everything before 2007 and it produced the drawdowns this section warned about.
-It now governs 1988-1996 only, eight years at the very back of the files, since
-real NAVs cover everything after. Measured on the shipped files, the maximum
-drawdown of the whole history is DBMF and DBMF UCITS USD -26.5 % (2018), DBMF
-UCITS EUR -32.0 % (2018), KMLM -31.0 % (2025), Simplify CTA -27.4 % (2012), the
-AQR class -21.7 % and its EUR-hedged sister -27.6 % (both 2021): every one of
-them falls inside the donor segment, not the reconstruction, and every one is
-of the order the industry's own indices lived through.
+The deep tails now carry the net composite's own months, rescaled to each
+fund's volatility target, and NO drag: the anchor is already net of the
+managers' fees, so a further drag would charge them twice. What that changes,
+measured on the shipped files over 1988-11 to 1996-03:
 
-The arithmetic is still unavoidable in that form (at a fixed volatility target,
-only a constant can move the information ratio), so the honest fix would still
-be an anchor that is already investable, that is, a real CTA index. None could
-be sourced: the SG, BarclayHedge and Mount Lucas records are all behind
-registration walls. Until one is, read 1988-1996 as right in shape and
-conservative in level; from 1996 on, these files are real fund NAVs.
+| File | vol target | segment vol | segment CAGR before | after |
+|---|---|---|---|---|
+| DBMF, DBMF UCITS USD | 11.5 % | 12.2 % | 18.0 %/yr | **8.3 %/yr** |
+| DBMF UCITS EUR | 11.5 % + FX | 17.1 % | 17.5 %/yr | **7.9 %/yr** |
+| KMLM | 14 % | 14.9 % | 17.0 %/yr | **8.7 %/yr** |
+| Simplify CTA | 16 % | 17.0 % | 17.4 %/yr | **8.9 %/yr** |
+| AQR UCITS A | 9 % | 9.6 % | 12.0 %/yr | **7.9 %/yr** |
+| AQR UCITS RAEF EUR | 9 % hedged | 9.7 % | 8.2 %/yr | **4.3 %/yr** |
+
+Each fund's volatility target still holds over the segment, to within the two
+tenths of a point the change moved it, and the maximum drawdown of every
+shipped file is unchanged to the digit (DBMF and DBMF UCITS USD -26.5 %, DBMF
+UCITS EUR -32.0 %, KMLM -31.0 %, Simplify CTA -27.4 %, the AQR class -21.7 %
+and its EUR-hedged sister -27.6 %): every one of them falls in the donor
+segment, not in the reconstruction.
+
+Against the industry's own record, the deep tail's calendar years now track it
+rather than doubling it. Compared with a second, independently published
+managed-futures index (a different composite of the same industry, so the two
+disagree between themselves by several points in several years):
+
+| year | the industry index | DBMF before | DBMF after |
+|---|---|---|---|
+| 1989 | +1.8 % | +33.4 % | **+2.0 %** |
+| 1990 | +21.0 % | +22.5 % | **+16.9 %** |
+| 1991 | +3.7 % | +13.7 % | **+16.5 %** |
+| 1992 | -0.9 % | +19.7 % | **+2.0 %** |
+| 1993 | +10.4 % | +33.0 % | **+15.8 %** |
+| 1994 | -0.7 % | -0.6 % | **-2.3 %** |
+| 1995 | +13.6 % | +17.0 % | **+15.7 %** |
+
+The mean absolute gap over those seven fully-reconstructed years falls from
+13.3 points to 4.2, and the sign agrees in six of seven. The one wide year,
+1991, is not the reconstruction's doing: the two industry indices themselves
+read +14.7 % and +3.7 % that year, and the reconstruction sits 1.9 points above
+its own anchor, which is what rescaling a 9.3 % index to an 11.5 % target
+costs. 1996 is excluded from the table because the real donor takes over on
+1996-03-26 and the year is mostly its record, not the reconstruction's.
+
+**What is left open.** Two things, both structural.
+
+First, rescaling. A 9.3 %-volatility industry index carried to a 16 or 17 %
+target is levered about 1.8 times, and its drawdowns are levered with it. That
+is arithmetically what a fund running at that target does, but it means the
+deep tail of the hotter funds shows falls roughly twice the industry's own,
+and no anchor can fix that: it is the target that says so.
+
+Second, the very back of the file. The reconstructions begin 1988-11-17 and the
+net composite begins 1987-01, so the reference covers every month they hold;
+but an anchor governs the span BETWEEN two month ends, so the fortnight from
+1988-11-17 to that month's end keeps the engine's own returns, as `AnchorTrend`
+documents. Two unanchored weeks at the start of a thirty-eight-year file.
+
+From 1996 on, these files are real fund NAVs and none of this applies.
 
 ## Traps
 
@@ -314,5 +383,15 @@ conservative in level; from 1996 on, these files are real fund NAVs.
 - The funds beat the strategy over their own live windows (DBMF by about
   six points a year since 2019). No honest reconstruction of trend
   following reproduces that, and chasing it would be curve fitting.
+- The reconstruction is not confined to the deep tail: it is also the daily
+  texture the weekly-dealing 1996-2007 donor is projected onto. A change that
+  only touches the pre-1996 level therefore still moves daily-frequency
+  statistics over 1996-2007, at the third decimal. The anchor swap moved the
+  twelve-month CTA/equity correlation by at most 0.0045 across 306 monthly
+  windows, which is invisible in a chart and enough to break a literal frozen
+  to two decimals.
 - Any change to the CTA series breaks two FIRE-book plates, whose tests
-  recompute from `pkg/datasets` and fail on drift.
+  recompute from `pkg/datasets` and fail on drift. Their tolerance (0.005
+  around a two-decimal literal) is finer than the series' own stability under
+  any change to the reconstruction, so expect a handful of cells to need
+  refreezing whenever this file is touched.
