@@ -338,7 +338,7 @@ func localNames() map[string]string {
 // structure come from the chosen "stacked cards" mock; the benchmark control
 // is a text input (the /view grammar accepts any locally known id), not the
 // mock's select.
-var composerTmpl = template.Must(template.New("composer").Parse(`<link rel="stylesheet" href="/composer.css">
+var composerTmpl = template.Must(template.New("composer").Parse(versionedAssets(`<link rel="stylesheet" href="/composer.css">
 <details class="cmp" id="composer" data-caps="{{.Caps}}"{{if .Boot}} data-boot="{{.Boot}}"{{end}}{{if .GlobalsSeed}} data-globals="{{.GlobalsSeed}}"{{end}}{{if .Presets}} data-preset-count="{{len .Presets}}"{{end}}{{range .Presets}} data-preset-{{.Index}}="{{.JSON}}"{{end}}{{if .Open}} open{{end}}>
 <summary class="cmp-bar">
 <span class="eyebrow">Composer</span>
@@ -374,7 +374,7 @@ var composerTmpl = template.Must(template.New("composer").Parse(`<link rel="styl
 </div>
 </details>
 <script defer src="/composer.js"></script>
-`))
+`)))
 
 // specToP serializes a spec into the /view p= value grammar
 // ("ID:WEIGHT,..." plus "!name:" and "!key:value" directives), the exact
