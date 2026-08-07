@@ -26,6 +26,18 @@
 // the autocorrelation the daily statistics hide. Returns and Mean are
 // exposed as building blocks.
 //
+// # CWARP
+//
+// CWARP (Cole Wins Above Replacement Portfolio, Artemis Capital Management)
+// scores whether an asset improves a pre-existing "replacement" portfolio
+// when layered on top at a fixed weight, financed by borrowing. It is the
+// geometric average of the improvements it makes to the replacement's
+// Sortino ratio and its return-to-maximum-drawdown, minus one, in percent:
+// positive means the overlay lifts the portfolio, negative means it hurts.
+// Because both denominators are measured on the combined series, CWARP
+// rewards non-correlation and skew that the Sharpe ratio ignores. The
+// replacement is typically equity beta or a 60/40 blend.
+//
 // # External flows
 //
 // When a series carries external contributions and withdrawals (a savings
