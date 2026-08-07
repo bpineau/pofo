@@ -19,9 +19,13 @@ import (
 const (
 	figBlue  = "#3a6db4"
 	figGreen = "#2f9068"
-	figGrid  = "rgba(60,48,34,.10)"
-	figSans  = `'Instrument Sans',-apple-system,'Segoe UI',Roboto,sans-serif`
-	figMono  = `'Spline Sans Mono',ui-monospace,Menlo,Consolas,monospace`
+	// figGrid is a PRE-BLENDED solid hex (ink 60,48,34 @ .10 composited onto the
+	// figure card background #fffdf9), not rgba: crengine (KOReader's EPUB SVG
+	// renderer) paints rgba fills solid black. As a hairline gridline drawn
+	// behind the marks, the opaque value reads the same as the old translucent one.
+	figGrid = "#ECE9E4"
+	figSans = `'Instrument Sans',-apple-system,'Segoe UI',Roboto,sans-serif`
+	figMono = `'Spline Sans Mono',ui-monospace,Menlo,Consolas,monospace`
 )
 
 // sTxt sets a label in the UI sans.
