@@ -2,6 +2,9 @@
 // specs plus overrides for the server's default options. Each parsed
 // portfolio section also carries a Simulate link to its FIRE mount
 // (/fire/e/<name>/ for an example, /fire/p/<spec>/ for a p= spec).
+//
+// Under -serve the live composer (composer.go) is a front end that edits
+// exactly this grammar in-page, keeping the URL equal to the edited state.
 package main
 
 import (
