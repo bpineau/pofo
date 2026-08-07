@@ -67,6 +67,15 @@ type Spec struct {
 	// then serve only as a baseline for comparison.
 	Optimize *optimize.Spec
 
+	// Currencies lists the base currencies in which the portfolio should
+	// be evaluated ("#meta currencies:USD,EUR"): the CLI produces one
+	// comparison column per currency, each with its own numeraire and CPI
+	// deflator, so the difference between columns exposes currency risk.
+	// Uppercased 3-letter codes in written order, deduplicated; nil when
+	// the directive is absent (the caller then uses its single default
+	// currency). Cannot be combined with Optimize.
+	Currencies []string
+
 	// Meta holds every "#meta key:value" directive verbatim, for callers
 	// with custom needs.
 	Meta map[string]string
@@ -164,6 +173,9 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	}
 	if spec.Optimize != nil && spec.Leverage {
 		return nil, fmt.Errorf("#meta optimize and #meta leverage cannot be combined")
+	}
+	if spec.Optimize != nil && len(spec.Currencies) > 0 {
+		return nil, fmt.Errorf("#meta optimize and #meta currencies cannot be combined")
 	}
 	if spec.Leverage {
 		// Explicit leverage: weights are fractions of the capital, as
@@ -344,6 +356,12 @@ func (s *Spec) applyMeta(directives string) error {
 				return fmt.Errorf("#meta extra-fees: %q is not a valid yearly percentage", val)
 			}
 			s.EnvelopeFees = f
+		case "currencies":
+			cs, err := parseCurrencies(val)
+			if err != nil {
+				return fmt.Errorf("#meta currencies: %v", err)
+			}
+			s.Currencies = cs
 		default:
 			s.Warnings = append(s.Warnings, fmt.Sprintf("unknown #meta directive ignored: %s", key))
 		}
@@ -362,6 +380,37 @@ func parseWeight(s string) (float64, error) {
 		return 0, fmt.Errorf("must be greater than 0 and at most 500")
 	}
 	return w, nil
+}
+
+// parseCurrencies parses a comma-separated list of 3-letter currency codes
+// ("USD,EUR"), uppercased and deduplicated while preserving written order.
+func parseCurrencies(val string) ([]string, error) {
+	seen := map[string]bool{}
+	var out []string
+	for _, tok := range strings.Split(val, ",") {
+		code := strings.ToUpper(strings.TrimSpace(tok))
+		if len(code) != 3 || !isAlpha(code) {
+			return nil, fmt.Errorf("invalid code %q (expected a 3-letter currency, e.g. USD)", tok)
+		}
+		if !seen[code] {
+			seen[code] = true
+			out = append(out, code)
+		}
+	}
+	if len(out) == 0 {
+		return nil, fmt.Errorf("no currency listed")
+	}
+	return out, nil
+}
+
+// isAlpha reports whether s is non-empty and all uppercase ASCII letters.
+func isAlpha(s string) bool {
+	for _, r := range s {
+		if r < 'A' || r > 'Z' {
+			return false
+		}
+	}
+	return s != ""
 }
 
 // parseNumber accepts a decimal comma and an optional % suffix.

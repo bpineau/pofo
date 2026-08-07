@@ -2,11 +2,44 @@ package portfolio
 
 import (
 	"math"
+	"reflect"
 	"strings"
 	"testing"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
+
+func TestParseCurrencies(t *testing.T) {
+	spec, err := Parse("p", strings.NewReader("#meta currencies:usd,EUR,usd\n100 VOO\n"))
+	if err != nil {
+		t.Fatalf("Parse: %v", err)
+	}
+	if got, want := spec.Currencies, []string{"USD", "EUR"}; !reflect.DeepEqual(got, want) {
+		t.Errorf("Currencies = %v, want %v", got, want)
+	}
+	if spec.Meta["currencies"] != "usd,EUR,usd" {
+		t.Errorf("Meta[currencies] = %q, want verbatim", spec.Meta["currencies"])
+	}
+}
+
+func TestParseCurrenciesInvalid(t *testing.T) {
+	for _, in := range []string{
+		"#meta currencies:US\n100 VOO\n",   // too short
+		"#meta currencies:USD,\n100 VOO\n", // empty token
+		"#meta currencies:US1\n100 VOO\n",  // not alpha
+	} {
+		if _, err := Parse("p", strings.NewReader(in)); err == nil {
+			t.Errorf("Parse(%q): expected error", in)
+		}
+	}
+}
+
+func TestParseCurrenciesOptimizeConflict(t *testing.T) {
+	in := "#meta currencies:USD,EUR\n#meta optimize:max-sharpe\n100 VOO\n"
+	if _, err := Parse("p", strings.NewReader(in)); err == nil {
+		t.Error("Parse: expected error combining currencies and optimize")
+	}
+}
 
 func TestParseBasic(t *testing.T) {
 	in := `

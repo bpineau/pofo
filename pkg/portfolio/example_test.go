@@ -31,6 +31,15 @@ func ExampleParse() {
 	//  14.5 % GLD
 }
 
+// A "#meta currencies" directive asks the CLI to evaluate the portfolio in
+// several base currencies at once, one comparison column each.
+func ExampleParse_currencies() {
+	spec, _ := portfolio.Parse("dragon", strings.NewReader(
+		"#meta currencies:USD,EUR\n60 NTSGSIM\n40 XAUUSDSIM\n"))
+	fmt.Println(spec.Currencies)
+	// Output: [USD EUR]
+}
+
 // Simulate replays a portfolio (base 100, periodic rebalancing) on series
 // obtained from marketdata or built by hand. Weights are FRACTIONS summing
 // to 1; fees fields are PERCENT per year. The result chains directly into
