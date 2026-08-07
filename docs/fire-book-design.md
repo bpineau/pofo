@@ -83,6 +83,58 @@ and are worth knowing: a raw ampersand in SVG text breaks the EPUB XHTML guard
 (write `S&amp;amp;P`), and a Monte Carlo recipe must freeze its worker count,
 since DrawPaths splits per worker and NumCPU makes a plate machine-dependent.
 
+Second wave 2026-07-31: eleven more plates and ten reference tables. The
+tables come from the backlog ideas costed C ("a table beats a drawing") and
+were held to one rule, a table only earns its place if it REPLACES prose, so
+each shipped with the paragraph it makes redundant cut down to its point. Two
+of them found contradictions rather than merely tidying: the bond pocket's
+worked example sized its indexed sleeve at 19 % against its own article's
+25-50 % doctrine, and the lexique's numeric memo is now a book-wide guard, its
+test re-reading, for every anchor, the chapter that owns it.
+
+The same engine-first rule kept correcting the prose, and this wave it reached
+published sources too:
+
+  - long-volatility described the PPUT index as costing 1,5 to 2,5 points a
+    year for a drawdown "à peine amélioré". Both halves were wrong: Cboe and
+    Wilshire publish 6,6 % against 9,8 % over 1986-2018 (3,2 points) and the
+    drawdown does improve, from −51 % to −38,9 %. Israelov's point is that the
+    cut is not worth the return given up, which is what the plate shows.
+  - rendements-attendus stopped its Morningstar staircase at 3,7 %. The
+    December 2025 edition publishes 3,9 %, and reading the report itself
+    showed the rise is a METHOD change, not a market move (it states the
+    previous method would have given 3,6 %). The same series was stale in
+    guardrails-morningstar and was corrected there too.
+  - la-regle-des-4-pourcents claimed "la moyenne des millésimes supporte plus
+    de 6 %". Measured over 66 vintages the mean is 6,05 % and the median
+    5,89 %, so the sentence now speaks of the median vintage.
+  - pourquoi-la-diversification-marche put its equity block at 0,85-0,95; it
+    measures 0,85-1,00, with the S&P 500 against the whole US market at
+    0,9955, the same asset at rounding.
+
+Three findings were recorded rather than drawn, which is the other half of the
+discipline. The glidepath plate could not test the article's CAPE thesis at
+all, since no vintage in the available window started above a CAPE of 25, so
+the plate marks vintage hardness instead and a test will fail the day a longer
+sample makes the valuation highlight possible. The 4 % floor is not one freak
+vintage but six consecutive ones, 1964 to 1969. And the put-protection point
+does not merely sit inside the equity/bond cloud, it is strictly dominated by
+every rung from 50/50 to 75/25.
+
+Two construction habits are worth keeping. When a new plate answers a question
+a shipped plate already touches, reuse the shipped construction and change only
+what the question requires (puts-domines keeps tous-temps-echange's ladder and
+moves only the window and the basis, so the two cannot contradict each other).
+And anchor a reconstruction on a published number when one exists: that ladder's
+100 % equity rung reproduces Cboe's published S&P 500 return and drawdown to the
+decimal over the same 390 months, which is what puts a published point and a
+recomputed cloud on the same footing.
+
+A rendering bug surfaced and was fixed in pkg/bookmd: the pipe-table splitter
+cut rows on a plain split over "|", so a labelled wiki-link ([[slug|Label]])
+tore its cell in two. amortissement-abw's comparison table had been rendering
+with a four-cell header over three-cell rows.
+
 Style-finishing pass done 2026-07-16 (full line-by-line read of all 79 FR
 articles): rewrote the telegraphic `cas-types` into prose and broke the worst
 colon-cascade sentences elsewhere (couple-et-famille, plancher-plafond,

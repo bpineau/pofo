@@ -2,9 +2,9 @@
 
 Status: RESIDUAL backlog, opened 2026-07-30 during the line-by-line review of
 the fourteen articles of the portfolio part (one reviewer per article; the
-prose fixes shipped as the "line review of ..." commit series). Nine ideas were
-built on 2026-07-30 and their entries have been removed from this file, so what
-remains is exactly what has NOT been built: `tous-temps-saisons`,
+prose fixes shipped as the "line review of ..." commit series). Thirteen ideas
+were built over 2026-07-30 and 2026-07-31 and their entries have been removed
+from this file, so what remains is exactly what has NOT been built: `tous-temps-saisons`,
 `tous-temps-echange`, `tous-temps-ecart`, `duration-vehicules`, `or-decennies`,
 `linkers-echelle`, `scv-ecart-10ans`, `risques-briques` and `safemax-pays`
 (the last one placed in [[anarkulova-cederburg]] with a cross-reference here).
@@ -47,21 +47,6 @@ réel US 60/40 depuis 1954, S&P 500 et Treasuries 5 ans déflatés par le CPI ;
 `pkg/datasets` pour l'or et les taux courts). Limiter le nuage aux actifs
 réellement bundlés et ne pas inventer de point crédit ou trend faute de série.
 
-## 2. La grille d'audit, en tableau (coût C)
-
-Pas de figure : un tableau à quatre colonnes (la ligne du portefeuille, quelle
-prime, qui la paie, pourquoi elle tient encore dans vingt ans), sur huit lignes
-typiques d'un portefeuille de particulier (ETF monde, obligations d'État
-longues, linkers, or, trend, fonds thématique, produit structuré, SCPI ou
-private equity grand public).
-
-La section « L'audit de votre portefeuille » est le passage le plus utile de
-l'article et le plus dense à lire, car ses trois exemples sont enchaînés dans
-un seul paragraphe. Un tableau les rend consultables ligne par ligne, ce qui
-est exactement l'usage visé (auditer son propre portefeuille, feuille en main),
-et il accueille sans effort les deux ou trois cas que le paragraphe n'a pas la
-place de traiter.
-
 ## 3. La décote des primes après publication, en pente (coût B)
 
 Un graphe en pente à trois points sur l'axe du temps de vie d'une anomalie
@@ -103,23 +88,6 @@ Pourquoi un tableau et pas une figure : la démonstration est arithmétique, pas
 visuelle, et deux trajectoires qui divergent seraient une forme déjà prise
 (courbes qui se croisent, petites-multiples de séries). Les chiffres se
 recalculent à la main dans l'article, aucune donnée externe n'est nécessaire.
-
-## 2. Le triangle de corrélations : trente fonds actions contre quatre briques (coût B)
-
-Le passage le plus fort de l'article est aussi le plus verbal : « trente fonds
-actions ne font qu'un seul actif » (ρ de 0,85 à 0,95) alors que quatre briques
-bien choisies tiennent entre −0,2 et +0,3. Une demi-matrice de corrélations, en
-triangle, sur sept lignes (trois variantes actions monde/US/tech, puis actions
-mondiales, obligations longues, or, trend) montre d'un seul coup d'œil un bloc
-saturé en haut à gauche et une zone pâle ailleurs. La thèse « la diversification
-se compte en corrélations, pas en lignes » devient une image.
-
-Forme neuve pour le livre (aucune matrice de corrélation n'existe encore ; la
-« matrice de barres » déjà prise est un objet différent). Attention à la règle
-maison : labels horizontaux, pas de diagonale décorative, échelle de couleur
-divergente validée. Coût B : les séries longues sont dans le repo (simdata
-actions/obligations longues/or/trend) et `suggest.Correlation` existe déjà, mais
-il faut écrire le petit calcul et figer les valeurs dans la figure.
 
 ## 3. La médiane baisse, le percentile 5 monte (coût B)
 
@@ -230,31 +198,6 @@ L'article a déjà `::: figure bond-tent` (la forme de la tente : part d'actions
 qu'est* la tente. Aucune illustration ne dit aujourd'hui *ce qu'elle rapporte*,
 ni *comment elle s'exécute* : les deux thèses les plus contre-intuitives de
 l'article restent purement verbales.
-
-## 1. La courbe des millésimes triés : la pente transfère, elle ne crée pas
-
-Un seul trait monotone. En abscisse, les millésimes de départ classés du plus
-défavorisé au plus favorisé par la tente ; en ordonnée, le gain (ou la perte) en
-points de taux soutenable, tente 58 → 85 % contre statique équivalente. La
-courbe part vers +0,3/+0,4, traverse zéro autour de la médiane, et finit en
-négatif : le lecteur voit d'un coup que la tente ne fabrique pas de rendement,
-elle déplace du résultat des bons millésimes vers les mauvais. On surligne sur
-la même courbe les cohortes parties à CAPE > 25, qui se massent du côté
-gagnant : la seconde thèse de l'article (« assurance dont la prime baisse quand
-le risque monte ») tombe sans un mot de plus. C'est la figure qui remplace les
-trois formulations verbales de « +0,1-0,3 point dans les mauvais cas, ~0 en
-médiane ».
-
-Forme neuve : une courbe de gains triés qui coupe l'axe zéro, ni série
-chronologique, ni éventail, ni barres. À ne pas confondre avec
-`bengen-millesimes`, qui est un nuage chronologique de résultats bruts.
-
-**Coût : B.** Le 60/40 réel américain de `pkg/replay` (depuis 1954) et le CAPE
-de `pkg/datasets/cape` existent, mais il faut écrire le calcul du taux
-soutenable maximal sous allocation variable, par cohorte. Attention à la
-maigreur de l'échantillon : 1954 + 30 ans de retraite ne laisse qu'une
-quarantaine de cohortes, il faudra sans doute remonter aux séries longues de
-`pkg/datasets/refdata` pour que la courbe ne soit pas un accident.
 
 ## 2. La carte des sauvetages : ce que la tente et le buffer se disputent
 
@@ -608,27 +551,6 @@ Coût : **B** (le taux de marché est dans le repo via `macropanel` FRA
 `longrate` ; la série des taux servis moyens n'y est pas et demande une
 quinzaine de valeurs annuelles saisies à la main depuis les rapports de la
 profession, à sourcer explicitement).
-
-## 4. Le cahier des charges de la poche, en tableau
-
-Un tableau de récapitulation à la fin de la section des quatre décisions, une
-ligne par brique et cinq colonnes : brique, service rendu (1, 2, 3), duration,
-régime qui la sert, régime qui la casse, part indicative de la poche. Il fixe
-en une grille ce que l'article déroule en quatre paragraphes plus un exemple
-chiffré.
-
-Pourquoi il vaut la place : la promesse de l'article est « votre poche
-obligataire aura un cahier des charges écrit », et ce cahier des charges
-n'existe nulle part sous forme consultable. Le lecteur qui revient six mois
-plus tard cherche cette grille, pas les paragraphes. Attention au recouvrement
-avec la table des rôles de [[actifs-defensifs]] : ici on ne liste que
-l'intérieur de la poche obligataire, avec la colonne duration qui est propre à
-cet article.
-
-Coût : **C** (pas de figure ; un tableau, entièrement dérivé du texte existant
-et de l'exemple chiffré).
-
----
 
 ## obligations-indexees
 
