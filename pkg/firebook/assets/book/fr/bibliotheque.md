@@ -78,9 +78,9 @@ Cette section n'est pas une liste de liens, c'est le calendrier de votre revue a
 | INSEE, indice des prix | Chaque mois | La dérive de vos dépenses |
 | [info-retraite.fr](https://www.info-retraite.fr) | À votre date de revue | Le montant et la date de la pension |
 
-Chaque source a son chapitre d'usage, [[rendements-attendus|le μ prospectif]], [[guardrails-morningstar|les guardrails]], [[diversification-internationale|les primes par pays]], [[valorisations-et-cape|le CAPE]], [[suivre-inflation|l'inflation]] et [[retraite-legale|la pension]]. Une seule règle de discipline les accompagne. Relevez ces valeurs une fois par an, à date fixe, et surtout pas au fil des titres de presse. Un μ recalibré en pleine baisse n'est plus une prévision, c'est une décision de marché déguisée ([[psychologie-du-retrait]]).
+Chaque source a son chapitre d'usage, [[rendements-attendus|le μ prospectif]], [[guardrails-morningstar|les guardrails]], [[diversification-internationale|les primes par pays]], [[valorisations-et-cape|le CAPE]], [[suivre-inflation|l'inflation]] et [[retraite-legale|la pension]]. Le SG Trend Index, lui, n'entre pas dans ce tableau, car il ne rafraîchit aucun paramètre du plan. Il reste l'étalon auquel comparer tout véhicule de trend ([[managed-futures]]).
 
-**Le SG Trend Index** : le référentiel des programmes de trend. L'étalon auquel comparer tout véhicule. [[managed-futures]]
+Une seule règle de discipline accompagne le calendrier. Relevez ces valeurs une fois par an, à date fixe, et surtout pas au fil des titres de presse. Un μ recalibré en pleine baisse n'est plus une prévision, c'est une décision de marché déguisée ([[psychologie-du-retrait]]).
 
 ## Les sources officielles françaises
 
