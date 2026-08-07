@@ -5,5 +5,5 @@
 #   https://www.pwlcapital.com/rational-reminder/
 # UCITS, 100% equity.
 
-85    IE00B4L5Y983    # World (IWDA)
+85    IE00B4L5Y983SIM    # World (IWDA)
 15    ZPRVSIM         # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV

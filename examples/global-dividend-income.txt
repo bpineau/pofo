@@ -10,4 +10,4 @@
 15    IE00B9CQXS71    # Global Dividend Aristocrats (ZPRG)
 10    IE00B1FZS350    # Global REITs (IWDP)
 25    IE00B4WXJJ64    # € Government Bond (IEGA)
-15    IE00B4ND3602    # Gold (IGLN)
+15    GOLDSIM    # Gold (IGLN)

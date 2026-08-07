@@ -5,9 +5,9 @@
 #   https://www.bogleheads.org/wiki/Lazy_portfolios#Coffeehouse_Portfolio
 # UCITS. Equity split across world, US value, world small-cap and REITs.
 
-20    IE00B4L5Y983    # World (IWDA)
+20    IE00B4L5Y983SIM    # World (IWDA)
 10    IE00BP3QZB59    # World Value factor (IWVL)
-10    IE00BSPLC413    # US Small-Cap Value (ZPRV)
+10    IE00BSPLC413SIM    # US Small-Cap Value (ZPRV)
 10    IE00BF4RFH31    # World Small Cap (WSML)
 10    IE00B1FZS350    # Global REITs (IWDP)
 40    IE00B4WXJJ64    # € Government Bond (IEGA)
