@@ -58,6 +58,15 @@ type FetchOptions struct {
 	// account for income separately. Raw combined with a SIM suffix is an
 	// error: simulated histories are total-return by construction.
 	Raw bool
+
+	// NoConvert, with Currency set, demands the native quote line: the
+	// resolution is restricted to listings quoted in Currency and the
+	// fetch fails with ErrWrongCurrency when none exists, instead of
+	// converting a twin listing through FX crosses. Callers that merge
+	// incremental fetches into a persistent series want this: converted
+	// twin closes never splice cleanly into a native history. Without
+	// Currency it is a no-op.
+	NoConvert bool
 }
 
 // FetchExtended fetches an asset the way the pofo CLI does: Fetch, then for
@@ -80,13 +89,21 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 	if opt.Raw && wantSim {
 		return nil, fmt.Errorf("%s: raw closes cannot be SIM-extended (simulated histories are total-return); set NoSim or drop Raw", id)
 	}
+	spec := fetchSpec{raw: opt.Raw}
+	if opt.NoConvert && opt.Currency != "" {
+		spec.wantCurrency, spec.nativeOnly = opt.Currency, true
+	}
 	if !wantSim {
-		s, err := c.fetch(ctx, base, opt.From, fetchSpec{raw: opt.Raw})
+		s, err := c.fetch(ctx, base, opt.From, spec)
 		if err != nil {
 			return nil, err
 		}
-		if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
-			return nil, err
+		// Under NoConvert the series is guaranteed native (or of unknown
+		// currency): nothing to convert.
+		if !opt.NoConvert {
+			if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
+				return nil, err
+			}
 		}
 		return Trim(s, time.Time{}, opt.To), nil
 	}
@@ -104,7 +121,7 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 		sim = Trim(sim, opt.From, time.Time{})
 		simOK = len(sim.Points) >= 2
 	}
-	s, err := c.Fetch(ctx, base, opt.From)
+	s, err := c.fetch(ctx, base, opt.From, spec)
 	if err != nil {
 		if simOK {
 			c.Logf("warning: %s unavailable (%v), using simulated data only", base, err)
@@ -140,8 +157,10 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 			}
 		}
 	}
-	if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
-		return nil, err
+	if !opt.NoConvert {
+		if s, err = c.convertTo(ctx, s, opt.Currency, opt.From); err != nil {
+			return nil, err
+		}
 	}
 	return Trim(s, time.Time{}, opt.To), nil
 }
