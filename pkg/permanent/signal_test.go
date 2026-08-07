@@ -33,3 +33,24 @@ func TestRegimeAtMissingMonth(t *testing.T) {
 		t.Fatal("expected no regime in 1900")
 	}
 }
+
+func TestRegimeQuadrant(t *testing.T) {
+	cases := []struct {
+		g, i float64
+		want Quadrant
+	}{
+		{0.8, 0.2, GrowthQuadrant},
+		{0.8, 0.8, InflationQuadrant},
+		{0.2, 0.2, DeflationQuadrant},
+		{0.2, 0.8, CrisisQuadrant},
+	}
+	for _, c := range cases {
+		q := Regime{GrowthBreadth: c.g, InflationBreadth: c.i}.Quadrant()
+		if q != c.want {
+			t.Errorf("Quadrant(g=%.1f, i=%.1f) = %v, want %v", c.g, c.i, q, c.want)
+		}
+	}
+	if s := CrisisQuadrant.String(); s != "crisis" {
+		t.Errorf("String() = %q", s)
+	}
+}

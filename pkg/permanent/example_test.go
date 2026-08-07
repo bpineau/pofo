@@ -32,3 +32,13 @@ func ExampleLoadPanel() {
 	fmt.Printf("%d countries", len(p.Countries()))
 	// Output: 30 countries
 }
+
+// Quadrant is the coarse four-season reading of a regime, for labels and
+// per-regime aggregations; the allocator itself stays continuous.
+func ExampleRegime_Quadrant() {
+	fmt.Println(permanent.Regime{GrowthBreadth: 0.7, InflationBreadth: 0.2}.Quadrant())
+	fmt.Println(permanent.Regime{GrowthBreadth: 0.3, InflationBreadth: 0.8}.Quadrant())
+	// Output:
+	// growth
+	// crisis
+}
