@@ -65,7 +65,7 @@ Portefeuille : 70 % actions mondiales, 30 % obligations d'État euro nominales 7
 
 Au-delà du portefeuille et du modèle, trois conséquences de pilotage.
 
-**Les traversées se comptent en années, budgétez-les ainsi.** Un coussin de liquidités (cash buffer) dimensionné pour « un krach » (18 mois) est dimensionné pour le mauvais objet : les épisodes hostiles durent 2 à 7 ans, retour au sommet réel compris. C'est l'ordre de grandeur qui doit calibrer le coussin et les règles de flexibilité ([[cash-buffer]], [[recharger-ou-pas]], [[flexibilite-realite]]). Il faut tenir un régime, pas amortir une secousse.
+**Les traversées se comptent en années, budgétez-les ainsi.** Un coussin de liquidités (cash buffer) dimensionné pour « un krach » (18 mois) est dimensionné pour le mauvais objet : les épisodes hostiles durent de 16 mois à plus de 10 ans, retour au sommet réel compris, avec une médiane autour de 32 mois sur le 60/40 réel américain. C'est l'ordre de grandeur qui doit calibrer le coussin et les règles de flexibilité ([[cash-buffer]], [[recharger-ou-pas]], [[flexibilite-realite]]). Il faut tenir un régime, pas amortir une secousse.
 
 **Le régime d'entrée en retraite mérite un regard, pas une obsession.** Partir en fin de prospérité euphorique (valorisations chères, [[valorisations-et-cape]]) ou au creux d'un bust purgé n'expose pas au même risque de séquence. D'où l'utilité de situer d'abord le point de départ, valorisations du jour replacées dans leur siècle, avant de dérouler la moindre projection. Mais on ne choisit pas son régime de départ, on choisit ses marges ([[les-trois-phases]]).
 
@@ -77,7 +77,7 @@ Au-delà du portefeuille et du modèle, trois conséquences de pilotage.
 - La grille croissance × inflation classe les saisons en quatre quadrants, et le 60/40 n'en couvre que deux. Toute la ligne inflationniste (surchauffe, stagflation) frappe actions et obligations ensemble : 1966-1981 hier, 2022 en rappel.
 - Le pire quadrant du rentier est la stagflation (rendements réels négatifs des deux actifs classiques + retraits gonflés + durée) : un portefeuille de retrait s'arme explicitement contre elle (or, linkers, actifs réels, tendance).
 - La préparation structurelle bat la prédiction : la grille sert à auditer la composition (un gagnant par quadrant), le simulateur à tester la robustesse (stress = persistance, broad-sample = régimes réels, décennie perdue = crash-test).
-- Pilotage : budgétez les traversées en années (2 à 7 ans), regardez le régime d'entrée sans en faire une obsession, et ne prenez pas une correction pour un changement d'ère. La persistance macro décide, pas les gros titres.
+- Pilotage : budgétez les traversées en années (médiane de 32 mois, plus de 10 ans dans le pire cas), regardez le régime d'entrée sans en faire une obsession, et ne prenez pas une correction pour un changement d'ère. La persistance macro décide, pas les gros titres.
 
 ---
 
