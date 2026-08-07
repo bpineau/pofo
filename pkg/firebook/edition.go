@@ -88,6 +88,58 @@ var French = &Edition{
 	Figure:   FigureSVG,
 }
 
+// English is the English edition, "The Quiet FIRE". It is a translation of
+// French, article by article, and never a fork: the only text it owns outright
+// is its US-framework part, which the French edition has no counterpart for.
+// It is not mounted yet; see docs/fire-book-en-edition-design.md.
+var English = &Edition{
+	Lang:     "en",
+	OGLocale: "en_US",
+	SiteName: "The Quiet FIRE",
+	// draft, review at M4
+	SiteDescription: "Living off your capital without outliving it: the science of withdrawal, " +
+		"the strategies and portfolios that hold up, inflation, US accounts and taxes, and the human factor.",
+	// draft, review at M4
+	SiteLede: "Living off your capital without outliving it: the science of withdrawal, " +
+		"the models and their traps, the strategies, the portfolios that hold up, buffers, inflation.",
+	HomePath:     "/firebook/en/",
+	AssetDir:     "assets/book/en",
+	EPUBFileName: "the-quiet-fire.epub",
+	// Minted once with uuidgen and hardcoded, like the French one, and
+	// necessarily different: to an e-reader the two editions are two
+	// publications, and a shared identifier would collide their annotations.
+	EPUBIdentifier: "urn:uuid:0d3e428a-fdd6-454e-a82a-d8c70ce563d0",
+	Categories:     CategoriesEN,
+	UI: UIStrings{
+		IndexLink:          "Contents",
+		SameCategory:       "In the same part",
+		LinkCopied:         "link copied",
+		SectionAnchorLabel: "Link to this section",
+		PartAnchorLabel:    "Link to this part",
+		EPUBLink:           "EPUB edition",
+		EPUBUnavailable:    "EPUB unavailable",
+		CatalogUnavailable: "Catalog unavailable",
+		NotFound:           "Article not found.",
+		EditionNote:        "The online edition, kept current, is published by pofo at %s.",
+		HumanSize:          humanSizeEN,
+	},
+	Callouts: calloutsEN,
+}
+
+// calloutsEN heads the ::: blocks in English. The block TOKENS are syntax and
+// stay French (cle, astuce, ...), so the two editions' sources diff line for
+// line; only these display labels change. The glyphs are shared.
+var calloutsEN = map[string]bookmd.Callout{
+	"encart":    {Glyph: "❖", Label: "Aside"},
+	"cle":       {Glyph: "🔑", Label: "The key idea"},
+	"astuce":    {Glyph: "💡", Label: "Pro tip"},
+	"attention": {Glyph: "⚠", Label: "Watch out"},
+	"exemple":   {Glyph: "🧮", Label: "Worked example"},
+	"science":   {Glyph: "🔬", Label: "What the research says"},
+	"terrain":   {Glyph: "🗣", Label: "From the field"},
+	"admin":     {Glyph: "📋", Label: "The admin side"},
+}
+
 // humanSizeFR formats a byte count as a compact, French-locale file size
 // ("312 Ko", "1,4 Mo"), the way the EPUB download link presents it.
 func humanSizeFR(n int) string {
@@ -98,6 +150,19 @@ func humanSizeFR(n int) string {
 		return fmt.Sprintf("%d Ko", (n+512)/(1<<10))
 	default:
 		return fmt.Sprintf("%d o", n)
+	}
+}
+
+// humanSizeEN is humanSizeFR in US convention: point decimal, English units
+// ("312 KB", "1.4 MB").
+func humanSizeEN(n int) string {
+	switch {
+	case n >= 1<<20:
+		return fmt.Sprintf("%.1f MB", float64(n)/(1<<20))
+	case n >= 1<<10:
+		return fmt.Sprintf("%d KB", (n+512)/(1<<10))
+	default:
+		return fmt.Sprintf("%d B", n)
 	}
 }
 
