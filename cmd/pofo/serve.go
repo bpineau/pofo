@@ -45,7 +45,7 @@ const (
 // so the standalone -fire mount keeps a clean bar.
 var fireSiteNav = []web.NavLink{
 	{Label: "Portfolios", Href: "/"},
-	{Label: "FIRE book (fr)", Href: "/firebook/fr/"},
+	{Label: "Book-fr", Href: "/firebook/fr/"},
 }
 
 // server carries the constellation's shared state. render is a field so
