@@ -93,6 +93,11 @@ trend-refdata: ## (Re)generate the monthly trend reference the managed-futures r
 	$(GO) run ./cmd/gen-trend-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: trendnet-refdata
+trendnet-refdata: ## (Re)generate the monthly NET managed-futures reference the deep trend tails are anchored on (network); run `make simdata` after
+	$(GO) run ./cmd/gen-trendnet-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: book-drift
 book-drift: build ## What the FIRE book's translations owe their French source
 	./pofo -book-drift
