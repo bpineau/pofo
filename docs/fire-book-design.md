@@ -310,6 +310,20 @@ TRANSPOSED (rules as rows, statistics as columns): a book page and an e-reader
 cannot carry a year x rule matrix without horizontal scrolling, and the
 year-by-year detail belongs in a figure anyway.
 
+`figures_strategies.go` (2026-07-29) applies the same pattern to five plates
+of the withdrawal-strategies part, and adds a second rule: no two of them share
+a form. A figure earns its page by fitting ITS question, so the set runs a
+warning light climbing over nineteen years (`bengen-falaise`, frozen from
+`pkg/replay`), a plane of constant incomes crossed two different ways
+(`cape-contracyclique`), two curves swapping rank at a nameable age
+(`credits-mortalite`), a narrowing five-step procedure (`arbre-decision`) and
+four instrument strips read side by side (`deux-thermometres`). Reusing a form
+that worked elsewhere is the failure mode to avoid, not the shortcut to take.
+Where a plate carries a closed-form model rather than a replayed series (the
+CAPE rule, the Gompertz mortality law), the model lives in the plate as a small
+pure function and the guard test checks it against the numbers the article
+quotes in prose, so figure and text cannot drift apart.
+
 ## Adding articles
 
 Research with live sources where needed (ERN, Morningstar,

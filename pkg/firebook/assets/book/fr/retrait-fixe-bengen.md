@@ -24,6 +24,10 @@ Ce qui distingue le fixe indexé de toutes les autres règles, c'est la forme de
 
 La règle n'échoue jamais d'un coup. Elle échoue par un mécanisme de ciseaux silencieux. Dans un régime hostile ([[regimes-de-marche]]), le portefeuille baisse pendant que le retrait, lui, monte avec l'inflation. Le taux de retrait courant (retrait / portefeuille) grimpe alors de 4 % à 6, 8, 12 %. Passé un seuil, situé empiriquement autour de 8 à 10 % de taux courant sans pension proche, même un marché redevenu généreux ne suffit plus. Les prélèvements dépassent toute croissance plausible, et la trajectoire est condamnée des années avant le zéro ([[ruine-et-probabilites]]). Le millésime 1966 met quinze ans à devenir irrécupérable, et près de trente à s'épuiser ([[etude-trinity]]).
 
+::: figure bengen-falaise
+Le millésime 1966 sur le 60/40 américain du livre : 600 000 €, 24 000 € par an indexés sur l'inflation, jamais ajustés, tout en euros constants. Le voyant part à 4,0 %, franchit 8 % en janvier 1975 et ne redescend plus jamais. Le ménage dispose donc de neuf relevés avant même cette alerte, puis de dix-neuf ans pour agir avant que le capital ne s'épuise. Aucune de ces informations n'exige un modèle : une division suffit.
+:::
+
 Cette forme d'échec a deux conséquences pratiques.
 
 D'abord, la règle fixe est la seule dont l'échec est parfaitement prévisible en cours de route. Le taux de retrait courant est un voyant fiable, gradué, lisible par n'importe qui. Quiconque applique du Bengen doit suivre ce ratio une fois par an, avec des seuils écrits ([[quand-s-inquieter]]). 
