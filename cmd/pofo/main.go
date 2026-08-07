@@ -1168,7 +1168,17 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 	if len(specs) > 0 {
 		var assets []web.AssetSeries
 		for _, h := range specs[0].Holdings {
-			s, err := fetchAsset(ctx, c, h.ID, opt)
+			// Honour "#meta sim:on" exactly like portfolio.Build: fetch the
+			// SIM (backcast-extended) variant, falling back to the real
+			// quotes when no backcast exists. The FIRE panel needs the deep
+			// history; real-only overlaps of recent funds are often too
+			// short to fit or resample a retirement-length horizon.
+			fetchID := portfolio.SimFetchID(h.ID, specs[0].Sim)
+			s, err := fetchAsset(ctx, c, fetchID, opt)
+			if err != nil && fetchID != h.ID {
+				log.Printf("fire: %s: no simulated history, using real quotes", h.ID)
+				s, err = fetchAsset(ctx, c, h.ID, opt)
+			}
 			if err != nil {
 				log.Printf("fire: skipping %s: %v", h.ID, err)
 				continue
