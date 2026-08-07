@@ -42,10 +42,14 @@ func embeddedHICP(geo string) ([]Point, bool) {
 	return nil, false
 }
 
-// parseMonthlyAnchors reads "YYYY-MM,value" lines (ignoring blanks and #
-// comments), skipping any malformed row, sorted ascending by date. It backs
-// every bundled monthly series (HICP indices, the long EUR/USD proxy).
-func parseMonthlyAnchors(csv string) []Point {
+// parseMonthlyAnchors reads "YYYY-MM,value" lines; it backs every bundled
+// monthly series (HICP and CPI indices, the long EUR/USD proxy).
+func parseMonthlyAnchors(csv string) []Point { return parseAnchors(csv, "2006-01") }
+
+// parseAnchors reads "date,value" lines whose date matches the given layout
+// (ignoring blanks and # comments), skipping any malformed row, sorted
+// ascending by date. It backs every bundled snapshot series.
+func parseAnchors(csv, layout string) []Point {
 	var pts []Point
 	for _, line := range strings.Split(csv, "\n") {
 		line = strings.TrimSpace(line)
@@ -56,7 +60,7 @@ func parseMonthlyAnchors(csv string) []Point {
 		if !ok {
 			continue
 		}
-		t, err := time.ParseInLocation("2006-01", strings.TrimSpace(label), time.UTC)
+		t, err := time.ParseInLocation(layout, strings.TrimSpace(label), time.UTC)
 		if err != nil {
 			continue
 		}

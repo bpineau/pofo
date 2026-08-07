@@ -12,7 +12,10 @@ const dropoutRatio = 0.25
 // percent (Yahoo's ^IRX, ^TNX, …) rather than a price. Such series legitimately
 // visit near-zero levels (e.g. ^IRX at ~0.003 % when the Fed cut to zero in
 // March 2020), so the dropout filter must not touch them: a real low rate is
-// not a bad print. Mirrors simgen.isRate.
+// not a bad print. Mirrors simgen.isRate. ^VIX, though an annualized percent
+// level too, deliberately stays a "price" here: it never legitimately visits
+// the extremes the repairs look for (near zero, 8x in a day), so the cleaning
+// passes only protect it from provider bad prints.
 func isRateSymbol(symbol string) bool {
 	switch symbol {
 	case "^IRX", "^FVX", "^TNX", "^TYX":

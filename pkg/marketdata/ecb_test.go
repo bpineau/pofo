@@ -108,6 +108,33 @@ func TestHistoryFXCrossRateViaECB(t *testing.T) {
 	}
 }
 
+func TestHistoryEuroCrossOfflineSnapshot(t *testing.T) {
+	// Every live source down and nothing cached: the euro crosses still
+	// answer from the bundled monthly ECU/EUR anchors (1978→).
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "everything down", http.StatusInternalServerError)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.History(context.Background(), "USDEUR=X", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Currency != "EUR" {
+		t.Fatalf("currency = %q, want EUR: %+v", s.Currency, s)
+	}
+	if first := s.First().Date; first.Year() != 1978 {
+		t.Errorf("first = %s, want 1978 (bundled anchors)", first.Format("2006-01"))
+	}
+	// December 1978 EUR/USD anchor is 1.3773 USD per EUR: the USDEUR
+	// snapshot serves its reciprocal.
+	if got, want := s.Points[0].Close, 1/1.3773; math.Abs(got-want) > 1e-9 {
+		t.Errorf("first close = %v, want %v", got, want)
+	}
+}
+
 func TestLatestFXSurvivesStooqChallenge(t *testing.T) {
 	// Latest must reach the ECB leg when Yahoo is down and Stooq serves its
 	// anti-bot page. Rows are recent so the one-year Latest window keeps them.

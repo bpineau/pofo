@@ -193,17 +193,22 @@ and sweeps), with the thin web layer under `pkg/decumul/web`.
   → built-in catalog of pinned resolutions → multi-source search
   (Yahoo, FT, Morningstar via Boursorama), the deepest series winning.
 - **Inflation**: `^HICP-FR` (and `^HICP-<geo>`, e.g. `^HICP-EA`) fetch the
-  Eurostat Harmonised Index of Consumer Prices (monthly, 1996→), interpolated
-  to a smooth daily curve. It charts like any asset: the CAGR reads as average
-  inflation, drawdowns mark deflation episodes; it also serves as the deflator
-  for real-return analysis. A monthly snapshot is embedded in the binary as an
-  offline fallback, so the series is available even if Eurostat is down.
+  Eurostat Harmonised Index of Consumer Prices (monthly; the French series is
+  extended back to 1955 via the OECD CPI), interpolated to a smooth daily
+  curve. `^CPI-US` is the dollar sibling: the US CPI-U from FRED, monthly
+  since 1913. They chart like any asset: the CAGR reads as average inflation,
+  drawdowns mark deflation episodes; they also serve as the deflator for
+  real-return analysis (HICP for EUR reports, CPI-US for USD ones). Monthly
+  snapshots are embedded in the binary as offline fallbacks, so the series
+  are available even if Eurostat or FRED is down.
 - **Currency**: every series is converted to the `-currency` (default EUR)
-  using daily Yahoo FX crosses, so USD ETFs and EUR funds compare fairly;
-  the earliest known rate is held flat before the FX history starts (with a
-  warning), and unconverted (unknown-currency) assets are flagged. For
-  library consumers, `Client.ConvertCurrency` reprices any `Series` into a
-  target currency via the same Yahoo crosses.
+  using daily FX crosses (Yahoo, with Stooq then the ECB reference rates as
+  fallbacks), so USD ETFs and EUR funds compare fairly; the euro crosses
+  reach back to 1978 via a bundled monthly ECU/EUR proxy, the earliest known
+  rate is held flat before the FX history starts (with a warning), and
+  unconverted (unknown-currency) assets are flagged. For library consumers,
+  `Client.ConvertCurrency` reprices any `Series` into a target currency via
+  the same crosses.
 - **Cache**: 1 month by default; a failed refresh **serves the stale data**
   with a stderr warning (charts may stop before today), and never deletes
   anything.
@@ -211,6 +216,38 @@ and sweeps), with the thin web layer under `pkg/decumul/web`.
   `pkg/datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
   BND→VBMFX, …), rescaled to the first real quote. The report flags every
   simulated portion.
+
+### Special identifiers
+
+Beyond tickers, ISINs and catalog aliases, a few special names work wherever
+an asset identifier does (portfolio files, `-assets`, `-verify-data`, the
+library `Fetch`):
+
+| Identifier | Series | History |
+|---|---|---|
+| `^GSPC` | S&P 500 price index | 1927→ |
+| `^NDX`, `^DJI`, `^IXIC` | Nasdaq-100, Dow Jones, Nasdaq Composite | |
+| `^VIX` | CBOE Volatility Index (implied vol, percent points) | 1990→, bundled |
+| `^IRX`, `^FVX`, `^TNX`, `^TYX` | US Treasury yields: 13-week, 5, 10, 30-year | |
+| `^HICP-FR`, `^HICP-<geo>` | Eurostat inflation index (all-items HICP) | 1955→ (FR), bundled |
+| `^CPI-US` | US CPI-U inflation index (FRED) | 1913→, bundled |
+| `USDEUR=X`, any `<AAA><BBB>=X` | FX cross, quoted in the second currency | 1978→ (euro crosses), bundled |
+| `XAUUSD` (alias `GOLD`), `XAGUSD` | gold / silver spot (via futures) | `GOLDSIM` reaches 1968 |
+| `CL=F` | WTI crude oil continuous futures | |
+
+For example, `pofo -cli -assets '^VIX'` charts the VIX, and
+`pofo -assets 'USDEUR=X,^CPI-US'` compares the dollar and US inflation.
+"Bundled" means the binary embeds the history (full for `^VIX`, monthly
+anchors otherwise) and serves it as a last resort, so these chart offline.
+
+Mind the units: the yields, `^VIX` and the inflation indices are LEVELS, not
+prices. They chart fine and their long histories make good regime context,
+but they are not investable returns: keep them out of weighted portfolios
+(statistics computed on them read as nonsense).
+
+The long MSCI World history is not a symbol of its own: it backs the `SIM`
+extensions, so chart `IWDASIM` or `URTHSIM` to see MSCI World back to 1969
+(the bundled series is the net total return in USD).
 
 ### Intraday
 
