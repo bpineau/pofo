@@ -296,6 +296,7 @@ let run = async function() {
   const b = body();
   renderModels(b, id);
   renderPaths(b, id);
+  renderMarket(b, id);
   renderSolver(b, id);
   renderFrontier(b, id);
   renderPolicyFrontier(b, id);
@@ -526,6 +527,16 @@ async function renderPaths(b, id) {
     const r = await post("/api/paths", b);
     if (!fresh(id)) return;
     document.getElementById("fansGrid").innerHTML =
+      (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
+  } catch (e) { /* keep the previous charts */ }
+}
+
+// §01 first row: the market each model imagines, before any withdrawal.
+async function renderMarket(b, id) {
+  try {
+    const r = await post("/api/market", b);
+    if (!fresh(id)) return;
+    document.getElementById("marketGrid").innerHTML =
       (r.fans || []).map(f => `<div class="fan">${f.svg || ""}</div>`).join("");
   } catch (e) { /* keep the previous charts */ }
 }

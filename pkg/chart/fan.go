@@ -94,10 +94,15 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64) str
 	if xLabel != "" {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeMuted+`" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, y1+32, esc(xLabel))
 	}
-	// Bottom axis is zero wealth: draw it as a bold red ruin line, labelled, so
-	// paths reaching 0 (running out of money) are unmistakable.
+	// Bottom axis is zero: draw it as a bold red line, labelled, so paths
+	// reaching 0 are unmistakable. The label defaults to the wealth-fan
+	// reading ("ruin"); a market-only fan overrides it via Style.ZeroLabel.
+	zeroLabel := opt.Style.ZeroLabel
+	if zeroLabel == "" {
+		zeroLabel = "ruin · 0"
+	}
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeBad+`" stroke-width="1.8"/>`+"\n", x0, y1, x1, y1)
-	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="`+themeBad+`">ruin · 0</text>`+"\n", x0+5, y1-4)
+	fmt.Fprintf(&b, `<text x="%g" y="%g" font-size="11" font-weight="600" fill="`+themeBad+`">%s</text>`+"\n", x0+5, y1-4, esc(zeroLabel))
 	fmt.Fprintf(&b, `<line x1="%g" y1="%g" x2="%g" y2="%g" stroke="`+themeAxis+`"/>`+"\n", x0, y0, x0, y1)
 
 	// Shaded bands, outermost first so inner pairs paint on top, values
