@@ -5,7 +5,7 @@
 #   share (DBMFE), gold is a physical ETC. This is the simplicity flagship
 #   of the family: the portfolio you can explain in one sentence, rebalance
 #   in three trades, and hold through a decade without second-guessing six
-#   sleeves. Its engineered sibling is hydra-five-engines.txt.
+#   sleeves. Its engineered sibling is hydra-five-engines-ucits.txt.
 #
 # ## Lineage: Cole's Dragon, minus the hardest head, plus a growth engine
 #   The ancestor is the Artemis Dragon Portfolio (Christopher Cole, "The
@@ -115,7 +115,7 @@
 #       but it is the family's widest gap; 3-5% of IDTL/DTLE or accepting
 #       the hydra's ZROZ-style head is the patch.
 #   (b) SEQUENCE RISK, measured: worst rolling 5y CAGR is NEGATIVE
-#       (-1.7%) and the worst recovery runs 4.9 years (vs +0.9% and 3.2y
+#       (-1.7%) and the worst recovery runs 4.9 years (vs +0.8% and 3.2y
 #       for the UCITS hydra). A retirement starting into a bad decade CAN
 #       spend five-plus years under water. This is the price of the 54%
 #       growth engine; see the honesty note.
@@ -160,16 +160,16 @@
 #   Vs the UCITS-converted hydra (same investable universe, six lines):
 #   CAGR is a WASH (10.2 vs 10.2) but the shape differs: dragon-lite takes
 #   +7 points of up-capture and +1 point of median-5y in exchange for a
-#   negative worst-5y (-1.7% vs +0.9%), two extra underwater years (4.9y
-#   vs 3.2y) and double the modeled ruin at a 4% withdrawal (0.7% vs
-#   0.3%; safe WR at 5% ruin 5.3% vs 5.5% -- read levels skeptically, the
+#   negative worst-5y (-1.7% vs +0.8%), two extra underwater years (4.9y
+#   vs 3.2y) and nearly double the modeled ruin at a 4% withdrawal (0.7%
+#   vs 0.4%; safe WR at 5% ruin 5.3% vs 5.4% -- read levels skeptically, the
 #   1988-2026 panel is generous, read gaps comparatively). In one line:
 #   same engine, fewer hedges, more throttle.
 #
-# Siblings: hydra-five-engines.txt (the engineered six-line version),
-#   dragon-portfolio-artemis.txt (Cole's original five heads, long vol
-#   included), hydra-all-weather-balanced.txt (quadrant-balanced),
-#   fire-* (decumulation-specific builds with euro buffers).
+# Siblings: hydra-five-engines-ucits.txt (the engineered six-line
+#   version), dragon-portfolio-artemis.txt (Cole's original five heads,
+#   long vol included), fire-* (decumulation-specific builds with euro
+#   buffers).
 #
 # Uncomment to compare the lived experience of a USD and a EUR investor
 # (blind spot (d)): one column per currency, each with its own numeraire
