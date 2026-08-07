@@ -5028,7 +5028,10 @@
       "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
     ],
     "since": "2007-12-11",
-    "duration": 0.05
+    "duration": 0.05,
+    "aliases": [
+      "XEON"
+    ]
   },
   {
     "id": "LU0319687124",
@@ -7102,7 +7105,7 @@
     "source": "yahoo",
     "symbol": "JCL0.DE",
     "currency": "EUR",
-    "fees": 0.35,
+    "fees": 0.25,
     "asset_class": "corporate-bond",
     "underlying": "European AAA-rated collateralised loan obligations (senior secured, floating-rate corporate credit); up to 30% non-European AAA CLOs",
     "benchmark_index": "J.P. Morgan EUR CLOIE AAA",
@@ -7115,10 +7118,11 @@
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge",
+    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge. Measured against the ESTR ETF (LU0290358497) on their common window since 2024-12: 3.42 %/yr against 2.15 %, so +126 bp net of fees, for 1.2 % volatility and a 0.70 % worst drawdown. TER pinned at the 0.25 % justETF now publishes; the December 2024 launch schedule said 0.35 %, and the euro AAA CLO ETF segment repriced as BlackRock and Invesco arrived at 0.25 %.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081"
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081",
+      "https://www.janushenderson.com/en-gb/adviser/press-releases/janus-henderson-launches-its-first-aaa-clo-etf-in-europe/"
     ],
     "since": "2024-12-23"
   },
@@ -8569,6 +8573,106 @@
     "sources": [
       "https://hanetf.com/fund/co2-sparkchange-physical-carbon-eua-etc/",
       "https://www.justetf.com/en/etf-profile.html?isin=XS2353177293"
+    ]
+  },
+  {
+    "id": "IE000Q9IHH10",
+    "isin": "IE000Q9IHH10",
+    "aliases": [
+      "EUCL"
+    ],
+    "name": "iShares EUR AAA CLO Active UCITS ETF EUR Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "EUCL",
+    "xid": "1001800450",
+    "currency": "EUR",
+    "fees": 0.25,
+    "since": "2025-07-24",
+    "asset_class": "corporate-bond",
+    "underlying": "Euro-denominated AAA-rated CLO tranches (at least 80 %), with up to 20 % in tranches rated A- or above; senior secured leveraged-loan collateral, floating rate over Euribor",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "BlackRock's entry in the euro AAA CLO ETF segment (listed 2025-07-18), the cheapest tier at 0.25 %. Measured against the ESTR ETF over its own window: 3.37 %/yr against 2.01 %, so +136 bp net of fees, worst drawdown 0.30 %. Read the mandate before treating it as a pure AAA sleeve: up to a fifth of the book may sit in A- or better, which is a step down the capital structure that the name does not say.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000Q9IHH10",
+      "https://www.blackrock.com/lu/intermediaries/products/343060/ishares-aaa-clo-active-ucits-etf"
+    ]
+  },
+  {
+    "id": "IE000Y2JPPS4",
+    "isin": "IE000Y2JPPS4",
+    "aliases": [
+      "CLOA"
+    ],
+    "name": "Invesco EUR AAA CLO UCITS ETF Acc",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "CLOA",
+    "xid": "964668920",
+    "currency": "EUR",
+    "fees": 0.25,
+    "since": "2025-02-13",
+    "asset_class": "corporate-bond",
+    "underlying": "Euro-denominated CLO tranches rated AAA (at least 80 %) and AA (up to 20 %), ~113 positions, floating rate over Euribor",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "Invesco's euro AAA CLO ETF (inception 2025-02-10, EUR 246m at 2026-07), 0.25 %. Measured against the ESTR ETF over its own window: 3.35 %/yr against 2.08 %, so +127 bp net of fees, for 0.9 % volatility and a 0.56 % worst drawdown. The whole euro AAA CLO cohort (this one, EUCL, JCL0, LAAA) lands within ten basis points of each other, which is what a spread product looks like while nothing goes wrong: the differentiators are the fee, the AA/A- allowance and the wrapper, not the manager.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000Y2JPPS4"
+    ]
+  },
+  {
+    "id": "LU2785470191",
+    "isin": "LU2785470191",
+    "aliases": [
+      "LAAA"
+    ],
+    "name": "Fair Oaks AAA CLO Fund UCITS ETF EUR Dist",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "LAAA.DE",
+    "currency": "EUR",
+    "fees": 0.35,
+    "since": "2024-09-11",
+    "asset_class": "corporate-bond",
+    "underlying": "European AAA-rated CLO tranches (the EU risk-retention rule keeps most US CLOs out of a UCITS wrapper), floating rate over Euribor",
+    "benchmark_index": "active (no index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "currency_exposure": {
+      "EUR": 100
+    },
+    "notes": "Europe's FIRST CLO ETF (Xetra, 2024-09-10), from the specialist Fair Oaks; EUR 37m, 0.35 %, quarterly distributions. DATA TRAP, read before comparing: the quotes are PRICE-ONLY. Yahoo carries no distribution for LAAA.DE, so the series shows 0.51 %/yr since inception where the total return is roughly three points higher (12-month distribution yield ~3.0 %). Any chart or statistic that puts this line next to an accumulating sibling (JCL0, EUCL, CLOA) understates it by the whole coupon. Prefer an accumulating share class for analysis, and keep this one for what it is, the income vehicle of the family.",
+    "confidence": "medium",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2785470191",
+      "https://www.etfstream.com/articles/fair-oaks-capital-launches-europe-s-first-clo-etf"
     ]
   }
 ]
