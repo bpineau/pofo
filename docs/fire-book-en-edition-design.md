@@ -351,6 +351,12 @@ slips mechanically.
   the completeness guard flips from env-gated to hard. Update
   `docs/webapp-design.md` (route map), `CLAUDE.md` (map row), `README.md`,
   and this document's status line.
+  Partially pulled forward (2026-08-01, the landing-page reorganization):
+  `/firebook/en/` is mounted under `-serve` with cross-navigation both ways,
+  and the index skips parts with no translated article yet, so the page grows
+  with M2. Still owed to M4: `WithAlternate` hreflang cross-links,
+  `-export-epub -book-lang`, epubcheck/KOReader validation, the hard
+  completeness guard.
 
 M1 is a self-contained refactor PR-sized task; M2 is the bulk of the cost
 (~91 articles, ~220k French words) and is embarrassingly parallel after M1.

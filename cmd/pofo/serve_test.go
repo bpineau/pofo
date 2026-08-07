@@ -85,6 +85,10 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/firebook/fr/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "book-sitenav") {
 		t.Errorf("book: code=%d, navbar wanted", rec.Code)
 	}
+	// Both editions are mounted; the English one grows with the translation.
+	if rec := serveGet(t, h, "/firebook/en/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "The Quiet FIRE") {
+		t.Errorf("book-en: code=%d, The Quiet FIRE wanted", rec.Code)
+	}
 	// The old /book/ path permanently redirects to /firebook/.
 	if rec := serveGet(t, h, "/book/fr/"); rec.Code != http.StatusMovedPermanently ||
 		rec.Header().Get("Location") != "/firebook/fr/" {
@@ -118,6 +122,43 @@ func TestServeRoutes(t *testing.T) {
 	}
 }
 
+// TestServeLanding locks the front door: the two-tone mark, the four section
+// cards, and the visualizer's canonical path (with the trailing-slash form
+// redirected, and the old front-door content now living there).
+func TestServeLanding(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+
+	rec := serveGet(t, h, "/")
+	if rec.Code != 200 {
+		t.Fatalf("landing: code=%d", rec.Code)
+	}
+	body := rec.Body.String()
+	for _, want := range []string{
+		`<h1 class="land-mark">po<b>fo</b></h1>`,
+		`href="/firebook/fr/"`, `href="/firebook/en/"`,
+		`href="/visualizer"`, `href="/firesimulator/"`,
+		`Fire Book (fr)`, `Fire Book (en)`, `Portfolio visualizer`, `Fire Simulator`,
+	} {
+		if !strings.Contains(body, want) {
+			t.Errorf("landing missing %q", want)
+		}
+	}
+
+	if rec := serveGet(t, h, "/visualizer/"); rec.Code != 301 ||
+		rec.Header().Get("Location") != "/visualizer" {
+		t.Errorf("visualizer slash: code=%d loc=%q, want 301 to /visualizer", rec.Code, rec.Header().Get("Location"))
+	}
+	viz := serveGet(t, h, "/visualizer")
+	if viz.Code != 200 || !strings.Contains(viz.Body.String(), "Put portfolios side by side.") {
+		t.Errorf("visualizer: code=%d, hub headline wanted", viz.Code)
+	}
+	// The visualizer's mark links back to the landing page.
+	if !strings.Contains(viz.Body.String(), `<a class="hub-mark" href="/">po<b>fo</b></a>`) {
+		t.Error("visualizer mark must link home")
+	}
+}
+
 func TestServeComposerAssets(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
@@ -144,7 +185,7 @@ func TestServeComposerAssets(t *testing.T) {
 func TestServeAssetFingerprinting(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
-	hub := serveGet(t, h, "/").Body.String()
+	hub := serveGet(t, h, "/visualizer").Body.String()
 	for _, want := range []string{
 		`href="/theme.css?v=`, `href="/fonts.css?v=`,
 		`href="/composer.css?v=`, `src="/composer.js?v=`,
@@ -315,8 +356,8 @@ func TestServeView(t *testing.T) {
 		t.Errorf("render calls = %+v", *calls)
 	}
 
-	if rec := serveGet(t, h, "/view"); rec.Code != 303 || rec.Header().Get("Location") != "/" {
-		t.Errorf("empty view: code=%d loc=%q, want 303 to /", rec.Code, rec.Header().Get("Location"))
+	if rec := serveGet(t, h, "/view"); rec.Code != 303 || rec.Header().Get("Location") != "/visualizer" {
+		t.Errorf("empty view: code=%d loc=%q, want 303 to /visualizer", rec.Code, rec.Header().Get("Location"))
 	}
 	if rec := serveGet(t, h, "/view?p=ZZZNOTANID:100"); rec.Code != 400 ||
 		!strings.Contains(rec.Body.String(), "not in the local catalog") {
@@ -354,7 +395,7 @@ func TestServeViewCurrencyNative(t *testing.T) {
 	}
 
 	// Feeding that cookie back to the hub re-selects the native option.
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/visualizer", nil)
 	req.AddCookie(stored)
 	rec2 := httptest.NewRecorder()
 	h.ServeHTTP(rec2, req)
@@ -373,7 +414,7 @@ func TestServeHubOutOfListPref(t *testing.T) {
 
 	// A stored rebalance outside the hardcoded list must appear as its own
 	// selected option, never silently rewritten by a lying select.
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/visualizer", nil)
 	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: "rebalance=7"})
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)
@@ -436,7 +477,7 @@ func TestFireForSpecPanelCaching(t *testing.T) {
 func TestServeHub(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
-	rec := serveGet(t, h, "/")
+	rec := serveGet(t, h, "/visualizer")
 	if rec.Code != 200 {
 		t.Fatalf("hub: code=%d", rec.Code)
 	}
@@ -470,7 +511,7 @@ func TestServeHub(t *testing.T) {
 func TestServeHubComposer(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
-	body := serveGet(t, h, "/").Body.String()
+	body := serveGet(t, h, "/visualizer").Body.String()
 
 	for _, want := range []string{
 		`id="composer"`, `data-boot="blank"`, `data-globals=`,
@@ -507,7 +548,7 @@ func TestServeHubPrefs(t *testing.T) {
 	h := s.handler(nil, nil)
 
 	// Without a cookie: server defaults selected, bare Open links.
-	body := serveGet(t, h, "/").Body.String()
+	body := serveGet(t, h, "/visualizer").Body.String()
 	for _, want := range []string{
 		`name="currency"`, `name="rebalance"`, `name="sim"`,
 		`value="EUR" selected`, `value="90" selected`, `value="on" selected`,
@@ -521,7 +562,7 @@ func TestServeHubPrefs(t *testing.T) {
 	}
 
 	// With a cookie: controls pre-selected and Open links carry the prefs.
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req := httptest.NewRequest(http.MethodGet, "/visualizer", nil)
 	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: "currency=USD&rebalance=30&sim=off"})
 	rec := httptest.NewRecorder()
 	h.ServeHTTP(rec, req)

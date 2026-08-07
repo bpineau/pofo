@@ -51,7 +51,8 @@
 // plate generators stay French and single-source, and FigureSVGEnglish
 // translates the rendered SVG text through a dictionary (see figures_i18n.go;
 // scripts/figure-audit.sh checks that no translated label runs off its plate).
-// It is not mounted yet. The design is docs/fire-book-en-edition-design.md.
+// It is mounted at /firebook/en/ and its index grows as articles are
+// translated. The design is docs/fire-book-en-edition-design.md.
 //
 // EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
 // pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,

@@ -1,6 +1,7 @@
-// The -serve mode: the pofo web constellation on one local port: the hub
-// and /view visualizer (this file and hub.go), the FIRE explorer under
-// /firesimulator/, and the FIRE book under /firebook/fr/.
+// The -serve mode: the pofo web constellation on one local port: the landing
+// page at / (landing.go), the portfolio visualizer at /visualizer and /view
+// (this file and hub.go), the FIRE explorer under /firesimulator/, and the
+// FIRE book under /firebook/fr/ and /firebook/en/.
 package main
 
 import (
@@ -83,10 +84,11 @@ func setImmutableIfVersioned(w http.ResponseWriter, r *http.Request) {
 }
 
 // fireSiteNav is the FIRE simulator's top-bar cross-navigation under -serve:
-// links back to the portfolios hub and the FIRE book. It is passed only here,
-// so the standalone -fire mount keeps a clean bar.
+// links back to the landing page, the portfolio visualizer and the FIRE book.
+// It is passed only here, so the standalone -fire mount keeps a clean bar.
 var fireSiteNav = []web.NavLink{
-	{Label: "Portfolios", Href: "/"},
+	{Label: "Home", Href: "/"},
+	{Label: "Portfolios", Href: "/visualizer"},
 	{Label: "Book-fr", Href: "/firebook/fr/"},
 }
 
@@ -182,7 +184,13 @@ func newServer(opt *options, client *marketdata.Client) *server {
 func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	mux := http.NewServeMux()
 	s.fireDefault = web.Handler(panel, labels, fireOptions(s.sourceLabel)...)
-	mux.HandleFunc("/", s.hub)
+	mux.HandleFunc("/", s.landing)
+	mux.HandleFunc("/visualizer", s.hub)
+	// The visualizer used to live at "/"; a trailing-slash form is close
+	// enough to type that it deserves the canonical redirect.
+	mux.HandleFunc("/visualizer/", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/visualizer", http.StatusMovedPermanently)
+	})
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
 	mux.HandleFunc(fireBase+"/", s.fire)
@@ -196,11 +204,22 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		}
 		http.Redirect(w, r, target, http.StatusMovedPermanently)
 	})
-	nav := []firebook.NavLink{
-		{Label: "Portefeuilles", Href: "/"},
+	navFR := []firebook.NavLink{
+		{Label: "Accueil", Href: "/"},
+		{Label: "Portefeuilles", Href: "/visualizer"},
 		{Label: "Simulateur", Href: fireBase + "/"},
+		{Label: "English", Href: "/firebook/en/"},
 	}
-	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.Handler(firebook.WithNav(nav))))
+	navEN := []firebook.NavLink{
+		{Label: "Home", Href: "/"},
+		{Label: "Portfolios", Href: "/visualizer"},
+		{Label: "Simulator", Href: fireBase + "/"},
+		{Label: "Français", Href: "/firebook/fr/"},
+	}
+	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
+		firebook.Handler(firebook.WithNav(navFR), firebook.WithHome("/"))))
+	mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
+		firebook.English.Handler(firebook.WithNav(navEN), firebook.WithHome("/"))))
 	// The book moved from /book/ to /firebook/; keep the old path working with
 	// a permanent redirect so existing bookmarks and links do not break.
 	mux.HandleFunc("/book/fr/", func(w http.ResponseWriter, r *http.Request) {
@@ -556,7 +575,7 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(vr.specs) == 0 {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
+		http.Redirect(w, r, "/visualizer", http.StatusSeeOther)
 		return
 	}
 	// Remember explicit, valid global preferences (currency, rebalance,
@@ -617,7 +636,7 @@ var errorTmpl = template.Must(template.New("err").Parse(versionedAssets(`<!DOCTY
 <link rel="stylesheet" href="/fonts.css"><link rel="stylesheet" href="/theme.css">
 </head><body>
 <main style="max-width:38rem;margin:4rem auto;padding:0 1.2rem">
-<h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/">Back to the portfolios</a></p>
+<h1>{{.Status}}</h1><p>{{.Message}}</p><p><a href="/visualizer">Back to the portfolios</a></p>
 </main></body></html>`)))
 
 func (s *server) errorPage(w http.ResponseWriter, code int, msg string) {

@@ -16,10 +16,14 @@ const siteNavCSS = `.site-nav{display:flex;gap:1.2rem;align-items:baseline;max-w
 	`letter-spacing:.06em;text-transform:uppercase}` +
 	`.site-nav a{color:var(--muted);text-decoration:none}` +
 	`.site-nav a:hover{color:var(--accent-ink)}` +
-	`.site-nav a:first-child{color:var(--accent-ink)}`
+	`.site-nav a.here{color:var(--accent-ink)}` +
+	`.site-nav a.mark{color:var(--ink);font-weight:600;letter-spacing:-.02em;text-transform:none;font-size:.82rem}` +
+	`.site-nav a.mark b{color:var(--accent);font-weight:600}`
 
 var siteNavHTML = template.HTML(`<nav class="site-nav">` +
-	`<a href="/">Portfolios</a><a href="/fire/">Simulator</a><a href="/firebook/fr/">Book-fr</a>` +
+	`<a class="mark" href="/">po<b>fo</b></a>` +
+	`<a class="here" href="/visualizer">Portfolios</a>` +
+	`<a href="/fire/">Simulator</a><a href="/firebook/fr/">Book-fr</a>` +
 	`</nav>`)
 
 // compareOptions maps the CLI options onto the pkg/compare inputs.
