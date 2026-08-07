@@ -9,8 +9,9 @@ Financial Times, Morningstar, Stooq, ECB), rebuilds the missing past (proxies an
 simulated data), simulates each portfolio with periodic rebalancing and
 generates a self-contained HTML report opened in the browser (comparison and
 statistics front and center; per-portfolio sections collapsed, each with a
-performance curve, three composition pies (geography, sector, asset type)
-and its macro-regime coverage).
+performance curve, four look-through composition pies (geography, currency
+exposure, equity sectors, asset type with stacked funds opened into their
+legs) and its macro-regime coverage, each bar split by contributing holding).
 
 ## Usage
 
@@ -427,7 +428,8 @@ pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR
 pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity /
                   max-sortino / return-to-drawdown / min-ulcer / max-worst-5y /
                   cwarp
-pkg/suggest/      regime coverage, redundancy and gap-filling suggestions
+pkg/suggest/      regime coverage, look-through composition, redundancy and
+                  gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
 pkg/portfolio/    allocation file format + rebalanced simulation
 pkg/report/       HTML and text rendering of the comparison model
@@ -499,7 +501,9 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
   daily downloads, `Intraday` for the live 5-minute path, `Latest` for the
   freshest quote, cache, simdata, proxies; `FetchExtended` bundles the whole
   per-asset pipeline in one call.
-- `suggest`: regime/factor coverage and gap-filling (consumes `datasets.Asset`).
+- `suggest`: regime/factor coverage, look-through composition splits (asset
+  classes, geography, currency exposure, equity sectors, duration) and
+  gap-filling (consumes `datasets.Asset`).
 - `metrics`: statistics over value series (returns, drawdowns, Beta).
 - `chart`: pure-stdlib inline SVG charts.
 - `portfolio`: allocation file parsing, `Build` (spec + fetch callback →
