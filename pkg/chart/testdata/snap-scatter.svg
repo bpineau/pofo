@@ -10,8 +10,10 @@
 <text x="288.0" y="352.0" font-size="11" fill="#7A8294" text-anchor="middle">vol</text>
 <text x="14" y="170.0" font-size="11" fill="#7A8294" text-anchor="middle" transform="rotate(-90 14 170.0)">ruin</text>
 <path d="M100.8 72.7L459.5 298.6" fill="none" stroke="#CDD2DA" stroke-width="1.5" stroke-dasharray="4 4"/>
-<circle cx="100.8" cy="72.7" r="6" fill="#D2402F"/>
-<circle cx="459.5" cy="298.6" r="6" fill="#0B7285"/>
+<circle cx="100.8" cy="72.7" r="14" fill="transparent"><title>Fixed · vol 2.00 · ruin 14.00</title></circle>
+<circle cx="100.8" cy="72.7" r="6" fill="#D2402F"><title>Fixed · vol 2.00 · ruin 14.00</title></circle>
+<circle cx="459.5" cy="298.6" r="14" fill="transparent"><title>VPW · vol 18.00 · ruin 1.00</title></circle>
+<circle cx="459.5" cy="298.6" r="6" fill="#0B7285"><title>VPW · vol 18.00 · ruin 1.00</title></circle>
 <text x="111.8" y="88.7" font-size="12" fill="#16181D" text-anchor="start">Fixed</text>
 <text x="448.5" y="288.6" font-size="12" fill="#16181D" text-anchor="end">VPW</text>
 </svg>

@@ -44,8 +44,8 @@ func CategoryBars(opt Options, bars []CatBar) string {
 		if bw < 0 {
 			bw = 0
 		}
-		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="`+themeWell+`"/>`+"\n", x0, y, x1-x0)
-		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="%s"/>`+"\n", x0, y, bw, col)
+		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="`+themeWell+`"><title>%s: %s</title></rect>`+"\n", x0, y, x1-x0, esc(bar.Label), esc(bar.Text))
+		fmt.Fprintf(&b, `<rect x="%.1f" y="%.1f" width="%.1f" height="20" rx="4" fill="%s"><title>%s: %s</title></rect>`+"\n", x0, y, bw, col, esc(bar.Label), esc(bar.Text))
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" fill="`+themeInkSoft+`" text-anchor="end">%s</text>`+"\n", labelW-10, y+14, esc(bar.Label))
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
 	}

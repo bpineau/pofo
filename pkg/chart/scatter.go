@@ -75,13 +75,16 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 	}
 	fmt.Fprintf(&b, `<path d="%s" fill="none" stroke="`+themeAxis+`" stroke-width="1.5" stroke-dasharray="4 4"/>`+"\n", path.String())
 
-	// Points.
+	// Points, each with a native tooltip and an oversized transparent hit
+	// ring (a 6px dot is a pinpoint nobody hovers reliably).
 	for _, p := range pts {
 		col := p.Color
 		if col == "" {
 			col = themeAccent
 		}
-		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"/>`+"\n", xAt(p.X), yAt(p.Y), col)
+		tip := fmt.Sprintf("%s · %s %s · %s %s", p.Label, xlab, fmtTick(p.X, 0.01), ylab, fmtTick(p.Y, 0.01))
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="14" fill="transparent"><title>%s</title></circle>`+"\n", xAt(p.X), yAt(p.Y), esc(tip))
+		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="6" fill="%s"><title>%s</title></circle>`+"\n", xAt(p.X), yAt(p.Y), col, esc(tip))
 	}
 	// Labels, deconflicted: policies often land on the same spot (e.g. two
 	// rules with near-identical ruin and volatility), and overlapping text is

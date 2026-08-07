@@ -74,15 +74,16 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	}
 	ruinSVG := chart.Bars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
 
-	// Why plans fail: decompose the ruined paths by the timing that stands in for
-	// the cause (early crash / lost decade / longevity).
-	rt := e.RuinTiming()
-	pct := roundShares100(rt.Early, rt.Mid, rt.Late)
+	// Why plans fail: classify the ruined paths by trajectory shape (halved
+	// early / never grew / prospered then outlived), sharper than the old
+	// when-it-failed timing proxy.
+	sh := e.RuinShapes()
+	pct := roundShares100(sh.Crash, sh.Grind, sh.Longevity)
 	causesSVG := chart.CategoryBars(chart.Options{Width: 460},
 		[]chart.CatBar{
-			{Label: "Early crash", Value: rt.Early, Text: fmt.Sprintf("%d%%", pct[0]), Color: "#D2402F"},
-			{Label: "Lost decade", Value: rt.Mid, Text: fmt.Sprintf("%d%%", pct[1]), Color: "#C77E17"},
-			{Label: "Longevity", Value: rt.Late, Text: fmt.Sprintf("%d%%", pct[2]), Color: "#9AA2B1"},
+			{Label: "Early crash", Value: sh.Crash, Text: fmt.Sprintf("%d%%", pct[0]), Color: "#D2402F"},
+			{Label: "Slow grind", Value: sh.Grind, Text: fmt.Sprintf("%d%%", pct[1]), Color: "#C77E17"},
+			{Label: "Longevity", Value: sh.Longevity, Text: fmt.Sprintf("%d%%", pct[2]), Color: "#9AA2B1"},
 		})
 
 	// What you leave behind: the distribution of terminal real wealth across
