@@ -177,8 +177,8 @@ func TestHandlerIndexEPUBLink(t *testing.T) {
 	if !strings.Contains(body, `href="le-fire-tranquille.epub"`) {
 		t.Error("index misses the relative EPUB download link")
 	}
-	if !strings.Contains(body, "Version EPUB") {
-		t.Error("index misses the 'Version EPUB' link label")
+	if !strings.Contains(body, "Version epub") {
+		t.Error("index misses the 'Version epub' link label")
 	}
 }
 
