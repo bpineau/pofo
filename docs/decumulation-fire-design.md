@@ -236,6 +236,20 @@ variation, the leanest year, the years spent below plan, the estate left.
   test that recomputes them from the engine (`figures_replay_test.go`) and reads
   the article's tables back out of the markdown.
 
+**Saying where you are, and how to leave.** Two small onboarding affordances
+answer the two questions a first visit cannot otherwise answer. A **provenance
+pill** in the top bar names the market the figures come from (`WithSourceLabel`,
+read from `/api/meta`): amber "generic market · load portfolio" with no panel,
+green "market: <name>" with one. With no panel, the drawer slot that portfolio
+mode fills with the Allocation bar carries a **portfolio loader** instead
+(`WithPicker`): the bundled builds as a list and a small search-and-weigh
+composer over the `p=` grammar, both of which merely navigate to the matching
+`/firesimulator/e/` or `/firesimulator/p/` mount, hash included. Without a
+picker (standalone `-fire`) the same slot states the command-line route. And on
+a demonstrably untouched load (default situation values, no defaults cookie, no
+hash) a **coach arrow** points at the parameters toggle for five seconds, since
+every number on a first visit is a plan the reader never entered.
+
 **One spending policy at a time.** The kernel applies exactly one withdrawal
 rule, in a fixed precedence (ABW > bounded > VPW > risk guardrails >
 Guyton-Klinger > the fixed rule with its flex cut and ratchet). The rail
