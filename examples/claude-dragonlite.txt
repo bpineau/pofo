@@ -1,47 +1,184 @@
-# Dragon-lite équilibré, risk parity light.
-# Volatilité attendue : ~9 % en pas mensuel (mesurée 9.2 %), ~12.5 % en pas quotidien annualisé.
-# Angles morts :
-# (a) une stagflation en dents de scie qui fait whipsawer le trend ; l'or reste alors le seul backstop
-# (b) la protection du plancher reste probabiliste, ce qui plaide pour renforcer la brique linkers (ici 5 %) à l'approche de la décumulation
-# (c) le risque de change n'est pas traité : NTSG etc sont quotés USD sans hedge ; la vol EUR/USD (~8-10 %/an) se retrouve en partie (pas linéairement) dans celle du portefeuille
-# (d) protection faible contre une inflation euro modérée mais persistante : l'essentiel de la poche réelle est US (meme si on ajoute un petit % de linkers euro)
-# (e) peu efficace contre les lost decades à la japonaise (cf. la brique macro discrétionnaire en bas de fichier)
-# NB : on obtient des perfs très proches avec juste NTSGSIM + DBMFSIM + XAUUSDSIM ; cette version est juste plus complète (pour documenter).
-
-# Décommenter pour comparer le vécu d'un investisseur USD et d'un investisseur EUR
-# (angle mort (c) ci-dessus) : une colonne par devise, avec son propre numéraire et
-# sa propre inflation. L'écart entre colonnes mesure le risque de change.
+# Claude dragon-lite -- the Dragon Portfolio distilled to three buyable lines.
+#
+# STATUS: fully implementable TODAY with UCITS/ETC vehicles, no compromise
+#   and no waiting for product launches: NTSG is UCITS, DBi has a UCITS EUR
+#   share (DBMFE), gold is a physical ETC. This is the simplicity flagship
+#   of the family: the portfolio you can explain in one sentence, rebalance
+#   in three trades, and hold through a decade without second-guessing six
+#   sleeves. Its engineered sibling is hydra-five-engines.txt.
+#
+# ## Lineage: Cole's Dragon, minus the hardest head, plus a growth engine
+#   The ancestor is the Artemis Dragon Portfolio (Christopher Cole, "The
+#   Allegory of the Hawk and Serpent", Artemis Capital 2020; see
+#   dragon-portfolio-artemis.txt): ~24% equity, 18% long bonds, 19% gold,
+#   18% commodity trend, 21% long volatility, built to compound through
+#   100-year regime cycles rather than one favorable decade. Dragon-LITE
+#   makes two deliberate departures:
+#   - It DROPS the long-volatility head. Long vol is the Dragon's hardest
+#     sleeve to hold in practice: persistent negative carry, enormous
+#     manager dispersion, and no cheap UCITS vehicle that reliably delivers
+#     the convexity (the investable funds mostly bleed). Trend + gold +
+#     duration take over the crisis job, imperfectly: they are
+#     PROBABILISTIC hedges (they usually respond), not the contractual
+#     convexity Cole wanted. That is the "lite".
+#   - It RE-WEIGHTS toward growth. Cole's 24% equity is calibrated for
+#     century-scale survival; a FIRE accumulator/decumulator still needs
+#     the portfolio to compound. Via NTSG the equity share rises to ~54%,
+#     with the bond sleeve carried as futures ON TOP (capital efficiency:
+#     Asness, "Why Not 100% Equities", JPM 1996; WisdomTree Efficient
+#     Core), instead of Cole's side-by-side 24+18.
+#
+# ## What 100 EUR actually holds (the exposure ledger)
+#
+#   60 NTSG   -> 54  world equity + 36 sovereign futures (~7y duration,
+#                    US/Germany/UK/Japan)
+#   25 DBMF   -> 25  managed-futures trend (SG CTA replication, DBi)
+#   15 XAU    -> 15  gold
+#   ------------------------------------------------------------------
+#   Total     ~54 equity + ~36 bonds + ~25 trend + ~15 gold  = ~130%
+#
+# ## Regime map: what hurts, and which head answers
+#
+#   Growth boom            54 points of world equity: full presence, and
+#                          the best up-capture of the family (61%).
+#   Disinflation/recession 36 points of intermediate duration + trend
+#                          rotating long bonds.
+#   Deflation crash (2008) The KNOWN GAP: only intermediate duration (no
+#                          long-end convexity, no long vol). Trend and the
+#                          USD flight-to-quality carry the day; measured
+#                          2008 real drawdown -18% vs -13% for the hydra,
+#                          which holds a deep-duration head for this.
+#   Inflation shock        Trend long commodities/short bonds (Neville,
+#                          Draaisma, Funnell, Harvey & van Hemert, "The
+#                          Best Strategies for Inflationary Times", JPM
+#                          2021) + gold.
+#   Choppy stagflation     Gold only; trend whipsaws without a trend
+#                          (Neville et al. 2021).
+#   Prolonged equity bear  Trend crisis alpha (Hurst, Ooi & Pedersen, "A
+#                          Century of Evidence on Trend-Following
+#                          Investing", JPM 2017; for the decumulation
+#                          link, Clare, Seaton, Smith & Thomas, FAJ 2017).
+#
+# ## The three heads: rationale, sane ranges, vehicles
+#
+# HEAD 1 -- NTSG, equity + duration (60%; sane range 50-65%).
+#   90% developed-world equities + 60% sovereign futures in one UCITS line
+#   (IE00077IIPQ8). The 60% weight is the IDENTITY choice of this build:
+#   growth-first, hedges second. Empirically the ceiling is hard: above
+#   ~65% every decumulation metric degrades fast (worst rolling 5y CAGR
+#   falls to -2.5%, ruin at a 4% withdrawal doubles). The floor is
+#   identity, not data: BELOW ~50% the portfolio stops being dragon-lite
+#   and converges toward the hydra; and honesty demands saying the sweep
+#   PREFERS that direction (see the honesty note). Approaching
+#   decumulation, slide toward the 50-55% end. Euro-native variant: NTSZ
+#   (IE000OV4XWA3) for part of the sleeve kills the FX quotation on it.
+#
+# HEAD 2 -- trend / managed futures (25%; sane range 20-30%).
+#   Time-series momentum (Moskowitz, Ooi & Pedersen, JFE 2012), the one
+#   head that can profit in both tails and the main reason this build
+#   de-risks decumulation at all. The 20% floor is the strongest
+#   empirical result of the sweep: at 0-15% trend, ruin runs 1.2-1.5%,
+#   max drawdown -32 to -39%, recoveries beyond 5 years. The 30% ceiling
+#   is behavioral (tracking-error regret) plus single-model prudence, not
+#   backtest (which happily takes 40%: in-sample flattery of the shared
+#   TSMOM backcast). KNOWN WEAKNESS: 25% on ONE manager and ONE method
+#   (DBi replication). The single best upgrade to this file is splitting
+#   it two ways, e.g. 13% DBMFE (LU2951555585, EUR share) + 12% AQR
+#   Managed Futures UCITS (LU1103257975, the standout live record
+#   2015-2026) -- at which point you are two thirds of the way to the
+#   hydra's trend sleeve. Rejected for the base build: WINTON-TREND-
+#   EQUITY (portable alpha, adds ~8 points of hidden equity), MFA8 (same
+#   DBi method as DBMFE, ESG-amputated commodities: not diversifying).
+#
+# HEAD 3 -- gold (15%; sane range 10-20%).
+#   Near-zero expected real return alone (Erb & Harvey, "The Golden
+#   Dilemma", FAJ 2013), so the ceiling is drag (~0.17 pt of CAGR per 5
+#   points of gold in the backtest); the floor is empirical (at 0% gold,
+#   ruin nearly doubles and the worst-5y deepens: it is the only backstop
+#   in choppy stagflation). Cole's Dragon runs 19%; 15% is the same idea
+#   net of the growth tilt. Vehicle: a physically-backed ETC (IGLN
+#   IE00B4ND3602, Invesco SGLD, or Xetra-Gold for a EUR line).
+#
+# ## Blind spots (known and accepted; the patches are one file away)
+#
+#   (a) DEFLATION CONVEXITY. No long-duration head and no long vol: in a
+#       2008-style crash this build leans on intermediate futures, trend
+#       reacting in time, and the USD. It worked (2008 real drawdown -18%)
+#       but it is the family's widest gap; 3-5% of IDTL/DTLE or accepting
+#       the hydra's ZROZ-style head is the patch.
+#   (b) SEQUENCE RISK, measured: worst rolling 5y CAGR is NEGATIVE
+#       (-1.7%) and the worst recovery runs 4.9 years (vs +0.9% and 3.2y
+#       for the UCITS hydra). A retirement starting into a bad decade CAN
+#       spend five-plus years under water. This is the price of the 54%
+#       growth engine; see the honesty note.
+#   (c) SINGLE-MANAGER TREND: 25% on one fund and one replication method.
+#       Upgrade path in HEAD 2.
+#   (d) Currency: all three lines are USD-quoted, unhedged; EUR/USD vol
+#       partly feeds portfolio vol. Half feature (crisis USD), half bug.
+#       Uncomment "#meta currencies:USD,EUR" below to SEE the gap: one
+#       column per currency, each with its own numeraire and inflation.
+#   (e) Euro-area inflation is hedged only indirectly (gold, trend). The
+#       liability of a EUR retiree is euro inflation: approaching
+#       decumulation, add 7-15% of euro liquidity (livrets + XEON/ERNX +
+#       short euro linkers; the commented CHSN/42C0 lines below are that
+#       buffer, kept at hand).
+#   (f) A Japan-style lost decade: trend and duration soften, nothing
+#       profits. Optional patch: a small discretionary-macro head (the
+#       commented BHMG line; see fire-macro-leg-bhmg.txt).
+#   (g) Reconstruction risk: pre-inception history is backcast (SIM
+#       series); trend backcasts understate live manager dispersion.
+#       Regime-behavior study, not a promise.
+#
+# ## Honesty note on the WEIGHTS
+#   60/25/15 are round, hand-picked numbers: a priori, never optimizer-
+#   tuned, which is worth something out of sample. The RANGE CHECK
+#   (per-head sweep, rest renormalized, 1988-2026 EUR + bootstrap ruin at
+#   a 4% real withdrawal over 40y) confirms the trend floor (20%) and the
+#   gold floor (10%) emphatically, and the NTSG ceiling (~65%) clearly.
+#   But it also says something uncomfortable: the current point sits at
+#   the AGGRESSIVE EDGE of its own sane ranges. Every decumulation metric
+#   improves monotonically toward 50-55% NTSG / ~30% trend (ruin 0.77% ->
+#   ~0.5%, worst-5y -1.7% -> -0.9%), and the improvement direction, taken
+#   further, simply becomes the hydra. Dragon-lite at 60/25/15 is
+#   therefore an ACCUMULATION-leaning tuning of the concept, chosen for
+#   up-capture and simplicity; it is not the decumulation optimum of its
+#   own design space, and it knows it.
+#
+# ## Measured profile (this toolkit, EUR, common window 1988-11 -> 2026-07)
+#   CAGR 10.2%, vol 12.9% (monthly 10.1%), Sharpe 0.81, max drawdown
+#   -30.8% real, worst recovery 4.9y, worst rolling 5y -1.7%, median 5y
+#   10.0%, up/down-capture 61/57%, weighted fees 0.36%. Real drawdowns:
+#   2000-02 -30%, 2008 -18%, 2022 -14.4%.
+#   Vs the UCITS-converted hydra (same investable universe, six lines):
+#   CAGR is a WASH (10.2 vs 10.2) but the shape differs: dragon-lite takes
+#   +7 points of up-capture and +1 point of median-5y in exchange for a
+#   negative worst-5y (-1.7% vs +0.9%), two extra underwater years (4.9y
+#   vs 3.2y) and double the modeled ruin at a 4% withdrawal (0.7% vs
+#   0.3%; safe WR at 5% ruin 5.3% vs 5.5% -- read levels skeptically, the
+#   1988-2026 panel is generous, read gaps comparatively). In one line:
+#   same engine, fewer hedges, more throttle.
+#
+# Siblings: hydra-five-engines.txt (the engineered six-line version),
+#   dragon-portfolio-artemis.txt (Cole's original five heads, long vol
+#   included), hydra-all-weather-balanced.txt (quadrant-balanced),
+#   fire-* (decumulation-specific builds with euro buffers).
+#
+# Uncomment to compare the lived experience of a USD and a EUR investor
+# (blind spot (d)): one column per currency, each with its own numeraire
+# and its own inflation; the gap between columns IS the currency risk.
 # #meta currencies:USD,EUR
+#meta rebalance:90
 
-# NTSG : 90 % actions Monde développées (filtre ESG) + ~60 % de futures souverains (US, Allemagne, UK, Japon), duration intermédiaire (~7 ans).
-# À 60 % du portefeuille, la contribution effective est ~54 % actions + ~36 % obligations.
-60	NTSGSIM
+60	NTSGSIM         # Head 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS; euro-native variant NTSZ IE000OV4XWA3)
+25	DBMFSIM         # Head 2, trend: iMGP DBi Managed Futures (buy the UCITS EUR share DBMFE, LU2951555585; best upgrade: split with AQR MF UCITS LU1103257975)
+15	XAUUSDSIM       # Head 3, gold (buy a physical ETC: IGLN IE00B4ND3602)
 
-# Trend following / managed futures, pour dérisquer la décumulation (Miller 2017 ; Neville et al. 2021).
-# Amélioration à envisager : répartir sur deux gérants aux styles différents (p.ex. réplication DBi + pur trend). Options :
-# * LU1662502183 (AQR Managed Futures UCITS) : surperforme DBMF, réputé excellent, part hedgée euro disponible
-# * KMLM : intéressant car style différent de DBi (pas d'equity, long historique), mais pas UCITS
-# * MFA8 : peu diversifiant vs DBMFE (même méthode DBi), et amputé des commodities pour rester ESG
-# * WINTON-TREND-EQUITYSIM : attention, portable alpha (100 % MSCI World + 100 % overlay trend), pas un trend pur ;
-#   la jambe de 8 % ci-dessous ajoute donc ~8 points d'exposition actions (actions totales ~62 %)
-# * Fortem : aussi basé sur DBi, mais avec un overlay convexe ciblé contre les dislocations rapides menées par les actions
-# Un sleeve trend en deux jambes du type 12 % DBMF + 8 % Winton me semble plus robuste que 25 % DBMF seul (pour un budget trend voisin)
-# (et quand l'AQR est accessible, mieux vaut DBMF + AQR).
-25	DBMFSIM # ou mieux, DBMFESIM (la part EUR non hedgée)
-#8	WINTON-TREND-EQUITYSIM # reduit la perf, mais il faudrait (et enlever autant a DBMFESIM)...
+# Approaching decumulation: 7-15% of capital (3-3.5 years of spending) in
+# liquid euro assets, funded from NTSG; the "wide buffer" version replaces
+# pure cash with short euro linkers to also cover blind spot (e):
+# 3	CHSNSIM         # LU1645380442, UBS Euro Inflation Linked 1-10 (CHSN); daily backcast from 2005
+# 2	42C0SIM         # LU1459801780, UBS TIPS 1-10 hedged EUR (42C0): US inflation, EUR-hedged; backcast from 2000
 
-# Or spot : couverture stagflation (théorique) et débasement monétaire.
-# En réel, prendre un ETC physiquement adossé (Invesco Physical Gold, iShares Physical Gold...).
-15	XAUUSDSIM
-
-# Pour la décumulation : viser 7 à 15 % du capital (3 à 3.5 ans de dépenses hors épargne de précaution) en actifs euro liquides ;
-# ici 5 % seulement, à remonter à l'approche du départ.
-# P.ex. obligations indexées euro (OATi / linkers euro courts), logées dans un "tampon élargi" à la place de cash pur,
-# pour contrer le risque d'inflation.
-# Bucketed : p.ex. 50k livrets/précaution, 1 an de dépenses en ERNX/XEON, 2 à 2.5 ans en linkers euro courts.
-# 3	CHSNSIM # LU1645380442 aka CHSN (UBS Core BBG Euro Inflation Linked Bond 1-10 UCITS ETF EUR acc) ; backcast quotidien depuis 2005
-# 2	42C0SIM # LU1459801780 aka 42C0 (UBS Core BBG TIPS 1-10 UCITS ETF hEUR acc) ; complément intéressant : hedgé euro mais sur l'inflation US ; backcast depuis 2000
-
-# Optionnel : macro discrétionnaire pour les scénarios évoqués plus haut (décennie perdue japonaise, 2007-2009, ...).
-# Si activé, prendre p.ex. NTSG 60 -> 50 pour rester à 100.
-# 10	BHMGSIM
+# Optional macro head for the scenarios trend handles worst (Japanese lost
+# decade, slow grinds); if enabled, take NTSG 60 -> 50 to stay at 100:
+# 10	BHMGSIM         # Brevan Howard Global (discretionary macro)
