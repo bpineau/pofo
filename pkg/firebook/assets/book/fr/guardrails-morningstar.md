@@ -39,7 +39,7 @@ Le thermomètre par risque hérite de tout ce que le simulateur a de fragile ([[
 
 Tout ce qui précède reste abstrait tant qu'on n'a pas vu la règle vivre. Rien ne vaut un déroulé, comme pour le corridor Vanguard ([[plancher-plafond]]). Prenons le plan qui servira d'exemple plus bas : 1,5 M€, retrait de confort 54 000 € (3,6 %), plancher 44 000 €, pension en année 18. Le corridor est écrit ainsi : coupe de 10 % si le succès simulé tombe sous 85 %, hausse de 10 % s'il dépasse 99 %, tout franchissement devant être confirmé par deux revues consécutives (l'hystérésis). La séquence est un marché baissier précoce suivi d'une reprise, et les valeurs du capteur sont illustratives.
 
-| Revue | Portefeuille (réel) | Succès lu | Décision (corridor 85-99, hystérésis) | Retrait servi (réel) |
+| Revue | Portefeuille (réel) | Succès lu | Décision (corridor 85-99, hystérésis) | Retrait |
 |---|---|---|---|---|
 | 1 | 1 500 000 | 93 % | dans le corridor : rien | 54 000 |
 | 2 | 1 150 000 (−20 %) | 82 % | 1re alerte basse : on attend | 54 000 |

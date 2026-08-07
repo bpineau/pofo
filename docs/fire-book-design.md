@@ -76,7 +76,11 @@ New package `pkg/firebook`, stdlib only:
 - `handler.go`: `func Handler() http.Handler` serving the index (sommaire) at
   `/` and each article at `/<slug>`, as full HTML pages with an embedded
   reading-oriented stylesheet (comfortable measure, generous line-height,
-  webui visual identity: petrol accent, same fonts).
+  webui visual identity: petrol accent, same fonts). Article headings get a
+  hover-revealed "§" anchor link (web chrome only, injected post-render, so
+  the EPUB stays clean); clicking it copies the section URL to the clipboard
+  with a "lien copié" confirmation, and degrades to plain hash navigation
+  without JavaScript or a secure context.
 - Guard test: every file under `assets/book/` appears in the manifest and vice
   versa; every `[[slug]]` in every article resolves to a manifest slug.
 

@@ -8,6 +8,7 @@ import (
 	"html"
 	"log"
 	"net/http"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
@@ -204,10 +205,11 @@ func writePage(w http.ResponseWriter, nav []NavLink, title, description, body st
 </head>
 <body class="book">
 %s%s
+<script>%s</script>
 </body>
 </html>`, html.EscapeString(pageTitle), html.EscapeString(description), ogType,
 		html.EscapeString(siteName), html.EscapeString(pageTitle), html.EscapeString(description),
-		jsonLD(title, description, index), bookCSS, bar.String(), body)
+		jsonLD(title, description, index), bookCSS, bar.String(), body, bookJS)
 }
 
 // jsonLD builds the schema.org structured-data blob for a page: a WebSite for
@@ -300,7 +302,7 @@ func articleHTML(art Article, cat Category) string {
 	var b strings.Builder
 	fmt.Fprintf(&b, `<nav class="book-top"><a href=".">← Sommaire</a><span class="book-cat-tag">%s</span></nav>`,
 		html.EscapeString(cat.Title))
-	fmt.Fprintf(&b, `<article><h1>%s</h1>%s</article>`, html.EscapeString(art.Title), ToHTML(body, Titles()))
+	fmt.Fprintf(&b, `<article><h1>%s</h1>%s</article>`, html.EscapeString(art.Title), addHeadingAnchors(ToHTML(body, Titles())))
 	var others strings.Builder
 	for _, a := range cat.Articles {
 		if a.Slug == art.Slug {
@@ -313,6 +315,40 @@ func articleHTML(art Article, cat Category) string {
 	}
 	return b.String()
 }
+
+// reHeading matches one rendered article heading (bookmd emits h2-h4 with a
+// slug id and no nesting, so the lazy body match always stops at the right
+// closing tag).
+var reHeading = regexp.MustCompile(`(?s)<h([2-4]) id="([^"]+)">(.*?)</h[2-4]>`)
+
+// addHeadingAnchors appends a hover-revealed anchor link ("§") to every
+// article heading, so a section can be bookmarked or shared. This is a
+// web-chrome affordance: it decorates the HTML served by the handler only,
+// never the EPUB export (which renders its own body via articleEPUBBody).
+// The plain <a href="#id"> works without JavaScript; bookJS layers
+// copy-to-clipboard on top.
+func addHeadingAnchors(rendered string) string {
+	return reHeading.ReplaceAllString(rendered,
+		`<h$1 id="$2">$3<a class="book-hanchor" href="#$2" aria-label="Lien direct vers cette section">§</a></h$1>`)
+}
+
+// bookJS upgrades the heading anchors: a click copies the section's full URL
+// to the clipboard (with a small "lien copié" confirmation) and updates the
+// address bar without scrolling. Without JavaScript, or when the clipboard
+// API is unavailable (non-secure origins), the anchor still navigates and
+// puts the shareable URL in the address bar.
+const bookJS = `document.querySelectorAll("article .book-hanchor").forEach(function(a){
+a.addEventListener("click",function(e){
+if(!navigator.clipboard||!navigator.clipboard.writeText)return;
+e.preventDefault();
+var h=a.getAttribute("href");
+history.replaceState(null,"",h);
+navigator.clipboard.writeText(location.origin+location.pathname+h).then(function(){
+a.classList.add("copied");
+setTimeout(function(){a.classList.remove("copied")},1400);
+});
+});
+});`
 
 // bookCSS layers a reading-oriented layout over the shared webui identity:
 // a single comfortable measure, generous leading, and the callout boxes.
@@ -369,6 +405,17 @@ article li.task{list-style:none;margin-left:-1.1rem}
 article code{font-family:var(--mono);font-size:.85em;background:var(--paper-2);padding:.08em .35em;border-radius:4px;color:var(--ink)}
 article a{color:var(--accent-deep);text-decoration:none;border-bottom:1px solid var(--rule)}
 article a:hover{border-bottom-color:var(--accent)}
+article h2[id],article h3[id],article h4[id]{scroll-margin-top:1rem}
+article .book-hanchor{margin-left:.45em;font-family:var(--sans);font-weight:400;font-size:.72em;
+  color:var(--accent-deep);border-bottom:0;opacity:0;transition:opacity .15s ease;position:relative}
+article h2:hover .book-hanchor,article h3:hover .book-hanchor,article h4:hover .book-hanchor,
+article .book-hanchor:focus-visible{opacity:.55}
+article .book-hanchor:hover{opacity:1}
+article .book-hanchor.copied::after{content:"lien copié";position:absolute;bottom:1.35em;left:50%;
+  transform:translateX(-50%);font-family:var(--mono);font-size:.6rem;letter-spacing:.06em;
+  text-transform:none;color:var(--accent-deep);background:var(--card);border:1px solid var(--rule);
+  border-radius:6px;padding:.14em .55em;white-space:nowrap}
+@media (hover:none){article .book-hanchor{opacity:.3}}
 article blockquote{margin:1.1rem 0;padding:.2rem 0 .2rem 1rem;border-left:3px solid var(--accent);color:var(--muted);font-style:italic}
 article hr{border:0;border-top:1px solid var(--rule);margin:2rem 0}
 .book-fig{margin:1.7rem 0}

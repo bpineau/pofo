@@ -7,8 +7,10 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
+	"time"
 )
 
 func get(t *testing.T, srv *httptest.Server, path string) (int, string) {
@@ -72,6 +74,39 @@ func TestHandler(t *testing.T) {
 		if code, _ := get(t, srv, css); code != http.StatusOK {
 			t.Errorf("%s: status %d", css, code)
 		}
+	}
+}
+
+// TestHeadingAnchors checks the web-only hover anchors: every article body
+// heading carries a "§" link to its own id, the page ships the clipboard
+// script, and none of it leaks into the EPUB export.
+func TestHeadingAnchors(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+
+	art := Categories[0].Articles[0]
+	code, body := get(t, srv, "/"+art.Slug)
+	if code != http.StatusOK {
+		t.Fatalf("article: status %d", code)
+	}
+	m := regexp.MustCompile(`<h3 id="([^"]+)">`).FindStringSubmatch(body)
+	if m == nil {
+		t.Fatalf("article page has no h3 with an id")
+	}
+	want := `<a class="book-hanchor" href="#` + m[1] + `"`
+	if !strings.Contains(body, want) {
+		t.Errorf("heading %q misses its anchor link (%s)", m[1], want)
+	}
+	if !strings.Contains(body, "book-hanchor.copied") || !strings.Contains(body, "navigator.clipboard") {
+		t.Errorf("article page misses the anchor CSS or clipboard script")
+	}
+
+	blob, err := EPUB(time.Unix(1700000000, 0).UTC())
+	if err != nil {
+		t.Fatalf("EPUB: %v", err)
+	}
+	if bytes.Contains(blob, []byte("book-hanchor")) {
+		t.Errorf("EPUB export must not contain the web-only heading anchors")
 	}
 }
 
