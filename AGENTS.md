@@ -35,7 +35,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage) |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp |
 | `pkg/permanent` | tactical Permanent Portfolio 2.0 (Darcet): reads `datasets.MacroPanel` into a growth×inflation + monetary regime, quadratically-damped four-sleeve allocation, monthly-real backtest; see `docs/darcet-permanent-portfolio-design.md` |
-| `pkg/suggest` | macro-regime/factor coverage, redundancy, gap-filling suggestions |
+| `pkg/suggest` | macro-regime/factor coverage, look-through composition splits (asset classes, geography, currency exposure, equity sectors, duration), redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
 | `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; `web/` = embedded live UI |
 | `pkg/firebook` | the FIRE book: embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler), served by the fire UI at `/book/fr/`; plan, depth conventions and progress ledger in `docs/fire-book-design.md` |
