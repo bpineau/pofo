@@ -118,6 +118,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   adjusted closes double-counts income. Valuation consumers use
   `FetchOptions.Raw` (unadjusted closes + dividends as cash); Raw + SIM
   suffix is an error.
+- BUT the FT/Morningstar NAV of a DISTRIBUTING share class is a PRICE
+  return: the income it pays out is missing, silently, from every
+  statistic (~3.1 %/yr for the long-bond class DTLE, measured). The
+  report warns (`LooksDistributing`), nothing corrects it. Never splice
+  such a series onto a total-return reconstruction; give the
+  reconstruction its own `source: "index"` id instead (`DTLETR`).
 - With external flows, `SimResult.Values` follows the money while
   `SimResult.Index` is the time-weighted series: compute statistics and
   comparisons on `Index`, money outcomes (IRR) on `Values` + flows.

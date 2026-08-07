@@ -58,6 +58,8 @@ func All() []Recipe {
 		chsnRecipe(),
 		tip1eRecipe(),
 		idtlRecipe(),
+		dtleRecipe(),
+		eresMondeRecipe(),
 		ernaRecipe(),
 		ernxRecipe(),
 		xeonRecipe(),
@@ -671,6 +673,70 @@ func wpeaBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	}
 	return convertDaily("WPEA (MSCI World net TR expressed in EUR)",
 		extend(f), "EURUSD=X", from, dates, lvl)
+}
+
+// eresMondeFeeGap is the extra yearly charge the FCPE wrapper adds on top of
+// the 0.20%/yr tracker TER already embedded in the wpeaBuild path: the fund's
+// all-in charge is 0.50%/yr, so 0.30 points remain to be deducted.
+const eresMondeFeeGap = 0.0050 - 0.0020
+
+// eresMondeRecipe builds ERES Xtrackers Actions Monde M (QS0009135623), the
+// world-equity FCPE offered inside Eres employee-savings plans. The fund is a
+// feeder into two Xtrackers MSCI World trackers (75% the swap-replicated 1D
+// class, 25% the physical 1D class), so its exposure is plainly MSCI World net
+// total return in EUR; what distinguishes it from a directly-held tracker is
+// the wrapper's all-in 0.50%/yr charge.
+//
+// It is therefore built as the WPEA path (MSCI World net TR expressed in EUR,
+// already net of a 0.20%/yr tracker TER, riding real iShares Core MSCI World
+// over 2009-2024) with the remaining eresMondeFeeGap deducted continuously.
+// Two consequences are worth stating rather than discovering later. First,
+// there is nothing to validate against and no real series to graft: an FCPE
+// has no public quotation, and this share class only launched in 2024-03, so
+// the whole series is a reconstruction by construction, honest only insofar as
+// "MSCI World minus a stated fee" describes the fund. Second, the TER-only
+// convention of every tracker recipe applies: the swap leg's substitute-basket
+// economics (which in practice recover part of the US dividend withholding a
+// net index assumes lost) are not modelled, so the series is, if anything, a
+// touch conservative for the 75% swap-replicated share.
+func eresMondeRecipe() Recipe {
+	return Recipe{
+		ID:     "ERESMONDEM",
+		Name:   "ERES Xtrackers Actions Monde M (FCPE): MSCI World net TR in EUR, 0.50%/yr all-in",
+		Method: "MSCI World net TR in EUR (the WPEA path: real IWDA from 2009, MSCIWORLD-USD refdata + daily shape before, converted USD→EUR at EURUSD spot back to 1971) less the FCPE's 0.50%/yr all-in charge; no real quotes exist for an FCPE, nothing is grafted",
+		Build:  eresMondeBuild,
+	}
+}
+
+// eresMondeBuild is wpeaBuild net of the extra wrapper charge.
+func eresMondeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	base, err := wpeaBuild(f, from)
+	if err != nil {
+		return nil, err
+	}
+	return afterAnnualFee("ERESMONDEM (MSCI World net TR in EUR, FCPE charges)", base, eresMondeFeeGap), nil
+}
+
+// afterAnnualFee returns a copy of s with a continuous annual fee deducted:
+// each daily step keeps its own return less the fee accrued over the days
+// elapsed, so the drag compounds on the calendar rather than on quote count
+// (holidays and weekends carry fees too).
+func afterAnnualFee(name string, s *marketdata.Series, annual float64) *marketdata.Series {
+	out := *s
+	out.Name = name
+	out.Points = make([]marketdata.Point, len(s.Points))
+	if len(s.Points) == 0 {
+		return &out
+	}
+	out.Points[0] = s.Points[0]
+	level := s.Points[0].Close
+	for i := 1; i < len(s.Points); i++ {
+		days := s.Points[i].Date.Sub(s.Points[i-1].Date).Hours() / 24
+		step := s.Points[i].Close / s.Points[i-1].Close
+		level *= step * math.Pow(1-annual, days/365.25)
+		out.Points[i] = marketdata.Point{Date: s.Points[i].Date, Close: level}
+	}
+	return &out
 }
 
 // sp500IndexRecipe is the pure S&P 500 Total Return benchmark: SP500-USD
@@ -1350,6 +1416,55 @@ func tltRecipe() Recipe {
 		Build:           composite("TLT (long Treasury)", []Leg{{ID: "VUSTX", Weight: 1}}, "", 0),
 		ValidateAgainst: "TLT",
 		SpliceReal:      "TLT",
+	}
+}
+
+// dtleDuration is the weight the US long-Treasury donor carries in dtleRecipe:
+// VUSTX is a 10-25 year fund (effective duration ~15) while DTLE tracks the
+// 20+ segment (~17), so the local leg is geared to the duration ratio.
+const dtleDuration = 17.0 / 15.0
+
+// dtleRecipe backcasts the iShares $ Treasury Bond 20+yr UCITS ETF EUR Hedged
+// (IE00BD8PGZ49, DTLE, real from 2017-09) as US long Treasuries hedged to EUR.
+// It applies the standard FX-hedge identity, exactly as tip1eRecipe does for
+// hedged TIPS: a hedged foreign return equals the local return financed at the
+// foreign (USD) cash rate plus the domestic (EUR) cash rate earned on the
+// hedged capital, so the EUR investor collects the EUR-minus-USD carry (deeply
+// negative in 2018-2024, which is most of the real overlap) on top of the bond
+// return. The local leg is VUSTX, the same donor the unhedged USD sibling
+// (idtlRecipe) uses, itself extended to 1962 by the TREASURY-LONG-USD 20-year
+// CMT reconstruction and its daily shape, geared by dtleDuration to reach the
+// 20+ segment's duration. Currency-wise the output is EUR-native by
+// construction (no FX path in it), which is the point of the hedged class: the
+// US curve without the dollar.
+//
+// It lives under its OWN identifier, DTLETR, rather than extending DTLE, and
+// nothing is grafted on top: DTLE is a DISTRIBUTING share class, so its only
+// public series (FT NAV) is a PRICE return that omits the coupons it pays out,
+// which for a long-Treasury fund is most of the return. Extending DTLE would
+// have spliced that price series over the recent decade and silently corrupted
+// it, and every SIM consumer would have inherited the mix. The overlap check
+// against the real fund is kept for the shape, and its CAGR gap is the finding
+// rather than an error: the reconstruction beats the quotes by roughly the
+// distribution yield (~3.1%/yr over 2017-2026). Beta below 1 and a daily
+// correlation near 0.7 (weekly ~0.89) have the same two causes as tip1eRecipe,
+// a US-close mutual-fund donor against a European listing, plus that same
+// price/total-return mismatch.
+//
+// Read it as the total-return view of the EUR-hedged US 20+ segment, which is
+// what a backtest needs; the tradable line stays DTLE, and a French investor
+// should weigh its annual coupon taxation against an accumulating alternative
+// before holding it in a taxable account.
+func dtleRecipe() Recipe {
+	return Recipe{
+		ID:     "DTLETR",
+		Name:   "US long Treasuries hedged to EUR (total return, the DTLE segment)",
+		Method: "1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less 0.10%/yr TER; total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
+		Build: composite("DTLE (EUR-hedged US long Treasury)", []Leg{
+			{ID: "VUSTX", Weight: dtleDuration, Excess: true},
+			{ID: "EURCASH-EUR", Weight: 1},
+		}, "^IRX", 0.0010),
+		ValidateAgainst: "DTLE",
 	}
 }
 
