@@ -18,13 +18,13 @@ func styleFixture() []Series {
 }
 
 // The zero-value Style must not change Line's output at all: existing
-// callers (reports, the fire UI) rely on the warm-study look.
+// callers (reports, the fire UI) rely on the default chrome.
 func TestLineZeroStyleUnchanged(t *testing.T) {
 	svg := Line(Options{Width: 640, Height: 300}, styleFixture())
 	for _, want := range []string{
-		`fill="#FFFDF9"`,               // background rect
-		`stroke="#EAE1D3"`,             // grid lines
-		`stroke="#CBBFAE"`,             // axes
+		`fill="#FFFFFF"`,               // background rect
+		`stroke="#E9EDF3"`,             // grid lines
+		`stroke="#C6CEDA"`,             // axes
 		`font-family="-apple-system, `, // default font
 		`stroke-width="1.8"`,           // default stroke
 	} {
@@ -49,7 +49,7 @@ func TestLineMinimalStyle(t *testing.T) {
 	if !strings.Contains(svg, "fill-opacity") {
 		t.Error("minimal style should fill under the first series")
 	}
-	if strings.Contains(svg, `stroke="#EAE1D3"`) || strings.Contains(svg, `stroke="#CBBFAE"`) {
+	if strings.Contains(svg, `stroke="#E9EDF3"`) || strings.Contains(svg, `stroke="#C6CEDA"`) {
 		t.Error("minimal style should draw neither grid nor axes")
 	}
 	if !strings.Contains(svg, "2020-01-01") {

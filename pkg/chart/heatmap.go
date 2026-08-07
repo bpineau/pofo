@@ -52,7 +52,9 @@ func Heatmap(opt Options, d HeatmapData) string {
 	return sb.String()
 }
 
-// heatColor maps v in [0,1] to a green-to-red hex color.
+// heatColor maps v in [0,1] to the risk ramp, green through amber to red,
+// interpolating between the theme's status colors at reduced opacity so the
+// grid stays readable under labels.
 func heatColor(v float64) string {
 	if v < 0 {
 		v = 0
@@ -60,7 +62,15 @@ func heatColor(v float64) string {
 	if v > 1 {
 		v = 1
 	}
-	r := int(255 * v)
-	g := int(200 * (1 - v))
-	return fmt.Sprintf("#%02x%02x40", r, g)
+	// #12B76A (safe) -> #F79009 (caution) -> #D92D20 (danger).
+	lerp := func(a, b int, t float64) int { return a + int(t*float64(b-a)) }
+	var r, g, b int
+	if v < 0.5 {
+		t := v * 2
+		r, g, b = lerp(0x12, 0xF7, t), lerp(0xB7, 0x90, t), lerp(0x6A, 0x09, t)
+	} else {
+		t := (v - 0.5) * 2
+		r, g, b = lerp(0xF7, 0xD9, t), lerp(0x90, 0x2D, t), lerp(0x09, 0x20, t)
+	}
+	return fmt.Sprintf("#%02x%02x%02x59", r, g, b)
 }

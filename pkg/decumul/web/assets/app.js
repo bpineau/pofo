@@ -101,7 +101,8 @@ for (const g of GROUPS) for (const it of g.items) if (it.kind === "range") {
   if (it.unit === "int") INTKEYS.push(it.key);
 }
 const fmtVal = (k, v) => (FMT[UNIT[k] || "int"])(v);
-const PAL = ["#B25A34","#2E6E63","#C08A2D","#7A4A63","#6E7A3A","#3E5C7E","#A8506A","#8A5A2A"];
+// Series palette, mirrors chart.PaletteColor so page and SVG stay consistent.
+const PAL = ["#2E4BE0","#0E9384","#E19000","#7A5AF8","#E8622C","#0BA5EC","#067647","#C11574"];
 const esc = s => (s || "").replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 // portfolio-mode state, set once /api/meta resolves.
@@ -116,11 +117,11 @@ const checkEls = {};
 
 function renderRail() {
   for (const g of GROUPS) {
-    const fs = document.createElement("fieldset");
-    fs.className = "group";
-    fs.innerHTML = `<legend>${g.title}</legend>`;
-    for (const it of g.items) fs.appendChild(buildControl(it));
-    form.appendChild(fs);
+    const box = document.createElement("div");
+    box.className = "group";
+    box.innerHTML = `<div class="group-h">${g.title}</div>`;
+    for (const it of g.items) box.appendChild(buildControl(it));
+    form.appendChild(box);
   }
 }
 
@@ -355,15 +356,13 @@ document.addEventListener("keydown", e => {
   if (e.key === "Escape" && !lightbox.hidden) closeLightbox();
 });
 
-// Ruin colour: a soft ramp, green (safe) through amber to red, saturating at
-// 30%. Kept light so the figures stay readable.
-function ruinColor(r) {
-  const x = Math.max(0, Math.min(r, 0.30)) / 0.30;
-  return `hsl(${(150 - 142 * x).toFixed(0)},50%,${(91 - 5 * x).toFixed(0)}%)`;
-}
+// Ruin colour: the theme's risk ramp, green (safe) through amber to red,
+// saturating at 30%. Rendered as small dots/beads next to mono figures, so
+// the numbers themselves stay in ink.
 function beadColor(r) {
   const x = Math.max(0, Math.min(r, 0.30)) / 0.30;
-  return `hsl(${(150 - 142 * x).toFixed(0)},55%,45%)`;
+  const hue = x < 0.5 ? 152 - 236 * x : 34 - 60 * (x - 0.5);
+  return `hsl(${hue.toFixed(0)},78%,44%)`;
 }
 
 // ---------------------------------------------------------------------------
@@ -380,16 +379,14 @@ async function renderModels(b, id) {
   if (r.confNote) conf.setAttribute("data-help", r.confNote);
   else conf.removeAttribute("data-help");
   const ms = r.models || [];
-  const cells = (fn, attr = "") => ms.map(m => `<td${attr ? " " + attr(m) : ""}>${fn(m)}</td>`).join("");
-  // A green→red rail under the headers encodes the optimistic→catastrophic order.
-  const rail = i => ms.length < 2 ? "var(--accent)"
-    : `hsl(${(150 - 142 * i / (ms.length - 1)).toFixed(0)},55%,45%)`;
-  const head = `<tr><th></th>${ms.map((m, i) =>
-    `<th data-help="${esc(m.help)}" style="border-top-color:${rail(i)}">${m.name}</th>`).join("")}</tr>`;
+  const cells = fn => ms.map(m => `<td>${fn(m)}</td>`).join("");
+  const head = `<tr><th></th>${ms.map(m =>
+    `<th data-help="${esc(m.help)}">${m.name}</th>`).join("")}</tr>`;
+  // Risk is carried by a coloured dot per cell; the figures stay in ink.
   const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend.">Ruin</th>` +
-    cells(m => (m.ruin * 100).toFixed(1) + "%", m => `style="background:${ruinColor(m.ruin)}"`) + `</tr>`;
+    cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
   const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model.">Safe spend</th>` +
-    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub"> ${(m.safeWR * 100).toFixed(1)}%</span>`) + `</tr>`;
+    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(1)}%</span>`) + `</tr>`;
   const wealthRow = `<tr><th data-help="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
     cells(m => (m.medianWealth / 1000).toFixed(0) + "k€") + `</tr>`;
   document.getElementById("modelstrip").innerHTML =
@@ -473,7 +470,7 @@ async function renderSolver(b, id) {
     ? `<b>Your plan meets the target</b> (ruin ${(m.currentRuin * 100).toFixed(1)}% ≤ ${(m.targetRuin * 100).toFixed(1)}%):`
     : `<b>To get ruin down to ${(m.targetRuin * 100).toFixed(1)}%</b> (now ${(m.currentRuin * 100).toFixed(1)}%), any one of:`;
   const items = (m.options || []).map(o =>
-    `<li class="${o.ok ? "" : "no"}">${o.ok ? "" : "✗ "}<span class="lev">${esc(o.lever)}:</span> ${esc(o.text)}</li>`).join("");
+    `<li class="${o.ok ? "" : "no"}"><span class="lev">${esc(o.lever)}</span><span>${o.ok ? "" : "✗ "}${esc(o.text)}</span></li>`).join("");
   document.getElementById("solvermenu").innerHTML =
     `<div class="solvehead">${head}</div><ul class="solveopts">${items}</ul>`;
 }
@@ -549,14 +546,14 @@ fetch("/api/meta").then(r => r.json()).then(m => {
   // charts below use the central parametric one.
   state.model = "parametric";
 
-  const fs = document.createElement("fieldset");
-  fs.className = "group";
-  fs.innerHTML = `<legend>Allocation</legend>
+  const box = document.createElement("div");
+  box.className = "group";
+  box.innerHTML = `<div class="group-h">Allocation</div>
     <div class="ctl span" data-help="Drag a divider to shift weight between adjacent holdings. Every model re-fits (μ/σ/df and the historical panel) from the live weights.">
       <span class="lab"><span>Drag a divider to shift weight</span></span>
       <div class="allocbar" id="allocbar"></div><div class="alloclegend" id="alloclegend"></div>
     </div>`;
-  form.insertBefore(fs, form.children[1] || null);
+  form.insertBefore(box, form.children[1] || null);
   renderAlloc();
   run();
   runSlow();

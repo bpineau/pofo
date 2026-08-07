@@ -77,20 +77,20 @@ type Page struct {
 
 // reportCSS holds the view-specific rules layered on the shared theme.
 const reportCSS = `
-.pies{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;justify-content:center;align-items:flex-start;margin:1rem 0}
-.pies>svg{flex:0 1 auto;max-width:360px}
+.pies{display:flex;flex-wrap:wrap;gap:.5rem 1.4rem;justify-content:center;align-items:flex-start;margin:1rem 0}
+.pies>svg{flex:0 1 auto;max-width:340px}
 .cov{margin:1rem 0}
-.cov-title{font-size:.74rem;font-weight:700;letter-spacing:.03em;color:var(--ink-soft);margin-bottom:.5rem}
+.cov-title{font-size:.66rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
 .cov-row{display:flex;align-items:center;gap:.8rem;margin:.25rem 0}
-.cov-label{width:8.5rem;color:var(--ink-soft);font-size:.84rem}
-.cov-track{flex:0 0 clamp(180px,34vw,340px);height:.8rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
-.cov-fill{display:block;height:100%;background:var(--teal);border-radius:999px}
-.cov-val{font-size:.82rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
-.cov-val.gap{color:var(--accent-ink)}
+.cov-label{width:8.5rem;color:var(--ink-soft);font-size:.8rem}
+.cov-track{flex:0 0 clamp(180px,34vw,340px);height:.55rem;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.cov-fill{display:block;height:100%;background:var(--accent);border-radius:999px}
+.cov-val{font-family:var(--mono);font-size:.76rem;font-variant-numeric:tabular-nums;color:var(--ink-soft)}
+.cov-val.gap{color:var(--warn-ink)}
 .overview,.stat-scroll{overflow-x:auto}
 details.pf{margin-top:.8rem}
-.pf-name{font-weight:700}
-.pf-sub{color:var(--muted);font-size:.84rem;margin-left:.5rem}
+.pf-name{font-weight:650}
+.pf-sub{color:var(--muted);font-size:.8rem;margin-left:.5rem;font-weight:400}
 .pf-body{padding:1rem 1.1rem 1.2rem}
 .pf-body>.chart-frame{box-shadow:none;border-color:var(--line)}
 .legend{margin-top:.8rem}
@@ -160,7 +160,7 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%{{if .Gap}};background:var(--warm){{end}}"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track"><span class="cov-fill" style="width:{{.Width}}%{{if .Gap}};background:var(--warn){{end}}"></span></span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
 {{- end}}
 </div>
 {{end}}
