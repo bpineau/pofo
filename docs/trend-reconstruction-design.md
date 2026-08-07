@@ -592,6 +592,84 @@ The chains were untouched by the swap, and their validation lines are
 identical to the digit before and after (correlation, beta, tracking error,
 CAGR), which is the check that the anchor change reached only the overlays.
 
+### An overlay finances at the overnight rate, not at the T-bill (measured, 2026-08)
+
+A stacked overlay used to pay `^IRX`, the 13-week T-bill rate, for the notional
+it carries. That is the wrong rate twice over. A future prices off the implied
+repo, which is the OVERNIGHT rate plus a roll richness, where a T-bill is a
+scarce collateral asset that trades through it; and Yahoo quotes `^IRX` on a
+DISCOUNT basis, which sits under the same bill's own investment yield (0.33 of a
+point at the 8.8 % level of the 1980s, ~0.13 at 5 %). Both errors make an
+overlay too cheap to carry, in the same direction.
+
+The gap between the two rates, measured on their common dates (`^SOFR` from
+2018-04, the effective federal funds rate before it, against `^IRX`):
+
+| decade | `^IRX` | overnight | overnight − bill |
+|---|---|---|---|
+| 1960s | 3.97 % | 4.13 % | +0.16 |
+| 1970s | 6.29 % | 7.09 % | +0.80 |
+| 1980s | 8.82 % | 9.97 % | +1.15 |
+| 1990s | 4.85 % | 5.17 % | +0.33 |
+| 2000s | 2.68 % | 2.96 % | +0.28 |
+| 2010-2018 | 0.24 % | 0.30 % | +0.07 |
+| 2018-2026 (SOFR) | 2.66 % | 2.68 % | +0.02 |
+| 1960-2018 | 4.59 % | 5.07 % | **+0.48** |
+
+The convention now separates the two rates: an Excess leg finances at
+`usdOvernight` (SOFR from 2018-04, effective federal funds from 1954-07, the
+bill rate before), while a collateral sleeve keeps EARNING `^IRX`, which is
+what the fund's own bills pay. A gearing that stands in for duration
+(`zrozRecipe`, `iefRecipe`, `shyRecipe`) also keeps `^IRX`: its cash term is an
+arithmetic residue of writing `g × bond` as `cash + g × (bond − cash)`, not
+money anyone borrows.
+
+What it moves, on each fund's own live overlap (CAGR gap, reconstruction minus
+fund):
+
+| fund | before | after | move |
+|---|---|---|---|
+| NTSX | +0.37 pt | **+0.36 pt** | -0.01 |
+| NTSG | +1.16 pts | **+1.06 pts** | -0.10 |
+| GDE | +1.29 pts | **+1.28 pts** | -0.01 |
+| RSSB | +1.76 pts | **+1.57 pts** | -0.19 |
+| RSST | -1.26 pts | **-1.42 pts** | -0.16 |
+| RSBT | +1.41 pts | **+1.30 pts** | -0.11 |
+| Winton | -4.19 pts | **-4.28 pts** | -0.09 |
+
+The adoption bar was a smaller mean absolute gap for the group with no single
+fund's gap growing by more than 0.3 of a point, and it is met: the mean falls
+from 1.63 to 1.61 points, and the largest growth is RSST's 0.16. Every
+correlation, beta and tracking error is unchanged to the digit, which is the
+check that a rate change moved a level and nothing else.
+
+The size is the finding, though, and it refutes the hypothesis that sent it:
+this family runs 1.2 to 1.8 points a year hot, and financing explains between
+1 and 11 % of that. Whatever is left is not the financing convention. The deep
+past is where the change actually bites, because that is where the two rates
+parted company: over 1954-2000 the NTSX file loses 0.43 points a year, NTSG
+0.53, GDE 0.79 and RSSB 0.54, and over 2000-2018 the overlays lose 0.19 each.
+No annualized volatility moves by a tenth of a point anywhere; the maximum
+drawdowns deepen slightly (GDE's full-period -69.4 % to -70.7 %, NTSX's
+1954-2000 -43.3 % to -44.6 %), which is what carrying a levered sleeve at a
+higher cost through a fall does to it.
+
+Two conservatisms are deliberately left in. The ROLL RICHNESS of a futures
+overlay, the premium a crowded long pays over the overnight rate to roll its
+position, is not charged at all: it is real, it is positive, and no free series
+measures it, so the overlay still finances a touch too cheaply. And the deep
+tail before 1954 keeps the bill rate, since no overnight series reaches it. The
+euro-native stack (NTSZ) is untouched: it finances at the euro money-market
+series already in place.
+
+One reproducibility note. The effective federal funds rate reaches 1954 through
+FRED and only 2000 through the New York Fed, so a rebuild made while FRED is
+unreachable would finance 1954-2000 at the bill rate and silently ship a
+different file. FRED had in fact been unreachable from this client for some
+time (it hangs on a browser User-Agent over HTTP/1.1, `fredUserAgent`); the
+build now logs its financing splice on stderr, so a shortened one is visible
+rather than silent.
+
 ## The tail that was removed, and why it went (measured, 2026-08)
 
 Until 2026-08 the donor chains shipped an engine tail back to 1988-11, anchored
