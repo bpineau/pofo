@@ -15,8 +15,7 @@ of truth for everything current.
 | `dbmfe-simdata-validation-design.md` / `-results.md` | how the bundled DBMFE managed-futures backcast was validated against the SG CTA index, and the evidence; the raw reference series is `SG-CTA-Index-Daily-Returns-since-1999-12-31.csv` |
 | `epub-export-design.md` | EPUB 3 export of the embedded books (firebook, then locador): `pkg/bookmd` extraction, `pkg/epub` writer, delivery routes, the on-device validation gate |
 | `fire-book-design.md` | the embedded French FIRE book: plan, depth conventions, style rules, progress ledger (`pkg/firebook` godoc points here) |
-| `fire-book-en-edition-design.md` | SPEC for the English edition: Edition value, translated slugs + source stamps + drift report, figure-translation pass, US-framework part, rollout plan |
-| `fire-book-en-m1-plan.md` | ACTIVE task-level plan for M1 of the English edition (technical prep, no public EN surface); delete once M1 ships |
+| `fire-book-en-edition-design.md` | The English edition: Edition value, translated slugs + source stamps + drift report, figure-translation pass, US-framework part, rollout plan (M1 shipped, M2 translation campaign next) |
 | `fire-book-illustrations-2026-07.md` | ACTIVE figure backlog for the withdrawal-strategies part: twenty candidate plates, what each shows and what it costs; fourteen shipped and six deliberately dropped on 2026-07-29, each with its reason; the list is closed and the file can go |
 | `fire-book-illustrations-portefeuille-2026-07.md` | ACTIVE figure backlog for the portfolio part: the fourteen reviewers' candidate figures with cost tags, awaiting selection; delete once shipped or dropped |
 | `fire-book-illustrations-reste-2026-07.md` | ACTIVE figure backlog for every other part (alternatives, buffers, inflation, tax, human factor, references, science, starter): the 48 reviewers' candidate figures with cost tags, awaiting selection; delete once shipped or dropped |

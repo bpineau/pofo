@@ -20,6 +20,7 @@ make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
+make book-drift # what the FIRE book's translations owe their French source
 ```
 
 Tests never touch the network: HTTP sources are faked with `httptest`
@@ -61,7 +62,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/bookmd` | the shared book-Markdown-dialect renderer (`ToHTML`, callouts, wiki-links, figures), extracted from firebook so other repos can reuse it; see `docs/epub-export-design.md` |
 | `pkg/epub` | generic stdlib-only EPUB 3 writer (`Book`/`Chapter` in, `.epub` bytes out) + `Normalize` (HTML5 -> XHTML); deterministic output for a given `Modified`; see `docs/epub-export-design.md` |
 | `pkg/opds` | generic stdlib-only OPDS 1.2 acquisition-feed builder (`Feed`/`Entry` in, Atom `.xml` bytes out); book-agnostic, relative acquisition links, deterministic output for fixed `Updated`; consumed by firebook's `opds.xml` route so KOReader can add the catalog once and refresh the book in place |
-| `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); `epub.go` assembles the whole book as an EPUB 3 (`EPUB`, served at `le-fire-tranquille.epub` and by `pofo -export-epub`), and the handler serves an OPDS 1.2 catalog at `opds.xml` (built via `pkg/opds`, relative acquisition link, shares the lazy EPUB build time) for KOReader; plan, depth conventions and progress ledger in `docs/fire-book-design.md` |
+| `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); `epub.go` assembles the whole book as an EPUB 3 (`EPUB`, served at `le-fire-tranquille.epub` and by `pofo -export-epub`), and the handler serves an OPDS 1.2 catalog at `opds.xml` (built via `pkg/opds`, relative acquisition link, shares the lazy EPUB build time) for KOReader; everything renders through an `Edition` value (`French`, plus `English` = "The Quiet FIRE", translated slugs under `assets/book/en/`, NOT mounted yet) and the package-level API is a thin French wrapper; `Drift` / `pofo -book-drift` / `make book-drift` report what a translation owes, via per-article source stamps; plan, depth conventions and progress ledger in `docs/fire-book-design.md`, English edition in `docs/fire-book-en-edition-design.md` |
 | `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM, regression backcasts) into simdata files |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
@@ -179,6 +180,13 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   doc and the godoc in sync when either changes.
 - FIRE/decumulation work: read `docs/decumulation-fire-design.md` first;
   the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`.
+- FIRE book work: French is the SOURCE OF TRUTH and every edit lands there
+  first. After a French edit, `make book-drift` lists the translations it made
+  stale; that report is the English worklist. Read
+  `docs/fire-book-en-edition-design.md` before touching anything English, and
+  never duplicate a plate: figures stay single-source French, and the English
+  edition translates the rendered SVG through `figureDict`
+  (`scripts/figure-audit.sh en` after any dictionary change).
 - Tactical Permanent Portfolio / Darcet / growth-inflation-regime work: read
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
