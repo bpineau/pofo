@@ -403,6 +403,10 @@ document.body.appendChild(tip);
 document.addEventListener("mouseover", e => {
   const el = e.target.closest("[data-help]");
   if (!el) return;
+  // Over a crosshair-instrumented chart the data tooltip wins; the help
+  // text stays reachable from the chart's frame border and title.
+  const svg = e.target.closest("svg");
+  if (svg && hoverData(svg)) return;
   tip.textContent = el.getAttribute("data-help");
   tip.style.display = "block";
 });
@@ -418,6 +422,121 @@ document.addEventListener("mousemove", e => {
 document.addEventListener("mouseout", e => {
   if (e.target.closest("[data-help]")) tip.style.display = "none";
 });
+
+// ---------------------------------------------------------------------------
+// Crosshair + tooltip for every chart carrying hover metadata (fans, lines,
+// stacked areas). The server embeds each chart's data as an SVG <metadata>
+// element; this layer maps the pointer back to the data, snaps a hairline to
+// the nearest x, and lists every series' value at that x. Values are built
+// with textContent (labels are untrusted data).
+// ---------------------------------------------------------------------------
+const xtip = document.createElement("div");
+xtip.id = "xtip";
+document.body.appendChild(xtip);
+let xline = null; // the crosshair line element, moved between charts
+
+function hoverData(svg) {
+  if (svg.__hd !== undefined) return svg.__hd;
+  const meta = svg.querySelector("metadata.hover");
+  try { svg.__hd = meta ? JSON.parse(meta.textContent) : null; }
+  catch (e) { svg.__hd = null; }
+  return svg.__hd;
+}
+
+// fmtHV renders a tooltip value with unit-free smart precision (the chart's
+// axis label carries the unit).
+function fmtHV(v) {
+  const a = Math.abs(v);
+  if (a >= 1e6) return (v / 1e6).toFixed(2) + "M";
+  if (a >= 1e4) return Math.round(v / 1e3) + "k";
+  if (a >= 100) return v.toFixed(0);
+  if (a >= 10) return v.toFixed(1);
+  return v.toFixed(2);
+}
+
+function hideCrosshair() {
+  xtip.style.display = "none";
+  if (xline) { xline.remove(); xline = null; }
+}
+
+document.addEventListener("pointermove", e => {
+  const svg = e.target.closest ? e.target.closest("svg") : null;
+  const hd = svg ? hoverData(svg) : null;
+  if (!hd || !hd.series || !hd.series.length) { hideCrosshair(); return; }
+
+  // Pointer position in viewBox coordinates.
+  const rect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const px = (e.clientX - rect.left) * vb.width / rect.width;
+  if (px < hd.x0 - 10 || px > hd.x1 + 10) { hideCrosshair(); return; }
+  const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
+
+  // Snap per series to its nearest x; indexed charts snap to the index.
+  const rows = [];
+  let snapX = null;
+  for (const s of hd.series) {
+    if (!s.ys || !s.ys.length) continue;
+    let i, sx;
+    if (s.xs && s.xs.length) {
+      i = 0;
+      for (let k = 1; k < s.xs.length; k++)
+        if (Math.abs(s.xs[k] - xdom) < Math.abs(s.xs[i] - xdom)) i = k;
+      sx = s.xs[i];
+      // A series that ends before the pointer (truncated vintage) drops out
+      // rather than repeating its last value.
+      if (Math.abs(sx - xdom) > (hd.xmax - hd.xmin) / 8) continue;
+    } else {
+      i = Math.round(Math.min(Math.max(xdom, 0), s.ys.length - 1));
+      if (i >= s.ys.length) continue;
+      sx = i;
+    }
+    if (snapX === null) snapX = sx;
+    rows.push({name: s.name, color: s.color, v: s.ys[i]});
+  }
+  if (!rows.length || snapX === null) { hideCrosshair(); return; }
+
+  // Crosshair line at the snapped x, spanning the plot box.
+  const cx = hd.x0 + (snapX - hd.xmin) / (hd.xmax - hd.xmin) * (hd.x1 - hd.x0);
+  if (!xline || xline.ownerSVGElement !== svg) {
+    if (xline) xline.remove();
+    xline = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    xline.setAttribute("stroke", "#B4A991");
+    xline.setAttribute("stroke-width", "1");
+    xline.setAttribute("stroke-dasharray", "2 3");
+    xline.setAttribute("pointer-events", "none");
+    svg.appendChild(xline);
+  }
+  xline.setAttribute("x1", cx); xline.setAttribute("x2", cx);
+  xline.setAttribute("y1", hd.y0); xline.setAttribute("y2", hd.y1);
+
+  // Tooltip: header = x (+ y-axis unit), then one row per series.
+  xtip.textContent = "";
+  const head = document.createElement("div");
+  head.className = "xh";
+  const xv = Math.abs(snapX - Math.round(snapX)) < 1e-9 ? String(Math.round(snapX)) : snapX.toFixed(1);
+  head.textContent = (hd.xlabel || "x") + " " + xv + (hd.ylabel ? " · " + hd.ylabel : "");
+  xtip.appendChild(head);
+  for (const r of rows) {
+    const row = document.createElement("div");
+    row.className = "xr";
+    const key = document.createElement("i");
+    if (r.color) key.style.background = r.color;
+    const val = document.createElement("b");
+    val.textContent = fmtHV(r.v);
+    const name = document.createElement("span");
+    name.textContent = r.name || "";
+    row.appendChild(key); row.appendChild(val); row.appendChild(name);
+    xtip.appendChild(row);
+  }
+  xtip.style.display = "block";
+  const pad = 14, tw = xtip.offsetWidth, th = xtip.offsetHeight;
+  let tx = e.clientX + pad, ty = e.clientY + pad;
+  if (tx + tw > innerWidth) tx = e.clientX - pad - tw;
+  if (ty + th > innerHeight) ty = e.clientY - pad - th;
+  xtip.style.left = tx + "px";
+  xtip.style.top = ty + "px";
+});
+document.addEventListener("pointerleave", hideCrosshair);
 
 // ---------------------------------------------------------------------------
 // Chart lightbox: click any chart to view it large over the page, click
@@ -728,3 +847,4 @@ fetch("/api/meta").then(r => r.json()).then(m => {
   run();
   runSlow();
 });
+
