@@ -4457,6 +4457,39 @@
     "duration": 17.0
   },
   {
+    "id": "DTLA",
+    "isin": "IE00BFM6TC58",
+    "aliases": [],
+    "name": "iShares $ Treasury Bond 20+yr UCITS ETF USD (Acc)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "DTLA.L",
+    "xid": "",
+    "currency": "USD",
+    "currency_hedged": false,
+    "fees": 0.07,
+    "since": "2018-05-10",
+    "asset_class": "government-bond",
+    "underlying": "US Treasury bonds with 20+ years to maturity, unhedged USD",
+    "benchmark_index": "ICE US Treasury 20+ Year Index",
+    "strategy": "physical-replication",
+    "geography": null,
+    "sectors": null,
+    "duration": 17.0,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "currency_exposure": {
+      "USD": 100
+    },
+    "notes": "The ACCUMULATING share class of the long US Treasury UCITS range, and the only long-Treasury wrapper here that is both accumulating and quoted with adjusted closes: the distributing twin IDTL (IE00BSKRJZ44) forces annual coupon taxation on a taxable account, and the EUR-hedged class DTLE (IE00BD8PGZ49) is distributing AND quoted by FT as a price-only NAV (see DTLETR). Unhedged, so a euro holder gets the crisis-USD kicker on top of the flight-to-quality rally, which is the case for holding it rather than a euro long-bond line; the corollary is that the hedge carry is not paid either. Deflation and recession sleeve.",
+    "confidence": "high",
+    "sources": [
+      "https://www.ishares.com/uk/individual/en/products/291772/",
+      "https://finance.yahoo.com/quote/DTLA.L"
+    ]
+  },
+  {
     "id": "IE00BSPLC298",
     "isin": "IE00BSPLC298",
     "name": "State Street SPDR MSCI Europe Small Cap Value Weighted UCITS ETF EUR Acc",
