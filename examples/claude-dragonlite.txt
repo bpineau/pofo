@@ -1,15 +1,42 @@
-# B — Dragon-lite équilibré
-# deux angles morts : 
-# (a) une stagflation à trend whipsaw, que l'or backstop
-# (b) le fait que la protection du plancher reste probabiliste, ce qui plaide pour ajouter une brique de linkers à l'approche de la décumulation.
-# Là où les trois protections peuvent décevoir en même temps, c'est un scénario précis : 
-# une stagflation où le trend whipsaw.
-#
-60	NTSGSIM # 90 % actions Monde + environ 60 % d'obligations souveraines "intermediate duration" (~7 ans) obtenues via futures.
-# LU1662502183 (AQR Managed Futures UCITS) performe encore mieux que DBMFE, mais
-# accessible aux institutionels avec ticket de 100k seulement
-25	DBMFSIM # DBMFESIM ou WINTON-TREND-EQUITYSIM ou MFA8 ou le nouveau Fortem
+# Dragon-lite équilibré, risk parity light.
+# Volatilité attendue : ~9 % en pas mensuel (mesurée 9.2 %), ~12.5 % en pas quotidien annualisé.
+# Angles morts :
+# (a) une stagflation en dents de scie qui fait whipsawer le trend ; l'or reste alors le seul backstop
+# (b) la protection du plancher reste probabiliste, ce qui plaide pour renforcer la brique linkers (ici 5 %) à l'approche de la décumulation
+# (c) le risque de change n'est pas traité : NTSG et l'or sont quotés USD sans hedge ; la vol EUR/USD (~8-10 %/an) se retrouve en partie (pas linéairement) dans celle du portefeuille
+# (d) protection faible contre une inflation euro modérée mais persistante : l'essentiel de la poche réelle est US, seuls 3 % de linkers euro
+# (e) peu efficace contre les lost decades à la japonaise (cf. la brique macro discrétionnaire en bas de fichier)
+# NB : on obtient des perfs très proches avec juste NTSGSIM + DBMFSIM + XAUUSDSIM ; cette version est juste plus complète (pour documenter).
+
+# NTSG : 90 % actions Monde développées (filtre ESG) + ~60 % de futures souverains (US, Allemagne, UK, Japon), duration intermédiaire (~7 ans).
+# À 60 % du portefeuille, la contribution effective est ~54 % actions + ~36 % obligations.
+60	NTSGSIM
+
+# Trend following / managed futures, pour dérisquer la décumulation (Miller 2017 ; Neville et al. 2021).
+# Amélioration à envisager : répartir sur deux gérants aux styles différents (p.ex. réplication DBi + pur trend). Options :
+# * LU1662502183 (AQR Managed Futures UCITS) : surperforme DBMF, réputé excellent, part hedgée euro disponible
+# * KMLM : intéressant car style différent de DBi (pas d'equity, long historique), mais pas UCITS
+# * MFA8 : peu diversifiant vs DBMFE (même méthode DBi), et amputé des commodities pour rester ESG
+# * WINTON-TREND-EQUITYSIM : attention, portable alpha (100 % MSCI World + 100 % overlay trend), pas un trend pur ;
+#   la jambe de 8 % ci-dessous ajoute donc ~8 points d'exposition actions (actions totales ~62 %)
+# * Fortem : aussi basé sur DBi, mais avec un overlay convexe ciblé contre les dislocations rapides menées par les actions
+# Un sleeve trend en deux jambes du type 12 % DBMF + 8 % Winton me semble plus robuste que 25 % DBMF seul (pour un budget trend voisin)
+# (et quand l'AQR est accessible, mieux vaut DBMF + AQR).
+25	DBMFSIM # ou mieux, DBMFESIM (la part EUR non hedgée)
+#8	WINTON-TREND-EQUITYSIM # reduit la perf, mais il faudrait (et enlever autant a DBMFESIM)...
+
+# Or : couverture stagflation (théorique) et débasement monétaire.
+# En réel, prendre un ETC physiquement adossé (Invesco Physical Gold, iShares Physical Gold...).
 15	XAUUSDSIM
-# ChatGPT reco des macro discretionnaires pour les situations comme indiquees plus haut
-# (cris Japonaise, 2007-2009, ...).
+
+# Pour la décumulation : viser 7 à 15 % du capital (3 à 3.5 ans de dépenses hors épargne de précaution) en actifs euro liquides ;
+# ici 5 % seulement, à remonter à l'approche du départ.
+# P.ex. obligations indexées euro (OATi / linkers euro courts), logées dans un "tampon élargi" à la place de cash pur,
+# pour contrer le risque d'inflation.
+# Bucketed : p.ex. 50k livrets/précaution, 1 an de dépenses en ERNX/XEON, 2 à 2.5 ans en linkers euro courts.
+# 3	CHSNSIM # LU1645380442 aka CHSN (UBS Core BBG Euro Inflation Linked Bond 1-10 UCITS ETF EUR acc) ; backcast quotidien depuis 2005
+# 2	42C0SIM # LU1459801780 aka 42C0 (UBS Core BBG TIPS 1-10 UCITS ETF hEUR acc) ; complément intéressant : hedgé euro mais sur l'inflation US ; backcast depuis 2000
+
+# Optionnel : macro discrétionnaire pour les scénarios évoqués plus haut (décennie perdue japonaise, 2007-2009, ...).
+# Si activé, prendre p.ex. NTSG 60 -> 50 pour rester à 100.
 # 10	BHMGSIM
