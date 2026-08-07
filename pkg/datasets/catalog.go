@@ -15,17 +15,18 @@ import "encoding/json"
 // years; Exposures maps asset_class → notional weight (may sum past 1 for
 // stacked funds).
 type Asset struct {
-	ID       string   `json:"id"`              // canonical identifier (European ticker or ISIN)
-	ISIN     string   `json:"isin"`            // ISIN; may be empty for indices/commodities
-	Aliases  []string `json:"aliases"`         // alternative identifiers accepted on input
-	Name     string   `json:"name"`            // full asset / share-class name
-	UCITS    bool     `json:"ucits"`           // UCITS-regulated fund or ETF
-	Source   string   `json:"source"`          // quote source: "yahoo", "ft", "morningstar", "stooq", or "index" (served from the embedded reconstruction, no live symbol)
-	Symbol   string   `json:"symbol"`          // Yahoo/Stooq symbol or Morningstar id; empty for ft and index
-	Xid      string   `json:"xid"`             // FT internal id; empty otherwise
-	Currency string   `json:"currency"`        // quote currency (ISO 4217)
-	Fees     float64  `json:"fees"`            // published TER, percent per year; 0 = unknown
-	Since    string   `json:"since,omitempty"` // inception date (YYYY-MM-DD); bounds real-data coverage before SIM extension
+	ID       string   `json:"id"`                  // canonical identifier (European ticker or ISIN)
+	ISIN     string   `json:"isin"`                // ISIN; may be empty for indices/commodities
+	Aliases  []string `json:"aliases"`             // alternative identifiers accepted on input
+	Name     string   `json:"name"`                // full asset / share-class name
+	UCITS    bool     `json:"ucits"`               // UCITS-regulated fund or ETF
+	EURetail bool     `json:"eu_retail,omitempty"` // buyable by an EU/French retail investor: UCITS, or EU-listed with a PRIIPs KID (ETCs, listed closed-end funds); false for US-listed funds without a KID; omitted for non-tradable series (indices, spot, futures)
+	Source   string   `json:"source"`              // quote source: "yahoo", "ft", "morningstar", "stooq", or "index" (served from the embedded reconstruction, no live symbol)
+	Symbol   string   `json:"symbol"`              // Yahoo/Stooq symbol or Morningstar id; empty for ft and index
+	Xid      string   `json:"xid"`                 // FT internal id; empty otherwise
+	Currency string   `json:"currency"`            // quote currency (ISO 4217)
+	Fees     float64  `json:"fees"`                // published TER, percent per year; 0 = unknown
+	Since    string   `json:"since,omitempty"`     // inception date (YYYY-MM-DD); bounds real-data coverage before SIM extension
 
 	AssetClass     string             `json:"asset_class"`               // e.g. "equity", "government-bond", "gold"
 	Underlying     string             `json:"underlying"`                // free-text description of the holdings

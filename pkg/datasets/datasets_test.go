@@ -71,3 +71,21 @@ func TestCatalogParsesAndIsTyped(t *testing.T) {
 		t.Fatalf("IWDA did not decode into a full Asset: %+v", iwda)
 	}
 }
+
+// TestCatalogEURetailConsistent enforces the invariants of the eu_retail
+// flag: every UCITS fund is EU-retail buyable by definition, a US-ISIN
+// instrument without a PRIIPs KID never is, and fee-free index series
+// (source "index") are not tradable so the flag must be absent (false).
+func TestCatalogEURetailConsistent(t *testing.T) {
+	for _, a := range Catalog() {
+		if a.UCITS && !a.EURetail {
+			t.Errorf("%s: ucits implies eu_retail", a.ID)
+		}
+		if strings.HasPrefix(a.ISIN, "US") && a.EURetail {
+			t.Errorf("%s: US-listed instrument flagged eu_retail", a.ID)
+		}
+		if a.Source == "index" && a.EURetail {
+			t.Errorf("%s: index series cannot be eu_retail", a.ID)
+		}
+	}
+}

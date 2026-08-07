@@ -23,6 +23,7 @@ Resolution fields (consumed by `pkg/marketdata`):
 | `aliases` | extra identifiers accepted in portfolio files (e.g. `GOLD`, `NTSX`) |
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
+| `eu_retail` | `true` when an EU/French retail investor can actually buy it: every UCITS fund, plus EU-listed products with a PRIIPs KID (gold/commodity ETCs, listed closed-end funds like BH Macro). `false` for US-listed funds without a KID. Omitted for non-tradable series (`index` benchmarks, spot, futures). This is the buyability flag; `ucits` alone understates it (no gold product can be UCITS, yet ETCs are freely buyable) |
 | `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, or `index` (non-investable benchmark served from its embedded reconstruction, no live symbol) |
 | `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT and `index` |
 | `xid` | FT internal id; empty otherwise |
