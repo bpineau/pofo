@@ -14,7 +14,7 @@ L'apport de Bengen n'est pas le chiffre « 4 % ». C'est d'avoir montré que le 
 
 L'intuition « les actions font 10 %, je peux retirer 8 % » commet deux fautes qui se cumulent.
 
-La première : confondre moyenne arithmétique et croissance réellement composée : la volatilité fait que le portefeuille croît moins vite que sa moyenne annuelle ([[rendements-arithmetiques-geometriques]]), et l'inflation retranche encore 2 à 3 points. Le vrai moteur d'un portefeuille équilibré est un rendement **réel** géométrique de l'ordre de 3 à 5 %, pas 10.
+La première : confondre moyenne arithmétique et croissance réellement composée. La volatilité fait que le portefeuille croît moins vite que sa moyenne annuelle ([[rendements-arithmetiques-geometriques]]), et l'inflation retranche encore 2 à 3 points. Le vrai moteur d'un portefeuille équilibré est un rendement **réel** géométrique de l'ordre de 3 à 5 %, pas 10.
 
 La seconde, plus meurtrière : un retraité qui retire un montant fixe vend davantage de parts quand les cours sont bas. Deux séquences de rendements de **même** moyenne donnent alors des fortunes opposées selon que les mauvaises années arrivent au début ou à la fin ([[sequence-des-rendements]]). La moyenne ne dit presque rien ; l'ordre dit presque tout.
 
@@ -26,7 +26,7 @@ L'idée est d'une simplicité lumineuse. Prenez les données annuelles américai
 
 Le résultat tient dans un graphique resté célèbre : la durée de survie du portefeuille par millésime, pour chaque taux. À 3 % : tous les millésimes dépassent 50 ans. À 4 % : le pire millésime tient 33 ans ; **tous** tiennent au moins 30 ans. À 5 % : les départs de la fin des années 1960 s'épuisent en ~20 ans. À 6 % : des dizaines de millésimes échouent avant 20 ans.
 
-Bengen nomme **SAFEMAX** le taux maximal qui survit à tous les millésimes sur l'horizon choisi : environ 4,15 % pour 30 ans en 50/50. Et il identifie les trois pires époques pour partir : 1929 (déflation et krach), 1937, et surtout **1966** : non pas le pire krach, mais la pire **combinaison**, quinze ans de marché réel nul avec une inflation qui gonfle les retraits. Leçon capitale : l'ennemi du rentier n'est pas le krach spectaculaire, c'est l'érosion réelle prolongée ([[inflation-et-taux-de-retrait]]).
+Bengen nomme **SAFEMAX** le taux maximal qui survit à tous les millésimes sur l'horizon choisi : environ 4,15 % pour 30 ans en 50/50. Et il identifie les trois pires époques pour partir : 1929 (déflation et krach), 1937, et surtout **1966**, non pas le pire krach, mais la pire **combinaison**, quinze ans de marché réel nul avec une inflation qui gonfle les retraits. Leçon capitale : l'ennemi du rentier n'est pas le krach spectaculaire, c'est l'érosion réelle prolongée ([[inflation-et-taux-de-retrait]]).
 
 Ses articles suivants (1996-2006) complètent le cadre : l'allocation optimale se situe entre 50 et 75 % d'actions (moins d'actions **abaisse** le taux sûr, les obligations seules ne survivent pas à l'inflation) ; ajouter des petites capitalisations remonte le SAFEMAX ; et l'horizon compte, ~4,3 % pour 25 ans, ~4,1 % pour 30, ~3,5 % pour du très long.
 
@@ -36,7 +36,7 @@ Le rejeu historique (« historical windows » dans pofo) reste, trente ans aprè
 
 ## Trinity 1998 : du plancher à la probabilité
 
-Quatre ans plus tard, trois professeurs de finance de la Trinity University (Texas), Philip Cooley, Carl Hubbard et Daniel Walz, publient « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable ». Même méthode de rejeu, mais un déplacement conceptuel : au lieu du taux plancher qui survit à **tout** (le SAFEMAX de Bengen), ils publient une **grille de taux de succès** : pour chaque combinaison taux de retrait × allocation × horizon, le pourcentage des fenêtres historiques où le portefeuille finit avec plus de zéro.
+Quatre ans plus tard, trois professeurs de finance de la Trinity University (Texas), Philip Cooley, Carl Hubbard et Daniel Walz, publient « Retirement Savings: Choosing a Withdrawal Rate That Is Sustainable ». Même méthode de rejeu, mais un déplacement conceptuel : au lieu du taux plancher qui survit à **tout** (le SAFEMAX de Bengen), ils publient une **grille de taux de succès**. Pour chaque combinaison taux de retrait × allocation × horizon, elle donne le pourcentage des fenêtres historiques où le portefeuille finit avec plus de zéro.
 
 Extrait de la logique de la grille (chiffres de l'étude actualisée, retraits indexés sur l'inflation, données 1926-2009) :
 
