@@ -1,7 +1,6 @@
 package decumul
 
 import (
-	"math"
 	"testing"
 
 	"github.com/bpineau/pofo/pkg/scenario"
@@ -53,30 +52,7 @@ func TestPercentRuleTradesRuinForVolatility(t *testing.T) {
 	if !(vpwEns.RuinProb() < fixed.RuinProb()) {
 		t.Errorf("VPW ruin %.3f should be below fixed %.3f", vpwEns.RuinProb(), fixed.RuinProb())
 	}
-	if cv := spendCV(vpwEns); cv <= spendCV(fixed) {
-		t.Errorf("VPW spending CV %.3f should exceed fixed %.3f", cv, spendCV(fixed))
+	if cv := vpwEns.SpendCV(); cv <= fixed.SpendCV() {
+		t.Errorf("VPW spending CV %.3f should exceed fixed %.3f", cv, fixed.SpendCV())
 	}
-}
-
-// spendCV is the coefficient of variation of delivered spending across every
-// path-year, a rough spending-stability measure for the tests.
-func spendCV(e Ensemble) float64 {
-	var sum, n float64
-	for _, p := range e.Paths {
-		for _, s := range p.Spend {
-			sum += s
-			n++
-		}
-	}
-	if n == 0 {
-		return 0
-	}
-	mean := sum / n
-	var v float64
-	for _, p := range e.Paths {
-		for _, s := range p.Spend {
-			v += (s - mean) * (s - mean)
-		}
-	}
-	return math.Sqrt(v/n) / mean
 }
