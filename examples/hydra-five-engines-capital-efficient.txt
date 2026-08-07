@@ -1,4 +1,4 @@
-# Hydra (five engines) -- a diversified build that outruns the dragon-lite
+# Hydra (five engines) -- a diversified, capital-efficient engine build
 # Idea: diversify across independent return ENGINES, not across tickers. Each
 #   sleeve is a distinct, well-documented source of return driven by a different
 #   macro force, so their worst years rarely coincide, and combining lowly-
@@ -110,14 +110,13 @@
 #   named benchmark. Expect the edge over that benchmark to shrink out of
 #   sample; the engine-level logic is the part built to survive.
 #
-# Backtest vs claude-dragonlite (60/25/15) over the common 1988->2026 window,
-#   EUR: higher CAGR (12.08% vs 10.21%), higher Sharpe (0.87 vs 0.81), higher
-#   Sortino (1.25 vs 1.17), much faster recovery (2.8y vs 4.9y), worst rolling
-#   5y CAGR +1.58% vs -1.68% and median 5y 10.74% vs 10.02%, plus fuller regime
-#   coverage (inflation 58% vs 40%, crisis 51% vs 40%). The price: slightly
-#   higher vol (14.0% vs 12.9%), a deeper max drawdown (-34.4% vs -30.6%) and
-#   more down-capture (61.6% vs 56.9%) -- the levered long-Treasury and trend
-#   tails cost in a 2022-style joint stock/bond selloff.
+# Backtest profile over 1988->2026, EUR: CAGR 12.08%, vol 14.0% (monthly
+#   11.5%), Sharpe 0.87, Sortino 1.25, max drawdown -34.4% with a 2.8y worst
+#   recovery, worst rolling 5y CAGR +1.58% and median 5y 10.74%, and broad
+#   regime coverage (growth 60%, inflation 58%, crisis 51%, deflation 42%).
+#   The cost of the levered long-Treasury and trend tails: vol and drawdown
+#   run a touch hotter than an unlevered balanced mix, and down-capture is
+#   ~62%, so a 2022-style joint stock/bond selloff still bites.
 #meta rebalance:90
 
 35    NTSGSIM         # Engine 1, equity + duration: Global Efficient Core 90/60 (NTSG, IE00077IIPQ8)
