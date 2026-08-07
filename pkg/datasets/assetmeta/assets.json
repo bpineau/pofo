@@ -2458,6 +2458,7 @@
   {
     "id": "IE00B5BMR087",
     "isin": "IE00B5BMR087",
+    "aliases": ["SP500"],
     "name": "iShares Core S&P 500 UCITS ETF USD (Acc)",
     "ucits": true,
     "source": "yahoo",
