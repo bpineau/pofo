@@ -159,6 +159,14 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 			// rule delivers less than that count as a lived cut.
 			need = p.netOf(p.Percent*total, k)
 			uncut = p.needAt(k)
+		} else if p.RiskGuard.active() {
+			// Risk-based guardrail: the same ±10 % moves as Guyton-Klinger,
+			// but the band is the safe rate of the REMAINING horizon and the
+			// rate is read on total wealth, pensions to come included.
+			wealth := total + p.cashflowPV(k, p.RiskGuard.PVRate)
+			spending = p.RiskGuard.adjust(spending, wealth, k)
+			need = p.netOf(spending*p.schedAt(k), k)
+			uncut = p.needAt(k)
 		} else if p.Guard.active() {
 			spending = p.Guard.adjust(spending, total)
 			need = p.netOf(spending*p.schedAt(k), k)

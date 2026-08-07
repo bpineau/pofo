@@ -50,6 +50,13 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		{"Guardrails", "#0C8A47", func(p *decumul.Plan) {
 			p.Guard = decumul.Guardrails{Upper: wr * 1.2, Lower: wr * 0.8, Cut: 0.10, Raise: 0.10}
 		}},
+		{"Risk guardrails", "#15803D", func(p *decumul.Plan) {
+			// The same family, hence the neighbouring green: only the sensor
+			// changes, from a band around the initial rate to one that tracks
+			// the safe rate of the remaining horizon.
+			p.RiskGuard = decumul.RiskGuardrails{SafeWR: pr.safeRateTable(),
+				Band: 0.20, Cut: 0.10, Raise: 0.10, Cap: 1.5 * pr.NeedAnnual, PVRate: pr.pvRate()}
+		}},
 		{"Bounded %", "#BE185D", func(p *decumul.Plan) {
 			p.Bounded = decumul.BoundedPct{Pct: wr, Up: 0.05, Down: 0.025}
 		}},
@@ -79,6 +86,6 @@ func PolicyFrontier(pr Params, panel *scenario.Panel) PolicyFrontierResult {
 		"lifestyle volatility (spending CV among surviving futures, %)", "ruin (%)", pts)
 	return PolicyFrontierResult{
 		SVG:  svg,
-		Note: "Same plan, six spending rules, under the selected return model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
+		Note: "Same plan, seven spending rules, under the selected return model. Up and left is safe but rigid; down and right rarely runs out but the standard of living moves. Volatility is measured among the surviving futures, so ruin is not double-counted on both axes.",
 	}
 }

@@ -14,9 +14,25 @@ added, so nobody re-proposes them:
 - CAPE valuation anchoring (`pkg/datasets/cape`, `make cape`, multpl
   fallback, staleness chip) feeding the central return and ABW's assumed
   return.
-- The six spending rules incl. VPW, guardrails with an incompressible
+- The spending rules incl. VPW, guardrails with an incompressible
   floor (monthly-stepped in the monthly kernel), ABW/TPAW with
   after-tax-liquidation amortization and pension PV folded in.
+- Risk-based guardrails (Kitces & Tharp, Morningstar; added 2026-07-25).
+  Same architecture as the 2006 rule, different sensor: the band tracks
+  the safe rate of the REMAINING horizon rather than a band around the
+  initial rate, and the rate is read on total wealth (portfolio + PV of
+  the cashflows still to come), so a pension about to start no longer
+  triggers a cut. `decumul.RiskGuardrails` takes the safe-rate table as
+  data; the web layer solves it (`riskband.go`) on a pension-free,
+  unit-capital plan so one table serves any wealth level, at five
+  interpolated anchors, cached per assumption set (~23 ms cold). It is
+  the household's planning table: computed once under the central
+  parametric assumptions and deliberately NOT re-derived per strip
+  column, so the reader sees how a table written under their central
+  case behaves inside a harsher world. Expressing the sensor in
+  withdrawal-rate space rather than re-running a success probability
+  inside every year of every path is what makes it affordable; it is the
+  same signal read on the other side of the solve.
 - Historical replays (USA 1929/1966/2000, Japan 1990), decisive-decade
   decomposition, ruin causes by trajectory shape, income layers, the
   policy frontier, per-model market fans.
