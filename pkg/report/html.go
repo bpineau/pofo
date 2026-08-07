@@ -152,7 +152,14 @@ const reportCSS = `
 .rb-vals span{min-width:3.6rem;text-align:right}
 .rb-vals .risk{font-weight:700;color:var(--ink)}
 .rb-vals .ret{color:var(--muted)}
-.rb-key{margin:.15rem 0 .5rem 9.3rem;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.cov-pair{display:flex;flex-wrap:wrap;gap:0 2.6rem;align-items:flex-start}
+.cov-pair>.cov{flex:1 1 26rem;min-width:0}
+.cov-pair .cov-track,.cov-pair .rb-track,.cov-pair .rb-legend{flex:0 0 clamp(110px,15vw,250px)}
+.cov-pair .cov-label{width:8.7rem}
+.cov-pair .cov-detail{margin-left:9.5rem}
+.rb-titles{display:flex;align-items:flex-end;gap:.8rem;margin:.1rem 0 .35rem}
+.rb-legend{flex:0 0 clamp(180px,34vw,340px);font-family:var(--mono);font-size:.66rem;color:var(--muted)}
+.rb-titles .rb-vals span{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .tabs{display:flex;gap:.4rem;margin:0 0 .6rem}
 .tbtn{font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);background:var(--surface);border:1px solid var(--line-strong);border-radius:999px;padding:.18rem .75rem;cursor:pointer}
 .tbtn.on{background:var(--accent);border-color:var(--accent);color:#FFFFFF}
@@ -311,6 +318,8 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 {{- end}}
 </div>{{end}}
 {{if .Breakdowns}}<div class="pies">{{range .Breakdowns}}{{.}}{{end}}</div>{{end}}
+{{if or .Coverage .RiskBudget}}
+<div class="cov-pair">
 {{if .Coverage}}
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
@@ -325,11 +334,12 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 {{if .RiskBudget}}
 <div class="cov">
 <div class="cov-title">Risk budget</div>
-<div class="rb-key">bar = share of variance · tick = share of capital</div>
+<div class="rb-titles"><span class="cov-label"></span><span class="rb-legend">bar = variance · tick = capital</span><span class="rb-vals"><span>risk</span><span>capital</span><span>return</span></span></div>
 {{- range .RiskBudget}}
 <div class="rb-head"><span class="cov-label">{{.Label}}</span><span class="rb-track"><span class="rb-fill{{if .Negative}} neg{{end}}" style="width:{{.RiskWidth}}%"></span><span class="rb-mark" style="left:{{.CapitalMark}}%"></span></span><span class="rb-vals"><span class="risk">{{.Risk}}</span><span>{{.Capital}}</span><span class="ret">{{.Return}}</span></span></div>
 {{- end}}
-<div class="rb-key">risk · capital · return</div>
+</div>
+{{end}}
 </div>
 {{end}}
 {{if .RegimeSVG}}<div class="chart-frame" style="margin-top:1rem">{{.RegimeSVG}}</div>{{end}}
