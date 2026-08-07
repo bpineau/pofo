@@ -1,38 +1,40 @@
 /* ============================================================================
-   pofo — shared visual identity ("quant desk")
-   A modern fintech analytics surface: cool paper, white panels ruled by
-   hairlines, deep slate ink, one ultramarine accent, and every figure set in
-   monospace. Green / amber / red are reserved for risk semantics and never
-   used decoratively. Shared by the portfolio report and the FIRE explorer;
-   all embedded, plain `go build`.
+   pofo — shared visual identity ("instrument")
+   A precision instrument: cool light ground, white panels with a crisp
+   contact shadow, deep neutral ink, one petrol accent, every figure in the
+   mono face. The identity typefaces (Instrument Sans, Spline Sans Mono) are
+   embedded in the binary and delivered by webui.FontsCSS; green / amber /
+   red are reserved for risk semantics and never used decoratively. Form
+   controls are never left to the browser default. Shared by the portfolio
+   report and the FIRE explorer; all embedded, plain `go build`.
    ========================================================================== */
 :root{
-  --bg:#F4F5F8;            /* cool paper                                       */
+  --bg:#F3F4F6;            /* page ground, cool gray                           */
   --surface:#FFFFFF;       /* card / panel                                     */
-  --surface-2:#F2F4F8;     /* inset / zebra                                    */
-  --ink:#101828;           /* deep slate, near-black                           */
-  --ink-soft:#475467;      /* secondary text                                   */
-  --muted:#667085;         /* captions, axis-grade text                        */
-  --faint:#98A2B3;         /* placeholders, tertiary                           */
-  --line:#E7EAF0;          /* hairline                                         */
-  --line-strong:#D2D8E2;   /* structural rule                                  */
-  --accent:#2E4BE0;        /* ultramarine — the one brand color                */
-  --accent-ink:#2743C7;    /* accent tuned for text on white                   */
-  --accent-wash:#EEF1FD;   /* accent tint for selected / highlighted surfaces  */
-  --good:#12B76A;          /* risk scale: safe (marks, dots)                   */
-  --good-ink:#067647;      /*             safe, text grade                     */
-  --good-wash:#EAF7F0;
-  --warn:#F79009;          /*             caution                              */
-  --warn-ink:#B54708;
-  --warn-wash:#FFF6E6;
-  --bad:#D92D20;           /*             danger / ruin                        */
-  --bad-ink:#B42318;
-  --bad-wash:#FDECEA;
-  --sans:-apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  --mono:ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
-  --r:10px;
-  --r-sm:6px;
-  --sh:0 1px 2px rgba(16,24,40,.06);
+  --surface-2:#EEF0F3;     /* wells, insets, zebra                             */
+  --ink:#16181D;           /* primary text                                     */
+  --ink-soft:#4A5160;      /* secondary text                                   */
+  --muted:#7A8294;         /* captions, axis-grade text                        */
+  --faint:#A8AEBC;         /* placeholders, tertiary                           */
+  --line:#E3E6EB;          /* hairline                                         */
+  --line-strong:#CDD2DA;   /* structural rule                                  */
+  --accent:#0B7285;        /* petrol — the one brand color                     */
+  --accent-ink:#0A6376;    /* accent tuned for text on white                   */
+  --accent-wash:#E5F2F5;   /* accent tint for selected / highlighted surfaces  */
+  --good:#0C8A47;          /* risk scale: safe (marks, dots)                   */
+  --good-ink:#0A7038;      /*             safe, text grade                     */
+  --good-wash:#E7F3EC;
+  --warn:#C77E17;          /*             caution                              */
+  --warn-ink:#9E6410;
+  --warn-wash:#F9F0E1;
+  --bad:#D2402F;           /*             danger / ruin                        */
+  --bad-ink:#B23425;
+  --bad-wash:#FAEAE7;
+  --sans:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --mono:"Spline Sans Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r:12px;
+  --r-sm:7px;
+  --sh:0 1px 2px rgba(22,24,29,.04),0 8px 24px -18px rgba(22,24,29,.25);
 }
 
 *{box-sizing:border-box}
@@ -44,7 +46,7 @@ body{
   margin:0;line-height:1.5;font-size:14px;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
 }
-a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(39,67,199,.35)}
+a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(10,99,118,.35)}
 
 /* ---- full-width shell (no wasted side bands) ----------------------------- */
 .wrap{width:100%;max-width:1760px;margin:0 auto;padding:0 clamp(1rem,2vw,2rem) 4rem}
@@ -52,21 +54,21 @@ a{color:var(--accent-ink);text-underline-offset:2px;text-decoration-color:rgba(3
 /* ---- masthead: a slim product bar ----------------------------------------- */
 .masthead{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;
   padding:.85rem 0;border-bottom:1px solid var(--line-strong);margin-bottom:1.4rem}
-.masthead .mark{font-family:var(--mono);font-weight:700;font-size:.95rem;
+.masthead .mark{font-family:var(--mono);font-weight:600;font-size:.92rem;
   letter-spacing:-.02em;color:var(--ink)}
-.masthead .mark b{color:var(--accent);font-weight:700}
-.masthead .ctx{font-size:.7rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;
+.masthead .mark b{color:var(--accent);font-weight:600}
+.masthead .ctx{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
   color:var(--muted);padding-left:.9rem;border-left:1px solid var(--line-strong)}
 .masthead .spacer{flex:1}
-.masthead .stamp{font-family:var(--mono);font-size:.7rem;color:var(--faint)}
+.masthead .stamp{font-family:var(--mono);font-size:.7rem;color:var(--muted)}
 
 /* ---- typography ----------------------------------------------------------- */
-h1{font-weight:650;font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.15;
+h1{font-weight:600;font-size:clamp(1.35rem,2.2vw,1.7rem);line-height:1.15;
   margin:.1rem 0 .3rem;letter-spacing:-.02em}
-h2{font-size:.85rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin:0}
+h2{font-size:.85rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;margin:0}
 h3{font-size:.9rem;margin:0}
 .lede{color:var(--ink-soft);font-size:.92rem;max-width:78ch;margin:.1rem 0 0}
-.eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.eyebrow{font-size:.66rem;font-weight:650;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums}
 
 /* Section heads: an index in mono, an uppercase title, a rule filling the
@@ -74,10 +76,11 @@ h3{font-size:.9rem;margin:0}
    it separates analysis blocks on a dense page. */
 .section-head{display:flex;align-items:baseline;gap:.7rem;margin:2.1rem 0 .8rem}
 .section-head .idx{font-family:var(--mono);font-size:.78rem;font-weight:600;color:var(--accent)}
-.section-head h2{color:var(--ink);white-space:nowrap}
+.section-head h2{color:var(--ink);white-space:nowrap;letter-spacing:-.01em;
+  text-transform:none;font-size:.95rem}
 .section-head::after{content:"";flex:1;border-top:1px solid var(--line-strong);
   align-self:center;order:3}
-.section-head .aside{order:4;font-size:.76rem;color:var(--muted);white-space:nowrap}
+.section-head .aside{order:4;font-size:.74rem;color:var(--muted);white-space:nowrap}
 
 /* ---- cards & panels -------------------------------------------------------- */
 .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
@@ -91,7 +94,7 @@ svg{display:block;width:100%;height:auto}
 
 /* ---- tables ---------------------------------------------------------------- */
 table{border-collapse:collapse;width:100%;font-size:.84rem}
-thead th{font-weight:650;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+thead th{font-weight:650;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
   color:var(--muted);text-align:left;border-bottom:1px solid var(--line-strong);
   padding:.45rem .6rem;white-space:nowrap}
 tbody td{padding:.42rem .6rem;border-bottom:1px solid var(--line);vertical-align:baseline}
@@ -99,17 +102,52 @@ tbody tr:last-child td{border-bottom:none}
 tbody tr:hover{background:var(--surface-2)}
 td.n,th.n{text-align:right;font-family:var(--mono);font-variant-numeric:tabular-nums;
   font-size:.8rem;white-space:nowrap}
-td.best{color:var(--accent-ink);font-weight:700;background:var(--accent-wash)}
+td.best{color:var(--accent-ink);font-weight:600;background:var(--accent-wash)}
 td.mono{font-family:var(--mono);font-size:.8rem}
 
 /* ---- badges ---------------------------------------------------------------- */
 .badge{display:inline-flex;align-items:center;gap:.3rem;font-size:.68rem;font-weight:600;
   padding:.1rem .5rem;border-radius:999px;border:1px solid var(--line-strong);
   color:var(--ink-soft);background:var(--surface)}
-.badge.good{color:var(--good-ink);border-color:#BFE5D2;background:var(--good-wash)}
-.badge.warn{color:var(--warn-ink);border-color:#F2D9AC;background:var(--warn-wash)}
-.badge.bad{color:var(--bad-ink);border-color:#F0C5C0;background:var(--bad-wash)}
-.badge.accent{color:var(--accent-ink);border-color:#C7D0F5;background:var(--accent-wash)}
+.badge.good{color:var(--good-ink);border-color:#B9DCC8;background:var(--good-wash)}
+.badge.warn{color:var(--warn-ink);border-color:#EBD3A8;background:var(--warn-wash)}
+.badge.bad{color:var(--bad-ink);border-color:#F0C4BC;background:var(--bad-wash)}
+.badge.accent{color:var(--accent-ink);border-color:#B5D8DF;background:var(--accent-wash)}
+
+/* ---- form controls: never the browser default ------------------------------ */
+/* Range sliders: 4px track filled to the accent on the left (the view's JS
+   keeps --fill = (value-min)/(max-min)), 16px white thumb with a petrol
+   ring and a contact shadow. */
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;
+  background:transparent;padding:0;margin:0;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:999px;
+  background:linear-gradient(to right,var(--accent) var(--fill,50%),var(--line-strong) var(--fill,50%))}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;
+  border-radius:50%;background:var(--surface);border:1.5px solid var(--accent);
+  box-shadow:0 1px 3px rgba(22,24,29,.25);margin-top:-6px}
+input[type=range]::-moz-range-track{height:4px;border-radius:999px;background:var(--line-strong)}
+input[type=range]::-moz-range-progress{height:4px;border-radius:999px;background:var(--accent)}
+input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+  background:var(--surface);border:1.5px solid var(--accent);
+  box-shadow:0 1px 3px rgba(22,24,29,.25)}
+/* A ruler under plan-defining sliders. */
+.ticks{height:5px;margin:3px 8px 0;
+  background:repeating-linear-gradient(to right,var(--line-strong) 0 1px,transparent 1px 10%)}
+/* Segmented control: a well with one raised white segment. */
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:2px;gap:2px}
+.seg button{flex:1;font:inherit;font-size:.72rem;font-weight:600;color:var(--ink-soft);
+  background:transparent;border:none;border-radius:5px;padding:.3rem 0;cursor:pointer}
+.seg button:hover{color:var(--ink)}
+.seg button[aria-pressed=true]{background:var(--surface);color:var(--accent-ink);
+  box-shadow:0 1px 2px rgba(22,24,29,.12)}
+/* Text-grade inputs share the well treatment. */
+input[type=number],input[type=text],select{font-family:var(--mono);font-size:.82rem;
+  color:var(--ink);background:var(--surface);border:1px solid var(--line-strong);
+  border-radius:var(--r-sm);padding:.24rem .45rem}
+input[type=number]:focus,input[type=text]:focus,select:focus{outline:none;
+  border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-wash)}
+input[type=checkbox]{accent-color:var(--accent)}
 
 /* ---- disclosures ------------------------------------------------------------ */
 details{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--sh)}
@@ -125,7 +163,7 @@ details[open]>summary{border-bottom:1px solid var(--line);color:var(--ink)}
 
 /* ---- notes / warnings -------------------------------------------------------- */
 .note{color:var(--ink-soft);font-size:.82rem;margin:.3rem 0}
-.warn{color:var(--warn-ink);background:var(--warn-wash);border:1px solid #F2D9AC;
+.warn{color:var(--warn-ink);background:var(--warn-wash);border:1px solid #EBD3A8;
   border-radius:var(--r-sm);padding:.5rem .8rem;font-size:.82rem;margin:.5rem 0}
 
 .muted{color:var(--muted)}.soft{color:var(--ink-soft)}
