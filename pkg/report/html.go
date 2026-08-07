@@ -45,9 +45,11 @@ type PortfolioSection struct {
 	Name          string
 	Subtitle      string // optional hint shown next to the name (e.g. rebalancing override)
 	ChartSVG      template.HTML
+	ContribSVG    template.HTML   // realized-contribution timeline (diverging stack); empty to omit
 	Breakdowns    []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
 	CoverageLabel string          // heading for the coverage chart
 	Coverage      []CoverageBar   // macro-regime or factor coverage; empty to omit
+	RegimeSVG     template.HTML   // realized contribution per regime (bar matrix); empty to omit
 	Assets        []AssetRow
 	Notes         []string // informational lines (e.g. optimizer choices)
 	Warnings      []string
@@ -105,6 +107,66 @@ details.pf{margin-top:.8rem}
 .pf-body>.chart-frame{box-shadow:none;border-color:var(--line)}
 .legend{margin-top:.8rem}
 .legend .disclosure-body ul{margin:.3rem 0;padding-left:1.15rem;line-height:1.55}
+#xtip{position:fixed;z-index:50;display:none;pointer-events:none;background:var(--surface);border:1px solid var(--line-strong);border-radius:8px;box-shadow:0 4px 16px rgba(22,24,29,.14);padding:.45rem .6rem;font-family:var(--mono);font-size:.72rem;color:var(--ink-soft);max-width:300px}
+#xtip .xh{font-weight:700;color:var(--ink);margin-bottom:.25rem}
+#xtip .xr{display:flex;align-items:center;gap:.4rem;margin:.1rem 0;white-space:nowrap}
+#xtip .xr i{width:8px;height:8px;border-radius:2px;flex:none}
+#xtip .xr b{min-width:3.4em;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+`
+
+// reportJS is the report's interaction layer: an instant tooltip for every
+// element carrying a data-tip attribute (coverage segments, matrix bars,
+// regime strips), and a crosshair-plus-tooltip for charts embedding "stack"
+// hover metadata (the contribution timeline). It mirrors, in miniature and
+// on the light theme, the FIRE UI's hover layer over the same metadata
+// contract (pkg/chart/hover.go). No delay anywhere: native title tooltips
+// are deliberately not used.
+const reportJS = `
+(function(){
+"use strict";
+var tip=document.createElement("div");tip.id="xtip";document.body.appendChild(tip);
+var cross=null;
+function hide(){tip.style.display="none";if(cross){cross.remove();cross=null;}}
+function place(x,y){tip.style.display="block";var p=12,w=tip.offsetWidth,h=tip.offsetHeight,tx=x+p,ty=y+p;
+if(tx+w>innerWidth)tx=x-p-w;if(ty+h>innerHeight)ty=y-p-h;tip.style.left=tx+"px";tip.style.top=ty+"px";}
+function hover(svg){if(svg.__hd!==undefined)return svg.__hd;var m=svg.querySelector("metadata.hover");
+try{svg.__hd=m?JSON.parse(m.textContent):null;}catch(e){svg.__hd=null;}return svg.__hd;}
+function fmt(v){var a=Math.abs(v);return a>=100?v.toFixed(0):a>=10?v.toFixed(1):v.toFixed(2);}
+document.addEventListener("pointermove",function(e){
+var dt=e.target.closest?e.target.closest("[data-tip]"):null;
+if(dt){if(cross){cross.remove();cross=null;}tip.textContent=dt.getAttribute("data-tip");place(e.clientX,e.clientY);return;}
+var svg=e.target.closest?e.target.closest("svg"):null;
+var hd=svg?hover(svg):null;
+if(!hd||!hd.series||hd.kind!=="stack"){hide();return;}
+var r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+var px=(e.clientX-r.left)*vb.width/r.width;
+if(px<hd.x0-8||px>hd.x1+8){hide();return;}
+var i=Math.round(Math.min(Math.max((px-hd.x0)/(hd.x1-hd.x0)*(hd.xmax-hd.xmin)+hd.xmin,0),hd.xmax));
+if(!cross||cross.ownerSVGElement!==svg){if(cross)cross.remove();
+cross=document.createElementNS("http://www.w3.org/2000/svg","line");
+cross.setAttribute("stroke","#CDD2DA");cross.setAttribute("stroke-dasharray","2 3");
+cross.setAttribute("pointer-events","none");svg.appendChild(cross);}
+var cx=hd.x0+(i-hd.xmin)/(hd.xmax-hd.xmin)*(hd.x1-hd.x0);
+cross.setAttribute("x1",cx);cross.setAttribute("x2",cx);
+cross.setAttribute("y1",hd.y0);cross.setAttribute("y2",hd.y1);
+tip.textContent="";
+var head=document.createElement("div");head.className="xh";
+head.textContent=(hd.rows&&hd.rows[i]?hd.rows[i]:String(i))+(hd.ylabel?" · "+hd.ylabel:"");
+tip.appendChild(head);
+var rows=[];
+for(var s=0;s<hd.series.length;s++){var sr=hd.series[s];
+if(sr.ys&&i<sr.ys.length)rows.push({n:sr.name,c:sr.color,v:sr.ys[i]});}
+rows.sort(function(a,b){return b.v-a.v;});
+for(var k=0;k<rows.length;k++){var d=document.createElement("div");d.className="xr";
+var sw=document.createElement("i");if(rows[k].c)sw.style.background=rows[k].c;
+var b=document.createElement("b");b.textContent=fmt(rows[k].v);
+var nm=document.createElement("span");nm.textContent=rows[k].n||"";
+d.appendChild(sw);d.appendChild(b);d.appendChild(nm);tip.appendChild(d);}
+place(e.clientX,e.clientY);
+});
+document.addEventListener("pointerleave",hide);
+addEventListener("scroll",hide,{passive:true});
+})();
 `
 
 var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
@@ -165,18 +227,20 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 <summary><span class="pf-name">{{.Name}}</span>{{if .Subtitle}} <span class="pf-sub">{{.Subtitle}}</span>{{end}}</summary>
 <div class="pf-body">
 <div class="chart-frame">{{.ChartSVG}}</div>
+{{if .ContribSVG}}<div class="chart-frame" style="margin-top:1rem">{{.ContribSVG}}</div>{{end}}
 {{if .Breakdowns}}<div class="pies">{{range .Breakdowns}}{{.}}{{end}}</div>{{end}}
 {{if .Coverage}}
 <div class="cov">
 <div class="cov-title">{{.CoverageLabel}}</div>
 {{- range .Coverage}}
-<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track">{{range .Segments}}<span class="cov-seg" style="width:{{.Width}}%;background:{{.Color}}"{{if .Title}} title="{{.Title}}"{{end}}></span>{{end}}</span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
+<div class="cov-row"><span class="cov-label">{{.Regime}}</span><span class="cov-track">{{range .Segments}}<span class="cov-seg" style="width:{{.Width}}%;background:{{.Color}}"{{if .Title}} data-tip="{{.Title}}"{{end}}></span>{{end}}</span><span class="cov-val{{if .Gap}} gap{{end}}">{{.Pct}} %{{if .Gap}} (gap){{end}}</span></div>
 {{- if .Detail}}
 <div class="cov-detail">{{.Detail}}</div>
 {{- end}}
 {{- end}}
 </div>
 {{end}}
+{{if .RegimeSVG}}<div class="chart-frame" style="margin-top:1rem">{{.RegimeSVG}}</div>{{end}}
 <div class="stat-scroll">
 <table>
 <thead><tr><th class="n">Weight</th><th>Identifier</th><th>Symbol</th><th>Name</th><th>Class</th><th>UCITS</th><th class="n">Fees</th><th>Ccy</th><th>History</th><th class="n">CWARP</th><th>Note</th></tr></thead>
@@ -198,12 +262,17 @@ var tpl = template.Must(template.New("report").Parse(`<!DOCTYPE html>
 {{end}}
 
 </div>
+<script>{{.ReportJS}}</script>
 </body>
 </html>
 `))
 
 // ReportCSS exposes the view-specific stylesheet to the template.
 func (Page) ReportCSS() template.CSS { return template.CSS(reportCSS) }
+
+// ReportJS exposes the interaction layer (instant tooltips, crosshair) to
+// the template.
+func (Page) ReportJS() template.JS { return template.JS(reportJS) }
 
 // Render writes the HTML document for page to w. The embedded identity
 // fonts ride along with the theme so the document stays self-contained.

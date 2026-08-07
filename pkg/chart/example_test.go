@@ -125,3 +125,38 @@ func ExampleLine_intraday() {
 	// Output:
 	// true true
 }
+
+// DivergingStack decomposes a signed total into stacked areas around zero:
+// positive layers stack upward, negative downward, an optional line overlays
+// the net (the shape of a return-contribution timeline).
+func ExampleDivergingStack() {
+	svg := chart.DivergingStack(chart.DivergingStackOptions{
+		Title:  "Contribution",
+		Total:  []float64{1, -1, 2},
+		XLabel: "month", YLabel: "pts",
+	}, []chart.DivergingStackSeries{
+		{Name: "EQ", Values: []float64{2, -3, 1}},
+		{Name: "GOLD", Values: []float64{-1, 2, 1}},
+	})
+	fmt.Println(strings.HasPrefix(svg, "<svg"), strings.HasSuffix(svg, "</svg>"))
+	fmt.Println(strings.Count(svg, "<polygon"), strings.Contains(svg, `"kind":"stack"`))
+	// Output:
+	// true true
+	// 4 true
+}
+
+// BarMatrix compares signed values across rows and categories on one shared
+// scale: each column is a category with its own zero axis.
+func ExampleBarMatrix() {
+	svg := chart.BarMatrix(chart.BarMatrixOptions{
+		Title:     "Per regime",
+		RowLabels: []string{"EQ", "GOLD"},
+		Unit:      "pts/yr",
+	}, []chart.MatrixColumn{
+		{Title: "growth", Values: []float64{5.3, 1.5}},
+		{Title: "crisis", Values: []float64{-2.0, 1.8}},
+	})
+	fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(svg, "data-tip"))
+	// Output:
+	// true true
+}

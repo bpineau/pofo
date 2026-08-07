@@ -9,9 +9,12 @@ Financial Times, Morningstar, Stooq, ECB), rebuilds the missing past (proxies an
 simulated data), simulates each portfolio with periodic rebalancing and
 generates a self-contained HTML report opened in the browser (comparison and
 statistics front and center; per-portfolio sections collapsed, each with a
-performance curve, four look-through composition pies (geography, currency
-exposure, equity sectors, asset type with stacked funds opened into their
-legs) and its macro-regime coverage, each bar split by contributing holding).
+performance curve, a realized-contribution timeline (who carried the trailing
+12 months, stacked around zero under a macro-regime strip), four look-through
+composition pies (geography, currency exposure, equity sectors, asset type
+with stacked funds opened into their legs), its macro-regime coverage with
+each bar split by contributing holding, and the per-regime realized
+contributions that mirror it; hover any chart for exact figures).
 
 ## Usage
 

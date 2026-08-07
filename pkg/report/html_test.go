@@ -65,9 +65,10 @@ func TestRenderSegmentedCoverage(t *testing.T) {
 	}
 	html := b.String()
 	for _, want := range []string{
-		`<span class="cov-seg" style="width:25.2%;background:#0880A8" title="NTSG 25%"></span>`,
-		`<span class="cov-seg" style="width:9%;background:#C2452B" title="SMALL 9%"></span>`,
+		`<span class="cov-seg" style="width:25.2%;background:#0880A8" data-tip="NTSG 25%"></span>`,
+		`<span class="cov-seg" style="width:9%;background:#C2452B" data-tip="SMALL 9%"></span>`,
 		`<div class="cov-detail">NTSG 25 · SMALL 9</div>`,
+		`<script>`, `id="xtip"`,
 	} {
 		if !strings.Contains(html, want) {
 			t.Errorf("rendered coverage lacks %q", want)

@@ -3,6 +3,7 @@ package chart
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 	"time"
 )
@@ -41,6 +42,36 @@ var defaultPalette = []string{
 // same palette Line falls back to, exported so callers can keep multiple
 // charts color-consistent.
 func PaletteColor(i int) string { return defaultPalette[i%len(defaultPalette)] }
+
+// safeSlotSeq is the palette's stacking sequence: slot indices reordered so
+// no two consecutive colors form a confusable pair under common color-vision
+// deficiencies (deutan-validated adjacency; the trap pairs are green next to
+// the warm hues and indigo next to purple or cyan).
+var safeSlotSeq = [...]int{0, 1, 2, 3, 4, 6, 7, 5}
+
+// SafeStackOrder returns the indices 0..n-1 reordered so that entities
+// colored in palette order (PaletteColor(i)) can be stacked or juxtaposed
+// with every adjacent pair of colors distinguishable under common color
+// vision deficiencies. Identity is untouched (each index keeps its color);
+// only the drawing order changes. Beyond one palette cycle, wrapped indices
+// sit next to their color twin, where a tooltip or label must disambiguate.
+func SafeStackOrder(n int) []int {
+	pos := func(i int) int {
+		slot := i % len(safeSlotSeq)
+		for p, s := range safeSlotSeq {
+			if s == slot {
+				return p*2 + i/len(safeSlotSeq) // twins right after their original
+			}
+		}
+		return slot * 2
+	}
+	order := make([]int, n)
+	for i := range order {
+		order[i] = i
+	}
+	sort.SliceStable(order, func(a, b int) bool { return pos(order[a]) < pos(order[b]) })
+	return order
+}
 
 // maxPlotPoints bounds the number of points drawn per series; longer series
 // are decimated (statistics are always computed on full series elsewhere).
