@@ -27,7 +27,20 @@ L'historique réel repose sur les données américaines de 1972 à 2024, le prix
 **Le Dragon d'Artemis** (Chris Cole, « The Allegory of the Hawk and Serpent », 2020) est la version extrême et la plus intéressante intellectuellement. Il tient en environ 24 % actions, 18 % obligations longues, 19 % or, 18 % matières premières et trend, et 21 % de volatilité longue (long volatility), ces stratégies optionnelles qui **gagnent** dans les krachs. Cole reconstruit un siècle, de 1928 à 2019, et montre qu'un tel mélange traverse **toutes** les grandes destructions, la déflation des années 1930, l'inflation des années 1970 et les krachs, là où le 60/40 alterne gloire et ruine selon la décennie. Une limite pratique le rend rédhibitoire pour un particulier. La poche long volatility n'existe pas en format UCITS accessible, et se dégrade en produits chargés ; [[long-volatility]] fait le tour complet de ce mur. La version implémentable remplace la long volatility par des managed futures ([[managed-futures]]), son cousin praticable. On y perd la convexité de krach instantané, mais on garde la couverture des régimes longs.
 
 ::: science Ce que les chiffres disent vraiment, et leurs limites
-Sur 1972-2024 (séries américaines, reconstruction indépendante recoupée avec Portfolio Charts), en réel : le 60/40 rend 5,4 %, drawdown max −37 %, SWR 30 ans ~4 % ; le Permanent 4,4 %, −22 %, SWR ~4,5-5 % ; le Golden Butterfly 6,0 %, −22 %, SWR ~5,5 % ; l'All-Weather 5,0 %, −29 % (2022 compris), SWR ~4,5 %. La leçon robuste tient en trois constats. À rendement égal, le pire chemin est deux fois moins profond, le Golden Butterfly rendant comme un 80/20 pour un plongeon de moitié. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −29 %. Et c'est le pire chemin qui fixe le taux de retrait. Les limites sont tout aussi robustes. On travaille sur **un seul** échantillon de 50 ans, dominé par un marché obligataire haussier séculaire et un or parti de prix administrés en 1972. Sa décennie 1970 à +1 300 % nominal est un événement de libération, pas une propriété permanente de l'actif ([[or-en-retrait]]). Hors États-Unis, les répliques donnent la même **forme**, des queues courtes, avec des niveaux plus modestes. La prudence s'impose : retenir la structure, décoter les niveaux, tester sur le siècle mondial. Une réserve pratique s'ajoute. Les panels longs multi-pays sont bâtis sur les actions et les obligations domestiques, et ne permettent guère de simuler autre chose qu'un 60/40 ([[anarkulova-cederburg]]). Ils éprouvent la forme d'un plan de retrait, jamais une recette d'allocation particulière ([[historique-vs-parametrique]]).
+Sur 1972-2024 (séries américaines, reconstruction indépendante recoupée avec Portfolio Charts), en réel :
+
+| Portefeuille | Rendement | Drawdown max | SWR 30 ans |
+|---|---|---|---|
+| 60/40 | 5,4 % | −37 % | ~4 % |
+| Permanent | 4,4 % | −22 % | ~4,5-5 % |
+| Golden Butterfly | 6,0 % | −22 % | ~5,5 % |
+| All-Weather | 5,0 % | −29 % (2022 compris) | ~4,5 % |
+
+La leçon robuste tient en trois constats. À rendement égal, le pire chemin est deux fois moins profond, le Golden Butterfly rendant comme un 80/20 pour un plongeon de moitié. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −29 %. Et c'est le pire chemin qui fixe le taux de retrait.
+
+Les limites sont tout aussi robustes. On travaille sur **un seul** échantillon de 50 ans, dominé par un marché obligataire haussier séculaire et un or parti de prix administrés en 1972. Sa décennie 1970 à +1 300 % nominal est un événement de libération, pas une propriété permanente de l'actif ([[or-en-retrait]]). Hors États-Unis, les répliques donnent la même **forme**, des queues courtes, avec des niveaux plus modestes. La prudence s'impose : retenir la structure, décoter les niveaux, tester sur le siècle mondial.
+
+Une réserve pratique s'ajoute. Les panels longs multi-pays sont bâtis sur les actions et les obligations domestiques, et ne permettent guère de simuler autre chose qu'un 60/40 ([[anarkulova-cederburg]]). Ils éprouvent la forme d'un plan de retrait, jamais une recette d'allocation particulière ([[historique-vs-parametrique]]).
 :::
 
 ::: figure tous-temps-echange
