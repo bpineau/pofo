@@ -157,6 +157,14 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   report warns (`LooksDistributing`), nothing corrects it. Never splice
   such a series onto a total-return reconstruction; give the
   reconstruction its own `source: "index"` id instead (`DTLETR`).
+- A SECOND WAY a fee escapes the price: a share class whose management
+  charge is not levied inside its NAV. AQR's `RAEF` class (LU1662501532)
+  lists 1.00 %/yr of management yet only 0.23 % ever reaches the NAV (FT
+  ongoing charge, audited Swiss TNER), so it appears to beat its own
+  siblings by exactly their fee difference. Pin `fees` to the ONGOING
+  charge (what is in the price, per the convention above) and say in
+  `notes` what else the holder pays; compare share classes on published
+  ongoing charges, never on NAV performance.
 - With external flows, `SimResult.Values` follows the money while
   `SimResult.Index` is the time-weighted series: compute statistics and
   comparisons on `Index`, money outcomes (IRR) on `Values` + flows.

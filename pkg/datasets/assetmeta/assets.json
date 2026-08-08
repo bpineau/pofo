@@ -194,7 +194,7 @@
   {
     "id": "DE0005933931",
     "isin": "DE0005933931",
-    "name": "iShares Core DAX\u00ae UCITS ETF (DE) EUR (Acc)",
+    "name": "iShares Core DAX® UCITS ETF (DE) EUR (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
@@ -447,8 +447,8 @@
     "currency": "EUR",
     "fees": 0.1,
     "asset_class": "money-market",
-    "underlying": "Euro overnight money-market rate (\u20acSTR) via swap",
-    "benchmark_index": "Solactive \u20acSTR Overnight Total Return Index",
+    "underlying": "Euro overnight money-market rate (€STR) via swap",
+    "benchmark_index": "Solactive €STR Overnight Total Return Index",
     "strategy": "synthetic-swap",
     "geography": null,
     "sectors": null,
@@ -1603,7 +1603,7 @@
     "aliases": [
       "IBCI"
     ],
-    "name": "iShares \u20ac Inflation Linked Govt Bond UCITS ETF EUR (Acc)",
+    "name": "iShares € Inflation Linked Govt Bond UCITS ETF EUR (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
@@ -1757,7 +1757,7 @@
     "aliases": [
       "IBGL"
     ],
-    "name": "iShares \u20ac Govt Bond 15-30yr UCITS ETF EUR (Dist)",
+    "name": "iShares € Govt Bond 15-30yr UCITS ETF EUR (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -1894,7 +1894,7 @@
   {
     "id": "IE00B3DKXQ41",
     "isin": "IE00B3DKXQ41",
-    "name": "iShares \u20ac Aggregate Bond ESG SRI UCITS ETF EUR (Dist)",
+    "name": "iShares € Aggregate Bond ESG SRI UCITS ETF EUR (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -1932,7 +1932,7 @@
     "aliases": [
       "IEAC"
     ],
-    "name": "iShares Core \u20ac Corp Bond UCITS ETF EUR (Dist)",
+    "name": "iShares Core € Corp Bond UCITS ETF EUR (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -2015,7 +2015,7 @@
     "aliases": [
       "IBGS"
     ],
-    "name": "iShares \u20ac Govt Bond 1-3yr UCITS ETF EUR (Acc)",
+    "name": "iShares € Govt Bond 1-3yr UCITS ETF EUR (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -2450,7 +2450,7 @@
     "aliases": [
       "IEGA"
     ],
-    "name": "iShares Core \u20ac Govt Bond UCITS ETF EUR (Dist)",
+    "name": "iShares Core € Govt Bond UCITS ETF EUR (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -2765,7 +2765,7 @@
     "aliases": [
       "IHYG"
     ],
-    "name": "iShares \u20ac High Yield Corp Bond UCITS ETF EUR (Dist)",
+    "name": "iShares € High Yield Corp Bond UCITS ETF EUR (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -4859,7 +4859,7 @@
     "aliases": [
       "IAMFS"
     ],
-    "name": "Ind\u00e9pendance AM - France Small & Mid A (C)",
+    "name": "Indépendance AM - France Small & Mid A (C)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
@@ -5521,7 +5521,7 @@
     "aliases": [
       "IAMES"
     ],
-    "name": "Ind\u00e9pendance AM - Europe Small A (C)",
+    "name": "Indépendance AM - Europe Small A (C)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
@@ -5623,7 +5623,7 @@
   {
     "id": "LU2798962978",
     "isin": "LU2798962978",
-    "name": "Ind\u00e9pendance AM - Europe Mid A (C)",
+    "name": "Indépendance AM - Europe Mid A (C)",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
@@ -8240,7 +8240,7 @@
     "currency": "EUR",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "fees": 1.31,
+    "fees": 0.23,
     "asset_class": "managed-futures",
     "underlying": "Systematic trend-following / managed futures: long/short across equities, bonds, currencies and commodities, EUR-hedged",
     "benchmark_index": "active (no index)",
@@ -8249,7 +8249,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-hedged FLAT-fee class of the AQR Managed Futures UCITS fund and the reference EUR vehicle here: mgmt 1.00%, NO performance fee, 0.24% expense cap, 0.05% subscription tax, EUR 100,000 minimum initial subscription (a 'selected retail' class, reached through platforms). Its high headline fee is misleading: it has beaten every cheaper-on-paper EUR-hedged sibling. The institutional IAE2F (LU1662499612, mgmt 0.75%) needs EUR 80m and has returned 0.6 to 0.7 pts/yr LESS in every quarter since 2023-11; the 0.60% classes B and RAE give up ~2 pts to their 10% performance fee in strong trend years (2.03 and 2.07 pts of average class NAV in the year to 31 March 2026). Platform-visible siblings IAET (LU1662498721, 0.60% mgmt + 10% perf fee) and IAE1FT (LU2622190622, flat ~1.26%, 2026-05 launch) are catalogued separately; neither improves on this class. Its 31 March NAVs match the audited annual report to the cent, see pkg/datasets/golden/aqrmf_test.go.",
+    "notes": "EUR-hedged FLAT-fee class of the AQR Managed Futures UCITS fund and the reference EUR vehicle here: NO performance fee, EUR 100,000 minimum initial subscription (a 'selected retail' class, reached through platforms). FEE TRAP, and the reason this pin reads 0.23 where an earlier record carried 1.31: only 0.23%/yr of this class's price list is levied INSIDE the NAV (FT ongoing charge 0.23%, audited Swiss Total Net Expense Ratio 0.24% at 30/09/2025, no performance fee), while the same list carries a 1.00%/yr management charge that never reaches it. Its published record is therefore that of a share class bearing a quarter point of costs, which is the whole of why it looks like it beats every cheaper-on-paper EUR-hedged sibling: the measured wedge against IAET is 1.31 pts/yr and the two classes' inside-NAV charges explain 1.25 of it, leaving nothing for skill. WHAT IS UNRESOLVED is whether that 1.00% is waived at the manager's discretion (note 6(a) of the accounts reserves exactly that right) or billed outside the fund under a separate agreement: the first makes the NAV the whole truth, the second makes a holder pay ~1.23%/yr all in. Settle it before buying, and if it is billed, carry it as extra-fees in the portfolio file, since pofo assumes a pinned fee is already inside the price. The 0.60% classes B and RAE give up ~2 pts to their 10% performance fee in strong trend years (2.03 and 2.07 pts of average class NAV in the year to 31 March 2026); the institutional IAE2F (LU1662499612) needs EUR 80m. Platform-visible siblings IAET (LU1662498721) and the flat-fee IAE1FT (LU2622190622) are catalogued separately and now carry their own backcasts; IAE1FT bears the same economics INSIDE its NAV and is the unambiguous flat-fee route. Its 31 March NAVs match the audited annual report to the cent, see pkg/datasets/golden/aqrmf_test.go.",
     "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
@@ -8376,7 +8376,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Institutional-series 'IAET' EUR class of the AQR Managed Futures UCITS fund, visible on retail platforms (IBKR lists it). Performance-fee economics like classes B and RAE: mgmt 0.60% PLUS a 10% performance fee over the cash hurdle (EUR STR for the EUR classes), high-on-high, crystallised each 31 March; the sibling classes' fee took ~2 pts of average class NAV in the year to 31 March 2026, so the 0.78% pin understates the cost of a good trend year by roughly a factor of three. An access route, not an economic upgrade: prefer the flat-fee RAEF (LU1662501532) for both analysis and purchase.",
+    "notes": "Institutional-series 'IAET' EUR class of the AQR Managed Futures UCITS fund, visible on retail platforms (IBKR lists it) and for some buyers the only reachable way into this programme. Costs: 0.78%/yr of ongoing charge inside the NAV (FT and the audited Swiss TNER agree to a basis point), PLUS a 10% performance fee over the EUR STR hurdle, high-on-high, crystallised each 31 March, which took 0.64 pts of average class NAV in the half-year to 30/09/2025 alone. All in, the audited TNER after performance fee was 1.49% over that period. Against the flat-fee RAEF (LU1662501532) it measures 1.31 pts/yr behind, and disclosed inside-NAV charges explain 1.25 of that, so the choice between the two classes is a fee-plumbing choice and not a manager one. Backcast to 1996-03 (simdata) on the legacy B EUR class, which pays the SAME 0.60% management and the SAME 10% performance fee over the same hurdle: their daily returns correlate at 0.9991 over the 672 days both quote, and the 0.096 pts/yr that separate them match the 0.05 the two published ongoing charges predict.",
     "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
@@ -8409,8 +8409,8 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Flat-fee institutional-series 'IAE1FT' EUR class launched 2026-05-11, visible on retail platforms (IBKR lists it): the 'F' class code and the 1.26% ongoing-charge pin mark the RAEF-style flat structure (no performance fee); minimum per the KID to check at subscription. NAV history only from 2026-05, far too short for analysis: use RAEF (LU1662501532), whose 2015+ spliced history and audited-NAV goldens carry the trend leg; keep this class as an access route when a platform lists it and not RAEF.",
-    "confidence": "medium",
+    "notes": "Flat-fee institutional-series 'IAE1FT' EUR class launched 2026-05-11, visible on retail platforms (IBKR lists it): NO performance fee, and 1.26%/yr of ongoing charge levied INSIDE the NAV (FT). That last point is what makes this class the honest flat-fee route into the programme: it carries the same 1.00%/yr management charge as RAEF (LU1662501532), but here the charge reaches the NAV, so the quoted price is the whole cost and no separate agreement or waiver stands between the holder and the record. Measured against RAEF over the 59 days both quote, the daily correlation is 1.0000 and the wedge is 0.995 pts/yr, against the 1.03 the two published ongoing charges predict. Backcast to 1996-03 (simdata) on RAEF's whole published history charged that 1.03%/yr difference; the reconstruction reproduces the real class to 0.03 pts/yr over their overlap. Prefer this class over RAEF whenever a platform lists both and the RAEF management charge is not demonstrably waived; prefer it over IAET (LU1662498721) in strong trend years, when IAET's performance fee costs more than the 0.48 pts of ongoing charge it saves.",
+    "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
