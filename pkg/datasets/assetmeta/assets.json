@@ -2013,13 +2013,15 @@
     "id": "IE00B3VTMJ91",
     "isin": "IE00B3VTMJ91",
     "aliases": [
+      "CSBGE3",
+      "CBE3",
       "IBGS"
     ],
     "name": "iShares € Govt Bond 1-3yr UCITS ETF EUR (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
-    "symbol": "IBGS.L",
+    "symbol": "CSBGE3.MI",
     "currency": "EUR",
     "fees": 0.15,
     "asset_class": "government-bond",
@@ -2039,9 +2041,10 @@
     "notes": "Short-duration EUR sovereign; low-volatility defensive sleeve near cash",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91",
+      "https://www.borsaitaliana.it/borsa/etf/scheda/IE00B3VTMJ91.html"
     ],
-    "since": "2010-04-14",
+    "since": "2009-06-02",
     "duration": 1.9
   },
   {
