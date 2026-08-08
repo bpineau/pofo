@@ -3,7 +3,7 @@
 # name: iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR
 # method: the US-listed DBMF itself from 2019, then the net all-styles composite the fund replicates (2000-01) and Man AHL Diversified (1996-03), each lifted to the UCITS class's 0.75%/yr fee load, the file starting at that deepest donor's own first NAV, the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025
 # validation: corr=0.362 (weekly 0.708) beta=0.48 TE=17.3%/yr CAGR sim 20.34% vs real 20.50% (overlap 304 d from 2025-04-08 to 2026-07-31) vs DBMFE
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,7.596630
 1996-03-27,7.570013

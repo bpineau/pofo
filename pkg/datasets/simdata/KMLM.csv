@@ -3,7 +3,7 @@
 # name: KraneShares KMLM: TSMOM replication
 # method: real NAVs of other managed-futures programmes spliced behind the fund, each lifted to its 0.90%/yr fee load (Virtus AlphaSimplex 2010-08→ +0.55%/yr, Guggenheim 2007-02→ +1.09%/yr, Man AHL Diversified 1996-03→ +1.84%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (14% vol target ~ the fund's realized 14.7%) supplies the daily texture the weekly-dealing donor is projected onto; real KMLM grafted from 2020
 # validation: corr=0.626 (weekly 0.647) beta=0.63 TE=12.7%/yr CAGR sim 4.77% vs real 6.45% (overlap 1420 d from 2020-12-02 to 2026-07-31) vs KMLM
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,1.680277
 1996-03-27,1.661659

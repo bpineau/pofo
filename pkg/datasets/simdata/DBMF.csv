@@ -3,7 +3,7 @@
 # name: iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction
 # method: the published net all-styles managed-futures composite the fund replicates, spliced behind it from 2000-01, volatility-matched to it and lifted +1.15%/yr to put its constituents' 2%/yr management load on the fund's own 0.85%, then real NAVs of Man AHL Diversified (1996-03, +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019
 # validation: corr=0.675 (weekly 0.749) beta=0.67 TE=10.0%/yr CAGR sim 7.22% vs real 9.19% (overlap 1817 d from 2019-05-08 to 2026-07-31) vs DBMF
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,2.141328
 1996-03-27,2.122013
