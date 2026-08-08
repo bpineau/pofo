@@ -905,31 +905,33 @@
     "benchmark_index": "active (MSCI World Small Cap Value as comparison)",
     "strategy": "active",
     "geography": {
-      "Canada": 4,
-      "Japan": 18,
-      "Other": 11,
-      "Other Europe": 15,
-      "Other developed": 8,
-      "UK": 8,
-      "US": 36
+      "Australia": 3,
+      "Canada": 3,
+      "Japan": 10,
+      "Other developed": 11,
+      "UK": 4,
+      "US": 69
     },
     "sectors": {
-      "Consumer Discretionary": 19,
-      "Consumer Staples": 4,
-      "Energy": 14,
-      "Financials": 23,
-      "Health Care": 4,
+      "Communication Services": 3,
+      "Consumer Discretionary": 17,
+      "Consumer Staples": 5,
+      "Energy": 15,
+      "Financials": 25,
+      "Health Care": 3,
       "Industrials": 15,
-      "Information Technology": 8,
+      "Information Technology": 5,
       "Materials": 10,
-      "Other": 3
+      "Real Estate": 1,
+      "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Actively managed global small-cap value (AVWS); ~5% tech vs ~25% in broad world trackers; high size+value factor loading",
-    "confidence": "medium",
+    "notes": "Actively managed global small-cap value (AVWS); ~69% US, so a US small-value sleeve with a developed-markets tail rather than a balanced global book; ~5% tech vs ~25% in broad world trackers, against ~25% financials and ~15% energy; high size+value factor loading. Geography and sectors from the issuer factsheet dated 31/07/2026, which publishes the top five countries only (US 69.2, Japan 10.2, UK 3.6, Canada 3.3, Australia 2.7); the undisclosed 11% residual is left in Other developed rather than split by guesswork. An earlier entry read 36% US, which the fund's own returns contradict: it regresses on US and international small-value sleeves at 0.70/0.30 (see simgen's avantisRecipe)",
+    "confidence": "high",
     "sources": [
-      "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/"
+      "https://www.avantisinvestors.com/ucitsetf/avantis-global-small-cap-value-ucits-etf/",
+      "https://res.avantisinvestors.com/docs/avantis-global-small-cap-value-ucits-etf-fact-sheet.pdf"
     ],
     "since": "2024-09-25",
     "factors": [
