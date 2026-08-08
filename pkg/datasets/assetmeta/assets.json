@@ -8200,6 +8200,36 @@
     ]
   },
   {
+    "id": "LU2604697206",
+    "isin": "LU2604697206",
+    "aliases": [],
+    "name": "iMGP DBi Managed Futures Fund R EUR HP (hedged)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "xid": "857543840",
+    "currency": "EUR",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "fees": 1.12,
+    "since": "2024-04-29",
+    "asset_class": "managed-futures",
+    "underlying": "Long/short global futures across equities, bonds, commodities and currencies (CTA replication), EUR-hedged",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "The EUR-HEDGED route into the same DBi Dynamic Beta Engine replication book as DBMFE, which is cheaper (0.75%/yr) but UNHEDGED. R EUR HP retail class (class launch 2024-04-29, ongoing charges 1.12%/yr = 0.80% max management fee plus expenses, no performance fee) of the iMGP DBi Managed Futures Fund sub-fund of the iMGP Funds Luxembourg SICAV, the original mutual-fund vehicle launched 2023-01; the UCITS ETF classes (DBMF USD LU2951555585, DBMFE EUR LU2951555403) are a SEPARATE 2025 sub-fund running the same strategy. The hedge is real and class-level, measured on local returns: correlation vs the US DBMF ETF (USD) 0.95 daily / 0.997 monthly over 2024-04..2026-08, vs the unhedged DBMFE only 0.37 daily / 0.70 monthly (the difference is USDEUR noise), and the CAGR gap vs DBMF USD of -2.3 pts/yr decomposes into the 1.8 pts average SOFR-ESTR carry, the 0.27 pts fee gap and ~0.25 pts hedging cost. IBKR carries it with zero minimum. Since 2026-05-13 a EUR-hedged ETF class also exists (MFEH on Xetra, LU3359622902, 0.75%/yr, still ~EUR 11m and unseasoned). No simdata backcast: if one is ever wanted, the DBMFE recipe's donor chain hedges trivially via the FX identity (donor local USD returns plus EUR cash minus USD cash).",
+    "confidence": "high",
+    "sources": [
+      "https://www.imgp.com/fund/lu2604697206-imgp-dbi-managed-futures-fund-r-eur-hp/",
+      "https://www.imgp.com/imgp-dbi-managed-futures-fund/",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2604697206:EUR"
+    ]
+  },
+  {
     "id": "FOLOW",
     "isin": "LU3307218399",
     "aliases": [],
