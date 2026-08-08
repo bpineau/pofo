@@ -11,6 +11,7 @@ import (
 
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/simgen"
 )
 
 // The reconstruction window of the all-weather plate: the value of
@@ -123,6 +124,16 @@ func ttRecompute(t *testing.T, legs map[string]func(prev, cur string) float64,
 	return cagr, vol, worst, drawdown
 }
 
+// ttSmallValueNet charges the small-value leg what the Ken French factor does
+// not pay. The plate quotes a return a reader could aim for, so its 20 % sleeve
+// cannot be an academic portfolio free of fees, commissions and spreads: the
+// leg takes the same measured 1.0 %/yr the investable reconstruction takes
+// (simgen.USSCVGrossCost), accrued month by month.
+func ttSmallValueNet(s map[string]float64) func(prev, cur string) float64 {
+	monthly := math.Pow(1-simgen.USSCVGrossCost, 1.0/12)
+	return func(prev, cur string) float64 { return s[cur]/s[prev]*monthly - 1 }
+}
+
 // The plate's fourteen points are frozen literals, so the book's figures stay
 // pure functions with no data dependency at render time. This rebuilds every
 // one of them from the bundled series and fails the moment the plate and the
@@ -160,6 +171,7 @@ func TestTousTempsFigureMatchesTheData(t *testing.T) {
 	}
 	// cash earns the previous month's annualized bill rate, one twelfth at a time
 	legs["cash"] = func(prev, cur string) float64 { return bills[prev] / 1200 }
+	legs["smallvalue"] = ttSmallValueNet(price["smallvalue"])
 	// SHY only starts in 1991-10; T-bills stand in for the short sleeve before
 	shy := price["short"]
 	legs["short"] = func(prev, cur string) float64 {
@@ -222,8 +234,8 @@ func TestTousTempsClaimsHold(t *testing.T) {
 	}
 	// the title's claim, read at the Golden Butterfly's return
 	gb := tousTempsFamily[2]
-	if ratio := tousTempsLadderAt(gb.cagr) / gb.drawdn; ratio < 1.9 || ratio > 2.1 {
-		t.Errorf("at %.2f %% the ladder plunges %.1f times deeper, the plate title says twice",
+	if ratio := tousTempsLadderAt(gb.cagr) / gb.drawdn; ratio < 1.7 || ratio > 2.05 {
+		t.Errorf("at %.2f %% the ladder plunges %.1f times deeper, the plate title says nearly twice",
 			gb.cagr, ratio)
 	}
 	if got := tousTempsLadderAt(6.0); math.Abs(got-(-42.0)) > 0.2 {
@@ -245,7 +257,7 @@ func TestTousTempsFigureAgreesWithTheArticle(t *testing.T) {
 	for _, want := range []string{
 		"5,6 %", "−38 %", // 60/40
 		"4,4 %", "−22 %", // Browne
-		"6,0 %",          // Golden Butterfly
+		"5,8 %",          // Golden Butterfly
 		"5,0 %", "−29 %", // All-Weather
 		"−34 %", // the ladder's own floor
 	} {

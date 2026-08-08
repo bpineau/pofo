@@ -9,7 +9,7 @@ Un facteur est une source de rendement **systématique**, distincte du marché. 
 :::
 
 ::: figure scv-ecart-10ans
-Écart de rendement réel annualisé entre le small-cap value américain (les petites capitalisations décotées de Kenneth French, brut de frais) et le S&P 500 total return, sur dix ans glissants, chaque fenêtre étant datée du mois qui la ferme. Les deux séries sont déflatées par le CPI américain et courent de 1963 à 2026.
+Écart de rendement réel annualisé entre le small-cap value américain et le S&P 500 total return, sur dix ans glissants, chaque fenêtre étant datée du mois qui la ferme. La jambe small value est le portefeuille académique de Kenneth French, qui ne paie ni frais ni courtage : on lui retire ici 1,0 point par an, l'écart mesuré entre ce portefeuille et un vrai fonds sur leurs trente-trois années communes. Les deux séries sont déflatées par le CPI américain et courent de 1963 à 2026.
 :::
 
 ## De quoi parle-t-on : le socle académique, en bref
@@ -45,7 +45,7 @@ L'argument d'en face existe pourtant, et il est historique. Les grandes catastro
 **Pièce 3 : l'affinité de régime de la value.** C'est la pièce la plus moderne. Historiquement, la value est le style qui résiste le **mieux** aux régimes inflationnistes. Ses entreprises ont des flux de trésorerie proches dans le temps et des actifs tangibles, et leur dette s'érode avec l'inflation. Les valeurs de croissance (growth) souffrent à l'inverse, car leurs bénéfices sont attendus loin dans le futur, donc actualisés plus durement. En 2022, la value mondiale a fait à peu près 0 % quand la croissance perdait 25 %. Pour un portefeuille dont l'ennemi numéro un est le régime inflationniste ([[regimes-de-marche]]), un tilt value est une demi-brique défensive, logée à l'intérieur de la poche actions. Elle est gratuite en espérance, parfois même rémunérée, là où l'or et les linkers coûtent leur portage ([[actifs-defensifs]]).
 
 ::: attention Le prix d'entrée : la décennie 2010, et toutes les suivantes
-Toute prime factorielle se paie de la même façon : des années, parfois une décennie entière, à faire moins bien que l'indice que tout le monde détient. La décennie 2010-2020 en est l'exemple à encadrer. La value mondiale a sous-performé la croissance d'environ 5 % par an pendant dix ans, le pire épisode de son histoire, pire encore que 1999. Le même purgatoire se lit sur l'écart glissant du small-cap value américain, qui a compté jusqu'à 6,9 points de retard par an face au S&P 500 sur les dix ans qui s'achèvent en avril 2020, son pire écart depuis 1963. Les capitulations ont été massives, juste avant le retournement de 2021-2022.
+Toute prime factorielle se paie de la même façon : des années, parfois une décennie entière, à faire moins bien que l'indice que tout le monde détient. La décennie 2010-2020 en est l'exemple à encadrer. La value mondiale a sous-performé la croissance d'environ 5 % par an pendant dix ans, le pire épisode de son histoire, pire encore que 1999. Le même purgatoire se lit sur l'écart glissant du small-cap value américain, qui a compté jusqu'à 8,0 points de retard par an face au S&P 500 sur les dix ans qui s'achèvent en avril 2020, son pire écart depuis 1963. Les capitulations ont été massives, juste avant le retournement de 2021-2022.
 
 Le parallèle est parfait avec l'hiver des CTA ([[managed-futures]]) et le purgatoire de l'or entre 1980 et 2000 ([[or-en-retrait]]). Toute diversification réelle a ses années de honte. C'est même à cela qu'on la reconnaît, car ce qui ne s'écarte jamais de l'indice n'apporte rien de plus que l'indice.
 
