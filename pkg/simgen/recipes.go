@@ -661,9 +661,15 @@ func spxRecipe() Recipe {
 // (LU1645380442, a brand-new 2025 EUR-acc share class) from the longer-running
 // iShares Euro Inflation Linked Govt Bond ETF (IBCI, daily FT NAVs from its
 // 2005 inception). IBCI tracks the all-maturity euro-area linker index
-// (duration ~8) versus ~4.8 for the 1-10 segment, so it is held at 0.60x with
-// the rest in EUR cash (bundled EURCASH-EUR money-market index) to match
-// durations; same asset class and currency (EUR), no FX leg needed. The
+// against the 1-10 segment, so it is held at 0.60x with the rest in EUR cash
+// (bundled EURCASH-EUR money-market index) to match durations; same asset
+// class and currency (EUR), no FX leg needed. The two durations both drift:
+// the 0.60 comes from the ~8-versus-~4.8 pair of the years the recipe was
+// written, and the issuer factsheets of 30/06/2026 now read 7.14 and 4.55,
+// an implied 0.64. The weight is deliberately left where it is until a
+// revision earns its own validation pass, since moving it moves a shipped
+// backcast; the measured under-scaling shows up as the engine's slightly
+// thin return in `pofo -verify-simdata`. The
 // scaling brought the validation beta from 0.53 to 0.85 and the tracking
 // error from 2.3 to 1.5%/yr, and the FT source moved the start from 2009
 // back to 2005. The real CHSN quotes are grafted on top from 2025.
