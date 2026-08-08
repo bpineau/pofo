@@ -76,6 +76,7 @@ func ecartLegs(t *testing.T) (map[string]func(prev, cur string) float64, map[str
 		s := s
 		legs[name] = func(prev, cur string) float64 { return s[cur]/s[prev] - 1 }
 	}
+	legs["smallvalue"] = ttSmallValueNet(price["smallvalue"])
 	// SHY only starts in 1991-10: T-bills stand in for the short sleeve before
 	shy := price["short"]
 	legs["short"] = func(prev, cur string) float64 {
@@ -119,7 +120,7 @@ func TestEcartFigureMatchesTheData(t *testing.T) {
 // them from memory: they must be the actual longest runs of the actual series,
 // with their actual dates.
 func TestEcartBandsAreTheRealStreaks(t *testing.T) {
-	want := []ecartStreak{{1983, 1986, 4}, {1988, 1991, 4}, {1994, 1999, 6}, {2012, 2017, 6}}
+	want := []ecartStreak{{1983, 1991, 9}, {1994, 1999, 6}, {2012, 2017, 6}}
 	got := ecartStreaks(ecartBandMin)
 	if len(got) != len(want) {
 		t.Fatalf("the plate bands %d runs, the series has %d of at least %d years: %v",
@@ -141,8 +142,8 @@ func TestEcartBandsAreTheRealStreaks(t *testing.T) {
 			longest = s.length
 		}
 	}
-	if longest != 6 {
-		t.Errorf("the longest run is %d years, the plate annotates 6", longest)
+	if longest != 9 {
+		t.Errorf("the longest run is %d years, the plate annotates 9", longest)
 	}
 	// every banded run must really be behind the index, year after year
 	for _, s := range got {
@@ -171,13 +172,13 @@ func TestEcartPlateClaimsHold(t *testing.T) {
 			best = e
 		}
 	}
-	if behind != 33 {
-		t.Errorf("the plate says 33 lagging years, the series has %d", behind)
+	if behind != 34 {
+		t.Errorf("the plate says 34 lagging years, the series has %d", behind)
 	}
 	n := float64(len(ecartYears))
 	drag := (math.Pow(eqGrowth, 1/n) - math.Pow(gbGrowth, 1/n)) * 100
-	if math.Abs(drag-0.8) > 0.05 {
-		t.Errorf("the plate says 0,8 point a year, the series says %.2f", drag)
+	if math.Abs(drag-1.0) > 0.05 {
+		t.Errorf("the plate says 1,0 point a year, the series says %.2f", drag)
 	}
 	// the two years the plate names, with the numbers it writes next to them
 	if worst.year != 2013 || math.Abs(worst.allWeather-5) > 0.5 || math.Abs(worst.equities-30) > 0.5 {
@@ -187,11 +188,14 @@ func TestEcartPlateClaimsHold(t *testing.T) {
 	if best.year != 2008 || math.Abs(best.gap()-32) > 0.5 {
 		t.Errorf("the best year is %d at %+.2f points, the plate says 2008, +32", best.year, best.gap())
 	}
-	// the notch between the two four-year runs, the only year of that stretch
-	// that is not a lagging one
+	// 1987 used to split the 1980s stretch into two four-year runs, and the
+	// plate named it for that. Charging the small-value leg its 1.0 %/yr takes
+	// the year a tenth of a point under the index, so the stretch is one run of
+	// nine years and the annotation is gone: check the year rather than trust
+	// the memory of a notch.
 	for _, e := range ecartYears {
-		if e.year == 1987 && math.Abs(e.gap()-0.04) > 0.005 {
-			t.Errorf("1987 is %+.4f point, the plate writes +0,04", e.gap())
+		if e.year == 1987 && e.gap() >= 0 {
+			t.Errorf("1987 is %+.4f point, no longer inside the 1983-1991 run", e.gap())
 		}
 	}
 }
@@ -200,7 +204,7 @@ func TestEcartPlateClaimsHold(t *testing.T) {
 // leave the reader with an unlabelled wash.
 func TestEcartFigureRenders(t *testing.T) {
 	svg := FigureSVG("tous-temps-ecart")
-	for _, want := range []string{"6 ans", "4 ans", "2008 : +32", "2013 : +5 % contre +30 %", "1987 : +0,04"} {
+	for _, want := range []string{"9 ans", "6 ans", "2008 : +32", "2013 : +5 % contre +30 %"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer writes %q", want)
 		}
