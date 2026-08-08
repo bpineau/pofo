@@ -14,7 +14,9 @@ import (
 // a long retirement at daily granularity throughout. Every file carries real
 // daily FRED noon rates; the euro additionally chains monthly ECU/USD anchors
 // (1:1 to the euro) over the Bundesbank Frankfurt DM/USD fixing before 1999.
-// See each file's header for regeneration.
+// Regenerate with "make snapshots" (cmd/gen-snapshots); see each file's header
+// for its sources, and note that the euro's pre-1999 head is settled history
+// the command carries over rather than rebuilds.
 //
 //go:embed data/eurusd-long.csv
 var eurusdLongCSV string

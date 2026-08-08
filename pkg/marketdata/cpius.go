@@ -16,9 +16,10 @@ const cpiUSSymbol = "^CPI-US"
 // all-items NSA index (BLS, 1913→), used when the live FRED endpoint is
 // unreachable and nothing is cached. The live series is always preferred;
 // this only needs refreshing occasionally to keep the recent tail current.
-// Regenerate from FRED fredgraph.csv?id=CPIAUCNS (or the datahub mirror,
-// raw.githubusercontent.com/datasets/cpi-us/main/data/cpiai.csv, the same
-// BLS series), rewriting rows as "YYYY-MM,value" under the comment header.
+// Regenerate with "make snapshots" (cmd/gen-snapshots), which reads FRED
+// fredgraph.csv?id=CPIAUCNS; the datahub mirror
+// (raw.githubusercontent.com/datasets/cpi-us/main/data/cpiai.csv) publishes the
+// same BLS series and makes a good cross-check.
 //
 //go:embed data/cpi-us.csv
 var cpiUSSnapshot string
