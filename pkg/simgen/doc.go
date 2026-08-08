@@ -62,8 +62,11 @@
 //     reaches back to its youngest leg's first quote (BuildFrame's start);
 //     dailyShape then blends a real daily series of the same market into a
 //     monthly proxy (anchors keep the levels, the shape supplies the day-to-day
-//     variance), so long backcasts stay honest at daily-statistics frequency,
-//     and longBackFee charges a gross proxy what its grossness is worth;
+//     variance), so long backcasts stay honest at daily-statistics frequency;
+//     a shape source is despiked first (a lone provider print whose two huge
+//     legs cancel against a calm neighbourhood is dropped, real crash days
+//     never qualify), and longBackFee charges a gross proxy what its
+//     grossness is worth;
 //   - globalbond.go rebuilds a MULTI-CURRENCY government bond futures basket
 //     (the sleeve of the global efficient-core fund NTSG) as one excess-return
 //     index: a local sleeve per currency, each netted against its OWN
