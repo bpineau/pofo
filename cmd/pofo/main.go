@@ -113,12 +113,18 @@ func run(ctx context.Context, argv []string) error {
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
 	assetsList := fs.String("assets", "", "comma-separated list of tickers/ISINs, each compared as a portfolio 100 % invested in it")
 	fs.StringVar(assetsList, "a", "", "shorthand for -assets")
+	simAll := fs.Bool("simulate", false, "backcast every identifier, as if each carried the SIM suffix (like \"#meta sim:on\"); one without a simulated history keeps its real quotes")
+	fs.BoolVar(simAll, "b", false, "shorthand for -simulate")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: pofo [options] portfolio.txt [portfolio2.txt …]
        pofo [options] -assets VOO,IWDA,NTSG
+       pofo [options] -b -assets AVWS,ZPRV
 
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
+
+-simulate (-b) backcasts every identifier of the run, so "-b -a AVWS,ZPRV"
+means "-a AVWSSIM,ZPRVSIM" without the suffixes; -no-simulate overrides it.
 
 File format: one line per asset:
 
@@ -251,28 +257,9 @@ Options:
 		return runGenSimdata(ctx, genClient, &opt, *refdataDir, fs.Args(), *dry)
 	}
 
-	// Parse every portfolio file, disambiguating duplicate names, then add
-	// one synthetic 100 % portfolio per -assets entry.
-	specs := make([]*portfolio.Spec, 0, len(files))
-	nameCount := map[string]int{}
-	addSpec := func(spec *portfolio.Spec) {
-		nameCount[spec.Name]++
-		if n := nameCount[spec.Name]; n > 1 {
-			spec.Name = fmt.Sprintf("%s (%d)", spec.Name, n)
-		}
-		specs = append(specs, spec)
-	}
-	for _, f := range files {
-		spec, err := portfolio.ParseFile(f)
-		if err != nil {
-			return err
-		}
-		addSpec(spec)
-	}
-	for id := range strings.SplitSeq(*assetsList, ",") {
-		if id = strings.TrimSpace(id); id != "" {
-			addSpec(portfolio.Single(id))
-		}
+	specs, err := buildSpecs(files, *assetsList, *simAll)
+	if err != nil {
+		return err
 	}
 	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		return errors.New("the -assets option contains no identifier")
@@ -333,6 +320,44 @@ Options:
 		openBrowser(outPath)
 	}
 	return nil
+}
+
+// buildSpecs assembles the run's portfolios: one per file, then one synthetic
+// 100 %-invested portfolio per -assets identifier, with duplicate names
+// disambiguated so two files called the same thing stay apart in the report.
+//
+// simAll is -simulate, the command-line form of a file's "#meta sim:on": it
+// asks for the backcast on every identifier of the run at once, so comparing a
+// handful of reconstructed assets needs no SIM suffix on each of them. It only
+// ever turns the backcast ON: a file that already carries the directive, or an
+// identifier already written with the suffix, is unaffected, and an asset with
+// no simulated history falls back to its real quotes (see portfolio.Build).
+func buildSpecs(files []string, assetsList string, simAll bool) ([]*portfolio.Spec, error) {
+	specs := make([]*portfolio.Spec, 0, len(files))
+	nameCount := map[string]int{}
+	add := func(spec *portfolio.Spec) {
+		if simAll {
+			spec.Sim = true
+		}
+		nameCount[spec.Name]++
+		if n := nameCount[spec.Name]; n > 1 {
+			spec.Name = fmt.Sprintf("%s (%d)", spec.Name, n)
+		}
+		specs = append(specs, spec)
+	}
+	for _, f := range files {
+		spec, err := portfolio.ParseFile(f)
+		if err != nil {
+			return nil, err
+		}
+		add(spec)
+	}
+	for id := range strings.SplitSeq(assetsList, ",") {
+		if id = strings.TrimSpace(id); id != "" {
+			add(portfolio.Single(id))
+		}
+	}
+	return specs, nil
 }
 
 // renderComparison runs the whole pipeline and renders the HTML report:

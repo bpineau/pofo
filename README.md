@@ -26,6 +26,7 @@ go build ./cmd/pofo                       # self-contained binary (datasets embe
 ./pofo my-portfolio.txt other.txt         # HTML report in /tmp + open
 ./pofo -assets WPEA,NTSG,CSPX             # compare individual assets (100% each)
 ./pofo -cli -assets VOO,IWDA              # quick check in the terminal
+./pofo -b -assets AVWS,ZPRV               # same, with every history backcast
 ./pofo -warmup                            # pre-warm the catalog cache
 ./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
 ./pofo -export-epub le-fire-tranquille.epub  # export the FIRE book as EPUB 3
@@ -38,7 +39,9 @@ quote cache lives in the standard user cache directory
 
 The `-assets` option treats each identifier as a portfolio invested 100% in
 it, handy for comparing ETFs against each other without writing a file. It
-can be combined with portfolio files.
+can be combined with portfolio files. Add `-simulate` (`-b`) to backcast every
+identifier of the run, so `-b -assets AVWS,ZPRV` says what
+`-assets AVWSSIM,ZPRVSIM` says without suffixing each one.
 
 ## Portfolio file format
 
@@ -167,7 +170,10 @@ uncovered period, via `pkg/datasets/simdata/` then the known proxies; real
 quotes always keep priority wherever they exist. `-no-simulate` ignores SIM
 suffixes globally. `#meta sim:on` applies the suffix to every holding of a
 file at once, so you can drop it from each line (and add it back for the whole
-file just as easily).
+file just as easily); `-simulate` (`-b`) is the same thing from the command
+line, for every file and every `-assets` identifier of the run at once. Both
+only ever turn the backcast on: an asset with no simulated history keeps its
+real quotes, with a note in the report.
 
 ## Suggesting assets to add
 
@@ -337,7 +343,8 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-benchmark` | `^GSPC` | reference for Beta, capture ratios and the CWARP replacement |
 | `-currency` | `EUR` | convert every series (and the benchmark) to this currency; empty disables |
 | `-cache-age` | `720h` (1 month) | cache freshness before re-downloading |
-| `-assets` | | list `A,B,C`: each asset compared as a 100% portfolio |
+| `-assets`, `-a` | | list `A,B,C`: each asset compared as a 100% portfolio |
+| `-simulate`, `-b` | | backcast every identifier of the run, as if each carried the `SIM` suffix |
 | `-cli` | | curves and summary table in the terminal, no HTML |
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
@@ -349,7 +356,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-export-epub` | | write the FIRE book to the given path as an EPUB 3 file, then exit |
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
-| `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes |
+| `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes (overrides `-simulate`) |
 
 ## Data
 
