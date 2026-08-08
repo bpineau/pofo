@@ -42,6 +42,12 @@ func mkCombo(symbol string, parts []*marketdata.Series, weights []float64) *mark
 	return s
 }
 
+// from returns the tail of a series, for a component that only starts quoting
+// partway through the window.
+func from(s *marketdata.Series, i int) *marketdata.Series {
+	return &marketdata.Series{Symbol: s.Symbol, Points: s.Points[i:]}
+}
+
 // TestAllRecipesBuildOffline runs every bundled recipe's Build against a
 // synthetic offline universe (canned component series + the embedded refdata,
 // no network), asserting each returns a plausible series. This exercises the
@@ -64,6 +70,11 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	bcom := mkWave("^BCOM", n, 2e-4, 0.012, 1.6, 0.9)
 	dfsvx := mkWave("DFSVX", n, 4e-4, 0.013, 0.8, 1.4)
 	disvx := mkWave("DISVX", n, 3e-4, 0.011, 1.5, 0.2)
+	// The same manager's own small-value sleeves quote over the recent part of
+	// the window only, so avantisBuild exercises the splice onto the
+	// Dimensional pair behind them rather than a full-length fiction.
+	avuv := from(mkWave("AVUV", n, 4e-4, 0.013, 0.85, 1.35), n/3)
+	avdv := from(mkWave("AVDV", n, 3e-4, 0.011, 1.45, 0.25), n/3)
 	ibci := mkWave("IBCI", n, 2e-4, 0.004, 1.2, 1.7)
 	indepFr := mkWave("LU0131510165", n, 4e-4, 0.012, 0.9, 2.1)
 	vix := mkWave("^VIX", n, 0, 0.030, 0.6, 0.5)
@@ -96,7 +107,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
-		"DFSVX": dfsvx, "DISVX": disvx, "IBCI": ibci,
+		"DFSVX": dfsvx, "DISVX": disvx, "AVUV": avuv, "AVDV": avdv, "IBCI": ibci,
 		"LU0131510165": indepFr,
 		"EZU":          ezu, "EUNH.DE": eunh,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
@@ -137,5 +148,43 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 				prev = p.Date
 			}
 		})
+	}
+}
+
+// The Avantis fund takes its geography from its own factsheet (70 % US) and
+// its donor from its own manager: over the era AVUV and AVDV quote, they alone
+// drive the blend, at the adopted weights and net of the difference in ongoing
+// charges (avantisRecipe). Before them the Dimensional pair takes over, which
+// here is flat, so every move in the output belongs to the same-manager pair.
+func TestAvantisBlendsSameManagerSleevesAtTheFundsGeography(t *testing.T) {
+	const n, live = 900, 600
+	flat := func(sym string, start int) *marketdata.Series {
+		return atSeries(sym, start, n-start, 100)
+	}
+	f := fakeFetcher{
+		"DFSVX": flat("DFSVX", 0), "DISVX": flat("DISVX", 0),
+		"AVUV":     from(mkWave("AVUV", n, 1e-3, 0, 1, 0), live),
+		"AVDV":     flat("AVDV", live),
+		"EURUSD=X": flat("EURUSD=X", 0),
+	}
+
+	got, err := avantisBuild(f, time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byDate := map[time.Time]float64{}
+	for _, p := range got.Points {
+		byDate[p.Date] = p.Close
+	}
+	// A day inside the Dimensional era: both legs flat, so is the blend.
+	if a, b := byDate[day(300)], byDate[day(301)]; a == 0 || b/a-1 > 1e-9 {
+		t.Errorf("Dimensional era moves by %.2e/day, want flat legs to stay flat", b/a-1)
+	}
+	// A day inside the same-manager era: 0.70 of AVUV's move, less the
+	// 0.107 %/yr the pair's cheaper wrapper owes the fund's.
+	want := avwsUS*1e-3 - (avwsTER-(avwsUS*avuvTER+avwsIntl*avdvTER))/252
+	a, b := byDate[day(live+100)], byDate[day(live+101)]
+	if a == 0 || math.Abs(b/a-1-want) > 1e-9 {
+		t.Errorf("same-manager era moves %.6f/day, want %.6f (0.70×AVUV, fee-aligned)", b/a-1, want)
 	}
 }
