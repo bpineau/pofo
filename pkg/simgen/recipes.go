@@ -14,10 +14,6 @@ import (
 // frames start at the youngest component's first quote.
 var ComponentsFrom = time.Date(1962, 1, 1, 0, 0, 0, 0, time.UTC)
 
-// minBackcastR2 is the floor under which a regression-based reconstruction
-// is considered too unfaithful to be written at all.
-const minBackcastR2 = 0.35
-
 // All returns every bundled reconstruction recipe.
 func All() []Recipe {
 	return []Recipe{
@@ -43,8 +39,6 @@ func All() []Recipe {
 		aqrmfHedgedRecipe(),
 		indepEuropeRecipe(),
 		ctaRecipe(),
-		amundiVolRecipe(),
-		bhmgRecipe(),
 		rssbRecipe(),
 		gdeRecipe(),
 		rsstRecipe(),
@@ -2677,55 +2671,5 @@ func ctaRecipe() Recipe {
 		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{pureTrendIndex, ahlDiversified}), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
-	}
-}
-
-// backcastBuild wraps FitBackcast: the model is fitted on the asset's real
-// history, then projected over the whole frame. Honest but limited: only
-// the systematic exposures survive.
-func backcastBuild(name, realID string, ids []string) func(Fetcher, time.Time) (*marketdata.Series, error) {
-	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-		fr, err := BuildFrame(extend(f), ids, from)
-		if err != nil {
-			return nil, err
-		}
-		real, err := f.Fetch(realID, from)
-		if err != nil {
-			return nil, err
-		}
-		values, r2, _, err := FitBackcast(fr, real, ids)
-		if err != nil {
-			return nil, err
-		}
-		if r2 < minBackcastR2 {
-			return nil, fmt.Errorf("%w: R² in-sample %.2f < %.2f", ErrUnfaithful, r2, minBackcastR2)
-		}
-		return SeriesFromFrame(fmt.Sprintf("%s (backcast R²=%.2f)", name, r2), fr, values), nil
-	}
-}
-
-// amundiVolRecipe attempts a regression backcast of the Amundi Volatility
-// World fund on VIX variations; volatility-trading funds are idiosyncratic,
-// so this only ships when the in-sample fit clears minBackcastR2.
-func amundiVolRecipe() Recipe {
-	return Recipe{
-		ID:              "LU0319687124",
-		Name:            "Amundi Volatility World: backcast on ^VIX",
-		Method:          "regression of the fund's daily returns on Δ^VIX and VFISX (2007→), replayed before 2007; residuals dropped",
-		Build:           backcastBuild("Amundi Volatility World", "LU0319687124", []string{"^VIX", "VFISX"}),
-		ValidateAgainst: "LU0319687124",
-	}
-}
-
-// bhmgRecipe attempts the same exercise for BH Macro; discretionary macro
-// rarely regresses well on asset-class factors, in which case nothing is
-// written.
-func bhmgRecipe() Recipe {
-	return Recipe{
-		ID:              "GG00BQBFY362",
-		Name:            "BH Macro: factor backcast",
-		Method:          "regression of daily returns on VUSTX, VFINX, GC=F (2007→), replayed before; residuals dropped",
-		Build:           backcastBuild("BH Macro", "GG00BQBFY362", []string{"VUSTX", "VFINX", "GC=F"}),
-		ValidateAgainst: "GG00BQBFY362",
 	}
 }
