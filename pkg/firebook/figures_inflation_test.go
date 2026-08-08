@@ -15,6 +15,7 @@ import (
 // absent when the panel has no record for that year.
 func fraRealReturns(t *testing.T) map[int]map[string]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	r := csv.NewReader(bytes.NewReader(datasets.BroadSample()))
 	r.Comment = '#'
 	recs, err := r.ReadAll()

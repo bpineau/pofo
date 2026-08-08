@@ -21,6 +21,7 @@ const triFirstAnchor = 2000*12 + 11
 // on. It returns the month keys of the anchors and one return slice per row.
 func triReturns(t *testing.T) (anchors []int, rets [][]float64) {
 	t.Helper()
+	frozenAgainstData(t)
 	levels := make([]map[time.Time]float64, len(triRows))
 	for i, s := range triRows {
 		fsys := datasets.Simdata()
@@ -174,6 +175,7 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 // (figScvEcart10Ans, figTousTempsEchange): a fee is a constant multiplicative
 // drag, it moves no correlation, and the footnote reads a correlation.
 func TestTriangleFootnoteNumbers(t *testing.T) {
+	frozenAgainstData(t)
 	anchors, rets := triReturns(t)
 	scv, ok, err := marketdata.ReadSimdataFS(datasets.Refdata(), "USSCV-USD")
 	if err != nil || !ok {
