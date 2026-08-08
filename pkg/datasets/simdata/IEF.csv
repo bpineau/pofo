@@ -3,7 +3,7 @@
 # name: iShares 7-10Y Treasury: VFITX intermediate Treasury
 # method: cash + 1.41×(VFITX − cash) (Vanguard Intermediate-Term Treasury, 1991→, geared to the 7-10 segment's duration), real IEF grafted from 2002
 # validation: corr=0.944 (weekly 0.962) beta=0.95 TE=2.3%/yr CAGR sim 3.81% vs real 3.53% (overlap 6039 d from 2002-07-30 to 2026-07-31) vs IEF
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1962-01-01,1.829215
 1962-01-02,1.829135

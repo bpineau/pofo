@@ -3,7 +3,7 @@
 # name: Simplify CTA: TSMOM replication
 # method: the published net pure-trend composite the fund names as its benchmark, spliced behind it from 2000-01 and lifted +1.25%/yr to put its constituents' 2%/yr management load on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022
 # validation: corr=0.536 (weekly 0.538) beta=0.53 TE=16.3%/yr CAGR sim 4.40% vs real 7.62% (overlap 1103 d from 2022-03-08 to 2026-07-31) vs CTA
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,0.992959
 1996-03-27,0.980401

@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS (EUR-hedged): real B EUR sister class over a hedged TSMOM backcast
 # method: real B EUR sister class (LU1103258197, same fund, daily correlation 1.000 on the 2021 overlap and 0.999 on the 2023-2026 one) from 2015-03 to its 2021-12 NAV gap, lifted by a constant 0.45 %/yr, the low end of the measured 0.45-1.91 pts/yr the donor's 10% performance fee over EUR STR costs it against the flat-fee class; before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, where the file starts) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662501532 grafted from its 2021-04 inception
 # validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.1%/yr CAGR sim -10.59% vs real -10.55% (overlap 176 d from 2021-04-01 to 2021-12-21) vs LU1662501532
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,21.251737
 1996-03-27,21.095769

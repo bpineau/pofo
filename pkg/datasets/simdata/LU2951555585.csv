@@ -3,7 +3,7 @@
 # name: iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain
 # method: the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, then the net all-styles composite the fund replicates (2000-01, +1.25%/yr) and Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025
 # validation: corr=0.651 (weekly 0.848) beta=0.71 TE=10.0%/yr CAGR sim 22.73% vs real 22.55% (overlap 343 d from 2025-03-10 to 2026-07-30) vs LU2951555585
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,8.773489
 1996-03-27,8.694388

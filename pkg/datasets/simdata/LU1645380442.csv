@@ -2,8 +2,8 @@
 # id: LU1645380442
 # name: UBS Core Euro Inflation Linked 1-10: euro govt linker proxy
 # method: 0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, duration-matched to 1-10) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025
-# validation: corr=0.820 (weekly 0.870) beta=0.85 TE=1.5%/yr CAGR sim 2.22% vs real 3.55% (overlap 225 d from 2025-08-06 to 2026-07-01) vs LU1645380442
-# generated: 2026-07-18
+# validation: corr=0.819 (weekly 0.883) beta=0.85 TE=1.4%/yr CAGR sim 1.59% vs real 2.79% (overlap 246 d from 2025-08-06 to 2026-07-30) vs LU1645380442
+# generated: 2026-08-08
 date,close
 2005-11-23,6.140010
 2005-11-24,6.161048
@@ -5195,3 +5195,24 @@ date,close
 2026-06-29,8.811000
 2026-06-30,8.812800
 2026-07-01,8.833800
+2026-07-02,8.823600
+2026-07-03,8.816000
+2026-07-06,8.814600
+2026-07-07,8.803600
+2026-07-08,8.789800
+2026-07-09,8.810200
+2026-07-10,8.811800
+2026-07-13,8.808000
+2026-07-14,8.820200
+2026-07-15,8.816800
+2026-07-16,8.805600
+2026-07-17,8.812000
+2026-07-20,8.817800
+2026-07-21,8.813200
+2026-07-22,8.808600
+2026-07-23,8.798200
+2026-07-24,8.798600
+2026-07-27,8.795800
+2026-07-28,8.797200
+2026-07-29,8.804000
+2026-07-30,8.794400
