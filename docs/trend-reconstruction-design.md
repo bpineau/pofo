@@ -1070,6 +1070,26 @@ the donor era's LEVEL survives the change, not only its volatility.
   performance fee already covers the gap.
   The RAEF B EUR donor is corrected by its own measured wedge and takes no
   uplift, or it would be corrected twice.
+- A share class's headline management charge is NOT necessarily inside its
+  NAV, and for the AQR EUR classes that difference is the whole story. What
+  is levied inside each NAV (FT ongoing charge, confirmed to a basis point by
+  the audited Swiss Total Net Expense Ratio at 30/09/2025) is RAEF 0.23 %,
+  B EUR 0.73 %, IAET 0.78 % before its performance fee, IAE1FT 1.26 %; yet
+  RAEF and IAE1FT both list 1.00 % of management. RAEF therefore looks like it
+  beats every sibling by roughly their fee difference, and it does not: its
+  measured 1.31 pt/yr lead over IAET is explained to 1.25 by inside-NAV
+  charges alone. Two consequences for the recipes. Converting one EUR class
+  into another is a difference of published ongoing charges and nothing else,
+  which is what `aqrIAE1FTRecipe` does (RAEF whole, charged 1.03 %/yr;
+  measured 0.995 against a predicted 1.03 on their 59-day overlap). And a
+  performance fee, which cannot be removed from a NAV after the fact, need not
+  be removed when the target pays the same one: `aqrIAETRecipe` donates the
+  B EUR class precisely because it shares IAET's 10 % over EUR STR, leaving
+  only 0.05 pt/yr of ongoing charge to align (measured 0.096, daily
+  correlation 0.9991 over 672 days). The residue is the IAET bridge, eleven
+  weeks of flat-fee RAEF between the donor's 2021-12 emptying and IAET's own
+  first NAV, which carries no performance fee and shows up as the +0.83 pt/yr
+  level gap of that file's validation window.
   The three OVERLAY builds (`stackedTrend`, `wintonBuild`) obey the same rule on
   their funded CORE, which is a Vanguard index fund and therefore already net of
   its own charge: since 2026-08 they charge the fund's fee less that core's load
