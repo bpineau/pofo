@@ -525,7 +525,6 @@ simulation wherever it exists):
 | RSST (100% stocks + trend) | VFINX + 1.0×(trend−cash) overlay on a net pure-trend reference (2000→) | 0.88 / 0.89 |
 | RSBT (100% bonds + trend) | VFITX + 1.0×(trend−cash), same overlay (2000→) | 0.50 / 0.47 |
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (2000→) | 0.62 / 0.84 |
-| Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
 A fund's ongoing charge is deducted only where its donors do not already carry
 one. A mutual-fund or ETF NAV arrives net of its own manager's fee, so charging
@@ -562,9 +561,12 @@ twenty-plus-year backcast is worth more than a heavily simulated forty-year
 one. The construction, its measurements and what it leaves open are in
 `docs/trend-reconstruction-design.md`.
 The lower fidelity is accepted in exchange for full self-generation.
-Discretionary strategies that cannot be honestly replicated with factors are
-rejected below an R² floor rather than shipped as invented data; the matching
-`SIM` identifiers then simply fall back to the real (shorter) history.
+Strategies with no honest donor are not reconstructed at all: a long-volatility
+fund such as Amundi Volatility World (LU0319687124) and a discretionary macro
+vehicle such as BH Macro (BHMG) trade their own book, not a factor mix, and a
+factor regression on them explained 20 % and 0 % of their daily variance. They
+carry no simulated history; their `SIM` identifiers simply fall back to the
+real (shorter) quotes, from 2007.
 
 ## Using it as a library
 
@@ -662,7 +664,7 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
   each day's return to its holdings (`Contributions`, `MonthlyContributions`).
 - `report`: HTML report rendering.
 - `simgen`: reconstruction engine (linear composites, TSMOM
-  trend-following engine, regression backcasts) and validated recipes, all
+  trend-following engine, donor chains) and validated recipes, all
   built from fetchable quotes only.
 
 ## Known limitations

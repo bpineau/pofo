@@ -2,7 +2,6 @@ package simgen
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io/fs"
 	"math"
@@ -11,10 +10,6 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 )
-
-// ErrUnfaithful marks reconstructions whose fit against reality is too poor
-// to be worth storing; callers should treat it as a documented skip.
-var ErrUnfaithful = errors.New("replication too unfaithful")
 
 // Fetcher provides price histories. A batch generator has no per-request
 // cancellation to gain, so the interface stays context-free: wrap a
