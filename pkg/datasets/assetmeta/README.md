@@ -127,7 +127,11 @@ record claims.
   -22 % into 2008 as soon as the series was converted back to EUR
   (`mendScaleBreak` now refuses any junction that is not a plain change of
   units, so the cliff reaches the doctor instead). `ITPS.L` has the same shape.
-  When a fund's home listing exists, pin that one.
+  When a fund's home listing exists, pin that one. The resolver enforces the
+  same doctrine when a pinned line fails and a search takes over: candidates
+  quoted in the record's `currency` outrank deeper cross-currency listings
+  (`fetchSpec.preferCurrency`; born of FOLOW, whose young Paris line lost a
+  depth contest to its Swiss CHF listing by four quotes).
 
 ## Provenance and refresh recipes
 
