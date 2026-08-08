@@ -16,6 +16,7 @@ make test      # go test ./...  (unit tests + runnable examples, NO network)
 make lint      # go vet + staticcheck
 make check     # fmt-check + lint + test: run this before any commit
 make golden    # computation goldens vs frozen external references
+make refresh   # refresh EVERY bundled series from its live source, in order (network)
 make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 make cape      # regenerate the Shiller CAPE series (network) then rebuild
@@ -28,6 +29,14 @@ make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); 
 make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
 make book-drift # what the FIRE book's translations owe their French source
 ```
+
+`make refresh` runs every generator below it in dependency order (references
+first, then the simdata built on them, then the offline snapshots); the
+individual targets are for touching one series. Follow it with `make check` and
+`make golden`. Expect the FIRE book's frozen plates to need re-freezing when a
+bundled series moves under one: their guard tests fail on purpose and name the
+literal to update (`figures_cape10.go`, `capeJanuaries` in
+`figures_strategies.go`), so a data revision is never absorbed silently.
 
 Tests never touch the network: HTTP sources are faked with `httptest`
 (`stubAllBases` in `pkg/marketdata/client_test.go`), file sources with
