@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS: TSMOM replication
 # method: the manager's own US fund (AQMIX, same programme: monthly correlation 0.93 over their 11-year overlap, no fee uplift since the class's own performance fee already covers the difference) from 2010, real NAVs of other managed-futures programmes behind it (Guggenheim 2007-02, Man AHL Diversified 1996-03 +0.37%/yr), the file starting at that deepest donor's own first NAV, at a 9% vol target ~ the class's realized 9.3%, real AQR grafted from 2015
 # validation: corr=0.730 (weekly 0.915) beta=0.72 TE=6.8%/yr CAGR sim 3.78% vs real 3.71% (overlap 2755 d from 2015-03-05 to 2026-07-27) vs LU1103257975
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1996-03-26,21.127304
 1996-03-27,20.975141
