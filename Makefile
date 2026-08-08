@@ -58,6 +58,16 @@ check: fmt-check lint test ## Everything: format, lint, tests (CI target)
 warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 	./pofo -warmup
 
+# Every generator that reads a live source, in dependency order: the panels and
+# the reference series first, then the simdata reconstructions anchored on them,
+# then the offline snapshots (independent). This is the one command to run when
+# the bundled data should catch up with the world; expect a few minutes of
+# network. A generator that fails stops the chain, so nothing downstream is
+# rebuilt on half-refreshed inputs.
+.PHONY: refresh
+refresh: cape broadsample macropanel euro-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+	@echo "refreshed; now run 'make check' and 'make golden'"
+
 .PHONY: simdata
 simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the binary
 	./pofo -gen-simdata
