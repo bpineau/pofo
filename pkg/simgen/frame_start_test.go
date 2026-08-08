@@ -133,8 +133,8 @@ func TestOverlayBuildsStopWhereTheirReferenceDoes(t *testing.T) {
 		build func(Fetcher, time.Time) (*marketdata.Series, error)
 	}{
 		{"Winton", wintonBuild},
-		{"RSST", stackedTrend("RSST", "VFINX", mfConfig(0.10, 0), 0.0096)},
-		{"RSBT", stackedTrend("RSBT", "VFITX", mfConfig(0.10, 0), 0.0097)},
+		{"RSST", stackedTrend("RSST", "VFINX", vfinxTER, mfConfig(0.10, 0), 0.0096)},
+		{"RSBT", stackedTrend("RSBT", "VFITX", vfitxTER, mfConfig(0.10, 0), 0.0097)},
 	} {
 		t.Run(c.name, func(t *testing.T) {
 			s, err := c.build(f, ComponentsFrom)
