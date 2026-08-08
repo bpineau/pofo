@@ -315,6 +315,23 @@
 #   CHSN backcasts cleanly to 2005-11, which is what bounds this file's
 #     common window. A US TIPS 1-10 stand-in is not a substitute: US CPI
 #     base, different series.
+#   THE DIRECT TREND SHARE CLASS is chosen on fee PLUMBING, not on past
+#     returns, and the reasoning generalises to any multi-class fund
+#     (details in pofo docs/aqr-mf.txt). Every EUR class of that fund
+#     holds the same portfolio, so comparing two of them on NAV measures
+#     their fee difference and never the manager. What each levies INSIDE
+#     its NAV: 0.23%/yr for the cheapest class, 0.78% plus 10% of the
+#     gains above cash for the performance-fee one, 1.26% flat for the one
+#     held here. The flat class wins on two grounds. Its whole cost sits
+#     in the quoted price, so the backtest above is what a holder gets.
+#     And a performance fee bills the most in the years trend explodes,
+#     which are the crash years this sleeve exists to pay the floor
+#     through: at +40% it takes 3.7 points against 1.26, surrendering a
+#     quarter of the very crisis alpha it was bought for. The cheapest
+#     class is cheapest only because its management fee is WAIVED at the
+#     manager's sole discretion, revocable without notice, and leaving
+#     after a revocation realises a taxable gain. Break-even between the
+#     flat and performance-fee classes: an excess of 4.8%/yr over cash.
 #   WEIGHTS ARE INTEGERS on purpose. Half a point is worth less than the
 #     drift between two rebalancings, and far less than the width of the
 #     sane ranges. They are rounded off a design logic, never optimized
@@ -326,8 +343,12 @@
 #   - Rebalance on bands, executed in the taxable account; spending IS
 #     rebalancing. Inside the shelters the only trade available is
 #     equity for equity, so no cross-sleeve move can happen there.
-#   - Always use limit orders on the thin or NAV-priced lines (linkers,
-#     both trend funds, euro 25+).
+#   - Always use limit orders on the thin LISTED lines (linkers, the
+#     replication trend ETF, euro 25+). The direct trend fund is not
+#     listed at all: it deals at the day's NAV on a early-afternoon
+#     cut-off and settles three days later, so there is no price to
+#     limit, and a rebalance that pairs the two trend legs has to budget
+#     for the one-day lag between them.
 #   - One management day per quarter: withdrawal, bands, journal.
 #   - Annual review: trend 20 -> 25 on lived evidence only (section 4);
 #     the unhedged US leg never above 5 (section 6); the total expense and
@@ -350,7 +371,7 @@
 5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194) | HEDGE, liability currency (s. 6)
 5	DTLA            # US deflation duration: iShares $ Treasury 20+yr Acc (IE00BFM6TC58) | HEDGE, accumulating and unhedged: crisis dollar, capped at 5 (s. 6)
 10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403) | MECHANISM, dose capped by error asymmetry (s. 4)
-10	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532; siblings LU1662498721 perf-fee, LU2622190622 flat; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk
+10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26 %/yr flat, all of it inside the NAV, EUR 100k minimum; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk; on the share-class choice see below
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602) | HEDGE, the stagflation regime (s. 7); physical ETC only, never an ETN
 13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged
