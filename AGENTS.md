@@ -22,6 +22,7 @@ make broadsample # regenerate the JST broad-sample panel (network) then rebuild
 make cape      # regenerate the Shiller CAPE series (network) then rebuild
 make macropanel # regenerate the OECD monthly macro panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
+make gbond-refdata # regenerate the German/Japanese/British govt bond reference series (network); run make simdata after
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
@@ -251,6 +252,17 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
   the macro drivers live in `pkg/datasets/macropanel`.
+- Global Efficient Core (NTSG) / multi-currency government bond baskets: read
+  `docs/ntsg-global-efficient-core-design.md` first. The bond overlay is FOUR
+  local-currency sleeves (`pkg/simgen/globalbond.go`, 80 % US / 11 % German /
+  6 % Japanese / 3 % British), each an excess return over its OWN money-market
+  rate with NO FX and NO carry (the fund rolls the currency away with forwards
+  whose points are that same differential), weights renormalized over the
+  sleeves that quote. The non-US references (`BUND-EUR{,-DAILY}`, `JGB-JPY`,
+  `GILT-GBP`, `JPCASH-JPY`, `GBCASH-GBP`) come from `cmd/gen-gbond-refdata`
+  (`make gbond-refdata`), which validates every series before writing it; its
+  OECD source is the CURRENT `OECD/DSD_STES@DF_FINMARK` dataflow, not the
+  `OECD/MEI` one `gen-euro-refdata` still reads (frozen at 2024-01).
 - Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
   govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
