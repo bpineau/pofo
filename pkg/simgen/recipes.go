@@ -2168,7 +2168,7 @@ func iglnRecipe() Recipe {
 // arbitration.
 const (
 	allStylesIndex = "TREND-ALLSTYLES-NET-USD" // the index the DBi family replicates
-	pureTrendIndex = "TREND-PURE-NET-USD"      // the index Simplify CTA names as its benchmark
+	pureTrendIndex = "TREND-PURE-NET-USD"      // the published index closest to Simplify CTA's own risk
 )
 
 // dbiDonors are the records spliced behind the DBi family, nearest trade first.
@@ -2645,29 +2645,42 @@ func truncateAtGap(s *marketdata.Series, maxDays int) *marketdata.Series {
 	return s
 }
 
-// ctaRecipe reconstructs Simplify CTA behind the pure-trend composite the fund
-// names as its own benchmark, real CTA quotes grafted on top (see dbmf/kmlm/cta
-// note above).
+// ctaRecipe reconstructs Simplify CTA behind the published pure-trend
+// composite, real CTA quotes grafted on top (see dbmf/kmlm/cta note above).
 //
 // The index is the donor here for the reason it is one for the DBi family: a
-// fund tracks the index it is built to track better than it tracks another
-// manager's fund. The four single funds that held these two decades until
-// 2026-08 reached 0.39 monthly against CTA's live window between them; the
-// pure-trend composite reaches 0.58, and closes the level gap from -3.4 to
-// about -3.2 points a year.
+// fund tracks a published trend index better than it tracks another manager's
+// fund. The four single funds that held these two decades until 2026-08 reached
+// 0.39 monthly against CTA's live window between them; the pure-trend composite
+// reaches 0.58, and closes the level gap from -3.4 to about -3.2 points a year.
 //
-// The broader all-styles composite correlates better still on this fund's short
-// window (0.63) and is NOT used. It is not the index this fund follows, it runs
-// at half the fund's volatility so the chain would have to lever it 1.9 times
-// (against 1.5 for the pure-trend one), close to the point where volMatch stops
-// believing two series are the same trade, and it leaves the level a further
-// two points a year colder. A correlation bought by levering the wrong index is
-// not the trade this file wants.
+// This file is the loosest fit of the family and the reason is the fund, not
+// the engine: the engine's own monthly correlation with the real quotes (0.574)
+// is the donor index's correlation with them (0.573), so the TSMOM texture adds
+// no path error of its own, and no published index does better. Simplify CTA is
+// not a pure trend programme. Its 2024 shareholder report attributes a 14.5 %
+// year against 3.5 % for its named benchmark to "short interest rate and
+// related positions" and to carry earned on curve shape, which is a book no
+// trend index holds. Three months of 2024 (April, August, October: +7.9, +5.5
+// and +7.2 points against the donor) carry the whole level gap; drop that
+// calendar year and the fund's excess over the donor falls from +5.6 to
+// +1.6 %/yr on a 14 %/yr tracking error, one fifth of a standard error from
+// zero. There is no systematic coldness to correct, and correcting it would
+// write one year of a manager's rates bet into three decades of history.
+//
+// The broader all-styles composite is the index the fund's own report names,
+// and it correlates better on this short window (0.63 against 0.57), yet it is
+// NOT used: it runs at half the fund's volatility so the chain would have to
+// lever it 1.9 times (against 1.5 for the pure-trend one), close to the point
+// where volMatch stops believing two series are the same trade, and measured
+// end to end it leaves the reconstruction 5.5 points a year cold instead of
+// 3.2. A correlation bought by levering an index nearly twofold is not the
+// trade this file wants.
 func ctaRecipe() Recipe {
 	return Recipe{
 		ID:              "CTA",
 		Name:            "Simplify CTA: TSMOM replication",
-		Method:          "the published net pure-trend composite the fund names as its benchmark, spliced behind it from 2000-01 and lifted +1.25%/yr to put its constituents' 2%/yr management load on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
+		Method:          "the published net pure-trend composite, the index closest to the fund's own volatility, spliced behind it from 2000-01 and lifted +1.25%/yr to put its constituents' 2%/yr management load on the fund's own 0.75%, then real NAVs of Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV; the 12-month TSMOM engine (16% vol target ~ the fund's realized 16.9%) supplies the daily texture the weekly-dealing donor is projected onto; real CTA grafted from 2022",
 		Build:           chainedTrend("CTA (donor chain)", "CTA", feeAligned("CTA", []string{pureTrendIndex, ahlDiversified}), mfConfig(0.16, 0.0075)),
 		ValidateAgainst: "CTA",
 		SpliceReal:      "CTA",
