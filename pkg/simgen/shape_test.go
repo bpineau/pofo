@@ -190,3 +190,61 @@ func TestAnchorShapeSkipsAnchorsBeforeShape(t *testing.T) {
 		t.Errorf("last = %+v, want the 1970-03 anchor level 99", got[2])
 	}
 }
+
+// spikeSeries builds a calm daily series (dailyVol per-step alternating
+// moves) with an optional one-day spike of the given legs at position k.
+func spikeSeries(n int, dailyVol float64, k int, up, down float64) []marketdata.Point {
+	pts := make([]marketdata.Point, 0, n)
+	v := 100.0
+	day := time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC)
+	for i := range n {
+		if i > 0 {
+			r := dailyVol
+			if i%2 == 0 {
+				r = -dailyVol
+			}
+			switch {
+			case k > 0 && i == k:
+				r = up
+			case k > 0 && i == k+1:
+				r = down
+			}
+			v *= 1 + r
+		}
+		pts = append(pts, marketdata.Point{Date: day.AddDate(0, 0, i), Close: v})
+	}
+	return pts
+}
+
+func TestDespikeDropsLoneBadPrint(t *testing.T) {
+	// The 2001-04-03 shape of Yahoo's MSCI World price index: +11.9% then
+	// -13.2% inside a ~1.4%-vol neighbourhood, netting to a normal day.
+	pts := spikeSeries(60, 0.012, 30, +0.119, -0.132)
+	got := despike(pts)
+	if len(got) != len(pts)-1 {
+		t.Fatalf("want the spike dropped (%d points), got %d", len(pts)-1, len(got))
+	}
+	for _, p := range got {
+		if p.Date.Equal(pts[30].Date) {
+			t.Fatalf("the fabricated print survived: %+v", p)
+		}
+	}
+	// The two-day net move survives through the neighbours' direct ratio.
+	wantNet := pts[31].Close / pts[29].Close
+	gotNet := got[30].Close / got[29].Close
+	if math.Abs(gotNet-wantNet) > 1e-12 {
+		t.Fatalf("net move across the dropped day: want %f, got %f", wantNet, gotNet)
+	}
+}
+
+func TestDespikeKeepsRealCrashes(t *testing.T) {
+	// 1987-10-19: -23% then +5%, the legs do not cancel.
+	if got := despike(spikeSeries(60, 0.012, 30, -0.23, +0.05)); len(got) != 60 {
+		t.Fatalf("a real crash day was eaten (kept %d of 60)", len(got))
+	}
+	// 2020-03-12/13: -10% then +9%, but the local sigma is ~5%: neither
+	// leg clears 6 sigma, the pair stays.
+	if got := despike(spikeSeries(60, 0.05, 30, -0.10, +0.093)); len(got) != 60 {
+		t.Fatalf("a volatile-regime swing was eaten (kept %d of 60)", len(got))
+	}
+}

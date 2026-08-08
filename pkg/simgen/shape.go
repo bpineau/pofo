@@ -122,3 +122,71 @@ func anchorShape(anchors, shape []marketdata.Point) []marketdata.Point {
 	out = append(out, marketdata.Point{Date: shape[last.shape].Date, Close: anchors[last.anchor].Close})
 	return out
 }
+
+// despike drops single-day bad prints from a daily shape series. The
+// signature is strict, because real crashes must pass untouched: a point
+// whose arrival and departure returns are BOTH enormous against the local
+// volatility (>6 sigma over the surrounding ~5 weeks, the spike itself
+// excluded), OPPOSITE in sign, and mostly cancel (the two-day round trip
+// nets to less than a third of either leg) is a provider glitch, not a
+// market day. 1987-10-19 keeps its -23% (the legs do not cancel) and
+// 2020-03-12/13 its -10%/+9% (against a ~5% local sigma neither leg
+// clears the bar); what goes is the lone fabricated print, like Yahoo's
+// MSCI World price index quoting 1180.3 on 2001-04-03 between 1055 and
+// 1025 (+11.9% then -13.2% inside a 1.4%-sigma neighbourhood), which a
+// month-anchored reconstruction would otherwise bake into every world
+// equity backcast. Dropping the point keeps the two-day net move via the
+// direct ratio of its neighbours.
+func despike(points []marketdata.Point) []marketdata.Point {
+	const (
+		zBar   = 6.0 // each leg must exceed zBar times the local sigma
+		window = 25  // returns on each side defining "local"
+	)
+	if len(points) < 10 {
+		return points
+	}
+	ret := func(i int) float64 { return points[i].Close/points[i-1].Close - 1 }
+	out := make([]marketdata.Point, 0, len(points))
+	out = append(out, points[0])
+	for i := 1; i < len(points); i++ {
+		if i+1 >= len(points) {
+			out = append(out, points[i])
+			continue
+		}
+		r1, r2 := ret(i), ret(i+1)
+		if r1*r2 >= 0 {
+			out = append(out, points[i])
+			continue
+		}
+		net := (1+r1)*(1+r2) - 1
+		if math.Abs(net) >= math.Min(math.Abs(r1), math.Abs(r2))/3 {
+			out = append(out, points[i])
+			continue
+		}
+		// Local sigma, the suspect pair excluded.
+		var sum, sumsq float64
+		n := 0
+		for j := max(1, i-window); j <= min(len(points)-1, i+window); j++ {
+			if j == i || j == i+1 {
+				continue
+			}
+			r := ret(j)
+			sum += r
+			sumsq += r * r
+			n++
+		}
+		if n < 10 {
+			out = append(out, points[i])
+			continue
+		}
+		mean := sum / float64(n)
+		sigma := math.Sqrt(sumsq/float64(n) - mean*mean)
+		if sigma <= 0 || math.Abs(r1) <= zBar*sigma || math.Abs(r2) <= zBar*sigma {
+			out = append(out, points[i])
+			continue
+		}
+		// The point is a glitch: skip it (its neighbours' direct ratio
+		// carries the true two-day move).
+	}
+	return out
+}

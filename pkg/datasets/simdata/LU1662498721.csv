@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS (IAET EUR): the sister class that pays the same fees
 # method: real B EUR sister class (LU1103258197, same 0.60% management and same 10% performance fee over EUR STR, daily correlation 0.9991 on their 672-day overlap) from 2015-03 to its 2021-12 NAV gap, charged 0.05 %/yr for the difference between the two published ongoing charges (0.78 against 0.73); before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, where the file starts) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662498721 grafted from its 2022-03 inception
 # validation: corr=0.999 (weekly 0.999) beta=0.95 TE=0.7%/yr CAGR sim 9.06% vs real 8.23% (overlap 1064 d from 2022-03-08 to 2026-08-07) vs LU1662498721
-# generated: 2026-08-08
+# generated: 2026-08-09
 date,close
 1996-03-26,20.881054
 1996-03-27,20.727788
