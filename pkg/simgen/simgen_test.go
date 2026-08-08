@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
-	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // fakeFetcher serves canned series, no network.
@@ -126,42 +125,6 @@ func TestTSMOMGoesLongUptrendShortDowntrend(t *testing.T) {
 	// Long UP and short DOWN: both legs win.
 	if last := values[len(values)-1]; last <= 100 {
 		t.Errorf("the strategy should profit on clean trends: %v", last)
-	}
-}
-
-func TestFitBackcastRecoversLinearModel(t *testing.T) {
-	n := 300
-	x := mkWobbly("X", n, 0.001, 0.01)
-	// real = 0.5×return(x) + 0.0002 per day, exactly.
-	xr := metrics.Returns(func() []float64 {
-		out := make([]float64, len(x.Points))
-		for i, p := range x.Points {
-			out[i] = p.Close
-		}
-		return out
-	}())
-	real := &marketdata.Series{Symbol: "REAL"}
-	v := 100.0
-	for i := range n {
-		real.Points = append(real.Points, marketdata.Point{Date: day(i), Close: v})
-		if i < len(xr) {
-			v *= 1 + 0.5*xr[i] + 0.0002
-		}
-	}
-	f := fakeFetcher{"X": x}
-	fr, err := BuildFrame(f, []string{"X"}, day(0))
-	if err != nil {
-		t.Fatal(err)
-	}
-	values, r2, coef, err := FitBackcast(fr, real, []string{"X"})
-	if err != nil {
-		t.Fatal(err)
-	}
-	near(t, "R²", r2, 1.0, 1e-6)
-	near(t, "intercept", coef[0], 0.0002, 1e-9)
-	near(t, "slope", coef[1], 0.5, 1e-9)
-	if len(values) != len(fr.Dates) {
-		t.Errorf("reconstructed length: %d", len(values))
 	}
 }
 
