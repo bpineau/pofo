@@ -1,0 +1,182 @@
+AQR Managed Futures UCITS: share classes, fees and what the prospectus settles
+==============================================================================
+
+Read this before touching any LU1103.../LU1662.../LU2622... entry in
+assets.json, or the aqrmf*/aqrIAET*/aqrIAE1FT* recipes in pkg/simgen.
+
+Primary source: AQR UCITS Funds prospectus, Supplement 2 (AQR Managed Futures
+UCITS Fund), "Summary of Shares, Fees and Expenses" tables and the general
+"Fees and Expenses" / "Performance Fee" sections. Cross-checked against the
+semi-annual report to 30 September 2025 (share class NAVs, note 6 Fees and
+Expenses, and the Swiss annex Total Net Expense Ratio table) and against the
+Financial Times tearsheet of each class. Read 2026-08-08.
+
+
+1. The one fact that explains everything
+----------------------------------------
+
+Every EUR class of this sub-fund holds the SAME portfolio. What separates
+their published NAVs is their fee schedule and nothing else. So:
+
+  - comparing two classes on NAV performance measures their fee difference,
+    never the manager;
+  - converting one class's NAV into another's is a fee transformation, which
+    is what both new backcasts do;
+  - a class whose fees are NOT levied inside its NAV looks like a better fund.
+
+That last case is real here and it is RAEF.
+
+
+2. What the prospectus says, class by class (EUR classes and the USD reference)
+------------------------------------------------------------------------------
+
+  class    ISIN           ccy  mgmt   perf fee        hurdle   exp cap  taxe   minimum
+  A        LU1103257975   USD  0.60%  10%             ML 3M TB  0.18%   0.01%  USD 100,000
+  B        LU1103258197   EUR  0.60%  10%             EUR STR   0.18%   0.01%  EUR 100,000
+  M        (not held)     EUR  1.00%  NA              NA        0.18%   0.01%  EUR 100,000
+  IAET     LU1662498721   EUR  0.60%  10%             EUR STR   0.23%   0.01%  EUR 100,000
+  RAE      LU1662502183   EUR  0.60%  10%             EUR STR   0.24%   0.05%  EUR 100,000
+  RAEF     LU1662501532   EUR  1.00%  NA              NA        0.24%   0.05%  EUR 100,000
+  IAE1FT   LU2622190622   EUR  1.00%  NA              NA        0.25%   0.01%  EUR 100,000
+
+Class types, and they matter for access:
+  - "Institutional" (class B, M): institutional investors.
+  - "Selected Institutional Investors" (IAET, IAE1FT): "institutional
+    investors selected at the discretion of the Board of Directors and may
+    include, but not exclusively, PLATFORMS, investors deemed strategic and
+    seed investors."
+  - "Selected Retail Investors" (RAEF, RAG4F): "reserved EXCLUSIVELY for
+    retail investors that form part of the SENIOR MANAGEMENT of the
+    Investment Manager as well as PLATFORMS, and are selected at the
+    discretion of the Board of Directors."
+  - "Retail" (RAE, RAET).
+
+The Directors may reduce or waive any Minimum Initial Subscription at their
+sole discretion.
+
+
+3. List price against what actually reaches the NAV
+---------------------------------------------------
+
+  class    prospectus list        FT ongoing   audited Swiss TNER (30/09/2025)
+  RAEF     1.29% (1.00+0.24+0.05)   0.23%      0.24% before perf fee, no perf fee
+  B        0.79% (0.60+0.18+0.01)   0.73%      0.74% + 1.96% perf fee = 2.70%
+  IAET     0.84% (0.60+0.23+0.01)   0.78%      0.78% + 0.71% perf fee = 1.49%
+  IAE1FT   1.26% (1.00+0.25+0.01)   1.26%      not yet reported (launched 2026-05)
+  A        0.79%                    0.79%      0.73% + 0.48% perf fee = 1.21%
+
+IAE1FT matches its list to the basis point. RAEF does not, by a full point.
+
+Why: the prospectus provides that the Investment Management Fee is "calculated
+at an annual rate equal to a percentage of the average daily Net Asset Value
+of the Fund ... accrued daily and ... payable BY THE FUND monthly in arrears",
+and separately that "the Investment Manager may from time to time, and at its
+sole discretion, and out of its own resources decide to WAIVE, REDUCE OR
+RETURN all or a portion of the Investment Management Fees and/or Performance
+Fee to some or all Shareholders ... their agents or to intermediaries".
+
+There is therefore NO mechanism by which the management fee is billed outside
+the fund: it is always inside the NAV. A class whose list is 1.29% and whose
+audited TNER is 0.24% (which is its expense cap alone) is a class whose
+management fee is being WAIVED. That is consistent with RAEF being, by the
+prospectus's own definition, substantially a class for the manager's own
+senior management.
+
+Consequences:
+  - a RAEF holder pays what the NAV shows, about 0.23%/yr, NOT 1.23%;
+  - the waiver is at AQR's sole discretion and revocable without shareholder
+    approval, so RAEF's cost can go to 1.29%/yr at any time;
+  - the prospectus also allows per-holder rebates negotiated privately and
+    states the Fund "cannot, and is under no duty to, enforce equality of
+    treatment between Shareholders", so another holder's economics need not
+    be ours.
+
+An earlier version of this catalog pinned RAEF at 1.31% (its list) and
+described it as beating every cheaper sibling. Both were wrong: the pin is
+0.23% and the "outperformance" is the waiver.
+
+
+4. Performance fee mechanics (identical for every class that pays one)
+----------------------------------------------------------------------
+
+  - Rate 10%, hurdle EUR STR for the EUR classes, ML 3 Month T-Bill for USD,
+    SONIA for GBP.
+  - High-on-High model, computed DAILY: the day's change in gross NAV per
+    share minus the day's change in an adjusted hurdle, times the rate, times
+    shares outstanding. A NEGATIVE hurdle return is floored at zero.
+  - Calculation Period = the twelve months ending 31 March. Accrued daily as
+    an expense of the class, crystallised at period end only if cumulative
+    overperformance is positive.
+  - LOSS CARRYFORWARD over "the whole life of the relevant Class of Shares",
+    which "cannot be reset". Losses must be recovered before any fee is
+    payable again. This is a genuine shareholder protection and rules out the
+    reset games some funds play.
+  - Subscriptions do not create an artificial fee ("artificial increases
+    resulting from new subscriptions and/or exchanges will not be taken into
+    account").
+
+Measured cost, from the accounts: 0.64 pts of average class NAV for IAET in
+the half-year to 30/09/2025 alone; 1.19 for class B; 2.03 (class B) and 2.07
+(class RAE) for the full year to 31 March 2026; 1.58 for class A over the same
+year.
+
+
+5. Dealing terms
+----------------
+
+Daily dealing, every Business Day. Dealing request deadline 13:00 Luxembourg
+time on the Dealing Day. Subscription settlement within 3 Business Days;
+redemption normally within 10 Business Days, targeted at 3. No subscription or
+redemption fee in the supplement's tables for these classes. Swing pricing may
+be applied.
+
+Leverage: the notional figure is huge (the supplement explains the sum-of-
+notionals methodology and that it is dominated by 3-month interest rate
+futures, "not necessarily representative of economic risk").
+
+
+6. What this validated in pofo, and what it corrected
+-----------------------------------------------------
+
+Validated:
+  - IAET and class B EUR pay the SAME performance fee (10%, EUR STR,
+    High-on-High, 31 March), which is the whole justification for making B the
+    donor of the IAET backcast: a performance fee cannot be removed from a NAV
+    after the fact, and does not need to be when the target pays the same one.
+  - The 0.05%/yr alignment between them is the prospectus's own arithmetic
+    (IAET cap 0.23 against B's 0.18, everything else equal). Measured
+    independently at 0.096 pts/yr over their 672 common days, correlation
+    0.9991.
+  - IAE1FT is flat with no performance fee, so RAEF (also flat) is the right
+    donor; the 1.03%/yr conversion is 1.26 minus 0.23. Measured at 0.995
+    pts/yr over their 59 common days, correlation 1.0000.
+  - The catalog pins 0.78 (IAET) and 1.26 (IAE1FT) are correct.
+
+Corrected:
+  - RAEF's pin, 1.31 to 0.23, and its notes.
+  - The claim that RAEF beats its siblings on merit.
+  - The open question left in an earlier pass ("waived or billed outside?") is
+    settled: waived, never billed outside.
+
+Left standing, and worth re-checking at each refresh:
+  - aqrRAEFOngoing (0.0023) depends on a discretionary waiver. If FT's ongoing
+    charge for LU1662501532 ever prints near 1.29%, the waiver is gone: RAEF's
+    pin, the IAE1FT conversion and the IAE1FT backcast all move together.
+  - IAE1FT has 59 days of real quotes. Its validation window will stay thin
+    for a year; nothing else about it is uncertain.
+
+
+7. Comparable numbers, 1996-03 to 2026-08 (bundled backcasts, all fees in price)
+--------------------------------------------------------------------------------
+
+  class            ISIN           CAGR    vol     max DD    worst 5y
+  RAEF             LU1662501532   6.84%   9.20%   -27.6%    -4.39%/yr
+  IAET             LU1662498721   6.51%   9.12%   -30.0%    -4.86%/yr
+  IAE1FT           LU2622190622   6.43%   9.20%   -32.4%    -5.37%/yr
+  A USD            LU1103257975   7.25%  13.30%   -30.2%    -5.09%/yr
+  DBMFE (peer)     LU2951555403   9.59%  15.26%   -29.2%    -2.51%/yr
+
+RAEF's lead is its waiver. IAET and IAE1FT sit 0.08 pt/yr apart over thirty
+years: the choice between them is WHEN the cost falls (a flat charge against a
+performance-linked one), not how much it averages. The A USD class is not
+EUR-hedged and its higher CAGR and volatility are mostly the currency.
