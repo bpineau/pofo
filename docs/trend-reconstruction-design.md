@@ -738,9 +738,9 @@ the CAGR gap (reconstruction minus fund) over the overlap.
 | Simplify CTA | 4.4 y | 0.54 | 0.54 | 0.58 | 16.3 % | -3.2 pts |
 | AQR UCITS A | 11.4 y | 0.73 | 0.92 | 0.93 | 6.8 % | +0.1 pt |
 | AQR RAEF EUR | 0.7 y | none independent | | | 0.1 % | -0.04 pt |
-| RSST (overlay) | 2.9 y | 0.88 | 0.89 | 0.96 | 11.7 % | -1.3 pts |
-| RSBT (overlay) | 3.5 y | 0.50 | 0.47 | 0.84 | 12.6 % | +1.4 pts |
-| Winton (overlay) | 1.2 y | 0.62 | 0.84 | 0.97 | 14.6 % | -4.2 pts |
+| RSST (overlay) | 2.9 y | 0.88 | 0.89 | 0.96 | 11.7 % | -1.1 pts |
+| RSBT (overlay) | 3.5 y | 0.50 | 0.47 | 0.84 | 12.6 % | +1.6 pts |
+| Winton (overlay) | 1.2 y | 0.62 | 0.84 | 0.97 | 14.6 % | -4.1 pts |
 
 How to read it, because each row's residual has a KNOWN decomposition:
 
@@ -1034,6 +1034,16 @@ the donor era's LEVEL survives the change, not only its volatility.
   performance fee already covers the gap.
   The RAEF B EUR donor is corrected by its own measured wedge and takes no
   uplift, or it would be corrected twice.
+  The three OVERLAY builds (`stackedTrend`, `wintonBuild`) obey the same rule on
+  their funded CORE, which is a Vanguard index fund and therefore already net of
+  its own charge: since 2026-08 they charge the fund's fee less that core's load
+  (RSST 0.96 − 0.14, RSBT 0.97 − 0.20, Winton 0.80 − 0.112), worth +0.1 to
+  +0.2 pt/yr on the reconstruction. Their trend leg is deliberately NOT
+  corrected, although its net reference carries its constituents' load by the
+  same argument: that load is the 2 % ESTIMATE of `trendFeeLoad` rather than a
+  price list, correcting it would hand the overlay about two points a year, and
+  the two funds built this way disagree on the sign of the residual (RSST reads
+  cold, RSBT hot). An estimate that large, arbitrated by nothing, stays out.
 - Index composites finalize late. The net reference's recent months revise
   for one to two years before freezing (measured against point-in-time
   archive captures), and its last one or two months are flagged estimated at
