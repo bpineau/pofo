@@ -5077,7 +5077,7 @@
     "sources": [
       "https://etf.dws.com/en-gb/LU0290358497-ii-eur-overnight-rate-swap-ucits-etf-1c/"
     ],
-    "since": "2007-12-11",
+    "since": "2007-05-25",
     "duration": 0.05,
     "aliases": [
       "XEON"
@@ -5571,7 +5571,7 @@
       "https://www.independance-am.com/wp-content/uploads/2026/08/260731-reporting-europe-small-x-eur-c2-en.pdf",
       "https://www.independance-am.com/wp-content/uploads/2026/03/kiddoc-2026-02-17-fr-00-2026-02-17-lu1832174962-independance-am-sicav-europe-small-classe-a-c.pdf"
     ],
-    "since": "2018-11-13",
+    "since": "2018-06-13",
     "factors": [
       "size",
       "value",
@@ -5920,7 +5920,7 @@
     "strategy": "futures-overlay",
     "geography": null,
     "sectors": null,
-    "distribution": "accumulating",
+    "distribution": "distributing",
     "leverage": 1.5,
     "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income; bond leg tracks Bloomberg US Aggregate (~6y duration); currency_exposure = USD bonds + Dynamic managed-futures book",
     "confidence": "high",
@@ -5984,7 +5984,7 @@
       "Real Estate": 2,
       "Utilities": 2
     },
-    "distribution": "accumulating",
+    "distribution": "distributing",
     "leverage": 1.5,
     "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity; equity leg ~MSCI ACWI (sectors/geography/currency approximated); bond leg ~US core (~6y)",
     "confidence": "medium",
@@ -6044,7 +6044,7 @@
       "Real Estate": 2,
       "Utilities": 2
     },
-    "distribution": "accumulating",
+    "distribution": "distributing",
     "leverage": 1.5,
     "notes": "Return-stacked 100/100 equities+CTA; trend diversification without cutting equity; currency_exposure = 100% USD equity + Dynamic managed-futures book (levered notional sums to 200)",
     "confidence": "high",
@@ -6500,7 +6500,8 @@
     "id": "IE000BI8OT95",
     "isin": "IE000BI8OT95",
     "aliases": [
-      "MWRE"
+      "MWRE",
+      "MWRD"
     ],
     "name": "Amundi Core MSCI World UCITS ETF Acc",
     "ucits": true,
@@ -8281,6 +8282,7 @@
     "geography": null,
     "sectors": null,
     "distribution": "accumulating",
+    "since": "2021-04-01",
     "leverage": 1.0,
     "notes": "EUR-hedged flat-fee class of the AQR Managed Futures UCITS fund and the reference EUR vehicle here. Its prospectus list is 1.00% management + 0.24% expense cap + 0.05% taxe d'abonnement = 1.29%/yr, NO performance fee, EUR 100,000 minimum initial subscription. Only 0.23%/yr of that reaches the NAV (FT ongoing charge, audited Swiss TNER 0.24% at 30/09/2025, which is the expense cap alone), so the pin is 0.23 and not the 1.29 of the list: the prospectus lets the Investment Manager 'waive, reduce or return' the management fee at its sole discretion and out of its own resources, and for this class it evidently does. There is NO outside billing mechanism, the fee being accrued daily on the class NAV and payable by the Fund, so a holder pays what the NAV shows. TWO CONSEQUENCES. First, the class's apparent edge over its siblings is that waiver and not skill: it leads IAET by 1.31 pts/yr and their inside-NAV charges explain 1.25 of it. Second, the waiver is revocable at any time without shareholder approval, so this pin is the least durable in the catalog: a reinstatement would take the class to 1.29%/yr and would also invalidate the 1.03%/yr conversion the IAE1FT backcast rests on. ACCESS is the other catch: the prospectus reserves 'Selected Retail Investors' classes to retail investors who are senior management of the Investment Manager, plus platforms, selected at the Board's discretion. The 0.60% classes B and RAE pay a 10% performance fee over EUR STR worth ~2 pts of average class NAV in a strong trend year. Platform-visible siblings IAET (LU1662498721) and the flat-fee IAE1FT (LU2622190622) are catalogued separately and carry their own backcasts; IAE1FT bears the same 1.00% management INSIDE its NAV, with no waiver to lose. Its 31 March NAVs match the audited annual report to the cent, see pkg/datasets/golden/aqrmf_test.go. Full dossier: docs/aqr-mf.txt.",
     "confidence": "high",
