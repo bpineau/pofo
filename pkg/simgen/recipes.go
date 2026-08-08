@@ -148,7 +148,8 @@ func vtiRecipe() Recipe {
 // US-listed twin TLT: Vanguard Long-Term Treasury (VUSTX, 1986->), carried
 // further back by the constant-maturity Treasury total-return reconstruction
 // (TREASURY-LONG, daily from 1962, monthly from 1953). Same asset (US
-// Treasuries 20+yr, duration ~17) and currency (USD, the fund's own quote
+// Treasuries 20+yr, effective duration ~15 as of mid-2026, and shortening as
+// yields rise) and currency (USD, the fund's own quote
 // line), so no FX leg is needed; the real IDTL quotes are grafted from
 // inception.
 func idtlRecipe() Recipe {
@@ -1809,7 +1810,8 @@ func mthBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // and France smalls both outperformed Europe before 2018 (the manager's
 // golden era) and underperformed after, so read the backcast as regime
 // shape, not as what a Europe fund would have earned. Both A(C) share
-// classes carry ~2.15%/yr of fees inside the NAV: no fee adjustment.
+// classes carry the same 2.11%/yr of recurring charges inside the NAV (both
+// KIDs of 17/02/2026), plus the same 10% performance fee: no fee adjustment.
 func indepEuropeRecipe() Recipe {
 	return Recipe{
 		ID:              "LU1832174962",
