@@ -106,6 +106,7 @@ func run(ctx context.Context, argv []string) error {
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
+	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	exportEpub := fs.String("export-epub", "", "write the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
 	bookDrift := fs.Bool("book-drift", false, "print what the FIRE book's translations owe their French source (stale and untranslated articles), then exit")
@@ -190,7 +191,7 @@ Options:
 		return runBookDrift()
 	}
 
-	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -231,7 +232,7 @@ Options:
 			"-fire": *fireFlag, "-cli": opt.cli, "-warmup": *warmup,
 			"-verify-data": *verifyData, "-suggest": *suggestFlag,
 			"-coverage": *coverageFlag, "-permanent": *permanentFlag,
-			"-gen-simdata": *genSimdata,
+			"-gen-simdata": *genSimdata, "-verify-simdata": *verifySimdata,
 		} {
 			if on {
 				return fmt.Errorf("-serve cannot be combined with %s", name)
@@ -248,8 +249,14 @@ Options:
 		return runRates(ctx, &opt, rateClient, *ratesFlag)
 	}
 
-	// Generation mode consumes positional args as recipe ids, not files;
+	// The two simdata modes consume positional args as recipe ids, not files;
 	// dispatch before any portfolio parsing.
+	if *verifySimdata {
+		qaClient := marketdata.NewClient(opt.dataDir)
+		qaClient.MaxAge = opt.cacheAge
+		qaClient.Logf = log.Printf
+		return runVerifySimdata(ctx, qaClient, &opt, fs.Args())
+	}
 	if *genSimdata {
 		genClient := marketdata.NewClient(opt.dataDir)
 		genClient.MaxAge = opt.cacheAge
