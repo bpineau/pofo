@@ -132,7 +132,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   that window for you; direct callers must too.
 - SIM convention: a bare id (`VOO`) = real quotes only; the `SIM` suffix
   (`VOOSIM`) also splices simulated/proxy history in front.
-  `Client.FetchExtended` handles it; plain `Fetch` does not.
+  `Client.FetchExtended` handles it; plain `Fetch` does not. Three ways to
+  ask for it wholesale, all setting `Spec.Sim` and resolved by
+  `portfolio.SimFetchID` at fetch time (the written id never changes):
+  `#meta sim:on` in a file, `-simulate`/`-b` on the command line (every file
+  and every `-assets` id of the run), `sim=on` in the `/view` grammar.
+  They only turn it ON; `-no-simulate` overrides them all.
 - Asset TERs are ALREADY reflected in prices: `Simulate` never deducts
   them (informational). Envelope fees (`extra-fees`) are NOT in prices and
   are deducted daily.
