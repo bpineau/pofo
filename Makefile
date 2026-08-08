@@ -103,6 +103,11 @@ sgtrend-refdata: ## (Re)generate the two daily NET managed-futures references (p
 	$(GO) run ./cmd/gen-sgtrend-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: snapshots
+snapshots: ## (Re)generate the offline fallback snapshots in pkg/marketdata/data/ (network) then rebuild
+	$(GO) run ./cmd/gen-snapshots
+	$(GO) build -o pofo ./cmd/pofo
+
 .PHONY: book-drift
 book-drift: build ## What the FIRE book's translations owe their French source
 	./pofo -book-drift
