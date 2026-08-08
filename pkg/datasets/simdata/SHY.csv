@@ -3,7 +3,7 @@
 # name: iShares 1-3 Year Treasury Bond ETF
 # method: cash + 0.75×(VFISX − cash) (Vanguard Short-Term Treasury, 1991→, geared down to the 1-3 segment's duration), real SHY grafted from 2002
 # validation: corr=0.812 (weekly 0.889) beta=0.81 TE=0.9%/yr CAGR sim 2.06% vs real 1.98% (overlap 6039 d from 2002-07-30 to 2026-07-31) vs SHY
-# generated: 2026-08-07
+# generated: 2026-08-08
 date,close
 1991-10-28,27.916760
 1991-10-29,27.960008
