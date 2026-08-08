@@ -56,6 +56,11 @@
 //     monthly proxy (anchors keep the levels, the shape supplies the day-to-day
 //     variance), so long backcasts stay honest at daily-statistics frequency,
 //     and longBackFee charges a gross proxy what its grossness is worth;
+//   - globalbond.go rebuilds a MULTI-CURRENCY government bond futures basket
+//     (the sleeve of the global efficient-core fund NTSG) as one excess-return
+//     index: a local sleeve per currency, each netted against its OWN
+//     money-market rate and carrying no FX at all, weights renormalized over
+//     the sleeves that quote so the notional is always full;
 //   - the bundled recipes (All, Find) assemble these building blocks for
 //     NTSX, NTSG, URTH, IWDA, VT, RSSB, GDE, XAUUSD, ZPRV, the Avantis Global
 //     Small Cap Value ETF, SHY, IEF, TLT, ZROZ, DBMF, DBMFE, KMLM, the AQR

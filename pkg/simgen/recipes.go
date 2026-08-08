@@ -315,13 +315,7 @@ func overnightEUR(f Fetcher, from time.Time) *marketdata.Series {
 
 // eurCashDaily fetches the bundled EUR money-market index (EURCASH-EUR, the
 // FRED 3-month interbank rate compounded, monthly from 1994) and expands it to
-// business-day granularity by geometric interpolation between the monthly
-// anchors. A money-market accrual index grows by a near-constant daily rate
-// within each month, so unlike a risk asset it carries no real intramonth
-// variation to lose: the interpolation is faithful and yields a genuinely
-// daily series (rather than feeding month-sized steps to daily statistics),
-// with no external data. The last anchor is appended as-is so the series ends
-// exactly on a real EURCASH-EUR level.
+// business-day granularity (cashDaily).
 func eurCashDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	m, err := f.Fetch("EURCASH-EUR", from)
 	if err != nil {
@@ -330,7 +324,18 @@ func eurCashDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if m == nil || len(m.Points) < 2 {
 		return nil, fmt.Errorf("EURCASH-EUR: empty history")
 	}
-	s := &marketdata.Series{Name: "EUR cash (money-market, daily)", Source: "simdata"}
+	return cashDaily("EUR cash (money-market, daily)", m), nil
+}
+
+// cashDaily expands a monthly money-market accrual index to business-day
+// granularity by geometric interpolation between the monthly anchors. Such an
+// index grows by a near-constant daily rate within each month, so unlike a risk
+// asset it carries no real intramonth variation to lose: the interpolation is
+// faithful and yields a genuinely daily series (rather than feeding month-sized
+// steps to daily statistics), with no external data. The last anchor is appended
+// as-is so the series ends exactly on a real published level.
+func cashDaily(name string, m *marketdata.Series) *marketdata.Series {
+	s := &marketdata.Series{Name: name, Source: "simdata"}
 	for i := 0; i+1 < len(m.Points); i++ {
 		t0, t1 := m.Points[i].Date, m.Points[i+1].Date
 		l0, l1 := m.Points[i].Close, m.Points[i+1].Close
@@ -347,7 +352,7 @@ func eurCashDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		}
 	}
 	s.Points = append(s.Points, m.Points[len(m.Points)-1])
-	return s, nil
+	return s
 }
 
 // dpgtRecipe rebuilds the Dimensional Global Targeted Value UCITS ETF
@@ -1447,6 +1452,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 // off the fund page and NEVER off an observed return gap, which would grant the
 // donor's manager whatever skill separates the two records:
 //
+//	IWDA   0.20 %  iShares Core MSCI World UCITS ETF (IE00B4L5Y983)
 //	VFINX  0.14 %  Vanguard 500 Index Fund Investor Shares
 //	VFITX  0.20 %  Vanguard Intermediate-Term Treasury Fund Investor Shares
 //	VUSTX  0.20 %  Vanguard Long-Term Treasury Fund Investor Shares
@@ -1461,6 +1467,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 // EURCASH-EUR), a futures price (GC=F) and an index (^BCOM, the refdata
 // reconstructions) charge nothing, so a target's whole load is due on them.
 const (
+	iwdaTER  = 0.0020
 	vfinxTER = 0.0014
 	vfitxTER = 0.0020
 	vustxTER = 0.0020
@@ -1577,25 +1584,166 @@ func ntsxRecipe() Recipe {
 	}
 }
 
-// ntsgRecipe is the global variant (NTSG UCITS): 90 % global developed
-// equities approximated as 60/40 US/international, plus the same 60 %
-// treasury overlay. Its donors are the same funds NTSX uses, so the same
-// fee alignment applies: 0.54×0.14 + 0.36×0.05 + 0.60×0.20 = 0.221 %/yr of
-// donor charges against the fund's 0.25, leaving 0.029 to deduct once every
-// donor quotes (1999) and more before that (feeGap).
+// ntsgRecipe is the global variant (NTSG UCITS, WisdomTree Global Efficient
+// Core, real from 2024-11): 90 % global developed equities + a 60 % government
+// bond futures overlay + 10 % T-bill collateral, all in USD.
+//
+// It used to rebuild both of those from US mutual funds: a frozen 60/40 US /
+// developed-ex-US equity split and a bond overlay entirely on the intermediate
+// Treasury fund. Both were wrong in a way the fund's own disclosures settle, and
+// the reconstruction paid for it on its whole validation window (daily
+// correlation 0.40, tracking error 1.11 times the fund's volatility):
+//
+//   - the equity book is the MSCI World universe, ~72 % US, not 60. Twelve
+//     points of US underweight is a large factor bet to run inside a
+//     replication, and it is unnecessary: this repository already carries the
+//     MSCI World net total return to 1969 (MSCIWORLD-USD plus the daily price
+//     shape ^990100-USD-STRD), and the real iShares Core MSCI World (IWDA,
+//     2009-09 on) to ride the recent decade.
+//   - the bond basket is a FOUR-CURRENCY government futures basket, 80 % US /
+//     11 % German / 6 % Japanese / 3 % British, every leg near a ten-year
+//     duration. The whole of globalbond.go answers for that, including why the
+//     foreign legs are local excess returns carrying no currency at all.
+//
+// The equity leg also fixes the other half of the daily-correlation problem.
+// The fund prices at a European valuation point, and its old donors were US
+// mutual fund NAVs struck hours later; IWDA closes in London, so from 2009 the
+// two are struck within the same session.
+//
+// # The approximation that remains, and its sign
+//
+// The fund tracks the WisdomTree Global Efficient Core Index (Bloomberg
+// WTNTSGN, net total return), whose equity universe is a proprietary top-1500
+// developed-markets cap-weighted selection over the same 21 countries as MSCI
+// World, with ESG exclusions applied. Plain MSCI World is therefore a proxy, not
+// the index. It is an honest one, and the direction is known: MSCI's own
+// comparison of its screened world index against the plain one runs +0.36 %/yr
+// with 0.81 % tracking error over ten years, so the screen has if anything
+// helped, and using the unscreened parent is the conservative choice rather than
+// a flattering one. The fund's published book is 3 points lighter in the US than
+// the plain index for the same reason.
+//
+// # Fees
+//
+// The 0.25 %/yr charge goes through the feeGap discipline, on the loads its
+// donors already carry on their own notionals: IWDA 0.90×0.20 = 0.180 from
+// 2009-09, VFITX 0.60×0.80×0.78×0.20 = 0.075 from 1991-10, VUSTX
+// 0.60×0.80×0.22×0.20 = 0.021 from 1986-05, everything else (the reference
+// reconstructions and the two rates) fee-free. So the schedule is 0.250 %/yr
+// before 1986-05, 0.229 to 1991-10, 0.154 to 2009-09, and nothing after: past
+// that date the donors alone charge 0.276 %/yr, more than the fund does.
+//
+// # Depth
+//
+// The floor is the deepest date every leg covers, which is the equity one:
+// MSCIWORLD-USD opens in 1969-12 and the bond and collateral legs both reach the
+// 1950s or before. Two sleeves of the bond basket open later than that (see
+// globalbond.go), and the overlay renormalizes over what quotes rather than
+// shortening the file.
 func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − overnight financing, both extended: CMT Treasury TR ~1953, effective fed funds ~1954 then T-bill ~1934) + 0.10×cash ^IRX, the 0.25%/yr TER charged only where the donors' own charges (0.221%/yr blended) do not already cover it; start set by the dev-ex-US leg (~1969)",
-		Build: alignedComposite("NTSG (global 90/60 replication)", []pricedLeg{
-			{ID: "VFINX", Weight: 0.54, Load: vfinxTER},
-			{ID: "VTMGX", Weight: 0.36, Load: vtmgxTER},
-			{ID: "VFITX", Weight: 0.60, Excess: true, Load: vfitxTER},
-			{ID: "^IRX", Weight: 0.10},
-		}, usdOvernight, 0.0025),
+		Method: "0.90×MSCI World net TR (real IWDA from 2009-09, MSCIWORLD-USD refdata ~1969 with the ^990100 daily shape before) + 0.60×a four-currency government bond futures overlay (80% US VFITX/VUSTX duration blend − overnight financing, 11% BUND-EUR, 6% JGB-JPY, 3% GILT-GBP, each in local excess return over its own money-market rate, weights renormalized before a sleeve opens) + 0.10×cash ^IRX, the 0.25%/yr TER charged only where the donors' own charges do not already cover it; start set by the equity leg (~1969-12)",
+		Build:  ntsgBuild,
+		// The real fund opened in 2024-11: the overlap clears the 60-point floor
+		// but not by much, so the card's CAGR comparison is indicative and the
+		// correlations are what to read.
 		ValidateAgainst: "IE00077IIPQ8",
+		// The record standing behind the equity leg for fifteen of the file's
+		// years, graded on its own overlap by the audit's chain panel.
+		Donors: []string{"IE00B4L5Y983"},
 	}
+}
+
+// The synthetic identifiers under which ntsgBuild serves its two pre-built legs
+// to the frame. They never leave this build.
+const (
+	ntsgEquityID = "NTSG-EQ"
+	ntsgBondID   = "NTSG-BOND"
+)
+
+// ntsgBuild assembles NTSG from a pre-built global equity leg and a pre-built
+// global bond overlay, served to the standard frame/Composite machinery under
+// synthetic ids (the same shape as ntszBuild). The collateral leg is the ordinary
+// T-bill rate: it is cash the fund really holds, not financing, so it earns ^IRX
+// and not the overnight rate the futures pay (see usdOvernight).
+//
+// The overlay already carries its own financing, sleeve by sleeve and currency by
+// currency, so it enters the composite as a PLAIN leg at the fund's 0.60
+// notional rather than as an Excess one: netting it a second time against the
+// USD rate would charge the German, Japanese and British sleeves a financing
+// cost in the wrong currency on top of the one they have already paid.
+//
+// The fee schedule is built on the REAL donors rather than on the synthetic
+// ids, since it is IWDA's, VFITX's and VUSTX's own inceptions that end the
+// fee-free reference era behind each of them (see ntsgRecipe for the
+// arithmetic).
+func ntsgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	eq, err := ntsgEquityUSD(f, from)
+	if err != nil {
+		return nil, err
+	}
+	bonds, err := globalBondOverlay(f, from)
+	if err != nil {
+		return nil, err
+	}
+	inj := injected{inner: extend(f), have: map[string]*marketdata.Series{
+		ntsgEquityID: eq,
+		ntsgBondID:   bonds,
+	}}
+	legs := []Leg{
+		{ID: ntsgEquityID, Weight: 0.90},
+		{ID: ntsgBondID, Weight: 0.60},
+		{ID: "^IRX", Weight: 0.10},
+	}
+	fr, err := BuildFrame(inj, []string{"^IRX", ntsgEquityID, ntsgBondID}, from)
+	if err != nil {
+		return nil, err
+	}
+	values, err := Composite(fr, legs, "^IRX", 0)
+	if err != nil {
+		return nil, err
+	}
+	steps, err := feeGap(f, from, 0.0025, []pricedLeg{
+		{ID: "IE00B4L5Y983", Weight: 0.90, Load: iwdaTER},
+		{ID: "VFITX", Weight: 0.60 * usdBondShare * usdShortShare, Load: vfitxTER},
+		{ID: "VUSTX", Weight: 0.60 * usdBondShare * (1 - usdShortShare), Load: vustxTER},
+	})
+	if err != nil {
+		return nil, err
+	}
+	name := "NTSG (global 90/60 replication)"
+	return afterFeeSteps(name, SeriesFromFrame(name, fr, values), steps), nil
+}
+
+// ntsgEquityUSD builds the fund's equity book: the MSCI World net total return
+// in USD, real iShares Core MSCI World (IWDA, 2009-09 on, London close and
+// already net of its own 0.20 %/yr) grafted on top of the monthly MSCIWORLD-USD
+// reconstruction with its daily price shape (1969-12 on, fee-free, the feeGap
+// schedule charging the fund's own load over that era).
+//
+// Riding the real tracker over the recent decade is what makes the daily
+// statistics mean anything: the fund is struck at a European valuation point,
+// and a London close is the same session while a US mutual fund's NAV is not.
+// If IWDA cannot be fetched the reconstruction alone still yields a valid MSCI
+// World, one strictly coarser.
+func ntsgEquityUSD(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	recon, err := msciWorld(0, composite("NTSG (MSCI World replication)", []Leg{
+		{ID: "VFINX", Weight: 0.60},
+		{ID: "VTMGX", Weight: 0.40},
+	}, "", 0))(f, from)
+	if err != nil {
+		return nil, err
+	}
+	real, rerr := f.Fetch("IE00B4L5Y983", from)
+	if rerr != nil || real == nil || len(real.Points) <= 300 {
+		fmt.Fprintf(os.Stderr, "NTSG: real IWDA unavailable (%v), the MSCI World reconstruction stands alone\n", rerr)
+		return recon, nil
+	}
+	grafted := *real
+	marketdata.ExtendBack(&grafted, recon)
+	return &grafted, nil
 }
 
 // ntszRecipe is the eurozone variant (NTSZ UCITS, WisdomTree Eurozone Efficient
