@@ -662,34 +662,164 @@ func spxRecipe() Recipe {
 	}
 }
 
+// chsnDonor is the distributing twin of the target share class: the same UBS
+// Core Euro Inflation Linked 1-10 portfolio, listed on Xetra since 2017-10-31,
+// eight years older than the EUR-acc class the file is about.
+//
+// It is spliced from the YAHOO ADJUSTED closes and from nothing else. Those
+// closes add the semi-annual distributions back, a clean ex-date step function
+// worth +17.90 % cumulated over the 8.63 years to 2026-08, and the result
+// agrees with the live accumulating class to -0.047 %/yr over their 222 common
+// days: two share classes of one portfolio, as they should be. The FT series of
+// the very same listing (xid 437262179) is a PRICE return and misses about
+// 1.93 %/yr of income, the DTLE trap; it is forbidden here.
+const chsnDonor = "LU1645380368"
+
+// chsnDonorFeeSteps lifts the donor class onto the target class's price list.
+// Both are 0.08 %/yr today, but the distributing class carried more for most of
+// the spliced era: 0.20 %/yr from its 2017 launch to the end of 2023, 0.10 %/yr
+// through 2025-07-14, 0.08 %/yr since (the day the accumulating class itself
+// launched). The uplift is the difference, and nothing else: it is read off the
+// two published schedules and never derived from the return gap the two
+// records show, which would hand the backcast a performance nobody earned.
+//
+// The schedule is stepped rather than averaged into the single 0.10 %/yr the
+// era's time weights would give, because the steps are documented and free: a
+// flat uplift would over-credit the recent years and under-credit the deep
+// ones, which are exactly the years the file exists to cover.
+var chsnDonorFeeSteps = []feeStep{
+	{Annual: -0.0012}, // 0.20 % donor vs 0.08 % target
+	{From: time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), Annual: -0.0002}, // 0.10 % vs 0.08 %
+	{From: time.Date(2025, 7, 15, 0, 0, 0, 0, time.UTC), Annual: 0},      // both at 0.08 %
+}
+
+// chsnIBCIBeta is the share of the all-maturity euro linker ETF (IBCI) held
+// against EUR cash to reproduce the 1-10 segment, and it is MEASURED, not
+// modelled. Regressing the real 1-10 total return on IBCI, both in excess of
+// EUR cash, over 2017-2026 gives a beta of 0.622 (R2 0.857, sub-period betas
+// 0.598 to 0.632, alpha +0.48 %/yr with a standard error of 0.53, so no level
+// correction is permitted alongside it). 0.60 sits inside that range and is
+// what the file already shipped, so it stays.
+//
+// The paragraph this replaces reasoned from a duration RATIO and expected it to
+// drift toward 0.64 as the two funds' factsheet durations moved. That model was
+// wrong: the 1-10 leg's duration is stable near 4.9 years, plus or minus 0.3,
+// while the all-maturity leg's fell from 8.7 to 7.4, so the ratio moved for a
+// reason that has nothing to do with how the two co-move. The regression does
+// not move with it, and it is the justification now.
+const chsnIBCIBeta = 0.60
+
 // chsnRecipe backcasts the UBS Core Euro Inflation Linked 1-10 ETF
-// (LU1645380442, a brand-new 2025 EUR-acc share class) from the longer-running
-// iShares Euro Inflation Linked Govt Bond ETF (IBCI, daily FT NAVs from its
-// 2005 inception). IBCI tracks the all-maturity euro-area linker index
-// against the 1-10 segment, so it is held at 0.60x with the rest in EUR cash
-// (bundled EURCASH-EUR money-market index) to match durations; same asset
-// class and currency (EUR), no FX leg needed. The two durations both drift:
-// the 0.60 comes from the ~8-versus-~4.8 pair of the years the recipe was
-// written, and the issuer factsheets of 30/06/2026 now read 7.14 and 4.55,
-// an implied 0.64. The weight is deliberately left where it is until a
-// revision earns its own validation pass, since moving it moves a shipped
-// backcast; the measured under-scaling shows up as the engine's slightly
-// thin return in `pofo -verify-simdata`. The
-// scaling brought the validation beta from 0.53 to 0.85 and the tracking
-// error from 2.3 to 1.5%/yr, and the FT source moved the start from 2009
-// back to 2005. The real CHSN quotes are grafted on top from 2025.
+// (LU1645380442, a EUR-acc share class launched 2025-07) in three segments,
+// real quotes for as long as real quotes of this exact portfolio exist:
+//
+//	2005-11 .. 2017-10  0.60×IBCI + 0.40×EUR cash, a proxy
+//	2017-10 .. 2025-08  LU1645380368, the fund's own distributing class
+//	2025-08 ..          LU1645380442 itself (SpliceReal)
+//
+// The middle segment is new and is the point. The proxy alone lagged the real
+// 1-10 total return by about 0.46 %/yr over 2017-2026 (+11.76 % against
+// +16.44 % cumulated), and the miss is not spread evenly: it is 2.23 points in
+// 2021 and 2.47 in 2022, the two years short linkers earned their inflation
+// carry and a duration-matched blend of an all-maturity fund with cash did not.
+// Eight years of the fund's own history retire that question entirely.
+//
+// # The texture trap
+//
+// The donor's Yahoo prints are STALE before roughly 2020-11: 79 % of the days
+// in 2018 and 80 % in 2019 print the previous close, with flat runs reaching 24
+// trading days, against 3 % or fewer from 2021. The LEVEL path is sound and the
+// daily texture is fiction, so no rescaling of any kind is applied to that era:
+// a scale factor can only stretch a shape, and this one has to be replaced.
+//
+// The fiction is measurable, and it runs the way a fortnight's move landing on
+// a single print runs, not the way a flat quote intuitively suggests. Over
+// 2018-2020 the raw donor annualizes 4.32 %/yr of DAILY volatility against
+// 3.56 % monthly, where the reshaped segment reads 3.52 % and 3.47 %: the
+// staleness inflates the daily figure by four fifths of a point and leaves the
+// monthly one nearly intact, which is exactly the signature of a level that is
+// right and a calendar that is not. Volatility-matching the era would have
+// entrenched that artefact rather than removed it.
+//
+// chsnBuild takes the honest reading instead. A repeated print carries no
+// information, so only the days the donor's level actually MOVED are kept, and
+// they are used as anchors carrying the proxy's daily shape in between
+// (shapedSeries). The result passes exactly through every real NAV the donor
+// published and takes its day-to-day texture from the linker-plus-cash blend
+// over the stale era. From 2021 the donor prints properly (3 % zero-return days
+// or fewer), consecutive anchors are one trading day apart, and the mechanism
+// is a pass-through by construction: no cutoff date is written down anywhere,
+// the data says where the staleness ends. Measurement confirms it, the 2021-2026
+// stretch reading 4.31 %/yr of daily volatility in the file against the donor's
+// own 4.34 %.
+//
+// What survives the treatment is the level, exactly: on every day the donor
+// published a move, the file's ratio to it drifts by the fee uplift and by
+// nothing else (+0.118 %/yr through 2023, +0.020 % in 2024, flat after).
+//
+// # Considered and rejected
+//
+// Dimensional Euro Inflation Linked Intermediate Duration (IE00B3N38C44, FT
+// daily from 2011-06) as a 2011-2017 donor, to shorten the proxy era further.
+// It is a real fund and would feel like the better record, but it tracks the
+// 5-10 bucket actively, and it measures worse: monthly correlation 0.869
+// against the real 1-10, where the scaled-IBCI proxy reaches 0.925. More real,
+// less faithful; the proxy keeps the era.
 func chsnRecipe() Recipe {
 	return Recipe{
-		ID:     "LU1645380442",
-		Name:   "UBS Core Euro Inflation Linked 1-10: euro govt linker proxy",
-		Method: "0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, duration-matched to 1-10) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025",
-		Build: composite("CHSN (euro inflation-linked proxy)", []Leg{
-			{ID: "IBCI", Weight: 0.60},
-			{ID: "EURCASH-EUR", Weight: 0.40},
-		}, "", 0),
+		ID:   "LU1645380442",
+		Name: "UBS Core Euro Inflation Linked 1-10: the fund's own distributing class, then a euro linker proxy",
+		Method: "real NAVs of the distributing twin LU1645380368 (Yahoo adjusted = total return, from 2017-10, lifted +0.12%/yr then +0.02%/yr onto the target's 0.08% price list, its stale pre-2021 prints reshaped on the proxy's texture), " +
+			"behind it 0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, measured beta 0.622) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025",
+		Donors:          []string{chsnDonor, "IE00B0M62X26"},
+		Build:           chsnBuild,
 		ValidateAgainst: "LU1645380442",
 		SpliceReal:      "LU1645380442",
 	}
+}
+
+// chsnBuild assembles the two reconstructed segments: the distributing class,
+// fee-aligned and reshaped where its prints are stale, with the linker-plus-cash
+// proxy spliced behind it at its 2017 inception. If the donor is unreachable
+// (an offline build, a dead symbol) the proxy stands alone, which is exactly
+// the file that shipped before.
+func chsnBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	proxy, err := composite("CHSN (euro inflation-linked proxy)", []Leg{
+		{ID: "IBCI", Weight: chsnIBCIBeta},
+		{ID: "EURCASH-EUR", Weight: 1 - chsnIBCIBeta},
+	}, "", 0)(f, from)
+	if err != nil {
+		return nil, err
+	}
+	donor, derr := f.Fetch(chsnDonor, from)
+	if derr != nil || donor == nil || len(donor.Points) < 30 {
+		fmt.Fprintf(os.Stderr, "chsn: donor %s unavailable (%v), the IBCI proxy stands alone\n", chsnDonor, derr)
+		return proxy, nil
+	}
+	aligned := afterFeeSteps("CHSN (distributing class, fee-aligned)", movesOnly(donor), chsnDonorFeeSteps)
+	out := shapedSeries(aligned, proxy)
+	out.SimulatedBefore = time.Time{} // let ExtendBack put the proxy era in front
+	marketdata.ExtendBack(out, proxy)
+	out.Name = "CHSN (distributing class, then euro inflation-linked proxy)"
+	out.Source = "simdata"
+	out.SimulatedBefore = time.Time{}
+	return out, nil
+}
+
+// movesOnly drops the points that merely repeat the previous close. On a feed
+// that prints every session it is a no-op; on one that goes stale it turns a
+// flat run into the gap it really is, which is what lets shapedSeries fill the
+// run with a live texture instead of pinning it flat. The first and last points
+// are always kept, so the segment keeps both of its ends.
+func movesOnly(s *marketdata.Series) *marketdata.Series {
+	out := *s
+	out.Points = make([]marketdata.Point, 0, len(s.Points))
+	for i, p := range s.Points {
+		if i == 0 || i == len(s.Points)-1 || p.Close != out.Points[len(out.Points)-1].Close {
+			out.Points = append(out.Points, p)
+		}
+	}
+	return &out
 }
 
 // tip1eRecipe backcasts the UBS Core Bloomberg TIPS 1-10 EUR-hedged ETF

@@ -48,6 +48,23 @@ func from(s *marketdata.Series, i int) *marketdata.Series {
 	return &marketdata.Series{Symbol: s.Symbol, Points: s.Points[i:]}
 }
 
+// stale returns a copy of s whose first half prints the previous close on all
+// but every nth day, the shape of a thinly-traded listing's feed. The level
+// path is preserved (a refresh day carries the whole move since the last one),
+// only the calendar is fiction, which is exactly the case movesOnly exists for.
+func stale(s *marketdata.Series, every int) *marketdata.Series {
+	out := *s
+	out.Points = make([]marketdata.Point, len(s.Points))
+	half, held := len(s.Points)/2, s.Points[0].Close
+	for i, p := range s.Points {
+		if i >= half || i%every == 0 {
+			held = p.Close
+		}
+		out.Points[i] = marketdata.Point{Date: p.Date, Close: held}
+	}
+	return &out
+}
+
 // TestAllRecipesBuildOffline runs every bundled recipe's Build against a
 // synthetic offline universe (canned component series + the embedded refdata,
 // no network), asserting each returns a plausible series. This exercises the
@@ -76,6 +93,10 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	avuv := from(mkWave("AVUV", n, 4e-4, 0.013, 0.85, 1.35), n/3)
 	avdv := from(mkWave("AVDV", n, 3e-4, 0.011, 1.45, 0.25), n/3)
 	ibci := mkWave("IBCI", n, 2e-4, 0.004, 1.2, 1.7)
+	// CHSN's donor is the fund's own distributing class, whose feed goes STALE
+	// over the first half of its life: keep the stand-in shaped that way so
+	// chsnBuild exercises movesOnly and the reshaping, not a daily fiction.
+	chsnTwin := stale(from(mkWave(chsnDonor, n, 2e-4, 0.004, 1.2, 1.75), n/3), 5)
 	indepFr := mkWave("LU0131510165", n, 4e-4, 0.012, 0.9, 2.1)
 	vix := mkWave("^VIX", n, 0, 0.030, 0.6, 0.5)
 	eurusd := mkWave("EURUSD=X", n, 0, 0.005, 1.4, 2.6)
@@ -108,6 +129,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"TIP": tip, "STIP": stip,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "AVUV": avuv, "AVDV": avdv, "IBCI": ibci,
+		chsnDonor:      chsnTwin,
 		"LU0131510165": indepFr,
 		"EZU":          ezu, "EUNH.DE": eunh,
 		"^IRX":     mkLevels("^IRX", n, 3.0),
@@ -237,5 +259,85 @@ func TestAvantisBlendsSameManagerSleevesAtTheFundsGeography(t *testing.T) {
 	a, b := byDate[day(live+100)], byDate[day(live+101)]
 	if a == 0 || math.Abs(b/a-1-want) > 1e-9 {
 		t.Errorf("same-manager era moves %.6f/day, want %.6f (0.70×AVUV, fee-aligned)", b/a-1, want)
+	}
+}
+
+// CHSN splices its own distributing class, and that class's feed goes stale
+// for years: the reconstruction must keep every level the class published and
+// take the days in between from the proxy, never pin them flat. Both halves
+// are checked here, on a donor whose first half prints once a week and whose
+// second half prints daily, against a proxy that moves every day.
+func TestCHSNReshapesTheStaleDonorAndPassesTheCleanOneThrough(t *testing.T) {
+	const n, live = 900, 300
+	donor := stale(from(mkWave(chsnDonor, n, 3e-4, 0.004, 1.2, 1.75), live), 5)
+	f := fakeFetcher{
+		"IBCI":    mkWave("IBCI", n, 2e-4, 0.004, 1.2, 1.7),
+		chsnDonor: donor,
+	}
+
+	got, err := chsnBuild(WithRefData(datasets.Refdata(), f), time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	byDate := map[time.Time]float64{}
+	for _, p := range got.Points {
+		byDate[p.Date] = p.Close
+	}
+	// Over the stale era the file's day-to-day moves must come from the
+	// proxy, not from the donor's frozen prints: correlate the output's
+	// returns with each candidate texture and let the numbers say which one
+	// it followed.
+	proxy, err := composite("proxy", []Leg{
+		{ID: "IBCI", Weight: chsnIBCIBeta},
+		{ID: "EURCASH-EUR", Weight: 1 - chsnIBCIBeta},
+	}, "", 0)(WithRefData(datasets.Refdata(), f), time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	half := live + (n-live)/2
+	returns := func(s *marketdata.Series) map[time.Time]float64 {
+		out := map[time.Time]float64{}
+		for i := 1; i < len(s.Points); i++ {
+			out[s.Points[i].Date] = s.Points[i].Close/s.Points[i-1].Close - 1
+		}
+		return out
+	}
+	against := func(other *marketdata.Series) float64 {
+		mine, theirs := returns(got), returns(other)
+		var a, b []float64
+		for i := live + 2; i < half; i++ {
+			ra, oka := mine[day(i)]
+			rb, okb := theirs[day(i)]
+			if oka && okb {
+				a, b = append(a, ra), append(b, rb)
+			}
+		}
+		if len(a) < (half-live)/4 {
+			t.Fatalf("only %d common days in the stale era, the check would be vacuous", len(a))
+		}
+		return pearson(a, b)
+	}
+	if c := against(proxy); c < 0.95 {
+		t.Errorf("stale era correlates %.2f with the proxy's texture, want it to follow the proxy", c)
+	}
+	if c := against(donor); c > 0.5 {
+		t.Errorf("stale era correlates %.2f with the donor's frozen prints, want that texture dropped", c)
+	}
+	// It must still pass through the donor's own levels, up to the fee
+	// uplift, which is all that separates the two share classes. The whole
+	// synthetic window sits inside the schedule's first step.
+	uplift := func(a, b time.Time) float64 {
+		return math.Pow(1-feeAt(chsnDonorFeeSteps, b), b.Sub(a).Hours()/24/365.25)
+	}
+	for _, i := range []int{live + 5, live + 100, live + 400, n - 1} {
+		d, base := day(i), day(live)
+		want := donor.Points[i-live].Close / donor.Points[0].Close * uplift(base, d)
+		if got := byDate[d] / byDate[base]; math.Abs(got/want-1) > 1e-9 {
+			t.Errorf("day %d: level ratio %.9f, want the donor's %.9f", i, got, want)
+		}
+	}
+	// The proxy era is spliced in front, so the file starts where IBCI does.
+	if got.First().Date != day(0) {
+		t.Errorf("file starts %s, want the proxy's own first day", got.First().Date)
 	}
 }
