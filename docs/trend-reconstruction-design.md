@@ -44,7 +44,7 @@ record reaches, the file ends.
 | DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 1996-03-26 |
 | AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02, Man AHL 1996-03 (0.71) | 1996-03-26 |
 | KMLM | 2020-12 | AlphaSimplex 2010-08 (0.69), Guggenheim 2007-02, Man AHL 1996-03 (0.57) | 1996-03-26 |
-| Simplify CTA | 2022-03 | the pure-trend composite it benchmarks against 2000-01 (0.58), Man AHL 1996-03 | 1996-03-26 |
+| Simplify CTA | 2022-03 | the pure-trend composite 2000-01 (0.58), Man AHL 1996-03 | 1996-03-26 |
 | AQR UCITS RAEF EUR | 2021-04 | its B EUR sister 2015-03 (1.000, same fund, +0.45 %/yr fee uplift), then the AQR chain hedged to EUR | 1996-03-26 |
 
 Correlations are monthly, measured on each pair's own overlap. Two funds take a
@@ -304,15 +304,51 @@ Simplify CTA, live 2022-03 to 2026-07, split at the end of April 2024:
 | pure-trend composite | 0.706, **+0.68 pts** | 0.363, **-6.03 pts** | 6.71 | 0.575, -3.22 pts |
 | all-styles composite | 0.768, -1.79 pts | 0.409, -7.83 pts | 6.04 | 0.630, -5.45 pts |
 
-Here the criterion is NOT followed, deliberately, and the reasons are three. The
-pure-trend index is the benchmark this fund names; a four-year window split in
-two decides nothing at a 16 % tracking error (the standard error of either half's
-gap is about 11 points, twice the swing being compared); and the all-styles
-candidate would have to be levered 1.89 times to reach the fund's volatility,
-against 1.55, which is close to the point at which `volMatch` stops believing two
-series are the same trade at all. A correlation bought by levering the wrong
-index nearly twofold is not a better donor, and the level agrees: all-styles
-leaves the reconstruction a further two points a year cold.
+Here the criterion is NOT followed, deliberately, and the reasons are two. A
+four-year window split in two decides nothing at a 16 % tracking error (the
+standard error of either half's gap is about 11 points, twice the swing being
+compared); and the all-styles candidate would have to be levered 1.89 times to
+reach the fund's volatility, against 1.55, which is close to the point at which
+`volMatch` stops believing two series are the same trade at all. A correlation
+bought by levering an index nearly twofold is not a better donor, and the level
+agrees: rebuilt end to end on the all-styles composite, the file comes out at
+2.17 %/yr against 4.40 for the shipped one, so the gap to the fund widens from
+-3.22 to -5.45 points a year.
+
+A third reason used to be given and it was wrong: that the pure-trend index is
+the benchmark this fund names. It is not. The fund's own annual shareholder
+report for the year ended 2024-06 measures itself against the SG CTA Index, the
+all-styles one, and beat it by 11 points. The pure-trend composite is kept on
+the two reasons above, not on a naming that does not exist.
+
+### What the 2024 break actually was
+
+The half-to-half swing above is one calendar year, and that year is three
+months. Against the pure-trend donor, monthly: April 2024 +7.9 points, August
++5.5, October +7.2, every other month of 2024 inside ±2 except March at -4.5.
+Drop the 2024 calendar year and the fund's excess over the donor falls from
++5.63 %/yr to +1.55 %/yr on a 14.0 %/yr tracking error, which is 0.20 standard
+errors from zero over the remaining 3.3 years. The full-window +5.63 is itself
+only 0.84 standard errors from zero. There is no measurable systematic coldness
+in this reconstruction, and tuning the engine to close the headline gap would be
+fitting three months.
+
+What those three months were is documented by the manager, not inferred: the
+2024 report attributes the year to "short interest rate and related positions"
+as "the predominant risks and primary contributors", with the fund's positioning
+"benefit[ing] from asset curves' shapes, providing positive carry". A pure-trend
+index holds no carry sleeve and no rates concentration of that size, so the
+divergence is a fund exposure, not a donor defect. It shows in the path too: the
+monthly correlation with the donor was 0.65 in 2022 and 0.85 in 2023, then 0.47,
+0.37 and 0.54 in 2024, 2025 and 2026. The same collapse hits every candidate,
+including other managers' funds (DBMF falls to -0.15 in 2025), which is what
+rules out a donor swap as the cure.
+
+The engine is exonerated separately and precisely: its own monthly correlation
+with the real quotes, 0.574, is the donor index's correlation with them, 0.573.
+The TSMOM texture, the volatility match and the fee alignment add no path error
+of their own. The ceiling on this file is the donor, the best published donor is
+0.63, and the reason both are low is that this fund is trend plus carry.
 
 What the swap bought, on each fund's own live window (daily / weekly / monthly
 correlation, tracking error, CAGR gap):
@@ -761,8 +797,8 @@ How to read it, because each row's residual has a KNOWN decomposition:
   monthly only.
 - **Simplify CTA is still the worst fit, though no longer by a mile**: its
   months agreed at 0.39 while its donors were other managers' all-styles funds
-  and reach 0.58 now that the donor is the pure-trend index it benchmarks
-  against. Its level is right to about 3.2 pts. What it pays for that donor is
+  and reach 0.58 now that the donor is the pure-trend index. Its level is right
+  to about 3.2 pts, and that gap is one calendar year (see below). What it pays for that donor is
   risk realism in the far past: the index is levered 1.55 times to reach the
   fund's volatility, on a match calibrated in a calm era, so the file runs hot
   before 2007 (see the cadence section).
