@@ -37,8 +37,6 @@
 //     reconstructions and they are not interchangeable: an overlay finances at
 //     the overnight rate, a collateral sleeve earns the bill rate, and the two
 //     have differed by 0.02 to 1.15 points a year depending on the decade;
-//   - FitBackcast regresses an asset on factors and replays the model
-//     over the whole history (rejected under an R² floor: ErrUnfaithful);
 //   - Validate measures daily and weekly correlation, beta, tracking error
 //     and CAGR against the real series; WithRefData serves the bundled
 //     reference series (datasets.Refdata, e.g. MSCIWORLD-USD, SP500-USD) and
