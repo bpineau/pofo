@@ -506,7 +506,7 @@ simulation wherever it exists):
 | IWDA (MSCI World) | 0.60×VFINX + 0.40×VTMGX (1999→) | 0.60 / 0.85 (GBP listing, short overlap) |
 | VT (total world) | 0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (1999→) | 0.98 / 0.99 |
 | RSSB (100/100 stocks+bonds) | VT composite + 1.0×(VFITX−cash) (1999→) | 0.95 / 0.99 |
-| ZPRV (US small-cap value, UCITS) | DFSVX (DFA US Small Cap Value, 1993→), real grafted 2015 | 0.67 / 0.91 |
+| ZPRV (US small-cap value, UCITS) | DFSVX (DFA US Small Cap Value, 1993→), then the Ken French small-value factor less a measured 1.0 %/yr for its grossness (1963→), real grafted 2015 | 0.67 / 0.91 |
 | AVWS (global small-cap value, UCITS) | 0.70×AVUV + 0.30×AVDV, the same manager's own sleeves (2019→), then the Dimensional pair (1994→), in EUR | 0.46 / 0.92 (EUR NAV against US-close donors: read the weekly figure, monthly 0.99) |
 | SHY (1-3y Treasury) | VFISX short Treasury (1991→) | 0.81 / 0.89 |
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |

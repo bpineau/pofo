@@ -575,11 +575,42 @@ func avwsBlend(f Fetcher, from time.Time, usID string, usTER float64, intlID str
 // SPDR ZPRV grafted on top. Cross-checked once against the MSCI USA Small Cap
 // Value Weighted index (weekly corr 0.90, CAGR 11.4% vs 10.4% over 1997-2015)
 // to confirm faithfulness.
+//
+// # The three segments, and what each is worth
+//
+// The file is three records end to end, and only the deepest is not a fund:
+//
+//	1963-07 .. 1993-02  Ken French SMALL HiBM, a gross academic factor
+//	1993-02 .. 2015-02  DFSVX, a real fund's NAV, net of its own charges
+//	2015-02 ..          ZPRV itself
+//
+// The middle segment is the one that earns the file its length. Measured
+// monthly against the real fund over their 137 common months, DFSVX tracks ZPRV
+// at a correlation of 0.972 for a CAGR gap of -0.30 pt/yr and a volatility ratio
+// of 1.001: a real US small-value fund is very nearly the fund this file is
+// about. DFA's Targeted Value fund (DFFVX) measures marginally better still
+// (0.976, gap -0.00) but starts in 2000-02, seven years later, so it would add
+// no history and displace a donor that is already good; it is left out and
+// stays here as the measurement that says why.
+//
+// # The deep segment is gross, and pays a measured haircut for it
+//
+// A Ken French portfolio charges nothing and trades for free. Since 2026-08 the
+// factor therefore gives back 1.0 %/yr before it is spliced (longBackFee, which
+// carries the full measurement table and the two caveats): that is the wedge it
+// shows against DFSVX over their thirty-three common years, +1.02 pts/yr with a
+// standard error of 0.69, at a monthly correlation of 0.980. Truncating the file
+// at 1993 instead was considered and rejected: this tail is not a simulation of
+// a path the way a reconstructed trend book is, it is the realized return of the
+// actual stocks, and its one defect is a level a long overlap can measure. Over
+// 1963-07 to 1993-02 the segment now compounds at 16.96 %/yr where it read
+// 18.14 %; nothing after 1993-02 moves, since the haircut touches the proxy
+// alone and ExtendBack pins the level at the junction.
 func scvwRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BSPLC413",
 		Name:            "SPDR MSCI USA Small Cap Value Weighted",
-		Method:          "Ken French small-value factor (USSCV-USD, daily 1963-07→) spliced before DFSVX (DFA US Small Cap Value, 1993→); real ZPRV grafted from 2015",
+		Method:          "Ken French small-value factor (USSCV-USD, daily 1963-07→, gross, so less a measured 1.0%/yr) spliced before DFSVX (DFA US Small Cap Value, 1993→); real ZPRV grafted from 2015",
 		Build:           composite("US small-cap value (DFSVX)", []Leg{{ID: "DFSVX", Weight: 1}}, "", 0),
 		ValidateAgainst: "IE00BSPLC413",
 		SpliceReal:      "IE00BSPLC413",

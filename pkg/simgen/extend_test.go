@@ -272,3 +272,31 @@ func TestAfterFee(t *testing.T) {
 		t.Errorf("after 2%%/yr fee over ~1y, level = %.3f, want ~98", last)
 	}
 }
+
+// A gross proxy pays its measured haircut before it is spliced, and only over
+// its own segment: the component's own quotes must come through untouched
+// (longBackFee). Checked on the one entry that exists, the Ken French
+// small-value factor standing in front of DFSVX.
+func TestExtendingFetcherChargesGrossProxy(t *testing.T) {
+	// Component: 100 flat for a year. Proxy: 100 flat for the two years
+	// before it, so every move in the output is the haircut's doing.
+	comp := atSeries("DFSVX", 730, 366, 100)
+	proxy := atSeries("USSCV-USD", 0, 731, 100)
+
+	got, err := extend(fakeFetcher{"DFSVX": comp, "USSCV-USD": proxy}).Fetch("DFSVX", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !got.First().Date.Equal(day(0)) {
+		t.Fatalf("extended series starts %v, want the proxy's start", got.First().Date)
+	}
+	// Two years of a 1 %/yr drag, seen backwards from the pinned junction.
+	if first := got.First().Close; first < 101.9 || first > 102.1 {
+		t.Errorf("proxy start = %.3f, want ~102 (two years of the %.1f %%/yr haircut)", first, longBackFee["USSCV-USD"]*100)
+	}
+	for _, p := range got.Points {
+		if !p.Date.Before(day(730)) && p.Close != 100 {
+			t.Fatalf("component quote at %s = %v, want the untouched 100", p.Date.Format("2006-01-02"), p.Close)
+		}
+	}
+}

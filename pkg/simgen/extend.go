@@ -43,7 +43,7 @@ import (
 //   - DFSVX (DFA US Small Cap Value, 1993) → US small-cap value TR (refdata
 //     USSCV-USD: Ken French value-weighted SMALL HiBM daily, cumulated, from
 //     1963-07), the size×value factor behind ZPRV/USSC. Real daily total-return
-//     levels, so no daily shape is needed.
+//     levels, so no daily shape is needed, but a GROSS one: see longBackFee.
 //   - EUNH.DE (iShares Core Euro Govt Bond, 2009) → euro-area government bond TR
 //     (refdata EUROGOV-EUR: OECD euro-area 10y yield through TreasuryTR, ~1970),
 //     carried at daily granularity from 2004 by the ECB daily yield-curve shape
@@ -60,6 +60,50 @@ var longBack = map[string]string{
 	"GBPUSD=X": "GBPUSD-DAILY",
 	"DFSVX":    "USSCV-USD",
 	"EUNH.DE":  "EUROGOV-EUR",
+}
+
+// longBackFee is what a proxy owes before it may stand in for a fund: a
+// constant fraction per year taken off its returns, applied to the proxy alone
+// and never to the component's own quotes. Most proxies owe nothing, because
+// they are already what an investor received (another fund's NAV, a total-return
+// index a tracker exists for). One is an ACADEMIC FACTOR, and a factor pays no
+// fee, no commission and no spread, in the one corner of the equity market where
+// those are largest.
+//
+// USSCV-USD, the Ken French small-value portfolio, is that one. Its overstatement
+// is measurable rather than assumed, because it and the fund it extends overlap
+// for thirty-three years, and it is small: over 1993-03 to 2026-05 (399 months)
+// the factor compounds at 12.51 %/yr against DFSVX's 11.49 %, a gap of
+// +1.02 pts/yr with a standard error of 0.69, at a monthly correlation of 0.980
+// and a volatility ratio of 1.002. The two are the same trade, minus a wrapper.
+// Against the target fund's own quotes (ZPRV, 2015-2026) the factor runs
+// +0.38 pts/yr hot, and against DFA's Targeted Value fund -0.07, so the
+// correction is bounded by the universe it is measured on. Adopted: 1.0 %/yr,
+// the full-overlap figure rounded, since neither the standard error nor the era
+// justifies a second decimal.
+//
+// Two caveats belong with the number, and both point the same way. The gap
+// decays across the overlap, +1.89 pts/yr over the first half and +0.16 over the
+// second (per decade: 1990s +2.62, 2000s +1.30, 2010s +0.32, 2020s +0.02), which
+// is what falling commissions and spreads look like. The repo's own stability
+// criterion does not accept that as established, the swing of 1.73 sitting inside
+// the 1.39 standard error of the difference, so the constant stays the
+// full-overlap one rather than a fitted half. But it means the deep segment, all
+// of which predates the overlap and most of which predates the end of fixed
+// commissions in 1975, is corrected by a floor and not by its own cost: if the
+// trend is real, the 1963-1993 tail is still a touch rich. The other direction
+// is covered too: the price lists alone (DFSVX charged 0.31 to 0.53 %/yr over
+// the overlap, ZPRV charges 0.30 %) put a hard lower bound near 0.4 %/yr on the
+// gap, so a zero haircut is known to be wrong whatever the sampling error says.
+//
+// Grossness is a level error, not a cadence error, and the file does not have a
+// cadence problem: the ratio of daily-annualized to monthly-annualized
+// volatility runs 0.54 to 0.66 through the tail, and DFSVX's own NAVs show the
+// same 0.68 in the one decade they share (both rise above 1 in the 2000s). Thin
+// trading in small caps is the era, not the reconstruction, so nothing here is
+// projected onto another calendar the way a weekly-dealing donor is.
+var longBackFee = map[string]float64{
+	"USSCV-USD": 0.010,
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same
@@ -108,6 +152,9 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 		if sh, serr := e.inner.Fetch(sid, from); serr == nil {
 			p = shapedSeries(p, sh)
 		}
+	}
+	if fee, owed := longBackFee[pid]; owed && p != nil {
+		p = afterAnnualFee(p.Name+" (fee-aligned)", p, fee)
 	}
 	switch {
 	case perr != nil:
