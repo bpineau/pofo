@@ -124,6 +124,13 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"AQMIX": mf("AQMIX", 0.008, 1.05, 0.5), "KMLM": mf("KMLM", 0.010, 1.05, 0.55),
 		"CTA": mf("CTA", 0.012, 1.05, 0.6), "LU1103257975": mf("LU1103257975", 0.007, 1.05, 0.65),
 		"IE0000360275": ahl,
+		// The two AQR EUR classes whose real NAVs the hedged recipes splice:
+		// the legacy B EUR donor (whose first date anchors IAE1FT's fee
+		// schedule) and the flat-fee RAEF class, both quoting only over the
+		// recent part of the window so the splices onto the reconstruction
+		// are exercised.
+		"LU1103258197": from(mf("LU1103258197", 0.007, 1.05, 0.7), n/3),
+		"LU1662501532": from(mf("LU1662501532", 0.007, 1.05, 0.75), n/2),
 		"VFINX":        vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
