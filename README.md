@@ -349,6 +349,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
 | `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies (bad points, gaps, stale feeds), then exit |
+| `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
@@ -492,12 +493,26 @@ then stored as self-documenting CSVs (method, validation, date) in
 ```sh
 ./pofo -gen-simdata                   # regenerate everything (then make build to re-embed)
 ./pofo -gen-simdata -dry NTSX         # validate without writing
+./pofo -verify-simdata                # how good is every engine? HTML report, opened
+./pofo -verify-simdata CTA DBMF       # just these two
 ```
+
+`-verify-simdata` is the standing answer to "can this backcast be trusted".
+It replays each recipe's engine **without the real quotes it normally splices
+in** and lays it over those quotes on the window where they exist, which is the
+only window a reconstruction can be judged on. Each asset gets a curve pair
+(engine against real, base 100), a cumulative engine/real drift panel, and two
+separate verdicts: **level**, does the engine earn the asset's return (a hot
+engine flatters every backtest downstream), and **path**, does it move with the
+asset, on the monthly correlation and on the tracking error relative to the
+asset's own volatility. Recipes built as donor chains also get a chain of
+custody: every junction graded on its own overlap, since the card's own
+statistics can only grade the nearest one. Worst first inside each family.
 
 Every series is built **only from quotes the tool itself can fetch**
 (Vanguard/Yahoo funds with decades of history, the `^IRX` cash rate, gold and
-oil futures) combined by the in-house composite, TSMOM trend, and regression
-backcast engines; no third-party data is bundled. External index series are
+oil futures) combined by the in-house composite, TSMOM trend and donor-chain
+engines; no third-party data is bundled. External index series are
 used solely to cross-check quality during development, never shipped.
 
 Bundled recipes and measured quality (daily / weekly correlation of returns
