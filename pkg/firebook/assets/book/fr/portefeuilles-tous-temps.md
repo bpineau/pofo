@@ -22,7 +22,7 @@ L'historique réel repose sur les données américaines de 1972 à 2024, le prix
 
 **L'All-Weather de Dalio** (Bridgewater) est formalisé dans les années 1990, puis décliné pour le grand public par Tony Robbins en environ 30 % actions, 40 % obligations longues, 15 % intermédiaires, 7,5 % or et 7,5 % matières premières. Il raffine Browne par la **pondération par le risque** (risk parity). L'idée est d'équilibrer non pas les capitaux mais les contributions au risque de chaque saison. Les obligations, moins volatiles, reçoivent donc plus de capital. La version institutionnelle emploie du levier pour ramener l'espérance au niveau des actions. La version pour particuliers s'en passe, d'où une espérance modeste, environ 4-5 % réels, pour une volatilité de 8 %. Sa faiblesse propre a éclaté en 2022 : la surpondération massive de la duration. Quand l'inflation frappe, les 55 % d'obligations longues et intermédiaires encaissent le choc ensemble, soit −20 % nominal, la pire année de son histoire. C'est le rappel que « pondéré par le risque **passé** » ne vaut plus « tous-temps » si les corrélations basculent ([[regimes-de-marche]], [[obligations-en-retrait]]).
 
-**Le Golden Butterfly** (Portfolio Charts, Tyler) ajoute au Permanent une cinquième aile : **20 % actions larges, 20 % small-cap value, 20 % obligations longues, 20 % courtes, 20 % or**. L'idée est de faire pencher le portefeuille vers la prospérité, le régime le plus fréquent, par la prime small-cap value ([[facteurs-fama-french]]), sans abandonner les trois autres saisons. Sur 1972-2024, il rend environ 6 % réels pour une volatilité de 8 %, avec un drawdown réel maximal d'environ −22 %. C'est le meilleur couple rendement/pire-chemin de la famille sur l'échantillon disponible, et il affiche régulièrement le SWR le plus élevé de tout Portfolio Charts, autour de 5,5-6 % sur 30 ans aux États-Unis. À lire avec la méfiance due aux optimisations rétrospectives, car le choix du small-cap value est guidé par l'échantillon.
+**Le Golden Butterfly** (Portfolio Charts, Tyler) ajoute au Permanent une cinquième aile : **20 % actions larges, 20 % small-cap value, 20 % obligations longues, 20 % courtes, 20 % or**. L'idée est de faire pencher le portefeuille vers la prospérité, le régime le plus fréquent, par la prime small-cap value ([[facteurs-fama-french]]), sans abandonner les trois autres saisons. Sur 1972-2024, il rend environ 5,8 % réels pour une volatilité de 8 %, avec un drawdown réel maximal d'environ −22 %. C'est le meilleur couple rendement/pire-chemin de la famille sur l'échantillon disponible, et il affiche régulièrement le SWR le plus élevé de tout Portfolio Charts, autour de 5,5-6 % sur 30 ans aux États-Unis. À lire avec la méfiance due aux optimisations rétrospectives, car le choix du small-cap value est guidé par l'échantillon.
 
 **Le Dragon d'Artemis** (Chris Cole, « The Allegory of the Hawk and Serpent », 2020) est la version extrême et la plus intéressante intellectuellement. Il tient en environ 24 % actions, 18 % obligations longues, 19 % or, 18 % matières premières et trend, et 21 % de volatilité longue (long volatility), ces stratégies optionnelles qui **gagnent** dans les krachs. Cole reconstruit un siècle, de 1928 à 2019, et montre qu'un tel mélange traverse **toutes** les grandes destructions, la déflation des années 1930, l'inflation des années 1970 et les krachs, là où le 60/40 alterne gloire et ruine selon la décennie. Une limite pratique le rend rédhibitoire pour un particulier. La poche long volatility n'existe pas en format UCITS accessible, et se dégrade en produits chargés ; [[long-volatility]] fait le tour complet de ce mur. La version implémentable remplace la long volatility par des managed futures ([[managed-futures]]), son cousin praticable. On y perd la convexité de krach instantané, mais on garde la couverture des régimes longs.
 
@@ -33,10 +33,10 @@ Sur 1972-2024 (séries américaines, reconstruction indépendante recoupée avec
 |---|---|---|---|
 | 60/40 | 5,6 % | −38 % | ~4 % |
 | Permanent | 4,4 % | −22 % | ~4,5-5 % |
-| Golden Butterfly | 6,0 % | −22 % | ~5,5 % |
+| Golden Butterfly | 5,8 % | −22 % | ~5,5 % |
 | All-Weather | 5,0 % | −29 % (2022 compris) | ~4,5 % |
 
-La leçon robuste tient en trois constats. À rendement égal, le pire chemin est deux fois moins profond, le Golden Butterfly rendant comme un 70/30 pour un plongeon de moitié. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −34 %. Et c'est le pire chemin qui fixe le taux de retrait.
+La leçon robuste tient en trois constats. À rendement égal, le pire chemin est presque deux fois moins profond : le Golden Butterfly rend comme un 70/30 en ne plongeant que de 22 %, quand ce 70/30 plonge de 41 %. Aucun dosage entre actions et obligations, même le plus prudent, n'a fait mieux que −34 %. Et c'est le pire chemin qui fixe le taux de retrait.
 
 Les limites sont tout aussi robustes. On travaille sur **un seul** échantillon de 50 ans, dominé par un marché obligataire haussier séculaire et un or parti de prix administrés en 1972. Sa décennie 1970 à +1 300 % nominal est un événement de libération, pas une propriété permanente de l'actif ([[or-en-retrait]]). Hors États-Unis, les répliques donnent la même **forme**, des queues courtes, avec des niveaux plus modestes. La prudence s'impose : retenir la structure, décoter les niveaux, tester sur le siècle mondial.
 
@@ -44,7 +44,7 @@ Une réserve pratique s'ajoute. Les panels longs multi-pays sont bâtis sur les 
 :::
 
 ::: figure tous-temps-echange
-Chaque portefeuille devient un point : le rendement réel annualisé en abscisse, le pire chemin réel en ordonnée. La famille tous-temps occupe un coin que l'échelle actions / obligations n'atteint jamais, et le Golden Butterfly rend comme un 80/20 pour un plongeon deux fois moins profond (US, 1972-2024, en réel, rééquilibrage annuel).
+Chaque portefeuille devient un point : le rendement réel annualisé en abscisse, le pire chemin réel en ordonnée. La famille tous-temps occupe un coin que l'échelle actions / obligations n'atteint jamais, et le Golden Butterfly rend comme un 70/30 pour un plongeon presque deux fois moins profond (US, 1972-2024, en réel, rééquilibrage annuel). Sa jambe small value paie 1,0 point de coûts par an, que le portefeuille académique de Kenneth French ne paie pas.
 :::
 
 ## Les critiques honnêtes, et à qui elles s'adressent
@@ -55,10 +55,10 @@ Chaque portefeuille devient un point : le rendement réel annualisé en abscisse
 
 **La duration longue.** Browne et Dalio veulent des obligations **longues**, pour la puissance déflationniste maximale, et 2022 en a montré la facture en régime inverse. Le compromis moderne est simple : une duration intermédiaire majoritaire, plus une part longue assumée comme « assurance déflation », au même titre que l'or joue l'« assurance inflation ».
 
-**L'écart à l'indice, la critique la plus sérieuse.** Par construction, un tous-temps fait +6 % l'année où le monde fait +25 %. L'épreuve se compte d'ailleurs en années et non en points, car sur les cinquante-trois ans reconstruits ici le Golden Butterfly compte trente-trois années de retard sur les actions, dont deux séries de six ans d'affilée. Tenir cette « sous-performance » **des années** durant, en lisant partout que les actions s'envolent, est une épreuve comportementale documentée. La plupart des abandons de tous-temps ont lieu au sommet d'un bull actions, c'est-à-dire au pire moment ([[psychologie-du-retrait]]). Le tous-temps exige la même chose que le glidepath ([[glidepaths]]) : une adhésion écrite, pour des raisons écrites, relue quand ça démange ([[construire-son-plan]]).
+**L'écart à l'indice, la critique la plus sérieuse.** Par construction, un tous-temps fait +6 % l'année où le monde fait +25 %. L'épreuve se compte d'ailleurs en années et non en points, car sur les cinquante-trois ans reconstruits ici le Golden Butterfly compte trente-quatre années de retard sur les actions, dont une série de neuf ans d'affilée. Tenir cette « sous-performance » **des années** durant, en lisant partout que les actions s'envolent, est une épreuve comportementale documentée. La plupart des abandons de tous-temps ont lieu au sommet d'un bull actions, c'est-à-dire au pire moment ([[psychologie-du-retrait]]). Le tous-temps exige la même chose que le glidepath ([[glidepaths]]) : une adhésion écrite, pour des raisons écrites, relue quand ça démange ([[construire-son-plan]]).
 
 ::: figure tous-temps-ecart
-L'écart de rendement réel annuel entre le Golden Butterfly et 100 % actions, année après année (US, 1972-2024, en réel, rééquilibrage annuel). Les bandes grises marquent les séries d'au moins quatre années consécutives de retard.
+L'écart de rendement réel annuel entre le Golden Butterfly et 100 % actions, année après année (US, 1972-2024, en réel, rééquilibrage annuel, la jambe small value nette de 1,0 point de coûts par an). Les bandes grises marquent les séries d'au moins quatre années consécutives de retard.
 :::
 
 ## L'usage recommandé : une dose de tous-temps, à calibrer
@@ -79,7 +79,7 @@ Le plan : 1,5 M€, 51 000 €/an (soit 3,4 %) avec corridor Vanguard, sur 45 an
 
 ## L'essentiel à retenir
 
-- La famille (Browne 4 × 25, All-Weather risk parity, Golden Butterfly, Dragon) applique la grille des régimes : un gagnant par saison, un rééquilibrage régulier. Elle vend des queues courtes (drawdowns réels de −20 à −30 %) contre une espérance modeste (4,4-6 % réels).
+- La famille (Browne 4 × 25, All-Weather risk parity, Golden Butterfly, Dragon) applique la grille des régimes : un gagnant par saison, un rééquilibrage régulier. Elle vend des queues courtes (drawdowns réels de −20 à −30 %) contre une espérance modeste (4,4-5,8 % réels).
 - Pour un rentier, l'échange est le bon, car le taux de retrait dépend du pire chemin, pas de la moyenne. Les SWR historiques des tous-temps égalent ou battent ceux de portefeuilles bien plus « performants », sur un échantillon de 50 ans à décoter (marché obligataire haussier, or post-1971).
 - Les vraies critiques sont connues : la dépendance à l'or (partager la poche inflation), la duration longue (2022) et surtout l'écart à l'indice pendant les années de bull. L'adhésion s'écrit avant de se vivre.
 - L'usage moderne est un **curseur**, pas un dogme. Un cœur croissance plus 30-40 % de poche de régimes (le demi-tous-temps) capte l'essentiel des queues courtes pour 0,3-0,6 point d'espérance, avec une dose maximale pendant la fenêtre fragile.

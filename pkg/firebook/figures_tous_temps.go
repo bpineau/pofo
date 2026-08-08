@@ -37,7 +37,7 @@ var (
 	tousTempsFamily = []tousTempsPoint{
 		{"Browne 4 × 25", 4.41, -22.2},
 		{"All-Weather *", 5.01, -28.7},
-		{"Golden Butterfly", 6.00, -21.6},
+		{"Golden Butterfly", 5.78, -21.6},
 	}
 	// tousTempsLadder runs from 100 % intermediate Treasuries to 100 %
 	// equities, by steps of 10 points of equities.
@@ -85,7 +85,7 @@ func ttNum(v float64, dec int) string {
 func figTousTempsEchange() string {
 	m := mapper(2, 7.2, -60, -14, 84, 600, 322, 96)
 	var b strings.Builder
-	b.WriteString(plateHead("portefeuilles tous-temps", "À rendement égal, un pire chemin deux fois moins profond"))
+	b.WriteString(plateHead("portefeuilles tous-temps", "À rendement égal, un pire chemin presque deux fois moins profond"))
 	legendChips(&b, 56, [][2]string{
 		{figAccent, "famille tous-temps"},
 		{figBlue, "échelle actions / obligations (pas de 10 points)"},
@@ -134,9 +134,12 @@ func figTousTempsEchange() string {
 	b.WriteString(dashLine(gp[0], gp[1]+8, ip[0], ip[1]-5, figDeep, 1.2, "4 4"))
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.6" fill="none" stroke="%s" stroke-width="1.6"/>`, ip[0], ip[1], figDeep)
 	b.WriteString(mTxt(ip[0]+9, ip[1]+4, 10.5, figDeep, "start", "600", ttNum(iso, 0)+" %"))
-	b.WriteString(sTxt(gp[0]+9, gp[1]+45, 11, figDeep, "start", "600", "à rendement égal,"))
-	b.WriteString(sTxt(gp[0]+9, gp[1]+59, 11, figDeep, "start", "600", "un plongeon deux"))
-	b.WriteString(sTxt(gp[0]+9, gp[1]+73, 11, figDeep, "start", "600", "fois plus profond"))
+	// The block hangs to the right of the fund's own dashed line, far enough
+	// from it to clear the All-Weather label on its left: the two points sit on
+	// the same line once the small-value leg pays its costs.
+	b.WriteString(sTxt(gp[0]+22, gp[1]+45, 11, figDeep, "start", "600", "à rendement égal,"))
+	b.WriteString(sTxt(gp[0]+22, gp[1]+59, 11, figDeep, "start", "600", "un plongeon presque"))
+	b.WriteString(sTxt(gp[0]+22, gp[1]+73, 11, figDeep, "start", "600", "deux fois plus profond"))
 
 	// the family, above the whole ladder. Every name sits over its point; the
 	// three pairs of numbers go where the neighbours leave room, Browne's to
@@ -156,8 +159,10 @@ func figTousTempsEchange() string {
 	}
 
 	b.WriteString(sTxt(24, 380, 9.5, figMuted, "start", "400",
-		"US, 1972-2024, en réel, rééquilibrage annuel. Reconstruction sur le S&amp;P 500, les Treasuries, l'or, les T-bills et le small value."))
+		"US, 1972-2024, en réel, rééquilibrage annuel. Reconstruction sur le S&amp;P 500, les Treasuries, l'or, les T-bills et le small value,"))
 	b.WriteString(sTxt(24, 394, 9.5, figMuted, "start", "400",
+		"ce dernier net de 1,0 point de coûts par an, le prix qu'un vrai fonds paie et pas le portefeuille académique."))
+	b.WriteString(sTxt(24, 408, 9.5, figMuted, "start", "400",
 		"* All-Weather : la jambe matières premières est approchée par le pétrole, son pire chemin dépend de ce choix."))
-	return svg(640, 406, b.String())
+	return svg(640, 420, b.String())
 }

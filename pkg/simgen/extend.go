@@ -102,8 +102,14 @@ var longBack = map[string]string{
 // same 0.68 in the one decade they share (both rise above 1 in the 2000s). Thin
 // trading in small caps is the era, not the reconstruction, so nothing here is
 // projected onto another calendar the way a weekly-dealing donor is.
+// It is exported because the same series stands behind figures outside this
+// package (the FIRE book's small-value plates read USSCV-USD directly), and a
+// measured constant must have exactly one home: charge this one, never derive
+// a second.
+const USSCVGrossCost = 0.010
+
 var longBackFee = map[string]float64{
-	"USSCV-USD": 0.010,
+	"USSCV-USD": USSCVGrossCost,
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same

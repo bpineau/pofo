@@ -3,11 +3,13 @@ package firebook
 import (
 	"context"
 	"math"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/simgen"
 )
 
 // scvRealLegs rebuilds the two real legs of the factor plate from the bundled
@@ -42,6 +44,15 @@ func scvRealLegs(t *testing.T) (months []int, scv, sp []float64) {
 	}
 	value, index := byMonth("USSCV-USD"), byMonth("SP500-USD")
 
+	// The small-value leg is Kenneth French's academic portfolio: it pays no
+	// management fee, no commission and no spread, in the corner of the market
+	// where those bite hardest. It stands here beside an index a tracker exists
+	// for, so it is charged the same measured cost the investable
+	// reconstruction charges it, and no other (simgen.USSCVGrossCost, 1.0 %/yr
+	// measured over 399 months against a real small-value fund). The charge
+	// accrues by month, the series being month-end here.
+	net := math.Pow(1-simgen.USSCVGrossCost, 1.0/12)
+
 	// The record opens with the small-value series in July 1963, exactly ten
 	// years before the first window the plate can close.
 	first := scvGapStart - 120
@@ -53,7 +64,7 @@ func scvRealLegs(t *testing.T) (months []int, scv, sp []float64) {
 			break
 		}
 		months = append(months, k)
-		scv = append(scv, v/c)
+		scv = append(scv, v/c*math.Pow(net, float64(k-first)))
 		sp = append(sp, i/c)
 	}
 	if len(months) == 0 {
@@ -201,5 +212,15 @@ func TestScvGapAgreesWithTheArticle(t *testing.T) {
 	dip := scvGapPoints[scvDipMonth-scvGapStart]
 	if deep >= dip {
 		t.Errorf("the 2010s trough (%+.2f pt) is not deeper than the 1990s dip (%+.2f pt)", deep, dip)
+	}
+
+	// The article quotes that trough in points, and the plate owns the number:
+	// read it off the plate rather than off the memory of a sentence.
+	raw, err := assets.ReadFile("assets/book/fr/facteurs-fama-french.md")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := frNum(-deep, 1) + " points de retard"; !strings.Contains(string(raw), want) {
+		t.Errorf("the article no longer states %q, the plate's deepest window", want)
 	}
 }

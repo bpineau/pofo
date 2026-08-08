@@ -169,6 +169,10 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 
 // The two footnote numbers: the small-value fund the plate does not draw, and
 // the ten-year slices that show these correlations are period averages.
+//
+// The small-value leg stays GROSS here, unlike the plates that quote a return
+// (figScvEcart10Ans, figTousTempsEchange): a fee is a constant multiplicative
+// drag, it moves no correlation, and the footnote reads a correlation.
 func TestTriangleFootnoteNumbers(t *testing.T) {
 	anchors, rets := triReturns(t)
 	scv, ok, err := marketdata.ReadSimdataFS(datasets.Refdata(), "USSCV-USD")

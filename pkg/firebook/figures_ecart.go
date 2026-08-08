@@ -25,31 +25,32 @@ type ecartYear struct {
 // Same reconstruction as figTousTempsEchange, on the same bundled series:
 // equities SP500, long Treasuries TLT, short Treasuries SHY (T-bills before
 // SHY starts in 1991-10), gold XAUUSD (pkg/datasets/simdata); small-cap value
-// USSCV-USD, T-bills TBILL-3M (pkg/datasets/refdata); deflator ^CPI-US (the
-// snapshot pkg/marketdata embeds). Monthly total returns, weights reset every
-// December, each year read December to December.
+// USSCV-USD less the 1.0 %/yr an academic factor does not pay (ttSmallValueNet),
+// T-bills TBILL-3M (pkg/datasets/refdata); deflator ^CPI-US (the snapshot
+// pkg/marketdata embeds). Monthly total returns, weights reset every December,
+// each year read December to December.
 //
 // TestEcartFigureMatchesTheData recomputes both legs from those series and
 // fails the moment the plate and the data disagree.
 var ecartYears = []ecartYear{
-	{1972, 11.43, 15.01}, {1973, -1.19, -21.63}, {1974, -5.24, -34.62},
-	{1975, 9.33, 28.34}, {1976, 14.33, 17.90}, {1977, 1.87, -13.25},
-	{1978, 5.12, -2.40}, {1979, 21.71, 4.42}, {1980, 3.05, 17.51},
-	{1981, -9.34, -12.86}, {1982, 22.18, 16.98}, {1983, 9.30, 17.99},
-	{1984, 0.14, 2.10}, {1985, 17.13, 26.81}, {1986, 16.15, 17.30},
-	{1987, 0.73, 0.69}, {1988, 4.93, 11.82}, {1989, 9.32, 25.84},
-	{1990, -8.92, -8.68}, {1991, 13.96, 26.59}, {1992, 7.15, 4.59},
-	{1993, 12.07, 7.13}, {1994, -3.74, -1.32}, {1995, 19.54, 34.17},
-	{1996, 5.88, 19.01}, {1997, 12.46, 31.13}, {1998, 7.03, 26.54},
-	{1999, 2.18, 17.88}, {2000, 3.78, -12.08}, {2001, 3.43, -13.23},
-	{2002, 1.04, -23.91}, {2003, 20.98, 26.31}, {2004, 5.40, 7.39},
-	{2005, 4.90, 1.45}, {2006, 10.19, 12.93}, {2007, 3.94, 1.36},
-	{2008, -4.97, -37.06}, {2009, 9.03, 23.11}, {2010, 14.77, 13.37},
-	{2011, 4.92, -0.83}, {2012, 7.55, 14.02}, {2013, 5.19, 30.43},
-	{2014, 7.91, 12.83}, {2015, -4.72, 0.65}, {2016, 9.58, 9.68},
-	{2017, 8.52, 19.32}, {2018, -5.66, -6.18}, {2019, 13.92, 28.55},
-	{2020, 12.11, 16.81}, {2021, 5.05, 20.24}, {2022, -17.32, -23.08},
-	{2023, 8.16, 22.19}, {2024, 8.37, 21.51},
+	{1972, 11.22, 15.01}, {1973, -1.32, -21.63}, {1974, -5.38, -34.62},
+	{1975, 9.03, 28.34}, {1976, 14.02, 17.90}, {1977, 1.64, -13.25},
+	{1978, 4.89, -2.40}, {1979, 21.47, 4.42}, {1980, 2.83, 17.51},
+	{1981, -9.55, -12.86}, {1982, 21.91, 16.98}, {1983, 9.02, 17.99},
+	{1984, -0.07, 2.10}, {1985, 16.88, 26.81}, {1986, 15.92, 17.30},
+	{1987, 0.55, 0.69}, {1988, 4.68, 11.82}, {1989, 9.10, 25.84},
+	{1990, -9.06, -8.68}, {1991, 13.69, 26.59}, {1992, 6.88, 4.59},
+	{1993, 11.83, 7.13}, {1994, -3.94, -1.32}, {1995, 19.28, 34.17},
+	{1996, 5.64, 19.01}, {1997, 12.19, 31.13}, {1998, 6.84, 26.54},
+	{1999, 1.97, 17.88}, {2000, 3.54, -12.08}, {2001, 3.19, -13.23},
+	{2002, 0.86, -23.91}, {2003, 20.66, 26.31}, {2004, 5.17, 7.39},
+	{2005, 4.69, 1.45}, {2006, 9.95, 12.93}, {2007, 3.77, 1.36},
+	{2008, -5.10, -37.06}, {2009, 8.78, 23.11}, {2010, 14.52, 13.37},
+	{2011, 4.74, -0.83}, {2012, 7.31, 14.02}, {2013, 4.91, 30.43},
+	{2014, 7.70, 12.83}, {2015, -4.90, 0.65}, {2016, 9.31, 9.68},
+	{2017, 8.31, 19.32}, {2018, -5.83, -6.18}, {2019, 13.70, 28.55},
+	{2020, 11.91, 16.81}, {2021, 4.79, 20.24}, {2022, -17.50, -23.08},
+	{2023, 7.94, 22.19}, {2024, 8.15, 21.51},
 }
 
 // gap is the year's shortfall against the index, in points of real return.
@@ -139,17 +140,13 @@ func figTousTempsEcart() string {
 	}
 
 	// what the whole plate adds up to, in the one clear space it leaves
-	b.WriteString(sTxt(150, 136, 11, figSoft, "start", "600", "33 années de retard sur 53,"))
-	b.WriteString(sTxt(150, 150, 11, figSoft, "start", "600", "pour 0,8 point de moins par an."))
-
-	// the single year that splits the two four-year runs, named because the
-	// eye reads the notch as a respite and it was not one
-	b.WriteString(mTxt(x(1987.5), y(0)-9, 10, figMuted, "middle", "400", "1987 : +0,04"))
+	b.WriteString(sTxt(150, 136, 11, figSoft, "start", "600", "34 années de retard sur 53,"))
+	b.WriteString(sTxt(150, 150, 11, figSoft, "start", "600", "pour 1,0 point de moins par an."))
 
 	// the two extremes: the year the insurance paid, and the year the article's
 	// sentence ("+6 % quand le monde fait +25 %") really happened
-	b.WriteString(mTxt(x(2008.5), y(32.08)-7, 10.5, figBlue, "middle", "600", "2008 : +32"))
-	b.WriteString(sTxt(x(2013.5), y(-25.24)+14, 10.5, figBad, "middle", "600", "2013 : +5 % contre +30 %"))
+	b.WriteString(mTxt(x(2008.5), y(31.96)-7, 10.5, figBlue, "middle", "600", "2008 : +32"))
+	b.WriteString(sTxt(x(2013.5), y(-25.52)+14, 10.5, figBad, "middle", "600", "2013 : +5 % contre +30 %"))
 
 	// x axis
 	b.WriteString(line(56, 338, 616, 338, figRule, 1))
@@ -158,8 +155,8 @@ func figTousTempsEcart() string {
 	}
 
 	b.WriteString(sTxt(24, 376, 9.5, figMuted, "start", "400",
-		"Golden Butterfly moins 100 % actions, écart de rendement réel annuel. US, 1972-2024, rééquilibrage annuel en décembre."))
+		"Golden Butterfly moins 100 % actions, écart de rendement réel annuel. Sa jambe small value paie 1,0 point par an de coûts. US, 1972-2024."))
 	b.WriteString(sTxt(24, 390, 9.5, figMuted, "start", "400",
-		"Bandes grises : 1983-1986, 1988-1991, 1994-1999 et 2012-2017, les séries d'au moins quatre années de retard consécutives."))
+		"Bandes grises : 1983-1991, 1994-1999 et 2012-2017, les séries d'au moins quatre années de retard consécutives."))
 	return svg(640, 402, b.String())
 }
