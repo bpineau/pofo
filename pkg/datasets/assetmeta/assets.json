@@ -2434,12 +2434,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Pure gold price exposure via physical backing; inflation and tail-risk hedge, uncorrelated to equities",
+    "notes": "Pure gold price exposure via physical backing; inflation and tail-risk hedge, uncorrelated to equities. Fund and share class both launched 08/04/2011 (iShares factsheet), which is where the real quotes start; an earlier 2009 inception date in this record was wrong.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
+      "https://www.ishares.com/gls-download/literature/fact-sheet/sgln-ishares-physical-gold-etc-fund-fact-sheet-en-gb.pdf"
     ],
-    "since": "2009-12-11"
+    "since": "2011-04-08"
   },
   {
     "id": "IE00B4WXJJ64",
@@ -4478,13 +4479,13 @@
     "strategy": "physical-replication",
     "geography": null,
     "sectors": null,
-    "duration": 17.0,
+    "duration": 15.3,
     "distribution": "accumulating",
     "leverage": 1.0,
     "currency_exposure": {
       "USD": 100
     },
-    "notes": "The ACCUMULATING share class of the long US Treasury UCITS range, and the only long-Treasury wrapper here that is both accumulating and quoted with adjusted closes: the distributing twin IDTL (IE00BSKRJZ44) forces annual coupon taxation on a taxable account, and the EUR-hedged class DTLE (IE00BD8PGZ49) is distributing AND quoted by FT as a price-only NAV (see DTLETR). Unhedged, so a euro holder gets the crisis-USD kicker on top of the flight-to-quality rally, which is the case for holding it rather than a euro long-bond line; the corollary is that the hedge carry is not paid either. Deflation and recession sleeve.",
+    "notes": "The ACCUMULATING share class of the long US Treasury UCITS range, and the only long-Treasury wrapper here that is both accumulating and quoted with adjusted closes: the distributing twin IDTL (IE00BSKRJZ44) forces annual coupon taxation on a taxable account, and the EUR-hedged class DTLE (IE00BD8PGZ49) is distributing AND quoted by FT as a price-only NAV (see DTLETR). Unhedged, so a euro holder gets the crisis-USD kicker on top of the flight-to-quality rally, which is the case for holding it rather than a euro long-bond line; the corollary is that the hedge carry is not paid either. Deflation and recession sleeve. Effective duration 15.34 years for a 26.07-year average maturity (iShares factsheet, 30/06/2026): the segment's convexity is bought at a duration that shortens as yields rise, so re-read it at each refresh rather than assuming the 17 of a lower-rate year.",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291772/",
@@ -4861,33 +4862,41 @@
     "source": "ft",
     "xid": "8542",
     "currency": "EUR",
-    "fees": 2.16,
+    "fees": 2.11,
     "asset_class": "equity",
     "underlying": "French small- and mid-cap listed companies selected by Quality Value methodology",
     "benchmark_index": "CAC Mid & Small NR",
     "strategy": "active",
     "geography": {
-      "France": 100
+      "France": 89,
+      "Germany": 3,
+      "Norway": 3,
+      "Luxembourg": 2,
+      "Spain": 2,
+      "Other Europe": 1
     },
     "sectors": {
-      "Communication Services": 7,
-      "Consumer Discretionary": 8,
-      "Consumer Staples": 3,
-      "Energy": 9,
-      "Financials": 15,
-      "Industrials": 36,
-      "Information Technology": 12,
-      "Materials": 8,
-      "Other": 2
+      "Industrials": 34,
+      "Communication Services": 14,
+      "Consumer Discretionary": 14,
+      "Financials": 13,
+      "Information Technology": 11,
+      "Energy": 5,
+      "Consumer Staples": 4,
+      "Materials": 2,
+      "Other": 2,
+      "Real Estate": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active French small/mid-cap value fund since 1993; Quality Value stock-picking; PEA/assurance-vie eligible; strong long-term track record",
+    "notes": "Active French small/mid-cap fund whose SICAV was launched 17/08/1990, which is where its published track record and the FT series both start (the A class itself is younger, the NAV chain is not); Quality Value stock-picking; PEA-eligible, and PEA-PME is NOT among its wrappers unlike its Europe sibling. Geography and sectors from the July 2026 monthly reporting: 'France' is a mandate, not a book, and about a tenth of it sits outside France (Norway carries the fund's only material non-euro exposure). fees pins the KID's recurring charge (2.11%, DIC of 17/02/2026, management fee 1.95%), with 0.38% of transaction costs and a 10% performance fee over the CAC Mid & Small NR outside it.",
     "confidence": "high",
     "sources": [
-      "https://www.independance-am.com/en/our-funds/france-small/"
+      "https://www.independance-am.com/en/our-funds/france-small/",
+      "https://www.independance-am.com/wp-content/uploads/2026/08/260731-reporting-france-small-mid-x-eur-c2-en.pdf",
+      "https://www.independance-am.com/wp-content/uploads/2026/03/kiddoc-2026-02-17-fr-00-2026-02-17-lu0131510165-independance-am-sicav-france-small--and--mid-classe-a-c.pdf"
     ],
-    "since": "2002-07-08",
+    "since": "1990-08-17",
     "factors": [
       "size",
       "value",
@@ -5323,22 +5332,22 @@
     "benchmark_index": "Bloomberg Euro Government Inflation-Linked 1-10 Year",
     "strategy": "physical-replication",
     "geography": {
-      "France": 38,
-      "Italy": 30,
-      "Germany": 17,
-      "Spain": 13,
-      "Other": 2
+      "France": 43,
+      "Italy": 32,
+      "Spain": 16,
+      "Germany": 9
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR inflation hedge, intermediate segment (duration ~4.8y); pairs with nominal euro govts; European stagflation protection; brand-new EUR-acc share class (launched 2025-07), backcast from euro linker history; country split approximate",
-    "confidence": "medium",
+    "notes": "EUR inflation hedge, intermediate segment; pairs with nominal euro govts; European stagflation protection; brand-new EUR-acc share class (launched 2025-07), backcast from euro linker history. Modified duration 4.55, average remaining maturity 4.75 years, yield 2.98% and the four-country split come from the UBS monthly factsheet dated 30/06/2026 for the distributing class LU1645380368, which holds the same portfolio; the index only reaches France, Italy, Germany and Spain, so there is no residual bucket to carry.",
+    "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=LU1645380442"
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1645380442",
+      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260630-en.pdf"
     ],
     "since": "2025-07-15",
-    "duration": 4.8
+    "duration": 4.6
   },
   {
     "id": "LU1681038243",
@@ -5483,29 +5492,30 @@
     "source": "ft",
     "xid": "118135654",
     "currency": "EUR",
-    "fees": 2.15,
+    "fees": 2.11,
     "asset_class": "equity",
     "underlying": "European (ex-UK) small- and mid-cap listed companies selected by Quality Value methodology",
     "benchmark_index": "STOXX Europe Small ex UK NR",
     "strategy": "active",
     "geography": {
-      "France": 32,
-      "Greece": 7,
+      "France": 37,
       "Italy": 23,
-      "Netherlands": 7,
-      "Other Europe": 18,
-      "Spain": 13
+      "Other Europe": 13,
+      "Spain": 12,
+      "Netherlands": 8,
+      "Greece": 7
     },
     "sectors": {
-      "Communication Services": 2,
-      "Consumer Discretionary": 10,
-      "Energy": 6,
-      "Financials": 1,
-      "Health Care": 3,
       "Industrials": 58,
-      "Information Technology": 2,
-      "Materials": 15,
-      "Other": 3
+      "Consumer Discretionary": 14,
+      "Energy": 7,
+      "Materials": 5,
+      "Communication Services": 3,
+      "Health Care": 3,
+      "Information Technology": 3,
+      "Real Estate": 3,
+      "Financials": 2,
+      "Other": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -5516,11 +5526,12 @@
       "NOK": 3,
       "SEK": 3
     },
-    "notes": "Active European small/mid-cap value fund (ex-UK) since 2018; Quality Value ESG-integrated strategy; high industrials concentration; geography/sectors from the Dec 2025 monthly reporting (page 2 pie + sector table); currency_exposure ~90% EUR with a Nordic/Swiss tail (DKK/SEK/NOK/CHF)",
+    "notes": "Active European small/mid-cap value fund (ex-UK) since 2018; Quality Value ESG-integrated strategy; high industrials concentration (the manager's own labels put engineering, capital goods, defence, B2B services and transport together at 58%); geography/sectors from the July 2026 monthly reporting (page 2 pie + sector table), fund assets EUR 1,161m over 73 holdings; currency_exposure ~90% EUR with a Nordic/Swiss tail (DKK/SEK/NOK/CHF). fees pins the KID's recurring charge (2.11%, DIC of 17/02/2026, management fee 1.95%); on top of it sit 0.49% of transaction costs and a 10% performance fee over the STOXX index, worth 1.52% of NAV in the KID's own illustration, so the realized cost in a strong year is roughly double the pin.",
     "confidence": "high",
     "sources": [
       "https://www.independance-am.com/en/our-funds/europe-small/",
-      "https://www.independance-am.com/wp-content/uploads/2026/01/251231-reporting-europe-small-x-eur-c2-fr-fr.pdf"
+      "https://www.independance-am.com/wp-content/uploads/2026/08/260731-reporting-europe-small-x-eur-c2-en.pdf",
+      "https://www.independance-am.com/wp-content/uploads/2026/03/kiddoc-2026-02-17-fr-00-2026-02-17-lu1832174962-independance-am-sicav-europe-small-classe-a-c.pdf"
     ],
     "since": "2018-11-13",
     "factors": [
@@ -6296,24 +6307,25 @@
       "US": 72
     },
     "sectors": {
-      "Communication Services": 9,
+      "Communication Services": 8,
       "Consumer Discretionary": 9,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 16,
+      "Financials": 17,
       "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
+      "Information Technology": 29,
       "Materials": 3,
       "Real Estate": 2,
       "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on MSCI World; EUR share class; iShares; launched March 2024",
+    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on MSCI World; EUR share class; iShares; launched March 2024. Country and sector weights are the MSCI World index factsheet of 31/07/2026, not a fund sheet, so they refresh with the index.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE0002XZSHO1"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0002XZSHO1",
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb"
     ],
     "since": "2024-03-26"
   },
@@ -6701,9 +6713,9 @@
       "Other": 5
     },
     "sectors": {
-      "Information Technology": 30,
-      "Financials": 16,
-      "Industrials": 12,
+      "Information Technology": 29,
+      "Financials": 17,
+      "Industrials": 11,
       "Consumer Discretionary": 9,
       "Health Care": 9,
       "Communication Services": 8,
@@ -6711,15 +6723,16 @@
       "Energy": 4,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 2
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "World-equity FCPE offered inside Eres employee-savings plans (PEE/PER), the shelter-side equivalent of a plain MSCI World tracker at a 0.50%/yr all-in charge. An FCPE has NO public quotation, so it is served from its embedded reconstruction (MSCI World net TR in EUR less the stated 0.50%, ~1971) rather than any live source; the share class itself only launched 2024-03-05, so even a feed would be too short to backtest. The reconstruction follows the tracker-recipe convention (TER only), so the swap leg's withholding recovery is not credited and the series is, if anything, slightly conservative.",
+    "notes": "World-equity FCPE offered inside Eres employee-savings plans (PEE/PER), the shelter-side equivalent of a plain MSCI World tracker at a 0.50%/yr all-in charge. An FCPE has NO public quotation, so it is served from its embedded reconstruction (MSCI World net TR in EUR less the stated 0.50%, ~1971) rather than any live source; the share class itself only launched 2024-03-05, so even a feed would be too short to backtest. The reconstruction follows the tracker-recipe convention (TER only), so the swap leg's withholding recovery is not credited and the series is, if anything, slightly conservative. Country and sector weights are the MSCI World index factsheet of 31/07/2026; the 0.50% all-in charge comes from the plan's own fee schedule and cannot be re-verified from a public source, an FCPE publishing neither NAV nor KID openly.",
     "confidence": "medium",
     "sources": [
       "https://www.sicavonline.fr/index.cfm?action=fiche&code=0000X161074",
-      "https://citywire.com/fr/fund/eres-xtrackers-actions-monde/c930134"
+      "https://citywire.com/fr/fund/eres-xtrackers-actions-monde/c930134",
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb"
     ]
   },
   {
@@ -8135,7 +8148,7 @@
     "xid": "975922878",
     "currency": "EUR",
     "fees": 0.75,
-    "since": "2025-03-31",
+    "since": "2025-03-24",
     "asset_class": "managed-futures",
     "underlying": "Long/short global futures across equities, bonds, commodities and currencies (CTA replication)",
     "benchmark_index": "active (no index)",
@@ -8527,25 +8540,31 @@
     "xid": "85564769",
     "currency": "EUR",
     "fees": 0.07,
+    "since": "2015-03-02",
     "asset_class": "government-bond",
     "underlying": "euro-denominated sovereign bonds with 25+ years to maturity (eurozone governments)",
-    "benchmark_index": "Bloomberg Euro Treasury 25+ Year Bond Index",
+    "benchmark_index": "Bloomberg Euro Treasury 50bn 25+ Year Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "France": 40,
-      "Italy": 22,
-      "Germany": 15,
-      "Spain": 13,
-      "Other eurozone": 10
+      "France": 31,
+      "Germany": 20,
+      "Italy": 15,
+      "Spain": 11,
+      "Belgium": 9,
+      "Netherlands": 6,
+      "Austria": 5,
+      "Portugal": 2,
+      "Finland": 1
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "duration": 20.0,
-    "notes": "euro-native long-duration line, accumulating, cheapest and largest of the eurozone 25+ ETFs; deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists)",
-    "confidence": "medium",
+    "duration": 19.0,
+    "notes": "euro-native long-duration line, accumulating, cheapest (0.07%) and largest of the eurozone 25+ ETFs (EUR 276m against EUR 104m for the only peer, Xtrackers LU0290357846 at 0.15%); deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists), though Germany is a fifth of the book, not the sixth an older split suggested. Duration and country weights from the Amundi monthly reporting dated 30/06/2026 (rate sensitivity 18.96, yield 4.00%, 49 holdings); the ETF dates from 2015-03-02 but the FT quote series only starts 2018-09.",
+    "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=LU1686832194"
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1686832194",
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1686832194/FRA/FRA/RETAIL/ETF"
     ]
   },
   {
