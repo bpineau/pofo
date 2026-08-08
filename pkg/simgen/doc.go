@@ -31,6 +31,14 @@
 //     donor that does not quote daily is projected onto the engine's calendar
 //     first. The file starts at the deepest donor and nothing is shipped behind
 //     it;
+//   - movesOnly is the other half of that projection, for a donor that quotes
+//     daily on paper and STALE in fact (a thin listing whose feed reprints the
+//     previous close for days on end). The repeated prints are dropped, which
+//     turns each flat run back into the gap it really is, and the surviving
+//     levels become anchors for the proxy's texture (shapedSeries). No
+//     rescaling is applied to such an era: a scale factor stretches a shape,
+//     and this one has to be replaced. See chsnRecipe, which measures what the
+//     staleness does to daily volatility and what the treatment gives back;
 //   - financed serves the USD overnight financing rate (usdOvernight: ^SOFR
 //     from 2018-04, effective fed funds from 1954, the T-bill rate before), the
 //     rate a FUTURES-based leg pays. Two rates run through these

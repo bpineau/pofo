@@ -5318,6 +5318,38 @@
     }
   },
   {
+    "id": "LU1645380368",
+    "isin": "LU1645380368",
+    "name": "UBS Core BBG Euro Inflation Linked Bond 1-10 UCITS ETF EUR dist",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "symbol": "FRC3.DE",
+    "currency": "EUR",
+    "fees": 0.08,
+    "asset_class": "inflation-linked-bond",
+    "underlying": "Euro-area government inflation-linked bonds (French OATei, Italian BTPei, German Bundei, Spanish Bonosi), 1-10 year maturities",
+    "benchmark_index": "Bloomberg Euro Government Inflation-Linked 1-10 Year",
+    "strategy": "physical-replication",
+    "geography": {
+      "France": 43,
+      "Italy": 32,
+      "Spain": 16,
+      "Germany": 9
+    },
+    "sectors": null,
+    "distribution": "distributing",
+    "leverage": 1.0,
+    "notes": "Distributing twin of the EUR-acc class LU1645380442, same portfolio, quoted on Xetra since 2017-10-31; it is the deep donor of that class's backcast, which is the only reason it is catalogued. Total return is available from the YAHOO ADJUSTED closes ONLY (they add back the semi-annual distributions, +17.90% cumulated over 2017-2026); the FT series of the same listing (xid 437262179) is price-only and understates the return by about 1.93%/yr, so it must never be used here. Yahoo prints are STALE before ~2020-11 (78-80% zero-return days in 2018-2019, flat runs up to 24 trading days): the level path is sound, the daily texture of that era is fiction and is replaced by the linker-plus-cash composite's in the backcast. TER 0.20% to end-2023, 0.10% from 2024-01, 0.08% from 2025-07-15.",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1645380368",
+      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260630-en.pdf"
+    ],
+    "since": "2017-10-31",
+    "duration": 4.6
+  },
+  {
     "id": "LU1645380442",
     "isin": "LU1645380442",
     "aliases": [
