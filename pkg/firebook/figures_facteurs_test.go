@@ -19,6 +19,7 @@ import (
 // tests below can recompute every number the plate freezes.
 func scvRealLegs(t *testing.T) (months []int, scv, sp []float64) {
 	t.Helper()
+	frozenAgainstData(t)
 	byMonth := func(id string) map[int]float64 {
 		s, ok, err := marketdata.ReadSimdataFS(datasets.Refdata(), id)
 		if err != nil || !ok {

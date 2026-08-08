@@ -66,7 +66,8 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
 refresh: cape broadsample macropanel euro-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
-	@echo "refreshed; now run 'make check' and 'make golden'"
+	@echo "refreshed; now run 'make check' and 'make golden'."
+	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
 .PHONY: simdata
 simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the binary
@@ -121,6 +122,14 @@ snapshots: ## (Re)generate the offline fallback snapshots in pkg/marketdata/data
 .PHONY: book-drift
 book-drift: build ## What the FIRE book's translations owe their French source
 	./pofo -book-drift
+
+# The book's plates freeze numbers read off the bundled datasets. Refreshing the
+# data is allowed to move them, so those checks are kept out of `make check`
+# (see frozenAgainstData in pkg/firebook): a data refresh never has to become a
+# code change. This target is where the debt shows up, on demand.
+.PHONY: figure-drift
+figure-drift: ## What the FIRE book's frozen figures owe the bundled data (optional after make refresh)
+	POFO_FIGURE_DRIFT=1 $(GO) test ./pkg/firebook/ -count=1
 
 .PHONY: demo
 demo: build ## Demo report on the example portfolios

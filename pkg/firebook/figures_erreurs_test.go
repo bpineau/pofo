@@ -46,6 +46,7 @@ func errRefPlan() decumul.Plan {
 }
 
 func TestErreursPlateMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	ruin := func(p decumul.Plan) float64 {
 		return p.Simulate(errTestPaths, errTestWorkers, errTestSeed).RuinProb() * 100
 	}
@@ -130,6 +131,7 @@ func TestErreursPlateMatchesTheEngine(t *testing.T) {
 // budget. This checks the arithmetic and that the article still states the band
 // that 12 % sits in.
 func TestErreursFrictionMatchesTheArticle(t *testing.T) {
+	frozenAgainstData(t)
 	if got := 35000 * 1.12; math.Abs(got-39200) > 1e-9 {
 		t.Errorf("35 k€ raised by 12 %% = %.0f, the plate says 39 200", got)
 	}

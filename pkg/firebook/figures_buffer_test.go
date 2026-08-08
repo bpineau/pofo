@@ -24,6 +24,7 @@ type underwaterEpisode struct {
 // exactly as the comment on bufferEpisodes describes the recipe.
 func underwaterEpisodes(t *testing.T) []underwaterEpisode {
 	t.Helper()
+	frozenAgainstData(t)
 	s, err := replay.Reference()
 	if err != nil {
 		t.Fatal(err)

@@ -65,6 +65,7 @@ func vrpPlan() decumul.Plan {
 }
 
 func TestVivantRuinePartiMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	surv := func(years float64) float64 {
 		return decumul.FrenchMortality.CoupleSurvival(vrpAge, years)
 	}
@@ -154,6 +155,7 @@ func TestVivantRuinePartiMatchesTheEngine(t *testing.T) {
 // The plate is only honest if the article states the same figures and the same
 // caveats; the numbers no longer live in the prose alone, so guard the pair.
 func TestVivantRuinePartiAgreesWithTheArticle(t *testing.T) {
+	frozenAgainstData(t)
 	raw, err := assets.ReadFile("assets/book/fr/horizon-et-esperance-de-vie.md")
 	if err != nil {
 		t.Fatal(err)

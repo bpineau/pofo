@@ -61,6 +61,7 @@ func coupeMinDepth(seq scenario.Sequence, spend float64, dur int) (depth float64
 
 func coupeSequence(t *testing.T) scenario.Sequence {
 	t.Helper()
+	frozenAgainstData(t)
 	ref, err := replay.Reference()
 	if err != nil {
 		t.Fatal(err)

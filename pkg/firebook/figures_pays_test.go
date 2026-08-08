@@ -18,6 +18,7 @@ const safemaxHorizon = 30
 // the equity and the bond leg are present, plus the panel's year span.
 func broadSample6040(t *testing.T) (map[string]map[int]float64, int, int) {
 	t.Helper()
+	frozenAgainstData(t)
 	r := csv.NewReader(bytes.NewReader(datasets.BroadSample()))
 	r.Comment = '#'
 	recs, err := r.ReadAll()
@@ -256,6 +257,7 @@ func TestSafemaxPaysRanking(t *testing.T) {
 // are the plate's answer to the Dimson-Marsh-Staunton numbers quoted elsewhere
 // in the book.
 func TestSafemaxFranceEquityFootnote(t *testing.T) {
+	frozenAgainstData(t)
 	r := csv.NewReader(bytes.NewReader(datasets.BroadSample()))
 	r.Comment = '#'
 	recs, err := r.ReadAll()

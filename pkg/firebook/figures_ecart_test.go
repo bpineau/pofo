@@ -50,6 +50,7 @@ func ecartRecompute(t *testing.T, legs map[string]func(prev, cur string) float64
 // plates use, out of the bundled series alone.
 func ecartLegs(t *testing.T) (map[string]func(prev, cur string) float64, map[string]float64) {
 	t.Helper()
+	frozenAgainstData(t)
 	sim, ref := datasets.Simdata(), datasets.Refdata()
 	price := map[string]map[string]float64{
 		"equities":   ttMonthEnds(t, sim, "SP500"),

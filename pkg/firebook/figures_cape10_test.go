@@ -25,6 +25,7 @@ type capePair struct {
 // marketdata snapshot), so this never touches the network.
 func capeRebuild(t *testing.T) []capePair {
 	t.Helper()
+	frozenAgainstData(t)
 	key := func(d time.Time) int { return d.Year()*12 + int(d.Month()) - 1 }
 
 	cape := map[int]float64{}
