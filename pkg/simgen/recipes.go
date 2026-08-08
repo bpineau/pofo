@@ -1472,7 +1472,6 @@ const (
 	vfitxTER = 0.0020
 	vustxTER = 0.0020
 	vtmgxTER = 0.0005
-	veiexTER = 0.0029
 	ezuTER   = 0.0050
 	eunhTER  = 0.0007
 	dtlaTER  = 0.0007

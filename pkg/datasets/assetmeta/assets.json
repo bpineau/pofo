@@ -1115,7 +1115,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes; bond leg is a 2/5/10/30y govt-futures ladder (~7y effective duration); currency_exposure = MSCI World country weights x0.9 equity notional + USD collateral. sectors are the tracked index's, the MSCI World factsheet of 31/07/2026, per the stacked-fund convention; geography is the fund's own book, which the ESG screen leaves 3 points lighter in US than the plain index (68.6% against 72.0% on the same date).",
+    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes. The bond leg is a FOUR-currency govt-futures basket, not a US ladder: ~80% US (2y/10y/30y equal notional) / 11% German (Bund/Buxl/Schatz) / 6% Japanese (mini 10y JGB) / 3% British (Long Gilt), per the audited Schedule of Investments of 31/12/2025, blended effective duration ~7y; collateral is US T-bills with FX forwards rolling the non-USD balances away. currency_exposure = MSCI World country weights x0.9 equity notional + USD collateral. sectors are the tracked index's, the MSCI World factsheet of 31/07/2026, per the stacked-fund convention; geography is the fund's own book, which the ESG screen leaves 3 points lighter in US than the plain index (68.6% against 72.0% on the same date). Backcast design: docs/ntsg-global-efficient-core-design.md.",
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc",
