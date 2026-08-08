@@ -132,6 +132,7 @@ func TestSmoothingFigureMatchesTheEngine(t *testing.T) {
 
 // The CAPE plate freezes 146 Januaries; read the dataset back and fail on drift.
 func TestCapeJanuariesMatchTheDataset(t *testing.T) {
+	frozenAgainstData(t)
 	byYear := map[int]float64{}
 	for _, l := range strings.Split(string(datasets.CAPE()), "\n") {
 		f := strings.Split(l, ",")
@@ -172,6 +173,7 @@ func TestCapeJanuariesMatchTheDataset(t *testing.T) {
 // The vintage plate freezes one number per forty-year window of the record;
 // recompute all of them.
 func TestBengenVintagesMatchTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	ref, err := replay.Reference()
 	if err != nil {
 		t.Fatal(err)

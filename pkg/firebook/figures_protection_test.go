@@ -19,6 +19,7 @@ import (
 // be checked against every month since.
 func rattrapReal(t *testing.T) ([]time.Time, []float64) {
 	t.Helper()
+	frozenAgainstData(t)
 	s, ok, err := marketdata.ReadSimdataFS(datasets.Refdata(), "SP500-USD")
 	if err != nil {
 		t.Fatal(err)
@@ -128,6 +129,7 @@ func TestRattrapTroughAndRecovery(t *testing.T) {
 
 // The footnote's two ratios, over the same window as the curve.
 func TestRattrapFootnoteRatios(t *testing.T) {
+	frozenAgainstData(t)
 	s, _, err := marketdata.ReadSimdataFS(datasets.Refdata(), "SP500-USD")
 	if err != nil {
 		t.Fatal(err)

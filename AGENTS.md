@@ -28,15 +28,22 @@ make trendnet-refdata # regenerate the monthly NET managed-futures reference (ne
 make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
 make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
 make book-drift # what the FIRE book's translations owe their French source
+make figure-drift # what the FIRE book's frozen figures owe the bundled data
 ```
 
 `make refresh` runs every generator below it in dependency order (references
 first, then the simdata built on them, then the offline snapshots); the
 individual targets are for touching one series. Follow it with `make check` and
-`make golden`. Expect the FIRE book's frozen plates to need re-freezing when a
-bundled series moves under one: their guard tests fail on purpose and name the
-literal to update (`figures_cape10.go`, `capeJanuaries` in
-`figures_strategies.go`), so a data revision is never absorbed silently.
+`make golden`, both of which must stay green: refreshing data must never require
+a code change.
+
+The FIRE book's plates freeze numbers read off the bundled datasets, so a
+refresh does move some of them. Those recomputation checks are therefore kept
+out of `make check` by `frozenAgainstData` (`pkg/firebook/figures_drift_test.go`)
+and run only under `make figure-drift`, which names the plate and the literal to
+update. The book is allowed to lag its data; catching it up is a separate,
+deliberate job. The plates' rendering, wording and house-rule tests are not
+gated and keep running everywhere.
 
 Tests never touch the network: HTTP sources are faked with `httptest`
 (`stubAllBases` in `pkg/marketdata/client_test.go`), file sources with

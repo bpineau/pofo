@@ -13,6 +13,7 @@ import (
 // panel: year -> {equity, bond}.
 func weimarPanel(t *testing.T) map[int][2]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	out := map[int][2]float64{}
 	for _, line := range strings.Split(string(datasets.BroadSample()), "\n") {
 		if strings.HasPrefix(line, "#") || !strings.HasPrefix(line, "DEU,") {

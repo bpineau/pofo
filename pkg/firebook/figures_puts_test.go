@@ -68,6 +68,7 @@ func pdRecompute(equity float64, sp, bonds map[string]float64) (cagr, drawdown f
 // from the bundled series and fails the moment the plate and the data disagree,
 // which is also what happens when those series are regenerated.
 func TestPutsLadderMatchesTheData(t *testing.T) {
+	frozenAgainstData(t)
 	sim := datasets.Simdata()
 	sp := ttMonthEnds(t, sim, "SP500")
 	bonds := ttMonthEnds(t, sim, "IEF")
