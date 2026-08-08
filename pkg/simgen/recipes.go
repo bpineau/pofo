@@ -37,6 +37,8 @@ func All() []Recipe {
 		kmlmRecipe(),
 		aqrmfRecipe(),
 		aqrmfHedgedRecipe(),
+		aqrIAETRecipe(),
+		aqrIAE1FTRecipe(),
 		indepEuropeRecipe(),
 		ctaRecipe(),
 		rssbRecipe(),
@@ -2870,12 +2872,28 @@ func aqrmfHedgedRecipe() Recipe {
 	}
 }
 
-// aqrHedgedBuild builds the EUR-hedged AQR series: the TSMOM reconstruction
-// hedged to EUR (r_eur = r_usd − usd_cash + eur_cash, accruals from the
-// strategy's own frame), then the real B EUR sister class spliced over it,
-// lifted by aqrBEURFeeWedge and truncated at its first long NAV gap (see
-// aqrmfHedgedRecipe for the measured rationale of both). When the donor is
-// unavailable (offline builds) the reconstruction stands alone.
+// aqrHedgedBuild builds the EUR-hedged AQR series for the FLAT-fee class
+// (RAEF): the shared reconstruction with the B EUR donor lifted by
+// aqrBEURFeeWedge, the performance fee the donor pays and RAEF does not.
+func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	return aqrHedgedRecon(f, from, -aqrBEURFeeWedge,
+		"AQR Managed Futures B EUR (real donor, performance fee added back)")
+}
+
+// aqrHedgedRecon builds the EUR-hedged AQR series every EUR class of the
+// sub-fund shares: the TSMOM reconstruction hedged to EUR (r_eur = r_usd −
+// usd_cash + eur_cash, accruals from the strategy's own frame), then the real
+// B EUR sister class spliced over it, charged donorAdj and truncated at its
+// first long NAV gap. When the donor is unavailable (offline builds) the
+// reconstruction stands alone.
+//
+// donorAdj is what carries the donor from ITS price list to the target's, in
+// the sign afterAnnualFee takes: positive charges the donor (the target is
+// dearer), negative lifts it (the target is cheaper). Every EUR class holds
+// the same portfolio, so this difference is the whole of what separates their
+// NAVs, and the caller reads it off published ongoing charges rather than off
+// an observed return gap. It is one number and not a schedule because the
+// classes' price lists have not moved over the donor's era.
 //
 // The truncation is load bearing beyond ending the segment where the class was
 // emptied. The donor's own NAV history resumes on 2023-10-19 with one stale
@@ -2884,7 +2902,7 @@ func aqrmfHedgedRecipe() Recipe {
 // alone drags the post-gap daily correlation with RAEF from 0.999 to 0.777.
 // Nothing downstream needs those NAVs anyway, since real RAEF quotes cover
 // 2021-04 onward, so the head of the series is the only part kept.
-func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+func aqrHedgedRecon(f Fetcher, from time.Time, donorAdj float64, donorName string) (*marketdata.Series, error) {
 	cfg := mfConfig(0.09, 0.0079)
 	// The USD leg is the same donor chain the unhedged class uses: the
 	// manager's own US fund from 2010, another manager's programme behind it,
@@ -2927,9 +2945,188 @@ func aqrHedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return hedged, nil
 	}
 	donor = truncateAtGap(donor, 30)
-	donor = afterAnnualFee("AQR Managed Futures B EUR (real donor, performance fee added back)",
-		donor, -aqrBEURFeeWedge)
+	donor = afterAnnualFee(donorName, donor, donorAdj)
 	return Splice(donor, hedged), nil
+}
+
+// Ongoing charges of the AQR Managed Futures UCITS EUR classes: the part of
+// each class's price list that is levied INSIDE its net asset value, as a
+// fraction per year. Sources agree to a basis point: the Financial Times
+// tearsheet of each class, and the audited Total Net Expense Ratio the Swiss
+// annex of the report publishes per class before any performance fee (RAEF
+// 0.24 %, IAET 0.78 % as at 30 September 2025).
+//
+// These are what separates the classes' NAVs, and NOT the headline management
+// charge: RAEF's list says 1.00 % management, yet only 0.23 % ever reaches its
+// NAV, so its published record is that of a share class carrying a quarter
+// point of costs. Any comparison of these classes on NAV alone therefore reads
+// a fee plumbing difference as manager skill; see the catalog notes of
+// LU1662501532 for what that means for a buyer.
+const (
+	aqrRAEFOngoing   = 0.0023 // LU1662501532, flat, no performance fee
+	aqrBEUROngoing   = 0.0073 // LU1103258197, plus a 10 % performance fee
+	aqrIAETOngoing   = 0.0078 // LU1662498721, plus a 10 % performance fee
+	aqrIAE1FTOngoing = 0.0126 // LU2622190622, flat, no performance fee
+)
+
+// aqrIAETRecipe backcasts the IAET EUR class of the AQR Managed Futures UCITS
+// fund (LU1662498721, real from 2022-03), an institutional-series class that
+// retail platforms list and that is, for some buyers, the only reachable way
+// into this programme.
+//
+// Its donor is the legacy B EUR class (LU1103258197) rather than the flat-fee
+// RAEF, and the reason is that the two share a FEE STRUCTURE and not merely a
+// portfolio: 0.60 % management inside a ~0.75 % ongoing charge, plus the same
+// 10 % performance fee over the same EUR STR hurdle, high-on-high, crystallised
+// each 31 March. A performance fee cannot be removed from a NAV after the fact
+// (the crystallisation path is not observable from daily prices, which is what
+// forces the flat-fee class to correct its donor with a constant, see
+// aqrBEURFeeWedge); it does not need to be removed when the target pays the
+// same one. The donor carries it, already correctly shaped, for free.
+//
+// What is left to align is the ongoing charge, 0.78 % against the donor's
+// 0.73 %, so the donor segment is charged 0.05 %/yr. Measurement agrees and was
+// taken before the recipe was written: over the 672 common days the two classes
+// both quote (2023-10-20 to 2026-08-07, the donor's stale re-seeding print
+// dropped), their daily returns correlate at 0.9991 and IAET trails B EUR by
+// 0.096 points a year, against the 0.05 the price lists predict.
+//
+// Before the donor's own 2015-03 start the series falls back on the same
+// EUR-hedged reconstruction the other classes use, fee-aligned as class A.
+// That alignment fits this class better than any other: class A's list (0.79 %
+// plus 10 % of the excess over a cash hurdle) is IAET's list to a basis point.
+func aqrIAETRecipe() Recipe {
+	return Recipe{
+		ID:   "LU1662498721",
+		Name: "AQR Managed Futures UCITS (IAET EUR): the sister class that pays the same fees",
+		Method: "real B EUR sister class (LU1103258197, same 0.60% management and same 10% performance fee over EUR STR, daily correlation 0.9991 on their 672-day overlap) from 2015-03 to its 2021-12 NAV gap, charged 0.05 %/yr for the difference between the two published ongoing charges (0.78 against 0.73); " +
+			"before that the same USD donor chain as the unhedged class (AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03, where the file starts) hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real LU1662498721 grafted from its 2022-03 inception",
+		Build:           aqrIAETBuild,
+		Donors:          append([]string{"LU1103258197"}, aqrmfDonors...),
+		ValidateAgainst: "LU1662498721",
+		SpliceReal:      "LU1662498721",
+	}
+}
+
+// aqrIAETBuild is the shared EUR-hedged reconstruction with the B EUR donor
+// charged the difference between the two classes' ongoing charges (positive:
+// IAET is the dearer of the two), then RAEF laid over whatever the donor's
+// 2021-12 emptying leaves uncovered.
+//
+// That bridge exists because the donor stops two and a half months before IAET
+// starts quoting, which would leave the file with a hole AND with no window on
+// which to validate it at all. RAEF is the only real EUR class covering the
+// stretch, and it is flat-fee, so it is charged the base difference of the two
+// ongoing charges and NOTHING for the performance fee IAET pays and it does
+// not: that fee is not removable from a NAV after the fact, and it is not
+// modelled here.
+//
+// Two consequences, both deliberate. The file's consumed reconstruction carries
+// no performance fee over 2021-12 to 2022-03, eleven weeks out of thirty years.
+// And the validation window, which lies entirely inside the bridge, reads that
+// missing fee as a level gap of roughly three quarters of a point a year: it
+// grades the bridge, not the donor. The donor's own grade is the measurement in
+// aqrIAETRecipe, 0.9991 daily correlation and 0.096 points a year against the
+// price lists' 0.05.
+func aqrIAETBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	donorEra, err := aqrHedgedRecon(f, from, aqrIAETOngoing-aqrBEUROngoing,
+		"AQR Managed Futures B EUR (real donor, charged IAET's ongoing charge)")
+	if err != nil {
+		return nil, err
+	}
+	bridge, err := f.Fetch("LU1662501532", from)
+	if err != nil || bridge == nil || len(bridge.Points) == 0 {
+		return donorEra, nil
+	}
+	bridge = afterAnnualFee("AQR Managed Futures RAEF EUR (bridge, charged IAET's ongoing charge)",
+		trimBefore(bridge, donorEra.Last().Date), aqrIAETOngoing-aqrRAEFOngoing)
+	if len(bridge.Points) == 0 {
+		return donorEra, nil
+	}
+	return Splice(bridge, donorEra), nil
+}
+
+// trimBefore drops the points of s dated before d, keeping the tail. It returns
+// an empty series when nothing is left, which a caller must handle.
+func trimBefore(s *marketdata.Series, d time.Time) *marketdata.Series {
+	out := *s
+	out.Points = nil
+	for _, p := range s.Points {
+		if !p.Date.Before(d) {
+			out.Points = append(out.Points, p)
+		}
+	}
+	return &out
+}
+
+// aqrIAE1FTRecipe backcasts the IAE1FT EUR class (LU2622190622, launched
+// 2026-05), the flat-fee institutional-series class: 1.26 % of ongoing charge
+// inside the NAV and NO performance fee.
+//
+// Its donor is RAEF (LU1662501532), the other flat-fee EUR class, taken whole:
+// the real quotes from 2021-04 and, behind them, the reconstruction RAEF's own
+// recipe assembles. Same portfolio, same absence of a performance fee, so the
+// conversion is one constant: 1.03 %/yr, the difference between the two
+// published ongoing charges (1.26 against 0.23). Inheriting RAEF's series also
+// inherits the one judgement call in it, the constant that corrects its own B
+// EUR donor, which is the right outcome: two flat-fee classes of one fund
+// should not disagree about their shared past.
+//
+// Measurement agrees and was taken before the recipe was written: over the 59
+// common days the two classes both quote (2026-05-11 to 2026-08-07) their daily
+// returns correlate at 1.0000 and IAE1FT trails RAEF by 0.995 points a year,
+// against the 1.03 the price lists predict.
+//
+// The economics are worth stating because they are not what the two headline
+// numbers suggest: this class and RAEF carry the same 1.00 % management charge,
+// but here it is levied inside the NAV and there it is not. A holder of this
+// class sees its whole cost in the price it is quoted at.
+func aqrIAE1FTRecipe() Recipe {
+	return Recipe{
+		ID:   "LU2622190622",
+		Name: "AQR Managed Futures UCITS (IAE1FT EUR): the flat-fee sister class, charged in the NAV",
+		Method: "the flat-fee RAEF class (LU1662501532) whole, its real quotes from 2021-04 over its own reconstruction (real B EUR 2015-03, then AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03 hedged to EUR, where the file starts), " +
+			"charged 1.03 %/yr for the difference between the two published ongoing charges (1.26 against 0.23), the two classes being flat-fee and otherwise identical; real LU2622190622 grafted from its 2026-05 inception",
+		Build:           aqrIAE1FTBuild,
+		Donors:          append([]string{"LU1662501532", "LU1103258197"}, aqrmfDonors...),
+		ValidateAgainst: "LU2622190622",
+		SpliceReal:      "LU2622190622",
+	}
+}
+
+// aqrIAE1FTBuild is RAEF's whole published history, real quotes included,
+// charged the difference between the two flat-fee classes' ongoing charges.
+// The real RAEF quotes are spliced here rather than left to SpliceReal, which
+// serves the TARGET's own quotes and knows nothing of a sister class.
+//
+// The charge is a SCHEDULE and not a constant because RAEF's own series is not
+// at RAEF's price list throughout. From its B EUR donor's first NAV it is: the
+// donor is lifted to the flat-fee class's economics and the real quotes after
+// it ARE that class. Before that date the leg is the TSMOM reconstruction
+// fee-aligned as class A, whose list (0.79 % plus a performance fee worth 1.58
+// points of average class NAV in the year to 31 March 2026) is already heavier
+// than this class's 1.26 % flat. Charging the difference there as well would
+// correct one fee twice, which is the quiet way to lose a point a year, so
+// that era is charged nothing and stays where RAEF's own recipe leaves it.
+func aqrIAE1FTBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	recon, err := aqrHedgedBuild(f, from)
+	if err != nil {
+		return nil, err
+	}
+	whole := recon
+	if real, rerr := f.Fetch("LU1662501532", from); rerr == nil && real != nil && len(real.Points) > 0 {
+		whole = Splice(real, recon)
+	}
+	donor, derr := f.Fetch("LU1103258197", from)
+	if derr != nil || donor == nil || len(donor.Points) == 0 {
+		return nil, fmt.Errorf("IAE1FT: the B EUR donor dates the fee schedule: %w", derr)
+	}
+	steps := []feeStep{
+		{Annual: 0},
+		{From: donor.Points[0].Date, Annual: aqrIAE1FTOngoing - aqrRAEFOngoing},
+	}
+	return afterFeeSteps("AQR Managed Futures RAEF EUR (real class, charged IAE1FT's ongoing charge)",
+		whole, steps), nil
 }
 
 // truncateAtGap cuts a series at its first quote gap longer than maxDays
