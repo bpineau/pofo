@@ -4,8 +4,10 @@
 #   the real DAILY shape of the Frankfurt DM/USD fixing (Bundesbank BBEX3 D.USD.DEM.AA.AC.000 via DBnomics),
 #   blended anchors+shape as in pkg/simgen/shape.go: month-end levels are exactly the ECU anchors.
 # 1971-01..1978-11 (pre-ECU): daily 1/(DM/USD) rescaled to the first ECU anchor; levels follow the DM by construction.
-# Regenerate: FRED fredgraph.csv?id=EXUSEC and =DEXUSEU + DBnomics BUBA/BBEX3/D.USD.DEM.AA.AC.000. See pkg/marketdata/currency.go.
-# generated: 2026-07-03
+# Regenerate: make snapshots (cmd/gen-snapshots) refetches the DEXUSEU leg only and
+# carries the pre-1999 head over; that head came from FRED EXUSEC + DBnomics
+# BUBA/BBEX3/D.USD.DEM.AA.AC.000. See pkg/marketdata/currency.go.
+# generated: 2026-08-08
 1971-01-04,0.731763
 1971-01-05,0.731763
 1971-01-06,0.731803
@@ -13872,3 +13874,27 @@
 2026-06-24,1.134800
 2026-06-25,1.138500
 2026-06-26,1.140300
+2026-06-29,1.142500
+2026-06-30,1.141700
+2026-07-01,1.138400
+2026-07-02,1.144800
+2026-07-06,1.142600
+2026-07-07,1.142300
+2026-07-08,1.139600
+2026-07-09,1.143900
+2026-07-10,1.143800
+2026-07-13,1.140200
+2026-07-14,1.142800
+2026-07-15,1.143600
+2026-07-16,1.144700
+2026-07-17,1.144000
+2026-07-20,1.141100
+2026-07-21,1.140800
+2026-07-22,1.141400
+2026-07-23,1.137300
+2026-07-24,1.138500
+2026-07-27,1.137600
+2026-07-28,1.140100
+2026-07-29,1.138400
+2026-07-30,1.152200
+2026-07-31,1.151900
