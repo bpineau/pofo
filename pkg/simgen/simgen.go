@@ -49,6 +49,13 @@ type Recipe struct {
 	// SpliceReal, when non-empty, grafts this real series on top of the
 	// composite so the simdata file carries real data wherever available.
 	SpliceReal string
+
+	// Donors lists the records this recipe splices behind the asset, nearest
+	// trade first, for the recipes built as a donor chain. It is declared for
+	// the audit report (Audit), which grades every junction of the chain on
+	// its own overlap; a recipe passes the same slice to its Build, so the two
+	// cannot drift apart. Empty for the recipes that are not chains.
+	Donors []string
 }
 
 // Frame holds daily returns of several components aligned on the dates where

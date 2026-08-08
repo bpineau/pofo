@@ -74,6 +74,10 @@ simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the b
 	./pofo -gen-simdata
 	$(GO) build -o pofo ./cmd/pofo
 
+.PHONY: simdata-qa
+simdata-qa: build ## Reconstruction quality report: every engine vs the real quotes (network), opened in the browser
+	./pofo -verify-simdata
+
 .PHONY: broadsample
 broadsample: ## (Re)generate the bundled JST broad-sample panel (network) then rebuild
 	$(GO) run ./cmd/gen-broadsample

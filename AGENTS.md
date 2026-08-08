@@ -27,6 +27,7 @@ make trend-refdata # regenerate the monthly trend reference (network); run make 
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
 make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
 make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
+make simdata-qa # reconstruction quality: every engine vs the real quotes, HTML (network)
 make book-drift # what the FIRE book's translations owe their French source
 make figure-drift # what the FIRE book's frozen figures owe the bundled data
 ```
@@ -61,6 +62,10 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 - Chart hover/tooltip data: grep the rendered HTML for
   `<metadata class="hover">` and replay the front-end math on the JSON
   payload in node/python instead of driving a browser.
+- Is a backcast any good? `./pofo -verify-simdata [ID...]` replays each engine
+  without its real graft, against the real quotes, and opens an HTML report:
+  level and path verdicts, drift panel, donor-chain junctions. This is the
+  cheapest way to see what a recipe change did.
 - One golden at a time: `go test -v -run TestGoldenGold ./pkg/datasets/golden/`.
   Chart snapshots moved on purpose? Regenerate with
   `UPDATE_SNAPSHOTS=1 go test ./pkg/chart -run TestChartSnapshots` and justify
@@ -85,7 +90,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/epub` | generic stdlib-only EPUB 3 writer (`Book`/`Chapter` in, `.epub` bytes out) + `Normalize` (HTML5 -> XHTML); deterministic output for a given `Modified`; see `docs/epub-export-design.md` |
 | `pkg/opds` | generic stdlib-only OPDS 1.2 acquisition-feed builder (`Feed`/`Entry` in, Atom `.xml` bytes out); book-agnostic, relative acquisition links, deterministic output for fixed `Updated`; consumed by firebook's `opds.xml` route so KOReader can add the catalog once and refresh the book in place |
 | `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); `epub.go` assembles the whole book as an EPUB 3 (`EPUB`, served at `le-fire-tranquille.epub` and by `pofo -export-epub`), and the handler serves an OPDS 1.2 catalog at `opds.xml` (built via `pkg/opds`, relative acquisition link, shares the lazy EPUB build time) for KOReader; everything renders through an `Edition` value (`French`, plus `English` = "The Quiet FIRE", translated slugs under `assets/book/en/`, mounted at `/firebook/en/`, index grows with the translation) and the package-level API is a thin French wrapper; `Drift` / `pofo -book-drift` / `make book-drift` report what a translation owes, via per-article source stamps; plan, depth conventions and progress ledger in `docs/fire-book-design.md`, English edition in `docs/fire-book-en-edition-design.md` |
-| `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM engine, donor chains) into simdata files |
+| `pkg/simgen` | rebuilds the missing past of complex assets (composites, TSMOM engine, donor chains) into simdata files; `audit.go` grades every engine against the real quotes (`Audit`/`AuditAll`, behind `pofo -verify-simdata`) |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/compare` | compute the comparison model (fetch, build, simulate, common window, nominal/real stats) and assemble the HTML report `Page`; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
