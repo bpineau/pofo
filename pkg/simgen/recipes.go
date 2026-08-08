@@ -2957,11 +2957,20 @@ func aqrHedgedRecon(f Fetcher, from time.Time, donorAdj float64, donorName strin
 // 0.24 %, IAET 0.78 % as at 30 September 2025).
 //
 // These are what separates the classes' NAVs, and NOT the headline management
-// charge: RAEF's list says 1.00 % management, yet only 0.23 % ever reaches its
-// NAV, so its published record is that of a share class carrying a quarter
-// point of costs. Any comparison of these classes on NAV alone therefore reads
-// a fee plumbing difference as manager skill; see the catalog notes of
-// LU1662501532 for what that means for a buyer.
+// charge: RAEF's prospectus list is 1.29 % (1.00 management, 0.24 expense cap,
+// 0.05 taxe d'abonnement), yet only 0.23 % ever reaches its NAV, because the
+// prospectus lets the manager waive the management fee at its sole discretion
+// and for that class it does. Its published record is therefore that of a share
+// class carrying a quarter point of costs, and any comparison of these classes
+// on NAV alone reads a fee plumbing difference as manager skill.
+//
+// The waiver is revocable, which makes aqrRAEFOngoing the least durable number
+// in this file: reinstating the fee would take RAEF to 1.29 %/yr and would move
+// the IAE1FT conversion below from 1.03 to nearly zero. Re-read the FT ongoing
+// charge and the audited Swiss TNER before trusting it after a refresh. The
+// other three are prospectus arithmetic and do not drift: IAE1FT is exactly
+// 1.00 + 0.25 + 0.01, and IAET's cap sits 0.05 above B EUR's, which is the
+// whole of the alignment aqrIAETRecipe applies. See docs/aqr-mf.txt.
 const (
 	aqrRAEFOngoing   = 0.0023 // LU1662501532, flat, no performance fee
 	aqrBEUROngoing   = 0.0073 // LU1103258197, plus a 10 % performance fee

@@ -208,6 +208,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - Add a ticker alias: `pkg/marketdata/aliases.go`.
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
+- AQR Managed Futures share classes (`LU1103...`, `LU1662...`, `LU2622...`):
+  read `docs/aqr-mf.txt` first. Every EUR class holds the same portfolio, so
+  NAV differences are fee differences; `RAEF`'s management fee is WAIVED at the
+  manager's discretion, which is why it looks like it beats its siblings and
+  why its pin is the least durable in the catalog.
 - Managed-futures / trend reconstructions: read
   `docs/trend-reconstruction-design.md` first. RELIABILITY BOUNDS LENGTH is the
   standing decision: every file stops where its evidence stops, the donor chains
