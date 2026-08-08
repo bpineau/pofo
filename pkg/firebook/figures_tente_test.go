@@ -28,6 +28,7 @@ func tenteMonth(t time.Time) int { return t.Year()*12 + int(t.Month()) - 1 }
 // tenteLeg reads one bundled reference series into month-keyed levels.
 func tenteLeg(t *testing.T, id string) map[int]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	s, ok, err := marketdata.ReadSimdataFS(datasets.Refdata(), id)
 	if err != nil {
 		t.Fatalf("reading %s: %v", id, err)
@@ -48,6 +49,7 @@ func tenteLeg(t *testing.T, id string) map[int]float64 {
 // offline-first from its embedded snapshot, so this never reaches the network.
 func tenteCPI(t *testing.T) map[int]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	s, err := marketdata.NewClient("").Fetch(context.Background(), "^CPI-US", time.Time{})
 	if err != nil {
 		t.Fatalf("reading ^CPI-US: %v", err)
@@ -266,6 +268,7 @@ func TestTenteReadingsMatchTheCurve(t *testing.T) {
 // the day a longer sample makes the highlight possible, which is exactly when
 // the plate should be revisited.
 func TestTenteSampleCannotTestTheCAPEThesis(t *testing.T) {
+	frozenAgainstData(t)
 	cape := map[int]float64{}
 	r := csv.NewReader(strings.NewReader(string(datasets.CAPE())))
 	r.Comment = '#'

@@ -16,6 +16,7 @@ import (
 // are present.
 func millesimesPanelUSA(t *testing.T) map[int]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	r := csv.NewReader(bytes.NewReader(datasets.BroadSample()))
 	r.Comment = '#'
 	recs, err := r.ReadAll()

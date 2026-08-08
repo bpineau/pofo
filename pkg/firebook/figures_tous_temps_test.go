@@ -40,6 +40,7 @@ func ttMonths() []string {
 // ttMonthEnds reduces a bundled series to its last value of each month.
 func ttMonthEnds(t *testing.T, fsys fs.FS, id string) map[string]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	s, ok, err := marketdata.ReadSimdataFS(fsys, id)
 	if err != nil || !ok {
 		t.Fatalf("read %s: ok=%v err=%v", id, ok, err)
@@ -139,6 +140,7 @@ func ttSmallValueNet(s map[string]float64) func(prev, cur string) float64 {
 // one of them from the bundled series and fails the moment the plate and the
 // data disagree, which is also what happens when those series are regenerated.
 func TestTousTempsFigureMatchesTheData(t *testing.T) {
+	frozenAgainstData(t)
 	sim, ref := datasets.Simdata(), datasets.Refdata()
 	price := map[string]map[string]float64{
 		"equities":     ttMonthEnds(t, sim, "SP500"),
