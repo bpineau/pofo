@@ -520,6 +520,14 @@ simulation wherever it exists):
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (2000→) | 0.62 / 0.84 |
 | Amundi Volatility, BH Macro | regression backcast **rejected** (R² 0.20 / 0.00) | real history only (2007→) |
 
+A fund's ongoing charge is deducted only where its donors do not already carry
+one. A mutual-fund or ETF NAV arrives net of its own manager's fee, so charging
+the target's whole TER on top of it would bill the backcast twice: what each
+recipe charges is the difference, floored at zero, and it steps with the eras,
+the whole charge falling on the deep segment where the leg is a fee-free index
+or a constant-maturity reconstruction. An academic factor pays no fee at all
+and owes a haircut instead (1.0 %/yr for the small-value one, measured).
+
 Managed-futures correlations are modest: each fund runs a faster, partly
 discretionary strategy that a single 12-month TSMOM rule only approximates.
 Those daily correlations understate the fidelity, because a seven-market

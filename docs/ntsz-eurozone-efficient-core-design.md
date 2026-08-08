@@ -48,7 +48,10 @@ richly (~20%/yr over the 1981-2004 disinflation vs ~13%/yr for a real long bond)
 
 ```
 0.90 × equity  +  0.60 × (bond − EUR cash, futures overlay)  +  0.10 × EUR cash
-fee 0.20%/yr ; real NTSZ grafted from inception (2025-10)
+fee 0.20%/yr, charged only where the donors' own charges do not already cover
+it (EZU 0.50% and EUNH 0.07% come to 0.492% blended from 2000, so the whole
+0.20% falls on the pre-2000 reference era alone) ; real NTSZ grafted from
+inception (2025-10)
 ```
 
 - **Equity leg** (`ntszEquityEUR`): the real MSCI Eurozone ETF (`EZU`, US-listed,

@@ -94,6 +94,12 @@
 //     wrapper rather than to the trade. A donor fund is lifted or charged the
 //     difference in published ongoing charges, read off fee tables and never off
 //     an observed return gap (a gap between two managers contains their skill).
+//     A target's WHOLE ongoing charge on top of a fund donor bills the backcast
+//     twice, since a NAV already arrives net of its own manager's cut: what is
+//     due is the difference, floored at zero (feeGap, alignedComposite). It is a
+//     schedule and not a constant, because a leg extended by longBack rides a
+//     fee-free index or CMT reconstruction before the donor fund's own quotes,
+//     and over that era the whole charge IS due.
 //     An ACADEMIC FACTOR has no price list at all: it pays no fee, no commission
 //     and no spread, so it owes a haircut measured on its overlap with the fund
 //     it stands in for, and the smaller the stocks the larger that is

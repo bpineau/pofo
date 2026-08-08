@@ -151,6 +151,61 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	}
 }
 
+// A fund donor's NAV already carries its own manager's charge, so the target's
+// load is due in full only over the era a fee-free proxy stands in for it, and
+// the charge steps down as each donor's own quotes begin (feeGap). NTSX's legs
+// are the case in point: the two Vanguard funds together cost more than the
+// fund they stand in for, so the schedule ends at zero.
+func TestFeeGapStepsDownAsEachDonorStartsCarryingItsOwnCharge(t *testing.T) {
+	const n = 900
+	f := fakeFetcher{
+		"VFINX": from(mkLevels("VFINX", n, 100), 300),
+		"VFITX": from(mkLevels("VFITX", n, 100), 600),
+	}
+	steps, err := feeGap(f, time.Time{}, 0.0020, []pricedLeg{
+		{ID: "VFINX", Weight: 0.90, Load: vfinxTER},
+		{ID: "VFITX", Weight: 0.60, Excess: true, Load: vfitxTER},
+		{ID: "^IRX", Weight: 0.10},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range []struct {
+		when time.Time
+		want float64
+		why  string
+	}{
+		{day(100), 0.0020, "index and CMT reconstruction, nothing deducted yet"},
+		{day(400), 0.0020 - 0.90*vfinxTER, "the equity fund carries its own 0.126 %/yr"},
+		{day(700), 0, "both funds together cost 0.246 %/yr, more than the target"},
+	} {
+		if got := feeAt(steps, c.when); math.Abs(got-c.want) > 1e-12 {
+			t.Errorf("charge on %s is %.5f, want %.5f (%s)", c.when.Format("2006-01-02"), got, c.want, c.why)
+		}
+	}
+}
+
+// afterFeeSteps compounds each step on the calendar, so a year under a given
+// charge costs exactly that charge whatever the quote count.
+func TestAfterFeeStepsCompoundsEachEraOnTheCalendar(t *testing.T) {
+	flat := mkLevels("X", 900, 100)
+	steps := []feeStep{{Annual: 0.02}, {From: day(365), Annual: 0.01}}
+	got := afterFeeSteps("X (fee-aligned)", flat, steps)
+	at := func(i int) float64 { return got.Points[i].Close }
+	for _, c := range []struct {
+		from, to int
+		want     float64
+	}{
+		{0, 364, 1 - 0.02},
+		{365, 729, 1 - 0.01},
+	} {
+		years := day(c.to).Sub(day(c.from)).Hours() / 24 / 365.25
+		if ratio := at(c.to) / at(c.from); math.Abs(ratio-math.Pow(c.want, years)) > 1e-9 {
+			t.Errorf("days %d-%d lost %.6f, want %.6f", c.from, c.to, 1-ratio, 1-math.Pow(c.want, years))
+		}
+	}
+}
+
 // The Avantis fund takes its geography from its own factsheet (70 % US) and
 // its donor from its own manager: over the era AVUV and AVDV quote, they alone
 // drive the blend, at the adopted weights and net of the difference in ongoing
