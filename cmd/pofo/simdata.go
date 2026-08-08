@@ -4,7 +4,6 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -46,11 +45,7 @@ func runGenSimdata(ctx context.Context, client *marketdata.Client, opt *options,
 	}
 	failures := 0
 	for _, r := range recipes {
-		err := genOne(ctx, client, fetcher, outDir, r, dry)
-		switch {
-		case errors.Is(err, simgen.ErrUnfaithful):
-			log.Printf("⚠ %-14s skipped: %v", r.ID, err)
-		case err != nil:
+		if err := genOne(ctx, client, fetcher, outDir, r, dry); err != nil {
 			log.Printf("✗ %-14s %v", r.ID, err)
 			failures++
 		}

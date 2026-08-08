@@ -23,8 +23,8 @@ func mkWave(symbol string, n int, drift, amp, freq, phase float64) *marketdata.S
 }
 
 // mkCombo builds a series whose daily returns are an exact linear combination
-// of the given series' returns, so a regression backcast on them fits with
-// R² ≈ 1 (the offline stand-in for the real fund the recipe regresses on).
+// of the given series' returns: the offline stand-in for a fund a recipe
+// splices real quotes from.
 func mkCombo(symbol string, parts []*marketdata.Series, weights []float64) *marketdata.Series {
 	s := &marketdata.Series{Symbol: symbol}
 	v := 100.0
@@ -51,7 +51,7 @@ func from(s *marketdata.Series, i int) *marketdata.Series {
 // TestAllRecipesBuildOffline runs every bundled recipe's Build against a
 // synthetic offline universe (canned component series + the embedded refdata,
 // no network), asserting each returns a plausible series. This exercises the
-// full wiring: frames, composites, the TSMOM engine, regression backcasts,
+// full wiring: frames, composites, the TSMOM engine,
 // FX conversion (fxOnDates/convertDaily), the longBack splices and the
 // dailyShape blends over the real embedded refdata.
 func TestAllRecipesBuildOffline(t *testing.T) {
@@ -118,10 +118,6 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		// Real iShares Core MSCI World that wpeaBuild grafts over the mid-period:
 		// a 60/40 US/international combo, the MSCI World stand-in.
 		"IE00B4L5Y983": mkCombo("IE00B4L5Y983", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}),
-		// The funds the regression recipes backcast: exact factor combos,
-		// so the in-sample R² clears the faithfulness floor.
-		"LU0319687124": mkCombo("LU0319687124", []*marketdata.Series{vix, vfisx}, []float64{0.3, 0.7}),
-		"GG00BQBFY362": mkCombo("GG00BQBFY362", []*marketdata.Series{vustx, vfinx, gold}, []float64{0.4, 0.3, 0.3}),
 	}
 	fetcher := WithRefData(datasets.Refdata(), f)
 
