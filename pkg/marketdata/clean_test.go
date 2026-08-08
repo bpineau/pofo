@@ -49,14 +49,15 @@ func ramp(start, step float64, n int) []float64 {
 func concat(a, b []float64) []float64 { return append(append([]float64{}, a...), b...) }
 
 func TestMendScaleBreak(t *testing.T) {
-	// Older segment at ~100x scale, then a clean junction to the real ~120 NAV
-	// (the IBGS.L shape). After mending, the older segment must sit on the newer
-	// scale and the series must be continuous (no >=8x jump left).
+	// Older segment quoted in pence, then a clean junction to the same NAV in
+	// pounds (the ITPS.L shape: exactly 100x, bar a day of real move). After
+	// mending, the older segment must sit on the newer scale and the series must
+	// be continuous (no >=8x jump left).
 	t.Run("single clean break rescaled", func(t *testing.T) {
-		old := ramp(12000, 20, 25) // ~12000..12480
-		new := ramp(120, 0.2, 25)  // ~120..124.8
+		old := ramp(12000, 20, 25) // pence, ~12000..12480
+		new := ramp(124.9, 0.2, 25)
 		got := closes(mendScaleBreak(pts(concat(old, new)...)))
-		// Junction ratio at index 25: 120/12480 ≈ 0.009615; older *= that.
+		// Junction ratio at index 25: 124.9/12480 ≈ 0.010008; older *= that.
 		if got[24] > 200 || got[24] < 100 {
 			t.Errorf("older segment not rescaled onto newer: got[24]=%.2f", got[24])
 		}
@@ -64,6 +65,21 @@ func TestMendScaleBreak(t *testing.T) {
 			if r := got[i] / got[i-1]; r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
 				t.Errorf("scale break remains at %d: %.2f -> %.2f", i, got[i-1], got[i])
 			}
+		}
+	})
+	// The real IBGS.L trap: the pre-2009 segment is the fund's EUR NAV in cents,
+	// the later one its GBP line, so the junction is 104x, not 100x. That is two
+	// quote lines, not a change of units: welding them buries a currency change
+	// inside one series, which FX conversion then reprices as if uniform (a
+	// fictitious -21 % across 2008). It must be left for the doctor to flag.
+	t.Run("cross-currency weld untouched", func(t *testing.T) {
+		old := ramp(13175, 12, 25) // EUR cents, ~13175..13463
+		new := ramp(129.5, 0.1, 25)
+		s := concat(old, new)
+		in := append([]float64{}, s...)
+		got := closes(mendScaleBreak(pts(s...)))
+		if !eq(got, in...) {
+			t.Errorf("cross-currency weld was mended: got[24]=%.4f, want %.4f", got[24], in[24])
 		}
 	})
 	// A spliced share class with several breaks (CL2.PA) is ambiguous: leave it.

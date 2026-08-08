@@ -77,8 +77,22 @@ func isDenominationBreak(r float64) bool {
 	if r >= scaleBreakFactor || r <= 1/scaleBreakFactor {
 		return true
 	}
-	for _, rate := range euroLegacyRates {
-		if math.Abs(r/rate-1) <= 0.015 || math.Abs(r*rate-1) <= 0.015 {
+	return nearRatio(r, euroLegacyRates)
+}
+
+// unitRatios are the magnitudes one instrument can legitimately change units
+// by: powers of ten (pence vs pounds, cents vs units), the round ratios of a
+// share split the provider forgot to back-adjust, and the euro-legacy
+// conversion rates. Only ratios at or beyond scaleBreakFactor (plus the euro
+// rates, which sit below it) can ever reach the test, so the small split
+// ratios are deliberately absent.
+var unitRatios = append([]float64{10, 20, 25, 50, 100, 200, 500, 1000, 10000}, euroLegacyRates...)
+
+// nearRatio reports whether r matches one of the ratios, in either direction,
+// within the 1.5 % that absorbs the real market move sitting across a junction.
+func nearRatio(r float64, ratios []float64) bool {
+	for _, want := range ratios {
+		if math.Abs(r/want-1) <= 0.015 || math.Abs(r*want-1) <= 0.015 {
 			return true
 		}
 	}
@@ -87,10 +101,21 @@ func isDenominationBreak(r float64) bool {
 
 // mendScaleBreak repairs a single large, persistent denomination break: when a
 // series has EXACTLY ONE adjacent jump beyond scaleBreakFactor with a
-// substantial segment on both sides, the older segment is rescaled onto the
-// newer one (the recent segment is the current NAV, hence authoritative). The
-// real IBGS.L / ITPS.L case: their pre-2009 history sits at ~100x the true NAV,
-// a -99% cliff at the junction; after mending the whole series is continuous.
+// substantial segment on both sides AND that jump is a plain change of units,
+// the older segment is rescaled onto the newer one (the recent segment is the
+// current NAV, hence authoritative). The real ITPS.L shape: pre-2009 history at
+// ~100x the true NAV, a -99% cliff at the junction; after mending the whole
+// series is continuous.
+//
+// The unit-ratio test is what keeps the repair honest. A break at an arbitrary
+// magnitude is not one instrument re-expressed in new units but two DIFFERENT
+// quote lines spliced together, and welding those hides a currency change
+// inside a series that FX conversion then treats as uniform. The real IBGS.L
+// case: its 2008 segment is the fund's EUR NAV in cents and its 2009+ segment
+// its GBP line, so the junction carries the EUR/GBP rate on top of the 100x
+// (104.0, not 100). Mending it used to bake a fictitious -21 % into 2008 as
+// soon as the series was converted back to EUR; leaving it alone surfaces the
+// cliff to the -verify-data doctor instead, which is the whole point.
 //
 // It is deliberately timid: no break, several breaks (a spliced share class like
 // CL2.PA), a reversed round-trip (GRE), or a too-short side are all left
@@ -118,6 +143,9 @@ func mendScaleBreak(pts []Point) []Point {
 	// segment: the spurious junction move is absorbed (a normal day's real move
 	// across it is negligible next to an 8x+ break).
 	f := pts[breakIdx].Close / pts[breakIdx-1].Close
+	if !nearRatio(f, unitRatios) {
+		return pts
+	}
 	for i := 0; i < breakIdx; i++ {
 		pts[i].Close *= f
 	}

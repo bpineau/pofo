@@ -105,6 +105,30 @@ verify it fetches cleanly with `pofo -verify-data -assets <id>`. The
 resolution fields make it part of the bundle (one `-warmup` away); the
 descriptive fields feed `-coverage` and `-suggest`.
 
+Read the name the doctor echoes back, not just its verdict: it is the only
+place a pinned `symbol` admits it serves a different instrument than the
+record claims.
+
+### Picking the quote line: two traps a green fetch hides
+
+- **The symbol must be the share class the ISIN names.** Sibling classes of one
+  fund share a family ticker, and a provider's ISIN search happily returns the
+  other one. `IE00B3VTMJ91` (iShares € Govt Bond 1-3yr, accumulating) was pinned
+  to `IBGS.L`, which is the *distributing* class `IE00B14X4Q57`; the fetch was
+  clean and only the name in the log, `(Dist)`, said so. The accumulating class
+  trades as `CSBGE3` in Milan and `CBE3` in London.
+- **Prefer the listing quoted in the fund's own currency.** A cross-currency
+  listing (a euro fund's GBP line in London, a dollar fund's EUR line on Xetra)
+  is priced correctly but arrives as one more FX layer, and a provider that
+  spliced two such lines into one symbol hides a currency change inside a single
+  series. That is the second half of the same bug: Yahoo's `IBGS.L` is the
+  fund's EUR NAV in cents until 2008-12-31 and its GBP line from 2009-01-02, a
+  104x junction the scale-break repair used to weld shut, baking a fictitious
+  -22 % into 2008 as soon as the series was converted back to EUR
+  (`mendScaleBreak` now refuses any junction that is not a plain change of
+  units, so the cliff reaches the doctor instead). `ITPS.L` has the same shape.
+  When a fund's home listing exists, pin that one.
+
 ## Provenance and refresh recipes
 
 Field guide for refreshing the descriptive data: per family, where the numbers
