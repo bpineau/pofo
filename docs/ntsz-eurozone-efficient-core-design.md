@@ -14,9 +14,10 @@ history.
 
 ## The structural difference from NTSX/NTSG
 
-NTSX and NTSG reach back to 1953/1969 by leaning on long-running **US** index
-funds (Vanguard) and USD refdata (S&P 500 to 1871, CMT Treasuries to 1953). NTSZ
-is **euro-native end to end**, and no comparable deep euro building blocks
+NTSX reaches back to 1953 by leaning on long-running **US** index funds
+(Vanguard) and USD refdata (S&P 500 to 1871, CMT Treasuries to 1953), and NTSG to
+1969 on the MSCI World reconstruction plus a four-currency bond basket
+(`docs/ntsg-global-efficient-core-design.md`). NTSZ is **euro-native end to end**, and no comparable deep euro building blocks
 existed in the repo. So the deep tail is assembled from four new bundled
 reference series, all sourced from **DBnomics** (free, key-less; the same mirror
 the macro panel uses) by `cmd/gen-euro-refdata`. The pofo binary never fetches
@@ -114,10 +115,10 @@ binding constraint**:
 
 | | NTSX | NTSG | NTSZ |
 |---|---|---|---|
-| CAGR | 11.0% | 9.8% | **8.2%** |
-| Vol (monthly, ann.) | 15.3% | 13.5% | **15.7%** |
-| Max drawdown | -50% | -47% | **-55%** |
-| Worst rolling 5y | -6.3% | -5.2% | **-9.2%** |
+| CAGR | 11.1% | 9.2% | **8.4%** |
+| Vol (monthly, ann.) | 15.3% | 14.2% | **15.7%** |
+| Max drawdown | -50% | -49% | **-55%** |
+| Worst rolling 5y | -6.3% | -5.9% | **-9.0%** |
 
 The eurozone 90/60 trails the US and global versions and draws down harder,
 exactly the "lost decade + leverage" story one expects, with a clean monthly
