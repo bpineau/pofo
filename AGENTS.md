@@ -18,11 +18,14 @@ make check     # fmt-check + lint + test: run this before any commit
 make golden    # computation goldens vs frozen external references
 make simdata   # regenerate pkg/datasets/simdata/ (network) then rebuild
 make broadsample # regenerate the JST broad-sample panel (network) then rebuild
+make cape      # regenerate the Shiller CAPE series (network) then rebuild
+make macropanel # regenerate the OECD monthly macro panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
 make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
+make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
 make book-drift # what the FIRE book's translations owe their French source
 ```
 

@@ -18,9 +18,9 @@ const vixSymbol = "^VIX"
 // vixSnapshot is a bundled offline fallback for ^VIX: the full official
 // daily close history (1990→), used when every live source fails and
 // nothing is cached. The live series is always preferred; this only needs
-// refreshing occasionally to keep the recent tail current. Regenerate from
-// the CBOE endpoint fetchCBOEVIX reads, keeping "YYYY-MM-DD,close" rows
-// under the comment header.
+// refreshing occasionally to keep the recent tail current. Regenerate with
+// "make snapshots" (cmd/gen-snapshots), which reads the same CBOE endpoint
+// fetchCBOEVIX does.
 //
 //go:embed data/vix.csv
 var vixSnapshot string

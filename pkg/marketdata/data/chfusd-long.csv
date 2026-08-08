@@ -1,8 +1,9 @@
 # CHF/USD spot (USD per CHF), long DAILY history for a CHF-investor backcast.
 # 1971-01→ : USD/CHF daily noon rate (FRED DEXSZUS, CHF per USD), inverted; spliced behind Yahoo CHFUSD=X (~2003→) at fetch time.
 # Real daily levels from FRED, key-less CSV endpoint; "." (holiday) rows skipped, business days only.
-# Regenerate: FRED fredgraph.csv?id=DEXSZUS. See pkg/marketdata/currency.go.
-# generated: 2026-07-04
+# Regenerate: make snapshots (cmd/gen-snapshots, FRED fredgraph.csv?id=DEXSZUS).
+# See pkg/marketdata/currency.go.
+# generated: 2026-08-08
 1971-01-04,0.2315887
 1971-01-05,0.23192708
 1971-01-06,0.2319486
@@ -13916,3 +13917,27 @@
 2026-06-24,1.2306178
 2026-06-25,1.2356357
 2026-06-26,1.2373175
+2026-06-29,1.2374706
+2026-06-30,1.2373175
+2026-07-01,1.2367054
+2026-07-02,1.2465719
+2026-07-06,1.2402332
+2026-07-07,1.2393109
+2026-07-08,1.2338063
+2026-07-09,1.2402332
+2026-07-10,1.2402332
+2026-07-13,1.2310723
+2026-07-14,1.2359412
+2026-07-15,1.2396182
+2026-07-16,1.237777
+2026-07-17,1.2393109
+2026-07-20,1.2339585
+2026-07-21,1.2312238
+2026-07-22,1.2294074
+2026-07-23,1.2236907
+2026-07-24,1.2242899
+2026-07-27,1.2214486
+2026-07-28,1.2239902
+2026-07-29,1.2196609
+2026-07-30,1.2413108
+2026-07-31,1.2374706

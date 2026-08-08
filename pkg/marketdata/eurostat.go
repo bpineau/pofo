@@ -20,15 +20,9 @@ import (
 // so an offline run still deflates the high-inflation 1955-1990s a long
 // retirement backcast needs. The live series is always preferred; this only
 // needs refreshing occasionally to keep the recent tail current. Regenerate
-// (requires curl + jq) with:
-//
-//	url='https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=FR'
-//	curl -s "$url" | jq -r '.dimension.time.category.index as $i | .value as $v |
-//	  ($i|to_entries|sort_by(.value)[]) | select($v[(.value|tostring)]!=null) |
-//	  "\(.key),\($v[(.value|tostring)])"'
-//
-// then prepend the rescaled FRED FRACPIALLMINMEI months before 1996 (chain at
-// the overlap, as extendMonthlyBack does), keeping the comment header.
+// with "make snapshots" (cmd/gen-snapshots), which refetches the Eurostat leg
+// and carries the pre-1996 OECD head over unchanged, refusing to write if
+// Eurostat has rebased under the chain point.
 //
 //go:embed data/hicp-fr.csv
 var hicpFRSnapshot string

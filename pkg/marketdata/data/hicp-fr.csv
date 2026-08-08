@@ -1,7 +1,10 @@
 # HICP France (all-items, index 2015=100), monthly anchors — LONG history.
 # 1996-01-> : Eurostat prc_hicp_midx (geo=FR, coicop=CP00, unit=I15, freq=M).
 # 1955-01..1995-12 : OECD French CPI (FRED FRACPIALLMINMEI) chained at the 1996 overlap (rescaled to the Eurostat level).
-# Embedded offline fallback for ^HICP-FR; the live Eurostat+FRED path is preferred. Regenerate: see pkg/marketdata/eurostat.go.
+# Embedded offline fallback for ^HICP-FR; the live Eurostat+FRED path is preferred.
+# Regenerate: make snapshots (cmd/gen-snapshots) refetches the Eurostat leg only and
+# carries the pre-1996 OECD head over. See pkg/marketdata/eurostat.go.
+# generated: 2026-08-08
 1955-01,7.2475
 1955-02,7.2325
 1955-03,7.2275
