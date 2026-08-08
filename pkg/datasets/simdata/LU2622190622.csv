@@ -3,7 +3,7 @@
 # name: AQR Managed Futures UCITS (IAE1FT EUR): the flat-fee sister class, charged in the NAV
 # method: the flat-fee RAEF class (LU1662501532) whole, its real quotes from 2021-04 over its own reconstruction (real B EUR 2015-03, then AQMIX 2010, Guggenheim 2007-02, Man AHL Diversified 1996-03 hedged to EUR, where the file starts), charged 1.03 %/yr for the difference between the two published ongoing charges (1.26 against 0.23), the two classes being flat-fee and otherwise identical; real LU2622190622 grafted from its 2026-05 inception
 # validation: corr=1.000 (weekly 0.000) beta=1.00 TE=0.1%/yr CAGR sim -11.30% vs real -11.27% (overlap 59 d from 2026-05-11 to 2026-08-07) vs LU2622190622
-# generated: 2026-08-08
+# generated: 2026-08-09
 date,close
 1996-03-26,14.663796
 1996-03-27,14.556164
