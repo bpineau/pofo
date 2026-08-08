@@ -1105,21 +1105,22 @@
       "Consumer Discretionary": 9,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 16,
+      "Financials": 17,
       "Health Care": 9,
-      "Industrials": 12,
-      "Information Technology": 30,
+      "Industrials": 11,
+      "Information Technology": 29,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 2
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes; bond leg is a 2/5/10/30y govt-futures ladder (~7y effective duration); currency_exposure = MSCI World country weights x0.9 equity notional + USD collateral",
+    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes; bond leg is a 2/5/10/30y govt-futures ladder (~7y effective duration); currency_exposure = MSCI World country weights x0.9 equity notional + USD collateral. sectors are the tracked index's, the MSCI World factsheet of 31/07/2026, per the stacked-fund convention; geography is the fund's own book, which the ESG screen leaves 3 points lighter in US than the plain index (68.6% against 72.0% on the same date).",
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc",
-      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00077IIPQ8",
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb",
       "https://www.optimizedportfolio.com/ntsx/"
     ],
     "since": "2024-11-05",
@@ -1624,13 +1625,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection; FT xid is the Amsterdam EUR listing (IBCI:AEX:EUR), daily history from the 2005 inception (Yahoo only starts 2009)",
+    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection; FT xid is the Amsterdam EUR listing (IBCI:AEX:EUR), daily history from the 2005 inception (Yahoo only starts 2009). All-maturity, so effective duration 7.14 years for a 7.55-year average maturity and a 1.35% real yield (iShares factsheet, 30/06/2026): holding it rather than the 1-10 segment (CHSN) is a real-rate bet, not a longer inflation hedge.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26",
+      "https://www.ishares.com/uk/individual/en/literature/fact-sheet/ibci-ishares-inflation-linked-govt-bond-ucits-etf-fund-fact-sheet-en-gb.pdf"
     ],
-    "since": "2005-11-15",
-    "duration": 8.0
+    "since": "2005-11-18",
+    "duration": 7.1
   },
   {
     "id": "IE00B0M63284",
@@ -4451,13 +4453,14 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Long-duration US Treasuries (IDTL, 20+yr); high interest-rate sensitivity (~17yr duration); deflation/recession hedge and rate-cut beneficiary",
+    "notes": "Long-duration US Treasuries (IDTL, 20+yr); deflation/recession hedge and rate-cut beneficiary. The DISTRIBUTING twin of DTLA (IE00BFM6TC58): same fund, same book, same 0.07% and the same 15.34-year effective duration for a 26.07-year average maturity (iShares factsheet, 30/06/2026); a taxable account pays income tax on its coupons every year, which is why the accumulating class is the one held. Fund and share class launched 20/01/2015, an earlier 2020 date in this record being wrong.",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/284433/"
+      "https://www.ishares.com/uk/individual/en/products/284433/",
+      "https://www.ishares.com/uk/individual/en/literature/fact-sheet/idtl-ishares-treasury-bond-20yr-ucits-etf-fund-fact-sheet-en-gb.pdf"
     ],
-    "since": "2020-10-09",
-    "duration": 17.0
+    "since": "2015-01-20",
+    "duration": 15.3
   },
   {
     "id": "DTLA",
@@ -4558,21 +4561,21 @@
       "US": 99
     },
     "sectors": {
-      "Communication Services": 3,
-      "Consumer Discretionary": 16,
-      "Consumer Staples": 6,
-      "Energy": 7,
-      "Financials": 23,
-      "Health Care": 8,
+      "Financials": 24,
       "Industrials": 16,
-      "Information Technology": 8,
-      "Materials": 5,
+      "Consumer Discretionary": 15,
+      "Health Care": 8,
+      "Energy": 7,
+      "Information Technology": 7,
+      "Consumer Staples": 6,
       "Real Estate": 6,
+      "Materials": 5,
+      "Communication Services": 3,
       "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "US small-cap equities tilted toward value via fundamental weighting (USSC/ZPRV); enhances small-cap value premium",
+    "notes": "US small-cap equities tilted toward value via fundamental weighting (USSC/ZPRV); enhances small-cap value premium. Sectors from the issuer's own holdings breakdown of 06/08/2026 over 1,646 lines: a quarter financials against 7% technology, the mirror image of a cap-weighted US index, which is what the tilt is bought for. The Xetra line ZPRV and the London line USSC are the same share class.",
     "confidence": "high",
     "sources": [
       "https://www.ssga.com/ie/en_gb/intermediary/etfs/spdr-msci-usa-small-cap-value-weighted-ucits-etf-zprv-gy"
@@ -6671,7 +6674,7 @@
     "strategy": "index",
     "geography": null,
     "sectors": null,
-    "duration": 17.0,
+    "duration": 15.3,
     "distribution": "n/a",
     "leverage": 1.0,
     "currency_exposure": {
@@ -8492,8 +8495,9 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "duration": 17.0,
-    "notes": "EUR-hedged share class of IDTL (IE00BSKRJZ44); strips the USD FX from the long-duration Treasury sleeve; deflation/recession hedge",
+    "duration": 15.3,
+    "since": "2017-09-25",
+    "notes": "EUR-hedged share class of IDTL (IE00BSKRJZ44); strips the USD FX from the long-duration Treasury sleeve; deflation/recession hedge. Same bond book as DTLA and IDTL, so the same 15.34-year effective duration (iShares factsheet, 30/06/2026). Its public NAV is a PRICE return: price the holding with it, never compute a statistic on it, use DTLETR for that.",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291773/"
@@ -8523,11 +8527,12 @@
     "distribution": "accumulating",
     "leverage": 1,
     "duration": 19.0,
-    "notes": "euro-native long-duration line: deflation/recession convexity in the liability currency, accumulating (no coupons to declare); small AUM, watch for closure; euro sovereign mix carries OAT/BTP spread risk",
+    "notes": "euro-native long-duration line: deflation/recession convexity in the liability currency, accumulating (no coupons to declare); euro sovereign mix carries OAT/BTP spread risk. The only ETF on the iBoxx EUR Eurozone 25+ (DE ES FR IT NL), and at EUR 104m against MTH's 276m for 0.15% against 0.07%, it is the second choice on both counts: watch for closure. duration is the segment's, read off the comparable Amundi book (18.96 on 30/06/2026), the issuer publishing no figure this record could pin.",
     "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU0290357846"
     ],
+    "since": "2007-06-05",
     "xid": "7140102"
   },
   {
