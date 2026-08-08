@@ -17,6 +17,7 @@ import (
 // plate freezes, rebuilt from pkg/datasets and marketdata's offline snapshot.
 func orRealDecember(t *testing.T) map[int]float64 {
 	t.Helper()
+	frozenAgainstData(t)
 	s, ok, err := marketdata.ReadSimdataFS(datasets.Simdata(), "XAUUSD")
 	if err != nil {
 		t.Fatal(err)
@@ -133,6 +134,7 @@ func TestOrDecadesMatchTheData(t *testing.T) {
 // pins each one to the reading it comes from, with room for the rounding the
 // prose uses.
 func TestOrEpisodesMatchTheData(t *testing.T) {
+	frozenAgainstData(t)
 	s, _, err := marketdata.ReadSimdataFS(datasets.Simdata(), "XAUUSD")
 	if err != nil {
 		t.Fatal(err)
