@@ -121,6 +121,17 @@ type fetchSpec struct {
 	raw          bool   // unadjusted closes (FetchOptions.Raw)
 	wantCurrency string // restrict resolution to this quote currency; "" = unconstrained
 	nativeOnly   bool   // only meaningful with wantCurrency (FetchOptions.NoConvert)
+
+	// preferCurrency is a soft ranking preference, not a constraint: when a
+	// catalogued asset must be re-resolved (its pinned line is missing or
+	// degenerate), candidates quoted in the record's own currency win over
+	// deeper candidates in another one. A cross-currency listing is priced
+	// correctly but arrives as one more FX layer, so it is a last resort,
+	// never a depth upgrade (the IBGS.L lesson: a euro fund served through
+	// its London pound line invented a 2008 crash once converted back).
+	// Unlike wantCurrency it never rejects: with no candidate in the
+	// preferred currency, the off-currency one is still served.
+	preferCurrency string
 }
 
 // currencyOK reports whether a quote currency satisfies the constraint:
@@ -149,6 +160,12 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 	canonical := CanonicalID(id)
 	if canonical != strings.ToUpper(strings.TrimSpace(id)) {
 		c.Logf("%s → %s", strings.ToUpper(strings.TrimSpace(id)), canonical)
+	}
+	if e, ok := catalogByID()[canonical]; ok && spec.preferCurrency == "" {
+		// The catalog states the currency the asset quotes in; should its
+		// pinned line fail and a search take over, candidates in that
+		// currency must outrank deeper cross-currency listings.
+		spec.preferCurrency = e.Currency
 	}
 	var s *Series
 	var err error
@@ -358,7 +375,9 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // ticker) and returns the series with the deepest usable history: each Yahoo
 // search candidate (same-ticker listings and fund entries first), then the
 // Financial Times when years remain uncovered, then a Morningstar fund id
-// obtained from Boursorama as a last resort. All three fallbacks are
+// obtained from Boursorama as a last resort. When the identifier is a
+// catalogued asset, candidates quoted in the record's own currency beat
+// deeper cross-currency listings (fetchSpec.preferCurrency). All three fallbacks are
 // full-text searches: a name-like query that does not match a candidate's
 // name is rejected (fuzzyMatchRelevant) so a stray fuzzy hit can never be
 // served in place of a real listing.
@@ -382,8 +401,8 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	var (
 		failures    []string
 		offCurrency bool
-		series      [slotCount]*Series
-		resols      [slotCount]resolution
+		series      [2 * slotCount]*Series // second half: off-preferred-currency lines
+		resols      [2 * slotCount]resolution
 	)
 	consider := func(s *Series, res resolution, fund, sameBase bool) {
 		// Clean before judging: FT, Morningstar and Stooq candidates bypass
@@ -405,12 +424,19 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		case fund:
 			i = slotFund
 		}
+		// A line trading in another currency than the catalog states for
+		// the asset drops behind every preferred-currency slot: depth never
+		// buys back the extra FX layer (see fetchSpec.preferCurrency).
+		if spec.preferCurrency != "" && s != nil && s.Currency != "" &&
+			!strings.EqualFold(s.Currency, spec.preferCurrency) {
+			i += slotCount
+		}
 		if deeper(series[i], s, from) {
 			series[i], resols[i] = s, res
 		}
 	}
 	preferred := func() (*Series, resolution) {
-		for i := range slotCount {
+		for i := range 2 * slotCount {
 			if series[i] != nil {
 				return series[i], resols[i]
 			}
@@ -418,10 +444,16 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		return nil, resolution{}
 	}
 	// covered reports whether the requested start date is essentially
-	// reached: no other source could meaningfully improve on it.
+	// reached: no other source could meaningfully improve on it. Only
+	// preferred-currency candidates count: an off-currency line, however
+	// deep, must not stop the search for a native one.
 	covered := func() bool {
-		s, _ := preferred()
-		return goodFor(s, from) && !s.First().Date.After(from.AddDate(1, 0, 0))
+		for i := range slotCount {
+			if s := series[i]; s != nil {
+				return goodFor(s, from) && !s.First().Date.After(from.AddDate(1, 0, 0))
+			}
+		}
+		return false
 	}
 	matchesBase := func(symbol string) bool {
 		return preferBase != "" &&
