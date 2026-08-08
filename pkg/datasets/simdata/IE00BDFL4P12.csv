@@ -2,8 +2,8 @@
 # id: IE00BDFL4P12
 # name: iShares Diversified Commodity: Bloomberg Commodity TR
 # method: ^BCOM (Bloomberg Commodity excess-return index, Yahoo daily from 1991) + ^IRX T-bill collateral = total return, real ICOM grafted from 2009
-# validation: corr=0.866 (weekly 0.972) beta=0.86 TE=7.8%/yr CAGR sim 7.16% vs real 6.91% (overlap 2208 d from 2017-07-18 to 2026-07-01) vs IE00BDFL4P12
-# generated: 2026-07-18
+# validation: corr=0.863 (weekly 0.971) beta=0.86 TE=7.9%/yr CAGR sim 7.89% vs real 7.76% (overlap 2228 d from 2017-07-18 to 2026-07-30) vs IE00BDFL4P12
+# generated: 2026-08-08
 date,close
 1991-01-02,3.028702
 1991-01-03,3.001917
@@ -8936,3 +8936,24 @@ date,close
 2026-06-29,9.052500
 2026-06-30,9.100000
 2026-07-01,9.095000
+2026-07-02,9.087500
+2026-07-03,9.145000
+2026-07-06,9.292500
+2026-07-07,9.310000
+2026-07-08,9.495000
+2026-07-09,9.442500
+2026-07-10,9.365000
+2026-07-13,9.470000
+2026-07-14,9.642500
+2026-07-15,9.633750
+2026-07-16,9.640000
+2026-07-17,9.707500
+2026-07-20,9.745000
+2026-07-21,9.877500
+2026-07-22,10.015000
+2026-07-23,10.090000
+2026-07-24,9.987500
+2026-07-27,9.790000
+2026-07-28,9.657500
+2026-07-29,9.802500
+2026-07-30,9.822500

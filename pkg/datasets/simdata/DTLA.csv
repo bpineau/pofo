@@ -3,7 +3,7 @@
 # name: iShares $ Treasury 20+ Acc: VUSTX long Treasury
 # method: 1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018
 # validation: corr=0.748 (weekly 0.950) beta=0.68 TE=11.2%/yr CAGR sim -0.92% vs real -1.24% (overlap 2015 d from 2018-05-10 to 2026-07-14) vs DTLA
-# generated: 2026-08-04
+# generated: 2026-08-08
 date,close
 1962-01-01,0.079079
 1962-01-02,0.079079
