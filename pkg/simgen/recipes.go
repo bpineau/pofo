@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"sort"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -357,21 +358,49 @@ func eurCashDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // dpgtRecipe rebuilds the Dimensional Global Targeted Value UCITS ETF
 // (IE000S67ID55, launched 2025) from Dimensional's own long-running US and
 // international small-cap value mutual funds, the same shop and factor design,
-// blended 60/40 US / developed-ex-US, net of the 0.44% TER. The only market
-// quote is the LSE line in GBP, so the USD blend is re-expressed in GBP at the
-// GBP/USD spot rate (GBPUSD=X extended to 1971 by the daily FRED refdata, so
-// the start is set by DISVX ~1994) to match the real series, which is grafted
-// from inception.
+// blended 60/40 US / developed-ex-US, fee-aligned to the 0.44% TER. The only
+// market quote is the LSE line in GBP, so the USD blend is re-expressed in GBP
+// at the GBP/USD spot rate (GBPUSD=X extended to 1971 by the daily FRED
+// refdata, so the start is set by DISVX ~1994) to match the real series, which
+// is grafted from inception.
+//
+// # The donor pair is fee-aligned, from price lists only
+//
+// The recipe deducted the fund's WHOLE 0.44 %/yr until 2026-08, on top of two
+// mutual-fund NAVs that already arrive net of their own managers' charges: the
+// blend was billed roughly twice, and the deep history it lends every consumer
+// ran about a third of a point a year cold. It now charges the difference and
+// never more (dpgtFee), exactly as the Avantis sibling does: DFSVX 0.31 %,
+// DISVX 0.43 % (0.358 % at 60/40) against the UCITS fund's 0.44, so 0.082 %/yr
+// remains due. Both loads are read off the funds' pages (2026), never off an
+// observed return gap.
+//
+// The whole file sits in one era, so the charge is a constant rather than a
+// schedule: the frame starts at DISVX's own first NAV (1994-12), both donors
+// quoting throughout. The Dimensional funds charged more in the 1990s than
+// their current list says, so the early years carry a touch too much fee, in
+// the conservative direction.
 func dpgtRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000S67ID55",
 		Name:            "Dimensional Global Targeted Value: DFA small-cap value blend (GBP)",
-		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), 0.44%/yr fees, converted USD→GBP at GBPUSD spot (FRED daily refdata back to 1971), real DPGT grafted from 2025",
+		Method:          "0.60×DFSVX (US small value) + 0.40×DISVX (intl developed small value), fee-aligned to the fund's 0.44%/yr load (0.082%/yr over the pair's own 0.358%), converted USD→GBP at GBPUSD spot (FRED daily refdata back to 1971), real DPGT grafted from 2025",
 		Build:           dpgtBuild,
 		ValidateAgainst: "IE000S67ID55",
 		SpliceReal:      "IE000S67ID55",
 	}
 }
+
+// The DPGT geography and what the fund's ongoing charge exceeds its donors'
+// (see dpgtRecipe). Floored at zero, as everywhere: a donor dearer than its
+// target keeps its cost rather than being credited the difference.
+const (
+	dpgtUS   = 0.60
+	dpgtIntl = 1 - dpgtUS
+
+	dpgtTER = 0.0044
+	dpgtFee = max(0, dpgtTER-(dpgtUS*dfsvxTER+dpgtIntl*disvxTER))
+)
 
 // dpgtBuild builds the 60/40 DFA small-cap value blend in USD, then converts
 // each daily return into GBP via the GBP/USD spot rate (a GBP-denominated NAV
@@ -381,12 +410,12 @@ func dpgtRecipe() Recipe {
 // rather than joined into the frame, which would pollute the calendar with
 // the FX feed's weekend prints.
 func dpgtBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	legs := []Leg{{ID: "DFSVX", Weight: 0.60}, {ID: "DISVX", Weight: 0.40}}
+	legs := []Leg{{ID: "DFSVX", Weight: dpgtUS}, {ID: "DISVX", Weight: dpgtIntl}}
 	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX"}, from)
 	if err != nil {
 		return nil, err
 	}
-	usd, err := Composite(fr, legs, "", 0.0044)
+	usd, err := Composite(fr, legs, "", dpgtFee)
 	if err != nil {
 		return nil, err
 	}
@@ -779,13 +808,18 @@ func rssbRecipe() Recipe {
 // financing rate ~1934 through the T-bill), so the composite reaches back to
 // the gold leg's floor. Real GDE quotes are grafted from inception; same
 // currency (USD), no FX leg.
+//
+// Only one leg is a fund here: the gold overlay is a futures price and the
+// collateral a bill rate, and neither charges anything, so the equity donor
+// alone carries a load (0.90×0.14 = 0.126 %/yr). The fund's 0.20 is deducted
+// in full before VFINX's own quotes and the remaining 0.074 after (feeGap).
 func gdeRecipe() Recipe {
 	return Recipe{
 		ID:     "GDE",
 		Name:   "WisdomTree Efficient Gold Plus Equity: 90/90 replication",
-		Method: "0.90×VFINX + 0.90×(GC=F gold − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay + 0.10×cash ^IRX, daily rebalancing, 0.20%/yr fees, real GDE grafted from 2022",
-		Build: composite("GDE (90/90 gold+equity replication)", []Leg{
-			{ID: "VFINX", Weight: 0.90},
+		Method: "0.90×VFINX + 0.90×(GC=F gold − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay + 0.10×cash ^IRX, daily rebalancing, the 0.20%/yr TER less the equity donor's own 0.126%/yr where VFINX carries the leg, real GDE grafted from 2022",
+		Build: alignedComposite("GDE (90/90 gold+equity replication)", []pricedLeg{
+			{ID: "VFINX", Weight: 0.90, Load: vfinxTER},
 			{ID: "GC=F", Weight: 0.90, Excess: true},
 			{ID: "^IRX", Weight: 0.10},
 		}, usdOvernight, 0.0020),
@@ -807,8 +841,8 @@ func rsstRecipe() Recipe {
 	return Recipe{
 		ID:              "RSST",
 		Name:            "Return Stacked US Stocks & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFINX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees, real RSST grafted from 2023",
-		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", mfConfig(0.10, 0), 0.0096),
+		Method:          "1.00×VFINX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.96%/yr fees less the equity donor's own 0.14%, real RSST grafted from 2023",
+		Build:           stackedTrend("RSST (100% stocks + TSMOM overlay)", "VFINX", vfinxTER, mfConfig(0.10, 0), 0.0096),
 		ValidateAgainst: "RSST",
 		SpliceReal:      "RSST",
 	}
@@ -823,8 +857,8 @@ func rsbtRecipe() Recipe {
 	return Recipe{
 		ID:              "RSBT",
 		Name:            "Return Stacked Bonds & Managed Futures: 100/100 replication",
-		Method:          "1.00×VFITX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees, real RSBT grafted from 2023",
-		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", mfConfig(0.10, 0), 0.0097),
+		Method:          "1.00×VFITX + 1.00×(TSMOM trend − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) overlay, the overlay's months and its level from the bundled net pure-trend reference (2000→, where that reference begins), 0.97%/yr fees less the bond donor's own 0.20%, real RSBT grafted from 2023",
+		Build:           stackedTrend("RSBT (100% bonds + TSMOM overlay)", "VFITX", vfitxTER, mfConfig(0.10, 0), 0.0097),
 		ValidateAgainst: "RSBT",
 		SpliceReal:      "RSBT",
 	}
@@ -987,6 +1021,23 @@ func eresMondeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // a donor share class measured to carry a cost the target class does not (see
 // aqrBEURFeeWedge).
 func afterAnnualFee(name string, s *marketdata.Series, annual float64) *marketdata.Series {
+	return afterFeeSteps(name, s, []feeStep{{Annual: annual}})
+}
+
+// feeStep is one segment of a piecewise-constant charge: Annual is in force
+// from From (inclusive) until the next step. A reconstruction needs the
+// schedule rather than a constant because its donors change nature partway
+// through, a fee-free index covering what comes before a fund's own NAVs (see
+// feeGap).
+type feeStep struct {
+	From   time.Time
+	Annual float64
+}
+
+// afterFeeSteps is afterAnnualFee with a schedule: the same calendar-day
+// compounding, with the charge read off steps at each date. Steps must be
+// sorted by From; a date before the first step pays that first step.
+func afterFeeSteps(name string, s *marketdata.Series, steps []feeStep) *marketdata.Series {
 	out := *s
 	out.Name = name
 	out.Points = make([]marketdata.Point, len(s.Points))
@@ -998,10 +1049,21 @@ func afterAnnualFee(name string, s *marketdata.Series, annual float64) *marketda
 	for i := 1; i < len(s.Points); i++ {
 		days := s.Points[i].Date.Sub(s.Points[i-1].Date).Hours() / 24
 		step := s.Points[i].Close / s.Points[i-1].Close
-		level *= step * math.Pow(1-annual, days/365.25)
+		level *= step * math.Pow(1-feeAt(steps, s.Points[i].Date), days/365.25)
 		out.Points[i] = marketdata.Point{Date: s.Points[i].Date, Close: level}
 	}
 	return &out
+}
+
+// feeAt returns the charge in force on d, 0 when the schedule is empty.
+func feeAt(steps []feeStep, d time.Time) float64 {
+	annual := 0.0
+	for i, s := range steps {
+		if i == 0 || !d.Before(s.From) {
+			annual = s.Annual
+		}
+	}
+	return annual
 }
 
 // sp500IndexRecipe is the pure S&P 500 Total Return benchmark: SP500-USD
@@ -1020,12 +1082,17 @@ func sp500IndexRecipe() Recipe {
 
 // wintonRecipe rebuilds the Winton Trend-Enhanced Global Equity fund as
 // global equities (60/40 US/international) plus a half-sized self-generated
-// TSMOM trend overlay, net of 0.80%/yr fees.
+// TSMOM trend overlay, net of what its 0.80%/yr load exceeds its equity
+// donors' own (wintonFee): the two Vanguard funds charge 0.60×0.14 +
+// 0.40×0.05 = 0.112 %/yr inside their NAVs, and the file starts at the trend
+// reference's 2000-01, where both already quote, so the charge is a constant.
+// The overlay leg is left as its net reference gives it, for the reason
+// stackedTrend states.
 func wintonRecipe() Recipe {
 	return Recipe{
 		ID:              "IE000O1VI174",
 		Name:            "Winton Trend-Enhanced Global Equity: equities + TSMOM overlay",
-		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees (2000→, where that reference begins)",
+		Method:          "0.60×VFINX + 0.40×VTMGX + 0.50×(TSMOM trend − overnight financing, its months and its level from the bundled net pure-trend reference), 0.80%/yr fees less the equity donors' own 0.112%/yr (2000→, where that reference begins)",
 		Build:           wintonBuild,
 		ValidateAgainst: "IE000O1VI174",
 	}
@@ -1058,13 +1125,17 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	}
 	vfinx, vtmgx := fr.Returns["VFINX"], fr.Returns["VTMGX"]
 	fin := fr.Returns[usdOvernight]
-	const feeDaily = 0.0080 / 252
+	const (
+		wintonUS  = 0.60
+		wintonTER = 0.0080
+		feeDaily  = max(0, wintonTER-(wintonUS*vfinxTER+(1-wintonUS)*vtmgxTER)) / 252
+	)
 	s := &marketdata.Series{Name: "Winton Trend-Enhanced Global Equity (replication)", Source: "simdata"}
 	val := 100.0
 	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[start], Close: val})
 	for i := 1; i < len(trend); i++ {
 		k := start + i
-		rEq := 0.6*vfinx[k] + 0.4*vtmgx[k]
+		rEq := wintonUS*vfinx[k] + (1-wintonUS)*vtmgx[k]
 		// The overlay is already an excess over the bill rate (EarnCash=false
 		// above), and a stack pays the overnight financing rate rather than
 		// that bill rate, so it gives back the difference. Same convention as
@@ -1179,7 +1250,26 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 // in-sample information ratio never reaches the output. The price of that is
 // length, and it is the price this family accepts: the file starts where the
 // reference does rather than at the engine's own 1989 floor (trimToAnchor).
-func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
+//
+// # What the fee is charged on, and what it is not
+//
+// coreLoad is the ongoing charge already inside the CORE donor's own NAV, and
+// the fund's fee is charged less that much: a Vanguard index fund standing in
+// for a sleeve the fund holds directly has been billed once already, and
+// annualFee on top of it bills it twice (the doctrine is spelled out at
+// feeGap). Both cores quote over the whole file, which starts at the
+// reference's 2000-01, so the charge is a constant and needs no schedule.
+//
+// The OVERLAY leg is deliberately left alone, and the number says why. Its
+// reference is a composite of real programmes whose returns arrive net of their
+// managers' fees, estimated at 2 %/yr in trendFeeLoad because those managers
+// publish no schedule. Reading that estimate as a donor load would hand the
+// overlay back about two points a year, more than every other correction in
+// this file put together, on a figure that is not a price list; and the two
+// funds carrying this build disagree on the sign of the residual over their own
+// live windows (the reconstruction runs cold against RSST and hot against
+// RSBT). An estimate that large, arbitrated by nothing, stays out.
+func stackedTrend(name, coreID string, coreLoad float64, cfg TSMOMConfig, annualFee float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		ids := append([]string{coreID, cfg.CashID, usdOvernight}, cfg.Markets...)
 		fr, err := BuildFrame(financed(extend(f)), ids, from)
@@ -1208,7 +1298,7 @@ func stackedTrend(name, coreID string, cfg TSMOMConfig, annualFee float64) func(
 			overlay[i] = (trend[i]/trend[i-1] - 1) - fin[start+i]
 		}
 
-		feeDaily := annualFee / 252
+		feeDaily := max(0, annualFee-coreLoad) / 252
 		values := make([]float64, len(trend))
 		values[0] = 100
 		for i := 1; i < len(trend); i++ {
@@ -1345,6 +1435,117 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 	}
 }
 
+// A donor's NAV is ALREADY NET of its own manager's charges, so a recipe that
+// deducts its target's whole ongoing charge on top of fund donors bills the
+// reconstruction twice. What a target still owes is the DIFFERENCE between its
+// own load and its donors', floored at zero: a donor may lose its wrapper's
+// cost advantage, never gain a return it did not earn. avantisRecipe states the
+// doctrine at length; these constants are its price list.
+//
+// Every figure is the vehicle's current published ongoing charge (2026), read
+// off the fund page and NEVER off an observed return gap, which would grant the
+// donor's manager whatever skill separates the two records:
+//
+//	VFINX  0.14 %  Vanguard 500 Index Fund Investor Shares
+//	VFITX  0.20 %  Vanguard Intermediate-Term Treasury Fund Investor Shares
+//	VUSTX  0.20 %  Vanguard Long-Term Treasury Fund Investor Shares
+//	VTMGX  0.05 %  Vanguard Developed Markets Index Fund Admiral Shares
+//	VEIEX  0.29 %  Vanguard Emerging Markets Stock Index Fund Investor Shares
+//	EZU    0.50 %  iShares MSCI Eurozone ETF
+//	EUNH   0.07 %  iShares Core € Govt Bond UCITS ETF (IE00B4WXJJ64)
+//	DTLA   0.07 %  iShares $ Treasury Bond 20+yr UCITS ETF USD Acc (IE00BFM6TC58)
+//
+// The Dimensional pair keeps its own constants (dfsvxTER, disvxTER) next to the
+// recipe that first priced it. Two loads are deliberately absent: a rate (^IRX,
+// EURCASH-EUR), a futures price (GC=F) and an index (^BCOM, the refdata
+// reconstructions) charge nothing, so a target's whole load is due on them.
+const (
+	vfinxTER = 0.0014
+	vfitxTER = 0.0020
+	vustxTER = 0.0020
+	vtmgxTER = 0.0005
+	veiexTER = 0.0029
+	ezuTER   = 0.0050
+	eunhTER  = 0.0007
+	dtlaTER  = 0.0007
+)
+
+// pricedLeg is a composite leg plus the ongoing charge that already sits inside
+// its donor's own NAV, on the leg's own notional (a 0.60 leg of a fund charging
+// 0.20 %/yr costs the composite 0.12). Load is 0 for a rate, a futures price or
+// an index, which charge nothing.
+type pricedLeg struct {
+	ID     string
+	Weight float64
+	Excess bool
+	Load   float64
+}
+
+func (p pricedLeg) leg() Leg { return Leg{ID: p.ID, Weight: p.Weight, Excess: p.Excess} }
+
+// feeGap is what a reconstruction still owes its target's price list: the
+// target's load less the loads its donors already carry, floored at zero.
+//
+// It is a SCHEDULE and not a constant because a deep composite's donors change
+// nature partway through. A leg extended by longBack rides a fee-free index or
+// CMT reconstruction before the fund's own quotes begin (1980-01 for VFINX,
+// 1991-10 for VFITX, 1986-05 for VUSTX, 1999-08 for VTMGX, 2000-07 for EZU,
+// 2009-04 for EUNH.DE), and over that era the target's whole charge IS due,
+// since nothing has been deducted yet. Each donor's step therefore falls on its
+// own first quote, read from the RAW fetcher (the one Build receives, before
+// composite wraps it with extend), so the boundary is the fund's real inception
+// rather than a date written down here.
+func feeGap(f Fetcher, from time.Time, target float64, legs []pricedLeg) ([]feeStep, error) {
+	steps := []feeStep{{Annual: target}}
+	carried := 0.0
+	type entry struct {
+		date time.Time
+		load float64
+	}
+	var starts []entry
+	for _, l := range legs {
+		if l.Load == 0 {
+			continue
+		}
+		s, err := f.Fetch(l.ID, from)
+		if err != nil {
+			return nil, fmt.Errorf("donor %s: %w", l.ID, err)
+		}
+		if s == nil || len(s.Points) == 0 {
+			return nil, fmt.Errorf("donor %s: empty history", l.ID)
+		}
+		starts = append(starts, entry{s.Points[0].Date, l.Weight * l.Load})
+	}
+	sort.Slice(starts, func(i, j int) bool { return starts[i].date.Before(starts[j].date) })
+	for _, st := range starts {
+		carried += st.load
+		steps = append(steps, feeStep{From: st.date, Annual: max(0, target-carried)})
+	}
+	return steps, nil
+}
+
+// alignedComposite is composite() charging feeGap instead of the target's whole
+// ongoing charge: the same constant-weight linear build, then the schedule
+// deducted on the calendar (afterFeeSteps) rather than per trading day, as
+// every other fee in this file is.
+func alignedComposite(name string, legs []pricedLeg, cashID string, target float64) func(Fetcher, time.Time) (*marketdata.Series, error) {
+	plain := make([]Leg, len(legs))
+	for i, l := range legs {
+		plain[i] = l.leg()
+	}
+	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
+		s, err := composite(name, plain, cashID, 0)(f, from)
+		if err != nil {
+			return nil, err
+		}
+		steps, err := feeGap(f, from, target, legs)
+		if err != nil {
+			return nil, err
+		}
+		return afterFeeSteps(name, s, steps), nil
+	}
+}
+
 // ntsxRecipe rebuilds the WisdomTree US Efficient Core (90 % US equities +
 // 60 % treasury futures ladder) from Vanguard index funds and two rates: the
 // Treasury overlay FINANCES at the USD overnight rate (usdOvernight, what a
@@ -1353,14 +1554,21 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 // the UCITS share class (IE000KF370H3); the validation runs against the
 // US-listed twin NTSX, which has traded since 2018 with the exact same
 // strategy.
+//
+// The fund's 0.20 %/yr is charged through feeGap, so the two Vanguard donors
+// pay it only where their own NAVs do not already carry a charge. Their
+// wrappers alone cost 0.90×0.14 + 0.60×0.20 = 0.246 %/yr, more than the fund
+// itself, so from VFITX's 1991 start the reconstruction owes nothing further;
+// over 1980-1991 it owes 0.20 − 0.126 = 0.074, and before VFINX's own quotes
+// the whole 0.20, the legs being fee-free reconstructions there.
 func ntsxRecipe() Recipe {
 	return Recipe{
 		ID:     "IE000KF370H3",
 		Name:   "WisdomTree US Efficient Core: 90/60 replication",
-		Method: "0.90×VFINX + 0.60×(VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) + 0.10×cash ^IRX, daily rebalancing, 0.20%/yr fees",
-		Build: composite("NTSX (90/60 replication)", []Leg{
-			{ID: "VFINX", Weight: 0.90},
-			{ID: "VFITX", Weight: 0.60, Excess: true},
+		Method: "0.90×VFINX + 0.60×(VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) + 0.10×cash ^IRX, daily rebalancing, the 0.20%/yr TER charged only where the donors' own charges (0.246%/yr blended) do not already cover it",
+		Build: alignedComposite("NTSX (90/60 replication)", []pricedLeg{
+			{ID: "VFINX", Weight: 0.90, Load: vfinxTER},
+			{ID: "VFITX", Weight: 0.60, Excess: true, Load: vfitxTER},
 			{ID: "^IRX", Weight: 0.10},
 		}, usdOvernight, 0.0020),
 		ValidateAgainst: "NTSX-US",
@@ -1370,16 +1578,19 @@ func ntsxRecipe() Recipe {
 
 // ntsgRecipe is the global variant (NTSG UCITS): 90 % global developed
 // equities approximated as 60/40 US/international, plus the same 60 %
-// treasury overlay.
+// treasury overlay. Its donors are the same funds NTSX uses, so the same
+// fee alignment applies: 0.54×0.14 + 0.36×0.05 + 0.60×0.20 = 0.221 %/yr of
+// donor charges against the fund's 0.25, leaving 0.029 to deduct once every
+// donor quotes (1999) and more before that (feeGap).
 func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − overnight financing, both extended: CMT Treasury TR ~1953, effective fed funds ~1954 then T-bill ~1934) + 0.10×cash ^IRX, 0.25%/yr fees; start now set by the dev-ex-US leg (~1969)",
-		Build: composite("NTSG (global 90/60 replication)", []Leg{
-			{ID: "VFINX", Weight: 0.54},
-			{ID: "VTMGX", Weight: 0.36},
-			{ID: "VFITX", Weight: 0.60, Excess: true},
+		Method: "0.54×VFINX (extended with S&P 500 TR ~1871) + 0.36×VTMGX (dev-ex-US, DEVEXUS-USD ~1969) + 0.60×(VFITX − overnight financing, both extended: CMT Treasury TR ~1953, effective fed funds ~1954 then T-bill ~1934) + 0.10×cash ^IRX, the 0.25%/yr TER charged only where the donors' own charges (0.221%/yr blended) do not already cover it; start set by the dev-ex-US leg (~1969)",
+		Build: alignedComposite("NTSG (global 90/60 replication)", []pricedLeg{
+			{ID: "VFINX", Weight: 0.54, Load: vfinxTER},
+			{ID: "VTMGX", Weight: 0.36, Load: vtmgxTER},
+			{ID: "VFITX", Weight: 0.60, Excess: true, Load: vfitxTER},
 			{ID: "^IRX", Weight: 0.10},
 		}, usdOvernight, 0.0025),
 		ValidateAgainst: "IE00077IIPQ8",
@@ -1423,6 +1634,14 @@ func ntszRecipe() Recipe {
 // extended by EMU-EUR) and the deep EUR cash leg (EURCASH-EUR extended by
 // DECASH-EUR) are pre-built here and served to the frame under synthetic ids;
 // the bond leg (EUNH.DE) reaches back through the standard extend() splice.
+//
+// The fee schedule is built on the REAL donors rather than on those synthetic
+// ids, since it is EZU's and EUNH.DE's own inceptions (2000-07 and 2009-04)
+// that end the fee-free euro-area reference series behind them. Both are
+// wrapped funds, and the equity one is an expensive US-listed regional ETF:
+// 0.90×0.50 + 0.60×0.07 = 0.492 %/yr against the fund's own 0.20, so from 2000
+// the reconstruction owes nothing more and the whole 0.20 is charged only over
+// the reference era before it.
 func ntszBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	eq, err := ntszEquityEUR(f, from)
 	if err != nil {
@@ -1445,11 +1664,19 @@ func ntszBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	values, err := Composite(fr, legs, "NTSZ-CASH", 0.0020)
+	values, err := Composite(fr, legs, "NTSZ-CASH", 0)
 	if err != nil {
 		return nil, err
 	}
-	return SeriesFromFrame("NTSZ (eurozone 90/60 replication)", fr, values), nil
+	steps, err := feeGap(f, from, 0.0020, []pricedLeg{
+		{ID: "EZU", Weight: 0.90, Load: ezuTER},
+		{ID: "EUNH.DE", Weight: 0.60, Load: eunhTER},
+	})
+	if err != nil {
+		return nil, err
+	}
+	name := "NTSZ (eurozone 90/60 replication)"
+	return afterFeeSteps(name, SeriesFromFrame(name, fr, values), steps), nil
 }
 
 // ntszEquityEUR builds the eurozone equity leg: the real MSCI Eurozone ETF (EZU,
@@ -1789,19 +2016,28 @@ func dtleRecipe() Recipe {
 		ID:   "DTLETR",
 		Name: "US long Treasuries hedged to EUR (total return, the DTLE segment)",
 		Method: "the accumulating USD twin's own total return (real DTLA from 2018, 1.13×VUSTX geared to the 20+ duration before, extended TREASURY-LONG daily from 1962) " +
-			"financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less 0.10%/yr TER; total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
+			"financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less what the class's 0.10%/yr TER exceeds its donor's own charge (0.03%/yr over the twin, nothing over the dearer geared mutual fund); total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)",
 		Build:           dtleBuild,
 		ValidateAgainst: "DTLE",
 	}
 }
 
 // dtleBuild hedges the USD 20+ Treasury segment into EUR: the local leg earns
-// its excess over USD cash, the hedge gives back EUR cash, and the TER comes
-// off. From 2018 the local leg is the REAL accumulating USD twin (DTLA), which
-// holds the same bonds and prices on the same London close as DTLE itself, so
-// the timing mismatch that a US mutual-fund donor carries disappears over the
-// whole window the comparison is made on; before it, the geared VUSTX
-// reconstruction stands, as it does inside DTLA's own history.
+// its excess over USD cash, the hedge gives back EUR cash, and what the hedged
+// class costs OVER ITS DONOR comes off. From 2018 the local leg is the REAL
+// accumulating USD twin (DTLA), which holds the same bonds and prices on the
+// same London close as DTLE itself, so the timing mismatch that a US mutual-fund
+// donor carries disappears over the whole window the comparison is made on;
+// before it, the geared VUSTX reconstruction stands, as it does inside DTLA's
+// own history.
+//
+// Both donors are wrapped funds, so neither owes the hedged class's whole
+// 0.10 %/yr, which the build deducted on top of them until 2026-08. The twin
+// charges 0.07 % (iShares fund page, 2026), leaving 0.03 to deduct over its
+// era; the geared mutual fund charges 1.13×0.20 = 0.227 %, more than the target
+// itself, so the VUSTX era owes nothing and is floored at zero. The charge
+// therefore follows the donor date by date, in the same branch that picks the
+// leg, rather than averaging two eras into one wrong constant.
 func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	fr, err := BuildFrame(extend(f), []string{"^IRX", "VUSTX", "EURCASH-EUR"}, from)
 	if err != nil {
@@ -1818,18 +2054,22 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		}
 	}
 
-	const feeDaily = 0.0010 / 252
+	const (
+		dtleTER  = 0.0010
+		twinFee  = max(0, dtleTER-dtlaTER) / 252 // the real accumulating twin's era
+		vustxFee = max(0, dtleTER-longTreasuryGearing*vustxTER) / 252
+	)
 	s := &marketdata.Series{
 		Name: "DTLE (EUR-hedged US long Treasury, total return)", Source: "simdata", Currency: "EUR",
 	}
 	v := 100.0
 	s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[0], Close: v})
 	for k := 1; k < len(fr.Dates); k++ {
-		excess := longTreasuryGearing * (vustx[k] - irx[k])
+		excess, fee := longTreasuryGearing*(vustx[k]-irx[k]), vustxFee
 		if r, ok := twin[fr.Dates[k]]; ok {
-			excess = r - irx[k]
+			excess, fee = r-irx[k], twinFee
 		}
-		v *= 1 + excess + eur[k] - feeDaily
+		v *= 1 + excess + eur[k] - fee
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[k], Close: v})
 	}
 	return s, nil
