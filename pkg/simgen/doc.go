@@ -46,12 +46,13 @@
 //   - extend/longBack splice a long real proxy behind a short component leg
 //     (VFINX→S&P 500 ~1871, VTMGX→MSCI World ex-US ~1969, VEIEX→MSCI EM ~1988,
 //     VFITX/VUSTX→constant-maturity Treasury TR ~1953, GC=F→LBMA gold ~1968,
-//     CL=F→WTI ~1946, ^IRX→3-month T-bill ~1934, GBPUSD=X→FRED daily ~1971),
-//     so a multi-leg reconstruction reaches back to its youngest leg's first
-//     quote (BuildFrame's start); dailyShape then blends a real daily series
-//     of the same market into a monthly proxy (anchors keep the levels, the
-//     shape supplies the day-to-day variance), so long backcasts stay honest
-//     at daily-statistics frequency;
+//     CL=F→WTI ~1946, ^IRX→3-month T-bill ~1934, GBPUSD=X→FRED daily ~1971,
+//     DFSVX→Ken French small value ~1963), so a multi-leg reconstruction
+//     reaches back to its youngest leg's first quote (BuildFrame's start);
+//     dailyShape then blends a real daily series of the same market into a
+//     monthly proxy (anchors keep the levels, the shape supplies the day-to-day
+//     variance), so long backcasts stay honest at daily-statistics frequency,
+//     and longBackFee charges a gross proxy what its grossness is worth;
 //   - the bundled recipes (All, Find) assemble these building blocks for
 //     NTSX, NTSG, URTH, IWDA, VT, RSSB, GDE, XAUUSD, ZPRV, the Avantis Global
 //     Small Cap Value ETF, SHY, IEF, TLT, ZROZ, DBMF, DBMFE, KMLM, the AQR
@@ -68,9 +69,9 @@
 // marketdata.RateSymbols, and usdOvernight) are annualized percent levels and
 // are converted to daily accruals by BuildFrame.
 //
-// # Three rules that keep coming back
+// # Four rules that keep coming back
 //
-// Every recipe here is its own measurement, but three corrections have now
+// Every recipe here is its own measurement, but four corrections have now
 // been made often enough to state once (each recipe's comment carries its own
 // numbers):
 //
@@ -89,6 +90,15 @@
 //     capital, not on the fraction its duration weight leaves over: the hedge
 //     covers the position, not the leftover. A hedged leg is
 //     w × (local − foreign cash) + 1.00 × domestic cash.
+//   - A STAND-IN CARRIES ITS OWN PRICE LIST, and the difference belongs to the
+//     wrapper rather than to the trade. A donor fund is lifted or charged the
+//     difference in published ongoing charges, read off fee tables and never off
+//     an observed return gap (a gap between two managers contains their skill).
+//     An ACADEMIC FACTOR has no price list at all: it pays no fee, no commission
+//     and no spread, so it owes a haircut measured on its overlap with the fund
+//     it stands in for, and the smaller the stocks the larger that is
+//     (longBackFee: 1.0 %/yr for the small-value factor behind DFSVX, measured
+//     over 399 common months).
 //   - A RATE IS NOT INTERCHANGEABLE WITH ANOTHER RATE of a different tenor or
 //     security. A futures overlay finances overnight (usdOvernight) and a
 //     collateral sleeve earns the bill rate; a fund tracking an overnight
