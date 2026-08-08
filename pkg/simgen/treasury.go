@@ -8,9 +8,19 @@ import (
 
 // bondPrice returns the clean price (per 100 face) of an annual-coupon bond
 // with coupon rate c and n years to maturity, discounted at yield y. y, c are
-// decimals; y must be positive and n non-negative. A bond whose coupon equals
-// its yield prices at exactly 100 for any maturity (a par bond).
+// decimals and n is non-negative; y may be negative, as government bond yields
+// have been for years at a time in Germany and in Japan, and only has to stay
+// above -100 % for the discount factor to exist. A bond whose coupon equals its
+// yield prices at exactly 100 for any maturity (a par bond), at a negative
+// yield as at a positive one.
+//
+// Zero is the annuity factor's one singular point, and its limit there is the
+// undiscounted sum of the coupons plus the face: an epsilon guard rather than a
+// yield floor, so a day at exactly 0.000 % prices instead of being skipped.
 func bondPrice(y, c, n float64) float64 {
+	if math.Abs(y) < 1e-12 {
+		return 100 * (c*n + 1)
+	}
 	d := math.Pow(1+y, -n)
 	return 100 * (c*(1-d)/y + d)
 }
@@ -32,6 +42,14 @@ func bondPrice(y, c, n float64) float64 {
 // It models annual coupons (Treasuries pay semiannual); the small difference is
 // second-order and is absorbed when the series is rescaled at its splice point
 // and validated against the real fund on their overlap.
+//
+// A NEGATIVE yield is priced, not skipped. Japan's 10-year benchmark closed
+// below zero on 453 days between 2016-02 and 2020-05 and the German and
+// euro-area curves spent years there, all of them years in which those bonds
+// returned a great deal: treating a sub-zero yield as missing data would
+// flat-line the reconstruction through the largest rally in its record. Only a
+// yield at or below -100 %/yr is refused, since the discount factor stops
+// existing there.
 func TreasuryTR(name string, yields *marketdata.Series, maturityYears, annualFee float64) *marketdata.Series {
 	s := &marketdata.Series{Name: name, Source: "simdata"}
 	pts := yields.Points
@@ -42,7 +60,7 @@ func TreasuryTR(name string, yields *marketdata.Series, maturityYears, annualFee
 	s.Points = append(s.Points, marketdata.Point{Date: pts[0].Date, Close: val})
 	for i := 1; i < len(pts); i++ {
 		y0, y1 := pts[i-1].Close/100, pts[i].Close/100
-		if y0 <= 0 || y1 <= 0 {
+		if y0 <= -1 || y1 <= -1 {
 			s.Points = append(s.Points, marketdata.Point{Date: pts[i].Date, Close: val})
 			continue
 		}

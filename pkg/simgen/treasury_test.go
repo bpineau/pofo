@@ -69,3 +69,39 @@ func TestTreasuryTRFee(t *testing.T) {
 		t.Errorf("~1y of 0.2%%/yr fee dragged %.4f, want ~0.002", drag)
 	}
 }
+
+// A negative yield is a price, not a gap. Japan's benchmark spent four years
+// below zero and rallied hard doing it, so the reconstruction has to keep
+// pricing: a bond bought at -0.10 % and marked at -0.50 % has gained, and an
+// implementation that skips sub-zero days would report a flat line instead.
+func TestTreasuryTRPricesNegativeYields(t *testing.T) {
+	drop := yieldSeries(-0.10, -0.50)
+	got := TreasuryTR("jgb", drop, 10, 0).Last().Close
+	if got <= 100 {
+		t.Errorf("a yield falling from -0.10%% to -0.50%% should gain, got %.4f", got)
+	}
+	// Roughly duration x the yield move, less a month of (negative) carry.
+	if want := 100 * (1 + 0.004*9.6); math.Abs(got-want) > 0.5 {
+		t.Errorf("negative-yield gain = %.4f, want ~%.4f", got, want)
+	}
+	rise := yieldSeries(-0.50, -0.10)
+	if loss := TreasuryTR("jgb", rise, 10, 0).Last().Close; loss >= 100 {
+		t.Errorf("a yield rising back towards zero should lose, got %.4f", loss)
+	}
+}
+
+// Zero is the annuity factor's singular point and nothing else: the par bond
+// still prices at 100 there, and a series crossing zero keeps moving.
+func TestBondPriceAtZeroYield(t *testing.T) {
+	if p := bondPrice(0, 0, 10); math.Abs(p-100) > 1e-9 {
+		t.Errorf("zero-coupon zero-yield par bond priced %.6f, want 100", p)
+	}
+	if p := bondPrice(0, 0.02, 10); math.Abs(p-120) > 1e-9 {
+		t.Errorf("2%% coupon at a zero yield priced %.6f, want 120", p)
+	}
+	crossing := yieldSeries(0.20, 0, -0.20)
+	tr := TreasuryTR("crossing", crossing, 10, 0)
+	if tr.Points[1].Close <= 100 || tr.Points[2].Close <= tr.Points[1].Close {
+		t.Errorf("a yield falling through zero should gain every step, got %v", tr.Points)
+	}
+}
