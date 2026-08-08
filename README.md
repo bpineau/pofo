@@ -521,7 +521,7 @@ simulation wherever it exists):
 | ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
 | DBMF (managed futures) | the net all-styles composite it replicates, then real NAVs back to the deepest donor (1996-03→) | 0.68 / 0.75 |
 | KMLM (managed futures) | real managed-futures NAVs, 14% target vol (1996-03→) | 0.63 / 0.65 |
-| CTA (managed futures) | the net pure-trend composite it benchmarks against, then the same deepest donor, 16% target vol (1996-03→) | 0.54 / 0.54 |
+| CTA (managed futures) | the net pure-trend composite, then the same deepest donor, 16% target vol (1996-03→) | 0.54 / 0.54 |
 | RSST (100% stocks + trend) | VFINX + 1.0×(trend−cash) overlay on a net pure-trend reference (2000→) | 0.88 / 0.89 |
 | RSBT (100% bonds + trend) | VFITX + 1.0×(trend−cash), same overlay (2000→) | 0.50 / 0.47 |
 | Winton Trend-Equity (UCITS) | 0.60×VFINX + 0.40×VTMGX + 0.50×trend overlay (2000→) | 0.62 / 0.84 |
