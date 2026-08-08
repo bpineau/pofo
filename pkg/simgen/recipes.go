@@ -446,43 +446,127 @@ func convertDaily(name string, f Fetcher, cross string, from time.Time, dates []
 }
 
 // avantisRecipe rebuilds the Avantis Global Small Cap Value UCITS ETF
-// (IE0003R87OG3, AVWS, EUR-quoted on the FT line, launched 2024-09-25) from
-// Dimensional's long-running small-cap value mutual funds, the same size+value
-// design, blended 40/60 US / developed-ex-US to match the fund's ~40 % North
-// America geography (versus DPGT's 60/40 US tilt), net of the 0.39 % TER. The
-// blend is built in USD and re-expressed in EUR at the EURUSD spot (Yahoo daily,
-// ~2003, as for the DBMFE and NTSZ euro legs), which sets the start, so the real
-// series it splices onto (also EUR) lines up in currency. Real Avantis quotes
-// are grafted from inception. This makes the file-recommended global buy option
+// (IE0003R87OG3, AVWS, EUR-quoted on the FT line, launched 2024-09-25) as a
+// US / developed-ex-US small-cap value pair, taken from the SAME MANAGER's own
+// sleeves for as long as they exist and from Dimensional's long-running mutual
+// funds before that. The blend is built in USD and re-expressed in EUR at the
+// EURUSD spot (Yahoo daily, ~1994, which sets the start), so the real series it
+// splices onto (also EUR) lines up in currency, and the real Avantis quotes are
+// grafted from inception. This makes the file-recommended global buy option
 // backtestable; ZPRV (US small-cap value) still reaches deeper, to 1963.
+//
+// # The geography is 70 % US, and used to be shipped inverted
+//
+// The recipe shipped 0.40 US / 0.60 international until 2026-08, on the belief
+// that the fund held ~40 % North America. It holds the opposite, and three
+// independent readings agree on it:
+//
+//   - the fund's own factsheet (31/07/2026) publishes United States 69.2 %,
+//     Japan 10.2 %, United Kingdom 3.6 %, Canada 3.3 %, Australia 2.7 %;
+//   - regressing the fund's monthly returns, converted to USD at EURUSD spot,
+//     on the two donor pairs over their 21 common months gives 0.73 DFSVX /
+//     0.30 DISVX (R2 0.973) and 0.68 AVUV / 0.33 AVDV (R2 0.967);
+//   - a global developed small-cap value benchmark is about two thirds US by
+//     construction, so 0.40 was never plausible a priori either.
+//
+// The adopted split is ROUNDED to 0.70 / 0.30: twenty-one months cannot justify
+// two decimals, and the rounded pair sits between the two regressions and on
+// the published geography. Measured monthly over those 21 months, in the EUR the
+// file ships (correlation with the fund, CAGR gap, annualized volatility against
+// the fund's own 16.1 %):
+//
+//	0.40 DFSVX + 0.60 DISVX (shipped until 2026-08)  0.934  +3.3 pts  12.6 %
+//	0.70 DFSVX + 0.30 DISVX                          0.988  -1.3 pts  15.5 %
+//	0.40 AVUV  + 0.60 AVDV                           0.936  +4.2 pts  13.3 %
+//	0.70 AVUV  + 0.30 AVDV  (adopted)                0.984  -0.3 pt   16.2 %
+//
+// # The nearest donor is the same manager
+//
+// AVUV and AVDV are Avantis' own US and international small-cap value ETFs,
+// real from 2019-09-26, running the same process the UCITS fund runs. They are
+// therefore the donor for 2019-09 onward, exactly as the managed-futures chains
+// prefer a same-manager NAV to a reconstruction, and the Dimensional pair stays
+// behind them for 1994-2019. The two are spliced with marketdata.ExtendBack
+// rather than through DonorChain: the donor here is a BLEND rather than a
+// fetchable identifier, and with only 21 months of fund quotes to calibrate on,
+// DonorChain's volatility match would be noise (the table above shows the pair
+// already lands within 1 % of the fund's volatility unscaled).
+//
+// # Both donor segments are fee-aligned, from price lists only
+//
+// A donor's returns are net of ITS ongoing charge, not the target's, and here
+// the donors are CHEAPER than the UCITS wrapper they stand in for, so each
+// segment is charged the difference and never more (avwsFee). Loads are read off
+// the fund pages (2026) and never off an observed return gap: AVUV 0.25 %, AVDV
+// 0.36 % (0.283 % blended), DFSVX 0.31 %, DISVX 0.43 % (0.346 % blended), against
+// the UCITS fund's 0.39 %. That is 0.107 %/yr charged to the Avantis segment and
+// 0.044 %/yr to the Dimensional one, both small enough to round to nothing over a
+// year and worth applying anyway since they cost one multiplication. The
+// Dimensional funds charged more in the 1990s than their current list says, so
+// the deep segment carries a touch too much fee, in the conservative direction.
 func avantisRecipe() Recipe {
 	return Recipe{
 		ID:              "IE0003R87OG3",
-		Name:            "Avantis Global Small Cap Value: DFA small-cap value blend (EUR)",
-		Method:          "0.40×DFSVX (US small value) + 0.60×DISVX (intl developed small value), 0.39%/yr fees, converted USD→EUR at EURUSD spot (Yahoo daily ~2003), real Avantis grafted from 2024",
+		Name:            "Avantis Global Small Cap Value: same-manager sleeves over a DFA small-cap value blend (EUR)",
+		Method:          "0.70×AVUV + 0.30×AVDV (Avantis' own US and intl small-value sleeves, real from 2019-09) spliced over 0.70×DFSVX + 0.30×DISVX (~1994), each fee-aligned to the fund's 0.39%/yr load, converted USD→EUR at EURUSD spot; real Avantis grafted from 2024-10",
 		Build:           avantisBuild,
 		ValidateAgainst: "IE0003R87OG3",
 		SpliceReal:      "IE0003R87OG3",
 	}
 }
 
-// avantisBuild builds the 40/60 DFA small-cap value blend in USD, then converts
-// each daily return into EUR via the EURUSD spot rate, so the simulated history
-// matches the EUR quote the real Avantis Global Small Cap Value trades in. The
-// construction mirrors dpgtBuild (its GBP-quoted Dimensional sibling), with the
-// US/international split shifted to the Avantis fund's regional weights.
+// The Avantis fund's own geography, rounded (see avantisRecipe), and the
+// published ongoing charges of the fund and of its four donors.
+const (
+	avwsUS   = 0.70
+	avwsIntl = 1 - avwsUS
+
+	avwsTER  = 0.0039
+	avuvTER  = 0.0025
+	avdvTER  = 0.0036
+	dfsvxTER = 0.0031
+	disvxTER = 0.0043
+)
+
+// avantisBuild splices the same-manager small-value pair over the Dimensional
+// one in USD, then converts each daily return into EUR via the EURUSD spot rate,
+// so the simulated history matches the EUR quote the real Avantis Global Small
+// Cap Value trades in. dpgtBuild is its GBP-quoted Dimensional-only sibling.
 func avantisBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	legs := []Leg{{ID: "DFSVX", Weight: 0.40}, {ID: "DISVX", Weight: 0.60}}
-	fr, err := BuildFrame(extend(f), []string{"DFSVX", "DISVX"}, from)
+	usd, err := avwsBlend(f, from, "AVUV", avuvTER, "AVDV", avdvTER)
 	if err != nil {
 		return nil, err
 	}
-	usd, err := Composite(fr, legs, "", 0.0039)
+	dfa, err := avwsBlend(f, from, "DFSVX", dfsvxTER, "DISVX", disvxTER)
 	if err != nil {
 		return nil, err
+	}
+	marketdata.ExtendBack(usd, dfa)
+	dates := make([]time.Time, len(usd.Points))
+	values := make([]float64, len(usd.Points))
+	for i, p := range usd.Points {
+		dates[i], values[i] = p.Date, p.Close
 	}
 	return convertDaily("Avantis Global SCV (USD small-value blend expressed in EUR)",
-		extend(f), "EURUSD=X", from, fr.Dates, usd)
+		extend(f), "EURUSD=X", from, dates, values)
+}
+
+// avwsBlend builds one US / developed-ex-US small-cap value pair at the fund's
+// own geography, in USD, charging only what the fund's ongoing charge exceeds
+// the pair's own. A pair dearer than the fund is left as its managers published
+// it rather than credited the difference: a donor may lose its wrapper's cost
+// advantage, never gain a return it did not earn.
+func avwsBlend(f Fetcher, from time.Time, usID string, usTER float64, intlID string, intlTER float64) (*marketdata.Series, error) {
+	fr, err := BuildFrame(extend(f), []string{usID, intlID}, from)
+	if err != nil {
+		return nil, err
+	}
+	legs := []Leg{{ID: usID, Weight: avwsUS}, {ID: intlID, Weight: avwsIntl}}
+	values, err := Composite(fr, legs, "", max(0, avwsTER-(avwsUS*usTER+avwsIntl*intlTER)))
+	if err != nil {
+		return nil, err
+	}
+	return SeriesFromFrame(usID+"/"+intlID+" small-cap value blend (USD)", fr, values), nil
 }
 
 // scvwRecipe rebuilds US small-cap value from DFA US Small Cap Value
