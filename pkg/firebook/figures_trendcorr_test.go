@@ -22,6 +22,7 @@ const trendCorrWindow = 252
 // each reading (year*12 + month - 1) and the correlation itself.
 func trendCorrRecord(t *testing.T) (months []int, corr []float64) {
 	t.Helper()
+	frozenAgainstData(t)
 	read := func(id string) *marketdata.Series {
 		s, ok, err := marketdata.ReadSimdataFS(datasets.Simdata(), id)
 		if err != nil || !ok {

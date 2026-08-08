@@ -119,6 +119,7 @@ func briqueParseTotal(t *testing.T, row, s string) (lo, hi float64) {
 // bundled Shiller series: each edition of "The State of Retirement Income" is
 // arrested on 30 September, so the band carries the CAPE of that September.
 func TestEscalierMorningstarCAPE(t *testing.T) {
+	frozenAgainstData(t)
 	cape := map[string]float64{}
 	sc := bufio.NewScanner(strings.NewReader(string(datasets.CAPE())))
 	for sc.Scan() {
