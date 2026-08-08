@@ -3,6 +3,8 @@ package simgen
 import (
 	"fmt"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
 // Composite builds a constant-weight base-100 index from arbitrary
@@ -43,4 +45,23 @@ func Example_tsmom() {
 		TargetVol: 0.10, MaxLeverage: 2,
 	})
 	_ = values[start:]
+}
+
+// Audit grades a recipe's engine against the asset's real quotes over the
+// window where they overlap, which is the only window a backcast can be
+// judged on. The CLI wraps it as "pofo -verify-simdata".
+func ExampleAudit() {
+	real := quoted(mkWobbly("FUND", 900, 4e-4, 0.01))
+	fetch := fakeFetcher{"FUND": real}
+	recipe := Recipe{
+		ID: "FUND", Name: "a fund", Method: "canned",
+		// A reconstruction that levers the fund's own path by 30 %.
+		Build: func(Fetcher, time.Time) (*marketdata.Series, error) {
+			return scaled("engine", real, 1.3), nil
+		},
+	}
+	a := Audit(fetch, recipe)
+	fmt.Printf("level=%s path=%s monthly=%.2f\n", a.Level, a.Path, a.MonthlyCorr)
+	// Output:
+	// level=bad path=ok monthly=1.00
 }

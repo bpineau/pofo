@@ -37,6 +37,11 @@
 //     reconstructions and they are not interchangeable: an overlay finances at
 //     the overnight rate, a collateral sleeve earns the bill rate, and the two
 //     have differed by 0.02 to 1.15 points a year depending on the decade;
+//   - Audit / AuditAll replay a recipe's engine WITHOUT the real quotes it
+//     splices in and grade it against them over their overlap: two verdicts
+//     (level, does it earn the return; path, does it move with the asset),
+//     the donor chain junction by junction, and the curves to plot. This is
+//     what "pofo -verify-simdata" renders;
 //   - Validate measures daily and weekly correlation, beta, tracking error
 //     and CAGR against the real series; WithRefData serves the bundled
 //     reference series (datasets.Refdata, e.g. MSCIWORLD-USD, SP500-USD) and
