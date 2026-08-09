@@ -35,18 +35,42 @@ func (i Issue) String() string {
 // values are legitimate readings of the world, a ratio between two levels near
 // zero means nothing, and a policy rate stays flat for months by design, so the
 // non-positive, relative-move and flat-run checks would fire on correct data.
-// And a series is measured against ITS OWN cadence: a monthly rate or a weekly
-// fund NAV is not stale because it has no quote from last Tuesday.
+// And a series is measured against ITS OWN cadence, LOCALLY: a monthly rate or
+// a weekly fund NAV is not stale because it has no quote from last Tuesday, and
+// a series that reported monthly for eighty years before turning daily is
+// judged by the pace it kept at the time. Without that, every one of the S&P
+// 500's month-ends before 1928 reads as a three-week outage and every one of
+// its month-over-month moves as a bad print.
 //
 // Findings are heuristics on real, sometimes wild, market data; review
 // them rather than treating every warning as corruption.
+//
+// VerifyAsset wraps Verify with the checks that need the catalog record, and
+// judges the same moves against the asset class's own limit instead of the
+// blanket one below.
 func Verify(s *Series, now time.Time) []Issue {
+	return verify(s, now, 0)
+}
+
+// maxMove is the |return| beyond which a single observation is suspicious, for
+// a series about which nothing is known but its cadence. A quarter in one
+// session is beyond any unlevered asset; VerifyAsset replaces it with the
+// asset class's own Move, which is both tighter (a money market has no business
+// moving 3.5 %) and looser where it must be (a daily 3x fund is allowed three
+// times the equity limit).
+const maxMove = 0.25
+
+// verify is Verify with an optional per-observation move limit: 0 asks for the
+// blanket maxMove, anything positive replaces it. Either way the limit is
+// scaled by the square root of the LOCAL cadence, because a monthly observation
+// of an equity index is a month of moves and legitimately dwarfs a daily one:
+// the S&P 500's month-end series really did gain 40 % in August 1932.
+func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 	const (
-		maxDailyMove = 0.25 // |daily return| beyond this is suspicious
-		maxRateJump  = 3.0  // percentage points in a day, for a rate level
-		maxGapDays   = 14   // calendar days without a quote
-		maxFlatRun   = 20   // consecutive identical closes
-		maxStaleDays = 10   // calendar days since the last quote
+		maxRateJump  = 3.0 // percentage points in a day, for a rate level
+		maxGapDays   = 14  // calendar days without a quote
+		maxFlatRun   = 20  // consecutive identical closes
+		maxStaleDays = 10  // calendar days since the last quote
 	)
 	var issues []Issue
 	warn := func(d time.Time, format string, args ...any) {
@@ -56,11 +80,11 @@ func Verify(s *Series, now time.Time) []Issue {
 		return []Issue{{Severity: "error", Message: "no quotes at all"}}
 	}
 	rate := isRateSymbol(s.Symbol) || isPolicyRate(s.Symbol)
-	// A series reports at its own pace; the calendar thresholds follow it.
-	cadence := medianSpacingDays(s.Points)
-	gapLimit, staleLimit := float64(maxGapDays), float64(maxStaleDays)
-	if lim := 3 * cadence; lim > gapLimit {
-		gapLimit, staleLimit = lim, lim
+	// A series reports at its own pace, and may change it; every calendar
+	// threshold follows the pace in force around each observation.
+	cadence := localSpacingDays(s.Points)
+	if moveLimit <= 0 {
+		moveLimit = maxMove
 	}
 
 	flatRun := 1
@@ -84,11 +108,13 @@ func Verify(s *Series, now time.Time) []Issue {
 				warn(pt.Date, "rate jumped %+.2f points in a day, bad point?", d)
 			}
 		case prev.Close > 0:
-			if r := pt.Close/prev.Close - 1; math.Abs(r) > maxDailyMove {
-				warn(pt.Date, "daily move of %+.1f %%, missed split or bad point?", r*100)
+			limit := moveLimit * math.Sqrt(math.Max(1, cadence[k]))
+			if r := pt.Close/prev.Close - 1; math.Abs(r) > limit {
+				warn(pt.Date, "move of %+.1f %% in one observation, beyond the %.1f %% this series can make",
+					r*100, limit*100)
 			}
 		}
-		if gap := pt.Date.Sub(prev.Date).Hours() / 24; gap > gapLimit {
+		if gap, limit := pt.Date.Sub(prev.Date).Hours()/24, math.Max(maxGapDays, 3*cadence[k]); gap > limit {
 			warn(pt.Date, "no quotes for %.0f days (since %s)", gap, prev.Date.Format("2006-01-02"))
 		}
 		if pt.Close == prev.Close {
@@ -100,25 +126,45 @@ func Verify(s *Series, now time.Time) []Issue {
 			flatRun = 1
 		}
 	}
+	staleLimit := math.Max(maxStaleDays, 3*cadence[len(cadence)-1])
 	if age := now.Sub(s.Last().Date).Hours() / 24; age > staleLimit {
 		warn(s.Last().Date, "last quote is %.0f days old", age)
 	}
 	return issues
 }
 
-// medianSpacingDays is the typical number of calendar days between two
-// consecutive quotes: 1 for a daily series (weekends included, the median
-// absorbs them), 7 for a weekly NAV, ~30 for a monthly publication.
-func medianSpacingDays(pts []Point) float64 {
+// spacingWindow is how many neighbouring intervals define the pace in force
+// around one observation. Twenty-one is a trading month either way: long enough
+// for the median to shrug off a holiday week, short enough to follow a series
+// that changes pace once, at a date nobody recorded.
+const spacingWindow = 21
+
+// localSpacingDays returns, for every index of pts, the typical number of
+// calendar days between two consecutive quotes AROUND it: 1 for a daily stretch
+// (weekends included, the median absorbs them), 7 for a weekly NAV, ~30 for a
+// monthly one. Index 0 carries the same value as index 1, so callers can index
+// it by the later point of any pair.
+func localSpacingDays(pts []Point) []float64 {
+	out := make([]float64, len(pts))
 	if len(pts) < 3 {
-		return 1
+		for i := range out {
+			out[i] = 1
+		}
+		return out
 	}
-	gaps := make([]float64, 0, len(pts)-1)
+	gaps := make([]float64, len(pts)) // gaps[k] = days between pts[k-1] and pts[k]
 	for k := 1; k < len(pts); k++ {
-		gaps = append(gaps, pts[k].Date.Sub(pts[k-1].Date).Hours()/24)
+		gaps[k] = pts[k].Date.Sub(pts[k-1].Date).Hours() / 24
 	}
-	sortFloats(gaps)
-	return gaps[len(gaps)/2]
+	window := make([]float64, 0, spacingWindow)
+	for k := 1; k < len(pts); k++ {
+		lo, hi := max(1, k-spacingWindow/2), min(len(pts)-1, k+spacingWindow/2)
+		window = append(window[:0], gaps[lo:hi+1]...)
+		sortFloats(window)
+		out[k] = window[len(window)/2]
+	}
+	out[0] = out[1]
+	return out
 }
 
 // sortFloats is an insertion sort, adequate for the sizes here and cheaper

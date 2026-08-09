@@ -101,8 +101,13 @@ func genOne(ctx context.Context, client *marketdata.Client, fetcher simgen.Fetch
 
 // runVerifyData is the data doctor: it fetches every asset referenced by
 // the given portfolios (or the whole bundled catalog when none is given)
-// and reports data-quality findings from marketdata.Verify. It returns an
-// error when any series has error-grade problems.
+// and reports data-quality findings from marketdata.VerifyAsset: series
+// hygiene, plus, for a catalogued identifier, plausibility against its asset
+// class's band and identity against its record (currency, share class,
+// inception). It returns an error when any series has error-grade problems.
+//
+// Over the whole catalog this is `make verify-catalog`, the pass to run after
+// any catalog edit or data refresh.
 func runVerifyData(ctx context.Context, c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
 	var ids []string
 	seen := map[string]bool{}
@@ -120,17 +125,24 @@ func runVerifyData(ctx context.Context, c *marketdata.Client, specs []*portfolio
 	}
 	now := time.Now()
 	broken, suspicious := 0, 0
+	// The doctor judges the quote line as the provider serves it. Converting
+	// it to a display currency first would hide the very thing the identity
+	// check exists for (a euro fund pinned to a pound listing) behind an FX
+	// layer, and would mix that layer's volatility into every plausibility
+	// verdict.
+	native := *opt
+	native.currency = ""
 	for _, id := range ids {
-		s, err := fetchAsset(ctx, c, id, opt)
+		s, err := fetchAsset(ctx, c, id, &native)
 		if err != nil {
 			fmt.Printf("%-22s FETCH FAILED: %v\n", id, err)
 			broken++
 			continue
 		}
-		issues := marketdata.Verify(s, now)
-		span := fmt.Sprintf("%s → %s, %d points, %s",
+		issues := marketdata.VerifyAsset(id, s, now)
+		span := fmt.Sprintf("%s → %s, %d points, %s, %s",
 			s.First().Date.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"),
-			len(s.Points), s.Source)
+			len(s.Points), s.Currency, s.Source)
 		if len(issues) == 0 {
 			fmt.Printf("%-22s ok (%s)\n", id, span)
 			continue

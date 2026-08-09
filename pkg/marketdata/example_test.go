@@ -115,8 +115,8 @@ func ExampleVerify() {
 		fmt.Println(issue)
 	}
 	// Output:
-	// [warn] 2024-01-04: daily move of +243.1 %, missed split or bad point?
-	// [warn] 2024-01-05: daily move of -70.6 %, missed split or bad point?
+	// [warn] 2024-01-04: move of +243.1 % in one observation, beyond the 25.0 % this series can make
+	// [warn] 2024-01-05: move of -70.6 % in one observation, beyond the 25.0 % this series can make
 }
 
 // Lookup resolves a ticker, alias or ISIN to the asset's full catalog
@@ -133,4 +133,37 @@ func ExampleLocalCatalog() {
 	cat := marketdata.LocalCatalog()
 	fmt.Println(len(cat) > 0)
 	// Output: true
+}
+
+// ClassBand exposes the plausibility bounds the data doctor judges an asset
+// against: what its class can do over a whole history, and what it cannot.
+// Scale widens them by a fund's notional leverage.
+func ExampleClassBand() {
+	b, _ := marketdata.ClassBand("aggregate-bond")
+	fmt.Printf("plain      volatility up to %.0f %%/yr, worst session %.0f %%\n", b.VolHi*100, b.Move*100)
+	stacked := b.Scale(1.5) // a 90/60 efficient-core sleeve
+	fmt.Printf("at 1.5x    volatility up to %.0f %%/yr, worst session %.0f %%\n", stacked.VolHi*100, stacked.Move*100)
+	// Output:
+	// plain      volatility up to 12 %/yr, worst session 8 %
+	// at 1.5x    volatility up to 18 %/yr, worst session 12 %
+}
+
+// VerifyAsset is the doctor's full pass on a catalogued identifier: the series
+// hygiene Verify judges from the quotes alone, plus plausibility against the
+// asset class's band and identity against the catalog record. Here a series
+// pinned to an equity ETF is far too quiet to be one.
+func ExampleVerifyAsset() {
+	s := &marketdata.Series{Symbol: "VOO", Currency: "USD"}
+	start := time.Date(2010, 9, 10, 0, 0, 0, 0, time.UTC) // days after VOO's own inception
+	for i := 0; i < 500; i++ {
+		s.Points = append(s.Points, marketdata.Point{
+			Date:  start.AddDate(0, 0, i),
+			Close: 100 * (1 + 0.0002*float64(i%7)),
+		})
+	}
+	for _, issue := range marketdata.VerifyAsset("VOO", s, start.AddDate(0, 0, 501)) {
+		fmt.Println(issue.Message)
+	}
+	// Output:
+	// volatility 0.9 %/yr is outside the equity band [6.0, 42.0], wrong quote line?
 }
