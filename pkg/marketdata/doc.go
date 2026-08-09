@@ -111,13 +111,42 @@
 // # Data repair
 //
 // Every fetched daily series goes through a conservative cleaning pass
-// before being cached: leading provider placeholders and isolated one-day
-// collapses are dropped, a single persistent denomination break (pence vs
-// pounds splices) is mended, and currency crosses lose isolated
-// self-cancelling spikes (a Yahoo bad print, not a market move). Anything
-// ambiguous is left untouched for the -verify-data doctor (Verify) to
-// flag for human review; rate symbols (^IRX, …) are exempt because their
+// before being cached, in this order: leading provider placeholders and
+// isolated one-day collapses are dropped, a single persistent denomination
+// break (pence vs pounds splices) is mended, one-session round trips no
+// asset of the class could have made are dropped, and currency crosses lose
+// isolated self-cancelling spikes (a Yahoo bad print, not a market move).
+// Anything ambiguous is left untouched for the -verify-data doctor to flag
+// for human review; rate symbols (^IRX, …) are exempt because their
 // legitimate extremes look like artefacts.
+//
+// The round-trip pass is the strictest of them: it needs a full reversal
+// within two sessions, six standard deviations of LOCAL volatility on each
+// leg, and a leg beyond what the asset class's Band makes ordinary. All
+// three, so 1987-10-19, March 2020 and October 2008 come through whole
+// while a provider's isolated +21.9 %/-17.6 % on an emerging-market bond
+// fund does not.
+//
+// # The data doctor
+//
+// Verify judges a series on its own: non-positive prices, suspicious moves,
+// calendar gaps, flat runs, staleness, each against the series' own cadence.
+// VerifyAsset adds what only the catalog record can say, and is what
+// -verify-data (and `make verify-catalog`, over the whole catalog) runs:
+//
+//   - PLAUSIBILITY: volatility, CAGR, largest one-session move and deepest
+//     drawdown against the asset class's Band (ClassBand), scaled by the
+//     record's leverage. This is the check that names, in one line, what a
+//     green fetch hides: an aggregate-bond fund at 20 %/yr volatility is
+//     being served through a foreign-currency line.
+//   - IDENTITY: the served currency against the record's currency field, the
+//     served share-class name against its distribution field, and the first
+//     quote against since, the share class's official launch date.
+//
+// Nothing here is repaired. The catalog is curated by hand, so the doctor
+// names the disagreement and leaves the verdict to a human; several true
+// findings are permanent, a fund whose provider serves its predecessor's
+// history really does start before its own inception.
 //
 // # Simulated data
 //
@@ -135,6 +164,8 @@
 //   - Client.Fees returns an asset's published TER (pinned catalog, disk
 //     cache, otherwise FT tearsheets and justETF);
 //   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
+//   - ClassBand returns an asset class's plausibility Band, the table the
+//     doctor judges by and the cleaning pass is gated on;
 //   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker
 //     from the embedded list) to its canonical form; KnownLocal reports
 //     whether it resolves without a network lookup, and LocalCatalog
