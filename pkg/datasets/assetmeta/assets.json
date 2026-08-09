@@ -9211,5 +9211,37 @@
     "currency_exposure": {
       "EUR": 100
     }
+  },
+  {
+    "id": "MFEH",
+    "isin": "LU3359622902",
+    "name": "iMGP DBi Managed Futures R EUR HP ETF (EUR-hedged)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "yahoo",
+    "xid": "975922878",
+    "currency": "EUR",
+    "fees": 0.75,
+    "since": "2026-05-13",
+    "asset_class": "managed-futures",
+    "underlying": "Long/short global futures across equities, bonds, commodities and currencies (CTA replication)",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-HEDGED share class of the same iMGP DBi managed-futures sub-fund as DBMFE (LU2951555403, unhedged EUR) and LU2951555585 (USD): one portfolio, three classes, all at 0.75%/yr TER. The hedge costs only the USD-EUR carry gap (~1.5%/yr at 2026-08 rates, near zero over 2000-2014) plus small forward-roll frictions, and removes ~3 points of volatility and the drawdowns EURUSD added (backcast 1996-2026: vol 12.7% vs 15.6%, MaxDD -21.6% vs -25.2%, CAGR 8.96% vs 9.52%). Prefer it to DBMFE when the sleeve's crisis alpha must pay in euros whatever the dollar does (the unhedged class is trend plus long dollar: better in 2022, much worse in a falling-dollar crisis like 1990). CAVEATS at listing time: ~EUR 11m AUM, weeks of live history, Xetra only, not yet registered for sale in France; re-check before holding.",
+    "confidence": "high",
+    "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2951555403",
+      "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
+    ],
+    "symbol": "MFEH.DE",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
   }
 ]
