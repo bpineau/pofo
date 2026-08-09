@@ -28,6 +28,7 @@ Resolution fields (consumed by `pkg/marketdata`):
 | `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT and `index` |
 | `xid` | FT internal id; empty otherwise |
 | `fees` | pinned ongoing charge (TER), percent per year; `0` = unknown, or genuinely fee-free for an `index` benchmark |
+| `since` | the share class's own official launch date (`YYYY-MM-DD`), from the issuer or justETF, not the date the provider's history happens to start. Nothing is ever trimmed on it; the doctor compares it to the first quote and speaks when they are more than 400 days apart in either direction (see "What `since` means") |
 
 Descriptive fields (consumed by `pkg/suggest`):
 
@@ -89,6 +90,75 @@ describes the equity leg (the equity index it stacks). Bond funds keep their
 own bond-sleeve labels (`US Government`, `Investment-Grade Corporate`, ...);
 those are ignored by the equity pie and must not be GICS-normalized.
 
+### Plausibility bands per asset class
+
+`asset_class` does more than group the pies: it tells the data doctor what the
+record's quotes are allowed to look like. The table lives in
+`marketdata.ClassBand` (`pkg/marketdata/plausible.go`) and is reproduced here,
+next to the vocabulary it is keyed by, because a new class needs a row in both.
+
+Volatility and CAGR are annualized fractions; "move" is the largest plausible
+single observation, "fall" the deepest plausible drawdown. Every bound is
+multiplied by the record's `leverage`, so a 3x fund is allowed three times the
+move and a 90/60 stacked one 1.5 times the volatility.
+
+| asset_class | volatility | CAGR | move | fall |
+|---|---|---|---|---|
+| `equity` | 6 to 42 % | -15 to +40 % | 23 % | 97 % |
+| `government-bond` | 0.3 to 28 % | -10 to +15 % | 14 % | 80 % |
+| `corporate-bond` | 0.5 to 14 % | -8 to +12 % | 10 % | 45 % |
+| `aggregate-bond` | 1 to 12 % | -6 to +10 % | 8 % | 30 % |
+| `inflation-linked-bond` | 1 to 14 % | -6 to +12 % | 8 % | 30 % |
+| `money-market` | 0 to 3 % | -2 to +7 % | 3.5 % | 10 % |
+| `gold` | 8 to 30 % | -10 to +25 % | 15 % | 60 % |
+| `broad-commodity` | 10 to 45 % | -20 to +25 % | 22 % | 85 % |
+| `managed-futures` | 4 to 28 % | -15 to +30 % | 15 % | 45 % |
+| `long-volatility` | 4 to 60 % | -30 to +30 % | 25 % | 60 % |
+| `tail-risk` | 4 to 60 % | -30 to +30 % | 25 % | 60 % |
+| `multi-asset` | 5 to 32 % | -12 to +28 % | 15 % | 45 % |
+| `real-estate` | 12 to 38 % | -15 to +25 % | 25 % | 80 % |
+| `other` | 0 to 60 % | -35 to +40 % | 25 % | 60 % |
+
+They were calibrated on the measured statistics of every bundled record, each
+bound set clear of the widest real value in its class, so a full-catalog run
+flags accidents and not surprises. Consequences worth knowing before widening
+one: the money-market ceiling accepts XEON's 1.0 %/yr, which its 2007 launch
+weeks alone produce (the class targets ~0.7 %/yr and every other member sits
+below), and its 3.5 % move accepts March 2020's ultrashort credit dislocation
+(-3.2 % for ERNA) while rejecting the annual income drops of a distributing
+money-market NAV; the corporate-bond floor accepts the AAA CLO funds at 0.8 to
+1.1 %/yr; the equity move accepts 1987-10-19 and the equity fall a single
+country through its own crisis (Greece, -96 %). A CAGR is only judged over
+three years or more, and a single observation only against the pace the series
+kept at the time, so a month-end series is not asked to move like a daily one.
+
+Series whose numbers are not prices are exempt from all of it: `source: index`
+reconstructions, rate levels, and the continuous-futures symbols behind spot
+quotes (`XAUUSD` is served by `GC=F`).
+
+The same table gates the fetch pipeline's round-trip cleaner
+(`Band.SpikeLeg`): a leg below four class-level daily sigmas is ordinary
+volatility and is never a candidate for removal, whatever else it looks like.
+
+### What `since` means
+
+The share class's own launch date, as the issuer or justETF publishes it. Not
+the first date the provider serves, and not a date to be bent until the two
+agree: the disagreement is the information. The doctor compares them and speaks
+past 400 days in either direction.
+
+- **Quotes start well BEFORE it.** The provider is serving a predecessor under
+  this class's name: a merged fund, a converted share class, an older vehicle.
+  The statistics are then somebody else's, and the fee load almost certainly
+  differs. PFOCX (quotes from 1992-12, class launched 2008-04) is the standing
+  example, and it also carries the flat runs and the -12.9 % step of that older
+  series.
+- **Quotes start well AFTER it.** The depth the record implies does not exist
+  at this provider; a deeper listing of the same class may.
+
+Neither is repaired automatically and neither trims anything. Twenty-six
+records currently say one or the other, and all twenty-six are true.
+
 ### Currency exposure
 
 Keys are ISO 4217 codes, plus `None` (no fiat: real assets) and `Dynamic`
@@ -108,6 +178,20 @@ descriptive fields feed `-coverage` and `-suggest`.
 Read the name the doctor echoes back, not just its verdict: it is the only
 place a pinned `symbol` admits it serves a different instrument than the
 record claims.
+
+**Run `make verify-catalog` after any catalog edit, and after `make refresh`.**
+It is the same doctor over all of it, in each asset's native currency, and it
+is what turns `asset_class`, `leverage`, `currency`, `distribution` and `since`
+from decoration into checks: a wrong quote line shows up as a volatility
+outside the class band, a sibling share class as a name that contradicts
+`distribution`, a predecessor's history as a first quote years before `since`.
+About a minute on a warm quote cache.
+
+The justETF TER sweep is deliberately NOT in the binary: pinned `fees` change a
+few times a year at most, the sweep is one HTTP call per ISIN with a second of
+politeness between them, and it needs a human to decide whether a moved TER is
+a fee cut or a scraped table. It stays a campaign script, run by hand when the
+fees are due a review.
 
 ### Picking the quote line: two traps a green fetch hides
 
@@ -163,7 +247,10 @@ Record what the provider serves, then state the exposure where it belongs:
 listing that is: the two traps above are why one usually exists.
 
 `pofo -verify-data -assets <id>` echoes the served currency next to the name,
-which is the whole check.
+and the doctor now says so itself when the two disagree ("catalog says the line
+quotes in EUR, the source serves CHF"). `GBp` and `GBP` are deliberately read as
+the same line spelled two ways: a hundredfold is the scale-break pass's
+business, not the identity check's.
 
 ## Provenance and refresh recipes
 
