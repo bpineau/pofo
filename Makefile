@@ -66,7 +66,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
 refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
-	@echo "refreshed; now run 'make check' and 'make golden'."
+	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
 .PHONY: simdata
@@ -77,6 +77,16 @@ simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the b
 .PHONY: simdata-qa
 simdata-qa: build ## Reconstruction quality report: every engine vs the real quotes (network), opened in the browser
 	./pofo -verify-simdata
+
+# The data doctor over the whole bundled catalog, in each asset's native
+# currency: series hygiene, plausibility against the asset class's band, and
+# identity against the record (currency, share class, inception). Run it after
+# any catalog edit and after `make refresh`. About a minute on a warm quote
+# cache; a cold one takes as long as a `-warmup`. It exits non-zero only on
+# error-grade data, so the warnings are yours to read, not to chase to zero.
+.PHONY: verify-catalog
+verify-catalog: build ## Data doctor over the whole bundled catalog (network), with a summary
+	./pofo -verify-data
 
 .PHONY: broadsample
 broadsample: ## (Re)generate the bundled JST broad-sample panel (network) then rebuild
@@ -147,10 +157,6 @@ demo: build ## Demo report on the example portfolios
 .PHONY: suggest
 suggest: build ## Demo the -suggest analysis on a catalog-based example
 	./pofo -suggest examples/msci-world.txt
-
-.PHONY: verify
-verify: build ## Run the -verify-data doctor over the bundled catalog
-	./pofo -verify-data
 
 .PHONY: clean
 clean: ## Remove the binaries (not data/ nor pkg/datasets/)
