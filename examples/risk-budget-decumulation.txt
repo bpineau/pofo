@@ -255,8 +255,18 @@
 #   Accept the consequence: a ~20y duration line will print -30% in
 #   another 2022. That is the line doing its job, and the anti-panic rule
 #   must name it explicitly ("do not sell duration after a rate shock").
-#   Currency: ~5 points of dollar through the unhedged US leg, plus the
-#   USD inside the global small-value fund; the floor stays in euros.
+#   Currency: ~5 points of dollar through the unhedged US leg, ~10 more
+#   riding the replication trend line (its EUR share class is UNHEDGED:
+#   the NAV carries EURUSD on the whole position, correlation 0.70 with
+#   the dollar twin), plus the USD inside the global small-value fund;
+#   the floor stays in euros. The 1990 measurement prices that trend
+#   side-effect: in a falling-dollar crisis the unhedged half returns
+#   most of its crisis alpha to the currency, exactly when trend is the
+#   only leg that pays. A hedged sister class exists since 2026-05
+#   (MFEH, LU3359622902, same portfolio, same 0.75%/yr; measured on the
+#   backcast it trades ~0.75 pt of CAGR for 3 points less volatility and
+#   ~5 points less drawdown); switch when its assets and registrations
+#   allow.
 #
 # ## 9. Regime map: what hurts a spending household, what answers
 #
@@ -495,7 +505,7 @@
 # ---- Taxable account (everything the shelters cannot hold) ------------
 5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194) | HEDGE, liability currency (s. 6)
 5	DTLA            # US deflation duration: iShares $ Treasury 20+yr Acc (IE00BFM6TC58) | HEDGE, accumulating and unhedged: crisis dollar, capped at 5 (s. 6)
-10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403) | MECHANISM, dose capped by error asymmetry (s. 4)
+10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403; UNHEDGED class, ~10 pts of USD ride the NAV, s. 8; hedged sister MFEH LU3359622902 since 2026-05, same 0.75%, switch when AUM/registration allow) | MECHANISM, dose capped by error asymmetry (s. 4)
 10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26 %/yr flat, all of it inside the NAV, EUR 100k minimum; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk; on the share-class choice see below
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602) | HEDGE, the stagflation regime (s. 7); physical ETC only, never an ETN
 13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
