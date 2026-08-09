@@ -20,7 +20,7 @@ Resolution fields (consumed by `pkg/marketdata`):
 |---|---|
 | `id` | canonical identifier (ticker or ISIN); the key |
 | `isin` | ISIN, or `null`/empty for indices/spot/futures |
-| `aliases` | extra identifiers accepted in portfolio files (e.g. `GOLD`, `NTSX`) |
+| `aliases` | extra identifiers accepted in portfolio files (e.g. `GOLD`, `NTSX`). An alias shadows every provider ticker of the same spelling, so check the collision before minting one: `GOLD` deliberately resolves to spot gold (`XAUUSD`) and NOT to Barrick Mining, whose NYSE ticker it also is |
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
 | `eu_retail` | `true` when an EU/French retail investor can actually buy it: every UCITS fund, plus EU-listed products with a PRIIPs KID (gold/commodity ETCs, listed closed-end funds like BH Macro). `false` for US-listed funds without a KID. Omitted for non-tradable series (`index` benchmarks, spot, futures). This is the buyability flag; `ucits` alone understates it (no gold product can be UCITS, yet ETCs are freely buyable) |
@@ -39,7 +39,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `other` |
 | `geography` | approximate region weights (percent), `{ "Global developed": 100 }`, or `null` when not meaningful (gold, broad managed futures, money market) |
 | `sectors` | approximate equity sector weights (percent), or `null` for non-equity; for a stacked fund, describes the equity leg |
-| `currency` | quote currency used for fetching and FX conversion (ISO code) |
+| `currency` | the quote line's currency: what `symbol`/`xid` actually serves (ISO code, plus `GBp` for a London pence line). Not the denomination, not the exposure; see "What `currency` means" |
 | `currency_exposure` | optional look-through fiat exposure: currency (ISO code, plus `None` for real assets and `Dynamic` for futures books) → percent of capital; any shortfall below 100 counts as `None`. Set it only where the automatic derivation (`suggest.CurrencySplit`: hedging, asset class, geography, then quote currency) is wrong: funds denominated differently than their holdings' countries (corporate/aggregate bonds, EM hard-currency debt), mixed-region equity residuals worth resolving |
 | `distribution` | `accumulating`, `distributing`, `n/a` |
 | `leverage` | `1.0` normal; `2.0` for 2× daily; embedded notional for capital-efficient funds (e.g. `1.5` for a 90/60 structure) |
@@ -132,6 +132,38 @@ record claims.
   quoted in the record's `currency` outrank deeper cross-currency listings
   (`fetchSpec.preferCurrency`; born of FOLOW, whose young Paris line lost a
   depth contest to its Swiss CHF listing by four quotes).
+
+One family concentrates both traps. Several iShares funds have, on Yahoo, an
+LSE line served in pence (`SEAG.L`, `SEMB.L`, `SEML.L`, `IWDP.L`, `IPRP.L`,
+`INFR.L`) alongside a home listing in the fund's own currency. The pence lines
+carry, on top of the FX layer, isolated one-day round trips of 30 to 70 %
+around 2011 that no other listing of the same fund shows. Symptom: an
+aggregate-bond record with 20 % annualized volatility. Prefer `IEAG.AS`,
+`IEMB.L`, `IEML.L`, `IQQ6.DE`, `IPRP.AS`, `INFR.MI`.
+
+### What `currency` means (and what `currency_exposure` means)
+
+`currency` is a resolution field: the currency the pinned `symbol`/`xid`
+actually serves, verbatim, `GBp` included. It is not the fund's denomination
+and not what its holdings are exposed to. Two consumers read it, and the first
+is the one that matters:
+
+- `pkg/marketdata` uses it as `fetchSpec.preferCurrency`, the tie-break that
+  keeps a fallback search on the record's own listing instead of a deeper
+  cross-currency twin. A value disagreeing with the served line aims that
+  tie-break at the wrong listing, which is the opposite of its purpose.
+- `suggest.CurrencySplit` uses it only as rule 6, the last resort reached by a
+  holding that has neither `currency_exposure` nor `geography`: money markets,
+  and bonds with no country split.
+
+So when the quote line and the exposure disagree, do not bend `currency`.
+Record what the provider serves, then state the exposure where it belongs:
+`currency_exposure`, or `geography` (rule 5), or `currency_hedged`+`hedged_to`
+(rule 3). And when the served currency is not the fund's own, look for a
+listing that is: the two traps above are why one usually exists.
+
+`pofo -verify-data -assets <id>` echoes the served currency next to the name,
+which is the whole check.
 
 ## Provenance and refresh recipes
 
