@@ -29,6 +29,7 @@ make trendnet-refdata # regenerate the monthly NET managed-futures reference (ne
 make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
 make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
 make simdata-qa # reconstruction quality: every engine vs the real quotes, HTML (network)
+make verify-catalog # data doctor over the whole catalog: hygiene, plausibility bands, identity (network)
 make book-drift # what the FIRE book's translations owe their French source
 make figure-drift # what the FIRE book's frozen figures owe the bundled data
 ```
@@ -36,8 +37,9 @@ make figure-drift # what the FIRE book's frozen figures owe the bundled data
 `make refresh` runs every generator below it in dependency order (references
 first, then the simdata built on them, then the offline snapshots); the
 individual targets are for touching one series. Follow it with `make check` and
-`make golden`, both of which must stay green: refreshing data must never require
-a code change.
+`make golden`, both of which must stay green (refreshing data must never require
+a code change), then `make verify-catalog`, which says what the new quotes look
+like.
 
 The FIRE book's plates freeze numbers read off the bundled datasets, so a
 refresh does move some of them. Those recomputation checks are therefore kept
@@ -72,7 +74,10 @@ Tests never touch the network: HTTP sources are faked with `httptest`
   `UPDATE_SNAPSHOTS=1 go test ./pkg/chart -run TestChartSnapshots` and justify
   the diff in the commit message.
 - Catalog edits: `make test` revalidates `assets.json`;
-  `./pofo -verify-data -assets <id>` checks a single asset end to end.
+  `./pofo -verify-data -assets <id>` checks a single asset end to end, and
+  `make verify-catalog` runs the doctor over all of it (plausibility bands per
+  `asset_class`, identity vs the record); run it after any catalog edit or
+  `make refresh`.
 
 ## Map
 
