@@ -348,7 +348,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-cli` | | curves and summary table in the terminal, no HTML |
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
-| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog) for anomalies (bad points, gaps, stale feeds), then exit |
+| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog, `make verify-catalog`) for anomalies. Series hygiene (bad points, gaps, stale feeds, each judged against the pace the series kept at the time), plus, for a catalogued asset, plausibility against its class's volatility/CAGR/move/drawdown band and identity against its record (served currency, share class, inception). Prints a summary and exits |
 | `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
