@@ -174,18 +174,19 @@
       "Consumer Discretionary": 7,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 23,
-      "Health Care": 8,
+      "Financials": 24,
+      "Health Care": 13,
       "Industrials": 18,
       "Information Technology": 8,
       "Materials": 6,
+      "Other": 2,
       "Real Estate": 1,
       "Utilities": 5
     },
     "distribution": "distributing",
     "leverage": 1,
     "notes": "Broad European large/mid-cap core holding; distributing; full physical replication of STOXX 600",
-    "confidence": "high",
+    "confidence": "medium",
     "sources": [
       "https://www.ishares.com/ch/individual/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund"
     ],
@@ -1938,7 +1939,7 @@
     "source": "yahoo",
     "symbol": "IEAC.L",
     "currency": "EUR",
-    "fees": 0.2,
+    "fees": 0.09,
     "asset_class": "corporate-bond",
     "underlying": "Euro-denominated investment-grade corporate bonds",
     "benchmark_index": "Bloomberg Euro Corporate Bond Index",
@@ -1970,7 +1971,7 @@
     "source": "yahoo",
     "symbol": "VWRD.L",
     "currency": "USD",
-    "fees": 0.19,
+    "fees": 0.14,
     "asset_class": "equity",
     "underlying": "FTSE All-World Index (~3,700 large/mid-cap stocks, developed + emerging markets)",
     "benchmark_index": "FTSE All-World Index",
@@ -2329,17 +2330,17 @@
       "UK": 20
     },
     "sectors": {
-      "Communication Services": 2,
-      "Consumer Discretionary": 6,
+      "Communication Services": 3,
+      "Consumer Discretionary": 7,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 23,
-      "Health Care": 9,
-      "Industrials": 18,
+      "Financials": 24,
+      "Health Care": 13,
+      "Industrials": 19,
       "Information Technology": 9,
       "Materials": 6,
-      "Real Estate": 2,
-      "Utilities": 4
+      "Real Estate": 1,
+      "Utilities": 5
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -2459,7 +2460,7 @@
     "source": "yahoo",
     "symbol": "IEGA.AS",
     "currency": "EUR",
-    "fees": 0.09,
+    "fees": 0.07,
     "asset_class": "government-bond",
     "underlying": "Euro-area investment-grade government bonds, all maturities",
     "benchmark_index": "Bloomberg Euro Treasury Bond Index",
@@ -2518,6 +2519,7 @@
       "Industrials": 11,
       "Information Technology": 28,
       "Materials": 3,
+      "Other": 4,
       "Real Estate": 2,
       "Utilities": 3
     },
@@ -2866,6 +2868,7 @@
       "Industrials": 10,
       "Information Technology": 29,
       "Materials": 4,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -3512,6 +3515,7 @@
       "Industrials": 11,
       "Information Technology": 28,
       "Materials": 3,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 3
     },
@@ -3690,6 +3694,7 @@
       "Industrials": 10,
       "Information Technology": 30,
       "Materials": 3,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -3847,6 +3852,7 @@
       "Industrials": 10,
       "Information Technology": 10,
       "Materials": 8,
+      "Other": 2,
       "Real Estate": 8,
       "Utilities": 9
     },
@@ -3877,7 +3883,7 @@
     "source": "yahoo",
     "symbol": "VWRA.L",
     "currency": "USD",
-    "fees": 0.19,
+    "fees": 0.14,
     "asset_class": "equity",
     "underlying": "FTSE All-World Index (~3,700 large/mid-cap stocks, developed + emerging markets)",
     "benchmark_index": "FTSE All-World Index",
@@ -5138,22 +5144,23 @@
       "UK": 20
     },
     "sectors": {
-      "Communication Services": 2,
+      "Communication Services": 3,
       "Consumer Discretionary": 7,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 23,
-      "Health Care": 8,
+      "Financials": 24,
+      "Health Care": 13,
       "Industrials": 18,
       "Information Technology": 9,
       "Materials": 4,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Xtrackers physically replicated STOXX 600 ETF (XSX6)",
-    "confidence": "high",
+    "confidence": "medium",
     "sources": [
       "https://etf.dws.com/en-gb/LU0328475792-stoxx-europe-600-ucits-etf-1c/"
     ],
@@ -5225,22 +5232,23 @@
       "UK": 20
     },
     "sectors": {
-      "Communication Services": 2,
+      "Communication Services": 3,
       "Consumer Discretionary": 7,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 23,
-      "Health Care": 8,
+      "Financials": 24,
+      "Health Care": 13,
       "Industrials": 19,
       "Information Technology": 8,
       "Materials": 4,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Low-cost EUR-accumulating pan-European core holding (MEUD); full physical replication of STOXX 600",
-    "confidence": "high",
+    "confidence": "medium",
     "sources": [
       "https://www.amundietf.lu/en/individual/products/equity/amundi-core-stoxx-europe-600-ucits-etf-acc/lu0908500753"
     ],
@@ -5770,7 +5778,7 @@
   },
   {
     "id": "NTSX-US",
-    "isin": "US97717X8488",
+    "isin": "US97717Y7904",
     "name": "WisdomTree US Efficient Core ETF (US version)",
     "ucits": false,
     "eu_retail": false,
@@ -5877,7 +5885,7 @@
   },
   {
     "id": "QNZIX",
-    "isin": "US00191K3100",
+    "isin": "US00191K3106",
     "aliases": [],
     "name": "AQR Trend Total Return Fund Class I",
     "ucits": false,
@@ -5892,7 +5900,7 @@
     "strategy": "trend-following",
     "geography": null,
     "sectors": null,
-    "distribution": "n/a",
+    "distribution": "distributing",
     "leverage": 1.0,
     "notes": "AQR systematic trend fund (managed futures with an equity anchor); crisis-alpha diversifier",
     "confidence": "high",
@@ -6306,6 +6314,7 @@
       "Industrials": 12,
       "Information Technology": 25,
       "Materials": 4,
+      "Other": 3,
       "Real Estate": 2,
       "Utilities": 3
     },
@@ -7312,15 +7321,22 @@
     "underlying": "Global gold and silver mining companies",
     "benchmark_index": "MarketVector Global Gold Miners",
     "strategy": "physical-replication",
-    "geography": null,
+    "geography": {
+      "Australia": 7,
+      "Canada": 44,
+      "Mexico": 3,
+      "Other": 28,
+      "US": 18
+    },
     "sectors": {
       "Materials": 100
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price; equity risk plus amplified gold sensitivity",
-    "confidence": "high",
+    "confidence": "medium",
     "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84"
     ],
     "since": "2015-03-25"
@@ -7730,6 +7746,7 @@
       "Industrials": 9,
       "Information Technology": 32,
       "Materials": 2,
+      "Other": 2,
       "Real Estate": 3,
       "Utilities": 2
     },
@@ -9078,7 +9095,7 @@
     "source": "yahoo",
     "symbol": "OOSAX",
     "currency": "USD",
-    "fees": 0,
+    "fees": 1.12,
     "since": "1999-09-02",
     "asset_class": "corporate-bond",
     "underlying": "Actively managed portfolio of US senior secured floating-rate corporate loans (the CLO collateral), one of the oldest retail loan funds",
@@ -9111,7 +9128,7 @@
     "symbol": "",
     "xid": "535666183",
     "currency": "EUR",
-    "fees": 0,
+    "fees": 0.13,
     "since": "1984-05-16",
     "asset_class": "money-market",
     "underlying": "Classic French money market SICAV: short-dated euro paper, the fund-form sibling of an overnight-rate ETF",
