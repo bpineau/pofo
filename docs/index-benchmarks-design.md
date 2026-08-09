@@ -1,4 +1,4 @@
-# Fee-free index benchmarks (`MSCIWORLD`, `SP500`)
+# Fee-free index benchmarks (`MSCIWORLD`, `SP500`, `BTOP50`, `BTOP50E`)
 
 ## Problem
 
@@ -49,6 +49,32 @@ shape, no fee). `make simdata` / `-gen-simdata MSCIWORLD SP500` writes the two
 CSVs. Validation: correlation ~1.0 against the matching ETF, with an expected
 CAGR gap of about the ETF's TER (that gap is the point), plus CAGR/vol sanity
 against the reference index.
+
+### The managed-futures pair (`BTOP50`, `BTOP50E`, added 2026-08)
+
+Same kind, different job. Every managed-futures RECONSTRUCTION stops at
+1996-03, the first NAV of the deepest real donor, so no book carrying a trend
+sleeve could be tested through the 1987 crash, 1990 or the 1994 bond rout.
+`BTOP50` serves the monthly Barclay BTOP50 net composite (`TREND-NET-USD`
+refdata, 1986-12, already net of each constituent manager's fees) with the
+daily texture of the net pure-trend composite (`TREND-PURE-NET-USD`, 2000-01),
+exactly as `MSCIWORLD` is monthly before its daily shape donor opens in 1972.
+`BTOP50E` is the same index hedged into EUR by the standard identity (local
+total return less USD cash plus euro cash, the euro leg on the deep chain that
+reaches the German money market), because every trend line a European
+household can actually buy is a EUR class or EUR-hedged.
+
+Two properties make this a benchmark rather than a reconstruction, and both
+matter: nothing is rescaled to a fund's volatility target (the index is served
+at its own ~9.3 % in USD, ~8 % hedged, against the ~15 % a UCITS trend fund
+runs), and nothing is grafted. Rescaling an index to a fund's target is
+precisely what discredited an earlier tail over this period; see "The tail that
+was removed" in `docs/trend-reconstruction-design.md`. A sleeve held through
+this line therefore carries roughly half the risk of the real one, which is
+the price of the extra decade and the safe direction to err in. Measured over
+1996-2026 on `examples/risk-budget-decumulation-longhist.txt`, substituting the
+index for the two fund lines at equal weight costs 0.74 points of CAGR and
+moves the drawdown by 0.06.
 
 ## Testing
 

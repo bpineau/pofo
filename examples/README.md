@@ -103,6 +103,20 @@ rather than recomputing it (and drifting) on every run.
   to melt into a rising equity glidepath. Carries its own risk-budget
   reading (equity is 65% of the variance for 42 of capital), regime map,
   sane ranges and blind-spot ledger.
+- `risk-budget-decumulation-longhist`: the same book with its euro linker line
+  traded for euro cash, which buys thirty years instead of twenty: the Asian
+  crisis, LTCM, the **dotcom top and bust**, 2008, 2011, 2020, 2022. Through
+  2000-03 to 2003-03 it prints -13.5% against MSCI World's -55.2%. The header
+  measures the substitution over the window where both lines exist, so the
+  licence to extrapolate travels with the file.
+- `risk-budget-decumulation-deephist`: forty years (1986-12), reached with
+  three index stand-ins (the BTOP50 managed-futures index for the two trend
+  funds, cash for the linkers, a US small-value index for the boutique funds).
+  Both substitution errors point the same way (~0.9 pt less return, ~0.8 pt
+  more volatility than the real book), so it reads as a floor case. Its
+  finding: the worst drawdown of the whole period is neither 2008 nor the
+  dotcom bust but the 1990 oil-spike recession, which is exactly the regime
+  the parent file names as its worst covered.
 - `cockroach-portfolio-mutiny`: Mutiny Fund's four-quadrant Cockroach.
 - `risk-parity-plus-trend`: diversified set weighted by the **risk-parity optimizer**
   (`#meta optimize:risk-parity`; run it to see the computed weights).
