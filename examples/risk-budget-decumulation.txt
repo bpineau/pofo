@@ -85,7 +85,12 @@
 #              Investable UCITS trend (0.8-1.3% plus replication error),
 #              net, has a markedly thinner realized Sharpe and an enormous
 #              manager dispersion. The premium exists; its NET SIZE is the
-#              least certain input in the whole design.
+#              least certain input in the whole design. Measured on this
+#              file's own backcast window (2005-2025, real EUR): the
+#              replication leg earned ~3.8%/yr real and the direct-manager
+#              leg ~1.2%, an excess over cash of ~3.6%/yr for the pair.
+#              The dispersion is not hypothetical; it is the thing the
+#              two-leg structure diversifies.
 #   TERM       thin today. The line stands on its hedging demand (negative
 #              beta to growth shocks), not on its yield.
 #   SIZE/VALUE Fama-French, contested since 2000: weaker mechanism, hence
@@ -144,6 +149,13 @@
 #   book level, never the line alone; look quarterly, not daily. Base
 #   rate: Morningstar's "Mind the Gap" measures ~1-2%/yr lost to timing by
 #   investors who all thought they were steady.
+#   QUANTIFIED (2026-08): a decumulation Monte-Carlo sweep of the trend
+#   weight over {7.5, 12, 17, 22} improves the floor metrics MONOTONICALLY
+#   up to 22 in five of six return models (years at the floor in a lost
+#   decade: 6.8 -> 2.8 going from 7.5 to 17); the only model that pays is
+#   the flat-CTA decade, and only its median (-0.24 pt/yr), never its
+#   tail. The regret asymmetry argued above is measured, not just pleaded,
+#   and the upward-only revision protocol has numbers behind it.
 #
 # ## 5. The bond tent that does not say its name
 #
@@ -157,6 +169,11 @@
 #   expected return against a static book UNDERSTATES this one, because
 #   the return given up is concentrated on the years where it buys the
 #   most survival.
+#   GUARDRAIL PLUMBING that goes with the tent: if the plan includes an
+#   indexed income arriving mid-retirement (a state pension), REBASE the
+#   guardrail reference rate at each income step. Without the rebase, the
+#   pension's arrival mechanically crushes the measured withdrawal rate
+#   and a prosperity rule would raise spending for the wrong reason.
 #   Name the mechanical loss honestly: against a build centered on a
 #   stacked 90/60 core, notional exposure falls from ~130% to ~116%,
 #   because cheap embedded leverage was handed back when the equity moved
@@ -202,6 +219,13 @@
 #   trend are the only two legs of that regime; weakening both at once is
 #   incoherent. The dose is what the regime demands GIVEN that the other
 #   leg is capped.
+#   HEAD-TO-HEAD CHECK (2026-08): a leaner variant at 9 points of gold was
+#   dominated by this file across six decumulation return models,
+#   INCLUDING one where every sleeve is capped at prudent forward priors
+#   (gold at 1%/yr real). Gold is paid by its covariance with bad states,
+#   not by its 2005-2025 tailwind (~9%/yr real, not to be extrapolated).
+#   An isolated weight sweep cannot see this (8 vs 11 reads as noise);
+#   only the full head-to-head, in the tails, does.
 #
 # ## 8. What 100 EUR holds
 #
@@ -271,9 +295,19 @@
 #     needs weeks to reposition, gold is unreliable in the first sessions,
 #     duration only helps if the shock is deflationary. Accepted because
 #     listed long-vol vehicles bleed structurally and a household cannot
-#     run an option book with discipline.
+#     run an option book with discipline. UPGRADED FROM ASSUMED TO
+#     MEASURED (2026-08): a 3-point long-vol sleeve was simulated in the
+#     decumulation Monte-Carlo; near-neutral under generous assumptions
+#     (-4%/yr bleed, +90% payoff on a <=-30% equity year), NEGATIVE under
+#     a realistic one (-10%/yr bleed, +60%). And the retail UCITS shelf
+#     was surveyed: the listed VIX-roll product lost ~99% since 2012, the
+#     genuine tail funds are institutional-access. Trend buys roughly
+#     three times the protection at positive carry.
 #   NO BROAD COMMODITIES beyond gold: an energy shock is reached only
-#     through the trend sleeve, which has to catch it first.
+#     through the trend sleeve, which has to catch it first. ALSO MEASURED
+#     (2026-08): a 2-point broad-commodity sleeve was tested head-to-head
+#     and dragged every model (-2.2%/yr real over 2005-2025, and a prudent
+#     prior only caps upside tailwinds, it never lifts a drag).
 #   THE EQUITY SLEEVE IS A US MEGA-CAP BET in disguise (world cap weight),
 #     and small value is only a partial answer to it.
 #   CONCENTRATION IN NAMES, not just in assets: two managers carry the
@@ -292,6 +326,23 @@
 #     cash instead of linkers (see section 1).
 #
 # ## 12. Backtesting this file
+#
+#   RE-DERIVED AND STRESSED (2026-08). As an adversarial check, the same
+#     liability was handed to three blind designers from opposed schools
+#     (liability-driven, all-weather risk-balanced, capital-efficient
+#     return-stacking), plus an instrument-universe survey, WITHOUT access
+#     to this file. Their synthesis reconverged on this architecture: the
+#     same two trend vehicles, the same euro linkers fund, the same
+#     "equity budget first, tax wrapper second" doctrine, ~116% notional.
+#     The head-to-head decumulation Monte-Carlo that followed (monthly
+#     real-return panel 2005-2025, 5000 paths, six return models including
+#     capped prudent priors, floor-years / first-cut / terminal-wealth
+#     metrics) kept THIS file dominant over the blind challenger on every
+#     model, prudent priors included (lost decade: 2.3 mean years at the
+#     floor vs 5.0). The drivers: the small-value tilt, gold at 15, and
+#     two drags on the challenger's side (broad commodities, an oversized
+#     near-zero-real linkers block). Ruin stayed <= 0.1% for both, which
+#     is the saturation argument of section 13 in action.
 #
 #   WHAT THE WINDOW CAN AND CANNOT SAY. The common period starts 2005-11,
 #     bounded by the linkers line. It contains 2008, 2011, 2020 and 2022,
@@ -358,6 +409,21 @@
 #     cut, median terminal wealth. NOT the Sharpe of a 20-year backtest:
 #     its second decimal is estimation noise, and a pre-tax backtest is
 #     structurally blind to the wrapper arbitrage this design rests on.
+#   - Harvest realized losses in the taxable account each December (ten
+#     year carry-forward in France): on a book of 7+ decorrelated lines
+#     there is almost always a loser to purge, worth ~0.15-0.25%/yr.
+#   - SURVIVOR FALLBACK, written in advance: a two-page notice plus a
+#     three-line replacement book (35 world equity / 45 euro linkers 1-10
+#     / 20 gold, rebalanced once a year), switched AUTOMATICALLY if the
+#     managing spouse dies, no waiting for a good market moment. Measured
+#     cost of the simplicity: ~-0.2 pt/yr real and the loss of the
+#     conditional hedges (a 2022 at ~-14% real instead of ~-9). A design
+#     nobody can run when its designer is gone is a design flaw.
+#   - DEFERRED LIFE ANNUITY decision point: mandatory review at ~75, buy
+#     if capital has drifted more than ~25% below its median trajectory.
+#     Late annuitization is the cheapest longevity insurance for the
+#     beyond-the-horizon tail, and French taxation of purchased annuities
+#     improves sharply with age at purchase.
 #
 # Siblings: dragon-decumulation-household.txt (same wrappers, one
 #   generation earlier, stacked core kept), claude-dragonlite.txt (the
@@ -379,5 +445,5 @@
 # ---- Tax shelters (equity only by law) --------------------------------
 23	ERESMONDEM      # world equity at 0.50%/yr fees (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1; alt CW8 LU1681043599) | MECHANISM + wrapper CONSTRAINT
-7	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelter that cannot hold a world fund) | CONSTRAINT + weak mechanism
+7	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelter that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism
 2	LU0131510165    # France small/mid value: Independance AM France Small Mid | CONSTRAINT; folding it into the Europe line is equivalent
