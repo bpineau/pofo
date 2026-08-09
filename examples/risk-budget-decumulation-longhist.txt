@@ -56,6 +56,32 @@
 #   -0.03, worst rolling 5y +3.6 % against -7.8 %, longest recovery 2.8 years
 #   against 7.3 and counting.
 #
+#   Calendar years, this book / MSCI World net in EUR:
+#
+#     1997   +15.7 / +27.5      2003    +9.2 / +10.9
+#     1998   +12.4 / +15.6      2004    +6.7 /  +6.5
+#     1999   +21.5 / +45.9      2005   +21.4 / +25.4
+#     2000    +6.9 /  -6.9      2006    +6.8 /  +7.7
+#     2001    +3.3 / -12.3      2007    +3.6 /  -1.4
+#     2002    -7.2 / -32.0
+#
+#   Cumulative 2000-2007: +60.4 % against -12.7 %; over the three bear
+#   years 2000-2002 alone, +2.5 % against -44.5 %.
+#
+# ## The price is paid in advance (1997-1999)
+#
+#   Read the first three rows of that table before the rest: the book
+#   compounds +58 % over 1997-1999 while the index compounds +115 %.
+#   Three consecutive years of trailing a world tracker by 12 to 24
+#   points, at the exact moment every conversation says diversification
+#   is obsolete, are the entry fee for the three years that follow. That
+#   is the behavioral shape of every regime-balanced book: it does not
+#   merely "lag a little in bull markets", it looks broken at the top of
+#   a mania, then pays it all back through the collapse. Whoever holds it
+#   needs that sentence written down BEFORE 1999 arrives, not after; it
+#   is the same asymmetry the parent file's trend protocol (section 4)
+#   handles, at the scale of the whole book.
+#
 # ## What to distrust in it
 #
 #   THE TREND SLEEVE IS RECONSTRUCTED, not observed, before 2007: the donor

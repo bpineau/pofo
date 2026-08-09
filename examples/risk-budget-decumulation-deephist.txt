@@ -33,6 +33,24 @@
 #     This is the substitution that hurts: those funds are unusually calm and
 #     a US SCV index is not.
 #
+#   Three reconstruction caveats specific to the deep era, on top of the
+#   substitutions:
+#   - CURRENCY WEIGHT: the small-value stand-in is 100 % USD where the
+#     funds it replaces are mostly EUR (the boutiques) plus one USD line,
+#     so this file carries roughly 9 extra points of dollar. Part of the
+#     1990 drawdown below is that extra dollar, which the real book would
+#     not have carried.
+#   - PRE-EURO DURATION: the euro 25+ line before 1999 is rebuilt from an
+#     EA19 aggregate yield whose ~11 % pre-convergence coupons (Italy near
+#     13 %) no longer exist. Its +5.9 % through 1990 owes most of itself
+#     to that carry: the same shock priced off a Bund-only curve was flat
+#     (-0.4 %), and priced off 2020s coupons it is 2022. Do not read the
+#     deep era as "euro duration shrugs off rate shocks".
+#   - EARLY-INDEX CONCENTRATION: the BTOP50 of the late 1980s rests on the
+#     handful of large programmes the sector then had, so its
+#     spectacular first years (+57.6 % in 1987) are a concentrated record,
+#     not a diversified-industry one.
+#
 #   Measured over 1996-03 to 2026-08, where the real book exists, all three
 #   substitutions together:
 #
@@ -79,11 +97,45 @@
 #   long duration losing outright). The book's own design document predicted
 #   where its weakness would be, and forty years of data put the weakness
 #   exactly there.
+#
+#   The decomposition (calendar 1990, every line in EUR) says WHY, and the
+#   why is not only oil:
+#
+#     world equity      -27.4 %     (-17.0 % in USD)
+#     US small value    -34.4 %
+#     gold              -13.0 %     ( -3.1 % in USD)
+#     US 20+ unhedged    -6.7 %
+#     euro 25+           +5.9 %
+#     euro cash          +8.3 %
+#     trend, hedged     +16.0 %
+#
+#   Two shocks stacked: the real one (oil, recession, rising rates) and a
+#   CURRENCY one, the dollar falling hard against the mark. For a euro
+#   holder that second shock turned both dollar hedges against the book at
+#   once: gold lost 13 in EUR while barely moving in USD, and the "crisis
+#   dollar" line lost money in the middle of a crisis. The legs that paid
+#   were the hedged trend sleeve, the liability-currency duration and the
+#   cash floor: every euro-denominated or euro-hedged line, and nothing
+#   else. 1990 is thus a second measured failure of the crisis-dollar
+#   playbook (2025 being the watched-live one) and the strongest single
+#   piece of evidence for keeping the trend sleeve hedged, the floor in
+#   euros and the US leg capped at 5.
 #   Read it with the substitution in mind, in the direction that matters:
 #   trend was strongly positive through that episode (the index returned
 #   +15.3 % in 1990, and +57.6 % in 1987), so a sleeve at the real funds'
 #   volatility would have cushioned more than this file shows. The -20.7 % is
 #   pessimistic, not alarmist.
+#
+#   The second finding is 1994, the bond rout: US 20+ -17.0 %, euro 25+
+#   -10.4 % and gold -11.2 % in EUR, all three hedges down together, trend
+#   flat (+1.7 %) and cash at +7.1 % the only shelters. The book prints
+#   -4.6 % for the year: survivable, but it is the regime where the
+#   DIVERSIFICATION of the hedges is at its thinnest, and unlike 1990 it
+#   offers no compensating leg. What decided the damage in both episodes
+#   is the STARTING yield: 1990's euro long line carried 8-11 % coupons
+#   into the shock and finished positive; 1994's carried less and lost 10;
+#   2022's carried ~1 % and lost 38. The gauge of the next 1994 is today's
+#   long yield, not yesterday's drawdown.
 #
 # ## What still cannot be tested, and why the 1970s are not here
 #
