@@ -1,0 +1,94 @@
+# Risk-budget decumulation, long history -- the same book, one line traded away for thirty years.
+#
+# STATUS: research file, not an allocation to hold. It exists to answer the
+#   question the parent file cannot: how does this design cross a long equity
+#   bear that is not 2008? risk-budget-decumulation.txt starts in 2005-11,
+#   bounded by its euro linker line, so it has never met the dotcom bust.
+#   This file gives that line up and reaches 1996-03 instead.
+#
+# ## What was substituted, and the licence for it
+#
+#   ONE change of substance: the 13 points of euro inflation-linked 1-10y
+#   (CHSN, quotes from 2005-11) become 13 points of euro overnight cash
+#   (XEON, rebuilt from the euro overnight rate and the German money market
+#   before the euro existed, so it is never the binding constraint). Both are
+#   short, low-volatility euro assets that pay the floor; what is lost is the
+#   indexation, i.e. exactly the thing the parent file holds them for.
+#   Plus one tidying: the two boutique small-value funds are folded into the
+#   European one, which reaches 1990.
+#
+#   The substitution is licensed by measurement, not by assertion. Over
+#   2005-11 to 2026-08, where the real linker line exists, the two books are
+#   the same book:
+#
+#     metric              with linkers (CHSN)   this file (XEON)
+#     CAGR                       7.98 %                7.96 %
+#     volatility                 8.27 %                8.23 %
+#     max drawdown             -19.14 %              -18.27 %
+#     worst rolling 5y           0.67 %                0.92 %
+#
+#   Read that table twice, because it cuts both ways. It says the WHOLE-BOOK
+#   statistics do not depend on the linker line, so carrying the book back on
+#   a cash stand-in is honest. It does NOT say the two lines are
+#   interchangeable: the parent file holds linkers for a regime (a long,
+#   choppy inflation) that this window, 2022 included, never really delivered.
+#   A file that swaps them can be trusted on sequence risk and equity bears,
+#   and never on inflation protection.
+#
+# ## What the extra decade buys
+#
+#   1996-03 to 2026-08 covers the Asian crisis, LTCM, the dotcom top AND its
+#   bust, 2008, 2011, 2020 and 2022. Measured over the whole window, pre-tax
+#   and before any withdrawal: CAGR ~8.6 %, volatility ~8.1 %, worst drawdown
+#   ~-18.5 %, worst rolling 5y ~+0.9 %/yr.
+#
+#   The dotcom passage is the reason the file exists (2000-03 to 2003-03,
+#   against MSCI World in EUR):
+#
+#     metric              this book        MSCI World (EUR)
+#     CAGR                 -0.56 %              -19.88 %
+#     max drawdown        -13.47 %              -55.20 %
+#     max drawdown real   -15.93 %              -57.32 %
+#     volatility            8.17 %               24.30 %
+#
+#   And over the whole 2000-06 to 2007-12 stretch, the decade a European
+#   equity investor lost: CAGR +5.8 % against -2.3 %, Sharpe 0.75 against
+#   -0.03, worst rolling 5y +3.6 % against -7.8 %, longest recovery 2.8 years
+#   against 7.3 and counting.
+#
+# ## What to distrust in it
+#
+#   THE TREND SLEEVE IS RECONSTRUCTED, not observed, before 2007: the donor
+#     chain runs back through Man AHL Diversified, whose first NAV in 1996-03
+#     is what sets this file's start. In 1996-1999 both trend lines sit on
+#     that same donor and correlate at 0.84, so the "two managers against
+#     manager risk" argument of the parent file is fictitious there. From
+#     2000-01 the chains separate and the correlation falls to 0.33, which is
+#     where the live era sits too, so the dotcom passage itself is honest.
+#   THE DURATION LINES CROSS A ONE-WAY BOND MARKET: 1996-2020 is a falling
+#     yield regime and the two long-duration lines are its beneficiaries.
+#     Nothing in this window punishes them the way 2022 did.
+#   GOLD STARTS ITS BULL in 2001, near the beginning of the window.
+#   Read the file as evidence about SEQUENCE RISK and equity bears, which is
+#   what it was built to test, and not as a general verdict.
+#
+# Siblings: risk-budget-decumulation.txt (the real allocation, real lines,
+#   from 2005-11), risk-budget-decumulation-deephist.txt (three substitutions,
+#   back to 1986-12), fire-core-longhist.txt (the same trick on the FIRE
+#   family).
+#meta rebalance:90
+#meta sim:on
+
+# ---- Taxable account --------------------------------------------------
+5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194)
+5	DTLA            # US deflation duration, unhedged: iShares $ Treasury 20+yr Acc (IE00BFM6TC58)
+10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403)
+10	RAEF            # trend, direct method: AQR Managed Futures UCITS EUR-hedged (LU1662501532)
+15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602)
+13	XEON            # THE SUBSTITUTION: euro overnight cash (LU0290358497) standing in for the euro linkers 1-10y (CHSN, LU1645380442) the parent file holds
+5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3)
+
+# ---- Tax shelters (equity only by law) --------------------------------
+23	ERESMONDEM      # world equity at 0.50%/yr fees
+5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1)
+9	LU1832174962    # Europe small value: Independance AM Europe Small (the parent file's 7+2 folded into one line, which reaches 1990)

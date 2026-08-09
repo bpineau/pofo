@@ -1,0 +1,112 @@
+# Risk-budget decumulation, deep history -- forty years, on index stand-ins, read as a floor case.
+#
+# STATUS: research file, the deepest of the three, and the least faithful.
+#   It carries the risk-budget-decumulation design back to 1986-12 by giving
+#   up three of its lines for index-level stand-ins. The point is not to
+#   flatter the design: the substitutions are measured below and they run
+#   COOLER on return and HOTTER on risk than the real book, so what comes out
+#   is a floor case, not a sales pitch.
+#
+# ## The ladder
+#
+#   risk-budget-decumulation.txt            2005-11, every line real
+#   risk-budget-decumulation-longhist.txt   1996-03, floor de-indexed
+#   this file                               1986-12, plus trend and small
+#                                                    value at index level
+#
+# ## The three substitutions, and what each costs
+#
+#   TREND. The two fund reconstructions (DBMFE, RAEF) stop at 1996-03, the
+#     first NAV of the deepest real donor, which is what walls the family off
+#     from the 1987 crash and 1990. They become 20 points of BTOP50E: the
+#     Barclay BTOP50 net managed-futures index, hedged to EUR, held at its own
+#     ~8 % volatility rather than rescaled to the ~15 % a UCITS trend fund
+#     targets. So the sleeve carries about half the risk the real one does,
+#     and nothing here pretends otherwise: rescaling an index to a fund's
+#     target is exactly what discredited an older reconstruction of this
+#     period (docs/trend-reconstruction-design.md).
+#   FLOOR. Euro linkers 1-10y (CHSN, 2005-11) become euro overnight cash
+#     (XEON, rebuilt on the German money market before the euro existed).
+#     Same argument as the longhist file, where the swap is measured.
+#   SMALL VALUE. The global and European boutique funds (AVWS, Independance)
+#     become 14 points of a US small-cap-value index (IE00BSPLC413, 1963).
+#     This is the substitution that hurts: those funds are unusually calm and
+#     a US SCV index is not.
+#
+#   Measured over 1996-03 to 2026-08, where the real book exists, all three
+#   substitutions together:
+#
+#     metric              real lines (longhist)   this file's stand-ins
+#     CAGR                       8.48 %                  7.54 %
+#     volatility                 8.06 %                  8.87 %
+#     Sharpe                       1.01                    0.83
+#     max drawdown             -18.88 %                -19.49 %
+#     worst rolling 5y           0.80 %                 -0.27 %
+#
+#   Both errors point the same way, which is the only reason this file is
+#   worth reading: it gives up ~0.9 points of annual return and carries ~0.8
+#   points more volatility than the book it stands for. Whatever it shows
+#   surviving, the real allocation would have survived at least as well.
+#   Isolated, the trend stand-in costs 0.74 points of CAGR and changes the
+#   drawdown by 0.06; the small-value stand-in costs 0.18 points of CAGR and
+#   adds 1.19 points of volatility; the floor stand-in is worth ~0.02.
+#
+# ## What forty years say (1986-12 to 2026-05, vs MSCI World in EUR)
+#
+#     metric              this book        MSCI World (EUR)
+#     CAGR                  8.08 %              8.56 %
+#     volatility            8.68 %             17.31 %
+#     Sharpe                  0.90               0.56
+#     max drawdown        -20.63 %            -60.27 %
+#     max drawdown real   -23.73 %            -66.11 %
+#     longest recovery     2.4 y               13.7 y
+#     ... in real terms    3.3 y               14.4 y
+#     worst rolling 5y     +0.04 %             -9.32 %
+#     median rolling 5y    +7.41 %             +9.83 %
+#
+#   Half a point of compounding given up over four decades, against a
+#   drawdown cut by two thirds and a recovery of 2.4 years instead of 13.7.
+#   For a household spending from the portfolio, the third and fourth rows
+#   are the ones that decide whether the plan survives; the first is the
+#   price of admission.
+#
+# ## The finding worth carrying away
+#
+#   The worst drawdown of the whole forty years is NOT 2008, and not the
+#   dotcom bust. It is 1989-06 to 1991-06 (-20.7 %): an oil spike, a
+#   recession and rising rates at once, which is precisely the regime the
+#   parent file names as its worst covered (gold and trend the only two legs,
+#   long duration losing outright). The book's own design document predicted
+#   where its weakness would be, and forty years of data put the weakness
+#   exactly there.
+#   Read it with the substitution in mind, in the direction that matters:
+#   trend was strongly positive through that episode (the index returned
+#   +15.3 % in 1990, and +57.6 % in 1987), so a sleeve at the real funds'
+#   volatility would have cushioned more than this file shows. The -20.7 % is
+#   pessimistic, not alarmist.
+#
+# ## What still cannot be tested, and why the 1970s are not here
+#
+#   No investable managed-futures record exists before 1986-12 (the index's
+#   own start), no euro inflation-linked bond before 1998, no small-value
+#   fund of this kind before the 1990s. A 1970s version of this book would
+#   have to drop the trend sleeve, which carries a fifth of the capital and
+#   most of the inflation defense, and would therefore be a different
+#   portfolio wearing this one's name. The honest tools for that regime are
+#   class-level, not ticker-level: `pofo -fire` resamples real historical
+#   cohorts back to 1900 (bundled JST broad sample), which is the right
+#   instrument for asking what a long stagflation does to a withdrawal plan.
+#
+# Siblings: risk-budget-decumulation.txt (the real allocation),
+#   risk-budget-decumulation-longhist.txt (one substitution, from 1996-03).
+#meta rebalance:90
+#meta sim:on
+
+5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194), rebuilt to 1970
+5	DTLA            # US deflation duration, unhedged: iShares $ Treasury 20+yr Acc (IE00BFM6TC58), rebuilt to 1962
+20	BTOP50E         # STAND-IN for DBMFE+RAEF: BTOP50 net managed-futures index hedged to EUR, 1986-12, at index volatility (~8%, vs ~15% for the funds)
+15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602), rebuilt to 1968
+13	XEON            # STAND-IN for CHSN: euro overnight cash (LU0290358497), deep chain to 1960
+23	ERESMONDEM      # world equity at 0.50%/yr fees, rebuilt to 1971
+5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1), rebuilt to 1971
+14	IE00BSPLC413    # STAND-IN for AVWS+Independance: SPDR MSCI USA Small Cap Value Weighted, 1963; hotter and more US-concentrated than the funds it replaces

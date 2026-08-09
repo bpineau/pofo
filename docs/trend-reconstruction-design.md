@@ -26,6 +26,19 @@ tool invites exactly that lookup. What the removed tail was, and what it
 measured, is kept below: the measurements are the argument for the decision,
 not a description of what ships.
 
+The question the decision leaves open, "then how does a book carrying a trend
+sleeve cross 1987 or 1990?", has an answer that does not require reopening it.
+Since 2026-08 the reference itself is served as a benchmark asset, `BTOP50`
+(and `BTOP50E`, hedged to EUR): the monthly net composite with the daily
+pure-trend texture, from 1986-12, at ITS OWN volatility. That is a different
+object from the reconstructions here and must stay one. It is not a fund's
+path, it is not rescaled to a fund's target (the move that discredited the
+removed tail), and a sleeve held through it carries roughly half the risk the
+real one would, which understates both the sleeve's contribution and its drag.
+See `docs/index-benchmarks-design.md` and
+`examples/risk-budget-decumulation-deephist.txt`, which measures what the
+substitution costs before using it.
+
 ## The rule that comes first
 
 **Where a real record of the same trade exists, use it.** A futures-price

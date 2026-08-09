@@ -9150,5 +9150,66 @@
     "sources": [
       "https://markets.ft.com/data/funds/tearsheet/summary?s=FR0000288946:EUR"
     ]
+  },
+  {
+    "id": "BTOP50",
+    "isin": "",
+    "aliases": [
+      "TREND-INDEX"
+    ],
+    "name": "Barclay BTOP50 Managed Futures (index, net of manager fees)",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "USD",
+    "fees": 0,
+    "asset_class": "managed-futures",
+    "underlying": "The largest investable managed-futures programmes making up 50% of the sector's assets, equally weighted and rebalanced annually, each already net of its own manager's fees",
+    "benchmark_index": "Barclay BTOP50 Index",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "Non-investable benchmark, served long (1986-12) so a book carrying a trend sleeve can be tested through the 1987 crash, 1990 and the 1994 bond rout: every managed-futures RECONSTRUCTION here stops at 1996-03, the first NAV of the deepest real donor. It is not a substitute for one. The index runs at its own ~9.3%/yr volatility where a UCITS trend fund targets ~15%, and nothing rescales it, so a sleeve held through this line carries roughly 60% of the risk the real sleeve would; read a book built on it as an understatement of both the trend contribution and its drag. Investable equivalents: DBMFE, RAEF, KMLM, CTA.",
+    "confidence": "high",
+    "sources": [
+      "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi"
+    ],
+    "since": "1986-12-31"
+  },
+  {
+    "id": "BTOP50E",
+    "isin": "",
+    "aliases": [
+      "TREND-INDEX-EUR"
+    ],
+    "name": "Barclay BTOP50 Managed Futures hedged to EUR (index)",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "EUR",
+    "fees": 0,
+    "asset_class": "managed-futures",
+    "underlying": "The largest investable managed-futures programmes making up 50% of the sector's assets, equally weighted and rebalanced annually, each already net of its own manager's fees",
+    "benchmark_index": "Barclay BTOP50 Index",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "EUR-hedged view of BTOP50, the form a euro book compares against (every investable trend line a European household can buy is a EUR class or EUR-hedged). Same caveats as BTOP50: non-investable, served long (1986-12) only so a trend sleeve can be tested before 1996-03, and carried at the index's own ~9.3%/yr volatility rather than the ~15% a UCITS trend fund targets, so it understates both the sleeve's contribution and its drag. Investable equivalents: DBMFE (LU2951555403), RAEF (LU1662501532).",
+    "confidence": "high",
+    "sources": [
+      "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi"
+    ],
+    "since": "1986-12-31",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
   }
 ]

@@ -27,6 +27,8 @@ func All() []Recipe {
 		wpeaRecipe(),
 		msciworldIndexRecipe(),
 		sp500IndexRecipe(),
+		btop50IndexRecipe(),
+		btop50HedgedIndexRecipe(),
 		wintonRecipe(),
 		zrozRecipe(),
 		dbxgRecipe(),
@@ -220,8 +222,16 @@ func ernxRecipe() Recipe {
 
 // xeonRecipe backcasts the Xtrackers II EUR Overnight Rate Swap UCITS ETF
 // (LU0290358497, EUR, real from 2007), which tracks a euro OVERNIGHT accrual
-// index, from the euro overnight rates themselves (eurOvernightDaily) less the
+// index, from the euro overnight rates themselves (eurOvernightDeep) less the
 // fund's 0.10%/yr TER.
+//
+// It takes the DEEP chain (the German money-market accrual before the euro
+// existed, ~1960) rather than stopping at the 1994 start of the euro-area
+// money-market index, for the same reason the German bond sleeve finances on
+// that chain: Germany was the anchor economy and the mark the reference
+// currency, so its own short rate is what euro-area cash was. The depth is
+// what lets a euro floor line stand in a backtest that reaches the 1980s
+// instead of becoming its binding constraint.
 //
 // It used to be rebuilt from the 3-month interbank index the ERNX recipe uses,
 // and a 3-month rate is not an overnight rate: measured over 1999-2025 on the
@@ -242,9 +252,9 @@ func xeonRecipe() Recipe {
 	return Recipe{
 		ID:     "LU0290358497",
 		Name:   "Xtrackers EUR Overnight Rate Swap: EUR overnight cash",
-		Method: "euro overnight rate compounded ACT/360 (ESTR from 2019-10, EONIA 1999-01 before it) less 0.10%/yr TER, extended by the 3-month EURCASH-EUR money-market index before the euro (1994->); real XEON grafted from 2007",
+		Method: "euro overnight rate compounded ACT/360 (ESTR from 2019-10, EONIA 1999-01 before it) less 0.10%/yr TER, extended by the 3-month EURCASH-EUR money-market index before the euro (1994->) and by the German money-market accrual DECASH-EUR before that (~1960); real XEON grafted from 2007",
 		Build: func(f Fetcher, from time.Time) (*marketdata.Series, error) {
-			s, err := eurOvernightDaily(f, from)
+			s, err := eurOvernightDeep(f, from)
 			if err != nil {
 				return nil, err
 			}
@@ -1487,6 +1497,109 @@ const msciWorldShapeID = "^990100-USD-STRD"
 // accidental short fetch of the same symbol.
 func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata.Series, error)) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return shapedIndex("MSCIWORLD-USD", msciWorldShapeID, annualFee, fallback)
+}
+
+// btop50IndexRecipe serves the managed-futures reference AS ITSELF, the way
+// MSCIWORLD serves the equity one: the monthly net composite of real
+// programmes (TREND-NET-USD, 1986-12→, each constituent already net of its own
+// manager's fees) with the daily texture of the net pure-trend composite
+// (TREND-PURE-NET-USD, 2000-01→) inside each month.
+//
+// It exists because every managed-futures RECONSTRUCTION in this package stops
+// at 1996-03, the first NAV of the deepest real donor, which puts the 1987
+// crash, 1990 and the 1994 bond rout out of reach of any book carrying a trend
+// sleeve. This id reaches 1986-12 instead, and it is a different object from
+// those reconstructions, deliberately: nothing here is rescaled to a fund's
+// volatility target. The index runs at its own ~9.3% volatility against the
+// ~15% a UCITS trend fund targets, so a sleeve held through this line carries
+// roughly 60% of the risk the real sleeve would; that understatement is the
+// price of the extra decade, and it is the honest direction to err in (see
+// "The tail that was removed" in docs/trend-reconstruction-design.md, where
+// rescaling an index to a fund's target is exactly what discredited the older
+// 1988 tail). Non-investable: no ISIN, no fund fee added, and the index's
+// annual-rebalanced equal weighting of the 50% largest programmes is not
+// something a household can buy.
+func btop50IndexRecipe() Recipe {
+	return Recipe{
+		ID:     "BTOP50",
+		Name:   "Barclay BTOP50 managed futures (index, net of manager fees)",
+		Method: "monthly BTOP50 net composite (TREND-NET-USD refdata, 1986-12→) with the daily shape of the net pure-trend composite (TREND-PURE-NET-USD, 2000-01→); no fund fee added and no volatility rescaling, the index is served at its own level and its own ~9.3% volatility",
+		Build:  btop50Local,
+	}
+}
+
+// btop50Local is the index in its own currency, shared by the raw and the
+// hedged recipes. Monthly before 2000 (the daily shape donor's start), daily
+// after, exactly as MSCIWORLD is monthly before 1972.
+var btop50Local = shapedIndex(NetTrendAnchor.ID, PureTrendAnchor.ID, 0,
+	func(Fetcher, time.Time) (*marketdata.Series, error) {
+		return nil, fmt.Errorf("%s: refdata missing, no fallback (an index of hedge-fund programmes cannot be replicated from prices)", NetTrendAnchor.ID)
+	})
+
+// btop50HedgedIndexRecipe is the same index expressed in EUR with the currency
+// risk hedged away, which is the form a euro book actually compares against:
+// every investable trend line a European household can buy is either a EUR
+// share class or EUR-hedged (DBMFE, RAEF). Holding the raw USD index instead
+// would put ~10%/yr of EURUSD volatility and four decades of dollar drift into
+// what is supposed to be a test of the trend sleeve.
+//
+// The arithmetic is the standard hedged-return identity, the same one dtleBuild
+// applies to the long-Treasury segment: the index is a FUNDED total return
+// (its collateral earns USD cash), so hedging strips that cash leg and gives
+// back the euro one, day by day, which is what a rolling forward does.
+func btop50HedgedIndexRecipe() Recipe {
+	return Recipe{
+		ID:     "BTOP50E",
+		Name:   "Barclay BTOP50 managed futures, hedged to EUR (index)",
+		Method: "the BTOP50 net composite (see BTOP50) financed at USD cash (^IRX, extended by TBILL-3M) and re-earning euro cash (the deep euro overnight chain, German money market before the euro) = the EUR-hedged view of the index; no fund fee added, no volatility rescaling",
+		Build:  btop50HedgedBuild,
+	}
+}
+
+// btop50HedgedBuild turns the USD index into its EUR-hedged view: over every
+// step, the local return less USD cash plus EUR cash. The union of dates is
+// daily even where the index is monthly, so the hedge accrues every day while
+// the index return lands on its month end, which is what the two legs really
+// do.
+func btop50HedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	local, err := btop50Local(f, from)
+	if err != nil {
+		return nil, err
+	}
+	fr, err := BuildFrame(extend(f), []string{"^IRX"}, from)
+	if err != nil {
+		return nil, err
+	}
+	usd := &marketdata.Series{Name: "USD cash (accrual)", Source: "simdata"}
+	v := 100.0
+	for k, d := range fr.Dates {
+		v *= 1 + fr.Returns["^IRX"][k]
+		usd.Points = append(usd.Points, marketdata.Point{Date: d, Close: v})
+	}
+	eur, err := eurOvernightDeep(f, from)
+	if err != nil {
+		return nil, err
+	}
+	dates, lv := marketdata.Align([]*marketdata.Series{local, usd, eur}, local.First().Date, time.Time{})
+	if len(dates) < 2 {
+		return nil, fmt.Errorf("BTOP50E: %d aligned dates", len(dates))
+	}
+	out := &marketdata.Series{
+		Name: "BTOP50 hedged to EUR (index)", Source: "simdata", Currency: "EUR",
+	}
+	v = 100.0
+	out.Points = append(out.Points, marketdata.Point{Date: dates[0], Close: v})
+	for k := 1; k < len(dates); k++ {
+		r := 0.0
+		for i, leg := range [3]float64{1, -1, 1} {
+			if lv[i][k-1] > 0 && lv[i][k] > 0 {
+				r += leg * (lv[i][k]/lv[i][k-1] - 1)
+			}
+		}
+		v *= 1 + r
+		out.Points = append(out.Points, marketdata.Point{Date: dates[k], Close: v})
+	}
+	return out, nil
 }
 
 // sp500ShapeID is the Yahoo daily S&P 500 PRICE index (1927→): like the MSCI
