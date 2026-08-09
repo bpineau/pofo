@@ -202,7 +202,14 @@
 #   the United States. The 2025 tariff episodes showed the dollar and long
 #   Treasuries falling in concert when the shock is US fiscal and
 #   institutional: the line can then lose on both legs at once. That is
-#   precisely why it is capped at 5 and never averaged up.
+#   precisely why it is capped at 5 and never averaged up. And 2025 was
+#   not the first failure, only the first watched live: in the 1990
+#   oil-shock recession (US-centered: S&L, recession, dollar sliding
+#   against the mark) the unhedged US line printed -6.7% in EUR while the
+#   euro long line printed +5.9%. Both times, the half that paid was the
+#   liability-currency half. The two-issuer split is not diversification
+#   cosmetics; it is what has actually carried the leg through both of
+#   its measured failures.
 #   Accepted corollary: outside crises the line moves with EURUSD,
 #   visible volatility with no expected return attached. That is the
 #   premium on an insurance that pays twice when it pays.
@@ -226,8 +233,17 @@
 #   not by its 2005-2025 tailwind (~9%/yr real, not to be extrapolated).
 #   An isolated weight sweep cannot see this (8 vs 11 reads as noise);
 #   only the full head-to-head, in the tails, does.
-#
-# ## 8. What 100 EUR holds
+#   WHAT GOLD DOES NOT COVER (1990, measured on the deep-history file):
+#   gold is a DOLLAR asset, and in an inflation shock where the dollar
+#   falls it can lose double digits for a euro holder. Through the 1990
+#   oil-spike recession, the worst drawdown of the whole forty-year test,
+#   gold printed -13.0% in EUR (only -3.1% in USD; the rest is the
+#   dollar) while hedged trend printed +16.0% and was the one leg that
+#   paid. Read the division of labor precisely: TREND catches the shock
+#   as it happens (long energy, short bonds: +16% in 1990, +15% in 2022
+#   for the net index); GOLD covers the monetary aftermath and the
+#   debasement decade, on its own clock. Judging gold on the shock year
+#   is the same mistake as judging the linkers on 2022.
 #
 #   42 equity (of which 14 small value)
 #   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
@@ -258,7 +274,11 @@
 #                          by contract. The 2022 configuration.
 #   Choppy inflation       Gold and the linkers' accrual. The worst covered
 #   (stagflation)          regime and the retiree killer: trend is slow to
-#                          turn, duration loses outright. Section 7.
+#                          turn, duration loses outright. Section 7. The
+#                          1990 measurement (deep-history file) adds a
+#                          twist: when the shock comes with a FALLING
+#                          dollar, gold fails too (in EUR) and trend
+#                          alone answers; see section 7.
 #   Long equity bear       Trend crisis alpha (Hurst, Ooi & Pedersen 2017);
 #                          linkers and duration are what gets spent while
 #                          equity is underwater, which is what stops the
@@ -324,6 +344,19 @@
 #     the taxable account (restores leverage but wastes the shelters), a
 #     single trend manager (manager risk on the least certain premium),
 #     cash instead of linkers (see section 1).
+#   CONSIDERED, MEASURED AND REJECTED (2026-08, on the long-history
+#     variants): a broad-commodity sleeve, 4 points carved out of gold as
+#     a standing oil-shock hedge. Over 1996-2026 it costs 0.21 points of
+#     CAGR a year, deepens the real drawdown from -19.4% to -21.8% (it
+#     loses a third of its value across 2008) and drops the worst rolling
+#     5y from 0.80% to 0.28%, for about +0.6 points in 2022: a premium
+#     paid every year for a hedge that pays once a decade, and whose
+#     exposure the trend sleeve already RENTS when it trends (+16% in
+#     1990, +15% in 2022 for the net index). An oil shock is a spike that
+#     reverses (WTI +112% June-October 1990, then -29% in 1991), not a
+#     state to hold. Also measured and refused: floating-rate cash in
+#     place of part of the linker line (nil effect: 13 points at duration
+#     4.5 weigh 0.6 duration-points on the whole book).
 #
 # ## 12. Backtesting this file
 #
@@ -356,6 +389,20 @@
 #     charges 0.58%. Read the drawdown and the worst 5y, not the CAGR.
 #     For ruin probabilities rather than a single path, feed the file to
 #     `pofo -fire`, which resamples instead of replaying.
+#   THE LONG WINDOWS (2026-08, on the sibling files, which substitute the
+#     youngest lines for deeper stand-ins and MEASURE the substitution
+#     before using it). Three findings worth carrying back here. (1) The
+#     dotcom test passes: 2000-03 to 2003-03 at -13.5% against MSCI
+#     World's -55.2% in EUR, +2.5% cumulative over 2000-2002 against
+#     -44.5%. (2) The forty-year worst drawdown is NOT 2008 and not the
+#     dotcom bust: it is 1989-06 to 1991-06 (-20.7%, pessimistically
+#     measured), the oil-spike recession, i.e. exactly the regime section
+#     7 names as worst covered. The design document predicted where its
+#     weakness would be and four decades of data put it there. (3) The
+#     passage is paid in advance: 1997-1999 the book compounds +58%
+#     against the index's +115%, three straight years of trailing by 12
+#     to 24 points BEFORE the three years that repay it. Nobody holds
+#     that without having written down, in advance, that it is the plan.
 #   ERESMONDEM is MSCI World net EUR minus 0.50%/yr, backcast from 1971.
 #   DTLA has a clean total-return backcast from 1962. Its EUR-hedged
 #     cousin DTLE (IE00BD8PGZ49) is set aside twice over: a distributing class (coupons
@@ -404,7 +451,16 @@
 #   - Annual review: trend 20 -> 25 on lived evidence only (section 4);
 #     the unhedged US leg never above 5 (section 6); the total expense and
 #     fund range of each shelter; re-run the withdrawal simulation with
-#     current capital and age.
+#     current capital and age. Also check that BOTH trend managers still
+#     trade energy and commodities, not only financials: in the oil-shock
+#     regime the trend sleeve is the only leg that answers (1990, 2022),
+#     and a CTA that has drifted to purely financial futures silently
+#     vacates that post.
+#   - Duration vulnerability is read off the STARTING long yield, not
+#     rebalanced away: at 8-11% coupons the 1990 rate shock left euro long
+#     bonds positive; from ~1% carry the same shock in 2022 cost -38%.
+#     The current euro long yield is the gauge of how bad the next 1994
+#     would be; it changes what to expect, never the weights.
 #   - Steering metrics: years spent at the floor, median year of the first
 #     cut, median terminal wealth. NOT the Sharpe of a 20-year backtest:
 #     its second decimal is estimation noise, and a pre-tax backtest is
@@ -425,11 +481,14 @@
 #     beyond-the-horizon tail, and French taxation of purchased annuities
 #     improves sharply with age at purchase.
 #
-# Siblings: dragon-decumulation-household.txt (same wrappers, one
-#   generation earlier, stacked core kept), claude-dragonlite.txt (the
-#   simplicity flagship), hydra-five-engines-ucits.txt (one line per
-#   engine), fire-liability-buffer.txt (the years 1-3 buffer this file
-#   assumes is held outside).
+# Siblings: risk-budget-decumulation-longhist.txt and -deephist.txt (this
+#   book on measured stand-ins, back to 1996 and 1987; the source of every
+#   long-window number quoted above), dragon-decumulation-household.txt
+#   (same wrappers, one generation earlier, stacked core kept),
+#   claude-dragonlite.txt (the simplicity flagship),
+#   hydra-five-engines-ucits.txt (one line per engine),
+#   fire-liability-buffer.txt (the years 1-3 buffer this file assumes is
+#   held outside).
 #meta rebalance:90
 #meta sim:on
 
