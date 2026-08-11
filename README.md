@@ -71,7 +71,7 @@ its extension.
 | `capital:X` | starting amount (e.g. `10000`); required for flows, and unlocks the money rows |
 | `contribute:A/P` | add a fixed amount A every period P ∈ {`week`, `month`, `quarter`, `year`} |
 | `withdraw:A/P` | take out A, or `A%` of the current value, every period P |
-| `optimize:OBJ[,max-weight:C]` | let the optimizer choose the weights for objective `OBJ` (table below), optionally capping each asset at C% |
+| `optimize:OBJ[,constraints]` | let the optimizer choose the weights for objective `OBJ` (table below), under optional weight bounds, feasibility limits and a fitting window (all below) |
 | `currencies:USD,EUR` | evaluate the portfolio in several base currencies at once; each becomes a comparison column with its own numeraire and CPI deflator (nominal **and** real stats), so the gap between columns is the currency risk. Cannot be combined with `optimize` |
 
 Flows are invested or sold pro rata on the first trading day of each new
@@ -94,7 +94,57 @@ combined with `leverage`.
 | `return-to-drawdown` | maximize return / max drawdown (Calmar-style) |
 | `min-ulcer` | minimize the Ulcer Index (depth **and** duration underwater) |
 | `max-worst-5y` | maximize the worst rolling 5-year return |
+| `max-return` | maximize the CAGR. Degenerate alone (everything goes to the single fastest-compounding line): pair it with a limit, where it becomes the frontier point |
 | `cwarp` | maximize CWARP vs the `-benchmark` (a diversifier selector, see [CWARP](#cwarp)) |
+
+**Constraints.** They follow the objective, comma-separated, and compose:
+
+| Constraint | Effect |
+|---|---|
+| `max-weight:25` | cap every line at 25 % (ignored by `risk-parity`) |
+| `min-weight:5` | floor every line at 5 %, so the search cannot drop a sleeve it dislikes in sample |
+| `bounds:NTSG:15-30` | a range for ONE line, repeatable; either end may be omitted (`bounds:GDE:-25`). An identifier matching no holding is an error, not a silent no-op |
+| `max-vol:9.5` | volatility cap, %/yr |
+| `min-return:10.5` | CAGR floor, %/yr |
+| `max-drawdown:20` | drawdown budget, % |
+| `train:..2015` | fit the weights on that window ONLY (`START..END`, each end a year, a `YYYY-MM-DD` date, or empty) |
+
+The limits express what portfolio work usually asks: not "the best Sharpe" but
+*the most return that stays under 9.5 % volatility*, or *the least volatility
+that still compounds at 10.5 %*. They also route around a trap of this
+toolkit's conventions: Sharpe here runs at a **zero** risk-free rate, so any
+cash-like sleeve buys ratio for free (a short-linker sleeve can lift a
+portfolio's measured Sharpe while costing two points of CAGR). A volatility cap
+asks the intended question. When no allocation can meet the limits, the note
+says so instead of returning a plausible-looking answer.
+
+Bounds are not decoration: an unconstrained optimum is a corner solution, and a
+corner fitted on one window is the least durable thing an optimizer produces.
+The ranges an owner can defend line by line, for reasons the backtest cannot
+see, belong in the problem.
+
+```
+#meta optimize:max-return,max-vol:9.5,min-weight:5,bounds:NTSG:10-30,bounds:GDE:10-25
+```
+
+**`train:`, fitting on data and judging on other data.** With a training window,
+the optimizer sees only that slice while the report measures the resulting
+weights over the WHOLE window, so the column you read is out of sample. The
+note carries both halves, and the gap is usually the story:
+
+```
+$ pofo -cli hydra.txt          # with optimize:max-return,max-vol:9.5,train:..2015
+hydra (max-return): weights computed by the optimizer (max-return under vol ≤ 9.5 %)
+over 1996-03-27→2015-12-31: NTSG 10.0 %, ZPRV 15.5 %, MFEH 53.0 %, RAEF 5.0 %,
+GDE 10.5 %, ZROZ 5.9 %, in-sample CAGR 11.5 %/yr, volatility 9.5 %, deepest
+drawdown -12.5 %, Sharpe 1.19; over 2016-01-01→2026-08-07, which it did not see,
+CAGR 8.3 %/yr, volatility 10.0 %, deepest drawdown -20.1 %
+```
+
+Fitted, it promised 11.5 %/yr inside a 9.5 % volatility budget; on the eleven
+years it had never seen it delivered 8.3 %/yr, 10.0 % volatility and a
+drawdown 8 points deeper than the one it was fitted to avoid. An optimizer
+without `train:` never shows you that.
 
 For **decumulation**, where long underwater stretches or a bad five-year run are
 hard to live through, `min-ulcer` and `max-worst-5y` target that discomfort
@@ -174,6 +224,39 @@ file just as easily); `-simulate` (`-b`) is the same thing from the command
 line, for every file and every `-assets` identifier of the run at once. Both
 only ever turn the backcast on: an asset with no simulated history keeps its
 real quotes, with a note in the report.
+
+## What each weight buys: `-sweep`
+
+`pofo -sweep portfolio.txt` takes one holding at a time, moves its weight
+across a grid (0 to 45 % in 5-point steps, `-sweep-step` to refine), keeps the
+other lines' **relative proportions**, and re-runs the real simulation at every
+point:
+
+```
+$ pofo -sweep examples/hydra-five-engines-capital-efficient.txt
+
+NTSG (written 18.0 %)
+    weight      CAGR       vol  Sharpe     maxDD     TTR   worst5y
+     0.0 %   10.96 %    9.83 %    1.07  -17.40 %   1.4 y    0.72 %
+    10.0 %   10.86 %    9.79 %    1.07  -18.57 %   1.5 y    0.88 %
+    18.0 %   10.77 %    9.89 %    1.05  -19.50 %   2.0 y    1.01 %  <- written
+    30.0 %   10.61 %   10.28 %    1.00  -20.89 %   2.3 y    1.18 %
+    45.0 %   10.39 %   11.10 %    0.92  -23.83 %   2.8 y    0.80 %
+```
+
+Read down a column and the sleeve's job becomes explicit: here more world
+equity costs CAGR and Sharpe while **buying** the five-year floor, which is an
+argument the backtest cannot make on its own but can price. Read across the
+sleeves and you get the per-line "sane ranges" a portfolio file should be
+documenting: where the worst five-year stretch peaks, where the drawdown starts
+deepening, and how flat the answer is in between (usually flatter than the
+optimizer's precision suggests).
+
+Every grid point is measured over the same window, since a holding at 0 %
+stays in the portfolio and keeps binding it, so the rows are comparable. The
+simulation is the real one, with the file's own `rebalance:` period, fees and
+flows: the question is what would have happened had a different number been
+written in the file.
 
 ## Suggesting assets to add
 
@@ -352,6 +435,8 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, then exit |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
+| `-sweep` | | per-holding weight sweep: what each line's weight buys and costs, then exit |
+| `-sweep-step` | `5` | grid step, in weight percent, for `-sweep` |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
 | `-export-epub` | | write the FIRE book to the given path as an EPUB 3 file, then exit |
@@ -592,9 +677,10 @@ applications. Layout:
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, alignment
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
-pkg/optimize/     weights for max-sharpe / min-volatility / risk-parity /
-                  max-sortino / return-to-drawdown / min-ulcer / max-worst-5y /
-                  cwarp
+pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
+                  risk-parity / max-sortino / return-to-drawdown / min-ulcer /
+                  max-worst-5y / cwarp, under per-line bounds and volatility /
+                  return / drawdown limits
 pkg/suggest/      regime coverage, look-through composition, redundancy and
                   gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
