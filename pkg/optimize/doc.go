@@ -1,7 +1,7 @@
 // Package optimize computes portfolio weights that optimize a risk/return
 // objective from the historical returns of the candidate assets.
 //
-// Eight objectives are supported:
+// Nine objectives are supported:
 //
 //   - MaxSharpe ("max-sharpe"): the tangency portfolio, maximizing the
 //     ratio of expected return to volatility.
@@ -19,6 +19,11 @@
 //     hard to sit through.
 //   - MaxWorst5y ("max-worst-5y"): maximizes the worst rolling five-year
 //     return, the robust worst-case medium-term outcome.
+//   - MaxReturn ("max-return"): maximizes the portfolio's own CAGR (the
+//     geometric return of the blended path). Alone it is degenerate, since
+//     the whole budget goes to the single best-performing asset; it earns
+//     its keep under a Limit, where it is the frontier point: the most
+//     return reachable inside a volatility or drawdown budget.
 //   - CWARP ("cwarp"): the blend that best improves a replacement portfolio
 //     (a benchmark) when overlaid on it. It is solved by SolveCWARP, which
 //     takes the replacement's returns as an extra argument; the objective is
@@ -26,9 +31,53 @@
 //     solver is a multi-start heuristic and its weights are a good allocation
 //     rather than a certified optimum.
 //
-// Weights are long-only (no short selling) and sum to 1. An optional
-// per-asset cap (MaxWeight) bounds concentration for every objective except
-// RiskParity, whose weights follow directly from the equal-risk condition.
+// Weights are long-only (no short selling) and sum to 1. Concentration is
+// bounded for every objective except RiskParity (whose weights follow
+// directly from the equal-risk condition) by, in increasing order of
+// precision: MaxWeight, a cap on every asset; MinWeight, a floor on every
+// asset, which keeps each line in the book instead of letting the search
+// drop the ones that only pay off out of sample; and Bounds, a range per
+// named asset. Bounds arrive keyed by identifier and are turned into the
+// per-position Lower/Upper the solver reads by Spec.Resolve, which the
+// CALLER runs: resolving identifiers is pkg/marketdata's job.
+//
+// Bounds matter more than they look. An unconstrained optimum is a corner
+// solution, and a corner fitted on one window is the least durable thing an
+// optimizer produces. The ranges a portfolio's owner can defend line by line,
+// for reasons the backtest cannot see, belong in the problem, not in a
+// footnote to its answer.
+//
+// # Constraints, and why they beat a scalar objective
+//
+// Limits express the question most portfolio work actually asks: not "the
+// best Sharpe" but "the most return without going above X volatility", or
+// "the least volatility that still returns Y". Three are available
+// (MaxVolatility, MinReturn, MaxDrawdown), they compose, and they apply to
+// any objective:
+//
+//	optimize.Spec{Objective: optimize.MaxReturn,
+//	    Limits: optimize.Limits{MaxVolatility: 0.095}}
+//
+// Any limit (or any per-asset bound) routes the solve through one penalized
+// path search, whatever the objective; without them the closed forms answer
+// exactly as they always did. Result.Feasible reports whether the answer
+// actually meets the limits: when nothing can, the weights returned are the
+// least-violating point found, and saying so is the point of the flag.
+//
+// Reaching for a constraint rather than a ratio also sidesteps a trap of this
+// toolkit's conventions: Sharpe here runs at a ZERO risk-free rate, so any
+// cash-like sleeve buys ratio for free. A euro-linker sleeve can raise a
+// portfolio's measured Sharpe while cutting two points of CAGR. A volatility
+// cap asks the question that was meant.
+//
+// # Fitting on one window, judging on another
+//
+// Spec.Train carries the "train:" window parsed from a portfolio file. This
+// package IGNORES IT: Solve is date-free, and slicing the returns is the
+// caller's job (pkg/compare fits on the slice, then measures the resulting
+// weights over the whole window, so what the report shows is out-of-sample).
+// It travels in Spec because it arrives in the same directive, and one
+// parser beats two.
 //
 // # How each objective is solved, and how much to trust it
 //
