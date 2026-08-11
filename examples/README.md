@@ -127,10 +127,13 @@ rather than recomputing it (and drifting) on every run.
   worst rolling 5y and every stress window (2000-02, 2008, 2022). The file
   doubles as the design document: regime map, references, weight ranges,
   blind spots.
-- `hydra-five-engines-capital-efficient`: the frontier build (~146% notional
-  via stacked funds: RSBT, GDE); +1.6 pts of CAGR over the buyable hydra but
-  US-listed pieces an EU retail investor cannot buy. Research file, exposure
-  ledger, alternatives-considered ledger, and UCITS watch list.
+- `hydra-five-engines-capital-efficient`: the frontier build (~125% notional
+  via stacked funds: NTSG, GDE); over 1996-2026 it matches the S&P 500's EUR
+  CAGR on less than half its volatility, and beats the buyable hydra by
+  1.2 pts of CAGR, but two pieces (GDE, ZROZ) are US-listed and an EU retail
+  investor cannot buy them. Research file: exposure ledger, the volatility/
+  CAGR frontier of the shape, alternatives-considered ledger (why RSBT was
+  dropped for a EUR-hedged trend leg), and UCITS watch list.
 
 ## Capital-efficient / return-stacking (modern)
 
