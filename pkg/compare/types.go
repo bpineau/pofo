@@ -50,6 +50,10 @@ type Column struct {
 	WinValues []float64
 	Assets    []portfolio.Asset
 	Stats     metrics.Stats
+	// Note is the informational line a computed column carries, currently
+	// the optimizer's account of the weights it chose, the window it fitted
+	// them on and how they did outside it. Empty for a plain portfolio.
+	Note string
 }
 
 // column is the full per-portfolio compute record produced by Compute (the
@@ -105,7 +109,7 @@ func (c *Comparison) Columns() []Column {
 			Name: col.p.Name, Color: col.color,
 			SimDates: col.sim.Dates, SimValues: col.sim.Values,
 			WinDates: col.winDates, WinValues: col.winValues,
-			Assets: col.p.Assets, Stats: col.stats,
+			Assets: col.p.Assets, Stats: col.stats, Note: col.note,
 		}
 	}
 	return out
