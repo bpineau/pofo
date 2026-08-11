@@ -224,9 +224,35 @@
 #     carries ~46 points of equity; the trend sleeve earns its keep
 #     precisely by NOT adding more.
 #   - Small-cap value (ZPRV): no stacked SCV instrument exists. The
-#     nearest same-core alternative is global SCV (Avantis, DPGT); on the
-#     common 1994 window it is a wash. ZPRV keeps the deeper clean
-#     backcast (1963 vs 1994), so it stays.
+#     nearest same-core alternative is global SCV. Re-measured in this mix
+#     over 1996-2026, AVWS (IE0003R87OG3) instead of ZPRV reads CAGR
+#     10.69% / vol 9.76% / Sharpe 1.06 against 10.77% / 9.89% / 1.05: a
+#     wash, and a 6/6 split lands exactly in between. Alone, AVWS is the
+#     better-behaved sleeve (Sharpe 0.62 vs 0.59, drawdown -62% vs -64%,
+#     worst 5y -8.5% vs -11.3%) for 0.4 pts less CAGR. The tie-breakers
+#     are outside the backtest and point both ways: AVWS carries a 31%
+#     non-US tail, which is the one real answer to blind spot (f), while
+#     ZPRV costs 0.09%/yr less and keeps the deeper clean backcast (1963 vs
+#     1994, below which global SCV proxies non-US with US data). ZPRV
+#     stays; AVWS is a legitimate swap, not an upgrade.
+#   - Gold (inside GDE) -> IGLN, physical gold at 1x. A free search gives
+#     IGLN only 2.5 to 5 points; forced doses replace equity premium with
+#     nothing, so both CAGR and volatility fall together and Sharpe barely
+#     moves (10 points of GDE moved to IGLN: CAGR 10.77% -> 10.09%, vol
+#     9.89% -> 9.07%, Sharpe 1.05 -> 1.07; the full swap: 9.38% / 8.56% /
+#     1.06). That is a slide DOWN the same frontier line, not a better
+#     frontier, and it is exactly the Erb-Harvey drag GDE exists to dodge.
+#     IGLN belongs in the buyable sibling, where GDE is not an option.
+#   - Euro inflation-linked ballast -> CHSN (LU1645380442, euro linkers
+#     1-10, backcast from 2005-11). On its own shorter window, 5, 10 or 15
+#     points of CHSN cost 0.4, 0.8 and 1.2 pts of CAGR for the same Sharpe
+#     (0.93 against 0.93). A free search does push it to ~29 points and
+#     Sharpe 1.02, but at 6.8% CAGR, and READ THAT WITH CARE: this
+#     toolkit's Sharpe uses a ZERO risk-free rate, so any cash-like sleeve
+#     buys ratio for free. CHSN is ballast, and its real job (euro
+#     inflation and liquidity near a departure date) is a decumulation
+#     buffer question, not a frontier question. Out of this file, in the
+#     fire-* examples.
 #   - Long Treasury (ZROZ): a 25+y zero-coupon is ALREADY the most
 #     capital-efficient long-duration expression. Nothing to swap to.
 #   Net: the plain sleeves are plain on purpose. Stacking is used where it

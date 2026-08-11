@@ -9,11 +9,12 @@
 #   a full growth engine instead of being funded by shrinking it.
 #
 # This is the buyable flagship of the hydra family. Two related files:
-#   - hydra-five-engines-capital-efficient.txt: the research build (~148%
+#   - hydra-five-engines-capital-efficient.txt: the research build (~125%
 #     notional via US-listed stacked funds, no PRIIPs constraint). It marks
-#     where the frontier sits, keeps the alternatives-considered ledger,
-#     and doubles as the UCITS watch list; what it gains over this file is
-#     what the missing UCITS launches would unlock.
+#     where the frontier sits, keeps the alternatives-considered ledger and
+#     the volatility/CAGR frontier of the shape, and doubles as the UCITS
+#     watch list; what it gains over this file is what the missing UCITS
+#     launches (a gold-on-equity fund, a 25y+ zero-coupon) would unlock.
 #   - claude-dragonlite.txt: the same philosophy distilled to three lines
 #     (NTSG/trend/gold) for whoever will not maintain six.
 #
@@ -101,14 +102,26 @@
 #   which is why it gets the largest combined budget after equities. It is
 #   also the head with the worst single-point-of-failure risk: any one
 #   model can decay, close, or drift, so the sleeve is split across two
-#   genuinely different methods -- DBi's CTA-replication (DBMFE,
-#   LU2951555403) and AQR's direct multi-asset trend (AQR Managed Futures
+#   genuinely different methods -- DBi's CTA-replication (MFEH,
+#   LU3359622902) and AQR's direct multi-asset trend (AQR Managed Futures
 #   UCITS, EUR-hedged flat "RAEF" share LU1662501532; 100k+ tickets: the
 #   cheaper flat I class IAE2F LU1662499612, OCF ~0.88%), the standout LIVE
 #   record among UCITS trend funds:
 #   over 2022-2026 it ran Sharpe ~0.75 with a -20% max drawdown while the
-#   US-listed KMLM (the research build's second leg) did Sharpe ~0 and
-#   -42%. Below ~20% total the sleeve no longer moves the needle in a
+#   US-listed KMLM (a third replication route, kept as a backtest proxy
+#   only) did Sharpe ~0 and -42%.
+#   BOTH legs are EUR-HEDGED share classes, which is a deliberate change:
+#   MFEH (LU3359622902) and DBMFE (LU2951555403) are the same sub-fund, so
+#   their difference IS the hedge, and over 1996-2026 in EUR the hedged
+#   class reads 6.70%/yr at 11.9% volatility against 6.59% at 15.1%
+#   (max drawdown -24.5% vs -29.2%). An unhedged managed-futures sleeve is
+#   trend PLUS a long-dollar position; the dollar leg added three points of
+#   volatility here for no measured return. The hedge is not free looking
+#   forward (it costs the USD-EUR carry gap, ~1.5%/yr at 2026-08 rates,
+#   near zero over 2000-2014), but this sleeve's job is to pay in euros
+#   whatever the dollar does in the crisis that triggers it. Keep DBMFE in
+#   view as the fallback: MFEH is very new and very small (see the
+#   practical notes). Below ~20% total the sleeve no longer moves the needle in a
 #   crisis; above ~35% the tracking-error regret in long bull markets
 #   becomes untenable for most humans. For decumulation specifically,
 #   trend is the sleeve that most reduces sequence risk (Clare, Seaton,
@@ -136,19 +149,21 @@
 #   EUR-hedged share class (DTLE, IE00BD8PGZ49) if you prefer the
 #   defensive sleeve without the USD.
 #
-# ## What the UCITS constraint costs (measured, 1988-2026, EUR)
-#   Vs the same six-line book with the US-listed originals (KMLM as the
-#   second trend leg, 5% ZROZ as the duration leg): CAGR 10.1% vs 10.6%,
-#   Sharpe 0.85 vs 0.86, worst rolling 5y +0.8% vs +1.0%, max drawdown
-#   -31.9% vs -32.4%, worst real recovery 3.3y (identical), weighted TER
-#   0.36% vs 0.38%. FIRE check (monthly real bootstrap, 40y): ruin at a 4%
-#   real withdrawal 0.4% vs 0.2%, safe WR at 5% ruin 5.4% vs 5.7%. So the
-#   conversion costs ~0.4pt of CAGR and ~0.3pt of modeled safe WR, mostly
-#   the shared-TSMOM backcast of the AQR leg and the milder duration; the
-#   sequence-risk profile, which is what the hydra exists for, survives
-#   intact. The 3 extra IDTL points (vs 5 ZROZ) are funded from trend
-#   (30 -> 28) and gold (18 -> 17), the two sleeves the range sweep shows
-#   have slack at the top of their sane ranges.
+# ## What the UCITS constraint costs (measured, 1996-03 -> 2026-08, EUR)
+#   Vs the research build (hydra-five-engines-capital-efficient.txt, which
+#   swaps gold-on-equity for plain gold and a 25+y zero-coupon for IDTL):
+#   CAGR 9.50% vs 10.77%, vol 9.67% vs 9.89%, Sharpe 0.96 vs 1.05, max
+#   drawdown -19.5% (identical), worst real recovery 2.8y vs 2.2y, worst
+#   rolling 5y +0.54% vs +1.01%, weighted TER 0.29% vs 0.33%. FIRE check
+#   (monthly real bootstrap, 40y): ruin at a 4% real withdrawal 0.11% vs
+#   0.00%, safe WR at 5% ruin 5.42% vs 6.25%. So the conversion costs
+#   ~1.3pt of CAGR and ~0.8pt of modeled safe WR, and essentially all of it
+#   is GDE: the research build earns the equity premium underneath its gold
+#   while this one pays the Erb-Harvey drag on 17 points of metal. The
+#   risk profile, which is what the hydra exists for, survives intact.
+#   The extra IDTL points (vs the research build's zero-coupon) are funded
+#   from trend and gold, the two sleeves the range sweep shows have slack
+#   at the top of their sane ranges.
 #
 # ## Blind spots (known, accepted, and what would patch them)
 #
@@ -159,10 +174,12 @@
 #       investor, so EUR/USD vol (~8-10%/yr) partly feeds the portfolio
 #       vol. It is half feature (USD rallies in global crises), half bug
 #       (a dollar-debasement decade drags everything at once). One patch is
-#       already applied here: the AQR trend leg (13%) uses the EUR-hedged
-#       RAEF share, so its return carries the strategy without the EUR/USD
-#       spot move (paying only the small EUR-minus-USD carry; pofo models it
-#       with the FX-hedge identity, not a naive USD conversion). Further
+#       already applied here: the WHOLE trend sleeve (28%) uses EUR-hedged
+#       share classes (MFEH and RAEF), so its return carries the strategy
+#       without the EUR/USD spot move (paying only the EUR-minus-USD carry;
+#       pofo models it with the FX-hedge identity, not a naive USD
+#       conversion). That patch alone is worth 0.8 pts of portfolio
+#       volatility and 1.3y of real recovery time, measured below. Further
 #       patches: swap part of NTSG to NTSZ, prefer DTLE for the duration leg.
 #   (c) Euro-area inflation is only hedged INDIRECTLY (gold, trend,
 #       commodities via trend). A EUR retiree's liability is euro
@@ -194,10 +211,12 @@
 #   benchmark. Expect the measured edge over that benchmark to shrink out
 #   of sample; the engine-level logic, and the ranges above, are the part
 #   built to survive. Anywhere inside those ranges is the same portfolio.
-#   RANGE CHECK (per-sleeve weight sweep, rest renormalized, 1988-2026 +
-#   bootstrap ruin at a 4% real WR over 40y; swept on the US-listed
-#   research build, carried over here since the substitutes share the same
-#   backcasts). Empirically confirmed: ZPRV 8-15 on both ends (worst-5y
+#   RANGE CHECK (per-sleeve weight sweep, rest renormalized; swept on the
+#   US-listed research build over 1988-2026 with the sleeves it held then,
+#   and carried over here because the substitutes share the same backcasts.
+#   The research build has since been re-swept over 1996-2026 on its
+#   current sleeves; where the two disagree, its own file is the record).
+#   Empirically confirmed: ZPRV 8-15 on both ends (worst-5y
 #   peaks near 8-12%, collapses past 16 while max drawdown deepens); the
 #   trend FLOOR at 20% (at 10-15% Sharpe drops to ~0.81 and ruin doubles;
 #   at 0% worst-5y goes negative); the gold FLOOR at 10% (below it
@@ -213,22 +232,30 @@
 #   diversifiers compounded like equities in-sample; forward-looking, the
 #   growth engine pays the plan).
 #
-# ## Measured profile (this toolkit, EUR, common window 1988-11 -> 2026-06)
-#   vs claude-dragonlite (60/25/15): CAGR 10.1% vs 10.2% (a wash), vol
-#   12.0% vs 12.9%, Sharpe 0.85 vs 0.81, worst recovery 3.2y vs 4.9y,
-#   worst rolling 5y CAGR +0.8% vs -1.7%, median 5y 9.0% vs 10.0%,
-#   up/down-capture 54/50% vs 61/57%, beta 0.47 vs 0.54, weighted fees
-#   0.36% for both. Real drawdowns in the three real-data crises: 2000-02
-#   -23% vs -30%, 2008 -14% vs -18%, 2022 -12% vs -14%. The overall max
-#   drawdown (-32%) sits entirely in the pre-2000 backcast era. The price
-#   of the hedges: up-capture 54% vs 61%, so it lags in straight-up bull
-#   markets -- that is the premium being paid, not a defect.
+# ## Measured profile (this toolkit, EUR, common window 1996-03 -> 2026-08)
+#   vs claude-dragonlite (60/25/15): CAGR 9.50% vs 9.81%, vol 9.67% vs
+#   12.5%, Sharpe 0.96 vs 0.79, max drawdown -19.5% vs -27.0%, worst real
+#   recovery 2.8y vs 6.3y, worst rolling 5y CAGR +0.54% vs -2.06%, median
+#   5y 8.1% vs 9.0%, up/down-capture 35/30% vs 41/37%, beta 0.28 vs 0.34,
+#   weighted fees 0.29% vs 0.36%. Real drawdowns in the three real-data
+#   crises: 2000-02 -16% vs -30%, 2008 -15% vs -19%, 2022 -11% vs -12%.
+#   The price of the hedges: up-capture 35% vs 41%, so it lags in
+#   straight-up bull markets -- that is the premium being paid, not a
+#   defect. WINDOW NOTE: the trend legs bind the panel at 1996-03 (the
+#   deepest real NAV in their donor chains), so the figures above no longer
+#   include 1988-1995; the earlier version of this file, whose engine 3a
+#   was unhedged, read a 1988 start.
 #   Decumulation check (monthly real returns deflated by HICP, stationary
-#   bootstrap, 40y horizon): ruin at a 4% real withdrawal rate 0.4% vs
-#   0.7%; safe WR at 5% ruin 5.4% vs 5.3%. Read those LEVELS skeptically
-#   (the 1988-2026 panel compounds ~9%/yr real, far above any sane forward
-#   anchor) and the GAP comparatively: the sequence-risk profile, not the
-#   headline CAGR, is what this build buys for a FIRE plan.
+#   bootstrap, 40y horizon): ruin at a 4% real withdrawal rate 0.11% vs
+#   1.31%; safe WR at 5% ruin 5.42% vs 4.81%. Read those LEVELS skeptically
+#   (the panel compounds far above any sane forward anchor) and the GAP
+#   comparatively: the sequence-risk profile, not the headline CAGR, is
+#   what this build buys for a FIRE plan.
+#   POST-SWAP REWEIGHT, tested and declined: with a less volatile engine
+#   3a, the search wants more trend and less NTSG+gold (30/12/18/17/15/8
+#   reads Sharpe 1.01 against 0.96). It buys volatility, and it sells the
+#   floor: worst rolling 5y falls from +0.54% to +0.22% and CAGR from
+#   9.50% to 9.41%. The weights below stay as they were.
 #
 # ## Practical notes
 #   - AQR MF UCITS is a FUND, not an ETF: check platform availability and
@@ -236,8 +263,14 @@
 #     share class avoids manual FX). If unavailable: Winton Trend
 #     (IE00BG382Q20), or as a last resort concentrate the sleeve in DBMFE
 #     and accept single-model risk.
-#   - DBMFE = the UCITS EUR share of DBi Managed Futures (LU2951555403;
-#     the USD Acc class is LU2951555585, DBMF.PA).
+#   - MFEH = the EUR-HEDGED UCITS share of DBi Managed Futures
+#     (LU3359622902, Xetra, 0.75%/yr); the same sub-fund quotes unhedged in
+#     EUR as DBMFE (LU2951555403) and in USD as LU2951555585 (DBMF.PA).
+#     CHECK BEFORE BUYING: at the time of writing MFEH holds ~EUR 11m, has
+#     a few weeks of live history, lists on Xetra only and is not yet
+#     registered for sale in France. If it is not reachable or still too
+#     small for comfort, DBMFE is the same portfolio without the hedge, and
+#     the file's numbers move as the engine-3a note says.
 #   - Gold: no gold product can be UCITS (the directive bans single-
 #     commodity funds), so every gold line in Europe is an ETC:
 #     UCITS-ELIGIBLE, PRIIPs-KID'd, freely buyable from a French broker,
@@ -253,7 +286,7 @@
 
 35    NTSG      # Engine 1, equity + duration: WisdomTree Global Efficient Core 90/60 (NTSG, IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 12    ZPRV      # Engine 2, value factor: SPDR US Small Cap Value Weighted (ZPRV, IE00BSPLC413; global alt AVWS IE0003R87OG3)
-15    DBMFE     # Engine 3a, trend replication: iMGP DBi Managed Futures EUR (DBMFE, LU2951555403)
+15    MFEH      # Engine 3a, trend replication, EUR-hedged: iMGP DBi Managed Futures R EUR HP (MFEH, LU3359622902; unhedged class DBMFE LU2951555403)
 13    LU1662501532 # Engine 3b, second trend model: AQR Managed Futures UCITS (LU1103257975; EUR share LU1662502183 if available; fallback Winton IE00BG382Q20 or Man AHL Trend LU0503879685)
 17    IGLN      # Engine 4, gold: iShares Physical Gold ETC (IGLN, IE00B4ND3602), backcast to 1968 spot minus 0.12%/yr fee
 8     IDTL      # Engine 5, deflation duration: iShares USD Treasury 20+y (IDTL, IE00BSKRJZ44; EUR-hedged share DTLE)
