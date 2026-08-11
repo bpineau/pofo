@@ -1,0 +1,37 @@
+# Optimizer under constraints -- the most return inside a volatility budget,
+# fitted on data it is then judged outside of.
+#
+# Three things separate this from optimized.txt, and each answers a way a
+# plain optimizer misleads:
+#
+# 1. THE OBJECTIVE IS THE REAL QUESTION. Not "the best Sharpe" but "the most
+#    return that stays under 12 % volatility". Sharpe is also a poor proxy
+#    here specifically: this toolkit computes it at a ZERO risk-free rate, so
+#    a cash-like sleeve buys ratio for free. A volatility cap cannot be gamed
+#    that way.
+# 2. BOUNDS PER LINE. An unconstrained optimum is a corner solution, and a
+#    corner fitted on one window is the least durable thing an optimizer
+#    produces. The floor (min-weight:5) keeps every engine in the book; the
+#    ranges are the ones a holder could defend for reasons the backtest
+#    cannot see.
+# 3. A HELD-OUT WINDOW. train:..2015 fits the weights on 1996-2015 only,
+#    while the report measures them over the WHOLE period, so the column you
+#    read is out of sample. The note prints both halves, and the gap between
+#    them is the honest part of the exercise: it is routinely wide.
+#
+# Read the two columns as "the weights as written" against "what the search
+# would have chosen", and the note under them as what that choice was worth
+# once the data ran out.
+#
+# Set the cap below what these five lines can reach together (try max-vol:9)
+# and the note says so instead of returning a plausible-looking answer: an
+# infeasible problem has no optimum, only a least-bad violation.
+#meta rebalance:90
+#meta sim:on
+#meta optimize:max-return,max-vol:12,min-weight:5,bounds:NTSG:10-35,bounds:GOLD:5-25,train:..2015
+
+30 NTSG     # equity + duration in one line (90/60)
+15 ZPRV     # US small-cap value
+25 DBMFE    # managed-futures trend
+20 GOLD     # gold
+10 IDTL     # long-duration Treasuries

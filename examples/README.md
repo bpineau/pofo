@@ -34,6 +34,7 @@ baseline before adopting anything.
 #meta optimize:risk-parity                 # equalize each asset's risk
 #meta optimize:min-volatility              # lowest-variance mix
 #meta optimize:max-sharpe,max-weight:35    # best in-sample Sharpe, capped at 35%
+#meta optimize:max-return,max-vol:9.5      # the most return inside a volatility budget
 ```
 
 Pick the objective by what you trust:
@@ -56,6 +57,27 @@ expected return / volatility / Sharpe. Past-fitted figures are a starting
 point, not a promise; check that the common window (printed in the report)
 is long, and that the allocation makes economic sense, before moving real
 weights. `optimize` cannot be combined with `#meta leverage`.
+
+Three constraints make that warning less necessary, and
+`optimized-constrained.txt` is the worked example of all three:
+
+- **bounds per line** (`min-weight:5`, `bounds:NTSG:10-35`) keep the search
+  inside ranges you can defend for reasons the backtest cannot see. Without
+  them an optimum is a corner solution, which is the least durable thing an
+  optimizer produces.
+- **limits** (`max-vol:9.5`, `min-return:10.5`, `max-drawdown:20`) ask the
+  real question instead of a proxy for it. They also route around a trap:
+  Sharpe here is computed at a **zero** risk-free rate, so a cash-like sleeve
+  buys ratio for free.
+- **`train:..2015`** fits on that window only, while the report measures the
+  result over the whole history: the column you read is then out of sample,
+  and the note prints what the weights promised in-sample next to what they
+  actually did afterwards. The gap is usually the most useful number on the
+  page.
+
+To see what a single weight is worth without any optimizer at all, run
+`pofo -sweep <file>`: one table per line, its weight moved across a grid, the
+others keeping their proportions.
 
 Workflow tip: keep your file's hand-written weights as the baseline and add
 an `optimize` line only while exploring. Once you have decided, write the

@@ -25,5 +25,6 @@ of truth for everything current.
 | `ntsg-global-efficient-core-design.md` | the GLOBAL Efficient Core backcast: the four-currency government bond futures basket (local excess returns, measured duration blend, renormalization), the new German/Japanese/British reference series and their validation, the NTSI cross-check |
 | `ntsz-eurozone-efficient-core-design.md` | euro-native Efficient Core backcasts and the deep euro reference series (DBXG/MTH long sleeve, equity-leg caveats), with their epistemic ledger |
 | `suggest-design.md` | `-suggest`/`-coverage` classification and out-of-sample validation design (`pkg/suggest` godoc points here) |
+| `weight-search-design.md` | the bounded/constrained optimizer, the held-out `train:` window and the `-sweep` per-sleeve grid: what each piece answers, where it surfaces, and what was deliberately left for later (Pareto `improve`, the frontier chart) |
 | `webapp-design.md` | the `-serve` web constellation: route map, the `/view` URL grammar and its guardrails, catalog-only identifiers, style layering, the M2-M4 ladder (`cmd/pofo/serve.go`/`hub.go`/`view.go`) |
 | `webui-instrument-redesign.md` | the shared "instrument" visual identity: tokens, fonts, chart chrome (`pkg/webui` godoc points here) |

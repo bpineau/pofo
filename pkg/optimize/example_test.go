@@ -2,6 +2,7 @@ package optimize_test
 
 import (
 	"fmt"
+	"log"
 	"math"
 
 	"github.com/bpineau/pofo/pkg/optimize"
@@ -58,4 +59,29 @@ func ExampleParseSpec() {
 	fmt.Printf("%s, cap %.0f %%\n", spec.Objective, spec.MaxWeight*100)
 	// Output:
 	// max-sharpe, cap 40 %
+}
+
+// The most return a book can reach without breaking a volatility budget: the
+// question a scalar objective answers only by accident. The cap applies to the
+// blended path, so it reads like the report's "Volatility (annualized)" row.
+func ExampleSolve_underAVolatilityCap() {
+	// A hot asset and a calm one, anti-correlated enough to blend well.
+	hot := make([]float64, 500)
+	calm := make([]float64, 500)
+	for i := range hot {
+		swing := 0.012 * math.Sin(float64(i)*0.25)
+		hot[i] = 0.0009 + swing
+		calm[i] = 0.0003 - swing
+	}
+	res, err := optimize.Solve([][]float64{hot, calm}, optimize.Spec{
+		Objective: optimize.MaxReturn,
+		MinWeight: 0.05, // keep both lines in the book
+		Limits:    optimize.Limits{MaxVolatility: 0.08},
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("hot %.0f %%, calm %.0f %%, feasible %v\n",
+		res.Weights[0]*100, res.Weights[1]*100, res.Feasible)
+	// Output: hot 80 %, calm 20 %, feasible true
 }

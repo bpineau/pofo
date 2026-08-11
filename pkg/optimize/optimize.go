@@ -5,6 +5,7 @@ import (
 	"math"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const tradingDays = 252
@@ -36,7 +37,70 @@ const (
 	// score against a replacement/benchmark series; solved by SolveCWARP,
 	// which needs that extra series, not Solve.
 	CWARP Objective = "cwarp"
+	// MaxReturn maximizes the portfolio's own CAGR (geometric, over the
+	// blended daily path). Alone it is degenerate, since the whole budget
+	// goes to the single best-performing asset; it earns its keep under a
+	// constraint (Spec.Limits), where it is the frontier point: the most
+	// return reachable without exceeding a volatility or drawdown budget.
+	MaxReturn Objective = "max-return"
 )
+
+// Limits are the feasibility constraints a solve must respect, on top of the
+// weight bounds. A zero field means "no limit": a 0 % volatility cap, a 0 %
+// return floor and a 0 % drawdown budget are all meaningless or infeasible,
+// so nothing is lost by using zero as the sentinel. Every limit is measured
+// on the blended daily return path, so MaxVolatility reads exactly like the
+// report's "Volatility (annualized)" row and MinReturn like its CAGR row.
+type Limits struct {
+	// MaxVolatility caps the annualized volatility, as a fraction
+	// (0.095 = 9.5 %/yr).
+	MaxVolatility float64
+	// MinReturn floors the annualized GEOMETRIC return (CAGR), as a
+	// fraction (0.105 = 10.5 %/yr).
+	MinReturn float64
+	// MaxDrawdown caps the deepest peak-to-trough loss, as a POSITIVE
+	// fraction (0.20 tolerates a -20 % drawdown, not a deeper one).
+	MaxDrawdown float64
+}
+
+// Any reports whether at least one limit applies.
+func (l Limits) Any() bool {
+	return l.MaxVolatility > 0 || l.MinReturn > 0 || l.MaxDrawdown > 0
+}
+
+// Window is the optional fitting period parsed from a "train:" constraint.
+// A zero Start or End leaves that end open.
+//
+// Solve IGNORES IT: this package is date-free, and slicing the returns to the
+// training window is the caller's job (pkg/compare does it, then measures the
+// resulting weights over the full window so the report's numbers are
+// out-of-sample). It travels in Spec only because it arrives in the same
+// "#meta optimize:" directive and one parser is better than two.
+type Window struct {
+	Start, End time.Time
+}
+
+// IsZero reports whether the window constrains nothing.
+func (w Window) IsZero() bool { return w.Start.IsZero() && w.End.IsZero() }
+
+// Contains reports whether t falls in the window (bounds inclusive).
+func (w Window) Contains(t time.Time) bool {
+	if !w.Start.IsZero() && t.Before(w.Start) {
+		return false
+	}
+	return w.End.IsZero() || !t.After(w.End)
+}
+
+// String renders the window as "start→end", with "…" for an open end.
+func (w Window) String() string {
+	f := func(t time.Time) string {
+		if t.IsZero() {
+			return "…"
+		}
+		return t.Format("2006-01-02")
+	}
+	return f(w.Start) + "→" + f(w.End)
+}
 
 // Spec describes an optimization: an objective and its constraints.
 type Spec struct {
@@ -44,6 +108,100 @@ type Spec struct {
 	// MaxWeight caps each asset's weight, as a fraction in (0,1]; 0 means
 	// no cap. Ignored for RiskParity.
 	MaxWeight float64
+	// MinWeight floors each asset's weight, as a fraction in [0,1). It
+	// keeps every line in the book instead of letting the search drop the
+	// ones that only pay off out of sample. Ignored for RiskParity.
+	MinWeight float64
+	// Bounds holds per-asset weight ranges as [low, high] fractions, keyed
+	// by the identifier written in the portfolio file. It is what ParseSpec
+	// can produce from text, and this package never reads it: the caller
+	// resolves it against its own assets with Resolve, which fills the
+	// Lower/Upper the solver uses. Identifier resolution belongs to
+	// pkg/marketdata, not here.
+	Bounds map[string][2]float64
+	// Lower and Upper are the resolved per-asset bounds, in the same order
+	// as the returns passed to Solve, as fractions. A nil slice (or a NaN
+	// entry) falls back to MinWeight/MaxWeight for that asset.
+	Lower, Upper []float64
+	// Limits are the feasibility constraints (volatility cap, return floor,
+	// drawdown budget). Any limit routes the solve through the penalized
+	// path search, whatever the objective.
+	Limits Limits
+	// Train is the fitting window parsed from "train:", ignored here and
+	// applied by the caller: see Window.
+	Train Window
+}
+
+// Resolve turns Spec.Bounds (keyed by identifier) into the Lower/Upper slices
+// the solver reads, for assets whose identifiers are ids[i] (several spellings
+// per asset are accepted: pass the written id and the resolved symbol). An id
+// in Bounds that matches no asset is an error, since a typo would otherwise
+// read as "no bound at all".
+func (s *Spec) Resolve(ids [][]string) error {
+	n := len(ids)
+	s.Lower, s.Upper = make([]float64, n), make([]float64, n)
+	for i := range s.Lower {
+		s.Lower[i], s.Upper[i] = math.NaN(), math.NaN()
+	}
+	for key, b := range s.Bounds {
+		found := -1
+		for i, names := range ids {
+			for _, name := range names {
+				if strings.EqualFold(strings.TrimSpace(name), key) {
+					found = i
+					break
+				}
+			}
+			if found >= 0 {
+				break
+			}
+		}
+		if found < 0 {
+			return fmt.Errorf("bounds: %q matches no holding", key)
+		}
+		s.Lower[found], s.Upper[found] = b[0], b[1]
+	}
+	return nil
+}
+
+// box returns the effective per-asset bounds for n assets: the resolved
+// Lower/Upper where set, the scalar MinWeight/MaxWeight elsewhere.
+func (s Spec) box(n int) (lo, hi []float64) {
+	lo, hi = make([]float64, n), make([]float64, n)
+	defLo, defHi := s.MinWeight, s.MaxWeight
+	if defHi <= 0 || defHi > 1 {
+		defHi = 1
+	}
+	for i := range lo {
+		lo[i], hi[i] = defLo, defHi
+		if i < len(s.Lower) && !math.IsNaN(s.Lower[i]) {
+			lo[i] = s.Lower[i]
+		}
+		if i < len(s.Upper) && !math.IsNaN(s.Upper[i]) {
+			hi[i] = s.Upper[i]
+		}
+	}
+	return lo, hi
+}
+
+// Bounded reports whether the spec constrains weights per asset (a floor or
+// a resolved per-asset bound), beyond the plain MaxWeight cap the closed-form
+// solvers already handle.
+func (s Spec) Bounded() bool {
+	if s.MinWeight > 0 {
+		return true
+	}
+	for _, v := range s.Lower {
+		if !math.IsNaN(v) && v > 0 {
+			return true
+		}
+	}
+	for _, v := range s.Upper {
+		if !math.IsNaN(v) {
+			return true
+		}
+	}
+	return false
 }
 
 // Result is an optimized allocation and its in-sample statistics.
@@ -60,6 +218,16 @@ type Result struct {
 	Ulcer         float64 // Ulcer Index in percent points (MinUlcer)
 	Worst5y       float64 // worst rolling five-year return (MaxWorst5y)
 	CWARP         float64 // CWARP vs the replacement (SolveCWARP)
+
+	// CAGR is the annualized GEOMETRIC return of the weighted path, set by
+	// the constrained solver (Return, above, is the arithmetic mean the
+	// mean/covariance solvers work in, and runs higher by the volatility
+	// drag). Zero when the solve did not go through that path.
+	CAGR float64
+	// Feasible reports whether the returned weights satisfy Spec.Limits.
+	// False means the constraints could not be met and the weights are the
+	// least-violating point found, not an answer.
+	Feasible bool
 }
 
 // ParseSpec reads a "#meta optimize:" value: an objective optionally
@@ -69,9 +237,9 @@ func ParseSpec(s string) (Spec, error) {
 	tokens := strings.Split(s, ",")
 	obj := Objective(strings.ToLower(strings.TrimSpace(tokens[0])))
 	switch obj {
-	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y, CWARP:
+	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y, CWARP, MaxReturn:
 	default:
-		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y or cwarp)", tokens[0])
+		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y or cwarp)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
 	for _, tok := range tokens[1:] {
@@ -81,16 +249,148 @@ func ParseSpec(s string) (Spec, error) {
 		}
 		switch strings.ToLower(key) {
 		case "max-weight":
-			pct, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(val), "%"), 64)
-			if err != nil || pct <= 0 || pct > 100 {
-				return Spec{}, fmt.Errorf("max-weight: %q is not a percentage in (0,100]", val)
+			pct, err := percent(val, 0, 100, false)
+			if err != nil {
+				return Spec{}, fmt.Errorf("max-weight: %w", err)
 			}
 			spec.MaxWeight = pct / 100
+		case "min-weight":
+			pct, err := percent(val, 0, 100, true)
+			if err != nil {
+				return Spec{}, fmt.Errorf("min-weight: %w", err)
+			}
+			spec.MinWeight = pct / 100
+		case "max-vol", "max-volatility":
+			pct, err := percent(val, 0, 200, false)
+			if err != nil {
+				return Spec{}, fmt.Errorf("max-vol: %w", err)
+			}
+			spec.Limits.MaxVolatility = pct / 100
+		case "min-return":
+			pct, err := percent(val, -100, 200, false)
+			if err != nil {
+				return Spec{}, fmt.Errorf("min-return: %w", err)
+			}
+			spec.Limits.MinReturn = pct / 100
+		case "max-drawdown", "max-dd":
+			pct, err := percent(strings.TrimPrefix(strings.TrimSpace(val), "-"), 0, 100, false)
+			if err != nil {
+				return Spec{}, fmt.Errorf("max-drawdown: %w", err)
+			}
+			spec.Limits.MaxDrawdown = pct / 100
+		case "bounds":
+			id, rng, ok := strings.Cut(strings.TrimSpace(val), ":")
+			if !ok {
+				return Spec{}, fmt.Errorf("bounds: %q is not ID:LOW-HIGH", val)
+			}
+			lo, hi, err := parseRange(rng)
+			if err != nil {
+				return Spec{}, fmt.Errorf("bounds %s: %w", id, err)
+			}
+			if spec.Bounds == nil {
+				spec.Bounds = map[string][2]float64{}
+			}
+			spec.Bounds[strings.TrimSpace(id)] = [2]float64{lo, hi}
+		case "train":
+			w, err := parseWindow(val)
+			if err != nil {
+				return Spec{}, fmt.Errorf("train: %w", err)
+			}
+			spec.Train = w
 		default:
 			return Spec{}, fmt.Errorf("unknown constraint %q", key)
 		}
 	}
+	if spec.MinWeight > 0 && spec.MaxWeight > 0 && spec.MinWeight > spec.MaxWeight {
+		return Spec{}, fmt.Errorf("min-weight (%.0f %%) above max-weight (%.0f %%)", spec.MinWeight*100, spec.MaxWeight*100)
+	}
 	return spec, nil
+}
+
+// percent parses a percentage, with an optional "%" suffix, inside
+// (lo, hi] (or [lo, hi] when zeroOK, i.e. when 0 is a meaningful value).
+func percent(val string, lo, hi float64, zeroOK bool) (float64, error) {
+	pct, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(val), "%"), 64)
+	switch {
+	case err != nil:
+		return 0, fmt.Errorf("%q is not a number", val)
+	case pct > hi, pct < lo, pct == lo && !zeroOK:
+		return 0, fmt.Errorf("%q is not a percentage in %s%.0f,%.0f]", val, map[bool]string{true: "[", false: "("}[zeroOK], lo, hi)
+	}
+	return pct, nil
+}
+
+// parseRange reads a "LOW-HIGH" weight range in percent, either end
+// omittable ("15-", "-30"), and returns the two fractions (NaN when open).
+func parseRange(s string) (lo, hi float64, err error) {
+	loStr, hiStr, ok := strings.Cut(strings.TrimSpace(s), "-")
+	if !ok {
+		return 0, 0, fmt.Errorf("%q is not LOW-HIGH", s)
+	}
+	lo, hi = math.NaN(), math.NaN()
+	if strings.TrimSpace(loStr) != "" {
+		v, err := percent(loStr, 0, 100, true)
+		if err != nil {
+			return 0, 0, err
+		}
+		lo = v / 100
+	}
+	if strings.TrimSpace(hiStr) != "" {
+		v, err := percent(hiStr, 0, 100, false)
+		if err != nil {
+			return 0, 0, err
+		}
+		hi = v / 100
+	}
+	if !math.IsNaN(lo) && !math.IsNaN(hi) && lo > hi {
+		return 0, 0, fmt.Errorf("%q has its low end above its high end", s)
+	}
+	return lo, hi, nil
+}
+
+// parseWindow reads "START..END", each end a year (2015), a full date
+// (2015-12-31) or empty, and returns the calendar window it denotes (a bare
+// year means the whole year: 2015 as a start is 2015-01-01, as an end
+// 2015-12-31).
+func parseWindow(s string) (Window, error) {
+	startStr, endStr, ok := strings.Cut(strings.TrimSpace(s), "..")
+	if !ok {
+		return Window{}, fmt.Errorf("%q is not START..END", s)
+	}
+	var w Window
+	var err error
+	if w.Start, err = parseBound(startStr, false); err != nil {
+		return Window{}, err
+	}
+	if w.End, err = parseBound(endStr, true); err != nil {
+		return Window{}, err
+	}
+	if w.IsZero() {
+		return Window{}, fmt.Errorf("%q leaves both ends open", s)
+	}
+	if !w.Start.IsZero() && !w.End.IsZero() && !w.Start.Before(w.End) {
+		return Window{}, fmt.Errorf("%q starts after it ends", s)
+	}
+	return w, nil
+}
+
+// parseBound reads one end of a train window; end selects the last day of a
+// bare year rather than its first.
+func parseBound(s string, end bool) (time.Time, error) {
+	s = strings.TrimSpace(s)
+	if s == "" {
+		return time.Time{}, nil
+	}
+	if t, err := time.Parse("2006-01-02", s); err == nil {
+		return t, nil
+	}
+	if t, err := time.Parse("2006", s); err == nil {
+		if end {
+			return t.AddDate(1, 0, -1), nil
+		}
+		return t, nil
+	}
+	return time.Time{}, fmt.Errorf("%q is neither a year nor a YYYY-MM-DD date", s)
 }
 
 // Solve returns the weights optimizing spec.Objective over returns, the
@@ -109,6 +409,11 @@ func Solve(returns [][]float64, spec Spec) (Result, error) {
 		if len(r) != t {
 			return Result{}, fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
 		}
+	}
+	// Bounds and limits route every objective through the one penalized
+	// path search; without them the closed forms answer exactly as before.
+	if spec.Objective != RiskParity && (spec.Bounded() || spec.Limits.Any() || spec.Objective == MaxReturn) {
+		return solveConstrained(returns, spec)
 	}
 	switch spec.Objective {
 	case MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y:

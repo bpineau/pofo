@@ -31,4 +31,27 @@
 // Comparison keeps its per-column compute records private; accessors
 // (CommonStart, CommonEnd, Columns) expose the narrow public view a caller
 // needs without leaking the internal record.
+//
+// # Optimized columns
+//
+// A spec carrying "#meta optimize:" produces TWO columns, the weights as
+// written and the weights the optimizer chose, so the two can be read side by
+// side. This package resolves the per-asset bounds (which arrive keyed by
+// identifier), applies the "train:" window by slicing the returns to it, and
+// writes Column.Note: which objective ran under which limits, over which
+// window, the weights it landed on, and, when the fit used only part of the
+// history, how those weights behaved over the stretch they did not see. That
+// last clause is what keeps an optimizer honest, so it is built here rather
+// than left to each renderer.
+//
+// # Sweep
+//
+// Sweep answers the neighbouring question: not "which weights are best" but
+// "what does each weight buy, and what does it cost". It re-runs the real
+// simulation with one holding's weight moved across a grid, the others
+// keeping their relative proportions, and reports CAGR, volatility, Sharpe,
+// drawdown, recovery time and the worst five-year stretch at every point. It
+// is the evidence behind a portfolio file's per-sleeve "sane range", and it
+// is deliberately model-free: no optimizer, no objective, just the
+// consequences of a number.
 package compare

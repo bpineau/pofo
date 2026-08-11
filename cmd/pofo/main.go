@@ -101,6 +101,8 @@ func run(ctx context.Context, argv []string) error {
 	suggestFlag := fs.Bool("suggest", false, "suggest catalog assets to add for better regime coverage/diversification, then exit")
 	frameworkName := fs.String("framework", "regimes", "classification for coverage and -suggest: \"regimes\" (macro quadrants) or \"factors\" (risk factors)")
 	coverageFlag := fs.Bool("coverage", false, "offline coverage advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit")
+	sweepFlag := fs.Bool("sweep", false, "per-holding weight sweep: what each line's weight buys and costs (CAGR, vol, Sharpe, drawdown, recovery, worst 5y), the other lines keeping their proportions, then exit")
+	sweepStep := fs.Float64("sweep-step", 5, "with -sweep: grid step in weight percent")
 	fireFlag := fs.Bool("fire", false, "open the decumulation/FIRE explorer (local web UI; optionally for a portfolio file), then serve until stopped")
 	serveFlag := fs.Bool("serve", false, "serve the web app (hub, visualizer, FIRE simulator, book) until stopped; portfolio file args feed the FIRE historical models")
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
@@ -156,11 +158,26 @@ File format: one line per asset:
         #meta withdraw:A/P   take out A, or A%% of the current value
                              (withdraw:4%%/year), every period P
         #meta optimize:OBJ   compute the weights: OBJ is max-sharpe,
-                             min-volatility, risk-parity, max-sortino,
-                             return-to-drawdown, min-ulcer, max-worst-5y or
-                             cwarp (maximize CWARP vs the benchmark), with an
-                             optional ",max-weight:40" cap. The report shows
-                             the optimized weights next to the written ones.
+                             min-volatility, max-return, risk-parity,
+                             max-sortino, return-to-drawdown, min-ulcer,
+                             max-worst-5y or cwarp (maximize CWARP vs the
+                             benchmark). The report shows the optimized
+                             weights next to the written ones. Comma-
+                             separated constraints follow the objective:
+                               max-weight:25 / min-weight:5  caps and floors
+                                             on every line
+                               bounds:NTSG:15-30  a range for one line
+                                             (repeat it; either end may be
+                                             omitted, as in bounds:GDE:-25)
+                               max-vol:9.5   volatility cap in %%/yr
+                               min-return:10.5  CAGR floor in %%/yr
+                               max-drawdown:20  drawdown budget in %%
+                               train:..2015  fit on that window only, and
+                                             report how the weights did over
+                                             the years they did not see
+                                             (START..END, each a year or a
+                                             YYYY-MM-DD date, either omittable)
+                             e.g. optimize:max-return,max-vol:9.5,train:..2015
 
 Example:
     #meta rebalance:30
@@ -191,7 +208,7 @@ Options:
 		return runBookDrift()
 	}
 
-	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -231,7 +248,7 @@ Options:
 		for name, on := range map[string]bool{
 			"-fire": *fireFlag, "-cli": opt.cli, "-warmup": *warmup,
 			"-verify-data": *verifyData, "-suggest": *suggestFlag,
-			"-coverage": *coverageFlag, "-permanent": *permanentFlag,
+			"-coverage": *coverageFlag, "-sweep": *sweepFlag, "-permanent": *permanentFlag,
 			"-gen-simdata": *genSimdata, "-verify-simdata": *verifySimdata,
 		} {
 			if on {
@@ -268,7 +285,7 @@ Options:
 	if err != nil {
 		return err
 	}
-	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -287,6 +304,9 @@ Options:
 	}
 	if *coverageFlag {
 		return runCoverage(specs, &opt)
+	}
+	if *sweepFlag {
+		return runSweep(ctx, client, specs, &opt, *sweepStep)
 	}
 	if *serveFlag {
 		if *pprofAddr != "" {
@@ -414,6 +434,14 @@ func renderCLI(cmp *compare.Comparison, opt *options) error {
 	}
 	if err := report.RenderText(os.Stdout, page, color); err != nil {
 		return err
+	}
+	// The optimizer's account of its own work (weights, fitting window,
+	// out-of-sample behavior) is the whole point of asking for it: print it
+	// here too, not only in the HTML report.
+	for _, col := range cols {
+		if col.Note != "" {
+			fmt.Printf("\n%s: %s\n", col.Name, col.Note)
+		}
 	}
 	printCoverageCLI(cmp)
 	return nil
