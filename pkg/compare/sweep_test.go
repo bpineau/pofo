@@ -119,6 +119,34 @@ func TestSweepNeedsTwoHoldings(t *testing.T) {
 	}
 }
 
+// TestSweepChargesFinancing: a levered book borrows, and the borrowed money
+// costs the cash rate plus the spread. Sweeping must carry that financing
+// into every grid point, otherwise the whole table describes a portfolio that
+// leveraged itself for free (the trap cmd/pofo's -sweep fell into by building
+// its portfolio without BuildOptions.Cash).
+func TestSweepChargesFinancing(t *testing.T) {
+	sweepCAGR := func(cash *marketdata.Series) float64 {
+		t.Helper()
+		p := sweepFixture(t, 0.9, 0.6)
+		p.Leverage, p.BorrowSpread, p.Cash = true, 1.0, cash
+		out, err := Sweep(p, SweepOptions{Weights: []float64{0.6}, RebalanceDays: 90})
+		if err != nil {
+			t.Fatal(err)
+		}
+		return out[0].Points[0].Stats.CAGR
+	}
+	// A flat 5 %/yr financing rate on the same calendar as the holdings.
+	src := sweepFixture(t, 1).Assets[0].Series
+	rate := &marketdata.Series{Symbol: "^IRX", Points: make([]marketdata.Point, len(src.Points))}
+	for i, pt := range src.Points {
+		rate.Points[i] = marketdata.Point{Date: pt.Date, Close: 5}
+	}
+	free, financed := sweepCAGR(nil), sweepCAGR(rate)
+	if !(financed < free-0.005) {
+		t.Fatalf("financed CAGR %.4f vs free %.4f: the cash rate did not reach the sweep", financed, free)
+	}
+}
+
 // TestReweightedProportions: the other holdings keep their relative
 // proportions and the weights still sum to one.
 func TestReweightedProportions(t *testing.T) {
