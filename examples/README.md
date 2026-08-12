@@ -43,7 +43,9 @@ Pick the objective by what you trust:
   Uses only the covariance (not past returns), so it does not chase whatever
   happened to win the backtest. The most robust choice and the natural one
   for all-weather / diversified sleeves. `max-weight` is ignored here (the
-  weights follow from the equal-risk condition).
+  weights follow from the equal-risk condition), and the `max-vol` /
+  `min-return` / `max-drawdown` limits are refused outright, since this
+  solver cannot enforce them.
 - **min-volatility**: the calmest mix. Tends to pile into bonds / low-vol
   assets; useful to anchor a withdrawal phase, but it ignores return
   entirely, so cap it or it concentrates.

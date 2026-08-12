@@ -105,9 +105,14 @@ combined with `leverage`.
 | `min-weight:5` | floor every line at 5 %, so the search cannot drop a sleeve it dislikes in sample |
 | `bounds:NTSG:15-30` | a range for ONE line, repeatable; either end may be omitted (`bounds:GDE:-25`). An identifier matching no holding is an error, not a silent no-op |
 | `max-vol:9.5` | volatility cap, %/yr |
-| `min-return:10.5` | CAGR floor, %/yr |
+| `min-return:10.5` | CAGR floor, %/yr (strictly positive) |
 | `max-drawdown:20` | drawdown budget, % |
 | `train:..2015` | fit the weights on that window ONLY (`START..END`, each end a year, a `YYYY-MM-DD` date, or empty) |
+
+The three limits do not combine with `risk-parity` or `cwarp`, whose solvers
+cannot enforce them (and `cwarp` takes no `min-weight` or `bounds` either, only
+`max-weight`): those combinations are rejected when the file is read, rather
+than silently dropped.
 
 The limits express what portfolio work usually asks: not "the best Sharpe" but
 *the most return that stays under 9.5 % volatility*, or *the least volatility
