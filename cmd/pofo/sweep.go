@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"math"
 
 	"github.com/bpineau/pofo/pkg/compare"
@@ -39,10 +40,27 @@ func runSweep(ctx context.Context, c *marketdata.Client, specs []*portfolio.Spec
 }
 
 func sweepPortfolio(ctx context.Context, c *marketdata.Client, spec *portfolio.Spec, opt *options, grid []float64) error {
+	// A "#meta leverage:on" book borrows, and borrowed money is financed at
+	// the cash rate plus a spread: exactly what pkg/compare does, because a
+	// nil Cash means a flat 0 %/yr and would hand every row of the table free
+	// financing. The rate is an annualized percent LEVEL, not a price, so it
+	// is fetched raw (Fetch) and never through fetchAsset, whose currency
+	// conversion would multiply a yield by an FX cross.
+	var cashRate *marketdata.Series
+	if spec.Leverage {
+		cr, err := c.Fetch(ctx, "^IRX", opt.start)
+		if err != nil {
+			log.Printf("warning: financing rate ^IRX unavailable (%v), leverage financed at 0 %%", err)
+		} else {
+			cashRate = cr
+		}
+	}
 	p, err := portfolio.Build(spec, portfolio.BuildOptions{
 		Fetch: func(id string) (*marketdata.Series, error) {
 			return fetchAsset(ctx, c, id, opt)
 		},
+		Cash:         cashRate,
+		BorrowSpread: 1.0, // default: cash + 1 %/yr, as in pkg/compare
 		BaseCurrency: opt.currency,
 	})
 	if err != nil {

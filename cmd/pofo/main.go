@@ -172,6 +172,9 @@ File format: one line per asset:
                                max-vol:9.5   volatility cap in %%/yr
                                min-return:10.5  CAGR floor in %%/yr
                                max-drawdown:20  drawdown budget in %%
+                                             (these three limits do not
+                                             combine with risk-parity or
+                                             cwarp, which cannot enforce them)
                                train:..2015  fit on that window only, and
                                              report how the weights did over
                                              the years they did not see

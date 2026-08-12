@@ -51,6 +51,10 @@ const (
 // so nothing is lost by using zero as the sentinel. Every limit is measured
 // on the blended daily return path, so MaxVolatility reads exactly like the
 // report's "Volatility (annualized)" row and MinReturn like its CAGR row.
+//
+// Limits apply to every objective but RiskParity and CWARP, whose solvers do
+// not go through the constrained search: ParseSpec refuses that combination
+// rather than letting a constraint be dropped in silence.
 type Limits struct {
 	// MaxVolatility caps the annualized volatility, as a fraction
 	// (0.095 = 9.5 %/yr).
@@ -125,7 +129,8 @@ type Spec struct {
 	Lower, Upper []float64
 	// Limits are the feasibility constraints (volatility cap, return floor,
 	// drawdown budget). Any limit routes the solve through the penalized
-	// path search, whatever the objective.
+	// path search, for every objective but RiskParity and CWARP, which are
+	// solved elsewhere and reject limits at parse time.
 	Limits Limits
 	// Train is the fitting window parsed from "train:", ignored here and
 	// applied by the caller: see Window.
@@ -242,6 +247,21 @@ func ParseSpec(s string) (Spec, error) {
 		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y or cwarp)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
+	// Two objectives are solved by code that never sees the feasibility
+	// limits: RiskParity answers the equal-risk condition in closed form and
+	// CWARP has its own multi-start solver (SolveCWARP), which honours the
+	// scalar MaxWeight cap and nothing else. Silently dropping a constraint is
+	// the worst outcome, since the report would then describe limits nobody
+	// enforced, so the combination is refused here, where the objective and
+	// the offending token are both in hand.
+	noLimits := obj == RiskParity || obj == CWARP
+	reject := func(name, why string) error {
+		return fmt.Errorf("%s does not apply to %s: %s", name, obj, why)
+	}
+	const (
+		whyLimits = "that solve cannot enforce a feasibility limit"
+		whyBox    = "that solve only honours max-weight, not a floor or a per-line range"
+	)
 	for _, tok := range tokens[1:] {
 		key, val, ok := strings.Cut(strings.TrimSpace(tok), ":")
 		if !ok {
@@ -255,30 +275,48 @@ func ParseSpec(s string) (Spec, error) {
 			}
 			spec.MaxWeight = pct / 100
 		case "min-weight":
+			if obj == CWARP {
+				return Spec{}, reject("min-weight", whyBox)
+			}
 			pct, err := percent(val, 0, 100, true)
 			if err != nil {
 				return Spec{}, fmt.Errorf("min-weight: %w", err)
 			}
 			spec.MinWeight = pct / 100
 		case "max-vol", "max-volatility":
+			if noLimits {
+				return Spec{}, reject("max-vol", whyLimits)
+			}
 			pct, err := percent(val, 0, 200, false)
 			if err != nil {
 				return Spec{}, fmt.Errorf("max-vol: %w", err)
 			}
 			spec.Limits.MaxVolatility = pct / 100
 		case "min-return":
-			pct, err := percent(val, -100, 200, false)
+			if noLimits {
+				return Spec{}, reject("min-return", whyLimits)
+			}
+			// The floor has to be strictly positive: Limits uses zero as its
+			// "unset" sentinel, so a 0 %/yr (or negative) floor would parse
+			// and then constrain nothing at all.
+			pct, err := percent(val, 0, 200, false)
 			if err != nil {
 				return Spec{}, fmt.Errorf("min-return: %w", err)
 			}
 			spec.Limits.MinReturn = pct / 100
 		case "max-drawdown", "max-dd":
+			if noLimits {
+				return Spec{}, reject("max-drawdown", whyLimits)
+			}
 			pct, err := percent(strings.TrimPrefix(strings.TrimSpace(val), "-"), 0, 100, false)
 			if err != nil {
 				return Spec{}, fmt.Errorf("max-drawdown: %w", err)
 			}
 			spec.Limits.MaxDrawdown = pct / 100
 		case "bounds":
+			if obj == CWARP {
+				return Spec{}, reject("bounds", whyBox)
+			}
 			id, rng, ok := strings.Cut(strings.TrimSpace(val), ":")
 			if !ok {
 				return Spec{}, fmt.Errorf("bounds: %q is not ID:LOW-HIGH", val)

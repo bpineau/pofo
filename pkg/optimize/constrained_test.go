@@ -255,6 +255,56 @@ func TestParseSpecConstraints(t *testing.T) {
 	}
 }
 
+// TestParseSpecRejectsUnenforceableConstraints: risk-parity and cwarp are
+// solved by code that never reads Limits (and, for cwarp, never reads the
+// per-asset box either), so those combinations must fail at parse time
+// instead of producing weights that ignore what was asked.
+func TestParseSpecRejectsUnenforceableConstraints(t *testing.T) {
+	for _, bad := range []string{
+		"risk-parity,max-vol:9.5",
+		"risk-parity,min-return:5",
+		"risk-parity,max-drawdown:20",
+		"cwarp,max-vol:9.5",
+		"cwarp,min-return:5",
+		"cwarp,max-dd:20",
+		"cwarp,min-weight:5",
+		"cwarp,bounds:NTSG:15-30",
+	} {
+		if _, err := ParseSpec(bad); err == nil {
+			t.Fatalf("ParseSpec(%q) must fail: the solver would ignore the constraint", bad)
+		}
+	}
+	// The lenient cases stay lenient: risk-parity accepts (and the report
+	// notes) weight bounds, and cwarp accepts its scalar cap.
+	for _, ok := range []string{
+		"risk-parity,max-weight:40",
+		"risk-parity,min-weight:5",
+		"risk-parity,bounds:NTSG:15-30",
+		"cwarp,max-weight:50",
+		"risk-parity,train:1996..2015",
+	} {
+		if _, err := ParseSpec(ok); err != nil {
+			t.Fatalf("ParseSpec(%q) must parse: %v", ok, err)
+		}
+	}
+}
+
+// TestParseSpecRejectsInertReturnFloor: Limits uses zero as its "no limit"
+// sentinel, so a zero or negative CAGR floor cannot be expressed; it used to
+// parse and then constrain nothing.
+func TestParseSpecRejectsInertReturnFloor(t *testing.T) {
+	for _, bad := range []string{"max-sharpe,min-return:0", "max-sharpe,min-return:-5"} {
+		if _, err := ParseSpec(bad); err == nil {
+			t.Fatalf("ParseSpec(%q) must fail: the floor would be silently inert", bad)
+		}
+	}
+	spec, err := ParseSpec("max-sharpe,min-return:0.5")
+	if err != nil {
+		t.Fatal(err)
+	}
+	approx(t, spec.Limits.MinReturn, 0.005, 1e-12, "a small but real floor")
+}
+
 // TestWindowContains: the parsed window is inclusive on both ends.
 func TestWindowContains(t *testing.T) {
 	w, err := ParseSpec("max-sharpe,train:2000..2005")

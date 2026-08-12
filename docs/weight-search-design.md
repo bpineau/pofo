@@ -80,9 +80,23 @@ type Limits struct {
 
 Zero means "unset" for all three because a 0 % volatility cap, a 0 % return
 floor and a 0 % drawdown cap are all meaningless or infeasible, so no
-information is lost. A `worst-5y` floor is the one constraint where 0 is a
-real value ("never negative over five years"); it is deliberately left out of
-this pass rather than given a second, inconsistent sentinel.
+information is lost. That sentinel is also enforced at the grammar's door:
+`min-return:` accepts only a strictly positive percentage, since a zero or
+negative floor would parse and then constrain nothing. A `worst-5y` floor is
+the one constraint where 0 is a real value ("never negative over five years");
+it is deliberately left out of this pass rather than given a second,
+inconsistent sentinel.
+
+The limits do not combine with `risk-parity` or `cwarp`. Neither goes through
+the constrained path: risk-parity answers the equal-risk condition in closed
+form, and `cwarp` has its own multi-start solver (`SolveCWARP`), which honours
+the scalar `max-weight` and nothing else. `ParseSpec` therefore refuses those
+pairs (and `cwarp` with `min-weight` or `bounds`) instead of letting the solver
+drop them: an unenforced constraint is worse than a rejected one, since the
+report would otherwise describe limits nobody evaluated, and even print the
+"no allocation meets the limits" warning for a feasibility that was never
+tested. `max-weight` on `risk-parity` keeps its older, lenient treatment
+(ignored, with a note in the report).
 
 New objective `max-return`: maximize the blend's CAGR. On its own it is
 degenerate (100 % of the best line) and it says so in the note; under a
@@ -184,6 +198,11 @@ Two decisions worth writing down:
   returns. It answers "what if I had written a different number in this file",
   and a continuously-rebalanced approximation would answer a different
   question. It costs one simulation per grid point, which is milliseconds.
+- The sweep builds its portfolio itself, outside `pkg/compare`'s pipeline, so
+  it has to reproduce that pipeline's financing: a `#meta leverage:on` file
+  borrows at the cash rate (`^IRX`) plus the 1 %/yr spread, and a portfolio
+  built without them would be swept with free money, lifting the CAGR of every
+  row of a levered book.
 - Renormalization is PROPORTIONAL over the other lines. Any other rule (fund
   from one named sleeve, fund from cash) is a different experiment and would
   have to say which; proportional is the only choice that needs no argument.
@@ -216,3 +235,8 @@ Two decisions worth writing down:
 - The unconstrained paths are covered by goldens: a constraint-free
   `max-sharpe` returning different weights than before is a regression, not an
   improvement.
+- A constraint the chosen solver cannot read must be an ERROR at parse time.
+  The report's "no allocation of these holdings meets the limits" warning
+  believes `Result.Feasible`, and a solver that never saw the limits leaves it
+  false: the reader would be told a feasibility question was answered when it
+  was never asked.
