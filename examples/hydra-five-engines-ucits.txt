@@ -8,13 +8,16 @@
 #   efficient instrument buyable here, so the diversifiers stack ON TOP of
 #   a full growth engine instead of being funded by shrinking it.
 #
-# This is the buyable flagship of the hydra family. Two related files:
+# This is the buyable flagship of the hydra family. Three related files:
 #   - hydra-five-engines-capital-efficient.txt: the research build (~125%
 #     notional via US-listed stacked funds, no PRIIPs constraint). It marks
 #     where the frontier sits, keeps the alternatives-considered ledger and
 #     the volatility/CAGR frontier of the shape, and doubles as the UCITS
 #     watch list; what it gains over this file is what the missing UCITS
 #     launches (a gold-on-equity fund, a 25y+ zero-coupon) would unlock.
+#   - cerberus-three-heads.txt: the same engines regrouped into three even
+#     notional thirds (equity / trend / bonds+gold), euro duration, global
+#     small value; nearly buyable (GDE is its one non-UCITS line).
 #   - claude-dragonlite.txt: the same philosophy distilled to three lines
 #     (NTSG/trend/gold) for whoever will not maintain six.
 #

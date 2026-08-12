@@ -158,6 +158,14 @@ rather than recomputing it (and drifting) on every run.
   investor cannot buy them. Research file: exposure ledger, the volatility/
   CAGR frontier of the shape, alternatives-considered ledger (why RSBT was
   dropped for a EUR-hedged trend leg), and UCITS watch list.
+- `cerberus-three-heads`: the hydra's sibling: the same engines regrouped
+  into three even notional thirds (equity / trend / bonds+gold), euro
+  duration (MTH) instead of the USD zero-coupon, global small value (AVWS),
+  both trend legs EUR-hedged; direct US exposure a minority (40% geography,
+  41% currency). Over 1996-2026 it matches the S&P 500's EUR return at 46%
+  of its volatility, 31% of its drawdown and 15% of its time under water.
+  One line (GDE) is not UCITS; the file carries the measured access ledger
+  (professional opt-up, a priced CL2+IGLN synthesis, the watch list).
 
 ## Capital-efficient / return-stacking (modern)
 

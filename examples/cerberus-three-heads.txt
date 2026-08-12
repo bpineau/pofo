@@ -1,0 +1,230 @@
+# Cerberus (three heads) -- the S&P 500's return without the parts that break the holder
+#
+# STATUS: nearly buyable. Five of the six lines are UCITS funds a French
+#   retail account can hold today; the sixth (GDE, 24%) is US-listed with
+#   no PRIIPs KID, and its accessibility is this file's one standing
+#   problem (the access ledger below is the state of the art). Cerberus is
+#   the hydra's sibling, in the family and in the myth: Hydra and Cerberus
+#   are both children of Typhon and Echidna, and this build is the same
+#   engine philosophy regrouped into THREE EVEN HEADS of notional exposure.
+#   Its job is the watchdog's: guard the floor while the owner sleeps.
+#
+# Thesis in one line: the S&P 500's 30-year return at half its volatility,
+#   a third of its drawdown and a sixth of its time under water, packaged
+#   as three balanced notional thirds (equity / trend / bonds+gold) with a
+#   minority of direct US exposure.
+#
+# ## What 100 EUR actually holds (the exposure ledger)
+#
+#   17 NTSG   -> 15.3 world equity + 10.2 sovereign futures (~7y duration)
+#    6 AVWS   ->  6   global small-cap value equity
+#   28 MFEH   -> 28   managed-futures trend (replication, EUR-hedged)
+#   16 AQR MF -> 16   managed-futures trend (direct TSMOM, EUR-hedged)
+#   24 GDE    -> 21.6 US large-cap equity + 21.6 gold futures
+#    9 MTH    ->  9   euro sovereigns at ~19y duration
+#   ------------------------------------------------------------------
+#   Total     ~43 equity + ~44 trend + ~41 bonds-and-gold  = ~128%
+#
+#   That last line IS the design: three even heads, one third of notional
+#   each (34/34/32), the hard-ballast head split half nominal duration
+#   (19.2 bonds) and half gold (21.6). The ~28 stacked points are financed
+#   inside NTSG and GDE at roughly the T-bill rate; the frontier sibling
+#   (hydra-five-engines-capital-efficient.txt) keeps the full case for
+#   embedded leverage over margin, boxes and daily-reset ETFs.
+#
+# ## Where it stands in the hydra family
+#   Same five engines as the hydras; what changed is the passport and the
+#   currency doctrine. Three swaps against the frontier build:
+#   - ZPRV -> AVWS: the small-value sleeve goes global (31% non-US) instead
+#     of US-only. The frontier file measured the swap a wash on returns;
+#     here the tie-breaker is the whole point of the build (minority US).
+#   - RAEF -> the AQR flat-fee I class (IAE1FT): same fund, but a share
+#     class whose published charge is real and durable. RAEF's 0.23%
+#     ongoing figure is a discretionary management-fee waiver that can end
+#     any day; IAE1FT's 1.26% is what the NAV actually pays, and the class
+#     is reachable through ordinary brokers (IBKR carries it).
+#   - ZROZ -> MTH: the deflation-duration head moves from a 27y USD
+#     zero-coupon to a 19y euro sovereign book. Deliberate doctrine, not a
+#     compromise: the USD flight-to-quality premise behind a Treasury
+#     sleeve was re-examined on the very windows it is supposed to pay in
+#     and did not survive the check, so the defensive duration stays in
+#     the liability currency instead of paying dollar volatility on top of
+#     the rate bet.
+#   Net: direct US exposure is a minority stake, 40% by geography and 41%
+#   by currency (EUR 54%), against a family habit of USD-heavy books.
+#
+# ## Regime map: what hurts, and which head answers
+#
+#   Growth boom            ~43% equity across three engines (NTSG world,
+#                          AVWS global small value, GDE US large).
+#   Disinflation/recession NTSG's overlay (~10 points intermediate
+#                          duration) + MTH + trend rotating long.
+#   Deflation crash (2008) MTH long-end convexity in euros + trend short
+#                          risk assets.
+#   Inflation shock        Trend long commodities/short bonds + 21.6
+#                          points of gold via GDE.
+#   Choppy stagflation     Gold (trend whipsaws without a trend).
+#   Prolonged equity bear  Trend crisis alpha, 44 points of it.
+#
+#   Measured coverage (share of weight): growth 43%, inflation 72%,
+#   crisis 75%, deflation 19%. Deflation is the thin quadrant, as in the
+#   frontier build (21%): the repair, if wanted, is MTH toward 15-20 (the
+#   sweep below prices it at ~0.28 pts of CAGR per 5 points).
+#
+# ## The five engines (weights, and sane ranges from the per-line sweep)
+#
+# ENGINE 1 -- NTSG, equity + duration (17%; range 10-25).
+#   90% developed-world equities + 60% sovereign futures, UCITS
+#   (IE00077IIPQ8). The sweep reads nearly flat Sharpe (1.05-1.07) across
+#   0-25 and a ceiling past ~25 (Sharpe 1.03 and falling, drawdown -21% by
+#   30): the ceiling is empirical. The floor is a priori, as in every
+#   hydra: the sweep would happily hold 0% NTSG, but the worst-5y floor
+#   thins (+0.65% at 0) and a 30-year plan needs the world-equity presence.
+#
+# ENGINE 2 -- AVWS, global small-cap value (6%; range 0-10).
+#   Size and value premia in the value-weighted form, global edition
+#   (IE0003R87OG3), carrying the non-US tail ZPRV lacks. The most
+#   expensive risk in the book, empirically: each 5 points buys ~0.13 pts
+#   of CAGR and costs ~1.4 pts of drawdown and ~0.4 pts of worst-5y; by
+#   20% the worst-5y is negative. The ceiling is empirical and tight.
+#
+# ENGINES 3a/3b -- trend, TWO models (28% + 16%; 44 total).
+#   The largest head, and knowingly above the frontier file's 40-point
+#   comfort edge and its ~22-per-leg cap. The overweight leg is carried on
+#   the manager's record, not the share class's: MFEH (LU3359622902,
+#   0.75%/yr) is DBi's SG CTA replication, the same engine that has run
+#   DBMF since 2019 with the longest replication record in the business,
+#   and the class adds only an EUR hedge on top. Engine 3b is AQR's direct
+#   TSMOM (Managed Futures UCITS, flat-fee I class IAE1FT LU2622190622,
+#   EUR-hedged). Both legs hedged: an unhedged managed-futures sleeve is
+#   trend plus a long-dollar position (the frontier file measures the
+#   dollar leg at +3 pts of volatility for no return). The sweep is
+#   monotone in Sharpe up to 45% on either leg, which is exactly the
+#   in-sample flattery of a shared reconstruction the family's blind-spot
+#   notes warn about: the 44-point total and the 28/16 split are a priori.
+#
+# ENGINE 4 -- GDE, gold stacked on equity (24%; range 15-30).
+#   90% S&P 500 + 90% gold futures (US97717Y5684). The CAGR engine: the
+#   sweep pays +0.39 pts of CAGR and +0.48 pts of worst-5y per 5 points,
+#   at ~0.5 pts of volatility each. The floor is empirical: below ~15 the
+#   worst-5y goes negative and the build no longer matches the index's
+#   return, i.e. Cerberus stops being Cerberus. Sharpe peaks at 5-15 and
+#   volatility makes the ceiling call. NOT UCITS; see the access ledger.
+#
+# ENGINE 5 -- MTH, euro deflation duration (9%; range 5-20).
+#   Amundi Euro Government Bond 25+Y (LU1686832194, 0.07%/yr, ~19y
+#   duration): recession/deflation convexity in the liability currency.
+#   The sweep prices each 5 points at ~0.28 pts of CAGR for ~0.35 pts less
+#   volatility and a slowly rising worst-5y, up to a cliff past ~35 where
+#   2022-style duration losses dominate (drawdown -23%, recovery 3.9y at
+#   45%): both ends of the range are empirical. The euro book carries
+#   OAT/BTP spread risk (31% France, 15% Italy): see blind spot (a).
+#
+# ## GDE access ledger (the one standing problem, measured 2026-08)
+#   No UCITS stacks gold on equity today. What exists, in order:
+#   - HOLD GDE ANYWAY: requires an account that clears PRIIPs, i.e. MiFID
+#     professional opt-up (2 of 3: 500k EUR portfolio, trading frequency,
+#     professional experience) or a non-EU account. The options-exercise
+#     route that unlocks big US ETFs does not work here: GDE has no liquid
+#     option chain.
+#   - SYNTHESIZE IT, UCITS-only: 24 GDE -> 10.8 CL2 (Amundi MSCI USA 2x
+#     Daily, FR0010755611, PEA-eligible) + 13.2 IGLN (physical gold,
+#     IE00B4ND3602). Measured on the shared 2009-2026 window: CAGR 10.28%
+#     vs 10.84%, volatility 8.70% vs 9.58%, Sharpe 1.13 vs 1.09, same
+#     -19.5% drawdown, worst-5y +0.18% vs +0.95%. The -0.56 pts of CAGR
+#     buy the passport; read them as a floor, not the full price: the
+#     window starts mid-2009 and never charges CL2's daily-reset decay a
+#     2000-02-style chop, and 8.4 points of gold notional are missing
+#     (gold at 1x cannot fund both halves from 24 points of capital).
+#   - DE-STACK IT (12 IGLN + NTSG raised to 29): refuted. CAGR 9.03%
+#     (-1.6 pts), worst-5y -0.22%: it breaks both properties the build
+#     exists for. Documented so nobody retries it.
+#   - WATCH LIST: a WisdomTree Efficient Gold UCITS stays the clean
+#     unlock. Two live signals: Return Stacked announced a UCITS rollout
+#     with HANetf targeted at 2026 (nothing shipped as of 2026-08), and
+#     their RSSX (US stocks + gold/bitcoin 100/100, US-listed 2025-05) is
+#     a near-GDE with a bitcoin kicker; a UCITS RSSX would do this job.
+#
+# ## Currency
+#   EUR 54% / USD 41% / other 5% of look-through exposure: both trend legs
+#   are EUR-hedged share classes and the whole duration head is euro
+#   sovereigns, so the dollar remains only where it is paid for (the
+#   equity premium inside NTSG and GDE). Hedging is not free forward (the
+#   USD-EUR carry gap, ~1.5%/yr at 2026-08 rates); the build accepts that
+#   as the price of a defensive book that pays in the liability currency.
+#   AVWS quotes in EUR on Xetra but that is cosmetic (its basket is ~55%
+#   USD); no hedged class exists, and at 6 points it would move the book's
+#   currency mix by ~2 points: not worth an instrument change.
+#
+# ## Blind spots
+#   (a) A euro-sovereign stress (2011): MTH is then exposure, not hedge
+#       (31% France, 15% Italy; no Bund-only long ETF exists). The USD
+#       zero-coupon dodged this one and caught dollar volatility instead;
+#       this build chose its side of that trade.
+#   (b) DEFLATION is the thin quadrant (19% of weight): a bust that trend
+#       misses leans on 9 points of MTH plus NTSG's overlay.
+#   (c) 44 points of capital in trend, above the family's 40-point
+#       live-record edge, and the deep history of both legs shares one
+#       reconstruction: the backtest cannot price model divergence and
+#       flatters the sleeve. Treat it as a regime study, not a promise.
+#   (d) Product risk: GDE is small and young; MFEH is younger and smaller
+#       still (~EUR 11m, weeks of live NAV, Xetra only, France
+#       registration to verify before buying). DBMFE (LU2951555403) is the
+#       same book unhedged if MFEH is unreachable; the frontier file
+#       prices that fallback at +3 pts of sleeve volatility.
+#   (e) Fee stack: 0.53%/yr weighted, the trend legs being 0.75% and
+#       1.26%. That is the price of published charges that are real
+#       (RAEF's 0.23% is a waiver, not a fee schedule).
+#   (f) Embedded financing: the ~28 stacked points pay T-bill inside the
+#       funds; when cash is at 5% that is ~1.4%/yr of drag before the
+#       overlays earn anything (2022-23).
+#
+# ## Honesty note on the WEIGHTS
+#   The engine roles are theory-first; the percentages are backtest-
+#   informed and then hand-rounded to the three-thirds shape. The measured
+#   edge should be expected to shrink out of sample; the three-heads
+#   geometry, the ranges above and their empirical/a-priori labels are the
+#   part built to survive. The per-line sweep (rest renormalized,
+#   1996-2026) is re-runnable with: pofo -sweep cerberus-three-heads.txt.
+#
+# ## Measured profile (this toolkit, EUR, common window 1996-03 -> 2026-08)
+#   CAGR 10.61%, volatility 9.55% (8.66% monthly), Sharpe 1.07, Sortino
+#   1.50, Ulcer 4.2, max drawdown -19.5%, worst recovery 2.0y, worst
+#   rolling 5y +0.95%, median 5y 9.18%, up/down-capture 38/33%, beta vs
+#   S&P 0.32, CWARP +19.1, weighted charges 0.53%/yr. The S&P 500 in EUR
+#   over the same window: 10.76% CAGR at 20.9% volatility, -63.8% max
+#   drawdown, 13.2y worst recovery, worst rolling 5y -9.84%. That is the
+#   claim in the title, measured: the index's return (10.61 vs 10.76) at
+#   46% of its volatility, 31% of its drawdown, 15% of its time under
+#   water, and a positive worst-5y against the index's -9.8%.
+#   Vs the frontier hydra (same window): 0.16 pts less CAGR, 0.34 pts
+#   less volatility, same Sharpe (1.07 vs 1.05), same drawdown, and a
+#   better CWARP (+19.1 vs +18.7), for +0.20%/yr of fees: the three-thirds
+#   regrouping costs almost nothing against the frontier the family says
+#   is unreachable without GDE.
+#   Vs the buyable hydra: +1.11 pts of CAGR, +0.41 pts of worst-5y, one
+#   recovery year less (2.0y vs 2.8y real): that gap is what GDE's
+#   accessibility problem is worth, and why the access ledger above
+#   exists.
+#
+# ## Practical notes
+#   - Rebalance quarterly; the sane ranges define how far drift can run.
+#   - The AQR leg is a FUND, not an ETF: check platform availability and
+#     minimums (IBKR carries IAE1FT; the EUR class avoids manual FX).
+#   - CHECK BEFORE BUYING MFEH: size, spread and France registration (see
+#     blind spot (d)); DBMFE is the fallback.
+#   - GDE makes this file 76% buyable today; the synthesis line in the
+#     access ledger is the 100% UCITS fallback, priced.
+#
+# Siblings: hydra-five-engines-capital-efficient.txt (the frontier build
+#   and the family's rationale ledger), hydra-five-engines-ucits.txt (the
+#   fully buyable five-engine build), claude-dragonlite.txt (three lines).
+#meta rebalance:90
+#meta sim:on
+
+17    NTSG            # Engine 1, equity + duration: WisdomTree Global Efficient Core 90/60 (NTSG, IE00077IIPQ8, UCITS)
+6     AVWS            # Engine 2, value factor: Avantis Global Small Cap Value (AVWS, IE0003R87OG3, UCITS)
+28    MFEH            # Engine 3a, trend replication, EUR-hedged: iMGP DBi Managed Futures R EUR HP (MFEH, LU3359622902, UCITS; unhedged class DBMFE LU2951555403)
+16    LU2622190622    # Engine 3b, second trend model, direct TSMOM: AQR Managed Futures UCITS, flat-fee EUR-hedged I class IAE1FT (LU2622190622)
+24    GDE             # Engine 4, gold stacked on equity 90/90: WisdomTree Efficient Gold Plus Equity (GDE, US97717Y5684, US-listed; access ledger above)
+9     MTH             # Engine 5, euro deflation duration: Amundi Euro Government Bond 25+Y (MTH, LU1686832194, UCITS)
