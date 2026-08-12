@@ -388,7 +388,9 @@
 #   ~118% effective notional, and the gap above is what waiting costs.
 #
 # Siblings: hydra-five-engines-ucits.txt (the buyable UCITS
-#   implementation), claude-dragonlite.txt (three-line distillation).
+#   implementation), cerberus-three-heads.txt (the same engines regrouped
+#   into three even notional thirds, euro duration and one non-UCITS line),
+#   claude-dragonlite.txt (three-line distillation).
 #meta rebalance:90
 #meta sim:on
 
