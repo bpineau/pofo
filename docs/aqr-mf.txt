@@ -38,6 +38,14 @@ That last case is real here and it is RAEF.
   RAE      LU1662502183   EUR  0.60%  10%             EUR STR   0.24%   0.05%  EUR 100,000
   RAEF     LU1662501532   EUR  1.00%  NA              NA        0.24%   0.05%  EUR 100,000
   IAE1FT   LU2622190622   EUR  1.00%  NA              NA        0.25%   0.01%  EUR 100,000
+  IAE2F    LU1662499612   EUR  0.75%  NA              NA        0.18%   0.01%  EUR 80 MILLION
+
+IAE2F looks like the cheap flat class (OCF ~0.88%) and is not a way in:
+its minimum is EUR 80m, its NAV has a three-year hole (2020-02 to
+2023-05: the class was emptied then re-seeded at par, so statistics
+across the gap are meaningless), and since 2023-11 it has returned 0.6
+to 0.7 pts/yr LESS than RAEF, a cost-side gap the published schedules
+do not explain. The assets.json entry carries the full note.
 
 Class types, and they matter for access:
   - "Institutional" (class B, M): institutional investors.
