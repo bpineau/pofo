@@ -107,9 +107,11 @@
 #   model can decay, close, or drift, so the sleeve is split across two
 #   genuinely different methods -- DBi's CTA-replication (MFEH,
 #   LU3359622902) and AQR's direct multi-asset trend (AQR Managed Futures
-#   UCITS, EUR-hedged flat "RAEF" share LU1662501532; 100k+ tickets: the
-#   cheaper flat I class IAE2F LU1662499612, OCF ~0.88%), the standout LIVE
-#   record among UCITS trend funds:
+#   UCITS, EUR-hedged flat "RAEF" share LU1662501532; the durable-fee
+#   route for 100k+ tickets is the flat I class IAE1FT LU2622190622 at
+#   1.26%/yr -- NOT IAE2F LU1662499612, whose 0.88% headline hides an EUR
+#   80m minimum, a 2020-2023 dormancy and a worse net return, see the
+#   catalog note), the standout LIVE record among UCITS trend funds:
 #   over 2022-2026 it ran Sharpe ~0.75 with a -20% max drawdown while the
 #   US-listed KMLM (a third replication route, kept as a backtest proxy
 #   only) did Sharpe ~0 and -42%.
