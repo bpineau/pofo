@@ -39,7 +39,9 @@
 // drop the ones that only pay off out of sample; and Bounds, a range per
 // named asset. Bounds arrive keyed by identifier and are turned into the
 // per-position Lower/Upper the solver reads by Spec.Resolve, which the
-// CALLER runs: resolving identifiers is pkg/marketdata's job.
+// CALLER runs: resolving identifiers is pkg/marketdata's job. CWARP is the
+// exception on the box too: SolveCWARP caps weights (MaxWeight) but knows
+// nothing of MinWeight or Bounds, which ParseSpec therefore refuses.
 //
 // Bounds matter more than they look. An unconstrained optimum is a corner
 // solution, and a corner fitted on one window is the least durable thing an
@@ -52,11 +54,16 @@
 // Limits express the question most portfolio work actually asks: not "the
 // best Sharpe" but "the most return without going above X volatility", or
 // "the least volatility that still returns Y". Three are available
-// (MaxVolatility, MinReturn, MaxDrawdown), they compose, and they apply to
-// any objective:
+// (MaxVolatility, MinReturn, MaxDrawdown) and they compose:
 //
 //	optimize.Spec{Objective: optimize.MaxReturn,
 //	    Limits: optimize.Limits{MaxVolatility: 0.095}}
+//
+// They apply to every objective but RiskParity and CWARP: those two are
+// solved by code that never sees Limits (the equal-risk condition in closed
+// form, and SolveCWARP's own search, which honours MaxWeight alone), so
+// ParseSpec refuses to combine them with a limit, and CWARP with a floor or
+// a per-line range, instead of dropping the constraint in silence.
 //
 // Any limit (or any per-asset bound) routes the solve through one penalized
 // path search, whatever the objective; without them the closed forms answer
