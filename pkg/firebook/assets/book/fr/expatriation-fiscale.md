@@ -1,4 +1,5 @@
 # L'expatriation : fiscalité et protection sociale
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 Aucune conversation FIRE française ne dure une heure sans que quelqu'un lâche « de toute façon, moi, je partirai au Portugal ». L'expatriation est le joker mental du rentier français, réputé effacer d'un coup PFU, PUMa et lois de finances. La réalité mérite un chapitre froid. Oui, la résidence fiscale se déplace, et certains régimes étrangers sont attractifs. Mais le gain **réel** pour un plan français déjà organisé ([[enveloppes-francaises]], [[flat-tax-et-imposition]]) est souvent bien plus mince qu'annoncé. Il se paie en coûts nouveaux (l'assurance santé privée, la distance, la complexité, l'instabilité des régimes de faveur eux-mêmes, demandez aux « NHR » portugais). Et plusieurs attaches françaises suivent le rentier où qu'il aille (l'immobilier, une partie de la succession, l'exit tax pour les gros portefeuilles).
 

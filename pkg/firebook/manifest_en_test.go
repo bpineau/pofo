@@ -18,10 +18,125 @@ import (
 func plannedENSet(t *testing.T) map[string]bool {
 	t.Helper()
 	set := make(map[string]bool, len(plannedEN))
-	for _, slug := range plannedEN {
-		set[slug] = true
+	for _, p := range plannedEN {
+		set[p.EN] = true
 	}
 	return set
+}
+
+// expectedFROnly is the French tax part ("Fiscalité et cadre français"): seven
+// articles that are French law end to end and are deliberately never
+// translated, the English edition writing usFrameworkEN in their slot instead.
+//
+// The authority is the in-file "<!-- edition: fr-only -->" marker, which is
+// what Drift reads; this list is only the expectation the guard below holds it
+// to, so that neither a lost marker nor a new one slips by unnoticed.
+var expectedFROnly = []string{
+	"enveloppes-francaises",
+	"flat-tax-et-imposition",
+	"taxe-puma",
+	"retraite-legale",
+	"sante-et-protection-sociale",
+	"succession-et-transmission",
+	"expatriation-fiscale",
+}
+
+// frOnlySlugs lists the French articles carrying the fr-only marker.
+func frOnlySlugs(t *testing.T) map[string]bool {
+	t.Helper()
+	set := map[string]bool{}
+	files, err := assets.ReadDir(French.AssetDir)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, f := range files {
+		slug, ok := strings.CutSuffix(f.Name(), ".md")
+		if !ok {
+			continue
+		}
+		raw, err := assets.ReadFile(French.AssetDir + "/" + f.Name())
+		if err != nil {
+			t.Errorf("%s: %v", f.Name(), err)
+			continue
+		}
+		if frOnly(raw) {
+			set[slug] = true
+		}
+	}
+	return set
+}
+
+// The marked set must be exactly the tax part, and a marked article must be
+// out of the translation plan on every side: no English article sources it,
+// and plannedEN pairs nothing with it.
+func TestFROnlyMarkersMatchTheTaxPart(t *testing.T) {
+	marked := frOnlySlugs(t)
+	for _, slug := range expectedFROnly {
+		if !marked[slug] {
+			t.Errorf("%s carries no fr-only marker on line 2", slug)
+		}
+	}
+	expected := map[string]bool{}
+	for _, slug := range expectedFROnly {
+		expected[slug] = true
+	}
+	for slug := range marked {
+		if !expected[slug] {
+			t.Errorf("%s is marked fr-only but is not part of the French tax part", slug)
+		}
+	}
+	for _, cat := range English.Categories {
+		for _, a := range cat.Articles {
+			if marked[a.Source] {
+				t.Errorf("%s translates %q, which is marked fr-only", a.Slug, a.Source)
+			}
+		}
+	}
+	for _, p := range plannedEN {
+		if marked[p.FR] {
+			t.Errorf("plannedEN pairs %q with %q, which is marked fr-only", p.EN, p.FR)
+		}
+	}
+}
+
+// plannedEN is the pairing table the campaign works from: every translatable
+// French article sits in it exactly once, and every written translation agrees
+// with the slot planned for it.
+func TestPlannedENPairsEveryFrenchArticle(t *testing.T) {
+	marked := frOnlySlugs(t)
+	seen := map[string]int{}
+	for _, p := range plannedEN {
+		if p.FR != "" {
+			seen[p.FR]++
+		}
+	}
+	for slug := range French.Titles() {
+		if marked[slug] {
+			continue
+		}
+		switch seen[slug] {
+		case 1:
+		case 0:
+			t.Errorf("%s is neither marked fr-only nor paired in plannedEN", slug)
+		default:
+			t.Errorf("%s is paired %d times in plannedEN", slug, seen[slug])
+		}
+	}
+	for slug := range seen {
+		if _, ok := French.Titles()[slug]; !ok {
+			t.Errorf("plannedEN pairs %q, which is not a French article", slug)
+		}
+	}
+	for _, cat := range English.Categories {
+		for _, a := range cat.Articles {
+			if a.Source == "" {
+				continue
+			}
+			if want := plannedENSource[a.Source]; want != a.Slug {
+				t.Errorf("%s translates %q, which plannedEN pairs with %q", a.Slug, a.Source, want)
+			}
+		}
+	}
 }
 
 // enArticleFiles lists the English article files, tolerating an absent
@@ -231,27 +346,64 @@ func TestEnglishEditionIsComplete(t *testing.T) {
 			}
 		}
 	}
+	marked := frOnlySlugs(t)
 	for slug := range French.Titles() {
-		if !taxOnlyFR[slug] && !covered[slug] {
+		if !marked[slug] && !covered[slug] {
 			t.Errorf("%s has no English counterpart", slug)
 		}
 	}
 }
 
-// The source stamp is metadata, never content: it must not reach the page.
+// The source stamp and the edition marker are metadata, never content: they
+// must not reach the page, in either edition.
 func TestStampNeverRenders(t *testing.T) {
-	srv := httptest.NewServer(English.Handler())
-	defer srv.Close()
-	for _, cat := range English.Categories {
-		for _, a := range cat.Articles {
-			res, err := http.Get(srv.URL + "/" + a.Slug)
-			if err != nil {
-				t.Fatal(err)
+	for _, ed := range []*Edition{English, French} {
+		srv := httptest.NewServer(ed.Handler())
+		for _, cat := range ed.Categories {
+			for _, a := range cat.Articles {
+				res, err := http.Get(srv.URL + "/" + a.Slug)
+				if err != nil {
+					t.Fatal(err)
+				}
+				body, _ := io.ReadAll(res.Body)
+				res.Body.Close()
+				if strings.Contains(string(body), "source:") {
+					t.Errorf("%s/%s: the source stamp leaks into the page", ed.Lang, a.Slug)
+				}
+				if strings.Contains(string(body), "edition: fr-only") {
+					t.Errorf("%s/%s: the edition marker leaks into the page", ed.Lang, a.Slug)
+				}
 			}
-			body, _ := io.ReadAll(res.Body)
-			res.Body.Close()
-			if strings.Contains(string(body), "source:") {
-				t.Errorf("%s: the source stamp leaks into the page", a.Slug)
+		}
+		srv.Close()
+	}
+}
+
+// English prose follows English number conventions. A translator carrying a
+// French figure over verbatim ("6,6 %", "1 000 000") is a slip no reader
+// should have to catch, so a grep over the whole tree catches it here.
+func TestNoFrenchNumbersEN(t *testing.T) {
+	patterns := []struct {
+		what string
+		re   *regexp.Regexp
+	}{
+		{"French decimal comma before a percent", regexp.MustCompile(`\d,\d+[\x{00a0}\x{202f} ]?%`)},
+		{"French no-break space between digits", regexp.MustCompile(`\d[\x{00a0}\x{202f}]\d`)},
+		{"space before a percent sign", reFrenchPercent},
+	}
+	for slug := range enArticleFiles(t) {
+		path := English.AssetDir + "/" + slug + ".md"
+		raw, err := assets.ReadFile(path)
+		if err != nil {
+			t.Errorf("%s: %v", path, err)
+			continue
+		}
+		for i, line := range strings.Split(string(raw), "\n") {
+			for _, p := range patterns {
+				if m := p.re.FindString(line); m != "" {
+					t.Errorf("%s:%d: %s (%q); English writes \"6.6%%\" and \"1,000,000\"",
+						path, i+1, p.what, m)
+				}
 			}
 		}
 	}

@@ -1,4 +1,5 @@
 # FIRE et retraite légale : trimestres, AGIRC-ARRCO, décote
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 L'actif le plus négligé d'un plan FIRE français ne figure sur aucun relevé de portefeuille. C'est la pension légale. Même une carrière écourtée à 40 ou 45 ans en a déjà constitué une, et elle arrivera à 64-67 ans sous la forme la plus précieuse qui soit en décumulation. Une rente viagère indexée sur l'inflation, à deux têtes via la réversion, garantie par le système le plus solide du pays ([[rentes-et-annuites]], tout ce que le chapitre des rentes cherchait, déjà acquis). L'ignorer coûte des années de travail superflues ([[erreurs-classiques-fire]], l'erreur « prudente » la plus chère). Mal l'estimer fausse tout le dimensionnement. Et ignorer qu'elle s'entretient à bas coût, par les trimestres d'une activité minime et les rachats déductibles, laisse dormir le meilleur rendement du patrimoine français.
 

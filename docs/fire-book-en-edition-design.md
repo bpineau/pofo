@@ -1,6 +1,8 @@
 # The FIRE book, English edition: design
 
-Status: M1 (wiring) DONE 2026-08-01; M2, the translation campaign, is next.
+Status: M1 (wiring) DONE 2026-08-01; campaign signals (fr-only marker,
+FR -> EN pairing as data, number guard, translator's brief, glossary) DONE
+2026-08-16; M2, the translation campaign, is next.
 This document is the implementation brief for the
 English edition of the embedded FIRE book ("Le FIRE tranquille",
 `pkg/firebook`). Read `docs/fire-book-design.md` first: everything there
@@ -172,6 +174,40 @@ test time, survives history rewrites) and beat single-source bilingual files
 with conditional markers (which would make every French edit wade through
 English text and were rejected outright).
 
+### Campaign signals (2026-08-16)
+
+The M2 worklist is read by translation agents, so it says everything a fresh
+session needs and says it once, in the report itself.
+
+- FR-ONLY MARKER. A French article that belongs to the French edition alone
+  declares it in its own file, on the line right after its `# Title`:
+  `<!-- edition: fr-only: French law end to end -->`. The text after the
+  second colon is optional documentation. Drift reports such an article as
+  "fr-only" and never as "untranslated", and `articleBody` strips the marker
+  before rendering, exactly as it strips the source stamp. The marker carries
+  the same argument as the stamp: it travels with the article, so moving,
+  renaming or copying a file cannot separate the two. The seven articles of
+  the tax part carry it. The old hardcoded skip list left the library, since
+  the files now answer the question; the list survives as a test-only
+  expectation, checked both ways against the markers, so neither a lost nor a
+  stray marker passes unnoticed.
+- FR -> EN PAIRING IS DATA. `plannedEN` is a table of `{EN, FR}` pairs, not a
+  list of English slugs with the pairing in trailing comments, and Drift fills
+  `DriftItem.ENSlug` with the planned English slug of every untranslated
+  article. A worklist line is therefore a complete instruction: the French
+  file to read and the English file to write. Guard tests hold the table to
+  covering every non-marked French article exactly once, and to agreeing with
+  the `Source` of every translation already written.
+- NUMBER GUARD. A guard test greps every file under `assets/book/en/` for
+  French number formatting (a decimal comma before a percent sign, a
+  (narrow) no-break space between digits, a space before a percent sign) and
+  reports file:line. It covers the whole tree rather than the manifest, so a
+  file lands guarded from the moment it is written. The figures already had
+  the equivalent check on their translated payloads.
+
+`pofo -book-drift` prints one line per unsettled article, `<reason> <fr-slug>
+-> <en-slug>`, and a three-way count on stderr.
+
 ## Figures: one generator, a translation pass
 
 The ~100 plates stay SINGLE-SOURCE: every `func() string` keeps its French
@@ -294,6 +330,42 @@ The ledger, opened with the M1 pilots:
 |---|---|---|---|
 | sequence-des-rendements | sequence-of-returns | generalize | Nothing France-specific; a straight translation. |
 | vpw | vpw | generalize | The pension-bridge passage pointed at `retraite-legale`, a tax-part article with no EN counterpart. Neutralized to "before your pensions start" with NO replacement pointer: a cross-link there earns little, and a reader who wants the local rules will find the US part on their own. The "phase adossée d'un plan FIRE français" aside became locale-neutral. |
+
+#### Triage of the general articles (2026-08-16, awaiting arbitration)
+
+A sweep of the non-tax articles for France-specific density (term counts,
+then a reading of the sections) yields the list below. "Proposed" rows are
+NOT decisions: until a row is settled here, a translator applies the
+GENERALIZE default and reports the passages that pushed for more (see
+`docs/fire-book-en-translation-brief.md`, section 3). Three outcomes are
+possible per article: fr-only (marker on the French file, no English
+counterpart), adapt (one or more sections rewritten for the US reader), or
+generalize.
+
+| FR slug | EN slug | Proposed | Why |
+|---|---|---|---|
+| cas-types | three-worked-plans | fr-only OR original rewrite | The three households are built on PEA / assurance-vie / CTO / PUMa / pension quarters; a US version is three new plans, not a translation. |
+| inflation-histoire | inflation-history | adapt (heavy) OR fr-only | The spine is French monetary history 1914-2025 (ruined rentiers, post-war financial repression, 1974-81); a US reader expects the dollar's 1913-2025. |
+| etf-ucits-europeens | building-it-with-us-etfs | adapt (decided 2026-08-01) | European practice end to end; effectively an original article on US-listed ETFs. |
+| cash-ameliore | enhanced-cash | adapt | The "fonds euros" third has no US equivalent (stable value, MMF, T-bills); CLO AAA and money-market parts translate. |
+| immobilier-en-retrait | real-estate-in-retirement | adapt | French property taxation, SCPI, viager, dismemberment, fixed-rate mortgage frame; US counterparts are REITs, reverse mortgage, HELOC. |
+| retour-au-travail | going-back-to-work | adapt | "La boîte à outils française du travail dosé" and the "quadruplé" (PUMa, quarters); the US pendant is ACA subsidies and Social Security credits. |
+| echelle-obligataire | bond-ladders | adapt | "La pratique française : les contournements du guichet absent" inverts in the US (TreasuryDirect exists). |
+| obligations-indexees | inflation-linked-bonds | adapt | "La pratique française" section becomes TIPS / I-bonds. |
+| diversification-internationale | international-diversification | adapt | Home bias and the currency section are written from the euro side; for a US reader home bias IS the S&P and the FX asymmetry flips. |
+| combien-il-vous-faut | how-much-you-need | generalize + pointer | Step 2 "la correction fiscale" is PFU/PUMa; replace with a pointer to `us-taxes-in-the-withdrawal-phase`. |
+| revue-annuelle | the-annual-review | generalize | Bloc 4 (fiscal/administratif) neutralized, pointer to the US part. |
+| construire-son-plan | building-your-plan | generalize | Step 7 (day-1 execution) names French envelopes and brokers. |
+| suivre-inflation | tracking-inflation | adapt (light) | IPCH/INSEE indices become CPI-U/PCE. |
+| bibliotheque | the-library | adapt (light) | "Les sources officielles françaises" section becomes IRS/SSA/BLS. |
+| lexique | glossary | generalize | Drop the entries of the tax part (PUMa, fonds euros, ...); add the US-part terms once M3 lands. |
+| rentes-et-annuites | annuities-and-safety-first | adapt (decided 2026-08-01) | French annuity products become the US SPIA/DIA market. |
+| or-en-retrait | gold-in-retirement | adapt (decided 2026-08-01) | French buying practice becomes US practice. |
+
+Light generalization suffices (UCITS/PEA mentions in passing) for
+managed-futures, facteurs-fama-french, allocation-actions-obligations,
+levier-et-marges, hyperinflation-et-extremes, temoignages-fire (the quoted
+corpus is already English-language), la-machine-pofo, utiliser-la-page-fire.
 
 Rejected: keeping "in France, ..." passages verbatim as curiosities (dead
 weight for the target reader), and conditional markers in shared sources

@@ -1,4 +1,5 @@
 # Santé et protection sociale du rentier
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 Dans les récits FIRE américains, la santé est le monstre du placard. L'assurance santé privée y coûte 15-25 k$/an à un couple de cinquantenaires, et peut tuer un plan à elle seule. Le rentier français joue une autre partie. La PUMa le couvre par principe (c'est la contrepartie de la cotisation décrite au chapitre [[taxe-puma]], vous payez, vous êtes couvert). Les affections graves sont prises en charge à 100 %, et le reste à charge est parmi les plus bas du monde. Mais cette chance a ses angles morts. Ils sont exactement là où un salarié ne regarde jamais. La mutuelle passe à charge pleine et dérive plus vite que l'inflation. La prévoyance d'entreprise (invalidité, décès) disparaît le jour du départ, sans que personne ne le signale. Et la dépendance du grand âge reste le gros risque non assuré du système, 3 000 à 3 500 €/mois de reste à charge en établissement non habilité à l'aide sociale, pendant des années.
 

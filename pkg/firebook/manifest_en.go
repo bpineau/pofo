@@ -11,6 +11,10 @@ package firebook
 // the French original it was made from, and an in-file source stamp; Drift
 // reads both to report what the translation still owes. The French edition
 // stays the source of truth for everything but the US part.
+//
+// Which French articles have no counterpart is not recorded here: each of them
+// says so in its own file, with the fr-only edition marker Drift reads (see
+// drift.go).
 var CategoriesEN = []Category{
 	{
 		Title: "Getting started",
@@ -68,20 +72,6 @@ var CategoriesEN = []Category{
 	},
 }
 
-// taxOnlyFR is the French tax part ("Fiscalité et cadre français"). Those
-// seven articles are French law end to end and are deliberately never
-// translated: the English edition writes usFrameworkEN in their slot instead.
-// Drift skips them when it lists what the translation owes.
-var taxOnlyFR = map[string]bool{
-	"enveloppes-francaises":       true,
-	"flat-tax-et-imposition":      true,
-	"taxe-puma":                   true,
-	"retraite-legale":             true,
-	"sante-et-protection-sociale": true,
-	"succession-et-transmission":  true,
-	"expatriation-fiscale":        true,
-}
-
 // usFrameworkEN is the English edition's own part, written from scratch
 // against US primary sources rather than translated, so those articles carry
 // no Source and no source stamp.
@@ -91,115 +81,133 @@ var usFrameworkEN = []string{
 	"us-healthcare-and-social-security",
 }
 
+// enPlan is one line of the English edition's plan: the English slug, and the
+// French article it will be translated from. FR is empty for the three
+// articles the English edition writes for itself.
+type enPlan struct{ EN, FR string }
+
 // plannedEN lists every article of the English edition, written or not, in
 // reading order, and is therefore the FR -> EN slug map the translation
-// campaign works from: each line names the French original it comes from.
-// Wiki-links in an English article may point at any slug listed here, written
-// or not (they degrade to plain text until the target exists), exactly as
-// planned works for the French edition.
+// campaign works from. The pairing is data, not a trailing comment: Drift
+// reads it to tell a translation agent which English slug an untranslated
+// French article is owed under. Wiki-links in an English article may point at
+// any EN slug listed here, written or not (they degrade to plain text until
+// the target exists), exactly as planned works for the French edition.
 //
 // Proper nouns keep their slug (vpw, guyton-klinger, anarkulova-cederburg).
-// The seven French tax articles are deliberately absent: the three us-*
-// articles below are the English edition's own, written from scratch against
-// US primary sources, and carry no Source.
-var plannedEN = []string{
+// The French articles marked fr-only in their own file (the tax part) are
+// deliberately absent: the three us-* articles below are the English edition's
+// own, written from scratch against US primary sources, and carry no Source.
+var plannedEN = []enPlan{
 	// I. Getting started
-	"what-is-fire",               // fire-cest-quoi
-	"the-4-percent-rule",         // la-regle-des-4-pourcents
-	"how-much-you-need",          // combien-il-vous-faut
-	"the-three-phases",           // les-trois-phases
-	"using-the-fire-simulator",   // utiliser-la-page-fire
-	"ten-plan-wrecking-mistakes", // erreurs-classiques-fire
+	{EN: "what-is-fire", FR: "fire-cest-quoi"},
+	{EN: "the-4-percent-rule", FR: "la-regle-des-4-pourcents"},
+	{EN: "how-much-you-need", FR: "combien-il-vous-faut"},
+	{EN: "the-three-phases", FR: "les-trois-phases"},
+	{EN: "using-the-fire-simulator", FR: "utiliser-la-page-fire"},
+	{EN: "ten-plan-wrecking-mistakes", FR: "erreurs-classiques-fire"},
 	// II. The science of withdrawal
-	"the-trinity-study",               // etude-trinity
-	"sequence-of-returns",             // sequence-des-rendements
-	"failure-probability",             // ruine-et-probabilites
-	"arithmetic-vs-geometric-returns", // rendements-arithmetiques-geometriques
-	"anarkulova-cederburg",            // anarkulova-cederburg
-	"valuations-and-cape",             // valorisations-et-cape
-	"expected-returns",                // rendements-attendus
-	"horizon-and-life-expectancy",     // horizon-et-esperance-de-vie
-	"the-ern-series",                  // serie-ern
-	"the-math-of-4-percent",           // les-maths-du-4-pourcent
-	"deciding-under-uncertainty",      // decider-sous-incertitude
+	{EN: "the-trinity-study", FR: "etude-trinity"},
+	{EN: "sequence-of-returns", FR: "sequence-des-rendements"},
+	{EN: "failure-probability", FR: "ruine-et-probabilites"},
+	{EN: "arithmetic-vs-geometric-returns", FR: "rendements-arithmetiques-geometriques"},
+	{EN: "anarkulova-cederburg", FR: "anarkulova-cederburg"},
+	{EN: "valuations-and-cape", FR: "valorisations-et-cape"},
+	{EN: "expected-returns", FR: "rendements-attendus"},
+	{EN: "horizon-and-life-expectancy", FR: "horizon-et-esperance-de-vie"},
+	{EN: "the-ern-series", FR: "serie-ern"},
+	{EN: "the-math-of-4-percent", FR: "les-maths-du-4-pourcent"},
+	{EN: "deciding-under-uncertainty", FR: "decider-sous-incertitude"},
 	// III. Modeling
-	"monte-carlo-strengths-and-limits", // monte-carlo-forces-faiblesses
-	"historical-vs-parametric",         // historique-vs-parametrique
-	"fat-tails",                        // queues-epaisses
-	"reading-a-fan-chart",              // lire-un-fan-chart
-	"simulator-traps",                  // pieges-des-simulateurs
-	"making-monte-carlo-relevant",      // rendre-monte-carlo-pertinent
-	"market-regimes",                   // regimes-de-marche
+	{EN: "monte-carlo-strengths-and-limits", FR: "monte-carlo-forces-faiblesses"},
+	{EN: "historical-vs-parametric", FR: "historique-vs-parametrique"},
+	{EN: "fat-tails", FR: "queues-epaisses"},
+	{EN: "reading-a-fan-chart", FR: "lire-un-fan-chart"},
+	{EN: "simulator-traps", FR: "pieges-des-simulateurs"},
+	{EN: "making-monte-carlo-relevant", FR: "rendre-monte-carlo-pertinent"},
+	{EN: "market-regimes", FR: "regimes-de-marche"},
 	// IV. Withdrawal strategies
-	"withdrawal-strategies-overview",      // panorama-strategies-retrait
-	"fixed-inflation-adjusted-withdrawal", // retrait-fixe-bengen
-	"fixed-percentage",                    // pourcentage-fixe
-	"guyton-klinger",                      // guyton-klinger
-	"vpw",                                 // vpw
-	"cape-based-rules",                    // regles-cape
-	"morningstar-guardrails",              // guardrails-morningstar
-	"amortization-based-withdrawal",       // amortissement-abw
-	"floor-and-ceiling",                   // plancher-plafond
-	"annuities-and-safety-first",          // rentes-et-annuites (adapted: US SPIA/DIA market)
-	"seven-ways-to-live-on-one-portfolio", // sept-facons-de-vivre
-	"choosing-your-strategy",              // choisir-sa-strategie
+	{EN: "withdrawal-strategies-overview", FR: "panorama-strategies-retrait"},
+	{EN: "fixed-inflation-adjusted-withdrawal", FR: "retrait-fixe-bengen"},
+	{EN: "fixed-percentage", FR: "pourcentage-fixe"},
+	{EN: "guyton-klinger", FR: "guyton-klinger"},
+	{EN: "vpw", FR: "vpw"},
+	{EN: "cape-based-rules", FR: "regles-cape"},
+	{EN: "morningstar-guardrails", FR: "guardrails-morningstar"},
+	{EN: "amortization-based-withdrawal", FR: "amortissement-abw"},
+	{EN: "floor-and-ceiling", FR: "plancher-plafond"},
+	{EN: "annuities-and-safety-first", FR: "rentes-et-annuites"}, // adapted: US SPIA/DIA market
+	{EN: "seven-ways-to-live-on-one-portfolio", FR: "sept-facons-de-vivre"},
+	{EN: "choosing-your-strategy", FR: "choisir-sa-strategie"},
 	// V. The retirement portfolio
-	"risk-premia",                   // primes-de-risque
-	"why-diversification-works",     // pourquoi-la-diversification-marche
-	"designing-a-portfolio",         // concevoir-un-portefeuille
-	"stock-bond-allocation",         // allocation-actions-obligations
-	"glidepaths",                    // glidepaths
-	"all-weather-portfolios",        // portefeuilles-tous-temps
-	"defensive-assets",              // actifs-defensifs
-	"false-defensive-assets",        // faux-actifs-defensifs
-	"gold-in-retirement",            // or-en-retrait (adapted: US buying practice)
-	"bonds-in-retirement",           // obligations-en-retrait
-	"inflation-linked-bonds",        // obligations-indexees
-	"factors-in-retirement",         // facteurs-fama-french
-	"international-diversification", // diversification-internationale
-	"building-it-with-us-etfs",      // etf-ucits-europeens (adapted: US-listed ETFs)
+	{EN: "risk-premia", FR: "primes-de-risque"},
+	{EN: "why-diversification-works", FR: "pourquoi-la-diversification-marche"},
+	{EN: "designing-a-portfolio", FR: "concevoir-un-portefeuille"},
+	{EN: "stock-bond-allocation", FR: "allocation-actions-obligations"},
+	{EN: "glidepaths", FR: "glidepaths"},
+	{EN: "all-weather-portfolios", FR: "portefeuilles-tous-temps"},
+	{EN: "defensive-assets", FR: "actifs-defensifs"},
+	{EN: "false-defensive-assets", FR: "faux-actifs-defensifs"},
+	{EN: "gold-in-retirement", FR: "or-en-retrait"}, // adapted: US buying practice
+	{EN: "bonds-in-retirement", FR: "obligations-en-retrait"},
+	{EN: "inflation-linked-bonds", FR: "obligations-indexees"},
+	{EN: "factors-in-retirement", FR: "facteurs-fama-french"},
+	{EN: "international-diversification", FR: "diversification-internationale"},
+	{EN: "building-it-with-us-etfs", FR: "etf-ucits-europeens"}, // adapted: US-listed ETFs
 	// V bis. Alternative assets
-	"managed-futures",  // managed-futures
-	"long-volatility",  // long-volatility
-	"global-macro",     // global-macro
-	"insurance-premia", // primes-d-assurance
-	"return-stacking",  // return-stacking
+	{EN: "managed-futures", FR: "managed-futures"},
+	{EN: "long-volatility", FR: "long-volatility"},
+	{EN: "global-macro", FR: "global-macro"},
+	{EN: "insurance-premia", FR: "primes-d-assurance"},
+	{EN: "return-stacking", FR: "return-stacking"},
 	// VI. Buffers and protections
-	"cash-buffer",               // cash-buffer
-	"enhanced-cash",             // cash-ameliore
-	"the-bucket-strategy",       // strategie-buckets
-	"bond-ladders",              // echelle-obligataire
-	"refilling-the-buffer",      // recharger-ou-pas
-	"real-estate-in-retirement", // immobilier-en-retrait
-	"leverage-and-margin",       // levier-et-marges
+	{EN: "cash-buffer", FR: "cash-buffer"},
+	{EN: "enhanced-cash", FR: "cash-ameliore"},
+	{EN: "the-bucket-strategy", FR: "strategie-buckets"},
+	{EN: "bond-ladders", FR: "echelle-obligataire"},
+	{EN: "refilling-the-buffer", FR: "recharger-ou-pas"},
+	{EN: "real-estate-in-retirement", FR: "immobilier-en-retrait"},
+	{EN: "leverage-and-margin", FR: "levier-et-marges"},
 	// VII. Inflation
-	"inflation-history",              // inflation-histoire
-	"tracking-inflation",             // suivre-inflation
-	"inflation-and-withdrawal-rates", // inflation-et-taux-de-retrait
-	"inflation-protection",           // se-proteger-de-inflation
-	"hyperinflation-and-extremes",    // hyperinflation-et-extremes
+	{EN: "inflation-history", FR: "inflation-histoire"},
+	{EN: "tracking-inflation", FR: "suivre-inflation"},
+	{EN: "inflation-and-withdrawal-rates", FR: "inflation-et-taux-de-retrait"},
+	{EN: "inflation-protection", FR: "se-proteger-de-inflation"},
+	{EN: "hyperinflation-and-extremes", FR: "hyperinflation-et-extremes"},
 	// VIII. Taxes and the US framework (English-only, no French source)
-	"us-accounts-and-account-order",
-	"us-taxes-in-the-withdrawal-phase",
-	"us-healthcare-and-social-security",
+	{EN: "us-accounts-and-account-order"},
+	{EN: "us-taxes-in-the-withdrawal-phase"},
+	{EN: "us-healthcare-and-social-security"},
 	// IX. The human factor
-	"the-psychology-of-spending", // psychologie-du-retrait
-	"voices-from-real-retirees",  // temoignages-fire
-	"meaning-and-identity",       // sens-et-identite
-	"couples-and-family",         // couple-et-famille
-	"flexibility-in-practice",    // flexibilite-realite
-	"one-more-year",              // une-annee-de-plus
-	"going-back-to-work",         // retour-au-travail
+	{EN: "the-psychology-of-spending", FR: "psychologie-du-retrait"},
+	{EN: "voices-from-real-retirees", FR: "temoignages-fire"},
+	{EN: "meaning-and-identity", FR: "sens-et-identite"},
+	{EN: "couples-and-family", FR: "couple-et-famille"},
+	{EN: "flexibility-in-practice", FR: "flexibilite-realite"},
+	{EN: "one-more-year", FR: "une-annee-de-plus"},
+	{EN: "going-back-to-work", FR: "retour-au-travail"},
 	// X. In practice
-	"building-your-plan",         // construire-son-plan
-	"the-annual-review",          // revue-annuelle
-	"when-to-worry",              // quand-s-inquieter
-	"bear-markets-in-retirement", // marche-baissier-en-retraite
-	"pensions-and-other-income",  // revenus-complementaires
-	"spending-in-retirement",     // depenses-en-retraite
-	"three-worked-plans",         // cas-types
+	{EN: "building-your-plan", FR: "construire-son-plan"},
+	{EN: "the-annual-review", FR: "revue-annuelle"},
+	{EN: "when-to-worry", FR: "quand-s-inquieter"},
+	{EN: "bear-markets-in-retirement", FR: "marche-baissier-en-retraite"},
+	{EN: "pensions-and-other-income", FR: "revenus-complementaires"},
+	{EN: "spending-in-retirement", FR: "depenses-en-retraite"},
+	{EN: "three-worked-plans", FR: "cas-types"},
 	// XI. References
-	"glossary",       // lexique
-	"the-library",    // bibliotheque
-	"under-the-hood", // la-machine-pofo
+	{EN: "glossary", FR: "lexique"},
+	{EN: "the-library", FR: "bibliotheque"},
+	{EN: "under-the-hood", FR: "la-machine-pofo"},
 }
+
+// plannedENSource maps a French slug to the English slug planned for it,
+// derived from plannedEN so the two can never disagree.
+var plannedENSource = func() map[string]string {
+	m := make(map[string]string, len(plannedEN))
+	for _, p := range plannedEN {
+		if p.FR != "" {
+			m[p.FR] = p.EN
+		}
+	}
+	return m
+}()

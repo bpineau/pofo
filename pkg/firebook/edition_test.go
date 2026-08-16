@@ -59,30 +59,39 @@ func TestEnglishEditionWiring(t *testing.T) {
 	}
 }
 
-// plannedEN is the FR -> EN slug map; it must be free of duplicates and cover
-// every French article outside the tax part, plus the English-only US part.
+// plannedEN is the FR -> EN slug map; its English slugs must be free of
+// duplicates, its French ones too, and it must cover every French article
+// outside the fr-only part plus the English-only US part. Which French
+// articles it is allowed to leave out is checked against the in-file markers
+// by TestPlannedENPairsEveryFrenchArticle.
 func TestPlannedENIsWellFormed(t *testing.T) {
 	seen := make(map[string]bool, len(plannedEN))
-	for _, slug := range plannedEN {
-		if seen[slug] {
-			t.Errorf("plannedEN lists %q twice", slug)
+	sources := make(map[string]bool, len(plannedEN))
+	own := 0
+	for _, p := range plannedEN {
+		if seen[p.EN] {
+			t.Errorf("plannedEN lists %q twice", p.EN)
 		}
-		seen[slug] = true
-	}
-	frOnly := 0
-	for _, slug := range planned {
-		if !taxOnlyFR[slug] {
-			frOnly++
+		seen[p.EN] = true
+		if p.FR == "" {
+			own++
+			continue
 		}
+		if sources[p.FR] {
+			t.Errorf("plannedEN pairs %q with two English articles", p.FR)
+		}
+		sources[p.FR] = true
 	}
-	if want := frOnly + len(usFrameworkEN); len(plannedEN) != want {
-		t.Errorf("plannedEN has %d slugs, want %d (%d translatable French + %d US-only)",
-			len(plannedEN), want, frOnly, len(usFrameworkEN))
+	if own != len(usFrameworkEN) {
+		t.Errorf("plannedEN has %d source-less articles, want %d", own, len(usFrameworkEN))
 	}
 	for _, slug := range usFrameworkEN {
 		if !seen[slug] {
 			t.Errorf("plannedEN is missing the US-part article %q", slug)
 		}
+	}
+	if len(plannedENSource) != len(sources) {
+		t.Errorf("plannedENSource has %d entries, want %d", len(plannedENSource), len(sources))
 	}
 }
 

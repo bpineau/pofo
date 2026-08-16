@@ -1,4 +1,5 @@
 # PFU, barème, abattements : l'imposition des retraits
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 Les études de taux de retrait raisonnent hors impôt ([[etude-trinity]]). Votre banquier raisonne en rendement brut. Votre plan, lui, vit en **net**. Chaque euro de dépense doit être extrait du portefeuille à travers la fiscalité française. Cette extraction a un coût, typiquement 5 à 15 % du flux, et jusqu'à plus de 20 % si l'on s'y prend mal. C'est l'équivalent d'un demi-point de taux de retrait, autant que bien des débats de stratégie ([[choisir-sa-strategie]]).
 

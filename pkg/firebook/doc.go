@@ -43,7 +43,10 @@
 // edition pairs each of its articles with its French original (Article.Source
 // plus an in-file source stamp, dropped at render time) and Drift reports what
 // the translation owes: the articles whose original moved since, then the ones
-// nothing covers yet. "pofo -book-drift" prints that worklist.
+// nothing covers yet, then the ones the French edition keeps for itself, which
+// say so with an in-file "<!-- edition: fr-only -->" marker (dropped at render
+// time too). "pofo -book-drift" prints that worklist, naming for each
+// untranslated article the English slug planned for it.
 //
 // English is the second edition, "The Quiet FIRE": its own translated slugs,
 // its own EPUB identity, English chrome and callout labels, and the French tax

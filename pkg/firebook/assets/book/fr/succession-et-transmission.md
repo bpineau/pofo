@@ -1,4 +1,5 @@
 # Succession et transmission
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 Tout plan de décumulation a deux sorties. L'épuisement, le scénario contre lequel tout ce livre lutte. Et la transmission, le scénario majoritaire, car les plans prudents meurent riches ([[une-annee-de-plus]]). La France taxe la seconde plus lourdement que presque tous ses voisins. Jusqu'à 45 % en ligne directe au-delà des abattements, et 60 % hors famille. Mais elle offre en même temps une panoplie d'outils légaux. Utilisés **tôt** et dans l'ordre, ils ramènent la friction effective d'une transmission organisée à 5-10 %, là où l'improvisation paie 10 à 30 % selon la taille du patrimoine.
 
