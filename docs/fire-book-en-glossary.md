@@ -44,6 +44,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | taux d'épargne | savings rate | | fire-cest-quoi |
 | variante (Lean, Fat, Barista, Coast) | variant | | fire-cest-quoi |
 | ordres de grandeur (as a blurb or heading) | ballpark numbers | Prose form: "orders of magnitude" only when the meaning is literally powers of ten. | fire-cest-quoi |
+| version de comptoir | the barstool version | Fixed by `the-4-percent-rule` (2026-08-16). | la-regle-des-4-pourcents |
+| borne de récit | a sanity check on a pitch | Never "bound on a story". | la-regle-des-4-pourcents |
+| le multiple de 25 | the 25x multiple (heading), "25 times what you spend" (prose) | | la-regle-des-4-pourcents |
+| taux de retrait effectif | effective withdrawal rate | Distinct from "current withdrawal rate" (taux de retrait courant). | la-regle-des-4-pourcents |
+| plancher (Bengen sense, SAFEMAX) | that floor, the historical floor | Say which floor when the spending floor is nearby. | la-regle-des-4-pourcents |
+| l'état de l'art | the state of the art | | la-regle-des-4-pourcents |
+| dans son cadre | inside its own frame | | la-regle-des-4-pourcents |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
