@@ -79,6 +79,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | les volets pliants (the two details panels) | the fold-out panels | | utiliser-la-page-fire |
 | la séance type | a typical session | | utiliser-la-page-fire |
 | le cas d'école (the default demo configuration) | a textbook case | | utiliser-la-page-fire |
+| erreur de construction | construction error | | erreurs-classiques-fire |
+| le fil conducteur (callout title) | the thread running through them | | erreurs-classiques-fire |
+| portefeuille mono-régime | one-regime portfolio | Plate label and section title. | erreurs-classiques-fire |
+| la check-list anti-erreurs | the anti-mistake checklist | | erreurs-classiques-fire |
+| pts (plate suffix), +X points de ruine | "pts" in plates, "points" in prose; "+X points of failure probability" in captions, "adds X points" in prose | | erreurs-classiques-fire |
+| payée en années de travail | paid in working years | | erreurs-classiques-fire |
+| se raconter le simulateur | talking yourself into the answer you wanted | | erreurs-classiques-fire |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
