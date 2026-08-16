@@ -171,15 +171,16 @@ index page grows with the manifest.
 
 ## 7. Figures dictionary and the ledger
 
-- If `make test` fails in `TestFigureDictionaryCoversEN`, the plates your
-  article uses carry French text nodes not yet in `figureDict`
-  (`pkg/firebook/figures_i18n.go`). Add the missing entries (plain French ->
-  English; use the `"<figure-id>|<french>"` key form only when the same
-  French string must translate differently in another plate). Numeric
-  payloads are reformatted mechanically and need no entry. English labels
-  run wider than French: if you can, run `scripts/figure-audit.sh en`
-  (needs Chrome) and eyeball a PNG of any plate whose labels moved; if you
-  cannot, say so in the report.
+- Run `go test ./pkg/firebook -run TestFigureDictionaryCoversEN`. If it
+  fails, it prints every French text node of your article's plates that
+  `figureDict` (`pkg/firebook/figures_i18n.go`) lacks: append those entries
+  (plain French -> English; the `"<figure-id>|<french>"` key form only when
+  the same French string must translate differently in another plate). Do
+  NOT read the whole dictionary; the test output is the worklist. Numeric
+  payloads are reformatted mechanically and need no entry. Then run
+  `scripts/figure-audit.sh en` (needs Chrome, mechanical, cheap) and fix any
+  reported overflow. Do NOT render and eyeball PNGs per article: the visual
+  pass is batched once per part by the maintainer.
 - Append one row to the ledger table of
   `docs/fire-book-en-edition-design.md` ("France-specific passages"
   section): FR slug, EN slug, generalize/adapt, one-line note of what you
@@ -204,6 +205,17 @@ End your session with: the pair (FR -> EN slug), generalize/adapt and what
 exactly was neutralized or rewritten, fr-only links dropped, figureDict
 entries added, whether the figure audit ran, and any French sentence you
 were unsure how to render (quote it, give your choice).
+
+## Cost discipline (a session is ~40% reads if it is not careful)
+
+- Read ONE already-translated article for the register (the one closest in
+  shape to yours), not all of them.
+- Do not read the design doc: this brief carries every rule you need, and
+  the generalize/adapt decision for your article is in your prompt.
+- Read the glossary's sections 1, 2, 3 and 5; section 4.2 (the simulator's
+  control names) only if your article describes the tool.
+- Do not read `manifest.go` for the French blurb: it is in your prompt.
+- Iterate with `go test ./pkg/firebook`; run `make check` once, at the end.
 
 ## Anti-patterns seen in past campaigns
 
