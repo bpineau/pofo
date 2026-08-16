@@ -362,6 +362,33 @@ var figureDict = map[string]string{
 	"Plan : 1 M€, 33 k€/an réels (3,3 %), 53 ans, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.":         "Plan: EUR 1M, EUR 33k a year real (3.3%), 53 years, pension of EUR 14k a year from year 20, a 10% cut held.",
 	"Modèle : 16 pays, 1871-2020, 60/40, blocs de 10 ans, 200 000 tirages. Gompertz unisexe, couple de même âge.": "Model: 16 countries, 1871 to 2020, 60/40, 10-year blocks, 200,000 draws. Unisex Gompertz, couple of the same age.",
 	"À l'année 40, deux couples sur trois ont encore un survivant, d'où une remise d'un cinquième seulement.":     "In year 40, two couples in three still have a survivor, so the discount is only a fifth.",
+
+	// the-math-of-4-percent
+	"LES MATHS DU 4 %": "THE MATH OF 4%",
+	"Du rendement au taux de retrait : la cascade": "From return to withdrawal rate: the cascade",
+	"rendement réel":                 "real return",
+	"géométrique du 60/40":           "geometric, on a 60/40",
+	"bonus d'amortissement":          "amortization bonus",
+	"(consommer le capital, 30 ans)": "(spending the capital, 30 years)",
+	"pénalité de séquence":           "sequence penalty",
+	"(survivre au pire ordre)":       "(surviving the worst order)",
+	"taux de retrait sûr":            "safe withdrawal rate",
+	"(la règle de Bengen)":           "(Bengen's rule)",
+	"Le clavier des leviers : ce que chaque hypothèse déplace":                                                       "The bank of levers: what each assumption moves",
+	"chaque hypothèse déplacée seule, à partir du plan de référence : 60/40 historique, 30 ans, retrait fixe indexé": "each assumption moved on its own, from the reference plan: historical 60/40, 30 years, fixed indexed withdrawal",
+	"fourchettes : le plein s'arrête à la borne basse, la teinte va jusqu'à la haute":                                "ranges: the solid bar stops at the low bound, the tint runs to the high one",
+	"le plan de référence":                              "the reference plan",
+	"taux de retrait obtenu, en % du capital de départ": "resulting withdrawal rate, as a % of starting capital",
+	"CAPE élevé au départ":                              "High CAPE at the start",
+	"étage 1, le rendement":                             "tier 1, the return",
+	"Échantillon mondial":                               "World sample",
+	"−0,5 à −1,0":                                       "−0.5 to −1.0",
+	"Horizon de 50 ans":                                 "50-year horizon",
+	"étage 2, le bonus":                                 "tier 2, the bonus",
+	"Frais de 0,5 % par an":                             "Fees of 0.5% a year",
+	"Règle flexible à plancher":                         "Flexible rule with a floor",
+	"étage 3, la pénalité":                              "tier 3, the penalty",
+	"+0,3 à +0,5":                                       "+0.3 to +0.5",
 }
 
 var (
