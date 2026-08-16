@@ -330,6 +330,7 @@ The ledger, opened with the M1 pilots:
 |---|---|---|---|
 | sequence-des-rendements | sequence-of-returns | generalize | Nothing France-specific; a straight translation. |
 | vpw | vpw | generalize | The pension-bridge passage pointed at `retraite-legale`, a tax-part article with no EN counterpart. Neutralized to "before your pensions start" with NO replacement pointer: a cross-link there earns little, and a reader who wants the local rules will find the US part on their own. The "phase adossée d'un plan FIRE français" aside became locale-neutral. |
+| fire-cest-quoi | what-is-fire | generalize | The "atouts spécifiques du lecteur français" passage (efficient wrappers, a state pension arriving later, PUMa) became one locale-neutral sentence on the plumbing that changes from country to country, with a single pointer to `us-accounts-and-account-order`; the reading-guide bullet "Vous êtes français" became "You want the local framework" and points at the three US-part articles. Links dropped: `enveloppes-francaises`, `retraite-legale`, `taxe-puma`. The product name in the simulator bullet dropped per the glossary; r/vosfinances replaced by r/financialindependence. |
 
 #### Triage of the general articles (settled 2026-08-16)
 
