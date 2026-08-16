@@ -138,6 +138,54 @@ var figureDict = map[string]string{
 	"le même choc passe sous le confort":            "the same shock drops below comfort",
 	"un couple de 47 ans, 1,6 M€ en 60/40, pensions de 21,6 k€ à 67 ans ; revenu servi, k€ par an": "a couple aged 47, EUR 1.6M in 60/40, pensions of EUR 21.6k at 67; income served, EUR k a year",
 	"pointillé bleu : le confort visé, 52 ; pointillé brun : le plancher, 38":                      "blue dashes: target comfort, 52; brown dashes: the floor, 38",
+
+	// Shared by the two plates of how-much-you-need.
+	"COMBIEN IL VOUS FAUT": "HOW MUCH YOU NEED",
+
+	// cible-convexite
+	"Chaque demi-point de prudence coûte plus cher que le précédent":                                          "Every extra half point of caution costs more than the one before",
+	"le multiple est l'inverse exact du taux : les crochets donnent le prix de chaque demi-point de prudence": "the multiple is the exact inverse of the rate: the brackets price each extra half point of caution",
+	"capital cible, en multiples de dépenses annuelles":                                                       "target capital, in multiples of annual spending",
+	"+ 3,6x": "+ 3.6x",
+	"+ 4,8x": "+ 4.8x",
+	"+ 6,7x": "+ 6.7x",
+	"25x":    "25x",
+	"28,6x":  "28.6x",
+	"33x":    "33x",
+	"40x":    "40x",
+	"au-delà de 33x, le risque dominant n'est plus la ruine :": "past 33x, the dominant risk is no longer ruin:",
+	"c'est d'avoir travaillé des années de trop":               "it is having worked years too many",
+	"taux de retrait initial":                                  "initial withdrawal rate",
+	"plus prudent, plus cher →":                                "more cautious, more expensive →",
+	"De 25x à 33x, l'écart représente typiquement 3 à 6 ans de travail de plus pour un taux d'épargne de 40 à 50 %.":   "From 25x to 33x, the gap is typically 3 to 6 more years of work at a savings rate of 40 to 50%.",
+	"Courbe exacte, sans hypothèse de marché : c'est la définition du taux de retrait, pas un résultat de simulation.": "Exact curve, no market assumption: this is the definition of the withdrawal rate, not a simulation result.",
+
+	// cible-cascade. The friction step names the French levies in the plate;
+	// the English edition states what it is instead, as the article does.
+	"Du relevé bancaire au capital cible, marche par marche":                              "From bank statement to capital target, step by step",
+	"Nadia et Marc, étape 5 : à 3,5 %, un euro de dépense par mois pèse 343 € de capital": "Nadia and Marc, step 5: at 3.5%, one euro of monthly spending weighs EUR 343 of capital",
+	"capital cible (k€)": "target capital (EUR k)",
+	"étape 1":            "step 1",
+	"étape 2":            "step 2",
+	"étape 4":            "step 4",
+	"dépenses observées": "observed spending",
+	"24 mois de relevés": "24 months of statements",
+	"3 400 €/mois":       "EUR 3,400/mo",
+	"voyages et loisirs": "travel and leisure",
+	"la vie visée":       "the life you aim at",
+	"+ 350 €/mois":       "+ EUR 350/mo",
+	"mutuelle santé":     "health coverage",
+	"à votre charge":     "on your own tab",
+	"+ 220 €/mois":       "+ EUR 220/mo",
+	"friction fiscale":   "tax friction",
+	"impôts et PUMa":     "tax on withdrawals",
+	"+ 12 % du brut":     "+ 12% of gross",
+	"cible":              "target",
+	"1 547 000 €":        "EUR 1,547,000",
+	"− 200 000 € : la retraite légale, comptée en revenu différé":                                                     "− EUR 200,000: the state pension, counted as deferred income",
+	"sans elle, le même plan aurait exigé 1 747 000 €":                                                                "without it, the same plan would have demanded EUR 1,747,000",
+	"Les deux marches que le calcul de comptoir oublie, la fiscalité et la pension, pèsent chacune plus lourd que le": "The two steps the barstool calculation leaves out, tax and the pension, each weigh more than the",
+	"budget voyages, et en sens opposés. Les hypothèses sont celles de l'étape 5 : remplacez chacune par la vôtre.":   "travel budget, and they pull in opposite directions. The assumptions are step 5's: replace each with your own.",
 }
 
 var (
