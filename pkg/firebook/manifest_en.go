@@ -25,6 +25,7 @@ var CategoriesEN = []Category{
 			{Slug: "how-much-you-need", Title: "How much you need", Blurb: "From the annual budget to the capital target: 25x, 28x, 33x, and everything that moves the multiple.", Source: "combien-il-vous-faut"},
 			{Slug: "the-three-phases", Title: "Accumulation, transition, withdrawal: the three lives of a FIRE plan", Blurb: "What changes in each phase, what to optimize there, and the moves that carry you from one to the next.", Source: "les-trois-phases"},
 			{Slug: "using-the-fire-simulator", Title: "Using the FIRE simulator", Blurb: "The full manual: the sections in reading order, every control in the parameters panel, and the classic ways to misuse it.", Source: "utiliser-la-page-fire"},
+			{Slug: "ten-plan-wrecking-mistakes", Title: "The ten mistakes that wreck a FIRE plan", Blurb: "The most common traps, from an unrealistic rate to forgetting taxes, and how to steer clear of them.", Source: "erreurs-classiques-fire"},
 		},
 	},
 	{
