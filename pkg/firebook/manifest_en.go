@@ -36,6 +36,7 @@ var CategoriesEN = []Category{
 			{Slug: "sequence-of-returns", Title: "Sequence of returns risk: the retiree's real enemy", Blurb: "Why the same returns in a different order ruin one retiree and enrich another, where the danger concentrates, and the full map of defenses.", Source: "sequence-des-rendements"},
 			{Slug: "failure-probability", Title: "Failure probability: reading it, choosing it, and not letting it run you", Blurb: "What the number the simulators print really measures, how to pick your threshold, and why the decimals lie.", Source: "ruine-et-probabilites"},
 			{Slug: "arithmetic-vs-geometric-returns", Title: "Arithmetic mean, geometric mean, and volatility drag", Blurb: "Why the returns in the brochures are not returns you can live on, and the cascade that leads to the withdrawal rate.", Source: "rendements-arithmetiques-geometriques"},
+			{Slug: "anarkulova-cederburg", Title: "Beyond the United States: Anarkulova, Cederburg and the world sample", Blurb: "The withdrawal rate recomputed over the whole century of the developed world, its uncomfortable numbers, and its critics.", Source: "anarkulova-cederburg"},
 		},
 	},
 	{
