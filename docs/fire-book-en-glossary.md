@@ -125,6 +125,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | zone CAPE | the CAPE zone | | valorisations-et-cape |
 | bénéfices NIPA | NIPA earnings | National accounts. | valorisations-et-cape |
 | cherté | expensiveness | Never "richness". | valorisations-et-cape |
+| le rétroviseur (the opposing posture) | the rear-view mirror; "anchoring on the rear-view mirror" | | rendements-attendus |
+| les briques (return components), le calcul building-blocks | the blocks, the building blocks; "a building-blocks μ" | Distinct from "brique" = a portfolio building block (1.3). | rendements-attendus |
+| le rendement de distribution (dividends + net buybacks) | the distribution yield; "payout" in plate labels | | rendements-attendus |
+| le terme de valorisation | the valuation term | | rendements-attendus |
+| le point mort d'inflation | the breakeven | | rendements-attendus |
+| empiler les prudences, double-compter la prudence, la prudence se budgète | stacking prudence, double-counting prudence, prudence gets a budget | | rendements-attendus |
+| le blending | blending | | rendements-attendus |
+| millésime (annual edition of a CMA report) | edition | "Use their latest edition". | rendements-attendus |
+| les modèles de données (vs le modèle central) | the data models | | rendements-attendus |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
