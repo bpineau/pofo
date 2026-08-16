@@ -49,14 +49,16 @@ A French article whose second line is
 
 (optionally `<!-- edition: fr-only: <reason> -->`) belongs to the French
 edition only. It is never translated, never listed as owed by
-`make book-drift`, and no English article may name it as `Source`. Today the
-seven articles of the "Fiscalité et cadre français" part carry it; the
+`make book-drift`, and no English article may name it as `Source`. Nine
+articles carry it: the seven of the "Fiscalité et cadre français" part (the
 English edition writes its own "Taxes and the US framework" part in that
-slot (three `us-*` articles, original writing, no `Source`, no stamp).
+slot: three `us-*` articles, original writing, no `Source`, no stamp), plus
+`inflation-histoire` and `cas-types`, whose whole spine is French.
 
 When the article you translate wiki-links to a fr-only article
 (`[[taxe-puma]]`, `[[retraite-legale]]`, `[[enveloppes-francaises]]`,
-`[[flat-tax-et-imposition]]`, ...): do NOT translate the link target.
+`[[flat-tax-et-imposition]]`, `[[inflation-histoire]]`, `[[cas-types]]`,
+...): do NOT translate the link target.
 Neutralize the sentence ("before your pensions start", "net of taxes") and,
 only where the reader needs the concrete local answer, point at the
 matching `us-*` article of `plannedEN`. Record it in the ledger (see 7).
@@ -76,11 +78,15 @@ practice). Two treatments, and only two:
   against primary sources at writing time. The rest of the article stays a
   translation.
 
-The design doc's ledger says which articles are already decided ADAPT
-(`rentes-et-annuites`, `or-en-retrait`, `etf-ucits-europeens`) and lists
-the proposals awaiting arbitration. If your article is in neither list,
-GENERALIZE. If a passage clearly needs ADAPT and no decision exists, do the
-generalize version, and say so in your report so the maintainer can decide.
+The design doc's triage table ("Triage of the general articles", settled
+2026-08-16) says which articles are decided ADAPT and which section of each:
+`rentes-et-annuites`, `or-en-retrait`, `etf-ucits-europeens`,
+`cash-ameliore`, `immobilier-en-retrait`, `retour-au-travail`,
+`echelle-obligataire`, `obligations-indexees`,
+`diversification-internationale`, `suivre-inflation`, `bibliotheque`. If
+your article is not in that table, GENERALIZE. If a passage clearly needs
+ADAPT and no decision exists, do the generalize version, and say so in your
+report so the maintainer can decide.
 
 Never keep an "in France, ..." passage verbatim as a curiosity: it is dead
 weight for the target reader.

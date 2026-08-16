@@ -24,9 +24,11 @@ func plannedENSet(t *testing.T) map[string]bool {
 	return set
 }
 
-// expectedFROnly is the French tax part ("Fiscalité et cadre français"): seven
-// articles that are French law end to end and are deliberately never
-// translated, the English edition writing usFrameworkEN in their slot instead.
+// expectedFROnly lists the French articles deliberately never translated: the
+// seven of the tax part ("Fiscalité et cadre français"), French law end to end,
+// in whose slot the English edition writes usFrameworkEN, plus two general
+// articles settled fr-only on 2026-08-16 because their whole spine is French
+// (the country's monetary history; three households on French envelopes).
 //
 // The authority is the in-file "<!-- edition: fr-only -->" marker, which is
 // what Drift reads; this list is only the expectation the guard below holds it
@@ -39,6 +41,8 @@ var expectedFROnly = []string{
 	"sante-et-protection-sociale",
 	"succession-et-transmission",
 	"expatriation-fiscale",
+	"inflation-histoire",
+	"cas-types",
 }
 
 // frOnlySlugs lists the French articles carrying the fr-only marker.
@@ -125,6 +129,9 @@ func TestPlannedENPairsEveryFrenchArticle(t *testing.T) {
 	for slug := range seen {
 		if _, ok := French.Titles()[slug]; !ok {
 			t.Errorf("plannedEN pairs %q, which is not a French article", slug)
+		}
+		if marked[slug] {
+			t.Errorf("plannedEN pairs %q, which is marked fr-only", slug)
 		}
 	}
 	for _, cat := range English.Categories {
