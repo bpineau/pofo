@@ -134,6 +134,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le blending | blending | | rendements-attendus |
 | millésime (annual edition of a CMA report) | edition | "Use their latest edition". | rendements-attendus |
 | les modèles de données (vs le modèle central) | the data models | | rendements-attendus |
+| ruine brute / ruine pondérée / ruine vécue | raw failure (probability) / mortality-weighted failure / failure actually lived | | horizon-et-esperance-de-vie |
+| quantile de survie, dernier survivant | survival quantile, last survivor | | horizon-et-esperance-de-vie |
+| gradient socio-économique, dérive générationnelle, tables prospectives | socioeconomic gradient, generational drift, projected tables | | horizon-et-esperance-de-vie |
+| courbe taux-horizon | the rate-horizon curve | | horizon-et-esperance-de-vie |
+| rabais / remise (of the mortality weighting) | the discount | | horizon-et-esperance-de-vie |
+| un plan devenu une perpétuité | a plan that has turned into a perpetuity | | horizon-et-esperance-de-vie |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
