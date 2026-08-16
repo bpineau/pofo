@@ -17,8 +17,11 @@ Scope: the ~84 French articles that are translated. The seven `fr-only` tax
 articles are out of scope, and so is the vocabulary that lives only in them.
 "Seen in" names one article where the term appears, not all of them.
 
-House rules that override everything: US English, no em-dash and no en-dash
-anywhere, decimal point, `4%` with no space.
+House rules that override everything: idiomatic US English (clear, fluid,
+engaging, short sentences, no gallicisms; the brief lists the banned
+calques), no em-dash and no en-dash anywhere, decimal point, `4%` with no
+space. A row of this file never justifies an unnatural sentence: if the EN
+term does not sit well in your sentence, rewrite the sentence, not the term.
 
 ---
 
@@ -37,7 +40,7 @@ anywhere, decimal point, `4%` with no space.
 | phase adossée | covered phase | Fixed by the vpw pilot. Not "matched phase", not "pension-backed phase". | vpw |
 | pont, pont de pension | bridge, pension bridge | The missing pension years, discounted and provisioned. Distinct sense in `levier-et-marges`: a liquidity bridge. | vpw |
 | adosser, adossement | to match, liability matching | "On ne projette plus, on adosse" -> "we stop projecting and start matching". The school is safety-first (see 2). | obligations-indexees |
-| traversée | the crossing | A multi-year hostile stretch lived through, not a crash. Verb "traverser" -> to get through, to ride out. | marche-baissier-en-retraite |
+| traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
 | revue annuelle | the annual review | The one meeting a year where the plan may change. Its sections "Bloc 1 ..." -> "Block 1: ...". | revue-annuelle |
@@ -45,7 +48,7 @@ anywhere, decimal point, `4%` with no space.
 | trimestre d'essai | the trial quarter | Living on the floor for three months to measure it instead of declaring it. | flexibilite-realite |
 | à froid | while calm, decided in advance | Never "cold". "Critères écrits à froid" -> "criteria written in advance, while calm". | une-annee-de-plus |
 | chantier | workstream | "Chantier 1, la structure" -> "Workstream 1, structure". Also "un chantier" = an open piece of work. | sens-et-identite |
-| quadruplé (français) | the French four-for-one | France-specific: income, PUMa extinguished, four pension quarters, sequence softened. Under the default GENERALIZE rule it does not survive; if the passage is adapted, the US analogues are the ACA subsidy cliff and Social Security credits. | retour-au-travail |
+| quadruplé (français) | (does not survive) | SETTLED 2026-08-16: never rendered as a coinage. `retour-au-travail` is an ADAPT article: the section is rewritten around the US analogues (income, the ACA subsidy cliff, Social Security credits, the sequence softened), spelled out as a list, no label. Elsewhere generalize to "the side benefits of a little income". | retour-au-travail |
 | cas-type, fil rouge | worked case, the running example | The recurring households (Aline and Thomas, Léa, Claire and Idris, Karim, Nora and Malik) keep their French first names, identical across every article. | cas-types |
 | le mur (des dix-huit mois) | the wall, the eighteen-month wall | The motivational trough 12 to 24 months after quitting. | temoignages-fire |
 | la convalescence | convalescence | Year one treated as recovery: no big decisions. | sens-et-identite |
@@ -78,9 +81,9 @@ anywhere, decimal point, `4%` with no space.
 | coupe | cut, spending cut | Pilot: "cut to EUR 36,000". "Coupe écrite" -> the written cut; "plancher de coupe" -> cut floor. | flexibilite-realite |
 | gel d'indexation | indexation freeze | Skipping the annual inflation adjustment after a down year. Avoid "COLA freeze", which ties it to Social Security. | flexibilite-realite |
 | cliquet | ratchet | Kitces's upward ratchet. The simulator's control is labeled Ratchet. | guyton-klinger |
-| effet ciseaux | the scissors effect | Indexed withdrawals rising while a nominal portfolio stalls: the 1966 mechanism. Not standard US finance, so gloss it in half a sentence at first use in each article. | inflation-et-taux-de-retrait |
+| effet ciseaux | the squeeze | SETTLED 2026-08-16: "the scissors effect" is a calque, "the squeeze" is the English word for it. Indexed withdrawals rising while a nominal portfolio stalls: the 1966 mechanism. Gloss it in half a sentence at first use per article ("the squeeze: spending climbs with inflation while the portfolio stalls"). | inflation-et-taux-de-retrait |
 | falaise | the cliff | The nonlinear collapse of a rigid rule, and the drop in success rates between 4% and 5%. "La falaise silencieuse" -> the silent cliff. | retrait-fixe-bengen |
-| voyant | warning light, gauge | The plan's dashboard. "Piloter les voyants, pas le solde" -> "steer by the gauges, not the balance". | quand-s-inquieter |
+| voyant | warning light | SETTLED 2026-08-16: one word, prose and monitored ratios alike ("the withdrawal-rate warning light"); the set is "the dashboard". "Piloter les voyants, pas le solde" -> "steer by the warning lights, not the balance". | quand-s-inquieter |
 | vert, orange, rouge | green, amber, red | Fixed color scale for the gauges. "Zone rouge" -> the red zone; "les critères sont au vert" -> the criteria are green. | quand-s-inquieter |
 | seuil, franchissement | threshold, breach | "Seuil écrit" -> written threshold. | quand-s-inquieter |
 | hystérésis | hysteresis | Arm at one level, disarm at a lower one. | quand-s-inquieter |
@@ -165,7 +168,7 @@ anywhere, decimal point, `4%` with no space.
 | décennie perdue | lost decade | UI column "Lost decade". | la-machine-pofo |
 | fenêtres historiques | historical windows | UI column. "Rejeu, rejouer" -> replay, to replay. | historique-vs-parametrique |
 | bootstrap par blocs | block bootstrap | UI column. | historique-vs-parametrique |
-| faisceau (de modèles), lecture en faisceau | the body of evidence, reading the models together | The book's insistence that a plan is judged on several models and never on one verdict. Avoid "beam"; keep "bundle" for the next row only. | construire-son-plan |
+| faisceau (de modèles), lecture en faisceau | the weight of the evidence; (verb) run the models side by side | SETTLED 2026-08-16. The book's insistence that a plan is judged on several models and never on one verdict: "the plan holds on the weight of the evidence, not on one verdict". Never "beam", "bundle" or "panel" here; "bundle" is the next row only. | construire-son-plan |
 | faisceau de chemins | a bundle of paths | What a fan chart is NOT: it is a stack of cross-sections. | lire-un-fan-chart |
 | cône | the fan, the wealth fan | The fan chart's cone of outcomes; "bas du cône" -> the bottom of the fan. The UI says "wealth fans". | lire-un-fan-chart |
 | éventail (des dépenses servies) | the fan of delivered spending | A distinct object from the wealth fan; keep them distinct in English too. | lire-un-fan-chart |
@@ -182,7 +185,7 @@ anywhere, decimal point, `4%` with no space.
 | part de gain | embedded gain fraction | The taxable fraction of a sale, rising over the plan. | la-machine-pofo |
 | sous l'eau | underwater | UI: "Median years underwater". | cash-buffer |
 | écrêtage, axe écrêté | clipping, a clipped axis | Capping the wealth axis at a multiple of initial capital. | lire-un-fan-chart |
-| prix de l'ordre | what the sequence costs | The gap between the central model and the sequence stress. "The price of order" reads oddly alone; prefer the paraphrase. | la-machine-pofo |
+| prix de l'ordre | what the sequence costs, the cost of a bad sequence | SETTLED 2026-08-16: always the paraphrase, never "the price of order". The gap between the central model and the sequence stress. | la-machine-pofo |
 | mode de défaillance | failure mode | Erosion versus crash. | allocation-actions-obligations |
 | équivalent certain | certainty equivalent | Standard US term. | decider-sous-incertitude |
 | richesse totale | total wealth | Portfolio plus the present value of future pensions. | amortissement-abw |
@@ -386,7 +389,7 @@ unnamed in ordinary prose, which is what the pilots did.
 | un simulateur, un simulateur généraliste | a simulator, a general-purpose simulator | The default. 67 articles use the generic form already. | vpw |
 | le simulateur FIRE de pofo | the FIRE simulator | Drop the product name in ordinary prose. | les-trois-phases |
 | pofo (as the implementing tool) | (dropped, or "the simulator") | Pilot precedent: "cette mécanique telle que pofo l'implémente" became "how this machinery is actually implemented". | sequence-des-rendements |
-| `Dans pofo : ...` | `In pofo: ...` | The one place the French deliberately keeps the product name, as an operational pointer; keep it. Six articles. | cash-buffer |
+| `Dans pofo : ...` | `In the simulator: ...` | SETTLED 2026-08-16: the operational pointer survives, the product name does not (an English reader arrives from the simulator page or the EPUB and has never met the name; the two articles that document the tool are the exception and name it). Six articles. | cash-buffer |
 | `[[utiliser-la-page-fire]]`, `[[la-machine-pofo]]` | `[[using-the-fire-simulator]]`, `[[under-the-hood]]` | The two articles that document the tool name it in their opening line, as the French does. | la-machine-pofo |
 
 The simulator's interface is already in English, so a French sentence that

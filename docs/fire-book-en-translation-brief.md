@@ -99,10 +99,21 @@ non-negotiables:
 
 - US English. NO em-dash, NO en-dash, anywhere (prose, tables, captions,
   commit message). Use a colon, a comma, parentheses or a hyphen.
-- The book's voice, not a translation's voice: translate meaning, not
-  sentences; rebuild idioms as real English idioms; same register (clear,
-  warm, precise, no hype). Bad English is the number one failure mode and
-  no test catches it: reread your output line by line before finishing.
+- THE STYLE BAR, above every other rule. Idiomatic, natural US English is
+  the number one axis, exactly as correct idiomatic French is the number
+  one axis of the source: clear, fluid, engaging, a pleasure to read.
+  Short sentences and a good rhythm; break any French sentence that runs
+  past two clauses. Above all NO GALLICISMS: no calqued word order, no
+  "permits to", "in a first time", "at the level of", "it is about",
+  "concretely", "notably", "on the contrary", "we will see that", no
+  French-style rhetorical questions or ternary "d'abord... ensuite...
+  enfin" scaffolding, no nouns where English wants a verb. Translate the
+  meaning, then write the paragraph as a good American finance writer
+  would have written it from scratch; then reread it aloud in your head.
+  Same register as the French: clear, warm, precise, no hype; the book's
+  voice, not a translation's voice. Bad English is the number one failure
+  mode and no test catches it: reread your output line by line before
+  finishing, hunting calques specifically.
 - French glosses of English finance terms disappear ("le volatility
   harvesting, la récolte de volatilité" -> "volatility harvesting").
 - Numbers: decimal point, comma thousands, `4%` with no space, `6.6%`.

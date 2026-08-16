@@ -388,6 +388,12 @@ slips mechanically.
 - Same register as the French: clear, warm, precise, no hype; the book's
   voice, not a translation's voice. Translate meaning, not sentences:
   rebuild idioms as real English idioms.
+- Restated 2026-08-16 as the campaign's first axis: idiomatic US English
+  that is clear, fluid, engaging and pleasant to read, in short sentences
+  with a good rhythm, and free of gallicisms (calqued word order, French
+  connectives and scaffolding, nouns where English wants verbs). The
+  translator's brief spells out the banned patterns and the reread-aloud
+  discipline; no test catches bad English, the line review does.
 - The French text glosses English finance terms at first use; in English
   those glosses simply disappear (the term stands alone). Book-specific
   French coinages map once in a glossary file kept next to the dictionary
