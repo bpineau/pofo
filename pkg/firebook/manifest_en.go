@@ -19,6 +19,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "Getting started",
 		Blurb: "The wide shots: what FIRE is, the 4% rule, and how much you actually need.",
+		Articles: []Article{
+			{Slug: "what-is-fire", Title: "What FIRE actually is", Blurb: "History, the variants (Lean, Fat, Barista, Coast) and the ballpark numbers: the map you enter the subject with.", Source: "fire-cest-quoi"},
+		},
 	},
 	{
 		Title: "The science of withdrawal",
