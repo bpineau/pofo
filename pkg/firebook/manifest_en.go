@@ -34,6 +34,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "the-trinity-study", Title: "Bengen, the Trinity study, and the birth of the safe withdrawal rate", Blurb: "The founding studies of 1994 to 1998: what they showed, and what they are wrongly made to say.", Source: "etude-trinity"},
 			{Slug: "sequence-of-returns", Title: "Sequence of returns risk: the retiree's real enemy", Blurb: "Why the same returns in a different order ruin one retiree and enrich another, where the danger concentrates, and the full map of defenses.", Source: "sequence-des-rendements"},
+			{Slug: "failure-probability", Title: "Failure probability: reading it, choosing it, and not letting it run you", Blurb: "What the number the simulators print really measures, how to pick your threshold, and why the decimals lie.", Source: "ruine-et-probabilites"},
 		},
 	},
 	{
