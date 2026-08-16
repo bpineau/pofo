@@ -335,6 +335,33 @@ var figureDict = map[string]string{
 	"conditions d'entrée : le CAPE de Shiller au 30 septembre, date d'arrêté de chaque édition":                     "entry conditions: Shiller's CAPE on September 30, the data cutoff of each edition",
 	"Le CAPE n'est qu'une des deux conditions : 2023 monte grâce aux taux obligataires restaurés, pas aux actions.": "The CAPE is only one of the two conditions: 2023 rises on restored bond yields, not on stocks.",
 	"2025 monte pour une autre raison encore : à méthode 2024 inchangée, le 50/50 sortait à 3,6 % (tireté).":        "2025 rises for yet another reason: on the unchanged 2024 method, the 50/50 came out at 3.6% (dashed).",
+	// horizon-flatten
+	"Le taux soutenable par horizon : la courbe qui s'aplatit": "The sustainable rate by horizon: the curve that flattens",
+	"chute rapide":           "steep fall",
+	"(30 → 40 ans)":          "(30 → 40 years)",
+	"au-delà, quasi plat":    "beyond that, almost flat",
+	"≈ perpétuité (~3,25 %)": "≈ perpetuity (~3.25%)",
+	"un plan qui tient 40 ans tient (presque) toujours": "a plan that holds 40 years holds (almost) forever",
+	"horizon du plan (années)  →":                       "plan horizon (years)  →",
+
+	// vivant-ruine-parti
+	"RUINE ET MORTALITÉ": "FAILURE AND MORTALITY",
+	"Vivant, ruiné ou parti : les trois états, année par année": "Alive, broke or gone: the three states, year by year",
+	"de ruine brute": "raw failure",
+	"de ruine vécue, un jour vivant et ruiné": "lived failure, alive and broke one day",
+	"→":                                    "→",
+	"part des scénarios (%)":               "share of scenarios (%)",
+	"décédé":                               "gone",
+	"le couple n'est plus là":              "the couple is no longer there",
+	"vivant et solvable":                   "alive and solvent",
+	"le plan tient":                        "the plan holds",
+	"vivant et ruiné":                      "alive and broke",
+	"le seul état qui coûte quelque chose": "the only state that costs anything",
+	"au pic, à l'année 35":                 "at the peak, in year 35",
+	"année du plan (départ à 47 ans, donc 87 ans à l'année 40)":                                                   "plan year (leaving at 47, so age 87 in year 40)",
+	"Plan : 1 M€, 33 k€/an réels (3,3 %), 53 ans, pension de 14 k€/an à l'année 20, coupe tenue de 10 %.":         "Plan: EUR 1M, EUR 33k a year real (3.3%), 53 years, pension of EUR 14k a year from year 20, a 10% cut held.",
+	"Modèle : 16 pays, 1871-2020, 60/40, blocs de 10 ans, 200 000 tirages. Gompertz unisexe, couple de même âge.": "Model: 16 countries, 1871 to 2020, 60/40, 10-year blocks, 200,000 draws. Unisex Gompertz, couple of the same age.",
+	"À l'année 40, deux couples sur trois ont encore un survivant, d'où une remise d'un cinquième seulement.":     "In year 40, two couples in three still have a survivor, so the discount is only a fifth.",
 }
 
 var (
