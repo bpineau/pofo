@@ -40,6 +40,10 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | phase adossée | covered phase | Fixed by the vpw pilot. Not "matched phase", not "pension-backed phase". | vpw |
 | pont, pont de pension | bridge, pension bridge | The missing pension years, discounted and provisioned. Distinct sense in `levier-et-marges`: a liquidity bridge. | vpw |
 | adosser, adossement | to match, liability matching | "On ne projette plus, on adosse" -> "we stop projecting and start matching". The school is safety-first (see 2). | obligations-indexees |
+| double détente (épargner plus accélère l'accumulation ET abaisse la cible) | the two-front effect | Fixed by `what-is-fire` (2026-08-16); never "double trigger". "Works on two fronts at once". | fire-cest-quoi |
+| taux d'épargne | savings rate | | fire-cest-quoi |
+| variante (Lean, Fat, Barista, Coast) | variant | | fire-cest-quoi |
+| ordres de grandeur (as a blurb or heading) | ballpark numbers | Prose form: "orders of magnitude" only when the meaning is literally powers of ten. | fire-cest-quoi |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
