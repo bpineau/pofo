@@ -66,6 +66,24 @@ var figureDict = map[string]string{
 	"Le portefeuille de 1966 a pourtant rapporté plus que le retrait. C'est l'ordre des années qui a tué le plan.":                  "The 1966 portfolio still earned more than it paid out. The order of the years is what killed the plan.",
 	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; retrait fixe, sans fiscalité.": "Real US 60/40 (S&amp;P 500, 5-year Treasuries, CPI-U deflated), reconstructed for this book; fixed withdrawal, no taxes.",
 
+	// millesimes-soutenables
+	"SOIXANTE-SIX DÉPARTS EN RETRAITE":                                                                     "SIXTY-SIX RETIREMENT DATES",
+	"Le taux qui a tenu trente ans, millésime par millésime":                                               "The rate that held for thirty years, vintage by vintage",
+	"Retrait initial maximal qu'un 50/50 américain aurait soutenu trente ans, en pouvoir d'achat constant": "Highest initial withdrawal a US 50/50 would have carried for thirty years, in constant purchasing power",
+	"66 millésimes, de 1926 à 1991, le dernier dont les trente années sont complètes":                      "66 vintages, 1926 to 1991, the last one whose thirty years are complete",
+	"la règle":      "the rule",
+	"médiane":       "median",
+	"1982 · 10,2 %": "1982 · 10.2%",
+	"2,2 points":    "2.2 points",
+	"sous la règle : six départs, de 1964 à 1969": "below the rule: six retirement dates, 1964 to 1969",
+	"1966 · 3,67 %": "1966 · 3.67%",
+	"Le millésime médian aurait supporté 60 % de dépenses en plus que celui de 1966.":                                                               "The median vintage would have carried 60% more spending than the 1966 one.",
+	"6 millésimes sur 66 passent sous 4 %, et ce sont six départs consécutifs, de 1964 à 1969. Les 60 autres tiennent la règle.":                    "6 vintages out of 66 fall below 4%, and they are six retirement dates in a row, 1964 to 1969. The other 60 hold the rule.",
+	"Panel Jorda-Schularick-Taylor, États-Unis : actions et obligations d'État domestiques, rendements réels annuels déflatés du CPI américain.":    "Jorda-Schularick-Taylor panel, United States: domestic stocks and government bonds, annual real returns deflated by US CPI.",
+	"50/50 rééquilibré chaque année, prélèvement en début d'année, ni frais ni impôt ; le capital a le droit de finir exactement à zéro.":           "50/50 rebalanced every year, withdrawal at the start of the year, no fees and no taxes; the capital is allowed to end at exactly zero.",
+	"Bengen publie 4,15 % pour 1966. Sa reconstruction n'est pas celle-ci : obligations à moyen terme, autre indice d'actions, données mensuelles.": "Bengen publishes 4.15% for 1966. His reconstruction is not this one: intermediate bonds, another stock index, monthly data.",
+	"L'ordre de grandeur tient, la décimale non. Le pire millésime, lui, est le même des deux côtés.":                                               "The ballpark holds, the decimal does not. The worst vintage is the same on both sides.",
+
 	// Shared by several plates. An age tick reads "40 ans" in French and
 	// "age 40" in English, which is the same width.
 	"VPW":          "VPW",
