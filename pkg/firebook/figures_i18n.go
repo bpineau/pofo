@@ -186,6 +186,27 @@ var figureDict = map[string]string{
 	"sans elle, le même plan aurait exigé 1 747 000 €":                                                                "without it, the same plan would have demanded EUR 1,747,000",
 	"Les deux marches que le calcul de comptoir oublie, la fiscalité et la pension, pèsent chacune plus lourd que le": "The two steps the barstool calculation leaves out, tax and the pension, each weigh more than the",
 	"budget voyages, et en sens opposés. Les hypothèses sont celles de l'étape 5 : remplacez chacune par la vôtre.":   "travel budget, and they pull in opposite directions. The assumptions are step 5's: replace each with your own.",
+
+	// flux-relatif-phases
+	"LES TROIS PHASES": "THE THREE PHASES",
+	"ACCUMULATION":     "ACCUMULATION",
+	"TRANSITION":       "TRANSITION",
+	"RETRAIT":          "WITHDRAWAL",
+	"Le flux de l'année, rapporté au portefeuille où il tombe":                                                            "The year's flow, measured against the portfolio it lands in",
+	"Une seule variable gouverne les trois phases : ce que vous versez ou prélevez dans l'année, en % du portefeuille.":   "One variable governs the three phases: what you pay in or draw out over the year, as a % of the portfolio.",
+	"Projection déterministe sur les hypothèses de l'article, pas une simulation : 34 % d'épargne, 5 % de rendement réel": "A deterministic projection on the article's assumptions, not a simulation: 34% saved, 5% real return",
+	"jusqu'au départ à 45 ans, puis un portefeuille dé-risqué à 4 % réel. Ni krach, ni bonne surprise.":                   "until the exit at 45, then a de-risked portfolio at 4% real. No crash, no happy surprise.",
+	"axe coupé à +15 % : le ratio vaut 49 % à 22 ans, et diverge au premier euro versé":                                   "axis cut at +15%: the ratio is 49% at age 22, and diverges on the first euro paid in",
+	"vous versez":   "you pay in",
+	"vous prélevez": "you draw",
+	"à 30 ans, le versement de l'année vaut encore 8 % du capital :": "at 30, the year's contribution is still 8% of the capital:",
+	"un krach est effacé par les versements suivants.":               "the next few contributions erase a crash.",
+	"À la transition, le portefeuille n'a jamais été":                "At the transition the portfolio has never been",
+	"aussi gros par rapport au flux qui pourrait le réparer.":        "this large against the flow that could repair it.",
+	"45 ans : le flux change de signe,":                              "45: the flow changes sign,",
+	"de +2,1 % à −4,1 % du portefeuille, du jour au lendemain.":      "from +2.1% to −4.1% of the portfolio, overnight.",
+	"à 85 ans :": "at 85:",
+	"âge, de la première épargne sérieuse au grand âge": "age, from the first serious saving year to old age",
 }
 
 var (
