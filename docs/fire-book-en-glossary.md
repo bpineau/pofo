@@ -70,6 +70,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | d'épargnant à gérant de rente | from saver to income manager | | les-trois-phases |
 | prototyper la vie d'après | prototype the life that comes next | | les-trois-phases |
 | 4/5e | a four-day week | | les-trois-phases |
+| la bande de plan (the sticky top strip of the simulator) | the plan bar | Distinct from "the strip" (the model selector). | utiliser-la-page-fire |
+| la pastille (per-model color chip, the Confidence badge) | chip ("a colored chip", "the Confidence chip") | | utiliser-la-page-fire |
+| le soulignement ambre | the amber underline | Marks the active column. | utiliser-la-page-fire |
+| le mode d'emploi complet | the full manual | | utiliser-la-page-fire |
+| mésusage | misuse | Never "misusage". | utiliser-la-page-fire |
+| le prior mondial | the world prior | | utiliser-la-page-fire |
+| les volets pliants (the two details panels) | the fold-out panels | | utiliser-la-page-fire |
+| la séance type | a typical session | | utiliser-la-page-fire |
+| le cas d'école (the default demo configuration) | a textbook case | | utiliser-la-page-fire |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
