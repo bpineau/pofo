@@ -265,6 +265,32 @@ var figureDict = map[string]string{
 	"* Japon et Allemagne : 1946-1947 et 1944-1948 manquent au panel, et leurs pires fenêtres avec. Ces deux barres sont trop longues.": "* Japan and Germany: 1946-1947 and 1944-1948 are missing from the panel, and their worst windows with them. These two bars are too long.",
 	"Pfau et Anarkulova-Cederburg calculent sur d'autres bases : leur SAFEMAX américain ressort vers 4 %, ici 3,75 %.":                  "Pfau and Anarkulova-Cederburg compute on other databases: their US SAFEMAX comes out near 4%, here 3.75%.",
 	"Le panel est très dur avec la France d'avant 1950 : −0,2 %/an réel en actions sur 1900-2020, mais +3,4 %/an sur 1950-2020.":        "The panel is very hard on pre-1950 France: −0.2%/yr real in stocks over 1900 to 2020, but +3.4%/yr over 1950 to 2020.",
+	// cape-swr
+	"Plus le marché est cher au départ, plus le taux soutenable baisse": "The more expensive the market at the start, the lower the sustainable rate",
+	"marché bon marché": "cheap market",
+	"marché cher":       "expensive market",
+	"règle des 4 %":     "the 4% rule",
+	"taux sûr":          "safe rate",
+	"CAPE au départ  →": "CAPE at the start  →",
+
+	// cape-dix-ans
+	"Le CAPE d'un mois, et les dix années réelles qui l'ont suivi":                                              "One month's CAPE, and the ten real years that followed",
+	"chaque point : un mois de départ, et le rendement réel annualisé du S&amp;P 500 sur les 120 mois suivants": "each dot: a start month, and the annualized real return of the S&amp;P 500 over the next 120 months",
+	"1 242 départs mensuels de janvier 1913 à juin 2016, total return déflaté du CPI américain":                 "1,242 monthly start dates from January 1913 to June 2016, total return deflated by US CPI",
+	"LE CENTRE BOUGE, LA LARGEUR RESTE":     "THE CENTER MOVES, THE WIDTH STAYS",
+	"rendement réel annualisé, en % par an": "annualized real return, % a year",
+	"ajustement des moindres carrés":        "least-squares fit",
+	"rendement = 1,0 + 0,86 × 100 / CAPE":   "return = 1.0 + 0.86 × 100 / CAPE",
+	"R² = 0,29":                             "R² = 0.29",
+	"9 à 11":                                "9 to 11",
+	"18 à 22":                               "18 to 22",
+	"27 à 33":                               "27 to 33",
+	"164 départs":                           "164 starts",
+	"219 départs":                           "219 starts",
+	"48 départs":                            "48 starts",
+	"Le trait épais couvre huit départs sur dix, la colonne claire les couvre tous. À CAPE 9 à 11, la décennie":       "The thick bar covers eight start dates in ten, the pale column covers them all. At a CAPE of 9 to 11, the decade",
+	"a payé de +2,7 à +18,9 % réels par an ; à CAPE 18 à 22, de −3,6 à +14,4 %. Le centre descend, la largeur reste.": "paid +2.7 to +18.9% real a year; at a CAPE of 18 to 22, −3.6 to +14.4%. The center drops, the width stays.",
+	"La colonne 27 à 33 ne compte que 48 départs (1929, la fin des années 1990, 2013-2015) : largeur sous-mesurée.":   "The 27 to 33 column holds only 48 start dates (1929, the late 1990s, 2013 to 2015): its width is under-measured.",
 }
 
 var (
