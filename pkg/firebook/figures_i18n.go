@@ -389,6 +389,19 @@ var figureDict = map[string]string{
 	"Règle flexible à plancher":                         "Flexible rule with a floor",
 	"étage 3, la pénalité":                              "tier 3, the penalty",
 	"+0,3 à +0,5":                                       "+0.3 to +0.5",
+	// utilite-ce
+	"DÉCIDER SOUS INCERTITUDE":                                   "DECIDING UNDER UNCERTAINTY",
+	"L'équivalent certain : ce que vaut vraiment un plan risqué": "The certainty equivalent: what a risky plan is really worth",
+	"utilité (bien-être)":                                        "utility (well-being)",
+	"revenu annuel (k€)":                                         "annual income (EUR k)",
+	"l'utilité croît de":                                         "utility grows more",
+	"moins en moins vite":                                        "and more slowly",
+	"mauvais monde (20 k€)":                                      "bad world (EUR 20k)",
+	"bon monde (65 k€)":                                          "good world (EUR 65k)",
+	"la loterie 50/50":                                           "the 50/50 lottery",
+	"E = 42,5":                                                   "E = 42.5",
+	"ÉC ≈ 36":                                                    "CE ≈ 36",
+	"le prix du risque":                                          "the price of the risk",
 }
 
 var (
