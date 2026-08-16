@@ -24,6 +24,7 @@ var CategoriesEN = []Category{
 			{Slug: "the-4-percent-rule", Title: "The 4% rule in ten minutes", Blurb: "Where it came from, what it says exactly, and why it is only a starting point.", Source: "la-regle-des-4-pourcents"},
 			{Slug: "how-much-you-need", Title: "How much you need", Blurb: "From the annual budget to the capital target: 25x, 28x, 33x, and everything that moves the multiple.", Source: "combien-il-vous-faut"},
 			{Slug: "the-three-phases", Title: "Accumulation, transition, withdrawal: the three lives of a FIRE plan", Blurb: "What changes in each phase, what to optimize there, and the moves that carry you from one to the next.", Source: "les-trois-phases"},
+			{Slug: "using-the-fire-simulator", Title: "Using the FIRE simulator", Blurb: "The full manual: the sections in reading order, every control in the parameters panel, and the classic ways to misuse it.", Source: "utiliser-la-page-fire"},
 		},
 	},
 	{
