@@ -265,7 +265,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`.
 - FIRE book work: French is the SOURCE OF TRUTH and every edit lands there
   first. After a French edit, `make book-drift` lists the translations it made
-  stale; that report is the English worklist. Read
+  stale; that report is the English worklist. TRANSLATING an article: follow
+  `docs/fire-book-en-translation-brief.md` step by step (it names the FR -> EN
+  slug map, the `<!-- edition: fr-only -->` marker that flags never-translated
+  French articles, the stamp, the manifest entry, the ledger) with
+  `docs/fire-book-en-glossary.md` open. Read
   `docs/fire-book-en-edition-design.md` before touching anything English, and
   never duplicate a plate: figures stay single-source French, and the English
   edition translates the rendered SVG through `figureDict`
