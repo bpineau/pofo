@@ -41,6 +41,7 @@ var CategoriesEN = []Category{
 			{Slug: "expected-returns", Title: "Forward-looking expected returns (Morningstar, Vanguard, the investment banks)", Blurb: "Building a μ you can defend: the building blocks, the ranges from Vanguard to GMO, how precise they really are, and how not to stack prudence on prudence.", Source: "rendements-attendus"},
 			{Slug: "horizon-and-life-expectancy", Title: "Horizon, life expectancy, and 50-year retirements", Blurb: "The right survival quantile, the rate-horizon curve that flattens out, failure weighted by mortality, and the uncovered phase.", Source: "horizon-et-esperance-de-vie"},
 			{Slug: "the-ern-series", Title: "ERN's Safe Withdrawal Rate series: a reader's guide", Blurb: "The modern reference on the subject: its major results part by part, the filters for reading it from outside the United States, and what an American reader can skip.", Source: "serie-ern"},
+			{Slug: "the-math-of-4-percent", Title: "Why 4%? The mathematical anatomy of the rule", Blurb: "The three-tier cascade (real return, amortization bonus, sequence penalty), why it holds up so well, and what would break it.", Source: "les-maths-du-4-pourcent"},
 		},
 	},
 	{
