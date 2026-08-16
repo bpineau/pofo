@@ -1,4 +1,5 @@
 # PEA, assurance-vie, CTO : les enveloppes du rentier français
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 La littérature FIRE américaine consacre des volumes entiers à l'ordre de retrait entre 401(k), Roth et comptes imposables. L'équivalent français existe, et il est tout aussi décisif. Entre le PEA, l'assurance-vie, le compte-titres ordinaire (CTO), le PER et les livrets, un même portefeuille, face au même marché, peut rendre des flux nets qui varient de 10 à 20 % selon son organisation. Cela représente plusieurs années de dépenses sur la vie d'un plan. Cet article en dresse la carte complète. Chaque enveloppe est décrite du point de vue du rentier, car ce qui compte en phase de retrait n'est pas ce qui compte en phase d'épargne. Vient ensuite la préparation pendant l'accumulation, car les horloges fiscales démarrent des années à l'avance (le rentier de 50 ans hérite des clics du trentenaire). Puis l'ordre de consommation à la décumulation, la question la plus posée et ses vraies nuances. Enfin la dimension successorale, qui en France renverse une partie des conclusions.
 

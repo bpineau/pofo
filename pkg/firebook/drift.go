@@ -26,18 +26,40 @@ import (
 //
 // A hash beats tracking the pair in git: it works on the embedded FS, needs no
 // repository at test time, and survives history rewrites.
+//
+// The other half of the contract runs the other way. Some French articles
+// belong to the French edition alone (the tax part is French law end to end,
+// and the English edition writes its own US-framework part in that slot).
+// Such an article says so in its own file, on the line right after its
+// "# Title":
+//
+//	<!-- edition: fr-only: French law end to end -->
+//
+// The reason after the second colon is optional and purely documentation.
+// Drift reports a marked article as "fr-only" and never as "untranslated", so
+// a translation agent reading the worklist can tell "not yet done" from "never
+// to be done" without consulting a table elsewhere. The marker lives in the
+// file for the same reason the stamp does: it travels with the article.
 
-// DriftItem is one entry of the synchronization report: either a translated
-// article whose French original moved since, or a French article no
-// translation covers yet.
+// DriftItem is one entry of the synchronization report: a translated article
+// whose French original moved since ("stale"), a French article no
+// translation covers yet ("untranslated"), or a French article marked as
+// belonging to the French edition alone ("fr-only").
 type DriftItem struct {
-	ENSlug string // "" when the French article has no counterpart yet
+	// ENSlug is the English article: the existing one for "stale", the
+	// planned one for "untranslated" (empty when the French article is in no
+	// plan), and always empty for "fr-only".
+	ENSlug string
 	FRSlug string
-	Reason string // "stale" or "untranslated"
+	Reason string // "stale", "untranslated" or "fr-only"
 }
 
 // reSourceStamp matches a source stamp on a line of its own.
 var reSourceStamp = regexp.MustCompile(`(?m)^<!-- source: ([a-z0-9-]+) @ ([0-9a-f]{12}) -->$`)
+
+// reEditionMark matches an edition marker on a line of its own, with or
+// without its free-text reason.
+var reEditionMark = regexp.MustCompile(`(?m)^<!-- edition: fr-only(?:: [^>]*)? -->$`)
 
 // sourceStamp extracts the French slug and the recorded hash from a
 // translated article's body, or reports ok=false when it carries no
@@ -50,10 +72,17 @@ func sourceStamp(body []byte) (frSlug, hash string, ok bool) {
 	return string(m[1]), string(m[2]), true
 }
 
+// frOnly reports whether an article carries the fr-only edition marker, which
+// makes it French-edition-only and never owed to a translation.
+func frOnly(body []byte) bool {
+	return reEditionMark.Match(body)
+}
+
 // articleBody prepares one article's markdown for rendering: it drops the
-// in-file "# Title" line (the page shell renders the h1) and the source stamp,
-// which is metadata for Drift and never content. French articles carry no
-// stamp, so for them this is exactly the old title-stripping behavior.
+// in-file "# Title" line (the page shell renders the h1), the source stamp and
+// the edition marker, which are metadata for Drift and never content. Most
+// articles carry neither, so for them this is exactly the old title-stripping
+// behavior.
 func articleBody(raw []byte) string {
 	body := strings.TrimSpace(string(raw))
 	if strings.HasPrefix(body, "# ") {
@@ -63,7 +92,8 @@ func articleBody(raw []byte) string {
 		}
 		body = rest
 	}
-	return strings.TrimSpace(reSourceStamp.ReplaceAllString(body, ""))
+	body = reSourceStamp.ReplaceAllString(body, "")
+	return strings.TrimSpace(reEditionMark.ReplaceAllString(body, ""))
 }
 
 // SourceHash is the stamp value of a French article's bytes: the first 12 hex
@@ -76,8 +106,9 @@ func SourceHash(body []byte) string {
 
 // Drift reports what the English translation owes: the translated articles
 // whose French original changed since they were made ("stale"), then the
-// French articles no translation covers yet ("untranslated"). The French tax
-// part is never owed (see taxOnlyFR).
+// French articles no translation covers yet ("untranslated"), then the French
+// articles marked fr-only, which are owed to nobody and are listed only so the
+// worklist accounts for every French file ("fr-only").
 //
 // The report is advisory and nothing enforces immediacy: the workflow is to
 // commit a French edit as usual, then run it and translate what it lists.
@@ -92,7 +123,7 @@ func Drift() []DriftItem {
 // driftFS is the testable core of Drift: fsys holds the two article trees at
 // "book/fr" and "book/en", english is the translated manifest.
 func driftFS(fsys fs.FS, english []Category) []DriftItem {
-	var stale, untranslated []DriftItem
+	var stale, untranslated, french []DriftItem
 	translated := make(map[string]bool)
 
 	for _, cat := range english {
@@ -116,21 +147,30 @@ func driftFS(fsys fs.FS, english []Category) []DriftItem {
 		}
 	}
 
-	entries, err := fs.ReadDir(fsys, "book/fr")
-	if err != nil {
-		return append(stale, untranslated...)
-	}
+	entries, _ := fs.ReadDir(fsys, "book/fr")
 	for _, e := range entries {
 		slug, ok := strings.CutSuffix(e.Name(), ".md")
-		if !ok || taxOnlyFR[slug] || translated[slug] {
+		if !ok {
 			continue
 		}
-		untranslated = append(untranslated, DriftItem{FRSlug: slug, Reason: "untranslated"})
+		// The marker wins over everything: a French-only article is never
+		// owed, translated or not.
+		if body, err := fs.ReadFile(fsys, "book/fr/"+e.Name()); err == nil && frOnly(body) {
+			french = append(french, DriftItem{FRSlug: slug, Reason: "fr-only"})
+			continue
+		}
+		if translated[slug] {
+			continue
+		}
+		untranslated = append(untranslated, DriftItem{ENSlug: plannedENSource[slug], FRSlug: slug, Reason: "untranslated"})
 	}
 
-	// Stale first (a moved original is the urgent half), alphabetical within
-	// each half, so the report and its tests are deterministic.
-	sort.Slice(stale, func(i, j int) bool { return stale[i].FRSlug < stale[j].FRSlug })
-	sort.Slice(untranslated, func(i, j int) bool { return untranslated[i].FRSlug < untranslated[j].FRSlug })
-	return append(stale, untranslated...)
+	// Stale first (a moved original is the urgent half), then what is owed,
+	// then what never will be; alphabetical within each section, so the report
+	// and its tests are deterministic.
+	byFRSlug := func(s []DriftItem) { sort.Slice(s, func(i, j int) bool { return s[i].FRSlug < s[j].FRSlug }) }
+	byFRSlug(stale)
+	byFRSlug(untranslated)
+	byFRSlug(french)
+	return append(append(stale, untranslated...), french...)
 }
