@@ -107,6 +107,16 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | outil de visualisation de portefeuille (pofo's other surface) | a portfolio visualizer | Unnamed, like the FIRE simulator (4.2). | rendements-arithmetiques-geometriques |
 | empilement 90/60 (type NTSG) | stacked 90/60 (efficient core) | Product tickers dropped in prose. | rendements-arithmetiques-geometriques |
 | outil de coin de table | a back-of-the-envelope tool | | rendements-arithmetiques-geometriques |
+| biais d'anticipation | look-ahead bias | | anarkulova-cederburg |
+| années-pays | country-years | | anarkulova-cederburg |
+| le point qui fâche | the sore point | | anarkulova-cederburg |
+| borne prudente, les deux bornes | prudent bound, the two bounds | Pairs with "read as a range". | anarkulova-cederburg |
+| taux de pire millésime | worst-vintage rate | | anarkulova-cederburg |
+| label de robustesse | robustness label | | anarkulova-cederburg |
+| investisseur domestique / mondialisé | domestic investor / globally diversified investor | | anarkulova-cederburg |
+| queue politique | political tail risk | | anarkulova-cederburg |
+| décrochage d'un pays | a country falling behind | | anarkulova-cederburg |
+| panier mondial équipondé | equal-weighted world basket | Plate label. | anarkulova-cederburg |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
