@@ -1,4 +1,5 @@
 # Trois plans complets, chiffrés de bout en bout
+<!-- edition: fr-only: three French households built on French envelopes and pension rules; the English edition has no counterpart -->
 
 La théorie est derrière nous. Voici trois ménages fictifs mais réalistes, déroulés de bout en bout avec la procédure du livre ([[construire-son-plan]]). Le premier est un solo précoce et sobre, le cas où chaque marge compte. Le deuxième est un couple FIRE classique, le fil rouge du livre, ici traité en entier. Le troisième est un départ tardif confortable, au pont court, où presque tout se simplifie. Pour chacun, vous trouverez les chiffres audités, la cible, le portefeuille, la règle de retrait, les protections et la validation croisée. Et surtout les leçons, ce que le cas enseigne et qu'on ne voit qu'une fois les nombres posés.
 

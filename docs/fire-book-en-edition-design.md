@@ -331,21 +331,20 @@ The ledger, opened with the M1 pilots:
 | sequence-des-rendements | sequence-of-returns | generalize | Nothing France-specific; a straight translation. |
 | vpw | vpw | generalize | The pension-bridge passage pointed at `retraite-legale`, a tax-part article with no EN counterpart. Neutralized to "before your pensions start" with NO replacement pointer: a cross-link there earns little, and a reader who wants the local rules will find the US part on their own. The "phase adossée d'un plan FIRE français" aside became locale-neutral. |
 
-#### Triage of the general articles (2026-08-16, awaiting arbitration)
+#### Triage of the general articles (settled 2026-08-16)
 
 A sweep of the non-tax articles for France-specific density (term counts,
-then a reading of the sections) yields the list below. "Proposed" rows are
-NOT decisions: until a row is settled here, a translator applies the
-GENERALIZE default and reports the passages that pushed for more (see
-`docs/fire-book-en-translation-brief.md`, section 3). Three outcomes are
-possible per article: fr-only (marker on the French file, no English
-counterpart), adapt (one or more sections rewritten for the US reader), or
-generalize.
+then a reading of the sections) yields the list below, settled the same day.
+Three outcomes per article: fr-only (marker on the French file, no English
+counterpart, dropped from `plannedEN`), adapt (one or more sections rewritten
+for the US reader; the rest translates), or generalize (the default, see
+`docs/fire-book-en-translation-brief.md`, section 3). An article absent from
+this table is generalized.
 
-| FR slug | EN slug | Proposed | Why |
+| FR slug | EN slug | Decision | Why |
 |---|---|---|---|
-| cas-types | three-worked-plans | fr-only OR original rewrite | The three households are built on PEA / assurance-vie / CTO / PUMa / pension quarters; a US version is three new plans, not a translation. |
-| inflation-histoire | inflation-history | adapt (heavy) OR fr-only | The spine is French monetary history 1914-2025 (ruined rentiers, post-war financial repression, 1974-81); a US reader expects the dollar's 1913-2025. |
+| cas-types | (none) | fr-only | The three households are built on PEA / assurance-vie / CTO / PUMa / pension quarters; a US version would be three new plans, not a translation. The English "In practice" part has six articles. |
+| inflation-histoire | (none) | fr-only | The spine is French monetary history 1914-2025 (ruined rentiers, post-war financial repression, 1974-81); a US reader would expect the dollar's 1913-2025, which is another article. English wiki-links to it are neutralized. |
 | etf-ucits-europeens | building-it-with-us-etfs | adapt (decided 2026-08-01) | European practice end to end; effectively an original article on US-listed ETFs. |
 | cash-ameliore | enhanced-cash | adapt | The "fonds euros" third has no US equivalent (stable value, MMF, T-bills); CLO AAA and money-market parts translate. |
 | immobilier-en-retrait | real-estate-in-retirement | adapt | French property taxation, SCPI, viager, dismemberment, fixed-rate mortgage frame; US counterparts are REITs, reverse mortgage, HELOC. |
