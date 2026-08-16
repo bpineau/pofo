@@ -369,6 +369,7 @@ this table is generalized.
 | lexique | glossary | generalize | Drop the entries of the tax part (PUMa, fonds euros, ...); add the US-part terms once M3 lands. |
 | rentes-et-annuites | annuities-and-safety-first | adapt (decided 2026-08-01) | French annuity products become the US SPIA/DIA market. |
 | or-en-retrait | gold-in-retirement | adapt (decided 2026-08-01) | French buying practice becomes US practice. |
+| anarkulova-cederburg | anarkulova-cederburg | generalize | Pfau's worst-country aside stops singling France out (Japan, Italy and France "among others"); no fr-only link in the article; the simulator stays unnamed in the closing bullet, which now points at `under-the-hood`. |
 
 Light generalization suffices (UCITS/PEA mentions in passing) for
 managed-futures, facteurs-fama-french, allocation-actions-obligations,
