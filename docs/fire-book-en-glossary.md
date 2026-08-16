@@ -145,6 +145,11 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | pas un minimum vital | not a survival minimum | Pairs with "prudent bound". | serie-ern |
 | guide de lecture | a reader's guide | | serie-ern |
 | « Tu as fait tes 25x ? » | "Have you hit 25x?" | | serie-ern |
+| bonus d'amortissement | amortization bonus | Feeds amortization-based-withdrawal. | les-maths-du-4-pourcent |
+| pénalité de séquence | sequence penalty | Distinct from "sequence stress" (the model). | les-maths-du-4-pourcent |
+| la cascade (4%-anatomy sense), étage (of the cascade) | the cascade; tier 1 / 2 / 3 | Cousin of the brochure-to-withdrawal-rate cascade; "étage" = tier in both the budget and the cascade senses. | les-maths-du-4-pourcent |
+| le clavier des leviers | the bank of levers | Plate title. | les-maths-du-4-pourcent |
+| hors échantillon | outside the sample | | les-maths-du-4-pourcent |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
