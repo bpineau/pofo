@@ -32,11 +32,57 @@ func TestDrift(t *testing.T) {
 	}
 }
 
-// A French article of the tax part is never owed to the English edition.
-func TestDriftSkipsTheFrenchTaxPart(t *testing.T) {
-	fsys := fstest.MapFS{"book/fr/taxe-puma.md": {Data: []byte("# PUMa\n")}}
-	if got := driftFS(fsys, nil); len(got) != 0 {
-		t.Errorf("the tax part must never be reported: %+v", got)
+// A French article marked fr-only is reported as such, never as untranslated,
+// and the marker alone decides it: no table elsewhere is consulted.
+func TestDriftReadsTheFrOnlyMarker(t *testing.T) {
+	fsys := fstest.MapFS{
+		"book/fr/taxe-puma.md": {Data: []byte("# PUMa\n<!-- edition: fr-only: French law end to end -->\n\nCorps.\n")},
+		"book/fr/nu.md":        {Data: []byte("# Nu\n<!-- edition: fr-only -->\n\nCorps.\n")},
+		"book/fr/un.md":        {Data: []byte("# Un\n\nCorps.\n")},
+	}
+	want := []DriftItem{
+		{FRSlug: "un", Reason: "untranslated"},
+		{FRSlug: "nu", Reason: "fr-only"},
+		{FRSlug: "taxe-puma", Reason: "fr-only"},
+	}
+	if got := driftFS(fsys, nil); !reflect.DeepEqual(got, want) {
+		t.Errorf("got %+v want %+v", got, want)
+	}
+}
+
+// The marker parses on its own line only, with or without a reason.
+func TestFrOnly(t *testing.T) {
+	if !frOnly([]byte("# T\n<!-- edition: fr-only -->\n")) {
+		t.Error("the bare marker must parse")
+	}
+	if !frOnly([]byte("# T\n<!-- edition: fr-only: any free text -->\n")) {
+		t.Error("the marker with a reason must parse")
+	}
+	if frOnly([]byte("# T\n\nAn article mentioning edition: fr-only in prose.\n")) {
+		t.Error("false positive: the marker must own its line")
+	}
+	if frOnly([]byte("# T\n<!-- edition: en-only -->\n")) {
+		t.Error("false positive: only fr-only is a marker")
+	}
+}
+
+// Untranslated items name the English slug the campaign owes, so a worklist
+// line is enough to start a translation.
+func TestDriftNamesThePlannedENSlug(t *testing.T) {
+	for _, it := range Drift() {
+		switch it.Reason {
+		case "untranslated":
+			if want := plannedENSource[it.FRSlug]; it.ENSlug != want {
+				t.Errorf("%s: ENSlug %q, want %q", it.FRSlug, it.ENSlug, want)
+			}
+			if it.ENSlug == "" {
+				t.Errorf("%s: no planned English slug", it.FRSlug)
+			}
+		case "fr-only":
+			if it.ENSlug != "" {
+				t.Errorf("%s: an fr-only article names an English slug %q", it.FRSlug, it.ENSlug)
+			}
+		}
 	}
 }
 
@@ -89,7 +135,7 @@ func TestDriftOverTheEmbeddedBook(t *testing.T) {
 		if _, ok := titles[it.FRSlug]; !ok {
 			t.Errorf("drift names %q, which is not a French article", it.FRSlug)
 		}
-		if it.Reason != "stale" && it.Reason != "untranslated" {
+		if it.Reason != "stale" && it.Reason != "untranslated" && it.Reason != "fr-only" {
 			t.Errorf("%s: unknown reason %q", it.FRSlug, it.Reason)
 		}
 	}
