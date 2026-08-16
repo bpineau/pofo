@@ -32,6 +32,7 @@ var CategoriesEN = []Category{
 		Title: "The science of withdrawal",
 		Blurb: "What research really knows about the safe withdrawal rate, from the classics to recent work.",
 		Articles: []Article{
+			{Slug: "the-trinity-study", Title: "Bengen, the Trinity study, and the birth of the safe withdrawal rate", Blurb: "The founding studies of 1994 to 1998: what they showed, and what they are wrongly made to say.", Source: "etude-trinity"},
 			{Slug: "sequence-of-returns", Title: "Sequence of returns risk: the retiree's real enemy", Blurb: "Why the same returns in a different order ruin one retiree and enrich another, where the danger concentrates, and the full map of defenses.", Source: "sequence-des-rendements"},
 		},
 	},
