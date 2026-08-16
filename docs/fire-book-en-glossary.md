@@ -93,6 +93,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | biais du survivant géographique | geographic survivorship bias | | etude-trinity |
 | angles morts | blind spots | | etude-trinity |
 | érosion réelle prolongée | long, grinding real erosion | Pairs with "the squeeze". | etude-trinity |
+| taux de succès | success rate | The complement of failure probability. | ruine-et-probabilites |
+| bruit d'échantillonnage | sampling noise | | ruine-et-probabilites |
+| sensibilité / incertitude des paramètres | parameter sensitivity / parameter uncertainty | | ruine-et-probabilites |
+| précision illusoire | false precision | | ruine-et-probabilites |
+| filets (a plan's fallbacks) | safety nets | | ruine-et-probabilites |
+| lecture en intervalle | read as a range | Distinct from "faisceau" (the weight of the evidence). | ruine-et-probabilites |
+| ruine simulée / ruine réelle | simulated ruin / real ruin | The event; the statistic stays "failure probability". | ruine-et-probabilites |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
