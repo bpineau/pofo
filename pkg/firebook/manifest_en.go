@@ -169,7 +169,6 @@ var plannedEN = []enPlan{
 	{EN: "real-estate-in-retirement", FR: "immobilier-en-retrait"},
 	{EN: "leverage-and-margin", FR: "levier-et-marges"},
 	// VII. Inflation
-	{EN: "inflation-history", FR: "inflation-histoire"},
 	{EN: "tracking-inflation", FR: "suivre-inflation"},
 	{EN: "inflation-and-withdrawal-rates", FR: "inflation-et-taux-de-retrait"},
 	{EN: "inflation-protection", FR: "se-proteger-de-inflation"},
@@ -193,7 +192,6 @@ var plannedEN = []enPlan{
 	{EN: "bear-markets-in-retirement", FR: "marche-baissier-en-retraite"},
 	{EN: "pensions-and-other-income", FR: "revenus-complementaires"},
 	{EN: "spending-in-retirement", FR: "depenses-en-retraite"},
-	{EN: "three-worked-plans", FR: "cas-types"},
 	// XI. References
 	{EN: "glossary", FR: "lexique"},
 	{EN: "the-library", FR: "bibliotheque"},
