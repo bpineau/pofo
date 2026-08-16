@@ -22,6 +22,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "what-is-fire", Title: "What FIRE actually is", Blurb: "History, the variants (Lean, Fat, Barista, Coast) and the ballpark numbers: the map you enter the subject with.", Source: "fire-cest-quoi"},
 			{Slug: "the-4-percent-rule", Title: "The 4% rule in ten minutes", Blurb: "Where it came from, what it says exactly, and why it is only a starting point.", Source: "la-regle-des-4-pourcents"},
+			{Slug: "how-much-you-need", Title: "How much you need", Blurb: "From the annual budget to the capital target: 25x, 28x, 33x, and everything that moves the multiple.", Source: "combien-il-vous-faut"},
 		},
 	},
 	{
