@@ -1,4 +1,5 @@
 # La taxe PUMa : le piège du rentier français
+<!-- edition: fr-only: French law end to end, replaced by the US-framework part in the English edition -->
 
 Un prélèvement échappe à la plupart des candidats FIRE français. Ils le découvrent trop tard, souvent par un courrier de l'URSSAF deux ans après leur départ. C'est la cotisation subsidiaire maladie (CSM), dite « taxe PUMa ». Son principe vise exactement le profil de ce livre. Celui qui vit de son capital, sans activité professionnelle ni pension, doit cotiser à l'assurance maladie sur ses revenus du capital. Comptez environ 6,5 % par an sur les revenus du patrimoine au-delà d'une franchise, par-dessus toute la fiscalité du chapitre précédent ([[flat-tax-et-imposition]]).
 
