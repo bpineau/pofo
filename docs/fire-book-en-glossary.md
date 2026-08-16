@@ -59,6 +59,17 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | revenu différé (a pension fed to a simulator as a dated flow) | deferred income | | combien-il-vous-faut |
 | les raccourcis qui trompent (section) | the shortcuts that fool people | | combien-il-vous-faut |
 | stresser un chiffre | to stress a number | | combien-il-vous-faut |
+| la transition (the middle phase) | the transition | The five years around the exit. | les-trois-phases |
+| zone rouge (of the transition) | the red zone | Also the red band of the gauge scale. | les-trois-phases |
+| le piège du sommet | the trap at the top | | les-trois-phases |
+| la règle des deux compteurs | the two-number rule | | les-trois-phases |
+| virement automatique | an automatic transfer on payday | Distinct from "salaire automatique" = the automatic paycheck (withdrawal phase). | les-trois-phases |
+| infidélité (changing strategy with the fashions), collectionnite | infidelity; fund collecting | | les-trois-phases |
+| dé-risquer | to de-risk | | les-trois-phases |
+| le plan de pilotage | the operating plan | | les-trois-phases |
+| d'épargnant à gérant de rente | from saver to income manager | | les-trois-phases |
+| prototyper la vie d'après | prototype the life that comes next | | les-trois-phases |
+| 4/5e | a four-day week | | les-trois-phases |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
