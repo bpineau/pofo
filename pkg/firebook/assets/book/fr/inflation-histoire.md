@@ -1,4 +1,5 @@
 # L'inflation sur les dernières décennies : ce que 1914-2025 enseigne
+<!-- edition: fr-only: French monetary history end to end; the English edition has no counterpart -->
 
 S'il fallait une seule raison de consacrer une partie entière de ce livre à l'inflation, la voici. Dans l'histoire réelle des rentiers, la grande tueuse, c'est elle, pas les krachs. Les krachs sont spectaculaires, mais ils rendent ce qu'ils ont pris. L'inflation est silencieuse, et elle ne rend jamais rien.
 
