@@ -237,6 +237,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | borne géométrique | the geometric bound | | pourcentage-fixe |
 | part de mémoire (d'une règle) | the memory term | | pourcentage-fixe |
 | entamer son incompressible | eat into its floor | | pourcentage-fixe |
+| règle de gestion du portefeuille / de retrait / de préservation du capital / de prospérité (Guyton-Klinger) | Portfolio Management Rule / Withdrawal Rule / Capital Preservation Rule / Prosperity Rule | Capitalized as in the paper. | guyton-klinger |
+| cascade de coupes | cascade of cuts | | guyton-klinger |
+| les doses (d'ajustement) | doses, adjustment size | | guyton-klinger |
+| descendance (d'une règle) | what came next; "the descendants" for the family | Never "posterity". | guyton-klinger |
+| mise à la diète, diète illimitée | put on a diet, the unlimited diet | | guyton-klinger |
+| vice de construction, vice caché | the construction flaw, the hidden flaw | | guyton-klinger |
+| programme d'austérité différée | a deferred austerity program | | guyton-klinger |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
