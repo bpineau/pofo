@@ -275,6 +275,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | la règle de dépense dynamique de Vanguard | Vanguard's dynamic spending rule | | plancher-plafond |
 | bornes en niveau / en variation, borne haute / basse | bounds on the level / on the change; upper bound / lower bound | | plancher-plafond |
 | régime hostile | hostile regime | | plancher-plafond |
+| crédits de mortalité | mortality credits | | rentes-et-annuites |
+| taux de conversion (annuity sense) | payout rate | | rentes-et-annuites |
+| chargements (insurer's) | loads | | rentes-et-annuites |
+| annuitiser, annuitisation | annuitize, annuitization | US -ize in prose; the UI string stays "Annuitise % of capital". | rentes-et-annuites |
+| rente à deux têtes, réversion, annuités garanties | joint-life, survivor benefit, period certain | | rentes-et-annuites |
+| rente différée | deferred income annuity | QLAC inside a pre-tax account. | rentes-et-annuites |
+| tontines modernes | modern tontines | | rentes-et-annuites |
+| étage de rente | annuity tier | | rentes-et-annuites |
+| croisement (of two curves) | where the two curves cross | Never "the crossing" (reserved for traversée). | rentes-et-annuites |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
