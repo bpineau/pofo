@@ -540,6 +540,14 @@ var figureDict = map[string]string{
 	"Yale":     "Yale",
 	"brut":     "raw",
 	"Le confort du corridor se paie sur le capital : fin 1984 il reste 715 k€ contre 908 au brut. Il a emprunté à sa propre suite.": "The corridor's comfort is paid out of capital: EUR 715k left in 1984 against 908 raw. It borrowed from its own future.",
+	"GUYTON-KLINGER": "GUYTON-KLINGER",
+	"La cascade de coupes, et ce qu'un plancher change":      "The cascade of cuts, and what a floor changes",
+	"revenu réel servi (k€/an), taux initial 4,3 % sur 1 M€": "real income delivered (EUR k a year), initial rate 4.3% on EUR 1M",
+	"avec plancher à 78 % : la descente s'arrête à −22 %":    "with a 78% floor: the descent stops at −22%",
+	"sans plancher : cinq coupes, −57 %":                     "no floor: five cuts, −57%",
+	"43 k€ pendant quatre ans":                               "EUR 43k for four years",
+	"Le portefeuille, lui, s'en sort : 886 k€ sans plancher, 313 k€ avec. La diète a payé la survie du capital.":       "The portfolio survives either way: EUR 886k with no floor, EUR 313k with one. The diet bought that survival.",
+	"Millésime 1966, 60/40 américain réel ; règles 3 et 4 seules (corridor ±20 %, ajustements ±10 %), sans fiscalité.": "1966 vintage, real US 60/40; rules 3 and 4 only (corridor ±20%, adjustments ±10%), no taxes.",
 }
 
 var (
