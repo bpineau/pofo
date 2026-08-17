@@ -223,6 +223,10 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | increvable, invivable | indestructible, unlivable | The paired antithesis. | panorama-strategies-retrait |
 | écouter (une information) | to listen to | The taxonomy's verb. | panorama-strategies-retrait |
 | jauge de gouvernance | governance gauge | Plate label. | panorama-strategies-retrait |
+| indexation partielle / plafonnée, gel d'indexation après année rouge | partial or capped indexation, an indexation freeze after a red year | | retrait-fixe-bengen |
+| la flexibilité minimale viable | the minimum viable flexibility | | retrait-fixe-bengen |
+| le luxe non consommé | unspent luxury | | retrait-fixe-bengen |
+| préavis (in a plate title) | warning | "Nineteen years of warning". | retrait-fixe-bengen |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
