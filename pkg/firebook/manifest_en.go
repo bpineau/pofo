@@ -68,6 +68,7 @@ var CategoriesEN = []Category{
 			{Slug: "guyton-klinger", Title: "Guyton-Klinger: the original guardrails, their power and their limits", Blurb: "The four exact rules of 2006, the cascade of cuts in bad vintages, and the modern fixes, starting with the floor.", Source: "guyton-klinger"},
 			{Slug: "vpw", Title: "VPW, the Bogleheads' variable percentage withdrawal", Blurb: "A loan annuity reversed: the exact mechanics, the pension bridge, the loss tolerance test everyone skips, and where it stands against ABW.", Source: "vpw"},
 			{Slug: "cape-based-rules", Title: "CAPE-based rules: tying the withdrawal to valuations (ERN)", Blurb: "Rate = a + b/CAPE: the double countercyclicality that smooths the income by itself, ERN's parameters, and the finished form, ABW with a CAPE anchor.", Source: "regles-cape"},
+			{Slug: "morningstar-guardrails", Title: "Modern guardrails (Morningstar): the state of the art", Blurb: "Morningstar's honest judge, the risk-based indicator of Kitces and Tharp, and the executable version, with a simulator as the instrument.", Source: "guardrails-morningstar"},
 		},
 	},
 	{
