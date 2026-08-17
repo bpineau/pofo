@@ -51,6 +51,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "monte-carlo-strengths-and-limits", Title: "Monte Carlo: strengths, weaknesses, and how to use it well", Blurb: "The machine behind every failure probability: how it works, its four structural weaknesses, and the eight rules for using it well.", Source: "monte-carlo-forces-faiblesses"},
 			{Slug: "historical-vs-parametric", Title: "Historical windows, bootstrap, parametric: the three families of models", Blurb: "Where simulated futures come from, which question each family can really answer, and what to do when they disagree.", Source: "historique-vs-parametrique"},
+			{Slug: "fat-tails", Title: "Fat tails, crises, and the Student-t", Blurb: "Why markets produce ten times too many disasters for the bell curve, and what the df dial really decides.", Source: "queues-epaisses"},
 		},
 	},
 	{
