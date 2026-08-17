@@ -67,6 +67,7 @@ var CategoriesEN = []Category{
 			{Slug: "fixed-percentage", Title: "The fixed percentage of the portfolio: indestructible but uncomfortable", Blurb: "Impossible ruin and lifestyle ruin, endowment smoothing (the Yale rule), and how to pick the percentage.", Source: "pourcentage-fixe"},
 			{Slug: "guyton-klinger", Title: "Guyton-Klinger: the original guardrails, their power and their limits", Blurb: "The four exact rules of 2006, the cascade of cuts in bad vintages, and the modern fixes, starting with the floor.", Source: "guyton-klinger"},
 			{Slug: "vpw", Title: "VPW, the Bogleheads' variable percentage withdrawal", Blurb: "A loan annuity reversed: the exact mechanics, the pension bridge, the loss tolerance test everyone skips, and where it stands against ABW.", Source: "vpw"},
+			{Slug: "cape-based-rules", Title: "CAPE-based rules: tying the withdrawal to valuations (ERN)", Blurb: "Rate = a + b/CAPE: the double countercyclicality that smooths the income by itself, ERN's parameters, and the finished form, ABW with a CAPE anchor.", Source: "regles-cape"},
 		},
 	},
 	{
