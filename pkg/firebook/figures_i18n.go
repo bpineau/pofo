@@ -769,6 +769,32 @@ var figureDict = map[string]string{
 	"incalculable": "beyond computing",
 	"L'ordre de la liste est l'ordre du travail. Le choix fin entre deux finalistes arrive en dernier, sereinement,": "The order of the list is the order of the work. The fine choice between two finalists comes last, calmly,",
 	"parce qu'à ce stade on ne peut plus beaucoup se tromper.":                                                       "because by then you can no longer go very wrong.",
+
+	// managed-futures
+	"MANAGED FUTURES": "MANAGED FUTURES",
+	"La corrélation aux actions n'est pas un état":                                                   "Correlation to equities is not a state",
+	"corrélation des rendements quotidiens du trend et du S&amp;P 500, fenêtre glissante de 12 mois": "correlation of daily trend and S&amp;P 500 returns, 12-month rolling window",
+	"moyenne":                         "average",
+	"mai 2010, douze mois de hausse":  "May 2010, twelve months of gains",
+	"acheteur d'actions":              "long equities",
+	"avril 2003, la fenêtre du krach": "April 2003, the crash window",
+	"vendeur d'actions":               "short equities",
+	"Moyenne de la période : +0,04. Et pourtant 50 % des mois tombent hors de la bande ±0,2, celle qu'un gérant lirait comme plate.":                   "Average over the period: +0.04. And yet 50% of the months fall outside the plus or minus 0.2 band, the one a manager would read as flat.",
+	"Trend : valeurs liquidatives réelles de programmes de suivi de tendance, dont le fonds lui-même depuis 2022. Actions : S&amp;P 500 total return.": "Trend: real NAVs of trend-following programs, including the fund itself from 2022 on. Equities: S&amp;P 500 total return.",
+	"Le sourire du trend : payé aux deux extrêmes":                    "The trend smile: paid at both extremes",
+	"rendement des actions mondiales sur 12 mois (%, profil stylisé)": "12-month return on world equities (%, stylized profile)",
+	"rendement du trend sur la même fenêtre (%)":                      "trend return over the same window (%)",
+	"les grands krachs":                                   "big crashes",
+	"sont des tendances (2008)":                           "are trends (2008)",
+	"les grands bulls aussi":                              "so are big bull markets",
+	"(fin des années 1990)":                               "(late 1990s)",
+	"le creux : marchés sans direction,":                  "the dip: directionless markets,",
+	"faux départs (2011-2019)":                            "false starts (2011-2019)",
+	"2022 : hors du sourire actions,":                     "2022: off the equity smile,",
+	"gagné sur les taux et l'énergie":                     "won on rates and energy",
+	"Un quart de siècle de SG Trend, année par année":     "A quarter century of SG Trend, year by year",
+	"l'hiver : ≈ 0 % cumulé":                              "the winter: ≈ 0% cumulative",
+	"rendement annuel, net de frais (ordres de grandeur)": "annual return, net of fees (ballpark figures)",
 }
 
 var (

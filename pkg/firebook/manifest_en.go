@@ -83,6 +83,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "Alternative assets",
 		Blurb: "Past stocks and bonds: the blocks that truly diversify, what they cost, and how to buy them cleanly.",
+		Articles: []Article{
+			{Slug: "managed-futures", Title: "Managed futures and trend following: the diversification that works in a crisis", Blurb: "The only defensive asset with a positive expected return: a century of evidence, the crisis alpha of long regimes, how to buy it, and the winter you have to cross.", Source: "managed-futures"},
+		},
 	},
 	{
 		Title: "Buffers and protections",
