@@ -215,6 +215,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | ligne inflationniste, colonne de gauche (of the grid) | the inflation row, the left column | | regimes-de-marche |
 | régime d'entrée | the regime you retire into | | regimes-de-marche |
 | à découvert (a quadrant with no winner held) | wide open | Not the "uncovered phase" sense. | regimes-de-marche |
+| le zoo (des règles de retrait) | the zoo | "Sorted into five families". | panorama-strategies-retrait |
+| les règles à information | the rules that listen | Never "informed rules". | panorama-strategies-retrait |
+| changer de terrain (safety-first) | to change the game | | panorama-strategies-retrait |
+| règles nommées | named rules | | panorama-strategies-retrait |
+| pathologie (d'une règle) | pathology | | panorama-strategies-retrait |
+| increvable, invivable | indestructible, unlivable | The paired antithesis. | panorama-strategies-retrait |
+| écouter (une information) | to listen to | The taxonomy's verb. | panorama-strategies-retrait |
+| jauge de gouvernance | governance gauge | Plate label. | panorama-strategies-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
