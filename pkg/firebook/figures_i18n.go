@@ -821,6 +821,19 @@ var figureDict = map[string]string{
 	"le pic : la convexité paie":         "the spike: convexity pays",
 	"(à condition de vendre)":            "(provided you sell)",
 	"années (profil stylisé, base 100)":  "years (stylized profile, base 100)",
+
+	// global-macro
+	"COMMODITY CARRY": "COMMODITY CARRY",
+	"Deux pentes, deux destins : la courbe des contrats à terme": "Two slopes, two fates: the futures curve",
+	"échéance du contrat (mois)":                                 "contract expiry (months)",
+	"niveau du spot":                                             "spot level",
+	"spot (100)":                                                 "spot (100)",
+	"contango :":                                                 "contango:",
+	"rouler coûte":                                               "rolling costs",
+	"backwardation :":                                            "backwardation:",
+	"rouler rapporte":                                            "rolling pays",
+	"à l'échéance, chaque contrat":                               "at expiry, every contract",
+	"converge vers le spot":                                      "converges to spot",
 }
 
 var (
