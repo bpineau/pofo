@@ -87,6 +87,7 @@ var CategoriesEN = []Category{
 			{Slug: "managed-futures", Title: "Managed futures and trend following: the diversification that works in a crisis", Blurb: "The only defensive asset with a positive expected return: a century of evidence, the crisis alpha of long regimes, how to buy it, and the winter you have to cross.", Source: "managed-futures"},
 			{Slug: "long-volatility", Title: "Long volatility and tail hedging: paying for crashes", Blurb: "The convexity that explodes in fast crashes, the variance risk premium that overcharges for it, the toxic vehicles, and the rare legitimate uses.", Source: "long-volatility"},
 			{Slug: "global-macro", Title: "Global macro and alternative risk premia: how the big institutions diversify", Blurb: "The macro bets that win in hostile regimes, the catalog of premia (commodity carry included), the purge of the ARP funds, and the five-question checklist.", Source: "global-macro"},
+			{Slug: "insurance-premia", Title: "Insurance premia: cat bonds and merger arbitrage", Blurb: "Getting paid to carry the hurricane or the deal that breaks: causal decorrelation, the collateral currency trap, and what ten points really change (not much).", Source: "primes-d-assurance"},
 		},
 	},
 	{
