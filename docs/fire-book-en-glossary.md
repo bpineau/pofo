@@ -191,6 +191,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | écrêté (upside) | upside clipped (the UI string) | | lire-un-fan-chart |
 | causes d'échec (early crash / slow grind / longevity) | causes of failure: an early crash, a slow grind, longevity | UI help-text words. | lire-un-fan-chart |
 | distribution des héritages | the distribution of bequests | | lire-un-fan-chart |
+| grille d'audit, question d'audit | audit checklist, audit question | | pieges-des-simulateurs |
+| piège (the article's unit), parade | trap, defense | | pieges-des-simulateurs |
+| biais du survivant, survivant au carré | survivorship bias, survivorship squared | | pieges-des-simulateurs |
+| backfill, historiques reconstruits | backfilled history | | pieges-des-simulateurs |
+| dégradé (de pièges levés) | gradient | | pieges-des-simulateurs |
+| brut de tout, brut de frais | gross of everything, gross of fees | | pieges-des-simulateurs |
+| p-hacking de scénarios | p-hacking with scenarios | | pieges-des-simulateurs |
+| pièges de données / de moteur / de périmètre / de lecture | data / engine / scope / reading traps | | pieges-des-simulateurs |
+| contrat chargé | an expensive account | Generalized. | pieges-des-simulateurs |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
