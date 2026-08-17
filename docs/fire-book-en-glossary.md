@@ -208,6 +208,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le chiffre de brochure | the brochure number | | rendre-monte-carlo-pertinent |
 | rétrécissement (shrinkage) | shrinkage | Gloss disappears. | rendre-monte-carlo-pertinent |
 | la fenêtre favorable | a kind window | | rendre-monte-carlo-pertinent |
+| juge de paix (a model that settles a disagreement) | the tiebreaker | | regimes-de-marche |
+| matières premières (plate: matières 1res) | commodities | | regimes-de-marche |
+| cash rémunéré | interest-bearing cash | Distinct from the cash buffer. | regimes-de-marche |
+| prospérité / surchauffe / stagflation / déflation, bust | prosperity / overheating / stagflation / deflation, bust | The four quadrant names, fixed. | regimes-de-marche |
+| ligne inflationniste, colonne de gauche (of the grid) | the inflation row, the left column | | regimes-de-marche |
+| régime d'entrée | the regime you retire into | | regimes-de-marche |
+| à découvert (a quadrant with no winner held) | wide open | Not the "uncovered phase" sense. | regimes-de-marche |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
