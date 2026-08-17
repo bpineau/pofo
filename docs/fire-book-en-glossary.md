@@ -322,6 +322,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | espérance brute | gross expectation | | global-macro |
 | la panoplie | the toolkit | | global-macro |
 | directionnel taux | directional rates | | global-macro |
+| cat bonds (obligations catastrophe) | cat bonds | | primes-d-assurance |
+| déclencheur indemnitaire / paramétrique / sectoriel | indemnity based / parametric / industry loss based trigger | | primes-d-assurance |
+| collatéral, part couverte en euro | collateral, hedged share class | | primes-d-assurance |
+| le piège du collatéral (en euros) | the collateral currency trap | Generalized: the collateral's currency and hedge cost decide the cash leg. | primes-d-assurance |
+| l'écart (merger-arb sense) | the spread | Never "the gap" (reserved for écart à l'indice). | primes-d-assurance |
+| arbitragiste | arbitrageur | | primes-d-assurance |
+| mauvaise saison (catastrophe sense) | bad season | | primes-d-assurance |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
