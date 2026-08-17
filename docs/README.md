@@ -8,6 +8,7 @@ of truth for everything current.
 
 | Doc | Why it stays |
 |---|---|
+| `catbond-sleeve-design.md` | the insurance-linked family: which reference is bundled and why the market's own is not, how the fund backcasts and the euro hedge are built, and what a 5 to 10 % cat bond sleeve was measured to do to a decumulation book |
 | `darcet-permanent-portfolio-design.md` | tactical Permanent Portfolio 2.0 research: macro-breadth signals, reconstruction choices, the empirical-vs-a-priori epistemic ledger; `pkg/permanent` godoc points here |
 | `decumulation-fire-design.md` | the FIRE/decumulation engine's design (scenario sources, ruin metrics, solvers); `pkg/decumul` work starts here |
 | `decumulation-fire-program-2026-07.md` | the ACTIVE FIRE improvement backlog |
