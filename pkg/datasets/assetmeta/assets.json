@@ -8714,7 +8714,7 @@
     "currency": "EUR",
     "fees": 1.28,
     "since": "2025-12-03",
-    "asset_class": "other",
+    "asset_class": "insurance-linked",
     "underlying": "Actively managed book of ~55 catastrophe bonds: insurance-linked securities that pay a spread over collateral (T-bills / money market funds) and lose principal when a defined natural catastrophe exceeds its trigger",
     "benchmark_index": "active (no index)",
     "strategy": "active",
@@ -8749,7 +8749,7 @@
     "currency": "EUR",
     "fees": 1.32,
     "since": "2013-10-21",
-    "asset_class": "other",
+    "asset_class": "insurance-linked",
     "underlying": "Diversified portfolio of catastrophe bonds and tradable insurance-linked securities (mostly US wind and quake, European windstorm, Japan quake), collateral in short-term instruments",
     "benchmark_index": "active (no index; Swiss Re Global Cat Bond TR as the reference)",
     "strategy": "active",
@@ -8763,7 +8763,7 @@
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "The long-history ILS reference of the catalog: EUR-hedged share class, weekly NAVs since 2013-10 (748 points), so the series is the insurance risk premium itself, without the USD/EUR noise that swamps the unhedged IE000UWJUW87. Schroders' GAIA Cat Bond passed USD 4bn in 2025. Read the drawdowns as event losses, not as market beta: the asset class prices a season, not a cycle. Weekly granularity means daily-frequency statistics (variance ratio, daily vol) are not meaningful on it.",
+    "notes": "The long-history ILS reference of the catalog: EUR-hedged share class, weekly NAVs since 2013-10 (748 points), so the series is the insurance risk premium itself, without the USD/EUR noise that swamps the unhedged IE000UWJUW87. Schroders' GAIA Cat Bond passed USD 4bn in 2025. Read the drawdowns as event losses, not as market beta: the asset class prices a season, not a cycle. Weekly granularity means daily-frequency statistics (variance ratio, daily vol) are not meaningful on it. Since 2026-08 the class also anchors the catalog's insurance-linked family: the deep reference is ILSFUND / ILSFUNDE (monthly, 2006-01) and the two backcast share classes are LI0049587301 and IE00B3Q8M574.",
     "confidence": "medium",
     "sources": [
       "https://www.morningstar.co.uk/uk/funds/snapshot/snapshot.aspx?id=F00000QKZD",
@@ -9238,6 +9238,174 @@
       "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
     ],
     "symbol": "MFEH.DE",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
+  },
+  {
+    "id": "ILSFUND",
+    "isin": "",
+    "aliases": [
+      "ILS-INDEX"
+    ],
+    "name": "ILS Advisers Fund Index (index, net of manager fees)",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "USD",
+    "fees": 0,
+    "asset_class": "insurance-linked",
+    "underlying": "Equally weighted composite of the funds investing in non-life insurance-linked securities (catastrophe bonds and private insurance-linked transactions, each constituent at least 70% non-life risk), each already net of its own manager's fees",
+    "benchmark_index": "ILS Advisers Fund Index (formerly the Eurekahedge ILS Advisers Index)",
+    "strategy": "index",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "notes": "Non-investable benchmark, monthly from 2006-01 and monthly throughout: no ILS series has daily granularity to borrow a texture from, and the asset prices weekly at best. It is what a book of REAL insurance-linked funds paid its investors, which makes it the right anchor for a cat bond fund and a poor description of the market (the Swiss Re Global Cat Bond Total Return Index is the market's own reference, gross of every fund fee, reaches 2002 and publishes no downloadable history). Hurricane Katrina (2005) falls before the first month and is outside every file of this family. Quoted in USD: a euro book reads ILSFUNDE instead. Investable equivalents: LI0049587301, IE00B3Q8M574, LU0951570927.",
+    "confidence": "high",
+    "sources": [
+      "https://www.ilsadvisers.com/products-solutions/#ils-index",
+      "https://www.ilsadvisers.com/wp-content/themes/raft/data/ils-index.json"
+    ],
+    "since": "2005-12-31"
+  },
+  {
+    "id": "ILSFUNDE",
+    "isin": "",
+    "aliases": [
+      "ILS-INDEX-EUR"
+    ],
+    "name": "ILS Advisers Fund Index, hedged to EUR (index)",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "index",
+    "symbol": "",
+    "currency": "EUR",
+    "fees": 0,
+    "asset_class": "insurance-linked",
+    "underlying": "Equally weighted composite of the funds investing in non-life insurance-linked securities, each already net of its own manager's fees, with the dollar exposure hedged away",
+    "benchmark_index": "ILS Advisers Fund Index (formerly the Eurekahedge ILS Advisers Index)",
+    "strategy": "index",
+    "geography": null,
+    "sectors": null,
+    "distribution": "n/a",
+    "leverage": 1.0,
+    "notes": "EUR-hedged view of ILSFUND, the form a euro book compares against: every cat bond share class a European household can hold is EUR-hedged. The identity is exact here, a catastrophe bond being a floating-rate note whose collateral earns the money-market rate, so hedging really does swap the dollar cash leg for the euro one. That swap is not free: over 2006-2026 it costs about 0.7 points a year, and over 2011-2026, with dollar rates far above euro ones, about 1.5. Same caveats as ILSFUND: non-investable, index returns landing on month ends (only the two cash legs accrue daily), nothing before 2006-01.",
+    "confidence": "high",
+    "sources": [
+      "https://www.ilsadvisers.com/products-solutions/#ils-index"
+    ],
+    "since": "2005-12-31",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
+  },
+  {
+    "id": "LI0049587301",
+    "isin": "LI0049587301",
+    "aliases": [
+      "SOLIDUM"
+    ],
+    "name": "Solidum Cat Bond Fund EUR R acc hedged",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "LI0049587301",
+    "xid": "535694099",
+    "currency": "EUR",
+    "fees": 1.2,
+    "asset_class": "insurance-linked",
+    "underlying": "Actively managed portfolio of catastrophe bonds (mostly US wind and quake, European windstorm, Japan perils), collateral in short-term instruments",
+    "benchmark_index": "active (no index; Swiss Re Global Cat Bond TR as the reference)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "notes": "The deepest publicly quoted cat bond record a euro household could actually have held (2009-09) and the cheapest of the retail classes here. Deals SEMI-MONTHLY, about 24 quotes a year, so per-observation statistics (daily volatility, variance ratio) are meaningless on it: read the monthly figures. Backcast to 2006-01 by ILSFUNDE.",
+    "confidence": "medium",
+    "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LI0049587301:EUR",
+      "https://www.solidum-partners.ch/"
+    ],
+    "since": "2009-09-30",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
+  },
+  {
+    "id": "IE00B3Q8M574",
+    "isin": "IE00B3Q8M574",
+    "aliases": [
+      "GAMCAT"
+    ],
+    "name": "GAM Star Cat Bond Ordinary EUR Acc Hedged",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "IE00B3Q8M574",
+    "xid": "39618157",
+    "currency": "EUR",
+    "fees": 1.41,
+    "asset_class": "insurance-linked",
+    "underlying": "Actively managed catastrophe bond portfolio sub-advised by Fermat Capital, collateral in short-term instruments",
+    "benchmark_index": "active (no index; Swiss Re Global Cat Bond TR as the reference)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "notes": "The best known retail cat bond UCITS class in EUR, weekly dealing (~65 quotes a year: read monthly statistics, not per-observation ones). USD sibling IE00B4VZPG27, institutional EUR-hedged sibling IE00B6TLWG59 at 0.76%. Over 2011-2026 it beat the ILS fund index by about 1.8 points a year; that is manager selection and is NOT extrapolated backwards, the 2006-2011 prefix carrying the index's return and not the manager's.",
+    "confidence": "medium",
+    "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=IE00B3Q8M574:EUR"
+    ],
+    "since": "2011-10-31",
+    "currency_hedged": true,
+    "hedged_to": "EUR",
+    "currency_exposure": {
+      "EUR": 100
+    }
+  },
+  {
+    "id": "LI0115208543",
+    "isin": "LI0115208543",
+    "aliases": [
+      "PLENUMDEF"
+    ],
+    "name": "Plenum CAT Bond Defensive Fund R EUR",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "LI0115208543",
+    "xid": "77534950",
+    "currency": "EUR",
+    "fees": 1.75,
+    "asset_class": "insurance-linked",
+    "underlying": "Catastrophe bonds at the low-expected-loss end of the market, collateral in short-term instruments",
+    "benchmark_index": "active (Plenum CAT Bond UCITS Fund Index, low-risk sub-index)",
+    "strategy": "active",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "duration": 0.25,
+    "notes": "The defensive mandate of the family: about four fifths of the market's volatility and, over 2011-2026, less than half its return once the 1.75% ongoing charge is paid. Kept as the low-risk end of the class and as the demonstration that inside a small premium a retail fee is a large share of it. Weekly dealing; backcast to 2006-01 by ILSFUNDE.",
+    "confidence": "medium",
+    "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LI0115208543:EUR"
+    ],
+    "since": "2010-09-06",
     "currency_hedged": true,
     "hedged_to": "EUR",
     "currency_exposure": {

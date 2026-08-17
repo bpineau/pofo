@@ -44,6 +44,12 @@ type Band struct {
 //   - corporate-bond VolLo accepts the AAA CLO funds at 0.8 to 1.1 %/yr.
 //   - equity Move accepts 1987-10-19 (-20.5 %) and Drawdown accepts a single
 //     country index through its own crisis (Greece, -96 %).
+//   - insurance-linked spans a very wide VolHi because the class covers both a
+//     currency-hedged share class (~3 %/yr) and the same fund held unhedged by
+//     a euro investor, where EURUSD supplies most of the variation (~8 %/yr);
+//     its Move accepts a single event step (the reference index lost 8.6 % in
+//     the month of Harvey, Irma and Maria) and its Drawdown accepts a fund that
+//     lost half its capital to one bad season.
 //   - "other" is a junk drawer, so its bounds are the widest of the table;
 //     they still reject a quarter lost in one session.
 var classBands = map[string]Band{
@@ -52,6 +58,7 @@ var classBands = map[string]Band{
 	"corporate-bond":        {VolLo: 0.005, VolHi: 0.14, CAGRLo: -0.08, CAGRHi: 0.12, Move: 0.10, Drawdown: 0.45},
 	"aggregate-bond":        {VolLo: 0.01, VolHi: 0.12, CAGRLo: -0.06, CAGRHi: 0.10, Move: 0.08, Drawdown: 0.30},
 	"inflation-linked-bond": {VolLo: 0.01, VolHi: 0.14, CAGRLo: -0.06, CAGRHi: 0.12, Move: 0.08, Drawdown: 0.30},
+	"insurance-linked":      {VolLo: 0.005, VolHi: 0.16, CAGRLo: -0.06, CAGRHi: 0.15, Move: 0.10, Drawdown: 0.55},
 	"money-market":          {VolLo: 0.0, VolHi: 0.03, CAGRLo: -0.02, CAGRHi: 0.07, Move: 0.035, Drawdown: 0.10},
 	"gold":                  {VolLo: 0.08, VolHi: 0.30, CAGRLo: -0.10, CAGRHi: 0.25, Move: 0.15, Drawdown: 0.60},
 	"broad-commodity":       {VolLo: 0.10, VolHi: 0.45, CAGRLo: -0.20, CAGRHi: 0.25, Move: 0.22, Drawdown: 0.85},
