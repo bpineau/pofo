@@ -834,6 +834,18 @@ var figureDict = map[string]string{
 	"rouler rapporte":                                            "rolling pays",
 	"à l'échéance, chaque contrat":                               "at expiry, every contract",
 	"converge vers le spot":                                      "converges to spot",
+
+	"PRIMES D'ASSURANCE": "INSURANCE PREMIA",
+	"Les mauvais mois ne tombent pas aux mêmes dates":                                                               "The bad months do not land on the same dates",
+	"rendements mensuels réels en euros, novembre 2013 à décembre 2025, même échelle sur les deux panneaux (±12 %)": "real monthly returns in euros, November 2013 to December 2025, same scale on both panels (±12%)",
+	"cat bonds, couverts en euro": "cat bonds, euro hedged",
+	"actions mondiales":           "world stocks",
+	"Irma et Maria":               "Irma and Maria",
+	"Ian":                         "Ian",
+	"mars 2020,":                  "March 2020,",
+	"les vendeurs forcés":         "forced sellers",
+	"font tout tomber":            "take everything down",
+	"Deux mois sur 146 voient les deux panneaux perdre ensemble : mars 2020, par la liquidité, et septembre 2022, par coïncidence.": "Two months out of 146 show both panels losing together: March 2020, through liquidity, and September 2022, by coincidence.",
 }
 
 var (
