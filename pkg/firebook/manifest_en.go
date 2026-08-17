@@ -62,6 +62,7 @@ var CategoriesEN = []Category{
 		Title: "Withdrawal strategies",
 		Blurb: "Which rule to draw by: the impossible triangle, every strategy in detail, and how to pick yours.",
 		Articles: []Article{
+			{Slug: "withdrawal-strategies-overview", Title: "Withdrawal strategies: the map before the territory", Blurb: "The impossible triangle, the two extremes that bound everything, the five families, and the six criteria for scoring them honestly.", Source: "panorama-strategies-retrait"},
 			{Slug: "vpw", Title: "VPW, the Bogleheads' variable percentage withdrawal", Blurb: "A loan annuity reversed: the exact mechanics, the pension bridge, the loss tolerance test everyone skips, and where it stands against ABW.", Source: "vpw"},
 		},
 	},
