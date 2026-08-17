@@ -88,6 +88,7 @@ var CategoriesEN = []Category{
 			{Slug: "long-volatility", Title: "Long volatility and tail hedging: paying for crashes", Blurb: "The convexity that explodes in fast crashes, the variance risk premium that overcharges for it, the toxic vehicles, and the rare legitimate uses.", Source: "long-volatility"},
 			{Slug: "global-macro", Title: "Global macro and alternative risk premia: how the big institutions diversify", Blurb: "The macro bets that win in hostile regimes, the catalog of premia (commodity carry included), the purge of the ARP funds, and the five-question checklist.", Source: "global-macro"},
 			{Slug: "insurance-premia", Title: "Insurance premia: cat bonds and merger arbitrage", Blurb: "Getting paid to carry the hurricane or the deal that breaks: causal decorrelation, the collateral currency trap, and what ten points really change (not much).", Source: "primes-d-assurance"},
+			{Slug: "return-stacking", Title: "Return stacking, overlays and portable alpha: stacking the premia", Blurb: "Stacking the diversifiers on top of the core instead of funding them by selling it: the mechanics, the cost of cash, the lesson of 2022, and the sizing rules.", Source: "return-stacking"},
 		},
 	},
 	{

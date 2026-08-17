@@ -846,6 +846,19 @@ var figureDict = map[string]string{
 	"les vendeurs forcés":         "forced sellers",
 	"font tout tomber":            "take everything down",
 	"Deux mois sur 146 voient les deux panneaux perdre ensemble : mars 2020, par la liquidité, et septembre 2022, par coïncidence.": "Two months out of 146 show both panels losing together: March 2020, through liquidity, and September 2022, by coincidence.",
+	// stacking-expo
+	"RETURN STACKING": "RETURN STACKING",
+	"Pour 100 € investis : l'exposition, pas la mise": "For EUR 100 invested: the exposure, not the stake",
+	"actions": "stocks",
+	"obligations (via futures au-delà de 100)": "bonds (via futures above 100)",
+	"diversifiants (trend, or)":                "diversifiers (trend, gold)",
+	"100 € investis":                           "EUR 100 invested",
+	"classique":                                "plain",
+	"100 € de fonds 90/60":                     "EUR 100 of a 90/60 fund",
+	"(un 60/40 à levier 1,5)":                  "(a 60/40 at 1.5x leverage)",
+	"67 € de 90/60":                            "EUR 67 of 90/60",
+	"+ 33 € de diversifiants":                  "+ EUR 33 of diversifiers",
+	"exposition totale (€)":                    "total exposure (EUR)",
 }
 
 var (
