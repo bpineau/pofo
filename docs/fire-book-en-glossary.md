@@ -253,6 +253,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | version de coin de table | the back-of-the-envelope version | | regles-cape |
 | le taux respire avec les prix | the rate breathes with prices | | regles-cape |
 | décoter (une règle en marché cher) | to mark it down | | regles-cape |
+| indicateur (of a rule), thermomètre | indicator, thermometer | Keep the two words distinct. | guardrails-morningstar |
+| chantier (a research effort, not a plan workstream) | a body of work | | guardrails-morningstar |
+| guardrails par risque | risk-based guardrails | Matches the UI label. | guardrails-morningstar |
+| hausse (of a guardrail), plafond de hausse | raise, raise ceiling | UI: "Risk-guardrail raise ceiling". | guardrails-morningstar |
+| première alerte / alerte confirmée | first alert / alert confirmed | Hysteresis vocabulary. | guardrails-morningstar |
+| taux sûr | the safe rate | | guardrails-morningstar |
+| bien dimensionné (une règle) | well-sized | | guardrails-morningstar |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
