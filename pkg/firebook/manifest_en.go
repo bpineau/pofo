@@ -70,6 +70,7 @@ var CategoriesEN = []Category{
 			{Slug: "cape-based-rules", Title: "CAPE-based rules: tying the withdrawal to valuations (ERN)", Blurb: "Rate = a + b/CAPE: the double countercyclicality that smooths the income by itself, ERN's parameters, and the finished form, ABW with a CAPE anchor.", Source: "regles-cape"},
 			{Slug: "morningstar-guardrails", Title: "Modern guardrails (Morningstar): the state of the art", Blurb: "Morningstar's honest judge, the risk-based indicator of Kitces and Tharp, and the executable version, with a simulator as the instrument.", Source: "guardrails-morningstar"},
 			{Slug: "amortization-based-withdrawal", Title: "Amortization-based withdrawal (ABW/TPAW): the actuarial approach", Blurb: "The loan run backwards and repriced every year: total wealth, four personal parameters, and the final head-to-head against guardrails.", Source: "amortissement-abw"},
+			{Slug: "floor-and-ceiling", Title: "Floor and ceiling and the Vanguard rules: bounded flexibility", Blurb: "The corridor on the annual change (+5%/−2.5%): glides instead of falls, an honest failure probability again, second everywhere.", Source: "plancher-plafond"},
 		},
 	},
 	{

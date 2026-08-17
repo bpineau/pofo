@@ -637,6 +637,24 @@ var figureDict = map[string]string{
 	"1974 : marché à −22,7 %, rente à −25 %":                                                                     "1974: market at −22.7%, annuity at −25%",
 	"Total consommé : 1 260 k€ sous ABW, 1 160 k€ sous fixe. Plus de vie servie, et pas de mur.":                 "Total consumed: EUR 1,260k under ABW, EUR 1,160k under the fixed rule. More living delivered, and no wall.",
 	"Millésime 1966, 60/40 américain réel, 1 M€, horizon 30 ans, rente recalculée à 3,2 % réel, sans fiscalité.": "1966 vintage, real US 60/40, EUR 1M, 30-year horizon, annuity repriced at 3.2% real, no tax.",
+
+	// corridor-1966, corridor-borne
+	"PLANCHER-PLAFOND": "FLOOR AND CEILING",
+	"Trois façons de traverser le millésime 1966":       "Three ways to cross the 1966 vintage",
+	"revenu réel servi (k€/an), capital de départ 1 M€": "real income served (EUR k/yr), starting capital EUR 1M",
+	"ruine":                            "ruin",
+	"fixe indexé : 40 k€ jusqu'au mur": "fixed indexed: EUR 40k up to the wall",
+	"% pur : −55 % au creux":           "pure %: −55% at the trough",
+	"corridor +5 / −2,5":               "corridor +5 / −2.5",
+	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), retrait de 4 %, sans fiscalité.": "Real US 60/40 (S&amp;P 500, 5-year Treasuries, deflated by CPI-U), 4% withdrawal, no tax.",
+	"Le test que personne ne fait : la borne basse, composée":                                               "The test nobody runs: the lower bound, compounded",
+	"revenu réel, en % du niveau de départ, après n années de baisse consécutive":                           "real income, as a % of the starting level, after n straight years of falling",
+	"années de baisse consécutive":                       "straight years of falling",
+	"le plancher du ménage : 41 k€ sur 50 k€, soit 82 %": "the household floor: EUR 41k out of EUR 50k, or 82%",
+	"9.8 ans": "9.8 years",
+	"7.8 ans": "7.8 years",
+	"4.9 ans": "4.9 years",
+	"Le millésime 1966 (cercle) a demandé vingt-trois ans de glisse d'affilée, jusqu'à 57 % du revenu de départ.": "The 1966 vintage (circle) asked twenty-three years of sliding in a row, down to 57% of the starting income.",
 }
 
 var (
