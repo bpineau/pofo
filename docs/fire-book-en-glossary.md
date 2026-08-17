@@ -329,6 +329,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | l'écart (merger-arb sense) | the spread | Never "the gap" (reserved for écart à l'indice). | primes-d-assurance |
 | arbitragiste | arbitrageur | | primes-d-assurance |
 | mauvaise saison (catastrophe sense) | bad season | | primes-d-assurance |
+| fonds efficient core | efficient core fund | | return-stacking |
+| étage empilé, la pile | stacked layer, the stack | | return-stacking |
+| critère d'admission (d'un étage) | the admission test | Same English form as condition/test d'admissibilité. | return-stacking |
+| coût de financement, financé au taux court, net du cash | financing cost, financed at the short rate, net of cash | | return-stacking |
+| fonds à levier quotidien (ETF ×2) | daily-leveraged fund (2x ETF) | | return-stacking |
+| clause de démontage | dismantling clause | | return-stacking |
+| budget de diversification | the diversification budget | | return-stacking |
+| mode de forum | a forum fad | | return-stacking |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
