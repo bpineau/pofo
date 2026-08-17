@@ -612,6 +612,31 @@ var figureDict = map[string]string{
 	"le plancher (44 k€), jamais approché":                 "the floor (EUR 44k), never approached",
 	"48,6 (quatre ans)":                                    "48.6 (four years)",
 	"revues annuelles (chiffres illustratifs de la table)": "annual reviews (illustrative figures from the table)",
+	// richesse-totale
+	"LA RICHESSE TOTALE": "TOTAL WEALTH",
+	"Ce que l'amortissement regarde, et ce que les autres règles ignorent":                              "What amortization looks at, and what every other rule ignores",
+	"un ménage de 49 ans : 1,55 M€ de portefeuille, 19 k€/an de pension à 67 ans, 200 k€ de legs visé":  "a household of 49: EUR 1.55M portfolio, EUR 19k a year of pension at 67, EUR 200k target bequest",
+	"barres à l'échelle en k€, segment bleu = la pension future actualisée ; à droite, la rente servie": "bars to scale in EUR k, blue segment = the discounted future pension; on the right, the annuity delivered",
+	"Ce que la plupart des règles amortissent":                                                          "What most rules amortize",
+	"Ce que l'amortissement amortit vraiment":                                                           "What amortization really amortizes",
+	"62,8 k€":            "EUR 62.8k",
+	"71,7 k€":            "EUR 71.7k",
+	"−90, le legs visé":  "−90, the target bequest",
+	"1 770 amortis":      "1,770 amortized",
+	"par an":             "a year",
+	"par an, soit +14 %": "a year, up 14%",
+	"La pension n'arrive que dans dix-huit ans, mais elle est certaine : la consommer par anticipation est": "The pension is eighteen years away, but it is certain: spending it in advance is",
+	"le lissage que les économistes prescrivent depuis Modigliani. Et le legs cesse d'être un résidu.":      "the smoothing economists have prescribed since Modigliani. And the bequest stops being a leftover.",
+	// abw-1966
+	"AMORTISSEMENT (ABW)": "AMORTIZATION (ABW)",
+	"Atterrir à zéro le jour prévu, plutôt que s'écraser avant":                                                  "Landing on zero on the planned day, instead of crashing before it",
+	"le capital réel restant (k€)":                                                                               "the real capital left (EUR k)",
+	"le fixe s'épuise un an trop tôt":                                                                            "the fixed rule runs dry a year too early",
+	"ABW : le capital fond exprès, jamais par accident":                                                          "ABW: capital melts on purpose, never by accident",
+	"le revenu réel servi (k€/an)":                                                                               "the real income delivered (EUR k a year)",
+	"1974 : marché à −22,7 %, rente à −25 %":                                                                     "1974: market at −22.7%, annuity at −25%",
+	"Total consommé : 1 260 k€ sous ABW, 1 160 k€ sous fixe. Plus de vie servie, et pas de mur.":                 "Total consumed: EUR 1,260k under ABW, EUR 1,160k under the fixed rule. More living delivered, and no wall.",
+	"Millésime 1966, 60/40 américain réel, 1 M€, horizon 30 ans, rente recalculée à 3,2 % réel, sans fiscalité.": "1966 vintage, real US 60/40, EUR 1M, 30-year horizon, annuity repriced at 3.2% real, no tax.",
 }
 
 var (
