@@ -244,6 +244,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | mise à la diète, diète illimitée | put on a diet, the unlimited diet | | guyton-klinger |
 | vice de construction, vice caché | the construction flaw, the hidden flaw | | guyton-klinger |
 | programme d'austérité différée | a deferred austerity program | | guyton-klinger |
+| double contracyclicité | double countercyclicality | | regles-cape |
+| le robinet de consommation | the spending tap | | regles-cape |
+| amortissement ancré au CAPE | CAPE-anchored amortization | | regles-cape |
+| cohérence temporelle, règles sans mémoire morte | time consistency, rules with no dead memory | | regles-cape |
+| auto-lissage, pourcentage auto-lissé | self-smoothing, a percentage that smooths itself | | regles-cape |
+| borne haute (d'une formule de taux) | a rate cap | | regles-cape |
+| version de coin de table | the back-of-the-envelope version | | regles-cape |
+| le taux respire avec les prix | the rate breathes with prices | | regles-cape |
+| décoter (une règle en marché cher) | to mark it down | | regles-cape |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
