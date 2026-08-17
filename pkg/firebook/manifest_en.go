@@ -85,6 +85,7 @@ var CategoriesEN = []Category{
 		Blurb: "Past stocks and bonds: the blocks that truly diversify, what they cost, and how to buy them cleanly.",
 		Articles: []Article{
 			{Slug: "managed-futures", Title: "Managed futures and trend following: the diversification that works in a crisis", Blurb: "The only defensive asset with a positive expected return: a century of evidence, the crisis alpha of long regimes, how to buy it, and the winter you have to cross.", Source: "managed-futures"},
+			{Slug: "long-volatility", Title: "Long volatility and tail hedging: paying for crashes", Blurb: "The convexity that explodes in fast crashes, the variance risk premium that overcharges for it, the toxic vehicles, and the rare legitimate uses.", Source: "long-volatility"},
 		},
 	},
 	{
