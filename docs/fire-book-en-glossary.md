@@ -268,6 +268,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | marge de prudence sur g, décoter g | margin of prudence; to mark g down, a light markdown | | amortissement-abw |
 | mémoire morte (bare noun) | dead memory; "no dead memory" | | amortissement-abw |
 | talon d'Achille assumé | acknowledged Achilles heel | | amortissement-abw |
+| glissement, des glissements au lieu de chutes | glide; glides instead of falls | | plancher-plafond |
+| couloir (Bengen's level band) vs corridor (Vanguard) | band vs corridor | Keep the two distinct. | plancher-plafond |
+| écrêté (a withdrawal clipped by bounds) | clipped to the range | | plancher-plafond |
+| test d'admissibilité | the admission test | | plancher-plafond |
+| la règle de dépense dynamique de Vanguard | Vanguard's dynamic spending rule | | plancher-plafond |
+| bornes en niveau / en variation, borne haute / basse | bounds on the level / on the change; upper bound / lower bound | | plancher-plafond |
+| régime hostile | hostile regime | | plancher-plafond |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
