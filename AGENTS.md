@@ -27,6 +27,7 @@ make sp500-refdata # regenerate the month-end SP500-USD reference (network); run
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
 make sgtrend-refdata # regenerate the daily NET pure-trend reference (network); run make simdata after
+make catbond-refdata # regenerate the monthly NET insurance-linked reference (network); run make simdata after
 make snapshots # regenerate pkg/marketdata/data/'s offline fallback snapshots (network)
 make simdata-qa # reconstruction quality: every engine vs the real quotes, HTML (network)
 make verify-catalog # data doctor over the whole catalog: hygiene, plausibility bands, identity (network)
@@ -100,7 +101,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/compare` | `Sweep` (per-holding weight grid, the evidence behind a file's sane ranges, behind `pofo -sweep`); compute the comparison model (fetch, build, simulate, common window, nominal/real stats) and assemble the HTML report `Page`; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
-| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/`, `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
+| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (incl. `ILS-NET-USD`, the monthly net insurance-linked composite), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `permanent.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `prefs.go` (the settings cookie) and `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
@@ -239,6 +240,17 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   one. Touching the donor era or the texture breaks two FIRE-book plates (their
   tests recompute from `pkg/datasets` and say so), because the weekly donor is
   projected onto that texture.
+- Catastrophe bond / insurance-linked (ILS) work: read
+  `docs/catbond-sleeve-design.md` first. The reference is `ILS-NET-USD`
+  (`cmd/gen-catbond-refdata`, monthly from 2006-01, already net of the
+  constituent funds' fees), served as `ILSFUND` / `ILSFUNDE` (EUR-hedged, via
+  the shared `hedgeToEUR`) and spliced behind three retail UCITS classes by
+  `pkg/simgen/catbond.go`, each rescaled to its OWN monthly volatility with
+  `monthlyVolMatch` (a monthly donor and a weekly fund share no observation
+  dates, so `volMatch` would skip the donor in silence). Nothing reaches before
+  2006-01. THE CADENCE TRAP: these lines quote weekly or semi-monthly, so every
+  per-observation statistic on them is wrong by ~sqrt(5); read the monthly
+  columns.
 - Weight search (bounded/constrained optimize, `train:`, `-sweep`): read
   `docs/weight-search-design.md` first; it also records what was deliberately
   left for later (the Pareto `improve` mode, the frontier chart) and the traps
