@@ -297,6 +297,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | plancher de coupe | cut floor | | choisir-sa-strategie |
 | hiérarchie de l'attention | the pecking order for your attention; plate "WHERE TO SPEND YOUR ATTENTION" | | choisir-sa-strategie |
 | règle sous-optimale exécutée / optimale abandonnée | a rule that gets run / a rule that gets abandoned | | choisir-sa-strategie |
+| saisons sèches | dry seasons | Pairs with "the winter". | managed-futures |
+| réplication par les positions / par les règles | position-based / rule-based replication | The two schools. | managed-futures |
+| référentiel (a benchmark index) | benchmark | Distinct from "indice". | managed-futures |
+| dispersion entre gérants | dispersion between managers | | managed-futures |
+| 2/20 | "2 and 20" | Never "2/20" (reads as an allocation). | managed-futures |
+| auto-réplication | do-it-yourself replication | | managed-futures |
+| le véhicule est la thèse | the vehicle is the thesis | | managed-futures |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |

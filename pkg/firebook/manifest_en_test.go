@@ -374,7 +374,9 @@ func TestStampNeverRenders(t *testing.T) {
 				}
 				body, _ := io.ReadAll(res.Body)
 				res.Body.Close()
-				if strings.Contains(string(body), "source:") {
+				// Match the stamp's own shape, not the bare word "source:",
+				// which ordinary prose is free to use.
+				if reSourceStamp.Match(body) || strings.Contains(string(body), "&lt;!-- source:") {
 					t.Errorf("%s/%s: the source stamp leaks into the page", ed.Lang, a.Slug)
 				}
 				if strings.Contains(string(body), "edition: fr-only") {
