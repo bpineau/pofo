@@ -53,6 +53,7 @@ var CategoriesEN = []Category{
 			{Slug: "historical-vs-parametric", Title: "Historical windows, bootstrap, parametric: the three families of models", Blurb: "Where simulated futures come from, which question each family can really answer, and what to do when they disagree.", Source: "historique-vs-parametrique"},
 			{Slug: "fat-tails", Title: "Fat tails, crises, and the Student-t", Blurb: "Why markets produce ten times too many disasters for the bell curve, and what the df dial really decides.", Source: "queues-epaisses"},
 			{Slug: "reading-a-fan-chart", Title: "Reading a fan chart without fooling yourself", Blurb: "The anatomy of the wealth fan, the geometry that talks, the five classic reading mistakes, and the other fans on the page.", Source: "lire-un-fan-chart"},
+			{Slug: "simulator-traps", Title: "Simulator traps: independence, US bias, survivorship", Blurb: "Why five tools return five verdicts on the same plan: the ten traps ranked by damage, and the ten-question audit.", Source: "pieges-des-simulateurs"},
 		},
 	},
 	{
