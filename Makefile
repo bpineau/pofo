@@ -65,7 +65,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata catbond-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -126,6 +126,11 @@ trend-refdata: ## (Re)generate the monthly trend reference the managed-futures r
 .PHONY: trendnet-refdata
 trendnet-refdata: ## (Re)generate the monthly NET managed-futures reference the deep trend tails are anchored on (network); run `make simdata` after
 	$(GO) run ./cmd/gen-trendnet-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: catbond-refdata
+catbond-refdata: ## (Re)generate the monthly NET insurance-linked-securities reference the cat bond reconstructions are anchored on (network); run `make simdata` after
+	$(GO) run ./cmd/gen-catbond-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: sgtrend-refdata

@@ -118,8 +118,25 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		ahl.Points = append(ahl.Points, marketdata.Point{Date: day(i), Close: v})
 	}
 
+	// The cat bond share classes deal WEEKLY (semi-monthly for Solidum), which
+	// is why their recipes match volatility on MONTH-END returns: keep the
+	// stand-ins at those cadences so catBondBuild exercises monthlyVolMatch
+	// rather than a daily fiction.
+	catBond := func(name string, every int, amp, freq, phase float64) *marketdata.Series {
+		s := &marketdata.Series{Symbol: name}
+		v := 100.0
+		for i := 0; i < n; i += every {
+			s.Points = append(s.Points, marketdata.Point{Date: day(i), Close: v})
+			v *= 1 + 3e-4 + amp*math.Sin(freq*float64(i)+phase)
+		}
+		return s
+	}
+
 	f := fakeFetcher{
-		"DBMF": mf("DBMF", 0.008, 1.05, 0.3), "ASFYX": mf("ASFYX", 0.009, 1.05, 0.35),
+		"IE00B3Q8M574": catBond("IE00B3Q8M574", 7, 0.018, 0.35, 0.2),
+		"LI0049587301": catBond("LI0049587301", 15, 0.013, 0.30, 1.1),
+		"LI0115208543": catBond("LI0115208543", 7, 0.020, 0.40, 2.0),
+		"DBMF":         mf("DBMF", 0.008, 1.05, 0.3), "ASFYX": mf("ASFYX", 0.009, 1.05, 0.35),
 		"RYMFX": mf("RYMFX", 0.007, 1.05, 0.4), "AHLPX": mf("AHLPX", 0.010, 1.05, 0.45),
 		"AQMIX": mf("AQMIX", 0.008, 1.05, 0.5), "KMLM": mf("KMLM", 0.010, 1.05, 0.55),
 		"CTA": mf("CTA", 0.012, 1.05, 0.6), "LU1103257975": mf("LU1103257975", 0.007, 1.05, 0.65),
@@ -159,7 +176,14 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Build: %v", err)
 			}
-			if s == nil || len(s.Points) < 300 {
+			// Every recipe but the ILS index builds at daily or weekly cadence.
+			// That one is month-end throughout (no ILS series quotes daily
+			// anywhere), so twenty years of it is 250 points, not 5000.
+			want := 300
+			if r.ID == "ILSFUND" {
+				want = 200
+			}
+			if s == nil || len(s.Points) < want {
 				t.Fatalf("Build returned %d points, want a substantial series", len(s.Points))
 			}
 			prev := time.Time{}
