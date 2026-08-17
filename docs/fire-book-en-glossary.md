@@ -290,6 +290,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | moy. / pire (plate panel stats) | avg / worst | | sept-facons-de-vivre |
 | vent arrière | tailwind | | sept-facons-de-vivre |
 | capital final (table column) | Ending capital | | sept-facons-de-vivre |
+| l'admissibilité (bare noun, plate label) | the admission test | | choisir-sa-strategie |
+| la matrice profils-règles | the profile-to-rule matrix | | choisir-sa-strategie |
+| hybrides par phases, la bascule | a hybrid by phase, the switch | | choisir-sa-strategie |
+| le socle (plan sense: the three settled numbers) | the base | | choisir-sa-strategie |
+| plancher de coupe | cut floor | | choisir-sa-strategie |
+| hiérarchie de l'attention | the pecking order for your attention; plate "WHERE TO SPEND YOUR ATTENTION" | | choisir-sa-strategie |
+| règle sous-optimale exécutée / optimale abandonnée | a rule that gets run / a rule that gets abandoned | | choisir-sa-strategie |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
