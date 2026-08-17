@@ -419,6 +419,17 @@ var figureDict = map[string]string{
 	"N 10 000": "N 10,000",
 	"± 0,5 pt": "± 0.5 pts",
 	"1 M€, 32 k€/an réels (3,2 %), 35 ans, Student-t σ 11 %, df 5. Barres : erreur d'échantillonnage à 95 %.": "EUR 1M, EUR 32k a year real (3.2%), 35 years, Student-t σ 11%, df 5. Bars: 95% sampling error.",
+
+	// fat-tails
+	"À volatilité égale, deux mondes : la cloche et ses queues": "Same volatility, two worlds: the bell and its tails",
+	"loi normale":                          "normal law",
+	"Student-t (df 5)":                     "Student-t (df 5)",
+	"les années ordinaires se ressemblent": "ordinary years look alike",
+	"la queue épaisse":                     "the fat tail",
+	"~10× plus d'années à −30 %":           "~10× more years at −30%",
+	"−30 % réel":                           "−30% real",
+	"rendement réel annuel (%)  →":         "annual real return (%)  →",
+	"densité":                              "density",
 }
 
 var (
