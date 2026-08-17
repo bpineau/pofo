@@ -430,6 +430,18 @@ var figureDict = map[string]string{
 	"−30 % réel":                           "−30% real",
 	"rendement réel annuel (%)  →":         "annual real return (%)  →",
 	"densité":                              "density",
+	// reading-a-fan-chart
+	"Une pile de distributions par date, pas un faisceau de chemins": "A stack of distributions by date, not a bundle of paths",
+	"ruine (le zéro)":     "ruin (the zero line)",
+	"prospère":            "prospers",
+	"finit ruiné":         "ends ruined",
+	"× capital de départ": "× starting capital",
+	"Le bas du cône, dans les dix premières années, décide": "The bottom of the fan, over the first ten years, decides",
+	"Plan défendu":                  "Defended plan",
+	"le bas s'enfonce lentement":    "the bottom sinks slowly",
+	"Plan tendu":                    "Stretched plan",
+	"le 5e percentile pique à zéro": "the 5th percentile dives to zero",
+	"années  \u2192  (la pente du bas, sur la première décennie, est l'exposition à la séquence)": "years  \u2192  (the slope of the bottom, over the first decade, is your sequence exposure)",
 }
 
 var (
