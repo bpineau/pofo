@@ -182,6 +182,15 @@ func regimeLeg(m Meta) []Category {
 		return []Category{Inflation, Crisis}
 	case "managed-futures":
 		return []Category{Crisis, Inflation}
+	case "insurance-linked":
+		// Catastrophe risk is priced by an insurance cycle, not by the macro
+		// one: the loss driver is the weather, and the coupon floats over the
+		// money-market rate. Crisis is the closest label the four quadrants
+		// offer for "pays a premium that owes nothing to this quadrant", and
+		// it is not a claim of crisis PROTECTION: the 2008 collateral shock
+		// hit these funds alongside everything else. See
+		// docs/catbond-sleeve-design.md.
+		return []Category{Crisis}
 	case "long-volatility", "tail-risk":
 		return []Category{Deflation, Crisis}
 	default: // "other" (e.g. global macro hedge funds)
@@ -248,7 +257,7 @@ func factorLeg(m Meta) []Category {
 		return []Category{Credit, Term}
 	case "money-market":
 		return []Category{Cash}
-	default: // gold, broad-commodity, managed-futures, long-volatility, tail-risk, other
+	default: // gold, broad-commodity, managed-futures, insurance-linked, long-volatility, tail-risk, other
 		return []Category{Alternative}
 	}
 }
