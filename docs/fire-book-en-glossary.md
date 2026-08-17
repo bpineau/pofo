@@ -312,6 +312,16 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | interdit de séjour (verdict) | banned from a retirement plan | | long-volatility |
 | fonds tail risk, sélection de survivant | tail risk funds, survivor selection | | long-volatility |
 | prime de variance | variance risk premium | | long-volatility |
+| les grandes maisons | the big institutions (the big quant shops for the CTA houses) | | global-macro |
+| l'alpha de jugement, beta déguisé | the alpha of judgment, disguised beta | | global-macro |
+| diversification décorative | decorative diversification | | global-macro |
+| la question qui tue | the killer question | | global-macro |
+| roll optimisé | optimized roll | | global-macro |
+| la purge (2018-2020 des fonds ARP) | the purge | | global-macro |
+| gagner par forfait | to win by forfeit | | global-macro |
+| espérance brute | gross expectation | | global-macro |
+| la panoplie | the toolkit | | global-macro |
+| directionnel taux | directional rates | | global-macro |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
