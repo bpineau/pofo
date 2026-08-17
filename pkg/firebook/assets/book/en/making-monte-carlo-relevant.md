@@ -67,7 +67,7 @@ The path from 1% to 9% to 3.5% tells the whole philosophy. The naive run flatter
 
 ## The essentials
 
-- A Monte Carlo becomes relevant through six fixes in order: blending the parameters toward a world prior (the antidote to the bias of your own window, dosed by how far the horizon outruns your history), fitted Student-t tails, mean-preserving regimes for memory (the stress measures the price of order and nothing else), anchors to the present (CAPE), the raw data kept as a judge, and simulating the real plan.
+- A Monte Carlo becomes relevant through six fixes in order: blending the parameters toward a world prior (the antidote to the bias of your own window, dosed by how far the horizon outruns your history), fitted Student-t tails, mean-preserving regimes for memory (the stress measures what the sequence costs and nothing else), anchors to the present (CAPE), the raw data kept as a judge, and simulating the real plan.
 - The finished product is not a number but a body of evidence: an honest central model bracketed by bounds. You decide inside it, on the harsh models.
 - Calibrations do not stack: blending or a manual μ or the CAPE anchor as the central case, the others as cross-checks. Prudence piled three layers deep is paid in working years.
 - The realism of the plan (pension, income, taxes, spending rules) often weighs more than any market refinement. That complexity is free in a simulation, so use it.
