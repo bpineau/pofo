@@ -442,6 +442,21 @@ var figureDict = map[string]string{
 	"Plan tendu":                    "Stretched plan",
 	"le 5e percentile pique à zéro": "the 5th percentile dives to zero",
 	"années  \u2192  (la pente du bas, sur la première décennie, est l'exposition à la séquence)": "years  \u2192  (the slope of the bottom, over the first decade, is your sequence exposure)",
+
+	// regime-grid (market-regimes)
+	"Prospérité":           "Prosperity",
+	"actions, obligations": "stocks, bonds",
+	"Surchauffe":           "Overheating",
+	"matières 1res, or":    "commodities, gold",
+	"Déflation":            "Deflation",
+	"obligations longues":  "long bonds",
+	"Stagflation":          "Stagflation",
+	"or, linkers, trend":   "gold, linkers, trend",
+	"croissance +":         "growth +",
+	"croissance −":         "growth −",
+	"inflation basse":      "low inflation",
+	"inflation haute":      "high inflation",
+	"Les quatre régimes : un gagnant par saison": "The four regimes: one winner per season",
 }
 
 var (
