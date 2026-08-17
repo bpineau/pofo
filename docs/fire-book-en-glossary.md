@@ -260,6 +260,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | première alerte / alerte confirmée | first alert / alert confirmed | Hysteresis vocabulary. | guardrails-morningstar |
 | taux sûr | the safe rate | | guardrails-morningstar |
 | bien dimensionné (une règle) | well-sized | | guardrails-morningstar |
+| re-cotation annuelle, re-coté chaque année | repriced every year | Never "re-quoted". | amortissement-abw |
+| crédit inversé, le crédit immobilier à l'envers | a mortgage run backwards, the loan run backwards | vpw says "a loan annuity reversed". | amortissement-abw |
+| pente de consommation (spending tilt) | the spending tilt; to tilt | | amortissement-abw |
+| lissage d'affichage | display smoothing | | amortissement-abw |
+| obligation implicite (a discounted pension inside total wealth) | implicit bond | | amortissement-abw |
+| marge de prudence sur g, décoter g | margin of prudence; to mark g down, a light markdown | | amortissement-abw |
+| mémoire morte (bare noun) | dead memory; "no dead memory" | | amortissement-abw |
+| talon d'Achille assumé | acknowledged Achilles heel | | amortissement-abw |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
