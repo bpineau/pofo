@@ -55,6 +55,7 @@ var CategoriesEN = []Category{
 			{Slug: "reading-a-fan-chart", Title: "Reading a fan chart without fooling yourself", Blurb: "The anatomy of the wealth fan, the geometry that talks, the five classic reading mistakes, and the other fans on the page.", Source: "lire-un-fan-chart"},
 			{Slug: "simulator-traps", Title: "Simulator traps: independence, US bias, survivorship", Blurb: "Why five tools return five verdicts on the same plan: the ten traps ranked by damage, and the ten-question audit.", Source: "pieges-des-simulateurs"},
 			{Slug: "making-monte-carlo-relevant", Title: "Making a Monte Carlo relevant: blending, regimes, stress", Blurb: "The six fixes that turn a random number generator into a planning instrument, from blending toward the world prior to simulating the real plan.", Source: "rendre-monte-carlo-pertinent"},
+			{Slug: "market-regimes", Title: "Market regimes (growth × inflation, sticky bears) and why they matter", Blurb: "The seasons of markets, the four-quadrant grid, the retiree's stagflation nightmare, and auditing a portfolio regime by regime.", Source: "regimes-de-marche"},
 		},
 	},
 	{
