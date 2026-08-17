@@ -59,7 +59,7 @@ Take one plan through the fixes and watch what each one costs or reveals. The pl
 | 1 | + blending toward the world prior (μ 5.5%, df 4, at the 50/50 cap) | ~4% | The kind window stops making the law |
 | 2 | + Student-t (fitted df ≈ 5) | ~5.5% | Disasters get their frequency back |
 | 3 | + the CAPE anchor (expensive market: equity μ pulled toward ~3%) | ~9% | The present enters the model |
-| 4 | Sequence stress reading (mean-preserving, sticky bears) | ~12% | The price of order: +3 points |
+| 4 | Sequence stress reading (mean-preserving, sticky bears) | ~12% | What the sequence costs: +3 points |
 | 5 | Broad-sample reading | ~13% | The century confirms the zone |
 | 6 | + the real plan: a EUR 14k pension in year 16, written flexibility of −10% | central ~3.5%, stress ~6% | The plan's realism gives back what the model's rigor took away |
 
