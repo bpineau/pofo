@@ -48,6 +48,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "Modeling: Monte Carlo and other machines",
 		Blurb: "Simulators from the inside: what they do well, what they make up, and how to read them.",
+		Articles: []Article{
+			{Slug: "monte-carlo-strengths-and-limits", Title: "Monte Carlo: strengths, weaknesses, and how to use it well", Blurb: "The machine behind every failure probability: how it works, its four structural weaknesses, and the eight rules for using it well.", Source: "monte-carlo-forces-faiblesses"},
+		},
 	},
 	{
 		Title: "Withdrawal strategies",

@@ -402,6 +402,23 @@ var figureDict = map[string]string{
 	"E = 42,5":                                                   "E = 42.5",
 	"ÉC ≈ 36":                                                    "CE ≈ 36",
 	"le prix du risque":                                          "the price of the risk",
+	// monte-carlo-strengths-and-limits
+	"MONTE-CARLO": "MONTE CARLO",
+	"Ce qui déplace la ruine : les hypothèses, pas le nombre de tirages": "What moves failure: the assumptions, not the number of draws",
+	"probabilité de ruine (%)": "failure probability (%)",
+	"On bouge μ de ±0,5 point (un écart indétectable dans les données), à N = 10 000": "μ moves plus or minus 0.5 point (undetectable in the data), at N = 10,000",
+	"μ 4,5 %":           "μ 4.5%",
+	"μ 5,0 %":           "μ 5.0%",
+	"μ 5,5 %":           "μ 5.5%",
+	"×2,1 sur la ruine": "×2.1 on failure",
+	"On multiplie N par dix, à hypothèses figées (μ = 5,0 %)": "N goes up tenfold, assumptions frozen (μ = 5.0%)",
+	"N 1 000":  "N 1,000",
+	"± 1,5 pt": "± 1.5 pts",
+	"N 4 000":  "N 4,000",
+	"± 0,7 pt": "± 0.7 pts",
+	"N 10 000": "N 10,000",
+	"± 0,5 pt": "± 0.5 pts",
+	"1 M€, 32 k€/an réels (3,2 %), 35 ans, Student-t σ 11 %, df 5. Barres : erreur d'échantillonnage à 95 %.": "EUR 1M, EUR 32k a year real (3.2%), 35 years, Student-t σ 11%, df 5. Bars: 95% sampling error.",
 }
 
 var (
