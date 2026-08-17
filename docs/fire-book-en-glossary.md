@@ -227,6 +227,16 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | la flexibilité minimale viable | the minimum viable flexibility | | retrait-fixe-bengen |
 | le luxe non consommé | unspent luxury | | retrait-fixe-bengen |
 | préavis (in a plate title) | warning | "Nineteen years of warning". | retrait-fixe-bengen |
+| pourcentage fixe (du portefeuille), brut | the fixed percentage (of the portfolio), raw fixed percentage | | pourcentage-fixe |
+| règle de Yale (Tobin), règle de dépense des dotations, dotation | the Yale rule, the endowment spending rule, endowment | | pourcentage-fixe |
+| lissage, lisser, moyenne mobile, lissage exponentiel | smoothing, to smooth, moving average, exponential smoothing | | pourcentage-fixe |
+| matière première (d'une règle) | raw material | | pourcentage-fixe |
+| contracyclique | countercyclical | | pourcentage-fixe |
+| auto-correction (d'une règle) | self-correction | | pourcentage-fixe |
+| condition d'admissibilité, admissible / inadmissible | admission requirement, admissible / inadmissible | The verdict word for a rule against a household. | pourcentage-fixe |
+| borne géométrique | the geometric bound | | pourcentage-fixe |
+| part de mémoire (d'une règle) | the memory term | | pourcentage-fixe |
+| entamer son incompressible | eat into its floor | | pourcentage-fixe |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
