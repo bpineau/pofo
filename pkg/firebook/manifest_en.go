@@ -64,6 +64,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "withdrawal-strategies-overview", Title: "Withdrawal strategies: the map before the territory", Blurb: "The impossible triangle, the two extremes that bound everything, the five families, and the six criteria for scoring them honestly.", Source: "panorama-strategies-retrait"},
 			{Slug: "fixed-inflation-adjusted-withdrawal", Title: "The fixed inflation-adjusted withdrawal (Bengen): the benchmark rule", Blurb: "The founding rule as a working strategy: the fine mechanics, the silent cliff, and the three nearly free amendments.", Source: "retrait-fixe-bengen"},
+			{Slug: "fixed-percentage", Title: "The fixed percentage of the portfolio: indestructible but uncomfortable", Blurb: "Impossible ruin and lifestyle ruin, endowment smoothing (the Yale rule), and how to pick the percentage.", Source: "pourcentage-fixe"},
 			{Slug: "vpw", Title: "VPW, the Bogleheads' variable percentage withdrawal", Blurb: "A loan annuity reversed: the exact mechanics, the pension bridge, the loss tolerance test everyone skips, and where it stands against ABW.", Source: "vpw"},
 		},
 	},
