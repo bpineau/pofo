@@ -157,6 +157,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le paradoxe de Saint-Pétersbourg | the St. Petersburg paradox | | decider-sous-incertitude |
 | curseur (risk-profile sense: tolérance et capacité) | dial ("two dials") | | decider-sous-incertitude |
 | solutions en coin | corner solutions | | decider-sous-incertitude |
+| gravité (severity label of a weakness) | Severity: | | monte-carlo-forces-faiblesses |
+| bon usage, mode d'emploi raisonné | using it well | | monte-carlo-forces-faiblesses |
+| entrées / sorties (of a model), discipline des entrées | inputs / outputs, input discipline | | monte-carlo-forces-faiblesses |
+| erreur d'échantillonnage | sampling error | Distinct from sampling noise. | monte-carlo-forces-faiblesses |
+| machine à « et si » | what-if machine | | monte-carlo-forces-faiblesses |
+| théorème conditionnel | conditional theorem | | monte-carlo-forces-faiblesses |
+| lire en ordinal | read it as a ranking | Same wording in failure-probability. | monte-carlo-forces-faiblesses |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
