@@ -284,6 +284,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | tontines modernes | modern tontines | | rentes-et-annuites |
 | étage de rente | annuity tier | | rentes-et-annuites |
 | croisement (of two curves) | where the two curves cross | Never "the crossing" (reserved for traversée). | rentes-et-annuites |
+| protocole (the replay's fixed setup) | the setup | Never "the protocol". | sept-facons-de-vivre |
+| écart (column: coefficient of variation of income) | Variability | | sept-facons-de-vivre |
+| the seven replay rule labels | Fixed (inflation-adjusted), Flex −10%, Guardrails (GK), Risk-based guardrails, Bounded %, Amortization (ABW), % of portfolio (VPW) | Identical in prose, tables and plates. | sept-facons-de-vivre |
+| moy. / pire (plate panel stats) | avg / worst | | sept-facons-de-vivre |
+| vent arrière | tailwind | | sept-facons-de-vivre |
+| capital final (table column) | Ending capital | | sept-facons-de-vivre |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
