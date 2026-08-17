@@ -396,7 +396,9 @@ func TestNoFrenchNumbersEN(t *testing.T) {
 		what string
 		re   *regexp.Regexp
 	}{
-		{"French decimal comma before a percent", regexp.MustCompile(`\d,\d+[\x{00a0}\x{202f} ]?%`)},
+		// One or two digits after the comma: "6,6 %" is French, "4,144%" is a
+		// US thousands group and passes.
+		{"French decimal comma before a percent", regexp.MustCompile(`\d,\d{1,2}[\x{00a0}\x{202f} ]?%`)},
 		{"French no-break space between digits", regexp.MustCompile(`\d[\x{00a0}\x{202f}]\d`)},
 		{"space before a percent sign", reFrenchPercent},
 	}
