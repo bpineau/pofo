@@ -548,6 +548,38 @@ var figureDict = map[string]string{
 	"43 k€ pendant quatre ans":                               "EUR 43k for four years",
 	"Le portefeuille, lui, s'en sort : 886 k€ sans plancher, 313 k€ avec. La diète a payé la survie du capital.":       "The portfolio survives either way: EUR 886k with no floor, EUR 313k with one. The diet bought that survival.",
 	"Millésime 1966, 60/40 américain réel ; règles 3 et 4 seules (corridor ±20 %, ajustements ±10 %), sans fiscalité.": "1966 vintage, real US 60/40; rules 3 and 4 only (corridor ±20%, adjustments ±10%), no taxes.",
+	// cape-contracyclique
+	"LA DOUBLE CONTRACYCLICITÉ":                                                       "DOUBLE COUNTERCYCLICALITY",
+	"Le revenu, produit de deux facteurs en sens inverse":                             "Income, the product of two factors that move in opposite directions",
+	"un portefeuille de 1,5 M€ à CAPE 30, frappé par un krach puis par une euphorie":  "a EUR 1.5M portfolio at a CAPE of 30, hit by a crash and then by a euphoria",
+	"les courbes fines joignent les couples qui servent le même revenu, en k€ par an": "the thin curves join the pairs that deliver the same income, in EUR k a year",
+	"portefeuille (M€ réels)":                                                         "portfolio (EUR M, real)",
+	"taux servi (%)":                                                                  "rate paid (%)",
+	"35,9 k€":                                                                         "EUR 35.9k",
+	"pourcentage fixe":                                                                "fixed percentage",
+	"71,8 k€":                                                                         "EUR 71.8k",
+	"43,4 k€":                                                                         "EUR 43.4k",
+	"krach, CAPE 21":                                                                  "crash, CAPE 21",
+	"64,4 k€":                                                                         "EUR 64.4k",
+	"euphorie, CAPE 38":                                                               "euphoria, CAPE 38",
+	"51,3 k€":                                                                         "EUR 51.3k",
+	"aujourd'hui, CAPE 30":                                                            "today, CAPE 30",
+	"Trait plein : la règle CAPE, qui longe presque une courbe de revenu constant.":     "Solid line: the CAPE rule, which almost rides a constant-income curve.",
+	"Pointillé : le pourcentage fixe, qui les traverse toutes et prend le choc entier.": "Dotted line: the fixed percentage, which cuts across them all and takes the whole shock.",
+
+	// cape-depuis-1881
+	"LE TAUX N'EST PAS UNE CONSTANTE":                                                               "THE RATE IS NOT A CONSTANT",
+	"Ce que la règle CAPE aurait servi, chaque janvier depuis 1881":                                 "What the CAPE rule would have paid, every January since 1881",
+	"taux de retrait a + b / CAPE (a = 1,75, b = 0,5) appliqué au CAPE du 1er janvier, en % par an": "withdrawal rate a + b / CAPE (a = 1.75, b = 0.5) applied to the CAPE on January 1, in % a year",
+	"les 4 % de Bengen":        "Bengen's 4%",
+	"l'après-guerre : CAPE 5":  "the postwar low: CAPE 5",
+	"la bulle de 1929":         "the 1929 bubble",
+	"le pire millésime":        "the worst vintage",
+	"la fin de la stagflation": "the end of stagflation",
+	"la bulle internet":        "the internet bubble",
+	"La règle n'a presque jamais dit 4 %. Elle a dit 11,5 % en 1921 et 2,9 % en 2000, parce que le taux soutenable": "The rule almost never said 4%. It said 11.5% in 1921 and 2.9% in 2000, because the sustainable rate",
+	"est une fonction du prix payé, pas une constante de la nature. Aux extrêmes elle déraille, faute de borne :":   "is a function of the price paid, not a constant of nature. At the extremes it derails, for lack of a cap:",
+	"personne n'aurait dû retirer 11 % en 1921, et c'est le défaut d'une formule linéaire en 1 / CAPE.":             "nobody should have withdrawn 11% in 1921, and that is the flaw of a formula linear in 1 / CAPE.",
 }
 
 var (
