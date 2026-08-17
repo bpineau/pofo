@@ -304,6 +304,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | 2/20 | "2 and 20" | Never "2/20" (reads as an allocation). | managed-futures |
 | auto-réplication | do-it-yourself replication | | managed-futures |
 | le véhicule est la thèse | the vehicle is the thesis | | managed-futures |
+| krach rapide / marché baissier lent | fast crash / slow bear market | "Flash crash" only for the March 2020 event proper. | long-volatility |
+| monétisation, monétiser (a hedge) | monetization, to monetize | | long-volatility |
+| poche de puts, convexité | put sleeve, convexity | | long-volatility |
+| saignement (structurel, contango) | the bleed, structural bleed | | long-volatility |
+| hors de la monnaie | out of the money (OTM) | | long-volatility |
+| interdit de séjour (verdict) | banned from a retirement plan | | long-volatility |
+| fonds tail risk, sélection de survivant | tail risk funds, survivor selection | | long-volatility |
+| prime de variance | variance risk premium | | long-volatility |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
