@@ -73,6 +73,7 @@ var CategoriesEN = []Category{
 			{Slug: "floor-and-ceiling", Title: "Floor and ceiling and the Vanguard rules: bounded flexibility", Blurb: "The corridor on the annual change (+5%/−2.5%): glides instead of falls, an honest failure probability again, second everywhere.", Source: "plancher-plafond"},
 			{Slug: "annuities-and-safety-first", Title: "Annuities and safety first: buying a floor", Blurb: "Mortality credits, what the US market really sells (and the best annuity of all, delaying Social Security), the inflation objection, and when to annuitize.", Source: "rentes-et-annuites"},
 			{Slug: "seven-ways-to-live-on-one-portfolio", Title: "Seven ways to live on one portfolio", Blurb: "Three real retirements replayed year by year: what each rule paid, when it cut, and what it left on the table.", Source: "sept-facons-de-vivre"},
+			{Slug: "choosing-your-strategy", Title: "Choosing your strategy: criteria, comparison, worked case", Blurb: "The five-step procedure: the admission tests, the profile-to-rule matrix, hybrids by phase, and the written page that ends it.", Source: "choisir-sa-strategie"},
 		},
 	},
 	{
