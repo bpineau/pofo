@@ -28,6 +28,11 @@ func All() []Recipe {
 		msciworldIndexRecipe(),
 		sp500IndexRecipe(),
 		btop50IndexRecipe(),
+		ilsIndexRecipe(),
+		ilsHedgedIndexRecipe(),
+		gamCatBondRecipe(),
+		solidumCatBondRecipe(),
+		plenumCatBondRecipe(),
 		btop50HedgedIndexRecipe(),
 		wintonRecipe(),
 		zrozRecipe(),
@@ -1557,50 +1562,14 @@ func btop50HedgedIndexRecipe() Recipe {
 	}
 }
 
-// btop50HedgedBuild turns the USD index into its EUR-hedged view: over every
-// step, the local return less USD cash plus EUR cash. The union of dates is
-// daily even where the index is monthly, so the hedge accrues every day while
-// the index return lands on its month end, which is what the two legs really
-// do.
+// btop50HedgedBuild turns the USD index into its EUR-hedged view through the
+// shared hedged-return identity (hedgeToEUR).
 func btop50HedgedBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	local, err := btop50Local(f, from)
 	if err != nil {
 		return nil, err
 	}
-	fr, err := BuildFrame(extend(f), []string{"^IRX"}, from)
-	if err != nil {
-		return nil, err
-	}
-	usd := &marketdata.Series{Name: "USD cash (accrual)", Source: "simdata"}
-	v := 100.0
-	for k, d := range fr.Dates {
-		v *= 1 + fr.Returns["^IRX"][k]
-		usd.Points = append(usd.Points, marketdata.Point{Date: d, Close: v})
-	}
-	eur, err := eurOvernightDeep(f, from)
-	if err != nil {
-		return nil, err
-	}
-	dates, lv := marketdata.Align([]*marketdata.Series{local, usd, eur}, local.First().Date, time.Time{})
-	if len(dates) < 2 {
-		return nil, fmt.Errorf("BTOP50E: %d aligned dates", len(dates))
-	}
-	out := &marketdata.Series{
-		Name: "BTOP50 hedged to EUR (index)", Source: "simdata", Currency: "EUR",
-	}
-	v = 100.0
-	out.Points = append(out.Points, marketdata.Point{Date: dates[0], Close: v})
-	for k := 1; k < len(dates); k++ {
-		r := 0.0
-		for i, leg := range [3]float64{1, -1, 1} {
-			if lv[i][k-1] > 0 && lv[i][k] > 0 {
-				r += leg * (lv[i][k]/lv[i][k-1] - 1)
-			}
-		}
-		v *= 1 + r
-		out.Points = append(out.Points, marketdata.Point{Date: dates[k], Close: v})
-	}
-	return out, nil
+	return hedgeToEUR("BTOP50 hedged to EUR (index)", local, f, from)
 }
 
 // sp500ShapeID is the Yahoo daily S&P 500 PRICE index (1927→): like the MSCI

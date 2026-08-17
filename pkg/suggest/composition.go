@@ -68,8 +68,8 @@ func AssetClassSplit(holdings []Holding) map[string]float64 {
 // class, rather than merely missing from the catalog.
 func noCountryClass(class string) bool {
 	switch class {
-	case "gold", "broad-commodity", "managed-futures", "long-volatility",
-		"tail-risk", "money-market", "other":
+	case "gold", "broad-commodity", "managed-futures", "insurance-linked",
+		"long-volatility", "tail-risk", "money-market", "other":
 		return true
 	}
 	return false
