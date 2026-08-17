@@ -580,6 +580,38 @@ var figureDict = map[string]string{
 	"La règle n'a presque jamais dit 4 %. Elle a dit 11,5 % en 1921 et 2,9 % en 2000, parce que le taux soutenable": "The rule almost never said 4%. It said 11.5% in 1921 and 2.9% in 2000, because the sustainable rate",
 	"est une fonction du prix payé, pas une constante de la nature. Aux extrêmes elle déraille, faute de borne :":   "is a function of the price paid, not a constant of nature. At the extremes it derails, for lack of a cap:",
 	"personne n'aurait dû retirer 11 % en 1921, et c'est le défaut d'une formule linéaire en 1 / CAPE.":             "nobody should have withdrawn 11% in 1921, and that is the flaw of a formula linear in 1 / CAPE.",
+
+	// deux-thermometres
+	"KITCES-THARP": "KITCES-THARP",
+	"Deux thermomètres, deux verdicts opposés":                                                        "Two thermometers, two opposite verdicts",
+	"chaque ménage lu par le ratio brut de 2006, puis par la probabilité de succès du plan complet ;": "each household read by the raw 2006 ratio, then by the success probability of the whole plan;",
+	"la bande beige est le corridor de la règle, le point vide l'avant, le point plein l'après":       "the beige band is the rule's corridor, the hollow dot before, the solid dot after",
+	"Le retraité de 62 ans, pension à 64 ans":                                                         "The 62-year-old retiree, pension at 64",
+	"un krach emporte 25 % du portefeuille":                                                           "a crash takes 25% of the portfolio",
+	"taux de retrait":                                                                                 "current withdrawal",
+	"courant (%)":                                                                                     "rate (%)",
+	"coupe de 10 %":                                                                                   "10% cut",
+	"probabilité":                                                                                     "success",
+	"de succès (%)":                                                                                   "probability (%)",
+	"on ne touche à rien":                                                                             "nothing changes",
+	"Le FIRE de 48 ans, marché très cher":                                                             "The 48-year-old early retiree, a very expensive market",
+	"une décennie plate, sans krach":                                                                  "a flat decade, no crash",
+	"Le ratio brut ignore les deux ans de pont du premier ménage, et le prix payé pour les actions par le second.": "The raw ratio misses the first household's two bridge years, and the price the second paid for stocks.",
+	"L'indicateur par risque voit les deux. Valeurs illustratives.":                                                "The risk-based indicator sees both. Illustrative values.",
+
+	// guardrails-indicateur
+	"GUARDRAILS PAR RISQUE":                                "RISK-BASED GUARDRAILS",
+	"L'indicateur décide, le revenu suit":                  "The indicator decides, the income follows",
+	"l'indicateur : probabilité de succès recalculée (%)":  "the indicator: recomputed success probability (%)",
+	"le corridor : on ne touche à rien":                    "the corridor: nothing changes",
+	"coupe sous 85 %":                                      "cut below 85%",
+	"hausse au-dessus de 99 %":                             "raise above 99%",
+	"confirmée : coupe −10 %":                              "confirmed: cut 10%",
+	"confirmée : hausse +10 %":                             "confirmed: raise 10%",
+	"le revenu : retrait réel servi (k€)":                  "the income: real withdrawal delivered (EUR k)",
+	"le plancher (44 k€), jamais approché":                 "the floor (EUR 44k), never approached",
+	"48,6 (quatre ans)":                                    "48.6 (four years)",
+	"revues annuelles (chiffres illustratifs de la table)": "annual reviews (illustrative figures from the table)",
 }
 
 var (
