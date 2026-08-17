@@ -31,6 +31,12 @@
 //     donor that does not quote daily is projected onto the engine's calendar
 //     first. The file starts at the deepest donor and nothing is shipped behind
 //     it;
+//   - monthlyVolMatch is DonorChain's volatility match for the case a
+//     per-observation one cannot serve: a MONTHLY donor and a weekly fund share
+//     almost no observation dates, so the ratio must be measured on month-end
+//     returns instead. It is what lets the insurance-linked family
+//     (catbond.go: ILSFUND, ILSFUNDE and the cat bond share classes behind
+//     them) stand on a monthly index; see docs/catbond-sleeve-design.md;
 //   - movesOnly is the other half of that projection, for a donor that quotes
 //     daily on paper and STALE in fact (a thin listing whose feed reprints the
 //     previous close for days on end). The repeated prints are dropped, which

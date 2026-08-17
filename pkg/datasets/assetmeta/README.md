@@ -34,7 +34,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 
 | field | meaning |
 |---|---|
-| `asset_class` | `equity`, `government-bond`, `corporate-bond`, `aggregate-bond`, `inflation-linked-bond`, `money-market`, `gold`, `broad-commodity`, `managed-futures`, `long-volatility`, `tail-risk`, `multi-asset`, `real-estate`, `other` |
+| `asset_class` | `equity`, `government-bond`, `corporate-bond`, `aggregate-bond`, `inflation-linked-bond`, `money-market`, `gold`, `broad-commodity`, `managed-futures`, `insurance-linked`, `long-volatility`, `tail-risk`, `multi-asset`, `real-estate`, `other` |
 | `underlying` | one-line plain description of what it holds |
 | `benchmark_index` | the index it tracks, or `active (...)` / `null` |
 | `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `other` |
