@@ -418,6 +418,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | l'écueil de l'indexation taxée | phantom income | US idiom. | obligations-indexees |
 | détention à terme | hold-to-maturity | Opposite of the rebalanced sleeve. | obligations-indexees |
 | l'outil de décision | the tool you decide with | | obligations-indexees |
+| dossier du rentier, pièce 1/2/3 | the retiree's case file, Exhibit 1/2/3 | | facteurs-fama-french |
+| prix d'entrée (cost of holding a tilt) | the price of admission | Distinct from the CAPE entry-price sense. | facteurs-fama-french |
+| tilt documenté et tenu, tilt homéopathique | a tilt written down and held, a homeopathic tilt | | facteurs-fama-french |
+| pari de style | style bet | | facteurs-fama-french |
+| terrain de gloire / terrain de peine | field of glory / field of pain | | facteurs-fama-french |
+| capacité (d'un fonds), taux de rotation | a fund's capacity, turnover | | facteurs-fama-french |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
