@@ -513,6 +513,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | fonds ségrégués | segregated funds | | hyperinflation-et-extremes |
 | la queue de la queue | the tail of the tail | | hyperinflation-et-extremes |
 | filets non financiers | the safety nets that are not financial | | hyperinflation-et-extremes |
+| sous-consommation (chronique), sous-dépensier | underspending, the underspender | | psychologie-du-retrait |
+| budget de plaisir obligatoire | the mandatory fun budget | | psychologie-du-retrait |
+| permission chiffrée | permission in numbers | Distinct from "permission to spend". | psychologie-du-retrait |
+| le tiers et la date, co-signature | a second person, and a date; two signatures | | psychologie-du-retrait |
+| biais du survivant social | social survivorship bias | | psychologie-du-retrait |
+| glisse (of a −2.5%/yr rule), marche de 10 % | glide, a 10% step | | psychologie-du-retrait |
+| hygiène d'information | information hygiene | | psychologie-du-retrait |
+| en euros courants | in nominal terms | | psychologie-du-retrait |
+| prothèses psychologiques déguisées en finance | psychological prosthetics dressed up as finance | | psychologie-du-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
