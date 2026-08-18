@@ -997,6 +997,31 @@ var figureDict = map[string]string{
 	"n'arrive jamais à échéance":                 "never matures",
 	"Fonds à échéance 8 ans":                     "8-year dated fund",
 	"Zéro-coupon 12 ans":                         "12-year zero-coupon",
+	// bond-tent (glidepaths)
+	"bond-tent|départ":                     "day one",
+	"obligations":                          "bonds",
+	"fenêtre fragile (risque de séquence)": "fragile window (sequence risk)",
+	"années · 0 = départ  →":               "years · 0 = day one  →",
+	"La tente obligataire : la prudence concentrée là où le danger est": "The bond tent: caution concentrated where the danger is",
+
+	// tente-transfert (glidepaths)
+	"LE GLIDEPATH, CE QU'IL RAPPORTE":                                                                "WHAT THE GLIDE PATH BUYS YOU",
+	"La tente déplace le résultat, elle n'en fabrique pas":                                           "The tent moves results around, it does not manufacture them",
+	"écart de taux de retrait soutenable, en points de taux : tente 58 → 85 % d'actions en dix ans,": "gap in sustainable withdrawal rate, in points: a tent from 58 to 85% stocks over ten years,",
+	"moins la statique de même exposition moyenne (80/20)":                                           "minus the static allocation with the same average exposure (80/20)",
+	"les dix millésimes les plus durs (taux soutenable statique le plus bas)":                        "the ten hardest vintages (lowest static sustainable rate)",
+	"les trente-trois autres":                                                                        "the other thirty-three",
+	"1973 : +0,33 pt":                                                                                "1973: +0.33 pts",
+	"le meilleur cas de la tente":                                                                    "the tent's best case",
+	"le pire cas : un millésime qui n'avait besoin de rien":                                          "the worst case: a vintage that needed nothing",
+	"1954 : −1,13 pt":                                                                                "1954: −1.13 pts",
+	"9 millésimes sur 43 y gagnent ; les 34 autres paient la note":                                   "9 vintages out of 43 gain; the other 34 pay the bill",
+	"les dix millésimes les plus durs : +0,07 pt en moyenne":                                         "the ten hardest vintages: +0.07 pts on average",
+	"les dix plus faciles : −0,32 pt":                                                                "the ten easiest: −0.32 pts",
+	"millésime médian : −0,25 pt":                                                                    "median vintage: −0.25 pts",
+	"millésimes de départ, classés du plus favorisé au moins favorisé par la tente":                  "start vintages, ranked from most to least favored by the tent",
+	"Taux de retrait réel constant maximal sur trente ans, calculé millésime par millésime, rééquilibrage annuel, hors fiscalité.": "Maximum constant real withdrawal rate over thirty years, computed vintage by vintage, annual rebalancing, before tax.",
+	"60/40 américain réel reconstruit (S&amp;P 500 + Treasuries 5 ans, déflatés CPI-U) : 43 départs seulement, de 1954 à 1996.":    "Reconstructed real US 60/40 (S&amp;P 500 + 5-year Treasuries, deflated by CPI-U): only 43 start years, from 1954 to 1996.",
 }
 
 var (
