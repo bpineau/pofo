@@ -1278,6 +1278,20 @@ var figureDict = map[string]string{
 	"à l'année 19, avec 11 ans encore à financer":                                           "in year 19, with 11 years still to fund",
 	"l'épisode": "the episode",
 	"la dérive": "the drift",
+
+	// se-proteger-de-inflation -> inflation-protection
+	"LES ACTIONS PENDANT L'INFLATION":                                                                          "EQUITIES THROUGH AN INFLATION",
+	"La moitié du pouvoir d'achat perdue en 1974, tout repris en 1985":                                         "Half the purchasing power lost in 1974, all of it back in 1985",
+	"S&amp;P 500 dividendes réinvestis, en dollars, déflaté par le CPI américain. Base 100 fin décembre 1972.": "S&amp;P 500 with dividends reinvested, in dollars, deflated by the US CPI. Base 100 at the end of December 1972.",
+	"pouvoir d'achat de départ":                                                                                "starting purchasing power",
+	"creux de septembre 1974":                                                                                  "September 1974 low",
+	"−52 % de pouvoir d'achat":                                                                                 "−52% of purchasing power",
+	"janvier 1985 : au-dessus, pour de bon":                                                                    "January 1985: above, for good",
+	"12 ans et 1 mois plus tard":                                                                               "12 years and 1 month later",
+	"douze ans et un mois sous le pouvoir d'achat de départ":                                                   "twelve years and one month below the starting purchasing power",
+	"Sur ces quinze ans, les prix américains sont multipliés par 2,7 et l'indice nominal par 4,0 : la courbe est déjà nette de cette hausse.": "Over those fifteen years US prices multiply by 2.7 and the nominal index by 4.0: the curve is already net of that rise.",
+	"La chute finale est le krach d'octobre 1987, qui laisse encore l'indice 48 % au-dessus du départ.":                                       "The last drop is the October 1987 crash, which still leaves the index 48% above the start.",
+	"« Durablement » : premier mois repassé au-dessus de 100 sans jamais y redescendre ensuite, vérifié jusqu'à aujourd'hui.":                 "\"For good\": the first month back above 100 that never fell below it again, checked through today.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
