@@ -88,6 +88,7 @@ var CategoriesEN = []Category{
 			{Slug: "all-weather-portfolios", Title: "All-weather portfolios: Browne, All Weather, Golden Butterfly, Dragon", Blurb: "One winner per season: the exact compositions, the numbers that matter to a retiree, the honest criticisms, and a dose rather than a dogma.", Source: "portefeuilles-tous-temps"},
 			{Slug: "defensive-assets", Title: "Defensive assets: the map and the roles", Blurb: "Defense against what: the spec, the candidates one by one, the gallery of false defensives, and how the pieces fit together.", Source: "actifs-defensifs"},
 			{Slug: "false-defensive-assets", Title: "False defensives: what looks defensive and is not", Blurb: "Low vol, dividends, covered calls, REITs, high yield, private equity, crypto: why they look defensive, and why they let go in the 2008 and 2022 tests.", Source: "faux-actifs-defensifs"},
+			{Slug: "gold-in-retirement", Title: "Gold in a retirement portfolio", Blurb: "A secular real return of zero, a decorrelation that survives crises: the three roles, the size of each, how to hold it in practice, and the mistakes.", Source: "or-en-retrait"},
 		},
 	},
 	{
