@@ -1192,6 +1192,41 @@ var figureDict = map[string]string{
 	"cash":                                                                                    "cash",
 	"2 ans de dépenses":                                                                       "2 years of spending",
 	"taux de retrait initial (%), et l'allocation qui en découle : cash / obligations / actions": "initial withdrawal rate (%), and the allocation that follows: cash / bonds / stocks",
+
+	// immobilier-net-net. The plate is French-tax-labelled; the English
+	// edition neutralizes the two regimes into what they mean anywhere:
+	// income taxed as it comes in, against income sheltered by depreciation.
+	// The frozen euro amounts stay, reformatted.
+	"L'IMMOBILIER LOCATIF":                      "RENTAL PROPERTY",
+	"Du brut d'annonce au net-net : la cascade": "From the listed gross yield to the net-net: the cascade",
+	"un logement de 200 000 € loué 1 000 € par mois, sans crédit, TMI 30 % : chaque marche se remplace par la vôtre": "a EUR 200,000 unit renting at EUR 1,000 a month, bought with cash, 45% friction on the flow: swap each step for your own",
+	"immobilier-net-net|brut": "gross",
+	"d'annonce":               "yield",
+	"12 000 €":                "EUR 12,000",
+	"−1 150 €":                "−EUR 1,150",
+	"charges non":             "owner's",
+	"récupérables":            "charges",
+	"−900 €":                  "−EUR 900",
+	"taxe":                    "property",
+	"foncière":                "tax",
+	"−600 €":                  "−EUR 600",
+	"entretien":               "routine",
+	"courant":                 "upkeep",
+	"vacance":                 "vacancy",
+	"−1 490 €":                "−EUR 1,490",
+	"gestion":                 "management",
+	"et impayés":              "and rent guarantee",
+	"loyer net avant impôt":   "net rent before tax",
+	"3,6 % = 7 260 €":         "3.6% = EUR 7,260",
+	"−3 279 €":                "−EUR 3,279",
+	"net-net":                 "net-net",
+	"foncier nu":              "taxed on the flow",
+	"3 981 €":                 "EUR 3,981",
+	"aucun impôt":             "no tax",
+	"LMNP au réel":            "sheltered by depreciation",
+	"7 260 €":                 "EUR 7,260",
+	"Impôt du foncier nu : TMI 30 % plus 17,2 % de prélèvements sociaux, CSG déductible déduite, soit 45,2 % du net imposable.": "Tax on the flow: 45.2% of the taxable net in this example, what a middle-bracket owner hands over once federal and state are counted.",
+	"En meublé, les prélèvements sociaux passent à 18,6 % (LFSS 2026), mais l'amortissement efface la base tant qu'il dure.":    "Where depreciation still runs, it erases the taxable base for as long as the schedule lasts, whatever the rate.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
