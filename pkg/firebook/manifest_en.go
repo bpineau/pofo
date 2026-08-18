@@ -86,6 +86,7 @@ var CategoriesEN = []Category{
 			{Slug: "stock-bond-allocation", Title: "The stock and bond allocation in retirement", Blurb: "The 50 to 80% plateau that falls away on both sides, the three dials that place you inside it, and the 100% stocks debate put in its place.", Source: "allocation-actions-obligations"},
 			{Slug: "glidepaths", Title: "Glide paths: the bond tent, rising equity, and the fragile window", Blurb: "Caution as a temporary expense: the Pfau-Kitces and ERN results, running the climb automatically through the withdrawals, and the head-to-head against the cash buffer.", Source: "glidepaths"},
 			{Slug: "all-weather-portfolios", Title: "All-weather portfolios: Browne, All Weather, Golden Butterfly, Dragon", Blurb: "One winner per season: the exact compositions, the numbers that matter to a retiree, the honest criticisms, and a dose rather than a dogma.", Source: "portefeuilles-tous-temps"},
+			{Slug: "defensive-assets", Title: "Defensive assets: the map and the roles", Blurb: "Defense against what: the spec, the candidates one by one, the gallery of false defensives, and how the pieces fit together.", Source: "actifs-defensifs"},
 		},
 	},
 	{
