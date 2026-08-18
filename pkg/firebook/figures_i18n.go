@@ -930,6 +930,73 @@ var figureDict = map[string]string{
 	"secondaire":                                                "secondary",
 	"partielle":                                                 "partial",
 	"risque accepté, aucun lien":                                "risk accepted, no link",
+
+	// allocation-plateau (stock-bond-allocation)
+	"Le taux soutenable plonge des deux côtés du plateau": "The sustainable rate falls away on both sides of the plateau",
+	"trop peu :":            "too few:",
+	"l'érosion":             "erosion",
+	"le plateau":            "the plateau",
+	"trop de vol :":         "too much vol:",
+	"le drag coûte":         "the drag costs",
+	"part d'actions (%)  →": "equity share (%)  →",
+
+	// duration-choc (stock-bond-allocation)
+	"L'ATLAS DES OBLIGATIONS":                           "THE BOND ATLAS",
+	"Un point de taux, et le prix bouge de sa duration": "One point of rates, and the price moves by its duration",
+	"taux −1 point : le prix monte":                     "rates −1 point: the price rises",
+	"taux +1 point : le prix baisse":                    "rates +1 point: the price falls",
+	"monétaire":                                         "money market",
+	"±0,2 %":                                            "±0.2%",
+	"duration 0,2":                                      "duration 0.2",
+	"±2 %":                                              "±2%",
+	"État 2 ans":                                        "2-year govt",
+	"duration 2":                                        "duration 2",
+	"±7 %":                                              "±7%",
+	"aggregate euro":                                    "euro aggregate",
+	"duration 7":                                        "duration 7",
+	"±15 %":                                             "±15%",
+	"État 30 ans":                                       "30-year govt",
+	"duration 15":                                       "duration 15",
+	"±29 %":                                             "±29%",
+	"zéro-coupon 30 ans":                                "30-year zero-coupon",
+	"duration 29":                                       "duration 29",
+
+	// obligations-rendements (stock-bond-allocation)
+	"Ce que chaque espèce paie, en réel":                             "What each species pays, in real terms",
+	"points de rendement réel par an (ordres de grandeur 2024-2026)": "points of real return a year (2024-2026 ballpark)",
+	"Monétaire":                    "Money market",
+	"0 à 0,5":                      "0 to 0.5",
+	"État euro 2 ans":              "Euro govt 2y",
+	"État euro 10 ans":             "Euro govt 10y",
+	"1 à 1,5":                      "1 to 1.5",
+	"État euro 30 ans":             "Euro govt 30y",
+	"Linkers euro (réel affiché)":  "Euro linkers (quoted real)",
+	"0,5 à 1,5":                    "0.5 to 1.5",
+	"Crédit IG euro":               "Euro IG credit",
+	"1,5 à 2,5":                    "1.5 to 2.5",
+	"High yield (corrélé actions)": "High yield (equity-correlated)",
+	"2 à 3,5":                      "2 to 3.5",
+
+	// obligations-regimes (stock-bond-allocation)
+	"Deux chocs, cinq réponses":  "Two shocks, five answers",
+	"choc déflationniste (2008)": "deflationary shock (2008)",
+	"choc d'inflation (2022)":    "inflation shock (2022)",
+	"État court":                 "Short govt",
+	"État long":                  "Long govt",
+	"Linker court":               "Short linker",
+	"Crédit IG":                  "IG credit",
+	"High yield":                 "High yield",
+	"rendement nominal sur l'année du choc (%, stylisé)": "nominal return in the year of the shock (%, stylized)",
+
+	// duration-vehicules (stock-bond-allocation)
+	"LE VÉHICULE CHANGE LA DONNE":                "THE VEHICLE CHANGES THINGS",
+	"Trois véhicules, trois destins de duration": "Three vehicles, three fates for duration",
+	"duration restante (années)":                 "remaining duration (years)",
+	"années de détention":                        "years held",
+	"ETF roulant « 7-10 ans »":                   "Rolling \"7-10 year\" ETF",
+	"n'arrive jamais à échéance":                 "never matures",
+	"Fonds à échéance 8 ans":                     "8-year dated fund",
+	"Zéro-coupon 12 ans":                         "12-year zero-coupon",
 }
 
 var (
