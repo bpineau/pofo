@@ -125,6 +125,7 @@ var CategoriesEN = []Category{
 		Blurb: "What kills retirees: its history, how you measure it, its exact effect on the withdrawal rate, and the defenses that work.",
 		Articles: []Article{
 			{Slug: "tracking-inflation", Title: "Tracking inflation: the indexes, and yours", Blurb: "CPI-U, CPI-W, PCE and their blind spots, the retiree's personal inflation (0.2 to 0.5 points above the index), the breakevens, and how to set the drift.", Source: "suivre-inflation"},
+			{Slug: "inflation-and-withdrawal-rates", Title: "Inflation and the withdrawal rate: the exact link", Blurb: "The squeeze and simultaneous real compression: why 1966 beats 1929, the conditional numbers, and the plan's indexation inventory.", Source: "inflation-et-taux-de-retrait"},
 		},
 	},
 	{
