@@ -1129,6 +1129,31 @@ var figureDict = map[string]string{
 	"Fenêtres de 120 mois, chacune datée du mois qui la ferme. Aux deux sommets, le S&amp;P 500 réel ne fait que +2,2 puis −2,6 %/an.":        "120-month windows, each dated by the month that closes it. At the two peaks, the real S&amp;P 500 manages only +2.2% then −2.6% a year.",
 	"Petites capitalisations décotées de Kenneth French moins 1,0 point par an de coûts mesurés, contre S&amp;P 500 total return, en réel.":   "Kenneth French's cheap small caps less 1.0 point a year of measured costs, against the S&amp;P 500 total return, in real terms.",
 	"Sur 1963-2026, 9,8 %/an réel contre 6,7 %/an, et 63 % des fenêtres au-dessus de zéro : une prime réelle, qu'une fenêtre sur trois perd.": "From 1963 to 2026, 9.8% a year real against 6.7%, and 63% of windows above zero: a real premium, and one window in three misses it.",
+
+	// cash-buffer
+	"optimum mou (2-3 ans)":                                                    "soft optimum (2 to 3 years)",
+	"au-delà, le buffer appauvrit le moteur":                                   "beyond that, the buffer starves the engine",
+	"toute la plage tient en moins d'un point de ruine":                        "the whole range fits in under one point of failure",
+	"taille du matelas (années de dépenses)  →":                                "buffer size (years of spending)  →",
+	"L'arbitrage du buffer : une courbe presque plate":                         "The buffer trade-off: a nearly flat curve",
+	"LE MATELAS DE LIQUIDITÉS":                                                 "THE CASH BUFFER",
+	"Neuf traversées contre la portée du matelas":                              "Nine crossings against the reach of the buffer",
+	"mois passés sous le dernier sommet réel, 60/40 américain réel, 1953-2026": "months spent below the last real high, real US 60/40, 1953 to 2026",
+	"les 18 premiers mois":                                                     "the first 18 months",
+	"de 18 à 36 mois":                                                          "18 to 36 months",
+	"au-delà : à découvert":                                                    "beyond: uncovered",
+	"la taille recommandée : 18 à 36 mois":                                     "the recommended size: 18 to 36 months",
+	"épisode":                                                                  "episode",
+	"creux":                                                                    "trough",
+	"stagflation des années 1970":                                              "1970s stagflation",
+	"bulle internet":                                                           "dot-com bubble",
+	"crise financière":                                                         "financial crisis",
+	"choc d'inflation":                                                         "inflation shock",
+	"5 épisodes sur 9 tiennent dans 36 mois.":                                  "5 of 9 episodes fit inside 36 months.",
+	"Les 4 autres laissent 136 mois à découvert,":                              "The other 4 leave 136 months uncovered,",
+	"dont 88 pour la seule traversée des":                                      "88 of them in the crossing of the",
+	"années 1970.":                                                             "1970s alone.",
+	"durée de l'épisode, du sommet réel au retour à ce sommet (mois)":          "length of the episode, from the real high back to that high (months)",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
