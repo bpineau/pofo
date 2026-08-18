@@ -880,7 +880,7 @@ comparison) rather than lose it.
 | IPC, IPCH | French CPI, HICP | `^HICP-FR` and `CPI-U` are symbols: verbatim. | suivre-inflation |
 | SCPI, SIIC | French non-traded property funds, French listed REITs | | immobilier-en-retrait |
 | viager, démembrement, nue-propriété | no English equivalent | Keep the French with a one-line gloss, or drop the passage. | immobilier-en-retrait |
-| crédit lombard, avance d'assurance-vie | lombard loan, policy advance | Both are real English banking terms. | levier-et-marges |
+| crédit lombard, avance d'assurance-vie | (superseded) see the settled rows in section 1: a securities-backed line of credit, a loan against a cash-value policy | "Lombard loan" is real banking English but opaque to a US retail reader. | levier-et-marges |
 
 ---
 
