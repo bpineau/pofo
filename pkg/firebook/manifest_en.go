@@ -123,6 +123,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "Inflation",
 		Blurb: "What kills retirees: its history, how you measure it, its exact effect on the withdrawal rate, and the defenses that work.",
+		Articles: []Article{
+			{Slug: "tracking-inflation", Title: "Tracking inflation: the indexes, and yours", Blurb: "CPI-U, CPI-W, PCE and their blind spots, the retiree's personal inflation (0.2 to 0.5 points above the index), the breakevens, and how to set the drift.", Source: "suivre-inflation"},
+		},
 	},
 	{
 		Title: "Taxes and the US framework",
