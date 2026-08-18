@@ -397,6 +397,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | aristocrates du dividende | Dividend Aristocrats | | faux-actifs-defensifs |
 | erreur de catégorie | category error | | faux-actifs-defensifs |
 | sous-provisionner (un plan) | to under-provision | | faux-actifs-defensifs |
+| relique barbare, réserve de valeur | barbarous relic, store of value | | or-en-retrait |
+| dosage rétrospectif | sizing by the rear-view mirror | | or-en-retrait |
+| prime (sur pièces) | premium over spot | Distinct from risk premium. | or-en-retrait |
+| or papier, ETC physique (US side) | paper gold, physically backed gold ETF | | or-en-retrait |
+| pièces (bullion sense) | coins | Never "pieces". | or-en-retrait |
+| pouvoir d'achat de l'or | purchasing power of gold | | or-en-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
