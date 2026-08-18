@@ -424,6 +424,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | pari de style | style bet | | facteurs-fama-french |
 | terrain de gloire / terrain de peine | field of glory / field of pain | | facteurs-fama-french |
 | capacité (d'un fonds), taux de rotation | a fund's capacity, turnover | | facteurs-fama-french |
+| biais domestique | home bias | | diversification-internationale |
+| capitalisation mondiale, pondération par la capitalisation | world market capitalization, cap weighting | | diversification-internationale |
+| couverture de change, non couvert, contrat de change | hedging, unhedged, forward contract | | diversification-internationale |
+| destins nationaux | national fates | | diversification-internationale |
+| amortisseur (de change) | the crisis cushion | Runs the other way for a dollar investor. | diversification-internationale |
+| tilt ex-US, dose totale | ex-US tilt, the total dose | | diversification-internationale |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
