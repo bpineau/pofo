@@ -1112,6 +1112,23 @@ var figureDict = map[string]string{
 	"La ligne pointillée est la règle des 4 %. Au-delà de 1,2 % réel, l'échelle de 30 ans fait mieux.":          "The dotted line is the 4% rule. Above 1.2% real, the 30-year ladder does better.",
 	"Repères : 0 % réel finance 3,3 %, 1 % (zone euro récente) 3,9 %, 2 % (TIPS de 2023-2024) 4,5 %.":           "Markers: 0% real funds 3.3%, 1% real funds 3.9%, 2% real (TIPS in 2023-2024) funds 4.5%.",
 	"Sur 40 ans, l'horizon FIRE, elle ne finance que 3,0 % à 1 % réel et n'égale la règle qu'au-delà de 2,5 %.": "Over 40 years, the FIRE horizon, it funds only 3.0% at 1% real and matches the rule only above 2.5%.",
+
+	// facteurs-fama-french -> factors-in-retirement.
+	"LES FACTEURS EN RETRAIT":         "FACTORS IN RETIREMENT",
+	"Pas les mêmes décennies perdues": "Not the same lost decades",
+	"écart de rendement réel annualisé sur dix ans glissants, small-cap value américain moins S&amp;P 500, en points": "gap in annualized real return over rolling ten-year windows, US small-cap value minus the S&amp;P 500, in points",
+	"+16,0 pt": "+16.0 pts",
+	"les sommets du tilt : les décennies perdues du marché large": "the tilt's peaks: the broad market's lost decades",
+	"+10,9 pt":               "+10.9 pts",
+	"creux de 1999":          "the 1999 trough",
+	"−5,2 pt":                "−5.2 pts",
+	"purgatoire de la value": "value's purgatory",
+	"−8,0 pt":                "−8.0 pts",
+	"année de fin de la fenêtre de dix ans": "year the ten-year window ends",
+	"mai 2026 : −4,3 pt":                    "May 2026: −4.3 pts",
+	"Fenêtres de 120 mois, chacune datée du mois qui la ferme. Aux deux sommets, le S&amp;P 500 réel ne fait que +2,2 puis −2,6 %/an.":        "120-month windows, each dated by the month that closes it. At the two peaks, the real S&amp;P 500 manages only +2.2% then −2.6% a year.",
+	"Petites capitalisations décotées de Kenneth French moins 1,0 point par an de coûts mesurés, contre S&amp;P 500 total return, en réel.":   "Kenneth French's cheap small caps less 1.0 point a year of measured costs, against the S&amp;P 500 total return, in real terms.",
+	"Sur 1963-2026, 9,8 %/an réel contre 6,7 %/an, et 63 % des fenêtres au-dessus de zéro : une prime réelle, qu'une fenêtre sur trois perd.": "From 1963 to 2026, 9.8% a year real against 6.7%, and 63% of windows above zero: a real premium, and one window in three misses it.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
