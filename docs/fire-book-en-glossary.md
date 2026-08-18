@@ -549,6 +549,11 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | géo-arbitrage temporaire | temporary geographic arbitrage | | flexibilite-realite |
 | le test des cinq ans, ratio plancher/confort | the five-year test, the floor-to-comfort ratio | | flexibilite-realite |
 | incompressible / compressible douloureux / indolore | fixed / compressible but painful / compressible painlessly | | flexibilite-realite |
+| date plancher | the backstop date | Distinct from the date-or-condition commitment. | une-annee-de-plus |
+| report borné | a bounded delay | | une-annee-de-plus |
+| espérance de vie en bonne santé | healthy life expectancy ("roughly 64 or 65 in rich countries") | | une-annee-de-plus |
+| zone pentue / plateau plat (prudence curve) | the steep part of the curve / the flat plateau | | une-annee-de-plus |
+| prototypage fait | prototyping done | Departure criterion. | une-annee-de-plus |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
