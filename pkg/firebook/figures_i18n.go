@@ -1089,6 +1089,15 @@ var figureDict = map[string]string{
 	"rendement réel annualisé sur la fenêtre, en % par an":                                                      "annualized real return over the window, in % a year",
 	"En cumulé : +607 % réel sur 1970-79, −53 % sur 1980-89. Dernière barre partielle : déc. 2019 à déc. 2025.": "Cumulative: +607% real over 1970-79, −53% over 1980-89. Last bar partial: Dec. 2019 to Dec. 2025.",
 	"En euros, l'expérience diffère : le change du dollar s'ajoute au prix de l'or.":                            "Outside the dollar, the experience differs: the currency move adds to the price of gold.",
+	// correl-sign
+	"La corrélation actions / obligations change de signe": "The stock-bond correlation changes sign",
+	"corrélation glissante actions / obligations  →":       "rolling stock-bond correlation  →",
+	"corrélation 0":                          "correlation 0",
+	"ère inflationniste":                     "inflationary era",
+	"négative : les obligations amortissent": "negative: bonds cushion",
+	"positive : tombent ensemble":            "positive: they fall together",
+	"l'âge d'or du 60/40":                    "the golden age of the 60/40",
+	"retour 2022 →":                          "back in 2022 →",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
