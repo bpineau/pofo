@@ -1292,6 +1292,19 @@ var figureDict = map[string]string{
 	"Sur ces quinze ans, les prix américains sont multipliés par 2,7 et l'indice nominal par 4,0 : la courbe est déjà nette de cette hausse.": "Over those fifteen years US prices multiply by 2.7 and the nominal index by 4.0: the curve is already net of that rise.",
 	"La chute finale est le krach d'octobre 1987, qui laisse encore l'indice 48 % au-dessus du départ.":                                       "The last drop is the October 1987 crash, which still leaves the index 48% above the start.",
 	"« Durablement » : premier mois repassé au-dessus de 100 sans jamais y redescendre ensuite, vérifié jusqu'à aujourd'hui.":                 "\"For good\": the first month back above 100 that never fell below it again, checked through today.",
+
+	// hyperinflation-et-extremes -> hyperinflation-and-extremes
+	"HYPERINFLATION": "HYPERINFLATION",
+	"Weimar en termes réels : la créance à zéro, l'action seulement amochée": "Weimar in real terms: the claim goes to zero, the share is only battered",
+	"capital réel restant pour 100 placés fin 1913, échelle log":             "real capital left per 100 invested at the end of 1913, log scale",
+	"mesure non fiable":                "measurement unreliable",
+	"capital intact":                   "capital intact",
+	"l'obligation d'État atteint zéro": "the government bond hits zero",
+	"en 1923, et n'en revient pas":     "in 1923, and never comes back",
+	"Actions allemandes":               "German equities",
+	"40 en 1926":                       "40 in 1926",
+	"Le rentier obligataire est ruiné, l'actionnaire a perdu plus de 80 % et lui survit.":                    "The bondholder is wiped out, the shareholder has lost more than 80% and outlives him.",
+	"Rendements réels annuels allemands du panel Jorda-Schularick-Taylor (R6), capitalisés depuis fin 1913.": "German annual real returns from the Jorda-Schularick-Taylor panel (R6), compounded from the end of 1913.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
