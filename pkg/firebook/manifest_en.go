@@ -93,6 +93,7 @@ var CategoriesEN = []Category{
 			{Slug: "inflation-linked-bonds", Title: "Inflation-linked bonds: the only contract written in real terms", Blurb: "The breakeven as the decision tool, the lesson of 2022, the ladder of linkers that guarantees what the 4% rule only hopes for, and TIPS and I bonds in practice.", Source: "obligations-indexees"},
 			{Slug: "factors-in-retirement", Title: "Factors (Fama-French, value, momentum) in the withdrawal phase", Blurb: "The core that survives replication, the retiree's case file (SCV, the value-inflation affinity), a decade of lagging the index, and the optional tilt, properly sized.", Source: "facteurs-fama-french"},
 			{Slug: "international-diversification", Title: "International diversification (and home bias)", Blurb: "The dominant risk is your own country falling behind: the national fates in numbers, why the currency argument runs backwards for a dollar investor, and the target in one fund.", Source: "diversification-internationale"},
+			{Slug: "building-it-with-us-etfs", Title: "Building it with US-listed ETFs: the retiree's shopping list", Blurb: "The 1940 Act fund and its four technical choices, the full cost chain, the table of blocks with US-listed examples, and selling cleanly across account types.", Source: "etf-ucits-europeens"},
 		},
 	},
 	{
