@@ -337,6 +337,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | clause de démontage | dismantling clause | | return-stacking |
 | budget de diversification | the diversification budget | | return-stacking |
 | mode de forum | a forum fad | | return-stacking |
+| prime de risque actions | equity risk premium | | primes-de-risque |
+| covariance avec les mauvais états du monde | covariance with the bad states of the world | | primes-de-risque |
+| risque de désastre, prime d'illiquidité, limites d'arbitrage | disaster risk, illiquidity premium, limits to arbitrage | | primes-de-risque |
+| le salaire du risque porté | the wage of risk carried | | primes-de-risque |
+| survivre à sa propre célébrité | survive its own fame | | primes-de-risque |
+| l'étalon (cash as the measuring stick) | the yardstick | | primes-de-risque |
+| petites monnaies (minor premia) | the loose change | Not currencies. | primes-de-risque |
+| commission déguisée | a commission in disguise | | primes-de-risque |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
