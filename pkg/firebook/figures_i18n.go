@@ -1335,6 +1335,28 @@ var figureDict = map[string]string{
 	"Se rationner d'un quart n'a évité la ruine que dans un millésime sur 43. Dans les 42 autres, cela n'a fait que grossir le legs.": "Rationing by a quarter avoided ruin in one vintage out of 43. In the other 42 it only made the bequest bigger.",
 	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; sans fiscalité.":                 "Real US 60/40 (S&amp;P 500, 5-year Treasuries, deflated by CPI-U), the book's reconstruction; no taxes.",
 	"43 fenêtres de trente ans, largement chevauchantes ; chaque série est classée pour elle-même, rang par rang.":                    "43 thirty-year windows, heavily overlapping; each series is ranked on its own, rank by rank.",
+
+	// flexibilite-realite -> flexibility-in-practice
+	"LA FLEXIBILITÉ, MYTHE ET RÉALITÉ":                                                                     "FLEXIBILITY, MYTH AND REALITY",
+	"La coupe exigée par le marché contre la coupe tenable par un ménage":                                  "The cut the market demands against the cut a household can sustain",
+	"millésime 1966, 60/40 américain réel, plan de trente ans":                                             "1966 vintage, real US 60/40, thirty-year plan",
+	"exigé par le marché : la coupe minimale qui évite la ruine (calculé, en % du train de vie)":           "demanded by the market: the smallest cut that avoids ruin (computed, in % of the standard of living)",
+	"tenable par un ménage : 15 % au plus, douze ans au plus (affirmation de ce chapitre, pas une mesure)": "sustainable by a household: 15% at most, twelve years at most (this chapter's claim, not a measurement)",
+	"Plan à 4,5 %":                          "Plan at 4.5%",
+	"Plan à 4,0 %":                          "Plan at 4.0%",
+	"arrêt total des dépenses":              "spending stopped entirely",
+	"1 à 3 ans : impossible,":               "1 to 3 years: impossible,",
+	"même sans dépenser un euro":            "even spending nothing at all",
+	"pour ne demander que 15 %,":            "to ask for only 15%,",
+	"il faut tenir vingt-six ans":           "you have to hold it twenty-six years",
+	"aucune coupe tenable ne sauve ce plan": "no sustainable cut saves this plan",
+	"l'exigence entre dans le tenable":      "the demand comes inside reach",
+	"un an : 42 %. Trois ans : 15 %.":       "one year: 42%. Three years: 15%.",
+	"Cinq ans : 9 %. Dix ans : 4 %.":        "Five years: 9%. Ten years: 4%.",
+	"la coupe tenable suffit dès trois ans": "the sustainable cut is enough from three years on",
+	"durée de la coupe, en années ; elle démarre en 1970, l'année où le portefeuille passe 20 % sous son sommet":            "how long the cut lasts, in years; it starts in 1970, the year the portfolio falls 20% below its peak",
+	"Plan de 30 ans sur 1 M€ de capital : 45 000 € par an à gauche, 40 000 € à droite, en euros constants, hors fiscalité.": "A 30-year plan on EUR 1M of capital: EUR 45,000 a year on the left, EUR 40,000 on the right, in constant euros, no taxes.",
+	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre.":                        "Real US 60/40 (S&amp;P 500, 5-year Treasuries, deflated by CPI-U), the book's reconstruction.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
