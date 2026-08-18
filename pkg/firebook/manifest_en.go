@@ -79,6 +79,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "The retirement portfolio",
 		Blurb: "What you live on for forty years: the allocation, the time dimension, and the blocks that hold in every regime.",
+		Articles: []Article{
+			{Slug: "risk-premia", Title: "Where returns come from: risk premia", Blurb: "Why stocks pay, who pays the premium, why it survives its own fame, and why gold returns nothing without that being a flaw.", Source: "primes-de-risque"},
+		},
 	},
 	{
 		Title: "Alternative assets",

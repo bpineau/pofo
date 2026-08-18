@@ -28,6 +28,21 @@ import "regexp"
 // The dictionary grows with the translation campaign: an entry is needed only
 // once an English article uses the plate.
 var figureDict = map[string]string{
+	// primes-echelle
+	"PRIMES DE RISQUE": "RISK PREMIA",
+	"Ce que chaque risque paie au-dessus du cash":                      "What each risk pays above cash",
+	"points de rendement réel par an (ordres de grandeur historiques)": "points of real return a year (historical ballpark)",
+	"Actions mondiales":           "World stocks",
+	"4 à 6":                       "4 to 6",
+	"Suivi de tendance (brut)":    "Trend following (gross)",
+	"2 à 4":                       "2 to 4",
+	"Terme (obligations longues)": "Term (long bonds)",
+	"1 à 2":                       "1 to 2",
+	"Crédit IG (net des défauts)": "IG credit (net of defaults)",
+	"0,5 à 1":                     "0.5 to 1",
+	"pas de prime : une monnaie, pas un risque rémunéré": "no premium: a currency, not a paid risk",
+	"Cash (l'étalon)": "Cash (the yardstick)",
+	"zéro réel par définition, négatif en répression": "zero real by definition, negative under repression",
 	// vol-drag
 	"Le volatility drag : même moyenne, richesses opposées": "Volatility drag: same average, opposite outcomes",
 	"régulier : +7 % chaque année":                          "steady: +7% every year",
