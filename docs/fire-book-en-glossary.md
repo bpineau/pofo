@@ -498,6 +498,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | indexation négative, en négatif | negative indexation, indexed in reverse | | inflation-et-taux-de-retrait |
 | rapport douleur/protection | the pain-to-protection trade | | inflation-et-taux-de-retrait |
 | bancs d'essai | test benches | | inflation-et-taux-de-retrait |
+| nature de la preuve (sorting axis) | the kind of evidence | | se-proteger-de-inflation |
+| protection lente | the slow protection | | se-proteger-de-inflation |
+| les erreurs d'achat: acheter après / sur-acheter / tout vendre | the buying mistakes: buy after / buy too much / sell everything | | se-proteger-de-inflation |
+| sur-protection contre le dernier régime | over-protecting against the last regime | | se-proteger-de-inflation |
+| programme d'indexation | the indexation program | Distinct from the indexation inventory. | se-proteger-de-inflation |
+| matières premières larges | broad commodities | | se-proteger-de-inflation |
+| dérive budgétée | the budgeted drift | | se-proteger-de-inflation |
+| plan rigide, plancher détendu | a plan with no give in it, a floor with slack | | se-proteger-de-inflation |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
