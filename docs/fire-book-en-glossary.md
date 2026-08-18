@@ -562,6 +562,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | l'assurance-séquence, son prix d'exercice | sequence insurance, its strike price | | retour-au-travail |
 | micro-entreprise, portage salarial, rupture conventionnelle, cumul emploi-retraite | (ADAPTed away) the five US vehicles: negotiated part-time, W-2 part-time, 1099 contracting, seasonal work, volunteering | | retour-au-travail |
 | US-side work vocabulary | 1099, W-2, self-employment tax, quarters of coverage, open enrollment | Reuse verbatim in the us-* articles. | retour-au-travail |
+| désamorcer la date | defuse the date | | revue-annuelle |
+| le journal de revue | the review log | Alongside "the plan log". | revue-annuelle |
+| hygiène des lignes | holding hygiene | | revue-annuelle |
+| la veille (réglementaire / passive) | watching the rules, the low-effort watch | | revue-annuelle |
+| sous surveillance / surveillance levée (guardrail state) | on watch / watch lifted | | revue-annuelle |
+| prix plancher (of the ritual) | floor price | | revue-annuelle |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
@@ -574,7 +580,7 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | cas-type, fil rouge | worked case, the running example | The recurring households (Aline and Thomas, Léa, Claire and Idris, Karim, Nora and Malik) keep their French first names, identical across every article. | cas-types |
 | le mur (des dix-huit mois) | the wall, the eighteen-month wall | The motivational trough 12 to 24 months after quitting. | temoignages-fire |
 | la convalescence | convalescence | Year one treated as recovery: no big decisions. | sens-et-identite |
-| les quatre chantiers | the four workstreams | Structure, identity, connection, usefulness. The review line "les quatre chantiers, ça va ?" -> "how are the four projects doing?". | sens-et-identite |
+| les quatre chantiers | the four workstreams | Structure, identity, connection, usefulness. The review line "les quatre chantiers, ça va ?" -> "how are the four workstreams doing?". | sens-et-identite |
 | le lien, l'utilité | connection, usefulness | Two of the four projects. Never "link", never "utility". | sens-et-identite |
 | identités de verbe, de statut | verb identities, status identities | "I work wood" against "I am an engineer". | sens-et-identite |
 | le journal du plan | the plan log | Three lines written at each annual review. | revue-annuelle |
