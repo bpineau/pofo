@@ -411,6 +411,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | convexité de crise | crisis convexity | | obligations-en-retrait |
 | fonds à duration constante | constant-duration fund | | obligations-en-retrait |
 | fonds euros (in a worked-example line) | stable value and T-bills | | obligations-en-retrait |
+| échelle de linkers, barreau, échelle entièrement consommée | a ladder of linkers, a TIPS ladder; rung; fully consumed ladder | | obligations-indexees |
+| taux réel, rendement réel affiché | real yield | | obligations-indexees |
+| plancher de déflation | deflation floor | | obligations-indexees |
+| principal réindexé, l'indexation créditée | re-indexed principal, the credited indexation | | obligations-indexees |
+| l'écueil de l'indexation taxée | phantom income | US idiom. | obligations-indexees |
+| détention à terme | hold-to-maturity | Opposite of the rebalanced sleeve. | obligations-indexees |
+| l'outil de décision | the tool you decide with | | obligations-indexees |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
