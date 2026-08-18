@@ -81,6 +81,7 @@ var CategoriesEN = []Category{
 		Blurb: "What you live on for forty years: the allocation, the time dimension, and the blocks that hold in every regime.",
 		Articles: []Article{
 			{Slug: "risk-premia", Title: "Where returns come from: risk premia", Blurb: "Why stocks pay, who pays the premium, why it survives its own fame, and why gold returns nothing without that being a flaw.", Source: "primes-de-risque"},
+			{Slug: "why-diversification-works", Title: "Why diversification works: the mechanics of the free lunch", Blurb: "The free lunch taken apart: correlations, the rebalancing premium, volatility harvesting, the doubled effect in decumulation, and the fake diversification to hunt down.", Source: "pourquoi-la-diversification-marche"},
 		},
 	},
 	{
