@@ -1079,8 +1079,17 @@ var figureDict = map[string]string{
 	"2013 : +5 % contre +30 %":                                  "2013: +5% vs +30%",
 	"Bandes grises : 1983-1991, 1994-1999 et 2012-2017, les séries d'au moins quatre années de retard consécutives.":                            "Gray bands: 1983-1991, 1994-1999 and 2012-2017, the runs of at least four consecutive years behind.",
 	"Golden Butterfly moins 100 % actions, écart de rendement réel annuel. Sa jambe small value paie 1,0 point par an de coûts. US, 1972-2024.": "Golden Butterfly minus 100% stocks, annual real return gap. Its small value leg pays 1.0 point a year in costs. US, 1972-2024.",
+	// or-decennies
+	"L'OR EN PORTEFEUILLE": "GOLD IN A PORTFOLIO",
+	"Les décennies de l'or, en réel : cinq dans le rouge, trois à deux chiffres":                                "Gold's decades, in real terms: five in the red, three in double digits",
+	"Une fenêtre de dix ans tous les cinq ans. Or en dollars, déflaté par le CPI américain.":                    "One ten-year window every five years. Gold in dollars, deflated by US CPI.",
+	"cinq fenêtres d'affilée dans le rouge":                                                                     "five windows in a row in the red",
+	"moyenne des dix fenêtres : +3,0 %/an":                                                                      "average of the ten windows: +3.0% a year",
+	"sans la fenêtre 1970-79 : +1,0 %/an":                                                                       "without the 1970-79 window: +1.0% a year",
+	"rendement réel annualisé sur la fenêtre, en % par an":                                                      "annualized real return over the window, in % a year",
+	"En cumulé : +607 % réel sur 1970-79, −53 % sur 1980-89. Dernière barre partielle : déc. 2019 à déc. 2025.": "Cumulative: +607% real over 1970-79, −53% over 1980-89. Last bar partial: Dec. 2019 to Dec. 2025.",
+	"En euros, l'expérience diffère : le change du dollar s'ajoute au prix de l'or.":                            "Outside the dollar, the experience differs: the currency move adds to the price of gold.",
 }
-
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
 	// plate: a <text> wrapping <tspan>s contributes its tspans, not itself
