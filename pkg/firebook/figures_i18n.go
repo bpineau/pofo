@@ -1364,6 +1364,14 @@ var figureDict = map[string]string{
 	"2 points de suite → coupe": "2 readings in a row → cut",
 	"coupe levée":               "cut lifted",
 	"Le taux de retrait courant : le voyant qu'on pilote": "The current withdrawal rate: the warning light you steer by",
+
+	// spending-in-retirement
+	"go-go":            "go-go",
+	"ralentissement":   "slowdown",
+	"santé":            "health care",
+	"âge  →":           "age  →",
+	"dépenses réelles": "real spending",
+	"Les dépenses réelles font un « sourire », pas une ligne plate": "Real spending traces a smile, not a flat line",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
