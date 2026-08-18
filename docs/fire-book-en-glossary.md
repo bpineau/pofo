@@ -467,6 +467,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | en terrain calme | in calm weather | | recharger-ou-pas |
 | munitions (of a buffer), armé / désarmé (a trigger) | ammunition, armed / disarmed | | recharger-ou-pas |
 | plomberie (a chapter about flows), ordre de préséance | plumbing, order of play | | recharger-ou-pas |
+| loyer fantôme | phantom rent | | immobilier-en-retrait |
+| le net-net | the net-net | | immobilier-en-retrait |
+| décoté, flux décoté | marked down, a discounted flow | | immobilier-en-retrait |
+| robinet (de dernier recours) | tap | | immobilier-en-retrait |
+| linker vivant | living linker | | immobilier-en-retrait |
+| les configurations tranchées | the clear-cut cases | | immobilier-en-retrait |
+| SCPI (ADAPT rendering) | non-traded property funds and real estate interval funds | | immobilier-en-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
