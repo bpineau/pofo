@@ -441,6 +441,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | convention de financement (buffer carved out vs stacked) | carved out of the starting capital vs stacked on top | | cash-buffer |
 | permission de dépenser | permission to spend | | cash-buffer |
 | anxiolytique structurel | structural sedative | | cash-buffer |
+| étage (of the cash ladder) | rung | Distinct from the budget "tier" and the "stacked layer". | cash-ameliore |
+| pair | par | | cash-ameliore |
+| cascade (CLO waterfall sense) | the waterfall | Third sense of cascade. | cash-ameliore |
+| coussin (subordination) | cushion | | cash-ameliore |
+| surdimensionnement, test de couverture des intérêts | overcollateralization test, interest coverage test | | cash-ameliore |
+| prêts à effet de levier, recouvrement | leveraged loans, recovery | | cash-ameliore |
+| fonds daté | defined-maturity fund | Alongside target-maturity fund. | cash-ameliore |
+| livrets réglementés | savings account (US: FDIC-insured) | | cash-ameliore |
+| stablecoins rémunérés | yield-bearing stablecoins | | cash-ameliore |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
