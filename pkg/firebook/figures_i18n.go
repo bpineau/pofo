@@ -1154,6 +1154,31 @@ var figureDict = map[string]string{
 	"dont 88 pour la seule traversée des":                                      "88 of them in the crossing of the",
 	"années 1970.":                                                             "1970s alone.",
 	"durée de l'épisode, du sommet réel au retour à ce sommet (mois)":          "length of the episode, from the real high back to that high (months)",
+
+	// enhanced-cash: the ladder of cash rungs.
+	"POCHE DE LIQUIDITÉS": "THE CASH SLEEVE",
+	"Le supplément se compte en points de base, le risque aussi":                                      "The extra yield is counted in basis points, and so is the risk",
+	"écart de rendement annualisé au monétaire, et pire baisse subie, sur la fenêtre de chaque ligne": "annualized yield above the money market fund, and worst drawdown taken, over each row's own window",
+	"ce que ça rapporte en plus":          "what it pays on top",
+	"ce que ça peut perdre":               "what it can lose",
+	"monétaire (ESTR)":                    "money market (overnight rate)",
+	"XEON, l'étalon":                      "the yardstick",
+	"référence":                           "benchmark",
+	"obligataire ultra-court":             "ultra-short bonds",
+	"ERNX, crédit investment grade court": "short investment grade credit",
+	"CLO AAA en euro":                     "AAA CLO, euro",
+	"JCL0, depuis 2024-12":                "euro-listed, since 2024-12",
+	"CLO AAA en dollar":                   "AAA CLO, dollar",
+	"JAAA, depuis 2020-10":                "US-listed, since 2020-10",
+	"Les deux barres n'ont pas la même unité de temps : le gain est annuel, la perte est un accident bref.": "The two bars do not share a unit of time: the gain is annual, the loss is a brief accident.",
+	"Le dollar occupe la dernière ligne pour son historique plus long, pas pour un investisseur en euros.":  "The dollar row is last for its longer history; it is also the one a US investor buys.",
+	"-8 bp":   "-8 bp",
+	"+27 bp":  "+27 bp",
+	"-20 bp":  "-20 bp",
+	"+127 bp": "+127 bp",
+	"-70 bp":  "-70 bp",
+	"+133 bp": "+133 bp",
+	"-260 bp": "-260 bp",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
