@@ -1098,6 +1098,20 @@ var figureDict = map[string]string{
 	"positive : tombent ensemble":            "positive: they fall together",
 	"l'âge d'or du 60/40":                    "the golden age of the 60/40",
 	"retour 2022 →":                          "back in 2022 →",
+
+	// linkers-echelle (inflation-linked-bonds)
+	"L'ÉCHELLE INDEXÉE": "THE INDEXED LADDER",
+	"Ce que finance une échelle de linkers, selon le taux réel et l'horizon":                        "What a ladder of linkers funds, by real yield and horizon",
+	"Retrait annuel réel d'une échelle entièrement consommée : r / (1 − (1+r)^−N), en % du capital": "Real annual withdrawal from a fully consumed ladder: r / (1 − (1+r)^−N), as a % of capital",
+	"retrait annuel":                       "annual withdrawal",
+	"taux réel de marché des linkers  →":   "market real yield on linkers  →",
+	"20 ans":                               "20 years",
+	"30 ans":                               "30 years",
+	"1,2 % réel":                           "1.2% real",
+	"l'échelle de 30 ans rejoint la règle": "the 30-year ladder catches the rule",
+	"La ligne pointillée est la règle des 4 %. Au-delà de 1,2 % réel, l'échelle de 30 ans fait mieux.":          "The dotted line is the 4% rule. Above 1.2% real, the 30-year ladder does better.",
+	"Repères : 0 % réel finance 3,3 %, 1 % (zone euro récente) 3,9 %, 2 % (TIPS de 2023-2024) 4,5 %.":           "Markers: 0% real funds 3.3%, 1% real funds 3.9%, 2% real (TIPS in 2023-2024) funds 4.5%.",
+	"Sur 40 ans, l'horizon FIRE, elle ne finance que 3,0 % à 1 % réel et n'égale la règle qu'au-delà de 2,5 %.": "Over 40 years, the FIRE horizon, it funds only 3.0% at 1% real and matches the rule only above 2.5%.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered

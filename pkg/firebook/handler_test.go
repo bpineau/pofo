@@ -208,7 +208,9 @@ func TestHandlerEnglishIndexSkipsEmptyParts(t *testing.T) {
 	defer srv.Close()
 	_, body := get(t, srv, "/")
 	for _, cat := range CategoriesEN {
-		want := strings.Contains(body, html.EscapeString(cat.Title))
+		// Match the rendered heading, not the bare title: an article title may
+		// legitimately contain a part title as a substring.
+		want := strings.Contains(body, `<h2 id="`+bookmd.HeadingID(cat.Title)+`">`)
 		if len(cat.Articles) == 0 && want {
 			t.Errorf("empty part %q rendered on the index", cat.Title)
 		}
