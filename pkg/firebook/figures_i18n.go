@@ -1260,6 +1260,24 @@ var figureDict = map[string]string{
 	"et fait un quart de l'inflation du ménage.": "and makes a quarter of the household's inflation.",
 	"Inflation du ménage":                        "Household inflation",
 	"+0,5 point au-dessus de l'indice":           "+0.5 point above the index",
+
+	// inflation-and-withdrawal-rates
+	"L'INFLATION ET LE TAUX DE RETRAIT":                                                                                "INFLATION AND THE WITHDRAWAL RATE",
+	"Même perte cumulée, deux formes : l'épisode contre la dérive":                                                     "Same cumulative loss, two shapes: the episode against the drift",
+	"600 k€, 24 k€ par an indexés sur les prix (4,0 % au départ), 30 ans.":                                             "EUR 600k, EUR 24k a year indexed to prices (4.0% at the start), 30 years.",
+	"Les mêmes actifs dans les deux mondes : 6,1 % nominal par an, soit 4 % réel si l'inflation tient les 2 % prévus.": "The same assets in both worlds: 6.1% nominal a year, which is 4% real if inflation holds at the planned 2%.",
+	"Le niveau des prix, base 100 au départ":                                                                           "The price level, 100 at the start",
+	"fin de l'épisode": "end of the episode",
+	"l'épisode : cinq ans à 8 %, puis retour à 2 %": "the episode: five years at 8%, then back to 2%",
+	"la dérive : 2,98 % par an":                     "the drift: 2.98% a year",
+	"les deux se rejoignent":                        "the two meet",
+	"même perte cumulée :":                          "same cumulative loss:",
+	"le plan prévu":                                 "the plan as designed",
+	"Le taux de retrait courant, lu chaque 1er janvier : retrait de l'année / portefeuille": "The current withdrawal rate, read every January 1: the year's withdrawal / portfolio",
+	"l'épisode entre dans la zone d'alerte":                                                 "the episode enters the alert zone",
+	"à l'année 19, avec 11 ans encore à financer":                                           "in year 19, with 11 years still to fund",
+	"l'épisode": "the episode",
+	"la dérive": "the drift",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
