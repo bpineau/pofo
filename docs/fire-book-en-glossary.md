@@ -554,6 +554,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | espérance de vie en bonne santé | healthy life expectancy ("roughly 64 or 65 in rich countries") | | une-annee-de-plus |
 | zone pentue / plateau plat (prudence curve) | the steep part of the curve / the flat plateau | | une-annee-de-plus |
 | prototypage fait | prototyping done | Departure criterion. | une-annee-de-plus |
+| travail dosé, doser | work in small doses, to dose | | retour-au-travail |
+| travail choisi | work you choose | Not "chosen work". | retour-au-travail |
+| le retour subi / le retour temporaire ciblé | the forced return / the targeted temporary return | Named taxonomy. | retour-au-travail |
+| l'option fond, la décroissance de l'option | the option melts, the option's decay | Echoes the melting buffer. | retour-au-travail |
+| marge de première décennie | first-decade margin | | retour-au-travail |
+| l'assurance-séquence, son prix d'exercice | sequence insurance, its strike price | | retour-au-travail |
+| micro-entreprise, portage salarial, rupture conventionnelle, cumul emploi-retraite | (ADAPTed away) the five US vehicles: negotiated part-time, W-2 part-time, 1099 contracting, seasonal work, volunteering | | retour-au-travail |
+| US-side work vocabulary | 1099, W-2, self-employment tax, quarters of coverage, open enrollment | Reuse verbatim in the us-* articles. | retour-au-travail |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
