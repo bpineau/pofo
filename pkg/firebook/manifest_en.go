@@ -112,6 +112,7 @@ var CategoriesEN = []Category{
 		Blurb: "The shock absorbers of a plan: the cash buffer and its rules, buckets demystified, ladders, and the protections around your wealth.",
 		Articles: []Article{
 			{Slug: "cash-buffer", Title: "The cash buffer: size, cost, and what it is really for", Blurb: "The instinct is right, the arithmetic is stubborn (plus or minus 0.5 points), and the real value lies elsewhere: no panic, permission to spend, a household that can run the plan.", Source: "cash-buffer"},
+			{Slug: "enhanced-cash", Title: "Enhanced cash: money market funds, T-bills and AAA CLOs", Blurb: "What to fill the short sleeve with: the rungs measured, AAA CLOs taken apart, and the three-layer assembly rule.", Source: "cash-ameliore"},
 		},
 	},
 	{
