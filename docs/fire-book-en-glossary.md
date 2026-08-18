@@ -474,6 +474,15 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | linker vivant | living linker | | immobilier-en-retrait |
 | les configurations tranchées | the clear-cut cases | | immobilier-en-retrait |
 | SCPI (ADAPT rendering) | non-traded property funds and real estate interval funds | | immobilier-en-retrait |
+| crédit lombard | a securities-backed line of credit | Settled 2026-08-18 for the EN edition (overrides "lombard loan"). | levier-et-marges |
+| avance d'assurance-vie | a loan against a cash-value policy | | levier-et-marges |
+| quotité (of a credit line) | advance rate | | levier-et-marges |
+| appel de marge, liquidation forcée | margin call, forced liquidation | | levier-et-marges |
+| tirage (on a line) | draw | | levier-et-marges |
+| plan tendu | a tight plan | Opposite of oversized. | levier-et-marges |
+| levier naïf / contracyclique | naive leverage / countercyclical leverage | | levier-et-marges |
+| test du conjoint | the spouse test | | levier-et-marges |
+| pont de liquidité | liquidity bridge | | levier-et-marges |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
