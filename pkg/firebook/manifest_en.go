@@ -92,6 +92,7 @@ var CategoriesEN = []Category{
 			{Slug: "bonds-in-retirement", Title: "Bonds in retirement: types, duration, the exact job", Blurb: "Price and duration, YTM as the expectation on the label, the three services and the regimes they need, the four decisions, and where a stable value fund belongs.", Source: "obligations-en-retrait"},
 			{Slug: "inflation-linked-bonds", Title: "Inflation-linked bonds: the only contract written in real terms", Blurb: "The breakeven as the decision tool, the lesson of 2022, the ladder of linkers that guarantees what the 4% rule only hopes for, and TIPS and I bonds in practice.", Source: "obligations-indexees"},
 			{Slug: "factors-in-retirement", Title: "Factors (Fama-French, value, momentum) in the withdrawal phase", Blurb: "The core that survives replication, the retiree's case file (SCV, the value-inflation affinity), a decade of lagging the index, and the optional tilt, properly sized.", Source: "facteurs-fama-french"},
+			{Slug: "international-diversification", Title: "International diversification (and home bias)", Blurb: "The dominant risk is your own country falling behind: the national fates in numbers, why the currency argument runs backwards for a dollar investor, and the target in one fund.", Source: "diversification-internationale"},
 		},
 	},
 	{
