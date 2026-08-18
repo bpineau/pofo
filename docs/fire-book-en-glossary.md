@@ -491,6 +491,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le débat core/headline | the core-versus-headline argument | | suivre-inflation |
 | ménage « indice +0,3 » | the "index plus 0.3" household | | suivre-inflation |
 | l'optimisme le mieux déguisé | the best-disguised optimism | | suivre-inflation |
+| inventaire d'indexation | the indexation inventory | | inflation-et-taux-de-retrait |
+| compression réelle simultanée | simultaneous real compression | Paired with "the squeeze". | inflation-et-taux-de-retrait |
+| la zone d'alerte | the alert zone | | inflation-et-taux-de-retrait |
+| long / court inflation (exposure sign) | long inflation / short inflation | | inflation-et-taux-de-retrait |
+| indexation négative, en négatif | negative indexation, indexed in reverse | | inflation-et-taux-de-retrait |
+| rapport douleur/protection | the pain-to-protection trade | | inflation-et-taux-de-retrait |
+| bancs d'essai | test benches | | inflation-et-taux-de-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
