@@ -528,6 +528,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le regret n° 1, la liste canonique | the number one regret, the canonical list | | temoignages-fire |
 | lune de miel (post-exit) | the honeymoon | Pairs with the eighteen-month wall. | temoignages-fire |
 | prototyper la vie avant le départ | prototype the life before you leave | | temoignages-fire |
+| chantier (personal-worksite sense), les quatre chantiers | workstream, the four workstreams | Unified 2026-08-19 (was split workstream/projects). | sens-et-identite |
+| rituels fixes, engagements externes | fixed rituals, outside commitments | | sens-et-identite |
+| communauté de pratique, adaptation hédonique, courbe en U, fatigue décisionnelle | community of practice, hedonic adaptation, U-curve, decision fatigue | | sens-et-identite |
+| l'oisiveté se programme | schedule the idleness | | sens-et-identite |
+| optimisation sans objet, plan de vie sur-spécifié | optimizing with nothing left to optimize, the over-specified life plan | | sens-et-identite |
+| métier de substitution | substitute career | | sens-et-identite |
+| transmettre / construire / aider | teaching / building / helping | The four moves of usefulness. | sens-et-identite |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
@@ -540,7 +547,7 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | cas-type, fil rouge | worked case, the running example | The recurring households (Aline and Thomas, Léa, Claire and Idris, Karim, Nora and Malik) keep their French first names, identical across every article. | cas-types |
 | le mur (des dix-huit mois) | the wall, the eighteen-month wall | The motivational trough 12 to 24 months after quitting. | temoignages-fire |
 | la convalescence | convalescence | Year one treated as recovery: no big decisions. | sens-et-identite |
-| les quatre chantiers | the four projects | Structure, identity, connection, usefulness. The review line "les quatre chantiers, ça va ?" -> "how are the four projects doing?". | sens-et-identite |
+| les quatre chantiers | the four workstreams | Structure, identity, connection, usefulness. The review line "les quatre chantiers, ça va ?" -> "how are the four projects doing?". | sens-et-identite |
 | le lien, l'utilité | connection, usefulness | Two of the four projects. Never "link", never "utility". | sens-et-identite |
 | identités de verbe, de statut | verb identities, status identities | "I work wood" against "I am an engineer". | sens-et-identite |
 | le journal du plan | the plan log | Three lines written at each annual review. | revue-annuelle |
