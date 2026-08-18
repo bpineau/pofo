@@ -140,7 +140,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "the-psychology-of-spending", Title: "The psychology of spending: why spending it is the hard part", Blurb: "Chronic underspending and panic in a crash: four mechanisms, the biases named, and the toolbox that equips all of it.", Source: "psychologie-du-retrait"},
 			{Slug: "voices-from-real-retirees", Title: "What real FIRE retirees say: accounts and advice", Blurb: "Six findings from the corpus (the money works, the eighteen-month wall, the number one regret: not leaving sooner) and the canonical list of veterans' advice.", Source: "temoignages-fire"},
-			{Slug: "meaning-and-identity", Title: "Meaning, identity, structure: life after work", Blurb: "The four projects a paycheck used to hide, the optimizer's traps, and the prototyping that makes all the difference.", Source: "sens-et-identite"},
+			{Slug: "meaning-and-identity", Title: "Meaning, identity, structure: life after work", Blurb: "The four workstreams a paycheck used to hide, the optimizer's traps, and the prototyping that makes all the difference.", Source: "sens-et-identite"},
 		},
 	},
 	{
