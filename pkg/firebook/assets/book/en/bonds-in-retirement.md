@@ -55,7 +55,7 @@ Here is the opening promise, written down. One line per building block, with the
 
 | Block | Service | Duration | What breaks it | Share |
 |---|---|---|---|---|
-| Stable value, money market | 2, the withdrawals of the hole | 1 to 3 | Falling behind rising rates | Up to 50% |
+| Stable value, money market | 2, withdrawals in the holes | 1 to 3 | Falling behind rising rates | Up to 50% |
 | Intermediate Treasuries | 3, and 1 in disinflation | 5 to 8 | An inflation shock | The remainder |
 | Long Treasuries | 1, deflation insurance | 15 to 20 | An inflation shock, amplified | 10 to 20% |
 | Short TIPS | Inflation by surprise | 3 to 5 | Rising real rates | 25 to 50% |
