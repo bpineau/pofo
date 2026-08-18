@@ -460,6 +460,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | échelle nominale gonflée, échelle courte roulée | the inflated nominal ladder, the short rolling ladder | | echelle-obligataire |
 | fonds à échéance (US-article form) | defined-maturity ETF | iBonds / BulletShares category name. | echelle-obligataire |
 | yield-chasing | yield chasing | No hyphen. | echelle-obligataire |
+| buffer perpétuel / fondant | permanent buffer / melting buffer | | recharger-ou-pas |
+| compte d'attente | parking account | | recharger-ou-pas |
+| consommation partielle (du buffer) | partial drawing | | recharger-ou-pas |
+| l'interdiction (absolue), jamais en baisse | the prohibition, never while under water | | recharger-ou-pas |
+| en terrain calme | in calm weather | | recharger-ou-pas |
+| munitions (of a buffer), armé / désarmé (a trigger) | ammunition, armed / disarmed | | recharger-ou-pas |
+| plomberie (a chapter about flows), ordre de préséance | plumbing, order of play | | recharger-ou-pas |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
