@@ -358,6 +358,16 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | l'arbitrage (verdict of a test) | the tradeoff | Distinct from arbitrage the trade. | concevoir-un-portefeuille |
 | millésimes tristement célèbres | the infamous vintages | | concevoir-un-portefeuille |
 | l'allocation tombe à la fin | the allocation falls out at the end | | concevoir-un-portefeuille |
+| carte d'identité (of an asset) | the anatomy | | allocation-actions-obligations |
+| bestiaire | the species ("The species, issuer by issuer") | | allocation-actions-obligations |
+| souveraines du cœur / à spread | core sovereigns / sovereigns with a spread | | allocation-actions-obligations |
+| prime de crédit, le spread | credit premium (the spread) | | allocation-actions-obligations |
+| courbe des taux, grille tarifaire (of the curve) | yield curve, price list | | allocation-actions-obligations |
+| fonds à échéance, ETF à maturité datée, ETF roulant | target-maturity fund, dated-maturity ETF, rolling ETF | | allocation-actions-obligations |
+| zéro-coupon, contre-emploi | zero-coupon, misuse | | allocation-actions-obligations |
+| chercher du rendement | reaching for yield | | allocation-actions-obligations |
+| choc déflationniste / choc d'inflation | deflationary shock / inflation shock | | allocation-actions-obligations |
+| balayage d'allocation | allocation sweep | | allocation-actions-obligations |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
