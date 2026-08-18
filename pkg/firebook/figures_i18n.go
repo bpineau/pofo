@@ -874,6 +874,33 @@ var figureDict = map[string]string{
 	"67 € de 90/60":                            "EUR 67 of 90/60",
 	"+ 33 € de diversifiants":                  "+ EUR 33 of diversifiers",
 	"exposition totale (€)":                    "total exposure (EUR)",
+
+	// why-diversification-works
+	"POURQUOI LA DIVERSIFICATION MARCHE":            "WHY DIVERSIFICATION WORKS",
+	"Le seul levier est la corrélation":             "Correlation is the only lever",
+	"volatilité du panier 50/50 (%)":                "volatility of the 50/50 basket (%)",
+	"volatilité de chaque actif (20 %)":             "volatility of each asset (20%)",
+	"corrélation ρ entre les deux actifs":           "correlation ρ between the two assets",
+	"même rendement moyen,":                         "same average return,",
+	"risque en moins : le free lunch":               "less risk: the free lunch",
+	"DIVERSIFICATION":                               "DIVERSIFICATION",
+	"Quatre fonds actions ne font qu'un seul actif": "Four equity funds are a single asset",
+	"corrélation des rendements mensuels, janvier 2001 à mai 2026, une seule fenêtre commune de 305 mois": "correlation of monthly returns, January 2001 to May 2026, one common window of 305 months",
+	"fonds monde":                       "world fund",
+	"fonds S&amp;P 500":                 "S&amp;P 500 fund",
+	"fonds US toutes tailles":           "total US market fund",
+	"fonds hors US":                     "ex-US fund",
+	"triangle-correlations|or":          "gold",
+	"triangle-correlations|trend":       "trend",
+	"les six paires de fonds actions":   "the six equity fund pairs",
+	"+0,85 à +1,00":                     "+0.85 to +1.00",
+	"les six paires des quatre briques": "the six pairs of the four blocks",
+	"−0,12 à +0,23":                     "−0.12 to +0.23",
+	"corrélation":                       "correlation",
+	"Sept séries en dollars : MSCI World, S&amp;P 500, marché américain toutes tailles, développés hors US (Ken French),":                        "Seven dollar series: MSCI World, S&amp;P 500, the whole US market, developed markets ex-US (Ken French),",
+	"Treasuries 20 ans et plus, or au comptant, programme de suivi de tendance (valeurs liquidatives réelles, le fonds lui-même depuis 2022).":   "Treasuries 20 years and longer, spot gold, a trend-following program (real net asset values, the fund itself since 2022).",
+	"Prendre des actions vraiment différentes n'y change rien : le small value américain reste à 0,79 du fonds monde.":                           "Picking genuinely different stocks changes nothing: US small value still sits at 0.79 with the world fund.",
+	"Ces corrélations sont des moyennes de période : par tranches de dix ans, la paire actions monde / obligations longues va de −0,42 à +0,58.": "These correlations are period averages: over ten-year slices, the world stocks / long bonds pair runs from −0.42 to +0.58.",
 }
 
 var (
