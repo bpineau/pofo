@@ -345,6 +345,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | l'étalon (cash as the measuring stick) | the yardstick | | primes-de-risque |
 | petites monnaies (minor premia) | the loose change | Not currencies. | primes-de-risque |
 | commission déguisée | a commission in disguise | | primes-de-risque |
+| dépendance de queue, copules | tail dependence, copulas | | pourquoi-la-diversification-marche |
+| le démon de Shannon | Shannon's demon | | pourquoi-la-diversification-marche |
+| allers-retours / lignes droites (of a price path) | round trips / straight lines | | pourquoi-la-diversification-marche |
+| panier (a mix of assets) | basket | Distinct from "seaux" = buckets. | pourquoi-la-diversification-marche |
+| amies des beaux jours | fair-weather friends | | pourquoi-la-diversification-marche |
+| diversification dans le temps | diversification across time | | pourquoi-la-diversification-marche |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
