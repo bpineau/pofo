@@ -117,6 +117,7 @@ var CategoriesEN = []Category{
 			{Slug: "bond-ladders", Title: "Bond ladders (and the ladder of linkers)", Blurb: "The matching that cancels interest-rate risk: the bridge to your pension, a floor backed by contract, and how to build one at retail with Treasuries, TIPS and defined-maturity ETFs.", Source: "echelle-obligataire"},
 			{Slug: "refilling-the-buffer", Title: "Drawing on a buffer and refilling it: the rules that work", Blurb: "The drawdown trigger, refilling in calm weather, the one absolute prohibition, and the melting buffer that beats the permanent one.", Source: "recharger-ou-pas"},
 			{Slug: "real-estate-in-retirement", Title: "Real estate in a FIRE plan (your home, and rentals)", Blurb: "Phantom rent and double counting, a rental counted as a discounted flow, the sell-or-keep call, and REITs and reverse mortgages in their place.", Source: "immobilier-en-retrait"},
+			{Slug: "leverage-and-margin", Title: "Leverage, margin and borrowing against your portfolio (advanced)", Blurb: "Why leverage changes sign in retirement, the only three defensible uses, and the five non-negotiable rules.", Source: "levier-et-marges"},
 		},
 	},
 	{
