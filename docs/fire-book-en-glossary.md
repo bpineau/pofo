@@ -522,6 +522,12 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | hygiène d'information | information hygiene | | psychologie-du-retrait |
 | en euros courants | in nominal terms | | psychologie-du-retrait |
 | prothèses psychologiques déguisées en finance | psychological prosthetics dressed up as finance | | psychologie-du-retrait |
+| constat (numbered unit) | finding ("Finding 1: ...") | Never "observation". | temoignages-fire |
+| témoignage, le corpus | account (never "testimony"), the corpus | | temoignages-fire |
+| au fil de l'eau (vs rétrospectif) | written as it happened (vs in hindsight) | | temoignages-fire |
+| le regret n° 1, la liste canonique | the number one regret, the canonical list | | temoignages-fire |
+| lune de miel (post-exit) | the honeymoon | Pairs with the eighteen-month wall. | temoignages-fire |
+| prototyper la vie avant le départ | prototype the life before you leave | | temoignages-fire |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
