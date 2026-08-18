@@ -137,6 +137,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "The human factor",
 		Blurb: "The hard part, spending and living and lasting: what the models never see, and what the veterans report.",
+		Articles: []Article{
+			{Slug: "the-psychology-of-spending", Title: "The psychology of spending: why spending it is the hard part", Blurb: "Chronic underspending and panic in a crash: four mechanisms, the biases named, and the toolbox that equips all of it.", Source: "psychologie-du-retrait"},
+		},
 	},
 	{
 		Title: "In practice",
