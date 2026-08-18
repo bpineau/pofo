@@ -535,6 +535,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | optimisation sans objet, plan de vie sur-spécifié | optimizing with nothing left to optimize, the over-specified life plan | | sens-et-identite |
 | métier de substitution | substitute career | | sens-et-identite |
 | transmettre / construire / aider | teaching / building / helping | The four moves of usefulness. | sens-et-identite |
+| huis clos | close quarters | Not "cabin fever". | couple-et-famille |
+| asymétrie d'appétence | the mismatch in appetite | | couple-et-famille |
+| départ décalé / synchronisé | staggered exit / simultaneous exit | | couple-et-famille |
+| gestionnaire unique | the single manager, the single-manager problem | | couple-et-famille |
+| plan sur une page | the one-page plan | | couple-et-famille |
+| aidant naturel, fratrie | the natural caregiver, siblings | Never "sibship". | couple-et-famille |
+| régime matrimonial | the marital-property rules | Never "matrimonial regime". | couple-et-famille |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
