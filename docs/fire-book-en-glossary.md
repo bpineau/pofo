@@ -403,6 +403,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | or papier, ETC physique (US side) | paper gold, physically backed gold ETF | | or-en-retrait |
 | pièces (bullion sense) | coins | Never "pieces". | or-en-retrait |
 | pouvoir d'achat de l'or | purchasing power of gold | | or-en-retrait |
+| l'année-leçon (callout title) | the year that taught the lesson | | obligations-en-retrait |
+| les trois services (of the bond sleeve) | the three services (cushion, fund the withdrawals in the holes, cap the volatility) | | obligations-en-retrait |
+| conditions de fonctionnement | what each one needs to work | | obligations-en-retrait |
+| la part indexée | the linked share | Distinct from "linkers". | obligations-en-retrait |
+| l'aggregate (broad bond index) | the aggregate | | obligations-en-retrait |
+| convexité de crise | crisis convexity | | obligations-en-retrait |
+| fonds à duration constante | constant-duration fund | | obligations-en-retrait |
+| fonds euros (in a worked-example line) | stable value and T-bills | | obligations-en-retrait |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
