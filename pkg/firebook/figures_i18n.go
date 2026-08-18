@@ -1179,6 +1179,19 @@ var figureDict = map[string]string{
 	"-70 bp":  "-70 bp",
 	"+133 bp": "+133 bp",
 	"-260 bp": "-260 bp",
+	// buckets-allocation
+	"LES BUCKETS": "BUCKETS",
+	"Le taux de retrait décide de l'allocation, pas les buckets":                              "The withdrawal rate decides the allocation, not the buckets",
+	"recette canonique, 2 ans de dépenses en cash, 6 ans en obligations, le reste en actions": "canonical recipe, 2 years of spending in cash, 6 years in bonds, the rest in stocks",
+	"la part actions n'est jamais choisie,":                                                   "the equity share is never chosen,",
+	"elle est le solde, 100 − 8 × le taux":                                                    "it is the balance, 100 − 8 × the rate",
+	"le taux de référence du livre":                                                           "the book's reference rate",
+	"part du patrimoine (%)":                                                                  "share of wealth (%)",
+	"le solde, jamais choisi":                                                                 "the balance, never chosen",
+	"6 ans de dépenses":                                                                       "6 years of spending",
+	"cash":                                                                                    "cash",
+	"2 ans de dépenses":                                                                       "2 years of spending",
+	"taux de retrait initial (%), et l'allocation qui en découle : cash / obligations / actions": "initial withdrawal rate (%), and the allocation that follows: cash / bonds / stocks",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
