@@ -84,6 +84,7 @@ var CategoriesEN = []Category{
 			{Slug: "why-diversification-works", Title: "Why diversification works: the mechanics of the free lunch", Blurb: "The free lunch taken apart: correlations, the rebalancing premium, volatility harvesting, the doubled effect in decumulation, and the fake diversification to hunt down.", Source: "pourquoi-la-diversification-marche"},
 			{Slug: "designing-a-portfolio", Title: "Designing a portfolio: the method, not the model", Blurb: "Designing by risks instead of by assets: the seven questions in order, and the allocation that falls out at the end as a result.", Source: "concevoir-un-portefeuille"},
 			{Slug: "stock-bond-allocation", Title: "The stock and bond allocation in retirement", Blurb: "The 50 to 80% plateau that falls away on both sides, the three dials that place you inside it, and the 100% stocks debate put in its place.", Source: "allocation-actions-obligations"},
+			{Slug: "glidepaths", Title: "Glide paths: the bond tent, rising equity, and the fragile window", Blurb: "Caution as a temporary expense: the Pfau-Kitces and ERN results, running the climb automatically through the withdrawals, and the head-to-head against the cash buffer.", Source: "glidepaths"},
 		},
 	},
 	{
