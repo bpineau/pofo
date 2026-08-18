@@ -542,6 +542,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | plan sur une page | the one-page plan | | couple-et-famille |
 | aidant naturel, fratrie | the natural caregiver, siblings | Never "sibship". | couple-et-famille |
 | régime matrimonial | the marital-property rules | Never "matrimonial regime". | couple-et-famille |
+| bornée en profondeur et tenable en durée | bounded in depth and sustainable in duration | The article's defining formula. | flexibilite-realite |
+| la durée bat la profondeur | duration beats depth | | flexibilite-realite |
+| mauvaise passe | a bad stretch | Distinct from "the crossing". | flexibilite-realite |
+| coupe réversible bornée, coupe en repli de marché, coupe de survie | the bounded reversible cut, the cut-in-a-downturn rule, the survival cut | | flexibilite-realite |
+| géo-arbitrage temporaire | temporary geographic arbitrage | | flexibilite-realite |
+| le test des cinq ans, ratio plancher/confort | the five-year test, the floor-to-comfort ratio | | flexibilite-realite |
+| incompressible / compressible douloureux / indolore | fixed / compressible but painful / compressible painlessly | | flexibilite-realite |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
