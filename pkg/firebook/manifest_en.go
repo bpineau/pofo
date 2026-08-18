@@ -114,6 +114,7 @@ var CategoriesEN = []Category{
 			{Slug: "cash-buffer", Title: "The cash buffer: size, cost, and what it is really for", Blurb: "The instinct is right, the arithmetic is stubborn (plus or minus 0.5 points), and the real value lies elsewhere: no panic, permission to spend, a household that can run the plan.", Source: "cash-buffer"},
 			{Slug: "enhanced-cash", Title: "Enhanced cash: money market funds, T-bills and AAA CLOs", Blurb: "What to fill the short sleeve with: the rungs measured, AAA CLOs taken apart, and the three-layer assembly rule.", Source: "cash-ameliore"},
 			{Slug: "the-bucket-strategy", Title: "The bucket strategy: the promise, and the case against it", Blurb: "An allocation in disguise plus flows that are either rebalancing or timing: the fair trial, and the clean version.", Source: "strategie-buckets"},
+			{Slug: "bond-ladders", Title: "Bond ladders (and the ladder of linkers)", Blurb: "The matching that cancels interest-rate risk: the bridge to your pension, a floor backed by contract, and how to build one at retail with Treasuries, TIPS and defined-maturity ETFs.", Source: "echelle-obligataire"},
 		},
 	},
 	{
