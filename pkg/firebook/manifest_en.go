@@ -143,6 +143,7 @@ var CategoriesEN = []Category{
 			{Slug: "meaning-and-identity", Title: "Meaning, identity, structure: life after work", Blurb: "The four workstreams a paycheck used to hide, the optimizer's traps, and the prototyping that makes all the difference.", Source: "sens-et-identite"},
 			{Slug: "couples-and-family", Title: "FIRE as a couple, and as a family", Blurb: "A team sport: the mismatch in appetite, the staggered exit, governance for two (the reverse quiz), clear eyes on divorce, children and parents.", Source: "couple-et-famille"},
 			{Slug: "flexibility-in-practice", Title: "Flexibility: myth and reality (what it can really absorb)", Blurb: "What it is really worth (0.3 to 0.5 points), why duration beats depth, the six forms ranked, and the floor tested rather than declared.", Source: "flexibilite-realite"},
+			{Slug: "one-more-year", Title: "The one-more-year syndrome", Blurb: "The accounting asymmetry that manufactures it, both columns priced, rational OMY in three cases, and the commitment made while calm.", Source: "une-annee-de-plus"},
 		},
 	},
 	{
