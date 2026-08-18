@@ -506,6 +506,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | matières premières larges | broad commodities | | se-proteger-de-inflation |
 | dérive budgétée | the budgeted drift | | se-proteger-de-inflation |
 | plan rigide, plancher détendu | a plan with no give in it, a floor with slack | | se-proteger-de-inflation |
+| la règle de l'assureur (callout title) | the insurer's rule | | hyperinflation-et-extremes |
+| le piège du prepper, la mauvaise allocation de la peur | the prepper trap, fear allocated badly | | hyperinflation-et-extremes |
+| dominance fiscale, redénomination | fiscal dominance, redenomination | | hyperinflation-et-extremes |
+| la saisie réglementaire douce, emprunt forcé | soft regulatory seizure, forced loan | | hyperinflation-et-extremes |
+| fonds ségrégués | segregated funds | | hyperinflation-et-extremes |
+| la queue de la queue | the tail of the tail | | hyperinflation-et-extremes |
+| filets non financiers | the safety nets that are not financial | | hyperinflation-et-extremes |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
