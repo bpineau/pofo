@@ -389,6 +389,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | bulletin (of a product in 2008/2022) | report card | | actifs-defensifs |
 | le test infaillible | the infallible test | | actifs-defensifs |
 | principes d'assemblage, l'assemblage | assembly principles, putting it together | | actifs-defensifs |
+| contre-galerie | the gallery of the fakes | | faux-actifs-defensifs |
+| volatilité blanchie (heading form) | laundered volatility | Next to "volatility laundering". | faux-actifs-defensifs |
+| le risk-on déguisé | risk-on in disguise | | faux-actifs-defensifs |
+| poche de rendement | the return-seeking sleeve | Distinct from the "income" sleeve. | faux-actifs-defensifs |
+| fonds evergreen, ELTIF (retail PE wrappers) | evergreen and interval funds | | faux-actifs-defensifs |
+| aristocrates du dividende | Dividend Aristocrats | | faux-actifs-defensifs |
+| erreur de catégorie | category error | | faux-actifs-defensifs |
+| sous-provisionner (un plan) | to under-provision | | faux-actifs-defensifs |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
