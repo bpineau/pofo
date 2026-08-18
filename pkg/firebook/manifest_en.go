@@ -115,6 +115,7 @@ var CategoriesEN = []Category{
 			{Slug: "enhanced-cash", Title: "Enhanced cash: money market funds, T-bills and AAA CLOs", Blurb: "What to fill the short sleeve with: the rungs measured, AAA CLOs taken apart, and the three-layer assembly rule.", Source: "cash-ameliore"},
 			{Slug: "the-bucket-strategy", Title: "The bucket strategy: the promise, and the case against it", Blurb: "An allocation in disguise plus flows that are either rebalancing or timing: the fair trial, and the clean version.", Source: "strategie-buckets"},
 			{Slug: "bond-ladders", Title: "Bond ladders (and the ladder of linkers)", Blurb: "The matching that cancels interest-rate risk: the bridge to your pension, a floor backed by contract, and how to build one at retail with Treasuries, TIPS and defined-maturity ETFs.", Source: "echelle-obligataire"},
+			{Slug: "refilling-the-buffer", Title: "Drawing on a buffer and refilling it: the rules that work", Blurb: "The drawdown trigger, refilling in calm weather, the one absolute prohibition, and the melting buffer that beats the permanent one.", Source: "recharger-ou-pas"},
 		},
 	},
 	{
