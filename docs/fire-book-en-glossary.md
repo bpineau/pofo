@@ -374,6 +374,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | fonds à date cible, l'anti-fonds-à-date-cible | target-date fund, the anti target-date fund | | glidepaths |
 | jour J | day one | | glidepaths |
 | dé-risquer par les flux | de-risk with new money | | glidepaths |
+| poche de régimes | the regime sleeve | | portefeuilles-tous-temps |
+| demi-tous-temps | half all-weather | | portefeuilles-tous-temps |
+| l'échelle actions / obligations (the ladder of mixes) | the stock-and-bond scale | Distinct from "plateau". | portefeuilles-tous-temps |
+| assurance déflation / inflation | deflation insurance / inflation insurance | | portefeuilles-tous-temps |
+| pondération par le risque (risk parity) | risk weighting (risk parity) | | portefeuilles-tous-temps |
+| optimisations rétrospectives | backward-looking optimization | | portefeuilles-tous-temps |
+| décoter les niveaux | mark the levels down | | portefeuilles-tous-temps |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
