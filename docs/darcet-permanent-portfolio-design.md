@@ -84,8 +84,8 @@ All work is REAL (inflation removed), monthly, no lookahead (macro signals lagge
 one extra month for the publication delay).
 
 Assets (via pofo `marketdata`, SIM suffix splices long history):
-- Equity: `URTHSIM` (MSCI World TR, 1969→) for the global model; OECD MEI
-  `SPASTT01` price index + flat dividend add-back for per-country.
+- Equity: `URTHSIM` (MSCI World TR, 1969→) for the global model; the OECD
+  `SHARE` price index + flat dividend add-back for per-country.
 - Long bonds: `TLTSIM` (1962→); per-country = synthetic from the long yield.
 - Cash: from `^IRX` (13-week bill, 1960→) compounded; per-country from short rate.
 - Gold: `XAUUSDSIM` (1968→), USD; converted to a currency by pofo FX.
@@ -94,17 +94,67 @@ Assets (via pofo `marketdata`, SIM suffix splices long history):
 Macro signals - **the key sourcing lesson**:
 - **FRED is UNREACHABLE from the sandbox** (HTTP/2 INTERNAL_ERROR + timeout even
   on HTTP/1.1). Do not rely on it here.
-- **DBnomics is reachable** and mirrors OECD MEI. The growth proxy is US/where-
-  needed industrial production `OECD/MEI/<ISO>.PRINTO01.IXOBSA.M` (1919→ for US;
-  the OECD MEI mirror is frozen ~late 2023).
-- Interest rates: `IRLTLT01.ST` (long), `IR3TIB01.ST` (3-month, else
-  `IRSTCI01.ST` immediate). Share prices: `SPASTT01.IXOB`. CPI: `CPALTT01.IXOB`.
+- **DBnomics is reachable** and mirrors the OECD. The growth proxy is industrial
+  production `OECD/DSD_STES@DF_INDSERV/<ISO>.M.PRVM.IX.BTE.Y._Z._Z.N` (1919→ for
+  the US), the whole industry B-to-E aggregate.
+- Interest rates, `OECD/DSD_STES@DF_FINMARK`: `IRLT` (long), `IR3TIB` (3-month,
+  else `IRSTCI` immediate). Share prices: `SHARE`. CPI:
+  `OECD/DSD_PRICES@DF_PRICES_ALL/<ISO>.M.N.CPI.IX._T.N._Z`.
+- These are the CURRENT dataflows; the panel read the legacy `OECD/MEI` codes
+  (`PRINTO01.IXOBSA`, `CPALTT01.IXOB`, `IR3TIB01.ST`, `IRLTLT01.ST`,
+  `SPASTT01.IXOB`) until the 2026-08-19 migration below.
 
 **Now bundled permanently** (commit 8f649f3): `pkg/datasets/macropanel/oecd-
 monthly.csv` - 30 economies, monthly `iso,date,ip,cpi,shortrate,longrate,
-shareprice` from OECD MEI. Generator `cmd/gen-macropanel`, `make macropanel`,
-accessor `datasets.MacroPanel()`. This is the offline, reproducible substrate for
-the breadth model.
+shareprice`. Generator `cmd/gen-macropanel`, `make macropanel`, accessor
+`datasets.MacroPanel()`. This is the offline, reproducible substrate for the
+breadth model.
+
+### The 2026-08-19 migration off OECD MEI (and the merge that was not reproducible)
+
+The MEI dataset the panel was built on stopped being updated in 2024-01 while
+still answering HTTP 200, so the tactical allocation had been re-reading a
+January 2024 macro state for two and a half years (the backtest holds the last
+regime dated before each month, so a frozen panel freezes the allocation, it does
+not stop it). The generator now reads the three current dataflows above.
+
+What changed, measured old against new over their shared window:
+
+- **Coverage is a strict superset.** Not one country-month was lost; every
+  country and column now runs to 2026-03/2026-05 instead of 2024-01. Australia
+  gains a (short, 2024→) monthly CPI, South Africa an industrial production
+  series, Turkey's production goes back to 1958 and France's, Sweden's and
+  Greece's to 1955. Still absent at the source: production for Australia and New
+  Zealand, CPI for New Zealand, a long yield for Turkey, and Japanese CPI after
+  2021-06 (all four were absent under MEI too).
+- **The index columns are a different vintage**, so `ip` moves in 99 % of shared
+  cells (new base year and revisions) and `cpi` in 11 %, `shareprice` in under
+  4 %. Only ratios of these are ever read, so a rebasing is not a change of
+  signal.
+- **The short rate merge was order-dependent and is not any more.** The 3-month
+  interbank rate and the immediate-rate fallback used to be fetched concurrently
+  into one map, so either could win a month depending on which HTTP response
+  arrived first; ~4300 cells flipped between two runs of the same binary. The
+  sources are now applied in priority order after every fetch has landed, the
+  primary owning every month it quotes. 2082 shared cells changed because the
+  shipped file had been carrying the fallback where the 3-month rate exists
+  (USA 708, DEU 504, KOR 395, POL 391 months), and two runs of the generator now
+  produce byte-identical files.
+- **Regimes barely move.** Over 1960-2024, 33 of 769 months (4.3 %) change
+  quadrant, all isolated boundary crossings on the growth axis; mean absolute
+  change in growth breadth 0.019 (max 0.099), in inflation breadth 0.0009, in
+  the monetary slope 0.12 points. The backtest reads 5.00 %/yr real (vol 7.3 %,
+  maxDD -22.5 %) where it read 5.25 % (7.5 %, -22.8 %): the same portrait, and
+  the 2024-2026 years are now driven by live macro rather than a held signal.
+
+Two lessons were folded back into the generator. A dataflow that freezes must
+fail loudly, so `-check` (on by default) refuses to write a panel whose columns
+do not reach within six months of today, or whose rate series end on a run of
+repeated levels, or that misses one of five public anchors (US production over
+the 2020 stop, the 2022 US inflation peak, the 2023 US 3-month rate, the 1981
+and 2020 US long-yield extremes, the 2007-2009 fall in US share prices). And
+level columns are spliced like donor chains: where manufacturing fills in front
+of the industry aggregate, it is rebased onto it at the first month both quote.
 
 Known data artifacts:
 - **Gold in EUR/CAD before ~1999/1971 is wrong** (pofo returns identical bogus
@@ -360,8 +410,10 @@ subperiod/start-date/multi-country battery used here.
   post-hoc pick.
 - In-sample, real-terms, pre-tax. Turnover cost tested (survives); taxes and ETF
   fees not modelled.
-- OECD MEI mirror frozen ~2023; gold pre-1999 EUR/CAD FX unusable (worked around
-  with global USD-real gold).
+- Gold pre-1999 EUR/CAD FX unusable (worked around with global USD-real gold).
+  The OECD MEI mirror froze at 2024-01 and the panel was migrated off it on
+  2026-08-19 (see the migration note in section 3); the regime series moved by a
+  handful of boundary months.
 - Single realized path per country/global; no Monte-Carlo bands on the edge.
 
 ## 10. Status & next steps
