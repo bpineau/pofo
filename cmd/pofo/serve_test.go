@@ -85,9 +85,18 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/firebook/fr/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "book-sitenav") {
 		t.Errorf("book: code=%d, navbar wanted", rec.Code)
 	}
-	// Both editions are mounted; the English one grows with the translation.
+	// Both editions are mounted, and each is told where the other one sits:
+	// the indexes cross-link, so the hreflang pair reaches the served page.
 	if rec := serveGet(t, h, "/firebook/en/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "The Quiet FIRE") {
 		t.Errorf("book-en: code=%d, The Quiet FIRE wanted", rec.Code)
+	}
+	for path, want := range map[string]string{
+		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="/firebook/en/">`,
+		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+	} {
+		if rec := serveGet(t, h, path); !strings.Contains(rec.Body.String(), want) {
+			t.Errorf("%s: misses the cross-edition link %q", path, want)
+		}
 	}
 	// The old /book/ path permanently redirects to /firebook/.
 	if rec := serveGet(t, h, "/book/fr/"); rec.Code != http.StatusMovedPermanently ||

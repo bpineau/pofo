@@ -32,11 +32,23 @@ running a command per comparison.
 | `/firesimulator/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
 | `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces and a home-linked kicker (`firebook.WithHome`); the old `/book/fr/` path 301-redirects here |
-| `/firebook/en/` | `firebook.English.Handler`, prefix-stripped | the English edition ("The Quiet FIRE"); its index lists only the parts with at least one translated article and grows with the translation campaign |
+| `/firebook/en/` | `firebook.English.Handler`, prefix-stripped | the English edition ("The Quiet FIRE"), complete since 2026-08-19: every French article that is not French-only has a counterpart here |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
+
+The two `/firebook` mounts are cross-linked by
+`firebook.WithAlternate(base, sibling)`, which each mount hands the OTHER one's
+base path (the handler emits relative URLs and
+cannot know where its sibling sits). A page with a counterpart then carries a
+`<link rel="alternate" hreflang="fr">` / `hreflang="en">` pair in its head (the
+self-referencing half stays relative, like every other URL the handler emits)
+and a discreet language switch at the end of the top bar, labelled in the
+target's language ("English version" on a French page). The two indexes always
+pair; an article pairs through `Article.Source`, so the French-only tax part
+declares nothing and points nowhere. Without the option the book renders
+exactly as before, which the offline and `-fire` mounts rely on.
 
 The four static assets above are **content-fingerprinted**: the HTML surfaces
 link them as `…?v=<hash>` (`assetURL`/`versionedAssets` in `serve.go`, applied to
@@ -279,9 +291,10 @@ instrument look:
 - The **book** keeps its own reading layer. Its default `Handler()` stays
   chrome-free for offline and `-fire` use; under `-serve` it is mounted with
   `firebook.WithNav`, which adds a **print-hidden** nav bar (chrome, not
-  content) linking back to the hub and the simulator. The labels are French
-  ("Portefeuilles", "Simulateur") because the navbar sits on the French book;
-  when an English book joins, its mount gets English labels.
+  content) linking back to the hub and the simulator. Each mount gets the
+  labels of its own edition ("Portefeuilles"/"Simulateur" on the French book,
+  "Portfolios"/"Simulator" on the English one), and the language switch
+  `WithAlternate` appends closes the bar.
 
 ## Perimeter
 
