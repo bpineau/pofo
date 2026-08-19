@@ -114,11 +114,33 @@ const sparseSpacing = 3
 // daily one alone. before bounds the segment the chain will actually keep of
 // this donor (its points strictly before that date); the zero time means all
 // of them. See DonorChain for why, and shapedSeries/anchorShape for how.
+//
+// The texture's day-to-day amplitude is rescaled first (textureScale), because
+// the two series are calibrated on nothing in common: the donor's NAVs decide
+// the level and the week, the texture decides the days, and a reconstruction
+// built to one fund's volatility target has no reason to carry the daily
+// amplitude another fund's weekly record implies. The rescale is measured on
+// the segment the chain actually keeps, so a donor that turns daily later in
+// life (the deepest one does, in 2016) cannot calibrate its own weekly era.
 func densify(donor, texture *marketdata.Series, before time.Time) *marketdata.Series {
 	if texture == nil || !sparse(donor, before) {
 		return donor
 	}
-	return shapedSeries(donor, texture)
+	return shapedSeries(donor, retextured(texture, textureScale(kept(donor, before), texture.Points)))
+}
+
+// kept is the donor's points the chain will splice: those strictly before the
+// junction, or all of them when there is no junction yet.
+func kept(donor *marketdata.Series, before time.Time) []marketdata.Point {
+	if before.IsZero() {
+		return donor.Points
+	}
+	for i, p := range donor.Points {
+		if !p.Date.Before(before) {
+			return donor.Points[:i]
+		}
+	}
+	return donor.Points
 }
 
 // sparse reports whether the donor's points before the given date (all of them

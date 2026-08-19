@@ -29,8 +29,9 @@
 //     that index itself. Each donor is volatility-matched to the target and
 //     lifted to the target's own fee load (see feeAligned in the recipes); a
 //     donor that does not quote daily is projected onto the engine's calendar
-//     first. The file starts at the deepest donor and nothing is shipped behind
-//     it;
+//     first, the engine's day-to-day amplitude rescaled (textureScale) so the
+//     projected days carry the volatility the donor's own weeks imply. The file
+//     starts at the deepest donor and nothing is shipped behind it;
 //   - monthlyVolMatch is DonorChain's volatility match for the case a
 //     per-observation one cannot serve: a MONTHLY donor and a weekly fund share
 //     almost no observation dates, so the ratio must be measured on month-end
