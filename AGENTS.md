@@ -23,6 +23,7 @@ make cape      # regenerate the Shiller CAPE series (network) then rebuild
 make macropanel # regenerate the OECD monthly macro panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 make gbond-refdata # regenerate the German/Japanese/British govt bond reference series (network); run make simdata after
+make dbi-refdata # regenerate the DBi family's nearest donor (the all-styles composite half-projected on the fund's ten futures); run after make sgtrend-refdata, then make simdata
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 make trend-refdata # regenerate the monthly trend reference (network); run make simdata after
 make trendnet-refdata # regenerate the monthly NET managed-futures reference (network); run make simdata after
@@ -237,9 +238,16 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   published index as their nearest DONOR rather than another manager's fund:
   DBMF and its UCITS classes the daily all-styles composite
   (`TREND-ALLSTYLES-NET-USD`, same generator), Simplify CTA the daily pure-trend
-  one. Touching the donor era or the texture breaks two FIRE-book plates (their
-  tests recompute from `pkg/datasets` and say so), because the weekly donor is
-  projected onto that texture.
+  one. Since 2026-08 the DBi family reads that composite through the TEN futures
+  contracts the fund actually holds: the shipped donor `TREND-ALLSTYLES-DBI-USD`
+  (`pkg/simgen/dbireplica.go`, `cmd/gen-dbi-refdata`) is half the composite and
+  half a rolling 60-day regression of it on those contracts with the intercept
+  discarded, which lifts the monthly agreement with the fund from 0.85 to 0.89
+  and cuts the split-half swing of the level gap from 5.2 points to 1.2.
+  Touching the CTA or overlay donor era or the texture breaks two FIRE-book
+  plates (their tests recompute from `pkg/datasets` and say so), because the
+  weekly donor is projected onto that texture; those plates read `CTA` and
+  `SP500`, so a DBi-only change leaves them alone.
 - Catastrophe bond / insurance-linked (ILS) work: read
   `docs/catbond-sleeve-design.md` first. The reference is `ILS-NET-USD`
   (`cmd/gen-catbond-refdata`, monthly from 2006-01, already net of the
