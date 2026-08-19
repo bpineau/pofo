@@ -28,7 +28,7 @@ func TestRegimeAtMissingMonth(t *testing.T) {
 	if err != nil {
 		t.Fatalf("LoadPanel: %v", err)
 	}
-	// Well before OECD MEI coverage: no regime.
+	// Well before the panel's coverage: no regime.
 	if _, ok := p.RegimeAt(time.Date(1900, 1, 1, 0, 0, 0, 0, time.UTC), DefaultSignalConfig()); ok {
 		t.Fatal("expected no regime in 1900")
 	}

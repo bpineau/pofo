@@ -300,9 +300,9 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `GILT-GBP`, `JPCASH-JPY`, `GBCASH-GBP`) come from `cmd/gen-gbond-refdata`
   (`make gbond-refdata`), which validates every series before writing it; its
   OECD source is the CURRENT `OECD/DSD_STES@DF_FINMARK` dataflow, which
-  `gen-euro-refdata` also reads since 2026-08 (the legacy `OECD/MEI` dataflow
-  both used to read froze at 2024-01 while still answering HTTP 200;
-  `cmd/gen-macropanel` is the last generator still on it).
+  `gen-euro-refdata` and `gen-macropanel` also read since 2026-08 (the legacy
+  `OECD/MEI` dataflow all three used to read froze at 2024-01 while still
+  answering HTTP 200; no generator is left on it).
 - Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
   govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
