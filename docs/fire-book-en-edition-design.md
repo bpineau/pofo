@@ -472,7 +472,19 @@ Worked examples KEEP their euro amounts (formatted English: "EUR 1,000,000"
 or the article's existing style anglicized), because the plates and the
 frozen data arrays behind them are euro-denominated and single-source; a
 currency swap would fork the data the guard tests pin. The US-framework
-articles are natively in dollars. Prose numbers follow English convention
+articles are natively in dollars.
+
+DIRECTION CHANGE (decided 2026-08-19, not yet executed): the English
+edition's worked amounts should read in dollars. The illustrative numbers
+are round (EUR 1M of capital, EUR 40,000 a year) and the replay data behind
+the plates is US data, so a one-for-one relabel (EUR 1M -> $1M), prose and
+`figureDict` values together, is editorially sound and forks no data: the
+French plates and arrays stay untouched, only the English rendering of the
+labels changes. A dedicated pass will sweep the ~175 prose mentions across
+66 files and the ~100 euro-bearing dictionary values, update the glossary's
+section 5 and the translator's brief accordingly, and re-run the visual
+audit. Until that pass lands, euro amounts remain the standing rule for any
+new translation work. Prose numbers follow English convention
 (decimal point, comma thousands, "4%" without the French space); a small
 guard grep over `assets/book/en/` rejects French number patterns
 (digit-comma-digit before %, narrow-space thousands) to catch translation
