@@ -47,19 +47,38 @@ func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 	return &out
 }
 
+// monthEndAnchor lists the bundled monthly reference series whose points are
+// month-END levels: a point for month M holds that month's closing level, and
+// the label is only a name for the month. They are the ones alignMonthEnd may
+// re-date. The distinction matters because the other monthly references are not
+// month-end observations at all (the Treasury and euro-govt reconstructions run
+// on FRED/OECD MONTHLY AVERAGE yields, dated the first of the month by the
+// provider's own convention, and WTI-USD is a monthly average spot), and moving
+// those to the month's last trading day would shift a whole reconstruction the
+// other way. Only add an id here after checking its calendar-year returns
+// against the published index (see pkg/datasets/golden/refdata_test.go).
+var monthEndAnchor = map[string]bool{
+	"SP500-USD":     true, // dated from ^GSPC, already on trading days
+	"MSCIWORLD-USD": true, // Curvo net-TR export, relabeled 2026-07-18
+	"DEVEXUS-USD":   true, // Curvo net-TR export, relabeled 2026-08-20
+	"EM-USD":        true, // Curvo net-TR export, relabeled 2026-08-20
+	"TREND-NET-USD": true, // BTOP50 monthly net composite, month-end by construction
+}
+
 // alignMonthEnd re-dates each monthly anchor point onto the last shape date in
-// the same calendar month. The anchor levels are month-END values (see the
-// SP500-USD / MSCIWORLD-USD headers); anchorShape pins each to the first shape
-// date ON OR AFTER the anchor's date, so an anchor dated on a calendar month-end
-// that falls on a weekend or holiday would pin to the next month's first trading
-// day and slip the whole reconstruction by a few days (up to ~1.5 %/yr on a
-// volatile December, the trap that first showed up rebuilding a EUR MSCI World).
-// Snapping the date to the shape's own last trading day of the month removes
-// that slip and is a no-op for an anchor already dated on a trading day (e.g.
-// SP500-USD, dated from ^GSPC). Anchor months the shape does not reach keep
-// their date; month order is preserved, so the result stays ascending.
-func alignMonthEnd(anchor, shape *marketdata.Series) *marketdata.Series {
-	if shape == nil || len(shape.Points) == 0 {
+// the same calendar month, for the anchors whose levels are month-END values
+// (monthEndAnchor; anything else is returned untouched). anchorShape pins each
+// anchor to the first shape date ON OR AFTER the anchor's date, so an anchor
+// dated on a calendar month-end that falls on a weekend or holiday would pin to
+// the next month's first trading day and slip the whole reconstruction by a few
+// days (up to ~1.5 %/yr on a volatile December, the trap that first showed up
+// rebuilding a EUR MSCI World). Snapping the date to the shape's own last
+// trading day of the month removes that slip and is a no-op for an anchor
+// already dated on a trading day (e.g. SP500-USD). Anchor months the shape does
+// not reach keep their date; month order is preserved, so the result stays
+// ascending.
+func alignMonthEnd(anchorID string, anchor, shape *marketdata.Series) *marketdata.Series {
+	if !monthEndAnchor[anchorID] || shape == nil || len(shape.Points) == 0 || anchor == nil {
 		return anchor
 	}
 	last := make(map[string]time.Time, len(shape.Points)/20)
