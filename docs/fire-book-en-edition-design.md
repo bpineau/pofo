@@ -1,8 +1,11 @@
 # The FIRE book, English edition: design
 
-Status: M1 (wiring) DONE 2026-08-01; campaign signals (fr-only marker,
-FR -> EN pairing as data, number guard, translator's brief, glossary) DONE
-2026-08-16; M2, the translation campaign, is next.
+Status: M1 (wiring) DONE 2026-08-01; campaign signals DONE 2026-08-16;
+M2, the translation campaign, DONE 2026-08-19 (82 articles under
+assets/book/en, 0 stale, 0 untranslated, 9 fr-only; ledger below). Next:
+M3, the three US-framework articles, then M4 (hreflang cross-links,
+-export-epub -book-lang, epubcheck/KOReader validation, the hard
+completeness guard).
 This document is the implementation brief for the
 English edition of the embedded FIRE book ("Le FIRE tranquille",
 `pkg/firebook`). Read `docs/fire-book-design.md` first: everything there
