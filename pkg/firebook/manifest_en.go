@@ -162,6 +162,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "References",
 		Blurb: "The glossary, the annotated library, and the machine that computes this book.",
+		Articles: []Article{
+			{Slug: "glossary", Title: "The FIRE and withdrawal glossary", Blurb: "Every term in the book and in the forum jargon, defined and linked to its chapter: read straight through, an alphabetical summary of the whole book.", Source: "lexique"},
+		},
 	},
 }
 
