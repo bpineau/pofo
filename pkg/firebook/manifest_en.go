@@ -164,6 +164,7 @@ var CategoriesEN = []Category{
 		Blurb: "The glossary, the annotated library, and the machine that computes this book.",
 		Articles: []Article{
 			{Slug: "glossary", Title: "The FIRE and withdrawal glossary", Blurb: "Every term in the book and in the forum jargon, defined and linked to its chapter: read straight through, an alphabetical summary of the whole book.", Source: "lexique"},
+			{Slug: "the-library", Title: "The library: sites, papers, books, tools", Blurb: "Every reference annotated (why to read it, where to get it), the official sources, and three reading paths.", Source: "bibliotheque"},
 		},
 	},
 }
