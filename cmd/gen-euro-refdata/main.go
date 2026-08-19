@@ -30,11 +30,14 @@
 //     EUROGOV-EUR, so the reconstruction stops feeding
 //     month-sized moves to daily statistics after 2004.
 //   - EUROGOV-LONG-EUR.csv   long euro-area government bond TR (25+ segment,
-//     modified duration ~17; monthly, ~1970): the OECD 10-year
-//     yield mapped to a 25-year yield (calibrated on the
-//     2004-2026 ECB curve) run through TreasuryTR at a 24-year
-//     par maturity (vol-matched to DBXG). Proxy behind the euro
-//     25+ govt ETF (DBXG).
+//     modified duration ~17; monthly, ~1970): the month-ends of
+//     the real ECB 25-year reconstruction below from the day that
+//     curve starts (2004-09), and before it, where no real long
+//     curve exists, the OECD 10-year yield mapped to a 25-year one
+//     (calibrated on the 2004-2026 ECB curve); both run through
+//     TreasuryTR at a 24-year par maturity (vol-matched to DBXG),
+//     the synthesized tail rebased onto the real curve at the
+//     junction. Proxy behind the euro 25+ govt ETF (DBXG).
 //   - EUROGOV-LONG-DAILY.csv long euro-area government bond TR at daily
 //     granularity (~2004): the ECB daily 25-year euro-area yield
 //     curve point run through the same TreasuryTR. Daily shape
@@ -103,14 +106,21 @@ const euroBondMaturity = 10.0
 // 25-year yield synthesized from the 10-year (below).
 const euroLongMaturity = 24.0
 
-// The deep monthly tail (~1970-2004) predates the ECB yield curve, so its long
-// yield is synthesized from the OECD long-term (10-year) benchmark as
+// The deep monthly tail (~1970 to 2004-09) predates the ECB yield curve, so its
+// long yield is synthesized from the OECD long-term (10-year) benchmark as
 // euroLongIntercept + euroLongSlope*y10. Both are calibrated on the 2004-2026
 // ECB curve overlap, where the 25-year point regresses on the 10-year as
 // 25y = 0.571 + 0.962*10y: a ~0.5%/yr term premium and a slightly damped
 // (~0.96x) sensitivity, so the deep long bond carries the long end's own level
-// and volatility rather than the raw 10-year path. The real ECB 25-year yield
-// takes over from 2004 through the daily series.
+// and volatility rather than the raw 10-year path.
+//
+// The map is fitted on the whole 2004-2026 curve BECAUSE that is the only
+// window where a real 25-year yield exists at all; it is deliberately not
+// refitted on a sub-window (2024-2026 alone, a steepening, would put the slope
+// at 1.43). It governs the deep tail only: from 2004-09 the monthly series
+// follows the real curve point rather than this map, which is why a slope that
+// cannot reproduce a steepening no longer biases the years the funds are
+// actually compared over.
 const euroLongIntercept = 0.571
 const euroLongSlope = 0.9615
 
@@ -130,18 +140,23 @@ func main() {
 	govDaily := simgen.TreasuryTR("Euro-area government bond total return (10y benchmark, daily)", asSeries(govDailyYield), euroBondMaturity, 0)
 	report("EUROGOV-DAILY", govDaily.Points)
 
-	// Long euro-area government bond TR (25+ segment), monthly (~1970) and daily
-	// (~2004). The monthly tail synthesizes a 25-year yield from the OECD
-	// long-term (10-year) benchmark; the daily series uses the real ECB 25-year
-	// yield-curve point. Both
-	// are priced at euroLongMaturity (vol-matched to DBXG, see above).
-	longMonthlyYield := affine(asSeries(govYield), euroLongSlope, euroLongIntercept)
-	govLongMonthly := simgen.TreasuryTR("Long euro-area government bond total return (25+, monthly)", longMonthlyYield, euroLongMaturity, 0)
-	report("EUROGOV-LONG-EUR", govLongMonthly.Points)
-
+	// Long euro-area government bond TR (25+ segment), daily (~2004) from the
+	// real ECB 25-year yield-curve point and monthly (~1970) from that same
+	// curve's month-ends spliced onto the synthesized deep tail. Both are priced
+	// at euroLongMaturity (vol-matched to DBXG, see above). The house rule is
+	// that real data sets the level wherever real data exists: the synthesized
+	// 25-year yield only carries the years the ECB curve does not reach.
 	govLongDailyYield := fetch(*base, "ECB/YC/B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y")
 	govLongDaily := simgen.TreasuryTR("Long euro-area government bond total return (25+, daily)", asSeries(govLongDailyYield), euroLongMaturity, 0)
 	report("EUROGOV-LONG-DAILY", govLongDaily.Points)
+
+	longSynthYield := affine(asSeries(govYield), euroLongSlope, euroLongIntercept)
+	govLongSynth := simgen.TreasuryTR("Long euro-area government bond total return (25+, synthesized from the 10y)", longSynthYield, euroLongMaturity, 0)
+	report("EUROGOV-LONG-SYN", govLongSynth.Points)
+	govLongMonthly, splice := spliceLong(govLongSynth, govLongDaily)
+	log.Printf("EUROGOV-LONG-EUR splice: synthesized tail to %s, real ECB curve from %s (real era rebased x%.4f onto the tail, junction month return %+.2f%%)",
+		splice.lastSynth.Format("2006-01"), splice.at.Format("2006-01-02"), splice.factor, splice.seam*100)
+	report("EUROGOV-LONG-EUR", govLongMonthly.Points)
 
 	// Eurozone equity net TR, monthly (~1986).
 	price := fetch(*base, "OECD/DSD_STES@DF_FINMARK/EA20.M.SHARE.IX._Z._Z._Z._Z.N")
@@ -156,7 +171,7 @@ func main() {
 	report("DECASH-EUR", cash)
 
 	if *check {
-		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongDaily, equity, cash)
+		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongSynth, govLongDaily, equity, cash, splice)
 	}
 	if *dry {
 		return
@@ -168,7 +183,8 @@ func main() {
 	write(*dir, "EUROGOV-DAILY", "Euro-area government bond total return (10-year benchmark, EUR, daily)",
 		"ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y (~2004) run through TreasuryTR (10y); via DBnomics. Daily shape for EUROGOV-EUR.", govDaily.Points)
 	write(*dir, "EUROGOV-LONG-EUR", "Long euro-area government bond total return (25+ segment, EUR, monthly)",
-		fmt.Sprintf("OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) mapped to a 25y yield (%.3f+%.4f*10y, calibrated on the 2004-2026 ECB curve) run through TreasuryTR (%.0fy par, modified duration ~17, vol-matched to DBXG); via DBnomics. Proxy behind the euro 25+ govt ETF (DBXG).", euroLongIntercept, euroLongSlope, euroLongMaturity), govLongMonthly.Points)
+		fmt.Sprintf("month-ends of the ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y from %s; before it, the OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) mapped to a 25y yield (%.3f+%.4f*10y, calibrated on that same ECB curve) and rebased onto it at the junction; both run through TreasuryTR (%.0fy par, modified duration ~17, vol-matched to DBXG); via DBnomics. Proxy behind the euro 25+ govt ETF (DBXG).",
+			splice.at.Format("2006-01"), euroLongIntercept, euroLongSlope, euroLongMaturity), govLongMonthly.Points)
 	write(*dir, "EUROGOV-LONG-DAILY", "Long euro-area government bond total return (25+ segment, EUR, daily)",
 		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
 	write(*dir, "DECASH-EUR", "German 3-month money-market accrual (EUR/DM, monthly)",
@@ -258,6 +274,76 @@ func affine(y *marketdata.Series, slope, intercept float64) *marketdata.Series {
 	return out
 }
 
+// longSplice records where the synthesized long tail hands over to the real ECB
+// curve, so the junction can be reported and checked rather than assumed.
+type longSplice struct {
+	at        time.Time // first real month-end kept, and the start of the real era
+	lastSynth time.Time // last synthesized month kept in front of it
+	factor    float64   // level rebasing applied to the real era, to meet the tail
+	seam      float64   // the (synthesized) return carried across the junction
+}
+
+// spliceLong joins the synthesized deep long-bond tail to the reconstruction
+// built on the real ECB 25-year curve, at the first month that curve covers.
+//
+// The doctrine is the one the donor chains follow: real data sets the LEVEL
+// wherever real data exists, and a synthesis only fills the years in front of
+// it. So every month the ECB curve reaches is taken from the curve (its
+// month-end level, on the day it fell), multiplied by one constant factor
+// chosen so the two meet with no level jump, exactly as marketdata.ExtendBack
+// rebases one series onto another. Rebasing the REAL part rather than the
+// synthesized one is what keeps the file based at 100 on its first date and
+// leaves the deep tail's published levels untouched by this change; either
+// direction is the same series, since a constant factor is not a return. The
+// month straddling the junction keeps the synthesized return, the only one
+// available for it.
+//
+// Month-END sampling is deliberate: euroGovLongDaily pins each monthly anchor
+// to the shape point on or after its date, so anchors dated on the curve's own
+// month-end trading day reproduce the daily series exactly instead of sliding
+// the reconstruction by a fraction of a month.
+func spliceLong(synth, curve *marketdata.Series) (*marketdata.Series, longSplice) {
+	ends := monthEnds(curve.Points)
+	if len(ends) == 0 {
+		log.Fatalf("EUROGOV-LONG-EUR: the ECB long curve is empty, nothing to splice onto")
+	}
+	key := ends[0].Date.Format("2006-01")
+	var tail []marketdata.Point
+	var at float64
+	for _, p := range synth.Points {
+		switch k := p.Date.Format("2006-01"); {
+		case k < key:
+			tail = append(tail, p)
+		case k == key:
+			at = p.Close
+		}
+	}
+	if at == 0 || len(tail) == 0 {
+		log.Fatalf("EUROGOV-LONG-EUR: the synthesized tail does not reach the ECB curve's first month (%s)", key)
+	}
+	sp := longSplice{at: ends[0].Date, lastSynth: tail[len(tail)-1].Date, factor: at / ends[0].Close}
+	out := &marketdata.Series{Name: "Long euro-area government bond total return (25+, monthly)", Source: synth.Source}
+	out.Points = append(out.Points, tail...)
+	for _, p := range ends {
+		out.Points = append(out.Points, marketdata.Point{Date: p.Date, Close: p.Close * sp.factor})
+	}
+	sp.seam = out.Points[len(tail)].Close/tail[len(tail)-1].Close - 1
+	return out, sp
+}
+
+// monthEnds keeps the last observation of each calendar month, on its own date.
+func monthEnds(pts []marketdata.Point) []marketdata.Point {
+	var out []marketdata.Point
+	for _, p := range pts {
+		if n := len(out); n > 0 && out[n-1].Date.Format("2006-01") == p.Date.Format("2006-01") {
+			out[n-1] = p
+			continue
+		}
+		out = append(out, p)
+	}
+	return out
+}
+
 // grossUp turns a price index into a net-total-return level (base 100) by
 // compounding each period's price return together with the pro-rata-temporis
 // constant net dividend yield.
@@ -330,6 +416,10 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     stale tail is the failure mode to catch first: every OECD-sourced series
 //     must reach within a year of today, and the two ECB curve series within a
 //     quarter (the ECB publishes daily, the OECD with a lag and revisions).
+//     EUROGOV-LONG-EUR is now fed by the ECB from 2004, so a frozen OECD
+//     dataflow would no longer show at its tail: the OECD rule is applied to the
+//     SYNTHESIZED long series instead, which is the part that still depends on
+//     the 10-year yield.
 //   - Flat runs. The daily series shipped before this check carried a 698-day
 //     stretch (2019-04 to 2022-01, the covid drawdown included) at one constant
 //     level, from a degraded fetch that reported nothing and passed review: a
@@ -353,8 +443,10 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     euroLongMaturity was trimmed to 24 years for; it must still land inside
 //     11-18%/yr, and above the 10-year's, or the maturity is no longer the one
 //     the calibration assumed.
-//   - The long tail's synthesis (2004->). Where the synthesized 25-year yield
-//     and the real ECB one overlap, the two reconstructions must agree on level
+//   - The long tail's synthesis (2004->). The synthesized 25-year yield no
+//     longer sets the shipped level after 2004, but it still carries the deep
+//     tail, and the only place it can be graded is the window where a real
+//     25-year yield exists. Over it the two reconstructions must agree on level
 //     and on risk: less than a point a year of CAGR gap, and volatilities within
 //     a third of each other. This grades euroLongIntercept/euroLongSlope against
 //     the curve they were fitted on, so a refreshed long-term yield that no
@@ -362,6 +454,11 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     not gated: the OECD publishes a monthly AVERAGE yield while the ECB curve
 //     is read month-end, which offsets the two by half a month and drags the
 //     correlation of their monthly returns down whatever the mapping does.
+//   - The long splice. After the junction the shipped monthly series IS the
+//     daily one, sampled: every month-end must match the ECB reconstruction to
+//     the last bit, or the sampling has slipped a month. The rebasing factor
+//     and the single synthesized return carried across the junction are checked
+//     for sanity too (the seam is one month of a long bond, not a jump).
 //   - The equity gross-up (2001-2023). netDivYield is calibrated so the proxy
 //     matches EZU (MSCI Eurozone, net TR, in EUR) over that window, ~3.05%/yr.
 //     The check recomputes the proxy's CAGR there and requires it inside
@@ -370,7 +467,7 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //   - The cash accrual. A money-market index is monotone by construction and
 //     post-war German 3-month rates sit inside 0-15%/yr, so DECASH-EUR's CAGR
 //     over its whole span must land inside 0-12%/yr with no drawdown.
-func runChecks(dir string, gov, govDaily, govLong, govLongDaily *marketdata.Series, equity, cash []marketdata.Point) {
+func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *marketdata.Series, equity, cash []marketdata.Point, splice longSplice) {
 	failed := 0
 	fail := func(format string, a ...any) {
 		failed++
@@ -384,7 +481,7 @@ func runChecks(dir string, gov, govDaily, govLong, govLongDaily *marketdata.Seri
 		max time.Duration
 	}{
 		{"EUROGOV-EUR", gov.Points, 365 * 24 * time.Hour},
-		{"EUROGOV-LONG-EUR", govLong.Points, 365 * 24 * time.Hour},
+		{"EUROGOV-LONG-EUR (synthesized tail)", govLongSynth.Points, 365 * 24 * time.Hour},
 		{"EMU-EUR", equity, 365 * 24 * time.Hour},
 		{"EUROGOV-DAILY", govDaily.Points, 92 * 24 * time.Hour},
 		{"EUROGOV-LONG-DAILY", govLongDaily.Points, 92 * 24 * time.Hour},
@@ -446,13 +543,42 @@ func runChecks(dir string, gov, govDaily, govLong, govLongDaily *marketdata.Seri
 		fail("the long reconstruction is no longer vol-matched to DBXG (~14.4%%/yr)")
 	}
 
-	from, to = date(2004, 9), govLong.Last().Date.AddDate(0, 0, 1)
-	cs, cr := cagr(govLong, from, to), cagr(govLongDaily, from, to)
-	vs, vr := vol(govLong, from, to), vol(govLongDaily, from, to)
+	from, to = date(2004, 9), govLongSynth.Last().Date.AddDate(0, 0, 1)
+	cs, cr := cagr(govLongSynth, from, to), cagr(govLongDaily, from, to)
+	vs, vr := vol(govLongSynth, from, to), vol(govLongDaily, from, to)
 	log.Printf("check EUROGOV-LONG synthesized vs ECB curve 2004->: CAGR %.2f%% vs %.2f%% (gap %+.2f), vol %.2f%% vs %.2f%%/yr (ratio %.2f), monthly corr %.3f (not gated, monthly-average yield)",
-		cs*100, cr*100, (cs-cr)*100, vs*100, vr*100, vs/vr, monthlyCorr(govLong, govLongDaily, from, to))
+		cs*100, cr*100, (cs-cr)*100, vs*100, vr*100, vs/vr, monthlyCorr(govLongSynth, govLongDaily, from, to))
 	if math.Abs(cs-cr) > 0.01 || vs/vr < 0.7 || vs/vr > 1.35 {
 		fail("the synthesized 25y yield (%.3f+%.4f*10y) no longer matches the ECB curve it was fitted on", euroLongIntercept, euroLongSlope)
+	}
+
+	worst, at := 0.0, time.Time{}
+	curveEnds := make(map[string]float64, len(govLongDaily.Points)/20)
+	for _, p := range monthEnds(govLongDaily.Points) {
+		curveEnds[p.Date.Format("2006-01-02")] = p.Close
+	}
+	months := 0
+	for _, p := range govLong.Points {
+		if p.Date.Before(splice.at) {
+			continue
+		}
+		months++
+		r, ok := curveEnds[p.Date.Format("2006-01-02")]
+		if !ok {
+			fail("EUROGOV-LONG-EUR carries %s, which is not a month-end of the ECB curve", p.Date.Format("2006-01-02"))
+			continue
+		}
+		if d := math.Abs(p.Close/(r*splice.factor) - 1); d > worst {
+			worst, at = d, p.Date
+		}
+	}
+	log.Printf("check EUROGOV-LONG splice: %d real month-ends from %s (worst deviation from the rebased ECB curve %.1e%s), real era rebased x%.4f, junction return %+.2f%%",
+		months, splice.at.Format("2006-01-02"), worst, atNote(at), splice.factor, splice.seam*100)
+	if months < 12 || worst > 1e-9 {
+		fail("the monthly long series does not reproduce the ECB curve it is sampled from")
+	}
+	if splice.factor <= 0 || math.Abs(splice.seam) > 0.15 {
+		fail("the long splice at %s is not continuous (factor %.4f, junction return %+.2f%%)", splice.at.Format("2006-01"), splice.factor, splice.seam*100)
 	}
 
 	eq := &marketdata.Series{Points: equity}
@@ -474,6 +600,15 @@ func runChecks(dir string, gov, govDaily, govLong, govLongDaily *marketdata.Seri
 	if failed > 0 {
 		log.Fatalf("%d sanity check(s) failed, nothing written", failed)
 	}
+}
+
+// atNote names the date a deviation was measured on, or nothing when there was
+// no deviation to report.
+func atNote(at time.Time) string {
+	if at.IsZero() {
+		return ""
+	}
+	return ", on " + at.Format("2006-01-02")
 }
 
 // longestFlatRun returns the longest run of consecutive observations carrying
