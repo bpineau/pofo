@@ -35,15 +35,15 @@ The movement produced a vocabulary for very different projects that all run on t
 
 | Variant | The idea | Spending | Who it fits |
 |---|---|---|---|
-| **Lean FIRE** | Deliberate frugality, minimum capital | EUR 15,000 to 25,000 a year | Single, or a thrifty couple; home paid off or a low-cost country |
-| **Classic FIRE** | A normal life without a job | EUR 25,000 to 45,000 a year | A disciplined middle-income household |
-| **Fat FIRE** | Comfort with no compromises | EUR 60,000 a year and well beyond | High earners, founders, late-career executives |
+| **Lean FIRE** | Deliberate frugality, minimum capital | $15,000 to $25,000 a year | Single, or a thrifty couple; home paid off or a low-cost country |
+| **Classic FIRE** | A normal life without a job | $25,000 to $45,000 a year | A disciplined middle-income household |
+| **Fat FIRE** | Comfort with no compromises | $60,000 a year and well beyond | High earners, founders, late-career executives |
 | **Barista FIRE** | Partial capital plus a job you actually want | Capital covers 50 to 80% of spending | Leaves the main job early, tops it up with work they enjoy |
 | **Coast FIRE** | The capital is already enough... eventually | Nothing is withdrawn: it is left to compound | "Done saving" at 35, works to cover current spending until 50 or 60 |
 
 Two things about that table matter.
 
-First, **the difficulty is not linear**. Going from Lean to Fat does not merely triple the target capital. It changes the nature of the problem. A Lean FIRE at EUR 20,000 a year has enormous levers (geographic arbitrage, a spell back at work, [[going-back-to-work]]) because a minimum-wage job covers its spending. A Fat FIRE at EUR 100,000 a year cannot make up a shortfall with a part-time job: its safety has to sit entirely inside the plan.
+First, **the difficulty is not linear**. Going from Lean to Fat does not merely triple the target capital. It changes the nature of the problem. A Lean FIRE at $20,000 a year has enormous levers (geographic arbitrage, a spell back at work, [[going-back-to-work]]) because a minimum-wage job covers its spending. A Fat FIRE at $100,000 a year cannot make up a shortfall with a part-time job: its safety has to sit entirely inside the plan.
 
 Second, **Barista and Coast are sequence-risk absorbers**, not just lifestyles. A few years of partial income at the start of retirement cut withdrawals sharply during the most dangerous window ([[sequence-of-returns]]). Mathematically that is one of the most powerful tools in the field, and [[pensions-and-other-income]] comes back to it.
 
@@ -61,7 +61,7 @@ What drives FIRE is not return, it is the **savings rate**, and it works on two 
 | 80% | ~5.5 years |
 
 ::: exemple One couple, in numbers
-Léa and Sam, both 32, take home EUR 5,400 a month between them and spend EUR 3,200. Savings rate: 41%. Target at 4%: 3,200 × 12 × 25 = EUR 960,000. With EUR 90,000 already invested and EUR 2,200 a month going in at 5% real, they reach the target around 50; at 4% real, around 52. Cut spending by EUR 400 a month and the target falls to EUR 840,000 while savings climb to EUR 2,600 a month: independence moves three to four years closer. That is the two-front effect. For the target calculation itself, see [[how-much-you-need]].
+Léa and Sam, both 32, take home $5,400 a month between them and spend $3,200. Savings rate: 41%. Target at 4%: 3,200 × 12 × 25 = $960,000. With $90,000 already invested and $2,200 a month going in at 5% real, they reach the target around 50; at 4% real, around 52. Cut spending by $400 a month and the target falls to $840,000 while savings climb to $2,600 a month: independence moves three to four years closer. That is the two-front effect. For the target calculation itself, see [[how-much-you-need]].
 :::
 
 ::: attention Return will not save you

@@ -76,7 +76,7 @@ Screening an "alternative" brochure comes down to five questions.
 A salesman who answers the fifth question with "our proprietary model" has already given you your answer.
 
 ::: exemple A full alternative sleeve, sized
-Plan: EUR 1.2M, EUR 45,000 a year, 40-year horizon. Total alternative budget capped at 20%. Past that, the psychological gap with an ordinary portfolio becomes unmanageable ([[the-psychology-of-spending]]).
+Plan: $1.2M, $45,000 a year, 40-year horizon. Total alternative budget capped at 20%. Past that, the psychological gap with an ordinary portfolio becomes unmanageable ([[the-psychology-of-spending]]).
 
 The allocation: 10% trend, checked against the SG Trend, 5% gold, and 5% left open. For that last 5%, two options. A second trend program from another shop, to diversify the manager, which is the plainer choice. Or a surviving multi-premia fund that clears all five questions.
 
