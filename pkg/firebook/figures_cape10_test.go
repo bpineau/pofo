@@ -241,18 +241,18 @@ func TestCapeDixAnsPlate(t *testing.T) {
 		t.Errorf("%d circles drawn for %d starts and %d medians", got, len(capeStarts), len(capeBands))
 	}
 	for _, want := range []string{
-		"R² = 0,29",                 // the measured fit, named on the plate
-		"rendement = 1,0 + 0,86",    // the specification, named on the plate
-		"1 242 départs mensuels",    // the sample size
-		"janvier 1913 à juin 2016",  // the window the bundled series allow
-		"+10,2 %", "+5,7 %", "+2,8", // the three medians
+		"R² = 0,29",                   // the measured fit, named on the plate
+		"rendement = 1,1 + 0,86",      // the specification, named on the plate
+		"1 243 départs mensuels",      // the sample size
+		"janvier 1913 à juillet 2016", // the window the bundled series allow
+		"+10,2 %", "+5,7 %", "+2,8",   // the three medians
 		"164 départs", "219 départs", "48 départs",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate never says %q", want)
 		}
 	}
-	if n := len(capeStarts); n != 1242 {
-		t.Errorf("the plate says 1 242 starts but froze %d", n)
+	if n := len(capeStarts); n != 1243 {
+		t.Errorf("the plate says 1 243 starts but froze %d", n)
 	}
 }
