@@ -87,7 +87,7 @@ func pearson(a, b []float64) float64 {
 	return sab / math.Sqrt(sa*sb)
 }
 
-// The plate's 306 monthly readings are frozen literals; recompute every one of
+// The plate's 307 monthly readings are frozen literals; recompute every one of
 // them from pkg/datasets and fail on any drift.
 func TestTrendCorrMatchesTheRecord(t *testing.T) {
 	months, corr := trendCorrRecord(t)
