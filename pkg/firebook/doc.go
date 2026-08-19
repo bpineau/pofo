@@ -26,8 +26,8 @@
 // rule, bookmd.HeadingID, so the index and the articles cannot drift apart.
 // It is web chrome only: the EPUB export never carries it.
 //
-// The pofo -fire web UI mounts Handler under /livre/; any other server (for
-// example finador) can mount the same book by importing this package.
+// The pofo web surfaces mount the book under /firebook/<lang>/; any other
+// server (for example finador) can mount it by importing this package.
 //
 // # Editions
 //
@@ -54,8 +54,20 @@
 // plate generators stay French and single-source, and FigureSVGEnglish
 // translates the rendered SVG text through a dictionary (see figures_i18n.go;
 // scripts/figure-audit.sh checks that no translated label runs off its plate).
-// It is mounted at /firebook/en/ and its index grows as articles are
-// translated. The design is docs/fire-book-en-edition-design.md.
+// It is mounted at /firebook/en/ and is complete: every French article that is
+// not marked fr-only has a counterpart there, and a guard test says so.
+//
+// Two mounted editions cross-link with WithAlternate, which each mount hands
+// the OTHER one's base path (the handler emits relative URLs, so it cannot
+// know where its sibling sits):
+//
+//	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
+//		firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
+//
+// Every paired page then declares both languages with rel="alternate"
+// hreflang links and offers a switch to its counterpart; a page the sibling
+// does not carry declares nothing. The design is
+// docs/fire-book-en-edition-design.md.
 //
 // EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
 // pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,

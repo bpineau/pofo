@@ -24,8 +24,10 @@ type NavLink struct{ Label, Href string }
 
 // handlerConfig collects Handler options.
 type handlerConfig struct {
-	nav  []NavLink
-	home string
+	nav     []NavLink
+	home    string
+	altBase string   // sibling edition's mount path, trailing slash included
+	alt     *Edition // the sibling edition itself
 }
 
 // Option configures Handler.
@@ -37,6 +39,29 @@ type Option func(*handlerConfig)
 // in print. Without this option the book renders exactly as before, which
 // the offline and -fire mounts rely on.
 func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = links } }
+
+// WithAlternate cross-links this edition with its sibling ed, published at
+// base (an absolute path, e.g. "/firebook/en/"): every page that has a
+// counterpart there gains a <link rel="alternate" hreflang="..."> pair in its
+// head and a discreet language-switch link at the end of the top bar, named in
+// the SIBLING's language ("English version" on a French page). The index
+// always pairs with the sibling index; an article pairs through
+// Article.Source, so an article the sibling does not carry (the French tax
+// part) is left alone rather than pointed at a 404.
+//
+// The base path is the caller's to give: the handler emits relative URLs so it
+// can be mounted anywhere, and only the caller knows where the sibling sits.
+// The self-referencing hreflang stays relative for the same reason. No
+// x-default is emitted: neither edition is a fallback for the other, and both
+// are already declared.
+func WithAlternate(base string, ed *Edition) Option {
+	return func(c *handlerConfig) {
+		if base == "" || ed == nil {
+			return
+		}
+		c.altBase, c.alt = strings.TrimSuffix(base, "/")+"/", ed
+	}
+}
 
 // WithHome turns the "pofo" kicker above the index title into a link to href,
 // rendered as the site's two-tone wordmark (po in ink, fo in the accent).
@@ -135,6 +160,32 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 		_, _ = w.Write(feed.XML())
 	})
 
+	// The sibling edition's pairing is a static property of the two
+	// manifests, so it is resolved once, at mount time.
+	var pairs map[string]string
+	if cfg.alt != nil {
+		pairs = e.alternates(cfg.alt)
+	}
+	// alternate describes the sibling page of the one being served: slug is
+	// the article, empty for the index (which always pairs with the sibling
+	// index). The zero value means "no counterpart, no cross-link".
+	alternate := func(slug string) altLink {
+		if cfg.alt == nil {
+			return altLink{}
+		}
+		link := altLink{Lang: cfg.alt.Lang, Label: cfg.alt.UI.SwitchLabel, Self: "."}
+		if slug == "" {
+			link.Href = cfg.altBase
+			return link
+		}
+		other, ok := pairs[slug]
+		if !ok {
+			return altLink{}
+		}
+		link.Href, link.Self = cfg.altBase+other, slug
+		return link
+	}
+
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		slug := strings.Trim(r.URL.Path, "/")
 		if slug == "" {
@@ -143,7 +194,7 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 			if err == nil {
 				size = len(data)
 			}
-			e.writePage(w, cfg.nav, e.SiteName, e.SiteDescription, e.indexHTML(size, cfg.home))
+			e.writePage(w, cfg.nav, alternate(""), e.SiteName, e.SiteDescription, e.indexHTML(size, cfg.home))
 			return
 		}
 		art, cat, ok := e.find(slug)
@@ -151,17 +202,24 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 			http.NotFound(w, r)
 			return
 		}
-		e.writePage(w, cfg.nav, art.Title, art.Blurb, e.articleHTML(art, cat))
+		e.writePage(w, cfg.nav, alternate(slug), art.Title, art.Blurb, e.articleHTML(art, cat))
 	})
 	return mux
 }
 
-func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, title, description, body string) {
+func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, alt altLink, title, description, body string) {
 	var bar strings.Builder
-	if len(nav) > 0 {
+	if len(nav) > 0 || alt.Href != "" {
 		bar.WriteString(`<nav class="book-sitenav"><a href=".">` + e.UI.IndexLink + `</a>`)
 		for _, l := range nav {
 			fmt.Fprintf(&bar, `<a href="%s">%s</a>`, html.EscapeString(l.Href), html.EscapeString(l.Label))
+		}
+		// The language switch closes the bar: it is the way out of this
+		// edition, and the way back in (the index link) already holds the
+		// other edge.
+		if alt.Href != "" {
+			fmt.Fprintf(&bar, `<a class="book-lang" lang="%s" hreflang="%s" href="%s">%s</a>`,
+				alt.Lang, alt.Lang, html.EscapeString(alt.Href), html.EscapeString(alt.Label))
 		}
 		bar.WriteString("</nav>\n")
 	}
@@ -191,7 +249,7 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, title, descrip
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
 <meta name="twitter:card" content="summary">
-<script type="application/ld+json">%s</script>
+<script type="application/ld+json">%s</script>%s
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="theme.css">
@@ -203,7 +261,64 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, title, descrip
 </body>
 </html>`, e.Lang, html.EscapeString(pageTitle), html.EscapeString(description), ogType, e.OGLocale,
 		html.EscapeString(e.SiteName), html.EscapeString(pageTitle), html.EscapeString(description),
-		e.jsonLD(title, description, index), e.css(), bar.String(), body, bookJS)
+		e.jsonLD(title, description, index), e.alternateHead(alt), e.css(), bar.String(), body, bookJS)
+}
+
+// altLink is the sibling edition's counterpart of the page being rendered.
+// The zero value means the page has none and gets no cross-link at all.
+type altLink struct {
+	Href  string // where the counterpart lives (the caller's base plus its slug)
+	Lang  string // the sibling's language code, for hreflang and the anchor's lang
+	Label string // switch-link text, written in the SIBLING's language
+	Self  string // this page's own URL, relative, for the self-referencing hreflang
+}
+
+// alternateHead renders the two hreflang links of a cross-linked page: this
+// page in this edition's language, its counterpart in the sibling's. A search
+// engine needs both halves of the pair to treat them as one document in two
+// languages, so the self-referencing link is not optional.
+func (e *Edition) alternateHead(alt altLink) string {
+	if alt.Href == "" {
+		return ""
+	}
+	return fmt.Sprintf("\n"+`<link rel="alternate" hreflang="%s" href="%s">`+
+		"\n"+`<link rel="alternate" hreflang="%s" href="%s">`,
+		e.Lang, html.EscapeString(alt.Self), alt.Lang, html.EscapeString(alt.Href))
+}
+
+// alternates maps this edition's slugs to the sibling edition's counterparts.
+// The pairing is Article.Source, which a translation carries and its original
+// does not: it reads forward for a translation (its Source names the sibling
+// slug) and backward for a source edition (the sibling article naming it).
+// Both directions are computed, so the function does not care which edition it
+// is called on, and an article with no counterpart is simply absent.
+func (e *Edition) alternates(sib *Edition) map[string]string {
+	slugs := func(ed *Edition) map[string]bool {
+		set := make(map[string]bool)
+		for _, cat := range ed.Categories {
+			for _, a := range cat.Articles {
+				set[a.Slug] = true
+			}
+		}
+		return set
+	}
+	own, other := slugs(e), slugs(sib)
+	pairs := make(map[string]string)
+	for _, cat := range e.Categories {
+		for _, a := range cat.Articles {
+			if a.Source != "" && other[a.Source] {
+				pairs[a.Slug] = a.Source
+			}
+		}
+	}
+	for _, cat := range sib.Categories {
+		for _, a := range cat.Articles {
+			if a.Source != "" && own[a.Source] {
+				pairs[a.Source] = a.Slug
+			}
+		}
+	}
+	return pairs
 }
 
 // css is the page stylesheet of one edition: the shared book CSS around the
@@ -472,5 +587,7 @@ article tr:last-child td{border-bottom:0}
 .book-sitenav a{color:var(--muted);text-decoration:none}
 .book-sitenav a:hover{color:var(--accent-deep)}
 .book-sitenav a:first-child{color:var(--accent-deep);margin-right:auto}
+.book-sitenav a.book-lang{color:var(--accent-deep);opacity:.8}
+.book-sitenav a.book-lang:hover{opacity:1}
 @media print{.book-sitenav{display:none}}
 `
