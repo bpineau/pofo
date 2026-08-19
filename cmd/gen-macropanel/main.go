@@ -16,12 +16,13 @@
 // answering HTTP 200, which is why the -check pass below leads with freshness):
 //
 //	ip         DSD_STES@DF_INDSERV  {ISO}.M.PRVM.IX.BTE.Y._Z._Z.N   production, industry B-to-E, index, seasonally adjusted
-//	cpi        DSD_PRICES@DF_PRICES_ALL {ISO}.M.N.CPI.IX._T.N._Z    consumer prices, all items, index
+//	cpi        DSD_PRICES_COICOP2018@DF_PRICES_C2018_ALL {ISO}.M.N.CPI.IX._T.N._Z  consumer prices, all items, index
+//	           DSD_PRICES@DF_PRICES_ALL {ISO}.M.N.CPI.IX._T.N._Z    the same key in the COICOP 1999 dataflow
 //	shortrate  DSD_STES@DF_FINMARK  {ISO}.M.IR3TIB.PA._Z._Z._Z._Z.N 3-month interbank rate, per cent
 //	longrate   DSD_STES@DF_FINMARK  {ISO}.M.IRLT.PA._Z._Z._Z._Z.N   long-term government bond yield, per cent
 //	shareprice DSD_STES@DF_FINMARK  {ISO}.M.SHARE.IX._Z._Z._Z._Z.N  share prices, index
 //
-// Two columns have a documented fallback, and the merge between a column's
+// Three columns have a documented fallback, and the merge between a column's
 // sources is deterministic by construction: the sources are tried in priority
 // order and the FIRST one that quotes a given country-month owns that cell,
 // whatever order the concurrent fetches happen to complete in. Industrial
@@ -30,7 +31,20 @@
 // need outright and which extends four more (their aggregate starts later than
 // their manufacturing index); the short rate falls back from the 3-month
 // interbank rate (IR3TIB) to the immediate/call money rate (IRSTCI), which most
-// of the panel needs for its early decades.
+// of the panel needs for its early decades; and consumer prices are read from
+// the COICOP 2018 classification first, falling back to COICOP 1999.
+//
+// That last one is a migration, not a preference. The OECD is moving its price
+// statistics from COICOP 1999 to COICOP 2018 country by country, and a country
+// that has moved simply STOPS in the old dataflow while the old dataflow keeps
+// answering HTTP 200 for the years it already holds. Japan stopped there at
+// 2021-06, Mexico at 2024-07, South Africa at 2025-01 and eighteen European
+// members at 2025-12, all of them current under COICOP 2018; nine countries
+// (USA, DEU, GBR, AUS, KOR, POL, BRA, IND, NZL) are the other way round and
+// answer 404 under COICOP 2018, which is why both are read and the newer one
+// wins. The two classifications carry the same all-items index on the same base
+// where they overlap (Japan to the last digit, France and Italy within 3e-4),
+// so the rebasing below is a formality on this column.
 //
 // A rate is a rate, so the two short-rate sources are spliced as they come. Two
 // index levels are not: they carry different bases, so a fallback filling in
@@ -65,9 +79,10 @@ const defaultBase = "https://api.db.nomics.world/v22"
 // The three OECD dataflows the panel reads. The '@' of an SDMX dataflow id is
 // percent-encoded here because it travels in the URL path.
 const (
-	indserv = "OECD/DSD_STES%40DF_INDSERV"
-	prices  = "OECD/DSD_PRICES%40DF_PRICES_ALL"
-	finmark = "OECD/DSD_STES%40DF_FINMARK"
+	indserv     = "OECD/DSD_STES%40DF_INDSERV"
+	prices      = "OECD/DSD_PRICES%40DF_PRICES_ALL"
+	pricesC2018 = "OECD/DSD_PRICES_COICOP2018%40DF_PRICES_C2018_ALL"
+	finmark     = "OECD/DSD_STES%40DF_FINMARK"
 )
 
 // countries covered by the panel: a broad OECD + large-emerging set, wide enough
@@ -100,7 +115,8 @@ var columns = []column{
 		{"manufacturing", indserv + "/{ISO}.M.PRVM.IX.C.Y._Z._Z.N"},
 	}},
 	{"cpi", true, []source{
-		{"all items", prices + "/{ISO}.M.N.CPI.IX._T.N._Z"},
+		{"all items (COICOP 2018)", pricesC2018 + "/{ISO}.M.N.CPI.IX._T.N._Z"},
+		{"all items (COICOP 1999)", prices + "/{ISO}.M.N.CPI.IX._T.N._Z"},
 	}},
 	{"shortrate", false, []source{
 		{"3-month interbank", finmark + "/{ISO}.M.IR3TIB.PA._Z._Z._Z._Z.N"},
@@ -391,7 +407,8 @@ func writeCSV(path string, recs []record) error {
 	b.WriteString("# Columns: iso,date(YYYY-MM),ip,cpi,shortrate,longrate,shareprice\n")
 	b.WriteString("# ip/cpi/shareprice are index levels; shortrate/longrate are per-cent yields.\n")
 	b.WriteString("# Source: OECD via DBnomics (https://db.nomics.world): production from\n")
-	b.WriteString("# DSD_STES@DF_INDSERV, prices from DSD_PRICES@DF_PRICES_ALL, rates and share\n")
+	b.WriteString("# DSD_STES@DF_INDSERV, prices from DSD_PRICES_COICOP2018@DF_PRICES_C2018_ALL\n")
+	b.WriteString("# falling back to DSD_PRICES@DF_PRICES_ALL, rates and share\n")
 	b.WriteString("# prices from DSD_STES@DF_FINMARK (the legacy OECD/MEI froze at 2024-01).\n")
 	b.WriteString("# ip = industry B-to-E (manufacturing alone where a country has no aggregate);\n")
 	b.WriteString("# shortrate = 3-month interbank, immediate rate for the months it lacks.\n")
@@ -472,6 +489,15 @@ func missingNote(missing []string) string {
 //     six months rather than one quarter because the OECD publishes industrial
 //     production with a ~3-month lag and DBnomics reindexes on its own cadence;
 //     a frozen dataflow misses by years, not by weeks.
+//   - Freshness, per country. The check above is blind to ONE country freezing:
+//     the United States alone reaching the current month satisfies it, which is
+//     exactly how Japanese CPI shipped stuck at 2021-06 for as long as it did,
+//     with Mexico and South Africa behind it. So each country-column is also
+//     compared to the newest month that column reaches ANYWHERE in the panel,
+//     and may not trail it by more than maxCountryLag. The bound is generous
+//     (18 months) because members genuinely publish at different cadences and a
+//     few series legitimately end; what it catches is a country left behind by a
+//     classification change, which is measured in years.
 //   - Coverage. A column must still reach a wide majority of the countries, and
 //     the panel a wide majority of its country list: a dataflow that quietly
 //     drops half its reporters would otherwise pass every value-level check.
@@ -516,6 +542,37 @@ func runChecks(panel map[string]map[string]map[string]float64, recs []record) {
 		}
 		if n < 5000 {
 			fail("%s carries only %d country-months", c.name, n)
+		}
+	}
+
+	const maxCountryLag = 18 // months behind the column's own newest month
+	for _, c := range columns {
+		newest := ""
+		last := map[string]string{}
+		for _, r := range recs {
+			if _, ok := r.Val[c.name]; !ok {
+				continue
+			}
+			if r.Month > last[r.ISO] {
+				last[r.ISO] = r.Month
+			}
+			if r.Month > newest {
+				newest = r.Month
+			}
+		}
+		cut := monthsBefore(newest, maxCountryLag)
+		var stale []string
+		for iso, m := range last {
+			if m < cut {
+				stale = append(stale, iso+" "+m)
+			}
+		}
+		sort.Strings(stale)
+		log.Printf("check %-10s per-country freshness: newest %s, %d of %d countries behind %s%s",
+			c.name, newest, len(stale), len(last), cut, listNote(stale))
+		if len(stale) > 0 {
+			fail("%s leaves %d countries frozen more than %d months behind the panel (%s): a source that moved rather than data that ended",
+				c.name, len(stale), maxCountryLag, strings.Join(stale, ", "))
 		}
 	}
 
@@ -695,6 +752,24 @@ func trailingFlatRun(s map[string]float64) int {
 		n++
 	}
 	return n
+}
+
+// monthsBefore shifts a "YYYY-MM" month back by n months.
+func monthsBefore(month string, n int) string {
+	t, err := time.Parse("2006-01", month)
+	if err != nil {
+		return month
+	}
+	return t.AddDate(0, -n, 0).Format("2006-01")
+}
+
+// listNote spells out a short list of offenders in a log line, or nothing when
+// there are none.
+func listNote(items []string) string {
+	if len(items) == 0 {
+		return ""
+	}
+	return " (" + strings.Join(items, ", ") + ")"
 }
 
 // longestFlatRun returns the longest run of consecutive months carrying the
