@@ -307,7 +307,9 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
   series (`EMU-EUR`, `EUROGOV-EUR{,-DAILY}`, `EUROGOV-LONG-EUR{,-DAILY}` for the
-  25+ segment, `DECASH-EUR`) come from DBnomics via `cmd/gen-euro-refdata`
+  25+ segment, `DECASH-EUR`, and since 2026-08 the euro cash leg `EURCASH-EUR`,
+  which had no generator and froze when its FRED source died) come from DBnomics
+  via `cmd/gen-euro-refdata`
   (`make euro-refdata`), which validates every series before writing it (its
   freshness and flat-run checks exist because the MEI freeze and a degraded
   fetch both shipped unnoticed); note the equity-leg daily-vol/FX caveat there,
