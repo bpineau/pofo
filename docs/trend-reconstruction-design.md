@@ -537,6 +537,59 @@ deviation. What is left belongs to the fund, not to the clock: the UCITS
 wrapper holds its own positions and cash, and its NAV is not a repackaged DBMF
 close.
 
+### A time-varying volatility match: measured and rejected (2026-08)
+
+`volMatch` rescales a donor once, on the window it shares with the fund, and
+carries that one constant over the donor's whole life. The standing complaint
+against it is that a calm calibration window then over-levers a hot era, which
+is what the Simplify CTA file shows. The obvious repair is a rolling match. It
+was built and measured, and it is not adopted.
+
+First, the disease is not general. Measured as annualized volatility of monthly
+returns, calibration era against donor era:
+
+| donor | 2000-2007 | 2007-2015 | 2022-2026 | era spread |
+|---|---|---|---|---|
+| the pure-trend composite (Simplify CTA's donor) | 17.27 % | 11.84 % | 12.14 % | **1.42** |
+| the all-styles composite (the DBi family's donor) | 9.67 % | 7.60 % | 9.68 % | **1.00** |
+| Man AHL Diversified (every chain's deepest donor) | 18.15 % | 14.46 % | 15.72 % | **1.16** |
+
+The all-styles composite, which covers 2000-2019 in every DBi chain, has the
+same volatility in the calibration era as in the era it is carried into, to a
+hundredth of a point. The DBi family therefore has no calibration problem over
+the nineteen years that matter most to it. What it does have is a hot
+1996-2000, where the vol-matched deepest donor realizes 13.9 % of monthly
+volatility against 12.0 % over the calibration window: Man AHL was 16 % more
+volatile in the 1990s than it is now, and it traded genuinely choppier weeks
+then (its weekly volatility annualized to 1.22 times its monthly one over
+1996-2000, against 1.02 today).
+
+That 16 % is the second reason not to repair it: it is a FACT, not a
+calibration artefact. Every independent record of the trade says the 1990s and
+early 2000s were more volatile than the 2020s, the pure-trend composite by half
+and the monthly all-styles one from 10.29 % to 8.52 %. Rescaling a donor era to
+the fund's modern target would tell a reader that a trend sleeve in 1998 carried
+the risk one carries today. It did not, and understating a sleeve's risk is the
+expensive error.
+
+The third reason is decisive and it is the bar this change had to clear: the
+level does not survive. A rolling match (the donor's trailing one-year realized
+volatility retargeted to the fund's, clamped like the constant one) puts the
+deepest donor's 1996-2000 weekly volatility exactly on target, 16.94 % to
+12.14 %, and moves that same segment's CAGR from 22.42 % to 17.00 %. Five and a
+half points a year, over a stretch where no reference exists to say which is
+right. The multiplier also spends its life on the clamps (0.50 to 2.00, mean
+1.66 over 2019-2026 where the constant match asks for 0.79), which is the tell:
+what it produces is no longer a real fund's record volatility-matched to
+another, it is a volatility-targeting overlay run on top of a real fund's
+record.
+
+The contrast with the texture rescale of the previous section is the general
+lesson. That one preserves the level EXACTLY, by construction, because it
+rescales deviations that sum to zero inside each interval. A rolling volatility
+match rescales the returns themselves, so it cannot preserve anything, and in a
+segment with no reference there is nothing to catch it.
+
 ## The two layers
 
 What is left to the reconstruction is assembled in two separable layers, each
@@ -984,12 +1037,44 @@ it, but do not re-run the dead ends blind.
 - The academic "century of trend, net of fees" series: never published. The
   sitemap and the archive of the publisher's dataset directory were both
   enumerated; the absence is real, not a blocked probe.
-- SEC EDGAR full-text search: clean public JSON, fully scriptable, and the
-  right idea for pre-2001 partnership NAVs, EXCEPT full-text coverage starts
-  in 2001 and the one ideal filing found prints "[To Come]" in place of every
-  table. A composite of 1980s public futures partnerships remains possible
-  through per-filing document retrieval, at high extraction cost and with
-  worse survivorship than the net composite. Fallback only.
+- SEC EDGAR, walked end to end in 2026-08 and closed. It is reachable, clean,
+  fully scriptable through the submissions JSON, and it does not hold what this
+  file needs. Three routes were followed and each has a hard wall:
+  - **the 10-K.** A commodity pool's annual report carries year-end net asset
+    value per unit and nothing finer: two years in the financial statements,
+    five in Item 6 Selected Financial Data. Verified on the oldest 10-K of a
+    1989-inception partnership (filed 1996), whose Selected Financial Data
+    reaches 1991 at ANNUAL cadence. Electronic filing was only phased in over
+    1993-1996, so nothing older exists to retrieve.
+  - **the registration statement.** A public pool's Form S-1 or Form 10 carries
+    the CFTC-mandated capsule: monthly rates of return for the most recent FIVE
+    calendar years, and no more. Verified on two of them, a trust trading since
+    January 1972 whose 2003 registration prints month-end NAVs from 1998, and a
+    fund trading since January 1990 whose 2004 registration prints monthly
+    returns from 1999.
+  - **the voluntary supplemental table**, which is the only route that reaches
+    the 1980s and it was found: one 2003 registration prints, as unaudited
+    supplemental information, the monthly rate of return of its fund for every
+    month from January 1989 to February 2003. That fund is REJECTED on merit,
+    on four counts at once: its own filing says the table is not independently
+    audited; it realized 33.2 %/yr volatility since inception against a target
+    family running at 9 to 16 %, so `volMatch` would have to divide it by three
+    where its clamp stops at two, and a record levered down that far is not the
+    same object any more; it fell -38.9 % peak to valley in its first year, with
+    single months of -15.2 %, +31.1 % and +26.1 %, which is a small heavily
+    levered private pool rather than a diversified programme; and it converted
+    from a privately offered single-advisor pool to a public multi-advisor fund
+    in February 2003, exactly the restructuring artefact this survey rejects
+    elsewhere.
+
+  One structural constraint was found along the way and is worth more than the
+  survey itself: `DonorChain` volatility-matches every donor to the TARGET fund
+  and needs at least 120 common trading days, so a pool that closed before the
+  target's own inception cannot be spliced AT ALL, whatever its record. A deeper
+  donor must therefore still quote today, or the calibration has to become
+  chain-relative. Of the public managed-futures pools filing annual reports
+  under the commodity-pool industry code, seven were still filing in 2026 and
+  exactly one of those began trading before 1996: the fund rejected above.
 
 ## Rebuilding it from scratch
 
@@ -1078,8 +1163,13 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    1980s or early-1990s managed-futures NAV series exists that survives the
    grading applied to the current donors (a real programme, a sane drawdown, no
    restructuring artefacts, a documented fee load). The rejected candidates are
-   listed in the survey; the SEC EDGAR route is the one that was never fully
-   walked.
+   listed in the survey, SEC EDGAR among them since 2026-08: it was walked end
+   to end and it does not hold one. Two routes are left and neither is free.
+   Repairing the third NAV fallback (above) would reopen the fund-database
+   hunt through a second source; and making `DonorChain` calibrate a donor
+   against the CHAIN rather than against the target fund would admit
+   dissolved pools, at the cost of letting a volatility error compound down
+   the chain, which is the reason it does not.
 
 The entry that used to head this list, "validate the engine's daily texture
 against a daily reference", is closed: the texture was graded against both daily
@@ -1095,15 +1185,13 @@ of the engine tail went with the tail, and "find a nearer donor for DBMF and
 Simplify CTA" was answered by the index each of them replicates rather than by
 another fund.
 
-One new entry is worth stating, since it is the cost of that answer:
-**a volatility match calibrated on a calm window and applied to a hot decade.**
-The Simplify CTA chain levers its index donor 1.55 times on a 2022-2026
-calibration and carries that constant back to 2000, where the same index ran
-half again as volatile; the file reads 24.2 % over 1997-2006 against a 16 %
-target. A time-varying match (a rolling volatility ratio, or a match on the
-donor's own era) would fix it and would also let a donor's level drift, which is
-the reason `volMatch` uses a constant today. Whoever attempts it must show that
-the donor era's LEVEL survives the change, not only its volatility.
+One entry that used to head this paragraph was tried in 2026-08 and is now
+recorded as a rejection rather than an idea: **a time-varying volatility match**
+(see the section on it above). It buys a donor era on target and costs 5.4
+points a year of level that nothing can check, and the four chains do not even
+share the disease: only the pure-trend index donor's volatility fell by half
+between the eras, the all-styles one being flat to a hundredth. The constant
+match stays.
 
 ## Traps
 
