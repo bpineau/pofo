@@ -636,7 +636,7 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | prélèvement, prélèvement-rééquilibrage | withdrawal, the draw; funding the withdrawal by selling the overweight | | allocation-actions-obligations |
 | taux de retrait courant | current withdrawal rate | Pilot wording. Never "current rate" alone. | quand-s-inquieter |
 | taux de retrait initial, soutenable | initial, sustainable withdrawal rate | Pilot: "arithmetic mean > geometric mean > sustainable withdrawal rate". | les-maths-du-4-pourcent |
-| coupe | cut, spending cut | Pilot: "cut to EUR 36,000". "Coupe écrite" -> the written cut; "plancher de coupe" -> cut floor. | flexibilite-realite |
+| coupe | cut, spending cut | Pilot: "cut to $36,000". "Coupe écrite" -> the written cut; "plancher de coupe" -> cut floor. | flexibilite-realite |
 | gel d'indexation | indexation freeze | Skipping the annual inflation adjustment after a down year. Avoid "COLA freeze", which ties it to Social Security. | flexibilite-realite |
 | cliquet | ratchet | Kitces's upward ratchet. The simulator's control is labeled Ratchet. | guyton-klinger |
 | effet ciseaux | the squeeze | SETTLED 2026-08-16: "the scissors effect" is a calque, "the squeeze" is the English word for it. Indexed withdrawals rising while a nominal portfolio stalls: the 1966 mechanism. Gloss it in half a sentence at first use per article ("the squeeze: spending climbs with inflation while the portfolio stalls"). | inflation-et-taux-de-retrait |
@@ -1002,14 +1002,22 @@ comparison) rather than lose it.
 ## 5. Numbers, currency and typography
 
 What the pilots actually did, and what the guard grep over
-`assets/book/en/` enforces.
+`assets/book/en/` enforces. One rule changed after the pilots: worked
+amounts read in dollars since 2026-08-19, one for one with the French euro
+figures (the illustrative numbers are round and the replay data behind the
+plates is US data). The French articles, plates and arrays are untouched;
+only the English rendering of the labels changed.
 
 | FR | EN | Note | Seen in |
 |---|---|---|---|
-| `1 000 000 €` | `EUR 1,000,000` | Euro amounts STAY in euros. Comma thousands, `EUR` before the figure. | sequence-of-returns |
-| `1 M€`, `1,6 M€` | `EUR 1M`, `EUR 1.6M` | | vpw |
-| `40 k€`, `38,5 k€` | `EUR 40k`, `EUR 38.5k` | Lowercase k, decimal point. | vpw |
-| `40 000 €/an` | `EUR 40,000 a year` | "a year", not "per year" or "/yr". | vpw |
+| `1 000 000 €` | `$1,000,000` | Worked amounts read in DOLLARS, one for one with the French euro figure: no exchange rate is applied. Comma thousands, `$` glued to the figure. | sequence-of-returns |
+| `1 M€`, `1,6 M€` | `$1M`, `$1.6M` | | vpw |
+| `40 k€`, `38,5 k€` | `$40k`, `$38.5k` | Lowercase k, decimal point. | vpw |
+| `40 000 €/an` | `$40,000 a year` | "a year", not "per year" or "/yr". | vpw |
+| `8 à 15 k€` | `$8k to $15k` | A range repeats the sign on both ends. | when-to-worry |
+| `en euros constants`, `en euros courants` | `in constant dollars`, `in current dollars` (or "in nominal terms", see the row in section 1) | The idioms follow: `chaque euro` -> every dollar, `un euro de plus` -> one more dollar. | floor-and-ceiling |
+| `k€` as an axis or column unit | `$k`, `$M` | Figure labels follow the same rule through `figureDict`. | seven-ways-to-live-on-one-portfolio |
+| the euro as a CURRENCY, not as an amount | unchanged | GENUINE euro references stay: the euro area, a euro investor, euro-denominated bonds and CLO tranches, the euro futures market, the French-history evidence, and any sentence that contrasts "in euros" with "in dollars" as evidence. Amounts that are historical facts about a euro country stay too (Greece 2015, withdrawals capped at EUR 60 a day). | international-diversification, enhanced-cash, hyperinflation-and-extremes |
 | `4 %`, `6,6 %` | `4%`, `6.6%` | No space before the percent sign. | sequence-of-returns |
 | `~3,9 %` | `~3.9%` in tables, `about 3.9%` in prose | The pilots keep the tilde inside tables and spell it out in sentences. | vpw |
 | `±10 %` | `plus or minus 10%` | Spell it out in prose; the symbol survives only in a table cell. | guyton-klinger |

@@ -61,7 +61,7 @@ A calm year's review still takes ninety minutes. That is its floor price, not an
 ::: exemple Three years of the review log
 From Aline and Thomas's log ([[building-your-plan]]).
 
-- **Review 2031, a calm year.** Current withdrawal rate 3.4% (green), indexation +2.1%, rebalanced through the withdrawals. Harvesting: EUR 9,200 drawn tax free and EUR 14k of gains realized inside a low bracket. Buffer full, reverse quiz passed. The travel budget went unspent, so a trip was booked on the spot. Time: 1 hour 50.
+- **Review 2031, a calm year.** Current withdrawal rate 3.4% (green), indexation +2.1%, rebalanced through the withdrawals. Harvesting: $9,200 drawn tax free and $14k of gains realized inside a low bracket. Buffer full, reverse quiz passed. The travel budget went unspent, so a trip was booked on the spot. Time: 1 hour 50.
 - **Review 2033, a red year, −19%.** Current withdrawal rate 4.6% (amber), indexation **frozen** by the rule. Seven months drawn from the buffer (the drawdown passed 18%, exactly as written). Guardrail resimulated: failure probability 11%, under the 13% threshold, so **no** cut, and a first year on watch. **Nothing** else changed. The session mostly consisted of doing nothing that was not already written down. Time: 2 hours 10.
 - **Review 2034.** The market has recovered, the rate is back to 3.9%, the buffer refilled out of sales made in calm weather. Failure probability resimulated at 6%, watch lifted. Beneficiary designations reread (the three-year cycle). Non-financial line: Thomas is bored less often since he joined the chess club.
 
