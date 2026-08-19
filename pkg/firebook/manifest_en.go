@@ -136,6 +136,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "us-accounts-and-account-order", Title: "US accounts, and the order you drain them", Blurb: "The three tax homes of a dollar, what each account is for, the standard filling ladder, the toolkit that opens the locked accounts before 59 1/2, and the draining order that comes out of it."},
 			{Slug: "us-taxes-in-the-withdrawal-phase", Title: "US taxes in the withdrawal phase", Blurb: "Why a modest draw is often taxed at nothing: the gain inside a sale, the two rate ladders and how they stack, the friction computed in dollars, and the tools of the phase (gain and loss harvesting, specific identification, conversions, RMDs)."},
+			{Slug: "us-healthcare-and-social-security", Title: "US health coverage and Social Security: the two ends of the gap", Blurb: "Covering yourself before Medicare: guaranteed issue, the premium tax credit as a function of your income and the 400% cliff that is back for 2026, the alternatives, then Medicare at 65 and its two-year lookback. And the Social Security a short career actually earns: 40 credits, 35 years with zeros in them, the bend points that hand much of it back, and how to read an SSA estimate that assumes you kept working."},
 		},
 	},
 	{
