@@ -51,7 +51,7 @@ Every fix has an academic pedigree. Shrinking return estimates goes back to Jame
 
 ## All of it together: relevance, step by step, with numbers
 
-Take one plan through the fixes and watch what each one costs or reveals. The plan: EUR 1.4M, EUR 50,000 a year, 45 years, a global portfolio with 18 years of kind history (raw fitted μ of 6.5% real, σ of 11%, monthly kurtosis of 8).
+Take one plan through the fixes and watch what each one costs or reveals. The plan: $1.4M, $50,000 a year, 45 years, a global portfolio with 18 years of kind history (raw fitted μ of 6.5% real, σ of 11%, monthly kurtosis of 8).
 
 | Step | Model | Failure | What it adds |
 |---|---|---|---|
@@ -61,7 +61,7 @@ Take one plan through the fixes and watch what each one costs or reveals. The pl
 | 3 | + the CAPE anchor (expensive market: equity μ pulled toward ~3%) | ~9% | The present enters the model |
 | 4 | Sequence stress reading (mean-preserving, sticky bears) | ~12% | What the sequence costs: +3 points |
 | 5 | Broad-sample reading | ~13% | The century confirms the zone |
-| 6 | + the real plan: a EUR 14k pension in year 16, written flexibility of −10% | central ~3.5%, stress ~6% | The plan's realism gives back what the model's rigor took away |
+| 6 | + the real plan: a $14k pension in year 16, written flexibility of −10% | central ~3.5%, stress ~6% | The plan's realism gives back what the model's rigor took away |
 
 The path from 1% to 9% to 3.5% tells the whole philosophy. The naive run flattered (1%), rigor sobered things up (9% to 13%), and the realism of a complete plan handed back honest margin (3.5% to 6%). The final number looks like the naive one and has nothing in common with it. It was won against the traps rather than handed over by them, and you know exactly which assumptions carry it and which margins defend it.
 

@@ -71,7 +71,7 @@ The weighting is a relief, but a much smaller one than it is usually sold as. Me
 The discount grows with the age you leave at. The same failure profile, reread for a couple of sixty-five, would give 7.7% lived failure, a discount of more than half. So the weighting is above all a reading of the **timing** of your risk. If it takes almost nothing off, your failures are arriving early, and that is a serious signal ([[sequence-of-returns]]).
 
 ::: figure vivant-ruine-parti
-The three states of Léa and Sam's plan, year by year, over 53 years (EUR 1M, EUR 33k a year in real terms, a pension of EUR 14k a year from year 20). Empirical model from the JST panel (16 countries, 1871 to 2020, a 60/40 portfolio, 200,000 draws), with unisex Gompertz mortality fitted to the French tables and applied to a couple of the same age.
+The three states of Léa and Sam's plan, year by year, over 53 years ($1M, $33k a year in real terms, a pension of $14k a year from year 20). Empirical model from the JST panel (16 countries, 1871 to 2020, a 60/40 portfolio, 200,000 draws), with unisex Gompertz mortality fitted to the French tables and applied to a couple of the same age.
 :::
 
 None of which means you should size the plan on the weighted number. Size on raw failure over a prudent horizon: it covers the surviving spouse and the longevity surprises at once. Weighted failure then earns its keep on the **borderline** cases, and only at the margin. A discount of a fifth can tip a decision that was already close. It does not rescue a plan the raw reading condemns, and leaning on it is a good way to misjudge an exit date ([[one-more-year]]).
