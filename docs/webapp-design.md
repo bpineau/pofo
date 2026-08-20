@@ -42,6 +42,7 @@ running a command per comparison.
 | `/<key>.txt` | `firebook.Site.Handle` | the IndexNow ownership key file, mounted only when `-serve -indexnow-key <key>` names one (`pkg/decumul/web`: `WithIndexNowKey`). Its name is the key and its body is the key again |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
+| `/healthz` | `health` (`serve.go`) | the liveness probe: `200 text/plain` `ok`, `Cache-Control: no-store`, GET/HEAD only. It checks that the process serves and nothing else, on purpose: a health endpoint that depended on a quote source would report the server dead every time that source hiccups. The one route excluded from the access log (see below); absent from the sitemap and from `robots.txt`, since it is not a page |
 
 Every `text/html` route above passes through one response filter,
 `webui.Beacon`, which splices the optional Cloudflare Web Analytics tag in front
@@ -99,6 +100,38 @@ response bytes, referer, user agent, latency); the startup banner and
 application errors keep going to stderr, so `pofo -serve >access.log` cleanly
 separates the two streams. The client IP honors a left-most `X-Forwarded-For`
 entry when present, so the log stays truthful behind a reverse proxy.
+
+### Keeping the two logs readable in production
+
+Two kinds of noise drown a long-lived deployment's logs, and each has exactly
+one countermeasure.
+
+**The liveness probe.** The container image's `HEALTHCHECK` polls every 30
+seconds, which is one access-log line every 30 seconds saying nothing. `/healthz`
+exists so that probe has a route of its own, and `logAccess` skips that ONE path.
+The exclusion is by path, never by user agent or source address: a filter on
+either could silently hide a request a real visitor made, and crawler 404s (which
+are signal) keep being logged like everything else.
+
+**The fetch narration.** The fetch path tells its story as it goes: identifier
+resolutions, `history extended via simdata starting …`, cache decisions. That is
+the point interactively, where a run prints each line once; a server replays the
+same pipeline on every request and the same handful of sentences then scroll
+forever. `runServe` and `runFire` therefore install `dedupServerLog`
+(`logdedup.go`), a filter in front of the standard logger's destination that
+prints each distinct informational line ONCE per process. A line starting with
+`warning:` is always printed, however often it repeats: warnings report degraded
+data (a held-flat FX rate, a stale cache, a missing benchmark) and their
+repetition is itself the signal. Nothing about the lines changes, and the CLI
+modes never install the filter, so an interactive run stays as verbose as it was.
+
+The filter sits at the logger rather than at `marketdata.Client.Logf` because the
+narration reaches the log through two doors: that field (which `cmd/pofo` wires
+to `log.Printf`) and a few direct `log.Printf` calls in `pkg/compare`, the
+`resolved X -> name` line among them. Filtering at the client seam would have
+caught only half of it. The memory is bounded (`dedupLimit` distinct lines, then
+forget everything and start over), since anonymous visitors can mint unbounded
+identifiers through the `/view` grammar.
 
 ## The `/view` URL grammar
 

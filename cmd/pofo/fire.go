@@ -23,6 +23,9 @@ import (
 // switch to the bootstrap/cohort models and re-weight allocations live. It
 // blocks, serving until interrupted.
 func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*portfolio.Spec) error {
+	// Long-lived like -serve: print each informational fetch line once, keep
+	// every warning (see logdedup.go).
+	dedupServerLog()
 	// The charts render dark through the web package's own wrappers
 	// (pkg/decumul/web/theme.go), not the chart process-global, so the FIRE
 	// UI stays dark whether it runs alone (-fire) or beside the light /view
