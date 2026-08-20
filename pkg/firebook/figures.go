@@ -151,6 +151,7 @@ var figures = map[string]func() string{
 	"triangle-correlations":    figTriangleCorrelations,
 	"echelle-passif":           figEchellePassif,
 	"linkers-plancher-adosse":  figLinkersPlancherAdosse,
+	"or-ab-modeles":            figOrAbModeles,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
