@@ -1507,6 +1507,21 @@ var figureDict = map[string]string{
 	"levier quotidien : deux fois le σ, −3,4 points":      "daily leverage: twice the σ, −3.4 points",
 	"Le drag est le carré de la volatilité : 0,5 point à 10 % de σ, 4,5 points à 30 %, pour la même moyenne annoncée.":               "The drag is the square of the volatility: 0.5 point at 10% of σ, 4.5 points at 30%, for the same advertised mean.",
 	"Moyenne arithmétique tenue à 7 %/an, drag = σ² / 2. Les volatilités sont celles du tableau de l'article, hors frais de levier.": "Arithmetic mean held at 7% a year, drag = σ² / 2. The volatilities are the ones in the table above, before the cost of leverage.",
+
+	// mf-cash-prime-frais
+	"LES MANAGED FUTURES":                                                      "MANAGED FUTURES",
+	"Le même programme, deux régimes de taux courts":                           "The same program, two short-rate regimes",
+	"Un fonds trend rapporte le cash, plus la prime du trend, moins les frais": "A trend fund returns cash, plus the trend premium, minus fees",
+	"collatéral rémunéré":                                                      "collateral yield",
+	"prime de trend brute":                                                     "gross trend premium",
+	"frais":                                                                    "fees",
+	"net":                                                                      "net",
+	"taux courts à 0 %":                                                        "short rates at 0%",
+	"taux courts à 3-4 %":                                                      "short rates at 3-4%",
+	"2022 →":                                                                   "2022 →",
+	"Rien n'a changé dans le programme : seule la rémunération du collatéral est passée de 0 à 3-4 %.":                  "Nothing changed in the program: only the yield on the collateral went from 0 to 3-4%.",
+	"Prime brute 3 % et frais 1 % dans les deux régimes. Aux deux bouts de la fourchette de taux, le net vaut 5 à 6 %.": "A 3% gross premium and 1% of fees in both regimes. At the two ends of the rate range, the net is 5 to 6%.",
+	"Les dates nomment les régimes comme l'article les date ; aucune série de marché n'entre dans la planche.":          "The dates name the regimes as the article dates them; no market series enters the plate.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
