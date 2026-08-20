@@ -107,8 +107,8 @@ func TestLevierInstrumentsTable(t *testing.T) {
 	}
 
 	body := rows[1:]
-	if len(body) != 6 {
-		t.Errorf("the sheet holds %d instruments, the lead-in announces six", len(body))
+	if len(body) != 7 {
+		t.Errorf("the sheet holds %d instruments, the lead-in announces seven", len(body))
 	}
 	for _, r := range body {
 		for i, c := range r {
