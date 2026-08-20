@@ -6,13 +6,6 @@ import (
 	"testing"
 )
 
-// amortRate is the article's own formula for the amortization stage: the
-// constant real payment that empties the capital over n years at rate r,
-// r / (1 − (1+r)^−n), in percent.
-func amortRate(r float64, n int) float64 {
-	return 100 * r / (1 - math.Pow(1+r, -float64(n)))
-}
-
 // The plate carries the article's numbers, so the article must still carry
 // them. Each fragment is the sentence the corresponding bar is drawn from.
 func TestClavierLeviersMatchesTheArticle(t *testing.T) {
@@ -71,7 +64,9 @@ func TestClavierLeviersArithmetic(t *testing.T) {
 // but the sequence penalty lightens over the longer horizon and the net move
 // the plate draws is smaller. Recompute both from the closed formula.
 func TestClavierLeviersHorizonAgainstTheAmortizationFormula(t *testing.T) {
-	at30, at50 := amortRate(0.04, 30), amortRate(0.04, 50)
+	// amortRate is the plate-side formula of figures_amortissement.go, so the
+	// two plates of this article can never drift apart.
+	at30, at50 := amortRate(amortReal, 30), amortRate(amortReal, 50)
 	if math.Abs(at30-5.8) > 0.06 {
 		t.Errorf("30 years at 4 %% real amortizes at %.2f %%, the article says 5,8 %%", at30)
 	}
