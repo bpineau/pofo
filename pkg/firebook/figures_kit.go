@@ -159,9 +159,15 @@ func (s figScale) Map(v float64) float64 {
 // a time axis it does not want ruled.
 //
 // A tick at exactly zero is drawn in figRule rather than figGrid: the zero of a
-// signed plate is a fact, not a guide. format is a Printf verb for the label
-// ("%.0f %%", "%.1f", "%.0f").
-func axisTicks(b *strings.Builder, s figScale, ticks []float64, format string, from, to float64, horizontal bool) {
+// signed plate is a fact, not a guide.
+//
+// The label is the tick set the book's way: decimals digits after a French
+// decimal COMMA, a negative value carrying the typographic minus, and suffix
+// appended verbatim for the unit a plate wants on every tick (" %", " ans", or
+// "" when an axis title carries it instead). The plates are single-source
+// French and the English edition reformats their numbers mechanically, so the
+// kit has no business emitting a point decimal or an ASCII hyphen.
+func axisTicks(b *strings.Builder, s figScale, ticks []float64, decimals int, suffix string, from, to float64, horizontal bool) {
 	for _, v := range ticks {
 		p := s.Map(v)
 		if from != to {
@@ -175,7 +181,7 @@ func axisTicks(b *strings.Builder, s figScale, ticks []float64, format string, f
 				b.WriteString(line(from, p, to, p, col, 1))
 			}
 		}
-		label := fmt.Sprintf(format, v)
+		label := frMinus(v, decimals) + suffix
 		if horizontal {
 			b.WriteString(mTxt(p, math.Max(from, to)+18, 10, figMuted, "middle", "400", label))
 		} else {
