@@ -1398,6 +1398,30 @@ var figureDict = map[string]string{
 	"les pensions":                "the pensions",
 	"le relais":                   "the hand-over",
 	"Besoins et barreaux en euros d'aujourd'hui ; à l'achat, les barreaux nominaux sont gonflés de 2,5 %/an et les linkers sont indexés.": "Needs and rungs in today's dollars; when bought, the nominal rungs are sized up 2.5% a year and the TIPS are indexed.",
+
+	// linkers-plancher-adosse
+	"LES OBLIGATIONS INDEXÉES":                                                             "INFLATION-LINKED BONDS",
+	"Le plancher adossé : ce qu'on achète, et ce qu'on touche":                             "A matched floor: what you buy, and what you get",
+	"Couple, 52 ans : plancher 40 k€, confort 55 k€, pensions à 66 ans, patrimoine 1,6 M€": "A couple at 52: a $40k floor, $55k of comfort, pensions at 66, $1.6M of capital",
+	"Ce qu'on achète":                       "What you buy",
+	"le patrimoine, 1,6 M€":                 "the capital, $1.6M",
+	"Ce qu'on touche":                       "What you get",
+	"le revenu annuel, en k€ d'aujourd'hui": "the annual income, in today's dollars",
+	"520 k€":                                "$520k",
+	"1,08 M€":                               "$1.08M",
+	"échelle indexée":                       "TIPS ladder",
+	"détenue à terme":                       "held to maturity",
+	// The amber block is named on two lines under its bar, and the break
+	// falls elsewhere in English, so the pair is scoped to this plate.
+	"linkers-plancher-adosse|portefeuille": "the comfort",
+	"linkers-plancher-adosse|de confort":   "portfolio",
+	"14 barreaux de 40 k€ réels":           "14 rungs of $40k real",
+	"prennent le relais":                   "take over",
+	"le confort, 15 k€ par an":             "comfort, $15k a year",
+	"15/1080 = 1,4 % du portefeuille":      "15/1080 = 1.4% of the portfolio",
+	"une teinte par barreau : à gauche ce qu'il coûte, à droite l'année qu'il paie":                                "one tint per rung: what it costs on the left, the year it pays on the right",
+	"Montants en euros d'aujourd'hui. Les 14 barreaux versent 40 k€ chacun et coûtent 520 k€ au taux réel de 1 %.": "Amounts in today's dollars. The 14 rungs pay $40k each and cost $520k at a 1% real yield.",
+	"Le portefeuille de confort n'est pas garanti ; le plancher adossé l'est, jusqu'aux pensions.":                 "The comfort portfolio carries no guarantee; the matched floor does, until the pensions start.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
