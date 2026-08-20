@@ -1,5 +1,5 @@
 # All-weather portfolios: Browne, All Weather, Golden Butterfly, Dragon
-<!-- source: portefeuilles-tous-temps @ 6d22f0203afc -->
+<!-- source: portefeuilles-tous-temps @ 4d157c87c0a1 -->
 
 Markets have seasons, and no asset wins in all of them ([[market-regimes]]). One conclusion follows. Instead of betting on the likely season, you hold at least one winner per season at all times and let rebalancing harvest the rotations. That simple idea produced a line of famous portfolios: Harry Browne's Permanent Portfolio (1981), Ray Dalio's All Weather (Bridgewater), the Golden Butterfly from the Portfolio Charts community, then Artemis Capital's Dragon. They are all cousins. They all rest on the same growth × inflation grid. And they all sell the same product: a **tighter** distribution of returns, with no deep left tail, paid for with a lower expected return than a portfolio dominated by stocks.
 
@@ -65,6 +65,11 @@ The annual real return gap between the Golden Butterfly and 100% stocks, year by
 ## The recommended use: a dose of all-weather, sized to the plan
 
 The choice is not binary. Modern design treats all-weather as a **dial**. Between a growth portfolio (global stocks and bonds, the core of [[stock-bond-allocation]]) and a full all-weather portfolio, every weighting exists, and the right dose depends on the phase and on the floor. The practical markers are clear. In **accumulation**, the dose stays small or zero. In the **transition** and through the first decade, the fragile window, it rises. Call it a glide path of structure, and it completes or replaces the bond tent ([[glidepaths]], [[the-three-phases]]). In the **covered phase**, set it by temperament. In practice, many robust plans converge on a core of 60 to 70% global growth plus 30 to 40% in a regime sleeve (gold, linkers, long duration and possibly trend). This half all-weather captures most of the tail shortening for 0.3 to 0.6 points of expected return.
+
+::: figure tous-temps-curseur
+The dial dose by dose, on the 70/30 core of the worked example below: before the plateau, each slice of sleeve buys a lot of worst path for almost nothing; inside it, the buying stops while the return keeps being paid. The sleeve here is half gold, half long duration, the example's linkers having no real-dollar series available. US, 1972-2024, in real terms, annual rebalancing: this is a shape, not a universal level.
+:::
+
 
 ::: astuce Test the variant before you adopt it
 An all-weather portfolio is judged A/B, never in the absolute. Build the variant from the blocks you can actually buy (global stocks, long and intermediate bonds, gold, linkers, managed futures; [[building-it-with-us-etfs]] goes through the shopping list) and run it against your current portfolio, same withdrawal rule, same horizon.
