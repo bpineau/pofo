@@ -114,7 +114,7 @@ func figLinkersPlancherAdosse() string {
 	var b strings.Builder
 	b.WriteString(plateHead("les obligations indexées",
 		"Le plancher adossé : ce qu'on achète, et ce qu'on touche"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Couple, 52 ans : plancher 40 k€, confort 55 k€, pensions à 66 ans, patrimoine 1,6 M€"))
 
 	// The two panels, named and kept apart by their own baselines: one is a

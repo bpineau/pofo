@@ -40,7 +40,7 @@ func figCibleConvexite() string {
 	var b strings.Builder
 	b.WriteString(plateHead("combien il vous faut",
 		"Chaque demi-point de prudence coûte plus cher que le précédent"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"le multiple est l'inverse exact du taux : les crochets donnent le prix de chaque demi-point de prudence"))
 
 	// The zone the article calls rarely rational, drawn before the grid so the
@@ -180,7 +180,7 @@ func figCibleCascade() string {
 	var b strings.Builder
 	b.WriteString(plateHead("combien il vous faut",
 		"Du relevé bancaire au capital cible, marche par marche"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Nadia et Marc, étape 5 : à 3,5 %, un euro de dépense par mois pèse 343 € de capital"))
 
 	for _, g := range []float64{0, 500, 1000, 1500} {

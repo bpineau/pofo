@@ -117,8 +117,8 @@ func figDouleurPrime() string {
 	x, y := douleurScales()
 	var b strings.Builder
 	b.WriteString(plateHead("douleur et salaire", "Ce qui est payé est ce qui fait mal au mauvais moment"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
-		"Chaque actif : ce qu'il a rendu dans les dix pires années des actions (horizontal), "+
+	b.WriteString(plateDeck(
+		"Chaque actif : ce qu'il a rendu dans les dix pires années des actions (horizontal), " +
 			"ce qu'il paie au-dessus du cash (vertical)"))
 	legendChips(&b, 74, [][2]string{{figBlue, "actifs à salaire"}, {figAccent, "or"}})
 
@@ -177,7 +177,7 @@ func figDouleurPrime() string {
 	b.WriteString(sTxt(douX0+8, y.Map(0)-8, 10, figSoft, "start", "600",
 		"Cash (bons du Trésor 3 mois) : l'étalon, prime nulle par construction"))
 
-	b.WriteString(sTxt(24, 378, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(378,
 		"Les actifs à salaire sont payés à proportion de ce qu'ils font perdre au mauvais moment ; "+
 			"l'or est payé sans douleur."))
 	b.WriteString(plateFoot(400, []string{

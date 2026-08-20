@@ -117,7 +117,7 @@ func figTroisBruits() string {
 	var b strings.Builder
 	b.WriteString(plateHead("trois bruits, un seul chiffre",
 		"Ce que vous lisez est le plus petit des trois"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le même plan, la même ruine affichée, et les trois incertitudes qui l'entourent, sur la même règle"))
 
 	// The ruler itself, graduated in points of ruin.
@@ -172,7 +172,7 @@ func figTroisBruits() string {
 		b.WriteString(sTxt(x1, y+bruBarH+28, 9.5, band.color, "end", "600", band.hiLabel))
 	}
 
-	b.WriteString(sTxt(24, 372, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(372,
 		"Les décimales sont du bruit, les écarts entre modèles sont du signal : "+
 			"la ruine se lit en ordinal, pas en cardinal."))
 	b.WriteString(plateFoot(394, []string{
