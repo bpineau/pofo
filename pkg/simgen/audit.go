@@ -102,8 +102,11 @@ var auditGroups = []struct {
 	},
 	{
 		Title: "Capital-efficient / stacked",
-		Note:  "Leg-by-leg replications of a levered sleeve (90/60, 100/100, a gold overlay).",
-		IDs:   []string{"IE000KF370H3", "IE00077IIPQ8", "IE000OV4XWA3", "GDE", "RSSB", "ZROZ"},
+		Note: "Leg-by-leg replications of a levered sleeve (90/60, 100/100, a gold overlay). " +
+			"The level verdicts of this family read on windows too short to carry them: measured on whole months, " +
+			"no fund's CAGR gap reaches one and a half standard errors from zero, and the two longest windows " +
+			"(ZROZ's sixteen years, NTSX's eight) are the two smallest gaps. Measured 2026-08; see the design doc.",
+		IDs: []string{"IE000KF370H3", "IE00077IIPQ8", "IE000OV4XWA3", "GDE", "RSSB", "ZROZ"},
 	},
 	{
 		Title: "Equity",
@@ -151,6 +154,14 @@ var auditCaveats = map[string]string{
 	"LU1662501532": "The engine already contains the sister class and the real quotes, so the live window holds " +
 		"nothing independent to validate; only the pre-2015 segment is a reconstruction.",
 	"XAUUSD": "The engine is the real quote extended by the LBMA fixing: over the real period it is the real series.",
+	"GDE": "The warn level is 0.45 standard errors from zero on whole months (+0.85 pt/yr over 51 of them, " +
+		"3.86 % monthly tracking error), so it measures nothing yet. One named mechanism points the same way and " +
+		"is deliberately not applied: the gold leg's price series carries no roll (Yahoo's GC=F compounds within " +
+		"a hundredth of the LBMA fix), while the fund holds futures whose embedded financing ran ~1.4 %/yr above " +
+		"the bill rate over 2009-2023, measured on the only public futures-based gold vehicle. That figure is a " +
+		"vehicle's shortfall rather than a price list, and applying it would overshoot the gap. Measured 2026-08.",
+	"RSSB": "The warn level is 1.4 standard errors from zero on whole months (+1.43 pt/yr over 30 of them), " +
+		"which is the largest of this family and still not a measurement. Measured 2026-08.",
 	"ERESMONDEM": "No quote exists for an employee-savings fund; the closest reference is WPEA " +
 		"(same index, same currency, different fees).",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +

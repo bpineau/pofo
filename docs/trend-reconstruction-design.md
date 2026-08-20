@@ -1056,6 +1056,110 @@ time (it hangs on a browser User-Agent over HTTP/1.1, `fredUserAgent`); the
 build now logs its financing splice on stderr, so a shortened one is visible
 rather than silent.
 
+### The capital-efficient group's residual is not measurable (measured, 2026-08)
+
+The section above ends on an open item: after the financing fix the levered
+family still read 1.2 to 1.8 points a year hot, uniformly, for no named reason.
+Re-measured on the current data, the finding is that there is nothing left to
+name. The residual is inside the noise of every window it is measured on, its
+sign is no longer uniform, and the two funds with the most evidence show the
+smallest gaps.
+
+The right frequency for this is MONTHLY. A daily gap between a US-listed fund
+and a reconstruction of it carries a large non-synchronous-close component that
+averages away in a month and inflates the tracking error a standard error is
+built from. Each fund is measured against its own real quotes (NTSX against its
+US-listed twin, which has traded since 2018 and is the longest window in the
+family), on whole months:
+
+| fund | months | window | CAGR gap | monthly TE | se of the gap | t |
+|---|---|---|---|---|---|---|
+| NTSX | 92 | 2018-12 .. 2026-07 | +0.51 pts | 1.53 % | 0.55 | **0.93** |
+| ZROZ | 199 | 2010-01 .. 2026-07 | +0.11 pts | 4.50 % | 1.10 | **0.10** |
+| GDE | 51 | 2022-05 .. 2026-07 | +0.85 pts | 3.86 % | 1.87 | **0.45** |
+| RSSB | 30 | 2024-02 .. 2026-07 | +1.43 pts | 1.61 % | 1.02 | **1.41** |
+| NTSG | 19 | 2025-01 .. 2026-07 | **-2.53 pts** | 2.64 % | 2.10 | **-1.21** |
+| NTSZ | 8 | 2025-12 .. 2026-07 | +2.92 pts | 3.97 % | 4.86 | **0.60** |
+
+Not one of the six reaches one and a half standard errors from zero, and the
+two longest windows, ZROZ's sixteen years and NTSX's eight, are the two
+smallest gaps in the table. NTSG has changed sign since the figure that opened
+this item: it was rebuilt in 2026-08 on the MSCI World equity leg and the
+four-currency bond overlay (`docs/ntsg-global-efficient-core-design.md`), and
+now reads two and a half points COLD. What was recorded as "uniformly hot" was
+a snapshot of five short windows, three of which have since moved by more than
+the effect being chased.
+
+**A pooled test does not rescue it either.** If one mechanism were at work it
+would be a cost on the LEVERED notional, so each gap divided by its overlay
+notional estimates the same quantity: +0.86 %/yr for NTSX (0.60 of notional),
++0.94 for GDE (0.90), +1.43 for RSSB (1.00), +0.17 for ZROZ (0.65), -4.21 for
+NTSG and +4.87 for NTSZ (0.60 each). Inverse-variance pooled, that is
+**+0.85 %/yr per unit of notional with a standard error of 0.59**, t = 1.43,
+and the true standard error is larger still: the six windows overlap in time
+and share the same equity and bond markets, so their residuals are positively
+correlated and the pooled figure is not a sum of independent evidence.
+
+**A factor decomposition finds no tilt to fix.** Regressing each fund's daily
+gap on its own donors leaves the residual tracking error where it was (NTSX
+4.88 % against 4.89 % unregressed) and returns slopes of a few hundredths: the
+recon's bond exposure is about 4 % short of NTSX's own ladder and 7 % short of
+RSSB's, which is a duration hundredth, not a level. The intercepts (+0.47 %/yr
+NTSX, -0.53 GDE, +2.12 RSSB, +0.09 ZROZ) sit inside one standard error apiece.
+Year by year the gap swings with the rate cycle rather than accruing: NTSX
+reads -2.06 pts in 2020, +1.51 in 2021, +3.42 in 2022 and then -0.13, -0.08 and
++0.17 in 2024, 2025 and 2026. A constant cost does not do that; it would show
+most in the years the bill rate was highest, which are exactly the years the
+gap vanishes.
+
+What was ruled out, and how:
+
+- **Securities lending is dead on sign.** Lending revenue accrues to the REAL
+  fund's NAV, so it raises the fund and LOWERS a gap measured as recon minus
+  fund. It can only deepen a hot residual, never explain one. The donors lend
+  too (the Vanguard equity funds a little, the Treasury funds next to nothing),
+  which if anything pushes the same way.
+- **Fees are not it.** `feeGap` charges the target's load only where the donors'
+  own charges do not already cover it, and floors at zero: where the donors cost
+  more than the target (NTSX's blended 0.246 % against 0.20 %), the difference is
+  NOT handed back. The convention errs cold, not hot.
+- **A financing spread above overnight is the survivor, and it is too small to
+  test.** It is real: a futures long finances at the implied repo, which sits
+  above the overnight rate by the contract's richness. But the gaps would need
+  0.86 to 1.43 %/yr of it on the levered notional, where the Treasury
+  cash-futures basis is a tens-of-basis-points phenomenon, and the measurement
+  cannot separate a 0.2 % spread from zero on any of these windows.
+
+**One leg does have a named, measured spread, and it still does not ship.**
+GDE's gold overlay is built as the gold price less overnight financing, and the
+price series behind it is a SPOT series in all but name: Yahoo's continuous
+`GC=F` compounds at 8.15 %/yr over 2010-2026 against the LBMA afternoon fix's
+8.16 %, so it carries no roll at all. A real rolled gold futures position does.
+The only public futures-based gold vehicle with a long record, Invesco's DB Gold
+Fund, ran 1.76 points a year under the physical gold ETF over 2009-2023; net of
+their 0.37-point fee difference and of the collateral interest the futures
+vehicle earns and the physical one does not, the financing embedded in the
+futures ran about **1.4 %/yr above the bill rate**, by era 0.78 (2009-2015),
+1.68 (2016-2019) and 2.41 (2020-2023). At 0.90 of notional that is 1.25 %/yr,
+the same order as GDE's whole gap and pointing the same way.
+
+It is not shipped, for three reasons and each is the house rule rather than
+caution. The constant is not separable from the vehicle it was measured on: DB's
+own roll rule, brokerage and trading costs sit inside that 1.76 alongside the
+market's carry, so it is a shortfall, not a price list. Its era pattern does not
+behave like a financing spread, growing steadily across three eras whose
+overnight rates went 0.1 %, 1.5 %, 0.1 % then 4 %. And applying it would move
+GDE's level by more than the gap it is meant to explain, from +0.85 to -0.40,
+which trades an unmeasurable positive residual for an unmeasurable negative one.
+The measurement is recorded here so a future session starts from it rather than
+from the hypothesis. What would make it shippable is a carry measured on the
+futures curve itself, front against next contract annualized against the
+overnight rate, or a second vehicle corroborating the first.
+
+The item is closed as measured and explained. It should be reopened only by
+evidence, and the evidence is time: NTSX and ZROZ are the windows that will
+answer it, and neither says anything today.
+
 ### A duration gearing must not gear the yield (measured, 2026-08)
 
 The section above separates the two rates a levered sleeve meets. It leaves a
