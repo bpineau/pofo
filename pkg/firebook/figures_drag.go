@@ -73,19 +73,17 @@ func figDragVolatilite() string {
 		arrowB     = 378.0 // the leverage move
 	)
 	x := func(s float64) float64 { return x0 + s/sigMax*(x1-x0) }
-	y := func(v float64) float64 { return yBot - (v-vLo)/(vHi-vLo)*(yBot-yTop) }
+	rate := figScale{Min: vLo, Max: vHi, Px0: yBot, Px1: yTop}
+	y := rate.Map
 
 	var b strings.Builder
 	b.WriteString(plateHead("arithmétique et géométrique",
 		"Doubler la volatilité quadruple ce qu'elle coûte"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le rendement réellement composé quand la moyenne arithmétique reste 7 % et que seule la volatilité change"))
 
 	// Grid and axes.
-	for v := 2.0; v <= 7.0; v++ {
-		b.WriteString(line(x0, y(v), x1, y(v), figGrid, 1))
-		b.WriteString(mTxt(x0-10, y(v)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f %%", v)))
-	}
+	axisTicks(&b, rate, []float64{2, 3, 4, 5, 6, 7}, 0, " %", x0, x1, false)
 	b.WriteString(line(x0, yTop, x0, yBot, figRule, 1))
 	b.WriteString(line(x0, yBot, x1, yBot, figRule, 1))
 	for s := 0.0; s <= 30; s += 5 {
@@ -137,10 +135,11 @@ func figDragVolatilite() string {
 		fmt.Sprintf("levier quotidien : deux fois le σ, %s points",
 			"−"+frNum(-dragMove(dragLeverFrom, dragLeverTo), 1))))
 
-	b.WriteString(sTxt(24, 402, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(402, fmt.Sprintf(
 		"Le drag est le carré de la volatilité : %s point à 10 %% de σ, %s points à 30 %%, pour la même moyenne annoncée.",
 		frNum(dragDrag(10), 1), frNum(dragDrag(30), 1))))
-	b.WriteString(sTxt(24, 418, 9.5, figMuted, "start", "400",
-		"Moyenne arithmétique tenue à 7 %/an, drag = σ² / 2. Les volatilités sont celles du tableau de l'article, hors frais de levier."))
+	b.WriteString(plateFoot(418, []string{
+		"Moyenne arithmétique tenue à 7 %/an, drag = σ² / 2. Les volatilités sont celles du tableau de l'article, hors frais de levier.",
+	}))
 	return svg(640, 434, b.String())
 }

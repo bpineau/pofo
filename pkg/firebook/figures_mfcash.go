@@ -54,13 +54,14 @@ func figMfCashPrimeFrais() string {
 		vLo, vHi       = -1.5, 7.0
 		stackW, netW   = 110.0, 70.0
 	)
-	y := func(v float64) float64 { return yBot - (v-vLo)/(vHi-vLo)*(yBot-yTop) }
+	rate := figScale{Min: vLo, Max: vHi, Px0: yBot, Px1: yTop}
+	y := rate.Map
 	y0 := y(0)
 
 	var b strings.Builder
 	b.WriteString(plateHead("les managed futures",
 		"Le même programme, deux régimes de taux courts"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Un fonds trend rapporte le cash, plus la prime du trend, moins les frais"))
 	legendChips(&b, 76, [][2]string{
 		{figBlue, "collatéral rémunéré"},
@@ -68,20 +69,8 @@ func figMfCashPrimeFrais() string {
 		{figBad, "frais"},
 	})
 
-	// The value axis, zero picked out from the rest.
-	for v := -1.0; v <= 7.0; v++ {
-		col := figGrid
-		if v == 0 {
-			col = figRule
-		}
-		b.WriteString(line(gridX0, y(v), gridX1, y(v), col, 1))
-		// The typographic minus, like every other negative number of the book.
-		tick := fmt.Sprintf("%.0f %%", v)
-		if v < 0 {
-			tick = fmt.Sprintf("\u2212%.0f %%", -v)
-		}
-		b.WriteString(mTxt(gridX0-10, y(v)+3.5, 10, figMuted, "end", "400", tick))
-	}
+	// The value axis, zero picked out from the rest by the kit.
+	axisTicks(&b, rate, []float64{-1, 0, 1, 2, 3, 4, 5, 6, 7}, 0, " %", gridX0, gridX1, false)
 
 	// One group per regime: the signed stack, then the net beside it.
 	for i, r := range []mfRegime{mfZIRP, mfHigh} {
@@ -128,7 +117,7 @@ func figMfCashPrimeFrais() string {
 		b.WriteString(sTxt(cx-16, 370, 9.5, figMuted, "middle", "400", r.dates))
 	}
 
-	b.WriteString(sTxt(24, 396, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(396,
 		"Rien n'a changé dans le programme : seule la rémunération du collatéral est passée de 0 à 3-4 %."))
 	b.WriteString(sTxt(24, 412, 9.5, figMuted, "start", "400", fmt.Sprintf(
 		"Prime brute %s %% et frais %s %% dans les deux régimes. Aux deux bouts de la fourchette de taux, le net vaut %s à %s %%.",

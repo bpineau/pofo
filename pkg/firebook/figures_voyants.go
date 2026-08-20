@@ -148,7 +148,7 @@ func figVoyants19291966() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le krach rend, l'épisode jamais",
 		"Deux millésimes, deux voyants"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le taux de retrait courant, année après année, pour le même plan parti en 1929 puis en 1966"))
 	legendChips(&b, 74, [][2]string{
 		{figBlue, "millésime 1929"},
@@ -217,7 +217,7 @@ func figVoyants19291966() string {
 		fmt.Sprintf("revenu à %s %% trente ans plus tard",
 			frNum(voyantVintages[0].rate[voyantYears-1], 1))))
 
-	b.WriteString(sTxt(24, 380, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(380,
 		"Le krach de 1929 fait sonner le voyant trois ans puis le rend ; "+
 			"l'épisode de 1966 le fait sonner quinze ans et le garde."))
 	b.WriteString(plateFoot(402, []string{
