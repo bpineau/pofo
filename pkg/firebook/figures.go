@@ -160,6 +160,7 @@ var figures = map[string]func() string{
 	"retrait-deux-lectures":    figRetraitDeuxLectures,
 	"preavis-1966":             figPreavis1966,
 	"defenses-bulletin":        figDefensesBulletin,
+	"douleur-prime":            figDouleurPrime,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
