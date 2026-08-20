@@ -4,6 +4,14 @@ Go tool to visualize and compare investment portfolios over time, plus
 reusable libraries to fetch price histories, compute risk/return metrics
 and produce SVG charts.
 
+A public instance runs at [pofo.zouh.org](https://pofo.zouh.org): the
+[portfolio visualizer](https://pofo.zouh.org/visualizer), a
+[FIRE simulator](https://pofo.zouh.org/firesimulator/), and a book on
+living off your capital in retirement, in two editions:
+[Le FIRE tranquille](https://pofo.zouh.org/firebook/fr/) (French) and
+[The Quiet FIRE](https://pofo.zouh.org/firebook/en/) (English), both also
+downloadable as EPUB. No ads, no accounts, no tracking cookies.
+
 The CLI reads allocation files, downloads price histories (Yahoo Finance,
 Financial Times, Morningstar, Stooq, ECB), rebuilds the missing past (proxies and
 simulated data), simulates each portfolio with periodic rebalancing and
