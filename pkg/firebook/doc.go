@@ -107,6 +107,13 @@
 // article linked as its Markdown mirror). The formats themselves live in
 // pkg/seo.
 //
+// For readers who follow rather than search, each edition also publishes an
+// Atom feed at "<mount>/feed.xml" (FeedXML), one entry per article in reading
+// order, declared from every page's head. Its <updated> is the mount's single
+// publication stamp, the same time the EPUB writes into dcterms:modified, on
+// the feed and on every entry alike: the articles are embedded in the binary
+// and none of them carries an honest date of its own.
+//
 // # Adding a plate
 //
 // A figure is a Go function returning inline SVG, so adding one touches a
