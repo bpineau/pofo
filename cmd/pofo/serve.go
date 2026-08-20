@@ -292,7 +292,13 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		w.Header().Set("Cache-Control", "public, max-age=3600")
 		_, _ = w.Write(catalogJSON)
 	})
-	return mux
+	// The optional analytics tag wraps the finished mux, which is the only
+	// place that sees every HTML page the constellation emits: the landing,
+	// the hub, the /view report, the error page, both book editions and the
+	// simulator mounts, whichever renderer produced them. The mounts
+	// themselves are therefore left alone (no web.WithBeaconToken here), and
+	// webui.Beacon returns the mux untouched when no token was given.
+	return webui.Beacon(s.opt.cfBeaconToken, mux)
 }
 
 // runServe starts the constellation server and blocks until the context

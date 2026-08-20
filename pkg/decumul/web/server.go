@@ -55,6 +55,7 @@ type handlerConfig struct {
 	sourceLabel string
 	picker      *Picker
 	indexNowKey string
+	beaconToken string
 }
 
 // Option configures Handler.
@@ -90,6 +91,17 @@ func WithIndexNowKey(key string) Option {
 	return func(c *handlerConfig) { c.indexNowKey = key }
 }
 
+// WithBeaconToken puts the Cloudflare Web Analytics tag on every HTML page this
+// mount serves: its own page, and the book editions mounted under it. Like the
+// IndexNow key it is a property of a public deployment, not of the program, so
+// only a mount that IS a public host has one; empty, the default, leaves the
+// feature off entirely and every page byte-identical. The tag is cookieless and
+// the injection is webui.Beacon's, shared with the -serve constellation, which
+// wraps this handler from the outside and needs no option here.
+func WithBeaconToken(token string) Option {
+	return func(c *handlerConfig) { c.beaconToken = token }
+}
+
 // renderTopnav builds the top-bar cross-navigation, or "" when there is none
 // (so the index page's placeholder simply vanishes).
 func renderTopnav(links []NavLink) string {
@@ -110,7 +122,8 @@ func renderTopnav(links []NavLink) string {
 // portfolio models (bootstrap/cohorts) and live allocation sliders; labels
 // names the holdings for the allocation UI. Options (WithNav,
 // WithSourceLabel, WithPicker) tune the chrome, which the front end reads
-// back from /api/meta; WithIndexNowKey adds the ownership key file.
+// back from /api/meta; WithIndexNowKey adds the ownership key file, and
+// WithBeaconToken puts the analytics tag on every HTML page served here.
 func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handler {
 	var cfg handlerConfig
 	for _, o := range opts {
@@ -259,7 +272,10 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	post("/api/income", func(pr Params) any { return Income(pr, panel) })
 	post("/api/lifecycle", func(pr Params) any { return Lifecycle(pr, panel) })
 	post("/api/curves", func(pr Params) any { return Curves(pr, panel) })
-	return mux
+	// The analytics tag, if this mount was given one, goes on last so it
+	// covers the page AND the book editions mounted above; without a token
+	// this returns the mux itself (WithBeaconToken).
+	return webui.Beacon(cfg.beaconToken, mux)
 }
 
 // fingerprintRefs rewrites the page's local asset references to carry a
