@@ -41,6 +41,11 @@ type Edition struct {
 	Lang     string // "fr", "en": html lang, EPUB dc:language, JSON-LD inLanguage
 	OGLocale string // "fr_FR", "en_US"
 
+	// Original marks the source edition every other one is translated from.
+	// Exactly one edition sets it, and it is the hreflang x-default of every
+	// cross-linked page: see alternateHead.
+	Original bool
+
 	SiteName        string // the book's title
 	SiteDescription string // SEO meta description of the index page
 	SiteLede        string // hero sentence, shared by the index page and the EPUB title page
@@ -62,6 +67,7 @@ type Edition struct {
 var French = &Edition{
 	Lang:     "fr",
 	OGLocale: "fr_FR",
+	Original: true,
 	SiteName: "Le FIRE tranquille",
 	SiteDescription: "Vivre de son capital sans le survivre : la science du retrait, " +
 		"les stratégies et portefeuilles qui résistent, l'inflation, la fiscalité française et le facteur humain.",
