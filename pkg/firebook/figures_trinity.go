@@ -109,7 +109,7 @@ func figTrinityFalaise() string {
 	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
 		"Part des retraites de trente ans qui sont allées au bout, taux de retrait par taux de retrait"))
 
-	axisTicks(&b, success, []float64{0, 25, 50, 75, 100}, "%.0f %%", triX0, triX1, false)
+	axisTicks(&b, success, []float64{0, 25, 50, 75, 100}, 0, " %", triX0, triX1, false)
 	for r := 3.0; r <= 8.001; r++ {
 		b.WriteString(mTxt(rate.Map(r), triBot+18, 10, figMuted, "middle", "400",
 			fmt.Sprintf("%.0f %%", r)))

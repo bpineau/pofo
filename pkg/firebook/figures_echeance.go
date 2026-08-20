@@ -136,7 +136,7 @@ func figTenirEcheance() string {
 		{figBlue, "le fonds, valorisé au marché"},
 	})
 
-	axisTicks(&b, y, []float64{90, 95, 100, 105, 110, 115}, "%.0f", tenX0, tenX1, false)
+	axisTicks(&b, y, []float64{90, 95, 100, 105, 110, 115}, 0, "", tenX0, tenX1, false)
 	for yr := 0.0; yr <= tenirHorizon; yr++ {
 		b.WriteString(mTxt(x.Map(yr), tenBot+18, 10, figMuted, "middle", "400", fmt.Sprintf("%.0f", yr)))
 	}

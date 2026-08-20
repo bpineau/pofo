@@ -124,19 +124,9 @@ func figDouleurPrime() string {
 
 	// The premium axis, whose zero is the cash line, and the pain axis, whose
 	// zero separates the assets that lose in those years from those that gain.
-	axisTicks(&b, y, []float64{0, 2, 4, 6}, "%.0f", douX0, douX1, false)
+	axisTicks(&b, y, []float64{0, 2, 4, 6}, 0, "", douX0, douX1, false)
 	b.WriteString(sTxt(douX0-10, douYTop-6, 9, figMuted, "end", "400", "points/an"))
-	// Drawn by hand rather than through axisTicks: a negative label on a plate
-	// is set with the book's typographic minus, never an ASCII hyphen.
-	for p := -20.0; p <= 5.01; p += 5 {
-		px := x.Map(p)
-		col := figGrid
-		if p == 0 {
-			col = figRule
-		}
-		b.WriteString(line(px, douYTop, px, douYBot, col, 1))
-		b.WriteString(mTxt(px, douYBot+18, 10, figMuted, "middle", "400", frMinus0(p)))
-	}
+	axisTicks(&b, x, []float64{-20, -15, -10, -5, 0, 5}, 0, " %", douYTop, douYBot, true)
 	b.WriteString(sTxt(douX0, douYBot+37, 9.5, figMuted, "start", "400",
 		"douleur : rendement réel moyen dans les dix pires années des actions, en % par an"))
 
@@ -218,9 +208,6 @@ func douleurPts(v float64) string {
 	}
 	return frMinus(v, 1) + " pts"
 }
-
-// frMinus0 sets a whole percent for an axis label, with the typographic minus.
-func frMinus0(v float64) string { return frMinus(v, 0) + " %" }
 
 // douleurYearsLine lists the ten worst equity years for the legend.
 func douleurYearsLine() string {

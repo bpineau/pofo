@@ -456,7 +456,7 @@ func figHorizonFlatten() string {
 	// y ticks
 	for _, v := range []float64{3.5, 4.0, 4.5} {
 		p := m(25, v)
-		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.1f %%", v)))
+		b.WriteString(txt(68, p[1]+4, 10, figMuted, "end", "400", frNum(v, 1)+" %"))
 	}
 	// x ticks
 	for _, c := range []float64{30, 40, 50, 60} {
@@ -588,7 +588,10 @@ func figCorrelSign() string {
 	// y ticks
 	for _, v := range []float64{-0.5, 0.5} {
 		p := m(1963, v)
-		b.WriteString(txt(72, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%+.1f", v)))
+		// A correlation axis carries its sign on both ends, and this edition
+		// writes the decimal with a comma.
+		b.WriteString(txt(72, p[1]+4, 10, figMuted, "end", "400",
+			strings.Replace(fmt.Sprintf("%+.1f", v), ".", ",", 1)))
 	}
 	for _, c := range []float64{1970, 1985, 2000, 2015} {
 		p := m(c, -0.62)
@@ -625,7 +628,7 @@ func figBufferFlat() string {
 	// y ticks
 	for _, v := range []float64{4.5, 5.0, 5.5} {
 		p := m(0, v)
-		b.WriteString(txt(74, p[1]+4, 10, figMuted, "end", "400", fmt.Sprintf("%.1f %%", v)))
+		b.WriteString(txt(74, p[1]+4, 10, figMuted, "end", "400", frNum(v, 1)+" %"))
 	}
 	for _, c := range []float64{0, 2, 4, 6, 8} {
 		p := m(c, 4.0)
