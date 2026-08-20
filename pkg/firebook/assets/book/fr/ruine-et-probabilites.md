@@ -54,6 +54,10 @@ Plan : 1,2 M€, 42 000 €/an, 45 ans, pension 12 000 €/an à 66 ans. Lecture
 
 Dernier recadrage, le plus important pour dormir. Dans le simulateur, la ruine est une falaise : le solde passe par zéro un mardi et tout s'arrête. Dans la vie, l'échec d'un plan de retraite est un processus lent et **visible** : le portefeuille décroche de la trajectoire prévue, le taux de retrait courant monte année après année, les voyants passent à l'orange longtemps avant le gouffre. Les trajectoires historiques défaillantes le confirment : entre le moment où un plan « condamné » devient statistiquement identifiable et l'épuisement effectif, il s'écoule une dizaine d'années au moins, et vingt ans sur le pire millésime connu. Le rouge du millésime 1966 se confirme en 1974-1975 ; le capital ne s'épuise qu'en 1994. Un préavis énorme pour qui a prévu des seuils d'action ([[quand-s-inquieter]], [[revue-annuelle]]).
 
+::: figure preavis-1966
+Le millésime 1966, le pire que l'histoire américaine ait produit, sous un retrait fixe de 4 % indexé. En haut, le capital qui décroche puis s'épuise. En bas, le même plan vu par les voyants du tableau de bord ([[quand-s-inquieter]]) : l'orange dès 1967, plus jamais de vert à partir de 1970, le rouge en 1974 et sa confirmation en 1975. Le compte n'est vide qu'en 1994. Le jour où le voyant passe au rouge, il reste encore 670 k€ en caisse et vingt revues annuelles pour agir : voilà à quoi ressemble une ruine réelle.
+:::
+
 C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un instrument de **conception** et non d'angoisse. Elle sert à comparer des plans et à dimensionner des marges avant le départ. Après le départ, elle cède la place au pilotage : des indicateurs simples, des seuils écrits, des réponses préparées. Un plan à 8 % de ruine avec un pilote attentif est plus sûr qu'un plan à 3 % avec un pilote endormi.
 
 ## L'essentiel à retenir
