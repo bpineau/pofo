@@ -87,6 +87,24 @@ func ExampleRobots_Text() {
 	// Sitemap: https://example.org/sitemap.xml
 }
 
+// A deploy pushes what changed instead of waiting to be crawled. The key must
+// already be served at KeyLocation: the endpoint reads that file to check the
+// submitter controls the host. Pass seo.IndexNowEndpoint in production; a test
+// passes an httptest URL, which is why the endpoint is an argument.
+func ExampleIndexNow_Submit() {
+	n := seo.IndexNow{
+		Host:        "example.org",
+		Key:         "1a2b3c4d5e6f7890",
+		KeyLocation: "https://example.org/1a2b3c4d5e6f7890.txt",
+		URLs:        []string{"https://example.org/", "https://example.org/handbook/"},
+	}
+	fmt.Println(n.Validate() == nil, len(n.Bodies()))
+	fmt.Println(string(n.Bodies()[0]))
+	// Output:
+	// true 1
+	// {"host":"example.org","key":"1a2b3c4d5e6f7890","keyLocation":"https://example.org/1a2b3c4d5e6f7890.txt","urlList":["https://example.org/","https://example.org/handbook/"]}
+}
+
 func ExampleLLMs_Text() {
 	l := seo.LLMs{
 		Title:   "Example",
