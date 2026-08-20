@@ -1,5 +1,5 @@
 # Arithmetic mean, geometric mean, and volatility drag
-<!-- source: rendements-arithmetiques-geometriques @ 2dc06d49e4c9 -->
+<!-- source: rendements-arithmetiques-geometriques @ 50c547741fb9 -->
 
 Here is the most profitable trick question in all of personal finance: an investment gains 50% in its first year and loses 50% in its second. Average return: 0%. How much did you make?
 
@@ -46,7 +46,15 @@ Compare the two leveraged rows, they say everything. The 90/60 stack carries 150
 The table, straightened into a curve. The cost of volatility is its square, so a table read row by row suggests a gentle slope where the truth bends. The six assets sit on the parabola at the volatilities the table quotes, and the two moves of the text are written under the axis. The two leveraged rows land at the ends of the second one: at plain-stock volatility the 90/60 stack keeps 5.9%, while the daily ×2 falls to 2.5%.
 :::
 
-Hence a result that surprises every beginner: a daily ×2 leveraged ETF on a volatile index can do **worse** than the index over a long stretch, even though it doubles it faithfully day after day. As soon as the extra drag exceeds the extra return, leverage destroys ([[leverage-and-margin]]). The same mechanics explain why diversification is the only free lunch in finance. Combining uncorrelated assets lowers σ without lowering the arithmetic mean, so it raises the geometric one. Diversification does not promise better average years. It promises better compounding. The full mechanism, rebalancing premium included, is in [[why-diversification-works]]; the assembly in [[all-weather-portfolios]] and [[defensive-assets]].
+Hence a result that surprises every beginner: a daily ×2 leveraged ETF on a volatile index can do **worse** than the index over a long stretch, even though it doubles it faithfully day after day. As soon as the extra drag exceeds the extra return, leverage destroys ([[leverage-and-margin]]).
+
+**That extra has a name, beta slippage**: what the daily reset of the leverage adds to the drag the bare asset already carries. It is not a second phenomenon. It is the same one, amplified by the reset. A product levered L and reset every day compounds at roughly L × μ − L² × σ²/2, where L times the index's own compounded growth would be L × μ − L × σ²/2. The gap between the two, (L² − L) × σ²/2, is the beta slippage. At L = 2 it comes to σ², twice the drag the index itself carries, and the product's total drag is then 2σ², four times the index's. At 20% volatility, the index gives up 2 points a year to compounding and the daily ×2 gives up 8.
+
+The reset cuts both ways, though, and that is the part nobody mentions. In 2013 the S&P 500 gained 32% and a daily ×2 gained 73%, well past twice the index's own gain: in a sustained trend the reset puts the gains back to work every evening and the product beats its own multiple. In 2011 the same index gained 2% and the same product lost 1%, because a market that swings without going anywhere runs the same mechanics in reverse. Beta slippage is an expectation, then, not a levy collected every year. What never changes is the direction of the gap against twice the index's **compounded** growth, and that gap is the realized variance, always.
+
+**And a smooth curve says nothing about the regime.** Faced with a daily ×2 and a good-looking track record, the natural question is what the curve is hiding. Looking backward, nothing: the slippage of the years gone by is already subtracted from it, day by day. What the curve does not carry is the volatility regime that produced it. The drag grows as (L × σ)² / 2, as the square of volatility, and the same ×2 product gives up 4.5 points a year on an index at 15% volatility against nearly 10 points if the regime shifts to 22%. Expected return and Sharpe ratio degrade far faster than the bare asset's when volatility rises. And most of the track records on display were born in a rising, quiet decade and simply do not contain 2000-2009 ([[leverage-and-margin]]).
+
+The same mechanics explain why diversification is the only free lunch in finance. Combining uncorrelated assets lowers σ without lowering the arithmetic mean, so it raises the geometric one. Diversification does not promise better average years. It promises better compounding. The full mechanism, rebalancing premium included, is in [[why-diversification-works]]; the assembly in [[all-weather-portfolios]] and [[defensive-assets]].
 
 ::: exemple Check it on two holdings
 Holding A: +7% every year, never varying. Holding B: +27% and −13%, alternating. Its arithmetic mean is (27 − 13) / 2 = 7%, exactly A's, and every one of its years sits 20 points away from that mean: σ = 20 points.
@@ -94,7 +102,7 @@ No formalism needed. The logarithm of a return, ln(1+r), is what really adds up 
 - Two means: the arithmetic one (the typical year) and the geometric one (the growth you actually live); your capital lives in geometric terms, marketing speaks in arithmetic ones.
 - The gap is the volatility drag ≈ σ²/2: volatility is a cost of compounding, with no crash required, even when the advertised average is zero.
 - The cascade from brochure to livable: minus drag, minus inflation, minus fees, minus the sequence premium; 3 to 3.5% of rigid withdrawal survives it, which is the 4% rule demystified.
-- Diversifying raises the geometric mean at an equal arithmetic mean. That is the mathematical case for a diversified withdrawal portfolio; leverage does the opposite.
+- Diversifying raises the geometric mean at an equal arithmetic mean. That is the mathematical case for a diversified withdrawal portfolio; leverage does the opposite, and a daily reset adds beta slippage on top, (L² − L) × σ²/2.
 - Three reflex questions in front of any number: compounded? real? net? And for your simulators, a **real** and modest μ, never the brochure's average.
 
 ---
