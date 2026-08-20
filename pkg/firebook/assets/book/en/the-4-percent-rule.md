@@ -1,5 +1,5 @@
 # The 4% rule in ten minutes
-<!-- source: la-regle-des-4-pourcents @ 5b27abd60734 -->
+<!-- source: la-regle-des-4-pourcents @ 1095f9061b00 -->
 
 It is the most famous rule in personal finance: withdraw 4% of your capital in the first year of retirement, raise that amount with inflation every year after, and your portfolio will last thirty years. It is so famous that people call it "the rule" and leave it at that.
 
@@ -24,6 +24,10 @@ Three properties follow straight from that machinery, and they explain everythin
 **The effective withdrawal rate, though, floats.** If Camille's portfolio drops to $700,000 after a crash in year 2, her $41,000 is suddenly 5.9% of capital. The rule does not care, and that is exactly where the risk lives.
 
 **The "4%" is counted once and never again.** The rate applies to the starting capital, on the day you leave, and to nothing else. Hence a well-known paradox: two identical neighbors, one who left in 2021 with $1M and draws $40k, the other who left in 2022 after a crash with $800k and draws $32k, take out different amounts although their portfolios are now worth roughly the same. That is not a footnote. It shows the rule is a simplification of something deeper: the withdrawal rate depends on the valuations you start from ([[valuations-and-cape]]).
+
+::: figure retrait-deux-lectures
+The two properties above, set side by side on the worst vintage on record. On top, what the retiree sees: a payment that does not move by one constant dollar for twenty-eight years. Below, what the plan sees: that same payment, measured against the capital still there, goes from 4% to more than 8% as early as 1975 and never comes back down. Neither reading lies, and that is the problem, because the first one is the only one daily life ever shows you.
+:::
 
 ## Where the numbers came from
 
