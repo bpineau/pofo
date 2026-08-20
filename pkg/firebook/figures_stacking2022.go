@@ -63,15 +63,6 @@ func stack22Steps() []stack22Step {
 	}
 }
 
-// frMinus formats a number the French way and with the book's typographic
-// minus, so a negative value in a plate never falls back to an ASCII hyphen.
-func frMinus(v float64, decimals int) string {
-	if v < 0 {
-		return "\u2212" + frNum(-v, decimals)
-	}
-	return frNum(v, decimals)
-}
-
 // figStacking2022 draws the waterfall.
 func figStacking2022() string {
 	const (
