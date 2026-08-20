@@ -1,5 +1,5 @@
 # Beyond the United States: Anarkulova, Cederburg and the world sample
-<!-- source: anarkulova-cederburg @ 6491c83551c3 -->
+<!-- source: anarkulova-cederburg @ c09c7d2cabe0 -->
 
 The whole safe withdrawal rate tradition, from Bengen to Trinity and on to nearly every online simulator, rests on one data set: US markets since 1926 ([[the-trinity-study]]). The twentieth-century United States is not a neutral sample. It is the country that won the last century.
 
@@ -42,6 +42,11 @@ Three samples travel under the same flag, and mixing them up wrecks any reading.
 | US history | United States since 1926, rolling windows | 50/50 to 75/25 | fixed 30 years | SAFEMAX ~4.15%; ~2% failure at 4% |
 
 Read that last column carefully, because the three numbers do not measure the same thing. The first is a probability over retirements of random length; the other two are worst-vintage rates, one across a basket of countries, the other for a single one. The databases differ too. On the panel behind the figure above, the United States carries only 3.75%, where the Bengen tradition prints 4.15%.
+
+::: figure echantillon-croise
+The same plan judged twice: a domestic 60/40 and a rigid indexed withdrawal over thirty years, measured first on the panel's American record alone, then on the broad-sample model that draws its blocks inside all sixteen countries. The two verdicts start almost together and separate exactly in the band where everyone sizes a plan. The numbers the 2023 paper publishes (17% and 2.26%) belong to a third setup, thirty-eight countries and real mortality, and the legend puts them back in their place.
+:::
+
 
 ::: science Where these numbers sit in the literature
 Keep the spread of bounds for a long horizon in mind. US history alone gives about 3.25 to 3.5% rigid ([[the-ern-series]]). Morningstar's forward-looking returns over 30 years give about 3.9% ([[morningstar-guardrails]], [[expected-returns]]). The Anarkulova-Cederburg world sample gives about 2.3 to 2.7%. The gap between those bounds is **not** technical disagreement: they answer different questions ("what if the future looks like America, like today's expectations, or like the whole developed century?"). A serious plan knows all three numbers and picks its spot deliberately, rather than ignoring the two that hurt.
