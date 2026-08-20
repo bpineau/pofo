@@ -238,9 +238,15 @@ func TestCanonicalAndStructuredData(t *testing.T) {
 	srv := siteServer(t)
 	art := Categories[0].Articles[0]
 
+	// The canonical link is fully qualified (Google only recommends it, but
+	// the hreflang pair next to it requires it, and the two must agree), built
+	// from the request's origin plus the edition's declared home.
 	_, index := get(t, srv, French.HomePath)
-	if !strings.Contains(index, `<link rel="canonical" href="`+French.HomePath+`">`) {
-		t.Error("index misses its canonical link")
+	if !strings.Contains(index, `<link rel="canonical" href="`+srv.URL+French.HomePath+`">`) {
+		t.Error("index misses its absolute canonical link")
+	}
+	if !strings.Contains(index, `<meta property="og:url" content="`+srv.URL+French.HomePath+`">`) {
+		t.Error("index misses its absolute og:url")
 	}
 	nodes := structuredData(t, index)
 	types := nodeTypes(nodes)
@@ -264,8 +270,8 @@ func TestCanonicalAndStructuredData(t *testing.T) {
 	}
 
 	_, page := get(t, srv, French.HomePath+art.Slug)
-	if !strings.Contains(page, `<link rel="canonical" href="`+French.HomePath+art.Slug+`">`) {
-		t.Error("article misses its canonical link")
+	if !strings.Contains(page, `<link rel="canonical" href="`+srv.URL+French.HomePath+art.Slug+`">`) {
+		t.Error("article misses its absolute canonical link")
 	}
 	nodes = structuredData(t, page)
 	types = nodeTypes(nodes)
