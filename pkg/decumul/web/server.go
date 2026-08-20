@@ -56,6 +56,7 @@ type handlerConfig struct {
 	picker      *Picker
 	indexNowKey string
 	beaconToken string
+	embedded    bool
 }
 
 // Option configures Handler.
@@ -101,6 +102,15 @@ func WithIndexNowKey(key string) Option {
 func WithBeaconToken(token string) Option {
 	return func(c *handlerConfig) { c.beaconToken = token }
 }
+
+// Embedded marks this handler as an inner app mounted under a larger site
+// (the -serve FIRE mounts at /firesimulator/, /firesimulator/e/<name>/ and
+// /firesimulator/p/<spec>/). An embedded app serves only itself: the page,
+// its assets and /api. The book mounts and the site files (sitemap.xml,
+// robots.txt, llms.txt, the IndexNow key) stay with the site that owns the
+// root, so nested copies of those pages cannot exist and a crawler wandering
+// under the mount gets 404s instead of a republished book.
+func Embedded() Option { return func(c *handlerConfig) { c.embedded = true } }
 
 // renderTopnav builds the top-bar cross-navigation, or "" when there is none
 // (so the index page's placeholder simply vanishes).
@@ -156,22 +166,29 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		setImmutableIfVersioned(w, r)
 		fileSrv.ServeHTTP(w, r)
 	})
-	// The FIRE book (pkg/firebook), linked discreetly from the page's
-	// "How this machine works" fold, in both editions. Each is told where the
-	// other is mounted (WithAlternate), which cross-links every paired page.
-	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
-		firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
-	mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
-		firebook.English.Handler(firebook.WithAlternate("/firebook/fr/", firebook.French))))
-	// The machine-readable face of the server: /sitemap.xml, /robots.txt and
-	// /llms.txt, covering both book editions and this page. It is the same
-	// set of files -serve publishes, minus the surfaces this mount lacks.
-	site := firebook.BookSite(firebook.Page{
-		Path: "/", Title: "FIRE simulator",
-		Note: "stress-test a withdrawal plan against thousands of simulated futures",
-	})
-	site.IndexNowKey = cfg.indexNowKey
-	site.Handle(mux)
+	// The FIRE book and the site files belong to whoever owns the root: the
+	// standalone server mounts them here, an Embedded() mount serves only
+	// itself and leaves both to the enclosing site.
+	if !cfg.embedded {
+		// The FIRE book (pkg/firebook), linked discreetly from the page's
+		// "How this machine works" fold, in both editions. Each is told where
+		// the other is mounted (WithAlternate), which cross-links every
+		// paired page.
+		mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
+			firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
+		mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
+			firebook.English.Handler(firebook.WithAlternate("/firebook/fr/", firebook.French))))
+		// The machine-readable face of the server: /sitemap.xml, /robots.txt
+		// and /llms.txt, covering both book editions and this page. It is the
+		// same set of files -serve publishes, minus the surfaces this mount
+		// lacks.
+		site := firebook.BookSite(firebook.Page{
+			Path: "/", Title: "FIRE simulator",
+			Note: "stress-test a withdrawal plan against thousands of simulated futures",
+		})
+		site.IndexNowKey = cfg.indexNowKey
+		site.Handle(mux)
+	}
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {
