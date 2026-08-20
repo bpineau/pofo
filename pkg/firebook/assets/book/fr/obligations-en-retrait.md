@@ -14,6 +14,11 @@ Un. Le prix d'une obligation varie **en sens inverse** des taux, proportionnelle
 
 **Fonds contre titres en direct, le faux débat.** « Je tiens ma ligne à échéance, donc je ne perds jamais » est l'illusion la plus tenace. Tenir à échéance verrouille le rendement nominal promis. Si les taux ont monté, vous encaissez la même perte que le fonds, sous forme de coût d'opportunité. Vous touchez 2 % quand le marché en sert 4, au lieu d'une baisse de prix affichée. La richesse finale est identique, seule la comptabilité mentale change. Le fonds à duration constante et le titre détenu à échéance sont deux outils légitimes pour deux usages. Le fonds sert les poches permanentes, l'amortisseur du portefeuille que l'on rééquilibre. Le titre, ou le fonds à échéance comme les ETF « iBonds », sert les passifs datés. C'est le principe de l'échelle, traité dans [[echelle-obligataire]].
 
+::: figure tenir-echeance
+Un portefeuille obligataire à sept ans, un choc de deux points au douzième mois, et les deux comptabilités de la même position : le fonds valorise au marché et affiche aussitôt une baisse de 11 %, le titre détenu à échéance reste au coût amorti et n'affiche rien, mais sert 2 % quand le marché en donne 4. La bande entre les deux courbes est la même perte, sous ses deux noms. À l'échéance, les deux richesses sont le même nombre, au centime près.
+:::
+
+
 ## Les trois services, et leurs conditions de fonctionnement
 
 La poche obligataire d'un rentier rend trois services ([[allocation-actions-obligations]]), et chacun a ses conditions de régime ([[regimes-de-marche]]).
