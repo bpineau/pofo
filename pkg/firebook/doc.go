@@ -83,6 +83,14 @@
 // the Book (its EPUB as a workExample, its whole table of contents as Chapter
 // parts) on the index, an Article and its BreadcrumbList on every page.
 //
+// Shared rather than searched, a link to the book shows its social card: one
+// image per edition at "<mount>/card.png", 1200x630, declared as og:image with
+// a summary_large_image Twitter card. The drawing is Go code like every other
+// plate ((*Edition).CardSVG, the book's own hero block at card size in the v2
+// plate identity), and every word on it comes from the Edition value already:
+// nothing is written for the card. The committed PNG next to it is that SVG
+// rasterized once by scripts/card-shot.sh, since a crawler wants a bitmap.
+//
 // Those head URLs are the handler's one departure from the relative,
 // mount-anywhere URLs it emits everywhere else: they are FULLY QUALIFIED, the
 // request's own origin (RequestOrigin) in front of the HomePath-derived path.
