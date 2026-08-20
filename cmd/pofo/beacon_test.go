@@ -48,6 +48,7 @@ var notHTML = []string{
 	"/robots.txt",
 	"/llms.txt",
 	"/catalog.json",
+	"/healthz",
 	"/theme.css",
 	"/favicon.svg",
 	"/examples/claude-dragonlite.txt",

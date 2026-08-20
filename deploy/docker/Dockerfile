@@ -58,5 +58,7 @@ VOLUME ["/var/lib/pofo"]
 ENTRYPOINT ["/usr/local/bin/pofo"]
 CMD ["-serve", "-listen", "0.0.0.0:8787", "-data", "/var/lib/pofo"]
 
+# /healthz is the one route -serve keeps out of the access log, so this probe
+# leaves no trace every 30 seconds; polling "/" instead would flood it.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
-  CMD wget -qO- http://127.0.0.1:8787/ >/dev/null 2>&1 || exit 1
+  CMD wget -qO- http://127.0.0.1:8787/healthz >/dev/null 2>&1 || exit 1
