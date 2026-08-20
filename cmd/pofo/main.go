@@ -111,7 +111,7 @@ func run(ctx context.Context, argv []string) error {
 	serveFlag := fs.Bool("serve", false, "serve the web app (hub, visualizer, FIRE simulator, book) until stopped; portfolio file args feed the FIRE historical models")
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
 	indexNow := fs.String("indexnow", "", "submit every published URL of this origin (e.g. https://example.org) to the IndexNow search engines, then exit; needs -indexnow-key")
-	fs.StringVar(&opt.indexNowKey, "indexnow-key", "", "IndexNow ownership key: with -serve, serve it at /<key>.txt; with -indexnow, sign the submission with it (empty = feature off)")
+	fs.StringVar(&opt.indexNowKey, "indexnow-key", "", "IndexNow ownership key: with -serve, serve it at /<key>.txt; with -indexnow, sign the submission with it (empty = read POFO_INDEXNOW_KEY from the environment; both empty = feature off)")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
@@ -217,6 +217,13 @@ Options:
 	if *bookDrift {
 		return runBookDrift()
 	}
+	// The IndexNow key may come from the environment instead of the flag: a
+	// container image with a fixed command line turns the feature on by
+	// setting POFO_INDEXNOW_KEY, and an empty flag defers to it.
+	if opt.indexNowKey == "" {
+		opt.indexNowKey = os.Getenv("POFO_INDEXNOW_KEY")
+	}
+
 	// -indexnow talks to a search engine and nothing else: no portfolio, no
 	// quote cache, no date window. Dispatch it before any of that.
 	if *indexNow != "" {
