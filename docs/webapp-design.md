@@ -37,6 +37,7 @@ running a command per comparison.
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | `firebook.Site.Handle` (`pkg/firebook/site.go`) | the machine-readable face of the constellation: every article, index and EPUB of both book editions plus the app surfaces; everything allowed and the AI crawlers named one by one; the llmstxt.org index. Absolute URLs are built per request from the `Host` header (`firebook.RequestOrigin`), since the public origin is not known at build time. Also mounted by `pkg/decumul/web` |
 | `/firebook/<lang>/<slug>.md` | `pkg/firebook.Handler` | one article's Markdown SOURCE, untransformed, behind a one-line HTML-comment provenance header naming the page to cite; strong ETag, `text/markdown`. The HTML page declares it (`<link rel="alternate" type="text/markdown">`) and `llms.txt` lists it |
+| `/firebook/<lang>/feed.xml` | `pkg/firebook.Handler` (`feed.go`) | the edition's Atom 1.0 feed: one entry per article in reading order, the manifest blurb as its summary, absolute URLs from `RequestOrigin`. Every page of the edition declares it in its head and `llms.txt` lists it; the sitemap does not (a feed is not a page to index). Mounted by both servers, since it rides the edition handler itself |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
 
@@ -328,9 +329,21 @@ and its x-default, and schema.org JSON-LD: `WebSite` + `Book` (with the EPUB as
 a `workExample` and the whole table of contents as `Chapter` parts) on an
 index, `Article` + `BreadcrumbList` on a page. `/sitemap.xml` lists every
 article, index and EPUB of both editions plus the app surfaces, and
-`/robots.txt` points at it. No `og:image`: there is no artwork for the book,
-and inventing one would be worse than none. No `lastmod` in the sitemap: the
-articles are embedded in the binary with no honest modification date.
+`/robots.txt` points at it. No `lastmod` in the sitemap: the articles are
+embedded in the binary with no honest modification date.
+
+For readers who would rather follow than search, each edition publishes an
+**Atom feed** at `/firebook/<lang>/feed.xml`, one entry per article in reading
+order with its manifest blurb as the summary, declared from every page's head
+(`rel="alternate" type="application/atom+xml"`) and listed in `llms.txt`. Atom
+makes `<updated>` mandatory, and the same problem that keeps `lastmod` out of
+the sitemap applies here: no article has an honest date. So one stamp answers
+for the feed and for every entry of it, the mount's single publication time
+(`built` in `Handler`, taken once when the handler is assembled), which is also
+what the EPUB writes into `dcterms:modified` and what the OPDS catalog carries.
+The entry ids are derived from `Edition.EPUBIdentifier`, not from the URLs, so
+they do not move when the same book is reached under another host name. A
+guard test holds the one-stamp invariant.
 
 For AI agents the decisive move is the **Markdown mirror**: `<article>.md`
 serves the article's source exactly as written, callouts, tables and
