@@ -198,6 +198,7 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 	})
 	mux.HandleFunc("/view", s.view)
 	mux.HandleFunc("/examples/", s.exampleFile)
+	mux.HandleFunc(healthPath, health)
 	mux.HandleFunc(fireBase+"/", s.fire)
 	// The simulator moved from /fire/ to /firesimulator/; keep the old path
 	// working with a permanent redirect so existing bookmarks, shared /view
@@ -309,6 +310,9 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 // runServe starts the constellation server and blocks until the context
 // is canceled (Ctrl-C), mirroring runFire's lifecycle.
 func runServe(ctx context.Context, opt *options, client *marketdata.Client, specs []*portfolio.Spec, addr string) error {
+	// A long-lived process replays the fetch narration on every request:
+	// print each informational line once, keep every warning (see logdedup.go).
+	dedupServerLog()
 	panel, labels := firePanel(ctx, opt, client, specs)
 	ln, err := net.Listen("tcp", addr)
 	if err != nil {
@@ -334,12 +338,39 @@ func runServe(ctx context.Context, opt *options, client *marketdata.Client, spec
 	return nil
 }
 
+// healthPath is the liveness endpoint an orchestrator (the container image's
+// HEALTHCHECK, a load balancer) polls. It is the ONE path logAccess keeps out
+// of the access log: a probe every few seconds would otherwise bury the real
+// traffic, and unlike a user-agent or source-address filter this exclusion
+// cannot hide a request a visitor made. It is deliberately absent from the
+// sitemap and from robots.txt: it is not a page.
+const healthPath = "/healthz"
+
+// health answers the liveness probe: the process is up and its mux is serving.
+// Nothing is checked beyond that on purpose (no fetch, no cache probe): a
+// health endpoint that depends on a third-party quote source would report the
+// server dead every time Yahoo hiccups.
+func health(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet && r.Method != http.MethodHead {
+		http.Error(w, "GET only", http.StatusMethodNotAllowed)
+		return
+	}
+	w.Header().Set("Content-Type", "text/plain; charset=utf-8")
+	w.Header().Set("Cache-Control", "no-store")
+	_, _ = w.Write([]byte("ok\n"))
+}
+
 // logAccess wraps h so every served request prints one NCSA combined-log-format
 // line to w (stdout): client IP, timestamp, request line, status, response
 // bytes, referer and user agent. Application errors keep going to log's own
-// destination (stderr), so the two streams stay separable.
+// destination (stderr), so the two streams stay separable. The liveness probe
+// (healthPath) is the single exception, served but never logged.
 func logAccess(w io.Writer, h http.Handler) http.Handler {
 	return http.HandlerFunc(func(rw http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == healthPath {
+			h.ServeHTTP(rw, r)
+			return
+		}
 		start := time.Now()
 		rec := &statusRecorder{ResponseWriter: rw, status: http.StatusOK}
 		h.ServeHTTP(rec, r)
