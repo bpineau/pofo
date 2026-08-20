@@ -20,6 +20,10 @@ Le rentier n'est pas immortel. Sur un horizon de 30 ans, il a le droit de consom
 
 Ce bonus explique au passage la sensibilité à l'horizon ([[horizon-et-esperance-de-vie]]). À 50 ans d'horizon, le même calcul donne 4,7 % et le bonus fond à +0,7. À l'infini, il disparaît. La retraite très précoce ne « perd » pas son taux à cause d'un mystère. Elle perd simplement le droit d'amortir vite.
 
+::: figure amortissement-horizon
+Le retrait qu'une pure arithmétique d'amortissement finance à 4 % réel, selon le nombre d'années à couvrir. La courbe tombe vite, puis s'aplatit sur son asymptote, le rendement seul. Les vingt premières années emportent l'essentiel du bonus, tandis que passer de 50 ans d'horizon à l'éternité ne coûte plus que sept dixièmes de point. La retraite très précoce paie donc son horizon, mais beaucoup moins qu'on ne le croit.
+:::
+
 ## Étage 3 : la pénalité de séquence, ou le désordre qui coûte
 
 Tout l'étage 2 supposait un rendement constant. Les vrais rendements arrivent en désordre. Le retrait fixe transforme ce désordre en risque asymétrique, car vendre pendant les baisses détruit du capital qui ne verra pas le rebond ([[sequence-des-rendements]]). Avec des retraits, le résultat final ne dépend plus seulement de la moyenne géométrique des rendements. Il dépend aussi de leur ordre, les premières années pesant plusieurs fois plus que les dernières. Or la règle veut survivre aux pires ordres observés (1929, 1966), et non à l'ordre moyen. Il faut donc provisionner le désordre maximal.
