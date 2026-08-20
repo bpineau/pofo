@@ -1477,6 +1477,19 @@ var figureDict = map[string]string{
 	"Aucune case n'est interdite ici, et les cases vides sont un choix d'imposition : chaque brique à revenu ordinaire se loge là où son revenu est invisible.": "No cell is off limits here, and the empty ones are a tax choice: every ordinary-income block sits where its income is invisible.",
 	"Poids en % du portefeuille total. Le moteur monde se coupe en deux, le Monde synthétique du PEA et l'All-World physique du CTO.":                           "Weights in % of the whole portfolio. The world engine splits in two, the synthetic World fund in the PEA and the physical All-World in the taxable account.",
 	"Poids en % du portefeuille total. Le moteur monde se coupe en trois, une part par compte, selon l'impôt que cette part paie.":                              "Weights in % of the whole portfolio. The world engine splits three ways, one slice per account type, by the tax that slice pays.",
+
+	// amortissement-horizon
+	"Le bonus d'amortissement fond avec l'horizon":                                                "The amortization bonus melts with the horizon",
+	"Le retrait qui épuise exactement le capital, à 4 % réel, selon le nombre d'années à couvrir": "The withdrawal that empties the capital exactly, at 4% real, by the number of years to cover",
+	"années à couvrir  →": "years to cover  →",
+	"∞":                   "∞",
+	"4 % : la perpétuité, le rendement seul": "4%: the perpetuity, the return alone",
+	"10 ans":                         "10 years",
+	"50 ans":                         "50 years",
+	"30 → 50 ans : −1,1 point":       "30 → 50 years: −1.1 point",
+	"50 ans → toujours : −0,7 point": "50 years → forever: −0.7 point",
+	"L'horizon se paie au début : de 10 à 30 ans le taux perd 6,5 points, de 50 ans à l'éternité il en perd 0,7.":             "The horizon is paid for early: from 10 to 30 years the rate loses 6.5 points, from 50 years to eternity it loses 0.7.",
+	"Arithmétique d'annuité, r / (1 − (1+r)^−n) à r = 4 % réel. Le capital finit à zéro le dernier jour, sans legs ni marge.": "Annuity arithmetic, r / (1 − (1+r)^−n) at r = 4% real. The capital lands on zero on the last day, with no estate and no margin.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
