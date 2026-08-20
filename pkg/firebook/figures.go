@@ -155,6 +155,7 @@ var figures = map[string]func() string{
 	"ucits-implantation":       figUcitsImplantation,
 	"amortissement-horizon":    figAmortissementHorizon,
 	"drag-volatilite":          figDragVolatilite,
+	"levier-reset":             figLevierReset,
 	"mf-cash-prime-frais":      figMfCashPrimeFrais,
 	"stacking-2022":            figStacking2022,
 	"retrait-deux-lectures":    figRetraitDeuxLectures,
