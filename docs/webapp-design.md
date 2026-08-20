@@ -410,6 +410,10 @@ Then, **after a deploy**, from any machine that can reach the endpoint:
 ./pofo -indexnow https://pofo.example.org -indexnow-key 1a2b3c4d5e6f7890...
 ```
 
+The key may also come from the environment as POFO_INDEXNOW_KEY, read
+whenever the flag is empty: a container image with a fixed command line
+turns the feature on by setting that variable.
+
 It builds the same `firebook.Site` the server serves, takes its sitemap URL
 list (`Site.URLs`, which `SitemapXML` renders: one list, so what is pushed and
 what is crawlable cannot drift), and POSTs it as one batch per 10 000 URLs. A
