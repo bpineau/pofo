@@ -345,6 +345,15 @@ The same mount also serves an **OPDS 1.2 catalog** at `opds.xml` (e.g.
 reader such as KOReader to download and later refresh the book in place, the
 re-download overwriting the same file so any annotation sidecar is preserved.
 
+The book is written to be found and to be quoted. Each page carries its own
+title, description, canonical link, hreflang pair and schema.org data, and each
+article is also served as **clean Markdown** at the same URL with a `.md`
+suffix (`/firebook/en/what-is-fire.md`), source untouched, behind one comment
+line naming the page to cite. The server publishes `/sitemap.xml`,
+a `/robots.txt` that allows everything and names the AI crawlers one by one,
+and an [`/llms.txt`](https://llmstxt.org) indexing both editions article by
+article. Nothing here is behind a paywall: cite the page.
+
 The reusable pieces live in the library: `pkg/scenario` (return-path
 generation) and `pkg/decumul` (the withdrawal engine, FIRE outcome metrics
 and sweeps), with the thin web layer under `pkg/decumul/web`; the book is its
@@ -363,6 +372,8 @@ single port:
 | `/firesimulator/` | the **FIRE simulator** (`-fire`, mounted under a prefix; old `/fire/` redirects here) |
 | `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
 | `/firebook/en/` | the English edition ("The Quiet FIRE"), cross-linked with the French one page by page |
+| `/firebook/<lang>/<article>.md` | any article's **Markdown source**, served as written: the same URL as the page, plus `.md` |
+| `/sitemap.xml`, `/robots.txt`, `/llms.txt` | what crawlers and AI agents read: every page of both editions, everything allowed, and an [llms.txt](https://llmstxt.org) index of the whole site |
 
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/
