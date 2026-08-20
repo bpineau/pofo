@@ -71,7 +71,7 @@ func figSinistresCalendrier() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("primes d'assurance", "Les mauvais mois ne tombent pas aux mêmes dates"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"rendements mensuels réels en euros, novembre 2013 à décembre 2025, même échelle sur les deux panneaux (±12 %)"))
 
 	panel := func(base float64, data []int, pos, label string) {
@@ -144,7 +144,7 @@ func figEchelleDuCash() string {
 	maxGain, maxLoss := 140.0, 280.0
 	var b strings.Builder
 	b.WriteString(plateHead("poche de liquidités", "Le supplément se compte en points de base, le risque aussi"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"écart de rendement annualisé au monétaire, et pire baisse subie, sur la fenêtre de chaque ligne"))
 	b.WriteString(sTxt(midX+14, 82, 10.5, figSoft, "start", "600", "ce que ça rapporte en plus"))
 	b.WriteString(sTxt(midX-14, 82, 10.5, figSoft, "end", "600", "ce que ça peut perdre"))
