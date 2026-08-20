@@ -1,5 +1,5 @@
 # Arithmetic mean, geometric mean, and volatility drag
-<!-- source: rendements-arithmetiques-geometriques @ 9f311511671c -->
+<!-- source: rendements-arithmetiques-geometriques @ 2dc06d49e4c9 -->
 
 Here is the most profitable trick question in all of personal finance: an investment gains 50% in its first year and loses 50% in its second. Average return: 0%. How much did you make?
 
@@ -41,6 +41,10 @@ A few ballpark numbers to calibrate the intuition (drag = σ²/2):
 Every row starts from the same 7% arithmetic mean, to isolate the effect of volatility alone.
 
 Compare the two leveraged rows, they say everything. The 90/60 stack carries 150% of exposure, and its volatility is still that of plain stocks: the leverage is spread across two lightly correlated engines and rolled in long-dated futures, never reset overnight ([[return-stacking]]). The daily ×2 piles its leverage onto a single asset and resets it every evening: it doubles the arithmetic mean but quadruples the variance.
+
+::: figure drag-volatilite
+The table, straightened into a curve. The cost of volatility is its square, so a table read row by row suggests a gentle slope where the truth bends. The six assets sit on the parabola at the volatilities the table quotes, and the two moves of the text are written under the axis. The two leveraged rows land at the ends of the second one: at plain-stock volatility the 90/60 stack keeps 5.9%, while the daily ×2 falls to 2.5%.
+:::
 
 Hence a result that surprises every beginner: a daily ×2 leveraged ETF on a volatile index can do **worse** than the index over a long stretch, even though it doubles it faithfully day after day. As soon as the extra drag exceeds the extra return, leverage destroys ([[leverage-and-margin]]). The same mechanics explain why diversification is the only free lunch in finance. Combining uncorrelated assets lowers σ without lowering the arithmetic mean, so it raises the geometric one. Diversification does not promise better average years. It promises better compounding. The full mechanism, rebalancing premium included, is in [[why-diversification-works]]; the assembly in [[all-weather-portfolios]] and [[defensive-assets]].
 
