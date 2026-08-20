@@ -328,7 +328,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   via `cmd/gen-euro-refdata`
   (`make euro-refdata`), which validates every series before writing it (its
   freshness and flat-run checks exist because the MEI freeze and a degraded
-  fetch both shipped unnoticed); note the equity-leg daily-vol/FX caveat there,
+  fetch both shipped unnoticed); a short rate is a number PLUS a convention, so
+  each cash leg is accrued at the one its publisher states (`EURCASH-EUR` simple
+  over a calendar year, `DECASH-EUR` simple on a 360-day year, German 360/360 to
+  1990-06 then act/360, re-quoted in 2026-08 for +0.23 %/yr on the pre-1994
+  path) and a per-year check gates it; note the equity-leg daily-vol/FX caveat there,
   and that the long sleeve is a real `TreasuryTR` long-bond reconstruction (never a
   levered short bond, which overstates a bond bull). Its LEVEL follows the real
   ECB 25y curve point from 2004-09 (the monthly `EUROGOV-LONG-EUR` is that
