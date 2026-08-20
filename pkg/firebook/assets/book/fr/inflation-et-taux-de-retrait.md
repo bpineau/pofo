@@ -18,6 +18,11 @@ Reprenons la mécanique du retrait fixe indexé ([[retrait-fixe-bengen]]) pendan
 
 Voilà pourquoi le millésime 1966 est pire que 1929 dans toutes les études ([[etude-trinity]]). Le krach de 1929 est brutal, puis il rend : la déflation fait **baisser** les retraits en nominal avec les prix, et l'indexation joue alors en votre faveur. L'épisode 1966-1981, lui, ne rend jamais : quinze ans de ciseaux.
 
+::: figure voyants-1929-1966
+Le voyant du plan, année après année, pour le même retrait de 4 % indexé parti en 1929 puis en 1966. Celui de 1929 sonne trois ans, culmine à 6,3 % en 1932, puis redescend : le capital réel se refait pendant que la déflation baisse le retrait en nominal. Celui de 1966 franchit 8 % en 1975 et ne redescend plus, sort de l'échelle en 1988 et vide le compte en 1991. Détail qui confirme la thèse : le vrai maximum du millésime 1929 n'est pas son krach, c'est l'inflation d'après-guerre de 1949.
+:::
+
+
 Le corollaire est immédiat pour les règles de retrait. Les amendements anti-inflation du fixe attaquent **précisément** ce mécanisme : plafonner l'indexation, ou la geler après les années rouges ([[retrait-fixe-bengen]]). Renoncer à 2-3 points d'indexation pendant un épisode, c'est désarmer la moitié des ciseaux pour un coût de pouvoir d'achat modeste et étalé. C'est le meilleur rapport douleur/protection de toute la flexibilité ([[flexibilite-realite]]).
 
 ## Mécanisme 2 : la compression réelle simultanée
