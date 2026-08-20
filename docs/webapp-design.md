@@ -37,6 +37,7 @@ running a command per comparison.
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | `firebook.Site.Handle` (`pkg/firebook/site.go`) | the machine-readable face of the constellation: every article, index and EPUB of both book editions plus the app surfaces; everything allowed and the AI crawlers named one by one; the llmstxt.org index. Absolute URLs are built per request from the `Host` header (`firebook.RequestOrigin`), since the public origin is not known at build time. Also mounted by `pkg/decumul/web` |
 | `/firebook/<lang>/<slug>.md` | `pkg/firebook.Handler` | one article's Markdown SOURCE, untransformed, behind a one-line HTML-comment provenance header naming the page to cite; strong ETag, `text/markdown`. The HTML page declares it (`<link rel="alternate" type="text/markdown">`) and `llms.txt` lists it |
+| `/firebook/<lang>/card.png` | `pkg/firebook.Handler` (`card.go`) | the edition's social card, 1200x630, embedded via `go:embed` and served with a strong ETag; what `og:image` points at |
 | `/firebook/<lang>/feed.xml` | `pkg/firebook.Handler` (`feed.go`) | the edition's Atom 1.0 feed: one entry per article in reading order, the manifest blurb as its summary, absolute URLs from `RequestOrigin`. Every page of the edition declares it in its head and `llms.txt` lists it; the sitemap does not (a feed is not a page to index). Mounted by both servers, since it rides the edition handler itself |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
@@ -331,6 +332,25 @@ index, `Article` + `BreadcrumbList` on a page. `/sitemap.xml` lists every
 article, index and EPUB of both editions plus the app surfaces, and
 `/robots.txt` points at it. No `lastmod` in the sitemap: the articles are
 embedded in the binary with no honest modification date.
+
+Shared rather than searched, a link to the book now shows a **social card**:
+one image per edition at `/firebook/<lang>/card.png`, 1200x630, emitted as
+`og:image` (absolute, with `og:image:width`/`height`/`alt`) and paired with a
+`summary_large_image` Twitter card. The drawing is Go code like every other
+plate, `firebook.(*Edition).CardSVG` in `card.go`: the book's own hero block at
+card size in the v2 plate identity (paper ground, letterspaced kicker, serif
+title, the accent rule an article heading carries, sans deck). Every word on it
+comes from the `Edition` value already, none of it written for the card: the
+publisher mark, `SiteName`, the head clause of `SiteLede` as the promise, its
+tail clause as the contents line, and `UI.SwitchLabel` as the edition marker.
+
+Rasterizing SVG needs a browser, so the PNG is generated once by
+`scripts/card-shot.sh` (headless Chrome, the book's embedded fonts, exactly
+1200x630) and committed under `pkg/firebook/assets/cards/`, which the binary
+embeds. Run the script after any change to `CardSVG` or to an edition's title
+or lede, and look at the two PNGs. A guard test checks the embedded images are
+real PNGs at the declared size, that the SVG carries the edition's own words,
+and that the pages' `og:image` points at the served route.
 
 For readers who would rather follow than search, each edition publishes an
 **Atom feed** at `/firebook/<lang>/feed.xml`, one entry per article in reading
