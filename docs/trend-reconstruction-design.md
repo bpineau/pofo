@@ -1056,6 +1056,56 @@ time (it hangs on a browser User-Agent over HTTP/1.1, `fredUserAgent`); the
 build now logs its financing splice on stderr, so a shortened one is visible
 rather than silent.
 
+### A duration gearing must not gear the yield (measured, 2026-08)
+
+The section above separates the two rates a levered sleeve meets. It leaves a
+third case, the gearing that stands in for DURATION, and one recipe was writing
+it the wrong way. `dtlaRecipe` multiplied its donor's whole TOTAL return by
+17/15, where `zrozRecipe`, `iefRecipe` and `shyRecipe` write the same operation
+as `cash + g × (bond − cash)`. The two differ by exactly `(g − 1) × cash`, and
+that difference is not a rounding: a longer bond does not earn 1.13 times a
+shorter one's coupon, it earns about the same yield with more sensitivity to it.
+The plain form was therefore paying the file 0.133 of the bill rate every year,
+which is small today and large in the era the file is mostly made of.
+
+What the excess form moves, on the shipped `DTLA` file (CAGR per era):
+
+| era | plain g × total | cash + g × excess | move |
+|---|---|---|---|
+| 1962-1985 | 5.94 % | **5.02 %** | -0.92 |
+| 1986-2002 | 11.58 % | **10.83 %** | -0.75 |
+| 2002-2018 | 6.98 % | **6.81 %** | -0.17 |
+| 2018-2026 (real quotes) | -1.37 % | -1.37 % | 0.00 |
+| whole file | 6.45 % | **5.88 %** | **-0.57** |
+
+Two checks say the new number is the right one. The live-window CAGR gap against
+the real fund falls from +0.38 to +0.03 of a point, with every correlation, beta
+and tracking error unchanged to the digit, which is the signature of a level
+correction that touched nothing else. And the geared ladder becomes monotone in
+the direction arithmetic requires: over 1962-1985, an era the long bond spent
+losing money, the ungeared TLT reconstruction compounds at 5.28 %/yr, the
+1.13-geared DTLA at 5.02 and the 1.65-geared ZROZ at 3.91. The plain form had
+DTLA at 5.94, ABOVE its own ungeared sibling, which no duration gearing can do.
+
+**The gearing itself, 17/15, stands.** A direct regression on the fund's own
+2018-2026 quotes measures 1.02 and looks like a contradiction; it is not one,
+for two separable reasons, both measured.
+
+- The ratio is not constant, because duration shrinks as yields rise. Measured
+  artefact-free on the US-listed twin against the same donor (TLT on VUSTX, both
+  struck at the US close): 1.243 over 2002-2010, 1.110 over 2011-2018, 1.06 over
+  2018-2026, **1.131 over the whole 2002-2026 overlap**. The constant governs
+  1962-2018 only, the real quotes covering everything after, so the era that
+  produced the 1.02 is the one era where it is never applied.
+- The fund's own reading is depressed by its LISTING. DTLA reads 0.963 of TLT's
+  monthly volatility and its distributing twin IDTL 0.970, the same deficit for
+  the same reason (a 16:30 London close against a 16:00 New York one), while
+  DTLA and IDTL agree with each other at 0.993. Undo that and DTLA's own window
+  reads the 1.06 its twin measures there.
+
+Gearing at 1.06 was built and measured anyway: the live-window CAGR gap goes
+from +0.03 to +0.36 of a point. The level refuses it too.
+
 ## The tail that was removed, and why it went (measured, 2026-08)
 
 Until 2026-08 the donor chains shipped an engine tail back to 1988-11, anchored
