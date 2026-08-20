@@ -12,6 +12,12 @@ Les briques majeures ont chacune leur article détaillé ([[obligations-en-retra
 Quatre exigences, dans l'ordre. (1) Tenir, ou **monter**, quand le moteur actions souffre. Pas seulement pendant les krachs de six mois, mais pendant les **régimes** hostiles de plusieurs années ([[regimes-de-marche]]). (2) Une décorrélation qui **survit** aux crises. Beaucoup de « décorrélations » moyennes convergent vers 1 juste au moment où l'on en a besoin ([[queues-epaisses]]). (3) La liquidité, car un défensif qu'on ne peut pas vendre au creux pour financer les retraits ne défend rien. (4) Un coût de portage connu et budgété. Toute vraie assurance a une prime, et un « défensif » qui prétend aussi rapporter cache la sienne quelque part.
 :::
 
+Le bulletin de crise des candidats, avant même la revue détaillée, tient dans une grille.
+
+::: figure defenses-bulletin
+Le rendement réel en dollars de chaque candidat pendant quatre crises de nature différente. Le cadre marque le meilleur défenseur de la colonne : il change d'épisode en épisode, et chaque gagnant s'effondre ailleurs dans sa propre ligne. C'est toute la thèse de l'article, avant la revue qui suit.
+:::
+
 ## La revue des candidats, régime par régime
 
 **Le cash (monétaire, fonds euros).** Régimes servis : tous, faiblement. Il ne monte jamais et ne baisse presque jamais en nominal. C'est le zéro de l'échelle. Son vrai rôle n'est pas la performance défensive, mais la **liquidité** des retraits et l'optionalité, cette faculté de racheter le reste au creux. Son ennemi propre est l'inflation : les années 1970 comme 2022 l'ont amputé en réel, même rémunéré. Coût de portage : l'écart au rendement du portefeuille, environ 2 à 4 points réels par an. Verdict : indispensable comme buffer, le matelas de liquidités (18 à 36 mois, [[cash-buffer]]), ruineux en matelas permanent au-delà. Le fonds euros français en est la version améliorée, au rendement obligataire lissé et garanti en capital. C'est un excellent véhicule de buffer et de poche courte ([[enveloppes-francaises]]).
