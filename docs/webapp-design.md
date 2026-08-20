@@ -43,6 +43,12 @@ running a command per comparison.
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
 
+Every `text/html` route above passes through one response filter,
+`webui.Beacon`, which splices the optional Cloudflare Web Analytics tag in front
+of the closing `</body>`. It wraps the finished mux, so no renderer knows about
+it, and without a token it returns the mux itself. See "Audience: the optional
+analytics beacon" below.
+
 The two `/firebook` mounts are cross-linked by
 `firebook.WithAlternate(base, sibling)`, which each mount hands the OTHER one's
 base path (the handler emits relative URLs and
@@ -413,6 +419,69 @@ Then, **after a deploy**, from any machine that can reach the endpoint:
 The key may also come from the environment as POFO_INDEXNOW_KEY, read
 whenever the flag is empty: a container image with a fixed command line
 turns the feature on by setting that variable.
+
+### Audience: the optional analytics beacon
+
+Being indexed says nothing about being read. **Cloudflare Web Analytics** is the
+one measurement the deployment may switch on, and it follows the IndexNow
+pattern exactly: a value that belongs to the public host, not to the program.
+
+```sh
+./pofo -serve -listen 127.0.0.1:8787 -cf-beacon-token 0123456789abcdef...
+```
+
+An empty flag defers to `POFO_CF_BEACON_TOKEN`, for the same fixed-command-line
+reason as the key above. **Both empty, the feature is entirely off and every
+page is byte-identical to what it was before it existed**: no markup, no request,
+no name. `-fire` takes the same flag, and `pkg/decumul/web` the same value
+through `web.WithBeaconToken`, the twin of `WithIndexNowKey`.
+
+The tag is the one Cloudflare documents, spliced in front of the closing
+`</body>`:
+
+```html
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon='{"token":"..."}'></script>
+```
+
+**Coverage is the point**, and it is why the injection is a response filter
+(`webui.Beacon`) rather than a line in a template. The constellation's HTML
+comes out of four independent renderers that share design tokens but no
+head-or-foot helper: the landing and hub templates in `cmd/pofo`, the comparison
+report in `pkg/report`, the book in `pkg/firebook`, the simulator page in
+`pkg/decumul/web`. Wrapping the finished mux is the only seam that sees all of
+them, so the tag lands on the landing page, the visualizer, every `/view`
+report, the shared error page, every page of both book editions and every
+simulator mount, with no renderer aware of it. `-serve` wraps from the outside
+and therefore passes no `WithBeaconToken` to the mounts it makes; the injector
+is idempotent anyway, so a nested pair still leaves exactly one tag.
+
+Only a `text/html` response is rewritten, and only at a status a visitor lands
+on (200, and the 4xx/5xx error pages, where a broken link is exactly what
+deserves counting). The Markdown mirrors, the Atom feeds, the sitemap,
+`robots.txt`, `llms.txt`, `catalog.json`, the stylesheets, the SVG favicon, the
+social cards, the EPUB, the raw portfolio files, the redirect stubs and every
+304 stream through untouched, which leaves the strong ETags those routes compute
+matching the bytes they send. A rewritten response drops its `Content-Length`,
+since the body is longer than the inner handler announced.
+
+The token is operator-supplied and escaped anyway: `encoding/json` handles `<`,
+`>`, `&`, the double quote and the control characters, and the single quote that
+would close the attribute is replaced.
+
+**No consent banner, deliberately.** The beacon sets no cookie and stores nothing
+on the visitor's device, which is the condition under which the CNIL exempts
+audience measurement from prior consent; there is no identifier to refuse.
+Nothing about this appears in the book, which is about retirement withdrawal and
+not about this server. No other analytics of any kind exists in the program, and
+with no token there is none at all.
+
+**No Content-Security-Policy** is set anywhere in pofo: no handler emits the
+header and no page carries the equivalent `<meta>`. Nothing therefore had to be
+widened for the beacon. Should one ever be added, it needs
+`https://static.cloudflareinsights.com` in `script-src` (the loader) and
+`https://cloudflareinsights.com` in `connect-src` (where the beacon POSTs its
+page-view record).
 
 It builds the same `firebook.Site` the server serves, takes its sitemap URL
 list (`Site.URLs`, which `SitemapXML` renders: one list, so what is pushed and
