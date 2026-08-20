@@ -177,3 +177,20 @@ func TestSEORootFiles(t *testing.T) {
 		}
 	}
 }
+
+// The IndexNow ownership key file is off unless a mount is told it is a public
+// host with a key of its own.
+func TestIndexNowKeyOption(t *testing.T) {
+	const key = "1a2b3c4d5e6f7890"
+	rec := httptest.NewRecorder()
+	Handler(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/"+key+".txt", nil))
+	if rec.Code != http.StatusNotFound {
+		t.Errorf("without the option: status %d, want 404", rec.Code)
+	}
+	rec = httptest.NewRecorder()
+	Handler(nil, nil, WithIndexNowKey(key)).ServeHTTP(rec,
+		httptest.NewRequest(http.MethodGet, "/"+key+".txt", nil))
+	if rec.Code != http.StatusOK || rec.Body.String() != key {
+		t.Errorf("key file: status %d body %q, want 200 and the key", rec.Code, rec.Body.String())
+	}
+}
