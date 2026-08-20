@@ -1,5 +1,5 @@
 # Why diversification works: the mechanics of the free lunch
-<!-- source: pourquoi-la-diversification-marche @ e488a43681ff -->
+<!-- source: pourquoi-la-diversification-marche @ 8f5cbd053361 -->
 
 "Don't put all your eggs in one basket" is the oldest piece of financial advice in the world, and the most misunderstood. Most savers diversify the way people recite a prayer. They never see that the proverb hides a precise mathematical mechanism, the only one in all of finance that gives you something without asking for anything back: the free lunch Markowitz called "the only free lunch in investing". The mechanism has conditions and limits. Above all it has a consequence almost nobody talks about. A diversified portfolio that gets rebalanced can return more than the average of its parts, a bonus with the pretty name of rebalancing premium.
 
@@ -38,6 +38,10 @@ The limiting illustration comes from Claude Shannon. An asset flips a coin every
 ## Why the effect doubles in decumulation
 
 In accumulation, diversification buys comfort and a little extra final return. In decumulation it pulls on a far more powerful lever, sequence of returns risk ([[sequence-of-returns]]). The sustainable withdrawal rate is not set by the average path, it is set by the worst paths. And that is exactly where diversification acts. It shortens the left tail and cuts both the depth and the length of real drawdowns. So it lifts the floor that sizes the whole plan. The effect shows up in any simulator. Move from 100% stocks to a basket of four blocks and median wealth at thirty years often slips a little, while the withdrawal rate that clears a 95% success rate goes up ([[reading-a-fan-chart]] to read both at once). A retiree does not diversify for the average. He diversifies for the 5th percentile, where his sleepless nights and his failure probability live.
+
+::: figure panier-mediane-plancher
+The same thirty-year plan, held by two portfolios, in the simulator's central model fitted on the four blocks' common history (1987-2026): on the left what capital is left in the middle of the cases after thirty years of a fixed 4% withdrawal, on the right the withdrawal rate that leaves 95% of the paths solvent. The basket sells a quarter of the median and buys 0.78 points of floor. An order of magnitude, not a universal result: other blocks, other weights or another window move both numbers.
+:::
 
 The same reasoning clears up a phrase that fools a lot of people, diversification across time. Spreading your withdrawals over thirty years exposes every dollar to a different market. Flexible withdrawal rules ([[choosing-your-strategy]]) are, at bottom, a way of diversifying your spending between the fat years and the lean ones. The portfolio and the withdrawal rule work the same risk from opposite ends.
 
