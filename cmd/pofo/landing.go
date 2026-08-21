@@ -55,9 +55,9 @@ body.land{background:
     <span class="land-title">Fire Book (fr)</span>
     <span class="land-blurb">Le FIRE tranquille, the French handbook of living off your capital.</span>
   </a>
-  <a class="land-card soon" href="/firebook/en/">
+  <a class="land-card" href="/firebook/en/">
     <span class="land-title">Fire Book (en)</span>
-    <span class="land-blurb">Coming soon</span>
+    <span class="land-blurb">The Quiet FIRE, the English edition of the handbook.</span>
   </a>
   <a class="land-card" href="/visualizer">
     <span class="land-title">Portfolio visualizer</span>
