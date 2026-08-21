@@ -404,23 +404,26 @@ func TestWithAlternate(t *testing.T) {
 		name: "french index cross-links the english index",
 		srv:  fr, path: "/",
 		want: []string{
-			`<link rel="alternate" hreflang="fr" href=".">`,
+			`<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
 			`<link rel="alternate" hreflang="en" href="/firebook/en/">`,
+			// The source edition takes the x-default on both sides.
+			`<link rel="alternate" hreflang="x-default" href="/firebook/fr/">`,
 			`href="/firebook/en/">English version</a>`,
 		},
 	}, {
 		name: "english index cross-links the french index",
 		srv:  en, path: "/",
 		want: []string{
-			`<link rel="alternate" hreflang="en" href=".">`,
+			`<link rel="alternate" hreflang="en" href="/firebook/en/">`,
 			`<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+			`<link rel="alternate" hreflang="x-default" href="/firebook/fr/">`,
 			`href="/firebook/fr/">Version française</a>`,
 		},
 	}, {
 		name: "paired french article points at its translation",
 		srv:  fr, path: "/" + frPaired,
 		want: []string{
-			`<link rel="alternate" hreflang="fr" href="` + frPaired + `">`,
+			`<link rel="alternate" hreflang="fr" href="/firebook/fr/` + frPaired + `">`,
 			`<link rel="alternate" hreflang="en" href="/firebook/en/` + enPaired + `">`,
 			`English version`,
 		},
@@ -428,14 +431,16 @@ func TestWithAlternate(t *testing.T) {
 		name: "paired english article points back at its source",
 		srv:  en, path: "/" + enPaired,
 		want: []string{
-			`<link rel="alternate" hreflang="en" href="` + enPaired + `">`,
+			`<link rel="alternate" hreflang="en" href="/firebook/en/` + enPaired + `">`,
 			`<link rel="alternate" hreflang="fr" href="/firebook/fr/` + frPaired + `">`,
 			`Version française`,
 		},
 	}, {
 		name: "french-only article cross-links nothing",
 		srv:  fr, path: "/" + frOnly,
-		bad: []string{`rel="alternate"`, "English version", "/firebook/en/"},
+		// hreflang, not rel="alternate": every article page carries one
+		// rel="alternate" of its own, the markdown mirror.
+		bad: []string{"hreflang", "English version", "/firebook/en/"},
 	}}
 
 	for _, c := range cases {
@@ -463,7 +468,7 @@ func TestWithoutAlternateNoCrossLinks(t *testing.T) {
 	defer srv.Close()
 	for _, path := range []string{"/", "/" + Categories[0].Articles[0].Slug} {
 		_, body := get(t, srv, path)
-		if strings.Contains(body, `rel="alternate"`) || strings.Contains(body, "English version") {
+		if strings.Contains(body, "hreflang") || strings.Contains(body, "English version") {
 			t.Errorf("%s: cross-edition markup leaked without WithAlternate", path)
 		}
 	}
