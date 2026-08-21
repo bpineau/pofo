@@ -58,14 +58,14 @@ Trois choses que le CAPE ne fait pas, à graver avant d'aller plus loin :
 
 Venons-en au cœur du sujet pour un rentier. Le sort d'une retraite se joue surtout dans sa première décennie ([[sequence-des-rendements]]), et le CAPE prédit justement le rendement moyen de la décennie qui suit. On s'attend donc à une relation forte entre le CAPE au départ et le taux de retrait maximal soutenable du millésime (SAFEMAX, [[etude-trinity]]). C'est massivement le cas, et l'un des résultats les mieux répliqués de la littérature. Bengen l'esquisse en 2006. Kitces le documente en 2008 (« Resolving the Paradox: Is the Safe Withdrawal Rate Sometimes Too Safe? »). Pfau le formalise en régression en 2011. Le seul earnings yield au départ (l'inverse du CAPE) explique environ 70 % de la variance des taux soutenables d'un 60/40 américain depuis 1926, et encore 55 % en remontant à 1883, loin devant tout autre candidat. ERN le systématise sur données mensuelles, au volet 3 puis au volet 54 de sa série ([[serie-ern]]).
 
-Les ordres de grandeur qui ressortent de l'analyse d'ERN (retraites de 30 ans, portefeuille ~75/25, données mensuelles américaines 1871-2016, les seuils exacts variant d'une étude à l'autre, jamais la structure) :
+Les ordres de grandeur, recalculés ici sur le siècle américain embarqué (retraites de 30 ans, portefeuille 75/25 rééquilibré, retrait réel fixe, millésimes annuels 1881-1991 classés par le CAPE de janvier ; la structure est celle qu'ERN retrouve en données mensuelles) :
 
 | CAPE au départ | Fréquence historique | SAFEMAX (30 ans) | Lecture |
 |---|---|---|---|
-| < 15 (marché bon marché) | ~2/5 du temps | 5,5 à 13 % | La règle des 4 % est très conservatrice |
-| 15 à 20 | ~1/4 du temps | ~4,5 à 5,5 % | Le 4 % a de la marge |
-| 20 à 30 | ~1/4 du temps | ~3,8 à 4,5 % | Le 4 % passe, sans marge |
-| > 30 (cher) | ~1/10 du temps, mais **souvent** ces dernières décennies | ~3,2 à 3,8 % | Le 4 % rigide est en zone d'échec historique |
+| < 15 (marché bon marché) | ~2/5 du temps | 4,2 à 11,6 % (médiane 7,9) | La règle des 4 % est très conservatrice |
+| 15 à 20 | ~1/4 du temps | 4,3 à 8,9 % (médiane 6,2) | Le 4 % a de la marge |
+| 20 à 30 | ~1/4 du temps | 3,9 à 6,0 % (médiane 4,4) | Le 4 % passe, sans marge ; 1966, le pire millésime du siècle, tombe à 3,9 |
+| > 30 (cher) | ~1/10 du temps, mais **souvent** ces dernières décennies | aucun millésime achevé ; ~3,2 à 3,8 % en simulation | Le 4 % rigide y entre en zone d'échec |
 
 Et pour les horizons longs du FIRE (50-60 ans), ERN trouve qu'à CAPE > 30, le taux qui aurait survécu à tous les millésimes descend vers 3,0 à 3,25 %. Autrement dit, la fameuse fourchette moderne « 3,25-3,5 % pour un départ précoce » ([[la-regle-des-4-pourcents]]) n'est pas une moyenne tous temps. C'est déjà le chiffre conditionnel à un départ en marché cher, c'est-à-dire la situation de la plupart des candidats FIRE actuels. Symétriquement, celui qui part après un grand marché baissier, à CAPE 15, peut légitimement retirer bien davantage. Le millésime 1982 supportait plus de 7 %.
 
@@ -126,7 +126,7 @@ Presque tout ce qui précède est calibré sur le S&P 500, parce que c'est là q
 ## L'essentiel à retenir
 
 - Le CAPE = prix / bénéfices réels moyens sur 10 ans. C'est une mesure de cherté qui prédit le centre des rendements réels à 10-15 ans (R² ~0,3 à dix ans et ~0,4 à quinze ans aux États-Unis), pas leur calendrier ni leurs krachs.
-- Tous les pires millésimes de retraite partent à CAPE élevé. Le « taux de retrait sûr » est une fonction du prix d'entrée. À CAPE > 30 et horizon long, la zone historique est 3,0-3,25 % rigide, à CAPE < 15 elle dépasse 5 %.
+- Tous les pires millésimes de retraite partent à CAPE élevé. Le « taux de retrait sûr » est une fonction du prix d'entrée. À CAPE > 30 et horizon long, la zone de travail est 3,0-3,25 % rigide (simulée, car aucun millésime achevé n'est parti aussi cher), à CAPE < 15 la médiane des millésimes dépasse 7 %.
 - Les critiques (comptabilité, buybacks, taux, secteurs) déplacent les seuils, pas la pente. Usage ordinal et par zones, jamais au dixième. Lisez le rang dans les 30-40 dernières années, pas l'écart à la moyenne depuis 1881.
 - Quatre usages légitimes, par ordre de sûreté : calibrer l'espérance du modèle (l'ancre CAPE), dimensionner le taux initial, piloter le retrait ([[regles-cape]]), moduler (un peu, avec une borne datée) la date de départ. Un usage interdit : le timing binaire du portefeuille.
 - Le réflexe de session : situez le CAPE du jour dans son propre historique, refaites tourner le plan avec l'espérance ancrée dessus, et s'il ne tient plus, chiffrez ce que coûte votre point d'entrée, en euros de dépenses, en années de travail ou en flexibilité.
