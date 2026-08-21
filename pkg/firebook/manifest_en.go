@@ -165,6 +165,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "glossary", Title: "The FIRE and withdrawal glossary", Blurb: "Every term in the book and in the forum jargon, defined and linked to its chapter: read straight through, an alphabetical summary of the whole book.", Source: "lexique"},
 			{Slug: "the-library", Title: "The library: sites, papers, books, tools", Blurb: "Every reference annotated (why to read it, where to get it), the official sources, and three reading paths.", Source: "bibliotheque"},
+			{Slug: "under-the-hood", Title: "Under the hood: how the simulator computes this book", Blurb: "The data, the central model's pipeline, the six columns, the month-by-month core, the limits it owns up to, and how to check it yourself.", Source: "la-machine-pofo"},
 		},
 	},
 }
