@@ -1,5 +1,5 @@
 # Barista, Coast, side income: work you choose
-<!-- source: retour-au-travail @ cb77f7cf7510 -->
+<!-- source: retour-au-travail @ b67b1eec91c5 -->
 
 FIRE's founding taboo died of ridicule. It held that if you still work, you are not really retired. But the corpus shows that almost every FIRE retiree keeps producing, and that many of them make money without going looking for it ([[voices-from-real-retirees]]). The research shows that work in **small doses** is one of the best predictors of well-being after a career ([[meaning-and-identity]]). And the arithmetic shows that a few thousand dollars of income in the early years buy more plan safety than hundreds of thousands of dollars of extra capital ([[sequence-of-returns]]). This chapter builds the case for **work you choose**. It lays out the forms it takes (Barista, Coast, organic side income, the targeted temporary return, and the forced return, which deserves a straight look). It puts numbers on the power of it, including everything that rides along with a small earned income: health coverage, Social Security credits, and a softened sequence. It also tells the unpleasant truth about **decay**, because employability melts, and the option is worth most when you need it least. It is an asset, and it has to be maintained. It closes with the toolbox for work in small doses.
 
