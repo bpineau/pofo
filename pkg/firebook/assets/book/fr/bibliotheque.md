@@ -109,7 +109,7 @@ Une seule règle de discipline accompagne le calendrier. Relevez ces valeurs une
 **justETF et TrackingDifferences.com** : la sélection et le contrôle des briques UCITS. [[etf-ucits-europeens]]
 
 ::: astuce Trois parcours de lecture
-**Le débutant complet** : ce livre, parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties VIII-X de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], un simulateur ouvert à côté.
+**Le débutant complet** : ce livre, parties I-II → *The Simple Path to Wealth* (l'accumulation) → ERN volets 1 et 26 → revenir aux parties IV et X. **Le quantitatif pressé** : la série ERN en entier (avec [[serie-ern]] comme carte) → Anarkulova-Cederburg → Ilmanen 2022 → les parties III et V de ce livre en contrepoint outillé. **Le presque-parti** : les parties IX-XI de ce livre → info-retraite (l'audit) → Morningstar de l'année → Zelinski et *Die With Zero* pour la vie. Puis [[construire-son-plan]], un simulateur ouvert à côté.
 :::
 
 ## L'essentiel à retenir
