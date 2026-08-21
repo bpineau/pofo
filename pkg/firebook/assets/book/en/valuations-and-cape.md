@@ -1,5 +1,5 @@
 # Valuations, the CAPE, and what they say about your withdrawal rate
-<!-- source: valorisations-et-cape @ 0ed15d9def17 -->
+<!-- source: valorisations-et-cape @ 2c5925bd973d -->
 
 After sequence risk, here is the most important empirical fact in the field. It fits in one sentence. The worst retirement start dates in history, 1929, 1966, 2000, Japan in 1990, all share one feature. It is not bad luck. It is that the market was historically expensive on the day they left. The valuation level on the day of your first withdrawal is the best known predictor of the withdrawal rate that vintage can carry.
 
@@ -26,7 +26,7 @@ A few markers to calibrate the eye (S&P 500, Shiller's series, whose CAPE runs f
 
 | Era | CAPE | What followed (real, 10 to 15 years) |
 |---|---|---|
-| 1881 to 2026 average | ~17 | ~6.5% a year over the very long run |
+| 1881 to 2026 average | ~18 | ~6.5% a year over the very long run |
 | 1921 (the postwar low) | ~5 | The Roaring Twenties: over 15% a year |
 | 1929 (before the crash) | ~33 | Negative over ten years; one of Bengen's worst vintages, with 1966 |
 | 1966 (peak of the great postwar bull market) | ~24 | About 0% real over fifteen years: the worst US start date ([[the-trinity-study]]) |
@@ -57,16 +57,16 @@ Three things the CAPE does not do, worth fixing in your head before we go furthe
 
 ## The CAPE and the withdrawal rate: the numbers
 
-Now the heart of it for a retiree. A retirement is decided mostly in its first decade ([[sequence-of-returns]]), and the CAPE predicts precisely the average return of the decade that follows. So you would expect a strong link between the CAPE at the start and the maximum sustainable withdrawal rate of that vintage (SAFEMAX, [[the-trinity-study]]). There is one, and it is among the best replicated results in the literature. At ERN, the starting CAPE alone explains about 70% of the variance in the sustainable rates of US vintages, far ahead of every other candidate, including the inflation rate on the day of departure. Bengen sketched it in 2006. Kitces documented it in 2008 ("Resolving the Paradox: Is the Safe Withdrawal Rate Sometimes Too Safe?"). Pfau turned it into a regression in 2011. ERN systematized it on monthly data, in Part 3 and then Part 54 of his series ([[the-ern-series]]).
+Now the heart of it for a retiree. A retirement is decided mostly in its first decade ([[sequence-of-returns]]), and the CAPE predicts precisely the average return of the decade that follows. So you would expect a strong link between the CAPE at the start and the maximum sustainable withdrawal rate of that vintage (SAFEMAX, [[the-trinity-study]]). There is one, and it is among the best replicated results in the literature. Bengen sketched it in 2006. Kitces documented it in 2008 ("Resolving the Paradox: Is the Safe Withdrawal Rate Sometimes Too Safe?"). Pfau turned it into a regression in 2011. The starting earnings yield alone (the inverse of the CAPE) explains about 70% of the variance in the sustainable rates of a US 60/40 since 1926, and still 55% going back to 1883, far ahead of every other candidate. ERN systematized it on monthly data, in Part 3 and then Part 54 of his series ([[the-ern-series]]).
 
-The ballpark numbers that come out of ERN's work (30-year retirements, a roughly 75/25 portfolio, US monthly data from 1871 to 2016; the exact thresholds move from one study to the next, the structure never does):
+The ballpark numbers, recomputed here on the American century this book carries (30-year retirements, a 75/25 portfolio rebalanced, a fixed real withdrawal, annual vintages from 1881 to 1991 sorted by their January CAPE; the structure is the one ERN finds on monthly data):
 
 | CAPE at the start | Historical frequency | SAFEMAX (30 years) | What it means |
 |---|---|---|---|
-| Under 15 (cheap market) | about a third of the time | 5.5 to 13% | The 4% rule is very conservative |
-| 15 to 20 | about a quarter of the time | ~4.5 to 5.5% | 4% has room to spare |
-| 20 to 30 | about a third of the time | ~3.8 to 4.5% | 4% works, with no margin |
-| Over 30 (expensive) | about a tenth of the time, but **often** in recent decades | ~3.2 to 3.8% | A rigid 4% sits in the historical failure zone |
+| Under 15 (cheap market) | about two fifths of the time | 4.2 to 11.6% (median 7.9) | The 4% rule is very conservative |
+| 15 to 20 | about a quarter of the time | 4.3 to 8.9% (median 6.2) | 4% has room to spare |
+| 20 to 30 | about a quarter of the time | 3.9 to 6.0% (median 4.4) | 4% works, with no margin; 1966, the worst vintage of the century, comes in at 3.9 |
+| Over 30 (expensive) | about a tenth of the time, but **often** in recent decades | no completed vintage; ~3.2 to 3.8% in simulation | A rigid 4% enters the failure zone there |
 
 And for FIRE-length horizons (50 to 60 years), ERN finds that above a CAPE of 30 the rate that would have survived every vintage drops toward 3.0 to 3.25%. Put another way, the famous modern range of "3.25 to 3.5% for an early retirement" ([[the-4-percent-rule]]) is not an all-weather average. It is already the number conditional on leaving into an expensive market, which is where most FIRE candidates stand today. The reverse holds too: someone leaving after a big bear market, at a CAPE of 15, can legitimately withdraw far more. The 1982 vintage carried more than 7%.
 
@@ -92,10 +92,10 @@ An indicator this widely used has been attacked from every direction. Most of th
 
 **"The sector mix has changed."** True. An index that is 30 to 40% technology, with high margins and low capital intensity, "deserves" a structurally higher multiple than an index of 1970 industrial conglomerates. This is hard to quantify cleanly. Mostly it argues against comparing today's absolute level with pre-1990 averages.
 
-**The practical synthesis** of these criticisms comes in two parts. The modern US CAPE is probably overstated by 3 to 8 points in a naive century-long comparison, and the mean it reverts to is no longer 17 but something closer to 22 or 25. But, and this is the decisive point for us, those corrections move the level, not the slope. Even corrected, a CAPE of 35 sits in the expensive quintile of its own era, and "more expensive at the start means a lower SAFEMAX" survives every published correction. For planning use, which is ordinal and works in broad zones, the criticisms call for humility about the exact thresholds, not for dropping the tool.
+**The practical synthesis** of these criticisms comes in two parts. The modern US CAPE is probably overstated by 3 to 8 points in a naive century-long comparison, and the mean it reverts to is no longer 18 but something closer to 22 or 25. But, and this is the decisive point for us, those corrections move the level, not the slope. Even corrected, a CAPE of 35 sits in the expensive quintile of its own era, and "more expensive at the start means a lower SAFEMAX" survives every published correction. For planning use, which is ordinal and works in broad zones, the criticisms call for humility about the exact thresholds, not for dropping the tool.
 
 ::: attention The long-run-average fallacy
-The most common misuse fits in one sentence. "The CAPE has been above its historical average since 1991 except for a few months in 2009, so it is broken, so I ignore it." That confuses two uses. As a position signal, meaning are you in the expensive quintile of your own era, the CAPE still works. 1999 and 2021 really were relative peaks, 2009 a relative trough, and the returns that followed confirmed it. As a signal of reversion to an eternal mean of 17, it has indeed been broken for thirty years. Use the rank, the percentile within the last 30 to 40 years, not the distance from the average since 1881.
+The most common misuse fits in one sentence. "The CAPE has been above its historical average since 1991 except for a few months in 2009, so it is broken, so I ignore it." That confuses two uses. As a position signal, meaning are you in the expensive quintile of your own era, the CAPE still works. 1999 and 2021 really were relative peaks, 2009 a relative trough, and the returns that followed confirmed it. As a signal of reversion to an eternal mean of 18, it has indeed been broken for thirty years. Use the rank, the percentile within the last 30 to 40 years, not the distance from the average since 1881.
 :::
 
 ## The four uses in a plan, safest first
@@ -111,7 +111,7 @@ The most common misuse fits in one sentence. "The CAPE has been above its histor
 And the forbidden use, binary portfolio timing: sell everything at a high CAPE, buy it all back at a low one. Exit strategies built on a valuation signal destroy value on average, because they miss the ends of bubbles, which are the best years, in exchange for protection that arrives far too early. Every study confirms it. The CAPE sets the plan, meaning the spending, the rate and the expectations; it does not set the portfolio. The one defensible exception, a mild one, is the glide path around the departure date ([[glidepaths]]), which can take the valuation regime into account.
 
 ::: exemple Two departures, two worlds
-Twins: $1.3M, a global 60/40, a 45-year horizon, the same $45,000 a year of target spending (3.46%). Amel leaves in January 2000, at a CAPE of 44. Boris leaves in January 2010, at a CAPE of 20. With the expectation anchored on the valuation of the day, Amel's central model runs on about 2.3% expected real equity return over the decisive decade. Central-case failure probability goes above 15%, verdict: not as it stands. What is left is to price the fixes, all of them equivalent in failure probability. Cut to $39,000 (3%), or add $1,000 a month of side income for 8 years, or push the date back by 30 months. Boris, at a CAPE of 20, runs on about 5% expected and about 4% central-case failure probability: plan approved, no changes. Twenty years later, history has settled it exactly that way. The US vintage of 2000 came within a hair of the red zone and survived 4% only thanks to the 2010s. The 2009 to 2010 vintage is one of the most generous of the century. Two identical plans, two entry prices, two fates. That is all the CAPE gives you, and it was there on the day they left.
+Twins: $1.3M, a global 60/40, a 45-year horizon, the same $45,000 a year of target spending (3.46%). Amel leaves in January 2000, at a CAPE of 44. Boris leaves in January 2010, at a CAPE of 20. With the expectation anchored on the valuation of the day, Amel's central model runs on about 2.3% expected real equity return over the decisive decade. Central-case failure probability goes above 15%, verdict: not as it stands. What is left is to price the fixes, each of them sized here to bring failure back to the same level. Cut to $39,000 (3%), or add $1,000 a month of side income for 8 years, or push the date back by 30 months. Boris, at a CAPE of 20, runs on about 5% expected and about 4% central-case failure probability: plan approved, no changes. Twenty years later, history has settled it exactly that way. The US vintage of 2000 came within a hair of the red zone and survived 4% only thanks to the 2010s. The 2009 to 2010 vintage is one of the most generous of the century. Two identical plans, two entry prices, two fates. That is all the CAPE gives you, and it was there on the day they left.
 :::
 
 ## The CAPE outside the United States, and your own portfolio's CAPE
@@ -127,7 +127,7 @@ Almost everything above is calibrated on the S&P 500, because that is where the 
 ## The essentials
 
 - The CAPE is price divided by average real earnings over 10 years. It measures expensiveness, and it predicts the center of real returns over 10 to 15 years (R² of about 0.3 at ten years and 0.4 at fifteen in the United States), not their timing and not their crashes.
-- Every one of the worst retirement vintages starts at a high CAPE. The "safe withdrawal rate" is a function of the entry price. Above a CAPE of 30 with a long horizon, the historical zone is 3.0 to 3.25% rigid; below 15 it clears 5%.
+- Every one of the worst retirement vintages starts at a high CAPE. The "safe withdrawal rate" is a function of the entry price. Above a CAPE of 30 with a long horizon, the working zone is 3.0 to 3.25% rigid (simulated, since no completed vintage ever started that expensive); below 15 the median vintage clears 7%.
 - The criticisms (accounting, buybacks, rates, sectors) move the thresholds, not the slope. Use it ordinally, by zones, never to the decimal. Read the rank within the last 30 to 40 years, not the distance from the average since 1881.
 - Four legitimate uses, safest first: calibrate the model's expectation (the CAPE anchor), size the initial rate, steer the withdrawal ([[cape-based-rules]]), and shift the departure date a little, with a dated bound. One forbidden use: binary portfolio timing.
 - The habit worth building: place today's CAPE within its own history, rerun the plan with the expectation anchored on it, and if it no longer holds, price what your entry point costs, in dollars of spending, in working years, or in flexibility.
