@@ -50,6 +50,16 @@ import (
 // Shiller monthly AVERAGE that smeared every turning point (1987 came out -0.1%
 // against the real +5.3%). simgen.alignMonthEnd now snaps each anchor onto the
 // shape's own last trading day so the fix cannot silently regress.
+//
+// (3) The two remaining Curvo exports, DEVEXUS-USD and EM-USD, carried the same
+// first-of-month labels and were relabeled the same way on 2026-08-20; the snap
+// was extended to the splice path in simgen/extend.go, which is where those two
+// are consumed (as the long proxies behind VTMGX and VEIEX) and which shaped
+// without aligning. Unfixed, the developed-ex-US leg rebuilt 2022 at -4.3%
+// against the index's -14.3%. Only anchors listed in simgen.monthEndAnchor are
+// snapped: the Treasury, euro-govt and WTI references run on monthly AVERAGE
+// observations dated the first of the month, and moving those would slide them
+// the other way.
 
 func loadRefdata(t *testing.T, id string) *marketdata.Series {
 	t.Helper()
@@ -222,6 +232,90 @@ func TestGoldenMSCIWorld(t *testing.T) {
 		{name: "2000s (net)", y0: 1999, y1: 2009, cagr: -0.2, ctol: 0.6, minDD: -50},
 		{name: "1971-2024 (net)", y0: 1971, y1: 2024, cagr: 9.1, ctol: 0.5, volLo: 13, volHi: 17},
 	})
+}
+
+// TestGoldenDevExUSA validates DEVEXUS-USD as the MSCI World ex USA NET
+// total-return index, the developed-ex-US leg behind VT/VWRA and the intl half
+// of every World reconstruction. The reference CAGRs are compounded from the
+// published net calendar years below, so the two checks share one source.
+func TestGoldenDevExUSA(t *testing.T) {
+	s := loadRefdata(t, "DEVEXUS-USD")
+	runRefCases(t, s, []refCase{
+		{name: "2013-2024 (net)", y0: 2012, y1: 2024, cagr: 5.65, ctol: 0.3, volLo: 12, volHi: 18},
+		{name: "2013-2025 (net)", y0: 2012, y1: 2025, cagr: 7.46, ctol: 0.3},
+		// No published figure spans the whole file, so the long window is a
+		// plausibility band rather than a pin: a developed-ex-US equity index
+		// compounding near 9 %/yr at ~17 % volatility, and a global financial
+		// crisis at least 50 points deep (MSCI publishes 60.1 % for the gross
+		// index on daily data, 2007-10-31 to 2009-03-09).
+		{name: "since 1970 (band)", y0: 1969, y1: 2025, cagr: 8.8, ctol: 1.0, minDD: -50, volLo: 13, volHi: 19},
+	})
+}
+
+// TestGoldenDevExUSAYearly pins DEVEXUS-USD to published MSCI World ex USA NET
+// USD calendar-year returns (MSCI index factsheet msci-world-ex-usa-index-net.pdf,
+// Jul 31 2026 edition, msci.com/documents/10199/255599/). The anchor reproduces
+// every one of them to the basis point, which is what identifies it as that
+// index and, more to the point here, what proves its levels are month-END
+// values: a one-month slip would move 2022 by ten points (it did, before the
+// 2026-08-20 relabeling).
+//
+// The anchor is monthly, so this test validates the LEVELS and their labels.
+// That the daily SHAPING preserves them is checked where the shaping code lives,
+// by simgen.TestAlignMonthEndPreservesCalendarYears, which recomputes the blend
+// from these same bundled files.
+func TestGoldenDevExUSAYearly(t *testing.T) {
+	s := loadRefdata(t, "DEVEXUS-USD")
+	for _, c := range []struct {
+		year int
+		ref  float64
+	}{
+		{2012, 16.41}, {2013, 21.02}, {2014, -4.32}, {2015, -3.04}, {2016, 2.75},
+		{2017, 24.21}, {2018, -14.09}, {2019, 22.49}, {2020, 7.59}, {2021, 12.62},
+		{2022, -14.29}, {2023, 17.94}, {2024, 4.70}, {2025, 31.85},
+	} {
+		within(t, "DEVEXUS-USD "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, 0.05)
+	}
+}
+
+// TestGoldenEM validates EM-USD, the emerging-market leg behind VEIEX/EIMI/VWRA,
+// against the published MSCI Emerging Markets NET calendar years compounded into
+// CAGRs. It is a Curvo export rather than the index itself and runs +0.31
+// point/yr rich on average over 2012-2025 (see TestGoldenEMYearly), so the
+// tolerances are a shade wider than the developed-ex-US ones.
+func TestGoldenEM(t *testing.T) {
+	s := loadRefdata(t, "EM-USD")
+	runRefCases(t, s, []refCase{
+		{name: "2013-2024 (net)", y0: 2012, y1: 2024, cagr: 2.61, ctol: 0.5, volLo: 14, volHi: 20},
+		{name: "2013-2025 (net)", y0: 2012, y1: 2025, cagr: 4.71, ctol: 0.5},
+		// Plausibility band over the whole file, as for DEVEXUS-USD: emerging
+		// equity near 10 %/yr since 1987 at ~22 % volatility, with a 2008 drop
+		// of at least 55 points.
+		{name: "since 1988 (band)", y0: 1987, y1: 2025, cagr: 10.6, ctol: 1.0, minDD: -55, volLo: 18, volHi: 26},
+	})
+}
+
+// TestGoldenEMYearly pins EM-USD to published MSCI Emerging Markets NET USD
+// calendar-year returns (MSCI index factsheet msci-emerging-markets-index-usd-net.pdf,
+// Jul 31 2026 edition). The fit is close but not exact: the export runs +0.31
+// point/yr rich on average (max +0.47 in 2017, -0.38 in 2025, whose months are
+// chained from a tracking series rather than exported), a LEVEL divergence that
+// has been there since the file was adopted and is not what this test is for.
+// What it catches is a date slip, which moves a calendar year by whole points,
+// so the tolerance is set at 0.6 point: loose enough for the known bias, an
+// order of magnitude tighter than a one-month slide.
+func TestGoldenEMYearly(t *testing.T) {
+	s := loadRefdata(t, "EM-USD")
+	for _, c := range []struct {
+		year int
+		ref  float64
+	}{
+		{2012, 18.22}, {2013, -2.60}, {2014, -2.19}, {2015, -14.92}, {2016, 11.19},
+		{2017, 37.28}, {2018, -14.57}, {2019, 18.42}, {2020, 18.31}, {2021, -2.54},
+		{2022, -20.09}, {2023, 9.83}, {2024, 7.50}, {2025, 33.57},
+	} {
+		within(t, "EM-USD "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, 0.6)
+	}
 }
 
 // TestGoldenGold validates XAUUSD-LBMA (London/LBMA PM fix, daily since
