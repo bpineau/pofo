@@ -153,6 +153,11 @@ var auditCaveats = map[string]string{
 	"XAUUSD": "The engine is the real quote extended by the LBMA fixing: over the real period it is the real series.",
 	"ERESMONDEM": "No quote exists for an employee-savings fund; the closest reference is WPEA " +
 		"(same index, same currency, different fees).",
+	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
+		"its own target index reads 0.85 monthly, so no public donor can beat what the fund itself leaves " +
+		"observable, and the negative gap is the manager's replication alpha over the index (net of the " +
+		"constituents' performance fees, which the fee uplift deliberately does not claim back). Real quotes " +
+		"are grafted from 2019, so all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
 }
 
 // Audit measures one recipe's engine against reality. f must serve the
