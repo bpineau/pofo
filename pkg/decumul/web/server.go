@@ -140,6 +140,13 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
 	mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
 		firebook.English.Handler(firebook.WithAlternate("/firebook/fr/", firebook.French))))
+	// The machine-readable face of the server: /sitemap.xml, /robots.txt and
+	// /llms.txt, covering both book editions and this page. It is the same
+	// set of files -serve publishes, minus the surfaces this mount lacks.
+	firebook.BookSite(firebook.Page{
+		Path: "/", Title: "FIRE simulator",
+		Note: "stress-test a withdrawal plan against thousands of simulated futures",
+	}).Handle(mux)
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {

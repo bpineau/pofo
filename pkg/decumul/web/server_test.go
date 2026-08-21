@@ -150,3 +150,23 @@ func TestFirebookMounts(t *testing.T) {
 		}
 	}
 }
+
+// The standalone explorer publishes the same machine-readable root files as
+// the -serve constellation: a crawler or an agent that lands on this mount
+// finds the book the same way.
+func TestSEORootFiles(t *testing.T) {
+	for path, want := range map[string]string{
+		"/robots.txt":  "Sitemap: http://example.com/sitemap.xml",
+		"/sitemap.xml": "<loc>http://example.com/firebook/fr/</loc>",
+		"/llms.txt":    "# pofo",
+	} {
+		rec := httptest.NewRecorder()
+		Handler(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK {
+			t.Errorf("%s: status = %d", path, rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), want) {
+			t.Errorf("%s: misses %q", path, want)
+		}
+	}
+}

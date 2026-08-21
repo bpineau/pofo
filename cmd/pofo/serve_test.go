@@ -123,6 +123,27 @@ func TestServeRoutes(t *testing.T) {
 		rec.Header().Get("Location") != "/firesimulator/p/IWDA:100/?x=1" {
 		t.Errorf("fire redirect: code=%d loc=%q, want 301 to /firesimulator/p/IWDA:100/?x=1", rec.Code, rec.Header().Get("Location"))
 	}
+	// The machine-readable root files: the sitemap covers both editions and
+	// the app surfaces, robots.txt points at it, llms.txt indexes the book.
+	if rec := serveGet(t, h, "/sitemap.xml"); rec.Code != 200 ||
+		!strings.Contains(rec.Body.String(), "<loc>http://example.com/firebook/en/</loc>") ||
+		!strings.Contains(rec.Body.String(), "<loc>http://example.com/visualizer</loc>") {
+		t.Errorf("sitemap: code=%d, both editions and the app surfaces wanted", rec.Code)
+	}
+	if rec := serveGet(t, h, "/robots.txt"); rec.Code != 200 ||
+		!strings.Contains(rec.Body.String(), "Sitemap: http://example.com/sitemap.xml") ||
+		!strings.Contains(rec.Body.String(), "User-agent: ClaudeBot") {
+		t.Errorf("robots.txt: code=%d", rec.Code)
+	}
+	if rec := serveGet(t, h, "/llms.txt"); rec.Code != 200 ||
+		!strings.Contains(rec.Body.String(), "http://example.com/firebook/fr/fire-cest-quoi.md") {
+		t.Errorf("llms.txt: code=%d", rec.Code)
+	}
+	// And the markdown mirror an agent is pointed at is really there.
+	if rec := serveGet(t, h, "/firebook/fr/fire-cest-quoi.md"); rec.Code != 200 ||
+		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/markdown") {
+		t.Errorf("markdown mirror: code=%d type=%q", rec.Code, rec.Header().Get("Content-Type"))
+	}
 	// A per-example FIRE mount for an unknown name 404s before any panel
 	// build (the known-name build path fetches quotes and is exercised by the
 	// manual smoke test, not here).
