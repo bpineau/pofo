@@ -82,7 +82,7 @@ func TestMendScaleBreak(t *testing.T) {
 			t.Errorf("cross-currency weld was mended: got[24]=%.4f, want %.4f", got[24], in[24])
 		}
 	})
-	// A spliced share class with several breaks (CL2.PA) is ambiguous: leave it.
+	// A spliced share class with several breaks is ambiguous: leave it.
 	t.Run("multiple breaks untouched", func(t *testing.T) {
 		s := concat(concat(ramp(12000, 20, 25), ramp(120, 1, 25)), ramp(40000, 50, 25))
 		in := append([]float64{}, s...)
@@ -190,6 +190,22 @@ func TestDropDropouts(t *testing.T) {
 			want: []float64{1, 1.3, 1.8, 2.5, 3.4, 5},
 		},
 		{
+			// The mirror image, and the real CL2.PA holiday print: the session
+			// the current quote line skips is filled from the pre-split one,
+			// ~300x above both neighbours.
+			name: "interior spike recovers",
+			in:   []float64{1.7312, 522.81, 1.744, 1.7382, 1.7159},
+			want: []float64{1.7312, 1.744, 1.7382, 1.7159},
+		},
+		{
+			// A permanent step is a split or a redenomination, not a bad print:
+			// the level moves and STAYS there, so no point is far from both its
+			// neighbours and mendScaleBreak keeps its junction to reason about.
+			name: "permanent step kept",
+			in:   []float64{300, 303, 306, 1, 1.01, 1.02},
+			want: []float64{300, 303, 306, 1, 1.01, 1.02},
+		},
+		{
 			name: "clean series untouched",
 			in:   []float64{50, 51, 52, 51, 53},
 			want: []float64{50, 51, 52, 51, 53},
@@ -202,6 +218,46 @@ func TestDropDropouts(t *testing.T) {
 				t.Errorf("dropDropouts(%v) = %v, want %v", tc.in, got, tc.want)
 			}
 		})
+	}
+}
+
+// A lone spike is also a fourfold jump up, so the leading-placeholder rule can
+// mistake it for the end of an inception run and condemn every real quote
+// before it. That is why the isolated prints go first, and why a long prefix is
+// never placeholder noise: the CL2.PA shape must come back whole.
+func TestDropDropoutsKeepsHistoryBeforeASpike(t *testing.T) {
+	in := make([]float64, 0, 60)
+	for i := 0; i < 30; i++ {
+		in = append(in, 1.70+float64(i)*0.001)
+	}
+	in = append(in, 522.81) // the holiday print, ~300x the level around it
+	for i := 0; i < 29; i++ {
+		in = append(in, 1.73+float64(i)*0.001)
+	}
+	got := closes(dropDropouts(pts(in...)))
+	if len(got) != len(in)-1 {
+		t.Fatalf("dropDropouts kept %d of %d points, want %d: the spike alone must go",
+			len(got), len(in), len(in)-1)
+	}
+	if got[0] != in[0] {
+		t.Errorf("the history before the spike was dropped: first close %.4f, want %.4f", got[0], in[0])
+	}
+	for i, v := range got {
+		if v > 100 {
+			t.Errorf("the spike survived at index %d (%.2f)", i, v)
+		}
+	}
+}
+
+// A leading segment at or beyond minScaleSegment is real history at another
+// scale (a fund quoted in pence, an unadjusted pre-split line): dropDropouts
+// must hand it to mendScaleBreak intact rather than delete it.
+func TestDropDropoutsKeepsALongLeadingSegment(t *testing.T) {
+	in := concat(ramp(124.9, 0.2, 25), ramp(12500, 20, 25)) // pounds, then pence
+	got := closes(dropDropouts(pts(in...)))
+	if !eq(got, in...) {
+		t.Errorf("the 25-point leading segment was treated as placeholder noise (%d points left of %d)",
+			len(got), len(in))
 	}
 }
 
