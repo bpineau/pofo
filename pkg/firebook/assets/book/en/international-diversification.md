@@ -40,7 +40,7 @@ The objection comes up constantly. "A world fund is 62 to 70% US stocks, a fifth
 
 1. Even at that weight, **the world is far more diversified than the all-US portfolio it replaces**. The argument is about refinement, not about the principle.
 2. **Cap weighting is the rational default.** It bets on nothing, rebalances itself and costs the least. Leaving it is an active position that has to justify itself.
-3. **Part of that justification exists today.** American concentration comes with extreme relative valuations ([[valuations-and-cape]], [[expected-returns]]). A moderate tilt away from the United States, bringing it from about 65% down to 50 to 55% through an ex-US block in the spirit of GDP weights, is defensible as a valuation position, taken deliberately and written down. Not as an anti-American reflex, and not further than that, because "the United States keeps winning" has to stay a livable scenario too.
+3. **Part of that justification exists today.** American concentration comes with extreme relative valuations ([[valuations-and-cape]], [[expected-returns]]). A moderate tilt away from the United States, bringing it from about 62% (its weight in a total-world fund in mid-2026) down to 50 to 55% through an ex-US block in the spirit of GDP weights, is defensible as a valuation position, taken deliberately and written down. Not as an anti-American reflex, and not further than that, because "the United States keeps winning" has to stay a livable scenario too.
 
 It is the same reading on the weight of the evidence as everywhere else in this book ([[failure-probability]]).
 :::
