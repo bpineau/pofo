@@ -204,22 +204,28 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		}
 		http.Redirect(w, r, target, http.StatusMovedPermanently)
 	})
+	// The way across to the other edition is WithAlternate's business below,
+	// which lands on the counterpart article rather than the other index; the
+	// nav bars carry only the way out of the book.
 	navFR := []firebook.NavLink{
 		{Label: "Accueil", Href: "/"},
 		{Label: "Portefeuilles", Href: "/visualizer"},
 		{Label: "Simulateur", Href: fireBase + "/"},
-		{Label: "English", Href: "/firebook/en/"},
 	}
 	navEN := []firebook.NavLink{
 		{Label: "Home", Href: "/"},
 		{Label: "Portfolios", Href: "/visualizer"},
 		{Label: "Simulator", Href: fireBase + "/"},
-		{Label: "Français", Href: "/firebook/fr/"},
 	}
+	// WithAlternate gives each edition the other one's mount path, which only
+	// this mux knows: it turns into the hreflang pair of every paired page and
+	// the language switch at the end of the top bar.
 	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
-		firebook.Handler(firebook.WithNav(navFR), firebook.WithHome("/"))))
+		firebook.Handler(firebook.WithNav(navFR), firebook.WithHome("/"),
+			firebook.WithAlternate("/firebook/en/", firebook.English))))
 	mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
-		firebook.English.Handler(firebook.WithNav(navEN), firebook.WithHome("/"))))
+		firebook.English.Handler(firebook.WithNav(navEN), firebook.WithHome("/"),
+			firebook.WithAlternate("/firebook/fr/", firebook.French))))
 	// The book moved from /book/ to /firebook/; keep the old path working with
 	// a permanent redirect so existing bookmarks and links do not break.
 	mux.HandleFunc("/book/fr/", func(w http.ResponseWriter, r *http.Request) {

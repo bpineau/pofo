@@ -110,7 +110,8 @@ func run(ctx context.Context, argv []string) error {
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
-	exportEpub := fs.String("export-epub", "", "write the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
+	exportEpub := fs.String("export-epub", "", "write one edition of the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
+	bookLang := fs.String("book-lang", "fr", "with -export-epub: which edition of the FIRE book to write, fr (Le FIRE tranquille) or en (The Quiet FIRE)")
 	bookDrift := fs.Bool("book-drift", false, "print what the FIRE book's translations owe their French source (stale and untranslated articles), then exit")
 	dry := fs.Bool("dry", false, "with -gen-simdata: validate without writing")
 	refdataDir := fs.String("refdata", "", "dev override: directory of extra local reference CSVs for -gen-simdata")
@@ -205,7 +206,7 @@ Options:
 	// quote cache or date window, so dispatch it before any of that. Same for
 	// -book-drift, which only reads the embedded book.
 	if *exportEpub != "" {
-		return runExportEpub(*exportEpub)
+		return runExportEpub(*exportEpub, *bookLang)
 	}
 	if *bookDrift {
 		return runBookDrift()

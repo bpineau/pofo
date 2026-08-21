@@ -374,3 +374,97 @@ func TestHandlerUnderPrefix(t *testing.T) {
 		t.Errorf("prefixed article: status %d", code)
 	}
 }
+
+// WithAlternate is the cross-edition wiring: a paired page declares both
+// languages in its head and offers the switch in its top bar, an unpaired one
+// (the French tax part) declares nothing, and the two indexes always pair.
+func TestWithAlternate(t *testing.T) {
+	pairs := French.alternates(English)
+	const frPaired, frOnly = "fire-cest-quoi", "taxe-puma"
+	enPaired := pairs[frPaired]
+	if enPaired == "" {
+		t.Fatalf("%s has no English counterpart to test with", frPaired)
+	}
+	if _, ok := pairs[frOnly]; ok {
+		t.Fatalf("%s is meant to be French-only", frOnly)
+	}
+
+	fr := httptest.NewServer(Handler(WithAlternate("/firebook/en/", English)))
+	defer fr.Close()
+	en := httptest.NewServer(English.Handler(WithAlternate("/firebook/fr/", French)))
+	defer en.Close()
+
+	cases := []struct {
+		name string
+		srv  *httptest.Server
+		path string
+		want []string
+		bad  []string
+	}{{
+		name: "french index cross-links the english index",
+		srv:  fr, path: "/",
+		want: []string{
+			`<link rel="alternate" hreflang="fr" href=".">`,
+			`<link rel="alternate" hreflang="en" href="/firebook/en/">`,
+			`href="/firebook/en/">English version</a>`,
+		},
+	}, {
+		name: "english index cross-links the french index",
+		srv:  en, path: "/",
+		want: []string{
+			`<link rel="alternate" hreflang="en" href=".">`,
+			`<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+			`href="/firebook/fr/">Version française</a>`,
+		},
+	}, {
+		name: "paired french article points at its translation",
+		srv:  fr, path: "/" + frPaired,
+		want: []string{
+			`<link rel="alternate" hreflang="fr" href="` + frPaired + `">`,
+			`<link rel="alternate" hreflang="en" href="/firebook/en/` + enPaired + `">`,
+			`English version`,
+		},
+	}, {
+		name: "paired english article points back at its source",
+		srv:  en, path: "/" + enPaired,
+		want: []string{
+			`<link rel="alternate" hreflang="en" href="` + enPaired + `">`,
+			`<link rel="alternate" hreflang="fr" href="/firebook/fr/` + frPaired + `">`,
+			`Version française`,
+		},
+	}, {
+		name: "french-only article cross-links nothing",
+		srv:  fr, path: "/" + frOnly,
+		bad: []string{`rel="alternate"`, "English version", "/firebook/en/"},
+	}}
+
+	for _, c := range cases {
+		code, body := get(t, c.srv, c.path)
+		if code != http.StatusOK {
+			t.Fatalf("%s: status %d", c.name, code)
+		}
+		for _, w := range c.want {
+			if !strings.Contains(body, w) {
+				t.Errorf("%s: page misses %q", c.name, w)
+			}
+		}
+		for _, b := range c.bad {
+			if strings.Contains(body, b) {
+				t.Errorf("%s: page should not carry %q", c.name, b)
+			}
+		}
+	}
+}
+
+// Without the option the book renders exactly as it did before: the offline
+// and -fire mounts, and any third-party mount, get no cross-edition markup.
+func TestWithoutAlternateNoCrossLinks(t *testing.T) {
+	srv := httptest.NewServer(Handler())
+	defer srv.Close()
+	for _, path := range []string{"/", "/" + Categories[0].Articles[0].Slug} {
+		_, body := get(t, srv, path)
+		if strings.Contains(body, `rel="alternate"`) || strings.Contains(body, "English version") {
+			t.Errorf("%s: cross-edition markup leaked without WithAlternate", path)
+		}
+	}
+}

@@ -29,7 +29,7 @@ go build ./cmd/pofo                       # self-contained binary (datasets embe
 ./pofo -b -assets AVWS,ZPRV               # same, with every history backcast
 ./pofo -warmup                            # pre-warm the catalog cache
 ./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
-./pofo -export-epub le-fire-tranquille.epub  # export the FIRE book as EPUB 3
+./pofo -export-epub le-fire-tranquille.epub  # export the FIRE book as EPUB 3 (-book-lang en for English)
 ```
 
 The binary can be installed anywhere: simulated histories and reference
@@ -329,13 +329,16 @@ The explorer also embeds **the FIRE book** ("Le FIRE tranquille") at
 `/firebook/fr/` (a small link sits at the bottom of the "How this machine
 works" fold): a French-language handbook of decumulation, withdrawal
 strategies, resilient portfolios, buffers and French taxation, written as
-cross-linked articles and served straight from the binary (`pkg/firebook`;
-an English translation will join at `/firebook/en/` later).
+cross-linked articles and served straight from the binary (`pkg/firebook`).
+The complete English edition, "The Quiet FIRE", sits next to it at
+`/firebook/en/`, and every page of one edition links to its counterpart in the
+other.
 
 The whole book is also downloadable as a single **EPUB 3** file for offline
 reading: every mount exposes it at `le-fire-tranquille.epub` (a discreet
-"Version EPUB" link sits on the book index), and `pofo -export-epub
-le-fire-tranquille.epub` writes the same file from the command line.
+"Version EPUB" link sits on the book index, `the-quiet-fire.epub` on the
+English one), and `pofo -export-epub le-fire-tranquille.epub` writes the same
+file from the command line, `-book-lang en` the English edition.
 
 The same mount also serves an **OPDS 1.2 catalog** at `opds.xml` (e.g.
 `http://localhost:8080/firebook/fr/opds.xml`): add that URL once in an e-book
@@ -359,7 +362,7 @@ single port:
 | `/view` | the visualizer's report: the same HTML comparison the CLI writes, addressed by a shareable URL |
 | `/firesimulator/` | the **FIRE simulator** (`-fire`, mounted under a prefix; old `/fire/` redirects here) |
 | `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
-| `/firebook/en/` | the English edition ("The Quiet FIRE"), growing as articles are translated |
+| `/firebook/en/` | the English edition ("The Quiet FIRE"), cross-linked with the French one page by page |
 
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/
@@ -444,7 +447,8 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-sweep-step` | `5` | grid step, in weight percent, for `-sweep` |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
-| `-export-epub` | | write the FIRE book to the given path as an EPUB 3 file, then exit |
+| `-export-epub` | | write one edition of the FIRE book to the given path as an EPUB 3 file, then exit |
+| `-book-lang` | `fr` | with `-export-epub`: which edition to write, `fr` ("Le FIRE tranquille") or `en` ("The Quiet FIRE") |
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes (overrides `-simulate`) |
@@ -776,7 +780,7 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 ## Known limitations
 
 - Price-index proxies (^GSPC, ^NDX…) omit dividends over the simulated
-  portion; managed-futures replications (corr ≈ 0.3–0.5) reflect those
+  portion; managed-futures replications (corr ≈ 0.3-0.5) reflect those
   strategies' regime, not their daily positions.
 - Assets whose quote currency cannot be determined are left unconverted
   (flagged in the report warnings).

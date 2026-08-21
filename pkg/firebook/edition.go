@@ -20,6 +20,7 @@ type UIStrings struct {
 	SectionAnchorLabel string           // aria-label of a heading's "§" anchor
 	PartAnchorLabel    string           // aria-label of a part's "§" anchor on the index
 	EPUBLink           string           // label of the EPUB download link ("Version epub")
+	SwitchLabel        string           // how this edition names itself in the other one's top bar ("Version française")
 	EPUBUnavailable    string           // 500 body of the epub route
 	CatalogUnavailable string           // 500 body of the opds route
 	NotFound           string           // body shown when an article file cannot be read
@@ -78,6 +79,7 @@ var French = &Edition{
 		SectionAnchorLabel: "Lien direct vers cette section",
 		PartAnchorLabel:    "Lien direct vers cette partie",
 		EPUBLink:           "Version epub",
+		SwitchLabel:        "Version française",
 		EPUBUnavailable:    "EPUB indisponible",
 		CatalogUnavailable: "Catalogue indisponible",
 		NotFound:           "Article introuvable.",
@@ -91,16 +93,18 @@ var French = &Edition{
 // English is the English edition, "The Quiet FIRE". It is a translation of
 // French, article by article, and never a fork: the only text it owns outright
 // is its US-framework part, which the French edition has no counterpart for.
-// It is mounted at /firebook/en/ and fills in as the translation campaign
-// progresses; see docs/fire-book-en-edition-design.md.
+// It is mounted at /firebook/en/ and is complete: every French article that is
+// not marked fr-only has an English counterpart, a guard test enforces it, and
+// the two editions cross-link article by article (WithAlternate). See
+// docs/fire-book-en-edition-design.md.
 var English = &Edition{
 	Lang:     "en",
 	OGLocale: "en_US",
 	SiteName: "The Quiet FIRE",
-	// draft, review at M4
+	// The US-framework part is not written yet, so the description does not
+	// promise it; it gains a "US accounts and taxes" clause with M3.
 	SiteDescription: "Living off your capital without outliving it: the science of withdrawal, " +
-		"the strategies and portfolios that hold up, inflation, US accounts and taxes, and the human factor.",
-	// draft, review at M4
+		"the strategies and portfolios that hold up, inflation, and the human factor.",
 	SiteLede: "Living off your capital without outliving it: the science of withdrawal, " +
 		"the models and their traps, the strategies, the portfolios that hold up, buffers, inflation.",
 	HomePath:     "/firebook/en/",
@@ -118,6 +122,7 @@ var English = &Edition{
 		SectionAnchorLabel: "Link to this section",
 		PartAnchorLabel:    "Link to this part",
 		EPUBLink:           "EPUB edition",
+		SwitchLabel:        "English version",
 		EPUBUnavailable:    "EPUB unavailable",
 		CatalogUnavailable: "Catalog unavailable",
 		NotFound:           "Article not found.",

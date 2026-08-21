@@ -134,9 +134,12 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		fileSrv.ServeHTTP(w, r)
 	})
 	// The FIRE book (pkg/firebook), linked discreetly from the page's
-	// "How this machine works" fold. The language segment leaves room for
-	// the planned English translation at /firebook/en/.
-	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr", firebook.Handler()))
+	// "How this machine works" fold, in both editions. Each is told where the
+	// other is mounted (WithAlternate), which cross-links every paired page.
+	mux.Handle("/firebook/fr/", http.StripPrefix("/firebook/fr",
+		firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
+	mux.Handle("/firebook/en/", http.StripPrefix("/firebook/en",
+		firebook.English.Handler(firebook.WithAlternate("/firebook/fr/", firebook.French))))
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {

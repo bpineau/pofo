@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -129,5 +130,23 @@ func TestServesIndex(t *testing.T) {
 	Handler(nil, nil).ServeHTTP(rec, req)
 	if rec.Code != 200 || !bytes.Contains(rec.Body.Bytes(), []byte("<html")) {
 		t.Errorf("index not served: %d", rec.Code)
+	}
+}
+
+// The offline mount serves both editions of the FIRE book, each pointing at
+// the other: the -fire explorer is a complete, self-contained reading surface.
+func TestFirebookMounts(t *testing.T) {
+	for path, want := range map[string]string{
+		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="/firebook/en/">`,
+		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+	} {
+		rec := httptest.NewRecorder()
+		Handler(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK {
+			t.Errorf("%s: status = %d", path, rec.Code)
+		}
+		if !strings.Contains(rec.Body.String(), want) {
+			t.Errorf("%s: misses the cross-edition link %q", path, want)
+		}
 	}
 }
