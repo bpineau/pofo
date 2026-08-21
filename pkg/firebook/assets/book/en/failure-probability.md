@@ -1,5 +1,5 @@
 # Failure probability: reading it, choosing it, and not letting it run you
-<!-- source: ruine-et-probabilites @ 9f826067bd9c -->
+<!-- source: ruine-et-probabilites @ 175318d229a6 -->
 
 Every retirement simulator boils its verdict down to a single number: the failure probability, or its mirror image, the success rate. It is the most watched number in the field, and the most misread. People treat it like a weather forecast ("5% risk, that's fine"), compare it across tools that are not measuring the same thing, ask it for a precision it does not have, and forget that it describes a world in which nobody ever reacts.
 
@@ -44,6 +44,11 @@ The simulator prints "4.7%" and the mind files away a jeweler's precision. There
 **Parameter sensitivity** is far worse. Shave 0.5 point off the expected real return, a refinement nobody can actually estimate ([[expected-returns]]), and failure can double. The thickness of the tails (the degrees of freedom of the Student-t, [[fat-tails]]) moves it again. Your parameters are uncertain, so your failure probability is at least as uncertain.
 
 **The choice of model dominates everything else.** The same plan can print 2% on historical windows, 5% on the central model, 9% under sequence stress and 14% on the broad sample. None of them is wrong; they answer different questions ("what if the future looks like the history of my own holdings, or like a prudently calibrated i.i.d. world, or like that same world with sticky bears, or like a century across 16 developed countries").
+
+::: figure trois-bruits
+The three noises put on one scale, for a single reference plan: the figure on screen, the two points of uncertainty the draw leaves, the three and a half the parameters leave, and the thirty-five the choice of model leaves. The bar you stare at while believing you are reading a probability is the shortest of the three, by a wide margin.
+:::
+
 
 One rule follows: **read failure probability as a ranking, not as a measurement**. It compares beautifully (plan A is more robust than plan B; this lever cuts risk more than that one; even the pessimistic model stays acceptable) and measures poorly ("my real risk is 4.7%"). The decimals are noise. The gaps between scenarios, and between models, are signal.
 
