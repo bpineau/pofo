@@ -89,7 +89,7 @@ Nora et Malik, 47 ans, 1,6 M€, 60/40, pensions estimées 21 600 €/an à 67 a
 
 - Le VPW est l'annuité d'un crédit inversée. Chaque année, il applique le pourcentage qui épuiserait le portefeuille sur les années restantes, à rendements supposés fixes (5 % réel actions, 1,9 % obligations). Ce pourcentage croît avec l'âge : environ 3,9 % à 40 ans, 4,8 % à 65 ans, 100 % à 99 ans.
 - Il hérite du pourcentage fixe (jamais de ruine du capital, contracyclique, auto-correcteur) et y ajoute la conscience de l'horizon : consommation délibérée, legs quasi nul, et la consommation moyenne la plus généreuse du panorama.
-- Ses exigences : le test de tolérance à la perte (revenu sous « actions −50 % » ≥ plancher, à ne jamais sauter), le pont de pension en phase à découvert, et l'annuitisation vers 80 ans pour la longévité au-delà de la table.
+- Ses exigences : le test de tolérance à la perte (revenu sous « actions −50 % » ≥ plancher, à ne jamais sauter), le pont de pension en phase à découvert, et la mise en rente vers 80 ans pour la longévité au-delà de la table.
 - Sa ligne de partage avec l'ABW : table gravée (robustesse comportementale) contre rendements courants (justesse conditionnelle). Même formule, deux paris sur celui qui l'exécute.
 - Deux règles l'approchent dans un simulateur, à tester séparément : le pourcentage constant (le VPW à horizon long) et le retrait amorti sur l'horizon (le VPW dynamique complet). Jugez-les sur le niveau de vie servi, et en marché cher, décotez g d'un point.
 
