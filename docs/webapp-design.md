@@ -52,14 +52,21 @@ pair; an article pairs through `Article.Source`, so the French-only tax part
 declares nothing and points nowhere. Without the option the book renders
 exactly as before, which the offline and `-fire` mounts rely on.
 
-Two URLs in the head are NOT relative, on purpose: the `rel="canonical"` link
-and the self-referencing `hreflang`, both built from `Edition.HomePath`. The
+A handful of head URLs are NOT relative, on purpose: `rel="canonical"`,
+`og:url`, the three `hreflang` links and `og:image`. They are **fully
+qualified**: the request's own origin (`firebook.RequestOrigin`, the same
+helper the sitemap uses) in front of a path built from `Edition.HomePath`.
+
+Two separate reasons stack here. `HomePath` answers *which copy counts*: the
 constellation republishes the whole book under the simulator's own prefix
 (`/firesimulator/firebook/fr/...`, a consequence of mounting `pkg/decumul/web`
 under a path), and a relative canonical would declare every copy canonical.
-`HomePath` is the edition's declared online home, the same value the EPUB's
-title page prints, so it is the one honest answer to "which URL should be
-indexed". Everything else the handler emits stays relative and mount-agnostic.
+`RequestOrigin` answers *on which host*: an `hreflang` annotation is ignored
+unless both ends are complete URLs, a canonical link should agree with the
+`hreflang` beside it, and a social-card crawler fetching `og:image` holds no
+document base to resolve a path against. The visible language switch in the top
+bar stays a path (a visitor should stay on the host they reached), and
+everything else the handler emits stays relative and mount-agnostic.
 
 The four static assets above are **content-fingerprinted**: the HTML surfaces
 link them as `…?v=<hash>` (`assetURL`/`versionedAssets` in `serve.go`, applied to

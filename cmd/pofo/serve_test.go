@@ -90,9 +90,11 @@ func TestServeRoutes(t *testing.T) {
 	if rec := serveGet(t, h, "/firebook/en/"); rec.Code != 200 || !strings.Contains(rec.Body.String(), "The Quiet FIRE") {
 		t.Errorf("book-en: code=%d, The Quiet FIRE wanted", rec.Code)
 	}
+	// The hreflang hrefs are fully qualified, built from the request's own
+	// origin (httptest's default host).
 	for path, want := range map[string]string{
-		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="/firebook/en/">`,
-		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="http://example.com/firebook/en/">`,
+		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="http://example.com/firebook/fr/">`,
 	} {
 		if rec := serveGet(t, h, path); !strings.Contains(rec.Body.String(), want) {
 			t.Errorf("%s: misses the cross-edition link %q", path, want)

@@ -77,11 +77,19 @@
 //
 // For search engines: a per-page title and meta description (the manifest
 // blurb), Open Graph and Twitter-card metas, a self-referencing canonical link
-// built from Edition.HomePath (the same book is reachable under more than one
-// prefix on a pofo server, and only HomePath says which copy counts), the
-// hreflang pair and its x-default, and schema.org JSON-LD: a WebSite plus the
-// Book (its EPUB as a workExample, its whole table of contents as Chapter
+// and og:url built from Edition.HomePath (the same book is reachable under more
+// than one prefix on a pofo server, and only HomePath says which copy counts),
+// the hreflang pair and its x-default, and schema.org JSON-LD: a WebSite plus
+// the Book (its EPUB as a workExample, its whole table of contents as Chapter
 // parts) on the index, an Article and its BreadcrumbList on every page.
+//
+// Those head URLs are the handler's one departure from the relative,
+// mount-anywhere URLs it emits everywhere else: they are FULLY QUALIFIED, the
+// request's own origin (RequestOrigin) in front of the HomePath-derived path.
+// An hreflang annotation whose ends are not complete URLs is ignored outright,
+// and a canonical link should agree with the hreflang next to it. The visible
+// language switch in the top bar stays a path, so a visitor never leaves the
+// host they reached.
 //
 // For AI agents: every article is also served as its own Markdown source at
 // "<slug>.md", untransformed (callouts, tables and [[wiki-links]] included),

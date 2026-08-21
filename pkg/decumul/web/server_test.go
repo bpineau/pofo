@@ -136,9 +136,11 @@ func TestServesIndex(t *testing.T) {
 // The offline mount serves both editions of the FIRE book, each pointing at
 // the other: the -fire explorer is a complete, self-contained reading surface.
 func TestFirebookMounts(t *testing.T) {
+	// The hreflang hrefs are fully qualified, built from the request's own
+	// origin (httptest's default host).
 	for path, want := range map[string]string{
-		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="/firebook/en/">`,
-		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
+		"/firebook/fr/": `<link rel="alternate" hreflang="en" href="http://example.com/firebook/en/">`,
+		"/firebook/en/": `<link rel="alternate" hreflang="fr" href="http://example.com/firebook/fr/">`,
 	} {
 		rec := httptest.NewRecorder()
 		Handler(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))

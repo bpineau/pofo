@@ -394,6 +394,10 @@ func TestWithAlternate(t *testing.T) {
 	en := httptest.NewServer(English.Handler(WithAlternate("/firebook/fr/", French)))
 	defer en.Close()
 
+	// Every hreflang href is fully qualified, on BOTH ends of the pair (a
+	// path-relative one is ignored by search engines): the request's own
+	// origin, which is the test server's. The visible switch link in the top
+	// bar stays a path, so a visitor never leaves the host they reached.
 	cases := []struct {
 		name string
 		srv  *httptest.Server
@@ -404,35 +408,35 @@ func TestWithAlternate(t *testing.T) {
 		name: "french index cross-links the english index",
 		srv:  fr, path: "/",
 		want: []string{
-			`<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
-			`<link rel="alternate" hreflang="en" href="/firebook/en/">`,
+			`<link rel="alternate" hreflang="fr" href="` + fr.URL + `/firebook/fr/">`,
+			`<link rel="alternate" hreflang="en" href="` + fr.URL + `/firebook/en/">`,
 			// The source edition takes the x-default on both sides.
-			`<link rel="alternate" hreflang="x-default" href="/firebook/fr/">`,
+			`<link rel="alternate" hreflang="x-default" href="` + fr.URL + `/firebook/fr/">`,
 			`href="/firebook/en/">English version</a>`,
 		},
 	}, {
 		name: "english index cross-links the french index",
 		srv:  en, path: "/",
 		want: []string{
-			`<link rel="alternate" hreflang="en" href="/firebook/en/">`,
-			`<link rel="alternate" hreflang="fr" href="/firebook/fr/">`,
-			`<link rel="alternate" hreflang="x-default" href="/firebook/fr/">`,
+			`<link rel="alternate" hreflang="en" href="` + en.URL + `/firebook/en/">`,
+			`<link rel="alternate" hreflang="fr" href="` + en.URL + `/firebook/fr/">`,
+			`<link rel="alternate" hreflang="x-default" href="` + en.URL + `/firebook/fr/">`,
 			`href="/firebook/fr/">Version française</a>`,
 		},
 	}, {
 		name: "paired french article points at its translation",
 		srv:  fr, path: "/" + frPaired,
 		want: []string{
-			`<link rel="alternate" hreflang="fr" href="/firebook/fr/` + frPaired + `">`,
-			`<link rel="alternate" hreflang="en" href="/firebook/en/` + enPaired + `">`,
+			`<link rel="alternate" hreflang="fr" href="` + fr.URL + `/firebook/fr/` + frPaired + `">`,
+			`<link rel="alternate" hreflang="en" href="` + fr.URL + `/firebook/en/` + enPaired + `">`,
 			`English version`,
 		},
 	}, {
 		name: "paired english article points back at its source",
 		srv:  en, path: "/" + enPaired,
 		want: []string{
-			`<link rel="alternate" hreflang="en" href="/firebook/en/` + enPaired + `">`,
-			`<link rel="alternate" hreflang="fr" href="/firebook/fr/` + frPaired + `">`,
+			`<link rel="alternate" hreflang="en" href="` + en.URL + `/firebook/en/` + enPaired + `">`,
+			`<link rel="alternate" hreflang="fr" href="` + en.URL + `/firebook/fr/` + frPaired + `">`,
 			`Version française`,
 		},
 	}, {

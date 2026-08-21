@@ -51,10 +51,11 @@ func WithNav(links []NavLink) Option { return func(c *handlerConfig) { c.nav = l
 //
 // The base path is the caller's to give: the handler emits relative URLs so it
 // can be mounted anywhere, and only the caller knows where the sibling sits.
-// The self-referencing hreflang, like the canonical link, is the one exception:
-// it names the edition's declared home (Edition.HomePath), because an hreflang
-// pair must be made of canonical URLs. An x-default completes the pair and
-// points at the source edition; see alternateHead.
+// The hreflang links are the one exception, and deliberately: they are built
+// from the edition's declared home (Edition.HomePath) plus the request's own
+// origin, because an hreflang pair must be made of canonical, fully-qualified
+// URLs. The visible switch link in the top bar stays a path. An x-default
+// completes the pair and points at the source edition; see alternateHead.
 func WithAlternate(base string, ed *Edition) Option {
 	return func(c *handlerConfig) {
 		if base == "" || ed == nil {
@@ -169,26 +170,31 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 	}
 	// alternate describes the sibling page of the one being served: slug is
 	// the article, empty for the index (which always pairs with the sibling
-	// index). The zero value means "no counterpart, no cross-link".
-	alternate := func(slug string) altLink {
+	// index). The zero value means "no counterpart, no cross-link". Both ends
+	// of an hreflang pair must be fully-qualified URLs, so the request's own
+	// origin prefixes them; the sibling sits on the same host by construction
+	// (one server mounts both editions).
+	alternate := func(origin, slug string) altLink {
 		if cfg.alt == nil {
 			return altLink{}
 		}
 		link := altLink{Lang: cfg.alt.Lang, Label: cfg.alt.UI.SwitchLabel,
-			Self: e.canonical("."), Original: cfg.alt.Original}
+			Self: e.absolute(origin, "."), Original: cfg.alt.Original}
 		if slug == "" {
-			link.Href = cfg.altBase
+			link.Href, link.Nav = origin+cfg.altBase, cfg.altBase
 			return link
 		}
 		other, ok := pairs[slug]
 		if !ok {
 			return altLink{}
 		}
-		link.Href, link.Self = cfg.altBase+other, e.canonical(slug)
+		link.Href, link.Nav = origin+cfg.altBase+other, cfg.altBase+other
+		link.Self = e.absolute(origin, slug)
 		return link
 	}
 
 	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		origin := RequestOrigin(r)
 		slug := strings.Trim(r.URL.Path, "/")
 		if slug == "" {
 			data, _, err := build()
@@ -196,9 +202,9 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 			if err == nil {
 				size = len(data)
 			}
-			e.writePage(w, cfg.nav, page{
+			e.writePage(w, origin, cfg.nav, page{
 				Title: e.SiteName, Description: e.SiteDescription, Self: ".",
-				Alt: alternate(""), Body: e.indexHTML(size, cfg.home),
+				Alt: alternate(origin, ""), Body: e.indexHTML(size, cfg.home),
 			})
 			return
 		}
@@ -214,9 +220,9 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 			http.NotFound(w, r)
 			return
 		}
-		e.writePage(w, cfg.nav, page{
+		e.writePage(w, origin, cfg.nav, page{
 			Title: art.Title, Description: art.Blurb, Self: art.Slug,
-			Alt: alternate(slug), Article: &art, Category: &cat,
+			Alt: alternate(origin, slug), Article: &art, Category: &cat,
 			Body: e.articleHTML(art, cat),
 		})
 	})
@@ -282,6 +288,23 @@ func (e *Edition) canonical(self string) string {
 	return e.HomePath + self
 }
 
+// absolute is canonical fully qualified: the request's own origin (scheme and
+// host, see RequestOrigin) in front of the canonical path.
+//
+// The head's canonical link, its hreflang pair and the social-card URLs must
+// all be complete URLs, not paths: hreflang annotations are ignored outright
+// unless both ends are fully qualified, and a card image is fetched by a
+// crawler that holds no document base. The origin cannot be known at build
+// time (the same binary answers on localhost, on a tailnet name and behind a
+// proxy), so it arrives per request, exactly as the sitemap's does. An edition
+// with no HomePath declares no online home and keeps the relative form.
+func (e *Edition) absolute(origin, self string) string {
+	if e.HomePath == "" {
+		return e.canonical(self)
+	}
+	return origin + e.canonical(self)
+}
+
 // page is one rendered page's head material: what it is, where it sits, and
 // what it is part of. Article and Category are nil on the index.
 type page struct {
@@ -294,7 +317,7 @@ type page struct {
 	Body        string
 }
 
-func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, p page) {
+func (e *Edition) writePage(w http.ResponseWriter, origin string, nav []NavLink, p page) {
 	title, description, alt, body := p.Title, p.Description, p.Alt, p.Body
 	var bar strings.Builder
 	if len(nav) > 0 || alt.Href != "" {
@@ -304,10 +327,12 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, p page) {
 		}
 		// The language switch closes the bar: it is the way out of this
 		// edition, and the way back in (the index link) already holds the
-		// other edge.
+		// other edge. It uses the sibling's PATH, not the fully-qualified URL
+		// the hreflang link needs: a visitor should stay on the host they
+		// reached, whichever one that is.
 		if alt.Href != "" {
 			fmt.Fprintf(&bar, `<a class="book-lang" lang="%s" hreflang="%s" href="%s">%s</a>`,
-				alt.Lang, alt.Lang, html.EscapeString(alt.Href), html.EscapeString(alt.Label))
+				alt.Lang, alt.Lang, html.EscapeString(alt.Nav), html.EscapeString(alt.Label))
 		}
 		bar.WriteString("</nav>\n")
 	}
@@ -329,6 +354,8 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, p page) {
 			html.EscapeString(p.Article.Slug+markdownSuffix) + `">`
 	}
 
+	self := e.absolute(origin, p.Self)
+
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprintf(w, `<!DOCTYPE html>
 <html lang="%s">
@@ -343,6 +370,7 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, p page) {
 <meta property="og:site_name" content="%s">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
+<meta property="og:url" content="%s">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="%s">
 <meta name="twitter:description" content="%s">
@@ -359,15 +387,17 @@ func (e *Edition) writePage(w http.ResponseWriter, nav []NavLink, p page) {
 </body>
 </html>`, e.Lang, html.EscapeString(pageTitle), html.EscapeString(description), ogType, e.OGLocale,
 		html.EscapeString(e.SiteName), html.EscapeString(pageTitle), html.EscapeString(description),
+		html.EscapeString(self),
 		html.EscapeString(pageTitle), html.EscapeString(description),
-		e.jsonLD(p), html.EscapeString(e.canonical(p.Self)), e.alternateHead(alt), mdLink,
+		e.jsonLD(p), html.EscapeString(self), e.alternateHead(alt), mdLink,
 		e.css(), bar.String(), body, bookJS)
 }
 
 // altLink is the sibling edition's counterpart of the page being rendered.
 // The zero value means the page has none and gets no cross-link at all.
 type altLink struct {
-	Href     string // where the counterpart lives (the caller's base plus its slug)
+	Href     string // the counterpart's fully-qualified URL, for hreflang
+	Nav      string // the same counterpart as a path, for the on-page switch link
 	Lang     string // the sibling's language code, for hreflang and the anchor's lang
 	Label    string // switch-link text, written in the SIBLING's language
 	Self     string // this page's own canonical URL, for the self-referencing hreflang
@@ -377,7 +407,9 @@ type altLink struct {
 // alternateHead renders the hreflang links of a cross-linked page: this page
 // in this edition's language, its counterpart in the sibling's, and an
 // x-default. A search engine needs both halves of the pair to treat them as
-// one document in two languages, so the self-referencing link is not optional.
+// one document in two languages, so the self-referencing link is not optional,
+// and it needs FULLY-QUALIFIED URLs on both ends: a path-relative hreflang is
+// dropped without a word. altLink carries them already absolute.
 //
 // The x-default names the SOURCE edition (Edition.Original). There is no
 // language-selector page to point it at, and no edition is a translation
