@@ -1,5 +1,5 @@
 # Arithmetic mean, geometric mean, and volatility drag
-<!-- source: rendements-arithmetiques-geometriques @ 50c547741fb9 -->
+<!-- source: rendements-arithmetiques-geometriques @ 7a5cb2478259 -->
 
 Here is the most profitable trick question in all of personal finance: an investment gains 50% in its first year and loses 50% in its second. Average return: 0%. How much did you make?
 
@@ -79,7 +79,7 @@ Volatility drag is the first step of a cascade that runs from the marketing numb
 4. **minus fees and taxes** (0.3 to 1.5%, depending on the accounts and the funds you use, [[building-it-with-us-etfs]], [[us-taxes-in-the-withdrawal-phase]]).
 5. **minus the sequence premium**: even a net real geometric return is only withdrawable if the returns show up in an orderly fashion; their lumpiness against fixed withdrawals costs another 1 to 1.5 points ([[sequence-of-returns]]).
 
-Destination: 3 to 3.5% of sustainable rigid withdrawal over a long horizon, exactly the range modern research reaches by independent routes ([[the-4-percent-rule]], [[the-ern-series]]). That is no coincidence. The 4% rule is not mysterious, it is where this cascade lands once the accounting is done. Memorize the hierarchy: **arithmetic > geometric > real geometric > sustainable withdrawal rate**, with 0.5 to 1.5 points lost at every step.
+Destination: 3 to 3.5% of sustainable rigid withdrawal over a long horizon, exactly the range modern research reaches by independent routes ([[the-4-percent-rule]], [[the-ern-series]]). That is the prudent edge of the cascade, not its middle: take the kind end of every step and you land nearer 5%. A 60/40 starting from its own 3.5 to 4.5% real gets there by the same road. That is no coincidence. The 4% rule is not mysterious, it is where this cascade lands once the accounting is done. Memorize the hierarchy: **arithmetic > geometric > real geometric > sustainable withdrawal rate**, with 0.5 to 1.5 points lost at every step.
 
 ::: attention The salesman test
 When someone quotes you a return, ask the cascade's three questions every time. Arithmetic or geometric (compounded)? Nominal or real (net of inflation)? Gross or net of fees? "8%" can mean 6.9% compounded, 4.4% real, 3.4% net: less than half the headline number, with no formal lie anywhere. Backtests of structured products and fund averages almost always show the most flattering corner of the table. A professional who cannot answer those three questions has not understood their own product.
@@ -91,7 +91,7 @@ When someone quotes you a return, ask the cascade's three questions every time. 
 
 **2. Judging a withdrawal portfolio.** Two portfolios with the same arithmetic expectation are not worth the same: the less volatile one compounds better and stands up better to sequence, a double advantage. That is why serious withdrawal portfolios trade average return for steadiness (bonds, gold, diversification across regimes, [[stock-bond-allocation]], [[all-weather-portfolios]]), and why "100% stocks is optimal in the long run", fair enough in accumulation, does not survive the first withdrawal ([[ten-plan-wrecking-mistakes]]).
 
-**3. Reading your own performance.** The "+9% a year over 5 years" on your statement is probably an arithmetic mean. The only honest number for your own use: (ending value / starting value)^(1/n) − 1, corrected for contributions (a good simulator computes IRR and CAGR properly on your real flows). Plenty of investors discover that their real compounded performance is 2 to 3 points below their impression. The difference goes to drag, to fees, and to badly timed contributions.
+**3. Reading your own performance.** The "+9% a year over 5 years" on your statement is probably an arithmetic mean. The only honest number for your own use: (ending value / starting value)^(1/n) − 1, corrected for contributions (a good simulator computes IRR and CAGR properly on your real flows). Plenty of investors discover that their real compounded performance is 2 to 3 points below their impression. The difference goes to drag, to fees, and to badly timed contributions, that last one worth 1.2 points a year on its own in Morningstar's Mind the Gap study, over the ten years ended in 2024.
 
 ## For the curious: why σ²/2 exactly
 
