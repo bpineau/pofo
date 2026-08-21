@@ -69,6 +69,36 @@
 // does not carry declares nothing. The design is
 // docs/fire-book-en-edition-design.md.
 //
+// # Adding a plate
+//
+// A figure is a Go function returning inline SVG, so adding one touches a
+// handful of files in a fixed order.
+//
+//  1. Write the plate in figures_<theme>.go: the closed model as pure
+//     functions (or the numbers read off pkg/datasets, frozen into arrays),
+//     then the renderer over them. The palette, the type primitives and the
+//     shared utilities are in figures_kit.go; the FORM itself is invented per
+//     plate and never factored out.
+//  2. Register the slug in the figures map of figures.go.
+//  3. Write the guard test in figures_<theme>_test.go: numbers taken from a
+//     dataset are recomputed under frozenAgainstData (they are allowed to lag
+//     a refresh, "make figure-drift" reports what they owe); a closed model is
+//     confronted with the numbers its article's prose quotes; and the rendered
+//     SVG is checked for the labels and readings the plate claims to draw.
+//  4. Insert "::: figure <slug>" plus a caption in the French article AND in
+//     its English counterpart, add a figureDict entry for every text node of
+//     the plate (in figures_i18n_data.go), and refresh the English article's
+//     source stamp so "make book-drift" stays clean.
+//  5. Check it: go test ./pkg/firebook, scripts/figure-audit.sh fr and en for
+//     labels running off the plate, and scripts/figure-shot.sh <slug> to look
+//     at the thing with your own eyes, which no test replaces.
+//
+// The hard rules, all of them enforced by tests somewhere: labels stay
+// horizontal, fills are opaque hex and never rgba (crengine, KOReader's EPUB
+// renderer, paints rgba solid black), no em- or en-dash anywhere, decimal
+// commas in French and points in English, and English money amounts convert
+// one for one (500 k EUR becomes $500k).
+//
 // EPUB(modified) assembles the whole book as a standard EPUB 3 file (via
 // pkg/epub, styled with the theme-neutral assets/book/epub.css): a title page,
 // one page per category with its articles nested beneath it in the table of
