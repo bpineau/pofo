@@ -71,13 +71,13 @@ returns, the fund's own real quotes included from its inception):
 
 | File | window | CAGR | volatility | max drawdown |
 |---|---|---|---|---|
-| DBMF | 1996-03-26 .. 2026-07-31 | 9.20 % | 11.9 % | -21.5 % |
-| DBMF UCITS USD | 1996-03-26 .. 2026-07-30 | 9.29 % | 11.9 % | -21.3 % |
-| DBMF UCITS EUR | 1996-03-26 .. 2026-08-03 | 9.55 % | 15.3 % | -29.2 % |
-| KMLM | 1996-03-26 .. 2026-07-31 | 9.88 % | 13.9 % | -31.0 % |
-| Simplify CTA | 1996-03-26 .. 2026-07-31 | 11.52 % | 19.4 % | -32.8 % |
-| AQR UCITS A | 1996-03-26 .. 2026-07-31 | 7.04 % | 9.0 % | -21.7 % |
-| AQR RAEF EUR | 1996-03-26 .. 2026-07-15 | 6.89 % | 9.2 % | -27.6 % |
+| DBMF | 1996-03-26 .. 2026-08-19 | 9.18 % | 12.4 % | -21.5 % |
+| DBMF UCITS USD | 1996-03-26 .. 2026-08-19 | 9.32 % | 12.5 % | -21.3 % |
+| DBMF UCITS EUR | 1996-03-26 .. 2026-08-19 | 9.61 % | 15.7 % | -29.2 % |
+| KMLM | 1996-03-26 .. 2026-08-19 | 9.83 % | 15.0 % | -31.0 % |
+| Simplify CTA | 1996-03-26 .. 2026-08-19 | 11.63 % | 20.1 % | -32.8 % |
+| AQR UCITS A | 1996-03-26 .. 2026-08-18 | 7.07 % | 9.4 % | -21.7 % |
+| AQR RAEF EUR | 1996-03-26 .. 2026-08-18 | 6.93 % | 9.6 % | -27.6 % |
 | RSST | 2000-01-03 .. 2026-07-31 | 10.11 % | 22.1 % | -48.8 % |
 | RSBT | 2000-01-03 .. 2026-07-31 | 5.45 % | 12.6 % | -26.3 % |
 | Winton | 2000-01-03 .. 2026-08-06 | 7.88 % | 19.3 % | -53.8 % |
@@ -236,18 +236,21 @@ carries the texture.
 Measured on the shipped files, annualized daily volatility over 1997-2006,
 against each fund's own volatility target:
 
-| File | target | before | after |
-|---|---|---|---|
-| DBMF, DBMF UCITS USD | 11.5 % | 11.9 % | **12.8 %** |
-| DBMF UCITS EUR | 11.5 % + FX | 14.6 % | **14.9 %** |
-| KMLM | 14 % | 14.5 % | **15.1 %** |
-| Simplify CTA | 16 % | 16.6 % | **22.9 %** |
-| AQR UCITS A | 9 % | 9.3 % | **9.4 %** |
+| File | target | before | after | with the texture rescaled |
+|---|---|---|---|---|
+| DBMF, DBMF UCITS USD | 11.5 % | 11.9 % | 12.8 % | **14.1 %** |
+| DBMF UCITS EUR | 11.5 % + FX | 14.6 % | 14.9 % | **16.0 %** |
+| KMLM | 14 % | 14.5 % | 15.1 % | **17.7 %** |
+| Simplify CTA | 16 % | 16.6 % | 22.9 % | **24.2 %** |
+| AQR UCITS A | 9 % | 9.3 % | 9.4 % | **10.3 %** |
 
 The "before" column is the previous reconstruction, which had no cadence problem
 because it was daily by construction; the point of the table is that replacing a
 decade of it with real NAVs left the daily texture where it was, and 31.9 % is
-what the same decade would have read without the projection.
+what the same decade would have read without the projection. The last column is
+the correction of the section below: the projection kept the donor's weeks and
+the ENGINE's days, and those days were an amplitude calibrated on nothing the
+donor had a say in.
 
 Simplify CTA is the exception in that column and its cause is not cadence, it is
 the index donor's own era (see the arbitration below). A donor is
@@ -268,6 +271,70 @@ compounds at 13.8 %/yr where its single-fund chain had 16.8 % and the pinned
 reconstruction 19.5 % (KMLM 18.6 against 19.5, Simplify CTA 16.6 against 20.7
 and 20.5, the AQR class 11.8 against 12.7). That is a real record, fees and all,
 in place of an information-ratio pin, and it is lower.
+
+### The projected days must carry the donor's own volatility (measured, 2026-08)
+
+The projection above keeps the donor's NAVs and takes everything between two of
+them from the engine. That leaves one quantity decided by nobody: HOW BIG the
+days in between are. A donor's weekly record says what its volatility is; the
+engine's daily amplitude is whatever the reconstruction it was built for
+happens to realize, and the two were never made to agree. Blended as they
+stood, the shipped donor era read 0.84 of the daily volatility its own weeks
+implied.
+
+The correction has no free parameter. The blend's daily variance splits into
+two pieces that do not interact, the anchors' own steps and the shape's
+deviations inside each interval (a deviation sums to zero over its interval, so
+the cross term is exactly zero), and only the second scales with the texture.
+Under the random walk a fund NAV approximates, a series carries the same
+variance at every frequency, so the donor's own weekly variance says what the
+daily variance has to be, and the factor that gets it there follows in closed
+form (`textureScale`). It is applied to the texture's log moves about their own
+mean (`retextured`), which multiplies the amplitude and leaves the total return,
+and therefore every NAV the blend passes through, exactly where it was.
+
+Graded out of sample, on the only objects a sparse donor is ever made of: four
+managed-futures funds whose REAL daily NAVs were subsampled to the Monday
+cadence the deepest donor dealt on before 2016, projected back onto the engine,
+and compared with the daily record that was hidden. Annualized daily volatility:
+
+| record subsampled to weekly | window | real | shipped blend | rescaled blend |
+|---|---|---|---|---|
+| Man AHL Diversified | 2017-2026 | 15.52 % | 12.79 % | **16.41 %** |
+| iMGP DBi (DBMF) | 2019-2026 | 12.35 % | 11.89 % | **11.12 %** |
+| KraneShares (KMLM) | 2021-2026 | 14.76 % | 12.51 % | **14.32 %** |
+| Simplify (CTA) | 2022-2026 | 17.19 % | 13.03 % | **17.24 %** |
+| mean absolute error | | | 15.2 % | **4.8 %** |
+
+The error is not only smaller, it is centred: the four signed errors average
+-15.2 % before and -1.7 % after. The tails follow the same way (worst single day
+on the AHL case -4.84 % against a real -6.15 %, and -6.20 % after; excess
+kurtosis 2.60, real 2.41, 2.37 after), and the maximum drawdown never moves
+more than half a point in any case, because a drawdown of this length is
+governed by the anchors, which are real.
+
+Two costs are worth stating. The daily correlation with the hidden record falls
+slightly, 0.513 to 0.492 averaged over the four cases, which is what adding
+amplitude to a texture that is right about half the time does; it is a statistic
+no consumer of these files reads, since real quotes are grafted from each fund's
+inception. And on a record with positively autocorrelated days the random-walk
+target overshoots by a few per cent, because a weekly record cannot reveal that
+autocorrelation. Both published composites are such records (their daily
+volatility annualizes to 0.95 of their weekly one, the twenty constituents'
+days being averaged), and the rescale would run them 12 % hot; neither is ever
+densified, both being published daily. On the fund NAVs that are, the overshoot
+is the safe direction: understating a sleeve's risk is the expensive error.
+
+What it moves in the shipped files: the donor era's daily volatility, by 8 to
+17 %, and nothing else. Every file's CAGR is unchanged to two decimals over its
+whole length and to three hundredths of a point over the donor era itself, every
+maximum drawdown is unchanged, every monthly volatility moves by under a tenth
+of a point, and every validation line against every fund's real quotes is
+identical to the digit, the texture reaching nowhere near a live window. A
+golden test now holds the invariant on all ten files
+(`pkg/datasets/golden/trendcadence_test.go`): over the 1996-1999 donor era, a
+file's daily volatility must annualize to within 10 % of its weekly one. The
+pre-2026-08 files read 0.84 to 0.89 and would have failed it.
 
 ### The index is the better donor for the funds that track it (measured, 2026-08)
 
@@ -963,9 +1030,14 @@ must preserve. Every one of these was learned by breaking it.
    load, performance fees only ever subtracted), then splice nearest-first with
    `ExtendBack`, which rescales the incoming segment to the junction level. A donor whose median spacing exceeds three calendar
    days is first projected onto the engine's daily calendar (`densify`, via
-   `anchorShape`): its NAVs are anchors, the engine is texture. NEVER splice
-   a weekly series raw into a daily file; per-observation statistics will
-   read the cadence as volatility (31.9 % measured where the truth was 12.5).
+   `anchorShape`): its NAVs are anchors, the engine is texture, and the
+   texture's amplitude is rescaled first (`textureScale`, `retextured`) so the
+   projected days carry the volatility the donor's own weeks imply. NEVER
+   splice a weekly series raw into a daily file; per-observation statistics
+   will read the cadence as volatility (31.9 % measured where the truth was
+   12.5). And never blend one in without the rescale either: the file then
+   reads whatever volatility the engine happened to have (0.84 of the truth,
+   measured).
    The chain is where the file STARTS: nothing is spliced behind the deepest
    donor. A donor is normally another fund's real NAVs; for the two funds whose
    programme replicates a published index, the nearest donor is that index
@@ -993,27 +1065,29 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
 
 ## Improvements worth attempting, ranked
 
-1. **Validate the engine's daily texture against a daily reference.** Both daily
-   composites are now bundled, and the engine's texture is still the one layer
-   with no external check at all. It carries less than it did: the weekly-dealing
-   donor's era now ends in 2000-01 rather than 2007-02, so the texture bridges
-   four years of NAVs instead of eleven. This remains the cheapest missing
-   validation in the file.
-2. **Repair the third NAV fallback.** The Morningstar timeseries endpoint
+1. **Repair the third NAV fallback.** The Morningstar timeseries endpoint
    currently answers empty for every id, which narrows donor hunting to two
    sources; if it revives, re-run the 1990s donor survey, the rejected
    candidates deserve a second look through a second source.
-3. **The EUR class's valuation convention** (a = 0.75 on the US session, ECB
+2. **The EUR class's valuation convention** (a = 0.75 on the US session, ECB
    fixing): measured, real, and under the adoption bar because it buys only
    +0.08 of a daily correlation nobody consumes. Revisit only if the daily
    texture of the pre-2025 EUR tail ever starts to matter.
-4. **A deeper REAL donor, which is now the only way any of these files grows.**
+3. **A deeper REAL donor, which is now the only way any of these files grows.**
    Length no longer comes from the engine, so the whole question is whether a
    1980s or early-1990s managed-futures NAV series exists that survives the
    grading applied to the current donors (a real programme, a sane drawdown, no
    restructuring artefacts, a documented fee load). The rejected candidates are
    listed in the survey; the SEC EDGAR route is the one that was never fully
    walked.
+
+The entry that used to head this list, "validate the engine's daily texture
+against a daily reference", is closed: the texture was graded against both daily
+composites and, more usefully, out of sample against four funds' real daily NAVs
+subsampled to a weekly cadence (the section above). The engine's own texture is
+sound (its daily volatility annualizes to 0.965 of its monthly one, against
+0.946 and 0.951 for the two published daily composites); what was wrong was that
+the projection shipped that texture at the wrong AMPLITUDE, and that is fixed.
 
 Three entries retired here rather than being solved: the pure-trend record the
 overlays needed was found (survey above), the unanchored fortnight at the start
@@ -1025,7 +1099,7 @@ One new entry is worth stating, since it is the cost of that answer:
 **a volatility match calibrated on a calm window and applied to a hot decade.**
 The Simplify CTA chain levers its index donor 1.55 times on a 2022-2026
 calibration and carries that constant back to 2000, where the same index ran
-half again as volatile; the file reads 22.9 % over 1997-2006 against a 16 %
+half again as volatile; the file reads 24.2 % over 1997-2006 against a 16 %
 target. A time-varying match (a rolling volatility ratio, or a match on the
 donor's own era) would fix it and would also let a donor's level drift, which is
 the reason `volMatch` uses a constant today. Whoever attempts it must show that

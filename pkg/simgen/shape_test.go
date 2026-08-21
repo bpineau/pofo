@@ -248,3 +248,111 @@ func TestDespikeKeepsRealCrashes(t *testing.T) {
 		t.Fatalf("a volatile-regime swing was eaten (kept %d of 60)", len(got))
 	}
 }
+
+// weekdays returns n consecutive weekday dates from the given day.
+func weekdays(y int, m time.Month, d, n int) []time.Time {
+	out := make([]time.Time, 0, n)
+	t := time.Date(y, m, d, 0, 0, 0, 0, time.UTC)
+	for len(out) < n {
+		if t.Weekday() != time.Saturday && t.Weekday() != time.Sunday {
+			out = append(out, t)
+		}
+		t = t.AddDate(0, 0, 1)
+	}
+	return out
+}
+
+// walk builds a base-100 series whose log returns are sd * a deterministic
+// pseudo-random sequence, one point per date.
+func walk(dates []time.Time, sd float64, seed uint64) *marketdata.Series {
+	s := &marketdata.Series{Symbol: "W", Name: "walk"}
+	v, x := 100.0, seed
+	for i, d := range dates {
+		if i > 0 {
+			x = x*6364136223846793005 + 1442695040888963407
+			u := float64(x>>11)/float64(uint64(1)<<53) - 0.5 // uniform on [-0.5, 0.5]
+			v *= math.Exp(sd * u * math.Sqrt(12))            // unit variance
+		}
+		s.Points = append(s.Points, marketdata.Point{Date: d, Close: v})
+	}
+	return s
+}
+
+// annVol is the annualized volatility of a series' log returns, at the given
+// number of observations per year.
+func annVol(s *marketdata.Series, perYear float64) float64 {
+	var rets []float64
+	for i := 1; i < len(s.Points); i++ {
+		rets = append(rets, math.Log(s.Points[i].Close/s.Points[i-1].Close))
+	}
+	return math.Sqrt(popVar(rets)) * math.Sqrt(perYear)
+}
+
+func TestRetexturedScalesAmplitudeNotDrift(t *testing.T) {
+	dates := weekdays(2000, 1, 3, 500)
+	shape := walk(dates, 0.006, 42)
+	got := retextured(shape, 2)
+
+	if a, b := annVol(got, 252), annVol(shape, 252); math.Abs(a/b-2) > 1e-9 {
+		t.Errorf("volatility ratio = %.6f, want 2 (%.4f vs %.4f)", a/b, a, b)
+	}
+	want := shape.Last().Close / shape.First().Close
+	if r := got.Last().Close / got.First().Close; math.Abs(r/want-1) > 1e-12 {
+		t.Errorf("total return = %.10f, want %.10f: rescaling must leave the drift alone", r, want)
+	}
+	if retextured(shape, 1) != shape {
+		t.Error("a unit factor must return the shape itself")
+	}
+}
+
+// A weekly donor and a daily texture are calibrated on nothing in common, so
+// the blend has to be told how much daily amplitude the donor's own weeks
+// imply. Without the rescale the output carries the texture's amplitude,
+// whatever that happens to be.
+func TestDensifyGivesTheTextureTheAnchorsVolatility(t *testing.T) {
+	dates := weekdays(2000, 1, 3, 780) // ~3 years
+	texture := walk(dates, 0.006, 7)   // ~9.5 %/yr: too calm for the donor
+
+	var mondays []time.Time
+	for _, d := range dates {
+		if d.Weekday() == time.Monday {
+			mondays = append(mondays, d)
+		}
+	}
+	donor := walk(mondays, 0.02, 99) // ~14.4 %/yr at the weekly frequency
+
+	want := annVol(donor, 52)
+	if got := densify(donor, texture, time.Time{}); math.Abs(annVol(got, 252)/want-1) > 0.05 {
+		t.Errorf("densified daily volatility = %.4f, want the donor's own %.4f within 5%%",
+			annVol(got, 252), want)
+	}
+	// The unscaled blend is the behaviour this replaced: it ships the
+	// texture's amplitude, which here is less than half the donor's.
+	if got := shapedSeries(donor, texture); annVol(got, 252) > 0.85*want {
+		t.Errorf("unscaled blend = %.4f, expected it to fall far short of %.4f",
+			annVol(got, 252), want)
+	}
+}
+
+func TestTextureScaleDegenerate(t *testing.T) {
+	dates := weekdays(2000, 1, 3, 60)
+	shape := walk(dates, 0.006, 3)
+	if k := textureScale(shape.Points[:2], shape.Points); k != 1 {
+		t.Errorf("two anchors: %v, want 1", k)
+	}
+	// One shape step per anchor leaves no room for a texture at all.
+	if k := textureScale(shape.Points, shape.Points); k != 1 {
+		t.Errorf("daily anchors: %v, want 1", k)
+	}
+	// A texture far hotter than the anchors is clamped rather than crushed.
+	var mondays []marketdata.Point
+	for _, p := range shape.Points {
+		if p.Date.Weekday() == time.Monday {
+			mondays = append(mondays, p)
+		}
+	}
+	hot := walk(dates, 0.20, 5)
+	if k := textureScale(mondays, hot.Points); k != textureScaleMin {
+		t.Errorf("hot texture: %v, want the floor %v", k, textureScaleMin)
+	}
+}
