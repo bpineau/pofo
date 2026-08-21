@@ -12,8 +12,6 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Anarkulova-Cederburg** : les travaux qui recalculent le taux de retrait sur le siècle des pays développés (38 pays). Le 4 % rigide y échoue ~17 % du temps. La borne prudente moderne. [[anarkulova-cederburg]]
 
-**Annuité / rente viagère** : un capital converti en revenu payé tant qu'on vit. L'assurance-longévité, dont le rendement propre vient des crédits de mortalité. [[rentes-et-annuites]]
-
 **Assiette PUMa** : les revenus du capital soumis à la cotisation subsidiaire maladie du rentier sans activité. [[taxe-puma]]
 
 **Backwardation / contango** : les deux pentes possibles d'une courbe de contrats à terme. Rouler ses positions rapporte en backwardation (les échéances lointaines cotent sous le spot) et coûte en contango, ce qui condamne les trackers matières premières naïfs. [[global-macro]]
@@ -49,7 +47,7 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Corrélation actions-obligations** : le paramètre instable central de l'allocation. Négative en régime désinflationniste (l'amortisseur), positive en régime d'inflation (2022). [[obligations-en-retrait]]
 
-**Crédits de mortalité** : la part des rentes financée par les décès des autres assurés. Ils croissent avec l'âge. La raison d'annuitiser tard. [[rentes-et-annuites]]
+**Crédits de mortalité** : la part des rentes financée par les décès des autres assurés. Ils croissent avec l'âge. La raison de passer en rente tard. [[rentes-et-annuites]]
 
 **CSM (cotisation subsidiaire maladie)** : le vrai nom de la taxe PUMa. Elle vaut ~6,5 % des revenus du capital du rentier sans activité, au-delà d'une franchise. [[taxe-puma]]
 
@@ -150,6 +148,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 **Régimes de marché** : les saisons persistantes croisant croissance et inflation. Le 60/40 n'en couvre que deux. La stagflation est le cauchemar du rentier. [[regimes-de-marche]]
 
 **Règle CAPE** : taux de retrait = a + b × (1/CAPE) sur le portefeuille courant. Le pourcentage devenu conscient des valorisations. Auto-lissé par sa double contracyclicité. [[regles-cape]]
+
+**Rente viagère (annuity)** : un capital converti en revenu payé tant qu'on vit. L'assurance-longévité, dont le rendement propre vient des crédits de mortalité. Rien à voir avec l'annuité d'un prêt. [[rentes-et-annuites]]
 
 **Répression financière** : maintenir les taux servis à l'épargne sous l'inflation pendant des années. La sortie de dette historiquement préférée des États. Le régime qui érode sans alarme. [[inflation-histoire]]
 
