@@ -156,6 +156,7 @@ var CategoriesEN = []Category{
 			{Slug: "when-to-worry", Title: "When to worry, and when to let it ride", Blurb: "The current rate as the main warning light, sorting noise from signal, ruin that gives years of notice, and the five-step playbook.", Source: "quand-s-inquieter"},
 			{Slug: "bear-markets-in-retirement", Title: "Riding out a bear market in retirement: the playbook", Blurb: "Three bear markets, week 1 of doing nothing on purpose, the mechanical moves at the bottom (tax-loss harvesting among them), the never-dos, and the exit.", Source: "marche-baissier-en-retraite"},
 			{Slug: "pensions-and-other-income", Title: "Pensions and other income in the plan", Blurb: "Three categories, three treatments: the four things a flow does to a plan, the exact entries in the simulator, and the test for the over-backed plan.", Source: "revenus-complementaires"},
+			{Slug: "spending-in-retirement", Title: "Real spending in retirement (the retirement smile, Die With Zero)", Blurb: "Blanchett's smile, dated time buckets, front-loading an early retirement on purpose, and engineering a budget in dated tiers.", Source: "depenses-en-retraite"},
 		},
 	},
 	{
