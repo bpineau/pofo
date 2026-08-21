@@ -66,8 +66,8 @@ func impMeasure(t *testing.T) (shares []float64, decade, wealthDecade float64) {
 		Capital: impCapital, NeedAnnual: impCapital * impRule, Years: impYears,
 		Source: scenario.ParametricSource{Mu: mu, Sigma: sigma, Df: df, Periods: impYears},
 	}
-	seqs := plan.DrawPaths(impPaths, impWorkers, impSeed)
-	e := plan.SimulateOn(seqs, impWorkers)
+	draws := plan.Draw(impPaths, impWorkers, impSeed)
+	e := plan.SimulateOn(draws, impWorkers)
 
 	ruin := make([]float64, len(e.Paths))
 	logWealth := make([]float64, len(e.Paths))
@@ -81,8 +81,8 @@ func impMeasure(t *testing.T) (shares []float64, decade, wealthDecade float64) {
 		}
 		logWealth[i] = math.Log(math.Max(p.Wealth[len(p.Wealth)-1], floor))
 	}
-	shares, decade = impProfile(seqs, ruin)
-	_, wealthDecade = impProfile(seqs, logWealth)
+	shares, decade = impProfile(draws.Returns, ruin)
+	_, wealthDecade = impProfile(draws.Returns, logWealth)
 	return shares, decade, wealthDecade
 }
 

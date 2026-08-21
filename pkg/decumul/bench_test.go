@@ -35,7 +35,7 @@ func BenchmarkRunPath(b *testing.B) {
 	seq := p.Source.Draw(rng)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = p.RunPath(seq)
+		_ = p.RunPath(seq, Lives{})
 	}
 }
 
@@ -69,11 +69,11 @@ func BenchmarkSweepRedraw(b *testing.B) {
 func BenchmarkSweepShared(b *testing.B) {
 	base := benchPlan()
 	for i := 0; i < b.N; i++ {
-		seqs := base.DrawPaths(1000, 8, 7)
+		draws := base.Draw(1000, 8, 7)
 		for _, wr := range sweepWRs {
 			p := base
 			p.NeedAnnual = wr * base.Capital
-			_ = p.SimulateOn(seqs, 8).RuinProb()
+			_ = p.SimulateOn(draws, 8).RuinProb()
 		}
 	}
 }
@@ -94,6 +94,6 @@ func BenchmarkRunPathAmortize(b *testing.B) {
 	seq := p.Source.Draw(rng)
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_ = p.RunPath(seq)
+		_ = p.RunPath(seq, Lives{})
 	}
 }

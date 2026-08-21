@@ -11,7 +11,7 @@ import (
 // delivered each year: 25k for four years, then nothing.
 func TestRunPathRuinYearAndSpend(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0}, Lives{})
 	if !res.Ruined {
 		t.Fatalf("expected ruin")
 	}
@@ -32,7 +32,7 @@ func TestRunPathRuinYearAndSpend(t *testing.T) {
 // A surviving path keeps RuinYear at -1 and delivers the full need every year.
 func TestRunPathNoRuinYear(t *testing.T) {
 	p := Plan{Capital: 1_000_000, NeedAnnual: 20000, Years: 3, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0.05, 0.05, 0.05})
+	res := p.RunPath(scenario.Sequence{0.05, 0.05, 0.05}, Lives{})
 	if res.Ruined {
 		t.Fatalf("did not expect ruin")
 	}
@@ -51,7 +51,7 @@ func TestRunPathNoRuinYear(t *testing.T) {
 func TestRunPathSpendReflectsFlexCut(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		Flex: FlexRule{Threshold: 0.20, Cut: 0.25}, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{-0.5, 0, 0})
+	res := p.RunPath(scenario.Sequence{-0.5, 0, 0}, Lives{})
 	// Year 0: no drawdown yet, full 4000. Year 1: ~52% drawdown, cut to 3000.
 	if math.Abs(res.Spend[0]-4000) > 1e-6 {
 		t.Errorf("Spend[0] = %.0f, want 4000", res.Spend[0])
@@ -65,7 +65,7 @@ func TestRunPathSpendReflectsFlexCut(t *testing.T) {
 // spend and records the ruin year at annual granularity.
 func TestRunPathMonthlyRuinYearAndSpend(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPathMonthly(zeros(5 * 12))
+	res := p.RunPathMonthly(zeros(5*12), Lives{})
 	if !res.Ruined {
 		t.Fatalf("expected ruin")
 	}

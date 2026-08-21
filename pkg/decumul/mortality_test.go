@@ -105,7 +105,7 @@ func TestRuinYearHistogram(t *testing.T) {
 func TestRunPathCutAccounting(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 4,
 		Flex: FlexRule{Threshold: 0.20, Cut: 0.25}, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{-0.5, 0, 1.2, 0})
+	res := p.RunPath(scenario.Sequence{-0.5, 0, 1.2, 0}, Lives{})
 	// Year 0 full spend; years 1 and 2 in deep drawdown (cut); year 3 back
 	// above the -20% drawdown line after the +120% year.
 	if res.FirstCut != 1 {
@@ -116,7 +116,7 @@ func TestRunPathCutAccounting(t *testing.T) {
 	}
 
 	nocut := Plan{Capital: 100000, NeedAnnual: 4000, Years: 2, Tax: CTOFlatTax{Rate: 0}}
-	if r := nocut.RunPath(scenario.Sequence{0, 0}); r.FirstCut != -1 || r.CutYears != 0 {
+	if r := nocut.RunPath(scenario.Sequence{0, 0}, Lives{}); r.FirstCut != -1 || r.CutYears != 0 {
 		t.Errorf("FirstCut = %d CutYears = %d, want -1 and 0 without a flex rule", r.FirstCut, r.CutYears)
 	}
 }

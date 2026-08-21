@@ -14,7 +14,7 @@ func zeros(n int) scenario.Sequence { return make(scenario.Sequence, n) }
 // deplete the capital on the same schedule as the annual kernel.
 func TestRunPathMonthlyDepletion(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPathMonthly(zeros(5 * 12))
+	res := p.RunPathMonthly(zeros(5*12), Lives{})
 	if !res.Ruined {
 		t.Errorf("expected ruin: 100k - 5*25k < 0")
 	}
@@ -31,7 +31,7 @@ func TestRunPathMonthlyDepletion(t *testing.T) {
 func TestRunPathMonthlyGrowthCompounding(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 0, Years: 1, Tax: CTOFlatTax{Rate: 0}}
 	seq := scenario.Sequence{0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01}
-	res := p.RunPathMonthly(seq)
+	res := p.RunPathMonthly(seq, Lives{})
 	want := 100000 * math.Pow(1.01, 12)
 	if math.Abs(res.Wealth[1]-want) > 1e-6 {
 		t.Errorf("Wealth[1] = %.2f, want %.2f", res.Wealth[1], want)
@@ -51,7 +51,7 @@ func TestRunPathMonthlyBufferCompounding(t *testing.T) {
 		Buffer:    BufferSleeve{Years: 100, RealReturn: 0.1268},
 		Tax:       CTOFlatTax{Rate: 0},
 	}
-	res := p.RunPathMonthly(zeros(12))
+	res := p.RunPathMonthly(zeros(12), Lives{})
 	want := 100000 * 1.1268
 	if math.Abs(res.Wealth[1]-want) > 1e-6 {
 		t.Errorf("Wealth[1] = %.2f, want %.2f (annual buffer return applied monthly)", res.Wealth[1], want)
@@ -65,7 +65,7 @@ func TestRunPathMonthlySurvives(t *testing.T) {
 	for i := range seq {
 		seq[i] = 0.004 // ~4.9%/yr
 	}
-	res := p.RunPathMonthly(seq)
+	res := p.RunPathMonthly(seq, Lives{})
 	if res.Ruined {
 		t.Errorf("did not expect ruin")
 	}
@@ -99,10 +99,10 @@ func TestRunPathMonthlyGuardrails(t *testing.T) {
 	for i := 0; i < 12; i++ {
 		seq[i] = -0.03 // a deep first year pushes the withdrawal rate up
 	}
-	fixed := base.RunPathMonthly(seq)
+	fixed := base.RunPathMonthly(seq, Lives{})
 	guarded := base
 	guarded.Guard = Guardrails{Upper: 0.06, Lower: 0.03, Cut: 0.10, Raise: 0.10}
-	got := guarded.RunPathMonthly(seq)
+	got := guarded.RunPathMonthly(seq, Lives{})
 	if !(got.Withdrawn < fixed.Withdrawn) {
 		t.Errorf("monthly guardrails should cut spending after the drop: guarded=%.0f fixed=%.0f", got.Withdrawn, fixed.Withdrawn)
 	}
@@ -114,7 +114,7 @@ func TestRunPathMonthlyCashflowYearValued(t *testing.T) {
 	p := Plan{Capital: 500000, NeedAnnual: 24000, Years: 3,
 		Cashflows: []Cashflow{{FromYear: 2, Annual: 12000}}, Tax: CTOFlatTax{Rate: 0}}
 	// Year 0 and 1 withdraw 2000/mo; year 2 withdraws (24000-12000)/12 = 1000/mo.
-	res := p.RunPathMonthly(zeros(36))
+	res := p.RunPathMonthly(zeros(36), Lives{})
 	wantWithdrawn := 2*24000.0 + 1*12000.0
 	if math.Abs(res.Withdrawn-wantWithdrawn) > 1e-6 {
 		t.Errorf("Withdrawn = %.0f, want %.0f", res.Withdrawn, wantWithdrawn)

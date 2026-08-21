@@ -19,7 +19,7 @@ import (
 //	source: scenario.PooledBootstrap of the bundled Jorda-Schularick-Taylor
 //	      per-country real returns blended 60/40 within each country,
 //	      mean block 10 years,
-//	draw: 200 000 paths, seed 1, 8 workers (DrawPaths splits the sampling per
+//	draw: 200 000 paths, seed 1, 8 workers (Draw splits the sampling per
 //	      worker, so the worker count is part of the reproduction recipe).
 //
 // Mortality is decumul.FrenchMortality (Gompertz, modal age 88, dispersion

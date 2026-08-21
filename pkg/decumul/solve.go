@@ -56,7 +56,7 @@ func FlexCutAxis(lo, hi float64) SolveAxis {
 // least needed to reach it (e.g. the required capital, or the downturn cut that
 // brings ruin down to target).
 func (p Plan) Solve(target float64, axis SolveAxis, nPaths, workers int, seed uint64) float64 {
-	shared := p.DrawPaths(nPaths, workers, seed)
+	shared := p.Draw(nPaths, workers, seed)
 	lo, hi := axis.Lo, axis.Hi
 	for range solveSteps {
 		mid := (lo + hi) / 2

@@ -11,10 +11,42 @@ import (
 // sold from the portfolio. A zero ToYear runs to the horizon, so a lifelong
 // pension leaves it unset while a temporary rental/activity income bounds it.
 // Cashflows are modelled as income, not as an asset.
+//
+// Owner and Reversion only matter once the plan draws lifetimes (see
+// Lifetime); their zero values are exactly the historical behaviour, an income
+// the whole household receives for as long as it exists.
 type Cashflow struct {
 	FromYear int
 	ToYear   int // exclusive end; 0 = to the horizon
 	Annual   float64
+	// Owner names the life the flow depends on. The zero value, Household,
+	// pays while anyone is alive.
+	Owner Owner
+	// Reversion is the share of Annual that keeps being paid to the SURVIVOR
+	// after Owner's death: 0 stops the flow outright, 0.54 is the order of a
+	// French pension reversion. Ignored for a Household flow, and moot when
+	// there is nobody left to revert to.
+	Reversion float64
+}
+
+// paidAt is the flow's amount in a given year, after its owner's death and
+// the reversion. Without a drawn lifetime every member is alive throughout, so
+// this is the plain date test.
+func (c Cashflow) paidAt(year int, l life) float64 {
+	if year < c.FromYear || (c.ToYear != 0 && year >= c.ToYear) {
+		return 0
+	}
+	switch c.Owner {
+	case Self, Partner:
+		switch {
+		case l.alive(c.Owner, year):
+			return c.Annual
+		case l.alive(c.Owner.other(), year):
+			return c.Annual * c.Reversion
+		}
+		return 0
+	}
+	return c.Annual
 }
 
 // BufferSleeve is a low-volatility cash or inflation-linked pocket sized at
@@ -270,6 +302,29 @@ type Plan struct {
 	// Monthly steps the kernel monthly (RunPathMonthly) instead of annually;
 	// the Source must then yield monthly returns (Years*12 per path).
 	Monthly bool
+	// Lifetime, when set, draws the household's lifespan inside every path
+	// instead of running Years for certain: ruin becomes broke-while-alive,
+	// the wealth left at death becomes a first-class output, and an Annuity
+	// realises real mortality credits. nil keeps the fixed horizon, which is
+	// the special case where the household is certain to reach the end.
+	Lifetime *Lifetime
+	// Annuity optionally converts part of the portfolio into a lifelong real
+	// income at a chosen date. It needs a Lifetime and is ignored without one.
+	Annuity *Annuity
+	// PlanHorizon is the horizon the amortization rule (ABW/TPAW) plans over;
+	// 0 means Years. The two differ only under a Lifetime, where Years must
+	// run past any plausible age so the longevity tail is not truncated, while
+	// the household still amortizes over the horizon it actually plans for.
+	// The drawn lifespan is never visible to a spending rule.
+	PlanHorizon int
+}
+
+// planYears is the horizon the spending rules plan over.
+func (p Plan) planYears() int {
+	if p.PlanHorizon > 0 {
+		return p.PlanHorizon
+	}
+	return p.Years
 }
 
 // runPath dispatches to the monthly or the annual kernel; Simulate and the
@@ -277,11 +332,11 @@ type Plan struct {
 // annual RunPath stays the validated reference (and its golden tests). The
 // wealth-based rules (VPW, ABW, bounded %) are yearly rebalancing decisions
 // and always run on the annual kernel.
-func (p Plan) runPath(seq scenario.Sequence) PathResult {
+func (p Plan) runPath(seq scenario.Sequence, lives Lives) PathResult {
 	if p.Monthly && p.Percent <= 0 && !p.Amortize && !p.Bounded.active() {
-		return p.RunPathMonthly(seq)
+		return p.RunPathMonthly(seq, lives)
 	}
-	return p.RunPath(seq)
+	return p.RunPath(seq, lives)
 }
 
 // RiskGuardrails is the risk-based guardrail (Kitces & Tharp, industrialised
@@ -413,8 +468,11 @@ func pmt(wealth, r float64, n int) float64 {
 }
 
 // needAt is the scheduled net spending in a given year: the base need scaled
-// by the spend schedule, minus active cashflows, floored at 0.
-func (p Plan) needAt(year int) float64 { return p.netOf(p.NeedAnnual*p.schedAt(year), year) }
+// by the spend schedule and by any survivor adjustment, minus the income
+// active that year, floored at 0.
+func (p Plan) needAt(year int, l life) float64 {
+	return p.netOf(p.NeedAnnual*p.schedAt(year)*l.spendFactor(year), year, l)
+}
 
 // schedAt is the spending multiplier for a year: SpendSchedule[year] when
 // present, 1 otherwise.
@@ -426,11 +484,15 @@ func (p Plan) schedAt(year int) float64 {
 }
 
 // cashflowPV is the present value, discounted at r to year from, of every
-// cashflow between from (inclusive) and the horizon. The amortization rule
-// adds it to the portfolio's liquidation value so a future pension raises
+// income between from (inclusive) and the planning horizon. The amortization
+// rule adds it to the portfolio's liquidation value so a future pension raises
 // today's sustainable budget, the TPAW treatment of retirement income.
-func (p Plan) cashflowPV(from int, r float64) float64 {
-	if len(p.Cashflows) == 0 {
+//
+// This is the HOUSEHOLD's forecast, so it uses the full flows and the annuity
+// as bought, never the drawn deaths: a rule that discounted the mortality it
+// was dealt would be planning with knowledge no retiree has.
+func (p Plan) cashflowPV(from int, r float64, l life) float64 {
+	if len(p.Cashflows) == 0 && l.annuity == 0 {
 		return 0 // no income to discount; skip the whole horizon scan
 	}
 	// The discount factor is (1+r)^-(j-from): it starts at 1 for j==from and is
@@ -439,8 +501,8 @@ func (p Plan) cashflowPV(from int, r float64) float64 {
 	// once per simulated year, making the naive form quadratic in the horizon
 	// and math.Pow its dominant cost.
 	pv, disc, inv := 0.0, 1.0, 1/(1+r)
-	for j := from; j < p.Years; j++ {
-		cf := 0.0
+	for j := from; j < p.planYears(); j++ {
+		cf := l.annuityPlanned(j)
 		for _, c := range p.Cashflows {
 			if j >= c.FromYear && (c.ToYear == 0 || j < c.ToYear) {
 				cf += c.Annual
@@ -454,17 +516,23 @@ func (p Plan) cashflowPV(from int, r float64) float64 {
 	return pv
 }
 
-// netOf reduces a gross annual spend by the cashflows active in the year,
-// floored at 0. It lets the guardrails rule feed a dynamic spending level
-// through the same cashflow netting as the fixed NeedAnnual.
-func (p Plan) netOf(spend float64, year int) float64 {
-	for _, c := range p.Cashflows {
-		if year >= c.FromYear && (c.ToYear == 0 || year < c.ToYear) {
-			spend -= c.Annual
-		}
-	}
-	if spend < 0 {
+// netOf reduces a gross annual spend by the income active in the year (the
+// cashflows each member still receives, plus any annuity), floored at 0. It
+// lets every spending rule feed a dynamic level through the same netting as
+// the fixed NeedAnnual.
+func (p Plan) netOf(spend float64, year int, l life) float64 {
+	if spend -= p.income(year, l); spend < 0 {
 		return 0
 	}
 	return spend
+}
+
+// income is the year's income from outside the portfolio: the cashflows each
+// member still receives, after any reversion, plus the annuity.
+func (p Plan) income(year int, l life) float64 {
+	sum := l.annuityAt(year)
+	for _, c := range p.Cashflows {
+		sum += c.paidAt(year, l)
+	}
+	return sum
 }

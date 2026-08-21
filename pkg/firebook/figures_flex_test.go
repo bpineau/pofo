@@ -32,7 +32,7 @@ func coupeSurvives(seq scenario.Sequence, spend float64, dur int, d float64) boo
 		Capital: coupeCapital, NeedAnnual: spend, Years: coupeYears,
 		SpendSchedule: coupeSchedule(dur, d),
 	}
-	return !p.RunPath(seq).Ruined
+	return !p.RunPath(seq, decumul.Lives{}).Ruined
 }
 
 // coupeMinDepth is the plate's solver: the shallowest cut that survives the
@@ -146,7 +146,7 @@ func TestCoupeImpossibleDurations(t *testing.T) {
 func TestCoupeTriggerFollowsTheWrittenRule(t *testing.T) {
 	seq := coupeSequence(t)
 	p := decumul.Plan{Capital: coupeCapital, NeedAnnual: coupeSpend45, Years: coupeYears}
-	w := p.RunPath(seq).Wealth
+	w := p.RunPath(seq, decumul.Lives{}).Wealth
 	peak, fired := w[0], -1
 	for i := 1; i < len(w) && fired < 0; i++ {
 		peak = math.Max(peak, w[i])
@@ -173,7 +173,7 @@ func TestCoupeTriggerFollowsTheWrittenRule(t *testing.T) {
 				s[i] = 1 - d
 			}
 			q := decumul.Plan{Capital: coupeCapital, NeedAnnual: coupeSpend45, Years: coupeYears, SpendSchedule: s}
-			return !q.RunPath(seq).Ruined
+			return !q.RunPath(seq, decumul.Lives{}).Ruined
 		}
 		lo, hi := 0.0, 1.0
 		if !alt(10, 1) {

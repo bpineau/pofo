@@ -65,7 +65,7 @@ func sampleByTerminal(paths []PathResult, n int) []SamplePath {
 	for i := range order {
 		order[i] = i
 	}
-	terminal := func(p PathResult) float64 { return p.Wealth[len(p.Wealth)-1] }
+	terminal := func(p PathResult) float64 { return p.Wealth[p.end()] }
 	sort.Slice(order, func(a, b int) bool { return terminal(paths[order[a]]) < terminal(paths[order[b]]) })
 
 	if n > len(order) {

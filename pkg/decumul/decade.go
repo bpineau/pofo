@@ -45,7 +45,7 @@ func (e Ensemble) DecadeBuckets(n int) []DecadeBucket {
 			if p.Ruined {
 				ruined++
 			}
-			terminals = append(terminals, p.Wealth[len(p.Wealth)-1])
+			terminals = append(terminals, p.Wealth[p.end()])
 		}
 		out = append(out, DecadeBucket{
 			LoRet:       e.Paths[idx[lo]].Ret10,

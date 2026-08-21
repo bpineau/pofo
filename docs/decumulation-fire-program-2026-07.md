@@ -43,8 +43,22 @@ added, so nobody re-proposes them:
 - The model strip as selector, hover/crosshair + keyboard + table view on
   every chart, in-product mechanics explanations.
 
+- Stochastic lifetime (2026-08-22). `Plan.Lifetime` draws the household's
+  lifespan inside every path, so ruin is broke-WHILE-ALIVE counted rather
+  than weighted, the estate at death is a first-class output, couples
+  carry a survivor budget and a per-cashflow reversion, and `Plan.Annuity`
+  realises real mortality credits. It is opt-in and moved no golden. The
+  design, its calibration and its deferrals are
+  `docs/stochastic-lifetime-kernel-design.md`.
+
 ## Open
 
+- Wire the lifecycle view and the annuity toggle in `pkg/decumul/web` to the
+  exact kernel: `LifeStates` in place of `LifeCurve`, the estate distribution
+  as its own panel, and the annuity as a `Plan.Annuity` rather than a
+  hand-built cashflow. The kernel is complete without it; this is UI work
+  (layout, copy, the horizon-versus-planning-horizon control) and it was kept
+  out of the kernel pass on purpose.
 - CAPE-conditioned spending rule (WR = a + b/CAPE): needs a per-path
   valuation model, which no scenario source simulates today; its
   planning-time content is already covered by the CAPE anchor feeding

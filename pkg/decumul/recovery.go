@@ -18,7 +18,7 @@ func (e Ensemble) RecoveryTimeDistribution() []RecoveryBucket {
 	counts := map[int]int{}
 	total := 0
 	for _, p := range e.Paths {
-		for _, spell := range underwaterSpells(p.Wealth) {
+		for _, spell := range underwaterSpells(p.Wealth[:p.end()+1]) {
 			counts[spell]++
 			total++
 		}

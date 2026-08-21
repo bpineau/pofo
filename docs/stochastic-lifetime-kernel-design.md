@@ -166,6 +166,10 @@ longer-lived than the INSEE period table. Pricing on the household's own law
 and calling the difference "load" conflates two effects that move
 differently with age. One optional field keeps them separable.
 
+An `Annuity` needs a `Lifetime` and is ignored without one: it has no price
+without an age and nothing to insure without a drawn lifespan. The pairing is
+obvious enough that it is stated rather than enforced.
+
 ### 3.4 Draws, and why `SimulateOn` changed shape
 
 A stochastic-lifetime plan has two independent sources of randomness. The
@@ -249,8 +253,17 @@ func (e Ensemble) Estates() []float64
 `LifeOutcome` carries the alive-ruin probability, the median lived years and
 the censored share, the broke-years distribution (mean and p95 of years lived
 after running out), the estate distribution (p5/p50/p90 plus the share
-leaving nothing) and the lifetime income (mean delivered real income per
-lived year and its coefficient of variation).
+leaving nothing) and the mean lifetime income.
+
+That income figure is the TOTAL, portfolio withdrawals plus the pensions and
+annuity received, and it has to be. `PathResult.Spend` records only what the
+portfolio delivered, since income is netted off the budget before anything is
+sold; reading it alone would show an annuitised household's income collapsing
+by exactly the amount the insurer started paying it. `PathResult.Received`
+was added to carry the other half. The spending VOLATILITY stays on
+`SpendCV`/`SpendBands`, where it belongs: a pension and a real annuity do not
+move, so all of the swing is in the portfolio-funded part those already
+measure.
 
 `LifeStates` is the exact counterpart of `LifeCurve`: the same
 `[]LifePoint` shape, counted from the drawn deaths instead of weighted by a
@@ -337,19 +350,34 @@ same ruin years, same spending. Not a tolerance, an equality.
 **The weighting and the kernel agree on alive-ruin.** On a plan with no
 annuity, no survivor adjustment and household income, the posterior weighting
 `mean_paths S(RuinYear)` and the kernel's counted `RuinAlive` estimate the
-same quantity. At 20 000 paths the Monte-Carlo standard error on a ~10 %
-probability is about 0.2 pt, so the test asserts agreement within 1.0 pt (five
-sigma), and the measured gap is well inside it. This is the anchor that says
-the new kernel did not silently change the meaning of ruin.
+same quantity. Measured on a couple retiring at 60 on a million at 45 k a
+year, 30 000 paths, over a 55-year horizon: the fixed-horizon headline is
+**88.9 %**, the survival weighting says **51.3 %** and the kernel counts
+**51.1 %**, a gap of **0.15 pt**. The paired Monte-Carlo standard error is
+about 0.29 pt, so the test asserts 1.0 pt (over three sigma). Curve by curve,
+`LifeStates` and `LifeCurve` never differ by more than **0.6 pt** on the dead
+share and **0.2 pt** on the broke share. This is the anchor that says the new
+kernel did not silently change the meaning of ruin, and the 88.9-versus-51
+gap is the measure of how much the fixed horizon was overstating.
 
 **Money back at zero rate and zero load.** An annuity priced at a 0 % real
 rate with no insurer margin is a pure redistribution across the group: the
-expected total income it pays must equal the premium. The test runs the
-annuity through the kernel and compares `mean(Annuity)` to `mean(Premium)`,
-within 2 %. It is the identity that proves the mortality credit is really
-being realised (early deaths funding late ones) rather than approximated, and
-it fails immediately if the draw convention and the pricing convention
-disagree by a single year.
+expected total income it pays must equal the premium. Measured through the
+kernel on 50 000 paths, a 500 000 premium pays back **500 888**, a ratio of
+**1.0018**; the test asserts 2 %. It is the identity that proves the mortality
+credit is really being realised (early deaths funding late ones) rather than
+approximated, and it fails immediately if the draw convention and the pricing
+convention disagree by a single year.
+
+**And the trade-off itself is now measurable**, which was the point. On a
+couple retiring at 65 on a million at 42 k a year, converting half the
+portfolio into an actuarially fair joint annuity moves the alive-ruin from
+**24.4 % to 12.1 %** and the median estate from **460 k to 367 k**: the
+insurance is bought, and the bequest pays for it. Price it realistically
+instead, a third at 75 on an annuitant table with a 10 % load, and it pays
+3.6 % where the plan withdraws 4.2 %, so both readings get worse. Neither
+result was reachable under a fixed horizon, where the 2026-07 sweep found the
+two readings moving together at every age and rate.
 
 `make golden` must not move: no golden plan carries a `Lifetime`, and the
 draw stream for returns is unchanged.

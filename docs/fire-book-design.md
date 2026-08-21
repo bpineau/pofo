@@ -82,7 +82,7 @@ plate itself rather than passed off as measurement: the link thickness of
 season attribution of `tous-temps-saisons`. Two traps cost a round trip each
 and are worth knowing: a raw ampersand in SVG text breaks the EPUB XHTML guard
 (write `S&amp;amp;P`), and a Monte Carlo recipe must freeze its worker count,
-since DrawPaths splits per worker and NumCPU makes a plate machine-dependent.
+since Draw splits per worker and NumCPU makes a plate machine-dependent.
 
 Second wave 2026-07-31: eleven more plates and ten reference tables. The
 tables come from the backlog ideas costed C ("a table beats a drawing") and
