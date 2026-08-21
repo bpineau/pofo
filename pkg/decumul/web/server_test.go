@@ -232,3 +232,36 @@ func TestBeaconTokenOption(t *testing.T) {
 		}
 	}
 }
+
+// Embedded marks a mount as an inner app under a larger site: the page and
+// its API stay, the book mounts and the site files disappear, so a crawler
+// wandering under the mount cannot find a republished book or a second
+// sitemap.
+func TestEmbeddedOption(t *testing.T) {
+	h := Handler(nil, nil, Embedded())
+	for _, path := range []string{"/", "/api/meta"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK {
+			t.Errorf("embedded %s: status %d, want 200", path, rec.Code)
+		}
+	}
+	for _, path := range []string{"/firebook/fr/", "/firebook/en/",
+		"/firebook/fr/les-maths-du-4-pourcent", "/sitemap.xml", "/robots.txt",
+		"/llms.txt"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusNotFound {
+			t.Errorf("embedded %s: status %d, want 404", path, rec.Code)
+		}
+	}
+	// The default handler is a site and keeps all of it.
+	full := Handler(nil, nil)
+	for _, path := range []string{"/firebook/fr/", "/sitemap.xml"} {
+		rec := httptest.NewRecorder()
+		full.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK {
+			t.Errorf("standalone %s: status %d, want 200", path, rec.Code)
+		}
+	}
+}
