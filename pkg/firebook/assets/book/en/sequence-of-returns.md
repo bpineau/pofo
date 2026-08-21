@@ -1,5 +1,5 @@
 # Sequence of returns risk: the retiree's real enemy
-<!-- source: sequence-des-rendements @ f9199a52c13b -->
+<!-- source: sequence-des-rendements @ 63e0285d7fdc -->
 
 Two retirees start with the same million, the same portfolio, the same $40,000 inflation-indexed withdrawal. Over thirty years their portfolios earn exactly the same average return.
 
@@ -60,7 +60,7 @@ Three practical consequences follow from that concentration in time.
 
 **2. Your start date is a risk parameter.** Retiring at the top of an expensive market raises the odds that the fragile window contains the crash ([[valuations-and-cape]]). It is also what makes one more year partly rational in a euphoric market, and expensive in a market that has already been purged ([[one-more-year]]).
 
-**3. The early years of a plan are monitored differently.** A plan that crosses its first decade without major damage has, statistically, won; vigilance can relax. Useful alert thresholds are therefore dated, not uniform ([[when-to-worry]]).
+**3. The early years of a plan are monitored differently.** A plan that crosses its first decade without major damage has, statistically, built a lead that almost always settles it; the watch can space out without going dark, because a late adverse sequence is still possible, just rarer and shallower. Useful alert thresholds are therefore dated, not uniform ([[when-to-worry]]).
 
 ::: science Measuring sequence risk on your own plan
 Two readings make your exposure visible, and any serious tool supports both. The first is the decomposition by decisive decade described above. If the scenarios whose first decade falls in the worst quartile nearly all end in ruin, your plan is a bet on the sequence; if they survive battered, it is robust. The second is a comparison of two twin models. A central model draws years independently. A sequence stress keeps exactly the same long-run average but makes the bad years arrive in clusters, the way persistent bear markets do (Markov chains). Everything else is identical: withdrawal, allocation, horizon. The gap in failure rate between the two is, precisely, what the sequence costs in your plan ([[making-monte-carlo-relevant]]). A small gap signals a plan that is naturally well defended, by a low withdrawal, by flexibility, or by income. A gap of several points signals that the defenses below deserve your attention.
@@ -117,7 +117,7 @@ Base plan: $1M, 60/40, a rigid $40,000 a year, 45-year horizon; failure under se
 
 ## Going further
 
-- Early Retirement Now, SWR Series parts 14 and 15 ("Sequence of Return Risk"): the demonstration that the sequence explains most of the outcome; part 53 on hedges and the Retiree-Saver Investment Pact ([[the-ern-series]]).
+- Early Retirement Now, SWR Series parts 14 and 15 ("Sequence of Return Risk"): the demonstration that the sequence explains most of the outcome; part 53, the Retiree-Saver Investment Pact, on the opposite exposures of the saver and the retiree ([[the-ern-series]]).
 - Pfau and Kitces, "Reducing Retirement Risk with a Rising Equity Glide Path", *Journal of Financial Planning*, 2014: the defense by allocation ([[glidepaths]]).
 - Moshe Milevsky, "Retirement Ruin and the Sequencing of Returns": the actuarial formalization.
 - In this book: [[the-math-of-4-percent]] (the sequence penalty in figures, about 1.8 points in the cascade of the 4% rule) and [[why-diversification-works]] (diversification as a remedy for the same risk).
