@@ -38,6 +38,10 @@ L'illustration limite est due à Claude Shannon. Un actif fait pile ou face, +10
 
 En accumulation, la diversification améliore le confort et un peu le rendement final. En décumulation, elle joue sur un levier bien plus puissant, le risque de séquence ([[sequence-des-rendements]]). Le taux de retrait soutenable n'est pas fixé par la trajectoire moyenne, mais par les pires trajectoires. Or la diversification agit précisément là. Elle raccourcit la queue gauche et réduit la profondeur comme la durée des reculs réels (drawdowns). Elle relève donc le plancher qui dimensionne tout le plan. L'effet est visible dans n'importe quel simulateur. En passant d'un 100 % actions à un panier de quatre briques, la richesse médiane à trente ans baisse souvent un peu, tandis que le SWR à 95 % de succès monte ([[lire-un-fan-chart]] pour lire les deux à la fois). Le rentier ne diversifie pas pour la moyenne. Il diversifie pour le percentile 5, là où vivent ses nuits blanches et sa probabilité de ruine.
 
+::: figure panier-mediane-plancher
+Le même plan de trente ans, tenu par deux portefeuilles, dans le modèle central du simulateur ajusté sur l'historique commun des quatre briques (1987-2026) : à gauche ce qu'il reste de capital au milieu des cas après trente ans de retrait fixe à 4 %, à droite le taux de retrait qui laisse 95 % des trajectoires solvables. Le panier vend un quart de la médiane et achète 0,78 point de plancher. Un ordre de grandeur, pas un résultat universel : d'autres briques, d'autres poids ou une autre fenêtre déplacent les deux nombres.
+:::
+
 Le même raisonnement éclaire un point de vocabulaire qui trompe beaucoup, la diversification dans le temps. Étaler ses retraits sur trente ans expose chaque euro à des marchés différents. Les règles de retrait flexibles ([[choisir-sa-strategie]]) sont, au fond, une manière de diversifier la consommation entre les années fastes et les années maigres. Portefeuille et règle de retrait travaillent le même risque par deux bouts.
 
 ## Les limites, sans folklore
