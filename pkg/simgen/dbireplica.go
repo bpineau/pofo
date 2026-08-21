@@ -56,7 +56,7 @@ type dbiLegKind int
 
 const (
 	dbiFunded dbiLegKind = iota // a total return: excess = return - cash
-	dbiPrice                    // a spot or futures price: the return IS the excess
+	dbiPrice                    // a ROLLED futures price: the return IS the excess
 	dbiFX                       // a currency: the spot move plus the rate differential
 )
 
@@ -115,7 +115,27 @@ var dbiLegs = []dbiLeg{
 	{Name: "UST 2y", Near: "SHY", NearFee: 0.0015, Deep: "^FVX", Maturity: 2, Kind: dbiFunded},
 	{Name: "UST 10y", Near: "IEF", NearFee: 0.0015, Deep: "^TNX", Maturity: 10, Kind: dbiFunded},
 	{Name: "UST 30y", Near: "TLT", NearFee: 0.0015, Deep: "^TYX", Maturity: 30, Kind: dbiFunded},
-	{Name: "Gold", Deep: "GC=F", Kind: dbiPrice},
+	// Gold is a SPOT series under a futures ticker, so it is funded, not a
+	// price leg: Yahoo's GC=F compounds at 8.15 %/yr over 2010-2026 against the
+	// LBMA afternoon fix's 8.16, carrying no roll at all, and spot appreciation
+	// is a futures excess return PLUS the financing. It is the same reading
+	// gdeRecipe already applies to the identical series. Measured 2026-08: the
+	// correction moves the blend's monthly agreement with the fund from 0.8930
+	// to 0.8931 and its drift over the composite in the donor era from +0.16 to
+	// +0.12 pt/yr, every column the right way and none of them by much, the
+	// weekly refit dumping a slow level offset into the discarded intercept.
+	{Name: "Gold", Deep: "GC=F", Kind: dbiFunded},
+	// Crude is left as a price leg deliberately, though its series is spot-like
+	// too: what separates a rolled WTI position from the front-month price is
+	// the ROLL yield, not the financing, and the roll is an order of magnitude
+	// larger (the continuous price compounds at +1.00 %/yr over 2006-2026 where
+	// the front-month rolling fund USO returns -6.63, most of that gap being
+	// contango). Subtracting a cash rate here would be a token correction to a
+	// far bigger misspecification, and no rolled WTI excess-return series
+	// reaching 2000 is available to price the leg properly. The leg still earns
+	// its place: dropping it costs the blend 0.0096 of monthly correlation with
+	// the fund and takes the split swing from 4.03 to 5.82, so the regression
+	// harvests its co-movement despite the level error.
 	{Name: "WTI crude", Deep: "CL=F", Kind: dbiPrice},
 	{Name: "EUR", Deep: "EURUSD=X", Kind: dbiFX, Carry: "EUR"},
 	{Name: "JPY", Deep: "JPYUSD=X", Kind: dbiFX, Carry: "JPCASH-JPY"},

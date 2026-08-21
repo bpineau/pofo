@@ -506,6 +506,36 @@ proxy is given back its own ongoing charge, because a futures contract levies
 none: the book is short about 2.3 units of Treasury proxies, so leaving the
 charge in would have the projection EARN those fees, worth about 0.35 %/yr.
 
+A third was found in 2026-08 and corrected. Two of the ten legs were declared
+as futures PRICES, whose return the engine takes to be an excess return
+already, and neither series is one. Yahoo's `GC=F` is a spot series under a
+futures ticker: it compounds at 8.15 %/yr over 2010-2026 against the LBMA
+afternoon fix's 8.16, so it carries no roll whatever, and spot appreciation is
+a futures excess return PLUS the financing. The gold leg is therefore funded
+now, which is what `gdeRecipe` already did with the identical series; the two
+files disagreed about one series, which is the kind of thing that propagates.
+
+Measured, the correction is real and small, and the reason it is small is worth
+more than the correction. The blend's monthly agreement with the fund goes from
+0.8930 to 0.8931, its drift over the composite through the donor era from +0.16
+to +0.12 pt/yr, its split swing from 4.18 to 4.03: every column the right way,
+none of them by much. A weekly-refitted rolling regression harvests a
+regressor's CO-MOVEMENT, and a slowly-varying level offset inside one goes
+almost entirely into the intercept, which this engine discards.
+
+**The crude leg has the same defect, ten times larger, and is deliberately left
+alone.** `CL=F` is spot-like too, but what separates a rolled WTI position from
+the front-month price is the ROLL yield rather than the financing: the
+continuous price compounds at +1.00 %/yr over 2006-2026 where the front-month
+rolling fund USO returns -6.63 %/yr, and most of that eight-point gap is
+contango. Subtracting a cash rate would be a token correction to a far bigger
+misspecification, and no rolled WTI excess-return series reaching 2000 is
+available to price the leg properly. Nor should the leg be dropped: removing it
+costs the blend 0.0096 of monthly correlation with the fund and takes the split
+swing from 4.03 to 5.82, so the regression is earning its keep on the leg's
+co-movement despite the level error. That is the same lesson as the paragraph
+above, read from the other end.
+
 ### The same treatment refuses to transfer to Simplify CTA (measured, 2026-08)
 
 The section above closes on a control, not on a claim: what the blend buys is
