@@ -16,6 +16,7 @@ import (
 	"github.com/bpineau/pofo/pkg/bookmd"
 
 	"github.com/bpineau/pofo/pkg/opds"
+	"github.com/bpineau/pofo/pkg/seo"
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
@@ -72,9 +73,11 @@ func WithAlternate(base string, ed *Edition) Option {
 func WithHome(href string) Option { return func(c *handlerConfig) { c.home = href } }
 
 // Handler serves the edition: the index at "/", one HTML page per article at
-// "/<slug>", the EPUB and its OPDS catalog, and the shared identity
-// stylesheets at "/theme.css" and "/fonts.css". Every URL it emits is
-// relative, so the handler can be mounted under any prefix, e.g.
+// "/<slug>" (and its Markdown source at "/<slug>.md"), the EPUB with its OPDS
+// catalog, the Atom feed at "/feed.xml", and the shared identity stylesheets at
+// "/theme.css" and "/fonts.css". Every URL it emits is relative, bar the head's
+// canonical, hreflang and social-card URLs (see absolute), so the handler can
+// be mounted under any prefix, e.g.
 // http.StripPrefix("/firebook/fr", firebook.French.Handler()).
 func (e *Edition) Handler(opts ...Option) http.Handler {
 	var cfg handlerConfig
@@ -91,20 +94,26 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 	mux.HandleFunc("/theme.css", css(webui.CSS))
 	mux.HandleFunc("/fonts.css", css(webui.FontsCSS))
 
-	// The whole book as a single EPUB, built once on first demand (the book is
-	// embedded, so it cannot change while the process runs) and cached with a
-	// strong ETag. build() is shared by the download route and the index page
-	// (whose download link shows the file size).
+	// built is this mount's single publication stamp, taken once when the
+	// handler is assembled. The book is embedded, so it cannot change while
+	// the process runs, and no article carries an honest date of its own: one
+	// stamp for the whole mount is the only truthful answer, and every format
+	// that must name a time (the EPUB's dcterms:modified, the OPDS catalog,
+	// the Atom feed and all of its entries) says the same thing.
+	built := time.Now()
+
+	// The whole book as a single EPUB, built once on first demand and cached
+	// with a strong ETag (deterministic for a given built, hence stable for the
+	// life of the process). build() is shared by the download route, the OPDS
+	// catalog and the index page, whose download link shows the file size.
 	var (
-		once  sync.Once
-		body  []byte
-		etag  string
-		built time.Time
-		bErr  error
+		once sync.Once
+		body []byte
+		etag string
+		bErr error
 	)
 	build := func() ([]byte, string, error) {
 		once.Do(func() {
-			built = time.Now()
 			body, bErr = e.EPUB(built)
 			if bErr != nil {
 				log.Printf("firebook: EPUB build failed: %v", bErr)
@@ -160,6 +169,16 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 		}
 		w.Header().Set("Content-Type", opds.FeedType)
 		_, _ = w.Write(feed.XML())
+	})
+
+	// The Atom syndication feed: one entry per article, so a reader can follow
+	// the book from a feed reader rather than by revisiting the index. Its
+	// URLs are absolute (an aggregator stores the document and resolves
+	// nothing against where it fetched it from), hence built per request.
+	mux.HandleFunc("/"+FeedFileName, func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", seo.AtomType)
+		w.Header().Set("Cache-Control", "public, max-age=3600")
+		_, _ = w.Write(e.FeedXML(RequestOrigin(r), built))
 	})
 
 	// The sibling edition's pairing is a static property of the two
@@ -376,6 +395,7 @@ func (e *Edition) writePage(w http.ResponseWriter, origin string, nav []NavLink,
 <meta name="twitter:description" content="%s">
 <script type="application/ld+json">%s</script>
 <link rel="canonical" href="%s">%s%s
+<link rel="alternate" type="application/atom+xml" title="%s" href="%s">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="stylesheet" href="fonts.css">
 <link rel="stylesheet" href="theme.css">
@@ -390,6 +410,7 @@ func (e *Edition) writePage(w http.ResponseWriter, origin string, nav []NavLink,
 		html.EscapeString(self),
 		html.EscapeString(pageTitle), html.EscapeString(description),
 		e.jsonLD(p), html.EscapeString(self), e.alternateHead(alt), mdLink,
+		html.EscapeString(e.SiteName), FeedFileName,
 		e.css(), bar.String(), body, bookJS)
 }
 
