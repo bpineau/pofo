@@ -144,7 +144,7 @@ func TestImportanceAgreesWithItsArticle(t *testing.T) {
 	art := bookArticle(t, "sequence-des-rendements")
 	for _, want := range []string{
 		"::: figure importance-annees",
-		"le sort d'une retraite de 40 ans se joue **aux trois quarts dans sa première décennie**",
+		"le sort d'une retraite de 40 ans se joue **à 70 % au moins dans sa première décennie**",
 		"la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années",
 		"Tout modèle qui tire les années indépendamment (Monte-Carlo naïf, y compris le modèle Student-t central) sous-estime légèrement le risque de séquence",
 	} {

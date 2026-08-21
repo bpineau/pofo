@@ -243,7 +243,7 @@ func TestMedianePlancherAgreesWithItsArticle(t *testing.T) {
 	for _, want := range []string{
 		"::: figure panier-mediane-plancher",
 		"quatre briques bien choisies (actions mondiales, obligations longues, or, trend au sens du suivi de tendance)",
-		"la richesse médiane à trente ans baisse souvent un peu, tandis que le SWR à 95 % de succès monte",
+		"la richesse médiane à trente ans baisse, d'un quart pour le panier mesuré ci-dessous, tandis que le SWR à 95 % de succès monte",
 		"Il diversifie pour le percentile 5",
 	} {
 		if !strings.Contains(art, want) {

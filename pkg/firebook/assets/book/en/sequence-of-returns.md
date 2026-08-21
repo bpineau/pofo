@@ -1,5 +1,5 @@
 # Sequence of returns risk: the retiree's real enemy
-<!-- source: sequence-des-rendements @ d704fc2fa6af -->
+<!-- source: sequence-des-rendements @ f9199a52c13b -->
 
 Two retirees start with the same million, the same portfolio, the same $40,000 inflation-indexed withdrawal. Over thirty years their portfolios earn exactly the same average return.
 
@@ -47,10 +47,10 @@ Here is the intuition worth keeping. In accumulation an early crash is a gift: y
 
 Sequence risk is not spread evenly through time. It piles up massively at the start of retirement, for a mechanical reason. That is when the capital to protect is largest, when the most withdrawals still lie ahead, and when the path has the most years left to diverge. A crash in year 25 of a 30-year retirement is nearly painless: most of the withdrawals are behind you, and the capital needed to finish is small. The same crash in year 2 governs everything that follows.
 
-The research (ERN part 15 in particular, [[the-ern-series]]) puts numbers on that intuition: the correlation between a plan's final success and the returns it actually earned is overwhelming for the first 5 to 10 years and weak afterward. In practice, **three quarters** of the fate of a 40-year retirement is settled in its first decade. The analysis that shows it can be redone on any set of simulated paths. Sort the scenarios by the real return of their first ten years, then look at the distribution of final outcomes within each bucket. That is failure decomposed by decisive decade, and it tells you at once whether your plan depends on the opening or on the average.
+The research (ERN part 15 in particular, [[the-ern-series]]) puts numbers on that intuition: the correlation between a plan's final success and the returns it actually earned is overwhelming for the first 5 to 10 years and weak afterward. In practice, **at least 70%** of the fate of a 40-year retirement is settled in its first decade (more still once the years are no longer drawn independently). The analysis that shows it can be redone on any set of simulated paths. Sort the scenarios by the real return of their first ten years, then look at the distribution of final outcomes within each bucket. That is failure decomposed by decisive decade, and it tells you at once whether your plan depends on the opening or on the average.
 
 ::: figure importance-annees
-The same analysis pushed year by year instead of in ten-year buckets: the share of the final outcome that each retirement year's return accounts for on its own. The first two years carry a fifth of it, the first decade 70%, the last twenty years 6% between them. The text says three quarters; the measurement, on the central model with a rigid 4% withdrawal over forty years, gives 70. And since that model draws its years independently, it understates rather than exaggerates.
+The same analysis pushed year by year instead of in ten-year buckets: the share of the final outcome that each retirement year's return accounts for on its own. The first two years carry a fifth of it, the first decade 70%, the last twenty years 6% between them. Measured on the central model, with a rigid 4% withdrawal over forty years. And since that model draws its years independently, it understates rather than exaggerates.
 :::
 
 
