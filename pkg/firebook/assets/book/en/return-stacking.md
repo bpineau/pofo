@@ -1,5 +1,5 @@
 # Return stacking, overlays and portable alpha: stacking the premia
-<!-- source: return-stacking @ 75a937eb2a62 -->
+<!-- source: return-stacking @ 9e7bc7d9eaff -->
 
 Every diversifier hands the retiree a funding problem. Adding 10% of trend ([[managed-futures]]) or gold ([[gold-in-retirement]]) means selling 10% of stocks or bonds. You give up part of the premium that pays for the plan ([[risk-premia]]). That is the classic dilemma of the table of defenses: protection is paid for in expected return. **Return stacking** offers a third way. It puts moderate leverage inside funds built for it. You then hold the diversifiers on top of the stock-and-bond core instead of in its place.
 
@@ -53,6 +53,10 @@ This block can be tested before it is bought. That takes a simulator whose catal
 
 ::: exemple Freeing up 33% of diversification without selling a share
 Plan: $1M, $38,000 a year, 60% stocks / 40% bonds, 45 years. Stacked version: 67% in a 90/60 fund (60 of stocks and 40 of bonds in exposure), 18% trend, 10% gold, 5% cash. Total exposure about 133%, including a defensive layer of 33% that did not exist before. Typical reading in a simulator. The central case goes from 3.9 to 3.7% (the stacked premium, net of cash). The sequence stress goes from 5.4 to 4.6% (trend and gold work the long regimes without having disarmed the equities). The worst real drawdown goes from −34% to −29%. But replaying 2022 shows the bill for the leverage. The stacked core loses about 21% there, where the naked 60/40 loses 17%, and the whole plan gets away with about −10% only because trend worked very well that year. The clause written into the plan: "overall leverage capped at 1.35; the stacked layer is judged net of the short rate; if the core fund closes or changes its policy, back to the plain 60/40 within a month." Unless you accept that dependence on the diversification layer, do not sign the other lines.
+:::
+
+::: figure stacking-2022
+The 2022 vintage of the example's plan, set out as one addition. The naked 60/40 loses 17%, the stacked core 21%: the leverage bill is four points, and it is quite real. The whole plan still gets away with −10%, because that core weighs only 67% of the book and the freed third went to work. The case for stacking is judged right there, in its most hostile year.
 :::
 
 ## The sizing rules
