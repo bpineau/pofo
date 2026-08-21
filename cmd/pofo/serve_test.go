@@ -138,8 +138,21 @@ func TestServeRoutes(t *testing.T) {
 		t.Errorf("robots.txt: code=%d", rec.Code)
 	}
 	if rec := serveGet(t, h, "/llms.txt"); rec.Code != 200 ||
-		!strings.Contains(rec.Body.String(), "http://example.com/firebook/fr/fire-cest-quoi.md") {
+		!strings.Contains(rec.Body.String(), "http://example.com/firebook/fr/fire-cest-quoi.md") ||
+		!strings.Contains(rec.Body.String(), "http://example.com/firebook/en/feed.xml") {
 		t.Errorf("llms.txt: code=%d", rec.Code)
+	}
+	// Each edition's Atom feed, on its own mount, with absolute URLs.
+	for lang, title := range map[string]string{"fr": "Le FIRE tranquille", "en": "The Quiet FIRE"} {
+		path := "/firebook/" + lang + "/feed.xml"
+		rec := serveGet(t, h, path)
+		if rec.Code != 200 || !strings.HasPrefix(rec.Header().Get("Content-Type"), "application/atom+xml") {
+			t.Errorf("%s: code=%d type=%q", path, rec.Code, rec.Header().Get("Content-Type"))
+		}
+		if !strings.Contains(rec.Body.String(), "<title>"+title+"</title>") ||
+			!strings.Contains(rec.Body.String(), `href="http://example.com`+path+`"`) {
+			t.Errorf("%s: the feed does not name itself absolutely", path)
+		}
 	}
 	// And the markdown mirror an agent is pointed at is really there.
 	if rec := serveGet(t, h, "/firebook/fr/fire-cest-quoi.md"); rec.Code != 200 ||

@@ -121,8 +121,9 @@ func (s Site) RobotsTXT(origin string) []byte {
 }
 
 // LLMsTXT renders the llms.txt (llmstxt.org): the site in one paragraph, then
-// one section per mounted edition (index, EPUB, OPDS catalog) followed by one
-// section per part of that edition listing every article as its MARKDOWN URL.
+// one section per mounted edition (index, EPUB, OPDS catalog, Atom feed)
+// followed by one section per part of that edition listing every article as its
+// MARKDOWN URL.
 //
 // Both editions live in ONE file, sections labelled by edition. An agent
 // fetches one llms.txt per host; splitting the languages into two files would
@@ -151,6 +152,7 @@ func (s Site) LLMsTXT(origin string) []byte {
 				{Title: e.UI.IndexLink, URL: base, Note: e.SiteLede},
 				{Title: e.UI.EPUBLink, URL: base + e.EPUBFileName, Note: "the whole edition as one EPUB 3 file"},
 				{Title: "OPDS", URL: base + "opds.xml", Note: "acquisition catalog for e-readers"},
+				{Title: "Atom", URL: base + FeedFileName, Note: "every article of this edition as a feed"},
 			},
 		})
 		for _, cat := range e.Categories {
