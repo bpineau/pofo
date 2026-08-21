@@ -1,5 +1,5 @@
 # ERN's Safe Withdrawal Rate series: a reader's guide
-<!-- source: serie-ern @ 698768d091ff -->
+<!-- source: serie-ern @ e2bdaec7b4d4 -->
 
 If this book could send you to one outside source on everything it covers, it would be this one: the Safe Withdrawal Rate Series on the blog *Early Retirement Now* (ERN). Karsten Jeske writes it, a PhD economist who worked at the Atlanta Fed and in quantitative asset management, and who retired early in 2018. More than sixty parts since 2016, every one of them built on reproducible simulations over monthly US data going back to 1871. Article after article, the series took apart the slogans of first-generation FIRE and laid down most of what is now said seriously about long retirements.
 
@@ -33,7 +33,7 @@ Two leanings are worth knowing before you start. The first sits in the data, whi
 
 **Annuities, bonds, gold, real estate, leverage (Parts 29 to 31, 34 to 36, 40, 49, 52, 56, 59, 62).** These are the asset reviews. The yield illusion of dividend portfolios, since living off your dividends is no safer (Parts 29 to 31 and 40, [[ten-plan-wrecking-mistakes]]). Gold as a partial sequence hedge (Part 34, [[gold-in-retirement]]). Real estate (Part 36, [[real-estate-in-retirement]]). Annuities and Social Security (Parts 56 and 59, [[annuities-and-safety-first]]). Leverage, sophisticated and in small doses (Parts 49 and 52, [[leverage-and-margin]]). And small-cap value in decumulation, a negative verdict (Part 62, 2025, [[factors-in-retirement]]).
 
-**The side topics that change a life (Parts 21, 22, 27, 37, 42, 47, 60).** The mortgage in retirement, where keeping the loan is a levered bet on sequence (Part 21). "One more year", with numbers attached (Part 42, [[one-more-year]]). When to worry along the way (Part 47, [[when-to-worry]]). Getting through a bear market (Part 37, [[bear-markets-in-retirement]]). And the critique of *Die With Zero* (Part 60, [[spending-in-retirement]]).
+**The side topics that change a life (Parts 21, 22, 27, 37, 42, 47, 60).** The mortgage in retirement, where keeping the loan is a levered bet on sequence (Part 21). "One more year", with numbers attached (Part 42, [[one-more-year]]). What deserves a fine calculation and what you can eyeball, from the rhythm of withdrawals to spending drift (Part 47, [[when-to-worry]]). Getting through a bear market (Part 37, [[bear-markets-in-retirement]]). And the critique of *Die With Zero* (Part 60, [[spending-in-retirement]]).
 
 ::: astuce Where to start, depending on your question
 The overview: Parts 1 and 26. "How much can I withdraw?": Parts 2 and 3, then 54 for the CAPE. "Will flexibility save me?": Parts 23 to 25, then 58. "My allocation around the exit": Parts 19 and 20. "What about buckets?": Parts 12 and 48. Each part takes 20 to 40 minutes. The whole series is a book in its own right, longer than this one, and the two fit together. ERN pushes the American simulations further; this book covers the world sample, the tax and account frame, and the plumbing of the simulator.
