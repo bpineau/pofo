@@ -152,6 +152,7 @@ var CategoriesEN = []Category{
 		Blurb: "Building the plan and flying it: assemble it, keep it alive, cross the storms, and three complete cases.",
 		Articles: []Article{
 			{Slug: "building-your-plan", Title: "Building your plan step by step", Blurb: "The seven steps in order, the eight-block template for the one-page plan, the validation recipe, and day one.", Source: "construire-son-plan"},
+			{Slug: "the-annual-review", Title: "The annual review: the retiree's checklist", Blurb: "One session a year, seven blocks, the reverse quiz and the non-financial line: the review records and executes, it does not redesign.", Source: "revue-annuelle"},
 		},
 	},
 	{
