@@ -1,5 +1,5 @@
 # Failure probability: reading it, choosing it, and not letting it run you
-<!-- source: ruine-et-probabilites @ a00366b22d13 -->
+<!-- source: ruine-et-probabilites @ a50c3902821f -->
 
 Every retirement simulator boils its verdict down to a single number: the failure probability, or its mirror image, the success rate. It is the most watched number in the field, and the most misread. People treat it like a weather forecast ("5% risk, that's fine"), compare it across tools that are not measuring the same thing, ask it for a precision it does not have, and forget that it describes a world in which nobody ever reacts.
 
@@ -53,7 +53,7 @@ The plan: $1.2M, $42,000 a year, a 45-year horizon, a pension of $12,000 a year 
 
 ## Real ruin looks nothing like simulated ruin
 
-One last correction, and the one that does the most for your sleep. In the simulator, ruin is a cliff: the balance crosses zero on a Tuesday and everything stops. In life, a retirement plan fails slowly, and **visibly**: the portfolio drifts off its planned path, the current withdrawal rate climbs year after year, the warning lights turn amber a decade before the drop. Studies of the historical paths that failed agree on the timing: between the moment a doomed plan becomes statistically recognizable and the day the money actually runs out, 8 to 15 years typically go by. That is an enormous amount of notice for anyone who has written down thresholds for action ([[when-to-worry]], [[the-annual-review]]).
+One last correction, and the one that does the most for your sleep. In the simulator, ruin is a cliff: the balance crosses zero on a Tuesday and everything stops. In life, a retirement plan fails slowly, and **visibly**: the portfolio drifts off its planned path, the current withdrawal rate climbs year after year, the warning lights turn amber long before the drop. The historical paths that failed agree on the timing: between the moment a doomed plan becomes statistically recognizable and the day the money actually runs out, a decade goes by at the very least, and twenty years on the worst vintage on record. The 1966 vintage confirms its red light in 1974-75; the money does not run out until 1994. That is an enormous amount of notice for anyone who has written down thresholds for action ([[when-to-worry]], [[the-annual-review]]).
 
 That is the real reason failure probability, read properly, is an instrument of **design** and not a source of dread. It is there to compare plans and to size margins before you leave. Once you have left, it gives way to piloting: a few simple indicators, written thresholds, prepared answers. A plan at 8% failure with an attentive pilot is safer than a plan at 3% with a sleeping one.
 
