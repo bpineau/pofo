@@ -93,7 +93,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/permanent` | tactical Permanent Portfolio 2.0 (Darcet): reads `datasets.MacroPanel` into a growth×inflation + monetary regime, quadratically-damped four-sleeve allocation, monthly-real backtest, coarse `Regime.Quadrant` view (used by the report's regime strip); see `docs/darcet-permanent-portfolio-design.md` |
 | `pkg/suggest` | macro-regime/factor coverage, look-through composition splits (asset classes, geography, currency exposure, equity sectors, duration), redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
-| `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; `web/` = embedded live UI |
+| `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; optional STOCHASTIC LIFETIME (`Plan.Lifetime` draws the household's lifespan per path: alive-ruin, estate at death, couple reversion, `Plan.Annuity` realising mortality credits; `docs/stochastic-lifetime-kernel-design.md`); `web/` = embedded live UI |
 | `pkg/replay` | the seven canonical withdrawal rules (shared names/tags/colours/plan mutations) run deterministically over the years as they happened, on a bundled real US 60/40 (S&P 500 + 5y Treasuries, CPI-deflated, from 1954); portraits of a rule (income mean/CV/leanest year/lean years/estate), not failure probabilities; feeds the FIRE book's `sept-facons-de-vivre` article and the simulator's policy frontier |
 | `pkg/bookmd` | the shared book-Markdown-dialect renderer (`ToHTML`, callouts, wiki-links, figures), extracted from firebook so other repos can reuse it; see `docs/epub-export-design.md` |
 | `pkg/epub` | generic stdlib-only EPUB 3 writer (`Book`/`Chapter` in, `.epub` bytes out) + `Normalize` (HTML5 -> XHTML); deterministic output for a given `Modified`; see `docs/epub-export-design.md` |
@@ -298,7 +298,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   ladder). The `/view` grammar is authoritatively `view.go`'s godoc; keep the
   doc and the godoc in sync when either changes.
 - FIRE/decumulation work: read `docs/decumulation-fire-design.md` first;
-  the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`.
+  the follow-up backlog is `docs/decumulation-fire-program-2026-07.md`. Anything
+  touching mortality, estates, couples or annuities goes through
+  `docs/stochastic-lifetime-kernel-design.md` as well: `Plan.Lifetime` draws the
+  lifespan INSIDE each path, and the standing rule is that the household never
+  sees its own drawn death (spending rules plan over `PlanHorizon`, never over
+  the lifespan the path was dealt).
 - FIRE book work: French is the SOURCE OF TRUTH and every edit lands there
   first. After a French edit, `make book-drift` lists the translations it made
   stale; that report is the English worklist. TRANSLATING an article: follow

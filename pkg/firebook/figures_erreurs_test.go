@@ -20,7 +20,7 @@ import (
 // book.
 
 // errTestPaths/errTestSeed/errTestWorkers are the plate's reproduction recipe.
-// The worker count matters: DrawPaths splits the sampling per worker, so the
+// The worker count matters: Draw splits the sampling per worker, so the
 // same seed with a different worker count is a different Monte-Carlo.
 const (
 	errTestPaths   = 200000

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bpineau/pofo/pkg/chart"
+	"github.com/bpineau/pofo/pkg/decumul"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
@@ -68,7 +69,7 @@ func Vintages(pr Params, _ *scenario.Panel) VintagesResult {
 		p := pr.plan()
 		p.Monthly = false
 		p.Years = years
-		res := p.RunPath(seq)
+		res := p.RunPath(seq, decumul.Lives{})
 
 		xs := make([]float64, len(res.Wealth))
 		ys := make([]float64, len(res.Wealth))

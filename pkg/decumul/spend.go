@@ -11,29 +11,40 @@ import (
 // divided by its mean. It is the spending-volatility axis of the decumulation
 // frontier, the price an adaptive or percentage-of-portfolio rule pays for
 // avoiding ruin. 0 for a perfectly steady income, rising as spending swings.
+//
+// "Lived" is literal: with a Plan.Lifetime, years after the household is gone
+// are not zero-income years, they are no years at all, and counting them would
+// report an income collapse that nobody experienced.
 func (e Ensemble) SpendCV() float64 {
+	_, cv := e.spendMoments()
+	return cv
+}
+
+// spendMoments is the mean delivered real spending per lived path-year and its
+// coefficient of variation.
+func (e Ensemble) spendMoments() (mean, cv float64) {
 	var sum float64
 	var n int
 	for _, p := range e.Paths {
-		for _, s := range p.Spend {
+		for _, s := range p.Spend[:p.spendYears()] {
 			sum += s
 			n++
 		}
 	}
 	if n == 0 {
-		return 0
+		return 0, 0
 	}
-	mean := sum / float64(n)
+	mean = sum / float64(n)
 	if mean == 0 {
-		return 0
+		return 0, 0
 	}
 	var v float64
 	for _, p := range e.Paths {
-		for _, s := range p.Spend {
+		for _, s := range p.Spend[:p.spendYears()] {
 			v += (s - mean) * (s - mean)
 		}
 	}
-	return math.Sqrt(v/float64(n)) / mean
+	return mean, math.Sqrt(v/float64(n)) / mean
 }
 
 // SpendStats summarises the lived cost of an adaptive spending policy across
@@ -75,6 +86,10 @@ func (e Ensemble) SpendStats() SpendStats {
 // paths: Bands[p][year] is the pcts[p] quantile of Spend that year. It is the
 // spending counterpart of the wealth fan, showing how deep and how long the
 // dips in living standard get.
+//
+// Each year's quantiles are taken over the households still ALIVE that year,
+// which is the conditional a reader wants ("of those still here, how are they
+// living?"); a year nobody reaches keeps zeros.
 func (e Ensemble) SpendBands(pcts []float64) [][]float64 {
 	bands := make([][]float64, len(pcts))
 	if len(e.Paths) == 0 || e.Years == 0 {
@@ -83,10 +98,16 @@ func (e Ensemble) SpendBands(pcts []float64) [][]float64 {
 	for p := range bands {
 		bands[p] = make([]float64, e.Years)
 	}
-	col := make([]float64, len(e.Paths))
+	col := make([]float64, 0, len(e.Paths))
 	for y := 0; y < e.Years; y++ {
-		for i, path := range e.Paths {
-			col[i] = path.Spend[y]
+		col = col[:0]
+		for _, path := range e.Paths {
+			if y < path.spendYears() {
+				col = append(col, path.Spend[y])
+			}
+		}
+		if len(col) == 0 {
+			continue
 		}
 		q := metrics.Quantiles(col, pcts...)
 		for p := range pcts {

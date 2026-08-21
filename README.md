@@ -756,7 +756,8 @@ pkg/portfolio/    allocation file format + rebalanced simulation with
 pkg/report/       HTML and text rendering of the comparison model
 pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
 pkg/scenario/     return-path generation (parametric, bootstrap, cohorts)
-pkg/decumul/      decumulation/FIRE engine + metrics + sweeps; web/ live UI
+pkg/decumul/      decumulation/FIRE engine + metrics + sweeps + optional
+                  stochastic lifetime (estates, annuities); web/ live UI
 pkg/datasets/     versioned data (embedded at build time) and its QA:
   assetmeta/        catalog asset metadata (classes, factors, regimes…)
   simdata/          permanent simulated histories (spliced at runtime)

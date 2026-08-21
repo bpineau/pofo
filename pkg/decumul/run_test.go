@@ -18,10 +18,10 @@ func TestBufferDrawThresholdZeroHonored(t *testing.T) {
 		Buffer: BufferSleeve{Years: 2}, Tax: CTOFlatTax{Rate: 0.5}}
 	seq := scenario.Sequence{0.5, -0.05, 0}
 
-	def := base.RunPath(seq)
+	def := base.RunPath(seq, Lives{})
 	eager := base
 	eager.Buffer.DrawThreshold = ptr(0)
-	got := eager.RunPath(seq)
+	got := eager.RunPath(seq, Lives{})
 
 	if !(got.TaxPaid < def.TaxPaid) {
 		t.Errorf("explicit DrawThreshold 0 should tap the buffer at a shallow drawdown and pay less tax: got=%.0f default=%.0f", got.TaxPaid, def.TaxPaid)
@@ -37,10 +37,10 @@ func TestBufferRefillCapZeroHonored(t *testing.T) {
 		Buffer: BufferSleeve{Years: 2}, Tax: CTOFlatTax{Rate: 0.5}}
 	seq := scenario.Sequence{0.3, -0.2, 0.25, 0}
 
-	on := base.RunPath(seq)
+	on := base.RunPath(seq, Lives{})
 	off := base
 	off.Buffer.RefillCap = ptr(0)
-	got := off.RunPath(seq)
+	got := off.RunPath(seq, Lives{})
 
 	if !(got.TaxPaid < on.TaxPaid) {
 		t.Errorf("explicit RefillCap 0 should skip the refill and pay less tax: got=%.0f default=%.0f", got.TaxPaid, on.TaxPaid)
@@ -54,10 +54,10 @@ func TestRunPathGuardrailsCutSpending(t *testing.T) {
 	base := Plan{Capital: 100000, NeedAnnual: 5000, Years: 3, Tax: CTOFlatTax{Rate: 0}}
 	seq := scenario.Sequence{-0.3, -0.3, 0}
 
-	fixed := base.RunPath(seq)
+	fixed := base.RunPath(seq, Lives{})
 	guarded := base
 	guarded.Guard = Guardrails{Upper: 0.06, Lower: 0.03, Cut: 0.10, Raise: 0.10}
-	got := guarded.RunPath(seq)
+	got := guarded.RunPath(seq, Lives{})
 
 	if !(got.Withdrawn < fixed.Withdrawn) {
 		t.Errorf("guardrails should cut spending after the drop: guarded=%.0f fixed=%.0f", got.Withdrawn, fixed.Withdrawn)
@@ -72,10 +72,10 @@ func TestBufferRefillStopYearHonored(t *testing.T) {
 		Buffer: BufferSleeve{Years: 2}, Tax: CTOFlatTax{Rate: 0.5}}
 	seq := scenario.Sequence{0.3, -0.2, 0.25, 0}
 
-	on := base.RunPath(seq) // refills throughout
+	on := base.RunPath(seq, Lives{}) // refills throughout
 	stop := base
 	stop.Buffer.RefillStopYear = 3 // no refill from year 3 onward
-	got := stop.RunPath(seq)
+	got := stop.RunPath(seq, Lives{})
 
 	if !(got.TaxPaid < on.TaxPaid) {
 		t.Errorf("RefillStopYear should skip the year-3 refill and pay less tax: got=%.0f default=%.0f", got.TaxPaid, on.TaxPaid)
@@ -85,7 +85,7 @@ func TestBufferRefillStopYearHonored(t *testing.T) {
 // With zero returns, no tax and no pension, capital depletes by need/year.
 func TestRunPathDepletion(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0}, Lives{})
 	if !res.Ruined {
 		t.Errorf("expected ruin: 100k - 5*25k < 0")
 	}
@@ -102,7 +102,7 @@ func TestRunPathDepletion(t *testing.T) {
 // withdrawn (with a non-negative tax), not the full requested need.
 func TestRunPathUnderDelivery(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 70000, Years: 2, Tax: CTOFlatTax{Rate: 0.5}}
-	res := p.RunPath(scenario.Sequence{1.0, 0})
+	res := p.RunPath(scenario.Sequence{1.0, 0}, Lives{})
 	if !res.Ruined {
 		t.Errorf("expected ruin: year 2 cannot gross up 70k net from 60k of growth")
 	}
@@ -122,7 +122,7 @@ func TestRunPathUnderDelivery(t *testing.T) {
 // A high enough capital with positive returns survives.
 func TestRunPathSurvives(t *testing.T) {
 	p := Plan{Capital: 1_000_000, NeedAnnual: 20000, Years: 10, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05})
+	res := p.RunPath(scenario.Sequence{0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05}, Lives{})
 	if res.Ruined {
 		t.Errorf("did not expect ruin")
 	}

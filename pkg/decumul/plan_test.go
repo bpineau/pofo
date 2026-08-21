@@ -55,10 +55,10 @@ func TestCTOFlatTaxGrossUpCapped(t *testing.T) {
 
 func TestNeedAtAppliesCashflows(t *testing.T) {
 	p := Plan{NeedAnnual: 48000, Cashflows: []Cashflow{{FromYear: 12, Annual: 18000}}}
-	if got := p.needAt(0); math.Abs(got-48000) > 1e-9 {
+	if got := p.needAt(0, p.life(Lives{})); math.Abs(got-48000) > 1e-9 {
 		t.Errorf("needAt(0) = %.0f, want 48000", got)
 	}
-	if got := p.needAt(12); math.Abs(got-30000) > 1e-9 {
+	if got := p.needAt(12, p.life(Lives{})); math.Abs(got-30000) > 1e-9 {
 		t.Errorf("needAt(12) = %.0f, want 30000", got)
 	}
 }
@@ -67,13 +67,13 @@ func TestNeedAtAppliesCashflows(t *testing.T) {
 // ToYear); a zero ToYear keeps running to the horizon.
 func TestNeedAtBoundedCashflow(t *testing.T) {
 	p := Plan{NeedAnnual: 48000, Cashflows: []Cashflow{{FromYear: 0, ToYear: 5, Annual: 12000}}}
-	if got := p.needAt(0); math.Abs(got-36000) > 1e-9 {
+	if got := p.needAt(0, p.life(Lives{})); math.Abs(got-36000) > 1e-9 {
 		t.Errorf("needAt(0) = %.0f, want 36000", got)
 	}
-	if got := p.needAt(4); math.Abs(got-36000) > 1e-9 {
+	if got := p.needAt(4, p.life(Lives{})); math.Abs(got-36000) > 1e-9 {
 		t.Errorf("needAt(4) = %.0f, want 36000", got)
 	}
-	if got := p.needAt(5); math.Abs(got-48000) > 1e-9 {
+	if got := p.needAt(5, p.life(Lives{})); math.Abs(got-48000) > 1e-9 {
 		t.Errorf("needAt(5) = %.0f, want 48000 (side income ended)", got)
 	}
 }
@@ -87,7 +87,7 @@ func TestGuardrailsFloor(t *testing.T) {
 	}
 	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: 20,
 		Guard: Guardrails{Upper: 0.048, Lower: 0.032, Cut: 0.10, Raise: 0.10, Floor: 30000}}
-	res := p.RunPath(crash)
+	res := p.RunPath(crash, Lives{})
 	minSpend := res.Spend[0]
 	for k, s := range res.Spend {
 		if res.Ruined && k >= res.RuinYear {
@@ -102,7 +102,7 @@ func TestGuardrailsFloor(t *testing.T) {
 	}
 	// Same plan without a floor must go materially below it.
 	p.Guard.Floor = 0
-	res = p.RunPath(crash)
+	res = p.RunPath(crash, Lives{})
 	below := false
 	for k, s := range res.Spend {
 		if res.Ruined && k >= res.RuinYear {
@@ -127,7 +127,7 @@ func TestGuardrailsMonthlyStepped(t *testing.T) {
 	}
 	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: 20, Monthly: true,
 		Guard: Guardrails{Upper: 0.048, Lower: 0.032, Cut: 0.10, Raise: 0.10}}
-	res := p.RunPathMonthly(months)
+	res := p.RunPathMonthly(months, Lives{})
 	y0 := res.Spend[0]
 	if y0 > 40000+1 || y0 < 36000 {
 		t.Errorf("first-year delivered spending %.0f: monthly steps should land between the full level and one annual cut", y0)
@@ -155,7 +155,7 @@ func TestAmortizeExactAndRuinFree(t *testing.T) {
 		flat[i] = r
 	}
 	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: years, Amortize: true, AmortReturn: r}
-	res := p.RunPath(flat)
+	res := p.RunPath(flat, Lives{})
 	if res.Ruined {
 		t.Fatalf("ABW must not ruin, got ruin at %d", res.RuinYear)
 	}
@@ -171,7 +171,7 @@ func TestAmortizeExactAndRuinFree(t *testing.T) {
 	for i := range crash {
 		crash[i] = -0.10
 	}
-	res = p.RunPath(crash)
+	res = p.RunPath(crash, Lives{})
 	if res.Ruined {
 		t.Errorf("ABW must not ruin even in a relentless bear (ruin year %d)", res.RuinYear)
 	}
@@ -195,7 +195,7 @@ func TestBoundedPct(t *testing.T) {
 	}
 	p := Plan{Capital: 1e6, NeedAnnual: 40000, Years: years,
 		Bounded: BoundedPct{Pct: 0.04, Up: 0.05, Down: 0.025}}
-	res := p.RunPath(seq)
+	res := p.RunPath(seq, Lives{})
 	for k := 1; k < years; k++ {
 		if res.Ruined && k >= res.RuinYear {
 			break
@@ -211,7 +211,7 @@ func TestBoundedPct(t *testing.T) {
 	for i := range crash {
 		crash[i] = -0.20
 	}
-	if res := p.RunPath(crash); !res.Ruined {
+	if res := p.RunPath(crash, Lives{}); !res.Ruined {
 		t.Errorf("bounded rule should ruin in a relentless -20%%/yr bear")
 	}
 }
@@ -225,13 +225,13 @@ func TestWealthRulesNetCashflows(t *testing.T) {
 
 	vpw := base
 	vpw.Percent = 0.05 // budget 5000, pension 2000 -> portfolio delivers 3000
-	if got := vpw.RunPath(flat).Spend[0]; math.Abs(got-3000) > 1 {
+	if got := vpw.RunPath(flat, Lives{}).Spend[0]; math.Abs(got-3000) > 1 {
 		t.Errorf("VPW year-0 portfolio draw = %.0f, want 3000 (5000 budget - 2000 pension)", got)
 	}
 
 	bd := base
 	bd.Bounded = BoundedPct{Pct: 0.05, Up: 0.05, Down: 0.025}
-	if got := bd.RunPath(flat).Spend[0]; math.Abs(got-3000) > 1 {
+	if got := bd.RunPath(flat, Lives{}).Spend[0]; math.Abs(got-3000) > 1 {
 		t.Errorf("bounded year-0 portfolio draw = %.0f, want 3000", got)
 	}
 
@@ -242,8 +242,8 @@ func TestWealthRulesNetCashflows(t *testing.T) {
 	abw.Amortize, abw.AmortReturn = true, 0.02
 	noPension := abw
 	noPension.Cashflows = nil
-	with := abw.RunPath(flat).Spend[0]
-	without := noPension.RunPath(flat).Spend[0]
+	with := abw.RunPath(flat, Lives{}).Spend[0]
+	without := noPension.RunPath(flat, Lives{}).Spend[0]
 	if math.Abs(with-without) > 200 {
 		t.Errorf("ABW portfolio draw with a lifelong pension = %.0f, want ~%.0f (budget rises by ~the pension, netting removes it)", with, without)
 	}
@@ -288,7 +288,7 @@ func TestRiskGuardrailsHorizonAware(t *testing.T) {
 		RiskGuard: RiskGuardrails{SafeWR: safe, Band: 0.20, Cut: 0.10, Raise: 0.10, PVRate: 0.03}}
 	noPension := p
 	noPension.Cashflows = nil
-	if a, b := p.RunPath(flat).Spend[1], noPension.RunPath(flat).Spend[1]; a <= b {
+	if a, b := p.RunPath(flat, Lives{}).Spend[1], noPension.RunPath(flat, Lives{}).Spend[1]; a <= b {
 		t.Errorf("the discounted pension must hold the sensor back: %.0f vs %.0f", a, b)
 	}
 }
@@ -308,7 +308,7 @@ func TestRiskGuardrailsPrecedenceAndMonthly(t *testing.T) {
 		Guard:     Guardrails{Upper: 0.99, Lower: 0.98, Cut: 0.50, Raise: 0.50}, // never fires if ignored
 		Flex:      FlexRule{Threshold: 0.10, Cut: 0.50},
 		RiskGuard: RiskGuardrails{SafeWR: safe, Band: 0.20, Cut: 0.10, Raise: 0.10}}
-	res := base.RunPath(bear)
+	res := base.RunPath(bear, Lives{})
 	if res.Spend[1] >= res.Spend[0] {
 		t.Errorf("the risk rule must cut in a bear: %.0f then %.0f", res.Spend[0], res.Spend[1])
 	}
@@ -322,7 +322,7 @@ func TestRiskGuardrailsPrecedenceAndMonthly(t *testing.T) {
 	}
 	m := base
 	m.Monthly = true
-	y0 := m.RunPathMonthly(months).Spend[0]
+	y0 := m.RunPathMonthly(months, Lives{}).Spend[0]
 	if y0 > 40000+1 || y0 < 36000 {
 		t.Errorf("monthly first-year spending %.0f: expected between one annual cut and none", y0)
 	}
