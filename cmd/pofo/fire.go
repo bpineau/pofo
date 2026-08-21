@@ -44,7 +44,9 @@ func runFire(ctx context.Context, opt *options, c *marketdata.Client, specs []*p
 	// catalog endpoint it searches only exist under -serve. The page then
 	// states how to bind a portfolio from the command line instead. The
 	// source label still rides, so a file argument names the market.
-	srv := &http.Server{Handler: web.Handler(panel, labels, web.WithSourceLabel(specsLabel(specs)))}
+	srv := &http.Server{Handler: web.Handler(panel, labels,
+		web.WithSourceLabel(specsLabel(specs)),
+		web.WithBeaconToken(opt.cfBeaconToken))}
 	go func() {
 		<-ctx.Done()
 		shutCtx, cancel := context.WithTimeout(context.Background(), 3*time.Second)

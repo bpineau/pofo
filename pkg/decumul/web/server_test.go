@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/bpineau/pofo/pkg/webui"
 )
 
 func TestAPISim(t *testing.T) {
@@ -192,5 +194,41 @@ func TestIndexNowKeyOption(t *testing.T) {
 		httptest.NewRequest(http.MethodGet, "/"+key+".txt", nil))
 	if rec.Code != http.StatusOK || rec.Body.String() != key {
 		t.Errorf("key file: status %d body %q, want 200 and the key", rec.Code, rec.Body.String())
+	}
+}
+
+// WithBeaconToken is the analytics half of the same bargain: off by default, and
+// when a mount is told it is a public host, on every HTML page it serves, the
+// book editions under it included, and on nothing else.
+func TestBeaconTokenOption(t *testing.T) {
+	const token = "0123456789abcdef0123456789abcdef"
+	pages := []string{"/", "/firebook/fr/", "/firebook/en/"}
+	others := []string{"/sitemap.xml", "/robots.txt", "/llms.txt",
+		"/firebook/fr/feed.xml", "/theme.css", "/favicon.svg"}
+
+	off := Handler(nil, nil)
+	for _, path := range append(append([]string{}, pages...), others...) {
+		rec := httptest.NewRecorder()
+		off.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if strings.Contains(rec.Body.String(), "cloudflareinsights") {
+			t.Errorf("%s: analytics markup without the option", path)
+		}
+	}
+
+	on := Handler(nil, nil, WithBeaconToken(token))
+	want := webui.BeaconSnippet(token)
+	for _, path := range pages {
+		rec := httptest.NewRecorder()
+		on.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK || !strings.Contains(rec.Body.String(), want) {
+			t.Errorf("%s: status %d, no analytics tag", path, rec.Code)
+		}
+	}
+	for _, path := range others {
+		rec := httptest.NewRecorder()
+		on.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if strings.Contains(rec.Body.String(), "cloudflareinsights") {
+			t.Errorf("%s: a non-page must carry no analytics markup", path)
+		}
 	}
 }
