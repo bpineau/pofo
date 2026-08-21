@@ -1,5 +1,5 @@
 # Annuities and safety first: buying a floor
-<!-- source: rentes-et-annuites @ 2a65451ced93 -->
+<!-- source: rentes-et-annuites @ 0662927ddb01 -->
 
 Every withdrawal rule in this part attacks the same problem: making a risky pot of money last longer than a life of unknown length. A life annuity dissolves the problem instead. You hand capital to an insurer. The insurer pays you an income for as long as you live, whatever the markets do and however long you last.
 
