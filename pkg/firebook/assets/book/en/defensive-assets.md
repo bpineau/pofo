@@ -1,5 +1,5 @@
 # Defensive assets: the map and the roles
-<!-- source: actifs-defensifs @ d7acbc426027 -->
+<!-- source: actifs-defensifs @ 1290d3f94e94 -->
 
 Everything in the portfolio that is not the equity engine has one job: defense. But defense against **what**?
 
@@ -25,7 +25,7 @@ What each candidate returned, in real dollars, through four crises of different 
 
 **Short and intermediate nominal government bonds (1 to 7 years).** Regimes served: the disinflationary recession and, more modestly, the growth crash. Neutral elsewhere. They lose in inflation, but not by much, because short duration caps the damage (−5 to −10% in 2022, against −30% for long bonds). This is the **generalist** defender: never heroic, rarely catastrophic, liquid, with almost no carry cost while real rates are positive. Verdict: the bedrock of the defensive sleeve ([[bonds-in-retirement]]).
 
-**Long government bonds (15 to 30 years).** Regime served: **deflation**, and growth crashes. There they are the only asset that rises violently (2008, +25 to +30%; 2020, +20%), a power that comes straight from duration. Killer regime: inflation and rising rates (2022, −30 to −40%, **worse** than stocks). This is an asset with a thesis, not a "safe investment". It is the most expensive misunderstanding in mainstream wealth advice. Verdict: a dose of **deflation insurance** held openly (5 to 15%), the way gold plays inflation insurance. Never the core of the sleeve ([[bonds-in-retirement]]).
+**Long government bonds (15 to 30 years).** Regime served: **deflation**, and growth crashes. There they are the only asset that rises violently (2008, +25 to +30%; 2020, +20%), a power that comes straight from duration. Those are US Treasury numbers, and they do not travel: other government markets paid a fraction of that in the same two years. Killer regime: inflation and rising rates (2022, −30 to −40%, **worse** than stocks). This is an asset with a thesis, not a "safe investment". It is the most expensive misunderstanding in mainstream wealth advice. Verdict: a dose of **deflation insurance** held openly (5 to 15%), the way gold plays inflation insurance. Never the core of the sleeve ([[bonds-in-retirement]]).
 
 **Inflation-linked bonds (linkers, TIPS).** Regime served: inflation, by contract. It is the only asset whose cash flow is mechanically indexed to the retiree's enemy number one ([[inflation-and-withdrawal-rates]]). One subtlety caught everyone out in 2022: at equal duration, a linker still moves with **real rates**. Long linkers fell that year despite the inflation, because real rates were rising faster. The contractual protection pays at maturity, not day by day. Hence the preference for short durations, or for a ladder held to maturity ([[inflation-linked-bonds]], [[bond-ladders]]). Verdict: the most under-owned block in retirement portfolios, given what it does. A dose of 5 to 15% of assets, and more when the floor is matched with linkers held to maturity.
 
