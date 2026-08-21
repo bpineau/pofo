@@ -1,5 +1,5 @@
 # Why 4%? The mathematical anatomy of the rule
-<!-- source: les-maths-du-4-pourcent @ a299d9f8f590 -->
+<!-- source: les-maths-du-4-pourcent @ a54d4d47b35a -->
 
 [[the-4-percent-rule]] tells the story of where the rule came from, and [[the-trinity-study]] how it was established. This chapter answers the question almost nobody asks: why that number? Why not 6%, when US stocks have returned 6 to 7% real on average? Why not 2%, since anything can happen? The 4% is no magic constant that fell out of a backtest. It is the **residue of a three-tier calculation**, and every tier has a name, a sign and a ballpark size. Once you see the cascade, the rule stops being a dogma to believe or debunk. It becomes a result you can recompute yourself the day an assumption changes.
 
@@ -20,6 +20,10 @@ That leaves the return itself to pin down. A global 60/40 has historically deliv
 Nobody is immortal. Over a 30-year horizon you are allowed to eat the capital itself, not just its fruit. Lending gives the exact formula, a mortgage payment run backwards: at 4% real over 30 years, the withdrawal that lands exactly on zero on the last day is about 5.8% a year. The right to finish at zero is therefore worth +1.8 points. That is the **amortization bonus**, and it is the entire logic of the ABW and VPW methods, which recompute it every year ([[amortization-based-withdrawal]], [[vpw]]).
 
 The bonus also explains why the horizon matters so much ([[horizon-and-life-expectancy]]). Stretch it to 50 years and the same formula gives 4.7%: the bonus melts to +0.7. Stretch it to infinity and it disappears. Very early retirement does not lose rate to some mystery. It simply loses the right to amortize fast.
+
+::: figure amortissement-horizon
+The withdrawal that pure amortization arithmetic funds at 4% real, by the number of years to cover. The curve falls fast, then flattens onto its asymptote, the return alone. The first twenty years carry most of the bonus, while stretching from a 50-year horizon to eternity costs only seven tenths of a point. Very early retirement does pay for its horizon, but far less than people think.
+:::
 
 ## Tier 3: the sequence penalty, or what disorder costs
 
