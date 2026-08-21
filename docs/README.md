@@ -9,6 +9,7 @@ of truth for everything current.
 | Doc | Why it stays |
 |---|---|
 | `catbond-sleeve-design.md` | the insurance-linked family: which reference is bundled and why the market's own is not, how the fund backcasts and the euro hedge are built, and what a 5 to 10 % cat bond sleeve was measured to do to a decumulation book |
+| `wti-rolled-reference-design.md` | the rolled WTI crude reference `WTI-ER-USD`: why spot is not investable (the roll yield swings from +9.5 to -12.8 points a year by era), the roll and slot-renumbering method, the per-year validation against the published S&P GSCI Crude Oil total return, the 1985-2024 reliability bound, and which data sources answered or were walled |
 | `darcet-permanent-portfolio-design.md` | tactical Permanent Portfolio 2.0 research: macro-breadth signals, reconstruction choices, the empirical-vs-a-priori epistemic ledger; `pkg/permanent` godoc points here |
 | `decumulation-fire-design.md` | the FIRE/decumulation engine's design (scenario sources, ruin metrics, solvers); `pkg/decumul` work starts here |
 | `decumulation-fire-program-2026-07.md` | the ACTIVE FIRE improvement backlog |

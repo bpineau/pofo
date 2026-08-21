@@ -65,7 +65,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -116,6 +116,11 @@ gbond-refdata: ## (Re)generate the bundled German/Japanese/British government bo
 .PHONY: sp500-refdata
 sp500-refdata: ## (Re)generate the month-end SP500-USD reference series (network); run `make simdata` after
 	$(GO) run ./cmd/gen-sp500-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: wti-refdata
+wti-refdata: ## (Re)generate WTI-ER-USD, the rolled-futures EXCESS return of WTI crude (network)
+	$(GO) run ./cmd/gen-wti-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: trend-refdata
