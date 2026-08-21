@@ -83,6 +83,32 @@ func TestAxisTicksLabelsSpeakFrench(t *testing.T) {
 	}
 }
 
+// The masthead and the closing line are standing slots, not free typography:
+// every plate that has one puts it in the same place, in the same ink.
+func TestPlateDeckAndConclusionHoldTheirSlots(t *testing.T) {
+	deck := plateDeck("ce que la planche mesure")
+	for _, want := range []string{`x="24.0"`, `y="62.0"`, `font-size="10.5"`,
+		`fill="` + figMuted + `"`, `text-anchor="start"`, `font-weight="400"`,
+		">ce que la planche mesure<"} {
+		if !strings.Contains(deck, want) {
+			t.Errorf("the deck does not carry %q", want)
+		}
+	}
+	// The conclusion takes its baseline and nothing else: same column, one
+	// notch louder than the notes under it.
+	concl := plateConclusion(374, "ce qu'il faut en retenir")
+	for _, want := range []string{`x="24.0"`, `y="374.0"`, `font-size="10.5"`,
+		`fill="` + figSoft + `"`, `font-weight="600"`, ">ce qu'il faut en retenir<"} {
+		if !strings.Contains(concl, want) {
+			t.Errorf("the conclusion does not carry %q", want)
+		}
+	}
+	// Both are set in the UI sans, like every other worded line of a plate.
+	if !strings.Contains(deck, figSans) || !strings.Contains(concl, figSans) {
+		t.Error("a masthead line escaped the UI sans")
+	}
+}
+
 func TestPlateFootStacksItsLines(t *testing.T) {
 	out := plateFoot(400, []string{"une convention", "une réserve"})
 	if n := strings.Count(out, "<text"); n != 2 {

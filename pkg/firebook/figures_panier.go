@@ -64,7 +64,7 @@ func figPanierContributions() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("votre inflation", "Le panier de Denise et Paul, poste par poste"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"chaque barre : le poids du poste × la hausse de ses prix, en points d'inflation par an"))
 
 	// vertical grid, ticked at the top so the bottom stays free for the total
@@ -159,7 +159,7 @@ func figEcartCompose() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("l'écart composé", "Un demi-point par an, compté en années de dépenses"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"ce qu'une indexation sur le seul indice ne paie pas, cumulé année après année"))
 
 	// the cost zone: the whole area under the worse drift, the softer tint

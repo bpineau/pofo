@@ -68,7 +68,7 @@ func figImmobilierNetNet() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("l'immobilier locatif", "Du brut d'annonce au net-net : la cascade"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"un logement de 200 000 € loué 1 000 € par mois, sans crédit, TMI 30 % : chaque marche se remplace par la vôtre"))
 
 	for _, g := range []float64{0, 2, 4, 6} {

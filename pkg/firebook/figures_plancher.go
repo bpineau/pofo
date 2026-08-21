@@ -118,7 +118,7 @@ func figMillesimesSoutenables() string {
 	var b strings.Builder
 	b.WriteString(plateHead("soixante-six départs en retraite",
 		"Le taux qui a tenu trente ans, millésime par millésime"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Retrait initial maximal qu'un 50/50 américain aurait soutenu trente ans, en pouvoir d'achat constant"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		fmt.Sprintf("%d millésimes, de %d à %d, le dernier dont les trente années sont complètes",

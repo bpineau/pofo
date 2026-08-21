@@ -96,7 +96,7 @@ func figRetraitDeuxLectures() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la règle des 4 %",
 		"Un retrait rigide, et les deux lectures qu'on en fait"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Millésime 1966, 60/40 américain réel, 1 M€ et un retrait initial de 4 % indexé sur l'inflation"))
 
 	// The upper panel: the cheque, one bar per year.
@@ -173,9 +173,10 @@ func figRetraitDeuxLectures() string {
 			fmt.Sprintf("%d", yr)))
 	}
 
-	b.WriteString(sTxt(24, 428, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(428,
 		"Le virement ne bouge pas d'un euro pendant vingt-huit ans, et c'est bien ce qui rend la règle si difficile à quitter à temps."))
-	b.WriteString(sTxt(24, 444, 9.5, figMuted, "start", "400",
-		"Tout est réel, inflation retirée. Le capital s'épuise dans la 29e année : 4 % dépassait ce que ce millésime pouvait porter."))
+	b.WriteString(plateFoot(444, []string{
+		"Tout est réel, inflation retirée. Le capital s'épuise dans la 29e année : 4 % dépassait ce que ce millésime pouvait porter.",
+	}))
 	return svg(640, 460, b.String())
 }

@@ -61,6 +61,28 @@ func plateHead(kicker, title string) string {
 	return b.String()
 }
 
+// plateDeck sets the deck: the one grey line under the title that says what the
+// plate measures, on the standing baseline the head block leaves for it. It
+// takes no geometry because it has none to take, and that is the point: the
+// masthead of every plate is kicker, title, deck, always in the same place.
+//
+// A plate whose title runs to two lines, or whose deck has to breathe, sets its
+// own line instead; the handful that do are deviations, not a second slot.
+func plateDeck(deck string) string {
+	return sTxt(24, 62, 10.5, figMuted, "start", "400", deck)
+}
+
+// plateConclusion sets the sentence a plate closes on: the reading it wants
+// carried away, one notch louder than the notes under it and one notch quieter
+// than the title over it. It sits above plateFoot's block and takes only its
+// baseline, because that is all that varies between plates.
+//
+// The typography is the book's "loud small line" and a few plates borrow it for
+// a row label or a panel header; those keep sTxt. This slot is the conclusion.
+func plateConclusion(y float64, sentence string) string {
+	return sTxt(24, y, 10.5, figSoft, "start", "600", sentence)
+}
+
 // barV draws a vertical bar with the data end rounded (r), anchored at base.
 func barV(x, w, yBase, yEnd float64, fill string) string {
 	r := 3.5
@@ -196,7 +218,7 @@ func axisTicks(b *strings.Builder, s figScale, ticks []float64, decimals int, su
 // y + 15*len(lines) plus its bottom margin.
 //
 // The conclusive sentence some plates carry just above these notes is not part
-// of the block: it is louder on purpose and stays the plate's own business.
+// of the block: it is louder on purpose and has its own slot, plateConclusion.
 func plateFoot(y float64, lines []string) string {
 	var b strings.Builder
 	for i, l := range lines {

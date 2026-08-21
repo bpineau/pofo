@@ -76,7 +76,7 @@ func figLinkersEchelle() string {
 	var b strings.Builder
 	b.WriteString(plateHead("l'échelle indexée",
 		"Ce que finance une échelle de linkers, selon le taux réel et l'horizon"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Retrait annuel réel d'une échelle entièrement consommée : r / (1 − (1+r)^−N), en % du capital"))
 
 	// The window where a 30-year ladder pays more than the rule: the wedge
@@ -162,7 +162,7 @@ func figLinkersEchelle() string {
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="3.8" fill="none" stroke="%s" stroke-width="1.6"/>`, x(cross40), yc, figBad)
 	b.WriteString(mTxt(x(cross40), yc+16, 10.5, figBad, "middle", "600", frNum(cross40, 1)+" %"))
 
-	b.WriteString(sTxt(24, 338, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(338, fmt.Sprintf(
 		"La ligne pointillée est la règle des 4 %%. Au-delà de %s %% réel, l'échelle de 30 ans fait mieux.",
 		frNum(cross30, 1))))
 	b.WriteString(sTxt(24, 354, 10.5, figMuted, "start", "400", fmt.Sprintf(

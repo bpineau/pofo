@@ -140,7 +140,7 @@ func figPreavis1966() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le préavis",
 		"Le millésime qui échoue prévient vingt ans à l'avance"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Millésime 1966, le pire connu : le capital au-dessus, le taux de retrait courant et ses voyants au-dessous"))
 
 	// The upper register: the capital, in thousands of constant euros.
@@ -252,7 +252,7 @@ func figPreavis1966() string {
 	b.WriteString(braceH(xY(preavisFirstRed()), xY(preavisRuinYear), 428,
 		fmt.Sprintf("préavis : %d ans", preavisNotice())))
 
-	b.WriteString(sTxt(24, 470, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(470, fmt.Sprintf(
 		"Le plan condamné a prévenu %d ans à l'avance : premier rouge en %d, dernière ligne du compte en %d.",
 		preavisNotice(), preavisFirstRed(), preavisRuinYear)))
 	b.WriteString(plateFoot(488, []string{

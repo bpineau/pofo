@@ -106,7 +106,7 @@ func figEchantillonCroise() string {
 	var b strings.Builder
 	b.WriteString(plateHead("deux échantillons, un plan",
 		"Le même retrait, jugé sur deux siècles"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Probabilité d'épuiser le capital en trente ans, pour un 60/40 et un retrait rigide indexé"))
 
 	// The band where plans are actually sized, marked first.
@@ -160,7 +160,7 @@ func figEchantillonCroise() string {
 		b.WriteString(sTxt(x+dx, ry+c.dy, 10, c.color, anchor, "600", c.label))
 	}
 
-	b.WriteString(sTxt(24, 376, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(376, fmt.Sprintf(
 		"À 4 %%, le même plan échoue %s fois sur cent sur le siècle américain, et %s fois sur cent "+
 			"sur le siècle développé.",
 		frNum(croiseAt(4).us, 0), frNum(croiseAt(4).broad, 0))))

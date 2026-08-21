@@ -118,7 +118,7 @@ func figInflationEpisodeDerive() string {
 	var b strings.Builder
 	b.WriteString(plateHead("l'inflation et le taux de retrait",
 		"Même perte cumulée, deux formes : l'épisode contre la dérive"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"600 k€, 24 k€ par an indexés sur les prix (4,0 % au départ), 30 ans."))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"Les mêmes actifs dans les deux mondes : 6,1 % nominal par an, soit 4 % réel si l'inflation tient les 2 % prévus."))

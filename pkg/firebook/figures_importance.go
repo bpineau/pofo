@@ -108,7 +108,7 @@ func figImportanceAnnees() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le profil d'importance",
 		"Où se joue vraiment le sort d'une retraite"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Part de l'issue finale que le rendement de chaque année, à lui seul, explique"))
 
 	// The decade the article points at, marked before the bars are drawn over
@@ -145,7 +145,7 @@ func figImportanceAnnees() string {
 	b.WriteString(sTxt(impX1, impBot-40, 10, figMuted, "end", "600",
 		fmt.Sprintf("les vingt dernières : %s %% en tout", frNum(impTailShare(), 0))))
 
-	b.WriteString(sTxt(24, 364, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(364, fmt.Sprintf(
 		"Le quart le plus court de l'horizon porte %s %% du résultat : la vigilance se date, elle ne s'étale pas.",
 		frNum(impDecadeShare(), 0))))
 	b.WriteString(plateFoot(386, []string{

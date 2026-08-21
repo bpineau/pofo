@@ -69,7 +69,7 @@ func figOrAbModeles() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("l'or en retrait", "Avec ou sans or, modèle par modèle"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le même plan joué deux fois : 1,5 M€, 51 000 €/an, 45 ans, corridor Vanguard"))
 
 	// The axis: a hairline per even point, and the ticks under the last row.
@@ -121,7 +121,7 @@ func figOrAbModeles() string {
 	b.WriteString(sTxt(420, 336, 11.5, goldABWithFill, "start", "600", goldABVerdictB))
 
 	// The price of the cover, which the plate is not allowed to leave out.
-	b.WriteString(sTxt(24, 376, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(376, fmt.Sprintf(
 		"Le prix de cette couverture : richesse médiane à 45 ans, \u2212%s %%.", frNum(-goldABMedianCost, 0))))
 	b.WriteString(sTxt(24, 392, 9.5, figMuted, "start", "400",
 		"A = 70 % actions / 30 % obligations intermédiaires. B = 70 / 20 / 10 avec or, ETC physique en CTO."))

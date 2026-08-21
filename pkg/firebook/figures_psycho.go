@@ -111,7 +111,7 @@ func figMourirRiche() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la distribution du patrimoine terminal",
 		"Ce qu'il restait au bout de trente ans, millésime par millésime"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"1 M€ de capital, retrait fixe indexé sur l'inflation et jamais ajusté : ce qui restait à l'arrivée, en multiple de la mise"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		fmt.Sprintf("%d départs, de %d à %d, sur le 60/40 américain réel du livre, classés du pire au meilleur", n, mourirRicheFirst, mourirRicheFirst+n-1)))
@@ -199,7 +199,7 @@ func figMourirRiche() string {
 	// The closing line's arithmetic: exactly one vintage ran out at 40 000 EUR
 	// and none did at 30 000, so the quarter given up bought an escape from ruin
 	// once in forty-three worlds, and an estate in all the others.
-	b.WriteString(sTxt(24, 522, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(522,
 		fmt.Sprintf("Se rationner d'un quart n'a évité la ruine que dans un millésime sur %d. Dans les %d autres, cela n'a fait que grossir le legs.", n, n-1)))
 	b.WriteString(sTxt(24, 540, 10, figMuted, "start", "400",
 		"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; sans fiscalité."))

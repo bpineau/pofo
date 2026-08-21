@@ -164,7 +164,7 @@ func figActionsRattrapent() string {
 	var b strings.Builder
 	b.WriteString(plateHead("les actions pendant l'inflation",
 		"La moitié du pouvoir d'achat perdue en 1974, tout repris en 1985"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"S&amp;P 500 dividendes réinvestis, en dollars, déflaté par le CPI américain. Base 100 fin décembre 1972."))
 
 	// The two seas: the deficit to climb out of, then what is above water.

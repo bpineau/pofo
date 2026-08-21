@@ -154,7 +154,7 @@ func figTenteTransfert() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le glidepath, ce qu'il rapporte",
 		"La tente déplace le résultat, elle n'en fabrique pas"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"écart de taux de retrait soutenable, en points de taux : tente 58 → 85 % d'actions en dix ans,"))
 	b.WriteString(sTxt(24, 76, 10.5, figMuted, "start", "400",
 		"moins la statique de même exposition moyenne (80/20)"))

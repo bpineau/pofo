@@ -85,7 +85,7 @@ func figOrDecennies() string {
 	var b strings.Builder
 	b.WriteString(plateHead("l'or en portefeuille",
 		"Les décennies de l'or, en réel : cinq dans le rouge, trois à deux chiffres"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Une fenêtre de dix ans tous les cinq ans. Or en dollars, déflaté par le CPI américain."))
 
 	// The purgatory: five consecutive windows underwater, 1975 to 2004.

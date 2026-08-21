@@ -57,18 +57,16 @@ func figAmortissementHorizon() string {
 	x := func(n float64) float64 {
 		return x0 + (n-amortFirstN)/(amortLastN-amortFirstN)*(x1-x0)
 	}
-	y := func(v float64) float64 { return yBot - (v-vLo)/(vHi-vLo)*(yBot-yTop) }
+	rate := figScale{Min: vLo, Max: vHi, Px0: yBot, Px1: yTop}
+	y := rate.Map
 
 	var b strings.Builder
 	b.WriteString(plateHead("les maths du 4 %", "Le bonus d'amortissement fond avec l'horizon"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le retrait qui épuise exactement le capital, à 4 % réel, selon le nombre d'années à couvrir"))
 
 	// Grid and axes.
-	for v := 4.0; v <= 12.0; v += 2 {
-		b.WriteString(line(x0, y(v), xInf, y(v), figGrid, 1))
-		b.WriteString(mTxt(x0-10, y(v)+3.5, 10, figMuted, "end", "400", fmt.Sprintf("%.0f %%", v)))
-	}
+	axisTicks(&b, rate, []float64{4, 6, 8, 10, 12}, 0, " %", x0, xInf, false)
 	b.WriteString(line(x0, yTop, x0, yBot, figRule, 1))
 	b.WriteString(line(x0, yBot, xInf, yBot, figRule, 1))
 	for n := amortFirstN; n <= amortLastN; n += 10 {
@@ -123,10 +121,11 @@ func figAmortissementHorizon() string {
 		b.WriteString(sTxt((br.xa+br.xb)/2, 372, 10, figSoft, "middle", "600", br.label))
 	}
 
-	b.WriteString(sTxt(24, 400, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(400, fmt.Sprintf(
 		"L'horizon se paie au début : de 10 à 30 ans le taux perd %s points, de 50 ans à l'éternité il en perd %s.",
 		frNum(amortGap(10, 30), 1), frNum(amortForever(50), 1))))
-	b.WriteString(sTxt(24, 416, 9.5, figMuted, "start", "400",
-		"Arithmétique d'annuité, r / (1 − (1+r)^−n) à r = 4 % réel. Le capital finit à zéro le dernier jour, sans legs ni marge."))
+	b.WriteString(plateFoot(416, []string{
+		"Arithmétique d'annuité, r / (1 − (1+r)^−n) à r = 4 % réel. Le capital finit à zéro le dernier jour, sans legs ni marge.",
+	}))
 	return svg(640, 432, b.String())
 }

@@ -129,7 +129,7 @@ func figTenirEcheance() string {
 	x, y := tenirScales()
 	var b strings.Builder
 	b.WriteString(plateHead("tenir à échéance", "Deux comptabilités, une seule richesse"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le même portefeuille obligataire à sept ans, après une hausse de deux points au douzième mois"))
 	legendChips(&b, 74, [][2]string{
 		{figDeep, "le titre détenu à échéance"},
@@ -186,7 +186,7 @@ func figTenirEcheance() string {
 	b.WriteString(sTxt(tenX1-8, 118, 10, figSoft, "end", "600",
 		"même richesse finale : "+frNum(tenirFace(), 2)+" pour 100 investis"))
 
-	b.WriteString(sTxt(24, 372, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(372,
 		"La perte est la même des deux côtés : affichée en prix chez l'un, invisible dans le coupon chez l'autre."))
 	b.WriteString(plateFoot(394, []string{
 		"Arithmétique obligataire fermée, aucune donnée de marché. Capital 100, courbe plate à 2 % portée à 4 % " +

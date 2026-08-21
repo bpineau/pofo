@@ -79,7 +79,7 @@ func figTraverseesMatelas() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le matelas de liquidités",
 		"Neuf traversées contre la portée du matelas"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"mois passés sous le dernier sommet réel, 60/40 américain réel, 1953-2026"))
 	legendChips(&b, 72, [][2]string{
 		{figAccent, "les 18 premiers mois"},

@@ -80,7 +80,7 @@ func figStacking2022() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le return stacking",
 		"L'anatomie de 2022, de la perte nue à la perte empilée"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Le millésime 2022 du plan de l'exemple, décomposé en une addition"))
 
 	// The value axis, zero picked out: everything happens below it.

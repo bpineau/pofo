@@ -79,7 +79,7 @@ func figMillesimes1966Vs1982() string {
 	var b strings.Builder
 	b.WriteString(plateHead("millésime 1966 contre millésime 1982",
 		"Le même plan, deux dates de départ"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"capital réel restant, en millions d'euros"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"même plan des deux côtés : 1 M€, 40 k€ retirés chaque année, indexés sur l'inflation, jamais ajustés"))
@@ -142,7 +142,7 @@ func figMillesimes1966Vs1982() string {
 		b.WriteString(sTxt(556, r.y, 10.5, r.col, "middle", "600", r.end))
 	}
 
-	b.WriteString(sTxt(24, 420, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(420,
 		"Le portefeuille de 1966 a pourtant rapporté plus que le retrait. C'est l'ordre des années qui a tué le plan."))
 	b.WriteString(sTxt(24, 436, 10, figMuted, "start", "400",
 		"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre ; retrait fixe, sans fiscalité."))

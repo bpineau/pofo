@@ -77,7 +77,7 @@ func figBengenFalaise() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le voyant du retrait fixe",
 		"La falaise silencieuse : dix-neuf ans de préavis"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"taux de retrait courant lu chaque 1er janvier (retrait de l'année / portefeuille), en %"))
 
 	// The two severity bands the article names, drawn under everything else.
@@ -171,7 +171,7 @@ func figCapeContracyclique() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la double contracyclicité",
 		"Le revenu, produit de deux facteurs en sens inverse"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"un portefeuille de 1,5 M€ à CAPE 30, frappé par un krach puis par une euphorie"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"les courbes fines joignent les couples qui servent le même revenu, en k€ par an"))
@@ -280,7 +280,7 @@ func figCreditsMortalite() string {
 	var b strings.Builder
 	b.WriteString(plateHead("l'économie de la rente",
 		"Le crédit de mortalité, et l'âge où il prend le dessus"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"ce que la mortalité du groupe verse aux survivants, en % du capital et par an"))
 
 	for _, g := range []float64{0, 2, 4, 6, 8, 10} {
@@ -359,7 +359,7 @@ func figArbreDecision() string {
 
 	var b strings.Builder
 	b.WriteString(plateHead("la procédure", "Cinq étapes, dans cet ordre : le champ se referme"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"on entre avec neuf règles candidates, on sort avec une seule, écrite"))
 
 	const (
@@ -476,7 +476,7 @@ func figDeuxThermometres() string {
 	)
 	var b strings.Builder
 	b.WriteString(plateHead("kitces-tharp", "Deux thermomètres, deux verdicts opposés"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"chaque ménage lu par le ratio brut de 2006, puis par la probabilité de succès du plan complet ;"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"la bande beige est le corridor de la règle, le point vide l'avant, le point plein l'après"))
@@ -572,7 +572,7 @@ func figPourcentageLissages() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le lissage du pourcentage",
 		"Le même krach, trois façons de le transmettre au ménage"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"1,4 M€, w = 4 %, à travers les rendements réels du 60/40 de 1973 à 1984 ; revenu servi, k€"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"pointillé : les 45 k€ sous lesquels le ménage entame son incompressible"))
@@ -659,7 +659,7 @@ func figBorneGeometrique() string {
 	var b strings.Builder
 	b.WriteString(plateHead("choisir le pourcentage",
 		"La borne géométrique : au-delà, le revenu s'érode pour toujours"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"1 M€, rendement réel géométrique de 4 %/an, revenu servi en k€, sans aléa"))
 
 	for _, v := range []float64{20, 30, 40, 50, 60} {
@@ -699,7 +699,7 @@ func figBorneGeometrique() string {
 	fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.4" fill="none" stroke="%s" stroke-width="1.8"/>`, cx, cy, figInk)
 	b.WriteString(mTxt(cx+9, cy+16, 10, figInk, "start", "600", fmt.Sprintf("%.0f ans", tc)))
 
-	b.WriteString(sTxt(24, 338, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(338, fmt.Sprintf(
 		"La bascule est à w = g / (1 + g), soit %s %% ici.", frNum(wStar*100, 1))))
 	b.WriteString(sTxt(24, 354, 10.5, figMuted, "start", "400",
 		"En dessous, le portefeuille croît plus vite qu'on ne le ponctionne et le revenu monte doucement."))
@@ -745,7 +745,7 @@ func figCapeDepuis1881() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le taux n'est pas une constante",
 		"Ce que la règle CAPE aurait servi, chaque janvier depuis 1881"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"taux de retrait a + b / CAPE (a = 1,75, b = 0,5) appliqué au CAPE du 1er janvier, en % par an"))
 
 	for _, g := range []float64{2, 4, 6, 8, 10, 12} {
@@ -828,7 +828,7 @@ func figRichesseTotale() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la richesse totale",
 		"Ce que l'amortissement regarde, et ce que les autres règles ignorent"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"un ménage de 49 ans : 1,55 M€ de portefeuille, 19 k€/an de pension à 67 ans, 200 k€ de legs visé"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"barres à l'échelle en k€, segment bleu = la pension future actualisée ; à droite, la rente servie"))
@@ -885,7 +885,7 @@ func figEtagesDuPlancher() string {
 	var b strings.Builder
 	b.WriteString(plateHead("safety first",
 		"Deux colonnes qui doivent s'aligner : le besoin et sa source"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"un couple de 74 et 72 ans, 1,1 M€, 38 k€ de plancher et 50 k€ de confort, k€ par an"))
 
 	const lx, rx = 190.0, 450.0
@@ -940,7 +940,7 @@ func figHierarchieAttention() string {
 	var b strings.Builder
 	b.WriteString(plateHead("où porter son attention",
 		"Ce qui déplace vraiment la ruine, du plus lourd au plus léger"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"effet sur la probabilité de ruine, en points (ordres de grandeur de la littérature)"))
 
 	for _, g := range []float64{0, 2, 4, 6, 8, 10} {
@@ -998,7 +998,7 @@ func figVpwTestDePerte() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le test de tolérance à la perte",
 		"Le même choc, avec et sans le pont de pension"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"un couple de 47 ans, 1,6 M€ en 60/40, pensions de 21,6 k€ à 67 ans ; revenu servi, k€ par an"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"pointillé bleu : le confort visé, 52 ; pointillé brun : le plancher, 38"))
@@ -1085,7 +1085,7 @@ func figBengenMillesimes() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le legs qu'on ne choisit pas",
 		"Trente-trois départs, deux pathologies opposées, une seule règle"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"600 000 € et 24 000 € par an indexés, tenus quarante ans : ce qui restait à l'arrivée, en k€ réels"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"un point par année de départ, de 1954 à 1986, sur le 60/40 américain du livre"))
@@ -1152,7 +1152,7 @@ func figBengenMillesimes() string {
 		"%d départs sur %d finissent à zéro, et ils sont tous voisins : c'est la même mauvaise décennie.", ruined, len(bengenVintages))))
 	b.WriteString(sTxt(24, 360, 10.5, figMuted, "start", "400", fmt.Sprintf(
 		"%d autres laissent plus de trois fois la mise, jusqu'à neuf fois. Le médian, lui, rend le capital intact.", rich)))
-	b.WriteString(sTxt(24, 376, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(376,
 		"La règle ne choisit pas entre ses deux pathologies, et vous non plus : c'est le tirage qui décide."))
 	return svg(640, 390, b.String())
 }
@@ -1183,7 +1183,7 @@ func figFamillesInformation() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la carte des familles",
 		"Plus une règle écoute, mieux elle se place, plus elle exige de vous"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"cercle plein quand toute la famille l'écoute, demi-cercle quand certaines règles seulement, vide sinon"))
 
 	for i, c := range cols {

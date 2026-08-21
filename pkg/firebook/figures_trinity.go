@@ -106,7 +106,7 @@ func figTrinityFalaise() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la falaise de trinity",
 		"Entre quatre et cinq pour cent, le sol se dérobe"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Part des retraites de trente ans qui sont allées au bout, taux de retrait par taux de retrait"))
 
 	axisTicks(&b, success, []float64{0, 25, 50, 75, 100}, 0, " %", triX0, triX1, false)
@@ -148,7 +148,7 @@ func figTrinityFalaise() string {
 	b.WriteString(sTxt(lx, 134, 10, figSoft, "start", "600",
 		"repasse devant le 75/25"))
 
-	b.WriteString(sTxt(24, 376, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(376, fmt.Sprintf(
 		"Un point de retrait en plus, de 4 à 5 %%, coûte %s points de succès au 75/25 ; "+
 			"le point précédent n'en coûtait que %s.",
 		frNum(trinityCliffFour(), 0), frNum(trinityCliffThree(), 0))))
