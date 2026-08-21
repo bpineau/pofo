@@ -1,5 +1,5 @@
 # Defensive assets: the map and the roles
-<!-- source: actifs-defensifs @ fd3a815e5aa3 -->
+<!-- source: actifs-defensifs @ d7acbc426027 -->
 
 Everything in the portfolio that is not the equity engine has one job: defense. But defense against **what**?
 
@@ -11,6 +11,12 @@ The major building blocks each have their own article ([[bonds-in-retirement]], 
 
 ::: cle The spec for a real defensive asset
 Four requirements, in order. (1) Hold, or **rise**, when the equity engine suffers. Not only through six-month crashes, but through hostile **regimes** that last for years ([[market-regimes]]). (2) A decorrelation that **survives** a crisis. Plenty of average "decorrelations" converge to 1 exactly when you need them ([[fat-tails]]). (3) Liquidity: a defensive asset you cannot sell at the bottom to fund a withdrawal defends nothing. (4) A carry cost you know and have budgeted. Real insurance carries a premium, and a "defensive" asset that also claims to pay is hiding its premium somewhere.
+:::
+
+The candidates' crisis report card, before the detailed review, fits in one grid.
+
+::: figure defenses-bulletin
+What each candidate returned, in real dollars, through four crises of different natures. The frame marks the best defender of the column: it moves from episode to episode, and every winner collapses somewhere else in its own row. That is the article's whole thesis, before the review that follows.
 :::
 
 ## The candidates, regime by regime
