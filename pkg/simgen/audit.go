@@ -162,6 +162,14 @@ var auditCaveats = map[string]string{
 		"vehicle's shortfall rather than a price list, and applying it would overshoot the gap. Measured 2026-08.",
 	"RSSB": "The warn level is 1.4 standard errors from zero on whole months (+1.43 pt/yr over 30 of them), " +
 		"which is the largest of this family and still not a measurement. Measured 2026-08.",
+	"IE00BGCSB447": "The bad path is two months out of 96, and they are real. The engine is a compounded bill " +
+		"rate, which has no credit spread and almost no daily variance; the fund is an investment-grade " +
+		"ultrashort book. Monthly correlation is 0.29 over the whole window and 0.81 once March 2020 (-3.46 %) " +
+		"and its April reversal (+3.54 %) are dropped, after which dropping further months changes nothing. " +
+		"Both siblings moved the same day (ICSH -1.5 %, NEAR -6.2 % on 2020-03-19 against this fund's -3.2 %), " +
+		"so nothing here is a bad print and no hygiene rule should remove it. The two months net out, the level " +
+		"gap is -0.42 %/yr, and real quotes are grafted from 2018, so this governs only the pre-inception tail. " +
+		"Measured 2026-08; read the level verdict, not the path.",
 	"ERESMONDEM": "No quote exists for an employee-savings fund; the closest reference is WPEA " +
 		"(same index, same currency, different fees).",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
