@@ -313,6 +313,16 @@ kurtosis 2.60, real 2.41, 2.37 after), and the maximum drawdown never moves
 more than half a point in any case, because a drawdown of this length is
 governed by the anchors, which are real.
 
+The engine's own texture, graded directly against the two daily composites over
+their whole 2000-2026 span, is sound and needed no change. Its correlation with
+them is flat across frequencies, 0.50 daily, 0.52 weekly and 0.51 monthly
+against the all-styles composite (0.51 / 0.52 / 0.52 against the pure-trend
+one), so it is no better and no worse a description of a trend book's day than
+of its month. And its daily volatility annualizes to 0.965 of its monthly one,
+against 0.946 and 0.951 for the two composites: the engine puts about the right
+share of a month's variance inside the month. What was wrong was never the
+texture, it was the amplitude the projection shipped it at.
+
 Two costs are worth stating. The daily correlation with the hidden record falls
 slightly, 0.513 to 0.492 averaged over the four cases, which is what adding
 amplitude to a texture that is right about half the time does; it is a statistic
@@ -1174,10 +1184,9 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
 The entry that used to head this list, "validate the engine's daily texture
 against a daily reference", is closed: the texture was graded against both daily
 composites and, more usefully, out of sample against four funds' real daily NAVs
-subsampled to a weekly cadence (the section above). The engine's own texture is
-sound (its daily volatility annualizes to 0.965 of its monthly one, against
-0.946 and 0.951 for the two published daily composites); what was wrong was that
-the projection shipped that texture at the wrong AMPLITUDE, and that is fixed.
+subsampled to a weekly cadence. The engine's own texture came out sound; what
+was wrong was the AMPLITUDE the projection shipped it at, and that is fixed. The
+measurements are two sections up.
 
 Three entries retired here rather than being solved: the pure-trend record the
 overlays needed was found (survey above), the unanchored fortnight at the start
@@ -1185,9 +1194,9 @@ of the engine tail went with the tail, and "find a nearer donor for DBMF and
 Simplify CTA" was answered by the index each of them replicates rather than by
 another fund.
 
-One entry that used to head this paragraph was tried in 2026-08 and is now
-recorded as a rejection rather than an idea: **a time-varying volatility match**
-(see the section on it above). It buys a donor era on target and costs 5.4
+One idea that stood here as the next thing to try was tried in 2026-08 and is
+now recorded as a rejection: **a time-varying volatility match** (its own
+section above). It buys a donor era on target and costs 5.4
 points a year of level that nothing can check, and the four chains do not even
 share the disease: only the pure-trend index donor's volatility fell by half
 between the eras, the all-styles one being flat to a hundredth. The constant
