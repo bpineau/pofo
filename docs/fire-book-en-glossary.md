@@ -590,6 +590,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | bloc marges | the margins block | | revenus-complementaires |
 | activité structurelle | structural work | | revenus-complementaires |
 | un simulateur complaisant est un simulateur mort | a simulator that flatters you is a dead simulator | | revenus-complementaires |
+| sous-consommation (Blanchett sense) | underconsumption | Distinct from underspending/underliving. | depenses-en-retraite |
+| choc de dépendance, provision dédiée | the long-term care shock, a dedicated reserve | | depenses-en-retraite |
+| dérive santé | the health-care drift | Distinct from spending drift. | depenses-en-retraite |
+| front-loading, charger sur le début, memory dividend | front-loading, loaded onto the front, memory dividend | English kept. | depenses-en-retraite |
+| enveloppe active, décennie active | the active envelope, the active decade | | depenses-en-retraite |
+| budget à étages temporels | a budget in dated tiers | Sibling of the three-tier budget. | depenses-en-retraite |
+| besoin actualisé | the need in present value | | depenses-en-retraite |
+| dépense coupable | the line that gets cut first | | depenses-en-retraite |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
