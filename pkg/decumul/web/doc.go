@@ -20,6 +20,13 @@
 // Without a picker the page states in one line how to bind a portfolio from
 // the command line.
 //
+// Two further options describe the DEPLOYMENT rather than the chrome, and are
+// off unless a mount is told it is a public host: WithIndexNowKey publishes the
+// ownership key file at the root, and WithBeaconToken puts the cookieless
+// Cloudflare Web Analytics tag (webui.Beacon) on every HTML page this handler
+// serves, the book editions mounted under it included. Empty, neither leaves a
+// trace: the pages are byte for byte what they are without them.
+//
 // Spending policies are exclusive in the rail. The kernel resolves clashes
 // by a fixed precedence (see the package comment of pkg/decumul), which is
 // invisible to a reader ticking two boxes, so claiming one policy clears the

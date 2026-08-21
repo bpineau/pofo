@@ -8,6 +8,12 @@
 //
 // The identity ("instrument") and the reasoning behind it are documented in
 // docs/webui-instrument-redesign.md.
+//
+// It also holds the one piece of chrome every HTML surface must carry
+// identically and none of them renders: Beacon, an http.Handler wrapper that
+// splices the optional Cloudflare Web Analytics tag into every text/html
+// response of whatever it wraps (see beacon.go). An empty token leaves the
+// wrapped handler untouched.
 package webui
 
 import _ "embed"

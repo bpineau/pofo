@@ -402,6 +402,20 @@ disagree. Without `-indexnow-key` the feature is off, and nothing is ever
 submitted by a running server: `-indexnow` is the only thing here that talks to
 a search engine, and only when you run it.
 
+A public deploy can likewise count its readers with
+[Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/),
+which sets no cookie and stores nothing on the visitor's device:
+
+```sh
+./pofo -serve -cf-beacon-token <token>   # or POFO_CF_BEACON_TOKEN in the environment
+```
+
+The beacon then rides every HTML page the server emits: the landing page, the
+visualizer, every report, both editions of the book, every simulator mount. Both
+the flag and the variable empty, the feature is entirely off and the pages are
+byte for byte what they were. There is no other analytics of any kind in the
+program.
+
 `-listen` defaults to `127.0.0.1:8787` (loopback only). Portfolio file
 arguments feed the FIRE simulator's historical models, exactly as they do
 for `-fire`.
@@ -484,6 +498,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
 | `-indexnow-key` | | IndexNow ownership key: with `-serve`, publish it at `/<key>.txt`; with `-indexnow`, sign the submission (empty = off) |
 | `-indexnow` | | submit every published URL of the given origin to the IndexNow search engines, then exit |
+| `-cf-beacon-token` | | Cloudflare Web Analytics site token: with `-serve` or `-fire`, put the cookieless beacon on every HTML page (empty = off) |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes (overrides `-simulate`) |
 

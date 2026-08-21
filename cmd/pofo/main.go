@@ -64,6 +64,10 @@ type options struct {
 	// indexNowKey publishes the IndexNow ownership key file at the root of
 	// the -serve mux ("/<key>.txt"); empty leaves the feature off.
 	indexNowKey string
+	// cfBeaconToken puts the Cloudflare Web Analytics tag on every HTML page
+	// the -serve and -fire mounts emit (webui.Beacon); empty leaves the
+	// feature off and every page byte-identical.
+	cfBeaconToken string
 }
 
 // frameworkFor resolves the -framework flag to a classification.
@@ -112,6 +116,7 @@ func run(ctx context.Context, argv []string) error {
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
 	indexNow := fs.String("indexnow", "", "submit every published URL of this origin (e.g. https://example.org) to the IndexNow search engines, then exit; needs -indexnow-key")
 	fs.StringVar(&opt.indexNowKey, "indexnow-key", "", "IndexNow ownership key: with -serve, serve it at /<key>.txt; with -indexnow, sign the submission with it (empty = read POFO_INDEXNOW_KEY from the environment; both empty = feature off)")
+	fs.StringVar(&opt.cfBeaconToken, "cf-beacon-token", "", "Cloudflare Web Analytics site token: with -serve or -fire, put the cookieless beacon on every HTML page (empty = read POFO_CF_BEACON_TOKEN from the environment; both empty = feature off)")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
@@ -222,6 +227,11 @@ Options:
 	// setting POFO_INDEXNOW_KEY, and an empty flag defers to it.
 	if opt.indexNowKey == "" {
 		opt.indexNowKey = os.Getenv("POFO_INDEXNOW_KEY")
+	}
+	// Same reasoning for the analytics site token: it belongs to the
+	// deployment, not to the command line the image is built with.
+	if opt.cfBeaconToken == "" {
+		opt.cfBeaconToken = os.Getenv("POFO_CF_BEACON_TOKEN")
 	}
 
 	// -indexnow talks to a search engine and nothing else: no portfolio, no
