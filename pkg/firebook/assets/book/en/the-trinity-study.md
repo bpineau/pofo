@@ -1,5 +1,5 @@
 # Bengen, the Trinity study, and the birth of the safe withdrawal rate
-<!-- source: etude-trinity @ 6910af79a617 -->
+<!-- source: etude-trinity @ 7b73d2b24b98 -->
 
 Before 1994, one question got the same wrong answer with impressive consistency: how much can I take out of my portfolio every year? "The average return, obviously." Stocks returned 10% historically, so withdraw 8%, said professional advisers with a straight face.
 
@@ -49,6 +49,11 @@ A slice of the grid (figures from the 2011 update, inflation-indexed withdrawals
 | 6% | 62% | 60% | 51% | 22% |
 
 Three lasting lessons come out of that grid.
+
+::: figure trinity-falaise
+The Trinity grid rebuilt in house, on a century and a half of American data rather than its seventy years: the share of thirty-year retirements that made it, withdrawal rate by withdrawal rate. The drop between 4 and 5% is the cliff; the spread of the curves in the lower half is the allocation asymmetry; and past 4.50%, all equity moves back ahead of the 75/25, which is the same lesson read where it surprises.
+:::
+
 
 **The cliff.** Between 4 and 5%, success collapses. The subject is nonlinear, and that is why "just a little more" costs so much.
 

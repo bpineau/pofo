@@ -1698,4 +1698,23 @@ var figureDict = map[string]string{
 	"importance-annees|Lue sur la richesse finale plutôt que sur le succès, la concentration tombe à 58 % pour la première décennie.":                      "Read on final wealth rather than on success, the concentration drops to 58% for the first decade.",
 	"importance-annees|Le texte annonce trois quarts, la mesure en donne 70, stable de 67 à 77 % selon l'horizon, le retrait et le portefeuille.":          "The text says three quarters, the measurement gives 70, stable between 67 and 77% across horizon, withdrawal and portfolio.",
 	"importance-annees|Un tirage indépendant sous-estime le risque de séquence : la concentration réelle est plutôt au-dessus de cette planche.":           "Drawing years independently understates sequence risk: the real concentration is likelier above this plate's.",
+
+	// The Trinity cliff (trinity-falaise).
+	"trinity-falaise|LA FALAISE DE TRINITY":                                                                         "THE TRINITY CLIFF",
+	"trinity-falaise|Entre quatre et cinq pour cent, le sol se dérobe":                                              "Between four and five percent, the floor gives way",
+	"trinity-falaise|Part des retraites de trente ans qui sont allées au bout, taux de retrait par taux de retrait": "Share of thirty-year retirements that made it, withdrawal rate by withdrawal rate",
+	"trinity-falaise|taux de retrait initial, indexé sur l'inflation ensuite  →":                                    "initial withdrawal rate, indexed to inflation thereafter  →",
+	"trinity-falaise|la falaise":                                                                                    "the cliff",
+	"trinity-falaise|100 % actions":                                                                                 "100% stocks",
+	"trinity-falaise|à partir de 4,50 %, le 100 % actions":                                                          "past 4.50%, all equity moves back",
+	"trinity-falaise|repasse devant le 75/25":                                                                       "ahead of the 75/25",
+	"trinity-falaise|Un point de retrait en plus, de 4 à 5 %, coûte 20 points de succès au 75/25 ; le point précédent n'en coûtait que 2.":                                "One more point of withdrawal, from 4 to 5%, costs the 75/25 twenty points of success; the point before it cost two.",
+	"trinity-falaise|Recalcul maison sur le panel Jorda-Schularick-Taylor des États-Unis (rendements réels annuels, actions et obligations d'État,":                       "Recomputed in house on the Jorda-Schularick-Taylor record for the United States (annual real returns, stocks and government bonds,",
+	"trinity-falaise|1872-2020), soit 120 fenêtres glissantes de trente ans. Aucun chiffre publié par Trinity n'est repris ici :":                                         "1872-2020), giving 120 rolling thirty-year windows. Not one number published by Trinity is reused here:",
+	"trinity-falaise|l'étude d'origine porte sur 1926-1995 et en nominal pour partie, quand ce panel remonte un demi-siècle plus haut et reste réel.":                     "the original study covers 1926-1995 and is partly nominal, while this record starts half a century earlier and stays real.",
+	"trinity-falaise|Retrait fixe pris en début d'année, part du capital de départ, tenu en pouvoir d'achat, rééquilibrage annuel des deux jambes.":                       "A fixed withdrawal taken at the start of each year, a share of the starting capital, held in purchasing power, both legs rebalanced yearly.",
+	"trinity-falaise|L'échantillon plus profond durcit le verdict : à 4 %, le 75/25 échoue deux fois sur cent ici, jamais chez Trinity, et le 25/75":                      "The deeper sample hardens the verdict: at 4%, the 75/25 fails twice in a hundred here and never in Trinity, and the 25/75",
+	"trinity-falaise|échoue une fois sur quatre là où le texte dit une sur cinq. L'asymétrie, elle, est intacte : trop peu d'actions reste bien plus dangereux que trop.": "fails one time in four where the text says one in five. The asymmetry is intact: too few stocks stays far more dangerous than too many.",
+
+	// The crossed samples of the broad-sample article (echantillon-croise).
 }
