@@ -52,7 +52,7 @@ record reaches, the file ends.
 
 | Fund | Real from | Donors, nearest first | File starts |
 |---|---|---|---|
-| DBMF | 2019-05 | the all-styles composite it replicates 2000-01 (0.85), Man AHL Diversified 1996-03 (0.77) | 1996-03-26 |
+| DBMF | 2019-05 | the all-styles composite it replicates, half projected on the fund's own ten futures, 2000-03 (0.89), the raw composite for the quarter before it (0.85), Man AHL Diversified 1996-03 (0.77) | 1996-03-26 |
 | DBMF UCITS USD | 2025-03 | DBMF 2019-05 (0.97), then as above | 1996-03-26 |
 | DBMF UCITS EUR | 2025-04 | same chain, converted at EURUSD spot | 1996-03-26 |
 | AQR UCITS A | 2015-03 | AQMIX 2010-01 (0.93, same manager), Guggenheim 2007-02, Man AHL 1996-03 (0.71) | 1996-03-26 |
@@ -410,6 +410,99 @@ the benchmark this fund names. It is not. The fund's own annual shareholder
 report for the year ended 2024-06 measures itself against the SG CTA Index, the
 all-styles one, and beat it by 11 points. The pure-trend composite is kept on
 the two reasons above, not on a naming that does not exist.
+
+### The fund holds ten contracts, so half the index is read through them (measured, 2026-08)
+
+The index donor above closed most of the gap on DBMF and left a specific one
+open: a composite of twenty programmes trading fifty-odd markets is not the same
+object as a fund that holds TEN futures contracts. The fund's own consolidated
+schedule of investments names them, and there are exactly ten: the S&P 500
+E-mini, MSCI EAFE, MSCI Emerging Markets, the 2-year, 10-year and long US
+Treasury contracts, gold, WTI crude, the euro and the yen. Whatever the
+composite earns on the forty markets the fund cannot hold is tracking error by
+construction, and no volatility match removes it.
+
+The manager's process for removing it is public, and none of it is a secret
+model: the prospectus states a trailing 60-day window on the target's
+performance, US-traded contracts only, and no discretion to override the model;
+the manager describes weekly refits and about ten contracts. Run that process on
+the PUBLIC index with PUBLIC price series and it produces a projection of the
+composite onto the fund's own instrument set. The intercept is fitted and thrown
+away, which is the point: what a regression cannot explain is the constituent
+managers' skill and their fees, and a portfolio of ten futures earns neither.
+The engine is `pkg/simgen/dbireplica.go`, the bundled result
+`TREND-ALLSTYLES-DBI-USD` (`cmd/gen-dbi-refdata`, `make dbi-refdata`).
+
+Graded on DBMF's own live window, 2019-05 to 2026-07, each candidate
+volatility-matched to the fund and fee-aligned exactly as the chain does it:
+
+| candidate | daily | weekly | monthly | TE | TE/vol | CAGR gap | split swing | worst split |
+|---|---|---|---|---|---|---|---|---|
+| the composite alone (shipped until now) | 0.675 | 0.749 | 0.853 | 10.0 % | 0.81 | -2.0 pts | 5.20 | 10.82 |
+| the projection alone | 0.714 | 0.780 | 0.786 | 9.4 % | 0.76 | -1.0 pt | 9.56 | 10.58 |
+| **half of each (shipped)** | **0.779** | **0.846** | **0.892** | **8.2 %** | **0.67** | **-1.3 pts** | **1.17** | **4.41** |
+
+"Split swing" is the arbitration criterion of the section above, the difference
+between the CAGR gaps of the two halves of the window split at the end of 2022,
+and "worst split" the largest such difference over every month of the middle
+third. The blend wins on the honest monthly column, on tracking error, and by a
+factor of four on the stability criterion that decides a donor.
+
+**The projection ALONE was the hypothesis and it fails.** It buys daily and
+weekly agreement, which nobody consumes on a file whose real quotes are grafted
+from inception, and loses monthly agreement, which is what a sleeve held for
+years is judged on. Worse, its level is not robust: swept over lookbacks of 20
+to 120 days, its CAGR gap against the fund wanders over 3.8 points (+1.7 at 20
+days, -0.2 at 40, -1.4 at 60, -2.1 at 80) and its era-by-era spread over the
+composite swings from -1.7 to +3.0 points a year across four-year windows. The
+hypothesis that motivated it, that dropping the intercept mechanically hands
+back the constituents' fee drag as a stable spread, is refuted by that swing:
+the residual is estimation noise of the same size. Ridge shrinkage was tried at
+three penalties and makes every column worse. The documented 60-day window is
+kept, not the 40-day one that happens to measure best.
+
+**The blend is not a lucky point.** It was swept over three lookbacks (40, 60,
+80), three blend weights (0.25, 0.5, 0.75) and both leg sets (with and without
+the US-hours listed proxies): all eighteen combinations beat the composite on
+the monthly correlation, on daily and weekly agreement and on tracking error,
+and seventeen of eighteen on the worst split. The half weight is the unsearched
+midpoint of a flat optimum, not a fitted one.
+
+**Two controls say what the gain is and is not.** Blending the composite with
+the repository's own TSMOM engine at the same half weight makes the monthly
+correlation WORSE (0.787), so this is not the variance reduction any smoothing
+would buy; blending it with the other published composite buys nothing (0.855).
+But a projection fitted to the WRONG index (the pure-trend composite instead of
+the all-styles one) buys almost the same (0.892 against 0.892), which locates
+the gain precisely: it is the INSTRUMENT SET that matters, not whose index is
+projected. What the donor gains is the removal of exposures the fund cannot
+hold, and any CTA index implies a similar enough position vector to do it. The
+claim "replicating the replicator's own target reproduces its edge" is therefore
+NOT supported, and the section is written accordingly.
+
+What it costs, stated plainly. The donor era 2000-2019 is now half a model
+output, where it was a published record; the projection is a portfolio of that
+record's own exposures, and over the era it runs +0.4 points a year above the
+composite at a monthly correlation of 0.93 with it, which is the whole
+unverifiable drift the change introduces. The blend also realizes 0.86 of the
+composite's volatility (averaging two series correlated at 0.65 shrinks
+variance, mechanically), so `volMatch` levers it about 1.7 times to reach the
+fund's own risk against 1.45 for the raw composite; the reason is understood and
+constant rather than an era artefact, but it is closer to the point where a
+volatility match stops being credible. Two golden tests hold both halves of
+this in place (`pkg/datasets/golden/dbidonor_test.go`): the donor must stay the
+composite (level within a point a year, 0.75 to 1.00 of its volatility, 0.90
+monthly), and it must keep beating the raw composite against the fund's own
+quotes, on monthly correlation and on volatility-scaled tracking error.
+
+Two implementation details are worth keeping. The legs are priced on US-listed
+proxies wherever they exist (SPY, EFA, EEM, SHY, IEF, TLT) and on deeper funds
+or par bonds built from published yields before that: a futures contract settles
+at a US exchange close and a mutual fund NAV struck on a Tokyo or Frankfurt
+close is a different day, which a daily regression reads as beta. And every
+proxy is given back its own ongoing charge, because a futures contract levies
+none: the book is short about 2.3 units of Treasury proxies, so leaving the
+charge in would have the projection EARN those fees, worth about 0.35 %/yr.
 
 ### What the 2024 break actually was
 
@@ -910,7 +1003,7 @@ the CAGR gap (reconstruction minus fund) over the overlap.
 
 | Fund | window | daily | weekly | monthly | TE | CAGR gap |
 |---|---|---|---|---|---|---|
-| DBMF | 7.2 y | 0.68 | 0.75 | 0.85 | 10.0 % | -2.0 pts |
+| DBMF | 7.2 y | 0.78 | 0.85 | 0.89 | 8.2 % | -1.3 pts |
 | DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.2 pt |
 | DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.2 pt |
 | KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -1.7 pts |
@@ -927,8 +1020,8 @@ How to read it, because each row's residual has a KNOWN decomposition:
   and weekly figures are dominated by intra-month texture that no seven-market
   engine, and no donor of another manager, can match tick for tick.
 - **A negative CAGR gap on DBMF, KMLM, CTA is not an error to fix.** Those
-  funds beat the trade they run over their own live windows (DBMF by 2.0
-  points a year against the fee-aligned index its programme replicates, which
+  funds beat the trade they run over their own live windows (DBMF by 1.3
+  points a year against the fee-aligned donor its programme replicates, which
   is about what the constituents' unclaimed performance fee is worth).
   Closing that gap would mean granting the manager's alpha to the backcast,
   which is curve fitting.
@@ -1137,7 +1230,10 @@ must preserve. Every one of these was learned by breaking it.
    donor. A donor is normally another fund's real NAVs; for the two funds whose
    programme replicates a published index, the nearest donor is that index
    itself, which goes through the identical machinery (it is daily, so nothing
-   densifies it).
+   densifies it). For the DBi family that index is additionally read through the
+   fund's own ten futures contracts, half and half (`DBiReplication`, the
+   section above); the raw index stays behind it, covering the quarter the
+   projection spends warming up.
 6. **Real quotes last** (`SpliceReal` in the recipe): the fund's own NAVs are
    grafted over everything from inception, byte-exact.
 7. **Per-family constants.** Vol targets are the fund's own REALIZED
@@ -1181,6 +1277,17 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    dissolved pools, at the cost of letting a volatility error compound down
    the chain, which is the reason it does not.
 
+One hypothesis was tested in full in 2026-08 and half of it is now shipped:
+**replicate the replicator rather than its target**. Running DBi's published
+process on the public index (60-day rolling regression of the composite on the
+ten futures the fund holds, weekly refits, intercept discarded) does NOT beat
+the composite as a donor on its own, and the measurements that refuse it are in
+the section "The fund holds ten contracts". Averaged with the composite at equal
+weight it beats it decisively and is what ships. The open end is the one the
+controls exposed: the gain comes from the instrument set rather than from the
+target, so a projection of the pure-trend composite onto the same ten contracts
+would serve Simplify CTA the same way, and it has not been measured.
+
 The entry that used to head this list, "validate the engine's daily texture
 against a daily reference", is closed: the texture was graded against both daily
 composites and, more usefully, out of sample against four funds' real daily NAVs
@@ -1222,9 +1329,12 @@ match stays.
   A change that seems to touch only a level therefore still moves
   daily-frequency statistics over 1996-2007, at the third decimal, and that is
   enough to break a literal frozen to two decimals.
-- Two FIRE-book plates recompute the CTA series from `pkg/datasets` and fail on
-  drift, at a tolerance (0.005 around a two-decimal literal) finer than the
-  series' own stability. They read 2001 onward, so a change confined to the
+- Two FIRE-book plates recompute the CTA series (Simplify, `CTA`) from
+  `pkg/datasets` and fail on drift, at a tolerance (0.005 around a two-decimal
+  literal) finer than the series' own stability. They read `CTA` and `SP500`,
+  so a change confined to the DBi chain leaves them alone: the 2026-08
+  half-projected donor moved all four DBi files over 1996-2019 and no plate
+  cell. They read 2001 onward, so a change confined to the
   pre-1996 tail or to the overlays leaves them alone: the 2026-08 truncation
   and anchor swap moved no plate cell. A change to the donor era will move a
   lot: the index-donor swap rewrote all 306 readings of the rolling-correlation
@@ -1247,7 +1357,10 @@ match stays.
   return gap, which would bake a manager's alpha into a "fee". Performance fees
   move the number in one direction only: the donor's are ignored, the target's
   are subtracted (`trendPerfFee`), so the uplift errs small. Applied today:
-  the all-styles index +1.15 into DBMF and +1.25 into its UCITS classes, the
+  the half-projected all-styles donor +0.15 into DBMF and +0.25 into its UCITS
+  classes (its load is 1.00 %, half the composite's estimated 2 % and half a
+  futures book that pays no manager), the raw all-styles index +1.15 and +1.25
+  behind it, the
   pure-trend index +1.25 into Simplify CTA, ASFYX +0.55 and RYMFX +1.09 into
   KMLM, DBMF +0.10 into its UCITS classes, Man AHL +1.84 to +1.99 everywhere
   except the AQR chain (+0.37), and 0 for AQMIX into AQR UCITS A, whose own
