@@ -138,11 +138,22 @@ func nearRatio(r float64, ratios []float64) bool {
 // soon as the series was converted back to EUR; leaving it alone surfaces the
 // cliff to the -verify-data doctor instead, which is the whole point.
 //
-// It is deliberately timid: no break, several breaks (a spliced share class like
-// CL2.PA), a reversed round-trip (GRE), or a too-short side are all left
-// untouched for the -verify-data doctor to flag, because rescaling them
-// automatically could corrupt genuine data. Run it AFTER dropDropouts, so
-// leading placeholders and isolated dropouts are already gone.
+// It is deliberately timid: no break, several breaks, an off-ratio junction or
+// a too-short side are all left untouched for the -verify-data doctor to flag,
+// because rescaling them automatically could corrupt genuine data. Run it AFTER
+// dropDropouts, so leading placeholders and isolated bad prints are already
+// gone.
+//
+// CL2.PA is the standing example of the off-ratio abstention, and it is a real
+// split rather than a currency weld. Amundi's leveraged MSCI USA ETF divided
+// its unit by 300 over the 2011/2012 new year and Yahoo never back-adjusted
+// the older segment: 262.17 on 2011-12-30, 0.9094 on 2012-01-02, a junction of
+// 1/288.3. The pre-split line survives on the holidays dropDropouts now clears
+// (see there) and puts the two lines 296x to 303x apart, so 300 is certainly
+// the number; but the junction itself is 3.9 % away from it, far outside the
+// 1.5 % nearRatio allows, and the gap is unexplained. Mending at 288.3 would
+// bake that 4 % into every pre-2012 return, so the series keeps its one honest
+// finding instead.
 func mendScaleBreak(pts []Point) []Point {
 	n := len(pts)
 	if n < 2*minScaleSegment {
@@ -175,18 +186,36 @@ func mendScaleBreak(pts []Point) []Point {
 
 // dropDropouts removes obvious bad prints from a sorted daily series:
 //
+//   - an isolated interior point away from BOTH neighbours by at least the
+//     fourfold dropoutRatio implies, in either direction. Down is the classic
+//     dropout: a one-day collapse that immediately recovers. Up is the same
+//     artefact seen from the other side, and the real CL2.PA case: on the
+//     French half-days and holidays the current quote line does not print
+//     (24/12, 31/12, 01/05), Yahoo fills the session from the fund's
+//     PRE-SPLIT line instead, so 2014-05-01 closes at 522.81 between 1.7312
+//     and 1.7440, a ~300x round trip in two sessions. Seven such pairs stand
+//     in that series between 2013 and 2015.
 //   - a leading run of placeholder points before the price first jumps up (>=4x)
 //     to its stable level, e.g. Yahoo emitting a tiny value at an ETF inception
 //     (the real IB01 case: closes of 5 before the true ~99 NAV, which otherwise
-//     shows as a +1884% daily move);
-//   - an isolated interior point below dropoutRatio of BOTH neighbours (a one-day
-//     collapse that immediately recovers).
+//     shows as a +1884% daily move).
+//
+// The order inside the function is the one that survives CL2.PA. The isolated
+// prints go first, because the leading-run rule reads the first fourfold jump
+// up as the end of the placeholders, and a lone 300x spike further in is
+// exactly such a jump: judged before the spike is gone, it would condemn every
+// real quote before it. The leading run is then bounded by minScaleSegment for
+// the same reason it bounds a scale: a prefix that long is a segment of real
+// history, whatever its level, and rescaling or dropping it is mendScaleBreak's
+// business and no one else's.
 //
 // It deliberately keeps everything else: moderate spikes (they may be real
 // distributions or genuine volatility), permanent declines (a low tail that
-// never recovers), and gradual growth from a low base (which never quadruples in
-// a single day). The -verify-data doctor still surfaces the moderate moves for
-// human review; this only strips the unambiguous artefacts.
+// never recovers), permanent steps (a split or a redenomination moves the level
+// and LEAVES it there, so the both-neighbours test never sees one), and gradual
+// growth from a low base (which never quadruples in a single day). The
+// -verify-data doctor still surfaces the moderate moves for human review; this
+// only strips the unambiguous artefacts.
 func dropDropouts(pts []Point) []Point {
 	n := len(pts)
 	if n < 3 {
@@ -194,36 +223,46 @@ func dropDropouts(pts []Point) []Point {
 	}
 	bad := make([]bool, n)
 
-	// Leading placeholder run: find the first adjacent jump up of at least
-	// 1/dropoutRatio (>=4x). If every point before it sits below dropoutRatio of
-	// that first stable price, the whole prefix is placeholder noise.
-	for k := 0; k+1 < n; k++ {
-		if pts[k+1].Close < pts[k].Close/dropoutRatio {
+	// Isolated interior outliers: a point far from both its neighbours, either
+	// way. No instrument quadruples in a session and hands it all back the next,
+	// nor the reverse; a real move of that size stays where it went.
+	for i := 1; i+1 < n; i++ {
+		cur, prev, next := pts[i].Close, pts[i-1].Close, pts[i+1].Close
+		low := cur < dropoutRatio*prev && cur < dropoutRatio*next
+		high := cur*dropoutRatio > prev && cur*dropoutRatio > next
+		if low || high {
+			bad[i] = true
+		}
+	}
+
+	// Leading placeholder run, read over the points the pass above left
+	// standing: find the first adjacent jump up of at least 1/dropoutRatio
+	// (>=4x). If every point before it sits below dropoutRatio of that first
+	// stable price, and there are few enough of them to be noise rather than
+	// history, the whole prefix is placeholder noise.
+	keep := make([]int, 0, n)
+	for i := range pts {
+		if !bad[i] {
+			keep = append(keep, i)
+		}
+	}
+	for k := 0; k+1 < len(keep); k++ {
+		lo, hi := pts[keep[k]].Close, pts[keep[k+1]].Close
+		if hi < lo/dropoutRatio {
 			continue // no >=4x jump here yet
 		}
-		allLow := true
-		for i := 0; i <= k; i++ {
-			if pts[i].Close > dropoutRatio*pts[k+1].Close {
+		allLow := k+1 < minScaleSegment
+		for j := 0; allLow && j <= k; j++ {
+			if pts[keep[j]].Close > dropoutRatio*hi {
 				allLow = false
-				break
 			}
 		}
 		if allLow {
-			for i := 0; i <= k; i++ {
-				bad[i] = true
+			for j := 0; j <= k; j++ {
+				bad[keep[j]] = true
 			}
 		}
 		break // only the first jump can bound a leading run
-	}
-
-	// Isolated interior dropouts: a point far below both its neighbours.
-	for i := 1; i+1 < n; i++ {
-		if bad[i-1] || bad[i+1] {
-			continue
-		}
-		if pts[i].Close < dropoutRatio*pts[i-1].Close && pts[i].Close < dropoutRatio*pts[i+1].Close {
-			bad[i] = true
-		}
 	}
 
 	anyBad := false
