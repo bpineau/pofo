@@ -1,5 +1,5 @@
 # What real FIRE retirees say: accounts and advice
-<!-- source: temoignages-fire @ 84c336d50b1e -->
+<!-- source: temoignages-fire @ 163a569efc2b -->
 
 Sixty chapters of models in, here is the common-sense question. What do the people who actually **did** it say? The FIRE movement is twenty years old and has one precious property: it writes. Blogs kept during and after the exit, annual reviews published with the numbers attached, forums where veterans answer the candidates, and a handful of long accounts that have become canonical: the decumulation diary of "LivingAFI", the reviews Early Retirement Now has published since its author quit in 2018, and the twenty years of hindsight of Mr. Money Mustache.
 
@@ -19,7 +19,7 @@ The corpus is unanimous to the point of comedy. Forty-year-old "retirees" build 
 
 ## Finding 3: time, the honeymoon, then the eighteen-month wall
 
-This is the most repeated time pattern in the corpus. The first six to twelve months are euphoric: rest, the backlog of projects, the list of things you always meant to do. Then the list runs out. Somewhere between month 12 and month 24 comes what the accounts call the wall, the trough, the "now what?". Days lose their structure, motivation refuses to be summoned, and sometimes a real depression settles in. LivingAFI's diary is the most honest chronicle of it; his own return to work, five years later, came down to something else entirely (a separation and a medical diagnosis that redid the math for one). The veterans converge on the diagnosis. You do not retire from something, you retire toward something. And the "toward" cannot be improvised on arrival: it gets prototyped beforehand ([[the-three-phases]], the trial sabbatical, [[meaning-and-identity]] for the substance). The ones who get through it best either had a practice that already gave the week a shape (an art, a sport, a commitment) or the sense to treat year one as **convalescence** and year two as construction. End-of-career burnout is over-represented among FIRE retirees.
+This is the most repeated time pattern in the corpus. The first six to twelve months are euphoric: rest, the backlog of projects, the list of things you always meant to do. Then the list runs out. Somewhere between month 12 and month 24 comes what the accounts call the wall, the trough, the "now what?". Days lose their structure, motivation refuses to be summoned, and sometimes a real depression settles in. LivingAFI's diary is still the most honest chronicle of it, even though his own trough did not arrive until the third year; his return to work, four and a half years after leaving, came down to something else entirely (a separation and a medical diagnosis that redid the math for one). The veterans converge on the diagnosis. You do not retire from something, you retire toward something. And the "toward" cannot be improvised on arrival: it gets prototyped beforehand ([[the-three-phases]], the trial sabbatical, [[meaning-and-identity]] for the substance). The ones who get through it best either had a practice that already gave the week a shape (an art, a sport, a commitment) or the sense to treat year one as **convalescence** and year two as construction. End-of-career burnout is over-represented among FIRE retirees.
 
 ## Finding 4: your social life gets rebuilt, it does not survive on its own
 
@@ -50,7 +50,7 @@ Compiled from the "advice for candidates" threads, here are the ten that always 
 
 ## The corpus, and where to read it
 
-If you want to go further, here are the sources that last. Start with the long-form diaries. LivingAFI and its "The Drawdown" series is the most honest decumulation account on the web, the return to work included. Early Retirement Now's anniversary reviews, published since 2018, give the quantitative version ([[the-ern-series]]). Then the oldest veterans, Mr. Money Mustache and his generation; read their **recent** posts, not the founding ones. Then the forums with long threads: [r/financialindependence](https://www.reddit.com/r/financialindependence) and its year-end "annual updates", and the Mr. Money Mustache forum with its post-FIRE section. Wherever you live, the local rules are the one thing no foreign account can settle for you ([[us-healthcare-and-social-security]]). Last, the qualitative studies, still in their infancy; academic research is starting to interview FIRE cohorts, worth watching. The reading filter stays the same: written as it happened rather than in hindsight, numbers rather than narrative, failures actively sought out.
+If you want to go further, here are the sources that last. Start with the long-form diaries. LivingAFI's diary is the most honest post-FIRE account on the web, the return to work included. Early Retirement Now's anniversary reviews, published since 2018, give the quantitative version ([[the-ern-series]]). Then the oldest veterans, Mr. Money Mustache and his generation; read their **recent** posts, not the founding ones. Then the forums with long threads: [r/financialindependence](https://www.reddit.com/r/financialindependence) and its year-end "annual updates", and the Mr. Money Mustache forum with its post-FIRE section. Wherever you live, the local rules are the one thing no foreign account can settle for you ([[us-healthcare-and-social-security]]). Last, the qualitative studies, still in their infancy; academic research is starting to interview FIRE cohorts, worth watching. The reading filter stays the same: written as it happened rather than in hindsight, numbers rather than narrative, failures actively sought out.
 
 ## The essentials
 
@@ -64,7 +64,7 @@ If you want to go further, here are the sources that last. Start with the long-f
 
 ## Going further
 
-- LivingAFI, "The Drawdown": the reference decumulation diary, failures included.
+- LivingAFI: the reference post-FIRE diary, failures and the return to work included.
 - Early Retirement Now, Karsten Jeske's post-retirement reviews ([[the-ern-series]]).
 - [r/financialindependence](https://www.reddit.com/r/financialindependence) (the "annual updates") and the Mr. Money Mustache forum (post-FIRE section).
 - Ernie Zelinski, *How to Retire Happy, Wild, and Free*: the non-financial classic the veterans recommend most.
