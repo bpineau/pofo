@@ -1,5 +1,5 @@
 # Pensions and other income in the plan
-<!-- source: revenus-complementaires @ 5f57fdd075b4 -->
+<!-- source: revenus-complementaires @ 42b0059e0f40 -->
 
 Almost no real plan is a portfolio alone against the world. There is Social Security, and a pension if you have one, arriving one day. Sometimes rent ([[real-estate-in-retirement]]). Work in small doses ([[going-back-to-work]]). An annuity, and maybe a distant inheritance. How you **count** those flows matters more to the plan than most portfolio choices do. Sensitivity work ranks the pension second among the variables of a plan, right behind spending.
 
