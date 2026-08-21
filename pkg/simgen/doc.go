@@ -115,7 +115,13 @@
 //     (it is always lower, because with correlation under one it pays to
 //     under-risk), and never read the beta of a validation line as a target:
 //     beta is correlation times the volatility ratio, so it too rewards
-//     under-risking.
+//     under-risking. And write the gearing as cash + g × (donor − cash), never
+//     as g × donor: a longer bond does not earn g times a shorter one's coupon,
+//     so plain multiplication pays the file (g − 1) × the cash rate every year,
+//     which is 0.9 of a point in the 1960s-80s (dtlaRecipe, corrected 2026-08).
+//     The ratio is also not constant, duration shrinking as yields rise: TLT on
+//     VUSTX reads 1.243 over 2002-2010 and 1.06 over 2018-2026, so measure it on
+//     the whole overlap and not on the era that happens to be observable.
 //   - AN FX-HEDGED SHARE CLASS earns the domestic cash rate on its WHOLE
 //     capital, not on the fraction its duration weight leaves over: the hedge
 //     covers the position, not the leftover. A hedged leg is
@@ -142,4 +148,15 @@
 //     year apart over 1999-2025). Splicing rate levels needs no rescaling,
 //     only the right order (ESTR before EONIA, which was defined as ESTR plus
 //     8.5 bp).
+//   - A CASH-LIKE PROXY IS GRADED ON ITS LEVEL, NOT ON ITS PATH. A compounded
+//     bill rate has almost no daily variance of its own, so its correlation
+//     with a fund that carries any spread at all measures the spread, not the
+//     reconstruction. ERNA is the case: monthly correlation 0.29 over 96
+//     months, and 0.81 once the two months of the March 2020 ultrashort-credit
+//     dislocation and its reversal are dropped (dropping any further month
+//     changes nothing). Those two months are real, to the day, in both
+//     US-listed siblings; they are the fund's investment-grade spread, which
+//     the recipe deliberately omits and a bill rate cannot have. Read the level
+//     verdict on such a line, and the path verdict as a description of the
+//     spread that was left out.
 package simgen
