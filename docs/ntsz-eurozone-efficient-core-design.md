@@ -31,6 +31,7 @@ OECD or the ECB; it embeds the CSVs.
 | `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | month-ends of the real ECB 25y curve from 2004-09; before it, the OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on that same curve) → `TreasuryTR` (24y par, dur ~17), rebased at the junction | ~1970 |
 | `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
 | `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB`, compounded | 1960-1994 |
+| `EURCASH-EUR` | euro-area 3M cash TR index | ECB monthly EURIBOR 3M `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA`, rolled at the simple money-market convention | 1994-> |
 
 ## Source dataflow: the 2026-08 migration off OECD MEI
 
@@ -127,6 +128,18 @@ inception (2025-10)
 - **Cash leg** (`eurCashDeep`): the euro money-market index `EURCASH-EUR` carried
   to daily granularity (`eurCashDaily`, 1994->) and extended before the euro by
   `DECASH-EUR` (Germany was the anchor economy, the DM the reference currency).
+  `EURCASH-EUR` was a hand-built file with no generator until **2026-08-20**,
+  which is why it froze at 2026-01 when its FRED source became unreachable (FRED
+  times out from the generation environment and DBnomics has dropped the FRED
+  provider). It is now produced here, from the ECB's own EURIBOR history: the
+  rebuilt index reproduces the shipped one to **4e-4** over the 385 months they
+  share, and the generator refuses to write it if that ever exceeds 2e-3.
+  Note the two cash series do not share a compounding convention: an interbank
+  rate is quoted SIMPLE, which is what `EURCASH-EUR` (and the file it replaces)
+  is rolled at, while `DECASH-EUR` still reads its rate as an effective annual
+  yield, worth about 0.19 %/yr on a 6 % rate. `DECASH-EUR` is rebased onto
+  `EURCASH-EUR` at the 1994 splice, so only its returns reach a reconstruction,
+  and re-quoting them is a data change with its own validation to write.
 
 `ntszBuild` pre-builds the equity and deep-cash legs and serves them to the
 standard frame/`Composite` machinery under synthetic ids (`injected` fetcher);
@@ -216,6 +229,6 @@ volatility close to its NTSX peer.
 ## Regeneration
 
 ```sh
-make euro-refdata   # rebuild EMU-EUR / EUROGOV-EUR{,-DAILY} / EUROGOV-LONG-EUR{,-DAILY} / DECASH-EUR (network)
+make euro-refdata   # rebuild EMU-EUR / EUROGOV-EUR{,-DAILY} / EUROGOV-LONG-EUR{,-DAILY} / DECASH-EUR / EURCASH-EUR (network)
 make simdata        # rebuild pkg/datasets/simdata/, including IE000OV4XWA3
 ```
