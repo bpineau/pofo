@@ -38,6 +38,10 @@ Que devient une prime une fois publiée dans une revue académique ? McLean et P
 
 L'or est le contre-exemple pédagogique parfait. Pas de flux, pas de dividende, pas de coupon, personne à qui transférer un risque contre salaire : il n'y a pas de prime de risque de l'or, et son rendement réel séculaire est proche de zéro ([[or-en-retrait]]). Ce n'est pas un défaut caché, c'est sa définition. L'or n'est pas un actif de rendement, c'est une **monnaie alternative** dont le prix en euros monte quand la confiance dans les monnaies officielles baisse. On ne le détient pas pour sa prime (il n'en a pas) mais pour sa **corrélation** : il paie dans des états du monde (crises monétaires, répression financière, stagflation) où presque tout le reste trahit. Le même raisonnement, sans le millénaire d'historique, s'applique aux cryptomonnaies : zéro flux, zéro prime théorique, un pur pari monétaire et comportemental, ce qui interdit de les dimensionner comme des actifs de rendement dans un plan de retrait.
 
+::: figure douleur-prime
+Chaque actif sur les mêmes 57 années : ce qu'il a rendu dans les dix pires années des actions (horizontal, la douleur au mauvais moment) et ce qu'il a payé au-dessus du cash (vertical, le salaire). Les cinq actifs qui prétendent à une prime tiennent sur une droite. L'or est payé 4,2 points de plus que sa douleur ne le justifie, ce qui est une autre façon de dire qu'il ne récolte aucune prime : ce que la fenêtre lui compte est la revalorisation monétaire des années 1971-1980, pas un salaire.
+:::
+
 Le cash ferme la marche : il est l'étalon (les primes se mesurent au-dessus de lui) et rapporte, en réel, à peu près zéro sur longue période, avec de longs épisodes négatifs quand la répression financière s'en mêle ([[inflation-histoire]]). Le détenir a un rôle (la manœuvre, [[cash-buffer]]), mais il n'y a aucun rendement à en attendre.
 
 ## L'audit de votre portefeuille, prime par prime

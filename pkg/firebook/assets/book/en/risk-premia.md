@@ -1,5 +1,5 @@
 # Where returns come from: risk premia
-<!-- source: primes-de-risque @ e2f2477955b9 -->
+<!-- source: primes-de-risque @ 6e0fcf408c32 -->
 
 This whole book rests on an assumption so basic that nobody stops to look at it: a portfolio of stocks and bonds earns something, durably, above inflation. Without it there is no 4% rule, no FIRE, nothing. This page drags that assumption into the light and asks the three uncomfortable questions. Why do stocks pay more than bonds, and bonds more than cash? Who pays those gaps, and why would they keep paying? And why do some assets, gold first among them, return nothing in real terms without that being a flaw?
 
@@ -38,6 +38,10 @@ What becomes of a premium once it is published in an academic journal? McLean an
 ## Why gold returns nothing (and why you want some anyway)
 
 Gold is the perfect teaching counterexample. No cash flow, no dividend, no coupon, nobody handing off a risk in exchange for a wage: there is no gold risk premium, and its secular real return is close to zero ([[gold-in-retirement]]). That is not a hidden flaw, it is the definition. Gold is not a return asset. It is an **alternative currency** whose price rises when confidence in official money falls. You do not hold it for its premium, it has none, but for its **correlation**: it pays in the states of the world (currency crises, financial repression, stagflation) where almost everything else betrays you. The same reasoning, minus the thousand years of history, applies to cryptocurrencies: no cash flow, no theoretical premium, a pure monetary and behavioral bet, which rules out sizing them like return assets in a withdrawal plan.
+
+::: figure douleur-prime
+Every asset over the same 57 years: what it returned in the ten worst years for equities (horizontal, the pain at the wrong moment) and what it paid above cash (vertical, the wage). The five assets that claim a premium sit on one line. Gold is paid 4.2 points more than its pain justifies, which is another way of saying it collects no premium at all: what the window credits it with is the monetary repricing of 1971-1980, not a wage.
+:::
 
 Cash brings up the rear. It is the yardstick, since premia are measured above it, and it returns roughly zero in real terms over long stretches, with long negative episodes whenever financial repression joins in. Holding it has a role, room to maneuver ([[cash-buffer]]), but there is no return to expect from it.
 
