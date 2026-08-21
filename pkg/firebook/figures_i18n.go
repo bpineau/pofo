@@ -1422,6 +1422,26 @@ var figureDict = map[string]string{
 	"une teinte par barreau : à gauche ce qu'il coûte, à droite l'année qu'il paie":                                "one tint per rung: what it costs on the left, the year it pays on the right",
 	"Montants en euros d'aujourd'hui. Les 14 barreaux versent 40 k€ chacun et coûtent 520 k€ au taux réel de 1 %.": "Amounts in today's dollars. The 14 rungs pay $40k each and cost $520k at a 1% real yield.",
 	"Le portefeuille de confort n'est pas garanti ; le plancher adossé l'est, jusqu'aux pensions.":                 "The comfort portfolio carries no guarantee; the matched floor does, until the pensions start.",
+
+	// or-ab-modeles
+	"L'OR EN RETRAIT":                    "GOLD IN RETIREMENT",
+	"Avec ou sans or, modèle par modèle": "With gold or without, model by model",
+	"Le même plan joué deux fois : 1,5 M€, 51 000 €/an, 45 ans, corridor Vanguard": "The same plan run twice: $1.5M, $51,000 a year, 45 years, Vanguard corridor",
+	"probabilité de ruine  →":         "failure probability  →",
+	"l'or retire":                     "what gold removes",
+	"(points de ruine)":               "(points of failure)",
+	"scénario central":                "central case",
+	"stress de séquence":              "sequence stress",
+	"modèles à inflation longue":      "long-inflation models",
+	"avec or":                         "with gold",
+	"sans or":                         "no gold",
+	"millésime 1966 rejoué":           "the 1966 vintage, replayed",
+	"un verdict, pas une probabilité": "a verdict, not a probability",
+	"épuisé à l'année 27":             "exhausted in year 27",
+	"traversé, amoché":                "ridden out, battered",
+	"Le prix de cette couverture : richesse médiane à 45 ans, −5 %.":                                               "The price of that cover: median wealth at 45 years, −5%.",
+	"A = 70 % actions / 30 % obligations intermédiaires. B = 70 / 20 / 10 avec or, ETC physique en CTO.":           "A = 70% stocks / 30% intermediate bonds. B = 70 / 20 / 10 with gold, a physically backed fund in a taxable account.",
+	"Mêmes hypothèses des deux côtés ; seule l'allocation change. Le millésime 2000, lui, ne bouge quasiment pas.": "Same assumptions on both sides; only the allocation changes. The 2000 vintage, for its part, barely moves.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered

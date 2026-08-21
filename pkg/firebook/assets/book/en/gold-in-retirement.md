@@ -1,5 +1,5 @@
 # Gold in a retirement portfolio
-<!-- source: or-en-retrait @ 822957203c86 -->
+<!-- source: or-en-retrait @ dddaab9f6617 -->
 
 No asset splits a room like gold. To one camp it is a barbarous relic, with no cash flow and nothing productive behind it. To the other it is the only honest money and the ultimate insurance. Each camp is right about its own half of the picture, and that is exactly what makes gold so hard to size.
 
@@ -73,6 +73,10 @@ Since its own expected return is close to nothing, the entire portfolio-level re
 
 ::: exemple Ten percent gold, tested against the models
 The plan: $1.5M, $51,000 a year, Vanguard corridor, 45 years. Variant A: 70% stocks, 30% intermediate bonds. Variant B: 70/20/10 with gold (a physically backed fund, taxable account). Now the verdicts. Central case, 4.1% failure for A against 3.9% for B, next to nothing, as expected. Sequence stress, from 7.2 down to 6.1%. Long-inflation models, from 10.8 down to 8.9%. That is where gold earns its place: in the futures that contain a stagflation. In the vintage replay, 1966 goes from "exhausted in year 27" to "ridden out, battered", and 2000 barely moves. Median wealth at 45 years: down 5%. The typical decision: B, with half the sleeve converted into linkers if the taxable account already carries a heavy tax bill, same row of the defense through a different mechanism. And one line in the plan: "gold 10%, bands plus or minus 5 points, not up for discussion in a drawdown".
+:::
+
+::: figure or-ab-modeles
+The same A/B, model by model. Each bar joins the two variants of one plan on the ruin axis, and its length is the whole subject. In the central case there is next to nothing to see, which is the honest answer both to "gold is useless" and to "gold saves everything". The bar grows as the model turns hostile, out to the two points won on the long-inflation futures. The 1966 vintage is read apart, at the bottom, because a dated replay gives a verdict and not a probability.
 :::
 
 ## The essentials

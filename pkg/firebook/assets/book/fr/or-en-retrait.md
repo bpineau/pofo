@@ -66,6 +66,10 @@ Puisque son espérance propre est quasi nulle, tout le rendement au niveau du po
 Plan : 1,5 M€, 51 000 €/an, corridor Vanguard, 45 ans. Variante A : 70 % actions / 30 % obligations intermédiaires. Variante B : 70 / 20 / 10 % or (ETC physique, CTO). Les verdicts, maintenant. Au central, 4,1 % pour A contre 3,9 % pour B, quasi rien, comme attendu. Au stress de séquence, on passe de 7,2 à 6,1 %. Sur les modèles à inflation longue, de 10,8 à 8,9 %. C'est là, dans les futurs qui contiennent une stagflation, que l'or gagne sa place. Au rejeu des millésimes, 1966 passe de « épuisé à l'année 27 » à « traversé, amoché », et 2000 reste quasi inchangé. Richesse médiane à 45 ans : −5 %. Décision type : B, avec la moitié de la poche convertie en linkers si le CTO est déjà chargé fiscalement, même ligne de défense mais autre mécanisme. Et une ligne au plan : « or 10 %, bandes ±5 points, ne se discute pas dans les creux ».
 :::
 
+::: figure or-ab-modeles
+Le même A/B, modèle par modèle. Chaque trait relie les deux variantes d'un même plan sur l'axe de la ruine, et sa longueur est tout le sujet. Au central il n'y a presque rien à voir, et c'est la réponse honnête à « l'or ne sert à rien » comme à « l'or sauve tout ». Le trait s'allonge à mesure que le modèle devient hostile, jusqu'aux deux points gagnés sur les futurs à inflation longue. Le millésime 1966 se lit à part, en bas, parce qu'un rejeu daté donne un verdict et non une probabilité.
+:::
+
 ## L'essentiel à retenir
 
 - L'or est une réserve de valeur (~0-1 % réel séculaire, volatilité d'actions, longues périodes mortes et épisodes violents), pas un placement. Il se paie en espérance ce qu'il rend en couverture des régimes inflation/confiance : les trous de la défense classique.
