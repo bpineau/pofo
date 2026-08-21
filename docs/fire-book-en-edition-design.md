@@ -2,10 +2,11 @@
 
 Status: M1 (wiring) DONE 2026-08-01; campaign signals DONE 2026-08-16;
 M2, the translation campaign, DONE 2026-08-19 (82 articles under
-assets/book/en, 0 stale, 0 untranslated, 9 fr-only; ledger below). Next:
-M3, the three US-framework articles, then M4 (hreflang cross-links,
--export-epub -book-lang, epubcheck/KOReader validation, the hard
-completeness guard).
+assets/book/en, 0 stale, 0 untranslated, 9 fr-only; ledger below);
+M4, the publication wiring, DONE 2026-08-19 (hreflang cross-links,
+-export-epub -book-lang, epubcheck clean on both files, the hard
+completeness guard), except on-device KOReader validation, still owed.
+Next: M3, the three US-framework articles.
 This document is the implementation brief for the
 English edition of the embedded FIRE book ("Le FIRE tranquille",
 `pkg/firebook`). Read `docs/fire-book-design.md` first: everything there
@@ -142,8 +143,9 @@ For the EN edition: manifest matches files both ways; every `[[slug]]`
 resolves against the EN slug space (with the same planned-slug allowance);
 every `::: figure` id resolves; every `Source` names an existing French
 article, and no French article outside the tax part is left without an EN
-counterpart once the edition ships (this last check is env-gated during the
-translation campaign, hard afterwards). One new cross-edition check: for
+counterpart (`TestEnglishEditionIsComplete`; env-gated during the translation
+campaign, hard since 2026-08-19: a French article now ships either with a
+counterpart or with its own fr-only marker, and `make check` says which). One new cross-edition check: for
 each paired article, the SET of figure ids used must be identical between FR
 and EN (a translated article cannot silently drop or add a plate).
 
@@ -268,7 +270,15 @@ design exists to avoid).
   pairing), a `<link rel="alternate" hreflang="...">` pair in the head and a
   discreet "English version" / "Version française" link in the top bar.
   hreflang needs the sibling mount's base path, which only the caller knows;
-  hence the option, mirroring how `WithNav` already works.
+  hence the option, mirroring how `WithNav` already works. Shipped 2026-08-19,
+  wired in both servers, with three implementation notes: the pairing map is
+  computed once per mount and reads `Source` in both directions (forward for a
+  translation, reverse for the source edition), so the option does not care
+  which edition it decorates; the self-referencing half of the pair stays a
+  relative URL, like every other URL the handler emits, since the mount does
+  not know its own absolute address; and no `x-default` is emitted, neither
+  edition being a fallback for the other. The switch label belongs to the
+  edition it points at and lives in `UIStrings.SwitchLabel`.
 - `og:locale`, `lang`, JSON-LD `inLanguage` come from the Edition.
 - EPUB: `English.EPUB(modified)` with the EN identifier, `Language: "en"`,
   the EN title page and edition note. Validate with epubcheck and on-device
@@ -276,7 +286,9 @@ design exists to avoid).
 - OPDS: each edition's handler serves its own `opds.xml` listing its own
   book, exactly as today. A combined two-entry catalog was considered and
   dropped: a reader adds the edition it reads.
-- CLI: `-export-epub` gains `-book-lang fr|en` (default `fr`).
+- CLI: `-export-epub` gains `-book-lang fr|en` (default `fr`). Shipped
+  2026-08-19: the flag picks the edition only, the written file name stays the
+  caller's, and an unknown value is an error rather than a silent fallback.
 
 ## Editorial scope (what gets written, what gets adapted)
 
@@ -514,10 +526,15 @@ slips mechanically.
   and this document's status line.
   Partially pulled forward (2026-08-01, the landing-page reorganization):
   `/firebook/en/` is mounted under `-serve` with cross-navigation both ways,
-  and the index skips parts with no translated article yet, so the page grows
-  with M2. Still owed to M4: `WithAlternate` hreflang cross-links,
-  `-export-epub -book-lang`, epubcheck/KOReader validation, the hard
-  completeness guard.
+  and the index skips parts with no translated article yet, so the page grew
+  with M2. The rest shipped 2026-08-19: `WithAlternate` cross-links on both
+  mounts (the offline `pkg/decumul/web` server now serves the English edition
+  too), `-export-epub -book-lang`, and `TestEnglishEditionIsComplete` without
+  its env gate, so a French article added without an English counterpart or an
+  fr-only marker now fails `make check`. EPUBCheck 5.3.0 reports 0 fatals /
+  0 errors / 0 warnings on both `le-fire-tranquille.epub` and
+  `the-quiet-fire.epub`. STILL OWED: on-device KOReader validation of the
+  English EPUB and its OPDS catalog, which no automated check replaces.
 
 M1 is a self-contained refactor PR-sized task; M2 is the bulk of the cost
 (~91 articles, ~220k French words) and is embarrassingly parallel after M1.
