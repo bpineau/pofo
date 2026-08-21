@@ -1372,6 +1372,32 @@ var figureDict = map[string]string{
 	"âge  →":           "age  →",
 	"dépenses réelles": "real spending",
 	"Les dépenses réelles font un « sourire », pas une ligne plate": "Real spending traces a smile, not a flat line",
+
+	// echelle-passif
+	"L'ÉCHELLE OBLIGATAIRE":                     "BOND LADDERS",
+	"Le passif année par année, et qui le paie": "The liability year by year, and who pays it",
+	"Claire et Idris : 45 k€ de plancher, 58 k€ de confort, les pensions dans 13 ans": "Claire and Idris: a $45k floor, $58k of comfort, pensions in 13 years",
+	"58 k€":                    "$58k",
+	"45 k€":                    "$45k",
+	"24 k€/an":                 "$24k/yr",
+	"confort":                  "comfort",
+	"plancher":                 "floor",
+	"100 % du plancher adossé": "100% of the floor matched",
+	"60 % du plancher adossé":  "60% of the floor matched",
+	// The amber block is named on two lines in the right margin, so the pair
+	// is scoped to this plate: the line break falls elsewhere in English.
+	"echelle-passif|portefeuille": "the comfort",
+	"echelle-passif|de confort":   "portfolio",
+	"non garanti":                 "no guarantee",
+	"fonds euros":                 "T-bills",
+	"garantis, liquides":          "safe and liquid",
+	"fonds à échéance":            "defined-maturity funds",
+	"État ou IG, 2028-2033":       "Treasuries, 2028-2033",
+	"ETF linkers courts roulés":   "TIPS for those years",
+	"indexés sur les prix":        "indexed to prices",
+	"les pensions":                "the pensions",
+	"le relais":                   "the hand-over",
+	"Besoins et barreaux en euros d'aujourd'hui ; à l'achat, les barreaux nominaux sont gonflés de 2,5 %/an et les linkers sont indexés.": "Needs and rungs in today's dollars; when bought, the nominal rungs are sized up 2.5% a year and the TIPS are indexed.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
