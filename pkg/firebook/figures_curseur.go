@@ -111,7 +111,7 @@ func figTousTempsCurseur() string {
 	dose, cagr, draw := curseurScales()
 	var b strings.Builder
 	b.WriteString(plateHead("le curseur tous-temps", "Le plancher s'achète vite, et se paie peu"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Ce que chaque dose de poche de régimes retire au rendement, et ce qu'elle retire au pire recul"))
 	legendChips(&b, 74, [][2]string{
 		{figDeep, "rendement réel annualisé"},
@@ -166,7 +166,7 @@ func figTousTempsCurseur() string {
 	}
 
 	// What the whole sweep bought and what it cost, cotéd once.
-	b.WriteString(sTxt(24, 374, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(374, fmt.Sprintf(
 		"Quarante points de poche retirent %s points de recul et coûtent %s point de rendement.",
 		frNum(curseurBought(40), 0), frNum(curseurCost(40), 1))))
 	b.WriteString(plateFoot(396, []string{

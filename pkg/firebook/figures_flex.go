@@ -124,7 +124,7 @@ func figCoupeExigeeTenable() string {
 	var b strings.Builder
 	b.WriteString(plateHead("la flexibilité, mythe et réalité",
 		"La coupe exigée par le marché contre la coupe tenable par un ménage"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		fmt.Sprintf("millésime %d, 60/40 américain réel, plan de trente ans", coupeVintage)))
 
 	// The legend carries the plate's honesty: one measured object, one claim.

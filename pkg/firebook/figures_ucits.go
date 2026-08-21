@@ -170,7 +170,7 @@ func ucitsPlate(l ucitsLayout) string {
 	var b strings.Builder
 	b.WriteString(plateHead("la liste de courses",
 		"La grille d'implantation : quelle brique, dans quelle enveloppe"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400", l.subtitle))
+	b.WriteString(plateDeck(l.subtitle))
 
 	// The header row: the block column, the three wrappers in their own
 	// colours, and the margin that names what each block defends.

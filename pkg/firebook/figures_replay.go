@@ -200,7 +200,7 @@ func replayIncomePlate(kicker, title string, start int, income [][]float64, ymax
 
 	var b strings.Builder
 	b.WriteString(plateHead(kicker, title))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		fmt.Sprintf("revenu réel servi, k€ par an, de %d à %d ; même échelle partout, pointillé = les 24 k€ prévus",
 			start, start+n)))
 

@@ -180,7 +180,7 @@ func defensesRowY(i int) float64 {
 func figDefensesBulletin() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le bulletin de crise", "Aucun actif ne défend contre tout"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"Ce que chaque candidat a rendu, en dollars réels, pendant quatre crises de nature différente"))
 
 	// The column heads: the episode, then the enemy it stands for.
@@ -229,7 +229,7 @@ func figDefensesBulletin() string {
 	}
 
 	bottom := defensesRowY(len(defensesRows)-1) + defRowH
-	b.WriteString(sTxt(24, bottom+26, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(bottom+26,
 		"Trois défenseurs se partagent quatre crises, et pas un ne les tient toutes : "+
 			"chacun s'effondre dans une autre colonne."))
 	b.WriteString(plateFoot(bottom+48, []string{
