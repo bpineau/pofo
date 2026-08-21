@@ -86,7 +86,7 @@ var Categories = []Category{
 			{Slug: "guardrails-morningstar", Title: "Les guardrails modernes (Morningstar) : l'état de l'art", Blurb: "Le juge honnête de Morningstar, l'indicateur par risque de Kitces-Tharp, et la version exécutable avec pofo en instrument."},
 			{Slug: "amortissement-abw", Title: "Le retrait par amortissement (ABW/TPAW) : l'approche actuarielle", Blurb: "Le crédit inversé re-coté chaque année : richesse totale, quatre paramètres personnels, et le match final contre les guardrails."},
 			{Slug: "plancher-plafond", Title: "Plancher-plafond et règles Vanguard : la flexibilité bornée", Blurb: "Le corridor sur variation (+5 %/−2,5 %) : des glissements au lieu de chutes, une ruine redevenue honnête, deuxième partout."},
-			{Slug: "rentes-et-annuites", Title: "Rentes, annuités et safety first : acheter un plancher", Blurb: "Les crédits de mortalité, le cadre français (dont le rachat de trimestres, meilleure rente du marché), l'objection inflation, et quand annuitiser."},
+			{Slug: "rentes-et-annuites", Title: "Rentes et safety first : acheter un plancher", Blurb: "Les crédits de mortalité, le cadre français (dont le rachat de trimestres, meilleure rente du marché), l'objection inflation, et quand passer en rente."},
 			{Slug: "sept-facons-de-vivre", Title: "Sept façons de vivre du même portefeuille", Blurb: "Trois retraites réelles rejouées année par année : ce que chaque règle a versé, quand elle a coupé, et ce qu'elle a laissé sur la table."},
 			{Slug: "choisir-sa-strategie", Title: "Choisir sa stratégie : critères, comparatif, cas d'usage", Blurb: "La procédure en cinq étapes : tests d'admissibilité, matrice profils-règles, hybrides par phases, et la page écrite qui conclut."},
 		},
