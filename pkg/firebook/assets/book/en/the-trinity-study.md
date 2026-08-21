@@ -1,5 +1,5 @@
 # Bengen, the Trinity study, and the birth of the safe withdrawal rate
-<!-- source: etude-trinity @ 7b73d2b24b98 -->
+<!-- source: etude-trinity @ c2eb524d72c8 -->
 
 Before 1994, one question got the same wrong answer with impressive consistency: how much can I take out of my portfolio every year? "The average return, obviously." Stocks returned 10% historically, so withdraw 8%, said professional advisers with a straight face.
 
@@ -70,7 +70,7 @@ Trinity's percentage counts overlapping historical windows from the US market al
 Reading Bengen and Trinity today means admiring the method and measuring how far the field has come since. Their blind spots, each covered elsewhere in this book, map out the program of modern research.
 
 - **The FIRE horizon.** Thirty years was the horizon of a 65-year-old. Over 45 to 55 years, the US SAFEMAX drops toward 3.25 to 3.5% ([[the-ern-series]]) and Trinity's grid no longer applies as printed ([[horizon-and-life-expectancy]]).
-- **Geographic survivorship bias.** The Ibbotson data starts in 1926 in the United States, the country that won two world wars on other people's soil and came out of them a superpower. The world sample (16 countries, 1870 to 2020) tells a harder story ([[anarkulova-cederburg]]). That panel is what the "broad sample" models replay.
+- **Geographic survivorship bias.** The Ibbotson data starts in 1926 in the United States, the country that won two world wars on other people's soil and came out of them a superpower. The developed century in full tells a harder story ([[anarkulova-cederburg]]); the panel the "broad sample" models replay is the JST one, 16 countries from 1870 to 2020.
 - **Valuations.** Bengen noted the link between starting market levels and SAFEMAX as early as 2006; formalizing it (CAPE to initial rate) came later ([[valuations-and-cape]], [[cape-based-rules]]).
 - **A rigid withdrawal.** Bengen's retiree runs the rule for 30 years without looking up. The next generation of strategies (Guyton-Klinger [[guyton-klinger]], modern guardrails [[morningstar-guardrails]], amortization [[amortization-based-withdrawal]]) starts from the opposite idea: react to what you learn.
 - **Fees, taxes, real spending.** Out of scope for the founders, first order in real life ([[how-much-you-need]]).
