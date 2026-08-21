@@ -111,8 +111,11 @@
 // # Data repair
 //
 // Every fetched daily series goes through a conservative cleaning pass
-// before being cached, in this order: leading provider placeholders and
-// isolated one-day collapses are dropped, a single persistent denomination
+// before being cached, in this order: isolated one-session prints far from
+// both their neighbours are dropped (a collapse that recovers, or a spike
+// that gives it all back: on a French holiday Yahoo fills CL2.PA from the
+// fund's pre-split line, ~300x above the sessions around it), leading
+// provider placeholders go with them, a single persistent denomination
 // break (pence vs pounds splices) is mended, one-session round trips no
 // asset of the class could have made are dropped, and currency crosses lose
 // isolated self-cancelling spikes (a Yahoo bad print, not a market move).
