@@ -30,7 +30,7 @@ OECD or the ECB; it embeds the CSVs.
 | `EUROGOV-DAILY` | euro govt bond TR (daily shape) | ECB daily 10y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y` → `TreasuryTR` | ~2004 |
 | `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | month-ends of the real ECB 25y curve from 2004-09; before it, the OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on that same curve) → `TreasuryTR` (24y par, dur ~17), rebased at the junction | ~1970 |
 | `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
-| `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB`, compounded | 1960-1994 |
+| `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB` (the Bundesbank's Frankfurt three-month money, FIBOR from 1991), rolled monthly at the convention it is quoted in: simple, German 360/360 to 1990-06 then act/360 | 1960-1994 |
 | `EURCASH-EUR` | euro-area 3M cash TR index | ECB monthly EURIBOR 3M `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA`, rolled at the simple money-market convention | 1994-> |
 
 ## Source dataflow: the 2026-08 migration off OECD MEI
@@ -59,8 +59,10 @@ choice therefore costs nothing in comparability and buys the live tail.
 What the migration changed, measured old file against new file on the shared
 window (levels rebased at the first common date):
 
-- `EMU-EUR`, `DECASH-EUR`: identical to **1e-6** over 446 and 420 months. The
-  dataflow move alone revised nothing.
+- `EMU-EUR`, `DECASH-EUR`: identical to **1e-6** over 446 and 420 months (each
+  measured against itself under the convention it was then built at; what
+  re-quoting `DECASH-EUR` moved in 2026-08 is the cash-conventions section
+  below). The dataflow move alone revised nothing.
 - `EUROGOV-EUR` / `EUROGOV-LONG-EUR`: cumulative deviation under **0.92 %** and
   **0.23 %** over 54 years, from OECD revisions of a few basis points on the
   monthly yield (the largest single month is 2010-12, 0.11 pt of return).
@@ -107,6 +109,71 @@ before that the ECB 25y curve gives both the level and the daily shape back to
 rejected: leveraging the excess return compounds a sustained bond bull far too
 richly (~20%/yr over the 1981-2004 disinflation vs ~13%/yr for a real long bond).
 
+## The cash legs: what each rate is quoted in
+
+A short rate is a number plus a convention, and the convention is a property of
+the publication, not a modelling choice. Reading a simple money-market quote as
+if it were already compounded to the year costs about `r^2/2` a year (0.17 %/yr
+at 6 %); reading a 360-day year as a calendar one costs another 1.46 % of the
+rate. `EURCASH-EUR` has always been rolled simple; `DECASH-EUR` was compounded
+as an **effective annual yield** until **2026-08-20**, which was wrong, and is
+now rolled at the convention its source states.
+
+The evidence, gathered before the change and all of it primary:
+
+- **What the series is.** `DEU.M.IR3TIB` is the Bundesbank's own money-market
+  quotation for three-month funds at the Frankfurt banking centre, FIBOR from
+  1991-01. Ten annual averages read off the Bundesbank's long time series
+  (*III. Geld- und Kapitalmarkt*, table "Geldmarktzinsen bis 1998") match the
+  means of the OECD monthly series to **under 0.005 pt** (1965-1974), which is
+  the rounding of the monthly figures being averaged. The OECD series is a
+  republication, so its convention is the Bundesbank's.
+- **What that convention is.** The Bundesbank's own footnote on the series:
+  "Bis Juni 1990 berechnet nach der deutschen Zinsmethode 360/360 Tage, ab Juli
+  1990 nach der Zinsmethode act/360." So the rate is **simple for the term of
+  the deposit** throughout, on a 360-day year: the German 360/360 method (every
+  month exactly one twelfth of the quoted rate) to 1990-06, act/360 after. FIBOR,
+  which takes the series over in 1991-01, was quoted act/360 too. **No sub-era
+  is quoted as an effective annual yield**, so there was nothing to preserve.
+- **What it measures.** Under the shipped convention the index grew at
+  6.31 %/yr over 1960-1994 against a mean quoted rate of 6.34 %, i.e. it paid
+  slightly LESS than the rate it was built from, which no rolled deposit does.
+  It now grows at **6.54 %/yr**: the rate, plus the roll compounding
+  (+0.19 pt in the 1970s, +0.20 pt in the 1980s) and the act/360 uplift after
+  1990-07 (+0.47 pt over 1990-1994).
+
+Measured, new file against old, on the 420 months they both cover (dates
+identical): **+0.230 pt/yr**, **+7.84 %** cumulative over 35 years, worst single
+month +0.109 pt (1981-03). The generator now gates the convention itself rather
+than the level: every full calendar year of the index is compared with what the
+documented convention pays on that year's mean quoted rate, restated
+independently of the builder, and the two agree to **0.008 pt** at worst over 34
+years (gate 0.10 pt). Reading the same quote as an effective annual yield lands
+0.2 to 0.7 pt below in the high-rate years, so the check names the mistake that
+was there.
+
+`DECASH-EUR` is rebased onto `EURCASH-EUR` where the two meet, so the +7.84 %
+level change reaches **nothing**: only pre-1994 RETURNS travel downstream, and
+the young end of every reconstruction is untouched (end-level ratio 1.000000 for
+both euro-native lines). The four reconstructions that reach behind 1994 and
+finance or earn euro cash move by, over their whole history: XEON
+**+0.115 pt/yr** (it IS euro cash), the EUR-hedged BTOP50 index **+0.058 pt/yr**
+(hedging earns euro cash), NTSZ **-0.029 pt/yr** and NTSG **-0.009 pt/yr** (both
+finance a bond overlay at it, 0.60 and 0.066 of notional against a 0.10 cash
+sleeve, so a dearer cash rate is a net cost). Every audit verdict is unchanged:
+the graded overlaps all start in 2007 or later, decades after the last month
+`DECASH-EUR` touches.
+
+One thing was measured and deliberately NOT done: `EURCASH-EUR` accrues EURIBOR
+over a 365.25-day year while EURIBOR is itself quoted act/360, worth 1.46 % of
+the rate (0.03 %/yr at its 2.3 %/yr average). It is left alone here because it
+is a change to the LIVE cash leg every hedged recipe reads, not to a pre-euro
+tail, and it belongs with its own regeneration of those lines; the two legs are
+biased identically in the meantime. Note this is not the deep tail's problem:
+the German 360/360 era is 366 of `DECASH-EUR`'s 420 months, and on a monthly
+grid that convention IS one twelfth of the rate a month, which the generator now
+computes exactly.
+
 ## The recipe (`ntszRecipe` / `ntszBuild`)
 
 ```
@@ -133,13 +200,9 @@ inception (2025-10)
   times out from the generation environment and DBnomics has dropped the FRED
   provider). It is now produced here, from the ECB's own EURIBOR history: the
   rebuilt index reproduces the shipped one to **4e-4** over the 385 months they
-  share, and the generator refuses to write it if that ever exceeds 2e-3.
-  Note the two cash series do not share a compounding convention: an interbank
-  rate is quoted SIMPLE, which is what `EURCASH-EUR` (and the file it replaces)
-  is rolled at, while `DECASH-EUR` still reads its rate as an effective annual
-  yield, worth about 0.19 %/yr on a 6 % rate. `DECASH-EUR` is rebased onto
-  `EURCASH-EUR` at the 1994 splice, so only its returns reach a reconstruction,
-  and re-quoting them is a data change with its own validation to write.
+  share, and the generator refuses to write it if that ever exceeds 2e-3. What
+  each leg's rate is quoted in, and what re-quoting `DECASH-EUR` moved, is the
+  cash-conventions section above.
 
 `ntszBuild` pre-builds the equity and deep-cash legs and serves them to the
 standard frame/`Composite` machinery under synthetic ids (`injected` fetcher);
@@ -209,6 +272,13 @@ binding constraint**:
   -0.54 %/yr** (corr 0.56 → 0.96, drift +15.4 % → -4.2 %), level verdicts ok on
   both. The affine map was **not** refitted: 2004-2026 is the only window where
   a real 25-year yield exists at all, and it now governs the deep tail alone.
+- **The deep cash leg is quoted right (fixed 2026-08-20).** `DECASH-EUR` read
+  its source rate as an effective annual yield, where the Bundesbank quotes it
+  simple on a 360-day year; re-quoting it adds **+0.230 %/yr** to the pre-1994
+  cash path and moves the four reconstructions that reach behind 1994 by
+  **+0.115 to -0.029 %/yr** over their whole history, with no audit verdict
+  changed. Evidence, measurements and what was deliberately left alone are in
+  the cash-conventions section above.
 - **Bond duration.** `EUROGOV-*` reconstruct a 10y benchmark (matching the OECD/ECB
   yield tenor); the real `EUNH.DE` is a broad eurozone govt basket (duration
   ~7-8y). The small mismatch is rescaled/absorbed at the 2009 splice.
