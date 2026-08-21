@@ -86,7 +86,7 @@ Une seule règle de discipline accompagne le calendrier. Relevez ces valeurs une
 
 ## Les sources officielles françaises
 
-**[info-retraite.fr](https://www.info-retraite.fr) (relevé, M@REL, rachats)** : la source du deuxième paramètre du plan. L'audit d'une heure le plus rentable du livre. [[retraite-legale]]
+**[info-retraite.fr](https://www.info-retraite.fr) (relevé, M@rel, rachats)** : la source du deuxième paramètre du plan. L'audit d'une heure le plus rentable du livre. [[retraite-legale]]
 
 **[impots.gouv.fr](https://www.impots.gouv.fr) et le BOFiP ; [service-public.fr](https://www.service-public.fr)** : les textes fiscaux à jour. Ils priment tout blog, chaque année. [[flat-tax-et-imposition]], [[enveloppes-francaises]]
 

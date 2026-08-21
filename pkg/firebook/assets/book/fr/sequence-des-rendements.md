@@ -116,7 +116,7 @@ Plan de base : 1 M€, 60/40, 40 000 €/an rigides, 45 ans d'horizon ; ruine so
 
 ## Pour aller plus loin
 
-- Early Retirement Now, SWR Series volets 14-15 (« Sequence of Return Risk ») : la démonstration que la séquence explique l'essentiel du résultat ; volet 53 sur les couvertures, le « Retiree-Saver Investment Pact » ([[serie-ern]]).
+- Early Retirement Now, SWR Series volets 14-15 (« Sequence of Return Risk ») : la démonstration que la séquence explique l'essentiel du résultat ; volet 53, le « Retiree-Saver Investment Pact », sur les expositions opposées de l'épargnant et du rentier ([[serie-ern]]).
 - Pfau & Kitces, « Reducing Retirement Risk with a Rising Equity Glide Path », *Journal of Financial Planning*, 2014 : la parade par l'allocation ([[glidepaths]]).
 - Moshe Milevsky, « Retirement Ruin and the Sequencing of Returns » : la formalisation actuarielle.
 - Dans ce livre : [[les-maths-du-4-pourcent]] (la pénalité de séquence chiffrée, ~1,8 point dans la cascade du 4 %) et [[pourquoi-la-diversification-marche]] (la diversification comme remède au même risque).
