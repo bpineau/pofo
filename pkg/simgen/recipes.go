@@ -213,6 +213,17 @@ func dtlaRecipe() Recipe {
 // investment-grade credit spread over bills that the pre-inception proxy omits
 // (the grafted real quotes carry it); with duration ~0 the bill rate is the
 // faithful cash-equivalent backcast.
+//
+// That omission is what the audit's path verdict reads, and it is not a defect
+// to repair. The engine's monthly correlation with the fund is 0.29 over 96
+// months and 0.81 once TWO months are dropped, March 2020 (-3.46 %) and its
+// April reversal (+3.54 %); dropping any further month leaves it at 0.79-0.81.
+// Those two months are the investment-grade ultrashort dislocation, real to the
+// day in both US-listed siblings (ICSH -1.5 %, NEAR -6.2 % on 2020-03-19
+// against this fund's -3.2 %), so they are neither a bad print nor anything a
+// hygiene rule should touch. They also net out: the level gap is -0.42 %/yr,
+// and real quotes are grafted from 2018, so the reconstruction only ever
+// governs a tail where no credit spread is observable anyway.
 func ernaRecipe() Recipe {
 	return Recipe{
 		ID:              "IE00BGCSB447",
