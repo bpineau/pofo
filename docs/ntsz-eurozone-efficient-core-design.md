@@ -25,12 +25,72 @@ OECD or the ECB; it embeds the CSVs.
 
 | Refdata (new) | Content | Source | Span |
 |---|---|---|---|
-| `EMU-EUR` | eurozone equity **net TR** | OECD euro-area share-price index `EA19.SPASTT01` (price) grossed by a constant net dividend yield | ~1986 |
-| `EUROGOV-EUR` | euro govt bond **TR** (monthly) | OECD euro-area 10y yield `EA19.IRLTLT01` → `TreasuryTR` (10y) | ~1970 |
+| `EMU-EUR` | eurozone equity **net TR** | OECD euro-area share-price index `EA20.M.SHARE` (price) grossed by a constant net dividend yield | ~1986 |
+| `EUROGOV-EUR` | euro govt bond **TR** (monthly) | OECD euro-area long-term yield `EA20.M.IRLT` → `TreasuryTR` (10y) | ~1970 |
 | `EUROGOV-DAILY` | euro govt bond TR (daily shape) | ECB daily 10y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y` → `TreasuryTR` | ~2004 |
-| `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | OECD 10y yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on the 2004-2026 ECB curve) → `TreasuryTR` (24y par, dur ~17) | ~1970 |
+| `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on the 2004-2026 ECB curve) → `TreasuryTR` (24y par, dur ~17) | ~1970 |
 | `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
-| `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.IR3TIB01`, compounded | 1960-1994 |
+| `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB`, compounded | 1960-1994 |
+
+## Source dataflow: the 2026-08 migration off OECD MEI
+
+The three OECD inputs used to be read from the legacy `OECD/MEI` dataflow. That
+dataflow **stopped being updated in 2024-01** and went on answering HTTP 200 for
+two and a half years, so the bundled euro references silently carried a
+two-year-old tail. On **2026-08-19** the generator was moved to the current
+short-term-statistics dataflow `OECD/DSD_STES@DF_FINMARK`, the one
+`cmd/gen-gbond-refdata` already read:
+
+| was (`OECD/MEI`, ends 2024-01) | is (`OECD/DSD_STES@DF_FINMARK`) |
+|---|---|
+| `EA19.IRLTLT01.ST.M` | `EA20.M.IRLT.PA._Z._Z._Z._Z.N` |
+| `EA19.SPASTT01.IXOB.M` | `EA20.M.SHARE.IX._Z._Z._Z._Z.N` |
+| `DEU.IR3TIB01.ST.M` | `DEU.M.IR3TIB.PA._Z._Z._Z._Z.N` |
+
+**EA20 rather than EA19**, because the euro area has had 20 members since
+Croatia joined in 2023 and only the EA20 aggregate is still being extended: the
+new dataflow publishes both, EA20 runs four months further (2026-05 against
+2026-01), and over their entire common history (673 monthly yields from 1970-01,
+470 share-price points from 1986-12) the two agree to within **1.5e-4 percentage
+point** on the yield and to the last published digit on the equity index. The
+choice therefore costs nothing in comparability and buys the live tail.
+
+What the migration changed, measured old file against new file on the shared
+window (levels rebased at the first common date):
+
+- `EMU-EUR`, `DECASH-EUR`: identical to **1e-6** over 446 and 420 months. The
+  dataflow move alone revised nothing.
+- `EUROGOV-EUR` / `EUROGOV-LONG-EUR`: cumulative deviation under **0.92 %** and
+  **0.23 %** over 54 years, from OECD revisions of a few basis points on the
+  monthly yield (the largest single month is 2010-12, 0.11 pt of return).
+- the **daily** pair was not merely extended but **repaired**. The files shipped
+  before this pass carried flat runs from a degraded fetch: `EUROGOV-DAILY` held
+  one constant level for **698 trading days** (2019-04 to 2022-01, the whole
+  covid round trip) and `EUROGOV-LONG-DAILY` for 114. The ECB series they come
+  from is clean today and the rebuilt files have **no repeated level at all**.
+  Nothing reported this at the time, which is why the generator now checks it.
+- the new OECD tail, 2024-01 to 2026-05, is sane against outside knowledge: the
+  euro-area 10-year lands at **3.49 %** (the ECB AAA curve is at 3.21 %, a
+  28 bp aggregate-over-AAA spread), and `EMU-EUR` returns **+16.3 %/yr** with
+  10.7 %/yr monthly volatility against **+16.9 %/yr** and 10.7 % for the real
+  EZU in EUR over the very same window: 0.6 pt/yr apart on the level and within
+  0.1 pt on the risk.
+
+The generator now validates every series before writing it (`-check`, on by
+default), the way `cmd/gen-gbond-refdata` does: freshness (an OECD series more
+than a year stale, or an ECB one more than a quarter, fails: this exact failure
+went unnoticed for two years), flat runs, `EUROGOV-EUR` against the bundled
+`BUND-EUR` over 1999-2010 (corr 0.955, CAGR gap -0.26 pt), the daily curve
+against the monthly yield (vol ratio 1.09), the long reconstruction against
+DBXG's realized volatility (13.99 %/yr), the synthesized long yield against the
+ECB curve it was fitted on, and the equity gross-up against the EZU overlap
+`netDivYield` was calibrated on (3.05 %/yr, the calibration target to two
+decimals).
+
+Both calibrations were re-derived from the live data and **neither moved**: the
+25-year-on-10-year regression over the full 2004-2026 ECB curve still fits
+`0.5711 + 0.9615x` to four digits, and `EMU-EUR`'s 2001-2023 CAGR is still
+3.05 %/yr, exactly the EZU net-TR figure `netDivYield = 2.2 %` was set against.
 
 The `EUROGOV-LONG-*` pair proxies the **25+** segment of the euro sovereign
 curve (`dbxgRecipe`, backing DBXG). It is a genuine long-bond reconstruction:
@@ -77,7 +137,7 @@ The bond and cash legs reach 1970 and 1960 cheaply. The **equity leg is the
 binding constraint**:
 
 - A credible eurozone equity **total return** only goes back to the OECD euro-area
-  share-price index (`EA19.SPASTT01`, ~1986). MSCI EMU net TR via Curvo starts
+  share-price index (`EA20.M.SHARE`, ~1986). MSCI EMU net TR via Curvo starts
   even later (~1998) and is a manual export, not fetchable.
 - Reaching the 1970s would require fabricating a synthetic pre-euro "eurozone
   equity in EUR" (aggregating pre-euro national markets in a currency that did
@@ -87,7 +147,7 @@ binding constraint**:
 
 ## Calibration and known limitations (the ledger)
 
-- **Equity net-dividend constant (`netDivYield = 2.2%/yr`).** `EA19.SPASTT01` is
+- **Equity net-dividend constant (`netDivYield = 2.2%/yr`).** `EA20.M.SHARE` is
   a price index; the gross-up to net TR uses a constant calibrated on the EZU
   (net TR, in EUR) overlap: EZU's EUR CAGR over 2001-2023 is ~3.05%/yr vs
   ~0.84%/yr for the price index, a ~2.2%/yr gap (dividends + universe drift). A
@@ -107,6 +167,21 @@ binding constraint**:
   and the annualized-CAGR comparison over 9 months is noise. The value here is
   the deep reconstruction, not a tight tracking claim; the real quotes are
   grafted from inception regardless.
+- **The long monthly anchors govern the level even where a real long curve
+  exists.** `euroGovLongDaily` takes `EUROGOV-LONG-EUR` as anchors and
+  `EUROGOV-LONG-DAILY` only as intra-month shape, so the 25-year yield
+  *synthesized from the 10-year* sets the level over 2004-2026 too, where the
+  ECB publishes the real 25-year point. The affine map has a slope of 0.96, so
+  it cannot reproduce a **steepening**: over 2024-01 to 2026-05 the synthesized
+  long bond returns -0.3 %/yr where the real ECB 25-year curve returns
+  -5.1 %/yr (the same window refits the regression at a slope of 1.43). This was
+  invisible while the OECD tail stopped in 2024-01; extending it moved `MTH`'s
+  level verdict from ok to warn (engine -2.30 %/yr vs real -4.19 %/yr over
+  2018-2026) and widened `DBXG`'s gap from +0.01 to +0.65 %/yr, both still on
+  windows the SIM consumer never sees (real quotes are grafted from 2018-09 and
+  2007-08). Anchoring the post-2004 level on the real curve instead is the
+  obvious fix and is **not** done here: it is a recipe change, not a data
+  refresh.
 - **Bond duration.** `EUROGOV-*` reconstruct a 10y benchmark (matching the OECD/ECB
   yield tenor); the real `EUNH.DE` is a broad eurozone govt basket (duration
   ~7-8y). The small mismatch is rescaled/absorbed at the 2009 splice.

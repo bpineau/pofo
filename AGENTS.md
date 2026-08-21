@@ -299,13 +299,17 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   sleeves that quote. The non-US references (`BUND-EUR{,-DAILY}`, `JGB-JPY`,
   `GILT-GBP`, `JPCASH-JPY`, `GBCASH-GBP`) come from `cmd/gen-gbond-refdata`
   (`make gbond-refdata`), which validates every series before writing it; its
-  OECD source is the CURRENT `OECD/DSD_STES@DF_FINMARK` dataflow, not the
-  `OECD/MEI` one `gen-euro-refdata` still reads (frozen at 2024-01).
+  OECD source is the CURRENT `OECD/DSD_STES@DF_FINMARK` dataflow, which
+  `gen-euro-refdata` also reads since 2026-08 (the legacy `OECD/MEI` dataflow
+  both used to read froze at 2024-01 while still answering HTTP 200;
+  `cmd/gen-macropanel` is the last generator still on it).
 - Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
   govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
   series (`EMU-EUR`, `EUROGOV-EUR{,-DAILY}`, `EUROGOV-LONG-EUR{,-DAILY}` for the
   25+ segment, `DECASH-EUR`) come from DBnomics via `cmd/gen-euro-refdata`
-  (`make euro-refdata`); note the equity-leg daily-vol/FX caveat there, and that
-  the long sleeve is a real `TreasuryTR` long-bond reconstruction (never a
+  (`make euro-refdata`), which validates every series before writing it (its
+  freshness and flat-run checks exist because the MEI freeze and a degraded
+  fetch both shipped unnoticed); note the equity-leg daily-vol/FX caveat there,
+  and that the long sleeve is a real `TreasuryTR` long-bond reconstruction (never a
   levered short bond, which overstates a bond bull).
