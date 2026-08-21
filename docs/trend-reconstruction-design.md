@@ -71,9 +71,9 @@ returns, the fund's own real quotes included from its inception):
 
 | File | window | CAGR | volatility | max drawdown |
 |---|---|---|---|---|
-| DBMF | 1996-03-26 .. 2026-08-19 | 9.18 % | 12.4 % | -21.5 % |
-| DBMF UCITS USD | 1996-03-26 .. 2026-08-19 | 9.32 % | 12.5 % | -21.3 % |
-| DBMF UCITS EUR | 1996-03-26 .. 2026-08-19 | 9.61 % | 15.7 % | -29.2 % |
+| DBMF | 1996-03-26 .. 2026-08-19 | 9.08 % | 12.2 % | -22.8 % |
+| DBMF UCITS USD | 1996-03-26 .. 2026-08-19 | 9.23 % | 12.2 % | -22.7 % |
+| DBMF UCITS EUR | 1996-03-26 .. 2026-08-19 | 9.51 % | 15.5 % | -29.2 % |
 | KMLM | 1996-03-26 .. 2026-08-19 | 9.83 % | 15.0 % | -31.0 % |
 | Simplify CTA | 1996-03-26 .. 2026-08-19 | 11.63 % | 20.1 % | -32.8 % |
 | AQR UCITS A | 1996-03-26 .. 2026-08-18 | 7.07 % | 9.4 % | -21.7 % |
@@ -93,9 +93,9 @@ back cannot move them: they are what the chain bought over 2007-2019, and the
 
 | Fund | Before | After |
 |---|---|---|
-| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.68 / 0.75, 10.0 %, -2.0 pts** |
-| DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.65 / 0.85, 10.0 %, +0.2 pt** |
-| DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.36 / 0.71, 17.3 %, -0.2 pt** |
+| DBMF | 0.55 / 0.58, 11.7 %, -5.6 pts | **0.78 / 0.85, 8.2 %, -1.3 pts** |
+| DBMF UCITS USD | 0.29 / 0.54, 14.7 %, -13.7 pts | **0.66 / 0.86, 9.9 %, -0.9 pt** |
+| DBMF UCITS EUR | 0.15 / 0.27, 19.2 %, -6.2 pts | **0.37 / 0.73, 17.1 %, -0.9 pt** |
 | AQR UCITS A | 0.37 / 0.55, 10.6 %, -4.8 pts | **0.73 / 0.92, 6.8 %, +0.1 pt** |
 | KMLM | 0.37 / 0.44, 16.6 %, -3.2 pts | **0.63 / 0.65, 12.7 %, -1.7 pts** |
 | Simplify CTA | 0.19 / 0.24, 21.3 %, -6.8 pts | **0.54 / 0.54, 16.3 %, -3.2 pts** |
@@ -1004,8 +1004,8 @@ the CAGR gap (reconstruction minus fund) over the overlap.
 | Fund | window | daily | weekly | monthly | TE | CAGR gap |
 |---|---|---|---|---|---|---|
 | DBMF | 7.2 y | 0.78 | 0.85 | 0.89 | 8.2 % | -1.3 pts |
-| DBMF UCITS USD | 1.4 y | 0.65 | 0.85 | 0.98 | 10.0 % | +0.2 pt |
-| DBMF UCITS EUR | 1.3 y | 0.36 | 0.71 | 0.90 | 17.3 % | -0.2 pt |
+| DBMF UCITS USD | 1.4 y | 0.66 | 0.86 | 0.97 | 9.9 % | -0.9 pt |
+| DBMF UCITS EUR | 1.4 y | 0.37 | 0.73 | 0.89 | 17.1 % | -0.9 pt |
 | KMLM | 5.7 y | 0.63 | 0.65 | 0.69 | 12.7 % | -1.7 pts |
 | Simplify CTA | 4.4 y | 0.54 | 0.54 | 0.58 | 16.3 % | -3.2 pts |
 | AQR UCITS A | 11.4 y | 0.73 | 0.92 | 0.93 | 6.8 % | +0.1 pt |
@@ -1025,9 +1025,9 @@ How to read it, because each row's residual has a KNOWN decomposition:
   is about what the constituents' unclaimed performance fee is worth).
   Closing that gap would mean granting the manager's alpha to the backcast,
   which is curve fitting.
-  Conversely DBMF UCITS USD, DBMFE and AQR sit within 0.3 pt because their
+  Conversely DBMF UCITS USD, DBMFE and AQR sit within a point because their
   nearest donor is the same manager running the same book.
-- **The DBMFE daily 0.36 has a measured ceiling of 0.46** (the
+- **The DBMFE daily 0.37 has a measured ceiling of 0.46** (the
   valuation-convention section below): four fifths of its daily residual is
   the UCITS wrapper's own positions and cash. Judge that class on weekly and
   monthly only.
