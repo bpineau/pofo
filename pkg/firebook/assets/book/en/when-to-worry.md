@@ -1,9 +1,9 @@
 # When to worry, and when to let it ride
-<!-- source: quand-s-inquieter @ 2c08ac3d2530 -->
+<!-- source: quand-s-inquieter @ 94ff341c0bf0 -->
 
 Between two annual reviews, a retiree lives with one nagging question. "With the market doing this, right now, should I be doing something?" This book's answer is almost always no. But that no needs **instruments** behind it to hold up. Doing nothing with no instruments is just holding your breath. Doing nothing while watching your warning lights is flying the plan ([[the-psychology-of-spending]]: numbers are what put bounds on fear).
 
-This chapter builds the dashboard you fly between reviews. One warning light does most of the work: the current withdrawal rate, on a green-amber-red scale calibrated to your own plan. Next comes the list of everything that is **not** a signal, because sorting noise from signal is half the job. Then the early warnings that are real. They exist, they are slow, and their slowness is what saves you: ruin gives 10 to 20 years of notice ([[failure-probability]]). Last, the ladder of graded responses. Worrying usefully means knowing in advance what you will do at each step, from doing nothing on purpose to redesigning the plan from scratch. It is the operating version of ERN's Part 47, "When to Worry, When to Wing It" ([[the-ern-series]]).
+This chapter builds the dashboard you fly between reviews. One warning light does most of the work: the current withdrawal rate, on a green-amber-red scale calibrated to your own plan. Next comes the list of everything that is **not** a signal, because sorting noise from signal is half the job. Then the early warnings that are real. They exist, they are slow, and their slowness is what saves you: ruin gives 10 to 20 years of notice ([[failure-probability]]). Last, the ladder of graded responses. Worrying usefully means knowing in advance what you will do at each step, from doing nothing on purpose to redesigning the plan from scratch. It applies to the flying the same sorting that ERN's Part 47 applies to the assumptions of a plan ("When to Worry, When to Wing It", [[the-ern-series]]).
 
 ::: cle The principle behind the dashboard
 You steer by **ratios**, never by balances. A balance scares you or elates you without telling you anything, because it only means something next to your spending and your horizon. The **current withdrawal rate** says it all in one number: annual spending divided by today's portfolio. It tells you where the plan stands, whatever moved it, the market, your spending or inflation. Anyone can work it out in their head ([[couples-and-family]]: it is the number the reverse quiz turns on), and its thresholds can be calibrated to you. That is the main warning light. Everything else is a supplement.
@@ -68,6 +68,6 @@ The tally of the crossing, the years spent inside a hostile market, as written i
 
 ## Going further
 
-- Early Retirement Now, Part 37 (bear markets in retirement) and Part 47 ("When to Worry, When to Wing It"): the foundations of the playbook ([[the-ern-series]]).
+- Early Retirement Now, Part 37 (getting through a bear market in retirement) and Part 38 ("When Can We Stop Worrying about Sequence Risk?", whose answer is that you never quite stop, and that you have to judge yourself every year as if it were day one): the foundations of the playbook ([[the-ern-series]]).
 - The current rate is a mental calculation, spending divided by portfolio; resimulating the thresholds belongs to the annual review ([[the-annual-review]], [[morningstar-guardrails]]).
 - In this book: [[bear-markets-in-retirement]] (the crossing in detail), [[flexibility-in-practice]] (steps 1 and 2), [[going-back-to-work]] (step 3), [[failure-probability]] (why ruin gives notice).
