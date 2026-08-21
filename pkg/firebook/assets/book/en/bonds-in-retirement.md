@@ -1,5 +1,5 @@
 # Bonds in retirement: types, duration, the exact job
-<!-- source: obligations-en-retrait @ 1a93bd9a2061 -->
+<!-- source: obligations-en-retrait @ 2686742fff3d -->
 
 Bonds are the most misunderstood asset a retiree owns. People think they are safe, and 2022 destroyed that belief: broad investment grade indexes lost double digits, long government bonds 30% and more, worse than stocks. People think they are complicated, when the mechanics come down to two ideas. And people ask them to do a job, to pay, that is not their job in a withdrawal plan. This chapter puts all of it back in order. First the mechanics, the minimum that is enough: price and rates, duration as the unit of both risk and horizon, yield to maturity as the only honest expectation. Then the three services a retiree wants from the bond sleeve, and the regimes in which each one works or breaks. Then the decisive history of the stock-bond correlation, the most important and least stable parameter in the whole allocation. Then the four concrete decisions: quality, duration, the linked share, currency. And finally the stable value fund, a bond substitute with unusual properties in both directions, and the full lesson of 2022.
 
@@ -14,6 +14,11 @@ One. A bond's price moves **the opposite way** from rates, in proportion to its 
 **Price and rates.** A bond is a stream of fixed cash flows. When market rates rise, those old fixed flows are worth less, so the price falls. It falls by exactly what it takes to bring the buyer's yield back to today's rate. Duration measures that sensitivity. It runs around 2 for a short-term fund, around 7 for the standard aggregate, 15 to 20 for long government funds. It is also, and this is no accident, the horizon over which your return is locked in. Hold a bond fund for roughly its duration in years and you earn about the YTM you bought at. Rate rises along the way hurt the price, but reinvesting the coupons at the new rates pays them back. Hence one basic consistency rule: the sleeve's duration must stay at or below the horizon it serves. Money earmarked for the next three years of withdrawals and parked in duration 15 is a bet on rates, not a reserve.
 
 **Funds against individual bonds, a false debate.** "I hold my bond to maturity, so I never lose" is the most stubborn illusion in the asset class. Holding to maturity locks in the nominal yield you were promised. If rates have risen, you take the same loss the fund took, as an opportunity cost. You collect 2% while the market pays 4, instead of a visible drop in price. Final wealth is identical; only the mental accounting changes. The constant-duration fund and the bond held to maturity are two legitimate tools for two jobs. The fund serves permanent sleeves, the shock absorber you rebalance. The individual bond, or a dated-maturity fund, serves dated liabilities. That is the ladder principle, covered in [[bond-ladders]].
+
+::: figure tenir-echeance
+A seven-year bond position, a two-point rate shock in the twelfth month, and the same position under two accountings: the fund marks to market and prints an 11% fall at once, the bond held to maturity stays at amortized cost and prints nothing, but pays 2% while the market pays 4. The band between the two curves is the same loss under its two names. At maturity the two wealths are the same number, to the cent.
+:::
+
 
 ## The three services, and what each one needs to work
 
