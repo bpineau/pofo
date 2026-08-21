@@ -62,6 +62,10 @@ Le moment venu, le portefeuille UCITS se consomme. Quelques savoir-faire éviten
 La cible de Karim et Léa ([[diversification-internationale]]) : 1,6 M€, 65/35, phase à découvert de 14 ans, tout ce livre assemblé. Le PEA (300 k€) loge l'ETF Monde synthétique Acc → 19 %. Le CTO (1 170 k€) loge le reste : All-World physique IE Acc → 38 % ; SCV US et Europe → 8 % ; État euro 5-8 ans Acc → 11 % ; linkers euro 1-5 ans → 6 % ; ETC or physique → 5 % ; fonds trend UCITS à frais fixes → 5 %. L'AV (130 k€) loge le fonds euros → 8 % (buffer de 30 mois et tranche courte). Au total, sept lignes, trois enveloppes, environ 0,22 %/an tout compris. Chaque ligne remplit un rôle nommé dans la table des défenses, et le rééquilibrage aux bandes de ±5 points s'exécute par les ventes de retrait. C'est **tout** : la sophistication de ce portefeuille est dans sa conception, pas dans son nombre de lignes. Et il tient sur la page écrite du plan ([[construire-son-plan]]).
 :::
 
+::: figure ucits-implantation
+Les sept lignes de l'exemple, chacune à sa place. L'aire d'un carré est le poids de la brique dans le portefeuille total, sa colonne est l'enveloppe qui la loge, et la marge droite nomme le rôle qu'elle sert. La ligne se lit « quelle brique », la colonne « quelle tuyauterie ». Le moteur monde est coupé en deux parce que le PEA plafonne, et les points de la colonne PEA disent ce qu'elle n'a pas le droit de détenir. C'est pour cela que le CTO finit par porter les trois quarts du plan.
+:::
+
 ## L'essentiel à retenir
 
 - L'écosystème UCITS couvre toutes les briques du livre, avec deux avantages propres : les parts capitalisantes (le revenu du rentier vient de ventes programmées, moins taxées et mieux contrôlées que tout dividende) et les fonds irlandais (retenue américaine à 15 %, environ 0,2 %/an gagnés sur les actions américaines).
