@@ -1357,6 +1357,13 @@ var figureDict = map[string]string{
 	"durée de la coupe, en années ; elle démarre en 1970, l'année où le portefeuille passe 20 % sous son sommet":            "how long the cut lasts, in years; it starts in 1970, the year the portfolio falls 20% below its peak",
 	"Plan de 30 ans sur 1 M€ de capital : 45 000 € par an à gauche, 40 000 € à droite, en euros constants, hors fiscalité.": "A 30-year plan on EUR 1M of capital: EUR 45,000 a year on the left, EUR 40,000 on the right, in constant euros, no taxes.",
 	"60/40 américain réel (S&amp;P 500, Treasuries 5 ans, déflatés CPI-U), reconstruction du livre.":                        "Real US 60/40 (S&amp;P 500, 5-year Treasuries, deflated by CPI-U), the book's reconstruction.",
+	"taux courant":              "current rate",
+	"vert · rien":               "green · nothing",
+	"orange · vigilance":        "amber · watch",
+	"rouge · coupe écrite":      "red · written cut",
+	"2 points de suite → coupe": "2 readings in a row → cut",
+	"coupe levée":               "cut lifted",
+	"Le taux de retrait courant : le voyant qu'on pilote": "The current withdrawal rate: the warning light you steer by",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
