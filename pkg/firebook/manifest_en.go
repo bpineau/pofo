@@ -153,6 +153,7 @@ var CategoriesEN = []Category{
 		Articles: []Article{
 			{Slug: "building-your-plan", Title: "Building your plan step by step", Blurb: "The seven steps in order, the eight-block template for the one-page plan, the validation recipe, and day one.", Source: "construire-son-plan"},
 			{Slug: "the-annual-review", Title: "The annual review: the retiree's checklist", Blurb: "One session a year, seven blocks, the reverse quiz and the non-financial line: the review records and executes, it does not redesign.", Source: "revue-annuelle"},
+			{Slug: "when-to-worry", Title: "When to worry, and when to let it ride", Blurb: "The current rate as the main warning light, sorting noise from signal, ruin that gives years of notice, and the five-step playbook.", Source: "quand-s-inquieter"},
 		},
 	},
 	{
