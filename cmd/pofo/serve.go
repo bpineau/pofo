@@ -232,14 +232,11 @@ func (s *server) handler(panel *scenario.Panel, labels []string) http.Handler {
 		http.Redirect(w, r, "/firebook"+strings.TrimPrefix(r.URL.Path, "/book"), http.StatusMovedPermanently)
 	})
 	// The machine-readable face of the constellation: /sitemap.xml,
-	// /robots.txt and /llms.txt, covering both editions and the app surfaces.
-	firebook.BookSite(
-		firebook.Page{Path: "/", Title: "pofo", Note: "the front door"},
-		firebook.Page{Path: "/visualizer", Title: "Portfolio visualizer",
-			Note: "compose portfolios and backtest them side by side"},
-		firebook.Page{Path: fireBase + "/", Title: "FIRE simulator",
-			Note: "stress-test a withdrawal plan against thousands of simulated futures"},
-	).Handle(mux)
+	// /robots.txt and /llms.txt, covering both editions and the app surfaces,
+	// plus the IndexNow key file when -indexnow-key names one.
+	site := serveSite()
+	site.IndexNowKey = s.opt.indexNowKey
+	site.Handle(mux)
 	css := func(body string) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodGet {
