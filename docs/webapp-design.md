@@ -35,6 +35,8 @@ running a command per comparison.
 | `/firebook/en/` | `firebook.English.Handler`, prefix-stripped | the English edition ("The Quiet FIRE"), complete since 2026-08-19: every French article that is not French-only has a counterpart here |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
+| `/sitemap.xml`, `/robots.txt`, `/llms.txt` | `firebook.Site.Handle` (`pkg/firebook/site.go`) | the machine-readable face of the constellation: every article, index and EPUB of both book editions plus the app surfaces; everything allowed and the AI crawlers named one by one; the llmstxt.org index. Absolute URLs are built per request from the `Host` header (`firebook.RequestOrigin`), since the public origin is not known at build time. Also mounted by `pkg/decumul/web` |
+| `/firebook/<lang>/<slug>.md` | `pkg/firebook.Handler` | one article's Markdown SOURCE, untransformed, behind a one-line HTML-comment provenance header naming the page to cite; strong ETag, `text/markdown`. The HTML page declares it (`<link rel="alternate" type="text/markdown">`) and `llms.txt` lists it |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
 
@@ -42,13 +44,22 @@ The two `/firebook` mounts are cross-linked by
 `firebook.WithAlternate(base, sibling)`, which each mount hands the OTHER one's
 base path (the handler emits relative URLs and
 cannot know where its sibling sits). A page with a counterpart then carries a
-`<link rel="alternate" hreflang="fr">` / `hreflang="en">` pair in its head (the
-self-referencing half stays relative, like every other URL the handler emits)
-and a discreet language switch at the end of the top bar, labelled in the
+`<link rel="alternate" hreflang="fr">` / `hreflang="en">` pair in its head, an
+`hreflang="x-default"` naming the French (source) edition, and a discreet
+language switch at the end of the top bar, labelled in the
 target's language ("English version" on a French page). The two indexes always
 pair; an article pairs through `Article.Source`, so the French-only tax part
 declares nothing and points nowhere. Without the option the book renders
 exactly as before, which the offline and `-fire` mounts rely on.
+
+Two URLs in the head are NOT relative, on purpose: the `rel="canonical"` link
+and the self-referencing `hreflang`, both built from `Edition.HomePath`. The
+constellation republishes the whole book under the simulator's own prefix
+(`/firesimulator/firebook/fr/...`, a consequence of mounting `pkg/decumul/web`
+under a path), and a relative canonical would declare every copy canonical.
+`HomePath` is the edition's declared online home, the same value the EPUB's
+title page prints, so it is the one honest answer to "which URL should be
+indexed". Everything else the handler emits stays relative and mount-agnostic.
 
 The four static assets above are **content-fingerprinted**: the HTML surfaces
 link them as `…?v=<hash>` (`assetURL`/`versionedAssets` in `serve.go`, applied to
@@ -295,6 +306,49 @@ instrument look:
   labels of its own edition ("Portefeuilles"/"Simulateur" on the French book,
   "Portfolios"/"Simulator" on the English one), and the language switch
   `WithAlternate` appends closes the bar.
+
+## Being indexed, and being quoted
+
+The book is the one surface here written for strangers, so it states what it is
+twice: once for search engines, once for the agents that answer questions by
+quoting sources. The machinery is `pkg/firebook` (per-page metadata, the three
+root files) over `pkg/seo` (the file formats themselves, book-agnostic).
+
+For search engines, every book page carries a title and a meta description
+(the manifest blurb, one per article, guarded non-empty and distinct by a
+test), Open Graph and Twitter-card metas, a canonical link, the hreflang pair
+and its x-default, and schema.org JSON-LD: `WebSite` + `Book` (with the EPUB as
+a `workExample` and the whole table of contents as `Chapter` parts) on an
+index, `Article` + `BreadcrumbList` on a page. `/sitemap.xml` lists every
+article, index and EPUB of both editions plus the app surfaces, and
+`/robots.txt` points at it. No `og:image`: there is no artwork for the book,
+and inventing one would be worse than none. No `lastmod` in the sitemap: the
+articles are embedded in the binary with no honest modification date.
+
+For AI agents the decisive move is the **Markdown mirror**: `<article>.md`
+serves the article's source exactly as written, callouts, tables and
+`[[wiki-links]]` included, behind a single HTML-comment line naming the page to
+cite. An agent quoting clean Markdown gets the text right; an agent scraping
+rendered HTML gets the furniture too. The mirror is declared from the HTML head
+(`rel="alternate" type="text/markdown"`), inside the article's structured data
+(`encoding`), and in `/llms.txt`, which follows the llmstxt.org convention: one
+H1, one summary paragraph, then a section per edition (index, EPUB, OPDS) and
+one per part of that edition listing every article by its Markdown URL. Both
+editions live in ONE file, sections labelled by language: an agent fetches one
+`llms.txt` per host, and splitting the languages would hide each edition from
+whoever found the other. The mirrors are deliberately absent from the sitemap,
+where they would read as duplicate content.
+
+`robots.txt` allows everything and then names GPTBot, OAI-SearchBot,
+ChatGPT-User, ClaudeBot, Claude-Web, PerplexityBot, Google-Extended and CCBot
+one by one, with a comment saying why: the book wants to be indexed, quoted and
+cited, there is no paywall, and the thing to cite is the page.
+
+The three files are dynamic because the public origin is not knowable at build
+time (the same binary answers on localhost, on a tailnet name and behind a
+proxy): `firebook.RequestOrigin` reads the request's own `Host`, and only the
+scheme is taken from `X-Forwarded-Proto`, never the host, so an untrusted
+client cannot mint a sitemap pointing somewhere else.
 
 ## Perimeter
 
