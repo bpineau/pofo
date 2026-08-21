@@ -65,6 +65,11 @@ L'écart de rendement réel annuel entre le Golden Butterfly et 100 % actions, a
 
 Le choix n'est pas binaire. La conception moderne traite le tous-temps comme un **curseur**. Entre le portefeuille de croissance (actions mondiales et obligations, le cœur de [[allocation-actions-obligations]]) et le tous-temps complet, toutes les pondérations existent, et la bonne dose dépend de la phase et du plancher. Les repères pratiques sont clairs. En **accumulation**, la dose reste faible ou nulle. En **transition** et durant la première décennie, la fenêtre fragile, elle monte. C'est un « glidepath de structure », qui complète ou remplace la tente obligataire ([[glidepaths]], [[les-trois-phases]]). En **phase adossée**, elle se règle selon le tempérament. Concrètement, beaucoup de plans robustes convergent vers un cœur de 60-70 % de croissance mondiale, plus 30-40 % de poche de régimes (or, linkers, duration longue et éventuellement trend). Ce demi-tous-temps capte l'essentiel du raccourcissement des queues pour un coût d'espérance de 0,3-0,6 point.
 
+::: figure tous-temps-curseur
+Le curseur dose par dose, sur le cœur 70/30 de l'exemple ci-dessous : avant le plateau, chaque tranche de poche achète beaucoup de pire chemin pour presque rien ; à l'intérieur, l'achat s'arrête et le rendement, lui, continue de se payer. La poche est ici moitié or, moitié duration longue, les linkers de l'exemple n'ayant pas de série en dollars réels disponible. US, 1972-2024, en réel, rééquilibrage annuel : c'est une forme, pas un niveau universel.
+:::
+
+
 ::: astuce Tester la variante avant de l'adopter
 Un tous-temps se juge en A/B, jamais dans l'absolu. Composez la variante avec les briques disponibles (actions mondiales, obligations longues et intermédiaires, or, linkers, managed futures) et déroulez-la contre votre portefeuille actuel, à règle de retrait et à horizon identiques.
 

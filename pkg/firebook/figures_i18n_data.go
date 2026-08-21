@@ -1663,4 +1663,22 @@ var figureDict = map[string]string{
 	"tenir-echeance|Les deux finissent sur le même nombre, au centime près : c'est le même actif, lu sur deux comptabilités. L'écart culmine à":                  "Both end on the same number, to the cent: it is the same asset read under two accountings. The gap peaks at",
 	"tenir-echeance|11,2 points juste après le choc, et il faut 48 mois au prix affiché pour retrouver son niveau d'avant.":                                      "11.2 points just after the shock, and the printed price takes 48 months to return to where it was.",
 	"tenir-echeance|L'égalité tient parce que l'horizon égale la maturité restante. Un fonds qui roule pour garder 7 ans de duration finit, lui, sous le titre.": "The equality holds because the horizon equals the maturity left. A fund that rolls to keep 7 years of duration ends below the bond.",
+
+	// The dose sweep of the all-weather article (tous-temps-curseur).
+	"tous-temps-curseur|LE CURSEUR TOUS-TEMPS":                                                                          "THE ALL-WEATHER DIAL",
+	"tous-temps-curseur|Le plancher s'achète vite, et se paie peu":                                                      "The floor is bought fast, and costs little",
+	"tous-temps-curseur|Ce que chaque dose de poche de régimes retire au rendement, et ce qu'elle retire au pire recul": "What each dose of the regime sleeve takes off the return, and off the worst drawdown",
+	"tous-temps-curseur|rendement réel annualisé":                                                                       "annualized real return",
+	"tous-temps-curseur|pire recul réel":                                                                                "worst real drawdown",
+	"tous-temps-curseur|plateau recommandé":                                                                             "recommended plateau",
+	"tous-temps-curseur|% par an":                                                                                       "% a year",
+	"tous-temps-curseur|pire recul":                                                                                     "worst drawdown",
+	"tous-temps-curseur|dose de poche de régimes, en % du portefeuille  →":                                              "dose of the regime sleeve, in % of the portfolio  →",
+	"tous-temps-curseur|Quarante points de poche retirent 16 points de recul et coûtent 0,3 point de rendement.":        "Forty points of sleeve take 16 points off the drawdown and cost 0.3 points of return.",
+	"tous-temps-curseur|Cœur de croissance : 70 % actions US, 30 % Treasuries 7-10 ans (le 70/30 de l'article). Poche de régimes : moitié or,":                      "Growth core: 70% US stocks, 30% Treasuries 7-10 years (the article's 70/30). Regime sleeve: half gold,",
+	"tous-temps-curseur|moitié Treasuries 20 ans et plus. L'article partage sa poche entre or, duration longue et linkers ; aucune série de linkers":                "half Treasuries 20 years and up. The article splits its sleeve between gold, long duration and linkers; no linker series",
+	"tous-temps-curseur|en dollars réels n'est disponible ici, donc la poche est renormalisée sur les deux autres, et sa couverture d'inflation tient à l'or seul.": "in real dollars is available here, so the sleeve is renormalized over the other two, and its inflation cover rests on gold alone.",
+	"tous-temps-curseur|US, décembre 1971 à décembre 2024, en réel (IPC américain), rééquilibrage chaque décembre, recul maximal de l'indice mensuel réel.":         "US, December 1971 to December 2024, in real terms (US CPI), rebalanced every December, deepest drawdown of the real monthly index.",
+	"tous-temps-curseur|Le plateau : de 0 à 30 % de dose, le recul remonte de 16 points ; de 30 à 40 %, de 0,2 point de plus, pour 0,14 de rendement.":              "The plateau: from 0 to 30% of dose the drawdown recovers 16 points; from 30 to 40%, 0.2 points more, for 0.14 of return.",
+	"tous-temps-curseur|La pire année civile passe de −16,7 % à −4,1 % à 30 %, puis remonte à −7,7 % à 40 % : trop de duration longue a payé 2022.":                 "The worst calendar year goes from −16.7% to −4.1% at 30%, then back to −7.7% at 40%: too much long duration paid for 2022.",
 }

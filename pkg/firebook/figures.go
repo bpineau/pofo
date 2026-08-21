@@ -163,6 +163,7 @@ var figures = map[string]func() string{
 	"douleur-prime":            figDouleurPrime,
 	"panier-mediane-plancher":  figMedianePlancher,
 	"tenir-echeance":           figTenirEcheance,
+	"tous-temps-curseur":       figTousTempsCurseur,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
