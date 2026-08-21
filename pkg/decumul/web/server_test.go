@@ -161,6 +161,11 @@ func TestSEORootFiles(t *testing.T) {
 		"/robots.txt":  "Sitemap: http://example.com/sitemap.xml",
 		"/sitemap.xml": "<loc>http://example.com/firebook/fr/</loc>",
 		"/llms.txt":    "# pofo",
+		// Each edition's Atom feed rides its own mount, so this server
+		// publishes them too, absolute URLs and all.
+		"/firebook/fr/feed.xml": `<link rel="self" type="application/atom+xml; charset=utf-8" ` +
+			`href="http://example.com/firebook/fr/feed.xml"/>`,
+		"/firebook/en/feed.xml": `<title>The Quiet FIRE</title>`,
 	} {
 		rec := httptest.NewRecorder()
 		Handler(nil, nil).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))

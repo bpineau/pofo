@@ -1,6 +1,7 @@
-// Package seo builds the three small machine-readable files a site publishes
-// for crawlers and for AI agents: a sitemaps.org sitemap, a robots.txt, and an
-// llms.txt (the llmstxt.org convention).
+// Package seo builds the small machine-readable files a site publishes for
+// crawlers, for feed readers and for AI agents: a sitemaps.org sitemap, a
+// robots.txt, an llms.txt (the llmstxt.org convention) and an Atom 1.0
+// syndication feed.
 //
 // The package is content-agnostic and stdlib-only: it knows the file formats,
 // never what a particular site holds. A caller assembles the values from its
@@ -29,4 +30,13 @@
 // sections holding link lists ("- [title](url): note"). LLMs.Text renders
 // exactly that, so an agent can read the file as an index of the site and
 // follow the links it needs instead of scraping HTML.
+//
+// # Atom
+//
+// Feed.Atom renders an Atom 1.0 syndication feed: the feed's identity and its
+// entries, each a page with a title, an absolute link and an optional summary.
+// Atom makes <updated> mandatory on the feed and on every entry, and the
+// package will not invent one: a caller with no honest per-page date passes
+// the same publication stamp everywhere, which is what an entry with a zero
+// Updated inherits by default.
 package seo

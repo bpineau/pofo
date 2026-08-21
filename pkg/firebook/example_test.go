@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/firebook"
 )
@@ -48,6 +49,18 @@ func ExampleSite_LLMsTXT() {
 	txt := string(site.LLMsTXT("https://example.org"))
 	fmt.Println(strings.HasPrefix(txt, "# pofo\n"),
 		strings.Contains(txt, "https://example.org/firebook/en/what-is-fire.md"))
+	// Output: true true
+}
+
+// Handler serves the feed itself; FeedXML is for a caller publishing it some
+// other way. The stamp answers for the feed and for every entry alike: the
+// book carries no honest per-article date, and inventing one per entry would
+// fake an editorial history.
+func ExampleEdition_FeedXML() {
+	stamp := time.Date(2026, 8, 20, 0, 0, 0, 0, time.UTC)
+	feed := string(firebook.French.FeedXML("https://example.org", stamp))
+	fmt.Println(strings.Contains(feed, "<title>Le FIRE tranquille</title>"),
+		strings.Count(feed, "<updated>2026-08-20T00:00:00Z</updated>") == 1+len(firebook.Titles()))
 	// Output: true true
 }
 

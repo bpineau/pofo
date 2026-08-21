@@ -345,6 +345,10 @@ The same mount also serves an **OPDS 1.2 catalog** at `opds.xml` (e.g.
 reader such as KOReader to download and later refresh the book in place, the
 re-download overwriting the same file so any annotation sidecar is preserved.
 
+Each edition publishes an **Atom feed** at `feed.xml` (e.g.
+`http://localhost:8080/firebook/en/feed.xml`), one entry per article in reading
+order, which a feed reader can follow instead of the index page.
+
 The book is written to be found and to be quoted. Each page carries its own
 title, description, canonical link, hreflang pair and schema.org data, and each
 article is also served as **clean Markdown** at the same URL with a `.md`
@@ -373,6 +377,7 @@ single port:
 | `/firebook/fr/` | the **FIRE book** ("Le FIRE tranquille"), with a small nav bar back to the other surfaces (old `/book/fr/` redirects here) |
 | `/firebook/en/` | the English edition ("The Quiet FIRE"), cross-linked with the French one page by page |
 | `/firebook/<lang>/<article>.md` | any article's **Markdown source**, served as written: the same URL as the page, plus `.md` |
+| `/firebook/<lang>/feed.xml` | the edition's **Atom feed**: every article, in reading order, for a feed reader |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | what crawlers and AI agents read: every page of both editions, everything allowed, and an [llms.txt](https://llmstxt.org) index of the whole site |
 
 ```sh
