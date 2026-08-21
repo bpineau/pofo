@@ -99,7 +99,9 @@ Macro signals - **the key sourcing lesson**:
   the US), the whole industry B-to-E aggregate.
 - Interest rates, `OECD/DSD_STES@DF_FINMARK`: `IRLT` (long), `IR3TIB` (3-month,
   else `IRSTCI` immediate). Share prices: `SHARE`. CPI:
-  `OECD/DSD_PRICES@DF_PRICES_ALL/<ISO>.M.N.CPI.IX._T.N._Z`.
+  `OECD/DSD_PRICES_COICOP2018@DF_PRICES_C2018_ALL/<ISO>.M.N.CPI.IX._T.N._Z`,
+  falling back to the COICOP 1999 dataflow `OECD/DSD_PRICES@DF_PRICES_ALL` with
+  the same key for the countries that have not migrated.
 - These are the CURRENT dataflows; the panel read the legacy `OECD/MEI` codes
   (`PRINTO01.IXOBSA`, `CPALTT01.IXOB`, `IR3TIB01.ST`, `IRLTLT01.ST`,
   `SPASTT01.IXOB`) until the 2026-08-19 migration below.
