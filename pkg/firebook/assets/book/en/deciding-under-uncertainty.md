@@ -1,5 +1,5 @@
 # Deciding under uncertainty: utility, Kelly, regret, and robust choices
-<!-- source: decider-sous-incertitude @ 8d8c6ee56571 -->
+<!-- source: decider-sous-incertitude @ bc8eb3a3e1a8 -->
 
 This book spends a lot of pages answering questions like "which strategy maximizes the withdrawal rate" or "which allocation minimizes failure". This page steps back and asks the question that comes before them: **what makes a decision good when the future is unknown?** A retiree has a problem that averages ignore. You live one path. A simulator draws ten thousand, life draws one, and there is no second game. Maximizing an average computed over ten thousand worlds is not automatically the right goal for someone who will only ever live in one of them.
 
@@ -30,7 +30,7 @@ The Kelly criterion (1956) answers a real question elegantly. What fraction of y
 
 Three of its assumptions are disqualifying for a retirement. It assumes an infinite horizon, while a retiree has 30 to 50 years and dated spending to fund. It is indifferent to drawdowns, and full Kelly rides calmly through 50% declines (odds of about 1 in 2 of meeting one) and 90% declines (1 in 10), which withdrawals turn into ruin through sequence risk ([[sequence-of-returns]]). And it needs the true parameters. A small estimation error on the high side of Kelly destroys growth instead of maximizing it, because the error is asymmetric.
 
-The lesson worth keeping is **fractional Kelly**. Serious practitioners bet half Kelly or less, trading a little growth for a lot of peace. The equity position of a well-built withdrawal plan lands, without anyone aiming for it, somewhere around a quarter to a third of Kelly. If a product or a blog sells you full Kelly for your retirement, it read the formula and not the assumptions.
+The lesson worth keeping is **fractional Kelly**. Serious practitioners bet half Kelly or less, trading a little growth for a lot of peace. The equity position of a well-built withdrawal plan lands, without anyone aiming for it, somewhere between a third and a half of Kelly. If a product or a blog sells you full Kelly for your retirement, it read the formula and not the assumptions.
 :::
 
 ## Regret, good enough, and robustness
@@ -50,7 +50,7 @@ All of it condenses into a protocol you can apply to every decision in the plan,
 One: judge decisions on the **process**, never on the outcome of one path. A good decision can turn out badly and a stupid bet can pay off; over a single life, confusing the two is the most expensive mistake there is. Two: compare plans on the **5th percentile and the median** together, your homemade certainty equivalent, not on the average and not on the best case. Three: prefer the **middle of a plateau** to the top of a ridge, and distrust any option whose advantage vanishes when you move one assumption by a point. Four: when the choice is close, minimize the regret you can see coming, in both directions, the crash and the rally you missed. Five: write the decision down, with the conditions for revisiting it, **while you are calm** ([[building-your-plan]]), because the best decision theory in the world does not survive a call made at 11 at night in March 2020.
 
 ::: exemple Two plans, two criteria, two winners
-Capital of $1.2M, spending of $43,000 a year. Plan A is 85% stocks with a fixed withdrawal: a 30-year median of $4.1M, a 5th percentile that runs out in year 24, and a magnificent average. Plan B is 65% stocks, diversified, with a flexible corridor: a median of $2.9M and a 5th percentile that ends at $400,000, with the withdrawal cut to $36,000 at the worst moment. On the average, A wins by a mile. On the certainty equivalent of a normally cautious person, B wins with no argument, because A's extra $1.2M of median weighs less than its 5% chance of destitution. A simulator settles the question well only when you ask it the right one. The question was never "which plan pays more?" but "which distribution would you rather live in?".
+Capital of $1.2M, spending of $43,000 a year, on this book's forward assumptions ([[expected-returns]]): 3.7% real expected for the very equity-heavy plan, 3.3% for the diversified one. Plan A is 85% stocks with a fixed withdrawal: a 30-year median of $1.3M, a 5th percentile that runs out in year 24, and a magnificent average. Plan B is 65% stocks, diversified, with a flexible corridor: a median of $1.0M and a 5th percentile that ends at $400,000, with the withdrawal cut to $36,000 at the worst moment. On the average, A wins by a mile. On the certainty equivalent of a normally cautious person, B wins with no argument, because A's extra $300,000 of median weighs less than its 5% chance of destitution. A simulator settles the question well only when you ask it the right one. The question was never "which plan pays more?" but "which distribution would you rather live in?".
 :::
 
 ## The essentials
