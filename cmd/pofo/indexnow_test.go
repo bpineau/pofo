@@ -143,3 +143,15 @@ func TestIndexNowPayloadShape(t *testing.T) {
 		}
 	}
 }
+
+// An empty -indexnow-key defers to POFO_INDEXNOW_KEY, so a container image
+// with a fixed command line can turn the feature on from its environment.
+// An invalid env key must hit the same validation as the flag: reaching it
+// proves the fallback is read before -serve would start listening.
+func TestIndexNowKeyFromEnvironment(t *testing.T) {
+	t.Setenv("POFO_INDEXNOW_KEY", "not a valid key")
+	err := run(context.Background(), []string{"-serve"})
+	if err == nil || !strings.Contains(err.Error(), "invalid -indexnow-key") {
+		t.Fatalf("env key should reach the same validation as the flag; got %v", err)
+	}
+}
