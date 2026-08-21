@@ -61,7 +61,16 @@
 //     the pre-euro cash proxy (Germany was the anchor economy
 //     and the DM the reference currency), spliced under the
 //     euro money-market index EURCASH-EUR at 1994 to carry the
-//     cash leg back before the euro.
+//     cash leg back before the euro. The OECD series is the
+//     Bundesbank's own three-month money at the Frankfurt
+//     banking centre (FIBOR from 1991-01): ten annual averages
+//     read off the Bundesbank's long time series match the
+//     OECD monthly means to under 0.005 pt. It is quoted
+//     SIMPLE for the term of the deposit, on a 360-day year
+//     (the German 360/360 method to 1990-06, act/360 after),
+//     which is how it is accrued here since 2026-08. It used
+//     to be read as an effective annual yield, worth
+//     -0.23 %/yr of accrual over 1960-1994.
 //
 // Every series is checked before it is written (-check, on by default): its
 // shape where an outside answer is known, its freshness (a dataflow that quietly
@@ -186,7 +195,7 @@ func main() {
 	// cash tail. Trimmed at 1995 so it only ever feeds the splice under
 	// EURCASH-EUR (which starts 1994).
 	shortRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/DEU.M.IR3TIB.PA._Z._Z._Z._Z.N")
-	cash := accrue(shortRate, time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC), effectiveAnnual)
+	cash := accrue(shortRate, date(1995, 1), germanMoneyMarket)
 	report("DECASH-EUR", cash)
 
 	// Euro-area 3-month cash accrual, monthly (1994-01), from the ECB's own
@@ -196,7 +205,7 @@ func main() {
 	report("EURCASH-EUR", eurCash)
 
 	if *check {
-		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongSynth, govLongDaily, equity, cash, eurCash, splice)
+		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongSynth, govLongDaily, equity, cash, eurCash, shortRate, splice)
 	}
 	if *dry {
 		return
@@ -215,7 +224,7 @@ func main() {
 	write(*dir, "EURCASH-EUR", "Euro area 3-month cash total-return index (base 100, monthly)",
 		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) compounded into a money-market index; via DBnomics. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
 	write(*dir, "DECASH-EUR", "German 3-month money-market accrual (EUR/DM, monthly)",
-		"OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01) compounded into a money-market level; via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.", cash)
+		"OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.", cash)
 }
 
 // obs is one dated observation.
@@ -388,6 +397,8 @@ func grossUp(price []obs, annualDiv float64) []marketdata.Point {
 
 // accrue compounds a short-rate series (annualized percent) into a
 // money-market level (base 100), pro rata temporis, up to (but excluding) end.
+// Each step earns the rate quoted at its START, held to the next observation,
+// under the convention that rate is quoted in.
 func accrue(rate []obs, end time.Time, conv convention) []marketdata.Point {
 	out := make([]marketdata.Point, 0, len(rate))
 	val := 100.0
@@ -396,32 +407,71 @@ func accrue(rate []obs, end time.Time, conv convention) []marketdata.Point {
 		if !rate[i].date.Before(end) {
 			break
 		}
-		yrs := rate[i].date.Sub(rate[i-1].date).Hours() / 24 / 365.25
-		val *= conv(rate[i-1].val, yrs)
+		val *= conv(rate[i-1].val, rate[i-1].date, rate[i].date)
 		out = append(out, marketdata.Point{Date: rate[i].date, Close: val})
 	}
 	return out
 }
 
-// convention turns a quoted annual rate (percent) held for yrs years into the
-// growth factor of one unit of cash. Which one a series takes is a property of
-// how its rate is QUOTED, not a modelling choice, and the two differ by roughly
-// r^2/2 a year (about 0.04 %/yr at 3 %, 0.19 %/yr at 6 %).
-type convention func(rate, yrs float64) float64
+// convention turns a quoted annual rate (percent) held from one observation to
+// the next into the growth factor of one unit of cash. Which one a series takes
+// is a property of how its rate is QUOTED, read off the publisher's own
+// documentation, and never a modelling choice: reading a simple money-market
+// quote as if it were already compounded to the year costs about r^2/2 a year
+// (0.04 %/yr at 3 %, 0.17 %/yr at 6 %), and reading a 360-day year as a
+// calendar one costs another 1.46 % of the rate.
+//
+// Every rate this generator reads is quoted SIMPLE for the term of the deposit,
+// so only the rolls themselves compound; the conventions below differ solely in
+// the year the day count is taken over.
+type convention func(rate float64, from, to time.Time) float64
 
-// simpleAnnual is the money-market convention: an interbank deposit rate is
-// quoted as a SIMPLE annual rate for the term of the deposit, so a roll earns
-// r*yrs over the period and only the rolls themselves compound. EURIBOR and its
-// national predecessors are quoted this way, and it is the convention the
-// shipped EURCASH-EUR was built on (the rebuilt index reproduces it to 4e-4).
-func simpleAnnual(rate, yrs float64) float64 { return 1 + rate/100*yrs }
+// simpleAnnual accrues a simple rate over the actual days elapsed, on a
+// calendar year. EURCASH-EUR is built this way: it is the convention the
+// hand-built file it replaced was built on (the rebuilt index reproduces it to
+// 2.4e-5). EURIBOR's own day count is act/360 too, worth 1.46 % of the rate
+// (0.03 %/yr at this leg's 2.3 %/yr average); moving the LIVE cash leg every
+// hedged recipe reads is a change of its own, with its own regenerations, and
+// is deliberately not made a side effect of re-quoting the pre-euro tail.
+func simpleAnnual(rate float64, from, to time.Time) float64 {
+	return 1 + rate/100*to.Sub(from).Hours()/24/365.25
+}
 
-// effectiveAnnual reads the quote as a yield already compounded to one year.
-// DECASH-EUR is built this way and stays so here: it is a pre-1994 tail that is
-// rebased onto EURCASH-EUR at the splice, so only its returns reach a
-// reconstruction, and re-quoting them is a separate data decision with its own
-// validation, not a side effect of repairing a stale file.
-func effectiveAnnual(rate, yrs float64) float64 { return math.Pow(1+rate/100, yrs) }
+// simpleAct360 accrues a simple rate over the actual days elapsed, on the money
+// market's own 360-day year: a rate quoted act/360 earns 1.46 % more over a
+// calendar year than the same number read on a 365.25-day one.
+func simpleAct360(rate float64, from, to time.Time) float64 {
+	return 1 + rate/100*to.Sub(from).Hours()/24/360
+}
+
+// simple30360 accrues a simple rate under the German 360/360 method ("deutsche
+// Zinsmethode"), which counts every month as 30 days and every year as 360, so
+// a monthly roll earns exactly one twelfth of the quoted rate whatever the
+// calendar does.
+func simple30360(rate float64, from, to time.Time) float64 {
+	days := 360*(to.Year()-from.Year()) + 30*(int(to.Month())-int(from.Month())) + (to.Day() - from.Day())
+	return 1 + rate/100*float64(days)/360
+}
+
+// germanAct360From is the month the Frankfurt three-month money-market quote
+// moved from the German 360/360 method to act/360, per the Bundesbank's own
+// note on the series ("Bis Juni 1990 berechnet nach der deutschen Zinsmethode
+// 360/360 Tage, ab Juli 1990 nach der Zinsmethode act/360", Lange Zeitreihen,
+// III. Geld- und Kapitalmarkt). FIBOR, which takes the series over in 1991-01,
+// was quoted act/360 too.
+var germanAct360From = date(1990, 7)
+
+// germanMoneyMarket is the convention DECASH-EUR's source rate is quoted in,
+// era by era. It was read as an EFFECTIVE ANNUAL yield until 2026-08, which
+// understated the accrual by 0.23 %/yr over 1960-1994: the Frankfurt
+// three-month rate is a simple money-market quote and never was a compounded
+// one.
+func germanMoneyMarket(rate float64, from, to time.Time) float64 {
+	if from.Before(germanAct360From) {
+		return simple30360(rate, from, to)
+	}
+	return simpleAct360(rate, from, to)
+}
 
 func report(id string, pts []marketdata.Point) {
 	if len(pts) == 0 {
@@ -515,6 +565,15 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     post-war German and euro-area 3-month rates sit inside 0-15%/yr, so
 //     DECASH-EUR's and EURCASH-EUR's CAGRs over their whole span must land
 //     inside 0-12%/yr with no drawdown.
+//   - The German cash CONVENTION, year by year. A money-market index that
+//     downloaded cleanly and rose plausibly can still be accrued at the wrong
+//     convention, which is what DECASH-EUR shipped with until 2026-08 (an
+//     effective annual yield, 0.23 %/yr short). So every full calendar year of
+//     the index is compared with what the source's documented convention pays
+//     on that year's mean quoted rate; the two must agree to 0.10 pt, and they
+//     measure 0.008 pt apart at worst. Reading the same quote as an effective
+//     annual yield lands 0.2 to 0.7 pt below in the high-rate years, so the
+//     check names the convention rather than merely the level.
 //   - EURCASH-EUR against the file it replaces. The euro cash leg changed source
 //     in 2026-08 (FRED, unreachable, to the ECB's own EURIBOR history), and a
 //     cash leg is subtracted from every hedged recipe, so the swap may not move
@@ -522,7 +581,7 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     better than 0.5% over the whole overlap. It measured 2.4e-3%. The check
 //     survives the swap as a guard on future refreshes, where the reference is
 //     the shipped file and any real drift is a revision to look at.
-func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *marketdata.Series, equity, cash, eurCash []marketdata.Point, splice longSplice) {
+func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *marketdata.Series, equity, cash, eurCash []marketdata.Point, shortRate []obs, splice longSplice) {
 	failed := 0
 	fail := func(format string, a ...any) {
 		failed++
@@ -664,6 +723,13 @@ func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *m
 		}
 	}
 
+	worstConv, convYear, convYears := germanConventionDrift(cash, shortRate)
+	log.Printf("check DECASH-EUR convention (simple, German 360/360 to %s then act/360): %d full years, worst yearly gap to the quoted rate %+.3f pt (%d)",
+		germanAct360From.AddDate(0, -1, 0).Format("2006-01"), convYears, worstConv, convYear)
+	if convYears < 30 || math.Abs(worstConv) > 0.10 {
+		fail("DECASH-EUR does not pay its own quoted rate: %d years compared, worst gap %+.3f pt in %d", convYears, worstConv, convYear)
+	}
+
 	if prev, err := readRefdata(dir, "EURCASH-EUR"); err != nil {
 		log.Printf("check: no shipped EURCASH-EUR to compare against (%v)", err)
 	} else {
@@ -716,6 +782,64 @@ func driftAgainst(rebuilt []marketdata.Point, shipped *marketdata.Series) (float
 		}
 	}
 	return worst, at, months
+}
+
+// germanConventionDrift grades the German cash accrual against the rate it is
+// built from, year by year, and returns the worst gap in percentage points, the
+// year it falls in, and how many full calendar years were compared.
+//
+// The comparison is a RESTATEMENT of the source's documented convention, not a
+// call back into the builder's, or it would pass whatever the builder did: at a
+// constant quoted rate r, a monthly roll of a simple quote earns r/12 while the
+// rate is quoted 360/360, and r*days/360 once it moves to act/360 in 1990-07,
+// so a year of rolls grows by the product of its twelve factors. The residual
+// gap is only the year's rate dispersion (Jensen), a few basis points. Reading
+// the same quote as an effective annual yield would grow by exactly r, which is
+// 0.2 to 0.7 pt less in the high-rate years.
+func germanConventionDrift(pts []marketdata.Point, rate []obs) (float64, int, int) {
+	level := make(map[string]float64, len(pts))
+	for _, p := range pts {
+		level[p.Date.Format("2006-01")] = p.Close
+	}
+	quoted := make(map[string]float64, len(rate))
+	for _, o := range rate {
+		quoted[o.date.Format("2006-01")] = o.val
+	}
+	worst, year, years := 0.0, 0, 0
+	for y := pts[0].Date.Year(); y <= pts[len(pts)-1].Date.Year(); y++ {
+		start, ok := level[date(y, 1).Format("2006-01")]
+		end, done := level[date(y+1, 1).Format("2006-01")]
+		if !ok || !done {
+			continue
+		}
+		var sum float64
+		months := 0
+		for m := 1; m <= 12; m++ {
+			r, has := quoted[date(y, m).Format("2006-01")]
+			if !has {
+				break
+			}
+			sum, months = sum+r, months+1
+		}
+		if months < 12 {
+			continue
+		}
+		mean := sum / 12
+		grown := 1.0
+		for m := 1; m <= 12; m++ {
+			from, to := date(y, m), date(y, m+1)
+			if from.Before(germanAct360From) {
+				grown *= 1 + mean/100/12
+				continue
+			}
+			grown *= 1 + mean/100*to.Sub(from).Hours()/24/360
+		}
+		years++
+		if d := (end/start - grown) * 100; math.Abs(d) > math.Abs(worst) {
+			worst, year = d, y
+		}
+	}
+	return worst, year, years
 }
 
 // longestFlatRun returns the longest run of consecutive observations carrying
