@@ -97,11 +97,17 @@ func parseOrigin(origin string) (normalized, host string, err error) {
 // /sitemap.xml, /robots.txt and /llms.txt; -indexnow builds the same value to
 // know what to submit, which is why it lives in one place.
 func serveSite() firebook.Site {
-	return firebook.BookSite(
+	s := firebook.BookSite(
 		firebook.Page{Path: "/", Title: "pofo", Note: "the front door"},
 		firebook.Page{Path: "/visualizer", Title: "Portfolio visualizer",
 			Note: "compose portfolios and backtest them side by side"},
 		firebook.Page{Path: fireBase + "/", Title: "FIRE simulator",
 			Note: "stress-test a withdrawal plan against thousands of simulated futures"},
 	)
+	// /view is the visualizer's compute endpoint: every hit fetches quotes and
+	// runs simulations, and the query grammar makes its URL space unbounded.
+	// Crawlers walking shared links would burn CPU for pages that are all the
+	// visualizer wearing different parameters; people keep sharing the links.
+	s.Disallow = []string{"/view"}
+	return s
 }

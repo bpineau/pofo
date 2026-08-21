@@ -47,6 +47,14 @@ type Site struct {
 	// URLs for this host. Empty leaves the feature off, and a key that does not
 	// validate is ignored rather than mounted.
 	IndexNowKey string
+
+	// Disallow lists path prefixes robots.txt tells crawlers to keep out of.
+	// It is for compute endpoints (a path whose every hit costs real work and
+	// whose parameter space is unbounded), never for pages: a path listed
+	// here must not appear in Pages. The rule is repeated in the named
+	// AI-crawler record, because a named record REPLACES the catch-all for
+	// its agents and a rule left only on "*" would never reach them.
+	Disallow []string
 }
 
 // Editions are the published editions of the book, source edition first.
@@ -126,9 +134,22 @@ func (s Site) URLs(origin string) []string {
 	return urls
 }
 
-// RobotsTXT renders the robots.txt: everything is allowed, the AI crawlers are
-// named explicitly, and the sitemap and llms.txt are pointed at.
+// RobotsTXT renders the robots.txt: every page is allowed, the AI crawlers
+// are named explicitly, the Disallow prefixes (if any) are carried by both
+// records, and the sitemap and llms.txt are pointed at.
 func (s Site) RobotsTXT(origin string) []byte {
+	catchAll := seo.Group{Disallow: s.Disallow}
+	named := seo.Group{
+		Comment:  "AI crawlers and answer engines, welcome by name.",
+		Agents:   aiAgents,
+		Disallow: s.Disallow,
+	}
+	if len(s.Disallow) > 0 {
+		// Keep the welcome explicit: with a Disallow present, the implicit
+		// "empty record means Allow: /" no longer fires.
+		catchAll.Allow = []string{"/"}
+		named.Allow = []string{"/"}
+	}
 	r := seo.Robots{
 		Preamble: []string{
 			"Everything published here is meant to be indexed, quoted and cited.\n" +
@@ -136,10 +157,7 @@ func (s Site) RobotsTXT(origin string) []byte {
 				"Every article is also served as clean Markdown at the same URL\n" +
 				"with a \".md\" suffix, and /llms.txt indexes the whole site.",
 		},
-		Groups: []seo.Group{
-			{},
-			{Comment: "AI crawlers and answer engines, welcome by name.", Agents: aiAgents},
-		},
+		Groups:   []seo.Group{catchAll, named},
 		Sitemaps: []string{origin + "/sitemap.xml"},
 	}
 	return r.Text()

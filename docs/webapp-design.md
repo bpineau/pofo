@@ -35,7 +35,7 @@ running a command per comparison.
 | `/firebook/en/` | `firebook.English.Handler`, prefix-stripped | the English edition ("The Quiet FIRE"), complete since 2026-08-19: every French article that is not French-only has a counterpart here |
 | `/theme.css`, `/fonts.css` | inline | the shared `pkg/webui` identity tokens and embedded fonts; content-fingerprinted (see below) |
 | `/favicon.svg`, `/favicon.ico` | inline (`serve.go`) | the shared tab icon (`webui.FaviconSVG`, a petrol "p"); every head links `/favicon.svg`, the report inlines it as a data URI to stay self-contained |
-| `/sitemap.xml`, `/robots.txt`, `/llms.txt` | `firebook.Site.Handle` (`pkg/firebook/site.go`) | the machine-readable face of the constellation: every article, index and EPUB of both book editions plus the app surfaces; everything allowed and the AI crawlers named one by one; the llmstxt.org index. Absolute URLs are built per request from the `Host` header (`firebook.RequestOrigin`), since the public origin is not known at build time. Also mounted by `pkg/decumul/web` |
+| `/sitemap.xml`, `/robots.txt`, `/llms.txt` | `firebook.Site.Handle` (`pkg/firebook/site.go`) | the machine-readable face of the constellation: every article, index and EPUB of both book editions plus the app surfaces; every page allowed, `/view` disallowed as a compute endpoint (`Site.Disallow`, repeated in the named-crawler record) and the AI crawlers named one by one; the llmstxt.org index. Absolute URLs are built per request from the `Host` header (`firebook.RequestOrigin`), since the public origin is not known at build time. Also mounted by `pkg/decumul/web` |
 | `/firebook/<lang>/<slug>.md` | `pkg/firebook.Handler` | one article's Markdown SOURCE, untransformed, behind a one-line HTML-comment provenance header naming the page to cite; strong ETag, `text/markdown`. The HTML page declares it (`<link rel="alternate" type="text/markdown">`) and `llms.txt` lists it |
 | `/firebook/<lang>/card.png` | `pkg/firebook.Handler` (`card.go`) | the edition's social card, 1200x630, embedded via `go:embed` and served with a strong ETag; what `og:image` points at |
 | `/firebook/<lang>/feed.xml` | `pkg/firebook.Handler` (`feed.go`) | the edition's Atom 1.0 feed: one entry per article in reading order, the manifest blurb as its summary, absolute URLs from `RequestOrigin`. Every page of the edition declares it in its head and `llms.txt` lists it; the sitemap does not (a feed is not a page to index). Mounted by both servers, since it rides the edition handler itself |
@@ -537,10 +537,16 @@ schedule or otherwise. The protocol lives in `pkg/seo` (`IndexNow`, endpoint an
 argument), so every test drives it against an `httptest` server and the suite
 never leaves the machine.
 
-`robots.txt` allows everything and then names GPTBot, OAI-SearchBot,
+`robots.txt` allows every page and then names GPTBot, OAI-SearchBot,
 ChatGPT-User, ClaudeBot, Claude-Web, PerplexityBot, Google-Extended and CCBot
 one by one, with a comment saying why: the book wants to be indexed, quoted and
-cited, there is no paywall, and the thing to cite is the page.
+cited, there is no paywall, and the thing to cite is the page. The one
+exception (2026-08) is `Disallow: /view`, carried by `firebook.Site.Disallow`
+and repeated in the named-crawler record (a named record replaces the
+catch-all for its agents, so a rule left only on `*` would never reach them):
+`/view` is a compute endpoint whose every hit fetches quotes and runs
+simulations over an unbounded parameter space, not a page to index. People
+keep sharing `/view` links; crawlers are told not to walk them.
 
 The three files are dynamic because the public origin is not knowable at build
 time (the same binary answers on localhost, on a tailnet name and behind a

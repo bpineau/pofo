@@ -135,8 +135,9 @@ func TestServeRoutes(t *testing.T) {
 	}
 	if rec := serveGet(t, h, "/robots.txt"); rec.Code != 200 ||
 		!strings.Contains(rec.Body.String(), "Sitemap: http://example.com/sitemap.xml") ||
-		!strings.Contains(rec.Body.String(), "User-agent: ClaudeBot") {
-		t.Errorf("robots.txt: code=%d", rec.Code)
+		!strings.Contains(rec.Body.String(), "User-agent: ClaudeBot") ||
+		!strings.Contains(rec.Body.String(), "Disallow: /view") {
+		t.Errorf("robots.txt: code=%d, sitemap + named crawlers + Disallow: /view wanted", rec.Code)
 	}
 	if rec := serveGet(t, h, "/llms.txt"); rec.Code != 200 ||
 		!strings.Contains(rec.Body.String(), "http://example.com/firebook/fr/fire-cest-quoi.md") ||
