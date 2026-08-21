@@ -39,7 +39,7 @@ The premium itself, though, rests on solid ground. It is one of the few on the a
 
 ## Merger arbitrage: a return paid by the legal calendar
 
-The mechanism fits in three sentences. A company announces it is buying another at EUR 50 a share; the next day the target trades at EUR 48, not EUR 50. The gap of EUR 2 pays for two uncertainties, the wait until closing and the risk that the deal breaks. The arbitrageur buys the target, shorts the acquirer or an index to neutralize the market, and pockets the gap when the deal completes.
+The mechanism fits in three sentences. A company announces it is buying another at $50 a share; the next day the target trades at $48, not $50. The gap of $2 pays for two uncertainties, the wait until closing and the risk that the deal breaks. The arbitrageur buys the target, shorts the acquirer or an index to neutralize the market, and pockets the gap when the deal completes.
 
 The payoff is again the payoff of an insurance seller: small regular gains, set by a legal calendar rather than by the business cycle, and rare brutal losses when a deal falls apart. Two properties follow, and a retiree should care about both. The spread is quoted over the short rate, so the premium rises with rates. This is enhanced cash, not a substitute for stocks. And market sensitivity is low by construction, since the long leg is hedged.
 

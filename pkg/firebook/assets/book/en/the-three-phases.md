@@ -6,7 +6,7 @@ A FIRE plan is not a state, it is a path. It runs through three phases, and they
 This page lays out what changes in each phase, what to optimize there, and the moves that carry you from one to the next. It is the book's spine: nearly every other article hangs off one of the three.
 
 ::: cle What really changes between the phases
-One variable governs everything: the **direction** and the **size** of the flows between you and the portfolio. While you accumulate you pay in, and crashes make you richer, because you buy low. While you withdraw you draw on the portfolio, and crashes bleed you, because you sell low ([[sequence-of-returns]]). At the transition the flows reverse. That is also, mechanically, where the portfolio is at its largest against the flows. Every percent of decline costs the most euros there, and mistakes are the hardest to undo. Same portfolio, same market: three different problems.
+One variable governs everything: the **direction** and the **size** of the flows between you and the portfolio. While you accumulate you pay in, and crashes make you richer, because you buy low. While you withdraw you draw on the portfolio, and crashes bleed you, because you sell low ([[sequence-of-returns]]). At the transition the flows reverse. That is also, mechanically, where the portfolio is at its largest against the flows. Every percent of decline costs the most dollars there, and mistakes are the hardest to undo. Same portfolio, same market: three different problems.
 :::
 
 ::: figure flux-relatif-phases

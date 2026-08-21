@@ -19,7 +19,7 @@ The decumulation frontier: every rule is a point between failure probability and
 
 Start with the two strategies that bound the whole space. Each one delivers two corners of the triangle perfectly, by abandoning the third.
 
-**The income-first extreme: the fixed inflation-adjusted amount** (Bengen's rule, [[fixed-inflation-adjusted-withdrawal]]). You take EUR X in year one, then the same amount adjusted for inflation, whatever happens. Income is perfectly stable, by construction. The price is that ruin becomes possible: if markets disappoint for long enough, the portfolio runs out before you do ([[the-4-percent-rule]], [[sequence-of-returns]]). All the risk piles onto one event, binary and far away.
+**The income-first extreme: the fixed inflation-adjusted amount** (Bengen's rule, [[fixed-inflation-adjusted-withdrawal]]). You take $X in year one, then the same amount adjusted for inflation, whatever happens. Income is perfectly stable, by construction. The price is that ruin becomes possible: if markets disappoint for long enough, the portfolio runs out before you do ([[the-4-percent-rule]], [[sequence-of-returns]]). All the risk piles onto one event, binary and far away.
 
 **The capital-first extreme: the fixed percentage** ([[fixed-percentage]]). Each year you take Y% of the portfolio as it stands. Ruin becomes impossible, by construction: Y% of something is never all of it. In exchange, income tracks the market one for one. A portfolio down 35% buys a standard of living down 35%, possibly for years. All the risk spreads out over daily life.
 
@@ -70,10 +70,10 @@ You will see tables everywhere along the lines of "rule X succeeds 98% of the ti
 
 ## The map in action: one plan under four rules
 
-Nothing beats a worked case. The plan: EUR 1.5M, a comfort need of EUR 54,000 a year (3.6%), a floor set at EUR 42,000 ([[how-much-you-need]]), a 45-year horizon, and a pension of EUR 15,000 a year starting in year 17. Here are the four points on the frontier (indicative numbers from the central model, run your own):
+Nothing beats a worked case. The plan: $1.5M, a comfort need of $54,000 a year (3.6%), a floor set at $42,000 ([[how-much-you-need]]), a 45-year horizon, and a pension of $15,000 a year starting in year 17. Here are the four points on the frontier (indicative numbers from the central model, run your own):
 
-- **Bengen, EUR 54,000 indexed**: failure about 9%. Perfectly stable income, right up to the cliff. Comfortable median bequest. The reference point.
-- **Fixed percentage, 3.6%**: failure 0%. But the worst quartile spends years below the EUR 42,000 floor as soon as the first hostile regime arrives, and income swings by plus or minus 25% from one decade to the next. Unlivable for this household.
+- **Bengen, $54,000 indexed**: failure about 9%. Perfectly stable income, right up to the cliff. Comfortable median bequest. The reference point.
+- **Fixed percentage, 3.6%**: failure 0%. But the worst quartile spends years below the $42,000 floor as soon as the first hostile regime arrives, and income swings by plus or minus 25% from one decade to the next. Unlivable for this household.
 - **Guardrails (a −10% cut when the current withdrawal rate passes 4.5%, floor at 78% of comfort)**: failure about 3%, income stable most of the time, and in the bad quartile two to four cuts, never below the stated floor. Average lifetime spending comes out 4% below Bengen's.
 - **ABW (amortized over the remaining horizon, central return, smoothed)**: failure structurally near zero, the highest average total consumption of the four (the rule dares to spend what the others hoard), income officially variable but bounded by the pension and by the smoothing, and a small bequest, accepted up front.
 

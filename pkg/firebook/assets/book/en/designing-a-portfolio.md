@@ -64,7 +64,7 @@ Rarely, by rule, and never on the news. Rebalancing mechanically back to target 
 The written thesis behind each block, the one from question 5, is exactly what lets you **not** change under fire. When a block disappoints, you reread its thesis instead of selling it the day before it earns its keep ([[the-psychology-of-spending]]). A portfolio redesigned at every crisis has no design at all.
 
 ::: exemple A design, start to finish
-Léa and Marc, both 50, EUR 1.3M, a 15-year bridge before two modest but secure pensions.
+Léa and Marc, both 50, $1.3M, a 15-year bridge before two modest but secure pensions.
 
 1. **What are your risks?** Sequence (the 15-year bridge, dominant), inflation (their nightmare regime), a long crash. Longevity and health are handled outside the portfolio, through flexibility and a reserve.
 2. **Which ones do you accept?** They accept equity risk, their engine, and they defend sequence and inflation.
