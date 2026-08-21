@@ -133,6 +133,9 @@ var CategoriesEN = []Category{
 	{
 		Title: "Taxes and the US framework",
 		Blurb: "The retiree inside the US system: accounts and account order, tax on the withdrawal phase, health cover before Medicare, and Social Security.",
+		Articles: []Article{
+			{Slug: "us-accounts-and-account-order", Title: "US accounts, and the order you drain them", Blurb: "The three tax homes of a dollar, what each account is for, the standard filling ladder, the toolkit that opens the locked accounts before 59 1/2, and the draining order that comes out of it."},
+		},
 	},
 	{
 		Title: "The human factor",
