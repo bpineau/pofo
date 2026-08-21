@@ -44,6 +44,11 @@ Le simulateur affiche « 4,7 % » et l'esprit enregistre une précision d'orfèv
 
 **Le choix du modèle domine tout** : le même plan peut afficher 2 % en fenêtres historiques, 5 % en paramétrique central, 9 % en stress de séquence et 14 % en échantillon mondial. Aucun n'est faux ; ils répondent à des questions différentes (« et si le futur ressemble à l'histoire de mes fonds / à un monde i.i.d. calibré prudemment / au même monde avec des sticky bears / au siècle des 16 pays développés »).
 
+::: figure trois-bruits
+Les trois bruits mis à la même échelle, sur un seul plan de référence : le chiffre affiché, les deux points d'incertitude que laisse le tirage, les trois et demi que laissent les paramètres, et les trente-cinq que laisse le choix du modèle. La barre que l'on regarde en croyant lire une probabilité est la plus courte des trois, et de loin.
+:::
+
+
 La conséquence pratique tient en une règle : **lisez la ruine en ordinal, pas en cardinal**. Elle compare admirablement (le plan A est plus robuste que le plan B ; ce levier réduit le risque plus que celui-là ; ce modèle pessimiste reste acceptable) et mesure médiocrement (« mon risque réel est 4,7 % »). Les décimales sont du bruit ; les écarts entre scénarios et entre modèles sont du signal.
 
 ::: exemple Une décision bien posée
