@@ -88,17 +88,6 @@ func floorLadderTint(k int) string {
 	return mixHex(floorLadderLight, floorLadderDark, t)
 }
 
-// mixHex blends two "#rrggbb" colours, t = 0 giving the first and t = 1 the
-// second, and returns an opaque hex: the book's figures never ship a
-// translucent fill.
-func mixHex(a, b string, t float64) string {
-	var ar, ag, ab, br, bg, bb int
-	fmt.Sscanf(a, "#%02x%02x%02x", &ar, &ag, &ab)
-	fmt.Sscanf(b, "#%02x%02x%02x", &br, &bg, &bb)
-	mix := func(x, y int) int { return int(float64(x) + (float64(y)-float64(x))*t + 0.5) }
-	return fmt.Sprintf("#%02x%02x%02x", mix(ar, br), mix(ag, bg), mix(ab, bb))
-}
-
 // figLinkersPlancherAdosse draws the two panels: the balance sheet that buys
 // the floor, and the income that floor buys.
 func figLinkersPlancherAdosse() string {

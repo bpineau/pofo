@@ -6,74 +6,8 @@ import (
 	"strings"
 )
 
-// This file holds the second generation of book figures ("plates"), with a
-// tighter editorial system than the first batch: a left-aligned serif title
-// under a letterspaced kicker, axis labels in the UI sans (Instrument Sans),
-// numbers in the UI mono (Spline Sans Mono), hairline grids, thin marks with
-// rounded data ends, and direct labels instead of legends wherever possible.
-// The palette is the book's, with a categorical trio validated for CVD and
-// normal-vision separation on the card surface: amber, blue, red (+ green as
-// a third stacked segment, always paired with gaps and direct labels).
-// Labels are always horizontal (house rule).
-
-const (
-	figBlue  = "#3a6db4"
-	figGreen = "#2f9068"
-	// figGrid is a PRE-BLENDED solid hex (ink 60,48,34 @ .10 composited onto the
-	// figure card background #fffdf9), not rgba: crengine (KOReader's EPUB SVG
-	// renderer) paints rgba fills solid black. As a hairline gridline drawn
-	// behind the marks, the opaque value reads the same as the old translucent one.
-	figGrid = "#ECE9E4"
-	figSans = `'Instrument Sans',-apple-system,'Segoe UI',Roboto,sans-serif`
-	figMono = `'Spline Sans Mono',ui-monospace,Menlo,Consolas,monospace`
-)
-
-// sTxt sets a label in the UI sans.
-func sTxt(x, y, size float64, color, anchor, weight, s string) string {
-	return fmt.Sprintf(`<text x="%.1f" y="%.1f" font-size="%.1f" fill="%s" text-anchor="%s" font-weight="%s" font-family="%s">%s</text>`,
-		x, y, size, color, anchor, weight, figSans, s)
-}
-
-// mTxt sets a number in the UI mono.
-func mTxt(x, y, size float64, color, anchor, weight, s string) string {
-	return fmt.Sprintf(`<text x="%.1f" y="%.1f" font-size="%.1f" fill="%s" text-anchor="%s" font-weight="%s" font-family="%s">%s</text>`,
-		x, y, size, color, anchor, weight, figMono, s)
-}
-
-// plateHead renders the kicker + left-aligned serif title of a v2 plate.
-func plateHead(kicker, title string) string {
-	var b strings.Builder
-	b.WriteString(sTxt(24, 21, 9.5, figDeep, "start", "600",
-		`<tspan letter-spacing="1.8">`+strings.ToUpper(kicker)+`</tspan>`))
-	fmt.Fprintf(&b, `<text x="24" y="43" font-size="15.5" fill="%s" text-anchor="start" font-weight="600" font-family="%s">%s</text>`,
-		figInk, figSerif, title)
-	return b.String()
-}
-
-// barV draws a vertical bar with the data end rounded (r), anchored at base.
-func barV(x, w, yBase, yEnd float64, fill string) string {
-	r := 3.5
-	if math.Abs(yBase-yEnd) < r*2 {
-		r = math.Abs(yBase-yEnd) / 2
-	}
-	if yEnd < yBase { // grows upward, round the top
-		return fmt.Sprintf(`<path d="M %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Z" fill="%s"/>`,
-			x, yBase, x, yEnd+r, x, yEnd, x+r, yEnd, x+w-r, yEnd, x+w, yEnd, x+w, yEnd+r, x+w, yBase, fill)
-	}
-	// grows downward, round the bottom
-	return fmt.Sprintf(`<path d="M %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Z" fill="%s"/>`,
-		x, yBase, x, yEnd-r, x, yEnd, x+r, yEnd, x+w-r, yEnd, x+w, yEnd, x+w, yEnd-r, x+w, yBase, fill)
-}
-
-// barH draws a horizontal bar from x0 with the right (data) end rounded.
-func barH(x0, x1, y, h float64, fill string) string {
-	r := 3.5
-	if x1-x0 < r*2 {
-		r = (x1 - x0) / 2
-	}
-	return fmt.Sprintf(`<path d="M %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Z" fill="%s"/>`,
-		x0, y, x1-r, y, x1, y, x1, y+r, x1, y+h-r, x1, y+h, x1-r, y+h, x0, y+h, fill)
-}
+// The plate generators of the book's second generation. The editorial system
+// they are drawn in, its palette and its primitives live in figures_kit.go.
 
 // --- 17. The 4 % cascade: real return + amortization − sequence penalty ---
 func figCascade4pct() string {
@@ -425,27 +359,6 @@ func figStackingExpo() string {
 	}
 	b.WriteString(sTxt(56, y(160)-6, 10.5, figMuted, "start", "400", "exposition totale (€)"))
 	return svg(640, 384, b.String())
-}
-
-// barHL draws a horizontal bar ending at x1 with the LEFT (data) end rounded,
-// for bars growing leftward from a zero axis.
-func barHL(x0, x1, y, h float64, fill string) string {
-	r := 3.5
-	if x1-x0 < r*2 {
-		r = (x1 - x0) / 2
-	}
-	return fmt.Sprintf(`<path d="M %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Q %.1f,%.1f %.1f,%.1f L %.1f,%.1f Z" fill="%s"/>`,
-		x1, y, x0+r, y, x0, y, x0, y+r, x0, y+h-r, x0, y+h, x0+r, y+h, x1, y+h, fill)
-}
-
-// legendChips renders one quiet row of legend chips under the plate title.
-func legendChips(b *strings.Builder, y float64, items [][2]string) {
-	lx := 24.0
-	for _, it := range items {
-		fmt.Fprintf(b, `<rect x="%.1f" y="%.1f" width="10" height="10" rx="2.5" fill="%s"/>`, lx, y, it[0])
-		b.WriteString(sTxt(lx+15, y+9, 10.5, figSoft, "start", "400", it[1]))
-		lx += 15 + 6.4*float64(len(it[1])) + 22
-	}
 }
 
 // --- 24. Bond primer: one rate point, five durations ---
