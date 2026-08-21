@@ -1,5 +1,5 @@
 # Building your plan step by step
-<!-- source: construire-son-plan @ 26cde8bb293c -->
+<!-- source: construire-son-plan @ 556d1b99cdbe -->
 
 Sixty-eight chapters supplied the materials. This one is the build. It lays out the full sequence that turns them into a plan with numbers in it, tested, written down and ready to run. A plan that does not live on one page does not exist ([[choosing-your-strategy]]: without that page you have an intention, not a strategy).
 
