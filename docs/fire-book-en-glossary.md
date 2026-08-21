@@ -583,6 +583,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | la doctrine de la tempête, les gestes mécaniques | the storm doctrine, the mechanical moves | | marche-baissier-en-retraite |
 | l'inversion fatale | the fatal inversion | Protecting the buffer by selling stocks. | marche-baissier-en-retraite |
 | la donation au creux, le creux | gifting at the bottom, the bottom | | marche-baissier-en-retraite |
+| horizon à risque | the horizon at risk | | revenus-complementaires |
+| queue de longévité | the longevity tail | | revenus-complementaires |
+| garantis / quasi sûrs / espérés (flow categories) | the guaranteed / the near-certain / the hoped-for | | revenus-complementaires |
+| réversion pondérée | a weighted survivor benefit | | revenus-complementaires |
+| bloc marges | the margins block | | revenus-complementaires |
+| activité structurelle | structural work | | revenus-complementaires |
+| un simulateur complaisant est un simulateur mort | a simulator that flatters you is a dead simulator | | revenus-complementaires |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
