@@ -1717,4 +1717,22 @@ var figureDict = map[string]string{
 	"trinity-falaise|échoue une fois sur quatre là où le texte dit une sur cinq. L'asymétrie, elle, est intacte : trop peu d'actions reste bien plus dangereux que trop.": "fails one time in four where the text says one in five. The asymmetry is intact: too few stocks stays far more dangerous than too many.",
 
 	// The crossed samples of the broad-sample article (echantillon-croise).
+	"echantillon-croise|DEUX ÉCHANTILLONS, UN PLAN":                                                                "TWO SAMPLES, ONE PLAN",
+	"echantillon-croise|Le même retrait, jugé sur deux siècles":                                                    "The same withdrawal, judged on two centuries",
+	"echantillon-croise|Probabilité d'épuiser le capital en trente ans, pour un 60/40 et un retrait rigide indexé": "Probability of running out in thirty years, for a 60/40 and a rigid indexed withdrawal",
+	"echantillon-croise|là où tout le monde se dimensionne":                                                        "where everyone sizes their plan",
+	"echantillon-croise|taux de retrait rigide, en % du capital de départ  →":                                      "rigid withdrawal rate, in % of the starting capital  →",
+	"echantillon-croise|5 % d'échec":                                                                               "5% failure",
+	"echantillon-croise|le siècle développé":                                                                       "the developed century",
+	"echantillon-croise|le siècle américain":                                                                       "the American century",
+	"echantillon-croise|sûr ici : 1,72 %":                                                                          "safe here: 1.72%",
+	"echantillon-croise|sûr ici : 4,07 %":                                                                          "safe here: 4.07%",
+	"echantillon-croise|À 4 %, le même plan échoue 3 fois sur cent sur le siècle américain, et 23 fois sur cent sur le siècle développé.":                                  "At 4%, the same plan fails 3 times in a hundred on the American century, and 23 times in a hundred on the developed one.",
+	"echantillon-croise|Un seul plan des deux côtés : 60/40 domestique, retrait rigide indexé sur l'inflation, horizon 30 ans, mêmes conventions.":                         "One plan on both sides: domestic 60/40, a rigid inflation-indexed withdrawal, 30-year horizon, identical conventions.",
+	"echantillon-croise|Siècle américain : panel Jorda-Schularick-Taylor des États-Unis (1872-2020), 120 fenêtres glissantes de trente ans.":                               "American century: the Jorda-Schularick-Taylor record for the United States (1872-2020), 120 rolling thirty-year windows.",
+	"echantillon-croise|Siècle développé : le modèle broad-sample du livre, 16 pays du même panel, blocs tirés à l'intérieur d'un même pays, 20 000 tirages, graine fixe.": "Developed century: the book's broad-sample model, 16 countries from the same panel, blocks drawn inside one country, 20,000 draws, fixed seed.",
+	"echantillon-croise|Le panel donne aux États-Unis 3,75 % sans aucun échec, exactement ce que dit le texte ; à 5 % d'échec toléré il monte à 4,07 %.":                   "The panel gives the United States 3.75% with no failure at all, exactly what the text says; at a 5% failure budget it rises to 4.07%.",
+	"echantillon-croise|Le papier de 2023 publie 17 % d'échec à 4 % et 2,26 % à 5 % d'échec, sur 38 pays, en blocs tous pays et à mortalité réelle,":                       "The 2023 paper publishes 17% failure at 4% and 2.26% at 5% failure, over 38 countries, in all-country blocks and with real mortality,",
+	"echantillon-croise|quand cette planche tient l'horizon à trente ans fermes sur 16 pays : plus sévère (23 % et 1,7 %).":                                                "while this plate holds the horizon at a firm thirty years over 16 countries: stricter (23% and 1.7%).",
+	"echantillon-croise|Trois questions différentes, comme le dit le tableau de l'article : ces nombres ne mesurent pas la même chose.":                                    "Three different questions, as the article's table says: these numbers do not measure the same thing.",
 }
