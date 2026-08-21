@@ -28,7 +28,7 @@ OECD or the ECB; it embeds the CSVs.
 | `EMU-EUR` | eurozone equity **net TR** | OECD euro-area share-price index `EA20.M.SHARE` (price) grossed by a constant net dividend yield | ~1986 |
 | `EUROGOV-EUR` | euro govt bond **TR** (monthly) | OECD euro-area long-term yield `EA20.M.IRLT` → `TreasuryTR` (10y) | ~1970 |
 | `EUROGOV-DAILY` | euro govt bond TR (daily shape) | ECB daily 10y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y` → `TreasuryTR` | ~2004 |
-| `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on the 2004-2026 ECB curve) → `TreasuryTR` (24y par, dur ~17) | ~1970 |
+| `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | month-ends of the real ECB 25y curve from 2004-09; before it, the OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on that same curve) → `TreasuryTR` (24y par, dur ~17), rebased at the junction | ~1970 |
 | `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
 | `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB`, compounded | 1960-1994 |
 
@@ -83,7 +83,8 @@ went unnoticed for two years), flat runs, `EUROGOV-EUR` against the bundled
 `BUND-EUR` over 1999-2010 (corr 0.955, CAGR gap -0.26 pt), the daily curve
 against the monthly yield (vol ratio 1.09), the long reconstruction against
 DBXG's realized volatility (13.99 %/yr), the synthesized long yield against the
-ECB curve it was fitted on, and the equity gross-up against the EZU overlap
+ECB curve it was fitted on (it grades the deep tail, which is all it feeds), the
+long splice against the curve it samples (264 month-ends, bit-exact), and the equity gross-up against the EZU overlap
 `netDivYield` was calibrated on (3.05 %/yr, the calibration target to two
 decimals).
 
@@ -100,8 +101,8 @@ convexity come from real bond pricing, not a levered shorter bond. The maturity
 daily reconstruction matches DBXG's ~14.4%/yr realized volatility over
 2007-2026, because the fitted long curve is slightly more volatile than the
 traded fund per year of maturity. DBXG's own quotes cover 2007-> (grafted);
-before that the daily ECB 25y series shapes it to 2004, and the OECD-10y-derived
-monthly tail carries it to ~1970. Reconstructing the 25+ from a levered 10y was
+before that the ECB 25y curve gives both the level and the daily shape back to
+2004-09, and the OECD-10y-derived monthly tail carries it to ~1970. Reconstructing the 25+ from a levered 10y was
 rejected: leveraging the excess return compounds a sustained bond bull far too
 richly (~20%/yr over the 1981-2004 disinflation vs ~13%/yr for a real long bond).
 
@@ -167,21 +168,34 @@ binding constraint**:
   and the annualized-CAGR comparison over 9 months is noise. The value here is
   the deep reconstruction, not a tight tracking claim; the real quotes are
   grafted from inception regardless.
-- **The long monthly anchors govern the level even where a real long curve
-  exists.** `euroGovLongDaily` takes `EUROGOV-LONG-EUR` as anchors and
-  `EUROGOV-LONG-DAILY` only as intra-month shape, so the 25-year yield
-  *synthesized from the 10-year* sets the level over 2004-2026 too, where the
-  ECB publishes the real 25-year point. The affine map has a slope of 0.96, so
-  it cannot reproduce a **steepening**: over 2024-01 to 2026-05 the synthesized
-  long bond returns -0.3 %/yr where the real ECB 25-year curve returns
-  -5.1 %/yr (the same window refits the regression at a slope of 1.43). This was
-  invisible while the OECD tail stopped in 2024-01; extending it moved `MTH`'s
-  level verdict from ok to warn (engine -2.30 %/yr vs real -4.19 %/yr over
-  2018-2026) and widened `DBXG`'s gap from +0.01 to +0.65 %/yr, both still on
-  windows the SIM consumer never sees (real quotes are grafted from 2018-09 and
-  2007-08). Anchoring the post-2004 level on the real curve instead is the
-  obvious fix and is **not** done here: it is a recipe change, not a data
-  refresh.
+- **The long series' level now follows the real ECB curve (fixed 2026-08-19).**
+  `euroGovLongDaily` takes `EUROGOV-LONG-EUR` as anchors and
+  `EUROGOV-LONG-DAILY` only as intra-month shape, so whatever the monthly file
+  carries sets the level. It used to carry a 25-year yield *synthesized from the
+  10-year* over 2004-2026 too, where the ECB publishes the real 25-year point.
+  The affine map has a slope of 0.96, so it cannot reproduce a **steepening**:
+  over 2024-01 to 2026-05 the synthesized long bond returned -0.3 %/yr where the
+  real ECB 25-year curve returns -5.1 %/yr (the same window refits the
+  regression at a slope of 1.43). This was invisible while the OECD tail stopped
+  in 2024-01; extending it moved `MTH`'s level verdict to warn and widened
+  `DBXG`'s gap from +0.01 to +0.65 %/yr.
+  `cmd/gen-euro-refdata` now builds the monthly file the way a donor chain is
+  built: **the real curve where it exists, the synthesis only in front of it**.
+  From the ECB curve's first month (**2004-09-30**) every monthly anchor is that
+  curve's own month-end level, so anchors and shape are the same series and the
+  reconstruction reproduces the real long bond exactly; the synthesized tail
+  (~1970 to 2004-08, its published levels unchanged to the last digit) has the
+  real era rebased onto it by one constant factor, so the junction shows no
+  level jump and the seam keeps the one synthesized month return (+1.14 %) it
+  has no substitute for. Measured old file against new: the pre-junction 416
+  months are **identical**, the real era returns **+3.07 %/yr against +3.31 %/yr**
+  synthesized (widest rebased path deviation +31 % in 2012, -4 % at the end),
+  and the 2024-2026 tail now returns **-4.96 %/yr**, the real curve's own
+  number. `-verify-simdata` on the same windows: `DBXG` **+0.65 → -0.05 %/yr**
+  (monthly corr 0.51 → 0.93, drift +12.9 % → -0.9 %), `MTH` **+1.89 →
+  -0.54 %/yr** (corr 0.56 → 0.96, drift +15.4 % → -4.2 %), level verdicts ok on
+  both. The affine map was **not** refitted: 2004-2026 is the only window where
+  a real 25-year yield exists at all, and it now governs the deep tail alone.
 - **Bond duration.** `EUROGOV-*` reconstruct a 10y benchmark (matching the OECD/ECB
   yield tenor); the real `EUNH.DE` is a broad eurozone govt basket (duration
   ~7-8y). The small mismatch is rescaled/absorbed at the 2009 splice.

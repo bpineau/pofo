@@ -2108,21 +2108,22 @@ const dbxgFee = 0.0015
 
 // dbxgRecipe rebuilds the Xtrackers II Eurozone Government Bond 25+ UCITS ETF
 // (LU0290357846, EUR, real from 2007) from the bundled long euro-area government
-// bond total return (EUROGOV-LONG-EUR, ~1970, with the ECB daily 30-year shape
+// bond total return (EUROGOV-LONG-EUR, ~1970, with the ECB daily 25-year shape
 // EUROGOV-LONG-DAILY from 2004), less the fund's TER. That reference is a
-// constant-maturity ~30-year par bond, modified duration ~19, matching the iBoxx
-// EUR Eurozone Sovereigns 25+ index DBXG tracks; it is a genuine long-bond
+// constant-maturity 24-year par bond, modified duration ~17, vol-matched to the
+// iBoxx EUR Eurozone Sovereigns 25+ index DBXG tracks; it is a genuine long-bond
 // reconstruction (yield path through TreasuryTR) rather than a levered shorter
 // bond, so it neither overstates the return in a sustained bond bull nor needs a
 // financing leg. Euro-native throughout, no FX leg; real DBXG is grafted from
-// 2007. The pre-2004 tail is monthly and its long yield is synthesized from the
-// 10-year (the ECB curve only reaches 2004), a modest approximation next to the
-// two decades of real quotes the fund itself carries; see cmd/gen-euro-refdata.
+// 2007. From 2004-09 both the level and the shape come from the real ECB
+// 25-year curve point; only the deeper monthly tail synthesizes its long yield
+// from the 10-year, the years no real long curve exists for; see
+// cmd/gen-euro-refdata.
 func dbxgRecipe() Recipe {
 	return Recipe{
 		ID:              "DBXG",
 		Name:            "Xtrackers Eurozone Govt 25+: long euro-gov bond",
-		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, ~30y constant maturity, modified duration ~19, ~1970 with the ECB daily 30y shape EUROGOV-LONG-DAILY from 2004) less 0.15%/yr TER; euro-native, real DBXG grafted from 2007",
+		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, 24y constant maturity, modified duration ~17, ~1970; the real ECB 25y curve point sets level and shape from 2004 via EUROGOV-LONG-DAILY) less 0.15%/yr TER; euro-native, real DBXG grafted from 2007",
 		Build:           dbxgBuild,
 		ValidateAgainst: "DBXG",
 		SpliceReal:      "DBXG",
@@ -2153,7 +2154,7 @@ func mthRecipe() Recipe {
 	return Recipe{
 		ID:              "MTH",
 		Name:            "Amundi Euro Govt Bond 25+Y: long euro-gov bond",
-		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, ~30y constant maturity, ~1970, with the ECB daily 30y shape EUROGOV-LONG-DAILY from 2004) less 0.07%/yr TER; euro-native, real MTH grafted from 2017",
+		Method:          "long euro-area government bond TR (EUROGOV-LONG-EUR, 24y constant maturity, modified duration ~17, ~1970; the real ECB 25y curve point sets level and shape from 2004 via EUROGOV-LONG-DAILY) less 0.07%/yr TER; euro-native, real MTH grafted from 2017",
 		Build:           mthBuild,
 		ValidateAgainst: "MTH",
 		SpliceReal:      "MTH",
@@ -2198,11 +2199,16 @@ func indepEuropeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	return f.Fetch("LU0131510165", from)
 }
 
-// euroGovLongDaily builds the long (25+ segment, ~30-year, duration ~19) euro-area
-// government bond total return at daily granularity: the bundled monthly
-// EUROGOV-LONG-EUR anchors (~1970) carrying the ECB daily 30-year shape
+// euroGovLongDaily builds the long (25+ segment, 24-year par, duration ~17)
+// euro-area government bond total return at daily granularity: the bundled
+// monthly EUROGOV-LONG-EUR anchors (~1970) carrying the ECB daily 25-year shape
 // (EUROGOV-LONG-DAILY, 2004->) where it overlaps, the long-maturity twin of the
 // EUROGOV-EUR / EUROGOV-DAILY pair the NTSZ bond leg uses.
+//
+// The anchors govern the level, so what they carry after 2004 matters: they are
+// themselves the month-ends of that same ECB curve (cmd/gen-euro-refdata splices
+// them there), which is why the reconstruction reproduces the real long curve
+// over those years instead of a 25-year yield synthesized from the 10-year one.
 func euroGovLongDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	anchors, err := f.Fetch("EUROGOV-LONG-EUR", from)
 	if err != nil {

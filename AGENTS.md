@@ -312,4 +312,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   freshness and flat-run checks exist because the MEI freeze and a degraded
   fetch both shipped unnoticed); note the equity-leg daily-vol/FX caveat there,
   and that the long sleeve is a real `TreasuryTR` long-bond reconstruction (never a
-  levered short bond, which overstates a bond bull).
+  levered short bond, which overstates a bond bull). Its LEVEL follows the real
+  ECB 25y curve point from 2004-09 (the monthly `EUROGOV-LONG-EUR` is that
+  curve's month-ends there, spliced onto the synthesized deep tail); the affine
+  25y-on-10y map carries the pre-2004 years only.
