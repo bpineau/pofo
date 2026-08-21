@@ -590,9 +590,13 @@ func figCorrelSign() string {
 	for _, v := range []float64{-0.5, 0.5} {
 		p := m(1963, v)
 		// A correlation axis carries its sign on both ends, and this edition
-		// writes the decimal with a comma.
-		b.WriteString(txt(72, p[1]+4, 10, figMuted, "end", "400",
-			strings.Replace(fmt.Sprintf("%+.1f", v), ".", ",", 1)))
+		// writes the decimal with a comma. The negative end takes the book's
+		// typographic minus, never the ASCII hyphen Go's %+f would print.
+		sign := "+"
+		if v < 0 {
+			sign = figMinus
+		}
+		b.WriteString(txt(72, p[1]+4, 10, figMuted, "end", "400", sign+frNum(math.Abs(v), 1)))
 	}
 	for _, c := range []float64{1970, 1985, 2000, 2015} {
 		p := m(c, -0.62)
