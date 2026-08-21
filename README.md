@@ -378,6 +378,7 @@ single port:
 | `/firebook/en/` | the English edition ("The Quiet FIRE"), cross-linked with the French one page by page |
 | `/firebook/<lang>/<article>.md` | any article's **Markdown source**, served as written: the same URL as the page, plus `.md` |
 | `/firebook/<lang>/feed.xml` | the edition's **Atom feed**: every article, in reading order, for a feed reader |
+| `/firebook/<lang>/card.png` | the edition's **social card**, the 1200x630 image a shared link shows |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | what crawlers and AI agents read: every page of both editions, everything allowed, and an [llms.txt](https://llmstxt.org) index of the whole site |
 
 ```sh
