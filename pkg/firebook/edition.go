@@ -101,12 +101,10 @@ var English = &Edition{
 	Lang:     "en",
 	OGLocale: "en_US",
 	SiteName: "The Quiet FIRE",
-	// The US-framework part is not written yet, so the description does not
-	// promise it; it gains a "US accounts and taxes" clause with M3.
 	SiteDescription: "Living off your capital without outliving it: the science of withdrawal, " +
-		"the strategies and portfolios that hold up, inflation, and the human factor.",
+		"the strategies and portfolios that hold up, US accounts and taxes, and the human factor.",
 	SiteLede: "Living off your capital without outliving it: the science of withdrawal, " +
-		"the models and their traps, the strategies, the portfolios that hold up, buffers, inflation.",
+		"the models and their traps, the strategies, the portfolios that hold up, US accounts and taxes.",
 	HomePath:     "/firebook/en/",
 	AssetDir:     "assets/book/en",
 	EPUBFileName: "the-quiet-fire.epub",
