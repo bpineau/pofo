@@ -581,7 +581,7 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | le mur (des dix-huit mois) | the wall, the eighteen-month wall | The motivational trough 12 to 24 months after quitting. | temoignages-fire |
 | la convalescence | convalescence | Year one treated as recovery: no big decisions. | sens-et-identite |
 | les quatre chantiers | the four workstreams | Structure, identity, connection, usefulness. The review line "les quatre chantiers, ça va ?" -> "how are the four workstreams doing?". | sens-et-identite |
-| le lien, l'utilité | connection, usefulness | Two of the four projects. Never "link", never "utility". | sens-et-identite |
+| le lien, l'utilité | connection, usefulness | Two of the four workstreams. Never "link", never "utility". | sens-et-identite |
 | identités de verbe, de statut | verb identities, status identities | "I work wood" against "I am an engineer". | sens-et-identite |
 | le journal du plan | the plan log | Three lines written at each annual review. | revue-annuelle |
 | clause anti-goalposts | the anti-goalposts clause | A written ban on hardening the departure criteria. Keep "goalposts". | une-annee-de-plus |
