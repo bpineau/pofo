@@ -157,6 +157,7 @@ var figures = map[string]func() string{
 	"drag-volatilite":          figDragVolatilite,
 	"mf-cash-prime-frais":      figMfCashPrimeFrais,
 	"stacking-2022":            figStacking2022,
+	"retrait-deux-lectures":    figRetraitDeuxLectures,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---

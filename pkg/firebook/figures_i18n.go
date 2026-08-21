@@ -1540,6 +1540,21 @@ var figureDict = map[string]string{
 	"Le levier pique, et c'est l'étage libéré qui paie la facture.":                                                                    "The leverage stings, and the freed layer is what pays the bill.",
 	"Les trois niveaux sont ceux de l'article : −17 % pour le 60/40 nu, −21 % pour le cœur empilé seul, −10 % pour le plan entier.":    "The three levels are the article's own: −17% for the naked 60/40, −21% for the stacked core alone, −10% for the whole plan.",
 	"Les deux marches du milieu en découlent, le cœur pesant 67 % du plan. L'article crédite le solde au très bon millésime du trend.": "The two middle steps follow from them, the core weighing 67% of the plan. The article credits the balance to a very good trend year.",
+
+	// retrait-deux-lectures
+	"LA RÈGLE DES 4 %": "THE 4% RULE",
+	"Un retrait rigide, et les deux lectures qu'on en fait":                                          "One rigid withdrawal, and the two ways of reading it",
+	"Millésime 1966, 60/40 américain réel, 1 M€ et un retrait initial de 4 % indexé sur l'inflation": "The 1966 vintage, a real US 60/40, $1M and a 4% initial withdrawal indexed to inflation",
+	"Ce que voit le retraité":                               "What the retiree sees",
+	"le virement annuel, en euros constants":                "the yearly payment, in constant dollars",
+	"40 k€":                                                 "$40k",
+	"le dernier virement tombe en 1994":                     "the last payment lands in 1994",
+	"Ce que voit le plan":                                   "What the plan sees",
+	"le même retrait, en % du capital restant":              "the same withdrawal, as a % of the capital left",
+	"le taux quitte l'échelle en 1989, passe 38 % en 1992,": "the rate leaves the scale in 1989, passes 38% in 1992,",
+	"et il n'y a plus rien à retirer en 1994":               "and there is nothing left to withdraw in 1994",
+	"Le virement ne bouge pas d'un euro pendant vingt-huit ans, et c'est bien ce qui rend la règle si difficile à quitter à temps.": "The payment does not move by a dollar for twenty-eight years, which is what makes the rule so hard to leave in time.",
+	"Tout est réel, inflation retirée. Le capital s'épuise dans la 29e année : 4 % dépassait ce que ce millésime pouvait porter.":   "Everything is real, inflation removed. The capital runs out in the 29th year: 4% was more than this vintage could carry.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered

@@ -24,6 +24,10 @@ Trois propriétés découlent immédiatement de cette mécanique, et elles expli
 
 **Le « 4 % » ne compte qu'une fois.** Le taux ne s'applique qu'au capital initial, au jour du départ. D'où un paradoxe connu : deux voisins identiques, l'un parti en 2021 avec 1 M€ (retrait 40 k€), l'autre parti en 2022 après un krach avec 800 k€ (retrait 32 k€), retirent des montants différents alors que leur portefeuille vaut désormais à peu près la même chose. Ce paradoxe n'est pas un détail. Il révèle que la règle est une simplification d'un objet plus profond (le taux de retrait dépend des valorisations de départ, [[valorisations-et-cape]]).
 
+::: figure retrait-deux-lectures
+Les deux propriétés ci-dessus, mises côte à côte sur le pire millésime connu. En haut, ce que voit le retraité : un virement qui ne bouge pas d'un euro constant pendant vingt-huit ans. En bas, ce que voit le plan : le même virement, rapporté au capital qui reste, passe de 4 % à plus de 8 % dès 1975 et ne redescend jamais. Aucune des deux lectures ne ment, et c'est bien le problème, car la première est la seule que le quotidien donne à voir.
+:::
+
 ## D'où viennent les chiffres
 
 La règle a deux actes fondateurs, détaillés dans [[etude-trinity]].
