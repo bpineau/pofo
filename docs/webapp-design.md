@@ -249,6 +249,13 @@ adds no new fetch surface or concurrency beyond the visualizer's. The naked
 `/firesimulator/e/<name>` and `/firesimulator/p/<spec>` forms 301 to their trailing-slash
 canonical.
 
+Every `-serve` FIRE mount is `web.Embedded()` (2026-08): an inner app serves
+only itself (the page, its assets, `/api`), never the book mounts or the site
+files, which belong to the root that owns them. `/firesimulator/e/<name>/firebook/...`
+is therefore a 404 where it used to republish the whole book under a second
+URL (a crawler was seen wandering there). The standalone `pofo -fire` server
+keeps the full site: it owns its root.
+
 Every FIRE mount also tells the page what it is running on, through two
 `pkg/decumul/web` options the front end reads back from `/api/meta`.
 `WithSourceLabel` names the market (the example name for `/e/<name>/`,

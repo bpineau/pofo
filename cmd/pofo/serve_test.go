@@ -668,3 +668,38 @@ func TestServeViewSetsPrefsCookie(t *testing.T) {
 		t.Error("bare /view must not set a cookie")
 	}
 }
+
+// The nested FIRE mounts are Embedded: they serve the app, never a second
+// copy of the book or of the site files. A crawler was seen wandering into
+// /firesimulator/e/<name>/firebook/..., which used to answer 200.
+func TestFireMountsDoNotRepublishTheSite(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	name := ""
+	for n := range s.examples {
+		name = n
+		break
+	}
+	if name == "" {
+		t.Fatal("no known examples")
+	}
+	for _, path := range []string{
+		"/firesimulator/firebook/fr/",
+		"/firesimulator/sitemap.xml",
+		"/firesimulator/e/" + name + "/firebook/fr/echelle-obligataire",
+		"/firesimulator/e/" + name + "/sitemap.xml",
+	} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusNotFound {
+			t.Errorf("%s: status %d, want 404", path, rec.Code)
+		}
+	}
+	for _, path := range []string{"/firesimulator/", "/firesimulator/e/" + name + "/", "/firebook/fr/"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
+		if rec.Code != http.StatusOK {
+			t.Errorf("%s: status %d, want 200", path, rec.Code)
+		}
+	}
+}

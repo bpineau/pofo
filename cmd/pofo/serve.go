@@ -115,6 +115,11 @@ func fireOptions(sourceLabel string) []web.Option {
 		web.WithNav(fireSiteNav),
 		web.WithPicker(firePicker()),
 		web.WithSourceLabel(sourceLabel),
+		// These mounts live under a site that already serves the book and
+		// the site files at the root; nested copies would be crawlable
+		// duplicates (a crawler was seen wandering into
+		// /firesimulator/e/<name>/firebook/...).
+		web.Embedded(),
 	}
 }
 
