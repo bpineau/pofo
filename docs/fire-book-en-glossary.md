@@ -568,6 +568,14 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | la veille (réglementaire / passive) | watching the rules, the low-effort watch | | revue-annuelle |
 | sous surveillance / surveillance levée (guardrail state) | on watch / watch lifted | | revue-annuelle |
 | prix plancher (of the ritual) | floor price | | revue-annuelle |
+| palier (graded-response sense), l'échelle de réponses graduées | step, the ladder of graded responses | Not "tier". | quand-s-inquieter |
+| le playbook (à cinq paliers) | the (five-step) playbook | | quand-s-inquieter |
+| plan de pont | a plan in its bridge years | | quand-s-inquieter |
+| hystérésis anti-fausse-alerte, rouge confirmé | the hysteresis that filters false alarms, a confirmed red | | quand-s-inquieter |
+| point mensuel / trimestriel | the monthly / quarterly check | | quand-s-inquieter |
+| zone de vigilance / zone d'action, le régime normal | the watch zone / the action zone, normal operation | | quand-s-inquieter |
+| revue exceptionnelle, replan | an off-cycle review, the redesign (plan v2) | | quand-s-inquieter |
+| prime d'entretien (of the work option) | the upkeep premium | | quand-s-inquieter |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
