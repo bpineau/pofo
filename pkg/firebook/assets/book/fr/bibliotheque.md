@@ -60,6 +60,8 @@ Tout ce que ce livre cite, plus ce qu'il faut avoir dans sa bibliothèque pour c
 
 **Reinhart & Sbrancia (2011), « The Liquidation of Government Debt »** : la répression financière documentée. [[inflation-histoire]]
 
+**Redington (1952), « Review of the Principles of Life-Office Valuations » ; Fisher & Weil (1971), « Coping with the Risk of Interest-Rate Fluctuations » ; Leibowitz (1986), « The Dedicated Bond Portfolio in Pension Funds »** : l'immunisation et l'appariement des flux, des actuaires de l'assurance-vie aux fonds de pension. La source de l'échelle obligataire. [[echelle-obligataire]]
+
 **Dimson, Marsh & Staunton, *Global Investment Returns Yearbook* (annuel, UBS)** : le siècle mondial en chiffres, pays par pays, mis à jour chaque année. Le rapport annuel à lire. [[diversification-internationale]]
 
 ## Les rapports annuels et données vivantes

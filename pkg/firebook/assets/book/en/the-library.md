@@ -1,5 +1,5 @@
 # The library: sites, papers, books, tools
-<!-- source: bibliotheque @ 36ee35524b0a -->
+<!-- source: bibliotheque @ 632e7005eb32 -->
 
 Everything this book cites, plus what belongs on your shelf if you want to keep going on your own: every reference annotated in a sentence or two (**why** to read it, and where to get it), sorted by kind, each with the chapter of this book that leans on it. Links are given by name, because URLs change and names do not. The last section lays out reading paths, since a library with no reading order is just a pile.
 
@@ -60,6 +60,8 @@ Everything this book cites, plus what belongs on your shelf if you want to keep 
 **Neville, Draaisma, Funnell, Harvey and Van Hemert (2021), "The Best Strategies for Inflationary Times"**: what actually worked across eight inflation episodes. [[inflation-protection]]
 
 **Reinhart and Sbrancia (2011), "The Liquidation of Government Debt"**: financial repression, documented. [[hyperinflation-and-extremes]]
+
+**Redington (1952), "Review of the Principles of Life-Office Valuations"; Fisher and Weil (1971), "Coping with the Risk of Interest-Rate Fluctuations"; Leibowitz (1986), "The Dedicated Bond Portfolio in Pension Funds"**: immunization and cash-flow matching, from life-office actuaries to pension funds. Where the bond ladder comes from. [[bond-ladders]]
 
 **Dimson, Marsh and Staunton, *Global Investment Returns Yearbook* (annual, UBS)**: the world century in numbers, country by country, updated every year. The one annual report to read. [[international-diversification]]
 

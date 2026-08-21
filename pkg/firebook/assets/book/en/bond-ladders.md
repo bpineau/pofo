@@ -1,5 +1,5 @@
 # Bond ladders (and the ladder of linkers)
-<!-- source: echelle-obligataire @ fa7bacd56781 -->
+<!-- source: echelle-obligataire @ 3429541eb95a -->
 
 There are two ways to own bonds. This book has mostly talked about the first one, the constant-duration **fund** ([[bonds-in-retirement]]). That is the permanent sleeve, the one that absorbs shocks and gets rebalanced. The second is the **ladder**. You own a series of bonds, each held to its own maturity, one "rung" per year of spending to fund: 2027, 2028, 2029, and on down the line.
 
@@ -9,6 +9,12 @@ This chapter gives the principle, and the one property that sets a ladder apart:
 
 ::: cle When "hold it to maturity" stops being an illusion
 For a **permanent** sleeve, holding to maturity protects nothing. A rate rise costs you the same, as forgone income instead of a capital loss ([[bonds-in-retirement]]). For a **dated liability**, everything changes. If the bond maturing in 2031 funds exactly the spending of 2031, the price swings in between are **beside the point**. The cash flow at maturity is contractual, and it lands on the day you need it. The ladder does not remove interest-rate risk. It **cancels** it by matching, which is what immunization means. The risk exists only when the horizon of the asset and the horizon of the need fail to line up. This is the one structure in the book where the word "guaranteed" is literally true.
+:::
+
+::: science Where the ladder comes from: three generations of actuaries
+The idea was not born on a FIRE forum. It comes from life insurers and pension funds, which have always faced the same problem: dated promises to keep with assets that move. The British actuary Frank Redington gave it its name in 1952, in "Review of the Principles of Life-Office Valuations" (*Journal of the Institute of Actuaries*): a fund is **immunized** when its value stops moving, to first order, under a general shift in interest rates. His recipe is already ours, matching the mean term of the assets to the mean term of the liabilities. Lawrence Fisher and Roman Weil put it to the data in 1971, in "Coping with the Risk of Interest-Rate Fluctuations" (*Journal of Business*): a matching strategy removes almost all of the interest-rate risk of a high-grade bond portfolio held to a definite horizon. Martin Leibowitz finally turned it into a manager's craft, in the two 1986 *Financial Analysts Journal* installments of "The Dedicated Bond Portfolio in Pension Funds". They draw a sharp line between cash-flow matching, which is exactly the ladder of this chapter, and duration immunization, which manages a horizon without pinning every single maturity.
+
+Liability matching is therefore neither a forum trick nor a recent find. It is what pension funds do for a living, shrunk to household size. And that lineage also says what a ladder will never do, since no pension fund funds its most distant promises, or its benefit increases, this way.
 :::
 
 ## The three jobs a ladder does
@@ -29,7 +35,7 @@ A **nominal** rung of $40,000 maturing in 2038 will fund $40,000 of 2038 money, 
 - **The inflated nominal ladder.** Nominal rungs that grow (40,000 × 1.025^n). It covers **expected** inflation and stays naked against surprises. Fine for the short rungs, steadily more fragile after that.
 - **The short rolling ladder.** Nominal, 3 to 5 years only, rebuilt at the top every year. Inflation over a short horizon carries little uncertainty. The long-horizon risk stays in the portfolio, handled by its building blocks ([[defensive-assets]]).
 
-The doctrine that follows is simple. Nominal is fine when the ladder is short. When it is long, it is indexed or nothing.
+The doctrine that follows is simple. Nominal is fine when the ladder is short. When it is long, it is indexed or nothing. It is not a new doctrine either. Zvi Bodie and Michael Clowes had already made it the heart of *Worry-Free Investing* (2003), a whole book on funding a retirement out of inflation-indexed bonds rather than out of stocks.
 
 ## Building it, rung by rung
 
@@ -85,5 +91,6 @@ Claire and Idris's liability, year by year. The annual need does not move in tod
 - Allan Roth and the TIPS ladder tools ([tipsladder.com](https://www.tipsladder.com)): the finished version of the idea, priced on live quotes.
 - [treasurydirect.gov](https://www.treasurydirect.gov): terms, auction calendar and how a noncompetitive bid works, from the issuer.
 - The defined-maturity ETF lineups (iShares iBonds, Invesco BulletShares): the product pages, for the actual build.
-- Wade Pfau, *Safety-First Retirement Planning*: liability matching as a doctrine ([[annuities-and-safety-first]]).
+- Wade Pfau, *Safety-First Retirement Planning* (2019): liability matching as a doctrine ([[annuities-and-safety-first]]).
+- Zvi Bodie and Michael Clowes, *Worry-Free Investing* (2003): the case for funding a retirement out of indexed bonds, written for a general reader. The three founding papers cited above are in [[the-library]].
 - In this book: [[inflation-linked-bonds]] (the real rung, and what a guaranteed ladder delivers), [[bonds-in-retirement]] (funds against individual bonds, the real debate), [[the-bucket-strategy]] (the second bucket made contractual), [[cash-buffer]] (rungs zero and one).

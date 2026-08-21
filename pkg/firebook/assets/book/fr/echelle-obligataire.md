@@ -10,6 +10,12 @@ Cet article donne le principe et la propriété qui le distingue (pourquoi « d�
 Pour une poche **permanente**, tenir à échéance ne protège de rien. La hausse des taux coûte pareil, en manque à gagner au lieu d'une moins-value ([[obligations-en-retrait]]). Mais pour un **passif daté**, tout change. Si l'obligation qui échoit en 2031 finance exactement les dépenses de 2031, les variations de prix intermédiaires sont **sans objet**. Le flux à l'échéance est contractuel, et il tombe le jour où on en a besoin. L'échelle ne supprime pas le risque de taux. Elle l'**annule** par appariement (immunisation). Le risque n'existe que s'il y a un décalage entre l'horizon de l'actif et celui du besoin. C'est la seule structure du livre où le mot « garanti » a un sens littéral.
 :::
 
+::: science D'où vient l'échelle : trois générations d'actuaires
+L'idée n'est pas née sur un forum FIRE. Elle vient de l'assurance-vie et des fonds de pension, qui affrontent le même problème depuis toujours, des engagements datés à honorer avec des actifs qui bougent. L'actuaire britannique Frank Redington lui donne son nom en 1952, dans « Review of the Principles of Life-Office Valuations » (*Journal of the Institute of Actuaries*) : un fonds est **immunisé** quand sa valeur ne bouge plus, au premier ordre, lors d'un déplacement général des taux. Sa recette est déjà la nôtre, égaliser le terme moyen des actifs et celui des engagements. Lawrence Fisher et Roman Weil la mettent à l'épreuve des données en 1971, dans « Coping with the Risk of Interest-Rate Fluctuations » (*Journal of Business*) : une stratégie d'appariement élimine presque entièrement le risque de taux d'un portefeuille obligataire de bonne qualité détenu jusqu'à un horizon donné. Martin Leibowitz en fait enfin un métier de gérant, dans les deux volets du *Financial Analysts Journal* de 1986, « The Dedicated Bond Portfolio in Pension Funds ». Ils séparent nettement l'appariement des flux (le cash matching, exactement l'échelle de cet article) de l'immunisation par la duration, qui gère un horizon sans coller à chaque échéance.
+
+L'adossement n'est donc ni une astuce de forum ni une trouvaille récente. C'est le métier des caisses de retraite, réduit à la taille d'un ménage. Et cette filiation dit aussi ce qu'une échelle ne fera jamais, puisque aucune caisse ne finance ainsi ses engagements les plus lointains ni ses hausses de prestations.
+:::
+
 ## Les trois travaux de l'échelle
 
 **Travail 1 : le pont vers la pension.** Le cas d'usage FIRE par excellence, déjà rencontré ([[vpw]], [[horizon-et-esperance-de-vie]]). Entre le départ et la liquidation des pensions s'étend une phase à découvert de 10-20 ans où le portefeuille finance tout. La fraction **plancher** de ces années est un passif daté, connu, non négociable, le candidat parfait à l'adossement. La construction est simple, un barreau par année (le montant du plancher non couvert), de l'année 1 à l'année de liquidation. Le reste du patrimoine, déchargé du plancher, porte le confort et le long terme avec une liberté retrouvée ([[allocation-actions-obligations]], la couverture du plancher libère vers le haut du plateau).
@@ -28,7 +34,7 @@ Un barreau **nominal** de 40 000 € en 2038 financera 40 000 € de 2038, soit 
 - **L'échelle nominale gonflée.** Des barreaux nominaux croissants (40 000 × 1,025^n). Elle couvre l'inflation **anticipée** mais reste nue contre les surprises. Acceptable pour les barreaux courts, elle devient de plus en plus fragile ensuite.
 - **L'échelle courte roulée.** Nominale sur 3-5 ans seulement, reconstruite chaque année par le haut. L'inflation courte est peu incertaine. Le risque long reste dans le portefeuille, traité par ses briques ([[actifs-defensifs]]).
 
-La doctrine qui en sort est simple. Courte, la nominale est acceptable. Longue, c'est indexé ou rien.
+La doctrine qui en sort est simple. Courte, la nominale est acceptable. Longue, c'est indexé ou rien. Elle n'est pas neuve. Zvi Bodie et Michael Clowes en avaient fait le cœur de *Worry-Free Investing* (2003), un livre entier consacré à bâtir le financement de la retraite sur des obligations indexées plutôt que sur des actions.
 
 ## La pratique française : les contournements du guichet absent
 
@@ -76,5 +82,6 @@ Le passif de Claire et Idris, année par année. Le besoin annuel ne bouge pas e
 
 - Allan Roth et les outils d'échelle TIPS ([tipsladder.com](https://www.tipsladder.com)) : la version aboutie américaine, le modèle à transposer.
 - Les gammes de fonds à échéance UCITS (iBonds et équivalents) : les fiches produits, pour la construction concrète.
-- Wade Pfau, *Safety-First Retirement Planning* : l'adossement des passifs comme doctrine ([[rentes-et-annuites]]).
+- Wade Pfau, *Safety-First Retirement Planning* (2019) : l'adossement des passifs comme doctrine ([[rentes-et-annuites]]).
+- Zvi Bodie & Michael Clowes, *Worry-Free Investing* (2003) : la thèse du financement indexé, en version grand public. Les trois papiers fondateurs cités plus haut sont dans [[bibliotheque]].
 - Dans ce livre : [[obligations-indexees]] (le barreau réel et le résultat de l'échelle garantie), [[obligations-en-retrait]] (fonds contre titres, le vrai débat), [[strategie-buckets]] (le deuxième bucket rendu contractuel), [[cash-buffer]] (les barreaux zéro et un).
