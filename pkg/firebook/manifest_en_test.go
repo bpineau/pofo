@@ -4,7 +4,6 @@ import (
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -339,12 +338,10 @@ func TestFigureDictValuesAreXMLSafe(t *testing.T) {
 	}
 }
 
-// Completeness. Env-gated while the campaign runs; it becomes unconditional
-// when the edition ships (M4 of docs/fire-book-en-edition-design.md).
+// Completeness, enforced unconditionally since the edition shipped (M4 of
+// docs/fire-book-en-edition-design.md): every French article either has an
+// English counterpart or says in its own file that it is French-only.
 func TestEnglishEditionIsComplete(t *testing.T) {
-	if os.Getenv("FIREBOOK_EN_COMPLETE") == "" {
-		t.Skip("set FIREBOOK_EN_COMPLETE=1 to require every French article to have an English counterpart")
-	}
 	covered := map[string]bool{}
 	for _, cat := range English.Categories {
 		for _, a := range cat.Articles {
