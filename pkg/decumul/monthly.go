@@ -17,9 +17,15 @@ import (
 // each month. Wealth is reported at annual granularity (Years+1 points, one per
 // year-end) so the Outcome statistics read the same as for the annual kernel.
 //
+// Mortality stays a yearly decision here too: the household's drawn lifespans
+// are in whole years, so the kernel simply stops at the end of the last year
+// it lives. A monthly death date would change one year's spending by at most
+// half a year's need, far below the Monte-Carlo error of any statistic the
+// package reports.
+//
 // This is a distinct kernel from RunPath (the validated annual reference); it
 // has its own validation tests.
-func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
+func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
@@ -31,6 +37,9 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 	refillCap := p.Buffer.refillCap()
 	bufferStep := math.Pow(1+p.Buffer.RealReturn, 1.0/12) - 1
 	monthlyNeedCap := p.NeedAnnual / 12
+
+	lf := p.life(lives)
+	end := lf.end()
 
 	res := newPathResult(p.Capital, p.Years)
 	res.Ret10 = firstDecadeReturn(returns, min(120, p.Years*12), 12)
@@ -57,18 +66,21 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 	adaptive := p.Guard.active() || p.RiskGuard.active()
 
 	ruined := false
-	for k := 0; k < p.Years && !ruined; k++ {
-		// The ratchet and stateful taxes stay yearly decisions, adjusted at
-		// the start of each year against the current wealth.
+	for k := 0; k < end && !ruined; k++ {
+		// The ratchet, the annuity purchase and stateful taxes stay yearly
+		// decisions, taken at the start of each year against current wealth.
 		pks.newYear()
+		p.buyAnnuity(k, pks, &res, &lf)
+		res.Annuity += lf.annuityAt(k)
+		res.Received += p.income(k, lf)
 		if !adaptive {
 			level, lastRaise = p.Ratchet.raise(level, pks.total()+buffer, p.Capital, k, lastRaise)
 		}
 		// The year's uncut reference standard, for the cut accounting: the
 		// initial level under guardrails, the ratcheted level otherwise.
-		uncut := p.needAt(k)
+		uncut := p.needAt(k, lf)
 		if !adaptive {
-			uncut = p.netOf(level*p.schedAt(k), k)
+			uncut = p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
 		}
 		for m := range 12 {
 			total := pks.total() + buffer
@@ -84,13 +96,13 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 
 			var need float64
 			if p.RiskGuard.active() {
-				spending = riskM.adjust(spending, total+p.cashflowPV(k, p.RiskGuard.PVRate), k)
-				need = p.netOf(spending*p.schedAt(k), k) / 12
+				spending = riskM.adjust(spending, total+p.cashflowPV(k, p.RiskGuard.PVRate, lf), k)
+				need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf) / 12
 			} else if p.Guard.active() {
 				spending = guardM.adjust(spending, total)
-				need = p.netOf(spending*p.schedAt(k), k) / 12
+				need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf) / 12
 			} else {
-				yearNeed := p.netOf(level*p.schedAt(k), k)
+				yearNeed := p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
 				need = yearNeed / 12
 				if p.Flex.Cut > 0 && p.Flex.triggered(dd, yearNeed, total) {
 					need *= 1 - p.Flex.Cut
@@ -134,5 +146,6 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence) PathResult {
 		}
 		res.Wealth[k+1] = pks.total() + buffer
 	}
+	res.close(lf)
 	return res
 }

@@ -17,6 +17,15 @@ import (
 // FirstCut and CutYears account the spending cuts: FirstCut is the first year
 // the household lived below its uncut standard (flex cut, guardrails cut or
 // under-delivery), -1 when it never did, and CutYears counts such years.
+//
+// The last block is the household's lifetime. Without a Plan.Lifetime it still
+// reads correctly: LifeYears is the full horizon, Outlived is true and Estate
+// is the terminal wealth, since the fixed horizon is the case where the
+// household is certain to reach the end. With one, the series are FROZEN after
+// death (Wealth holds the estate, Spend holds 0) rather than zeroed, so an
+// ordinary death is never mistaken for a ruin by a drawdown or a terminal
+// statistic; the statistics that are genuinely per-lifetime are bounded by
+// LifeYears instead.
 type PathResult struct {
 	Wealth    []float64
 	Spend     []float64
@@ -27,6 +36,36 @@ type PathResult struct {
 	TaxPaid   float64
 	Withdrawn float64
 	Ret10     float64 // annualized real market return of the first decade (sequence risk)
+	LifeYears int     // whole years the household lived, capped at the horizon
+	Outlived  bool    // it was still alive at the horizon (censored, not dead)
+	Estate    float64 // total real wealth at the household's end
+	Annuity   float64 // cumulative real annuity income received over the path
+	Premium   float64 // net premium actually converted into an annuity
+	// Received is the cumulative real income from OUTSIDE the portfolio over
+	// the lived years: cashflows after any reversion, plus the annuity (so it
+	// includes Annuity). Spend records only what the portfolio delivered, since
+	// income is netted off the budget before anything is sold; the household's
+	// standard of living is the two together. A year's income above the year's
+	// budget is still counted as received, the model having nowhere to reinvest
+	// it.
+	Received float64
+}
+
+// end is the index in Wealth of the household's last point. A PathResult built
+// by hand (LifeYears unset) reads as the full series.
+func (r PathResult) end() int {
+	if r.LifeYears > 0 && r.LifeYears < len(r.Wealth) {
+		return r.LifeYears
+	}
+	return len(r.Wealth) - 1
+}
+
+// spendYears is how many Spend entries the household actually lived through.
+func (r PathResult) spendYears() int {
+	if r.LifeYears > 0 && r.LifeYears < len(r.Spend) {
+		return r.LifeYears
+	}
+	return len(r.Spend)
 }
 
 // ruinAt latches ruin at year k, keeping the first occurrence.
@@ -63,13 +102,18 @@ func newPathResult(capital float64, years int) PathResult {
 }
 
 // RunPath simulates one path under the returns sequence (one return per
-// year; missing years are treated as 0). The order each year is: compute the
-// net need after cashflows, apply the flex cut on deep drawdowns, withdraw
-// via the bucket rule (buffer first while underwater, else growth + refill),
-// then grow the sleeves. A year is ruin when it cannot deliver the full net
-// need, i.e. when the gross required exceeds the available liquidity; only the
-// net actually delivered is accounted, never the requested amount.
-func (p Plan) RunPath(returns scenario.Sequence) PathResult {
+// year; missing years are treated as 0) and the household's drawn lifespans.
+// The order each year is: buy the annuity if this is its year, compute the
+// net need after income, apply the flex cut on deep drawdowns, withdraw via
+// the bucket rule (buffer first while underwater, else growth + refill), then
+// grow the sleeves. A year is ruin when it cannot deliver the full net need,
+// i.e. when the gross required exceeds the available liquidity; only the net
+// actually delivered is accounted, never the requested amount.
+//
+// The zero Lives means no draw: the path runs the plan's fixed horizon. That
+// is what a plan without a Lifetime always does, and it is how a caller asks
+// for the horizon kernel explicitly. Simulate draws the lifespans for you.
+func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
@@ -79,6 +123,9 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
+
+	lf := p.life(lives)
+	end := lf.end()
 
 	res := newPathResult(p.Capital, p.Years)
 	res.Ret10 = firstDecadeReturn(returns, min(10, p.Years), 1)
@@ -110,10 +157,13 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		return take
 	}
 
-	for k := 0; k < p.Years; k++ {
+	for k := 0; k < end; k++ {
 		if yearlyTax {
 			pks.newYear()
 		}
+		p.buyAnnuity(k, pks, &res, &lf)
+		res.Annuity += lf.annuityAt(k)
+		res.Received += p.income(k, lf)
 		growth := pks.total()
 		total := growth + buffer
 		if total <= 0 {
@@ -144,38 +194,38 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 			// understate today's sustainable budget). uncut stays the fixed
 			// reference standard, so lean years count as lived cuts.
 			wNet := pks.liquidationNet() + buffer
-			budget := pmt(wNet+p.cashflowPV(k, p.AmortReturn), p.AmortReturn, p.Years-k)
-			need = math.Min(p.netOf(budget, k), wNet*(1-1e-9))
-			uncut = p.needAt(k)
+			budget := pmt(wNet+p.cashflowPV(k, p.AmortReturn, lf), p.AmortReturn, p.planYears()-k)
+			need = math.Min(p.netOf(budget, k, lf), wNet*(1-1e-9))
+			uncut = p.needAt(k, lf)
 		} else if p.Bounded.active() {
 			// Bounded percent-of-portfolio (Vanguard dynamic spending): target
 			// a share of wealth, move at most Up/Down from last year's level.
 			bounded = p.Bounded.clampStep(p.Bounded.Pct*total, bounded)
-			need = p.netOf(bounded, k)
-			uncut = p.needAt(k)
+			need = p.netOf(bounded, k, lf)
+			uncut = p.needAt(k, lf)
 		} else if p.Percent > 0 {
 			// Percentage-of-portfolio (VPW): spend a fixed share of current
 			// wealth. uncut stays the fixed reference standard, so years where the
 			// rule delivers less than that count as a lived cut.
-			need = p.netOf(p.Percent*total, k)
-			uncut = p.needAt(k)
+			need = p.netOf(p.Percent*total, k, lf)
+			uncut = p.needAt(k, lf)
 		} else if p.RiskGuard.active() {
 			// Risk-based guardrail: the same ±10 % moves as Guyton-Klinger,
 			// but the band is the safe rate of the REMAINING horizon and the
 			// rate is read on total wealth, pensions to come included.
-			wealth := total + p.cashflowPV(k, p.RiskGuard.PVRate)
+			wealth := total + p.cashflowPV(k, p.RiskGuard.PVRate, lf)
 			spending = p.RiskGuard.adjust(spending, wealth, k)
-			need = p.netOf(spending*p.schedAt(k), k)
-			uncut = p.needAt(k)
+			need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf)
+			uncut = p.needAt(k, lf)
 		} else if p.Guard.active() {
 			spending = p.Guard.adjust(spending, total)
-			need = p.netOf(spending*p.schedAt(k), k)
-			uncut = p.needAt(k)
+			need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf)
+			uncut = p.needAt(k, lf)
 		} else {
 			if ratchetActive {
 				level, lastRaise = p.Ratchet.raise(level, total, p.Capital, k, lastRaise)
 			}
-			need = p.netOf(level*p.schedAt(k), k)
+			need = p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
 			uncut = need
 			if p.Flex.Cut > 0 && p.Flex.triggered(dd, need, total) {
 				need *= 1 - p.Flex.Cut
@@ -221,7 +271,21 @@ func (p Plan) RunPath(returns scenario.Sequence) PathResult {
 		buffer *= 1 + p.Buffer.RealReturn
 		res.Wealth[k+1] = pks.total() + buffer
 	}
+	res.close(lf)
 	return res
+}
+
+// close records the household's lifetime on a finished path and freezes the
+// wealth series at the estate past its end, so a death is never read as a
+// crash to zero. A path that ruined early already sits at zero, so the fill is
+// a no-op there.
+func (r *PathResult) close(l life) {
+	end := l.end()
+	r.LifeYears, r.Outlived = end, l.outlived()
+	for k := end + 1; k < len(r.Wealth); k++ {
+		r.Wealth[k] = r.Wealth[end]
+	}
+	r.Estate = r.Wealth[end]
 }
 
 // ret returns the k-th return, or 0 when the sequence is shorter.

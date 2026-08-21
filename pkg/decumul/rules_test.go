@@ -14,7 +14,7 @@ func TestFlexCutTriggersOnWithdrawalRate(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 5000, Years: 2,
 		Flex: FlexRule{Threshold: 0.99, WRThreshold: 0.04, Cut: 0.20},
 		Tax:  CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0}, Lives{})
 	// wr = 5000/100000 = 5% > 4%: spend 4000, not 5000.
 	if math.Abs(res.Spend[0]-4000) > 1e-6 {
 		t.Errorf("Spend[0] = %.0f, want 4000 (WR-triggered cut)", res.Spend[0])
@@ -26,7 +26,7 @@ func TestFlexCutTriggersOnWithdrawalRate(t *testing.T) {
 func TestFlexCutWRThresholdZeroInactive(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 5000, Years: 2,
 		Flex: FlexRule{Threshold: 0.99, Cut: 0.20}, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0}, Lives{})
 	if math.Abs(res.Spend[0]-5000) > 1e-6 {
 		t.Errorf("Spend[0] = %.0f, want 5000 (no trigger)", res.Spend[0])
 	}
@@ -39,7 +39,7 @@ func TestRatchetRaisesSpending(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		Ratchet: Ratchet{Trigger: 1.2, Step: 1000, Cap: 10000},
 		Tax:     CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0.5, 0, 0})
+	res := p.RunPath(scenario.Sequence{0.5, 0, 0}, Lives{})
 	// Year 0: 100k < 120k, spend 4000. The +50% year lifts wealth to 144k:
 	// years 1 and 2 each ratchet up by 1000.
 	want := []float64{4000, 5000, 6000}
@@ -56,7 +56,7 @@ func TestRatchetCooldown(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		Ratchet: Ratchet{Trigger: 1.2, Step: 1000, Cap: 10000, Cooldown: 2},
 		Tax:     CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0.5, 0, 0})
+	res := p.RunPath(scenario.Sequence{0.5, 0, 0}, Lives{})
 	want := []float64{4000, 5000, 5000}
 	for k, w := range want {
 		if math.Abs(res.Spend[k]-w) > 1e-6 {
@@ -72,7 +72,7 @@ func TestRatchetCapAndMaxWR(t *testing.T) {
 	capped := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		Ratchet: Ratchet{Trigger: 1.2, Step: 1000, Cap: 5000},
 		Tax:     CTOFlatTax{Rate: 0}}
-	res := capped.RunPath(scenario.Sequence{0.5, 0, 0})
+	res := capped.RunPath(scenario.Sequence{0.5, 0, 0}, Lives{})
 	if math.Abs(res.Spend[2]-5000) > 1e-6 {
 		t.Errorf("Spend[2] = %.0f, want 5000 (cap)", res.Spend[2])
 	}
@@ -82,7 +82,7 @@ func TestRatchetCapAndMaxWR(t *testing.T) {
 		// bound, so no raise happens despite wealth > trigger.
 		Ratchet: Ratchet{Trigger: 1.2, Step: 1000, Cap: 10000, MaxWR: 0.02},
 		Tax:     CTOFlatTax{Rate: 0}}
-	res = vetoed.RunPath(scenario.Sequence{0.5, 0})
+	res = vetoed.RunPath(scenario.Sequence{0.5, 0}, Lives{})
 	if math.Abs(res.Spend[1]-4000) > 1e-6 {
 		t.Errorf("Spend[1] = %.0f, want 4000 (MaxWR veto)", res.Spend[1])
 	}
@@ -93,7 +93,7 @@ func TestRatchetCapAndMaxWR(t *testing.T) {
 func TestSpendSchedule(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		SpendSchedule: []float64{1, 1.1, 1.21}, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0, 0}, Lives{})
 	want := []float64{4000, 4400, 4840}
 	for k, w := range want {
 		if math.Abs(res.Spend[k]-w) > 1e-6 {
@@ -106,7 +106,7 @@ func TestSpendSchedule(t *testing.T) {
 func TestSpendScheduleShort(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3,
 		SpendSchedule: []float64{1.5}, Tax: CTOFlatTax{Rate: 0}}
-	res := p.RunPath(scenario.Sequence{0, 0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0, 0}, Lives{})
 	want := []float64{6000, 4000, 4000}
 	for k, w := range want {
 		if math.Abs(res.Spend[k]-w) > 1e-6 {
@@ -126,7 +126,7 @@ func TestRunPathMonthlyRatchetAndSchedule(t *testing.T) {
 	for i := 0; i < 12; i++ {
 		seq[i] = 0.05 // ≈ +80% over year 0: well above the ratchet trigger
 	}
-	res := p.RunPathMonthly(seq)
+	res := p.RunPathMonthly(seq, Lives{})
 	if math.Abs(res.Spend[0]-4800) > 1e-6 {
 		t.Errorf("Spend[0] = %.0f, want 4800", res.Spend[0])
 	}
