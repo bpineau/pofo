@@ -576,6 +576,13 @@ term does not sit well in your sentence, rewrite the sentence, not the term.
 | zone de vigilance / zone d'action, le régime normal | the watch zone / the action zone, normal operation | | quand-s-inquieter |
 | revue exceptionnelle, replan | an off-cycle review, the redesign (plan v2) | | quand-s-inquieter |
 | prime d'entretien (of the work option) | the upkeep premium | | quand-s-inquieter |
+| l'art du rien actif | the art of doing nothing on purpose | | marche-baissier-en-retraite |
+| l'érosion longue, le krach court | the long grind, the fast crash | The three bear shapes: fast crash / long grind / the crossing. | marche-baissier-en-retraite |
+| le butin (fiscal) | loot ("the storm leaves loot behind") | | marche-baissier-en-retraite |
+| le point (de portefeuille), le point passe mensuel | the (portfolio) check, the check goes monthly | | marche-baissier-en-retraite |
+| la doctrine de la tempête, les gestes mécaniques | the storm doctrine, the mechanical moves | | marche-baissier-en-retraite |
+| l'inversion fatale | the fatal inversion | Protecting the buffer by selling stocks. | marche-baissier-en-retraite |
+| la donation au creux, le creux | gifting at the bottom, the bottom | | marche-baissier-en-retraite |
 | traversée | the crossing | SETTLED 2026-08-16: one form everywhere. A multi-year hostile stretch lived through, not a crash; give it a half-sentence gloss at first use per article ("the crossing, the years spent inside a bear market"). Never "bear stretch" as the noun. Verb "traverser" -> to cross, to get through, to ride out. | marche-baissier-en-retraite |
 | fenêtre fragile | fragile window | Fixed by the pilot. The first 5 to 10 years of withdrawals. | sequence-des-rendements |
 | une année de plus, OMY | one more year (OMY) | The French puts the English in guillemets; in English it stands unquoted (pilot). The syndrome: "the one-more-year syndrome". | une-annee-de-plus |
