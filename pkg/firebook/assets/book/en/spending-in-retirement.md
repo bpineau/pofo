@@ -1,5 +1,5 @@
 # Real spending in retirement (the retirement smile, Die With Zero)
-<!-- source: depenses-en-retraite @ ac05498b923c -->
+<!-- source: depenses-en-retraite @ f8249b2855bc -->
 
 Every mechanism in this book starts from an annual need. What is left to establish is what spending actually **does** over forty years. The data answers plainly. It is **not** flat. Real retirees spend heavily at the start, the go-go years: travel, projects, the health that makes everything possible. Then less and less for twenty years, because the pace slows well before the body does. Then more again at the end, with health care and long-term care. That is the smile-shaped curve David Blanchett documented. A plan that indexes a **constant** need for forty years therefore gets it wrong twice. It underfunds the start, the only years when some of that spending is even possible. And it overfunds the middle.
 
