@@ -1,5 +1,5 @@
 # Bonds in retirement: types, duration, the exact job
-<!-- source: obligations-en-retrait @ 2686742fff3d -->
+<!-- source: obligations-en-retrait @ 2d21010c66cc -->
 
 Bonds are the most misunderstood asset a retiree owns. People think they are safe, and 2022 destroyed that belief: broad investment grade indexes lost double digits, long government bonds 30% and more, worse than stocks. People think they are complicated, when the mechanics come down to two ideas. And people ask them to do a job, to pay, that is not their job in a withdrawal plan. This chapter puts all of it back in order. First the mechanics, the minimum that is enough: price and rates, duration as the unit of both risk and horizon, yield to maturity as the only honest expectation. Then the three services a retiree wants from the bond sleeve, and the regimes in which each one works or breaks. Then the decisive history of the stock-bond correlation, the most important and least stable parameter in the whole allocation. Then the four concrete decisions: quality, duration, the linked share, currency. And finally the stable value fund, a bond substitute with unusual properties in both directions, and the full lesson of 2022.
 
