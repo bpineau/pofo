@@ -1,5 +1,5 @@
 # Failure probability: reading it, choosing it, and not letting it run you
-<!-- source: ruine-et-probabilites @ 175318d229a6 -->
+<!-- source: ruine-et-probabilites @ 5b3df0bb173d -->
 
 Every retirement simulator boils its verdict down to a single number: the failure probability, or its mirror image, the success rate. It is the most watched number in the field, and the most misread. People treat it like a weather forecast ("5% risk, that's fine"), compare it across tools that are not measuring the same thing, ask it for a precision it does not have, and forget that it describes a world in which nobody ever reacts.
 
@@ -78,7 +78,7 @@ That is the real reason failure probability, read properly, is an instrument of 
 
 ## Going further
 
-- Early Retirement Now, SWR Series part 11 ("Six Criteria to Grade Withdrawal Rules") and part 46 ("The Need for Precision in an Uncertain World"): [earlyretirementnow.com](https://earlyretirementnow.com) ([[the-ern-series]]).
-- Michael Kitces, "Flexible Spending Rules To Avoid FIREing At 4%" and "Is A Probability Of Success-Driven Retirement Plan Actually Riskier?" ([kitces.com](https://www.kitces.com)): the practitioner's reading of the success rate.
+- Early Retirement Now, SWR Series part 11 ("Six Criteria to Grade Dynamic Withdrawal Rules") and part 46 ("The Need for Precision in an Uncertain World"): [earlyretirementnow.com](https://earlyretirementnow.com) ([[the-ern-series]]).
+- Michael Kitces, "Flexible Spending Rules To Avoid FIREing At 4%" and "Does the Probability of Success Drive Your Retirement Plan?" ([kitces.com](https://www.kitces.com)): the practitioner's reading of the success rate.
 - Derek Tharp and Michael Kitces on probability-of-success-driven guardrails: piloting rather than a static number.
 - In this book: [[historical-vs-parametric]] (why models disagree about the same plan) and [[under-the-hood]] (how the simulator computes this number and sets it against mortality tables).
