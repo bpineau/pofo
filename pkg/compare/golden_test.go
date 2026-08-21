@@ -145,8 +145,13 @@ func fabricatedColumns(t *testing.T) (columns []*column, bench *marketdata.Serie
 
 // TestReportGolden carries Task 1's characterization golden forward: the same
 // fabricated comparison, now rendered through Comparison.HTMLPage, must
-// reproduce the frozen bytes exactly. If it fails, the HTMLPage port diverged
-// from the original buildPage; fix the port, do NOT regenerate the golden.
+// reproduce the frozen bytes exactly. If it fails after a CODE change, the
+// rendering diverged: fix the code, do NOT regenerate the golden.
+//
+// One input is not fabricated: the report's regime strip reads the bundled
+// macro panel, so refreshing pkg/datasets/macropanel does legitimately move a
+// few pixels of it (a month at a quadrant boundary). That is the only reason to
+// re-run with UPDATE_GOLDEN=1, and the diff must be confined to the strip.
 func TestReportGolden(t *testing.T) {
 	cols, bench, start, end, meta := fabricatedColumns(t)
 	opt := Options{Rebalance: 90, Benchmark: "^GSPC", Framework: suggest.RegimeFramework(), Currency: "EUR"}

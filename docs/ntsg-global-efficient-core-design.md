@@ -122,9 +122,9 @@ Two source notes that cost time to find:
 
 - the OECD series must come from the **current** short-term-statistics dataflow
   `OECD/DSD_STES@DF_FINMARK`. The legacy `OECD/MEI` dataset stopped being
-  updated in **2024-01** while still answering HTTP 200;
-  `cmd/gen-euro-refdata` was moved off it in 2026-08 and `cmd/gen-macropanel`
-  is now the last generator reading it;
+  updated in **2024-01** while still answering HTTP 200; `cmd/gen-euro-refdata`
+  and `cmd/gen-macropanel` were both moved off it in 2026-08, so no generator
+  reads it any more;
 - the Ministry of Finance CSV is only served on the `/english/` path. It carries
   two header rows, dates as `YYYY/M/D` with no zero padding, and a bare `-`
   wherever a tenor did not quote: the table opens in 1974 but its 10-year column

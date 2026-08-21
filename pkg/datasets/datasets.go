@@ -52,7 +52,7 @@ func CAPE() []byte {
 }
 
 // MacroPanel returns the embedded multi-country monthly macro panel
-// (date,iso,ip,cpi,shortrate,longrate,shareprice from OECD MEI, 30 economies):
+// (date,iso,ip,cpi,shortrate,longrate,shareprice from the OECD, 30 economies):
 // the growth/inflation and short/long-rate drivers behind macro-regime analysis
 // and the growth x inflation breadth model. Regenerate with "make macropanel".
 func MacroPanel() []byte {

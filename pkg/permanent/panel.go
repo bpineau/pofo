@@ -13,7 +13,7 @@ import (
 // Panel is the parsed multi-country monthly macro panel: for each column
 // (ip, cpi, shortrate, longrate, shareprice) a map from ISO country code to a
 // month-keyed value series. Months are normalized to the first of the month at
-// 00:00 UTC. Built from the embedded OECD MEI data (datasets.MacroPanel).
+// 00:00 UTC. Built from the embedded OECD panel (datasets.MacroPanel).
 type Panel struct {
 	// series[column][iso][month] = value. Columns: the five macro drivers.
 	series map[string]map[string]map[time.Time]float64
