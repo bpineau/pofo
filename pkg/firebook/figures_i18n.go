@@ -1442,6 +1442,41 @@ var figureDict = map[string]string{
 	"Le prix de cette couverture : richesse médiane à 45 ans, −5 %.":                                               "The price of that cover: median wealth at 45 years, −5%.",
 	"A = 70 % actions / 30 % obligations intermédiaires. B = 70 / 20 / 10 avec or, ETC physique en CTO.":           "A = 70% stocks / 30% intermediate bonds. B = 70 / 20 / 10 with gold, a physically backed fund in a taxable account.",
 	"Mêmes hypothèses des deux côtés ; seule l'allocation change. Le millésime 2000, lui, ne bouge quasiment pas.": "Same assumptions on both sides; only the allocation changes. The 2000 vintage, for its part, barely moves.",
+
+	// ucits-implantation. The English edition draws its own table here (see
+	// figuresAdapted): the entries below cover BOTH tables, the French
+	// wrappers included, since the coverage guard reads the French plate.
+	"LA LISTE DE COURSES": "THE SHOPPING LIST",
+	"La grille d'implantation : quelle brique, dans quelle enveloppe":                                  "The placement grid: which block, in which account",
+	"La cible de Karim et Léa : 1,6 M€, sept lignes, trois enveloppes, environ 0,22 %/an tout compris": "Karim and Léa's target: $1.6M, seven holdings, three wrappers, about 0.22% a year all in",
+	"La cible de Karim et Léa : 1,6 M€, sept lignes, trois comptes, environ 0,12 %/an tout compris":    "Karim and Léa's target: $1.6M, seven holdings, three account types, about 0.12% a year all in",
+	"la brique":                 "the block",
+	"PEA":                       "PEA",
+	"assurance-vie":             "life-insurance wrapper",
+	"CTO":                       "taxable account",
+	"compte imposable":          "taxable",
+	"Roth":                      "Roth",
+	"401(k) et IRA":             "traditional 401(k) and IRA",
+	"le rôle servi":             "the role it serves",
+	"moteur monde":              "world engine",
+	"tilt SCV":                  "small-value tilt",
+	"cœur obligataire":          "bond core",
+	"linkers courts":            "short TIPS",
+	"ucits-implantation|or":     "gold",
+	"ucits-implantation|trend":  "managed futures",
+	"buffer et tranche courte":  "buffer and short sleeve",
+	"la croissance longue":      "long growth",
+	"la prime de valeur":        "the value premium",
+	"le krach et la déflation":  "the crash and the deflation",
+	"l'inflation persistante":   "persistent inflation",
+	"la crise de confiance":     "a crisis of confidence",
+	"le régime baissier long":   "the long bear regime",
+	"la liquidité des retraits": "withdrawal liquidity",
+	"total logé":                "held there",
+	"Le point discret marque une case où la brique n'y loge pas : le PEA ne peut détenir ni obligations, ni linkers, ni or, ni trend, ni fonds euros.":          "The quiet dot marks a cell the block cannot go in: a PEA may hold no bonds, no linkers, no gold, no trend and no euro fund.",
+	"Aucune case n'est interdite ici, et les cases vides sont un choix d'imposition : chaque brique à revenu ordinaire se loge là où son revenu est invisible.": "No cell is off limits here, and the empty ones are a tax choice: every ordinary-income block sits where its income is invisible.",
+	"Poids en % du portefeuille total. Le moteur monde se coupe en deux, le Monde synthétique du PEA et l'All-World physique du CTO.":                           "Weights in % of the whole portfolio. The world engine splits in two, the synthetic World fund in the PEA and the physical All-World in the taxable account.",
+	"Poids en % du portefeuille total. Le moteur monde se coupe en trois, une part par compte, selon l'impôt que cette part paie.":                              "Weights in % of the whole portfolio. The world engine splits three ways, one slice per account type, by the tax that slice pays.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
@@ -1544,8 +1579,25 @@ func figureTextNodes(svg string) []string {
 // never duplicated. An untranslatable payload is left in French, which the
 // coverage guard test turns into a failure.
 func FigureSVGEnglish(id string) string {
-	svg := translateNodes(id, FigureSVG(id), reFigTspan, "tspan")
+	src := FigureSVG(id)
+	if adapted, ok := figuresAdapted[id]; ok {
+		src = adapted()
+	}
+	svg := translateNodes(id, src, reFigTspan, "tspan")
 	return translateNodes(id, svg, reFigText, "text")
+}
+
+// figuresAdapted holds the rare plate whose DATA the English edition adapts
+// rather than translates. A handful of English articles are adaptations, not
+// translations: their worked example states US accounts and its own split of
+// the same blocks, so rendering the French table there would put a French
+// wrapper inside a US article. Such a plate keeps ONE renderer and one layout
+// algorithm, registered here under the same id with the other table; both
+// tables are written in French, so the dictionary pass below translates their
+// labels exactly as it does for every other plate. This is not a second
+// drawing of a plate, which the book never ships.
+var figuresAdapted = map[string]func() string{
+	"ucits-implantation": figUcitsImplantationEN,
 }
 
 // translateNodes rewrites the payload of every <tag> the regexp matches,

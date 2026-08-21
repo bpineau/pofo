@@ -1,5 +1,5 @@
 # Building it with US-listed ETFs: the retiree's shopping list
-<!-- source: etf-ucits-europeens @ 0f0f1b13620c -->
+<!-- source: etf-ucits-europeens @ 8ba2a37c9500 -->
 
 The withdrawal literature is written in dollars, and the plumbing it assumes is already sitting in your brokerage account. Every block in this part of the book has a US-listed fund behind it, and most of them cost between three and twenty-five basis points a year. Access is not the problem. The problem is that the American fund industry will sell you an expensive version of a cheap idea in every aisle, and that the tax code cares a great deal about which account each block goes in.
 
@@ -71,6 +71,10 @@ When the time comes, the portfolio gets consumed. A few habits keep the friction
 
 ::: exemple The whole portfolio, in seven holdings
 Karim and Léa's target ([[international-diversification]]): $1.6M, 65/35, a fourteen-year uncovered phase, this whole book assembled. The **taxable** brokerage (50% of the money) holds the total world fund at 34%, small-cap value at 8%, and the T-bill fund at 8%, which is the buffer and the short sleeve. The **Roth** (13%) holds nothing but that same world fund, because it is the block with the longest runway and the highest expected return. The **traditional 401(k) and IRA** (37%) hold everything that throws off ordinary income: intermediate Treasuries 11%, short TIPS 6%, gold 5%, managed futures 5%, and the last 10% of the world fund to fill the sleeve. Seven holdings, three account types, about **0.12% a year** all in. Each holding fills a named role in the table of defenses, rebalancing at bands of plus or minus 5 points is executed through the withdrawal sales themselves, and every ordinary-income block sits where its income is invisible. That is **all** of it: the sophistication of this portfolio is in its design, not in its line count. And it fits on the written page of the plan ([[building-your-plan]]).
+:::
+
+::: figure ucits-implantation
+The seven holdings of the example, each in its place. A square's area is the block's weight in the whole portfolio, its column is the account type that holds it, and the right margin names the role it serves. Read across for the block, down for the plumbing. The world engine splits three ways because each slice pays a different tax, and everything that throws off ordinary income lands in the traditional accounts, which is why they carry more than a third of the plan.
 :::
 
 ## The essentials
