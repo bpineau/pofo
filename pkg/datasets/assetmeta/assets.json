@@ -6413,7 +6413,7 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Single-country Greek equity (ex-Lyxor); bank-heavy (~51% financials) and concentrated; the 14% UK weight is Coca-Cola HBC (London-listed CDI, capped 20/35 in the index); high volatility; distributing annually; launched 2007",
+    "notes": "Single-country Greek equity (ex-Lyxor); bank-heavy (~51% financials) and concentrated; the 14% UK weight is Coca-Cola HBC (London-listed CDI, capped 20/35 in the index); high volatility; distributing annually; launched 2007. The 34-day hole between 2015-06-30 and 2015-08-03 that the data doctor flags is history, not a feed failure: Athens closed its exchange for five weeks under the capital controls, and reopened -14.2%. The series is otherwise clean end to end (no split, no denomination break, no adjacent move beyond 21.4%, rechecked 2026-08-21)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010405431"
