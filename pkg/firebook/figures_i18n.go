@@ -1522,6 +1522,24 @@ var figureDict = map[string]string{
 	"Rien n'a changé dans le programme : seule la rémunération du collatéral est passée de 0 à 3-4 %.":                  "Nothing changed in the program: only the yield on the collateral went from 0 to 3-4%.",
 	"Prime brute 3 % et frais 1 % dans les deux régimes. Aux deux bouts de la fourchette de taux, le net vaut 5 à 6 %.": "A 3% gross premium and 1% of fees in both regimes. At the two ends of the rate range, the net is 5 to 6%.",
 	"Les dates nomment les régimes comme l'article les date ; aucune série de marché n'entre dans la planche.":          "The dates name the regimes as the article dates them; no market series enters the plate.",
+
+	// stacking-2022
+	"LE RETURN STACKING": "RETURN STACKING",
+	"L'anatomie de 2022, de la perte nue à la perte empilée":            "The anatomy of 2022, from the naked loss to the stacked one",
+	"Le millésime 2022 du plan de l'exemple, décomposé en une addition": "The 2022 vintage of the example's plan, broken into one addition",
+	"60/40 nu":         "the naked 60/40",
+	"l'année 2022":     "in 2022",
+	"la facture":       "the bill",
+	"du levier":        "for the leverage",
+	"le cœur ne pèse":  "the core is only",
+	"que 67 % du plan": "67% of the plan",
+	"l'étage libéré":   "the freed layer",
+	"trend, or, cash":  "trend, gold, cash",
+	"le plan empilé":   "the stacked plan",
+	"au complet":       "all in",
+	"Le levier pique, et c'est l'étage libéré qui paie la facture.":                                                                    "The leverage stings, and the freed layer is what pays the bill.",
+	"Les trois niveaux sont ceux de l'article : −17 % pour le 60/40 nu, −21 % pour le cœur empilé seul, −10 % pour le plan entier.":    "The three levels are the article's own: −17% for the naked 60/40, −21% for the stacked core alone, −10% for the whole plan.",
+	"Les deux marches du milieu en découlent, le cœur pesant 67 % du plan. L'article crédite le solde au très bon millésime du trend.": "The two middle steps follow from them, the core weighing 67% of the plan. The article credits the balance to a very good trend year.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered
