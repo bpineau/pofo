@@ -1,5 +1,5 @@
 # Managed futures and trend following: the diversification that works in a crisis
-<!-- source: managed-futures @ 1abf2642f5c5 -->
+<!-- source: managed-futures @ e5f4676cb8f2 -->
 
 In the table of defenses ([[defensive-assets]]), one slot was still open: **long regimes**. These are the bear markets and inflationary stretches that drag on for years and wear out the ordinary shock absorbers. The cash buffer runs dry, bonds can fall alongside stocks, and gold can sleep through the whole thing. The holder of that slot is the strangest defensive asset of them all: managed futures, meaning **trend following**. These are systematic programs that trade dozens of futures markets (equity indexes, rates, currencies, commodities), buying whatever is going up and shorting whatever is going down.
 
@@ -60,7 +60,7 @@ Three confusions come up over and over, and they are expensive.
 **Its zero correlation is an average, not a state.** At any given moment the program is positioned, and its correlation right then follows those positions. Short equities in late 2008, it was negatively correlated. Long equities in 2021, positively. That is **conditional** correlation, and the famous zero shows up only once you average across regimes. The practical consequence: never judge the holding on six months of observed correlation, because that is positioning noise.
 
 ::: figure trend-correlation
-Rolling 12-month correlation between a diversified trend-following program and the S&P 500, read at each month end from 2001 to 2026. The average over the period is +0.02, but nearly two months in three fall outside the plus or minus 0.2 band: in late 2008 the ribbon drops to −0.34, in late 2021 it climbs back to +0.52. The trend leg uses real NAVs of trend-following programs over the whole period, and the fund's own NAV from 2022 on.
+Rolling 12-month correlation between a diversified trend-following program and the S&P 500, read at each month end from 2001 to 2026. The average over the period is +0.04, but one month in two falls outside the plus or minus 0.2 band: in late 2008 the ribbon drops to −0.42, in late 2021 it climbs back to +0.50. The trend leg uses real NAVs of trend-following programs over the whole period, and the fund's own NAV from 2022 on.
 :::
 
 **Its loss profile is the opposite of its reputation.** People picture a crisis asset, and assume it must be dangerous day to day. The truth is the reverse. Day to day, trend is a stream of small frequent losses, the false starts (whipsaws, signals that reverse the moment they fire), and its gains are rare and large. Year by year, its distribution leans the right way (positive skew), where equities lean the wrong way. The psychological consequence is real: the holding annoys you often and saves you rarely, the exact opposite of an equity holding. Knowing that in advance is half the discipline.

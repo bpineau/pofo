@@ -291,11 +291,11 @@ var figureDict = map[string]string{
 	// cape-dix-ans
 	"Le CAPE d'un mois, et les dix années réelles qui l'ont suivi":                                              "One month's CAPE, and the ten real years that followed",
 	"chaque point : un mois de départ, et le rendement réel annualisé du S&amp;P 500 sur les 120 mois suivants": "each dot: a start month, and the annualized real return of the S&amp;P 500 over the next 120 months",
-	"1 242 départs mensuels de janvier 1913 à juin 2016, total return déflaté du CPI américain":                 "1,242 monthly start dates from January 1913 to June 2016, total return deflated by US CPI",
+	"1 243 départs mensuels de janvier 1913 à juillet 2016, total return déflaté du CPI américain":              "1,243 monthly start dates from January 1913 to July 2016, total return deflated by US CPI",
 	"LE CENTRE BOUGE, LA LARGEUR RESTE":     "THE CENTER MOVES, THE WIDTH STAYS",
 	"rendement réel annualisé, en % par an": "annualized real return, % a year",
 	"ajustement des moindres carrés":        "least-squares fit",
-	"rendement = 1,0 + 0,86 × 100 / CAPE":   "return = 1.0 + 0.86 × 100 / CAPE",
+	"rendement = 1,1 + 0,86 × 100 / CAPE":   "return = 1.1 + 0.86 × 100 / CAPE",
 	"R² = 0,29":                             "R² = 0.29",
 	"9 à 11":                                "9 to 11",
 	"18 à 22":                               "18 to 22",
