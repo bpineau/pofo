@@ -1,5 +1,5 @@
 # The fixed percentage of the portfolio: indestructible but uncomfortable
-<!-- source: pourcentage-fixe @ d406fa226094 -->
+<!-- source: pourcentage-fixe @ df817865365e -->
 
 Every year, take 4% of the portfolio as it stands, not an indexed amount set years ago. That is the fixed percentage. It is the simplest strategy after Bengen's, and its exact mirror image on the impossible triangle ([[withdrawal-strategies-overview]]). It offers the most reassuring property in all of decumulation: ruin is mathematically impossible. But it charges the most visible price for it. Your standard of living tracks the market, point for point.
 
@@ -57,7 +57,7 @@ The same portfolio, the same crash, three ways of delivering it to the household
 All three teach the same lesson: the raw fixed percentage is not a finished rule but a **raw material**. Smoothed by an average, by memory or by a corridor, it gives you the rules in the middle of the frontier. Crossed with the remaining horizon, it gives you the actuarial family ([[vpw]], [[amortization-based-withdrawal]]).
 
 ::: science Choosing w: the geometric bound
-Theory gives a clean bound for the percentage. Over the long run, a portfolio under a fixed percentage grows in real terms if and only if w stays below the expected **real geometric** return ([[arithmetic-vs-geometric-returns]]). Set w at 3 to 3.5% against a real geometric return of about 3.5 to 4.5% for a diversified portfolio ([[expected-returns]]) and median real income is flat or rising. At a w of 5 to 6%, it erodes as a trend. Each year then takes out more than growth puts in, and income follows the capital down without ever zeroing it. There is no cliff to fall off, so w can legitimately be more generous than a Bengen rate. A w of 4 to 4.5% is defensible where a fixed indexed rule would demand 3.25 to 3.5%. That is the dividend of self-correction. Endowment practice, around 4.5 to 5% smoothed for more aggressive portfolios, confirms the ballpark.
+Theory gives a clean bound for the percentage. Over the long run, a portfolio under a fixed percentage grows in real terms if and only if w stays below the expected **real geometric** return ([[arithmetic-vs-geometric-returns]]). Set w at 3 to 3.5% against a historical real geometric return of about 3.5 to 4.5% for a diversified portfolio ([[expected-returns]]) and median real income is flat or rising. At a w of 5 to 6%, it erodes as a trend. Each year then takes out more than growth puts in, and income follows the capital down without ever zeroing it. There is no cliff to fall off, so w can legitimately be more generous than a Bengen rate. A w of 4 to 4.5% is defensible where a fixed indexed rule would demand 3.25 to 3.5%. That is the dividend of self-correction. Endowment practice, around 4.5 to 5% smoothed for more aggressive portfolios, confirms the ballpark.
 :::
 
 ::: figure borne-geometrique
