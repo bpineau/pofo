@@ -1,5 +1,5 @@
 # Inflation-linked bonds: the only contract written in real terms
-<!-- source: obligations-indexees @ b8d1d77f8012 -->
+<!-- source: obligations-indexees @ 57dbb454f96e -->
 
 This whole book thinks in constant money. A retiree's spending is real, the floor is real, and ruin happens in real terms ([[inflation-and-withdrawal-rates]]). Yet nearly everything a retiree owns promises nominal. A conventional bond paying 3% while inflation runs at 5% makes its owner poorer on a schedule, by contract.
 
@@ -59,6 +59,10 @@ The real annual withdrawal an indexed ladder funds, by the market real yield and
 
 ::: exemple A matched floor, in numbers
 A couple, 52 years old, a floor of $40,000 a year, comfort at $55,000, pensions covering the floor at 66. The uncovered phase of the floor therefore runs 14 years. Matching it takes about 14 rungs of about $40,000 real. At a real yield of 1%, that costs about $520,000 in linkers held to maturity. The rest of the money, $1.08M out of $1.6M, funds the comfort above the floor ($15,000 a year, a withdrawal rate of 1.4%) and everything that comes after, on a generous VPW with no anxiety ([[vpw]], [[choosing-your-strategy]]). The verdict is clean. Failure of the floor goes from "5% in simulation" to "zero by contract until the pensions start", and failure of the comfort layer is negligible by construction. The price paid is the expected return the $520,000 gives up, since the linkers will not compound. This is the safety-first trade in its cleanest form ([[annuities-and-safety-first]]).
+:::
+
+::: figure linkers-plancher-adosse
+The same example, seen from both sides. On the left what the couple buys, on the right what they get, year after year. The fourteen rungs do not cost 14 × $40,000 but $520,000, because the rung for age 65, discounted at 1% real, comes to $34,800. Each rung wears its tint on the left and wears it again on the year it pays on the right. The pensions take over at 66, and the comfort portfolio, the one block with no guarantee, never serves more than the $15,000 on top.
 :::
 
 ## The essentials

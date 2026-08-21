@@ -56,6 +56,10 @@ Le retrait annuel réel qu'une échelle indexée finance, selon le taux réel du
 Couple, 52 ans, plancher 40 000 €/an, confort 55 000 €, pensions couvrant le plancher à 66 ans. La phase à découvert du plancher dure donc 14 ans. L'adossement demande ~14 barreaux de ~40 000 € réels. Au taux réel de 1 %, cela coûte ~520 000 € en linkers détenus à terme (ETF courts roulés pour les barreaux lointains, faute d'échelle directe euro). Le reste du patrimoine (1,08 M€ sur 1,6 M€) finance le confort au-dessus du plancher (15 000 €/an, taux de retrait 1,4 % !) et la suite, en VPW généreux et sans angoisse ([[vpw]], [[choisir-sa-strategie]]). Le verdict est net. La ruine du plancher passe de « 5 % simulés » à « zéro contractuel jusqu'aux pensions », et la ruine du confort est négligeable par construction. Le prix payé, c'est l'espérance des 520 000 € (les linkers ne composeront pas). C'est l'arbitrage safety-first, ici dans sa version la plus propre ([[rentes-et-annuites]]).
 :::
 
+::: figure linkers-plancher-adosse
+Le même exemple, vu des deux côtés. À gauche ce que le couple achète, à droite ce qu'il touche année après année. Les quatorze barreaux ne coûtent pas 14 × 40 000 € mais 520 000 €, car le barreau de 65 ans, actualisé à 1 % réel, revient à 34 800 €. Chaque barreau porte sa teinte à gauche et la reprend sur l'année qu'il paie à droite. Les pensions prennent le relais à 66 ans, et le portefeuille de confort, la seule brique non garantie, ne sert jamais que les 15 000 € du dessus.
+:::
+
 ## L'essentiel à retenir
 
 - Le linker est le seul actif dont le contrat est écrit en réel, « inflation + taux réel affiché, garanti ». Conceptuellement, c'est l'actif sans risque du rentier, l'étalon contre lequel tout portefeuille risqué doit justifier sa prime.
