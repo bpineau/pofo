@@ -19,10 +19,11 @@ import (
 //
 //   - VTMGX (Vanguard Developed Markets, 1999) → developed-ex-US equity TR
 //     (refdata DEVEXUS-USD: MSCI World ex USA net TR via Curvo, monthly
-//     ~1969, carried at daily granularity from 1990-07 by the Ken French
-//     daily shape, see dailyShape).
+//     month-END levels ~1969, carried at daily granularity from 1990-07 by the
+//     Ken French daily shape, see dailyShape and alignMonthEnd).
 //   - VEIEX (Vanguard Emerging Markets, 1994) → emerging-market equity TR
-//     (refdata EM-USD: MSCI Emerging Markets net TR via Curvo, ~1988).
+//     (refdata EM-USD: MSCI Emerging Markets net TR via Curvo, monthly
+//     month-END levels, ~1988; no daily shape, the leg stays monthly there).
 //   - GC=F (COMEX gold futures, 2000) → daily London/LBMA PM gold fix
 //     (refdata XAUUSD-LBMA, ~1968).
 //   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
@@ -153,10 +154,14 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 	}
 	// Diagnostics to stderr (gen-simdata only): a silent skip hides why a
 	// backcast did not lengthen, so report the proxy fetch and splice outcome.
+	// alignMonthEnd before shaping, exactly as shapedIndex does: a month-END
+	// proxy dated on a weekend would otherwise pin into the next month and slide
+	// the whole spliced era (DEVEXUS-USD rebuilt 2022 at -4.3 % against the
+	// index's -14.3 % that way).
 	p, perr := e.inner.Fetch(pid, from)
 	if sid, shaped := dailyShape[pid]; shaped && perr == nil && p != nil {
 		if sh, serr := e.inner.Fetch(sid, from); serr == nil {
-			p = shapedSeries(p, sh)
+			p = shapedSeries(alignMonthEnd(pid, p, sh), sh)
 		}
 	}
 	if fee, owed := longBackFee[pid]; owed && p != nil {
