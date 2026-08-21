@@ -49,6 +49,11 @@ Un extrait de la grille (chiffres de la mise à jour de 2011, retraits indexés 
 
 Trois enseignements durables sortent de cette grille. D'abord la **falaise**. Entre 4 et 5 %, le succès s'effondre : le sujet est non linéaire, et c'est pour cela que « juste un peu plus » de retrait coûte si cher. Ensuite l'effet d'allocation, asymétrique : trop peu d'actions est bien plus dangereux que trop (le 25/75 échoue une fois sur cinq là où le 75/25 n'a jamais failli). Enfin, la notion même de « taux de succès ». C'est Trinity qui installe la probabilité de ruine comme langue commune du domaine, celle que parlent tous les simulateurs modernes ([[ruine-et-probabilites]]).
 
+::: figure trinity-falaise
+La grille de Trinity refaite maison, sur un siècle et demi de données américaines plutôt que sur ses soixante-dix ans : la part des retraites de trente ans qui vont au bout, taux de retrait par taux de retrait. Le décrochage entre 4 et 5 % est la falaise ; l'écartement des courbes en bas de l'image est l'asymétrie d'allocation ; et passé 4,50 %, le 100 % actions repasse devant le 75/25, ce qui est la même leçon lue là où elle surprend.
+:::
+
+
 ::: attention Ce que « 95 % de succès » veut dire chez Trinity, et ne veut pas dire
 Le pourcentage de Trinity compte des **fenêtres historiques chevauchantes** du seul marché américain : « 95 % » signifie « 95 % des départs entre 1926 et 1980 auraient tenu », pas « votre plan a 95 % de chances de réussir ». Le « succès » lui-même se compte au sens le plus faible qui soit, un solde encore positif au dernier jour, fût-il d'un euro. Les fenêtres partagent leurs années (le krach de 1929 apparaît dans des dizaines de fenêtres), l'échantillon indépendant est minuscule, et le futur n'est pas tiré de cette urne. Les probabilités affichées par les simulateurs modernes ont des limites cousines ([[pieges-des-simulateurs]], [[lire-un-fan-chart]]) ; la parade est toujours la même, croiser plusieurs modèles et garder des marges.
 :::
