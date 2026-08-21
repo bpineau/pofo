@@ -2,7 +2,7 @@
 # id: XAUUSD
 # name: Gold (XAU/USD spot)
 # method: real gold spot (XAU/USD daily, ~2000→) extended back with the daily London/LBMA PM gold fix (bundled refdata XAUUSD-LBMA, 1968→)
-# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.0%/yr CAGR sim 8.50% vs real 8.50% (overlap 14661 d from 1968-04-01 to 2026-08-07) vs XAUUSD
+# validation: corr=1.000 (weekly 1.000) beta=1.00 TE=0.0%/yr CAGR sim 8.56% vs real 8.56% (overlap 14669 d from 1968-04-01 to 2026-08-19) vs XAUUSD
 # generated: 2026-08-19
 date,close
 1968-04-01,37.782765
@@ -14666,4 +14666,12 @@ date,close
 2026-08-04,4095.399902
 2026-08-05,4245.799805
 2026-08-06,4242.000000
-2026-08-07,4399.700195
+2026-08-07,4340.700195
+2026-08-10,4361.799805
+2026-08-11,4383.000000
+2026-08-12,4408.899902
+2026-08-13,4363.600098
+2026-08-14,4380.399902
+2026-08-17,4417.799805
+2026-08-18,4366.000000
+2026-08-19,4565.299805

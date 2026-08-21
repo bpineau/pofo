@@ -4,7 +4,7 @@
 # (raw.githubusercontent.com/datasets/cpi-us/main/data/cpiai.csv) is a cross-check.
 # Regenerate: make snapshots (cmd/gen-snapshots, FRED fredgraph.csv?id=CPIAUCNS).
 # See pkg/marketdata/cpius.go.
-# generated: 2026-08-08
+# generated: 2026-08-19
 1913-01,9.800
 1913-02,9.800
 1913-03,9.800
@@ -1366,3 +1366,4 @@
 2026-04,333.020
 2026-05,335.123
 2026-06,333.952
+2026-07,333.918
