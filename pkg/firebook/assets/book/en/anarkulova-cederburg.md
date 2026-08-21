@@ -1,5 +1,5 @@
 # Beyond the United States: Anarkulova, Cederburg and the world sample
-<!-- source: anarkulova-cederburg @ c09c7d2cabe0 -->
+<!-- source: anarkulova-cederburg @ 15d151dec43a -->
 
 The whole safe withdrawal rate tradition, from Bengen to Trinity and on to nearly every online simulator, rests on one data set: US markets since 1926 ([[the-trinity-study]]). The twentieth-century United States is not a neutral sample. It is the country that won the last century.
 
@@ -15,7 +15,7 @@ Start with the problem. The Ibbotson data begins in 1926 in New York. It holds t
 
 The developed twentieth century produced plenty of what the US sample does not contain: stock markets shut down or expropriated (Germany 1948, Japan 1946), hyperinflations that pulverize bonds ([[hyperinflation-and-extremes]]), lost decades (Japan after 1990, stocks below their real peak for more than thirty years), defaults and financial repression. A German, Japanese, French or Italian retiree who left between 1900 and 1960 with an American-style plan was ruined in a fair share of cases. Not through bad luck in the sequence, but because their **country** lived through history.
 
-Dimson, Marsh and Staunton, the London Business School trio behind the *Global Investment Returns Yearbook*, put a number on the gap back in 2002. Real stock returns from 1900 to 2020 ran about 6.5% a year in the United States against about 4.5% outside it. And in half the countries, government bonds did **worse** than 0% real over long stretches. Wade Pfau applied Bengen's method to 17 countries as early as 2010. The 30-year SAFEMAX, about 4% in the United States, falls below 3% in most countries and below 1.5% in the worst of them, Japan, Italy and France among others, sunk by their postwar inflations.
+Dimson, Marsh and Staunton, the London Business School trio behind the *Global Investment Returns Yearbook*, put a number on the gap back in 2002. Real stock returns from 1900 to 2020 ran about 6.5% a year in the United States against about 4.5% outside it. And in half the countries, government bonds did **worse** than 0% real over long stretches. Wade Pfau applied Bengen's method to 17 countries as early as 2010. The 30-year SAFEMAX, about 4% in the United States, falls below 3% in a third of them and below 1.5% in the worst, Japan, Italy and France among others, sunk by their postwar inflations.
 
 ::: figure safemax-pays
 Jorda-Schularick-Taylor panel, sixteen developed countries, 1870 to 2020: the initial withdrawal rate a domestic 60/40 would have carried for 30 years in each country's worst vintage, computed here over 59 to 121 windows depending on how far back the country's data goes. The Pfau and Anarkulova-Cederburg SAFEMAX numbers quoted above come from other databases: the levels do not match to the tenth of a point, only the ranking is comparable.
@@ -62,7 +62,7 @@ This work has serious opponents, ERN first among them, who has devoted several a
 
 **The simulated investor is domestic.** The simulated retirements live one country's history, in local stocks and local bonds. A globally diversified investor today, holding an unhedged world equity fund, would not have taken Japan 1990 or Italy 1970 full in the face: international diversification cushions precisely the worst blocks of the sample. This is probably the most important criticism in practice, and it argues for diversification ([[international-diversification]]) more than it argues **against** the study.
 
-**Overlapping blocks and the real sample size.** Two thousand five hundred country-years sounds like a lot. But crises are global and correlated: 1929, 1973 and 2008 hit everyone. The sample of **independent** disasters stays small, and the uncertainty around these numbers is itself wide.
+**Overlapping blocks and the real sample size.** Two thousand five hundred country-years sounds like a lot. But the draw pulls ten-year blocks out of overlapping windows, so the same German or Japanese decade shows up in a great many simulated retirements, and a single disaster weighs on thousands of paths. Crises are global and correlated on top of that: 1929, 1973 and 2008 hit everyone. The sample of **independent** disasters stays small, and the uncertainty around these numbers is itself wide.
 
 The reasonable synthesis: the true risk facing a globally diversified investor today sits somewhere between US history and the domestic world sample, and nobody knows where. So here is the rule to work by, whatever tool you use. Keep both bounds on screen, side by side, all the time, and distrust any verdict that shows only one.
 
