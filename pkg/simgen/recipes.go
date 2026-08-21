@@ -179,12 +179,28 @@ func idtlRecipe() Recipe {
 // coupon stream into yearly taxable income. Its quotes come from Yahoo, whose
 // closes are dividend-adjusted, so unlike the EUR-hedged DTLE the real series
 // is a genuine total return and can be grafted.
+//
+// The donor is geared in the same EXCESS form as zrozRecipe, iefRecipe and
+// shyRecipe, cash + g × (VUSTX − cash), and it did not use to be: until 2026-08
+// it multiplied VUSTX's whole total return by g, which gears the coupon along
+// with the duration. A longer bond does not earn 1.13 times a shorter one's
+// yield, so the plain form paid the file (g − 1) × the bill rate every year,
+// and the bill rate is what the deep past is made of: 0.92 pt/yr over
+// 1962-1985, 0.75 over 1986-2002, 0.57 over the whole file. It also read
+// ABOVE the ungeared TLT reconstruction over 1962-1985 (5.94 against 5.28 %/yr),
+// which a duration gearing cannot do in an era the long bond spent losing
+// money. In the excess form the ladder is monotone the right way (TLT 5.28,
+// DTLA 5.02, ZROZ 3.91 %/yr over 1962-1985) and the live-window CAGR gap falls
+// from +0.38 to +0.03 pt with every path statistic unchanged to the digit.
 func dtlaRecipe() Recipe {
 	return Recipe{
-		ID:              "DTLA",
-		Name:            "iShares $ Treasury 20+ Acc: VUSTX long Treasury",
-		Method:          "1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018",
-		Build:           composite("DTLA (long Treasury, accumulating)", []Leg{{ID: "VUSTX", Weight: longTreasuryGearing}}, "", 0),
+		ID:     "DTLA",
+		Name:   "iShares $ Treasury 20+ Acc: VUSTX long Treasury",
+		Method: "cash + 1.13×(VUSTX − cash) (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018",
+		Build: composite("DTLA (long Treasury, accumulating)", []Leg{
+			{ID: "VUSTX", Weight: longTreasuryGearing, Excess: true},
+			{ID: "^IRX", Weight: 1},
+		}, "^IRX", 0),
 		ValidateAgainst: "DTLA",
 		SpliceReal:      "DTLA",
 	}
@@ -2336,12 +2352,28 @@ func tltRecipe() Recipe {
 // year fund, effective duration ~15, against a ~17 target, so the donor is
 // geared to the duration ratio: the point of these lines is their rate
 // sensitivity, and a 12% shortfall in it would quietly understate the deflation
-// hedge they are bought for. The gearing is what the overlap measures support
-// (it halves the CAGR gap against the real DTLA, from 0.57 to 0.32 points a
-// year over 2018-2026); the reported beta cannot arbitrate it, being a
+// hedge they are bought for. The reported beta cannot arbitrate it, being a
 // real-on-sim slope depressed by the US-close donor against a European listing.
 // The older idtlRecipe holds the same bonds ungeared and is left alone rather
 // than silently moved, so the distributing twin runs ~12% short on duration.
+//
+// The duration table is corroborated by the only artefact-free measurement of
+// the same ratio, the US-listed twin TLT against VUSTX (both struck at the US
+// close), whose whole 2002-2026 overlap reads 1.131. That ratio is not
+// constant, though, because duration itself shrinks as yields rise: it reads
+// 1.243 over 2002-2010, 1.110 over 2011-2018 and 1.06 over 2018-2026. 17/15 is
+// therefore the whole-window value, and it lands inside the era the constant is
+// actually used in, since the real quotes cover everything from 2018.
+//
+// Measuring the ratio on DTLA's OWN quotes gives 1.02, and that reading is
+// twice unusable. It is the live window, where the gearing is never applied;
+// and it is depressed by the listing, DTLA reading 0.963 of TLT's monthly
+// volatility and the distributing twin IDTL 0.970, the same deficit for the
+// same reason (a 16:30 London close against a 16:00 New York one), while DTLA
+// and IDTL agree with each other at 0.993. Undone, the two corrections put
+// DTLA's own window back on the 1.06 its twin measures there. Gearing at 1.06
+// was tested end to end anyway and the level refuses it: the live-window CAGR
+// gap goes from +0.03 to +0.36 pt.
 const longTreasuryGearing = 17.0 / 15.0
 
 // dtleRecipe backcasts the iShares $ Treasury Bond 20+yr UCITS ETF EUR Hedged
