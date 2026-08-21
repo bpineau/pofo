@@ -162,6 +162,7 @@ var figures = map[string]func() string{
 	"defenses-bulletin":        figDefensesBulletin,
 	"douleur-prime":            figDouleurPrime,
 	"panier-mediane-plancher":  figMedianePlancher,
+	"tenir-echeance":           figTenirEcheance,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---
