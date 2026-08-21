@@ -10,8 +10,8 @@
 // since Croatia joined in 2023) aggregate rather than EA19: over their whole
 // common history the two aggregates agree to within 1.5e-4 percentage point on
 // the yield and to the last published digit on the share-price index, and EA20
-// is the one that keeps being revised and extended. Six series are written into
-// pkg/datasets/refdata/:
+// is the one that keeps being revised and extended. Seven series are written
+// into pkg/datasets/refdata/:
 //
 //   - EMU-EUR.csv       eurozone equity net total return (monthly, ~1986):
 //     the OECD euro-area share-price index (EA20.M.SHARE, a
@@ -42,6 +42,21 @@
 //     granularity (~2004): the ECB daily 25-year euro-area yield
 //     curve point run through the same TreasuryTR. Daily shape
 //     for EUROGOV-LONG-EUR.
+//   - EURCASH-EUR.csv   euro-area 3-month cash total return (monthly, 1994):
+//     the ECB's own monthly EURIBOR 3-month history compounded
+//     into a money-market level. It is the EUR cash leg every
+//     currency-hedged recipe earns, and the leg XEON and ERNX are
+//     carried back on. It used to be a hand-built file with no
+//     generator, sourced from FRED IR3TIB01EZM156N, and it froze
+//     at 2026-01 when that route stopped being reachable (FRED
+//     times out from the generation environment and DBnomics has
+//     dropped the FRED provider outright). The ECB series is the
+//     original publication rather than a re-publication of it,
+//     starts on the same month (1994-01) and is the freshest of
+//     the candidates; over the 385 months the old file covered,
+//     the rebuilt index reproduces it to 2.4e-5 relative, i.e. to
+//     the rounding of the rate it was built from. The same rate
+//     is already read live as ^EURIBOR3M (pkg/marketdata/rates.go).
 //   - DECASH-EUR.csv    German 3-month money-market accrual (monthly, ~1960):
 //     the pre-euro cash proxy (Germany was the anchor economy
 //     and the DM the reference currency), spliced under the
@@ -124,6 +139,10 @@ const euroLongMaturity = 24.0
 const euroLongIntercept = 0.571
 const euroLongSlope = 0.9615
 
+// farFuture is the open end passed to accrue when a money-market series is not
+// trimmed: every observation is kept, up to the last one published.
+var farFuture = time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
+
 func main() {
 	base := flag.String("base", defaultBase, "DBnomics API base URL")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
@@ -167,11 +186,17 @@ func main() {
 	// cash tail. Trimmed at 1995 so it only ever feeds the splice under
 	// EURCASH-EUR (which starts 1994).
 	shortRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/DEU.M.IR3TIB.PA._Z._Z._Z._Z.N")
-	cash := accrue(shortRate, time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC))
+	cash := accrue(shortRate, time.Date(1995, 1, 1, 0, 0, 0, 0, time.UTC), effectiveAnnual)
 	report("DECASH-EUR", cash)
 
+	// Euro-area 3-month cash accrual, monthly (1994-01), from the ECB's own
+	// EURIBOR history. Not trimmed: this is the live end of the cash leg.
+	euriborRate := fetch(*base, "ECB/FM/M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA")
+	eurCash := accrue(euriborRate, farFuture, simpleAnnual)
+	report("EURCASH-EUR", eurCash)
+
 	if *check {
-		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongSynth, govLongDaily, equity, cash, splice)
+		runChecks(*dir, govMonthly, govDaily, govLongMonthly, govLongSynth, govLongDaily, equity, cash, eurCash, splice)
 	}
 	if *dry {
 		return
@@ -187,6 +212,8 @@ func main() {
 			splice.at.Format("2006-01"), euroLongIntercept, euroLongSlope, euroLongMaturity), govLongMonthly.Points)
 	write(*dir, "EUROGOV-LONG-DAILY", "Long euro-area government bond total return (25+ segment, EUR, daily)",
 		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
+	write(*dir, "EURCASH-EUR", "Euro area 3-month cash total-return index (base 100, monthly)",
+		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) compounded into a money-market index; via DBnomics. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
 	write(*dir, "DECASH-EUR", "German 3-month money-market accrual (EUR/DM, monthly)",
 		"OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01) compounded into a money-market level; via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.", cash)
 }
@@ -361,7 +388,7 @@ func grossUp(price []obs, annualDiv float64) []marketdata.Point {
 
 // accrue compounds a short-rate series (annualized percent) into a
 // money-market level (base 100), pro rata temporis, up to (but excluding) end.
-func accrue(rate []obs, end time.Time) []marketdata.Point {
+func accrue(rate []obs, end time.Time, conv convention) []marketdata.Point {
 	out := make([]marketdata.Point, 0, len(rate))
 	val := 100.0
 	out = append(out, marketdata.Point{Date: rate[0].date, Close: val})
@@ -370,11 +397,31 @@ func accrue(rate []obs, end time.Time) []marketdata.Point {
 			break
 		}
 		yrs := rate[i].date.Sub(rate[i-1].date).Hours() / 24 / 365.25
-		val *= math.Pow(1+rate[i-1].val/100, yrs)
+		val *= conv(rate[i-1].val, yrs)
 		out = append(out, marketdata.Point{Date: rate[i].date, Close: val})
 	}
 	return out
 }
+
+// convention turns a quoted annual rate (percent) held for yrs years into the
+// growth factor of one unit of cash. Which one a series takes is a property of
+// how its rate is QUOTED, not a modelling choice, and the two differ by roughly
+// r^2/2 a year (about 0.04 %/yr at 3 %, 0.19 %/yr at 6 %).
+type convention func(rate, yrs float64) float64
+
+// simpleAnnual is the money-market convention: an interbank deposit rate is
+// quoted as a SIMPLE annual rate for the term of the deposit, so a roll earns
+// r*yrs over the period and only the rolls themselves compound. EURIBOR and its
+// national predecessors are quoted this way, and it is the convention the
+// shipped EURCASH-EUR was built on (the rebuilt index reproduces it to 4e-4).
+func simpleAnnual(rate, yrs float64) float64 { return 1 + rate/100*yrs }
+
+// effectiveAnnual reads the quote as a yield already compounded to one year.
+// DECASH-EUR is built this way and stays so here: it is a pre-1994 tail that is
+// rebased onto EURCASH-EUR at the splice, so only its returns reach a
+// reconstruction, and re-quoting them is a separate data decision with its own
+// validation, not a side effect of repairing a stale file.
+func effectiveAnnual(rate, yrs float64) float64 { return math.Pow(1+rate/100, yrs) }
 
 func report(id string, pts []marketdata.Point) {
 	if len(pts) == 0 {
@@ -464,10 +511,18 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //     The check recomputes the proxy's CAGR there and requires it inside
 //     2.5-3.6%/yr: a revised share-price index that moved the calibration shows
 //     up here rather than silently in the pre-2000 drift.
-//   - The cash accrual. A money-market index is monotone by construction and
-//     post-war German 3-month rates sit inside 0-15%/yr, so DECASH-EUR's CAGR
-//     over its whole span must land inside 0-12%/yr with no drawdown.
-func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *marketdata.Series, equity, cash []marketdata.Point, splice longSplice) {
+//   - The cash accruals. A money-market index is monotone by construction and
+//     post-war German and euro-area 3-month rates sit inside 0-15%/yr, so
+//     DECASH-EUR's and EURCASH-EUR's CAGRs over their whole span must land
+//     inside 0-12%/yr with no drawdown.
+//   - EURCASH-EUR against the file it replaces. The euro cash leg changed source
+//     in 2026-08 (FRED, unreachable, to the ECB's own EURIBOR history), and a
+//     cash leg is subtracted from every hedged recipe, so the swap may not move
+//     the series: rebased on their first common month, the two must agree to
+//     better than 0.5% over the whole overlap. It measured 2.4e-3%. The check
+//     survives the swap as a guard on future refreshes, where the reference is
+//     the shipped file and any real drift is a revision to look at.
+func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *marketdata.Series, equity, cash, eurCash []marketdata.Point, splice longSplice) {
 	failed := 0
 	fail := func(format string, a ...any) {
 		failed++
@@ -485,6 +540,9 @@ func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *m
 		{"EMU-EUR", equity, 365 * 24 * time.Hour},
 		{"EUROGOV-DAILY", govDaily.Points, 92 * 24 * time.Hour},
 		{"EUROGOV-LONG-DAILY", govLongDaily.Points, 92 * 24 * time.Hour},
+		// The ECB publishes the monthly EURIBOR average within weeks; half a
+		// year of silence means the series moved or died, as FRED's did.
+		{"EURCASH-EUR", eurCash, 182 * 24 * time.Hour},
 	} {
 		last := f.pts[len(f.pts)-1].Date
 		log.Printf("check %s freshness: last %s (%.0f days old)", f.id, last.Format("2006-01-02"), now.Sub(last).Hours()/24)
@@ -502,6 +560,7 @@ func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *m
 		{"EUROGOV-LONG-EUR", govLong.Points, 2},
 		{"EMU-EUR", equity, 2},
 		{"DECASH-EUR", cash, 2},
+		{"EURCASH-EUR", eurCash, 2},
 		{"EUROGOV-DAILY", govDaily.Points, 5},
 		{"EUROGOV-LONG-DAILY", govLongDaily.Points, 5},
 	} {
@@ -589,12 +648,30 @@ func runChecks(dir string, gov, govDaily, govLong, govLongSynth, govLongDaily *m
 		fail("the gross-up no longer reproduces the EZU net-TR overlap netDivYield was calibrated on")
 	}
 
-	c := &marketdata.Series{Points: cash}
-	rate, dd := cagr(c, c.First().Date, c.Last().Date.AddDate(0, 0, 1)), drawdown(cash)
-	log.Printf("check DECASH-EUR: %.2f%%/yr over %s..%s, deepest drawdown %.2f%%", rate*100,
-		c.First().Date.Format("2006-01"), c.Last().Date.Format("2006-01"), dd*100)
-	if rate < 0 || rate > 0.12 || dd < 0 {
-		fail("DECASH-EUR is not a plausible money-market accrual")
+	for _, m := range []struct {
+		id  string
+		pts []marketdata.Point
+	}{{"DECASH-EUR", cash}, {"EURCASH-EUR", eurCash}} {
+		c := &marketdata.Series{Points: m.pts}
+		rate, dd := cagr(c, c.First().Date, c.Last().Date.AddDate(0, 0, 1)), drawdown(m.pts)
+		log.Printf("check %s: %.2f%%/yr over %s..%s, deepest drawdown %.2f%%", m.id, rate*100,
+			c.First().Date.Format("2006-01"), c.Last().Date.Format("2006-01"), dd*100)
+		// Euro cash was NEGATIVE from 2015 to 2022, so a euro money-market
+		// index does drift down for years; -5 % is the room that era needs and
+		// no more (the shipped file's deepest dip is -2.5 %).
+		if rate < 0 || rate > 0.12 || dd < -0.05 {
+			fail("%s is not a plausible money-market accrual", m.id)
+		}
+	}
+
+	if prev, err := readRefdata(dir, "EURCASH-EUR"); err != nil {
+		log.Printf("check: no shipped EURCASH-EUR to compare against (%v)", err)
+	} else {
+		worst, at, months := driftAgainst(eurCash, prev)
+		log.Printf("check EURCASH-EUR vs the shipped file: %d common months, worst rebased deviation %.1e%s", months, worst, atNote(at))
+		if months < 120 || worst > 2e-3 {
+			fail("the rebuilt EUR cash leg no longer reproduces the shipped one (%d months, worst %.1e)", months, worst)
+		}
 	}
 
 	if failed > 0 {
@@ -609,6 +686,36 @@ func atNote(at time.Time) string {
 		return ""
 	}
 	return ", on " + at.Format("2006-01-02")
+}
+
+// driftAgainst compares a rebuilt index against the one already shipped, on the
+// months they share and after rebasing both on the first of them, and returns
+// the worst relative deviation, the date it happens on and how many months were
+// compared. A money-market index is a level, so only its SHAPE is comparable
+// across a source change: rebasing removes the arbitrary base and leaves exactly
+// the accumulated return difference.
+func driftAgainst(rebuilt []marketdata.Point, shipped *marketdata.Series) (float64, time.Time, int) {
+	old := make(map[string]float64, len(shipped.Points))
+	for _, p := range shipped.Points {
+		old[p.Date.Format("2006-01")] = p.Close
+	}
+	var base float64
+	worst, at, months := 0.0, time.Time{}, 0
+	for _, p := range rebuilt {
+		o, ok := old[p.Date.Format("2006-01")]
+		if !ok || o <= 0 || p.Close <= 0 {
+			continue
+		}
+		months++
+		if base == 0 {
+			base = p.Close / o
+			continue
+		}
+		if d := math.Abs(p.Close/(o*base) - 1); d > worst {
+			worst, at = d, p.Date
+		}
+	}
+	return worst, at, months
 }
 
 // longestFlatRun returns the longest run of consecutive observations carrying
