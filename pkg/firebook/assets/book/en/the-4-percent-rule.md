@@ -6,24 +6,24 @@ It is the most famous rule in personal finance: withdraw 4% of your capital in t
 This page lays out what the rule actually says (it is subtler than the barstool version), where its numbers came from, what it quietly assumes, and why the state of the art now treats it as an excellent place to start and a bad place to stop. By the end you will know how to use it for what it is worth: a ballpark, not a plan. And if you want to see why that number holds mathematically, and what would move it, the arithmetic is taken apart layer by layer in [[the-math-of-4-percent]].
 
 ::: cle What the rule says exactly
-Year 1: withdraw 4% of the starting capital (EUR 40,000 on EUR 1,000,000). Every year after: withdraw the **same** amount adjusted for inflation (EUR 41,200 if inflation ran at 3%), whatever the portfolio does. In Bengen's data, across every 30-year US window since 1926, a portfolio holding 50 to 75% stocks was never emptied by that regime. "Safe" here means one thing: it never failed in the observed American past. Nothing more.
+Year 1: withdraw 4% of the starting capital ($40,000 on $1,000,000). Every year after: withdraw the **same** amount adjusted for inflation ($41,200 if inflation ran at 3%), whatever the portfolio does. In Bengen's data, across every 30-year US window since 1926, a portfolio holding 50 to 75% stocks was never emptied by that regime. "Safe" here means one thing: it never failed in the observed American past. Nothing more.
 :::
 
 ## The mechanics, step by step
 
-Meet Camille, who retires with EUR 1,000,000, invested 60% in global stocks and 40% in bonds.
+Meet Camille, who retires with $1,000,000, invested 60% in global stocks and 40% in bonds.
 
-1. **Year 1**: she withdraws EUR 40,000 (4% of 1,000,000).
-2. **Year 2**: inflation ran at 2.5%. She withdraws 40,000 × 1.025 = EUR 41,000. It makes no difference whether her portfolio gained 15% or lost 20%: the withdrawal is the same.
+1. **Year 1**: she withdraws $40,000 (4% of 1,000,000).
+2. **Year 2**: inflation ran at 2.5%. She withdraws 40,000 × 1.025 = $41,000. It makes no difference whether her portfolio gained 15% or lost 20%: the withdrawal is the same.
 3. **Year 3 and after**: same logic, last year's withdrawal adjusted for inflation.
 
 Three properties follow straight from that machinery, and they explain everything else in the subject.
 
 **Purchasing power is constant.** That is the rule's great virtue: your standard of living never depends on the mood of the markets. It is an annuity contract you sign with your own portfolio.
 
-**The effective withdrawal rate, though, floats.** If Camille's portfolio drops to EUR 700,000 after a crash in year 2, her EUR 41,000 is suddenly 5.9% of capital. The rule does not care, and that is exactly where the risk lives.
+**The effective withdrawal rate, though, floats.** If Camille's portfolio drops to $700,000 after a crash in year 2, her $41,000 is suddenly 5.9% of capital. The rule does not care, and that is exactly where the risk lives.
 
-**The "4%" is counted once and never again.** The rate applies to the starting capital, on the day you leave, and to nothing else. Hence a well-known paradox: two identical neighbors, one who left in 2021 with EUR 1M and draws EUR 40k, the other who left in 2022 after a crash with EUR 800k and draws EUR 32k, take out different amounts although their portfolios are now worth roughly the same. That is not a footnote. It shows the rule is a simplification of something deeper: the withdrawal rate depends on the valuations you start from ([[valuations-and-cape]]).
+**The "4%" is counted once and never again.** The rate applies to the starting capital, on the day you leave, and to nothing else. Hence a well-known paradox: two identical neighbors, one who left in 2021 with $1M and draws $40k, the other who left in 2022 after a crash with $800k and draws $32k, take out different amounts although their portfolios are now worth roughly the same. That is not a footnote. It shows the rule is a simplification of something deeper: the withdrawal rate depends on the valuations you start from ([[valuations-and-cape]]).
 
 ## Where the numbers came from
 
@@ -54,7 +54,7 @@ The marketing power of "4%" buried the long list of its assumptions. Each one de
 | Perfectly rigid spending, indexed to inflation | Real spending moves, and that is a margin you can use ([[spending-in-retirement]]) |
 | No other income, ever | Pensions, side work and inheritances exist ([[pensions-and-other-income]]) |
 | The retiree runs the rule mechanically for 30 years | Nobody watches a portfolio melt without reacting ([[the-psychology-of-spending]]) |
-| Success = one euro left on the final day | Ending at 82 with EUR 3,000 counts as "success" for the simulator alone |
+| Success = one dollar left on the final day | Ending at 82 with $3,000 counts as "success" for the simulator alone |
 
 None of these assumptions kills the rule as a ballpark. Together, though, they explain why the number that comes out of a serious look at **your** situation can land well away from 4%, in either direction.
 
@@ -78,7 +78,7 @@ For an early retirement, meaning a horizon of 45 years and up, with a globally d
 
 Keep it, in its place. The 4% rule is excellent in three roles and fails in a fourth.
 
-**Excellent as a unit of measure.** "This annual expense needs 25 times its own size in capital" is the most useful mental reflex in the field. A recurring EUR 100 a month "costs" EUR 30,000 to 40,000 of capital, and that one calculation changes how you weigh a subscription, a car, a move.
+**Excellent as a unit of measure.** "This annual expense needs 25 times its own size in capital" is the most useful mental reflex in the field. A recurring $100 a month "costs" $30,000 to $40,000 of capital, and that one calculation changes how you weigh a subscription, a car, a move.
 
 **Excellent as a starting point for sizing.** Aim at 25 times your spending, then refine with a real model ([[using-the-fire-simulator]]) and your own situation. That is the right order. The mistake is not starting at 4%, it is stopping there.
 
@@ -91,7 +91,7 @@ Keep it, in its place. The 4% rule is excellent in three roles and fails in a fo
 :::
 
 ::: exemple The 4% rule against a real case
-Back to Camille: EUR 1M, a global 60/40, retiring at 45, EUR 40,000 a year indexed. Here is what the three families of models ([[historical-vs-parametric]]) say over 45 years. A calibrated central parametric model typically gives a failure probability around 10 to 15%, a replay of the global sample gives more, the portfolio's own historical windows give less. At 3.4%, that is EUR 34,000 a year, the central-case failure probability drops below 5%. Keeping 4% but adding EUR 800 a month of pension from 67 gets it below 5% as well. That is the rule used well: one starting point, three levers tested, one informed decision.
+Back to Camille: $1M, a global 60/40, retiring at 45, $40,000 a year indexed. Here is what the three families of models ([[historical-vs-parametric]]) say over 45 years. A calibrated central parametric model typically gives a failure probability around 10 to 15%, a replay of the global sample gives more, the portfolio's own historical windows give less. At 3.4%, that is $34,000 a year, the central-case failure probability drops below 5%. Keeping 4% but adding $800 a month of pension from 67 gets it below 5% as well. That is the rule used well: one starting point, three levers tested, one informed decision.
 :::
 
 ## The essentials

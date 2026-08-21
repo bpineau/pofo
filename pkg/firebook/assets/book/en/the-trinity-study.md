@@ -57,7 +57,7 @@ Three lasting lessons come out of that grid.
 **The success rate itself.** Trinity is where failure probability became the common language of the field, the one every modern simulator speaks ([[failure-probability]]).
 
 ::: attention What Trinity's "95% success" means, and what it does not
-Trinity's percentage counts overlapping historical windows from the US market alone. "95%" means "95% of the retirements beginning between 1926 and 1980 would have held", not "your plan has a 95% chance of working". And "success" is counted in the weakest sense there is: a balance still positive on the last day, even if it is one euro. The windows share their years (the 1929 crash shows up in dozens of them), the independent sample is tiny, and the future is not drawn from that urn. The probabilities modern simulators print carry cousin limits ([[simulator-traps]], [[reading-a-fan-chart]]). The defense never changes: run several models side by side and keep margins.
+Trinity's percentage counts overlapping historical windows from the US market alone. "95%" means "95% of the retirements beginning between 1926 and 1980 would have held", not "your plan has a 95% chance of working". And "success" is counted in the weakest sense there is: a balance still positive on the last day, even if it is one dollar. The windows share their years (the 1929 crash shows up in dozens of them), the independent sample is tiny, and the future is not drawn from that urn. The probabilities modern simulators print carry cousin limits ([[simulator-traps]], [[reading-a-fan-chart]]). The defense never changes: run several models side by side and keep margins.
 :::
 
 ## What the founders had not seen yet
@@ -77,7 +77,7 @@ None of this refutes them. The vintage method still stands; what widened is its 
 One of the method's great teaching virtues is that anyone can redo it. The classic historical simulators, FICalc and cFIREsim first among them, replay the vintage logic on the long US indexes, one withdrawal rate at a time. A simulator that reads a real portfolio replays it on the history of **your own** holdings and hands down a verdict start date by start date. Either exercise is worth the hour. Watching your plan go through 1966 or 2000 makes sequence risk concrete in a way no probability does.
 
 ::: exemple Reading a vintage
-The plan: EUR 1M, a 60/40, 4% indexed. Replayed vintage by vintage, the January 2000 start shows what a bad vintage looks like: two crashes in the first decade, the real portfolio cut in half by 2009, a recovery that never catches up with the good vintages, and capital still below half its starting value a quarter of a century later, winded but solvent. The 2009 start sails far above it. Same rule, same portfolio, same long-run average: only the **start date** differs. That is sequence risk made visible, and the best possible way into [[sequence-of-returns]].
+The plan: $1M, a 60/40, 4% indexed. Replayed vintage by vintage, the January 2000 start shows what a bad vintage looks like: two crashes in the first decade, the real portfolio cut in half by 2009, a recovery that never catches up with the good vintages, and capital still below half its starting value a quarter of a century later, winded but solvent. The 2009 start sails far above it. Same rule, same portfolio, same long-run average: only the **start date** differs. That is sequence risk made visible, and the best possible way into [[sequence-of-returns]].
 :::
 
 ## The essentials

@@ -71,7 +71,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **ERN (Early Retirement Now)**: Karsten Jeske's blog and its Safe Withdrawal Rate series, more than 60 parts. The modern quantitative reference on the subject. [[the-ern-series]]
 
-**Expected utility**: the criterion that weighs each level of wealth by what it is really worth to you, rather than in raw euros. Its concavity is where risk aversion comes from, and why a plan gets judged on its 5th percentile plus its median. [[deciding-under-uncertainty]]
+**Expected utility**: the criterion that weighs each level of wealth by what it is really worth to you, rather than in raw dollars. Its concavity is where risk aversion comes from, and why a plan gets judged on its 5th percentile plus its median. [[deciding-under-uncertainty]]
 
 **Failure probability**: the share of simulated futures where the portfolio runs dry before the horizon, under a mechanical rule. A property of the plan and the model together. Read it as a range, and as a ranking. [[failure-probability]]
 
@@ -105,7 +105,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Ladder (bonds, linkers)**: one rung held to maturity per year of liability. The matching that cancels interest-rate risk, and the contractual version of the bridge to your pensions. [[bond-ladders]], [[inflation-linked-bonds]]
 
-**Lean / Fat FIRE**: the frugal variant (EUR 15,000 to 25,000 a year) and the comfortable one (EUR 60,000 and well beyond). The difficulty between the two is not linear. [[what-is-fire]]
+**Lean / Fat FIRE**: the frugal variant ($15,000 to $25,000 a year) and the comfortable one ($60,000 and well beyond). The difficulty between the two is not linear. [[what-is-fire]]
 
 **Linkers (inflation-linked bonds)**: TIPS and their foreign cousins. The only contract written in real terms: inflation, plus a guaranteed real yield. The retiree's conceptual risk-free asset. [[inflation-linked-bonds]]
 

@@ -13,7 +13,7 @@ This article takes it apart. Two lineages first, Bengen's own floor and ceiling 
 
 ::: admin How to run it
 - **Two reference points, and never mix them up.** The target applies to the **current portfolio**: w × today's portfolio, with w set at the start and never revised. The bounds apply to the withdrawal **actually delivered last year**, not to last year's target and not to the initial withdrawal. That is what gives the rule its short memory and its lack of an anchor: after ten years, nothing left in the arithmetic remembers the day you retired.
-- **Indexation.** Everything runs in constant euros. Re-index last year's delivered withdrawal to inflation first, then apply the +5% / −2.5% bounds to it. One consequence explains much of the rule's success: with inflation at 2 to 3%, the deepest cut allowed lands somewhere between −0.6% and +0.4% **in current euros**. The bank statement barely moves while purchasing power slips 2.5% a year. That is deliberate ([[the-psychology-of-spending]]).
+- **Indexation.** Everything runs in constant dollars. Re-index last year's delivered withdrawal to inflation first, then apply the +5% / −2.5% bounds to it. One consequence explains much of the rule's success: with inflation at 2 to 3%, the deepest cut allowed lands somewhere between −0.6% and +0.4% **in current dollars**. The bank statement barely moves while purchasing power slips 2.5% a year. That is deliberate ([[the-psychology-of-spending]]).
 - **Frequency.** Annual. This is the family where the cadence matters least, since the smoothing comes from the bounds and not from the date.
 - **The thresholds are one point on a grid, not a constant of nature.** Vanguard swept the possible pairs, trading the 35-year success rate against income stability, and settled on this one, which survives 35 years about 85% of the time; its 2020 publication uses an even more timid default, +5 / −1.5. So move the bounds without guilt: (+4 / −2) for a rigid budget, (+6 / −4) for an elastic one. The asymmetry has to stay. It encodes a measured fact: a drop in income hurts more than a rise of the same size helps ([[the-psychology-of-spending]]).
 - **Floor.** None built in, and this is the rule's one real flaw: its lower bound is a **speed**, not a level, so nothing stops the descent if the hostile regime drags on. The admission test stands in for it: (1 − the lower bound) to the power n has to stay above your real floor, for an n as long as a genuine hostile regime, twenty years and not six.
@@ -30,7 +30,7 @@ The asymmetry is not decoration. It encodes a documented human preference: a cut
 
 ## The mechanics at work: five hard years
 
-Nothing beats walking through it. The plan: EUR 1.4M, w = 4%, initial withdrawal EUR 56,000.
+Nothing beats walking through it. The plan: $1.4M, w = 4%, initial withdrawal $56,000.
 
 | Year | Portfolio (real) | 4% target | Bounds (real) | Income delivered |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@ Nothing beats walking through it. The plan: EUR 1.4M, w = 4%, initial withdrawal
 | 6 | 1,400,000 (+13%) | 56,000 | ≤ 53,136 | **53,136** (ceiling, +5%) |
 
 ::: figure corridor-1966
-The same hostile vintage, three rules, one capital of EUR 1M. The fixed indexed rule delivers EUR 40k without flinching, right up to the wall: the portfolio is empty in 1994. The pure percentage never runs out, but it makes you live the crisis in real time, down 55% of income at the 1982 trough. The Vanguard corridor makes the same underlying correction, in glides of at most 2.5% a year: income falls from EUR 40k to EUR 22.8k, but over twenty-three years, and never in a single jump. **That is what the rule delivers: the same adjustment, spread out until it becomes livable.**
+The same hostile vintage, three rules, one capital of $1M. The fixed indexed rule delivers $40k without flinching, right up to the wall: the portfolio is empty in 1994. The pure percentage never runs out, but it makes you live the crisis in real time, down 55% of income at the 1982 trough. The Vanguard corridor makes the same underlying correction, in glides of at most 2.5% a year: income falls from $40k to $22.8k, but over twenty-three years, and never in a single jump. **That is what the rule delivers: the same adjustment, spread out until it becomes livable.**
 :::
 
 Read years 4 to 6 closely. The portfolio recovers, but the withdrawal keeps sliding down for a while, because the 4% target is still far below it; only then does it climb back, at the capped pace. Across six years of a severe crossing, the years spent inside a bear market, with the portfolio down 28% at the trough, income never moved by more than 2.5% in a year, for a cumulative sacrifice of about 10% at worst. The same sequence under a pure percentage would have delivered −28% in two years. That is the product: glides instead of falls.
@@ -82,7 +82,7 @@ Here is the profile the bounded corridor was made for. A household that wants ea
 Against the finalists, two trade-offs. Against the guardrails ([[morningstar-guardrails]]), the corridor trades rare steps of plus or minus 10%, and the emotional weight of a decision each time, for continuous glides that ask for no decision at all: less optimal, more livable for many people. Against ABW ([[amortization-based-withdrawal]]), it gives up consumption optimality and any awareness of the horizon, and gets governance that fits on a postcard. The general guide to picking one is [[choosing-your-strategy]].
 
 ::: exemple Calibrating your version in twenty minutes
-The household: real floor EUR 41,000, comfort EUR 50,000, portfolio EUR 1.3M (target w of 3.85%), pension in 15 years. Start with the lower-bound test. A six-year crossing at the −2.5% floor takes income to 50,000 × 0.975^6, about EUR 43,100, still above the floor, so (+5/−2.5) is admissible. Now simulate. Under a central model the corridor comes out at 2.8% failure against 6.1% for a fixed EUR 50,000 withdrawal, and its worst income quartile drops 9% for five to seven years, which the household accepts. The (+4/−2) variant, tested next, gives 3.4% failure and a worst quartile of −7%: the household prefers it and writes it into the plan. Twenty minutes, two simulations, a rule they own. Compare that with the hours of argument risk-based guardrails demand, for a result close to this one in most scenarios.
+The household: real floor $41,000, comfort $50,000, portfolio $1.3M (target w of 3.85%), pension in 15 years. Start with the lower-bound test. A six-year crossing at the −2.5% floor takes income to 50,000 × 0.975^6, about $43,100, still above the floor, so (+5/−2.5) is admissible. Now simulate. Under a central model the corridor comes out at 2.8% failure against 6.1% for a fixed $50,000 withdrawal, and its worst income quartile drops 9% for five to seven years, which the household accepts. The (+4/−2) variant, tested next, gives 3.4% failure and a worst quartile of −7%: the household prefers it and writes it into the plan. Twenty minutes, two simulations, a rule they own. Compare that with the hours of argument risk-based guardrails demand, for a result close to this one in most scenarios.
 :::
 
 ## The essentials

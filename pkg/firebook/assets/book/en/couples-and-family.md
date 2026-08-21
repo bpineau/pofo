@@ -49,11 +49,11 @@ What belongs in this book comes down to three things. **Prevention** is not fina
 
 **Children in the plan** are three separate subjects.
 
-Their **cost** can be dated and funded. Higher education runs EUR 10k to EUR 25k a year for 3 to 5 years per child, on dates you know fifteen years ahead: the textbook case for a bond ladder ([[bond-ladders]], [[how-much-you-need]]).
+Their **cost** can be dated and funded. Higher education runs $10k to $25k a year for 3 to 5 years per child, on dates you know fifteen years ahead: the textbook case for a bond ladder ([[bond-ladders]], [[how-much-you-need]]).
 
 Then the **example**. Growing up with parents who are free, present and frugal **by choice** is, in the accounts of FIRE parents, the project's number one benefit: "the real inheritance is the model". As long as you explain it. Children of an unexplained FIRE sometimes conclude "we are poor" or "money is not to be talked about". Teaching them how money works is a workstream of the project in its own right.
 
-Last, **helping adult children**. The best moment to pass money on is often when they are setting up, between 25 and 35: the down payment, the venture, the moment when EUR 30k changes a trajectory. Gifts made while you are alive stay under the golden rule, because they come out of the surplus, never out of the plan's margins.
+Last, **helping adult children**. The best moment to pass money on is often when they are setting up, between 25 and 35: the down payment, the venture, the moment when $30k changes a trajectory. Gifts made while you are alive stay under the golden rule, because they come out of the surplus, never out of the plan's margins.
 
 **Aging parents** are the subject FIRE runs into more often than most. Free time makes you the sibling designated as the **natural caregiver**. It is a gift: time given and simple presence rank among the finest entries in the corpus when people take stock. It is also a risk worth naming. Care can turn into a full-time job you never chose. It has a cost, since in some places the law can send a parent's long-term-care bill to the children, so a plan that provisions for your own care should look upstream as well. And it raises a fairness question, because whoever gives their time should not also be the only one paying. Have those conversations with your siblings early. The plan can carry a "family support" line: a named reserve beats a recurring surprise.
 
