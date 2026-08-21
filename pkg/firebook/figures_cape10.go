@@ -29,9 +29,9 @@ const figBlueTint = "#7F9FCC"
 // the CPI of its own month, so the two ends of a decade carry the same
 // convention and the ratio is clean.
 //
-// 1 242 starts, January 1913 (the first month the bundled CPI covers) to June
+// 1 243 starts, January 1913 (the first month the bundled CPI covers) to July
 // 2016 (the last month with a full decade of both series ahead of it), the last
-// outcome landing in June 2026. figures_cape10_test.go rebuilds both arrays from
+// outcome landing in July 2026. figures_cape10_test.go rebuilds both arrays from
 // those three sources and fails on any drift.
 var capeStarts = []float64{
 	13.15, 12.68, 12.44, 12.43, 12.22, 11.49, 11.53, 11.85, 11.84, 11.47, 11.07, 11.17,
@@ -137,7 +137,7 @@ var capeStarts = []float64{
 	21.90, 22.05, 22.42, 22.60, 23.41, 22.93, 23.49, 23.36, 23.44, 23.83, 24.64, 24.86,
 	24.86, 24.59, 24.96, 24.79, 24.94, 25.56, 25.82, 25.62, 25.92, 25.16, 26.61, 26.79,
 	26.49, 27.00, 26.73, 26.79, 26.81, 26.50, 26.38, 25.69, 24.50, 25.49, 26.23, 25.97,
-	24.21, 24.00, 25.37, 25.92, 25.69, 25.84,
+	24.21, 24.00, 25.37, 25.92, 25.69, 25.84, 26.69,
 }
 var capeForward10 = []float64{
 	0.49, 1.27, 1.63, 1.22, 0.91, 1.09, 0.60, 0.45, 0.46, 0.59, 1.25, 1.50,
@@ -243,19 +243,19 @@ var capeForward10 = []float64{
 	9.77, 9.38, 9.36, 9.26, 9.04, 9.88, 9.67, 9.78, 8.90, 8.15, 8.77, 9.00,
 	9.54, 9.60, 9.85, 9.31, 9.60, 9.78, 10.05, 9.86, 10.23, 9.83, 10.11, 9.81,
 	10.32, 9.56, 9.14, 8.95, 9.51, 10.27, 10.27, 11.14, 11.77, 11.13, 11.11, 11.26,
-	11.97, 11.85, 10.49, 11.51, 11.86, 11.80,
+	11.97, 11.85, 10.49, 11.51, 11.86, 11.80, 11.37,
 }
 
 // The fit the plate draws and names: ordinary least squares of the ten-year
-// real return on the earnings yield 100/CAPE, both in percent, over the 1 242
+// real return on the earnings yield 100/CAPE, both in percent, over the 1 243
 // pairs above. It is the article's own arithmetic (a rate of return regressed
 // on a rate of return), and it is the specification stated on the plate.
 // Regressing on ln(CAPE) instead gives R2 = 0.313, and stretching the horizon
 // to fifteen years gives 0.355 (0.407 in logs): the article quotes both.
 const (
-	capeFitA  = 1.0372 // intercept, percent per year
-	capeFitB  = 0.8616 // percent of return per point of earnings yield
-	capeFitR2 = 0.2882
+	capeFitA  = 1.0559 // intercept, percent per year
+	capeFitB  = 0.8598 // percent of return per point of earnings yield
+	capeFitR2 = 0.2871
 )
 
 // capeBand is one narrow slice of the CAPE axis (centre +/- 10 %) and what the
@@ -292,7 +292,7 @@ func figCapeDixAns() string {
 	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
 		"chaque point : un mois de départ, et le rendement réel annualisé du S&amp;P 500 sur les 120 mois suivants"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
-		"1 242 départs mensuels de janvier 1913 à juin 2016, total return déflaté du CPI américain"))
+		"1 243 départs mensuels de janvier 1913 à juillet 2016, total return déflaté du CPI américain"))
 	b.WriteString(sTxt(24, 100, 10, figMuted, "start", "400", "rendement réel annualisé, en % par an"))
 
 	// Grid, the zero line carrying the weight.
@@ -326,7 +326,7 @@ func figCapeDixAns() string {
 	}
 	b.WriteString(poly(fit, figAccent, 2.4, ""))
 	b.WriteString(sTxt(x1, 150, 10, figMuted, "end", "400", "ajustement des moindres carrés"))
-	b.WriteString(mTxt(x1, 167, 10.5, figDeep, "end", "600", "rendement = 1,0 + 0,86 × 100 / CAPE"))
+	b.WriteString(mTxt(x1, 167, 10.5, figDeep, "end", "600", "rendement = 1,1 + 0,86 × 100 / CAPE"))
 	b.WriteString(mTxt(x1, 184, 11, figDeep, "end", "600", "R² = 0,29"))
 
 	// Axes.
