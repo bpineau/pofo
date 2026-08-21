@@ -177,9 +177,15 @@ deep tail, not to graft an engine onto it.
   futures data source that answers; none did in this session.
 - **1990 and 1994.** Named above, unresolved, and gated around rather than
   tuned away.
-- **`pkg/simgen`'s DBi replica prices its crude leg off `CL=F`**, a front-month
-  price series, which carries the same spot-like defect this series exists to
-  fix. `docs/trend-reconstruction-design.md` flags it under "The crude leg has
-  the same defect"; repricing it is now possible and stays gated on the same
-  evidence bar as the gold-leg fix (the blend must hold or improve its monthly
-  agreement with the fund and its split-half swing, not only its drift).
+- **`pkg/simgen`'s DBi replica prices its crude leg off `CL=F`.** Measured
+  against this series on 2026-08-21 and left untouched: the two correlate 0.957
+  daily over 5913 shared days, and the difference is not the slow drift the
+  projection's discarded intercept would absorb (removing each 60-day window's
+  own mean shrinks the residual by -0.5 %). It sits on the days the continuous
+  series switches contract, RMS 0.0258 there against 0.0056 elsewhere, with 24
+  of the 40 largest differences on the 4.8 % of days that are switch days and
+  +23.6 % on 2008-12-22 alone. `CL=F` books the calendar spread as a return once
+  a month, which is a monthly phantom in a regression leg rather than a level
+  error. Repricing it still fails the gate, because this series stops at
+  2024-04-05 while the blend is graded against the fund through 2026; the full
+  record is in `docs/trend-reconstruction-design.md`.

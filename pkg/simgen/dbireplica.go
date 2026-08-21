@@ -131,11 +131,22 @@ var dbiLegs = []dbiLeg{
 	// larger (the continuous price compounds at +1.00 %/yr over 2006-2026 where
 	// the front-month rolling fund USO returns -6.63, most of that gap being
 	// contango). Subtracting a cash rate here would be a token correction to a
-	// far bigger misspecification, and no rolled WTI excess-return series
-	// reaching 2000 is available to price the leg properly. The leg still earns
-	// its place: dropping it costs the blend 0.0096 of monthly correlation with
-	// the fund and takes the split swing from 4.03 to 5.82, so the regression
-	// harvests its co-movement despite the level error.
+	// far bigger misspecification. The leg still earns its place: dropping it
+	// costs the blend 0.0096 of monthly correlation with the fund and takes the
+	// split swing from 4.03 to 5.82, so the regression harvests its co-movement
+	// anyway.
+	//
+	// Measured 2026-08-21 against the rolled excess return WTI-ER-USD, which
+	// the repo now carries: the defect is worse than a level error. The two
+	// correlate 0.957 daily, and the difference is NOT the smooth drift the
+	// 60-day intercept would absorb (removing each window's own mean shrinks it
+	// by -0.5 %). It sits on the days the continuous series switches contract,
+	// RMS 0.0258 there against 0.0056 elsewhere, +23.6 % on 2008-12-22 alone:
+	// CL=F books the calendar spread as a return once a month. The leg is left
+	// alone regardless, because WTI-ER-USD stops at 2024-04-05 where EIA
+	// discontinued its source and the blend is graded against the fund through
+	// 2026. See docs/trend-reconstruction-design.md and
+	// docs/wti-rolled-reference-design.md.
 	{Name: "WTI crude", Deep: "CL=F", Kind: dbiPrice},
 	{Name: "EUR", Deep: "EURUSD=X", Kind: dbiFX, Carry: "EUR"},
 	{Name: "JPY", Deep: "JPYUSD=X", Kind: dbiFX, Carry: "JPCASH-JPY"},
