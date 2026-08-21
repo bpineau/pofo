@@ -1,5 +1,5 @@
 # The FIRE and withdrawal glossary
-<!-- source: lexique @ 8fa4c5829e94 -->
+<!-- source: lexique @ ed9f41b97c49 -->
 
 Every term in this book, and the forum jargon around it, defined in a few sentences, with a pointer to the chapter that covers it. A glossary is something you look things up in, but this one is also meant to be **read**. Straight through, it works as a summary of the book in alphabetical order. The last section pulls the thirteen numbers that turn up everywhere into one table, so you can check your ballpark at a glance.
 
@@ -15,7 +15,7 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **Anarkulova-Cederburg**: the work that recomputes the withdrawal rate over a century of developed markets (38 countries). A rigid 4% fails about 17% of the time there. The modern prudent bound. [[anarkulova-cederburg]]
 
-**Annuity**: capital converted into an income paid for as long as you live. Longevity insurance, whose own return comes from mortality credits. [[annuities-and-safety-first]]
+**Annuity**: capital converted into an income paid for as long as you live. Longevity insurance, whose own return comes from mortality credits. Nothing to do with the annuity of a loan schedule, which is the same arithmetic put to a different use. [[annuities-and-safety-first]]
 
 **Asset allocation**: how the portfolio is split between classes (stocks, bonds, gold and the rest). In the withdrawal phase, a wide plateau (50 to 80% stocks) that drops away on both sides. [[stock-bond-allocation]]
 
