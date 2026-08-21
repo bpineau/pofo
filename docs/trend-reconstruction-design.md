@@ -529,12 +529,37 @@ the front-month price is the ROLL yield rather than the financing: the
 continuous price compounds at +1.00 %/yr over 2006-2026 where the front-month
 rolling fund USO returns -6.63 %/yr, and most of that eight-point gap is
 contango. Subtracting a cash rate would be a token correction to a far bigger
-misspecification, and no rolled WTI excess-return series reaching 2000 is
-available to price the leg properly. Nor should the leg be dropped: removing it
-costs the blend 0.0096 of monthly correlation with the fund and takes the split
-swing from 4.03 to 5.82, so the regression is earning its keep on the leg's
-co-movement despite the level error. That is the same lesson as the paragraph
-above, read from the other end.
+misspecification. Nor should the leg be dropped: removing it costs the blend
+0.0096 of monthly correlation with the fund and takes the split swing from 4.03
+to 5.82, so the regression is earning its keep on the leg's co-movement despite
+the level error. That is the same lesson as the paragraph above, read from the
+other end.
+
+**What the defect actually is, measured 2026-08-21.** A rolled WTI excess-return
+series now exists in the repo (`WTI-ER-USD`, 1985 to 2024-04,
+`docs/wti-rolled-reference-design.md`), so the leg could be compared with a
+properly rolled one rather than argued about. It is NOT only a level error, and
+the earlier framing above understated it. Over the 5913 shared days from 2000-08
+the two series correlate 0.957 daily, and the difference is not a slow drift:
+removing each 60-day window's own mean difference, which is exactly what the
+projection's discarded intercept absorbs, shrinks the residual by nothing at
+all (-0.5 %). It is concentrated on the days the continuous series switches
+contract, where its RMS is 0.0258 against 0.0056 on every other day, and 24 of
+the 40 largest daily differences fall on those days, which are 4.8 % of the
+sample. `CL=F` books the calendar spread as a return once a month: +23.6 % on
+2008-12-22 alone, in the depths of that winter's contango. That is a monthly
+phantom return in a regression leg, not a mislevelled one.
+
+**Nothing changes, and here is the gate it fails.** `WTI-ER-USD` stops
+2024-04-05, where EIA discontinued the futures price series it is built from,
+while the blend is graded against the fund through 2026. Repricing the leg would
+therefore either go dark over the last two years of the grading window or need a
+splice back onto the very series whose artifact it removes, and the DBi chapter
+was closed on 2026-08-20 with its ceiling documented. The measurement is
+recorded, the leg is untouched, and the honest reading is that the crude leg
+contributes co-movement in spite of a monthly artifact rather than because the
+artifact is harmless. Should a rolled series that reaches today become
+obtainable, this is the first thing to retry.
 
 ### The same treatment refuses to transfer to Simplify CTA (measured, 2026-08)
 
