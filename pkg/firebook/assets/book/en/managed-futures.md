@@ -1,5 +1,5 @@
 # Managed futures and trend following: the diversification that works in a crisis
-<!-- source: managed-futures @ e5f4676cb8f2 -->
+<!-- source: managed-futures @ b597d0e63250 -->
 
 In the table of defenses ([[defensive-assets]]), one slot was still open: **long regimes**. These are the bear markets and inflationary stretches that drag on for years and wear out the ordinary shock absorbers. The cash buffer runs dry, bonds can fall alongside stocks, and gold can sleep through the whole thing. The holder of that slot is the strangest defensive asset of them all: managed futures, meaning **trend following**. These are systematic programs that trade dozens of futures markets (equity indexes, rates, currencies, commodities), buying whatever is going up and shorting whatever is going down.
 
@@ -18,6 +18,10 @@ A typical trend program runs a few simple steps. It tracks 50 to 100 liquid futu
 **A closer look at the signals.** Three families do most of the work. Moving-average crossovers first: buy when the 50-day average crosses above the 200-day. Time-series momentum (TSMOM) next, the academic version, which just looks at the sign of the past 12 months' return. Breakouts last: buy the 100-day high, the school of Richard Dennis and his Turtles. All three measure the same thing, persistence, and their signals overlap heavily. The big shops combine them into an **ensemble**: several signals at several speeds, fast (1 to 3 months), medium (3 to 6), slow (9 to 12), to smooth the entries and the exits. Speed is the real design choice. A fast program turns early, which helps in short shocks but multiplies the false starts. A slow program eats the reversals but rides the big waves better. The ensemble diversifies that choice the way it diversifies everything else.
 
 **The cash works too.** One detail decides how you read a fact sheet: a futures program ties up only 10% to 20% of its capital in margin. The rest sits in Treasury bills, and their yield adds to performance in full. A trend fund returns cash plus the trend premium minus fees. With short rates at zero (2015-2021), a program earning a 3% gross premium and charging 1% showed about 2%. With short rates at 3% to 4%, the same program shows 5% to 6% without changing a thing. Part of the disappointment of the winter, and part of the recent glow, is nothing more than that piece of arithmetic. Any comparison across eras, or between a fund and its index, has to be made in excess return, above cash.
+
+::: figure mf-cash-prime-frais
+The same recipe, in two short-rate regimes. The three bricks are drawn separately, positive above zero and negative below, with the net set beside them. From one column to the other the program has not moved an inch: the gross premium and the fees are the same, and only the yield on the collateral has changed. That is why the winter and the recent glow are read first in the short rate, and why the honest comparison is the one in excess return alone.
+:::
 
 Three properties follow from the recipe. First, **symmetry**: making money in a lasting decline is as natural as making it in a rise, which is unique among your holdings. Second, it works across asset classes. In 2022 most of the gains came from short bond positions and long commodity and dollar positions, not from equities; the strategy hunts the trend wherever it happens to be ([[bonds-in-retirement]]). Third, **controlled risk**: vol targeting aims at a constant 10% to 15% volatility, a risk profile close to equities but steered.
 
