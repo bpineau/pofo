@@ -1,5 +1,5 @@
 # Real estate in a FIRE plan (your home, and rentals)
-<!-- source: immobilier-en-retrait @ 8112a3043e67 -->
+<!-- source: immobilier-en-retrait @ 54bbab3e151f -->
 
 You cannot write a book about decumulation without a chapter on real estate. For most households it is the largest thing they own, and often the only asset that ever felt solid. But the word covers two objects with almost nothing in common inside a withdrawal plan. The first is **the home you live in**. It is not an asset of the plan. It is a cost reducer, and the source of the most common double-counting error in the field. The second is **rental property**, a stream of supplementary income. It has qualities nothing else offers at that price, starting with rents that follow prices, a rare and valuable thing ([[inflation-and-withdrawal-rates]]). Its drawbacks are just as distinctive: concentration, illiquidity, management, and a tax treatment with a sting in the tail.
 
