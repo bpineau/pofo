@@ -136,6 +136,42 @@ cut rows on a plain split over "|", so a labelled wiki-link ([[slug|Label]])
 tore its cell in two. amortissement-abw's comparison table had been rendering
 with a four-cell header over three-cell rows.
 
+Third wave 2026-08-21, twenty plates, one per commit with its guard test, and
+the two figure backlogs purged of the entries they answered (8 in the portfolio
+file, 12 in the other, so what is left there is unbuilt by definition). Same
+engine-first rule as the earlier waves: what the repository can compute is
+computed, frozen into arrays and re-derived by a test gated on
+frozenAgainstData, so a refreshed dataset surfaces in "make figure-drift"
+instead of quietly falsifying a picture. Both editions shipped together, each
+plate with its figureDict entries and the English article's source stamp
+refreshed, so "make book-drift" stays at zero.
+
+The rule corrected the prose once, on the book's ruin-warning anchor. The
+claim was eight to fifteen years of notice; replayed on the worst known
+vintage (1966, real US 60/40, fixed 4 % rule, exhausted in 1994) against
+quand-s-inquieter's own thresholds, the first red fires in 1974 and is
+confirmed in 1975, twenty years ahead, and the amber never returns to green
+from 1970. The anchor now reads ten to twenty years in ruine-et-probabilites
+and in the three quand-s-inquieter spots, plus their English counterparts, and
+preavis-1966 draws the evidence. Two further divergences were recorded on the
+plate rather than smoothed away: trinity-falaise's deeper cohort sample
+contradicts two of etude-trinity's parenthetical numbers, and
+panier-mediane-plancher costs a median loss that its article still calls
+"un peu". Both await a prose pass.
+
+Tooling landed with the batch and outlives it. figures_kit.go names the plate
+toolbox (palette, type and bar primitives, the value-to-pixel map, axis ticks,
+the notes block, the brace, the dot label), plumbing only, since the FORM of a
+plate stays invented per plate; existing plates were deliberately not migrated
+onto it. scripts/figure-shot.sh renders one slug at the book's reading measure
+through the real page CSS, the render half of the render-and-look loop that
+was a throwaway harness until then. doc.go gained the "Adding a plate" recipe,
+five steps naming the file each one touches. figureDict moved out to
+figures_i18n_data.go, leaving figures_i18n.go readable in one go and giving
+agents a data file to append to. And ucits-implantation introduced
+figuresAdapted, for a plate whose English article is an adaptation and needs
+its own data table under the same renderer.
+
 Style-finishing pass done 2026-07-16 (full line-by-line read of all 79 FR
 articles): rewrote the telegraphic `cas-types` into prose and broke the worst
 colon-cascade sentences elsewhere (couple-et-famille, plancher-plafond,

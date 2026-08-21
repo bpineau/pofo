@@ -3,15 +3,15 @@
 Status: RESIDUAL backlog, opened 2026-07-30 during the line-by-line review of
 the fourteen articles of the portfolio part (one reviewer per article; the
 prose fixes shipped as the "line review of ..." commit series). Thirteen ideas
-were built over 2026-07-30 and 2026-07-31 and their entries have been removed
-from this file, so what remains is exactly what has NOT been built: `tous-temps-saisons`,
-`tous-temps-echange`, `tous-temps-ecart`, `duration-vehicules`, `or-decennies`,
-`linkers-echelle`, `scv-ecart-10ans`, `risques-briques` and `safemax-pays`
-(the last one placed in [[anarkulova-cederburg]] with a cross-reference here).
+were built over 2026-07-30 and 2026-07-31, eight more during the 2026-08 plate
+campaign, and their entries have been removed from this file (last purge
+2026-08-21), so what remains is exactly what has NOT been built.
 
 What is left is a pool of ideas to RE-EVALUATE when a figure is wanted, not a
 to-do list: several were written before their article had any illustration, and
-some are weak or superseded. Delete this file once the pool stops being useful.
+some are weak or superseded. The per-article context notes date from the review
+and predate the plates built since, so read the article itself before acting on
+an idea. Delete this file once the pool stops being useful.
 
 Figures, when built, follow the v2 plate system and the frozen-array +
 guard-test pattern recorded in `fire-book-design.md`. Costs: **A** = data
@@ -26,26 +26,6 @@ book is.
 L'article porte déjà `::: figure primes-echelle` (barres d'intervalle classées,
 l'échelle des primes au-dessus du cash). Toute idée ci-dessous doit donc éviter
 cette forme et servir un autre passage.
-
-## 1. Le nuage « douleur au mauvais moment » contre « prime » (coût B)
-
-Un nuage de points, un actif par point. En abscisse, le rendement réel moyen de
-l'actif dans les dix pires années des actions depuis 1954 (l'axe de la douleur,
-donc). En ordonnée, sa prime réelle annualisée au-dessus du cash sur la période
-complète. Actions, obligations longues, 60/40, crédit, cash s'alignent sur une
-droite décroissante, et l'or se pose franchement hors de la droite, en haut à
-gauche de l'axe de douleur avec une prime nulle.
-
-C'est la thèse centrale de l'article, aujourd'hui entièrement verbale (« le
-rendement est le salaire du risque porté », « ce qui compte est la covariance
-avec les mauvais états du monde ») et la seule preuve visuelle possible que
-l'or n'est pas un actif raté mais un actif d'une autre nature. La figure
-existante donne les niveaux, celle-ci donnerait la raison des niveaux.
-
-Coût B : le calcul est à écrire, mais les séries sont là (`pkg/replay` pour le
-réel US 60/40 depuis 1954, S&P 500 et Treasuries 5 ans déflatés par le CPI ;
-`pkg/datasets` pour l'or et les taux courts). Limiter le nuage aux actifs
-réellement bundlés et ne pas inventer de point crédit ou trend faute de série.
 
 ## 3. La décote des primes après publication, en pente (coût B)
 
@@ -88,24 +68,6 @@ Pourquoi un tableau et pas une figure : la démonstration est arithmétique, pas
 visuelle, et deux trajectoires qui divergent seraient une forme déjà prise
 (courbes qui se croisent, petites-multiples de séries). Les chiffres se
 recalculent à la main dans l'article, aucune donnée externe n'est nécessaire.
-
-## 3. La médiane baisse, le percentile 5 monte (coût B)
-
-La section décumulation porte la thèse centrale de l'article et n'a aucune
-image : en passant de 100 % actions à un panier de quatre briques, la richesse
-médiane à trente ans baisse un peu tandis que le SWR à 95 % de succès monte.
-Deux mesures qui bougent en sens contraire, c'est exactement ce qu'une figure
-sait dire mieux qu'une phrase. Forme proposée : deux axes verticaux côte à côte
-(richesse médiane à gauche, SWR à 95 % à droite), chaque portefeuille tracé par
-un segment reliant sa position sur les deux axes, les deux segments se croisant
-en X. Le lecteur voit le prix payé (un peu de médiane) et ce qu'il achète (du
-plancher).
-
-Ce n'est ni un fan chart, ni des barres appariées, ni un plan à iso-courbes :
-la forme (deux échelles reliées par des segments) est libre. Coût B : les
-briques du panier et le moteur de décumulation existent, mais les deux couples
-de chiffres doivent être calculés et figés, et le choix des briques documenté
-dans la légende pour ne pas laisser croire à un résultat universel.
 
 ---
 
@@ -237,80 +199,12 @@ est vérifiée ci-dessus.
 
 ---
 
-## portefeuilles-tous-temps
-
-L'article n'a aujourd'hui aucune figure, alors qu'il enchaîne quatre
-compositions chiffrées, un bloc `science` qui n'est qu'un tableau déguisé en
-phrase, et deux thèses (l'échange espérance/queues, l'écart à l'indice) qui
-sont purement verbales. C'est l'article de la partie portefeuille qui a le
-plus à gagner d'être illustré.
-
-Toutes les données citées ci-dessous ont été recalculées pendant la review à
-partir du repo seul (`pkg/datasets/simdata/{SP500,TLT,IEF,SHY,XAUUSD}.csv`,
-`pkg/datasets/refdata/{USSCV-USD,TBILL-3M,WTI-USD}.csv`, déflateur
-`pkg/marketdata/data/cpi-us.csv`), 1972-2024, rééquilibrage annuel, en réel.
-Valeurs mesurées, utiles comme garde-fou d'implémentation :
-
-| Portefeuille | CAGR réel | vol | pire année réelle | pire drawdown réel |
-|---|---|---|---|---|
-| Browne 4 × 25 | 4,4 % | 7,2 % | 2022, −17 % | −22 % (2020-07 → 2022-10) ; −21 % (1980-01 → 1982-06) |
-| Golden Butterfly | 5,9 % | 8,2 % | 2022, −16 % | −21 % (2021-12 → 2022-09) |
-| All-Weather (Robbins) | 5,0 % | 7,7 % | 2022, −25 % | −29 % (2021-11 → 2023-10) |
-| 60/40 | 5,4 % | 9,4 % | 1974, −23 % | −37 % (1972-12 → 1974-09) |
-| 80/20 | 6,2 % | 12,2 % | 1974, −29 % | −45 % (1972-12 → 1974-09) |
-| 100 % actions | 6,8 % | 15,3 % | 2008, −37 % | −54 % (2000-08 → 2009-02) |
-
-## 4. Le curseur, du 100 % croissance au tous-temps complet (coût B)
-
-Balayage de la dose de « poche de régimes » (0 %, 10 %, 20 %, 30 %, 40 %),
-deux courbes qui se croisent, espérance réelle qui descend doucement et pire
-drawdown réel qui remonte vite quand la dose baisse, avec la zone 30-40 %
-marquée comme le plateau recommandé. La figure justifie chiffre en main la
-phrase « 0,3-0,6 point d'espérance » de la section usage recommandé, et
-montre que le rendement marginal de la dose décroît, ce qui est l'argument
-central contre le tout-ou-rien.
-
-Coût B, il faut écrire le balayage (composer le cœur croissance plus la poche
-or/linkers/duration longue et itérer sur la dose) ; les briques de données
-existent toutes dans le repo. Si l'on veut y mettre le SWR plutôt que le
-drawdown, le coût monte encore d'un cran (moteur de retrait), et le drawdown
-suffit au propos.
-
----
-
 ## actifs-defensifs
 
 L'article est le hub de la partie portefeuille (il porte la table des défenses et les
 verdicts par candidat) et n'a aucune figure aujourd'hui. Ses articles-fils en ont
 (`correl-sign`, `trend-smile`, `trend-annees`, les quatre d'`allocation-actions-obligations`).
 Une figure ici a donc une vraie valeur de carte.
-
-## 1. Le bulletin de crise, candidat par épisode (coût B, données presque toutes dans le repo)
-
-Une grille signée : en lignes les candidats (actions monde, cash, obligations d'État
-courtes, longues, linkers, or, trend, et deux faux défensifs, REIT et high yield) ; en
-colonnes les quatre épisodes de test que l'article invoque en prose (1973-1974
-stagflation, 2008 panique déflationniste, mars 2020 krach éclair, 2022 choc de taux).
-Dans chaque case le rendement réel de l'épisode, coloré en divergent signé.
-
-Pourquoi ça vaut la place : c'est la thèse centrale de l'article (« aucun actif ne
-défend contre tout, chacun a son régime et son régime tueur ») et son test infaillible
-(« qu'a fait ce produit en 2008 et en 2022 ? »), aujourd'hui dispersés dans dix
-paragraphes de revue. La lecture en diagonale rend visible d'un coup que chaque colonne
-a un gagnant différent, et que les deux dernières lignes n'ont de bulletin nulle part.
-C'est aussi la seule figure qui justifie visuellement le tableau ennemi/titulaire/doublure
-qui suit.
-
-Données : `pkg/datasets/refdata` et `simdata` couvrent déjà l'essentiel. Valeurs
-calculées en séance sur les séries du repo (années civiles, nominal) :
-US long 20 ans +25,8 % / +13,2 % / −23,6 % en 2008/2020/2022 ; TLT +34,0 / +18,2 / −31,2 ;
-euro govt 25 ans+ +12,2 / +10,8 / −37,8 ; euro govt agrégé +8,6 / +3,9 / −20,7 ;
-US 1-3 ans +6,6 / +3,0 / −3,9 ; or (USD) +5,8 / +24,6 / −0,4 ; backcast trend (CTA)
-+17,1 / −29,0 / +18,2 ; S&P 500 −37,0 / +18,4 / −18,1. À déflater par le CPI et à
-convertir en euros pour un lecteur français (l'or 2022 devient positif en euros, ce que
-l'article dit déjà). Manquent : linkers (reconstruction taux réel + IPC), REIT et high
-yield (valeurs d'indices publiées, hors repo), et 1973-1974 pour le trend (backcast).
-D'où le B.
 
 ## 2. La carte prime contre paiement (coût B, moitié stylisée)
 
@@ -432,22 +326,6 @@ L'article n'a aucune figure aujourd'hui, et deux de ses passages centraux sont
 purement verbaux (l'alternance de régimes, et l'A/B or contre pas-d'or). Quatre
 idées, par ordre de priorité.
 
-## 2. L'A/B or contre pas-d'or, modèle par modèle (barres appariées ou dumbbell)
-
-Quatre lignes, une par modèle de marché (central, stress de séquence, inflation
-longue, millésime 1966 rejoué), et pour chacune deux points reliés : variante A
-(70/30) et variante B (70/20/10 or). Le trait est quasi nul au central et
-s'allonge vers la gauche à mesure que le modèle devient hostile. C'est
-exactement la thèse la plus importante et la moins visible de l'article
-(« l'A/B ne se voit pas dans le scénario central, il apparaît sur les modèles
-qui contiennent les longues inflations »), aujourd'hui noyée dans le bloc
-`exemple`. Prévoir une note sur le coût, la richesse médiane à −5 %, pour ne
-pas laisser croire à un repas gratuit.
-
-Coût : **A**. Les huit chiffres sont déjà dans le bloc `exemple` de l'article
-(4,1/3,9 ; 7,2/6,1 ; 10,8/8,9 ; 1966 épuisé/traversé). Aucun calcul nouveau si
-l'on illustre l'exemple tel qu'il est écrit.
-
 ## 3. L'or dans les pires années des actions (barres classées par année d'actions)
 
 Les dix ou quinze pires années des actions mondiales, classées, et pour chacune
@@ -488,26 +366,6 @@ allocation-actions-obligations et ne doivent pas être redemandées ici :
 `obligations-regimes` (cinq espèces × deux chocs, 2008/2022). La mécanique
 duration et la grille de régimes sont donc couvertes ailleurs ; les idées
 ci-dessous portent ce que cet article a en propre.
-
-## 1. « Tenir à échéance ne protège de rien » : deux comptabilités, une richesse
-
-Deux trajectoires de richesse après une hausse de taux de +2 points au mois 12,
-sur un horizon égal à la duration (7 ans). Le fonds à duration constante
-plonge tout de suite en prix puis rattrape par le réinvestissement des coupons ;
-le titre détenu à échéance ne baisse jamais à l'écran mais reste bloqué sur son
-ancien coupon. Les deux courbes se rejoignent à l'échéance, et l'écart intermédiaire
-est étiqueté d'un côté « baisse de prix affichée », de l'autre « coût
-d'opportunité invisible ».
-
-Pourquoi elle vaut la place : c'est l'illusion la plus tenace de tout l'article
-(« je ne perds jamais »), et le passage qui la démonte est aujourd'hui à 100 %
-verbal, sans aucun appui visuel dans le livre. Une figure où les deux courbes
-convergent règle le débat en une seconde, là où le paragraphe demande un effort
-de foi. Forme : deux courbes qui convergent, avec la zone d'écart hachurée et
-nommée dans les deux sens.
-
-Coût : **B** (arithmétique obligataire déterministe à écrire, aucune donnée de
-marché nécessaire ; un fonds de duration constante et un titre à coupon fixe).
 
 ## 2. Le YTM est une prévision : rendement affiché contre rendement encaissé
 
@@ -574,20 +432,6 @@ plancher).
 maturité (source externe, ou reconstruction depuis les ETF linkers du catalogue
 `assetmeta` et la série IPCH pour la jambe indexation). Le calcul est simple,
 mais la donnée de taux réels n'est pas dans le repo aujourd'hui.
-
-## 3. Le plancher adossé du bloc `exemple`, en bilan plus escalier de revenu
-
-**Ce qu'elle montre.** Deux panneaux côte à côte. À gauche, le patrimoine de
-1,6 M€ coupé en deux, 520 k€ d'échelle indexée (14 barreaux de 40 k€ réels) et
-1,08 M€ de portefeuille de confort. À droite, le revenu année par année de 52 à
-75 ans : les barreaux consommés jusqu'à 66 ans, le relais des pensions ensuite,
-et par-dessus le filet de confort de 15 k€ servi par le portefeuille. Le passage
-est le plus concret de l'article et le plus difficile à tenir en tête en lecture
-linéaire, car il mêle un stock, un flux et une date de relais. La figure fait
-voir d'un coup pourquoi le taux de retrait du solde tombe à 1,4 %.
-
-**Coût : A.** Tous les chiffres sont dans le bloc `exemple` et ils tombent juste
-(annuité 14 ans à 1 % réel = 520 k€, 1,6 − 0,52 = 1,08 M€, 15 / 1 080 = 1,4 %).
 
 ## Écarté
 
@@ -715,21 +559,6 @@ dans l'article. Une annotation à droite convertit l'écart total en points de
 taux de retrait (0,5 à 1 point sur 40 ans) ; l'affirmer d'après l'article est
 coût A, la recalculer sur le 60/40 réel de `pkg/replay` en ajoutant un drag de
 frais constant est un petit coût B, et ce serait mieux.
-
-## 2. La grille d'implantation : sept lignes, trois enveloppes, sept rôles (coût A)
-
-Une matrice. En lignes les sept briques dans l'ordre des rôles (moteur monde,
-tilt SCV, cœur amortisseur, linkers, or, trend, buffer), en colonnes les trois
-enveloppes PEA / AV / CTO. Chaque cellule est un carré ou une barre
-proportionnelle au poids (19, 38, 8, 11, 6, 5, 5, 8 %), et la marge de droite
-nomme le rôle servi dans la table des défenses plus le critère « à vérifier ».
-Le paragraphe d'exemple est aujourd'hui un mur de huit pourcentages et trois
-montants que personne ne reconstitue de tête ; la grille rend d'un coup d'œil
-les deux thèses de l'article, à savoir que chaque ligne a un rôle nommé et
-qu'une enveloppe donnée n'accueille que ce qu'elle loge proprement. C'est aussi
-le récapitulatif que le lecteur photographiera. Données entièrement dans
-l'article (vérifier que la somme fait 100 % dans la figure comme dans le
-texte).
 
 ## 3. Le trajet d'un dividende américain selon le domicile (coût C, encadré)
 

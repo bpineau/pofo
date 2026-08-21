@@ -6,12 +6,15 @@ line-by-line review (one reviewer per article; the prose fixes shipped as the
 every part reviewed after the portfolio one: alternatives, buffers, inflation,
 French tax frame, human factor, references, withdrawal science and the starter
 part. Thirty-seven ideas were built over 2026-07-30 and 2026-07-31, figures and
-reference tables both, and their entries have been removed from this file, so
-what remains is exactly what has NOT been built.
+reference tables both, and twelve more during the 2026-08 plate campaign; their
+entries have been removed from this file (last purge 2026-08-21), so what
+remains is exactly what has NOT been built.
 
 What is left is a pool of ideas to RE-EVALUATE when a figure is wanted, not a
 to-do list: several were written before their article had any illustration, and
-some are weak or superseded. Delete this file once the pool stops being useful.
+some are weak or superseded. The per-article context notes date from the review
+and predate the plates built since, so read the article itself before acting on
+an idea. Delete this file once the pool stops being useful.
 The portfolio part has its own file,
 `fire-book-illustrations-portefeuille-2026-07.md`.
 
@@ -50,19 +53,6 @@ piège se voit chiffré.
 Coût C : pas une figure, un tableau de douze cellules, plus lisible qu'un
 graphique. Mais les chiffres viennent de l'extérieur du repo (Société Générale
 et BarclayHedge), donc il faut les relever et les dater proprement.
-
-## 3. La décomposition « cash + prime − frais », deux régimes de taux (coût A)
-
-Deux colonnes empilées côte à côte, régime de taux courts nuls (2015-2021) et
-régime de taux courts à 4 %, chacune décomposée en collatéral rémunéré, prime
-de trend brute et frais retirés, pour aboutir au chiffre affiché (~2 % contre
-~6 %). Le passage « le cash travaille aussi » est le plus décisif de l'article
-pour lire une plaquette, et il est aujourd'hui purement arithmétique dans le
-texte. La figure fait comprendre en un regard qu'une grande part de la
-déception de l'hiver et de l'embellie récente ne vient pas de la stratégie.
-
-Coût A : les trois nombres sont déjà dans l'article, la série de taux courts du
-repo ne sert qu'à dater les deux régimes.
 
 
 ## long-volatility
@@ -180,19 +170,6 @@ l'étage obligataire ne mérite sa place que quand la prime de terme existe.
 Données : séries treasury TR + `^IRX`/bills déjà dans `pkg/datasets` (A pour les
 niveaux, B si on veut le rendement excédentaire réalisé glissant, ~30 lignes de calcul).
 
-## 2. Anatomie de 2022, en cascade (coût A)
-
-Une cascade qui part du 60/40 nu (−17 %) et arrive au plan empilé de l'encadré
-d'exemple : coût du levier obligataire (environ −4 points), apport du trend (+4 à
-+5 points), apport de l'or en euros (+0,5 point), arrivée vers −10 %. Elle règle
-visuellement le point que le texte vient de corriger, et qui se lit mal en prose : le
-levier pique bien, mais c'est le diversifiant libéré qui paie la facture, donc le plan
-empilé n'est pas « celui qui perd plus en 2022 », il est celui qui dépend du trend
-cette année-là. Toutes les valeurs existent déjà (NTSX 2022 = −25,8 % en USD, ≈ −21 %
-pour un porteur en euros, trend +20 à 30 % selon [[obligations-en-retrait]]).
-Forme déjà présente dans le livre, mais c'est ici la bonne : une décomposition
-additive d'un résultat annuel.
-
 ## 3. Grille levier × corrélation : où le drag mange la prime (coût B)
 
 Petite grille 5 × 5, levier de 1,0 à 2,0 en lignes, corrélation actions-obligations de
@@ -308,26 +285,6 @@ comptabilité, et il rend la démonstration irréfutable en dix lignes.
 ## echelle-obligataire
 
 Article aujourd'hui sans aucune figure. Trois idées, plus un tableau.
-
-## 1. Le passif année par année, et qui le paie (barres empilées par année)
-
-Une barre par année de 2026 à 2039 pour Claire et Idris. Hauteur de barre = le
-besoin de l'année (plancher 45 000 € plus confort jusqu'à 58 000 €). Chaque
-barre est découpée en segments selon la source qui paie : fonds euros (années
-1-2), fonds à échéance nominal gonflé (3-8), linkers courts roulés (9-13),
-portefeuille de confort (le complément, présent chaque année), pensions
-(24 000 € à partir de l'année 14). On lit d'un coup la règle de couverture
-(100 % du plancher les six premières années, 60 % ensuite), le relais des
-pensions, et le fait que le portefeuille ne porte plus que la tranche haute.
-
-Pourquoi elle vaut sa place : c'est la thèse centrale de l'article,
-l'appariement actif-passif, et elle est aujourd'hui uniquement racontée en
-prose dans le bloc exemple, poste par poste, ce qui est exactement le genre
-d'énumération qu'une figure remplace mieux. C'est aussi la seule image qui
-montre que l'échelle se consomme au lieu de composer.
-
-Coût : **A** (tous les chiffres sont dans l'article et dans
-`choisir-sa-strategie`).
 
 ## 2. Ce que devient un barreau nominal de 40 000 €, par année d'échéance
 
@@ -605,23 +562,6 @@ Article pivot de la partie « L'inflation », aujourd'hui sans aucune figure, al
 qu'il porte deux mécanismes purement verbaux (les ciseaux, la compression réelle
 simultanée) et une thèse forte (« 1966 devant 1929 »). Quatre idées, par ordre de
 priorité. Si une seule est construite, prendre la n° 1 ; si deux, les n° 1 et 2.
-
-## 1. « 1966 devant 1929 » : deux voyants, un qui redescend, un qui ne redescend jamais
-
-Le taux de retrait courant (retrait / portefeuille, en réel) du millésime 1929 et
-du millésime 1966, superposés sur 30 ans depuis le départ, avec la bande
-d'irrécupérabilité 8-10 % marquée. 1929 monte violemment puis **redescend** (la
-déflation baisse les retraits en nominal, les actifs nominaux reprennent de la
-valeur réelle) ; 1966 monte lentement, franchit 8 % vers 1975 et ne redescend
-plus. C'est la démonstration visuelle de la phrase centrale de l'article, « le
-krach rend, l'épisode ne rend jamais », que le texte affirme sans la montrer.
-Différenciation : `bengen-falaise` (dans [[retrait-fixe-bengen]]) montre déjà le
-voyant de 1966 seul ; ici tout l'intérêt est le **contraste** avec 1929, qui
-n'existe nulle part dans le livre.
-
-Coût **B** : les séries sont dans le repo (SP500-USD, reconstruction Treasury,
-CPI-US, tous longs), mais `pkg/replay` démarre en 1954, donc le millésime 1929
-demande un petit calcul de voyant à écrire sur les séries mensuelles.
 
 ## 3. 1973-1981 en réel : la diversification qui ne diversifie plus
 
@@ -1558,22 +1498,6 @@ Article sans aucune figure aujourd'hui, alors qu'il porte deux objets visuels
 canoniques du domaine (le graphique de Bengen, la grille de Trinity). Trois
 idées, par ordre de valeur.
 
-## 1. La falaise de Trinity (coût B)
-
-Le taux de succès en ordonnée, le taux de retrait en abscisse (de 3 à 8 %), une
-courbe par allocation (100/0, 75/25, 50/50, 25/75). Le tableau de l'article
-donne quatre lignes ; la courbe donne la **forme**, c'est-à-dire exactement ce
-que le texte affirme sans pouvoir le montrer, l'effondrement entre 4 et 5 % et
-le croisement des allocations (la courbe 25/75 décroche bien avant les autres,
-la courbe 100 % actions passe sous la 75/25 en haut de gamme). C'est le passage
-« trois enseignements durables » rendu lisible d'un coup d'oeil.
-
-Coût B : il faut recalculer la grille (fenêtres glissantes de 30 ans sur le
-60/40 réel de `pkg/replay`, ou sur S&P 500 + Treasuries + CPI de
-`pkg/datasets`, par pas de 0,25 point de taux et par allocation). Rien de neuf
-côté données, seulement une boucle à écrire. Ne pas reprendre les chiffres
-publiés de Trinity dans une figure maison, sous peine de mélanger deux sources.
-
 ## 2. Le graphique fondateur : années de survie par millésime (coût A/B)
 
 L'article dit « le résultat tient dans un graphique resté célèbre » puis le
@@ -1614,27 +1538,6 @@ tard). Elle couvre le mécanisme abstrait. Ce qui reste purement verbal et
 porteur, c'est (a) l'ancrage historique 1966 contre 1982, (b) la concentration
 du risque sur la première décennie, (c) la hiérarchie des parades.
 
-## 2. Le profil d'importance année par année (coût B)
-
-Une seule courbe (ou une rangée de barres), abscisse = rang de l'année de
-retraite, 1 à 40, ordonnée = part de la variance de l'issue finale expliquée par
-le rendement de cette année-là seule. Le profil s'effondre : très haut sur les
-années 1 à 10, quasi plat ensuite. Une bande grisée sur les dix premières années
-matérialise la « fenêtre fragile », et l'aire sous cette bande porte le chiffre
-des trois quarts cité dans le texte.
-
-Pourquoi elle vaut sa place : la section « La fenêtre fragile » énonce un
-chiffre (« aux trois quarts dans sa première décennie ») sans jamais le montrer,
-et ce chiffre commande ensuite les trois conséquences pratiques, le glidepath,
-la date de départ et les seuils datés. Une décroissance vue une fois se retient
-pour toujours, et cette forme, un profil d'importance par rang temporel, n'existe
-pas encore dans le livre.
-
-Coût B : il faut écrire la décomposition (régression de l'issue finale sur le
-rendement de chaque année, ou variance expliquée par permutation) sur un jeu de
-trajectoires simulées ou sur les cohortes historiques. Les données sont là, le
-calcul est à écrire, et il fixerait au passage le chiffre exact des trois quarts.
-
 ## 3. La ruine décomposée par quartile de première décennie (coût B)
 
 Quatre barres empilées, une par quartile de rendement réel des dix premières
@@ -1666,23 +1569,6 @@ Article aujourd'hui sans aucune figure. Trois passages portent la thèse et sont
 100 % verbaux : la précision illusoire, la nature de l'échec (quand il frappe),
 et la ruine réelle lente. Ordre de priorité ci-dessous.
 
-## 1. L'échelle des trois bruits (coût B, la meilleure)
-
-Une seule règle horizontale graduée en points de ruine (0 à 20 %), et trois
-segments empilés verticalement qui montrent l'amplitude de chaque source
-d'imprécision pour UN même plan : le bruit d'échantillonnage à 2 000
-trajectoires (un segment étroit, environ 4 à 6 % autour d'un vrai 5 %), la
-sensibilité des paramètres (±0,5 point de rendement réel, environ 4 à 9 %), le
-choix du modèle (2 à 14 %). Un marqueur unique « le chiffre affiché : 4,7 % »
-posé dessus.
-
-C'est la thèse centrale de la section « précision illusoire », qui ne s'appuie
-aujourd'hui que sur des chiffres jetés en prose. Le lecteur voit d'un coup que
-la barre du haut, celle qu'il regarde, est écrasée par celles du bas, et que
-2 % et 8 % tombent dans le même segment. Coût B : le bruit d'échantillonnage
-est en forme fermée, les deux autres segments demandent quelques exécutions du
-moteur de décumulation sur un plan de référence.
-
 ## 2. Quand la ruine frappe, et qui est encore là pour la voir (coût B)
 
 Deux plans de MÊME probabilité de ruine (8 %), côte à côte : pour chacun, la
@@ -1697,20 +1583,6 @@ superbement votre mortalité ». C'est aussi le seul endroit du livre où la
 correction de mortalité devient visuelle plutôt qu'argumentée. Coût B : dates
 de ruine et table de mortalité existent dans le moteur, la mise en forme est à
 écrire.
-
-## 3. La falaise contre la pente (coût A)
-
-Une trajectoire historique réellement défaillante (départ 1966, 60/40 réel
-américain, données déjà embarquées dans `pkg/replay`), tracée en deux
-registres superposés : en haut le capital réel qui décroche puis s'épuise, en
-bas le taux de retrait courant qui monte marche par marche, avec les bandes
-verte, orange, rouge de [[quand-s-inquieter]] et deux repères datés, l'année où
-le voyant passe à l'orange et l'année de l'épuisement. L'écart entre les deux
-repères, annoté en clair, matérialise le préavis de 8 à 15 ans.
-
-C'est l'argument le plus important de la fin de l'article, celui qui doit faire
-dormir le lecteur, et il n'existe aujourd'hui que sous forme d'affirmation.
-Coût A : la série et les millésimes sont déjà dans le repo.
 
 ## 4. Le seuil selon vos filets (coût C, encadré ou tableau)
 
@@ -1728,25 +1600,6 @@ en dix secondes. Un graphique n'apporterait rien ici.
 Figure déjà présente : `vol-drag` (deux trajectoires de même moyenne arithmétique,
 ×7,6 contre ×4,5 sur 30 ans). Elle porte bien l'ouverture. Les idées ci-dessous
 visent les passages encore purement verbaux ou tabulaires.
-
-## 1. La courbe du drag : pourquoi doubler la volatilité quadruple le coût (coût A)
-
-Une seule courbe, géométrique obtenue en ordonnée, volatilité en abscisse, à
-moyenne arithmétique constante (7 %), soit y = 7 − σ²/2. On y pose les points du
-tableau existant comme des repères nommés horizontalement (monétaire ~1 %,
-60/40 ~10 %, actions mondiales ~15 %, 90/60 ~15 %, émergentes ~22 %, ×2
-quotidien ~30 %). Deux flèches annotées suffisent ensuite à raconter les deux
-passages qui suivent le tableau : vers la gauche à hauteur constante pour la
-diversification (moins de σ, même moyenne, donc plus de géométrique), et vers la
-droite pour le levier quotidien, qui déplace deux fois plus loin sur l'axe des
-abscisses que sur celui des ordonnées.
-
-Elle vaut sa place parce que le tableau, lui, ne montre pas la seule chose qui
-compte vraiment ici : la non-linéarité. Une colonne de nombres se lit comme une
-suite de cas ; la courbe montre d'un coup que le coût s'effondre à gauche et
-explose à droite, et c'est exactement ce que la prose demande au lecteur de
-croire sur parole. Données déjà dans l'article, formule fermée, aucun calcul
-externe.
 
 ## 2. Ce qu'il reste du « 8 % » annoncé (coût A)
 
@@ -1780,26 +1633,6 @@ les curieux », qui justifie déjà un objet plus technique que le reste de la
 page. Coût B : les séries existent, mais le calcul des fenêtres glissantes reste
 à écrire.
 
-
-## anarkulova-cederburg
-
-Article aujourd'hui sans aucune figure, alors que sa thèse est intégralement
-quantitative (« le taux sûr dépend de l'échantillon »). Trois idées, classées
-par valeur.
-
-## 2. Les deux courbes d'échec qui se croisent (coût B)
-
-Probabilité de ruine (axe y) en fonction du taux de retrait rigide (axe x, de
-2 à 5 %), deux courbes : histoire américaine seule, et rééchantillonnage
-broad-sample. Une ligne horizontale à 5 % d'échec, et deux repères verbaux là
-où chaque courbe la croise. La figure met en scène exactement les deux chiffres
-que l'article martèle (17 % d'échec à 4 % contre ~2 % aux États-Unis, taux à
-5 % d'échec vers 2,26 %), et surtout elle montre ce qu'aucune phrase ne montre :
-l'écart n'est pas un décalage constant, il explose dans la zone où tout le
-monde se dimensionne. C'est aussi la meilleure illustration possible de la
-règle de conduite finale (« gardez les deux bornes affichées côte à côte »),
-puisque la figure *est* les deux bornes côte à côte. Coût B, un balayage de
-taux sur les deux sources.
 
 ## valorisations-et-cape
 
@@ -2005,20 +1838,6 @@ L'article porte déjà la figure `cascade-4pct`, qui couvre la décomposition
 (4,0 → +1,8 → −1,8 → 4,0). Les idées ci-dessous complètent, elles ne
 redoublent pas : elles portent des passages aujourd'hui purement verbaux.
 
-## 2. La fonte du bonus d'amortissement avec l'horizon (coût A)
-
-L'étage 2 est celui qui parle le moins aux lecteurs FIRE, alors que c'est celui
-qui les concerne le plus : ils partent à 45 ans, pas à 65. Une seule courbe,
-taux d'amortissement à 4 % réel en fonction de l'horizon (10 à 60 ans), avec
-son asymptote horizontale à 4 % et trois points annotés (10 ans ≈ 12,3 %,
-30 ans ≈ 5,8 %, 50 ans ≈ 4,7 %), montre d'un regard que le bonus s'écrase très
-vite puis ne bouge presque plus. La conséquence est contre-intuitive et vaut la
-place : passer de 30 à 50 ans coûte cher, mais passer de 50 ans à « pour
-toujours » ne coûte presque plus rien.
-
-Pure formule de mensualité, rien à calculer d'autre qu'un `r/(1-(1+r)^-n)`.
-La forme (courbe à asymptote) n'existe pas encore dans le livre.
-
 ## 3. La marge cachée : capital final par millésime (coût B)
 
 Le passage « la médiane subventionne la queue » affirme que 90 % des millésimes
@@ -2186,25 +2005,6 @@ tenir à deux marches seulement (4 % puis 3 à 3,5 %) pour ne rien inventer.
 
 Article aujourd'hui sans aucune figure, alors que c'est la porte d'entrée du
 livre sur le sujet. Trois idées, par ordre de valeur.
-
-## 2. Ce que le retrait rigide fait vraiment, sur le millésime 1966
-
-Deux tracés superposés sur le même axe temporel, un millésime unique (1966, ou
-2000 pour un cas moderne) : en bas, le retrait annuel en euros constants, une
-droite parfaitement plate ; en haut, ce même retrait exprimé en pourcentage du
-capital restant, qui grimpe de 4 % à 8 ou 10 % au creux avant de redescendre.
-La zone entre les deux courbes est le risque, et il est invisible pour le
-retraité qui ne regarde que son virement mensuel.
-
-Pourquoi elle vaut sa place : elle illustre les deux premières « propriétés »
-de la section « La mécanique », qui sont le cœur du chapitre et n'ont
-aujourd'hui qu'un exemple arithmétique (700 000 € et 5,9 %). Elle montre en une
-image pourquoi la règle est confortable à vivre et dangereuse à tenir, et elle
-prépare [[sequence-des-rendements]].
-
-Coût : **A**. `pkg/replay` embarque déjà le 60/40 américain réel depuis 1954,
-donc le millésime 1966 est directement rejouable ; les deux séries sortent du
-même rejeu.
 
 ## 3. Le multiple de 25, en table de conversion
 
