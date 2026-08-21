@@ -56,13 +56,13 @@ If the bear market settles in (the long grind or the inflationary one, the amber
 The exit is flown like the entry, on thresholds and in reverse order. The cut is lifted when the rate falls back under the threshold, with the hysteresis. Indexation restarts. The buffer refills in calm weather ([[refilling-the-buffer]]). The check goes back to quarterly. The post-mortem at the next review closes the episode: what worked, which threshold chafed, and plan v1.1 takes two or three adjustments from it, made while calm. The log then records the line that is worth its weight in gold next time: "we got through it. Here is how". A first storm survived is an asset. It turns a simulator's probabilities into confidence you have lived, and no chapter of this book can do that for you.
 
 ::: exemple 2008 to 2009, replayed with the playbook
-A retiree in 2007: EUR 1.5M, a 65/35 allocation, EUR 52k a year of spending, a 24-month buffer, and a written plan. In October 2008 the market loses 30% in six weeks. Warning light at 4.9%, amber. Week 1: media fast, reread, nothing.
+A retiree in 2007: $1.5M, a 65/35 allocation, $52k a year of spending, a 24-month buffer, and a written plan. In October 2008 the market loses 30% in six weeks. Warning light at 4.9%, amber. Week 1: media fast, reread, nothing.
 
-In November the drawdown crosses 18% and the buffer takes over the withdrawals, a mechanical move. In December the equity band is breached. Rebalancing sells EUR 60k of bonds to buy stocks down 40%: written, executed, hated at the time.
+In November the drawdown crosses 18% and the buffer takes over the withdrawals, a mechanical move. In December the equity band is breached. Rebalancing sells $60k of bonds to buy stocks down 40%: written, executed, hated at the time.
 
-In January 2009, tax-loss harvesting on the taxable account built in 2006 and 2007: EUR 85k of losses banked. In March 2009, at the bottom at −50%, the warning light reads 5.6%, red confirmed, and the written cut of −12% applies. It is the only real sacrifice of the whole crossing, and it lasts eighteen months.
+In January 2009, tax-loss harvesting on the taxable account built in 2006 and 2007: $85k of losses banked. In March 2009, at the bottom at −50%, the warning light reads 5.6%, red confirmed, and the written cut of −12% applies. It is the only real sacrifice of the whole crossing, and it lasts eighteen months.
 
-2010 is the exit. Cut lifted, buffer refilled over 2010 and 2011, the banked losses offsetting the gains of the years that followed. The tally in 2012: the portfolio has recovered and the plan never came near its cliff. The EUR 60k rebalanced in December 2008 has doubled. The crossing cost eighteen months at −12% and returned a stock of tax losses, a golden rebalance, and confidence for good. That is what a storm looks like to a plan that had its list.
+2010 is the exit. Cut lifted, buffer refilled over 2010 and 2011, the banked losses offsetting the gains of the years that followed. The tally in 2012: the portfolio has recovered and the plan never came near its cliff. The $60k rebalanced in December 2008 has doubled. The crossing cost eighteen months at −12% and returned a stock of tax losses, a golden rebalance, and confidence for good. That is what a storm looks like to a plan that had its list.
 :::
 
 ## The essentials

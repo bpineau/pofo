@@ -6,7 +6,7 @@ FIRE plans rarely fail from plain bad luck. Hostile markets are already in the m
 This page lists the ten deadliest, in the order you meet them while building a plan, each with its mechanism, its warning sign and its fix. Six of them can be measured, and the ranking by cost is not the order of the list. The chart below does that ranking. Read the page twice: once before you build your plan, and again while you are running it ([[the-annual-review]]).
 
 ::: figure cout-des-erreurs
-The measured cost of the six mistakes that can be quantified, on one shared reference plan (EUR 1M, a rigid 3.5%, 50 years, a pension from year 20, 60/40) and one shared empirical model (16 countries, 1870 to 2020, 200,000 draws). The top two alone add 36.8 points of failure probability, against 33.9 for the other four combined.
+The measured cost of the six mistakes that can be quantified, on one shared reference plan ($1M, a rigid 3.5%, 50 years, a pension from year 20, 60/40) and one shared empirical model (16 countries, 1870 to 2020, 200,000 draws). The top two alone add 36.8 points of failure probability, against 33.9 for the other four combined.
 :::
 
 ::: cle The thread running through them
@@ -15,7 +15,7 @@ Nine of these ten mistakes share one root: taking a model's output for a promise
 
 ## 1. Underestimating what you spend
 
-This is the number one mistake, by a wide margin, and a multiple of 25 to 33 amplifies it ([[how-much-you-need]]): miss EUR 250 a month and the target comes out about EUR 90,000 short. The usual omissions are health coverage at full price, the lumpy items (car, home repairs, dental work, the vet), the tax on withdrawals, and the spending of the life you are **aiming at** (travel, the hobbies that free time makes room for) rather than the life you have now.
+This is the number one mistake, by a wide margin, and a multiple of 25 to 33 amplifies it ([[how-much-you-need]]): miss $250 a month and the target comes out about $90,000 short. The usual omissions are health coverage at full price, the lumpy items (car, home repairs, dental work, the vet), the tax on withdrawals, and the spending of the life you are **aiming at** (travel, the hobbies that free time makes room for) rather than the life you have now.
 
 **Warning sign**: your retirement budget comes out below what you spend today, "because we will be careful". **Fix**: 24 months of statements, lumpy items annualized, and a budget in three tiers (floor, comfort, dream).
 

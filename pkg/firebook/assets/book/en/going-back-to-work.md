@@ -1,7 +1,7 @@
 # Barista, Coast, side income: work you choose
 <!-- source: retour-au-travail @ cb77f7cf7510 -->
 
-FIRE's founding taboo died of ridicule. It held that if you still work, you are not really retired. But the corpus shows that almost every FIRE retiree keeps producing, and that many of them make money without going looking for it ([[voices-from-real-retirees]]). The research shows that work in **small doses** is one of the best predictors of well-being after a career ([[meaning-and-identity]]). And the arithmetic shows that a few thousand euros of income in the early years buy more plan safety than hundreds of thousands of euros of extra capital ([[sequence-of-returns]]). This chapter builds the case for **work you choose**. It lays out the forms it takes (Barista, Coast, organic side income, the targeted temporary return, and the forced return, which deserves a straight look). It puts numbers on the power of it, including everything that rides along with a small earned income: health coverage, Social Security credits, and a softened sequence. It also tells the unpleasant truth about **decay**, because employability melts, and the option is worth most when you need it least. It is an asset, and it has to be maintained. It closes with the toolbox for work in small doses.
+FIRE's founding taboo died of ridicule. It held that if you still work, you are not really retired. But the corpus shows that almost every FIRE retiree keeps producing, and that many of them make money without going looking for it ([[voices-from-real-retirees]]). The research shows that work in **small doses** is one of the best predictors of well-being after a career ([[meaning-and-identity]]). And the arithmetic shows that a few thousand dollars of income in the early years buy more plan safety than hundreds of thousands of dollars of extra capital ([[sequence-of-returns]]). This chapter builds the case for **work you choose**. It lays out the forms it takes (Barista, Coast, organic side income, the targeted temporary return, and the forced return, which deserves a straight look). It puts numbers on the power of it, including everything that rides along with a small earned income: health coverage, Social Security credits, and a softened sequence. It also tells the unpleasant truth about **decay**, because employability melts, and the option is worth most when you need it least. It is an asset, and it has to be maintained. It closes with the toolbox for work in small doses.
 
 The chapter's thesis fits in one sentence. The ability to earn a little, for a long time, whenever you choose, is the best defensive asset in this book, better than gold, better than TIPS. It is also the only one that makes your life richer at the same time as your plan.
 
@@ -25,7 +25,7 @@ In the plan, future earnings from work are not **counted** (the plan has to hold
 
 Here is what earlier chapters established piece by piece, pulled together.
 
-**The sequence effect.** EUR 12,000 a year of income through the first eight years of a plan that spends EUR 40,000 cuts net withdrawals by 30% across the fragile window. In the standard simulations (variant C of the founding example, [[sequence-of-returns]]), failure falls from about 18% to about 8%. Only another EUR 200,000 to EUR 300,000 of capital would match that. The hour you work inside the fragile window is the best-paid hour of your financial life.
+**The sequence effect.** $12,000 a year of income through the first eight years of a plan that spends $40,000 cuts net withdrawals by 30% across the fragile window. In the standard simulations (variant C of the founding example, [[sequence-of-returns]]), failure falls from about 18% to about 8%. Only another $200,000 to $300,000 of capital would match that. The hour you work inside the fragile window is the best-paid hour of your financial life.
 
 **And everything that rides along.** The same small income does more than land in the checking account.
 
@@ -34,7 +34,7 @@ Here is what earlier chapters established piece by piece, pulled together.
 - **Social Security credits.** Covered earnings buy quarters of coverage, four a year at most, and the dollar amount behind one credit is indexed every January, so read the current one off ssa.gov rather than off any book. The bigger mechanism sits in the benefit formula: it averages your highest 35 years of indexed earnings, so anyone who left before working 35 full years has zeros in that average. Every year you bill in early retirement replaces one of them, and the check waiting at 67 goes up for good.
 - **A softened sequence**, the effect above, the largest of the four by far, and the reason the other three are a bonus rather than the point.
 
-Add them up and a EUR 10,000 job during the bridge years is worth more to the plan than EUR 10,000 of avoided withdrawals, sometimes a good deal more, depending on what it does to your premium and to your benefit. No asset in the portfolio comes near that ratio.
+Add them up and a $10,000 job during the bridge years is worth more to the plan than $10,000 of avoided withdrawals, sometimes a good deal more, depending on what it does to your premium and to your benefit. No asset in the portfolio comes near that ratio.
 
 **And the psychological effect**, unquantifiable and unanimous. Retirees who **know** they can earn again sleep better and spend better (permission, [[the-psychology-of-spending]]). They go through crashes as spectators rather than hostages.
 
@@ -87,16 +87,16 @@ Three stances hold together. Pick one on purpose ([[building-your-plan]]).
 The consistency test is simple. Your withdrawal rate, your floor and your employability upkeep have to tell the **same** story. The 4.2% plan justified by "I can always go back to work", run by someone who has let their employability rot, is the most common inconsistency in the movement.
 
 ::: exemple Sam's bridge, the work-you-choose version
-Sam leaves at 47, with a plan that stands alone at 3.7%. He makes one design decision, FIRE with the option maintained, and gives it a real base. He targets about EUR 15,000 a year of consulting, billed through an entity he opened **before** he quit (six weeks a year, on his terms), which nets out to roughly EUR 10,000 in the household budget once self-employment tax and costs are paid.
+Sam leaves at 47, with a plan that stands alone at 3.7%. He makes one design decision, FIRE with the option maintained, and gives it a real base. He targets about $15,000 a year of consulting, billed through an entity he opened **before** he quit (six weeks a year, on his terms), which nets out to roughly $10,000 in the household budget once self-employment tax and costs are paid.
 
 Every year of the bridge, the ledger reads the same.
 
-- The EUR 10,000 brings withdrawals down to EUR 40,000, a current rate of 3.0%.
+- The $10,000 brings withdrawals down to $40,000, a current rate of 3.0%.
 - His health coverage stays on the exchange, and he re-runs the numbers each fall at open enrollment, because earned income moves them ([[us-healthcare-and-social-security]]).
 - Four Social Security credits land, and each billing year replaces a zero in his 35-year average, so the benefit waiting at 67 inches up. He reads the new figure off his statement at the annual review.
 - The network stays alive, with two recurring clients.
 
-He keeps the option of going to EUR 30,000 a year if a bad decade demanded it, sequence insurance whose strike price he knows. The lived cost is six weeks a year of work he enjoys at that dose. He tested it at double the dose during his prototype year, to find his limit. In the simulator, `Side income /yr` of EUR 10,000 with `Side income until year` set to 15 brings the central failure probability down to 2.1%. The strongest plan in this book is not the biggest. It is the best matched.
+He keeps the option of going to $30,000 a year if a bad decade demanded it, sequence insurance whose strike price he knows. The lived cost is six weeks a year of work he enjoys at that dose. He tested it at double the dose during his prototype year, to find his limit. In the simulator, `Side income /yr` of $10,000 with `Side income until year` set to 15 brings the central failure probability down to 2.1%. The strongest plan in this book is not the biggest. It is the best matched.
 :::
 
 ## The essentials

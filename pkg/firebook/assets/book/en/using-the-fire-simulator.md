@@ -11,13 +11,13 @@ The first two lenses need a portfolio. Without one they simply disappear, and th
 
 ## Getting started: with a portfolio, or without one
 
-**With no portfolio**, the page opens in parametric mode, where the market is three dials and nothing else: real return μ, volatility σ, and tail thickness df. This is sandbox mode, and it is the right place to learn the mechanics and size things roughly. It starts on a textbook case that describes nobody: EUR 600,000 of capital, EUR 24,000 of net spending a year, retirement at 40, a 42-year horizon, a EUR 12,000 pension from year 25, a three-year buffer, and a market at μ 5%, σ 11%, df 5. Those are demo numbers. Replace them with yours before you read anything into the output.
+**With no portfolio**, the page opens in parametric mode, where the market is three dials and nothing else: real return μ, volatility σ, and tail thickness df. This is sandbox mode, and it is the right place to learn the mechanics and size things roughly. It starts on a textbook case that describes nobody: $600,000 of capital, $24,000 of net spending a year, retirement at 40, a 42-year horizon, a $12,000 pension from year 25, a three-year buffer, and a market at μ 5%, σ 11%, df 5. Those are demo numbers. Replace them with yours before you read anything into the output.
 
-**With your portfolio**, the tool rebuilds the long real history of **your** holdings (through the `SIM` extensions), deflates it into constant euros, and gets two things out of it. First the central model's parameters: μ, σ and df fitted to your funds, then blended cautiously toward a world prior (more on that below). Then two purely historical models, historical windows and block bootstrap ([[historical-vs-parametric]]). You can also drag each holding's weight and watch the ruin figure recompute live. This is the mode worth the trouble: the two data columns exist at no other price.
+**With your portfolio**, the tool rebuilds the long real history of **your** holdings (through the `SIM` extensions), deflates it into constant dollars, and gets two things out of it. First the central model's parameters: μ, σ and df fitted to your funds, then blended cautiously toward a world prior (more on that below). Then two purely historical models, historical windows and block bootstrap ([[historical-vs-parametric]]). You can also drag each holding's weight and watch the ruin figure recompute live. This is the mode worth the trouble: the two data columns exist at no other price.
 
 On the web, the portfolio travels in the URL: `/firesimulator/e/<example>/` loads one of the example portfolios, `/firesimulator/p/<composition>/` a composition you write by hand, in the same grammar as the comparison page. From the command line, `pofo -fire` opens the bare simulator and `pofo -fire portfolio.txt` opens it with that portfolio loaded.
 
-Every amount on the page is **real** (constant purchasing power: inflation is already out, so a euro in year 30 buys what a euro buys today) and **net of tax** (tax is modeled separately, in the Taxes group). EUR 60,000 a year means EUR 5,000 a month of today's spending, forever ([[arithmetic-vs-geometric-returns]]).
+Every amount on the page is **real** (constant purchasing power: inflation is already out, so a dollar in year 30 buys what a dollar buys today) and **net of tax** (tax is modeled separately, in the Taxes group). $60,000 a year means $5,000 a month of today's spending, forever ([[arithmetic-vs-geometric-returns]]).
 
 ## The dashboard: the model strip
 
@@ -67,7 +67,7 @@ The parameters button opens the panel. Every control has a plain-language hover.
 
 **Cash buffer**: Buffer (years of spending), three by default, its real return, and the year refills stop. Mind the convention: the buffer is **carved out of** your starting capital, never added on top ([[cash-buffer]], [[refilling-the-buffer]]).
 
-**Taxes**: Tax on gains is charged on the gain share of every sale, by grossing the sale up. Withdrawing EUR 60k net sells more than EUR 60k of assets, and the effective burden climbs as unrealized gains build up. The 32.8% preset is one country's blended rate and nothing more: replace it with your own blended effective rate across your accounts ([[us-taxes-in-the-withdrawal-phase]]).
+**Taxes**: Tax on gains is charged on the gain share of every sale, by grossing the sale up. Withdrawing $60k net sells more than $60k of assets, and the effective burden climbs as unrealized gains build up. The 32.8% preset is one country's blended rate and nothing more: replace it with your own blended effective rate across your accounts ([[us-taxes-in-the-withdrawal-phase]]).
 
 **Simulation**: Simulated paths sets how many paths each model draws, 2,000 by default and 10,000 at most. At 2,000 the ruin figure moves by roughly plus or minus 0.7 point from one run to the next with nothing changed. That is sampling noise, and it is the first reason never to read the second decimal ([[failure-probability]]).
 
@@ -85,7 +85,7 @@ Several things are deliberately out of scope. No forecast: no model here predict
 
 ## The essentials
 
-- Two modes: the parametric sandbox, or the mode calibrated on your own funds, which is the only one that unlocks the data columns. Everything is in real euros, and spending is net of tax.
+- Two modes: the parametric sandbox, or the mode calibrated on your own funds, which is the only one that unlocks the data columns. Everything is in real dollars, and spending is net of tax.
 - The table at the top is a selector: click a column and the whole page recomputes under that lens. Plan between the central case and the broad sample.
 - Reading order: the strip (the spread), §02 and §03 (the real disasters, and the sequence), §04 (what flexibility costs in lived spending), §09 (the price of each margin).
 - The most powerful levers, in the usual order: spending and how flexible it is, the pension and early side income, and only then the portfolio.

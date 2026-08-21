@@ -21,7 +21,7 @@ Turn it around, and **bounded** flexibility applied to a plan that was already r
 
 ## The six forms, ranked by what they are worth
 
-**1. Side income (the most powerful "flexibility" of all, and it is not one).** EUR 10k to 15k a year of temporary income during a bad stretch does what no cut can do. It shrinks the withdrawals **without** shrinking the life, for as long as you need. And it turns up more often than people expect: the accounts show FIRE retirees generating it without even looking for it ([[voices-from-real-retirees]], [[going-back-to-work]], [[pensions-and-other-income]]). Going back to work is the real release valve of a tight plan, on one honest condition. It fades with age and with distance from your old trade. It is a margin for the first fifteen years, not for the whole thirty.
+**1. Side income (the most powerful "flexibility" of all, and it is not one).** $10k to $15k a year of temporary income during a bad stretch does what no cut can do. It shrinks the withdrawals **without** shrinking the life, for as long as you need. And it turns up more often than people expect: the accounts show FIRE retirees generating it without even looking for it ([[voices-from-real-retirees]], [[going-back-to-work]], [[pensions-and-other-income]]). Going back to work is the real release valve of a tight plan, on one honest condition. It fades with age and with distance from your old trade. It is a margin for the first fifteen years, not for the whole thirty.
 
 **2. The indexation freeze (the best pain-to-protection trade).** Skipping the inflation adjustment after a red year costs 2 to 3% of purchasing power, spread out and painless, and it disarms half of the squeeze, spending climbing with inflation while the portfolio stalls ([[fixed-inflation-adjusted-withdrawal]], [[inflation-and-withdrawal-rates]]). Call it 0.2 to 0.3 points for almost no pain. It is the first flexibility anyone should write down.
 
@@ -48,9 +48,9 @@ Two clear-eyed points to close on. First, flexibility gets **lived**. The ruin y
 Second, the condition that separates the flexibility that counts from the flexibility that does not exist: **writing it down**. Intention-flexibility ("we'll watch it if things go badly") has three fatal flaws. It fires too late, because the first down years get denied. It fires too small, because improvised cuts are symbolic, a canceled subscription instead of a reworked budget. And it gets improvised in fear, which produces the worst decisions in the whole repertoire ([[the-psychology-of-spending]]). Rule-flexibility (threshold written, size written, lifting written, [[when-to-worry]], [[building-your-plan]]) fires on time, in the right dose, and without a marital argument in the middle of a storm ([[couples-and-family]]). It is also the only kind a simulator can give you credit for. When it prints the failure probability of a plan "with flex", it is running a rule applied mechanically. If your real flexibility is an intention, your plan's true result is the one simulated **without** flexibility. Read that one.
 
 ::: exemple The same plan, three degrees of honesty
-The plan: EUR 1.4M, comfort spending EUR 52,000 (3.7%), 45 years.
+The plan: $1.4M, comfort spending $52,000 (3.7%), 45 years.
 
-The magic-phrase version: the rate pushed to 4.3% (EUR 60,000) "because we'll be flexible". The honest simulation (realistic bounded cuts) shows 11% central-case failure, and in the worst quartile the standard of living delivered falls to −25% for 9 years. The flexibility being invoked would have to deliver what it cannot hold.
+The magic-phrase version: the rate pushed to 4.3% ($60,000) "because we'll be flexible". The honest simulation (realistic bounded cuts) shows 11% central-case failure, and in the worst quartile the standard of living delivered falls to −25% for 9 years. The flexibility being invoked would have to deliver what it cannot hold.
 
 The honestly rigid version: 3.7% with no rule at all, failure at 5.5%.
 

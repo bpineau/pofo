@@ -1,7 +1,7 @@
 # Enhanced cash: money market funds, T-bills and AAA CLOs
 <!-- source: cash-ameliore @ df55b396faae -->
 
-The chapter on the buffer ([[cash-buffer]]) settles the question of size: how many years of spending to hold in cash, and what that costs in return. It does not say **what to fill that sleeve with**, and that is a decision in its own right. A retiree who keeps three years of spending on the side ties up something like EUR 60,000 to EUR 120,000, for thirty years. One extra point of yield on that money is a trip a year, forever.
+The chapter on the buffer ([[cash-buffer]]) settles the question of size: how many years of spending to hold in cash, and what that costs in return. It does not say **what to fill that sleeve with**, and that is a decision in its own right. A retiree who keeps three years of spending on the side ties up something like $60,000 to $120,000, for thirty years. One extra point of yield on that money is a trip a year, forever.
 
 The trouble is that every extra notch of yield is bought with risk, and that risk has a bad habit of waking up on exactly the day the short sleeve is needed. This chapter ranks the instruments from the most inert to the best paid, measures the real gap between them, and takes apart the rung fewest retirees know, the **AAA CLO**, which has been available in an ETF since 2020.
 
@@ -125,7 +125,7 @@ Two classic traps. Tax first, because the premium has to be compared after tax. 
 :::
 
 ::: exemple Three years of spending, three ways to hold it
-A household spends EUR 30,000 a year and keeps three years on the side, EUR 90,000. All of it in a Treasury money market fund earns the short rate, call it 4%, or EUR 3,600 a year. Split in thirds, a savings account, a money market fund and an AAA CLO ETF, it earns about EUR 400 a year more before tax, against a paper loss of EUR 700 to 800 on the exposed third in a 2022-style episode. The tradeoff is defensible, and it stays modest. That is the most useful lesson in this chapter: the short sleeve is managed for safety, and its yield is a bonus, never an objective.
+A household spends $30,000 a year and keeps three years on the side, $90,000. All of it in a Treasury money market fund earns the short rate, call it 4%, or $3,600 a year. Split in thirds, a savings account, a money market fund and an AAA CLO ETF, it earns about $400 a year more before tax, against a paper loss of $700 to $800 on the exposed third in a 2022-style episode. The tradeoff is defensible, and it stays modest. That is the most useful lesson in this chapter: the short sleeve is managed for safety, and its yield is a bonus, never an objective.
 :::
 
 ## The assembly rule

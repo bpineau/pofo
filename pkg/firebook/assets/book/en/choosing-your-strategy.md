@@ -84,13 +84,13 @@ The first three bars get settled on the back of an envelope, in one evening of c
 The final sitting takes an hour in front of a simulator. Set the candidate rule up with **your** parameters, not the ones from somebody else's blog post. Check the failure probability on the weight of the evidence: acceptable in the central case, tolerable on the broad sample, survivable in a lost decade ([[historical-vs-parametric]]). Then read the spending delivered in the worst quartile of paths, and make sure the life actually lived stays above the floor for stretches you could hold. Finally, run the candidate against the runner-up: same inputs, same market model, the rule the only thing that changes from one run to the next. That puts both finalists side by side on the decumulation frontier ([[withdrawal-strategies-overview]]). Then **write down** what matters: the rule, its parameters, its thresholds, the review date, the rule for the next phase, and the conditions for changing. You do not change rules in the middle of a crash. You decide it while calm, at the annual review, for reasons you wrote in advance. That one-page document is the final product of the whole of part IV, and [[building-your-plan]] folds it into the complete plan.
 
 ::: exemple The whole process, on a real case
-Claire (51) and Idris (53): EUR 1.7M, a floor of EUR 45,000, comfort at EUR 58,000, pensions of EUR 24,000 a year starting in 13 years.
+Claire (51) and Idris (53): $1.7M, a floor of $45,000, comfort at $58,000, pensions of $24,000 a year starting in 13 years.
 
 1. **Step 1**: an uncovered phase of 13 years, with the floor funded 100% by the portfolio, then 53% by the pensions.
-2. **Step 2, admission**: the fixed rule at 3.4% passes (58,000 on 1.7M); VPW fails the loss test **before** the pensions (income under stocks −50% is EUR 41,000, below the floor) but would pass after; ABW passes (g marked down, worst-quartile income EUR 47,500); the corridor scrapes through.
+2. **Step 2, admission**: the fixed rule at 3.4% passes (58,000 on 1.7M); VPW fails the loss test **before** the pensions (income under stocks −50% is $41,000, below the floor) but would pass after; ABW passes (g marked down, worst-quartile income $47,500); the corridor scrapes through.
 3. **Step 3, temperament**: Claire wants stability, Idris wants precision; on governance, Claire is the one who will run it.
 4. **Step 4**: the phase hybrid picks itself. Risk-based guardrails through the uncovered years (thresholds sized with the solver, a cut when central-case failure passes 13%, a raise below 1%, adjustments of plus or minus 10%, cut floor at 78%), then VPW on what is left once the pensions cover the floor.
-5. **Step 5**: central-case failure 4%, broad sample 9% (late failures, in the covered years), two cuts at most in the worst quartile, never below EUR 46,400. Signed, written, dated.
+5. **Step 5**: central-case failure 4%, broad sample 9% (late failures, in the covered years), two cuts at most in the worst quartile, never below $46,400. Signed, written, dated.
 
 Total time: two evenings, one of them conversation rather than arithmetic. That is the right proportion.
 :::

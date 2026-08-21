@@ -1,14 +1,14 @@
 # Sequence of returns risk: the retiree's real enemy
 <!-- source: sequence-des-rendements @ ac06601809cf -->
 
-Two retirees start with the same million, the same portfolio, the same EUR 40,000 inflation-indexed withdrawal. Over thirty years their portfolios earn exactly the same average return.
+Two retirees start with the same million, the same portfolio, the same $40,000 inflation-indexed withdrawal. Over thirty years their portfolios earn exactly the same average return.
 
 One ends up with two million. The other is broke at 78. The only difference: the **order** in which the same returns arrived.
 
 That is sequence of returns risk, and it is the central idea of this whole book. It explains why the safe withdrawal rate sits so far below average returns. It explains why the first ten years of retirement dominate everything. And it explains why most of the clever protections in the field are really anti-sequence weapons: glidepaths, cash buffers, flexibility, part-time income. By the end of this page you will know how to recognize the risk, how to measure it on your own plan, and what the full map of defenses looks like.
 
 ::: cle The fundamental asymmetry
-With no withdrawals, the order of returns is irrelevant: +30% then −20%, or −20% then +30%, leave you with the same capital (adding logarithms commutes). With withdrawals, the order decides everything: every euro you take out during a trough is a euro sold at the worst price, permanently removed from the rebound. A retiree converts temporary losses into permanent ones, euro for euro with what they withdraw. That is why the very same portfolio is far riskier in the withdrawal phase than in the accumulation phase.
+With no withdrawals, the order of returns is irrelevant: +30% then −20%, or −20% then +30%, leave you with the same capital (adding logarithms commutes). With withdrawals, the order decides everything: every dollar you take out during a trough is a dollar sold at the worst price, permanently removed from the rebound. A retiree converts temporary losses into permanent ones, dollar for dollar with what they withdraw. That is why the very same portfolio is far riskier in the withdrawal phase than in the accumulation phase.
 :::
 
 ::: figure sequence-risk
@@ -17,7 +17,7 @@ Two retirees, the same average return over thirty years and identical withdrawal
 
 ## The mechanism, in an example you will not forget
 
-Take three years of real returns: +20%, +10%, −25%. Geometric mean: near enough zero (1.20 × 1.10 × 0.75 = 0.99, or −0.3% a year). Starting capital EUR 1,000,000, EUR 40,000 withdrawn at the start of each year.
+Take three years of real returns: +20%, +10%, −25%. Geometric mean: near enough zero (1.20 × 1.10 × 0.75 = 0.99, or −0.3% a year). Starting capital $1,000,000, $40,000 withdrawn at the start of each year.
 
 **Favorable sequence (the crash last)**: +20%, +10%, −25%.
 
@@ -35,10 +35,10 @@ Take three years of real returns: +20%, +10%, −25%. Geometric mean: near enoug
 | 2 | 720,000 | 680,000 | +10% | 748,000 |
 | 3 | 748,000 | 708,000 | +20% | 849,600 |
 
-Same returns, same average, same withdrawals: EUR 887,400 against EUR 849,600. Almost EUR 38,000 apart, a full year of spending, in three years flat. Now stretch that mechanism across a bear market filling the entire first decade. Add withdrawals that eat a growing share of a shrinking capital every year. What you get is the distance between the 1966 and the 1982 vintages of US history. The first runs out before its horizon ends, the second finishes several times richer than it started. And the first was not short of returns: its portfolio compounded at 4.2% a year in real terms over thirty years, more than the 4% it was drawing. Its ruin turned on the order alone, a first decade at −1.2% a year against +11.4% for the 1982 vintage ([[the-trinity-study]]).
+Same returns, same average, same withdrawals: $887,400 against $849,600. Almost $38,000 apart, a full year of spending, in three years flat. Now stretch that mechanism across a bear market filling the entire first decade. Add withdrawals that eat a growing share of a shrinking capital every year. What you get is the distance between the 1966 and the 1982 vintages of US history. The first runs out before its horizon ends, the second finishes several times richer than it started. And the first was not short of returns: its portfolio compounded at 4.2% a year in real terms over thirty years, more than the 4% it was drawing. Its ruin turned on the order alone, a first decade at −1.2% a year against +11.4% for the 1982 vintage ([[the-trinity-study]]).
 
 ::: figure millesimes-1966-1982
-The same plan (EUR 1M, EUR 40k a year indexed to inflation) run on the real US 60/40, once from 1966 and once from 1982, both curves rebased to their starting day. Reconstructed for this book from the S&P 500, 5-year Treasuries and CPI-U.
+The same plan ($1M, $40k a year indexed to inflation) run on the real US 60/40, once from 1966 and once from 1982, both curves rebased to their starting day. Reconstructed for this book from the S&P 500, 5-year Treasuries and CPI-U.
 :::
 
 Here is the intuition worth keeping. In accumulation an early crash is a gift: you buy cheap for years. In withdrawal it is a hemorrhage: you sell cheap for years. The same event flips sign with the direction of the cash flows. Which is why your glorious record as a saver, "I sat through 2008 and 2020 without blinking", proves nothing about your exposure as a retiree. You were simply on the right side of the flows.
@@ -89,7 +89,7 @@ Every large family of protection in this field is, at bottom, an anti-sequence w
 No defense is free. A low withdrawal costs years of work. Cash and annuities cost return. Flexibility costs comfort, part-time income costs freedom. Designing a plan ([[building-your-plan]], [[choosing-your-strategy]]) means buying that anti-sequence protection at the best price for your situation. A household with an already high spending floor will buy cash buffer and deferred income. A flexible household will mostly buy an adaptive withdrawal rule, the best value for money for almost everyone.
 
 ::: exemple The same retirement, with and without defenses
-Base plan: EUR 1M, 60/40, a rigid EUR 40,000 a year, 45-year horizon; failure under sequence stress about 18%. Variant A, guardrails (cut to EUR 36,000 as soon as the current withdrawal rate passes 5%) gives about 7%. Variant B, three years of spending held as a cash buffer, drawn down in troughs and refilled at peaks, gives about 12%. Variant C, EUR 12,000 a year of side income for the first 8 years, gives about 8%. Variants A and C together give about 3%. The exact figures depend on the model, so test your own; the ranking, though, is robust: flexibility pays first, early income next, the buffer as a supplement.
+Base plan: $1M, 60/40, a rigid $40,000 a year, 45-year horizon; failure under sequence stress about 18%. Variant A, guardrails (cut to $36,000 as soon as the current withdrawal rate passes 5%) gives about 7%. Variant B, three years of spending held as a cash buffer, drawn down in troughs and refilled at peaks, gives about 12%. Variant C, $12,000 a year of side income for the first 8 years, gives about 8%. Variants A and C together give about 3%. The exact figures depend on the model, so test your own; the ranking, though, is robust: flexibility pays first, early income next, the buffer as a supplement.
 :::
 
 ## Three misunderstandings worth clearing up
@@ -102,7 +102,7 @@ Base plan: EUR 1M, 60/40, a rigid EUR 40,000 a year, 45-year horizon; failure un
 
 ## The essentials
 
-- With withdrawals, the order of returns matters as much as their average: early losses become permanent, euro for euro with what you withdraw during the trough.
+- With withdrawals, the order of returns matters as much as their average: early losses become permanent, dollar for dollar with what you withdraw during the trough.
 - The danger concentrates in the first 5 to 10 years, the fragile window; a plan that crosses it well has statistically won.
 - A ranking to memorize: arithmetic mean > geometric mean > sustainable rate. The brochures sell you the first, you live on the third.
 - Every large protection in the field is an anti-sequence weapon, each with its price; bounded flexibility offers the best protection per unit of cost for most plans.

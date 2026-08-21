@@ -39,18 +39,18 @@ The ladder is written into the plan and it is climbed in **order**. Each step ge
 - **Step 0, nothing**: normal operation in green, 90% of years.
 - **Step 1, the painless moves**: in amber, gentle savings, big discretionary purchases pushed back, an indexation freeze, about 5 to 8% off the spending without touching your life ([[flexibility-in-practice]]).
 - **Step 2, the written cut**: on a confirmed red, the rule's −10 to −15%, never below the floor, with the buffer switching on at its own thresholds, the two working together ([[refilling-the-buffer]]).
-- **Step 3, income**: on a red that persists past 18 to 24 months, you exercise the option you kept alive, and EUR 8k to 15k a year of contract work bends the curve more than any cut ([[going-back-to-work]]). This step is what the upkeep premium bought.
+- **Step 3, income**: on a red that persists past 18 to 24 months, you exercise the option you kept alive, and $8k to $15k a year of contract work bends the curve more than any cut ([[going-back-to-work]]). This step is what the upkeep premium bought.
 - **Step 4, the redesign**: a red that comes through steps 2 and 3 without bending. Rare. A full redesign, made while calm: the rate recomputed, the big assets on the table ([[real-estate-in-retirement]]), claiming a pension earlier put under study. This is plan v2, painful, orderly, and always available.
 
 That is what the slowness of ruin really buys: time to rebuild. The playbook fits in five lines of the template. Just having it in writing defuses most of the anxiety. What you truly dread is whatever you have no plan for.
 :::
 
 ::: exemple 2033 to 2036 on the dashboard
-Back to Aline and Thomas in their bad stretch ([[the-annual-review]]). In mid-2033 the market drops 19% and EUR 310k melts off their balance. Their Sunday-night question is not "what do we do?" but "what color are we?".
+Back to Aline and Thomas in their bad stretch ([[the-annual-review]]). In mid-2033 the market drops 19% and $310k melts off their balance. Their Sunday-night question is not "what do we do?" but "what color are we?".
 
 - **Mid-2033**: current rate 4.6%, amber. Step 1: the indexation freeze already provided for, the spring trip pushed back, the monthly check switched on. That is all. Not one holding moves.
 - **Early 2034**: another leg down takes the rate to 5.4%, so red, but that is only the first reading, and the hysteresis demands confirmation.
-- **Three months later**: 5.3%, red confirmed. The written cut applies, step 2, −10%, down to EUR 48,600, and the buffer carries the withdrawals. The decision took ten minutes. It had been written since 2029.
+- **Three months later**: 5.3%, red confirmed. The written cut applies, step 2, −10%, down to $48,600, and the buffer carries the withdrawals. The decision took ten minutes. It had been written since 2029.
 - **Mid-2035**: recovery to 4.4%, then 3.9%. The steps are climbed back down in reverse order: the cut lifted once the rate is under the threshold again, indexation restarted, the buffer refilled in calm weather.
 
 The tally of the crossing, the years spent inside a hostile market, as written in the log: two and a half years, two steps, zero sleepless nights over a decision, zero panic selling. And Thomas's line at the 2036 review sums up the chapter: "we never had to be brave, we only had to follow the list".

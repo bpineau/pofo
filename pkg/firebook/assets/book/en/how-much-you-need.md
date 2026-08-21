@@ -11,7 +11,7 @@ Target capital = (the gross annual spending of the life you are aiming at, tax o
 
 ## Step 1: what you actually spend
 
-The multiple amplifies everything. Miss EUR 200 a month and your target comes out EUR 60,000 to 80,000 short, which is one to two years of work. Your spending estimate therefore deserves more care than your choice of withdrawal rate.
+The multiple amplifies everything. Miss $200 a month and your target comes out $60,000 to $80,000 short, which is one to two years of work. Your spending estimate therefore deserves more care than your choice of withdrawal rate.
 
 **Start from the statements, not from memory.** Export 12 months, ideally 24, from every account and every card, and sort the lines. The gap between what people think they spend and what they spend is almost always 15 to 25%, and always in the same direction.
 
@@ -34,14 +34,14 @@ How much is taken depends on which account the money sits in, on how much of eac
 **Turn it into a single number.** Call it the friction: the share of a gross withdrawal that never reaches your bank account. Estimate it, write it down as an assumption, and gross your target spending up by it. A few percent for a modest, well-sheltered plan; more, sometimes a good deal more, for a large one drawn from a taxable account. Then replace the assumption with your own figure once you have run the numbers on your own accounts, and revisit it at the annual review, because it drifts upward as gains pile up.
 
 ::: exemple From net to gross
-Target spending: EUR 36,000 a year, net. Assumed tax friction on the withdrawals: 12% (an assumption, to be replaced by your own). Gross spending to fund: 36,000 / 0.88, about EUR 40,900 a year. At 3.5%, the target moves from EUR 1,029,000 (the naive calculation on the net figure) to EUR 1,169,000. Forgetting the tax would have undersized the plan by EUR 140,000, roughly two years of saving for a well-paid couple.
+Target spending: $36,000 a year, net. Assumed tax friction on the withdrawals: 12% (an assumption, to be replaced by your own). Gross spending to fund: 36,000 / 0.88, about $40,900 a year. At 3.5%, the target moves from $1,029,000 (the naive calculation on the net figure) to $1,169,000. Forgetting the tax would have undersized the plan by $140,000, roughly two years of saving for a well-paid couple.
 :::
 
 ## Step 3: subtract your non-portfolio income
 
 The portfolio does not have to fund what other income will fund. Three categories, each handled differently.
 
-**Your state pension.** Even someone who stops at 42 has usually banked years of contributions, and will draw a pension in their sixties: smaller than a full career would have earned, but real. Ignoring it is the most common cautious mistake, and it is paid for in years of work nobody needed. Do not subtract it from the budget, though, because it does not arrive for another twenty or twenty-five years. Model it as deferred income instead: a dated flow, in constant euros, that lightens the withdrawals from the year it starts. Any serious simulator accepts such a flow. The effect on failure probability is often dramatic, because a pension relieves exactly the long scenarios, the ones where the portfolio runs dry ([[us-healthcare-and-social-security]]).
+**Your state pension.** Even someone who stops at 42 has usually banked years of contributions, and will draw a pension in their sixties: smaller than a full career would have earned, but real. Ignoring it is the most common cautious mistake, and it is paid for in years of work nobody needed. Do not subtract it from the budget, though, because it does not arrive for another twenty or twenty-five years. Model it as deferred income instead: a dated flow, in constant dollars, that lightens the withdrawals from the year it starts. Any serious simulator accepts such a flow. The effect on failure probability is often dramatic, because a pension relieves exactly the long scenarios, the ones where the portfolio runs dry ([[us-healthcare-and-social-security]]).
 
 **Near-certain income**: rent from a property you own ([[real-estate-in-retirement]]), a pension already claimed, an annuity. Subtract these from the spending, after a prudence haircut for what can go wrong: vacancy, repairs, the tax they carry of their own.
 
@@ -75,19 +75,19 @@ The full calculation fits in five lines. Here it is on a realistic case.
 ::: exemple The calculation end to end
 Nadia and Marc, 41 and 43, are aiming to stop at 48.
 
-1. **24 months of statements** give EUR 3,400 a month of real spending, lumpy items annualized.
-2. **The life they are aiming at** adds EUR 350 a month of travel and leisure and EUR 220 a month of health coverage: **EUR 3,970 a month, or EUR 47,600 a year net**.
-3. **Assumed tax friction on the withdrawals**, 12%: **EUR 54,100 a year gross**.
-4. **Non-portfolio income**: none before 65. Pensions estimated at EUR 2,100 a month for the couple between 65 and 67, read off their official pension statements, given to the simulator rather than subtracted.
+1. **24 months of statements** give $3,400 a month of real spending, lumpy items annualized.
+2. **The life they are aiming at** adds $350 a month of travel and leisure and $220 a month of health coverage: **$3,970 a month, or $47,600 a year net**.
+3. **Assumed tax friction on the withdrawals**, 12%: **$54,100 a year gross**.
+4. **Non-portfolio income**: none before 65. Pensions estimated at $2,100 a month for the couple between 65 and 67, read off their official pension statements, given to the simulator rather than subtracted.
 5. **Multiple**: a 45-year horizon, a global 70/30, a floor at 75% of comfort, hence **3.5%, or 28.6x**.
 
-**Target: 54,100 × 28.6, about EUR 1,547,000.**
+**Target: 54,100 × 28.6, about $1,547,000.**
 
-Check it in a simulation, at EUR 1,550,000 and EUR 54,100 a year with pensions from 66: central-case failure probability around 5%, below the 10 to 20% working zone ([[failure-probability]]) by construction, since the pension is counted and the multiple is already cautious. The same plan **without** the pensions shows about 12%, and would have needed roughly EUR 200,000 more. The state pension is "worth" four years of work here. That is why it never gets left out.
+Check it in a simulation, at $1,550,000 and $54,100 a year with pensions from 66: central-case failure probability around 5%, below the 10 to 20% working zone ([[failure-probability]]) by construction, since the pension is counted and the multiple is already cautious. The same plan **without** the pensions shows about 12%, and would have needed roughly $200,000 more. The state pension is "worth" four years of work here. That is why it never gets left out.
 :::
 
 ::: figure cible-cascade
-The same calculation, step by step, in euros of capital. The two corrections the barstool version leaves out, tax friction and the state pension, each outweigh the travel budget, and they pull in opposite directions.
+The same calculation, step by step, in dollars of capital. The two corrections the barstool version leaves out, tax friction and the state pension, each outweigh the travel budget, and they pull in opposite directions.
 :::
 
 The number you land on is not a sacred finish line. It is the center of a range. Stress it: plus or minus 10% on the spending, plus or minus half a point on the rate, the pension pushed back two years. If the conclusion (in practice, your departure date) survives those shakes, the plan is solid. If it flips, you know which input to work on. Replaying the plan under a handful of variants is the most profitable thing you can do with a simulator, and far more useful than staring at the first verdict it printed.

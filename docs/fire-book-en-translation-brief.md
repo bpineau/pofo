@@ -117,9 +117,13 @@ non-negotiables:
 - French glosses of English finance terms disappear ("le volatility
   harvesting, la récolte de volatilité" -> "volatility harvesting").
 - Numbers: decimal point, comma thousands, `4%` with no space, `6.6%`.
-  Euro amounts STAY in euros (the plates and frozen data behind them are
-  euro-denominated), written the way the pilots do: `EUR 40,000`,
-  `EUR 1M`. A guard test rejects French number patterns in
+  Worked amounts read in DOLLARS, one for one with the French euro figure
+  and with no exchange rate applied (`1 M€` -> `$1M`, `40 000 €/an` ->
+  `$40,000 a year`, `8 à 15 k€` -> `$8k to $15k`); the illustrative numbers
+  are round and the replay data behind the plates is US data. The euro as a
+  CURRENCY stays wherever it is the subject: the euro area, a euro investor,
+  euro-denominated bonds, and any sentence contrasting "in euros" with "in
+  dollars" as evidence. A guard test rejects French number patterns in
   `assets/book/en/`.
 - Structure is preserved: same headings in the same order, same callouts,
   same figures, same "L'essentiel à retenir" / "Pour aller plus loin"
@@ -220,7 +224,8 @@ were unsure how to render (quote it, give your choice).
 ## Anti-patterns seen in past campaigns
 
 - Translating sentence by sentence and shipping calques.
-- Keeping French number formatting (`1 000 000 €`, `6,6 %`).
+- Keeping French number formatting (`1 000 000 €`, `6,6 %`), or leaving a
+  worked amount in euros instead of relabelling it in dollars.
 - Translating a `[[slug]]` target into words that are not in `plannedEN`.
 - Dropping or adding a `::: figure` block "because the plate is French":
   the plate is translated at render time, keep the block.
