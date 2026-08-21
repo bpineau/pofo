@@ -54,6 +54,10 @@ La brique se teste avant de s'acheter. Il faut pour cela un simulateur dont le c
 Plan : 1 M€, 38 000 €/an, 60 % actions / 40 % obligations, 45 ans. Version empilée : 67 % en fonds 90/60 (soit 60 d'actions et 40 d'obligations en exposition), 18 % trend, 10 % or, 5 % cash. Exposition totale ≈ 133 %, dont un étage défensif de 33 % qui n'existait pas. Lecture type au simulateur. Le central passe de 3,9 à 3,7 % (la prime empilée, nette du cash). Le stress passe de 5,4 à 4,6 % (le trend et l'or travaillent les régimes longs sans avoir désarmé les actions). Le pire drawdown réel passe de −34 % à −29 %. Mais l'année 2022 rejouée montre la facture du levier. Le cœur empilé y perd environ 21 % là où le 60/40 nu perd 17 %, et le plan complet ne s'en tire à environ −10 % que parce que le trend a très bien travaillé cette année-là. La clause écrite au plan : « levier global plafonné à 1,35 ; l'étage empilé est jugé net du taux court ; si le fonds cœur ferme ou change de politique, retour au 60/40 simple sous un mois ». Sans accepter cette dépendance à l'étage de diversification, ne signez pas les autres lignes.
 :::
 
+::: figure stacking-2022
+Le millésime 2022 du plan de l'exemple, posé en une addition. Le 60/40 nu perd 17 %, le cœur empilé 21 % : la facture du levier vaut quatre points, et elle est bien réelle. Le plan entier s'en tire pourtant à −10 %, parce que ce cœur ne pèse que 67 % du livre et que le tiers libéré a travaillé. La thèse de l'empilement se juge là, dans son année la plus hostile.
+:::
+
 ## Les règles de dose
 
 Elles tiennent en quatre lignes. Le levier global du plan (exposition totale sur capital) reste sous 1,5, et sous 1,3 pour un plan déjà tendu ou un horizon court. L'étage empilé est réservé aux instruments à dossier solide et à corrélation basse (obligations d'État quand leur prime au-dessus du cash est positive, trend, or), jamais aux paris. Le levier vit dans les fonds, jamais sur un compte sur marge personnel adossé au portefeuille de retrait. Et le tout se juge comme n'importe quelle brique, sur les pires millésimes du simulateur et non sur le backtest de la plaquette ([[pieges-des-simulateurs]]).
