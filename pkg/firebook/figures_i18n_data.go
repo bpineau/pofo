@@ -1477,6 +1477,28 @@ var figureDict = map[string]string{
 	"L'horizon se paie au début : de 10 à 30 ans le taux perd 6,5 points, de 50 ans à l'éternité il en perd 0,7.":             "The horizon is paid for early: from 10 to 30 years the rate loses 6.5 points, from 50 years to eternity it loses 0.7.",
 	"Arithmétique d'annuité, r / (1 − (1+r)^−n) à r = 4 % réel. Le capital finit à zéro le dernier jour, sans legs ni marge.": "Annuity arithmetic, r / (1 − (1+r)^−n) at r = 4% real. The capital lands on zero on the last day, with no estate and no margin.",
 
+	// levier-reset. "Reset" is the English word the French plate already
+	// borrows, so the column names translate to the plain frequencies and the
+	// axis keeps the word.
+	"LEVIER ET REMISE À NIVEAU":                       "LEVERAGE AND ITS RESET",
+	"Le levier n'a pas qu'une taille, il a un rythme": "Leverage has a size, and it also has a rhythm",
+	"Capital final d'une exposition ×2 sur le S&amp;P 500, en part de ce que rendrait un levier sans frottement de chemin": "Ending capital of a ×2 exposure on the S&amp;P 500, as a share of what leverage with no path friction would return",
+	"2000-2009, décennie heurtée (σ 22 %)":  "2000-2009, the choppy decade (σ 22%)",
+	"2010-2019, décennie porteuse (σ 15 %)": "2010-2019, the trending decade (σ 15%)",
+	"levier-reset|quotidien":                "daily",
+	"levier-reset|mensuel":                  "monthly",
+	"levier-reset|annuel":                   "yearly",
+	"fréquence de remise à niveau du levier, de la plus rapide à la plus lente  →": "how often the leverage is reset, fastest to slowest  →",
+	"repère 100 % : 2 × la croissance composée de l'indice, financement déduit":    "100% benchmark: 2 × the index's compounded growth, financing deducted",
+	"creux de 2008 : ×0,03": "2008 trough: ×0.03",
+	"levier effectif ×33":   "effective leverage ×33",
+	"Le point « quotidien » est le repère moins σ² par an, le beta slippage : 4,9 points en 2000-2009, 2,2 en 2010-2019.":             "The \"daily\" point is the benchmark less σ² a year, the beta slippage: 4.9 points in 2000-2009, 2.2 in 2010-2019.",
+	"S&amp;P 500, rendement total nominal. Les trois colonnes portent la même exposition ×2, financée à 1 × le bon du Trésor 3 mois.": "S&amp;P 500, nominal total return. All three columns carry the same ×2 exposure, financed at 1 × the 3-month T-bill.",
+	"Seule la fréquence de remise à niveau change. La colonne annuelle est un prêt à terme d'un an, renouvelé chaque 1er janvier.":    "Only the reset frequency changes. The yearly column is a one-year term loan, rolled every January 1.",
+	"Le repère à 100 % double la croissance composée de l'indice, financement déduit. C'est un étalon, pas un produit achetable.":     "The 100% benchmark doubles the index's compounded growth, financing deducted. It is a yardstick, not a product you can buy.",
+	"L'indice nu, sans levier, finit à ×0,91 sur 2000-2009, mieux que les trois colonnes, et à ×3,6 sur 2010-2019.":                   "The bare index, unlevered, ends at ×0.91 over 2000-2009, ahead of all three columns, and at ×3.6 over 2010-2019.",
+	"Un ETF à levier réel paie en plus ses frais et un écart de financement au-dessus du taux du bon du Trésor.":                      "A real leveraged ETF also pays its fees and a financing spread over the T-bill rate.",
+
 	// drag-volatilite. The asset names are the ones the English article's own
 	// table uses, so the plate and the table right above it agree.
 	"ARITHMÉTIQUE ET GÉOMÉTRIQUE":                      "ARITHMETIC AND GEOMETRIC",
