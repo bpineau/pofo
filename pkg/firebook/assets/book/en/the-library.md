@@ -1,5 +1,5 @@
 # The library: sites, papers, books, tools
-<!-- source: bibliotheque @ 632e7005eb32 -->
+<!-- source: bibliotheque @ 27f0ee1dde5f -->
 
 Everything this book cites, plus what belongs on your shelf if you want to keep going on your own: every reference annotated in a sentence or two (**why** to read it, and where to get it), sorted by kind, each with the chapter of this book that leans on it. Links are given by name, because URLs change and names do not. The last section lays out reading paths, since a library with no reading order is just a pile.
 
@@ -114,7 +114,7 @@ One rule of discipline goes with the calendar. Read these values once a year, on
 **Fund screeners, and the funds' own documents**: how you pick a building block and check what it really tracks, expense ratio and all. [[building-it-with-us-etfs]]
 
 ::: astuce Three reading paths
-**The complete beginner**: this book, parts I and II, then *The Simple Path to Wealth* for accumulation, then ERN Parts 1 and 26, then back to parts IV and X. **The quant in a hurry**: the whole ERN series (with [[the-ern-series]] as the map), then Anarkulova-Cederburg, then Ilmanen 2022, then parts III and V of this book as the tooled counterpoint. **The nearly-gone**: parts VIII to X of this book, then the Social Security audit, then this year's Morningstar report, then Zelinski and *Die With Zero* for the life. After that, [[building-your-plan]], with a simulator open beside you.
+**The complete beginner**: this book, parts I and II, then *The Simple Path to Wealth* for accumulation, then ERN Parts 1 and 26, then back to parts IV and X. **The quant in a hurry**: the whole ERN series (with [[the-ern-series]] as the map), then Anarkulova-Cederburg, then Ilmanen 2022, then parts III and V of this book as the tooled counterpoint. **The nearly-gone**: parts IX to XI of this book, then the Social Security audit, then this year's Morningstar report, then Zelinski and *Die With Zero* for the life. After that, [[building-your-plan]], with a simulator open beside you.
 :::
 
 ## The essentials
