@@ -26,7 +26,11 @@
 //   - DonorChain assembles a young fund's past out of REAL records of the same
 //     trade instead of a reconstruction, nearest first: another manager's fund
 //     NAVs, or, for a fund whose whole programme replicates a published index,
-//     that index itself. Each donor is volatility-matched to the target and
+//     that index itself, and for the DBi family that index read through the ten
+//     futures contracts the fund actually holds (DBiReplication in
+//     dbireplica.go, bundled as refdata by cmd/gen-dbi-refdata: half the
+//     composite, half a rolling regression of it on those ten contracts with
+//     the intercept discarded, which tracks the fund better than either side). Each donor is volatility-matched to the target and
 //     lifted to the target's own fee load (see feeAligned in the recipes); a
 //     donor that does not quote daily is projected onto the engine's calendar
 //     first, the engine's day-to-day amplitude rescaled (textureScale) so the

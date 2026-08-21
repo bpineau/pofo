@@ -2550,13 +2550,18 @@ const (
 
 // dbiDonors are the records spliced behind the DBi family, nearest trade first.
 // Measured against DBMF over its own live window (monthly correlation, the
-// honest yardstick for a sleeve held for years): the all-styles composite 0.85
-// from 2000-01, Man AHL Diversified 0.77 from 1996-03. The single funds that
-// held the 2000-2019 slot until 2026-08 (the Virtus AlphaSimplex fund 0.81 from
-// 2010-08 and the Guggenheim fund 0.72 from 2007-02) are gone from this chain:
-// the index covers their whole era and tracks the fund better than either,
-// which is unsurprising given that reproducing that index is what DBi's
-// programme does.
+// honest yardstick for a sleeve held for years): the composite half-projected
+// on the fund's own ten futures 0.89 from 2000-03 (DBiDonorID, see
+// dbireplica.go), the raw all-styles composite 0.85 for the quarter before
+// that, Man AHL Diversified 0.77 from 1996-03. The single funds that held the
+// 2000-2019 slot until 2026-08 (the Virtus AlphaSimplex fund 0.81 from 2010-08
+// and the Guggenheim fund 0.72 from 2007-02) are gone from this chain: the
+// index covers their whole era and tracks the fund better than either, which is
+// unsurprising given that reproducing that index is what DBi's programme does.
+//
+// The raw composite is kept behind the projected one rather than dropped: the
+// projection costs sixty trading days of warm-up, and the index itself is a
+// better donor for that quarter than a weekly-dealing fund of another manager.
 //
 // ahlDiversified is the deepest donor of the family and the one that made the
 // sparse-cadence handling necessary: the fund dealt WEEKLY until 2016, so the
@@ -2567,7 +2572,7 @@ const (
 // thing: 1998 +41 %, 2008 +33 %, 2022 +12 %.
 const ahlDiversified = "IE0000360275"
 
-var dbiDonors = []string{allStylesIndex, ahlDiversified}
+var dbiDonors = []string{DBiDonorID, allStylesIndex, ahlDiversified}
 
 // The other chains' donors, nearest trade first. Each recipe declares them
 // once and passes the same slice to feeAligned and to Recipe.Donors, so the
@@ -2625,6 +2630,10 @@ var (
 //	               management + 0.18 % expense cap + 0.01 % subscription tax
 //	               (prospectus supplement); see trendPerfFee for the rest
 //
+// The DBi family's nearest donor (DBiDonorID) is an average of two things, so
+// its load is the average of theirs: half the composite's estimated 2 %, half a
+// futures portfolio that pays no manager at all, hence 1.00 %.
+//
 // One entry is ESTIMATED rather than read off a price list, and it is the only
 // one: the two INDEX donors. An index of funds levies nothing itself, but every
 // return in it arrives net of a constituent manager's own fees, so what it
@@ -2645,6 +2654,7 @@ var trendFeeLoad = map[string]float64{
 	ahlDiversified: 0.0274,
 	allStylesIndex: 0.0200, // estimated, see above
 	pureTrendIndex: 0.0200, // estimated, see above
+	DBiDonorID:     0.0100, // half the composite's estimated load, half a fee-free futures book
 	"DBMF":         0.0085,
 	"LU2951555585": 0.0075,
 	"DBMFE":        0.0075,
@@ -2754,23 +2764,31 @@ func dbiChain(name string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.T
 }
 
 // dbmfRecipe reconstructs the iMGP DBi Managed Futures ETF behind the very
-// index its programme sets out to replicate: the published net ALL-STYLES
-// composite, daily from 2000-01, in place of the two single funds of other
-// managers that held that era until 2026-08.
+// index its programme sets out to replicate, and behind that index READ THE WAY
+// THE FUND READS IT: the published net ALL-STYLES composite, half of it
+// projected onto the ten futures contracts the fund actually holds
+// (DBiDonorID, see dbireplica.go), daily from 2000-03.
 //
-// It measures better on the fund's own live window (monthly correlation 0.85
-// against the nearest single fund's 0.81, and a CAGR gap that swings less
-// across two disjoint halves of that window), and the residual level gap has a
-// name for once. DBi copies the index constituents' positions at 0.85 % flat
-// where the index arrives net of those constituents' 2-and-20, and the uplift
-// only claims back the 2, so the reconstruction is expected to sit under the
-// fund by roughly what a performance fee costs. It does: about two points a
-// year. Closing the rest would mean granting DBi's own edge to the backcast.
+// Each step of that was measured on the fund's own live window (2019-05 to
+// 2026-07). Swapping the two single funds of other managers for the index they
+// replicate took the monthly correlation from 0.81 to 0.85 in 2026-08;
+// projecting half the index onto the fund's own instrument set takes it to
+// 0.89, cuts the tracking error from 10.0 % to 8.2 % of a 12.4 % volatility,
+// and, the criterion that actually decides a donor, cuts the swing of the CAGR
+// gap between two disjoint halves of the window from 5.2 points to 1.2.
+//
+// The residual level gap has a name, and it survives: DBi copies the index
+// constituents' positions at 0.85 % flat where the index arrives net of those
+// constituents' 2-and-20, and the uplift only claims back the 2, so the
+// reconstruction is expected to sit under the fund by roughly what a
+// performance fee costs. It does, by about 1.3 points a year. Closing the rest
+// would mean granting DBi's own edge to the backcast.
 func dbmfRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMF",
 		Name: "iMGP DBi Managed Futures: real managed-futures NAVs, then a TSMOM reconstruction",
-		Method: "the published net all-styles managed-futures composite the fund replicates, spliced behind it from 2000-01, volatility-matched to it and lifted +1.15%/yr to put its constituents' 2%/yr management load on the fund's own 0.85%, " +
+		Method: "the published net all-styles managed-futures composite the fund replicates, half of it projected onto the ten futures contracts the fund holds (the fund's own published process, run on the index), spliced behind it from 2000-03, volatility-matched to it and lifted +0.15%/yr for the fee load it carries; " +
+			"the raw composite for the quarter before that (+1.15%/yr), " +
 			"then real NAVs of Man AHL Diversified (1996-03, +1.89%/yr, its weekly NAVs projected onto the reconstruction's daily calendar), the file starting at that deepest donor's own first NAV, real DBMF grafted from 2019",
 		Donors:          dbiDonors,
 		Build:           dbiChain("DBMF (donor chain)", feeAligned("DBMF", dbiDonors), mfConfig(0.115, 0.0085)),
@@ -2790,7 +2808,7 @@ func dbmfpaRecipe() Recipe {
 		ID:   "LU2951555585",
 		Name: "iMGP DBi Managed Futures UCITS USD: the US ETF, then the donor chain",
 		Method: "the US-listed DBMF itself (same manager, same strategy, same currency: monthly correlation 0.97 on their overlap) from 2019, lifted 0.10%/yr for the cheaper UCITS fee load, " +
-			"then the net all-styles composite the fund replicates (2000-01, +1.25%/yr) and Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
+			"then the net all-styles composite half-projected onto the fund's own ten futures (2000-03, +0.25%/yr), the raw composite for the quarter before it (+1.25%/yr) and Man AHL Diversified (1996-03, +1.99%/yr), the file starting at that deepest donor's own first NAV, real DBMF.PA grafted from 2025",
 		Donors:          append([]string{"DBMF"}, dbiDonors...),
 		Build:           dbiChain("DBMF.PA (donor chain)", feeAligned("LU2951555585", append([]string{"DBMF"}, dbiDonors...)), mfConfig(0.115, 0.0075)),
 		ValidateAgainst: "LU2951555585",
@@ -2810,7 +2828,7 @@ func dbmfeRecipe() Recipe {
 	return Recipe{
 		ID:   "DBMFE",
 		Name: "iMGP DBi Managed Futures EUR unhedged: the US ETF and its donor chain, in EUR",
-		Method: "the US-listed DBMF itself from 2019, then the net all-styles composite the fund replicates (2000-01) and Man AHL Diversified (1996-03), each lifted to the UCITS class's 0.75%/yr fee load, the file starting at that deepest donor's own first NAV, " +
+		Method: "the US-listed DBMF itself from 2019, then the net all-styles composite half-projected onto the fund's own ten futures (2000-03), the raw composite for the quarter before it and Man AHL Diversified (1996-03), each lifted to the UCITS class's 0.75%/yr fee load, the file starting at that deepest donor's own first NAV, " +
 			"the whole converted USD→EUR at EURUSD spot (bundled ECU/DM/EUR proxy back to 1971), real DBMFE grafted from 2025",
 		Donors:          append([]string{"DBMF"}, dbiDonors...),
 		Build:           dbmfeBuild,
@@ -2868,7 +2886,7 @@ func mfehRecipe() Recipe {
 	return Recipe{
 		ID:   "MFEH",
 		Name: "iMGP DBi Managed Futures EUR-hedged: the USD chain, hedged to EUR",
-		Method: "the same USD donor chain as the UCITS USD class (the US-listed DBMF from 2019, the net all-styles composite 2000-01, Man AHL Diversified 1996-03, fee-aligned to the 0.75%/yr UCITS load) " +
+		Method: "the same USD donor chain as the UCITS USD class (the US-listed DBMF from 2019, the net all-styles composite half-projected onto the fund's ten futures 2000-03, the raw composite before it, Man AHL Diversified 1996-03, fee-aligned to the 0.75%/yr UCITS load) " +
 			"hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); real MFEH grafted from its 2026-05 inception",
 		Donors: append([]string{"DBMF"}, dbiDonors...),
 		Build:  mfehBuild,
