@@ -1,5 +1,5 @@
 # Inflation and the withdrawal rate: the exact link
-<!-- source: inflation-et-taux-de-retrait @ c3c56c847d13 -->
+<!-- source: inflation-et-taux-de-retrait @ fa7b9fcccff9 -->
 
 Everyone knows inflation is bad for retirees. Almost nobody can say **where** it attacks a withdrawal plan. Five years at 8% do incomparably more damage than thirty years running a point above plan, even though the cumulative loss of purchasing power is the same.
 
@@ -18,6 +18,11 @@ A plan simulated **in real terms** already carries average inflation. Working in
 Take the fixed inflation-adjusted rule ([[fixed-inflation-adjusted-withdrawal]]) through an episode. Inflation at 8% raises the withdrawal by 8% a year: that is the contract, and purchasing power holds. The nominal portfolio does not keep up, because bonds lose price and equity multiples compress. The current withdrawal rate, the withdrawal divided by the portfolio, then climbs at both ends: the numerator rises mechanically, the denominator falls in real terms. That is the squeeze, and its violence is pure arithmetic. Three years at 9% inflation with a flat nominal portfolio take a current rate of 4% to about 5.2%, the equivalent of a 23% crash, without a single day of crash.
 
 This is why 1966 is a worse vintage than 1929 in every study ([[the-trinity-study]]). The 1929 crash is brutal, then it gives back: deflation pulls nominal withdrawals down with prices, and indexation starts working in your favor. The 1966 to 1981 episode never gives anything back. Fifteen years of squeeze.
+
+::: figure voyants-1929-1966
+The plan's warning light, year after year, for the same indexed 4% withdrawal starting in 1929 and then in 1966. The 1929 one rings for three years, tops out at 6.3% in 1932, then comes back down: real capital rebuilds while deflation pulls the nominal withdrawal down with it. The 1966 one crosses 8% in 1975 and never comes back, leaves the scale in 1988 and empties the account in 1991. A detail that confirms the thesis: the 1929 vintage's true maximum is not its crash, it is the post-war inflation of 1949.
+:::
+
 
 The corollary for withdrawal rules follows at once. The anti-inflation amendments to the fixed rule go straight at this mechanism: cap the indexation, or freeze it after a red year ([[fixed-inflation-adjusted-withdrawal]]). Giving up 2 to 3 points of indexation during an episode disarms half the squeeze at a modest cost in purchasing power, spread over years. It is the best pain-to-protection trade in the whole flexibility toolkit ([[flexibility-in-practice]]).
 
