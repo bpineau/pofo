@@ -22,6 +22,9 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **Bengen (règle de)** : le retrait fixe indexé sur l'inflation. La règle fondatrice (1994) et l'étalon de toutes les comparaisons. [[retrait-fixe-bengen]], [[etude-trinity]]
 
+**Beta slippage** : ce que la remise à niveau quotidienne du levier ajoute au volatility drag. Un produit ×L à reset quotidien paie L² fois le frein de l'indice, pas L : pour un ×2, quatre fois. Joue dans les deux sens, contre vous en marché haché, pour vous en tendance suivie. [[rendements-arithmetiques-geometriques]], [[levier-et-marges]]
+
+
 **Bond tent (tente obligataire)** : monter la part obligataire à l'approche du départ, la redescendre pendant la première décennie. Le sommet de prudence sur la fenêtre fragile. [[glidepaths]]
 
 **Bootstrap (par blocs)** : rééchantillonner l'histoire en tirant des blocs de plusieurs années recollés. Des histoires synthétiques faites de morceaux réels. [[historique-vs-parametrique]]

@@ -1,5 +1,5 @@
 # The FIRE and withdrawal glossary
-<!-- source: lexique @ 773915a72b6f -->
+<!-- source: lexique @ 8fa4c5829e94 -->
 
 Every term in this book, and the forum jargon around it, defined in a few sentences, with a pointer to the chapter that covers it. A glossary is something you look things up in, but this one is also meant to be **read**. Straight through, it works as a summary of the book in alphabetical order. The last section pulls the thirteen numbers that turn up everywhere into one table, so you can check your ballpark at a glance.
 
@@ -26,6 +26,9 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 **Bend points**: the boundaries in the Social Security benefit formula, which replaces 90% of the first slice of your average indexed monthly earnings, 32% of the next and 15% of the rest. Steeply progressive, and cheerful news for a short career: the zeros in the 35-year average pull the average down, but the dollars that survive land where they are replaced at 90 cents instead of 15. A FIRE career therefore gets a smaller benefit and a better replacement rate on what it did earn, which is why the honest number is usually less alarming than the missing years suggest. [[us-healthcare-and-social-security]]
 
 **Bengen rule**: the fixed withdrawal indexed to inflation. The founding rule (1994), and the yardstick every comparison is measured against. [[fixed-inflation-adjusted-withdrawal]], [[the-trinity-study]]
+
+**Beta slippage**: what the daily reset of leverage adds to volatility drag. A daily-reset xL product pays L squared times the index's own drag, not L: four times, for a x2. It cuts both ways, against you in choppy markets, for you in a sustained trend. [[arithmetic-vs-geometric-returns]], [[leverage-and-margin]]
+
 
 **Block bootstrap**: resampling history by drawing multi-year blocks and gluing them together. Synthetic histories made of real pieces. [[historical-vs-parametric]]
 
