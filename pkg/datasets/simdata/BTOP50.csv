@@ -3,7 +3,7 @@
 # name: Barclay BTOP50 managed futures (index, net of manager fees)
 # method: monthly BTOP50 net composite (TREND-NET-USD refdata, 1986-12→) with the daily shape of the net pure-trend composite (TREND-PURE-NET-USD, 2000-01→); no fund fee added and no volatility rescaling, the index is served at its own level and its own ~9.3% volatility
 # validation: not validated (no real series)
-# generated: 2026-08-09
+# generated: 2026-08-19
 date,close
 1986-12-31,100.000000
 1987-01-31,111.000000

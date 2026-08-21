@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: DECASH-EUR
 # name: German 3-month money-market accrual (EUR/DM, monthly)
-# source: OECD MEI German 3-month interbank rate DEU.IR3TIB01 (~1960) compounded into a money-market level; via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.
+# source: OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01) compounded into a money-market level; via DBnomics. Pre-euro cash tail spliced under EURCASH-EUR at 1994.
 date,close
 1960-01-01,100.000000
 1960-02-01,100.362865

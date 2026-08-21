@@ -3,7 +3,7 @@
 # name: ERES Xtrackers Actions Monde M (FCPE): MSCI World net TR in EUR, 0.50%/yr all-in
 # method: MSCI World net TR in EUR (the WPEA path: real IWDA from 2009, MSCIWORLD-USD refdata + daily shape before, converted USD→EUR at EURUSD spot back to 1971) less the FCPE's 0.50%/yr all-in charge; no real quotes exist for an FCPE, nothing is grafted
 # validation: not validated (no real series)
-# generated: 2026-08-09
+# generated: 2026-08-19
 date,close
 1971-01-31,100.000000
 1971-02-28,101.088070

@@ -3,7 +3,7 @@
 # name: Plenum CAT Bond Defensive R EUR (backcast)
 # method: the EUR-hedged ILS fund composite (see ILSFUNDE), lifted to the class's ongoing charge and rescaled to its own monthly volatility, spliced behind the fund's real NAVs; monthly before 2010-09, the fund's own weekly cadence after
 # validation: corr=0.295 (weekly 0.418) beta=0.30 TE=6.9%/yr CAGR sim 2.37% vs real 1.88% (overlap 834 d from 2010-09-06 to 2026-08-07) vs LI0115208543
-# generated: 2026-08-17
+# generated: 2026-08-19
 date,close
 2005-12-31,81.948109
 2006-01-02,81.964635

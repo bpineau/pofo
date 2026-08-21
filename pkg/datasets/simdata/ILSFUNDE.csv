@@ -3,7 +3,7 @@
 # name: ILS Advisers Fund Index, hedged to EUR (index)
 # method: the ILS net composite (see ILSFUND) financed at USD cash (^IRX, extended by TBILL-3M) and re-earning euro cash (the deep euro overnight chain) = the EUR-hedged view of the index; no fund fee added, no volatility rescaling
 # validation: not validated (no real series)
-# generated: 2026-08-17
+# generated: 2026-08-19
 date,close
 2005-12-31,100.000000
 2006-01-02,100.020167
