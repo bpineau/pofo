@@ -969,7 +969,7 @@ func figVpwTable() string {
 	for _, age := range []float64{40, 65, 85} {
 		r := vpwRate(g, int(100-age)) * 100
 		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4" fill="%s"/>`, x(age), yr(r), figDeep)
-		b.WriteString(mTxt(x(age)+7, yr(r)-7, 10.5, figDeep, "start", "600", fmt.Sprintf("%.1f %%", r)))
+		b.WriteString(mTxt(x(age)+7, yr(r)-7, 10.5, figDeep, "start", "600", frNum(r, 1)+" %"))
 	}
 	b.WriteString(sTxt(x(44), yr(6.4), 10.5, figSoft, "start", "400", "vingt-cinq ans de quasi-pourcentage fixe"))
 
@@ -1064,7 +1064,7 @@ func figCorridorBorne() string {
 		if i == 1 {
 			off = 32
 		}
-		b.WriteString(mTxt(x(n), y(82)+off, 10.5, bd.color, "middle", "600", fmt.Sprintf("%.1f ans", n)))
+		b.WriteString(mTxt(x(n), y(82)+off, 10.5, bd.color, "middle", "600", frNum(n, 1)+" ans"))
 	}
 	b.WriteString(sTxt(x(24), y(63), 10.5, figGreen, "end", "600", "−2 %"))
 	b.WriteString(sTxt(x(24), y(56)+4, 10.5, figDeep, "end", "600", "−2,5 %"))

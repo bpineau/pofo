@@ -30,7 +30,7 @@ func TestFigScaleMaps(t *testing.T) {
 func TestAxisTicksConventions(t *testing.T) {
 	s := figScale{Min: -2, Max: 6, Px0: 300, Px1: 100}
 	var b strings.Builder
-	axisTicks(&b, s, []float64{-2, 0, 2, 4, 6}, "%.0f %%", 80, 560, false)
+	axisTicks(&b, s, []float64{-2, 0, 2, 4, 6}, 0, " %", 80, 560, false)
 	out := b.String()
 	if n := strings.Count(out, "<line"); n != 5 {
 		t.Errorf("%d gridlines for 5 ticks", n)
@@ -49,12 +49,37 @@ func TestAxisTicksConventions(t *testing.T) {
 	}
 	// Passing one extent twice draws the labels alone.
 	var bare strings.Builder
-	axisTicks(&bare, figScale{Min: 0, Max: 10, Px0: 80, Px1: 560}, []float64{0, 5, 10}, "%.0f", 300, 300, true)
+	axisTicks(&bare, figScale{Min: 0, Max: 10, Px0: 80, Px1: 560}, []float64{0, 5, 10}, 0, "", 300, 300, true)
 	if strings.Contains(bare.String(), "<line") {
 		t.Error("an axis given no extent still ruled the plate")
 	}
 	if !strings.Contains(bare.String(), `text-anchor="middle"`) {
 		t.Error("a horizontal axis does not centre its labels under the ticks")
+	}
+}
+
+// The plates are single-source French: a tick label carries a decimal COMMA and
+// the book's typographic minus, never a point or an ASCII hyphen. The English
+// edition reformats them mechanically, which only works from French input.
+func TestAxisTicksLabelsSpeakFrench(t *testing.T) {
+	var b strings.Builder
+	axisTicks(&b, figScale{Min: -2, Max: 2, Px0: 100, Px1: 500},
+		[]float64{-1.5, 0, 1.5}, 1, " %", 60, 60, true)
+	out := b.String()
+	for _, want := range []string{">" + figMinus + "1,5 %<", ">0,0 %<", ">1,5 %<"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("the axis does not carry %q", want)
+		}
+	}
+	if strings.Contains(out, "1.5") || strings.Contains(out, ">-") {
+		t.Error("a tick label fell back to a point decimal or an ASCII hyphen")
+	}
+	// The suffix is appended verbatim, and an empty one leaves the bare number.
+	var bare strings.Builder
+	axisTicks(&bare, figScale{Min: 0, Max: 10, Px0: 100, Px1: 500},
+		[]float64{5}, 0, "", 60, 60, true)
+	if !strings.Contains(bare.String(), ">5<") {
+		t.Error("an axis given no suffix still dressed its labels")
 	}
 }
 

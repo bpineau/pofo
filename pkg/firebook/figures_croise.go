@@ -116,7 +116,7 @@ func figEchantillonCroise() string {
 	b.WriteString(sTxt((bx0+bx1)/2, croTop-6, 10, figMuted, "middle", "600",
 		"là où tout le monde se dimensionne"))
 
-	axisTicks(&b, ruin, []float64{0, 10, 20, 30, 40}, "%.0f %%", croX0, croX1, false)
+	axisTicks(&b, ruin, []float64{0, 10, 20, 30, 40}, 0, " %", croX0, croX1, false)
 	for r := 2.0; r <= 5.001; r += 0.5 {
 		b.WriteString(mTxt(rate.Map(r), croBot+18, 10, figMuted, "middle", "400", frNum(r, 1)+" %"))
 	}

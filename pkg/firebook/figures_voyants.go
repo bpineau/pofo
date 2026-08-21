@@ -162,7 +162,7 @@ func figVoyants19291966() string {
 	b.WriteString(sTxt(voyX1-6, by0-6, 9.5, figBad, "end", "600",
 		"la zone dont on ne revient pas"))
 
-	axisTicks(&b, rate, []float64{0, 4, 8, 12, 16, 20, 24}, "%.0f %%", voyX0, voyX1, false)
+	axisTicks(&b, rate, []float64{0, 4, 8, 12, 16, 20, 24}, 0, " %", voyX0, voyX1, false)
 	for y := 0; y < voyantYears; y += 5 {
 		b.WriteString(mTxt(year.Map(float64(y)), voyBot+18, 10, figMuted, "middle", "400",
 			fmt.Sprint(y)))
