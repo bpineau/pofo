@@ -444,3 +444,129 @@ func TestGoldenTreasuryDailyShapes(t *testing.T) {
 		}
 	}
 }
+
+// TestGoldenWTIRolled validates WTI-ER-USD, the rolled-futures EXCESS return of
+// WTI crude (cmd/gen-wti-refdata), against the published S&P GSCI Crude Oil
+// TOTAL RETURN index, whose year-end levels are a matter of SEC record (Barclays
+// Bank PLC, iPath S&P GSCI Crude Oil ETN pricing supplement, form 424B2 filed
+// 2016-11-17, accession 0001104659-16-157831).
+//
+// The published series is FUNDED and the bundled one is not, so the test
+// compounds WTI-ER-USD with the bundled 3-month T-bill before comparing. It then
+// checks the thing that made the series worth bundling at all: the roll yield,
+// the gap between a rolled position and the spot price the repo already had,
+// which is large and changes sign by era.
+//
+// The reconstruction is not the index and is not claimed to be: 27 of the 29
+// comparable years land within five points, and the tolerances below are the
+// measured divergences. 1990 is the one wide year (+16.5 points) and is left out
+// of the year list on purpose: the Gulf War pushed the front-to-second spread
+// into double digits a month, which levers any roll-timing difference beyond
+// what a spot check can arbitrate.
+func TestGoldenWTIRolled(t *testing.T) {
+	s := loadRefdata(t, "WTI-ER-USD")
+	if got := s.Points[0].Date.Format("2006-01-02"); got != "1985-01-02" {
+		t.Errorf("history starts %s, want 1985-01-02", got)
+	}
+	// EIA discontinued its NYMEX futures price series after this day; the
+	// file stops where its evidence stops.
+	if got := s.Points[len(s.Points)-1].Date.Format("2006-01-02"); got != "2024-04-05" {
+		t.Errorf("history ends %s, want 2024-04-05", got)
+	}
+
+	// The tolerances are absolute points of calendar-year return, so a big
+	// year buys a wide one for the same relative agreement: 1999 diverges by
+	// 2.2 % relative, which on a +123 % year is five points.
+	funded := fundWithTBill(t, s)
+	for _, c := range []struct {
+		year     int
+		ref, tol float64
+	}{
+		{1989, 94.27, 1.0}, {1992, 3.65, 0.8}, {1996, 108.31, 2.5}, {1999, 122.69, 6.5},
+		{2001, -25.44, 0.8}, {2003, 27.47, 0.8}, {2007, 47.45, 0.8}, {2008, -55.47, 2.5},
+		{2009, 7.15, 3.0}, {2010, -0.11, 0.8}, {2012, -11.52, 0.8}, {2014, -42.56, 1.0},
+		{2015, -45.34, 0.8},
+	} {
+		within(t, "WTI rolled, funded, "+strconv.Itoa(c.year), calYearDaily(funded, c.year), c.ref, c.tol)
+	}
+
+	// The roll yield itself. Crude was backwardated through the 1990s and in
+	// deep contango over 2006-2016, so a rolled position must beat spot by a
+	// wide margin in the first era and lose to it by a wider one in the
+	// second. Getting this sign wrong is the whole error the series exists to
+	// prevent, so the bands are loose and the signs are not negotiable.
+	spot := loadRefdata(t, "WTI-USD")
+	for _, c := range []struct {
+		name         string
+		y0, y1       int
+		gapLo, gapHi float64 // rolled CAGR minus spot CAGR, in points per year
+	}{
+		{name: "backwardation era 1986-2000", y0: 1986, y1: 2000, gapLo: 5, gapHi: 15},
+		{name: "contango era 2006-2016", y0: 2006, y1: 2016, gapLo: -18, gapHi: -8},
+	} {
+		t.Run(c.name, func(t *testing.T) {
+			gap := (annualizedOver(t, s, c.y0, c.y1) - annualizedOver(t, spot, c.y0, c.y1)) * 100
+			if gap < c.gapLo || gap > c.gapHi {
+				t.Errorf("roll yield = %+.1f points/yr, expected within [%+.1f, %+.1f]", gap, c.gapLo, c.gapHi)
+			}
+		})
+	}
+}
+
+// fundWithTBill compounds an excess-return series with the bundled 3-month
+// T-bill, the way the published S&P GSCI total-return indices are funded: the
+// rate is a DISCOUNT rate in percent on a 91-day bill and it accrues on every
+// calendar day, weekends included.
+func fundWithTBill(t *testing.T, s *marketdata.Series) *marketdata.Series {
+	t.Helper()
+	bill := loadRefdata(t, "TBILL-3M")
+	byMonth := make(map[string]float64, len(bill.Points))
+	var latest float64
+	for _, p := range bill.Points {
+		byMonth[p.Date.Format("2006-01")] = p.Close
+		latest = p.Close
+	}
+	daily := func(d time.Time) float64 {
+		r, ok := byMonth[d.Format("2006-01")]
+		if !ok {
+			r = latest
+		}
+		return math.Pow(1/(1-91.0/360.0*r/100), 1.0/91.0) - 1
+	}
+	out := &marketdata.Series{Points: make([]marketdata.Point, len(s.Points))}
+	level := s.Points[0].Close
+	out.Points[0] = marketdata.Point{Date: s.Points[0].Date, Close: level}
+	for i := 1; i < len(s.Points); i++ {
+		level *= s.Points[i].Close / s.Points[i-1].Close
+		for d := s.Points[i-1].Date.AddDate(0, 0, 1); !d.After(s.Points[i].Date); d = d.AddDate(0, 0, 1) {
+			level *= 1 + daily(d)
+		}
+		out.Points[i] = marketdata.Point{Date: s.Points[i].Date, Close: level}
+	}
+	return out
+}
+
+// annualizedOver is the compound annual rate between the last observation of
+// year y0-1 and the last of y1, so it works on daily and monthly series alike.
+func annualizedOver(t *testing.T, s *marketdata.Series, y0, y1 int) float64 {
+	t.Helper()
+	pick := func(year int) (time.Time, float64) {
+		cut := time.Date(year, 12, 31, 23, 0, 0, 0, time.UTC)
+		var d time.Time
+		var v float64
+		for _, p := range s.Points {
+			if p.Date.After(cut) {
+				break
+			}
+			d, v = p.Date, p.Close
+		}
+		return d, v
+	}
+	d0, v0 := pick(y0 - 1)
+	d1, v1 := pick(y1)
+	if v0 <= 0 || v1 <= 0 || !d1.After(d0) {
+		t.Fatalf("no %d..%d window in the series", y0, y1)
+	}
+	years := d1.Sub(d0).Hours() / 24 / 365.25
+	return math.Pow(v1/v0, 1/years) - 1
+}
