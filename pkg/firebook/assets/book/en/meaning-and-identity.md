@@ -1,5 +1,5 @@
 # Meaning, identity, structure: life after work
-<!-- source: sens-et-identite @ aebb07af61a1 -->
+<!-- source: sens-et-identite @ 016940459eaf -->
 
 A modern job hands you five things at no charge, and you only notice them once they are gone: income, **structure** (your days have a shape), **identity** (the answer to "so what do you do?"), **connection** (colleagues, belonging) and a sense of **usefulness** (a skill exercised and recognized). The financial plan in this book replaces the first one. The other four are the work of this chapter, and the accounts are blunt about it ([[voices-from-real-retirees]]). That is where the FIRE retirements that work part company with the ones that drift, not at the withdrawal rate.
 
@@ -11,7 +11,7 @@ The question is not "what will I do with my time?". Time always fills up, with s
 
 ## What the research knows
 
-The psychology of ordinary retirement and the first studies of FIRE cohorts agree on a few robust results. Well-being after retirement does not follow one trajectory. The familiar sequence, honeymoon then disenchantment then reorientation, comes from Atchley's phase model (1976). Wang's longitudinal data (2007) adds one decisive wrinkle: about 70% of retirees hold their level of well-being steady, and a quarter go through a **U-curve**, a trough somewhere between month 6 and month 24 (the wall, [[voices-from-real-retirees]]) followed by a climb back out. That climb rests on three predictors that dwarf all the others: health, social connection and a sense of usefulness. Money, once you are past the security threshold, predicts very little ([[the-psychology-of-spending]]). It grants permission; it does not supply content.
+The psychology of ordinary retirement and the first studies of FIRE cohorts agree on a few robust results. Well-being after retirement does not follow one trajectory. The familiar sequence, honeymoon then disenchantment then reorientation, comes from Atchley's phase model (1976). Wang's longitudinal data (2007) adds one decisive wrinkle, three distinct trajectories rather than one. About 70% of retirees hold their level of well-being steady, a quarter go through a **U-curve**, that trough in the first two years (the wall, [[voices-from-real-retirees]]) followed by a climb back out, and 5% are better off the moment they stop working. That climb rests on three predictors that dwarf all the others: health, social connection and a sense of usefulness. Money, once you are past the security threshold, predicts very little ([[the-psychology-of-spending]]). It grants permission; it does not supply content.
 
 Leaving by choice, with preparation, protects you. Forced retirements dig the deepest troughs, and the FIRE candidate starts with that advantage. Early exits have their own weak spots, though. At 45, society has no box for you: no retirees' club, no peers who are free during the day, a social identity to invent against the current. And total autonomy, the great fantasy of the years before you quit, turns out to be a load. Deciding what your day looks like, every day, is work, and the retiree's "decision fatigue" comes up again and again in the accounts.
 
