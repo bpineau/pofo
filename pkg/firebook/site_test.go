@@ -111,6 +111,21 @@ func TestRobots(t *testing.T) {
 	}
 }
 
+// A compute endpoint listed in Site.Disallow must be kept out by BOTH records:
+// a named record replaces the catch-all for its agents, so a rule left only on
+// "*" would never reach the AI crawlers greeted by name.
+func TestRobotsDisallow(t *testing.T) {
+	s := BookSite(Page{Path: "/", Title: "pofo", Note: "the front door"})
+	s.Disallow = []string{"/view"}
+	body := string(s.RobotsTXT("http://example.com"))
+	if got := strings.Count(body, "Disallow: /view\n"); got != 2 {
+		t.Errorf("Disallow: /view appears %d times, want once per record:\n%s", got, body)
+	}
+	if got := strings.Count(body, "Allow: /\n"); got != 2 {
+		t.Errorf("Allow: / appears %d times, want the welcome explicit in both records:\n%s", got, body)
+	}
+}
+
 func TestLLMsTXT(t *testing.T) {
 	srv := siteServer(t)
 	code, body := get(t, srv, "/llms.txt")
