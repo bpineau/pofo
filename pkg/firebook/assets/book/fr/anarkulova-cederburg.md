@@ -42,6 +42,11 @@ Trois échantillons circulent sous le même drapeau, et les confondre fausse tou
 
 La dernière colonne se lit avec précaution, car ces trois nombres ne mesurent pas la même chose. Le premier est une probabilité sur des retraites de durée aléatoire, les deux autres des taux de pire millésime, l'un sur un panier de pays, l'autre sur un seul. Les bases divergent aussi. Sur le panel de la figure ci-dessus, les États-Unis ne tiennent que 3,75 %, là où la tradition de Bengen en affiche 4,15 %.
 
+::: figure echantillon-croise
+Le même plan, jugé deux fois : un 60/40 domestique et un retrait rigide indexé sur trente ans, mesuré d'abord sur le seul record américain du panel, puis sur le modèle broad-sample qui tire ses blocs dans les seize pays. Les deux verdicts partent presque ensemble et s'écartent exactement dans la bande où tout le monde dimensionne son plan. Les nombres publiés par le papier de 2023 (17 % et 2,26 %) portent sur un troisième dispositif, trente-huit pays et mortalité réelle, et la légende les rappelle à leur place.
+:::
+
+
 ::: science Où situer ces chiffres dans la littérature
 Retenez le spectre des bornes pour un horizon long. Histoire américaine seule → ~3,25-3,5 % rigide ([[serie-ern]]). Rendements prospectifs Morningstar sur 30 ans → ~3,9 % ([[guardrails-morningstar]], [[rendements-attendus]]). Échantillon mondial Anarkulova-Cederburg → ~2,3-2,7 %. L'écart entre ces bornes n'est **pas** du désaccord technique : ce sont des réponses à des questions différentes (« et si le futur ressemble à l'Amérique, aux anticipations actuelles ou au siècle développé entier ? »). Un plan sérieux connaît les trois chiffres et choisit consciemment où il se place, plutôt que d'ignorer les deux qui dérangent.
 :::
