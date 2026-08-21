@@ -297,7 +297,10 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `docs/fire-book-en-edition-design.md` before touching anything English, and
   never duplicate a plate: figures stay single-source French, and the English
   edition translates the rendered SVG through `figureDict`
-  (`scripts/figure-audit.sh en` after any dictionary change).
+  (`scripts/figure-audit.sh en` after any dictionary change). NEW PLATE: the
+  recipe is `go doc ./pkg/firebook` § "Adding a plate", the toolbox is
+  `pkg/firebook/figures_kit.go`, and `scripts/figure-shot.sh <slug> [fr|en]`
+  renders one to PNG for the eye.
 - Tactical Permanent Portfolio / Darcet / growth-inflation-regime work: read
   `docs/darcet-permanent-portfolio-design.md` first (complete findings,
   algorithms, data sources, and the empirical-vs-a-priori epistemic ledger);
