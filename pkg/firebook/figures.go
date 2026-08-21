@@ -149,6 +149,7 @@ var figures = map[string]func() string{
 	"replay-marche-2000":       figReplayMarche2000,
 	"replay-revenus-2000":      figReplayRevenus2000,
 	"triangle-correlations":    figTriangleCorrelations,
+	"echelle-passif":           figEchellePassif,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---

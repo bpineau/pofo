@@ -58,6 +58,10 @@ Le particulier américain construit son échelle TIPS en ligne en une heure. Le 
 Reprenons le couple de [[choisir-sa-strategie]], plancher 45 000 €, pensions dans 13 ans qui le couvriront à ~53 %. Le passif à adosser, c'est 13 années × 45 000 € de plancher, moins ce que le portefeuille de confort peut servir en toutes circonstances. Ils décident d'adosser 100 % du plancher des années 1-6 (la fenêtre fragile) et 60 % des années 7-13. La construction se lit poste par poste. Années 1-2, le fonds euros (92 k€). Années 3-8, des fonds à échéance État/IG 2028-2033, montants gonflés à 2,5 % (~220 k€). Années 9-13, des ETF linkers courts roulés provisionnés (~120 k€). Coût total, ~430 k€ sur 1,7 M€. Le solde (1,27 M€) porte le confort en guardrails puis VPW, à un taux de retrait effectif de ~1,8 %. La ruine du confort devient anecdotique, celle du plancher contractuellement nulle jusqu'aux pensions. Le prix payé, c'est l'espérance des 430 k€, chiffré, accepté, écrit.
 :::
 
+::: figure echelle-passif
+Le passif de Claire et Idris, année par année. Le besoin annuel ne bouge pas en euros d'aujourd'hui (45 k€ de plancher, 58 k€ de confort) ; ce qui change, c'est le payeur. Les barreaux couvrent 100 % du plancher les six premières années, 60 % ensuite, et les pensions prennent le relais à l'année 14. Le portefeuille de confort ne porte plus que le complément, 13 k€ par an d'abord, 31 k€ ensuite, soit 22,7 k€ en moyenne sur les treize ans : les ~1,8 % des 1,27 M€ restants.
+:::
+
 ## L'essentiel à retenir
 
 - L'échelle, c'est un barreau par année de passif, détenu à terme. L'appariement actif-passif **annule** le risque de taux, là où « tenir à échéance » n'était qu'une illusion comptable pour une poche permanente. C'est le seul « garanti » littéral du livre.

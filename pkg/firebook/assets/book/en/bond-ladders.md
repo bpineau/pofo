@@ -1,5 +1,5 @@
 # Bond ladders (and the ladder of linkers)
-<!-- source: echelle-obligataire @ 112672d1686a -->
+<!-- source: echelle-obligataire @ fa7bacd56781 -->
 
 There are two ways to own bonds. This book has mostly talked about the first one, the constant-duration **fund** ([[bonds-in-retirement]]). That is the permanent sleeve, the one that absorbs shocks and gets rebalanced. The second is the **ladder**. You own a series of bonds, each held to its own maturity, one "rung" per year of spending to fund: 2027, 2028, 2029, and on down the line.
 
@@ -64,6 +64,10 @@ A US investor is unusually well served here: everything the last section describ
 
 ::: exemple The bridge Claire and Idris built
 Take the couple from [[choosing-your-strategy]] again: a floor of $45,000, pensions in 13 years that will cover about 53% of it. The liability to match is 13 years × $45,000 of floor, less what the comfort portfolio can deliver in any weather. They decide to match 100% of the floor for years 1 to 6 (the fragile window) and 60% for years 7 to 13. The build reads line by line. Years 1 and 2, T-bills and a money market fund ($92k). Years 3 to 8, nominal Treasury rungs and defined-maturity Treasury funds maturing 2028 to 2033, each sized up 2.5% a year (about $220k). Years 9 to 13, TIPS bought for those exact maturities (about $120k). Total cost, about $430k out of $1.7M. The balance, $1.27M, carries the comfort layer on guardrails and then VPW, at an effective withdrawal rate of about 1.8%. Failure of the comfort layer becomes a footnote, failure of the floor is zero by contract until the pensions start. The price paid is the expected return the $430k gives up: measured, accepted, written down.
+:::
+
+::: figure echelle-passif
+Claire and Idris's liability, year by year. The annual need does not move in today's dollars ($45k of floor, $58k of comfort); what changes is who pays it. The rungs cover 100% of the floor for the first six years and 60% after that, and the pensions take over in year 14. The comfort portfolio carries only the balance, $13k a year at first and $31k later, an average of $22.7k over the thirteen years: the 1.8% of the remaining $1.27M.
 :::
 
 ## The essentials
