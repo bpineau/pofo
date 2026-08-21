@@ -39,6 +39,7 @@ running a command per comparison.
 | `/firebook/<lang>/<slug>.md` | `pkg/firebook.Handler` | one article's Markdown SOURCE, untransformed, behind a one-line HTML-comment provenance header naming the page to cite; strong ETag, `text/markdown`. The HTML page declares it (`<link rel="alternate" type="text/markdown">`) and `llms.txt` lists it |
 | `/firebook/<lang>/card.png` | `pkg/firebook.Handler` (`card.go`) | the edition's social card, 1200x630, embedded via `go:embed` and served with a strong ETag; what `og:image` points at |
 | `/firebook/<lang>/feed.xml` | `pkg/firebook.Handler` (`feed.go`) | the edition's Atom 1.0 feed: one entry per article in reading order, the manifest blurb as its summary, absolute URLs from `RequestOrigin`. Every page of the edition declares it in its head and `llms.txt` lists it; the sitemap does not (a feed is not a page to index). Mounted by both servers, since it rides the edition handler itself |
+| `/<key>.txt` | `firebook.Site.Handle` | the IndexNow ownership key file, mounted only when `-serve -indexnow-key <key>` names one (`pkg/decumul/web`: `WithIndexNowKey`). Its name is the key and its body is the key again |
 | `/catalog.json` | inline (`serve.go`) | the local catalog as JSON (`marketdata.LocalCatalog`: `{ID,Name,Class,Alt}` sorted, byte-stable), marshaled once at startup; GET-only, `Cache-Control: public, max-age=3600`; feeds the composer's autocomplete and inline validation |
 | `/composer.js`, `/composer.css` | inline (`composer.go`) | the live composer's embedded front end (the in-page editor over the `/view` grammar); content-fingerprinted (see below) |
 
@@ -378,6 +379,50 @@ editions live in ONE file, sections labelled by language: an agent fetches one
 `llms.txt` per host, and splitting the languages would hide each edition from
 whoever found the other. The mirrors are deliberately absent from the sitemap,
 where they would read as duplicate content.
+
+### IndexNow: pushing after a deploy
+
+Everything above waits to be crawled. **IndexNow** (indexnow.org) is the other
+direction: one POST tells the participating engines (Bing, Yandex, Seznam,
+Naver, and whoever else shares the endpoint) which URLs exist, and they fetch
+what they do not have.
+
+Ownership is proved by a **key file**: a text file at the root of the host whose
+name is the key and whose body is that same key. The key is therefore **per
+host**, not per binary and not per build: a key minted for one domain proves
+nothing about another, and whoever holds it can submit URLs for that host. Mint
+one unguessable value (8 to 128 letters, digits and dashes, e.g. `uuidgen | tr
+-d - | tr 'A-Z' 'a-z'`), keep it with the deployment secrets, and hand it to the
+server:
+
+```sh
+./pofo -serve -listen 127.0.0.1:8787 -indexnow-key 1a2b3c4d5e6f7890...
+```
+
+That mounts `/1a2b3c4d5e6f7890....txt` and nothing else changes. Without the
+flag the feature is entirely off, which is what every local run and every
+`-fire` mount wants. `pkg/decumul/web` takes the same key through
+`web.WithIndexNowKey`.
+
+Then, **after a deploy**, from any machine that can reach the endpoint:
+
+```sh
+./pofo -indexnow https://pofo.example.org -indexnow-key 1a2b3c4d5e6f7890...
+```
+
+It builds the same `firebook.Site` the server serves, takes its sitemap URL
+list (`Site.URLs`, which `SitemapXML` renders: one list, so what is pushed and
+what is crawlable cannot drift), and POSTs it as one batch per 10 000 URLs. A
+200 or a 202 is success; 202 simply means the endpoint has not read the key file
+yet. Any other status is reported with the endpoint's own words, which say more
+than the code (403 is a key it could not verify, 422 URLs that do not match the
+host).
+
+This is the **only** place in the program that talks to a search engine, and it
+does so only when asked by name: a running server never submits anything, on a
+schedule or otherwise. The protocol lives in `pkg/seo` (`IndexNow`, endpoint an
+argument), so every test drives it against an `httptest` server and the suite
+never leaves the machine.
 
 `robots.txt` allows everything and then names GPTBot, OAI-SearchBot,
 ChatGPT-User, ClaudeBot, Claude-Web, PerplexityBot, Google-Extended and CCBot

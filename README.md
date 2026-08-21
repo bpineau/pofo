@@ -387,6 +387,21 @@ single port:
 ./pofo -serve examples/dragon-decumulation-household.txt  # seed the FIRE panel from a file
 ```
 
+A public deploy can also **push** its URLs to the search engines that speak
+[IndexNow](https://www.indexnow.org/) instead of waiting to be crawled again.
+Mint one unguessable key per host (8 to 128 letters, digits and dashes), serve
+it, and submit after each deploy:
+
+```sh
+./pofo -serve -indexnow-key <key>                        # publishes /<key>.txt
+./pofo -indexnow https://example.org -indexnow-key <key> # push the URL list
+```
+
+The list is the sitemap's, so what is pushed and what is crawlable cannot
+disagree. Without `-indexnow-key` the feature is off, and nothing is ever
+submitted by a running server: `-indexnow` is the only thing here that talks to
+a search engine, and only when you run it.
+
 `-listen` defaults to `127.0.0.1:8787` (loopback only). Portfolio file
 arguments feed the FIRE simulator's historical models, exactly as they do
 for `-fire`.
@@ -467,6 +482,8 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-export-epub` | | write one edition of the FIRE book to the given path as an EPUB 3 file, then exit |
 | `-book-lang` | `fr` | with `-export-epub`: which edition to write, `fr` ("Le FIRE tranquille") or `en` ("The Quiet FIRE") |
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
+| `-indexnow-key` | | IndexNow ownership key: with `-serve`, publish it at `/<key>.txt`; with `-indexnow`, sign the submission (empty = off) |
+| `-indexnow` | | submit every published URL of the given origin to the IndexNow search engines, then exit |
 | `-framework` | `regimes` | classification for coverage and `-suggest`: `regimes` (macro quadrants) or `factors` (risk factors) |
 | `-no-open`, `-no-simulate` | | do not open the browser / ignore SIM suffixes (overrides `-simulate`) |
 

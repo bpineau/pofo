@@ -38,6 +38,15 @@ type Site struct {
 	Summary string // llms.txt blockquote: one paragraph on what the site is
 	Mounts  []Mount
 	Pages   []Page
+
+	// IndexNowKey, when set, publishes the IndexNow ownership key file at the
+	// root ("/<key>.txt"), which is what lets a deploy PUSH its URLs to the
+	// participating search engines instead of waiting to be crawled again (see
+	// seo.IndexNow and "pofo -indexnow"). The key is per host and is a secret
+	// only in the sense that it is unguessable: whoever holds it can submit
+	// URLs for this host. Empty leaves the feature off, and a key that does not
+	// validate is ignored rather than mounted.
+	IndexNowKey string
 }
 
 // Editions are the published editions of the book, source edition first.
@@ -84,21 +93,37 @@ var aiAgents = []string{
 // (<article>.md) are left out too: they are the same document in another
 // encoding, and a sitemap is for pages to index, not for duplicates.
 func (s Site) SitemapXML(origin string) []byte {
-	var urls []seo.URL
+	locs := s.URLs(origin)
+	urls := make([]seo.URL, 0, len(locs))
+	for _, loc := range locs {
+		urls = append(urls, seo.URL{Loc: loc})
+	}
+	return seo.Sitemap(urls)
+}
+
+// URLs is everything this site publishes as an indexable page, in sitemap
+// order: the server's own pages, then per mounted edition its index, its
+// articles and its EPUB. origin is the scheme and host to build them on.
+//
+// It is the sitemap's list, shared rather than reimplemented, so what a crawler
+// is offered and what a deploy pushes to IndexNow ("pofo -indexnow") can never
+// drift apart.
+func (s Site) URLs(origin string) []string {
+	var urls []string
 	for _, p := range s.Pages {
-		urls = append(urls, seo.URL{Loc: origin + p.Path})
+		urls = append(urls, origin+p.Path)
 	}
 	for _, m := range s.Mounts {
 		base := origin + m.Base
-		urls = append(urls, seo.URL{Loc: base})
+		urls = append(urls, base)
 		for _, cat := range m.Edition.Categories {
 			for _, a := range cat.Articles {
-				urls = append(urls, seo.URL{Loc: base + a.Slug})
+				urls = append(urls, base+a.Slug)
 			}
 		}
-		urls = append(urls, seo.URL{Loc: base + m.Edition.EPUBFileName})
+		urls = append(urls, base+m.Edition.EPUBFileName)
 	}
-	return seo.Sitemap(urls)
+	return urls
 }
 
 // RobotsTXT renders the robots.txt: everything is allowed, the AI crawlers are
@@ -181,7 +206,7 @@ func (s Site) LLMsTXT(origin string) []byte {
 
 // Handle registers /sitemap.xml, /robots.txt and /llms.txt on mux, each built
 // from the request's own origin so the absolute URLs are the ones the visitor
-// actually reached.
+// actually reached, plus the IndexNow key file when the Site carries a key.
 func (s Site) Handle(mux *http.ServeMux) {
 	serve := func(contentType string, render func(origin string) []byte) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
@@ -197,6 +222,20 @@ func (s Site) Handle(mux *http.ServeMux) {
 	mux.HandleFunc("/sitemap.xml", serve(seo.SitemapType, s.SitemapXML))
 	mux.HandleFunc("/robots.txt", serve(seo.TextType, s.RobotsTXT))
 	mux.HandleFunc("/llms.txt", serve(seo.TextType, s.LLMsTXT))
+	// The IndexNow ownership key file: its name is the key and its body is the
+	// key again. An engine reads it before trusting a submission, so it has to
+	// be served by the very host the submission names.
+	if seo.ValidIndexNowKey(s.IndexNowKey) {
+		key := s.IndexNowKey
+		mux.HandleFunc("/"+key+".txt", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != http.MethodGet && r.Method != http.MethodHead {
+				http.Error(w, "GET only", http.StatusMethodNotAllowed)
+				return
+			}
+			w.Header().Set("Content-Type", seo.IndexNowKeyType)
+			_, _ = w.Write([]byte(key))
+		})
+	}
 }
 
 // RequestOrigin reconstructs the scheme and host a request was made to

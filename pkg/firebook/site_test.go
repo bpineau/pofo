@@ -376,3 +376,62 @@ func TestBlurbsAreDistinctDescriptions(t *testing.T) {
 		}
 	}
 }
+
+// The IndexNow key file is the proof of ownership an engine fetches before it
+// trusts a submission: the file's name is the key and its body is the key
+// again. It is off unless a key is given, and a key that could not be a file
+// name is ignored rather than mounted.
+func TestIndexNowKeyFile(t *testing.T) {
+	const key = "1a2b3c4d5e6f7890"
+	site := BookSite()
+	site.IndexNowKey = key
+	mux := http.NewServeMux()
+	site.Handle(mux)
+	srv := httptest.NewServer(mux)
+	t.Cleanup(srv.Close)
+
+	code, body := get(t, srv, "/"+key+".txt")
+	if code != http.StatusOK {
+		t.Fatalf("key file: status %d", code)
+	}
+	if body != key {
+		t.Errorf("key file body = %q, want the key itself", body)
+	}
+
+	// Without a key, and with one that does not validate, nothing is mounted.
+	for name, bad := range map[string]string{"no key": "", "short": "abc", "path-shaped": "ab/cd/ef/gh"} {
+		off := BookSite()
+		off.IndexNowKey = bad
+		m := http.NewServeMux()
+		off.Handle(m)
+		s := httptest.NewServer(m)
+		if code, _ := get(t, s, "/"+bad+".txt"); code == http.StatusOK {
+			t.Errorf("%s: a key file was served for %q", name, bad)
+		}
+		s.Close()
+	}
+}
+
+// The sitemap and what a deploy pushes to IndexNow are ONE list, so a page can
+// never be crawlable but unpushed, or the other way round.
+func TestSiteURLsAreTheSitemap(t *testing.T) {
+	site := BookSite(Page{Path: "/visualizer", Title: "Portfolio visualizer"})
+	const origin = "https://example.org"
+	urls := site.URLs(origin)
+	sitemap := string(site.SitemapXML(origin))
+	if len(urls) != strings.Count(sitemap, "<loc>") {
+		t.Errorf("URLs lists %d entries, the sitemap %d", len(urls), strings.Count(sitemap, "<loc>"))
+	}
+	for _, u := range urls {
+		if !strings.HasPrefix(u, origin+"/") {
+			t.Errorf("%q is not an absolute URL on the origin", u)
+		}
+		if !strings.Contains(sitemap, "<loc>"+u+"</loc>") {
+			t.Errorf("%q is pushed but not in the sitemap", u)
+		}
+	}
+	// The whole book, both editions, plus the caller's page.
+	if want := 1 + 2 + 2 + len(Titles()) + len(English.Titles()); len(urls) != want {
+		t.Errorf("URLs lists %d entries, want %d", len(urls), want)
+	}
+}

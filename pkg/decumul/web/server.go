@@ -54,6 +54,7 @@ type handlerConfig struct {
 	nav         []NavLink
 	sourceLabel string
 	picker      *Picker
+	indexNowKey string
 }
 
 // Option configures Handler.
@@ -80,6 +81,15 @@ func WithSourceLabel(label string) Option {
 // move; it adds no server capability here.
 func WithPicker(p Picker) Option { return func(c *handlerConfig) { c.picker = &p } }
 
+// WithIndexNowKey publishes the IndexNow ownership key file at the root
+// ("/<key>.txt"), which is what lets a deploy push its URLs to the
+// participating search engines rather than wait to be crawled again (see
+// "pofo -indexnow"). The key is per host, so only a mount that IS a public
+// host has one; empty, the default, leaves the feature off entirely.
+func WithIndexNowKey(key string) Option {
+	return func(c *handlerConfig) { c.indexNowKey = key }
+}
+
 // renderTopnav builds the top-bar cross-navigation, or "" when there is none
 // (so the index page's placeholder simply vanishes).
 func renderTopnav(links []NavLink) string {
@@ -99,8 +109,8 @@ func renderTopnav(links []NavLink) string {
 // simulation endpoint at POST /api/sim. A non-nil panel enables the
 // portfolio models (bootstrap/cohorts) and live allocation sliders; labels
 // names the holdings for the allocation UI. Options (WithNav,
-// WithSourceLabel, WithPicker) tune the chrome; the front end reads them
-// back from /api/meta.
+// WithSourceLabel, WithPicker) tune the chrome, which the front end reads
+// back from /api/meta; WithIndexNowKey adds the ownership key file.
 func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handler {
 	var cfg handlerConfig
 	for _, o := range opts {
@@ -143,10 +153,12 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	// The machine-readable face of the server: /sitemap.xml, /robots.txt and
 	// /llms.txt, covering both book editions and this page. It is the same
 	// set of files -serve publishes, minus the surfaces this mount lacks.
-	firebook.BookSite(firebook.Page{
+	site := firebook.BookSite(firebook.Page{
 		Path: "/", Title: "FIRE simulator",
 		Note: "stress-test a withdrawal plan against thousands of simulated futures",
-	}).Handle(mux)
+	})
+	site.IndexNowKey = cfg.indexNowKey
+	site.Handle(mux)
 	// The shared visual identity (webui.CSS) is served here so both HTML
 	// surfaces link the same stylesheet; the report inlines the same bytes.
 	mux.HandleFunc("/theme.css", func(w http.ResponseWriter, r *http.Request) {

@@ -28,6 +28,7 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
+	"github.com/bpineau/pofo/pkg/seo"
 	"github.com/bpineau/pofo/pkg/suggest"
 )
 
@@ -60,6 +61,9 @@ type options struct {
 	width      int
 	cacheAge   time.Duration
 	fw         suggest.Framework // classification used by coverage and -suggest
+	// indexNowKey publishes the IndexNow ownership key file at the root of
+	// the -serve mux ("/<key>.txt"); empty leaves the feature off.
+	indexNowKey string
 }
 
 // frameworkFor resolves the -framework flag to a classification.
@@ -106,6 +110,8 @@ func run(ctx context.Context, argv []string) error {
 	fireFlag := fs.Bool("fire", false, "open the decumulation/FIRE explorer (local web UI; optionally for a portfolio file), then serve until stopped")
 	serveFlag := fs.Bool("serve", false, "serve the web app (hub, visualizer, FIRE simulator, book) until stopped; portfolio file args feed the FIRE historical models")
 	listenAddr := fs.String("listen", "127.0.0.1:8787", "listen address for -serve")
+	indexNow := fs.String("indexnow", "", "submit every published URL of this origin (e.g. https://example.org) to the IndexNow search engines, then exit; needs -indexnow-key")
+	fs.StringVar(&opt.indexNowKey, "indexnow-key", "", "IndexNow ownership key: with -serve, serve it at /<key>.txt; with -indexnow, sign the submission with it (empty = feature off)")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
 	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
@@ -210,6 +216,14 @@ Options:
 	}
 	if *bookDrift {
 		return runBookDrift()
+	}
+	// -indexnow talks to a search engine and nothing else: no portfolio, no
+	// quote cache, no date window. Dispatch it before any of that.
+	if *indexNow != "" {
+		return runIndexNow(ctx, *indexNow, opt.indexNowKey)
+	}
+	if opt.indexNowKey != "" && !seo.ValidIndexNowKey(opt.indexNowKey) {
+		return fmt.Errorf("invalid -indexnow-key %q: 8 to 128 letters, digits and dashes", opt.indexNowKey)
 	}
 
 	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
