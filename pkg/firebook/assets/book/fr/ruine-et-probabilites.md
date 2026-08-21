@@ -78,6 +78,6 @@ C'est la vraie raison pour laquelle la probabilité de ruine, bien lue, est un i
 ## Pour aller plus loin
 
 - Early Retirement Now, SWR Series volet 11 (« Six Criteria to Grade Dynamic Withdrawal Rules ») et volet 46 (« The Need for Precision in an Uncertain World ») : [earlyretirementnow.com](https://earlyretirementnow.com) ([[serie-ern]]).
-- Michael Kitces, « The Problem With FIREing At 4% And The Need For Flexible Spending Rules » (2019) et « Is The Retirement Plan With The Lowest Risk Of Failure Really The Best Choice? » (2012), sur [kitces.com](https://www.kitces.com) : la lecture praticienne du taux de succès.
+- Michael Kitces, « Flexible Spending Rules To Avoid FIREing At 4% » et « Does the Probability of Success Drive Your Retirement Plan? » ([kitces.com](https://www.kitces.com)) : la lecture praticienne du taux de succès.
 - Derek Tharp et Michael Kitces sur les « guardrails » en probabilité de succès : le pilotage plutôt que le chiffre statique.
 - Dans ce livre : [[historique-vs-parametrique]] (pourquoi les modèles divergent sur un même plan) et [[la-machine-pofo]] (comment pofo calcule cette ruine et la croise avec la mortalité).
