@@ -1,5 +1,5 @@
 # Building it with US-listed ETFs: the retiree's shopping list
-<!-- source: etf-ucits-europeens @ 8ba2a37c9500 -->
+<!-- source: etf-ucits-europeens @ 50c1ffeede1d -->
 
 The withdrawal literature is written in dollars, and the plumbing it assumes is already sitting in your brokerage account. Every block in this part of the book has a US-listed fund behind it, and most of them cost between three and twenty-five basis points a year. Access is not the problem. The problem is that the American fund industry will sell you an expensive version of a cheap idea in every aisle, and that the tax code cares a great deal about which account each block goes in.
 
@@ -27,7 +27,7 @@ One thing you can stop worrying about is domicile. The Irish-domicile arbitrage 
 
 ## The costs: the whole chain, and the real measure
 
-The expense ratio on the label, 0.03% to 0.90% across the blocks of this book, is only the first link. The chain has five. The expense ratio first. Then the fund's own internal drift, from sampling, from trading and from lending revenue, which runs either way and is sometimes a **gain**. Then the bid-ask spread you pay going in and coming out, a penny on the largest equity funds and more like 0.05 to 0.20% on a thin managed-futures fund. Then commissions, now zero on listed ETFs at every large US broker. And last the layer that dominates everything when it exists: about 1% a year of advisory fee on assets, or the expense load buried in a variable annuity subaccount.
+The expense ratio on the label, 0.03% to 0.90% across the blocks of this book, the bottom of that range for the index blocks and the top for the alternatives, is only the first link. The chain has five. The expense ratio first. Then the fund's own internal drift, from sampling, from trading and from lending revenue, which runs either way and is sometimes a **gain**. Then the bid-ask spread you pay going in and coming out, a penny on the largest equity funds and more like 0.05 to 0.20% on a thin managed-futures fund. Then commissions, now zero on listed ETFs at every large US broker. And last the layer that dominates everything when it exists: about 1% a year of advisory fee on assets, or the expense load buried in a variable annuity subaccount.
 
 The number that aggregates the first two links is the **tracking difference**: the fund's total return minus its index's total return, over three to five years, published by the sponsor and by the screeners. That is what you compare between two candidates, not the expense ratio. A complete portfolio built out of the table costs **0.10 to 0.25% a year all in**, against 1.5 to 2% for the same allocation delivered through an advisor in loaded funds. Over a 40-year retirement, that gap is worth something like half a point to a full point of withdrawal rate. The plumbing is worth as much as most of the strategy debates ([[expected-returns]]).
 
