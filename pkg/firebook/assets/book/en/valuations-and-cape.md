@@ -1,5 +1,5 @@
 # Valuations, the CAPE, and what they say about your withdrawal rate
-<!-- source: valorisations-et-cape @ 0cc5844ab5e1 -->
+<!-- source: valorisations-et-cape @ 0ed15d9def17 -->
 
 After sequence risk, here is the most important empirical fact in the field. It fits in one sentence. The worst retirement start dates in history, 1929, 1966, 2000, Japan in 1990, all share one feature. It is not bad luck. It is that the market was historically expensive on the day they left. The valuation level on the day of your first withdrawal is the best known predictor of the withdrawal rate that vintage can carry.
 
@@ -41,12 +41,12 @@ A raw level never reads alone. Put it back against its century of history, and a
 
 The mechanism is not mystical. It is cash-flow arithmetic. Owning the stock market means owning a claim on future corporate earnings. A shareholder's long-run return breaks into three pieces. First, the earnings yield at the price you paid (roughly 1/CAPE). Second, the real growth of those earnings (historically 1.5 to 2% a year in the United States). Third, the change in valuation between purchase and sale, the expansion or contraction of the multiple. Over one year that third term swamps everything and the CAPE predicts nothing. Over ten to fifteen years it averages out, and only the first two remain, the first of which you know on the day you buy. A CAPE of 33 is an earnings yield of 3%. The "certain" part of your future real return is already capped low, whatever happens to the rest.
 
-Empirically, the relationship is among the most robust in finance, and also more modest than what you usually read. Over the 1,242 monthly US start dates from January 1913 to June 2016, the starting CAPE explains 29% of the variance of real returns over the following ten years (regressing on 1/CAPE; 31% regressing on the log of the CAPE). At fifteen years it rises to 36%, and to 41% in logs. The number depends heavily on the window: about 43% for start dates before 1950, 25% for those after. Going back to 1881 on Shiller's series does not help, it hurts (28% at ten years).
+Empirically, the relationship is among the most robust in finance, and also more modest than what you usually read. Over the 1,243 monthly US start dates from January 1913 to July 2016, the starting CAPE explains 29% of the variance of real returns over the following ten years (regressing on 1/CAPE; 31% regressing on the log of the CAPE). At fifteen years it rises to 36%, and to 41% in logs. The number depends heavily on the window: about 43% for start dates before 1950, 25% for those after. Going back to 1881 on Shiller's series does not help, it hurts (28% at ten years).
 
 Keep the ballpark: a third of the variance at ten years, a bit more at fifteen. That is both enormous, since nothing else does better, and far too little for timing, since at any given CAPE the range of ten-year outcomes stays wide. The honest phrasing fits on one line. The CAPE shifts the center of the distribution of future returns without narrowing it much. That is exactly the information a planner needs, and exactly the information a trader can do nothing with.
 
 ::: figure cape-dix-ans
-Each dot is a start month between January 1913 and May 2016: its CAPE on the horizontal axis, the annualized real return of the S&P 500 (total return, deflated by US CPI) over the following ten years on the vertical axis. The curve is the least-squares fit of the return on 1/CAPE, R² = 0.29; the three columns show the range of outcomes at a given CAPE.
+Each dot is a start month between January 1913 and July 2016: its CAPE on the horizontal axis, the annualized real return of the S&P 500 (total return, deflated by US CPI) over the following ten years on the vertical axis. The curve is the least-squares fit of the return on 1/CAPE, R² = 0.29; the three columns show the range of outcomes at a given CAPE.
 :::
 
 Three things the CAPE does not do, worth fixing in your head before we go further:
