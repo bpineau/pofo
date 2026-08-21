@@ -1,5 +1,5 @@
 # VPW, the Bogleheads' variable percentage withdrawal
-<!-- source: vpw @ e5ad4f417a13 -->
+<!-- source: vpw @ f219febbf643 -->
 
 VPW ("Variable Percentage Withdrawal") is the Bogleheads community's answer to a precise question: how do you spend a portfolio with no forecast, no risk of ruin, and no dying on a pile of gold? Their solution rests on one idea. You withdraw a percentage of the portfolio, as with a fixed percentage ([[fixed-percentage]]), but that percentage rises with age along a table computed once and for all. It is about 3.9% at 40, 4.8% at 65, 7% at 80, up to 100% in the final year.
 
