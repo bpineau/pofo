@@ -119,7 +119,7 @@ func figImportanceAnnees() string {
 	b.WriteString(sTxt((impX0+bandX)/2, 106, 11, figDeep, "middle", "600",
 		fmt.Sprintf("les dix premières années : %s %% de l'issue", frNum(impDecadeShare(), 0))))
 
-	axisTicks(&b, share, []float64{0, 2, 4, 6, 8, 10}, "%.0f %%", impX0, impX1, false)
+	axisTicks(&b, share, []float64{0, 2, 4, 6, 8, 10}, 0, " %", impX0, impX1, false)
 
 	// One bar per year, the decade in full ink and the rest in a paler wash of
 	// the same colour: one series, two weights of attention.

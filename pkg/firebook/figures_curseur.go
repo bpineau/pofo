@@ -127,12 +127,7 @@ func figTousTempsCurseur() string {
 
 	// The return axis rules the plate; the drawdown axis only labels itself, on
 	// the other side, in its own colour.
-	// The return axis is ruled by hand rather than through axisTicks: its labels
-	// carry a decimal, and a decimal is written with a comma in this edition.
-	for _, v := range []float64{5.4, 5.6, 5.8, 6.0} {
-		b.WriteString(line(curX0, cagr.Map(v), curX1, cagr.Map(v), figGrid, 1))
-		b.WriteString(mTxt(curX0-10, cagr.Map(v)+3.5, 10, figMuted, "end", "400", frNum(v, 1)))
-	}
+	axisTicks(&b, cagr, []float64{5.4, 5.6, 5.8, 6.0}, 1, "", curX0, curX1, false)
 	b.WriteString(sTxt(curX0-10, curTop-14, 9, figDeep, "end", "400", "% par an"))
 	for _, v := range []float64{-45, -40, -35, -30, -25, -20} {
 		b.WriteString(mTxt(curX1+10, draw.Map(v)+3.5, 10, figMuted, "start", "400", frMinus(v, 0)+" %"))
