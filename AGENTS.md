@@ -243,7 +243,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   (`pkg/simgen/dbireplica.go`, `cmd/gen-dbi-refdata`) is half the composite and
   half a rolling 60-day regression of it on those contracts with the intercept
   discarded, which lifts the monthly agreement with the fund from 0.85 to 0.89
-  and cuts the split-half swing of the level gap from 5.2 points to 1.2.
+  and cuts the split-half swing of the level gap from 5.2 points to 1.2. The
+  SAME treatment was measured for Simplify CTA in 2026-08 and REFUSED: that
+  fund's own sixteen quarterly schedules show a fifty-market commodity-and-rates
+  book (no equity, no currency) rather than a ten-contract one, so there is no
+  instrument-set restriction to harvest, and the design doc holds the numbers.
   Touching the CTA or overlay donor era or the texture breaks two FIRE-book
   plates (their tests recompute from `pkg/datasets` and say so), because the
   weekly donor is projected onto that texture; those plates read `CTA` and

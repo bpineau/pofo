@@ -478,7 +478,9 @@ the gain precisely: it is the INSTRUMENT SET that matters, not whose index is
 projected. What the donor gains is the removal of exposures the fund cannot
 hold, and any CTA index implies a similar enough position vector to do it. The
 claim "replicating the replicator's own target reproduces its edge" is therefore
-NOT supported, and the section is written accordingly.
+NOT supported, and the section is written accordingly. The reading the controls
+invited, that the instrument set alone would carry the technique to Simplify
+CTA, was measured next and refused: see the section after this one.
 
 What it costs, stated plainly. The donor era 2000-2019 is now half a model
 output, where it was a published record; the projection is a portfolio of that
@@ -503,6 +505,118 @@ close is a different day, which a daily regression reads as beta. And every
 proxy is given back its own ongoing charge, because a futures contract levies
 none: the book is short about 2.3 units of Treasury proxies, so leaving the
 charge in would have the projection EARN those fees, worth about 0.35 %/yr.
+
+### The same treatment refuses to transfer to Simplify CTA (measured, 2026-08)
+
+The section above closes on a control, not on a claim: what the blend buys is
+the INSTRUMENT SET and not the identity of the index being projected. Read
+forward, that says the pure-trend composite projected onto Simplify CTA's own
+contracts should serve that file the way the all-styles projection serves the
+DBi one. It was built and measured under the same protocol, it fails the same
+gate on every column that decides a donor, and nothing ships. The measurements
+are here so the idea is never retried blindly.
+
+**What the fund actually holds, from its own filings.** Every consolidated
+schedule of investments the fund has filed, sixteen quarters from 2022-03-31 to
+2026-03-31 (SEC EDGAR, series S000075092), names commodity futures and
+interest-rate futures and NOTHING ELSE. The commodity side is a full CTA book:
+Brent and WTI crude, gasoil, ULSD, RBOB gasoline and Henry Hub gas; gold,
+silver, copper, platinum and palladium; corn, three wheats, soybeans, soybean
+oil and meal, canola and rapeseed; sugar twice, coffee twice, cocoa twice and
+cotton; live cattle, feeder cattle and lean hogs. The rates side is global:
+SOFR, CORRA, Canadian bank acceptances, Euribor, SONIA, SARON and ESTR at the
+short end, the US curve from the 2-year note to the ultra bond, Schatz, Bobl,
+Bund, Buxl, OAT and BTP, the long gilt, and Canadian 2, 5 and 10-year bonds.
+Eighty-three distinct commodity contracts and forty-four distinct rate
+contracts appear across the sixteen quarters.
+
+Two facts in that list matter more than its length. There is no equity index
+future and no currency future in ANY quarter, though the prospectus permits
+both ("a portfolio of equity, U.S. Treasury, commodity, and foreign exchange
+futures contracts"), so the fund does hold a restricted instrument set relative
+to the composite, which is what motivated the test. And the fund is not a
+replicator: its futures adviser is Altis Partners (Jersey) Limited, running its
+own monthly-positioned absolute and relative momentum programme, with the
+adviser selecting and executing the contracts. Projecting an index onto this
+fund's markets therefore means only "the index expressed in the markets this
+fund can hold". It reproduces no published process, unlike the DBi case where
+the projection IS the manager's stated method, and the section is written
+against the weaker claim only.
+
+**The leg set.** Eleven sector groups, each an equal-weight average of the
+excess returns of the contracts inside it, priced with the same conventions the
+DBi engine uses (US-listed proxies where they exist, par bonds built from
+published yields behind them, every proxy given back its own ongoing charge):
+short rates, US 2y, US 10y, US 30y, euro rates, energy, precious metals, base
+metals, grains, softs, livestock. Grouping is not a preference, it is the
+degrees of freedom: a 60-day window cannot estimate twenty-six slopes, and
+eleven groups reproduce the ratio the ten-contract DBi fit runs at. The
+ungrouped twenty-six-market version is measured too and is worse everywhere,
+which is what an over-parameterized fit looks like. Three verified sleeves are
+dropped for want of daily prices reaching 2000: Canadian bonds, the long gilt
+(the bundled British series is monthly) and the short-rate futures strip, whose
+omission was checked by adding a 3-month par-bond leg and moves no column by
+more than three thousandths. The projection starts 2001-06 rather than 2000-01,
+the livestock contracts being the last legs to begin quoting; the raw composite
+covers behind it, as it does for the DBi warm-up.
+
+Graded on the fund's own live window, 2022-03 to 2026-07, each candidate
+volatility-matched to the fund and fee-aligned exactly as the chain does it
+(lookback 60 days, weekly refits, the documented DBi parameters, nothing tuned
+to this fund):
+
+| candidate | daily | weekly | monthly | TE | TE/vol | CAGR gap | split swing | worst split | volMatch leverage |
+|---|---|---|---|---|---|---|---|---|---|
+| **the composite alone (shipped)** | **0.536** | **0.538** | **0.574** | **16.3 %** | **0.97** | **-2.5 pts** | **7.4** | **17.3** | **1.55** |
+| the projection alone | 0.339 | 0.324 | 0.446 | 19.5 % | 1.15 | +2.7 pts | 6.6 | 36.5 | 1.85 |
+| half of each | 0.503 | 0.494 | 0.579 | 16.9 % | 1.00 | -0.3 pts | 2.1 | 27.8 | 1.90 |
+| a quarter projection | 0.534 | 0.528 | 0.588 | 16.4 % | 0.97 | -1.4 pts | 5.3 | 22.2 | 1.75 |
+
+The shipped donor's own figures here are measured on the data as it stands
+after the 2026-08-19 refresh and are a few tenths away from the -3.22 points
+and 6.71 swing recorded two sections up, which predate it. Every candidate in
+the table is measured on the same data, which is what a comparison needs.
+
+**The gate is failed, and not narrowly.** Swept over three lookbacks (40, 60,
+80), three blend weights (0.25, 0.5, 0.75) and both leg sets, eighteen
+combinations: the monthly correlation beats the shipped donor in SIX of them,
+all six at the lightest weight, against eighteen of eighteen in the DBi sweep.
+The split swing beats it in fourteen. And the worst split over every month of
+the middle third, which is the criterion that survives a four-year window, is
+WORSE in EIGHTEEN of eighteen, running 21 to 43 points against the donor's 17.
+The blend also has to be levered 1.6 to 2.0 times to reach the fund's
+volatility against the donor's 1.55, and two combinations were refused outright
+by `volMatch` for exceeding 2. That is the same objection this file already
+records against the all-styles composite for this fund: a correlation bought by
+levering an index nearly twofold is not a better donor.
+
+**The controls say the little that is gained is not the instrument set.**
+Blending the composite with this repository's own TSMOM engine at half weight
+reaches 0.601 monthly, ABOVE every projection blend, where the same control on
+DBMF came out below (0.787 against 0.892). Blending in a projection of the
+WRONG index (the all-styles composite onto the same markets) reaches 0.606
+where it can be measured at all, also above. On DBMF those two controls pointed
+in opposite directions, which is what located the gain in the instrument set;
+here they point the same way, and what they point at is the variance reduction
+any smoothing buys. There is no instrument-set effect to harvest.
+
+**Why there is none is visible in the fit itself.** The projection tracks the
+composite it is made of at 0.611 monthly, where the DBi projection tracks its
+own at 0.93, and its spread over that composite swings from -6.7 to +2.2 points
+a year across four-year windows (-5.0, +2.2, -6.7, +1.5 over 2001-2008,
+2008-2014, 2014-2020, 2020-2026) against the DBi projection's steady +0.4. The
+reason is the restriction that motivated the test: a pure-trend composite earns
+a large part of its return in equity index and currency futures, and those are
+exactly the markets this fund does not hold, so the regression is asked to
+explain an index with the instruments least able to explain it. Half of such a
+projection inside the 2001-2022 donor era would inject several points a year of
+unverifiable wander into two decades of history in exchange for six thousandths
+of monthly correlation on a four-year window, and it is not a trade this file
+makes.
+
+The DBi result therefore stands as what it was measured to be, a finding about
+a fund whose published process IS a regression onto ten contracts, and not as a
+technique with a general claim on this family.
 
 ### What the 2024 break actually was
 
@@ -1283,10 +1397,16 @@ process on the public index (60-day rolling regression of the composite on the
 ten futures the fund holds, weekly refits, intercept discarded) does NOT beat
 the composite as a donor on its own, and the measurements that refuse it are in
 the section "The fund holds ten contracts". Averaged with the composite at equal
-weight it beats it decisively and is what ships. The open end is the one the
-controls exposed: the gain comes from the instrument set rather than from the
-target, so a projection of the pure-trend composite onto the same ten contracts
-would serve Simplify CTA the same way, and it has not been measured.
+weight it beats it decisively and is what ships. The open end the controls
+exposed, that the gain comes from the instrument set rather than from the target
+and should therefore carry to Simplify CTA, was measured in the same month and
+CLOSED as a rejection: the fund's own sixteen quarterly schedules show a
+fifty-market commodity-and-rates book rather than a ten-contract one, the
+projection of the pure-trend composite onto it beats the shipped donor's monthly
+correlation in six of eighteen settings and its worst split in none, and both
+controls come out above the candidate instead of straddling it. The section
+"The same treatment refuses to transfer to Simplify CTA" holds the numbers. Do
+not retry it without a new reason.
 
 The entry that used to head this list, "validate the engine's daily texture
 against a daily reference", is closed: the texture was graded against both daily
