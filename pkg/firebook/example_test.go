@@ -64,6 +64,17 @@ func ExampleEdition_FeedXML() {
 	// Output: true true
 }
 
+// The social card an edition shows when a link to it is shared. CardSVG is the
+// drawing, versioned as Go code; CardPNG is the rasterization the handler
+// serves and the pages point og:image at (scripts/card-shot.sh regenerates it).
+func ExampleEdition_CardSVG() {
+	svg := firebook.English.CardSVG()
+	fmt.Println(strings.Contains(svg, "The Quiet FIRE"),
+		len(firebook.English.CardPNG()) > 0,
+		firebook.CardWidth, firebook.CardHeight)
+	// Output: true true 1200 630
+}
+
 // ToHTML renders the book's Markdown dialect; Titles supplies the link
 // targets for [[slug]] wiki-links.
 func ExampleToHTML() {

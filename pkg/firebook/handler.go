@@ -171,6 +171,26 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 		_, _ = w.Write(feed.XML())
 	})
 
+	// The social card (og:image), embedded in the binary and immutable: one
+	// strong ETag computed at mount time, and a long freshness window, since
+	// the URL only changes bytes when the binary does.
+	card := e.CardPNG()
+	cardTag := `"` + hex.EncodeToString(sha256Prefix(card)) + `"`
+	mux.HandleFunc("/"+CardFileName, func(w http.ResponseWriter, r *http.Request) {
+		if len(card) == 0 {
+			http.NotFound(w, r)
+			return
+		}
+		w.Header().Set("ETag", cardTag)
+		if r.Header.Get("If-None-Match") == cardTag {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+		w.Header().Set("Content-Type", "image/png")
+		w.Header().Set("Cache-Control", "public, max-age=86400")
+		_, _ = w.Write(card)
+	})
+
 	// The Atom syndication feed: one entry per article, so a reader can follow
 	// the book from a feed reader rather than by revisiting the index. Its
 	// URLs are absolute (an aggregator stores the document and resolves
@@ -250,6 +270,13 @@ func (e *Edition) Handler(opts ...Option) http.Handler {
 
 // markdownSuffix turns an article URL into its source mirror.
 const markdownSuffix = ".md"
+
+// sha256Prefix is the first 16 bytes of a body's SHA-256, the strong-ETag
+// material every immutable route here hashes with.
+func sha256Prefix(body []byte) []byte {
+	sum := sha256.Sum256(body)
+	return sum[:16]
+}
 
 // writeMarkdown serves one article's markdown source as it is written, with a
 // single HTML-comment line prepended naming the page it backs. Nothing else is
@@ -390,7 +417,12 @@ func (e *Edition) writePage(w http.ResponseWriter, origin string, nav []NavLink,
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
 <meta property="og:url" content="%s">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="%s">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="%d">
+<meta property="og:image:height" content="%d">
+<meta property="og:image:alt" content="%s">
+<meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="%s">
 <meta name="twitter:description" content="%s">
 <script type="application/ld+json">%s</script>
@@ -408,6 +440,8 @@ func (e *Edition) writePage(w http.ResponseWriter, origin string, nav []NavLink,
 </html>`, e.Lang, html.EscapeString(pageTitle), html.EscapeString(description), ogType, e.OGLocale,
 		html.EscapeString(e.SiteName), html.EscapeString(pageTitle), html.EscapeString(description),
 		html.EscapeString(self),
+		html.EscapeString(e.absolute(origin, CardFileName)), CardWidth, CardHeight,
+		html.EscapeString(e.SiteName),
 		html.EscapeString(pageTitle), html.EscapeString(description),
 		e.jsonLD(p), html.EscapeString(self), e.alternateHead(alt), mdLink,
 		html.EscapeString(e.SiteName), FeedFileName,
