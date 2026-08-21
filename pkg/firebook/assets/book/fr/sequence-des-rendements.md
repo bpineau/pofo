@@ -48,6 +48,11 @@ Le risque de séquence n'est pas uniformément réparti dans le temps. Il se con
 
 La recherche (ERN volet 15 notamment, [[serie-ern]]) quantifie cette intuition : la corrélation entre le succès final d'un plan et les rendements réalisés est écrasante pour les 5 à 10 premières années, faible ensuite. En pratique, le sort d'une retraite de 40 ans se joue **aux trois quarts dans sa première décennie**. L'analyse qui le montre se refait sur n'importe quel jeu de trajectoires simulées. Rangez les scénarios par le rendement réel de leurs dix premières années, puis regardez la distribution des issues finales dans chaque tranche. C'est la décomposition de la ruine par décennie décisive, et elle dit immédiatement si votre plan dépend du début ou de la moyenne.
 
+::: figure importance-annees
+La même analyse, poussée année par année plutôt que par tranches de dix ans : la part de l'issue finale que le rendement de chaque année de retraite explique à lui seul. Les deux premières années en portent un cinquième, la première décennie 70 %, les vingt dernières 6 % à elles toutes. Le texte annonce trois quarts ; la mesure, sur le modèle central et un retrait rigide de 4 % sur quarante ans, en donne 70. Et comme ce modèle tire les années indépendamment, il sous-estime plutôt qu'il n'exagère.
+:::
+
+
 Trois conséquences pratiques découlent de cette concentration temporelle.
 
 **1. La protection peut être temporaire.** Puisque le danger est concentré, les défenses coûteuses (allocations prudentes, buffers, revenus d'appoint) n'ont pas besoin d'être éternelles. Les concentrer sur la fenêtre fragile capte l'essentiel du bénéfice pour une fraction du coût. C'est le fondement des glidepaths « rising equity » de Pfau et Kitces ([[glidepaths]]) : partir prudent, puis remonter l'exposition actions à mesure que la fenêtre se referme.
