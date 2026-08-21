@@ -9,8 +9,9 @@
 // (cle, astuce, attention, exemple, encart, science, terrain). That dialect
 // is rendered by the neutral pkg/bookmd package; firebook.ToHTML is a thin
 // wrapper over it wired with the book's figure generator (FigureSVG). Handler
-// serves the whole book as self-contained HTML pages
-// (index plus one page per article) styled with the shared pkg/webui identity.
+// serves the whole book as self-contained HTML pages (index plus one page per
+// article, each also available as its Markdown source at "<slug>.md") styled
+// with the shared pkg/webui identity.
 //
 // The table of contents is data (Categories); the index page and the
 // navigation are generated from it, so adding an article means adding its
@@ -65,9 +66,38 @@
 //		firebook.Handler(firebook.WithAlternate("/firebook/en/", firebook.English))))
 //
 // Every paired page then declares both languages with rel="alternate"
-// hreflang links and offers a switch to its counterpart; a page the sibling
-// does not carry declares nothing. The design is
-// docs/fire-book-en-edition-design.md.
+// hreflang links (plus an x-default naming the source edition) and offers a
+// switch to its counterpart; a page the sibling does not carry declares
+// nothing. The design is docs/fire-book-en-edition-design.md.
+//
+// # Being found, and being quoted
+//
+// The book is published to be read, indexed and cited, so every page states
+// what it is in the two vocabularies that matter.
+//
+// For search engines: a per-page title and meta description (the manifest
+// blurb), Open Graph and Twitter-card metas, a self-referencing canonical link
+// built from Edition.HomePath (the same book is reachable under more than one
+// prefix on a pofo server, and only HomePath says which copy counts), the
+// hreflang pair and its x-default, and schema.org JSON-LD: a WebSite plus the
+// Book (its EPUB as a workExample, its whole table of contents as Chapter
+// parts) on the index, an Article and its BreadcrumbList on every page.
+//
+// For AI agents: every article is also served as its own Markdown source at
+// "<slug>.md", untransformed (callouts, tables and [[wiki-links]] included),
+// with one HTML-comment provenance line naming the page to cite; the HTML page
+// declares that mirror with rel="alternate" type="text/markdown" and in its
+// structured data. Site (BookSite) renders the three files that index all of
+// it, for a server to mount at its root:
+//
+//	firebook.BookSite(firebook.Page{Path: "/", Title: "pofo"}).Handle(mux)
+//
+// which serves /sitemap.xml (every article, index and EPUB of every mounted
+// edition, no invented lastmod), /robots.txt (everything allowed, the AI
+// crawlers named one by one, the sitemap declared) and /llms.txt (the
+// llmstxt.org index of the whole site, both editions in one file, every
+// article linked as its Markdown mirror). The formats themselves live in
+// pkg/seo.
 //
 // # Adding a plate
 //

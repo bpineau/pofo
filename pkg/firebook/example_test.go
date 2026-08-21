@@ -29,6 +29,28 @@ func ExampleWithAlternate() {
 	// Output: both editions mounted, cross-linked
 }
 
+// BookSite adds the machine-readable root files a crawler and an AI agent
+// look for: /sitemap.xml, /robots.txt and /llms.txt, covering both editions
+// plus whatever else the server publishes.
+func ExampleBookSite() {
+	mux := http.NewServeMux()
+	firebook.BookSite(firebook.Page{
+		Path: "/", Title: "pofo", Note: "the front door",
+	}).Handle(mux)
+	fmt.Println("sitemap.xml, robots.txt and llms.txt mounted at the root")
+	// Output: sitemap.xml, robots.txt and llms.txt mounted at the root
+}
+
+// Site renders the same files without a server, for a caller that publishes
+// them another way (a static export, a different mux).
+func ExampleSite_LLMsTXT() {
+	site := firebook.BookSite()
+	txt := string(site.LLMsTXT("https://example.org"))
+	fmt.Println(strings.HasPrefix(txt, "# pofo\n"),
+		strings.Contains(txt, "https://example.org/firebook/en/what-is-fire.md"))
+	// Output: true true
+}
+
 // ToHTML renders the book's Markdown dialect; Titles supplies the link
 // targets for [[slug]] wiki-links.
 func ExampleToHTML() {
