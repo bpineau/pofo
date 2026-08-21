@@ -1490,6 +1490,23 @@ var figureDict = map[string]string{
 	"50 ans → toujours : −0,7 point": "50 years → forever: −0.7 point",
 	"L'horizon se paie au début : de 10 à 30 ans le taux perd 6,5 points, de 50 ans à l'éternité il en perd 0,7.":             "The horizon is paid for early: from 10 to 30 years the rate loses 6.5 points, from 50 years to eternity it loses 0.7.",
 	"Arithmétique d'annuité, r / (1 − (1+r)^−n) à r = 4 % réel. Le capital finit à zéro le dernier jour, sans legs ni marge.": "Annuity arithmetic, r / (1 − (1+r)^−n) at r = 4% real. The capital lands on zero on the last day, with no estate and no margin.",
+
+	// drag-volatilite. The asset names are the ones the English article's own
+	// table uses, so the plate and the table right above it agree.
+	"ARITHMÉTIQUE ET GÉOMÉTRIQUE":                      "ARITHMETIC AND GEOMETRIC",
+	"Doubler la volatilité quadruple ce qu'elle coûte": "Double the volatility and you quadruple what it costs",
+	"Le rendement réellement composé quand la moyenne arithmétique reste 7 % et que seule la volatilité change": "The return actually compounded when the arithmetic mean stays 7% and only the volatility changes",
+	"volatilité annualisée σ (%)  →":                      "annualized volatility σ (%)  →",
+	"fonds monétaire":                                     "money market fund",
+	"portefeuille 60/40":                                  "60/40 portfolio",
+	"drag-volatilite|actions mondiales":                   "global stocks",
+	"empilement 90/60":                                    "stacked 90/60",
+	"actions émergentes":                                  "emerging market stocks",
+	"levier ×2 quotidien":                                 "levered ×2 daily",
+	"diversifier : moins de σ, +1,9 point de géométrique": "diversify: less σ, +1.9 point of geometric return",
+	"levier quotidien : deux fois le σ, −3,4 points":      "daily leverage: twice the σ, −3.4 points",
+	"Le drag est le carré de la volatilité : 0,5 point à 10 % de σ, 4,5 points à 30 %, pour la même moyenne annoncée.":               "The drag is the square of the volatility: 0.5 point at 10% of σ, 4.5 points at 30%, for the same advertised mean.",
+	"Moyenne arithmétique tenue à 7 %/an, drag = σ² / 2. Les volatilités sont celles du tableau de l'article, hors frais de levier.": "Arithmetic mean held at 7% a year, drag = σ² / 2. The volatilities are the ones in the table above, before the cost of leverage.",
 }
 var (
 	// reFigTspan and reFigText extract the LEAF text payloads of a rendered

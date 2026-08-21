@@ -154,6 +154,7 @@ var figures = map[string]func() string{
 	"or-ab-modeles":            figOrAbModeles,
 	"ucits-implantation":       figUcitsImplantation,
 	"amortissement-horizon":    figAmortissementHorizon,
+	"drag-volatilite":          figDragVolatilite,
 }
 
 // --- 5. The equity-allocation plateau: safe rate vs % equities ---

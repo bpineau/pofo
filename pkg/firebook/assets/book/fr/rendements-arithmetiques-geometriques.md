@@ -41,6 +41,10 @@ La dernière colonne part chaque fois de 7 % arithmétique, pour isoler le seul 
 
 Comparez les deux lignes à levier, elles disent tout. L'empilement 90/60 porte 150 % d'exposition, et sa volatilité reste pourtant celle des actions nues : le levier est étalé sur deux moteurs peu corrélés et roulé sur des contrats à terme longs, jamais remis à zéro chaque soir ([[return-stacking]]). Le ×2 quotidien, lui, empile son levier sur un seul actif et le réinitialise chaque jour : il double l'arithmétique mais quadruple la variance.
 
+::: figure drag-volatilite
+Le tableau, redressé en courbe. Le coût de la volatilité est son carré, si bien que le tableau, lu ligne à ligne, laisse croire à une pente douce là où la réalité s'incurve. Les six actifs sont posés sur la parabole, aux volatilités du tableau, et les deux mouvements du texte sont écrits sous l'axe. Les deux lignes à levier tombent aux extrémités du second : à volatilité d'actions nues, l'empilement 90/60 garde 5,9 %, tandis que le ×2 quotidien descend à 2,5 %.
+:::
+
 D'où un phénomène qui surprend tous les débutants : un ETF à levier quotidien ×2 sur un indice volatil peut faire **moins** bien que l'indice sur longue période, alors qu'il double fidèlement chaque journée. Dès que le surcroît de drag dépasse le rendement supplémentaire, le levier détruit ([[levier-et-marges]]). La même mécanique éclaire pourquoi la diversification est le seul repas gratuit (free lunch) de la finance. Combiner des actifs décorrélés baisse σ sans baisser la moyenne arithmétique, donc augmente la géométrique. La diversification ne promet pas de meilleures années moyennes. Elle promet un meilleur effet des intérêts composés. Le mécanisme complet, prime de rééquilibrage (rebalancing premium) comprise, est dans [[pourquoi-la-diversification-marche]] ; l'assemblage dans [[portefeuilles-tous-temps]] et [[actifs-defensifs]].
 
 ::: exemple Vérifiez sur deux lignes
