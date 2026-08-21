@@ -16,7 +16,7 @@ func TestPercentRuleNeverRuins(t *testing.T) {
 	for i := range seq {
 		seq[i] = -0.30
 	}
-	res := p.RunPath(seq)
+	res := p.RunPath(seq, Lives{})
 	if res.Ruined {
 		t.Errorf("VPW must not ruin, ruined at year %d", res.RuinYear)
 	}
@@ -31,8 +31,8 @@ func TestPercentRuleNeverRuins(t *testing.T) {
 // strictly less than after a boom, the defining trade-off of the rule.
 func TestPercentRuleSpendingTracksWealth(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 4000, Years: 3, Percent: 0.05}
-	boom := p.RunPath(scenario.Sequence{0.3, 0.3, 0.3})
-	bust := p.RunPath(scenario.Sequence{-0.3, -0.3, -0.3})
+	boom := p.RunPath(scenario.Sequence{0.3, 0.3, 0.3}, Lives{})
+	bust := p.RunPath(scenario.Sequence{-0.3, -0.3, -0.3}, Lives{})
 	if !(bust.Spend[2] < boom.Spend[2]) {
 		t.Errorf("VPW spending should fall after losses: bust=%.0f boom=%.0f", bust.Spend[2], boom.Spend[2])
 	}

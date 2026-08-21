@@ -34,8 +34,8 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	// Sharing the paths also makes each ruin delta a paired difference, so the
 	// common Monte-Carlo noise cancels out of the bars.
 	paths := min(pr.NPaths, shapePaths)
-	seqs := base.DrawPaths(paths, simWorkers, seed)
-	baseRuin := base.SimulateOn(seqs, simWorkers).RuinProb()
+	draws := base.Draw(paths, simWorkers, seed)
+	baseRuin := base.SimulateOn(draws, simWorkers).RuinProb()
 
 	// Each nudge is a single-lever change. The source's path length (Periods) is
 	// at least Years, so shortening the horizon needs no source rebuild.
@@ -71,7 +71,7 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 
 	bars := make([]chart.Bar, 0, len(nudges))
 	for _, n := range nudges {
-		ruin := n.apply(base).SimulateOn(seqs, simWorkers).RuinProb()
+		ruin := n.apply(base).SimulateOn(draws, simWorkers).RuinProb()
 		d := (ruin - baseRuin) * 100
 		bars = append(bars, chart.Bar{Label: n.label, Value: d, Text: signedPP(d)})
 	}

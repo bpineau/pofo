@@ -47,6 +47,12 @@ type LifePoint struct {
 // point t uses surv(t) and the share of paths ruined in year t or earlier.
 // Mortality and market outcomes are independent, so the alive share is simply
 // split by the cumulative ruin probability.
+//
+// It applies mortality AFTER the fact, which is exact whenever mortality does
+// not change the path itself, and it is the right call on a fixed-horizon
+// ensemble. On an ensemble whose plan already carries a Lifetime the deaths
+// have been drawn inside the paths, so weighting them again would count
+// mortality twice: use Ensemble.LifeStates there.
 func (e Ensemble) LifeCurve(surv func(years float64) float64) []LifePoint {
 	ruinedBy := e.cumulativeRuin()
 	out := make([]LifePoint, e.Years+1)

@@ -118,7 +118,7 @@ func Run(s Setup) (Result, error) {
 	for _, pol := range Policies(cfg) {
 		p := base
 		pol.Apply(&p)
-		res := p.RunPath(seq)
+		res := p.RunPath(seq, decumul.Lives{})
 
 		r := Rule{Name: pol.Name, NameFR: pol.NameFR, Tag: pol.Tag, Help: pol.Help, Color: pol.Color,
 			Spend: res.Spend[:years], Wealth: res.Wealth[1 : years+1],

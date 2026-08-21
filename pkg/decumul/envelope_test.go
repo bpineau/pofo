@@ -68,7 +68,7 @@ func TestRunPathEnvelopeDrainOrder(t *testing.T) {
 			{Name: "CTO", Amount: 30000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0.5}},
 			{Name: "PEA", Amount: 70000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0}},
 		}}
-	res := p.RunPath(scenario.Sequence{0, 0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0, 0}, Lives{})
 	// Year 0: the CTO can only gross 30k (tax 15k, net 15k); the PEA tops up
 	// the remaining 15k tax-free. Year 1: 30k tax-free from the PEA.
 	// Year 2: only 25k left -> under-delivery, ruin.
@@ -92,7 +92,7 @@ func TestEnvelopesScaleWithCapital(t *testing.T) {
 			{Name: "CTO", Amount: 30000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0.5}},
 			{Name: "PEA", Amount: 70000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0}},
 		}}
-	res := p.RunPath(scenario.Sequence{0})
+	res := p.RunPath(scenario.Sequence{0}, Lives{})
 	// Pockets scale to 60k/140k. The 30k net need grosses 60k from the CTO
 	// (exactly its scaled size) at a 50% effective rate: 30k of tax.
 	if math.Abs(res.TaxPaid-30000) > 1 {
@@ -110,7 +110,7 @@ func TestEnvelopesNilParity(t *testing.T) {
 	env.Tax = nil
 	env.Envelopes = []Envelope{{Name: "CTO", Amount: 1, Tax: CTOFlatTax{Rate: 0.30}}}
 
-	a, b := base.RunPath(seq), env.RunPath(seq)
+	a, b := base.RunPath(seq, Lives{}), env.RunPath(seq, Lives{})
 	if math.Abs(a.TaxPaid-b.TaxPaid) > 1e-6 || math.Abs(a.Withdrawn-b.Withdrawn) > 1e-6 {
 		t.Errorf("single envelope diverges from the legacy sleeve: tax %.2f vs %.2f, withdrawn %.2f vs %.2f",
 			a.TaxPaid, b.TaxPaid, a.Withdrawn, b.Withdrawn)
@@ -129,13 +129,13 @@ func TestRunPathAVAllowanceYearly(t *testing.T) {
 		Envelopes: []Envelope{
 			{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.247, Allowance: 9200}},
 		}}
-	res := p.RunPath(scenario.Sequence{0, 0})
+	res := p.RunPath(scenario.Sequence{0, 0}, Lives{})
 	// Each year realises 5k of gain, inside the 9.2k allowance: no tax at all.
 	if res.TaxPaid != 0 {
 		t.Errorf("TaxPaid = %.2f, want 0 (allowance covers each year)", res.TaxPaid)
 	}
 	// Run again: the template must be untouched (fresh allowance per path).
-	res2 := p.RunPath(scenario.Sequence{0, 0})
+	res2 := p.RunPath(scenario.Sequence{0, 0}, Lives{})
 	if res2.TaxPaid != 0 {
 		t.Errorf("second path TaxPaid = %.2f, want 0 (per-path state)", res2.TaxPaid)
 	}
@@ -143,7 +143,7 @@ func TestRunPathAVAllowanceYearly(t *testing.T) {
 	noAllowance := p
 	noAllowance.Envelopes = []Envelope{
 		{Name: "AV", Amount: 1, GainFrac: 0.5, Tax: AVTax{Rate: 0.247}}}
-	if got := noAllowance.RunPath(scenario.Sequence{0, 0}); got.TaxPaid <= 0 {
+	if got := noAllowance.RunPath(scenario.Sequence{0, 0}, Lives{}); got.TaxPaid <= 0 {
 		t.Errorf("TaxPaid = %.2f, want > 0 without an allowance", got.TaxPaid)
 	}
 }
@@ -156,7 +156,7 @@ func TestRunPathMonthlyEnvelopes(t *testing.T) {
 			{Name: "CTO", Amount: 30000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0.5}},
 			{Name: "PEA", Amount: 70000, GainFrac: 1, Tax: CTOFlatTax{Rate: 0}},
 		}}
-	res := p.RunPathMonthly(zeros(36))
+	res := p.RunPathMonthly(zeros(36), Lives{})
 	if math.Abs(res.TaxPaid-15000) > 1 {
 		t.Errorf("TaxPaid = %.0f, want 15000", res.TaxPaid)
 	}

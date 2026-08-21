@@ -87,7 +87,7 @@ func TestRunPathRecordsRet10(t *testing.T) {
 	for i := range seq {
 		seq[i] = 0.04
 	}
-	if got := p.RunPath(seq).Ret10; math.Abs(got-0.04) > 1e-12 {
+	if got := p.RunPath(seq, Lives{}).Ret10; math.Abs(got-0.04) > 1e-12 {
 		t.Errorf("annual kernel Ret10 = %v, want 0.04", got)
 	}
 	mseq := make(scenario.Sequence, 240)
@@ -95,7 +95,7 @@ func TestRunPathRecordsRet10(t *testing.T) {
 	for i := range mseq {
 		mseq[i] = rm
 	}
-	if got := p.RunPathMonthly(mseq).Ret10; math.Abs(got-0.04) > 1e-9 {
+	if got := p.RunPathMonthly(mseq, Lives{}).Ret10; math.Abs(got-0.04) > 1e-9 {
 		t.Errorf("monthly kernel Ret10 = %v, want 0.04", got)
 	}
 }

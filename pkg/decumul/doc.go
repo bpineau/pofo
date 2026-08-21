@@ -21,4 +21,28 @@
 // and reads it on total wealth (portfolio plus discounted future cashflows),
 // which is the Kitces/Morningstar answer to the 2006 rule's blindness to age
 // and to pensions still to come.
+//
+// Lifetime. By default a plan runs Plan.Years for certain and mortality enters
+// afterwards, as a weighting (Ensemble.LifeCurve). Setting Plan.Lifetime draws
+// the household's lifespan inside every path instead, which unlocks what the
+// weighting cannot produce: ruin as broke-WHILE-ALIVE counted exactly, the
+// estate at death as a first-class output (Ensemble.LifeOutcome,
+// Ensemble.Estates), couple dynamics (a survivor spending less, a pension only
+// partly reverting via Cashflow.Owner and Cashflow.Reversion), and an optional
+// Annuity whose income stops with its annuitant, so the mortality credit is
+// realised rather than narrated. It is opt-in: a nil Lifetime is the special
+// case where the household is certain to reach the horizon, and every result is
+// bit-for-bit what it was.
+//
+// Two conventions come with it. Plan.Years is the simulation length, so set it
+// past any plausible age and use Plan.PlanHorizon for the horizon the spending
+// rules plan over: the drawn death is an outcome of the world, never an input
+// to a policy, and a rule that amortized over it would describe a clairvoyant
+// retiree. And a path's series are FROZEN at the household's end (Wealth holds
+// the estate, Spend holds 0) rather than zeroed, so a death is never read as a
+// crash; the statistics that are genuinely per-lifetime stop at
+// PathResult.LifeYears.
+//
+// Design and calibration, including what the bundled Gompertz law gets wrong
+// and in which direction: docs/stochastic-lifetime-kernel-design.md.
 package decumul

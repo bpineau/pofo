@@ -9,6 +9,12 @@ import (
 
 // Outcome bundles the headline decumulation statistics across an Ensemble.
 // All wealth figures are real euros; rates are fractions.
+//
+// Every per-path statistic here is read over the household's LIVED window.
+// Without a Plan.Lifetime that window is the whole horizon and the figures are
+// what they always were; with one, the terminal quantiles become the ESTATE
+// distribution and the path statistics stop at the drawn death instead of
+// counting a frozen post-mortem tail.
 type Outcome struct {
 	RuinProb              float64 // share of paths that ran out
 	TerminalP5            float64 // 5th-percentile terminal wealth (0 for ruined)
@@ -35,17 +41,18 @@ func (e Ensemble) Outcome() Outcome {
 	worsts := make([]float64, 0, len(e.Paths))
 	ruined, worst := 0, 0.0
 	for i, p := range e.Paths {
-		terminals[i] = p.Wealth[len(p.Wealth)-1]
+		lived := p.Wealth[:p.end()+1]
+		terminals[i] = lived[len(lived)-1]
 		if p.Ruined {
 			ruined++
 		}
-		underwater[i] = float64(yearsUnderwater(p.Wealth))
-		maxDDs[i] = pathMaxDD(p.Wealth)
+		underwater[i] = float64(yearsUnderwater(lived))
+		maxDDs[i] = pathMaxDD(lived)
 		taxes[i] = p.TaxPaid
 		if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
 			taxRates[i] = p.TaxPaid / gross
 		}
-		if c, ok := worst10y(p.Wealth); ok {
+		if c, ok := worst10y(lived); ok {
 			worsts = append(worsts, c)
 			if c < worst {
 				worst = c
