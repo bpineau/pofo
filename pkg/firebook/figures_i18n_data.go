@@ -1718,7 +1718,7 @@ var figureDict = map[string]string{
 	"importance-annees|retrait fixe de 4 % indexé, horizon 40 ans. Hauteur d'une barre : part de la variance de l'issue (le plan tient ou non)":            "a fixed indexed 4% withdrawal, 40-year horizon. A bar's height: the share of the outcome's variance (the plan holds or it does not)",
 	"importance-annees|expliquée par le seul rendement de cette année, R² univarié normalisé à 100 %. Le « succès final » est l'issue que le texte nomme.": "accounted for by that year's return alone, univariate R² normalized to 100%. \"Final success\" is the outcome the text names.",
 	"importance-annees|Lue sur la richesse finale plutôt que sur le succès, la concentration tombe à 58 % pour la première décennie.":                      "Read on final wealth rather than on success, the concentration drops to 58% for the first decade.",
-	"importance-annees|Le texte annonce trois quarts, la mesure en donne 70, stable de 67 à 77 % selon l'horizon, le retrait et le portefeuille.":          "The text says three quarters, the measurement gives 70, stable between 67 and 77% across horizon, withdrawal and portfolio.",
+	"importance-annees|Le texte annonce 70 % au moins, la mesure en donne 70, stable de 67 à 77 % selon l'horizon, le retrait et le portefeuille.":         "The text says at least 70%, the measurement gives 70, stable between 67 and 77% across horizon, withdrawal and portfolio.",
 	"importance-annees|Un tirage indépendant sous-estime le risque de séquence : la concentration réelle est plutôt au-dessus de cette planche.":           "Drawing years independently understates sequence risk: the real concentration is likelier above this plate's.",
 
 	// The Trinity cliff (trinity-falaise).

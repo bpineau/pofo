@@ -183,7 +183,7 @@ func TestImportancePlateRenders(t *testing.T) {
 		">année de retraite  →<",
 		"Le quart le plus court de l'horizon porte 70 % du résultat",
 		"la concentration tombe à 58 % pour la première décennie",
-		"Le texte annonce trois quarts, la mesure en donne 70",
+		"Le texte annonce 70 % au moins, la mesure en donne 70",
 		"sous-estime le risque de séquence",
 	} {
 		if !strings.Contains(svg, want) {

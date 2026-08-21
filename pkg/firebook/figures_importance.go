@@ -159,7 +159,7 @@ func figImportanceAnnees() string {
 			"Le « succès final » est l'issue que le texte nomme.",
 		"Lue sur la richesse finale plutôt que sur le succès, la concentration tombe à " +
 			frNum(impWealthDecade, 0) + " % pour la première décennie.",
-		"Le texte annonce trois quarts, la mesure en donne " + frNum(impDecadeShare(), 0) +
+		"Le texte annonce 70 % au moins, la mesure en donne " + frNum(impDecadeShare(), 0) +
 			", stable de 67 à 77 % selon l'horizon, le retrait et le portefeuille.",
 		"Un tirage indépendant sous-estime le risque de séquence : la concentration réelle est plutôt " +
 			"au-dessus de cette planche.",
