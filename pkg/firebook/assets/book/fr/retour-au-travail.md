@@ -84,7 +84,7 @@ Le bilan encaissé chaque année du pont est clair.
 
 - Les 10 k€ font passer les retraits à 40 k€, soit un taux courant de 3,0 %.
 - La PUMa s'éteint (~1,8 k€).
-- 4 trimestres se valident, et la pension à 67 ans grossit à chaque revue M@REL.
+- 4 trimestres se valident, et la pension à 67 ans grossit à chaque revue M@rel.
 - Le réseau reste vivant, avec deux clients récurrents.
 
 Il garde l'option de monter à 30 k€/an de missions si une mauvaise décennie l'exigeait, l'assurance-séquence dont il connaît le prix d'exercice. Le coût vécu tient en six semaines par an d'un travail qu'il aime à cette dose. Il l'a d'ailleurs testé à double dose l'année du prototype, pour connaître sa limite. Dans un simulateur, un side income de 10 k€ jusqu'à l'année 15 ramène la ruine centrale à 2,1 %. Le plan le plus solide du livre n'est pas le plus gros. C'est le mieux adossé.
