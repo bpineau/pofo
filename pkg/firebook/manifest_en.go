@@ -135,6 +135,7 @@ var CategoriesEN = []Category{
 		Blurb: "The retiree inside the US system: accounts and account order, tax on the withdrawal phase, health cover before Medicare, and Social Security.",
 		Articles: []Article{
 			{Slug: "us-accounts-and-account-order", Title: "US accounts, and the order you drain them", Blurb: "The three tax homes of a dollar, what each account is for, the standard filling ladder, the toolkit that opens the locked accounts before 59 1/2, and the draining order that comes out of it."},
+			{Slug: "us-taxes-in-the-withdrawal-phase", Title: "US taxes in the withdrawal phase", Blurb: "Why a modest draw is often taxed at nothing: the gain inside a sale, the two rate ladders and how they stack, the friction computed in dollars, and the tools of the phase (gain and loss harvesting, specific identification, conversions, RMDs)."},
 		},
 	},
 	{
