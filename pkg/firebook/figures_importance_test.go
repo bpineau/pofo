@@ -105,13 +105,13 @@ func TestImportanceProfileMatchesTheModel(t *testing.T) {
 }
 
 // The claim the plate is built to test, checked on the frozen profile. The
-// article says three quarters; the measurement has to land in the same
+// article says at least 70 %; the measurement has to land in the same
 // neighbourhood or the plate would be contradicting the sentence it
 // illustrates, and no drawing choice could repair that.
-func TestImportanceFirstDecadeIsNearTheArticlesThreeQuarters(t *testing.T) {
+func TestImportanceFirstDecadeIsNearTheArticlesClaim(t *testing.T) {
 	got := impDecadeShare()
 	if got < 65 || got > 85 {
-		t.Errorf("the first decade carries %.1f %% of the outcome, the article says about 75", got)
+		t.Errorf("the first decade carries %.1f %% of the outcome, the article says at least 70", got)
 	}
 	// The shares are shares: they add up.
 	sum := 0.0
