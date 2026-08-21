@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -701,5 +702,56 @@ func TestFireMountsDoNotRepublishTheSite(t *testing.T) {
 		if rec.Code != http.StatusOK {
 			t.Errorf("%s: status %d, want 200", path, rec.Code)
 		}
+	}
+}
+
+// The liveness endpoint answers plain text, says nothing about the market data,
+// and refuses anything but a read.
+func TestServeHealthz(t *testing.T) {
+	s, _ := testServer(t)
+	h := s.handler(nil, nil)
+	rec := serveGet(t, h, healthPath)
+	if rec.Code != http.StatusOK ||
+		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/plain") ||
+		strings.TrimSpace(rec.Body.String()) != "ok" {
+		t.Errorf("healthz: code=%d type=%q body=%q", rec.Code,
+			rec.Header().Get("Content-Type"), rec.Body.String())
+	}
+	post := httptest.NewRecorder()
+	h.ServeHTTP(post, httptest.NewRequest(http.MethodPost, healthPath, nil))
+	if post.Code != http.StatusMethodNotAllowed {
+		t.Errorf("POST healthz: code=%d, want 405", post.Code)
+	}
+	// It is a probe, not a page: nothing points at it.
+	for _, path := range []string{"/sitemap.xml", "/robots.txt", "/llms.txt"} {
+		if body := serveGet(t, h, path).Body.String(); strings.Contains(body, healthPath) {
+			t.Errorf("%s advertises %s", path, healthPath)
+		}
+	}
+}
+
+// The container's HEALTHCHECK polls every 30 seconds; that must leave no trace
+// in the access log, while ordinary traffic still logs one line per request.
+func TestLogAccessSkipsHealthz(t *testing.T) {
+	s, _ := testServer(t)
+	var buf bytes.Buffer
+	h := logAccess(&buf, s.handler(nil, nil))
+
+	for range 3 {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, healthPath, nil))
+		if rec.Code != http.StatusOK {
+			t.Fatalf("healthz through the access log: code=%d", rec.Code)
+		}
+	}
+	if buf.Len() != 0 {
+		t.Errorf("the probe logged %q", buf.String())
+	}
+
+	rec := httptest.NewRecorder()
+	h.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
+	got := buf.String()
+	if n := strings.Count(got, "\n"); n != 1 || !strings.Contains(got, `"GET / HTTP/1.1" 200`) {
+		t.Errorf("landing page: %d access-log line(s): %q", n, got)
 	}
 }

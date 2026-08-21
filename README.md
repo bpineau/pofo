@@ -388,6 +388,7 @@ single port:
 | `/firebook/<lang>/feed.xml` | the edition's **Atom feed**: every article, in reading order, for a feed reader |
 | `/firebook/<lang>/card.png` | the edition's **social card**, the 1200x630 image a shared link shows |
 | `/sitemap.xml`, `/robots.txt`, `/llms.txt` | what crawlers and AI agents read: every page of both editions, everything allowed, and an [llms.txt](https://llmstxt.org) index of the whole site |
+| `/healthz` | the **liveness probe** for an orchestrator or load balancer: `200 text/plain` `ok`, and the one route kept out of the access log so a probe every few seconds leaves no noise |
 
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/
