@@ -84,8 +84,8 @@ func figMedianePlancher() string {
 	var b strings.Builder
 	b.WriteString(plateHead("médiane et plancher",
 		"Ce que le panier vend, et ce qu'il achète avec"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
-		"Le même plan de trente ans, tenu par deux portefeuilles : ce qui reste au milieu des cas, "+
+	b.WriteString(plateDeck(
+		"Le même plan de trente ans, tenu par deux portefeuilles : ce qui reste au milieu des cas, " +
 			"ce qu'on peut en retirer"))
 
 	// The two axes, each with its own question written above it.
@@ -122,7 +122,7 @@ func figMedianePlancher() string {
 	b.WriteString(plancherBracket(plaRightX-20, swr.Map(basket.swr), swr.Map(eq.swr),
 		"+"+frNum(plancherGain()*100, 2)+" pt", "end"))
 
-	b.WriteString(sTxt(24, 374, 10.5, figSoft, "start", "600", fmt.Sprintf(
+	b.WriteString(plateConclusion(374, fmt.Sprintf(
 		"Le panier échange %s %% de médiane contre %s point de retrait sûr : "+
 			"on se dimensionne sur le percentile 5.",
 		frNum(plancherDrop()*100, 0), frNum(plancherGain()*100, 2))))

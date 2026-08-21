@@ -289,7 +289,7 @@ func figCapeDixAns() string {
 	var b strings.Builder
 	b.WriteString(plateHead("le centre bouge, la largeur reste",
 		"Le CAPE d'un mois, et les dix années réelles qui l'ont suivi"))
-	b.WriteString(sTxt(24, 62, 10.5, figMuted, "start", "400",
+	b.WriteString(plateDeck(
 		"chaque point : un mois de départ, et le rendement réel annualisé du S&amp;P 500 sur les 120 mois suivants"))
 	b.WriteString(sTxt(24, 78, 10.5, figMuted, "start", "400",
 		"1 243 départs mensuels de janvier 1913 à juillet 2016, total return déflaté du CPI américain"))
@@ -365,7 +365,7 @@ func figCapeDixAns() string {
 	}
 	b.WriteString(sTxt((x0+x1)/2, yBot+52, 11, figMuted, "middle", "400", "CAPE au départ  →"))
 
-	b.WriteString(sTxt(24, 388, 10.5, figSoft, "start", "600",
+	b.WriteString(plateConclusion(388,
 		"Le trait épais couvre huit départs sur dix, la colonne claire les couvre tous. À CAPE 9 à 11, la décennie"))
 	b.WriteString(sTxt(24, 404, 10.5, figSoft, "start", "400",
 		"a payé de +2,7 à +18,9 % réels par an ; à CAPE 18 à 22, de −3,6 à +14,4 %. Le centre descend, la largeur reste."))
