@@ -1309,7 +1309,7 @@ var figureDict = map[string]string{
 	// psychologie-du-retrait -> the-psychology-of-spending
 	"LA DISTRIBUTION DU PATRIMOINE TERMINAL":                          "THE DISTRIBUTION OF TERMINAL WEALTH",
 	"Ce qu'il restait au bout de trente ans, millésime par millésime": "What was left after thirty years, vintage by vintage",
-	"1 M€ de capital, retrait fixe indexé sur l'inflation et jamais ajusté : ce qui restait à l'arrivée, en multiple de la mise": "EUR 1M of capital, a fixed inflation-adjusted withdrawal never adjusted afterward: what was left at the end, as a multiple of the stake",
+	"1 M€ de capital, retrait fixe indexé sur l'inflation et jamais ajusté : ce qui restait à l'arrivée, en multiple de la mise": "EUR 1M, a fixed indexed withdrawal never adjusted: what was left, as a multiple of the stake",
 	"43 départs, de 1954 à 1996, sur le 60/40 américain réel du livre, classés du pire au meilleur":                              "43 start years, 1954 to 1996, on the book's real US 60/40, ranked worst to best",
 	"40 000 € par an (4 %) : tout ce que le plan autorise":                                                                       "EUR 40,000 a year (4%): everything the plan allows",
 	"30 000 € par an (3 %) : le sous-dépensier":                                                                                  "EUR 30,000 a year (3%): the underspender",
