@@ -1,5 +1,5 @@
 # The bucket strategy: the promise, and the case against it
-<!-- source: strategie-buckets @ 488bb9d5f849 -->
+<!-- source: strategie-buckets @ 7afe23d8ee05 -->
 
 No retirement strategy gets sold harder than this one. Cut your wealth into three buckets. The short-term bucket holds one to two years of spending in cash. The middle bucket holds three to eight years in bonds. The last one leaves the rest in stocks. You live off the first, you refill it from the others, and you let the third compound without ever having to touch it at the wrong moment. The picture is so vivid that it has won over the personal finance press, much of the advice industry (Christine Benz, Morningstar's voice on retirement, built her brand on it) and the imagination of savers.
 
@@ -30,7 +30,7 @@ The canonical recipe, two years of spending in cash and six years in bonds, give
 **Exhibit 4: bucket 1 costs what a buffer costs, without a buffer's rules.** Those two years of cash carry the same opportunity cost as any cash buffer ([[cash-buffer]]). The bucket frame presents them as "the short-term money" and usually leaves out the two rules that make a buffer work: a written trigger for drawing on it, and a refill at the highs. You pay the price and get no instructions.
 
 ::: science What happens when it is put to the test
-ERN's head-to-head simulations run buckets against equivalent portfolios over every historical cohort (Part 48, extended by the discussion in Part 55). The conclusion is clean. No bucket setup beats its total return twin. The discretionary versions do worse, through allocation drift. The mechanical ones do the same, with more moving parts. Kitces gets to the same place through the accounting of the flows, and his phrase stuck: buckets are an asset allocation mirage, better at explaining a plan to a client than at running one. The academic work on mental accounting (Thaler, Shefrin) explains **why** the strategy appeals anyway. Separate mental accounts lower anxiety and cut panic errors. That benefit is real, behavioral, and independent of the machinery. So the literature does not say buckets ruin a plan. It says buckets add nothing mechanically and can help psychologically. That precise verdict is the one you can act on.
+ERN's head-to-head simulations run buckets against equivalent portfolios over every historical cohort (Part 48, extended by the discussion in Part 55). The conclusion is clean. No bucket setup beats its total return twin. The academic test exists too, and it says the same thing: Javier Estrada (2019) runs the strategy against its static twins over the historical cohorts and finds the same ranking, at best a tie, most often slightly behind, the idle cash paying its toll over time. The discretionary versions do worse, through allocation drift. The mechanical ones do the same, with more moving parts. Kitces gets to the same place through the accounting of the flows, and his phrase stuck: buckets are an asset allocation mirage, better at explaining a plan to a client than at running one. The academic work on mental accounting (Thaler, Shefrin) explains **why** the strategy appeals anyway. Separate mental accounts lower anxiety and cut panic errors. That benefit is real, behavioral, and independent of the machinery. So the literature does not say buckets ruin a plan. It says buckets add nothing mechanically and can help psychologically. That precise verdict is the one you can act on.
 :::
 
 ## What survives: buckets as a language
@@ -62,4 +62,5 @@ The brochure version. "$1.5M, of which $100k in cash (bucket 1), $350k in bond f
 - Kitces, "Managing Sequence Of Return Risk With Bucket Strategies Vs A Total Return Rebalancing Approach": the accounting of the flows, laid out plainly.
 - Christine Benz (Morningstar), "The Bucket Approach to Retirement Allocation": the best version of the other side, so you can judge it for yourself.
 - Thaler, "Mental Accounting Matters": why buckets soothe, the real root of the debate.
+- Javier Estrada, "The Bucket Approach for Retirement: A Suboptimal Behavioral Trick?" (2019): the academic test of the verdict, cohort by cohort.
 - In this book: [[cash-buffer]] (bucket 1 with its rules), [[bond-ladders]] (bucket 2 under contract), [[refilling-the-buffer]] (the flows), [[stock-bond-allocation]] (what actually decides).

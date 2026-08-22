@@ -1,5 +1,5 @@
 # False defensives: what looks defensive and is not
-<!-- source: faux-actifs-defensifs @ a078ad523c28 -->
+<!-- source: faux-actifs-defensifs @ ee8961cdaa33 -->
 
 A defensive asset has one job. Hold up, or rise, when the equity sleeve collapses. It is a demanding job, and few assets truly do it ([[defensive-assets]] reviews the real defenders). But the word "defensive" sells. So the market dresses a long list of products in defensive colors when what they really chase is yield, or when they are just another flavor of equity risk. They pull one number on a brochure down, volatility or average drawdown, or they show a fat dividend. What they do not do is the work: protecting the 5th percentile, the one that sizes the whole plan ([[sequence-of-returns]]).
 
@@ -11,7 +11,7 @@ A defensive asset is judged by how it behaves in the worst equity regimes, never
 
 ## Low volatility is not a defense (low vol, minimum variance)
 
-Low volatility and minimum variance ETFs pick, or weight, the least agitated stocks. They look defensive: measured volatility is lower, historical drawdowns gentler, beta around 0.7. But they are still 100% stocks. In a bear market they fall too, only a little less. A beta of 0.7 gives roughly −28% when the market does −40%. That is not protection. It is a bit less exposure.
+Low volatility and minimum variance ETFs pick, or weight, the least agitated stocks. They look defensive: measured volatility is lower, historical drawdowns gentler, beta around 0.7. But they are still 100% stocks. In a bear market they fall too, only a little less. A beta of 0.7 gives roughly −28% when the market does −40%. That is not protection. It is a bit less exposure. The underlying anomaly is real and well documented, decent returns for a reduced beta (Baker, Bradley and Wurgler, 2011), but documented as a **return** anomaly, never as crisis protection.
 
 There is worse, and it is instructive. The low vol factor leans toward stable sectors, utilities and consumer staples, that trade like bond substitutes. So it breaks down when long rates jump, as in the spring of 2013, which is precisely one of the regimes you were hoping to be defended against. And when panic arrives, it falls with the market. In February and March 2020, US min-vol lost close to a third, same as the index. A style can also lag for a whole decade. The verdict is clear. Low volatility is a legitimate style choice **inside** the equity sleeve, a way to own stocks with a smoother ride ([[factors-in-retirement]]). It is never a portfolio defense. Swapping your bonds or your gold for min-vol stocks leaves the plan fully exposed to the crash.
 
@@ -23,7 +23,7 @@ This is the market's most stubborn illusion. A dividend looks like a bond coupon
 
 **Dividend Aristocrats** (companies that have raised their dividend for twenty-five years or more) are a better-quality variant. But this is a quality-value tilt concentrated in a few sectors, with a beta around 0.85. The "aristocrat" label is a screen, not a shield. The dividend can still be cut in a deep enough crisis, and the style can trail the index for years.
 
-**Covered calls** (buy-write, popularized by funds of the QYLD and JEPI kind) sell themselves as "income, with less volatility". The premium collected cushions small declines and smooths the volatility number. But the asymmetry runs the wrong way. You keep **all** of the downside and cap the upside. In a −40% crash, a premium worth a few percent a year barely dents the loss. In the rebound, the cap cuts the recovery short exactly when it would be repairing that loss. Economically this is a short volatility position, which means selling insurance. It loses precisely when insurance should be paying ([[long-volatility]]). The "income" it distributes is mostly your own capital handed back to you, plus the gains you agreed to give up. It is a yield strategy, not a defense.
+**Covered calls** (buy-write, popularized by funds of the QYLD and JEPI kind) sell themselves as "income, with less volatility". The premium collected cushions small declines and smooths the volatility number. But the asymmetry runs the wrong way. You keep **all** of the downside and cap the upside. In a −40% crash, a premium worth a few percent a year barely dents the loss. In the rebound, the cap cuts the recovery short exactly when it would be repairing that loss. Economically this is a short volatility position, which means selling insurance. It loses precisely when insurance should be paying ([[long-volatility]]). The reference decomposition, "Covered Calls Uncovered" (Israelov and Nielsen, 2015), says it plainly: the profile amounts to a reduced equity exposure plus a short volatility position, not a new source of return. The "income" it distributes is mostly your own capital handed back to you, plus the gains you agreed to give up. It is a yield strategy, not a defense.
 
 ## Correlated to stocks when it matters (REITs, high yield)
 
@@ -69,5 +69,6 @@ A couple replaces its 20% defensive sleeve (bonds and gold) with a 20% "income" 
 
 - Early Retirement Now, Parts 29 to 31 and 40 (the yield illusion of dividend stocks) ([[the-ern-series]]).
 - Cliff Asness (AQR), "Volatility Laundering" and "The Illiquidity Discount": private equity's smoothed risk, explained by a practitioner.
-- On covered calls, the literature on the CBOE BXM and PUT indexes: the real return and risk of a short volatility profile.
+- Israelov & Nielsen, "Covered Calls Uncovered" (2015), and the track records of the CBOE BXM and PUT indexes: the short volatility profile, decomposed and then measured.
+- Baker, Bradley & Wurgler, "Benchmarks as Limits to Arbitrage: Understanding the Low-Volatility Anomaly" (2011): the low vol anomaly, real, and distinct from a defense.
 - In this book: [[defensive-assets]] (the real defenders and the spec), [[risk-premia]] (what each block really pays), [[long-volatility]] (why selling volatility is a bad way to buy insurance), [[factors-in-retirement]] (low vol as a factor), [[real-estate-in-retirement]] (REITs against property owned directly), [[bonds-in-retirement]] (why government duration defends and high yield does not).
