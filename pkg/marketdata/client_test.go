@@ -363,8 +363,10 @@ func TestFetchISINPicksDeepestCandidate(t *testing.T) {
 }
 
 func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
-	// Yahoo and FT find nothing by ISIN; Boursorama supplies the Morningstar
-	// identifier, and the Morningstar timeseries API carries the history.
+	// Yahoo, FT and the Morningstar screener find nothing by ISIN (the
+	// screener route is simply not stubbed here, so it errors); Boursorama,
+	// the second bridge, supplies the Morningstar identifier, and the
+	// Morningstar timeseries API carries the history.
 	deep := testDays(70)
 	var rows []string
 	for i, d := range deep {
@@ -384,7 +386,9 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 		fmt.Fprint(w, `<a href="/bourse/opcvm/cours/0P0000VHO6/" class="search__list-link"><span class="search__item-title">BGF World Healthscience A2 </span></a>`)
 	})
 	mux.HandleFunc("/api/rest.svc/timeseries_price/"+morningstarToken, func(w http.ResponseWriter, r *http.Request) {
-		if id := r.URL.Query().Get("id"); id != "0P0000VHO6" {
+		// The disambiguating suffix must be there: without it the real
+		// service answers an empty array with HTTP 200.
+		if id := r.URL.Query().Get("id"); id != "0P0000VHO6"+morningstarIDSuffix {
 			t.Errorf("unexpected morningstar identifier: %q", id)
 		}
 		fmt.Fprintf(w, "[%s]", strings.Join(rows, ","))
@@ -412,6 +416,75 @@ func TestFetchISINViaBoursoramaMorningstar(t *testing.T) {
 	stubAllBases(c2, srv.URL)
 	if s2, err := c2.Fetch(context.Background(), "US0378331005", from); err != nil || s2.Source != "morningstar" || len(s2.Points) != 70 {
 		t.Errorf("Morningstar reload from the cache: %v", err)
+	}
+}
+
+func TestFetchISINViaMorningstarScreener(t *testing.T) {
+	// Yahoo and FT find nothing by ISIN, and Boursorama (which only indexes
+	// the French distribution list) finds nothing either. Morningstar's own
+	// screener does: it supplies the fund id, the name and the quote
+	// currency, which the timeseries API never reports.
+	deep := testDays(70)
+	var rows []string
+	for i, d := range deep {
+		rows = append(rows, fmt.Sprintf("[%d, %g]", d.UnixMilli(), 8+float64(i)*0.1))
+	}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/finance/search", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"quotes":[]}`)
+	})
+	mux.HandleFunc("/data/searchapi/searchsecurities", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"data":{"security":[]}}`)
+	})
+	mux.HandleFunc("/recherche/ajax", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `<div>Aucun r&eacute;sultat</div>`)
+	})
+	mux.HandleFunc("/api/rest.svc/"+morningstarScreenerToken+"/security/screener", func(w http.ResponseWriter, r *http.Request) {
+		if term := r.URL.Query().Get("term"); term != "IE0000360275" {
+			t.Errorf("unexpected screener term: %q", term)
+		}
+		// The exact-ISIN row must win over the full-text hit listed first.
+		fmt.Fprint(w, `{"total":2,"rows":[
+			{"SecId":"F00001GMHF","Name":"HEL (Gross) MAN AHL Diversified","currencyId":"CU$$$$$USD"},
+			{"SecId":"F0GBR05B68","Name":"Man AHL Diversified DN USD","isin":"IE0000360275","currencyId":"CU$$$$$USD"}]}`)
+	})
+	mux.HandleFunc("/api/rest.svc/timeseries_price/"+morningstarToken, func(w http.ResponseWriter, r *http.Request) {
+		if id := r.URL.Query().Get("id"); id != "F0GBR05B68"+morningstarIDSuffix {
+			t.Errorf("unexpected morningstar identifier: %q", id)
+		}
+		fmt.Fprintf(w, "[%s]", strings.Join(rows, ","))
+	})
+	c, _ := newTestClient(t, t.TempDir(), mux)
+	from := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	s, err := c.Fetch(context.Background(), "IE0000360275", from)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Source != "morningstar" || len(s.Points) != 70 {
+		t.Fatalf("screener bridge: %+v (%d points)", s, len(s.Points))
+	}
+	if s.Name != "Man AHL Diversified DN USD" {
+		t.Errorf("the exact-ISIN row should have won, got name %q", s.Name)
+	}
+	if s.Currency != "USD" {
+		t.Errorf("the screener reports the currency the timeseries API withholds, got %q", s.Currency)
+	}
+}
+
+func TestMorningstarCurrency(t *testing.T) {
+	cases := map[string]string{
+		"CU$$$$$USD": "USD",
+		"CU$$$$$EUR": "EUR",
+		"eur":        "EUR",
+		"":           "",
+		"CU$$$$$":    "",
+		"nonsense":   "",
+	}
+	for in, want := range cases {
+		if got := morningstarCurrency(in); got != want {
+			t.Errorf("morningstarCurrency(%q) = %q, want %q", in, got, want)
+		}
 	}
 }
 

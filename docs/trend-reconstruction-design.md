@@ -1579,10 +1579,48 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
 
 ## Improvements worth attempting, ranked
 
-1. **Repair the third NAV fallback.** The Morningstar timeseries endpoint
-   currently answers empty for every id, which narrows donor hunting to two
-   sources; if it revives, re-run the 1990s donor survey, the rejected
-   candidates deserve a second look through a second source.
+1. **Re-run the 1990s donor survey through the third NAV fallback**, which was
+   REPAIRED on 2026-08-22 and is no longer the blocker this entry used to
+   describe. Two faults were diagnosed, both in the client rather than at the
+   source: the configured host `tools.morningstar.fr` had lost its DNS A record
+   (the CNAME target resolves to nothing), and the timeseries id was being sent
+   bare when the service requires a two-field suffix, answering an EMPTY array
+   with HTTP 200 for an exchange-traded id without it. Both are fixed, and the
+   resolution now consults Morningstar's own fund screener before Boursorama,
+   which only indexes the French distribution list and knows neither
+   IE0000360275 nor LU1103171821. What this buys the donor hunt: an
+   unauthenticated, plain-HTTP search over open-end AND exchange-traded classes
+   worldwide that reports each hit's ISIN, quote currency and **inception
+   date**, which is the field a survey for pre-1996 programmes actually needs.
+   The rejected candidates deserve their second look through it.
+
+   Three findings bound that survey before it starts. **The floor is not a
+   sourcing artefact**: the screener puts Man AHL Diversified's inception at
+   1996-03-26, the very day the chains already start, so the deepest donor is
+   at its own beginning and only a DIFFERENT, older programme can move the
+   floor. **The two sources do not agree on the level**: measured over
+   IE0000360275's 3392 shared days, the Morningstar/FT ratio wanders in both
+   directions (1.06 in 1997, 1.41 in 2001, 0.92 in 2010) and ends 13.4 % from
+   where it started, with its worst excursion in the violent trend month of
+   2000-10. That is the signature of a weekly-dealing class whose two sources
+   stamp the same NAVs days apart, not of a fee or a currency, and it means a
+   Morningstar-sourced donor may not be spliced onto an FT-sourced one without
+   settling the date convention first. FT stays the reference for this fund,
+   since it is FT's series that reproduces the manager's published thirty-year
+   cumulative. **The distributing trap carries over unchanged**: Morningstar's
+   `timeseries_price` is a price return like FT's, measured on the distributing
+   control IE00BD8PGZ49 at 1.96 points a year below the bundled total-return
+   reconstruction over 2017-2026.
+
+   One capability was found and deliberately NOT taken: the sibling endpoint
+   `timeseries_cumulativereturn` serves a genuine TOTAL return (the same
+   control comes back at -4.06 %/yr against -6.89 %/yr for the price series and
+   -4.94 %/yr for the reconstruction), which is the one thing this source can
+   do that FT cannot. Adopting it is a convention change, not a fallback
+   repair: it returns a return index rather than a NAV, so it interacts with
+   the raw/adjusted split, with valuation consumers and with LooksDistributing.
+   It deserves its own deliberate change and is recorded here so that change
+   need not re-measure anything.
 2. **The EUR class's valuation convention** (a = 0.75 on the US session, ECB
    fixing): measured, real, and under the adoption bar because it buys only
    +0.08 of a daily correlation nobody consumes. Revisit only if the daily
@@ -1593,9 +1631,10 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    grading applied to the current donors (a real programme, a sane drawdown, no
    restructuring artefacts, a documented fee load). The rejected candidates are
    listed in the survey, SEC EDGAR among them since 2026-08: it was walked end
-   to end and it does not hold one. Two routes are left and neither is free.
-   Repairing the third NAV fallback (above) would reopen the fund-database
-   hunt through a second source; and making `DonorChain` calibrate a donor
+   to end and it does not hold one. Two routes are left and one is now open.
+   The third NAV fallback is repaired (above), so the fund-database hunt can be
+   re-run through a second source, and screened on inception dates rather than
+   on names; and making `DonorChain` calibrate a donor
    against the CHAIN rather than against the target fund would admit
    dissolved pools, at the cost of letting a volatility error compound down
    the chain, which is the reason it does not.
