@@ -1,5 +1,5 @@
 # FIRE as a couple, and as a family
-<!-- source: couple-et-famille @ 761fe13275b2 -->
+<!-- source: couple-et-famille @ 86ff93222aa1 -->
 
 Simulators plan for individuals. Life hands those plans to families. The corpus of accounts, the wins and the wrecks alike, is blunt about it: **FIRE is a team sport**. The biggest financial risk to a plan is not the sequence, and it is not inflation. It is divorce. It cuts the capital in half and nearly doubles the costs, which no crash does. And what the happy stories have in common is a project genuinely **shared**, not one half endured by the other.
 
@@ -13,7 +13,7 @@ Second, the plan has to be **runnable by either of you**. If only one of you und
 
 ## Accumulating together: the mismatch in appetite
 
-One founding conflict shows up in most couples in the movement. One of them finds FIRE, buys in, starts optimizing. The other likes their job, or their comfort, or simply has a different relationship with security and time. The project then turns into a quiet standoff, made of complaints about spending, spreadsheets waved around, and "you don't get it".
+One founding conflict shows up in most couples in the movement. One of them finds FIRE, buys in, starts optimizing. The other likes their job, or their comfort, or simply has a different relationship with security and time. The project then turns into a quiet standoff, made of complaints about spending, spreadsheets waved around, and "you don't get it". The danger is not anecdotal: in longitudinal studies of couples, money disagreements rank among the strongest predictors of divorce, ahead of fights about in-laws or chores (Dew, Britt and Huston, 2012).
 
 The couples who last tell a different story. They built the project on shared **life goals** before talking about the means. Time, freedom, less stress: agreement comes easily there. The savings rate is a harder negotiation, so it comes second. Each keeps a **personal budget** to spend without justifying it, because peace is worth its carrying cost. They spell out the **trade-offs** instead of tallying frustrations, since a happy FIRE at 50, together, beats a bitter one at 46. And nobody gets converted by force. You share the data ([[what-is-fire]], this book), you let it sit, and you accept that the other picks Coast when you were dreaming of Lean ([[how-much-you-need]]). The budget for the life you are **aiming at** gets negotiated by two. It does not get decreed by one.
 
@@ -21,7 +21,7 @@ The couples who last tell a different story. They built the project on shared **
 
 This is the least discussed call and one of the most structural. The **staggered** exit, where one leaves while the other keeps working, has huge financial virtues. The remaining salary covers all or part of the spending through the fragile window, and that is the best insurance against a bad sequence in this book ([[sequence-of-returns]], [[pensions-and-other-income]]). The employer health coverage stays in place, and the retirement credits keep accruing ([[us-healthcare-and-social-security]]).
 
-It has real human costs too. The two lives fall out of step: one is free, the other is at the office, vacations become impossible, and a mild jealousy settles in. The free one slides fast into the role of household manager, the number one source of friction in staggered exits. The **simultaneous** exit flips the picture. You gain the shared adventure and the projects done together. You lose the salary safety net, and the close quarters arrive all at once.
+It has real human costs too. The two lives fall out of step: one is free, the other is at the office, vacations become impossible, and a mild jealousy settles in. The free one slides fast into the role of household manager, the number one source of friction in staggered exits. The **simultaneous** exit flips the picture. You gain the shared adventure and the projects done together. You lose the salary safety net, and the close quarters arrive all at once. Longitudinal studies of the retirement transition find both pictures: marital quality dips during the transition, most sharply when one spouse has left and the other has not, then recovers once the roles are renegotiated (Moen, Kim and Hofmeister, 2001).
 
 The happy accounts almost always land on a **short, dated** gap of 12 to 36 months, chosen together, with a firm exit date for the second one. A gap that is endured and open-ended is the worst setup of all. Through that window, set the rules of close quarters in advance (below) and split the housework **explicitly**. The free one does not become the default homemaker. That gets decided.
 
@@ -41,7 +41,7 @@ Test yourselves. If your spouse had to take over on Monday, what would happen? I
 
 ## Divorce: looking straight at it
 
-Nobody plans a divorce, and a book about managing risk has no right to leave it out. This is the scenario that cuts the capital in half and inflates the needs at the same time, with two homes and two lives. Financially, no crash in history hurts this much, because that capital never comes back.
+Nobody plans a divorce, and a book about managing risk has no right to leave it out. Nor does the risk fade with age: the divorce rate past 50 has doubled in a generation, the "gray divorce" documented by Brown and Lin (2012) in the United States, with much of the developed world on a similar path. This is the scenario that cuts the capital in half and inflates the needs at the same time, with two homes and two lives. Financially, no crash in history hurts this much, because that capital never comes back.
 
 What belongs in this book comes down to three things. **Prevention** is not financial: it is this whole chapter. A shared project, explicit trade-offs, a life together with the right tools. FIRE run badly is a documented risk factor for a marriage, frugality imposed and close quarters unprepared at the top of the list. The **framework** gets chosen while things are calm. Depending on where you live, the marital-property rules, a prenuptial agreement or a cohabitation agreement decide who owns what and what passes to whom; unmarried partners are usually the least protected of all, and in some places they inherit almost nothing by default. Whatever they are called locally, these are tools of plain fairness, worth an hour with a lawyer **before** you need them, and clarity about who owns what protects a couple far more than it threatens it. And **if it happens**, you rebuild the plan. You re-run both halves, often two Coast FIRE plans where there had been one FIRE. Flexibility, a partial return to work and the years that follow do the rest, and the post-divorce accounts in the corpus are hard but rarely final wrecks. What cannot be rebuilt is having bet everything on a plan that assumed the couple was forever, without ever saying so.
 
@@ -86,5 +86,6 @@ Two hours a year, and the plan, the couple and the family stay inside the same l
 ## Going further
 
 - The "couples" threads on the FIRE forums ([r/financialindependence](https://www.reddit.com/r/financialindependence), MMM): the raw field material for this chapter, disagreements included.
+- The chapter's academic anchors: Dew, Britt & Huston, "Examining the Relationship Between Financial Issues and Divorce" (2012); Brown & Lin, "The Gray Divorce Revolution" (2012); Moen, Kim & Hofmeister (2001) on marital quality through the transition.
 - A family-law attorney where you live: the marital-property rules, what protects a surviving spouse, and what an unmarried partner gets by default. The appointment you take while things are calm.
 - In this book: [[meaning-and-identity]] (each person's workstreams), [[voices-from-real-retirees]] (the accounts), [[the-annual-review]] (the governance loop), [[building-your-plan]] (the written page and the never-dos).
