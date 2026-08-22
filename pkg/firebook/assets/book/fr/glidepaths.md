@@ -81,4 +81,4 @@ Iris, 44 ans, cible à 49 ans, CAPE au-dessus de 30 : la tente complète se just
 - Pfau & Kitces, « Reducing Retirement Risk with a Rising Equity Glide Path », *Journal of Financial Planning* (2014), et Kitces, « The Bond Tent » ([kitces.com](https://www.kitces.com)) : les fondateurs.
 - Early Retirement Now, volets 19-20 (glidepaths en retraite, version 60 ans d'horizon) et volet 43 (pré-retraite) ([[serie-ern]]).
 - Pfau, *Retirement Planning Guidebook*, chapitre allocation dynamique.
-- Dans ce livre : [[sequence-des-rendements]] (le risque visé), [[cash-buffer]] (l'alternative), [[les-trois-phases]] (le calendrier), [[allocation-actions-obligations]] (le point d'arrivée de la pente).
+- Dans ce livre : [[sequence-des-rendements]] (le risque visé), [[cash-buffer]] (l'alternative), [[les-trois-phases]] (le calendrier), [[allocation-actions-obligations]] (le point d'arrivée de la pente), [[theorie-du-cycle-de-vie]] (le capital humain, qui dérive les glidepaths au lieu de les décréter).

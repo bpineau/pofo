@@ -1,5 +1,5 @@
 # Deciding under uncertainty: utility, Kelly, regret, and robust choices
-<!-- source: decider-sous-incertitude @ bc8eb3a3e1a8 -->
+<!-- source: decider-sous-incertitude @ ded1d9f3e9ed -->
 
 This book spends a lot of pages answering questions like "which strategy maximizes the withdrawal rate" or "which allocation minimizes failure". This page steps back and asks the question that comes before them: **what makes a decision good when the future is unknown?** A retiree has a problem that averages ignore. You live one path. A simulator draws ten thousand, life draws one, and there is no second game. Maximizing an average computed over ten thousand worlds is not automatically the right goal for someone who will only ever live in one of them.
 
@@ -69,4 +69,4 @@ Capital of $1.2M, spending of $43,000 a year, on this book's forward assumptions
 - Herbert Simon, "A Behavioral Model of Rational Choice" (1955): satisficing from the man who coined it, and won a Nobel for it.
 - Edward Thorp, "The Kelly Criterion in Blackjack, Sports Betting, and the Stock Market": the best account of Kelly, assumptions included.
 - Kahneman and Tversky, "Prospect Theory" (1979): loss aversion measured, and the bridge to [[the-psychology-of-spending]].
-- In this book: [[failure-probability]] (picking your threshold), [[choosing-your-strategy]] (the protocol applied to withdrawal rules), [[stock-bond-allocation]] (the plateau), [[monte-carlo-strengths-and-limits]] (why every model is wrong, and how to decide anyway).
+- In this book: [[lifecycle-theory]] (the academic backbone this page is the user manual of), [[failure-probability]] (picking your threshold), [[choosing-your-strategy]] (the protocol applied to withdrawal rules), [[stock-bond-allocation]] (the plateau), [[monte-carlo-strengths-and-limits]] (why every model is wrong, and how to decide anyway).
