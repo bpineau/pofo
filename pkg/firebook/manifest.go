@@ -57,6 +57,7 @@ var Categories = []Category{
 			{Slug: "horizon-et-esperance-de-vie", Title: "Horizon, espérance de vie et retraites de 50 ans", Blurb: "Le bon quantile de survie, la courbe taux-horizon qui s'aplatit, la ruine pondérée par la mortalité, et la phase à découvert."},
 			{Slug: "serie-ern", Title: "La série Safe Withdrawal Rate d'ERN : guide de lecture", Blurb: "La référence moderne du sujet : ses résultats majeurs partie par partie, et les filtres pour la lire depuis la France."},
 			{Slug: "les-maths-du-4-pourcent", Title: "Pourquoi 4 % ? L'anatomie mathématique de la règle", Blurb: "La cascade en trois étages (rendement réel, bonus d'amortissement, pénalité de séquence), pourquoi elle est si robuste, et ce qui la casserait."},
+			{Slug: "theorie-du-cycle-de-vie", Title: "La théorie du cycle de vie : le socle académique du plan", Blurb: "Modigliani, Samuelson, Merton, Yaari : la part de risque optimale, le capital humain, la rente par défaut, et le registre étiqueté des écarts entre la théorie et ce livre."},
 			{Slug: "decider-sous-incertitude", Title: "Décider sous incertitude : utilité, Kelly, regret", Blurb: "Vous ne vivez qu'une trajectoire : l'équivalent certain, tolérance contre capacité, pourquoi fuir le Kelly complet, et le protocole en cinq règles."},
 		},
 	},
@@ -234,7 +235,8 @@ var planned = []string{
 	"rendements-arithmetiques-geometriques", "anarkulova-cederburg",
 	"valorisations-et-cape", "rendements-attendus",
 	"horizon-et-esperance-de-vie", "serie-ern",
-	"les-maths-du-4-pourcent", "decider-sous-incertitude",
+	"les-maths-du-4-pourcent", "theorie-du-cycle-de-vie",
+	"decider-sous-incertitude",
 	// III. Modéliser
 	"monte-carlo-forces-faiblesses", "historique-vs-parametrique",
 	"queues-epaisses", "lire-un-fan-chart", "pieges-des-simulateurs",

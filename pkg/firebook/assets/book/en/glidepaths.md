@@ -1,5 +1,5 @@
 # Glide paths: the bond tent, rising equity, and the fragile window
-<!-- source: glidepaths @ 510a5524e4c0 -->
+<!-- source: glidepaths @ 124653fc75d0 -->
 
 The previous chapter settled where to sit on the stock-bond axis ([[stock-bond-allocation]]). This one adds the dimension a static allocation ignores: time. Risk in a withdrawal plan is not spread evenly. It piles up in the first five to ten years, the fragile window of sequence risk ([[sequence-of-returns]]). A constant allocation, though, pays for protection at the same price for life. That price is the equity return you give up. And the danger eventually passes.
 
@@ -82,4 +82,4 @@ Iris, 44, targeting 49, with a CAPE above 30: the full tent is justified. Declin
 - Pfau and Kitces, "Reducing Retirement Risk with a Rising Equity Glide Path", *Journal of Financial Planning* (2014), and Kitces, "The Bond Tent" ([kitces.com](https://www.kitces.com)): the founding pieces.
 - Early Retirement Now, Parts 19-20 (glide paths in retirement, the 60-year horizon version) and Part 43 (the run-up to retirement) ([[the-ern-series]]).
 - Pfau, *Retirement Planning Guidebook*, the chapter on dynamic allocation.
-- In this book: [[sequence-of-returns]] (the risk being targeted), [[cash-buffer]] (the alternative), [[the-three-phases]] (the calendar), [[stock-bond-allocation]] (where the path ends up).
+- In this book: [[sequence-of-returns]] (the risk being targeted), [[cash-buffer]] (the alternative), [[the-three-phases]] (the calendar), [[stock-bond-allocation]] (where the path ends up), [[lifecycle-theory]] (human capital, which derives glidepaths instead of decreeing them).

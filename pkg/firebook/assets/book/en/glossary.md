@@ -1,5 +1,5 @@
 # The FIRE and withdrawal glossary
-<!-- source: lexique @ ed9f41b97c49 -->
+<!-- source: lexique @ ca730b2ed6a3 -->
 
 Every term in this book, and the forum jargon around it, defined in a few sentences, with a pointer to the chapter that covers it. A glossary is something you look things up in, but this one is also meant to be **read**. Straight through, it works as a summary of the book in alphabetical order. The last section pulls the thirteen numbers that turn up everywhere into one table, so you can check your ballpark at a glance.
 
@@ -116,6 +116,8 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 
 **HSA (health savings account)**: the only account taxed nowhere. It takes a high-deductible health plan; contributions are deducted, and escape payroll taxes too through an employer's cafeteria plan, growth is untaxed, and withdrawals for qualified medical expenses are untaxed at any age. A distribution can reimburse any qualified expense incurred since the account was opened, with no deadline, so paying today's bill out of pocket and filing the receipt turns it into a compounding medical reserve. At 65 non-medical withdrawals lose the 20% additional tax and become plain ordinary income. [[us-accounts-and-account-order]], [[us-healthcare-and-social-security]]
 
+**Human capital**: the present value of future labor income, the implicit bond that you are. Massive when young (hence the glidepaths), reduced for the retiree to the option of going back to work and the pension to come. [[lifecycle-theory]], [[glidepaths]]
+
 **Hysteresis**: trigger at one threshold, disarm at a lower one. What keeps every warning light in the plan from crying wolf. [[when-to-worry]]
 
 **i.i.d. (independent and identically distributed)**: draws with no memory, each period independent and pulled from the same distribution. Naive Monte Carlo. It under-represents long mediocre stretches (no clustering, no return of valuations toward their mean), which is why the engines with memory exist. [[monte-carlo-strengths-and-limits]], [[making-monte-carlo-relevant]]
@@ -137,6 +139,8 @@ Every term in this book, and the forum jargon around it, defined in a few senten
 **Managed futures, trend**: systematic trend-following strategies, long and short, across asset classes. The only defensive holding with a positive expectancy, and the winner of long regimes (2008, 2022). [[managed-futures]]
 
 **Market regimes**: the persistent seasons that cross growth and inflation. A 60/40 covers two of them. Stagflation is the retiree's nightmare. [[market-regimes]]
+
+**Merton share**: the lifecycle model's optimal risky fraction, (μ − r)/(γσ²), constant and independent of horizon. For plausible human risk aversions it draws the 50-80% plateau. [[lifecycle-theory]], [[stock-bond-allocation]]
 
 **Monte Carlo**: running the plan through thousands of futures drawn from a model. A conditional theorem ("if the world draws from this urn..."), never a prediction. [[monte-carlo-strengths-and-limits]]
 

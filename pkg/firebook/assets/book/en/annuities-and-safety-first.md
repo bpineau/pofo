@@ -1,5 +1,5 @@
 # Annuities and safety first: buying a floor
-<!-- source: rentes-et-annuites @ 0662927ddb01 -->
+<!-- source: rentes-et-annuites @ fbb98d604bfe -->
 
 Every withdrawal rule in this part attacks the same problem: making a risky pot of money last longer than a life of unknown length. A life annuity dissolves the problem instead. You hand capital to an insurer. The insurer pays you an income for as long as you live, whatever the markets do and however long you last.
 
@@ -21,7 +21,7 @@ An immediate life annuity is easy to take apart. The insurer takes your capital,
 
 The naive reading compares that rate with the portfolio's 4% and jumps to a conclusion. The correct reading splits the payment into three parts: the return of your own capital, which is by far the largest, the interest, and the mortality credits. A portfolio can reproduce the first two. It cannot reproduce the third, and the third grows with age. That gives the working principle. An annuity beats a portfolio only where mortality credits are large, which means late in life, and only for the one need no asset covers, a floor that lasts as long as you do. Buying at 62 to pick up yield is a mistake. Buying at 78 to lock down the base of the budget rarely is.
 
-The theory is old and it holds. Menahem Yaari showed in 1965 that a rational agent with no bequest motive should annuitize everything he owns. Modern work, once bequest motives and frictions are in the model, brings the optimum back to annuitizing part of the floor. That is the foundation of the safety-first school ([[withdrawal-strategies-overview]]), which Wade Pfau put into practitioner form. Cover the essential spending with income guaranteed for life: Social Security, an annuity, a bond ladder ([[bond-ladders]]). Leave the portfolio carrying comfort and projects, where swings are tolerable ([[flexibility-in-practice]]). The plan stops being one big bet. It becomes two tiers with different risks.
+The theory is old and it holds ([[lifecycle-theory]]). Menahem Yaari showed in 1965 that a rational agent with no bequest motive should annuitize everything he owns. Modern work, once bequest motives and frictions are in the model, brings the optimum back to annuitizing part of the floor. That is the foundation of the safety-first school ([[withdrawal-strategies-overview]]), which Wade Pfau put into practitioner form. Cover the essential spending with income guaranteed for life: Social Security, an annuity, a bond ladder ([[bond-ladders]]). Leave the portfolio carrying comfort and projects, where swings are tolerable ([[flexibility-in-practice]]). The plan stops being one big bet. It becomes two tiers with different risks.
 
 ::: figure etages-du-plancher
 The safety-first doctrine fits in the alignment of these two columns. On the left what you need every year, on the right what pays for it, and one rule: income guaranteed for life should reach the floor line and go no further. Whatever sits above it stays with the portfolio, where swings only threaten projects. Look at what the portfolio becomes after the trade: it now delivers 1.4% a year, a rate at which no withdrawal rule has any trouble at all.
