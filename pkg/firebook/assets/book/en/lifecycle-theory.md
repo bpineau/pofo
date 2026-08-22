@@ -1,5 +1,5 @@
 # Lifecycle theory: the academic backbone of the plan
-<!-- source: theorie-du-cycle-de-vie @ 5c2d338be74a -->
+<!-- source: theorie-du-cycle-de-vie @ 7a86654c318d -->
 
 This book is full of practical rules. A target allocation, a glidepath, an annuity in old age, a withdrawal that responds to wealth. Each one is defended in its own article with numbers and backtests. But none of them was invented by bloggers. Behind almost all of them stands half a century of academic research, three Nobel prizes, and a single framework, **lifecycle theory**. This article lays out that backbone. It shows where the recommendations the rest of the book applies come from, by proof rather than by habit. And it surfaces something just as valuable as the theory itself: the list of places where practice departs from it, and the reasons, good or less good, for each departure.
 
@@ -21,7 +21,7 @@ A word of empirical honesty, because the hypothesis describes the rational agent
 
 The next question is the portfolio. What fraction of wealth belongs in risky assets when you consume out of it for a lifetime? Paul Samuelson (1969) solves it in discrete time, Robert Merton (1969, 1971) in continuous time, and the answer has a closed form. For an agent with constant relative risk aversion facing returns independent from one period to the next, the optimal risky share is
 
-**w\* = (μ − r) / (γ σ²)**
+**w∗ = (μ − r) / (γ σ²)**
 
 that is, the expected risk premium, divided by the variance of the risky asset and by the risk aversion γ. This is the **Merton share**. Three properties follow from the formula, all three proved rather than observed. The optimal share is constant: it depends neither on wealth, nor on the path so far, nor, this is the counterintuitive one, on horizon. It is finite: even a mildly risk-averse agent does not go all-in on stocks once γ exceeds the premium over the variance. And it justifies the very existence of a target allocation to rebalance, the most ordinary gesture in this book ([[stock-bond-allocation]]).
 
@@ -33,7 +33,7 @@ Samuelson's most useful result is a negative one. "Stocks always win in the long
 This is a theorem, to be handled as one. It does not forbid holding a lot of stocks; it forbids justifying them **by the length of the horizon alone**. The real justifications go through the assumptions: human capital (next section), or a mean reversion in returns that would violate the independence of periods. The latter does exist empirically, valuations predict part of ten-year returns (Campbell and Shiller 1988, [[valuations-and-cape]]), but Ľuboš Pástor and Robert Stambaugh (2012) showed that uncertainty about the predictors inflates long-horizon variance back by a good part of what mean reversion had removed. Empirical result against empirical result: the debate is open, and it is the weakest grade of evidence on this page. The 100%-stocks case of [[anarkulova-cederburg]] should be read with this grid: a serious empirical argument, confronting a theorem by attacking its assumptions, exactly as it should be done.
 :::
 
-Merton's assumptions deserve their trial, because that is where practice forks. The formula asks for μ, yet Merton himself (1980) showed that a century of data is not enough to estimate a mean return with useful precision ([[expected-returns]]). It asks for γ, which is not observable to better than a factor of two. A factor-of-two uncertainty on γ moves w\* by a factor of two. The lesson is not to throw the formula away, but to give up on knife-edge optima and settle in the middle of the plateaus, the line of conduct of [[deciding-under-uncertainty]]. Victor DeMiguel, Lorenzo Garlappi and Raman Uppal (2009) gave the now-classic measurement: out of sample, the naive equal-weight portfolio beats most sophisticated optimizations, precisely because estimation error eats the gain from optimality. An empirical result, widely replicated, and one of the discipline's most humbling.
+Merton's assumptions deserve their trial, because that is where practice forks. The formula asks for μ, yet Merton himself (1980) showed that a century of data is not enough to estimate a mean return with useful precision ([[expected-returns]]). It asks for γ, which is not observable to better than a factor of two. A factor-of-two uncertainty on γ moves w∗ by a factor of two. The lesson is not to throw the formula away, but to give up on knife-edge optima and settle in the middle of the plateaus, the line of conduct of [[deciding-under-uncertainty]]. Victor DeMiguel, Lorenzo Garlappi and Raman Uppal (2009) gave the now-classic measurement: out of sample, the naive equal-weight portfolio beats most sophisticated optimizations, precisely because estimation error eats the gain from optimality. An empirical result, widely replicated, and one of the discipline's most humbling.
 
 ## Human capital: the bond that you are
 
