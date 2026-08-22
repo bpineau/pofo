@@ -67,10 +67,12 @@ func Spending(pr Params, panel *scenario.Panel) SpendingResult {
 	return SpendingResult{SVG: svg, Cards: cards}
 }
 
-// cashflowAt is the deterministic income (pension, side income, annuity)
-// active in a year, mirroring the plan's cashflow construction.
+// cashflowAt is the deterministic income (pension, side income) active in a
+// year, mirroring the plan's cashflow construction. An annuity is not among
+// them: it is priced and paid in the mortality kernel alone (see annuity.go),
+// so this fixed-horizon fan neither spends its premium nor collects its income.
 func (pr Params) cashflowAt(year int) float64 {
-	total := pr.annuityIncome() // lifelong, from year 0
+	total := 0.0
 	if pr.PensionAnnual > 0 && year >= pr.PensionYear {
 		total += pr.PensionAnnual
 	}
