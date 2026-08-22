@@ -100,7 +100,7 @@
     <div id="spendingSvg" class="chart-frame"></div>
     <div id="spendingCards" class="cardcol"></div>
   </div>
-  <p class="lede">And where each year's money comes from, on the median path: the guaranteed floors (pension, annuity, side income) against the portfolio sales that carry everything else. The years the portfolio carries alone are the ones sequence risk can hurt.</p>
+  <p class="lede">And where each year's money comes from, on the median path: the guaranteed floors (pension, side income) against the portfolio sales that carry everything else. The years the portfolio carries alone are the ones sequence risk can hurt.</p>
   <div class="duo">
     <div id="incomeSvg" class="chart-frame"></div>
     <div id="incomeCards" class="cardcol"></div>
@@ -110,6 +110,7 @@
 <section class="section">
   <div class="shead"><span class="code">§05</span><h2>Alive, broke or gone</h2><span class="aside">ruin odds against a French couple's mortality</span></div>
   <p class="lede">A failure at 92 is not the same life event as a failure at 61. Here each future draws its own death (INSEE-fitted Gompertz, both members of the couple), so the risk counted is the one that matters: being alive and out of money.</p>
+  <p class="lede" id="annuityNote" hidden>Your annuity is bought here, and only here. Longevity insurance needs a longevity to insure, which exists only where the death is drawn: the fixed-horizon sections above assume everyone reaches the end, so a lifelong income there would just be paid for longer than it was priced for, and they are left untouched. The last three cards run the same futures and the same deaths twice, without the purchase and with it: what it removes from the risk of outliving the money, what it costs the estate, and the ratio that decides which way that goes.</p>
   <div class="duo">
     <div class="stack">
       <div id="lifeSvg" class="chart-frame"></div>
@@ -218,7 +219,8 @@
 <li><b>The red lines on the wealth fans</b> are example failed futures. The eight thin sample paths are picked at evenly spaced ranks of final wealth (worst, ~14th percentile, ~29th, … best), so the count of red ones tracks the failure rate: one red line means "the worst future fails", two mean roughly "one future in seven fails", three "one in four", and so on. The bold red baseline is simply zero.</li>
 <li><b>The fans' vertical axis is capped at 10× the starting capital</b> ("upside clipped ↑"): the upper cone can compound far beyond, but showing it would crush the zero line, which is the part that matters.</li>
 <li><b>Safe spend</b> is always solved on the plain fixed rule at your acceptable ruin (the conventional definition of a safe withdrawal rate), even when your plan uses flex or guardrails; <b>Ruin</b> and <b>Median wealth</b> are evaluated under your actual policy.</li>
-<li><b>Taxes gross up every sale:</b> withdrawing 60 k€ net sells more than 60 k€ of assets; the annuity premium leaves the portfolio on day one and returns as lifelong income.</li>
+<li><b>Taxes gross up every sale:</b> withdrawing 60 k€ net sells more than 60 k€ of assets, and an annuity premium is a sale like any other, so raising it costs its capital-gains tax before a euro of income is bought.</li>
+<li><b>The annuity is priced where mortality is drawn</b> (section 05) and nowhere else: a joint-life, inflation-linked income at a 1% real rate, on an annuitant table, less the insurer margin you set. Under the fixed horizon of every other section, a lifelong income is paid for longer than it was priced for, which is a free lunch rather than a plan.</li>
 </ul>
 <p class="book-link"><a href="firebook/fr/">Le FIRE tranquille</a></p>
 </div>
