@@ -67,6 +67,15 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 			p.Ratchet = decumul.Ratchet{Trigger: 1.2, Step: 0.10 * p.NeedAnnual, Cap: 1.2 * p.NeedAnnual, Cooldown: 2, MaxWR: 0.022}
 			return p
 		}},
+		// No annuity lever here, deliberately. Every bar above is a paired
+		// delta in the SAME fixed-horizon ruin on the SAME draws, which is what
+		// makes them comparable to each other. An annuity has no price and
+		// nothing to insure under a fixed horizon (see annuity.go), so its bar
+		// would either read zero or read the free lunch of an income paid past
+		// the date it was priced to; measuring it properly means a different
+		// kernel and a different definition of ruin, which cannot share this
+		// axis. The lifecycle view carries that measurement, before and after,
+		// as its own readout.
 	}
 
 	bars := make([]chart.Bar, 0, len(nudges))

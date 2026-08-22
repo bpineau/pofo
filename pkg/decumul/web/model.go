@@ -79,7 +79,15 @@ type Params struct {
 	CapeAdjust                   bool    `json:"capeAdjust"`     // anchor the central return to today's CAPE valuation
 	Percent                      float64 `json:"percent"`        // percentage-of-portfolio (VPW) rule; 0 = fixed real spending
 	Glidepath                    bool    `json:"glidepath"`      // rising-equity glidepath (bond tent) on the central model
-	AnnuityShare                 float64 `json:"annuityShare"`   // share of capital annuitized (joint-life real income); 0 = none
+	// The annuity block (see annuity.go). Share is the fraction of the GROWTH
+	// sleeve converted into a joint-life, inflation-linked income, 0 = none and
+	// the default; Year is the plan year of the purchase (0 = at retirement);
+	// Load is the insurer's margin as a share of the fair income, 0 meaning the
+	// honest default rather than a fair annuity. It is read by the mortality
+	// kernel alone, which is where an annuity has a price and a risk to insure.
+	AnnuityShare float64 `json:"annuityShare"`
+	AnnuityYear  int     `json:"annuityYear"`
+	AnnuityLoad  float64 `json:"annuityLoad"`
 }
 
 // age resolves the mortality age, defaulting to 52 (an early retiree).
@@ -175,13 +183,9 @@ func (pr Params) plan() decumul.Plan {
 		p.Amortize = true
 		p.AmortReturn = pr.abwReturn()
 	}
-	// Partial annuitisation: spend a share of capital on a joint-life, real
-	// immediate annuity (1% real rate, 10% insurer load), hedging longevity. The
-	// premium leaves the portfolio; its lifelong income lowers the net need.
-	if income := pr.annuityIncome(); income > 0 {
-		p.Capital -= pr.AnnuityShare * pr.Capital
-		p.Cashflows = append(p.Cashflows, decumul.Cashflow{FromYear: 0, Annual: income})
-	}
+	// The annuity is deliberately NOT built here: it is a longevity instrument,
+	// and the kernel ignores it without a Lifetime. Lifecycle attaches both
+	// (see annuity.go for why the fixed-horizon views cannot carry it).
 	p.SpendSchedule = pr.spendSchedule()
 	p.Envelopes = pr.envelopes()
 	return p
@@ -197,16 +201,6 @@ func (pr Params) abwReturn() float64 {
 		return math.Max(0, capeSnapshot().ImpliedReal)
 	}
 	return math.Max(0, pr.Mu-pr.Sigma*pr.Sigma/2)
-}
-
-// annuityIncome is the lifelong yearly real income bought by the annuitised
-// share of capital (joint-life, 1% real rate, 10% insurer load); 0 when the
-// annuity option is off.
-func (pr Params) annuityIncome() float64 {
-	if pr.AnnuityShare <= 0 || pr.Capital <= 0 {
-		return 0
-	}
-	return decumul.AnnuityIncome(decumul.FrenchMortality, pr.age(), pr.AnnuityShare*pr.Capital, 0.01, 0.90)
 }
 
 // spendSchedule builds the per-year real spending multipliers from the drift

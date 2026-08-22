@@ -21,6 +21,11 @@ type LifecycleResult struct {
 	BequestSVG  string `json:"bequestSvg"`
 	Cards       []Card `json:"cards"`
 	Note        string `json:"note"`
+	// Annuitised says the plan bought an annuity, so this view is the only one
+	// on the page carrying it. The front end shows the standing note that says
+	// so, rather than leaving a reader to wonder why the sections above did
+	// not move.
+	Annuitised bool `json:"annuitised"`
 }
 
 // Lifecycle runs the central model at the planned spend with the death drawn
@@ -50,6 +55,9 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 		Self:    decumul.Life{Age: age},
 		Partner: &decumul.Life{Age: age},
 	}
+	// The annuity lives here and nowhere else: this is the only view whose
+	// households can outlive their money, which is the risk it insures.
+	mortal.Annuity = pr.annuity()
 	draws := mortal.Draw(pr.NPaths, simWorkers, 7)
 	e := mortal.SimulateOn(draws, simWorkers)
 	immortal := base.SimulateOn(draws, simWorkers) // same returns, nobody dies
@@ -110,8 +118,16 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	bequestSVG := darkBars(chart.Options{Title: "What's left at the end", XLabel: "real wealth at the household's own end",
 		Width: 900, Height: 300}, bequestBuckets(e.Estates()))
 
-	cards := lifecycleCards(e, immortal)
-	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}
+	cards := lifecycleCards(e, immortal, mortal.Annuity != nil)
+	// The third twin: the same households, the same deaths, no annuity. It is
+	// what makes the purchase readable as a trade rather than a level.
+	if a := mortal.Annuity; a != nil {
+		plain := mortal
+		plain.Annuity = nil
+		cards = append(cards, annuityCards(e, plain.SimulateOn(draws, simWorkers), pr, a)...)
+	}
+	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG,
+		Cards: cards, Annuitised: mortal.Annuity != nil}
 }
 
 // bequestBuckets buckets each path's estate (real wealth at the household's
@@ -209,12 +225,18 @@ func brokeYearsIfRuined(lo decumul.LifeOutcome) float64 {
 // lifecycleCards summarises the mortality-aware risk against its
 // mortality-free twin: the classic ruin figure (same return draws, nobody
 // dies), the share that really ran out while alive, how long that failure
-// lasted, and the odds of outliving the horizon.
-func lifecycleCards(e, immortal decumul.Ensemble) []Card {
+// lasted, and the odds of outliving the horizon. annuitised only affects what
+// the first card says about itself: the mortality-free twin cannot carry an
+// annuity, so with one bought it is no longer the same plan as the rest.
+func lifecycleCards(e, immortal decumul.Ensemble, annuitised bool) []Card {
 	lo := e.LifeOutcome()
+	horizonHelp := "The headline ruin figure: the same futures run to the full horizon with nobody ever dying. It is the number every other section of this page reports."
+	if annuitised {
+		horizonHelp += " It carries no annuity: with everyone certain to reach the horizon there is no longevity left to insure, only an income paid for longer than it was priced for, so the fixed horizon cannot price the purchase at all."
+	}
 	return []Card{
 		{Label: "Ruin (ignoring mortality)", Value: fmt.Sprintf("%.1f%%", immortal.Outcome().RuinProb*100),
-			Help: "The headline ruin figure: the same futures run to the full horizon with nobody ever dying. It is the number every other section of this page reports."},
+			Help: horizonHelp},
 		{Label: "Ever alive and broke", Value: fmt.Sprintf("%.1f%%", lo.RuinAlive*100),
 			Help: "Share of households that ran out of money with somebody still there to feel it. The death is drawn inside each future, so this is counted, not estimated."},
 		{Label: "Years broke, when it happens", Value: fmt.Sprintf("%.0f y", brokeYearsIfRuined(lo)),

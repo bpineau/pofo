@@ -8,8 +8,10 @@ import (
 )
 
 // IncomeResult shows where each year's spending money comes from on the
-// median path: the layers of guaranteed income (annuity, pension, side
-// income) and the portfolio withdrawals on top. It makes the plan's shape
+// median path: the layers of guaranteed income (pension, side income) and the
+// portfolio withdrawals on top. An annuity is not a layer here: it belongs to
+// the mortality kernel (annuity.go), and the lifecycle view reports the income
+// it buys. It makes the plan's shape
 // tangible: the gap years before the pension are visibly the ones carried by
 // the portfolio alone, which is why pension timing dominates the sensitivity
 // ranking and why sequence risk concentrates there.
@@ -37,12 +39,9 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	portfolio := bands[0]
 
 	years := pr.Years
-	annuity := make([]float64, years)
 	pension := make([]float64, years)
 	side := make([]float64, years)
-	annuityIncome := pr.annuityIncome()
 	for k := range years {
-		annuity[k] = annuityIncome / 1000
 		if pr.PensionAnnual > 0 && k >= pr.PensionYear {
 			pension[k] = pr.PensionAnnual / 1000
 		}
@@ -60,9 +59,6 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	// Only the active layers are drawn; the guaranteed floors sit at the
 	// bottom so the portfolio's share reads as the exposed remainder.
 	var series []chart.AreaSeries
-	if annuityIncome > 0 {
-		series = append(series, chart.AreaSeries{Name: "Annuity", Values: annuity, Color: chart.PaletteColor(5)})
-	}
 	if pr.PensionAnnual > 0 {
 		series = append(series, chart.AreaSeries{Name: "Pension", Values: pension, Color: chart.PaletteColor(2)})
 	}
@@ -77,7 +73,7 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 	if pr.PensionAnnual <= 0 {
 		gapYears = years
 	}
-	lastGuaranteed := annuityIncome
+	lastGuaranteed := 0.0
 	if pr.PensionAnnual > 0 {
 		lastGuaranteed += pr.PensionAnnual
 	}
@@ -89,7 +85,7 @@ func Income(pr Params, panel *scenario.Panel) IncomeResult {
 		{Label: "Years carried by the portfolio alone", Value: fmt.Sprintf("%d y", gapYears),
 			Help: "Before any pension starts, every euro of spending is a portfolio sale: these are the years sequence risk can do real damage."},
 		{Label: "Guaranteed share, final years", Value: fmt.Sprintf("%.0f%%", lastShare*100),
-			Help: "Pension + annuity as a share of the median household spending in the last plan year: the part of late-life spending no market crash can take away."},
+			Help: "The pension as a share of the median household spending in the last plan year: the part of late-life spending no market crash can take away."},
 	}
 	return IncomeResult{
 		SVG: darkStackedArea(chart.Options{
