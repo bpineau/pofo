@@ -1,5 +1,5 @@
 # The one-more-year syndrome
-<!-- source: une-annee-de-plus @ e9ca2997ee8f -->
+<!-- source: une-annee-de-plus @ 3d7aeac9c8ee -->
 
 One last obstacle stands between a FIRE candidate and the exit. It is not the market, and it is not the tax code. It is the candidate, who hits the target and stays. "One more year", to round the number up, to be safe, because the market is high, because the market is low, because the bonus lands in March. Then another year after that. The one-more-year syndrome (OMY) is the movement's terminal trap. It is common enough to have its own acronym on every forum, and costly enough that veterans call it their number one regret ([[voices-from-real-retirees]]: "I should have left sooner", unanimously).
 
@@ -13,9 +13,9 @@ The risk of running out, broke at 82, is visible, countable, terrifying. This wh
 
 Anyone approaching the exit is boxed in on three sides.
 
-**The target moves.** The moment you hit it, your mind renegotiates it ("25x, but with inflation... call it 27x, and the world is uncertain, so 30x?"). These are the moving goalposts, and they show up in every account. The target was never the real trigger. The real trigger is a feeling of safety, and numbers do not manufacture it ([[the-psychology-of-spending]] describes the same unbounded fear, one phase earlier).
+**The target moves.** The moment you hit it, your mind renegotiates it ("25x, but with inflation... call it 27x, and the world is uncertain, so 30x?"). These are the moving goalposts, and they show up in every account. They have a documented root, loss aversion: a loss weighs about twice its mirror-image gain (Kahneman and Tversky, 1979, the factor measured near 2 by the same authors in 1992), so the possible ruin crushes the certain years on the mental scale. The target was never the real trigger. The real trigger is a feeling of safety, and numbers do not manufacture it ([[the-psychology-of-spending]] describes the same unbounded fear, one phase earlier).
 
-**The known is comfortable.** Leaving is a cliff in your identity ([[meaning-and-identity]]); staying is the gentle slope. And one more year is the perfect compromise for anyone avoiding the drop. You do not give the project up. You push it back, indefinitely.
+**The known is comfortable.** Leaving is a cliff in your identity ([[meaning-and-identity]]); staying is the gentle slope, and status quo bias (Samuelson and Zeckhauser, 1988) does the rest: the default option wins as long as you do not confront it. And one more year is the perfect compromise for anyone avoiding the drop. You do not give the project up. You push it back, indefinitely.
 
 **Everything around you pushes the same way.** Your employer holds you with a bonus and a late promotion. The people around you doubt ("at your age?"). And the market always supplies a reason: high ("a bubble, let's wait for the correction"), low ("let's wait for the recovery"), calm ("let's bank a good year while it lasts"). Anyone who has read [[valuations-and-cape]] will recognize perpetual market timing, applied this time to a life.
 
@@ -32,7 +32,7 @@ Honesty demands the opposite list, three setups where the extra year is a good b
 2. **The market is extremely expensive** on the planned exit date ([[valuations-and-cape]]). A target reached on euphoria is a fragile target, when the CAPE runs above 32 to 35 and the CAPE-anchored failure probability confirms it. Sliding 12 to 24 months, bounded, with a backstop date written down, is the defensible version of timing your own life ([[the-three-phases]], the trap at the top).
 3. **The life after is not ready** (nothing prototyped, a spouse who is not on board, [[meaning-and-identity]], [[couples-and-family]]). The extra year that builds something, the four-day week, the trial sabbatical, the practices already started, is not a delay. It is preparation, as long as it has a deliverable and an end date.
 
-One question separates the rational case from the syndrome: "What will be true in a year that is not true today, and how will I know?" The rational case has a precise answer. The syndrome answers "we'll see, I'll feel better."
+One question separates the rational case from the syndrome: "What will be true in a year that is not true today, and how will I know?" The rational case has a precise answer. The syndrome answers "we'll see, I'll feel better." The research on affective forecasting says exactly the opposite: we are poor prophets of our future states, and that better feeling does not arrive on its own (Wilson and Gilbert, 2003).
 :::
 
 ## The cure: a commitment made while calm
@@ -66,4 +66,5 @@ Yasmine, 45, target reached, central failure 3.8%, floor tested, workshop projec
 - Early Retirement Now, Part 42 ("The Effect of One More Year"): the safety column, priced ([[the-ern-series]]).
 - Eurostat's healthy life years and the WHO's HALE series: the cost column, officially measured.
 - Bill Perkins, *Die With Zero*: the time bucket, experiences with a date on them, the conceptual antidote to postponing forever ([[spending-in-retirement]]).
+- The syndrome's three biases in the literature: Kahneman & Tversky (1979) for loss aversion, Samuelson & Zeckhauser (1988) for the status quo, Wilson & Gilbert (2003) for affective forecasting.
 - In this book: [[voices-from-real-retirees]] (the number one regret), [[the-psychology-of-spending]] (the parent mechanism), [[valuations-and-cape]] (the one good reason to delay, and only bounded), [[going-back-to-work]] (the partial OMY).
