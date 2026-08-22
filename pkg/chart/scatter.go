@@ -133,12 +133,16 @@ func Scatter(opt Options, xlab, ylab string, pts []LabeledPoint) string {
 	for _, l := range labels {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n", l.x, l.y, l.anchor, esc(l.text))
 	}
-	// Table-view payload: one row per point, x and y as two columns.
-	hm := hoverMeta{Kind: "scatter", XLabel: xlab, YLabel: ylab}
+	// Hover payload: one row per point, x and y as two columns, plus each
+	// point's pixel anchor so the pointer snaps to the nearest one from
+	// anywhere in the plot instead of having to land on the dot.
+	hm := hoverMeta{Kind: "scatter", Axis: "xy", XLabel: xlab, YLabel: ylab,
+		X0: x0, X1: x1, Y0: y0, Y1: y1}
 	xsCol := hoverSeries{Name: xlab}
 	ysCol := hoverSeries{Name: ylab}
 	for _, p := range pts {
 		hm.Rows = append(hm.Rows, p.Label)
+		hm.Marks = append(hm.Marks, hoverMark{X: xAt(p.X), Y: yAt(p.Y)})
 		xsCol.Ys = append(xsCol.Ys, p.X)
 		ysCol.Ys = append(ysCol.Ys, p.Y)
 	}

@@ -34,6 +34,9 @@ func CategoryBars(opt Options, bars []CatBar) string {
 
 	var b strings.Builder
 	fmt.Fprintf(&b, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeSans+`">`+"\n", w, h, w, h)
+	// Capture surface: the whole frame answers the pointer, so a hover layer
+	// reads a row from anywhere on it and not only off the drawn bar.
+	fmt.Fprintf(&b, `<rect width="%d" height="%d" fill="transparent"/>`+"\n", w, h)
 	for i, bar := range bars {
 		y := top + float64(i)*rowH
 		col := bar.Color
@@ -49,11 +52,14 @@ func CategoryBars(opt Options, bars []CatBar) string {
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" fill="`+themeInkSoft+`" text-anchor="end">%s</text>`+"\n", labelW-10, y+14, esc(bar.Label))
 		fmt.Fprintf(&b, `<text x="%.1f" y="%.1f" dy="0.02em" font-size="12" font-family="'Spline Sans Mono',monospace" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", x1+8, y+14, esc(bar.Text))
 	}
-	// Table-view payload (no crosshair; per-mark titles carry the hover).
-	hm := hoverMeta{Kind: "cat"}
+	// Hover payload: the rows' band, so the pointer is answered anywhere on a
+	// row (label gutter and value included), not only on the bar.
+	hm := hoverMeta{Kind: "cat", Axis: "y",
+		X0: 0, X1: float64(w), Y0: top, Y1: top + float64(len(bars))*rowH}
 	vals := hoverSeries{Name: "share"}
-	for _, bar := range bars {
+	for i, bar := range bars {
 		hm.Rows = append(hm.Rows, bar.Label)
+		hm.Marks = append(hm.Marks, hoverMark{X: (x0 + x1) / 2, Y: top + float64(i)*rowH + 10, Text: bar.Text})
 		vals.Ys = append(vals.Ys, bar.Value)
 	}
 	hm.Series = append(hm.Series, vals)
