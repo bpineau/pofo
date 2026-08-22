@@ -41,6 +41,20 @@
 // Style is the default pofo look; StyleMinimal is a bare dialect for
 // dense pages embedding many small charts.
 //
+// # Hover metadata
+//
+// Every chart embeds a machine-readable copy of its data as an SVG
+// <metadata class="hover"> element (hover.go), so a front-end can read a
+// value out under the pointer without re-deriving the drawn geometry. The
+// payload always carries the plot box, plus either the x domain (the
+// continuous kinds: line, fan, stack) or one pixel anchor per mark (the
+// discrete kinds: bars, cat, scatter, with Axis saying whether they are laid
+// out along x, along y, or freely). The anchors are what let a hover layer
+// answer the pointer ANYWHERE over the plot rather than only where ink was
+// painted, which is the difference between a chart that reads out at its
+// centre and one that stays mute there. Discrete marks also carry a native
+// <title> as a fallback for consumers with no hover layer of their own.
+//
 // The "chrome" colors and fonts every chart draws with (grids, axes, labels,
 // backgrounds, the semantic good/warn/bad/accent hues) live in one place,
 // theme.go: that file is the reskin surface, mirroring pkg/webui/theme.css.

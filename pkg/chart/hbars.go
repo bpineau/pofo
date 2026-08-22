@@ -31,6 +31,8 @@ func HBars(opt Options, bars []Bar) string {
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeMono+`">`+"\n", w, h, w, h)
+	// The background doubles as the capture surface: the whole frame answers
+	// the pointer, so a hover layer reads a row from anywhere on it.
 	fmt.Fprintf(&sb, `<rect width="%d" height="%d" fill="`+themeSurface+`"/>`+"\n", w, h)
 	if opt.Title != "" {
 		fmt.Fprintf(&sb, `<text x="8" y="22" font-size="14" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", esc(opt.Title))
@@ -80,6 +82,18 @@ func HBars(opt Options, bars []Bar) string {
 				tx, cy, anchor, esc(b.Text))
 		}
 	}
+	// Hover payload: one anchor per row, so the pointer is answered anywhere
+	// on a row rather than only over the (often short) bar.
+	hm := hoverMeta{Kind: "bars", Axis: "y", YLabel: opt.Title,
+		X0: 0, X1: float64(w), Y0: padT, Y1: float64(h) - padB}
+	vals := hoverSeries{Name: "change"}
+	for i, b := range bars {
+		hm.Rows = append(hm.Rows, b.Label)
+		hm.Marks = append(hm.Marks, hoverMark{X: xAt(b.Value), Y: padT + (float64(i)+0.5)*rowH, Text: b.Text})
+		vals.Ys = append(vals.Ys, b.Value)
+	}
+	hm.Series = append(hm.Series, vals)
+	sb.WriteString(hoverBlock(hm))
 	sb.WriteString("</svg>")
 	return finish(sb.String())
 }

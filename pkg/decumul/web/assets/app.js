@@ -609,6 +609,11 @@ function setSVG(elId, svg) {
 function enhanceChart(el) {
   const svg = el.querySelector("svg");
   if (!svg || !svg.querySelector("metadata.hover")) return;
+  // The per-mark <title> elements are the fallback hover of a consumer with
+  // no hover layer (the standalone report). Here they would only duplicate
+  // the instant tooltip a second later, in the browser's own chrome, so they
+  // go; the chart's data stays reachable as a table (the "data" button, T).
+  for (const t of svg.querySelectorAll("title")) t.remove();
   el.tabIndex = 0;
   if (!el.__keys) {
     el.__keys = true;
@@ -617,8 +622,8 @@ function enhanceChart(el) {
   }
   const help = el.getAttribute("data-help");
   if (help) {
-    // Over an instrumented chart the crosshair tooltip wins, so the frame's
-    // explanation would only surface on its border: give it its own affordance.
+    // Over the plot area the data reading wins, so the frame's explanation
+    // only surfaces on its margins: give it its own affordance too.
     const hb = document.createElement("button");
     hb.type = "button";
     hb.className = "databtn helpbtn";
@@ -654,7 +659,21 @@ function chartKeydown(e) {
   }
   if (e.key === "Escape") { hideCrosshair(); return; }
   if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
-  if (!["line", "fan", "stack"].includes(hd.kind)) return; // discrete marks: table only
+  const rectOf = (x, y) => {
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    return [r.left + x / vb.width * r.width, r.top + y / vb.height * r.height];
+  };
+  // Discrete charts step from mark to mark; the continuous ones slide the
+  // crosshair by one x unit.
+  if (hd.marks && hd.marks.length) {
+    e.preventDefault();
+    const step = e.key === "ArrowRight" ? 1 : -1;
+    svg.__ki = svg.__ki === undefined ? 0 : Math.min(Math.max(svg.__ki + step, 0), hd.marks.length - 1);
+    const m = hd.marks[svg.__ki];
+    markTip(svg, hd, m.x, m.y, ...rectOf(m.x, m.y));
+    return;
+  }
+  if (!["line", "fan", "stack"].includes(hd.kind)) return;
   e.preventDefault();
   let steps = 2;
   for (const s of hd.series) steps = Math.max(steps, (s.xs || s.ys).length);
@@ -663,12 +682,8 @@ function chartKeydown(e) {
   svg.__kx += e.key === "ArrowRight" ? unit : -unit;
   svg.__kx = Math.min(Math.max(svg.__kx, hd.xmin), hd.xmax);
   // Anchor the tooltip at the crosshair position inside the chart.
-  const rect = svg.getBoundingClientRect();
-  const vb = svg.viewBox.baseVal;
   const cx = hd.x0 + (svg.__kx - hd.xmin) / (hd.xmax - hd.xmin) * (hd.x1 - hd.x0);
-  showCrosshair(svg, hd, svg.__kx,
-    rect.left + cx / vb.width * rect.width,
-    rect.top + (hd.y0 + hd.y1) / 2 / vb.height * rect.height);
+  showCrosshair(svg, hd, svg.__kx, ...rectOf(cx, (hd.y0 + hd.y1) / 2));
 }
 
 // showTable renders the chart's embedded data as an HTML table in a modal
@@ -736,45 +751,172 @@ const cardsHTML = cards => (cards || [])
 const fmtW = v => Math.abs(v) >= 1e6 ? (v / 1e6).toFixed(2) + "M€" : Math.round(v / 1000) + "k€";
 
 // ---------------------------------------------------------------------------
-// Instant tooltip for any [data-help] element.
+// ONE hover mechanism for the whole page.
+//
+// Every chart embeds its data as an SVG <metadata class="hover"> element
+// (pkg/chart/hover.go), carrying the plot box plus either an x domain
+// (lines, fans, stacked areas) or one pixel anchor per mark (bars, rows,
+// scatter points). This layer maps the pointer back to the data from
+// ANYWHERE over the plot area, which is the whole point: a bar chart answers
+// at its centre exactly like a line chart does, instead of only on the ink.
+//
+// When the pointer is not over a chart's plot area, the same handler shows
+// the [data-help] explanation of whatever it IS over (a chart's frame, a
+// card, a control, a table cell). The two tooltips never compete: the data
+// reading wins where there is data, the explanation everywhere else.
+//
+// Values are built with textContent (labels are untrusted data).
 // ---------------------------------------------------------------------------
 const tip = document.createElement("div");
 tip.id = "tip";
 document.body.appendChild(tip);
-document.addEventListener("mouseover", e => {
-  const el = e.target.closest("[data-help]");
-  if (!el) return;
-  // Over a crosshair-instrumented chart the data tooltip wins; the help
-  // text stays reachable from the chart's frame border and title.
-  const svg = e.target.closest("svg");
-  if (svg && hoverData(svg)) return;
-  tip.textContent = el.getAttribute("data-help");
-  tip.style.display = "block";
-});
-document.addEventListener("mousemove", e => {
-  if (tip.style.display !== "block") return;
-  const pad = 14, w = tip.offsetWidth, h = tip.offsetHeight;
-  let x = e.clientX + pad, y = e.clientY + pad;
-  if (x + w > innerWidth) x = e.clientX - pad - w;
-  if (y + h > innerHeight) y = e.clientY - pad - h;
-  tip.style.left = x + "px";
-  tip.style.top = y + "px";
-});
-document.addEventListener("mouseout", e => {
-  if (e.target.closest("[data-help]")) tip.style.display = "none";
-});
-
-// ---------------------------------------------------------------------------
-// Crosshair + tooltip for every chart carrying hover metadata (fans, lines,
-// stacked areas). The server embeds each chart's data as an SVG <metadata>
-// element; this layer maps the pointer back to the data, snaps a hairline to
-// the nearest x, and lists every series' value at that x. Values are built
-// with textContent (labels are untrusted data).
-// ---------------------------------------------------------------------------
 const xtip = document.createElement("div");
 xtip.id = "xtip";
 document.body.appendChild(xtip);
-let xline = null; // the crosshair line element, moved between charts
+let xline = null; // the crosshair line / band highlight, moved between charts
+
+// place pins a tooltip beside the pointer, flipping it before it leaves the
+// viewport.
+function place(el, clientX, clientY) {
+  const pad = 14, w = el.offsetWidth, h = el.offsetHeight;
+  let x = clientX + pad, y = clientY + pad;
+  if (x + w > innerWidth) x = clientX - pad - w;
+  if (y + h > innerHeight) y = clientY - pad - h;
+  el.style.left = x + "px";
+  el.style.top = y + "px";
+}
+function hideHelp() { tip.style.display = "none"; }
+
+document.addEventListener("pointermove", e => {
+  const t = e.target;
+  const svg = t && t.closest ? t.closest("svg") : null;
+  const hd = svg ? hoverData(svg) : null;
+  if (hd && chartTip(svg, hd, e.clientX, e.clientY)) { hideHelp(); return; }
+  hideCrosshair();
+  const el = t && t.closest ? t.closest("[data-help]") : null;
+  if (!el) { hideHelp(); return; }
+  tip.textContent = el.getAttribute("data-help");
+  tip.style.display = "block";
+  place(tip, e.clientX, e.clientY);
+});
+document.addEventListener("pointerleave", () => { hideCrosshair(); hideHelp(); });
+addEventListener("scroll", () => { hideCrosshair(); hideHelp(); }, {passive: true});
+
+// chartTip answers the pointer over one chart, returning false when it falls
+// outside the plot area (so the caller can fall back to the frame's help).
+function chartTip(svg, hd, clientX, clientY) {
+  if (!hd.series || !hd.series.length) return false;
+  const rect = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+  if (!rect.width || !vb.width) return false;
+  const px = (clientX - rect.left) * vb.width / rect.width;
+  const py = (clientY - rect.top) * vb.height / rect.height;
+  if (hd.marks && hd.marks.length) return markTip(svg, hd, px, py, clientX, clientY);
+  if (!["line", "fan", "stack"].includes(hd.kind)) return false;
+  if (px < hd.x0 - 10 || px > hd.x1 + 10) return false;
+  const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
+  return showCrosshair(svg, hd, xdom, clientX, clientY);
+}
+
+// markTip answers a discrete chart (bars, category rows, scatter): it finds
+// the mark nearest the pointer along the chart's own layout axis, highlights
+// its band, and reads its row out. HOVER_SLOP lets the pointer sit slightly
+// outside the plot box (on an axis label, on a value printed past a bar tip)
+// and still get an answer.
+const HOVER_SLOP = 8;
+function markTip(svg, hd, px, py, clientX, clientY) {
+  if (px < hd.x0 - HOVER_SLOP || px > hd.x1 + HOVER_SLOP ||
+      py < hd.y0 - HOVER_SLOP || py > hd.y1 + HOVER_SLOP) return false;
+  const axis = hd.axis || "x";
+  let best = -1, bestD = Infinity;
+  for (let i = 0; i < hd.marks.length; i++) {
+    const dx = px - hd.marks[i].x, dy = py - hd.marks[i].y;
+    const d = axis === "x" ? Math.abs(dx) : axis === "y" ? Math.abs(dy) : Math.hypot(dx, dy);
+    if (d < bestD) { bestD = d; best = i; }
+  }
+  if (best < 0) return false;
+  showMark(svg, hd, best, axis);
+  const rows = [];
+  const named = hd.series.length > 1; // a lone series is named by the chart
+  for (const s of hd.series) {
+    if (!s.ys || best >= s.ys.length) continue;
+    // A lone series reads out through the mark's own label when it has one,
+    // which carries the unit the raw number lost.
+    rows.push({name: named ? s.name : "", color: s.color, v: s.ys[best],
+      t: named ? "" : hd.marks[best].t});
+  }
+  if (!rows.length) return false;
+  fillTip((hd.rows && hd.rows[best]) || String(best), rows, clientX, clientY);
+  return true;
+}
+
+// showMark highlights the mark the tooltip is reading: a band across the plot
+// for laid-out marks, a ring for free points. The element is reused between
+// charts exactly like the crosshair, so at most one highlight ever exists.
+function showMark(svg, hd, i, axis) {
+  const svgNS = "http://www.w3.org/2000/svg";
+  const shape = axis === "xy" ? "circle" : "rect";
+  if (!xline || xline.ownerSVGElement !== svg || xline.tagName !== shape) {
+    if (xline) xline.remove();
+    xline = document.createElementNS(svgNS, shape);
+    xline.setAttribute("pointer-events", "none");
+    if (shape === "circle") {
+      xline.setAttribute("fill", "none");
+      xline.setAttribute("stroke", "#B4A991");
+      xline.setAttribute("r", "12");
+    } else {
+      xline.setAttribute("fill", "#B4A991");
+      xline.setAttribute("fill-opacity", "0.12");
+    }
+    svg.appendChild(xline);
+  }
+  const m = hd.marks[i];
+  if (shape === "circle") {
+    xline.setAttribute("cx", m.x);
+    xline.setAttribute("cy", m.y);
+    return;
+  }
+  // Band width: the tightest spacing between neighbouring marks, so the
+  // highlight matches the chart's own rhythm whatever its geometry.
+  const key = axis === "x" ? "x" : "y";
+  let step = Infinity;
+  for (let k = 1; k < hd.marks.length; k++)
+    step = Math.min(step, Math.abs(hd.marks[k][key] - hd.marks[k - 1][key]));
+  if (!isFinite(step) || step <= 0) step = axis === "x" ? hd.x1 - hd.x0 : hd.y1 - hd.y0;
+  if (axis === "x") {
+    xline.setAttribute("x", m.x - step / 2);
+    xline.setAttribute("y", hd.y0);
+    xline.setAttribute("width", step);
+    xline.setAttribute("height", Math.max(hd.y1 - hd.y0, 0));
+  } else {
+    xline.setAttribute("x", hd.x0);
+    xline.setAttribute("y", m.y - step / 2);
+    xline.setAttribute("width", Math.max(hd.x1 - hd.x0, 0));
+    xline.setAttribute("height", step);
+  }
+}
+
+// fillTip renders the tooltip: a header line, then one keyed row per value.
+function fillTip(header, rows, clientX, clientY) {
+  xtip.textContent = "";
+  const head = document.createElement("div");
+  head.className = "xh";
+  head.textContent = header;
+  xtip.appendChild(head);
+  for (const r of rows) {
+    const row = document.createElement("div");
+    row.className = "xr";
+    const key = document.createElement("i");
+    if (r.color) key.style.background = r.color;
+    const val = document.createElement("b");
+    val.textContent = r.t || fmtHV(r.v);
+    const name = document.createElement("span");
+    name.textContent = r.name || "";
+    row.appendChild(key); row.appendChild(val); row.appendChild(name);
+    xtip.appendChild(row);
+  }
+  xtip.style.display = "block";
+  place(xtip, clientX, clientY);
+}
 
 function hoverData(svg) {
   if (svg.__hd !== undefined) return svg.__hd;
@@ -800,22 +942,9 @@ function hideCrosshair() {
   if (xline) { xline.remove(); xline = null; }
 }
 
-document.addEventListener("pointermove", e => {
-  const svg = e.target.closest ? e.target.closest("svg") : null;
-  const hd = svg ? hoverData(svg) : null;
-  if (!hd || !hd.series || !hd.series.length || !["line", "fan", "stack"].includes(hd.kind)) { hideCrosshair(); return; }
-
-  // Pointer position in viewBox coordinates.
-  const rect = svg.getBoundingClientRect();
-  const vb = svg.viewBox.baseVal;
-  const px = (e.clientX - rect.left) * vb.width / rect.width;
-  if (px < hd.x0 - 10 || px > hd.x1 + 10) { hideCrosshair(); return; }
-  const xdom = hd.xmin + (Math.min(Math.max(px, hd.x0), hd.x1) - hd.x0) / (hd.x1 - hd.x0) * (hd.xmax - hd.xmin);
-  showCrosshair(svg, hd, xdom, e.clientX, e.clientY);
-});
-
 // showCrosshair snaps the hairline to the nearest x and fills the tooltip:
-// the shared engine behind both the pointer and the keyboard paths.
+// the shared engine behind both the pointer and the keyboard paths on the
+// continuous kinds. Returns false when no series reaches that x.
 function showCrosshair(svg, hd, xdom, clientX, clientY) {
   // Snap per series to its nearest x; indexed charts snap to the index.
   const rows = [];
@@ -839,11 +968,11 @@ function showCrosshair(svg, hd, xdom, clientX, clientY) {
     if (snapX === null) snapX = sx;
     rows.push({name: s.name, color: s.color, v: s.ys[i]});
   }
-  if (!rows.length || snapX === null) { hideCrosshair(); return; }
+  if (!rows.length || snapX === null) { hideCrosshair(); return false; }
 
   // Crosshair line at the snapped x, spanning the plot box.
   const cx = hd.x0 + (snapX - hd.xmin) / (hd.xmax - hd.xmin) * (hd.x1 - hd.x0);
-  if (!xline || xline.ownerSVGElement !== svg) {
+  if (!xline || xline.ownerSVGElement !== svg || xline.tagName !== "line") {
     if (xline) xline.remove();
     xline = document.createElementNS("http://www.w3.org/2000/svg", "line");
     xline.setAttribute("stroke", "#B4A991");
@@ -855,34 +984,10 @@ function showCrosshair(svg, hd, xdom, clientX, clientY) {
   xline.setAttribute("x1", cx); xline.setAttribute("x2", cx);
   xline.setAttribute("y1", hd.y0); xline.setAttribute("y2", hd.y1);
 
-  // Tooltip: header = x (+ y-axis unit), then one row per series.
-  xtip.textContent = "";
-  const head = document.createElement("div");
-  head.className = "xh";
   const xv = Math.abs(snapX - Math.round(snapX)) < 1e-9 ? String(Math.round(snapX)) : snapX.toFixed(1);
-  head.textContent = (hd.xlabel || "x") + " " + xv + (hd.ylabel ? " · " + hd.ylabel : "");
-  xtip.appendChild(head);
-  for (const r of rows) {
-    const row = document.createElement("div");
-    row.className = "xr";
-    const key = document.createElement("i");
-    if (r.color) key.style.background = r.color;
-    const val = document.createElement("b");
-    val.textContent = fmtHV(r.v);
-    const name = document.createElement("span");
-    name.textContent = r.name || "";
-    row.appendChild(key); row.appendChild(val); row.appendChild(name);
-    xtip.appendChild(row);
-  }
-  xtip.style.display = "block";
-  const pad = 14, tw = xtip.offsetWidth, th = xtip.offsetHeight;
-  let tx = clientX + pad, ty = clientY + pad;
-  if (tx + tw > innerWidth) tx = clientX - pad - tw;
-  if (ty + th > innerHeight) ty = clientY - pad - th;
-  xtip.style.left = tx + "px";
-  xtip.style.top = ty + "px";
+  fillTip((hd.xlabel || "x") + " " + xv + (hd.ylabel ? " · " + hd.ylabel : ""), rows, clientX, clientY);
+  return true;
 }
-document.addEventListener("pointerleave", hideCrosshair);
 
 // ---------------------------------------------------------------------------
 // Chart lightbox: click any chart to view it large over the page, click
@@ -940,16 +1045,23 @@ async function renderModels(b, id) {
   const eyebrow = document.querySelector(".hero-verdict .eyebrow");
   if (eyebrow && central >= 0) eyebrow.textContent = "Ruin probability · " + ms[central].name;
   const sel = i => (i === central ? ` class="sel"` : "");
-  const cells = fn => ms.map((m, i) => `<td${sel(i)}>${fn(m)}</td>`).join("");
+  // Every CELL carries its own explanation, not just the row and column
+  // headers: a reading of this table is "which model, which statistic", and
+  // a cell is where the pointer actually lands.
+  const row = (label, help, fn) => `<tr><th data-help="${esc(help)}">${label}</th>` +
+    ms.map((m, i) => `<td${sel(i)} data-help="${esc(m.name + " · " + help)}">${fn(m)}</td>`).join("") + `</tr>`;
   const head = `<tr><th></th>${ms.map((m, i) =>
     `<th${sel(i)} data-model="${esc(m.name)}" data-help="${esc(m.help)}. CLICK to run every detail section of the page (spending, lifecycle, risk, buffer…) under this model.">${m.name}</th>`).join("")}</tr>`;
   // Risk is carried by a coloured dot per cell; the figures stay in ink.
-  const ruinRow = `<tr><th data-help="Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, VPW, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.">Ruin</th>` +
-    cells(m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`) + `</tr>`;
-  const spendRow = `<tr><th data-help="The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.">Safe spend, no flex</th>` +
-    cells(m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%</span>`) + `</tr>`;
-  const wealthRow = `<tr><th data-help="Median real wealth left at the end of the horizon, at your planned spend.">Median wealth</th>` +
-    cells(m => fmtW(m.medianWealth)) + `</tr>`;
+  const ruinRow = row("Ruin",
+    "Share of simulated retirements that run out of money, at your planned spend AND under the spending rule you selected (flex cut, guardrails, VPW, ABW, bounded percent). An adaptive rule buys this number down by lowering the income you actually live on, so it is not comparable to the fixed rule's: read section 04 before reading it as safety.",
+    m => `<i class="dot" style="background:${beadColor(m.ruin)}"></i>${(m.ruin * 100).toFixed(1)}%`);
+  const spendRow = row("Safe spend, no flex",
+    "The most you could spend per year and still keep ruin at your acceptable level, under this model. Always solved on the FIXED rule, whatever adaptive rule you selected: a rule that rebases spending on wealth makes ruin non-monotonic in the withdrawal, so the solve would be ill-defined. Everything else (capital, buffer, pension, side income, taxes) is your plan. The gap between this figure and your planned spend is what your flexibility is buying; section 04 shows what it costs in lived income.",
+    m => `${(m.safeSpend / 1000).toFixed(0)}k€<span class="sub">${(m.safeWR * 100).toFixed(m.safeWR < 0.01 ? 2 : 1)}%</span>`);
+  const wealthRow = row("Median wealth",
+    "Median real wealth left at the end of the horizon, at your planned spend.",
+    m => fmtW(m.medianWealth));
   document.getElementById("modelstrip").innerHTML =
     `<table class="modeltab"><thead>${head}</thead><tbody>${ruinRow}${spendRow}${wealthRow}</tbody></table>`;
   for (const th of document.querySelectorAll(".modeltab th[data-model]")) {
