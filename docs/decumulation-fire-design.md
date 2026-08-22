@@ -269,6 +269,26 @@ the kernel would have ignored, and the two shared parameters (the guardrails
 floor, the raise ceiling) dim when their owning rule is off. Inbound URLs are
 never rewritten, so a link shared before the change still reproduces its run.
 
+**The annuity is scoped to the one view that can price it (2026-08-22).** The
+rail's annuity block (share of the growth sleeve, purchase year, insurer
+margin) feeds `decumul.Plan.Annuity`, which the kernel ignores without a
+`Lifetime`. That is not an obstacle to route around: under a fixed horizon
+every household is certain to reach the end, so a lifelong income is paid for
+longer than it was priced for, which is how the page's first annuity control (a
+`Cashflow` paying for ever, capital cut by an untaxed premium) manufactured a
+free lunch. The purchase therefore happens in the mortality view alone
+(`/api/lifecycle`), where the death is drawn: the premium is raised by selling
+and pays its capital-gains tax, the income stops with the covered lives, and a
+third twin on the same draws with no purchase gives the before-and-after
+readout (broke while alive, median estate, and the payout the quote offers
+against the plan's own withdrawal rate, which is the ratio that decides the
+sign). Two consequences are deliberate. Nothing else on the page moves when the
+slider does, and the view says so in one standing line rather than leaving the
+reader to guess. And the sensitivity tornado gets NO annuity bar: its bars are
+paired deltas in one fixed-horizon ruin on one set of draws, and a lever whose
+measurement needs another kernel and another definition of ruin cannot share
+that axis.
+
 **Generic chart additions.** `chart.Heatmap` (the 2D ruin surface) and
 `chart.Bars` (the recovery-time histogram) are added as small, dependency-free
 SVG primitives reusable elsewhere, matching the existing `Line`/`Pie` style.
