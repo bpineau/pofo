@@ -83,7 +83,7 @@ func NewClient(cacheDir string) *Client {
 		FTBase:          "https://markets.ft.com",
 		JustETFBase:     "https://www.justetf.com",
 		BoursoramaBase:  "https://www.boursorama.com",
-		MorningstarBase: "https://tools.morningstar.fr",
+		MorningstarBase: "https://lt.morningstar.com",
 		EurostatBase:    "https://ec.europa.eu",
 		FredBase:        "https://fred.stlouisfed.org",
 		DBnomicsBase:    "https://api.db.nomics.world",
@@ -524,29 +524,64 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		}
 	}
 	if s, _ := preferred(); !goodFor(s, from) {
-		if msid, name, berr := c.boursoramaMorningstarID(ctx, query); berr != nil {
-			failures = append(failures, fmt.Sprintf("boursorama: %v", berr))
-		} else if !fuzzyMatchRelevant(preferBase, name) {
-			// Boursorama's search is full-text too: a name-like query must not
-			// adopt an unrelated fund found this way (see fuzzyMatchRelevant).
-			failures = append(failures, fmt.Sprintf("morningstar %s: %q unrelated to %q", msid, name, preferBase))
-		} else {
-			res := resolution{Source: "morningstar", Symbol: msid, Name: name}
+		res, msFailures := c.morningstarResolution(ctx, query, preferBase)
+		failures = append(failures, msFailures...)
+		if res.Symbol != "" {
 			if s, herr := c.historyMS(ctx, query, res, from, spec.raw); herr == nil {
 				if spec.currencyOK(s.Currency) {
 					consider(s, res, true, false)
 				} else {
 					failures = append(failures, fmt.Sprintf("morningstar %s: quotes in %s, want %s",
-						msid, s.Currency, spec.wantCurrency))
+						res.Symbol, s.Currency, spec.wantCurrency))
 					offCurrency = true
 				}
 			} else {
-				failures = append(failures, fmt.Sprintf("morningstar %s: %v", msid, herr))
+				failures = append(failures, fmt.Sprintf("morningstar %s: %v", res.Symbol, herr))
 			}
 		}
 	}
 	best, bestRes := preferred()
 	return best, bestRes, failures, offCurrency
+}
+
+// morningstarResolution finds the Morningstar identifier to fetch an
+// instrument by, trying Morningstar's own screener first (funds and ETFs
+// worldwide, currency reported) and Boursorama's search after it (the French
+// distribution list only, but it indexes classes the screener misses). It
+// returns the first candidate whose name matches the query and the failure
+// summaries of the bridges that did not answer; a zero resolution means
+// neither bridge produced a usable identifier.
+//
+// Only one candidate is returned because the history is cached under the
+// QUERY rather than under the Morningstar id: trying a second candidate would
+// read the first one's cache entry back.
+func (c *Client) morningstarResolution(ctx context.Context, query, preferBase string) (resolution, []string) {
+	var failures []string
+	bridges := []struct {
+		name string
+		find func() (resolution, error)
+	}{
+		{"morningstar", func() (resolution, error) { return c.morningstarSearch(ctx, query) }},
+		{"boursorama", func() (resolution, error) {
+			id, name, err := c.boursoramaMorningstarID(ctx, query)
+			return resolution{Source: "morningstar", Symbol: id, Name: name}, err
+		}},
+	}
+	for _, b := range bridges {
+		res, err := b.find()
+		switch {
+		case err != nil:
+			failures = append(failures, fmt.Sprintf("%s: %v", b.name, err))
+		case !fuzzyMatchRelevant(preferBase, res.Name):
+			// Both bridges search full text: a name-like query must not adopt
+			// an unrelated fund found this way (see fuzzyMatchRelevant).
+			failures = append(failures, fmt.Sprintf("morningstar %s: %q unrelated to %q",
+				res.Symbol, res.Name, preferBase))
+		default:
+			return res, failures
+		}
+	}
+	return resolution{}, failures
 }
 
 // rankQuotes orders Yahoo search candidates: listings of the searched ticker
