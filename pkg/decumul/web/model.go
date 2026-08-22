@@ -460,7 +460,8 @@ func computeFrom(pr Params, p decumul.Plan) Result {
 		Arbitrage2SVG: darkMultiLine(chart.Options{Title: "Median terminal wealth vs buffer years", Width: 720, Height: 300},
 			"Buffer years", "Terminal p50 M€", []chart.XYSeries{terminalSeries(sweep)},
 			chart.Marker{Axis: 'x', Value: pr.BufferYears, Label: "your buffer"}),
-		RecoverySVG: darkBars(chart.Options{Title: "Recovery-time distribution (share %)", Width: 600, Height: 360}, bars),
+		RecoverySVG: darkBars(chart.Options{Title: "Recovery time", XLabel: "years to climb back, share of every underwater spell",
+			Width: 600, Height: 340}, bars),
 	}
 }
 

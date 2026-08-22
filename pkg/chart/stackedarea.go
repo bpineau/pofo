@@ -11,15 +11,20 @@ import (
 type AreaSeries struct {
 	Name   string
 	Values []float64
-	Color  string // CSS color; picked from the default palette when empty
+	Color  string  // CSS color; picked from the default palette when empty
+	Weight float64 // fill opacity, 0..1; 0 means the default 0.5
 }
 
 // StackedArea renders layers stacked bottom-up over the x index (year 0..N):
 // layer i fills the space between the running sum below it and itself. It is
 // meant for part-to-whole shares over time, e.g. the alive-broke-dead
-// decomposition of a retirement (pass shares already scaled to percent). The
-// fills are solid but soft; a hairline in the surface colour separates
-// adjacent layers so they read distinct without borrowing data ink.
+// decomposition of a retirement (pass shares already scaled to percent).
+//
+// The information in a stack is in its BOUNDARIES, so each layer is a soft
+// fill under a crisp line of its own colour: the eye follows the frontiers
+// rather than the mass. A layer that is a ground rather than a subject (the
+// share where nothing has happened yet) should be given a low Weight, so the
+// ink goes to the layers that carry the story.
 func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string {
 	w, h := opt.Width, opt.Height
 	if w == 0 {
@@ -72,8 +77,12 @@ func StackedArea(opt Options, xLabel, yLabel string, series []AreaSeries) string
 
 	// Layers first, so the grid stays visible on top of the soft fills.
 	for i := range series {
-		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="0.55" stroke="`+themeSurface+`" stroke-width="1"/>`+"\n",
-			bandPolygon(cum[i], cum[i+1], xAt, yAt), series[i].Color)
+		op := series[i].Weight
+		if op <= 0 {
+			op = 0.5
+		}
+		fmt.Fprintf(&b, `<polygon points="%s" fill="%s" fill-opacity="%.2f" stroke="%s" stroke-width="1.25" stroke-opacity="0.9"/>`+"\n",
+			bandPolygon(cum[i], cum[i+1], xAt, yAt), series[i].Color, op, series[i].Color)
 	}
 
 	// Horizontal grid and y labels, drawn over the fills as hairlines.

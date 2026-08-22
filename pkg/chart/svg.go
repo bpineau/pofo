@@ -23,6 +23,11 @@ type Options struct {
 	Width  int // pixels, defaults to 960
 	Height int // pixels, defaults to 420
 	Style  Style
+	// XLabel and YLabel name the axes of the charts whose data arrives
+	// without them (the bar family). The line family takes its axis labels as
+	// arguments, since it cannot be drawn without knowing them.
+	XLabel string
+	YLabel string
 }
 
 // defaultPalette is the pofo "instrument" series palette: a petrol anchor

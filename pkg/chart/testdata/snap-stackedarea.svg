@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" font-family="'Spline Sans Mono', ui-monospace, SF Mono, Menlo, Consolas, monospace">
 <rect width="640" height="360" fill="#FFFFFF"/>
 <text x="64" y="24" font-size="16" font-weight="600" fill="#16181D">Snap</text>
-<polygon points="64.0,312.0 344.0,312.0 624.0,312.0 624.0,170.3 344.0,134.9 64.0,99.4" fill="#12B76A" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="1"/>
-<polygon points="64.0,99.4 344.0,134.9 624.0,170.3 624.0,81.7 344.0,64.0 64.0,64.0" fill="#D92D20" fill-opacity="0.55" stroke="#FFFFFF" stroke-width="1"/>
+<polygon points="64.0,312.0 344.0,312.0 624.0,312.0 624.0,170.3 344.0,134.9 64.0,99.4" fill="#12B76A" fill-opacity="0.50" stroke="#12B76A" stroke-width="1.25" stroke-opacity="0.9"/>
+<polygon points="64.0,99.4 344.0,134.9 624.0,170.3 624.0,81.7 344.0,64.0 64.0,64.0" fill="#D92D20" fill-opacity="0.50" stroke="#D92D20" stroke-width="1.25" stroke-opacity="0.9"/>
 <line x1="64" y1="312.0" x2="624" y2="312.0" stroke="#EDF0F3" stroke-opacity="0.6"/>
 <text x="56" y="312.0" dy="0.35em" font-size="12" fill="#7A8294" text-anchor="end">0</text>
 <line x1="64" y1="241.1" x2="624" y2="241.1" stroke="#EDF0F3" stroke-opacity="0.6"/>

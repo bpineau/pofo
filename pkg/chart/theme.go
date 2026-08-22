@@ -34,6 +34,18 @@ const (
 	themeDead   = "#9AA2B1" // neutral grey ("gone" in the lifecycle)
 )
 
+// The semantic hues, exported for the callers that must pass a color IN (a
+// stacked area's layers, a category bar's rows). Passing one of these rather
+// than a hand-picked hex is what keeps a caller's series inside the theme,
+// and translatable by Darken.
+const (
+	ColorAccent = themeAccent // the product's own mark color; a lone series wears it
+	ColorGood   = themeGood
+	ColorWarn   = themeWarn
+	ColorBad    = themeBad
+	ColorDead   = themeDead // neutral grey: an absorbing, non-judgmental state
+)
+
 // Fonts. The mono face carries every numeric/axis label; the sans face titles
 // and the instrument-style charts. Theme-independent.
 const (

@@ -65,7 +65,8 @@ func Decade(pr Params, panel *scenario.Panel) DecadeResult {
 	}
 	return DecadeResult{
 		SVG: darkBars(chart.Options{
-			Title: "Ruin by first-decade real return (quintiles, worst → best)", Width: 720, Height: 360}, bars),
+			Title: "Ruin by first-decade real return", XLabel: "first-decade real return, quintiles worst to best",
+			Width: 720, Height: 340}, bars),
 		Cards: cards,
 	}
 }
