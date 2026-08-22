@@ -399,11 +399,47 @@ draw stream for returns is unchanged.
   figure moves 1.62 % -> 1.65 %, the still-alive-at-horizon figure 40.9 % ->
   40.1 %, and the alive-broke-dead curves never differ by more than 0.80 pt on
   the dead share and 0.06 pt on the broke share, all inside the Monte-Carlo
-  error of the run. Still deferred, deliberately: the ANNUITY panel. The page's
-  `AnnuityShare` control still buys a `Cashflow` that pays for ever, which is
-  the fixed-horizon reading of an annuity; routing it through `Plan.Annuity`
-  is what makes the trade-off of §7 visible, and it is a UI chantier of its
-  own (pricing law, load, joint/single, the trade-off chart).
+  error of the run.
+- ~~**The annuity panel.**~~ DONE 2026-08-22. The rail's `annuityShare` control
+  bought a `Cashflow` that paid for ever out of an untaxed premium, the
+  fixed-horizon reading of an annuity; it now feeds `Plan.Annuity`
+  (`pkg/decumul/web/annuity.go`) with two more parameters, `annuityYear` (the
+  plan year of the purchase, clamped into the plan since the page starts at
+  retirement) and `annuityLoad` (the insurer's margin, 2 % to 25 %, defaulting
+  to 10 %, where an unset zero means that default rather than a fair annuity so
+  a link written before the control cannot quietly buy one). Fixed, and stated
+  in the UI rather than offered as knobs: a joint-life, inflation-linked quote
+  at a **1 % real rate** on an **annuitant** table (`Gompertz{92, 9}`, about
+  three to four years of remaining life expectancy above the bundled population
+  law, the order of magnitude of the TGH/TGF-05 gap).
+  **The panel lives in `/api/lifecycle` and nowhere else**, because that is the
+  only view whose households can outlive their money. Everything fixed-horizon
+  ignores the block, and the view carries one standing line saying why. Wiring
+  it page-wide was refused: turning a slider off zero would silently redefine
+  ruin everywhere from broke-by-horizon to broke-while-alive, which is exactly
+  the category error the page fights between the guardrails and the fixed rule.
+  The readout is three cards, no new chart: a THIRD twin runs the same draws
+  and the same deaths with the purchase removed, giving `broke while alive`
+  and `median estate` before and after, plus the ratio that decides their sign,
+  what the annuity **pays** against what the plan **withdraws**.
+  Measured on the § 7 household (a couple retiring at 65 on a million at 42 k,
+  µ 3.5 %, σ 12 %, no tax, no buffer, half the sleeve annuitised at 65),
+  the sign is entirely a pricing question, and the readout says so: at the
+  §7 quote (fair, 2 % real, population table) it pays 4.97 % against a 4.2 %
+  withdrawal and moves alive-ruin 24.0 % → 12.0 % with the estate 460 k → 367 k,
+  while at the page's realistic quote (1 % real, annuitant table, 10 % margin)
+  it pays 3.57 % and moves alive-ruin 24.0 % → 36.6 % with the estate 460 k →
+  117 k. Break-even sits near a payout equal to the plan's withdrawal rate.
+  The truncation caveat is named on the card: the plan stops at the reader's
+  horizon, so payments the annuity would still make after it are neither
+  collected nor counted.
+  The sensitivity tornado deliberately gets no annuity bar (see
+  `docs/decumulation-fire-design.md` § 6).
+  The old control's URL key is KEPT rather than dropped: `annuityShare` still
+  means "annuitise this share", so a link written under it still asks for the
+  same thing and now gets it priced properly, with the two new keys taking
+  their defaults. Its figures are not the ones its sender saw, and cannot be:
+  those came from a product nobody sells.
 - **Correlated couple mortality.** See §5: the effect is smaller than the
   period-versus-cohort gap already accepted, and it needs a calibration this
   repo cannot source.
