@@ -306,19 +306,19 @@ rendering in Go is testable, stdlib-only and reusable.
   Pfau, Bogleheads wiki, Anarkulova/Cederburg papers, AMF/impots.gouv for the
   French tax pages. Cite by name and URL in "Pour aller plus loin".
 - French tax/social pages carry a dated-accuracy warning (rules move yearly).
-- THREE GRADES OF EVIDENCE (2026-08-22): every substantive claim should be
-  readable as one of three things, and the text must not let them blur:
-  (1) a THEOREM or scientific consensus (true by proof or overwhelmingly
-  replicated; contested only via its hypotheses), (2) a RESEARCH RESULT
-  (measured, cite the paper and authors; say if replicated or contested),
-  (3) the BOOK'S OWN JUDGMENT CALL (defensible, but a choice; own it as
-  such). Anchor claims on named research with authors and years, in prose
-  and in "Pour aller plus loin"; this matters MOST, and must be applied most
-  intensely, on the "soft" topics (psychology, couples, meaning, spending
-  behavior), where unattributed opinion reads as fact. The reference
-  implementation is theorie-du-cycle-de-vie (its "Trois régimes de preuve"
-  callout and its tagged "registre des écarts"); a book-wide labeling pass
-  over the existing articles is pending.
+- THREE GRADES OF EVIDENCE (2026-08-22), a GUIDANCE, not a mechanical rule:
+  a substantive claim should be readable as one of three things, without
+  blurring them: (1) a theorem or scientific consensus, (2) a research
+  result (then cite authors and year, and say if contested), (3) the book's
+  own judgment call, owned as such. Lean a bit more on named academic
+  background than the first drafts did, most of all on the "soft" topics
+  (psychology, couples, meaning, spending behavior), where unattributed
+  opinion reads as fact. But fluidity, engagement and pleasure of reading
+  stay just as important: never let the tagging turn an article into a
+  heavy student-survey; a light touch in flowing prose is the target.
+  theorie-du-cycle-de-vie applies it maximally BECAUSE its subject is the
+  theory itself; ordinary articles need much less. Apply when writing or
+  editing; no wholesale relabeling pass over the existing book.
 
 ## Table of contents
 
