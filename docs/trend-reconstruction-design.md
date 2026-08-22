@@ -1560,15 +1560,171 @@ Three by-products of the re-survey are worth keeping.
   classifier, which needs no convention change.
 - **One other 1990s trend record exists and it does not deepen anything.** SMN
   Diversified Futures (LU0070804173, weekly, EUR) is a genuine programme by both
-  columns, 0.713 monthly against the composite over 358 months, ABOVE the
-  incumbent donor's 0.67. It begins 1996-10-31, seven months after the floor, so
-  it can only widen the 1996-2007 era, never deepen it. Anything built on it
-  would still have to settle this source's date convention against the FT series
-  the chains use, and its EUR quote.
+  columns, 0.713 monthly against the composite over 356 months. It begins
+  1996-10-31, seven months after the floor, so it can only widen the 1996-2007
+  era, never deepen it. It was graded as a second donor for that era on
+  2026-08-22 and REFUSED; the next section holds the measurements. Read that
+  section before reading the 0.67 in the table above as a comparison: the
+  control row is measured on the fund database's own copy of the incumbent, and
+  the record the chains actually splice reaches 0.799 on the same 363 months.
 - **The floor is confirmed twice over.** It was already known that the incumbent
   donor's first NAV is its own inception; it is now known that no older class of
   this trade exists in the database at all. The chains start at 1996-03-26
   because the record does, not because a source is missing.
+
+### The second 1990s programme, graded and refused (measured, 2026-08-22)
+
+The one candidate the re-survey turned up was carried through the full donor
+arbitration the same day. It fails, robustly, on the column that decides a
+donor, and nothing ships. The 1996-2007 era keeps one programme.
+
+The candidate is SMN Diversified Futures (LU0070804173), a Luxembourg
+systematic-trend class quoted in EUR, monthly from its first NAV on 1996-10-31
+and weekly from 2000-10, still dealing today. Over its own life it compounds at
+4.99 %/yr for 18.7 % of monthly volatility and a maximum drawdown of -46.4 %.
+
+**The date convention was settled first, and it turned out there was nothing to
+settle.** The survey section above warns that a Morningstar-sourced donor may
+not be spliced onto an FT-sourced one before the stamps are reconciled. Measured
+end to end, that diagnosis is WITHDRAWN, in both directions.
+
+- On the candidate there is no disagreement at all. Its fund-database series and
+  an independently served copy of the same class share 253 weekly dates over
+  2022-03-04 to 2026-08-14 and agree on every one of them to the last printed
+  digit: level ratio 1.0000 at both ends, per-observation return correlation
+  1.000000, largest single-date return difference exactly zero.
+- On the incumbent the disagreement is real and it is NOT a stamp. Over
+  1996-03-26 to 2026-08-05 the two sources' date sets differ by two dates out of
+  3383, so there is no shift available to make. What differs is the LEVEL on
+  identical dates: the ratio runs from 0.628 (2008-04-21) to 1.196 (2000-10-23)
+  and ends 13 % from where it started. Per observation the two returns correlate
+  0.872 at lag zero and nothing anywhere else (every lag from -3 to +3
+  observations sits inside 0.035 of zero), which rules a shift out outright. The
+  arbitration is the manager's own published record: over 1996-03-26 to
+  2026-02-27 the FT series compounds to +1649.50 % against a published +1649.47,
+  where the other copy reads +1863.90 % over the same dates. FT stays the record
+  for that fund, and the "days apart" reading is replaced by this one.
+
+That has a consequence for the survey table above and it is the reason the
+candidate looked promising: its 0.713 was compared against 0.67 for the
+incumbent, but 0.67 is the fund database's degraded copy. Read on the series the
+chains actually splice, the incumbent reaches **0.799** monthly against the
+composite over the same 363 months. The candidate never was above it.
+
+**Currency.** The chains are USD and the class is EUR, converted at EURUSD spot
+the way every other EUR leg of this repository is. The conversion costs it: its
+monthly agreement with the USD composite falls from 0.713 as published to 0.674
+once carried into USD, which is an unhedged cross showing up as noise.
+
+**The machinery it needed was not the machinery it was expected to need.** The
+class still deals today, so it overlaps every target fund of this family and
+never required the chain-relative calibration that improvement 3 below names.
+What it did expose is that `volMatch` reads both sides PER OBSERVATION on the
+dates they share, so a weekly donor against a daily fund produces a ratio near
+sqrt(1/5) rather than a volatility ratio: 0.361 against DBMF, 0.385 against
+KMLM, 0.265 against the AQR class, all three refused by the [0.5, 2] clamp for
+the wrong reason, and 0.522 against Simplify CTA, INSIDE the clamp, which would
+have spliced two decades of history at less than half the scale the donor's own
+record implies (1.09 read on a common clock). That silent case is now refused
+outright (`cadenceMismatch`), which is the same lesson `monthlyVolMatch` already
+carries for the insurance-linked family. Every donor of this family calibrates
+on dates spaced one day at the median, so the guard is inert on every shipped
+file; all four chains were regenerated byte for byte to check it. The grading
+below reads both sides on the candidate's own weekly clock, which is what a
+repair that ADMITS a sparse donor would have to do.
+
+**The fee load is documented, and it is the largest in the family.** The audited
+annual accounts of the SICAV, note 10, put the total expense ratio excluding
+performance fees for this share category at 4.39 % for the year ended
+2025-10-31 (4.38 % in 2024, 4.39 % in 2023); the prospectus of 2024-02, part II
+section 1.5, states a management fee of up to 3.96 %/yr, which note 5 of the
+accounts gives as the applied rate, plus up to 15 % of performance over a
+permanent high-water mark set at the initial issue price and crystallised on
+every valuation date; the PRIIPs KID for the ISIN (2025-12) prints 4.11 % of
+management and other recurring costs, 1.15 % of transaction costs, 1.29 % of
+performance fees and a 5 % entry load. Aligned to a 0.85 % ETF, that is
++3.54 %/yr applied over a decade of donor era, half again the deepest incumbent
+donor's uplift.
+
+The ERA is not documented, and that is a hard negative rather than a gap in the
+search. The manager publishes only current documents; the Luxembourg fund
+repository's own file list for this class starts at a 2005-01 prospectus and a
+2001-10 annual report and serves none of them without an account; the oldest
+artefact any public archive holds is a 2004-03 monthly report, which prints the
+5 % entry load and no management fee at all. Nothing covering 1996 to 2004
+exists in the accessible record.
+
+**The grading**, on each fund's own live window, each candidate
+volatility-matched to the fund and lifted by the documented fee difference,
+exactly as the chain does it. "Swing" is the difference between the CAGR gaps of
+the two halves of the window split at its midpoint, "worst" the largest such
+difference over every month of the middle third.
+
+| fund | candidate | weekly | monthly | TE/vol | CAGR gap | swing | worst |
+|---|---|---|---|---|---|---|---|
+| DBMF | **the incumbent alone (shipped)** | **0.674** | **0.765** | **0.81** | **-1.9 pts** | 2.0 | **5.5** |
+| | one quarter SMN | 0.662 | 0.725 | 0.82 | -1.8 pts | **0.5** | 8.8 |
+| | half SMN | 0.616 | 0.640 | 0.88 | -1.9 pts | 0.6 | 11.8 |
+| | three quarters SMN | 0.545 | 0.530 | 0.95 | -2.1 pts | 1.1 | 14.1 |
+| | SMN alone | 0.465 | 0.418 | 1.03 | -2.2 pts | 1.2 | 15.8 |
+| KMLM | **the incumbent alone (shipped)** | **0.611** | **0.577** | **0.88** | **+1.2 pts** | 12.7 | 19.4 |
+| | one quarter SMN | 0.604 | 0.568 | 0.89 | +1.8 pts | 7.1 | 16.0 |
+| | half SMN | 0.566 | 0.524 | 0.93 | +2.2 pts | **1.9** | **13.5** |
+| | three quarters SMN | 0.503 | 0.453 | 1.00 | +2.5 pts | 2.3 | 13.5 |
+| | SMN alone | 0.429 | 0.374 | 1.07 | +2.7 pts | 5.0 | 15.1 |
+| Simplify CTA | **the incumbent alone (shipped)** | **0.390** | **0.472** | **1.10** | **-3.3 pts** | 2.9 | 24.5 |
+| | one quarter SMN | 0.375 | 0.447 | 1.12 | -4.3 pts | **0.9** | 23.2 |
+| | half SMN | 0.337 | 0.389 | 1.15 | -5.4 pts | 4.5 | 21.4 |
+| | three quarters SMN | 0.278 | 0.303 | 1.20 | -6.2 pts | 7.2 | **19.5** |
+| | SMN alone | 0.212 | 0.208 | 1.26 | -6.7 pts | 8.8 | 22.2 |
+| AQR UCITS A | **the incumbent alone (shipped)** | 0.604 | **0.714** | 0.89 | **-0.5 pt** | 8.2 | **13.0** |
+| | one quarter SMN | **0.617** | 0.690 | **0.88** | -0.5 pt | 7.2 | 13.6 |
+| | half SMN | 0.593 | 0.628 | 0.90 | -0.5 pt | 6.5 | 14.2 |
+| | three quarters SMN | 0.535 | 0.541 | 0.96 | -0.6 pt | **6.0** | 14.8 |
+| | SMN alone | 0.462 | 0.449 | 1.04 | -0.6 pt | 5.9 | 15.2 |
+
+**The gate is failed on the column that decides.** The monthly correlation, the
+honest one for a sleeve held for years, is WORSE in all twelve blend settings
+and in all four single-donor ones; the weekly one in eleven of twelve, the
+volatility-scaled tracking error in eleven of twelve. The worst split over every
+month of the middle third, the criterion built to survive a short window, is
+worse in six of twelve, and those six include all three settings on DBMF and all
+three on the AQR class, which are the two longest live windows in the family.
+The only column the candidate improves is the midpoint swing, ten of twelve, and
+that is the column any smoothing moves. The level, which the documented 4.39 %
+uplift carries, is the one thing that never was the problem: every gap stays
+within half a point of the incumbent's.
+
+**The control locates what little is gained.** Built the same way with a series
+this repository already ships, the daily all-styles composite at half weight,
+the blend beats the incumbent alone on monthly correlation in four chains of
+four (0.821 against 0.765, 0.641 against 0.577, 0.539 against 0.472, 0.750
+against 0.714), on tracking error in four of four, and on the worst split in
+three of four; and it beats every setting of the candidate on every column of
+every chain. Whatever a second record buys here, a record already in the repo
+buys more of it. (That control is not a proposal. The composite starts 2000-01
+and cannot cover 1996-2000 at all, and two of the four chains already stand on
+it over the era it does cover.)
+
+**The counterweight, stated because it is real.** Inside the donor era itself,
+graded against the composite because no fund exists there to grade against, half
+of each DOES beat the incumbent alone: 0.802 against 0.778 monthly over 1996-10
+to 2007-02, where the same blend built with this repository's own engine buys
+0.001 (0.779 against 0.778). A second real programme is worth something on that
+yardstick. It is not the yardstick that decides a donor, and the reason is
+circular: a blend of two programmes must look more like an index of twenty
+programmes than either does. The question a donor answers is how the FUND
+behaved, and the live windows are the only place that question can be asked.
+
+**The record would also need cleaning.** It carries five isolated V-shaped
+prints, four of them on month-ends: 1997-07-31 (+8.3 % then -6.0 %), 2001-03-30
+(+12.9 % then -12.7 %), 2003-05-30, 2004-12-31 (-18.0 % then +12.8 %) and
+2010-11-05, plus a -15.7 % followed by +22.4 % two days apart in 2013-04.
+Removing them lifts the class's monthly agreement with the composite from 0.713
+to 0.727 and leaves its CAGR at 4.99 % to two decimals, so they are prints
+rather than a level error. They fall on exactly the dates a monthly statistic
+reads, which is why the headline number understates the record and still does
+not reach the incumbent's.
 
 ## Rebuilding it from scratch
 
@@ -1604,7 +1760,10 @@ must preserve. Every one of these was learned by breaking it.
    reference's first date.
 5. **Donor chain** (`DonorChain`). For each fund, volatility-match every donor
    to the fund on their common window (excess-over-cash returns,
-   scale factor clamped to [0.5, 2], at least 120 common days), lift each
+   scale factor clamped to [0.5, 2], at least 120 common days, and both sides
+   read on the SAME CLOCK: a donor whose calibration dates are materially
+   coarser than the reference's is refused rather than scaled, `cadenceMismatch`),
+   lift each
    segment by its documented fee uplift (`feeAligned`, donor load minus target
    load, performance fees only ever subtracted), then splice nearest-first with
    `ExtendBack`, which rescales the incoming segment to the junction level. A donor whose median spacing exceeds three calendar
@@ -1668,15 +1827,18 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    1996-03-26, the very day the chains already start, so the deepest donor is
    at its own beginning and only a DIFFERENT, older programme can move the
    floor. **The two sources do not agree on the level**: measured over
-   IE0000360275's 3392 shared days, the Morningstar/FT ratio wanders in both
-   directions (1.06 in 1997, 1.41 in 2001, 0.92 in 2010) and ends 13.4 % from
-   where it started, with its worst excursion in the violent trend month of
-   2000-10. That is the signature of a weekly-dealing class whose two sources
-   stamp the same NAVs days apart, not of a fee or a currency, and it means a
-   Morningstar-sourced donor may not be spliced onto an FT-sourced one without
-   settling the date convention first. FT stays the reference for this fund,
-   since it is FT's series that reproduces the manager's published thirty-year
-   cumulative. **The distributing trap carries over unchanged**: Morningstar's
+   IE0000360275's shared days, the Morningstar/FT ratio wanders in both
+   directions and ends 13 % from where it started, with its worst excursion in
+   the violent trend month of 2000-10. That was first read as a weekly-dealing
+   class whose two sources stamp the same NAVs days apart. It is not: the two
+   date sets differ by two dates out of 3383, the returns correlate 0.872 at lag
+   zero and nothing at any other lag, and FT is the copy that reproduces the
+   manager's published thirty-year cumulative while Morningstar's overstates it
+   by 214 points. The disagreement is in the LEVELS on identical dates, it is
+   specific to this fund rather than to the source (the 2026-08-22 candidate's
+   two copies agree to the last digit), and the corrected measurement is in the
+   survey section above. FT stays the reference for this fund.
+   **The distributing trap carries over unchanged**: Morningstar's
    `timeseries_price` is a price return like FT's, measured on the distributing
    control IE00BD8PGZ49 at 1.96 points a year below the bundled total-return
    reconstruction over 2017-2026.
@@ -1708,6 +1870,21 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    which is the reason it does not. Nothing in the surveys so far says such a
    pool exists either, so that change should be made for a named candidate and
    not on speculation.
+
+   **That rule was tested on 2026-08-22 and held.** The one candidate the
+   re-survey named was carried through the full arbitration, and two things came
+   out of it. The candidate still quotes, so it needed no chain-relative
+   calibration at all: this change remains unbuilt and unjustified, and the
+   sentence above still governs it. And the candidate was refused on merit
+   anyway (the section "The second 1990s programme"), so the era it would have
+   widened is unchanged. What the exercise did buy is a different piece of
+   machinery, shipped: the volatility match now refuses a donor whose
+   calibration dates are materially coarser than the reference's, instead of
+   silently splicing it at a cadence ratio. The repair that would ADMIT such a
+   donor, reading both sides on the donor's own clock as `monthlyVolMatch` does
+   for the insurance-linked family, moves every existing calibration of this
+   family by 2 to 12 % and therefore needs its own arc and its own evidence; it
+   is not worth opening without a candidate that would use it.
 
 One hypothesis was tested in full in 2026-08 and half of it is now shipped:
 **replicate the replicator rather than its target**. Running DBi's published
@@ -1758,7 +1935,20 @@ match stays.
 - A donor is not required to quote daily, and the deepest one does not.
   Anything spliced into a daily file must be projected onto a daily calendar
   first (`densify`), or per-observation statistics will read its cadence as
-  volatility.
+  volatility. The CALIBRATION has the same trap one step earlier and it is the
+  silent one: `volMatch` fits per observation on the dates two series share, so
+  a weekly donor against a daily fund yields a ratio near sqrt(1/5). Three
+  chains of this family would refuse such a donor through the [0.5, 2] clamp for
+  the wrong reason and the fourth would accept it at less than half the scale
+  its own record implies (0.52 measured, 1.09 read on a common clock). It is now
+  refused outright (`cadenceMismatch`); the shipped chains all calibrate on
+  one-day spacing and were regenerated byte for byte to confirm the guard is
+  inert on them.
+- Two copies of the same fund from two sources are not interchangeable, and the
+  way to tell them apart is the manager's own published cumulative, not a
+  correlation. The deepest donor reads +1649.50 % on one source and +1863.90 %
+  on another over the same 3383 dates, and only the first matches what the
+  manager publishes. Grade a source before splicing from it.
 - The funds beat the strategy over their own live windows (DBMF by about
   six points a year since 2019). No honest reconstruction of trend
   following reproduces that, and chasing it would be curve fitting.
