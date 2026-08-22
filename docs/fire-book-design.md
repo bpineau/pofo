@@ -306,6 +306,19 @@ rendering in Go is testable, stdlib-only and reusable.
   Pfau, Bogleheads wiki, Anarkulova/Cederburg papers, AMF/impots.gouv for the
   French tax pages. Cite by name and URL in "Pour aller plus loin".
 - French tax/social pages carry a dated-accuracy warning (rules move yearly).
+- THREE GRADES OF EVIDENCE (2026-08-22): every substantive claim should be
+  readable as one of three things, and the text must not let them blur:
+  (1) a THEOREM or scientific consensus (true by proof or overwhelmingly
+  replicated; contested only via its hypotheses), (2) a RESEARCH RESULT
+  (measured, cite the paper and authors; say if replicated or contested),
+  (3) the BOOK'S OWN JUDGMENT CALL (defensible, but a choice; own it as
+  such). Anchor claims on named research with authors and years, in prose
+  and in "Pour aller plus loin"; this matters MOST, and must be applied most
+  intensely, on the "soft" topics (psychology, couples, meaning, spending
+  behavior), where unattributed opinion reads as fact. The reference
+  implementation is theorie-du-cycle-de-vie (its "Trois régimes de preuve"
+  callout and its tagged "registre des écarts"); a book-wide labeling pass
+  over the existing articles is pending.
 
 ## Table of contents
 
@@ -332,6 +345,7 @@ update both when adding an article.
 - horizon-et-esperance-de-vie: Horizon, esperance de vie et retraites de 50 ans
 - serie-ern: La serie Safe Withdrawal Rate d'ERN : guide de lecture
 - les-maths-du-4-pourcent: Pourquoi 4 % ? L'anatomie mathematique de la regle (rendement reel, vol drag, sequence, horizon)
+- theorie-du-cycle-de-vie: La theorie du cycle de vie : le socle academique (Modigliani, part de Merton, capital humain, Yaari, registre des ecarts) (added 2026-08-22)
 - decider-sous-incertitude: Decider sous incertitude : utilite, Kelly, equivalent certain, regret
 
 ### III. Modeliser : Monte-Carlo et autres machines

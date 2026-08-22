@@ -37,6 +37,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 
 **CAPE (ratio de Shiller)** : prix / bénéfices réels moyens sur 10 ans. Le meilleur prédicteur connu des rendements réels à 10-15 ans, donc du sort d'un millésime de départ. [[valorisations-et-cape]]
 
+**Capital humain** : la valeur actualisée des revenus de travail futurs, l'obligation implicite que vous êtes. Massif chez le jeune (d'où les glidepaths), réduit chez le rentier à l'option de retravailler et à la pension à venir. [[theorie-du-cycle-de-vie]], [[glidepaths]]
+
 **Carry** : la prime récoltée en détenant ce qui rapporte du portage, financé par ce qui n'en rapporte pas (devises, courbes de taux, matières premières). Documentée sur toutes les classes d'actifs, cyclique, et fragile dans les crises de liquidité. [[global-macro]]
 
 **Cascade (des rendements)** : arithmétique > géométrique > réel > net > soutenable. Chaque marche coûte 0,5-1,5 point. La démystification de la règle des 4 %. [[rendements-arithmetiques-geometriques]]
@@ -118,6 +120,8 @@ Tous les termes du livre (et du jargon des forums), définis en quelques phrases
 ## O-R
 
 **OMY (One More Year)** : le syndrome de l'année de plus. Reporter le départ faute d'un chiffre qui « suffise ». Le regret n° 1 des vétérans. Se traite par des critères écrits à froid. [[une-annee-de-plus]]
+
+**Part de Merton** : la fraction risquée optimale du cycle de vie, (μ − r)/(γσ²), constante et indépendante de l'horizon. Pour les aversions humaines plausibles, elle dessine le plateau 50-80 %. [[theorie-du-cycle-de-vie]], [[allocation-actions-obligations]]
 
 **Permanent Portfolio** : les quatre quarts de Browne (actions, obligations longues, or, cash). L'archétype tous-temps. Un gagnant par régime, rééquilibré. [[portefeuilles-tous-temps]]
 
