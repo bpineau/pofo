@@ -68,4 +68,4 @@ Capital 1,2 M€, besoin 43 000 €/an, hypothèses prospectives du livre ([[ren
 - Herbert Simon, « A Behavioral Model of Rational Choice » (1955) : le satisficing par son inventeur, prix Nobel pour cela.
 - Edward Thorp, « The Kelly Criterion in Blackjack, Sports Betting, and the Stock Market » : le meilleur exposé de Kelly, hypothèses incluses.
 - Kahneman & Tversky, « Prospect Theory » (1979) : l'aversion aux pertes mesurée, le pont vers [[psychologie-du-retrait]].
-- Dans ce livre : [[ruine-et-probabilites]] (choisir son seuil), [[choisir-sa-strategie]] (le protocole appliqué aux règles de retrait), [[allocation-actions-obligations]] (le plateau), [[monte-carlo-forces-faiblesses]] (pourquoi tout modèle est faux, et comment décider quand même).
+- Dans ce livre : [[theorie-du-cycle-de-vie]] (le socle académique dont cette page est le mode d'emploi), [[ruine-et-probabilites]] (choisir son seuil), [[choisir-sa-strategie]] (le protocole appliqué aux règles de retrait), [[allocation-actions-obligations]] (le plateau), [[monte-carlo-forces-faiblesses]] (pourquoi tout modèle est faux, et comment décider quand même).

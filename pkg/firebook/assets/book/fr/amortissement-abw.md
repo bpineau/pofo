@@ -52,7 +52,7 @@ Le millésime 1966, le pire de la littérature, vécu sous ABW et sous retrait f
 ::: science Pourquoi la littérature la préfère
 Trois arguments reviennent.
 
-1. **La cohérence.** C'est la seule famille dérivée d'un modèle de décision, le cycle de vie de Merton (1969), qui applique à la consommation le cadre d'utilité posé dans [[decider-sous-incertitude]]. Les autres règles ne sont que des heuristiques testées après coup. Ici, chaque propriété s'explique et chaque paramètre a un sens.
+1. **La cohérence.** C'est la seule famille dérivée d'un modèle de décision, le cycle de vie de Merton (1969, le socle présenté dans [[theorie-du-cycle-de-vie]]), qui applique à la consommation le cadre d'utilité posé dans [[decider-sous-incertitude]]. Les autres règles ne sont que des heuristiques testées après coup. Ici, chaque propriété s'explique et chaque paramètre a un sens.
 2. **La dominance** sur les critères modernes. Dans les comparatifs (Morningstar sur les RMD et leurs cousins réglementaires, les travaux Bogleheads et TPAW, ERN sur les règles actuarielles), l'amortissement sert la consommation totale la plus élevée pour une ruine quasi nulle, sans falaise ni cascade de coupes. Ses ajustements restent continus et petits, typiquement ±3-6 %/an hors crise, contre les marches de ±10 % des guardrails.
 3. **L'absence de mémoire morte.** Comme les règles CAPE, l'ABW ne dépend que de l'état présent : aucun « retrait de référence » historique ne vient fossiliser une décision de l'an 1 ([[regles-cape]]).
 

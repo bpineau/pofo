@@ -1,5 +1,5 @@
 # Amortization-based withdrawal (ABW/TPAW): the actuarial approach
-<!-- source: amortissement-abw @ f4bb9ab553b0 -->
+<!-- source: amortissement-abw @ 0abe7d717d46 -->
 
 Ask an academic economist how to spend down a portfolio over a lifetime. You will not hear about Bengen, and you will not hear about Guyton-Klinger. You will get the Samuelson and Merton life-cycle model, and a prescription read straight off it. Every year, spend the actuarial annuity of your **total** wealth (the portfolio plus the present value of your future income) over your remaining horizon, at today's expected returns. The FIRE community has a name for that prescription: ABW, amortization-based withdrawal. It also has a finished implementation: Ben Mathew's TPAW (Total Portfolio Allocation and Withdrawal), a free planning tool that has become a Bogleheads favorite.
 
@@ -53,7 +53,7 @@ The 1966 vintage, the worst in the literature, lived under ABW and under a fixed
 ::: science Why the research prefers it
 Three arguments come back.
 
-1. **Coherence.** It is the only family derived from a decision model, Merton's life cycle (1969), which applies to spending the utility framework laid out in [[deciding-under-uncertainty]]. The other rules are heuristics tested after the fact. Here every property has an explanation and every parameter means something.
+1. **Coherence.** It is the only family derived from a decision model, Merton's life cycle (1969, the backbone laid out in [[lifecycle-theory]]), which applies to spending the utility framework laid out in [[deciding-under-uncertainty]]. The other rules are heuristics tested after the fact. Here every property has an explanation and every parameter means something.
 2. **Dominance** on the modern criteria. In the comparisons (Morningstar on RMDs and their regulatory cousins, the Bogleheads and TPAW work, ERN on actuarial rules), amortization delivers the highest total consumption for a near-zero failure probability, with no cliff and no cascade of cuts. Its adjustments stay continuous and small, typically plus or minus 3 to 6% a year outside a crisis, against the plus or minus 10% steps of guardrails.
 3. **No dead memory.** Like the CAPE rules, ABW depends only on the present state: no historical "reference withdrawal" fossilizes a decision made in year 1 ([[cape-based-rules]]).
 
