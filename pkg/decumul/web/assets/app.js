@@ -57,8 +57,14 @@ const GROUPS = [
       "ABW = Amortization-Based Withdrawal; TPAW = Total Portfolio Allocation and Withdrawal, the popular planner built on it. The rule much of the recent literature prefers: each year, spend the payment that would exhaust your CURRENT wealth (after tax, plus the present value of future pensions) exactly over the REMAINING years, assuming the central expected return, a mortgage run in reverse, re-quoted every year. Why it is attractive: it can never run out early (spending is always the sustainable share of what remains), it never dies on a mountain of unspent money (the payout rate rises as the horizon shortens), and it self-corrects continuously in small steps instead of Guyton-Klinger's -10% jolts. The price: income follows the market; after a bad decade the payment is genuinely lower. Assumes the geometric central return (CAPE-implied when the valuation anchor is on). Only one spending rule runs at a time, so ticking it clears the others."),
     c("bounded", "Bounded % of portfolio (Vanguard-style)",
       "Vanguard's 'dynamic spending', the industry's smoothed VPW: each year target the initial percentage of CURRENT wealth, but never move real spending more than +5% up or -2.5% down from last year. In good markets your lifestyle drifts up slowly; in crashes it glides down 2.5% a year instead of jumping. Because the descent is capped, spending can outrun a collapsing portfolio, so unlike VPW/ABW this rule CAN still run out: it sits between the fixed rule and VPW on the frontier. Only one spending rule runs at a time, so ticking it clears the others."),
-    r("annuityShare", "Annuitise % of capital", 0, 0.5, 0.05, 0, "pct",
-      "Spend this share of capital on a joint-life, inflation-linked annuity (1% real rate, 10% insurer load): a guaranteed lifelong income floor that hedges longevity. It converts growth assets into lower guaranteed income, so headline ruin (failing the FULL need) can rise even as the worst late-life outcomes improve; its value is the floor, not the average."),
+  ]},
+  {title: "Longevity insurance", col: 1, items: [
+    r("annuityShare", "Annuitise % of the growth sleeve", 0, 0.5, 0.05, 0, "pct",
+      "Convert this share of the growth sleeve into a joint-life, inflation-linked annuity: a real income guaranteed for as long as either of you lives. The cash buffer is left alone, and the sale that raises the premium pays its capital-gains tax like any other withdrawal. This is longevity insurance, and longevity only exists where the death is drawn: section 05 runs that kernel and reports the trade before and after, income bought against estate given up. The sections above it run a FIXED horizon, where everybody is certain to reach the end, so there is nothing left to insure and a lifelong income would simply be paid for longer than it was priced for: they are left untouched by this slider, on purpose."),
+    r("annuityYear", "Buy in year", 0, 30, 1, 0, "int",
+      "Plan year of the purchase: 0 buys at retirement, later buys at the age shown. Waiting raises the payout (fewer years left to pay for) and leaves the money invested meanwhile, at the price of carrying the longevity risk yourself until then. The page starts at retirement, so there is no buying before year 0."),
+    r("annuityLoad", "Insurer margin", 0.02, 0.25, 0.01, 0.10, "pct",
+      "What the insurer keeps, as a share of the actuarially fair income: 10% is the conventional planning figure for a retail annuity, and the 2% floor stands in for a fair quote, which is a teaching device rather than a product you can buy. Two further costs are fixed and not yours to set: the quote is priced at a 1% real rate, and on an annuitant table, since people who buy lifelong income outlive the general population."),
   ]},
   {title: "Market model", col: 3, items: [
     r("mu", "Real growth return", 0.01, 0.12, 0.005, 0.05, "pct",
@@ -154,7 +160,7 @@ function renderRail() {
   const foot = document.createElement("div");
   foot.className = "rail-foot";
   foot.setAttribute("data-help",
-    "Save your capital, age, horizon, net spending and pension figures as personal defaults in a cookie on this browser, so you land on them next time. Click again to update them. It changes nothing you can share: the page URL always reproduces the exact scenario for anyone, cookie or not.");
+    "Save your capital, age, horizon, net spending, pension and annuity figures as personal defaults in a cookie on this browser, so you land on them next time. Click again to update them. It changes nothing you can share: the page URL always reproduces the exact scenario for anyone, cookie or not.");
   foot.innerHTML = `<button type="button" id="saveDefaults" class="save-defaults">Save as my defaults</button><span class="saved-note" id="savedNote" hidden>saved</span>`;
   form.appendChild(foot);
 }
@@ -213,10 +219,11 @@ function refreshVal(k) {
   const el = document.getElementById("v_" + k);
   if (!el) return;
   let text = fmtVal(k, state[k]);
-  if (k === "pensionYear" || k === "years") text += ` (age ${Math.round(state.age + state[k])})`;
+  if (k === "pensionYear" || k === "years" || k === "annuityYear")
+    text += ` (age ${Math.round(state.age + state[k])})`;
   el.textContent = text;
 }
-function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); }
+function refreshAges() { refreshVal("pensionYear"); refreshVal("years"); refreshVal("annuityYear"); }
 
 function setSliderVal(k, v) {
   state[k] = v;
@@ -277,6 +284,10 @@ function syncPolicy() {
   };
   dim("gkFloor", state.guardrails || state.riskGuard);
   dim("gkRaiseCap", state.riskGuard);
+  // The purchase date and the insurer's margin only exist once something is
+  // annuitised, so they follow the share rather than sit there looking live.
+  dim("annuityYear", state.annuityShare > 0);
+  dim("annuityLoad", state.annuityShare > 0);
 }
 
 renderRail();
@@ -302,13 +313,16 @@ function applyConservative() {
 }
 
 // ---------------------------------------------------------------------------
-// Personal defaults: a chosen subset of the situation sliders, saved to a
-// cookie on demand (the "Save as my defaults" button) so a regular visitor
-// lands on their own figures instead of the generic ones. The cookie seeds
+// Personal defaults: a chosen subset of the sliders (the situation, and the
+// annuity block, which is a standing decision about the household rather than
+// a spending rule to be tried), saved to a cookie on demand (the "Save as my
+// defaults" button) so a regular visitor lands on their own figures instead of
+// the generic ones. The cookie seeds
 // ONLY these keys, and a shared #hash always overrides it (applied after), so
 // a link reproduces the sender's exact scenario for anyone, cookie or not.
 // ---------------------------------------------------------------------------
-const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear"];
+const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear",
+  "annuityShare", "annuityYear", "annuityLoad"];
 const PREF_COOKIE = "fire_defaults";
 function readCookie(name) {
   const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
@@ -444,6 +458,9 @@ function updateCmd() {
     ` <span class="flag">--spend</span> <span class="val">${f("needAnnual")}€</span>` +
     ` <span class="flag">--horizon</span> <span class="val">${state.years}y</span>` +
     ` <span class="flag">--rule</span> <span class="val">${rule}</span>` +
+    (state.annuityShare > 0
+      ? ` <span class="flag">--annuity</span> <span class="val">${f("annuityShare")}@age${Math.round(state.age + state.annuityYear)}</span>`
+      : ``) +
     ` <span class="flag">--model</span> <span class="val">${model}</span>`;
 }
 
@@ -741,8 +758,13 @@ document.addEventListener("keydown", e => {
 });
 // cardsHTML renders summary cards; a help field becomes the hover, and a
 // verdict-shaped value (vintage replays) is graded good/bad by its outcome.
+// A before-and-after value ("20.5% → 34.7%") carries two figures where the
+// others carry one, so it gets its own calmer size rather than overflowing
+// its card; it is left ungraded, since the same arrow means good on one card
+// and bad on the next.
 const cardGrade = v =>
-  v.startsWith("ruined") ? " bad" : v.startsWith("survived") ? " good" : "";
+  v.startsWith("ruined") ? " bad" : v.startsWith("survived") ? " good"
+    : (v.includes("→") || v.includes(" vs ")) ? " pair" : "";
 const cardsHTML = cards => (cards || [])
   .map(c => `<div class="card"${c.help ? ` data-help="${esc(c.help)}"` : ""}>` +
     `<div class="k">${esc(c.label)}</div><div class="v${cardGrade(c.value)}">${esc(c.value)}</div></div>`).join("");
@@ -1203,6 +1225,10 @@ async function renderLifecycle(b, id) {
     setSVG("causesSvg", r.causesSvg);
     setSVG("bequestSvg", r.bequestSvg);
     document.getElementById("lifecycleCards").innerHTML = cardsHTML(r.cards);
+    // The annuity is bought here and only here, so the section says so while
+    // one is held, rather than leaving a reader wondering why the sections
+    // above did not move.
+    document.getElementById("annuityNote").hidden = !r.annuitised;
   } catch (e) { /* keep the previous chart */ }
 }
 
