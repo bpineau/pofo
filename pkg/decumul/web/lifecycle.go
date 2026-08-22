@@ -23,8 +23,16 @@ type LifecycleResult struct {
 	Note        string `json:"note"`
 }
 
-// Lifecycle runs the central model at the planned spend and crosses the ruin
-// timing with a French couple survival curve at the user's age.
+// Lifecycle runs the central model at the planned spend with the death drawn
+// INSIDE each path (decumul.Lifetime), so every figure here is counted rather
+// than weighted after the fact: ruin means broke while alive, the ruin-year
+// histogram holds the failures somebody lived through, and the terminal wealth
+// is the estate at the household's own end.
+//
+// The same return draws are replayed a second time with mortality off, which
+// is what the "ignoring mortality" card reports: the two runs differ by the
+// drawn death alone, so the pair reads as one comparison rather than two
+// simulations.
 func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	if pr.NPaths == 0 {
 		pr.NPaths = 2000
@@ -32,18 +40,25 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	base := pr.plan()
 	base.Monthly = false
 	base.Source = pr.detailSource(panel, pr.Years)
-	e := base.Simulate(pr.NPaths, simWorkers, 7)
 
+	// A couple of the same age, each drawn from the bundled French law, and no
+	// survivor adjustment: exactly the household the page's survival curve
+	// assumed, now sampled per path instead of applied as a weight.
 	age := pr.age()
-	surv := func(years float64) float64 {
-		return decumul.FrenchMortality.CoupleSurvival(age, years)
+	mortal := base
+	mortal.Lifetime = &decumul.Lifetime{
+		Self:    decumul.Life{Age: age},
+		Partner: &decumul.Life{Age: age},
 	}
-	curve := e.LifeCurve(surv)
+	draws := mortal.Draw(pr.NPaths, simWorkers, 7)
+	e := mortal.SimulateOn(draws, simWorkers)
+	immortal := base.SimulateOn(draws, simWorkers) // same returns, nobody dies
 
-	funded := make([]float64, len(curve))
-	broke := make([]float64, len(curve))
-	dead := make([]float64, len(curve))
-	for i, pt := range curve {
+	states := e.LifeStates()
+	funded := make([]float64, len(states))
+	broke := make([]float64, len(states))
+	dead := make([]float64, len(states))
+	for i, pt := range states {
 		funded[i] = pt.Funded * 100
 		broke[i] = pt.Broke * 100
 		dead[i] = pt.Dead * 100
@@ -88,15 +103,16 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	// What you leave behind: the distribution of terminal real wealth across
 	// paths (0 for the ruined). It shows the upside the broke/dead view hides:
 	// most futures end far richer than they started, a few end with nothing.
-	bequestSVG := darkBars(chart.Options{Title: "What's left at the end · terminal real wealth across futures", Width: 900, Height: 300}, bequestBuckets(e))
+	bequestSVG := darkBars(chart.Options{Title: "What's left at the end · real wealth at the household's own end", Width: 900, Height: 300}, bequestBuckets(e.Estates()))
 
-	cards := lifecycleCards(e, age)
+	cards := lifecycleCards(e, immortal)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}
 }
 
-// bequestBuckets buckets each path's terminal real wealth into readable bands
-// and returns their share of all paths.
-func bequestBuckets(e decumul.Ensemble) []chart.Bar {
+// bequestBuckets buckets each path's estate (real wealth at the household's
+// end, 0 for the ruined) into readable bands and returns their share of all
+// paths.
+func bequestBuckets(estates []float64) []chart.Bar {
 	type band struct {
 		label  string
 		lo, hi float64
@@ -111,11 +127,7 @@ func bequestBuckets(e decumul.Ensemble) []chart.Bar {
 		{"8M+", 8e6, 1e18},
 	}
 	counts := make([]int, len(bands))
-	for _, p := range e.Paths {
-		w := 0.0
-		if len(p.Wealth) > 0 {
-			w = p.Wealth[len(p.Wealth)-1]
-		}
+	for _, w := range estates {
 		for i, b := range bands {
 			if (i == 0 && w < 1) || (w >= b.lo && w < b.hi) {
 				counts[i]++
@@ -123,7 +135,7 @@ func bequestBuckets(e decumul.Ensemble) []chart.Bar {
 			}
 		}
 	}
-	n := float64(max(len(e.Paths), 1))
+	n := float64(max(len(estates), 1))
 	bars := make([]chart.Bar, 0, len(bands))
 	for i, b := range bands {
 		share := 100 * float64(counts[i]) / n
@@ -173,26 +185,30 @@ func fmtPctShare(v float64) string {
 	return strconv.FormatFloat(v, 'f', 1, 64) + "%"
 }
 
-// lifecycleCards summarises the mortality-adjusted risk: the classic ruin
-// figure, the probability of ever being alive AND broke, and the odds of
-// outliving the horizon.
-func lifecycleCards(e decumul.Ensemble, age float64) []Card {
-	o := e.Outcome()
-	// Probability of experiencing ruin while alive: the ruin year must be
-	// reached alive, i.e. weight each ruined path by survival to its ruin year.
-	pRuinAlive := 0.0
-	if n := len(e.Paths); n > 0 {
-		for _, p := range e.Paths {
-			if p.Ruined && p.RuinYear >= 0 {
-				pRuinAlive += decumul.FrenchMortality.CoupleSurvival(age, float64(p.RuinYear))
-			}
-		}
-		pRuinAlive /= float64(n)
+// brokeYearsIfRuined turns the unconditional mean broke-years into the
+// conditional one, the length of a failure among the households that had one.
+// Zero when nothing failed.
+func brokeYearsIfRuined(lo decumul.LifeOutcome) float64 {
+	if lo.RuinAlive <= 0 {
+		return 0
 	}
-	horizon := float64(e.Years)
+	return lo.BrokeYearsMean / lo.RuinAlive
+}
+
+// lifecycleCards summarises the mortality-aware risk against its
+// mortality-free twin: the classic ruin figure (same return draws, nobody
+// dies), the share that really ran out while alive, how long that failure
+// lasted, and the odds of outliving the horizon.
+func lifecycleCards(e, immortal decumul.Ensemble) []Card {
+	lo := e.LifeOutcome()
 	return []Card{
-		{Label: "Ruin (ignoring mortality)", Value: fmt.Sprintf("%.1f%%", o.RuinProb*100)},
-		{Label: "Ever alive and broke", Value: fmt.Sprintf("%.1f%%", pRuinAlive*100)},
-		{Label: "Still alive at horizon", Value: fmt.Sprintf("%.0f%%", decumul.FrenchMortality.CoupleSurvival(age, horizon)*100)},
+		{Label: "Ruin (ignoring mortality)", Value: fmt.Sprintf("%.1f%%", immortal.Outcome().RuinProb*100),
+			Help: "The headline ruin figure: the same futures run to the full horizon with nobody ever dying. It is the number every other section of this page reports."},
+		{Label: "Ever alive and broke", Value: fmt.Sprintf("%.1f%%", lo.RuinAlive*100),
+			Help: "Share of households that ran out of money with somebody still there to feel it. The death is drawn inside each future, so this is counted, not estimated."},
+		{Label: "Years broke, when it happens", Value: fmt.Sprintf("%.0f y", brokeYearsIfRuined(lo)),
+			Help: "How long a failure lasts: mean years lived after running out, among the households it happens to. Running dry two years before the end and running dry at 70 are not the same event, and this is what separates them."},
+		{Label: "Still alive at horizon", Value: fmt.Sprintf("%.0f%%", lo.OutlivedPlan*100),
+			Help: "Share of households still alive when the plan's horizon ends, so their estate is read there rather than at a drawn death."},
 	}
 }

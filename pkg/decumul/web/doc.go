@@ -37,5 +37,10 @@
 // sequence-risk decomposition (/api/decade), the deterministic replay of
 // infamous historical vintages through the user's plan (/api/vintages), the
 // median funding-mix layers (/api/income), the lived-spending fan, the
-// mortality lifecycle and the planning curves.
+// mortality lifecycle and the planning curves. /api/lifecycle runs the
+// stochastic-lifetime kernel (decumul.Lifetime, a couple of the user's age):
+// the death is drawn inside every path, so ruin there means broke while
+// alive, counted, and the terminal-wealth histogram is the estate at the
+// household's own end. The same draws are replayed with mortality off to
+// carry the headline "ignoring mortality" figure beside it.
 package web

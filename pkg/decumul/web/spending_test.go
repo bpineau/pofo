@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -50,6 +51,26 @@ func TestLifecycle(t *testing.T) {
 		if !strings.Contains(r.LifeSVG, s) {
 			t.Errorf("LifeSVG misses the %q layer", s)
 		}
+	}
+	// The view runs the exact lifetime kernel against its mortality-free twin:
+	// both figures are there, and a drawn death can only remove failures.
+	pct := func(label string) float64 {
+		for _, c := range r.Cards {
+			if c.Label == label {
+				var v float64
+				fmt.Sscanf(c.Value, "%f%%", &v)
+				return v
+			}
+		}
+		t.Fatalf("no %q card in %+v", label, r.Cards)
+		return 0
+	}
+	fixed, alive := pct("Ruin (ignoring mortality)"), pct("Ever alive and broke")
+	if alive > fixed+1e-9 {
+		t.Errorf("alive-ruin %.2f%% above the mortality-free ruin %.2f%%", alive, fixed)
+	}
+	if pct("Still alive at horizon") <= 0 {
+		t.Error("nobody survives to the horizon: the lifetime draw looks broken")
 	}
 }
 

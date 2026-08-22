@@ -384,11 +384,26 @@ draw stream for returns is unchanged.
 
 ## 8. Deferred, with the reason
 
-- **Web / `-fire` wiring.** The lifecycle view still uses `LifeCurve`, which
-  is correct for what it shows. Switching it to `LifeStates`, and exposing the
-  estate distribution and the annuity trade-off as their own panel, is a UI
-  chantier with its own layout and copy decisions; the kernel does not need it
-  to be complete, and mixing the two would make the diff unreadable.
+- ~~**Web / `-fire` wiring.**~~ DONE 2026-08-22. The lifecycle view
+  (`pkg/decumul/web/lifecycle.go`) now runs the exact kernel: a couple of two
+  lives of the same age drawn from `FrenchMortality`, no survivor adjustment,
+  which is exactly the household the posterior weighting assumed. The same
+  `Draws` are replayed with `Lifetime` nil, so the "ignoring mortality" card is
+  the paired mortality-free twin of the counted figures rather than a second
+  simulation. The stack reads `LifeStates`, the terminal-wealth histogram reads
+  `Estates` (wealth at the household's own end, so its upper bands thin out:
+  measured on the default plan, "8M+" falls from 17.1 % to 12.8 % because most
+  households die before the horizon), and one card was added for the length of
+  a failure (`BrokeYearsMean / RuinAlive`).
+  Measured on the page's default plan, 20 000 paths: the alive-and-broke
+  figure moves 1.62 % -> 1.65 %, the still-alive-at-horizon figure 40.9 % ->
+  40.1 %, and the alive-broke-dead curves never differ by more than 0.80 pt on
+  the dead share and 0.06 pt on the broke share, all inside the Monte-Carlo
+  error of the run. Still deferred, deliberately: the ANNUITY panel. The page's
+  `AnnuityShare` control still buys a `Cashflow` that pays for ever, which is
+  the fixed-horizon reading of an annuity; routing it through `Plan.Annuity`
+  is what makes the trade-off of §7 visible, and it is a UI chantier of its
+  own (pricing law, load, joint/single, the trade-off chart).
 - **Correlated couple mortality.** See §5: the effect is smaller than the
   period-versus-cohort gap already accepted, and it needs a calibration this
   repo cannot source.
