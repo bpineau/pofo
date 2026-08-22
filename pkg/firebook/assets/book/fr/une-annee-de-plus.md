@@ -12,9 +12,9 @@ Le risque de manquer, la ruine à 82 ans, est visible, chiffrable, terrifiant. T
 
 Le candidat au départ vit une configuration psychologique piégée de trois côtés.
 
-**La cible mouvante.** Sitôt la cible atteinte, l'esprit la renégocie (« 25x, mais avec l'inflation... disons 27x, et puis le monde est incertain, 30x ? »). C'est le phénomène des « moving goalposts », universel dans les récits. La cible n'a jamais été le vrai déclencheur. Le vrai déclencheur est un sentiment de sécurité que les chiffres ne fabriquent pas ([[psychologie-du-retrait]] décrit la même peur non bornée, en amont).
+**La cible mouvante.** Sitôt la cible atteinte, l'esprit la renégocie (« 25x, mais avec l'inflation... disons 27x, et puis le monde est incertain, 30x ? »). C'est le phénomène des « moving goalposts », universel dans les récits. Il a un fond documenté, l'aversion aux pertes : une perte pèse environ deux fois son gain symétrique (Kahneman et Tversky, 1979, le facteur mesuré autour de 2 par les mêmes en 1992), et la ruine possible écrase donc les années certaines dans la balance mentale. La cible n'a jamais été le vrai déclencheur. Le vrai déclencheur est un sentiment de sécurité que les chiffres ne fabriquent pas ([[psychologie-du-retrait]] décrit la même peur non bornée, en amont).
 
-**Le confort du connu.** Partir est une falaise identitaire ([[sens-et-identite]]), rester la pente douce. Et « une année de plus » est le compromis parfait de l'évitement. On ne renonce pas au projet, on le décale indéfiniment.
+**Le confort du connu.** Partir est une falaise identitaire ([[sens-et-identite]]), rester la pente douce, et le biais de statu quo (Samuelson et Zeckhauser, 1988) fait le reste : l'option par défaut gagne tant qu'on ne l'affronte pas. Et « une année de plus » est le compromis parfait de l'évitement. On ne renonce pas au projet, on le décale indéfiniment.
 
 **L'environnement qui pousse.** L'employeur retient, par la prime et la promotion tardive. L'entourage doute (« à ton âge ? »). Et le marché fournit toujours une raison, haut (« bulle, attendons la correction »), bas (« attendons la récupération »), calme (« profitons-en pour engranger »). Le lecteur de [[valorisations-et-cape]] reconnaîtra le timing perpétuel, appliqué cette fois à sa propre vie.
 
@@ -31,7 +31,7 @@ L'honnêteté du chapitre exige la liste inverse, trois configurations où l'ann
 2. **Le marché est extrêmement cher** au moment du départ prévu ([[valorisations-et-cape]]). Une cible atteinte par l'euphorie est fragile, quand le CAPE dépasse 32-35 et que la ruine ancrée-CAPE le confirme. Décaler de 12-24 mois bornés, avec une date plancher écrite, est la version défendable du market timing de vie ([[les-trois-phases]], le piège du sommet).
 3. **La vie d'après n'est pas prête** (rien de prototypé, le conjoint pas aligné, [[sens-et-identite]], [[couple-et-famille]]). L'année de plus qui sert à construire, le 4/5e, le sabbatique-test, les pratiques amorcées, n'est pas du report. C'est de la préparation, à condition qu'elle ait un livrable et une fin.
 
-Le test qui sépare le rationnel du syndrome tient en une question. « Qu'est-ce qui sera vrai dans un an qui ne l'est pas aujourd'hui, et comment le saurai-je ? » Le rationnel a une réponse précise. Le syndrome répond « on verra, je me sentirai mieux ».
+Le test qui sépare le rationnel du syndrome tient en une question. « Qu'est-ce qui sera vrai dans un an qui ne l'est pas aujourd'hui, et comment le saurai-je ? » Le rationnel a une réponse précise. Le syndrome répond « on verra, je me sentirai mieux ». La recherche sur la prévision affective dit exactement le contraire : nous sommes de piètres prophètes de nos états futurs, et ce mieux-là n'arrive pas tout seul (Wilson et Gilbert, 2003).
 :::
 
 ## Le remède : l'engagement pris à froid
@@ -65,4 +65,5 @@ Yasmine, 45 ans, cible atteinte, ruine centrale 3,8 %, plancher testé, atelier 
 - Early Retirement Now, volet 42 (« The Effect of One More Year ») : le chiffrage de la colonne sécurité ([[serie-ern]]).
 - Les données DREES/Eurostat sur l'espérance de vie en bonne santé : la colonne coût, officielle.
 - Bill Perkins, *Die With Zero* : le cadre « time bucket » des expériences datées, l'antidote conceptuel au report perpétuel ([[depenses-en-retraite]]).
+- Les trois biais du syndrome dans la littérature : Kahneman & Tversky (1979) pour l'aversion aux pertes, Samuelson & Zeckhauser (1988) pour le statu quo, Wilson & Gilbert (2003) pour la prévision affective.
 - Dans ce livre : [[temoignages-fire]] (le regret n° 1), [[psychologie-du-retrait]] (le mécanisme parent), [[valorisations-et-cape]] (le seul bon motif de décalage, borné), [[retour-au-travail]] (l'OMY partiel).
