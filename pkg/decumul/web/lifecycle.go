@@ -66,10 +66,13 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 	lifeSVG := darkStackedArea(
 		chart.Options{Title: fmt.Sprintf("Alive, broke or gone (couple aged %.0f at retirement)", age), Width: 900, Height: 360},
 		"Years into retirement", "% of simulated households",
+		// Funded is the ground, not a subject: it is where nothing has
+		// happened yet, so it stays a quiet accent wash and the ink goes to
+		// the two frontiers that carry the story.
 		[]chart.AreaSeries{
-			{Name: "Funded", Values: funded, Color: "#12B76A"},
-			{Name: "Broke", Values: broke, Color: "#D92D20"},
-			{Name: "Gone", Values: dead, Color: "#D5DBE5"},
+			{Name: "Funded", Values: funded, Color: chart.ColorAccent, Weight: 0.07},
+			{Name: "Broke", Values: broke, Color: chart.ColorBad, Weight: 0.5},
+			{Name: "Gone", Values: dead, Color: chart.ColorDead, Weight: 0.5},
 		})
 
 	// Ruin-year histogram, folded into 5-year buckets so it reads at a glance.
@@ -86,24 +89,26 @@ func Lifecycle(pr Params, panel *scenario.Panel) LifecycleResult {
 			Text:  fmt.Sprintf("%.1f%%", share*100),
 		})
 	}
-	ruinSVG := darkBars(chart.Options{Title: "When ruin happens (share of all paths, by year of failure)", Width: 600, Height: 360}, bars)
+	ruinSVG := darkBars(chart.Options{Title: "When ruin happens", XLabel: "years into retirement, by year of failure",
+		Width: 600, Height: 340}, bars)
 
 	// Why plans fail: classify the ruined paths by trajectory shape (halved
 	// early / never grew / prospered then outlived), sharper than the old
 	// when-it-failed timing proxy.
 	sh := e.RuinShapes()
 	pct := roundShares100(sh.Crash, sh.Grind, sh.Longevity)
-	causesSVG := darkCategoryBars(chart.Options{Width: 460},
+	causesSVG := darkCategoryBars(chart.Options{Title: "Why plans fail", Width: 460},
 		[]chart.CatBar{
-			{Label: "Early crash", Value: sh.Crash, Text: fmt.Sprintf("%d%%", pct[0]), Color: "#D2402F"},
-			{Label: "Slow grind", Value: sh.Grind, Text: fmt.Sprintf("%d%%", pct[1]), Color: "#C77E17"},
-			{Label: "Longevity", Value: sh.Longevity, Text: fmt.Sprintf("%d%%", pct[2]), Color: "#9AA2B1"},
+			{Label: "Early crash", Value: sh.Crash, Text: fmt.Sprintf("%d%%", pct[0]), Color: chart.ColorBad},
+			{Label: "Slow grind", Value: sh.Grind, Text: fmt.Sprintf("%d%%", pct[1]), Color: chart.ColorWarn},
+			{Label: "Longevity", Value: sh.Longevity, Text: fmt.Sprintf("%d%%", pct[2]), Color: chart.ColorDead},
 		})
 
 	// What you leave behind: the distribution of terminal real wealth across
 	// paths (0 for the ruined). It shows the upside the broke/dead view hides:
 	// most futures end far richer than they started, a few end with nothing.
-	bequestSVG := darkBars(chart.Options{Title: "What's left at the end · real wealth at the household's own end", Width: 900, Height: 300}, bequestBuckets(e.Estates()))
+	bequestSVG := darkBars(chart.Options{Title: "What's left at the end", XLabel: "real wealth at the household's own end",
+		Width: 900, Height: 300}, bequestBuckets(e.Estates()))
 
 	cards := lifecycleCards(e, immortal)
 	return LifecycleResult{LifeSVG: lifeSVG, RuinYearSVG: ruinSVG, CausesSVG: causesSVG, BequestSVG: bequestSVG, Cards: cards}
@@ -139,7 +144,13 @@ func bequestBuckets(estates []float64) []chart.Bar {
 	bars := make([]chart.Bar, 0, len(bands))
 	for i, b := range bands {
 		share := 100 * float64(counts[i]) / n
-		bars = append(bars, chart.Bar{Label: b.label, Value: share, Text: fmtPctShare(share)})
+		// The ruined bucket is not "least wealth", it is a different outcome:
+		// it wears the failure hue, the wealth bands the series accent.
+		col := ""
+		if i == 0 {
+			col = chart.ColorBad
+		}
+		bars = append(bars, chart.Bar{Label: b.label, Value: share, Text: fmtPctShare(share), Color: col})
 	}
 	return bars
 }
