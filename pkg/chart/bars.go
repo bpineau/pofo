@@ -2,6 +2,7 @@ package chart
 
 import (
 	"fmt"
+	"math"
 	"strings"
 )
 
@@ -73,12 +74,18 @@ func Bars(opt Options, bars []Bar) string {
 		}
 		fmt.Fprintf(&sb, `<text x="%.1f" y="%d" text-anchor="middle" fill="`+themeMuted+`">%s</text>`, x+bw/2, padT+plotH+15, esc(b.Label))
 	}
-	// Table-view payload: the bars as label/value rows (no crosshair; the
-	// per-mark titles carry the hover).
-	hm := hoverMeta{Kind: "bars", YLabel: opt.Title}
+	// Hover payload: the plot box plus one column anchor per bar, so the
+	// pointer is answered anywhere over the plot, not only on the ink.
+	hm := hoverMeta{Kind: "bars", Axis: "x", YLabel: opt.Title,
+		X0: float64(padL), X1: float64(w - padR), Y0: float64(padT), Y1: float64(padT + plotH)}
 	vals := hoverSeries{Name: "value"}
-	for _, b := range bars {
+	for i, b := range bars {
 		hm.Rows = append(hm.Rows, b.Label)
+		// The anchor is the bar's top, kept inside the plot box: Bars charts a
+		// non-negative quantity, and a stray negative must not put a mark (and
+		// with it a hover band) outside the plot.
+		y := math.Min(math.Max(yAt(b.Value), float64(padT)), float64(padT+plotH))
+		hm.Marks = append(hm.Marks, hoverMark{X: float64(padL) + (float64(i)+0.5)*gap, Y: y, Text: b.Text})
 		vals.Ys = append(vals.Ys, b.Value)
 	}
 	hm.Series = append(hm.Series, vals)
