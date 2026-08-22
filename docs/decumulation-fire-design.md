@@ -273,6 +273,32 @@ never rewritten, so a link shared before the change still reproduces its run.
 `chart.Bars` (the recovery-time histogram) are added as small, dependency-free
 SVG primitives reusable elsewhere, matching the existing `Line`/`Pie` style.
 
+**Tooltips are the comprehension channel, so ONE mechanism serves every
+chart.** Nobody reads the long blurbs; the reading happens under the pointer.
+Every chart therefore publishes its data and its geometry in the shared hover
+grammar (`pkg/chart/hover.go`): the plot box, plus either an x domain (lines,
+fans, stacks) or one pixel anchor per mark (bars, rows, scatter points). The
+front-end is a single pointer handler that reads the nearest mark or the
+nearest x from ANYWHERE over the plot area, and falls back to the `data-help`
+explanation of whatever else the pointer is over. Two rules keep it honest and
+were both learnt the hard way (2026-08-22): a chart must never rely on the
+pointer landing on painted ink, which is what left the middle of every bar
+chart mute; and the two tooltips must never guard against each other, which is
+what made the surviving hover look capricious. The same rule applies outside
+the charts: the model table carries its explanation on every CELL, not on its
+header row and column, because a cell is where the pointer lands.
+
+**The bar family draws in the same dialect as the line family.** Chart
+surface, mono labels, a title in ink at the plot's left edge, muted axes, one
+calm accent hue for a lone series, and semantic hues reserved for what is
+genuinely signed (the sensitivity tornado) or genuinely categorical (the
+failure shapes). Two decisions carry most of the result: a bar chart whose
+every bar carries its own value label drops the y axis entirely (numbers on
+the marks OR an axis behind them, never both), and a signed chart puts its
+zero where the data puts it, on ONE scale for both sides, with a fixed gutter
+for the tip labels rather than a per-side scale that would inflate a small
+opposite bar.
+
 ## 7. Validation and testing
 
 - **Golden acceptance tests** translate the reference spec's validation table

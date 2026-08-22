@@ -12,6 +12,13 @@
 //   - BarMatrix lays out a small-multiples grid of horizontal diverging
 //     bars (rows x categories on one shared scale), e.g. per-regime
 //     realized contributions;
+//   - Bars, HBars and CategoryBars are the bar family, drawn in the same
+//     dialect as Line (surface, mono labels, muted axes): vertical columns
+//     for a distribution, a signed tornado around a zero axis placed where
+//     the data puts it, and labelled rows in a common track. A lone series
+//     wears the accent; the semantic hues stay for signed and categorical
+//     readings. Bars whose every entry carries a Text drop the y axis, since
+//     the numbers are then on the marks;
 //   - Term produces a chart for the terminal (ANSI colors on a TTY,
 //     distinct markers per series otherwise; Braille mode packs 2x4 dots
 //     per cell for a smoother curve);

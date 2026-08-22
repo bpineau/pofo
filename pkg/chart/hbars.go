@@ -6,28 +6,36 @@ import (
 	"strings"
 )
 
-// HBars renders a horizontal signed bar chart: bars extend left (negative) or
-// right (positive) from a central zero axis, each row labelled on the left with
-// its Text drawn at the bar tip. It suits "sensitivity" displays of a signed
-// change: negative bars (here, a fall in ruin) are green, positive ones red.
+// HBars renders a signed horizontal bar chart (a tornado): each row's bar
+// runs left or right of a zero axis, in the diverging good/bad pair, with the
+// row named in the left gutter and its value at the bar's tip.
+//
+// The zero axis sits where the DATA puts it, not at the middle of the frame:
+// its position splits the plot in proportion to how far the rows reach each
+// way, so a chart where nine levers help and one hurts does not waste half
+// its width. Each side that carries a row keeps a floor of the plot, so a
+// lone small bar still has room to be seen and labelled.
 func HBars(opt Options, bars []Bar) string {
 	w, h := opt.Width, opt.Height
 	if w == 0 {
 		w = 960
 	}
 	if h == 0 {
-		h = 60 + 28*len(bars) // height grows with the row count
+		h = 60 + 30*len(bars) // height grows with the row count
 	}
-	const padR, padT, padB = 60.0, 40.0, 16.0
 	// The label gutter fits the longest row label (12px mono runs ~7.3px per
 	// glyph), within a third of the chart so the bars keep the floor space.
-	labelW := 150.0
+	labelW := 120.0
 	for _, b := range bars {
-		labelW = math.Max(labelW, float64(len(b.Label))*7.3+16)
+		labelW = math.Max(labelW, float64(len([]rune(b.Label)))*7.3+16)
 	}
 	labelW = math.Min(labelW, float64(w)/3)
-	x0, x1 := labelW, float64(w)-padR
-	zero := (x0 + x1) / 2
+	top, bottom := 28.0, 20.0
+	if opt.Title != "" {
+		top = 52
+	}
+	x0, x1 := labelW+10, float64(w)-20
+	y0, y1 := top, float64(h)-bottom
 
 	var sb strings.Builder
 	fmt.Fprintf(&sb, `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %d %d" width="%d" height="%d" font-family="`+themeMono+`">`+"\n", w, h, w, h)
@@ -35,61 +43,89 @@ func HBars(opt Options, bars []Bar) string {
 	// the pointer, so a hover layer reads a row from anywhere on it.
 	fmt.Fprintf(&sb, `<rect width="%d" height="%d" fill="`+themeSurface+`"/>`+"\n", w, h)
 	if opt.Title != "" {
-		fmt.Fprintf(&sb, `<text x="8" y="22" font-size="14" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", esc(opt.Title))
+		fmt.Fprintf(&sb, `<text x="%.1f" y="24" font-size="16" font-weight="600" fill="`+themeInk+`">%s</text>`+"\n", 20.0, esc(opt.Title))
 	}
 	if len(bars) == 0 {
 		sb.WriteString("</svg>")
 		return finish(sb.String())
 	}
 
-	ext := 0.0
+	// Where zero falls: in proportion to how far the rows reach each way, on
+	// ONE scale for both sides (two scales would make a small opposite bar
+	// look like a large one). A gutter on each side holds the tip label of a
+	// bar too short to hold it inside.
+	negExt, posExt := 0.0, 0.0
 	for _, b := range bars {
-		ext = math.Max(ext, math.Abs(b.Value))
+		negExt = math.Max(negExt, -b.Value)
+		posExt = math.Max(posExt, b.Value)
 	}
-	if ext == 0 {
-		ext = 1
+	const gutter = 64.0
+	span := negExt + posExt
+	scale := 0.0
+	if span > 0 {
+		scale = math.Max(x1-x0-2*gutter, 1) / span
 	}
-	// Reach the bars to 82% of the half-width so the value label outside each tip
-	// stays clear of the row-label gutter on the left.
-	half := (x1 - x0) / 2 * 0.82
-	xAt := func(v float64) float64 { return zero + v/ext*half }
+	zero := x0 + gutter + negExt*scale
+	xAt := func(v float64) float64 { return zero + v*scale }
 
-	plotH := float64(h) - padT - padB
-	rowH := plotH / float64(len(bars))
-	barH := math.Min(rowH*0.6, 20)
+	rowH := (y1 - y0) / float64(len(bars))
+	barH := math.Min(rowH*0.46, 14)
 
-	// Zero axis.
-	fmt.Fprintf(&sb, `<line x1="%.1f" y1="%g" x2="%.1f" y2="%.1f" stroke="`+themeAxis+`"/>`+"\n", zero, padT-4, zero, float64(h)-padB)
+	// Zero axis: the reference every row is read against, so it is drawn as an
+	// axis and not as a hairline lost among the bars.
+	fmt.Fprintf(&sb, `<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="`+themeAxis+`"/>`+"\n", zero, y0-4, zero, y1)
 
 	for i, b := range bars {
-		cy := padT + (float64(i)+0.5)*rowH
+		cy := y0 + (float64(i)+0.5)*rowH
 		x := xAt(b.Value)
-		left := math.Min(zero, x)
-		width := math.Abs(x - zero)
+		left, width := math.Min(zero, x), math.Abs(x-zero)
 		color := themeGood // negative: reduces ruin (good)
-		anchor, tx := "start", x+4
 		if b.Value > 0 {
 			color = themeBad // positive: increases ruin
-		} else {
-			anchor, tx = "end", x-4
 		}
-		fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="2" fill="%s"/>`+"\n",
-			left, cy-barH/2, width, barH, color)
+		if width >= 1 {
+			// Softened fills: a tornado is mostly one colour, and at full
+			// strength that colour becomes the loudest thing on the page.
+			fmt.Fprintf(&sb, `<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="2" fill="%s" fill-opacity="0.82"/>`+"\n",
+				left, cy-barH/2, width, barH, color)
+		}
 		fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="12" fill="`+themeMuted+`" text-anchor="end">%s</text>`+"\n",
-			x0-8, cy, esc(b.Label))
-		if b.Text != "" {
-			fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="12" fill="`+themeInk+`" text-anchor="%s">%s</text>`+"\n",
-				tx, cy, anchor, esc(b.Text))
+			x0-10, cy, esc(b.Label))
+		if b.Text == "" {
+			continue
 		}
+		// The value rides INSIDE a bar long enough to hold it, in the surface
+		// colour, and just past the tip otherwise: it can then never collide
+		// with the row label, whatever the bar's length.
+		tx, anchor, fill := x, "start", themeInkSoft
+		if b.Value > 0 {
+			tx += 6
+		} else {
+			tx, anchor = x-6, "end"
+		}
+		if width > float64(len([]rune(b.Text)))*7.3+14 {
+			fill = themeSurface
+			if b.Value > 0 {
+				tx, anchor = x-6, "end"
+			} else {
+				tx, anchor = x+6, "start"
+			}
+		}
+		fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" dy="0.35em" font-size="12" fill="%s" text-anchor="%s">%s</text>`+"\n",
+			tx, cy, fill, anchor, esc(b.Text))
 	}
+	if opt.XLabel != "" {
+		fmt.Fprintf(&sb, `<text x="%.1f" y="%.1f" font-size="12" fill="`+themeMuted+`" text-anchor="middle">%s</text>`+"\n", (x0+x1)/2, float64(h)-4, esc(opt.XLabel))
+	}
+
 	// Hover payload: one anchor per row, so the pointer is answered anywhere
 	// on a row rather than only over the (often short) bar.
-	hm := hoverMeta{Kind: "bars", Axis: "y", YLabel: opt.Title,
-		X0: 0, X1: float64(w), Y0: padT, Y1: float64(h) - padB}
+	hm := hoverMeta{Kind: "bars", Axis: "y", XLabel: opt.XLabel, YLabel: opt.Title,
+		X0: 0, X1: float64(w), Y0: y0, Y1: y1}
 	vals := hoverSeries{Name: "change"}
 	for i, b := range bars {
 		hm.Rows = append(hm.Rows, b.Label)
-		hm.Marks = append(hm.Marks, hoverMark{X: xAt(b.Value), Y: padT + (float64(i)+0.5)*rowH, Text: b.Text})
+		hm.Marks = append(hm.Marks, hoverMark{X: xAt(b.Value), Y: y0 + (float64(i)+0.5)*rowH, Text: b.Text})
 		vals.Ys = append(vals.Ys, b.Value)
 	}
 	hm.Series = append(hm.Series, vals)
