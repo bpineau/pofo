@@ -31,7 +31,7 @@ OECD or the ECB; it embeds the CSVs.
 | `EUROGOV-LONG-EUR` | **long** euro govt bond TR (25+, monthly) | month-ends of the real ECB 25y curve from 2004-09; before it, the OECD long-term yield mapped to a 25y yield (`0.571+0.962×10y`, calibrated on that same curve) → `TreasuryTR` (24y par, dur ~17), rebased at the junction | ~1970 |
 | `EUROGOV-LONG-DAILY` | long euro govt bond TR (daily shape) | ECB daily 25y yield curve `B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y` → `TreasuryTR` (24y par) | ~2004 |
 | `DECASH-EUR` | German 3M money-market accrual | OECD German 3M interbank `DEU.M.IR3TIB` (the Bundesbank's Frankfurt three-month money, FIBOR from 1991), rolled monthly at the convention it is quoted in: simple, German 360/360 to 1990-06 then act/360 | 1960-1994 |
-| `EURCASH-EUR` | euro-area 3M cash TR index | ECB monthly EURIBOR 3M `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA`, rolled at the simple money-market convention | 1994-> |
+| `EURCASH-EUR` | euro-area 3M cash TR index | ECB monthly EURIBOR 3M `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA`, rolled monthly at the convention it is quoted in: simple, act/360 | 1994-> |
 
 ## Source dataflow: the 2026-08 migration off OECD MEI
 
@@ -115,9 +115,12 @@ A short rate is a number plus a convention, and the convention is a property of
 the publication, not a modelling choice. Reading a simple money-market quote as
 if it were already compounded to the year costs about `r^2/2` a year (0.17 %/yr
 at 6 %); reading a 360-day year as a calendar one costs another 1.46 % of the
-rate. `EURCASH-EUR` has always been rolled simple; `DECASH-EUR` was compounded
-as an **effective annual yield** until **2026-08-20**, which was wrong, and is
-now rolled at the convention its source states.
+rate. Both legs have now been re-quoted at what their publishers state, and both
+had it wrong before: `DECASH-EUR` was compounded as an **effective annual yield**
+until **2026-08-20**, and `EURCASH-EUR` was rolled simple but on a **365.25-day
+year** until **2026-08-22**, where EMMI publishes Euribor act/360.
+
+### The pre-euro leg (`DECASH-EUR`, fixed 2026-08-20)
 
 The evidence, gathered before the change and all of it primary:
 
@@ -164,15 +167,55 @@ sleeve, so a dearer cash rate is a net cost). Every audit verdict is unchanged:
 the graded overlaps all start in 2007 or later, decades after the last month
 `DECASH-EUR` touches.
 
-One thing was measured and deliberately NOT done: `EURCASH-EUR` accrues EURIBOR
-over a 365.25-day year while EURIBOR is itself quoted act/360, worth 1.46 % of
-the rate (0.03 %/yr at its 2.3 %/yr average). It is left alone here because it
-is a change to the LIVE cash leg every hedged recipe reads, not to a pre-euro
-tail, and it belongs with its own regeneration of those lines; the two legs are
-biased identically in the meantime. Note this is not the deep tail's problem:
-the German 360/360 era is 366 of `DECASH-EUR`'s 420 months, and on a monthly
-grid that convention IS one twelfth of the rate a month, which the generator now
-computes exactly.
+One thing was measured then and deliberately deferred: `EURCASH-EUR` accrued
+EURIBOR over a 365.25-day year while EURIBOR is itself quoted act/360, worth
+1.46 % of the rate (0.03 %/yr at its 2.3 %/yr average). It was left alone
+because it is a change to the LIVE cash leg every hedged recipe reads, not to a
+pre-euro tail, and it belonged with its own regeneration of those lines. That is
+the section below. Note it was never the deep tail's problem: the German 360/360
+era is 366 of `DECASH-EUR`'s 420 months, and on a monthly grid that convention
+IS one twelfth of the rate a month, which the generator computes exactly.
+
+### The live leg (`EURCASH-EUR`, fixed 2026-08-22)
+
+- **What the series is.** `FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA` is the ECB's
+  monthly history of the 3-month Euribor fixing, the same rate the repository
+  already reads live as `^EURIBOR3M`. Euribor is administered by EMMI.
+- **What that convention is.** EMMI's own *Benchmark Determination Methodology
+  for Euribor* (D0016F-2019, in force 2024-12-05), paragraph 43: "The published
+  Euribor rates follow euro money market conventions, that is, spot settlement
+  (T+2), the TARGET2 calendar, an **Actual/360 day count convention**, and
+  modified following business day with month-end adjustment convention." So the
+  rate is simple for the term of the deposit, on a 360-day year, and reading it
+  on a calendar year is short by 1.46 % of the rate. The pre-1999 months of the
+  series are the euro's national-money-market ancestors, quoted act/360 as well
+  (the Frankfurt three-month rate had moved to act/360 in 1990-07, per the
+  section above), so the whole span takes one convention.
+- **What it measures.** Over 1994-01 to 2026-07 the index grew at **2.2705 %/yr**
+  on the calendar year; it now grows at **2.3040 %/yr**, i.e. **+0.0334 pt/yr**,
+  **+1.068 %** cumulative over 32.5 years, worst single month +0.0094 pt
+  (1995-04). That is the deferred estimate confirmed, not a surprise.
+
+The generator gates it the way it gates the German leg: every full calendar year
+of the index against what act/360 pays on that year's mean quoted rate, restated
+independently of the builder, agreeing to **0.005 pt** at worst over 32 years
+(gate 0.10). The check against the previously shipped file was extended rather
+than dropped: a day-count re-quote multiplies every step's interest by a
+constant and changes nothing else, so the check also compares the rebuilt index
+against the shipped file **restated** that way, and it agreed to **4.4e-9**,
+the rounding of the six decimals the file carries. That is the proof that the
+day count was all that moved, and a refresh that drifts for any other reason
+still fails.
+
+Downstream, the twelve reconstructions that read the leg move over their whole
+history by, from the re-quote alone: `DTLETR` **+0.034 %/yr** (EUR-hedged on the
+full notional from 1994, the largest exposure to the leg), `MFEH` **+0.030**,
+`ERNX` **+0.028** (it IS euro cash), the three EUR-hedged AQR classes
+**+0.026**, `42C0` **+0.019**, the EUR-hedged BTOP50 index **+0.010**, `XEON`
+**+0.006**, `CHSN` **+0.005**, `NTSG` **0.000**, and `NTSZ` **-0.014** (it
+finances a 0.60 bond overlay at cash against a 0.10 cash sleeve, so a dearer
+cash rate is a net cost). Every `-verify-simdata` level and path verdict is
+unchanged, the graded windows moving by 0.02 to 0.04 pt of CAGR at most.
 
 ## The recipe (`ntszRecipe` / `ntszBuild`)
 
@@ -272,13 +315,16 @@ binding constraint**:
   -0.54 %/yr** (corr 0.56 → 0.96, drift +15.4 % → -4.2 %), level verdicts ok on
   both. The affine map was **not** refitted: 2004-2026 is the only window where
   a real 25-year yield exists at all, and it now governs the deep tail alone.
-- **The deep cash leg is quoted right (fixed 2026-08-20).** `DECASH-EUR` read
-  its source rate as an effective annual yield, where the Bundesbank quotes it
-  simple on a 360-day year; re-quoting it adds **+0.230 %/yr** to the pre-1994
-  cash path and moves the four reconstructions that reach behind 1994 by
-  **+0.115 to -0.029 %/yr** over their whole history, with no audit verdict
-  changed. Evidence, measurements and what was deliberately left alone are in
-  the cash-conventions section above.
+- **Both cash legs are quoted right (fixed 2026-08-20 and 2026-08-22).**
+  `DECASH-EUR` read its source rate as an effective annual yield, where the
+  Bundesbank quotes it simple on a 360-day year; re-quoting it adds
+  **+0.230 %/yr** to the pre-1994 cash path and moves the four reconstructions
+  that reach behind 1994 by **+0.115 to -0.029 %/yr** over their whole history.
+  `EURCASH-EUR` then read Euribor on a calendar year, where EMMI publishes it
+  act/360; re-quoting it adds **+0.033 %/yr** to the euro-era cash path and
+  moves the twelve reconstructions that read it by **+0.034 to -0.014 %/yr**.
+  No audit verdict changed either time. Evidence and measurements are in the
+  cash-conventions section above.
 - **Bond duration.** `EUROGOV-*` reconstruct a 10y benchmark (matching the OECD/ECB
   yield tenor); the real `EUNH.DE` is a broad eurozone govt basket (duration
   ~7-8y). The small mismatch is rescaled/absorbed at the 2009 splice.
