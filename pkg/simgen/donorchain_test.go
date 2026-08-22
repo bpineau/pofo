@@ -4,6 +4,8 @@ import (
 	"math"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
 // TestFeeAligned checks the three rules the uplift table rests on: a donor
@@ -47,6 +49,61 @@ func TestFeeAlignedUnknownVehicle(t *testing.T) {
 		}
 	}()
 	feeAligned("DBMF", []string{"NOSUCHFUND"})
+}
+
+// TestVolMatchRefusesACoarserDonor: a donor that quotes weekly against a fund
+// that quotes daily must be refused, not scaled. Both series here carry the
+// same daily volatility, so the honest match is 1.0; read per observation, the
+// weekly one looks about sqrt(5) times more volatile and the fit would divide
+// it by that. The same donor read on a daily calendar is accepted.
+func TestVolMatchRefusesACoarserDonor(t *testing.T) {
+	const n = 900
+	fund := mkWave("FUND", n, 3e-4, 0.010, 1.0, 0.2)
+	daily := mkWave("DONOR", n, 3e-4, 0.010, 1.0, 0.7)
+	if _, ok := volMatch(fund, daily, nil); !ok {
+		t.Fatal("a daily donor of the same volatility was refused")
+	}
+	weekly := &marketdata.Series{Symbol: "WEEKLY"}
+	for i := 0; i < n; i += 7 {
+		weekly.Points = append(weekly.Points, daily.Points[i])
+	}
+	if _, ok := volMatch(fund, weekly, nil); ok {
+		t.Error("a weekly donor was volatility-matched against a daily fund")
+	}
+
+	// Two series on the same coarse clock measure the same thing, and the
+	// guard must leave them alone.
+	fundWeekly := &marketdata.Series{Symbol: "FUNDW"}
+	for i := 0; i < n; i += 7 {
+		fundWeekly.Points = append(fundWeekly.Points, fund.Points[i])
+	}
+	if _, ok := volMatch(fundWeekly, weekly, nil); !ok {
+		t.Error("two weekly series were refused, though they share a clock")
+	}
+}
+
+// TestDonorChainSkipsACoarserDonor: the refusal reaches the chain, which drops
+// that donor and keeps building on the ones it can calibrate.
+func TestDonorChainSkipsACoarserDonor(t *testing.T) {
+	const n = 900
+	daily := mkWave("DEEP", n, 1e-4, 0.010, 1.0, 0.7)
+	weekly := &marketdata.Series{Symbol: "WEEKLY"}
+	for i := 0; i < n; i += 7 {
+		weekly.Points = append(weekly.Points, daily.Points[i])
+	}
+	f := fakeFetcher{
+		"FUND":   mkWave("FUND", n, 3e-4, 0.010, 1.0, 0.2),
+		"WEEKLY": weekly,
+		"DEEP":   daily,
+		"^IRX":   mkLevels("^IRX", n, 2.0),
+	}
+	s, err := DonorChain(f, "^IRX", "FUND", []Donor{{ID: "WEEKLY"}, {ID: "DEEP"}}, time.Time{}, nil)
+	if err != nil {
+		t.Fatalf("DonorChain: %v", err)
+	}
+	if got := len(s.Points); got != n {
+		t.Errorf("chain has %d points, want the daily donor's %d", got, n)
+	}
 }
 
 // TestDonorChainUplift: the uplift is a constant annual addition to that

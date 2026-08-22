@@ -148,23 +148,52 @@ func kept(donor *marketdata.Series, before time.Time) []marketdata.Point {
 // median. A handful of points cannot tell a cadence from a gap, so a segment
 // shorter than half a year of weekly dealing is left alone.
 func sparse(donor *marketdata.Series, before time.Time) bool {
-	var gaps []float64
-	for i := 1; i < len(donor.Points); i++ {
-		if !before.IsZero() && !donor.Points[i].Date.Before(before) {
+	var dates []time.Time
+	for _, p := range donor.Points {
+		if !before.IsZero() && !p.Date.Before(before) {
 			break
 		}
-		gaps = append(gaps, donor.Points[i].Date.Sub(donor.Points[i-1].Date).Hours()/24)
+		dates = append(dates, p.Date)
 	}
-	if len(gaps) < 26 {
+	if len(dates) < 27 {
 		return false
 	}
+	return medianSpacing(dates) > sparseSpacing
+}
+
+// medianSpacing is the median gap, in calendar days, between consecutive
+// dates. It is zero for fewer than two dates.
+func medianSpacing(dates []time.Time) float64 {
+	if len(dates) < 2 {
+		return 0
+	}
+	gaps := make([]float64, 0, len(dates)-1)
+	for i := 1; i < len(dates); i++ {
+		gaps = append(gaps, dates[i].Sub(dates[i-1]).Hours()/24)
+	}
 	slices.Sort(gaps)
-	return gaps[len(gaps)/2] > sparseSpacing
+	return gaps[len(gaps)/2]
+}
+
+// pointDates is the dates of a series' points.
+func pointDates(points []marketdata.Point) []time.Time {
+	dates := make([]time.Time, len(points))
+	for i, p := range points {
+		dates[i] = p.Date
+	}
+	return dates
 }
 
 // volMatch rebuilds donor with its excess-over-cash returns scaled so that,
 // over the window it shares with ref, it realizes the same volatility. The
 // level is left alone: ExtendBack pins it at the junction.
+//
+// The two sides must be READ ON THE SAME CLOCK. Both returns are taken from
+// consecutive quotes of their own series on the dates the two share, so a
+// donor that deals weekly against a daily reference contributes week-sized
+// moves where the reference contributes day-sized ones, and the ratio measures
+// the cadence rather than the volatility (about sqrt(5) too small, measured).
+// Such a pair is refused rather than scaled: see cadenceMismatch.
 func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 	byDate := make(map[time.Time]float64, len(ref.Points))
 	for i := 1; i < len(ref.Points); i++ {
@@ -173,6 +202,7 @@ func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 		}
 	}
 	var a, b []float64
+	var fitted []time.Time
 	for i := 1; i < len(donor.Points); i++ {
 		if donor.Points[i-1].Close <= 0 {
 			continue
@@ -183,8 +213,12 @@ func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 		}
 		a = append(a, r)
 		b = append(b, donor.Points[i].Close/donor.Points[i-1].Close-1)
+		fitted = append(fitted, donor.Points[i].Date)
 	}
 	if len(a) < 120 { // under six months of common days, the ratio is noise
+		return nil, false
+	}
+	if cadenceMismatch(fitted, ref) {
 		return nil, false
 	}
 	sa, sb := stdev(a), stdev(b)
@@ -209,6 +243,30 @@ func volMatch(ref, donor, cash *marketdata.Series) (*marketdata.Series, bool) {
 		out.Points = append(out.Points, marketdata.Point{Date: donor.Points[i].Date, Close: v})
 	}
 	return out, len(out.Points) > 30
+}
+
+// cadenceMismatch reports whether the observations volMatch fitted on are
+// materially coarser than the reference's own quotes: the donor's returns then
+// span several of the reference's periods each, and their standard deviations
+// are not comparable quantities.
+//
+// The failure it guards is SILENT, which is why it is a refusal rather than a
+// warning. A weekly-dealing donor read against a daily fund yields a ratio near
+// sqrt(1/5): three of the four chains of this family would reject such a donor
+// through the [0.5, 2] clamp for the wrong reason, and the fourth would accept
+// it at less than half the scale its own record implies and splice two decades
+// of history at that scale (0.52 measured, against 1.09 for the same pair read
+// on a common clock).
+//
+// Both sides sparse is not a mismatch: two monthly series compared month by
+// month measure the same thing, which is what monthlyVolMatch does for the
+// insurance-linked family. The repair that would ADMIT a sparse donor here,
+// rather than refuse it, is the same one: read both sides on the donor's own
+// clock. It moves every existing calibration of this family by 2 to 12 % and
+// is therefore a deliberate change of its own, not a guard.
+func cadenceMismatch(fitted []time.Time, ref *marketdata.Series) bool {
+	return medianSpacing(fitted) > sparseSpacing &&
+		medianSpacing(pointDates(ref.Points)) <= sparseSpacing
 }
 
 // cashAccrual is the cash return between two dates, from an annualized
