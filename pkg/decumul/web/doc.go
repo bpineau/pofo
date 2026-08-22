@@ -43,4 +43,15 @@
 // alive, counted, and the terminal-wealth histogram is the estate at the
 // household's own end. The same draws are replayed with mortality off to
 // carry the headline "ignoring mortality" figure beside it.
+//
+// The annuity block (AnnuityShare/AnnuityYear/AnnuityLoad, see annuity.go)
+// belongs to that same endpoint and to no other. An annuity is longevity
+// insurance: under the fixed horizon every other view runs, the household is
+// certain to reach the end, so a lifelong income is simply paid for longer
+// than it was priced for. /api/lifecycle therefore attaches decumul.Annuity
+// beside the Lifetime and replays a THIRD twin on the same draws with the
+// purchase removed, which is the before-and-after readout its last three cards
+// carry: the risk of outliving the money, the estate that pays for removing
+// it, and the payout the quote actually offers against the plan's own
+// withdrawal rate. Everything else on the page ignores the block.
 package web
