@@ -35,7 +35,11 @@
 //     donor that does not quote daily is projected onto the engine's calendar
 //     first, the engine's day-to-day amplitude rescaled (textureScale) so the
 //     projected days carry the volatility the donor's own weeks imply. The file
-//     starts at the deepest donor and nothing is shipped behind it;
+//     starts at the deepest donor and nothing is shipped behind it. The
+//     volatility match reads both sides per observation, so it refuses a donor
+//     whose calibration dates are materially coarser than the reference's
+//     (cadenceMismatch): a weekly donor read against a daily fund yields a
+//     ratio near sqrt(1/5), which is a cadence, not a volatility;
 //   - monthlyVolMatch is DonorChain's volatility match for the case a
 //     per-observation one cannot serve: a MONTHLY donor and a weekly fund share
 //     almost no observation dates, so the ratio must be measured on month-end
