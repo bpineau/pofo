@@ -16,7 +16,7 @@
 // # Resolution
 //
 // An identifier goes through the following steps. CanonicalID applies
-// steps 1–3 (identifier → canonical id); Client.Fetch runs the whole
+// steps 1-3 (identifier → canonical id); Client.Fetch runs the whole
 // pipeline (and Lookup returns a catalogued asset's full metadata):
 //
 //  1. the built-in aliases (GOLD → XAUUSD, BHMG → GG00BQBFY362, …);
@@ -26,9 +26,10 @@
 //     datasets.Catalog), which makes common assets deterministic and
 //     independent of search engines;
 //  4. otherwise, a multi-source resolution: every candidate from the Yahoo
-//     search ("fund" entries first), then the Financial Times, then the
-//     Morningstar identifier discovered via Boursorama; the series with
-//     the deepest history wins, and the resolution is cached.
+//     search ("fund" entries first), then the Financial Times, then a
+//     Morningstar identifier, looked up in Morningstar's own fund screener
+//     and, failing that, in Boursorama's search; the series with the
+//     deepest history wins, and the resolution is cached.
 //
 // # Sources
 //
@@ -38,7 +39,15 @@
 // (fallback for ^VIX, full official history since 1990), Financial
 // Times and Morningstar (NAVs of European funds). Downloads are cached on
 // disk (JSON, one file per instrument); a failed refresh serves the stale
-// data with a warning rather than failing. A few symbols additionally
+// data with a warning rather than failing.
+//
+// FT and Morningstar NAVs are both a PRICE return: what a distributing share
+// class pays out is missing from them, silently, and no source corrects it
+// (LooksDistributing warns, see the note on Series below). They also carry
+// the same fund's history on their own dates: a weekly-dealing class measured
+// through both stamps the same NAVs days apart, which moves the level by low
+// double digits over decades without either source being wrong. Prefer one
+// source per instrument, and never splice segments of both into one series. A few symbols additionally
 // carry a bundled snapshot served as a last resort when every source fails
 // and nothing is cached: ^VIX (daily, 1990→), the inflation indices (see
 // below) and the euro crosses (the long daily ECU/DM/EUR proxy, 1971→, the
