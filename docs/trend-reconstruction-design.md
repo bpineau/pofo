@@ -1502,6 +1502,74 @@ it, but do not re-run the dead ends blind.
   under the commodity-pool industry code, seven were still filing in 2026 and
   exactly one of those began trading before 1996: the fund rejected above.
 
+### The 1990s re-survey through the fund database, closed (2026-08-22)
+
+The third NAV fallback was repaired on 2026-08-22, and its screener reports each
+class's INCEPTION DATE over an open-end and exchange-traded universe of 386462
+securities worldwide, which is the one field a survey for pre-1996 programmes
+actually needs. The survey was re-run through it, exhaustively rather than by
+name: the screener sorts on inception date, so the ten thousand oldest classes
+of the whole universe were enumerated in twenty pages of five hundred (every
+class whose inception precedes 1997-05-02) and read on category and on name.
+The host serves those two universes and no others, so the enumeration is the
+whole of what this source holds.
+
+The result is a clean negative and it closes the question rather than deferring
+it. Exactly one class of the entire universe carries a systematic-trend category
+and an inception at or before 1996-03-26, and it is the incumbent donor itself
+(Man AHL Diversified, IE0000360275). The next systematic-trend classes all begin
+later: SMN Diversified Futures 1996-10-31, Man AHL Diversified Futures
+1998-05-12, Aspect Diversified 1998-12-16, Lynx 2000-05-01. Manager-name probes
+say the same thing from the other direction, and they say why: a programme older
+than its share classes still only serves those classes' own NAVs, so the oldest
+class of every classic name in the database is younger than the floor (Millburn
+2002-07, Campbell 2008-10, Winton 2007-05, Dunn 2011-09, Chesapeake 2023-07;
+Transtrend, Graham, Mulvaney and Estlander are absent entirely).
+
+Everything else the pre-1996 window does hold was probed, and none of it is this
+trade. The screening statistic is the monthly correlation with the bundled net
+composite over each candidate's own life, with the incumbent donor carried as
+the control:
+
+| candidate | inception | actually served | cadence | corr composite | corr S&P 500 | verdict |
+|---|---|---|---|---|---|---|
+| Man AHL Diversified USD, IE0000360275 (control) | 1996-03-26 | 1996-03-26 .. 2026-08-20 | daily | **0.67** | -0.24 | the incumbent floor, and a trend programme by both columns |
+| Long/Short Selection Lynx Class I EUR, LU0675178148 | 1987-10-30 | 1987-10 .. 2026-07 | monthly | 0.00 | 0.55 | an equity-correlated fund of funds despite the name; the class ISIN is a 2011 one and the deep history is another vehicle's |
+| BlackRock Tactical Opportunities A, US0919278228 | 1988-12-29 | 1988-12-29 .. 2026-08-21 | daily | -0.08 | 0.39 | a macro bond fund, not a futures programme; also distributing (1.24 %/yr of price against 6.96 %/yr of total return) |
+| Premier Total Return SP, KYG722371039 | 1992-01-31 | 2002-09 .. 2026-07 | monthly | 0.03 | 0.38 | serves nothing before 2002 whatever its stated inception |
+| Prima Capital Fund Ltd USD, VGG7238P1062 | 1993-04-01 | 1993-03-31 .. 2026-08-14 | semi-monthly | 0.01 | 0.34 | not this trade |
+| Mosaic I USD, LU0211629901 | 1994-05-31 | 1994-05 .. 2026-06 | monthly | 0.12 | 0.04 | not this trade |
+| DWS Global Macro Inst, US25156G5099 | 1995-05-15 | 1995-05-15 .. 2026-08-21 | daily | -0.12 | 0.59 | an equity-correlated macro fund |
+| Polygon Capital Fund X CHF, CH0229089237 | 1995-09-30 | 1995-09 .. 2017-10 | monthly | 0.23 | 0.23 | stops quoting in 2017, so it cannot be volatility-matched to any target of this family |
+
+The fee column never had to be filled: no candidate reached the gate where a
+published fee load is asked for, the "same trade" test coming first. And the
+structural constraint recorded above still binds every one of them: a donor is
+volatility-matched to the TARGET fund over at least 120 common trading days, so
+a vehicle that stopped quoting before the target's own inception is unspliceable
+whatever its record.
+
+Three by-products of the re-survey are worth keeping.
+
+- **A class's return convention is now measurable rather than assumed.** The
+  sibling endpoint that serves a genuine total return grades the price series
+  against it in one probe: Man AHL 10.28 %/yr against 10.28, SMN 4.99 against
+  4.99 (both accumulating, so the shipped price convention is exact), the
+  BlackRock class 1.24 against 6.96 (distributing, and the trap is 5.7 points a
+  year on that one). This does not adopt the endpoint anywhere; it uses it as a
+  classifier, which needs no convention change.
+- **One other 1990s trend record exists and it does not deepen anything.** SMN
+  Diversified Futures (LU0070804173, weekly, EUR) is a genuine programme by both
+  columns, 0.713 monthly against the composite over 358 months, ABOVE the
+  incumbent donor's 0.67. It begins 1996-10-31, seven months after the floor, so
+  it can only widen the 1996-2007 era, never deepen it. Anything built on it
+  would still have to settle this source's date convention against the FT series
+  the chains use, and its EUR quote.
+- **The floor is confirmed twice over.** It was already known that the incumbent
+  donor's first NAV is its own inception; it is now known that no older class of
+  this trade exists in the database at all. The chains start at 1996-03-26
+  because the record does, not because a source is missing.
+
 ## Rebuilding it from scratch
 
 The pipeline, in dependency order, with the invariants a re-implementation
@@ -1579,22 +1647,23 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
 
 ## Improvements worth attempting, ranked
 
-1. **Re-run the 1990s donor survey through the third NAV fallback**, which was
-   REPAIRED on 2026-08-22 and is no longer the blocker this entry used to
-   describe. Two faults were diagnosed, both in the client rather than at the
-   source: the configured host `tools.morningstar.fr` had lost its DNS A record
-   (the CNAME target resolves to nothing), and the timeseries id was being sent
-   bare when the service requires a two-field suffix, answering an EMPTY array
-   with HTTP 200 for an exchange-traded id without it. Both are fixed, and the
-   resolution now consults Morningstar's own fund screener before Boursorama,
-   which only indexes the French distribution list and knows neither
-   IE0000360275 nor LU1103171821. What this buys the donor hunt: an
-   unauthenticated, plain-HTTP search over open-end AND exchange-traded classes
-   worldwide that reports each hit's ISIN, quote currency and **inception
-   date**, which is the field a survey for pre-1996 programmes actually needs.
-   The rejected candidates deserve their second look through it.
+1. **The 1990s donor survey through the third NAV fallback: RUN and CLOSED on
+   2026-08-22.** The fallback was repaired the same day (two faults, both in the
+   client rather than at the source: the configured host `tools.morningstar.fr`
+   had lost its DNS A record, and the timeseries id was being sent bare when the
+   service requires a two-field suffix, answering an EMPTY array with HTTP 200
+   for an exchange-traded id without it), and the resolution now consults the
+   fund screener before Boursorama, which only indexes the French distribution
+   list and knows neither IE0000360275 nor LU1103171821. What it bought the
+   donor hunt was an unauthenticated, plain-HTTP search over open-end AND
+   exchange-traded classes worldwide reporting each hit's ISIN, quote currency
+   and **inception date**. The survey it made possible was run exhaustively over
+   the ten thousand oldest classes of that universe and returned a clean
+   negative: no class of this trade is older than the floor. The candidate
+   table, the probes and the by-products are in the survey section above; this
+   entry stays only for the findings below, which bound anything similar.
 
-   Three findings bound that survey before it starts. **The floor is not a
+   Three findings bounded that survey. **The floor is not a
    sourcing artefact**: the screener puts Man AHL Diversified's inception at
    1996-03-26, the very day the chains already start, so the deepest donor is
    at its own beginning and only a DIFFERENT, older programme can move the
@@ -1629,15 +1698,16 @@ are percent. Dates are 00:00 UTC and matched by exact equality.
    Length no longer comes from the engine, so the whole question is whether a
    1980s or early-1990s managed-futures NAV series exists that survives the
    grading applied to the current donors (a real programme, a sane drawdown, no
-   restructuring artefacts, a documented fee load). The rejected candidates are
-   listed in the survey, SEC EDGAR among them since 2026-08: it was walked end
-   to end and it does not hold one. Two routes are left and one is now open.
-   The third NAV fallback is repaired (above), so the fund-database hunt can be
-   re-run through a second source, and screened on inception dates rather than
-   on names; and making `DonorChain` calibrate a donor
-   against the CHAIN rather than against the target fund would admit
-   dissolved pools, at the cost of letting a volatility error compound down
-   the chain, which is the reason it does not.
+   restructuring artefacts, a documented fee load). Three routes have now been
+   walked end to end and none holds one: the two NAV sources the client already
+   used, SEC EDGAR (2026-08), and the fund database enumerated by inception date
+   (2026-08-22, the survey above). What is left is not another source but a
+   change of machinery: making `DonorChain` calibrate a donor against the CHAIN
+   rather than against the target fund would admit pools that have stopped
+   quoting, at the cost of letting a volatility error compound down the chain,
+   which is the reason it does not. Nothing in the surveys so far says such a
+   pool exists either, so that change should be made for a named candidate and
+   not on speculation.
 
 One hypothesis was tested in full in 2026-08 and half of it is now shipped:
 **replicate the replicator rather than its target**. Running DBi's published
