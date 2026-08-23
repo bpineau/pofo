@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -262,6 +263,20 @@ func TestEmbeddedOption(t *testing.T) {
 		full.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, path, nil))
 		if rec.Code != http.StatusOK {
 			t.Errorf("standalone %s: status %d, want 200", path, rec.Code)
+		}
+	}
+}
+
+// Every href on the index page must be root-absolute (or external): a
+// relative link resolved under an embedded mount (/firesimulator/e/<name>/)
+// mints a crawlable 404 for every page that carries it, which is exactly how
+// /firesimulator/e/<name>/firebook/... ended up in a search console.
+func TestIndexLinksAbsolute(t *testing.T) {
+	rec := httptest.NewRecorder()
+	Handler(nil, nil, Embedded()).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
+	for _, m := range regexp.MustCompile(`<a [^>]*href="([^"]*)"`).FindAllStringSubmatch(rec.Body.String(), -1) {
+		if href := m[1]; !strings.HasPrefix(href, "/") && !strings.HasPrefix(href, "http") {
+			t.Errorf("index page: relative link href=%q; make it root-absolute", href)
 		}
 	}
 }
