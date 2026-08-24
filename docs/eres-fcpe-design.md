@@ -151,6 +151,39 @@ European trading hours: the estimate moves when New York trades and holds
 the previous close otherwise, which is honest about what the fund's own
 clock knows.
 
+## The second fund: ERES_DATADOG (added 2026-08-25)
+
+"Actions Datadog, Part C" (share code 990000124099) is the single-stock FCPE
+of the Datadog France plan: 90-100 % DDOG class A shares, the rest cash, NAV
+in EUR, unhedged, launched 2021-07-22 at 100.00, 0.61 %/yr charged in FY2025
+(max 1.50 %), no entry, exit or transaction cost. Catalogued as
+`ERES_DATADOG`, deliberately apart from the listed `DDOG` record, since a
+household can hold both. Everything above applies unchanged (the widget id
+is the Eres site's, not the fund's: the same `xid` serves every fund on the
+site), with three differences worth a line each:
+
+- WEEKLY. One NAV a week (Fridays, plus extra valuation days around
+  corporate events: 293 NAVs over five years), so every per-observation
+  statistic on the line is off by ~sqrt(5) (the cat bond cadence trap); the
+  audit's "real vol 115 %" is that artefact, the monthly correlation (0.96)
+  and the level are what to read. The refdata generator's per-NAV move bound
+  is a corruption detector (45 %) for this reason: the fund printed -24.6 %
+  in the week of 2026-08-06 and that is real.
+- THE CLOCK is an intraday print. On every large move the NAV sits between
+  the previous close and the day's close (2026-08-06: fund -24.6 %, close
+  -20.8 %; 2022-06-03: +15.9 % between +7.1 and +20.4), so the fund values
+  the share at a NASDAQ price struck during the session, presumably when the
+  administrator computes the NAV. A nowcast anchored on the close (proxy
+  `DDOG`, converted) therefore carries that half-session offset until the
+  next NAV; typically a percent, more on an earnings day. Against the closes
+  the weekly returns correlate 0.874 at the same day and 0.883 at the
+  previous day, which is the same finding seen from the other side.
+- THE RECIPE is the share itself: DDOG in EUR (no dividend, so price is total
+  return) less 0.61 %/yr from the 2019-09-19 IPO, real NAVs grafted from
+  2021-07-22, nothing before the IPO (a single stock has no donor). Measured
+  over the real window (5.08 years): level ok, -0.22 pt/yr, the fund's cash
+  pocket and the intraday clock accounting for the sign either way.
+
 ## Not done, and why
 
 - The forward nowcast uses Xetra-free daily closes of URTH, so no attempt was
