@@ -176,8 +176,9 @@ var auditCaveats = map[string]string{
 		"The level is the a-priori wrapper charge (0.35 % management + 0.06 % transactions, the FY2025 report) and " +
 		"the +0.3 pt/yr residual on two and a half years is inside the timing noise; real NAVs are grafted from " +
 		"2024-03, so all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
-	"ERES_DATADOG": "A weekly line valued at the NASDAQ OPENING price: the engine (closes) and the fund disagree by " +
-		"a session on every valuation day, and per-observation statistics read ~sqrt(5) off on one NAV a week. " +
+	"ERES_DATADOG": "Valued at the NASDAQ OPENING price (09:30 New York fits best on the 5-minute history, the close worst): " +
+		"the engine (closes) and the fund disagree by a session on every valuation day; and the NAV was weekly until " +
+		"2026-07-13 (daily since), so per-observation statistics read ~sqrt(5) off over most of the window. " +
 		"Judge the monthly correlation and the level; the level is the a-priori 0.61 %/yr charge, and the fund's " +
 		"cash pocket (0-10 %) explains a residual either way. Real NAVs are grafted from 2021-07, so this governs " +
 		"only the 2019-2021 tail. Measured 2026-08; do not retune.",

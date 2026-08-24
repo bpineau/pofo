@@ -271,10 +271,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   listing; its official NAV comes live from the airfund.io API (`source:
   "airfund"`, share code in `symbol`, the Eres SITE's widget id in `xid`, the
   same for every fund of the site) with `refdata/<ID>-NAV.csv` as the offline
-  fallback (`make eres-refdata`). `ERES_DATADOG` is WEEKLY (cadence trap: read
-  the monthly columns) and valued at the NASDAQ OPENING price (measured: 2.0 %
-  rmse vs 3.6 % for the close), so its nowcast anchored on the close is off by
-  the valuation day's session until the next NAV. THE CLOCK TRAP: the NAV of day D is struck on the two
+  fallback (`make eres-refdata`). `ERES_DATADOG` was WEEKLY until 2026-07-13, daily since
+  (cadence trap over most of the line: read the monthly columns) and is valued
+  at the NASDAQ OPENING price (measured two ways: 2.0 % rmse vs 3.6 % for the
+  close, and 09:30 New York the best-fitting instant on the 5-minute history),
+  so its nowcast anchored on the close is off by the valuation day's session
+  until the next NAV. THE CLOCK TRAP: the NAV of day D is struck on the two
   ETFs' official NAVs, i.e. after New York closes, so a US-listed tracker
   (URTH) follows its daily moves at 0.87 correlation and a Xetra line at 0.62;
   that is why `nowcast_proxy` is URTH and why the recipe's audit reads
