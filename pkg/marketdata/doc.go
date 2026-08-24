@@ -37,7 +37,10 @@
 // major indices and major currency crosses), the ECB reference rates
 // (second fallback for the currency crosses, daily since 1999), CBOE
 // (fallback for ^VIX, full official history since 1990), Financial
-// Times and Morningstar (NAVs of European funds). Downloads are cached on
+// Times and Morningstar (NAVs of European funds), and the airfund.io delivery
+// API (the official daily NAV behind a French employee-savings fund's page,
+// catalog source "airfund": such a fund has no ISIN and no listing, and its
+// bundled refdata NAV snapshot answers offline). Downloads are cached on
 // disk (JSON, one file per instrument); a failed refresh serves the stale
 // data with a warning rather than failing.
 //
@@ -100,7 +103,13 @@
 // intraday caching, so the caller is responsible for throttling and
 // storing results when needed. Yahoo Finance is the only intraday source;
 // if the identifier does not resolve to a Yahoo symbol, Intraday returns
-// ErrNotCovered (check with errors.Is). The mapping from an IntradaySeries
+// ErrNotCovered (check with errors.Is), unless the catalog names a
+// nowcast_proxy for it: a fund priced once a day and published with a lag
+// (an FCPE) then gets an ESTIMATED path, its last daily value scaled by the
+// proxy's intraday move converted tick by tick (IntradaySeries.Estimate,
+// see nowcast.go). The same proxy extends the fund's daily series past its
+// last NAV (Series.EstimatedFrom marks the tail; WithoutEstimates strips
+// it, and nothing cached or shipped ever holds it). The mapping from an IntradaySeries
 // to a chart is caller-side: iterate IntradaySeries.Points and copy
 // IntradayPoint.Time into Dates and IntradayPoint.Close into Values on a chart.Series
 // before passing it to chart.Line.
@@ -110,7 +119,9 @@
 // Client.Latest returns the most recent price of an instrument as a Quote: the
 // live Yahoo regular-market price (Quote.Live true) when the instrument is
 // Yahoo-quoted, otherwise the last daily close (Quote.Live false), which for an
-// FT or Morningstar fund is its latest NAV. Like Intraday the live path is
+// FT or Morningstar fund is its latest NAV; a fund with a nowcast_proxy quotes
+// the last tick of its estimated intraday path (Quote.Live true, Source
+// "nowcast"), or its last published NAV when the proxy is unreachable. Like Intraday the live path is
 // stateless, so a caller valuing a portfolio repeatedly keeps its own
 // short-TTL cache; the fallback inherits the whole Fetch resilience (Stooq,
 // FT/Morningstar re-resolution, stale on-disk cache), so Latest still answers

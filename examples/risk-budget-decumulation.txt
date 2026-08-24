@@ -413,7 +413,9 @@
 #     against the index's +115%, three straight years of trailing by 12
 #     to 24 points BEFORE the three years that repay it. Nobody holds
 #     that without having written down, in advance, that it is the plan.
-#   ERESMONDEM is MSCI World net EUR minus 0.50%/yr, backcast from 1971.
+#   ERESMONDEM is the 75/25 blend of two Xtrackers MSCI World ETFs less the
+#   FCPE's 0.41%/yr wrapper charge (0.56%/yr all-in per its KID), real NAV
+#   from 2024-03, backcast from 1971.
 #   DTLA has a clean total-return backcast from 1962. Its EUR-hedged
 #     cousin DTLE (IE00BD8PGZ49) is set aside twice over: a distributing class (coupons
 #     taxed every year in a taxable account) whose public series is a
@@ -512,7 +514,7 @@
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged
 
 # ---- Tax shelters (equity only by law) --------------------------------
-23	ERESMONDEM      # world equity at 0.50%/yr fees (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge
+23	ERESMONDEM      # world equity FCPE, 0.56%/yr KID charge (s. 12) | MECHANISM; block sized by the equity budget, never by the tax edge
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1; alt CW8 LU1681043599) | MECHANISM + wrapper CONSTRAINT
 7	LU1832174962    # Europe small value: Independance AM Europe Small (for the shelter that cannot hold a world fund; an institutional class exists at 1.40%/yr vs 1.95%, LU1832175001, minimum permitting) | CONSTRAINT + weak mechanism
 2	LU0131510165    # France small/mid value: Independance AM France Small Mid | CONSTRAINT; folding it into the Europe line is equivalent
