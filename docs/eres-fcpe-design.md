@@ -181,11 +181,21 @@ site), with three differences worth a line each:
   at 16:00; the daily NAVs match the open to the tenth of a percent
   (2026-07-27: +2.47 % against +2.47 % at the open and +2.07 % at the close;
   2026-08-11: +10.32 / +10.46 / -5.49; 2026-08-06: -24.63 / -24.50 / -20.82).
-  The FX bar alignment changes nothing (1.96 % with the next bar). The
-  remaining 2 % over the weekly years is a few spans whose NAV date looks
-  shifted by a day or more (2022-03-18: fund +13.0 % against -5.1 % at the
-  open), a labelling matter rather than a price, and what pulls alpha off
-  zero. A
+  The FX bar alignment changes nothing (1.96 % with the next bar), and a
+  price-date shift is excluded (NAV of X on the open of X-1: 5.2 % rmse,
+  X-2: 7.4 %). The 2 % rmse itself is three regimes, not a tracking error:
+  the LAUNCH months 2021-07 to 2022-03 (37 spans, rmse 5.4 %, beta of the
+  fund on the share 0.71, implied prices outside the day's range, e.g.
+  2022-03-18: 163 $ implied against a 146 $ high), a fund still filling up;
+  the weekly years 2022-04 to 2026-07 (227 spans, rmse 0.62 %, median 0.35 %,
+  beta 1.00), a few isolated days on another print that net out in pairs;
+  and the daily era (28 spans, rmse 0.79 %, MEDIAN 0.08 %, beta 0.99, 75 %
+  of the days within 0.5 %). Outside the launch the fund IS the opening
+  print in EUR. One thing the measurement leaves unexplained: over the
+  4.3 years after the launch the cumulated gap to the share is +0.1 pt,
+  where 0.61 %/yr of charges would cost about -2.6; something offsets the
+  fee (the cash pocket's yield covers a fraction, securities lending
+  would cover the rest, neither is documented) and it is not modelled. A
   nowcast anchored on the close (proxy `DDOG`, converted) therefore carries
   the valuation day's open-to-close move as an offset until the next NAV;
   typically a percent, more on an earnings day. Anchoring on the open would
