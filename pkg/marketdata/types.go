@@ -62,6 +62,14 @@ type Series struct {
 	// reconstructed from ProxySymbol instead of actual quotes.
 	SimulatedBefore time.Time
 	ProxySymbol     string
+
+	// EstimatedFrom is non-zero when the points from that date on are a
+	// nowcast: the fund's last published value carried forward by the daily
+	// moves of EstimateProxy (a catalog nowcast_proxy). Fetch adds the tail for
+	// funds priced once a day and published with a lag; WithoutEstimates
+	// removes it, and nothing stored or shipped keeps it.
+	EstimatedFrom time.Time
+	EstimateProxy string
 }
 
 // At returns the series value in force at the given time: the close of the
