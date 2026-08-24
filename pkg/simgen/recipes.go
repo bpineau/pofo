@@ -1332,12 +1332,13 @@ const eresDatadogCharge = 0.0061
 // stock has no donor, and the file stops where its evidence stops.
 //
 // The fund values the share at the NASDAQ OPENING price of the valuation day
-// (measured on the 293 NAVs: the weekly returns fit the open at 2.0 % rmse
-// against 3.6 % for the close and 3.5 % for the previous close; -24.6 % on
-// 2026-08-06 against a -20.8 % close), so the engine, built on closes,
-// disagrees with the real series by a session on every valuation day and the
-// per-observation statistics of a weekly line read ~sqrt(5) off anyway: judge
-// it on the monthly cadence.
+// (measured on the 293 NAVs: the returns fit the open at 2.0 % rmse against
+// 3.6 % for the close, and on the 5-minute history the best-fitting instant is
+// 09:30 New York, worsening monotonically to the close; -24.6 % on 2026-08-06
+// against a -20.8 % close), so the engine, built on closes, disagrees with the
+// real series by a session on every valuation day. The NAV was weekly until
+// 2026-07-13 and is daily since, so the per-observation statistics of the
+// weekly years read ~sqrt(5) off anyway: judge it on the monthly cadence.
 func eresDatadogRecipe() Recipe {
 	return Recipe{
 		ID:              "ERES_DATADOG",

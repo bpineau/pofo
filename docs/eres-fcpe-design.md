@@ -162,22 +162,30 @@ household can hold both. Everything above applies unchanged (the widget id
 is the Eres site's, not the fund's: the same `xid` serves every fund on the
 site), with three differences worth a line each:
 
-- WEEKLY. One NAV a week (Fridays, plus extra valuation days around
-  corporate events: 293 NAVs over five years), so every per-observation
-  statistic on the line is off by ~sqrt(5) (the cat bond cadence trap); the
+- WEEKLY, then daily. One NAV a week (Fridays) until 2026-07-13, when the
+  fund switched to daily valuation (fund page, "changements intervenus");
+  293 NAVs over five years, so every per-observation statistic over most of
+  the line is off by ~sqrt(5) (the cat bond cadence trap); the
   audit's "real vol 115 %" is that artefact, the monthly correlation (0.96)
   and the level are what to read. The refdata generator's per-NAV move bound
   is a corruption detector (45 %) for this reason: the fund printed -24.6 %
   in the week of 2026-08-06 and that is real.
-- THE CLOCK is the OPENING price. Fitting the fund's weekly returns to
-  DDOG in EUR under each convention (Yahoo daily opens and closes, 292
-  spans): open of the valuation day 2.00 % rmse, close of the day 3.58 %,
-  close of the previous day 3.48 %, mid of open and close 2.07 %; the FX bar
-  alignment changes nothing (1.96 % with the next bar). What first read as
-  "between the previous close and the close" on the big moves (2026-08-06:
-  fund -24.6 %, close -20.8 %) is the open. The remaining 2 % is a few spans
-  whose NAV date looks shifted by a day or more (2022-03-18: fund +13.0 %
-  against -5.1 % at the open), a labelling matter rather than a price. A
+- THE CLOCK is the OPENING price, established two ways. Fitting the fund's
+  returns to DDOG in EUR under each convention (Yahoo daily opens and closes,
+  292 spans): open of the valuation day 2.00 % rmse, close of the day
+  3.58 %, close of the previous day 3.48 %, high or low of the day 2.6 %; a
+  scan of the fraction alpha of the open-to-close path bottoms at 1.77 % for
+  alpha 0.2-0.3, which the second test resolves. On the 5-minute history
+  (60 days, 34 NAVs, the daily era) the best-fitting instant is 09:30 New
+  York at 2.45 % and every later time fits worse, monotonically, to 5.21 %
+  at 16:00; the daily NAVs match the open to the tenth of a percent
+  (2026-07-27: +2.47 % against +2.47 % at the open and +2.07 % at the close;
+  2026-08-11: +10.32 / +10.46 / -5.49; 2026-08-06: -24.63 / -24.50 / -20.82).
+  The FX bar alignment changes nothing (1.96 % with the next bar). The
+  remaining 2 % over the weekly years is a few spans whose NAV date looks
+  shifted by a day or more (2022-03-18: fund +13.0 % against -5.1 % at the
+  open), a labelling matter rather than a price, and what pulls alpha off
+  zero. A
   nowcast anchored on the close (proxy `DDOG`, converted) therefore carries
   the valuation day's open-to-close move as an offset until the next NAV;
   typically a percent, more on an earnings day. Anchoring on the open would
