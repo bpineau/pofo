@@ -170,6 +170,8 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"DBXW.DE": from(mkCombo("DBXW.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), n/2),
 		"XDWL.DE": from(mkCombo("XDWL.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), 2*n/3),
 		"XDWD.DE": from(mkCombo("XDWD.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), n/2),
+		// The single stock behind the ERES_DATADOG FCPE.
+		"DDOG": from(mkWave("DDOG", n, 6e-4, 0.030, 1.1, 0.4), n/2),
 	}
 	fetcher := WithRefData(datasets.Refdata(), f)
 

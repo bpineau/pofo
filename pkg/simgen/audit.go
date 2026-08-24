@@ -112,7 +112,7 @@ var auditGroups = []struct {
 		Title: "Equity",
 		IDs: []string{"URTH", "IE00B4L5Y983", "WPEA", "MSCIWORLD", "SP500", "IE00BFMXXD54",
 			"VTI", "VT", "IE00BK5BQT80", "IE00BKM4GZ66", "IE00BSPLC413", "IE000S67ID55",
-			"IE0003R87OG3", "LU1832174962", "ERESMONDEM"},
+			"IE0003R87OG3", "LU1832174962", "ERESMONDEM", "ERES_DATADOG"},
 	},
 	{
 		Title: "Bonds and cash",
@@ -176,6 +176,11 @@ var auditCaveats = map[string]string{
 		"The level is the a-priori wrapper charge (0.35 % management + 0.06 % transactions, the FY2025 report) and " +
 		"the +0.3 pt/yr residual on two and a half years is inside the timing noise; real NAVs are grafted from " +
 		"2024-03, so all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
+	"ERES_DATADOG": "A weekly line valued at an intraday NASDAQ print: the engine (closes) and the fund disagree by " +
+		"a half-session on every valuation day, and per-observation statistics read ~sqrt(5) off on one NAV a week. " +
+		"Judge the monthly correlation and the level; the level is the a-priori 0.61 %/yr charge, and the fund's " +
+		"cash pocket (0-10 %) explains a residual either way. Real NAVs are grafted from 2021-07, so this governs " +
+		"only the 2019-2021 tail. Measured 2026-08; do not retune.",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
 		"its own target index reads 0.85 monthly, so no public donor can beat what the fund itself leaves " +
 		"observable, and the negative gap is the manager's replication alpha over the index (net of the " +
