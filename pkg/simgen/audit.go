@@ -179,8 +179,9 @@ var auditCaveats = map[string]string{
 	"ERES_DATADOG": "Valued at the NASDAQ OPENING price (09:30 New York fits best on the 5-minute history, the close worst): " +
 		"the engine (closes) and the fund disagree by a session on every valuation day; and the NAV was weekly until " +
 		"2026-07-13 (daily since), so per-observation statistics read ~sqrt(5) off over most of the window. " +
-		"Judge the monthly correlation and the level; the level is the a-priori 0.61 %/yr charge, and the fund's " +
-		"cash pocket (0-10 %) explains a residual either way. Real NAVs are grafted from 2021-07, so this governs " +
+		"Judge the monthly correlation and the level. The fund was only ~70 % exposed over its first eight months " +
+		"(beta 0.71 on the share to 2022-03, then 1.00), and after the launch its level matched the share's within " +
+		"0.3 pt over four years, so the a-priori 0.61 %/yr charge is not visible in the record; kept, and said. Real NAVs are grafted from 2021-07, so this governs " +
 		"only the 2019-2021 tail. Measured 2026-08; do not retune.",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
 		"its own target index reads 0.85 monthly, so no public donor can beat what the fund itself leaves " +
