@@ -265,11 +265,15 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   GSCI roll schedule and validated per calendar year against the published S&P
   GSCI Crude Oil total return. It ENDS 2024-04-05 because EIA discontinued those
   series there, and no engine tail is shipped in front of that bound.
-- Employee-savings fund (FCPE, `ERESMONDEM`) work: read `docs/eres-fcpe-design.md`
-  first. The fund has no ISIN and no listing; its official NAV comes live from
-  the airfund.io API (`source: "airfund"`, share code + widget id in the
-  catalog) with `refdata/ERESMONDEM-NAV.csv` as the offline fallback
-  (`make eres-refdata`). THE CLOCK TRAP: the NAV of day D is struck on the two
+- Employee-savings fund (FCPE: `ERESMONDEM`, the world-equity fund, and
+  `ERES_DATADOG`, the single-stock DDOG fund kept apart from the listed `DDOG`)
+  work: read `docs/eres-fcpe-design.md` first. Such a fund has no ISIN and no
+  listing; its official NAV comes live from the airfund.io API (`source:
+  "airfund"`, share code in `symbol`, the Eres SITE's widget id in `xid`, the
+  same for every fund of the site) with `refdata/<ID>-NAV.csv` as the offline
+  fallback (`make eres-refdata`). `ERES_DATADOG` is WEEKLY (cadence trap: read
+  the monthly columns) and valued at an intraday NASDAQ print, so its nowcast
+  anchored on the close is off by a half-session until the next NAV. THE CLOCK TRAP: the NAV of day D is struck on the two
   ETFs' official NAVs, i.e. after New York closes, so a US-listed tracker
   (URTH) follows its daily moves at 0.87 correlation and a Xetra line at 0.62;
   that is why `nowcast_proxy` is URTH and why the recipe's audit reads
