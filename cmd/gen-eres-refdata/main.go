@@ -91,7 +91,7 @@ func refresh(ctx context.Context, client *marketdata.Client, dir, id, today stri
 		Method: fmt.Sprintf("official NAV history from the airfund.io delivery API (share code %s, widget %s), "+
 			"as published by the management company; offline fallback of the live source and real segment of the %s recipe",
 			a.Symbol, a.Xid, id),
-		Validation: fmt.Sprintf("%d NAVs, %s → %s, checked against the catalog inception and a 15%% daily-move bound",
+		Validation: fmt.Sprintf("%d NAVs, %s → %s, checked against the catalog inception and a 45%% per-NAV move bound",
 			len(s.Points), s.First().Date.Format("2006-01-02"), s.Last().Date.Format("2006-01-02")),
 		Generated: today,
 		Points:    s.Points,
@@ -100,7 +100,9 @@ func refresh(ctx context.Context, client *marketdata.Client, dir, id, today stri
 
 // validate refuses a series that cannot be the fund's own NAV history: too
 // short, not starting at the catalog inception, out of order, non-positive,
-// carrying an implausible daily move for a long-only fund, or stale.
+// carrying a move no long-only fund makes between two NAVs (a corruption
+// detector, not a plausibility band: a weekly single-stock FCPE printed
+// -24.6 % in one week and that is real), or stale.
 func validate(a datasets.Asset, s *marketdata.Series) error {
 	if len(s.Points) < 100 {
 		return fmt.Errorf("only %d NAVs", len(s.Points))
@@ -123,8 +125,8 @@ func validate(a datasets.Asset, s *marketdata.Series) error {
 		if !p.Date.After(prev.Date) {
 			return fmt.Errorf("%s: dates out of order", p.Date.Format("2006-01-02"))
 		}
-		if move := math.Abs(math.Log(p.Close / prev.Close)); move > 0.15 {
-			return fmt.Errorf("%s: %.1f%% daily move", p.Date.Format("2006-01-02"), (math.Exp(move)-1)*100)
+		if move := math.Abs(math.Log(p.Close / prev.Close)); move > 0.6 {
+			return fmt.Errorf("%s: %.1f%% move since the previous NAV", p.Date.Format("2006-01-02"), (math.Exp(move)-1)*100)
 		}
 	}
 	if age := time.Since(s.Last().Date); age > 45*24*time.Hour {

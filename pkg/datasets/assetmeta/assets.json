@@ -6793,6 +6793,40 @@
     ]
   },
   {
+    "id": "ERES_DATADOG",
+    "isin": "",
+    "aliases": [
+      "990000124099"
+    ],
+    "name": "Actions Datadog C (FCPE, PEE Datadog France)",
+    "ucits": false,
+    "source": "airfund",
+    "symbol": "990000124099",
+    "xid": "41481ca4-919c-46c0-9ca1-41a880ff4e8e",
+    "currency": "EUR",
+    "fees": 0.61,
+    "since": "2021-07-22",
+    "asset_class": "equity",
+    "underlying": "Datadog, Inc. class A shares (DDOG, NASDAQ), 90-100 % of the assets, the rest in cash; class B shares received from employees' option exercises are converted to class A at once",
+    "benchmark_index": "Datadog, Inc. share price in USD, dividends excluded (the fund's own 'indice de référence')",
+    "strategy": "single-stock",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Information Technology": 100
+    },
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "nowcast_proxy": "DDOG",
+    "notes": "Single-stock FCPE of the Datadog France employee-savings plan (PEE), managed by Eres Gestion, account-kept by Amundi ESR: the in-plan proxy of the DDOG share expressed in EUR, unhedged (0-100 % currency exposure). It has no ISIN (990000124099 is the company's share code) and no listing; the official NAV, WEEKLY (Fridays, plus extra valuation days around corporate events), is served live from the airfund.io API and bundled as refdata/ERES_DATADOG-NAV.csv. Launched 2021-07-22 at 100.00. Fees 0.61 %/yr charged in FY2025 (max 1.50 %), no entry or exit fee, no transaction cost billed. THE CADENCE TRAP: one NAV a week, so every per-observation statistic on this line is wrong by ~sqrt(5); read the monthly columns. NAV timing, measured on the 293 NAVs: the share is valued at an intraday NASDAQ print of the valuation day (on every large move the NAV sits between the previous close and the day's close), so a nowcast anchored on the day's close carries that half-session offset until the next NAV. Distinct from the DDOG record on purpose: the listed share is another line of the same household.",
+    "confidence": "high",
+    "sources": [
+      "https://www.eres-group.com/eres/new_fiche_fonds.php?id=990000124099",
+      "https://www.eres-group.com/eres/pdf/DIC_990000124099.pdf"
+    ]
+  },
+  {
     "id": "SP500",
     "isin": "",
     "aliases": [

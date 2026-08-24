@@ -67,6 +67,7 @@ func All() []Recipe {
 		dtlaRecipe(),
 		dtleRecipe(),
 		eresMondeRecipe(),
+		eresDatadogRecipe(),
 		ernaRecipe(),
 		ernxRecipe(),
 		xeonRecipe(),
@@ -1314,6 +1315,59 @@ func (sf seriesFetcher) Fetch(id string, from time.Time) (*marketdata.Series, er
 		return s, nil
 	}
 	return sf.fallback.Fetch(id, from)
+}
+
+// eresDatadogCharge is the FCPE's all-in charge, a fraction per year: 0.61 %
+// charged in FY2025 (management only; no induced cost, no transaction cost
+// billed), against a 1.50 % maximum. Kept a priori, as every wrapper charge.
+const eresDatadogCharge = 0.0061
+
+// eresDatadogRecipe builds "Actions Datadog C", the single-stock FCPE of the
+// Datadog France employee-savings plan (no ISIN; share code 990000124099):
+// 90-100 % Datadog class A shares (DDOG, NASDAQ), the rest cash, NAV in EUR,
+// weekly. The reconstruction is the DDOG price converted USD->EUR at the
+// EURUSD spot (DDOG pays no dividend, so price is total return) less the
+// wrapper charge, from the IPO of 2019-09-19, with the real weekly NAVs
+// grafted on top from 2021-07-22. Nothing stands before the IPO: a single
+// stock has no donor, and the file stops where its evidence stops.
+//
+// The fund values the share at an intraday NASDAQ print of the valuation day
+// (measured on the 293 NAVs: on every large move the NAV sits between the
+// previous close and the day's close, e.g. -24.6 % on 2026-08-06 against a
+// -20.8 % close), so the engine, built on closes, disagrees with the real
+// series by a half-session on every valuation day and the per-observation
+// statistics of a weekly line read ~sqrt(5) off anyway: judge it on the
+// monthly cadence.
+func eresDatadogRecipe() Recipe {
+	return Recipe{
+		ID:              "ERES_DATADOG",
+		Name:            "Actions Datadog C (FCPE): the DDOG share in EUR, wrapper charge 0.61 %/yr",
+		Method:          "DDOG (NASDAQ, no dividend) converted USD->EUR at the EURUSD spot from the 2019-09-19 IPO, less the FCPE's 0.61 %/yr charge; real weekly NAVs grafted from 2021-07-22; nothing before the IPO",
+		Build:           eresDatadogBuild,
+		ValidateAgainst: "ERES_DATADOG",
+		SpliceReal:      "ERES_DATADOG",
+	}
+}
+
+// eresDatadogBuild converts the share price and deducts the charge.
+func eresDatadogBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	ddog, err := f.Fetch("DDOG", from)
+	if err != nil {
+		return nil, err
+	}
+	if ddog == nil || len(ddog.Points) < 2 {
+		return nil, fmt.Errorf("ERES_DATADOG: no DDOG history")
+	}
+	dates := make([]time.Time, len(ddog.Points))
+	usd := make([]float64, len(ddog.Points))
+	for i, p := range ddog.Points {
+		dates[i], usd[i] = p.Date, p.Close
+	}
+	eur, err := convertDaily("ERES_DATADOG (DDOG expressed in EUR)", extend(f), "EURUSD=X", from, dates, usd)
+	if err != nil {
+		return nil, err
+	}
+	return afterAnnualFee("ERES_DATADOG (DDOG in EUR less the FCPE's charge)", eur, eresDatadogCharge), nil
 }
 
 // afterAnnualFee returns a copy of s with a continuous annual fee deducted:
