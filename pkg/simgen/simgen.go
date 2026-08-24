@@ -29,8 +29,15 @@ type ctxFetcher struct {
 	c   *marketdata.Client
 }
 
+// Fetch serves real quotes only: a nowcast tail (Series.EstimatedFrom) is an
+// estimate, and nothing a recipe splices, validates against or ships may
+// carry one.
 func (f ctxFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
-	return f.c.Fetch(f.ctx, id, from)
+	s, err := f.c.Fetch(f.ctx, id, from)
+	if err != nil {
+		return nil, err
+	}
+	return s.WithoutEstimates(), nil
 }
 
 // Recipe describes how to rebuild one asset's past.

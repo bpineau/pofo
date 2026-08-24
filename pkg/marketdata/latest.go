@@ -18,7 +18,7 @@ type Quote struct {
 	Time     time.Time // when this price was observed
 	Currency string    // ISO 4217 quote currency
 	Symbol   string    // the instrument actually served (a resolution may pick a twin listing)
-	Source   string    // "yahoo", "ft", "morningstar", "stooq" or "ecb"
+	Source   string    // "yahoo", "ft", "morningstar", "stooq", "ecb", "airfund", or "nowcast" for an estimate (see nowcast.go)
 	Live     bool      // true: real-time market field; false: last daily close
 }
 
@@ -53,6 +53,14 @@ func latestFrom() time.Time { return time.Now().AddDate(-1, 0, 0) }
 // FXRate (ConvertCurrency is its whole-series sibling).
 func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
 	base, _ := SplitSim(id)
+	// A fund priced once a day with a lag quotes its nowcast: the last tick
+	// of the proxy-scaled intraday path, live like any market print.
+	if e, ok := catalogByID()[CanonicalID(base)]; ok && e.NowcastProxy != "" {
+		if s, err := c.nowcastIntraday(ctx, CanonicalID(base), e); err == nil && len(s.Points) > 0 {
+			last := s.Last()
+			return &Quote{Price: last.Close, Time: last.Time, Currency: s.Currency, Symbol: s.Symbol, Source: "nowcast", Live: true}, nil
+		}
+	}
 	if symbol, ok := c.yahooSymbol(ctx, base); ok {
 		if q, err := c.fetchYahooSpot(ctx, symbol); err == nil {
 			return q, nil
@@ -68,12 +76,16 @@ func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
 	if last.Date.IsZero() {
 		return nil, fmt.Errorf("%s: no recent quote", id)
 	}
+	source := s.Source
+	if !s.EstimatedFrom.IsZero() && !last.Date.Before(s.EstimatedFrom) {
+		source = "nowcast" // the forward estimate, not a published close
+	}
 	return &Quote{
 		Price:    last.Close,
 		Time:     last.Date,
 		Currency: s.Currency,
 		Symbol:   s.Symbol,
-		Source:   s.Source,
+		Source:   source,
 		Live:     false,
 	}, nil
 }
