@@ -24,9 +24,9 @@ type Asset struct {
 	Name     string   `json:"name"`                // full asset / share-class name
 	UCITS    bool     `json:"ucits"`               // UCITS-regulated fund or ETF
 	EURetail bool     `json:"eu_retail,omitempty"` // buyable by an EU/French retail investor: UCITS, or EU-listed with a PRIIPs KID (ETCs, listed closed-end funds); false for US-listed funds without a KID; omitted for non-tradable series (indices, spot, futures)
-	Source   string   `json:"source"`              // quote source: "yahoo", "ft", "morningstar", "stooq", or "index" (served from the embedded reconstruction, no live symbol)
-	Symbol   string   `json:"symbol"`              // Yahoo/Stooq symbol or Morningstar id; empty for ft and index
-	Xid      string   `json:"xid"`                 // FT internal id; empty otherwise
+	Source   string   `json:"source"`              // quote source: "yahoo", "ft", "morningstar", "stooq", "airfund" (an FCPE's official NAV feed) or "index" (served from the embedded reconstruction, no live symbol)
+	Symbol   string   `json:"symbol"`              // Yahoo/Stooq symbol, Morningstar id or airfund share code; empty for ft and index
+	Xid      string   `json:"xid"`                 // FT internal id or airfund widget id; empty otherwise
 	Currency string   `json:"currency"`            // quote currency (ISO 4217)
 	Fees     float64  `json:"fees"`                // published TER, percent per year; 0 = unknown
 	Since    string   `json:"since,omitempty"`     // inception date (YYYY-MM-DD); bounds real-data coverage before SIM extension
@@ -45,6 +45,7 @@ type Asset struct {
 	Exposures        map[string]float64 `json:"exposures,omitempty"`         // asset_class → notional weight, for stacked / efficient-core funds
 	CurrencyExposure map[string]float64 `json:"currency_exposure,omitempty"` // fiat currency → percent of capital, overriding the geography/hedging derivation (see suggest.CurrencySplit)
 	Factors          []string           `json:"factors,omitempty"`           // explicit factor tilts: value, size, momentum, quality, low-vol
+	NowcastProxy     string             `json:"nowcast_proxy,omitempty"`     // catalog id whose daily and intraday moves (converted to Currency) stand in for the fund after its last published NAV; for funds priced once a day with a lag (an FCPE)
 	Notes            string             `json:"notes"`                       // human-readable notes
 	Confidence       string             `json:"confidence"`                  // metadata confidence: "high", "medium", "low"
 	Sources          []string           `json:"sources"`                     // provenance URLs

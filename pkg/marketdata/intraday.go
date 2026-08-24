@@ -80,5 +80,10 @@ func (c *Client) yahooSymbol(ctx context.Context, id string) (string, bool) {
 		}
 		return "", false
 	}
+	// A catalog entry pinned to a source Yahoo knows nothing about (an FCPE
+	// NAV feed, an embedded reconstruction) is not a Yahoo symbol either.
+	if e, ok := catalogByID()[canonical]; ok && e.Source != "yahoo" && e.Source != "stooq" && e.Source != "" {
+		return "", false
+	}
 	return canonical, true
 }

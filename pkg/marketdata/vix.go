@@ -93,5 +93,8 @@ func embeddedHistory(symbol string) (*Series, bool) {
 			Points:   proxy,
 		}, true
 	}
+	if s, ok := embeddedNAV(symbol); ok {
+		return s, true
+	}
 	return nil, false
 }
