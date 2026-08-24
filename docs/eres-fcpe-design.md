@@ -169,15 +169,19 @@ site), with three differences worth a line each:
   and the level are what to read. The refdata generator's per-NAV move bound
   is a corruption detector (45 %) for this reason: the fund printed -24.6 %
   in the week of 2026-08-06 and that is real.
-- THE CLOCK is an intraday print. On every large move the NAV sits between
-  the previous close and the day's close (2026-08-06: fund -24.6 %, close
-  -20.8 %; 2022-06-03: +15.9 % between +7.1 and +20.4), so the fund values
-  the share at a NASDAQ price struck during the session, presumably when the
-  administrator computes the NAV. A nowcast anchored on the close (proxy
-  `DDOG`, converted) therefore carries that half-session offset until the
-  next NAV; typically a percent, more on an earnings day. Against the closes
-  the weekly returns correlate 0.874 at the same day and 0.883 at the
-  previous day, which is the same finding seen from the other side.
+- THE CLOCK is the OPENING price. Fitting the fund's weekly returns to
+  DDOG in EUR under each convention (Yahoo daily opens and closes, 292
+  spans): open of the valuation day 2.00 % rmse, close of the day 3.58 %,
+  close of the previous day 3.48 %, mid of open and close 2.07 %; the FX bar
+  alignment changes nothing (1.96 % with the next bar). What first read as
+  "between the previous close and the close" on the big moves (2026-08-06:
+  fund -24.6 %, close -20.8 %) is the open. The remaining 2 % is a few spans
+  whose NAV date looks shifted by a day or more (2022-03-18: fund +13.0 %
+  against -5.1 % at the open), a labelling matter rather than a price. A
+  nowcast anchored on the close (proxy `DDOG`, converted) therefore carries
+  the valuation day's open-to-close move as an offset until the next NAV;
+  typically a percent, more on an earnings day. Anchoring on the open would
+  need the day's first intraday tick (pofo carries closes only); not done.
 - THE RECIPE is the share itself: DDOG in EUR (no dividend, so price is total
   return) less 0.61 %/yr from the 2019-09-19 IPO, real NAVs grafted from
   2021-07-22, nothing before the IPO (a single stock has no donor). Measured
