@@ -143,7 +143,7 @@ var auditExtras = map[string][]string{
 	"DTLETR":       {"DTLA"},
 	"MSCIWORLD":    {"URTH", "IWDA.L"},
 	"SP500":        {"VOO", "IE00BFMXXD54"},
-	"ERESMONDEM":   {"WPEA"},
+	"ERESMONDEM":   {"WPEA", "XDWD.DE"},
 	"XAUUSD":       {"GLD"},
 }
 
@@ -170,8 +170,12 @@ var auditCaveats = map[string]string{
 		"so nothing here is a bad print and no hygiene rule should remove it. The two months net out, the level " +
 		"gap is -0.42 %/yr, and real quotes are grafted from 2018, so this governs only the pre-inception tail. " +
 		"Measured 2026-08; read the level verdict, not the path.",
-	"ERESMONDEM": "No quote exists for an employee-savings fund; the closest reference is WPEA " +
-		"(same index, same currency, different fees).",
+	"ERESMONDEM": "The path warning is a clock, not a defect: the fund strikes its NAV on the two ETFs' " +
+		"official NAVs, i.e. after New York closes, while the engine's donor years are Xetra closes struck at " +
+		"17:30 CET, so every US afternoon lands a day apart (daily correlation 0.62, weekly 0.95, monthly 0.98). " +
+		"The level is the a-priori wrapper charge (0.35 % management + 0.06 % transactions, the FY2025 report) and " +
+		"the +0.3 pt/yr residual on two and a half years is inside the timing noise; real NAVs are grafted from " +
+		"2024-03, so all of this governs only the pre-inception tail. Measured 2026-08; do not retune.",
 	"DBMF": "The warn verdicts are the known ceiling of a replication fund, not a defect: the fund against " +
 		"its own target index reads 0.85 monthly, so no public donor can beat what the fund itself leaves " +
 		"observable, and the negative gap is the manager's replication alpha over the index (net of the " +
