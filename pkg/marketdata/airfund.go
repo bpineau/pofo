@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/datasets"
@@ -101,8 +102,13 @@ func parseAirfundNAVs(body []byte) (*Series, error) {
 // (refdata/<ID>-NAV.csv) when the live API cannot be reached: the same series
 // the recipe of the fund is validated against, so an offline run stays
 // consistent with the shipped reconstruction. ok is false for any other id.
+//
+// The id may carry the "~raw" view suffix (a raw fetch keys its cache that
+// way, and a valuation consumer such as a portfolio tracker fetches raw), so
+// it is stripped before the catalog lookup: without this the fallback misses
+// and the caller wrongly falls through to a live ticker search.
 func embeddedNAV(id string) (*Series, bool) {
-	canonical := CanonicalID(id)
+	canonical := CanonicalID(strings.TrimSuffix(id, "~raw"))
 	e, found := catalogByID()[canonical]
 	if !found || e.Source != "airfund" {
 		return nil, false
