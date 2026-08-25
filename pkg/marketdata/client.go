@@ -343,6 +343,12 @@ func (c *Client) cachedResolutionHistory(ctx context.Context, id string, from ti
 		return nil, false
 	}
 	s, err := c.historyForResolution(ctx, id, res, from, spec.raw)
+	if err == nil && res.Source == "airfund" && len(s.Points) > 0 && spec.currencyOK(s.Currency) {
+		// A NAV feed is as long as the fund is old and has no other source:
+		// re-resolving a short one would only search for a listing that does
+		// not exist.
+		return s, true
+	}
 	if err == nil && goodFor(s, from) && !spec.currencyOK(s.Currency) {
 		// A legacy resolution file may lack the currency; the series knows.
 		c.Logf("cached history for %s is quoted in %s, want %s: resolving again…",
@@ -669,6 +675,9 @@ func (c *Client) historyForResolution(ctx context.Context, isin string, res reso
 		s, err = c.cachedHistory(ctx, "airfund", isin, from, raw, func() (*Series, error) {
 			return c.fetchAirfund(ctx, isin, res, from)
 		})
+		if e, ok := catalogByID()[isin]; ok && err == nil {
+			s = c.nowcastForward(ctx, s, e.NowcastProxy) // a copy: the cache stays real
+		}
 	default:
 		s, err = c.historyView(ctx, res.Symbol, from, raw)
 		// The curated resolution name beats source metadata (e.g. Yahoo

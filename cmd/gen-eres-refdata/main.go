@@ -73,6 +73,7 @@ func refresh(ctx context.Context, client *marketdata.Client, dir, id, today stri
 	if err != nil {
 		return err
 	}
+	s = s.WithoutEstimates() // the snapshot holds published NAVs only
 	if s.Source != "airfund" {
 		return fmt.Errorf("served from %s, not the live API: nothing to snapshot", s.Source)
 	}

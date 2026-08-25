@@ -115,6 +115,6 @@
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3)
 
 # ---- Tax shelters (equity only by law) --------------------------------
-23	ERESMONDEM      # world equity at 0.50%/yr fees
+23	ERESMONDEM      # world equity FCPE (0.56%/yr KID charge, real NAV from 2024-03)
 5	WPEA            # world equity: iShares MSCI World Swap PEA (IE0002XZSHO1)
 9	LU1832174962    # Europe small value: Independance AM Europe Small (the parent file's 7+2 folded into one line, which reaches 1990)
