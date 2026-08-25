@@ -104,6 +104,29 @@ func TestAirfundOfflineFallsBackOnEmbeddedNAV(t *testing.T) {
 	}
 }
 
+// TestAirfundRawFallsBackToEmbeddedNAV: with the API unreachable, a RAW fetch
+// (what a valuation consumer uses) must still serve the bundled NAV snapshot,
+// not fall through to a live ticker search. Regression for the "~raw" cache
+// key missing the catalog lookup.
+func TestAirfundRawFallsBackToEmbeddedNAV(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc(airfundChartPath, func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "blocked", http.StatusBadGateway)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	from := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, raw := range []bool{false, true} {
+		s, err := c.FetchExtended(context.Background(), "ERESMONDEM", FetchOptions{From: from, NoSim: true, Raw: raw})
+		if err != nil {
+			t.Fatalf("raw=%v: %v (should fall back to the embedded NAV)", raw, err)
+		}
+		if s.Source != "airfund" || len(s.Points) < 500 {
+			t.Fatalf("raw=%v: %s %d points, want the embedded snapshot", raw, s.Source, len(s.Points))
+		}
+	}
+}
+
 // TestAirfundHasNoYahooIntraday: a fund with no listing must report
 // ErrNotCovered rather than ask Yahoo for a made-up symbol.
 func TestAirfundHasNoYahooIntraday(t *testing.T) {
