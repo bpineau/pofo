@@ -166,6 +166,15 @@ func TestWarmupIDsAllPinned(t *testing.T) {
 			if res.Xid == "" {
 				t.Errorf("%s: missing FT xid", id)
 			}
+		case "airfund":
+			// An FCPE NAV feed: share code, widget id, and the embedded
+			// snapshot the live source falls back on offline.
+			if res.Symbol == "" || res.Xid == "" {
+				t.Errorf("%s: airfund source needs a share code and a widget id", id)
+			}
+			if _, ok := embeddedNAV(id); !ok {
+				t.Errorf("%s: airfund source without an embedded NAV snapshot", id)
+			}
 		case "index":
 			// Non-investable benchmark: no live symbol, served straight from
 			// its embedded reconstruction, which therefore must be present.

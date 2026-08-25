@@ -24,9 +24,10 @@ Resolution fields (consumed by `pkg/marketdata`):
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
 | `eu_retail` | `true` when an EU/French retail investor can actually buy it: every UCITS fund, plus EU-listed products with a PRIIPs KID (gold/commodity ETCs, listed closed-end funds like BH Macro). `false` for US-listed funds without a KID. Omitted for non-tradable series (`index` benchmarks, spot, futures). This is the buyability flag; `ucits` alone understates it (no gold product can be UCITS, yet ETCs are freely buyable) |
-| `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, or `index` (served from its embedded reconstruction, no live symbol: a non-investable benchmark like `MSCIWORLD`, an instrument with no public quotation at all like the `ERESMONDEM` FCPE, or the total-return view of one whose only public series is unusable, like `DTLETR` for the distributing `DTLE`) |
-| `symbol` | provider symbol (Yahoo/Stooq ticker or Morningstar id); empty for FT and `index` |
-| `xid` | FT internal id; empty otherwise |
+| `source` | quote provider: `yahoo`, `ft`, `morningstar`, `stooq`, `airfund` (the official daily NAV feed behind a French employee-savings fund's page, see `ERESMONDEM`; no ISIN, no listing, the fund page is the only source) or `index` (served from its embedded reconstruction, no live symbol: a non-investable benchmark like `MSCIWORLD`, or the total-return view of one whose only public series is unusable, like `DTLETR` for the distributing `DTLE`) |
+| `symbol` | provider symbol (Yahoo/Stooq ticker, Morningstar id, or the share-class code an `airfund` fund is addressed by); empty for FT and `index` |
+| `xid` | FT internal id, or the fund-page widget id an `airfund` request must carry; empty otherwise |
+| `nowcast_proxy` | optional: a catalog id whose daily and intraday moves, converted into `currency`, stand in for the fund after its last published NAV (an FCPE prices once a day and publishes with a lag); the estimated tail is flagged `EstimatedFrom` on the series and never cached |
 | `fees` | pinned ongoing charge (TER), percent per year; `0` = unknown, or genuinely fee-free for an `index` benchmark |
 | `since` | the share class's own official launch date (`YYYY-MM-DD`), from the issuer or justETF, not the date the provider's history happens to start. Nothing is ever trimmed on it; the doctor compares it to the first quote and speaks when they are more than 400 days apart in either direction (see "What `since` means") |
 
