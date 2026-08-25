@@ -81,7 +81,7 @@ func genOne(ctx context.Context, client *marketdata.Client, fetcher simgen.Fetch
 		if err != nil {
 			return fmt.Errorf("series to splice %s: %w", r.SpliceReal, err)
 		}
-		sim = simgen.Splice(real, sim)
+		sim = simgen.Splice(real.WithoutEstimates(), sim) // a nowcast tail is not real data
 	}
 	log.Printf("✓ %-14s %s → %s (%d points)", r.ID,
 		sim.First().Date.Format("2006-01-02"), sim.Last().Date.Format("2006-01-02"), len(sim.Points))

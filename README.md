@@ -599,6 +599,15 @@ and storing results when needed. If the identifier does not resolve to a
 Yahoo symbol (for example, a fund quoted only by FT or Morningstar),
 the call returns `ErrNotCovered`; test with `errors.Is`.
 
+One exception: a fund priced once a day and published with a lag (a French
+employee-savings fund such as `ERESMONDEM`, served from its official NAV feed)
+whose catalog record names a `nowcast_proxy` gets an ESTIMATED path instead,
+its last daily value scaled by the proxy's intraday move converted tick by
+tick (`IntradaySeries.Estimate` is true, `Proxy` names the proxy). The same
+proxy carries the fund's daily series past its last published NAV
+(`Series.EstimatedFrom` marks the tail, `WithoutEstimates` strips it); the
+estimate is never cached and never enters a bundled dataset.
+
 Mapping the result to a chart series is caller-side:
 
 ```go
@@ -620,7 +629,9 @@ svg := chart.Line(chart.Options{Title: s.Name}, []chart.Series{ser})
 for a live portfolio valuation. A Yahoo-quoted instrument yields its live
 market price (`Quote.Live == true`); any other instrument (an FT or Morningstar
 fund, whose last NAV close is its latest price) yields its last daily close
-(`Quote.Live == false`). When Yahoo is down or throttled, the call degrades
+(`Quote.Live == false`); a fund with a `nowcast_proxy` yields the last tick of
+its estimated intraday path (`Quote.Live == true`, `Quote.Source == "nowcast"`),
+or its last published NAV when the proxy is unreachable. When Yahoo is down or throttled, the call degrades
 instead of failing: retries and a second Yahoo host first, then the daily-close
 path with its Stooq/ECB/FT/Morningstar fallbacks and, last, the stale on-disk
 cache, so it answers for every asset and even offline.

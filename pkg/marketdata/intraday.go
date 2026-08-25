@@ -25,8 +25,14 @@ type IntradaySeries struct {
 	Symbol   string
 	Name     string
 	Currency string
-	Source   string // "yahoo"
+	Source   string // "yahoo", or "nowcast" for an estimate
 	Points   []IntradayPoint
+
+	// Estimate is true when the path is a nowcast: an unlisted fund's last
+	// daily value scaled by the intraday move of Proxy (its catalog
+	// nowcast_proxy), converted into Currency tick by tick.
+	Estimate bool
+	Proxy    string
 }
 
 // First returns the earliest point, or the zero IntradayPoint if empty.
@@ -59,6 +65,9 @@ func (s *IntradaySeries) Last() IntradayPoint {
 // resolution: it reuses the symbol Fetch already learned (the bundled catalog
 // plus the on-disk resolution cache). For an unseen ISIN, call Fetch first.
 func (c *Client) Intraday(ctx context.Context, id string) (*IntradaySeries, error) {
+	if e, ok := catalogByID()[CanonicalID(id)]; ok && e.NowcastProxy != "" {
+		return c.nowcastIntraday(ctx, CanonicalID(id), e)
+	}
 	symbol, ok := c.yahooSymbol(ctx, id)
 	if !ok {
 		return nil, fmt.Errorf("%s: %w", id, ErrNotCovered)
