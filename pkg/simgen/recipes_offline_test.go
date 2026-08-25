@@ -164,6 +164,12 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		// Real iShares Core MSCI World that wpeaBuild grafts over the mid-period:
 		// a 60/40 US/international combo, the MSCI World stand-in.
 		"IE00B4L5Y983": mkCombo("IE00B4L5Y983", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}),
+		// The four Xtrackers MSCI World classes the ERESMONDEM legs chain, each
+		// quoting over a different tail of the window.
+		"XWD1.DE": from(mkCombo("XWD1.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), 3*n/4),
+		"DBXW.DE": from(mkCombo("DBXW.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), n/2),
+		"XDWL.DE": from(mkCombo("XDWL.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), 2*n/3),
+		"XDWD.DE": from(mkCombo("XDWD.DE", []*marketdata.Series{vfinx, vtmgx}, []float64{0.6, 0.4}), n/2),
 	}
 	fetcher := WithRefData(datasets.Refdata(), f)
 

@@ -1153,46 +1153,167 @@ func wpeaBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		extend(f), "EURUSD=X", from, dates, lvl)
 }
 
-// eresMondeFeeGap is the extra yearly charge the FCPE wrapper adds on top of
-// the 0.20%/yr tracker TER already embedded in the wpeaBuild path: the fund's
-// all-in charge is 0.50%/yr, so 0.30 points remain to be deducted.
-const eresMondeFeeGap = 0.0050 - 0.0020
+// eresMondeCharge is what the FCPE wrapper costs on top of the two ETFs it
+// holds, a fraction per year: 0.35 % management (the Part M maximum, charged
+// in full) plus 0.06 % of transaction costs per the FY2025 report, both of
+// which the fund's NAV bears and neither of which its ETFs do. The ETFs' own
+// TERs (0.21 % induced for the 75/25 mix) are NOT here: each leg below is a
+// real ETF NAV, already net of them. Measured over 2024-03 to 2026-08 the NAV
+// lagged the two ETFs' true total return by about 0.75 %/yr, the sum of these
+// charges and the small cash line the fund keeps; the a-priori figure is kept,
+// the residual being within the measurement's noise on two and a half years.
+const eresMondeCharge = 0.0035 + 0.0006
 
-// eresMondeRecipe builds ERES Xtrackers Actions Monde M (QS0009135623), the
-// world-equity FCPE offered inside Eres employee-savings plans. The fund is a
-// feeder into two Xtrackers MSCI World trackers (75% the swap-replicated 1D
-// class, 25% the physical 1D class), so its exposure is plainly MSCI World net
-// total return in EUR; what distinguishes it from a directly-held tracker is
-// the wrapper's all-in 0.50%/yr charge.
+// eresMondeLegs are the FCPE's two holdings, each with the chain of real
+// series standing behind it (nearest first) and its published TER. The fund's
+// own class comes first, its accumulating sibling behind (same portfolio,
+// same swap or basket, another fee), and the MSCI World EUR path behind both.
+// Every donor is lifted to the class's TER (feeUplift), never to close a
+// measured gap: DBXW carries 0.45 %/yr against XWD1's 0.19, so its years are
+// credited +0.26 %/yr, which is the fee difference and nothing else.
+var eresMondeLegs = []eresLeg{
+	{Weight: 0.75, TER: 0.0019, Donors: []eresDonor{{"XWD1.DE", 0.0019}, {"DBXW.DE", 0.0045}}},
+	{Weight: 0.25, TER: 0.0012, Donors: []eresDonor{{"XDWL.DE", 0.0012}, {"XDWD.DE", 0.0012}}},
+}
+
+// eresLeg is one holding of the FCPE: its weight, its own TER and the real
+// series that stand behind it.
+type eresLeg struct {
+	Weight float64
+	TER    float64
+	Donors []eresDonor
+}
+
+// eresDonor is a real ETF class and its published TER (fraction per year).
+type eresDonor struct {
+	ID  string
+	TER float64
+}
+
+// eresMondeRecipe builds ERES Xtrackers Actions Monde M, the world-equity FCPE
+// of Eres employee-savings plans (no ISIN; the company's share code
+// 990000135629 is its identifier). The fund holds permanently 75 % Xtrackers
+// MSCI World Swap UCITS ETF 1D (LU2263803533) and 25 % Xtrackers MSCI World
+// UCITS ETF 1D (IE00BK1PV551), reinvests their distributions and charges its
+// own wrapper fee on top; its NAV values each ETF at the ETF's official NAV,
+// i.e. MSCI World with every market at its own close of the day.
 //
-// It is therefore built as the WPEA path (MSCI World net TR expressed in EUR,
-// already net of a 0.20%/yr tracker TER, riding real iShares Core MSCI World
-// over 2009-2024) with the remaining eresMondeFeeGap deducted continuously.
-// Two consequences are worth stating rather than discovering later. First,
-// there is nothing to validate against and no real series to graft: an FCPE
-// has no public quotation, and this share class only launched in 2024-03, so
-// the whole series is a reconstruction by construction, honest only insofar as
-// "MSCI World minus a stated fee" describes the fund. Second, the TER-only
-// convention of every tracker recipe applies: the swap leg's substitute-basket
-// economics (which in practice recover part of the US dividend withholding a
-// net index assumes lost) are not modelled, so the series is, if anything, a
-// touch conservative for the 75% swap-replicated share.
+// The reconstruction is therefore the daily-rebalanced 75/25 blend of the two
+// ETFs' total-return paths less eresMondeCharge, each ETF read from its own
+// class for as long as it quotes (2021-03 for the swap 1D class, 2015-04 for
+// the physical), from its accumulating sibling before (DBXW.DE from 2008-01,
+// lifted by the 0.26 %/yr fee difference; XDWD.DE from 2014-08, same TER), and
+// from the MSCI World net-TR-in-EUR path (wpeaBuild: real IWDA from 2009,
+// MSCIWORLD-USD refdata and the daily index shape before, EURUSD spot back to
+// 1971) behind both, lifted from IWDA's 0.20 % to each class's TER. The real
+// NAVs, served live by the airfund source and bundled as ERESMONDEM-NAV, are
+// grafted on top from 2024-03-05, so the level is the fund's own.
+//
+// Two limits are stated rather than discovered. Xetra closes at 17:30 CET while
+// the NAV is struck after New York closes, so the daily texture of the donor
+// years carries a half-session timing smear (daily correlation ~0.6 against the
+// real NAV, whole-window level within the charge's noise); it is invisible at
+// the monthly cadence a backtest reads. And before 2008 the swap leg's edge
+// over the net index (the swap ETF outran its physical sibling by ~0.35 %/yr
+// over 2024-2026) is not modelled, so the deep tail is, if anything, a touch
+// conservative.
 func eresMondeRecipe() Recipe {
 	return Recipe{
-		ID:     "ERESMONDEM",
-		Name:   "ERES Xtrackers Actions Monde M (FCPE): MSCI World net TR in EUR, 0.50%/yr all-in",
-		Method: "MSCI World net TR in EUR (the WPEA path: real IWDA from 2009, MSCIWORLD-USD refdata + daily shape before, converted USD→EUR at EURUSD spot back to 1971) less the FCPE's 0.50%/yr all-in charge; no real quotes exist for an FCPE, nothing is grafted",
-		Build:  eresMondeBuild,
+		ID:              "ERESMONDEM",
+		Name:            "ERES Xtrackers Actions Monde M (FCPE): 75 % Xtrackers MSCI World Swap 1D + 25 % Xtrackers MSCI World 1D, wrapper charge 0.41 %/yr",
+		Method:          "daily-rebalanced 75/25 blend of the two Xtrackers MSCI World ETFs the fund holds (each read from its own 1D class, its 1C sibling before it lifted to the class's TER, the MSCI World net TR in EUR path before both, back to 1971) less the FCPE's 0.41 %/yr wrapper charge; real NAVs grafted from 2024-03-05",
+		Build:           eresMondeBuild,
+		ValidateAgainst: "ERESMONDEM",
+		SpliceReal:      "ERESMONDEM",
 	}
 }
 
-// eresMondeBuild is wpeaBuild net of the extra wrapper charge.
+// eresMondeBuild assembles the two legs and blends them.
 func eresMondeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
-	base, err := wpeaBuild(f, from)
+	world, err := wpeaBuild(f, from)
 	if err != nil {
 		return nil, err
 	}
-	return afterAnnualFee("ERESMONDEM (MSCI World net TR in EUR, FCPE charges)", base, eresMondeFeeGap), nil
+	const worldTER = 0.0020 // IWDA's, carried by the whole wpeaBuild path
+	fetched := map[string]*marketdata.Series{}
+	var legs []Leg
+	for _, l := range eresMondeLegs {
+		chain, err := eresLegChain(f, from, l, world, worldTER)
+		if err != nil {
+			return nil, err
+		}
+		id := "ERESMONDEM-LEG-" + l.Donors[0].ID
+		chain.Symbol = id
+		fetched[id] = chain
+		legs = append(legs, Leg{ID: id, Weight: l.Weight})
+	}
+	blend, err := composite("ERESMONDEM (75/25 blend of the two ETF legs)", legs, "", 0)(seriesFetcher{fetched, f}, from)
+	if err != nil {
+		return nil, err
+	}
+	blend.Currency = "EUR"
+	return afterAnnualFee("ERESMONDEM (blend less the FCPE's wrapper charge)", blend, eresMondeCharge), nil
+}
+
+// eresLegChain builds one leg: the nearest donor that quotes, each further
+// donor spliced behind it, the world path behind them all, every donor's
+// returns lifted from its own TER to the leg's. A donor that cannot be
+// fetched, quotes too briefly to matter, or quotes in another currency is
+// skipped with a note, so the recipe still builds (offline, or should a
+// listing die) on the deeper series behind it.
+func eresLegChain(f Fetcher, from time.Time, l eresLeg, world *marketdata.Series, worldTER float64) (*marketdata.Series, error) {
+	var out *marketdata.Series
+	for _, d := range l.Donors {
+		s, err := f.Fetch(d.ID, from)
+		if err != nil || s == nil || len(s.Points) < 300 {
+			fmt.Fprintf(os.Stderr, "ERESMONDEM: donor %s unavailable, the leg reads the next series behind it\n", d.ID)
+			continue
+		}
+		if s.Currency != "" && s.Currency != "EUR" {
+			return nil, fmt.Errorf("ERESMONDEM: donor %s quotes in %s, want EUR", d.ID, s.Currency)
+		}
+		lifted := afterAnnualFee(d.ID, s, feeUplift(l.TER, d.TER))
+		if out == nil {
+			out = lifted
+			continue
+		}
+		marketdata.ExtendBack(out, lifted)
+		out.SimulatedBefore = time.Time{} // let ExtendBack splice one more segment
+	}
+	back := afterAnnualFee("MSCI World net TR in EUR", world, feeUplift(l.TER, worldTER))
+	back.SimulatedBefore = time.Time{}
+	if out == nil {
+		return back, nil
+	}
+	marketdata.ExtendBack(out, back)
+	out.SimulatedBefore = time.Time{}
+	return out, nil
+}
+
+// feeUplift is the (negative) annual charge that puts a donor carrying
+// donorTER on a class carrying targetTER: the donor is credited the fee it
+// paid in excess of the target's, and owes nothing when it was the cheaper
+// (a donor may lose a wrapper's cost advantage, never gain a return it did
+// not earn, as the trend price list states).
+func feeUplift(targetTER, donorTER float64) float64 {
+	if donorTER <= targetTER {
+		return 0
+	}
+	return targetTER - donorTER
+}
+
+// seriesFetcher answers a few ids from memory and everything else from the
+// fetcher behind it, so a series assembled in a recipe can enter a Frame.
+type seriesFetcher struct {
+	own      map[string]*marketdata.Series
+	fallback Fetcher
+}
+
+func (sf seriesFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
+	if s, ok := sf.own[id]; ok {
+		return s, nil
+	}
+	return sf.fallback.Fetch(id, from)
 }
 
 // afterAnnualFee returns a copy of s with a continuous annual fee deducted:
