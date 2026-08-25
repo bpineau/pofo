@@ -65,7 +65,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -146,6 +146,11 @@ sgtrend-refdata: ## (Re)generate the two daily NET managed-futures references (p
 .PHONY: dbi-refdata
 dbi-refdata: ## (Re)generate the DBi family's nearest donor, the all-styles composite half-projected on the fund's ten futures (network); run after `make sgtrend-refdata` and before `make simdata`
 	$(GO) run ./cmd/gen-dbi-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: eres-refdata
+eres-refdata: ## (Re)generate the bundled NAV snapshot of the catalog's FCPE funds (network); run `make simdata` after
+	$(GO) run ./cmd/gen-eres-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: snapshots

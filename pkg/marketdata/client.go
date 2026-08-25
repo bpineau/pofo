@@ -39,6 +39,7 @@ type Client struct {
 	NYFedBase       string
 	ECBBase         string
 	CBOEBase        string
+	AirfundBase     string // airfund.io delivery API (FCPE NAV histories)
 	CookieBase      string // Yahoo cookie bootstrap host (fc.yahoo.com)
 	UserAgent       string
 	Logf            func(format string, args ...any)
@@ -90,6 +91,7 @@ func NewClient(cacheDir string) *Client {
 		NYFedBase:       "https://markets.newyorkfed.org",
 		ECBBase:         "https://www.ecb.europa.eu",
 		CBOEBase:        "https://cdn.cboe.com",
+		AirfundBase:     "https://core.communicate.airfund.io",
 		CookieBase:      "https://fc.yahoo.com",
 		UserAgent:       defaultUserAgent,
 		Logf:            func(string, ...any) {},
@@ -662,6 +664,11 @@ func (c *Client) historyForResolution(ctx context.Context, isin string, res reso
 		s, err = c.cachedHistory(ctx, "Stooq", isin, from, raw, func() (*Series, error) {
 			return c.fetchStooq(ctx, res.Symbol, from)
 		})
+	case "airfund":
+		// A NAV is its own raw price, as for the fund sources above.
+		s, err = c.cachedHistory(ctx, "airfund", isin, from, raw, func() (*Series, error) {
+			return c.fetchAirfund(ctx, isin, res, from)
+		})
 	default:
 		s, err = c.historyView(ctx, res.Symbol, from, raw)
 		// The curated resolution name beats source metadata (e.g. Yahoo
@@ -705,6 +712,8 @@ func (c *Client) loadResolution(isin string) (resolution, bool) {
 		ok = res.Symbol != ""
 	case "ft":
 		ok = res.Xid != ""
+	case "airfund":
+		ok = res.Symbol != "" && res.Xid != ""
 	}
 	return res, ok
 }
@@ -945,7 +954,8 @@ func (c *Client) do(ctx context.Context, method, rawURL, contentType string, pay
 			continue
 		}
 		switch {
-		case resp.StatusCode == http.StatusOK:
+		case resp.StatusCode >= 200 && resp.StatusCode < 300:
+			// Any success: the airfund API answers a POST with 201.
 			return body, nil
 		case resp.StatusCode == http.StatusTooManyRequests:
 			rateLimited = true
