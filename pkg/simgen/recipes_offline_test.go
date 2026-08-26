@@ -148,7 +148,11 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		// are exercised.
 		"LU1103258197": from(mf("LU1103258197", 0.007, 1.05, 0.7), n/3),
 		"LU1662501532": from(mf("LU1662501532", 0.007, 1.05, 0.75), n/2),
-		"VFINX":        vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
+		// The Campbell class the all-styles composite is calibrated on: a
+		// young class, quoting only over the last third of the window, like
+		// the real one (2020-06 against a 2000-01 file start).
+		campbellB: from(mf(campbellB, 0.006, 1.05, 0.8), 2*n/3),
+		"VFINX":   vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
