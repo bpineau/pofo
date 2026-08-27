@@ -84,7 +84,7 @@ func TestDofFromKurtosis(t *testing.T) {
 
 // Assets whose monthly grids do not line up (different start/end months) must
 // be aligned on shared calendar months, not by trailing position. Asset A
-// covers Jan–Apr (returns Feb,Mar,Apr); asset B covers Feb–May (returns
+// covers Jan-Apr (returns Feb,Mar,Apr); asset B covers Feb-May (returns
 // Mar,Apr,May). The common months are Mar and Apr, so each row must hold those
 // two returns in order, not three position-truncated ones.
 func TestBuildMonthlyPanelDateKeyed(t *testing.T) {
