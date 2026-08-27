@@ -172,10 +172,13 @@ File format: one line per asset:
         #meta optimize:OBJ   compute the weights: OBJ is max-sharpe,
                              min-volatility, max-return, risk-parity,
                              max-sortino, return-to-drawdown, min-ulcer,
-                             max-worst-5y or cwarp (maximize CWARP vs the
-                             benchmark). The report shows the optimized
-                             weights next to the written ones. Comma-
-                             separated constraints follow the objective:
+                             max-worst-5y, cwarp (maximize CWARP vs the
+                             benchmark) or black-litterman (start from the
+                             returns the file's own weights imply, revise
+                             them with your views). The report shows the
+                             optimized weights next to the written ones.
+                             Comma-separated constraints follow the
+                             objective:
                                max-weight:25 / min-weight:5  caps and floors
                                              on every line
                                bounds:NTSG:15-30  a range for one line
@@ -192,7 +195,16 @@ File format: one line per asset:
                                              the years they did not see
                                              (START..END, each a year or a
                                              YYYY-MM-DD date, either omittable)
+                               view:IGLN:2@60  a belief, black-litterman only:
+                                             IGLN earns 2 %%/yr at 60 %%
+                                             confidence (50 by default);
+                                             view:A>B:3 says A beats B by 3
+                                             points. Repeat it per belief
+                               prior-return:4.6  black-litterman only: the
+                                             return you expect from the
+                                             written weights as a whole
                              e.g. optimize:max-return,max-vol:9.5,train:..2015
+                                  optimize:black-litterman,view:GDE:2@60
 
 Example:
     #meta rebalance:30

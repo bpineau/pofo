@@ -1,7 +1,7 @@
 // Package optimize computes portfolio weights that optimize a risk/return
 // objective from the historical returns of the candidate assets.
 //
-// Nine objectives are supported:
+// Ten objectives are supported:
 //
 //   - MaxSharpe ("max-sharpe"): the tangency portfolio, maximizing the
 //     ratio of expected return to volatility.
@@ -24,6 +24,10 @@
 //     the whole budget goes to the single best-performing asset; it earns
 //     its keep under a Limit, where it is the frontier point: the most
 //     return reachable inside a volatility or drawdown budget.
+//   - BlackLitterman ("black-litterman"): the weights that maximize the
+//     mean-variance utility of the returns the portfolio's own weights
+//     imply, updated by the owner's views. It is the one objective that
+//     does not read its expected returns off the sample; see below.
 //   - CWARP ("cwarp"): the blend that best improves a replacement portfolio
 //     (a benchmark) when overlaid on it. It is solved by SolveCWARP, which
 //     takes the replacement's returns as an extra argument; the objective is
@@ -59,7 +63,8 @@
 //	optimize.Spec{Objective: optimize.MaxReturn,
 //	    Limits: optimize.Limits{MaxVolatility: 0.095}}
 //
-// They apply to every objective but RiskParity and CWARP: those two are
+// They apply to every objective but RiskParity and CWARP (BlackLitterman
+// accepts every constraint those two refuse): those two are
 // solved by code that never sees Limits (the equal-risk condition in closed
 // form, and SolveCWARP's own search, which honours MaxWeight alone), so
 // ParseSpec refuses to combine them with a limit, and CWARP with a floor or
@@ -77,6 +82,61 @@
 // portfolio's measured Sharpe while cutting two points of CAGR. A volatility
 // cap asks the question that was meant.
 //
+// # Black-Litterman: the file's weights as the prior, views as the input
+//
+// Every objective above that touches expected returns reads them off the
+// sample, which estimates them worst (see "Estimation error" below), so the
+// answer is a corner driven by whichever line was lucky over the window.
+// BlackLitterman keeps the means in the problem but anchors them.
+//
+// The PRIOR is the portfolio file itself: Spec.Prior holds the weights the
+// owner already defends, filled by the caller in asset order, and Solve
+// refuses anything that is not an allocation. There is no market-
+// capitalization anchor here, because the books this toolkit serves are made
+// of lines that have none (a managed-futures fund, a stacked 90/60, an
+// inflation-linked sleeve, gold). Reverse optimization then answers a
+// question an owner rarely asks, "what return does my allocation implicitly
+// expect from each line": ImpliedReturns returns pi = lambda*Sigma*w.
+//
+// The VIEWS are the input. Each is a belief about one line ("gold earns 2 %
+// a year") or about a pair ("trend beats long duration by 3 points"),
+// carrying a Confidence in (0,1). Posterior blends them into the implied
+// returns by the closed form
+//
+//	Omega = diag((1/c_k - 1) * (P tau Sigma P')_kk)
+//	mu    = pi + tau*Sigma*P' (P tau Sigma P' + Omega)^-1 (Q - P pi)
+//
+// where a confidence of 0.5 is He and Litterman's own Omega, near 0 switches
+// a view off and near 1 makes it certain. The scalar tau is fixed at 0.05 and
+// exposed nowhere because Omega is proportional to it, so it cancels exactly.
+// The posterior COVARIANCE is not used: Sigma stays the risk model, the
+// common practitioner choice. Weights then maximize mu'w - (lambda/2)w'Sigma w
+// over the same box simplex every other objective uses, so bounds, floors and
+// the feasibility limits all compose.
+//
+// The identity that makes the objective legible: with NO view, mu = pi and
+// the long-only optimum is EXACTLY the prior, since the utility's gradient
+// vanishes there. So "black-litterman" on a file with no view returns the
+// file's own weights and reports what returns they imply, which is a reading
+// worth having on its own. Maximizing the Sharpe ratio of the posterior would
+// not have that property, which is why the utility form was chosen.
+//
+// The RISK AVERSION sets the scale of pi, and absolute views are read against
+// that scale, so it matters. Spec.PriorReturn ("prior-return:4.6") states the
+// return the owner expects from the prior allocation as a whole and fixes
+// lambda at that return over the prior's variance; without it, the prior is
+// assumed to earn DefaultPriorSharpe. He and Litterman's delta = 2.5 is not
+// the default, and DefaultPriorSharpe says why.
+//
+// Two traps. The zero risk-free rate of this toolkit reaches here too: a 3 %
+// view on a 3 %-volatility sleeve is a Sharpe of 1.0 in the utility's eyes
+// and the weight follows, so state views as excess returns over cash when
+// that is what is meant. And what this model prices is the MEAN: a line held
+// for its crisis covariance or against a liability has a reason the model
+// cannot read, and will be sized by its view alone. That is a feature, since
+// it shows what the hedge costs in expected return, as long as the reader
+// knows it.
+//
 // # Fitting on one window, judging on another
 //
 // Spec.Train carries the "train:" window parsed from a portfolio file. This
@@ -88,14 +148,14 @@
 //
 // # How each objective is solved, and how much to trust it
 //
-// MaxSharpe, MinVolatility and RiskParity read only the mean vector and the
-// covariance matrix; MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y and
-// CWARP depend on the whole return path. All of them are minimized by
+// MaxSharpe, MinVolatility, RiskParity and BlackLitterman read only the mean
+// vector and the covariance matrix; MaxSortino, ReturnToDrawdown, MinUlcer,
+// MaxWorst5y and CWARP depend on the whole return path. All of them are minimized by
 // projected gradient descent over the capped simplex, from several
 // deterministic starting points. They differ in what that buys:
 //
-//   - MinVolatility and RiskParity are convex programs, so their answer is
-//     the global optimum.
+//   - MinVolatility, RiskParity and BlackLitterman are convex programs, so
+//     their answer is the global optimum.
 //   - MaxSharpe is not concave in the weights, but the UNCAPPED tangency
 //     portfolio is still obtained exactly, via Schaible's transformation
 //     (minimizing yᵀΣy under muᵀy = 1 and y ≥ 0 is convex, and w = y/Σyᵢ
@@ -128,5 +188,7 @@
 // a naive equal weighting is hard to beat out of sample (DeMiguel, Garlappi &
 // Uppal, RFS 2009). Prefer RiskParity or MinVolatility, which never touch the
 // means, when the weights are meant to be held rather than studied; read a
-// MaxSharpe fit as a description of the window it was fitted on.
+// MaxSharpe fit as a description of the window it was fitted on. Or state the
+// means instead of estimating them: BlackLitterman is the objective for an
+// owner who can say what they believe and how sure they are.
 package optimize

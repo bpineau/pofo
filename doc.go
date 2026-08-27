@@ -18,8 +18,10 @@
 //   - pkg/metrics: risk/return statistics (CAGR, volatility, Sharpe,
 //     Sortino, Ulcer, max drawdown, time-to-recovery, Beta, CWARP, IRR).
 //   - pkg/optimize: long-only weights for an objective (max-sharpe,
-//     min-volatility, risk-parity, max-sortino, return-to-drawdown,
-//     min-ulcer, max-worst-5y, cwarp) from the assets' historical returns.
+//     min-volatility, max-return, risk-parity, max-sortino,
+//     return-to-drawdown, min-ulcer, max-worst-5y, cwarp) from the assets'
+//     historical returns, or from the returns the file's own weights imply
+//     and the owner's views revise (black-litterman).
 //   - pkg/portfolio: the allocation file format and the rebalanced,
 //     fee-aware simulation that replays a portfolio over time, attributing
 //     each day's return to its holdings.
