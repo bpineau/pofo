@@ -42,7 +42,9 @@
 // max-sortino and return-to-drawdown objectives. Ulcer (root-mean-square
 // drawdown) and WorstRollingReturn (worst outcome over a fixed window) round
 // out the underwater-robustness measures, behind the min-ulcer and
-// max-worst-5y objectives that matter most in decumulation.
+// max-worst-5y objectives that matter most in decumulation. The
+// black-litterman objective needs none of them: it works on the mean vector
+// and the covariance matrix alone.
 //
 // # Attribution
 //

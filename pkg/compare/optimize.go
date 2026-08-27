@@ -3,6 +3,7 @@ package compare
 import (
 	"errors"
 	"fmt"
+	"math"
 	"strings"
 	"time"
 
@@ -57,16 +58,26 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	// dated by its END, so dates[1:] indexes the return series.
 	retDates := dates[1:]
 
-	// Per-asset bounds arrive keyed by identifier and the optimizer works on
-	// positions: resolve them here, where the holdings are known.
+	// Per-asset bounds and views arrive keyed by identifier and the optimizer
+	// works on positions: resolve them here, where the holdings are known.
 	sp := *spec.Optimize
-	if len(sp.Bounds) > 0 {
+	if len(sp.Bounds) > 0 || len(sp.Views) > 0 {
 		ids := make([][]string, len(base.Assets))
 		for i, a := range base.Assets {
 			ids[i] = []string{a.ID, a.Symbol}
 		}
 		if err := sp.Resolve(ids); err != nil {
 			return nil, "", fmt.Errorf("optimize: %w", err)
+		}
+	}
+	// Black-Litterman's prior is the allocation the file already defends:
+	// there is no market-capitalization anchor for the books this toolkit
+	// serves, so the written weights are the reference the views tilt away
+	// from.
+	if sp.Objective == optimize.BlackLitterman {
+		sp.Prior = make([]float64, len(base.Assets))
+		for i, a := range base.Assets {
+			sp.Prior[i] = a.Weight
 		}
 	}
 
@@ -99,6 +110,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	cp.Assets = make([]portfolio.Asset, len(base.Assets))
 	copy(cp.Assets, base.Assets)
 	parts := make([]string, len(cp.Assets))
+	names := make([]string, len(cp.Assets))
 	for i := range cp.Assets {
 		cp.Assets[i].Weight = res.Weights[i]
 		// Name each line as the file writes it: an ISIN or a resolved
@@ -107,6 +119,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		if name == "" {
 			name = cp.Assets[i].Symbol
 		}
+		names[i] = name
 		parts[i] = fmt.Sprintf("%s %.1f %%", name, res.Weights[i]*100)
 	}
 	note := fmt.Sprintf("weights computed by the optimizer (%s) over %s→%s: %s",
@@ -144,11 +157,105 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		if !sp.Limits.Any() {
 			note += ". Note: unconstrained, max-return is degenerate (the whole budget goes to whichever line compounded fastest); pair it with max-vol, max-drawdown or per-line bounds"
 		}
+	case optimize.BlackLitterman:
+		vols := make([]float64, len(fitReturns))
+		for i, r := range fitReturns {
+			vols[i] = metrics.Volatility(r)
+		}
+		note += blackLittermanNote(sp, res, names, vols)
 	}
 	if spec.Optimize.Objective == optimize.RiskParity && (sp.MaxWeight > 0 || sp.Bounded()) {
 		note += " (weight bounds do not apply to risk-parity)"
 	}
 	return &cp, note, nil
+}
+
+// cashLikeVolatility is the annualized volatility under which a line behaves
+// like cash for the purposes of a view. At this toolkit's zero risk-free
+// rate, a plain nominal view on such a line reads as an enormous Sharpe
+// ratio, and the utility sizes it accordingly.
+const cashLikeVolatility = 0.03
+
+// blackLittermanNote says what a Black-Litterman solve owes its reader: the
+// risk aversion and where it came from, what the views did to the expected
+// returns line by line, the views as they were parsed, and the two things the
+// model cannot price. Without that, the weights arrive with no way to tell
+// which belief paid for which tilt.
+func blackLittermanNote(sp optimize.Spec, res optimize.Result, names []string, vols []float64) string {
+	origin := fmt.Sprintf("the default assumption that the written weights earn a Sharpe of %.1f", optimize.DefaultPriorSharpe)
+	if sp.PriorReturn > 0 {
+		origin = fmt.Sprintf("prior-return %.1f %%/yr on the written weights", sp.PriorReturn*100)
+	}
+	note := fmt.Sprintf(". Black-Litterman: risk aversion λ = %.1f, from %s", res.Lambda, origin)
+
+	// Expected returns, before and after the views. A line whose posterior
+	// rounds to its implied return is listed once as unchanged rather than
+	// repeated with the same two numbers.
+	var moved, still []string
+	for i := range names {
+		if i >= len(res.Implied) || i >= len(res.Posterior) {
+			break
+		}
+		if math.Abs(res.Posterior[i]-res.Implied[i]) < 0.0005 {
+			still = append(still, names[i])
+			continue
+		}
+		moved = append(moved, fmt.Sprintf("%s implied %.1f %% → posterior %.1f %%",
+			names[i], res.Implied[i]*100, res.Posterior[i]*100))
+	}
+	switch {
+	case len(moved) == 0:
+		note += fmt.Sprintf(". No view moved an expected return, so the posterior IS what the written weights imply (%s) and the optimizer returns those weights",
+			strings.Join(impliedList(names, res.Implied), ", "))
+	default:
+		note += ". Expected returns: " + strings.Join(moved, ", ")
+		if len(still) > 0 {
+			note += "; unchanged: " + strings.Join(still, ", ")
+		}
+	}
+
+	if len(sp.Views) > 0 {
+		stated := make([]string, len(sp.Views))
+		for i, v := range sp.Views {
+			stated[i] = v.String()
+		}
+		note += ". Views: " + strings.Join(stated, "; ")
+	}
+	note += fmt.Sprintf(". The Sharpe above is the EXPECTED one, %.1f %%/yr of posterior mean over %.1f %% of modelled volatility, not the realized path's ratio",
+		res.Return*100, res.Volatility*100)
+
+	// The two traps worth carrying into the report.
+	note += ". Note: views price EXPECTED RETURNS only, so a line held for its"
+	note += " crisis covariance or for a liability is sized here by its view alone"
+	var cashLike []string
+	for _, v := range sp.Views {
+		for i, name := range names {
+			if name != v.Asset && name != v.Versus {
+				continue
+			}
+			if i < len(vols) && vols[i] > 0 && vols[i] < cashLikeVolatility {
+				cashLike = append(cashLike, fmt.Sprintf("%s at %.1f %% volatility", name, vols[i]*100))
+			}
+		}
+	}
+	if len(cashLike) > 0 {
+		note += fmt.Sprintf(". CAUTION: a view carries a cash-like line (%s) and this toolkit runs at a ZERO risk-free rate, so a nominal view on it reads as a large Sharpe: state such a view as an excess return over cash",
+			strings.Join(cashLike, ", "))
+	}
+	return note
+}
+
+// impliedList renders the implied returns of every line, for the no-view case
+// where they are the whole answer.
+func impliedList(names []string, implied []float64) []string {
+	out := make([]string, 0, len(names))
+	for i, name := range names {
+		if i >= len(implied) {
+			break
+		}
+		out = append(out, fmt.Sprintf("%s %.1f %%", name, implied[i]*100))
+	}
+	return out
 }
 
 // holdoutMinDays is the shortest stretch worth reporting as out-of-sample:

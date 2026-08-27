@@ -135,6 +135,23 @@ type Spec struct {
 	// Train is the fitting window parsed from "train:", ignored here and
 	// applied by the caller: see Window.
 	Train Window
+
+	// Views are the BlackLitterman beliefs parsed from "view:" tokens. They
+	// arrive keyed by identifier, like Bounds, and Resolve turns them into
+	// the positions the model works on.
+	Views []View
+	// Prior is the BlackLitterman reference allocation, as fractions in
+	// asset order: the weights written in the portfolio file, which is the
+	// allocation the owner already defends. There is no market-capitalization
+	// anchor in this toolkit (a managed-futures fund, a stacked 90/60 or an
+	// inflation-linked sleeve have no capitalization weight), so the file is
+	// the prior. The CALLER fills it, exactly as it fills Lower/Upper.
+	Prior []float64
+	// PriorReturn is the return the owner expects from the prior allocation
+	// as a whole, as a fraction per year, parsed from "prior-return:". It
+	// fixes the risk aversion at PriorReturn divided by the prior's
+	// variance; zero falls back to an assumed Sharpe of 0.4.
+	PriorReturn float64
 }
 
 // Resolve turns Spec.Bounds (keyed by identifier) into the Lower/Upper slices
@@ -149,24 +166,47 @@ func (s *Spec) Resolve(ids [][]string) error {
 		s.Lower[i], s.Upper[i] = math.NaN(), math.NaN()
 	}
 	for key, b := range s.Bounds {
-		found := -1
-		for i, names := range ids {
-			for _, name := range names {
-				if strings.EqualFold(strings.TrimSpace(name), key) {
-					found = i
-					break
-				}
-			}
-			if found >= 0 {
-				break
-			}
-		}
+		found := indexOf(ids, key)
 		if found < 0 {
 			return fmt.Errorf("bounds: %q matches no holding", key)
 		}
 		s.Lower[found], s.Upper[found] = b[0], b[1]
 	}
+	// Views are resolved into a COPY: a Spec travels by value and its Views
+	// slice header with it, so filling the positions in place would write
+	// through to whatever the caller still holds.
+	if len(s.Views) > 0 {
+		views := append([]View(nil), s.Views...)
+		for i := range views {
+			v := &views[i]
+			if v.asset = indexOf(ids, v.Asset); v.asset < 0 {
+				return fmt.Errorf("view: %q matches no holding", v.Asset)
+			}
+			v.versus = -1
+			if v.Versus != "" {
+				if v.versus = indexOf(ids, v.Versus); v.versus < 0 {
+					return fmt.Errorf("view: %q matches no holding", v.Versus)
+				}
+			}
+		}
+		s.Views = views
+	}
 	return nil
+}
+
+// indexOf returns the position of the asset one of whose spellings is key,
+// or -1. Several spellings per asset are accepted (the id written in the
+// file and the resolved symbol), and the match is case-insensitive.
+func indexOf(ids [][]string, key string) int {
+	key = strings.TrimSpace(key)
+	for i, names := range ids {
+		for _, name := range names {
+			if strings.EqualFold(strings.TrimSpace(name), key) {
+				return i
+			}
+		}
+	}
+	return -1
 }
 
 // box returns the effective per-asset bounds for n assets: the resolved
@@ -233,6 +273,14 @@ type Result struct {
 	// False means the constraints could not be met and the weights are the
 	// least-violating point found, not an answer.
 	Feasible bool
+
+	// Implied, Posterior and Lambda describe a BlackLitterman solve (zero
+	// for every other objective): the annualized returns the prior
+	// allocation implicitly expects, the same returns after the views are
+	// blended in, and the risk aversion that scaled them.
+	Implied   []float64
+	Posterior []float64
+	Lambda    float64
 }
 
 // ParseSpec reads a "#meta optimize:" value: an objective optionally
@@ -242,9 +290,9 @@ func ParseSpec(s string) (Spec, error) {
 	tokens := strings.Split(s, ",")
 	obj := Objective(strings.ToLower(strings.TrimSpace(tokens[0])))
 	switch obj {
-	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y, CWARP, MaxReturn:
+	case MaxSharpe, MinVolatility, RiskParity, MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y, CWARP, MaxReturn, BlackLitterman:
 	default:
-		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y or cwarp)", tokens[0])
+		return Spec{}, fmt.Errorf("unknown objective %q (max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp or black-litterman)", tokens[0])
 	}
 	spec := Spec{Objective: obj}
 	// Two objectives are solved by code that never sees the feasibility
@@ -261,6 +309,7 @@ func ParseSpec(s string) (Spec, error) {
 	const (
 		whyLimits = "that solve cannot enforce a feasibility limit"
 		whyBox    = "that solve only honours max-weight, not a floor or a per-line range"
+		whyBL     = "only black-litterman blends beliefs into expected returns"
 	)
 	for _, tok := range tokens[1:] {
 		key, val, ok := strings.Cut(strings.TrimSpace(tok), ":")
@@ -335,6 +384,24 @@ func ParseSpec(s string) (Spec, error) {
 				return Spec{}, fmt.Errorf("train: %w", err)
 			}
 			spec.Train = w
+		case "view":
+			if obj != BlackLitterman {
+				return Spec{}, reject("view", whyBL)
+			}
+			v, err := parseView(val)
+			if err != nil {
+				return Spec{}, fmt.Errorf("view: %w", err)
+			}
+			spec.Views = append(spec.Views, v)
+		case "prior-return":
+			if obj != BlackLitterman {
+				return Spec{}, reject("prior-return", whyBL)
+			}
+			pct, err := percent(val, 0, 100, false)
+			if err != nil {
+				return Spec{}, fmt.Errorf("prior-return: %w", err)
+			}
+			spec.PriorReturn = pct / 100
 		default:
 			return Spec{}, fmt.Errorf("unknown constraint %q", key)
 		}
@@ -384,6 +451,47 @@ func parseRange(s string) (lo, hi float64, err error) {
 		return 0, 0, fmt.Errorf("%q has its low end above its high end", s)
 	}
 	return lo, hi, nil
+}
+
+// parseView reads a "view:" value: "ID:Q" or "ID>ID2:Q", each optionally
+// followed by "@C". Q is a percentage per year (the expected return for an
+// absolute view, the margin for a relative one) and may be negative or zero,
+// both of which are statements; C is the confidence as a percentage strictly
+// inside (0,100), 50 by default, which is He and Litterman's own choice.
+func parseView(val string) (View, error) {
+	who, rest, ok := strings.Cut(strings.TrimSpace(val), ":")
+	if !ok {
+		return View{}, fmt.Errorf("%q is neither ID:RETURN nor ID>ID2:RETURN", val)
+	}
+	v := View{Confidence: 0.5}
+	if asset, versus, rel := strings.Cut(who, ">"); rel {
+		v.Asset, v.Versus = strings.TrimSpace(asset), strings.TrimSpace(versus)
+		if v.Asset == "" || v.Versus == "" {
+			return View{}, fmt.Errorf("%q leaves one side of the comparison empty", who)
+		}
+	} else {
+		v.Asset = strings.TrimSpace(who)
+	}
+	if v.Asset == "" {
+		return View{}, fmt.Errorf("%q names no holding", val)
+	}
+	ret, conf, hasConf := strings.Cut(rest, "@")
+	pct, err := strconv.ParseFloat(strings.TrimSuffix(strings.TrimSpace(ret), "%"), 64)
+	if err != nil {
+		return View{}, fmt.Errorf("%q is not a percentage per year", ret)
+	}
+	v.Return = pct / 100
+	if hasConf {
+		c, err := percent(conf, 0, 100, false)
+		if err != nil {
+			return View{}, fmt.Errorf("confidence: %w", err)
+		}
+		if c >= 100 {
+			return View{}, fmt.Errorf("confidence %q: a view at 100 %% is a certainty, which leaves the equilibrium no weight at all", conf)
+		}
+		v.Confidence = c / 100
+	}
+	return v, nil
 }
 
 // parseWindow reads "START..END", each end a year (2015), a full date
@@ -448,10 +556,15 @@ func Solve(returns [][]float64, spec Spec) (Result, error) {
 			return Result{}, fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
 		}
 	}
+	// Black-Litterman derives its own expected returns before optimizing,
+	// and chooses between the two paths below itself.
+	if spec.Objective == BlackLitterman {
+		return solveBlackLitterman(returns, spec)
+	}
 	// Bounds and limits route every objective through the one penalized
 	// path search; without them the closed forms answer exactly as before.
 	if spec.Objective != RiskParity && (spec.Bounded() || spec.Limits.Any() || spec.Objective == MaxReturn) {
-		return solveConstrained(returns, spec)
+		return solveConstrained(returns, spec, nil)
 	}
 	switch spec.Objective {
 	case MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y:
@@ -848,7 +961,11 @@ func projectCappedSimplex(v []float64, maxW float64) []float64 {
 	return w
 }
 
-// stats packages weights with their in-sample return, volatility and Sharpe.
+// stats packages weights with their return, volatility and Sharpe under the
+// mean vector mu. For most objectives that is the SAMPLE mean, so the figures
+// are in-sample descriptions of the optimization window; for BlackLitterman
+// it is the posterior mean, so they are the EXPECTED figures the views imply,
+// which is the point of that objective.
 func stats(w, mu []float64, cov [][]float64) Result {
 	r := Result{Weights: w, Return: dot(mu, w)}
 	if v := quad(cov, w); v > 0 {
