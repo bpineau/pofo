@@ -85,7 +85,7 @@ func (pr Params) cashflowAt(year int) float64 {
 // firstCutText formats the median first-cut year, or a dash when no path cut.
 func firstCutText(share, year float64) string {
 	if share == 0 {
-		return "–"
+		return "-"
 	}
 	return fmt.Sprintf("year %.0f", year)
 }
@@ -93,7 +93,7 @@ func firstCutText(share, year float64) string {
 // cutYearsText formats a cut-years figure, or a dash when no path cut.
 func cutYearsText(share, years float64) string {
 	if share == 0 {
-		return "–"
+		return "-"
 	}
 	return fmt.Sprintf("%.0f y", years)
 }
@@ -102,7 +102,7 @@ func cutYearsText(share, years float64) string {
 // living the policy would actually deliver.
 func floorText(bands [][]float64, year int) string {
 	if len(bands) == 0 || year >= len(bands[0]) {
-		return "–"
+		return "-"
 	}
 	return fmt.Sprintf("%.1f k€", bands[0][year]/1000)
 }

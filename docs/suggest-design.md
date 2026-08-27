@@ -6,7 +6,7 @@ out-of-sample. Phase 2 of the optimizer (after `pkg/optimize`).
 
 Decisions (2026-06-13):
 
-1. **Output**: assets to *add* to the existing portfolio (1–3), each with a
+1. **Output**: assets to *add* to the existing portfolio (1-3), each with a
    suggested weight. Not a from-scratch portfolio.
 2. **Criterion**: *structure first, then return*: only consider assets that
    fill a coverage/diversification gap, then rank them by an
@@ -69,7 +69,7 @@ Report each group with its combined weight. The same equivalence is used to
    the benefit is **consistent** across periods, not a one-period fluke.
 6. Keep candidates that improve in a majority of windows; rank by median
    out-of-sample Sharpe gain; pick the weight with the best median gain
-   (capped). Output the top 1–3.
+   (capped). Output the top 1-3.
 
 ## Output (terminal, exit-after, mirrors `-verify-data`)
 

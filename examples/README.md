@@ -51,7 +51,7 @@ Pick the objective by what you trust:
   entirely, so cap it or it concentrates.
 - **max-sharpe**: the best risk-adjusted return *over the fitted window*.
   This one overfits: it leans hard on the past winner. Always cap it
-  (`,max-weight:30`–`40`) and read the result as a hint, not a target.
+  (`,max-weight:30`-`40`) and read the result as a hint, not a target.
 
 The weights are fitted **in-sample**, over the period where every asset has a
 quote, and the note under the optimized portfolio reports the in-sample
