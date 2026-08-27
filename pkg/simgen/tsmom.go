@@ -28,9 +28,9 @@ import (
 // decaying estimator cuts as the storm builds, which is what the real
 // programmes do.
 //
-// This is the standard academic replication (Moskowitz–Ooi–Pedersen); real
+// This is the standard academic replication (Moskowitz-Ooi-Pedersen); real
 // funds add carry, faster signals and execution details, so expect daily
-// correlations around 0.5–0.7, not 0.9.
+// correlations around 0.5-0.7, not 0.9.
 type TSMOMConfig struct {
 	Markets     []string // component ids, traded as excess returns vs cash
 	CashID      string   // e.g. "^IRX"
