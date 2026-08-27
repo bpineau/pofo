@@ -26,13 +26,13 @@ and toggling one assumption at a time, ruin at a 4% withdrawal rate moves as:
 The kernel itself is sound (after the P1 fixes). The optimism is **defaults +
 fitted data + the i.i.d. return model**, not a bug. For MSCI World specifically
 the reported ~1.8% is driven by (a) the flex cut halving ruin, (b) mu/sigma
-fitted from a short, US-heavy, post-2009-favourable 1999–2026 window, and (c)
+fitted from a short, US-heavy, post-2009-favourable 1999-2026 window, and (c)
 i.i.d. draws that cannot produce the persistent multi-decade real bear markets
-(Japan post-1990, 1910s–40s Europe) that actually cause ruin.
+(Japan post-1990, 1910s-40s Europe) that actually cause ruin.
 
 Reference: Anarkulova, Cederburg & O'Doherty, "The Safe Withdrawal Rate:
 Evidence from a Broad Sample of Developed Markets" (2023, SSRN 4227132): a
-block bootstrap over ~38 developed markets, 1890–2019, with realistic
+block bootstrap over ~38 developed markets, 1890-2019, with realistic
 longevity, finds a fixed 4% rule fails far more often than US-only backtests
 suggest (their 5%-failure SWR is ~2.26% real).
 
@@ -85,11 +85,11 @@ The server blend of FitParametric toward the prior was not needed.
 from a short favourable window are optimistic: low vol, high mean, thin tails.
 
 **Change.**
-- Raise the default `sigma` toward ~0.16 and lower default `mu` to ~0.030–0.035
+- Raise the default `sigma` toward ~0.16 and lower default `mu` to ~0.030-0.035
   real for a 100% equity sleeve.
 - Add a **"Conservative (broad-sample) prior"** toggle that overrides the fit
   with long-run global real-equity assumptions (e.g. mu ≈ 0.03, sigma ≈ 0.17,
-  df ≈ 4–5) regardless of the portfolio's own rosy history, with a one-line
+  df ≈ 4-5) regardless of the portfolio's own rosy history, with a one-line
   explanation.
 - Consider deriving the seeded `df` and a small negative skew from the broad
   prior rather than only the (thin) fitted sample.
@@ -123,7 +123,7 @@ sample.
 **Change (options, pick during planning).**
 - Bundle a **long, broad-sample real-return panel** (developed-market index or
   a curated multi-country series) to bootstrap from, so the historical models
-  see 1900s–2020s regimes, not just 1999–. This is the most faithful fix and
+  see 1900s-2020s regimes, not just 1999-. This is the most faithful fix and
   the closest to Anarkulova.
 - And/or add **negative skew** and mild **autocorrelation/regime persistence**
   to the parametric source (e.g. a two-state or AR(1)-in-vol generator) so the

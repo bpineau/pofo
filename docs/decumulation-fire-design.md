@@ -340,7 +340,7 @@ opposite bar.
 - The parametric model is **i.i.d. with fat tails**: it does not capture
   volatility clustering or long bear decades and is **probably optimistic** vs
   multi-country data (Anarkulova). The historical-cohort and block-bootstrap
-  models exist precisely to temper this; treat 3.0–3.5% real as the planning
+  models exist precisely to temper this; treat 3.0-3.5% real as the planning
   case. Read ruin in relative orders of magnitude.
 - Everything is real euros; the pension is an **input**, not computed here.
 - **Not investment advice**; a hypothesis-exploration tool.
