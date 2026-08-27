@@ -156,7 +156,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 				return nil, fmt.Errorf("line %d: unexpected %q after the ticker; write a TER (number) or move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
 			}
 			if fees < 0 || fees > 20 {
-				return nil, fmt.Errorf("line %d: fees %q out of range (0–20 %%/year)", lineNo, rest[0])
+				return nil, fmt.Errorf("line %d: fees %q out of range (0-20 %%/year)", lineNo, rest[0])
 			}
 			h.Fees = fees
 			rest = rest[1:]
