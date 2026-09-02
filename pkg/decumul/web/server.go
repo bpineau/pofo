@@ -57,10 +57,15 @@ type handlerConfig struct {
 	indexNowKey string
 	beaconToken string
 	embedded    bool
+	gate        simGate // nil = a fresh gate of simParallel slots
 }
 
 // Option configures Handler.
 type Option func(*handlerConfig)
+
+// withSimGate substitutes the gate the simulation endpoints wait on; tests
+// use it to observe the refusal path.
+func withSimGate(g simGate) Option { return func(c *handlerConfig) { c.gate = g } }
 
 // WithNav adds a cross-navigation to the top bar (e.g. links back to the
 // portfolios hub and the FIRE book). The simulator only knows these siblings
@@ -138,6 +143,9 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	var cfg handlerConfig
 	for _, o := range opts {
 		o(&cfg)
+	}
+	if cfg.gate == nil {
+		cfg.gate = newSimGate(simParallel)
 	}
 	mux := http.NewServeMux()
 	// The index page carries a "<!--topnav-->" placeholder; splice the
@@ -242,6 +250,7 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		var body struct {
 			Weights []float64 `json:"weights"`
 		}
+		r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -254,7 +263,11 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 		_ = json.NewEncoder(w).Encode(out)
 	})
 	// Every simulation endpoint shares the same shape: POST a Params, get a
-	// JSON result. post factors the boilerplate once.
+	// JSON result. post factors the boilerplate once, and that boilerplate is
+	// where the request bounds live (bounds.go): the body is capped before it
+	// is decoded, every size-like field is clamped before any plan is built,
+	// and the computation waits for one of the gate's slots so a burst cannot
+	// pile simulations on top of one another.
 	post := func(path string, compute func(Params) any) {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodPost {
@@ -262,16 +275,22 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 				return
 			}
 			var pr Params
+			r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 			if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
+			if !cfg.gate.acquire(r) {
+				http.Error(w, "busy", http.StatusServiceUnavailable)
+				return
+			}
+			defer cfg.gate.release()
 			w.Header().Set("Content-Type", "application/json")
 			// The risk-based guardrail's table is solved on the page's own
 			// central assumptions (blended toward the prior on a short
 			// history, CAPE-anchored when the anchor is on), which only the
 			// server knows: stamp them before any plan is built.
-			_ = json.NewEncoder(w).Encode(compute(pr.withCentral(panel)))
+			_ = json.NewEncoder(w).Encode(compute(pr.bounded().withCentral(panel)))
 		})
 	}
 	post("/api/sim", func(pr Params) any { return ComputeWithPanel(pr, panel) })
