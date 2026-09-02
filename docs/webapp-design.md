@@ -176,6 +176,14 @@ each, `p=` value **<= 2000 bytes**, a **60 s** compute timeout per request, and
 The concurrency bound is safe because `marketdata.Client` guards its caches and
 its on-disk writes (temp file then rename, each write carrying complete JSON).
 
+The FIRE simulator's `POST /api/*` endpoints carry their own bounds
+(`pkg/decumul/web/bounds.go`): body capped at 64 KB, `nPaths` clamped to the
+slider's own maximum (10 000) and every year-like field to 100, and the
+computations queue behind a small semaphore (half the cores, at least 2), a
+request whose client has gone away being refused with 503. Before those
+bounds, one posted `nPaths` of a million took 2.4 GB and 22 s of every core,
+which on a shared host is a denial of service of everything else on it.
+
 ### Catalog-only identifiers for `p=`
 
 An `ex=` file is a vetted build shipped in the binary, so it carries no
