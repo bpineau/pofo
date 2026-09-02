@@ -54,4 +54,13 @@
 // carry: the risk of outliving the money, the estate that pays for removing
 // it, and the payout the quote actually offers against the plan's own
 // withdrawal rate. Everything else on the page ignores the block.
+//
+// Every simulation endpoint is bounded (bounds.go), because the page may be
+// served to anonymous visitors from a small machine: the posted body is
+// capped at maxBodyBytes before it is decoded, nPaths and every year-like
+// field are clamped (maxPaths is the top of the page's own slider), and the
+// computations queue behind simParallel slots, so no request can inflate a
+// simulation past what the page itself can ask for, and a burst cannot pile
+// them up. A request whose client gave up while waiting is refused with 503
+// rather than computed for nobody.
 package web
