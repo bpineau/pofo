@@ -6,3 +6,6 @@ pofo-*.html
 .claude/scheduled_tasks.lock
 /docs/superpowers/
 /.figure-audit.*
+/.claude/RESUME.md
+/.claude/settings.local.json
+/.claude/worktrees/
