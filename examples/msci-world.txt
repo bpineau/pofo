@@ -1,4 +1,5 @@
 # MSCI World -- 100% equity base
-# The '#meta sim:on' directive extends the history before the ETF's inception.
+# Idea: developed-world equity in one line, the simplest baseline in this
+#   directory. '#meta sim:on' extends the history before the ETF's inception.
 #meta sim:on
 100	IWDA     # iShares Core MSCI World UCITS ETF USD (Acc), history-extended
