@@ -6,14 +6,14 @@
 # Inspired by: factor investing (Fama-French) + a light crisis-alpha overlay.
 # Pair with regular contributions (monthly DCA) over a long horizon.
 # Backtest note: the small-cap-value sleeve uses ZPRVSIM (MSCI USA Small Cap
-#   Value Weighted, real ZPRV from 2015, simulated back to 1997) so the
+#   Value Weighted, real ZPRV from 2015, backcast to 1963) so the
 #   factor's long record -- incl. the dot-com bust and 2008 -- is visible. In
 #   practice buy the UCITS Avantis Global Small Cap Value (IE0003R87OG3) for a
 #   global tilt, or SPDR US Small Cap Value Weighted (ZPRV / IE00BSPLC413).
 #   The full portfolio's common window is still capped ~2015 by the momentum
-#   ETF's inception (IWMO); the value sleeve itself now spans 28 years.
+#   ETF's inception (IWMO); the value sleeve itself reaches back to 1963.
 # Tuning note: weights nudged toward what the optimizer (risk-parity and a
-#   capped max-sharpe, run over 2014→) consistently favored -- a little less
+#   capped max-sharpe, run over 2014 onward) consistently favored -- a little less
 #   emerging markets (a real, persistent drag this window) for more momentum
 #   and trend ballast. Tempered, not the raw in-sample weights; the result
 #   Pareto-beats the even split (higher return, lower vol and drawdown).
@@ -23,6 +23,6 @@
 
 45    IWDA       # World core (IWDA)
 10    EIMI       # Emerging Markets (EIMI)
-15    ZPRV            # Small-cap value, long history (US SCVW 1997→); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
+15    ZPRV            # Small-cap value (US SCVW, backcast to 1963); buy the UCITS Avantis Global SC Value IE0003R87OG3, or ZPRV
 18    IWMO    # World Momentum (IWMO)
 12    KMLM            # Managed futures ballast (UCITS: iMGP DBi)

@@ -1,5 +1,7 @@
 # S&P 500 -- 100% US large-cap equities, history-extended
-# Idea: the whole US large-cap market in one line. '#meta sim:on' splices
-#   simulated history in front so the backtest reaches well before inception.
+# Idea: the whole US large-cap market in one line, and the benchmark most
+#   of the other files are measured against. '#meta sim:on' splices
+#   simulated history in front so the backtest reaches well before the
+#   fund's inception.
 #meta sim:on
 100  VFINX      # Vanguard 500 Index (S&P 500 total return)

@@ -9,6 +9,6 @@
 #meta sim:on
 40    IWDA       # World core (IWDA)
 20    IWVL    # World Value (IWVL)
-20    ZPRV            # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
+20    ZPRV            # Small-cap value (US sleeve, backcast to 1963); buy the UCITS Avantis Global SC Value IE0003R87OG3, or ZPRV
 10    ZPRX    # Europe Small-Cap Value (ZPRX)
 10    EIMI       # Emerging Markets (EIMI)

@@ -5,7 +5,7 @@
 # Inspired by: Dalio's All Weather, popularized by Tony Robbins, 'Money: Master the Game'.
 #   https://www.bridgewater.com/research-and-insights/the-all-weather-story
 # Backtest uses long US-treasury/gold history (SIM); UCITS buy-route: IDTL,
-#   IEF→IEGA, IGLN, ICOM.
+#   IEF via IEGA, IGLN, ICOM.
 #meta rebalance:180
 #meta sim:on
 

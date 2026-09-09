@@ -10,10 +10,10 @@
 #   up ~8 points of notional, and 1.2 points of measured CAGR, to stay
 #   buyable.
 #
-# Thesis in one line: five engines, and every sleeve that CAN be expressed
-#   through an embedded-leverage instrument is, so ~125% of notional
-#   exposure fits in 100% of capital with no margin account, no borrow rate
-#   spread, and no daily-reset decay.
+# Idea: five engines, and every sleeve that CAN be expressed through an
+#   embedded-leverage instrument is, so ~125% of notional exposure fits in
+#   100% of capital with no margin account, no borrow rate spread, and no
+#   daily-reset decay.
 #
 # ## What 100 EUR actually holds (the exposure ledger)
 #
@@ -294,9 +294,11 @@
 #       overlays earn anything, exactly when bonds and equities may both
 #       struggle (2022-23). Invisible on a statement, real in the return.
 #   (c) Fee stack: 0.33%/yr weighted TER vs 0.29% for the buyable hydra.
-#       The trend legs are the expensive lines (0.75% and 0.23%); AQR's
-#       flat-fee I class cuts engine 3b further for tickets that clear its
-#       minimum.
+#       The trend legs carry it (0.75% for MFEH, 0.23% for RAEF), and that
+#       0.23% is the least durable number in the file: it is a management
+#       fee WAIVED at the manager's discretion, not a published schedule.
+#       Held instead through the flat I class IAE1FT (1.26%/yr, for tickets
+#       that clear its minimum), the weighted stack rises to ~0.54%/yr.
 #   (d) Product risk: GDE is a small, young ETF, and MFEH is younger still
 #       (a few weeks of live history, ~EUR 11m of assets, Xetra only, not
 #       yet registered for sale in France at the time of writing). A

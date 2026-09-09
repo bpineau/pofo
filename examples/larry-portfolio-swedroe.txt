@@ -7,6 +7,6 @@
 # UCITS. The bond sleeve stays short/high-quality on purpose.
 
 #meta sim:on
-30    ZPRV            # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV (IE00BSPLC413)
+30    ZPRV            # Small-cap value (US sleeve, backcast to 1963); buy the UCITS Avantis Global SC Value IE0003R87OG3, or ZPRV (IE00BSPLC413)
 50    IEGA    # € Government Bond (IEGA)
 20    ITPS    # TIPS (ITPS)
