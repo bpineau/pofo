@@ -4,7 +4,7 @@
 #   selling equities low, and gold for tail protection. Drawn at 4%/yr.
 # Inspired by: bucket / yield-shield decumulation + 4% rule, made all-weather.
 # Demonstrates a withdrawal phase; tune the rate to your needs.
-# Tuning note: weights nudged toward what the optimizer favored over 2018→ --
+# Tuning note: weights nudged toward what the optimizer favored over 2018 onward:
 #   slightly less equity/dividend for a touch more TIPS and gold, which
 #   shrinks the drawdown that matters most in a withdrawal phase (sequence
 #   risk). Tempered, not the optimizer's raw gold-heavy in-sample mix; the

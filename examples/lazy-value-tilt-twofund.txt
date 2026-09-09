@@ -1,10 +1,12 @@
-# World + global small-cap value tilt
-# Idea: a broad world core with a small, evidence-based tilt to the size and
-#   value premia (Fama-French) -- a mild factor lean without much complexity.
+# World + small-cap value -- a broad core with a mild size/value tilt
+# Idea: a world core with a small, evidence-based tilt to the size and value
+#   premia (Fama-French), and little else to maintain. The tilt is backtested
+#   on the US small-value sleeve for its depth; the global fund is the one to
+#   buy.
 # Inspired by: Fama-French factor research; Ben Felix / Rational Reminder model portfolios.
 #   https://www.pwlcapital.com/rational-reminder/
 # UCITS, 100% equity.
 
 #meta sim:on
 85    IWDA       # World (IWDA)
-15    ZPRV            # Small-cap value, long history (US 1993->); buy UCITS IE0003R87OG3 (Avantis Global SC Value) or ZPRV
+15    ZPRV            # Small-cap value (US sleeve, backcast to 1963); buy the UCITS Avantis Global SC Value IE0003R87OG3, or ZPRV

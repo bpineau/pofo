@@ -2,8 +2,9 @@
 # Idea: a five-engine Dragon variant built on a capital-efficient 90/60 core
 #   (NTSX carries the stock+bond engine) so the diversifiers stack on top:
 #   long volatility, two trend engines, discretionary macro, gold and
-#   long-duration Treasuries. Several legs are US-listed (DBMF, ZROZ, BHMG),
-#   so treat this as a research build rather than an EU-retail buy list.
+#   long-duration Treasuries. Several legs sit outside the EU retail shelf
+#   (DBMF, ZROZ and KMLM are US-listed, BHMG is London-listed), so treat
+#   this as a research build rather than a buy list.
 #meta sim:on
 33	NTSX                    # Stock + bond engine: US Efficient Core 90/60 (WisdomTree NTSX)
 15	GOLD                    # Gold (UCITS buy-route: IGLN)

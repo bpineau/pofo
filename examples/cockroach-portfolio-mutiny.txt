@@ -1,7 +1,7 @@
 # Cockroach Portfolio -- Jason Buck / Mutiny Fund, modernized
-# Idea: the four-quadrant cousin of the Dragon -- equal risk to stocks, bonds,
-#   gold and trend-following. Ugly but unkillable: survives whatever the decade
-#   throws at it.
+# Idea: the four-quadrant cousin of the Dragon -- a quarter of capital each
+#   to stocks, bonds, gold and trend-following. Ugly but unkillable: it
+#   survives whatever the decade throws at it.
 # Inspired by: Mutiny Fund / Jason Buck, 'The Cockroach Portfolio'.
 #   https://mutinyfund.com/cockroach/
 # Trend via managed futures (UCITS buy-route: iMGP DBi).

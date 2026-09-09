@@ -1,6 +1,7 @@
-# Lazy World Plus EM -- Developed World + Emerging Markets (cap-weighted ACWI, built cheaply)
-# Idea: replicate MSCI ACWI with two cheaper building blocks (World ~88%,
-#   EM ~12%) -- broad equity beta at a lower blended fee.
+# Lazy World + EM -- MSCI ACWI rebuilt from two cheaper blocks
+# Idea: replicate the cap-weighted world (developed + emerging) with two
+#   building blocks instead of one ACWI fund (World 88%, EM 12%): the same
+#   broad equity beta at a lower blended fee.
 # Inspired by: the classic Bogleheads two-ETF world equity build.
 # UCITS, accumulating, 100% equity.
 

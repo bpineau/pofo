@@ -1,4 +1,6 @@
 # Permanent Portfolio (raw US tickers) -- 25% each stocks, long bonds, gold, cash
+# Idea: Harry Browne's four seasons, in their original US building blocks.
+#   permanent-portfolio-browne.txt is the same design in UCITS vehicles.
 #meta sim:on
 25  VTI     # US equities
 25  TLT     # US long-term bonds

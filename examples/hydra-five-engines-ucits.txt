@@ -1,14 +1,16 @@
 # Hydra (five engines), UCITS edition -- diversify across return engines, not tickers
-# Every line is buyable today from an EU/French retail account (UCITS funds
-# plus one UCITS-eligible ETC, all with PRIIPs KIDs).
 #
-# Thesis in one line: five independent, well-documented sources of return,
-#   each answering a different macro regime, sized by risk contribution
-#   rather than capital, and each expressed through the most capital-
-#   efficient instrument buyable here, so the diversifiers stack ON TOP of
-#   a full growth engine instead of being funded by shrinking it.
+# STATUS: buyable today from an EU/French retail account, every line
+#   included (UCITS funds plus one UCITS-eligible ETC, all with PRIIPs
+#   KIDs). This is the buyable flagship of the hydra family.
 #
-# This is the buyable flagship of the hydra family. Three related files:
+# Idea: five independent, well-documented sources of return, each
+#   answering a different macro regime, sized by risk contribution rather
+#   than capital, and each expressed through the most capital-efficient
+#   instrument buyable here, so the diversifiers stack ON TOP of a full
+#   growth engine instead of being funded by shrinking it.
+#
+# Three related files:
 #   - hydra-five-engines-capital-efficient.txt: the research build (~125%
 #     notional via US-listed stacked funds, no PRIIPs constraint). It marks
 #     where the frontier sits, keeps the alternatives-considered ledger and
@@ -292,6 +294,6 @@
 35    NTSG      # Engine 1, equity + duration: WisdomTree Global Efficient Core 90/60 (NTSG, IE00077IIPQ8; euro-native variant NTSZ IE000OV4XWA3)
 12    ZPRV      # Engine 2, value factor: SPDR US Small Cap Value Weighted (ZPRV, IE00BSPLC413; global alt AVWS IE0003R87OG3)
 15    MFEH      # Engine 3a, trend replication, EUR-hedged: iMGP DBi Managed Futures R EUR HP (MFEH, LU3359622902; unhedged class DBMFE LU2951555403)
-13    LU1662501532 # Engine 3b, second trend model: AQR Managed Futures UCITS (LU1103257975; EUR share LU1662502183 if available; fallback Winton IE00BG382Q20 or Man AHL Trend LU0503879685)
+13    LU1662501532 # Engine 3b, second trend model: AQR Managed Futures UCITS, EUR-hedged flat RAEF class (LU1662501532; durable-fee route for 100k+ tickets IAE1FT LU2622190622; fallback Winton IE00BG382Q20 or Man AHL Trend LU0503879685)
 17    IGLN      # Engine 4, gold: iShares Physical Gold ETC (IGLN, IE00B4ND3602), backcast to 1968 spot minus 0.12%/yr fee
 8     IDTL      # Engine 5, deflation duration: iShares USD Treasury 20+y (IDTL, IE00BSKRJZ44; EUR-hedged share DTLE)

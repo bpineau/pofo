@@ -3,7 +3,8 @@
 #   20% each total-market equity, small-cap value, long bonds, short bonds, gold.
 # Inspired by: Tyler, Portfolio Charts.
 #   https://portfoliocharts.com/portfolio/golden-butterfly/
-# Backtest via long US history (SIM); UCITS: IWDA, ZPRV, IDTL, IB01/SHY, IGLN.
+# Backtest via long US history (SIM); UCITS buy-route: IWDA, ZPRV, IDTL,
+#   IB01 for the short sleeve, IGLN.
 #meta rebalance:365
 #meta sim:on
 

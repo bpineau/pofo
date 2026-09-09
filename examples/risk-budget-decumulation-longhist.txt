@@ -22,10 +22,10 @@
 #   the same book:
 #
 #     metric              with linkers (CHSN)   this file (XEON)
-#     CAGR                       7.98 %                7.96 %
-#     volatility                 8.27 %                8.23 %
-#     max drawdown             -19.14 %              -18.27 %
-#     worst rolling 5y           0.67 %                0.92 %
+#     CAGR                       7.98%                7.96%
+#     volatility                 8.27%                8.23%
+#     max drawdown             -19.14%              -18.27%
+#     worst rolling 5y           0.67%                0.92%
 #
 #   Read that table twice, because it cuts both ways. It says the WHOLE-BOOK
 #   statistics do not depend on the linker line, so carrying the book back on
@@ -39,21 +39,21 @@
 #
 #   1996-03 to 2026-08 covers the Asian crisis, LTCM, the dotcom top AND its
 #   bust, 2008, 2011, 2020 and 2022. Measured over the whole window, pre-tax
-#   and before any withdrawal: CAGR ~8.6 %, volatility ~8.1 %, worst drawdown
-#   ~-18.5 %, worst rolling 5y ~+0.9 %/yr.
+#   and before any withdrawal: CAGR ~8.6%, volatility ~8.1%, worst drawdown
+#   ~-18.5%, worst rolling 5y ~+0.9%/yr.
 #
 #   The dotcom passage is the reason the file exists (2000-03 to 2003-03,
 #   against MSCI World in EUR):
 #
 #     metric              this book        MSCI World (EUR)
-#     CAGR                 -0.56 %              -19.88 %
-#     max drawdown        -13.47 %              -55.20 %
-#     max drawdown real   -15.93 %              -57.32 %
-#     volatility            8.17 %               24.30 %
+#     CAGR                 -0.56%              -19.88%
+#     max drawdown        -13.47%              -55.20%
+#     max drawdown real   -15.93%              -57.32%
+#     volatility            8.17%               24.30%
 #
 #   And over the whole 2000-06 to 2007-12 stretch, the decade a European
-#   equity investor lost: CAGR +5.8 % against -2.3 %, Sharpe 0.75 against
-#   -0.03, worst rolling 5y +3.6 % against -7.8 %, longest recovery 2.8 years
+#   equity investor lost: CAGR +5.8% against -2.3%, Sharpe 0.75 against
+#   -0.03, worst rolling 5y +3.6% against -7.8%, longest recovery 2.8 years
 #   against 7.3 and counting.
 #
 #   Calendar years, this book / MSCI World net in EUR:
@@ -65,13 +65,13 @@
 #     2001    +3.3 / -12.3      2007    +3.6 /  -1.4
 #     2002    -7.2 / -32.0
 #
-#   Cumulative 2000-2007: +60.4 % against -12.7 %; over the three bear
-#   years 2000-2002 alone, +2.5 % against -44.5 %.
+#   Cumulative 2000-2007: +60.4% against -12.7%; over the three bear
+#   years 2000-2002 alone, +2.5% against -44.5%.
 #
 # ## The price is paid in advance (1997-1999)
 #
 #   Read the first three rows of that table before the rest: the book
-#   compounds +58 % over 1997-1999 while the index compounds +115 %.
+#   compounds +58% over 1997-1999 while the index compounds +115%.
 #   Three consecutive years of trailing a world tracker by 12 to 24
 #   points, at the exact moment every conversation says diversification
 #   is obsolete, are the entry fee for the three years that follow. That
@@ -95,6 +95,11 @@
 #     yield regime and the two long-duration lines are its beneficiaries.
 #     Nothing in this window punishes them the way 2022 did.
 #   GOLD STARTS ITS BULL in 2001, near the beginning of the window.
+#   THE DIRECT-TREND LEG IS PRICED ON THE RAEF SHARE CLASS (LU1662501532),
+#     whose 0.23%/yr ongoing charge is a management fee waived at the
+#     manager's discretion; the parent file holds the durable flat class
+#     IAE1FT at 1.26%/yr instead. That is ~0.1 pt/yr of CAGR on the whole
+#     book, in this file's favour.
 #   Read the file as evidence about SEQUENCE RISK and equity bears, which is
 #   what it was built to test, and not as a general verdict.
 #
