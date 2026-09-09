@@ -7,10 +7,10 @@
 #   overlay lost on the way is rebuilt with two issuers instead of one, and
 #   every line is labelled by the kind of claim that justifies it.
 #
-# Thesis in one line: start from the liability (a stream of real euros over
-#   ~40 years), immunize the years where a bad sequence is unrecoverable,
-#   and spend the surplus on mechanisms that pay a documented premium, not
-#   on assets that merely backtested well.
+# Idea: start from the liability (a stream of real euros over ~40 years),
+#   immunize the years where a bad sequence is unrecoverable, and spend the
+#   surplus on mechanisms that pay a documented premium, not on assets that
+#   merely backtested well.
 #
 # LABELS. Each weight below is tagged by what produced it:
 #   DERIVED    falls out of a calculation (the linkers dose).
@@ -245,6 +245,8 @@
 #   debasement decade, on its own clock. Judging gold on the shock year
 #   is the same mistake as judging the linkers on 2022.
 #
+# ## 8. What 100 EUR actually holds (the exposure ledger)
+#
 #   42 equity (of which 14 small value)
 #   + ~26.5 nominal duration in 7y-equivalent terms (the euro 25+ line at
 #     ~20y duration counts ~2.9x its 5 points, the US 20+ at ~17y ~2.4x)
@@ -385,7 +387,8 @@
 #     floor vs 5.0). The drivers: the small-value tilt, gold at 15, and
 #     two drags on the challenger's side (broad commodities, an oversized
 #     near-zero-real linkers block). Ruin stayed <= 0.1% for both, which
-#     is the saturation argument of section 13 in action.
+#     ruin saturates near zero for any sane book, which is why section 13
+#     steers on floor years rather than on a ruin probability.
 #
 #   WHAT THE WINDOW CAN AND CANNOT SAY. The common period starts 2005-11,
 #     bounded by the linkers line. It contains 2008, 2011, 2020 and 2022,
@@ -455,7 +458,7 @@
 #     equity for equity, so no cross-sleeve move can happen there.
 #   - Always use limit orders on the thin LISTED lines (linkers, the
 #     replication trend ETF, euro 25+). The direct trend fund is not
-#     listed at all: it deals at the day's NAV on a early-afternoon
+#     listed at all: it deals at the day's NAV on an early-afternoon
 #     cut-off and settles three days later, so there is no price to
 #     limit, and a rebalance that pairs the two trend legs has to budget
 #     for the one-day lag between them.
@@ -493,8 +496,9 @@
 #     beyond-the-horizon tail, and French taxation of purchased annuities
 #     improves sharply with age at purchase.
 #
-# Siblings: risk-budget-decumulation-longhist.txt and -deephist.txt (this
-#   book on measured stand-ins, back to 1996 and 1987; the source of every
+# Siblings: risk-budget-decumulation-longhist.txt and
+#   risk-budget-decumulation-deephist.txt (this book on measured
+#   stand-ins, back to 1996-03 and 1986-12; the source of every
 #   long-window number quoted above), dragon-decumulation-household.txt
 #   (same wrappers, one generation earlier, stacked core kept),
 #   claude-dragonlite.txt (the simplicity flagship),
@@ -508,7 +512,7 @@
 5	MTH             # euro deflation duration: Amundi Euro Govt Bond 25+Y Acc (LU1686832194) | HEDGE, liability currency (s. 6)
 5	DTLA            # US deflation duration: iShares $ Treasury 20+yr Acc (IE00BFM6TC58) | HEDGE, accumulating and unhedged: crisis dollar, capped at 5 (s. 6)
 10	DBMFE           # trend, replication method: iMGP DBi Managed Futures EUR (LU2951555403; UNHEDGED class, ~10 pts of USD ride the NAV, s. 8; hedged sister MFEH LU3359622902 since 2026-05, same 0.75%, switch when AUM/registration allow) | MECHANISM, dose capped by error asymmetry (s. 4)
-10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26 %/yr flat, all of it inside the NAV, EUR 100k minimum; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk; on the share-class choice see below
+10	IAE1FT          # trend, direct method: AQR Managed Futures UCITS IAE1FT EUR-hedged (LU2622190622, 1.26%/yr flat, all of it inside the NAV, EUR 100k minimum; ETF fallback FOLOW) | MECHANISM, a second manager against manager risk; on the share-class choice see below
 15	IGLN            # gold: iShares Physical Gold ETC (IE00B4ND3602) | HEDGE, the stagflation regime (s. 7); physical ETC only, never an ETN
 13	CHSN            # euro linkers 1-10y: UBS Core BBG Euro Inflation Linked acc (LU1645380442) | NUMERAIRE / DERIVED, floor years 4-10 (s. 1-2); all-maturity IBCI (IE00B0M62X26) rejected as a real-rate duration bet
 5	AVWS            # global small value: Avantis Global SCV (IE0003R87OG3, 0.39%) | MECHANISM, weak, hence a minority share; EUR-quoted, USD unhedged

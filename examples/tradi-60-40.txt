@@ -1,4 +1,7 @@
 # Classic 60/40 -- US total-market stocks + total bond market
+# Idea: the reference balanced portfolio, and the baseline every other file
+#   here is arguing with. Compare it with miller-50-40-10.txt to see what
+#   ten points of trend-following do to the same mix.
 #meta sim:on
 60  VTI        # Vanguard Total Stock Market
 40  BND     # Vanguard Total Bond Market (simulated before 2007 via VBMFX)

@@ -1,7 +1,7 @@
 # Decumulation demo -- balanced 50/30/20, 4%/yr withdrawal
 # Idea: shows the withdrawal mechanics on a diversified balanced portfolio,
-#   drawn at 4% a year. Compare its IRR and final value with the yield-shield
-#   and all-weather decumulation files.
+#   drawn at 4% a year. Compare its IRR and final value with
+#   yield-shield-decumulation.txt and gentle-decumulation-ucits.txt.
 # Inspired by: Bengen/Trinity 4% safe-withdrawal studies.
 #meta capital:1000000
 #meta withdraw:4%/year

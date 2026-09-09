@@ -1,6 +1,6 @@
 # FIRE Bond Tent (departure years) -- the sequence-risk window build
 # Idea: the same engines as fire-decumulation-core, but with the defensive
-#   pocket inflated to ~20% (about 6-7 years of a 3% withdrawal) for the
+#   pocket inflated to ~24% (about 8 years of a 3% withdrawal) for the
 #   "retirement red zone": the ~10 first years where a bad sequence does
 #   permanent damage. The tent is meant to MELT: stop refilling linkers/cash
 #   after year ~8 and drift toward fire-glidepath-late.

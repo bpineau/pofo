@@ -9,10 +9,10 @@
 #   engine philosophy regrouped into THREE EVEN HEADS of notional exposure.
 #   Its job is the watchdog's: guard the floor while the owner sleeps.
 #
-# Thesis in one line: the S&P 500's 30-year return at half its volatility,
-#   a third of its drawdown and a sixth of its time under water, packaged
-#   as three balanced notional thirds (equity / trend / bonds+gold) with a
-#   minority of direct US exposure.
+# Idea: the S&P 500's 30-year return at half its volatility, a third of
+#   its drawdown and a sixth of its time under water, packaged as three
+#   balanced notional thirds (equity / trend / bonds+gold) with a minority
+#   of direct US exposure.
 #
 # ## What 100 EUR actually holds (the exposure ledger)
 #
@@ -185,7 +185,8 @@
 #   edge should be expected to shrink out of sample; the three-heads
 #   geometry, the ranges above and their empirical/a-priori labels are the
 #   part built to survive. The per-line sweep (rest renormalized,
-#   1996-2026) is re-runnable with: pofo -sweep cerberus-three-heads.txt.
+#   1996-2026) is re-runnable with:
+#     ./pofo -sweep examples/cerberus-three-heads.txt
 #
 # ## Measured profile (this toolkit, EUR, common window 1996-03 -> 2026-08)
 #   CAGR 10.61%, volatility 9.55% (8.66% monthly), Sharpe 1.07, Sortino
