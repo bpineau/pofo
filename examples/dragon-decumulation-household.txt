@@ -1,20 +1,20 @@
 # Dragon decumulation, household edition -- the whole-wealth build, wrappers included.
 #
-# STATUS: fully implementable today from a French retail setup. This is
-#   the dragon-decumulation design expressed as a real household holds it: across a CTO
-#   AND the French tax shelters (PEA / PEA-PME), which by law can hold
-#   nothing but European-domiciled equity funds. The shelters are not a
-#   footnote; they reshape the build, and the reshaping turns out to be a
-#   measured upgrade, not a compromise. Nine lines, two sections below.
+# STATUS: fully implementable today from a French retail setup. This is the
+#   family's decumulation design as a real household holds it: across a
+#   taxable account (CTO) AND the French tax shelters (PEA / PEA-PME),
+#   which by law can hold nothing but European-domiciled equity funds. The
+#   shelters are not a footnote; they reshape the build, and the reshaping
+#   turns out to be a measured upgrade, not a compromise. Nine lines, two
+#   sections below.
 #
-# Thesis in one line: dragon-decumulation's design (a smaller efficient core,
-#   trend split across two managers, gold, a contractual euro-inflation
-#   line), with the equity sleeve carved out of the 90/60 core and moved
-#   into the tax shelters as plain world equity plus a small-cap
-#   value/quality tilt, and the bond overlay lost in the carve-out
-#   rebuilt with a dedicated long-duration line.
+# Idea: a smaller efficient core, trend split across two managers, gold and
+#   a contractual euro-inflation line, with the equity sleeve carved out of
+#   the 90/60 core and moved into the tax shelters as plain world equity
+#   plus a small-cap value/quality tilt, and the bond overlay lost in the
+#   carve-out rebuilt with a dedicated long-duration line.
 #
-# ## Lineage: Browne -> Cole -> dragon-lite/hydra -> dragon-decumulation -> here
+# ## Lineage: Browne -> Cole -> dragon-lite/hydra -> decumulation -> here
 #
 #   The design philosophy is regime balancing, four generations on.
 #   Harry Browne's Permanent Portfolio (1981) planted the idea: hold one
@@ -25,9 +25,10 @@
 #   in this directory made it buyable: dragon-lite distilled it to three
 #   UCITS lines around a capital-efficient 90/60 core (Asness, "Why Not
 #   100% Equities", JPM 1996), the hydra engineered it into one head per
-#   return engine, and dragon-decumulation re-tuned it for decumulation, where
-#   sequence risk and a euro-inflation liability change what "optimal"
-#   means (see that file for the full argument).
+#   return engine, and a CTO-only edition re-tuned it for decumulation,
+#   where sequence risk and a euro-inflation liability change what
+#   "optimal" means. That CTO-only edition is no longer bundled: this file
+#   supersedes it, and the comparisons below are what it measured.
 #   This edition adds the last real-world layer: TAXES AND WRAPPERS. A
 #   French household keeps part of its wealth in a PEA and a PEA-PME
 #   (gains taxed ~18.6% instead of ~31.4%), and those wrappers accept only
@@ -57,12 +58,13 @@
 #    7 Indep. Europe Small  -> 7  European small value/quality
 #    2 Indep. France Small Mid -> 2  French small/mid value/quality
 #   ------------------------------------------------------------------
-#   Total: ~39 equity (of which 9 small value) + ~26.5 nominal duration
-#   (7y-equivalent) + 26 trend + 15 gold + 13 linkers  = ~119.5%
-#   exposure, all embedded leverage inside NTSG, no margin anywhere.
-#   The ledger lands on dragon-decumulation's targets almost exactly; only the
-#   internal composition of the equity sleeve differs (a 9-point
-#   small-value tilt instead of pure cap-weight).
+#   Total: ~39 equity (of which 9 small value) + ~28 nominal duration
+#   (7y-equivalent: 16.8 from the overlay plus MTH's 4 points at ~2.8x)
+#   + 26 trend + 15 gold + 13 linkers  = ~121% exposure, all embedded
+#   leverage inside NTSG, no margin anywhere.
+#   The ledger lands on the CTO-only edition's targets almost exactly:
+#   only the internal composition of the equity sleeve differs (a
+#   9-point small-value tilt instead of pure cap-weight).
 #
 # ## Regime map: what hurts a spending household, and which line answers
 #
@@ -102,7 +104,7 @@
 #   price is a forgone implicit rising-equity glidepath (Kitces & Pfau,
 #   2014) from spending the equity-only shelters early; it is cheap,
 #   because band rebalancing unwinds most of that de-equitization
-#   anyway, and at this family's withdrawal rates sequence risk is thin
+#   anyway, and at this build's withdrawal rates sequence risk is thin
 #   enough that the certain tax edge outweighs the shape.
 #   REBALANCING ASYMMETRY: money cannot move freely INTO the shelters
 #   (deposit ceilings) and cannot change asset class inside them, so all
@@ -152,7 +154,7 @@
 #   hold whichever variant you will not fiddle with.
 #
 # CTO -- trend, two models (13% + 13%; total sane range 20-30%).
-#   Same head, same reasoning, same vehicles as dragon-decumulation: DBMFE
+#   Same head, same reasoning, same vehicles as the CTO-only edition: DBMFE
 #   (LU2951555403, DBi replication) + AQR Managed Futures UCITS
 #   (RAEF EUR LU1662501532, direct TSMOM). RAEF is the class to hold,
 #   not the cheapest pin: flat fee, no performance fee, EUR-hedged,
@@ -233,22 +235,22 @@
 # ## The two-lens verdict (and what was actually measured)
 #
 #   Decumulation builds cannot be judged through one lens; the two
-#   available lenses are biased in opposite directions. Measured on the toolkit's
-#   deep panels, with two declared proxies for the young lines (ZPRV
+#   available lenses are biased in opposite directions. Measured on the
+#   toolkit's deep panels, with two declared proxies for the young lines (ZPRV
 #   stands in for the Independance sleeve, the TIPS-hEUR backcast for
 #   the linkers line; window 2000/2005 -> 2026):
 #   LENS A, raw window (monthly real bootstrap, 40y, rigid 4% real
-#   withdrawal): ruin 3.1% vs 5.5% for pure dragon-decumulation and 2.1% for
+#   withdrawal): ruin 3.1% vs 5.5% for the CTO-only edition and 2.1% for
 #   the hydra; safe rate at 5% ruin 4.17% vs 3.96% and 4.36%. The
-#   small-value and duration lines close most of dragon-decumulation's
+#   small-value and duration lines close most of the CTO-only edition's
 #   in-window gap to the hydra. Bias: resampling 2000-2026 crowns that
 #   window's winners.
 #   LENS B, valuation-anchored (central mean replaced by the CAPE-
 #   implied estimate, risk kept from the fitted weights): safe rate
-#   2.52% vs 2.54% (dragon-decumulation) and 2.33% (hydra). The low-risk book
+#   2.52% vs 2.54% (CTO-only) and 2.33% (hydra). The low-risk book
 #   keeps the family lead. Bias: equal forward mean flatters low vol.
 #   WHAT SURVIVES BOTH: this edition is the family's best-of-both, at
-#   or near the top under each lens while pure dragon-decumulation wins only
+#   or near the top under each lens while the CTO-only edition wins only
 #   lens B and the hydra only lens A. What no lens can test: every
 #   linker series starts post-2000, so the 1970s, the regime the
 #   linkers exist for, sit outside every backcast. Every non-linker
@@ -256,10 +258,10 @@
 #   Independance sleeve to 1990 via its France sibling), so the file's
 #   panel reaches the euro 1-10 line's 2005-11 backcast start, the
 #   deepest any euro-linker book can go. Mind the window when comparing
-#   with siblings fitted on
-#   1988+ panels: same plan, different window, different verdict is a
-#   simulator artifact, not a portfolio property; on an identical
-#   panel this build matches or beats them (the tables above; to see it
+#   with siblings fitted on 1988+ panels: same plan, different window,
+#   different verdict is a simulator artifact, not a portfolio
+#   property; on an identical panel this build matches or beats them
+#   (the tables above; to see it
 #   yourself, window the siblings with the CLI flag, e.g.
 #   `pofo -start 2000-07-01 -fire examples/claude-dragonlite.txt`).
 #
@@ -292,7 +294,7 @@
 #       on the CTO (via NTSG) already dilutes it.
 #   (d) DEFLATION CONVEXITY: improved by MTH but still the modest
 #       quadrant; the family accepts this rather than pay negative
-#       carry for long-vol convexity (see dragon-decumulation and the hydra).
+#       carry for long-vol convexity (see the hydra files).
 #   (e) TREND WINTERS: 26 points can spend years flat while equities
 #       run; the cure is written rules, not weights. The rule, written:
 #       the trend sleeve moves only on band rebalancing at a scheduled
@@ -308,17 +310,17 @@
 #       sleeve to 1990 via its France sibling), so the panel binder is
 #       the linkers line: 2005-11 with the euro 1-10 fund, 2000-06
 #       with its LU1459801780 stand-in (see the linkers head), and
-#       nothing earlier anywhere,
-#       because inflation-linked markets did not exist (first linkers:
-#       UK 1981, TIPS 1997, OATi 1998, euro ~2003).
-#       Regime-behavior study, not a promise.
+#       nothing earlier anywhere, because inflation-linked markets did
+#       not exist (first linkers: UK 1981, TIPS 1997, OATi 1998, euro
+#       ~2003). Regime-behavior study, not a promise.
 #   (h) NO BUFFER IN THE FILE: pair with 2-3 years of spending in euro
 #       liquidity held outside these weights (livrets, fonds euros,
 #       XEON; see fire-liability-buffer.txt), spent in drawdown years.
 #
 # ## Honesty note on the WEIGHTS
-#   28/5/7/2/4/13/13/15/13 are hand-rounded from dragon-decumulation's targets
-#   minus the wrapper carve-out arithmetic; nothing was optimizer-fit.
+#   28/5/7/2/4/13/13/15/13 are hand-rounded from the CTO-only edition's
+#   targets minus the wrapper carve-out arithmetic; nothing was
+#   optimizer-fit.
 #   The two-lens table is the full disclosure; expect measured edges to
 #   shrink out of sample. Anywhere inside the sane ranges is the same
 #   portfolio. The design carried across editions, a contractual

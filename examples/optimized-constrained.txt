@@ -1,11 +1,11 @@
-# Optimizer under constraints -- the most return inside a volatility budget,
-# fitted on data it is then judged outside of.
+# Optimizer under constraints -- the most return inside a volatility budget
 #
-# Three things separate this from optimized.txt, and each answers a way a
-# plain optimizer misleads:
+# Idea: fit the weights on part of the history and judge them on the rest,
+#   under a volatility cap and per-line bounds. Three things separate this
+#   from optimized.txt, and each answers a way a plain optimizer misleads:
 #
 # 1. THE OBJECTIVE IS THE REAL QUESTION. Not "the best Sharpe" but "the most
-#    return that stays under 12 % volatility". Sharpe is also a poor proxy
+#    return that stays under 12% volatility". Sharpe is also a poor proxy
 #    here specifically: this toolkit computes it at a ZERO risk-free rate, so
 #    a cash-like sleeve buys ratio for free. A volatility cap cannot be gamed
 #    that way.
