@@ -87,3 +87,28 @@ func TestDedupWriterConcurrent(t *testing.T) {
 		t.Errorf("%d lines, want 1", n)
 	}
 }
+
+// The servers install the filter on the standard logger itself, so the lines
+// pkg/compare prints directly are deduplicated too. Installing it must leave
+// the existing destination in place, not replace it.
+func TestDedupServerLog(t *testing.T) {
+	var buf bytes.Buffer
+	save := log.Writer()
+	log.SetOutput(&buf)
+	defer log.SetOutput(save)
+
+	dedupServerLog()
+	log.SetFlags(0)
+	log.Print("resolved NTSG -> Global Efficient Core")
+	log.Print("resolved NTSG -> Global Efficient Core")
+	log.Print("warning: FX rate held constant")
+	log.Print("warning: FX rate held constant")
+
+	got := buf.String()
+	if n := strings.Count(got, "resolved NTSG"); n != 1 {
+		t.Errorf("the resolution line was printed %d times through the standard logger, want once:\n%s", n, got)
+	}
+	if n := strings.Count(got, "warning: FX rate"); n != 2 {
+		t.Errorf("a warning was printed %d times, want every time:\n%s", n, got)
+	}
+}

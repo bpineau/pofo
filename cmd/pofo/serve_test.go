@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"html"
+	"log"
 	"net/http"
 	"net/http/httptest"
 	"regexp"
@@ -754,5 +755,92 @@ func TestLogAccessSkipsHealthz(t *testing.T) {
 	got := buf.String()
 	if n := strings.Count(got, "\n"); n != 1 || !strings.Contains(got, `"GET / HTTP/1.1" 200`) {
 		t.Errorf("landing page: %d access-log line(s): %q", n, got)
+	}
+}
+
+// The provenance pill names the first portfolio a mount was started on, and
+// says nothing when the mount runs on none.
+func TestSpecsLabel(t *testing.T) {
+	if got := specsLabel(nil); got != "" {
+		t.Errorf("a portfolio-less mount claims the label %q", got)
+	}
+	specs := []*portfolio.Spec{portfolio.Single("NTSG"), portfolio.Single("IWDA")}
+	if got := specsLabel(specs); got != "NTSG" {
+		t.Errorf("label = %q, want the first spec's name", got)
+	}
+}
+
+// The source address is the left-most X-Forwarded-For entry when the server
+// sits behind a proxy, and the peer's own host otherwise.
+func TestClientIP(t *testing.T) {
+	for _, tc := range []struct{ xff, remote, want string }{
+		{"", "203.0.113.9:54321", "203.0.113.9"},
+		{"198.51.100.7", "10.0.0.1:80", "198.51.100.7"},
+		{" 198.51.100.7 , 10.0.0.1 ", "10.0.0.1:80", "198.51.100.7"},
+		{"", "not-an-address", "not-an-address"},
+	} {
+		r := httptest.NewRequest(http.MethodGet, "/", nil)
+		r.RemoteAddr = tc.remote
+		if tc.xff != "" {
+			r.Header.Set("X-Forwarded-For", tc.xff)
+		}
+		if got := clientIP(r); got != tc.want {
+			t.Errorf("clientIP(xff=%q, remote=%q) = %q, want %q", tc.xff, tc.remote, got, tc.want)
+		}
+	}
+}
+
+// quietLog keeps a test that installs the servers' log filter from leaking it
+// into the rest of the package.
+func quietLog(t *testing.T) {
+	t.Helper()
+	save := log.Writer()
+	t.Cleanup(func() { log.SetOutput(save) })
+}
+
+// -serve serves until the context is canceled, then returns cleanly: the
+// shutdown path is the whole lifecycle contract, and an already-canceled
+// context exercises it without a single request. No portfolio means no fetch.
+func TestRunServeShutsDownWithTheContext(t *testing.T) {
+	quietLog(t)
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+	opt := &options{currency: "EUR", benchmark: "^GSPC", rebalance: 90, noOpen: true}
+	out := captureOutput(t, func() {
+		if err := runServe(ctx, opt, nil, nil, "127.0.0.1:0"); err != nil {
+			t.Errorf("runServe: %v", err)
+		}
+	})
+	if !strings.Contains(out, "pofo web app on http://127.0.0.1:") {
+		t.Errorf("-serve did not announce its address:\n%s", out)
+	}
+}
+
+// An address nothing can listen on fails the run instead of serving nowhere.
+func TestRunServeReportsABadAddress(t *testing.T) {
+	quietLog(t)
+	err := runServe(context.Background(), &options{noOpen: true}, nil, nil, "127.0.0.1:-1")
+	if err == nil {
+		t.Error("-serve accepted an impossible listen address")
+	}
+}
+
+// The access log reports the status the handler actually sent, not the 200 it
+// assumed: an error page must be visible as one in the log.
+func TestLogAccessRecordsTheStatus(t *testing.T) {
+	var buf bytes.Buffer
+	h := logAccess(&buf, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "gone", http.StatusNotFound)
+	}))
+	req := httptest.NewRequest(http.MethodGet, "/missing", nil)
+	req.Header.Set("Referer", "https://example.org/from")
+	req.Header.Set("User-Agent", "pofo-test")
+	h.ServeHTTP(httptest.NewRecorder(), req)
+	got := buf.String()
+	if !strings.Contains(got, `"GET /missing HTTP/1.1" 404 5`) {
+		t.Errorf("status or size missing from the access line: %q", got)
+	}
+	if !strings.Contains(got, "https://example.org/from") || !strings.Contains(got, "pofo-test") {
+		t.Errorf("referer or user agent missing from the access line: %q", got)
 	}
 }
