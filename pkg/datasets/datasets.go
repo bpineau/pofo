@@ -29,7 +29,7 @@ func Refdata() fs.FS {
 }
 
 // BroadSample returns the embedded broad-sample per-country real-return table
-// (Jorda-Schularick-Taylor, 18 economies, 1870-2020; iso,year,equity,bond,bill
+// (Jorda-Schularick-Taylor, 16 economies, 1870-2020; iso,year,equity,bond,bill
 // as real annual fractions), pool-bootstrapped by the FIRE explorer's empirical
 // model. Regenerate with "make broadsample".
 func BroadSample() []byte {
