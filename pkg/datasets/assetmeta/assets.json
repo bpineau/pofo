@@ -136,10 +136,11 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Managed-futures / CTA replicator; tends to profit in trending markets and acts as crisis alpha during equity bear markets",
-    "confidence": "medium",
+    "notes": "Managed-futures / CTA replicator: it reads the recent returns of a basket of large CTA programmes and reproduces their implied positions in ten to fifteen liquid futures. Tends to profit in trending markets and acts as crisis alpha during equity bear markets. Replication is PHYSICAL (US Treasury bills, listed futures and two delta-one commodity notes per the audited report), not a swap. The DBi strategy across all vehicles held USD 5.6bn at 2026-06-30; the UCITS sub-fund that mirrors it for European buyers (DBMFE, LU2951555585, MFEH, LU2604697206) USD 594.2m at 2026-07-31. The 0.85% pin is the net expense ratio after the manager's fee waiver on a 0.95% gross.",
+    "confidence": "high",
     "sources": [
-      "https://stockanalysis.com/etf/dbmf/holdings/"
+      "https://stockanalysis.com/etf/dbmf/holdings/",
+      "https://www.imgp.com/imgp-dbi-managed-futures-fund/"
     ],
     "since": "2019-05-07"
   },
@@ -7209,7 +7210,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Winton flagship trend-following UCITS (GBP-hedged accumulating class); crisis-alpha diversifier uncorrelated to equities",
+    "notes": "Winton flagship trend-following UCITS, I GBP-hedged accumulating class; crisis-alpha diversifier uncorrelated to equities. NO PERFORMANCE FEE on any class of this fund, which with AQR's IAE1FT makes it one of only two schedules in the reachable managed-futures panel that bill nothing extra in the year the sleeve pays the floor. The class a French investor can actually reach through IBKR is not this one but the EUR-hedged I-P (IE00BG382T50, ongoing charge 1.12%/yr, GBP 50,000 minimum); the I classes at 1.05% are not on the platform, and the 0.33 pt/yr the cheaper class buys is not what caps this fund. What caps it is its 0.79 monthly correlation with the DBi replication book, the highest of the reachable panel: as a SECOND trend leg next to DBMFE it is close to a clone, and the pair measurably degrades both Sharpe and worst 12 months against holding DBMFE alone. Manager-level caveat: Winton fell from USD 28.5bn (2012) to 7.3bn (2020) and is back to 11.7bn of regulatory assets, of which only ~3.8bn on the Major-Market Trend programme this fund runs; the sub-fund itself is healthy at GBP 853m.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BG382Q20",
@@ -8256,12 +8257,15 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Euro-denominated (unhedged) share class of the iMGP DBi Managed Futures UCITS ETF (sibling of the USD LU2951555585); the EUR trend sleeve for the dragon/hydra/fire builds; managed-futures crisis-alpha diversifier",
+    "notes": "Euro-denominated UNHEDGED share class of the iMGP DBi Managed Futures UCITS ETF (sibling of the USD LU2951555585 and of the EUR-hedged MFEH LU3359622902, one portfolio at 0.75%/yr for the three); the EUR trend sleeve for the dragon/hydra/fire builds; managed-futures crisis-alpha diversifier. UNHEDGED IS A POSITION, NOT A DETAIL: regressed on the USD class and on EURUSD over 2025-05..2026-08 the class reads a strategy beta of +0.92 and a EURUSD beta of -0.94, i.e. essentially the whole notional is long dollar, and it correlates only 0.68 monthly with the hedged class of the same sub-fund. Over the 1996-2026 backcast the currency leg is worth +0.24 pt/yr of CAGR for +2.78 pts/yr of volatility; it paid handsomely in 2008 (+18.4 pts) and in the 2022 real-rate shock (+18.3 pts) and cost -7.9 pts in the 2025 tariff shock. Registered for sale in France, which MFEH is not. Sub-fund USD 594.2m at 2026-07-31; the audited portfolio is physical (Treasury bills, listed futures, two delta-one commodity notes), not the swap structure justETF files it under.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU2951555403",
       "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
-    ]
+    ],
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "LU2604697206",
@@ -8285,7 +8289,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "The EUR-HEDGED route into the same DBi Dynamic Beta Engine replication book as DBMFE, which is cheaper (0.75%/yr) but UNHEDGED. R EUR HP retail class (class launch 2024-04-29, ongoing charges 1.12%/yr = 0.80% max management fee plus expenses, no performance fee) of the iMGP DBi Managed Futures Fund sub-fund of the iMGP Funds Luxembourg SICAV, the original mutual-fund vehicle launched 2023-01; the UCITS ETF classes (DBMF USD LU2951555585, DBMFE EUR LU2951555403) are a SEPARATE 2025 sub-fund running the same strategy. The hedge is real and class-level, measured on local returns: correlation vs the US DBMF ETF (USD) 0.95 daily / 0.997 monthly over 2024-04..2026-08, vs the unhedged DBMFE only 0.37 daily / 0.70 monthly (the difference is USDEUR noise), and the CAGR gap vs DBMF USD of -2.3 pts/yr decomposes into the 1.8 pts average SOFR-ESTR carry, the 0.27 pts fee gap and ~0.25 pts hedging cost. IBKR carries it with zero minimum. Since 2026-05-13 a EUR-hedged ETF class also exists (MFEH on Xetra, LU3359622902, 0.75%/yr, still ~EUR 11m and unseasoned). No simdata backcast: if one is ever wanted, the DBMFE recipe's donor chain hedges trivially via the FX identity (donor local USD returns plus EUR cash minus USD cash).",
+    "notes": "The EUR-HEDGED route into the same DBi Dynamic Beta Engine replication book as DBMFE, which is cheaper (0.75%/yr) but UNHEDGED. R EUR HP retail class (class launch 2024-04-29, ongoing charges 1.12%/yr = 0.80% max management fee plus expenses, no performance fee) of the iMGP DBi Managed Futures Fund sub-fund of the iMGP Funds Luxembourg SICAV, launched 2023-01-25. The 2025 UCITS ETF classes (DBMF USD LU2951555585, DBMFE EUR LU2951555403, MFEH EUR LU3359622902) are classes OF THAT SAME SUB-FUND, not of a separate one: the audited annual report lists all of them in one class table. The hedge is real and class-level, measured on local returns: correlation vs the US DBMF ETF (USD) 0.95 daily / 0.997 monthly over 2024-04..2026-08, vs the unhedged DBMFE only 0.37 daily / 0.70 monthly (the difference is USDEUR noise), and the CAGR gap vs DBMF USD of -2.3 pts/yr decomposes into the 1.8 pts average SOFR-ESTR carry, the 0.27 pts fee gap and ~0.25 pts hedging cost. IBKR carries it with zero minimum, and unlike MFEH it IS registered for sale in France. Class AUM EUR 4.2m at 2026-08; sub-fund USD 594.2m at 2026-07-31 (255.0m end-2025, 74.5m end-2023), the DBi strategy across all vehicles USD 5.6bn at 2026-06-30. No simdata backcast: if one is ever wanted, the DBMFE recipe's donor chain hedges trivially via the FX identity (donor local USD returns plus EUR cash minus USD cash), which is what the MFEH recipe already does.",
     "confidence": "high",
     "sources": [
       "https://www.imgp.com/fund/lu2604697206-imgp-dbi-managed-futures-fund-r-eur-hp/",
@@ -8504,7 +8508,7 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Flat-fee institutional-series 'IAE1FT' EUR class launched 2026-05-11, EUR-hedged, accumulating, EUR 100,000 minimum initial subscription, reserved to 'Selected Institutional Investors' which the prospectus defines as including platforms at the Board's discretion (IBKR lists it). Prospectus list: 1.00% management + 0.25% expense cap + 0.01% taxe d'abonnement = 1.26%/yr, performance fee NA. That total is exactly the ongoing charge FT publishes, which is the point of this class: the whole of its cost is levied INSIDE the NAV, so the quoted price is the whole truth and there is no discretionary waiver to lose, unlike RAEF (LU1662501532), which lists the same 1.00% management and has it waived down to 0.23%. Measured against RAEF over the 59 days both quote, the daily correlation is 1.0000 and the wedge 0.995 pts/yr against the 1.03 the price lists predict. Backcast to 1996-03 (simdata) on RAEF's whole published history charged that 1.03%/yr, on a schedule rather than a constant so the pre-2015 class-A-aligned leg is not charged twice; the reconstruction reproduces the real class to 0.03 pts/yr over their overlap. Full dossier: docs/aqr-mf.txt.",
+    "notes": "Flat-fee institutional-series 'IAE1FT' EUR class launched 2026-05-11, EUR-hedged, accumulating, EUR 100,000 minimum initial subscription, reserved to 'Selected Institutional Investors' which the prospectus defines as including platforms at the Board's discretion (IBKR lists it). Prospectus list: 1.00% management + 0.25% expense cap + 0.01% taxe d'abonnement = 1.26%/yr, performance fee NA. That total is exactly the ongoing charge FT publishes, which is the point of this class: the whole of its cost is levied INSIDE the NAV, so the quoted price is the whole truth and there is no discretionary waiver to lose, unlike RAEF (LU1662501532), which lists the same 1.00% management and has it waived down to 0.23%. Measured against RAEF over the 59 days both quote, the daily correlation is 1.0000 and the wedge 0.995 pts/yr against the 1.03 the price lists predict. Backcast to 1996-03 (simdata) on RAEF's whole published history charged that 1.03%/yr, on a schedule rather than a constant so the pre-2015 class-A-aligned leg is not charged twice; the reconstruction reproduces the real class to 0.03 pts/yr over their overlap. TWO RESERVES, both about the CLASS and not the fund, both dated 2026-08-26. Size: the class holds only about EUR 0.7m (GBP 616k at FT) against a EUR 1.22bn sub-fund, so the risk here is a class closure or merger, not the fund's survival. Marketing: FT lists this class as available for sale in LUXEMBOURG ONLY where IAET is listed in fifteen countries, most likely a notification lag for a class born in May 2026; IBKR does serve it to a French resident, at a EUR 100,000 minimum through ALLFUNDS. Verify before placing an order; the immediate fallback is IAET (LU1662498721), same portfolio, same manager, same minimum, notified everywhere, at the price of its performance fee. The prospectus (Supplement 2, read 2026-08-26) still has the fund trading energy and commodities through commodity index swaps and metals/energy/agriculture notes, capped at 35% of net assets per commodity group. Full dossier: docs/aqr-mf.txt.",
     "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
@@ -8599,6 +8603,37 @@
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2392538224:EUR"
     ]
+  },
+  {
+    "id": "IE00BKYBHJ61",
+    "isin": "IE00BKYBHJ61",
+    "name": "U Access (IRL) Campbell Absolute Return UCITS B EUR (hedged)",
+    "ucits": true,
+    "eu_retail": true,
+    "source": "ft",
+    "symbol": "",
+    "xid": "607178544",
+    "currency": "EUR",
+    "fees": 1.48,
+    "since": "2020-06-05",
+    "asset_class": "managed-futures",
+    "underlying": "Campbell & Company's systematic absolute-return programme: trend following plus systematic macro plus short-term models, long/short across global equity indices, rates, currencies and commodities, taken through an unfunded total return swap",
+    "benchmark_index": "active (no index)",
+    "strategy": "trend-following",
+    "geography": null,
+    "sectors": null,
+    "distribution": "accumulating",
+    "leverage": 1.0,
+    "notes": "EUR-HEDGED accumulating B class of the Campbell sub-fund of U Access (Ireland) UCITS plc, Union Bancaire Privee's Irish UCITS platform (manager Carne Global Fund Managers (Ireland) Limited, depositary BNY Mellon, auditor KPMG); portfolio manager Campbell & Company Investment Adviser LLC, founded 1972 and the oldest house in the reachable managed-futures panel. The hedge is proved by measurement, not assumed: monthly correlation 1.0000 with the USD class IE00BKYBHH48 and with the CHF class, where an unhedged EUR class of a dollar book reads ~0.70. Reachable: IBKR carries it through ALLFUNDS with a ZERO minimum, and the compartment is registered for marketing in France (AMF passport A20200197 of 2020-05-30, paying agent Societe Generale Securities Services). Class AUM EUR 157m, the largest of the fund; fund ~EUR 750m. THE PIN IS THE ONGOING CHARGE AND IT IS NOT THE COST. The KID of 2026-04-24 adds, on top of the 1.48%/yr (of which 1.05% management), 1.44%/yr of transaction costs and a performance fee averaging 1.23%/yr over five years, for a stated total cost impact of 6.0%/yr over three years. The incentive fee (the prospectus never calls it a performance fee) is 15% of Net Profits with NO HURDLE, against a perpetual per-class high water mark floored at the EUR 100 initial issue price, accrued at every valuation point and crystallised each 31 December; the audited accounts put it at 1.03% of the class's average net assets in 2024 and 0.01% in the losing year 2025. That is the wrong shape of invoice for a floor: it bills most in the crash year the sleeve exists to pay for. Two more things the NAV does not show: the fund takes its exposure through an UNFUNDED total return swap with Morgan Stanley plus a funding swap rather than by holding futures, so counterparty concentration is real; and this is an 'Absolute Return' book (trend plus macro plus short-term), not a pure CTA, which is the source of its low 0.50 correlation with the DBi replication book and the reason not to ask it for a pure trend follower's work in an oil shock.",
+    "confidence": "high",
+    "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=IE00BKYBHJ61:EUR",
+      "https://www.interactivebrokers.ie/webrest/scanner/funds/funds?identifier=IE00BKYBHJ61&residency=FR",
+      "https://geco.amf-france.org/back-office/funds/getCompartmentsBycriteria?productType=NON_FR&idThirdParty=0"
+    ],
+    "currency_exposure": {
+      "EUR": 100
+    }
   },
   {
     "id": "DTLE",
@@ -9259,7 +9294,7 @@
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
-    "xid": "975922878",
+    "xid": "",
     "currency": "EUR",
     "fees": 0.75,
     "since": "2026-05-13",
@@ -9271,11 +9306,11 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-HEDGED share class of the same iMGP DBi managed-futures sub-fund as DBMFE (LU2951555403, unhedged EUR) and LU2951555585 (USD): one portfolio, three classes, all at 0.75%/yr TER. The hedge costs only the USD-EUR carry gap (~1.5%/yr at 2026-08 rates, near zero over 2000-2014) plus small forward-roll frictions, and removes ~3 points of volatility and the drawdowns EURUSD added (backcast 1996-2026: vol 12.7% vs 15.6%, MaxDD -21.6% vs -25.2%, CAGR 8.96% vs 9.52%). Prefer it to DBMFE when the sleeve's crisis alpha must pay in euros whatever the dollar does (the unhedged class is trend plus long dollar: better in 2022, much worse in a falling-dollar crisis like 1990). CAVEATS at listing time: ~EUR 11m AUM, weeks of live history, Xetra only, not yet registered for sale in France; re-check before holding.",
+    "notes": "EUR-HEDGED share class of the same iMGP DBi managed-futures sub-fund as DBMFE (LU2951555403, unhedged EUR) and LU2951555585 (USD): one portfolio, three classes, all at 0.75%/yr. The hedge costs the USD-EUR carry gap (SOFR minus ESTR: 1.46%/yr at 2026-08, 1.50%/yr averaged over 2019-10..2026-08, near zero over 2000-2014) plus forward-roll frictions, and removes ~3 points of volatility and the drawdowns EURUSD added (backcast 1996-2026: vol 12.7% vs 15.6%, MaxDD -21.6% vs -25.2%, CAGR 8.96% vs 9.52%). TWO THINGS THE 0.75% PIN DOES NOT COVER, both verified on the issuer documents 2026-08: prospectus section 10.3 lets an 'HP' hedged class carry up to a further 0.10%/yr of currency risk management fee, and the 0.75% itself is an estimate carried over from the unhedged class because this one was born 2026-05-13 and has never closed a financial year. NOT REGISTERED FOR SALE IN FRANCE: the issuer's per-class Registered Locations widget gives DE, DK, FI, IT, LU, SE for LU3359622902, while DBMFE and the fund class LU2604697206 do carry France, and the KID language sets agree (DA/DE/FI/IT/SV, no ES/NL/NO/PT). Class AUM EUR 11.6m at 2026-08-21, Xetra only. justETF files this class and DBMFE as 'Synthetic (Swap-based)'; the audited portfolio is PHYSICAL (US Treasury bills, listed futures, two delta-one commodity notes). The euro-registered alternative into the identical hedged book is LU2604697206 at 1.12%/yr: 37bp/yr for French registration and one closed financial year of real costs.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=LU2951555403",
-      "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
+      "https://www.imgp.com/fund/LU3359622902/",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU3359622902"
     ],
     "symbol": "MFEH.DE",
     "currency_hedged": true,

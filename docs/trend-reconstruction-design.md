@@ -411,6 +411,59 @@ report for the year ended 2024-06 measures itself against the SG CTA Index, the
 all-styles one, and beat it by 11 points. The pure-trend composite is kept on
 the two reasons above, not on a naming that does not exist.
 
+### The index is also the only donor for a fund nothing else tracks (measured, 2026-08-26)
+
+The reasoning above concerns REPLICATION funds, which take a published index as
+their donor because reproducing it is what they do. A third fund now takes the
+same donor for the opposite reason: nothing else comes close either.
+
+U Access (IRL) Campbell Absolute Return B EUR (`IE00BKYBHJ61`) runs trend plus
+systematic macro plus short-term models. Every public record was graded against
+its real monthly NAVs over 2020-06 to 2026-08, correlation first and the donor's
+CAGR minus the class's second:
+
+| candidate | monthly corr | level gap |
+|---|---|---|
+| all-styles net composite | **0.520** | **+0.94 pts/yr** |
+| all-styles composite projected on DBi's ten futures | 0.518 | +1.79 |
+| monthly BTOP50 net composite | 0.516 | +2.34 |
+| pure-trend net composite | 0.498 | +2.98 |
+| DBMF | 0.504 | +4.39 |
+| AQR Managed Futures (RAEF EUR) | 0.464 | +3.94 |
+| TSMOM academic factor | 0.373 | -2.53 |
+
+The all-styles composite wins on BOTH axes at once, which none of the earlier
+contests managed, and no public record reaches 0.53. That ceiling is the fund
+itself: 0.50 against the DBi replication book is the very property the class is
+held for, and a programme that decorrelates from the industry cannot be pathed
+by an index of the industry. The audit grades the recipe LEVEL OK and PATH BAD
+(gap -0.06 pts/yr, -0.37 % of cumulated drift over the 6.1 verifiable years,
+against a 0.52 monthly correlation and a tracking error of 0.89 of the class's
+own volatility). That split is the correct outcome and not a defect to tune
+away, and the recipe godoc says so: the file is a fair account of what this
+style of book earned over a decade and a poor account of any month a reader
+might look up.
+
+The chain stops at the composite's own first day (2000-01-03) and takes no
+deeper donor. Man AHL Diversified (1996-03), the family's deepest, is already
+behind BOTH other legs of the trend sleeve this class would sit next to, so
+adding it a third time would manufacture correlation between three backcasts
+that the three real funds do not share. That artefact is already measured
+elsewhere in this family: the AQR and DBi backcasts read 0.77 against 0.72 on
+the real NAVs, and the difference is the shared donor. Reliability bounds
+length, and here it also bounds independence.
+
+One thing the recipe deliberately does not model, in the same direction as every
+other performance fee this file declines to invent: the class pays a 15 %
+incentive fee on net profits with NO hurdle against a perpetual high water mark
+(1.03 % of average class net assets in 2024, 0.01 % in the losing year 2025,
+1.23 %/yr as the KID's own five-year average), plus 1.44 %/yr of transaction
+costs. The donor is fee-aligned on published ongoing charges only (2.00 %
+estimated for the composite's constituents against the class's 1.48 %, so a
+0.52 %/yr lift and nothing else), which leaves the reconstruction optimistic by
+roughly a point a year in a good trend year. The real NAVs grafted from 2020-06
+carry all of it, as they must.
+
 ### The fund holds ten contracts, so half the index is read through them (measured, 2026-08)
 
 The index donor above closed most of the gap on DBMF and left a specific one
