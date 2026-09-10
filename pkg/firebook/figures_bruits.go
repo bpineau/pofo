@@ -67,7 +67,7 @@ var bruitBands = []bruitBand{
 	},
 	{
 		name: "La sensibilité aux paramètres",
-		lo:   2.38, hi: 5.96,
+		lo:   2.31, hi: 5.99,
 		detail: "le rendement réel espéré déplacé d'un demi-point",
 		color:  figBlue,
 	},

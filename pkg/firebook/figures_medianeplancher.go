@@ -53,7 +53,7 @@ type plancherPortfolio struct {
 // (60 % world equities, 25 % bonds, 7.5 % gold, 7.5 % trend), read here with
 // the long government-bond brick the diversification article names.
 var plancherPortfolios = []plancherPortfolio{
-	{"100 % actions mondiales", "actions", []float64{1, 0, 0, 0}, 2.2070, 0.0337, figBlue, 2.2},
+	{"100 % actions mondiales", "actions", []float64{1, 0, 0, 0}, 2.2070, 0.0329, figBlue, 2.2},
 	{"Panier de quatre briques", "panier", []float64{0.60, 0.25, 0.075, 0.075}, 1.6656, 0.0415, figDeep, 3.4},
 }
 
