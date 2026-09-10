@@ -83,10 +83,10 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 		return nil, fmt.Errorf("unreadable yahoo response: %w", err)
 	}
 	if resp.Chart.Error != nil {
-		return nil, fmt.Errorf("yahoo: %s (%s)", resp.Chart.Error.Description, resp.Chart.Error.Code)
+		return nil, markAbsent(fmt.Errorf("yahoo: %s (%s)", resp.Chart.Error.Description, resp.Chart.Error.Code))
 	}
 	if len(resp.Chart.Result) == 0 {
-		return nil, fmt.Errorf("yahoo: empty response for %s", symbol)
+		return nil, markAbsent(fmt.Errorf("yahoo: empty response for %s", symbol))
 	}
 	r := resp.Chart.Result[0]
 
@@ -300,7 +300,7 @@ func (c *Client) search(ctx context.Context, query string) ([]searchQuote, error
 		out = append(out, searchQuote{Symbol: q.Symbol, Name: name, QuoteType: q.QuoteType})
 	}
 	if len(out) == 0 {
-		return nil, fmt.Errorf("no results for %q", query)
+		return nil, markAbsent(fmt.Errorf("no results for %q", query))
 	}
 	return out, nil
 }

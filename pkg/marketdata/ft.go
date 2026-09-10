@@ -66,7 +66,7 @@ func (c *Client) ftSearch(ctx context.Context, query string) (resolution, error)
 		}
 	}
 	if best < 0 {
-		return resolution{}, fmt.Errorf("no FT results for %q", query)
+		return resolution{}, markAbsent(fmt.Errorf("no FT results for %q", query))
 	}
 	sec := secs[best]
 	base, _, _ := strings.Cut(sec.Symbol, ":")
@@ -132,7 +132,7 @@ func (c *Client) fetchFT(ctx context.Context, id string, res resolution, from ti
 		return nil, fmt.Errorf("unreadable FT response: %w", err)
 	}
 	if len(resp.Elements) == 0 {
-		return nil, fmt.Errorf("FT: empty response for %s", id)
+		return nil, markAbsent(fmt.Errorf("FT: empty response for %s", id))
 	}
 	var closes []*float64
 	for _, cs := range resp.Elements[0].ComponentSeries {
