@@ -85,6 +85,23 @@ func ExampleClient_Latest() {
 	fmt.Printf("%.2f EUR (%s %s)\n", shares*q.Price*rate, freshness, q.Time.Format("2006-01-02 15:04"))
 }
 
+// ExampleClient_LatestBatchExtended values US lines before the opening bell:
+// with the extended-hours opt-in, a pre-market print beats yesterday's close,
+// and Quote.Session says which session the price belongs to so the display can
+// label it rather than pass it off as a close.
+// (Not run: requires the network.)
+func ExampleClient_LatestBatchExtended() {
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+	for id, q := range client.LatestBatchExtended(context.Background(), []string{"DDOG", "VT", "IWDA.AS"}) {
+		label := map[string]string{"pre": "pre-market", "post": "after hours", "regular": "regular session"}[q.Session]
+		if label == "" {
+			label = "last close" // a fund NAV or a daily close names no session
+		}
+		fmt.Printf("%s %.2f %s (%s, %s)\n", id, q.Price, q.Currency, label, q.Time.Format("15:04"))
+	}
+}
+
 // Align merges trading calendars: the union of dates from start on, with
 // each series' level forward-filled across its own non-trading days.
 func ExampleAlign() {

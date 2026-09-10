@@ -244,7 +244,21 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 		Symbol:   symbol,
 		Source:   "yahoo",
 		Live:     true,
+		Session:  sessionRegular,
 	}, nil
+}
+
+// fetchYahooSpotExtended reads one symbol's freshest print, extended hours
+// included, through the v7 quote API - the only Yahoo endpoint that carries
+// the preMarketPrice/postMarketPrice fields, the chart meta this file's spot
+// path reads having none. ok is false when the call fails or the symbol is
+// absent from the answer, so Latest can fall back to the regular-session spot.
+func (c *Client) fetchYahooSpotExtended(ctx context.Context, symbol string) (*Quote, bool) {
+	q, ok := c.fetchYahooQuoteBatch(ctx, []string{symbol}, true)[symbol]
+	if !ok {
+		return nil, false
+	}
+	return &q, true
 }
 
 // searchQuote is one candidate instrument returned by the Yahoo search API.
