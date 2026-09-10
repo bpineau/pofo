@@ -2,8 +2,8 @@
 # id: DTLETR
 # name: US long Treasuries hedged to EUR (total return, the DTLE segment)
 # method: the accumulating USD twin's own total return (real DTLA from 2018, 1.13×VUSTX geared to the 20+ duration before, extended TREASURY-LONG daily from 1962) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less what the class's 0.10%/yr TER exceeds its donor's own charge (0.03%/yr over the twin, nothing over the dearer geared mutual fund); total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)
-# validation: corr=0.911 (weekly 0.928) beta=0.95 TE=6.5%/yr CAGR sim -4.89% vs real -6.81% (overlap 2199 d from 2017-09-25 to 2026-08-19) vs DTLE
-# generated: 2026-08-22
+# validation: corr=0.911 (weekly 0.928) beta=0.95 TE=6.5%/yr CAGR sim -4.90% vs real -6.87% (overlap 2213 d from 2017-09-25 to 2026-09-09) vs DTLE
+# generated: 2026-09-10
 date,close
 1994-01-01,100.000000
 1994-01-03,99.235722
@@ -8345,16 +8345,31 @@ date,close
 2026-07-29,383.044847
 2026-07-30,377.322827
 2026-07-31,374.519320
-2026-08-03,376.535453
-2026-08-04,378.719723
-2026-08-05,380.015507
-2026-08-06,378.522294
-2026-08-07,378.254552
-2026-08-10,375.917486
-2026-08-11,375.988286
-2026-08-12,376.481117
-2026-08-13,377.776369
-2026-08-14,374.723153
-2026-08-17,373.317052
-2026-08-18,374.387658
-2026-08-19,379.834140
+2026-08-01,375.239498
+2026-08-03,377.259508
+2026-08-04,379.447978
+2026-08-05,380.746254
+2026-08-06,379.250169
+2026-08-07,378.981912
+2026-08-10,376.640353
+2026-08-11,376.711289
+2026-08-12,377.205067
+2026-08-13,378.502810
+2026-08-14,375.443723
+2026-08-17,374.034918
+2026-08-18,373.218432
+2026-08-19,379.420053
+2026-08-20,376.404970
+2026-08-21,375.884319
+2026-08-24,378.279476
+2026-08-25,381.688070
+2026-08-26,380.955579
+2026-08-27,380.983815
+2026-08-28,380.885546
+2026-08-31,380.821652
+2026-09-01,377.176125
+2026-09-02,375.937211
+2026-09-03,378.455151
+2026-09-04,377.427888
+2026-09-08,378.385727
+2026-09-09,378.321486
