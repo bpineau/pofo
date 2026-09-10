@@ -19,7 +19,7 @@ Resolution fields (consumed by `pkg/marketdata`):
 | field | meaning |
 |---|---|
 | `id` | canonical identifier (ticker or ISIN); the key |
-| `isin` | ISIN, or `null`/empty for indices/spot/futures |
+| `isin` | ISIN, or `null`/empty for indices, spot, futures and the `airfund` FCPEs, which have none. Every tradable record carries one, US-listed funds included: for a US security the ISIN is `US` + the CUSIP + a Luhn check digit, so the way to fill one is to read the CUSIP or ISIN off the issuer's own page and then confirm the result by looking the ISIN itself up on FT's security search, which resolves a US ISIN to its primary listing. Never enter one that a fetched, ISIN-keyed page has not named |
 | `aliases` | extra identifiers accepted in portfolio files (e.g. `GOLD`, `NTSX`). An alias shadows every provider ticker of the same spelling, so check the collision before minting one: `GOLD` deliberately resolves to spot gold (`XAUUSD`) and NOT to Barrick Mining, whose NYSE ticker it also is |
 | `name` | display name |
 | `ucits` | `true` for UCITS funds/ETFs (ETCs, US funds, indices are not) |
