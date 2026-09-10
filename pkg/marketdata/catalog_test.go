@@ -192,3 +192,55 @@ func TestWarmupIDsAllPinned(t *testing.T) {
 		t.Errorf("too few assets with a pinned TER: %d", withFees)
 	}
 }
+
+// TestGuessUCITS: the catalog answers first, and only an uncatalogued name is
+// judged by the heuristic, which is why an unknown identifier stays unknown
+// rather than reading as a non-UCITS fund.
+func TestGuessUCITS(t *testing.T) {
+	cases := []struct {
+		id, name     string
+		ucits, known bool
+	}{
+		{"IWDA", "anything at all", true, true},                          // catalogued: the record wins
+		{"NOSUCHTHING", "iShares Core MSCI World UCITS ETF", true, true}, // the name advertises it
+		{"NOSUCHTHING", "iShares core msci world ucits etf", true, true}, // case does not matter
+		{"NOSUCHTHING", "Vanguard S&P 500 ETF", false, false},            // nothing to go on
+		{"NOSUCHTHING", "", false, false},                                // nor here
+	}
+	for _, tc := range cases {
+		ucits, known := GuessUCITS(tc.id, tc.name)
+		if ucits != tc.ucits || known != tc.known {
+			t.Errorf("GuessUCITS(%q, %q) = %v, %v; want %v, %v",
+				tc.id, tc.name, ucits, known, tc.ucits, tc.known)
+		}
+	}
+}
+
+// TestLooksDistributing pins the markers behind the report's silent-income
+// warning: a distributing NAV series is a PRICE return, missing its whole
+// dividend stream, so a false negative costs about 3 %/yr of measured return.
+func TestLooksDistributing(t *testing.T) {
+	yes := []string{
+		"iShares $ Treasury Bond 20+yr UCITS ETF (Dist)",
+		"Amundi MSCI World UCITS ETF DIST",
+		"Vanguard FTSE All-World UCITS ETF (Dis)",
+		"Some Fund Class A (D)",
+		"AQR Managed Futures Fund Class I Inc",
+		"Fidelity Global Dividend W-Acc-GBP (Dy)",
+	}
+	no := []string{
+		"iShares Core MSCI World UCITS ETF USD (Acc)",
+		"Vanguard S&P 500 ETF",
+		"WisdomTree US Efficient Core UCITS ETF USD Acc",
+	}
+	for _, n := range yes {
+		if !LooksDistributing(n) {
+			t.Errorf("LooksDistributing(%q) = false, want true", n)
+		}
+	}
+	for _, n := range no {
+		if LooksDistributing(n) {
+			t.Errorf("LooksDistributing(%q) = true, want false", n)
+		}
+	}
+}

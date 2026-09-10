@@ -139,3 +139,60 @@ func TestNowcastSurvivesAMissingProxy(t *testing.T) {
 		t.Fatal("intraday without a reachable proxy must fail")
 	}
 }
+
+// TestWithoutEstimatesInvariants: the estimate stripper is what keeps a
+// nowcast out of every stored or shipped dataset, so its contract is narrow -
+// it never touches a real series, and it never leaves a stamp behind on a copy
+// it did strip.
+func TestWithoutEstimatesInvariants(t *testing.T) {
+	var nilSeries *Series
+	if nilSeries.WithoutEstimates() != nil {
+		t.Error("a nil series must stay nil")
+	}
+	real := &Series{Symbol: "F", Points: []Point{
+		{Date: d(2020, 1, 6), Close: 50}, {Date: d(2020, 1, 7), Close: 51},
+	}}
+	if got := real.WithoutEstimates(); got != real {
+		t.Error("a series carrying no estimate must be returned as is, not copied")
+	}
+	est := &Series{Symbol: "F", EstimatedFrom: d(2020, 1, 8), EstimateProxy: "URTH", Points: []Point{
+		{Date: d(2020, 1, 6), Close: 50},
+		{Date: d(2020, 1, 7), Close: 51},
+		{Date: d(2020, 1, 8), Close: 52},
+		{Date: d(2020, 1, 9), Close: 53},
+	}}
+	got := est.WithoutEstimates()
+	if len(got.Points) != 2 || !got.Last().Date.Equal(d(2020, 1, 7)) {
+		t.Fatalf("points = %+v, want the two published days", got.Points)
+	}
+	if !got.EstimatedFrom.IsZero() || got.EstimateProxy != "" {
+		t.Errorf("the stripped copy still claims an estimate: %+v", got)
+	}
+	if len(est.Points) != 4 || est.EstimateProxy != "URTH" {
+		t.Error("the input series was mutated")
+	}
+	// A stamp with nothing after it strips to the whole series.
+	head := &Series{EstimatedFrom: d(2030, 1, 1), Points: est.Points}
+	if len(head.WithoutEstimates().Points) != 4 {
+		t.Error("a stamp after the last point must keep every point")
+	}
+}
+
+// TestIntradayRateAt pins the forward fill the tick-by-tick conversion rests
+// on: a rate holds until the next print, and there is none before the first.
+func TestIntradayRateAt(t *testing.T) {
+	base := time.Date(2020, 1, 10, 14, 30, 0, 0, time.UTC)
+	fx := &IntradaySeries{Points: []IntradayPoint{
+		{Time: base, Close: 0.9},
+		{Time: base.Add(10 * time.Minute), Close: 0.91},
+	}}
+	if _, ok := fx.rateAt(base.Add(-time.Minute)); ok {
+		t.Error("there is no rate before the first tick")
+	}
+	if r, ok := fx.rateAt(base.Add(5 * time.Minute)); !ok || r != 0.9 {
+		t.Errorf("forward fill = %v, %v; want 0.9, true", r, ok)
+	}
+	if r, ok := fx.rateAt(base.Add(time.Hour)); !ok || r != 0.91 {
+		t.Errorf("after the last tick = %v, %v; want 0.91, true", r, ok)
+	}
+}
