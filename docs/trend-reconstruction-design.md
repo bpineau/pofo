@@ -1454,9 +1454,28 @@ it, but do not re-run the dead ends blind.
   closed. Two independent channels serve it: the calculation agent's own
   full-precision dump (six decimals, one POST) and the publisher's dashboard
   copy (two decimals). They are not copies of one another and they agree on
-  every one of 6926 common daily returns to within 2 bp, worst gap 1.11 bp,
-  which is what rounding a level to two decimals costs; the generator refuses
-  to write unless that still holds over at least 6500 days.
+  every one of 6940 SETTLED common daily returns to within 2 bp, worst gap
+  1.11 bp, which is what rounding a level to two decimals costs; the generator
+  refuses to write unless that still holds over at least 6500 days.
+  SETTLED is the word that matters, and it was learned the hard way on
+  2026-09-10: both publications put out a provisional print for their newest
+  days and restate it within a day or two (an index day is struck on constituent
+  programmes' own figures, some of which arrive late). A refresh that morning
+  wrote both files with the channels agreeing; by that evening the last two
+  common days disagreed by 5.5 and 7.4 bp, thirty times the rounding, and the
+  2 bp gate refused to write a file whose 6940 settled days still agreed to the
+  bp and whose incomplete month is dropped before shipping anyway. Nothing older
+  had moved: a month-old copy of the full-precision channel matches a fresh
+  fetch on all 6935 days they share but its own last one, and that by 0.001 bp.
+  A single snapshot cannot say which of the two publications revised, and the
+  gate does not need to know: the per-day and drift gates now stop
+  `restatementDays` (ten) trading days short of the live end, that tail is held
+  only to a percent (a broken row, a shifted column, a base change), and every
+  tail day is graded at the series' own tolerance by the next run, once settled.
+  The channel SHIPPED stays the full-precision one, since that is the one
+  measured to stop moving. The tolerance was NOT relaxed: a 7.4 bp step one day
+  deeper than the window is still refused, and a fixture in the generator's
+  tests pins both halves of that.
   Its calendar years were reconciled against six independent publications of
   them, the oldest an archived 2010 capture, and the index has never been
   restated by more than 5 bp, on 2018 alone. Its publisher attaches an EU
@@ -1468,11 +1487,12 @@ it, but do not re-run the dead ends blind.
   bundled since 2026-08 by the same generator. It is the donor of the DBi
   family. Its two channels are looser than its sibling's and the generator says
   so with its own tolerances: five of 6923 common days differ by more than 2 bp
-  (four in the unrevised live tail, worst 15.6 bp) and every month of calendar
-  2024 differs by 1 to 6 bp, 25 bp compounded over that year, which is a
-  restatement in one channel rather than rounding. Over the whole window the two
-  still compound to within 23 bp of each other, and that aggregate is the gate
-  that guards the level.
+  (four of them in the live tail, worst 15.6 bp, which the restatement window
+  above now covers) and every month of calendar 2024 differs by 1 to 6 bp, 25 bp
+  compounded over that year, which is a restatement of SETTLED days in one
+  channel rather than rounding, and the reason this index keeps a per-day gate
+  ten times its sibling's. Over the settled window the two compound to within
+  31 bp of each other, and that aggregate is the gate that guards the level.
 - Annual (only) figures for the broader CTA index of the same publisher,
   1980-2017, recovered from a public web archive: an independent
   calendar-year check.
