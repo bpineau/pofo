@@ -1,3 +1,14 @@
+// The tests of this package are deliberately state-free, and stay that way.
+//
+// Rendering is a pure function of its Page, so nothing here writes a file,
+// reads the clock, seeds a generator, mutates a package-level variable or
+// calls t.Parallel: every case builds its own Page and compares strings. A
+// 2026-09-10 report of a transient failure under concurrent runs was chased
+// with -count=20, -race -count=5, -shuffle=on and a run alongside another
+// package's tests, and never reproduced; the package holds no shared state
+// for it to come from. Keep it that way, and any future flake is a real bug
+// rather than a fixture race.
+
 package report
 
 import (
