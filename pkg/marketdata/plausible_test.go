@@ -81,6 +81,33 @@ func TestPlausibilityIssues(t *testing.T) {
 	}
 }
 
+// TestPlausibilitySingleName covers the second property that stretches a class
+// band: a record naming ONE issuer. Every row of the table describes a
+// diversified holding, and no single stock's volatility, earnings gap or
+// drawdown fits inside the equity row.
+func TestPlausibilitySingleName(t *testing.T) {
+	// 55 %/yr, the shape the Datadog employee-savings FCPE measures.
+	single := &Series{Symbol: "X", Points: walk(1200, 100, 0.033, 0.0009)}
+	fund := datasets.Asset{AssetClass: "equity", Leverage: 1}
+	if got := judge(fund, single); len(got) == 0 {
+		t.Fatal("a diversified equity fund at 55 %/yr must be flagged")
+	}
+	stock := datasets.Asset{AssetClass: "equity", Leverage: 1, Strategy: datasets.StrategySingleStock}
+	if got := judge(stock, single); len(got) != 0 {
+		t.Fatalf("the same shape on a single-name record must be clean, got %v", got)
+	}
+	// The stretch is a widening, not an exemption: a series no share makes
+	// honestly still leaves the band, and the verdict says what widened it.
+	wild := &Series{Symbol: "X", Points: walk(1200, 100, 0.07, 0)}
+	if got := messages(judge(stock, wild)); !strings.Contains(got, "single name") {
+		t.Fatalf("a 115 %%/yr single-name series must be flagged, and say why; got:\n%s", got)
+	}
+	// One earnings print is allowed to gap: DDOG did +31 % in one session.
+	if b, ok := assetBand(stock, single); !ok || b.Move < 0.32 {
+		t.Errorf("a single name must be allowed an earnings gap, Move = %.2f", b.Move)
+	}
+}
+
 func TestPlausibilityExemptions(t *testing.T) {
 	loud := &Series{Symbol: "X", Points: walk(1200, 100, 0.012, 0)}
 	for _, tc := range []struct {

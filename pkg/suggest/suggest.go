@@ -3,6 +3,8 @@ package suggest
 import (
 	"math"
 	"sort"
+
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 // Holding is one position of the portfolio under analysis.
@@ -91,9 +93,16 @@ func Analyze(holdings []Holding, heldReturns [][]float64, candidates []Candidate
 	return res
 }
 
+// Advisable reports whether a catalog record may be PROPOSED to an investor.
+// Every record can be priced and held; one naming a single issuer
+// (datasets.StrategySingleStock) is in the catalog to be priced, and advising a
+// single company is not diversification, so no advisor offers it.
+func Advisable(m Meta) bool { return m.Strategy != datasets.StrategySingleStock }
+
 // RankCandidates keeps the candidates that fill a gap category and whose
 // benefit is robust out-of-sample, ranked by the gap they fill (most
-// under-covered first) then by median out-of-sample Sharpe gain.
+// under-covered first) then by median out-of-sample Sharpe gain. A candidate
+// Advisable rejects is skipped however well it scores.
 func RankCandidates(gaps []Category, cov map[Category]float64, candidates []Candidate, opts Options, fw Framework) []Suggestion {
 	gapSet := map[Category]bool{}
 	for _, g := range gaps {
@@ -101,6 +110,9 @@ func RankCandidates(gaps []Category, cov map[Category]float64, candidates []Cand
 	}
 	var out []Suggestion
 	for _, c := range candidates {
+		if !Advisable(c.Meta) {
+			continue
+		}
 		fills := primaryGap(c.Meta, gapSet, cov, fw)
 		if fills == "" {
 			continue // helps no gap category
