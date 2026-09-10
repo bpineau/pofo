@@ -74,10 +74,14 @@ added, so nobody re-proposes them:
   capital-weighted gain fraction) and the PEE match break-even in
   `docs/fire-envelopes-tax-model-design.md`. Unlock dates (PEE and PEA 5 years,
   AV 8 years) and per-envelope allocations were refused there too.
-- Cheap UI item that spike exposed: `Params.GainFrac`, `Params.PEACapital` and
-  `Params.AVCapital` exist in `pkg/decumul/web/model.go` and reach the kernel,
-  but none of the three is in the page's control list (`GROUPS` in
-  `assets/app.js`), so the shipped page always runs a single sleeve with a ZERO
-  embedded gain, which flatters the plan by 0.30 point of withdrawal rate. Put
-  the gain fraction on the page (Taxes group), and the two envelope amounts
-  beside it, with the recipe in the help text.
+- Cheap UI item that spike exposed: SHIPPED 2026-09-10. `Params.GainFrac`,
+  `Params.PEACapital` and `Params.AVCapital` existed in
+  `pkg/decumul/web/model.go` and reached the kernel, but none of the three was
+  in the page's control list (`GROUPS` in `assets/app.js`), so the shipped page
+  always ran a single sleeve with a ZERO embedded gain, which flattered the plan
+  by 0.30 point of withdrawal rate. The Taxes group now carries the embedded
+  gain (default 50 %, the spike's base case and the recipe's worked example
+  rounded) beside the rate, and the two envelope amounts behind an `envelopes`
+  disclosure, each with the recipe in its help text; both amounts at zero keeps
+  the single blended sleeve, and the rate's help now says the rate applies to
+  the gain share of every sale.

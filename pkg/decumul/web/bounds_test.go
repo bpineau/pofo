@@ -26,6 +26,55 @@ func TestBoundedClampsEverySizeField(t *testing.T) {
 	}
 }
 
+// The tax book has bounds of its own: a gain fraction is a fraction, and
+// neither envelope can hold more than the invested capital (1 M€ less the
+// 120 k€ of cash buffer here).
+func TestBoundedClampsTheTaxBook(t *testing.T) {
+	in := Params{Capital: 1_000_000, NeedAnnual: 40_000, BufferYears: 3,
+		GainFrac: 3, PEACapital: 5_000_000, AVCapital: -1}
+	pr := in.bounded()
+	if pr.GainFrac != 1 || pr.PEACapital != 880_000 || pr.AVCapital != 0 {
+		t.Errorf("tax book not clamped: %+v", pr)
+	}
+	// A coherent book passes through untouched.
+	ok := Params{Capital: 1_000_000, NeedAnnual: 40_000, BufferYears: 3,
+		GainFrac: 0.5, PEACapital: 200_000, AVCapital: 100_000}
+	if got := ok.bounded(); got.GainFrac != ok.GainFrac || got.PEACapital != ok.PEACapital || got.AVCapital != ok.AVCapital {
+		t.Errorf("coherent tax book altered: %+v", got)
+	}
+	if err := ok.validate(); err != nil {
+		t.Errorf("coherent tax book refused: %v", err)
+	}
+}
+
+// Two pockets that add up to more than the sleeve they are carved from are a
+// contradiction, not a plan: clamping would silently pro-rate them and drop
+// the taxable pocket, so the request is refused and told why.
+func TestValidateRejectsAnOverfullTaxBook(t *testing.T) {
+	pr := Params{Capital: 1_000_000, NeedAnnual: 40_000, BufferYears: 3,
+		PEACapital: 600_000, AVCapital: 400_000}
+	err := pr.validate()
+	if err == nil {
+		t.Fatal("an over-full envelope book was accepted")
+	}
+	for _, want := range []string{"PEA 600000", "assurance-vie 400000", "880000", "cash buffer"} {
+		if !strings.Contains(err.Error(), want) {
+			t.Errorf("message %q does not name %s", err, want)
+		}
+	}
+	body := `{"capital":1000000,"needAnnual":40000,"bufferYears":3,"years":30,` +
+		`"mu":0.05,"sigma":0.11,"df":5,"nPaths":200,"peaCapital":600000,"avCapital":400000}`
+	req := httptest.NewRequest(http.MethodPost, "/api/sim", strings.NewReader(body))
+	rec := httptest.NewRecorder()
+	Handler(nil, nil).ServeHTTP(rec, req)
+	if rec.Code != http.StatusBadRequest {
+		t.Errorf("status = %d, want 400: %s", rec.Code, rec.Body.String())
+	}
+	if !strings.Contains(rec.Body.String(), "more than the invested capital") {
+		t.Errorf("body = %q", rec.Body.String())
+	}
+}
+
 // A request asking for a billion paths must be answered from the clamped
 // count, in the time a normal request takes, never allocated as asked.
 func TestAPISimClampsHugePathCount(t *testing.T) {
