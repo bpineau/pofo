@@ -49,6 +49,7 @@ func newTestClient(t *testing.T, dir string, mux *http.ServeMux) (*Client, *http
 // can ever reach the real APIs.
 func stubAllBases(c *Client, base string) {
 	c.ChartBase, c.SearchBase, c.StooqBase = base, base, base
+	c.CookieBase = base // the v7 quote path bootstraps its cookie here
 	c.FTBase, c.BoursoramaBase, c.MorningstarBase = base, base, base
 	c.JustETFBase = base
 	c.EurostatBase = base

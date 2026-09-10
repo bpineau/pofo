@@ -13,6 +13,11 @@ import (
 // the last daily close, whose Time is that close's date. A market that is
 // closed still yields a Live quote, the regular session's last price, with its
 // Time at the close.
+//
+// Session names the trading session Price was struck in, so a caller can label
+// an off-hours print rather than pass it off as a close. Only the
+// extended-hours opt-in (QuoteOptions.ExtendedHours, LatestBatchExtended) ever
+// produces "pre" or "post"; every default call returns "regular" or "".
 type Quote struct {
 	Price    float64   // in Currency
 	Time     time.Time // when this price was observed
@@ -20,6 +25,7 @@ type Quote struct {
 	Symbol   string    // the instrument actually served (a resolution may pick a twin listing)
 	Source   string    // "yahoo", "ft", "morningstar", "stooq", "ecb", "airfund", or "nowcast" for an estimate (see nowcast.go)
 	Live     bool      // true: real-time market field; false: last daily close
+	Session  string    // "regular", "pre", "post", or "" when the source names no session (a daily close, a fund NAV, a nowcast)
 }
 
 // latestFrom is the history window Latest fetches over when it falls back to
@@ -52,6 +58,13 @@ func latestFrom() time.Time { return time.Now().AddDate(-1, 0, 0) }
 // daily cache. To express the price in a display currency, pair Latest with
 // FXRate (ConvertCurrency is its whole-series sibling).
 func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
+	return c.latest(ctx, id, false)
+}
+
+// latest is Latest with the extended-hours switch QuoteOptions.ExtendedHours
+// and LatestBatchExtended flip. Only the live Yahoo leg reads it: a fund NAV,
+// a daily close and a nowcast have no session to report.
+func (c *Client) latest(ctx context.Context, id string, extended bool) (*Quote, error) {
 	base, _ := SplitSim(id)
 	// A fund priced once a day with a lag quotes its nowcast: the last tick
 	// of the proxy-scaled intraday path, live like any market print.
@@ -62,6 +75,14 @@ func (c *Client) Latest(ctx context.Context, id string) (*Quote, error) {
 		}
 	}
 	if symbol, ok := c.yahooSymbol(ctx, base); ok {
+		if extended {
+			if q, ok := c.fetchYahooSpotExtended(ctx, symbol); ok {
+				return q, nil
+			}
+			// The extended leg needs Yahoo's cookie+crumb pair and can fail
+			// where the plain chart call succeeds: fall through to it rather
+			// than lose the quote over the off-hours bonus.
+		}
 		if q, err := c.fetchYahooSpot(ctx, symbol); err == nil {
 			return q, nil
 		}

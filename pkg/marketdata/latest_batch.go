@@ -20,6 +20,22 @@ const yahooQuoteBatchMax = 50
 // the call never fails as a whole. Like Latest, a closed market still yields
 // a Live quote: the regular session's last price, timed at the close.
 func (c *Client) LatestBatch(ctx context.Context, ids []string) map[string]Quote {
+	return c.latestBatch(ctx, ids, false)
+}
+
+// LatestBatchExtended is LatestBatch with the extended-hours opt-in: on a venue
+// that runs them, a pre-market or after-hours print newer than the regular
+// session's last price wins, and the Quote says so in Session ("pre" or
+// "post"). Everything else is unchanged, so a European line, a fund NAV or a
+// nowcast comes back exactly as LatestBatch would return it.
+//
+// This is the batch sibling of QuoteOptions.ExtendedHours; see that field for
+// the selection rule and its caveats (thin off-hours prints).
+func (c *Client) LatestBatchExtended(ctx context.Context, ids []string) map[string]Quote {
+	return c.latestBatch(ctx, ids, true)
+}
+
+func (c *Client) latestBatch(ctx context.Context, ids []string, extended bool) map[string]Quote {
 	out := make(map[string]Quote, len(ids))
 	symbols := make([]string, 0, len(ids))
 	bySymbol := make(map[string][]string, len(ids)) // yahoo symbol → original ids
@@ -36,7 +52,7 @@ func (c *Client) LatestBatch(ctx context.Context, ids []string) map[string]Quote
 		}
 		bySymbol[symbol] = append(bySymbol[symbol], id)
 	}
-	quotes := c.fetchYahooQuoteBatch(ctx, symbols)
+	quotes := c.fetchYahooQuoteBatch(ctx, symbols, extended)
 	for symbol, ids := range bySymbol {
 		q, ok := quotes[symbol]
 		if !ok {
@@ -48,7 +64,7 @@ func (c *Client) LatestBatch(ctx context.Context, ids []string) map[string]Quote
 		}
 	}
 	for _, id := range rest {
-		if q, err := c.Latest(ctx, id); err == nil {
+		if q, err := c.latest(ctx, id, extended); err == nil {
 			out[id] = *q
 		} else {
 			c.Logf("latest batch: %s: %v", id, err)
@@ -63,15 +79,20 @@ func (c *Client) LatestBatch(ctx context.Context, ids []string) map[string]Quote
 // instruments get exactly the symbols they asked for; LatestBatch is the
 // batteries-included sibling.
 func (c *Client) LatestBatchLive(ctx context.Context, symbols []string) map[string]Quote {
-	return c.fetchYahooQuoteBatch(ctx, symbols)
+	return c.fetchYahooQuoteBatch(ctx, symbols, false)
+}
+
+// LatestBatchLiveExtended is LatestBatchLive with the extended-hours opt-in.
+func (c *Client) LatestBatchLiveExtended(ctx context.Context, symbols []string) map[string]Quote {
+	return c.fetchYahooQuoteBatch(ctx, symbols, true)
 }
 
 // fetchYahooQuoteBatch reads live regular-market prices for many symbols in
 // yahooQuoteBatchMax-sized chunks of the v7 quote API (cookie+crumb needed).
-func (c *Client) fetchYahooQuoteBatch(ctx context.Context, symbols []string) map[string]Quote {
+func (c *Client) fetchYahooQuoteBatch(ctx context.Context, symbols []string, extended bool) map[string]Quote {
 	out := make(map[string]Quote, len(symbols))
 	for start := 0; start < len(symbols); start += yahooQuoteBatchMax {
-		c.quoteBatchChunk(ctx, symbols[start:min(start+yahooQuoteBatchMax, len(symbols))], out)
+		c.quoteBatchChunk(ctx, symbols[start:min(start+yahooQuoteBatchMax, len(symbols))], out, extended)
 	}
 	return out
 }
@@ -79,7 +100,7 @@ func (c *Client) fetchYahooQuoteBatch(ctx context.Context, symbols []string) map
 // quoteBatchChunk fetches one chunk into out, renewing a stale cookie+crumb
 // pair once. Failures degrade to a log line: the caller's per-id fallback
 // picks the missing symbols up.
-func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[string]Quote) {
+func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[string]Quote, extended bool) {
 	if len(symbols) == 0 {
 		return
 	}
@@ -105,8 +126,13 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 				Symbol               string   `json:"symbol"`
 				Currency             string   `json:"currency"`
 				ExchangeTimezoneName string   `json:"exchangeTimezoneName"`
+				MarketState          string   `json:"marketState"`
 				RegularMarketPrice   *float64 `json:"regularMarketPrice"`
 				RegularMarketTime    *int64   `json:"regularMarketTime"`
+				PreMarketPrice       *float64 `json:"preMarketPrice"`
+				PreMarketTime        *int64   `json:"preMarketTime"`
+				PostMarketPrice      *float64 `json:"postMarketPrice"`
+				PostMarketTime       *int64   `json:"postMarketTime"`
 			} `json:"result"`
 		} `json:"quoteResponse"`
 	}
@@ -125,13 +151,19 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 		if err != nil {
 			loc = time.UTC
 		}
+		price, unix, session := *r.RegularMarketPrice, *r.RegularMarketTime, sessionRegular
+		if extended {
+			price, unix, session = freshestSession(price, unix,
+				r.PreMarketPrice, r.PreMarketTime, r.PostMarketPrice, r.PostMarketTime)
+		}
 		out[r.Symbol] = Quote{
-			Price:    *r.RegularMarketPrice,
-			Time:     time.Unix(*r.RegularMarketTime, 0).In(loc),
+			Price:    price,
+			Time:     time.Unix(unix, 0).In(loc),
 			Currency: r.Currency,
 			Symbol:   r.Symbol,
 			Source:   "yahoo",
 			Live:     true,
+			Session:  session,
 		}
 	}
 }

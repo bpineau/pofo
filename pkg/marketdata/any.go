@@ -49,6 +49,16 @@ type QuoteOptions struct {
 	// NoConvert, with Currency set, fails with ErrWrongCurrency instead
 	// of converting an off-currency quote.
 	NoConvert bool
+	// ExtendedHours accepts a pre-market or after-hours print when the
+	// venue runs those sessions and the print is more recent than the
+	// regular session's last price; Quote.Session then reads "pre" or
+	// "post" instead of "regular". Off by default, because an off-hours
+	// price is a thinner, wider-spread print than a close: ask for it to
+	// show what an instrument is doing right now, not to book a valuation.
+	// Nothing else changes - a venue without extended hours, a fund NAV, a
+	// daily close and a nowcast answer exactly as they would without it,
+	// and the extended leg failing costs the caller nothing but the bonus.
+	ExtendedHours bool
 }
 
 // LatestAny returns the freshest price the identifiers can produce, tried
@@ -75,7 +85,7 @@ func (c *Client) LatestAny(ctx context.Context, ids []string, opt QuoteOptions) 
 	var errs []error
 	var offCurrency, lastClose *Quote
 	for _, id := range ids {
-		q, err := c.Latest(ctx, id)
+		q, err := c.latest(ctx, id, opt.ExtendedHours)
 		if err != nil {
 			errs = append(errs, err)
 			continue
