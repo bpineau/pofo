@@ -82,6 +82,31 @@ type options struct {
 	exactForeign bool
 }
 
+// generatorCacheAge is the quote freshness the DATA GENERATORS default to.
+// The interactive default (-cache-age, 30 days) exists to keep an ordinary
+// report run off the network, but a generator writes a file that then ships
+// inside the binary: reading a month-old cached quote silently freezes the
+// series it rebuilds. That happened on 2026-09-10, when -gen-simdata rebuilt
+// BTOP50E, DTLETR and ILSFUNDE on a 22-day-old ^IRX and none of the three
+// advanced. An explicit -cache-age still wins, in either direction.
+const generatorCacheAge = 24 * time.Hour
+
+// generatorAge is the cache age a generator mode runs with: the short
+// generatorCacheAge unless the command line pinned -cache-age itself, in
+// which case the operator's choice is honoured.
+func generatorAge(fs *flag.FlagSet, chosen time.Duration) time.Duration {
+	pinned := false
+	fs.Visit(func(f *flag.Flag) {
+		if f.Name == "cache-age" {
+			pinned = true
+		}
+	})
+	if pinned {
+		return chosen
+	}
+	return generatorCacheAge
+}
+
 // frameworkFor resolves the -framework flag to a classification.
 func frameworkFor(name string) (suggest.Framework, error) {
 	switch name {
@@ -115,7 +140,7 @@ func run(ctx context.Context, argv []string) error {
 	fs.BoolVar(&opt.cli, "cli", false, "render in the terminal (curves + summary table), no HTML")
 	ratesFlag := fs.String("rates", "", "chart interest-rate levels in the terminal (comma-separated symbols, e.g. ^ESTR,^EURIBOR3M; \"list\" prints what is available), then exit")
 	fs.IntVar(&opt.width, "width", 0, "chart width in -cli mode, in columns (default: $COLUMNS, else 100)")
-	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "re-download quotes older than this duration")
+	fs.DurationVar(&opt.cacheAge, "cache-age", 30*24*time.Hour, "re-download quotes older than this duration (the data generators, -gen-simdata and -verify-simdata, default to 24h instead)")
 	warmup := fs.Bool("warmup", false, "pre-fetch the cache for the bundled asset catalog, then stop")
 	verifyData := fs.Bool("verify-data", false, "data doctor: check the quotes of the referenced assets (or the whole catalog) for anomalies, then exit")
 	suggestFlag := fs.Bool("suggest", false, "suggest catalog assets to add for better regime coverage/diversification, then exit")
@@ -331,13 +356,13 @@ Options:
 	// dispatch before any portfolio parsing.
 	if *verifySimdata {
 		qaClient := marketdata.NewClient(opt.dataDir)
-		qaClient.MaxAge = opt.cacheAge
+		qaClient.MaxAge = generatorAge(fs, opt.cacheAge)
 		qaClient.Logf = log.Printf
 		return runVerifySimdata(ctx, qaClient, &opt, fs.Args())
 	}
 	if *genSimdata {
 		genClient := marketdata.NewClient(opt.dataDir)
-		genClient.MaxAge = opt.cacheAge
+		genClient.MaxAge = generatorAge(fs, opt.cacheAge)
 		genClient.Logf = log.Printf
 		return runGenSimdata(ctx, genClient, &opt, *refdataDir, fs.Args(), *dry)
 	}
