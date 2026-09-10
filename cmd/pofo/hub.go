@@ -299,5 +299,5 @@ func (s *server) hub(w http.ResponseWriter, r *http.Request) {
 		Prefs      hubPrefs
 		Currencies []string
 		Rebalances []int
-	}{template.CSS(webui.WarmSkin), hubComposerMount(prefs, s.presets), hubItems(), prefs, currencies, rebalances})
+	}{template.CSS(webui.WarmSkin), hubComposerMount(prefs, s.presets, s.opt.foreignPerHour), hubItems(), prefs, currencies, rebalances})
 }

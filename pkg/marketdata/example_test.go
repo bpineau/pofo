@@ -19,6 +19,21 @@ func ExampleCanonicalID() {
 	// VOO
 }
 
+// PlausibleID judges an identifier on its shape alone, the first gate a
+// caller applies to an identifier it did not vet itself: a checksummed ISIN
+// or a plausible exchange ticker, nothing else.
+func ExamplePlausibleID() {
+	fmt.Println(marketdata.PlausibleID("IWDA.AS"))
+	fmt.Println(marketdata.PlausibleID("IE00B4L5Y983"))
+	fmt.Println(marketdata.PlausibleID("IE00B4L5Y984")) // wrong check digit
+	fmt.Println(marketdata.PlausibleID("MSCI WORLD"))
+	// Output:
+	// true
+	// true
+	// false
+	// false
+}
+
 // FundISIN translates European ETF and mutual fund tickers to ISINs using
 // the embedded correspondence list.
 func ExampleFundISIN() {

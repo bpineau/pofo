@@ -32,7 +32,7 @@ func (opt *options) compareOptions() compare.Options {
 		Currency: opt.currency, Benchmark: opt.benchmark,
 		Start: opt.start, End: opt.end, Rebalance: opt.rebalance,
 		NoSim: opt.noSim, NoFees: opt.noFees, Simdata: opt.simdata,
-		Framework: opt.fw,
+		Framework: opt.fw, ExactForeign: opt.exactForeign,
 	}
 }
 

@@ -164,6 +164,12 @@ type server struct {
 	// buildPanel builds a FIRE panel for one spec; a field so tests can
 	// stub the fetch-heavy build. Defaults to firePanel.
 	buildPanel func(ctx context.Context, spec *portfolio.Spec) (*scenario.Panel, []string)
+
+	// foreign rations the identifiers outside the bundled catalog that
+	// visitors may have fetched from the upstream sources (foreign.go).
+	// Nil = the feature is off and only catalog identifiers are accepted,
+	// which is the default (-serve-foreign-per-hour 0).
+	foreign *foreignBudget
 }
 
 func newServer(opt *options, client *marketdata.Client) *server {
@@ -175,6 +181,7 @@ func newServer(opt *options, client *marketdata.Client) *server {
 		presets:    viewPresets(),
 		fireByEx:   map[string]http.Handler{},
 		fireBySpec: map[string]http.Handler{},
+		foreign:    newForeignBudget(opt.foreignPerHour, opt.foreignGlobalPerHour, time.Hour),
 	}
 	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
 		return renderComparison(ctx, s.client, o, specs)
@@ -403,6 +410,26 @@ func clientIP(r *http.Request) string {
 	return r.RemoteAddr
 }
 
+// foreignGate returns this request's authority over identifiers outside the
+// bundled catalog: nil when the feature is off, so adhocSpec keeps rejecting
+// them, otherwise a gate charging the requesting client and skipping whatever
+// the quote cache can already serve for free.
+func (s *server) foreignGate(r *http.Request) *foreignGate {
+	if s.foreign == nil {
+		return nil
+	}
+	return &foreignGate{budget: s.foreign, client: clientIP(r), cached: s.client.Cached}
+}
+
+// requestStatus grades a rejected request: an exhausted fetch budget is a 429
+// (the same URL works later), anything else a 400 (it never will).
+func requestStatus(err error) int {
+	if errors.Is(err, errForeignBudget) {
+		return http.StatusTooManyRequests
+	}
+	return http.StatusBadRequest
+}
+
 // statusRecorder is a minimal http.ResponseWriter that remembers the status
 // code and byte count so logAccess can report them after the handler returns.
 type statusRecorder struct {
@@ -462,8 +489,9 @@ func (s *server) fire(w http.ResponseWriter, r *http.Request) {
 
 // fireComposed serves the simulator for an ad-hoc composed portfolio. It
 // works on the escaped path so a percent-encoded "/" cannot cross the
-// segment boundary, and validates the spec (grammar, byte cap, catalog
-// gate, all via adhocSpec) before any redirect or panel build.
+// segment boundary, and validates the spec (grammar, byte cap, identifier
+// gate and fetch budget, all via adhocSpec) before any redirect or panel
+// build.
 func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string) {
 	seg, tail, slash := strings.Cut(enc, "/")
 	raw, err := url.PathUnescape(seg)
@@ -471,9 +499,9 @@ func (s *server) fireComposed(w http.ResponseWriter, r *http.Request, enc string
 		s.errorPage(w, http.StatusBadRequest, "malformed portfolio spec")
 		return
 	}
-	spec, err := adhocSpec(raw, 1)
+	spec, err := adhocSpec(raw, 1, s.foreignGate(r))
 	if err != nil {
-		s.errorPage(w, http.StatusBadRequest, err.Error())
+		s.errorPage(w, requestStatus(err), err.Error())
 		return
 	}
 	if !slash {
@@ -623,9 +651,9 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "GET only", http.StatusMethodNotAllowed)
 		return
 	}
-	vr, err := parseViewQuery(r.URL.Query(), s.opt)
+	vr, err := parseViewQuery(r.URL.Query(), s.opt, s.foreignGate(r))
 	if err != nil {
-		s.errorPage(w, http.StatusBadRequest, err.Error())
+		s.errorPage(w, requestStatus(err), err.Error())
 		return
 	}
 	if len(vr.specs) == 0 {

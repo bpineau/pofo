@@ -25,6 +25,13 @@ type Options struct {
 	NoFees    bool  // do not fetch the assets' ongoing charges (TER); envelope fees still apply
 	Simdata   fs.FS // optional filesystem of simulated-history CSVs
 	Framework suggest.Framework
+	// ExactForeign resolves identifiers OUTSIDE the bundled catalog
+	// exactly (marketdata.FetchOptions.ExactOnly): no instrument matched by
+	// name, so a typo fails instead of quoting an unrelated fund. Catalog
+	// identifiers are pinned already and unaffected. Callers that compare
+	// portfolios composed by untrusted hands (the web app's p= grammar) set
+	// it; the CLI leaves it off.
+	ExactForeign bool
 }
 
 // Decoration carries optional presentation chrome injected into the rendered
