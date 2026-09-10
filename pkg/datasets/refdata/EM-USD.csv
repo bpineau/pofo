@@ -1,7 +1,11 @@
 # pofo simdata v1
 # id: EM-USD
 # name: Emerging markets equity total return (MSCI Emerging Markets, USD, monthly)
-# source: MSCI Emerging Markets net total return via curvo.eu/backtest (MSCI-derived; curvo uses NET indices), USD, index base 1987-12. Proxy behind VEIEX. Validated 2026-08-20: the Dec-to-Dec returns track the published MSCI Emerging Markets NET USD calendar years 2012-2025 within 0.5 point, running +0.31 point/yr rich on average (MSCI factsheet msci-emerging-markets-index-usd-net.pdf, Jul 31 2026); the export is MSCI-derived rather than the index itself, and its last months are chained from a tracking series. DATES: each point is dated the LAST calendar day of its month and holds that month-end level (relabeled from the first-of-month export 2026-08-20, so anchorShape pins it to the right month; values unchanged).
+# source: MSCI Emerging Markets net total return via curvo.eu/backtest (MSCI-derived; curvo uses NET indices), USD, index base 1987-12. Proxy behind VEIEX. Validated 2026-08-20: the Dec-to-Dec returns track the published MSCI Emerging Markets NET USD calendar years 2012-2025 within 0.5 point, running +0.31 point/yr rich on average (MSCI factsheet msci-emerging-markets-index-usd-net.pdf, Jul 31 2026); the export is MSCI-derived rather than the index itself, and its last months are chained from a tracking series. DATES: each point is dated the LAST calendar day of its month and holds that month-end level (relabeled from the first-of-month export 2026-08-20, so anchorShape pins it to the right month; values unchanged). Points from the month named by tail-from are NOT the export: they are the validated ETF proxy tail described by tail-source, rebuilt by cmd/gen-msci-refdata.
+# tail-source: tail from IE00BTJRMP35 (XMME.L) +TER 0.18 %/yr, TD on overlap 2017-07..2026-05 = -0.217 %/yr, corr 0.9887, rmse 0.785 %/mo, validated 2026-09-10
+# tail-from: 2026-06
+# generated: 2026-09-10
+date,close
 1987-12-31,10000.000000
 1988-01-31,10983.800000
 1988-02-29,11021.100000
@@ -464,3 +468,6 @@
 2026-03-31,376871.632144
 2026-04-30,432162.418216
 2026-05-31,474139.686408
+2026-06-30,472618.270073
+2026-07-31,443273.559464
+2026-08-31,469101.121841
