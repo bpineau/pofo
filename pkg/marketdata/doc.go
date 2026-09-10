@@ -128,6 +128,42 @@
 // through a Yahoo outage or offline. Pair it with Client.FXRate to express
 // the price in a display currency.
 //
+// Client.LatestBatch quotes many identifiers in one call, and Client.LatestAny
+// the first of several identifiers of one instrument that answers.
+//
+// # Trading sessions and extended hours
+//
+// Quote.Session names the session the price was struck in, and Quote.Time is
+// always the instant of that print:
+//
+//   - "regular": Yahoo's regularMarketPrice. Time is an intraday instant while
+//     the market is open, and the closing instant once it has closed - a closed
+//     market still quotes, which is why Live alone never means "open".
+//   - "pre" / "post": a pre-market or after-hours print, only ever returned
+//     under the extended-hours opt-in below. Time is the instant of that print.
+//   - "": the source names no session. A daily close (Time is that close's
+//     date at 00:00 UTC), an FT or Morningstar NAV, a nowcast estimate.
+//
+// The default quote paths report "regular" or "", never an off-hours price:
+// existing callers see the same prices they always did. Ask for extended hours
+// with QuoteOptions.ExtendedHours (Client.LatestAny) or Client.LatestBatchExtended,
+// and a pre-market or after-hours print then wins whenever it is STRICTLY more
+// recent than the regular session's last price. That recency test is the whole
+// rule: it needs no session calendar, it ignores the stale pre-market field
+// Yahoo keeps serving during the regular session, and at 03:00 in New York it
+// correctly reports last night's after-hours print, labelled "post", instead of
+// the 16:00 close. Only US venues run these sessions; a European line, a fund
+// NAV and a nowcast answer exactly as they would without the opt-in.
+//
+// Extended-hours quotes come from Yahoo's v7 quote API, the only endpoint
+// carrying preMarketPrice/postMarketPrice (the chart meta the single-symbol
+// spot path reads has neither, nor marketState). It needs a cookie+crumb pair,
+// so it can fail where the plain spot call succeeds: the extended leg then
+// falls back to the regular quote rather than lose it. Two caveats for the
+// consumer: an off-hours print is thin and wide-spread, a price to SHOW rather
+// than to book a valuation on, and Client.Intraday is deliberately left alone -
+// its path stops at the regular session's bounds.
+//
 // # Data repair
 //
 // Every fetched daily series goes through a conservative cleaning pass
@@ -199,7 +235,9 @@
 //     before the FX history starts;
 //   - Client.Latest returns the freshest known price (a Quote) for an
 //     identifier, the live Yahoo market price when available, otherwise the
-//     last daily close;
+//     last daily close; Client.LatestBatchExtended and
+//     QuoteOptions.ExtendedHours add the pre-market and after-hours prints,
+//     labelled by Quote.Session;
 //   - Client.Resolve returns a Resolution describing the instrument pofo
 //     would quote for an identifier (ticker, ISIN or alias), using the catalog and
 //     on-disk cache first, then the same multi-source search Fetch uses;

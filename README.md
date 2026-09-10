@@ -693,7 +693,32 @@ if err != nil {
 rate, _ := client.FXRate(ctx, q.Currency, "EUR", q.Time)
 value := shares * q.Price * rate // valuation in EUR
 _ = q.Live                       // true: real-time; false: last daily close (q.Time)
+_ = q.Session                    // "regular", or "" when the source names no session
 ```
+
+#### Extended hours (pre-market, after hours)
+
+`Quote.Session` names the session the price was struck in, and `Quote.Time` is
+always that print's instant. The default calls only ever report `"regular"`
+(Yahoo's regular-market price, timed at the close once the market has shut) or
+`""` (a daily close, a fund NAV, a nowcast: no session to name).
+
+Ask for the off-hours prints of US venues with `QuoteOptions.ExtendedHours`
+(`Client.LatestAny`) or `Client.LatestBatchExtended`. A pre-market or
+after-hours print then wins whenever it is strictly more recent than the regular
+session's last price, and `Quote.Session` reads `"pre"` or `"post"` so the
+display can label it:
+
+```go
+for id, q := range client.LatestBatchExtended(ctx, []string{"DDOG", "VT"}) {
+	fmt.Println(id, q.Price, q.Session, q.Time.Format("15:04")) // DDOG 225.70 post 19:59
+}
+```
+
+Only US venues run these sessions: a European line, a fund NAV and a nowcast
+answer exactly as they would without the opt-in, and so does everything when
+the extended leg (Yahoo's cookie-authenticated quote API) is unavailable. Such
+a print is thin and wide-spread: show it, do not book a valuation on it.
 
 ## Simulated data (pkg/datasets/simdata/)
 
