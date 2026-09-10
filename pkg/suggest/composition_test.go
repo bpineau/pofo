@@ -278,3 +278,151 @@ func TestContributors(t *testing.T) {
 		}
 	}
 }
+
+// The catalog is written by hand from a dozen fund factsheets, which spell the
+// same region and the same sector a dozen ways. Canonicalization is what makes
+// the pies aggregate instead of showing "Technology" next to "Information
+// Technology"; an unrecognized label passes through, trimmed, rather than
+// being silently dropped into "Other".
+func TestCanonRegionAndSector(t *testing.T) {
+	regions := map[string]string{
+		"united states": "US", "U.S.A.": "US", "USA": "US", "  US  ": "US",
+		"United Kingdom": "UK", "Great Britain": "UK", "u.k.": "UK",
+		"other developed":  "Other developed",
+		"Emerging Markets": "Other emerging", "other em": "Other emerging",
+		"Other Eurozone":     "Other eurozone",
+		"Other Europe ex-UK": "Other Europe",
+		"korea":              "South Korea",
+		"Japan":              "Japan", // unrecognized labels pass through
+		"Ruritania":          "Ruritania",
+	}
+	for in, want := range regions {
+		if got := CanonRegion(in); got != want {
+			t.Errorf("CanonRegion(%q) = %q, want %q", in, got, want)
+		}
+	}
+	sectors := map[string]string{
+		"Technology": "Information Technology", "info tech": "Information Technology",
+		"Basic Materials": "Materials",
+		"Telecom":         "Communication Services", "communications": "Communication Services",
+		"Consumer Cyclical": "Consumer Discretionary", "consumer defensive": "Consumer Staples",
+		"Financial Services": "Financials", "healthcare": "Health Care", "Health Care": "Health Care",
+		"Industrials": "Industrials", "Widgets": "Widgets",
+	}
+	for in, want := range sectors {
+		if got := CanonSector(in); got != want {
+			t.Errorf("CanonSector(%q) = %q, want %q", in, got, want)
+		}
+	}
+}
+
+// The currency of a holding is where its earnings are, not where it is listed,
+// so every geography label must resolve to a currency. Eurozone members share
+// EUR; a label spanning several currencies (a regional aggregate) lands in
+// CurrencyOther rather than pretending to a single one.
+func TestRegionCurrency(t *testing.T) {
+	cases := map[string]string{
+		"United States": "USD", "North America": "USD", "Foreign (USD-denominated)": "USD",
+		"United Kingdom": "GBP", "Japan": "JPY", "Switzerland": "CHF",
+		"Sweden": "SEK", "Denmark": "DKK", "Norway": "NOK",
+		"Canada": "CAD", "Australia": "AUD", "New Zealand": "NZD",
+		"China": "CNY", "Hong Kong": "HKD", "Taiwan": "TWD", "korea": "KRW",
+		"India": "INR", "Singapore": "SGD", "Brazil": "BRL", "Mexico": "MXN",
+		"South Africa": "ZAR", "Saudi Arabia": "SAR", "Indonesia": "IDR",
+		"Thailand": "THB", "Poland": "PLN",
+		"France": "EUR", "Germany": "EUR", "Italy": "EUR", "Spain": "EUR",
+		"Ireland": "EUR", "Other eurozone": "EUR", "Eurozone": "EUR",
+		// No single currency behind these, nor behind an unknown label.
+		"Other developed": CurrencyOther, "Other emerging": CurrencyOther,
+		"Other Europe": CurrencyOther, "Other": CurrencyOther, "Ruritania": CurrencyOther,
+	}
+	for region, want := range cases {
+		if got := regionCurrency(region); got != want {
+			t.Errorf("regionCurrency(%q) = %q, want %q", region, got, want)
+		}
+	}
+}
+
+// The rule ladder of CurrencySplit, rule by rule, on one holding at a time:
+// each rule must win over the ones below it. Rule 1's shortfall is the subtle
+// one (a currency exposure summing to less than 100 % is real-asset capital,
+// not missing data), and rule 6 is the last resort that makes a bond fund
+// without a geography split still count somewhere.
+func TestCurrencySplitRuleLadder(t *testing.T) {
+	cases := []struct {
+		name string
+		m    Meta
+		want map[string]float64
+	}{
+		{"1. explicit exposure, with a real-asset shortfall",
+			Meta{AssetClass: "multi-asset", Currency: "EUR",
+				CurrencyExposure: map[string]float64{"USD": 60, "EUR": 20}},
+			map[string]float64{"USD": 0.6, "EUR": 0.2, CurrencyNone: 0.2}},
+		{"2. gold is not a currency, whatever it is quoted in",
+			Meta{AssetClass: "gold", Currency: "USD", Geography: map[string]float64{"US": 100}},
+			map[string]float64{CurrencyNone: 1}},
+		{"2. broad commodities likewise",
+			Meta{AssetClass: "broad-commodity", Currency: "USD"},
+			map[string]float64{CurrencyNone: 1}},
+		{"3. a hedged share class is its hedge target",
+			Meta{AssetClass: "equity", Currency: "USD", CurrencyHedged: true, HedgedTo: "EUR",
+				Geography: map[string]float64{"US": 100}},
+			map[string]float64{"EUR": 1}},
+		{"4. a futures book sets its own exposure",
+			Meta{AssetClass: "managed-futures", Currency: "USD"},
+			map[string]float64{CurrencyDynamic: 1}},
+		{"5. geography drives it, eurozone members merging",
+			Meta{AssetClass: "equity", Currency: "EUR",
+				Geography: map[string]float64{"United States": 50, "France": 30, "Germany": 10, "Other developed": 10}},
+			map[string]float64{"USD": 0.5, "EUR": 0.4, CurrencyOther: 0.1}},
+		{"6. last resort: the quote currency",
+			Meta{AssetClass: "money-market", Currency: "EUR"},
+			map[string]float64{"EUR": 1}},
+		{"nothing at all is unknown, never a guess",
+			Meta{AssetClass: "corporate-bond"},
+			map[string]float64{BucketUnknown: 1}},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			got := CurrencySplit([]Holding{{ID: "X", Weight: 1, HasMeta: true, Meta: c.m}})
+			if len(got) != len(c.want) {
+				t.Fatalf("split = %v, want %v", got, c.want)
+			}
+			for cur, w := range c.want {
+				if math.Abs(got[cur]-w) > 1e-9 {
+					t.Errorf("split[%q] = %v, want %v (full split %v)", cur, got[cur], w, got)
+				}
+			}
+		})
+	}
+}
+
+// A zero-weight line (a holding parked at 0 % in a file being edited) must
+// leave every split untouched: it owns no capital, so it owns no share of
+// anything, and a holding with no metadata is never guessed at.
+func TestSplitsIgnoreZeroWeightAndUnknownMeta(t *testing.T) {
+	holdings := []Holding{
+		{ID: "PARKED", Weight: 0, HasMeta: true, Meta: Meta{AssetClass: "equity", Currency: "USD"}},
+		{ID: "REAL", Weight: 0.6, HasMeta: true, Meta: Meta{AssetClass: "equity", Currency: "EUR",
+			Geography: map[string]float64{"France": 100}, Sectors: map[string]float64{"Technology": 100}}},
+		{ID: "MYSTERY", Weight: 0.4},
+	}
+	if got := CurrencySplit(holdings); math.Abs(got["EUR"]-0.6) > 1e-9 || math.Abs(got[BucketUnknown]-0.4) > 1e-9 || len(got) != 2 {
+		t.Errorf("CurrencySplit = %v, want EUR 0.6 / Unknown 0.4", got)
+	}
+	if got := AssetClassSplit(holdings); math.Abs(got["equity"]-0.6) > 1e-9 || math.Abs(got[BucketUnknown]-0.4) > 1e-9 {
+		t.Errorf("AssetClassSplit = %v, want equity 0.6 / Unknown 0.4", got)
+	}
+	if got := GeographySplit(holdings); math.Abs(got["France"]-0.6) > 1e-9 || math.Abs(got[BucketUnknown]-0.4) > 1e-9 {
+		t.Errorf("GeographySplit = %v, want France 0.6 / Unknown 0.4", got)
+	}
+	// The sector pie covers the equity sleeve only, so it renormalizes over
+	// the equity notional it could actually read.
+	sectors, sleeve := EquitySectorSplit(holdings)
+	if math.Abs(sectors["Information Technology"]-1) > 1e-9 || math.Abs(sleeve-0.6) > 1e-9 {
+		t.Errorf("EquitySectorSplit = %v over a %v sleeve, want the whole readable sleeve in tech at 0.6", sectors, sleeve)
+	}
+	if got := Contributors(holdings, RegimeFramework()); len(got[Growth]) != 1 || got[Growth][0].ID != "REAL" {
+		t.Errorf("Contributors[growth] = %+v, want the one funded equity line", got[Growth])
+	}
+}

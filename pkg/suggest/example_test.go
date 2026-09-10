@@ -2,6 +2,7 @@ package suggest_test
 
 import (
 	"fmt"
+	"math"
 
 	"github.com/bpineau/pofo/pkg/suggest"
 )
@@ -114,4 +115,58 @@ func ExampleDurationSplit() {
 	fmt.Printf("nominal %.2f y, real %.2f y\n", led.Nominal, led.Real)
 	// Output:
 	// nominal 1.68 y, real 1.60 y
+}
+
+// Analyze is the package's entry point: it reports the framework coverage of
+// the holdings, the redundancies among them, and the candidates worth adding.
+// A candidate is only suggested when it fills a coverage gap AND improves the
+// blend consistently across the walk-forward windows, so the deterministic
+// series below (a diversifier moving against the book) is exactly the case the
+// engine is built to find.
+func ExampleAnalyze() {
+	const n = 500
+	held := make([]float64, n)
+	diversifier := make([]float64, n)
+	for i := range n {
+		held[i] = 0.004 * math.Sin(float64(i)/5)
+		diversifier[i] = 0.004*math.Cos(float64(i)/5) + 0.0003
+	}
+	holdings := []suggest.Holding{
+		{ID: "WORLD", Weight: 1, HasMeta: true, Meta: suggest.Meta{AssetClass: "equity"}},
+	}
+	candidates := []suggest.Candidate{{
+		Meta:        suggest.Meta{ID: "GOLD", AssetClass: "gold"},
+		PortReturns: held,
+		Returns:     diversifier,
+		Years:       12,
+	}}
+
+	res := suggest.Analyze(holdings, [][]float64{held}, candidates, suggest.DefaultOptions(), suggest.RegimeFramework())
+	fmt.Println("gaps:", res.Gaps)
+	for _, s := range res.Suggestions {
+		fmt.Printf("%s at %.0f %% fills %s (%d/%d windows)\n",
+			s.Meta.ID, s.Weight*100, s.Fills, s.SharpeWins, s.Windows)
+	}
+	// Output:
+	// gaps: [deflation inflation crisis]
+	// GOLD at 20 % fills inflation (8/8 windows)
+}
+
+// CurrencyProfile condenses a currency split into what an investor billed in
+// euros actually needs to know: how much of the book moves with exchange
+// rates, and which currency dominates that part.
+func ExampleCurrencyProfile() {
+	holdings := []suggest.Holding{
+		{ID: "WORLD", Weight: 0.6, HasMeta: true, Meta: suggest.Meta{
+			AssetClass: "equity", Currency: "EUR",
+			Geography: map[string]float64{"US": 70, "Japan": 10, "France": 20},
+		}},
+		{ID: "GOLD", Weight: 0.25, HasMeta: true, Meta: suggest.Meta{AssetClass: "gold", Currency: "USD"}},
+		{ID: "LINKER", Weight: 0.15, HasMeta: true, Meta: suggest.Meta{AssetClass: "inflation-linked-bond", Currency: "EUR"}},
+	}
+	p := suggest.CurrencyProfile(suggest.CurrencySplit(holdings), "EUR")
+	fmt.Printf("base %.0f %%, foreign %.0f %% (top %s at %.0f %%), non-fiat %.0f %%\n",
+		p.Base*100, p.Foreign*100, p.Top, p.TopShare*100, p.NonFiat*100)
+	// Output:
+	// base 27 %, foreign 48 % (top USD at 42 %), non-fiat 25 %
 }
