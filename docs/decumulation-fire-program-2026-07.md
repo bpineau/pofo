@@ -63,3 +63,21 @@ added, so nobody re-proposes them:
   valuation model, which no scenario source simulates today; its
   planning-time content is already covered by the CAPE anchor feeding
   ABW's assumed return. Revisit only with a valuation-path model.
+
+- Envelope tax model: DECIDED 2026-09-10, not to build. A per-envelope tax
+  model (CTO 31.4 %, PEA 18.6 %, assurance-vie 24.7 % under its allowance,
+  PEE 18.6 %) is worth 0.015 point of sustainable withdrawal rate over a
+  correctly blended single rate, and the drain order another 0.03; the rate's
+  CALIBRATION is worth 0.12 and the embedded gain fraction 0.30. The kernel
+  keeps the `Plan.Envelopes` machinery it already has; the blended slider stays
+  the shipped control, with the calibration recipe (gain-weighted rate,
+  capital-weighted gain fraction) and the PEE match break-even in
+  `docs/fire-envelopes-tax-model-design.md`. Unlock dates (PEE and PEA 5 years,
+  AV 8 years) and per-envelope allocations were refused there too.
+- Cheap UI item that spike exposed: `Params.GainFrac`, `Params.PEACapital` and
+  `Params.AVCapital` exist in `pkg/decumul/web/model.go` and reach the kernel,
+  but none of the three is in the page's control list (`GROUPS` in
+  `assets/app.js`), so the shipped page always runs a single sleeve with a ZERO
+  embedded gain, which flatters the plan by 0.30 point of withdrawal rate. Put
+  the gain fraction on the page (Taxes group), and the two envelope amounts
+  beside it, with the recipe in the help text.
