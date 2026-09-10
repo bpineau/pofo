@@ -1,5 +1,5 @@
 # Using the FIRE simulator
-<!-- source: utiliser-la-page-fire @ ba32f89b87ac -->
+<!-- source: utiliser-la-page-fire @ 4065a2a25cf6 -->
 
 pofo's FIRE simulator is a laboratory for a retirement plan, and it runs in a browser. You describe your situation there: capital, spending, age, pension, spending rules. It then runs that one plan through several market models, from the one that follows your own funds most closely to the harshest the century has on record. This article is the full manual. It says which order to read the sections in, what each group of parameters controls, and above all how to **read** what you are looking at. The tool is built to inform a decision, not to hand down a verdict.
 
@@ -67,7 +67,7 @@ The parameters button opens the panel. Every control has a plain-language hover.
 
 **Cash buffer**: Buffer (years of spending), three by default, its real return, and the year refills stop. Mind the convention: the buffer is **carved out of** your starting capital, never added on top ([[cash-buffer]], [[refilling-the-buffer]]).
 
-**Taxes**: Tax on gains is charged on the gain share of every sale, by grossing the sale up. Withdrawing $60k net sells more than $60k of assets, and the effective burden climbs as unrealized gains build up. The 32.8% preset is one country's blended rate and nothing more: replace it with your own blended effective rate across your accounts ([[us-taxes-in-the-withdrawal-phase]]).
+**Taxes**: Tax on gains is charged on the gain share of every sale, by grossing the sale up, so withdrawing $60k net sells more than $60k of assets. The rate bites on the gain alone, and the dial next to it says how large that gain is on day one: Embedded gain, the share of today's capital that is appreciation rather than the money you put in, half of it by default. The effective burden therefore starts at that fraction of your rate and climbs toward the full rate as gains are realized. The 32.8% preset is one country's blended rate and nothing more: replace it with your own blended effective rate across your accounts ([[us-taxes-in-the-withdrawal-phase]]). The two amounts folded under "envelopes" name capital held in the two French sheltered wrappers, drained in that order at their own rates; leave them at zero, since naming the structure is worth 0.015 point of sustainable withdrawal rate while moving the embedded gain from zero to 50% is worth 0.30, twenty times more.
 
 **Simulation**: Simulated paths sets how many paths each model draws, 2,000 by default and 10,000 at most. At 2,000 the ruin figure moves by roughly plus or minus 0.7 point from one run to the next with nothing changed. That is sampling noise, and it is the first reason never to read the second decimal ([[failure-probability]]).
 

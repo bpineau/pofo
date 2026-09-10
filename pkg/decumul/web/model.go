@@ -234,14 +234,23 @@ func smileAt(k int) float64 {
 	}
 }
 
+// growthSleeve is the invested part of the capital, the cash buffer carved
+// out: what the envelopes divide and what the tax is levied on (the buffer is
+// untaxed). Zero when the buffer swallows the whole capital.
+func (pr Params) growthSleeve() float64 {
+	return math.Max(0, pr.Capital-math.Min(pr.BufferYears*pr.NeedAnnual, pr.Capital))
+}
+
 // envelopes translates the PEA/AV sliders into the ordered tax pockets, CTO
 // first (the classic French drain order), with the shared embedded-gain
-// fraction. It returns nil when the plan is the legacy single CTO sleeve.
+// fraction. It returns nil when the plan is the legacy single CTO sleeve: no
+// wrapper named and no embedded gain, where one pocket at Plan.Tax whose cost
+// basis equals its value is the identical, cheaper plan.
 func (pr Params) envelopes() []decumul.Envelope {
 	if pr.PEACapital <= 0 && pr.AVCapital <= 0 && pr.GainFrac <= 0 {
 		return nil
 	}
-	growth := pr.Capital - math.Min(pr.BufferYears*pr.NeedAnnual, pr.Capital)
+	growth := pr.growthSleeve()
 	out := []decumul.Envelope{{
 		Name:     "CTO",
 		Amount:   math.Max(0, growth-pr.PEACapital-pr.AVCapital),
