@@ -145,6 +145,36 @@
     "since": "2019-05-07"
   },
   {
+    "id": "DDOG",
+    "isin": "US23804L1035",
+    "name": "Datadog, Inc. Class A",
+    "ucits": false,
+    "eu_retail": false,
+    "source": "yahoo",
+    "symbol": "DDOG",
+    "currency": "USD",
+    "fees": 0,
+    "asset_class": "equity",
+    "underlying": "One share of Datadog, Inc. (NASDAQ: DDOG), class A common stock: cloud observability and monitoring software",
+    "benchmark_index": null,
+    "strategy": "single-stock",
+    "geography": {
+      "US": 100
+    },
+    "sectors": {
+      "Information Technology": 100
+    },
+    "distribution": "n/a",
+    "leverage": 1,
+    "notes": "A SINGLE ISSUER, not a fund: it is in the catalog because a portfolio holding it needs a pinned quote line rather than a fuzzy search, and because it is the nowcast proxy of ERES_DATADOG, the employee-savings FCPE invested in the same share (that fund is valued at the NASDAQ OPENING print, so a nowcast anchored on this line's close carries the session's move as an offset; see docs/eres-fcpe-design.md). No ongoing charge exists on a share, which is what \"fees\": 0 means here. Its measured shape is a single name's, not an equity fund's: 60 %/yr volatility, -68 % maximum drawdown and +31 % on one earnings print since the 2019-09-19 IPO, which is why the doctor judges a \"single-stock\" record by a stretched equity band (pkg/marketdata/plausible.go). Held unhedged by a euro investor, the whole position is USD exposure.",
+    "confidence": "high",
+    "sources": [
+      "https://investors.datadoghq.com/",
+      "https://www.fidelity.co.uk/factsheet-data/factsheet/US23804L1035-datadog-inc/profile"
+    ],
+    "since": "2019-09-19"
+  },
+  {
     "id": "DE0002635307",
     "isin": "DE0002635307",
     "aliases": [
@@ -5933,7 +5963,7 @@
     "geography": null,
     "sectors": null,
     "distribution": "distributing",
-    "leverage": 1.5,
+    "leverage": 2.0,
     "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income; bond leg tracks Bloomberg US Aggregate (~6y duration); currency_exposure = USD bonds + Dynamic managed-futures book",
     "confidence": "high",
     "sources": [
@@ -5997,7 +6027,7 @@
       "Utilities": 2
     },
     "distribution": "distributing",
-    "leverage": 1.5,
+    "leverage": 2.0,
     "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity; equity leg ~MSCI ACWI (sectors/geography/currency approximated); bond leg ~US core (~6y)",
     "confidence": "medium",
     "sources": [
@@ -6057,7 +6087,7 @@
       "Utilities": 2
     },
     "distribution": "distributing",
-    "leverage": 1.5,
+    "leverage": 2.0,
     "notes": "Return-stacked 100/100 equities+CTA; trend diversification without cutting equity; currency_exposure = 100% USD equity + Dynamic managed-futures book (levered notional sums to 200)",
     "confidence": "high",
     "sources": [

@@ -4,6 +4,8 @@ import (
 	"math"
 	"strings"
 	"testing"
+
+	"github.com/bpineau/pofo/pkg/datasets"
 )
 
 func TestRegimes(t *testing.T) {
@@ -166,6 +168,39 @@ func TestAnalyzeSuggestsGapFiller(t *testing.T) {
 	}
 	if s.VolAfter >= s.VolBefore {
 		t.Fatalf("adding a calm uncorrelated asset should lower vol: %.5f -> %.5f", s.VolBefore, s.VolAfter)
+	}
+}
+
+// TestNeverSuggestsSingleStock: a single-issuer record is priced by the
+// toolkit, never advised by it, even when it fills the gap and wins every
+// walk-forward window.
+func TestNeverSuggestsSingleStock(t *testing.T) {
+	const n = 480
+	portR := make([]float64, n)
+	cand := make([]float64, n)
+	for i := 0; i < n; i++ {
+		if i%2 == 0 {
+			portR[i] = 0.02
+		} else {
+			portR[i] = -0.018
+		}
+		cand[i] = 0.0012 + 0.0001*math.Sin(float64(i))
+	}
+	holdings := []Holding{{ID: "EQ", Weight: 1, HasMeta: true, Meta: Meta{AssetClass: "equity"}}}
+	candidates := []Candidate{
+		{Meta: Meta{ID: "DDOG", AssetClass: "gold", Strategy: datasets.StrategySingleStock},
+			PortReturns: portR, Returns: cand, Years: 5},
+	}
+	res := Analyze(holdings, [][]float64{portR}, candidates, DefaultOptions(), RegimeFramework())
+	if len(res.Suggestions) != 0 {
+		t.Fatalf("a single-issuer candidate must never be suggested, got %+v", res.Suggestions)
+	}
+	// The same shape without that strategy is a suggestion, so the test is
+	// about the marker and not about the returns.
+	candidates[0].Meta.Strategy = ""
+	res = Analyze(holdings, [][]float64{portR}, candidates, DefaultOptions(), RegimeFramework())
+	if len(res.Suggestions) != 1 {
+		t.Fatalf("want 1 suggestion without the marker, got %d", len(res.Suggestions))
 	}
 }
 
