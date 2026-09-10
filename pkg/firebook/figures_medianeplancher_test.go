@@ -281,7 +281,7 @@ func TestMedianePlancherPlateRenders(t *testing.T) {
 	for _, want := range []string{
 		"richesse médiane à 30 ans",
 		"retrait sûr à 95 % de succès",
-		"Le panier échange 25 % de médiane contre 0,78 point de retrait sûr",
+		"Le panier échange 25 % de médiane contre 0,86 point de retrait sûr",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate does not carry %q", want)

@@ -61,16 +61,16 @@ var impWeights = []float64{0.60, 0.25, 0.075, 0.075}
 // The measured profile: the share of the outcome each retirement year accounts
 // for, in percent, year 1 first. Frozen, and recomputed by the guard test.
 var impShares = [impYears]float64{
-	10.51, 10.42, 8.17, 8.10, 6.65, 5.77, 5.52, 5.03, 5.24, 4.63,
-	3.26, 3.78, 2.37, 3.05, 3.32, 2.01, 1.96, 1.52, 0.95, 1.53,
-	1.38, 0.69, 0.56, 0.80, 0.72, 0.44, 0.55, 0.28, 0.26, 0.16,
-	0.02, 0.01, 0.14, 0.05, 0.14, 0.00, 0.03, 0.00, 0.01, 0.00,
+	11.80, 8.86, 8.52, 7.17, 6.70, 6.99, 5.91, 5.24, 5.40, 4.05,
+	3.34, 4.07, 3.43, 2.49, 1.98, 2.01, 1.66, 1.60, 1.02, 1.39,
+	1.25, 0.96, 0.65, 0.51, 0.73, 0.50, 0.47, 0.22, 0.22, 0.16,
+	0.05, 0.21, 0.20, 0.05, 0.11, 0.02, 0.01, 0.03, 0.00, 0.02,
 }
 
 // impWealthDecade is the same first-decade share computed on the log of
 // terminal wealth rather than on success, the second reading the legend
 // carries. Frozen and recomputed alongside the profile.
-const impWealthDecade = 58.3
+const impWealthDecade = 58.7
 
 // impDecadeShare is what the first decade carries, in percent.
 func impDecadeShare() float64 {
@@ -94,7 +94,7 @@ func impTailShare() float64 {
 const (
 	impX0, impX1   = 70.0, 608.0
 	impTop, impBot = 118.0, 300.0
-	impShareHi     = 11.0
+	impShareHi     = 12.0
 )
 
 func impScales() (slot float64, share figScale) {
@@ -119,7 +119,7 @@ func figImportanceAnnees() string {
 	b.WriteString(sTxt((impX0+bandX)/2, 106, 11, figDeep, "middle", "600",
 		fmt.Sprintf("les dix premières années : %s %% de l'issue", frNum(impDecadeShare(), 0))))
 
-	axisTicks(&b, share, []float64{0, 2, 4, 6, 8, 10}, 0, " %", impX0, impX1, false)
+	axisTicks(&b, share, []float64{0, 2, 4, 6, 8, 10, 12}, 0, " %", impX0, impX1, false)
 
 	// One bar per year, the decade in full ink and the rest in a paler wash of
 	// the same colour: one series, two weights of attention.
