@@ -19,11 +19,11 @@ func mustQuery(t *testing.T, raw string) url.Values {
 }
 
 func TestViewComposerMount(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&p=IWDA:60,IGLN:40"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&p=IWDA:60,IGLN:40"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	mount := string(composerMount(vr))
+	mount := string(composerMount(vr, 0))
 	for _, want := range []string{"composer", "data-caps", "data-fork-0", "claude-dragonlite"} {
 		if !strings.Contains(mount, want) {
 			t.Errorf("mount missing %q", want)
@@ -67,11 +67,11 @@ func TestViewComposerMountEscapesName(t *testing.T) {
 	// Encode what adhocSpec needs: the "!name:" delimiter stays literal, the
 	// payload is URL-encoded so it survives ParseQuery intact.
 	raw := "IWDA:100!name:" + url.QueryEscape(`"><script>alert(1)</script>`)
-	vr, err := parseViewQuery(mustQuery(t, "p="+raw), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "p="+raw), viewBase(), nil)
 	if err != nil {
 		t.Fatalf("adhocSpec rejected a control-char-free name: %v", err)
 	}
-	mount := string(composerMount(vr))
+	mount := string(composerMount(vr, 0))
 	if strings.Contains(mount, "<script>alert") {
 		t.Error("portfolio name must be html-escaped in the composer mount")
 	}
@@ -87,7 +87,7 @@ func TestComposerMountUnforkable(t *testing.T) {
 		}},
 		fireHrefs: map[string]string{"opaque": "/firesimulator/e/opaque/"},
 	}
-	mount := string(composerMount(vr))
+	mount := string(composerMount(vr, 0))
 	if strings.Contains(mount, "data-fork-0") {
 		t.Error("an all-dropped example must not be forkable")
 	}
@@ -102,7 +102,7 @@ func viewBase() *options {
 }
 
 func TestParseViewQueryExamples(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=ntsx-all-weather"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=ntsx-all-weather"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -119,7 +119,7 @@ func TestParseViewQueryExamples(t *testing.T) {
 
 func TestParseViewQueryAdhoc(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t,
-		"p=NTSG:60,IGLN:20,IBCI:20!rebalance:30!sim:on!name:essai"), viewBase())
+		"p=NTSG:60,IGLN:20,IBCI:20!rebalance:30!sim:on!name:essai"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +143,7 @@ func TestParseViewQueryAdhoc(t *testing.T) {
 
 func TestParseViewQueryGlobals(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t,
-		"ex=claude-dragonlite&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"), viewBase())
+		"ex=claude-dragonlite&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,7 +178,7 @@ func TestParseViewQueryGlobals(t *testing.T) {
 // reconstructed history). "sim=on" also clears any inherited noSim.
 func TestParseViewQuerySimOnEnablesBackcast(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40&ex=claude-dragonlite&sim=on"),
-		&options{currency: "EUR", rebalance: 90, noSim: true})
+		&options{currency: "EUR", rebalance: 90, noSim: true}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +192,7 @@ func TestParseViewQuerySimOnEnablesBackcast(t *testing.T) {
 	}
 	// Absent the sim param, each spec keeps whatever its own text declared: a
 	// composed card with no "!sim:on" stays real-quotes-only.
-	plain, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40"), viewBase())
+	plain, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -218,7 +218,7 @@ func TestParseViewQueryErrors(t *testing.T) {
 		{"carriage return", "p=NTSG:100%0D:1", "control character"},
 	}
 	for _, c := range cases {
-		_, err := parseViewQuery(mustQuery(t, c.raw), viewBase())
+		_, err := parseViewQuery(mustQuery(t, c.raw), viewBase(), nil)
 		if err == nil || !strings.Contains(err.Error(), c.wantErr) {
 			t.Errorf("%s: err = %v, want containing %q", c.name, err, c.wantErr)
 		}
@@ -228,13 +228,13 @@ func TestParseViewQueryErrors(t *testing.T) {
 func TestParseViewQueryBenchGate(t *testing.T) {
 	// An arbitrary symbol must be rejected before it can reach an outbound
 	// fetch or poison the shared quote cache.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=ZZZNOPE"), viewBase()); err == nil ||
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=ZZZNOPE"), viewBase(), nil); err == nil ||
 		!strings.Contains(err.Error(), "not in the local catalog") {
 		t.Errorf("bench=ZZZNOPE: err = %v, want a catalog rejection", err)
 	}
 	// The exact server default (a quote symbol KnownLocal deliberately rejects)
 	// is accepted, so the gate never 400s the default.
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=^GSPC"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=^GSPC"), viewBase(), nil)
 	if err != nil {
 		t.Fatalf("bench=^GSPC (the server default): %v", err)
 	}
@@ -242,11 +242,11 @@ func TestParseViewQueryBenchGate(t *testing.T) {
 		t.Errorf("bench = %v, want ^GSPC accepted", vr.bench)
 	}
 	// A catalog identifier is accepted as a benchmark.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=IWDA"), viewBase()); err != nil {
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=IWDA"), viewBase(), nil); err != nil {
 		t.Errorf("bench=IWDA (catalog): %v", err)
 	}
 	// Empty explicitly disables Beta.
-	vr, err = parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench="), viewBase())
+	vr, err = parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench="), viewBase(), nil)
 	if err != nil {
 		t.Fatalf("bench= (empty): %v", err)
 	}
@@ -257,7 +257,7 @@ func TestParseViewQueryBenchGate(t *testing.T) {
 
 func TestParseViewQueryCurrency(t *testing.T) {
 	// Absent: no override, serverOptions keeps the server default.
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -271,7 +271,7 @@ func TestParseViewQueryCurrency(t *testing.T) {
 	// currency=native (any case) keeps native currencies: a non-nil, empty
 	// override, so serverOptions clears the server default.
 	for _, raw := range []string{"currency=native", "currency=NATIVE", "currency=Native"} {
-		vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&"+raw), viewBase())
+		vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&"+raw), viewBase(), nil)
 		if err != nil {
 			t.Fatalf("%s: %v", raw, err)
 		}
@@ -284,7 +284,7 @@ func TestParseViewQueryCurrency(t *testing.T) {
 	}
 
 	// Junk currency is a 400, never bytes reaching an FX fetch URL.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&currency=DROP%20TABLE"), viewBase()); err == nil ||
+	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&currency=DROP%20TABLE"), viewBase(), nil); err == nil ||
 		!strings.Contains(err.Error(), "invalid currency") {
 		t.Errorf("junk currency: err = %v, want a shape rejection", err)
 	}
@@ -294,7 +294,7 @@ func TestViewFireHrefs(t *testing.T) {
 	vr, err := parseViewQuery(url.Values{
 		"ex": {"claude-dragonlite"},
 		"p":  {"IWDA:60,IGLN:40!sim:on"},
-	}, viewBase())
+	}, viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -314,7 +314,7 @@ func TestViewFireHrefs(t *testing.T) {
 }
 
 func TestParseViewQueryEmpty(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, ""), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, ""), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -324,7 +324,7 @@ func TestParseViewQueryEmpty(t *testing.T) {
 }
 
 func TestParseViewQueryDuplicateNames(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=claude-dragonlite"), viewBase())
+	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=claude-dragonlite"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}

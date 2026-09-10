@@ -134,6 +134,13 @@ type fetchSpec struct {
 	// Unlike wantCurrency it never rejects: with no candidate in the
 	// preferred currency, the off-currency one is still served.
 	preferCurrency string
+
+	// exactOnly refuses a candidate tied to the query by NAME alone
+	// (FetchOptions.ExactOnly): a ticker resolves only to listings of that
+	// same ticker, so a typo fails instead of adopting an unrelated fund.
+	// It has no effect on an ISIN request, where every source is queried
+	// with the identifier itself.
+	exactOnly bool
 }
 
 // currencyOK reports whether a quote currency satisfies the constraint:
@@ -388,7 +395,9 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // deeper cross-currency listings (fetchSpec.preferCurrency). All three fallbacks are
 // full-text searches: a name-like query that does not match a candidate's
 // name is rejected (fuzzyMatchRelevant) so a stray fuzzy hit can never be
-// served in place of a real listing.
+// served in place of a real listing. Under fetchSpec.exactOnly a ticker query
+// goes further and keeps only listings of that same ticker, dropping the
+// name-matched candidates and the Morningstar bridge altogether.
 // resolveBest returns the winning series and resolution, the per-source
 // failure summaries, and whether any candidate was rejected solely for
 // trading in another currency than spec demands (so callers can surface
@@ -468,6 +477,14 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			(symbol == preferBase || strings.HasPrefix(symbol, preferBase+".") ||
 				strings.HasPrefix(symbol, preferBase+":"))
 	}
+	// exactMiss rejects, under fetchSpec.exactOnly, a candidate that is not a
+	// listing of the queried ticker itself: the searches are full-text, so
+	// anything else was matched by name and may be another instrument
+	// entirely. It never bites on an ISIN query (preferBase empty), where
+	// every candidate was found by the identifier itself.
+	exactMiss := func(symbol string) bool {
+		return spec.exactOnly && preferBase != "" && !matchesBase(symbol)
+	}
 
 	quotes, err := c.search(ctx, query)
 	if err != nil {
@@ -501,6 +518,10 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			name = s.Name
 		}
 		sameBase := matchesBase(q.Symbol)
+		if exactMiss(q.Symbol) {
+			failures = append(failures, fmt.Sprintf("yahoo %s: not a listing of %s (exact-only resolution)", q.Symbol, preferBase))
+			continue
+		}
 		if !sameBase && !fuzzyMatchRelevant(preferBase, name) {
 			failures = append(failures, fmt.Sprintf("yahoo %s: %q unrelated to %q", q.Symbol, name, preferBase))
 			continue
@@ -512,6 +533,8 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		if res, ferr := c.ftSearch(ctx, query); ferr == nil {
 			sameBase := matchesBase(res.Symbol)
 			switch {
+			case exactMiss(res.Symbol):
+				failures = append(failures, fmt.Sprintf("ft %s: not a listing of %s (exact-only resolution)", res.Symbol, preferBase))
 			case !sameBase && !fuzzyMatchRelevant(preferBase, res.Name):
 				failures = append(failures, fmt.Sprintf("ft %s: %q unrelated to %q", res.Symbol, res.Name, preferBase))
 			default:
@@ -531,7 +554,11 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 			failures = append(failures, fmt.Sprintf("ft: %v", ferr))
 		}
 	}
-	if s, _ := preferred(); !goodFor(s, from) {
+	// Morningstar (and the Boursorama bridge behind it) only ever answers a
+	// full-text search with a fund identifier of its own, which can never be
+	// a listing of the queried ticker: under exact-only resolution there is
+	// nothing it could legitimately contribute to a ticker query.
+	if s, _ := preferred(); !goodFor(s, from) && !(spec.exactOnly && preferBase != "") {
 		res, msFailures := c.morningstarResolution(ctx, query, preferBase)
 		failures = append(failures, msFailures...)
 		if res.Symbol != "" {

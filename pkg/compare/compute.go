@@ -25,6 +25,10 @@ func (opt Options) fetchIn(ctx context.Context, client *marketdata.Client, id, c
 		NoSim:    opt.NoSim,
 		Simdata:  opt.Simdata,
 		Currency: currency,
+		// A catalog asset is pinned to its instrument, so exactness only
+		// concerns the rest: an identifier a caller took from untrusted
+		// hands must not adopt a fund a full-text search merely liked.
+		ExactOnly: opt.ExactForeign && !marketdata.KnownLocal(id),
 	})
 }
 

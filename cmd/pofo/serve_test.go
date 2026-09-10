@@ -472,7 +472,7 @@ func TestServeHubOutOfListPref(t *testing.T) {
 }
 
 func TestFireForSpecPanelCaching(t *testing.T) {
-	spec, err := adhocSpec("IWDA:60,IGLN:40", 1)
+	spec, err := adhocSpec("IWDA:60,IGLN:40", 1, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -585,7 +585,7 @@ func TestServeHubComposer(t *testing.T) {
 		if holdings, _, _ := strings.Cut(p.P, "!"); holdings == "" {
 			t.Errorf("preset %q is unforkable and must have been excluded", p.Name)
 		}
-		if _, err := adhocSpec(p.P, 1); err != nil {
+		if _, err := adhocSpec(p.P, 1, nil); err != nil {
 			t.Errorf("preset %q p=%q does not round-trip through adhocSpec: %v", p.Name, p.P, err)
 		}
 	}
