@@ -2,8 +2,8 @@
 # id: ERES_DATADOG-NAV
 # name: Actions Datadog C (FCPE, PEE Datadog France) (official daily NAV, EUR)
 # method: official NAV history from the airfund.io delivery API (share code 990000124099, widget 41481ca4-919c-46c0-9ca1-41a880ff4e8e), as published by the management company; offline fallback of the live source and real segment of the ERES_DATADOG recipe
-# validation: 293 NAVs, 2021-07-22 → 2026-08-20, checked against the catalog inception and a 45% per-NAV move bound
-# generated: 2026-08-24
+# validation: 304 NAVs, 2021-07-22 → 2026-09-04, checked against the catalog inception and a 45% per-NAV move bound
+# generated: 2026-09-10
 date,close
 2021-07-22,100.000000
 2021-07-23,102.550000
@@ -298,3 +298,14 @@ date,close
 2026-08-18,224.840000
 2026-08-19,217.870000
 2026-08-20,208.080000
+2026-08-21,209.930000
+2026-08-24,209.380000
+2026-08-25,202.600000
+2026-08-26,197.260000
+2026-08-27,212.040000
+2026-08-28,216.000000
+2026-08-31,208.990000
+2026-09-01,208.170000
+2026-09-02,196.910000
+2026-09-03,197.240000
+2026-09-04,190.290000
