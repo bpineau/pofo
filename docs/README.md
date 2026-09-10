@@ -15,7 +15,8 @@ of truth for everything current.
 | `decumulation-fire-design.md` | the FIRE/decumulation engine's design (scenario sources, ruin metrics, solvers); `pkg/decumul` work starts here |
 | `decumulation-fire-program-2026-07.md` | the ACTIVE FIRE improvement backlog |
 | `decumulation-fire-realism-spec.md` | realism and conservatism principles (valuation anchors, fat tails, why short-window fits flatter); guards against the recurring too-doomy/too-rosy failure modes |
-| `dbmfe-simdata-validation-design.md` / `-results.md` | how the bundled DBMFE managed-futures backcast was validated against the SG CTA index, and the evidence; the raw reference series is `SG-CTA-Index-Daily-Returns-since-1999-12-31.csv` |
+| `dbmfe-simdata-validation-design.md` | how the bundled DBMFE managed-futures backcast was to be validated against the SG CTA index: the nine levels, their methods and their pass thresholds; the raw reference series is `SG-CTA-Index-Daily-Returns-since-1999-12-31.csv` |
+| `dbmfe-simdata-validation-results.md` | what that campaign found: the nine levels' verdicts, the graft-seam and CAGR-shortfall decompositions, where the reconstruction is unfaithful and why every such place is conservative, the caveats, and why the 25 % sleeve is a cap and not a floor |
 | `epub-export-design.md` | EPUB 3 export of the embedded books (firebook, then locador): `pkg/bookmd` extraction, `pkg/epub` writer, delivery routes, the on-device validation gate |
 | `fire-book-design.md` | the embedded French FIRE book: plan, depth conventions, style rules, progress ledger (`pkg/firebook` godoc points here) |
 | `fire-book-en-edition-design.md` | The English edition: Edition value, translated slugs + source stamps + drift report, figure-translation pass, US-framework part, rollout plan (M1 shipped, M2 translation campaign next) |
