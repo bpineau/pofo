@@ -14,8 +14,9 @@ import (
 const penaltyScale = 1e3
 
 // solveConstrained is the one path for every solve the closed forms cannot
-// serve: per-asset weight bounds, feasibility limits, or an objective that
-// depends on the whole return path (MaxReturn). It maximizes
+// serve: per-asset weight bounds, feasibility limits, an objective that
+// depends on the whole return path (MaxReturn), or a bounded BlackLitterman
+// utility. It maximizes
 //
 //	objective(w) − penaltyScale × Σ relative violations
 //
@@ -26,7 +27,9 @@ const penaltyScale = 1e3
 //
 // The weights are a good allocation, not a certified optimum: these
 // objectives are non-convex and non-smooth.
-func solveConstrained(returns [][]float64, spec Spec) (Result, error) {
+// bl carries the Black-Litterman posterior and risk aversion when that is the
+// objective, and is nil otherwise.
+func solveConstrained(returns [][]float64, spec Spec, bl *blProblem) (Result, error) {
 	n := len(returns)
 	t := len(returns[0])
 	lo, hi := spec.box(n)
@@ -39,7 +42,7 @@ func solveConstrained(returns [][]float64, spec Spec) (Result, error) {
 
 	mu, cov := meanCov(returns)
 	buf := make([]float64, t)
-	objective, err := objectiveFn(returns, mu, cov, buf, spec)
+	objective, err := objectiveFn(returns, mu, cov, buf, spec, bl)
 	if err != nil {
 		return Result{}, err
 	}
@@ -64,8 +67,14 @@ func solveConstrained(returns [][]float64, spec Spec) (Result, error) {
 // objectiveFn returns the quantity to maximize for the spec's objective,
 // evaluated on the blended path (or on mean/covariance where that is what the
 // objective means), and whether it is defined at that point.
-func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float64, spec Spec) (func([]float64) (float64, bool), error) {
+func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float64, spec Spec, bl *blProblem) (func([]float64) (float64, bool), error) {
 	switch spec.Objective {
+	case BlackLitterman:
+		// The mean-variance utility at the POSTERIOR means, which is what
+		// makes the no-view answer the prior itself.
+		return func(w []float64) (float64, bool) {
+			return dot(bl.posterior, w) - 0.5*bl.lambda*quad(cov, w), true
+		}, nil
 	case MaxReturn:
 		return func(w []float64) (float64, bool) {
 			c := pathCAGR(returns, buf, w)
@@ -202,8 +211,8 @@ func feasible(lo, hi []float64) error {
 }
 
 // startingPoints returns the multi-start set: the equal-weight point, each
-// vertex (all the free budget on one asset), and the floor point, all
-// projected onto the box simplex.
+// vertex (all the free budget on one asset), and for Black-Litterman the
+// prior allocation, all projected onto the box simplex.
 func (s Spec) startingPoints(n int, lo, hi []float64) [][]float64 {
 	equal := make([]float64, n)
 	for i := range equal {
@@ -215,6 +224,11 @@ func (s Spec) startingPoints(n int, lo, hi []float64) [][]float64 {
 		copy(v, lo)
 		v[i] = 1
 		starts = append(starts, projectBoxSimplex(v, lo, hi))
+	}
+	// Black-Litterman starts from its own reference too: with no view the
+	// prior IS the optimum, and with one it is the right neighbourhood.
+	if s.Objective == BlackLitterman && len(s.Prior) == n {
+		starts = append(starts, projectBoxSimplex(s.Prior, lo, hi))
 	}
 	return starts
 }

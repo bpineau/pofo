@@ -104,6 +104,7 @@ combined with `leverage`.
 | `max-worst-5y` | maximize the worst rolling 5-year return |
 | `max-return` | maximize the CAGR. Degenerate alone (everything goes to the single fastest-compounding line): pair it with a limit, where it becomes the frontier point |
 | `cwarp` | maximize CWARP vs the `-benchmark` (a diversifier selector, see [CWARP](#cwarp)) |
+| `black-litterman` | start from the returns the file's OWN weights imply, revise them with your views, and maximize the utility of the result (see [Black-Litterman](#black-litterman)) |
 
 **Constraints.** They follow the objective, comma-separated, and compose:
 
@@ -116,6 +117,8 @@ combined with `leverage`.
 | `min-return:10.5` | CAGR floor, %/yr (strictly positive) |
 | `max-drawdown:20` | drawdown budget, % |
 | `train:..2015` | fit the weights on that window ONLY (`START..END`, each end a year, a `YYYY-MM-DD` date, or empty) |
+| `view:IGLN:2@60` | a belief, for `black-litterman` only: IGLN earns 2 %/yr, at 60 % confidence (50 by default). `view:A>B:3@70` says A beats B by 3 points. Repeatable |
+| `prior-return:4.6` | for `black-litterman` only: the return you expect from the written weights as a whole, which sets the scale everything else is read against |
 
 The three limits do not combine with `risk-parity` or `cwarp`, whose solvers
 cannot enforce them (and `cwarp` takes no `min-weight` or `bounds` either, only
@@ -175,6 +178,52 @@ proxy. A decumulation file might read:
 20 ZROZSIM     # long-duration deflation hedge
 15 DBMFESIM    # managed-futures trend
 ```
+
+### Black-Litterman
+
+Every objective above that uses expected returns reads them off the sample,
+which is exactly the quantity a price history estimates worst, and the answer
+is a corner built on whichever line was lucky. `black-litterman` keeps the
+expected returns in the problem but anchors them on the portfolio you already
+wrote.
+
+It runs in three steps. **Reverse optimization** turns the weights in the file
+into the returns those weights implicitly expect, line by line: a 15 % gold
+line in a defensive book can imply 5.6 %/yr, which is a number worth seeing on
+its own. Your **views** then revise them, each carrying a confidence. And the
+weights maximize the utility of the result, over the same bounds and limits
+every other objective accepts.
+
+The prior is the FILE, not a market-capitalization portfolio: a
+managed-futures fund, a stacked 90/60, an inflation-linked sleeve and gold
+have no capitalization weight, so the canonical anchor does not exist for the
+books this tool is built for. The allocation you already defend does.
+
+```
+#meta optimize:black-litterman,prior-return:4.6,view:IGLN:2,view:DBMFE>DTLA:3@70,bounds:IGLN:10-20
+```
+
+`view:ID:Q@C` says *ID earns Q percent a year*, `view:ID>ID2:Q@C` says *ID
+beats ID2 by Q points a year*, and `C` is your confidence as a percentage
+(50 by default, which is He and Litterman's own choice; near 0 switches the
+view off, near 100 makes it a certainty). `Q` may be negative or zero, both of
+which are statements. `prior-return:R` is the return you expect from the
+written weights as a whole and fixes the scale the views are read against;
+without it the written weights are assumed to earn a Sharpe of 0.4.
+
+With **no view at all**, the objective returns your own weights back, exactly,
+and the note reports the returns they imply. That is not a bug: reverse
+optimization and optimization are inverses, and the answer to "what do my
+weights already assume" is often the more useful half.
+
+Two things to keep in mind. This toolkit runs at a **zero risk-free rate**, so
+a 3 %/yr view on a 3 %-volatility sleeve reads as a Sharpe of 1.0 and the
+weights follow: state views as excess returns over cash when that is what you
+mean (the note flags a view on a cash-like line). And what the model prices is
+the **mean**: a line held for its crisis covariance, or against a liability,
+has a reason the model cannot read and will be sized by its view alone. That
+is useful, since it puts a number on what the hedge costs in expected return,
+as long as you read it that way.
 
 ### CWARP
 
@@ -757,8 +806,8 @@ pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
 pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
                   risk-parity / max-sortino / return-to-drawdown / min-ulcer /
-                  max-worst-5y / cwarp, under per-line bounds and volatility /
-                  return / drawdown limits
+                  max-worst-5y / cwarp / black-litterman, under per-line bounds
+                  and volatility / return / drawdown limits
 pkg/suggest/      regime coverage, look-through composition, redundancy and
                   gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
