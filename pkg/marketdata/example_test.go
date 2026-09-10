@@ -2,6 +2,7 @@ package marketdata_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -56,6 +57,26 @@ func Example_fetch() {
 	}
 	fmt.Printf("%s: %d quotes since %s\n",
 		series.Name, len(series.Points), series.First().Date.Format("2006-01-02"))
+}
+
+// Example_fetchFailure shows how to tell the two failures of a fetch apart,
+// which any caller answering someone else's identifier has to do: nothing
+// quotes it (permanent, and the error names it) or a source did not answer
+// (transient, so the same request may work later).
+// (Not run: requires the network.)
+func Example_fetchFailure() {
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+	_, err := client.Fetch(context.Background(), "ZQXWVT", time.Time{})
+	var unknown *marketdata.UnknownIdentifierError
+	switch {
+	case err == nil:
+		fmt.Println("quoted after all")
+	case errors.As(err, &unknown):
+		fmt.Printf("no source quotes %s\n", unknown.ID) // errors.Is(err, marketdata.ErrUnknownIdentifier)
+	default:
+		fmt.Printf("try again later: %v\n", err)
+	}
 }
 
 // Example_fetchExtended shows the do-what-I-mean entry point: the SIM suffix

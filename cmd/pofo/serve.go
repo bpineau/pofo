@@ -430,6 +430,21 @@ func requestStatus(err error) int {
 	return http.StatusBadRequest
 }
 
+// renderStatus grades a comparison that could not be computed, and returns
+// the status and the sentence the visitor gets. A p= identifier no source
+// quotes is the request's own fault and will never work, so it earns a 404
+// naming it (the syntactic gate cannot catch it: ZQXWVT is a perfectly
+// well-formed ticker, it simply does not exist). Anything else, an upstream
+// outage on a real identifier included, stays the opaque 500 whose detail
+// belongs in the server log.
+func renderStatus(err error) (int, string) {
+	var unknown *marketdata.UnknownIdentifierError
+	if errors.As(err, &unknown) {
+		return http.StatusNotFound, "no source quotes " + unknown.ID
+	}
+	return http.StatusInternalServerError, "the comparison failed; see the server log"
+}
+
 // statusRecorder is a minimal http.ResponseWriter that remembers the status
 // code and byte count so logAccess can report them after the handler returns.
 type statusRecorder struct {
@@ -681,7 +696,8 @@ func (s *server) view(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Printf("view %s: %v", r.URL.RawQuery, err)
-		s.errorPage(w, http.StatusInternalServerError, "the comparison failed; see the server log")
+		code, msg := renderStatus(err)
+		s.errorPage(w, code, msg)
 		return
 	}
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")

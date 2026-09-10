@@ -233,6 +233,41 @@ func TestServeForeignIdentifiers(t *testing.T) {
 	}
 }
 
+// A p= identifier that passes the syntactic gate but that no source quotes
+// (ZQXWVT is a perfectly well-formed ticker) is the request's own fault: a
+// 404 naming it, since no retry will ever help. An upstream outage on the
+// same URL keeps the opaque 500, so a broken source is never dressed up as a
+// visitor's typo.
+func TestServeUnknownIdentifierStatus(t *testing.T) {
+	s := foreignServer(t, 5, 10)
+	h := s.handler(nil, nil)
+
+	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
+		return nil, fmt.Errorf("portfolio %s, asset %q: %w", "p1", "ZQXWVT",
+			&marketdata.UnknownIdentifierError{
+				ID:       "ZQXWVT",
+				Failures: errors.New("ticker ZQXWVT: no usable source (yahoo: HTTP 404)"),
+			})
+	}
+	rec := serveGetFrom(t, h, "/view?p=ZQXWVT:100", "198.51.100.4")
+	if rec.Code != http.StatusNotFound || !strings.Contains(rec.Body.String(), "no source quotes ZQXWVT") {
+		t.Errorf("an identifier nothing quotes is a 404 naming it: code=%d body=%q", rec.Code, rec.Body.String())
+	}
+	if strings.Contains(rec.Body.String(), "no usable source") {
+		t.Error("the per-source detail belongs in the log, not in the page")
+	}
+
+	s.render = func(ctx context.Context, o *options, specs []*portfolio.Spec) ([]byte, error) {
+		return nil, fmt.Errorf("portfolio %s, asset %q: %w", "p1", "IWDA",
+			errors.New("downloading IWDA failed (yahoo: HTTP 500; stooq: HTTP 500)"))
+	}
+	rec = serveGetFrom(t, h, "/view?p=IWDA:100", "198.51.100.4")
+	if rec.Code != http.StatusInternalServerError ||
+		!strings.Contains(rec.Body.String(), "the comparison failed") {
+		t.Errorf("an upstream outage stays a 500: code=%d body=%q", rec.Code, rec.Body.String())
+	}
+}
+
 // With the feature off (the default), the whole surface behaves exactly as
 // before: a foreign identifier is a 400, whatever its shape.
 func TestServeForeignOffByDefault(t *testing.T) {

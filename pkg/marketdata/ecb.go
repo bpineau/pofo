@@ -116,7 +116,8 @@ func ecbColumn(header []string, currency string) func(row []string) (rate float6
 // historyFallback consults the non-Yahoo daily sources after a Yahoo
 // failure: Stooq for everything it maps, then the ECB reference rates for a
 // currency cross and the CBOE endpoint for ^VIX. It returns the combined
-// per-source error when every source failed.
+// per-source error when every source failed, marked as an absence only when
+// every one of them reported one (see markAbsentIfAll).
 func (c *Client) historyFallback(ctx context.Context, symbol string, from time.Time, yahooErr error) (*Series, error) {
 	s, stooqErr := c.fetchStooq(ctx, symbol, from)
 	if stooqErr == nil {
@@ -129,7 +130,9 @@ func (c *Client) historyFallback(ctx context.Context, symbol string, from time.T
 			c.Logf("%s fetched via the ECB reference rates", symbol)
 			return s, nil
 		}
-		return nil, fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v; ecb: %v)", symbol, yahooErr, stooqErr, ecbErr)
+		return nil, markAbsentIfAll(
+			fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v; ecb: %v)", symbol, yahooErr, stooqErr, ecbErr),
+			yahooErr, stooqErr, ecbErr)
 	}
 	if symbol == vixSymbol {
 		s, cboeErr := c.fetchCBOEVIX(ctx, from)
@@ -137,7 +140,11 @@ func (c *Client) historyFallback(ctx context.Context, symbol string, from time.T
 			c.Logf("%s fetched via CBOE", symbol)
 			return s, nil
 		}
-		return nil, fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v; cboe: %v)", symbol, yahooErr, stooqErr, cboeErr)
+		return nil, markAbsentIfAll(
+			fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v; cboe: %v)", symbol, yahooErr, stooqErr, cboeErr),
+			yahooErr, stooqErr, cboeErr)
 	}
-	return nil, fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr)
+	return nil, markAbsentIfAll(
+		fmt.Errorf("downloading %s failed (yahoo: %v; stooq: %v)", symbol, yahooErr, stooqErr),
+		yahooErr, stooqErr)
 }

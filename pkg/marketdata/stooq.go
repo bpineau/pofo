@@ -99,7 +99,7 @@ var euroInception = time.Date(1999, 1, 1, 0, 0, 0, 0, time.UTC)
 func (c *Client) fetchStooq(ctx context.Context, symbol string, from time.Time) (*Series, error) {
 	ss, invert := stooqSymbol(symbol)
 	if ss == "" {
-		return nil, fmt.Errorf("no stooq equivalent for %s", symbol)
+		return nil, markAbsent(fmt.Errorf("no stooq equivalent for %s", symbol))
 	}
 	u := fmt.Sprintf("%s/q/d/l/?s=%s&i=d&d1=%s&d2=%s", c.StooqBase, url.QueryEscape(ss),
 		from.Format("20060102"), time.Now().Format("20060102"))
@@ -108,14 +108,14 @@ func (c *Client) fetchStooq(ctx context.Context, symbol string, from time.Time) 
 		return nil, err
 	}
 	if !bytes.HasPrefix(body, []byte("Date,")) {
-		return nil, fmt.Errorf("stooq: no data for %s", ss)
+		return nil, markAbsent(fmt.Errorf("stooq: no data for %s", ss))
 	}
 	rows, err := csv.NewReader(bytes.NewReader(body)).ReadAll()
 	if err != nil {
 		return nil, fmt.Errorf("unreadable stooq CSV: %w", err)
 	}
 	if len(rows) < 2 || len(rows[0]) < 5 {
-		return nil, fmt.Errorf("stooq: no data for %s", ss)
+		return nil, markAbsent(fmt.Errorf("stooq: no data for %s", ss))
 	}
 	s := &Series{Symbol: symbol, Name: symbol, Source: "stooq"}
 	switch {

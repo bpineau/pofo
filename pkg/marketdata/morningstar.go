@@ -56,7 +56,7 @@ func (c *Client) fetchMorningstar(ctx context.Context, id string, res resolution
 		return nil, fmt.Errorf("unreadable morningstar response for %s", res.Symbol)
 	}
 	if len(rows) == 0 {
-		return nil, fmt.Errorf("morningstar: no data for %s", res.Symbol)
+		return nil, markAbsent(fmt.Errorf("morningstar: no data for %s", res.Symbol))
 	}
 	name := res.Name
 	if name == "" {
@@ -125,7 +125,7 @@ func (c *Client) morningstarSearch(ctx context.Context, query string) (resolutio
 		}
 	}
 	if best < 0 {
-		return resolution{}, fmt.Errorf("no Morningstar identifier for %s", query)
+		return resolution{}, markAbsent(fmt.Errorf("no Morningstar identifier for %s", query))
 	}
 	row := page.Rows[best]
 	return resolution{
