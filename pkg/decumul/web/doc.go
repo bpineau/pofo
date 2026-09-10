@@ -77,10 +77,11 @@
 // Every simulation endpoint is bounded (bounds.go), because the page may be
 // served to anonymous visitors from a small machine: the posted body is
 // capped at maxBodyBytes before it is decoded, nPaths and every year-like
-// field are clamped (maxPaths is the top of the page's own slider), and the
-// computations queue behind simParallel slots, so no request can inflate a
-// simulation past what the page itself can ask for, and a burst cannot pile
-// them up. A request whose client gave up while waiting is refused with 503
+// field are clamped (maxPaths is the top of the page's own slider; the horizon
+// is floored at ONE year rather than zero, an empty plan being the one
+// several views index the last year of), and the computations queue behind
+// simParallel slots, so no request can inflate a simulation past what the
+// page itself can ask for, and a burst cannot pile them up. A request whose client gave up while waiting is refused with 503
 // rather than computed for nobody. Coherence is bounded there too: the
 // envelope amounts are clamped to the invested capital and a book whose
 // pockets add up to more than the sleeve they are carved from is refused with

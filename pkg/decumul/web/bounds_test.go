@@ -135,3 +135,38 @@ func TestAPISimGateReturns503WhenAbandoned(t *testing.T) {
 		t.Errorf("status = %d, want 503", rec.Code)
 	}
 }
+
+// A horizon of zero is not a short retirement but an empty one, and several
+// views index the last plan year unconditionally: a POST of "{}" used to
+// index -1 inside /api/income and take the whole process down (the panic
+// happens in a simulation worker, where net/http cannot recover it). The
+// horizon is therefore floored at one year, not at zero.
+func TestBoundedFloorsTheHorizon(t *testing.T) {
+	if got := (Params{}).bounded().Years; got != 1 {
+		t.Errorf("empty request: years = %d, want the 1-year floor", got)
+	}
+	if got := (Params{Years: -30}).bounded().Years; got != 1 {
+		t.Errorf("negative years = %d, want the 1-year floor", got)
+	}
+	h := Handler(nil, nil)
+	for _, path := range []string{"/api/income", "/api/sensitivity", "/api/lifecycle", "/api/sim"} {
+		rec := httptest.NewRecorder()
+		h.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, path, strings.NewReader(`{}`)))
+		if rec.Code != http.StatusOK {
+			t.Errorf("%s on an empty body: status %d: %s", path, rec.Code, rec.Body.String())
+		}
+	}
+}
+
+// The sensitivity chart's horizon lever shortens the plan by five years, so a
+// plan shorter than that would hand the kernel a negative year count: an
+// invalid plan, not a shorter one, and another crash of the whole process.
+func TestSensitivityHorizonNudgeStaysValid(t *testing.T) {
+	for _, years := range []int{1, 2, 4, 5, 6} {
+		pr := Params{Capital: 1e6, NeedAnnual: 4e4, Years: years,
+			Mu: 0.04, Sigma: 0.12, Df: 5, NPaths: 50}
+		if svg := Sensitivity(pr, nil).SVG; !strings.HasPrefix(svg, "<svg") {
+			t.Errorf("%d-year horizon: no chart", years)
+		}
+	}
+}
