@@ -25,7 +25,7 @@ func TestSpecToPRoundTrip(t *testing.T) {
 	if len(dropped) != 0 {
 		t.Fatalf("dropped = %v, want none", dropped)
 	}
-	back, err := adhocSpec(p, 1)
+	back, err := adhocSpec(p, 1, nil)
 	if err != nil {
 		t.Fatalf("adhocSpec(%q): %v", p, err)
 	}

@@ -147,7 +147,10 @@ source of truth; edit both together):
   replaces the file format's `;` because a raw `;` is not valid in a Go query
   string. `!name:...` sets the portfolio's display name; every other
   `!key:value` becomes a `#meta key:value` line. Repeat `p=` for several
-  ad-hoc portfolios. The value is capped at 2000 bytes and control characters
+  ad-hoc portfolios. Identifiers are gated (see "Identifiers for `p=`" below):
+  the bundled catalog always, plus, where the server runs a fetch budget, a
+  well-formed ISIN or exchange ticker outside it.
+  The value is capped at 2000 bytes and control characters
   (a URL-decoded newline in particular) are rejected, since the parser rebuilds
   a line-based portfolio file and a smuggled newline would inject a holding
   line past the catalog gate and the holdings-count limit.
@@ -184,17 +187,58 @@ request whose client has gone away being refused with 503. Before those
 bounds, one posted `nPaths` of a million took 2.4 GB and 22 s of every core,
 which on a shared host is a denial of service of everything else on it.
 
-### Catalog-only identifiers for `p=`
+### Identifiers for `p=`: the catalog, then a budget
 
 An `ex=` file is a vetted build shipped in the binary, so it carries no
 identifier restriction. A `p=` spec, by contrast, comes from an anonymous
-visitor, and the server must never fetch an arbitrary symbol on their behalf
-(an SSRF and abuse vector, and a way to poison the shared quote cache). So
-every `p=` identifier is gated by `marketdata.KnownLocal`: catalog ids,
-catalog ISINs, aliases and embedded fund tickers resolve (the `SIM` suffix is
-allowed); a raw quote symbol or an unknown identifier is rejected before any
-network call. The bundled catalog is wide enough to compose real portfolios;
-anything outside it is a CLI or portfolio-file job, not an anonymous web one.
+visitor. Fetching an arbitrary symbol on their behalf was refused outright for
+three reasons: it is an **SSRF** shape (bytes from a URL reaching an outbound
+request), an **abuse** vector (the upstream sources rate-limit, and the server
+is small), and a way to **poison the shared quote cache** (a wrong instrument
+cached under a plausible id, which is exactly what a fuzzy resolution does with
+a typo). Every `p=` identifier therefore had to be `marketdata.KnownLocal`:
+catalog ids, catalog ISINs, aliases and embedded fund tickers (the `SIM`
+suffix allowed).
+
+The catalog is wide but finite, and a visitor who wants their own ticker in
+the picture has no way to ask. Since 2026-09 the server can accept identifiers
+outside it, each of the three reasons answered on its own terms rather than by
+a blanket refusal (`cmd/pofo/foreign.go`):
+
+- **SSRF.** A foreign identifier is admitted only if it is *shaped* like an
+  instrument: `marketdata.PlausibleID`, i.e. a valid ISIN (check digit
+  included, `IsISIN`) or a plausible exchange ticker (a base of letters and
+  digits, an optional `-` share-class part, at most one `.` exchange suffix,
+  fifteen characters at most). No space, no `/`, no `^` quote symbol, nothing
+  a path or a URL would have to escape. Beyond that shape, the fetch paths
+  only ever talk to the client's *configured* bases (`ChartBase`, `FTBase`,
+  `MorningstarBase`, ...) and the identifier rides as a URL-escaped path or
+  query element, never as a host: a foreign identifier cannot redirect a
+  request elsewhere, and a raw quote symbol cannot be minted at all.
+- **Abuse.** Two rolling hourly budgets, per client address (`clientIP`,
+  `-serve-foreign-per-hour`, default 10) and per process
+  (`-serve-foreign-global-per-hour`, default 60). Only identifiers that
+  would really cost an upstream request are charged: a catalog id is free and
+  unlimited, and so is one the quote cache can already serve
+  (`marketdata.Client.Cached`), so re-running the same link costs nothing. A
+  charge is all-or-nothing per portfolio, the per-client table is bounded
+  (10 000 entries, aged-out windows dropped first, then the least recently
+  charged), and a spent budget answers **429** with "try later or pick a
+  catalog id" rather than 400: the same URL works again later. Setting
+  `-serve-foreign-per-hour` to 0 restores the catalog-only policy exactly,
+  message included.
+- **Cache poisoning.** A foreign identifier is resolved **exactly**
+  (`marketdata.FetchOptions.ExactOnly`, reached from `compare.Options`
+  `ExactForeign`): a ticker resolves only to listings of that same ticker and
+  the name-searched fallbacks are skipped, so a typo *fails* instead of
+  quoting, and caching, an unrelated fund. An ISIN is unaffected, being an
+  identifier rather than a name, and a wrong check digit never gets that far.
+  The CLI keeps the fuzzy convenience: its user reads the resolution line.
+
+The client mirrors the shape rule (`plausibleId` in `composer.js`, ISIN
+checksum included) so a foreign row reads "outside the catalog, fetched live"
+instead of red, and the panel states the allowance. As everywhere else in the
+composer, the front end only warns early; the server stays the authority.
 
 ## The live composer
 
@@ -223,10 +267,11 @@ The design rests on a few decisions:
   only mirrors the rules to warn early.
 - **Catalog autocomplete and inline validation.** The editor fetches
   `/catalog.json` once and drives id autocomplete and per-row validation from
-  it (naming each holding, flagging an unknown id). If that fetch fails it
-  degrades to no autocomplete and no client validation; the server still
-  rejects anything outside the catalog gate, so correctness never depends on
-  the front end.
+  it (naming each holding, flagging an unknown id; where the server accepts
+  foreign identifiers, a well-formed one reads as a live fetch instead of a
+  mistake). If that fetch fails it degrades to no autocomplete and no client
+  validation; the server still applies the identifier gate and the fetch
+  budgets, so correctness never depends on the front end.
 - **Caps mirrored client-side.** The `/view` guardrails (6 portfolios, 20
   holdings, 2000-byte `p=`) are handed to the front end in a `data-caps`
   attribute (`composerCaps`), which gates add/remove of holdings and
@@ -279,10 +324,11 @@ Two features close the loop between the report and the simulator.
 `/firesimulator/p/<spec>/` mounts the FIRE simulator on an ad-hoc composed portfolio.
 `<spec>` is exactly the `/view` `p=` grammar carried in a single path segment,
 so a composed comparison and its simulator share one vocabulary. The spec is
-validated before anything is built: the same catalog gate as `p=`, the 2000-byte
-cap, the control-character rejection and the 20-holdings limit all apply up
-front, so an anonymous visitor can never make the server fetch an arbitrary
-symbol here either. A `!sim:on` directive is honored (the panel splices
+validated before anything is built: the same identifier gate and fetch budget
+as `p=`, the 2000-byte cap, the control-character rejection and the
+20-holdings limit all apply up front (a spent budget answers 429 here too), so
+an anonymous visitor can never make the server fetch an arbitrary symbol here
+either. A `!sim:on` directive is honored (the panel splices
 simulated history); the panel is built with the server's default currency.
 Built handlers live in a small bounded cache (arbitrary eviction past its cap),
 and the builds share the `/view` render semaphore, so the composed simulator

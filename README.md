@@ -445,6 +445,25 @@ single port:
 ./pofo -serve examples/dragon-decumulation-household.txt  # seed the FIRE panel from a file
 ```
 
+**Identifiers a visitor may compose.** Everything the bundled catalog resolves
+offline (ids, ISINs, aliases, embedded fund tickers, with the optional `SIM`
+suffix) is free and unlimited. Anything else is fetched from the usual quote
+sources, under two guards: it must *look* like an instrument (a valid ISIN,
+check digit included, or a plausible exchange ticker such as `DGRO` or
+`IWDA.AS`; no quote symbol, no punctuation), and it is rationed by two rolling
+hourly budgets, one per visitor and one for the whole process:
+
+```sh
+./pofo -serve -serve-foreign-per-hour 10 -serve-foreign-global-per-hour 60  # the defaults
+./pofo -serve -serve-foreign-per-hour 0    # catalog only, nothing else is fetched
+```
+
+Only identifiers that would really cost an upstream request are charged: one
+already in the quote cache is free, so re-running a link costs nothing. A spent
+budget answers `429` and says so. Such an identifier is resolved **exactly**
+(no fuzzy name search), so a typo fails instead of quoting an unrelated fund;
+the CLI keeps the fuzzy search, its user being able to read the resolution line.
+
 A public deploy can also **push** its URLs to the search engines that speak
 [IndexNow](https://www.indexnow.org/) instead of waiting to be crawled again.
 Mint one unguessable key per host (8 to 128 letters, digits and dashes), serve
@@ -554,6 +573,8 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-export-epub` | | write one edition of the FIRE book to the given path as an EPUB 3 file, then exit |
 | `-book-lang` | `fr` | with `-export-epub`: which edition to write, `fr` ("Le FIRE tranquille") or `en` ("The Quiet FIRE") |
 | `-listen` | `127.0.0.1:8787` | listen address for `-serve` (loopback by default) |
+| `-serve-foreign-per-hour` | `10` | with `-serve`: how many identifiers outside the bundled catalog one client may have fetched from the quote sources per hour (`0` = catalog only) |
+| `-serve-foreign-global-per-hour` | `60` | with `-serve`: the same budget for the whole process, all clients together |
 | `-indexnow-key` | | IndexNow ownership key: with `-serve`, publish it at `/<key>.txt`; with `-indexnow`, sign the submission (empty = off) |
 | `-indexnow` | | submit every published URL of the given origin to the IndexNow search engines, then exit |
 | `-cf-beacon-token` | | Cloudflare Web Analytics site token: with `-serve` or `-fire`, put the cookieless beacon on every HTML page (empty = off) |

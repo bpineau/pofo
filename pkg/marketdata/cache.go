@@ -151,3 +151,28 @@ func sanitizeFilename(s string) string {
 	}
 	return string(out)
 }
+
+// Cached reports whether id's price history is already in this client's disk
+// cache, fresh (Client.MaxAge) and deep enough to answer a long request: a
+// fetch of it costs no upstream call. It follows a stored resolution, since an
+// ISIN or a re-resolved ticker caches its history under the resolved symbol,
+// and performs no network I/O and no writes. A cache-less client (empty
+// CacheDir) always answers false.
+//
+// It exists for callers that must ration upstream requests rather than local
+// ones: the web app charges an identifier outside the bundled catalog to a
+// visitor's fetch budget only when it is not already cached here.
+func (c *Client) Cached(id string) bool {
+	base, _ := SplitSim(id)
+	canonical := CanonicalID(base)
+	from := resolveFrom()
+	if _, ok := c.loadCache(canonical, from); ok {
+		return true
+	}
+	if res, ok := c.loadResolution(canonical); ok && res.Symbol != "" {
+		if _, ok := c.loadCache(res.Symbol, from); ok {
+			return true
+		}
+	}
+	return false
+}

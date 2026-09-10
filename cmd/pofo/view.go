@@ -5,6 +5,14 @@
 //
 // Under -serve the live composer (composer.go) is a front end that edits
 // exactly this grammar in-page, keeping the URL equal to the edited state.
+//
+// What a p= holding identifier may be: any identifier the bundled catalog
+// resolves offline (an id, an ISIN, an alias or an embedded fund ticker, with
+// the optional SIM suffix), always; plus, when the server was started with a
+// foreign-identifier budget (-serve-foreign-per-hour, off by default), a
+// well-formed ISIN or exchange ticker outside the catalog, fetched from the
+// usual sources within an hourly per-client and per-process allowance. The
+// gate and the budgets live in foreign.go.
 package main
 
 import (
@@ -67,18 +75,20 @@ func (vr *viewRequest) serverOptions(base *options) *options {
 		o.noSim = *vr.noSim
 	}
 	o.fireHref = vr.fireHrefs
-	o.composer = composerMount(vr)
+	o.composer = composerMount(vr, base.foreignPerHour)
 	return &o
 }
 
 // parseViewQuery translates a /view query into a viewRequest. Portfolio
 // parsing is delegated to pkg/portfolio by rebuilding the file text form,
-// so the URL grammar can never drift from the file grammar. Each parsed
+// so the URL grammar can never drift from the file grammar. The gate carries
+// the request's authority over identifiers the bundled catalog does not know
+// (foreign.go); nil accepts none of them. Each parsed
 // portfolio also gets a FIRE simulator link recorded in fireHrefs, keyed by
 // its final (deduplicated) name: /firesimulator/e/<name>/ for an embedded
 // example, /firesimulator/p/<escaped spec>/ for an ad-hoc p= portfolio. The rendered /view
 // report surfaces these as per-section "Simulate" links.
-func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
+func parseViewQuery(q url.Values, base *options, gate *foreignGate) (*viewRequest, error) {
 	vr := &viewRequest{fireHrefs: map[string]string{}}
 	exs, ps := q["ex"], q["p"]
 	if len(exs)+len(ps) > maxViewPortfolios {
@@ -109,7 +119,7 @@ func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 		vr.fireHrefs[spec.Name] = fireBase + "/e/" + name + "/"
 	}
 	for i, raw := range ps {
-		spec, err := adhocSpec(raw, i+1)
+		spec, err := adhocSpec(raw, i+1, gate)
 		if err != nil {
 			return nil, err
 		}
@@ -125,13 +135,18 @@ func parseViewQuery(q url.Values, base *options) (*viewRequest, error) {
 // adhocSpec parses one p= value: "ID:WEIGHT,ID:WEIGHT[!meta:value]...".
 // The '!' meta delimiter keeps a shareable link hand-typable (a raw ';'
 // is invalid in a Go query string). It rebuilds the portfolio file text
-// and feeds portfolio.Parse; only locally-resolvable identifiers are
-// accepted (no network on behalf of anonymous visitors). Control
-// characters (notably a URL-decoded newline) are rejected up front:
-// since the rebuilt text is line-based, a smuggled newline would inject
-// an extra holding line that bypasses both the catalog gate and the
-// holdings-count limit below.
-func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
+// and feeds portfolio.Parse. Control characters (notably a URL-decoded
+// newline) are rejected up front: since the rebuilt text is line-based, a
+// smuggled newline would inject an extra holding line that bypasses both
+// the identifier gate and the holdings-count limit below.
+//
+// Identifiers the bundled catalog knows (marketdata.KnownLocal) are always
+// accepted. The rest go through the gate: nil (the CLI, and a server with the
+// feature off) rejects them all, otherwise they must look like an ISIN or a
+// ticker (marketdata.PlausibleID) and fit the requesting client's hourly
+// fetch allowance, charged once per portfolio for the identifiers that are
+// not already cached. See foreign.go.
+func adhocSpec(raw string, n int, gate *foreignGate) (*portfolio.Spec, error) {
 	if len(raw) > maxViewSpecLen {
 		return nil, fmt.Errorf("p parameter too long (%d bytes, max %d)", len(raw), maxViewSpecLen)
 	}
@@ -158,15 +173,24 @@ func adhocSpec(raw string, n int) (*portfolio.Spec, error) {
 	if len(pairs) > maxViewHoldings {
 		return nil, fmt.Errorf("at most %d holdings per portfolio", maxViewHoldings)
 	}
+	var foreign []string
 	for _, pair := range pairs {
 		id, weight, ok := strings.Cut(strings.TrimSpace(pair), ":")
 		if !ok || id == "" || weight == "" {
 			return nil, fmt.Errorf("malformed holding %q, want ID:WEIGHT (decimal point, no comma)", pair)
 		}
 		if !marketdata.KnownLocal(id) {
-			return nil, fmt.Errorf("identifier not in the local catalog: %s", id)
+			if !gate.accepts(id) {
+				return nil, fmt.Errorf("identifier not in the local catalog: %s", id)
+			}
+			foreign = append(foreign, id)
 		}
 		fmt.Fprintf(&text, "%s %s\n", weight, id)
+	}
+	// One charge per portfolio, after the whole line-up is known: a p= that
+	// does not fit the allowance is rejected whole, never half-fetched.
+	if err := gate.charge(foreign); err != nil {
+		return nil, err
 	}
 	spec, err := portfolio.Parse(name, strings.NewReader(text.String()))
 	if err != nil {
