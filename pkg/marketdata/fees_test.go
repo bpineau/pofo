@@ -64,3 +64,56 @@ func TestFeesPinnedInCatalog(t *testing.T) {
 	}
 	t.Skip("no catalog entry has pinned fees yet")
 }
+
+// TestCandidateCurrencies: the FT tearsheet is addressed by ISIN AND share
+// class currency, so the order of the guesses is what decides whether a fund
+// answers at all. A known currency is the only guess; GBp is not a share
+// class currency and reads as unknown.
+func TestCandidateCurrencies(t *testing.T) {
+	cases := []struct {
+		known, isin string
+		want        []string
+	}{
+		{"EUR", "IE00B4L5Y983", []string{"EUR"}},
+		{"USD", "IE00B4L5Y983", []string{"USD"}},
+		{"GBp", "GB00B4L5Y983", []string{"USD", "EUR"}}, // pence: not a class currency
+		{"", "FR0010315770", []string{"EUR", "USD"}},    // continental domiciles
+		{"", "LU1662501532", []string{"EUR", "USD"}},
+		{"", "DE000A0F5UF5", []string{"EUR", "USD"}},
+		{"", "IE00B4L5Y983", []string{"USD", "EUR"}}, // everything else
+	}
+	for _, tc := range cases {
+		got := candidateCurrencies(tc.known, tc.isin)
+		if len(got) != len(tc.want) {
+			t.Fatalf("candidateCurrencies(%q, %q) = %v, want %v", tc.known, tc.isin, got, tc.want)
+		}
+		for i := range got {
+			if got[i] != tc.want[i] {
+				t.Errorf("candidateCurrencies(%q, %q) = %v, want %v", tc.known, tc.isin, got, tc.want)
+			}
+		}
+	}
+}
+
+// TestParseFeesMatch: a scraped percentage must be believable before it is
+// believed, and the comma decimal separator of a European page must parse.
+func TestParseFeesMatch(t *testing.T) {
+	cases := []struct {
+		body string
+		want float64
+		ok   bool
+	}{
+		{`Ongoing charge</th><td class="x">0.20%`, 0.20, true},
+		{`Ongoing charge</th><td>0,85%`, 0.85, true},
+		{`Net expense ratio</th><td>1.00%`, 1.00, true},
+		{`Ongoing charge</th><td>99.00%`, 0, false}, // beyond any real fee
+		{`Total expense</th><td>0.20%`, 0, false},   // not a label we read
+		{`nothing here`, 0, false},
+	}
+	for _, tc := range cases {
+		got, err := parseFeesMatch(ftFeesRe, []byte(tc.body))
+		if (err == nil) != tc.ok || (tc.ok && got != tc.want) {
+			t.Errorf("parseFeesMatch(%q) = %v, %v; want %v, ok=%v", tc.body, got, err, tc.want, tc.ok)
+		}
+	}
+}

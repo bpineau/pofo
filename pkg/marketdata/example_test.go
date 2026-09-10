@@ -220,3 +220,90 @@ func ExampleVerifyAsset() {
 	// Output:
 	// volatility 0.9 %/yr is outside the equity band [6.0, 42.0], wrong quote line?
 }
+
+// Trim restricts a series to a window; a zero bound is open on that side, and
+// dividends are clipped along with the points.
+func ExampleTrim() {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &marketdata.Series{Symbol: "DEMO", Currency: "USD", Points: []marketdata.Point{
+		{Date: day(0), Close: 100}, {Date: day(1), Close: 101},
+		{Date: day(2), Close: 102}, {Date: day(3), Close: 103},
+	}, Dividends: []marketdata.Dividend{
+		{Date: day(0), Amount: 0.5}, {Date: day(2), Amount: 0.6},
+	}}
+	window := marketdata.Trim(s, day(1), day(2))
+	fmt.Println(len(window.Points), window.First().Close, window.Last().Close, len(window.Dividends))
+	open := marketdata.Trim(s, day(2), time.Time{})
+	fmt.Println(len(open.Points), open.First().Close)
+	// Output:
+	// 2 101 102 1
+	// 2 102
+}
+
+// ExtendBack splices a long-history proxy in front of an asset's own quotes,
+// rescaled so the two agree on the day they meet. SimulatedBefore marks the
+// frontier, so a reader always knows where the real data starts.
+func ExampleExtendBack() {
+	day := func(y int) time.Time { return time.Date(y, 1, 3, 0, 0, 0, 0, time.UTC) }
+	asset := &marketdata.Series{Symbol: "VOO", Points: []marketdata.Point{
+		{Date: day(2010), Close: 100}, {Date: day(2011), Close: 110},
+	}}
+	proxy := &marketdata.Series{Symbol: "^GSPC", Points: []marketdata.Point{
+		{Date: day(2000), Close: 25}, {Date: day(2005), Close: 40}, {Date: day(2010), Close: 50},
+	}}
+	fmt.Println(marketdata.ExtendBack(asset, proxy))
+	for _, p := range asset.Points {
+		fmt.Println(p.Date.Format("2006-01-02"), p.Close)
+	}
+	fmt.Println(asset.ProxySymbol, asset.SimulatedBefore.Format("2006-01-02"))
+	// Output:
+	// true
+	// 2000-01-03 50
+	// 2005-01-03 80
+	// 2010-01-03 100
+	// 2011-01-03 110
+	// ^GSPC 2010-01-03
+}
+
+// LooksDistributing spots a distributing share class in a fund's name. The
+// warning matters because a distributing NAV series is a PRICE return: the
+// income it pays out is missing from every statistic computed on it.
+func ExampleLooksDistributing() {
+	for _, name := range []string{
+		"iShares Core MSCI World UCITS ETF USD (Acc)",
+		"iShares $ Treasury Bond 20+yr UCITS ETF (Dist)",
+	} {
+		fmt.Println(marketdata.LooksDistributing(name), name)
+	}
+	// Output:
+	// false iShares Core MSCI World UCITS ETF USD (Acc)
+	// true iShares $ Treasury Bond 20+yr UCITS ETF (Dist)
+}
+
+// A rate symbol is an annualized percent LEVEL, not a price: read the
+// registry to offer them, and never feed one to a return computation.
+func ExampleRateName() {
+	fmt.Println(marketdata.RateName("^ESTR"))
+	fmt.Println(marketdata.RateName("^NOSUCHRATE") == "")
+	// Output:
+	// Euro short-term rate (ESTR, overnight)
+	// true
+}
+
+// WithoutEstimates removes a nowcast tail: the days a fund's proxy stood in
+// for it, after its last published value. Every consumer that stores or
+// validates data reads through it, so an estimate is never shipped.
+func ExampleSeries_WithoutEstimates() {
+	day := func(i int) time.Time { return time.Date(2026, 9, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &marketdata.Series{Symbol: "ERESMONDEM", EstimatedFrom: day(2), EstimateProxy: "URTH",
+		Points: []marketdata.Point{
+			{Date: day(0), Close: 50}, {Date: day(1), Close: 51},
+			{Date: day(2), Close: 51.4}, {Date: day(3), Close: 51.8},
+		}}
+	published := s.WithoutEstimates()
+	fmt.Println(len(s.Points), s.EstimateProxy)
+	fmt.Println(len(published.Points), published.Last().Date.Format("2006-01-02"), published.EstimatedFrom.IsZero())
+	// Output:
+	// 4 URTH
+	// 2 2026-09-02 true
+}

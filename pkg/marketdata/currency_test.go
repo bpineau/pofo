@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 )
@@ -198,4 +199,114 @@ func TestFXRate(t *testing.T) {
 	if _, err := c.FXRate(ctx, "SEK", "USD", time.Date(2023, 1, 1, 0, 0, 0, 0, time.UTC)); err == nil {
 		t.Error("a date before the FX history should error")
 	}
+}
+
+// TestConvertCurrencyNoops: every shape the conversion must hand back
+// untouched, so that a caller can route every asset through it.
+func TestConvertCurrencyNoops(t *testing.T) {
+	c := NewClient("")
+	cases := []struct {
+		name   string
+		s      *Series
+		target string
+	}{
+		{"no target currency", &Series{Currency: "USD", Points: []Point{{Date: d(2020, 1, 6), Close: 1}}}, ""},
+		{"blanks are not a target", &Series{Currency: "USD", Points: []Point{{Date: d(2020, 1, 6), Close: 1}}}, "   "},
+		{"the series currency is unknown", &Series{Points: []Point{{Date: d(2020, 1, 6), Close: 1}}}, "EUR"},
+		{"no points to convert", &Series{Currency: "USD"}, "EUR"},
+		{"already the target", &Series{Currency: "EUR", Points: []Point{{Date: d(2020, 1, 6), Close: 1}}}, "eur "},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			out, extrap, err := c.ConvertCurrency(context.Background(), tc.s, tc.target, time.Time{})
+			if err != nil || out != tc.s || !extrap.IsZero() {
+				t.Errorf("out=%p (want %p) extrap=%v err=%v", out, tc.s, extrap, err)
+			}
+		})
+	}
+}
+
+// TestConvertCurrencyPenceDividends: a GBp line is scaled to pounds, and its
+// dividends must follow, or the income of a pence-quoted class comes out a
+// hundred times too large.
+func TestConvertCurrencyPenceDividends(t *testing.T) {
+	c := NewClient("")
+	pence := &Series{Symbol: "P", Currency: "GBp",
+		Points:    []Point{{Date: d(2020, 1, 6), Close: 250}, {Date: d(2020, 1, 7), Close: 260}},
+		Dividends: []Dividend{{Date: d(2020, 1, 7), Amount: 5}},
+	}
+	out, _, err := c.ConvertCurrency(context.Background(), pence, "GBP", time.Time{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if out.Points[1].Close != 2.6 || len(out.Dividends) != 1 || out.Dividends[0].Amount != 0.05 {
+		t.Errorf("GBp scaling: points=%+v dividends=%+v", out.Points, out.Dividends)
+	}
+	if pence.Points[1].Close != 260 || pence.Dividends[0].Amount != 5 {
+		t.Error("the input series was mutated")
+	}
+}
+
+// TestConvertCurrencyExtrapolatesDividendsToo: a dividend paid before the FX
+// history begins converts at the oldest known rate, like the points around it.
+func TestConvertCurrencyExtrapolatesDividendsToo(t *testing.T) {
+	days := testDays(4)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/USDSEK=X", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("USDSEK=X", days[2:], []float64{9, 9.1}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s := &Series{Symbol: "X", Currency: "USD",
+		Points:    []Point{{Date: days[0], Close: 100}, {Date: days[3], Close: 110}},
+		Dividends: []Dividend{{Date: days[0], Amount: 1}, {Date: days[3], Amount: 2}},
+	}
+	// The window starts after the series: the FX fetch must still reach back
+	// to the first quote rather than the requested date.
+	out, extrap, err := c.ConvertCurrency(context.Background(), s, "SEK", days[2])
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !extrap.Equal(days[2]) {
+		t.Errorf("extrapolatedBefore = %v, want %v", extrap, days[2])
+	}
+	if math.Abs(out.Dividends[0].Amount-1*9) > 1e-9 || math.Abs(out.Dividends[1].Amount-2*9.1) > 1e-9 {
+		t.Errorf("dividends = %+v, want [9 18.2]", out.Dividends)
+	}
+}
+
+// TestConvertCurrencyReportsAnFXOutage: a cross no source can serve is an
+// error, never a series quietly left in its own currency.
+func TestConvertCurrencyReportsAnFXOutage(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "down", http.StatusInternalServerError)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	s := &Series{Symbol: "X", Currency: "USD", Points: []Point{{Date: d(2020, 1, 6), Close: 100}}}
+	if _, _, err := c.ConvertCurrency(context.Background(), s, "SEK", time.Time{}); err == nil ||
+		!strings.Contains(err.Error(), "FX rate USD") {
+		t.Fatalf("error = %v, want an FX failure naming the cross", err)
+	}
+	if _, err := c.FXRate(context.Background(), "USD", "SEK", d(2020, 1, 6)); err == nil ||
+		!strings.Contains(err.Error(), "FX rate USD") {
+		t.Fatalf("FXRate error = %v, want an FX failure naming the cross", err)
+	}
+}
+
+// TestLongFXCrossRefusals: the bundled splice only ever touches crosses it
+// can actually extend.
+func TestLongFXCrossRefusals(t *testing.T) {
+	for _, symbol := range []string{"VOO", "USDUSD=X", "SEKNOK=X", "USDSEK=X"} {
+		if _, _, ok := longFXCross(symbol); ok {
+			t.Errorf("longFXCross(%q) claimed a bundled proxy", symbol)
+		}
+	}
+	if _, _, ok := longFXCross("GBPJPY=X"); !ok {
+		t.Error("two bundled legs must triangulate through the dollar")
+	}
+	// A nil series is not a crash.
+	extendFXBack("EURUSD=X", nil)
 }

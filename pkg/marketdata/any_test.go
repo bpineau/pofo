@@ -204,3 +204,48 @@ func TestLatestAnyKeepsFirstCloseWhenNothingIsLive(t *testing.T) {
 		t.Fatalf("want the authoritative ISIN close, got %+v", q)
 	}
 }
+
+// TestAnyRefusesAnEmptyIdList: both multi-id entry points must say what is
+// wrong rather than return a nil series with a nil error.
+func TestAnyRefusesAnEmptyIdList(t *testing.T) {
+	c, srv := newTestClient(t, "", http.NewServeMux())
+	defer srv.Close()
+	if _, err := c.FetchAny(context.Background(), nil, FetchOptions{}); err == nil ||
+		!strings.Contains(err.Error(), "no identifier") {
+		t.Errorf("FetchAny error = %v", err)
+	}
+	if _, err := c.LatestAny(context.Background(), nil, QuoteOptions{}); err == nil ||
+		!strings.Contains(err.Error(), "no identifier") {
+		t.Errorf("LatestAny error = %v", err)
+	}
+}
+
+// TestFetchAnySkipsAnEmptySeries: a source that answers with no point at all
+// has not served the identifier, so the next one must be tried.
+func TestFetchAnySkipsAnEmptySeries(t *testing.T) {
+	days := testDays(3)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/EMPTY", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"chart":{"result":[{"meta":{"currency":"USD","longName":"Empty"},`+
+			`"timestamp":[],"indicators":{"quote":[{"close":[]}]}}],"error":null}}`)
+	})
+	mux.HandleFunc("/v8/finance/chart/FULL", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("FULL", days, []float64{10, 11, 12}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	s, err := c.FetchAny(context.Background(), []string{"EMPTY", "FULL"}, FetchOptions{From: d(2020, 1, 1)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Symbol != "FULL" {
+		t.Errorf("served %q, want FULL", s.Symbol)
+	}
+	// A window that ends before the quotes begin leaves nothing: that is an
+	// empty series, and it must be reported as such rather than returned.
+	_, err = c.FetchAny(context.Background(), []string{"FULL"},
+		FetchOptions{From: d(2020, 1, 1), To: d(2019, 1, 1)})
+	if err == nil || !strings.Contains(err.Error(), "empty series") {
+		t.Errorf("error = %v, want one about an empty series", err)
+	}
+}
