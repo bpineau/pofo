@@ -43,7 +43,11 @@ first, then the simdata built on them, then the offline snapshots); the
 individual targets are for touching one series. Follow it with `make check` and
 `make golden`, both of which must stay green (refreshing data must never require
 a code change), then `make verify-catalog`, which says what the new quotes look
-like.
+like. The generator modes fetch fresh (`-gen-simdata` and `-verify-simdata`
+re-download any quote older than a day, since what they write ships in the
+binary), but the doctor does not: `-cache-age` defaults to 30 days, so
+`make verify-catalog` on a cache left warm for weeks reports the cache's age as
+stale market data; pass `-cache-age 6h` after a pause.
 
 The FIRE book's plates freeze numbers read off the bundled datasets, so a
 refresh does move some of them. Those recomputation checks are therefore kept
