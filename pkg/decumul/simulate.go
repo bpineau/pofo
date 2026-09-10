@@ -55,6 +55,10 @@ func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 	if p.Lifetime != nil {
 		sampler = p.Lifetime.sampler(p.Years)
 	}
+	// The source's rng-independent setup (a data-driven source collapses its
+	// panel into one weighted history) is hoisted out of the path loop; the
+	// draws are byte-identical, the rng being consumed in the same order.
+	src := scenario.Prepare(p.Source)
 	forEachWorker(nPaths, workers, func(w int, lo func(func(int))) {
 		rng := rand.New(rand.NewPCG(seed, uint64(w)+1))
 		var lives *rand.Rand
@@ -62,7 +66,7 @@ func (p Plan) Draw(nPaths, workers int, seed uint64) Draws {
 			lives = rand.New(rand.NewPCG(seed, uint64(w)+1+lifeStream))
 		}
 		lo(func(i int) {
-			d.Returns[i] = p.Source.Draw(rng)
+			d.Returns[i] = src.Draw(rng)
 			if lives != nil {
 				d.Lives[i] = sampler.draw(lives)
 			}
@@ -99,13 +103,19 @@ func (p Plan) SimulateOn(d Draws, workers int) Ensemble {
 		lives = p.drawLives(len(d.Returns), workers, fallbackLifeSeed)
 	}
 	paths := make([]PathResult, len(d.Returns))
+	// Every path's two series (Wealth and Spend) come out of ONE arena rather
+	// than an allocation per path: a render simulates thousands of paths, and
+	// the allocator and the collector, not the kernel, were where that time
+	// went. The windows are disjoint, so the workers stay independent.
+	stride := seriesLen(p.Years)
+	arena := make([]float64, len(d.Returns)*stride)
 	forEachWorker(len(d.Returns), workers, func(_ int, lo func(func(int))) {
 		lo(func(i int) {
 			var lv Lives
 			if lives != nil {
 				lv = lives[i]
 			}
-			paths[i] = p.runPath(d.Returns[i], lv)
+			paths[i] = p.runPath(d.Returns[i], lv, arena[i*stride:(i+1)*stride:(i+1)*stride])
 		})
 	})
 	return Ensemble{Paths: paths, Years: p.Years}

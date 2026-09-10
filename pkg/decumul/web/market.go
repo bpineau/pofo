@@ -47,11 +47,12 @@ func Market(pr Params, panel *scenario.Panel) MarketResult {
 // terminal value), and a caption with the model's bear texture.
 func marketFan(ns namedSource, years int) string {
 	rng := rand.New(rand.NewPCG(11, 7))
+	src := scenario.Prepare(ns.source) // one panel combination for the whole cone
 	indexes := make([][]float64, marketDraws)
 	depths := make([]float64, marketDraws)
 	spells := make([]float64, marketDraws)
 	for i := range indexes {
-		indexes[i] = cumIndex(ns.source.Draw(rng))
+		indexes[i] = cumIndex(src.Draw(rng))
 		depths[i], spells[i] = bearTexture(indexes[i])
 	}
 

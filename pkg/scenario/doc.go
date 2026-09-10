@@ -15,4 +15,10 @@
 // ordering but mixing series between blocks: fed per-country records it models a
 // random developed-market retiree, whose run can land inside a single market's
 // disaster that a pre-diversified world index would have averaged away.
+//
+// A driver that draws thousands of paths should call Prepare on its Source
+// once, before the loop: the resampling sources collapse their Panel into one
+// weighted history at every Draw, which Prepare hoists out. The prepared
+// source draws byte-identical paths, and a source with nothing to hoist comes
+// back unchanged.
 package scenario

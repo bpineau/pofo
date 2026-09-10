@@ -14,6 +14,23 @@ type BlockBootstrap struct {
 	Weights  []float64
 	BlockLen int
 	Periods  int
+
+	hist Sequence // Panel combined at Weights, filled by prepare
+}
+
+// history is the weighted history to resample: the one Prepare computed, or a
+// fresh combination.
+func (b BlockBootstrap) history() Sequence {
+	if b.hist != nil {
+		return b.hist
+	}
+	return b.Panel.Combine(b.Weights)
+}
+
+// prepare implements preparer: it combines the panel once.
+func (b BlockBootstrap) prepare() Source {
+	b.hist = b.history()
+	return b
 }
 
 // Len reports the path length.
@@ -21,8 +38,7 @@ func (b BlockBootstrap) Len() int { return b.Periods }
 
 // Draw returns one resampled path.
 func (b BlockBootstrap) Draw(rng *rand.Rand) Sequence {
-	hist := b.Panel.Combine(b.Weights)
-	return blocks(rng, hist, b.BlockLen, b.Periods, func() bool { return false })
+	return blocks(rng, b.history(), b.BlockLen, b.Periods, func() bool { return false })
 }
 
 // StationaryBootstrap is a block bootstrap with random block lengths drawn
@@ -35,6 +51,23 @@ type StationaryBootstrap struct {
 	Weights   []float64
 	MeanBlock float64
 	Periods   int
+
+	hist Sequence // Panel combined at Weights, filled by prepare
+}
+
+// history is the weighted history to resample: the one Prepare computed, or a
+// fresh combination.
+func (s StationaryBootstrap) history() Sequence {
+	if s.hist != nil {
+		return s.hist
+	}
+	return s.Panel.Combine(s.Weights)
+}
+
+// prepare implements preparer: it combines the panel once.
+func (s StationaryBootstrap) prepare() Source {
+	s.hist = s.history()
+	return s
 }
 
 // Len reports the path length.
@@ -42,12 +75,11 @@ func (s StationaryBootstrap) Len() int { return s.Periods }
 
 // Draw returns one resampled path.
 func (s StationaryBootstrap) Draw(rng *rand.Rand) Sequence {
-	hist := s.Panel.Combine(s.Weights)
 	pNew := 1.0
 	if s.MeanBlock > 1 {
 		pNew = 1 / s.MeanBlock
 	}
-	return blocks(rng, hist, math.MaxInt, s.Periods, func() bool { return rng.Float64() < pNew })
+	return blocks(rng, s.history(), math.MaxInt, s.Periods, func() bool { return rng.Float64() < pNew })
 }
 
 // blocks builds a path of n periods by copying from hist starting at random
