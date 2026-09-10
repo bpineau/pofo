@@ -83,3 +83,41 @@ func ExampleSweep() {
 	// GROW at 60 %: CAGR 5.0 % (as written)
 	// GROW at 75 %: CAGR 6.0 %
 }
+
+// ExampleComparison_StatRows renders the statistics table of a comparison:
+// one row per metric, one cell per portfolio, the winning cell marked. Real
+// callers get the Comparison from Compute; here the columns are fabricated so
+// the example stays deterministic and offline.
+func ExampleComparison_StatRows() {
+	dates := months(24)
+	col := func(name string, monthly float64) *column {
+		values := make([]float64, len(dates))
+		for i := range values {
+			values[i] = 100 * math.Pow(1+monthly, float64(i))
+		}
+		stats, _ := metrics.Compute(dates, values)
+		return &column{
+			p: &portfolio.Portfolio{Name: name}, color: "#1f6f78",
+			sim:      &portfolio.SimResult{Dates: dates, Values: values},
+			winDates: dates, winValues: values, stats: stats,
+		}
+	}
+	c := newTestComparison([]*column{col("Slow", 0.004), col("Fast", 0.008)},
+		nil, dates[0], dates[len(dates)-1], nil, Options{Rebalance: 90})
+
+	for _, r := range c.StatRows() {
+		if r.Label != "CAGR (annualized return)" {
+			continue
+		}
+		for i, cell := range r.Cells {
+			mark := ""
+			if cell.Best {
+				mark = " (best)"
+			}
+			fmt.Printf("%s: %s%s\n", c.Columns()[i].Name, cell.Text, mark)
+		}
+	}
+	// Output:
+	// Slow: 4.91 %
+	// Fast: 10.03 % (best)
+}
