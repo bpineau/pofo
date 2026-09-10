@@ -37,6 +37,10 @@ type composerCaps struct {
 	Ports    int `json:"ports"`
 	Holdings int `json:"holdings"`
 	Bytes    int `json:"bytes"`
+	// Foreign tells the editor that this server accepts identifiers outside
+	// the bundled catalog (a budgeted live fetch, see foreign.go), so a
+	// well-formed ISIN or ticker it cannot name must not read as a mistake.
+	Foreign bool `json:"foreign,omitempty"`
 }
 
 // composerMount builds the live composer panel for one /view request: the
@@ -65,8 +69,8 @@ type composerCaps struct {
 // names and identifiers are user input, and every value (including the
 // encoding/json data attributes) rides the template's contextual escaping,
 // never string concatenation.
-func composerMount(vr *viewRequest) template.HTML {
-	caps := composerCaps{Ports: maxViewPortfolios, Holdings: maxViewHoldings, Bytes: maxViewSpecLen}
+func composerMount(vr *viewRequest, foreign int) template.HTML {
+	caps := composerCaps{Ports: maxViewPortfolios, Holdings: maxViewHoldings, Bytes: maxViewSpecLen, Foreign: foreign > 0}
 	capsJSON, err := json.Marshal(caps)
 	if err != nil {
 		return "" // constant shape; cannot fail
@@ -74,11 +78,12 @@ func composerMount(vr *viewRequest) template.HTML {
 
 	names := localNames()
 	data := composerData{
-		Caps:     string(capsJSON),
-		Count:    len(vr.specs),
-		MaxBytes: maxViewSpecLen,
-		Globals:  composerGlobals(vr),
-		Presets:  presetAttrs(viewPresets()),
+		Caps:       string(capsJSON),
+		Count:      len(vr.specs),
+		MaxBytes:   maxViewSpecLen,
+		Globals:    composerGlobals(vr),
+		Presets:    presetAttrs(viewPresets()),
+		ForeignPer: foreign,
 	}
 	for i, spec := range vr.specs {
 		card := composerCard{Index: i, Name: spec.Name}
@@ -123,8 +128,8 @@ func composerMount(vr *viewRequest) template.HTML {
 // front end insert any bundled build as an editable p= card; unforkable
 // examples (all holdings drop out of the grammar) are omitted from the slice
 // its caller builds, so they never appear here.
-func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
-	caps := composerCaps{Ports: maxViewPortfolios, Holdings: maxViewHoldings, Bytes: maxViewSpecLen}
+func hubComposerMount(prefs hubPrefs, presets []composerPreset, foreign int) template.HTML {
+	caps := composerCaps{Ports: maxViewPortfolios, Holdings: maxViewHoldings, Bytes: maxViewSpecLen, Foreign: foreign > 0}
 	capsJSON, err := json.Marshal(caps)
 	if err != nil {
 		return "" // constant shape; cannot fail
@@ -150,6 +155,7 @@ func hubComposerMount(prefs hubPrefs, presets []composerPreset) template.HTML {
 		GlobalsSeed: string(seedJSON),
 		Globals:     g,
 		Presets:     presetAttrs(presets),
+		ForeignPer:  foreign,
 	}
 	var buf bytes.Buffer
 	if err := composerTmpl.Execute(&buf, data); err != nil {
@@ -169,6 +175,10 @@ type composerData struct {
 	Globals     composerGlobal
 	Cards       []composerCard
 	Presets     []presetAttr // one data-preset-<i> payload per bundled build
+	// ForeignPer is the server's hourly per-client allowance for identifiers
+	// outside the bundled catalog; 0 (the default) leaves the feature off and
+	// the panel says nothing about it.
+	ForeignPer int
 }
 
 // composerPreset is one bundled build offered by the composer's "add preset"
@@ -383,6 +393,7 @@ var composerTmpl = template.Must(template.New("composer").Parse(versionedAssets(
 <div class="cmp-foot">
 <div class="budget"><span>link</span><span class="meter"><i></i></span><span class="cmp-bytes">&ndash; / {{.MaxBytes}} B</span></div>
 <span class="hint cmp-hint"></span>
+{{if .ForeignPer}}<span class="hint">any ticker or ISIN works &middot; {{.ForeignPer}} new ones per hour outside the catalog</span>{{end}}
 <span class="grow"></span>
 <button class="btn btn-run" type="button">Run comparison</button>
 </div>

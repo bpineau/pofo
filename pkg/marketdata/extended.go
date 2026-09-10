@@ -67,6 +67,18 @@ type FetchOptions struct {
 	// twin closes never splice cleanly into a native history. Without
 	// Currency it is a no-op.
 	NoConvert bool
+
+	// ExactOnly forbids adopting an instrument matched by NAME instead of
+	// by identifier: a ticker then resolves only to listings of that same
+	// ticker (IWDA, IWDA.AS, IWDA.L) and the name-searched fallbacks (an FT
+	// or Morningstar entry found by full text) are skipped, so a typo fails
+	// instead of quoting, and caching, an unrelated fund. An ISIN request is
+	// unaffected: every source is then queried with the ISIN itself, which
+	// is an identifier and not a name (PlausibleID rejects a wrong check
+	// digit before it gets that far). Callers that accept identifiers from
+	// untrusted hands want this; the CLI, whose user can read the resolution
+	// line and retry, leaves it off and keeps the fuzzy convenience.
+	ExactOnly bool
 }
 
 // FetchExtended fetches an asset the way the pofo CLI does: Fetch, then for
@@ -89,7 +101,7 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 	if opt.Raw && wantSim {
 		return nil, fmt.Errorf("%s: raw closes cannot be SIM-extended (simulated histories are total-return); set NoSim or drop Raw", id)
 	}
-	spec := fetchSpec{raw: opt.Raw}
+	spec := fetchSpec{raw: opt.Raw, exactOnly: opt.ExactOnly}
 	if opt.NoConvert && opt.Currency != "" {
 		spec.wantCurrency, spec.nativeOnly = opt.Currency, true
 	}
