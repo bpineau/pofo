@@ -1,6 +1,7 @@
 package web
 
 import (
+	"fmt"
 	"net/http"
 	"runtime"
 )
@@ -34,16 +35,37 @@ var simParallel = max(2, runtime.GOMAXPROCS(0)/2)
 // bounded returns pr with every size-like field clamped into its bound.
 // Negative counts fall back to zero, which the endpoints read as "default".
 func (pr Params) bounded() Params {
-	pr.NPaths = clampInt(pr.NPaths, 0, maxPaths)
-	pr.Years = clampInt(pr.Years, 0, maxYears)
-	pr.PensionYear = clampInt(pr.PensionYear, 0, maxYears)
-	pr.SideUntilYear = clampInt(pr.SideUntilYear, 0, maxYears)
-	pr.BufferStopYear = clampInt(pr.BufferStopYear, 0, maxYears)
-	pr.Age = clampInt(pr.Age, 0, 110)
+	pr.NPaths = clamp(pr.NPaths, 0, maxPaths)
+	pr.Years = clamp(pr.Years, 0, maxYears)
+	pr.PensionYear = clamp(pr.PensionYear, 0, maxYears)
+	pr.SideUntilYear = clamp(pr.SideUntilYear, 0, maxYears)
+	pr.BufferStopYear = clamp(pr.BufferStopYear, 0, maxYears)
+	pr.Age = clamp(pr.Age, 0, 110)
+	// The tax book: a fraction is a fraction, and each envelope is a pocket
+	// carved out of the growth sleeve, so neither can exceed it. A GainFrac
+	// above 1 would price a cost basis below zero, i.e. a tax on capital.
+	pr.GainFrac = clamp(pr.GainFrac, 0, 1)
+	g := pr.growthSleeve()
+	pr.PEACapital = clamp(pr.PEACapital, 0, g)
+	pr.AVCapital = clamp(pr.AVCapital, 0, g)
 	return pr
 }
 
-func clampInt(v, lo, hi int) int {
+// validate rejects a request the page itself cannot express: an envelope book
+// whose pockets add up to more than the sleeve they are carved from. Clamping
+// that one silently would simulate a different household (the pockets would
+// be pro-rated and the taxable one would vanish), so the caller is told
+// instead. Called on the bounded params, before any slot is taken.
+func (pr Params) validate() error {
+	if g := pr.growthSleeve(); pr.PEACapital+pr.AVCapital > g+0.5 {
+		return fmt.Errorf("envelope amounts add up to more than the invested capital: "+
+			"PEA %.0f + assurance-vie %.0f > %.0f (capital %.0f minus %.0f of cash buffer)",
+			pr.PEACapital, pr.AVCapital, g, pr.Capital, pr.Capital-g)
+	}
+	return nil
+}
+
+func clamp[T int | float64](v, lo, hi T) T {
 	return min(max(v, lo), hi)
 }
 
