@@ -9,6 +9,11 @@
 // reflects a consistent benefit rather than one lucky period. Conventions
 // match pkg/metrics: simple daily returns, 252 trading days per year.
 //
+// One screen is not about coverage at all: Advisable rejects a record naming a
+// single issuer, whatever it scores. Such a record is in the catalog to be
+// priced, and advising one company is not diversification; RankCandidates and
+// both CLI advisors read that one rule.
+//
 // The same metadata also powers the look-through composition views
 // (composition.go): AssetClassSplit opens stacked funds into their legs,
 // GeographySplit and EquitySectorSplit aggregate the published breakdowns,

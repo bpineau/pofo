@@ -361,7 +361,9 @@ regime view stays the default.
 `pofo -fire` opens a local web explorer that simulates a withdrawal
 (retirement) phase and shows the **probability of ruin** as you drag sliders
 for capital, spending floor, cash-buffer years, real return, volatility, tail
-df, horizon, pension, spending rules and the French taxes. The dashboard
+df, horizon, pension, spending rules and the French taxes (the rate, the share
+of today's capital that is unrealised gain, and how much of it sits in a PEA or
+an assurance-vie, the pockets being drained taxable account first). The dashboard
 reads top to bottom as one argument: the same plan under every return model
 (Student-t, sequence stress, JST broad-sample, lost decade), today's
 valuation (live Shiller CAPE), the simulated wealth fans, the plan replayed
@@ -463,6 +465,9 @@ already in the quote cache is free, so re-running a link costs nothing. A spent
 budget answers `429` and says so. Such an identifier is resolved **exactly**
 (no fuzzy name search), so a typo fails instead of quoting an unrelated fund;
 the CLI keeps the fuzzy search, its user being able to read the resolution line.
+A well-formed identifier no source quotes (`ZQXWVT` is a perfectly good ticker
+shape) answers `404` and names it, since no retry would help; an upstream
+outage on a real identifier stays a `500` with the detail in the server log.
 
 A public deploy can also **push** its URLs to the search engines that speak
 [IndexNow](https://www.indexnow.org/) instead of waiting to be crawled again.
@@ -553,10 +558,10 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-data` | standard user cache | quote cache (JSON) |
 | `-simdata` | embedded in the binary | source of simulated histories (directory for dev) |
 | `-rebalance` | `90` | rebalance every N calendar days (0 = never) |
-| `-start` | `2006-01-01` | desired start date |
+| `-start`, `-end` | earliest / last available quote | the analysis window (`YYYY-MM-DD`) |
 | `-benchmark` | `^GSPC` | reference for Beta, capture ratios and the CWARP replacement |
 | `-currency` | `EUR` | convert every series (and the benchmark) to this currency; empty disables |
-| `-cache-age` | `720h` (1 month) | cache freshness before re-downloading |
+| `-cache-age` | `720h` (1 month) | cache freshness before re-downloading; the data generators (`-gen-simdata`, `-verify-simdata`) default to `24h` instead, since what they write ships inside the binary |
 | `-assets`, `-a` | | list `A,B,C`: each asset compared as a 100% portfolio |
 | `-simulate`, `-b` | | backcast every identifier of the run, as if each carried the `SIM` suffix |
 | `-cli` | | curves and summary table in the terminal, no HTML |
@@ -568,6 +573,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-sweep` | | per-holding weight sweep: what each line's weight buys and costs, then exit |
 | `-sweep-step` | `5` | grid step, in weight percent, for `-sweep` |
+| `-permanent` | | backtest the tactical Permanent Portfolio 2.0 (Darcet) against the static one, ruin probabilities included, then exit |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
 | `-export-epub` | | write one edition of the FIRE book to the given path as an EPUB 3 file, then exit |
@@ -603,9 +609,10 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
   unconverted (unknown-currency) assets are flagged. For library consumers,
   `Client.ConvertCurrency` reprices any `Series` into a target currency via
   the same crosses.
-- **Cache**: 1 month by default; a failed refresh **serves the stale data**
-  with a stderr warning (charts may stop before today), and never deletes
-  anything.
+- **Cache**: 1 month by default (`-cache-age`), a day for the data
+  generators, whose output ships in the binary; a failed refresh **serves the
+  stale data** with a stderr warning (charts may stop before today), and never
+  deletes anything.
 - **History extension** (`…SIM` identifiers only): first the
   `pkg/datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
   BND→VBMFX, …), rescaled to the first real quote. The report flags every
