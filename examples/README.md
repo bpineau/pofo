@@ -107,6 +107,9 @@ rather than recomputing it (and drifting) on every run.
 ## Tail-risk / trend (anti-fragile)
 
 - `dragon-portfolio-artemis`: Chris Cole's Dragon (equity/bonds/gold/trend/long-vol).
+- `alt-dragon`: the same five engines on a capital-efficient 90/60 core
+  (NTSX), so the diversifiers stack on top; a research build, several legs
+  outside the EU retail shelf.
 - `claude-dragonlite`: the Dragon distilled to three buyable UCITS lines
   (NTSG/trend/gold, no long vol, growth-heavier than Cole); the family's
   simplicity flagship, with its own design notes and honest range check.
@@ -240,3 +243,7 @@ cash). The stages are meant to be compared side by side:
 
 Older simple examples also live here: `tradi-60-40`, `permanent`,
 `sp500`, `msci-world`, `optimized`.
+
+`predictis` is the odd one out: a real French assurance-vie unit-linked
+allocation, kept as a foil for the builds above (a bond core plus thematic
+satellites, fitted to the previous few years' winners).

@@ -102,9 +102,10 @@ func (b Band) Scale(leverage float64) Band {
 
 // singleNameStretch is how much wider a single-issuer record's bounds are than
 // its class's. Idiosyncratic risk is what a class row calibrated on diversified
-// funds leaves out, and half again the class ceiling covers it here: the two
-// single-name records of the catalog measure 55 and 60 %/yr against the equity
-// ceiling of 42, and gap 31 % on an earnings print against the class's 23.
+// funds leaves out, and three quarters again the class ceiling covers it here:
+// the two single-name records of the catalog measure 55 and 60 %/yr against the
+// equity ceiling of 42, and gap 31 % on an earnings print against the class's
+// 23.
 const singleNameStretch = 1.75
 
 // recordStretch is the multiple a record's class band must be widened by. Two
