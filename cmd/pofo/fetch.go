@@ -45,5 +45,8 @@ func fetchAssetIn(ctx context.Context, c *marketdata.Client, id string, opt *opt
 		NoSim:    opt.noSim,
 		Simdata:  opt.simdata,
 		Currency: currency,
+		// Catalog assets are pinned; anything else, under -serve, comes from
+		// a visitor and must resolve exactly (see options.exactForeign).
+		ExactOnly: opt.exactForeign && !marketdata.KnownLocal(id),
 	})
 }

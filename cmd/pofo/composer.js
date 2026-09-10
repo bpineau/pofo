@@ -183,6 +183,7 @@
   // ---- DOM layer ----------------------------------------------------------
 
   var CAP_PORTS = 6, CAP_HOLD = 20, CAP_BYTES = 2000; // overwritten from data-caps
+  var FOREIGN = false;         // server accepts ids outside the catalog (data-caps)
   var state = { ports: [], globals: {} };
   var catalog = null;          // [{id,name,class,alt}] once /catalog.json loads
   var byKey = null;            // lower-cased id/alt -> asset, for fill, name and validation
@@ -282,6 +283,36 @@
   // isISIN reports whether s has the ISIN shape (2 letters, 9 alphanumerics,
   // one check digit): the identifiers a human would rather not read or type.
   function isISIN(s) { return /^[A-Za-z]{2}[A-Za-z0-9]{9}[0-9]$/.test(s); }
+
+  // isinValid mirrors marketdata.IsISIN: the shape plus the check digit
+  // (letters expand to two digits, A=10 .. Z=35, then Luhn over the lot).
+  function isinValid(s) {
+    var u = s.toUpperCase(), digits = "", i;
+    if (!isISIN(u)) return false;
+    for (i = 0; i < u.length; i++) {
+      var c = u.charCodeAt(i);
+      digits += c >= 65 ? String(c - 55) : u.charAt(i);
+    }
+    var sum = 0, dbl = false;
+    for (i = digits.length - 1; i >= 0; i--) {
+      var v = Number(digits.charAt(i));
+      if (dbl) { v *= 2; if (v > 9) v -= 9; }
+      sum += v;
+      dbl = !dbl;
+    }
+    return sum % 10 === 0;
+  }
+
+  // plausibleId mirrors marketdata.PlausibleID, the shape a server that
+  // accepts identifiers outside the catalog demands: a valid ISIN, or a
+  // ticker (base, optional "-" share class, at most one "." exchange suffix,
+  // fifteen characters at most). It only decides how the row READS: the
+  // server stays the authority on what it will fetch.
+  function plausibleId(s) {
+    var u = s.trim().toUpperCase();
+    if (isISIN(u)) return isinValid(u);
+    return u.length <= 15 && /^[A-Z0-9]{1,12}(-[A-Z0-9]{1,4})?(\.[A-Z]{1,4})?$/.test(u);
+  }
 
   // preferredId is the friendliest identifier for an asset: its canonical id
   // unless that id is an ISIN and a non-ISIN alternate (a ticker) exists, in
@@ -428,19 +459,31 @@
   // ---- autocomplete + validation ------------------------------------------
 
   // refreshName fills a row's readout with the id's catalog name once known
-  // (SIM-suffixed ids read their base entry's name via resolve).
+  // (SIM-suffixed ids read their base entry's name via resolve). An id the
+  // catalog does not carry reads as a live fetch where the server allows one,
+  // and as a mistake otherwise: nothing here can name it, the quote sources
+  // will.
   function refreshName(input, rn) {
     if (!byKey) { rn.textContent = ""; return; }
-    var a = resolve(input.value);
-    rn.textContent = a ? a.name : (input.value.trim() ? "unknown identifier" : "");
+    var v = input.value.trim();
+    var a = resolve(v);
+    if (a) { rn.textContent = a.name; return; }
+    if (v === "") { rn.textContent = ""; return; }
+    rn.textContent = foreignOK(v) ? "outside the catalog \u00b7 fetched live" : "unknown identifier";
   }
 
-  // validateId reds an id input whose value is not in the catalog (only once
-  // the catalog has loaded; a failed fetch means no validation at all).
+  // foreignOK reports whether an id the catalog misses is still acceptable to
+  // this server: the feature is on and the id is well-formed.
+  function foreignOK(v) { return FOREIGN && plausibleId(v); }
+
+  // validateId reds an id input the server would refuse: absent from the
+  // catalog and not a well-formed foreign identifier this server would fetch
+  // (only once the catalog has loaded; a failed fetch means no validation at
+  // all).
   function validateId(input) {
     if (!byKey) { input.classList.remove("bad"); return; }
     var v = input.value.trim();
-    input.classList.toggle("bad", v !== "" && !resolve(v));
+    input.classList.toggle("bad", v !== "" && !resolve(v) && !foreignOK(v));
   }
 
   var acBox = null, acInput = null, acPos = -1;
@@ -1009,6 +1052,7 @@
     CAP_PORTS = caps.ports || CAP_PORTS;
     CAP_HOLD = caps.holdings || CAP_HOLD;
     CAP_BYTES = caps.bytes || CAP_BYTES;
+    FOREIGN = !!caps.foreign;
     panelEl = panel;
     bootBlank = panel.getAttribute("data-boot") === "blank";
     presets = readPresets(panel);

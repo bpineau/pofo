@@ -229,7 +229,14 @@
 //     from the embedded list) to its canonical form; KnownLocal reports
 //     whether it resolves without a network lookup, and LocalCatalog
 //     enumerates that whole set, one entry per canonical id;
-//   - IsISIN validates an ISIN, check digit included;
+//   - IsISIN validates an ISIN, check digit included; PlausibleID judges any
+//     identifier on its shape alone (a valid ISIN or a plausible exchange
+//     ticker), the first gate for identifiers a caller did not vet itself,
+//     to be paired with FetchOptions.ExactOnly so that a typo fails rather
+//     than adopting a fund a full-text search merely liked;
+//   - Client.Cached reports whether an identifier's history is already in
+//     the disk cache, fresh and deep enough to answer without any upstream
+//     request, for callers that must ration those;
 //   - Client.ConvertCurrency reprices a whole Series into a target currency
 //     using daily Yahoo FX crosses; the earliest known rate is held flat
 //     before the FX history starts;
