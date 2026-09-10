@@ -143,12 +143,8 @@ func TestParseDashboard(t *testing.T) {
 // crossCheck compares returns, not levels: the two channels are published on
 // different bases and one of them is rounded.
 func TestCrossCheckAcceptsADifferentBase(t *testing.T) {
-	a := walk(minCommonDays+10, 0.0002, 0.008)
-	b := make([]point, len(a))
-	for i, p := range a {
-		b[i] = point{p.date, p.level / 10} // the same index, published on a tenth of the base
-	}
-	msg, err := crossCheck(pureTrend, a, b)
+	a := walk(minCommonDays+restatementDays+10, 0.0002, 0.008)
+	msg, err := crossCheck(pureTrend, a, dashboardOf(a))
 	if err != nil {
 		t.Fatalf("crossCheck: %v", err)
 	}
@@ -158,7 +154,7 @@ func TestCrossCheckAcceptsADifferentBase(t *testing.T) {
 }
 
 func TestCrossCheckRejects(t *testing.T) {
-	a := walk(minCommonDays+10, 0.0002, 0.008)
+	a := walk(minCommonDays+restatementDays+10, 0.0002, 0.008)
 	diverging := make([]point, len(a))
 	for i, p := range a {
 		diverging[i] = p
@@ -172,6 +168,58 @@ func TestCrossCheckRejects(t *testing.T) {
 	if _, err := crossCheck(pureTrend, a, a[:100]); err == nil {
 		t.Fatal("accepted an overlap of 100 days")
 	}
+}
+
+// The refusal of 2026-09-10, on a fixture: the dashboard channel's last two
+// prints were 5.5 and 7.4 bp below the full-precision channel's, thirty times
+// the rounding of a two-decimal level, and the generator would not write a file
+// whose settled 6940 days agreed to the bp. A provisional print is not a
+// disagreement; the same step one day deeper still is.
+func TestCrossCheckToleratesAProvisionalTail(t *testing.T) {
+	a := walk(minCommonDays+restatementDays+10, 0.0002, 0.008)
+	tail := dashboardOf(a)
+	n := len(tail)
+	tail[n-2].level *= 1 - 5.5e-4  // the provisional print of the day before
+	tail[n-1].level *= 1 - 12.9e-4 // and of the newest day, 7.4 bp on the return
+	msg, err := crossCheck(pureTrend, a, tail)
+	if err != nil {
+		t.Fatalf("refused a provisional tail: %v", err)
+	}
+	if !strings.Contains(msg, "provisional tail") || !strings.Contains(msg, "7.4 bp") {
+		t.Errorf("report %q does not say what the tail cost", msg)
+	}
+
+	settled := dashboardOf(a)
+	i := len(settled) - restatementDays - 1 // the last day the gate still grades
+	for ; i < len(settled); i++ {
+		settled[i].level *= 1 - 7.4e-4
+	}
+	if _, err := crossCheck(pureTrend, a, settled); err == nil ||
+		!strings.Contains(err.Error(), "settled daily returns differ") {
+		t.Fatalf("accepted a 7.4 bp step on a settled day: %v", err)
+	}
+}
+
+// The tail is not ungated: a percent is more than a restatement of a
+// provisional print ever moves, and a broken row always more than that.
+func TestCrossCheckRejectsABrokenTailRow(t *testing.T) {
+	a := walk(minCommonDays+restatementDays+10, 0.0002, 0.008)
+	broken := dashboardOf(a)
+	broken[len(broken)-1].level *= 1.05
+	if _, err := crossCheck(pureTrend, a, broken); err == nil ||
+		!strings.Contains(err.Error(), "provisional tail") {
+		t.Fatalf("accepted a 5 %% jump in the newest row: %v", err)
+	}
+}
+
+// dashboardOf is the second channel as the publisher serves it: the same index
+// on a tenth of the base, and a fresh slice so a test can perturb it.
+func dashboardOf(a []point) []point {
+	out := make([]point, len(a))
+	for i, p := range a {
+		out[i] = point{p.date, p.level / 10}
+	}
+	return out
 }
 
 func TestTrimPartialMonth(t *testing.T) {
@@ -330,7 +378,7 @@ func TestIndexFixtureIsInsideTheBands(t *testing.T) {
 // common return agrees well inside the per-day gate, and the two channels still
 // end a third of a point apart.
 func TestCrossCheckRejectsASlowDrift(t *testing.T) {
-	a := walk(minCommonDays+10, 0.0002, 0.008)
+	a := walk(minCommonDays+restatementDays+10, 0.0002, 0.008)
 	drifting := make([]point, len(a))
 	k := 1.0
 	for i, p := range a {
