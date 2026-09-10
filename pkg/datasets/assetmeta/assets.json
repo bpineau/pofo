@@ -120,7 +120,7 @@
   },
   {
     "id": "DBMF",
-    "isin": "",
+    "isin": "US53700T8273",
     "name": "iMGP DBi Managed Futures Strategy ETF",
     "ucits": false,
     "eu_retail": false,
@@ -4723,7 +4723,7 @@
   },
   {
     "id": "IEF",
-    "isin": "",
+    "isin": "US4642874402",
     "aliases": [
       "IEF"
     ],
@@ -6176,7 +6176,7 @@
   },
   {
     "id": "TLT",
-    "isin": "",
+    "isin": "US4642874329",
     "aliases": [
       "TLT"
     ],
@@ -6251,7 +6251,7 @@
   },
   {
     "id": "VBMFX",
-    "isin": "",
+    "isin": "US9219371088",
     "name": "Vanguard Total Bond Market Index Fund",
     "ucits": false,
     "eu_retail": false,
@@ -7835,7 +7835,7 @@
   },
   {
     "id": "VXUS",
-    "isin": "",
+    "isin": "US9219097683",
     "name": "Vanguard Total International Stock ETF",
     "ucits": false,
     "eu_retail": false,
@@ -8127,7 +8127,7 @@
   },
   {
     "id": "DBC",
-    "isin": "",
+    "isin": "US46138B1035",
     "name": "Invesco DB Commodity Index Tracking Fund",
     "ucits": false,
     "eu_retail": false,
@@ -8192,7 +8192,7 @@
   },
   {
     "id": "UPRO",
-    "isin": "",
+    "isin": "US74347X8645",
     "name": "ProShares UltraPro S&P 500",
     "ucits": false,
     "eu_retail": false,
@@ -8238,7 +8238,7 @@
   },
   {
     "id": "TMF",
-    "isin": "",
+    "isin": "US25460G1388",
     "name": "Direxion Daily 20+ Year Treasury Bull 3X Shares",
     "ucits": false,
     "eu_retail": false,
@@ -8766,7 +8766,7 @@
   },
   {
     "id": "VFINX",
-    "isin": "",
+    "isin": "US9229081081",
     "name": "Vanguard 500 Index Fund Investor Shares",
     "ucits": false,
     "eu_retail": false,
@@ -8910,7 +8910,7 @@
   },
   {
     "id": "MNA",
-    "isin": "",
+    "isin": "US45409B8000",
     "aliases": [],
     "name": "NYLI Merger Arbitrage ETF",
     "ucits": false,
@@ -8940,7 +8940,7 @@
   },
   {
     "id": "JAAA",
-    "isin": "",
+    "isin": "US47103U8457",
     "aliases": [],
     "name": "Janus Henderson AAA CLO ETF",
     "ucits": false,
@@ -9103,7 +9103,7 @@
   },
   {
     "id": "AAA",
-    "isin": "",
+    "isin": "US46144X6105",
     "aliases": [],
     "name": "Alternative Access First Priority CLO Bond ETF",
     "ucits": false,
@@ -9134,7 +9134,7 @@
   },
   {
     "id": "TRPA",
-    "isin": "",
+    "isin": "US41653L6020",
     "aliases": [],
     "name": "Hartford AAA CLO ETF",
     "ucits": false,
@@ -9165,7 +9165,7 @@
   },
   {
     "id": "BKLN",
-    "isin": "",
+    "isin": "US46138G5080",
     "aliases": [],
     "name": "Invesco Senior Loan ETF",
     "ucits": false,
@@ -9195,7 +9195,7 @@
   },
   {
     "id": "OOSAX",
-    "isin": "",
+    "isin": "US00141G8722",
     "aliases": [],
     "name": "Invesco Senior Floating Rate Fund A",
     "ucits": false,
