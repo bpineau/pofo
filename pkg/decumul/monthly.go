@@ -26,12 +26,20 @@ import (
 // This is a distinct kernel from RunPath (the validated annual reference); it
 // has its own validation tests.
 func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult {
+	return p.runPathMonthly(returns, lives, nil)
+}
+
+// runPathMonthly is RunPathMonthly over an optional caller-owned arena window
+// for the path's two series (nil = allocate them here).
+func (p Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
 		buffer = p.Capital
 	}
-	pks := pocketOps(p.newPockets(p.Capital - buffer))
+	// As in the annual kernel: the single-sleeve case gets a stack array.
+	var pocketBuf [1]pocket
+	pks := pocketOps(p.newPockets(pocketBuf[:0], p.Capital-buffer))
 
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
@@ -41,7 +49,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult 
 	lf := p.life(lives)
 	end := lf.end()
 
-	res := newPathResult(p.Capital, p.Years)
+	res := newPathResult(p.Capital, p.Years, buf)
 	res.Ret10 = firstDecadeReturn(returns, min(120, p.Years*12), 12)
 	peak := p.Capital
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
@@ -65,22 +73,34 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult 
 	riskM := p.RiskGuard.stepped(12)
 	adaptive := p.Guard.active() || p.RiskGuard.active()
 
+	// The annuity is bought in one year only (see the annual kernel).
+	annuityYear := -1
+	if p.Annuity != nil && p.Lifetime != nil {
+		annuityYear = p.Annuity.Year
+	}
+
 	ruined := false
 	for k := 0; k < end && !ruined; k++ {
 		// The ratchet, the annuity purchase and stateful taxes stay yearly
 		// decisions, taken at the start of each year against current wealth.
 		pks.newYear()
-		p.buyAnnuity(k, pks, &res, &lf)
+		if k == annuityYear {
+			p.buyAnnuity(k, pks, &res, &lf)
+		}
 		res.Annuity += lf.annuityAt(k)
-		res.Received += p.income(k, lf)
+		// The year's outside income, read once for the year and netted off
+		// every month's budget below (the monthly kernel would otherwise
+		// rescan the cashflows twelve times a year for the same figure).
+		inc := p.income(k, lf)
+		res.Received += inc
 		if !adaptive {
 			level, lastRaise = p.Ratchet.raise(level, pks.total()+buffer, p.Capital, k, lastRaise)
 		}
 		// The year's uncut reference standard, for the cut accounting: the
 		// initial level under guardrails, the ratcheted level otherwise.
-		uncut := p.needAt(k, lf)
+		uncut := p.needAtWith(k, lf, inc)
 		if !adaptive {
-			uncut = p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
+			uncut = netAfter(level*p.schedAt(k)*lf.spendFactor(k), inc)
 		}
 		for m := range 12 {
 			total := pks.total() + buffer
@@ -97,12 +117,12 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult 
 			var need float64
 			if p.RiskGuard.active() {
 				spending = riskM.adjust(spending, total+p.cashflowPV(k, p.RiskGuard.PVRate, lf), k)
-				need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf) / 12
+				need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc) / 12
 			} else if p.Guard.active() {
 				spending = guardM.adjust(spending, total)
-				need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf) / 12
+				need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc) / 12
 			} else {
-				yearNeed := p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
+				yearNeed := netAfter(level*p.schedAt(k)*lf.spendFactor(k), inc)
 				need = yearNeed / 12
 				if p.Flex.Cut > 0 && p.Flex.triggered(dd, yearNeed, total) {
 					need *= 1 - p.Flex.Cut

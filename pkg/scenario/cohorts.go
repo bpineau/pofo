@@ -10,6 +10,23 @@ type HistoricalCohorts struct {
 	Panel   Panel
 	Weights []float64
 	Periods int
+
+	hist Sequence // Panel combined at Weights, filled by prepare
+}
+
+// history is the weighted history to window: the one Prepare computed, or a
+// fresh combination.
+func (h HistoricalCohorts) history() Sequence {
+	if h.hist != nil {
+		return h.hist
+	}
+	return h.Panel.Combine(h.Weights)
+}
+
+// prepare implements preparer: it combines the panel once.
+func (h HistoricalCohorts) prepare() Source {
+	h.hist = h.history()
+	return h
 }
 
 // Len reports the path length.
@@ -26,7 +43,7 @@ func (h HistoricalCohorts) Count() int {
 
 // Cohort returns the i-th historical window (start index i).
 func (h HistoricalCohorts) Cohort(i int) Sequence {
-	hist := h.Panel.Combine(h.Weights)
+	hist := h.history()
 	return Sequence(append([]float64(nil), hist[i:i+h.Periods]...))
 }
 

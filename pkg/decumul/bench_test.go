@@ -1,6 +1,7 @@
 package decumul
 
 import (
+	"math"
 	"math/rand/v2"
 	"testing"
 
@@ -42,6 +43,36 @@ func BenchmarkRunPath(b *testing.B) {
 // BenchmarkSimulate is one full endpoint-equivalent Monte-Carlo run.
 func BenchmarkSimulate(b *testing.B) {
 	p := benchPlan()
+	for i := 0; i < b.N; i++ {
+		_ = p.Simulate(2000, 8, 7)
+	}
+}
+
+// BenchmarkSolve is one bisection solve (the safe withdrawal), the shape every
+// solver endpoint runs: eighteen SimulateOn replays over one set of draws.
+func BenchmarkSolve(b *testing.B) {
+	p := benchPlan()
+	for i := 0; i < b.N; i++ {
+		_ = p.Solve(0.05, WithdrawalAxis(0, 150_000), 2000, 8, 7)
+	}
+}
+
+// BenchmarkSimulateBootstrap is the same run on the page's data-driven column:
+// monthly blocks resampled from a portfolio panel and compounded to years, the
+// source whose per-draw setup scenario.Prepare hoists.
+func BenchmarkSimulateBootstrap(b *testing.B) {
+	rows := make([][]float64, 4)
+	for a := range rows {
+		rows[a] = make([]float64, 480)
+		for t := range rows[a] {
+			rows[a][t] = 0.003 + 0.03*math.Sin(float64(t*(a+2))/7.0)
+		}
+	}
+	panel := scenario.Panel{Returns: rows, Weights: []float64{0.4, 0.3, 0.2, 0.1}}
+	p := benchPlan()
+	p.Source = scenario.Compounded{
+		Inner: scenario.StationaryBootstrap{Panel: panel, MeanBlock: 24, Periods: 360}, Group: 12}
+	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
 		_ = p.Simulate(2000, 8, 7)
 	}
