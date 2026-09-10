@@ -573,9 +573,17 @@ func fmtNum(x float64) string {
 	return fmt.Sprintf("%.2f", x)
 }
 
+// fmtTTR renders a longest-recovery duration. Zero days is a MEASUREMENT and
+// not a missing value: a series that never closed below a previous peak spent
+// no day underwater, so it prints "0 d" and is legitimately the best cell of
+// its row, exactly as Max Drawdown prints "0.00 %" for that same series rather
+// than a dash. A dash here would say "not measured" and then be starred as the
+// best, which is the one reading the table must never allow. The genuinely
+// unmeasured case is the real row without a real series, and it renders its own
+// dash against a NaN value, which markBest skips.
 func fmtTTR(s metrics.Stats) string {
 	if s.TTRDays <= 0 {
-		return "-"
+		return "0 d"
 	}
 	out := fmt.Sprintf("%d d", s.TTRDays)
 	if s.TTRDays >= 365 {

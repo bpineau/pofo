@@ -236,7 +236,8 @@ func TestFormatters(t *testing.T) {
 		}
 	}
 	ttr := map[metrics.Stats]string{
-		{TTRDays: 0}:                     "-",
+		// Never underwater: a measured zero, not a missing value (see fmtTTR).
+		{TTRDays: 0}:                     "0 d",
 		{TTRDays: 90}:                    "90 d",
 		{TTRDays: 731}:                   "2.0 y (731 d)",
 		{TTRDays: 90, TTROngoing: true}:  "90 d (ongoing)",
@@ -245,6 +246,36 @@ func TestFormatters(t *testing.T) {
 	for s, want := range ttr {
 		if got := fmtTTR(s); got != want {
 			t.Errorf("fmtTTR(%+v) = %q, want %q", s, got, want)
+		}
+	}
+}
+
+// The one starred cell that must never read "not measured". A portfolio that
+// never closed below a previous peak has the best recovery time of its row,
+// and the table has to SAY so with a number: a dash marked best would tell the
+// reader the winner is the column with no data.
+func TestStatRowsZeroTTRShowsAValueAndWins(t *testing.T) {
+	const n = 40
+	calm := statColumn(t, "Calm", n, nil, nil)
+	calm.stats.TTRDays, calm.stats.TTROngoing = 0, false
+	rough := statColumn(t, "Rough", n, nil, nil)
+	rough.stats.TTRDays, rough.stats.TTROngoing = 500, false
+
+	r := row(t, buildStatRows([]*column{calm, rough}, ""), "TTR (longest recovery)")
+	if got := r.Cells[0].Text; got != "0 d" {
+		t.Errorf("never-underwater TTR = %q, want \"0 d\"", got)
+	}
+	if !r.Cells[0].Best {
+		t.Error("the never-underwater column is not marked best on TTR")
+	}
+	if r.Cells[1].Best {
+		t.Error("the 500-day column is marked best on TTR")
+	}
+	// And the row that really has nothing to show keeps its dash, unstarred.
+	real := row(t, buildStatRows([]*column{calm, rough}, ""), "TTR real")
+	for i, c := range real.Cells {
+		if c.Text != "-" || c.Best {
+			t.Errorf("TTR real cell %d = %q best=%v, want an unstarred dash", i, c.Text, c.Best)
 		}
 	}
 }
