@@ -2,8 +2,8 @@
 # id: LU1832174962
 # name: Independance AM Europe Small: France sibling graft
 # method: Independance AM France Small & Mid NAV (LU0131510165, same manager and process, monthly correlation ~0.95 on the 2018-2026 overlap; fees already in NAV, no adjustment) as the pre-inception proxy; real LU1832174962 grafted from 2018
-# validation: corr=0.933 (weekly 0.954) beta=0.93 TE=7.6%/yr CAGR sim 5.75% vs real 11.56% (overlap 1528 d from 2018-06-13 to 2026-08-18) vs LU1832174962
-# generated: 2026-08-19
+# validation: corr=0.932 (weekly 0.954) beta=0.93 TE=7.6%/yr CAGR sim 5.42% vs real 11.64% (overlap 1543 d from 2018-06-13 to 2026-09-08) vs LU1832174962
+# generated: 2026-09-10
 date,close
 1990-08-17,3.773115
 1990-09-28,3.488119
@@ -2405,3 +2405,18 @@ date,close
 2026-08-14,248.620000
 2026-08-17,247.070000
 2026-08-18,244.720000
+2026-08-19,245.020000
+2026-08-20,243.770000
+2026-08-21,245.430000
+2026-08-24,244.460000
+2026-08-25,245.820000
+2026-08-26,248.460000
+2026-08-27,248.790000
+2026-08-28,249.690000
+2026-08-31,248.460000
+2026-09-01,246.620000
+2026-09-02,244.630000
+2026-09-03,246.210000
+2026-09-04,247.570000
+2026-09-07,246.670000
+2026-09-08,247.700000
