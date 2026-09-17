@@ -156,18 +156,19 @@
 #   EUR-hedged share class (DTLE, IE00BD8PGZ49) if you prefer the
 #   defensive sleeve without the USD.
 #
-# ## What the UCITS constraint costs (measured, 1996-03 -> 2026-08, EUR)
+# ## What the UCITS constraint costs (1996-03-26 -> 2026-09-10, EUR)
 #   Vs the research build (hydra-five-engines-capital-efficient.txt, which
 #   swaps gold-on-equity for plain gold and a 25+y zero-coupon for IDTL):
-#   CAGR 9.50% vs 10.77%, vol 9.67% vs 9.89%, Sharpe 0.96 vs 1.05, max
-#   drawdown -19.5% (identical), worst real recovery 2.8y vs 2.2y, worst
-#   rolling 5y +0.54% vs +1.01%, weighted TER 0.29% vs 0.33%. FIRE check
-#   (monthly real bootstrap, 40y): ruin at a 4% real withdrawal 0.11% vs
-#   0.00%, safe WR at 5% ruin 5.42% vs 6.25%. So the conversion costs
-#   ~1.3pt of CAGR and ~0.8pt of modeled safe WR, and essentially all of it
-#   is GDE: the research build earns the equity premium underneath its gold
-#   while this one pays the Erb-Harvey drag on 17 points of metal. The
-#   risk profile, which is what the hydra exists for, survives intact.
+#   CAGR 9.42% vs 10.71%, vol 9.70% vs 9.97%, Sharpe 0.95 vs 1.04, max
+#   drawdown -19.49% vs -19.50% (identical in practice), worst real
+#   recovery 2.8y vs 2.2y, worst rolling 5y +0.32% vs +0.71%, weighted TER
+#   0.29% vs 0.33%. FIRE check (monthly real bootstrap, 40y): ruin at a 4%
+#   real withdrawal 0.13% vs 0.02%, safe WR at 5% ruin 5.28% vs 6.06%. So
+#   the conversion costs ~1.3pt of CAGR and ~0.8pt of modeled safe WR, and
+#   essentially all of it is GDE: the research build earns the equity
+#   premium underneath its gold while this one pays the Erb-Harvey drag on
+#   17 points of metal. The risk profile, which is what the hydra exists
+#   for, survives intact.
 #   The extra IDTL points (vs the research build's zero-coupon) are funded
 #   from trend and gold, the two sleeves the range sweep shows have slack
 #   at the top of their sane ranges.
@@ -239,13 +240,21 @@
 #   diversifiers compounded like equities in-sample; forward-looking, the
 #   growth engine pays the plan).
 #
-# ## Measured profile (this toolkit, EUR, common window 1996-03 -> 2026-08)
-#   vs claude-dragonlite (60/25/15): CAGR 9.50% vs 9.81%, vol 9.67% vs
-#   12.5%, Sharpe 0.96 vs 0.79, max drawdown -19.5% vs -27.0%, worst real
-#   recovery 2.8y vs 6.3y, worst rolling 5y CAGR +0.54% vs -2.06%, median
-#   5y 8.1% vs 9.0%, up/down-capture 35/30% vs 41/37%, beta 0.28 vs 0.34,
+# ## Measured profile (this toolkit, EUR, 1996-03-26 -> 2026-09-10)
+#   MEASUREMENT DATE 2026-09-10. Every figure of this section, of the
+#   UCITS-cost section above and of the same sections of
+#   hydra-five-engines-capital-efficient.txt comes from ONE run of the
+#   toolkit over that window, so the two files quote the same numbers for
+#   the same builds. Anything measured on another window says so on the
+#   spot (the range sweeps, the share-class comparisons, the crisis
+#   drawdowns below).
+#   vs claude-dragonlite (60/25/15): CAGR 9.42% vs 9.63%, vol 9.70% vs
+#   12.5%, Sharpe 0.95 vs 0.78, max drawdown -19.5% vs -27.5%, worst real
+#   recovery 2.8y vs 9.3y, worst rolling 5y CAGR +0.32% vs -2.04%, median
+#   5y 8.1% vs 8.9%, up/down-capture 35/30% vs 41/37%, beta 0.28 vs 0.34,
 #   weighted fees 0.29% vs 0.36%. Real drawdowns in the three real-data
-#   crises: 2000-02 -16% vs -30%, 2008 -15% vs -19%, 2022 -11% vs -12%.
+#   crises, read on the earlier 2026-08 window and not re-run here:
+#   2000-02 -16% vs -30%, 2008 -15% vs -19%, 2022 -11% vs -12%.
 #   The price of the hedges: up-capture 35% vs 41%, so it lags in
 #   straight-up bull markets -- that is the premium being paid, not a
 #   defect. WINDOW NOTE: the trend legs bind the panel at 1996-03 (the
@@ -253,16 +262,18 @@
 #   include 1988-1995; the earlier version of this file, whose engine 3a
 #   was unhedged, read a 1988 start.
 #   Decumulation check (monthly real returns deflated by HICP, stationary
-#   bootstrap, 40y horizon): ruin at a 4% real withdrawal rate 0.11% vs
-#   1.31%; safe WR at 5% ruin 5.42% vs 4.81%. Read those LEVELS skeptically
-#   (the panel compounds far above any sane forward anchor) and the GAP
-#   comparatively: the sequence-risk profile, not the headline CAGR, is
-#   what this build buys for a FIRE plan.
+#   bootstrap, 40y horizon, 20 000 paths): ruin at a 4% real withdrawal
+#   rate 0.13% vs 1.51%; safe WR at 5% ruin 5.28% vs 4.66%. Read those
+#   LEVELS skeptically (the panel compounds far above any sane forward
+#   anchor) and the GAP comparatively: the sequence-risk profile, not the
+#   headline CAGR, is what this build buys for a FIRE plan.
 #   POST-SWAP REWEIGHT, tested and declined: with a less volatile engine
 #   3a, the search wants more trend and less NTSG+gold (30/12/18/17/15/8
-#   reads Sharpe 1.01 against 0.96). It buys volatility, and it sells the
-#   floor: worst rolling 5y falls from +0.54% to +0.22% and CAGR from
-#   9.50% to 9.41%. The weights below stay as they were.
+#   reads Sharpe 1.00 against 0.95). It buys that Sharpe by shaving
+#   volatility (9.07% against 9.70%), and it sells the floor: worst rolling
+#   5y falls from +0.32% to -0.10% and CAGR from 9.42% to 9.36%. A floor
+#   below zero is exactly what the gold and duration points are held for,
+#   so the weights below stay as they were.
 #
 # ## Practical notes
 #   - AQR MF UCITS is a FUND, not an ETF: check platform availability and
