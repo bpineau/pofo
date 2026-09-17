@@ -33,6 +33,29 @@ func ExampleComposite() {
 	// 300 points, base 100
 }
 
+// CapWeighted builds the same kind of index without rebalancing it, the way a
+// cap-weighted one behaves: the weights are the published split on the anchor
+// date and drift with the legs' own returns on either side of it.
+func ExampleCapWeighted() {
+	fetch := fakeFetcher{
+		"US":    mkSeries("US", 300, 0.0008),
+		"WORLD": mkSeries("WORLD", 300, 0.0002),
+	}
+	fr, err := BuildFrame(fetch, []string{"US", "WORLD"}, day(0))
+	if err != nil {
+		panic(err)
+	}
+	legs := []Leg{{ID: "US", Weight: 0.40}, {ID: "WORLD", Weight: 0.60}}
+	anchor := fr.Dates[len(fr.Dates)-1] // the split was published on the last date
+	if _, err := CapWeighted(fr, legs, anchor, 0); err != nil {
+		panic(err)
+	}
+	w := CapWeights(fr, legs, anchor, 0)
+	fmt.Printf("US weight: %.0f %% at the anchor, %.0f %% 300 days earlier\n", legs[0].Weight*100, w["US"]*100)
+	// Output:
+	// US weight: 40 % at the anchor, 36 % 300 days earlier
+}
+
 // TSMOM replays a configurable time-series momentum strategy on a basket
 // of markets. (API example; not executed.)
 func Example_tsmom() {
