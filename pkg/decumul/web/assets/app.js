@@ -10,6 +10,12 @@
 const r = (key, label, min, max, step, def, unit, help) =>
   ({kind: "range", key, label, min, max, step, def, unit, help});
 const c = (key, label, help) => ({kind: "check", key, label, help});
+// fold() tags consecutive controls as belonging to one disclosure inside their
+// group: the rail renders them under a chevron heading instead of in the open,
+// so a group can carry a second layer of detail (the tax book's envelopes)
+// without growing a second panel. The items stay plain items, so the state,
+// URL, defaults and help wiring below need to know nothing about it.
+const fold = (name, ...items) => items.map(it => ({...it, fold: name}));
 
 const GROUPS = [
   {title: "Your situation", col: 0, items: [
@@ -92,7 +98,15 @@ const GROUPS = [
   ]},
   {title: "Taxes", col: 1, items: [
     r("taxRate", "Tax on gains", 0, 0.40, 0.01, 0.328, "pct",
-      "Your country's rate on realised investment gains, charged on the GAIN share of every sale (withdrawing 60k net sells more than 60k of assets). Use your blended effective rate across accounts, e.g. ~31-35% for a plain French taxable account (the 2026 flat tax is 31.4%, plus the PUMa levy), less if part of the capital sits in sheltered wrappers. The effective burden starts low and drifts up as unrealised gains compound."),
+      "Your country's rate on realised investment gains. It is charged on the GAIN SHARE of every sale, never on the sale: with the embedded gain below at 50%, half of each sale is taxable, and the sale is grossed up so that withdrawing 60k net really sells more than 60k of assets. The basis is tracked as you spend (a weighted average, carried pro rata), so the effective burden starts at the gain fraction of your rate and drifts toward the full rate as unrealised gains compound. Use your blended effective rate across accounts, gain-weighted rather than capital-weighted, e.g. ~31-35% for a plain French taxable account (the 2026 flat tax is 31.4%, plus the PUMa levy), less where part of the capital sits in sheltered wrappers, or name those wrappers under the envelopes below instead."),
+    r("gainFrac", "Embedded gain in the capital", 0, 1, 0.05, 0.5, "pct",
+      "How much of today's capital is unrealised GAIN rather than the money you put in: 50% means the book has doubled, so half of every euro you sell is taxable from the first year. This is what the rate above bites on, and it is the tax input that moves the plan most: dropping it to zero (a book entirely made of cost basis, which no long accumulation ever is) flatters the sustainable withdrawal rate by about 0.30 point. Read it off your broker's statements; a capital built over a couple of decades usually lands between 40 and 60%."),
+    ...fold("envelopes",
+      r("peaCapital", "PEA capital", 0, 3000000, 10000, 0, "eur",
+        "How much of the invested capital sits in a French PEA, taxed on exit at the 18.6% social levies alone past 5 years. Naming it splits the book into ordered pockets (taxable account first, then PEA, then assurance-vie) instead of one blended rate, and withdrawals drain them in that order. Leave both amounts at zero to keep the single blended rate above, which is worth about 0.015 point of withdrawal rate: the structure matters far less than the two figures above it. The cash buffer is carved out first, so the two amounts together stop at the invested capital."),
+      r("avCapital", "Assurance-vie capital", 0, 3000000, 10000, 0, "eur",
+        "How much of the invested capital sits in a French assurance-vie past 8 years: the first 9 200 EUR of gains withdrawn each year are free of tax (the couple's allowance, tracked year by year inside every simulated path), the excess pays 7.5% plus 17.2% social levies. Drained last, after the taxable account and the PEA. Zero keeps this pocket out of the plan."),
+    ),
   ]},
   {title: "Simulation", col: 0, id: "group-simulation", items: [
     r("nPaths", "Simulated paths", 1000, 10000, 500, 2000, "int",
@@ -152,8 +166,19 @@ function renderRail() {
     box.className = "group";
     if (g.id) box.id = g.id;
     box.innerHTML = `<div class="group-h">${g.title}</div>`;
-    // The plan-defining sliders (first group) get a ruler of ticks.
-    for (const it of g.items) box.appendChild(buildControl(it, gi === 0));
+    // The plan-defining sliders (first group) get a ruler of ticks. Items
+    // tagged with a fold name go under a shared disclosure instead of into
+    // the open, consecutive ones sharing it.
+    let disc = null;
+    for (const it of g.items) {
+      if (!it.fold) {
+        disc = null;
+        box.appendChild(buildControl(it, gi === 0));
+        continue;
+      }
+      if (!disc || disc.dataset.fold !== it.fold) disc = box.appendChild(buildFold(it.fold));
+      disc.lastElementChild.appendChild(buildControl(it, false));
+    }
     cols[g.col || 0].appendChild(box);
   });
   // A full-width footer to persist the personal-defaults subset to a cookie.
@@ -163,6 +188,17 @@ function renderRail() {
     "Save your capital, age, horizon, net spending, pension and annuity figures as personal defaults in a cookie on this browser, so you land on them next time. Click again to update them. It changes nothing you can share: the page URL always reproduces the exact scenario for anyone, cookie or not.");
   foot.innerHTML = `<button type="button" id="saveDefaults" class="save-defaults">Save as my defaults</button><span class="saved-note" id="savedNote" hidden>saved</span>`;
   form.appendChild(foot);
+}
+
+// buildFold is the rail's in-group disclosure: the same undressed <details>
+// as the portfolio loader's, so a second layer of detail inside a group reads
+// as a heading with a chevron rather than as a panel of its own.
+function buildFold(name) {
+  const d = document.createElement("details");
+  d.className = "pickfold";
+  d.dataset.fold = name;
+  d.innerHTML = `<summary>${name}<span class="chev">▾</span></summary><div class="pickfold-body"></div>`;
+  return d;
 }
 
 function buildControl(it, ruler) {
@@ -199,6 +235,7 @@ function buildControl(it, ruler) {
     state[it.key] = parseFloat(e.target.value);
     paintFill(e.target);
     refreshVal(it.key);
+    capEnvelopes(it.key);
     if (state[it.key] !== it.def) claimPolicy(it.key);
     syncPolicy();
     schedule();
@@ -234,6 +271,28 @@ function setSliderVal(k, v) {
 function setCheckVal(k, v) {
   state[k] = v;
   if (checkEls[k]) checkEls[k].checked = v;
+}
+
+// capEnvelopes keeps the tax book coherent. The PEA and the assurance-vie are
+// pockets carved out of the same INVESTED capital (the cash buffer is untaxed
+// and taken out first), so their sum cannot exceed it: the server refuses a
+// book that contradicts itself, and rather than let the page post one, the
+// two controls simply run out of room. The slider just moved keeps its value
+// and the other yields; when the capital, the spending or the buffer moves
+// instead, the PEA keeps its room first (it is the capped pocket, which
+// cannot be refilled past its ceiling) and the assurance-vie gives way.
+function capEnvelopes(moved) {
+  let room = Math.max(0, state.capital - Math.min(state.bufferYears * state.needAnnual, state.capital));
+  for (const k of (moved === "avCapital" ? ["avCapital", "peaCapital"] : ["peaCapital", "avCapital"])) {
+    if (state[k] > room) {
+      const el = document.getElementById("s_" + k);
+      const step = el ? parseFloat(el.step) : 0;
+      // Down to the slider's own granularity, so the thumb and the figure
+      // never disagree (a range input snaps what it is handed to its step).
+      setSliderVal(k, step > 0 ? Math.floor(room / step) * step : room);
+    }
+    room -= state[k];
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -313,16 +372,18 @@ function applyConservative() {
 }
 
 // ---------------------------------------------------------------------------
-// Personal defaults: a chosen subset of the sliders (the situation, and the
+// Personal defaults: a chosen subset of the sliders (the situation, the
 // annuity block, which is a standing decision about the household rather than
-// a spending rule to be tried), saved to a cookie on demand (the "Save as my
+// a spending rule to be tried, and the tax book, which is a fact about the
+// household's accounts), saved to a cookie on demand (the "Save as my
 // defaults" button) so a regular visitor lands on their own figures instead of
 // the generic ones. The cookie seeds
 // ONLY these keys, and a shared #hash always overrides it (applied after), so
 // a link reproduces the sender's exact scenario for anyone, cookie or not.
 // ---------------------------------------------------------------------------
 const SAVEKEYS = ["capital", "age", "years", "needAnnual", "pensionAnnual", "pensionYear",
-  "annuityShare", "annuityYear", "annuityLoad"];
+  "annuityShare", "annuityYear", "annuityLoad",
+  "gainFrac", "peaCapital", "avCapital"];
 const PREF_COOKIE = "fire_defaults";
 function readCookie(name) {
   const m = document.cookie.match(new RegExp("(?:^|; )" + name + "=([^;]*)"));
@@ -361,6 +422,7 @@ for (const k of CHECKKEYS) {
   if (shared.get(k) === "1") { state[k] = true; checkEls[k].checked = true; }
 }
 if (state.conservative) applyReturns(PRIOR);
+capEnvelopes(); // a cookie or a shared link may over-fill the tax book
 syncPolicy();
 
 function syncURL() {

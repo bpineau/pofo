@@ -181,6 +181,25 @@ implementation (pro-rata cost basis, gain-fraction only). **Pension/income** is
 a `Cashflow` list (modelled as a future cashflow, not an asset). Both are
 generic and swappable.
 
+**The page's tax book** (shipped 2026-09-10). The per-envelope model
+(`Plan.Envelopes`, `pkg/decumul/envelope.go`) was reachable from Go only until
+the page grew three controls in its Taxes group: the EMBEDDED GAIN
+(`gainFrac`, the share of today's capital that is unrealised gain rather than
+cost basis) beside the rate, and, behind an `envelopes` disclosure, the PEA and
+assurance-vie amounts (`peaCapital` / `avCapital`, the remainder being the
+taxable account), which replace the single blended rate with ordered pockets
+drained CTO first, PEA next, assurance-vie last. Both amounts at zero keeps the
+single sleeve the kernel always had. The default gain fraction, 50 %, is the one
+change of meaning: the page used to run with a cost basis equal to the whole
+capital, which no long accumulation matches and which flattered the sustainable
+withdrawal rate by 0.30 point (measured in
+`docs/fire-envelopes-tax-model-design.md`, whose section 3 also carries the
+calibration recipe the help texts point at: a gain-weighted rate and a
+capital-weighted gain fraction). The two amounts are pockets carved out of the
+same invested capital, so the rail's sliders stop at the room the other leaves
+and a request that contradicts itself is refused rather than silently
+pro-rated (`bounds.go`).
+
 **`CapitalForRuin`** bisects `C0` in `[lo, hi]` over ~16-20 iterations,
 **reusing the same pre-drawn paths** across evaluations so Monte-Carlo noise
 does not break monotonicity.

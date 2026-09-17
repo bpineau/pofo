@@ -266,8 +266,9 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 	// JSON result. post factors the boilerplate once, and that boilerplate is
 	// where the request bounds live (bounds.go): the body is capped before it
 	// is decoded, every size-like field is clamped before any plan is built,
-	// and the computation waits for one of the gate's slots so a burst cannot
-	// pile simulations on top of one another.
+	// a self-contradicting tax book is refused, and the computation waits for
+	// one of the gate's slots so a burst cannot pile simulations on top of one
+	// another.
 	post := func(path string, compute func(Params) any) {
 		mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 			if r.Method != http.MethodPost {
@@ -277,6 +278,15 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 			var pr Params
 			r.Body = http.MaxBytesReader(w, r.Body, maxBodyBytes)
 			if err := json.NewDecoder(r.Body).Decode(&pr); err != nil {
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+			}
+			pr = pr.bounded()
+			// A request that contradicts itself is turned down before it
+			// queues for a slot: the page cannot produce one (its envelope
+			// sliders stop at the room the others leave), so this only ever
+			// answers a hand-written call.
+			if err := pr.validate(); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}
@@ -290,7 +300,7 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 			// central assumptions (blended toward the prior on a short
 			// history, CAPE-anchored when the anchor is on), which only the
 			// server knows: stamp them before any plan is built.
-			_ = json.NewEncoder(w).Encode(compute(pr.bounded().withCentral(panel)))
+			_ = json.NewEncoder(w).Encode(compute(pr.withCentral(panel)))
 		})
 	}
 	post("/api/sim", func(pr Params) any { return ComputeWithPanel(pr, panel) })

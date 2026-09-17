@@ -33,6 +33,25 @@
 // controls of the others; a shared URL is left as it arrived, only dimmed,
 // so old links keep reproducing the run their sender saw.
 //
+// The tax book is three controls in the Taxes group, over the kernel's
+// per-envelope model (decumul.Envelope). GainFrac is the share of today's
+// capital that is unrealised GAIN rather than cost basis, which is what the
+// rate is charged on: it defaults to 50 %, because a cost basis equal to the
+// whole capital is an assumption no long accumulation matches and it flatters
+// the sustainable withdrawal rate by 0.30 point. PEACapital and AVCapital, in
+// the rail's "envelopes" disclosure, name how much of the invested capital
+// sits in each French wrapper, the remainder being the taxable account;
+// Params.envelopes then builds the ordered pockets the kernel drains CTO
+// first, PEA next, assurance-vie last (that one carrying the couple's annual
+// allowance). Both amounts at zero leaves Plan.Envelopes nil, i.e. the
+// historical single sleeve at Params.TaxRate, so a plan that names no wrapper
+// is computed exactly as it was before the controls existed. The structure is
+// worth 0.015 point of withdrawal rate and the drain order 0.03, against 0.12
+// for the rate's calibration and 0.30 for the gain fraction: see
+// docs/fire-envelopes-tax-model-design.md, which also carries the calibration
+// recipe (a gain-weighted rate, a capital-weighted gain fraction) that the
+// help texts point at.
+//
 // Beyond the model strip and the sweeps, the analysis endpoints serve the
 // sequence-risk decomposition (/api/decade), the deterministic replay of
 // infamous historical vintages through the user's plan (/api/vintages), the
@@ -62,5 +81,10 @@
 // computations queue behind simParallel slots, so no request can inflate a
 // simulation past what the page itself can ask for, and a burst cannot pile
 // them up. A request whose client gave up while waiting is refused with 503
-// rather than computed for nobody.
+// rather than computed for nobody. Coherence is bounded there too: the
+// envelope amounts are clamped to the invested capital and a book whose
+// pockets add up to more than the sleeve they are carved from is refused with
+// a message naming the sum, since clamping it would silently simulate another
+// household. The page cannot post one, its two amount sliders stopping at the
+// room the other leaves.
 package web
