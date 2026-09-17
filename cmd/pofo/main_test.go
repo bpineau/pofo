@@ -3,11 +3,13 @@ package main
 import (
 	"bytes"
 	"context"
+	"flag"
 	"io"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"time"
 )
 
 // captureOutput runs fn with both standard streams redirected to a pipe and
@@ -193,5 +195,38 @@ func TestRunCoverageOffline(t *testing.T) {
 	}
 	if !strings.Contains(out, "Coverage advisor for") || !strings.Contains(out, "Coverage (by weight)") {
 		t.Errorf("-coverage printed no coverage report:\n%s", out)
+	}
+}
+
+// TestGeneratorAge checks the generator modes fetch fresh quotes by default
+// while an explicit -cache-age still wins.
+func TestGeneratorAge(t *testing.T) {
+	newSet := func(argv []string) (*flag.FlagSet, time.Duration) {
+		fs := flag.NewFlagSet("pofo", flag.ContinueOnError)
+		fs.SetOutput(io.Discard)
+		age := fs.Duration("cache-age", 30*24*time.Hour, "")
+		if err := fs.Parse(argv); err != nil {
+			t.Fatalf("parse %v: %v", argv, err)
+		}
+		return fs, *age
+	}
+
+	fs, age := newSet(nil)
+	if got := generatorAge(fs, age); got != generatorCacheAge {
+		t.Errorf("default generator age = %v, want %v", got, generatorCacheAge)
+	}
+	if age != 30*24*time.Hour {
+		t.Errorf("interactive default moved to %v", age)
+	}
+
+	for _, pinned := range []string{"6h", "720h", "-1s"} {
+		fs, age := newSet([]string{"-cache-age", pinned})
+		want, err := time.ParseDuration(pinned)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if got := generatorAge(fs, age); got != want {
+			t.Errorf("-cache-age %s: generator age = %v, want %v", pinned, got, want)
+		}
 	}
 }
