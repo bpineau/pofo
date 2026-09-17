@@ -3,6 +3,7 @@ package marketdata
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"strings"
@@ -92,5 +93,29 @@ func TestMarkAbsentIfAll(t *testing.T) {
 	}
 	if got := markAbsentIfAll(summary, nothing, nothing).Error(); got != "combined" {
 		t.Errorf("marking must not change the message: %q", got)
+	}
+}
+
+// TestUnknownIdentifierErrorWrapping: the error must be readable three ways
+// without any string parsing - as the sentinel, as the typed error carrying
+// the identifier, and as the per-source summary it wraps.
+func TestUnknownIdentifierErrorWrapping(t *testing.T) {
+	cause := errors.New("yahoo: nothing; ft: nothing")
+	err := &UnknownIdentifierError{ID: "NOSUCH", Failures: cause}
+	if !errors.Is(err, ErrUnknownIdentifier) {
+		t.Error("errors.Is must match the sentinel")
+	}
+	if !errors.Is(err, cause) {
+		t.Error("Unwrap must expose the per-source summary")
+	}
+	if errors.Unwrap(err) != cause {
+		t.Errorf("Unwrap = %v, want the summary", errors.Unwrap(err))
+	}
+	if err.Error() != cause.Error() {
+		t.Errorf("Error() = %q, want the summary's own text", err.Error())
+	}
+	var typed *UnknownIdentifierError
+	if !errors.As(fmt.Errorf("fetch: %w", err), &typed) || typed.ID != "NOSUCH" {
+		t.Error("errors.As must recover the identifier through a wrap")
 	}
 }

@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"math"
 	"strings"
 	"testing"
 	"time"
@@ -242,5 +243,114 @@ func TestClassBandsCoverTheVocabulary(t *testing.T) {
 		case b.Move <= 0 || b.Drawdown <= 0 || b.Drawdown > 1:
 			t.Errorf("%s: implausible Move/Drawdown %g/%g", class, b.Move, b.Drawdown)
 		}
+	}
+}
+
+// TestMeasureRefusals: the shape of a series is what every plausibility
+// verdict is computed from, so it must decline rather than produce a number
+// on data that cannot carry one.
+func TestMeasureRefusals(t *testing.T) {
+	day := func(i int) time.Time { return time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	cases := []struct {
+		name string
+		pts  []Point
+	}{
+		{"too short", []Point{{Date: day(0), Close: 100}, {Date: day(1), Close: 101}}},
+		{"no span at all", []Point{
+			{Date: day(0), Close: 100}, {Date: day(0), Close: 101}, {Date: day(0), Close: 102}}},
+		{"a non-positive first close", []Point{
+			{Date: day(0), Close: 0}, {Date: day(1), Close: 101}, {Date: day(2), Close: 102}}},
+		{"a non-positive last close", []Point{
+			{Date: day(0), Close: 100}, {Date: day(1), Close: 101}, {Date: day(2), Close: 0}}},
+		{"a non-positive close inside", []Point{
+			{Date: day(0), Close: 100}, {Date: day(1), Close: 0}, {Date: day(2), Close: 102}}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, ok := measure(tc.pts); ok {
+				t.Error("measure should have declined")
+			}
+			// And the verdict built on it stays silent rather than guessing.
+			if got := plausibilityIssues(datasets.Asset{AssetClass: "equity_developed"},
+				&Series{Symbol: "X", Points: tc.pts}, Band{VolHi: 0.42}); len(got) != 0 {
+				t.Errorf("issues = %v, want none", got)
+			}
+		})
+	}
+}
+
+// TestBandScaleGuards: a band widens linearly with leverage, except the
+// drawdown, which cannot reach a total loss, and a missing leverage reads as 1
+// rather than collapsing every bound to zero.
+func TestBandScaleGuards(t *testing.T) {
+	b := Band{VolLo: 0.05, VolHi: 0.20, CAGRLo: -0.02, CAGRHi: 0.12, Move: 0.10, Drawdown: 0.60}
+	for _, lev := range []float64{0, -1} {
+		if got := b.Scale(lev); got != b {
+			t.Errorf("Scale(%v) = %+v, want the band unchanged", lev, got)
+		}
+	}
+	got := b.Scale(3)
+	near := func(a, want float64) bool { return math.Abs(a-want) < 1e-12 }
+	if !near(got.VolHi, 0.60) || !near(got.Move, 0.30) || !near(got.CAGRLo, -0.06) {
+		t.Errorf("Scale(3) = %+v", got)
+	}
+	if got.Drawdown != 0.99 {
+		t.Errorf("Scale(3).Drawdown = %v, want the 0.99 cap", got.Drawdown)
+	}
+}
+
+// TestRecordStretch: the two properties that widen a class band, and the fact
+// that they compound.
+func TestRecordStretch(t *testing.T) {
+	cases := []struct {
+		name string
+		a    datasets.Asset
+		want float64
+	}{
+		{"a plain fund", datasets.Asset{}, 1},
+		{"a 3x fund", datasets.Asset{Leverage: 3}, 3},
+		{"a single name", datasets.Asset{Strategy: datasets.StrategySingleStock}, singleNameStretch},
+		{"both compound", datasets.Asset{Leverage: 2, Strategy: datasets.StrategySingleStock}, 2 * singleNameStretch},
+	}
+	for _, tc := range cases {
+		if got := recordStretch(tc.a); got != tc.want {
+			t.Errorf("%s: recordStretch = %v, want %v", tc.name, got, tc.want)
+		}
+	}
+}
+
+// TestVerifyAssetOffCatalog: everything the catalog cannot judge falls back to
+// the plain series checks, and never panics on a nil or a two-point series.
+func TestVerifyAssetOffCatalog(t *testing.T) {
+	now := time.Date(2020, 1, 10, 0, 0, 0, 0, time.UTC)
+	if got := VerifyAsset("VOO", nil, now); len(got) != 1 || got[0].Severity != "error" {
+		t.Errorf("a nil series = %v, want the single 'no quotes' error", got)
+	}
+	short := &Series{Symbol: "VOO", Points: []Point{
+		{Date: now.AddDate(0, 0, -2), Close: 100}, {Date: now.AddDate(0, 0, -1), Close: 101}}}
+	if got := VerifyAsset("VOO", short, now); len(got) != 0 {
+		t.Errorf("a clean two-point series = %v, want no issue", got)
+	}
+	// An identifier the catalog does not know has no class to be judged
+	// against, so only the blanket checks run: a 90 % session is beyond any
+	// unlevered asset and must still be caught.
+	unknown := &Series{Symbol: "NOSUCH", Points: []Point{
+		{Date: now.AddDate(0, 0, -3), Close: 100},
+		{Date: now.AddDate(0, 0, -2), Close: 190},
+		{Date: now.AddDate(0, 0, -1), Close: 191}}}
+	if got := countMoves(VerifyAsset("NOSUCHIDENTIFIER", unknown, now)); got != 1 {
+		t.Errorf("got %d move finding(s), want 1", got)
+	}
+}
+
+// TestIdentityDistributingRecordServedAccumulating is the mirror of the (Dist)
+// case: the record names the distributing class and the provider serves the
+// accumulating sibling, whose NAV is a total return and would flatter it.
+func TestIdentityDistributingRecordServedAccumulating(t *testing.T) {
+	day := func(i int) time.Time { return time.Date(2010, 1, 4, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &Series{Symbol: "X", Name: "iShares Core MSCI World UCITS ETF USD (Acc)", Points: []Point{
+		{Date: day(0), Close: 100}, {Date: day(1), Close: 101}, {Date: day(2), Close: 102}}}
+	if got := messages(identityIssues(datasets.Asset{Distribution: "distributing"}, s)); !strings.Contains(got, "reads accumulating") {
+		t.Fatalf("an (Acc) name under a distributing record must be flagged, got:\n%s", got)
 	}
 }

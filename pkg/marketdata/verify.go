@@ -45,6 +45,9 @@ func (i Issue) String() string {
 // Findings are heuristics on real, sometimes wild, market data; review
 // them rather than treating every warning as corruption.
 //
+// A nil or empty series is itself the finding: the single "no quotes at all"
+// error, so a caller can hand over whatever a fetch returned.
+//
 // VerifyAsset wraps Verify with the checks that need the catalog record, and
 // judges the same moves against the asset class's own limit instead of the
 // blanket one below.
@@ -76,7 +79,7 @@ func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 	warn := func(d time.Time, format string, args ...any) {
 		issues = append(issues, Issue{Severity: "warn", Date: d, Message: fmt.Sprintf(format, args...)})
 	}
-	if len(s.Points) == 0 {
+	if s == nil || len(s.Points) == 0 {
 		return []Issue{{Severity: "error", Message: "no quotes at all"}}
 	}
 	rate := isRateSymbol(s.Symbol) || isPolicyRate(s.Symbol)

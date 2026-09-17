@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 )
@@ -208,5 +209,75 @@ func TestFREDRequestsCarryAPlainUserAgent(t *testing.T) {
 	}
 	if seen != fredUserAgent {
 		t.Errorf("User-Agent = %q, want the plain %q", seen, fredUserAgent)
+	}
+}
+
+func TestRateName(t *testing.T) {
+	for _, symbol := range RateSymbols() {
+		if RateName(symbol) == "" {
+			t.Errorf("%s has no display name", symbol)
+		}
+	}
+	if got := RateName("^NOSUCHRATE"); got != "" {
+		t.Errorf("RateName of an unknown symbol = %q, want empty", got)
+	}
+}
+
+// TestParsePeriod pins the month-end convention: a monthly DBnomics period
+// dates at the LAST day of its month, so a monthly rate lines up with the
+// month-end anchors the rest of the toolkit uses instead of sliding a month
+// early.
+func TestParsePeriod(t *testing.T) {
+	cases := []struct {
+		period  string
+		monthly bool
+		want    string // "" = an error is expected
+	}{
+		{"2026-01-31", false, "2026-01-31"},
+		{"2026-01", true, "2026-01-31"},
+		{"2026-02", true, "2026-02-28"},
+		{"2024-02", true, "2024-02-29"}, // a leap year
+		{"2026-12", true, "2026-12-31"},
+		{"2026-01", false, ""},
+		{"2026-01-31", true, ""},
+		{"nonsense", true, ""},
+	}
+	for _, tc := range cases {
+		got, err := parsePeriod(tc.period, tc.monthly)
+		switch {
+		case tc.want == "":
+			if err == nil {
+				t.Errorf("parsePeriod(%q, %v) = %v, want an error", tc.period, tc.monthly, got)
+			}
+		case err != nil:
+			t.Errorf("parsePeriod(%q, %v): %v", tc.period, tc.monthly, err)
+		case got.Format("2006-01-02") != tc.want:
+			t.Errorf("parsePeriod(%q, %v) = %s, want %s",
+				tc.period, tc.monthly, got.Format("2006-01-02"), tc.want)
+		}
+	}
+}
+
+// TestJSONValueHandlesNA: a DBnomics observation is a number or the string
+// "NA"; a hole must read as absent, never as a zero rate.
+func TestJSONValueHandlesNA(t *testing.T) {
+	var v jsonValue
+	if err := v.UnmarshalJSON([]byte(`"NA"`)); err != nil || v.ok {
+		t.Errorf(`"NA" = %+v, %v; want an absent value`, v, err)
+	}
+	if err := v.UnmarshalJSON([]byte(`-0.5`)); err != nil || !v.ok || v.v != -0.5 {
+		t.Errorf("-0.5 = %+v, %v", v, err)
+	}
+	if err := v.UnmarshalJSON([]byte(`{}`)); err == nil {
+		t.Error("an object is not an observation")
+	}
+}
+
+func TestFetchRateFromUnknownProvider(t *testing.T) {
+	c, srv := newTestClient(t, "", http.NewServeMux())
+	defer srv.Close()
+	_, err := c.fetchRateFrom(context.Background(), rateSource{provider: "nowhere"}, false)
+	if err == nil || !strings.Contains(err.Error(), "unknown rate provider") {
+		t.Fatalf("error = %v, want one naming the provider", err)
 	}
 }

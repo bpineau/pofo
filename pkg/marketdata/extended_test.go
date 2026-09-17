@@ -166,3 +166,174 @@ func TestDefaultCacheDir(t *testing.T) {
 		t.Error("DefaultCacheDir must never be empty")
 	}
 }
+
+// TestFetchExtendedFallsBackToAProxy: with no bundled simdata and more than
+// six months missing, the known long-history proxy is spliced in, rescaled to
+// the first real quote.
+func TestFetchExtendedFallsBackToAProxy(t *testing.T) {
+	realDays := testDays(3) // 2020-01-06 …
+	proxyDays := []time.Time{d(2000, 1, 3), d(2010, 6, 1), realDays[0]}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/SPY", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("SPY", realDays, []float64{100, 101, 102}))
+	})
+	mux.HandleFunc("/v8/finance/chart/%5EGSPC", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("^GSPC", proxyDays, []float64{20, 40, 50}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	var logged strings.Builder
+	c.Logf = func(format string, args ...any) { fmt.Fprintf(&logged, format+"\n", args...) }
+
+	s, err := c.FetchExtended(context.Background(), "SPYSIM", FetchOptions{
+		From: d(1999, 1, 1), Simdata: fstest.MapFS{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.ProxySymbol != "^GSPC" || !s.SimulatedBefore.Equal(realDays[0]) {
+		t.Fatalf("proxy metadata: %+v", s)
+	}
+	// The proxy is rescaled to the first real quote: 50 → 100, so ×2.
+	if len(s.Points) != 5 || s.First().Close != 40 {
+		t.Fatalf("points = %+v, want the rescaled proxy in front", s.Points)
+	}
+	if !strings.Contains(logged.String(), "history extended via ^GSPC") {
+		t.Errorf("the splice was not reported: %q", logged.String())
+	}
+
+	// An unavailable proxy costs a warning and the short series, never the fetch.
+	c2, srv2 := newTestClient(t, t.TempDir(), func() *http.ServeMux {
+		m := http.NewServeMux()
+		m.HandleFunc("/v8/finance/chart/SPY", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, chartJSON("SPY", realDays, []float64{100, 101, 102}))
+		})
+		return m
+	}())
+	defer srv2.Close()
+	var warned strings.Builder
+	c2.Logf = func(format string, args ...any) { fmt.Fprintf(&warned, format+"\n", args...) }
+	s2, err := c2.FetchExtended(context.Background(), "SPYSIM", FetchOptions{
+		From: d(1999, 1, 1), Simdata: fstest.MapFS{},
+	})
+	if err != nil {
+		t.Fatalf("a missing proxy must not fail the fetch: %v", err)
+	}
+	if len(s2.Points) != 3 || !s2.SimulatedBefore.IsZero() {
+		t.Errorf("series = %+v, want the real quotes alone", s2.Points)
+	}
+	if !strings.Contains(warned.String(), "proxy ^GSPC for SPY unavailable") {
+		t.Errorf("the missing proxy was not reported: %q", warned.String())
+	}
+}
+
+// TestFetchExtendedWarnsOnUnreadableSimdata: a corrupt simdata file must be
+// reported and stepped over, never silently spliced or fatal.
+func TestFetchExtendedWarnsOnUnreadableSimdata(t *testing.T) {
+	realDays := testDays(3)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("VOO", realDays, []float64{100, 101, 102}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	var warned strings.Builder
+	c.Logf = func(format string, args ...any) { fmt.Fprintf(&warned, format+"\n", args...) }
+
+	broken := fstest.MapFS{"VOO.csv": &fstest.MapFile{
+		Data: []byte("# pofo simdata v1\ndate,close\n2019-01-02,not-a-number\n")}}
+	s, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{
+		From: d(2018, 1, 1), Simdata: broken,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Points) != 3 || !s.SimulatedBefore.IsZero() {
+		t.Errorf("series = %+v, want the real quotes alone", s.Points)
+	}
+	if !strings.Contains(warned.String(), "simdata VOO unreadable") {
+		t.Errorf("the corrupt file was not reported: %q", warned.String())
+	}
+}
+
+// TestFetchExtendedUsesTheEmbeddedSimdataByDefault: a nil Simdata reads the
+// series embedded in the binary, which is what every CLI call does.
+func TestFetchExtendedUsesTheEmbeddedSimdataByDefault(t *testing.T) {
+	realDays := testDays(3)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/TLT", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("TLT", realDays, []float64{100, 101, 102}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.FetchExtended(context.Background(), "TLTSIM", FetchOptions{From: d(1990, 1, 1)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.ProxySymbol != "simdata" || s.SimulatedBefore.IsZero() {
+		t.Fatalf("the bundled simdata was not spliced: %+v", s)
+	}
+	if !s.First().Date.Before(d(2000, 1, 1)) {
+		t.Errorf("series starts %s, want the bundled deep history", s.First().Date)
+	}
+}
+
+// TestFetchExtendedReportsAConversionFailure: an FX cross nothing can serve
+// must fail the fetch, on both the plain and the SIM path. A silently
+// unconverted series would be read as if it were in the target currency.
+func TestFetchExtendedReportsAConversionFailure(t *testing.T) {
+	realDays := testDays(3)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("VOO", realDays, []float64{100, 101, 102}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	for _, id := range []string{"VOO", "VOOSIM"} {
+		_, err := c.FetchExtended(context.Background(), id, FetchOptions{
+			From: d(2020, 1, 1), Currency: "SEK", Simdata: fstest.MapFS{},
+		})
+		if err == nil || !strings.Contains(err.Error(), "FX rate USD") {
+			t.Errorf("%s: error = %v, want a conversion failure", id, err)
+		}
+	}
+}
+
+// TestConvertToWarnsWhenFXIsHeldFlat: the report leans on this warning to say
+// that early points carry the oldest known cross rather than a real one.
+func TestConvertToWarnsWhenFXIsHeldFlat(t *testing.T) {
+	days := testDays(4)
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("VOO", days, []float64{100, 101, 102, 103}))
+	})
+	mux.HandleFunc("/v8/finance/chart/USDSEK=X", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("USDSEK=X", days[2:], []float64{9, 9.1}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	var warned strings.Builder
+	c.Logf = func(format string, args ...any) { fmt.Fprintf(&warned, format+"\n", args...) }
+
+	s, err := c.FetchExtended(context.Background(), "VOO", FetchOptions{From: days[0], Currency: "SEK"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Currency != "SEK" || s.First().Close != 100*9 {
+		t.Fatalf("conversion = %+v (%s)", s.Points, s.Currency)
+	}
+	if !strings.Contains(warned.String(), "held constant earlier") {
+		t.Errorf("the flat-held rate was not reported: %q", warned.String())
+	}
+}
+
+// TestDefaultCacheDirFallback: with no user cache directory to be found, the
+// library must still name a usable one rather than an empty path.
+func TestDefaultCacheDirFallback(t *testing.T) {
+	t.Setenv("HOME", "")
+	t.Setenv("XDG_CACHE_HOME", "")
+	if got := DefaultCacheDir(); got != "data" {
+		t.Errorf("DefaultCacheDir() = %q, want the %q fallback", got, "data")
+	}
+}

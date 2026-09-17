@@ -3,6 +3,7 @@ package marketdata
 import (
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -216,6 +217,77 @@ func TestFreshestSession(t *testing.T) {
 			p, u, s := freshestSession(100, 1000, tc.prePrice, tc.preTime, tc.postPrice, tc.postTime)
 			if p != tc.wantPrice || float64(u) != tc.wantTime || s != tc.wantSession {
 				t.Fatalf("got %v/%d/%q, want %v/%v/%q", p, u, s, tc.wantPrice, tc.wantTime, tc.wantSession)
+			}
+		})
+	}
+}
+
+// TestLatestBatchLive: the no-frills sibling returns exactly the symbols
+// Yahoo served, with no resolution and no per-id fallback, in both session
+// modes.
+func TestLatestBatchLive(t *testing.T) {
+	c, srv := newTestClient(t, t.TempDir(), quoteEndpoint(t, ddogPost, vtPost))
+	defer srv.Close()
+
+	got := c.LatestBatchLive(t.Context(), []string{"DDOG", "NOSUCHSYMBOL"})
+	if q := got["DDOG"]; q.Price != 225.27 || q.Session != "regular" || !q.Live {
+		t.Fatalf("DDOG = %+v, want the regular-session print", q)
+	}
+	if _, ok := got["NOSUCHSYMBOL"]; ok {
+		t.Error("a symbol Yahoo does not serve must simply be absent")
+	}
+	ext := c.LatestBatchLiveExtended(t.Context(), []string{"DDOG"})
+	if q := ext["DDOG"]; q.Price != 225.7 || q.Session != "post" {
+		t.Fatalf("DDOG extended = %+v, want the after-hours print", q)
+	}
+	// No symbols: no call, no answer, no error.
+	if got := c.LatestBatchLive(t.Context(), nil); len(got) != 0 {
+		t.Errorf("an empty request returned %v", got)
+	}
+}
+
+// TestQuoteBatchDegradesToALogLine: the batch is an optimization, so every
+// failure must cost a log line and nothing else - the caller's per-id
+// fallback then picks the missing symbols up.
+func TestQuoteBatchDegradesToALogLine(t *testing.T) {
+	cases := []struct {
+		name    string
+		handler http.HandlerFunc
+		want    string
+	}{
+		{
+			name: "no cookie to authenticate with",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, "nope", http.StatusForbidden)
+			},
+			want: "yahoo quote batch",
+		},
+		{
+			name: "an unreadable answer",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				http.SetCookie(w, &http.Cookie{Name: "A3", Value: "ck"})
+				if strings.Contains(r.URL.Path, "/v1/test/getcrumb") {
+					fmt.Fprint(w, "crumb")
+					return
+				}
+				fmt.Fprint(w, `{"quoteResponse":{"result":[`)
+			},
+			want: "unreadable response",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			mux := http.NewServeMux()
+			mux.HandleFunc("/", tc.handler)
+			c, srv := newTestClient(t, t.TempDir(), mux)
+			defer srv.Close()
+			var logged strings.Builder
+			c.Logf = func(format string, args ...any) { fmt.Fprintf(&logged, format, args...) }
+			if got := c.LatestBatchLive(t.Context(), []string{"DDOG"}); len(got) != 0 {
+				t.Fatalf("quotes = %v, want none", got)
+			}
+			if !strings.Contains(logged.String(), tc.want) {
+				t.Errorf("log = %q, want a line about %q", logged.String(), tc.want)
 			}
 		})
 	}
