@@ -9,8 +9,11 @@
 //
 //   - pkg/datasets: the bundled, versioned data, embedded into the binary:
 //     the curated asset catalog (assetmeta/assets.json, typed as
-//     datasets.Asset) and the permanent simulated histories (simdata/).
-//     This is the single source of truth other packages read from.
+//     datasets.Asset), the permanent simulated histories (simdata/), the long
+//     reference series they are built on (refdata/) and the three research
+//     panels behind the FIRE and macro-regime work (broadsample/, cape/,
+//     macropanel/). This is the single source of truth other packages read
+//     from.
 //   - pkg/marketdata: fetches, caches and post-processes daily, intraday and
 //     latest (real-time) prices from public sources, addressed by ticker, ISIN
 //     or alias; resolves identifiers against the embedded catalog and aligns
@@ -29,6 +32,9 @@
 //     composition splits (asset classes, geography, currency, sectors,
 //     duration), redundancy and out-of-sample-validated gap-filling
 //     suggestions from the catalog.
+//   - pkg/permanent: the tactical Permanent Portfolio 2.0 (a
+//     growth/inflation and monetary regime read off the bundled macro panel,
+//     a damped four-sleeve allocation, a monthly-real backtest).
 //   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
 //   - pkg/scenario: synthetic real-return path generation (parametric
@@ -49,6 +55,13 @@
 //     simulate, common window, nominal and real statistics) and assembles the
 //     HTML report Page. Presentation-neutral, it sits above report, suggest,
 //     metrics, portfolio and marketdata and below cmd/pofo.
+//   - pkg/webui: the visual identity every HTML surface shares (design
+//     tokens, embedded typefaces, favicon, the optional analytics beacon).
+//   - pkg/firebook: the embedded decumulation handbook in its two editions,
+//     served, exported and syndicated over four content-agnostic packages:
+//     pkg/bookmd (the book-Markdown dialect), pkg/epub (EPUB 3 writer),
+//     pkg/opds (OPDS 1.2 catalog) and pkg/seo (sitemap, robots.txt,
+//     llms.txt, Atom, IndexNow).
 //
 // # Typical pipeline
 //

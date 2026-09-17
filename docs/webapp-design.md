@@ -28,7 +28,7 @@ running a command per comparison.
 | `/visualizer` | `hub` (`hub.go`) | the portfolio visualizer's home ("Put portfolios side by side."): the live composer plus the bundled example portfolios as a pure-GET checkbox form that submits ticked names to `/view`; the trailing-slash form 301-redirects to the canonical path |
 | `/view` | `view` (`serve.go`, grammar in `view.go`) | the HTML comparison report the CLI writes, addressed by a query string (`ex=` / `p=` + global overrides) |
 | `/examples/<name>.txt` | `exampleFile` | one embedded portfolio file, raw text (the hub's "Source" link) |
-| `/firesimulator/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire`; the old `/firesimulator/` path 301-redirects here (sub-path and query preserved) |
+| `/firesimulator/` | `fire` (`serve.go`) -> `pkg/decumul/web.Handler`, prefix-stripped | the FIRE simulator on the startup panel, identical to `-fire`; the old `/fire/` path 301-redirects here (sub-path and query preserved) |
 | `/firesimulator/e/<name>/` | `fire` -> a per-example `web.Handler` | the simulator pre-loaded with one example's historical panel (the hub's "Simulate" link), built and cached lazily on first use |
 | `/firesimulator/p/<spec>/` | `fire` -> a per-spec `web.Handler` | the simulator bound to an ad-hoc composed portfolio, `<spec>` being exactly the `p=` grammar in one path segment; catalog-gated, bounded lazily-built cache |
 | `/firebook/fr/` | `pkg/firebook.Handler`, prefix-stripped | the French FIRE book ("Le FIRE tranquille"), with a chrome nav bar back to the other surfaces and a home-linked kicker (`firebook.WithHome`); the old `/book/fr/` path 301-redirects here |

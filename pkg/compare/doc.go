@@ -11,10 +11,12 @@
 // The package returns models, never I/O: it has no knowledge of the web server,
 // the terminal, or CLI flags. All caller intent arrives through Options (base
 // currency, benchmark, window, rebalancing, SIM/fee toggles, embedded simdata,
-// suggestion framework) and Decoration (skin CSS, site chrome). REAL versus
-// nominal accounting is handled inside (deflation by the base currency's CPI),
-// so callers get both nominal and inflation-adjusted statistics without wiring
-// the deflator themselves.
+// suggestion framework, and ExactForeign, which resolves identifiers outside
+// the bundled catalog exactly so a typo composed by an untrusted hand fails
+// instead of quoting an unrelated fund) and Decoration (skin CSS, site
+// chrome). REAL versus nominal accounting is handled inside (deflation by the
+// base currency's CPI), so callers get both nominal and inflation-adjusted
+// statistics without wiring the deflator themselves.
 //
 // The pipeline shape is:
 //
