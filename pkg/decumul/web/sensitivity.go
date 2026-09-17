@@ -45,7 +45,10 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	}{
 		{"Spend -5 k€/yr", func(p decumul.Plan) decumul.Plan { p.NeedAnnual -= 5000; return p }},
 		{"Capital +100 k€", func(p decumul.Plan) decumul.Plan { p.Capital += 100000; return p }},
-		{"Horizon -5 y", func(p decumul.Plan) decumul.Plan { p.Years -= 5; return p }},
+		// Floored at zero: a horizon shorter than the nudge would otherwise
+		// hand the kernel a negative year count, which is not a shorter plan
+		// but an invalid one (it panics allocating the path).
+		{"Horizon -5 y", func(p decumul.Plan) decumul.Plan { p.Years = max(0, p.Years-5); return p }},
 		{"Buffer +2 y", func(p decumul.Plan) decumul.Plan { p.Buffer.Years += 2; return p }},
 		{"Cut 20% in downturns", func(p decumul.Plan) decumul.Plan { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.20}; return p }},
 		{"Pension +500 €/m", func(p decumul.Plan) decumul.Plan {
