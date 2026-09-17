@@ -803,7 +803,7 @@ simulation wherever it exists):
 | SHY (1-3y Treasury) | VFISX short Treasury (1991→) | 0.81 / 0.89 |
 | IEF (7-10y Treasury) | VFITX intermediate Treasury (1991→) | 0.95 / 0.96 |
 | TLT (20+y Treasury) | VUSTX long Treasury (1986→) | 0.98 / 0.99 |
-| ZROZ (25+y STRIPS) | 1.65×(VUSTX−cash) (1986→) | 0.97 / 0.97 |
+| ZROZ (25+y STRIPS) | a constant 27-year zero-coupon Treasury repriced off the bundled long Treasury yield, net of the fund's own fee (1953-04→) | 0.96 / 0.99 (monthly 0.99; a geared coupon fund cannot stand in for a strip, see `docs/long-treasury-zero-coupon-design.md`) |
 | DBMF (managed futures) | the net all-styles composite it replicates, then real NAVs back to the deepest donor (1996-03→) | 0.68 / 0.75 |
 | KMLM (managed futures) | real managed-futures NAVs, 14% target vol (1996-03→) | 0.63 / 0.65 |
 | CTA (managed futures) | the net pure-trend composite, then the same deepest donor, 16% target vol (1996-03→) | 0.54 / 0.54 |

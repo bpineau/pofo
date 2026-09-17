@@ -23,6 +23,7 @@ make cape      # regenerate the Shiller CAPE series (network) then rebuild
 make macropanel # regenerate the OECD monthly macro panel (network) then rebuild
 make euro-refdata # regenerate the euro-area reference series (network) then rebuild
 make gbond-refdata # regenerate the German/Japanese/British govt bond reference series (network); run make simdata after
+make tyield-refdata # regenerate TREASURY-LONG-YIELD, the long Treasury yield the zero-coupon STRIPS reconstruction is priced off (network); run make simdata after
 make dbi-refdata # regenerate the DBi family's nearest donor (the all-styles composite half-projected on the fund's ten futures); run after make sgtrend-refdata, then make simdata
 make sp500-refdata # regenerate the month-end SP500-USD reference (network); run make simdata after
 make usmkt-refdata # regenerate USMKT-USD, the CRSP total-market factor behind the VTI backcast (network); run after make sp500-refdata, then make simdata
@@ -112,7 +113,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/webui` | the identity every HTML surface shares: design tokens (`CSS`), embedded OFL typefaces (`FontsCSS`), the favicon, and `Beacon`, the handler wrapper that splices the optional Cloudflare Web Analytics tag into every `text/html` response; see `docs/webui-instrument-redesign.md` |
 | `pkg/compare` | `Sweep` (per-holding weight grid, the evidence behind a file's sane ranges, behind `pofo -sweep`); compute the comparison model (fetch, build, simulate, common window, nominal/real stats) and assemble the HTML report `Page`; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
-| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot, and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
+| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `permanent.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `foreign.go` (identifiers outside the bundled catalog: the ISIN/ticker shape gate plus the per-client and per-process hourly fetch budgets behind `-serve-foreign-per-hour`, 0 = catalog only), `prefs.go` (the settings cookie), `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) and `logdedup.go` (log hygiene for the long-lived servers: each informational fetch line once per process, every `warning:` always; `/healthz` and the access log live in `serve.go`) |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
@@ -266,6 +267,21 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   plates (their tests recompute from `pkg/datasets` and say so), because the
   weekly donor is projected onto that texture; those plates read `CTA` and
   `SP500`, so a DBi-only change leaves them alone.
+- Long / zero-coupon Treasury work (`ZROZ`, STRIPS, `EDV`-shaped funds): read
+  `docs/long-treasury-zero-coupon-design.md` first. A STRIPS fund is NOT a
+  geared coupon fund: the gearing that matches a 27-year strip to a long coupon
+  fund is 1.66 at 3 % yields and 3.31 at 12 %, so a constant fitted on the
+  low-yield era halves the risk of the high-yield one (the incumbent recipe read
+  14.7 %/yr of volatility and a 46 % worst drawdown over 1953-2009 where the
+  strip's own arithmetic gives 25.0 % and 80 %). A zero is priced off the yield
+  itself, by `TreasuryZeroTR` (`pkg/simgen/treasury.go`, the semiannual sibling
+  of `TreasuryTR`, sharing its loop) over the bundled `TREASURY-LONG-YIELD`
+  (`cmd/gen-tyield-refdata`, `make tyield-refdata`). Its maturity is the
+  maturity of the PAPER, a-priori, never tuned to a fund's realized volatility,
+  and the 0.2 to 0.4 pt/yr by which it runs cold is the par-yield and no-roll-down
+  approximation, documented and deliberately NOT corrected. The coupon-to-coupon
+  gearing of the 20+ year ETFs (`longTreasuryGearing`) drifts only 7 % across
+  the same rate range and stands.
 - Rolled commodity / crude oil work: read `docs/wti-rolled-reference-design.md`
   first. `WTI-USD` and `WTI-DAILY` are SPOT and are not investable: the roll
   yield was +9.5 points a year over 1986-2000 and -12.8 over 2005-2016, so a

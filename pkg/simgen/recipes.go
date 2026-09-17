@@ -2666,24 +2666,28 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	return s, nil
 }
 
-// zrozRecipe approximates 25+ year zero-coupon STRIPS by leveraging the long
-// Treasury fund VUSTX to 1.65× over cash (its ~25-year duration matches
-// ZROZ's) ON TOP of the fully invested collateral earning cash: a STRIPS
-// fund owns its bonds outright, so the backcast must credit the cash rate
-// the excess formulation strips out. Without the collateral leg the sim
-// lagged the real fund by the T-bill average (~1.2%/yr over 2009-2026) and
-// collapsed in the high-rate 1960s-1980s (-6%/yr in the 60s, +1.9%/yr
-// full-period vs ~+6% for long Treasuries themselves). Real ZROZ quotes are
-// grafted on top.
+// zrozRecipe reconstructs the 25+ year zero-coupon Treasury fund as a
+// zero-coupon position: a constant 27-year STRIP repriced every business day
+// off the bundled long Treasury yield (TREASURY-LONG-YIELD, 1953-04→), net of
+// the fund's own 0.15 %/yr. Real ZROZ quotes are grafted from 2009-11.
+//
+// Until 2026-09 it was cash + 1.65 × (VUSTX − cash), a geared COUPON fund. That
+// multiple is the ratio of a 27-year zero's duration to the donor's, and it
+// holds only at the yields it was read off: 1.66 at 3 %, 3.31 at 12 %. Fitted
+// on the live window and applied to the whole file it therefore under-geared
+// the era that matters most for a 26-duration instrument, reporting 17.5 %/yr
+// of monthly volatility over 2002-2009 where a strip priced off the yield
+// reports 25.5 %, and a 47 % worst drawdown over the deep window where the
+// zero's own arithmetic gives 85 %. The live window could not see it: over
+// 2009-2026 the two forms agree closely, which is exactly what a multiple
+// fitted there does. pkg/simgen/strips.go carries the duration table and
+// docs/long-treasury-zero-coupon-design.md the validation.
 func zrozRecipe() Recipe {
 	return Recipe{
-		ID:     "ZROZ",
-		Name:   "PIMCO 25+Y zero-coupon: 1.65× long Treasury",
-		Method: "cash + 1.65×(VUSTX − cash) (leveraged long Treasury ≈ 25+ STRIPS duration, 1986→), real ZROZ grafted from 2009",
-		Build: composite("ZROZ (cash + 1.65x long Treasury excess)", []Leg{
-			{ID: "VUSTX", Weight: 1.65, Excess: true},
-			{ID: "^IRX", Weight: 1},
-		}, "^IRX", 0),
+		ID:              "ZROZ",
+		Name:            "PIMCO 25+Y zero-coupon: 27y Treasury STRIP",
+		Method:          "a constant 27-year zero-coupon Treasury priced off the bundled long Treasury yield (refdata TREASURY-LONG-YIELD: Fed H.15 30-year constant maturity daily from 1977, the 20-year point mapped onto it back to 1953-04), net of 0.15 %/yr, real ZROZ grafted from 2009",
+		Build:           zrozBuild,
 		ValidateAgainst: "ZROZ",
 		SpliceReal:      "ZROZ",
 	}
