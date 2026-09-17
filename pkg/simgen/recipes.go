@@ -119,21 +119,19 @@ func eimiRecipe() Recipe {
 }
 
 // vwraRecipe backcasts the Vanguard FTSE All-World UCITS ETF (IE00BK5BQT80,
-// USD, real from 2019) with the same 60/30/10 US / developed-ex-US / emerging
-// blend as VT: FTSE All-World (large+mid, developed+emerging) is Vanguard's
-// Total World universe minus the small-cap tail, so the blend is the faithful
-// long proxy. The youngest leg (VEIEX/EM-USD) sets the ~1988 start; real VWRA
+// USD, real from 2019) on the same world-equity blend as VT: FTSE All-World
+// (large+mid, developed+emerging) is Vanguard's Total World universe minus the
+// small-cap tail, so the blend is the faithful long proxy. Its weights DRIFT as
+// a cap-weighted index's do, from the published anchor split (worldLegs,
+// worldAnchor, and see CapWeighted for why a constant blend is a look-ahead
+// bias). The youngest leg (VEIEX/EM-USD) sets the ~1988 start; real VWRA
 // grafted from inception, same currency (USD), no FX leg.
 func vwraRecipe() Recipe {
 	return Recipe{
-		ID:     "IE00BK5BQT80",
-		Name:   "Vanguard FTSE All-World: world equity (US/dev-ex-US/EM blend)",
-		Method: "0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM, ~1988), real VWRA grafted from 2019",
-		Build: composite("VWRA (FTSE All-World replication)", []Leg{
-			{ID: "VFINX", Weight: 0.60},
-			{ID: "VTMGX", Weight: 0.30},
-			{ID: "VEIEX", Weight: 0.10},
-		}, "", 0),
+		ID:              "IE00BK5BQT80",
+		Name:            "Vanguard FTSE All-World: world equity (cap-weighted US/dev-ex-US/EM)",
+		Method:          worldMethod + " (~1988→), real VWRA grafted from 2019",
+		Build:           worldEquityFloat("VWRA (FTSE All-World replication)", 0),
 		ValidateAgainst: "IE00BK5BQT80",
 		SpliceReal:      "IE00BK5BQT80",
 	}
@@ -977,15 +975,10 @@ func tip1eBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 
 func rssbRecipe() Recipe {
 	return Recipe{
-		ID:     "RSSB",
-		Name:   "Return Stacked Global Stocks & Bonds",
-		Method: "100% world equity + 100% (VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) Treasury stack (1999→), real RSSB grafted from 2023",
-		Build: composite("RSSB (100/100 stocks+bonds replication)", []Leg{
-			{ID: "VFINX", Weight: 0.60},
-			{ID: "VTMGX", Weight: 0.30},
-			{ID: "VEIEX", Weight: 0.10},
-			{ID: "VFITX", Weight: 1.00, Excess: true},
-		}, usdOvernight, 0),
+		ID:              "RSSB",
+		Name:            "Return Stacked Global Stocks & Bonds",
+		Method:          "100% world equity (" + worldMethod + ") + 100% (VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) Treasury stack (~1988→), real RSSB grafted from 2023",
+		Build:           rssbBuild,
 		ValidateAgainst: "RSSB",
 		SpliceReal:      "RSSB",
 	}
@@ -1060,14 +1053,10 @@ func rsbtRecipe() Recipe {
 
 func vtRecipe() Recipe {
 	return Recipe{
-		ID:     "VT",
-		Name:   "Vanguard Total World Stock",
-		Method: "0.60×VFINX + 0.30×VTMGX + 0.10×VEIEX (US/developed/EM world, 1999→), real VT grafted from 2008",
-		Build: composite("VT (total world replication)", []Leg{
-			{ID: "VFINX", Weight: 0.60},
-			{ID: "VTMGX", Weight: 0.30},
-			{ID: "VEIEX", Weight: 0.10},
-		}, "", 0),
+		ID:              "VT",
+		Name:            "Vanguard Total World Stock",
+		Method:          worldMethod + " (1988→), real VT grafted from 2008",
+		Build:           worldEquityFloat("VT (total world replication)", 0),
 		ValidateAgainst: "VT",
 		SpliceReal:      "VT",
 	}

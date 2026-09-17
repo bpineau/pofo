@@ -9,6 +9,12 @@
 //     series such as ^IRX are converted to accrual);
 //   - Composite builds a base-100 index from constant weights, including
 //     "excess" legs (futures) and annual fees;
+//   - CapWeighted builds one the way a CAP-WEIGHTED index does instead: the
+//     legs' published split on a dated anchor, then no rebalancing at all, so
+//     the weights drift with the legs' own returns backward and forward
+//     (CapWeights reads them out). Carrying today's country split back through
+//     history at constant weights is a look-ahead bias worth pts/yr, which is
+//     what the world-equity reconstructions used to do;
 //   - TSMOM is a configurable time-series momentum engine (markets,
 //     lookback, vol target, leverage) for replicating trend strategies: the
 //     signal is refreshed every Rebalance days, risk is rescaled every day
