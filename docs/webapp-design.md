@@ -235,6 +235,37 @@ a blanket refusal (`cmd/pofo/foreign.go`):
   identifier rather than a name, and a wrong check digit never gets that far.
   The CLI keeps the fuzzy convenience: its user reads the resolution line.
 
+A typo that survives all three deserves its own answer. `ZQXWVT` is a
+perfectly well-formed ticker that simply does not exist, so the syntactic gate
+lets it through and only the fetch learns the truth. Since 2026-09 that
+failure is graded instead of being flattened into one 500 (`renderStatus` in
+`serve.go`, over `marketdata.ErrUnknownIdentifier` and
+`*marketdata.UnknownIdentifierError`):
+
+- every source that answered reported it holds nothing under that name:
+  `/view` answers **404**, "no source quotes ZQXWVT". No retry would help, and
+  the visitor is told which identifier to fix.
+- any source failed to answer at all (a network error, a rate limit, an HTTP
+  5xx, an unreadable payload): the identifier is not to blame, so the request
+  keeps the opaque **500** and the per-source detail goes to the log only.
+
+The classification is built the safe way round in `pkg/marketdata`
+(`unknown.go`): a per-source failure counts as evidence about the identifier
+only when explicitly marked as an absence (`markAbsent`, attached at the
+single HTTP choke point for a 404 or 410 and at each source's own "no data"
+answer), and a combined failure is an absence only when every part of it is
+one (`markAbsentIfAll`). Anything unclassified therefore reads as an outage,
+so a new source or a new error path can only ever cost a friendlier status,
+never blame a visitor for something that was not their fault.
+
+Two consequences of a 404 worth knowing. The lookup **is** charged to the
+budget: the charge happens when the spec is parsed, before the fetch, and an
+upstream request was really spent, so it is not refunded (a client that keeps
+composing typos runs its hourly allowance down, which is the point). And it
+writes **nothing** to the quote cache: only a successful fetch stores a series
+or adopts a resolution, so a nonexistent identifier leaves no entry behind for
+the next visitor.
+
 The client mirrors the shape rule (`plausibleId` in `composer.js`, ISIN
 checksum included) so a foreign row reads "outside the catalog, fetched live"
 instead of red, and the panel states the allowance. As everywhere else in the

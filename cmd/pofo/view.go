@@ -12,7 +12,10 @@
 // foreign-identifier budget (-serve-foreign-per-hour, off by default), a
 // well-formed ISIN or exchange ticker outside the catalog, fetched from the
 // usual sources within an hourly per-client and per-process allowance. The
-// gate and the budgets live in foreign.go.
+// gate and the budgets live in foreign.go. A well-formed identifier no source
+// quotes gets its own answer rather than a generic failure: /view then
+// reports 404 and names it (renderStatus in serve.go), while an upstream
+// outage on a real identifier stays a 500.
 package main
 
 import (

@@ -33,5 +33,5 @@ func (c *Client) boursoramaMorningstarID(ctx context.Context, isin string) (id, 
 	if m := morningstarIDRe.FindStringSubmatch(page); m != nil {
 		return m[1], "", nil
 	}
-	return "", "", fmt.Errorf("no Morningstar identifier for %s", isin)
+	return "", "", markAbsent(fmt.Errorf("no Morningstar identifier for %s", isin))
 }

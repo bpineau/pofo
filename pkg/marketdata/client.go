@@ -254,13 +254,13 @@ func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time, spe
 	if s, ok := c.cachedResolutionHistory(ctx, isin, from, spec); ok {
 		return s, nil
 	}
-	s, res, failures, offCurrency := c.resolveBest(ctx, isin, from, "", spec)
+	s, res, failures, verdict := c.resolveBest(ctx, isin, from, "", spec)
 	if s == nil {
-		if offCurrency {
+		if verdict.offCurrency {
 			return nil, fmt.Errorf("ISIN %s: %w (%s)",
 				isin, ErrWrongCurrency, strings.Join(failures, "; "))
 		}
-		return nil, fmt.Errorf("ISIN %s: no usable source (%s)", isin, strings.Join(failures, "; "))
+		return nil, noUsableSource("ISIN", isin, failures, verdict.absentOnly)
 	}
 	c.adoptResolution(isin, res)
 	return s, nil
@@ -285,20 +285,26 @@ func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time,
 	if directErr == nil && goodFor(direct, from) {
 		return direct, nil
 	}
-	resolved, res, failures, resolveOffCcy := c.resolveBest(ctx, ticker, from, ticker, spec)
-	offCurrency = offCurrency || resolveOffCcy
+	resolved, res, failures, verdict := c.resolveBest(ctx, ticker, from, ticker, spec)
+	verdict.offCurrency = verdict.offCurrency || offCurrency
 	if directErr != nil {
 		failures = append([]string{directErr.Error()}, failures...)
+		if !offCurrency {
+			// When offCurrency is set, directErr is the rewritten one above:
+			// a perfectly good direct line refused for its currency, which
+			// says nothing about the identifier existing.
+			verdict.note(directErr)
+		}
 	}
 	if !deeper(direct, resolved, from) {
 		if direct != nil {
 			return direct, nil
 		}
-		if offCurrency {
+		if verdict.offCurrency {
 			return nil, fmt.Errorf("ticker %s: %w (%s)",
 				ticker, ErrWrongCurrency, strings.Join(failures, "; "))
 		}
-		return nil, fmt.Errorf("ticker %s: no usable source (%s)", ticker, strings.Join(failures, "; "))
+		return nil, noUsableSource("ticker", ticker, failures, verdict.absentOnly)
 	}
 	c.adoptResolution(ticker, res)
 	return resolved, nil
@@ -386,6 +392,22 @@ func (c *Client) adoptResolution(id string, res resolution) {
 	c.Logf("%s resolved via %s: %s", id, via, res.Name)
 }
 
+// searchVerdict is why a resolution search found nothing usable, in the two
+// dimensions a caller must act on: offCurrency means a candidate existed but
+// quoted the wrong currency (ErrWrongCurrency, not a miss), absentOnly that
+// every source that spoke reported it holds nothing (an unknown identifier,
+// not an outage). See errAbsent for why the second is built the safe way
+// round.
+type searchVerdict struct {
+	offCurrency bool
+	absentOnly  bool
+}
+
+// note records what one source failure implies: a single source that did not
+// answer is enough to make the whole search uninformative about the
+// identifier.
+func (v *searchVerdict) note(err error) { v.absentOnly = v.absentOnly && absent(err) }
+
 // resolveBest tries every known source for an identifier (ISIN or unknown
 // ticker) and returns the series with the deepest usable history: each Yahoo
 // search candidate (same-ticker listings and fund entries first), then the
@@ -399,10 +421,9 @@ func (c *Client) adoptResolution(id string, res resolution) {
 // goes further and keeps only listings of that same ticker, dropping the
 // name-matched candidates and the Morningstar bridge altogether.
 // resolveBest returns the winning series and resolution, the per-source
-// failure summaries, and whether any candidate was rejected solely for
-// trading in another currency than spec demands (so callers can surface
-// ErrWrongCurrency rather than a generic miss).
-func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string, spec fetchSpec) (*Series, resolution, []string, bool) {
+// failure summaries, and the verdict a caller needs to phrase a miss (see
+// searchVerdict).
+func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, preferBase string, spec fetchSpec) (*Series, resolution, []string, searchVerdict) {
 	// Candidates compete in tiered slots so that the right instrument beats
 	// the deep one: a young same-ticker ETF must win against a namesake
 	// stock (SPEA the PEA ETF vs Saipem SpA) and against a fuzzy-matched
@@ -416,10 +437,10 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		slotCount
 	)
 	var (
-		failures    []string
-		offCurrency bool
-		series      [2 * slotCount]*Series // second half: off-preferred-currency lines
-		resols      [2 * slotCount]resolution
+		failures []string
+		verdict  = searchVerdict{absentOnly: true}
+		series   [2 * slotCount]*Series // second half: off-preferred-currency lines
+		resols   [2 * slotCount]resolution
 	)
 	consider := func(s *Series, res resolution, fund, sameBase bool) {
 		// Clean before judging: FT, Morningstar and Stooq candidates bypass
@@ -489,6 +510,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	quotes, err := c.search(ctx, query)
 	if err != nil {
 		failures = append(failures, fmt.Sprintf("yahoo: %v", err))
+		verdict.note(err)
 	}
 	tried := map[string]bool{}
 	for _, q := range rankQuotes(quotes, preferBase) {
@@ -505,12 +527,13 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		s, herr := c.historyView(ctx, q.Symbol, from, spec.raw)
 		if herr != nil {
 			failures = append(failures, fmt.Sprintf("yahoo %s: %v", q.Symbol, herr))
+			verdict.note(herr)
 			continue
 		}
 		if !spec.currencyOK(s.Currency) {
 			failures = append(failures, fmt.Sprintf("%s: quotes in %s, want %s",
 				q.Symbol, s.Currency, spec.wantCurrency))
-			offCurrency = true
+			verdict.offCurrency = true
 			continue
 		}
 		name := q.Name
@@ -544,14 +567,16 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 					} else {
 						failures = append(failures, fmt.Sprintf("ft %s: quotes in %s, want %s",
 							res.Symbol, s.Currency, spec.wantCurrency))
-						offCurrency = true
+						verdict.offCurrency = true
 					}
 				} else {
 					failures = append(failures, fmt.Sprintf("ft: %v", herr))
+					verdict.note(herr)
 				}
 			}
 		} else {
 			failures = append(failures, fmt.Sprintf("ft: %v", ferr))
+			verdict.note(ferr)
 		}
 	}
 	// Morningstar (and the Boursorama bridge behind it) only ever answers a
@@ -559,8 +584,9 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 	// a listing of the queried ticker: under exact-only resolution there is
 	// nothing it could legitimately contribute to a ticker query.
 	if s, _ := preferred(); !goodFor(s, from) && !(spec.exactOnly && preferBase != "") {
-		res, msFailures := c.morningstarResolution(ctx, query, preferBase)
+		res, msFailures, msAbsent := c.morningstarResolution(ctx, query, preferBase)
 		failures = append(failures, msFailures...)
+		verdict.absentOnly = verdict.absentOnly && msAbsent
 		if res.Symbol != "" {
 			if s, herr := c.historyMS(ctx, query, res, from, spec.raw); herr == nil {
 				if spec.currencyOK(s.Currency) {
@@ -568,30 +594,33 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 				} else {
 					failures = append(failures, fmt.Sprintf("morningstar %s: quotes in %s, want %s",
 						res.Symbol, s.Currency, spec.wantCurrency))
-					offCurrency = true
+					verdict.offCurrency = true
 				}
 			} else {
 				failures = append(failures, fmt.Sprintf("morningstar %s: %v", res.Symbol, herr))
+				verdict.note(herr)
 			}
 		}
 	}
 	best, bestRes := preferred()
-	return best, bestRes, failures, offCurrency
+	return best, bestRes, failures, verdict
 }
 
 // morningstarResolution finds the Morningstar identifier to fetch an
 // instrument by, trying Morningstar's own screener first (funds and ETFs
 // worldwide, currency reported) and Boursorama's search after it (the French
 // distribution list only, but it indexes classes the screener misses). It
-// returns the first candidate whose name matches the query and the failure
-// summaries of the bridges that did not answer; a zero resolution means
-// neither bridge produced a usable identifier.
+// returns the first candidate whose name matches the query, the failure
+// summaries of the bridges that did not answer, and whether every one of
+// those failures was an absence rather than an outage; a zero resolution
+// means neither bridge produced a usable identifier.
 //
 // Only one candidate is returned because the history is cached under the
 // QUERY rather than under the Morningstar id: trying a second candidate would
 // read the first one's cache entry back.
-func (c *Client) morningstarResolution(ctx context.Context, query, preferBase string) (resolution, []string) {
+func (c *Client) morningstarResolution(ctx context.Context, query, preferBase string) (resolution, []string, bool) {
 	var failures []string
+	absentOnly := true
 	bridges := []struct {
 		name string
 		find func() (resolution, error)
@@ -607,16 +636,18 @@ func (c *Client) morningstarResolution(ctx context.Context, query, preferBase st
 		switch {
 		case err != nil:
 			failures = append(failures, fmt.Sprintf("%s: %v", b.name, err))
+			absentOnly = absentOnly && absent(err)
 		case !fuzzyMatchRelevant(preferBase, res.Name):
 			// Both bridges search full text: a name-like query must not adopt
-			// an unrelated fund found this way (see fuzzyMatchRelevant).
+			// an unrelated fund found this way (see fuzzyMatchRelevant). The
+			// bridge did answer, so this is evidence about the identifier.
 			failures = append(failures, fmt.Sprintf("morningstar %s: %q unrelated to %q",
 				res.Symbol, res.Name, preferBase))
 		default:
-			return res, failures
+			return res, failures, absentOnly
 		}
 	}
-	return resolution{}, failures
+	return resolution{}, failures, absentOnly
 }
 
 // rankQuotes orders Yahoo search candidates: listings of the searched ticker
@@ -809,7 +840,7 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 		}
 	}
 	if len(s.Points) == 0 {
-		return c.staleFallback(ctx, cacheID, from, fmt.Errorf("no quotes returned for %s", symbol))
+		return c.staleFallback(ctx, cacheID, from, markAbsent(fmt.Errorf("no quotes returned for %s", symbol)))
 	}
 	s.Points = cleanQuotes(symbol, s.Points)
 	c.saveCacheAs(cacheID, s, from)
@@ -867,7 +898,7 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 	c.Logf("downloading %s via %s…", id, source)
 	s, err := fetch()
 	if err == nil && len(s.Points) == 0 {
-		err = fmt.Errorf("no %s quotes for %s", source, id)
+		err = markAbsent(fmt.Errorf("no %s quotes for %s", source, id))
 	}
 	if err != nil {
 		s, err = c.staleFallback(ctx, cacheID, from, err)
@@ -947,6 +978,12 @@ func (c *Client) post(ctx context.Context, rawURL, contentType string, payload [
 // do performs an HTTP request with retries on transient failures; rate
 // limiting (HTTP 429) backs off twice as long. A canceled context aborts
 // both the in-flight request and the retry backoff.
+//
+// It is the single HTTP choke point every source goes through, so it is also
+// where a failure is classified: an HTTP 404 or 410 is the source saying it
+// has nothing under that path (markAbsent, evidence about the identifier),
+// while a transport error, a rate limit, a 5xx or any other status is the
+// source not answering and stays unmarked. See errAbsent.
 func (c *Client) do(ctx context.Context, method, rawURL, contentType string, payload []byte, headers map[string]string) ([]byte, error) {
 	var lastErr error
 	rateLimited := false
@@ -998,6 +1035,8 @@ func (c *Client) do(ctx context.Context, method, rawURL, contentType string, pay
 			lastErr = fmt.Errorf("HTTP %d", resp.StatusCode)
 		case resp.StatusCode >= 500:
 			lastErr = fmt.Errorf("HTTP %d", resp.StatusCode)
+		case resp.StatusCode == http.StatusNotFound, resp.StatusCode == http.StatusGone:
+			return nil, markAbsent(fmt.Errorf("HTTP %d", resp.StatusCode))
 		default:
 			return nil, fmt.Errorf("HTTP %d", resp.StatusCode)
 		}
