@@ -92,7 +92,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 
 | Path | What lives there |
 |---|---|
-| `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; extended-hours quotes behind an opt-in (`Quote.Session`, `QuoteOptions.ExtendedHours`, `LatestBatchExtended`: a US pre-market or after-hours print when it is fresher than the regular one, never by default); data doctor (`Verify`/`VerifyAsset`, per-`asset_class` plausibility bands stretched by a record's leverage and, for a `single-stock` record, by its single-name concentration); telling a typo from an outage when a fetch finds nothing (`ErrUnknownIdentifier` / `UnknownIdentifierError`, `unknown.go`, which is what makes a nonexistent `/view` identifier a 404 instead of a 500); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote) |
+| `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; extended-hours quotes behind an opt-in (`Quote.Session`, `QuoteOptions.ExtendedHours`, `LatestBatchExtended`: a US pre-market or after-hours print when it is fresher than the regular one, never by default); data doctor (`Verify`/`VerifyAsset`, per-`asset_class` plausibility bands stretched by a record's leverage and, for a `single-stock` record, by its single-name concentration); telling a typo from an outage when a fetch finds nothing (`ErrUnknownIdentifier` / `UnknownIdentifierError`, `unknown.go`, which is what makes a nonexistent `/view` identifier a 404 instead of a 500); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote, anchored on the proxy's close or, per the record's `nowcast_anchor`, on its open) |
 | `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions) |
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/black-litterman-design.md`) |
@@ -285,8 +285,12 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   (cadence trap over most of the line: read the monthly columns) and is valued
   at the NASDAQ OPENING price since 2022-04-11 and at the CLOSE before (the FY2025 annual report's valuation rules; measured two ways: 2.0 % rmse vs 3.6 % for the
   close, and 09:30 New York the best-fitting instant on the 5-minute history),
-  so its nowcast anchored on the close is off by the valuation day's session
-  until the next NAV. THE CLOCK TRAP: the NAV of day D is struck on the two
+  so its record carries `nowcast_anchor: "open"` (catalog field, default
+  `close`): the nowcast anchors on the proxy's OPENING print of the last NAV's
+  day, an anchor worth 3.8 % rmse against 2.8 % on the one-span-ahead estimate,
+  and falls back on the close whenever that open cannot be read (the opens
+  travel as an open-to-close FACTOR series cached under `SYMBOL~open`, never as
+  a field on `Point`). THE CLOCK TRAP: the NAV of day D is struck on the two
   ETFs' official NAVs, i.e. after New York closes, so a US-listed tracker
   (URTH) follows its daily moves at 0.87 correlation and a Xetra line at 0.62;
   that is why `nowcast_proxy` is URTH and why the recipe's audit reads

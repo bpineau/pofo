@@ -10,6 +10,17 @@ import "encoding/json"
 // advisor never proposes it (suggest.RankCandidates).
 const StrategySingleStock = "single-stock"
 
+// The NowcastAnchor values: which print of its nowcast proxy a fund's NAV of
+// day D is struck on. An empty record anchors on the close, the convention of
+// a fund valued after its market has closed; NowcastAnchorOpen belongs to a
+// fund whose valuation rules name the opening price of the valuation day, whose
+// nowcast must therefore leave that session's open-to-close move out of the
+// anchor (marketdata.Client nowcast, docs/eres-fcpe-design.md).
+const (
+	NowcastAnchorClose = "close"
+	NowcastAnchorOpen  = "open"
+)
+
 // Asset is one row of the bundled asset catalog
 // (pkg/datasets/assetmeta/assets.json): a fund, ETF, index or commodity with its
 // resolution metadata (how to fetch its quotes) and its descriptive metadata
@@ -54,6 +65,7 @@ type Asset struct {
 	CurrencyExposure map[string]float64 `json:"currency_exposure,omitempty"` // fiat currency → percent of capital, overriding the geography/hedging derivation (see suggest.CurrencySplit)
 	Factors          []string           `json:"factors,omitempty"`           // explicit factor tilts: value, size, momentum, quality, low-vol
 	NowcastProxy     string             `json:"nowcast_proxy,omitempty"`     // catalog id whose daily and intraday moves (converted to Currency) stand in for the fund after its last published NAV; for funds priced once a day with a lag (an FCPE)
+	NowcastAnchor    string             `json:"nowcast_anchor,omitempty"`    // which print of NowcastProxy the NAV of a day is struck on: "close" (the default, also when empty) or "open"
 	Notes            string             `json:"notes"`                       // human-readable notes
 	Confidence       string             `json:"confidence"`                  // metadata confidence: "high", "medium", "low"
 	Sources          []string           `json:"sources"`                     // provenance URLs

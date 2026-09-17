@@ -28,6 +28,22 @@ func chartJSON(symbol string, days []time.Time, closes []float64) string {
 		symbol, symbol, ts, cl, cl)
 }
 
+// chartJSONOpens is chartJSON with the open column Yahoo serves next to the
+// close, which the open-anchored nowcast reads.
+func chartJSONOpens(symbol string, days []time.Time, opens, closes []float64) string {
+	ts, op, cl := "", "", ""
+	for i := range days {
+		if i > 0 {
+			ts, op, cl = ts+",", op+",", cl+","
+		}
+		ts += fmt.Sprint(days[i].Add(14*time.Hour + 30*time.Minute).Unix())
+		op += fmt.Sprint(opens[i])
+		cl += fmt.Sprint(closes[i])
+	}
+	return fmt.Sprintf(`{"chart":{"result":[{"meta":{"currency":"USD","symbol":%q,"longName":"Test Fund %s"},"timestamp":[%s],"indicators":{"quote":[{"open":[%s],"close":[%s]}],"adjclose":[{"adjclose":[%s]}]}}],"error":null}}`,
+		symbol, symbol, ts, op, cl, cl)
+}
+
 func testDays(n int) []time.Time {
 	out := make([]time.Time, n)
 	for i := range out {
