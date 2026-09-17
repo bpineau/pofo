@@ -74,6 +74,9 @@ func stale(s *marketdata.Series, every int) *marketdata.Series {
 func TestAllRecipesBuildOffline(t *testing.T) {
 	const n = 1600
 	vfinx := mkWave("VFINX", n, 4e-4, 0.010, 1.0, 0.1)
+	// The total-market Investor class, the donor of the VTI recipe: the same
+	// market as VFINX plus a completion tail, so a slightly hotter wave.
+	vtsmx := mkWave("VTSMX", n, 4e-4, 0.011, 1.05, 0.15)
 	vtmgx := mkWave("VTMGX", n, 3e-4, 0.009, 1.3, 0.7)
 	veiex := mkWave("VEIEX", n, 3e-4, 0.012, 0.7, 1.9)
 	vfitx := mkWave("VFITX", n, 2e-4, 0.003, 1.7, 0.4)
@@ -152,7 +155,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		// young class, quoting only over the last third of the window, like
 		// the real one (2020-06 against a 2000-01 file start).
 		campbellB: from(mf(campbellB, 0.006, 1.05, 0.8), 2*n/3),
-		"VFINX":   vfinx, "VTMGX": vtmgx, "VEIEX": veiex,
+		"VFINX":   vfinx, "VTSMX": vtsmx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
 		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,

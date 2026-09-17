@@ -8798,7 +8798,7 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Vanguard 500 Investor mutual fund; deep daily history from 1976 makes it the backtest S&P 500 total-return proxy used by the simdata recipes (VTI/GDE/RSST/SP500), not an EU-retail buyable ETF",
+    "notes": "Vanguard 500 Investor mutual fund; deep daily history from 1976 makes it the backtest S&P 500 total-return proxy used by the simdata recipes that mean the S&P 500 (SP500/GDE/NTSX/RSST and the world blends' US leg), not an EU-retail buyable ETF; the total-market recipe (VTI) reads its own share class VTSMX instead, see docs/us-total-market-reference-design.md",
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx",
