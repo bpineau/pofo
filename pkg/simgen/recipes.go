@@ -47,6 +47,7 @@ func All() []Recipe {
 		aqrmfHedgedRecipe(),
 		aqrIAETRecipe(),
 		aqrIAE1FTRecipe(),
+		campbellRecipe(),
 		indepEuropeRecipe(),
 		ctaRecipe(),
 		rssbRecipe(),
@@ -2800,6 +2801,8 @@ var (
 	kmlmDonors  = []string{"ASFYX", "RYMFX", ahlDiversified}
 	aqrmfDonors = []string{"AQMIX", "RYMFX", ahlDiversified}
 	ctaDonors   = []string{pureTrendIndex, ahlDiversified}
+	// campbellDonors is ONE donor on purpose, see campbellRecipe.
+	campbellDonors = []string{allStylesIndex}
 )
 
 // trendFeeLoad is the documented MANAGEMENT-AND-EXPENSE load of every vehicle
@@ -2848,6 +2851,12 @@ var (
 //	AQR A  0.79 %  AQR Managed Futures UCITS class A base cost: 0.60 %
 //	               management + 0.18 % expense cap + 0.01 % subscription tax
 //	               (prospectus supplement); see trendPerfFee for the rest
+//	Campbell
+//	       1.48 %  U Access (IRL) Campbell Absolute Return B EUR ongoing
+//	               charge (KID of 2026-04-24, of which 1.05 % management).
+//	               Its 15 % incentive fee and its 1.44 %/yr of transaction
+//	               costs are NOT in this number and are not put in a donor
+//	               uplift either: see campbellRecipe
 //
 // The DBi family's nearest donor (DBiDonorID) is an average of two things, so
 // its load is the average of theirs: half the composite's estimated 2 %, half a
@@ -2881,6 +2890,7 @@ var trendFeeLoad = map[string]float64{
 	"KMLM":         0.0090,
 	"CTA":          0.0075,
 	"LU1103257975": 0.0079,
+	campbellB:      0.0148,
 }
 
 // trendPerfFee is the documented performance fee a TARGET pays and its donors
@@ -3135,6 +3145,119 @@ func mfehBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	hedged := &marketdata.Series{Name: "iMGP DBi Managed Futures (EUR-hedged)", Source: "simdata", Currency: "EUR"}
+	val := 100.0
+	hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
+	for i := 1; i < len(usd.Points); i++ {
+		prev, cur := usd.Points[i-1].Date, usd.Points[i].Date
+		rUSD := usd.Points[i].Close/usd.Points[i-1].Close - 1
+		val *= 1 + rUSD + eurCashReturn(eurIdx, prev, cur) - cashAccrual(irxLvl, prev, cur)
+		hedged.Points = append(hedged.Points, marketdata.Point{Date: cur, Close: val})
+	}
+	return hedged, nil
+}
+
+// campbellB is the EUR-hedged accumulating B class of the Campbell sub-fund of
+// U Access (Ireland) UCITS plc, Union Bancaire Privee's Irish UCITS platform.
+const campbellB = "IE00BKYBHJ61"
+
+// campbellRecipe backcasts that class, and it is the shortest chain of the
+// family on purpose: ONE donor, the published net all-styles managed-futures
+// composite, and nothing at all before that index's own first day (2000-01-03).
+//
+// WHY THE INDEX AND NOT ANOTHER MANAGER'S FUND. Campbell runs an ABSOLUTE
+// RETURN book, trend plus systematic macro plus short-term models, not a pure
+// trend programme; that mixture is the whole of its interest here, since it is
+// what puts its monthly correlation with the DBi replication book at 0.50 when
+// every pure CTA of the panel sits between 0.71 and 0.79. Splicing a pure-trend
+// donor behind it would hand the backcast a correlation the fund does not have.
+// The all-styles composite is the one published record that mixes the same
+// styles, and it is exactly what the diversified funds of this family read.
+//
+// WHY NOTHING BEFORE 2000-01. The deepest donor of this family, Man AHL
+// Diversified (1996-03), is already behind BOTH legs of the trend sleeve this
+// fund would sit next to (the DBi chain and the AQR chain). Adding it here a
+// third time would manufacture correlation between three backcasts that the
+// three real funds do not share, which is the documented artefact of the deep
+// window (the AQR/DBi backcast pair reads 0.77 against 0.72 on the real NAVs).
+// Reliability bounds length: the file starts where its own evidence starts.
+//
+// FEES. The donor is fee-aligned on published price lists only: the composite
+// carries its constituents' estimated 2.00 %/yr, the class's ongoing charge is
+// 1.48 %/yr, so the donor is lifted by 0.52 %/yr and by nothing else. What is
+// deliberately NOT modelled, because no daily NAV can carry it honestly, is the
+// rest of this class's cost stack: a 15 % incentive fee on net profits with NO
+// hurdle against a perpetual high water mark, crystallised each 31 December
+// (1.03 % of the class's average net assets in 2024, 0.01 % in the losing year
+// 2025, 1.23 %/yr as the KID's own five-year average), plus 1.44 %/yr of
+// transaction costs. The reconstruction is therefore OPTIMISTIC by roughly a
+// point a year in a good trend year and by more in a great one, in the same
+// direction as every other performance fee this file declines to invent. The
+// real NAVs grafted from 2020-06 carry all of it, as they must.
+//
+// The volatility target is the class's own realized 9 %/yr (8.6 % monthly,
+// 9.1 % daily over 2020-06..2026-08). The engine supplies only the daily
+// texture; the composite is daily too, so in practice the texture is unused and
+// the shipped file is the index, fee-aligned, volatility-matched and hedged.
+//
+// THE DONOR IS THE BEST ONE AVAILABLE, AND IT IS STILL POOR. Every public
+// record was measured against the class's real monthly NAVs before the choice
+// (2020-06 to 2026-08, correlation and the donor's CAGR minus the class's):
+//
+//	all-styles net composite    0.520   +0.94 pt/yr   <- chosen
+//	DBi-projected composite     0.518   +1.79 pt/yr
+//	monthly BTOP50 net          0.516   +2.34 pt/yr
+//	pure-trend net composite    0.498   +2.98 pt/yr
+//	DBMF                        0.504   +4.39 pt/yr
+//	AQR Managed Futures (RAEF)  0.464   +3.94 pt/yr
+//	TSMOM academic factor       0.373   -2.53 pt/yr
+//
+// The chosen donor wins on BOTH axes, and nothing public reaches 0.53. That
+// ceiling is the fund itself: 0.50 against the DBi book is the very property
+// this class is held for, and a programme that decorrelates from the industry
+// cannot be pathed by an index of the industry. The audit grades this recipe
+// LEVEL OK and PATH BAD (CAGR gap -0.06 pt/yr and -0.37 % of cumulated drift
+// over the 6.1 verifiable years, against a 0.52 monthly correlation and a
+// tracking error of 0.89 of the class's own volatility), and that split is the
+// correct reading rather than a defect to tune away: the file is a fair account
+// of what this style of book EARNED over a decade and a poor account of any
+// month a reader might look up. Consumers should use it for level, allocation
+// and regime work, never as evidence about a particular episode before
+// 2020-06.
+func campbellRecipe() Recipe {
+	return Recipe{
+		ID:   campbellB,
+		Name: "U Access (IRL) Campbell Absolute Return B EUR: the net all-styles composite, hedged to EUR",
+		Method: "the published net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, 2000-01→, where the file starts), volatility-matched to the class and lifted 0.52%/yr from its constituents' estimated 2.00%/yr load to the class's 1.48%/yr ongoing charge, " +
+			"hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); no pure-trend donor and nothing before the index, the fund being an absolute-return book and the deeper donors being shared with the two other trend legs; real IE00BKYBHJ61 grafted from its 2020-06 inception",
+		Donors:          campbellDonors,
+		Build:           campbellBuild,
+		ValidateAgainst: campbellB,
+		SpliceReal:      campbellB,
+	}
+}
+
+// campbellBuild runs the USD donor chain and hedges it to EUR day by day,
+// reading the carry off the two cash series themselves (as mfehBuild and
+// aqrHedgedRecon do) so the chain's own trading calendar is kept and no date is
+// left unhedged. The class's local returns are what a EUR-hedged class of a USD
+// book earns, which is why it may be volatility-matched to a USD chain: its
+// monthly correlation with the fund's own USD class is 1.0000.
+func campbellBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
+	cfg := mfConfig(0.09, 0.0148)
+	usd, err := chainedTrend("Campbell B EUR (USD donor chain)", campbellB,
+		feeAligned(campbellB, campbellDonors), cfg)(f, from)
+	if err != nil {
+		return nil, err
+	}
+	irxLvl, err := extend(f).Fetch(cfg.CashID, from)
+	if err != nil {
+		return nil, err
+	}
+	eurIdx, err := f.Fetch("EURCASH-EUR", from)
+	if err != nil {
+		return nil, err
+	}
+	hedged := &marketdata.Series{Name: "Campbell Absolute Return (EUR-hedged)", Source: "simdata", Currency: "EUR"}
 	val := 100.0
 	hedged.Points = append(hedged.Points, marketdata.Point{Date: usd.Points[0].Date, Close: val})
 	for i := 1; i < len(usd.Points); i++ {

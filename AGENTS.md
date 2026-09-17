@@ -241,7 +241,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   published index as their nearest DONOR rather than another manager's fund:
   DBMF and its UCITS classes the daily all-styles composite
   (`TREND-ALLSTYLES-NET-USD`, same generator), Simplify CTA the daily pure-trend
-  one. Since 2026-08 the DBi family reads that composite through the TEN futures
+  one. Campbell (`IE00BKYBHJ61`) takes that same all-styles composite as its
+  SOLE donor for the opposite reason (nothing public tracks it above 0.53, its
+  0.50 correlation to the DBi book being what it is held for) and stops at the
+  composite's own 2000-01 floor, taking no deeper donor so the deep Man AHL leg
+  behind the two other trend legs is not shared a third time. Since 2026-08 the DBi family reads that composite through the TEN futures
   contracts the fund actually holds: the shipped donor `TREND-ALLSTYLES-DBI-USD`
   (`pkg/simgen/dbireplica.go`, `cmd/gen-dbi-refdata`) is half the composite and
   half a rolling 60-day regression of it on those contracts with the intercept
