@@ -30,10 +30,13 @@
 //	#meta withdraw:A/P    take A (or A% of the value: withdraw:4%/year)
 //	                      out every period P
 //	#meta optimize:OBJ    compute the weights instead of using the written
-//	                      ones; OBJ is max-sharpe, min-volatility or
-//	                      risk-parity, with an optional ",max-weight:40"
-//	                      cap (see pkg/optimize). Parse only records the
-//	                      request in Spec.Optimize; the caller runs it.
+//	                      ones; OBJ is max-sharpe, min-volatility,
+//	                      risk-parity, black-litterman or any of the others
+//	                      pkg/optimize supports, with optional constraints
+//	                      (",max-weight:40"). Parse only records the request
+//	                      in Spec.Optimize; the caller runs it. Under
+//	                      black-litterman the written weights are not merely
+//	                      the baseline: they are the PRIOR the views tilt.
 //	#meta currencies:C,D  evaluate the portfolio in several base currencies
 //	                      (Spec.Currencies); the caller builds one column per
 //	                      currency. Cannot be combined with optimize.

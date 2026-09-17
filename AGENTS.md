@@ -90,7 +90,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; data doctor (`Verify`); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote) |
 | `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions) |
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
-| `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`) |
+| `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/black-litterman-design.md`) |
 | `pkg/permanent` | tactical Permanent Portfolio 2.0 (Darcet): reads `datasets.MacroPanel` into a growth×inflation + monetary regime, quadratically-damped four-sleeve allocation, monthly-real backtest, coarse `Regime.Quadrant` view (used by the report's regime strip); see `docs/darcet-permanent-portfolio-design.md` |
 | `pkg/suggest` | macro-regime/factor coverage, look-through composition splits (asset classes, geography, currency exposure, equity sectors, duration), redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface |
@@ -300,6 +300,13 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   2006-01. THE CADENCE TRAP: these lines quote weekly or semi-monthly, so every
   per-observation statistic on them is wrong by ~sqrt(5); read the monthly
   columns.
+- Black-Litterman (`optimize:black-litterman`, `view:`, `prior-return:`): read
+  `docs/black-litterman-design.md` first. The prior is the FILE's weights, not
+  a market-capitalization portfolio, and with no view the objective returns
+  those weights EXACTLY (the identity every test hangs on). The golden lives
+  in `pkg/datasets/golden/blacklitterman_test.go` and pins the model on the
+  printed tables of He and Litterman (1999) and Idzorek (2005); a confidence
+  of 0.5 is those papers' own `Ω = diag(P τ Σ Pᵀ)`.
 - Weight search (bounded/constrained optimize, `train:`, `-sweep`): read
   `docs/weight-search-design.md` first; it also records what was deliberately
   left for later (the Pareto `improve` mode, the frontier chart) and the traps

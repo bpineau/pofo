@@ -85,3 +85,69 @@ func ExampleSolve_underAVolatilityCap() {
 		res.Weights[0]*100, res.Weights[1]*100, res.Feasible)
 	// Output: hot 80 %, calm 20 %, feasible true
 }
+
+// Black-Litterman with no view returns the portfolio's own weights and says
+// what returns they implicitly expect: reverse optimization is the exact
+// inverse of the optimization, so the prior is the answer.
+func ExampleSolve_blackLittermanWithoutAView() {
+	returns := exampleReturns(750)
+	prior := []float64{0.5, 0.3, 0.2}
+
+	res, err := optimize.Solve(returns, optimize.Spec{
+		Objective: optimize.BlackLitterman,
+		Prior:     prior,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("weights %.0f / %.0f / %.0f %%\n",
+		res.Weights[0]*100, res.Weights[1]*100, res.Weights[2]*100)
+	fmt.Printf("they imply %.1f / %.1f / %.1f %%/yr\n",
+		res.Implied[0]*100, res.Implied[1]*100, res.Implied[2]*100)
+	// Output:
+	// weights 50 / 30 / 20 %
+	// they imply 5.5 / 2.0 / -0.3 %/yr
+}
+
+// One view, and only the line it names moves. Here the owner expects the
+// middle line to earn 8 %/yr against the 3.1 % its written weight implies,
+// and states it at 70 % confidence; the posterior lands between the two and
+// the weight follows.
+func ExampleSolve_blackLittermanWithAView() {
+	returns := exampleReturns(750)
+	spec, err := optimize.ParseSpec("black-litterman,view:TREND:8@70,prior-return:5")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Views arrive keyed by identifier, like bounds: the caller resolves
+	// them against its own holdings, and fills the prior with the weights
+	// written in the file.
+	if err := spec.Resolve([][]string{{"EQUITY"}, {"TREND"}, {"CASH"}}); err != nil {
+		log.Fatal(err)
+	}
+	spec.Prior = []float64{0.5, 0.3, 0.2}
+
+	res, err := optimize.Solve(returns, spec)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("TREND: implied %.1f %% -> posterior %.1f %%/yr\n",
+		res.Implied[1]*100, res.Posterior[1]*100)
+	fmt.Printf("its weight goes from 30 %% to %.0f %%\n", res.Weights[1]*100)
+	// Output:
+	// TREND: implied 3.1 % -> posterior 6.5 %/yr
+	// its weight goes from 30 % to 49 %
+}
+
+// exampleReturns builds three deterministic daily return series: a volatile
+// equity-like line, a mid-volatility diversifier and a calm one.
+func exampleReturns(t int) [][]float64 {
+	out := [][]float64{make([]float64, t), make([]float64, t), make([]float64, t)}
+	for k := 0; k < t; k++ {
+		common := math.Sin(float64(k) * 0.11)
+		out[0][k] = 0.0004 + 0.011*common + 0.006*math.Sin(float64(k)*0.37)
+		out[1][k] = 0.0002 + 0.004*common + 0.005*math.Cos(float64(k)*0.23)
+		out[2][k] = 0.0001 - 0.001*common + 0.003*math.Sin(float64(k)*0.71)
+	}
+	return out
+}
