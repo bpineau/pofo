@@ -58,11 +58,32 @@
 //
 // Neither is a copy of the other, and a silent layout change in either would
 // otherwise ship as data, so this generator downloads both and refuses to write
-// a series unless every common daily return agrees to within that series' own
-// tolerance over at least minCommonDays days, AND the disagreement compounded
-// over the whole common window stays under its drift gate. The two tolerances
-// are not the same, and the difference is a finding rather than a convenience:
-// see the series table.
+// a series unless every SETTLED common daily return agrees to within that
+// series' own tolerance over at least minCommonDays days, AND the disagreement
+// compounded over that settled window stays under its drift gate. The two
+// tolerances are not the same, and the difference is a finding rather than a
+// convenience: see the series table.
+//
+// # The live tail is provisional, and is graded as such
+//
+// Both publications restate their newest prints. An index day is struck on the
+// constituent programmes' own daily figures, some of which arrive late, so a
+// first print is an estimate and a second one, a day or two later, is the
+// record. Measured 2026-09-10 on the pure-trend index, hours apart: a run in
+// the morning wrote the file with both channels agreeing, and by the evening
+// the last two common days disagreed by 5.5 and 7.4 bp, thirty times what
+// rounding a level to two decimals costs. Nothing older moved: a month-old copy
+// of the full-precision channel matches a fresh fetch on all 6935 days they
+// share but its own last one, and that by 0.001 bp.
+//
+// A single snapshot cannot say which publication is the one that revised, and
+// the gate does not need to know: what it can say is that the disagreement
+// lives in the last prints alone. So the per-day tolerance and the drift gate
+// apply to days older than restatementDays trading days, the tail is held to
+// tailReturnGap (a percent, which catches a broken row and nothing finer), and
+// every tail day is graded properly at the next run, once settled. The channel
+// SHIPPED is the full-precision one either way, since that is the one measured
+// to stop moving.
 //
 // # What was checked before this was trusted
 //
@@ -125,9 +146,21 @@ const (
 	// firstMonth is the inception month both indices are known to have:
 	// anything later means a truncated dump, anything earlier the wrong series.
 	firstMonth = "2000-01"
-	// minCommonDays is the overlap the two channels must share before their
-	// agreement means anything. Each full history holds about 6900 days.
+	// minCommonDays is the settled overlap the two channels must share before
+	// their agreement means anything. Each full history holds about 6900 days.
 	minCommonDays = 6500
+	// restatementDays is how many trading days at the live end of the two
+	// publications are treated as unsettled, and therefore graded at
+	// tailReturnGap instead of the series' own tolerance. Both publishers
+	// restate a newest print within a day or two (see the package comment);
+	// nothing older than three trading days has ever been seen to move, so ten
+	// is a fortnight of trading and well past the measurement. No day escapes
+	// the real gate: it is applied to every day the next run finds settled.
+	restatementDays = 10
+	// tailReturnGap is all the live tail is held to. A restatement of a
+	// provisional print never reaches a percent; a broken row, a shifted
+	// column or a base change always exceeds one.
+	tailReturnGap = 0.01
 )
 
 // series is one index this generator ships: where each channel serves it, what
@@ -160,9 +193,11 @@ var shipped = []series{pureTrend, allStyles}
 
 // pureTrend is the composite of the ten largest trend-following programmes.
 // Its two channels are as close as two independent publications of one index
-// ever get: every one of ~6920 common daily returns agrees to within 2 bp,
-// worst 1.16 bp, mean 0.16 bp, which is what rounding a level to two decimals
-// costs and nothing more.
+// ever get, once settled: every one of ~6940 settled common daily returns
+// agrees to within 2 bp, worst 1.16 bp, mean 0.16 bp, which is what rounding a
+// level to two decimals costs and nothing more. Its provisional tail is a
+// different matter and is graded as one (7.4 bp on 2026-09-08, measured the
+// same day the file was written from two agreeing channels).
 var pureTrend = series{
 	outID:        "TREND-PURE-NET-USD",
 	progCode:     "FT90004127",
@@ -183,12 +218,13 @@ var pureTrend = series{
 //
 // Its channels agree less tightly than the trend index's, and the tolerances
 // say so rather than hide it. Measured 2026-08 over 6923 common days: five days
-// past 2 bp, four of them in the unrevised live tail (worst 15.6 bp) and one in
-// 2024; and every month of calendar 2024 differs by 1 to 6 bp, 25 bp compounded
-// over that year, which is a restatement in one channel and not rounding. Over
-// the whole 2000-2026 window the two still compound to within 23 bp of each
-// other, so the drift gate is the binding one and it is set at ten times what
-// is measured, where the per-day gate is set to let a revising tail through.
+// past 2 bp, four of them in the live tail (worst 15.6 bp, and the tail is no
+// longer graded at this precision) and one in 2024; and every month of calendar
+// 2024 differs by 1 to 6 bp, 25 bp compounded over that year, which is a
+// restatement of settled days in one channel and not rounding. Over the whole
+// 2000-2026 window the two still compound to within 23 bp of each other, so the
+// drift gate is the binding one and it is set at ten times what is measured,
+// where the per-day gate is set to let that deep 2024 restatement through.
 var allStyles = series{
 	outID:        "TREND-ALLSTYLES-NET-USD",
 	progCode:     "calyon",
@@ -308,7 +344,9 @@ const pureSource = "daily levels of the SG Trend Index (NEIXCTAT, SG Prime Servi
 	"calculation agent (POST https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi with dump=excelDaily, " +
 	"prog_cod=FT90004127, return_option=since_inception) and cross-checked day by day against the publisher's own " +
 	"dashboard copy (https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv), " +
-	"which agrees on every common daily return to within 2 bp. The calendar years were reconciled against six " +
+	"which agrees on every SETTLED common daily return to within 2 bp; the newest prints of both publications are " +
+	"provisional and restated within a day or two, so the last ten trading days are cross-checked only against a " +
+	"broken row and graded properly at the next run. The calendar years were reconciled against six " +
 	"independent publications of them, the oldest an archived 2010 capture; the index has never been restated by " +
 	"more than 5 bp, on 2018 alone. The publisher's methodology carries an EU Benchmarks Regulation disclaimer (not " +
 	"to be used as a benchmark by financial products); it is bundled here as a reference series for a research " +
@@ -321,9 +359,11 @@ const allStylesSource = "daily levels of the SG CTA Index (NEIXCTA, SG Prime Ser
 	"precision from the index's calculation agent (POST " +
 	"https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi with dump=excelDaily, prog_cod=calyon, " +
 	"return_option=since_inception) and cross-checked day by day against the publisher's own dashboard copy " +
-	"(https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv). This index " +
-	"revises where its pure-trend sibling does not: measured 2026-08 over 6923 common days, five days differ by " +
-	"more than 2 bp (four in the unrevised live tail, worst 15.6 bp) and every month of calendar 2024 differs by " +
+	"(https://wholesale.banking.societegenerale.com/fileadmin/indices_feeds/ti_screen/data/4.nav.csv). Both " +
+	"publications restate their newest prints, so the last ten trading days are cross-checked only against a " +
+	"broken row and graded properly at the next run; this index also revises SETTLED days where its pure-trend " +
+	"sibling does not, and its tolerances say so: measured 2026-08 over 6923 common days, five days differ by " +
+	"more than 2 bp (four of them in the live tail, worst 15.6 bp) and every month of calendar 2024 differs by " +
 	"1 to 6 bp, 25 bp compounded over that year. Over the whole window the two channels still compound to within " +
 	"23 bp of each other. The publisher's methodology carries an EU Benchmarks Regulation disclaimer (not to be " +
 	"used as a benchmark by financial products); it is bundled here as a reference series for a research " +
@@ -464,6 +504,11 @@ func parseDashboard(raw []byte, column string) ([]point, error) {
 // share. Levels are not comparable (the two are published on different bases,
 // and one is rounded), returns are, and a return is also what the reference is
 // consumed for. It reports the agreement it found, or refuses it.
+//
+// The last restatementDays shared days are the publishers' provisional tail
+// (see the package comment) and are held to tailReturnGap alone: they are
+// graded at the series' own tolerance by the next run, once settled. The
+// tolerance gates and the drift gate therefore speak of the settled window.
 func crossCheck(s series, a, b []point) (string, error) {
 	byDate := make(map[time.Time]float64, len(b))
 	for _, p := range b {
@@ -475,21 +520,31 @@ func crossCheck(s series, a, b []point) (string, error) {
 			common = append(common, p.date)
 		}
 	}
-	if len(common) < minCommonDays {
-		return "", fmt.Errorf("only %d common days, want at least %d", len(common), minCommonDays)
+	settled := len(common) - restatementDays
+	if settled < minCommonDays {
+		return "", fmt.Errorf("only %d settled common days, want at least %d (%d shared, the last %d being the publishers' provisional tail)",
+			max(settled, 0), minCommonDays, len(common), restatementDays)
 	}
 	levelA := make(map[time.Time]float64, len(a))
 	for _, p := range a {
 		levelA[p.date] = p.level
 	}
+	tailFrom := common[min(settled, len(common)-1)] // the oldest provisional print
 	worst, worstDay, over := 0.0, common[0], 0
+	tailWorst, tailWorstDay := 0.0, tailFrom
 	drift := 1.0
 	for i := 1; i < len(common); i++ {
 		prev, cur := common[i-1], common[i]
 		ra := levelA[cur]/levelA[prev] - 1
 		rb := byDate[cur]/byDate[prev] - 1
-		drift *= (1 + ra) / (1 + rb)
 		gap := math.Abs(ra - rb)
+		if i >= settled { // a return into a provisional print
+			if gap > tailWorst {
+				tailWorst, tailWorstDay = gap, cur
+			}
+			continue
+		}
+		drift *= (1 + ra) / (1 + rb)
 		if gap > s.maxReturnGap {
 			over++
 		}
@@ -498,17 +553,24 @@ func crossCheck(s series, a, b []point) (string, error) {
 		}
 	}
 	if worst > s.maxReturnGap {
-		return "", fmt.Errorf("%s: daily returns differ by %.1f bp, over the %.0f bp allowed (%d such days)",
+		return "", fmt.Errorf("%s: settled daily returns differ by %.1f bp, over the %.0f bp allowed (%d such days)",
 			worstDay.Format("2006-01-02"), worst*1e4, s.maxReturnGap*1e4, over)
 	}
-	if d := math.Abs(drift - 1); d > s.maxDrift {
-		return "", fmt.Errorf("the channels compound %.2f%% apart over %d days, over the %.1f%% allowed",
-			d*100, len(common), s.maxDrift*100)
+	if tailWorst > tailReturnGap {
+		return "", fmt.Errorf("%s: the provisional tail's returns differ by %.2f%%, over the %.0f%% a restatement explains",
+			tailWorstDay.Format("2006-01-02"), tailWorst*100, tailReturnGap*100)
 	}
-	return fmt.Sprintf("the two channels agree over %d common days (%s to %s): "+
-		"worst daily-return gap %.2f bp, on %s; compounded %.2f%% apart", len(common),
-		common[0].Format("2006-01-02"), common[len(common)-1].Format("2006-01-02"),
-		worst*1e4, worstDay.Format("2006-01-02"), (drift-1)*100), nil
+	if d := math.Abs(drift - 1); d > s.maxDrift {
+		return "", fmt.Errorf("the channels compound %.2f%% apart over %d settled days, over the %.1f%% allowed",
+			d*100, settled, s.maxDrift*100)
+	}
+	return fmt.Sprintf("the two channels agree over %d settled common days (%s to %s): "+
+		"worst daily-return gap %.2f bp, on %s; compounded %.2f%% apart. "+
+		"The provisional tail (%s to %s, %d days) differs by up to %.1f bp, on %s, and is graded next run",
+		settled, common[0].Format("2006-01-02"), common[settled-1].Format("2006-01-02"),
+		worst*1e4, worstDay.Format("2006-01-02"), (drift-1)*100,
+		tailFrom.Format("2006-01-02"), common[len(common)-1].Format("2006-01-02"),
+		restatementDays, tailWorst*1e4, tailWorstDay.Format("2006-01-02")), nil
 }
 
 // trimPartialMonth drops the tail of a month the index has not finished. A
