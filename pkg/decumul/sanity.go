@@ -21,6 +21,7 @@ func GeoMean(src scenario.Source, nPaths int, rng *rand.Rand) float64 {
 	}
 	var sumLog float64
 	var n int
+	src = scenario.Prepare(src) // combine a data-driven source's panel once, not per draw
 	for range nPaths {
 		for _, r := range src.Draw(rng) {
 			// Floor 1+r: an extreme tail draw clamped to a total loss (1+r<=0)

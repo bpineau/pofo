@@ -379,3 +379,48 @@ opposite bar.
    toggle and live allocation sliders.
 
 README and per-package `doc.go` updates land with each step.
+
+## 10. Performance profile (2026-09)
+
+Determinism is a feature of this engine: a shared `/view` or `-fire` URL must
+reproduce byte for byte, so every optimisation here is measured against a
+before/after JSON dump of all fifteen endpoints (thirteen parameter sets, every
+return model) and of the kernel itself (draws, `Outcome`, `Fan`, `Solve`,
+`CapitalForRuin`, `LifeOutcome`, per-path series). Float summation order,
+worker striding in `Plan.Draw` (a draw's value is tied to its worker's RNG
+stream) and the seeding scheme are therefore untouchable.
+
+Where the time went, profiled on the page's default plan (2000 paths, 30
+years, 8 workers; `go test -bench=BenchmarkSimulate -cpuprofile`):
+
+- **the year loop's income scan.** Every spending rule netted the year's
+  pensions and side income off its budget by rescanning `Plan.Cashflows`, so a
+  year cost two or three identical scans (thirteen in the monthly kernel, which
+  re-netted inside the month loop), each copying the (large) `Plan` receiver.
+  It was the single largest line in the kernel. The kernels now read the income
+  once a year and hand it to every rule (`netAfter`, `Plan.needAtWith`).
+- **per-path allocation, not the arithmetic.** A path allocated its two series
+  and its tax pockets; at thousands of paths a render the allocator and the
+  collector, not the kernel, dominated. `SimulateOn` now hands out windows of
+  one arena for the series, and the single-sleeve case (no `Envelopes`) fills a
+  stack array of pockets, so a path allocates nothing at all.
+- **panel combining inside the draw loop.** The data-driven sources
+  (`BlockBootstrap`, `StationaryBootstrap`, `HistoricalCohorts`) collapsed the
+  `Panel` at its weights on EVERY draw: on a four-asset, forty-year monthly
+  panel that costs more than the sampling. `scenario.Prepare` hoists that
+  rng-independent setup out of the loop; `Plan.Draw` and `GeoMean` call it once.
+- **what did not pay.** Blocked (rather than striped) path assignment in
+  `SimulateOn`, to cut false sharing: no measurable change. An arena for the
+  drawn sequences too (a `DrawInto` side to `Source`): 1-2 %, not worth the
+  public API. Hoisting the regime source's per-period sigma standardisation:
+  nothing, the compiler already had it. Sorting, JSON and the RNG never showed.
+
+Deltas on an M1 Max, `-benchmem`, at equal results: `BenchmarkSimulate`
+1857 -> 1385 us/op (-25 %) and 6090 -> 2090 allocs/op; `BenchmarkRunPath`
+2552 -> 1599 ns/op (-37 %); `BenchmarkSolve` 25.6 -> 17.5 ms/op (-32 %);
+`BenchmarkSimulateBootstrap` 6.12 -> 3.28 ms/op (-46 %); at endpoint level
+`BenchmarkModelsStrip` 198 -> 133 ms/op (-33 %) with 502 k -> 38 k allocs, and
+`ComputeParametric` (`/api/sim`) 47.3 -> 41.8 ms/op (-12 %). The remaining GC
+share of `Simulate` is ~13 % (`GOGC=off`), and the eight-worker run reaches
+only ~3.3x the one-worker one: the ceiling now is memory traffic, not the
+kernel.

@@ -332,11 +332,13 @@ func (p Plan) planYears() int {
 // annual RunPath stays the validated reference (and its golden tests). The
 // wealth-based rules (VPW, ABW, bounded %) are yearly rebalancing decisions
 // and always run on the annual kernel.
-func (p Plan) runPath(seq scenario.Sequence, lives Lives) PathResult {
+// buf, when long enough, backs the path's two series (see newPathResult); nil
+// lets the kernel allocate them itself.
+func (p Plan) runPath(seq scenario.Sequence, lives Lives, buf []float64) PathResult {
 	if p.Monthly && p.Percent <= 0 && !p.Amortize && !p.Bounded.active() {
-		return p.RunPathMonthly(seq, lives)
+		return p.runPathMonthly(seq, lives, buf)
 	}
-	return p.RunPath(seq, lives)
+	return p.runPathAnnual(seq, lives, buf)
 }
 
 // RiskGuardrails is the risk-based guardrail (Kitces & Tharp, industrialised
@@ -471,7 +473,17 @@ func pmt(wealth, r float64, n int) float64 {
 // by the spend schedule and by any survivor adjustment, minus the income
 // active that year, floored at 0.
 func (p Plan) needAt(year int, l life) float64 {
-	return p.netOf(p.NeedAnnual*p.schedAt(year)*l.spendFactor(year), year, l)
+	return p.needAtWith(year, l, p.income(year, l))
+}
+
+// needAtWith is needAt with the year's income already in hand. The kernels
+// read that income once a year (Plan.income) and hand it to every spending
+// rule, through this and netAfter, instead of rescanning the cashflows for
+// each of them: the arithmetic is identical, but a year costs one scan rather
+// than three (thirteen in the monthly kernel), which the profile showed was
+// the kernel's single largest cost.
+func (p Plan) needAtWith(year int, l life, income float64) float64 {
+	return netAfter(p.NeedAnnual*p.schedAt(year)*l.spendFactor(year), income)
 }
 
 // schedAt is the spending multiplier for a year: SpendSchedule[year] when
@@ -516,12 +528,12 @@ func (p Plan) cashflowPV(from int, r float64, l life) float64 {
 	return pv
 }
 
-// netOf reduces a gross annual spend by the income active in the year (the
+// netAfter reduces a gross annual spend by the income of the year (the
 // cashflows each member still receives, plus any annuity), floored at 0. It
 // lets every spending rule feed a dynamic level through the same netting as
 // the fixed NeedAnnual.
-func (p Plan) netOf(spend float64, year int, l life) float64 {
-	if spend -= p.income(year, l); spend < 0 {
+func netAfter(spend, income float64) float64 {
+	if spend -= income; spend < 0 {
 		return 0
 	}
 	return spend

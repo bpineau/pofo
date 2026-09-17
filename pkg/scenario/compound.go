@@ -42,6 +42,12 @@ type Compounded struct {
 // Len is the inner length divided by Group.
 func (c Compounded) Len() int { return c.Inner.Len() / c.Group }
 
+// prepare implements preparer by preparing the inner source.
+func (c Compounded) prepare() Source {
+	c.Inner = Prepare(c.Inner)
+	return c
+}
+
 // Draw compounds one inner path into the coarser frequency.
 func (c Compounded) Draw(rng *rand.Rand) Sequence {
 	return Annualize(c.Inner.Draw(rng), c.Group)
