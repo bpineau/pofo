@@ -130,7 +130,12 @@
 // proxy's intraday move converted tick by tick (IntradaySeries.Estimate,
 // see nowcast.go). The same proxy extends the fund's daily series past its
 // last NAV (Series.EstimatedFrom marks the tail; WithoutEstimates strips
-// it, and nothing cached or shipped ever holds it). The mapping from an IntradaySeries
+// it, and nothing cached or shipped ever holds it). Both estimates start
+// from the proxy print the last NAV was struck on: its close of that day,
+// or its OPEN when the record says nowcast_anchor "open" (a fund whose
+// valuation rules price its holding at the opening of the valuation day),
+// with a silent fall back on the close when that day has no opening price.
+// The mapping from an IntradaySeries
 // to a chart is caller-side: iterate IntradaySeries.Points and copy
 // IntradayPoint.Time into Dates and IntradayPoint.Close into Values on a chart.Series
 // before passing it to chart.Line.
