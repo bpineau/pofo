@@ -140,16 +140,27 @@ func vwraRecipe() Recipe {
 }
 
 // vtiRecipe backcasts the Vanguard Total Stock Market ETF (VTI, USD, real from
-// 2001) from Vanguard 500 (VFINX, 1976->, carried back to the S&P 500 total
-// return SP500-USD ~1871). The total US market and the S&P 500 differ only by
-// a mid/small-cap tail and track at ~0.99 daily correlation, so VFINX is the
-// faithful deep-history proxy; real VTI grafted from inception.
+// 2001) on the SAME PORTFOLIO all the way down: Vanguard Total Stock Market
+// Investor (VTSMX, 1992-04->), the Investor share class of the very fund VTI
+// is a class of, itself carried back to 1926-07 by the CRSP total-market
+// factor (refdata USMKT-USD, gross, so less the measured longBackFee).
+//
+// It used to read the S&P 500 (VFINX) instead, on the ground that the total
+// market and the large-cap index track at ~0.99 daily correlation. A
+// correlation is the wrong test for a level: the two differ by the mid/small
+// completion, whose premium is worth about a point a year and changes SIGN by
+// era (the whole market ran 1.05 pts/yr BELOW the S&P 500 over the two funds'
+// own 1992-2001 overlap, above it over 1962-2001), which a backcast has no way
+// to know in advance. Graded on the window where real VTI exists (2001-06 to
+// 2026-09), the change is an improvement on both verdicts: the CAGR gap to the
+// real fund falls from -0.31 to -0.11 pts/yr, the cumulated drift from -6.99 %
+// to -2.55 %, and the monthly correlation rises from 0.9952 to 0.9994.
 func vtiRecipe() Recipe {
 	return Recipe{
 		ID:              "VTI",
-		Name:            "Vanguard Total US Market: S&P 500 proxy (VFINX)",
-		Method:          "VFINX (Vanguard 500, 1976->, extended SP500-USD total return to ~1871; total US market ≈ S&P 500), real VTI grafted from 2001",
-		Build:           composite("VTI (total US market)", []Leg{{ID: "VFINX", Weight: 1}}, "", 0),
+		Name:            "Vanguard Total US Market: own share class (VTSMX) + CRSP market factor",
+		Method:          "VTSMX (Vanguard Total Stock Market Investor, 1992-04->, the target's own portfolio; extended by the CRSP total-market factor USMKT-USD daily to 1926-07, gross, so less a measured 0.30%/yr), real VTI grafted from 2001",
+		Build:           composite("VTI (total US market)", []Leg{{ID: "VTSMX", Weight: 1}}, "", 0),
 		ValidateAgainst: "VTI",
 		SpliceReal:      "VTI",
 	}
