@@ -34,7 +34,7 @@ asset, so `-a MSCIWORLD` (EUR) works. The result:
 | id | index | reconstruction | history |
 |---|---|---|---|
 | `MSCIWORLD` | MSCI World Net TR (USD) | `MSCIWORLD-USD` refdata levels, MSCI World price-index daily shape (`^990100`), 0 TER | ~1969 |
-| `SP500` | S&P 500 Total Return (USD) | `SP500-USD` refdata levels, `^GSPC` daily shape, 0 TER | ~1871/1962 |
+| `SP500` | S&P 500 Total Return (USD) | `SP500-USD` refdata levels, `^GSPC` daily shape, 0 TER | ~1871/1927 |
 
 Aliases: `MSCI-WORLD` -> `MSCIWORLD`, `SP-500` -> `SP500` (case folded by
 `CanonicalID`). The temporary ETF aliases added earlier (`MSCIWORLD`,
@@ -45,8 +45,18 @@ Aliases: `MSCI-WORLD` -> `MSCIWORLD`, `SP-500` -> `SP500` (case folded by
 
 `msciworldIndexRecipe` reuses `msciWorld(0.0, fallback)`; `sp500IndexRecipe`
 uses a parallel `sp500Index()` builder (SP500-USD anchors + `^GSPC` daily
-shape, no fee). `make simdata` / `-gen-simdata MSCIWORLD SP500` writes the two
-CSVs. Validation: correlation ~1.0 against the matching ETF, with an expected
+shape, no fee). A shape is requested from the ANCHORS' first date, not from
+`ComponentsFrom` (1962), because a shape exists only to give the anchors their
+intra-period variance: asking for less silently leaves the deep years at the
+anchors' monthly cadence, which is what kept `SP500` monthly before 1962 while
+`^GSPC` quotes daily from 1927-12-30 (a daily-convention volatility then read
+109 %/yr on 1928-1961 where the monthly convention read 24 %). Shaped over its
+whole span, the file's per-observation volatility matches the published price
+index it is shaped from: 22.8 against 22.9 %/yr over 1928-1961, 33.9 against
+34.1 over 1928-1939, 11.2 against 11.3 over 1950-1961, the residual being the
+dividend leg the price index lacks. Month-end levels are untouched (mean
+relative move 6e-6, confined to January 1962 at the junction). `make simdata` /
+`-gen-simdata MSCIWORLD SP500` writes the two CSVs. Validation: correlation ~1.0 against the matching ETF, with an expected
 CAGR gap of about the ETF's TER (that gap is the point), plus CAGR/vol sanity
 against the reference index.
 
