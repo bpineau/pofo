@@ -88,6 +88,16 @@
 //     legs cancel against a calm neighbourhood is dropped, real crash days
 //     never qualify), and longBackFee charges a gross proxy what its
 //     grossness is worth;
+//   - TreasuryTR and TreasuryZeroTR (treasury.go) rebuild a bond sleeve from a
+//     YIELD series rather than from a fund, which is how the Treasury legs
+//     reach 1953: the first holds a constant-maturity PAR coupon bond, the
+//     second a constant-maturity ZERO (a STRIPS ladder, semiannual discounting,
+//     carry as the pull to par). They are two engines and not one parameter
+//     because a coupon bond's duration shrinks as its yield rises and a zero's
+//     does not, so no constant multiple of a coupon fund reproduces a strip
+//     across rate regimes: the ratio is 1.66 at a 3 % long yield and 3.31 at
+//     12 %. strips.go and docs/long-treasury-zero-coupon-design.md hold the
+//     table and the validation;
 //   - globalbond.go rebuilds a MULTI-CURRENCY government bond futures basket
 //     (the sleeve of the global efficient-core fund NTSG) as one excess-return
 //     index: a local sleeve per currency, each netted against its OWN

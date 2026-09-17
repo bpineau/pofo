@@ -65,7 +65,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata usmkt-refdata msci-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -115,6 +115,11 @@ euro-refdata: ## (Re)generate the bundled euro-area reference series (network) t
 .PHONY: gbond-refdata
 gbond-refdata: ## (Re)generate the bundled German/Japanese/British government bond reference series (network); run `make simdata` after
 	$(GO) run ./cmd/gen-gbond-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: tyield-refdata
+tyield-refdata: ## (Re)generate TREASURY-LONG-YIELD, the long Treasury yield the zero-coupon STRIPS reconstruction is priced off (network); run `make simdata` after
+	$(GO) run ./cmd/gen-tyield-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: sp500-refdata
