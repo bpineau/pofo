@@ -5,7 +5,6 @@ import (
 	"math"
 	"sort"
 
-	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
@@ -113,7 +112,6 @@ func pctShare(v float64) string { return fmt.Sprintf("%.1f %%", 100*v) }
 // suggest.AssetClassSplit, so the block and the composition pie tell the same
 // story about what a fund is made of.
 func classSplit(a portfolio.Asset, meta map[string]suggest.Meta) map[string]float64 {
-	base, _ := marketdata.SplitSim(a.ID)
 	m, _, ok := metaFor(meta, a.ID)
 	switch {
 	case !ok:
@@ -134,7 +132,6 @@ func classSplit(a portfolio.Asset, meta map[string]suggest.Meta) map[string]floa
 	case m.AssetClass != "":
 		return map[string]float64{m.AssetClass: 1}
 	default:
-		_ = base
 		return map[string]float64{suggest.BucketUnknown: 1}
 	}
 }
