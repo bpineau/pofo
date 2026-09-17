@@ -126,7 +126,7 @@ func buildCandidates(ctx context.Context, c *marketdata.Client, opt *options, me
 			continue
 		}
 		m, ok := meta[id]
-		if !ok || !intersectsGap(opt.fw.Classify(m), gapSet) {
+		if !ok || !suggest.Advisable(m) || !intersectsGap(opt.fw.Classify(m), gapSet) {
 			continue
 		}
 		if heldEquiv[m.AssetClass+"|"+m.Benchmark] {
@@ -326,7 +326,7 @@ func coverageAdvice(spec *portfolio.Spec, opt *options, meta map[string]suggest.
 				continue
 			}
 			m, ok := meta[id]
-			if !ok || !intersectsGap(opt.fw.Classify(m), map[suggest.Category]bool{g: true}) {
+			if !ok || !suggest.Advisable(m) || !intersectsGap(opt.fw.Classify(m), map[suggest.Category]bool{g: true}) {
 				continue
 			}
 			if _, seen := byClass[m.AssetClass]; !seen {

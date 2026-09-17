@@ -19,7 +19,8 @@ import (
 //
 // Units are FRACTIONS per year (0.42 = 42 %/yr), magnitudes are positive
 // (Move 0.23 means "a 23 % move in either direction"). Every bound scales with
-// the record's notional leverage; see Scale.
+// what the record does on top of its class: notional leverage, and holding a
+// single issuer; see Scale and recordStretch.
 //
 // The table lives in ClassBand and is documented, next to the vocabularies it
 // is keyed by, in pkg/datasets/assetmeta/README.md.
@@ -52,6 +53,9 @@ type Band struct {
 //     lost half its capital to one bad season.
 //   - "other" is a junk drawer, so its bounds are the widest of the table;
 //     they still reject a quarter lost in one session.
+//   - every row describes a DIVERSIFIED holding: a record naming one issuer
+//     (strategy "single-stock") is judged by the same row stretched, see
+//     singleNameStretch.
 var classBands = map[string]Band{
 	"equity":                {VolLo: 0.06, VolHi: 0.42, CAGRLo: -0.15, CAGRHi: 0.40, Move: 0.23, Drawdown: 0.97},
 	"government-bond":       {VolLo: 0.003, VolHi: 0.28, CAGRLo: -0.10, CAGRHi: 0.15, Move: 0.14, Drawdown: 0.80},
@@ -78,10 +82,11 @@ func ClassBand(class string) (b Band, known bool) {
 	return b, known
 }
 
-// Scale returns the band widened by a notional leverage multiple (the catalog's
-// leverage field: 1 for a plain fund, 3 for a daily 3x ETF, 1.5 for a 90/60
-// stacked one). Everything scales linearly except the drawdown, which is capped
-// just short of a total loss. A non-positive leverage reads as 1.
+// Scale returns the band widened by a multiple: the record's notional leverage
+// (1 for a plain fund, 3 for a daily 3x ETF, 1.5 for a 90/60 stacked one),
+// times any concentration stretch (see recordStretch, the one caller that
+// composes the two). Everything scales linearly except the drawdown, which is
+// capped just short of a total loss. A non-positive multiple reads as 1.
 func (b Band) Scale(leverage float64) Band {
 	if leverage <= 0 {
 		leverage = 1
@@ -93,6 +98,27 @@ func (b Band) Scale(leverage float64) Band {
 	b.Move *= leverage
 	b.Drawdown = math.Min(0.99, b.Drawdown*leverage)
 	return b
+}
+
+// singleNameStretch is how much wider a single-issuer record's bounds are than
+// its class's. Idiosyncratic risk is what a class row calibrated on diversified
+// funds leaves out, and half again the class ceiling covers it here: the two
+// single-name records of the catalog measure 55 and 60 %/yr against the equity
+// ceiling of 42, and gap 31 % on an earnings print against the class's 23.
+const singleNameStretch = 1.75
+
+// recordStretch is the multiple a record's class band must be widened by. Two
+// properties stretch a band and they compound: notional leverage (a 3x fund
+// makes three times the move) and holding a single issuer.
+func recordStretch(a datasets.Asset) float64 {
+	stretch := a.Leverage
+	if stretch <= 0 {
+		stretch = 1
+	}
+	if a.Strategy == datasets.StrategySingleStock {
+		stretch *= singleNameStretch
+	}
+	return stretch
 }
 
 // spikeLegSigmas is how many class-level daily standard deviations a leg of a
@@ -146,7 +172,7 @@ var bandBySymbol = sync.OnceValue(func() map[string]Band {
 		if !known {
 			continue
 		}
-		b = b.Scale(e.Leverage)
+		b = b.Scale(recordStretch(e))
 		add(e.Symbol, b)
 		add(e.Xid, b)
 	}
@@ -171,7 +197,7 @@ func widest(a, b Band) Band {
 func bandFor(id string) Band {
 	if a, ok := Lookup(id); ok {
 		if b, known := ClassBand(a.AssetClass); known {
-			return b.Scale(a.Leverage)
+			return b.Scale(recordStretch(a))
 		}
 	}
 	if b, ok := bandBySymbol()[strings.ToUpper(strings.TrimSpace(id))]; ok {
@@ -291,7 +317,7 @@ func assetBand(a datasets.Asset, s *Series) (Band, bool) {
 	if !known || !pricedInstrument(a, s) {
 		return Band{}, false
 	}
-	return b.Scale(a.Leverage), true
+	return b.Scale(recordStretch(a)), true
 }
 
 // pricedInstrument reports whether a series' numbers are prices whose ratios
@@ -321,9 +347,18 @@ func plausibilityIssues(a datasets.Asset, s *Series, band Band) []Issue {
 	if !ok {
 		return nil
 	}
-	lev := ""
+	// Name what widened the band, so a reader can tell a stretched verdict
+	// from the plain class row.
+	var stretched []string
 	if a.Leverage > 0 && a.Leverage != 1 {
-		lev = fmt.Sprintf(" at leverage %g", a.Leverage)
+		stretched = append(stretched, fmt.Sprintf("leverage %g", a.Leverage))
+	}
+	if a.Strategy == datasets.StrategySingleStock {
+		stretched = append(stretched, "a single name")
+	}
+	lev := ""
+	if len(stretched) > 0 {
+		lev = " at " + strings.Join(stretched, ", ")
 	}
 	var issues []Issue
 	warn := func(d time.Time, format string, args ...any) {
