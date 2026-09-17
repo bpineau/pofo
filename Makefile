@@ -4,7 +4,7 @@ GO        ?= go
 BINARIES  := pofo
 PKGS      := ./...
 # Local staticcheck if available, otherwise a pinned version via `go run`.
-STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2025.1")
+STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2026.2.1")
 
 .DEFAULT_GOAL := build
 
