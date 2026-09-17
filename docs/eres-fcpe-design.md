@@ -203,11 +203,29 @@ site), with three differences worth a line each:
   FY2025 tracking checks to the basis point on the fund's own clock (NAV
   -17.06 %, share at the open in EUR at the 16:00 London fixing -16.54 %,
   gap -0.62 pt; the report's own benchmark line, -16.07 %, is struck on
-  another clock and is not the one to read). A
-  nowcast anchored on the close (proxy `DDOG`, converted) therefore carries
-  the valuation day's open-to-close move as an offset until the next NAV;
-  typically a percent, more on an earnings day. Anchoring on the open would
-  need the day's first intraday tick (pofo carries closes only); not done.
+  another clock and is not the one to read). The
+  NOWCAST IS ANCHORED THERE (added 2026-09-17): the record carries
+  `nowcast_anchor: "open"` (default `close`, `ERESMONDEM` unchanged) and the
+  estimate is the last NAV times the proxy's move since the proxy's OPENING
+  print of that NAV's day, `DDOG` converted as before. Anchoring on the close
+  instead carried the valuation day's open-to-close move as an offset until the
+  next NAV: measured on the 264 NAV spans since 2022-04-11 (published NAVs,
+  Yahoo bars, same-day cross), the one-span-ahead estimate lands at 3.81 %
+  rmse anchored on the close against 2.78 % anchored on the open, and 4.52 %
+  against 3.22 % over the 39 spans of the daily era. The same measurement
+  reads the other way over the 37 pre-2022-04-11 spans (0.75 % on the close
+  against 3.33 % on the open), which is the clock change again and costs
+  nothing here: a nowcast only ever anchors on the LAST published NAV, whose
+  era is the current one. The opening prices reach no further than a factor:
+  `Client.fetchYahooOpenFactors` reads the chart API's `open` column next to
+  the `close` and stores the OPEN-TO-CLOSE RATIO of each session as a series of
+  its own (cached under the `SYMBOL~open` view, alongside `~raw`), so `Point`
+  keeps carrying closes only and no cache file written before this existed
+  changed meaning. A day the proxy did not trade, a proxy quoted by a source
+  with no opening print and a failed fetch all fall back on the close anchor
+  with a warning, never on an error, and an estimated forward day always
+  anchors on the proxy's close of its own day since that is the print it was
+  built from.
 - THE RECIPE is the share itself: DDOG in EUR (no dividend, so price is total
   return) less 0.61 %/yr from the 2019-09-19 IPO, real NAVs grafted from
   2021-07-22, nothing before the IPO (a single stock has no donor). Measured

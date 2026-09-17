@@ -193,6 +193,42 @@ func TestWarmupIDsAllPinned(t *testing.T) {
 	}
 }
 
+// TestNowcastRecordsAreWellFormed: a nowcast names a catalogued proxy and, at
+// most, one of the two anchors the client knows. The anchor is the fund's own
+// valuation rule, so it is spelled out per record: ERES_DATADOG's NAV is struck
+// on its proxy's opening print, ERESMONDEM's on its ETFs' NAVs after New York
+// closes, hence on the proxy's close.
+func TestNowcastRecordsAreWellFormed(t *testing.T) {
+	proxies := 0
+	for _, id := range WarmupIDs() {
+		e := catalogByID()[id]
+		switch e.NowcastAnchor {
+		case "", datasets.NowcastAnchorClose, datasets.NowcastAnchorOpen:
+		default:
+			t.Errorf("%s: unexpected nowcast_anchor %q", id, e.NowcastAnchor)
+		}
+		if e.NowcastProxy == "" {
+			if e.NowcastAnchor != "" {
+				t.Errorf("%s: nowcast_anchor without a nowcast_proxy", id)
+			}
+			continue
+		}
+		proxies++
+		if _, ok := Lookup(e.NowcastProxy); !ok {
+			t.Errorf("%s: nowcast proxy %s is not in the catalog", id, e.NowcastProxy)
+		}
+	}
+	if proxies == 0 {
+		t.Fatal("no nowcast_proxy left in the catalog")
+	}
+	if got := catalogByID()["ERES_DATADOG"].NowcastAnchor; got != datasets.NowcastAnchorOpen {
+		t.Errorf("ERES_DATADOG anchors on %q, want %q", got, datasets.NowcastAnchorOpen)
+	}
+	if got := catalogByID()["ERESMONDEM"].NowcastAnchor; got != "" {
+		t.Errorf("ERESMONDEM anchors on %q, want the default close", got)
+	}
+}
+
 // TestGuessUCITS: the catalog answers first, and only an uncatalogued name is
 // judged by the heuristic, which is why an unknown identifier stays unknown
 // rather than reading as a non-UCITS fund.

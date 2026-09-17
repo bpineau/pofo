@@ -132,6 +132,77 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 	return s, nil
 }
 
+// fetchYahooOpenFactors downloads symbol's daily OPEN-to-CLOSE factors: one
+// point per session whose value is that session's opening print divided by its
+// closing print. Multiplying a value that stands on a session's close by its
+// factor moves it back to that session's open, and the move survives any
+// same-session transformation: the split/dividend adjustment and an exchange
+// rate are both one multiplier a day, which the ratio cancels.
+//
+// A factor is all the nowcast of a fund valued at its proxy's opening price
+// needs (Client.openAnchorFactor), so opening prices travel no further than
+// this function: Point keeps carrying closes only, and the cache format is
+// unchanged since the factors are stored as an ordinary series of their own.
+func (c *Client) fetchYahooOpenFactors(ctx context.Context, symbol string, from time.Time) (*Series, error) {
+	path := fmt.Sprintf("/v8/finance/chart/%s?period1=%d&period2=%d&interval=1d",
+		url.PathEscape(symbol), from.Unix(), time.Now().Add(24*time.Hour).Unix())
+	body, err := c.yahooGet(ctx, c.ChartBase, path)
+	if err != nil {
+		return nil, err
+	}
+	var resp struct {
+		Chart struct {
+			Result []struct {
+				Meta struct {
+					Currency string `json:"currency"`
+					Symbol   string `json:"symbol"`
+				} `json:"meta"`
+				Timestamp  []int64 `json:"timestamp"`
+				Indicators struct {
+					Quote []struct {
+						Open  []*float64 `json:"open"`
+						Close []*float64 `json:"close"`
+					} `json:"quote"`
+				} `json:"indicators"`
+			} `json:"result"`
+			Error *struct {
+				Description string `json:"description"`
+			} `json:"error"`
+		} `json:"chart"`
+	}
+	if err := json.Unmarshal(body, &resp); err != nil {
+		return nil, fmt.Errorf("unreadable yahoo response: %w", err)
+	}
+	if resp.Chart.Error != nil {
+		return nil, markAbsent(fmt.Errorf("yahoo: %s", resp.Chart.Error.Description))
+	}
+	if len(resp.Chart.Result) == 0 {
+		return nil, markAbsent(fmt.Errorf("yahoo: empty response for %s", symbol))
+	}
+	r := resp.Chart.Result[0]
+	if len(r.Indicators.Quote) == 0 || len(r.Indicators.Quote[0].Open) != len(r.Timestamp) ||
+		len(r.Indicators.Quote[0].Close) != len(r.Timestamp) {
+		return nil, fmt.Errorf("yahoo: no open column for %s", symbol)
+	}
+	opens, closes := r.Indicators.Quote[0].Open, r.Indicators.Quote[0].Close
+	s := &Series{Symbol: symbol, Name: symbol + " open-to-close factor", Currency: r.Meta.Currency, Source: "yahoo"}
+	for i, ts := range r.Timestamp {
+		if opens[i] == nil || closes[i] == nil || *opens[i] <= 0 || *closes[i] <= 0 {
+			continue
+		}
+		day := dayUTC(time.Unix(ts, 0).UTC())
+		factor := *opens[i] / *closes[i]
+		// Yahoo sometimes repeats the current day; keep the latest value.
+		if n := len(s.Points); n > 0 && s.Points[n-1].Date.Equal(day) {
+			s.Points[n-1].Close = factor
+			continue
+		}
+		s.Points = append(s.Points, Point{Date: day, Close: factor})
+	}
+	sort.Slice(s.Points, func(i, j int) bool { return s.Points[i].Date.Before(s.Points[j].Date) })
+	return s, nil
+}
+
 // fetchYahooIntraday downloads the current day's 5-minute price path from the
 // Yahoo Finance chart API. It returns ErrNotCovered when Yahoo serves no
 // intraday result for the symbol.

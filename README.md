@@ -683,7 +683,12 @@ its last daily value scaled by the proxy's intraday move converted tick by
 tick (`IntradaySeries.Estimate` is true, `Proxy` names the proxy). The same
 proxy carries the fund's daily series past its last published NAV
 (`Series.EstimatedFrom` marks the tail, `WithoutEstimates` strips it); the
-estimate is never cached and never enters a bundled dataset.
+estimate is never cached and never enters a bundled dataset. Both estimates
+start from the proxy print the last NAV was struck on, which the record names:
+its close of that day, or its opening price when the record says
+`nowcast_anchor: "open"` (a fund whose valuation rules price its holding at the
+opening of the valuation day, such as the single-stock FCPE `ERES_DATADOG`),
+falling back on the close when that day has no opening price.
 
 Mapping the result to a chart series is caller-side:
 

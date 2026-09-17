@@ -734,7 +734,7 @@ func (c *Client) historyForResolution(ctx context.Context, isin string, res reso
 			return c.fetchAirfund(ctx, isin, res, from)
 		})
 		if e, ok := catalogByID()[isin]; ok && err == nil {
-			s = c.nowcastForward(ctx, s, e.NowcastProxy) // a copy: the cache stays real
+			s = c.nowcastForward(ctx, s, e) // a copy: the cache stays real
 		}
 	default:
 		s, err = c.historyView(ctx, res.Symbol, from, raw)
