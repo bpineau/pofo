@@ -776,6 +776,45 @@ reaches 0.684 monthly against its live window where its existing chain already
 reaches 0.691. It keeps its single-fund donors, which is the check that this
 section is a finding about replication funds and not a preference for indices.
 
+#### KMLM's own index has no shippable history (probed, 2026-09)
+
+KMLM is a replicator like the two funds above, and the index it replicates is
+the one this repository does not ship, so it was hunted on its own. The hunt
+found no series and closed. Mount Lucas Management's site describes the MLM
+Index and publishes no data for it, the whole site serving two compliance
+documents and nothing else; KraneShares publishes the underlying index only as
+summary periods (month, quarter, year to date, one, three and five years, since
+inception) on the product page and on the factsheet, its product presentation is
+a script-driven application, and its data paths serve holdings. What does exist
+is a filing record: the commodity pool registered as the index's own fund
+vehicle (SEC CIK 0001075058) filed annual reports from 2003 to its 2015
+deregistration, each stating the index's CALENDAR-YEAR return for three years,
+which reconstructs 1999 to 2014 complete, at annual granularity.
+
+That record fails the gate rather than the depth test. It stops six years before
+the fund's first quote, so no part of it can be graded on the real window; it is
+annual, so it cannot anchor a month; and it is the unleveraged 22-market index
+WITH interest on cash inside it, where the fund's index is a higher-notional
+variant, so its level is not the level wanted. Aligning the two would take an
+invented leverage factor, which is the object mismatch the hunt set out to
+escape.
+
+Two measurements are kept, and anyone reopening this should read them first. On
+the fund's own live window the sponsor's published figures put the index at
+9.31 %/yr against the fund's 7.38 %/yr NAV (since 2020-12-01, as of 2026-07-31),
+so an index-minus-published-fee build would sit 1.03 points a year ABOVE the
+fund it reconstructs where the incumbent chain measures 1.25 points a year
+below: neither level wins, and both are a level warn. Over 1999 to 2014 the
+shipped file returned 10.24 %/yr where the filed index returned 3.18 %/yr, at
+1.83 times the index's annual-return dispersion, annual correlation 0.534, signs
+agreeing in 14 of 16 years. Scaled to the file's dispersion and read as an
+excess return over the 2.00 % average three-month bill of those years, the index
+is worth about 4.2 %/yr funded, which puts the donor era some six points a year
+hot against the index the fund tracks. That is a caveat on the donor era's
+level, not a correction: an annual, pre-2015, unleveraged and cash-inclusive
+record is too thin to carry one, and the chain's grading against the fund itself
+stays what the tables above say.
+
 ### The one donor whose fee load is worth correcting (measured, 2026-08)
 
 The rule has an exception, and the euro-hedged AQR class is it. Its donor is
