@@ -43,6 +43,140 @@ func nowcastMux(t *testing.T) *http.ServeMux {
 
 func near(a, b float64) bool { return math.Abs(a-b) < 1e-9 }
 
+// openAnchorMux serves what an OPEN-anchored fund needs (ERES_DATADOG, whose
+// NAV of a day is struck on its proxy's opening print): two NAV days, the
+// proxy's daily bars with their open column, the flat cross, and the proxy's
+// and the cross's intraday ticks of the session named by `session`. proxyDays
+// bounds the daily bars, so a caller can choose whether a forward nowcast tail
+// exists at all. With opens false the chart answers without an open column, the
+// case every fallback rests on.
+func openAnchorMux(t *testing.T, proxyDays int, session time.Time, opens bool) *http.ServeMux {
+	t.Helper()
+	days := testDays(proxyDays)
+	london, _ := time.LoadLocation("Europe/London")
+	mux := http.NewServeMux()
+	mux.HandleFunc(airfundChartPath, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{"fundName":"F","navs":[{"date":"2020-01-06","value":50},{"date":"2020-01-07","value":51}]}`)
+	})
+	mux.HandleFunc("/v8/finance/chart/DDOG", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("interval") == "5m" {
+			fmt.Fprint(w, intradayJSON("USD", "America/New_York", session, []float64{110, 112}))
+			return
+		}
+		closes := []float64{100, 102, 104, 106}[:proxyDays]
+		if !opens {
+			fmt.Fprint(w, chartJSON("DDOG", days, closes))
+			return
+		}
+		// Each session opens 1 % below its close, the 2020-01-07 one at 101.
+		fmt.Fprint(w, chartJSONOpens("DDOG", days, []float64{99, 101, 103, 105}[:proxyDays], closes))
+	})
+	mux.HandleFunc("/v8/finance/chart/USDEUR=X", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Query().Get("interval") == "5m" {
+			fmt.Fprint(w, intradayJSON("EUR", "Europe/London", session.In(london), []float64{0.95, 0.95}))
+			return
+		}
+		fmt.Fprint(w, chartJSONCcy("USDEUR=X", "EUR", testDays(4), []float64{0.9, 0.9, 0.9, 0.9}))
+	})
+	return mux
+}
+
+// TestNowcastForwardAnchorsOnTheProxyOpen: a fund whose record says
+// nowcast_anchor "open" carries the proxy's move since the OPEN of the last
+// NAV's day, so the estimate leaves that session's open-to-close move out.
+func TestNowcastForwardAnchorsOnTheProxyOpen(t *testing.T) {
+	ny, _ := time.LoadLocation("America/New_York")
+	session := time.Date(2020, 1, 10, 9, 30, 0, 0, ny)
+	c, srv := newTestClient(t, t.TempDir(), openAnchorMux(t, 4, session, true))
+	defer srv.Close()
+	s, err := c.Fetch(context.Background(), "ERES_DATADOG", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(s.Points) != 4 || s.EstimateProxy != "DDOG" {
+		t.Fatalf("want the 2 NAVs + 2 estimated days from DDOG, got %d points (%q)", len(s.Points), s.EstimateProxy)
+	}
+	// 51 × 104/101 and 51 × 106/101: the anchor is the open of 2020-01-07
+	// (101), not its close (102), and the flat cross leaves the USD move.
+	if !near(s.Points[2].Close, 51*104/101.0) || !near(s.Points[3].Close, 51*106/101.0) {
+		t.Fatalf("estimated closes %v %v, want %v and %v",
+			s.Points[2].Close, s.Points[3].Close, 51*104/101.0, 51*106/101.0)
+	}
+	// An ESTIMATED last daily value already stands on the proxy's close of its
+	// own day, so today's path anchors there whatever the record says.
+	in, err := c.Intraday(context.Background(), "ERES_DATADOG")
+	if err != nil {
+		t.Fatal(err)
+	}
+	base, anchor := 51*106/101.0, 106*0.9
+	if len(in.Points) != 2 || !near(in.Points[0].Close, base*110*0.95/anchor) {
+		t.Fatalf("intraday on an estimated anchor: %+v", in.Points)
+	}
+}
+
+// TestNowcastIntradayAnchorsOnTheOpenOfAPublishedNAV: with the proxy's daily
+// history stopping at the last NAV, today's path stands on that published NAV
+// and must be anchored on the proxy's OPEN of the NAV's day.
+func TestNowcastIntradayAnchorsOnTheOpenOfAPublishedNAV(t *testing.T) {
+	ny, _ := time.LoadLocation("America/New_York")
+	session := time.Date(2020, 1, 8, 9, 30, 0, 0, ny)
+	c, srv := newTestClient(t, t.TempDir(), openAnchorMux(t, 2, session, true))
+	defer srv.Close()
+	in, err := c.Intraday(context.Background(), "ERES_DATADOG")
+	if err != nil {
+		t.Fatal(err)
+	}
+	anchor := 101 * 0.9 // the open of 2020-01-07 in EUR, not its close
+	if len(in.Points) != 2 || !near(in.Points[0].Close, 51*110*0.95/anchor) ||
+		!near(in.Points[1].Close, 51*112*0.95/anchor) {
+		t.Fatalf("ticks %+v, want the NAV scaled from the open anchor", in.Points)
+	}
+	q, err := c.Latest(context.Background(), "ERES_DATADOG")
+	if err != nil || !near(q.Price, 51*112*0.95/anchor) {
+		t.Fatalf("latest: %+v (%v)", q, err)
+	}
+}
+
+// TestNowcastOpenAnchorFallsBackOnTheClose: a proxy served without an opening
+// price (another source, a day it did not trade) must degrade to the
+// close-anchored estimate, never fail.
+func TestNowcastOpenAnchorFallsBackOnTheClose(t *testing.T) {
+	ny, _ := time.LoadLocation("America/New_York")
+	session := time.Date(2020, 1, 10, 9, 30, 0, 0, ny)
+	c, srv := newTestClient(t, t.TempDir(), openAnchorMux(t, 4, session, false))
+	defer srv.Close()
+	s, err := c.Fetch(context.Background(), "ERES_DATADOG", time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC))
+	if err != nil {
+		t.Fatal(err)
+	}
+	// 51 × 104/102 and 51 × 106/102: the close of 2020-01-07 anchors it.
+	if len(s.Points) != 4 || !near(s.Points[2].Close, 52) || !near(s.Points[3].Close, 53) {
+		t.Fatalf("points %+v, want the close-anchored 52 and 53", s.Points)
+	}
+	if _, ok := c.openAnchorFactor(context.Background(), "DDOG", d(2020, 1, 7)); ok {
+		t.Error("a chart served without an open column must not yield a factor")
+	}
+}
+
+// TestOpenAnchorFactorRejectsAMissingDay pins the two refusals the fallback
+// rests on: a day the proxy did not trade, and a proxy with no Yahoo symbol.
+func TestOpenAnchorFactorRejectsAMissingDay(t *testing.T) {
+	ny, _ := time.LoadLocation("America/New_York")
+	session := time.Date(2020, 1, 10, 9, 30, 0, 0, ny)
+	c, srv := newTestClient(t, t.TempDir(), openAnchorMux(t, 4, session, true))
+	defer srv.Close()
+	ctx := context.Background()
+	if f, ok := c.openAnchorFactor(ctx, "DDOG", d(2020, 1, 7)); !ok || !near(f, 101/102.0) {
+		t.Errorf("factor on a traded day = %v, %v; want 101/102", f, ok)
+	}
+	if _, ok := c.openAnchorFactor(ctx, "DDOG", d(2020, 1, 11)); ok {
+		t.Error("a day the proxy did not trade must not yield a factor")
+	}
+	if _, ok := c.openAnchorFactor(ctx, "LU1234567890", d(2020, 1, 7)); ok {
+		t.Error("an identifier with no known Yahoo symbol must not yield a factor")
+	}
+}
+
 // TestNowcastForwardExtendsToTheProxyClose: the days after the last NAV
 // carry the proxy's EUR returns, are flagged, and never reach the cache or
 // WithoutEstimates' reader.
