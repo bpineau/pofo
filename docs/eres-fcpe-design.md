@@ -183,19 +183,27 @@ site), with three differences worth a line each:
   2026-08-11: +10.32 / +10.46 / -5.49; 2026-08-06: -24.63 / -24.50 / -20.82).
   The FX bar alignment changes nothing (1.96 % with the next bar), and a
   price-date shift is excluded (NAV of X on the open of X-1: 5.2 % rmse,
-  X-2: 7.4 %). The 2 % rmse itself is three regimes, not a tracking error:
-  the LAUNCH months 2021-07 to 2022-03 (37 spans, rmse 5.4 %, beta of the
-  fund on the share 0.71, implied prices outside the day's range, e.g.
-  2022-03-18: 163 $ implied against a 146 $ high), a fund still filling up;
-  the weekly years 2022-04 to 2026-07 (227 spans, rmse 0.62 %, median 0.35 %,
-  beta 1.00), a few isolated days on another print that net out in pairs;
-  and the daily era (28 spans, rmse 0.79 %, MEDIAN 0.08 %, beta 0.99, 75 %
-  of the days within 0.5 %). Outside the launch the fund IS the opening
-  print in EUR. One thing the measurement leaves unexplained: over the
-  4.3 years after the launch the cumulated gap to the share is +0.1 pt,
-  where 0.61 %/yr of charges would cost about -2.6; something offsets the
-  fee (the cash pocket's yield covers a fraction, securities lending
-  would cover the rest, neither is documented) and it is not modelled. A
+  X-2: 7.4 %). The 2 % rmse itself is three regimes, not a tracking error,
+  and the fund's FY2025 annual report names the first: its valuation rules
+  (and the auditor's observation) state that the share is valued at the
+  NASDAQ OPENING price from 2022-04-11, under an expert's method dated
+  2021-04-06, and at the CLOSING price before. The refit agrees to the week:
+  over 2021-07 to 2022-04-11 (37 spans) the close of the valuation day fits
+  at 0.76 % rmse with a beta of 1.0 where the open gives 5.3 % and 0.74 (that
+  low beta once read as "a fund still filling up" was the wrong clock, not a
+  cash pocket); the weekly years 2022-04 to 2026-07 (225 spans) fit the open
+  at 0.58 %, beta 1.00, the close at 3.6 %; the daily era (40 spans) the open
+  at 0.69 %, MEDIAN 0.08 %, beta 0.99, 75 % of the days within 0.5 %. The
+  fund IS the closing print in EUR before 2022-04-11 and the opening print
+  since. The charge is visible once the regimes are kept apart: on the open,
+  the 225 weekly spans cumulate -3.0 pt, about -0.7 %/yr against 0.61 %
+  charged (an earlier reading of "no visible fee" mixed the two clocks). The
+  same report closes the other candidates: no securities financing operation
+  (SFTR) in the year and no financial income on the cash pocket, and its
+  FY2025 tracking checks to the basis point on the fund's own clock (NAV
+  -17.06 %, share at the open in EUR at the 16:00 London fixing -16.54 %,
+  gap -0.62 pt; the report's own benchmark line, -16.07 %, is struck on
+  another clock and is not the one to read). A
   nowcast anchored on the close (proxy `DDOG`, converted) therefore carries
   the valuation day's open-to-close move as an offset until the next NAV;
   typically a percent, more on an earnings day. Anchoring on the open would

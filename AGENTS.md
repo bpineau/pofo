@@ -283,7 +283,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   same for every fund of the site) with `refdata/<ID>-NAV.csv` as the offline
   fallback (`make eres-refdata`). `ERES_DATADOG` was WEEKLY until 2026-07-13, daily since
   (cadence trap over most of the line: read the monthly columns) and is valued
-  at the NASDAQ OPENING price (measured two ways: 2.0 % rmse vs 3.6 % for the
+  at the NASDAQ OPENING price since 2022-04-11 and at the CLOSE before (the FY2025 annual report's valuation rules; measured two ways: 2.0 % rmse vs 3.6 % for the
   close, and 09:30 New York the best-fitting instant on the 5-minute history),
   so its nowcast anchored on the close is off by the valuation day's session
   until the next NAV. THE CLOCK TRAP: the NAV of day D is struck on the two
