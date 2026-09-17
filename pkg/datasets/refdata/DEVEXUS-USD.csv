@@ -1,7 +1,11 @@
 # pofo simdata v1
 # id: DEVEXUS-USD
 # name: Developed markets ex-US equity total return (MSCI World ex USA, USD, monthly)
-# source: MSCI World ex USA net total return via curvo.eu/backtest (MSCI-derived; curvo uses NET indices), USD, 1969-12->. True ex-US universe. Proxy behind VTMGX. Validated 2026-08-20: the Dec-to-Dec returns reproduce the published MSCI World ex USA NET USD calendar years 2012-2025 to the basis point (MSCI factsheet msci-world-ex-usa-index-net.pdf, Jul 31 2026). DATES: each point is dated the LAST calendar day of its month and holds that month-end level (relabeled from the first-of-month export 2026-08-20, so anchorShape pins it to the right month; values unchanged).
+# source: MSCI World ex USA net total return via curvo.eu/backtest (MSCI-derived; curvo uses NET indices), USD, 1969-12->. True ex-US universe. Proxy behind VTMGX. Validated 2026-08-20: the Dec-to-Dec returns reproduce the published MSCI World ex USA NET USD calendar years 2012-2025 to the basis point (MSCI factsheet msci-world-ex-usa-index-net.pdf, Jul 31 2026). DATES: each point is dated the LAST calendar day of its month and holds that month-end level (relabeled from the first-of-month export 2026-08-20, so anchorShape pins it to the right month; values unchanged). Points from the month named by tail-from are NOT the export: they are the validated ETF proxy tail described by tail-source, rebuilt by cmd/gen-msci-refdata.
+# tail-source: tail from IE0006WW1TQ4 (EXUS.L) +TER 0.15 %/yr, TD on overlap 2024-04..2026-05 = -0.019 %/yr, corr 0.9966, rmse 0.297 %/mo, validated 2026-09-10
+# tail-from: 2026-06
+# generated: 2026-09-10
+date,close
 1969-12-31,10000.000000
 1970-01-31,9786.300000
 1970-02-28,9659.000000
@@ -680,3 +684,6 @@
 2026-03-31,1076224.400000
 2026-04-30,1155777.200000
 2026-05-31,1188250.500000
+2026-06-30,1190778.009425
+2026-07-31,1209566.016883
+2026-08-31,1245017.026442
