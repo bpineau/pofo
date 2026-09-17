@@ -1812,7 +1812,7 @@ func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetc
 			return fallback(f, from)
 		}
 		out := anchor
-		if shape, serr := f.Fetch(shapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
+		if shape, serr := f.Fetch(shapeID, shapeStart(anchor, from)); serr == nil && shape != nil && len(shape.Points) > 300 {
 			shape.Points = despike(shape.Points)
 			out = shapedSeries(alignMonthEnd(anchorID, anchor, shape), shape)
 		}

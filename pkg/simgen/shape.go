@@ -28,6 +28,22 @@ import (
 // remaining anchors then keep their own cadence rather than being dropped
 // or, worse, vetoing the whole blend. A missing or non-overlapping shape
 // leaves the anchors unchanged.
+// shapeStart is how far back a shape series must be requested to texture the
+// whole of anchors: the anchors' own first date when they reach further back
+// than the caller's window, otherwise that window. A shape exists only to give
+// the anchors their intra-period variance, so asking for less than the anchors
+// span silently leaves their deep years at the anchors' own cadence. Requesting
+// the shape from ComponentsFrom (1962) is what left the S&P 500 index monthly
+// before 1962 although its shape symbol quotes daily from 1927: every
+// per-observation statistic on that window was then wrong by the square root of
+// the cadence ratio, about sqrt(21) on a daily convention.
+func shapeStart(anchors *marketdata.Series, from time.Time) time.Time {
+	if anchors == nil || len(anchors.Points) == 0 || !anchors.Points[0].Date.Before(from) {
+		return from
+	}
+	return anchors.Points[0].Date
+}
+
 func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 	if shape == nil || len(shape.Points) == 0 || len(anchors.Points) == 0 {
 		return anchors

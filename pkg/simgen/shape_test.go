@@ -1,6 +1,7 @@
 package simgen
 
 import (
+	"errors"
 	"math"
 	"testing"
 	"time"
@@ -354,5 +355,80 @@ func TestTextureScaleDegenerate(t *testing.T) {
 	hot := walk(dates, 0.20, 5)
 	if k := textureScale(mondays, hot.Points); k != textureScaleMin {
 		t.Errorf("hot texture: %v, want the floor %v", k, textureScaleMin)
+	}
+}
+
+// recordingFetcher is a fakeFetcher that remembers the window each id was
+// asked for, which is what a "the shape must span the anchors" test observes.
+type recordingFetcher struct {
+	fakeFetcher
+	asked map[string]time.Time
+}
+
+func (r recordingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
+	r.asked[id] = from
+	return r.fakeFetcher.Fetch(id, from)
+}
+
+func TestShapeStart(t *testing.T) {
+	from := time.Date(1962, 1, 1, 0, 0, 0, 0, time.UTC)
+	deep := &marketdata.Series{Points: []marketdata.Point{{Date: time.Date(1871, 1, 31, 0, 0, 0, 0, time.UTC), Close: 100}}}
+	if got := shapeStart(deep, from); !got.Equal(deep.Points[0].Date) {
+		t.Errorf("deep anchors: %v, want the anchors' own first date", got)
+	}
+	young := &marketdata.Series{Points: []marketdata.Point{{Date: time.Date(1987, 1, 2, 0, 0, 0, 0, time.UTC), Close: 100}}}
+	if got := shapeStart(young, from); !got.Equal(from) {
+		t.Errorf("young anchors: %v, want the caller's window %v", got, from)
+	}
+	if got := shapeStart(nil, from); !got.Equal(from) {
+		t.Errorf("no anchors: %v, want the caller's window %v", got, from)
+	}
+}
+
+// A shape requested only from the caller's window leaves the anchors' deeper
+// years at the anchors' own cadence, which is how the S&P 500 index file stayed
+// monthly before 1962 while its shape symbol quotes daily from 1927.
+func TestShapedIndexAsksTheShapeForTheAnchorsSpan(t *testing.T) {
+	anchor := &marketdata.Series{Symbol: "ANCHOR", Name: "monthly anchor"}
+	v := 100.0
+	for i := 0; i < 420; i++ {
+		d := time.Date(1930, time.January, 1, 0, 0, 0, 0, time.UTC).AddDate(0, i+1, -1)
+		anchor.Points = append(anchor.Points, marketdata.Point{Date: d, Close: v})
+		v *= 1.005
+	}
+	shape := walk(weekdays(1930, time.January, 2, 9200), 0.01, 7)
+	shape.Symbol = "SHAPE"
+	f := recordingFetcher{
+		fakeFetcher: fakeFetcher{"ANCHOR": anchor, "SHAPE": shape},
+		asked:       map[string]time.Time{},
+	}
+	from := time.Date(1962, 1, 1, 0, 0, 0, 0, time.UTC)
+	build := shapedIndex("ANCHOR", "SHAPE", 0, func(Fetcher, time.Time) (*marketdata.Series, error) {
+		return nil, errors.New("fallback: the anchor was rejected")
+	})
+	out, err := build(f, from)
+	if err != nil {
+		t.Fatalf("build: %v", err)
+	}
+	if got := f.asked["ANCHOR"]; !got.Equal(from) {
+		t.Errorf("anchor asked from %v, want the caller's window %v", got, from)
+	}
+	if got := f.asked["SHAPE"]; !got.Equal(anchor.Points[0].Date) {
+		t.Errorf("shape asked from %v, want the anchors' first date %v", got, anchor.Points[0].Date)
+	}
+	// Anchors that a deep shape covers are blended, so the output carries the
+	// shape's cadence over the whole span, not just after the caller's window.
+	if len(out.Points) < 4*len(anchor.Points) {
+		t.Errorf("output has %d points for %d anchors: the deep years kept the anchors' cadence", len(out.Points), len(anchor.Points))
+	}
+	deep := 0
+	cut := time.Date(1940, 1, 1, 0, 0, 0, 0, time.UTC)
+	for _, p := range out.Points {
+		if p.Date.Before(cut) {
+			deep++
+		}
+	}
+	if deep < 2000 {
+		t.Errorf("%d points before %s, want a daily cadence there", deep, cut.Format("2006"))
 	}
 }
