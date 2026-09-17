@@ -45,6 +45,10 @@ import (
 //     USSCV-USD: Ken French value-weighted SMALL HiBM daily, cumulated, from
 //     1963-07), the size×value factor behind ZPRV/USSC. Real daily total-return
 //     levels, so no daily shape is needed, but a GROSS one: see longBackFee.
+//   - VTSMX (Vanguard Total Stock Market Investor, 1992-04) → US total market TR
+//     (refdata USMKT-USD: the CRSP value-weighted market factor, Mkt-RF + RF,
+//     cumulated daily from 1926-07; see cmd/gen-usmkt-refdata), the whole market
+//     behind VTI. Daily and total-return already, and GROSS: see longBackFee.
 //   - EUNH.DE (iShares Core Euro Govt Bond, 2009) → euro-area government bond TR
 //     (refdata EUROGOV-EUR: OECD euro-area 10y yield through TreasuryTR, ~1970),
 //     carried at daily granularity from 2004 by the ECB daily yield-curve shape
@@ -57,6 +61,7 @@ var longBack = map[string]string{
 	"VFITX":    "TREASURY-INT-USD",
 	"VUSTX":    "TREASURY-LONG-USD",
 	"VFINX":    "SP500-USD",
+	"VTSMX":    "USMKT-USD",
 	"^IRX":     "TBILL-3M",
 	"GBPUSD=X": "GBPUSD-DAILY",
 	"DFSVX":    "USSCV-USD",
@@ -109,8 +114,29 @@ var longBack = map[string]string{
 // a second.
 const USSCVGrossCost = 0.010
 
+// usmktGrossCost is the same correction for USMKT-USD, the CRSP total-market
+// factor, and it is small for the reason USSCV's is large: the whole market
+// cap-weighted is the cheapest portfolio there is to hold, where small value
+// is the dearest. Measured the same way, on the 411 months the factor shares
+// with the fund it extends (VTSMX, 1992-04 to 2026-07), it compounds at
+// 11.02 %/yr against the fund's 10.73, a gap of +0.29 pts/yr at a monthly
+// correlation of 0.9992. Adopted: 0.3 %/yr, the full-overlap figure rounded.
+//
+// About half of that is the donor's own price list (VTSMX charged 0.20 %/yr in
+// the 1990s and charges 0.14 now; the target ETF charges 0.03), the rest being
+// commissions, spreads and the CRSP tail of micro caps no fund replicates
+// share for share. The overlap does not identify the split and nothing here
+// pretends otherwise: what a proxy owes is what a holder of the fund did not
+// receive. Per decade the gap runs +0.80 (1992-1999), -0.12 (2000s), +0.30
+// (2010s), +0.56 (2020s), a swing no stability criterion would accept as a
+// trend, so the constant stays the full-overlap one rather than a fitted era.
+// Unexported, unlike USSCVGrossCost: nothing outside this package reads the
+// total-market factor directly.
+const usmktGrossCost = 0.003
+
 var longBackFee = map[string]float64{
 	"USSCV-USD": USSCVGrossCost,
+	"USMKT-USD": usmktGrossCost,
 }
 
 // dailyShape maps a monthly longBack proxy to a daily series of the same
