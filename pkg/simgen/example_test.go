@@ -88,3 +88,21 @@ func ExampleAudit() {
 	// Output:
 	// level=bad path=ok monthly=1.00
 }
+
+// TreasuryZeroTR prices a constant-maturity zero-coupon Treasury (a STRIPS
+// ladder) off a long yield series, which is how the 25+ year STRIPS
+// reconstruction reaches 1953. A par coupon bond of the same maturity is much
+// shorter once yields are high, which is the whole reason the two engines are
+// separate: here a one-point fall in a 12 % yield.
+func ExampleTreasuryZeroTR() {
+	yields := &marketdata.Series{Points: []marketdata.Point{
+		{Date: time.Date(1981, 9, 1, 0, 0, 0, 0, time.UTC), Close: 12},
+		{Date: time.Date(1981, 10, 1, 0, 0, 0, 0, time.UTC), Close: 11},
+	}}
+	strip := TreasuryZeroTR("27y STRIP", yields, 27, 0.0015)
+	par := TreasuryTR("22y par bond", yields, 22, 0.0015)
+	fmt.Printf("strip %+.1f%%, par bond %+.1f%%\n",
+		strip.Last().Close-100, par.Last().Close-100)
+	// Output:
+	// strip +30.2%, par bond +9.1%
+}

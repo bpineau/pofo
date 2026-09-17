@@ -90,6 +90,71 @@ func TestTreasuryTRPricesNegativeYields(t *testing.T) {
 	}
 }
 
+// A zero-coupon strip prices at the semiannual discount factor, and at par
+// (100) when it has no time left to run.
+func TestStripPrice(t *testing.T) {
+	if p := stripPrice(0.06, 0); p != 1 {
+		t.Errorf("a matured strip priced %.6f, want 1", p)
+	}
+	if p, want := stripPrice(0.06, 10), math.Pow(1.03, -20); math.Abs(p-want) > 1e-12 {
+		t.Errorf("10y strip at 6%% priced %.6f, want %.6f", p, want)
+	}
+	// Twice the maturity, the square of the discount factor.
+	if p, q := stripPrice(0.05, 13.5), stripPrice(0.05, 27); math.Abs(p*p-q) > 1e-12 {
+		t.Errorf("strip prices are not multiplicative: %.9f² != %.9f", p, q)
+	}
+}
+
+// With a flat yield a strip earns pure carry, like any other bond: the pull to
+// par IS the return, and it compounds at the yield.
+func TestTreasuryZeroTRFlatYieldIsCarry(t *testing.T) {
+	y := yieldSeries(6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6) // 12 monthly steps at 6%
+	got := TreasuryZeroTR("strip", y, 27, 0).Last().Close
+	if want := 100 * math.Pow(1.03, 2); math.Abs(got-want) > 0.05 {
+		t.Errorf("flat-yield strip index = %.4f, want carry-only ~%.4f", got, want)
+	}
+}
+
+// The reason the engine exists: a zero's duration barely moves with the yield
+// level while a par bond's collapses, so no constant gearing of the coupon bond
+// can stand in for the strip across rate regimes.
+func TestTreasuryZeroTRDurationHoldsWhenYieldsAreHigh(t *testing.T) {
+	// One month, yields 10 basis points lower, at two yield levels.
+	low, high := yieldSeries(3, 2.9), yieldSeries(12, 11.9)
+	zeroLow := TreasuryZeroTR("z", low, 27, 0).Last().Close - 100 - 0.03/12*100
+	zeroHigh := TreasuryZeroTR("z", high, 27, 0).Last().Close - 100 - 0.12/12*100
+	parLow := TreasuryTR("p", low, 22, 0).Last().Close - 100 - 0.03/12*100
+	parHigh := TreasuryTR("p", high, 22, 0).Last().Close - 100 - 0.12/12*100
+
+	if ratio := zeroHigh / zeroLow; ratio < 0.9 || ratio > 1.02 {
+		t.Errorf("a strip's sensitivity should hold across yield levels, high/low = %.3f", ratio)
+	}
+	if ratio := parHigh / parLow; ratio > 0.6 {
+		t.Errorf("a par bond's sensitivity should collapse at high yields, high/low = %.3f", ratio)
+	}
+	if gLow, gHigh := zeroLow/parLow, zeroHigh/parHigh; gHigh < 1.7*gLow {
+		t.Errorf("the strip-over-coupon gearing should roughly double from 3%% to 12%% yields, got %.2f then %.2f", gLow, gHigh)
+	}
+}
+
+// The strip is longer than any par bond of the same maturity, and the fee drags
+// it the same way it drags the coupon reconstruction.
+func TestTreasuryZeroTRLongerThanParAndNetOfFee(t *testing.T) {
+	drop := yieldSeries(5, 4)
+	zero := TreasuryZeroTR("z", drop, 27, 0).Last().Close
+	par := TreasuryTR("p", drop, 27, 0).Last().Close
+	if zero <= par {
+		t.Errorf("a 27y strip should gain more than a 27y par bond: %.4f vs %.4f", zero, par)
+	}
+
+	flat := yieldSeries(5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5)
+	gross := TreasuryZeroTR("g", flat, 27, 0).Last().Close
+	net := TreasuryZeroTR("n", flat, 27, 0.0015).Last().Close
+	if drag := (gross - net) / gross; math.Abs(drag-0.0015) > 5e-4 {
+		t.Errorf("~1y of 0.15%%/yr fee dragged %.5f, want ~0.0015", drag)
+	}
+}
+
 // Zero is the annuity factor's singular point and nothing else: the par bond
 // still prices at 100 there, and a series crossing zero keeps moving.
 func TestBondPriceAtZeroYield(t *testing.T) {

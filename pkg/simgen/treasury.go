@@ -51,6 +51,75 @@ func bondPrice(y, c, n float64) float64 {
 // yield at or below -100 %/yr is refused, since the discount factor stops
 // existing there.
 func TreasuryTR(name string, yields *marketdata.Series, maturityYears, annualFee float64) *marketdata.Series {
+	return constantMaturityTR(name, yields, annualFee, func(y0, y1, dt float64) float64 {
+		if y0 <= -1 || y1 <= -1 {
+			return math.NaN()
+		}
+		return (bondPrice(y1, y0, maturityYears-dt)+100*y0*dt)/100 - 1
+	})
+}
+
+// stripPrice returns the price (per 1 of face) of a zero-coupon bond with n
+// years to maturity at the SEMIANNUAL bond-equivalent yield y, the convention
+// every Treasury yield is quoted in: y/2 is compounded twice a year. n is
+// non-negative and y only has to stay above -200 %/yr for the discount factor
+// to exist.
+//
+// The semiannual convention is not cosmetic at this maturity. A 27-year zero
+// discounted annually instead has a modified duration of n/(1+y), not
+// n/(1+y/2): 24.1 rather than 25.5 years at a 12 % yield, a 5 % error in the
+// one quantity the series exists to carry.
+func stripPrice(y, n float64) float64 {
+	return math.Pow(1+y/2, -2*n)
+}
+
+// TreasuryZeroTR reconstructs the total-return index of a constant-maturity
+// ZERO-COUPON Treasury position (a STRIPS ladder held at a fixed point of the
+// curve) from a yield series, the way TreasuryTR does for a par coupon bond.
+//
+// A STRIP pays nothing until it matures, so its whole return is the repricing
+// of one discount factor: each step holds a fresh maturityYears zero, lets it
+// age by the step's length and reprices it at the next yield, total return =
+// P(y1, T − dt)/P(y0, T) − 1, minus a continuous annualFee. Carry comes out as
+// the pull to par, so there is no coupon term and nothing to reinvest. Yields
+// are read as annualised percent at any cadence and the index starts at 100 on
+// the first yield date.
+//
+// This is a SEPARATE engine from TreasuryTR rather than a maturity setting on
+// it, because the two answer a rate move differently and increasingly so as
+// rates rise. A coupon bond's duration SHRINKS when its yield rises (the early
+// coupons weigh more), a zero's does not: at a 3 % yield a 22-year par bond and
+// a 27-year zero have modified durations of 16.0 and 26.6, a ratio of 1.66, and
+// at 12 % of 7.7 and 25.5, a ratio of 3.31. Any fixed multiple of a coupon fund
+// is therefore right in one rate regime and wrong by a factor of two in the
+// other, which is why a long-STRIPS fund is reconstructed here from the yield
+// itself.
+//
+// Two approximations are worth naming, both of them level rather than path
+// effects. The yield fed in is a PAR yield, while the strip is discounted at a
+// zero rate: on an upward-sloping curve the zero rate sits ABOVE the par yield
+// of the same maturity, so the reconstruction understates the carry a little
+// (see docs/long-treasury-zero-coupon-design.md for the measured sign and
+// size). And the constant-maturity convention reprices the aged strip at its
+// ORIGINAL curve point, not at the slightly shorter one it has rolled down to,
+// so the roll-down gain of a positively-sloped curve is left out too. Both push
+// the same way, and both are small next to a 20 %/yr volatility.
+func TreasuryZeroTR(name string, yields *marketdata.Series, maturityYears, annualFee float64) *marketdata.Series {
+	return constantMaturityTR(name, yields, annualFee, func(y0, y1, dt float64) float64 {
+		if y0 <= -2 || y1 <= -2 {
+			return math.NaN()
+		}
+		return stripPrice(y1, maturityYears-dt)/stripPrice(y0, maturityYears) - 1
+	})
+}
+
+// constantMaturityTR is the loop both reconstructions share: it walks the yield
+// series, asks step for the total return of each period from the yields at its
+// ends and its length in years, and compounds that net of a continuous fee. A
+// period step cannot price (an unpriceable yield, reported as NaN) carries the
+// index forward unchanged, fee and all, rather than dropping the date: a period
+// nobody can price is not one to charge for.
+func constantMaturityTR(name string, yields *marketdata.Series, annualFee float64, step func(y0, y1, dt float64) float64) *marketdata.Series {
 	s := &marketdata.Series{Name: name, Source: "simdata"}
 	pts := yields.Points
 	if len(pts) < 2 {
@@ -59,14 +128,10 @@ func TreasuryTR(name string, yields *marketdata.Series, maturityYears, annualFee
 	val := 100.0
 	s.Points = append(s.Points, marketdata.Point{Date: pts[0].Date, Close: val})
 	for i := 1; i < len(pts); i++ {
-		y0, y1 := pts[i-1].Close/100, pts[i].Close/100
-		if y0 <= -1 || y1 <= -1 {
-			s.Points = append(s.Points, marketdata.Point{Date: pts[i].Date, Close: val})
-			continue
-		}
 		dt := pts[i].Date.Sub(pts[i-1].Date).Hours() / 24 / 365.25
-		r := (bondPrice(y1, y0, maturityYears-dt)+100*y0*dt)/100 - 1
-		val *= 1 + r - annualFee*dt
+		if r := step(pts[i-1].Close/100, pts[i].Close/100, dt); !math.IsNaN(r) {
+			val *= 1 + r - annualFee*dt
+		}
 		s.Points = append(s.Points, marketdata.Point{Date: pts[i].Date, Close: val})
 	}
 	return s
