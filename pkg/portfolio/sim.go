@@ -82,7 +82,11 @@ type SimResult struct {
 	// Portfolio.Assets.
 	Contributions [][]float64
 
-	// Contributed and Withdrawn are the totals of external flows.
+	// Contributed and Withdrawn are the totals of external flows that
+	// actually moved. A withdrawal the portfolio could not fund is recorded,
+	// here and in FlowAmounts, for what was left to pay it and no more: the
+	// household cannot spend money that is not there, and the money-weighted
+	// return is computed from these very flows.
 	Contributed float64
 	Withdrawn   float64
 
@@ -307,10 +311,18 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			}
 		}
 		if flow != 0 {
+			ruin := v+flow <= 0
+			if ruin {
+				// The withdrawal asks for more than is left. Only what was
+				// there can leave: the unfunded remainder is money nobody
+				// received, and recording it would overstate the reported
+				// total AND the money-weighted return, whose flows these are.
+				res.Withdrawn += v + flow // negative here: drops the shortfall
+				flow = -v
+			}
 			res.FlowDates = append(res.FlowDates, dates[k])
 			res.FlowAmounts = append(res.FlowAmounts, flow)
-			if v+flow <= 0 {
-				// Withdrawals depleted the portfolio.
+			if ruin {
 				dates, values, index, res.Ruined = dates[:k+1], values[:k+1], index[:k+1], true
 				values[k] = 0
 				break

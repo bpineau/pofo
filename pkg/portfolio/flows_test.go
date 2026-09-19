@@ -122,3 +122,39 @@ func TestParseFlowsMeta(t *testing.T) {
 		t.Fatal("unknown period must be rejected")
 	}
 }
+
+// A withdrawal plan that outruns the capital: the last payment is only what
+// was left to pay it. Recording the full instalment would overstate both the
+// total withdrawn and the money-weighted return the report builds from these
+// flows (1200 taken out of a 1000 that was never worth more than 1000).
+func TestSimulateLastWithdrawalIsWhatIsLeft(t *testing.T) {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	p := &Portfolio{
+		Name:     "drain",
+		Assets:   []Asset{{ID: "X", Symbol: "X", Weight: 1, Fees: -1, Series: flatSeries("X", start, 200, 10)}},
+		Capital:  1000,
+		Withdraw: Flow{Amount: 400, Period: Monthly},
+	}
+	sim, err := Simulate(p, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !sim.Ruined {
+		t.Fatal("the plan must exhaust the capital")
+	}
+	if math.Abs(sim.Withdrawn-1000) > 1e-9 {
+		t.Errorf("Withdrawn = %v, want 1000 (flat prices, nothing earned)", sim.Withdrawn)
+	}
+	want := []float64{-400, -400, -200}
+	if len(sim.FlowAmounts) != len(want) {
+		t.Fatalf("FlowAmounts = %v, want %v", sim.FlowAmounts, want)
+	}
+	for i := range want {
+		if math.Abs(sim.FlowAmounts[i]-want[i]) > 1e-9 {
+			t.Fatalf("FlowAmounts = %v, want %v", sim.FlowAmounts, want)
+		}
+	}
+	if got := sim.Values[len(sim.Values)-1]; got != 0 {
+		t.Errorf("final value = %v, want 0", got)
+	}
+}
