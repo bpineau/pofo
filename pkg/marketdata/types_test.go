@@ -95,3 +95,43 @@ func TestAlignWindowAndForwardFill(t *testing.T) {
 		t.Errorf("open-ended window kept %d dates, want 5", len(dates))
 	}
 }
+
+// SampleAt is the answer to the two ways Align is the wrong tool for a series
+// that does not own the calendar: it neither adds the series' own dates, nor
+// reads zero before its first quote.
+func TestSampleAtHoldsTheFirstLevelFlat(t *testing.T) {
+	day := func(i int) time.Time { return time.Date(2024, 1, i, 0, 0, 0, 0, time.UTC) }
+	rate := &Series{Symbol: "^IRX", Points: []Point{
+		{Date: day(3), Close: 5}, {Date: day(6), Close: 4},
+	}}
+	dates := []time.Time{day(1), day(2), day(3), day(4), day(6), day(7)}
+
+	lv, before := SampleAt(rate, dates)
+	want := []float64{5, 5, 5, 5, 4, 4}
+	for i := range want {
+		if lv[i] != want[i] {
+			t.Fatalf("levels = %v, want %v", lv, want)
+		}
+	}
+	if !before.Equal(day(3)) {
+		t.Errorf("extrapolation frontier = %v, want %v", before, day(3))
+	}
+	// Align, next to a series that owns the window, would instead have read
+	// ZERO for the rate until its first quote: the hazard SampleAt removes.
+	asset := &Series{Symbol: "A"}
+	for _, d := range dates {
+		asset.Points = append(asset.Points, Point{Date: d, Close: 100})
+	}
+	_, levels := Align([]*Series{asset, rate}, dates[0], dates[len(dates)-1])
+	if levels[1][0] != 0 {
+		t.Errorf("Align's zero fill is gone (%v): SampleAt's reason to exist with it", levels[1])
+	}
+
+	// Entirely inside the series' history: no frontier to report.
+	if _, before := SampleAt(rate, dates[2:]); !before.IsZero() {
+		t.Errorf("frontier = %v, want none", before)
+	}
+	if lv, before := SampleAt(nil, dates); lv != nil || !before.IsZero() {
+		t.Errorf("nil series = %v, %v", lv, before)
+	}
+}

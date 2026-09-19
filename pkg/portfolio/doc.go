@@ -60,8 +60,19 @@
 // calendars (prices forward-filled via marketdata.Align), from the first
 // day every asset trades to the last day they all still trade, rebalancing
 // back to the target weights every N calendar days and deducting envelope
-// fees daily. Asset TERs are never deducted: they are already reflected in
-// prices.
+// fees as it goes. Asset TERs are never deducted: they are already reflected
+// in prices.
+//
+// The ASSETS alone decide that calendar. The financing rate of a levered
+// portfolio is read onto it (marketdata.SampleAt) rather than merged into it,
+// and held flat before its own history starts instead of reading as 0 %/yr;
+// SimResult.Warnings says when it had to be.
+//
+// Everything quoted PER YEAR (envelope fees, the financing rate, the borrow
+// spread) accrues over the calendar time each step spans, 365.25 days to the
+// year. Charging a fixed 1/252 per quote instead only agrees with the quoted
+// rate on a daily calendar: a weekly-quoting holding would pay a fifth of its
+// envelope fee and a monthly one a twentieth.
 //
 // Along the way it attributes each day's time-weighted return to its
 // holdings (SimResult.Contributions: held shares x price move / value;

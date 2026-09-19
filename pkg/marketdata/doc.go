@@ -245,7 +245,10 @@
 // # Toolbox
 //
 //   - Align merges the trading calendars of several series (union of
-//     dates, forward-filled prices);
+//     dates, forward-filled prices); SampleAt reads ONE series onto a
+//     calendar somebody else decided, for the exogenous levels (a financing
+//     rate, a deflator) that must not add sessions of their own nor
+//     forward-fill zeros before their history;
 //   - Client.Fees returns an asset's published TER (pinned catalog, disk
 //     cache, otherwise FT tearsheets and justETF);
 //   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;

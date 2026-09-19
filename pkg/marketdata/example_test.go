@@ -154,6 +154,20 @@ func ExampleAlign() {
 	// 3 [10 11 12] [100 100 102]
 }
 
+// SampleAt reads one series onto a calendar it does not own: an exogenous
+// level (here a financing rate) joined to the assets' trading days without
+// adding any of its own, and held flat rather than zero before its history.
+func ExampleSampleAt() {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	rate := &marketdata.Series{Symbol: "^IRX", Points: []marketdata.Point{
+		{Date: day(2), Close: 5.25}, {Date: day(4), Close: 5.00},
+	}}
+	levels, before := marketdata.SampleAt(rate, []time.Time{day(0), day(2), day(3), day(5)})
+	fmt.Println(levels, before.Format("2006-01-02"))
+	// Output:
+	// [5.25 5.25 5.25 5] 2024-01-03
+}
+
 // Verify is the data doctor: it flags bad points, gaps, flat stretches and
 // staleness so suspect series are reviewed instead of silently skewing a
 // simulation.
