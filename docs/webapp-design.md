@@ -173,11 +173,17 @@ grammar: `/view` accepts exactly what a portfolio file accepts.
 ### Guardrails
 
 The composer is meant for a human on a small server, so it is bounded on every
-axis: at most **6 portfolios** per page (`ex` + `p` combined), **20 holdings**
-each, `p=` value **<= 2000 bytes**, a **60 s** compute timeout per request, and
+axis: at most **6 portfolios** per page, **20 holdings** each, `p=` value
+**<= 2000 bytes**, a **60 s** compute timeout per request, and
 **2 concurrent** renders (a semaphore; each render is CPU- and fetch-heavy).
 The concurrency bound is safe because `marketdata.Client` guards its caches and
 its on-disk writes (temp file then rename, each write carrying complete JSON).
+
+The portfolio cap counts the COLUMNS the page renders, not the `ex` and `p`
+parameters it is written with: `#meta currencies` expands one portfolio into
+one fetched, simulated and fully rendered column per currency, and that list
+has no length of its own, so counting parameters let a single 2 kB `p=` past
+the limit by two orders of magnitude (`columnBudget`, `view.go`).
 
 The FIRE simulator's `POST /api/*` endpoints carry their own bounds
 (`pkg/decumul/web/bounds.go`): body capped at 64 KB, `nPaths` clamped to the
