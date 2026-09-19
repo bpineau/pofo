@@ -573,7 +573,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-sweep` | | per-holding weight sweep: what each line's weight buys and costs, then exit |
 | `-sweep-step` | `5` | grid step, in weight percent, for `-sweep` |
-| `-permanent` | | backtest the tactical Permanent Portfolio 2.0 (Darcet) against the static one, ruin probabilities included, then exit |
+| `-permanent` | | backtest the tactical Permanent Portfolio 2.0 (Darcet) against the static one, ruin probabilities included, the tactical line reported both on the macro that had been published and on the reference-date reading, then exit |
 | `-fire` | | open the local decumulation/FIRE explorer (sliders, ruin curves), optionally for a portfolio file, then serve until stopped |
 | `-serve` | | serve the whole web app (hub, visualizer, FIRE simulator, book) on one port until stopped |
 | `-export-epub` | | write one edition of the FIRE book to the given path as an EPUB 3 file, then exit |

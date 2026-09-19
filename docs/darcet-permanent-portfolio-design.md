@@ -85,9 +85,12 @@ month by REFERENCE date: month M is allocated on the regime of reference month
 M-1 (`Simulate` takes the most recent regime dated strictly before the month it
 pays). That rules out the contemporaneous reading, but it is not a lag by
 PUBLICATION date, and the two differ here: OECD industrial production for
-reference month M-1 is released about forty days after that month ends, i.e.
-around the tenth of M+1, so the allocation of month M reads a number that did
-not exist when it was struck. Section 9 carries the size of the gap.
+reference month M-1 is released about forty days after that month ends, so the
+allocation of month M reads a number that did not exist when it was struck.
+Section 5.8 measures what that is worth and section 9 keeps the caveat; the
+honest information set is available as `SignalConfig.ReleaseLags`
+(`permanent.PublicationLags()`), and every figure in this document that does not
+say otherwise is computed at the reference-date lag.
 
 Assets (via pofo `marketdata`, SIM suffix splices long history):
 - Equity: `URTHSIM` (MSCI World TR, 1969→) for the global model; the OECD
@@ -290,6 +293,226 @@ multicountry_jst, breadth_faithful).
   damping is what holds drawdown low** - Darcet's 1/d² is load-bearing, not
   decoration. **[ROBUST]** (whole sweep), the specific wMax=1.6 is **[SELECTED]**.
 
+### 5.8 The publication-honest information set  [ROBUST]
+
+Everything above reads the macro panel by REFERENCE date. A real-time allocator
+reads it by PUBLICATION date, and the two are not the same month.
+`SignalConfig.ReleaseLags` holds each driver back by its publisher's delay;
+`PublicationLags()` is the honest setting and the zero value is the historical
+one, so both are reproducible from the same code.
+
+#### The honest information set, per driver
+
+`k` below reads: *at the start of month M, the latest reference month whose
+value is published is M-k*. Verified against the publishers' own calendars on
+2026-09-19; the `ReleaseLags` column is `k-1`, because `Simulate` already
+applies one month of its own.
+
+| driver | k | `ReleaseLags` | binding evidence |
+|---|---|---|---|
+| industrial production | **3** | `IP: 2` | Eurostat publishes the monthly production index "between 5 and 10 weeks after the end of the reference period", measured at t+43 to t+47 days over 2026 (ref March out 13 May, ref July out 16 September). The US Federal Reserve is faster ("about 15 days after the reference month ends", t+15 to t+18 over 2026), which alone would give k=2, but a breadth panel needs Europe, so Europe binds. |
+| consumer prices | **2** | `CPI: 1` | BLS publishes the US CPI at t+10 to t+14 days; Eurostat's full HICP "usually between 15 and 18 days after the end of the reference month". Both are out before the start of M+1 for reference month M-1, so at the start of M the freshest is M-2. |
+| short and long rates | **1** | `Rates: 0` | The monthly figure is an average of DAILY market quotes ("the monthly average interest rates for long-term government bonds issued by each country", ECB), so it is fully determined at the close of the reference month and an allocator reads it off a screen without waiting for any statistical agency. |
+
+Sources: Federal Reserve G.17 release policy and performance evaluation
+<https://www.federalreserve.gov/releases/g17/OMB/2026/OMB_2026.htm>; Eurostat
+short-term business statistics quality and scope
+<https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Short-term_business_statistics_-_quality_and_scope>;
+BLS CPI release schedule <https://www.bls.gov/schedule/news_release/cpi.htm>;
+Eurostat HICP metadata
+<https://ec.europa.eu/eurostat/cache/metadata/en/prc_hicp_esms.htm>; ECB
+long-term interest rate statistics
+<https://www.ecb.europa.eu/stats/financial_markets_and_interest_rates/long_term_interest_rates/html/index.en.html>.
+Every `oecd.org` HTML page is behind a Cloudflare challenge and could not be
+read; the OECD's own news-release PDFs and its live SDMX endpoint were used
+instead, which is stronger evidence anyway.
+
+Two of the three can be argued LONGER, and both readings are measured below:
+
+- The OECD's own CPI news release is issued in the first days of month M and
+  carries reference month M-2 (Paris, 8 September 2026 for July 2026), so a user
+  of the OECD AGGREGATE rather than of the national releases is at k=3.
+- The OECD database carries a month's rate average around day 10 to 15 of the
+  next month (FRED's OECD-sourced copy `IRLTLT01USM156N` received the August
+  2026 average on 15 September 2026), so a user who waits for the DATABASE
+  rather than reading the market is at k=2.
+
+`PublicationLags()` takes the shorter, defensible reading (3/2/1) because the
+allocator does not have to go through the OECD: it can read its own CPI release
+and its own screen. The longer reading (3/3/2, "conservative" in the tables) is
+what someone who only ever touches the OECD database would have had.
+
+**Two hazards found while checking the calendars, which concern the panel's
+generator rather than the backtest.** First, `DSD_STES@DF_INDSERV` **version 4.0
+still answers HTTP 200 and is frozen at 2024-03**, while the live version is
+4.3: the exact failure mode of the `OECD/MEI` freeze documented in section 3,
+one dataflow later. Second, the DBnomics mirror the generator reads is itself
+BEHIND the OECD's SDMX endpoint: on 2026-09-19 DBnomics carried 2026-04/2026-05
+where `sdmx.oecd.org` carried 2026-08, and the bundled panel ends accordingly
+(`ip` at 2026-04, the other columns at 2026-05). That is three to four months of
+silent staleness on top of every `k` above, and it is inside the generator's
+six-month freshness tolerance, so nothing complains. A live allocation is
+therefore stale by more than even the conservative setting; a backtest is not,
+since it only ever reads months that are long since final.
+
+The whole battery was re-run at every setting below, on today's data (global window
+1970-01..2026-07, monthly real, `wMax=1.3` unless stated). The reference-date
+row is the recomputation of the published model on the current panel and the
+current quotes, so the before/after comparison is like for like; it sits a
+little above the figures of 5.3/5.7, which were measured on earlier vintages and
+shorter windows.
+
+**Global model** (MSCI World / TLT / T-bills / gold, US-real):
+
+| information set | CAGR | vol | maxDD | %UW | edge vs static | turnover/mo | net 25bp | net 50bp |
+|---|---|---|---|---|---|---|---|---|
+| reference date (M-1) - the published figures | 5.12% | 7.5% | -22.5% | 73% | **+1.29%** | 7.2% | 4.89% | 4.67% |
+| **publication-honest** (IP M-3, CPI M-2, rates M-1) | **4.64%** | 7.6% | **-27.4%** | 75% | **+0.80%** | 7.1% | 4.42% | 4.19% |
+| conservative (IP M-3, CPI M-3, rates M-2) | 4.44% | 7.6% | -30.8% | 76% | +0.60% | 7.2% | 4.21% | 3.99% |
+| uniform lag 2 | 4.85% | 7.6% | -27.0% | 74% | +1.02% | 7.2% | 4.63% | 4.40% |
+| uniform lag 3 | 4.52% | 7.6% | -30.1% | 76% | +0.69% | 7.2% | 4.30% | 4.07% |
+| static Browne PP | 3.84% | 7.3% | -25.2% | 79% | - | 1.2% | 3.80% | 3.76% |
+| MSCI World (equity) | 5.07% | 14.8% | -54.7% | 83% | - | - | - | - |
+
+**Two thirds of the edge survives, and the drawdown does not.** The tactical
+line keeps +0.80 points a year over the static PP instead of +1.29, but its
+worst drawdown deepens from -22.5 % to -27.4 %, i.e. from *better* than the
+static PP's -25.2 % to *worse*. Darcet's quadratic damping still cuts equity
+before the stagflation corner; it now arrives late enough to be caught in part
+of the fall. TURNOVER IS UNCHANGED (7.1 % vs 7.2 % a month): a staler signal is
+not a busier one, so the honest setting costs nothing extra in fees.
+
+**The decay is smooth, not a cliff** (global, edge over static by TOTAL
+information lag; lag 0 is a deliberate look-ahead, the regime of the very month
+being paid, and lag 1 is the published convention):
+
+| total lag (months) | 0 | 1 | 2 | 3 | 4 | 5 | 6 |
+|---|---|---|---|---|---|---|---|
+| CAGR | 5.07% | 5.12% | 4.85% | 4.52% | 4.20% | 4.12% | 3.96% |
+| edge vs static | +1.23% | +1.29% | +1.02% | +0.69% | +0.36% | +0.28% | +0.12% |
+| maxDD | -21.3% | -22.5% | -27.0% | -30.1% | -34.8% | -36.0% | -36.5% |
+
+Reading the very month the portfolio earns adds NOTHING (+1.23 vs +1.29): there
+is no discontinuity at the look-ahead boundary, which is what a genuine
+look-ahead artefact would show. From there the edge bleeds off at roughly a
+third of a point per extra month of staleness and is gone by lag 6. That is the
+signature of a real, slow-moving signal whose half-life is short: two extra
+months of staleness halve it. It also sets the practical bound, and it is a
+narrow one - this method tolerates being a month or two late, and nothing more.
+
+**Per country** (each country's own equity, bond and cash sleeves from the panel
+- share prices plus a flat 3 %/yr dividend add-back, a 20-year par-bond total
+return from the long yield, the short rate accrued, all deflated by the
+country's own CPI - global USD-real gold, and the same global breadth signal):
+
+| country | window | static | tactical ref | tactical honest | edge ref | edge honest | maxDD ref | maxDD honest |
+|---|---|---|---|---|---|---|---|---|
+| USA | 1969-02..2026-05 | 3.86% | 5.14% | 4.79% | +1.28% | +0.93% | -19.8% | -23.0% |
+| JPN | 1989-02..2026-04 | 2.91% | 4.64% | 3.75% | +1.73% | +0.84% | -24.9% | -25.3% |
+| DEU | 1969-02..2026-04 | 4.16% | 5.93% | 5.54% | +1.77% | +1.38% | -26.0% | -24.6% |
+| FRA | 1969-02..2026-04 | 4.40% | 6.18% | 5.99% | +1.78% | +1.59% | -32.7% | -40.4% |
+| GBR | 1978-03..2026-04 | 4.27% | 6.05% | 5.95% | +1.77% | +1.67% | -20.1% | -19.0% |
+| ITA | 1991-04..2026-04 | 4.66% | 7.22% | 7.37% | +2.56% | +2.71% | -22.3% | -19.3% |
+| CAN | 1969-02..2026-04 | 4.30% | 5.85% | 5.41% | +1.54% | +1.10% | -25.1% | -26.6% |
+| **average** | | | | | **+1.78%** | **+1.46%** | | |
+
+The edge survives in all seven, and 82 % of it survives on average (+1.46
+against +1.78; +1.29, or 73 %, at the conservative setting). What the honest lag
+costs varies widely and not in an order this document can explain: Britain loses
+0.10 points a year and Italy GAINS 0.15, while Japan loses 0.89 and the United
+States 0.35. Turnover is 7.1 to 7.5 % a month at every setting in every country.
+Australia has no per-country run: its monthly CPI only starts in 2024, so the
+four sleeves never overlap for long enough (25 months). These runs vary the
+ASSETS, not the signal; the single-country SIGNAL prototypes of 5.5 and 5.6 were
+never in the repository and were not re-run.
+
+**Subperiods and start dates.** The edge over the static PP, in points a year:
+
+| information set | 1st third | 2nd third | 3rd third | 1st half | 2nd half |
+|---|---|---|---|---|---|
+| reference date | -0.29% | +1.10% | +2.95% | +0.56% | +1.99% |
+| publication-honest | -1.44% | +1.27% | +2.47% | -0.25% | +1.84% |
+| conservative | -1.75% | +1.18% | +2.26% | -0.48% | +1.67% |
+
+| information set (start year, to 2026) | 1970 | 1980 | 1990 | 2000 | 2010 | 2015 |
+|---|---|---|---|---|---|---|
+| reference date | +1.29% | +2.33% | +2.08% | +1.79% | +2.94% | +3.67% |
+| publication-honest | +0.80% | +2.10% | +1.93% | +1.65% | +2.29% | +3.38% |
+| conservative | +0.60% | +1.90% | +1.78% | +1.45% | +1.76% | +2.59% |
+
+Section 5.3's "edge in every third and half" DOES NOT SURVIVE: the first third
+(the 1970s and early 1980s, the inflation era the model is supposed to be best
+at) goes from -0.29 to -1.44 points a year, and the first half turns negative.
+The start-date claim survives: every start year from 1970 to 2015 still shows a
+positive honest edge, from +0.80 to +3.38. So the honest reading is that the
+edge is real but concentrated in the last forty years, and that the model was
+LATE, not wrong, during the great inflation.
+
+**FIRE metrics** (4 % real, 30-year overlapping cohorts; the section 7 table
+recomputed):
+
+| information set | CAGR | vol | maxDD | %UW | longest UW | 4% survival | p10 terminal |
+|---|---|---|---|---|---|---|---|
+| tactical, reference date | 5.12% | 7.5% | -22.5% | 73% | 10.1y | 100% | 0.80x |
+| **tactical, publication-honest** | 4.64% | 7.6% | -27.4% | 75% | 12.4y | 100% | **0.29x** |
+| tactical, conservative | 4.44% | 7.6% | -30.8% | 76% | 12.8y | 98% | 0.18x |
+| static Browne PP | 3.84% | 7.3% | -25.2% | 79% | 6.1y | 100% | 0.47x |
+
+40-year ruin probability at a fixed real withdrawal (same stationary bootstrap,
+mean block 24 months, 3000 paths):
+
+| withdrawal | 3.0% | 3.5% | 4.0% | 4.5% |
+|---|---|---|---|---|
+| tactical, reference date | 0.1% | 1.7% | 5.5% | 14.6% |
+| **tactical, publication-honest** | 1.5% | 4.5% | 11.9% | 22.6% |
+| tactical, conservative | 2.0% | 5.8% | 14.1% | 26.6% |
+| static Browne PP | 1.6% | 6.7% | 18.9% | 37.5% |
+
+This is where the honest lag bites hardest, and it changes a conclusion.
+Section 7 sold the overlay on two things: the best worst-case cushion among the
+low-risk options, and a ROUGHLY HALVED ruin probability. The cushion goes: at
+the honest lag the 10th-percentile terminal wealth is 0.29x, BELOW the static
+PP's 0.47x, because the deeper drawdown lands on the withdrawals. The ruin
+advantage survives but shrinks from a halving to about a third off (11.9 % vs
+18.9 % at 4 %), and at a 3 % withdrawal it disappears into the noise (1.5 % vs
+1.6 %). The overlay remains the better of the two at 3.5 % and above; it is no
+longer the better CUSHION in a bad sequence.
+
+**Revisions are a second gap, and a lag cannot close it.** The panel holds
+today's revised index levels, not the vintage the allocator would have read. A
+real-time backtest needs real-time VINTAGES, which this repository does not have
+and DBnomics does not serve, so the size of this one is stated from the
+publishers' own revision studies rather than measured here:
+
+- **Industrial production is the exposed column.** The Federal Reserve measures
+  the average revision to the percent change in total IP, disregarding sign, at
+  **0.24 percentage point** from the first to the fourth estimate over
+  1987-2025, and **0.9 point** mean absolute once the annual benchmarks are
+  folded in (benchmarks are mildly biased downward, -0.4 point on average).
+  Eurostat measures the mean absolute revision of the euro-area production
+  year-on-year rate at **0.3 point** after one month and **0.8 point** after
+  thirty-six. The regime reads an ACCELERATION of a year-on-year rate, i.e. a
+  difference of two such numbers, so a few tenths of a point is exactly the
+  scale at which a country flips side in the breadth count.
+- **Consumer prices are safe.** The BLS states that the CPI-U and CPI-W "are
+  final when issued"; only the SEASONALLY ADJUSTED series is revised, for five
+  rolling years each February, and the panel reads the non-seasonally-adjusted
+  level. (The chained C-CPI-U is the one genuinely provisional US price index,
+  and the panel does not use it.)
+- **Market rates are safe**, being transaction data: the ECB revises them only
+  to correct errors, which Eurostat's metadata calls "extremely infrequent".
+
+Sources: <https://www.federalreserve.gov/releases/g17/OMB/2026/OMB_2026.htm>,
+<https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Short-term_business_statistics_-_revisions>,
+<https://www.bls.gov/cpi/questions-and-answers.htm>,
+<https://ec.europa.eu/eurostat/cache/metadata/en/irt_st_esms.htm>.
+
+So the figures above remain an upper bound even at the honest lag, by an amount
+concentrated entirely in the growth axis. That cuts the same way as everything
+else in this section: the growth breadth is the fragile half of the signal, and
+section 6's standing finding that the inflation axis dominates it is, if
+anything, reinforced.
+
 ## 6. What we learned about regimes & invariants
 
 - **[ROBUST] Static-PP real invariant** (~inflation + 3%) is real across
@@ -299,7 +522,10 @@ multicountry_jst, breadth_faithful).
   noisy. Breadth is not cosmetic - it is what makes the growth axis usable.
 - **[ROBUST] The inflation axis dominates the growth axis.** Disinflation (even
   with slowing growth) is great for equities; the growth breadth mostly helps
-  avoid the stagflation corner.
+  avoid the stagflation corner. The publication lag says the same thing from the
+  other side (5.8): production is the slowest driver to be released AND the only
+  one materially revised, so the growth axis is where both honesty costs are
+  concentrated.
 - **[ROBUST] Quadratic (1/d²) damping trades almost no return for a large
   drawdown reduction**; linear scaling of the same signal concentrates and blows
   drawdown. This is the single most important mechanical finding.
@@ -332,12 +558,21 @@ stretch; 4% survival = share of 30y cohorts never ruined at a 4% real draw; p10
 terminal = 10th-percentile real wealth left after 30y at 4% (1.00x = starting
 capital, 0 = ruined).
 
+READ THIS TABLE WITH 5.8 OPEN: its tactical rows are at the reference-date lag,
+i.e. optimistic. At the publication-honest lag the tactical line's drawdown
+deepens to -27.4 %, its longest underwater stretch to 12.4 years and its p10
+terminal cushion falls to 0.29x, BELOW the static PP's. The findings below are
+amended accordingly.
+
 Findings:
-- **Relevant for FIRE: yes, strongly.** The tactical PP2.0 gave **100% historical
-  4% survival** with the best worst-case cushion (0.56x) among the low-risk
-  options, at 7.5% vol and -23% drawdown. That is exactly the sequence-risk
-  profile FIRE wants: little damage when you draw. 60/40 and equity match the
-  return but are far more fragile to a bad start (0.32x / 98%).
+- **Relevant for FIRE: yes, but on ruin, not on cushion.** The tactical PP2.0
+  gave **100% historical 4% survival** at both lags. At the reference-date lag
+  it also had the best worst-case cushion among the low-risk options (0.56x
+  then, 0.80x on today's longer window), at 7.5% vol and -23% drawdown. **That
+  cushion does not survive an honest information set** (0.29x against the static
+  PP's 0.47x, 5.8): arriving two months late on the growth signal deepens the
+  drawdown, and a drawdown taken while withdrawing is permanent. 60/40 and
+  equity remain far more fragile to a bad start (0.32x / 98%).
 - **Japan lost decades are cured by GLOBAL diversification, not by the overlay.**
   Japan-equity-only = 31y under water, -66%, 24% of retirements ruined; a Japan-
   concentrated static PP still ruins 15% of cohorts. Any *global* PP → 100%
@@ -372,13 +607,20 @@ Weather, etc.)**  [EMPIRICAL/ROBUST]:
 
    | withdrawal | 3.0% | 3.5% | 4.0% | 4.5% |
    |---|---|---|---|---|
-   | tactical PP2.0 | 0.3% | 2.2% | 7.2% | 15.7% |
+   | tactical PP2.0 (reference-date lag) | 0.3% | 2.2% | 7.2% | 15.7% |
+   | tactical PP2.0 (publication-honest) | 1.5% | 4.5% | 11.9% | 22.6% |
    | static Browne PP | 1.4% | 6.0% | 17.3% | 37.2% |
 
-   The tactical overlay roughly **halves the ruin probability at every rate** (4%:
-   7.2% vs 17.3%). This is the sharpest FIRE argument: shallower drawdowns convert
-   directly into materially lower sequence-of-returns ruin. Still a single
-   historical path (one economy's realized series), pre-tax and pre-fee.
+   At the reference-date lag the tactical overlay roughly **halves the ruin
+   probability at every rate** (4%: 7.2% vs 17.3%). At the publication-honest lag
+   the halving becomes **about a third off** (11.9% vs 18.9% on the same rerun,
+   5.8), and at a 3% withdrawal the advantage disappears into the noise. The
+   mechanism still holds: shallower drawdowns convert directly into lower
+   sequence-of-returns ruin, and the overlay still wins at 3.5% and above. The
+   honest row is from the 5.8 rerun (the reference-date and static rows are the
+   original run; the rerun reads 5.5% and 18.9% at 4%, i.e. the same picture).
+   Still a single historical path (one economy's realized series), pre-tax and
+   pre-fee.
 
 ## 8. Generalizing the framework (e.g. Artemis Dragon)
 
@@ -423,14 +665,23 @@ subperiod/start-date/multi-country battery used here.
   2026-08-19 (see the migration note in section 3); the regime series moved by a
   handful of boundary months.
 - Single realized path per country/global; no Monte-Carlo bands on the edge.
-- **The lag is by reference date, not by publication date** (section 3). Holding
-  the regime back one further month would be the strict real-time test, and at
-  this cadence that is not a rounding detail: over 1960-2026 consecutive regimes
-  flip quadrant in 28 % of months and move the four sleeves by 14.5 points of
-  allocation on average (L1 distance, 58.9 points at the worst month). The
-  published figures above are therefore an upper bound on what a real-time
-  investor could have captured, by an amount nobody has measured yet. Measuring
-  it (re-run the whole battery at lag 2) is the first item of the open list.
+- **The lag is by reference date, not by publication date** (section 3), and the
+  gap is now MEASURED (5.8), not merely flagged. It was worth measuring: over
+  1960-2026 consecutive regimes flip quadrant in 28 % of months and move the four
+  sleeves by 14.5 points of allocation on average (L1 distance, 58.9 points at
+  the worst month). Under the honest information set two thirds of the global
+  edge survives (+0.80 against +1.29 points a year) and 82 % of the per-country
+  average (+1.46 against +1.78), the decay with staleness is smooth rather than a
+  cliff, and turnover does not move. What does NOT survive: the drawdown claim
+  (-27.4 % against the static PP's -25.2 %, i.e. worse rather than better), the
+  "edge in every third and half" of 5.3, and the FIRE cushion of section 7. Every
+  figure in this document that does not say "publication-honest" is still at the
+  reference-date lag and is therefore an upper bound; the tables of 5.8 are the
+  ones to quote.
+- **Revisions remain unmeasured, and cannot be fixed by a lag.** The panel holds
+  today's revised levels; a real-time backtest needs real-time vintages, which
+  this repository does not have. Industrial production is the exposed column,
+  consumer prices much less so (5.8).
 
 ## 10. Status & next steps
 
@@ -441,12 +692,28 @@ Shipped:
   Pure core, offline tests, epistemic tags kept in the godoc.
 - `pofo -permanent` CLI: fetches the four sleeves, deflates to real, drives the
   allocation from the panel, prints the backtest stats and the decumul ruin
-  table (§7 caveat 5).
+  table (§7 caveat 5), each tactical line at BOTH information sets.
+- `SignalConfig.ReleaseLags` + `PublicationLags()`: the publication-honest
+  information set, measured across the whole battery in §5.8.
+
+Not made the default, deliberately. `DefaultSignalConfig` keeps the zero lag
+because `Regime` has two jobs: it drives a backtest (where the honest lag is the
+only defensible reading) and it DESCRIBES a past month's macro state for
+reporting (`pkg/compare`'s regime strip, `Regime.Quadrant`), where the
+reference-date reading is the right one and a publication lag would mislabel the
+month. Callers running a backtest should set `PublicationLags()`, as
+`pofo -permanent` now does for its honest row. Flipping the default would touch:
+`DefaultSignalConfig` and its doc, the regime strip in `pkg/compare/contrib.go`
+(which would silently start labelling months by what was known rather than by
+what happened) and its chart snapshots, `cmd/pofo/permanent.go`, this document's
+sections 5.3 to 5.7 and 7 in full, and the examples in
+`pkg/permanent/example_test.go`.
 
 Open:
-- **Measure the publication-date lag** (section 9): re-run the subperiod /
-  start-date / multi-country / frontier battery with the regime held back one
-  further month, and report the whole table at both lags rather than picking one.
+- **Add the measured drivers of the honest lag to the generator's guards**
+  (§5.8): `DSD_STES@DF_INDSERV` 4.0 answers HTTP 200 while frozen at 2024-03,
+  and the DBnomics mirror runs three to four months behind `sdmx.oecd.org`.
+  Neither trips the six-month freshness check.
 - Retune only pole *positions* and `wMax` from a-priori economics, not by fitting;
   re-run the subperiod/start-date/multi-country/frontier battery on any change.
 - Generalize to the Artemis Dragon (§8): add the third stress/vol axis and the

@@ -20,7 +20,10 @@ import (
 // the decumulation ruin probabilities that matter for FIRE. It fetches the four
 // sleeves, deflates them to real monthly returns, drives the allocation from the
 // embedded macro panel, and block-bootstraps the realized tactical and static
-// return streams through the decumul engine.
+// return streams through the decumul engine. The tactical line is reported at
+// two information sets, the publication-honest one and the reference-date one
+// the design doc's figures use, because the gap between them is a third of the
+// edge.
 func runPermanent(ctx context.Context, opt *options, c *marketdata.Client) error {
 	monthEnd := func(s *marketdata.Series) map[time.Time]float64 {
 		out := map[time.Time]float64{}
@@ -118,8 +121,20 @@ func runPermanent(ctx context.Context, opt *options, c *marketdata.Client) error
 	if err != nil {
 		return err
 	}
-	regimes := panel.Regimes(ar.Dates[0].AddDate(-1, 0, 0), ar.Dates[len(ar.Dates)-1], permanent.DefaultSignalConfig())
-	res, err := permanent.Simulate(regimes, ar, permanent.DefaultParams())
+	// Two information sets, reported side by side rather than picked between:
+	// the reference-date lag every published figure of the design doc is
+	// computed with, and the publication-honest one a real-time investor had.
+	simulate := func(lags permanent.ReleaseLags) (permanent.Result, error) {
+		cfg := permanent.DefaultSignalConfig()
+		cfg.ReleaseLags = lags
+		regimes := panel.Regimes(ar.Dates[0].AddDate(-1, 0, 0), ar.Dates[len(ar.Dates)-1], cfg)
+		return permanent.Simulate(regimes, ar, permanent.DefaultParams())
+	}
+	res, err := simulate(permanent.ReleaseLags{})
+	if err != nil {
+		return err
+	}
+	honest, err := simulate(permanent.PublicationLags())
 	if err != nil {
 		return err
 	}
@@ -137,15 +152,20 @@ func runPermanent(ctx context.Context, opt *options, c *marketdata.Client) error
 	fmt.Printf("Tactical Permanent Portfolio 2.0 (Darcet), REAL, monthly, %s..%s\n",
 		res.Dates[0].Format("2006-01"), res.Dates[len(res.Dates)-1].Format("2006-01"))
 	fmt.Printf("Reconstruction of an undisclosed method; see docs/darcet-permanent-portfolio-design.md\n\n")
-	fmt.Printf("%-24s %7s %6s %7s %5s %7s\n", "portfolio", "CAGR", "vol", "maxDD", "%UW", "longUW")
+	fmt.Printf("%-26s %7s %6s %7s %5s %7s\n", "portfolio", "CAGR", "vol", "maxDD", "%UW", "longUW")
 	statRow := func(name string, series []float64) {
 		s := permanent.Compute(series)
-		fmt.Printf("%-24s %6.2f%% %5.1f%% %6.1f%% %4.0f%% %5.1fy\n",
+		fmt.Printf("%-26s %6.2f%% %5.1f%% %6.1f%% %4.0f%% %5.1fy\n",
 			name, s.CAGR*100, s.Vol*100, s.MaxDrawdown*100, s.UnderwaterFraction*100, float64(s.LongestUnderwater)/12)
 	}
-	statRow("tactical PP 2.0", res.Tactical)
+	statRow("tactical, published macro", honest.Tactical)
+	statRow("tactical, reference lag", res.Tactical)
 	statRow("static Browne PP", res.Static)
 	statRow("MSCI World (equity)", eqReal)
+	fmt.Println("\n\"published macro\" holds each driver back by the time its publisher takes to")
+	fmt.Println("release it (production two further months, consumer prices one). \"reference lag\"")
+	fmt.Println("reads last month's numbers on the first of the month, before most of them were")
+	fmt.Println("out: it is what the design doc's figures use, and it is optimistic.")
 
 	const years = 40
 	rates := []float64{0.030, 0.035, 0.040, 0.045}
@@ -162,19 +182,20 @@ func runPermanent(ctx context.Context, opt *options, c *marketdata.Client) error
 		return plan.Simulate(3000, runtime.NumCPU(), 1).Outcome().RuinProb
 	}
 	fmt.Printf("\n%d-year ruin probability at a fixed real withdrawal (stationary bootstrap):\n", years)
-	fmt.Printf("%-24s", "withdrawal rate")
+	fmt.Printf("%-26s", "withdrawal rate")
 	for _, wr := range rates {
 		fmt.Printf(" %6.1f%%", wr*100)
 	}
 	fmt.Println()
 	ruinRow := func(name string, series []float64) {
-		fmt.Printf("%-24s", name)
+		fmt.Printf("%-26s", name)
 		for _, wr := range rates {
 			fmt.Printf(" %6.1f%%", ruin(series, wr)*100)
 		}
 		fmt.Println()
 	}
-	ruinRow("tactical PP 2.0", res.Tactical)
+	ruinRow("tactical, published macro", honest.Tactical)
+	ruinRow("tactical, reference lag", res.Tactical)
 	ruinRow("static Browne PP", res.Static)
 	fmt.Println("\nRuin = share of 40-year retirements exhausted. The realized real series is")
 	fmt.Println("block-bootstrapped (mean block 24 months): one historical path, no tax or fees.")
