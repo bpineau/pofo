@@ -43,17 +43,18 @@ func matiereCash(bills map[int]float64) map[int]float64 {
 	return out
 }
 
-// matiereLongTR builds the long pocket. The bundled TREASURY-LONG-USD cannot
-// serve: the 20-year constant maturity was discontinued between 1987-01 and
-// 1993-09 and the series carries that hole, which would cut every thirty-year
-// vintage from 1958 to 1993 out of the sample. The long PAR YIELD is whole from
-// 1953-04 on, so the pocket is priced off it with the same recipe the bundled
-// series uses, a 20-year par bond at 0,10 %/yr, sampled month-end.
+// matiereLongTR builds the long pocket, off the long PAR YIELD: a 20-year par
+// bond at 0,10 %/yr, sampled month-end.
 //
-// The two agree where both exist: 0,978 correlation on yearly real returns over
-// 1954-2025, and on the vintages the bundled series CAN carry the bundled leg
-// makes the long pocket look slightly WORSE than the rebuilt one does, so
-// nothing the plate concludes rests on the substitution.
+// The plate was drawn that way because the bundled TREASURY-LONG-USD could not
+// serve at the time: the 20-year constant maturity was discontinued between
+// 1987-01 and 1993-09, the file was built from that point alone and carried the
+// hole, which would have cut every thirty-year vintage from 1958 to 1993 out of
+// the sample. The bundled series was rebuilt on 2026-09-19 to this very recipe
+// (cmd/gen-tyield-refdata), so the two now agree by construction; the local
+// build is kept rather than swapped for a read, because the plate's numbers are
+// frozen and a plate should not change shape on the day a file it reads is
+// regenerated.
 func matiereLongTR(t *testing.T) map[int]float64 {
 	t.Helper()
 	frozenAgainstData(t)

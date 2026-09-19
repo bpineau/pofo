@@ -22,7 +22,7 @@ import (
 // a replay builds offline and identically on every machine.
 const (
 	refEquityID     = "SP500-USD"        // S&P 500 total return, month-end
-	refBondID       = "TREASURY-INT-USD" // 5-year Treasury total return, monthly
+	refBondID       = "TREASURY-INT-USD" // 5-year Treasury total return, month-end
 	refEquityWeight = 0.60               // the "60" of the 60/40
 
 	// Label names the reference portfolio for a caption or a chart title.

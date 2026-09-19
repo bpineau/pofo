@@ -29,9 +29,10 @@ import (
 //   - CL=F (NYMEX WTI futures, 2000) → monthly WTI spot (refdata WTI-USD, ~1946).
 //   - VFITX (Intermediate-Term Treasury, 1991) and VUSTX (Long-Term, 1986) →
 //     constant-maturity Treasury total-return reconstructions (refdata
-//     TREASURY-INT-USD / TREASURY-LONG-USD, from FRED CMT yields, ~1953),
-//     carried at daily granularity from 1962 by the TREASURY-*-DAILY
-//     daily-yield shapes (see dailyShape).
+//     TREASURY-INT-USD / TREASURY-LONG-USD: a 5-year and a 20-year par bond on
+//     the Fed's H.15 constant-maturity yields, month-END levels from 1953-04,
+//     see cmd/gen-tyield-refdata), carried at daily granularity from 1962 by the
+//     TREASURY-*-DAILY daily-yield shapes (see dailyShape and alignMonthEnd).
 //   - VFINX (Vanguard 500, 1976) → S&P 500 total return (refdata SP500-USD:
 //     month-end levels from the ^SP500TR index 1988->, ^GSPC + Shiller dividend
 //     1928-1988, Shiller 1871-1928; see cmd/gen-sp500-refdata), the index VFINX

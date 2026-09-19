@@ -24,7 +24,7 @@ func ExampleRun() {
 	}
 	// Output:
 	// 1973-2012, real CAGR 4.7%, worst year 1974 at -23%
-	// Fixed      mean 24k, leanest 24k, 0 lean years, 19k left
+	// Fixed      mean 24k, leanest 24k, 0 lean years, 20k left
 	// Flex -10%  mean 22k, leanest 22k, 33 lean years, 344k left
 }
 

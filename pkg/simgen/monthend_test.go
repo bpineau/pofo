@@ -85,15 +85,18 @@ func TestAlignMonthEndPreservesCalendarYears(t *testing.T) {
 }
 
 // TestMonthEndAnchorGate checks the registry, not the arithmetic: an anchor that
-// is not declared month-end (the Treasury and euro-govt reconstructions, built
-// on monthly AVERAGE yields dated the first of the month) must come back
-// untouched, because snapping those to the month's last trading day would slide
-// them the other way.
+// is not declared month-end (the euro-govt reconstructions, built on monthly
+// AVERAGE yields dated the first of the month, and the monthly average spot of
+// WTI-USD) must come back untouched, because snapping those to the month's last
+// trading day would slide them the other way.
 func TestMonthEndAnchorGate(t *testing.T) {
 	anchor := &marketdata.Series{Points: []marketdata.Point{pt(2020, 1, 1, 100), pt(2020, 2, 1, 110)}}
 	shape := &marketdata.Series{Points: []marketdata.Point{pt(2020, 1, 2, 50), pt(2020, 1, 31, 52)}}
-	if got := alignMonthEnd("TREASURY-INT-USD", anchor, shape); got != anchor {
-		t.Errorf("TREASURY-INT-USD was re-dated: %+v", got.Points)
+	if got := alignMonthEnd("EUROGOV-EUR", anchor, shape); got != anchor {
+		t.Errorf("EUROGOV-EUR was re-dated: %+v", got.Points)
+	}
+	if got := alignMonthEnd("WTI-USD", anchor, shape); got != anchor {
+		t.Errorf("WTI-USD was re-dated: %+v", got.Points)
 	}
 	got := alignMonthEnd("DEVEXUS-USD", anchor, shape)
 	if !got.Points[0].Date.Equal(pt(2020, 1, 31, 0).Date) {

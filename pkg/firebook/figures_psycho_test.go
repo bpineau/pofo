@@ -37,6 +37,7 @@ func mourirRicheReplay(t *testing.T, spend float64) (first int, out []float64) {
 // recompute them and fail on any drift. The sample must stay complete-window
 // only: padding it with truncated vintages would flatter the distribution.
 func TestMourirRicheFigureMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	for _, tc := range []struct {
 		name  string
 		spend float64

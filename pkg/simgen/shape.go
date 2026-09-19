@@ -67,18 +67,20 @@ func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 // month-END levels: a point for month M holds that month's closing level, and
 // the label is only a name for the month. They are the ones alignMonthEnd may
 // re-date. The distinction matters because the other monthly references are not
-// month-end observations at all (the Treasury and euro-govt reconstructions run
-// on FRED/OECD MONTHLY AVERAGE yields, dated the first of the month by the
-// provider's own convention, and WTI-USD is a monthly average spot), and moving
-// those to the month's last trading day would shift a whole reconstruction the
-// other way. Only add an id here after checking its calendar-year returns
-// against the published index (see pkg/datasets/golden/refdata_test.go).
+// month-end observations at all (the euro-govt reconstructions run on OECD
+// MONTHLY AVERAGE yields dated the first of the month by the provider's own
+// convention, and WTI-USD is a monthly average spot), and moving those to the
+// month's last trading day would shift a whole reconstruction the other way.
+// Only add an id here after checking its calendar-year returns against the
+// published index (see pkg/datasets/golden/refdata_test.go).
 var monthEndAnchor = map[string]bool{
-	"SP500-USD":     true, // dated from ^GSPC, already on trading days
-	"MSCIWORLD-USD": true, // Curvo net-TR export, relabeled 2026-07-18
-	"DEVEXUS-USD":   true, // Curvo net-TR export, relabeled 2026-08-20
-	"EM-USD":        true, // Curvo net-TR export, relabeled 2026-08-20
-	"TREND-NET-USD": true, // BTOP50 monthly net composite, month-end by construction
+	"SP500-USD":         true, // dated from ^GSPC, already on trading days
+	"MSCIWORLD-USD":     true, // Curvo net-TR export, relabeled 2026-07-18
+	"DEVEXUS-USD":       true, // Curvo net-TR export, relabeled 2026-08-20
+	"EM-USD":            true, // Curvo net-TR export, relabeled 2026-08-20
+	"TREND-NET-USD":     true, // BTOP50 monthly net composite, month-end by construction
+	"TREASURY-LONG-USD": true, // par bond on the month's LAST quoted yield, rebuilt 2026-09-19
+	"TREASURY-INT-USD":  true, // idem (cmd/gen-tyield-refdata)
 }
 
 // alignMonthEnd re-dates each monthly anchor point onto the last shape date in
