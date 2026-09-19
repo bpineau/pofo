@@ -1,5 +1,5 @@
 # Sequence of returns risk: the retiree's real enemy
-<!-- source: sequence-des-rendements @ 3a3275016c0b -->
+<!-- source: sequence-des-rendements @ 07a0c1f55315 -->
 
 Two retirees start with the same million, the same portfolio, the same $40,000 inflation-indexed withdrawal. Over thirty years their portfolios earn exactly the same average return.
 
@@ -35,7 +35,7 @@ Take three years of real returns: +20%, +10%, −25%. Geometric mean: near enoug
 | 2 | 720,000 | 680,000 | +10% | 748,000 |
 | 3 | 748,000 | 708,000 | +20% | 849,600 |
 
-Same returns, same average, same withdrawals: $887,400 against $849,600. Almost $38,000 apart, a full year of spending, in three years flat. Now stretch that mechanism across a bear market filling the entire first decade. Add withdrawals that eat a growing share of a shrinking capital every year. What you get is the distance between the 1966 and the 1982 vintages of US history. The first runs out before its horizon ends, the second finishes several times richer than it started. And the first was not short of returns: its portfolio compounded at 4.2% a year in real terms over thirty years, more than the 4% it was drawing. Its ruin turned on the order alone, a first decade at −1.2% a year against +11.4% for the 1982 vintage ([[the-trinity-study]]).
+Same returns, same average, same withdrawals: $887,400 against $849,600. Almost $38,000 apart, a full year of spending, in three years flat. Now stretch that mechanism across a bear market filling the entire first decade. Add withdrawals that eat a growing share of a shrinking capital every year. What you get is the distance between the 1966 and the 1982 vintages of US history. The first runs out before its horizon ends, the second finishes several times richer than it started. And the first was not short of returns: its portfolio compounded at 4.2% a year in real terms over thirty years, more than the 4% it was drawing. Its ruin turned on the order alone, a first decade at −1.2% a year against +11.5% for the 1982 vintage ([[the-trinity-study]]).
 
 ::: figure millesimes-1966-1982
 The same plan ($1M, $40k a year indexed to inflation) run on the real US 60/40, once from 1966 and once from 1982, both curves rebased to their starting day. Reconstructed for this book from the S&P 500, 5-year Treasuries and CPI-U.
@@ -50,7 +50,7 @@ Sequence risk is not spread evenly through time. It piles up massively at the st
 The research (ERN part 15 in particular, [[the-ern-series]]) puts numbers on that intuition: the correlation between a plan's final success and the returns it actually earned is overwhelming for the first 5 to 10 years and weak afterward. In practice, **at least 70%** of the fate of a 40-year retirement is settled in its first decade (more still once the years are no longer drawn independently). The analysis that shows it can be redone on any set of simulated paths. Sort the scenarios by the real return of their first ten years, then look at the distribution of final outcomes within each bucket. That is failure decomposed by decisive decade, and it tells you at once whether your plan depends on the opening or on the average.
 
 ::: figure importance-annees
-The same analysis pushed year by year instead of in ten-year buckets: the share of the final outcome that each retirement year's return accounts for on its own. The first two years carry a fifth of it, the first decade 71%, the last twenty years 6% between them. Measured on the central model, with a rigid 4% withdrawal over forty years. And since that model draws its years independently, it understates rather than exaggerates.
+The same analysis pushed year by year instead of in ten-year buckets: the share of the final outcome that each retirement year's return accounts for on its own. The first two years carry a fifth of it, the first decade 72%, the last twenty years 6% between them. Measured on the central model, with a rigid 4% withdrawal over forty years. And since that model draws its years independently, it understates rather than exaggerates.
 :::
 
 
