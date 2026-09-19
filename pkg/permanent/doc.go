@@ -44,7 +44,7 @@
 //     Regime is also read descriptively, to say what the world's macro state was
 //     in a past month (the report's regime strip), and there the reference-date
 //     reading is the right one. A backtest should pass PublicationLags; it costs
-//     about a third of the tactical edge over the static portfolio (globally
+//     nearly two fifths of the tactical edge over the static portfolio (globally
 //     +1.29 to +0.80 points a year, and a deeper worst drawdown), measured in
 //     docs/darcet-permanent-portfolio-design.md, which reports the whole battery
 //     at both settings.
