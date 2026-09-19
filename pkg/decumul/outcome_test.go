@@ -29,6 +29,29 @@ func TestOutcomeWorst10yRobust(t *testing.T) {
 	}
 }
 
+// When every path grew through every decade, the worst decade is still one a
+// path lived: a running minimum seeded at zero would report a decade of 0 %
+// that no path ever produced, and would contradict the p5 sitting above it.
+func TestOutcomeWorst10yWithoutALosingDecade(t *testing.T) {
+	grow := func(rate float64) []float64 {
+		w := make([]float64, 11)
+		w[0] = 100
+		for i := 1; i < len(w); i++ {
+			w[i] = w[i-1] * (1 + rate)
+		}
+		return w
+	}
+	o := Ensemble{Years: 10, Paths: []PathResult{
+		{Wealth: grow(0.02)}, {Wealth: grow(0.05)},
+	}}.Outcome()
+	if math.Abs(o.Worst10yCAGR-0.02) > 1e-9 {
+		t.Errorf("Worst10yCAGR = %.4f, want 0.02, the leanest decade any path lived", o.Worst10yCAGR)
+	}
+	if o.Worst10yP5 < o.Worst10yCAGR {
+		t.Errorf("p5 (%.4f) fell below the min (%.4f)", o.Worst10yP5, o.Worst10yCAGR)
+	}
+}
+
 // Cumulative tax and the effective tax rate are medians across paths of each
 // path's total tax and its tax/gross ratio.
 func TestOutcomeTaxMetrics(t *testing.T) {

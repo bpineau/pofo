@@ -135,7 +135,9 @@ func TestMaxSharpeIsGlobalOptimum(t *testing.T) {
 		return dot(mu, w) / math.Sqrt(v)
 	}
 	const steps = 200
-	bestGrid, bestW := 0.0, []float64{}
+	// seeded below every candidate, not at zero: a grid whose best Sharpe was
+	// negative would otherwise be compared against a point it never contains.
+	bestGrid, bestW := math.Inf(-1), []float64{}
 	for i := 0; i <= steps; i++ {
 		for j := 0; i+j <= steps; j++ {
 			w := []float64{float64(i) / steps, float64(j) / steps, float64(steps-i-j) / steps}
