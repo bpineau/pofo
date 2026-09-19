@@ -1,5 +1,5 @@
 # Seven ways to live on one portfolio
-<!-- source: sept-facons-de-vivre @ a7a228f3cba7 -->
+<!-- source: sept-facons-de-vivre @ 17641f10d1d5 -->
 
 A withdrawal rule has a name, not a face. Everyone knows that Bengen pays a fixed amount, that VPW pays a percentage, that guardrails cut when the current rate runs away. Far fewer people know what a life lived under each of those rules looks like. How much you get in year one, how much in year ten, whether the cut lands all at once or stretches over fifteen years, and what is left in the account the day you stop counting.
 
@@ -32,7 +32,7 @@ The seven rules, from the most rigid to the most closely tied to the portfolio:
 ## January 1973: the crisis first
 
 ::: figure replay-marche-1973
-The portfolio itself, with not a single withdrawal taken. The 1973 to 1974 crash wipes out 38% in real terms, then the decade's inflation eats what is left, so the capital is still a third below its starting value nine years in. It takes until 1983 to get durably back above where it began. Over the forty years, though, the portfolio returns 4.7% real a year.
+The portfolio itself, with not a single withdrawal taken. The 1973 to 1974 crash wipes out 38% in real terms, then the decade's inflation eats what is left, so the capital is still a quarter below its starting value nine years in. It takes until 1983 to get durably back above where it began. Over the forty years, though, the portfolio returns 4.7% real a year.
 :::
 
 This is the sequence all of these rules were invented for ([[sequence-of-returns]]). The average return over the forty years is fine. It is the order that kills. A withdrawal taken during a crash sells a much bigger slice of the portfolio, since the portfolio has shrunk while the amount withdrawn has not. Those shares leave at the bottom and never take part in the recovery. The same crash fifteen years later would find a portfolio that has already banked its best years and has far fewer years left to fund.

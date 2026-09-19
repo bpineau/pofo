@@ -31,7 +31,7 @@ Les sept règles, de la plus rigide à la plus proportionnelle au capital :
 ## Janvier 1973 : la crise d'abord
 
 ::: figure replay-marche-1973
-Le portefeuille lui-même, sans un seul retrait. Le krach de 1973-1974 emporte 38 % en termes réels, puis l'inflation de la décennie ronge ce qui reste, si bien que le capital vaut encore un tiers de moins neuf ans après le départ. Il faut attendre 1983 pour repasser durablement au-dessus de la valeur initiale. Sur les quarante ans, le portefeuille finit pourtant à 4,7 % réel par an.
+Le portefeuille lui-même, sans un seul retrait. Le krach de 1973-1974 emporte 38 % en termes réels, puis l'inflation de la décennie ronge ce qui reste, si bien que le capital vaut encore un quart de moins neuf ans après le départ. Il faut attendre 1983 pour repasser durablement au-dessus de la valeur initiale. Sur les quarante ans, le portefeuille finit pourtant à 4,7 % réel par an.
 :::
 
 Voilà la séquence pour laquelle toutes ces règles ont été inventées ([[sequence-des-rendements]]). Le rendement moyen des quarante ans est correct. C'est l'ordre qui tue. Un retrait pris pendant un krach vend une part bien plus grosse du portefeuille, puisque celui-ci a fondu alors que le montant retiré, lui, n'a pas bougé. Ces parts-là partent au plus bas et ne participent jamais à la reprise. Le même krach quinze ans plus tard trouverait un capital qui a déjà encaissé ses meilleures années, et qui a beaucoup moins d'années à financer derrière lui.
