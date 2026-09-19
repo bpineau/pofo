@@ -117,7 +117,7 @@ type pocket struct {
 // its pro-rata share of growth, its GainFrac-implied cost basis, and a
 // per-path clone of any stateful tax. The kernels pass a one-element stack
 // array as dst, so the common single-sleeve path allocates nothing.
-func (p Plan) newPockets(dst []pocket, growth float64) []pocket {
+func (p *Plan) newPockets(dst []pocket, growth float64) []pocket {
 	defaulted := func(t Tax) Tax {
 		if t == nil {
 			return CTOFlatTax{}

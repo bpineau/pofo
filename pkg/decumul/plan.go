@@ -320,7 +320,7 @@ type Plan struct {
 }
 
 // planYears is the horizon the spending rules plan over.
-func (p Plan) planYears() int {
+func (p *Plan) planYears() int {
 	if p.PlanHorizon > 0 {
 		return p.PlanHorizon
 	}
@@ -334,7 +334,7 @@ func (p Plan) planYears() int {
 // and always run on the annual kernel.
 // buf, when long enough, backs the path's two series (see newPathResult); nil
 // lets the kernel allocate them itself.
-func (p Plan) runPath(seq scenario.Sequence, lives Lives, buf []float64) PathResult {
+func (p *Plan) runPath(seq scenario.Sequence, lives Lives, buf []float64) PathResult {
 	if p.Monthly && p.Percent <= 0 && !p.Amortize && !p.Bounded.active() {
 		return p.runPathMonthly(seq, lives, buf)
 	}
@@ -472,7 +472,7 @@ func pmt(wealth, r float64, n int) float64 {
 // needAt is the scheduled net spending in a given year: the base need scaled
 // by the spend schedule and by any survivor adjustment, minus the income
 // active that year, floored at 0.
-func (p Plan) needAt(year int, l life) float64 {
+func (p *Plan) needAt(year int, l life) float64 {
 	return p.needAtWith(year, l, p.income(year, l))
 }
 
@@ -482,13 +482,13 @@ func (p Plan) needAt(year int, l life) float64 {
 // each of them: the arithmetic is identical, but a year costs one scan rather
 // than three (thirteen in the monthly kernel), which the profile showed was
 // the kernel's single largest cost.
-func (p Plan) needAtWith(year int, l life, income float64) float64 {
+func (p *Plan) needAtWith(year int, l life, income float64) float64 {
 	return netAfter(p.NeedAnnual*p.schedAt(year)*l.spendFactor(year), income)
 }
 
 // schedAt is the spending multiplier for a year: SpendSchedule[year] when
 // present, 1 otherwise.
-func (p Plan) schedAt(year int) float64 {
+func (p *Plan) schedAt(year int) float64 {
 	if year < len(p.SpendSchedule) {
 		return p.SpendSchedule[year]
 	}
@@ -503,7 +503,7 @@ func (p Plan) schedAt(year int) float64 {
 // This is the HOUSEHOLD's forecast, so it uses the full flows and the annuity
 // as bought, never the drawn deaths: a rule that discounted the mortality it
 // was dealt would be planning with knowledge no retiree has.
-func (p Plan) cashflowPV(from int, r float64, l life) float64 {
+func (p *Plan) cashflowPV(from int, r float64, l life) float64 {
 	if len(p.Cashflows) == 0 && l.annuity == 0 {
 		return 0 // no income to discount; skip the whole horizon scan
 	}
@@ -541,7 +541,7 @@ func netAfter(spend, income float64) float64 {
 
 // income is the year's income from outside the portfolio: the cashflows each
 // member still receives, after any reversion, plus the annuity.
-func (p Plan) income(year int, l life) float64 {
+func (p *Plan) income(year int, l life) float64 {
 	sum := l.annuityAt(year)
 	for _, c := range p.Cashflows {
 		sum += c.paidAt(year, l)

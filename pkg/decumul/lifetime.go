@@ -170,7 +170,7 @@ type life struct {
 
 // life builds the per-path state. A nil Lifetime, or the zero Lives (no
 // draw), yields a household that reaches the plan horizon intact.
-func (p Plan) life(lv Lives) life {
+func (p *Plan) life(lv Lives) life {
 	lf := life{horizon: p.Years, self: p.Years + 1, partner: -1, survivor: 1, annYear: -1}
 	if p.Lifetime == nil || lv.Self <= 0 {
 		return lf

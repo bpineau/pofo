@@ -114,7 +114,7 @@ func (a *Annuity) survivalFrom(lt *Lifetime, year int) func(float64) float64 {
 // recording the premium raised and the lifelong income it bought on the path
 // and on its mortality state. It is a no-op without a Lifetime, outside the
 // purchase year, or once already bought.
-func (p Plan) buyAnnuity(k int, pks pocketOps, res *PathResult, lf *life) {
+func (p *Plan) buyAnnuity(k int, pks pocketOps, res *PathResult, lf *life) {
 	a := p.Annuity
 	if a == nil || p.Lifetime == nil || k != a.Year || lf.annYear >= 0 {
 		return

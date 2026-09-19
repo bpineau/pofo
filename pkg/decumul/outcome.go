@@ -2,7 +2,6 @@ package decumul
 
 import (
 	"math"
-	"sort"
 
 	"github.com/bpineau/pofo/pkg/metrics"
 )
@@ -46,8 +45,9 @@ func (e Ensemble) Outcome() Outcome {
 		if p.Ruined {
 			ruined++
 		}
-		underwater[i] = float64(yearsUnderwater(lived))
-		maxDDs[i] = pathMaxDD(lived)
+		under, dd := pathPeakStats(lived)
+		underwater[i] = float64(under)
+		maxDDs[i] = dd
 		taxes[i] = p.TaxPaid
 		if gross := p.Withdrawn + p.TaxPaid; gross > 0 {
 			taxRates[i] = p.TaxPaid / gross
@@ -73,33 +73,25 @@ func (e Ensemble) Outcome() Outcome {
 	return o
 }
 
-// yearsUnderwater counts entries strictly below the running peak.
-func yearsUnderwater(w []float64) int {
-	peak, n := w[0], 0
+// pathPeakStats walks a wealth path once for the two statistics that read the
+// same running peak: under is the number of points strictly below the prior
+// real high, maxDD the deepest peak-to-trough loss (0.30 = 30%). A point at a
+// new high is neither, which is what lets the division be skipped there.
+func pathPeakStats(w []float64) (under int, maxDD float64) {
+	peak := w[0]
 	for _, v := range w {
 		if v >= peak {
 			peak = v
-		} else {
-			n++
+			continue
 		}
-	}
-	return n
-}
-
-// pathMaxDD is the deepest peak-to-trough loss of a wealth path (0.30 = 30%).
-func pathMaxDD(w []float64) float64 {
-	peak, dd := w[0], 0.0
-	for _, v := range w {
-		if v > peak {
-			peak = v
-		}
+		under++
 		if peak > 0 {
-			if d := 1 - v/peak; d > dd {
-				dd = d
+			if d := 1 - v/peak; d > maxDD {
+				maxDD = d
 			}
 		}
 	}
-	return dd
+	return under, maxDD
 }
 
 // worst10y is the lowest 10-year real CAGR found in the wealth path; ok is
@@ -109,18 +101,24 @@ func pathMaxDD(w []float64) float64 {
 // the -1 then means "lost everything over this decade", and windows that start
 // after ruin (zero starting wealth) are skipped instead of conflated with it.
 func worst10y(w []float64) (float64, bool) {
-	worst, ok := 0.0, false
+	// x^0.1 is increasing over the non-negative growth ratios, so the worst
+	// decade is the one with the smallest ratio: the window loop compares
+	// ratios and the (expensive) root is taken once, on the winner, instead of
+	// once per window. Same winner, same arithmetic on it, same bits.
+	ratio, ok := 0.0, false
 	for i := 0; i+10 < len(w); i++ {
 		if w[i] <= 0 {
 			continue // window starts after ruin: undefined, skip
 		}
-		end := max(w[i+10], 0)
-		c := math.Pow(end/w[i], 0.1) - 1 // end == 0 -> -1 (total loss realised)
-		if !ok || c < worst {
-			worst, ok = c, true
+		r := max(w[i+10], 0) / w[i] // end == 0 -> 0 -> -1 below (total loss realised)
+		if !ok || r < ratio {
+			ratio, ok = r, true
 		}
 	}
-	return worst, ok
+	if !ok {
+		return 0, false
+	}
+	return math.Pow(ratio, 0.1) - 1, true
 }
 
 // conditionalTail averages the worst frac share of dds (already losses).
@@ -128,14 +126,12 @@ func conditionalTail(dds []float64, frac float64) float64 {
 	if len(dds) == 0 {
 		return 0
 	}
-	s := append([]float64(nil), dds...)
-	sort.Sort(sort.Reverse(sort.Float64Slice(s)))
-	n := int(frac * float64(len(s)))
+	n := int(frac * float64(len(dds)))
 	if n < 1 {
 		n = 1
 	}
 	sum := 0.0
-	for _, d := range s[:n] {
+	for _, d := range metrics.TopK(dds, n) {
 		sum += d
 	}
 	return sum / float64(n)
