@@ -1,6 +1,9 @@
 package suggest
 
-import "sort"
+import (
+	"math"
+	"sort"
+)
 
 // Group is a set of holdings that move almost identically and belong to the
 // same asset class, effectively one bet held several times.
@@ -27,24 +30,25 @@ func Redundancies(holdings []Holding, returns [][]float64, threshold float64) []
 		}
 		return x
 	}
-	// Union near-identical, same-class pairs; remember the weakest link.
-	minCorr := map[int]float64{}
+	// Union near-identical, same-class pairs, keeping every pair's correlation:
+	// the weakest link cannot be tracked as the groups form, because a union
+	// moves the root and would orphan what was recorded under the old one (A~B
+	// at 0.95 then A~C at 0.99 reported 0.99 as the group's weakest pair). It is
+	// computed below, once the membership is final. Every pair inside a group
+	// shares its asset class by transitivity, so every one of them is in here.
+	corr := map[[2]int]float64{}
 	for i := 0; i < n; i++ {
 		for j := i + 1; j < n; j++ {
 			if holdings[i].Meta.AssetClass != holdings[j].Meta.AssetClass {
 				continue
 			}
 			c := Correlation(returns[i], returns[j])
+			corr[[2]int{i, j}] = c
 			if c < threshold {
 				continue
 			}
-			ri, rj := find(i), find(j)
-			if ri != rj {
+			if ri, rj := find(i), find(j); ri != rj {
 				parent[ri] = rj
-			}
-			root := find(i)
-			if v, ok := minCorr[root]; !ok || c < v {
-				minCorr[root] = c
 			}
 		}
 	}
@@ -55,14 +59,20 @@ func Redundancies(holdings []Holding, returns [][]float64, threshold float64) []
 		members[r] = append(members[r], i)
 	}
 	var groups []Group
-	for root, idx := range members {
+	for _, idx := range members {
 		if len(idx) < 2 {
 			continue
 		}
-		g := Group{MinCorr: minCorr[root]}
-		for _, i := range idx {
+		sort.Ints(idx)
+		g := Group{MinCorr: math.Inf(1)}
+		for a, i := range idx {
 			g.IDs = append(g.IDs, holdings[i].ID)
 			g.Weight += holdings[i].Weight
+			for _, j := range idx[a+1:] {
+				if c, ok := corr[[2]int{i, j}]; ok && c < g.MinCorr {
+					g.MinCorr = c
+				}
+			}
 		}
 		groups = append(groups, g)
 	}
