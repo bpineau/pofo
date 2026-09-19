@@ -14,16 +14,25 @@
 // pkg/datasets/refdata/:
 //
 //   - BUND-EUR.csv     German government bond total return (10-year benchmark,
-//     monthly, 1956-05→): the OECD long-term government bond
-//     yield for Germany run through the constant-maturity
-//     reconstruction simgen.TreasuryTR. The euro-area
-//     aggregate EUROGOV-EUR is deliberately NOT reused: it
-//     smears the periphery spreads of 2011-2012 that a Bund
-//     basket never carried.
+//     monthly, 1956-05→): the month-ends of the Bundesbank's
+//     own daily curve from the day it starts (1997-08), and
+//     before it the OECD long-term government bond yield for
+//     Germany rebased onto them at the junction; both run
+//     through the constant-maturity reconstruction
+//     simgen.TreasuryTR. The euro-area aggregate EUROGOV-EUR is
+//     deliberately NOT reused: it smears the periphery spreads
+//     of 2011-2012 that a Bund basket never carried. Real data
+//     sets the level wherever it exists, because an OECD monthly
+//     yield is the month's AVERAGE of the daily quotes: driven
+//     by it alone this reconstruction read 0.83 of the real
+//     curve's monthly volatility and correlated with it as
+//     strongly one month late (0.55) as contemporaneously
+//     (0.67), an average's signature rather than a close's.
 //   - BUND-DAILY.csv   the same at daily granularity (1997-08→): the
 //     Bundesbank's own daily 10-year point of the listed
 //     federal securities term structure (Svensson), through
-//     the same TreasuryTR. Daily shape for BUND-EUR.
+//     the same TreasuryTR. Daily shape for BUND-EUR, and the
+//     series its month-ends are taken from.
 //   - JGB-JPY.csv      Japanese government bond total return (10-year
 //     benchmark, DAILY, 1986-07→): the Ministry of Finance's
 //     historical JGB interest-rate table, 10Y column, through
@@ -34,7 +43,13 @@
 //     TreasuryTR. No daily shape in this pass: the sleeve is
 //     ~1.8 % of the fund's net assets and the Bank of England
 //     daily curve ships as a workbook, so a monthly texture is
-//     accepted there and documented in the recipe.
+//     accepted there and documented in the recipe. This is the
+//     one leg with no real daily or month-end curve to splice
+//     onto, so it carries the month-AVERAGE cadence end to end
+//     and says so in its header (monthAverageNote): measured
+//     against IGLT.L over 2008-2026 it reads 0.78 of the fund's
+//     monthly volatility and correlates 0.62 contemporaneously
+//     against 0.53 one month late.
 //   - JPCASH-JPY.csv   Japanese overnight money-market accrual (monthly,
 //     1985-07→): the OECD immediate (call money) rate for
 //     Japan, compounded. What the yen futures leg finances at.
@@ -109,14 +124,22 @@ func main() {
 	check := flag.Bool("check", true, "run the sanity checks before writing")
 	flag.Parse()
 
-	// German 10-year, monthly (1956-05→) and daily (1997-08→).
+	// German 10-year, monthly (1956-05→) and daily (1997-08→). The monthly file
+	// is the OECD-driven tail up to the day the Bundesbank curve starts and that
+	// curve's own month-ends after it: see spliceCurve and atMonthEnd.
 	bundYield := fetch(*base, "OECD/DSD_STES@DF_FINMARK/DEU.M.IRLT.PA._Z._Z._Z._Z.N")
-	bund := simgen.TreasuryTR("German government bond total return (10y benchmark, monthly)", asSeries(bundYield), bondMaturity, 0)
-	report("BUND-EUR", bund.Points)
+	bundSynth := simgen.TreasuryTR("German government bond total return (10y benchmark, OECD monthly yield)", asSeries(bundYield), bondMaturity, 0)
+	bundSynth.Points = atMonthEnd(bundSynth.Points)
+	report("BUND-SYN", bundSynth.Points)
 
 	bundDailyYield := fetch(*base, "BUBA/BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A")
 	bundDaily := simgen.TreasuryTR("German government bond total return (10y benchmark, daily)", asSeries(bundDailyYield), bondMaturity, 0)
 	report("BUND-DAILY", bundDaily.Points)
+
+	bund, bundSplice := spliceCurve("BUND-EUR", bundSynth, bundDaily)
+	log.Printf("BUND-EUR splice: OECD tail to %s, real Bundesbank curve from %s (real era rebased x%.4f onto the tail, junction month return %+.2f%%)",
+		bundSplice.lastSynth.Format("2006-01"), bundSplice.at.Format("2006-01-02"), bundSplice.factor, bundSplice.seam*100)
+	report("BUND-EUR", bund.Points)
 
 	// Japanese 10-year, daily (1986-07→), and the yen call-money accrual.
 	jgbYield := fetchJGB(*jgbURL)
@@ -124,36 +147,38 @@ func main() {
 	report("JGB-JPY", jgb.Points)
 
 	jpRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/JPN.M.IRSTCI.PA._Z._Z._Z._Z.N")
-	jpCash := accrue(jpRate)
+	jpCash := atAccrualEnd(accrue(jpRate))
 	report("JPCASH-JPY", jpCash)
 
 	// British 10-year, monthly (1960-01→), and the sterling interbank accrual.
 	giltYield := fetch(*base, "OECD/DSD_STES@DF_FINMARK/GBR.M.IRLT.PA._Z._Z._Z._Z.N")
 	gilt := simgen.TreasuryTR("British government bond total return (10y benchmark, monthly)", asSeries(giltYield), bondMaturity, 0)
+	gilt.Points = atMonthEnd(gilt.Points)
 	report("GILT-GBP", gilt.Points)
 
 	gbRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/GBR.M.IRSTCI.PA._Z._Z._Z._Z.N")
-	gbCash := accrue(gbRate)
+	gbCash := atAccrualEnd(accrue(gbRate))
 	report("GBCASH-GBP", gbCash)
 
 	if *check {
-		runChecks(*dir, bund, bundDaily, jgb, gilt, jpCash, gbCash)
+		runChecks(*dir, bund, bundSynth, bundDaily, jgb, gilt, jpCash, gbCash, bundSplice)
 	}
 	if *dry {
 		return
 	}
 	write(*dir, "BUND-EUR", "German government bond total return (10-year benchmark, EUR, monthly)",
-		fmt.Sprintf("OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had.", bondMaturity), bund.Points)
+		fmt.Sprintf("month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from %s; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. %s",
+			bundSplice.at.Format("2006-01"), bondMaturity, monthAverageNote), bund.Points)
 	write(*dir, "BUND-DAILY", "German government bond total return (10-year benchmark, EUR, daily)",
 		fmt.Sprintf("Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, BBSIS D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A (~1997-08) run through TreasuryTR (%.0fy par); via DBnomics. Daily shape for BUND-EUR.", bondMaturity), bundDaily.Points)
 	write(*dir, "JGB-JPY", "Japanese government bond total return (10-year benchmark, JPY, daily)",
 		fmt.Sprintf("Japanese Ministry of Finance historical JGB interest rates (jgbcme_all.csv), %s column (~1986-07), run through TreasuryTR (%.0fy par). Japanese leg of the NTSG global bond overlay; the yield is negative on 453 days between 2016-02 and 2020-05 and the reconstruction prices those days rather than flat-lining them.", jgbTenor, bondMaturity), jgb.Points)
 	write(*dir, "GILT-GBP", "British government bond total return (10-year benchmark, GBP, monthly)",
-		fmt.Sprintf("OECD long-term government bond yield GBR.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1960) run through TreasuryTR (%.0fy par); via DBnomics. British leg of the NTSG global bond overlay; monthly texture accepted, the sleeve is ~1.8%% of net assets.", bondMaturity), gilt.Points)
+		fmt.Sprintf("OECD long-term government bond yield GBR.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1960) run through TreasuryTR (%.0fy par); via DBnomics. British leg of the NTSG global bond overlay; monthly texture accepted, the sleeve is ~1.8%% of net assets. No real daily or month-end gilt curve is spliced in front of it, unlike the German leg: the Bank of England publishes its daily curve as a workbook rather than a series, so this file carries the month-average cadence end to end. %s", bondMaturity, monthAverageNote), gilt.Points)
 	write(*dir, "JPCASH-JPY", "Japanese overnight money-market accrual (JPY, monthly)",
-		"OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level; via DBnomics. What the yen leg of the NTSG bond overlay finances at.", jpCash)
+		"OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the yen leg of the NTSG bond overlay finances at.", jpCash)
 	write(*dir, "GBCASH-GBP", "British overnight money-market accrual (GBP, monthly)",
-		"OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level; via DBnomics. What the sterling leg of the NTSG bond overlay finances at.", gbCash)
+		"OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the sterling leg of the NTSG bond overlay finances at.", gbCash)
 }
 
 // obs is one dated observation.
@@ -279,10 +304,132 @@ func asSeries(o []obs) *marketdata.Series {
 	return s
 }
 
+// monthAverageNote is the sentence every OECD-driven monthly file carries, so
+// that a reader of the CSV alone knows what one of its rows IS. The same
+// sentence is in cmd/gen-euro-refdata, the other reader of this dataflow.
+const monthAverageNote = "CADENCE: the OECD observation for a month is that month's AVERAGE of the daily quotes, so the level is reached mid-month and its monthly returns are smoothed. The label is the month's last day, the convention every other monthly series here carries, so that the file's steps and its junction with a real month-end segment are one month each; it is a name for the month, not a claim that the level is a month-end close."
+
+// atMonthEnd re-dates monthly points onto the last day of the month they
+// belong to, never past today. See cmd/gen-euro-refdata's copy for the full
+// reasoning: an OECD monthly observation is the month's AVERAGE, so no label is
+// exactly right, and the one this bundle uses everywhere else names the month.
+// The relabelling leaves every monthly return, calendar year and CAGR
+// bit-identical, and buys a clean junction with the real curve segment.
+func atMonthEnd(pts []marketdata.Point) []marketdata.Point {
+	today := time.Now().UTC().Truncate(24 * time.Hour)
+	out := make([]marketdata.Point, len(pts))
+	for i, p := range pts {
+		end := time.Date(p.Date.Year(), p.Date.Month(), 1, 0, 0, 0, 0, time.UTC).AddDate(0, 1, -1)
+		if end.After(today) {
+			end = today
+		}
+		out[i] = marketdata.Point{Date: end, Close: p.Close}
+	}
+	return out
+}
+
+// atAccrualEnd re-dates a money-market accrual onto the month-end each of its
+// levels actually belongs to, which is the day BEFORE the date accrue gives it:
+// the level written at "M-01" is the cash a holder had once month M-1 had been
+// earned in full, i.e. the close of M-1. See cmd/gen-euro-refdata's copy for the
+// full reasoning; nothing but the label moves, every interest payment having
+// been computed from the source's own dates before this runs.
+func atAccrualEnd(pts []marketdata.Point) []marketdata.Point {
+	out := make([]marketdata.Point, len(pts))
+	for i, p := range pts {
+		out[i] = marketdata.Point{Date: p.Date.AddDate(0, 0, -1), Close: p.Close}
+	}
+	return out
+}
+
+// curveSplice records where a deep OECD-driven tail hands over to the real
+// daily curve, so the junction can be reported and checked rather than assumed.
+type curveSplice struct {
+	at        time.Time // first real month-end kept, and the start of the real era
+	lastSynth time.Time // last OECD-driven month kept in front of it
+	factor    float64   // level rebasing applied to the real era, to meet the tail
+	seam      float64   // the (OECD-driven) return carried across the junction
+}
+
+// spliceCurve joins the deep OECD-driven monthly tail to the reconstruction
+// built on the real Bundesbank daily curve, at the first month that curve
+// covers. The doctrine is the donor chains': real data sets the LEVEL wherever
+// real data exists, and the month-average tail only fills the years in front of
+// it. Every month the curve reaches is taken from the curve, on the day its
+// month-end fell, multiplied by one constant factor chosen so the two meet with
+// no level jump, exactly as marketdata.ExtendBack rebases one series onto
+// another; rebasing the REAL part keeps the file based at 100 on its first date,
+// and a constant factor is not a return either way. The month straddling the
+// junction keeps the OECD-driven return, the only one available for it, which
+// also absorbs the curve's partial first month.
+func spliceCurve(id string, synth, curve *marketdata.Series) (*marketdata.Series, curveSplice) {
+	ends := monthEnds(curve.Points)
+	if len(ends) == 0 {
+		log.Fatalf("%s: the daily curve is empty, nothing to splice onto", id)
+	}
+	key := ends[0].Date.Format("2006-01")
+	var tail []marketdata.Point
+	var at float64
+	for _, p := range synth.Points {
+		switch k := p.Date.Format("2006-01"); {
+		case k < key:
+			tail = append(tail, p)
+		case k == key:
+			at = p.Close
+		}
+	}
+	if at == 0 || len(tail) == 0 {
+		log.Fatalf("%s: the deep tail does not reach the curve's first month (%s)", id, key)
+	}
+	sp := curveSplice{at: ends[0].Date, lastSynth: tail[len(tail)-1].Date, factor: at / ends[0].Close}
+	out := &marketdata.Series{Name: id + " (monthly)", Source: synth.Source}
+	out.Points = append(out.Points, tail...)
+	for _, p := range ends {
+		out.Points = append(out.Points, marketdata.Point{Date: p.Date, Close: p.Close * sp.factor})
+	}
+	sp.seam = out.Points[len(tail)].Close/tail[len(tail)-1].Close - 1
+	return out, sp
+}
+
+// monthEnds keeps the last observation of each calendar month, on its own date.
+func monthEnds(pts []marketdata.Point) []marketdata.Point {
+	var out []marketdata.Point
+	for _, p := range pts {
+		if n := len(out); n > 0 && out[n-1].Date.Format("2006-01") == p.Date.Format("2006-01") {
+			out[n-1] = p
+			continue
+		}
+		out = append(out, p)
+	}
+	return out
+}
+
+// longestStep returns the longest interval between consecutive points, in days,
+// and the date it ends on. On a monthly file anything past 45 days means a row
+// carries more than one month of return, which is what a dating-convention
+// junction produces.
+func longestStep(pts []marketdata.Point) (float64, time.Time) {
+	worst, at := 0.0, time.Time{}
+	for i := 1; i < len(pts); i++ {
+		if d := pts[i].Date.Sub(pts[i-1].Date).Hours() / 24; d > worst {
+			worst, at = d, pts[i].Date
+		}
+	}
+	return worst, at
+}
+
 // accrue compounds a short-rate series (annualized percent) into a
 // money-market level (base 100), pro rata temporis. Each step accrues at the
 // rate that PREVAILED over it, i.e. the previous observation's level, so the
 // index never earns a rate before it was published.
+//
+// A cash accrual has no smoothing defect to repair, unlike the bond
+// reconstructions above: the OECD's month-average rate is exactly what a
+// money-market roll held through that month earns, and these two indices carry
+// 0.6 and 1.3 %/yr of annualized monthly-return dispersion against a bond's 5 to
+// 6, so there is nothing for a half-month of phase to damage. What they do get
+// is the bundle's month-end LABEL, from atAccrualEnd, so that a composite
+// reading a cash leg beside a bond leg sees one point a month and not two.
 func accrue(rate []obs) []marketdata.Point {
 	out := make([]marketdata.Point, 0, len(rate))
 	val := 100.0
@@ -330,19 +477,33 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //
 // The five checks, and why each number is the one to expect:
 //
-//   - German vs euro-area (1999-2010). Over the euro's first decade, before
-//     the sovereign crisis reopened them, the spreads between the euro
-//     aggregate and the Bund were a few tens of basis points. The two
-//     reconstructions must therefore agree closely: monthly correlation above
-//     0.95 and less than a point a year between their CAGRs. It is the one
-//     check that grades the German series against something already bundled.
-//   - German daily vs monthly (1998-2026). The daily Bundesbank curve and the
-//     monthly OECD yield describe the same bond, so their monthly volatilities
-//     must agree to within about a third. The daily one is expected to be the
-//     higher of the two: the OECD publishes a monthly AVERAGE yield, which
-//     damps whatever happened inside the month. What the check is really for is
-//     a wrong curve point, since a 2-year or a 30-year residual maturity would
-//     be off by a factor rather than by a fifth.
+//   - German vs euro-area. Over the euro's first decade, before the sovereign
+//     crisis reopened them, the spreads between the euro aggregate and the Bund
+//     were a few tens of basis points. The two reconstructions must therefore
+//     agree closely: less than a point a year between their 1999-2010 CAGRs, and
+//     a monthly correlation above 0.90 from 2005, the year from which both files
+//     are on their real month-end curve. It is the one check that grades the
+//     German series against something already bundled.
+//   - German daily curve vs the OECD tail (1998-2026). The daily Bundesbank
+//     curve and the monthly OECD yield describe the same bond, so their monthly
+//     volatilities must agree to within about a third. The daily one is expected
+//     to be the higher of the two: the OECD publishes a monthly AVERAGE yield,
+//     which damps whatever happened inside the month (measured: ratio 0.83, and
+//     the monthly returns correlate 0.67 at lag 0 against 0.55 at lag -1, an
+//     average's signature). That is why the shipped file takes the real curve's
+//     month-ends from 1997-08 and leaves the OECD tail only the years nothing
+//     else reaches; the check grades that tail, which is the part still in the
+//     file, and what it is really for is a wrong curve point, since a 2-year or
+//     a 30-year residual maturity would be off by a factor rather than a fifth.
+//   - The German splice. After the junction the shipped monthly series IS the
+//     daily one, sampled: every month-end must match the Bundesbank
+//     reconstruction to the last bit, or the sampling has slipped a month. The
+//     rebasing factor and the single month of return carried across the junction
+//     are checked for sanity, and so is the junction's own STEP: a tail dated
+//     the first of the month handing over to a month-end segment spans 60 days
+//     and carries two months of return in one row, which is what atMonthEnd
+//     removes. No monthly step may exceed 45 days, the same bar
+//     pkg/datasets/golden/gaps_test.go holds the whole bundle to.
 //   - Japanese, yield-curve-control era (2016-2021). A 10-year JGB pinned at
 //     zero by the Bank of Japan is the calmest government bond of the modern
 //     record: its total return must be quiet (volatility under 3 %/yr) and
@@ -356,7 +517,7 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //   - The two cash accruals. A money-market index is monotone by construction,
 //     and both countries' post-war short rates sit inside 0-20 %/yr, so their
 //     CAGR over the whole span must land inside 0-12 %/yr with no drawdown.
-func runChecks(dir string, bund, bundDaily, jgb, gilt *marketdata.Series, jpCash, gbCash []marketdata.Point) {
+func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Series, jpCash, gbCash []marketdata.Point, splice curveSplice) {
 	failed := 0
 	fail := func(format string, a ...any) {
 		failed++
@@ -366,21 +527,67 @@ func runChecks(dir string, bund, bundDaily, jgb, gilt *marketdata.Series, jpCash
 	if euro, err := readRefdata(dir, "EUROGOV-EUR"); err != nil {
 		log.Printf("check: EUROGOV-EUR unavailable (%v), skipping the euro-area cross-check", err)
 	} else {
+		// Mirror of the check gen-euro-refdata runs on the euro-area side, and
+		// windowed the same way and for the same reason: the level over the whole
+		// thin-spread decade, the monthly correlation only from 2005, the year
+		// from which both files are on their real month-end curve (this one's
+		// from 1997-08, the euro-area one's from 2004-09). The bar is 0.90
+		// because that is what two unsmoothed reconstructions of two different
+		// sovereign markets actually share (measured 0.94, sovereign crisis
+		// included); two month-average ones used to read higher only because they
+		// shared their averaging.
 		from, to := date(1999, 1), date(2010, 1)
 		cb, cg := cagr(bund, from, to), cagr(euro, from, to)
-		corr := monthlyCorr(bund, euro, from, to)
-		log.Printf("check BUND-EUR vs EUROGOV-EUR 1999-2010: CAGR %.2f%% vs %.2f%% (gap %+.2f), monthly corr %.3f",
+		corr := monthlyCorr(bund, euro, date(2005, 1), to)
+		log.Printf("check BUND-EUR vs EUROGOV-EUR: CAGR 1999-2010 %.2f%% vs %.2f%% (gap %+.2f), monthly corr 2005-2010 %.3f",
 			cb*100, cg*100, (cb-cg)*100, corr)
-		if corr < 0.95 || math.Abs(cb-cg) > 0.01 {
+		if corr < 0.90 || math.Abs(cb-cg) > 0.01 {
 			fail("the German and euro-area reconstructions diverge over the years their spreads were thin")
 		}
 	}
 
 	from, to := date(1998, 1), bundDaily.Last().Date
-	vd, vm := vol(bundDaily, from, to), vol(bund, from, to)
-	log.Printf("check BUND daily vs monthly 1998-2026: vol %.2f%% vs %.2f%%/yr (ratio %.2f)", vd*100, vm*100, vd/vm)
+	vd, vm := vol(bundDaily, from, to), vol(bundSynth, from, to)
+	log.Printf("check BUND daily curve vs OECD tail 1998-2026: vol %.2f%% vs %.2f%%/yr (ratio %.2f), monthly corr %.3f (not gated, monthly-average yield)",
+		vd*100, vm*100, vd/vm, monthlyCorr(bundSynth, bundDaily, from, to))
 	if vd/vm < 0.8 || vd/vm > 1.35 {
 		fail("the daily Bundesbank curve and the monthly OECD yield do not describe the same bond")
+	}
+
+	worst, at := 0.0, time.Time{}
+	curveEnds := make(map[string]float64, len(bundDaily.Points)/20)
+	for _, p := range monthEnds(bundDaily.Points) {
+		curveEnds[p.Date.Format("2006-01-02")] = p.Close
+	}
+	months := 0
+	for _, p := range bund.Points {
+		if p.Date.Before(splice.at) {
+			continue
+		}
+		months++
+		r, ok := curveEnds[p.Date.Format("2006-01-02")]
+		if !ok {
+			fail("BUND-EUR carries %s, which is not a month-end of the Bundesbank curve", p.Date.Format("2006-01-02"))
+			continue
+		}
+		if d := math.Abs(p.Close/(r*splice.factor) - 1); d > worst {
+			worst, at = d, p.Date
+		}
+	}
+	step, when := longestStep(bund.Points)
+	log.Printf("check BUND-EUR splice: %d real month-ends from %s (worst deviation from the rebased curve %.1e, on %s), real era rebased x%.4f, junction return %+.2f%%, longest monthly step %.0f days ending %s",
+		months, splice.at.Format("2006-01-02"), worst, at.Format("2006-01-02"), splice.factor, splice.seam*100, step, when.Format("2006-01-02"))
+	if months < 12 || worst > 1e-9 {
+		fail("BUND-EUR does not reproduce the Bundesbank curve it is sampled from")
+	}
+	if splice.factor <= 0 || math.Abs(splice.seam) > 0.15 {
+		fail("the BUND-EUR splice at %s is not continuous (factor %.4f, junction return %+.2f%%)", splice.at.Format("2006-01"), splice.factor, splice.seam*100)
+	}
+	if step > 45 {
+		fail("BUND-EUR takes a %.0f-day step ending %s: one row carries two months of return", step, when.Format("2006-01-02"))
+	}
+	if gstep, gwhen := longestStep(gilt.Points); gstep > 45 {
+		fail("GILT-GBP takes a %.0f-day step ending %s: one row carries two months of return", gstep, gwhen.Format("2006-01-02"))
 	}
 
 	from, to = date(2016, 1), date(2021, 1)

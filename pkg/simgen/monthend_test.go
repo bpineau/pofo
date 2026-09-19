@@ -84,22 +84,25 @@ func TestAlignMonthEndPreservesCalendarYears(t *testing.T) {
 	}
 }
 
-// TestMonthEndAnchorGate checks the registry, not the arithmetic: an anchor that
-// is not declared month-end (the euro-govt reconstructions, built on monthly
-// AVERAGE yields dated the first of the month, and the monthly average spot of
-// WTI-USD) must come back untouched, because snapping those to the month's last
-// trading day would slide them the other way.
+// TestMonthEndAnchorGate checks the registry, not the arithmetic. WTI-USD is
+// the one monthly reference deliberately left out of it: a monthly AVERAGE spot
+// still dated the first of the month, with no generator in this repository to
+// restate it in, so snapping it to the month's last trading day would slide the
+// whole 1946-2000 reconstruction with nothing regenerable behind the decision.
+// It must come back untouched. The euro and German bond references are IN the
+// registry since 2026-09 (their levels are the month-ends of a real daily curve
+// wherever one exists, and month-end labels before it), so they must be snapped
+// like any other month-end anchor.
 func TestMonthEndAnchorGate(t *testing.T) {
 	anchor := &marketdata.Series{Points: []marketdata.Point{pt(2020, 1, 1, 100), pt(2020, 2, 1, 110)}}
 	shape := &marketdata.Series{Points: []marketdata.Point{pt(2020, 1, 2, 50), pt(2020, 1, 31, 52)}}
-	if got := alignMonthEnd("EUROGOV-EUR", anchor, shape); got != anchor {
-		t.Errorf("EUROGOV-EUR was re-dated: %+v", got.Points)
-	}
 	if got := alignMonthEnd("WTI-USD", anchor, shape); got != anchor {
 		t.Errorf("WTI-USD was re-dated: %+v", got.Points)
 	}
-	got := alignMonthEnd("DEVEXUS-USD", anchor, shape)
-	if !got.Points[0].Date.Equal(pt(2020, 1, 31, 0).Date) {
-		t.Errorf("DEVEXUS-USD January anchor = %s, want the shape's 2020-01-31", got.Points[0].Date)
+	for _, id := range []string{"DEVEXUS-USD", "EUROGOV-EUR", "EUROGOV-LONG-EUR", "BUND-EUR"} {
+		got := alignMonthEnd(id, anchor, shape)
+		if !got.Points[0].Date.Equal(pt(2020, 1, 31, 0).Date) {
+			t.Errorf("%s January anchor = %s, want the shape's 2020-01-31", id, got.Points[0].Date)
+		}
 	}
 }

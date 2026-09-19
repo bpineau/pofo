@@ -49,20 +49,22 @@ const (
 // defect that has been measured and deliberately left, never a tolerance
 // widened to make a test pass; it must name the step it covers, so that a
 // SECOND, larger hole in the same file still fails.
+//
+// It is EMPTY, and that is the point. Its one entry was EUROGOV-LONG-EUR, whose
+// deep segment (the OECD 10-year yield mapped to a 25-year one) was dated the
+// first of the month while the ECB-curve segment taking over in 2004-09 was
+// dated month-end, so the one step across the junction spanned 60 days and
+// carried two months of return. The sweep of 2026-09 gave every OECD-driven
+// monthly reference the month-end label the rest of the bundle uses
+// (cmd/gen-euro-refdata's atMonthEnd), which closed that junction to 30 days,
+// and both generators now refuse to write a file whose longest monthly step
+// exceeds the 45 days this guard allows. Leave the map in place: the next
+// series to land with a measured, deliberate hole belongs here, not in a
+// widened constant.
 var knownMonthlyGaps = map[string]struct {
 	maxDays int
 	why     string
-}{
-	// EUROGOV-LONG-EUR changes dating convention at its 2004-09 junction: the
-	// deep segment (the OECD 10-year yield mapped to a 25-year one) is dated the
-	// first of the month, the ECB-curve segment that takes over is dated
-	// month-end, so the one step across the junction spans 60 days and carries
-	// two months of return. It is the same class of defect the Treasury files
-	// were rebuilt for and it is worth one day's work, but it is one step in a
-	// 681-point file, 22 years before the fund it stands behind starts quoting,
-	// and fixing it means re-deriving the pre-2004 map. Named, measured, left.
-	"EUROGOV-LONG-EUR": {maxDays: 60, why: "first-of-month to month-end dating junction at 2004-09"},
-}
+}{}
 
 // TestBundledSeriesHaveNoHoles walks every embedded refdata and simdata file
 // and refuses a monthly series that skips a month.

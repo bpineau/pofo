@@ -111,8 +111,8 @@ years of the file run on 88 % of the basket, then 91 %, then all of it.
 
 | Refdata (new) | Content | Source | Span |
 |---|---|---|---|
-| `BUND-EUR` | German govt bond TR (10y benchmark, monthly) | OECD long-term yield `DEU.M.IRLT` (`DSD_STES@DF_FINMARK`) → `TreasuryTR` (10y) | 1956-05 |
-| `BUND-DAILY` | the same, daily shape | Bundesbank daily term structure of listed federal securities, 10y point (`BBSIS`) → `TreasuryTR` | 1997-08 |
+| `BUND-EUR` | German govt bond TR (10y benchmark, monthly month-end) | month-ends of `BUND-DAILY` from 1997-08; OECD long-term yield `DEU.M.IRLT` (`DSD_STES@DF_FINMARK`) → `TreasuryTR` (10y) before it | 1956-05 |
+| `BUND-DAILY` | the same, daily shape, and the source of the month-ends above | Bundesbank daily term structure of listed federal securities, 10y point (`BBSIS`) → `TreasuryTR` | 1997-08 |
 | `JGB-JPY` | Japanese govt bond TR (10y benchmark, **daily**) | Japanese Ministry of Finance `jgbcme_all.csv`, 10Y column → `TreasuryTR` | 1986-07 |
 | `GILT-GBP` | British govt bond TR (10y benchmark, monthly) | OECD long-term yield `GBR.M.IRLT` → `TreasuryTR` (10y) | 1960-01 |
 | `JPCASH-JPY` | yen call-money accrual (monthly) | OECD immediate rate `JPN.M.IRSTCI`, compounded | 1985-07 |
@@ -136,20 +136,45 @@ never carried.
 
 ### The validation the generator runs on itself
 
-`gen-gbond-refdata` refuses to write anything until five checks pass (house
+`gen-gbond-refdata` refuses to write anything until six checks pass (house
 rule: a series that downloaded cleanly has proved nothing). Measured on
-2026-08-08:
+2026-09-19:
 
 | Check | Result |
 |---|---|
-| `BUND-EUR` vs `EUROGOV-EUR`, 1999-2010, when euro spreads were thin | CAGR 4.67 % vs 4.41 % (gap +0.26 pts/yr), monthly corr **0.955** |
-| `BUND-DAILY` vs `BUND-EUR` volatility, 1998-2026 | 6.07 % vs 5.05 %/yr (ratio 1.20; the OECD publishes a monthly *average* yield, which damps the month) |
+| `BUND-EUR` vs `EUROGOV-EUR`, CAGR 1999-2010 (thin euro spreads) and monthly corr from 2005 | CAGR 4.55 % vs 4.41 % (gap +0.14 pts/yr), monthly corr **0.942** |
+| `BUND-DAILY` vs the OECD tail, volatility 1998-2026 | 6.07 % vs 5.05 %/yr (ratio 1.20; the OECD publishes a monthly *average* yield, which damps the month) |
+| `BUND-EUR` splice | 348 month-ends reproduce the rebased Bundesbank curve exactly, junction return -0.30 %, longest monthly step 34 days |
 | `JGB-JPY` under yield-curve control, 2016-2021 | CAGR +0.44 %/yr, vol **2.02 %/yr**: quiet and flat, as a pinned bond must be |
 | `GILT-GBP` in the 1970s | CAGR +7.95 %/yr, vol 10.51 %/yr: positive in nominal terms, far behind that decade's inflation |
 | `JPCASH-JPY` / `GBCASH-GBP` | 1.22 %/yr and 5.72 %/yr over their whole spans, deepest drawdowns -0.32 % and 0.00 % |
 
-Whole-span CAGRs, for the record: `BUND-EUR` 5.83 %/yr (1956-2026), `GILT-GBP`
-7.10 %/yr (1960-2026), `JGB-JPY` 2.48 %/yr (1986-2026).
+Whole-span CAGRs, for the record: `BUND-EUR` 5.90 %/yr (1956-2026), `GILT-GBP`
+7.10 %/yr (1960-2026), `JGB-JPY` 2.45 %/yr (1986-2026).
+
+### The month-average sweep of 2026-09-19
+
+`BUND-EUR` used to be driven by the OECD month-average yield over its whole
+span, and that is a dating defect rather than a sampling preference: the level
+such a file carries is reached mid-month, so its monthly returns sit half a
+month out of step with anything month-end. Measured against the real Bundesbank
+curve it stands on, the old file read 0.83 of that curve's monthly volatility
+and correlated with it 0.67 contemporaneously against 0.55 one month LATE, which
+is an average's signature rather than a close's; against the real
+`X03G.DE` (Xtrackers Germany Govt) it read 0.600 contemporaneously and +0.505
+one month late. It now takes the curve's own month-ends from 1997-08 and reads
+0.949 against the fund, with -0.087 at lag -1.
+
+The two legs left on the month-average cadence are `GILT-GBP` (no Bank of
+England daily curve is published as a series, and the sleeve is 3 % of the
+basket: measured 0.78 of `IGLT.L`'s monthly volatility, 0.62 contemporaneous
+against 0.53 one month late) and the two cash accruals, where there is nothing
+to smooth: they carry 1.26 and 0.61 %/yr of annualized monthly-return dispersion
+against a bond's 5 to 6. All four files now carry the month-END label the rest
+of the bundle uses; for the cash legs that is the day before the date `accrue`
+gave them, which is the month each level actually closes. The full inventory,
+the measurement tables and the reasoning are in
+`ntsz-eurozone-efficient-core-design.md`.
 
 ## A negative yield is a price, not a gap
 

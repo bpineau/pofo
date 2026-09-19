@@ -8,7 +8,9 @@ the evidence and the roads that turned out to be closed.
 ## The gap this fills
 
 The repo carried WTI **spot** only: `WTI-USD` (monthly, 1946 onwards, FRED
-WTISPLC) and `WTI-DAILY` (daily, 1986-2000, a shape series whose levels are
+WTISPLC, a month-AVERAGE price stamped on the first of the month: see the
+stamping sweep in `ntsz-eurozone-efficient-core-design.md` for what that costs
+and why it was left alone) and `WTI-DAILY` (daily, 1986-2000, a shape series whose levels are
 explicitly not authoritative). A spot price is not investable. What a futures
 holder earns is the spot move plus the roll yield, and for crude that term has
 been worth far more than the spot move itself:
