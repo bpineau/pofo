@@ -129,3 +129,21 @@ func ExampleIRR() {
 	// Output:
 	// ok=true IRR=6.5 %/yr
 }
+
+func ExampleTopK() {
+	// The worst 20 % of a set of drawdowns, as a conditional-tail statistic
+	// reads them: the largest values first.
+	dds := []float64{0.12, 0.41, 0.07, 0.33, 0.19, 0.05, 0.28, 0.16, 0.22, 0.09}
+	worst := metrics.TopK(dds, 2)
+	fmt.Printf("worst two: %.2f %.2f\n", worst[0], worst[1])
+	// Output:
+	// worst two: 0.41 0.33
+}
+
+func ExampleQuantiles() {
+	xs := []float64{5, 1, 4, 2, 3}
+	q := metrics.Quantiles(xs, 0.05, 0.50, 0.95)
+	fmt.Printf("p5=%.1f p50=%.1f p95=%.1f\n", q[0], q[1], q[2])
+	// Output:
+	// p5=1.2 p50=3.0 p95=4.8
+}

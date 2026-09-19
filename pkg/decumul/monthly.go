@@ -31,7 +31,7 @@ func (p Plan) RunPathMonthly(returns scenario.Sequence, lives Lives) PathResult 
 
 // runPathMonthly is RunPathMonthly over an optional caller-owned arena window
 // for the path's two series (nil = allocate them here).
-func (p Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
+func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
@@ -102,6 +102,14 @@ func (p Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []float
 		if !adaptive {
 			uncut = netAfter(level*p.schedAt(k)*lf.spendFactor(k), inc)
 		}
+		// The risk guardrail's sensor discounts the income still to come. That
+		// present value depends on the year and the household, never on the
+		// month, so it is priced once a year rather than twelve times over the
+		// same horizon scan.
+		var futurePV float64
+		if p.RiskGuard.active() {
+			futurePV = p.cashflowPV(k, p.RiskGuard.PVRate, lf)
+		}
 		for m := range 12 {
 			total := pks.total() + buffer
 			if total <= 0 {
@@ -116,7 +124,7 @@ func (p Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []float
 
 			var need float64
 			if p.RiskGuard.active() {
-				spending = riskM.adjust(spending, total+p.cashflowPV(k, p.RiskGuard.PVRate, lf), k)
+				spending = riskM.adjust(spending, total+futurePV, k)
 				need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc) / 12
 			} else if p.Guard.active() {
 				spending = guardM.adjust(spending, total)

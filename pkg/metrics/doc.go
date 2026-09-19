@@ -70,6 +70,17 @@
 // turns a cumulative return over a day span into a compound annual rate,
 // and IRR solves the money-weighted rate of the flows themselves.
 //
+// # Distribution shape
+//
+// Skewness, ExcessKurtosis, Autocorr and Histogram describe a sample's shape.
+// Quantiles reads it at chosen probabilities and TopK returns its largest
+// values, the raw material of a tail statistic (a CVaR, a conditional
+// drawdown). Both place only the order statistics they need, by partial
+// selection rather than by sorting the whole sample: reading five percentiles
+// of thousands of values, which a decumulation wealth fan does once per year
+// of its horizon, costs a fraction of the sort. The values are the order
+// statistics either way, so the results are exactly those of a full sort.
+//
 // These computations are locked down by the golden package's benchmark
 // tests, which check them against external references (official S&P 500
 // TR annual returns, canonical drawdowns).
