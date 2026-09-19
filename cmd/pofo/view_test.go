@@ -332,3 +332,39 @@ func TestParseViewQueryDuplicateNames(t *testing.T) {
 		t.Error("duplicate names must be disambiguated like the CLI does")
 	}
 }
+
+// The page cap counts COLUMNS, not parameters. A "#meta currencies" list
+// expands one portfolio into one fetched, simulated and rendered column per
+// currency, and the list has no length of its own: a single 2 kB p= naming
+// hundreds of codes used to sail past the six-portfolio guardrail and set the
+// server to work on hundreds of full simulations.
+func TestParseViewQueryCountsCurrencyColumns(t *testing.T) {
+	base := &options{currency: "EUR", rebalance: 90, benchmark: "^GSPC"}
+
+	q := url.Values{"p": {"MSCIWORLD:100!currencies:USD,EUR,GBP,JPY,CHF,CAD,AUD,SEK"}}
+	if _, err := parseViewQuery(q, base, nil); err == nil {
+		t.Fatal("eight currencies from one p= were accepted past the six-column cap")
+	} else if !strings.Contains(err.Error(), "columns") {
+		t.Errorf("error = %v, want it to name the column count", err)
+	}
+
+	// Under the cap it still parses, and the currencies are carried through.
+	q = url.Values{"p": {"MSCIWORLD:100!currencies:USD,EUR,GBP"}}
+	vr, err := parseViewQuery(q, base, nil)
+	if err != nil {
+		t.Fatalf("three currencies rejected: %v", err)
+	}
+	if got := len(vr.specs[0].Currencies); got != 3 {
+		t.Errorf("currencies = %d, want 3", got)
+	}
+
+	// The budget is shared across portfolios: four single-currency cards plus
+	// a three-currency one is seven columns.
+	q = url.Values{"p": {
+		"MSCIWORLD:100", "MSCIWORLD:100", "MSCIWORLD:100", "MSCIWORLD:100",
+		"MSCIWORLD:100!currencies:USD,EUR,GBP",
+	}}
+	if _, err := parseViewQuery(q, base, nil); err == nil {
+		t.Error("seven columns spread over five p= parameters were accepted")
+	}
+}
