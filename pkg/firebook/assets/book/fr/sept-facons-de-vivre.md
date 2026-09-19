@@ -42,21 +42,21 @@ Sept vies dans la même crise. Le retrait fixe est la ligne droite : il verse 24
 
 | Règle | Revenu moyen | Écart | Pire année | Années maigres | Capital final |
 |---|---|---|---|---|---|
-| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 19 |
+| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 20 |
 | Flex −10 % | 22,0 | 4 % | 21,6 | 33 | 344 |
-| Guardrails (GK) | 23,5 | 33 % | 14,2 | 23 | 781 |
-| Guardrails par risque | 25,6 | 39 % | 12,8 | 19 | 762 |
-| % borné | 21,3 | 16 % | 16,0 | 28 | 575 |
-| Amortissement (ABW) | 30,9 | 35 % | 15,4 | 13 | 0 |
-| % du portefeuille (VPW) | 24,5 | 34 % | 12,5 | 19 | 734 |
+| Guardrails (GK) | 23,5 | 33 % | 14,2 | 23 | 779 |
+| Guardrails par risque | 25,6 | 39 % | 12,8 | 19 | 759 |
+| % borné | 21,4 | 16 % | 16,0 | 28 | 574 |
+| Amortissement (ABW) | 30,8 | 35 % | 15,3 | 13 | 0 |
+| % du portefeuille (VPW) | 24,5 | 33 % | 12,4 | 19 | 733 |
 
 Revenus en k€ par an, capital final en k€, le tout en euros constants. L'écart est le coefficient de variation du revenu annuel, autrement dit sa dispersion rapportée à sa moyenne, et c'est la mesure de ce que la règle fait bouger dans la vie du ménage. Les années maigres comptent les années vécues sous les 24 000 € prévus, sur les quarante.
 
-Le retrait fixe a tenu. Il a versé son dû quarante années de suite et il termine avec 19 000 € sur le compte, soit trois pour cent de ce qu'il avait au départ. Une année de marché de plus dans le mauvais sens et la colonne racontait une ruine. C'est la vraie nature de cette règle, et le mot juste est falaise plutôt que risque. Tout va bien jusqu'à la seconde où plus rien ne va.
+Le retrait fixe a tenu. Il a versé son dû quarante années de suite et il termine avec 20 000 € sur le compte, soit trois pour cent de ce qu'il avait au départ. Une année de marché de plus dans le mauvais sens et la colonne racontait une ruine. C'est la vraie nature de cette règle, et le mot juste est falaise plutôt que risque. Tout va bien jusqu'à la seconde où plus rien ne va.
 
 Les deux guardrails sont l'inverse exact. Ils ont sauvé le capital, plus de 750 000 € à l'arrivée, mais ils ont fait vivre le ménage à 14 200 € puis 12 800 € pendant l'essentiel des années 1970 et 1980. Ce sont des coupes de 40 à 47 %, tenues sur plus d'une décennie. Le taux de succès de ces colonnes est parfait et le train de vie qu'elles décrivent ne l'est pas du tout ([[guyton-klinger]]).
 
-Entre les deux, deux réponses honnêtes et très différentes. Le % borné descend jusqu'à 16 000 €, mais il met seize ans pour y aller, par marches de 2,5 % par an. Personne ne vit une baisse de 2,5 % comme une crise ; on la vit comme une année un peu serrée, et c'est exactement l'intérêt de la règle ([[plancher-plafond]]). L'amortissement, lui, verse le plus gros revenu moyen des sept, 30 900 € par an, et il termine à zéro. Ce n'est pas un échec, c'est sa définition : il a coté chaque année le versement qui épuise le capital sur l'horizon restant, et l'horizon s'est terminé ([[amortissement-abw]]).
+Entre les deux, deux réponses honnêtes et très différentes. Le % borné descend jusqu'à 16 000 €, mais il met seize ans pour y aller, par marches de 2,5 % par an. Personne ne vit une baisse de 2,5 % comme une crise ; on la vit comme une année un peu serrée, et c'est exactement l'intérêt de la règle ([[plancher-plafond]]). L'amortissement, lui, verse le plus gros revenu moyen des sept, 30 800 € par an, et il termine à zéro. Ce n'est pas un échec, c'est sa définition : il a coté chaque année le versement qui épuise le capital sur l'horizon restant, et l'horizon s'est terminé ([[amortissement-abw]]).
 
 ## Janvier 1985 : le problème inverse
 
@@ -72,19 +72,19 @@ Sept vies dans le même vent arrière. Le retrait fixe et sa variante flexible r
 
 | Règle | Revenu moyen | Écart | Pire année | Années maigres | Capital final |
 |---|---|---|---|---|---|
-| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 3 829 |
-| Flex −10 % | 23,9 | 2 % | 21,6 | 2 | 3 843 |
-| Guardrails (GK) | 46,6 | 26 % | 24,0 | 0 | 1 656 |
-| Guardrails par risque | 32,9 | 16 % | 21,6 | 7 | 3 053 |
-| % borné | 47,2 | 25 % | 24,0 | 0 | 1 571 |
-| Amortissement (ABW) | 58,3 | 23 % | 29,1 | 0 | 0 |
-| % du portefeuille (VPW) | 46,4 | 22 % | 24,0 | 0 | 1 448 |
+| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 3 812 |
+| Flex −10 % | 23,8 | 3 % | 21,6 | 3 | 3 829 |
+| Guardrails (GK) | 46,6 | 26 % | 24,0 | 0 | 1 644 |
+| Guardrails par risque | 32,9 | 16 % | 21,6 | 7 | 3 037 |
+| % borné | 47,2 | 25 % | 24,0 | 0 | 1 564 |
+| Amortissement (ABW) | 58,2 | 23 % | 29,1 | 0 | 0 |
+| % du portefeuille (VPW) | 46,3 | 22 % | 24,0 | 0 | 1 442 |
 
-Le retrait fixe meurt avec 3,83 millions d'euros constants sur le compte, après avoir vécu quarante ans à 2 000 € par mois. Il a multiplié son capital par six et n'en a rien fait. Personne n'appelle cela un échec parce que le mot ruine ne s'applique pas, et pourtant le ménage a renoncé à la moitié de sa retraite. L'amortissement a vécu la même période à 58 300 € par an en moyenne, deux fois et demie mieux, et il finit à zéro parce que c'était le contrat.
+Le retrait fixe meurt avec 3,81 millions d'euros constants sur le compte, après avoir vécu quarante ans à 2 000 € par mois. Il a multiplié son capital par six et n'en a rien fait. Personne n'appelle cela un échec parce que le mot ruine ne s'applique pas, et pourtant le ménage a renoncé à la moitié de sa retraite. L'amortissement a vécu la même période à 58 200 € par an en moyenne, deux fois et demie mieux, et il finit à zéro parce que c'était le contrat.
 
 On tient ici le prix caché de la rigidité, et il ne se lit sur aucun taux de succès. Une règle qui ne monte jamais est une règle qui ne saura pas dépenser un bon marché. Comme la plupart des retraites tombent sur des marchés plutôt bons ([[decider-sous-incertitude]]), c'est le cas le plus fréquent, pas le cas exotique.
 
-Deux nuances utiles. Les guardrails par risque restent nettement plus bas que leurs cousins, à 32 900 €, parce que leur corridor est plafonné à 150 % du niveau prévu dans cette page ; sans ce plafond la règle grimpe indéfiniment à mesure que l'horizon raccourcit, ce qui est une pathologie connue et non une performance ([[guardrails-morningstar]]). Et le flex à −10 % ne coupe que deux fois en quarante ans, ce qui rappelle qu'une flexibilité conditionnée à une baisse de 20 % ne sert presque jamais dans un marché haussier. C'est une assurance, pas une stratégie de revenu.
+Deux nuances utiles. Les guardrails par risque restent nettement plus bas que leurs cousins, à 32 900 €, parce que leur corridor est plafonné à 150 % du niveau prévu dans cette page ; sans ce plafond la règle grimpe indéfiniment à mesure que l'horizon raccourcit, ce qui est une pathologie connue et non une performance ([[guardrails-morningstar]]). Et le flex à −10 % ne coupe que trois fois en quarante ans, ce qui rappelle qu'une flexibilité conditionnée à une baisse de 20 % ne sert presque jamais dans un marché haussier. C'est une assurance, pas une stratégie de revenu.
 
 ## Janvier 2000 : celle qu'on vit
 
@@ -95,25 +95,25 @@ La décennie perdue, puis le rattrapage. Le départ se fait sur le sommet de la 
 Cette retraite n'est pas finie. Vingt-six des quarante années prévues sont écoulées, et c'est précisément ce qui la rend instructive : elle se lit comme la vôtre pourrait se lire aujourd'hui, à mi-parcours, sans savoir la fin.
 
 ::: figure replay-revenus-2000
-Sept vies dans la décennie perdue. Six règles sur sept ont déjà fait vivre le ménage en dessous de son plan, la plupart pendant plus de vingt ans. Seul le retrait fixe a tenu sa ligne, et il lui reste 271 000 € pour financer quatorze années à 24 000 €.
+Sept vies dans la décennie perdue. Six règles sur sept ont déjà fait vivre le ménage en dessous de son plan, la plupart pendant plus de vingt ans. Seul le retrait fixe a tenu sa ligne, et il lui reste 276 000 € pour financer quatorze années à 24 000 €.
 :::
 
 | Règle | Revenu moyen | Écart | Pire année | Années maigres | Capital final |
 |---|---|---|---|---|---|
-| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 271 |
-| Flex −10 % | 21,9 | 4 % | 21,6 | 23 | 387 |
-| Guardrails (GK) | 18,9 | 10 % | 17,5 | 24 | 552 |
-| Guardrails par risque | 19,7 | 24 % | 15,7 | 21 | 589 |
-| % borné | 19,5 | 11 % | 16,9 | 25 | 511 |
-| Amortissement (ABW) | 23,7 | 12 % | 18,2 | 16 | 316 |
-| % du portefeuille (VPW) | 19,1 | 12 % | 14,7 | 25 | 568 |
+| Retrait fixe | 24,0 | 0 % | 24,0 | 0 | 276 |
+| Flex −10 % | 21,9 | 4 % | 21,6 | 23 | 392 |
+| Guardrails (GK) | 19,2 | 12 % | 17,5 | 23 | 529 |
+| Guardrails par risque | 19,7 | 24 % | 15,7 | 21 | 593 |
+| % borné | 19,5 | 10 % | 17,0 | 25 | 513 |
+| Amortissement (ABW) | 23,8 | 12 % | 18,2 | 16 | 317 |
+| % du portefeuille (VPW) | 19,2 | 12 % | 14,8 | 25 | 570 |
 
 Les années maigres se comptent ici sur vingt-six, pas sur quarante.
 
-Regardez la ligne du retrait fixe et faites le calcul qu'un ménage ferait à sa place. Il lui reste 271 000 € et quatorze ans de plan, soit un taux de retrait courant de 8,9 %. Aucune de ces quatorze années n'est financée par autre chose que de la chance. Les colonnes qui ont coupé, elles, ont environ le double de capital pour la même distance restante, et elles l'ont payé en vivant à 19 000 € pendant vingt ans. Personne ne peut dire aujourd'hui qui avait raison, et c'est le fond du sujet.
+Regardez la ligne du retrait fixe et faites le calcul qu'un ménage ferait à sa place. Il lui reste 276 000 € et quatorze ans de plan, soit un taux de retrait courant de 8,7 %. Aucune de ces quatorze années n'est financée par autre chose que de la chance. Les colonnes qui ont coupé, elles, ont environ le double de capital pour la même distance restante, et elles l'ont payé en vivant à 19 000 € pendant vingt ans. Personne ne peut dire aujourd'hui qui avait raison, et c'est le fond du sujet.
 
 ::: attention Ce que la dernière colonne ne dit pas
-Un capital final élevé n'est ni une victoire ni une défaite tant qu'on ne sait pas ce qu'on voulait en faire. Pour un ménage sans héritier et sans projet de transmission, les 3,83 millions du retrait fixe en 1985 sont une perte sèche de niveau de vie. Pour un ménage qui veut transmettre, ou qui redoute une dépendance coûteuse en fin de vie, c'est exactement le but recherché ([[succession-et-transmission]], [[sante-et-protection-sociale]]). La bonne règle dépend d'une question qui n'est pas financière.
+Un capital final élevé n'est ni une victoire ni une défaite tant qu'on ne sait pas ce qu'on voulait en faire. Pour un ménage sans héritier et sans projet de transmission, les 3,81 millions du retrait fixe en 1985 sont une perte sèche de niveau de vie. Pour un ménage qui veut transmettre, ou qui redoute une dépendance coûteuse en fin de vie, c'est exactement le but recherché ([[succession-et-transmission]], [[sante-et-protection-sociale]]). La bonne règle dépend d'une question qui n'est pas financière.
 :::
 
 ## Trois retraites ne sont pas une distribution
@@ -128,7 +128,7 @@ Lisez donc cette page pour le comportement des règles, pas pour leur classement
 
 Trois choses tiennent après ces trois retraites, et elles ne se lisent sur aucune probabilité de ruine.
 
-La première, c'est que la stabilité du revenu et la sécurité du capital sont la même ressource, dépensée à deux endroits ([[panorama-strategies-retrait]]). Le retrait fixe a acheté quarante ans de tranquillité en 1973 et l'a payée avec les 19 000 € qui lui restaient à l'arrivée. Les guardrails ont acheté 780 000 € de capital et les ont payés avec une décennie de vaches maigres. Aucune règle ne crée du confort, elles le déplacent.
+La première, c'est que la stabilité du revenu et la sécurité du capital sont la même ressource, dépensée à deux endroits ([[panorama-strategies-retrait]]). Le retrait fixe a acheté quarante ans de tranquillité en 1973 et l'a payée avec les 20 000 € qui lui restaient à l'arrivée. Les guardrails ont acheté 780 000 € de capital et les ont payés avec une décennie de vaches maigres. Aucune règle ne crée du confort, elles le déplacent.
 
 La deuxième, c'est que la forme d'une coupe compte autant que sa profondeur. Le % borné et les guardrails descendent tous deux vers 15 à 16 000 € en 1973. L'un met seize ans, par marches insensibles ; l'autre y arrive en sept ans, par sauts de 10 %. Le second est infiniment plus dur à vivre, et il est très mal payé par les indicateurs habituels ([[psychologie-du-retrait]]).
 
