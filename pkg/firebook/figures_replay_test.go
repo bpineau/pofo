@@ -14,6 +14,7 @@ import (
 // engine disagree. A refreshed dataset therefore breaks the build here rather
 // than quietly leaving a wrong chart in the book.
 func TestReplayFiguresMatchTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	for _, tc := range []struct {
 		start  int
 		index  []float64
@@ -66,6 +67,7 @@ func TestReplayFiguresMatchTheEngine(t *testing.T) {
 // reads the numbers back out of the markdown and checks them against the
 // engine, the same guard the figures get.
 func TestReplayTablesMatchTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	raw, err := assets.ReadFile("assets/book/fr/sept-facons-de-vivre.md")
 	if err != nil {
 		t.Fatal(err)

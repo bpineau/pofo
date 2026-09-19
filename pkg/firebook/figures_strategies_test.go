@@ -14,6 +14,7 @@ import (
 // functions. This recomputes them from pkg/replay and the bundled record, and
 // fails the moment the figure and the engine disagree.
 func TestBengenFigureMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	res, err := replay.Run(replay.Setup{
 		Start: bengenStart, Capital: 600000, Spend: 24000, Years: 40,
 		Mu: 0.045, Sigma: 0.10, Df: 5, TargetRuin: 0.05, RaiseCap: 1.5,
@@ -98,6 +99,7 @@ func TestMortalityCreditsMatchTheArticle(t *testing.T) {
 // The smoothing plate replays the real 1973 weather; keep the frozen returns in
 // step with the engine, and the three paths in step with the article's example.
 func TestSmoothingFigureMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	res, err := replay.Run(replay.Setup{
 		Start: 1973, Capital: 600000, Spend: 24000, Years: 40,
 		Mu: 0.045, Sigma: 0.10, Df: 5, TargetRuin: 0.05, RaiseCap: 1.5,

@@ -50,6 +50,7 @@ func millCheckWealth(t *testing.T, start int, want []float64, got []float64) {
 // frozen returns; recompute all of them from pkg/replay and fail on any drift,
 // the ruin year included.
 func TestMillesimesFigureMatchesTheEngine(t *testing.T) {
+	frozenAgainstData(t)
 	res66 := millRun(t, 1966)
 	fixed66 := res66.Rules[0]
 	if !fixed66.Ruined || fixed66.RuinYear != millRuinYear {

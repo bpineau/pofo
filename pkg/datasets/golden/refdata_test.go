@@ -57,9 +57,18 @@ import (
 // are consumed (as the long proxies behind VTMGX and VEIEX) and which shaped
 // without aligning. Unfixed, the developed-ex-US leg rebuilt 2022 at -4.3%
 // against the index's -14.3%. Only anchors listed in simgen.monthEndAnchor are
-// snapped: the Treasury, euro-govt and WTI references run on monthly AVERAGE
-// observations dated the first of the month, and moving those would slide them
-// the other way.
+// snapped: the euro-govt and WTI references run on monthly AVERAGE observations
+// dated the first of the month, and moving those would slide them the other way.
+//
+// (4) The two Treasury references were the same story one layer deeper, fixed
+// 2026-09-19 (cmd/gen-tyield-refdata): they were built from FRED's MONTHLY
+// GS20/GS5, i.e. the month's AVERAGE yield stamped on the first of the month,
+// so their monthly returns correlated only 0.70 with the funds they stand
+// behind (VUSTX, VFITX). Sampling the yields at each month's LAST quote puts
+// both at 0.97, and TREASURY-LONG-USD also stopped carrying the 1987-01..1993-09
+// hole where H.15 had suspended the 20-year point. The calendar-year anchors
+// asserted below barely moved, which is exactly why the flaw survived them: a
+// half-month smear at both ends of a December-to-December window cancels.
 
 func loadRefdata(t *testing.T, id string) *marketdata.Series {
 	t.Helper()
@@ -341,8 +350,10 @@ func yearRet(t *testing.T, s *marketdata.Series, y int) float64 {
 }
 
 // TestGoldenTreasuries validates the constant-maturity Treasury total-return
-// reconstructions (TREASURY-INT-USD from GS5, TREASURY-LONG-USD from GS20,
-// both via simgen.TreasuryTR) against the published Ibbotson SBBI yearly
+// reconstructions (TREASURY-INT-USD, a 5-year par bond on the H.15 5-year
+// point; TREASURY-LONG-USD, a 20-year par bond on the bundled long par yield;
+// both month-end, both via simgen.TreasuryTR and cmd/gen-tyield-refdata)
+// against the published Ibbotson SBBI yearly
 // returns for intermediate- and long-term government bonds: 1969 (IT -0.7 %,
 // LT -5.1 %), 1982 (IT +29.1 %, LT +40.4 %), 1994 (IT -5.1 %, LT -7.8 %) and
 // 1995 (IT +16.8 %, LT +31.7 %). A 5-year (resp. 20-year) constant-maturity
