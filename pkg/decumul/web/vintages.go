@@ -14,6 +14,11 @@ import (
 // happened. It makes sequence-of-returns risk concrete with real dates, the
 // way the withdrawal literature was built (Bengen's and the Trinity study's
 // binding cohorts are the mid-1960s starts).
+//
+// Each replay runs the household's WHOLE plan and reports only the years the
+// record covers, the convention pkg/replay states: the horizon a rule quotes
+// against is the one the household has, never the one the data happens to end
+// at.
 type VintagesResult struct {
 	SVG   string `json:"vintagesSvg"`
 	Cards []Card `json:"cards"`
@@ -66,20 +71,32 @@ func Vintages(pr Params, _ *scenario.Panel) VintagesResult {
 		if len(seq) < years {
 			years, truncated = len(seq), true
 		}
+		// The plan keeps the household's OWN horizon even where the record
+		// stops early, and only the covered prefix is read back. A withdrawal
+		// path is causal, so this is identical to running the prefix, except
+		// the horizon-aware rules are no longer told the retirement
+		// conveniently ends when the data does: shortening Plan.Years would
+		// make the amortization rule (ABW/TPAW) re-quote its payment over
+		// twenty-one years instead of forty-two on the 2000 vintage, spend the
+		// capital down on purpose, and report the deliberate exhaustion as the
+		// vintage's verdict. Missing years return 0 (scenario.Sequence is read
+		// through decumul's bounds-checked accessor), and they are never shown.
 		p := pr.plan()
 		p.Monthly = false
-		p.Years = years
 		res := p.RunPath(seq, decumul.Lives{})
 
-		xs := make([]float64, len(res.Wealth))
-		ys := make([]float64, len(res.Wealth))
-		for k := range res.Wealth {
-			xs[k], ys[k] = float64(k), res.Wealth[k]/1e6
+		wealth := res.Wealth[:years+1]
+		xs := make([]float64, len(wealth))
+		ys := make([]float64, len(wealth))
+		for k := range wealth {
+			xs[k], ys[k] = float64(k), wealth[k]/1e6
 		}
 		series = append(series, chart.XYSeries{Name: v.label, Xs: xs, Ys: ys, Color: pal[i]})
 
-		cards = append(cards, Card{v.label, vintageVerdict(res.Ruined, res.RuinYear, years, pr.Years,
-			res.Wealth[len(res.Wealth)-1]), v.story})
+		// Ruin only counts inside the window the reader is shown.
+		ruined := res.Ruined && res.RuinYear < years
+		cards = append(cards, Card{v.label, vintageVerdict(ruined, res.RuinYear, years, pr.Years,
+			wealth[len(wealth)-1]), v.story})
 	}
 	note := "Local real equity returns of each market (JST), a proxy for the growth sleeve; your buffer, policy, taxes and cashflows all apply."
 	if truncated {

@@ -112,7 +112,13 @@ func (pr Params) tableAssumptions() (mu, sigma, df float64) {
 
 // withCentral stamps the blended central assumptions onto the params, so every
 // endpoint solves the guardrail table on the same model the page plans with.
+// It also rescales the posted allocation to sum to 1: a weight vector is
+// defined up to scale, and every reader of it (scenario.Panel.Combine) takes
+// the weights literally, so a book sent as percents would otherwise multiply
+// every return by a hundred. The length has already been checked against the
+// panel (Params.validate).
 func (pr Params) withCentral(panel *scenario.Panel) Params {
+	pr.Weights = normalize(pr.Weights)
 	pr.tableMu, pr.tableSigma, pr.tableDf = centralParams(pr, panel)
 	pr.panel = panel
 	return pr

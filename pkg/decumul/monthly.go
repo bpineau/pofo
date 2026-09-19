@@ -162,7 +162,10 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 				res.ruinAt(k)
 			}
 			buffer = pks.settle(buffer)
-			if pks.total()+buffer <= 0 {
+			// Emptying the pot with the month's need delivered in full is not
+			// a failed month; the next month's opening test records the
+			// failure where it belongs (see the annual kernel).
+			if pks.total()+buffer < 0 {
 				res.ruinAt(k)
 			}
 

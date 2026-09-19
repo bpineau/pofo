@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"math"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/scenario"
 )
 
 func TestBoundedClampsEverySizeField(t *testing.T) {
@@ -42,7 +45,7 @@ func TestBoundedClampsTheTaxBook(t *testing.T) {
 	if got := ok.bounded(); got.GainFrac != ok.GainFrac || got.PEACapital != ok.PEACapital || got.AVCapital != ok.AVCapital {
 		t.Errorf("coherent tax book altered: %+v", got)
 	}
-	if err := ok.validate(); err != nil {
+	if err := ok.validate(nil); err != nil {
 		t.Errorf("coherent tax book refused: %v", err)
 	}
 }
@@ -53,7 +56,7 @@ func TestBoundedClampsTheTaxBook(t *testing.T) {
 func TestValidateRejectsAnOverfullTaxBook(t *testing.T) {
 	pr := Params{Capital: 1_000_000, NeedAnnual: 40_000, BufferYears: 3,
 		PEACapital: 600_000, AVCapital: 400_000}
-	err := pr.validate()
+	err := pr.validate(nil)
 	if err == nil {
 		t.Fatal("an over-full envelope book was accepted")
 	}
@@ -168,5 +171,48 @@ func TestSensitivityHorizonNudgeStaysValid(t *testing.T) {
 		if svg := Sensitivity(pr, nil).SVG; !strings.HasPrefix(svg, "<svg") {
 			t.Errorf("%d-year horizon: no chart", years)
 		}
+	}
+}
+
+// An allocation that does not fit the portfolio is a different household, not
+// a repairable request: it is refused with a 400 rather than padded. Reading
+// it used to index past the panel's asset rows and take the request's
+// connection down with a runtime panic.
+func TestValidateRejectsAMisfittingAllocation(t *testing.T) {
+	panel := &scenario.Panel{
+		Returns: [][]float64{{0.01, 0.02}, {0.00, 0.01}},
+		Weights: []float64{0.5, 0.5},
+	}
+	pr := Params{Capital: 1_000_000, NeedAnnual: 40_000, Years: 30, Weights: []float64{1}}
+	if err := pr.validate(panel); err == nil {
+		t.Fatal("a one-weight allocation was accepted against a two-holding portfolio")
+	}
+	for _, path := range []string{"/api/fit", "/api/models", "/api/sim"} {
+		body := `{"capital":1000000,"needAnnual":40000,"years":30,"nPaths":200,` +
+			`"mu":0.05,"sigma":0.11,"df":5,"weights":[1]}`
+		req := httptest.NewRequest(http.MethodPost, path, strings.NewReader(body))
+		rec := httptest.NewRecorder()
+		Handler(panel, []string{"A", "B"}).ServeHTTP(rec, req)
+		if rec.Code != http.StatusBadRequest {
+			t.Errorf("%s: status %d, want 400", path, rec.Code)
+		}
+	}
+}
+
+// A weight vector is defined up to scale, so an allocation posted as percents
+// must describe the same portfolio as the same allocation posted as fractions.
+// Taken literally it multiplied every return by a hundred, turning a 3.7 %
+// fitted mean into 4962.
+func TestWeightsAreReadUpToScale(t *testing.T) {
+	panel := &scenario.Panel{
+		Returns: [][]float64{{0.01, 0.02, -0.01}, {0.00, 0.01, 0.005}},
+		Weights: []float64{0.6, 0.4},
+	}
+	frac := Params{Weights: []float64{0.6, 0.4}}.withCentral(panel)
+	pct := Params{Weights: []float64{60, 40}}.withCentral(panel)
+	a := FitParametric(*panel, frac.Weights)
+	b := FitParametric(*panel, pct.Weights)
+	if math.Abs(a.Mu-b.Mu) > 1e-12 || math.Abs(a.Sigma-b.Sigma) > 1e-12 {
+		t.Errorf("percents and fractions disagree: %+v vs %+v", a, b)
 	}
 }

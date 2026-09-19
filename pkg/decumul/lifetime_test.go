@@ -390,11 +390,11 @@ func TestBrokeYearsAreCounted(t *testing.T) {
 	if o.RuinAlive != 1 {
 		t.Errorf("RuinAlive = %.2f, want 1: three years of capital, nine years to live", o.RuinAlive)
 	}
-	// Three thousand euros fund years 0 to 2 and leave nothing, so ruin
-	// latches at year 2 (the kernel latches on an emptied portfolio as well as
-	// on an unfunded need) and seven of the nine lived years are lived broke.
-	if math.Abs(o.BrokeYearsMean-7) > 1e-9 || math.Abs(o.BrokeYearsP95-7) > 1e-9 {
-		t.Errorf("broke years mean %.1f p95 %.1f, want 7", o.BrokeYearsMean, o.BrokeYearsP95)
+	// Three thousand euros fund years 0 to 2 in full and leave nothing, so the
+	// first unfunded year is year 3 and six of the nine lived years are lived
+	// broke.
+	if math.Abs(o.BrokeYearsMean-6) > 1e-9 || math.Abs(o.BrokeYearsP95-6) > 1e-9 {
+		t.Errorf("broke years mean %.1f p95 %.1f, want 6", o.BrokeYearsMean, o.BrokeYearsP95)
 	}
 	if o.EstateZero != 1 {
 		t.Errorf("EstateZero = %.2f, want 1", o.EstateZero)
