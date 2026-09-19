@@ -41,9 +41,19 @@ var stripColor = map[suggest.Category]string{
 	suggest.Crisis:    "#D2402F",
 }
 
+// unclassified marks a month the macro panel does not reach. It is the zero
+// Category, so a forgotten check reads as "no regime" rather than as one.
+const unclassified = suggest.Category("")
+
 // monthQuadrants classifies each month into its macro quadrant from the
-// embedded OECD panel, forward-filling the last known state where the panel
-// has no data (its edges). Returns nil when the panel cannot be read.
+// embedded OECD panel, forward-filling the last known state past the panel's
+// END (a few months of nowcast at most, since the panel is refreshed with the
+// rest of the data). Months BEFORE its first regime are left unclassified:
+// the panel opens in 1960-01, while the bundled backcasts reach 1871 for the
+// S&P 500 and 1953 for long Treasuries, so head-filling would paint eighty-
+// nine years of a public chart with a macro state nothing measured, and hand
+// the per-regime matrix hundreds of months of "growth" that are only the
+// absence of data. Returns nil when the panel cannot be read.
 func monthQuadrants(months []time.Time) []suggest.Category {
 	if len(months) == 0 {
 		return nil
@@ -62,7 +72,7 @@ func monthQuadrants(months []time.Time) []suggest.Category {
 		byMonth[key(r.Date)] = quadCategory[r.Quadrant()]
 	}
 	out := make([]suggest.Category, len(months))
-	last := suggest.Growth
+	last := unclassified
 	for i, m := range months {
 		if q, ok := byMonth[key(m)]; ok {
 			last = q
@@ -159,11 +169,16 @@ func contribTimeline(months []time.Time, mc [][]float64, quads []suggest.Categor
 			for e < len(months) && quads[e] == quads[a] {
 				e++
 			}
-			opt.Strip = append(opt.Strip, chart.StripBand{
-				From: a - first, To: e - 1 - first,
-				Label: fmt.Sprintf("%s (%s → %s)", quads[a], months[a].Format("2006-01"), months[e-1].Format("2006-01")),
-				Color: stripColor[quads[a]],
-			})
+			// A stretch the macro panel does not reach leaves a HOLE in the
+			// strip. An empty band says "not measured"; any colour there would
+			// claim a regime, and the deep backcasts spend decades in it.
+			if quads[a] != unclassified {
+				opt.Strip = append(opt.Strip, chart.StripBand{
+					From: a - first, To: e - 1 - first,
+					Label: fmt.Sprintf("%s (%s → %s)", quads[a], months[a].Format("2006-01"), months[e-1].Format("2006-01")),
+					Color: stripColor[quads[a]],
+				})
+			}
 			a = e
 		}
 	}
@@ -179,6 +194,9 @@ func contribMatrix(months []time.Time, mc [][]float64, quads []suggest.Category,
 	sums := map[suggest.Category][]float64{}
 	cnt := map[suggest.Category]int{}
 	for m, q := range quads {
+		if q == unclassified {
+			continue // before the macro panel: counted nowhere, invented nowhere
+		}
 		if sums[q] == nil {
 			sums[q] = make([]float64, nA)
 		}
@@ -186,6 +204,13 @@ func contribMatrix(months []time.Time, mc [][]float64, quads []suggest.Category,
 		for i := range nA {
 			sums[q][i] += mc[i][m]
 		}
+	}
+	classified := 0
+	for _, n := range cnt {
+		classified += n
+	}
+	if classified == 0 {
+		return "" // nothing the macro panel reaches: no matrix to draw
 	}
 	var cols []chart.MatrixColumn
 	var summary []float64
@@ -208,8 +233,14 @@ func contribMatrix(months []time.Time, mc [][]float64, quads []suggest.Category,
 		cols = append(cols, col)
 		summary = append(summary, math.Round(colTotal*10)/10)
 	}
+	title := "Realized contribution per macro regime (pts/yr over that regime's months)"
+	if outside := len(months) - classified; outside > 0 {
+		// The shares below then do not fill the window, and the reader is owed
+		// the reason rather than left to add them up.
+		title += fmt.Sprintf(" - %d months precede the macro panel and are in no column", outside)
+	}
 	return chart.BarMatrix(chart.BarMatrixOptions{
-		Title:        "Realized contribution per macro regime (pts/yr over that regime's months)",
+		Title:        title,
 		RowLabels:    labels,
 		RowColors:    colors,
 		Unit:         "pts/yr",
