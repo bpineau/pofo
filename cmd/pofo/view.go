@@ -31,6 +31,8 @@ import (
 )
 
 // /view guardrails: the composer is meant for humans on a small server.
+// maxViewPortfolios bounds the COLUMNS the page renders (see columnBudget),
+// which is not the same as the number of ex= and p= parameters.
 const (
 	maxViewPortfolios = 6
 	maxViewHoldings   = 20
@@ -129,10 +131,31 @@ func parseViewQuery(q url.Values, base *options, gate *foreignGate) (*viewReques
 		add(spec)
 		vr.fireHrefs[spec.Name] = fireBase + "/p/" + url.PathEscape(raw) + "/"
 	}
+	if err := columnBudget(vr.specs); err != nil {
+		return nil, err
+	}
 	if err := parseViewGlobals(q, vr, base); err != nil {
 		return nil, err
 	}
 	return vr, nil
+}
+
+// columnBudget enforces the page cap on the COLUMNS a request expands into,
+// not on the ex= and p= parameters it is written with. One "currencies" meta
+// turns a single portfolio into one fetched, simulated and fully rendered
+// column per currency, and that list is unbounded: a lone 2 kB p= can name
+// several hundred codes, so counting parameters let a page past its own limit
+// by two orders of magnitude. The count is what the report will draw.
+func columnBudget(specs []*portfolio.Spec) error {
+	cols := 0
+	for _, s := range specs {
+		cols += max(len(s.Currencies), 1)
+	}
+	if cols > maxViewPortfolios {
+		return fmt.Errorf("at most %d portfolios per page; this one asks for %d columns (a \"currencies\" list counts once per currency)",
+			maxViewPortfolios, cols)
+	}
+	return nil
 }
 
 // adhocSpec parses one p= value: "ID:WEIGHT,ID:WEIGHT[!meta:value]...".
