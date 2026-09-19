@@ -159,6 +159,24 @@ contradicts two of etude-trinity's parenthetical numbers, and
 panier-mediane-plancher costs a median loss that its article still calls
 "un peu". Both await a prose pass.
 
+Catch-up 2026-09-19, the first deliberate one. Rebuilding the two bundled
+Treasury total-return references month-end and gap-free moved twenty-four
+plates, fifteen through the Treasury leg and nine through ordinary fresh
+quotes, and "make figure-drift" named every literal. All of them were
+refrozen, the prose that cites them was revisited number by number, and only
+what changed at its PRINTED precision was touched. Three claims had to move
+rather than be re-rounded. The long pocket's single sign change survived but
+its pivot slid a year (tente-matiere now reads twenty-six costing departures
+from 1954 to 1979 against seventeen paying ones), so the plate's cut, its two
+counts and glidepaths' two sentences follow the data. The slider's worst
+calendar year stopped folding back at the top dose: it now recedes at every
+dose, so tous-temps-curseur no longer blames 2022 on too much long duration
+and says what the sweep shows instead. And the 1985 replay's flexible rule
+cuts three times in forty years, not two. One control weakened and is left
+standing as a question rather than tuned away: the 60/40's real volatility
+over 1972-2024 reads 10.2 % against the 9.4 % published for the family, the
+de-smoothed bond leg being the whole difference.
+
 Tooling landed with the batch and outlives it. figures_kit.go names the plate
 toolbox (palette, type and bar primitives, the value-to-pixel map, axis ticks,
 the notes block, the brace, the dot label), plumbing only, since the FORM of a

@@ -155,7 +155,7 @@ func TestPreavisPlateRenders(t *testing.T) {
 		">Le capital réel<", ">Le voyant<",
 		">vert : sous 4,3 %<", ">orange : 4,3 à 5,2 %<", ">rouge : au-delà de 5,2 %, confirmé<",
 		">4,3 %<", ">5,2 %<", ">9 %<", ">1 000<",
-		">premier rouge, 1974<", ">670 k€<",
+		">premier rouge, 1974<", ">673 k€<",
 		">épuisement<", ">1994<", ">1966<", ">1974<",
 		">préavis : 20 ans<",
 		">confirmé en 1975, hors de l'échelle dès 1979<",
