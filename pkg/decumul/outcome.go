@@ -2,6 +2,7 @@ package decumul
 
 import (
 	"math"
+	"slices"
 
 	"github.com/bpineau/pofo/pkg/metrics"
 )
@@ -38,7 +39,7 @@ func (e Ensemble) Outcome() Outcome {
 	taxes := make([]float64, len(e.Paths))
 	taxRates := make([]float64, len(e.Paths))
 	worsts := make([]float64, 0, len(e.Paths))
-	ruined, worst := 0, 0.0
+	ruined := 0
 	for i, p := range e.Paths {
 		lived := p.Wealth[:p.end()+1]
 		terminals[i] = lived[len(lived)-1]
@@ -54,17 +55,18 @@ func (e Ensemble) Outcome() Outcome {
 		}
 		if c, ok := worst10y(lived); ok {
 			worsts = append(worsts, c)
-			if c < worst {
-				worst = c
-			}
 		}
 	}
 	o.RuinProb = float64(ruined) / float64(len(e.Paths))
 	q := metrics.Quantiles(terminals, 0.05, 0.50)
 	o.TerminalP5, o.TerminalP50 = q[0], q[1]
 	o.MedianYearsUnderwater = metrics.Quantiles(underwater, 0.50)[0]
-	o.Worst10yCAGR = worst
+	// Both worst-decade figures read the same sample, and both stay empty when
+	// no path has a full decade to show. The minimum is taken over that sample
+	// rather than against a zero seed: a plan whose every decade grew would
+	// otherwise report a worst decade of 0, a decade no path ever lived.
 	if len(worsts) > 0 {
+		o.Worst10yCAGR = slices.Min(worsts)
 		o.Worst10yP5 = metrics.Quantiles(worsts, 0.05)[0]
 	}
 	o.MedianCumTax = metrics.Quantiles(taxes, 0.50)[0]
