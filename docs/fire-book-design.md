@@ -458,6 +458,33 @@ TRANSPOSED (rules as rows, statistics as columns): a book page and an e-reader
 cannot carry a year x rule matrix without horizontal scrolling, and the
 year-by-year detail belongs in a figure anyway.
 
+`figures_matiere.go` (2026-09-19) answers the question the glidepath article's
+"De quoi la tente est faite" section had been arguing from citations alone: does
+the material of the defensive sleeve change what the tent is worth? It reuses
+tente-transfert's construction verbatim (same bundled real US history, same
+thirty-year vintages, same 58 -> 85 % tent over ten years, same bisected
+sustainable rate) and moves only the sleeve, per the habit recorded above. Four
+sleeves: 3-month bills (TBILL-3M accrued), 5-year Treasuries (TREASURY-INT-USD,
+the incumbent), a 20-year par bond and a fifty-fifty of the first two. The long
+sleeve is rebuilt by simgen.TreasuryTR over TREASURY-LONG-YIELD rather than read
+from the bundled TREASURY-LONG-USD, whose 1987-01..1993-09 hole (the 20-year
+constant maturity was discontinued there) would cut every vintage from 1958 to
+1993 out of the sample; the two agree at 0,978 on yearly real returns, and on
+the vintages the bundled leg CAN carry it makes the long sleeve look slightly
+worse, so the substitution is conservative.
+
+The measurement splits in two, and both halves are drawn or printed. What the
+SLOPE is worth does not depend on the sleeve: median vintage between -0,25 and
+-0,29 point, worst vintage between -1,09 and -1,14, on all four. The LEVEL does,
+and its sign changed exactly once in forty-three vintages, the long sleeve
+costing on every departure from 1954 to 1980 and paying on every one from 1981
+to 1996. It therefore lands on the wrong side: at 1966, the worst departure on
+every sleeve, the rate is 3,96 % on intermediates, 4,03 % on bills, 4,00 % on
+the fifty-fifty and 3,69 % on the long bond. What this does NOT establish is the
+mechanism: the sample holds one bond bear market and one bull, so the plate and
+the prose both say the record shows the material is not neutral, and leave the
+inflation-correlation explanation to the literature the section already cites.
+
 `figures_assurance.go` (2026-08-01) carries the two plates of the insurance
 premia and cash-ladder articles. Its monthly arrays are FROZEN measurements,
 not a recomputable engine output: they come from live quotes (a EUR-hedged cat
