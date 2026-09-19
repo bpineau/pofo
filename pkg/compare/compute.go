@@ -129,6 +129,10 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 		if err != nil {
 			return fmt.Errorf("portfolio %s: %w", p.Name, err)
 		}
+		for _, w := range sim.Warnings {
+			log.Printf("warning: portfolio %s: %s", p.Name, w)
+			p.Warnings = append(p.Warnings, w)
+		}
 		if sim.Ruined {
 			cause := "the leveraged exposure exhausted the net value"
 			if p.Withdraw.Active() && !p.Leverage {

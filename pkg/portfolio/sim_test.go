@@ -2,6 +2,7 @@ package portfolio
 
 import (
 	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -148,9 +149,11 @@ func TestSimulateContributionsEnvelopeFees(t *testing.T) {
 		t.Fatal(err)
 	}
 	// The fee drag stays out of the attribution: the index return is the
-	// contribution sum shaved by the daily fee, (1+r) = (1-f)(1+sum).
-	f := 2.52 / 100 / 252
+	// contribution sum shaved by the step's fee, (1+r) = (1-f)(1+sum). The
+	// fee is quoted per year, so the step carries the calendar time it spans
+	// (one day here) and not a fixed 1/252.
 	for k := 1; k < len(sim.Dates); k++ {
+		f := 2.52 / 100 * sim.Dates[k].Sub(sim.Dates[k-1]).Hours() / 24 / 365.25
 		r := sim.Index[k]/sim.Index[k-1] - 1
 		want := (1+r)/(1-f) - 1
 		if math.Abs(sim.Contributions[0][k]-want) > 1e-12 {
@@ -196,5 +199,55 @@ func TestMonthlyContributions(t *testing.T) {
 	}
 	if mc[1][0] != 0 {
 		t.Fatalf("flat asset contributed %v", mc[1][0])
+	}
+}
+
+// The financing rate is read onto the portfolio's calendar, never merged into
+// it: a policy rate published every calendar day used to inject weekends into
+// the simulation, adding sessions the book does not trade and accrual steps
+// nobody pays.
+func TestSimulateCashRateDoesNotAddSessions(t *testing.T) {
+	asset := &marketdata.Series{Symbol: "A"}
+	rate := &marketdata.Series{Symbol: "^FEDFUNDS"}
+	for i := range 400 {
+		d := day(i)
+		rate.Points = append(rate.Points, marketdata.Point{Date: d, Close: 5})
+		if wd := d.Weekday(); wd != time.Saturday && wd != time.Sunday {
+			asset.Points = append(asset.Points, marketdata.Point{Date: d, Close: 100})
+		}
+	}
+	p := &Portfolio{Name: "t", Leverage: true, Cash: rate,
+		Assets: []Asset{{Symbol: "A", Weight: 1, Series: asset}}}
+	sim, err := Simulate(p, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sim.Dates) != len(asset.Points) {
+		t.Errorf("simulation has %d dates for %d quotes", len(sim.Dates), len(asset.Points))
+	}
+}
+
+// A window opening before the financing feed used to read as 0 %/yr, i.e.
+// free leverage. The oldest rate on record is held flat there instead, and
+// the run says so.
+func TestSimulateCashRateBeforeItsHistory(t *testing.T) {
+	asset := constSeries("A", 0, 400, 100)
+	rate := &marketdata.Series{Symbol: "^IRX"}
+	for i := 200; i < 400; i++ {
+		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 5})
+	}
+	p := &Portfolio{Name: "t", Leverage: true, Cash: rate,
+		Assets: []Asset{{Symbol: "A", Weight: 2, Series: asset}}}
+	sim, err := Simulate(p, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Borrowing 100 % of the capital at 5 %/yr costs the same on day 1 as it
+	// does once the feed starts: the index must already be falling.
+	if !(sim.Index[1] < 100) {
+		t.Errorf("free leverage before the rate history: index[1] = %v", sim.Index[1])
+	}
+	if len(sim.Warnings) != 1 || !strings.Contains(sim.Warnings[0], "2020-07-19") {
+		t.Errorf("warnings = %v, want the frontier date", sim.Warnings)
 	}
 }

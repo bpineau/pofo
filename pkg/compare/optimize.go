@@ -34,21 +34,33 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		return nil, "", errors.New("optimize: the assets have no period in common")
 	}
 	// CWARP scores the blend against a replacement portfolio, so its solver
-	// also needs the benchmark's returns on the very same dates: align it
-	// alongside the assets and split it back off.
+	// also needs the benchmark's returns on the very same dates. The
+	// benchmark is then a CONSTITUENT of the common window, not a passenger:
+	// aligning it over a window that opens before its first quote forward-
+	// fills zeros, and the return out of the last of them is infinite, so the
+	// score the solver maximizes stops being a number long before anyone can
+	// see it. Reading it onto the assets' own calendar afterwards
+	// (marketdata.SampleAt) keeps it from adding sessions of its own too.
 	cwarpObj := spec.Optimize.Objective == optimize.CWARP
-	if cwarpObj && bench == nil {
-		return nil, "", errors.New("optimize: cwarp needs a benchmark (see -benchmark)")
-	}
-	alignList := list
 	if cwarpObj {
-		alignList = append(append([]*marketdata.Series{}, list...), bench)
+		if bench == nil {
+			return nil, "", errors.New("optimize: cwarp needs a benchmark (see -benchmark)")
+		}
+		if f := bench.First().Date; f.After(start) {
+			start = f
+		}
+		if l := bench.Last().Date; l.Before(end) {
+			end = l
+		}
+		if !start.Before(end) {
+			return nil, "", fmt.Errorf("optimize: the assets and the benchmark %s have no period in common", bench.Symbol)
+		}
 	}
-	dates, prices := marketdata.Align(alignList, start, end)
+	dates, prices := marketdata.Align(list, start, end)
 	var benchReturns []float64
 	if cwarpObj {
-		benchReturns = metrics.Returns(prices[len(prices)-1])
-		prices = prices[:len(prices)-1]
+		lv, _ := marketdata.SampleAt(bench, dates)
+		benchReturns = metrics.Returns(lv)
 	}
 	returns := make([][]float64, len(prices))
 	for i, px := range prices {
