@@ -22,8 +22,8 @@ import (
 // embedded macro panel, and block-bootstraps the realized tactical and static
 // return streams through the decumul engine. The tactical line is reported at
 // two information sets, the publication-honest one and the reference-date one
-// the design doc's figures use, because the gap between them is a third of the
-// edge.
+// the design doc's figures use, because the gap between them is nearly two
+// fifths of the edge over the static portfolio.
 func runPermanent(ctx context.Context, opt *options, c *marketdata.Client) error {
 	monthEnd := func(s *marketdata.Series) map[time.Time]float64 {
 		out := map[time.Time]float64{}

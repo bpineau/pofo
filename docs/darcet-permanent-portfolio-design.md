@@ -374,7 +374,7 @@ shorter windows.
 | static Browne PP | 3.84% | 7.3% | -25.2% | 79% | - | 1.2% | 3.80% | 3.76% |
 | MSCI World (equity) | 5.07% | 14.8% | -54.7% | 83% | - | - | - | - |
 
-**Two thirds of the edge survives, and the drawdown does not.** The tactical
+**Three fifths of the edge survives, and the drawdown does not.** The tactical
 line keeps +0.80 points a year over the static PP instead of +1.29, but its
 worst drawdown deepens from -22.5 % to -27.4 %, i.e. from *better* than the
 static PP's -25.2 % to *worse*. Darcet's quadratic damping still cuts equity
@@ -669,8 +669,8 @@ subperiod/start-date/multi-country battery used here.
   gap is now MEASURED (5.8), not merely flagged. It was worth measuring: over
   1960-2026 consecutive regimes flip quadrant in 28 % of months and move the four
   sleeves by 14.5 points of allocation on average (L1 distance, 58.9 points at
-  the worst month). Under the honest information set two thirds of the global
-  edge survives (+0.80 against +1.29 points a year) and 82 % of the per-country
+  the worst month). Under the honest information set 62 % of the global edge
+  survives (+0.80 against +1.29 points a year) and 82 % of the per-country
   average (+1.46 against +1.78), the decay with staleness is smooth rather than a
   cliff, and turnover does not move. What does NOT survive: the drawdown claim
   (-27.4 % against the static PP's -25.2 %, i.e. worse rather than better), the
