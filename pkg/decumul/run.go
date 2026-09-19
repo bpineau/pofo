@@ -47,7 +47,8 @@ type PathResult struct {
 	// income is netted off the budget before anything is sold; the household's
 	// standard of living is the two together. A year's income above the year's
 	// budget is still counted as received, the model having nowhere to reinvest
-	// it.
+	// it. Income does NOT stop at ruin: a household whose portfolio has run dry
+	// still collects its pensions and its annuity until it dies.
 	Received float64
 }
 
@@ -72,6 +73,20 @@ func (r PathResult) spendYears() int {
 func (r *PathResult) ruinAt(k int) {
 	if !r.Ruined {
 		r.Ruined, r.RuinYear = true, k
+	}
+}
+
+// collectIncome accounts the income of years from..end-1 on a path whose
+// portfolio has run dry. Both kernels stop stepping the sleeves there, since
+// empty sleeves neither sell nor grow, but a pension and an annuity keep being
+// paid to a household that is still alive: leaving them out let a plan whose
+// pension covered its whole need from year 10 report a mean income of 5 k€ on
+// a 50 k€ pension, and understated LifeOutcome.IncomeMean by a third on an
+// ordinary plan with a retirement pension and a realistic ruin probability.
+func (r *PathResult) collectIncome(p *Plan, from, end int, l life) {
+	for k := from; k < end; k++ {
+		r.Annuity += l.annuityAt(k)
+		r.Received += p.income(k, l) // income() already carries the annuity
 	}
 }
 
@@ -202,7 +217,13 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 		total := growth + buffer
 		if total <= 0 {
 			res.ruinAt(k)
-			// remaining years stay at 0.
+			// The portfolio is gone; the household is not. Its pensions and
+			// its annuity keep paying for the rest of its life, and Received
+			// is what it really received, so the remaining years' income is
+			// accounted before the sleeves, which have nothing left to do,
+			// stop being simulated. The spending series stays at 0: what the
+			// portfolio delivers from here is nothing.
+			res.collectIncome(p, k+1, end, lf)
 			break
 		}
 		if total > peak {

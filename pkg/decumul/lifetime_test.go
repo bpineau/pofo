@@ -208,11 +208,13 @@ func TestAnnuityBuysDownRuinAndPaysWithTheEstate(t *testing.T) {
 		t.Errorf("median estate %.0f annuitised vs %.0f plain: the insurance is paid out of the bequest",
 			with.EstateP50, plain.EstateP50)
 	}
-	// And the lifestyle is unchanged: the income simply arrives from the
+	// And the lifestyle does not collapse: the income simply arrives from the
 	// insurer instead of the portfolio, which a portfolio-only reading of
-	// income would report as a collapse.
-	if rel := with.IncomeMean / plain.IncomeMean; rel < 0.95 || rel > 1.05 {
-		t.Errorf("mean total income moved by %.1f%% (%.0f vs %.0f), want it roughly unchanged",
+	// income would report as a wipeout. It ends slightly HIGHER, and that
+	// excess is the insurance itself: the annuity is still paying in the years
+	// the plain plan's portfolio has run dry.
+	if rel := with.IncomeMean / plain.IncomeMean; rel < 1 || rel > 1.15 {
+		t.Errorf("mean total income moved by %.1f%% (%.0f vs %.0f), want it steady to modestly higher",
 			(rel-1)*100, with.IncomeMean, plain.IncomeMean)
 	}
 }
