@@ -188,7 +188,7 @@ func Line(opt Options, series []Series) string {
 
 	// Horizontal grid and y-axis labels.
 	step := niceStep(vmax-vmin, yTicks)
-	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
+	for v, k := math.Ceil(vmin/step)*step, 0; v <= vmax+step/1e6 && k < maxGridLines; v, k = v+step, k+1 {
 		y := yAt(v)
 		if !st.HideGrid {
 			fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="`+themeGrid+`"/>`+"\n", x0, y, x1, y)
@@ -401,3 +401,14 @@ func isFinite(v float64) bool {
 func esc(s string) string {
 	return strings.NewReplacer("&", "&amp;", "<", "&lt;", ">", "&gt;", `"`, "&quot;").Replace(s)
 }
+
+// maxGridLines caps every y-axis gridline walk. The walks advance a float by
+// the tick step until they pass the top of the range, which terminates for any
+// range a chart can sanely be asked to draw (a dozen ticks) but NOT when the
+// range reaches the last decade of the float type: the top bound then rounds
+// to +Inf, the running value saturates at +Inf too, "v <= +Inf" stays true and
+// the renderer never returns. A chart fed nonsense owes its caller an ugly
+// chart, not a stuck process, and on a long-lived server a stuck renderer is a
+// stuck request. The cap is far above the tick count any real axis asks for,
+// so no chart that terminated before draws differently.
+const maxGridLines = 64

@@ -88,7 +88,7 @@ func Bars(opt Options, bars []Bar) string {
 	yAt := func(v float64) float64 { return y1 - v/vmax*(y1-y0) }
 
 	if !labelled {
-		for v := 0.0; v <= vmax+step/1e6; v += step {
+		for v, k := 0.0, 0; v <= vmax+step/1e6 && k < maxGridLines; v, k = v+step, k+1 {
 			y := yAt(v)
 			fmt.Fprintf(&sb, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="`+themeGrid+`"/>`+"\n", x0, y, x1, y)
 			fmt.Fprintf(&sb, `<text x="%g" y="%.1f" dy="0.35em" font-size="11" fill="`+themeMuted+`" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
