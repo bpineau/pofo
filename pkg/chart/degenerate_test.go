@@ -552,3 +552,39 @@ func TestColorHelpers(t *testing.T) {
 		t.Error("a negative component must not produce a NaN lightness")
 	}
 }
+
+// A y-axis gridline walk advances a float by the tick step until it passes the
+// top of the range. When the range reaches the last decade of the float type,
+// that top rounds to +Inf, the running value saturates at +Inf, "v <= +Inf"
+// stays true and the renderer never returns: DivergingStack and Bars used to
+// spin forever on it, which on a long-lived server is a request that never
+// ends. maxGridLines makes every one of them terminate.
+func TestAxisWalksTerminateAtTheTopOfTheFloatRange(t *testing.T) {
+	huge := []float64{1e308, math.MaxFloat64, 1e308}
+	draw := map[string]func() string{
+		"DivergingStack": func() string {
+			return DivergingStack(DivergingStackOptions{Total: huge}, []DivergingStackSeries{{Name: "s", Values: huge}})
+		},
+		"Bars": func() string {
+			return Bars(Options{}, []Bar{{Label: "a", Value: 1e308}, {Label: "b", Value: math.MaxFloat64}})
+		},
+		"HBars": func() string {
+			return HBars(Options{}, []Bar{{Label: "a", Value: math.MaxFloat64}, {Label: "b", Value: -1e308}})
+		},
+		"Line": func() string {
+			return Line(Options{}, []Series{{Name: "s", Dates: days(len(huge)), Values: huge}})
+		},
+		"Fan": func() string {
+			return Fan(Options{}, "x", [][]float64{{-1e308, -math.MaxFloat64}, {1e308, math.MaxFloat64}}, nil)
+		},
+	}
+	for name, f := range draw {
+		done := make(chan string, 1)
+		go func() { done <- f() }()
+		select {
+		case <-done:
+		case <-time.After(5 * time.Second):
+			t.Errorf("%s never finished drawing", name)
+		}
+	}
+}
