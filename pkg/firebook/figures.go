@@ -62,6 +62,7 @@ var figures = map[string]func() string{
 	"fan-two-plans":            figFanTwoPlans,
 	"bond-tent":                figBondTent,
 	"tente-transfert":          figTenteTransfert,
+	"tente-matiere":            figTenteMatiere,
 	"wr-signal":                figWrSignal,
 	"fat-tails":                figFatTails,
 	"horizon-flatten":          figHorizonFlatten,
