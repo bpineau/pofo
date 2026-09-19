@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: TBILL-3M
 # name: US 3-month Treasury bill rate (annualized percent, monthly)
-# source: FRED TB3MS (3-month T-bill secondary market, 1934->). RATE levels (percent), proxy behind ^IRX; spliced as an isRate series.
+# source: FRED TB3MS (3-month T-bill secondary market, 1934->). RATE levels (percent), proxy behind ^IRX; spliced as an isRate series. CADENCE: TB3MS is the month's AVERAGE of the daily rates, dated the first of the month, and that is the right convention for the use it is put to: every consumer accrues it forward from its label, so a cash position earns month M's average rate over month M, which is what a monthly roll pays. A rate is not a price and there is no smoothed path to repair here. Hand-maintained header: nothing regenerates this file.
 1934-01-01,0.720000
 1934-02-01,0.620000
 1934-03-01,0.240000

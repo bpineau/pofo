@@ -2422,7 +2422,7 @@ func euroGovLongDaily(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, fmt.Errorf("EUROGOV-LONG-EUR: empty history")
 	}
 	if shape, serr := f.Fetch("EUROGOV-LONG-DAILY", from); serr == nil && shape != nil {
-		anchors = shapedSeries(anchors, shape)
+		anchors = shapedSeries(alignMonthEnd("EUROGOV-LONG-EUR", anchors, shape), shape)
 	}
 	return anchors, nil
 }

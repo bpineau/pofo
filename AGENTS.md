@@ -437,4 +437,13 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   levered short bond, which overstates a bond bull). Its LEVEL follows the real
   ECB 25y curve point from 2004-09 (the monthly `EUROGOV-LONG-EUR` is that
   curve's month-ends there, spliced onto the synthesized deep tail); the affine
-  25y-on-10y map carries the pre-2004 years only.
+  25y-on-10y map carries the pre-2004 years only. SINCE 2026-09-19 the same
+  doctrine covers `EUROGOV-EUR` (real ECB 10y curve month-ends from 2004-09) and
+  `BUND-EUR` (real Bundesbank curve month-ends from 1997-08): an OECD monthly
+  yield is the month's AVERAGE, which smooths a reconstruction by a fifth and
+  puts its months half a step out of phase (monthly correlation with the fund
+  behind `EUROGOV-EUR` went 0.59 -> 0.88, and with the one behind `BUND-EUR`
+  0.60 -> 0.95). Every OECD-driven monthly file now carries a month-END label,
+  the cash accruals included, which emptied the `gaps_test.go` allow-list;
+  `GILT-GBP`, `EMU-EUR`, `WTI-USD` and `TBILL-3M` are measured, named and left
+  (see the sweep section of `docs/ntsz-eurozone-efficient-core-design.md`).

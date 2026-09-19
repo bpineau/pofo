@@ -43,10 +43,12 @@ import (
 //
 //	USD  0.80  VFITX / VUSTX blend (CMT reconstructions behind them, ~1953)
 //	           financed at usdOvernight
-//	DEU  0.11  BUND-EUR (~1956, daily BUND-DAILY shape from 1997-08)
+//	DEU  0.11  BUND-EUR (~1956; the real Bundesbank curve sets both level and
+//	           daily shape from 1997-08, via BUND-DAILY)
 //	           financed at the euro overnight rate, DECASH-EUR before the euro
 //	JPY  0.06  JGB-JPY (daily, ~1986-07) financed at JPCASH-JPY (~1985-07)
-//	GBP  0.03  GILT-GBP (monthly, ~1960) financed at GBCASH-GBP (~1978-01)
+//	GBP  0.03  GILT-GBP (monthly month-average, ~1960; the one leg with no real
+//	           daily curve to splice on) financed at GBCASH-GBP (~1978-01)
 //
 // # What happens before a sleeve exists
 //
@@ -191,9 +193,9 @@ func usdBondSleeve(f Fetcher, from time.Time) (*marketdata.Series, error) {
 }
 
 // deuBondSleeve is the German leg: the bundled 10-year Bund reconstruction
-// (BUND-EUR from 1956, carried at daily granularity by the Bundesbank curve
-// BUND-DAILY from 1997-08), financed at the euro overnight rate, itself carried
-// before the euro by the German money-market accrual.
+// (BUND-EUR from 1956, whose levels AND daily granularity are both the
+// Bundesbank curve BUND-DAILY from 1997-08), financed at the euro overnight
+// rate, itself carried before the euro by the German money-market accrual.
 func deuBondSleeve(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	bund, err := shapedRefdata(f, "BUND-EUR", "BUND-DAILY", from)
 	if err != nil {
@@ -281,15 +283,16 @@ func refdata(f Fetcher, id string, from time.Time) (*marketdata.Series, error) {
 
 // shapedRefdata fetches a monthly reference series and blends in the daily
 // shape of the same market where it reaches, exactly as extend() does for the
-// proxies that stand behind a fetchable fund. It is spelled out here because
-// these series stand behind no fund: they ARE the sleeve.
+// proxies that stand behind a fetchable fund, alignMonthEnd included. It is
+// spelled out here because these series stand behind no fund: they ARE the
+// sleeve.
 func shapedRefdata(f Fetcher, anchorID, shapeID string, from time.Time) (*marketdata.Series, error) {
 	anchor, err := refdata(f, anchorID, from)
 	if err != nil {
 		return nil, err
 	}
 	if shape, serr := f.Fetch(shapeID, from); serr == nil && shape != nil && len(shape.Points) > 300 {
-		return shapedSeries(anchor, shape), nil
+		return shapedSeries(alignMonthEnd(anchorID, anchor, shape), shape), nil
 	}
 	fmt.Fprintf(os.Stderr, "bond overlay: %s: no daily shape %s, monthly cadence kept\n", anchorID, shapeID)
 	return anchor, nil

@@ -51,9 +51,11 @@ import (
 //     cumulated daily from 1926-07; see cmd/gen-usmkt-refdata), the whole market
 //     behind VTI. Daily and total-return already, and GROSS: see longBackFee.
 //   - EUNH.DE (iShares Core Euro Govt Bond, 2009) → euro-area government bond TR
-//     (refdata EUROGOV-EUR: OECD euro-area 10y yield through TreasuryTR, ~1970),
-//     carried at daily granularity from 2004 by the ECB daily yield-curve shape
-//     (EUROGOV-DAILY). The bond leg of the eurozone NTSZ recipe.
+//     (refdata EUROGOV-EUR: the ECB daily 10y yield-curve point through
+//     TreasuryTR, sampled month-END from 2004-09, and the OECD euro-area 10y
+//     yield the same way before it, ~1970), carried at daily granularity from
+//     2004 by that same curve as a shape (EUROGOV-DAILY). The bond leg of the
+//     eurozone NTSZ recipe.
 var longBack = map[string]string{
 	"VTMGX":    "DEVEXUS-USD",
 	"VEIEX":    "EM-USD",
@@ -155,8 +157,8 @@ var dailyShape = map[string]string{
 	"TREASURY-INT-USD":  "TREASURY-INT-DAILY",  // FRED DGS5 daily 5y CMT through TreasuryTR, 1962→1992
 	"TREASURY-LONG-USD": "TREASURY-LONG-DAILY", // FRED DGS20 daily 20y CMT through TreasuryTR, 1962→1986
 	"WTI-USD":           "WTI-DAILY",           // FRED DCOILWTICO daily WTI spot, 1986→2000
-	"EUROGOV-EUR":       "EUROGOV-DAILY",       // ECB daily euro-area 10y yield through TreasuryTR, 2004→
-	"EUROGOV-LONG-EUR":  "EUROGOV-LONG-DAILY",  // ECB daily euro-area 25y yield through TreasuryTR, 2004→
+	"EUROGOV-EUR":       "EUROGOV-DAILY",       // ECB daily euro-area 10y yield through TreasuryTR, 2004→ (also the anchors' own source there)
+	"EUROGOV-LONG-EUR":  "EUROGOV-LONG-DAILY",  // ECB daily euro-area 25y yield through TreasuryTR, 2004→ (idem)
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
