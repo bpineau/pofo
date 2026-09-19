@@ -128,3 +128,72 @@ func BenchmarkRunPathAmortize(b *testing.B) {
 		_ = p.RunPath(seq, Lives{})
 	}
 }
+
+// benchLifetimePlan is the mortality kernel's own shape: a couple, a horizon
+// long enough not to truncate the longevity tail, a shorter planning horizon
+// and a reverting pension. It is what the FIRE page's mortality sections
+// simulate, and it is a far longer path than the fixed-horizon benchmarks.
+func benchLifetimePlan() Plan {
+	p := benchPlan()
+	p.Years, p.PlanHorizon = 55, 40
+	p.Source = scenario.ParametricSource{Mu: 0.05, Sigma: 0.15, Df: 5, Periods: 55}
+	p.Cashflows = []Cashflow{{FromYear: 15, Annual: 18000, Owner: Self, Reversion: 0.54}}
+	p.Lifetime = &Lifetime{Self: Life{Age: 52}, Partner: &Life{Age: 50}, SurvivorSpend: 0.7}
+	return p
+}
+
+// BenchmarkSimulateLifetime is one endpoint-equivalent run of the stochastic
+// lifetime kernel: the lifespans are drawn per path alongside the returns and
+// the kernel stops at the household's end.
+func BenchmarkSimulateLifetime(b *testing.B) {
+	p := benchLifetimePlan()
+	for i := 0; i < b.N; i++ {
+		_ = p.Simulate(2000, 8, 7)
+	}
+}
+
+// BenchmarkDrawLifetime isolates the sampling side of that plan: a return
+// sequence plus a household lifespan per path.
+func BenchmarkDrawLifetime(b *testing.B) {
+	p := benchLifetimePlan()
+	for i := 0; i < b.N; i++ {
+		_ = p.Draw(2000, 8, 7)
+	}
+}
+
+// benchEnsemble is one simulated ensemble, the input every aggregate below
+// reads. Built once, outside the timed loop.
+func benchEnsemble(b *testing.B, p Plan) Ensemble {
+	b.Helper()
+	e := p.Simulate(2000, 8, 7)
+	b.ResetTimer()
+	return e
+}
+
+// BenchmarkOutcome is the headline statistics bundle, computed once per
+// simulation on every endpoint and once per point in a Sweep1D.
+func BenchmarkOutcome(b *testing.B) {
+	e := benchEnsemble(b, benchPlan())
+	for i := 0; i < b.N; i++ {
+		_ = e.Outcome()
+	}
+}
+
+// BenchmarkFan is the wealth fan the page's central chart is drawn from: a
+// quantile column per year over every path.
+func BenchmarkFan(b *testing.B) {
+	e := benchEnsemble(b, benchPlan())
+	pcts := []float64{0.05, 0.25, 0.50, 0.75, 0.95}
+	for i := 0; i < b.N; i++ {
+		_ = e.Fan(pcts, 5)
+	}
+}
+
+// BenchmarkLifeOutcome is the mortality bundle, the lifetime kernel's
+// counterpart to Outcome.
+func BenchmarkLifeOutcome(b *testing.B) {
+	e := benchEnsemble(b, benchLifetimePlan())
+	for i := 0; i < b.N; i++ {
+		_ = e.LifeOutcome()
+	}
+}

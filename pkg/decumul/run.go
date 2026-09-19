@@ -128,7 +128,7 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 
 // runPathAnnual is RunPath over an optional caller-owned arena window for the
 // path's two series (nil = allocate them here).
-func (p Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
+func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {

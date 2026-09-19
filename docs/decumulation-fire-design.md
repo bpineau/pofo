@@ -424,3 +424,86 @@ Deltas on an M1 Max, `-benchmem`, at equal results: `BenchmarkSimulate`
 share of `Simulate` is ~13 % (`GOGC=off`), and the eight-worker run reaches
 only ~3.3x the one-worker one: the ceiling now is memory traffic, not the
 kernel.
+
+### Second pass: the aggregates, not the kernel
+
+That first pass profiled `BenchmarkSimulate` and concluded that "sorting never
+showed". It never showed because it is not in `Simulate`: the reading of an
+ensemble had no benchmark at all. Adding one settled the question at once. On
+the page's default plan, `Outcome` cost 2.73 ms and `Fan` 3.15 ms against
+`Simulate`'s 1.14 ms, and both run on every endpoint (`Outcome` also once per
+sweep point). The endpoints were spending three quarters of their time reading
+the simulation, not running it.
+
+Three things paid, all of them bit-identical by construction:
+
+- **one root per path instead of one per decade window.** `worst10y` took
+  `math.Pow(ratio, 0.1)` on each of the horizon's twenty-odd windows to pick
+  the smallest. The tenth root is increasing, so the smallest CAGR is the
+  smallest ratio: the loop now compares ratios and takes the root once, on the
+  winner. It was 27 % of the two aggregates' profile.
+- **order statistics by selection, not by sorting.** `metrics.Quantiles` sorted
+  the whole sample to read two or three of its ranks; a wealth fan does that
+  once per year of the horizon, on thousands of paths. It now places only the
+  ranks it needs (`selectRanks`, a Hoare multiselect that splits the span once
+  per level instead of running one quickselect per rank), falling back to the
+  full sort on small samples and on any sample holding a NaN. `metrics.TopK` is
+  the same idea for a conditional tail: partition, then sort only the tail,
+  which is what `Outcome`'s CDaR needed (it was sorting two thousand path
+  drawdowns to average a hundred of them). The values are the order statistics
+  either way, and `TestQuantilesMatchesFullSort` / `TestTopKMatchesFullSort`
+  check that against the full-sort definition over thousands of random samples,
+  ties and all.
+- **one walk of a wealth path for the two statistics that share its peak.**
+  `yearsUnderwater` and `pathMaxDD` each walked the path tracking the same
+  running high; `pathPeakStats` does it once, and skips the division on a point
+  that sets a new high (where the drawdown is zero by construction).
+
+On the kernel side the remaining fat was the receiver: `Plan` is a ~430-byte
+struct and its per-year helpers (`income`, `cashflowPV`, `schedAt`,
+`needAtWith`, `planYears`) took it by value, so a thirty-year path copied it
+dozens of times. They are unexported, so they became pointer receivers without
+touching the public API (`RunPath`, `Simulate` and friends keep their value
+receivers). And the monthly kernel priced the risk guardrail's future income
+twelve times a year over the same horizon scan; that is a yearly quantity.
+
+Deltas on an M1 Max, `-benchmem`, median of six, at equal results:
+
+| benchmark | before | after | |
+|---|---|---|---|
+| `Outcome` | 2 730 us | 601 us | -78 % |
+| `Fan` | 3 154 us | 1 504 us | -52 % |
+| `LifeOutcome` | 207 us | 114 us | -45 % |
+| `RunPath` | 1 204 ns | 1 077 ns | -11 % |
+| `RunPathAmortize` | 4 492 ns | 3 962 ns | -12 % |
+| `Simulate` | 1 129 us | 1 046 us | -7 % |
+| `Solve` | 12.47 ms | 11.66 ms | -7 % |
+| `SweepShared` | 4.91 ms | 4.57 ms | -7 % |
+| `ComputeParametric` (`/api/sim`) | 40.8 ms | 15.7 ms | **-62 %** |
+| `ComputeBootstrap` | 41.4 ms | 18.4 ms | **-56 %** |
+| `ModelsStrip` (`/api/models`) | 111 ms | 89.8 ms | -19 % |
+
+`pkg/scenario` came out of this pass unchanged: its draws are arithmetic-bound
+in a rejection sampler, and the ways to speed one up all change either the
+order of the RNG calls or the rounding, which is to say the results.
+
+**What did not pay, or was not taken.** The amortization rule (ABW/TPAW) and
+the risk guardrail rebuild the household's forecast every year of every path:
+`cashflowPV` rescans the whole remaining horizon and `pmt` takes a `math.Pow`,
+which together are ~30 % of `RunPathAmortize` and make both rules quadratic in
+the horizon. Those tables are the same on every path (a planning rule never
+sees the draws), so they could be built once per simulation and memoised
+bit-identically, EXCEPT under an annuity, whose income the path itself sets.
+It was left alone: it needs plan-level tables threaded through `runPath`'s
+signature and a memoised twin of `pmt`, which is a lot of machinery across the
+kernel for one of seven spending rules. `sampleByTerminal`'s sort was also left
+alone: terminal wealth ties heavily (every ruined path ends at zero) and the
+sample it picks among the tied paths depends on the sort implementation, so
+swapping sorts there would silently move a displayed path.
+
+**The guard.** `pkg/decumul/determinism_test.go` pins a SHA-256 of everything
+the package produces, per-path series included, for fifteen plans (every
+spending rule, the envelope split, the monthly kernel, the lifetime kernel with
+a partner and with an annuity) and for every `scenario.Source` kind, raw and
+`Prepare`d. It carries no tolerance: an optimisation that moves a digest is a
+different model, not a faster one.
