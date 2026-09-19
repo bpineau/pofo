@@ -160,7 +160,7 @@ func DivergingStack(opt DivergingStackOptions, series []DivergingStackSeries) st
 	}
 
 	// Horizontal gridlines and y labels; the zero axis is emphasized.
-	for v := dn; v <= up+step/2; v += step {
+	for v, k := dn, 0; v <= up+step/2 && k < maxGridLines; v, k = v+step, k+1 {
 		col, sw := themeGrid, 1.0
 		if math.Abs(v) < step/2 {
 			col, sw = themeAxis, 1.2

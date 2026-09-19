@@ -83,7 +83,7 @@ func Fan(opt Options, xLabel string, bands [][]float64, samples [][]float64, mar
 
 	// Horizontal grid and y-axis labels (wealth).
 	step := niceStep(vmax-vmin, 6)
-	for v := math.Ceil(vmin/step) * step; v <= vmax+step/1e6; v += step {
+	for v, k := math.Ceil(vmin/step)*step, 0; v <= vmax+step/1e6 && k < maxGridLines; v, k = v+step, k+1 {
 		y := yAt(v)
 		fmt.Fprintf(&b, `<line x1="%g" y1="%.1f" x2="%g" y2="%.1f" stroke="`+themeGrid+`"/>`+"\n", x0, y, x1, y)
 		fmt.Fprintf(&b, `<text x="%g" y="%.1f" dy="0.35em" font-size="12" fill="`+themeMuted+`" text-anchor="end">%s</text>`+"\n", x0-8, y, fmtTick(v, step))
