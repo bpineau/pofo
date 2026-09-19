@@ -33,9 +33,8 @@ const (
 // from 1966. It is the cheque the household received: flat, then the last
 // partial year, then nothing.
 var deuxSpend = []float64{
-	40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0,
-	40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0,
-	40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 30.4, 0.0,
+	40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0,
+	40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 40.0, 39.6, 0.0,
 }
 
 // deuxRate is that same cheque as a percentage of the capital it was taken
@@ -43,9 +42,9 @@ var deuxSpend = []float64{
 // entry of deuxSpend has no rate, the capital being gone, so this series is one
 // year shorter.
 var deuxRate = []float64{
-	4.00, 4.52, 4.26, 4.29, 5.03, 5.11, 4.99, 4.82, 5.97, 8.23,
-	7.67, 7.28, 8.73, 10.00, 11.23, 11.82, 14.20, 13.82, 14.42, 15.92,
-	15.46, 15.74, 18.82, 21.57, 23.17, 31.37, 37.80, 58.49, 100.00,
+	4.00, 4.49, 4.24, 4.29, 5.03, 5.09, 4.95, 4.80, 5.94, 8.18, 7.59, 7.23, 8.67, 9.95, 11.12,
+	11.60, 14.12, 13.64, 14.23, 15.67, 15.12, 15.44, 18.31, 20.91, 22.31, 29.78, 34.96, 51.93,
+	100.00,
 }
 
 // deuxCeiling is where the lower panel stops drawing: the rate runs to 100 %,

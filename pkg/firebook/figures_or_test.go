@@ -230,7 +230,7 @@ func TestOrPlateRenders(t *testing.T) {
 	if strings.Contains(svg, "—") {
 		t.Error("no em-dash")
 	}
-	for _, want := range []string{"1970-79", "2015-24", "2020-25", "+21,6", "−7,2", "+14,5", "CPI américain"} {
+	for _, want := range []string{"1970-79", "2015-24", "2020-25", "+21,6", "−7,2", "+14,6", "CPI américain"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate is missing %q", want)
 		}

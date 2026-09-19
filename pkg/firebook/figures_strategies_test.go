@@ -118,7 +118,7 @@ func TestSmoothingFigureMatchesTheEngine(t *testing.T) {
 		got  float64
 		want float64
 	}{
-		{"brut an 1", raw[0], 56.0}, {"brut an 2", raw[1], 45.6}, {"brut an 3", raw[2], 33.8},
+		{"brut an 1", raw[0], 56.0}, {"brut an 2", raw[1], 45.7}, {"brut an 3", raw[2], 33.9},
 		{"yale an 2", yale[1], 52.9}, {"yale an 3", yale[2], 47.1},
 		{"corridor an 3", corridor[2], 53.2},
 	} {

@@ -28,10 +28,10 @@ import (
 //     is therefore a measured fact and not a rhetorical one.
 //   - The material does change the LEVEL, and its sign flips once in
 //     forty-three vintages. The long pocket subtracts from every departure from
-//     1954 to 1980 and adds to every departure from 1981 to 1996, the pivot
-//     falling exactly on the peak of yields.
+//     1954 to 1979 and adds to every departure from 1980 to 1996, the pivot
+//     falling within a year of the peak of yields.
 //   - The side it lands on is the wrong one. The worst departure of the sample,
-//     1966, sustains 3,96 % with intermediates, 4,03 % with bills and 3,69 %
+//     1966, sustains 3,97 % with intermediates, 4,03 % with bills and 3,69 %
 //     with the long bond: the long pocket takes a quarter of a point from the
 //     vintage that had none to give and hands three quarters of a point to
 //     1982, which needed nothing.
@@ -67,57 +67,57 @@ type matiereVintage struct {
 // under tenteAlloc three times. figures_matiere_test.go re-solves all of it
 // from the datasets and fails on any drift.
 var matiereVintages = []matiereVintage{
-	{1954, 7.787, -0.205, +0.049},
-	{1955, 6.127, -0.258, +0.078},
-	{1956, 5.368, -0.250, +0.022},
-	{1957, 5.477, -0.221, -0.047},
-	{1958, 6.008, -0.222, +0.032},
-	{1959, 5.039, -0.171, -0.009},
-	{1960, 4.913, -0.173, -0.088},
-	{1961, 4.909, -0.190, +0.056},
-	{1962, 4.366, -0.181, +0.057},
-	{1963, 4.650, -0.232, +0.120},
-	{1964, 4.286, -0.231, +0.095},
-	{1965, 4.046, -0.253, +0.104},
-	{1966, 3.960, -0.265, +0.070},
-	{1967, 4.413, -0.334, +0.058},
-	{1968, 4.165, -0.227, +0.015},
-	{1969, 4.201, -0.200, -0.005},
-	{1970, 4.905, -0.195, -0.170},
-	{1971, 4.930, -0.142, +0.020},
-	{1972, 4.788, -0.247, +0.085},
-	{1973, 4.620, -0.299, +0.092},
-	{1974, 5.626, -0.123, +0.048},
-	{1975, 7.520, -0.079, -0.019},
-	{1976, 6.897, -0.118, -0.028},
-	{1977, 6.411, -0.183, +0.199},
-	{1978, 7.489, -0.198, +0.112},
-	{1979, 8.324, -0.170, -0.056},
-	{1980, 9.012, -0.005, -0.301},
-	{1981, 9.199, +0.168, -0.729},
-	{1982, 10.503, +0.843, -1.070},
-	{1983, 9.582, +0.382, -0.624},
-	{1984, 9.386, +0.710, -0.839},
-	{1985, 9.580, +0.828, -0.838},
-	{1986, 8.492, +0.475, -0.517},
-	{1987, 7.810, +0.195, -0.262},
-	{1988, 8.327, +0.495, -0.517},
-	{1989, 8.261, +0.505, -0.627},
-	{1990, 7.406, +0.402, -0.500},
-	{1991, 8.079, +0.632, -0.603},
-	{1992, 7.134, +0.568, -0.405},
-	{1993, 7.280, +0.633, -0.392},
-	{1994, 7.166, +0.416, -0.274},
-	{1995, 7.845, +0.695, -0.629},
-	{1996, 6.661, +0.346, -0.367},
+	{1954, 7.790, -0.207, +0.046},
+	{1955, 6.129, -0.260, +0.076},
+	{1956, 5.369, -0.251, +0.021},
+	{1957, 5.479, -0.223, -0.050},
+	{1958, 6.010, -0.224, +0.030},
+	{1959, 5.040, -0.173, -0.011},
+	{1960, 4.915, -0.175, -0.089},
+	{1961, 4.911, -0.192, +0.054},
+	{1962, 4.368, -0.183, +0.055},
+	{1963, 4.653, -0.234, +0.117},
+	{1964, 4.290, -0.234, +0.092},
+	{1965, 4.051, -0.257, +0.100},
+	{1966, 3.974, -0.279, +0.055},
+	{1967, 4.397, -0.318, +0.073},
+	{1968, 4.164, -0.226, +0.015},
+	{1969, 4.212, -0.211, -0.017},
+	{1970, 4.922, -0.212, -0.187},
+	{1971, 4.932, -0.144, +0.018},
+	{1972, 4.771, -0.229, +0.102},
+	{1973, 4.625, -0.304, +0.087},
+	{1974, 5.624, -0.120, +0.051},
+	{1975, 7.518, -0.077, -0.016},
+	{1976, 6.862, -0.083, +0.007},
+	{1977, 6.407, -0.180, +0.203},
+	{1978, 7.487, -0.197, +0.114},
+	{1979, 8.344, -0.190, -0.076},
+	{1980, 8.996, +0.012, -0.284},
+	{1981, 9.098, +0.269, -0.628},
+	{1982, 10.553, +0.793, -1.120},
+	{1983, 9.564, +0.400, -0.606},
+	{1984, 9.387, +0.709, -0.840},
+	{1985, 9.575, +0.832, -0.834},
+	{1986, 8.457, +0.510, -0.482},
+	{1987, 7.829, +0.176, -0.281},
+	{1988, 8.311, +0.512, -0.501},
+	{1989, 8.267, +0.500, -0.632},
+	{1990, 7.421, +0.387, -0.515},
+	{1991, 8.073, +0.638, -0.597},
+	{1992, 7.104, +0.598, -0.375},
+	{1993, 7.275, +0.637, -0.387},
+	{1994, 7.176, +0.407, -0.283},
+	{1995, 7.853, +0.686, -0.637},
+	{1996, 6.652, +0.356, -0.358},
 }
 
 // The readings the plate prints, all of them re-derived by the guard test.
 const (
 	// The single sign change of the long pocket, and where it falls.
-	matiereLongNeg   = 27   // departures 1954-1980, every one of them a loss
-	matiereLongPos   = 16   // departures 1981-1996, every one of them a gain
-	matierePivot     = 1980 // the last departure the long pocket costs
+	matiereLongNeg   = 26   // departures 1954-1979, every one of them a loss
+	matiereLongPos   = 17   // departures 1980-1996, every one of them a gain
+	matierePivot     = 1979 // the last departure the long pocket costs
 	matiereWorstYear = 1966 // the worst departure of the sample, on every pocket
 
 	// The distribution of what the SLOPE is worth, across the four pockets
@@ -153,8 +153,8 @@ func figTenteMatiere() string {
 	bot := figScale{Min: -1.15, Max: 0.95, Px0: botBot, Px1: botTop}
 	zero := bot.Map(0)
 
-	// The era the long pocket never once paid in ends between the 1980 and the
-	// 1981 departure; both panels are washed on that side of the cut, so the
+	// The era the long pocket never once paid in ends between the 1979 and the
+	// 1980 departure; both panels are washed on that side of the cut, so the
 	// trough of the top panel and the deficit of the bottom one read as one span.
 	pivot, wi := 0, 0
 	for i, v := range matiereVintages {
@@ -202,7 +202,7 @@ func figTenteMatiere() string {
 	b.WriteString(sTxt(24, 214, 10.5, figSoft, "start", "600",
 		"Ce que la matière ajoute à ce taux, ou lui retire (points de taux)"))
 	b.WriteString(sTxt(px1, 214, 10, figAccent, "end", "600",
-		"elle rapporte sur les seize suivants"))
+		"elle rapporte sur les dix-sept suivants"))
 	b.WriteString(wash(botTop, botBot))
 	for _, g := range []float64{0.5, -0.5, -1} {
 		gy := bot.Map(g)
@@ -223,7 +223,7 @@ func figTenteMatiere() string {
 
 	// the counts, one on each side of the cut: the sign changes once, and once only
 	b.WriteString(sTxt(px0+10, botTop+13, 10, figAccent, "start", "600",
-		"1954-1980 : elle coûte sur les vingt-sept départs"))
+		"1954-1979 : elle coûte sur les vingt-six départs"))
 
 	// the two curves, named where they run flat and far apart
 	b.WriteString(sTxt(x(3), bot.Map(matiereVintages[3].cash)-13, 11, figBlue, "start", "600",

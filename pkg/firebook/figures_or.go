@@ -31,21 +31,21 @@ import (
 var (
 	orDecadeFirst = 1970 // first window: December 1969 to December 1979
 	orDecadeStep  = 5    // one window every five years
-	orDecadeAnn   = []float64{21.60, -2.01, -7.17, -1.35, -5.81, -1.07, 11.36, 8.24, 1.54, 5.04}
-	orDecadeTotal = []float64{607.0, -18.4, -52.5, -12.7, -45.1, -10.2, 193.3, 120.8, 16.5, 63.4}
+	orDecadeAnn   = []float64{21.60, -2.01, -7.17, -1.35, -5.81, -1.07, 11.36, 8.24, 1.54, 5.08}
+	orDecadeTotal = []float64{607.0, -18.4, -52.5, -12.7, -45.1, -10.2, 193.3, 120.8, 16.5, 64.2}
 
 	// The running window, kept as its own case: December 2019 to December 2025
 	// is six years, not ten, so only its annualized form is comparable.
 	orPartialStart = 2020
 	orPartialEnd   = 2025
-	orPartialAnn   = 14.54
-	orPartialTotal = 125.8
+	orPartialAnn   = 14.61
+	orPartialTotal = 126.6
 
 	// Averages of the ten complete windows, with and without the single window
 	// that holds the 1970s. The second one is what is left of gold once the
 	// post-1971 repricing leaves the sample.
 	orDecadeMean     = 3.04
-	orDecadeMeanEx70 = 0.97
+	orDecadeMeanEx70 = 0.98
 )
 
 // orDecadeLabel names a window the way the axis shows it ("1970-79").

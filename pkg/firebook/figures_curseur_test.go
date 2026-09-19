@@ -96,7 +96,7 @@ func TestCurseurControlTableStillHolds(t *testing.T) {
 		{name: "Golden Butterfly", cagr: 5.9, vol: 8.2, cagrTol: 0.25, volTol: 0.5,
 			drawdown: -22, drawdnTol: 1, hasDrawdwn: true,
 			weights: map[string]float64{"equities": .20, "smallvalue": .20, "long": .20, "short": .20, "gold": .20}},
-		{name: "60/40", cagr: 5.4, vol: 9.4, cagrTol: 0.25, volTol: 0.5,
+		{name: "60/40", cagr: 5.4, vol: 10.2, cagrTol: 0.25, volTol: 0.5,
 			weights: map[string]float64{"equities": .60, "intermediate": .40}},
 		{name: "100 % actions", cagr: 6.8, vol: 15.3, cagrTol: 0.25, volTol: 0.5,
 			weights: map[string]float64{"equities": 1}},
@@ -242,7 +242,7 @@ func TestCurseurPlateRenders(t *testing.T) {
 		">pire recul réel<",
 		"Quarante points de poche retirent 16 points de recul et coûtent 0,3 point de rendement.",
 		"aucune série de linkers",
-		"trop de duration longue a payé 2022",
+		"aucune dose n'a aggravé une mauvaise année",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate does not carry %q", want)

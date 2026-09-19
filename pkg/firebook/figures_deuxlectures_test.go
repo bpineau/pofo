@@ -126,7 +126,7 @@ func TestDeuxLecturesPlateRenders(t *testing.T) {
 	if n := strings.Count(svg, "<polyline"); n != 1 {
 		t.Errorf("%d curves drawn, the lower panel has exactly one", n)
 	}
-	if !strings.Contains(svg, ">le taux quitte l'échelle en 1989, passe 38 % en 1992,<") {
+	if !strings.Contains(svg, ">le taux quitte l'échelle en 1989, passe 35 % en 1992,<") {
 		t.Error("the plate does not say where the curve leaves the panel")
 	}
 }

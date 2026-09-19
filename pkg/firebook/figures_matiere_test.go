@@ -333,7 +333,7 @@ func TestTenteMatiereRenders(t *testing.T) {
 	s := figTenteMatiere()
 	for _, want := range []string{
 		"viewBox", "poche monétaire", "poche longue (État 20 ans)",
-		"1966, le pire départ", "1954-1980", "3,96 %", "4,03 %", "3,69 %",
+		"1966, le pire départ", "1954-1979", "3,97 %", "4,03 %", "3,70 %",
 	} {
 		if !strings.Contains(s, want) {
 			t.Errorf("the plate never mentions %q", want)

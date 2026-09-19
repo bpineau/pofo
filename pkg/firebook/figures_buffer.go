@@ -46,15 +46,15 @@ var bufferEpisodes = []struct {
 	depth    float64 // worst real drawdown of the episode, in percent
 	name     string  // the crisis, when it has a name worth printing
 }{
-	{"1972-12", "1983-04", 124, -38.0, "stagflation des années 1970"},
-	{"2000-08", "2006-10", 74, -24.0, "bulle internet"},
-	{"1968-11", "1972-05", 42, -24.8, ""},
-	{"2007-10", "2011-02", 40, -28.6, "crise financière"},
-	{"2021-12", "2024-08", 32, -22.6, "choc d'inflation"},
+	{"1972-12", "1983-04", 124, -37.5, "stagflation des années 1970"},
+	{"2000-08", "2006-10", 74, -23.6, "bulle internet"},
+	{"1968-11", "1972-05", 42, -24.5, ""},
+	{"2007-10", "2011-02", 40, -28.9, "crise financière"},
+	{"2021-12", "2024-08", 32, -23.1, "choc d'inflation"},
 	{"1956-07", "1958-07", 24, -11.3, ""},
 	{"1987-08", "1989-07", 23, -19.7, ""},
-	{"1965-10", "1967-04", 18, -12.3, ""},
-	{"1961-12", "1963-04", 16, -13.0, ""},
+	{"1965-10", "1967-03", 17, -11.9, ""},
+	{"1961-12", "1963-04", 16, -13.2, ""},
 }
 
 // figTraverseesMatelas draws one bar per crossing, sorted longest first, cut at

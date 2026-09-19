@@ -144,7 +144,7 @@ func TestMillesimesPctFormatting(t *testing.T) {
 	if got := millPct(millDecade1966); got != "−1,2 %/an" {
 		t.Errorf("millPct(%.2f) = %q", millDecade1966, got)
 	}
-	if got := millPct(millDecade1982); got != "+11,4 %/an" {
+	if got := millPct(millDecade1982); got != "+11,5 %/an" {
 		t.Errorf("millPct(%.2f) = %q", millDecade1982, got)
 	}
 }

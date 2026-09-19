@@ -20,7 +20,7 @@ import (
 // them drawn rather than asserted: only nine of the forty-three vintages gain
 // anything, the median vintage pays a quarter of a point, and the winners are
 // the hard vintages (the ten with the lowest static sustainable rate average
-// +0,07 point, the ten easiest −0,32 point).
+// +0,07 point, the ten easiest −0,33 point).
 //
 // The sample is thin and the plate says so on its own surface: the bond leg
 // starts in 1953, and a thirty-year retirement then leaves only the 1954-1996
@@ -63,7 +63,7 @@ func tenteAlloc(t int) float64 {
 // tenteCohort is one departure vintage: the gain of the tent over its static
 // twin, in points of maximum sustainable withdrawal rate, and whether the
 // vintage belongs to the ten hardest of the sample (the ten with the lowest
-// static sustainable rate, 3,90 % to 4,69 %; the eleventh sits at 4,84 %, so
+// static sustainable rate, 3,91 % to 4,70 %; the eleventh sits at 4,83 %, so
 // the cut is not on a knife edge).
 type tenteCohort struct {
 	year int
@@ -80,49 +80,49 @@ type tenteCohort struct {
 // once with tenteStatic, and subtract. figures_tente_test.go re-solves all
 // forty-three from the datasets and fails on any drift.
 var tenteCohorts = []tenteCohort{
-	{1973, +0.327, true},
-	{1981, +0.289, false},
-	{1969, +0.228, true},
-	{1970, +0.214, true},
-	{1972, +0.172, true},
-	{1974, +0.166, false},
+	{1973, +0.332, true},
+	{1981, +0.237, false},
+	{1969, +0.235, true},
+	{1970, +0.225, true},
+	{1974, +0.167, false},
+	{1972, +0.164, true},
 	{1968, +0.131, true},
-	{1971, +0.094, false},
-	{1966, +0.059, true},
-	{1965, -0.050, true},
-	{1977, -0.067, false},
-	{1967, -0.072, true},
-	{1984, -0.091, false},
-	{1982, -0.117, false},
+	{1971, +0.098, false},
+	{1966, +0.067, true},
+	{1965, -0.048, true},
+	{1977, -0.066, false},
+	{1967, -0.080, true},
+	{1984, -0.089, false},
+	{1982, -0.090, false},
 	{1962, -0.130, true},
-	{1976, -0.145, false},
-	{1960, -0.171, false},
-	{1964, -0.181, true},
-	{1980, -0.211, false},
-	{1990, -0.221, false},
-	{1957, -0.244, false},
-	{1956, -0.251, false},
-	{1986, -0.255, false},
+	{1976, -0.160, false},
+	{1960, -0.172, false},
+	{1964, -0.180, true},
+	{1980, -0.213, false},
+	{1990, -0.214, false},
+	{1957, -0.245, false},
+	{1956, -0.252, false},
 	{1959, -0.258, false},
-	{1978, -0.293, false},
-	{1987, -0.314, false},
-	{1983, -0.316, false},
-	{1961, -0.334, false},
-	{1979, -0.337, false},
-	{1985, -0.353, false},
-	{1989, -0.354, false},
+	{1986, -0.273, false},
+	{1978, -0.290, false},
+	{1987, -0.304, false},
+	{1979, -0.321, false},
+	{1983, -0.324, false},
+	{1961, -0.335, false},
+	{1989, -0.352, false},
+	{1985, -0.354, false},
 	{1963, -0.360, false},
-	{1988, -0.389, false},
-	{1992, -0.453, false},
-	{1996, -0.454, false},
-	{1975, -0.498, false},
-	{1993, -0.529, false},
-	{1955, -0.547, false},
-	{1991, -0.610, false},
-	{1994, -0.622, false},
+	{1988, -0.397, false},
+	{1996, -0.460, false},
+	{1992, -0.470, false},
+	{1975, -0.495, false},
+	{1993, -0.532, false},
+	{1955, -0.548, false},
+	{1991, -0.613, false},
+	{1994, -0.618, false},
 	{1958, -0.669, false},
-	{1995, -0.709, false},
-	{1954, -1.132, false},
+	{1995, -0.706, false},
+	{1954, -1.133, false},
 }
 
 // The three readings the plate prints, all of them derived from tenteCohorts
@@ -131,9 +131,9 @@ var tenteCohorts = []tenteCohort{
 // easiest ones.
 const (
 	tenteWinners  = 9
-	tenteMedian   = -0.251
-	tenteHardMean = +0.070
-	tenteEasyMean = -0.319
+	tenteMedian   = -0.252
+	tenteHardMean = +0.072
+	tenteEasyMean = -0.325
 )
 
 // figTenteTransfert draws the sorted gain curve. One monotone line, one zero

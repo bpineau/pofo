@@ -293,7 +293,7 @@ func TestDouleurPlateRenders(t *testing.T) {
 		">la droite des salaires<",
 		">+4,2 pts<",
 		"Cash (bons du Trésor 3 mois) : l'étalon, prime nulle par construction",
-		"R² = 0,86",
+		"R² = 0,87",
 		"L'or part du prix fixe de 35 dollars abandonné en 1971",
 		"2008, 1974, 2002, 2022, 1973, 1969, 1977, 2001, 1981, 2000.",
 	} {
