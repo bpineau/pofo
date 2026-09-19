@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: WTI-USD
 # name: Crude oil spot (WTI, monthly)
-# source: WTI spot price (FRED WTISPLC, monthly, 1946->); public domain. Proxy behind CL=F (~2000).
+# source: WTI spot price (FRED WTISPLC, monthly, 1946->); public domain. Proxy behind CL=F (~2000). CADENCE: WTISPLC is the month's AVERAGE of the daily spot prices, dated the first of the month as FRED publishes it, so the level is reached mid-month and the monthly returns are smoothed: against the real daily spot it stands on (WTI-DAILY, 1986-2000) it reads 0.83 of the daily series' monthly volatility, and its monthly returns correlate 0.74 contemporaneously against 0.50 one month late. It stays on the first of the month because no label is right for a month-average and this file has no generator to restate it in; simgen.monthEndAnchor deliberately leaves it out, so its anchors pin to the first trading day of the month rather than the last. Hand-maintained header: nothing regenerates this file.
 1946-01-01,1.170000
 1946-02-01,1.170000
 1946-03-01,1.170000

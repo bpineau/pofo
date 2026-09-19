@@ -63,16 +63,27 @@ func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 	return &out
 }
 
-// monthEndAnchor lists the bundled monthly reference series whose points are
-// month-END levels: a point for month M holds that month's closing level, and
-// the label is only a name for the month. They are the ones alignMonthEnd may
-// re-date. The distinction matters because the other monthly references are not
-// month-end observations at all (the euro-govt reconstructions run on OECD
-// MONTHLY AVERAGE yields dated the first of the month by the provider's own
-// convention, and WTI-USD is a monthly average spot), and moving those to the
-// month's last trading day would shift a whole reconstruction the other way.
-// Only add an id here after checking its calendar-year returns against the
-// published index (see pkg/datasets/golden/refdata_test.go).
+// monthEndAnchor lists the bundled monthly reference series whose label is a
+// name for the month rather than a date inside it: a point for month M holds
+// that month's level, and alignMonthEnd may therefore re-date it onto the
+// shape's own last trading day of M.
+//
+// WTI-USD is the one monthly reference deliberately left out. It is a monthly
+// AVERAGE spot price still dated the first of the month, as FRED publishes it,
+// and it has no generator in this repository to restate it in: moving its
+// anchors to the end of the month would shift the whole 1946-2000 reconstruction
+// by a month with nothing regenerable behind the decision. Measured against the
+// real daily spot it stands on (WTI-DAILY, 1986-2000), the average's signature
+// is plain: 0.83 of the daily series' monthly volatility, and monthly returns
+// correlating 0.74 contemporaneously against 0.50 one month late.
+//
+// The euro and German bond references used to be in that same bucket and are
+// not any more: since 2026-09 they take the month-ends of a real daily curve
+// wherever one exists (the ECB's from 2004-09, the Bundesbank's from 1997-08)
+// and carry the OECD month-average yield only in the deep years before it, on a
+// month-end label (cmd/gen-euro-refdata's atMonthEnd). Only add an id here after
+// checking its calendar-year returns against the published index (see
+// pkg/datasets/golden/refdata_test.go).
 var monthEndAnchor = map[string]bool{
 	"SP500-USD":         true, // dated from ^GSPC, already on trading days
 	"MSCIWORLD-USD":     true, // Curvo net-TR export, relabeled 2026-07-18
@@ -81,6 +92,9 @@ var monthEndAnchor = map[string]bool{
 	"TREND-NET-USD":     true, // BTOP50 monthly net composite, month-end by construction
 	"TREASURY-LONG-USD": true, // par bond on the month's LAST quoted yield, rebuilt 2026-09-19
 	"TREASURY-INT-USD":  true, // idem (cmd/gen-tyield-refdata)
+	"EUROGOV-EUR":       true, // ECB 10y curve month-ends from 2004-09, month-end labels before
+	"EUROGOV-LONG-EUR":  true, // ECB 25y curve month-ends from 2004-09, month-end labels before
+	"BUND-EUR":          true, // Bundesbank 10y curve month-ends from 1997-08, month-end labels before
 }
 
 // alignMonthEnd re-dates each monthly anchor point onto the last shape date in

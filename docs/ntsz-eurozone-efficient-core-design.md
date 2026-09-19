@@ -342,6 +342,177 @@ The eurozone 90/60 trails the US and global versions and draws down harder,
 exactly the "lost decade + leverage" story one expects, with a clean monthly
 volatility close to its NTSX peer.
 
+## The month-average stamping sweep, 2026-09-19
+
+This section is bundle-wide rather than euro-specific, and it lives here because
+`cmd/gen-euro-refdata` owns most of the series it moved. The companion note on
+the German, British and Japanese legs is in
+`ntsg-global-efficient-core-design.md`; the US Treasury instance, found and fixed
+five days earlier, is in `long-treasury-zero-coupon-design.md`.
+
+### The defect class
+
+A monthly reference built from month-AVERAGE observations and stamped on the
+first of the month is wrong twice over. The average smooths: under a random walk
+the variance of average-to-average monthly returns is exactly two thirds of
+close-to-close, so the file reads 0.82 of the real volatility. And the level it
+carries is reached in the MIDDLE of the month, not at either end, so its monthly
+returns sit half a month out of step with every month-end series they are read
+against, which is what destroys a measured correlation.
+
+The cheapest discriminating test is a lead/lag scan. A close-to-close series
+correlates with a real fund at lag 0 and at nothing else; an average-to-average
+one correlates about equally at lag 0 and at lag -1, because
+`A_t = R_{t-1} + I_t - I_{t-1}` puts half of each month's move on each side. The
+theoretical figure for a pure random walk is 0.61 at BOTH lags. That smear is
+the signature, and it is visible in every row of the measurement table below.
+
+### Inventory: every bundled monthly-or-coarser reference
+
+| Series | Observation | Stamp | `monthEndAnchor` | Who reads it |
+|---|---|---|---|---|
+| `EUROGOV-EUR` | **ECB 10y curve month-end from 2004-09**; OECD month-average 10y before | month-end (was 1st) | yes (added) | `EUNH.DE` backcast, NTSZ bond leg, `EUROGOV-DAILY` shape |
+| `EUROGOV-LONG-EUR` | **ECB 25y curve month-end from 2004-09**; OECD month-average mapped to 25y before | month-end (was 1st) | yes (added) | `DBXG`, `MTH` |
+| `BUND-EUR` | **Bundesbank 10y curve month-end from 1997-08**; OECD month-average before | month-end (was 1st) | yes (added) | NTSG German sleeve |
+| `GILT-GBP` | OECD month-average 10y, end to end | month-end (was 1st) | no shape | NTSG British sleeve (3 % of the basket) |
+| `EMU-EUR` | OECD month-average euro-area share prices, grossed up | month-end (was 1st) | no shape | NTSZ equity leg before `EZU` (2000-08) |
+| `EURCASH-EUR` | EURIBOR month-average, accrued | month-end (was 1st) | n/a, cash | every EUR-hedged recipe |
+| `DECASH-EUR` | German 3-month month-average, accrued | month-end (was 1st) | n/a, cash | pre-euro cash tail |
+| `GBCASH-GBP` / `JPCASH-JPY` | OECD month-average overnight, accrued | month-end (was 1st) | n/a, cash | NTSG financing legs |
+| `TBILL-3M` | FRED TB3MS month-average RATE | 1st, kept | no | `^IRX` backcast, financing, FIRE plates |
+| `WTI-USD` | FRED WTISPLC month-average SPOT | 1st, kept | deliberately out | `CL=F` backcast, FIRE commodities plate |
+| `TREASURY-LONG-USD` / `TREASURY-INT-USD` | par bond on the month's LAST quoted yield | month-end | yes | `VUSTX` / `VFITX` backcasts, `pkg/replay` |
+| `SP500-USD` | `^SP500TR` month-end | trading day | yes | `VFINX` backcast, plates |
+| `MSCIWORLD-USD` / `DEVEXUS-USD` / `EM-USD` | Curvo net-TR month-end export | month-end | yes | world blends, `VTMGX` / `VEIEX` |
+| `TREND-NET-USD` / `TREND-TSMOM-USD` / `ILS-NET-USD` | monthly returns of a published composite, month-end by construction | month-end | `TREND-NET-USD` yes | trend and cat-bond recipes |
+| `JGB-JPY`, `USMKT-USD`, `USSCV-USD`, `XAUUSD-LBMA`, `WTI-ER-USD`, `TREND-ALLSTYLES-*`, `TREND-PURE-NET-USD`, `GBPUSD-DAILY`, `*-DAILY`, `ERES*-NAV`, `TREASURY-LONG-YIELD` | daily | trading day | n/a | various |
+| `broadsample/` (JST) | annual real returns | year | n/a | FIRE empirical model |
+| `cape/` (Shiller) | month-average price over a 10y average of real earnings | 1st, kept | n/a | FIRE valuation anchor |
+| `macropanel/` (OECD) | month-average IP / CPI / rates / share prices | `YYYY-MM` key | n/a | `pkg/permanent` regimes |
+
+The last three rows are the ones that stay as they are on purpose. An index
+LEVEL published for a month is a different animal from a total-return path: the
+CAPE and the macro panel are read as regime indicators through 12-month changes,
+where half a month of phase is immaterial and the publisher's own convention IS
+the month average, and JST is annual.
+
+### Measurement, before and after
+
+Monthly returns over the whole overlap, against the best real month-end
+reference available for each series (a fund fetched through the repository's own
+client, or the real daily curve already bundled). `corr[-1,0]` is the lead/lag
+pair; a healthy series shows nothing at -1.
+
+| Series | Reference | n | corr[-1] | corr[0] | vol ratio | CAGR gap |
+|---|---|---|---|---|---|---|
+| `EUROGOV-EUR`, before | `EUNH.DE` (iShares Core Euro Govt) | 196 | +0.50 | 0.593 | 1.20 | +1.00 pt/yr |
+| `EUROGOV-EUR`, **after** | same | 200 | -0.05 | **0.884** | 1.30 | **+0.24 pt/yr** |
+| `EUROGOV-EUR`, before | `IBGL.L` (iShares Euro Govt 15-30) | 220 | +0.46 | 0.511 | 0.51 | +2.55 pt/yr |
+| `EUROGOV-EUR`, **after** | same | 224 | -0.04 | **0.805** | 0.56 | +2.11 pt/yr |
+| `EUROGOV-EUR`, before | `EUROGOV-DAILY` (real ECB curve) | 259 | +0.50 | 0.502 | 0.92 | +0.43 pt/yr |
+| `EUROGOV-EUR`, **after** | same | 263 | -0.07 | **1.000** | 1.00 | **0.00** |
+| `BUND-EUR`, before | `X03G.DE` (Xtrackers Germany Govt) | 177 | +0.51 | 0.600 | 1.02 | +0.19 pt/yr |
+| `BUND-EUR`, **after** | same | 179 | -0.09 | **0.949** | 1.29 | +0.41 pt/yr |
+| `BUND-EUR`, before | `BUND-DAILY` (real Bundesbank curve) | 344 | +0.55 | 0.669 | 0.83 | -0.14 pt/yr |
+| `BUND-EUR`, **after** | same | 346 | +0.01 | **1.000** | 1.00 | **0.00** |
+| `EUROGOV-LONG-EUR` | `EUROGOV-LONG-DAILY` | 263 | -0.07 | 1.000 | 1.00 | 0.00 |
+| `GILT-GBP`, left | `IGLT.L` (iShares Core UK Gilts) | 220 | +0.53 | 0.620 | 0.78 | +0.88 pt/yr |
+| `GILT-GBP`, left | `VGOV.L` (Vanguard UK Gilt) | 168 | +0.57 | 0.609 | 0.68 | +0.13 pt/yr |
+| `EMU-EUR`, left | `EZU` (MSCI Eurozone, EUR) | 308 | +0.51 | 0.701 | 0.87 | -0.22 pt/yr |
+| `WTI-USD`, left | `WTI-DAILY` (real daily spot) | 178 | +0.50 | 0.742 | 0.83 | -0.64 pt/yr |
+| `WTI-USD`, left | `CL=F` (NYMEX front month) | 304 | +0.55 | 0.767 | 0.92 | +0.52 pt/yr |
+| `JGB-JPY` (control, daily) | `2510.T` (NEXT FUNDS JGB) | 104 | +0.05 | 0.860 | 1.04 | -0.51 pt/yr |
+| `TREASURY-LONG-USD` (control, fixed 09-17) | `TREASURY-LONG-DAILY` | 298 | +0.14 | 0.992 | 0.95 | -0.02 pt/yr |
+
+The two controls at the bottom are what a correctly stamped series looks like:
+nothing at lag -1. Every row with a +0.5 there is an average.
+
+The level rows are worth reading separately from the shape rows. `EUROGOV-EUR`'s
+CAGR gap against the fund it stands behind falls from +1.00 to +0.24 pt/yr, which
+is the real curve replacing the averaged one; `BUND-EUR`'s rises from +0.19 to
++0.41, and that is not a regression but an accident of what the old averaging
+happened to cancel, the same file now reproducing the Bundesbank's own curve
+exactly. The volatility ratios against the ETFs stay above 1 because these
+reconstructions are single 10-year par bonds and the funds are all-maturity
+baskets; that mismatch is documented elsewhere in this file and is not what the
+sweep was about.
+
+### What was fixed, and how
+
+1. **Real data wherever it exists.** `EUROGOV-EUR` now takes the month-ends of
+   the real ECB 10-year curve from 2004-09 and `BUND-EUR` those of the
+   Bundesbank curve from 1997-08, with the OECD-driven reconstruction rebased
+   onto them and carrying only the years in front. It is the treatment
+   `EUROGOV-LONG-EUR` already had, generalized (`spliceCurve` in both
+   generators), and it removes the average from the twenty to thirty years the
+   funds are actually compared over.
+2. **One label convention across the bundle.** Everything OECD-driven now
+   carries the month's last day (`atMonthEnd`), the label every other monthly
+   reference here uses. It is a pure relabelling: one point per calendar month
+   either way, so `EMU-EUR`'s and `GILT-GBP`'s levels are bit-identical to what
+   they were. What it buys is the junction. The tail used to hand over to the
+   real-curve segment across a 60-day step that carried two months of return in
+   one row, which is the defect `pkg/datasets/golden/gaps_test.go` exists to
+   catch and the one entry its allow-list carried; the junction is now 30 days,
+   the allow-list is empty, and both generators refuse to write a monthly file
+   whose longest step exceeds 45 days.
+3. **The cash legs too, by one day.** `accrue` writes the level reached once
+   month M-1 has been earned in full and dates it the first of M;
+   `atAccrualEnd` subtracts a day and names the month it closes. Exact, and
+   necessary: with the market legs on month-end labels and the cash leg on
+   month-start ones, the NTSZ composite's deep era carried TWO points a month,
+   alternating a market step with a cash step. It now carries one.
+4. **The cross-check windows.** `EUROGOV-EUR` against `BUND-EUR` is still graded
+   on its 1999-2010 CAGR gap, but its monthly correlation is now graded from
+   2005, the year from which both files are on their real month-end curve, at a
+   bar of 0.90 rather than 0.95. That is not a loosened tolerance: two
+   month-average reconstructions share their averaging, which inflates any
+   correlation between them, and on real month-end data the euro aggregate and
+   the Bund measure 0.94 with the sovereign crisis inside the window.
+
+### What was deliberately left
+
+- **`GILT-GBP`** carries the month-average cadence end to end. The Bank of
+  England publishes its daily gilt curve as a workbook rather than as a series,
+  so there is nothing to splice on; the sleeve is 3 % of the NTSG bond basket
+  and the header says what the file is.
+- **`EMU-EUR`** likewise: the OECD euro-area share-price index IS a monthly
+  average of daily prices and no deeper daily euro-area index is reachable
+  (Yahoo's `^STOXX50E` only starts 2007, well after `EZU` takes the level over
+  in 2000-08). The consequence is stated rather than repaired: the NTSZ equity
+  leg's 1986-2000 monthly volatility is understated by about 13 %.
+- **`WTI-USD`** and **`TBILL-3M`** have no generator in this repository, so
+  there is nowhere to restate them that `make refresh` would reproduce. Their
+  headers now carry the measurement (hand-maintained, since nothing rewrites
+  those two files). `WTI-USD` stays OUT of `monthEndAnchor` for the same reason
+  the entry exists: no label is right for a month-average, month-start and
+  month-end are wrong by the same fifteen days in opposite directions, and
+  moving it would slide the whole 1946-2000 reconstruction with nothing
+  regenerable behind the decision. `TBILL-3M` is a RATE, and its first-of-month
+  stamp is the correct convention for the use it is put to: every consumer
+  accrues it forward, so a cash position earns month M's average rate over
+  month M, which is what a monthly roll pays.
+- **The cash accruals' smoothing**, which is not a defect: a money-market index
+  has nothing to smooth away. Measured, the four legs carry 0.62 %/yr
+  (`EURCASH-EUR`), 0.75 (`DECASH-EUR`), 1.26 (`GBCASH-GBP`) and 0.61
+  (`JPCASH-JPY`) of annualized monthly-return dispersion, against 5 to 6 for a
+  10-year bond reconstruction. Half a month of phase on a series that quiet
+  cannot move anything downstream.
+
+### What moved downstream
+
+- 11 reference files and 37 simdata files regenerated. The simdata that really
+  changed are the euro and global ones; the rest is sixth-decimal rounding from
+  a full rebuild.
+- `IE000OV4XWA3` (NTSZ) 1986-2026 CAGR 8.149 -> 8.190 %/yr, `IE00077IIPQ8`
+  (NTSG) 9.779 -> 9.788, `DBXG` 7.435 -> 7.446, `MTH` 7.591 -> 7.603. Every
+  fund's own audit window (the years its real quotes overlap the
+  reconstruction) is unchanged to 2e-3 or better, so no `-verify-simdata`
+  verdict moved.
+- `make golden` green with no golden touched, and `make figure-drift` reports
+  nothing: the FIRE book's plates read the US series, which this sweep did not
+  touch.
+
 ## Regeneration
 
 ```sh
