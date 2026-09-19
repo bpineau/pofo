@@ -31,7 +31,16 @@
 //   - Breadth is a fraction in [0,1]; slope and real short rate are in
 //     PERCENTAGE POINTS (2.0 = +2 pp). Allocation weights are FRACTIONS summing
 //     to 1.
-//   - No lookahead: Simulate drives each month's return with the most recent
+//   - Lookahead: Simulate drives each month's return with the most recent
 //     regime dated strictly before it, and Regime itself only reads past macro
-//     data (the breadth is additionally smoothed, which lags it further).
+//     data (the breadth is additionally smoothed, which lags it further). That
+//     is ONE month of lag by REFERENCE date, which is not the same as a lag by
+//     PUBLICATION date: month M is allocated on the regime of reference month
+//     M-1, whose OECD industrial production lands about forty days after that
+//     month ends, i.e. around the tenth of M+1. A strict real-time test would
+//     hold the regime back one further month; at this cadence that is not a
+//     detail, since consecutive regimes differ by 14.5 points of allocation on
+//     average (L1, 1960-2026) and flip quadrant in 28 % of months. The
+//     reference-date lag is what the published figures are computed with, and
+//     the design doc's epistemic ledger carries the gap.
 package permanent
