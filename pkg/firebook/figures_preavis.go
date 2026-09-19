@@ -53,18 +53,18 @@ const preavisCeiling = 9.0
 // constant money, from 1966 to 1995: the denominator of that year's withdrawal
 // rate, and the path the upper register draws.
 var preavisCapital = []float64{
-	1000.0, 885.8, 939.2, 932.2, 795.0, 782.1, 801.0, 829.3, 669.5, 486.1,
-	521.4, 549.7, 458.0, 400.1, 356.3, 338.3, 281.7, 289.5, 277.4, 251.2,
-	258.8, 254.1, 212.6, 185.4, 172.6, 127.5, 105.8, 68.4, 30.4, 0.0,
+	1000.0, 891.8, 942.6, 933.2, 795.7, 785.5, 807.4, 832.5, 673.2, 488.9, 526.8, 553.3, 461.1,
+	402.1, 359.8, 344.8, 283.3, 293.3, 281.1, 255.3, 264.6, 259.1, 218.5, 191.3, 179.3, 134.3,
+	114.4, 77.0, 39.6, 0.0,
 }
 
 // preavisRate is the current withdrawal rate of each year from 1966 to 1994,
 // in percent: the fixed cheque divided by the capital it was taken from. The
 // last year of preavisCapital has no rate, there being nothing left to divide.
 var preavisRate = []float64{
-	4.00, 4.52, 4.26, 4.29, 5.03, 5.11, 4.99, 4.82, 5.97, 8.23,
-	7.67, 7.28, 8.73, 10.00, 11.23, 11.82, 14.20, 13.82, 14.42, 15.92,
-	15.46, 15.74, 18.82, 21.57, 23.17, 31.37, 37.80, 58.49, 100.00,
+	4.00, 4.49, 4.24, 4.29, 5.03, 5.09, 4.95, 4.80, 5.94, 8.18, 7.59, 7.23, 8.67, 9.95, 11.12,
+	11.60, 14.12, 13.64, 14.23, 15.67, 15.12, 15.44, 18.31, 20.91, 22.31, 29.78, 34.96, 51.93,
+	100.00,
 }
 
 // preavisRateAt and preavisCapitalAt read the two series by calendar year.

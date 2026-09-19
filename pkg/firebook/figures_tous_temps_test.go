@@ -240,8 +240,8 @@ func TestTousTempsClaimsHold(t *testing.T) {
 		t.Errorf("at %.2f %% the ladder plunges %.1f times deeper, the plate title says nearly twice",
 			gb.cagr, ratio)
 	}
-	if got := tousTempsLadderAt(6.0); math.Abs(got-(-42.0)) > 0.2 {
-		t.Errorf("the ladder reads %.1f %% at 6 %%, expected about −42.0 %%", got)
+	if got := tousTempsLadderAt(6.0); math.Abs(got-(-42.4)) > 0.2 {
+		t.Errorf("the ladder reads %.1f %% at 6 %%, expected about −42.4 %%", got)
 	}
 }
 

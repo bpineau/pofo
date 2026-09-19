@@ -60,11 +60,11 @@ type douleurAsset struct {
 // the bad years.
 var douleurAssets = []douleurAsset{
 	{"Actions US (S&amp;P 500)", -20.55, 5.85, true, -8, 17, "end", false},
-	{"Portefeuille 60/40", -12.22, 4.79, true, 8, -16, "start", false},
-	{"Treasuries 7-10 ans", 0.29, 2.16, true, 8, -22, "start", false},
-	{"Treasuries 20 ans et +", -0.86, 1.83, true, -8, 22, "end", false},
+	{"Portefeuille 60/40", -12.21, 4.78, true, 8, -16, "start", false},
+	{"Treasuries 7-10 ans", 0.32, 2.15, true, 8, -22, "start", false},
+	{"Treasuries 20 ans et +", -1.37, 1.83, true, -8, 22, "end", false},
 	{"Cash (bons du Trésor 3 mois)", 0.07, 0, true, 0, 0, "middle", true},
-	{"Or", 7.54, 3.75, false, -8, -18, "end", false},
+	{"Or", 7.56, 3.76, false, -8, -18, "end", false},
 }
 
 // The least-squares line through the assets that earn a wage, gold excluded:
@@ -72,9 +72,9 @@ var douleurAssets = []douleurAsset{
 // their premiums it accounts for. The slope is NEGATIVE, which is the whole
 // argument: the more an asset loses in the bad years, the more it is paid.
 const (
-	douleurFitA  = 1.3651
-	douleurFitB  = -0.2346
-	douleurFitR2 = 0.8631
+	douleurFitA  = 1.3238
+	douleurFitB  = -0.2368
+	douleurFitR2 = 0.8663
 )
 
 // douleurPredict is the premium the fitted line expects at a given pain.

@@ -98,8 +98,8 @@ func TestBufferReachArithmetic(t *testing.T) {
 			longest = e.months
 		}
 	}
-	if total != 393 || longest != 124 {
-		t.Fatalf("%d underwater months, longest %d: expected 393 and 124", total, longest)
+	if total != 392 || longest != 124 {
+		t.Fatalf("%d underwater months, longest %d: expected 392 and 124", total, longest)
 	}
 
 	reach := func(buffer int) (covered, full int) {
@@ -116,9 +116,9 @@ func TestBufferReachArithmetic(t *testing.T) {
 	for _, tc := range []struct {
 		buffer, covered, full int
 	}{
-		{18, 160, 2}, // the article's lower bound covers 41 % of the months
-		{24, 201, 4}, // two years: half the months under water, to the month
-		{36, 257, 5}, // the upper bound: two thirds, and five crossings out of nine
+		{18, 159, 2}, // the article's lower bound covers 41 % of the months
+		{24, 200, 4}, // two years: half the months under water, to the month
+		{36, 256, 5}, // the upper bound: two thirds, and five crossings out of nine
 	} {
 		covered, full := reach(tc.buffer)
 		if covered != tc.covered || full != tc.full {

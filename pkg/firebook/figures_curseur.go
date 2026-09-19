@@ -52,11 +52,11 @@ type curseurStep struct {
 // December rebalancing, on the same legs and the same engine as the family
 // plate of this article (SP500, IEF, TLT, XAUUSD, deflator ^CPI-US).
 var curseurSweep = []curseurStep{
-	{0, 5.94, -41.3, -16.7},
-	{10, 5.91, -35.3, -12.5},
-	{20, 5.85, -28.9, -8.3},
-	{30, 5.74, -25.6, -4.1},
-	{40, 5.60, -25.4, -7.7},
+	{0, 5.93, -41.6, -16.6},
+	{10, 5.90, -35.8, -12.7},
+	{20, 5.84, -29.8, -8.8},
+	{30, 5.74, -25.7, -4.9},
+	{40, 5.60, -25.4, -1.0},
 }
 
 // The plateau the article recommends, in points of dose.
@@ -181,9 +181,9 @@ func figTousTempsCurseur() string {
 		"Le plateau : de 0 à 30 % de dose, le recul remonte de " + frNum(curseurBought(30), 0) +
 			" points ; de 30 à 40 %, de " + frNum(curseurAt(40).drawdown-curseurAt(30).drawdown, 1) +
 			" point de plus, pour " + frNum(curseurCost(40)-curseurCost(30), 2) + " de rendement.",
-		"La pire année civile passe de " + frMinus(curseurAt(0).worst, 1) + " % à " +
-			frMinus(curseurAt(30).worst, 1) + " % à 30 %, puis remonte à " + frMinus(curseurAt(40).worst, 1) +
-			" % à 40 % : trop de duration longue a payé 2022.",
+		"La pire année civile recule à chaque dose, de " + frMinus(curseurAt(0).worst, 1) +
+			" % sans poche à " + frMinus(curseurAt(40).worst, 1) +
+			" % à 40 % : aucune dose n'a aggravé une mauvaise année.",
 	}))
 	return svg(640, 490, b.String())
 }
