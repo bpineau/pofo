@@ -37,10 +37,15 @@
 //     is ONE month of lag by REFERENCE date, which is not the same as a lag by
 //     PUBLICATION date: month M is allocated on the regime of reference month
 //     M-1, whose OECD industrial production lands about forty days after that
-//     month ends, i.e. around the tenth of M+1. A strict real-time test would
-//     hold the regime back one further month; at this cadence that is not a
-//     detail, since consecutive regimes differ by 14.5 points of allocation on
-//     average (L1, 1960-2026) and flip quadrant in 28 % of months. The
-//     reference-date lag is what the published figures are computed with, and
-//     the design doc's epistemic ledger carries the gap.
+//     month ends, i.e. around the tenth of M+1, so the allocation reads a number
+//     that did not exist when it was struck. SignalConfig.ReleaseLags closes
+//     that gap, PublicationLags being the honest setting (production two months
+//     further back, prices one, market rates not at all). It is NOT the default:
+//     Regime is also read descriptively, to say what the world's macro state was
+//     in a past month (the report's regime strip), and there the reference-date
+//     reading is the right one. A backtest should pass PublicationLags; it costs
+//     about a third of the tactical edge over the static portfolio (globally
+//     +1.29 to +0.80 points a year, and a deeper worst drawdown), measured in
+//     docs/darcet-permanent-portfolio-design.md, which reports the whole battery
+//     at both settings.
 package permanent

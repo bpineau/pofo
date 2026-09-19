@@ -20,6 +20,47 @@ type SignalConfig struct {
 	// MinBreadth and MinRate are the minimum reporting countries required for a
 	// month to yield a regime.
 	MinBreadth, MinRate int
+	// ReleaseLags hold each macro driver back by the months its publisher takes
+	// to put a reference month on the wire. The zero value reads every column at
+	// the regime's own month, which is the reference-date convention every
+	// published figure of the design doc was computed with.
+	ReleaseLags ReleaseLags
+}
+
+// ReleaseLags is the publication delay of each macro driver, in months. A
+// regime dated m reads column c as of month m-lag(c), so it holds only numbers
+// that had been released by then.
+//
+// The lags are counted ON TOP of the one month Simulate already applies (month
+// M is paid with the regime dated M-1): the total information lag of column c
+// is 1+lag(c) months, i.e. "at the start of month M the latest published
+// reference month is M-1-lag(c)". The zero value is therefore the historical
+// behaviour, a lag by REFERENCE date alone. PublicationLags is the honest
+// setting; see the design doc for what the difference is worth.
+type ReleaseLags struct {
+	// IP delays industrial production, the growth driver.
+	IP int
+	// CPI delays consumer prices, which feed both the inflation breadth and the
+	// real short rate.
+	CPI int
+	// Rates delays the short and long interest rates. Market quotes are known
+	// as they happen, so this is normally 0.
+	Rates int
+}
+
+// PublicationLags is the information set a real-time investor actually had:
+// industrial production two months further back (an OECD reference month lands
+// about forty days after it ends, so at the start of month M the freshest one
+// is M-3), consumer prices one month further back (published mid-M for M-1, so
+// M-2 at the start of M), and interest rates not delayed at all, being market
+// quotes. Sources and the measured cost are in
+// docs/darcet-permanent-portfolio-design.md.
+func PublicationLags() ReleaseLags { return ReleaseLags{IP: 2, CPI: 1, Rates: 0} }
+
+// UniformLags delays every driver by the same number of months, for the
+// sensitivity ladder that asks how fast the edge decays with staleness.
+func UniformLags(months int) ReleaseLags {
+	return ReleaseLags{IP: months, CPI: months, Rates: months}
 }
 
 // DefaultSignalConfig is the reconstruction used in the design doc: a broad
@@ -108,15 +149,19 @@ func (p *Panel) rawPoint(m time.Time, cfg SignalConfig) (Regime, bool) {
 	if len(breadth) == 0 {
 		breadth = p.isos
 	}
+	// Each driver is read as of the last month its publisher had released.
+	ipM := m.AddDate(0, -cfg.ReleaseLags.IP, 0)
+	cpiM := m.AddDate(0, -cfg.ReleaseLags.CPI, 0)
+	rateM := m.AddDate(0, -cfg.ReleaseLags.Rates, 0)
 	var gAcc, gTot, iAcc, iTot int
 	for _, iso := range breadth {
-		if a, ok := p.accelerating("ip", iso, m, cfg); ok {
+		if a, ok := p.accelerating("ip", iso, ipM, cfg); ok {
 			gTot++
 			if a {
 				gAcc++
 			}
 		}
-		if a, ok := p.accelerating("cpi", iso, m, cfg); ok {
+		if a, ok := p.accelerating("cpi", iso, cpiM, cfg); ok {
 			iTot++
 			if a {
 				iAcc++
@@ -129,9 +174,9 @@ func (p *Panel) rawPoint(m time.Time, cfg SignalConfig) (Regime, bool) {
 	var slope, realShort float64
 	var rc int
 	for _, iso := range cfg.RateCountries {
-		long, okl := p.value("longrate", iso, m)
-		short, oks := p.value("shortrate", iso, m)
-		infl, oki := p.yoy("cpi", iso, m)
+		long, okl := p.value("longrate", iso, rateM)
+		short, oks := p.value("shortrate", iso, rateM)
+		infl, oki := p.yoy("cpi", iso, cpiM)
 		if okl && oks && oki {
 			slope += long - short
 			realShort += short - infl*100
