@@ -147,7 +147,10 @@ func Sweep2D(p Plan, x, y Param, xs, ys []float64) Surface
 1. Split capital into `buffer = Years*spending` (capped) and a growth sleeve;
    initialise the tax cost basis to the growth sleeve.
 2. For each year: `need = NeedAnnual - active cashflows`, floored at 0 (net).
-3. `total = growth + buffer`; if `total <= 0` → ruin (latched), stop.
+3. `total = growth + buffer`; if `total <= 0` → ruin (latched), stop stepping
+   the sleeves, but keep accounting the pensions and the annuity, which are
+   paid to a household whose portfolio has run dry just as they are to one
+   whose has not.
 4. `dd = 1 - total/peak`; if `Flex` active and `dd > Threshold`, cut `need`.
 5. Bucket rule: if `dd > DrawThreshold` and buffer > 0, take the net from the
    buffer first (no tax), the remainder from growth (gross-up tax below);
