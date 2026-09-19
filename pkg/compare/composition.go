@@ -208,6 +208,14 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw sug
 	for _, g := range suggest.Gaps(cov, fw, suggest.DefaultOptions().GapThreshold) {
 		gapSet[g] = true
 	}
+	// One color per holding, and the SAME one the realized-contribution
+	// timeline and the per-regime matrix give it (contrib.go): the two blocks
+	// sit in one section and are meant to be read against each other, so a
+	// holding that is ochre in the coverage bars must not be indigo in the
+	// timeline. Both therefore pick their hues with PaletteFor(n), which
+	// chooses WHICH n slots to use; taking the first n slots (PaletteColor)
+	// answers a different question and disagrees with it from three holdings on.
+	colors := chart.PaletteFor(len(holdings))
 	bars := make([]report.CoverageBar, 0, len(fw.Categories))
 	for _, rg := range fw.Categories {
 		// The track represents max(coverage, 100 %): segments stay
@@ -218,7 +226,7 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw sug
 		for _, c := range contrib[rg] {
 			segs = append(segs, report.CoverageSeg{
 				Width: math.Round(c.Weight/scale*1000) / 10,
-				Color: chart.PaletteColor(c.Index),
+				Color: colors[c.Index],
 				Tip:   fmt.Sprintf("%s %.0f%%", c.ID, c.Weight*100),
 			})
 			parts = append(parts, fmt.Sprintf("%s %.0f", c.ID, c.Weight*100))
