@@ -386,3 +386,29 @@ func TestHTMLPageOmitsBlocksWithoutMetadata(t *testing.T) {
 		t.Errorf("page header = %v / %q", page.PortfolioNames, page.CommonStart)
 	}
 }
+
+// A portfolio's own curve plots SimResult.Values, which starts at "#meta
+// capital:" when there is one and then follows the money in and out. Calling
+// it "base 100" read a 2 000 000 unit decumulation plan as an index and its
+// withdrawals as a collapse, so the title names the scale actually drawn.
+func TestSectionChartTitleNamesItsScale(t *testing.T) {
+	const n = 40
+	plain := statColumn(t, "Plain", n, nil, nil)
+	if got := sectionChartScale(plain); got != "base 100" {
+		t.Errorf("capital-less scale = %q, want base 100", got)
+	}
+	funded := statColumn(t, "Funded", n, &portfolio.Portfolio{Capital: 2000000},
+		&portfolio.SimResult{Withdrawn: 60000})
+	if got := sectionChartScale(funded); got != "value in EUR, flows included" {
+		t.Errorf("funded scale = %q", got)
+	}
+	lump := statColumn(t, "Lump", n, &portfolio.Portfolio{Capital: 100000}, nil)
+	if got := sectionChartScale(lump); got != "value in EUR" {
+		t.Errorf("lump-sum scale = %q", got)
+	}
+	native := statColumn(t, "Native", n, &portfolio.Portfolio{Capital: 100000}, nil)
+	native.currency = ""
+	if got := sectionChartScale(native); got != "value" {
+		t.Errorf("native scale = %q", got)
+	}
+}

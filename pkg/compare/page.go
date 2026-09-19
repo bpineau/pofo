@@ -34,6 +34,28 @@ func assetCWARP(s *marketdata.Series, benchDates []time.Time, benchValues []floa
 	return "-"
 }
 
+// sectionChartScale names the vertical scale of a portfolio's own curve, which
+// plots SimResult.Values. That series is base 100 only for a portfolio with no
+// declared capital: "#meta capital:" starts it at the amount instead, and
+// external flows then move it with the money rather than with the performance.
+// Calling every such curve "base 100" reads a 2 000 000 euro decumulation plan
+// as an index and its withdrawals as losses, so the title says which of the two
+// is on screen. The time-weighted view of the same portfolio is the comparison
+// chart up top, which is always rebased.
+func sectionChartScale(r *column) string {
+	if r.p.Capital <= 0 {
+		return "base 100"
+	}
+	scale := "value"
+	if r.currency != "" {
+		scale += " in " + r.currency
+	}
+	if r.sim.Contributed > 0 || r.sim.Withdrawn > 0 {
+		scale += ", flows included"
+	}
+	return scale
+}
+
 // HTMLPage assembles the full comparison report as a report.Page. The optional
 // Decoration injects presentation chrome (skin, site nav, composer, FIRE deep
 // links); the zero Decoration renders the plain standalone report, byte-for-byte
@@ -75,7 +97,7 @@ func (c *Comparison) HTMLPage(d Decoration) *report.Page {
 		// Rendered wider than the default so the full-width report shows the
 		// chart at a moderate, print-like scale rather than blown up.
 		svg := chart.Line(chart.Options{
-			Title:  fmt.Sprintf("%s: base 100 from %s to %s", r.p.Name, first, last),
+			Title:  fmt.Sprintf("%s: %s from %s to %s", r.p.Name, sectionChartScale(r), first, last),
 			Width:  1200,
 			Height: 400,
 		}, []chart.Series{{Name: r.p.Name, Dates: r.sim.Dates, Values: r.sim.Values, Color: r.color}})
@@ -264,7 +286,7 @@ func (c *Comparison) HTMLPage(d Decoration) *report.Page {
 	}
 	if hasContrib {
 		page.Footnotes = append(page.Footnotes,
-			"Realized contribution charts (per portfolio): each day's portfolio return is decomposed as held weight × asset return. The timeline stacks each holding's contribution around zero (bands above zero carried the period, bands below cost it; the black line is the portfolio's own return, the net of the bands); hover for exact figures. The 12m-rolling window reads regimes and trends but nets a crash against the year before it; switch to the monthly window for the anatomy of a single month (e.g. who drove and who cushioned March 2020). The per-regime matrix groups the same monthly contributions by macro quadrant, annualized: it is the empirical mirror of the coverage bars (who actually delivered, vs who was supposed to). Regimes come from the embedded OECD panel (share of countries with accelerating industrial production × accelerating inflation, thresholded at one half), forward-filled at the panel's edges; contributions before a fund's listing read its backcast, and envelope fees (when any) are not attributed to holdings.")
+			"Realized contribution charts (per portfolio): each day's portfolio return is decomposed as held weight × asset return. The timeline stacks each holding's contribution around zero (bands above zero carried the period, bands below cost it; the black line is the portfolio's own return, the net of the bands); hover for exact figures. The 12m-rolling window reads regimes and trends but nets a crash against the year before it; switch to the monthly window for the anatomy of a single month (e.g. who drove and who cushioned March 2020). The per-regime matrix groups the same monthly contributions by macro quadrant, annualized: it is the empirical mirror of the coverage bars (who actually delivered, vs who was supposed to). Regimes come from the embedded OECD panel (share of countries with accelerating industrial production × accelerating inflation, thresholded at one half), which opens in 1960-01: months past its last one hold the latest reading, months BEFORE it are left unclassified (a hole in the strip, and no column of the matrix), since the deep backcasts reach far earlier than any macro panel does. Contributions before a fund's listing read its backcast, and envelope fees (when any) are not attributed to holdings.")
 	}
 	if hasBreakdowns {
 		page.Footnotes = append(page.Footnotes,
