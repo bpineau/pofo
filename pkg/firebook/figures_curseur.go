@@ -46,17 +46,18 @@ const (
 type curseurStep struct {
 	dose, cagr, drawdown float64
 	worst                float64 // the worst calendar year, in percent
+	worstYear            int     // and the year it is
 }
 
 // The sweep, measured over December 1971 to December 2024 in real terms with a
 // December rebalancing, on the same legs and the same engine as the family
 // plate of this article (SP500, IEF, TLT, XAUUSD, deflator ^CPI-US).
 var curseurSweep = []curseurStep{
-	{0, 5.93, -41.6, -16.6},
-	{10, 5.90, -35.8, -12.7},
-	{20, 5.84, -29.8, -8.8},
-	{30, 5.74, -25.7, -4.9},
-	{40, 5.60, -25.4, -1.0},
+	{0, 5.93, -41.6, -26.3, 1974},
+	{10, 5.90, -35.8, -22.1, 2022},
+	{20, 5.84, -29.8, -22.0, 2022},
+	{30, 5.74, -25.7, -21.8, 2022},
+	{40, 5.60, -25.4, -21.7, 2022},
 }
 
 // The plateau the article recommends, in points of dose.
@@ -181,9 +182,13 @@ func figTousTempsCurseur() string {
 		"Le plateau : de 0 à 30 % de dose, le recul remonte de " + frNum(curseurBought(30), 0) +
 			" points ; de 30 à 40 %, de " + frNum(curseurAt(40).drawdown-curseurAt(30).drawdown, 1) +
 			" point de plus, pour " + frNum(curseurCost(40)-curseurCost(30), 2) + " de rendement.",
-		"La pire année civile recule à chaque dose, de " + frMinus(curseurAt(0).worst, 1) +
-			" % sans poche à " + frMinus(curseurAt(40).worst, 1) +
-			" % à 40 % : aucune dose n'a aggravé une mauvaise année.",
+		fmt.Sprintf(
+			"Pire année civile : %s %% en %d sans poche, mais dès la première dose c'est %d qui prend la place, à %s %%.",
+			frMinus(curseurAt(0).worst, 1), curseurAt(0).worstYear,
+			curseurAt(10).worstYear, frMinus(curseurAt(10).worst, 1)),
+		fmt.Sprintf(
+			"La poche efface le choc de %d et ne change rien à %d, où l'or et la duration longue ont chuté avec les actions.",
+			curseurAt(0).worstYear, curseurAt(40).worstYear),
 	}))
-	return svg(640, 490, b.String())
+	return svg(640, 505, b.String())
 }
