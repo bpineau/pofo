@@ -130,3 +130,43 @@ func TestRunPathSurvives(t *testing.T) {
 		t.Errorf("final wealth = %.0f, want > 0", res.Wealth[10])
 	}
 }
+
+// A year that delivers its whole need and leaves the portfolio at exactly zero
+// is a FUNDED year, not the ruin year: the failure belongs to the first year
+// that goes unfunded. Four withdrawals of 50k out of 200k at a zero real
+// return pay years 0 to 3 in full, so ruin latches at year 4.
+func TestRuinYearIsTheFirstUnfundedYear(t *testing.T) {
+	p := Plan{Capital: 200000, NeedAnnual: 50000, Years: 6, Tax: CTOFlatTax{Rate: 0}}
+	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0, 0}, Lives{})
+	if res.RuinYear != 4 {
+		t.Errorf("RuinYear = %d, want 4", res.RuinYear)
+	}
+	for k := 0; k < 4; k++ {
+		if math.Abs(res.Spend[k]-50000) > 1e-6 {
+			t.Errorf("Spend[%d] = %.0f, want 50000", k, res.Spend[k])
+		}
+	}
+}
+
+// ...and a plan whose LAST withdrawal empties the pot exactly never failed at
+// all: every year of the horizon was paid in full, so the path is not ruined.
+// Latching ruin on an emptied-but-funded year used to report this plan, and
+// every plan that lands on zero at its horizon, as a failure.
+func TestExactlyExhaustedAtTheHorizonIsNotRuin(t *testing.T) {
+	for _, monthly := range []bool{false, true} {
+		p := Plan{Capital: 200000, NeedAnnual: 50000, Years: 4, Tax: CTOFlatTax{Rate: 0},
+			Monthly: monthly}
+		seq := make(scenario.Sequence, 4)
+		if monthly {
+			seq = make(scenario.Sequence, 48)
+		}
+		res := p.runPath(seq, Lives{}, nil)
+		if res.Ruined {
+			t.Errorf("monthly=%v: every year was funded in full, yet the path reads as ruined (year %d)",
+				monthly, res.RuinYear)
+		}
+		if math.Abs(res.Withdrawn-200000) > 1e-6 {
+			t.Errorf("monthly=%v: withdrew %.2f, want 200000", monthly, res.Withdrawn)
+		}
+	}
+}

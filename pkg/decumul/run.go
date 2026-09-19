@@ -117,7 +117,10 @@ func seriesLen(years int) int { return 2*years + 1 }
 // the bucket rule (buffer first while underwater, else growth + refill), then
 // grow the sleeves. A year is ruin when it cannot deliver the full net need,
 // i.e. when the gross required exceeds the available liquidity; only the net
-// actually delivered is accounted, never the requested amount.
+// actually delivered is accounted, never the requested amount. A year that
+// delivers its whole need and leaves nothing behind is NOT that year's ruin:
+// the failure belongs to the first year that goes unfunded, which is the next
+// one, or to no year at all when the horizon ends there.
 //
 // The zero Lives means no draw: the path runs the plan's fixed horizon. That
 // is what a plan without a Lifetime always does, and it is how a caller asks
@@ -294,7 +297,15 @@ func (p *Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float
 			res.ruinAt(k)
 		}
 		buffer = pks.settle(buffer) // a stub without a cap may oversell
-		if pks.total()+buffer <= 0 {
+		// A year that delivered its whole need and left NOTHING is not a
+		// failed year: it is a funded year followed by an empty one, and the
+		// next year's opening test is what records the failure (at the right
+		// year). Only a NEGATIVE balance, which a stub tax overselling can
+		// produce, is a shortfall this year. Latching on zero here made the
+		// last funded year read as the ruin year, and made a plan whose final
+		// withdrawal empties the pot exactly read as ruined although it paid
+		// every year in full.
+		if pks.total()+buffer < 0 {
 			res.ruinAt(k)
 		}
 

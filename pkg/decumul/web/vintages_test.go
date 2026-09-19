@@ -168,3 +168,32 @@ func TestFmtWealth(t *testing.T) {
 		}
 	}
 }
+
+// A vintage whose record ends before the plan does must still be replayed over
+// the HOUSEHOLD's horizon. Shortening Plan.Years to the record's length told
+// the amortization rule (ABW/TPAW) that the retirement conveniently ends when
+// the data does, so on the 2000 vintage it re-quoted its payment over 21 years
+// instead of the planned 42, spent the capital down on purpose, and reported
+// the deliberate exhaustion as the vintage's verdict.
+func TestVintagesPlanOverTheHouseholdHorizon(t *testing.T) {
+	pr := Params{Capital: 1_000_000, NeedAnnual: 40_000, Years: 42,
+		Mu: 0.05, Sigma: 0.11, Df: 5, ABW: true}.bounded()
+	byLabel := map[string]string{}
+	for _, c := range Vintages(pr, nil).Cards {
+		byLabel[c.Label] = c.Value
+	}
+	// The short records: solvent when the data runs out, with capital left.
+	for _, label := range []string{"Japan 1990", "USA 2000"} {
+		got, ok := byLabel[label]
+		if !ok {
+			t.Fatalf("%s missing from the vintages", label)
+		}
+		if !strings.Contains(got, "solvent when the record ends") {
+			t.Errorf("%s: %q, want a solvent verdict", label, got)
+		}
+		if strings.Contains(got, ": 0 k€ left") {
+			t.Errorf("%s: %q, want capital left: the household plans over %d years, not over the record",
+				label, got, pr.Years)
+		}
+	}
+}
