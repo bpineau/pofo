@@ -52,14 +52,64 @@ func ttMonthEnds(t *testing.T, fsys fs.FS, id string) map[string]float64 {
 	return out
 }
 
-// ttRecompute measures one portfolio the way the plate's comment says: monthly
+// ttStats is what one portfolio reads over the window: every field is in
+// percent except worstYear, which names the calendar year worst belongs to.
+type ttStats struct {
+	cagr      float64 // annualized real return
+	vol       float64 // standard deviation of the calendar-year real returns
+	worst     float64 // worst calendar year, December to December
+	worstYear int
+	drawdown  float64 // deepest drawdown of the monthly real index
+}
+
+// ttCalendarYears reduces a monthly real index to one return per calendar year
+// of the window, read December to December, as fractions.
+func ttCalendarYears(real []float64) []float64 {
+	out := make([]float64, 0, len(real)/12)
+	for y := 1; y*12 < len(real); y++ {
+		out = append(out, real[y*12]/real[(y-1)*12]-1)
+	}
+	return out
+}
+
+// ttWorstCalendarYear reads the deepest of those years, in percent, and names
+// it. Both sides of the comparison are percentages on purpose: a fraction
+// never falls below −1, so comparing one against a minimum already stored in
+// percent freezes that minimum on the first losing year of the window and
+// reports it whatever comes after.
+func ttWorstCalendarYear(years []float64) (worst float64, year int) {
+	worst = math.Inf(1)
+	for i, r := range years {
+		if pct := r * 100; pct < worst {
+			worst, year = pct, ttFirst+1+i
+		}
+	}
+	return worst, year
+}
+
+// ttVol is the volatility of a portfolio as the family's publisher states it:
+// the year-to-year variation of the real returns, i.e. their sample standard
+// deviation, in percent. See the control table in figures_curseur_test.go for
+// why the book measures it on calendar years rather than on months.
+func ttVol(years []float64) float64 {
+	mean := 0.0
+	for _, r := range years {
+		mean += r
+	}
+	mean /= float64(len(years))
+	sum := 0.0
+	for _, r := range years {
+		sum += (r - mean) * (r - mean)
+	}
+	return math.Sqrt(sum/float64(len(years)-1)) * 100
+}
+
+// ttRealIndex runs one portfolio the way the plate's comment says: monthly
 // total returns of the legs, weights reset every December, deflated by the US
-// CPI, over 1972-2024. It returns the annualized real return, the annualized
-// volatility of monthly real returns, the worst calendar year and the deepest
-// drawdown of the monthly real index, all in percent.
-func ttRecompute(t *testing.T, legs map[string]func(prev, cur string) float64,
-	weights map[string]float64, cpi map[string]float64) (cagr, vol, worst, drawdown float64) {
-	t.Helper()
+// CPI, over 1972-2024. It returns the monthly real index, based at 1 in
+// December 1971.
+func ttRealIndex(legs map[string]func(prev, cur string) float64,
+	weights map[string]float64, cpi map[string]float64) []float64 {
 	var ids []string
 	for id := range weights {
 		ids = append(ids, id)
@@ -89,40 +139,28 @@ func ttRecompute(t *testing.T, legs map[string]func(prev, cur string) float64,
 		}
 	}
 
-	cagr = (math.Pow(real[len(real)-1], 1/float64(ttYears)) - 1) * 100
-	// the worst calendar year, read December to December
-	worst = math.Inf(1)
-	for y := 1; y <= ttYears; y++ {
-		if r := real[y*12]/real[(y-1)*12] - 1; r < worst {
-			worst = r * 100
-		}
-	}
-	// the annualized volatility of monthly real returns
-	monthly := make([]float64, 0, len(real)-1)
-	for i := 1; i < len(real); i++ {
-		monthly = append(monthly, real[i]/real[i-1]-1)
-	}
-	mean := 0.0
-	for _, r := range monthly {
-		mean += r
-	}
-	mean /= float64(len(monthly))
-	sum := 0.0
-	for _, r := range monthly {
-		sum += (r - mean) * (r - mean)
-	}
-	vol = math.Sqrt(sum/float64(len(monthly)-1)) * math.Sqrt(12) * 100
+	return real
+}
+
+// ttRecompute measures one portfolio over that index.
+func ttRecompute(t *testing.T, legs map[string]func(prev, cur string) float64,
+	weights map[string]float64, cpi map[string]float64) ttStats {
+	t.Helper()
+	real := ttRealIndex(legs, weights, cpi)
+	years := ttCalendarYears(real)
+	out := ttStats{cagr: (math.Pow(real[len(real)-1], 1/float64(ttYears)) - 1) * 100, vol: ttVol(years)}
+	out.worst, out.worstYear = ttWorstCalendarYear(years)
 	// the deepest drawdown of the real index
 	peak := real[0]
 	for _, v := range real {
 		if v > peak {
 			peak = v
 		}
-		if d := (v/peak - 1) * 100; d < drawdown {
-			drawdown = d
+		if d := (v/peak - 1) * 100; d < out.drawdown {
+			out.drawdown = d
 		}
 	}
-	return cagr, vol, worst, drawdown
+	return out
 }
 
 // ttSmallValueNet charges the small-value leg what the Ken French factor does
@@ -201,16 +239,41 @@ func TestTousTempsFigureMatchesTheData(t *testing.T) {
 		}{p, map[string]float64{"equities": eq, "intermediate": 1 - eq}})
 	}
 	for _, c := range cases {
-		cagr, vol, worst, dd := ttRecompute(t, legs, c.weights, cpi)
-		if math.Abs(cagr-c.point.cagr) > 0.06 {
-			t.Errorf("%s: real return %.2f %%, plate says %.2f %%", c.point.name, cagr, c.point.cagr)
+		got := ttRecompute(t, legs, c.weights, cpi)
+		if math.Abs(got.cagr-c.point.cagr) > 0.06 {
+			t.Errorf("%s: real return %.2f %%, plate says %.2f %%", c.point.name, got.cagr, c.point.cagr)
 		}
-		if math.Abs(dd-c.point.drawdn) > 0.15 {
-			t.Errorf("%s: worst drawdown %.1f %%, plate says %.1f %%", c.point.name, dd, c.point.drawdn)
+		if math.Abs(got.drawdown-c.point.drawdn) > 0.15 {
+			t.Errorf("%s: worst drawdown %.1f %%, plate says %.1f %%", c.point.name, got.drawdown, c.point.drawdn)
 		}
-		if vol <= 0 || worst >= 0 {
-			t.Errorf("%s: vol %.2f %% and worst year %.1f %% are not plausible", c.point.name, vol, worst)
+		if got.vol <= 0 || got.worst >= 0 {
+			t.Errorf("%s: vol %.2f %% and worst year %.1f %% are not plausible",
+				c.point.name, got.vol, got.worst)
 		}
+	}
+}
+
+// The worst calendar year is a running minimum, the shape that silently breaks
+// when its two sides are not in the same unit. On a series whose worst year is
+// the LAST one, an accumulator comparing a fraction against a percentage would
+// stop at the first loser and never see it.
+func TestTTWorstCalendarYearFindsALateLoser(t *testing.T) {
+	yearly := []float64{0.10, -0.05, 0.20, -0.40} // 1972 to 1975
+	real := make([]float64, len(yearly)*12+1)
+	real[0] = 1
+	for y, r := range yearly {
+		step := math.Pow(1+r, 1.0/12)
+		for m := 1; m <= 12; m++ {
+			real[y*12+m] = real[y*12+m-1] * step
+		}
+	}
+	years := ttCalendarYears(real)
+	if len(years) != len(yearly) {
+		t.Fatalf("%d calendar years read, the series holds %d", len(years), len(yearly))
+	}
+	worst, year := ttWorstCalendarYear(years)
+	if math.Abs(worst-(-40)) > 1e-6 || year != 1975 {
+		t.Errorf("worst year read %.2f %% in %d, expected −40.00 %% in 1975", worst, year)
 	}
 }
 

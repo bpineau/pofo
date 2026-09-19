@@ -168,14 +168,37 @@ what changed at its PRINTED precision was touched. Three claims had to move
 rather than be re-rounded. The long pocket's single sign change survived but
 its pivot slid a year (tente-matiere now reads twenty-six costing departures
 from 1954 to 1979 against seventeen paying ones), so the plate's cut, its two
-counts and glidepaths' two sentences follow the data. The slider's worst
-calendar year stopped folding back at the top dose: it now recedes at every
-dose, so tous-temps-curseur no longer blames 2022 on too much long duration
-and says what the sweep shows instead. And the 1985 replay's flexible rule
-cuts three times in forty years, not two. One control weakened and is left
-standing as a question rather than tuned away: the 60/40's real volatility
-over 1972-2024 reads 10.2 % against the 9.4 % published for the family, the
-de-smoothed bond leg being the whole difference.
+counts and glidepaths' two sentences follow the data. And the 1985 replay's
+flexible rule cuts three times in forty years, not two. Two readings the
+catch-up believed it had settled were wrong and were settled again the next
+day, both of them measurement bugs rather than data moves.
+
+The slider's worst calendar year was never measured. Its running minimum
+compared a fraction with a running value kept in percent, so it froze on the
+first losing year of the window and reported it whatever came after: the
+"kink at the top dose" of the original plate and the "recedes at every dose"
+of the catch-up were two readings of the same broken loop. Measured, the
+worst year of the naked 70/30 is 1974 at −26.3 %, and from the first dose on
+it is 2022, around −22 %, which the pocket then moves by four tenths of a
+point over thirty more points of dose. The pocket empties the 1974 kind of
+year and does nothing at all for 2022, when gold and long duration fell with
+equities, so the plate now says that instead. The helper is unit-tested and
+returns the year alongside the number, the sweep freezes both, and a claim
+test holds the two years apart.
+
+The 60/40 volatility control was never like-for-like. The published anchors
+are portfoliocharts.com's, and that site states its measure: the year-to-year
+variation of annual, inflation-adjusted, year-end returns. The control
+computed an annualized standard deviation of MONTHLY returns against them, a
+different and here lower statistic, and only looked green while the bond leg
+was smoothed by its first-of-month stamp on month-average yields. Measured
+the publisher's way, the rebuild moves the 60/40 by 0.01 point and all four
+portfolios sit within half a point of their published volatility (7.48
+against 7.6, 8.17 against 8.3, 11.84 against 11.4, 17.28 against 17.2), so
+the anchors went back to the published numbers untouched and the book now
+measures volatility year to year. The site's headline return is a 15-year
+baseline and its drawdowns are year-end, neither comparable to this book's
+compound return and monthly-index drawdown: the control comment says so.
 
 Tooling landed with the batch and outlives it. figures_kit.go names the plate
 toolbox (palette, type and bar primitives, the value-to-pixel map, axis ticks,

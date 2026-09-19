@@ -73,11 +73,38 @@ func curseurWeights(dose float64) map[string]float64 {
 }
 
 // The implementation guardrail, run BEFORE the sweep is trusted: four
-// portfolios of this family whose real return and real volatility are published
-// (Browne, Golden Butterfly, 60/40 and all equities, over 1972-2024). If this
-// repository's series and conventions reproduce them, the sweep computed on the
-// same engine means what it says; if they drift apart, the sweep is measuring
-// something else and no amount of tuning would fix it.
+// portfolios of this family whose real return and real volatility are
+// published. If this repository's series and conventions reproduce them, the
+// sweep computed on the same engine means what it says; if they drift apart,
+// the sweep is measuring something else and no amount of tuning would fix it.
+//
+// WHICH volatility, is the whole point of the row. The published figures below
+// are portfoliocharts.com's, the reference the article names, and that site
+// states what it measures: the "year-to-year variation in returns" of annual,
+// inflation-adjusted, year-end data (Permanent Portfolio 7.6, Golden Butterfly
+// 8.3, Classic 60-40 11.4, US large caps 17.2, each over its own 1970-2025
+// window, allocations identical to the four below down to the intermediate
+// Treasury leg of the 60/40). An annualized standard deviation of MONTHLY
+// returns is a different statistic on the same portfolio, and a lower one here
+// by one to two points, monthly noise in real returns being partly washed out
+// over a calendar year. The control used to compute the monthly one and compare
+// it to these annual publications: not a like-for-like reading, and it only
+// looked green because the bond leg was smoothed. Rebuilding the Treasury
+// references month-end (a first-of-month stamp on month-average yields had put
+// the bond leg half a month out of step with month-end equities, so its
+// correlation to equities read too low) raised the monthly measure of the 60/40
+// from 9.8 to 10.2 and left the gap with the 9.4 that stood here impossible to
+// read. Measured the way the publisher measures it, the same rebuild moves the
+// 60/40 by 0.01 point, and all four portfolios land within half a point of
+// their published volatility. So the anchors are the published numbers, put
+// back untouched, and ttStats.vol is the publisher's statistic.
+//
+// The return column is the book's own table in this article (4.4 / 5.8 / 5.6
+// real), except the all-equity line, which the article does not print. The
+// site's headline return is NOT comparable: it publishes a 15-year baseline,
+// not the window's compound return. Its drawdowns are not comparable either,
+// being read on year-end data where the plate reads the monthly index, which is
+// why the deeper numbers below are the article's own.
 func TestCurseurControlTableStillHolds(t *testing.T) {
 	legs, cpi := curseurLegs(t)
 	for _, c := range []struct {
@@ -90,26 +117,26 @@ func TestCurseurControlTableStillHolds(t *testing.T) {
 		drawdnTol  float64
 		hasDrawdwn bool
 	}{
-		{name: "Browne 4 × 25", cagr: 4.4, vol: 7.2, cagrTol: 0.25, volTol: 0.5,
+		{name: "Browne 4 × 25", cagr: 4.4, vol: 7.6, cagrTol: 0.25, volTol: 0.5,
 			drawdown: -22, drawdnTol: 1, hasDrawdwn: true,
 			weights: map[string]float64{"equities": .25, "long": .25, "gold": .25, "cash": .25}},
-		{name: "Golden Butterfly", cagr: 5.9, vol: 8.2, cagrTol: 0.25, volTol: 0.5,
+		{name: "Golden Butterfly", cagr: 5.8, vol: 8.3, cagrTol: 0.25, volTol: 0.5,
 			drawdown: -22, drawdnTol: 1, hasDrawdwn: true,
 			weights: map[string]float64{"equities": .20, "smallvalue": .20, "long": .20, "short": .20, "gold": .20}},
-		{name: "60/40", cagr: 5.4, vol: 10.2, cagrTol: 0.25, volTol: 0.5,
+		{name: "60/40", cagr: 5.6, vol: 11.4, cagrTol: 0.25, volTol: 0.5,
 			weights: map[string]float64{"equities": .60, "intermediate": .40}},
-		{name: "100 % actions", cagr: 6.8, vol: 15.3, cagrTol: 0.25, volTol: 0.5,
+		{name: "100 % actions", cagr: 6.8, vol: 17.2, cagrTol: 0.25, volTol: 0.5,
 			weights: map[string]float64{"equities": 1}},
 	} {
-		cagr, vol, _, dd := ttRecompute(t, legs, c.weights, cpi)
-		if math.Abs(cagr-c.cagr) > c.cagrTol {
-			t.Errorf("%s: real return %.2f %%, the control table says %.1f", c.name, cagr, c.cagr)
+		got := ttRecompute(t, legs, c.weights, cpi)
+		if math.Abs(got.cagr-c.cagr) > c.cagrTol {
+			t.Errorf("%s: real return %.2f %%, the control table says %.1f", c.name, got.cagr, c.cagr)
 		}
-		if math.Abs(vol-c.vol) > c.volTol {
-			t.Errorf("%s: real volatility %.2f %%, the control table says %.1f", c.name, vol, c.vol)
+		if math.Abs(got.vol-c.vol) > c.volTol {
+			t.Errorf("%s: real volatility %.2f %%, the control table says %.1f", c.name, got.vol, c.vol)
 		}
-		if c.hasDrawdwn && math.Abs(dd-c.drawdown) > c.drawdnTol {
-			t.Errorf("%s: worst real drawdown %.1f %%, the article says %.0f", c.name, dd, c.drawdown)
+		if c.hasDrawdwn && math.Abs(got.drawdown-c.drawdown) > c.drawdnTol {
+			t.Errorf("%s: worst real drawdown %.1f %%, the article says %.0f", c.name, got.drawdown, c.drawdown)
 		}
 	}
 }
@@ -119,15 +146,20 @@ func TestCurseurControlTableStillHolds(t *testing.T) {
 func TestCurseurSweepMatchesTheData(t *testing.T) {
 	legs, cpi := curseurLegs(t)
 	for _, s := range curseurSweep {
-		cagr, _, worst, dd := ttRecompute(t, legs, curseurWeights(s.dose), cpi)
-		if math.Abs(cagr-s.cagr) > 0.05 {
-			t.Errorf("dose %.0f %%: real return %.2f %%, the plate draws %.2f", s.dose, cagr, s.cagr)
+		got := ttRecompute(t, legs, curseurWeights(s.dose), cpi)
+		if math.Abs(got.cagr-s.cagr) > 0.05 {
+			t.Errorf("dose %.0f %%: real return %.2f %%, the plate draws %.2f", s.dose, got.cagr, s.cagr)
 		}
-		if math.Abs(dd-s.drawdown) > 0.3 {
-			t.Errorf("dose %.0f %%: worst drawdown %.1f %%, the plate draws %.1f", s.dose, dd, s.drawdown)
+		if math.Abs(got.drawdown-s.drawdown) > 0.3 {
+			t.Errorf("dose %.0f %%: worst drawdown %.1f %%, the plate draws %.1f",
+				s.dose, got.drawdown, s.drawdown)
 		}
-		if math.Abs(worst-s.worst) > 0.3 {
-			t.Errorf("dose %.0f %%: worst year %.1f %%, the plate says %.1f", s.dose, worst, s.worst)
+		if math.Abs(got.worst-s.worst) > 0.3 {
+			t.Errorf("dose %.0f %%: worst year %.1f %%, the plate says %.1f", s.dose, got.worst, s.worst)
+		}
+		if got.worstYear != s.worstYear {
+			t.Errorf("dose %.0f %%: the worst year is %d, the plate says %d",
+				s.dose, got.worstYear, s.worstYear)
 		}
 	}
 	// The naked core is the article's own 70/30, which the family plate of the
@@ -140,6 +172,33 @@ func TestCurseurSweepMatchesTheData(t *testing.T) {
 		math.Abs(curseurSweep[0].drawdown-ladder.drawdn) > 0.1 {
 		t.Errorf("the slider starts at %.2f / %.1f, the family plate's 70/30 is at %.2f / %.1f",
 			curseurSweep[0].cagr, curseurSweep[0].drawdown, ladder.cagr, ladder.drawdn)
+	}
+}
+
+// The note's sentence about bad years, rebuilt: the pocket empties the 1974
+// kind of year, where equities and inflation hit together, and does nothing at
+// all for 2022, where gold and long duration fell with equities. Which is why
+// the worst year stops improving as soon as 2022 inherits the title, and why
+// the plate says so rather than reading the slide as a general retreat.
+func TestCurseurWorstYearsAreTwoDifferentAnimals(t *testing.T) {
+	legs, cpi := curseurLegs(t)
+	year := func(dose float64, y int) float64 {
+		real := ttRealIndex(legs, curseurWeights(dose), cpi)
+		return ttCalendarYears(real)[y-ttFirst-1] * 100
+	}
+	if got := curseurAt(0).worstYear; got != 1974 {
+		t.Errorf("the naked core's worst year is %d, the note names 1974", got)
+	}
+	for _, s := range curseurSweep[1:] {
+		if s.worstYear != 2022 {
+			t.Errorf("dose %.0f %%: the worst year is %d, the note names 2022", s.dose, s.worstYear)
+		}
+	}
+	if bought := year(40, 1974) - year(0, 1974); bought < 15 {
+		t.Errorf("the pocket only lifts 1974 by %.1f points, the note says it empties that year", bought)
+	}
+	if moved := math.Abs(year(40, 2022) - year(0, 2022)); moved > 1 {
+		t.Errorf("the pocket moves 2022 by %.1f point, the note says it changes nothing there", moved)
 	}
 }
 
@@ -242,7 +301,8 @@ func TestCurseurPlateRenders(t *testing.T) {
 		">pire recul réel<",
 		"Quarante points de poche retirent 16 points de recul et coûtent 0,3 point de rendement.",
 		"aucune série de linkers",
-		"aucune dose n'a aggravé une mauvaise année",
+		"Pire année civile : −26,3 % en 1974 sans poche, mais dès la première dose c'est 2022 qui prend la place",
+		"La poche efface le choc de 1974 et ne change rien à 2022",
 	} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate does not carry %q", want)
