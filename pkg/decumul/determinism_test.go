@@ -233,21 +233,21 @@ func determinismPlans() []struct {
 // every envelope arrangement and the lifetime kernel.
 func TestDeterminismPlans(t *testing.T) {
 	want := map[string]string{
-		"fixed":             "0170ece8a17585a1685303a62373c763900ace92b42a9acaff223739d8341857",
-		"ratchet":           "260fcadb68af176a0779102d4958d3ad1903a9058aef86b939e23728ac5a76cb",
-		"guardrails":        "8ea4dc8babe6a1bfc7c2fdc90a8799d310b1b7358497809638a0b0ed641132d5",
-		"riskguard":         "af104619dc2b773665168e72a4918bb5ad79351f2e736685fb9c9afa1ab1cbda",
+		"fixed":             "c492941f124a478e9488c164305242b88b814af6137c3e07c24e83466dd3e94f",
+		"ratchet":           "f03dd8b5e9e32174634ac65c4e0efc65a2984c7f2c5b1ecd13b104c83eb09c42",
+		"guardrails":        "8721bd8d89408fb872fe49c0156b962fdde6614d81a1f9e201b0b77f58651271",
+		"riskguard":         "ae59b85955431ac5e96d4c27a9c666130c50c6d47609fd0679c2162a4637b2e7",
 		"percent":           "0fb11c7724fe5178e10f5dd83dc85bdfd4da4777aa121d6c7fbcdd6c671cd990",
-		"bounded":           "ffab630d8571313597aa40bae12ffd8b321034d7c06fb090064ef53432677c0c",
+		"bounded":           "b9656d0ad795ac47778e3636f0ccdb0d186db9f59923f65956cddc9fd313151a",
 		"amortize":          "d9b268b1ea73b66c8aa05b64532f41e7e0430eacea4e3ef95a91e5b5edd844b3",
-		"envelopes":         "d0e9dfb6a53c61a8273d558d58f3008a22e87b38f29770cb100d7fe028f639c7",
-		"monthly":           "400263421c6e97423488f8f8de5eac8f55ec28b976b12a80bf0a7b25c049d560",
-		"monthly-riskguard": "bd5713b66cdad99ba6866828fb483907a6ddb3252fa5b07849006077b002e84a",
-		"schedule":          "efae0d7087dbfce089f9d21434b082b2990adff00ac8a7e8af51e123a0efc76a",
-		"lifetime-single":   "06ebe292404a9bb8c2aed19e8d317512c0b5a0951be381116acba7069ba9117c",
-		"lifetime-couple":   "79fb72704dff9916a02469cac51c3fa6d7cdb8502ec9507edf8e3c73fcd542e3",
-		"lifetime-annuity":  "335f3ee2a850261b38fd256a16ee057f62c9590990065b19d41e7d70768f09cf",
-		"lifetime-amortize": "493331699ce919c4ebbcd976509819c9879652b9e0c7066979d18d1701c8bcdc",
+		"envelopes":         "1cfb23892a9d05efdbd66881debdc01a5105b9f2d43225ae9dab73860c512971",
+		"monthly":           "358c4597414baea7b17a0134434ac7144c1b74c50633c15ef1923085abd282cb",
+		"monthly-riskguard": "d029445ca13b08166088f48e58b3cc63ef727fcbe376ee3c1f1b52b76672e62a",
+		"schedule":          "c836df55470ed70418294ef8a94e33cbfbf7c1933d98f6fb5cde3bf439272784",
+		"lifetime-single":   "ec4ea7251ab386528b311913f47c6791ab14105c3b57268a550b8fb03eda4471",
+		"lifetime-couple":   "2164eb86f2cc43d116f717b2319758cc20d18b5a7d7b507d600fb1978b0cccf4",
+		"lifetime-annuity":  "e30b3c223d1c5ccd096301061c97929e500988da478d3d50e3ef592082332f81",
+		"lifetime-amortize": "baf815526ca45a480c8a25a87bc5f98e4833e37a2b8839c0e73d2aed1bb49928",
 	}
 	for _, c := range determinismPlans() {
 		d := newDigest()
@@ -305,11 +305,11 @@ func determinismSources() []struct {
 // full plan run on each of them.
 func TestDeterminismSources(t *testing.T) {
 	want := map[string]string{
-		"parametric":           "24dd853c008d6e030f6ebc62dca2e1828009bdf601c93e5fe7ef441e377b3427",
-		"parametric-normal":    "7a76fc2dfc8dcefc410987466df36867548af0d12aad158cd16249c77998e130",
-		"markov-regime":        "16333f54d4cb212e4c721c05a57b9bd4180aff2adb14c6d517b212522bceaac4",
-		"lost-decade":          "cfb61140eb120a69817faf6f342f3aef46c947db8fe9483c0f3fe951412f7832",
-		"glidepath":            "e3e93ec9e4025617afaad1082b22a6e653ab15c1af85ad7d60f540c45df8ee87",
+		"parametric":           "1a2076379a8fbbad3b197ef13af88e4e1b063db309bff622d634a749ecdbc338",
+		"parametric-normal":    "31b6895eec06259ee6f49391a7d23b69ceca5f56fe2771c13013894e7f5c5692",
+		"markov-regime":        "061e49bfc3975dbf57b7d3728af60bcbad6d389777f5e42d6d15a997e129d3be",
+		"lost-decade":          "c6d8d4b7d1bd0c669f9aa8c042af37410e6a975e4e426bab46d6ef354ee473f2",
+		"glidepath":            "2e742df1bf94cfd176a39c22e60060c3023c1c177fc5abc0e006bfcf8bb4c86f",
 		"block-bootstrap":      "2f87a7b074a036ee6d1d356bdc16f9e9e38a89051f7416367e7d13d07f814080",
 		"stationary-bootstrap": "c06555f720afd948745b4bb209c67ea8c18af7a4f399860b276c203330e2c091",
 		"historical-cohorts":   "9ad64c69483dde4dfbfe38f73b020b0e6cb5f739ac902ef3f79f53f0617eb25b",

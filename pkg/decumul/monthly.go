@@ -114,6 +114,9 @@ func (p *Plan) runPathMonthly(returns scenario.Sequence, lives Lives, buf []floa
 			total := pks.total() + buffer
 			if total <= 0 {
 				res.ruinAt(k)
+				// The pensions and the annuity outlive the portfolio (see the
+				// annual kernel): account the years nobody will simulate.
+				res.collectIncome(p, k+1, end, lf)
 				ruined = true
 				break
 			}
