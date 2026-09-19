@@ -80,8 +80,14 @@ backtest: PP2.0 ≈ 10.3% CAGR nominal, maxDD 9.4%, Sharpe 0.75 over **2023-2025
 
 ## 3. Data & reproducibility
 
-All work is REAL (inflation removed), monthly, no lookahead (macro signals lagged
-one extra month for the publication delay).
+All work is REAL (inflation removed), monthly, with the macro signal lagged one
+month by REFERENCE date: month M is allocated on the regime of reference month
+M-1 (`Simulate` takes the most recent regime dated strictly before the month it
+pays). That rules out the contemporaneous reading, but it is not a lag by
+PUBLICATION date, and the two differ here: OECD industrial production for
+reference month M-1 is released about forty days after that month ends, i.e.
+around the tenth of M+1, so the allocation of month M reads a number that did
+not exist when it was struck. Section 9 carries the size of the gap.
 
 Assets (via pofo `marketdata`, SIM suffix splices long history):
 - Equity: `URTHSIM` (MSCI World TR, 1969→) for the global model; the OECD
@@ -417,6 +423,14 @@ subperiod/start-date/multi-country battery used here.
   2026-08-19 (see the migration note in section 3); the regime series moved by a
   handful of boundary months.
 - Single realized path per country/global; no Monte-Carlo bands on the edge.
+- **The lag is by reference date, not by publication date** (section 3). Holding
+  the regime back one further month would be the strict real-time test, and at
+  this cadence that is not a rounding detail: over 1960-2026 consecutive regimes
+  flip quadrant in 28 % of months and move the four sleeves by 14.5 points of
+  allocation on average (L1 distance, 58.9 points at the worst month). The
+  published figures above are therefore an upper bound on what a real-time
+  investor could have captured, by an amount nobody has measured yet. Measuring
+  it (re-run the whole battery at lag 2) is the first item of the open list.
 
 ## 10. Status & next steps
 
@@ -430,6 +444,9 @@ Shipped:
   table (§7 caveat 5).
 
 Open:
+- **Measure the publication-date lag** (section 9): re-run the subperiod /
+  start-date / multi-country / frontier battery with the regime held back one
+  further month, and report the whole table at both lags rather than picking one.
 - Retune only pole *positions* and `wMax` from a-priori economics, not by fitting;
   re-run the subperiod/start-date/multi-country/frontier battery on any change.
 - Generalize to the Artemis Dragon (§8): add the third stress/vol axis and the
