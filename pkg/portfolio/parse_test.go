@@ -225,10 +225,12 @@ func TestParseFeesColumnAndEnvelope(t *testing.T) {
 }
 
 func TestSimulateEnvelopeFees(t *testing.T) {
-	n := 253 // ~1 trading year
+	// constSeries quotes every calendar day, so each step spans 1/365.25 of
+	// a year: a fee quoted per year accrues that much of itself per step.
+	n := 253
 	p := &Portfolio{
 		Name:         "t",
-		EnvelopeFees: 2.52, // 0.01 %/trading day
+		EnvelopeFees: 3.6525, // 0.01 %/calendar day
 		Assets: []Asset{
 			{Symbol: "A", Weight: 1, Series: constSeries("A", 0, n, 100)},
 		},
@@ -241,6 +243,36 @@ func TestSimulateEnvelopeFees(t *testing.T) {
 	got := sim.Values[len(sim.Values)-1]
 	if math.Abs(got-want) > 1e-9 {
 		t.Errorf("final value with envelope fees: %v, want %v", got, want)
+	}
+}
+
+// A yearly fee must cost a year of itself per calendar year, whatever the
+// quoting cadence: counting sessions instead charged a weekly-quoting book a
+// fifth of what its owner pays.
+func TestSimulateEnvelopeFeesCadenceInvariant(t *testing.T) {
+	daily := &marketdata.Series{Symbol: "A"}
+	weekly := &marketdata.Series{Symbol: "A"}
+	for i := range 3653 { // ten years of calendar days
+		pt := marketdata.Point{Date: day(i), Close: 100}
+		daily.Points = append(daily.Points, pt)
+		if i%7 == 0 {
+			weekly.Points = append(weekly.Points, pt)
+		}
+	}
+	for _, s := range []*marketdata.Series{daily, weekly} {
+		p := &Portfolio{Name: "t", EnvelopeFees: 1,
+			Assets: []Asset{{Symbol: "A", Weight: 1, Series: s}}}
+		sim, err := Simulate(p, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		last := len(sim.Dates) - 1
+		years := sim.Dates[last].Sub(sim.Dates[0]).Hours() / 24 / 365.25
+		drag := math.Pow(sim.Index[last]/100, 1/years) - 1
+		if math.Abs(drag+0.00995) > 1e-4 {
+			t.Errorf("%d quotes over %.2f years: drag %.4f %%/yr, want -1 %%/yr compounded",
+				len(s.Points), years, drag*100)
+		}
 	}
 }
 
@@ -321,12 +353,12 @@ func TestSimulateLeverage(t *testing.T) {
 	flat := constSeries("A", 0, n, 100)
 	rate := &marketdata.Series{Symbol: "^IRX"}
 	for i := range n {
-		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 2.52}) // 0.01 %/day
+		rate.Points = append(rate.Points, marketdata.Point{Date: day(i), Close: 3.6525}) // 0.01 %/calendar day
 	}
-	// 150 % of a flat asset, financed at 2.52 % + 2.52 % spread: the debt of
-	// 50 compounds at 0.02 %/day, eroding the NAV by as much.
+	// 150 % of a flat asset, financed at 3.6525 % + 3.6525 % spread: the debt
+	// of 50 compounds at 0.02 %/day, eroding the NAV by as much.
 	p := &Portfolio{
-		Name: "t", Leverage: true, BorrowSpread: 2.52, Cash: rate,
+		Name: "t", Leverage: true, BorrowSpread: 3.6525, Cash: rate,
 		Assets: []Asset{{Symbol: "A", Weight: 1.5, Series: flat}},
 	}
 	sim, err := Simulate(p, 0)

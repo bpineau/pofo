@@ -7,6 +7,11 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
+// daysPerYear is the year length the per-annum quantities Simulate accrues
+// (envelope fees, the financing rate and its spread) are spread over, the
+// same 365.25-day year pkg/metrics annualizes with.
+const daysPerYear = 365.25
+
 // Asset is a resolved portfolio constituent, ready for simulation.
 type Asset struct {
 	ID     string // identifier as written in the portfolio file
@@ -84,6 +89,12 @@ type SimResult struct {
 	// Ruined is true when the value hit zero (levered losses, or
 	// withdrawals from a depleted portfolio): the series is truncated.
 	Ruined bool
+
+	// Warnings records what the simulation had to assume, e.g. a financing
+	// rate held flat before its history starts. Callers surface them next to
+	// Portfolio.Warnings; they are per-run, so they belong here rather than
+	// on the portfolio, which a sweep re-simulates hundreds of times.
+	Warnings []string
 }
 
 // MonthlyContributions folds Contributions into calendar months: it returns
@@ -155,19 +166,31 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		return nil, fmt.Errorf("no common period between the portfolio's assets")
 	}
 
-	// Union of trading dates inside the window, prices forward-filled.
-	// The cash-rate series, when present, is aligned too but never
-	// constrains the window (start/end come from the assets alone).
+	// Union of trading dates inside the window, prices forward-filled. The
+	// ASSETS alone decide that calendar: the cash-rate series is read onto it
+	// afterwards (marketdata.SampleAt), never aligned with it. A rate is not a
+	// holding, and letting it into the union would both add sessions the
+	// portfolio does not trade (a policy rate published every calendar day
+	// would hand a per-session accrual 365 steps a year) and, for a window
+	// opening before the rate feed, forward-fill zeros, i.e. finance the
+	// leverage for free. SampleAt holds the oldest rate on record flat
+	// instead, and says how far back it had to.
 	seriesList := make([]*marketdata.Series, len(p.Assets))
 	for i, a := range p.Assets {
 		seriesList[i] = a.Series
 	}
-	rateIdx := -1
-	if p.Leverage && p.Cash != nil {
-		rateIdx = len(seriesList)
-		seriesList = append(seriesList, p.Cash)
-	}
 	dates, prices := marketdata.Align(seriesList, start, end)
+	res := &SimResult{}
+	var rates []float64
+	if p.Leverage && p.Cash != nil {
+		var before time.Time
+		rates, before = marketdata.SampleAt(p.Cash, dates)
+		if !before.IsZero() {
+			res.Warnings = append(res.Warnings, fmt.Sprintf(
+				"financing rate %s starts on %s; the leverage before that is financed at its oldest known level",
+				p.Cash.Symbol, before.Format("2006-01-02")))
+		}
+	}
 
 	// Without explicit leverage, weights are normalized defensively (the
 	// parser already does); with it, they are exposures of the capital
@@ -196,20 +219,32 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 			cash = total - invested
 		}
 	}
-	// dailyCashRate accrues the cash position: deposits earn the cash
-	// rate, borrowed money pays it plus the spread.
-	dailyCashRate := func(k int) float64 {
+	// Fees and financing are quoted PER YEAR, so they accrue over the
+	// calendar time each step covers, not once per quote. Counting steps
+	// instead only agrees with the quote when the calendar happens to hold
+	// 252 of them a year: a weekly-quoting book (an insurance-linked or
+	// employee-savings line) would pay a fifth of its envelope fee, a monthly
+	// one a twentieth, and a donor chain's gap would skip its years entirely.
+	// The span is capped at a year so a decade-long hole in a series cannot
+	// compound a decade of fees into one step.
+	yearFrac := func(k int) float64 {
+		y := dates[k].Sub(dates[k-1]).Hours() / 24 / daysPerYear
+		return min(max(y, 0), 1)
+	}
+	// stepCashRate accrues the cash position over that same span: deposits
+	// earn the cash rate, borrowed money pays it plus the spread.
+	stepCashRate := func(k int) float64 {
 		if !p.Leverage || cash == 0 {
 			return 0
 		}
 		r := 0.0
-		if rateIdx >= 0 {
-			r = prices[rateIdx][k-1] / 100 / 252
+		if rates != nil {
+			r = rates[k-1] / 100
 		}
 		if cash < 0 && p.BorrowSpread > 0 {
-			r += p.BorrowSpread / 100 / 252
+			r += p.BorrowSpread / 100
 		}
-		return r
+		return r * yearFrac(k)
 	}
 
 	startValue := 100.0
@@ -220,11 +255,10 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 	index := make([]float64, len(dates))
 	values[0], index[0] = startValue, 100
 	setShares(0, startValue)
-	dailyFee := 0.0
+	yearlyFee := 0.0
 	if p.EnvelopeFees > 0 {
-		dailyFee = p.EnvelopeFees / 100 / 252
+		yearlyFee = p.EnvelopeFees / 100
 	}
-	res := &SimResult{}
 	contrib := make([][]float64, len(p.Assets))
 	for i := range contrib {
 		contrib[i] = make([]float64, len(dates))
@@ -236,10 +270,11 @@ func Simulate(p *Portfolio, rebalanceDays int) (*SimResult, error) {
 		for i := range shares {
 			contrib[i][k] = shares[i] * (prices[i][k] - prices[i][k-1]) / values[k-1]
 		}
-		cash *= (1 - dailyFee) * (1 + dailyCashRate(k))
+		stepFee := yearlyFee * yearFrac(k)
+		cash *= (1 - stepFee) * (1 + stepCashRate(k))
 		v := cash
 		for i := range shares {
-			shares[i] *= 1 - dailyFee
+			shares[i] *= 1 - stepFee
 			v += shares[i] * prices[i][k]
 		}
 		if v <= 0 {

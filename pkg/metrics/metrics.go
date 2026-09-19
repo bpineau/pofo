@@ -33,14 +33,17 @@ type Stats struct {
 }
 
 // Compute derives Stats from a value series. dates must be ascending and
-// values strictly positive, both of equal length >= 2.
+// values strictly positive and finite, both of equal length >= 2.
 func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return Stats{}, fmt.Errorf("series too short (%d points)", len(values))
 	}
 	for _, v := range values {
-		if !(v > 0) {
-			return Stats{}, fmt.Errorf("non-positive value in series")
+		// An infinity passes "> 0" and then poisons half the statistics with
+		// NaN while leaving the other half (the CAGR, the drawdown) looking
+		// like numbers. Refuse it where the series is still readable.
+		if !(v > 0) || math.IsInf(v, 1) {
+			return Stats{}, fmt.Errorf("non-positive or infinite value in series")
 		}
 	}
 	var s Stats
