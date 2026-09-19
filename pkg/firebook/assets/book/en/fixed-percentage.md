@@ -1,5 +1,5 @@
 # The fixed percentage of the portfolio: indestructible but uncomfortable
-<!-- source: pourcentage-fixe @ df817865365e -->
+<!-- source: pourcentage-fixe @ d1933a13a2d4 -->
 
 Every year, take 4% of the portfolio as it stands, not an indexed amount set years ago. That is the fixed percentage. It is the simplest strategy after Bengen's, and its exact mirror image on the impossible triangle ([[withdrawal-strategies-overview]]). It offers the most reassuring property in all of decumulation: ruin is mathematically impossible. But it charges the most visible price for it. Your standard of living tracks the market, point for point.
 
@@ -77,7 +77,7 @@ This is the easiest rule in the whole survey to program, and a spreadsheet is en
 :::
 
 ::: exemple The same hostile regime, raw against smoothed
-A portfolio of $1.4M, w = 4%, so $56,000. The real returns of 1973-1974: −35% over two years, then a limp recovery. Under the raw fixed percentage, income goes from $56,000 to $45,600 and then $33,800 in two years, a fall of 40%. It climbs back at the market's pace and spends ten of the next twelve years below $45,000. Under the Yale rule (70/30), it goes from $56,000 to $52,900 and then $47,100, a fall of 16% over two years. It bottoms out near $31,700 much later, and the descent leaves time to get organized. Same portfolio, same anti-ruin guarantee, but the smoothed version turns a free fall into a gentle slope. In a budget with 25% compressible, the first path is a crisis for the plan and the second is routine management. Smoothing is not a refinement. It is the admission requirement for the whole proportional family.
+A portfolio of $1.4M, w = 4%, so $56,000. The real returns of 1973-1974: −34% over two years, then a limp recovery. Under the raw fixed percentage, income goes from $56,000 to $45,700 and then $33,900 in two years, a fall of 40%. It climbs back at the market's pace and spends ten of the next twelve years below $45,000. Under the Yale rule (70/30), it goes from $56,000 to $52,900 and then $47,100, a fall of 16% over two years. It bottoms out near $31,800 much later, and the descent leaves time to get organized. Same portfolio, same anti-ruin guarantee, but the smoothed version turns a free fall into a gentle slope. In a budget with 25% compressible, the first path is a crisis for the plan and the second is routine management. Smoothing is not a refinement. It is the admission requirement for the whole proportional family.
 :::
 
 ## The essentials
