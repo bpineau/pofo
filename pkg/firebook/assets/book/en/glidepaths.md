@@ -1,5 +1,5 @@
 # Glide paths: the bond tent, rising equity, and the fragile window
-<!-- source: glidepaths @ 23ddb168088a -->
+<!-- source: glidepaths @ b006d50bb0e8 -->
 
 The previous chapter settled where to sit on the stock-bond axis ([[stock-bond-allocation]]). This one adds the dimension a static allocation ignores: time. Risk in a withdrawal plan is not spread evenly. It piles up in the first five to ten years, the fragile window of sequence risk ([[sequence-of-returns]]). A constant allocation, though, pays for protection at the same price for life. That price is the equity return you give up. And the danger eventually passes.
 
@@ -61,7 +61,7 @@ Simulate both protections on the same plan and the honest reading comes out like
 
 ## What the tent is made of
 
-The results above say a great deal about stocks and almost nothing about the rest. In Pfau-Kitces the non-equity sleeve comes down to a few average parameters, a return, a volatility and a correlation with stocks. Those averages cover a century of US history and its successive regimes without ever telling them apart. In Jeske, as in the vintage chart above, the sleeve is a real intermediate Treasury, replayed vintage by vintage. Both samples do contain both worlds, the disinflationary golden age and the inflationary stretch from 1966 to 1981. So the path survives the hostile regime, which is reassuring. But it survives with that sleeve. Nothing in this work says any bond fund would do the same job.
+The results above say a great deal about stocks and almost nothing about the rest. In Pfau-Kitces the non-equity sleeve comes down to a few average parameters, a return, a volatility and a correlation with stocks. Those averages cover a century of US history and its successive regimes without ever telling them apart. In Jeske, as in the vintage chart above, the sleeve is an actual intermediate Treasury, its historical returns replayed vintage by vintage. Both samples do contain both worlds, the disinflationary golden age and the inflationary stretch from 1966 to 1981. So the path survives the hostile regime, which is reassuring. But it survives with that sleeve. Nothing in this work says any bond fund would do the same job.
 
 And the stock-bond correlation is not a constant. It is a regime variable, tied to inflation ([[why-diversification-works]], [[bonds-in-retirement]]). Campbell, Pflueger and Viceira (2020) trace its 2001 switch to a change in the relationship between inflation and economic activity. Brixton, Ilmanen and their AQR coauthors (2023) turn that into a working rule. The sign depends on the relative weight of growth shocks and inflation shocks, and on how the two move together. Negative from 2000 to 2021, the correlation has turned positive in episodes since 2022.
 
