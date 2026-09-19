@@ -1,5 +1,5 @@
 # Why diversification works: the mechanics of the free lunch
-<!-- source: pourquoi-la-diversification-marche @ ec100084cbf6 -->
+<!-- source: pourquoi-la-diversification-marche @ ac539c2a1e89 -->
 
 "Don't put all your eggs in one basket" is the oldest piece of financial advice in the world, and the most misunderstood. Most savers diversify the way people recite a prayer. They never see that the proverb hides a precise mathematical mechanism, the only one in all of finance that gives you something without asking for anything back: the free lunch Markowitz called "the only free lunch in investing". The mechanism has conditions and limits. Above all it has a consequence almost nobody talks about. A diversified portfolio that gets rebalanced can return more than the average of its parts, a bonus with the pretty name of rebalancing premium.
 
@@ -47,7 +47,7 @@ The same reasoning clears up a phrase that fools a lot of people, diversificatio
 
 ## The limits, no folklore
 
-**Correlations are fair-weather friends.** In a liquidity panic, nearly everything falls together for a few weeks (2008, March 2020). The correlation between stocks, real estate, credit and hedge funds heads toward 1 at the exact moment you were counting on them to diverge. Statisticians call this tail dependence. They model it with copulas, precisely because the ordinary correlation matrix, computed over the calm stretches, cannot see it. The list of what survives that test is short: high-quality government duration (in disinflationary crises only, as 2022 reminded everyone, [[market-regimes]]), cash, sometimes gold, and trend if the crisis lasts ([[managed-futures]]). Diversification does not remove short shocks, it tells regimes apart. That is already a great deal, but it is not immunity.
+**Correlations are fair-weather friends.** In a liquidity panic, nearly everything falls together for a few weeks (2008, March 2020). The correlation between stocks, real estate, credit and hedge funds heads toward 1 at the exact moment you were counting on them to diverge. Statisticians call this tail dependence. They model it with copulas, precisely because the ordinary correlation matrix, computed over the calm stretches, cannot see it. The list of what survives that test is short: high-quality government duration (in disinflationary crises only, as 2022 reminded everyone, [[market-regimes]]), cash, sometimes gold, and trend if the crisis lasts ([[managed-futures]]). Diversification does not remove short shocks, it tells regimes apart. That is already a great deal, but it is not immunity. It is also why the cautious sleeve of a glide path gets chosen on its duration and its type, not on its label ([[glidepaths]]).
 
 **Fake diversification, or diworsification.** Adding holdings correlated with what you already own gives you the feeling of a basket with the risk of a single block. Picture a world fund plus a US fund plus a tech fund plus ten American stocks. The test is one question per holding: "in which regime does this position win while the rest loses?" No answer, no diversification, just fees ([[risk-premia]] for the full version of the audit).
 

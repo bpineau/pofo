@@ -1,5 +1,5 @@
 # Glide paths: the bond tent, rising equity, and the fragile window
-<!-- source: glidepaths @ 124653fc75d0 -->
+<!-- source: glidepaths @ 23ddb168088a -->
 
 The previous chapter settled where to sit on the stock-bond axis ([[stock-bond-allocation]]). This one adds the dimension a static allocation ignores: time. Risk in a withdrawal plan is not spread evenly. It piles up in the first five to ten years, the fragile window of sequence risk ([[sequence-of-returns]]). A constant allocation, though, pays for protection at the same price for life. That price is the equity return you give up. And the danger eventually passes.
 
@@ -59,6 +59,16 @@ Simulate both protections on the same plan and the honest reading comes out like
 
 **How a pension changes it.** The climb in stocks is even easier to defend when a pension starts partway through ([[pensions-and-other-income]]). A discounted pension is a bond position that grows as it gets closer ([[amortization-based-withdrawal]]). Raising the equity share of the visible portfolio then does no more than hold total risk constant. Anyone whose pension or Social Security starts in fifteen years has two reasons to follow the path.
 
+## What the tent is made of
+
+The results above say a great deal about stocks and almost nothing about the rest. In Pfau-Kitces the non-equity sleeve comes down to a few average parameters, a return, a volatility and a correlation with stocks. Those averages cover a century of US history and its successive regimes without ever telling them apart. In Jeske, as in the vintage chart above, the sleeve is a real intermediate Treasury, replayed vintage by vintage. Both samples do contain both worlds, the disinflationary golden age and the inflationary stretch from 1966 to 1981. So the path survives the hostile regime, which is reassuring. But it survives with that sleeve. Nothing in this work says any bond fund would do the same job.
+
+And the stock-bond correlation is not a constant. It is a regime variable, tied to inflation ([[why-diversification-works]], [[bonds-in-retirement]]). Campbell, Pflueger and Viceira (2020) trace its 2001 switch to a change in the relationship between inflation and economic activity. Brixton, Ilmanen and their AQR coauthors (2023) turn that into a working rule. The sign depends on the relative weight of growth shocks and inflation shocks, and on how the two move together. Negative from 2000 to 2021, the correlation has turned positive in episodes since 2022.
+
+Which leaves the tent with a problem of its own. Its bond peak is not a long-term investment. It is the reserve that will fund the first ten years of withdrawals, and its useful horizon gets a year shorter every year. The rule matching duration to horizon therefore applies here in its strictest form ([[bonds-in-retirement]]). Short to intermediate duration, a linker sleeve against surprise inflation ([[inflation-linked-bonds]]), or a ladder held to maturity across the first years of spending ([[bond-ladders]]). That material works in both regimes. Long duration is something else, a deliberate bet on deflation, spectacular in 2008 and punished in 2022 ([[defensive-assets]]). It has a place in the portfolio, just not at the peak of the tent.
+
+That leaves the backups. Trend following ([[managed-futures]]) and gold win in the regimes where nominal bonds lose, and 2022 showed it live. Their case is shorter and leans harder on the vehicle than the case for government bonds. They strengthen the tent's defensive sleeve, they do not replace the path. The founding result is about equity exposure through the fragile window, and it holds. What 2022 made visible is that the composition of everything else is a separate decision, and it gets made with the table of defenses ([[defensive-assets]]).
+
 ::: astuce Setting a glide path in a simulation
 Not every simulator can move the allocation over the life of a plan. Where the option exists, it takes three numbers, and they are exactly the ones in the written plan: the starting equity share, the ending one, and how many years the climb takes. The control is usually labeled something like "Rising-equity glidepath (bond tent)". The rest is a matter of reading it right. Run the same plan with and without the path, and look first at the hard models, sequence stress and broad sample, because the benefit lives there and almost nowhere else ([[historical-vs-parametric]]). Then check how sensitive failure is to the returns of the first decade: it should visibly soften, and that is the signature of a glide path doing its job. If the tool plots failure against the number of buffer years, size both protections on the same plan rather than one at a time, and their overlap shows up in the numbers. None of it helps unless the path makes it into the written plan, and then into the annual review that keeps it alive ([[the-annual-review]]).
 :::
@@ -73,6 +83,7 @@ Iris, 44, targeting 49, with a CAPE above 30: the full tent is justified. Declin
 - The benefit is targeted: 0.1 to 0.3 points of SWR in the worst vintages, about zero at the median, largest when the starting CAPE is high. In expensive markets it is insurance with a negative premium, not alpha.
 - The rising leg runs itself if every withdrawal comes out of bonds during the climb, so there is no counterintuitive order to place. That is also the defense against its real weakness, which is behavioral: the path suspended at the first crash.
 - A glide path and a cash buffer cover the same risk, so a moderate combination of the two beats the maximum of each.
+- The path is about stocks. What the defensive sleeve is made of is a separate decision, and 2022 made it visible. That sleeve funds the first ten years of withdrawals, which argues for short to intermediate duration, a linker sleeve, or a ladder ([[bonds-in-retirement]], [[inflation-linked-bonds]], [[bond-ladders]]). Long duration stays deflation insurance, and gold and trend following are regime backups ([[defensive-assets]], [[managed-futures]]).
 - The anti-model: the target-date fund that descends forever and leaves an eighty-year-old below the allocation plateau, exposed to erosion ([[stock-bond-allocation]]).
 
 ---
@@ -82,4 +93,6 @@ Iris, 44, targeting 49, with a CAPE above 30: the full tent is justified. Declin
 - Pfau and Kitces, "Reducing Retirement Risk with a Rising Equity Glide Path", *Journal of Financial Planning* (2014), and Kitces, "The Bond Tent" ([kitces.com](https://www.kitces.com)): the founding pieces.
 - Early Retirement Now, Parts 19-20 (glide paths in retirement, the 60-year horizon version) and Part 43 (the run-up to retirement) ([[the-ern-series]]).
 - Pfau, *Retirement Planning Guidebook*, the chapter on dynamic allocation.
-- In this book: [[sequence-of-returns]] (the risk being targeted), [[cash-buffer]] (the alternative), [[the-three-phases]] (the calendar), [[stock-bond-allocation]] (where the path ends up), [[lifecycle-theory]] (human capital, which derives glidepaths instead of decreeing them).
+- Campbell, Pflueger and Viceira, "Macroeconomic Drivers of Bond and Equity Risks", *Journal of Political Economy* (2020): why the stock-bond correlation changes sign with the macro regime.
+- Brixton, Brooks, Hecht, Ilmanen, Maloney and McQuinn, "A Changing Stock-Bond Correlation", *The Journal of Portfolio Management* (2023): the practitioner reading of the same thing, and what it changes for allocation.
+- In this book: [[sequence-of-returns]] (the risk being targeted), [[cash-buffer]] (the alternative), [[the-three-phases]] (the calendar), [[stock-bond-allocation]] (where the path ends up), [[bonds-in-retirement]] (what the defensive sleeve is made of), [[defensive-assets]] (the regime backups), [[lifecycle-theory]] (human capital, which derives glidepaths instead of decreeing them).
