@@ -467,11 +467,12 @@ sustainable rate) and moves only the sleeve, per the habit recorded above. Four
 sleeves: 3-month bills (TBILL-3M accrued), 5-year Treasuries (TREASURY-INT-USD,
 the incumbent), a 20-year par bond and a fifty-fifty of the first two. The long
 sleeve is rebuilt by simgen.TreasuryTR over TREASURY-LONG-YIELD rather than read
-from the bundled TREASURY-LONG-USD, whose 1987-01..1993-09 hole (the 20-year
-constant maturity was discontinued there) would cut every vintage from 1958 to
-1993 out of the sample; the two agree at 0,978 on yearly real returns, and on
-the vintages the bundled leg CAN carry it makes the long sleeve look slightly
-worse, so the substitution is conservative.
+from the bundled TREASURY-LONG-USD, which at the time carried a
+1987-01..1993-09 hole (the 20-year constant maturity was discontinued there)
+that would have cut every vintage from 1958 to 1993 out of the sample. The
+bundled series was rebuilt to that same recipe on 2026-09-19, so the two now
+agree by construction; the plate keeps its local build so that its frozen
+numbers do not move with a regeneration.
 
 The measurement splits in two, and both halves are drawn or printed. What the
 SLOPE is worth does not depend on the sleeve: median vintage between -0,25 and
