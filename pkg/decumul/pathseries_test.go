@@ -8,15 +8,17 @@ import (
 )
 
 // A depleting path records the year ruin latched and the net spending actually
-// delivered each year: 25k for four years, then nothing.
+// delivered each year: 25k for four years, then nothing. Ruin is the FIRST
+// UNFUNDED year, so it is year 4 and not year 3: the fourth withdrawal was
+// paid in full, it merely left nothing behind.
 func TestRunPathRuinYearAndSpend(t *testing.T) {
 	p := Plan{Capital: 100000, NeedAnnual: 25000, Years: 5, Tax: CTOFlatTax{Rate: 0}}
 	res := p.RunPath(scenario.Sequence{0, 0, 0, 0, 0}, Lives{})
 	if !res.Ruined {
 		t.Fatalf("expected ruin")
 	}
-	if res.RuinYear != 3 {
-		t.Errorf("RuinYear = %d, want 3 (wealth reaches 0 at the 4th withdrawal)", res.RuinYear)
+	if res.RuinYear != 4 {
+		t.Errorf("RuinYear = %d, want 4 (years 0-3 were each funded in full)", res.RuinYear)
 	}
 	if len(res.Spend) != 5 {
 		t.Fatalf("Spend len = %d, want 5 (one per year)", len(res.Spend))

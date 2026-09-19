@@ -255,8 +255,14 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+		// The same gate as every simulation endpoint: an allocation that does
+		// not fit the panel is refused, one that does is read up to scale.
+		if err := (Params{Weights: body.Weights}).checkWeights(panel); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 		out := map[string]float64{}
-		if f := FitParametric(*panel, body.Weights); f.Valid() {
+		if f := FitParametric(*panel, normalize(body.Weights)); f.Valid() {
 			out["mu"], out["sigma"], out["df"] = f.Mu, f.Sigma, f.Df
 		}
 		w.Header().Set("Content-Type", "application/json")
@@ -286,7 +292,7 @@ func Handler(panel *scenario.Panel, labels []string, opts ...Option) http.Handle
 			// queues for a slot: the page cannot produce one (its envelope
 			// sliders stop at the room the others leave), so this only ever
 			// answers a hand-written call.
-			if err := pr.validate(); err != nil {
+			if err := pr.validate(panel); err != nil {
 				http.Error(w, err.Error(), http.StatusBadRequest)
 				return
 			}

@@ -160,6 +160,13 @@ func Sweep2D(p Plan, x, y Param, xs, ys []float64) Surface
 7. Apply returns: `growth *= 1 + r` (from `Source`), `buffer *= 1 + RealReturn`;
    `cost` does not move with returns, only with sales.
 
+Ruin is the FIRST UNFUNDED year, never the last funded one. A year that
+delivers its whole need and leaves the portfolio at exactly zero is a funded
+year: step 3 of the NEXT year records the failure, and a plan whose final
+withdrawal empties the pot exactly reaches its horizon without ever failing.
+Only a negative balance (which a stub `Tax` without a sale cap can produce)
+is a shortfall inside the year that produced it.
+
 `Run` returns the full yearly wealth path plus realised taxes and withdrawals,
 so per-path `metrics` (drawdowns, TTR, rolling CAGR, Ulcer) compose directly.
 

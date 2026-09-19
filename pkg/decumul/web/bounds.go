@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net/http"
 	"runtime"
+
+	"github.com/bpineau/pofo/pkg/scenario"
 )
 
 // Request bounds. The simulation endpoints are driven by whatever JSON a
@@ -56,17 +58,19 @@ func (pr Params) bounded() Params {
 }
 
 // validate rejects a request the page itself cannot express: an envelope book
-// whose pockets add up to more than the sleeve they are carved from. Clamping
-// that one silently would simulate a different household (the pockets would
-// be pro-rated and the taxable one would vanish), so the caller is told
+// whose pockets add up to more than the sleeve they are carved from, or an
+// allocation that does not fit the portfolio it would be read against.
+// Clamping either one silently would simulate a different household (the
+// pockets would be pro-rated and the taxable one would vanish; the missing
+// holdings would be given a weight nobody chose), so the caller is told
 // instead. Called on the bounded params, before any slot is taken.
-func (pr Params) validate() error {
+func (pr Params) validate(panel *scenario.Panel) error {
 	if g := pr.growthSleeve(); pr.PEACapital+pr.AVCapital > g+0.5 {
 		return fmt.Errorf("envelope amounts add up to more than the invested capital: "+
 			"PEA %.0f + assurance-vie %.0f > %.0f (capital %.0f minus %.0f of cash buffer)",
 			pr.PEACapital, pr.AVCapital, g, pr.Capital, pr.Capital-g)
 	}
-	return nil
+	return pr.checkWeights(panel)
 }
 
 func clamp[T int | float64](v, lo, hi T) T {
