@@ -242,3 +242,42 @@ func TestFactorFramework(t *testing.T) {
 		}
 	}
 }
+
+// MinCorr is the WEAKEST pairwise correlation inside a group, and a group
+// GROWS: it has to survive the unions that build it. It used to be tracked
+// against the union-find root, which moves on every merge, so a chain left the
+// record under an abandoned root and the group reported its LAST link instead
+// of its loosest. Here four lines form a ladder (each close to its neighbour,
+// far from the far end): the group is one bet held four times only in the
+// weakest sense, and saying 0.99 when the ends correlate at 0.83 is the
+// difference between "sell one of these" and "these are three different bets".
+func TestRedundanciesMinCorrIsTheWeakestLink(t *testing.T) {
+	const n = 400
+	rung := func(k float64) []float64 {
+		s := make([]float64, n)
+		for i := range n {
+			s[i] = math.Cos(float64(i)/3) + k*0.22*math.Sin(float64(i)/11)
+		}
+		return s
+	}
+	returns := [][]float64{rung(0), rung(1), rung(2), rung(3)}
+	holdings := []Holding{
+		{ID: "A", Weight: 0.25, Meta: Meta{AssetClass: "equity"}},
+		{ID: "B", Weight: 0.25, Meta: Meta{AssetClass: "equity"}},
+		{ID: "C", Weight: 0.25, Meta: Meta{AssetClass: "equity"}},
+		{ID: "D", Weight: 0.25, Meta: Meta{AssetClass: "equity"}},
+	}
+	weakest := math.Inf(1)
+	for i := range returns {
+		for j := i + 1; j < len(returns); j++ {
+			weakest = math.Min(weakest, Correlation(returns[i], returns[j]))
+		}
+	}
+	groups := Redundancies(holdings, returns, 0.95)
+	if len(groups) != 1 || len(groups[0].IDs) != 4 {
+		t.Fatalf("groups = %+v, want the four rungs chained into one", groups)
+	}
+	if math.Abs(groups[0].MinCorr-weakest) > 1e-12 {
+		t.Errorf("MinCorr = %.4f, want the weakest pair %.4f", groups[0].MinCorr, weakest)
+	}
+}
