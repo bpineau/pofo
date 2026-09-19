@@ -3,7 +3,7 @@
 # name: U Access (IRL) Campbell Absolute Return B EUR: the net all-styles composite, hedged to EUR
 # method: the published net all-styles managed-futures composite (TREND-ALLSTYLES-NET-USD, 2000-01→, where the file starts), volatility-matched to the class and lifted 0.52%/yr from its constituents' estimated 2.00%/yr load to the class's 1.48%/yr ongoing charge, hedged to EUR via the FX-hedge identity (− USD cash ^IRX + EUR cash EURCASH-EUR); no pure-trend donor and nothing before the index, the fund being an absolute-return book and the deeper donors being shared with the two other trend legs; real IE00BKYBHJ61 grafted from its 2020-06 inception
 # validation: corr=0.619 (weekly 0.602) beta=0.60 TE=8.0%/yr CAGR sim 5.75% vs real 5.43% (overlap 1484 d from 2020-06-10 to 2026-08-28) vs IE00BKYBHJ61
-# generated: 2026-09-10
+# generated: 2026-09-19
 date,close
 2000-01-03,40.982971
 2000-01-04,40.571020
@@ -6827,3 +6827,10 @@ date,close
 2026-09-03,142.001400
 2026-09-04,141.996100
 2026-09-08,142.575200
+2026-09-09,143.871200
+2026-09-10,144.779200
+2026-09-11,145.944000
+2026-09-14,145.406500
+2026-09-15,145.822400
+2026-09-16,145.599600
+2026-09-17,145.766100

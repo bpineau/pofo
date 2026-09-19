@@ -3,7 +3,7 @@
 # name: ILS Advisers Fund Index (index, net of manager fees)
 # method: the monthly ILS fund composite (ILS-NET-USD refdata, 2006-01→) served as it stands: no fund fee added, no volatility rescaling, month-end cadence throughout
 # validation: not validated (no real series)
-# generated: 2026-09-10
+# generated: 2026-09-19
 date,close
 2005-12-31,100.000000
 2006-01-31,100.850000
