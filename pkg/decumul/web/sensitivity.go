@@ -48,7 +48,11 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 		// Floored at zero: a horizon shorter than the nudge would otherwise
 		// hand the kernel a negative year count, which is not a shorter plan
 		// but an invalid one (it panics allocating the path).
-		{"Horizon -5 y", func(p decumul.Plan) decumul.Plan { p.Years = max(0, p.Years-5); return p }},
+		{"Horizon -5 y", func(p decumul.Plan) decumul.Plan {
+			p.Years = max(0, p.Years-5)
+			p.RiskGuard = shortenedTable(p.RiskGuard, 5)
+			return p
+		}},
 		{"Buffer +2 y", func(p decumul.Plan) decumul.Plan { p.Buffer.Years += 2; return p }},
 		{"Cut 20% in downturns", func(p decumul.Plan) decumul.Plan { p.Flex = decumul.FlexRule{Threshold: 0.20, Cut: 0.20}; return p }},
 		{"Pension +500 €/m", func(p decumul.Plan) decumul.Plan {
@@ -93,6 +97,26 @@ func Sensitivity(pr Params, panel *scenario.Panel) SensitivityResult {
 	svg := darkHbars(chart.Options{Title: "One change at a time", XLabel: "change in ruin, percentage points",
 		Width: 720, Height: 380}, bars)
 	return SensitivityResult{SVG: svg}
+}
+
+// shortenedTable re-indexes the risk guardrail's safe-rate table for a plan
+// whose horizon is n years shorter.
+//
+// The table is indexed by PLAN YEAR and holds the rate still safe for the
+// horizon REMAINING there (safeRateTable builds entry k for Years-k years
+// left), so shortening the plan without shifting the table leaves every year
+// quoting the rate of a retirement five years longer than the one being
+// simulated, and the shortfall compounds toward the end: the last year of a
+// 37-year plan would be banded at the 6-years-left rate instead of the
+// 1-year-left one. Reading it that way turned the "Horizon -5 y" bar into the
+// page's most effective lever, -24.8 points of ruin where the honest answer is
+// -1.3, because the stale band made the rule cut early and hard. Entry k+n is
+// exactly the rate the shortened plan wants at year k.
+func shortenedTable(g decumul.RiskGuardrails, n int) decumul.RiskGuardrails {
+	if n < len(g.SafeWR) {
+		g.SafeWR = g.SafeWR[n:]
+	}
+	return g
 }
 
 // signedPP formats a percentage-point delta with an explicit sign.
