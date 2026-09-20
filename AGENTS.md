@@ -268,7 +268,16 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   weekly donor is projected onto that texture; those plates read `CTA` and
   `SP500`, so a DBi-only change leaves them alone.
 - Long / zero-coupon Treasury work (`ZROZ`, STRIPS, `EDV`-shaped funds): read
-  `docs/long-treasury-zero-coupon-design.md` first. A STRIPS fund is NOT a
+  `docs/long-treasury-zero-coupon-design.md` first. TWO DATA TRAPS live there
+  besides the engine: H.15's 20-year point changed DEFINITION on 1973-01-04
+  (6.04 to 6.78 overnight with the 10-year point still), which the bundled
+  `TREASURY-LONG-YIELD` declares in a `# junctions:` header so no engine prices
+  a return across it; and `VFITX`'s adjusted close carries an unhandled
+  year-end capital gain on 1993-12-31 (-3.16 %, permanent), which `simgen`'s
+  `tracked` map refuses against `TREASURY-INT-DAILY`. The same scan found
+  `VUSTX` (1992-12) and `VFINX` (five Decembers) carrying the same signature
+  with no separating band: measured, reported in the doc, deliberately NOT
+  repaired. A STRIPS fund is NOT a
   geared coupon fund: the gearing that matches a 27-year strip to a long coupon
   fund is 1.66 at 3 % yields and 3.31 at 12 %, so a constant fitted on the
   low-yield era halves the risk of the high-yield one (the incumbent recipe read

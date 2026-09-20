@@ -161,6 +161,55 @@ var dailyShape = map[string]string{
 	"EUROGOV-LONG-EUR":  "EUROGOV-LONG-DAILY",  // ECB daily euro-area 25y yield through TreasuryTR, 2004→ (idem)
 }
 
+// tracked names the donors whose provider line can be graded against a bundled
+// series tracking the SAME instrument, with the reference and the tolerance
+// measured for that pair (see trackIndex). The grading happens before any
+// splice, so what is judged is the donor's own quotes.
+//
+// VFITX is here because its adjusted close carries an unhandled year-end
+// distribution. On 1993-12-31 the fund's raw NAV falls 3.60 % and the provider
+// reports 0.051 of dividend, 0.46 % of NAV, so the adjusted series steps down
+// 3.16 % and never recovers: a permanent level error in a donor that stands
+// behind IEF, NTSX, RSSB, RSBT and NTSG. The same day the longer-duration
+// sibling VUSTX ROSE 0.52 % and the shorter VFISX fell 0.19 %, and the 5-year
+// constant maturity moved 0.03 pt. The missing amount is a capital-gains
+// distribution the provider does not publish, so it cannot be added back from
+// the source; what can be done is refuse the session and take the
+// reconstruction's return over the same two dates.
+//
+// The tolerance is 1.5 %, measured over the fund's whole life (8 713 sessions
+// against a 5-year par bond on the H.15 5-year point, the reference allowed to
+// lead or lag one session): the defect stands at 2.88 % and the largest session
+// with nothing behind it at 0.84 %, so 1.5 % sits near the middle of an empty
+// band, a factor of 1.8 from either side. It is two orders of magnitude tighter
+// than the equity-ETF tolerance of the FCPE recipe, which is why trackIndex
+// takes the tolerance as an argument rather than owning one.
+//
+// Two neighbours were measured and are deliberately NOT here, because their
+// separating band closes:
+//
+//   - VUSTX carries a contaminated patch of its own, 1992-12-11 (-5.69 %
+//     against the long reconstruction's -0.18) to 1992-12-31 (+6.76 % against
+//     -0.08, on a day its raw NAV moved -0.10 % and the provider credited a
+//     0.632 distribution). Both clear 5.7 %, but 1987-10-22 is a REAL +7.76 %
+//     against the long curve point's +2.64, i.e. 4.86 % of honest excess, and
+//     no tolerance separates 4.86 from 5.69. Worse, the H.15 20-year point is
+//     suspended over 1987-01..1993-09, so the daily reference does not even
+//     cover the days in question.
+//   - VFINX steps down on five Decembers (1980-03-27, 1981-12-29, 1983-12-28,
+//     1985-12-27, 1986-12-09) with the same signature, the raw NAV falling far
+//     more than the distribution the provider reports, the largest being
+//     -6.97 % on 1986-12-09 against the CRSP market factor's -0.66 with no
+//     dividend reported at all. But 1987-10-19 is a real -20.46 % against that
+//     factor's -17.41, 3.77 % of honest excess, and 1983-12-28's defect is
+//     3.00 %. Measured 2026-09-20, reported, not repaired.
+var tracked = map[string]struct {
+	ref string
+	tol float64
+}{
+	"VFITX": {"TREASURY-INT-DAILY", 0.015},
+}
+
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
 // with a longer proxy (marketdata.ExtendBack) at fetch time. A missing or empty
 // proxy is skipped silently, leaving the component unchanged, so the wrapper is
@@ -171,11 +220,23 @@ type extendingFetcher struct {
 }
 
 // Fetch fetches id and, when a longer proxy is configured for it, prepends the
-// proxy's rescaled history before the component's first quote.
+// proxy's rescaled history before the component's first quote. A donor listed
+// in tracked is first held to the reference that grades it.
 func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
 	s, err := e.inner.Fetch(id, from)
 	if err != nil {
 		return nil, err
+	}
+	if t, ok := tracked[id]; ok && s != nil {
+		if ref, rerr := e.inner.Fetch(t.ref, from); rerr == nil && ref != nil {
+			repaired, rejects := trackIndex(s, ref, t.tol)
+			for _, r := range rejects {
+				fmt.Fprintf(os.Stderr, "extend: %s does not track %s on %s\n", id, t.ref, r)
+			}
+			s = repaired
+		} else {
+			fmt.Fprintf(os.Stderr, "extend: %s: reference %s unavailable (%v), the donor is used ungraded\n", id, t.ref, rerr)
+		}
 	}
 	pid, ok := e.back[id]
 	if !ok || s == nil {

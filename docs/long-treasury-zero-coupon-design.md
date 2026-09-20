@@ -469,3 +469,73 @@ Worst single day of each shipped file, and calendar 1973:
 (`pofo -verify-simdata ZROZ TLT IDTL DTLETR IEF` reads the same level and path
 grades before and after), which is expected: every audit window starts where the
 funds' own quotes do, decades after the break.
+
+## The Vanguard donor's missing distribution, 2026-09-20
+
+The intermediate leg of the same family carried a second, unrelated defect, in
+the donor rather than in the reference.
+
+`VFITX`'s adjusted close falls 3.16 % on 1993-12-31 and never comes back. The
+raw NAV falls 3.60 % (11.11 to 10.71) and the provider reports 0.051 of
+dividend, 0.46 % of NAV, so the adjusted series is internally consistent and
+wrong: the fund paid a year-end CAPITAL-GAINS distribution the provider does
+not publish. The controls all say so:
+
+| That day | move |
+|---|---|
+| `VFITX` adjusted | **-3.16 %** |
+| `VUSTX`, longer duration, total return | **+0.52 %** |
+| `VFISX`, shorter duration, total return | -0.19 % |
+| H.15 5-year constant maturity | -0.03 pt |
+| a 5-year par bond on that point | -0.03 % |
+
+A 5-10 year Treasury fund does not lose 3.6 % of price on a day the 5-year
+point does not move and the 20-year fund rises. It is a permanent level step in
+a donor that stands behind `IEF`, `NTSX`, `RSSB`, `RSBT` and `NTSG`, and it was
+`IEF`'s worst day ever.
+
+The amount cannot be recovered from the source, so the repair is the one the
+FCPE recipe already uses: hold the donor to the reference that grades it
+(`simgen.trackIndex`, `tracked` in `pkg/simgen/extend.go`), refuse the session
+and take the reconstruction's return over the same two dates. The reference is
+`TREASURY-INT-DAILY`, which is why that file now runs to the present instead of
+stopping at the donor's own inception.
+
+The tolerance is 1.5 %, measured over the fund's whole life (8 713 sessions,
+the reference allowed to lead or lag one session): the defect stands at 2.88 %
+and the largest session with nothing behind it at 0.84 %, so 1.5 % sits near
+the middle of an empty band, a factor of 1.8 from either side.
+
+| File | 1993-12-31 before | after | worst day before | after |
+|---|---|---|---|---|
+| `IEF` | **-4.45 %** | -0.05 % | -4.45 % (1993-12-31) | **-3.23 % (1981-07-20)** |
+| `RSSB` | -1.68 % | +1.44 % | -10.08 % (2020-03-16) | unchanged |
+| `IE000KF370H3` (NTSX) | -2.31 % | -0.43 % | -18.07 % (1987-10-19) | unchanged |
+| `IE00077IIPQ8` (NTSG) | -1.03 % | +0.14 % | -9.65 % (2020-03-12) | unchanged |
+
+No other file moves and no audit verdict moves.
+
+### Two neighbours measured and NOT repaired
+
+The same scan over every Vanguard mutual-fund donor the recipes read found two
+more sets of the same signature, and both are reported rather than fixed,
+because the band that separates the defect from real market history closes.
+
+- **`VUSTX`, 1992-12-11 to 1992-12-31.** A contaminated patch: -5.69 % against
+  the long reconstruction's -0.18 on the first day, +6.76 % against -0.08 on
+  the last, the latter on a day the raw NAV moved -0.10 % and the provider
+  credited a 0.632 distribution. Both ends clear 5.7 % of excess. But
+  1987-10-22 is a REAL +7.76 % against the long curve point's +2.64, i.e.
+  4.86 % of honest excess, and no tolerance separates 4.86 from 5.69. Worse,
+  H.15 suspends the 20-year point over 1987-01 to 1993-09, so the daily
+  reference does not cover the days in question at all.
+- **`VFINX`, five Decembers.** 1980-03-27, 1981-12-29, 1983-12-28, 1985-12-27
+  and 1986-12-09 all show the raw NAV falling far more than the distribution
+  the provider reports, the largest being -6.97 % against the CRSP market
+  factor's -0.66 on 1986-12-09 with no dividend reported at all. But
+  1987-10-19 is a real -20.46 % against that factor's -17.41, 3.77 % of honest
+  excess, and 1983-12-28's defect is 3.00 %.
+
+Both would need evidence the session test does not have: a second quote line,
+or the fund's published distribution history. Stated here so the next reader
+finds the measurement rather than the surprise.
