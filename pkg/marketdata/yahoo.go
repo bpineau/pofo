@@ -52,10 +52,11 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 		Chart struct {
 			Result []struct {
 				Meta struct {
-					Currency  string `json:"currency"`
-					Symbol    string `json:"symbol"`
-					LongName  string `json:"longName"`
-					ShortName string `json:"shortName"`
+					Currency             string `json:"currency"`
+					Symbol               string `json:"symbol"`
+					LongName             string `json:"longName"`
+					ShortName            string `json:"shortName"`
+					ExchangeTimezoneName string `json:"exchangeTimezoneName"`
 				} `json:"meta"`
 				Timestamp []int64 `json:"timestamp"`
 				Events    struct {
@@ -108,12 +109,13 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 		name = symbol
 	}
 	s := &Series{Symbol: symbol, Name: name, Currency: r.Meta.Currency, Source: "yahoo"}
+	tz := venueTimezone(symbol, r.Meta.ExchangeTimezoneName)
 	for i, ts := range r.Timestamp {
 		cl := closes[i]
 		if cl == nil || *cl <= 0 {
 			continue
 		}
-		day := dayUTC(time.Unix(ts, 0).UTC())
+		day := sessionDay(ts, tz)
 		// Yahoo sometimes repeats the current day; keep the latest value.
 		if n := len(s.Points); n > 0 && s.Points[n-1].Date.Equal(day) {
 			s.Points[n-1].Close = *cl
@@ -126,9 +128,10 @@ func (c *Client) fetchYahoo(ctx context.Context, symbol string, from time.Time, 
 		if ev.Amount <= 0 {
 			continue
 		}
-		s.Dividends = append(s.Dividends, Dividend{Date: dayUTC(time.Unix(ev.Date, 0).UTC()), Amount: ev.Amount})
+		s.Dividends = append(s.Dividends, Dividend{Date: sessionDay(ev.Date, tz), Amount: ev.Amount})
 	}
 	sort.Slice(s.Dividends, func(i, j int) bool { return s.Dividends[i].Date.Before(s.Dividends[j].Date) })
+	normalizeUnits(s) // a London line comes back in pence, labelled "GBp"
 	return s, nil
 }
 
@@ -154,8 +157,9 @@ func (c *Client) fetchYahooOpenFactors(ctx context.Context, symbol string, from 
 		Chart struct {
 			Result []struct {
 				Meta struct {
-					Currency string `json:"currency"`
-					Symbol   string `json:"symbol"`
+					Currency             string `json:"currency"`
+					Symbol               string `json:"symbol"`
+					ExchangeTimezoneName string `json:"exchangeTimezoneName"`
 				} `json:"meta"`
 				Timestamp  []int64 `json:"timestamp"`
 				Indicators struct {
@@ -185,12 +189,16 @@ func (c *Client) fetchYahooOpenFactors(ctx context.Context, symbol string, from 
 		return nil, fmt.Errorf("yahoo: no open column for %s", symbol)
 	}
 	opens, closes := r.Indicators.Quote[0].Open, r.Indicators.Quote[0].Close
-	s := &Series{Symbol: symbol, Name: symbol + " open-to-close factor", Currency: r.Meta.Currency, Source: "yahoo"}
+	// A ratio of two prices of the same session carries no currency, and must
+	// carry none: a series labelled with a venue sub-unit ("GBp") is rescaled by
+	// a hundredth on its way in (units.go), which would destroy a factor.
+	s := &Series{Symbol: symbol, Name: symbol + " open-to-close factor", Source: "yahoo"}
+	tz := venueTimezone(symbol, r.Meta.ExchangeTimezoneName)
 	for i, ts := range r.Timestamp {
 		if opens[i] == nil || closes[i] == nil || *opens[i] <= 0 || *closes[i] <= 0 {
 			continue
 		}
-		day := dayUTC(time.Unix(ts, 0).UTC())
+		day := sessionDay(ts, tz)
 		factor := *opens[i] / *closes[i]
 		// Yahoo sometimes repeats the current day; keep the latest value.
 		if n := len(s.Points); n > 0 && s.Points[n-1].Date.Equal(day) {
@@ -262,6 +270,7 @@ func (c *Client) fetchYahooIntraday(ctx context.Context, symbol string) (*Intrad
 		}
 		s.Points = append(s.Points, IntradayPoint{Time: time.Unix(ts, 0).In(loc), Close: *closes[i]})
 	}
+	normalizeIntradayUnits(s)
 	return s, nil
 }
 
@@ -308,7 +317,7 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 	if err != nil {
 		loc = time.UTC
 	}
-	return &Quote{
+	q := &Quote{
 		Price:    *m.RegularMarketPrice,
 		Time:     time.Unix(*m.RegularMarketTime, 0).In(loc),
 		Currency: m.Currency,
@@ -316,7 +325,9 @@ func (c *Client) fetchYahooSpot(ctx context.Context, symbol string) (*Quote, err
 		Source:   "yahoo",
 		Live:     true,
 		Session:  sessionRegular,
-	}, nil
+	}
+	normalizeQuoteUnits(q)
+	return q, nil
 }
 
 // fetchYahooSpotExtended reads one symbol's freshest print, extended hours

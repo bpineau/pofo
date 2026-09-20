@@ -145,10 +145,12 @@ type fetchSpec struct {
 
 // currencyOK reports whether a quote currency satisfies the constraint:
 // empty on either side always passes (a source that does not report its
-// currency cannot be judged), comparison is case-insensitive.
+// currency cannot be judged), and the comparison ignores case and the venue
+// sub-unit (sameCurrency), the London pence line being the pound line - its
+// PRICES are rescaled on the way in, see units.go.
 func (spec fetchSpec) currencyOK(currency string) bool {
 	return !spec.nativeOnly || spec.wantCurrency == "" || currency == "" ||
-		strings.EqualFold(currency, spec.wantCurrency)
+		sameCurrency(currency, spec.wantCurrency)
 }
 
 // Fetch returns the price history for a user-supplied identifier, after
@@ -466,7 +468,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		// the asset drops behind every preferred-currency slot: depth never
 		// buys back the extra FX layer (see fetchSpec.preferCurrency).
 		if spec.preferCurrency != "" && s != nil && s.Currency != "" &&
-			!strings.EqualFold(s.Currency, spec.preferCurrency) {
+			!sameCurrency(s.Currency, spec.preferCurrency) {
 			i += slotCount
 		}
 		if deeper(series[i], s, from) {
@@ -725,7 +727,7 @@ func (c *Client) historyForResolution(ctx context.Context, isin string, res reso
 	case "morningstar":
 		s, err = c.historyMS(ctx, isin, res, from, raw)
 	case "stooq":
-		s, err = c.cachedHistory(ctx, "Stooq", isin, from, raw, func() (*Series, error) {
+		s, err = c.cachedHistory(ctx, "stooq", isin, from, raw, func() (*Series, error) {
 			return c.fetchStooq(ctx, res.Symbol, from)
 		})
 	case "airfund":
@@ -817,6 +819,14 @@ func (c *Client) historyView(ctx context.Context, symbol string, from time.Time,
 	return s, nil
 }
 
+// sourceCacheID is the cache and memoization identity of a series a named
+// source serves under a caller's identifier: the source, then the view key.
+// Yahoo histories do not go through it - they are keyed by the Yahoo symbol,
+// which already names the source that can serve it.
+func sourceCacheID(source, id string, raw bool) string {
+	return source + ":" + viewKey(id, raw)
+}
+
 // viewKey is the cache and memoization identity of a series view.
 func viewKey(id string, raw bool) string {
 	if raw {
@@ -836,11 +846,11 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 		var fallbackErr error
 		s, fallbackErr = c.historyFallback(ctx, symbol, from, yahooErr)
 		if fallbackErr != nil {
-			return c.staleFallback(ctx, cacheID, from, fallbackErr)
+			return c.staleFallback(ctx, cacheID, symbol, from, fallbackErr)
 		}
 	}
 	if len(s.Points) == 0 {
-		return c.staleFallback(ctx, cacheID, from, markAbsent(fmt.Errorf("no quotes returned for %s", symbol)))
+		return c.staleFallback(ctx, cacheID, symbol, from, markAbsent(fmt.Errorf("no quotes returned for %s", symbol)))
 	}
 	s.Points = cleanQuotes(symbol, s.Points)
 	c.saveCacheAs(cacheID, s, from)
@@ -848,46 +858,62 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	return s, nil
 }
 
-// staleFallback serves the expired cache of symbol when a refresh fails:
+// staleFallback serves the expired cache of a series when a refresh fails:
 // charts then simply stop at the last cached date. With no cache at all, a
-// bundled snapshot answers for the few symbols that carry one (see
+// bundled snapshot answers for the few identifiers that carry one (see
 // embeddedHistory); the original error is returned only when neither exists.
-func (c *Client) staleFallback(ctx context.Context, symbol string, from time.Time, cause error) (*Series, error) {
-	s, fetchedAt, ok := c.loadCacheAnyAge(symbol, from)
+//
+// cacheID is the file to read, embedID the instrument to look for a bundled
+// snapshot under. They differ wherever the cache identity carries more than
+// the instrument (the source prefix, the "~raw" view), and the snapshot must
+// be found by the instrument alone.
+func (c *Client) staleFallback(ctx context.Context, cacheID, embedID string, from time.Time, cause error) (*Series, error) {
+	s, fetchedAt, ok := c.loadCacheAnyAge(cacheID, from)
 	if !ok {
-		if emb, embOK := embeddedHistory(symbol); embOK {
+		if emb, embOK := embeddedHistory(embedID); embOK {
 			c.Logf("warning: %v; using the embedded %s snapshot (ends %s)",
-				cause, symbol, emb.Last().Date.Format("2006-01-02"))
+				cause, embedID, emb.Last().Date.Format("2006-01-02"))
 			return emb, nil
 		}
 		return nil, cause
 	}
 	c.Logf("warning: refreshing %s failed (%v), keeping cached data from %s (last quote %s)",
-		symbol, cause, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
+		embedID, cause, fetchedAt.Format("2006-01-02"), s.Last().Date.Format("2006-01-02"))
 	return s, nil
 }
 
 // historyFT returns the daily history of an FT-resolved instrument, cached
-// under its original identifier.
+// under the FT source and the original identifier.
 func (c *Client) historyFT(ctx context.Context, id string, res resolution, from time.Time, raw bool) (*Series, error) {
-	return c.cachedHistory(ctx, "FT", id, from, raw, func() (*Series, error) {
+	return c.cachedHistory(ctx, "ft", id, from, raw, func() (*Series, error) {
 		return c.fetchFT(ctx, id, res, from)
 	})
 }
 
 // historyMS returns the daily history of a Morningstar-resolved fund, cached
-// under its original identifier.
+// under the Morningstar source and the original identifier.
 func (c *Client) historyMS(ctx context.Context, id string, res resolution, from time.Time, raw bool) (*Series, error) {
-	return c.cachedHistory(ctx, "Morningstar", id, from, raw, func() (*Series, error) {
+	return c.cachedHistory(ctx, "morningstar", id, from, raw, func() (*Series, error) {
 		return c.fetchMorningstar(ctx, id, res, from)
 	})
 }
 
 // cachedHistory wraps a downloader with the memoization and on-disk cache
-// shared by every non-Yahoo source, keyed by the original identifier.
+// shared by every non-Yahoo source, keyed by the SOURCE and the original
+// identifier.
+//
+// The source belongs in the key. One identifier is served by several of these
+// sources over its life (an ISIN resolved to the Financial Times today and to
+// Morningstar tomorrow, a rate symbol with two publishers), and those sources
+// do not agree: they stamp the same fund's NAVs on their own dates, which
+// moves a long history by low double digits without either being wrong. Keyed
+// by the identifier alone, the Morningstar path would read the FT file back
+// and serve it as its own - and the stale-cache fallback would do it silently,
+// during an outage, under a resolution that says Morningstar. The package
+// documentation forbids exactly that splice; the key is what enforces it.
 func (c *Client) cachedHistory(ctx context.Context, source, id string, from time.Time, raw bool, fetch func() (*Series, error)) (*Series, error) {
-	cacheID := viewKey(id, raw)
-	key := source + ":" + cacheID + "|" + from.Format("2006-01-02")
+	cacheID := sourceCacheID(source, id, raw)
+	key := cacheID + "|" + from.Format("2006-01-02")
 	if s, ok := c.memoized(key); ok {
 		return s, nil
 	}
@@ -901,7 +927,7 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 		err = markAbsent(fmt.Errorf("no %s quotes for %s", source, id))
 	}
 	if err != nil {
-		s, err = c.staleFallback(ctx, cacheID, from, err)
+		s, err = c.staleFallback(ctx, cacheID, id, from, err)
 		if err != nil {
 			return nil, err
 		}
@@ -924,8 +950,8 @@ func (c *Client) embeddedHistory(ctx context.Context, source, id string, from ti
 	if c.RefreshInflation {
 		return c.cachedHistory(ctx, source, id, from, false, live)
 	}
-	cacheID := viewKey(id, false)
-	key := source + ":" + cacheID + "|" + from.Format("2006-01-02")
+	cacheID := sourceCacheID(source, id, false)
+	key := cacheID + "|" + from.Format("2006-01-02")
 	if s, ok := c.memoized(key); ok {
 		return s, nil
 	}

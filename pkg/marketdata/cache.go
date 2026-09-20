@@ -7,11 +7,24 @@ import (
 	"time"
 )
 
+// cacheFormat is stamped on every file this package writes, so a fix that
+// changes what a correct file contains can tell its own output from the
+// output of the code it replaced. It is NOT a blanket invalidation: a bump
+// costs every user a full refetch of every instrument, which is the wrong
+// price for a fault that touches a handful of series, so each bump names the
+// fingerprint of the files it distrusts (see misdated) and keeps the rest.
+//
+//	1: daily bars dated in the venue's own time zone (sessionDay). Before
+//	   it, a session opening before midnight UTC landed a day early, which
+//	   shows as a weekend-dated close on an exchange-traded series.
+const cacheFormat = 1
+
 // cacheFile is the JSON document stored in the cache directory, one per
 // series view (a raw view lives under its own "SYMBOL~raw" identity).
 // Dividend dates and amounts are parallel arrays; files written before the
 // dividend columns existed simply load with none.
 type cacheFile struct {
+	Version       int       `json:"v,omitempty"`
 	Symbol        string    `json:"symbol"`
 	Name          string    `json:"name"`
 	Currency      string    `json:"currency"`
@@ -28,40 +41,72 @@ func (c *Client) cachePath(symbol string) string {
 	return filepath.Join(c.CacheDir, sanitizeFilename(symbol)+".json")
 }
 
-// loadCache returns the cached series for symbol if it is fresh enough and
-// was downloaded with a start date covering the requested one.
+// loadCache returns the cached series for symbol if it is fresh enough, was
+// downloaded with a start date covering the requested one, and is not a file
+// an older format left mis-dated (see cacheFormat and misdated): such a file
+// is refetched rather than served, while the stale-cache fallback below still
+// reads it, an outdated date being better than no data during an outage.
 func (c *Client) loadCache(symbol string, from time.Time) (*Series, bool) {
-	s, fetchedAt, ok := c.loadCacheAnyAge(symbol, from)
-	if !ok || time.Since(fetchedAt) > c.MaxAge {
+	s, cf, ok := c.loadCacheEntry(symbol, from)
+	if !ok || time.Since(cf.FetchedAt) > c.MaxAge {
+		return nil, false
+	}
+	if cf.Version < cacheFormat && misdated(s) {
+		c.Logf("cached %s was written before the session-day fix and shows it: downloading again…", symbol)
 		return nil, false
 	}
 	return s, true
+}
+
+// misdated is the fingerprint of the dating fault cacheFormat 1 repairs: an
+// exchange-traded series carrying a Saturday or Sunday close. The venues that
+// legitimately trade at the weekend (Tel Aviv on Sunday, a crypto pair every
+// day) simply refetch once and are then stamped with the current format like
+// everything else; a currency cross is exempt, its weekend dating being the
+// separate anomaly venueTimezone documents.
+func misdated(s *Series) bool {
+	if _, _, isCross := fxCross(s.Symbol); isCross {
+		return false
+	}
+	for _, p := range s.Points {
+		if wd := p.Date.Weekday(); wd == time.Saturday || wd == time.Sunday {
+			return true
+		}
+	}
+	return false
 }
 
 // loadCacheAnyAge returns the cached series for symbol regardless of its
 // age, along with its download time. It backs the stale-cache fallback: a
 // failed refresh must never lose previously downloaded data.
 func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.Time, bool) {
+	s, cf, ok := c.loadCacheEntry(symbol, from)
+	return s, cf.FetchedAt, ok
+}
+
+// loadCacheEntry reads a cache file and returns the series it holds together
+// with the envelope, so a caller can judge the file as well as the data.
+func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFile, bool) {
 	if c.CacheDir == "" {
-		return nil, time.Time{}, false
+		return nil, cacheFile{}, false
 	}
 	data, err := os.ReadFile(c.cachePath(symbol))
 	if err != nil {
-		return nil, time.Time{}, false
+		return nil, cacheFile{}, false
 	}
 	var cf cacheFile
 	if err := json.Unmarshal(data, &cf); err != nil || len(cf.Dates) == 0 || len(cf.Dates) != len(cf.Closes) {
-		return nil, time.Time{}, false
+		return nil, cacheFile{}, false
 	}
 	reqFrom, err := time.ParseInLocation("2006-01-02", cf.RequestedFrom, time.UTC)
 	if err != nil || reqFrom.After(from) {
-		return nil, time.Time{}, false
+		return nil, cacheFile{}, false
 	}
 	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source}
 	for i, d := range cf.Dates {
 		t, err := time.ParseInLocation("2006-01-02", d, time.UTC)
 		if err != nil {
-			return nil, time.Time{}, false
+			return nil, cacheFile{}, false
 		}
 		if t.Before(from) {
 			continue
@@ -69,7 +114,7 @@ func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.T
 		s.Points = append(s.Points, Point{Date: t, Close: cf.Closes[i]})
 	}
 	if len(s.Points) == 0 {
-		return nil, time.Time{}, false
+		return nil, cacheFile{}, false
 	}
 	if len(cf.DivDates) == len(cf.DivAmounts) {
 		for i, d := range cf.DivDates {
@@ -80,7 +125,11 @@ func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.T
 			s.Dividends = append(s.Dividends, Dividend{Date: t, Amount: cf.DivAmounts[i]})
 		}
 	}
-	return s, cf.FetchedAt, true
+	// A file written before the sub-unit rescaling existed still holds pence
+	// under a "GBp" label; the rescaling is driven by that label, so reading it
+	// back through the same pass heals the file without a format version.
+	normalizeUnits(s)
+	return s, cf, true
 }
 
 // saveCache persists a downloaded series under its own symbol; failures are
@@ -97,6 +146,7 @@ func (c *Client) saveCacheAs(cacheID string, s *Series, from time.Time) {
 		Name:          s.Name,
 		Currency:      s.Currency,
 		Source:        s.Source,
+		Version:       cacheFormat,
 		RequestedFrom: from.Format("2006-01-02"),
 		FetchedAt:     time.Now(),
 		Dates:         make([]string, 0, len(s.Points)),
@@ -169,10 +219,19 @@ func (c *Client) Cached(id string) bool {
 	if _, ok := c.loadCache(canonical, from); ok {
 		return true
 	}
-	if res, ok := c.loadResolution(canonical); ok && res.Symbol != "" {
-		if _, ok := c.loadCache(res.Symbol, from); ok {
-			return true
-		}
+	res, ok := c.loadResolution(canonical)
+	if !ok {
+		return false
+	}
+	// A fund source caches under the source AND the caller's identifier
+	// (sourceCacheID); only Yahoo caches under the resolved symbol.
+	if res.Source != "" && res.Source != "yahoo" {
+		_, ok := c.loadCache(sourceCacheID(res.Source, canonical, false), from)
+		return ok
+	}
+	if res.Symbol != "" {
+		_, ok := c.loadCache(res.Symbol, from)
+		return ok
 	}
 	return false
 }

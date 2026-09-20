@@ -401,10 +401,20 @@ func identityIssues(a datasets.Asset, s *Series) []Issue {
 	// The record's currency names the quote line. A disagreement means the
 	// pinned symbol is another listing of the fund (one more FX layer) or
 	// another instrument, and it aims the re-resolution tie-break at the wrong
-	// one. GBp and GBP are not distinguished: providers spell the pence line
-	// both ways, and a hundredfold is the scale-break pass's business.
-	if a.Currency != "" && s.Currency != "" && !strings.EqualFold(a.Currency, s.Currency) {
+	// one. A venue sub-unit and its currency ("GBp" and "GBP") name the same
+	// line and do not disagree; what would be a finding is a PRICE still in
+	// that sub-unit, which the next check names.
+	if a.Currency != "" && s.Currency != "" && !sameCurrency(a.Currency, s.Currency) {
 		warn(time.Time{}, "catalog says the line quotes in %s, the source serves %s", a.Currency, s.Currency)
+	}
+	// A price still carrying a venue sub-unit is a hundredfold level error
+	// wearing a currency code, and it is invisible to every plausibility bound
+	// (a ratio does not change when the unit does). It cannot happen through a
+	// fetch, which rescales at the provider boundary (units.go); it can happen
+	// to a series a caller assembled itself, which is exactly whom the doctor
+	// answers.
+	if IsMinorUnit(s.Currency) {
+		warn(time.Time{}, "prices are in %s, a sub-unit of %s: the level is a hundredfold out", s.Currency, mustMajor(s.Currency))
 	}
 	// The served share-class name is the only place a pinned symbol admits it
 	// serves the sibling class. Only an outright contradiction is reported.
