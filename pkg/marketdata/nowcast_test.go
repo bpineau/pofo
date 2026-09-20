@@ -206,8 +206,9 @@ func TestNowcastForwardExtendsToTheProxyClose(t *testing.T) {
 	if len(s.Points) != 4 {
 		t.Fatal("WithoutEstimates must not mutate the series it is called on")
 	}
-	// The disk cache holds the published NAVs only.
-	cached, ok := c.loadCache("ERESMONDEM", from)
+	// The disk cache holds the published NAVs only, under the identity that
+	// names the source serving them (sourceCacheID).
+	cached, ok := c.loadCache(sourceCacheID("airfund", "ERESMONDEM", false), from)
 	if !ok || len(cached.Points) != 2 {
 		t.Fatalf("cache: ok=%v %d points, want the 2 NAVs", ok, len(cached.Points))
 	}

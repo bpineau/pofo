@@ -12,6 +12,64 @@ func dayUTC(t time.Time) time.Time {
 	return time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
 }
 
+// venueTimezone is the time zone a symbol's daily bars are to be dated in:
+// the venue's own, as the provider reports it, except for a currency cross,
+// which is left on the UTC calendar it has always used.
+//
+// A cross has no exchange and no trading day, and the zone Yahoo attaches to
+// one is decorative. Its dating also carries an anomaly of its own that this
+// rule must not paper over: in the European summer a cross has no Friday-dated
+// close and one dated on the SUNDAY before the following week, whose level
+// measures as that missing Friday (median 0.10 % from the FRED noon fixing of
+// that Friday, against 0.24 % from the Monday after, over EURUSD=X since
+// 2016). Re-dating that point by a time zone would land it on a Monday the
+// series already holds, and the later value would silently overwrite the
+// earlier one: a lost session, which is worse than a misplaced one. The
+// anomaly stands, named, for a fix that understands it.
+func venueTimezone(symbol, reported string) string {
+	if _, _, isCross := fxCross(symbol); isCross {
+		return ""
+	}
+	return reported
+}
+
+// sessionDay is the calendar day a provider's daily bar belongs to: its
+// timestamp is an INSTANT of the trading session, not a date, so the day must
+// be read in the venue's own time zone (tz, Yahoo's exchangeTimezoneName).
+//
+// Reading it in UTC instead is wrong for every venue whose session opens
+// before midnight UTC, and the error is a whole day. The ASX opens at 10:00
+// Sydney, which is 23:00 UTC of the day before while Australia is on summer
+// time: half of every ASX history lands one day early, Monday's session on a
+// SUNDAY and Friday's on a Thursday. A cached ASX line here shows 534 Sunday
+// closes against 596 Fridays, where every other weekday holds about 1160.
+// Mis-dated points then break every date-matched join this toolkit makes
+// (metrics align on exact dates, a currency conversion picks the day's rate)
+// while looking perfectly ordinary.
+//
+// The correction is one-directional, and deliberately so: the UTC reading is
+// never LATE, only early, since it drops the hours a venue east of Greenwich
+// has already lived. So a local date before the UTC one is not a correction
+// but a time zone that disagrees with the instant (a venue west of Greenwich,
+// whose bars this provider already stamps inside the right UTC day), and the
+// UTC date stands. An empty or unknown tz also leaves the UTC date: the
+// package's dating then behaves exactly as it did before.
+func sessionDay(ts int64, tz string) time.Time {
+	t := time.Unix(ts, 0)
+	utc := dayUTC(t.UTC())
+	if tz == "" {
+		return utc
+	}
+	loc, err := time.LoadLocation(tz)
+	if err != nil {
+		return utc
+	}
+	if local := dayUTC(t.In(loc)); local.After(utc) {
+		return local
+	}
+	return utc
+}
+
 // Point is one daily observation of an asset price.
 type Point struct {
 	Date  time.Time // normalized to 00:00 UTC

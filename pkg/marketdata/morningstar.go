@@ -76,6 +76,7 @@ func (c *Client) fetchMorningstar(ctx context.Context, id string, res resolution
 		}
 		s.Points = append(s.Points, Point{Date: day, Close: row[1]})
 	}
+	normalizeUnits(s)
 	return s, nil
 }
 
@@ -139,12 +140,18 @@ func (c *Client) morningstarSearch(ctx context.Context, query string) (resolutio
 // morningstarCurrency extracts the ISO code from the screener's padded
 // currency id ("CU$$$$$USD" -> "USD"). Anything else yields no currency,
 // which the fetch path reads as "unknown" rather than as a mismatch.
+//
+// A venue sub-unit keeps its own spelling: uppercasing "GBp" would turn pence
+// into pounds and lose the hundredth that units.go still has to remove.
 func morningstarCurrency(id string) string {
 	if i := strings.LastIndexByte(id, '$'); i >= 0 {
 		id = id[i+1:]
 	}
 	if len(id) != 3 {
 		return ""
+	}
+	if IsMinorUnit(id) {
+		return id
 	}
 	return strings.ToUpper(id)
 }
