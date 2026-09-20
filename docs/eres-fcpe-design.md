@@ -84,7 +84,7 @@ donor chain nearest first, every donor lifted to the class's TER by the fee
 difference and never to close a gap:
 
 - swap leg: XWD1.DE (the fund's own 1D class, 2021-03) <- DBXW.DE (the 1C
-  sibling, same swap, 0.45 % TER against 0.19: +0.26 %/yr credited, 2008-01)
+  sibling, same swap, 0.45 % TER against 0.19: +0.26 %/yr credited, 2009-01)
   <- the MSCI World net-TR-in-EUR path of `wpeaBuild` (real IWDA from 2009,
   MSCIWORLD-USD refdata + daily index shape before, EURUSD spot to 1971),
   lifted from IWDA's 0.20 % to 0.19;
@@ -242,3 +242,108 @@ site), with three differences worth a line each:
 - The other share classes (H, P) are the same portfolio at other charges and
   are not catalogued; the generator and the source are generic over the
   catalog, so adding one is a record.
+
+## The donor lines were not the fund's, 2026-09-20
+
+The four Xtrackers quote lines the two legs read carry prints that are not the
+fund's, and a reconstruction does not merely repeat such a print: it weights it
+and compounds it. The file's four largest daily moves were all artefacts, and
+one of them was pinned in `pkg/datasets/golden/spikes_test.go` as a known
+defect shipped on purpose.
+
+| Date | What the donor printed | What the file read |
+|---|---|---|
+| 2008-02-04 | `DBXW.DE` 23.04 between 33.93 and 32.75 | -24.14 % then +31.12 % |
+| 2009-01-02 | `DBXW.DE` steps down 25.7 % and stays | -18.46 % |
+| 2014-11-06 | `DBXW.DE` +24.9 %, a month at that level, -19.8 % on 12-04 | +18.82 % then -15.22 % |
+| 2021-03-09 | `XWD1.DE`'s first print, 10.777 against its second 12.892 | +14.81 % on 03-10 |
+
+Both donors track the MSCI World, and so does a series this repository already
+builds and validates: the net-TR-in-EUR path behind `WPEA`. That is the tool.
+
+### The 2008 segment is a different currency
+
+The 2009-01-02 step is not a bad print; it is the boundary between two quote
+lines. Over calendar 2008 `DBXW.DE`'s daily excess return over the MSCI World
+EUR path correlates **+0.998** with the daily EUR/USD move and leaves a residual
+of **0.09 %/day**; in every later year the correlation is 0.36 to 0.62 and the
+residual 0.31 to 1.33 %. The level agrees: the fund's 2008 calendar return reads
+-40.64 % against the index's -40.77 % in USD and -38.35 % in EUR, and the step
+on 2009-01-02 is a factor 1.346 where the EUR/USD rate of the previous close,
+divided by that session's index move, is 1.339.
+
+So the 2008 quotes are the fund's USD line. A year of index returns with a
+currency overlaid on them is not this fund's history, and no session-level
+repair removes an overlay that moves 0.7 % a day. The donor now starts
+2009-01-02 (`eresDonor.Since`) and the leg reads the MSCI World EUR path over
+2008, which is what the fund held. That also removes 2008-02-04, which was a
+single EUR print inside the USD segment.
+
+### The rest: holding a donor to its own index
+
+`simgen.trackIndex` grades a donor against a reference tracking the same index
+in the same currency, session by session, with the reference allowed to LEAD OR
+LAG by one session. That allowance is what makes the rule safe: a Xetra line
+closes at 17:30 CET and the index is struck after New York, so a big US move
+reaches the donor a session late, and a rule reading one session at a time
+would convict it.
+
+Measured over the four lines and 11 920 sessions:
+
+| Statistic | One session | Allowing a one-session lag |
+|---|---|---|
+| largest disagreement with no defect behind it | 7.41 % | **3.50 %** |
+| smallest of the five defects | 13.32 % | **14.51 %** |
+
+The band between the two populations is empty by a factor of four once the
+clock is absorbed, and by less than two without it. The tolerance is 10 %,
+three times the worst honest session and a third below the mildest defect; it
+is not a number any case was fitted to, and it belongs to the pair rather than
+to the package, since a Treasury mutual fund against a par-bond reconstruction
+has a floor two orders of magnitude tighter.
+
+A rejected session takes the reference's return over the same two dates. A
+rejected FIRST session drops the donor's first print instead, because nothing
+precedes it to correct against and repairing its step would keep the bad print
+and drag every later level with it. Rejections are written to the generation
+log, not repaired in silence:
+
+    ERESMONDEM: donor XWD1.DE does not track MSCI World on 2021-03-09: first
+      print dropped (its step was +19.63 % against the reference's -0.03 %)
+    ERESMONDEM: donor DBXW.DE does not track MSCI World on 2014-11-06: return
+      replaced by the reference's (+24.93 % -> +0.65 %)
+    ERESMONDEM: donor DBXW.DE does not track MSCI World on 2014-12-04: return
+      replaced by the reference's (-19.85 % -> +0.11 %)
+    ERESMONDEM: donor DBXW.DE does not track MSCI World on 2025-10-24 and
+      2025-10-27: the same one-month patch again, outside the era this leg uses
+
+### What moved
+
+| | before | after |
+|---|---|---|
+| worst day | -24.14 % (2008-02-04) | -11.24 % (1987-10-19) |
+| best day | +31.12 % (2008-02-05) | +12.68 % (2001-09-24) |
+| 2008 volatility | 49.6 %/yr | 34.2 %/yr |
+| 2014 volatility | 26.9 %/yr | 12.4 %/yr |
+| 2021 volatility | 18.6 %/yr | 12.7 %/yr |
+| 2021 return | +52.24 % | +33.04 % |
+| the four dates | -24.14 / -18.46 / +18.82 / +14.81 % | -0.29 / +3.23 / +0.61 / +0.33 % |
+
+The worst day is now Black Monday and the four largest moves are all real. The
+2021 return is the one that should be read twice: a single bad first print was
+worth nineteen points on a calendar year.
+
+The audit verdict does not move (`pofo -verify-simdata ERESMONDEM`: level ok,
+path warn, the daily clock of the NAV era), which is expected, since the audit
+window starts at the real NAVs in 2024.
+
+The best day, +12.68 % on 2001-09-24, is inherited from the REFERENCE and not
+from a donor: it is the bad print in the MSCI World daily shape that
+`marketdata`'s `dropRoundTrips` and `simgen`'s `despike` both decline by name
+and on purpose (the round trip leaves 5.0 % standing, far past either bar).
+Nothing here changes that; it is named again because it is now the largest
+move the file carries.
+
+Nothing in the REAL NAV era (2024-03-05 onwards) is touched: `trackIndex` runs
+on the donors, and the real NAVs are grafted on top of the whole chain
+afterwards.

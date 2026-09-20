@@ -28,6 +28,12 @@ import (
 // nothing measured what actually shipped, so a print both passes let through
 // reached every consumer in silence.
 //
+// ERESMONDEM's entry is gone since 2026-09-20 and the way it went is the model
+// for the rest. Nothing was widened: the recipe now holds each donor to the
+// MSCI World reference it tracks (simgen's trackIndex), which sees what a
+// series read on its own cannot, and the fabricated print never reaches the
+// file. Every remaining entry is a series with no such reference behind it.
+//
 // The rule is deliberately narrow, so that a real market day can never trip it:
 // the two legs must point opposite ways, EACH exceed spikeFloor, EACH exceed
 // spikeZ local standard deviations (the suspect pair excluded from that
@@ -52,11 +58,6 @@ const (
 // file still fails. Emptying this map is the job; adding to it needs the same
 // argument every data decision in this repository needs.
 var knownSpikes = map[string]map[string]string{
-	"simdata/ERESMONDEM": {
-		"2008-02-04": "Yahoo quotes the donor DBXW.DE at 23.04 between 33.93 and 32.75 " +
-			"(-32.1 % then +42.2 %); at the leg's 0.75 weight the file reads -24.1 % then +31.1 %. " +
-			"The excursion leaves 3.5 % standing, past dropRoundTrips' 2 % bar. Measured 2026-09-20.",
-	},
 	"simdata/IE00BKM4GZ66": {
 		"2001-07-16": "Yahoo quotes the donor VEIEX at 4.5857 between 4.3443 and 4.3175 " +
 			"(+5.6 % then -5.9 %). Both legs clear six local sigmas and the round trip cancels, " +
