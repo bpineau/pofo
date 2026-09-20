@@ -3,7 +3,7 @@
 # name: WisdomTree Eurozone Efficient Core: eurozone 90/60 replication
 # method: 0.90×EZU (MSCI Eurozone, USD→EUR, extended EMU-EUR euro-area equity net TR ~1986) + 0.60×(EUNH.DE euro govt bond − EUR cash, extended EUROGOV-EUR ~1970 with ECB daily shape) + 0.10×EUR cash (EURCASH-EUR extended DECASH-EUR German money-market ~1960), 0.20%/yr fees; start now set by the equity leg (~1986)
 # validation: corr=0.642 (weekly 0.918) beta=0.50 TE=13.5%/yr CAGR sim 12.39% vs real 10.53% (overlap 233 d from 2025-10-13 to 2026-09-17) vs IE000OV4XWA3
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1986-12-31,1.221534
 1987-01-31,1.212840

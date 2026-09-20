@@ -3,7 +3,7 @@
 # name: ERES Xtrackers Actions Monde M (FCPE): 75 % Xtrackers MSCI World Swap 1D + 25 % Xtrackers MSCI World 1D, wrapper charge 0.41 %/yr
 # method: daily-rebalanced 75/25 blend of the two Xtrackers MSCI World ETFs the fund holds (each read from its own 1D class, its 1C sibling before it lifted to the class's TER, the MSCI World net TR in EUR path before both, back to 1971) less the FCPE's 0.41 %/yr wrapper charge; real NAVs grafted from 2024-03-05
 # validation: corr=0.621 (weekly 0.955) beta=0.59 TE=11.9%/yr CAGR sim 15.44% vs real 15.15% (overlap 625 d from 2024-03-05 to 2026-09-17) vs ERESMONDEM
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1971-01-31,1.021989
 1971-02-28,1.033043

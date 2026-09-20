@@ -1,8 +1,9 @@
 # pofo simdata v1
 # id: TREASURY-LONG-YIELD
 # name: US long Treasury constant-maturity par yield (annualized percent, daily from 1962, monthly before)
-# source: Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (FED/H15/RIFLGFCY30_N.B, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the 2002-02-19..2006-02-08 suspension of the 30-year issue), extended back by the 20-year business-daily point (FED/H15/RIFLGFCY20_N.B, 1962-01-02->) and the 20-year monthly point (FED/H15/RIFLGFCY20_N.M, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = +0.2126 +0.9638*y20 (least squares over the 10704 overlapping days, residual sd 0.157 pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR.
-# generated: 2026-09-19
+# source: Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (FED/H15/RIFLGFCY30_N.B, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the 2002-02-19..2006-02-08 suspension of the 30-year issue), extended back by the 20-year business-daily point (FED/H15/RIFLGFCY20_N.B, 1962-01-02->) and the 20-year monthly point (FED/H15/RIFLGFCY20_N.M, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = +0.2126 +0.9638*y20 (least squares over the 10704 overlapping days, residual sd 0.157 pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR. DEFINITIONAL BREAK at 1973-01-04, declared in the junctions header: the 20-year point steps +0.71 pt that day while the 10-year point does not move, and the term spread to the 10-year flips sign (-0.13 pt on average over 1962-1972, +0.13 over 1973-1986). Both published levels are kept; the RETURN across that one step is not a rate move and every consumer skips it.
+# generated: 2026-09-20
+# junctions: 1973-01-04
 date,close
 1953-04-30,3.324403
 1953-05-31,3.420781

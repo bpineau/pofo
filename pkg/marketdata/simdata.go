@@ -25,12 +25,19 @@ import (
 //	# generated: 2026-06-12
 //	date,close
 //	2000-01-03,100.000000
+//
+// A file whose SUBJECT changes definition mid-record carries the dates of those
+// changes in an optional "# junctions:" header (comma-separated, ISO dates),
+// read back into Series.Junctions. It is the one piece of the format a consumer
+// must honour to be correct rather than merely informed: the step into a
+// junction is not a market move.
 type SimdataFile struct {
 	ID         string
 	Name       string
 	Method     string
 	Validation string
 	Generated  string
+	Junctions  []time.Time
 	Points     []Point
 }
 
@@ -67,8 +74,17 @@ func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
 				continue
 			}
 			val = strings.TrimSpace(val)
-			if strings.TrimSpace(key) == "name" {
+			switch strings.TrimSpace(key) {
+			case "name":
 				name = val
+			case "junctions":
+				for _, d := range strings.Split(val, ",") {
+					t, err := time.ParseInLocation("2006-01-02", strings.TrimSpace(d), time.UTC)
+					if err != nil {
+						return nil, false, fmt.Errorf("%s: invalid junction date %q", path, d)
+					}
+					s.Junctions = append(s.Junctions, t)
+				}
 			}
 			continue
 		}
@@ -123,6 +139,13 @@ func WriteSimdata(dir string, sf *SimdataFile) error {
 	}
 	if sf.Generated != "" {
 		fmt.Fprintf(&b, "# generated: %s\n", sf.Generated)
+	}
+	if len(sf.Junctions) > 0 {
+		days := make([]string, len(sf.Junctions))
+		for i, t := range sf.Junctions {
+			days[i] = t.Format("2006-01-02")
+		}
+		fmt.Fprintf(&b, "# junctions: %s\n", strings.Join(days, ","))
 	}
 	b.WriteString("date,close\n")
 	for _, p := range sf.Points {
