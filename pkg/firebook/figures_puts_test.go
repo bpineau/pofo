@@ -133,9 +133,9 @@ func TestPutsDominationHolds(t *testing.T) {
 		t.Errorf("the 80/20 rung plunges %.2f %% against %.2f %%, no longer an equal-drawdown read",
 			eq.drawdn, putsProtected.drawdn)
 	}
-	// 3. and it pays 2.9 points a year more, the number the plate prints.
-	if gap := eq.cagr - putsProtected.cagr; math.Abs(gap-2.9) > 0.05 {
-		t.Errorf("the equal-drawdown gap is %.2f points, the plate prints 2.9", gap)
+	// 3. and it pays 3.0 points a year more, the number the plate prints.
+	if gap := eq.cagr - putsProtected.cagr; math.Abs(gap-3.0) > 0.05 {
+		t.Errorf("the equal-drawdown gap is %.2f points, the plate prints 3.0", gap)
 	}
 }
 
