@@ -3,7 +3,7 @@
 # name: WisdomTree US Efficient Core: 90/60 replication
 # method: 0.90×VFINX + 0.60×(VFITX − overnight financing: SOFR 2018→, effective fed funds 1954→, T-bill before) + 0.10×cash ^IRX, daily rebalancing, the 0.20%/yr TER charged only where the donors' own charges (0.246%/yr blended) do not already cover it
 # validation: corr=0.963 (weekly 0.989) beta=1.00 TE=4.9%/yr CAGR sim 12.98% vs real 12.49% (overlap 2042 d from 2018-08-02 to 2026-09-18) vs NTSX-US
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1962-01-01,0.123504
 1962-01-02,0.123498

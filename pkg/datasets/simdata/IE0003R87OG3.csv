@@ -3,7 +3,7 @@
 # name: Avantis Global Small Cap Value: same-manager sleeves over a DFA small-cap value blend (EUR)
 # method: 0.70×AVUV + 0.30×AVDV (Avantis' own US and intl small-value sleeves, real from 2019-09) spliced over 0.70×DFSVX + 0.30×DISVX (~1994), each fee-aligned to the fund's 0.39%/yr load, converted USD→EUR at EURUSD spot; real Avantis grafted from 2024-10
 # validation: corr=0.469 (weekly 0.917) beta=0.43 TE=18.8%/yr CAGR sim 17.93% vs real 18.74% (overlap 482 d from 2024-10-01 to 2026-09-18) vs IE0003R87OG3
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1994-12-29,0.771482
 1994-12-30,0.772732

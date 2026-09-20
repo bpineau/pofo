@@ -3,7 +3,7 @@
 # name: S&P 500 Total Return (index, fee-free)
 # method: S&P 500 total return: SP500-USD refdata (monthly ~1871→) with the daily shape of the S&P 500 price index (^GSPC, 1927→), no fund fee; fallback VFINX (1976→)
 # validation: corr=0.589 (weekly 0.917) beta=0.53 TE=17.1%/yr CAGR sim 16.10% vs real 15.88% (overlap 1810 d from 2019-05-14 to 2026-09-17) vs IE00BFMXXD54
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1871-01-31,100.000000
 1871-02-28,101.839339

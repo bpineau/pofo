@@ -354,3 +354,118 @@ the table above.
   not behind `frozenAgainstData` although they recompute frozen numbers from the
   bundled data; they are now, per the standing rule that a refresh must never
   require a code change.
+
+## The 1973 definitional break, found 2026-09-20
+
+A third defect, older than both and larger than either, sat in the same
+20-year H.15 point the whole family is carried back on.
+
+### What the source does
+
+Between 1973-01-03 and 1973-01-04 the Fed's 20-year constant maturity
+(`RIFLGFCY20_N.B`) goes 6.04 to 6.78 and stays there. The neighbouring points
+of the same release, published the same day, do not move: the 10-year goes 6.42
+to 6.40 and the 5-year 6.26 to 6.23.
+
+| Measure | 1962-1972 | 1973-1986 |
+|---|---|---|
+| mean 20-year minus 10-year | **-0.128 pt** | **+0.133 pt** |
+| days measured | 2 743 | 3 486 |
+
+The term spread between the two points changes sign overnight. The step itself
+is 0.74 pt; the next largest daily move the 20-year point makes in its fifteen
+years of business-daily history before the 30-year spine takes over is 0.25 pt,
+on 1975-03-20, and the 10-year point moved 0.15 pt with it that day.
+
+So the 20-year row before 1973 and after it are not measurements of the same
+thing. What changed is not documented in any note reachable from H.15 or FRED
+(both were read on 2026-09-20 and say nothing about it), and the repair does not
+depend on knowing: the arbitration below is against an external total-return
+record, not against a hypothesis about flower bonds or the coupon ceiling.
+
+### What was NOT done, and why
+
+The obvious repair is the one this generator already applies at 1977-02-15:
+shift one side so the level is continuous. It was tested and refused, because
+the pre-1973 LEVEL is independently correct. Over 1954-1972 a 20-year par bond
+priced off the bundled series compounds at 2.49 %/yr against the published
+Ibbotson SBBI long-term government record's 2.24 %/yr, with every calendar year
+inside a few points. Shifting the head up by 0.71 pt would add that much to
+nineteen years of carry and break an agreement that holds, in order to repair
+one day.
+
+The single calendar year the break is visible in is 1973 itself: the shipped
+file read -6.78 % where SBBI publishes -1.11 %.
+
+### What ships
+
+1973-01-04 is declared a SEGMENT JUNCTION, the same status 1977-02-15 has. Both
+published levels are kept, because both are what the Fed says; what is refused
+is the RETURN across that one step.
+
+The declaration travels with the data rather than living in the code that made
+it. `pkg/datasets/refdata/TREASURY-LONG-YIELD.csv` carries a
+`# junctions: 1973-01-04` header, `marketdata.ReadSimdataFS` reads it into
+`Series.Junctions`, and `simgen`'s shared constant-maturity loop skips any step
+whose window contains one. Every consumer of the yield therefore gets the
+repair, including the `ZROZ` recipe, which reads the CSV directly.
+
+The month-end total-return series needs one more turn, because its steps are
+months and the break falls inside one. `monthEndSample` adds the junction's own
+two boundary days to the monthly path, so January 1973 is compounded in two
+pieces (1972-12-29 to 1973-01-03, then 1973-01-04 to 1973-01-31) and only the
+splice between them is skipped; `monthEndIndex` then samples the compounded
+INDEX back down to one point per month. What is forgone is the junction day's
+own carry, 0.019 % at a 6.89 % yield.
+
+The two DAILY shape files, `TREASURY-LONG-DAILY` and `TREASURY-INT-DAILY`, had
+no generator at all and could not be refreshed; the long one carried the same
+break. Both are now written by `cmd/gen-tyield-refdata`, off the same H.15
+points read through the same mirror. Rebuilding them reproduces the committed
+files to 1e-8 on every daily return outside 1973, which is the control that the
+move of ownership changed nothing else.
+
+### Validation
+
+Calendar 1973, against the published SBBI long-term and intermediate-term
+government bond returns (Ibbotson and Sinquefield, *Stocks, Bonds, Bills, and
+Inflation: Historical Returns (1926-1987)*, CFA Institute Research Foundation,
+year-by-year total-return table, read 2026-09-20; the same table's -14.66 % for
+the S&P 500 and 8.80 % inflation confirm the columns are the ones they are taken
+for):
+
+| Series | shipped before | after | published |
+|---|---|---|---|
+| `TREASURY-LONG-USD` 1973 | **-6.78 %** | **+0.91 %** | -1.11 % (SBBI long govt) |
+| `TREASURY-INT-USD` 1973 | +4.48 % | +4.48 % | +4.60 % (SBBI intermediate) |
+
+The intermediate series is the control: it is priced off the 5-year point, which
+did not break, and it does not move. The long one's remaining +2.0 pt residual
+is the ordinary size of this engine's disagreement with the SBBI portfolio
+(1969 misses by 1.3, 1982 by 3.6, 1994 by 0.8, 1995 by 0.5), which is why the
+generator's new 1973 check is held at 2.5 points: it still leaves a factor of
+nearly three against the 5.7-point miss the defect produced.
+
+The generator also checks, before writing, that the declared junction still
+shows a step of at least 0.30 pt (0.713 pt as assembled) and that the 10-year
+point still moves less than 0.10 pt that day (-0.020 pt). A junction that stops
+showing a step would be forgiving a real market move, and a 10-year point that
+started moving would say the step was a market event after all.
+
+### What moved downstream
+
+Worst single day of each shipped file, and calendar 1973:
+
+| File | worst day before | worst day after | 1973 before | 1973 after |
+|---|---|---|---|---|
+| `ZROZ` | **-17.00 % (1973-01-04)** | -11.82 % (1980-02-19) | -23.66 % | -8.03 % |
+| `TLT` | -7.94 % (1973-01-04) | -6.67 % (2020-03-17) | -6.78 % | +0.91 % |
+| `DTLA` | -9.00 % (1973-01-04) | -6.57 % (2020-03-18) | -8.56 % | +0.08 % |
+| `IE00BSKRJZ44` | -10.07 % (2020-03-18) | -10.07 % (2020-03-18) | -6.78 % | +0.91 % |
+| `TREASURY-LONG-DAILY` | -7.96 % (1973-01-04) | -3.86 % (1980-02-19) | -7.34 % | +0.67 % |
+
+`ZROZ`'s worst day was a day on which nothing happened, and it is now
+1980-02-19, in the rate shock the file exists to carry. No audit verdict moves
+(`pofo -verify-simdata ZROZ TLT IDTL DTLETR IEF` reads the same level and path
+grades before and after), which is expected: every audit window starts where the
+funds' own quotes do, decades after the break.

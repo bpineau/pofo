@@ -3,7 +3,7 @@
 # name: Xtrackers Eurozone Govt 25+: long euro-gov bond
 # method: long euro-area government bond TR (EUROGOV-LONG-EUR, 24y constant maturity, modified duration ~17, ~1970; the real ECB 25y curve point sets level and shape from 2004 via EUROGOV-LONG-DAILY) less 0.15%/yr TER; euro-native, real DBXG grafted from 2007
 # validation: corr=0.767 (weekly 0.858) beta=0.75 TE=9.9%/yr CAGR sim 2.30% vs real 2.23% (overlap 4356 d from 2007-08-08 to 2026-09-15) vs DBXG
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1970-01-31,4.016467
 1970-02-28,3.982843

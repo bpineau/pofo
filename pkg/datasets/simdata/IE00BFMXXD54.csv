@@ -3,7 +3,7 @@
 # name: Vanguard S&P 500 UCITS ETF: S&P 500 total return (1871 with -refdata)
 # method: VFINX (Vanguard 500, extended with the S&P 500 total return via SP500-USD refdata ~1871); real VUAA auto-spliced from 2019
 # validation: corr=0.589 (weekly 0.917) beta=0.53 TE=17.1%/yr CAGR sim 16.05% vs real 15.88% (overlap 1810 d from 2019-05-14 to 2026-09-17) vs IE00BFMXXD54
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1962-01-02,100.000000
 1962-01-03,100.211745

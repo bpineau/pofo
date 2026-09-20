@@ -3,7 +3,7 @@
 # name: Barclay BTOP50 managed futures, hedged to EUR (index)
 # method: the BTOP50 net composite (see BTOP50) financed at USD cash (^IRX, extended by TBILL-3M) and re-earning euro cash (the deep euro overnight chain, German money market before the euro) = the EUR-hedged view of the index; no fund fee added, no volatility rescaling
 # validation: not validated (no real series)
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1986-12-31,100.000000
 1987-01-02,99.977500
