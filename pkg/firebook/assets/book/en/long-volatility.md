@@ -1,5 +1,5 @@
 # Long volatility and tail hedging: paying for crashes
-<!-- source: long-volatility @ 11abc2b06627 -->
+<!-- source: long-volatility @ 3a390c3b5204 -->
 
 The table of defenses ([[defensive-assets]]) hands out roles by type of crisis. Long bonds defend against deflationary recessions, gold against monetary crises, trend ([[managed-futures]]) against bear regimes that drag on. One slot is still open, and it is the most spectacular of them: the **fast crash**, those two to eight weeks when everything falls at once (October 1987, the acute phase of autumn 2008, February and March 2020). That is the specialty of a family of strategies called **long volatility**, or **tail hedging**: holding, permanently, instruments that explode upward when markets collapse, mostly put options and their cousins.
 
@@ -53,7 +53,7 @@ This is where the article turns into a warning, because the gap between the conc
 **The honest alternative, for almost everyone.** Israelov's conclusion is still the best default answer: if you want to suffer less in crashes, hold fewer stocks. Moving from 70/30 to 60/40 protects you with certainty, with no variance risk premium, no options to roll and no vehicle risk. The bond tent of the fragile years ([[glidepaths]]) and the cash buffer ([[cash-buffer]]) give the same defense against the same sequence risk, using instruments you already own.
 
 ::: figure puts-domines
-The whole range of stock and bond mixes, recomputed here (S&P 500 and intermediate Treasuries, month-end values, annual rebalancing), against permanent put protection, over the published window of the PPUT index, June 1986 to December 2018. At equal worst drawdown, a plain 80/20 returns 2.9 points more a year. The PPUT point sits at its published coordinates; it is not recomputed here.
+The whole range of stock and bond mixes, recomputed here (S&P 500 and intermediate Treasuries, month-end values, annual rebalancing), against permanent put protection, over the published window of the PPUT index, June 1986 to December 2018. At equal worst drawdown, a plain 80/20 returns 3.0 points more a year. The PPUT point sits at its published coordinates; it is not recomputed here.
 :::
 
 ::: exemple The tail hedge against three crises

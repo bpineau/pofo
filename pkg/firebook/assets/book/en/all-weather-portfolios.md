@@ -1,5 +1,5 @@
 # All-weather portfolios: Browne, All Weather, Golden Butterfly, Dragon
-<!-- source: portefeuilles-tous-temps @ 0031c9344063 -->
+<!-- source: portefeuilles-tous-temps @ 9f8964ab895a -->
 
 Markets have seasons, and no asset wins in all of them ([[market-regimes]]). One conclusion follows. Instead of betting on the likely season, you hold at least one winner per season at all times and let rebalancing harvest the rotations. That simple idea produced a line of famous portfolios: Harry Browne's Permanent Portfolio (1981), Ray Dalio's All Weather (Bridgewater), the Golden Butterfly from the Portfolio Charts community, then Artemis Capital's Dragon. They are all cousins. They all rest on the same growth × inflation grid. And they all sell the same product: a **tighter** distribution of returns, with no fat left tail (the flank of the distribution where the extreme losses live, [[fat-tails]]), paid for with a lower expected return than a portfolio dominated by stocks.
 
@@ -21,7 +21,7 @@ The real record rests on US data from 1972 to 2024, since gold only floated afte
 
 ## The family: All Weather, Golden Butterfly, Dragon
 
-**Dalio's All Weather** (Bridgewater) was formalized in the 1990s, then packaged for the public by Tony Robbins as roughly 30% stocks, 40% long bonds, 15% intermediate bonds, 7.5% gold and 7.5% commodities. It refines Browne with **risk weighting** (risk parity). The idea is to balance the risk contributions of each season rather than the capital. Bonds, less volatile, get more capital. The institutional version uses leverage to bring the expected return back up to equity level. The retail version does without, hence a modest expectation, about 4 to 5% real, for a volatility of 8%. Its own weakness broke out in 2022: the massive overweight in duration. When inflation hits, the 55% of long and intermediate bonds take the shock together, −20% nominal, the worst year in its history. It is the reminder that "weighted by **past** risk" stops meaning "all-weather" once correlations flip ([[market-regimes]], [[bonds-in-retirement]]).
+**Dalio's All Weather** (Bridgewater) was formalized in the 1990s, then packaged for the public by Tony Robbins as roughly 30% stocks, 40% long bonds, 15% intermediate bonds, 7.5% gold and 7.5% commodities. It refines Browne with **risk weighting** (risk parity). The idea is to balance the risk contributions of each season rather than the capital. Bonds, less volatile, get more capital. The institutional version uses leverage to bring the expected return back up to equity level. The retail version does without, hence a modest expectation, about 5% real, for a volatility of 8%. Its own weakness broke out in 2022: the massive overweight in duration. When inflation hits, the 55% of long and intermediate bonds take the shock together, −20% nominal, the worst year in its history. It is the reminder that "weighted by **past** risk" stops meaning "all-weather" once correlations flip ([[market-regimes]], [[bonds-in-retirement]]).
 
 **The Golden Butterfly** (Portfolio Charts, Tyler) adds a fifth wing to the Permanent: **20% broad stocks, 20% small-cap value, 20% long bonds, 20% short bonds, 20% gold**. The idea is to tilt the portfolio toward prosperity, the most frequent regime, through the small-cap value premium ([[factors-in-retirement]]), without giving up the other three seasons. Over 1972-2024 it returns about 5.8% real for a volatility of 8%, with a maximum real drawdown of about −22%. It is the best return-to-worst-path pair in the family on the sample available, and it regularly posts the highest SWR on all of Portfolio Charts, around 5.5 to 6% over 30 years in the United States. Read it with the suspicion owed to backward-looking optimization, because the choice of small-cap value is guided by the sample.
 
@@ -35,9 +35,9 @@ Over 1972-2024 (US series, an independent reconstruction cross-checked against P
 | 60/40 | 5.6% | −38% | ~4% |
 | Permanent | 4.4% | −22% | ~4.5-5% |
 | Golden Butterfly | 5.8% | −22% | ~5.5% |
-| All Weather | 5.0% | −29% (2022 included) | ~4.5% |
+| All Weather | 5.1% | −29% (2022 included) | ~4.5% |
 
-The robust lesson comes in three findings. At equal return, the worst path is almost twice as shallow: the Golden Butterfly returns like a 70/30 while diving only 22%, where that 70/30 dives 41%. No mix of stocks and bonds, however cautious, ever did better than −34%. And it is the worst path that sets the withdrawal rate.
+The robust lesson comes in three findings. At equal return, the worst path is almost twice as shallow: the Golden Butterfly returns like a 70/30 while diving only 22%, where that 70/30 dives 42%. No mix of stocks and bonds, however cautious, ever did better than −35%. And it is the worst path that sets the withdrawal rate.
 
 The limits are just as robust. We are working on **one** 50-year sample, dominated by a secular bond bull market and by a gold price that started from administered levels in 1972. Its 1970s decade at +1,300% nominal was a liberation event, not a permanent property of the asset ([[gold-in-retirement]]). Outside the United States, the replications give the same **shape**, short tails, at more modest levels. Caution is in order: keep the structure, mark the levels down, test against the world century.
 
