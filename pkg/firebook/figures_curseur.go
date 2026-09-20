@@ -53,11 +53,11 @@ type curseurStep struct {
 // December rebalancing, on the same legs and the same engine as the family
 // plate of this article (SP500, IEF, TLT, XAUUSD, deflator ^CPI-US).
 var curseurSweep = []curseurStep{
-	{0, 5.93, -41.6, -26.3, 1974},
-	{10, 5.90, -35.8, -22.1, 2022},
-	{20, 5.84, -29.8, -22.0, 2022},
-	{30, 5.74, -25.7, -21.8, 2022},
-	{40, 5.60, -25.4, -21.7, 2022},
+	{0, 5.96, -41.6, -26.3, 1974},
+	{10, 5.94, -35.6, -22.1, 2022},
+	{20, 5.88, -29.2, -22.0, 2022},
+	{30, 5.78, -25.6, -21.8, 2022},
+	{40, 5.65, -25.4, -21.7, 2022},
 }
 
 // The plateau the article recommends, in points of dose.
@@ -154,15 +154,25 @@ func figTousTempsCurseur() string {
 			cagrPts[i][0], cagrPts[i][1], figDeep)
 		fmt.Fprintf(&b, `<circle cx="%.1f" cy="%.1f" r="4.2" fill="%s"/>`,
 			drawPts[i][0], drawPts[i][1], figBlue)
-		// The last pair sits against the right-hand axis, so its readings are
-		// hung to the left instead of centred over the dots.
+		// The pairs standing against an axis hang inward instead of being
+		// centred over their dots, so no reading lands on an axis label.
 		anchor, dx := "middle", 0.0
-		if i == len(curseurSweep)-1 {
+		switch i {
+		case 0:
+			anchor, dx = "start", 9
+		case len(curseurSweep) - 1:
 			anchor, dx = "end", -9
 		}
-		b.WriteString(mTxt(cagrPts[i][0]+dx, cagrPts[i][1]+curLabelOffsetUp, 10.5, figDeep, anchor, "600",
+		// Each reading sits on the OUTSIDE of its pair. The two curves cross
+		// inside the plateau, and past the crossing a reading hung on the same
+		// side as before would land on the other one.
+		cagrOff, drawOff := curLabelOffsetUp, curLabelOffsetDn
+		if drawPts[i][1] < cagrPts[i][1] {
+			cagrOff, drawOff = curLabelOffsetDn, curLabelOffsetUp
+		}
+		b.WriteString(mTxt(cagrPts[i][0]+dx, cagrPts[i][1]+cagrOff, 10.5, figDeep, anchor, "600",
 			frNum(s.cagr, 2)))
-		b.WriteString(mTxt(drawPts[i][0]+dx, drawPts[i][1]+curLabelOffsetDn, 10.5, figBlue, anchor, "600",
+		b.WriteString(mTxt(drawPts[i][0]+dx, drawPts[i][1]+drawOff, 10.5, figBlue, anchor, "600",
 			frMinus(s.drawdown, 0)))
 	}
 
