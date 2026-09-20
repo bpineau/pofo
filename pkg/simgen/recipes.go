@@ -2063,7 +2063,7 @@ func ntsgRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00077IIPQ8",
 		Name:   "WisdomTree Global Efficient Core: global 90/60 replication",
-		Method: "0.90×MSCI World net TR (real IWDA from 2009-09, MSCIWORLD-USD refdata ~1969 with the ^990100 daily shape before) + 0.60×a four-currency government bond futures overlay (80% US VFITX/VUSTX duration blend − overnight financing, 11% BUND-EUR, 6% JGB-JPY, 3% GILT-GBP, each in local excess return over its own money-market rate, weights renormalized before a sleeve opens) + 0.10×cash ^IRX, the 0.25%/yr TER charged only where the donors' own charges do not already cover it; start set by the equity leg (~1969-12)",
+		Method: "0.90×MSCI World net TR (real IWDA from 2009-09, MSCIWORLD-USD refdata ~1969 with the ^990100 daily shape before) + 0.60×a four-currency government bond futures overlay (80% US VFITX/VUSTX duration blend − overnight financing, 11% BUND-EUR, 6% JGB-JPY, 3% GILT-GBP, each in local excess return over its own money-market rate, weights renormalized over the sleeves that quote, so one that has not opened yet or whose reference has stopped is carried by the others) + 0.10×cash ^IRX, the 0.25%/yr TER charged only where the donors' own charges do not already cover it; start set by the equity leg (~1969-12)",
 		Build:  ntsgBuild,
 		// The real fund opened in 2024-11: the overlap clears the 60-point floor
 		// but not by much, so the card's CAGR comparison is indicative and the

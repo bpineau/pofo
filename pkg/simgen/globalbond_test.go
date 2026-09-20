@@ -145,3 +145,26 @@ func TestCashDailyInterpolatesToBusinessDays(t *testing.T) {
 		}
 	}
 }
+
+// A sleeve whose reference has stopped publishing must LEAVE the basket, the
+// mirror image of the joining rule above. Series.At forward fills for ever, so
+// a stale sleeve used to keep its weight and contribute a frozen zero return,
+// which scales the whole overlay down by that weight for as long as the calendar
+// runs on. The non-US references stop on different days by construction, so this
+// is the end of every build, not a corner case.
+func TestBlendExcessDropsASleeveThatStoppedQuoting(t *testing.T) {
+	all := []int{0, 1, 2, 3, 4}
+	usd := growing("USD", all, 0.001)
+	// The foreign sleeve quotes for the first three days only.
+	foreign := growing("FOR", []int{0, 1, 2}, 0.002)
+
+	sleeves := []bondSleeve{{name: "USD", weight: 0.80}, {name: "FOR", weight: 0.20}}
+	got := blendExcess("blend", usd.Points, sleeves, []*marketdata.Series{usd, foreign})
+
+	// Day 2: both quote, the weights sum to one.
+	near(t, "day 2", got.Points[2].Close/got.Points[1].Close-1, 0.8*0.001+0.2*0.002, 1e-12)
+	// Days 3 and 4: only the US sleeve can be priced, so it carries the whole
+	// notional instead of four fifths of it.
+	near(t, "day 3", got.Points[3].Close/got.Points[2].Close-1, 0.001, 1e-12)
+	near(t, "day 4", got.Points[4].Close/got.Points[3].Close-1, 0.001, 1e-12)
+}
