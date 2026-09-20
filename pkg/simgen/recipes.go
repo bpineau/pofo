@@ -1173,10 +1173,40 @@ const eresMondeCharge = 0.0035 + 0.0006
 // Every donor is lifted to the class's TER (feeUplift), never to close a
 // measured gap: DBXW carries 0.45 %/yr against XWD1's 0.19, so its years are
 // credited +0.26 %/yr, which is the fee difference and nothing else.
+//
+// DBXW.DE starts at 2009-01-02 and not at its first quote, because the quotes
+// before that date are the fund's USD line rather than its EUR one. The
+// evidence is the reference: over 2008 the donor's daily excess return over the
+// MSCI World EUR path correlates +0.998 with the daily EUR/USD move and leaves
+// a residual of 0.09 %/day, against correlations of 0.36 to 0.62 and residuals
+// of 0.3 to 1.3 % in every later year; the line's own level confirms it, since
+// the step down on 2009-01-02 is 1.346 where the EUR/USD rate of the day before
+// divided by that session's index move is 1.339. A year of index returns with a
+// currency overlaid on them is not this fund's history, and no session-level
+// repair can take the overlay off: the leg reads the MSCI World EUR path there
+// instead, which is what the fund held.
 var eresMondeLegs = []eresLeg{
-	{Weight: 0.75, TER: 0.0019, Donors: []eresDonor{{"XWD1.DE", 0.0019}, {"DBXW.DE", 0.0045}}},
-	{Weight: 0.25, TER: 0.0012, Donors: []eresDonor{{"XDWL.DE", 0.0012}, {"XDWD.DE", 0.0012}}},
+	{Weight: 0.75, TER: 0.0019, Donors: []eresDonor{
+		{ID: "XWD1.DE", TER: 0.0019},
+		{ID: "DBXW.DE", TER: 0.0045, Since: "2009-01-02"},
+	}},
+	{Weight: 0.25, TER: 0.0012, Donors: []eresDonor{
+		{ID: "XDWL.DE", TER: 0.0012},
+		{ID: "XDWD.DE", TER: 0.0012},
+	}},
 }
+
+// eresTrackTol is how far one of these donors may disagree with the MSCI World
+// EUR path in one session before the session is refused (see trackIndex).
+//
+// Both sides track the same index in the same currency, so the disagreement is
+// a closing-time and tracking-error residual and nothing else. Measured over
+// the four lines and 11 920 sessions, with the reference allowed to lead or lag
+// by one session: the largest disagreement with no defect behind it is 3.50 %
+// and the smallest defect 14.51 %, an empty band of a factor of four. 10 % sits
+// in the middle of it, three times the worst honest session and a third below
+// the mildest defect, and is not a number any single case was fitted to.
+const eresTrackTol = 0.10
 
 // eresLeg is one holding of the FCPE: its weight, its own TER and the real
 // series that stand behind it.
@@ -1187,9 +1217,12 @@ type eresLeg struct {
 }
 
 // eresDonor is a real ETF class and its published TER (fraction per year).
+// Since, when set (an ISO date), is the first quote of that line worth reading:
+// everything before it is refused, for a reason the leg states.
 type eresDonor struct {
-	ID  string
-	TER float64
+	ID    string
+	TER   float64
+	Since string
 }
 
 // eresMondeRecipe builds ERES Xtrackers Actions Monde M, the world-equity FCPE
@@ -1203,13 +1236,20 @@ type eresDonor struct {
 // The reconstruction is therefore the daily-rebalanced 75/25 blend of the two
 // ETFs' total-return paths less eresMondeCharge, each ETF read from its own
 // class for as long as it quotes (2021-03 for the swap 1D class, 2015-04 for
-// the physical), from its accumulating sibling before (DBXW.DE from 2008-01,
+// the physical), from its accumulating sibling before (DBXW.DE from 2009-01,
 // lifted by the 0.26 %/yr fee difference; XDWD.DE from 2014-08, same TER), and
 // from the MSCI World net-TR-in-EUR path (wpeaBuild: real IWDA from 2009,
 // MSCIWORLD-USD refdata and the daily index shape before, EURUSD spot back to
 // 1971) behind both, lifted from IWDA's 0.20 % to each class's TER. The real
 // NAVs, served live by the airfund source and bundled as ERESMONDEM-NAV, are
 // grafted on top from 2024-03-05, so the level is the fund's own.
+//
+// Every donor is graded against that same MSCI World EUR path before it is
+// used, and a session where the two disagree by more than eresTrackTol is
+// refused (trackIndex): these provider lines carry prints that are not the
+// fund's, and a reconstruction multiplies them rather than merely repeating
+// them. A donor's whole early SEGMENT can also be refused, which is a judgement
+// the session test cannot make and which eresMondeLegs states case by case.
 //
 // Two limits are stated rather than discovered. Xetra closes at 17:30 CET while
 // the NAV is struck after New York closes, so the daily texture of the donor
@@ -1263,6 +1303,13 @@ func eresMondeBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // fetched, quotes too briefly to matter, or quotes in another currency is
 // skipped with a note, so the recipe still builds (offline, or should a
 // listing die) on the deeper series behind it.
+//
+// Every donor is also held to the index it tracks before it is used
+// (trackIndex against the same MSCI World EUR path that stands behind the whole
+// chain), because these lines carry prints that are not the fund's: a
+// fabricated close in 2008, a month of the fund's other listing in 2014, a bad
+// first print in 2021. What is rejected is written to the generation log rather
+// than repaired in silence.
 func eresLegChain(f Fetcher, from time.Time, l eresLeg, world *marketdata.Series, worldTER float64) (*marketdata.Series, error) {
 	var out *marketdata.Series
 	for _, d := range l.Donors {
@@ -1273,6 +1320,21 @@ func eresLegChain(f Fetcher, from time.Time, l eresLeg, world *marketdata.Series
 		}
 		if s.Currency != "" && s.Currency != "EUR" {
 			return nil, fmt.Errorf("ERESMONDEM: donor %s quotes in %s, want EUR", d.ID, s.Currency)
+		}
+		if d.Since != "" {
+			since, perr := time.Parse("2006-01-02", d.Since)
+			if perr != nil {
+				return nil, fmt.Errorf("ERESMONDEM: donor %s: bad Since %q: %w", d.ID, d.Since, perr)
+			}
+			s = marketdata.Trim(s, since, time.Time{})
+			if len(s.Points) < 300 {
+				fmt.Fprintf(os.Stderr, "ERESMONDEM: donor %s quotes too briefly after %s, the leg reads the next series behind it\n", d.ID, d.Since)
+				continue
+			}
+		}
+		s, rejects := trackIndex(s, world, eresTrackTol)
+		for _, r := range rejects {
+			fmt.Fprintf(os.Stderr, "ERESMONDEM: donor %s does not track MSCI World on %s\n", d.ID, r)
 		}
 		lifted := afterAnnualFee(d.ID, s, feeUplift(l.TER, d.TER))
 		if out == nil {
