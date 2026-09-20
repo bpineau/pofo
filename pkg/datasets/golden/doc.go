@@ -6,7 +6,7 @@
 // Sharpe, Sortino, Ulcer, Max Drawdown, TTR) beyond the tolerances fails
 // the suite.
 //
-// Five families live here:
+// Seven families live here:
 //
 //   - golden_test.go pins the COMPUTATIONS on frozen daily fixtures.
 //   - refdata_test.go pins the bundled long backcast SERIES
@@ -22,4 +22,15 @@
 //     CADENCE invariant: a weekly-dealing donor is projected onto a daily
 //     calendar there, and a projection that gets the daily amplitude wrong
 //     leaves every level right and every per-observation statistic wrong.
+//
+// The last two measure the bundled files as DATA rather than as computations,
+// over the whole bundle at once, because the defects they hunt are invisible to
+// a return or a CAGR and nothing else looks for them:
+//
+//   - gaps_test.go refuses a monthly series that skips a month, the hole a
+//     consumer cannot see because it reads as one enormous period followed by
+//     no volatility at all.
+//   - spikes_test.go refuses a one-session round trip no instrument could have
+//     made, the fabricated print a reconstruction multiplies by its donor's
+//     weight.
 package golden

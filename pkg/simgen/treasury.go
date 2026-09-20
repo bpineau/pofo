@@ -117,8 +117,8 @@ func TreasuryZeroTR(name string, yields *marketdata.Series, maturityYears, annua
 // series, asks step for the total return of each period from the yields at its
 // ends and its length in years, and compounds that net of a continuous fee. A
 // period that step cannot price (an unpriceable yield, reported as NaN) carries
-// the index forward unchanged, fee and all, rather than dropping the date: a
-// period nobody can price is not one to charge for.
+// the index forward unchanged, fee included, rather than dropping the date: a
+// period nobody can price is not one to charge for either.
 func constantMaturityTR(name string, yields *marketdata.Series, annualFee float64, step func(y0, y1, dt float64) float64) *marketdata.Series {
 	s := &marketdata.Series{Name: name, Source: "simdata"}
 	pts := yields.Points
