@@ -323,8 +323,8 @@ func TestTousTempsFigureAgreesWithTheArticle(t *testing.T) {
 		"5,6 %", "−38 %", // 60/40
 		"4,4 %", "−22 %", // Browne
 		"5,8 %",          // Golden Butterfly
-		"5,0 %", "−29 %", // All-Weather
-		"−34 %", // the ladder's own floor
+		"5,1 %", "−29 %", // All-Weather
+		"−35 %", // the ladder's own floor
 	} {
 		if !strings.Contains(article, want) {
 			t.Errorf("the article no longer states %q, which the plate draws", want)
