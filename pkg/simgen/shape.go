@@ -321,6 +321,15 @@ func retextured(shape *marketdata.Series, k float64) *marketdata.Series {
 // month-anchored reconstruction would otherwise bake into every world
 // equity backcast. Dropping the point keeps the two-day net move via the
 // direct ratio of its neighbours.
+//
+// What it does NOT catch is worth one line, because the cancellation bar is
+// where this pass gives up rather than guess. The same shape's 2001-09-24
+// print (+13.11% then -7.15%) is a fabricated one too, and it survives: the
+// round trip leaves 5.02% standing against a bar of 2.38%, a third of the
+// smaller leg. marketdata's own round-trip cleaner declines it for the same
+// reason, so it reaches every file this shape textures (MSCIWORLD, URTH, IWDA,
+// WPEA, ERESMONDEM). The anchors still pin the month's total, so what it
+// distorts is the daily path inside September 2001, not the level.
 func despike(points []marketdata.Point) []marketdata.Point {
 	const (
 		zBar   = 6.0 // each leg must exceed zBar times the local sigma

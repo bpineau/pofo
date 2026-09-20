@@ -150,7 +150,15 @@ type Leg struct {
 
 // Composite builds an index (base 100) from constant daily-rebalanced legs.
 // cashID (e.g. "^IRX") backs both the Excess financing and an optional
-// collateral leg; annualFee is deducted pro rata temporis.
+// collateral leg.
+//
+// annualFee is charged PER FRAME STEP at a 252-step year, the same convention
+// the excess legs finance at, so it is only a yearly charge on a frame whose
+// steps are trading days. Hand it a weekly or monthly frame and the fee shrinks
+// with the step count: twelve monthly steps carry a twentieth of it. Every
+// caller here passes a daily frame, and the fee schedules that have to survive a
+// coarse era go through afterFeeSteps instead, which compounds on calendar days
+// and is exact at any cadence.
 func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float64, error) {
 	cash := fr.Returns[cashID]
 	for _, l := range legs {
@@ -274,10 +282,20 @@ func SeriesFromFrame(name string, fr *Frame, values []float64) *marketdata.Serie
 	return s
 }
 
-// WithRefData returns a Fetcher that serves series found in fsys (CSV files
-// in the simdata format (an os.DirFS of local reference series, used in
-// development via -refdata) before falling back to the wrapped fetcher.
-// No reference data is bundled; recipes build from fetchable quotes only.
+// WithRefData returns a Fetcher that serves series found in fsys (CSV files in
+// the simdata format: the bundled datasets.Refdata, or an os.DirFS of local
+// reference series used in development via -refdata) before falling back to the
+// wrapped fetcher.
+//
+// A reference id that fsys does not hold falls through, which is how a recipe
+// reaches ordinary quotes. A reference id it DOES hold but cannot read does
+// not: the read error is returned. The distinction matters because these ids
+// (EM-USD, SP500-USD, TREND-NET-USD, …) look nothing like a ticker, so the
+// fallback resolves them by fuzzy search, and a fuzzy search always finds
+// something. EM-USD matches a crypto token named "Eminer USD" and SP500-USD a
+// derivatives index, both of which a build would then splice in silence where
+// its reference belonged. A malformed bundled file is a defect to report, never
+// a reason to go looking on the network.
 func WithRefData(fsys fs.FS, fallback Fetcher) Fetcher {
 	return refFetcher{fsys: fsys, fallback: fallback}
 }
@@ -288,7 +306,11 @@ type refFetcher struct {
 }
 
 func (r refFetcher) Fetch(id string, from time.Time) (*marketdata.Series, error) {
-	if s, ok, err := marketdata.ReadSimdataFS(r.fsys, id); err == nil && ok {
+	s, ok, err := marketdata.ReadSimdataFS(r.fsys, id)
+	if err != nil {
+		return nil, fmt.Errorf("reference %s: %w", id, err)
+	}
+	if ok {
 		return s, nil
 	}
 	return r.fallback.Fetch(id, from)

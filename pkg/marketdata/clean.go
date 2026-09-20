@@ -324,11 +324,18 @@ const (
 //
 // And the deliberate abstentions, all of them real market history: 1987-10-19
 // and its rebound, the March 2020 sessions (2020-03-12/13 and 2020-03-16),
-// October 2008, ERNA's -3.2 % ultrashort credit dislocation on 2020-03-19, and
-// the 2001-09-24 pair in the MSCI World shape. The last one is instructive: it
-// looks exactly like a bad print and IS one, but its legs leave 5 % standing,
-// so this pass declines it and simgen's shape-only despike, which may be laxer
-// because it judges an index rather than an investor's NAV, takes it instead.
+// October 2008 and ERNA's -3.2 % ultrashort credit dislocation on 2020-03-19.
+//
+// One abstention is NOT real market history and is worth naming, because the
+// rule that would catch it is the one thing this pass will not do. The
+// 2001-09-24 print in the MSCI World shape (+13.11 % then -7.15 %) is a bad
+// print and looks like one, but the two legs leave 5.02 % standing, far past
+// roundTripNet. simgen's shape-only despike declines it too, for the same
+// reason: its own bar asks the round trip to cancel to within a third of the
+// smaller leg, which is 2.38 % here. So no pass removes it, and it ships in
+// every reconstruction the shape textures (see pkg/simgen's despike, which
+// carries the measurement). Widening either bar to take it would also take real
+// dislocations, so it stands, said out loud rather than assumed away.
 //
 // Rate symbols never reach this pass (see cleanQuotes): a policy rate crossing
 // zero and back produces ratios that mean nothing.

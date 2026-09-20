@@ -250,6 +250,23 @@ func TestDespikeKeepsRealCrashes(t *testing.T) {
 	}
 }
 
+// The other end of the cancellation bar, pinned because the godoc of despike
+// and of marketdata's dropRoundTrips both name this case: the MSCI World
+// shape's 2001-09-24 print, +13.11 % then -7.15 %, is fabricated and neither
+// pass removes it, the round trip leaving 5.02 % standing against a bar of
+// 2.38 %. If a future change makes this drop, that is a deliberate widening of
+// the bar and the two godocs have to change with it.
+func TestDespikeKeepsThePartlyReversingPrint(t *testing.T) {
+	pts := spikeSeries(60, 0.014, 30, +0.1311, -0.0715)
+	if got := despike(pts); len(got) != 60 {
+		t.Fatalf("the 2001-09-24 shape print was dropped (kept %d of 60)", len(got))
+	}
+	net := (1+0.1311)*(1-0.0715) - 1
+	if bar := 0.0715 / 3; math.Abs(net) <= bar {
+		t.Fatalf("net %.4f no longer exceeds the bar %.4f: the godocs are stale", net, bar)
+	}
+}
+
 // weekdays returns n consecutive weekday dates from the given day.
 func weekdays(y int, m time.Month, d, n int) []time.Time {
 	out := make([]time.Time, 0, n)
