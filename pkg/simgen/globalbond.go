@@ -61,6 +61,12 @@ import (
 // for. The composite's own floor (~1969, set by the equity leg) sits inside the
 // era where the US and German sleeves both quote, so the deepest years of the
 // backcast run on 88 % of the basket, then 91 %, then all of it.
+//
+// The same rule runs at the OTHER end, and it is the one a refresh keeps
+// exercising: the three foreign references come from three publishers on three
+// release schedules and stop on three different days, weeks or months apart,
+// while the US sleeve runs to yesterday. Whatever has stopped quoting leaves the
+// basket there and its weight goes to the sleeves that have not.
 const (
 	usdBondShare = 0.80
 	deuBondShare = 0.11
@@ -155,8 +161,26 @@ func globalBondOverlay(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // blendExcess compounds the weighted average of the sleeves' returns on the
 // calendar of the first one, renormalizing the weights over the sleeves that
 // cover each step. A sleeve joins on the first date its own history reaches and
-// never before: until then its weight is spread across the others, so the index
-// always represents a fully invested basket rather than a partially empty one.
+// LEAVES after the last one: outside that span its weight is spread across the
+// others, so the index always represents a fully invested basket rather than a
+// partially empty one.
+//
+// Both ends matter and only one of them used to be handled. Series.At forward
+// fills, and it answers for every date from a series' first quote to the end of
+// time, so a sleeve whose reference had simply stopped publishing kept its
+// weight and contributed a frozen zero return for as long as the calendar ran
+// on. The non-US references do not all end on the same day (they come from
+// three publishers on three release schedules), so the tail of every build sat
+// on a basket several sleeves short of full: the file kept a British weight
+// three months after the gilt series ended and a German one after the Bund
+// series ended, which scaled the whole overlay's return down by their weights
+// instead of redistributing them. A sleeve that has stopped quoting is not a
+// sleeve earning zero, it is a sleeve nobody can price.
+//
+// Read INSIDE a sleeve's own span, a flat stretch still means zero: a monthly
+// series contributes nothing between two of its quotes and its whole step at the
+// next one, which is the documented texture of the gilt leg and self-correcting
+// by construction. Past the end, nothing ever arrives.
 func blendExcess(name string, calendar []marketdata.Point, sleeves []bondSleeve, series []*marketdata.Series) *marketdata.Series {
 	out := &marketdata.Series{Name: name, Source: "simdata"}
 	level := 100.0
@@ -164,6 +188,9 @@ func blendExcess(name string, calendar []marketdata.Point, sleeves []bondSleeve,
 	for k := 1; k < len(calendar); k++ {
 		var sum, weight float64
 		for i, sl := range sleeves {
+			if series[i].Last().Date.Before(calendar[k].Date) {
+				continue // the sleeve's reference stops here: nobody can price it
+			}
 			v0, _, ok0 := series[i].At(calendar[k-1].Date)
 			v1, _, ok1 := series[i].At(calendar[k].Date)
 			if !ok0 || !ok1 || v0 <= 0 {
