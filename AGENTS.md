@@ -1,12 +1,86 @@
 # pofo, for coding agents
 
-pofo is a dependency-free (stdlib-only) Go toolkit for tracking and designing
-investment portfolios, plus one CLI (`cmd/pofo`) built on it. Everything the
-CLI does is reachable as a library under `pkg/`.
-
 Read this file first; it is the cheapest way in. Details live in each
 package's `doc.go` (`go doc ./pkg/<name>` renders it) and in `README.md`
-(user-facing, CLI-oriented).
+(user-facing, CLI-oriented). Design docs, one per feature, are in `docs/`
+(`docs/README.md` is the one-line index): read the relevant one BEFORE
+reworking a feature.
+
+## What pofo is, and what it is for
+
+A dependency-free (stdlib-only) Go toolkit for **deciding and checking how a
+long-horizon portfolio is built**, plus one CLI (`cmd/pofo`) over it. The
+questions it exists to answer:
+
+- What would this mix of funds have done, over the longest window the evidence
+  supports, and what did each line contribute to the risk and the return?
+- Is this allocation redundant, or blind to a macro regime, and what would fill
+  the gap?
+- Can a given capital fund a given retirement spending, for how long, and with
+  what chance of running out (the FIRE / decumulation engine)?
+- What did an asset that is only ten years old plausibly do in 1975? (the
+  backcast engines, which rebuild a missing past from donors and references
+  rather than inventing it.)
+
+**Four faces, and a feature is judged against all four, never against one**:
+(1) a finance LIBRARY meant to be ergonomic and hard to misuse, (2) a FIRE /
+decumulation engine, (3) a portfolio VISUALIZER (terminal reports and a web UI),
+(4) a book, the embedded French and English FIRE handbook.
+
+Consumers, and how a change propagates:
+
+| Consumer | What it is | Direction |
+|---|---|---|
+| `cmd/pofo` | the CLI: reports, `-fire`, `-suggest`, `-sweep`, the data generators | in this repo |
+| `pofo -serve` | the web constellation: landing page, portfolio visualizer, `/view` share URLs, the FIRE simulator, the book | in this repo |
+| `../finador` | a personal wealth tracker | DEPENDS on pofo, by TAG. It delegates market data, performance math and charts here and keeps only its own conventions. A change it needs ends with a pofo release tag and a `go.mod` bump there |
+| `../locador` | a rental-property engine | DEPENDS on pofo, by TAG, for the EPUB writer and shared rendering |
+
+A `v*` tag on this repo is therefore a **publication**: it is what the siblings
+pin to, and it is what builds and deploys the public web instance. Never tag
+unless that is what was asked for (see "Commands" below).
+
+**Deliberately NOT in scope**: live trading or broker connectivity; anything
+that needs a third-party Go dependency; per-user accounts, authentication or
+stored user data on the web side; personalized financial advice. The web UI
+serves the bundled catalog plus tightly budgeted foreign identifiers, and
+stores nothing about a visitor.
+
+## Priorities and non-negotiables
+
+When a trade-off is unclear, these decide it, in order.
+
+1. **A wrong number beats a missing feature, both ways round.** A statistic, a
+   backcast or a withdrawal rate that is quietly wrong is the worst defect this
+   repo can ship, because nothing downstream can see it. Fix a reported
+   computation bug before starting new work.
+2. **Never ship a reconstruction you have not measured.** Before trusting a new
+   or rebuilt series, write the validation that checks its CAGR, volatility and
+   currency against a known reference, run it, and report the divergences. The
+   standing rule for backcasts is RELIABILITY BOUNDS LENGTH: a file stops where
+   its evidence stops, and no engine tail is shipped in front of that bound.
+3. **Stdlib only.** Do not add a third-party dependency, ever. This is what lets
+   two sibling programs embed pofo without inheriting a supply chain.
+4. **`make check` must pass, and `make golden` must stay green.** A moved golden
+   is justified against its external reference in the commit message, never
+   retuned casually.
+5. **Never assume a data source is unreachable.** Verify live before deferring
+   or building a fallback, and watch for anti-bot gates.
+6. **This repo is public: nothing personal in it.** No real holding, no amount,
+   no name, no home path, no session narration, in code, docs, examples or
+   commit messages. Dated decisions stand anonymous, in `docs/`. Example
+   portfolios use real, public identifiers (tickers in the identifier column,
+   ISINs in the comment) and never an invented alias.
+7. **English for all code, godoc and docs**, except the French edition of the
+   book under `pkg/firebook/assets/book/fr/`, which is the book's SOURCE OF
+   TRUTH and stays French. **Never a typographic dash** (no em-dash, no
+   en-dash), anywhere, including figure labels and commit messages.
+8. **Every package keeps a `doc.go`** with its conventions and runnable
+   `example_test.go` examples; extend them with any new API. New logic comes
+   with tests: most packages sit at 75 to 97 % coverage and that is the bar.
+9. **Documentation is part of the change**, not a follow-up: README, `doc.go`,
+   the design doc in `docs/` and this file's Map are updated in the same commit
+   as the code they describe.
 
 ## Commands
 
@@ -40,6 +114,23 @@ make verify-catalog # data doctor over the whole catalog: hygiene, plausibility 
 make book-drift # what the FIRE book's translations owe their French source
 make figure-drift # what the FIRE book's frozen figures owe the bundled data
 ```
+
+**`make check` is the single completion gate** (fmt-check + vet + staticcheck +
+the whole test suite). Green looks like `ok` or `no test files` on every
+package and nothing else: any `FAIL`, any staticcheck line, any gofmt diff is a
+failure. It takes a couple of minutes cold on this tree and a few seconds warm.
+`make golden` is the second gate for anything that touches a computation, and it
+is NOT part of `make check` (it is slower and pins external references).
+
+**Nothing runs on a push.** The only workflow (`.github/workflows/release-image.yml`)
+is tag-gated, so the local gate is all there is: do not push red. Commit and
+push directly to `master` once `make check` passes; there are no branches and no
+PR flow.
+
+**A `v*` tag is a PRODUCTION DEPLOY, not a bookmark.** It builds the container
+image, pushes it to the registry, and the public instance picks `latest` up by
+itself. It is also what the sibling repos pin to. Never tag unless publishing is
+exactly what was asked for.
 
 `make refresh` runs every generator below it in dependency order (references
 first, then the simdata built on them, then the offline snapshots); the
@@ -94,7 +185,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 
 | Path | What lives there |
 |---|---|
-| `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; extended-hours quotes behind an opt-in (`Quote.Session`, `QuoteOptions.ExtendedHours`, `LatestBatchExtended`: a US pre-market or after-hours print when it is fresher than the regular one, never by default); data doctor (`Verify`/`VerifyAsset`, per-`asset_class` plausibility bands stretched by a record's leverage and, for a `single-stock` record, by its single-name concentration); telling a typo from an outage when a fetch finds nothing (`ErrUnknownIdentifier` / `UnknownIdentifierError`, `unknown.go`, which is what makes a nonexistent `/view` identifier a 404 instead of a 500); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote, anchored on the proxy's close or, per the record's `nowcast_anchor`, on its open) |
+| `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; extended-hours quotes behind an opt-in (`Quote.Session`, `QuoteOptions.ExtendedHours`, `LatestBatchExtended`: a US pre-market or after-hours print when it is fresher than the regular one, never by default); data doctor (`Verify`/`VerifyAsset`, per-`asset_class` plausibility bands stretched by a record's leverage and, for a `single-stock` record, by its single-name concentration); telling a typo from an outage when a fetch finds nothing (`ErrUnknownIdentifier` / `UnknownIdentifierError`, `unknown.go`, which is what makes a nonexistent `/view` identifier a 404 instead of a 500); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote, anchored on the proxy's close or, per the record's `nowcast_anchor`, on its open); the price-hygiene passes every fetch path runs (`clean.go`: strip provider placeholders, mend a single denomination break, drop the one-session round trips no asset of the class could have made, de-spike an FX cross, rate symbols exempt, and the pass ORDER is load-bearing, see the file's own comment); DEFINITION JUNCTIONS (`Series.Junctions`, read from a simdata file's `# junctions:` header, the dates where a publisher started measuring something else so the step between two real levels is not a move, which the constant-maturity engines skip); and `SampleAt`, which reads a series at an arbitrary date list, holding the first level flat backwards and returning how far back that extrapolation reached so the caller can warn |
 | `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling, CWARP) plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions) |
 | `pkg/portfolio` | portfolio file format (`Parse`), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/black-litterman-design.md`) |
@@ -113,7 +204,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/report` | HTML/text rendering of the comparison model |
 | `pkg/webui` | the identity every HTML surface shares: design tokens (`CSS`), embedded OFL typefaces (`FontsCSS`), the favicon, and `Beacon`, the handler wrapper that splices the optional Cloudflare Web Analytics tag into every `text/html` response; see `docs/webui-instrument-redesign.md` |
 | `pkg/compare` | `Sweep` (per-holding weight grid, the evidence behind a file's sane ranges, behind `pofo -sweep`); compute the comparison model (fetch, build, simulate, common window, nominal/real stats) and assemble the HTML report `Page`; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
-| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture tests) |
+| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture computation tests, PLUS two guards that measure the bundle as DATA rather than as computations, because what they hunt is invisible to a return: `gaps_test.go` refuses a monthly series that skips a month, and `spikes_test.go` refuses a one-session round trip no instrument could have made) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `permanent.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `foreign.go` (identifiers outside the bundled catalog: the ISIN/ticker shape gate plus the per-client and per-process hourly fetch budgets behind `-serve-foreign-per-hour`, 0 = catalog only), `prefs.go` (the settings cookie), `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) and `logdedup.go` (log hygiene for the long-lived servers: each informational fetch line once per process, every `warning:` always; `/healthz` and the access log live in `serve.go`) |
 | `docs/` | design docs and plans, one per feature; read before reworking a feature (`docs/README.md` is the one-line index) |
 | `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
@@ -205,19 +296,6 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 - `-gen-simdata <ID>` writes `simdata/<CanonicalID(ID)>.csv`: make the id
   canonical BEFORE generating (an alias collision silently overwrites another
   asset's file) and check `git diff --stat pkg/datasets/simdata` after.
-
-## House rules
-
-- Stdlib only. Do not add a third-party dependency.
-- English for all code, godoc and docs. Never write an em-dash.
-- Every package keeps a `doc.go` (conventions included) and runnable
-  `example_test.go` examples; extend them with any new API.
-- `make check` must pass; new logic comes with tests (the bar is high:
-  most packages are at 75-97 % coverage).
-- Calculation changes must keep `make golden` green; if a golden moves,
-  justify it against the external reference, never retune the tolerance
-  casually.
-- Commit and push directly to `master` once `make check` passes.
 
 ## Common tasks
 
@@ -461,3 +539,32 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   the cash accruals included, which emptied the `gaps_test.go` allow-list;
   `GILT-GBP`, `EMU-EUR`, `WTI-USD` and `TBILL-3M` are measured, named and left
   (see the sweep section of `docs/ntsz-eurozone-efficient-core-design.md`).
+
+## Definition of done
+
+- [ ] `make check` green (fmt, vet, staticcheck, tests + examples).
+- [ ] `make golden` green if anything touching a computation or a bundled series
+      moved. A golden that moved is justified against its external reference in
+      the commit message, never silenced by a widened tolerance.
+- [ ] A new or rebuilt series was validated against a known reference (CAGR,
+      volatility, currency) and the divergences reported BEFORE committing.
+      `./pofo -verify-simdata <ID>` is the cheap version of that question.
+- [ ] Catalog edited? `make test` revalidates `assets.json`;
+      `./pofo -verify-data -assets <id>` checks one asset end to end and
+      `make verify-catalog` runs the doctor over all of it.
+- [ ] Docs updated in the SAME commit: the package's `doc.go`, its
+      `example_test.go`, `README.md` if a command or an output changed, the
+      design doc in `docs/`, and this file's Map if a package gained a concern.
+- [ ] No third-party dependency added.
+- [ ] No typographic dash anywhere in the diff (figure labels and the commit
+      message included).
+- [ ] Nothing personal added: no holding, no amount, no name, no home path, no
+      narration of who asked for what.
+- [ ] Committed to `master` and pushed. Nothing runs on a push, so the local
+      gate is the only gate.
+- [ ] NO `v*` tag unless a release was explicitly asked for: a tag publishes the
+      container image and deploys the public instance.
+- [ ] Anything a human must run by hand said explicitly: a `make refresh` or a
+      generator target (they need the network and move bundled data), and
+      `make figure-drift` afterwards, since a data refresh makes the book's
+      frozen plates stale on purpose.
