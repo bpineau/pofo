@@ -170,3 +170,49 @@ func TestBondPriceAtZeroYield(t *testing.T) {
 		t.Errorf("a yield falling through zero should gain every step, got %v", tr.Points)
 	}
 }
+
+// A definitional junction earns nothing: the step into it carries the index
+// forward unchanged whatever the yield does across it, while the steps on
+// either side price normally. This is the 1973-01-04 repair, in miniature: the
+// yield jumps a whole point on the junction day and the index must not notice.
+func TestConstantMaturityTRSkipsJunctions(t *testing.T) {
+	ys := yieldSeries(5, 5, 6, 6, 6)
+	ys.Junctions = []time.Time{ys.Points[2].Date}
+	tr := TreasuryTR("junction", ys, 20, 0)
+
+	if n := len(tr.Points); n != 5 {
+		t.Fatalf("got %d points, want one per yield observation", n)
+	}
+	if got := tr.Points[2].Close / tr.Points[1].Close; math.Abs(got-1) > 1e-12 {
+		t.Errorf("the junction step returns %+.6f %%, want exactly zero", (got-1)*100)
+	}
+	// The month before the junction is pure carry at 5 %, the month after pure
+	// carry at 6 %: both priced, neither skipped.
+	for _, tc := range []struct {
+		i    int
+		want float64
+	}{{1, 0.05}, {3, 0.06}} {
+		dt := tr.Points[tc.i].Date.Sub(tr.Points[tc.i-1].Date).Hours() / 24 / 365.25
+		got := tr.Points[tc.i].Close/tr.Points[tc.i-1].Close - 1
+		if math.Abs(got-tc.want*dt) > 1e-9 {
+			t.Errorf("step %d returns %+.6f, want the period's carry %+.6f", tc.i, got, tc.want*dt)
+		}
+	}
+
+	// Without the declaration the same yields fabricate a double-digit loss.
+	plain := TreasuryTR("no junction", yieldSeries(5, 5, 6, 6, 6), 20, 0)
+	if r := plain.Points[2].Close/plain.Points[1].Close - 1; r > -0.10 {
+		t.Errorf("the undeclared jump returns %+.2f %%, expected a large fabricated loss", r*100)
+	}
+}
+
+// A junction inside a longer step (the month-end case) is caught too: the whole
+// period is refused rather than priced through the break.
+func TestConstantMaturityTRJunctionInsideAStep(t *testing.T) {
+	ys := yieldSeries(5, 5, 6)
+	ys.Junctions = []time.Time{ys.Points[1].Date.AddDate(0, 0, 10)}
+	tr := TreasuryTR("junction inside", ys, 20, 0.01)
+	if got := tr.Points[2].Close / tr.Points[1].Close; math.Abs(got-1) > 1e-12 {
+		t.Errorf("a step spanning a junction returns %+.6f %%, want zero and no fee", (got-1)*100)
+	}
+}

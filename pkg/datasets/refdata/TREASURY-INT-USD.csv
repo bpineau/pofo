@@ -2,7 +2,7 @@
 # id: TREASURY-INT-USD
 # name: US intermediate-term Treasury total return (5-year constant maturity, month-end)
 # source: Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, 5-year, via DBnomics: the business-daily point (FED/H15/RIFLGFCY05_N.B, 1962-01-02->) sampled at each month's LAST quote, extended back by the monthly point (FED/H15/RIFLGFCY05_N.M, 1953-04->, a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then), run through simgen.TreasuryTR (5-year par bond, 0.10%/yr). One curve point throughout: no map, no splice and no hole. Proxy behind VFITX, and the bond sleeve of the bundled US 60/40 (pkg/replay).
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 1953-04-30,100.000000
 1953-05-31,99.082873

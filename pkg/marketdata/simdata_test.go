@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 	"testing/fstest"
+	"time"
 )
 
 func TestWriteReadSimdataRoundTrip(t *testing.T) {
@@ -137,4 +138,57 @@ func sortedByDate(pts []Point) bool {
 		}
 	}
 	return true
+}
+
+// Definition junctions travel with the file: they are written into the header
+// and read back into the Series, because a consumer that does not see them
+// prices a return across a step that is not a market move.
+func TestSimdataJunctionsRoundTrip(t *testing.T) {
+	dir := t.TempDir()
+	sf := &SimdataFile{
+		ID:        "TREASURY-LONG-YIELD",
+		Name:      "US long Treasury par yield",
+		Generated: "2026-09-20",
+		Junctions: []time.Time{d(1973, 1, 4), d(1977, 2, 15)},
+		Points: []Point{
+			{Date: d(1973, 1, 3), Close: 6.177},
+			{Date: d(1973, 1, 4), Close: 6.890},
+		},
+	}
+	if err := WriteSimdata(dir, sf); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(filepath.Join(dir, "TREASURY-LONG-YIELD.csv"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "# junctions: 1973-01-04,1977-02-15"; !strings.Contains(string(raw), want) {
+		t.Errorf("the file does not carry %q:\n%s", want, raw)
+	}
+	s, ok, err := ReadSimdata(dir, "TREASURY-LONG-YIELD")
+	if err != nil || !ok {
+		t.Fatalf("read back: ok=%v err=%v", ok, err)
+	}
+	if len(s.Junctions) != 2 || !s.Junctions[0].Equal(d(1973, 1, 4)) || !s.Junctions[1].Equal(d(1977, 2, 15)) {
+		t.Errorf("read back junctions %v, want the two written", s.Junctions)
+	}
+}
+
+// A file with no junction header reads back with none, and a malformed one is
+// an error rather than a silently ignored line.
+func TestSimdataJunctionsAbsentOrMalformed(t *testing.T) {
+	fsys := fstest.MapFS{
+		"PLAIN.csv":  &fstest.MapFile{Data: []byte("# id: PLAIN\ndate,close\n2020-01-02,100\n2020-01-03,101\n")},
+		"BROKEN.csv": &fstest.MapFile{Data: []byte("# id: BROKEN\n# junctions: not-a-date\ndate,close\n2020-01-02,100\n")},
+	}
+	s, ok, err := ReadSimdataFS(fsys, "PLAIN")
+	if err != nil || !ok {
+		t.Fatalf("PLAIN: ok=%v err=%v", ok, err)
+	}
+	if len(s.Junctions) != 0 {
+		t.Errorf("PLAIN carries junctions %v, want none", s.Junctions)
+	}
+	if _, _, err := ReadSimdataFS(fsys, "BROKEN"); err == nil {
+		t.Error("BROKEN parsed without error, want a rejected junction date")
+	}
 }

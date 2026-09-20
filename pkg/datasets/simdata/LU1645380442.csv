@@ -3,7 +3,7 @@
 # name: UBS Core Euro Inflation Linked 1-10: the fund's own distributing class, then a euro linker proxy
 # method: real NAVs of the distributing twin LU1645380368 (Yahoo adjusted = total return, from 2017-10, lifted +0.12%/yr then +0.02%/yr onto the target's 0.08% price list, its stale pre-2021 prints reshaped on the proxy's texture), behind it 0.60×IBCI (iShares Euro Inflation Linked Govt Bond, all-maturity euro-linker, FT daily from 2005, measured beta 0.622) + 0.40×EUR cash (EURCASH-EUR); real CHSN grafted from 2025
 # validation: corr=0.880 (weekly 0.954) beta=0.85 TE=1.2%/yr CAGR sim 1.70% vs real 1.75% (overlap 281 d from 2025-08-06 to 2026-09-17) vs LU1645380442
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 2005-11-23,5.873634
 2005-11-24,5.893759

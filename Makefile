@@ -118,7 +118,7 @@ gbond-refdata: ## (Re)generate the bundled German/Japanese/British government bo
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: tyield-refdata
-tyield-refdata: ## (Re)generate the US Treasury references: the long par yield the STRIPS reconstruction is priced off, plus the long and intermediate constant-maturity total returns (network); run `make simdata` after
+tyield-refdata: ## (Re)generate the five US Treasury references: the long par yield the STRIPS reconstruction is priced off, the long and intermediate constant-maturity total returns, and their daily shapes (network); run `make simdata` after
 	$(GO) run ./cmd/gen-tyield-refdata
 	$(GO) build -o pofo ./cmd/pofo
 

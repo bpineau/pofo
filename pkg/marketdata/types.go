@@ -70,6 +70,18 @@ type Series struct {
 	// removes it, and nothing stored or shipped keeps it.
 	EstimatedFrom time.Time
 	EstimateProxy string
+
+	// Junctions are the dates on which the series' DEFINITION changes rather
+	// than its subject: the publisher started measuring something else, so the
+	// step INTO such a date is not a market move and no consumer may read a
+	// return from it. Both published levels are kept, because both are what the
+	// source says; what is refused is the return between them.
+	//
+	// The bundled TREASURY-LONG-YIELD carries one, 1973-01-04, where H.15's
+	// 20-year constant maturity moved 0.74 pt overnight while the 10-year point
+	// sat still. See cmd/gen-tyield-refdata and simgen.TreasuryTR, which skips
+	// any step spanning one of these dates.
+	Junctions []time.Time
 }
 
 // At returns the series value in force at the given time: the close of the

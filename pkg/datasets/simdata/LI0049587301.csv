@@ -3,7 +3,7 @@
 # name: Solidum Cat Bond Fund R EUR hedged (backcast)
 # method: the EUR-hedged ILS fund composite (see ILSFUNDE), lifted to the class's ongoing charge and rescaled to its own monthly volatility, spliced behind the fund's real NAVs; monthly before 2009-09, the fund's own semi-monthly cadence after
 # validation: corr=0.412 (weekly 0.521) beta=0.37 TE=11.6%/yr CAGR sim 3.47% vs real 3.58% (overlap 400 d from 2009-09-30 to 2026-09-11) vs LI0049587301
-# generated: 2026-09-19
+# generated: 2026-09-20
 date,close
 2005-12-31,831.133034
 2006-01-02,831.313612

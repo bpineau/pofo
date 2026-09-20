@@ -2,6 +2,7 @@ package simgen
 
 import (
 	"math"
+	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
@@ -119,6 +120,18 @@ func TreasuryZeroTR(name string, yields *marketdata.Series, maturityYears, annua
 // period that step cannot price (an unpriceable yield, reported as NaN) carries
 // the index forward unchanged, fee included, rather than dropping the date: a
 // period nobody can price is not one to charge for either.
+//
+// A period spanning one of the yield series' DEFINITION junctions
+// (marketdata.Series.Junctions) is exactly such a period and is treated the
+// same way. On both sides of a junction the published yield describes a
+// different instrument, so the level difference across it is not a rate move
+// and pricing a bond through it fabricates a return: the bundled
+// TREASURY-LONG-YIELD's 1973-01-04 junction is 0.74 pt wide, which a 27-year
+// strip reads as a -17 % day. Skipping the step forgoes that period's carry as
+// well, which on a daily path is two hundredths of a percent and on a month-end
+// path is why the generator hands this loop the junction's own boundary days
+// (see cmd/gen-tyield-refdata): the real moves on each side of the junction are
+// kept, only the splice between them is refused.
 func constantMaturityTR(name string, yields *marketdata.Series, annualFee float64, step func(y0, y1, dt float64) float64) *marketdata.Series {
 	s := &marketdata.Series{Name: name, Source: "simdata"}
 	pts := yields.Points
@@ -129,10 +142,25 @@ func constantMaturityTR(name string, yields *marketdata.Series, annualFee float6
 	s.Points = append(s.Points, marketdata.Point{Date: pts[0].Date, Close: val})
 	for i := 1; i < len(pts); i++ {
 		dt := pts[i].Date.Sub(pts[i-1].Date).Hours() / 24 / 365.25
-		if r := step(pts[i-1].Close/100, pts[i].Close/100, dt); !math.IsNaN(r) {
+		r := step(pts[i-1].Close/100, pts[i].Close/100, dt)
+		if spansJunction(yields.Junctions, pts[i-1].Date, pts[i].Date) {
+			r = math.NaN()
+		}
+		if !math.IsNaN(r) {
 			val *= 1 + r - annualFee*dt
 		}
 		s.Points = append(s.Points, marketdata.Point{Date: pts[i].Date, Close: val})
 	}
 	return s
+}
+
+// spansJunction reports whether a definition junction falls in (from, to], i.e.
+// whether the period from..to straddles the day the series changed meaning.
+func spansJunction(junctions []time.Time, from, to time.Time) bool {
+	for _, j := range junctions {
+		if j.After(from) && !j.After(to) {
+			return true
+		}
+	}
+	return false
 }
