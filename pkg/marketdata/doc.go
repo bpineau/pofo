@@ -117,6 +117,18 @@
 // entries and cannot combine with the SIM extension, which is total-return
 // by construction.
 //
+// # Definition junctions
+//
+// Series.Junctions are the dates on which a series' publisher started
+// measuring something ELSE: the levels on both sides are real, the step
+// between them is not a move, and a consumer that reads a return from it
+// fabricates one. They are read from a simdata file's optional
+// "# junctions:" header, so the declaration travels with the data rather
+// than living in whichever code happened to notice. The bundled
+// TREASURY-LONG-YIELD carries one, 1973-01-04, where H.15's 20-year
+// constant maturity stepped 0.71 pt overnight while the 10-year point sat
+// still; simgen's constant-maturity engines skip any period spanning one.
+//
 // # Intraday
 //
 // Client.Intraday fetches the current trading day's price path for an
