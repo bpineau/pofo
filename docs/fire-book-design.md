@@ -200,6 +200,38 @@ measures volatility year to year. The site's headline return is a 15-year
 baseline and its drawdowns are year-end, neither comparable to this book's
 compound return and monthly-index drawdown: the control comment says so.
 
+Catch-up 2026-09-20, the second one, on the next day's data repairs. Three of
+them landed together: the 1973-01-04 definitional break in the Fed's 20-year
+yield had been priced as a market move (calendar 1973 for the long bond read
+−6.78 % against a published −1.11 %), an intermediate-Treasury donor swallowed
+a 1993 year-end distribution, and a donor line was spliced ahead of its own
+index. Six plates moved and were refrozen from the data. The largest reading
+is defenses-bulletin's: long government bonds lost 15.2 % in real dollars over
+1973-1974, not 21.6 %. The column's ranking is untouched, gold wins it and long
+duration still ends below both cash and the intermediate segment, so the plate
+keeps its lesson at a smaller scale, and no sentence of actifs-defensifs quoted
+the number. douleur-prime moved on both axes: the long-Treasury point's pain
+went from −1.37 to −0.66 % and its premium from 1.83 to 1.97 points, tilting
+the wage line and taking the fit from 0.87 to 0.85, so gold now sits 4.0 points
+above the line instead of 4.2, and primes-de-risque's caption says so.
+
+Two plates needed layout work rather than numbers, and both defects were
+created by the move. On tous-temps-echange the All-Weather point slid right
+onto the Golden Butterfly's dashed line and its reading landed on the block
+that line carries; its pair of numbers now hangs to the left like Browne's. On
+tous-temps-curseur the two curves now cross inside the recommended plateau, so
+readings hung on a fixed side collided at 30 % of dose: each reading sits on
+the outside of its pair instead, and the pair standing against an axis hangs
+inward, the naked core's 5.96 having grown into the 6.0 tick.
+
+Two readings of the PREVIOUS catch-up had been left behind, both in
+portefeuilles-tous-temps and both unguarded by any test: the 70/30 plunges
+42 % and not 41 %, and the shallowest stock and bond mix of the ladder stops at
+−35 % and not −34 %. The plate-against-article test now holds both, so they
+cannot drift away alone again. The lesson generalizes: a number a plate prints
+in WORDS and its article repeats is only as durable as the guard that ties the
+two together.
+
 Tooling landed with the batch and outlives it. figures_kit.go names the plate
 toolbox (palette, type and bar primitives, the value-to-pixel map, axis ticks,
 the notes block, the brace, the dot label), plumbing only, since the FORM of a
