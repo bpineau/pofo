@@ -88,6 +88,16 @@
 //     legs cancel against a calm neighbourhood is dropped, real crash days
 //     never qualify), and longBackFee charges a gross proxy what its
 //     grossness is worth;
+//   - trackIndex (tracked.go) holds a DONOR to the index it tracks, where the
+//     bundle carries a series of the same instrument: a session disagreeing
+//     with the reference past a stated per-pair tolerance takes the
+//     reference's return, and a bad first print is dropped. The reference is
+//     allowed to lead or lag one session, so a Xetra close is never convicted
+//     of a US move it posted a day late. It sees what a series read on its own
+//     cannot (a month of the fund's other listing, a distribution the provider
+//     never published) and reports every rejection to the generation log; the
+//     call sites are the FCPE donors (recipes.go) and the "tracked" map
+//     extend.go applies at fetch time;
 //   - TreasuryTR and TreasuryZeroTR (treasury.go) rebuild a bond sleeve from a
 //     YIELD series rather than from a fund, which is how the Treasury legs
 //     reach 1953: the first holds a constant-maturity PAR coupon bond, the
@@ -97,7 +107,11 @@
 //     does not, so no constant multiple of a coupon fund reproduces a strip
 //     across rate regimes: the ratio is 1.66 at a 3 % long yield and 3.31 at
 //     12 %. strips.go and docs/long-treasury-zero-coupon-design.md hold the
-//     table and the validation;
+//     table and the validation. A yield series may declare DEFINITION
+//     junctions (marketdata.Series.Junctions, read from a simdata file's
+//     "# junctions:" header): the step into one is not a rate move and both
+//     engines skip it, which is what keeps the 1973-01-04 break of the H.15
+//     20-year point out of every Treasury reconstruction;
 //   - globalbond.go rebuilds a MULTI-CURRENCY government bond futures basket
 //     (the sleeve of the global efficient-core fund NTSG) as one excess-return
 //     index: a local sleeve per currency, each netted against its OWN
