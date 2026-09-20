@@ -168,5 +168,6 @@ func (c *Client) fetchFT(ctx context.Context, id string, res resolution, from ti
 		}
 		s.Points = append(s.Points, Point{Date: day, Close: *cl})
 	}
+	normalizeUnits(s) // FT spells the London pence line "GBX"
 	return s, nil
 }

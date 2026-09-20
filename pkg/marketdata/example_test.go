@@ -296,6 +296,22 @@ func ExampleLooksDistributing() {
 
 // A rate symbol is an annualized percent LEVEL, not a price: read the
 // registry to offer them, and never feed one to a return computation.
+// A London listing is quoted in pence and labelled "GBp", a code that folds
+// into "GBP" in any case-insensitive comparison. Fetch rescales such a series
+// on the way in, so nothing this package serves ever carries a sub-unit;
+// IsMinorUnit is there for a caller checking records of its own.
+func ExampleIsMinorUnit() {
+	for _, code := range []string{"GBP", "GBp", "GBX", "ZAc", "EUR"} {
+		fmt.Println(code, marketdata.IsMinorUnit(code))
+	}
+	// Output:
+	// GBP false
+	// GBp true
+	// GBX true
+	// ZAc true
+	// EUR false
+}
+
 func ExampleRateName() {
 	fmt.Println(marketdata.RateName("^ESTR"))
 	fmt.Println(marketdata.RateName("^NOSUCHRATE") == "")

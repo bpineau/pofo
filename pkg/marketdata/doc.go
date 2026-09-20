@@ -63,7 +63,9 @@
 // catalog source "airfund": such a fund has no ISIN and no listing, and its
 // bundled refdata NAV snapshot answers offline). Downloads are cached on
 // disk (JSON, one file per instrument); a failed refresh serves the stale
-// data with a warning rather than failing.
+// data with a warning rather than failing. Each file records the format it was
+// written under, so a fix that changes what a correct file holds can distrust
+// its own past output without invalidating a whole cache (see cacheFormat).
 //
 // FT and Morningstar NAVs are both a PRICE return: what a distributing share
 // class pays out is missing from them, silently, and no source corrects it
@@ -71,11 +73,49 @@
 // the same fund's history on their own dates: a weekly-dealing class measured
 // through both stamps the same NAVs days apart, which moves the level by low
 // double digits over decades without either source being wrong. Prefer one
-// source per instrument, and never splice segments of both into one series. A few symbols additionally
-// carry a bundled snapshot served as a last resort when every source fails
-// and nothing is cached: ^VIX (daily, 1990→), the inflation indices (see
-// below) and the euro crosses (the long daily ECU/DM/EUR proxy, 1971→, the
-// same one that extends a live cross back in time).
+// source per instrument, and never splice segments of both into one series.
+// The cache enforces that last rule: a non-Yahoo source's history is keyed by
+// the SOURCE and the identifier, so an ISIN re-resolved from one to the other
+// refetches instead of reading its predecessor's file back, which the
+// stale-cache fallback would otherwise have done silently during an outage.
+//
+// A few symbols additionally carry a bundled snapshot, served as a last
+// resort when every source fails and nothing is cached: ^VIX (daily, 1990→),
+// the inflation indices (see below) and the euro crosses (the long daily
+// ECU/DM/EUR proxy, 1971→, the same one that extends a live cross back in
+// time).
+//
+// # Quote units
+//
+// Series.Currency and Quote.Currency are always an ISO currency, and the
+// numbers next to them are always in that currency's MAJOR unit. Providers
+// are not: a London listing comes back from Yahoo in pence labelled "GBp" and
+// from the Financial Times labelled "GBX", Johannesburg in cents ("ZAc"), the
+// Chicago grain contracts in US cents ("USX"). Every such series is rescaled
+// where it enters the package (units.go), dividends included, so a consumer
+// never has to know which venue it came from.
+//
+// This is not a convenience. "GBp" and "GBP" differ by case alone, so a pence
+// price satisfies every currency gate a caller can set - FetchOptions.Currency
+// with NoConvert, QuoteOptions.Currency - and is then booked as pounds: a
+// hundredfold valuation error that no plausibility band can see, since a
+// change of unit leaves every return untouched. IsMinorUnit names a sub-unit
+// code for a caller validating its own records, and the data doctor reports
+// one reaching it.
+//
+// # Trading days
+//
+// Every Point.Date is the calendar day the session ran on, at 00:00 UTC. A
+// provider's daily bar carries an INSTANT of that session rather than a date,
+// so the day is read in the venue's own time zone: the ASX opens at 10:00 in
+// Sydney, which is 23:00 UTC of the day before while Australia is on summer
+// time, and reading it in UTC dated half of every Australian history one day
+// early, Monday's session on a Sunday. The correction only ever moves a date
+// forward, since a UTC reading is never late, only early.
+//
+// One family is deliberately left on the UTC calendar: a currency cross, which
+// has no exchange and no trading day (see venueTimezone, which also records
+// the separate dating anomaly Yahoo's crosses carry in the European summer).
 //
 // Eurostat serves the Harmonised Index of Consumer Prices under the
 // "^HICP-<geo>" identifiers (^HICP-FR France, ^HICP-EA euro area, …): the
@@ -263,7 +303,9 @@
 //     forward-fill zeros before their history;
 //   - Client.Fees returns an asset's published TER (pinned catalog, disk
 //     cache, otherwise FT tearsheets and justETF);
-//   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds;
+//   - UCITSFlag/GuessUCITS and LooksDistributing qualify funds; IsMinorUnit
+//     tells a venue sub-unit ("GBp", "ZAc") from a currency, for a caller
+//     validating records of its own (nothing served here carries one);
 //   - ClassBand returns an asset class's plausibility Band, the table the
 //     doctor judges by and the cleaning pass is gated on;
 //   - CanonicalID normalizes any accepted identifier (alias, ISIN, ticker

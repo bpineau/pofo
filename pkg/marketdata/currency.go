@@ -140,11 +140,10 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 	if target == "" || s.Currency == "" || len(s.Points) == 0 {
 		return s, time.Time{}, nil
 	}
-	src := s.Currency
-	scale := 1.0
-	if src == "GBp" || src == "GBX" {
-		src, scale = "GBP", 0.01
-	}
+	// A series arriving through this package carries no sub-unit any more
+	// (units.go rescales it at the provider boundary), but ConvertCurrency is
+	// public and may be handed a series a caller built itself.
+	src, scale, _ := majorUnit(s.Currency)
 	if src == target {
 		if scale == 1.0 {
 			return s, time.Time{}, nil
@@ -209,11 +208,18 @@ func (c *Client) ConvertCurrency(ctx context.Context, s *Series, target string, 
 // the available FX history; ConvertCurrency instead holds the earliest
 // rate flat there, which suits series conversion but would silently skew
 // a point-in-time quote.
+//
+// A venue sub-unit ("GBp" pence, "ZAc" cents, see units.go) is accepted on
+// either side and carries its hundredth into the multiplier. Uppercasing it
+// first, as any ordinary code, would turn pence into pounds and return a rate
+// a hundred times too large.
 func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (float64, error) {
-	from = strings.ToUpper(strings.TrimSpace(from))
-	to = strings.ToUpper(strings.TrimSpace(to))
+	from, fromScale, _ := majorUnit(strings.TrimSpace(from))
+	to, toScale, _ := majorUnit(strings.TrimSpace(to))
+	from, to = strings.ToUpper(from), strings.ToUpper(to)
+	scale := fromScale / toScale
 	if from == to {
-		return 1, nil
+		return scale, nil
 	}
 	fx, err := c.fxHistory(ctx, from, to, time.Time{})
 	if err != nil {
@@ -223,7 +229,7 @@ func (c *Client) FXRate(ctx context.Context, from, to string, at time.Time) (flo
 	if !ok {
 		return 0, fmt.Errorf("no %s→%s rate on or before %s", from, to, at.Format("2006-01-02"))
 	}
-	return rate, nil
+	return rate * scale, nil
 }
 
 // fxHistory returns the src→target daily FX cross from Yahoo, with Stooq

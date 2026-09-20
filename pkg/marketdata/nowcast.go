@@ -198,7 +198,7 @@ func (c *Client) openAnchorFactor(ctx context.Context, proxyID string, day time.
 		return 1, false
 	}
 	from := day.AddDate(0, 0, -14)
-	s, err := c.cachedHistory(ctx, "Yahoo opens", openAnchorFactorView(symbol), from, false, func() (*Series, error) {
+	s, err := c.cachedHistory(ctx, "yahoo-opens", openAnchorFactorView(symbol), from, false, func() (*Series, error) {
 		return c.fetchYahooOpenFactors(ctx, symbol, from)
 	})
 	if err != nil {

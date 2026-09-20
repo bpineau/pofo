@@ -156,7 +156,7 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 			price, unix, session = freshestSession(price, unix,
 				r.PreMarketPrice, r.PreMarketTime, r.PostMarketPrice, r.PostMarketTime)
 		}
-		out[r.Symbol] = Quote{
+		q := Quote{
 			Price:    price,
 			Time:     time.Unix(unix, 0).In(loc),
 			Currency: r.Currency,
@@ -165,6 +165,8 @@ func (c *Client) quoteBatchChunk(ctx context.Context, symbols []string, out map[
 			Live:     true,
 			Session:  session,
 		}
+		normalizeQuoteUnits(&q)
+		out[r.Symbol] = q
 	}
 }
 
