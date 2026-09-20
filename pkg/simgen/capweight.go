@@ -30,9 +30,10 @@ import (
 // below rather than waved away, and it is the reason the anchor is taken as
 // close as possible to the era the reconstruction serves.
 //
-// annualFee is deducted pro rata temporis, exactly as in Composite. A leg
-// missing from the frame is an error, and the weights are renormalized (the
-// published splits are rounded percentages).
+// annualFee is charged per frame step at a 252-step year, exactly as in
+// Composite, and carries the same caveat: it is a yearly charge only on a daily
+// frame. A leg missing from the frame is an error, and the weights are
+// renormalized (the published splits are rounded percentages).
 func CapWeighted(fr *Frame, legs []Leg, anchor time.Time, annualFee float64) ([]float64, error) {
 	if len(legs) == 0 {
 		return nil, fmt.Errorf("no leg")

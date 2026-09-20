@@ -3,7 +3,9 @@ package simgen
 import (
 	"math"
 	"os"
+	"strings"
 	"testing"
+	"testing/fstest"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -204,6 +206,27 @@ func TestWithRefDataServesLocalFiles(t *testing.T) {
 	// Not in the directory: fallback.
 	if s, err := f.Fetch("AUTRE", day(0)); err != nil || s.Symbol != "AUTRE" {
 		t.Fatalf("fallback: %+v, %v", s, err)
+	}
+}
+
+// A reference file that EXISTS but cannot be read must fail loudly rather than
+// hand the id to the fallback. These ids look nothing like a ticker, so a
+// network fallback resolves them by fuzzy search and always finds something:
+// EM-USD matches a crypto token, SP500-USD a derivatives index. A build must
+// not splice either in silence because a bundled CSV lost a line.
+func TestWithRefDataRefusesAnUnreadableReference(t *testing.T) {
+	fsys := fstest.MapFS{"REF-X.csv": &fstest.MapFile{
+		Data: []byte("# pofo simdata v1\n# id: REF-X\ndate,close\n2020-01-01,not-a-number\n"),
+	}}
+	decoy := mkSeries("DECOY", 5, 0.01)
+	decoy.Name = "something a fuzzy search found"
+	f := WithRefData(fsys, fakeFetcher{"REF-X": decoy})
+	s, err := f.Fetch("REF-X", day(0))
+	if err == nil {
+		t.Fatalf("unreadable reference served %+v instead of failing", s)
+	}
+	if !strings.Contains(err.Error(), "REF-X") {
+		t.Errorf("error %q does not name the reference", err)
 	}
 }
 
