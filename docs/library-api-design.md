@@ -372,7 +372,7 @@ attribution shares summing to one, the composition against `suggest` called
 directly. Examples: `ExampleAsset`, `ExamplePortfolio`, and one
 `Example_sixtyForty` that is the README's opening snippet.
 
-### M4. `compare` consumes `analyze`
+### M4. `compare` consumes `analyze` (shipped 2026-09-26)
 
 `compare.Compute` builds each column through `analyze.Portfolio` and keeps
 its own responsibilities: the common window across columns, the benchmark
@@ -384,6 +384,14 @@ func (c *Comparison) Studies() []*analyze.PortfolioStudy
 ```
 
 so a consumer of the pipeline reaches the numbers behind every chart.
+
+As shipped, compare kept the currency expansion, the benchmark, the common
+window with its nominal and real statistics (a column spanning its whole
+simulation reads its study's own), the framework-dependent coverage bars and
+the optimizer, which analyze deliberately does not run: compare optimizes the
+written column's built portfolio, then studies the chosen weights, copied
+unrenormalized, through `analyze.Portfolio` like any other spec, so the
+optimized column has a study too and the reports stayed byte-identical.
 
 Gate: the rendered report of `examples/dragon-decumulation-household.txt`
 (and of two more example files, one with flows, one with leverage) must be

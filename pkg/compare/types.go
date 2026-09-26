@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/analyze"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/portfolio"
@@ -63,18 +64,26 @@ type Column struct {
 	Note string
 }
 
-// column is the full per-portfolio compute record produced by Compute (the
-// former cmd/pofo result struct). It keeps every intermediate a renderer might
-// need; Comparison exposes only the narrow Column view publicly.
+// column is the full per-portfolio compute record produced by Compute. Its
+// numbers come from study, the column's analyze.PortfolioStudy: p and sim are
+// that study's Portfolio and Sim (a test may set them without a study), and
+// the composition and risk attribution are read off it. What the record adds
+// is the comparison's own: the common-window view and its statistics, the
+// real (deflated) ones, the identity color, the report's warnings.
+// Comparison exposes only the narrow Column view publicly.
 type column struct {
+	study         *analyze.PortfolioStudy
 	p             *portfolio.Portfolio
 	sim           *portfolio.SimResult
+	warnings      []string // the report's: the build's, the simulation's, a ruin
 	color         string
 	rebalanceDays int
 	currency      string // base currency this column was evaluated in
 	specName      string // the spec this column came from (p.Name may be decorated: currency tag, "as written")
 	note          string // informational line (e.g. optimizer choice)
-	// Common-window view, renormalized to 100, used for stats and comparison.
+	// Common-window view, renormalized to 100: the comparison chart, the
+	// drawdowns, the rolling and the real rows. stats, rel and vts are
+	// measured on the same window of sim.Index itself (see column.measure).
 	winDates  []time.Time
 	winValues []float64
 	stats     metrics.Stats
@@ -106,6 +115,40 @@ func (c *Comparison) CommonStart() time.Time { return c.commonStart }
 // CommonEnd is the earliest last quote across the compared columns: the end of
 // the window every column shares.
 func (c *Comparison) CommonEnd() time.Time { return c.commonEnd }
+
+// composition is the column's look-through, zero without a study.
+func (r *column) composition() analyze.Composition {
+	if r.study == nil {
+		return analyze.Composition{}
+	}
+	return r.study.Composition
+}
+
+// attribution is the column's risk and return attribution, zero without a
+// study.
+func (r *column) attribution() metrics.Attribution {
+	if r.study == nil {
+		return metrics.Attribution{}
+	}
+	return r.study.Attribution
+}
+
+// Studies returns the numbers behind every column, in column order: one
+// analyze.PortfolioStudy per compared portfolio, each on that column's OWN
+// simulation window (Columns and StatRows read the common window instead).
+// Every column Compute builds has one, the optimizer's column and each
+// currency of a "#meta currencies" spec included: the study's Spec is then
+// the column's (named as the column, the currency expanded, the optimizer's
+// weights written in), so a study says exactly what its column shows. The
+// benchmark is not a column and has no study. The studies are shared, not
+// copied: treat them as read-only.
+func (c *Comparison) Studies() []*analyze.PortfolioStudy {
+	out := make([]*analyze.PortfolioStudy, len(c.columns))
+	for i, col := range c.columns {
+		out[i] = col.study
+	}
+	return out
+}
 
 // Columns returns the narrow public view of every compared portfolio, in the
 // order they were computed.

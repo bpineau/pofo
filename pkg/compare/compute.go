@@ -6,7 +6,9 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"slices"
 
+	"github.com/bpineau/pofo/pkg/analyze"
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -15,53 +17,33 @@ import (
 	"github.com/bpineau/pofo/pkg/suggest"
 )
 
-// fetchIn fetches one asset in an explicit target currency, honoring the
-// window and SIM/simdata toggles carried by the options. It is the library
-// counterpart of the CLI's fetchAssetIn.
-func (opt Options) fetchIn(ctx context.Context, client *marketdata.Client, id, currency string) (*marketdata.Series, error) {
-	return client.FetchExtended(ctx, id, marketdata.FetchOptions{
-		From:     opt.Start,
-		To:       opt.End,
-		NoSim:    opt.NoSim,
-		Simdata:  opt.Simdata,
-		Currency: currency,
-		// A catalog asset is pinned to its instrument, so exactness only
-		// concerns the rest: an identifier a caller took from untrusted
-		// hands must not adopt a fund a full-text search merely liked.
-		ExactOnly: opt.ExactForeign && !marketdata.KnownLocal(id),
-	})
-}
-
-// Compute runs the whole comparison pipeline for already-parsed specs: quotes
-// and benchmark fetches, portfolio builds, simulations, the common window, and
-// nominal/real statistics.
+// Compute runs the whole comparison pipeline for already-parsed specs. Every
+// column is an analyze.Portfolio study (fetch, build, simulation, per-holding
+// studies, composition, attribution: see Comparison.Studies), made through
+// one memoizing source so a series shared by several columns is fetched once.
+// Compute adds what only a comparison of several columns owns: the "#meta
+// currencies" expansion (one study per currency), the "#meta optimize" column
+// (the optimizer runs here, on the written column's built portfolio, and its
+// weights are then studied like any others), the benchmark, the common window,
+// and the nominal and real (CPI-deflated) statistics on that window.
 func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.Spec, opt Options) (*Comparison, error) {
-	// Download every distinct (currency, asset) once. A "#meta currencies"
-	// directive evaluates the same portfolio in several currencies.
-	seriesByCur := map[string]map[string]*marketdata.Series{}
+	src := newSource(client, opt)
+
+	// Fetch every holding up front, in every currency its spec is evaluated
+	// in, so a failure names the portfolio, the asset and the currency before
+	// any study starts; the studies then find each series in the memo.
 	resolved := map[string]bool{} // report each id's resolved instrument once
 	for _, spec := range specs {
 		for _, cur := range effectiveCurrencies(spec, opt.Currency) {
-			m := seriesByCur[cur]
-			if m == nil {
-				m = map[string]*marketdata.Series{}
-				seriesByCur[cur] = m
-			}
 			for _, h := range spec.Holdings {
-				// "#meta sim:on" backcasts every holding: fetch (and cache)
-				// its SIM variant, keyed by the same id Build will request.
-				// -no-simulate is honored downstream in FetchExtended (NoSim),
-				// which fetches real quotes for a SIM id, so the flag still
-				// wins over the meta with no extra handling here.
-				fetchID := portfolio.SimFetchID(h.ID, spec.Sim)
-				if _, ok := m[fetchID]; ok {
-					continue
-				}
-				s, err := opt.fetchIn(ctx, client, fetchID, cur)
+				// "#meta sim:on" backcasts every holding: fetch its SIM
+				// variant, the id portfolio.Build will request. -no-simulate
+				// is honored by the source (NoSim), which fetches real quotes
+				// for a SIM id, so the flag still wins over the meta.
+				s, err := src.FetchExtended(ctx, portfolio.SimFetchID(h.ID, spec.Sim), src.holding(cur))
 				if err != nil {
 					return nil, fmt.Errorf("portfolio %s, asset %q (%s): %w", spec.Name, h.ID, cur, err)
 				}
-				m[fetchID] = s
 				// Surface what each identifier resolved to: a fuzzy source match
 				// can return a wrong instrument (e.g. "SP500" -> an S&P sector
 				// sub-index), and a silent mismatch is how delirious numbers slip
@@ -74,115 +56,68 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 		}
 	}
 
-	// Benchmark for Beta/CWARP, best effort, memoized per currency. The chart's
-	// reference curve uses the default currency (benchIn(opt.Currency)).
-	benchCache := map[string]*marketdata.Series{}
+	// Benchmark for Beta/CWARP, best effort, per currency (the source
+	// memoizes it). The chart's reference curve uses the default currency.
+	warned := map[string]bool{}
 	benchIn := func(cur string) *marketdata.Series {
 		if opt.Benchmark == "" {
 			return nil
 		}
-		if b, ok := benchCache[cur]; ok {
-			return b
-		}
-		b, err := client.FetchExtended(ctx, opt.Benchmark, marketdata.FetchOptions{
-			From: opt.Start, NoSim: true, Currency: cur,
-		})
+		b, err := src.FetchExtended(ctx, opt.Benchmark, src.benchmark(cur))
 		if err != nil {
-			log.Printf("warning: benchmark %s unavailable in %s (no Beta): %v", opt.Benchmark, cur, err)
-			b = nil
+			if !warned[cur] {
+				warned[cur] = true
+				log.Printf("warning: benchmark %s unavailable in %s (no Beta): %v", opt.Benchmark, cur, err)
+			}
+			return nil
 		}
-		benchCache[cur] = b
 		return b
 	}
 	bench := benchIn(opt.Currency)
 
-	// Simulate each portfolio; a "#meta rebalance:N" directive overrides
-	// the CLI default for that portfolio only.
-	var feesFor func(string) (float64, bool)
-	if !opt.NoFees {
-		feesFor = func(id string) (float64, bool) {
-			base, _ := marketdata.SplitSim(id)
-			return client.Fees(ctx, base)
-		}
+	// The comparison's rebalancing period 0 means never; analyze reads 0 as
+	// its default and a negative period as never.
+	rebalance := opt.Rebalance
+	if rebalance <= 0 {
+		rebalance = -1
 	}
-	// The financing rate (leverage) is only fetched when needed.
-	var cashRate *marketdata.Series
-	for _, spec := range specs {
-		if spec.Leverage {
-			cr, err := client.Fetch(ctx, "^IRX", opt.Start)
-			if err != nil {
-				log.Printf("warning: financing rate ^IRX unavailable (%v), leverage financed at 0 %%", err)
-			} else {
-				cashRate = cr
-			}
-			break
-		}
-	}
-
-	results := make([]*column, 0, len(specs))
-	simulateInto := func(p *portfolio.Portfolio, spec *portfolio.Spec, currency string) error {
-		days := opt.Rebalance
-		if spec.RebalanceDays >= 0 {
-			days = spec.RebalanceDays
-		}
-		sim, err := portfolio.Simulate(p, days)
-		if err != nil {
-			return fmt.Errorf("portfolio %s: %w", p.Name, err)
-		}
-		for _, w := range sim.Warnings {
-			log.Printf("warning: portfolio %s: %s", p.Name, w)
-			p.Warnings = append(p.Warnings, w)
-		}
-		if sim.Ruined {
-			cause := "the leveraged exposure exhausted the net value"
-			if p.Withdraw.Active() && !p.Leverage {
-				cause = "withdrawals exhausted the capital"
-			}
-			when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
-			log.Printf("warning: portfolio %s wiped out on %s, series truncated", p.Name, when)
-			p.Warnings = append(p.Warnings, fmt.Sprintf(
-				"capital wiped out on %s: %s; the series stops there", when, cause))
-		}
-		results = append(results, &column{p: p, sim: sim, rebalanceDays: days, currency: currency, specName: spec.Name})
-		return nil
-	}
+	var results []*column
 	for _, spec := range specs {
 		for _, cur := range effectiveCurrencies(spec, opt.Currency) {
-			p, err := portfolio.Build(spec, portfolio.BuildOptions{
-				Fetch:        func(id string) (*marketdata.Series, error) { return seriesByCur[cur][id], nil },
-				Fees:         feesFor,
-				Cash:         cashRate,
-				BorrowSpread: 1.0, // default: cash + 1 %/yr
-				BaseCurrency: cur,
-			})
+			aopt := analyze.Options{Currency: cur, From: opt.Start, To: opt.End, Rebalance: rebalance, Simdata: opt.Simdata}
+			b := benchIn(cur)
+			if b != nil {
+				aopt.Benchmark = opt.Benchmark
+			}
+			name := spec.Name
+			if len(spec.Currencies) > 0 {
+				// Multi-currency: tag each column with its currency.
+				name = fmt.Sprintf("%s (%s)", name, cur)
+			}
+			if spec.Optimize != nil {
+				// An optimized portfolio is shown next to its written weights,
+				// so the optimizer's choice can be compared with the baseline.
+				// (Optimize and currencies cannot be combined, so cur is unique.)
+				name = spec.Name + " (as written)"
+			}
+			written, err := studyColumn(ctx, src, columnSpec(spec, name), aopt, opt.Rebalance, cur, spec.Name)
 			if err != nil {
 				return nil, err
 			}
-			// Multi-currency: tag each column with its currency.
-			if len(spec.Currencies) > 0 {
-				p.Name = fmt.Sprintf("%s (%s)", p.Name, cur)
-			}
-			// An optimized portfolio is shown next to its written weights, so
-			// the optimizer's choice can be compared with the baseline.
-			// (Optimize and currencies cannot be combined, so cur is unique here.)
-			if spec.Optimize != nil {
-				pOpt, note, err := optimizedPortfolio(p, spec, benchIn(cur))
-				if err != nil {
-					return nil, fmt.Errorf("portfolio %s: %w", spec.Name, err)
-				}
-				p.Name = spec.Name + " (as written)"
-				if err := simulateInto(p, spec, cur); err != nil {
-					return nil, err
-				}
-				if err := simulateInto(pOpt, spec, cur); err != nil {
-					return nil, err
-				}
-				results[len(results)-1].note = note
+			if spec.Optimize == nil {
+				results = append(results, written)
 				continue
 			}
-			if err := simulateInto(p, spec, cur); err != nil {
+			pOpt, note, err := optimizedPortfolio(written.p, spec, b)
+			if err != nil {
+				return nil, fmt.Errorf("portfolio %s: %w", spec.Name, err)
+			}
+			optimized, err := studyColumn(ctx, src, weightedSpec(spec, pOpt), aopt, opt.Rebalance, cur, spec.Name)
+			if err != nil {
 				return nil, err
 			}
+			optimized.note = note
+			results = append(results, written, optimized)
 		}
 	}
 
@@ -236,8 +171,7 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 		}
 		r.winDates = r.sim.Dates[i:j]
 		r.winValues = rebase(r.sim.Index[i:j])
-		st, err := metrics.Compute(r.winDates, r.winValues)
-		if err != nil {
+		if err := r.measure(i, j, benchIn(r.currency)); err != nil {
 			return nil, fmt.Errorf("portfolio %s: %w", r.p.Name, err)
 		}
 		if d, ok := deflatorIn(r.currency); ok {
@@ -245,18 +179,6 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 				r.realStats, r.hasReal = rs, true
 			}
 		}
-		if b := benchIn(r.currency); b != nil {
-			bd, bv := seriesSlices(b)
-			if rel, ok := metrics.VsBenchmark(r.winDates, r.winValues, bd, bv); ok {
-				st.Beta, st.HasBeta = rel.Beta, true
-				r.rel, r.hasRel = rel, true
-			}
-			if c, ok := metrics.CWARPvs(r.winDates, r.winValues, bd, bv, metrics.CWARPParams{}); ok {
-				st.CWARP, st.HasCWARP = c, true
-			}
-		}
-		r.vts, r.hasVTS = metrics.VarianceRatio(r.winDates, r.winValues)
-		r.stats = st
 	}
 
 	assetMeta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
@@ -265,4 +187,100 @@ func Compute(ctx context.Context, client *marketdata.Client, specs []*portfolio.
 	}
 
 	return &Comparison{columns: results, bench: bench, commonStart: commonStart, commonEnd: commonEnd, meta: assetMeta, opt: opt}, nil
+}
+
+// studyColumn studies one column's spec through analyze and wraps the study
+// in the column record, with the report's warnings: the build's, the
+// simulation's and a ruin, each also logged. rebalance is the comparison's
+// default period, which the spec's "#meta rebalance:N" overrides; specName is
+// the spec the column came from (the column's own name may be decorated).
+func studyColumn(ctx context.Context, src *source, spec *portfolio.Spec, aopt analyze.Options, rebalance int, cur, specName string) (*column, error) {
+	ps, err := analyze.Portfolio(ctx, src, spec, aopt)
+	if err != nil {
+		return nil, err
+	}
+	p, sim := ps.Portfolio, ps.Sim
+	if p.Leverage && p.Cash == nil {
+		log.Printf("warning: portfolio %s: financing rate unavailable, leverage financed at 0 %%", p.Name)
+	}
+	for _, w := range sim.Warnings {
+		log.Printf("warning: portfolio %s: %s", p.Name, w)
+	}
+	warnings := slices.Concat(p.Warnings, sim.Warnings)
+	if sim.Ruined {
+		cause := "the leveraged exposure exhausted the net value"
+		if p.Withdraw.Active() && !p.Leverage {
+			cause = "withdrawals exhausted the capital"
+		}
+		when := sim.Dates[len(sim.Dates)-1].Format("2006-01-02")
+		log.Printf("warning: portfolio %s wiped out on %s, series truncated", p.Name, when)
+		warnings = append(warnings, fmt.Sprintf(
+			"capital wiped out on %s: %s; the series stops there", when, cause))
+	}
+	days := rebalance
+	if spec.RebalanceDays >= 0 {
+		days = spec.RebalanceDays
+	}
+	return &column{
+		study: ps, p: p, sim: sim, warnings: warnings,
+		rebalanceDays: days, currency: cur, specName: specName,
+	}, nil
+}
+
+// columnSpec is the spec one column studies: spec under the column's name,
+// with the directives Compute acts on itself cleared (the currency list is
+// expanded into columns, the optimizer runs here), so the study describes
+// exactly what its column shows.
+func columnSpec(spec *portfolio.Spec, name string) *portfolio.Spec {
+	eff := *spec
+	eff.Name = name
+	eff.Currencies = nil
+	eff.Optimize = nil
+	return &eff
+}
+
+// weightedSpec is the spec of an optimizer's column: spec's holdings at the
+// weights the optimizer gave p, under p's name. The weights are copied as
+// they are, never renormalized, so the study simulates exactly them.
+func weightedSpec(spec *portfolio.Spec, p *portfolio.Portfolio) *portfolio.Spec {
+	eff := columnSpec(spec, p.Name)
+	eff.Holdings = slices.Clone(spec.Holdings)
+	for i := range eff.Holdings {
+		eff.Holdings[i].Weight = p.Assets[i].Weight
+		eff.Holdings[i].RawWeight = 100 * p.Assets[i].Weight
+	}
+	return eff
+}
+
+// measure sets the column's nominal statistics on the common window [i, j)
+// of its simulation. When that window is the whole simulation, as it is for a
+// lone portfolio, they are the study's own numbers; otherwise they are
+// measured again on that slice of the same Sim.Index, with the calls analyze
+// makes, so a shared window reads the same numbers either way.
+func (r *column) measure(i, j int, bench *marketdata.Series) error {
+	dates, index := r.sim.Dates[i:j], r.sim.Index[i:j]
+	r.vts, r.hasVTS = metrics.VarianceRatio(dates, index)
+	if r.study != nil && i == 0 && j == len(r.sim.Dates) {
+		r.stats = r.study.Stats
+		if rel := r.study.Relative; rel != nil {
+			r.rel, r.hasRel = *rel, true
+		}
+		return nil
+	}
+	st, err := metrics.Compute(dates, index)
+	if err != nil {
+		return err
+	}
+	if bench != nil {
+		bd, bv := bench.Dates(), bench.Values()
+		if rel, ok := metrics.VsBenchmark(dates, index, bd, bv); ok {
+			st.Beta, st.HasBeta = rel.Beta, true
+			r.rel, r.hasRel = rel, true
+		}
+		if c, ok := metrics.CWARPvs(dates, index, bd, bv, metrics.CWARPParams{}); ok {
+			st.CWARP, st.HasCWARP = c, true
+		}
+	}
+	r.stats = st
+	return nil
 }

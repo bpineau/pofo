@@ -1,12 +1,21 @@
 // Package compare computes the portfolio comparison model and assembles the
 // report Page from it.
 //
-// It is the presentation-neutral core that sits between the library pipeline
-// (marketdata, portfolio, metrics, suggest) and the renderers (report, chart):
-// Compute fetches each spec in its base currency, runs the shared simulation,
-// aligns every column on the common window, and folds the per-portfolio compute
-// records into a Comparison. HTMLPage then turns that Comparison into a
-// report.Page ready for report.Render.
+// It is presentation over pkg/analyze, the numbers layer, and it sits between
+// that layer and the renderers (report, chart). Every column Compute builds is
+// an analyze.Portfolio study (fetch, build, simulation, per-holding studies,
+// composition, risk attribution), made through one memoizing source so a
+// series two columns share is fetched once; Comparison.Studies hands those
+// studies to a caller who wants the numbers behind every chart rather than the
+// page. What compare adds is what only a comparison of several columns owns:
+// the "#meta currencies" expansion (one study per currency), the "#meta
+// optimize" column (the optimizer runs here, then its weights are studied like
+// any others), the benchmark, the window common to every column, and the
+// nominal and real (CPI-deflated) statistics on that window. A column whose
+// window is its whole simulation reads its study's own statistics; a column
+// the common window cuts is measured again on that slice of the same series.
+// HTMLPage then turns the Comparison into a report.Page ready for
+// report.Render.
 //
 // The package returns models, never I/O: it has no knowledge of the web server,
 // the terminal, or CLI flags. All caller intent arrives through Options (base
@@ -20,7 +29,7 @@
 //
 // The pipeline shape is:
 //
-//	Compute(...) -> *Comparison -> HTMLPage / StatRows / Columns
+//	Compute(...) -> *Comparison -> HTMLPage / StatRows / Columns / Studies
 //
 // Each portfolio's detail section is assembled from three blocks that answer
 // three different questions about the same holdings: the composition pies say
@@ -32,7 +41,8 @@
 //
 // Comparison keeps its per-column compute records private; accessors
 // (CommonStart, CommonEnd, Columns) expose the narrow public view a caller
-// needs without leaking the internal record.
+// needs without leaking the internal record, and Studies the numbers layer
+// underneath it, one analyze.PortfolioStudy per column.
 //
 // # Optimized columns
 //
