@@ -17,7 +17,7 @@ func TestNewSpecMatchesParse(t *testing.T) {
 	}{
 		{"sixty-forty", "60 IWDA 0.2\n40 AGGH\n",
 			[]Line{{ID: "IWDA", Weight: 0.6, Fees: 0.2}, {ID: "AGGH", Weight: 0.4, Fees: -1}}},
-		{"three-lines", "50 VTI 0.03\n30 IE00B4L5Y983\n20 IGLN 0\n",
+		{"three-lines", "50 VTI 0.03\n30 IE00B4L5Y983\n20 IGLN\n", // a Line's zero fee is the file's absent column
 			[]Line{{ID: "VTI", Weight: 0.5, Fees: 0.03}, {ID: "IE00B4L5Y983", Weight: 0.3, Fees: -1}, {ID: "IGLN", Weight: 0.2}}},
 		{"normalized", "30 VTI\n30 BND\n",
 			[]Line{{ID: "VTI", Weight: 0.3, Fees: -1}, {ID: "BND", Weight: 0.3, Fees: -1}}},
