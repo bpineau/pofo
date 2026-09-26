@@ -5,7 +5,6 @@ import (
 	"math"
 	"sort"
 
-	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/report"
 	"github.com/bpineau/pofo/pkg/suggest"
@@ -24,7 +23,8 @@ import (
 // visible at a glance rather than to be derived by the reader.
 //
 // The arithmetic is exact (metrics.Attribute, an Euler decomposition of
-// variance and a plain sum for the return), and it runs on the simulation's
+// variance and a plain sum for the return, which the column's study computes:
+// analyze.PortfolioStudy.Attribution), and it runs on the simulation's
 // per-holding MONTHLY contributions, so drifting weights, rebalancing and
 // embedded leverage are already in it, without the asynchronous-pricing bias a
 // daily view carries across time zones. Only the grouping is approximate, and in one
@@ -39,19 +39,20 @@ import (
 // too short to estimate a covariance or when no catalog metadata is available
 // (the classes would all be "unknown", which teaches nothing).
 func riskBudgetRows(r *column, meta map[string]suggest.Meta) []report.RiskRow {
-	if r == nil || r.sim == nil || len(meta) == 0 {
+	if r == nil || len(meta) == 0 {
 		return nil
 	}
-	// MONTHLY contributions, not daily: the book holds funds priced at
-	// different market closes (a US mutual-fund NAV against a European
-	// listing), and asynchronous pricing depresses measured cross-correlation,
-	// which would hand each holding a share of variance closer to its own
-	// standalone volatility than to its real co-movement with the book. Folding
-	// to months removes most of that bias, at the cost of fewer observations,
-	// which a covariance over this many holdings can afford.
-	_, monthly := r.sim.MonthlyContributions()
-	att, err := metrics.Attribute(monthly)
-	if err != nil || len(att.Risk) != len(r.p.Assets) {
+	// The study's attribution runs on MONTHLY contributions, not daily: the
+	// book holds funds priced at different market closes (a US mutual-fund NAV
+	// against a European listing), and asynchronous pricing depresses measured
+	// cross-correlation, which would hand each holding a share of variance
+	// closer to its own standalone volatility than to its real co-movement
+	// with the book. Folding to months removes most of that bias, at the cost
+	// of fewer observations, which a covariance over this many holdings can
+	// afford. A study that could not attribute carries none, and the block
+	// then omits itself.
+	att := r.attribution()
+	if len(att.Risk) != len(r.p.Assets) || len(att.Return) != len(r.p.Assets) {
 		return nil
 	}
 

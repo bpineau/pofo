@@ -314,6 +314,7 @@ func TestHTMLPageAssemblesEveryBlock(t *testing.T) {
 				series[k] = 0.01 * math.Sin(float64(k)/3+float64(j))
 			}
 		}
+		attachStudy(c, meta) // the attribution follows the new contributions
 	}
 	opt := Options{Rebalance: 90, Benchmark: "^GSPC", Framework: suggest.RegimeFramework(), Currency: "EUR"}
 	c := newTestComparison(cols, bench, start, end, meta, opt)

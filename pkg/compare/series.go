@@ -97,13 +97,3 @@ func rebase(values []float64) []float64 {
 	}
 	return out
 }
-
-func seriesSlices(s *marketdata.Series) ([]time.Time, []float64) {
-	dates := make([]time.Time, len(s.Points))
-	values := make([]float64, len(s.Points))
-	for i, p := range s.Points {
-		dates[i] = p.Date
-		values[i] = p.Close
-	}
-	return dates, values
-}

@@ -1,6 +1,8 @@
 // The report's composition blocks: look-through pies (geography, currency,
 // equity sectors, asset type), segmented coverage bars and the duration /
-// currency notes, all from pkg/suggest's composition splits.
+// currency notes. The pies and notes shape the composition a column's study
+// carries (analyze.Composition, pkg/suggest's splits); the coverage bars stay
+// computed here because they follow the comparison's own suggest.Framework.
 package compare
 
 import (
@@ -12,6 +14,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/bpineau/pofo/pkg/analyze"
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
@@ -58,27 +61,26 @@ func holdingsFor(assets []portfolio.Asset, meta map[string]suggest.Meta) []sugge
 
 // breakdownPies builds the look-through composition pies (geography, currency
 // exposure, equity sectors, asset type) for a portfolio's detail section from
-// the suggest composition splits. Returns the non-empty pie SVGs (nil when no
-// metadata is available at all).
-func breakdownPies(assets []portfolio.Asset, meta map[string]suggest.Meta) []template.HTML {
+// its study's composition (the suggest splits). Returns the non-empty pie SVGs
+// (nil when no metadata is available at all). The study's maps are cloned
+// before the display folds rewrite them.
+func breakdownPies(comp analyze.Composition, meta map[string]suggest.Meta) []template.HTML {
 	if len(meta) == 0 {
 		return nil
 	}
-	holdings := holdingsFor(assets, meta)
-
-	geo := suggest.GeographySplit(holdings)
+	geo := maps.Clone(comp.Geography)
 	foldInto(geo, "Other", suggest.BucketUnknown)
 
-	cur := suggest.CurrencySplit(holdings)
+	cur := maps.Clone(comp.Currency)
 	foldInto(cur, "Other", suggest.CurrencyOther, suggest.BucketUnknown)
 	relabel(cur, suggest.CurrencyNone, "None (real assets)")
 	relabel(cur, suggest.CurrencyDynamic, "Dynamic (futures)")
 
-	sec, equity := suggest.EquitySectorSplit(holdings)
-	secTitle := fmt.Sprintf("Equity sectors (%.0f%% of capital)", equity*100)
+	sec := comp.Sectors
+	secTitle := fmt.Sprintf("Equity sectors (%.0f%% of capital)", comp.Equity*100)
 
 	cls := map[string]float64{}
-	for class, w := range suggest.AssetClassSplit(holdings) {
+	for class, w := range comp.AssetClass {
 		cls[prettyClass(class)] += w
 	}
 
@@ -249,15 +251,15 @@ func coverageBars(assets []portfolio.Asset, meta map[string]suggest.Meta, fw sug
 }
 
 // compositionNotes renders the look-through duration and currency summary
-// lines shown under a portfolio's composition (empty without metadata).
-func compositionNotes(assets []portfolio.Asset, meta map[string]suggest.Meta, base string) []string {
+// lines shown under a portfolio's composition (empty without metadata), from
+// its study's composition.
+func compositionNotes(comp analyze.Composition, meta map[string]suggest.Meta, base string) []string {
 	if len(meta) == 0 {
 		return nil
 	}
-	holdings := holdingsFor(assets, meta)
 	var notes []string
 
-	led := suggest.DurationSplit(holdings)
+	led := comp.Duration
 	switch {
 	case led.Nominal > 0:
 		line := fmt.Sprintf("Rate duration (look-through): %.1f y nominal per unit of capital (≈ %.0f pts of 7y-bond equivalent)",
@@ -273,7 +275,7 @@ func compositionNotes(assets []portfolio.Asset, meta map[string]suggest.Meta, ba
 		notes = append(notes, fmt.Sprintf("Rate duration (look-through): %.1f y real-rate from inflation-linked bonds.", led.Real))
 	}
 
-	p := suggest.CurrencyProfile(suggest.CurrencySplit(holdings), base)
+	p := suggest.CurrencyProfile(comp.Currency, base)
 	if p.Base+p.Foreign+p.NonFiat > 0 {
 		line := fmt.Sprintf("Currency (look-through): %.0f%% %s-native or hedged · %.0f%% unhedged foreign", p.Base*100, base, p.Foreign*100)
 		if p.Top != "" {
