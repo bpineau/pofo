@@ -84,22 +84,31 @@ func (r *PathResult) cutAt(k int) {
 }
 
 // newPathResult prepares a result with the wealth and spend series allocated
-// and RuinYear at its -1 sentinel.
-func newPathResult(capital float64, years int) PathResult {
-	// Wealth (years+1) and Spend (years) are the two per-path series, allocated
-	// millions of times per page render; back them with a single slice and hand
-	// out two non-overlapping, capacity-capped windows, halving the allocation
-	// count (and the GC pressure it drives) without changing the public fields.
-	buf := make([]float64, 2*years+1)
+// and RuinYear at its -1 sentinel. buf, when it holds seriesLen(years) zeroed
+// floats, backs the two series instead of a fresh allocation: the ensemble
+// drivers hand out windows of one arena, so a thousand-path run allocates the
+// series once rather than once per path (see SimulateOn).
+func newPathResult(capital float64, years int, buf []float64) PathResult {
+	// Wealth (years+1) and Spend (years) are the two per-path series, built
+	// millions of times per page render; they share one backing slice, handed
+	// out as two non-overlapping, capacity-capped windows, so a path costs at
+	// most one allocation (none at all off an arena) without changing the
+	// public fields.
+	if len(buf) < seriesLen(years) {
+		buf = make([]float64, seriesLen(years))
+	}
 	res := PathResult{
 		Wealth:   buf[: years+1 : years+1],
-		Spend:    buf[years+1:],
+		Spend:    buf[years+1 : seriesLen(years) : seriesLen(years)],
 		RuinYear: -1,
 		FirstCut: -1,
 	}
 	res.Wealth[0] = capital
 	return res
 }
+
+// seriesLen is the number of floats one path's two series need.
+func seriesLen(years int) int { return 2*years + 1 }
 
 // RunPath simulates one path under the returns sequence (one return per
 // year; missing years are treated as 0) and the household's drawn lifespans.
@@ -114,12 +123,21 @@ func newPathResult(capital float64, years int) PathResult {
 // is what a plan without a Lifetime always does, and it is how a caller asks
 // for the horizon kernel explicitly. Simulate draws the lifespans for you.
 func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
+	return p.runPathAnnual(returns, lives, nil)
+}
+
+// runPathAnnual is RunPath over an optional caller-owned arena window for the
+// path's two series (nil = allocate them here).
+func (p Plan) runPathAnnual(returns scenario.Sequence, lives Lives, buf []float64) PathResult {
 	target := p.Buffer.Years * p.NeedAnnual
 	buffer := target
 	if buffer > p.Capital {
 		buffer = p.Capital
 	}
-	pks := pocketOps(p.newPockets(p.Capital - buffer))
+	// The single-sleeve case (no Envelopes) is by far the common one: give it a
+	// stack array so a path's pockets cost no allocation at all.
+	var pocketBuf [1]pocket
+	pks := pocketOps(p.newPockets(pocketBuf[:0], p.Capital-buffer))
 
 	drawTh := p.Buffer.drawThreshold()
 	refillCap := p.Buffer.refillCap()
@@ -127,7 +145,7 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 	lf := p.life(lives)
 	end := lf.end()
 
-	res := newPathResult(p.Capital, p.Years)
+	res := newPathResult(p.Capital, p.Years, buf)
 	res.Ret10 = firstDecadeReturn(returns, min(10, p.Years), 1)
 	peak := p.Capital
 	spending := p.NeedAnnual         // dynamic spending level for the guardrails rule
@@ -135,6 +153,12 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 	bounded := p.NeedAnnual          // last delivered level for the bounded-percent rule
 	lastRaise := -p.Ratchet.Cooldown // so a first raise is never cooldown-blocked
 	ratchetActive := p.Ratchet.active()
+	// The annuity is bought in one year and one year only: testing the year
+	// here keeps a no-op call, on a Plan-sized receiver, out of every other.
+	annuityYear := -1
+	if p.Annuity != nil && p.Lifetime != nil {
+		annuityYear = p.Annuity.Year
+	}
 	// newYear() only matters when a pocket carries per-year tax state (AVTax);
 	// the common CTOFlatTax carries none, so decide once per path whether the
 	// per-year call is needed rather than type-asserting every pocket every year.
@@ -161,9 +185,16 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 		if yearlyTax {
 			pks.newYear()
 		}
-		p.buyAnnuity(k, pks, &res, &lf)
+		if k == annuityYear {
+			p.buyAnnuity(k, pks, &res, &lf)
+		}
 		res.Annuity += lf.annuityAt(k)
-		res.Received += p.income(k, lf)
+		// The year's income from outside the portfolio, read ONCE: every
+		// spending rule below nets the same figure off its budget (netAfter,
+		// needAtWith), rather than rescanning the cashflows two or three times
+		// per year for the same answer.
+		inc := p.income(k, lf)
+		res.Received += inc
 		growth := pks.total()
 		total := growth + buffer
 		if total <= 0 {
@@ -181,7 +212,7 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 		// counts the year as "cut" (cutAt), whatever the cause.
 		var need, uncut float64
 		// Every rule below sets the HOUSEHOLD budget for the year; pensions
-		// and side income fund it first (netOf) and the portfolio delivers
+		// and side income fund it first (netAfter) and the portfolio delivers
 		// the remainder, exactly like the fixed rule. Without the netting,
 		// the wealth-based rules would silently withdraw the pension's share
 		// on top of it, making them incomparable in the model strip.
@@ -195,37 +226,37 @@ func (p Plan) RunPath(returns scenario.Sequence, lives Lives) PathResult {
 			// reference standard, so lean years count as lived cuts.
 			wNet := pks.liquidationNet() + buffer
 			budget := pmt(wNet+p.cashflowPV(k, p.AmortReturn, lf), p.AmortReturn, p.planYears()-k)
-			need = math.Min(p.netOf(budget, k, lf), wNet*(1-1e-9))
-			uncut = p.needAt(k, lf)
+			need = math.Min(netAfter(budget, inc), wNet*(1-1e-9))
+			uncut = p.needAtWith(k, lf, inc)
 		} else if p.Bounded.active() {
 			// Bounded percent-of-portfolio (Vanguard dynamic spending): target
 			// a share of wealth, move at most Up/Down from last year's level.
 			bounded = p.Bounded.clampStep(p.Bounded.Pct*total, bounded)
-			need = p.netOf(bounded, k, lf)
-			uncut = p.needAt(k, lf)
+			need = netAfter(bounded, inc)
+			uncut = p.needAtWith(k, lf, inc)
 		} else if p.Percent > 0 {
 			// Percentage-of-portfolio (VPW): spend a fixed share of current
 			// wealth. uncut stays the fixed reference standard, so years where the
 			// rule delivers less than that count as a lived cut.
-			need = p.netOf(p.Percent*total, k, lf)
-			uncut = p.needAt(k, lf)
+			need = netAfter(p.Percent*total, inc)
+			uncut = p.needAtWith(k, lf, inc)
 		} else if p.RiskGuard.active() {
 			// Risk-based guardrail: the same ±10 % moves as Guyton-Klinger,
 			// but the band is the safe rate of the REMAINING horizon and the
 			// rate is read on total wealth, pensions to come included.
 			wealth := total + p.cashflowPV(k, p.RiskGuard.PVRate, lf)
 			spending = p.RiskGuard.adjust(spending, wealth, k)
-			need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf)
-			uncut = p.needAt(k, lf)
+			need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc)
+			uncut = p.needAtWith(k, lf, inc)
 		} else if p.Guard.active() {
 			spending = p.Guard.adjust(spending, total)
-			need = p.netOf(spending*p.schedAt(k)*lf.spendFactor(k), k, lf)
-			uncut = p.needAt(k, lf)
+			need = netAfter(spending*p.schedAt(k)*lf.spendFactor(k), inc)
+			uncut = p.needAtWith(k, lf, inc)
 		} else {
 			if ratchetActive {
 				level, lastRaise = p.Ratchet.raise(level, total, p.Capital, k, lastRaise)
 			}
-			need = p.netOf(level*p.schedAt(k)*lf.spendFactor(k), k, lf)
+			need = netAfter(level*p.schedAt(k)*lf.spendFactor(k), inc)
 			uncut = need
 			if p.Flex.Cut > 0 && p.Flex.triggered(dd, need, total) {
 				need *= 1 - p.Flex.Cut

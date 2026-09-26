@@ -111,12 +111,13 @@ type pocket struct {
 	tax         Tax
 }
 
-// newPockets carves the growth sleeve into per-path tax pockets. Without
-// envelopes it is the historical single sleeve on Plan.Tax with a cost basis
-// equal to the invested amount; with envelopes each pocket takes its pro-rata
-// share of growth, its GainFrac-implied cost basis, and a per-path clone of
-// any stateful tax.
-func (p Plan) newPockets(growth float64) []pocket {
+// newPockets carves the growth sleeve into per-path tax pockets, appended to
+// dst. Without envelopes it is the historical single sleeve on Plan.Tax with a
+// cost basis equal to the invested amount; with envelopes each pocket takes
+// its pro-rata share of growth, its GainFrac-implied cost basis, and a
+// per-path clone of any stateful tax. The kernels pass a one-element stack
+// array as dst, so the common single-sleeve path allocates nothing.
+func (p Plan) newPockets(dst []pocket, growth float64) []pocket {
 	defaulted := func(t Tax) Tax {
 		if t == nil {
 			return CTOFlatTax{}
@@ -127,22 +128,21 @@ func (p Plan) newPockets(growth float64) []pocket {
 		return t
 	}
 	if len(p.Envelopes) == 0 {
-		return []pocket{{value: growth, cost: growth, tax: defaulted(p.Tax)}}
+		return append(dst, pocket{value: growth, cost: growth, tax: defaulted(p.Tax)})
 	}
 	sum := 0.0
 	for _, e := range p.Envelopes {
 		sum += e.Amount
 	}
-	out := make([]pocket, len(p.Envelopes))
-	for i, e := range p.Envelopes {
+	for _, e := range p.Envelopes {
 		v := growth
 		if sum > 0 {
 			v = growth * e.Amount / sum
 		}
 		g := min(max(e.GainFrac, 0), 1)
-		out[i] = pocket{value: v, cost: v * (1 - g), tax: defaulted(e.Tax)}
+		dst = append(dst, pocket{value: v, cost: v * (1 - g), tax: defaulted(e.Tax)})
 	}
-	return out
+	return dst
 }
 
 // pocketOps bundles the operations both kernels need over a pocket set.
