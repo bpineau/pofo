@@ -613,8 +613,9 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
   stale data** with a stderr warning (charts may stop before today), and never
   deletes anything.
 - **History extension** (`…SIM` identifiers only): first the
-  `pkg/datasets/simdata/` files (below), otherwise a known proxy (VOO→^GSPC,
-  BND→VBMFX, …), rescaled to the first real quote. The report flags every
+  `pkg/datasets/simdata/` files (below), otherwise a known total-return proxy
+  (VOO→SP500, IWM→^RUTTR, BND→VBMFX, …), converted into the asset's quote
+  currency and rescaled to its first real quote. The report flags every
   simulated portion.
 
 ### Special identifiers
@@ -955,11 +956,17 @@ _ = iwda.Fees                         // 0.20  (percent/yr)
 
 ## Known limitations
 
-- Price-index proxies (^GSPC, ^NDX…) omit dividends over the simulated
-  portion; managed-futures replications (corr ≈ 0.3-0.5) reflect those
-  strategies' regime, not their daily positions.
-- Assets whose quote currency cannot be determined are left unconverted
-  (flagged in the report warnings).
+- Every history proxy is a total-return series except one: QQQ before its
+  1999-03 launch rides the Nasdaq-100 PRICE index (^NDX), no total-return
+  Nasdaq-100 reaching further back, so that span misses the index's dividend
+  yield (0.57 pt/yr on the 1999-2026 overlap; smaller then, not measured).
+  QQQM and EQQQ inherit it through QQQ.
+- A simulated span is a reconstruction, not the fund: `pofo -verify-simdata`
+  grades each engine against the real quotes (managed-futures ones follow
+  their strategy's monthly path, not its daily positions).
+- A foreign identifier (outside the catalog, whose records all declare a
+  currency) whose source reports no quote currency is left unconverted, and
+  the report says so.
 
 ## Golden tests
 

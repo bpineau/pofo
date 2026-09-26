@@ -289,7 +289,8 @@
 //
 // ReadSimdata/WriteSimdata read and write the permanent simulated histories
 // (pkg/datasets/simdata/) produced by the simgen package; ExtendBack splices
-// those series, or a proxy (ProxySymbol), in front of the real quotes.
+// those series, or a total-return proxy (ProxySymbol) converted into the
+// asset's currency, in front of the real quotes.
 // The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
 // decoded by SplitSim. Client.FetchExtended packages all of this into one
 // call; the pieces stay public for custom pipelines.
