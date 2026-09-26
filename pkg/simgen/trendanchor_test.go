@@ -66,7 +66,7 @@ func TestAnchorTrendFundedReferenceKeepsOneCashLeg(t *testing.T) {
 	f := fakeFetcher{"REF": ref}
 	targetVol := monthlyVol(ref) // scale = 1: the output must BE the reference
 
-	funded, err := AnchorTrend(f, TrendAnchor{ID: "REF", Funded: true}, dates, values, cash, targetVol, true)
+	funded, err := anchorTrend(f, TrendAnchor{ID: "REF", Funded: true}, dates, values, cash, targetVol, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -83,7 +83,7 @@ func TestAnchorTrendFundedReferenceKeepsOneCashLeg(t *testing.T) {
 
 	// Read as an excess index instead, the same reference hands the output a
 	// second cash leg: every month comes out richer by that month's cash.
-	excess, err := AnchorTrend(f, TrendAnchor{ID: "REF"}, dates, values, cash, targetVol, true)
+	excess, err := anchorTrend(f, TrendAnchor{ID: "REF"}, dates, values, cash, targetVol, true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +107,7 @@ func TestAnchorTrendScalesTheExcessOnly(t *testing.T) {
 	f := fakeFetcher{"REF": ref}
 	anchor := TrendAnchor{ID: "REF", Funded: true}
 
-	out, err := AnchorTrend(f, anchor, dates, values, cash, 2*monthlyVol(ref), true)
+	out, err := anchorTrend(f, anchor, dates, values, cash, 2*monthlyVol(ref), true)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -143,7 +143,7 @@ func TestAnchorTrendExcessOverlay(t *testing.T) {
 		return -0.01
 	})
 	f := fakeFetcher{"REF": ref}
-	out, err := AnchorTrend(f, TrendAnchor{ID: "REF"}, dates, values, cash, monthlyVol(ref), false)
+	out, err := anchorTrend(f, TrendAnchor{ID: "REF"}, dates, values, cash, monthlyVol(ref), false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,12 +178,12 @@ func TestAnchorTrendReadsADailyReferenceAtItsMonthEnds(t *testing.T) {
 		daily.Points = append(daily.Points, p)
 	}
 
-	want, err := AnchorTrend(fakeFetcher{"REF": monthly}, TrendAnchor{ID: "REF", Funded: true},
+	want, err := anchorTrend(fakeFetcher{"REF": monthly}, TrendAnchor{ID: "REF", Funded: true},
 		dates, values, cash, 0.1, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := AnchorTrend(fakeFetcher{"REF": daily}, TrendAnchor{ID: "REF", Funded: true},
+	got, err := anchorTrend(fakeFetcher{"REF": daily}, TrendAnchor{ID: "REF", Funded: true},
 		dates, values, cash, 0.1, true)
 	if err != nil {
 		t.Fatal(err)
@@ -199,10 +199,10 @@ func TestAnchorTrendReadsADailyReferenceAtItsMonthEnds(t *testing.T) {
 func TestAnchorTrendRejectsMismatchedInputs(t *testing.T) {
 	ref, dates, values, cash := anchorFixture(func(i int) float64 { return 0.01 })
 	f := fakeFetcher{"REF": ref}
-	if _, err := AnchorTrend(f, TrendAnchor{ID: "REF"}, dates, values[:10], cash, 0.1, true); err == nil {
+	if _, err := anchorTrend(f, TrendAnchor{ID: "REF"}, dates, values[:10], cash, 0.1, true); err == nil {
 		t.Error("accepted a values slice shorter than dates")
 	}
-	if _, err := AnchorTrend(f, TrendAnchor{ID: "MISSING"}, dates, values, cash, 0.1, true); err == nil {
+	if _, err := anchorTrend(f, TrendAnchor{ID: "MISSING"}, dates, values, cash, 0.1, true); err == nil {
 		t.Error("accepted an unknown anchor")
 	}
 }

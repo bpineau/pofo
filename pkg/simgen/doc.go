@@ -12,14 +12,14 @@
 //   - CapWeighted builds one the way a CAP-WEIGHTED index does instead: the
 //     legs' published split on a dated anchor, then no rebalancing at all, so
 //     the weights drift with the legs' own returns backward and forward
-//     (CapWeights reads them out). Carrying today's country split back through
+//     (capWeights reads them out). Carrying today's country split back through
 //     history at constant weights is a look-ahead bias worth pts/yr, which is
 //     what the world-equity reconstructions used to do;
 //   - TSMOM is a configurable time-series momentum engine (markets,
 //     lookback, vol target, leverage) for replicating trend strategies: the
 //     signal is refreshed every Rebalance days, risk is rescaled every day
 //     against an exponentially weighted covariance (CovHalfLife);
-//   - AnchorTrend puts a trend reconstruction's month-to-month path back on a
+//   - anchorTrend puts a trend reconstruction's month-to-month path back on a
 //     bundled record while the engine keeps supplying the daily texture, which
 //     lifts the monthly agreement with the real funds from ~0.4 to ~0.7. Three
 //     such records are bundled: the net managed-futures composite
@@ -27,7 +27,7 @@
 //     (PureTrendAnchor) for a trend overlay, and the gross academic factor
 //     (GrossTrendAnchor), kept as a shape yardstick. The two net ones settle
 //     the level as well as the path, and a build that takes its level from a
-//     reference stops where that reference does (AnchorStart). See
+//     reference stops where that reference does (anchorStart). See
 //     docs/trend-reconstruction-design.md;
 //   - DonorChain assembles a young fund's past out of REAL records of the same
 //     trade instead of a reconstruction, nearest first: another manager's fund
@@ -66,11 +66,6 @@
 //     reconstructions and they are not interchangeable: an overlay finances at
 //     the overnight rate, a collateral sleeve earns the bill rate, and the two
 //     have differed by 0.02 to 1.15 points a year depending on the decade;
-//   - Audit / AuditAll replay a recipe's engine WITHOUT the real quotes it
-//     splices in and grade it against them over their overlap: two verdicts
-//     (level, does it earn the return; path, does it move with the asset),
-//     the donor chain junction by junction, and the curves to plot. This is
-//     what "pofo -verify-simdata" renders;
 //   - Validate measures daily and weekly correlation, beta, tracking error
 //     and CAGR against the real series; WithRefData serves the bundled
 //     reference series (datasets.Refdata, e.g. MSCIWORLD-USD, SP500-USD) and
@@ -193,4 +188,29 @@
 //     the recipe deliberately omits and a bill rate cannot have. Read the level
 //     verdict on such a line, and the path verdict as a description of the
 //     spread that was left out.
+//
+// # Generator plumbing
+//
+// These are exported for the pofo command's data modes and the generators
+// under cmd/, and are not meant for consumers, whose entry points are the
+// recipes (All, Find), the building blocks of the Toolbox and Validate:
+//
+//   - Audit and AuditAll (with AuditResult, AuditGroup, Junction, Verdict)
+//     replay a recipe's engine WITHOUT the real quotes it splices in and grade
+//     it against them over their overlap: two verdicts (level, does it earn
+//     the return; path, does it move with the asset), the donor chain junction
+//     by junction, and the curves to plot. This is what "pofo -verify-simdata"
+//     renders, and that report is the way to read a reconstruction;
+//   - Splice extends a real series backwards by a reconstruction, the last
+//     step of "pofo -gen-simdata";
+//   - Rebase scales a value slice to 100 at its first point, for the
+//     -verify-simdata curves;
+//   - ComponentsFrom is how far back the generators request component
+//     histories;
+//   - DBiDonorID, DBiReplication and DBiProjection build and name the DBi
+//     family's donor, which cmd/gen-dbi-refdata bundles as refdata and grades
+//     side by side;
+//   - TrendAnchor and its three values (GrossTrendAnchor, NetTrendAnchor,
+//     PureTrendAnchor) name the bundled references the trend recipes anchor
+//     on; nothing outside the recipes reads them.
 package simgen

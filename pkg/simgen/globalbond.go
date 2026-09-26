@@ -291,7 +291,7 @@ func excessIndex(name string, f Fetcher, cashID string, from time.Time, legs []L
 	if err != nil {
 		return nil, err
 	}
-	return SeriesFromFrame(name, fr, values), nil
+	return seriesFromFrame(name, fr, values), nil
 }
 
 // refdata fetches a bundled reference series and refuses an empty one, since a

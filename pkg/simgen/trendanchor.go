@@ -46,14 +46,14 @@ var (
 	PureTrendAnchor  = TrendAnchor{ID: "TREND-PURE-NET-USD", Funded: true}
 )
 
-// AnchorStart is the first date a reference covers.
+// anchorStart is the first date a reference covers.
 //
 // A reconstruction that takes its LEVEL from a reference, and not only its
 // path, has nothing to say before that date: what is left in front of it is
 // the engine's own unanchored opinion, at an information ratio no real
 // programme has sustained. Such a build truncates its output here rather than
-// shipping it, which is why this is exported.
-func AnchorStart(f Fetcher, ref TrendAnchor) (time.Time, error) {
+// shipping it.
+func anchorStart(f Fetcher, ref TrendAnchor) (time.Time, error) {
 	index, err := f.Fetch(ref.ID, time.Time{})
 	if err != nil {
 		return time.Time{}, fmt.Errorf("anchor %s: %w", ref.ID, err)
@@ -64,7 +64,7 @@ func AnchorStart(f Fetcher, ref TrendAnchor) (time.Time, error) {
 	return index.First().Date, nil
 }
 
-// AnchorTrend rewrites a trend reconstruction so that its return over every
+// anchorTrend rewrites a trend reconstruction so that its return over every
 // anchored month equals the reference's, rescaled to the book's volatility
 // target, while the reconstruction keeps supplying the day-to-day texture
 // inside each month. See the two anchors above for which one a caller wants
@@ -88,7 +88,7 @@ func AnchorStart(f Fetcher, ref TrendAnchor) (time.Time, error) {
 //
 // Months the reference does not cover keep the reconstruction's own returns,
 // so a series that starts before the reference does is not truncated.
-func AnchorTrend(f Fetcher, ref TrendAnchor, dates []time.Time, values, cash []float64, targetVol float64, earnCash bool) ([]float64, error) {
+func anchorTrend(f Fetcher, ref TrendAnchor, dates []time.Time, values, cash []float64, targetVol float64, earnCash bool) ([]float64, error) {
 	if len(dates) != len(values) || len(dates) != len(cash) {
 		return nil, fmt.Errorf("anchor: %d dates, %d values, %d cash", len(dates), len(values), len(cash))
 	}

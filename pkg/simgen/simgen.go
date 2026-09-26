@@ -273,8 +273,8 @@ func Validate(sim, real *marketdata.Series) (Validation, error) {
 	return v, nil
 }
 
-// SeriesFromFrame packages composite values as a marketdata series.
-func SeriesFromFrame(name string, fr *Frame, values []float64) *marketdata.Series {
+// seriesFromFrame packages composite values as a marketdata series.
+func seriesFromFrame(name string, fr *Frame, values []float64) *marketdata.Series {
 	s := &marketdata.Series{Name: name, Source: "simdata"}
 	for i := range fr.Dates {
 		s.Points = append(s.Points, marketdata.Point{Date: fr.Dates[i], Close: values[i]})

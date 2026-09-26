@@ -651,7 +651,7 @@ func avwsBlend(f Fetcher, from time.Time, usID string, usTER float64, intlID str
 	if err != nil {
 		return nil, err
 	}
-	return SeriesFromFrame(usID+"/"+intlID+" small-cap value blend (USD)", fr, values), nil
+	return seriesFromFrame(usID+"/"+intlID+" small-cap value blend (USD)", fr, values), nil
 }
 
 // scvwRecipe rebuilds US small-cap value from DFA US Small Cap Value
@@ -1539,7 +1539,7 @@ func wintonBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	// (TrendAnchor.Funded) against the frame's real cash accruals before it is
 	// rescaled, and not added back, since the output is an overlay.
 	cash := fr.Returns[cfg.CashID][start:]
-	trend, err = AnchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, cash, cfg.TargetVol, cfg.EarnCash)
+	trend, err = anchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, cash, cfg.TargetVol, cfg.EarnCash)
 	if err != nil {
 		return nil, err
 	}
@@ -1631,7 +1631,7 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 			return nil, err
 		}
 		dates, cash := fr.Dates[start:], fr.Returns[cfg.CashID][start:]
-		values, err = AnchorTrend(f, NetTrendAnchor, dates, values, cash, cfg.TargetVol, cfg.EarnCash)
+		values, err = anchorTrend(f, NetTrendAnchor, dates, values, cash, cfg.TargetVol, cfg.EarnCash)
 		if err != nil {
 			return nil, err
 		}
@@ -1700,7 +1700,7 @@ func stackedTrend(name, coreID string, coreLoad float64, cfg TSMOMConfig, annual
 		if err != nil {
 			return nil, err
 		}
-		trend, err = AnchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
+		trend, err = anchorTrend(f, PureTrendAnchor, fr.Dates[start:], trend, fr.Returns[cfg.CashID][start:], cfg.TargetVol, cfg.EarnCash)
 		if err != nil {
 			return nil, err
 		}
@@ -1739,7 +1739,7 @@ func stackedTrend(name, coreID string, coreLoad float64, cfg TSMOMConfig, annual
 // is the engine alone, unanchored and unlevelled, and a shorter history that is
 // worth reading beats a longer one that is not.
 func trimToAnchor(f Fetcher, ref TrendAnchor, s *marketdata.Series) (*marketdata.Series, error) {
-	start, err := AnchorStart(f, ref)
+	start, err := anchorStart(f, ref)
 	if err != nil {
 		return nil, err
 	}
@@ -1919,7 +1919,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 		if err != nil {
 			return nil, err
 		}
-		return SeriesFromFrame(name, fr, values), nil
+		return seriesFromFrame(name, fr, values), nil
 	}
 }
 
@@ -2195,7 +2195,7 @@ func ntsgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	name := "NTSG (global 90/60 replication)"
-	return afterFeeSteps(name, SeriesFromFrame(name, fr, values), steps), nil
+	return afterFeeSteps(name, seriesFromFrame(name, fr, values), steps), nil
 }
 
 // ntsgEquityUSD builds the fund's equity book: the MSCI World net total return
@@ -2306,7 +2306,7 @@ func ntszBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		return nil, err
 	}
 	name := "NTSZ (eurozone 90/60 replication)"
-	return afterFeeSteps(name, SeriesFromFrame(name, fr, values), steps), nil
+	return afterFeeSteps(name, seriesFromFrame(name, fr, values), steps), nil
 }
 
 // ntszEquityEUR builds the eurozone equity leg: the real MSCI Eurozone ETF (EZU,
