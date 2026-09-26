@@ -34,9 +34,13 @@ var simParallel = max(2, runtime.GOMAXPROCS(0)/2)
 
 // bounded returns pr with every size-like field clamped into its bound.
 // Negative counts fall back to zero, which the endpoints read as "default".
+// The horizon is the exception: it is floored at one year rather than zero,
+// because a zero-year plan is not a short retirement but an empty one, and
+// several views index the last plan year unconditionally (a POST of "{}" used
+// to take the whole process down on that index).
 func (pr Params) bounded() Params {
 	pr.NPaths = clamp(pr.NPaths, 0, maxPaths)
-	pr.Years = clamp(pr.Years, 0, maxYears)
+	pr.Years = clamp(pr.Years, 1, maxYears)
 	pr.PensionYear = clamp(pr.PensionYear, 0, maxYears)
 	pr.SideUntilYear = clamp(pr.SideUntilYear, 0, maxYears)
 	pr.BufferStopYear = clamp(pr.BufferStopYear, 0, maxYears)
