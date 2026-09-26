@@ -541,4 +541,7 @@ more sets of the same signature.
   sessions (1980-12-30, 1981-04-20/21, 1981-12-29, 1982-12-28, 1983-12-28,
   1984-12-28, 1985-12-27, 1986-12-09) cost about 30 % of level: the S&P 500
   tracker `IE00BFMXXD54` read 11.45 %/yr over 1980-1987 against the index's
-  15.88, and 15.28 after the repair. `tracked` holds it at 1.15 %.
+  15.88, and 15.28 after the repair. `tracked` holds it at 1.15 %. One
+  session of the same signature stays in, 1986-12-30 (0.83 % of excess alone,
+  0.30 % pooled, under the honest 0.93 % either way): 1.2 % of level, once,
+  out of reach of any tolerance on this pair.
