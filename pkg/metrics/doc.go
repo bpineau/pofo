@@ -46,6 +46,24 @@
 // black-litterman objective needs none of them: it works on the mean vector
 // and the covariance matrix alone.
 //
+// # Matrices, calendar table and tails
+//
+// Corr is the one Pearson correlation of the tree (suggest.Correlation
+// delegates to it). CorrelationMatrix and Covariance take [asset][period]
+// returns on ONE calendar, as marketdata.Aligned.Returns produces them, and
+// panic on ragged rows; Covariance is per period (multiply by 252 for an
+// annualized daily one). CalendarReturns cuts a value series into calendar
+// months, quarters or years (blocks of months counted from January, as
+// marketdata.Series.Resample cuts them), each period chained on the previous
+// period's last close and the first one flagged Partial: the table behind an
+// "annual returns" row or a monthly heatmap, and the one the golden tests
+// read published calendar-year returns against. RollingBeta and RollingCorr
+// are Beta and Corr over RollingVol's trailing windows, on the returns Beta
+// pairs by date. VaR and CVaR read a return sample's tail historically, off
+// Quantiles, as POSITIVE per-period losses (0.95 = the loss exceeded in 5 %
+// of periods), never annualized. Everything here takes and returns
+// fractions.
+//
 // # Attribution
 //
 // Attribute splits a portfolio's risk and realized return across its holdings,

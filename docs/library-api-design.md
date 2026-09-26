@@ -208,7 +208,7 @@ resample month-end on a holiday month-end, junction dropped/kept,
 `AlignSeries` error names the offender). Examples: `ExampleNewSeries`,
 `ExampleSeries_Resample`, `ExampleAlignSeries`, `ExampleCommonWindow`.
 
-### M2. `metrics`: the matrices, the calendar table, the tails
+### M2. `metrics`: the matrices, the calendar table, the tails (shipped 2026-09-26)
 
 All slice-based, fractions in and out, per-period inputs (daily unless said).
 

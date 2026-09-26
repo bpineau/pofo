@@ -124,22 +124,54 @@ func Returns(values []float64) []float64 {
 // Beta regresses the series' daily returns on the benchmark's, matching
 // observations by date. ok is false when fewer than 30 dates overlap.
 func Beta(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) (float64, bool) {
-	if len(dates) != len(values) || len(dates) < 2 || len(benchDates) != len(benchValues) || len(benchDates) < 2 {
+	p := pairReturns(dates, values, benchDates, benchValues)
+	if len(p.bench) < minBetaOverlap {
 		return 0, false
+	}
+	b := slope(p.bench, p.own)
+	if math.IsNaN(b) {
+		return 0, false
+	}
+	return b, true
+}
+
+// paired is two series' returns matched by date: own[k] and bench[k] are
+// each series' return from its own previous point to end[k], a date both
+// quote, and start[k] is the date own[k] is measured from.
+type paired struct {
+	start, end []time.Time
+	own, bench []float64
+}
+
+// pairReturns matches a series' simple returns with a benchmark's on the
+// dates both quote, each return taken from that series' own previous point:
+// the pairing Beta, VsBenchmark, RollingBeta and RollingCorr share. It is
+// empty when the slices are mismatched or shorter than two points.
+func pairReturns(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) paired {
+	var p paired
+	if len(dates) != len(values) || len(dates) < 2 || len(benchDates) != len(benchValues) || len(benchDates) < 2 {
+		return p
 	}
 	bench := make(map[time.Time]float64, len(benchDates)-1)
 	for i := 1; i < len(benchDates); i++ {
 		bench[benchDates[i]] = benchValues[i]/benchValues[i-1] - 1
 	}
-	var xs, ys []float64
 	for i := 1; i < len(dates); i++ {
 		if br, ok := bench[dates[i]]; ok {
-			xs = append(xs, br)
-			ys = append(ys, values[i]/values[i-1]-1)
+			p.start = append(p.start, dates[i-1])
+			p.end = append(p.end, dates[i])
+			p.own = append(p.own, values[i]/values[i-1]-1)
+			p.bench = append(p.bench, br)
 		}
 	}
-	if len(xs) < minBetaOverlap {
-		return 0, false
+	return p
+}
+
+// slope is the least-squares slope of ys on xs, cov(x, y) / var(x): NaN when
+// xs is constant or the samples hold fewer than two points.
+func slope(xs, ys []float64) float64 {
+	if len(xs) < 2 || len(xs) != len(ys) {
+		return math.NaN()
 	}
 	mx, my := Mean(xs), Mean(ys)
 	var cov, varx float64
@@ -148,9 +180,9 @@ func Beta(dates []time.Time, values []float64, benchDates []time.Time, benchValu
 		varx += (xs[i] - mx) * (xs[i] - mx)
 	}
 	if varx == 0 {
-		return 0, false
+		return math.NaN()
 	}
-	return cov / varx, true
+	return cov / varx
 }
 
 // Mean returns the arithmetic mean of xs.
