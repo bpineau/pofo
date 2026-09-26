@@ -1,7 +1,8 @@
 /* Warm "book" identity: the FIRE handbook's paper-and-ink palette expressed as
    an override of the shared instrument tokens (theme.css). Loaded after
-   theme.css so the constellation's reading surfaces (the hub and the /view
-   report) match the book, while the FIRE simulator keeps the instrument look.
+   theme.css so the constellation's reading surfaces (the hub and every
+   portfolio report, CLI file or served /view) match the book, while the FIRE
+   simulator keeps the instrument look.
    One source, so the warm identity never drifts across surfaces. */
 :root{
   --bg:#faf6ef; --surface:#fffdf9; --surface-2:#f2ebdd;
