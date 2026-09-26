@@ -541,7 +541,19 @@ more sets of the same signature.
   sessions (1980-12-30, 1981-04-20/21, 1981-12-29, 1982-12-28, 1983-12-28,
   1984-12-28, 1985-12-27, 1986-12-09) cost about 30 % of level: the S&P 500
   tracker `IE00BFMXXD54` read 11.45 %/yr over 1980-1987 against the index's
-  15.88, and 15.28 after the repair. `tracked` holds it at 1.15 %. One
-  session of the same signature stays in, 1986-12-30 (0.83 % of excess alone,
-  0.30 % pooled, under the honest 0.93 % either way): 1.2 % of level, once,
-  out of reach of any tolerance on this pair.
+  15.88, and 15.28 after the repair. `tracked` holds it at 1.15 %, and pools
+  two reference sessions only beside a repeated close (pooling beside any
+  neighbour lets a 3 % step pass on 15.4 % of sessions instead of 12.7 %).
+  A tenth session of the same signature, 1986-12-30, reads 0.83 % of excess,
+  under the honest 0.93 %, so no tolerance reaches it; it is refused ON THE
+  RECORD on the fund's own published total returns (Vanguard Index Trust
+  prospectus of 1995, EDGAR accession 0000893220-95-000289). With all ten
+  repaired, the line matches every published year of 1985-1994 within 0.05
+  point (1986: 18.03 against 18.06; unrepaired it read 9.30), the 1992/1993
+  pair aside, where a repeated 1992-12-31 close moves 0.8 point across the
+  year boundary and no level. `TestGoldenVanguard500Published` pins it.
+  The S&P 500 reference itself was checked on the way: the bundled `SP500`
+  matches the official S&P 500 total return to about 0.1 point a year
+  (1980 32.2 against 32.4, 1982 21.5 against 21.6, 1987 5.2 against 5.2),
+  and the 1.2 points by which the fund trails it in 1983 carry no session
+  above 0.4 % of excess, so they are not a quote defect.
