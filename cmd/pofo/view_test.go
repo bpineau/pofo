@@ -19,12 +19,12 @@ func mustQuery(t *testing.T, raw string) url.Values {
 }
 
 func TestViewComposerMount(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&p=IWDA:60,IGLN:40"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&p=IWDA:60,IGLN:40"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	mount := string(composerMount(vr, 0))
-	for _, want := range []string{"composer", "data-caps", "data-fork-0", "claude-dragonlite"} {
+	for _, want := range []string{"composer", "data-caps", "data-fork-0", "golden-butterfly"} {
 		if !strings.Contains(mount, want) {
 			t.Errorf("mount missing %q", want)
 		}
@@ -102,14 +102,14 @@ func viewBase() *options {
 }
 
 func TestParseViewQueryExamples(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=ntsx-all-weather"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&ex=ntsx-all-weather"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if len(vr.specs) != 2 {
 		t.Fatalf("specs = %d, want 2", len(vr.specs))
 	}
-	if vr.specs[0].Name != "claude-dragonlite" {
+	if vr.specs[0].Name != "golden-butterfly" {
 		t.Errorf("name = %q", vr.specs[0].Name)
 	}
 	if len(vr.specs[0].Holdings) == 0 {
@@ -143,7 +143,7 @@ func TestParseViewQueryAdhoc(t *testing.T) {
 
 func TestParseViewQueryGlobals(t *testing.T) {
 	vr, err := parseViewQuery(mustQuery(t,
-		"ex=claude-dragonlite&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"), viewBase(), nil)
+		"ex=golden-butterfly&start=2015-07-18&end=2026-06-30&rebalance=180&currency=USD&bench=&sim=off"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestParseViewQueryGlobals(t *testing.T) {
 // no "!sim:on" of its own (otherwise a live portfolio never shows its
 // reconstructed history). "sim=on" also clears any inherited noSim.
 func TestParseViewQuerySimOnEnablesBackcast(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40&ex=claude-dragonlite&sim=on"),
+	vr, err := parseViewQuery(mustQuery(t, "p=IWDA:60,IGLN:40&ex=golden-butterfly&sim=on"),
 		&options{currency: "EUR", rebalance: 90, noSim: true}, nil)
 	if err != nil {
 		t.Fatal(err)
@@ -208,12 +208,12 @@ func TestParseViewQueryErrors(t *testing.T) {
 		{"unknown id", "p=ZZZNOTANID:100", "not in the local catalog"},
 		{"quote symbol", "p=^GSPC:100", "not in the local catalog"},
 		{"malformed pair", "p=NTSG", "ID:WEIGHT"},
-		{"too many portfolios", "ex=claude-dragonlite&ex=claude-dragonlite&ex=claude-dragonlite&ex=claude-dragonlite&ex=claude-dragonlite&ex=claude-dragonlite&ex=claude-dragonlite", "at most 6"},
+		{"too many portfolios", "ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly&ex=golden-butterfly", "at most 6"},
 		{"too many holdings", "p=" + strings.Repeat("NTSG:1,", 20) + "NTSG:1", "at most 20"},
-		{"bad start", "ex=claude-dragonlite&start=notadate", "start"},
-		{"end before start", "ex=claude-dragonlite&start=2020-01-01&end=2019-01-01", "after"},
-		{"bad rebalance", "ex=claude-dragonlite&rebalance=x", "rebalance"},
-		{"bad sim", "ex=claude-dragonlite&sim=maybe", "sim"},
+		{"bad start", "ex=golden-butterfly&start=notadate", "start"},
+		{"end before start", "ex=golden-butterfly&start=2020-01-01&end=2019-01-01", "after"},
+		{"bad rebalance", "ex=golden-butterfly&rebalance=x", "rebalance"},
+		{"bad sim", "ex=golden-butterfly&sim=maybe", "sim"},
 		{"newline injection", "p=NTSG:100!rebalance:30%0A50%20BADIDXYZ", "control character"},
 		{"carriage return", "p=NTSG:100%0D:1", "control character"},
 	}
@@ -228,13 +228,13 @@ func TestParseViewQueryErrors(t *testing.T) {
 func TestParseViewQueryBenchGate(t *testing.T) {
 	// An arbitrary symbol must be rejected before it can reach an outbound
 	// fetch or poison the shared quote cache.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=ZZZNOPE"), viewBase(), nil); err == nil ||
+	if _, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&bench=ZZZNOPE"), viewBase(), nil); err == nil ||
 		!strings.Contains(err.Error(), "not in the local catalog") {
 		t.Errorf("bench=ZZZNOPE: err = %v, want a catalog rejection", err)
 	}
 	// The exact server default (a quote symbol KnownLocal deliberately rejects)
 	// is accepted, so the gate never 400s the default.
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=^GSPC"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&bench=^GSPC"), viewBase(), nil)
 	if err != nil {
 		t.Fatalf("bench=^GSPC (the server default): %v", err)
 	}
@@ -242,11 +242,11 @@ func TestParseViewQueryBenchGate(t *testing.T) {
 		t.Errorf("bench = %v, want ^GSPC accepted", vr.bench)
 	}
 	// A catalog identifier is accepted as a benchmark.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench=IWDA"), viewBase(), nil); err != nil {
+	if _, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&bench=IWDA"), viewBase(), nil); err != nil {
 		t.Errorf("bench=IWDA (catalog): %v", err)
 	}
 	// Empty explicitly disables Beta.
-	vr, err = parseViewQuery(mustQuery(t, "ex=claude-dragonlite&bench="), viewBase(), nil)
+	vr, err = parseViewQuery(mustQuery(t, "ex=golden-butterfly&bench="), viewBase(), nil)
 	if err != nil {
 		t.Fatalf("bench= (empty): %v", err)
 	}
@@ -257,7 +257,7 @@ func TestParseViewQueryBenchGate(t *testing.T) {
 
 func TestParseViewQueryCurrency(t *testing.T) {
 	// Absent: no override, serverOptions keeps the server default.
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -271,7 +271,7 @@ func TestParseViewQueryCurrency(t *testing.T) {
 	// currency=native (any case) keeps native currencies: a non-nil, empty
 	// override, so serverOptions clears the server default.
 	for _, raw := range []string{"currency=native", "currency=NATIVE", "currency=Native"} {
-		vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&"+raw), viewBase(), nil)
+		vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&"+raw), viewBase(), nil)
 		if err != nil {
 			t.Fatalf("%s: %v", raw, err)
 		}
@@ -284,7 +284,7 @@ func TestParseViewQueryCurrency(t *testing.T) {
 	}
 
 	// Junk currency is a 400, never bytes reaching an FX fetch URL.
-	if _, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&currency=DROP%20TABLE"), viewBase(), nil); err == nil ||
+	if _, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&currency=DROP%20TABLE"), viewBase(), nil); err == nil ||
 		!strings.Contains(err.Error(), "invalid currency") {
 		t.Errorf("junk currency: err = %v, want a shape rejection", err)
 	}
@@ -292,13 +292,13 @@ func TestParseViewQueryCurrency(t *testing.T) {
 
 func TestViewFireHrefs(t *testing.T) {
 	vr, err := parseViewQuery(url.Values{
-		"ex": {"claude-dragonlite"},
+		"ex": {"golden-butterfly"},
 		"p":  {"IWDA:60,IGLN:40!sim:on"},
 	}, viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if got := vr.fireHrefs["claude-dragonlite"]; got != "/firesimulator/e/claude-dragonlite/" {
+	if got := vr.fireHrefs["golden-butterfly"]; got != "/firesimulator/e/golden-butterfly/" {
 		t.Errorf("example href = %q", got)
 	}
 	adhoc := vr.specs[1].Name
@@ -324,7 +324,7 @@ func TestParseViewQueryEmpty(t *testing.T) {
 }
 
 func TestParseViewQueryDuplicateNames(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=claude-dragonlite&ex=claude-dragonlite"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&ex=golden-butterfly"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -263,7 +263,7 @@
 #   property; on an identical panel this build matches or beats them
 #   (the tables above; to see it
 #   yourself, window the siblings with the CLI flag, e.g.
-#   `pofo -start 2000-07-01 -fire examples/claude-dragonlite.txt`).
+#   `pofo -start 2000-07-01 -fire examples/hydra-five-engines-ucits.txt`).
 #
 # ## Range check honesty (measured floors, believed ceilings)
 #
@@ -314,8 +314,8 @@
 #       not exist (first linkers: UK 1981, TIPS 1997, OATi 1998, euro
 #       ~2003). Regime-behavior study, not a promise.
 #   (h) NO BUFFER IN THE FILE: pair with 2-3 years of spending in euro
-#       liquidity held outside these weights (livrets, fonds euros,
-#       XEON; see fire-liability-buffer.txt), spent in drawdown years.
+#       liquidity held outside these weights (regulated savings, a euro
+#       fund, a money-market ETF such as XEON), spent in drawdown years.
 #
 # ## Honesty note on the WEIGHTS
 #   28/5/7/2/4/13/13/15/13 are hand-rounded from the CTO-only edition's
@@ -342,9 +342,9 @@
 #   - Pair with a floor-capped flexible withdrawal rule, not a rigid
 #     indexed one; the portfolio is half the machine.
 #
-# Siblings: claude-dragonlite.txt and hydra-five-engines-ucits.txt (the
-#   accumulation flagship and the engineered all-rounder upstream),
-#   fire-liability-buffer.txt (the euro buffer this file assumes).
+# Siblings: hydra-five-engines-ucits.txt (the engineered all-rounder
+#   upstream) and risk-budget-decumulation.txt (one generation further,
+#   sized by risk rather than by capital symmetry).
 #meta rebalance:90
 #meta sim:on
 

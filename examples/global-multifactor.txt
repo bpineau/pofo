@@ -1,9 +1,0 @@
-# Global Multi-Factor Equity -- one fund (JPGL)
-# Idea: a single diversified-factor sleeve harvesting value, momentum, quality
-#   and low-volatility together, region-aware -- evidence-based equity premia
-#   in one line.
-# Inspired by: Fama-French / AQR factor research; JPM Diversified Factor index.
-#   https://www.pwlcapital.com/factor-investing/
-# UCITS, 100% equity.
-
-100   JPGL    # JPM Global Equity Multi-Factor (JPGL)

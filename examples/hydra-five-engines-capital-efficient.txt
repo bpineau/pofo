@@ -398,8 +398,7 @@
 #
 # Siblings: hydra-five-engines-ucits.txt (the buyable UCITS
 #   implementation), cerberus-three-heads.txt (the same engines regrouped
-#   into three even notional thirds, euro duration and one non-UCITS line),
-#   claude-dragonlite.txt (three-line distillation).
+#   into three even notional thirds, euro duration and one non-UCITS line).
 #meta rebalance:90
 #meta sim:on
 

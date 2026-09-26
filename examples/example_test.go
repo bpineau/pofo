@@ -8,9 +8,9 @@ import (
 
 func ExampleList() {
 	for _, in := range examples.List() {
-		if in.Name == "claude-dragonlite" {
+		if in.Name == "golden-butterfly" {
 			fmt.Println(in.Title)
 		}
 	}
-	// Output: Claude dragon-lite
+	// Output: Golden Butterfly
 }

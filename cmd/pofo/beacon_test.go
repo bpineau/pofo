@@ -29,7 +29,7 @@ func beaconServer(t *testing.T) http.Handler {
 var htmlFamilies = []string{
 	"/",                                 // landing.go
 	"/visualizer",                       // hub.go
-	"/view?ex=claude-dragonlite",        // pkg/report, through pkg/compare
+	"/view?ex=golden-butterfly",         // pkg/report, through pkg/compare
 	"/firebook/fr/",                     // pkg/firebook, French edition
 	"/firebook/en/",                     // pkg/firebook, English edition
 	"/firebook/fr/actifs-defensifs",     // one article, not just an index
@@ -51,7 +51,7 @@ var notHTML = []string{
 	"/healthz",
 	"/theme.css",
 	"/favicon.svg",
-	"/examples/claude-dragonlite.txt",
+	"/examples/golden-butterfly.txt",
 }
 
 func TestServeBeaconOnEveryHTMLFamily(t *testing.T) {

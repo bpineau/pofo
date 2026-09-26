@@ -149,8 +149,8 @@
     var cases = [
       "p=NTSX:46,VWCE:30!name:Core!rebalance:30&p=IWDA:60,IGLN:40!sim:on",
       "p=40%20VUAA,30%20IB01",
-      "ex=claude-dragonlite&p=IWDA:60,IGLN:40",
-      "ex=claude-dragonlite&currency=EUR&rebalance=90&sim=on&bench=IWDA&start=2010-01-01&end=2026-06-30",
+      "ex=golden-butterfly&p=IWDA:60,IGLN:40",
+      "ex=golden-butterfly&currency=EUR&rebalance=90&sim=on&bench=IWDA&start=2010-01-01&end=2026-06-30",
       "p=IWDA:60,IGLN:40&p=AVUV:100", // a freshly added second portfolio serializes cleanly
       "p=IWDASIM:60,IGLNSIM:40",      // SIM-suffixed ids survive the round trip intact
       ""

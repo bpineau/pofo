@@ -20,8 +20,6 @@
 #   - cerberus-three-heads.txt: the same engines regrouped into three even
 #     notional thirds (equity / trend / bonds+gold), euro duration, global
 #     small value; nearly buyable (GDE is its one non-UCITS line).
-#   - claude-dragonlite.txt: the same philosophy distilled to three lines
-#     (NTSG/trend/gold) for whoever will not maintain six.
 #
 # ## Why engines, and why these mechanics
 #
@@ -193,11 +191,12 @@
 #       commodities via trend). A EUR retiree's liability is euro
 #       inflation: approaching decumulation, add 7-15% of liquid euro
 #       assets (livrets, XEON/ERNX, short euro linkers), funded from NTSG
-#       (see claude-dragonlite's buffer notes and the fire-* examples);
-#       this file holds none.
+#       (see the fire-* examples and risk-budget-decumulation's buffer
+#       section); this file holds none.
 #   (d) A Japan-style lost decade in the equity core: trend and duration
 #       soften it, nothing here profits from it. The optional patch is a
-#       small discretionary-macro head (BHMG; see fire-macro-leg-bhmg.txt).
+#       small discretionary-macro head (BHMG, carved out of the trend
+#       budget; once a variant file of the fire-* family, since retired).
 #   (e) Model and reconstruction risk: most of the deep history is
 #       backcast (SIM series), and all deep trend backcasts share one
 #       TSMOM proxy, so the backtest cannot distinguish DBMFE from AQR
@@ -207,16 +206,17 @@
 #   (f) Complexity and instrument risk: six lines, quarterly rebalancing
 #       across five sleeves, and the AQR leg is a FUND, not an ETF (see
 #       the practical notes). If that overhead will not survive contact
-#       with real life, claude-dragonlite (3 lines) captures most of the
-#       idea.
+#       with real life, a three-line distillation (NTSG / one trend fund /
+#       gold at 60/25/15) captures most of the idea.
 #
 # ## Honesty note on the WEIGHTS
 #   The sleeves and their roles are theory-first; the exact percentages
 #   are backtest-informed. They started from where the risk-parity and
 #   capped max-sharpe optimizers agreed over 1988-2026, were hand-tempered
 #   (the raw max-sharpe mix piled 35% into one trend fund and was
-#   discarded), and were tuned against claude-dragonlite as the named
-#   benchmark. Expect the measured edge over that benchmark to shrink out
+#   discarded), and were tuned against the three-line NTSG/trend/gold
+#   60/25/15 blend as the named benchmark. Expect the measured edge over
+#   that benchmark to shrink out
 #   of sample; the engine-level logic, and the ranges above, are the part
 #   built to survive. Anywhere inside those ranges is the same portfolio.
 #   RANGE CHECK (per-sleeve weight sweep, rest renormalized; swept on the
@@ -248,7 +248,7 @@
 #   the same builds. Anything measured on another window says so on the
 #   spot (the range sweeps, the share-class comparisons, the crisis
 #   drawdowns below).
-#   vs claude-dragonlite (60/25/15): CAGR 9.42% vs 9.63%, vol 9.70% vs
+#   vs the three-line blend (60/25/15): CAGR 9.42% vs 9.63%, vol 9.70% vs
 #   12.5%, Sharpe 0.95 vs 0.78, max drawdown -19.5% vs -27.5%, worst real
 #   recovery 2.8y vs 9.3y, worst rolling 5y CAGR +0.32% vs -2.04%, median
 #   5y 8.1% vs 8.9%, up/down-capture 35/30% vs 41/37%, beta 0.28 vs 0.34,
