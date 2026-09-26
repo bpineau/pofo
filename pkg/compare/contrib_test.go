@@ -7,16 +7,16 @@ import (
 	"time"
 )
 
-// The macro panel opens in 1960-01 while the bundled backcasts reach 1871
-// (S&P 500) and 1953 (long Treasuries), so a /view of a deep portfolio asks
-// the regime strip about months nothing measured. Those months used to be
-// head-filled with the strip's zero value, "growth": eighty-nine years of a
+// The macro panel gives its first regime in 1956-04 while the bundled
+// backcasts reach 1871 (S&P 500) and 1953 (long Treasuries), so a /view of a
+// deep portfolio asks the regime strip about months nothing measured. Those
+// months used to be head-filled with the strip's zero value, "growth": decades of a
 // public chart painted with a macro state that does not exist, and the same
 // months averaged into the growth column of the per-regime matrix. They must
 // come back unclassified, appear in no band and be counted in no column.
 func TestMonthQuadrantsLeavesPrePanelMonthsUnclassified(t *testing.T) {
 	var months []time.Time
-	for y := 1940; y <= 1970; y++ {
+	for y := 1940; y <= 1966; y++ {
 		for m := 1; m <= 12; m++ {
 			months = append(months, time.Date(y, time.Month(m), 1, 0, 0, 0, 0, time.UTC))
 		}
@@ -28,7 +28,7 @@ func TestMonthQuadrantsLeavesPrePanelMonthsUnclassified(t *testing.T) {
 	before, after := 0, 0
 	for i, m := range months {
 		switch {
-		case m.Year() < 1960:
+		case m.Before(time.Date(1956, 4, 1, 0, 0, 0, 0, time.UTC)):
 			if quads[i] != unclassified {
 				t.Fatalf("%s classified %q, want no regime before the panel starts", m.Format("2006-01"), quads[i])
 			}
