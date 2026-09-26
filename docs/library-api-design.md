@@ -142,7 +142,7 @@ and M6 are hygiene and documentation. Each is one commit, gated by `make
 check` and `make golden`, and M4 additionally by a byte-for-byte report
 diff.
 
-### M1. `marketdata`: the series speaks to the rest of the tree
+### M1. `marketdata`: the series speaks to the rest of the tree (shipped 2026-09-26)
 
 ```go
 // NewSeries builds a series from a consumer's own data. dates must be

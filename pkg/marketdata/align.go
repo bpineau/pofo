@@ -15,6 +15,9 @@ import (
 // belong to the calendar the frame is about, and SampleAt exists for them:
 // the union takes the outsider's OWN quoting days too, and a start before its
 // first quote forward-fills ZEROS rather than failing.
+//
+// AlignSeries is the strict sibling to reach for first: same calendar, but an
+// error naming the series instead of those zeros.
 func Align(list []*Series, start, end time.Time) ([]time.Time, [][]float64) {
 	dateSet := map[time.Time]struct{}{}
 	for _, s := range list {

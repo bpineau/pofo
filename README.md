@@ -907,7 +907,7 @@ client := marketdata.NewClient(marketdata.DefaultCacheDir())
 series, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 
 // Compute CAGR, Sharpe, Sortino, Ulcer, MaxDD, TTR, Beta…
-stats, err := metrics.Compute(dates, values)
+stats, err := metrics.Compute(series.Dates(), series.Values())
 
 // Render a standalone SVG.
 svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1", Dates: dates, Values: values}})
