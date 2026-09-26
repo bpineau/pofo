@@ -1,9 +1,9 @@
 # pofo simdata v1
 # id: DTLA
 # name: iShares $ Treasury 20+ Acc: VUSTX long Treasury
-# method: 1.13×VUSTX (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018
-# validation: corr=0.748 (weekly 0.950) beta=0.68 TE=11.2%/yr CAGR sim -1.34% vs real -1.37% (overlap 2040 d from 2018-05-10 to 2026-08-19) vs DTLA
-# generated: 2026-08-21
+# method: cash + 1.13×(VUSTX − cash) (Vanguard Long-Term Treasury, 1986→, extended TREASURY-LONG daily from 1962, geared to the 20+ duration), real DTLA grafted from 2018
+# validation: corr=0.747 (weekly 0.949) beta=0.68 TE=11.2%/yr CAGR sim -1.34% vs real -1.39% (overlap 2053 d from 2018-05-10 to 2026-09-08) vs DTLA
+# generated: 2026-09-10
 date,close
 1962-01-01,0.112041
 1962-01-02,0.112040
@@ -16230,4 +16230,19 @@ date,close
 2026-08-13,4.474500
 2026-08-14,4.439000
 2026-08-17,4.423000
+2026-08-18,4.414000
 2026-08-19,4.488000
+2026-08-20,4.453000
+2026-08-21,4.447500
+2026-08-24,4.476500
+2026-08-25,4.517500
+2026-08-26,4.509500
+2026-08-27,4.510500
+2026-08-28,4.510000
+2026-09-01,4.467500
+2026-09-02,4.453500
+2026-09-03,4.484000
+2026-09-04,4.472500
+2026-09-07,4.464000
+2026-09-08,4.476000
+2026-09-10,4.443000
