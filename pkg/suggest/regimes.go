@@ -72,9 +72,9 @@ func FactorFramework() Framework {
 func (fw Framework) Contribution(m Meta) map[Category]float64 {
 	out := map[Category]float64{}
 	if len(m.Exposures) > 0 && fw.leg != nil {
-		for class, notional := range m.Exposures {
+		for _, class := range sortedKeys(m.Exposures) {
 			for _, c := range fw.leg(Meta{AssetClass: class}) {
-				out[c] += notional
+				out[c] += m.Exposures[class]
 			}
 		}
 		return out

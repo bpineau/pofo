@@ -1,9 +1,20 @@
 package suggest
 
 import (
+	"maps"
+	"slices"
 	"sort"
 	"strings"
 )
+
+// sortedKeys lists a catalog map's keys in order. Every split that folds
+// several keys into one bucket (regions into a currency, legs into a regime)
+// walks them this way: a float sum depends on its order, and map order
+// changes from run to run, so an unordered fold moves the last bit of a share
+// and, at a rounding or threshold boundary, a printed figure with it.
+func sortedKeys[V any](m map[string]V) []string {
+	return slices.Sorted(maps.Keys(m))
+}
 
 // composition.go computes look-through composition splits of a portfolio:
 // what the holdings actually are once stacked funds are opened up into their
@@ -90,8 +101,8 @@ func GeographySplit(holdings []Holding) map[string]float64 {
 		case !h.HasMeta:
 			out[BucketUnknown] += h.Weight
 		case len(h.Meta.Geography) > 0:
-			for region, pct := range h.Meta.Geography {
-				out[CanonRegion(region)] += h.Weight * pct / 100
+			for _, region := range sortedKeys(h.Meta.Geography) {
+				out[CanonRegion(region)] += h.Weight * h.Meta.Geography[region] / 100
 			}
 		case noCountryClass(h.Meta.AssetClass):
 			out[BucketNoCountry] += h.Weight
@@ -137,8 +148,8 @@ func EquitySectorSplit(holdings []Holding) (split map[string]float64, equity flo
 			split[BucketUnknown] += e
 			continue
 		}
-		for sector, pct := range h.Meta.Sectors {
-			split[CanonSector(sector)] += e * pct / 100
+		for _, sector := range sortedKeys(h.Meta.Sectors) {
+			split[CanonSector(sector)] += e * h.Meta.Sectors[sector] / 100
 		}
 	}
 	if equity <= 0 {
@@ -186,7 +197,8 @@ func CurrencySplit(holdings []Holding) map[string]float64 {
 		switch {
 		case len(m.CurrencyExposure) > 0:
 			covered := 0.0
-			for cur, pct := range m.CurrencyExposure {
+			for _, cur := range sortedKeys(m.CurrencyExposure) {
+				pct := m.CurrencyExposure[cur]
 				out[cur] += h.Weight * pct / 100
 				covered += pct
 			}
@@ -201,8 +213,8 @@ func CurrencySplit(holdings []Holding) map[string]float64 {
 			m.AssetClass == "tail-risk" || m.AssetClass == "other":
 			out[CurrencyDynamic] += h.Weight
 		case len(m.Geography) > 0:
-			for region, pct := range m.Geography {
-				out[regionCurrency(region)] += h.Weight * pct / 100
+			for _, region := range sortedKeys(m.Geography) {
+				out[regionCurrency(region)] += h.Weight * m.Geography[region] / 100
 			}
 		case m.Currency != "":
 			out[m.Currency] += h.Weight
@@ -229,7 +241,8 @@ type FXProfile struct {
 // exchange rates, and which currency dominates that part.
 func CurrencyProfile(split map[string]float64, base string) FXProfile {
 	p := FXProfile{}
-	for cur, w := range split {
+	for _, cur := range sortedKeys(split) {
+		w := split[cur]
 		switch cur {
 		case base:
 			p.Base += w

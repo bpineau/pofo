@@ -426,3 +426,42 @@ func TestSplitsIgnoreZeroWeightAndUnknownMeta(t *testing.T) {
 		t.Errorf("Contributors[growth] = %+v, want the one funded equity line", got[Growth])
 	}
 }
+
+// A split that folds several catalog keys into one bucket (eleven eurozone
+// countries into EUR, stacked legs into one regime) must come out bit for bit
+// the same on every call: map order changes from run to run, and an unordered
+// float sum then moved the last bit of a share, which flipped a report's pie
+// wedge across its 3 % threshold and a rounded label between two values.
+func TestSplitsAreBitStable(t *testing.T) {
+	geo := map[string]float64{}
+	for i, c := range []string{"Austria", "Belgium", "Finland", "France", "Germany",
+		"Ireland", "Italy", "Netherlands", "Portugal", "Spain", "Greece"} {
+		geo[c] = 0.1 + 0.37*float64(i)
+	}
+	h := []Holding{
+		{ID: "EZ", Weight: 0.3, HasMeta: true, Meta: Meta{AssetClass: "equity", Geography: geo}},
+		{ID: "FX", Weight: 0.7, HasMeta: true, Meta: Meta{AssetClass: "multi-asset",
+			CurrencyExposure: map[string]float64{"USD": 33.3, "EUR": 11.1, "JPY": 7.7, "GBP": 4.4, "CHF": 2.2},
+			Exposures:        map[string]float64{"equity": 0.9, "government-bond": 0.6, "gold": 0.13, "managed-futures": 0.37}}},
+	}
+	cur := CurrencySplit(h)
+	cov, _ := Coverage(h, RegimeFramework())
+	prof := CurrencyProfile(cur, "EUR")
+	for range 200 {
+		again := CurrencySplit(h)
+		for k, v := range cur {
+			if again[k] != v {
+				t.Fatalf("CurrencySplit[%s] = %v then %v", k, v, again[k])
+			}
+		}
+		againCov, _ := Coverage(h, RegimeFramework())
+		for k, v := range cov {
+			if againCov[k] != v {
+				t.Fatalf("Coverage[%s] = %v then %v", k, v, againCov[k])
+			}
+		}
+		if p := CurrencyProfile(cur, "EUR"); p != prof {
+			t.Fatalf("CurrencyProfile = %+v then %+v", prof, p)
+		}
+	}
+}
