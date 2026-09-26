@@ -6,7 +6,9 @@ package compare
 import (
 	"fmt"
 	"html/template"
+	"maps"
 	"math"
+	"slices"
 	"sort"
 	"strings"
 
@@ -134,7 +136,11 @@ func breakdownSlices(agg map[string]float64, maxSlices int, special ...string) [
 	}
 	items := make([]kv, 0, len(agg))
 	total, other := 0.0, 0.0
-	for k, v := range agg {
+	// Keys in sorted order: a float sum depends on its order, and a total
+	// that moves by one ulp from run to run flips a wedge sitting exactly on
+	// the 3 % threshold below in and out of "Other".
+	for _, k := range slices.Sorted(maps.Keys(agg)) {
+		v := agg[k]
 		total += v
 		if k == "Other" {
 			other += v
