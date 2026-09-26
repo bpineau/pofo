@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 )
@@ -166,5 +167,73 @@ func TestLatestFXSurvivesStooqChallenge(t *testing.T) {
 	}
 	if want := 1 / 1.1025; math.Abs(q.Price-want) > 1e-9 {
 		t.Errorf("price = %v, want %v", q.Price, want)
+	}
+}
+
+// TestECBArchiveEdges: the reference-rate file is a zip of a CSV, and every
+// way that can go wrong must surface as an error rather than as an empty
+// series that would silently hold a conversion flat.
+func TestECBArchiveEdges(t *testing.T) {
+	var noCSV bytes.Buffer
+	zw := zip.NewWriter(&noCSV)
+	if f, err := zw.Create("readme.txt"); err != nil {
+		t.Fatal(err)
+	} else if _, err := f.Write([]byte("hello")); err != nil {
+		t.Fatal(err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatal(err)
+	}
+	cases := []struct {
+		name string
+		body []byte
+		err  string
+	}{
+		{"not a zip at all", []byte("<html>maintenance</html>"), "unreadable ecb archive"},
+		{"a zip without a CSV", noCSV.Bytes(), "no CSV in the ecb archive"},
+		{"a CSV with only a header", ecbZip(t, "Date,USD,\n"), "empty ecb CSV"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if _, err := ecbRows(tc.body); err == nil || !strings.Contains(err.Error(), tc.err) {
+				t.Fatalf("error = %v, want one about %q", err, tc.err)
+			}
+		})
+	}
+}
+
+func TestECBColumnAndCrossGuards(t *testing.T) {
+	header := []string{"Date", "USD", "JPY", "GBP", ""}
+	// The euro is the implicit unit and needs no column.
+	if rate, ok := ecbColumn(header, "EUR")(nil); !ok || rate != 1 {
+		t.Errorf("EUR = %v, %v; want 1, true", rate, ok)
+	}
+	if ecbColumn(header, "SEK") != nil {
+		t.Error("a currency the file does not carry must have no reader")
+	}
+	read := ecbColumn(header, "GBP")
+	if _, ok := read([]string{"2020-01-07", "1.1"}); ok {
+		t.Error("a row too short to reach the column must not read as a rate")
+	}
+	if _, ok := read([]string{"2020-01-07", "1.1", "120", "N/A", ""}); ok {
+		t.Error("an N/A hole must not read as a rate")
+	}
+	if rate, ok := read([]string{"2020-01-07", "1.1", "120", " 0.85 ", ""}); !ok || rate != 0.85 {
+		t.Errorf("padded rate = %v, %v; want 0.85, true", rate, ok)
+	}
+
+	// The source only ever serves currency crosses.
+	c, srv := newTestClient(t, "", newECBOutageMux(t, ecbHistCSV))
+	defer srv.Close()
+	for _, symbol := range []string{"VOO", "EUREUR=X"} {
+		if _, err := c.fetchECBFX(context.Background(), symbol, time.Time{}); err == nil ||
+			!strings.Contains(err.Error(), "not a currency cross") {
+			t.Errorf("fetchECBFX(%q) error = %v, want a refusal", symbol, err)
+		}
+	}
+	// A cross the ECB does not publish is named as such.
+	if _, err := c.fetchECBFX(context.Background(), "SEKNOK=X", time.Time{}); err == nil ||
+		!strings.Contains(err.Error(), "does not publish") {
+		t.Errorf("error = %v, want one naming the missing pair", err)
 	}
 }

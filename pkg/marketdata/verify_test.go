@@ -1,6 +1,7 @@
 package marketdata
 
 import (
+	"math"
 	"strings"
 	"testing"
 	"time"
@@ -105,4 +106,86 @@ func countMoves(issues []Issue) int {
 		}
 	}
 	return n
+}
+
+// TestVerifyRejectsNonMonotonicDates: metrics match series by exact date
+// equality, so a repeated or backwards date is an ERROR, not a warning.
+func TestVerifyRejectsNonMonotonicDates(t *testing.T) {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &Series{Symbol: "X", Points: []Point{
+		{Date: day(0), Close: 100},
+		{Date: day(1), Close: 101},
+		{Date: day(1), Close: 101}, // repeated
+		{Date: day(0), Close: 100}, // backwards
+	}}
+	var errs int
+	for _, is := range Verify(s, day(2)) {
+		if is.Severity == "error" && strings.Contains(is.Message, "strictly increasing") {
+			errs++
+		}
+	}
+	if errs != 2 {
+		t.Fatalf("got %d date errors, want 2 in %v", errs, Verify(s, day(2)))
+	}
+}
+
+// TestVerifyNaNAndInfArePriceErrors: a NaN close breaks every computation
+// downstream and must never pass as a mere warning.
+func TestVerifyNaNAndInfArePriceErrors(t *testing.T) {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &Series{Symbol: "X", Points: []Point{
+		{Date: day(0), Close: 100},
+		{Date: day(1), Close: math.NaN()},
+		{Date: day(2), Close: math.Inf(1)},
+		{Date: day(3), Close: 101},
+	}}
+	var errs int
+	for _, is := range Verify(s, day(4)) {
+		if is.Severity == "error" && strings.Contains(is.Message, "non-positive price") {
+			errs++
+		}
+	}
+	if errs != 2 {
+		t.Fatalf("got %d price errors, want 2", errs)
+	}
+}
+
+// TestLocalSpacingDays: the cadence a series is judged against. Too short to
+// measure reads as daily; a weekly NAV and a monthly index each report their
+// own pace, and a series that changes pace is judged by the one in force.
+func TestLocalSpacingDays(t *testing.T) {
+	base := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+	pts := func(n, step int) []Point {
+		out := make([]Point, n)
+		for i := range out {
+			out[i] = Point{Date: base.AddDate(0, 0, i*step), Close: 100}
+		}
+		return out
+	}
+	for _, n := range []int{0, 1, 2} {
+		for i, got := range localSpacingDays(pts(n, 30)) {
+			if got != 1 {
+				t.Errorf("a %d-point series reads %v days at index %d, want the daily default", n, got, i)
+			}
+		}
+	}
+	if got := localSpacingDays(pts(40, 7)); got[0] != 7 || got[20] != 7 {
+		t.Errorf("a weekly series reads %v days, want 7", got[20])
+	}
+	daily := localSpacingDays(pts(40, 1))
+	if daily[0] != 1 || daily[39] != 1 {
+		t.Errorf("a daily series reads %v days, want 1", daily[39])
+	}
+	// Monthly for eighty points, then daily: each half keeps its own pace.
+	mixed := append(pts(80, 30), pts(40, 1)...)
+	for i := 80; i < len(mixed); i++ {
+		mixed[i].Date = mixed[79].Date.AddDate(0, 0, i-79)
+	}
+	spacing := localSpacingDays(mixed)
+	if spacing[40] != 30 {
+		t.Errorf("the monthly stretch reads %v days, want 30", spacing[40])
+	}
+	if spacing[len(spacing)-1] != 1 {
+		t.Errorf("the daily stretch reads %v days, want 1", spacing[len(spacing)-1])
+	}
 }
