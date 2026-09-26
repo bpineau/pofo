@@ -32,9 +32,6 @@
 //     composition splits (asset classes, geography, currency, sectors,
 //     duration), redundancy and out-of-sample-validated gap-filling
 //     suggestions from the catalog.
-//   - pkg/permanent: the tactical Permanent Portfolio 2.0 (a
-//     growth/inflation and monetary regime read off the bundled macro panel,
-//     a damped four-sleeve allocation, a monthly-real backtest).
 //   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
 //   - pkg/scenario: synthetic real-return path generation (parametric

@@ -388,7 +388,7 @@ the signature, and it is visible in every row of the measurement table below.
 | `JGB-JPY`, `USMKT-USD`, `USSCV-USD`, `XAUUSD-LBMA`, `WTI-ER-USD`, `TREND-ALLSTYLES-*`, `TREND-PURE-NET-USD`, `GBPUSD-DAILY`, `*-DAILY`, `ERES*-NAV`, `TREASURY-LONG-YIELD` | daily | trading day | n/a | various |
 | `broadsample/` (JST) | annual real returns | year | n/a | FIRE empirical model |
 | `cape/` (Shiller) | month-average price over a 10y average of real earnings | 1st, kept | n/a | FIRE valuation anchor |
-| `macropanel/` (OECD) | month-average IP / CPI / rates / share prices | `YYYY-MM` key | n/a | `pkg/permanent` regimes |
+| `macropanel/` (OECD) | month-average IP / CPI / rates / share prices | `YYYY-MM` key | n/a | `pkg/compare` regime strip |
 
 The last three rows are the ones that stay as they are on purpose. An index
 LEVEL published for a month is a different animal from a total-return path: the

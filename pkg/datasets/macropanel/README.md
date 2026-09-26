@@ -42,7 +42,8 @@ New Zealand, `cpi` for New Zealand, `longrate` for Turkey.
 The panel carries the drivers of macro-regime work: **growth x inflation
 breadth** (the share of countries whose industrial-production or CPI year-on-year
 is accelerating is a smoothed "world point"), and the **monetary quadrant** (the
-long vs short rate). The pofo binary embeds this committed CSV via
+long vs short rate). The report's regime strip reads the growth x inflation
+breadth (`pkg/compare/regime.go`). The pofo binary embeds this committed CSV via
 `pkg/datasets`; it never fetches OECD at runtime. Only ratios of the index
 columns are ever read, so their base years do not matter.
 

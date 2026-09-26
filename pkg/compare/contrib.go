@@ -8,7 +8,6 @@ import (
 
 	"github.com/bpineau/pofo/pkg/chart"
 	"github.com/bpineau/pofo/pkg/marketdata"
-	"github.com/bpineau/pofo/pkg/permanent"
 	"github.com/bpineau/pofo/pkg/suggest"
 )
 
@@ -18,18 +17,10 @@ import (
 // macro-regime strip, and the per-regime aggregation as a diverging bar
 // matrix (the empirical mirror of the a-priori coverage bars). Both use one
 // stable color per holding, the same assignment as the coverage bar
-// segments; the data work lives in pkg/portfolio and pkg/permanent, this
-// file only shapes it into charts.
-
-// quadCategory aligns permanent's coarse quadrants with suggest's regime
-// vocabulary, so the strip and matrix share labels and order (AllRegimes)
-// with the coverage bars.
-var quadCategory = map[permanent.Quadrant]suggest.Category{
-	permanent.GrowthQuadrant:    suggest.Growth,
-	permanent.InflationQuadrant: suggest.Inflation,
-	permanent.DeflationQuadrant: suggest.Deflation,
-	permanent.CrisisQuadrant:    suggest.Crisis,
-}
+// segments; the contributions come from pkg/portfolio and the macro reading
+// from regime.go, this file only shapes them into charts. The regimes use
+// suggest's vocabulary, so the strip and matrix share labels and order
+// (AllRegimes) with the coverage bars.
 
 // stripColor is the annotation tint of each regime quadrant: growth recedes
 // as a neutral wash, the three non-growth states carry a hue (kept away from
@@ -49,35 +40,29 @@ const unclassified = suggest.Category("")
 // embedded OECD panel, forward-filling the last known state past the panel's
 // END (a few months of nowcast at most, since the panel is refreshed with the
 // rest of the data). Months BEFORE its first regime are left unclassified:
-// the panel opens in 1960-01, while the bundled backcasts reach 1871 for the
-// S&P 500 and 1953 for long Treasuries, so head-filling would paint eighty-
-// nine years of a public chart with a macro state nothing measured, and hand
+// the panel's first reading is 1956-04, while the bundled backcasts reach
+// 1871 for the S&P 500 and 1953 for long Treasuries, so head-filling would
+// paint decades of a public chart with a macro state nothing measured, and hand
 // the per-regime matrix hundreds of months of "growth" that are only the
 // absence of data. Returns nil when the panel cannot be read.
 func monthQuadrants(months []time.Time) []suggest.Category {
 	if len(months) == 0 {
 		return nil
 	}
-	panel, err := permanent.LoadPanel()
+	panel, err := loadMacroPanel()
 	if err != nil {
 		return nil
 	}
-	regimes := panel.Regimes(months[0], months[len(months)-1], permanent.DefaultSignalConfig())
-	if len(regimes) == 0 {
-		return nil
-	}
-	key := func(t time.Time) int { return t.Year()*100 + int(t.Month()) }
-	byMonth := map[int]suggest.Category{}
-	for _, r := range regimes {
-		byMonth[key(r.Date)] = quadCategory[r.Quadrant()]
-	}
 	out := make([]suggest.Category, len(months))
-	last := unclassified
+	last, seen := unclassified, false
 	for i, m := range months {
-		if q, ok := byMonth[key(m)]; ok {
-			last = q
+		if q, ok := panel.regimeAt(time.Date(m.Year(), m.Month(), 1, 0, 0, 0, 0, time.UTC)); ok {
+			last, seen = q, true
 		}
 		out[i] = last
+	}
+	if !seen {
+		return nil
 	}
 	return out
 }
