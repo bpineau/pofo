@@ -2,6 +2,7 @@ package marketdata
 
 import (
 	"math"
+	"strings"
 	"testing"
 	"time"
 )
@@ -55,9 +56,11 @@ func TestExtendBackNoEarlierData(t *testing.T) {
 
 func TestProxySymbol(t *testing.T) {
 	cases := map[string]string{
-		"SPY":          "^GSPC",
-		"VTI":          "^GSPC",
+		"SPY":          "SP500",
+		"ITOT":         "VTI",
 		"QQQ":          "^NDX",
+		"QQQM":         "QQQ",
+		"IWM":          "^RUTTR",
 		"GLD":          "GC=F",
 		"IE000KF370H3": "NTSX",
 		"VOOX":         "", // not a proxied asset
@@ -66,6 +69,35 @@ func TestProxySymbol(t *testing.T) {
 		got, ok := ProxySymbol(in)
 		if got != want || ok != (want != "") {
 			t.Errorf("ProxySymbol(%q) = %q, %v; want %q, %v", in, got, ok, want, want != "")
+		}
+	}
+}
+
+// TestProxyChainsEnd: a proxy is fetched extended, so it may itself be
+// proxied; a cycle would recurse forever.
+func TestProxyChainsEnd(t *testing.T) {
+	for start := range proxyFor {
+		seen := map[string]bool{start: true}
+		for id := start; ; {
+			next, ok := proxyFor[id]
+			if !ok {
+				break
+			}
+			if seen[next] {
+				t.Fatalf("proxy chain from %s cycles through %s", start, next)
+			}
+			seen[next], id = true, next
+		}
+	}
+}
+
+// TestPriceIndexProxiesAreTheNamedException: a price index drops the
+// dividends over the whole simulated span; ^NDX for QQQ is the one accepted,
+// for want of any total-return Nasdaq-100 before QQQ.
+func TestPriceIndexProxiesAreTheNamedException(t *testing.T) {
+	for asset, proxy := range proxyFor {
+		if strings.HasPrefix(proxy, "^") && !strings.HasSuffix(proxy, "TR") && asset != "QQQ" {
+			t.Errorf("%s is proxied by the price index %s", asset, proxy)
 		}
 	}
 }

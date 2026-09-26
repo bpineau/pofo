@@ -83,8 +83,9 @@ type FetchOptions struct {
 
 // FetchExtended fetches an asset the way the pofo CLI does: Fetch, then for
 // "…SIM" identifiers (see SplitSim) the history extension, splicing the
-// bundled simulated series or else a known long-history proxy (ProxySymbol)
-// in front of the real quotes, then the optional conversion into a target
+// bundled simulated series or else a known long-history proxy (ProxySymbol,
+// a total-return series itself fetched extended and converted into the
+// asset's quote currency) in front of the real quotes, then the optional conversion into a target
 // currency. Real quotes always take precedence wherever they exist;
 // Series.SimulatedBefore marks the frontier. Progress and degradations
 // (unreadable simdata, unavailable proxy, FX rates held flat before their
@@ -160,7 +161,7 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 			proxySym, ok = ProxySymbol(s.Symbol)
 		}
 		if ok {
-			ps, perr := c.History(ctx, proxySym, opt.From)
+			ps, perr := c.proxyHistory(ctx, proxySym, s.Currency, opt.From, simdata)
 			if perr != nil {
 				c.Logf("warning: proxy %s for %s unavailable: %v", proxySym, s.Symbol, perr)
 			} else if ExtendBack(s, ps) {
@@ -175,6 +176,28 @@ func (c *Client) FetchExtended(ctx context.Context, id string, opt FetchOptions)
 		}
 	}
 	return Trim(s, time.Time{}, opt.To), nil
+}
+
+// proxyHistory fetches the proxy symbol sym for an asset quoted in currency,
+// converted into it: ExtendBack keeps only the proxy's returns, and a USD
+// index spliced under a EUR line would pass its dollar moves for euro ones.
+// A proxy with a longer history of its own (a bundled reconstruction, a
+// catalog index, another proxied fund) is fetched extended, SIM suffix and
+// catalog resolution included; any other is read as the exact quote line it
+// names, so a catalog alias cannot swap the US GDX (2006) for its UCITS
+// namesake (2015).
+func (c *Client) proxyHistory(ctx context.Context, sym, currency string, from time.Time, simdata fs.FS) (*Series, error) {
+	quote, _, _ := majorUnit(currency)
+	_, bundled, _ := ReadSimdataFS(simdata, sym)
+	_, chained := ProxySymbol(sym)
+	if bundled || chained || isIndexAsset(CanonicalID(sym)) {
+		return c.FetchExtended(ctx, sym+"SIM", FetchOptions{From: from, Currency: quote, Simdata: simdata})
+	}
+	ps, err := c.History(ctx, sym, from)
+	if err != nil {
+		return nil, err
+	}
+	return c.convertTo(ctx, ps, quote, from)
 }
 
 // convertTo reprices s into currency via ConvertCurrency. It is a no-op
