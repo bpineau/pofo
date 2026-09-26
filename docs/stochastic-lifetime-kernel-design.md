@@ -27,7 +27,7 @@ three others.
   worst late-life outcomes): both readings always moved together, because
   under a fixed horizon the annuity is simply a cashflow bought at a fee. The
   figure that would have shown the trade-off was dropped for that reason
-  (`fire-book-illustrations-2026-07.md` §10.3), with "would need a
+  (the 2026-07 figure backlog, since deleted), with "would need a
   stochastic-lifetime kernel" as the recorded verdict. This is that kernel.
 - It has no **estate**. Terminal wealth at a fixed horizon is the wealth of a
   household that is, in the model, still alive at exactly that year. What a
@@ -433,8 +433,8 @@ draw stream for returns is unchanged.
   The truncation caveat is named on the card: the plan stops at the reader's
   horizon, so payments the annuity would still make after it are neither
   collected nor counted.
-  The sensitivity tornado deliberately gets no annuity bar (see
-  `docs/decumulation-fire-design.md` § 6).
+  The sensitivity tornado deliberately gets no annuity bar (an annuity is a
+  decision, not a parameter to perturb).
   The old control's URL key is KEPT rather than dropped: `annuityShare` still
   means "annuitise this share", so a link written under it still asks for the
   same thing and now gets it priced properly, with the two new keys taking

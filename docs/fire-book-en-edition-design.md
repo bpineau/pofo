@@ -282,7 +282,8 @@ design exists to avoid).
 - `og:locale`, `lang`, JSON-LD `inLanguage` come from the Edition.
 - EPUB: `English.EPUB(modified)` with the EN identifier, `Language: "en"`,
   the EN title page and edition note. Validate with epubcheck and on-device
-  KOReader like the French one (see `docs/epub-export-design.md`).
+  KOReader like the French one (the device constraints are in
+  `go doc ./pkg/epub`).
 - OPDS: each edition's handler serves its own `opds.xml` listing its own
   book, exactly as today. A combined two-entry catalog was considered and
   dropped: a reader adds the edition it reads.
@@ -541,7 +542,7 @@ slips mechanically. Executed 2026-08-19.
 - M4, publication: mount `/firebook/en/`, nav + hub links, `WithAlternate`
   cross-links, `-export-epub -book-lang`, epubcheck + KOReader validation,
   the completeness guard flips from env-gated to hard. Update
-  `docs/webapp-design.md` (route map), `CLAUDE.md` (map row), `README.md`,
+  `cmd/pofo/serve.go`'s route godoc, `CLAUDE.md` (map row), `README.md`,
   and this document's status line.
   Partially pulled forward (2026-08-01, the landing-page reorganization):
   `/firebook/en/` is mounted under `-serve` with cross-navigation both ways,

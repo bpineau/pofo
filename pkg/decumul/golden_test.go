@@ -6,8 +6,11 @@ import (
 	"github.com/bpineau/pofo/pkg/scenario"
 )
 
-// Reference values from docs/decumulation-fire-design.md §7 (Python model),
-// tolerance ±0.03 M€ on target capital and ±0.3 pt on ruin, >=150k paths.
+// Reference values from the independent Python model the 2026-06 design was
+// validated against (its anchors: target capital at 5 % ruin, mu 3.5 %,
+// pension 1800, need 4 k/month about 1.67 M; ruin at 2.0 M about 2.1 %;
+// horizons 95/90/85 about 1.84/1.67/1.51 M), tolerance ±0.03 M on target
+// capital and ±0.3 pt on ruin, >=150k paths.
 // The reference uses a flat 12% gross-up, so these golden checks fix Tax to
 // a flat 12% stub; the cost-basis CTOFlatTax is covered by its own unit test.
 type flatGrossUp struct{ rate float64 }

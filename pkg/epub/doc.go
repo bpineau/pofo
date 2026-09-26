@@ -34,4 +34,13 @@
 // pkg/bookmd) emit HTML5. Normalize rewrites that finite tag inventory into
 // well-formed XHTML (self-closing <hr>, task-list checkboxes into text glyphs);
 // callers run it over each chapter body before building the Book.
+//
+// # What an e-reader taught the writer
+//
+// Three constraints come from the devices, not the standard, and every book
+// built here respects them: run epubcheck locally on the output (it is not
+// in make test), never write rgba() colours into an embedded SVG (crengine,
+// KOReader's engine, drops the whole figure), and keep table headers short
+// (a wide header wraps into one word per line on a 6-inch screen). The gate
+// for a change to a shipped book is the file opened on the device.
 package epub
