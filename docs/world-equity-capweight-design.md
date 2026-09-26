@@ -32,7 +32,7 @@ w_i,t+1  proportional to  w_i,t x (1 + r_i,t+1)    (forward)
 which is what holding one dated basket of shares produces in both directions.
 `CapWeighted` (`pkg/simgen/capweight.go`) does exactly that: it takes the legs'
 published split on an anchor date and never rebalances, so no weight rule is
-imposed at all. `CapWeights` reads the implied weights back out, which is what
+imposed at all. `capWeights` reads the implied weights back out, which is what
 the validation below checks. `Composite` (constant weights, daily rebalanced)
 stays for the recipes that replicate a fund which really does rebalance to
 fixed weights.

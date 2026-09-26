@@ -73,11 +73,11 @@ func CapWeighted(fr *Frame, legs []Leg, anchor time.Time, annualFee float64) ([]
 	return values, nil
 }
 
-// CapWeights reports the weights the drift implies on the frame's date k, the
+// capWeights reports the weights the drift implies on the frame's date k, the
 // series a reader checks against a published split. It repeats CapWeighted's
 // arithmetic rather than sharing a buffer with it, because a diagnostic that
 // can fall out of step with what it diagnoses is worse than none.
-func CapWeights(fr *Frame, legs []Leg, anchor time.Time, k int) map[string]float64 {
+func capWeights(fr *Frame, legs []Leg, anchor time.Time, k int) map[string]float64 {
 	a := anchorIndex(fr.Dates, anchor)
 	out := make(map[string]float64, len(legs))
 	var sum float64
@@ -142,7 +142,7 @@ func capWeighted(name string, legs []Leg, anchor time.Time, fee float64) func(Fe
 		if err != nil {
 			return nil, err
 		}
-		return SeriesFromFrame(name, fr, values), nil
+		return seriesFromFrame(name, fr, values), nil
 	}
 }
 

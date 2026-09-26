@@ -962,7 +962,7 @@ answering a different question, each validated on its own.
 | Layer | What it decides | Where |
 |---|---|---|
 | Engine | the daily texture: how a trend book moves inside a month | `TSMOM` |
-| Anchor | the monthly path AND the level | `AnchorTrend` |
+| Anchor | the monthly path AND the level | `anchorTrend` |
 
 Keeping them separate is the point. A criticism of the level is not a
 criticism of the texture, and the two are fixed in different places.
@@ -1014,7 +1014,7 @@ is spliced as a donor. Nothing reads both for the same purpose.
 
 The net records are FUNDED total returns: they earn cash on their
 collateral, where the gross factor is published as an excess over cash.
-`AnchorTrend` therefore strips the cash leg before rescaling one to a
+`anchorTrend` therefore strips the cash leg before rescaling one to a
 volatility target and funds it again afterwards, or not, depending on whether
 the OUTPUT is a fund or an overlay (`TrendAnchor.Funded`, `earnCash`). Reading
 a funded record as an excess index hands the reconstruction a second cash leg,
@@ -1022,7 +1022,7 @@ which in the 1990s was worth six points a year. Two unit tests hold that
 arithmetic in place.
 
 A reference may also be published daily, and what is anchored is still a
-month: `AnchorTrend` reduces any reference to its month ends first. Read a
+month: `anchorTrend` reduces any reference to its month ends first. Read a
 daily index as it stands and the anchor takes each month's FIRST day for the
 month itself, which is a different index; a third unit test holds that.
 
@@ -1084,7 +1084,7 @@ padding rather than on prices.
 ## The anchor
 
 Since the engine cannot manufacture the real sequence of trend months, it
-is given one. `AnchorTrend` rewrites each month so its return equals the
+is given one. `anchorTrend` rewrites each month so its return equals the
 reference's, rescaled to the book's volatility target, spreading the
 correction evenly across the days of that month: the daily texture, the
 intra-month drawdown shape and the crisis timing all still come from the
@@ -1402,7 +1402,7 @@ stayed open on top of it, and neither had a fix:
   anchor can fix that: it is the target that says so.
 - **The unanchored fortnight.** An anchor governs the span BETWEEN two month
   ends, so the stub from the tail's first day to that month's end kept the
-  engine's own returns, as `AnchorTrend` documents.
+  engine's own returns, as `anchorTrend` documents.
 
 Given the choice between eight more years of that and a file that is real
 throughout, the maintainer took the shorter file (see the decision at the top).
@@ -1857,7 +1857,7 @@ must preserve. Every one of these was learned by breaking it.
    (2020-03-12). A leg whose raw returns moved on under half the window's
    days is stale (a forward-filled proxy) and stays flat, or its zeros
    poison the covariance.
-3. **Anchor** (`AnchorTrend`). Rewrite each calendar month of the engine's
+3. **Anchor** (`anchorTrend`). Rewrite each calendar month of the engine's
    output so its total matches the reference month, rescaled to the target
    vol; spread the correction geometrically over the month's days. The
    reference can be an EXCESS factor or a FUNDED total return
@@ -1868,7 +1868,7 @@ must preserve. Every one of these was learned by breaking it.
 4. **Level.** Nothing. Both net references carry their own investable level,
    and a drag on top of one would charge the constituent managers' fees twice.
    A build that takes its level from a reference must not ship a day in front
-   of it either: `trimToAnchor`/`AnchorStart` cut the overlays at their
+   of it either: `trimToAnchor`/`anchorStart` cut the overlays at their
    reference's first date.
 5. **Donor chain** (`DonorChain`). For each fund, volatility-match every donor
    to the fund on their common window (excess-over-cash returns,
