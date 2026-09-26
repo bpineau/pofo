@@ -43,8 +43,8 @@ not started), and continuous upkeep of the dated French
 tax/social chapters. The ledger below tracks per-article state.
 
 Illustration campaign 2026-07-30, 29 new v2 plates. Selected from the two
-figure backlogs opened at the close of the line-by-line review
-(`docs/fire-book-illustrations-*`), priority to ideas whose data was already
+figure backlogs opened at the close of the line-by-line review (both since
+deleted, every idea either shipped or dropped), priority to ideas whose data was already
 bundled and to the ones carrying a thesis the article could only assert. One
 plate per commit, each with its guard test. The rule that made the batch worth
 its cost: WHERE THE REPOSITORY CAN COMPUTE THE NUMBER, THE PLATE COMPUTES IT
@@ -588,10 +588,9 @@ rules on them; `cape-depuis-1881` freezes 146 CAPE readings and applies the
 formula), which keeps the rule under study readable next to the picture it
 produces.
 
-Fourteen of those plates shipped on 2026-07-29, from the candidate list in
-`fire-book-illustrations-2026-07.md`, which is now closed: six candidates were
-dropped on purpose and each carries its reason there. Two of the reasons are
-worth knowing outside that file.
+Fourteen of those plates shipped on 2026-07-29 from a twenty-candidate list
+(since deleted): six candidates were dropped on purpose. Two of the reasons
+are worth keeping.
 
 Replaying Guyton-Klinger at four initial rates contradicts a sourced sentence of
 `guyton-klinger.md`, and `pkg/replay`'s GK is only the corridor, without the
