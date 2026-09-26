@@ -18,3 +18,7 @@
 8     KMLM            # Trend leg B: MLM index (sim to 1988)
 12    XAUUSD          # Gold (sim to 1968)
 14    SHY             # Short Treasuries, the buffer stand-in (sim to 1991; live: euro linkers + cash)
+
+# we should have this, but use SHY on sims for the long backcast/history
+#8     CHSN    # Euro inflation-linked 1-10y (UBS CHSN) -- matches the real-EUR liability
+#3     TIP1E    # $ TIPS 1-10 EUR-hedged (UBS TIP1E) -- diversifies the sovereign linker risk

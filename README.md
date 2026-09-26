@@ -506,7 +506,7 @@ The visualizer is driven entirely by its query string, so a comparison is a
 link you can bookmark or share:
 
 ```
-/view?ex=dragon-decumulation-household&ex=claude-dragonlite
+/view?ex=dragon-decumulation-household&ex=golden-butterfly
 /view?p=NTSG:60,IGLN:20,IBCI:20!sim:on&currency=EUR
 ```
 

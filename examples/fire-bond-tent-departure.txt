@@ -7,8 +7,8 @@
 # Inspired by: Kitces & Pfau 2014 (rising equity glidepaths / bond tent);
 #   Morningstar State of Retirement Income (early losses + rigid spending
 #   is what kills retirements).
-# Run the three fire-* stages side by side:
-#   ./pofo examples/fire-bond-tent-departure.txt examples/fire-decumulation-core.txt examples/fire-glidepath-late.txt
+# Run the two fire-* stages side by side:
+#   ./pofo examples/fire-bond-tent-departure.txt examples/fire-decumulation-core.txt
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90
