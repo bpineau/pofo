@@ -79,25 +79,26 @@ func loadRefdata(t *testing.T, id string) *marketdata.Series {
 	return s
 }
 
-// calYearDaily is the December-to-December total return (%) of calendar year y
-// from a DAILY series: the last close on or before 31 Dec of y over that of y-1.
-func calYearDaily(s *marketdata.Series, y int) float64 {
-	dec := func(yr int) float64 {
-		cut := time.Date(yr, 12, 31, 23, 0, 0, 0, time.UTC)
-		var v float64
-		for _, p := range s.Points {
-			if p.Date.After(cut) {
-				break
-			}
-			v = p.Close
+// calendarYear is the December-to-December total return (%) of calendar year
+// y, read off metrics.CalendarReturns: the last close of y over the last close
+// of the previous year the series quotes, whatever its cadence (daily or
+// month-end). The published yearly figures these goldens pin are that same
+// ratio, so the library's calendar table and the goldens cannot disagree. A
+// year the series does not cover in full (absent, or its first, partial one)
+// fails the test rather than reading a number.
+func calendarYear(t *testing.T, s *marketdata.Series, y int) float64 {
+	t.Helper()
+	for _, r := range metrics.CalendarReturns(s.Dates(), s.Values(), 12) {
+		if r.End.Year() != y {
+			continue
 		}
-		return v
+		if r.Partial {
+			t.Fatalf("%s: %d is the series' first, partial year", s.Symbol, y)
+		}
+		return r.Return * 100
 	}
-	a, b := dec(y-1), dec(y)
-	if a == 0 {
-		return 0
-	}
-	return (b/a - 1) * 100
+	t.Fatalf("%s: no quote in %d", s.Symbol, y)
+	return 0
 }
 
 // refWindow returns the monthly points from the December of y0 (inclusive) to
@@ -205,7 +206,7 @@ func TestGoldenSP500Yearly(t *testing.T) {
 		{2020, 18.4, 0.4}, {2021, 28.7, 0.4}, {2022, -18.1, 0.4}, {2023, 26.3, 0.4},
 		{2024, 25.0, 0.4},
 	} {
-		within(t, "SP500 "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, c.tol)
+		within(t, "SP500 "+strconv.Itoa(c.year), calendarYear(t, s, c.year), c.ref, c.tol)
 	}
 }
 
@@ -226,7 +227,7 @@ func TestGoldenMSCIWorldYearly(t *testing.T) {
 		{2018, -8.7, 0.5}, {2019, 27.7, 0.5}, {2020, 15.9, 0.5}, {2021, 21.8, 0.5},
 		{2022, -18.1, 0.5}, {2023, 23.8, 0.5}, {2024, 18.7, 0.5},
 	} {
-		within(t, "MSCIWORLD "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, c.tol)
+		within(t, "MSCIWORLD "+strconv.Itoa(c.year), calendarYear(t, s, c.year), c.ref, c.tol)
 	}
 }
 
@@ -283,7 +284,7 @@ func TestGoldenDevExUSAYearly(t *testing.T) {
 		{2017, 24.21}, {2018, -14.09}, {2019, 22.49}, {2020, 7.59}, {2021, 12.62},
 		{2022, -14.29}, {2023, 17.94}, {2024, 4.70}, {2025, 31.85},
 	} {
-		within(t, "DEVEXUS-USD "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, 0.05)
+		within(t, "DEVEXUS-USD "+strconv.Itoa(c.year), calendarYear(t, s, c.year), c.ref, 0.05)
 	}
 }
 
@@ -323,7 +324,7 @@ func TestGoldenEMYearly(t *testing.T) {
 		{2017, 37.28}, {2018, -14.57}, {2019, 18.42}, {2020, 18.31}, {2021, -2.54},
 		{2022, -20.09}, {2023, 9.83}, {2024, 7.50}, {2025, 33.57},
 	} {
-		within(t, "EM-USD "+strconv.Itoa(c.year), calYearDaily(s, c.year), c.ref, 0.6)
+		within(t, "EM-USD "+strconv.Itoa(c.year), calendarYear(t, s, c.year), c.ref, 0.6)
 	}
 }
 
@@ -339,14 +340,6 @@ func TestGoldenGold(t *testing.T) {
 		{name: "2000-2020", y0: 1999, y1: 2020, cagr: 9.4, ctol: 1.0},
 		{name: "1971-2024", y0: 1971, y1: 2024, cagr: 8.0, ctol: 1.0, minDD: -55},
 	})
-}
-
-// yearRet is the December-to-December total return (%) of calendar year y,
-// for the monthly first-of-month refdata convention (see refWindow).
-func yearRet(t *testing.T, s *marketdata.Series, y int) float64 {
-	t.Helper()
-	_, values := refWindow(t, s, y-1, y)
-	return (values[len(values)-1]/values[0] - 1) * 100
 }
 
 // TestGoldenTreasuries validates the constant-maturity Treasury total-return
@@ -374,8 +367,8 @@ func TestGoldenTreasuries(t *testing.T) {
 		{year: 1994, intRef: -5.1, itol: 1.5, longRef: -7.8, ltol: 2.0},
 		{year: 1995, intRef: 16.8, itol: 1.5, longRef: 31.7, ltol: 2.5},
 	} {
-		within(t, "INT "+strconv.Itoa(c.year), yearRet(t, ti, c.year), c.intRef, c.itol)
-		within(t, "LONG "+strconv.Itoa(c.year), yearRet(t, tl, c.year), c.longRef, c.ltol)
+		within(t, "INT "+strconv.Itoa(c.year), calendarYear(t, ti, c.year), c.intRef, c.itol)
+		within(t, "LONG "+strconv.Itoa(c.year), calendarYear(t, tl, c.year), c.longRef, c.ltol)
 	}
 	// Long-run sanity: intermediate treasuries ~6 %/yr and long treasuries
 	// ~7 %/yr over 1972-2021 (SBBI-era figures).
@@ -498,7 +491,7 @@ func TestGoldenWTIRolled(t *testing.T) {
 		{2009, 7.15, 3.0}, {2010, -0.11, 0.8}, {2012, -11.52, 0.8}, {2014, -42.56, 1.0},
 		{2015, -45.34, 0.8},
 	} {
-		within(t, "WTI rolled, funded, "+strconv.Itoa(c.year), calYearDaily(funded, c.year), c.ref, c.tol)
+		within(t, "WTI rolled, funded, "+strconv.Itoa(c.year), calendarYear(t, funded, c.year), c.ref, c.tol)
 	}
 
 	// The roll yield itself. Crude was backwardated through the 1990s and in
