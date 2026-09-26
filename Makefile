@@ -69,6 +69,10 @@ refresh: cape broadsample macropanel euro-refdata gbond-refdata sp500-refdata wt
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
+# The generator modes (-gen-simdata, -verify-simdata) re-download any quote
+# older than a day, whatever the interactive -cache-age default is: what they
+# write ships inside the binary, so a warm month-old cache would freeze the
+# series they rebuild (see generatorCacheAge in cmd/pofo/main.go).
 .PHONY: simdata
 simdata: build ## (Re)generate pkg/datasets/simdata/ then re-embed it into the binary
 	./pofo -gen-simdata
