@@ -185,11 +185,12 @@ var dailyShape = map[string]string{
 // than the equity-ETF tolerance of the FCPE recipe, which is why trackIndex
 // takes the tolerance as an argument rather than owning one.
 //
-// VFINX carries the same signature on nine Decembers of 1980-1986 (1980-12-30,
-// 1981-12-29, 1982-12-28, 1983-12-28, 1984-12-28, 1985-12-27, 1986-12-09, plus
-// the 1981-04-20/21 round trip), the raw NAV falling far more than the
-// distribution the provider reports: -7.22 % on 1986-12-09 against the S&P
-// 500's -0.75, about 30 % of cumulative level lost, i.e. every recipe whose
+// VFINX carries the same signature on seven Decembers of 1980-1986 (1980-12-30,
+// 1981-12-29, 1982-12-28, 1983-12-28, 1984-12-28, 1985-12-27, 1986-12-09),
+// plus a 1981-04-20/21 round trip, nine sessions in all, the raw NAV falling
+// far more than the distribution the provider reports: -6.97 % on 1986-12-09
+// against the S&P 500's -0.75 (the excesses below are on log returns, as
+// trackIndex reads them), about 30 % of cumulative level lost, i.e. every recipe whose
 // equity leg it carried over 1980-1987 ran some 4 points a year cold there (the
 // S&P 500 tracker IE00BFMXXD54 read 11.45 %/yr against the index's 15.88). It
 // is graded against the S&P 500 PRICE index ^GSPC, the index the fund tracks
@@ -201,6 +202,12 @@ var dailyShape = map[string]string{
 // total-market factor rather than the S&P 500, found no band at all (the
 // 1987-10-19 crash reads 3.77 % of honest excess there, the size premium's own
 // move): the reference has to be the index the fund holds.
+//
+// One session of the same signature is left in: 1986-12-30 (raw NAV -3.10 %, a
+// 0.35 dividend reported, adjusted -1.73 % against the index's -0.53) reads
+// 0.83 % of excess alone and 0.30 % pooled with the session before it, under
+// the honest 0.93 % either way, so no tolerance on this pair can reach it
+// without convicting real history. It costs 1.2 % of level, once.
 //
 // One neighbour was measured and is deliberately NOT here, because its
 // separating band closes:
@@ -268,6 +275,11 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 	if fee, owed := longBackFee[pid]; owed && p != nil {
 		p = afterAnnualFee(p.Name+" (fee-aligned)", p, fee)
 	}
+	// ExtendBack rewrites the series it is handed, and the inner fetcher may
+	// hand every caller the same memoized *Series: splice a copy, or the RAW
+	// fetch feeGap reads each donor's inception from would see the extension.
+	cp := *s
+	s = &cp
 	switch {
 	case perr != nil:
 		fmt.Fprintf(os.Stderr, "extend: %s: proxy %s fetch failed: %v\n", id, pid, perr)
