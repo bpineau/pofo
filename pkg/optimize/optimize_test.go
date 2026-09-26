@@ -2,6 +2,7 @@ package optimize
 
 import (
 	"math"
+	"strings"
 	"testing"
 )
 
@@ -205,6 +206,67 @@ func TestParseSpec(t *testing.T) {
 		if _, err := ParseSpec(bad); err == nil {
 			t.Fatalf("ParseSpec(%q) should fail", bad)
 		}
+	}
+}
+
+// The Black-Litterman grammar: views absolute and relative, their default
+// confidence, and the prior return that fixes the risk aversion.
+func TestParseSpecBlackLitterman(t *testing.T) {
+	s, err := ParseSpec("black-litterman,view:IGLN:2,view:DBMFE>DTLA:-3.5@70,prior-return:4.6,max-vol:9")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Objective != BlackLitterman {
+		t.Fatalf("objective = %q", s.Objective)
+	}
+	approx(t, s.PriorReturn, 0.046, 1e-12, "prior-return")
+	approx(t, s.Limits.MaxVolatility, 0.09, 1e-12, "max-vol still composes")
+	if len(s.Views) != 2 {
+		t.Fatalf("parsed %d views, want 2", len(s.Views))
+	}
+	if s.Views[0].Asset != "IGLN" || s.Views[0].Versus != "" {
+		t.Fatalf("absolute view = %+v", s.Views[0])
+	}
+	approx(t, s.Views[0].Return, 0.02, 1e-12, "absolute view return")
+	approx(t, s.Views[0].Confidence, 0.5, 1e-12, "default confidence")
+	if s.Views[1].Asset != "DBMFE" || s.Views[1].Versus != "DTLA" {
+		t.Fatalf("relative view = %+v", s.Views[1])
+	}
+	approx(t, s.Views[1].Return, -0.035, 1e-12, "a negative view is a statement too")
+	approx(t, s.Views[1].Confidence, 0.7, 1e-12, "stated confidence")
+
+	// A zero view is a statement as well (a zero-real-return belief).
+	zero, err := ParseSpec("black-litterman,view:GDE:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	approx(t, zero.Views[0].Return, 0, 1e-12, "zero view")
+
+	for _, bad := range []string{
+		"black-litterman,view:X",           // no return
+		"black-litterman,view:X:abc",       // not a number
+		"black-litterman,view:X:2@0",       // a switched-off view
+		"black-litterman,view:X:2@100",     // a certainty
+		"black-litterman,view:X:2@110",     // out of range
+		"black-litterman,view:>B:2",        // missing side
+		"black-litterman,view:A>:2",        // missing side
+		"black-litterman,prior-return:0",   // no scale at all
+		"black-litterman,prior-return:abc", // not a number
+		"max-sharpe,view:X:2",              // views belong to black-litterman
+		"risk-parity,view:X:2",             //
+		"max-sortino,prior-return:4",       //
+		"cwarp,view:X:2",                   //
+	} {
+		if _, err := ParseSpec(bad); err == nil {
+			t.Fatalf("ParseSpec(%q) should fail", bad)
+		}
+	}
+	// The refusals name the offending token, not just the objective.
+	if _, err := ParseSpec("max-sharpe,view:X:2"); err == nil || !strings.Contains(err.Error(), "view") {
+		t.Fatalf("error = %v, want one naming view", err)
+	}
+	if _, err := ParseSpec("max-sharpe,prior-return:4"); err == nil || !strings.Contains(err.Error(), "prior-return") {
+		t.Fatalf("error = %v, want one naming prior-return", err)
 	}
 }
 

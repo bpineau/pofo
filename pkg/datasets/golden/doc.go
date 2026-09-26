@@ -6,7 +6,7 @@
 // Sharpe, Sortino, Ulcer, Max Drawdown, TTR) beyond the tolerances fails
 // the suite.
 //
-// Four families live here:
+// Five families live here:
 //
 //   - golden_test.go pins the COMPUTATIONS on frozen daily fixtures.
 //   - refdata_test.go pins the bundled long backcast SERIES
@@ -14,6 +14,10 @@
 //   - aqrmf_test.go pins a bundled fund series against AUDITED net asset
 //     values per share, to the cent: a fund NAV has one true value per day,
 //     which also proves the identifier resolved to the right share class.
+//   - blacklitterman_test.go pins the optimizer's Black-Litterman step
+//     (reverse optimization and the Bayesian blend) on the published tables
+//     of He and Litterman (1999) and Idzorek (2005): no bundled data at all,
+//     only the model's own literature.
 //   - trendcadence_test.go pins the managed-futures files' donor era to a
 //     CADENCE invariant: a weekly-dealing donor is projected onto a daily
 //     calendar there, and a projection that gets the daily amplitude wrong

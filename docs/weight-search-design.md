@@ -220,6 +220,18 @@ Two decisions worth writing down:
   pass of its own (how many solves, cached where, at what resolution, and
   whether the report can afford them on every render).
 
+## Black-Litterman, which reuses all of it
+
+`optimize:black-litterman` is a tenth objective built on the machinery above
+rather than beside it: the same box simplex, the same feasibility limits, the
+same `train:` window, the same caller-side identifier resolution (its `view:`
+tokens resolve exactly as `bounds:` do, and an identifier matching no line is
+an error for the same reason). What it changes is where the expected returns
+come from: not the sample, but the returns the portfolio's OWN weights imply,
+revised by the owner's stated views. It answers point 2's complaint from the
+other side, since the mean it optimizes is one somebody defended rather than
+one a window happened to produce. See `docs/black-litterman-design.md`.
+
 ## Traps for whoever touches this next
 
 - Sharpe here runs at a ZERO risk-free rate. Constrained objectives exist

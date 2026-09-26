@@ -73,7 +73,9 @@ type Spec struct {
 	// Optimize, when non-nil, asks an optimizer to compute the weights
 	// instead of using those written in the file
 	// ("#meta optimize:max-sharpe[,max-weight:40]"). The written weights
-	// then serve only as a baseline for comparison.
+	// then serve only as a baseline for comparison, except under
+	// black-litterman, where they are also the prior the views tilt away
+	// from (the caller fills optimize.Spec.Prior with them).
 	Optimize *optimize.Spec
 
 	// Currencies lists the base currencies in which the portfolio should
