@@ -134,11 +134,12 @@ test reaches back decades; the UCITS you would buy is in each line's comment.
 ## Capital-efficient / return stacking
 
 - `return-stacked-modern`: stacked stocks + bonds + trend + gold (RSSB, RSST).
-- `chimera-three-thirds`: the all-weather promise in three equal lines, a
-  90/60 efficient core, unlevered gold and managed futures (the third child
-  of Typhon and Echidna, after the hydra and cerberus files); the header
-  measures why the gold line is not stacked and why there is no commodity
-  index.
+- `chimera-three-thirds`: the frontier in three equal lines, a 90/60
+  efficient core, a stacked gold-and-equity fund (GDE, this collection's
+  demonstration of it) and managed futures; 143 % of notional on three
+  clean thirds of capital (the third child of Typhon and Echidna, after the
+  hydra and cerberus files). The header measures the unlevered-gold
+  alternative it refuses and why there is no commodity index.
 - `modern-all-weather-ucits`: an all-weather you can buy today, UCITS-first.
 
 ## Decumulation
