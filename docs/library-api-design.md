@@ -171,8 +171,9 @@ const (
 // Resample keeps the last close of each calendar period, dated on that
 // close (a month-END series, the convention every bundled monthly anchor
 // follows). The last period is kept even when it is not complete: the caller
-// reads Last().Date to know. Junctions and Dividends that fall on a dropped
-// date are dropped with it.
+// reads Last().Date to know. Dividends that fall on a dropped date are
+// dropped with it; a Junction moves to the kept close of its period, since
+// the resampled step into that close spans the definition change.
 func (s *Series) Resample(f Frequency) *Series
 
 // CommonWindow is the latest first quote and the earliest last quote across
