@@ -295,6 +295,25 @@
 // decoded by SplitSim. Client.FetchExtended packages all of this into one
 // call; the pieces stay public for custom pipelines.
 //
+// # A series as data
+//
+// A Series is also the bridge to the slice-based rest of the tree (pkg/metrics
+// takes parallel dates and values). NewSeries wraps a consumer's own data
+// (strictly ascending dates, normalized to 00:00 UTC, finite values); Dates,
+// Values and Returns (simple returns as fractions, the same numbers as
+// metrics.Returns) hand out fresh slices; Rebase scales a copy to start at a
+// chosen level; Resample keeps the last trading close of each calendar month,
+// quarter or year, a month-END series like every bundled monthly anchor.
+// Every one of them returns fresh slices and leaves its receiver alone.
+//
+// Several series meet on one calendar through AlignSeries, the strict sibling
+// of Align: it starts by default at CommonWindow's start (the latest first
+// quote) and returns an error naming the series where Align would forward-fill
+// zeros; its Aligned result hands the per-asset returns a correlation takes.
+// Align itself stays for callers that compute their own start (portfolio's
+// simulation), SampleAt for an exogenous level read onto a calendar it must
+// not shape, and Trim is the window operation on one series.
+//
 // # Toolbox
 //
 //   - Align merges the trading calendars of several series (union of
