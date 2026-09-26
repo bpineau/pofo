@@ -68,9 +68,9 @@ func TestServeRoutes(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
 
-	if rec := serveGet(t, h, "/examples/claude-dragonlite.txt"); rec.Code != 200 ||
+	if rec := serveGet(t, h, "/examples/golden-butterfly.txt"); rec.Code != 200 ||
 		!strings.HasPrefix(rec.Header().Get("Content-Type"), "text/plain") ||
-		!strings.Contains(rec.Body.String(), "dragon-lite") {
+		!strings.Contains(rec.Body.String(), "Golden Butterfly") {
 		t.Errorf("examples file: code=%d type=%q", rec.Code, rec.Header().Get("Content-Type"))
 	}
 	// The mux cleans "/examples/../secret.txt" to "/secret.txt" (which the
@@ -355,7 +355,7 @@ func TestServeFireMetaSourceAndPicker(t *testing.T) {
 
 	for path, want := range map[string]string{
 		"/firesimulator/api/meta":                          "startup-portfolio",
-		"/firesimulator/e/claude-dragonlite/api/meta":      "claude-dragonlite",
+		"/firesimulator/e/golden-butterfly/api/meta":       "golden-butterfly",
 		"/firesimulator/p/IWDA:60,IGLN:40!sim:on/api/meta": "custom portfolio",
 	} {
 		m := meta(path)
@@ -379,8 +379,8 @@ func TestServeFireMetaSourceAndPicker(t *testing.T) {
 func TestServeFireExampleNakedRedirect(t *testing.T) {
 	s, _ := testServer(t)
 	h := s.handler(nil, nil)
-	if rec := serveGet(t, h, "/firesimulator/e/claude-dragonlite"); rec.Code != 301 ||
-		rec.Header().Get("Location") != "/firesimulator/e/claude-dragonlite/" {
+	if rec := serveGet(t, h, "/firesimulator/e/golden-butterfly"); rec.Code != 301 ||
+		rec.Header().Get("Location") != "/firesimulator/e/golden-butterfly/" {
 		t.Errorf("naked example: code=%d loc=%q", rec.Code, rec.Header().Get("Location"))
 	}
 	// Unknown names still 404, redirect or not.
@@ -393,14 +393,14 @@ func TestServeView(t *testing.T) {
 	s, calls := testServer(t)
 	h := s.handler(nil, nil)
 
-	rec := serveGet(t, h, "/view?ex=claude-dragonlite&rebalance=180")
+	rec := serveGet(t, h, "/view?ex=golden-butterfly&rebalance=180")
 	if rec.Code != 200 || !strings.Contains(rec.Body.String(), "fake report") {
 		t.Fatalf("view: code=%d body=%q", rec.Code, rec.Body.String())
 	}
 	if rec.Header().Get("Cache-Control") != "no-store" {
 		t.Error("view must be no-store")
 	}
-	if len(*calls) != 1 || len((*calls)[0].specs) != 1 || (*calls)[0].specs[0].Name != "claude-dragonlite" {
+	if len(*calls) != 1 || len((*calls)[0].specs) != 1 || (*calls)[0].specs[0].Name != "golden-butterfly" {
 		t.Errorf("render calls = %+v", *calls)
 	}
 
@@ -419,7 +419,7 @@ func TestServeViewCurrencyNative(t *testing.T) {
 
 	// currency=native renders with an empty currency override (keep native
 	// currencies), not the EUR server default.
-	rec := serveGet(t, h, "/view?ex=claude-dragonlite&currency=native")
+	rec := serveGet(t, h, "/view?ex=golden-butterfly&currency=native")
 	if rec.Code != 200 {
 		t.Fatalf("view: code=%d", rec.Code)
 	}
@@ -574,8 +574,8 @@ func TestServeHubComposer(t *testing.T) {
 	// Every embedded preset is valid JSON whose p= the server would accept.
 	re := regexp.MustCompile(`data-preset-\d+="([^"]*)"`)
 	matches := re.FindAllStringSubmatch(body, -1)
-	if len(matches) < 40 {
-		t.Fatalf("only %d presets embedded, want >= 40", len(matches))
+	if want := len(examples.List()); len(matches) < want {
+		t.Fatalf("only %d presets embedded, want every bundled example (%d)", len(matches), want)
 	}
 	for _, m := range matches {
 		var p composerPreset
@@ -605,7 +605,7 @@ func TestServeHubPrefs(t *testing.T) {
 			t.Errorf("hub defaults missing %q", want)
 		}
 	}
-	if !strings.Contains(body, `href="/view?ex=claude-dragonlite"`) {
+	if !strings.Contains(body, `href="/view?ex=golden-butterfly"`) {
 		t.Error("bare Open link expected without a cookie")
 	}
 
@@ -617,7 +617,7 @@ func TestServeHubPrefs(t *testing.T) {
 	body = rec.Body.String()
 	for _, want := range []string{
 		`value="USD" selected`, `value="30" selected`, `value="off" selected`,
-		`href="/view?ex=claude-dragonlite&amp;currency=USD&amp;rebalance=30&amp;sim=off"`,
+		`href="/view?ex=golden-butterfly&amp;currency=USD&amp;rebalance=30&amp;sim=off"`,
 	} {
 		if !strings.Contains(body, want) {
 			t.Errorf("hub with cookie missing %q", want)
@@ -630,7 +630,7 @@ func TestServeViewSetsPrefsCookie(t *testing.T) {
 	h := s.handler(nil, nil)
 
 	// Explicit globals set the cookie.
-	rec := serveGet(t, h, "/view?ex=claude-dragonlite&currency=USD&rebalance=30")
+	rec := serveGet(t, h, "/view?ex=golden-butterfly&currency=USD&rebalance=30")
 	cookies := rec.Result().Cookies()
 	var got *http.Cookie
 	for _, c := range cookies {
@@ -646,7 +646,7 @@ func TestServeViewSetsPrefsCookie(t *testing.T) {
 	}
 
 	// A partial URL merges with the stored cookie instead of erasing it.
-	req := httptest.NewRequest(http.MethodGet, "/view?ex=claude-dragonlite&sim=off", nil)
+	req := httptest.NewRequest(http.MethodGet, "/view?ex=golden-butterfly&sim=off", nil)
 	req.AddCookie(&http.Cookie{Name: prefsCookie, Value: got.Value})
 	rec2 := httptest.NewRecorder()
 	h.ServeHTTP(rec2, req)
@@ -666,7 +666,7 @@ func TestServeViewSetsPrefsCookie(t *testing.T) {
 	}
 
 	// No explicit globals: no Set-Cookie at all.
-	rec3 := serveGet(t, h, "/view?ex=claude-dragonlite")
+	rec3 := serveGet(t, h, "/view?ex=golden-butterfly")
 	if len(rec3.Result().Cookies()) != 0 {
 		t.Error("bare /view must not set a cookie")
 	}

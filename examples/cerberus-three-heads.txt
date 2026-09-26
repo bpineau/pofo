@@ -219,7 +219,7 @@
 #
 # Siblings: hydra-five-engines-capital-efficient.txt (the frontier build
 #   and the family's rationale ledger), hydra-five-engines-ucits.txt (the
-#   fully buyable five-engine build), claude-dragonlite.txt (three lines).
+#   fully buyable five-engine build).
 #meta rebalance:90
 #meta sim:on
 

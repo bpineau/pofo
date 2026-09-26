@@ -2,7 +2,8 @@
 #
 # Idea: fit the weights on part of the history and judge them on the rest,
 #   under a volatility cap and per-line bounds. Three things separate this
-#   from optimized.txt, and each answers a way a plain optimizer misleads:
+#   from a plain `#meta optimize:max-sharpe` line, and each answers a way a
+#   plain optimizer misleads:
 #
 # 1. THE OBJECTIVE IS THE REAL QUESTION. Not "the best Sharpe" but "the most
 #    return that stays under 12% volatility". Sharpe is also a poor proxy
