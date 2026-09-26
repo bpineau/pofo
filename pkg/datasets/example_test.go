@@ -81,7 +81,7 @@ func ExampleBroadSample() {
 }
 
 // MacroPanel is the OECD monthly panel behind the macro-regime work. Parse it
-// with permanent.ParsePanel rather than by hand; the columns are:
+// with a CSV reader skipping the # comment lines; the columns are:
 func ExampleMacroPanel() {
 	for _, line := range strings.Split(string(datasets.MacroPanel()), "\n") {
 		if strings.HasPrefix(line, "iso,") {

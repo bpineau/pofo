@@ -319,7 +319,7 @@ func TestMacroPanelValues(t *testing.T) {
 				// artifact. Rebased on 2015 = 100, the hyperinflating CPI
 				// and share prices of Brazil and Turkey round to 0.0000 in
 				// the early decades. Consumers must not divide by such a
-				// level (permanent.Panel.yoy drops both ends), so the
+				// level (the regime reading skips a zero base), so the
 				// stretch is pinned rather than accepted anywhere.
 				if col == "ip" || (iso != "BRA" && iso != "TUR") || month >= "1993" {
 					t.Fatalf("line %d: %s %s = %v is not a positive index level", n+1, iso, col, v)

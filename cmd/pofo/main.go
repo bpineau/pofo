@@ -157,7 +157,6 @@ func run(ctx context.Context, argv []string) error {
 	fs.IntVar(&opt.foreignPerHour, "serve-foreign-per-hour", 10, "with -serve: how many identifiers outside the bundled catalog one client may have fetched from the quote sources per hour (0 = refuse them all, catalog only)")
 	fs.IntVar(&opt.foreignGlobalPerHour, "serve-foreign-global-per-hour", 60, "with -serve: the same budget for the whole process, all clients together")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
-	permanentFlag := fs.Bool("permanent", false, "backtest the tactical Permanent Portfolio 2.0 (Darcet) and its ruin probabilities vs the static PP, then exit")
 	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	exportEpub := fs.String("export-epub", "", "write one edition of the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
@@ -294,7 +293,7 @@ Options:
 		return fmt.Errorf("invalid -indexnow-key %q: 8 to 128 letters, digits and dashes", opt.indexNowKey)
 	}
 
-	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -334,7 +333,7 @@ Options:
 		for name, on := range map[string]bool{
 			"-fire": *fireFlag, "-cli": opt.cli, "-warmup": *warmup,
 			"-verify-data": *verifyData, "-suggest": *suggestFlag,
-			"-coverage": *coverageFlag, "-sweep": *sweepFlag, "-permanent": *permanentFlag,
+			"-coverage": *coverageFlag, "-sweep": *sweepFlag,
 			"-gen-simdata": *genSimdata, "-verify-simdata": *verifySimdata,
 		} {
 			if on {
@@ -371,7 +370,7 @@ Options:
 	if err != nil {
 		return err
 	}
-	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag && !*permanentFlag {
+	if len(specs) == 0 && !*warmup && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
 		return errors.New("the -assets option contains no identifier")
 	}
 
@@ -410,10 +409,6 @@ Options:
 		}
 		return runFire(ctx, &opt, client, specs)
 	}
-	if *permanentFlag {
-		return runPermanent(ctx, &opt, client)
-	}
-
 	cmp, err := compare.Compute(ctx, client, specs, opt.compareOptions())
 	if err != nil {
 		return err
