@@ -337,3 +337,96 @@ func ExampleSeries_WithoutEstimates() {
 	// 4 URTH
 	// 2 2026-09-02 true
 }
+
+// NewSeries wraps a consumer's own data in a Series, which then hands the
+// parallel slices every pkg/metrics function takes: Dates and Values, and
+// Returns as fractions.
+func ExampleNewSeries() {
+	dates := []time.Time{
+		time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+		time.Date(2024, 1, 3, 0, 0, 0, 0, time.UTC),
+		time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC),
+	}
+	s, err := marketdata.NewSeries("MY-BOOK", dates, []float64{1000, 1010, 999.9})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s.Len(), s.Values())
+	r := s.Returns()
+	fmt.Printf("%+.2f%% %+.2f%%\n", 100*r[0], 100*r[1])
+
+	_, err = marketdata.NewSeries("MY-BOOK", []time.Time{dates[1], dates[0]}, []float64{1, 2})
+	fmt.Println(err)
+	// Output:
+	// 3 [1000 1010 999.9]
+	// +1.00% -1.00%
+	// marketdata: NewSeries MY-BOOK: date 1 (2024-01-02) does not follow date 0 (2024-01-03)
+}
+
+// Rebase scales a series so it starts at a chosen level, 100 here, leaving
+// every return, the metadata and the dividends (cash) as they were.
+func ExampleSeries_Rebase() {
+	day := func(i int) time.Time { return time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC).AddDate(0, 0, i) }
+	s := &marketdata.Series{Symbol: "DEMO", Currency: "EUR", Points: []marketdata.Point{
+		{Date: day(1), Close: 40}, {Date: day(2), Close: 42}, {Date: day(3), Close: 41},
+	}, Dividends: []marketdata.Dividend{{Date: day(2), Amount: 0.3}}}
+	r := s.Rebase(100)
+	fmt.Println(r.Values(), r.Currency, r.Dividends[0].Amount)
+	// Output:
+	// [100 105 102.5] EUR 0.3
+}
+
+// Resample keeps the last TRADING close of each calendar period, dated on
+// that close: March 2024 ends on a weekend after Good Friday, so its month-end
+// is Thursday the 28th. The unfinished last month is kept, on its own date.
+func ExampleSeries_Resample() {
+	d := func(m time.Month, day int) time.Time { return time.Date(2024, m, day, 0, 0, 0, 0, time.UTC) }
+	s, _ := marketdata.NewSeries("DEMO",
+		[]time.Time{d(2, 28), d(2, 29), d(3, 27), d(3, 28), d(4, 1), d(4, 2)},
+		[]float64{100, 101, 104, 105, 103, 106})
+	for _, p := range s.Resample(marketdata.Monthly).Points {
+		fmt.Println(p.Date.Format("2006-01-02"), p.Close)
+	}
+	fmt.Println(s.Resample(marketdata.Quarterly).Len())
+	// Output:
+	// 2024-02-29 101
+	// 2024-03-28 105
+	// 2024-04-02 106
+	// 2
+}
+
+// CommonWindow is the stretch on which every series quotes: from the latest
+// first quote to the earliest last one.
+func ExampleCommonWindow() {
+	d := func(day int) time.Time { return time.Date(2024, 1, day, 0, 0, 0, 0, time.UTC) }
+	old, _ := marketdata.NewSeries("OLD", []time.Time{d(2), d(3), d(4), d(5)}, []float64{1, 2, 3, 4})
+	young, _ := marketdata.NewSeries("YOUNG", []time.Time{d(4), d(5), d(8)}, []float64{1, 2, 3})
+	start, end, ok := marketdata.CommonWindow(old, young)
+	fmt.Println(start.Format("2006-01-02"), end.Format("2006-01-02"), ok)
+	// Output:
+	// 2024-01-04 2024-01-05 true
+}
+
+// AlignSeries puts several series on one calendar, starting by default where
+// all of them quote, and refuses a start that would forward-fill zeros where
+// Align would have done it in silence. Returns hands the per-asset returns a
+// correlation or a covariance takes.
+func ExampleAlignSeries() {
+	d := func(day int) time.Time { return time.Date(2024, 1, day, 0, 0, 0, 0, time.UTC) }
+	old, _ := marketdata.NewSeries("OLD", []time.Time{d(2), d(3), d(4), d(5)}, []float64{100, 101, 102, 103})
+	young, _ := marketdata.NewSeries("YOUNG", []time.Time{d(3), d(5)}, []float64{50, 55})
+
+	a, err := marketdata.AlignSeries([]*marketdata.Series{old, young}, time.Time{}, time.Time{})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(a.IDs, len(a.Dates), a.Dates[0].Format("2006-01-02"))
+	fmt.Println(a.Levels[1], len(a.Returns()[1]))
+
+	_, err = marketdata.AlignSeries([]*marketdata.Series{old, young}, d(2), time.Time{})
+	fmt.Println(err)
+	// Output:
+	// [OLD YOUNG] 3 2024-01-03
+	// [50 50 55] 2
+	// marketdata: AlignSeries: YOUNG starts 2024-01-03, after the window's start 2024-01-02
+}
