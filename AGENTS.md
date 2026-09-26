@@ -352,9 +352,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   a return across it; and `VFITX`'s adjusted close carries an unhandled
   year-end capital gain on 1993-12-31 (-3.16 %, permanent), which `simgen`'s
   `tracked` map refuses against `TREASURY-INT-DAILY`. `VFINX` carries the same
-  signature on nine sessions of 1980-1986 (about 30 % of level, ~4 pts/yr
+  signature on ten sessions of 1980-1986 (about 30 % of level, ~4 pts/yr
   cold on every recipe whose equity leg it carried then), refused since
-  2026-09-26 against `^GSPC`, the index it tracks; `VUSTX` (1992-12) has no
+  2026-09-26 against `^GSPC`, the index it tracks (nine by tolerance, one
+  on the record, all pinned by `TestGoldenVanguard500Published` to the fund's
+  published 1985-1994 returns); `VUSTX` (1992-12) has no
   separating band and stays measured, reported, NOT repaired. A STRIPS fund is NOT a
   geared coupon fund: the gearing that matches a 27-year strip to a long coupon
   fund is 1.66 at 3 % yields and 3.31 at 12 %, so a constant fitted on the
