@@ -203,11 +203,18 @@ var dailyShape = map[string]string{
 // 1987-10-19 crash reads 3.77 % of honest excess there, the size premium's own
 // move): the reference has to be the index the fund holds.
 //
-// One session of the same signature is left in: 1986-12-30 (raw NAV -3.10 %, a
-// 0.35 dividend reported, adjusted -1.73 % against the index's -0.53) reads
-// 0.83 % of excess alone and 0.30 % pooled with the session before it, under
-// the honest 0.93 % either way, so no tolerance on this pair can reach it
-// without convicting real history. It costs 1.2 % of level, once.
+// One session of the same signature sits under the tolerance: 1986-12-30 (raw
+// NAV -3.10 %, a 0.35 dividend reported, adjusted -1.73 % against the index's
+// -0.53) reads 0.83 % of excess, under the honest 0.93 %, so no tolerance on
+// this pair can reach it without convicting real history. It is refused ON THE
+// RECORD instead, on the fund's own published total returns (Vanguard Index
+// Trust prospectus of 1995, Financial Highlights of the 500 Portfolio, SEC
+// accession 0000893220-95-000289): with the nine convicted sessions repaired,
+// the line matches every published year of 1985-1994 within 0.05 point except
+// 1986, 16.61 % against a published 18.06, and this session is the whole of
+// that gap: refused, 1986 reads 18.03. (1992 and 1993 read +0.79 and -0.77 against
+// their published figures: a repeated close on 1992-12-31 caught up on
+// 1993-01-04, which moves a year boundary and no level.)
 //
 // One neighbour was measured and is deliberately NOT here, because its
 // separating band closes:
@@ -221,11 +228,14 @@ var dailyShape = map[string]string{
 //     suspended over 1987-01..1993-09, so the daily reference does not even
 //     cover the days in question.
 var tracked = map[string]struct {
-	ref string
-	tol float64
+	ref    string
+	tol    float64
+	refuse []time.Time // sessions refused on the record, each justified above
 }{
-	"VFITX": {"TREASURY-INT-DAILY", 0.015},
-	"VFINX": {sp500ShapeID, 0.0115},
+	"VFITX": {ref: "TREASURY-INT-DAILY", tol: 0.015},
+	"VFINX": {ref: sp500ShapeID, tol: 0.0115, refuse: []time.Time{
+		time.Date(1986, 12, 30, 0, 0, 0, 0, time.UTC),
+	}},
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
@@ -247,7 +257,7 @@ func (e extendingFetcher) Fetch(id string, from time.Time) (*marketdata.Series, 
 	}
 	if t, ok := tracked[id]; ok && s != nil {
 		if ref, rerr := e.inner.Fetch(t.ref, from); rerr == nil && ref != nil {
-			repaired, rejects := trackIndex(s, ref, t.tol)
+			repaired, rejects := trackIndex(s, ref, t.tol, t.refuse...)
 			for _, r := range rejects {
 				fmt.Fprintf(os.Stderr, "extend: %s does not track %s on %s\n", id, t.ref, r)
 			}

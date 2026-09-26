@@ -38,12 +38,23 @@ import (
 // defect.
 //
 // The same allowance also accepts a donor session that equals TWO of the
-// reference's, with its neighbour: that is the catch-up after a stale print
-// (the provider repeats a close, the next session carries both moves), and it
-// leaves no level error behind. Without it, VFINX's catch-up on 1987-11-30,
-// after a repeated close on 1987-11-27, reads 1.55 % of excess against the
-// S&P 500 and would be convicted above the 1.37 % of a real defect; pooled, it
-// reads 0.01 %.
+// reference's when the donor's neighbouring session is a REPEATED CLOSE (a
+// zero return): that is the catch-up after a stale print, the next session
+// carrying both moves, and it leaves no level error behind. Without it, VFINX's
+// catch-up on 1987-11-30, after a repeated close on 1987-11-27, reads 1.55 %
+// of excess against the S&P 500 and would be convicted above the 1.37 % of a
+// real defect; pooled, it reads 0.01 %. The repeated close is required, not
+// merely allowed: pooling with ANY neighbour measurably widens what a defect
+// can hide behind (a 3 % one-sided step injected into ^GSPC over 1980-2026
+// passes a 1.15 % tolerance on 15.4 % of sessions that way, against 12.7 % for
+// the one-session clock allowance alone).
+//
+// A session the tolerance cannot reach, because its defect is smaller than the
+// pair's honest noise, can still be refused ON THE RECORD: trackIndex takes
+// the dates of sessions to refuse whatever their excess. Each one must be
+// justified where it is listed by evidence the session test does not have (a
+// published annual return, a reported distribution), and refusing an honest
+// session costs at most one session of tracking noise, never a level error.
 //
 // The tolerance is therefore NOT a package constant: it belongs to the pair.
 // A Xetra ETF against a US-close index and a Treasury mutual fund against a
@@ -76,12 +87,16 @@ type trackReject struct {
 	Ref     float64   // the reference's return over the same two dates
 	Excess  float64   // the clock-tolerant excess that convicted it (log, absolute)
 	Dropped bool      // the first print was dropped rather than the return replaced
+	Listed  bool      // refused on the record, not by the tolerance
 }
 
 func (r trackReject) String() string {
 	what := fmt.Sprintf("return replaced by the reference's (%+.2f %% -> %+.2f %%)", r.Donor*100, r.Ref*100)
 	if r.Dropped {
 		what = fmt.Sprintf("first print dropped (its step was %+.2f %% against the reference's %+.2f %%)", r.Donor*100, r.Ref*100)
+	}
+	if r.Listed {
+		what += ", refused on the record"
 	}
 	return fmt.Sprintf("%s: %s, excess %.2f %%", r.Date.Format("2006-01-02"), what, r.Excess*100)
 }
@@ -95,8 +110,10 @@ func (r trackReject) String() string {
 // rounding noise.
 //
 // Sessions the reference does not cover are kept as they are: a donor cannot be
-// convicted on evidence that does not exist.
-func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.Series, []trackReject) {
+// convicted on evidence that does not exist. The sessions closing on a date in
+// refuse are replaced whatever their excess (see the package note above on
+// refusing on the record); a listed date the donor does not quote is ignored.
+func trackIndex(donor, reference *marketdata.Series, tol float64, refuse ...time.Time) (*marketdata.Series, []trackReject) {
 	if donor == nil || reference == nil || len(donor.Points) < 3 || len(reference.Points) < 3 {
 		return donor, nil
 	}
@@ -122,9 +139,9 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 	}
 
 	// The clock allowance: the reference may run one session ahead of the donor
-	// or one behind it, and a donor session may carry two of the reference's
-	// (the catch-up after a stale print), so a session is convicted only when it
-	// disagrees with all five.
+	// or one behind it, and next to a repeated close the donor session may carry
+	// two of the reference's (the catch-up after a stale print), so a session is
+	// convicted only when it disagrees with every reading it is allowed.
 	excess := func(i int) float64 {
 		if math.IsNaN(rr[i]) {
 			return 0
@@ -133,10 +150,16 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 		for _, k := range []int{-1, 1} {
 			if j := i + k; j >= 1 && j < n && !math.IsNaN(rr[j]) {
 				e = math.Min(e, math.Abs(dr[i]-rr[j]))
-				e = math.Min(e, math.Abs(dr[i]-rr[i]-rr[j]))
+				if dr[j] == 0 {
+					e = math.Min(e, math.Abs(dr[i]-rr[i]-rr[j]))
+				}
 			}
 		}
 		return e
+	}
+	listed := make(map[time.Time]bool, len(refuse))
+	for _, d := range refuse {
+		listed[d] = true
 	}
 
 	// The first session is judged first and alone: nothing precedes the first
@@ -150,7 +173,7 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 		}
 		trimmed := *donor
 		trimmed.Points = donor.Points[1:]
-		out, rest := trackIndex(&trimmed, reference, tol)
+		out, rest := trackIndex(&trimmed, reference, tol, refuse...)
 		return out, append([]trackReject{head}, rest...)
 	}
 
@@ -158,9 +181,12 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 	repaired := make([]float64, n)
 	for i := 1; i < n; i++ {
 		repaired[i] = dr[i]
-		if e := excess(i); e > tol {
+		e := excess(i)
+		onRecord := listed[donor.Points[i].Date] && !math.IsNaN(rr[i])
+		if e > tol || onRecord {
 			rejects = append(rejects, trackReject{
 				Date: donor.Points[i].Date, Donor: math.Expm1(dr[i]), Ref: math.Expm1(rr[i]), Excess: e,
+				Listed: e <= tol,
 			})
 			repaired[i] = rr[i]
 		}

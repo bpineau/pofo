@@ -14,6 +14,10 @@
 //   - aqrmf_test.go pins a bundled fund series against AUDITED net asset
 //     values per share, to the cent: a fund NAV has one true value per day,
 //     which also proves the identifier resolved to the right share class.
+//   - vanguard500_test.go pins the S&P 500 tracker's 1985-1994 years, which
+//     ARE the Vanguard 500 fund's quotes, to that fund's published annual
+//     total returns: the guard on the donor grading that repairs the
+//     provider's lost 1980s distributions.
 //   - blacklitterman_test.go pins the optimizer's Black-Litterman step
 //     (reverse optimization and the Bayesian blend) on the published tables
 //     of He and Litterman (1999) and Idzorek (2005): no bundled data at all,
