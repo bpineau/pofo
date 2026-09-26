@@ -1,72 +1,82 @@
-# Chimera (three thirds) -- one capital-efficient engine, gold, trend, in equal parts
+# Chimera (three thirds) -- the frontier in three equal lines: efficient core, stacked gold, trend
 #
-# Idea: the All-Weather promise (a book that does not depend on the regime)
-#   kept with the fewest moving parts. Three lines of equal weight, each a
-#   different SOURCE of return: a 90/60 efficient core for the growth regime
-#   (stocks plus the duration that pays in a deflationary crash), physical
-#   gold for the regime nothing else covers (inflation, currency stress),
-#   and managed futures for the crisis that unfolds over months. The core is
-#   levered so the two diversifiers can be held at full size without the
-#   equity budget paying for them; the diversifiers are NOT levered, on
-#   purpose (see "why not a stacked gold line").
+# Idea: a FRONTIER build and a game of simplicity, played at once. Three
+#   lines of equal weight, each a different source of return, and two of
+#   them capital-efficient: a 90/60 efficient core (stocks plus the duration
+#   that pays in a deflationary crash), a stacked gold-and-equity fund (GDE:
+#   90 % US equity plus 90 % gold on one dollar), and managed futures for
+#   the crisis that unfolds over months. Three thirds of CAPITAL, 143 % of
+#   notional, and the diversifiers held at full size without the equity
+#   budget paying for them: that is the frontier, reached with the fewest
+#   moving parts. It is also this collection's demonstration of GDE, the
+#   one fund that stacks gold rather than bonds on an equity core.
 #
 # Lineage: the third child of Typhon and Echidna, after Hydra
 #   (hydra-five-engines-ucits.txt, one head per engine) and Cerberus
 #   (cerberus-three-heads.txt, three even thirds of NOTIONAL). Chimera is
-#   three even thirds of CAPITAL: lion, goat and serpent on one body, and
-#   the one that fits a retail account without any opt-up (every line UCITS
-#   or with a UCITS twin named in its comment).
+#   three even thirds of capital, lion, goat and serpent on one body, and
+#   like Cerberus it carries one non-UCITS line (GDE): the buyable route is
+#   in the last section.
 #
-# What 100 EUR holds (notional 120): 36 US equity, 24 US Treasuries
-#   (intermediate ladder, futures), 30 gold, 30 managed futures. Regime
-#   coverage by weight: growth 36, deflation 24, inflation 60, crisis 60.
+# What 100 EUR holds (notional 143): 60 US equity (31 through the core,
+#   30 through GDE), 20 US Treasuries (intermediate ladder, futures), 30
+#   gold (futures, inside GDE), 33 managed futures. Regime coverage by
+#   weight: growth 60, deflation 20, inflation 63, crisis 63. Read the
+#   equity share before anything else: this is a growth book with two
+#   hedges at full size, not a risk-balanced one.
 #
 # Measured (USD, 1996-03 to 2026-09, sim:on, 180-day rebalancing) against
 #   the S&P 500 over the same window:
-#     CAGR 10.7 % vs 10.4 %; volatility 9.8 % vs 19.0 %; Sharpe 1.08 vs 0.61;
-#     max drawdown -19.4 % vs -55.3 %; longest recovery 1.8 y vs 6.1 y;
-#     worst rolling 5y +3.4 %/yr vs -8.2 %; beta 0.30.
-#   Stress windows (total return): dotcom 2000-03..2003-03 -5.5 % (S&P -44 %),
-#     2007-10..2009-03 -21.4 %, COVID 2020-02..03 -12.5 %, the 2022 rate
-#     shock -10.2 %. The gold bear of 2013-2015 is its worst regime: +4.8 %/yr
-#     with a -9.5 % drawdown, i.e. the price of holding the inflation hedge
-#     through two years where it was not needed.
+#     CAGR 12.8 % vs 10.4 %; volatility 13.1 % vs 19.0 %; Sharpe 0.98 vs
+#     0.61; max drawdown -30.5 % vs -55.3 %; longest recovery 1.9 y vs
+#     6.1 y; worst rolling 5y +4.1 %/yr vs -8.2 %, median rolling 5y
+#     +11.5 %; beta 0.55, up capture 65 %, down capture 58 %.
+#   Stress windows (total return): dotcom 2000-03..2003-03 -12.8 % (S&P
+#     -44 %), 2007-10..2009-03 -31.7 % (gold and equity fell together for
+#     four months before the trend line caught up), COVID 2020-02..03
+#     -19.6 %, the 2022 rate shock -13.6 % (the bond overlay and the
+#     equity both down, gold flat, trend +24 %). The gold bears of
+#     2011-2013 and 2013-2015 cost nothing: +2.8 and +8.2 %/yr, the equity
+#     inside GDE carrying the line.
 #
-# Why not a stacked gold line (GDE, 90 % equity + 90 % gold on one dollar).
-#   Measured, same window: 34 NTSX / 33 GDE / 33 KMLM returns 12.8 %/yr,
-#   but at 13.1 % volatility, a -30.5 % drawdown, beta 0.55, and a WORSE
-#   result on every stress window above (dotcom -12.8 %, 2008 -31.7 %,
-#   2022 -13.6 %). The stacked gold line spends its capital efficiency on
-#   more equity (60 of the 100), not on more diversification, and the
-#   book's deflation cover falls to 20. Same Sharpe (0.98) as the old
-#   four-line version of this file, three points more return bought with
-#   three points more volatility: a fine growth book, not an all-weather.
-#   The frontier sibling (hydra-five-engines-capital-efficient.txt) is
-#   where that trade is made on purpose.
+# The unlevered alternative, measured and NOT taken here. The same three
+#   lines with plain gold (40 NTSX / 30 IGLN / 30 KMLM, notional 120)
+#   returns 10.7 %/yr at 9.8 % volatility, Sharpe 1.08, a -19.4 % drawdown
+#   and a better result on every stress window (dotcom -5.5 %, 2008
+#   -21.4 %, 2022 -10.2 %). That book is the all-weather answer; this file
+#   is the frontier one: the stacked gold line buys 2.1 points of return
+#   for 3.3 points of volatility and eleven points of drawdown, at the
+#   same Sharpe as the old four-line version of this file. Whoever wants
+#   the calmer book moves 33 GDE to 30 gold and the freed capital into the
+#   core; the change is one line.
 #
 # Why no broad commodity line. The earlier version of this file held 15 %
 #   of a commodity index next to the trend fund. Managed futures already
 #   trade the same contracts, long AND short, and the trend fund carried
-#   the 2022 inflation year on its own (+24 %); a long-only commodity
-#   basket adds the roll cost and the 2014-2020 bear for a cover the
-#   sleeve already provides. Dropping it took the book from four lines to
-#   three and improved every risk figure.
+#   the 2022 inflation year on its own; a long-only basket adds the roll
+#   cost and the 2014-2020 bear for a cover the sleeve provides. Dropping
+#   it is what made three clean thirds possible.
 #
 # Where it fails. A prolonged stagflation with gold AND trend both out of
-#   phase (1970s-style, the trend fund's backcast reaches 1996 only, so
+#   phase (1970s-style; the trend line's backcast reaches 1996 only, so
 #   that decade is not in the test); a slow lost decade in the equity
-#   core, which the two diversifiers soften without profiting from; and
-#   model risk on the trend line, whose pre-2020 history is a donor chain
-#   of other managers' NAVs (see pkg/datasets/simdata/KMLM.csv's header
-#   and docs/trend-reconstruction-design.md for the error budget).
+#   core, which 60 points of equity feel in full and the two hedges soften
+#   without profiting from; and model risk on the trend line, whose
+#   pre-2020 history is a donor chain of other managers' NAVs (see
+#   pkg/datasets/simdata/KMLM.csv's header and
+#   docs/trend-reconstruction-design.md for the error budget). GDE's own
+#   backcast is a 90/90 composite financed at the overnight rate; its
+#   pre-2022 history is an engine, not a fund.
 #
-# Buy route (EU retail): NTSX -> IE000KF370H3 (the UCITS twin); GOLD ->
-#   IGLN (IE00B4ND3602, physical ETC); KMLM -> iMGP DBi Managed Futures
-#   (LU2951555403, EUR class) or the EUR-hedged AQR class (LU2622190622);
-#   the KMLM line is the US-listed index replicator the backcast is
-#   validated against.
+# Buy route (EU retail): NTSX -> IE000KF370H3 (the UCITS twin); KMLM ->
+#   iMGP DBi Managed Futures (LU2951555403, EUR class) or the EUR-hedged
+#   AQR class (LU2622190622). GDE has no UCITS twin: a retail account
+#   synthesizes the line with physical gold (IGLN, IE00B4ND3602) plus a
+#   2x MSCI USA UCITS ETF (CL2, FR0010755611) in roughly equal parts, at the
+#   cost of the daily-reset drift of the levered fund; cerberus-three-heads.txt
+#   carries the priced version of that synthesis and the access ledger.
 #meta rebalance:180
 #meta sim:on
-40    NTSX            # IE000KF370H3  US Efficient Core 90/60: the growth engine and the deflation duration
-30    GOLD            # gold, unlevered (UCITS: IGLN IE00B4ND3602): the regime nothing else covers
-30    KMLM            # managed futures (UCITS: iMGP DBi LU2951555403): the crisis that unfolds over months
+34    NTSX            # IE000KF370H3  US Efficient Core 90/60: the growth engine and the deflation duration
+33    GDE             # stacked gold and equity, 90/90 on one dollar (no UCITS twin: IGLN + CL2 synthesis): the inflation and currency hedge at full size
+33    KMLM            # managed futures (UCITS: iMGP DBi LU2951555403): the crisis that unfolds over months
