@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"unicode"
 
 	"github.com/bpineau/pofo/pkg/optimize"
 )
@@ -119,7 +120,7 @@ func ParseFile(path string) (*Spec, error) {
 // Weights accept a decimal comma and an optional % suffix. If the weights do
 // not sum to 100 they are normalized and a warning is recorded.
 func Parse(name string, r io.Reader) (*Spec, error) {
-	spec := &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1, Capital: -1}
+	spec := newSpec(name)
 	sc := bufio.NewScanner(r)
 	lineNo := 0
 	for sc.Scan() {
@@ -155,7 +156,7 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 			if ferr != nil {
 				return nil, fmt.Errorf("line %d: unexpected %q after the ticker; write a TER (number) or move free text behind a \"#\" comment", lineNo, strings.Join(rest, " "))
 			}
-			if fees < 0 || fees > 20 {
+			if !validFees(fees) {
 				return nil, fmt.Errorf("line %d: fees %q out of range (0-20 %%/year)", lineNo, rest[0])
 			}
 			h.Fees = fees
@@ -169,30 +170,48 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	if err := sc.Err(); err != nil {
 		return nil, err
 	}
+	if err := spec.normalize(); err != nil {
+		return nil, err
+	}
+	return spec, nil
+}
+
+// newSpec is an empty Spec with every numeric directive unset (negative), the
+// state Parse starts from and NewSpec leaves in place.
+func newSpec(name string) *Spec {
+	return &Spec{Name: name, RebalanceDays: -1, EnvelopeFees: -1, BorrowSpread: -1, Capital: -1}
+}
+
+// normalize checks a Spec whose Holdings carry their RawWeight and whose
+// directives are applied, then sets every Holding.Weight: RawWeight/100 under
+// Leverage, RawWeight over the sum of them otherwise (with a warning when that
+// sum is off 100). It is the one validation Parse and NewSpec share, so a spec
+// built in code and the same lines in a file are the same spec.
+func (spec *Spec) normalize() error {
 	if len(spec.Holdings) == 0 {
-		return nil, fmt.Errorf("no allocation line found")
+		return fmt.Errorf("no allocation line found")
 	}
 	sum := 0.0
 	for _, h := range spec.Holdings {
 		sum += h.RawWeight
 	}
 	if sum <= 0 {
-		return nil, fmt.Errorf("weights sum to zero")
+		return fmt.Errorf("weights sum to zero")
 	}
 	if (spec.Contribute.Active() || spec.Withdraw.Active()) && spec.Capital <= 0 {
-		return nil, fmt.Errorf("#meta contribute/withdraw need a starting amount: add \"#meta capital:<amount>\"")
+		return fmt.Errorf("#meta contribute/withdraw need a starting amount: add \"#meta capital:<amount>\"")
 	}
 	if spec.Optimize != nil && spec.Leverage {
-		return nil, fmt.Errorf("#meta optimize and #meta leverage cannot be combined")
+		return fmt.Errorf("#meta optimize and #meta leverage cannot be combined")
 	}
 	if spec.Optimize != nil && len(spec.Currencies) > 0 {
-		return nil, fmt.Errorf("#meta optimize and #meta currencies cannot be combined")
+		return fmt.Errorf("#meta optimize and #meta currencies cannot be combined")
 	}
 	if spec.Leverage {
 		// Explicit leverage: weights are fractions of the capital, as
 		// written; the residual (100−sum) becomes a cash position.
-		if sum > 500 {
-			return nil, fmt.Errorf("total exposure %.4g %% exceeds the 500 %% cap", sum)
+		if sum > maxWeightPct {
+			return fmt.Errorf("total exposure %.4g %% exceeds the 500 %% cap", sum)
 		}
 		for i := range spec.Holdings {
 			spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / 100
@@ -201,11 +220,11 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 			spec.Warnings = append(spec.Warnings,
 				fmt.Sprintf("explicit leverage: total exposure %.4g %%, cash residual %.4g %%", sum, 100-sum))
 		}
-		return spec, nil
+		return nil
 	}
 	for _, h := range spec.Holdings {
 		if h.RawWeight > 100 {
-			return nil, fmt.Errorf("weight %.4g %% > 100 %%; add \"#meta leverage:on\" if the exposure is intentional", h.RawWeight)
+			return fmt.Errorf("weight %.4g %% > 100 %%; add \"#meta leverage:on\" if the exposure is intentional", h.RawWeight)
 		}
 	}
 	if math.Abs(sum-100) > 0.5 {
@@ -214,6 +233,74 @@ func Parse(name string, r io.Reader) (*Spec, error) {
 	}
 	for i := range spec.Holdings {
 		spec.Holdings[i].Weight = spec.Holdings[i].RawWeight / sum
+	}
+	return nil
+}
+
+// The bounds every allocation line is held to, in percent: a weight above
+// zero and at most 500 % (the leverage cap), a TER from 0 to 20 %/year.
+const (
+	maxWeightPct = 500
+	maxFeesPct   = 20
+)
+
+// validWeight reports whether a line's weight, in percent, is in range. NaN
+// is not.
+func validWeight(pct float64) bool { return pct > 0 && pct <= maxWeightPct }
+
+// validFees reports whether a declared TER, in percent per year, is in range.
+// NaN is not.
+func validFees(pct float64) bool { return pct >= 0 && pct <= maxFeesPct }
+
+// Line is one allocation of a portfolio built in code, in the in-memory
+// convention: Weight is a FRACTION (0.6 for 60 %), Fees the asset's TER in
+// PERCENT per year (0.2 for 0.20 %/yr), as Holding.Fees. A negative Fees
+// means unknown, as an absent fee column does in a file; beware that the
+// zero value DECLARES a zero TER, which Build then keeps instead of looking
+// the fund's own up (BuildOptions.Fees), so write Fees: -1 when you do not
+// know it.
+type Line struct {
+	ID     string  // ticker, ISIN or alias, SIM suffix allowed, as in a file
+	Weight float64 // fraction of the portfolio, above 0 and at most 1
+	Fees   float64 // TER in percent per year, 0 to 20; negative when unknown
+}
+
+// NewSpec builds the Spec of a portfolio assembled in code rather than read
+// from a file. It validates and normalizes exactly as Parse does, through the
+// same code: each Holding gets RawWeight = Weight*100 (the percent a file
+// would carry) and a Weight renormalized so the weights sum to 1, with a
+// Spec.Warnings line when the lines did not already sum to 100 %. Every
+// directive is left unset: RebalanceDays, Capital, BorrowSpread and
+// EnvelopeFees negative, Meta nil, no leverage, no flows, no SIM. So
+// NewSpec(name, lines...) and Parse on the same lines written as a file are
+// the same Spec, Name aside.
+//
+// It fails on no line at all, an empty identifier or one with a blank inside
+// (a file could not carry it), a weight outside (0, 1] (a file line above
+// 100 % needs "#meta leverage:on", which NewSpec does not set), a fee above
+// 20 %/yr, and NaN anywhere. Duplicate identifiers are accepted, as Parse
+// accepts them: they are two lines of the same asset.
+func NewSpec(name string, lines ...Line) (*Spec, error) {
+	spec := newSpec(name)
+	for i, l := range lines {
+		id := strings.TrimSpace(l.ID)
+		if id == "" || strings.ContainsFunc(id, unicode.IsSpace) {
+			return nil, fmt.Errorf("line %d: invalid identifier %q", i+1, l.ID)
+		}
+		h := Holding{RawWeight: l.Weight * 100, ID: id, Fees: -1}
+		if !validWeight(h.RawWeight) || h.RawWeight > 100 {
+			return nil, fmt.Errorf("line %d (%s): weight %g out of range (a fraction above 0 and at most 1)", i+1, id, l.Weight)
+		}
+		if l.Fees >= 0 || math.IsNaN(l.Fees) {
+			if !validFees(l.Fees) {
+				return nil, fmt.Errorf("line %d (%s): fees %g out of range (0-20 %%/year)", i+1, id, l.Fees)
+			}
+			h.Fees = l.Fees
+		}
+		spec.Holdings = append(spec.Holdings, h)
+	}
+	if err := spec.normalize(); err != nil {
+		return nil, err
 	}
 	return spec, nil
 }
@@ -391,7 +478,7 @@ func parseWeight(s string) (float64, error) {
 	if err != nil {
 		return 0, fmt.Errorf("expected a number")
 	}
-	if w <= 0 || w > 500 {
+	if !validWeight(w) {
 		return 0, fmt.Errorf("must be greater than 0 and at most 500")
 	}
 	return w, nil

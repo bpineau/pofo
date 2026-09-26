@@ -260,7 +260,7 @@ so the two cannot disagree. Tests: matrices on a hand-built 3-asset sample
 with a partial first month and a 31-December quote, VaR against
 `Quantiles`. Examples for each new function.
 
-### M3. `portfolio.NewSpec` and `pkg/analyze`: the numbers layer
+### M3. `portfolio.NewSpec` and `pkg/analyze`: the numbers layer (shipped 2026-09-26)
 
 ```go
 // portfolio

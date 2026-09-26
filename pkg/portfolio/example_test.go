@@ -117,6 +117,27 @@ func ExampleSimulate_flows() {
 	// contributed 300, final value 1300, index 100
 }
 
+// NewSpec builds in code the Spec a file would give: weights are FRACTIONS
+// here (they are percent in a file), fees percent per year, and a negative
+// fee means "unknown, look it up".
+func ExampleNewSpec() {
+	spec, err := portfolio.NewSpec("sixty-forty",
+		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: 0.2},
+		portfolio.Line{ID: "AGGH", Weight: 0.3, Fees: -1},
+	)
+	if err != nil {
+		panic(err)
+	}
+	for _, h := range spec.Holdings {
+		fmt.Printf("%-4s weight %.3f (written %g %%), fees %g\n", h.ID, h.Weight, h.RawWeight, h.Fees)
+	}
+	fmt.Println(spec.Warnings)
+	// Output:
+	// IWDA weight 0.667 (written 60 %), fees 0.2
+	// AGGH weight 0.333 (written 30 %), fees -1
+	// [weights sum to 90 % instead of 100 %, they were normalized]
+}
+
 // Build turns a parsed Spec into a simulatable Portfolio through a fetch
 // callback. Against live data the callback is one line on a
 // marketdata.Client: client.FetchExtended(id, marketdata.FetchOptions{Currency: "EUR"});
