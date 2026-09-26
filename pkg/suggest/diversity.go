@@ -1,6 +1,10 @@
 package suggest
 
-import "math"
+import (
+	"math"
+
+	"github.com/bpineau/pofo/pkg/metrics"
+)
 
 // mean returns the arithmetic mean of xs.
 func mean(xs []float64) float64 {
@@ -25,25 +29,10 @@ func std(xs []float64) float64 {
 	return math.Sqrt(s / float64(len(xs)-1))
 }
 
-// Correlation is the Pearson correlation of two equal-length series.
-// It returns 0 when either series is constant or lengths differ.
-func Correlation(a, b []float64) float64 {
-	if len(a) != len(b) || len(a) < 2 {
-		return 0
-	}
-	ma, mb := mean(a), mean(b)
-	var cov, va, vb float64
-	for i := range a {
-		da, db := a[i]-ma, b[i]-mb
-		cov += da * db
-		va += da * da
-		vb += db * db
-	}
-	if va == 0 || vb == 0 {
-		return 0
-	}
-	return cov / math.Sqrt(va*vb)
-}
+// Correlation is the Pearson correlation of two equal-length series. It
+// delegates to metrics.Corr, the one Pearson correlation of the tree, and is
+// kept for its callers: 0 when either series is constant or lengths differ.
+func Correlation(a, b []float64) float64 { return metrics.Corr(a, b) }
 
 // DiversificationRatio is (sum of weighted asset volatilities) / (portfolio
 // volatility): 1 when every asset moves together, up to sqrt(N) when they

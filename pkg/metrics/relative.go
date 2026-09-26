@@ -67,20 +67,8 @@ type Relative struct {
 
 // VsBenchmark computes Relative statistics for values against the benchmark.
 func VsBenchmark(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) (Relative, bool) {
-	if len(dates) != len(values) || len(benchDates) != len(benchValues) || len(dates) < 2 || len(benchDates) < 2 {
-		return Relative{}, false
-	}
-	bench := make(map[time.Time]float64, len(benchDates)-1)
-	for i := 1; i < len(benchDates); i++ {
-		bench[benchDates[i]] = benchValues[i]/benchValues[i-1] - 1
-	}
-	var rp, rb []float64
-	for i := 1; i < len(dates); i++ {
-		if br, found := bench[dates[i]]; found {
-			rp = append(rp, values[i]/values[i-1]-1)
-			rb = append(rb, br)
-		}
-	}
+	p := pairReturns(dates, values, benchDates, benchValues)
+	rp, rb := p.own, p.bench
 	if len(rp) < minBetaOverlap {
 		return Relative{}, false
 	}

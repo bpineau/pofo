@@ -39,12 +39,12 @@ func TestGoldenVanguard500Published(t *testing.T) {
 		if y == 1992 || y == 1993 {
 			continue
 		}
-		if got := calYearDaily(s, y); math.Abs(got-published[y]) > tol {
+		if got := calendarYear(t, s, y); math.Abs(got-published[y]) > tol {
 			t.Errorf("%d: %.2f %%, published %.2f %%", y, got, published[y])
 		}
 	}
 	pair := func(a, b float64) float64 { return ((1+a/100)*(1+b/100) - 1) * 100 }
-	got := pair(calYearDaily(s, 1992), calYearDaily(s, 1993))
+	got := pair(calendarYear(t, s, 1992), calendarYear(t, s, 1993))
 	if want := pair(published[1992], published[1993]); math.Abs(got-want) > tol {
 		t.Errorf("1992-1993: %.2f %%, published %.2f %%", got, want)
 	}
