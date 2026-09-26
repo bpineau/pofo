@@ -174,46 +174,46 @@ func TestFetchExtendedFallsBackToAProxy(t *testing.T) {
 	realDays := testDays(3) // 2020-01-06 …
 	proxyDays := []time.Time{d(2000, 1, 3), d(2010, 6, 1), realDays[0]}
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v8/finance/chart/SPY", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, chartJSON("SPY", realDays, []float64{100, 101, 102}))
+	mux.HandleFunc("/v8/finance/chart/IWM", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("IWM", realDays, []float64{100, 101, 102}))
 	})
-	mux.HandleFunc("/v8/finance/chart/%5EGSPC", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, chartJSON("^GSPC", proxyDays, []float64{20, 40, 50}))
+	mux.HandleFunc("/v8/finance/chart/%5ERUTTR", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("^RUTTR", proxyDays, []float64{20, 40, 50}))
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 	var logged strings.Builder
 	c.Logf = func(format string, args ...any) { fmt.Fprintf(&logged, format+"\n", args...) }
 
-	s, err := c.FetchExtended(context.Background(), "SPYSIM", FetchOptions{
+	s, err := c.FetchExtended(context.Background(), "IWMSIM", FetchOptions{
 		From: d(1999, 1, 1), Simdata: fstest.MapFS{},
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	if s.ProxySymbol != "^GSPC" || !s.SimulatedBefore.Equal(realDays[0]) {
+	if s.ProxySymbol != "^RUTTR" || !s.SimulatedBefore.Equal(realDays[0]) {
 		t.Fatalf("proxy metadata: %+v", s)
 	}
 	// The proxy is rescaled to the first real quote: 50 → 100, so ×2.
 	if len(s.Points) != 5 || s.First().Close != 40 {
 		t.Fatalf("points = %+v, want the rescaled proxy in front", s.Points)
 	}
-	if !strings.Contains(logged.String(), "history extended via ^GSPC") {
+	if !strings.Contains(logged.String(), "history extended via ^RUTTR") {
 		t.Errorf("the splice was not reported: %q", logged.String())
 	}
 
 	// An unavailable proxy costs a warning and the short series, never the fetch.
 	c2, srv2 := newTestClient(t, t.TempDir(), func() *http.ServeMux {
 		m := http.NewServeMux()
-		m.HandleFunc("/v8/finance/chart/SPY", func(w http.ResponseWriter, r *http.Request) {
-			fmt.Fprint(w, chartJSON("SPY", realDays, []float64{100, 101, 102}))
+		m.HandleFunc("/v8/finance/chart/IWM", func(w http.ResponseWriter, r *http.Request) {
+			fmt.Fprint(w, chartJSON("IWM", realDays, []float64{100, 101, 102}))
 		})
 		return m
 	}())
 	defer srv2.Close()
 	var warned strings.Builder
 	c2.Logf = func(format string, args ...any) { fmt.Fprintf(&warned, format+"\n", args...) }
-	s2, err := c2.FetchExtended(context.Background(), "SPYSIM", FetchOptions{
+	s2, err := c2.FetchExtended(context.Background(), "IWMSIM", FetchOptions{
 		From: d(1999, 1, 1), Simdata: fstest.MapFS{},
 	})
 	if err != nil {
@@ -222,8 +222,45 @@ func TestFetchExtendedFallsBackToAProxy(t *testing.T) {
 	if len(s2.Points) != 3 || !s2.SimulatedBefore.IsZero() {
 		t.Errorf("series = %+v, want the real quotes alone", s2.Points)
 	}
-	if !strings.Contains(warned.String(), "proxy ^GSPC for SPY unavailable") {
+	if !strings.Contains(warned.String(), "proxy ^RUTTR for IWM unavailable") {
 		t.Errorf("the missing proxy was not reported: %q", warned.String())
+	}
+}
+
+// TestFetchExtendedConvertsTheProxy: a EUR listing extended by a USD proxy
+// takes the proxy's EUR returns. Here the index gains 25 % in dollars while
+// the dollar loses 20 % against the euro, so the euro path is flat; spliced
+// unconverted, it would show the dollar gain.
+func TestFetchExtendedConvertsTheProxy(t *testing.T) {
+	proxyFor["TESTEUR"] = "TESTUSD"
+	t.Cleanup(func() { delete(proxyFor, "TESTEUR") })
+	realDays := testDays(3)
+	early := []time.Time{d(2019, 1, 2), d(2019, 6, 3), realDays[0]}
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v8/finance/chart/TESTEUR", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, strings.Replace(chartJSON("TESTEUR", realDays, []float64{100, 101, 102}),
+			`"currency":"USD"`, `"currency":"EUR"`, 1))
+	})
+	mux.HandleFunc("/v8/finance/chart/TESTUSD", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("TESTUSD", early, []float64{40, 50, 50}))
+	})
+	mux.HandleFunc("/v8/finance/chart/USDEUR=X", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("USDEUR=X", early, []float64{1, 0.8, 0.8}))
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+
+	s, err := c.FetchExtended(context.Background(), "TESTEURSIM", FetchOptions{
+		From: d(2019, 1, 1), Simdata: fstest.MapFS{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if s.Currency != "EUR" || s.ProxySymbol != "TESTUSD" || len(s.Points) != 5 {
+		t.Fatalf("series = %+v", s)
+	}
+	if s.Points[0].Close != 100 || s.Points[1].Close != 100 {
+		t.Errorf("proxied span = %v, want the flat euro path at 100", s.Points[:2])
 	}
 }
 
@@ -232,17 +269,17 @@ func TestFetchExtendedFallsBackToAProxy(t *testing.T) {
 func TestFetchExtendedWarnsOnUnreadableSimdata(t *testing.T) {
 	realDays := testDays(3)
 	mux := http.NewServeMux()
-	mux.HandleFunc("/v8/finance/chart/VOO", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, chartJSON("VOO", realDays, []float64{100, 101, 102}))
+	mux.HandleFunc("/v8/finance/chart/VXUS", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, chartJSON("VXUS", realDays, []float64{100, 101, 102}))
 	})
 	c, srv := newTestClient(t, t.TempDir(), mux)
 	defer srv.Close()
 	var warned strings.Builder
 	c.Logf = func(format string, args ...any) { fmt.Fprintf(&warned, format+"\n", args...) }
 
-	broken := fstest.MapFS{"VOO.csv": &fstest.MapFile{
+	broken := fstest.MapFS{"VXUS.csv": &fstest.MapFile{
 		Data: []byte("# pofo simdata v1\ndate,close\n2019-01-02,not-a-number\n")}}
-	s, err := c.FetchExtended(context.Background(), "VOOSIM", FetchOptions{
+	s, err := c.FetchExtended(context.Background(), "VXUSSIM", FetchOptions{
 		From: d(2018, 1, 1), Simdata: broken,
 	})
 	if err != nil {
@@ -251,7 +288,7 @@ func TestFetchExtendedWarnsOnUnreadableSimdata(t *testing.T) {
 	if len(s.Points) != 3 || !s.SimulatedBefore.IsZero() {
 		t.Errorf("series = %+v, want the real quotes alone", s.Points)
 	}
-	if !strings.Contains(warned.String(), "simdata VOO unreadable") {
+	if !strings.Contains(warned.String(), "simdata VXUS unreadable") {
 		t.Errorf("the corrupt file was not reported: %q", warned.String())
 	}
 }

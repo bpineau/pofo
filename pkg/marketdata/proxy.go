@@ -2,20 +2,35 @@ package marketdata
 
 import "sort"
 
-// proxyFor maps common ETFs to indices or older mutual funds tracking the
-// same market, used to reconstruct ("simulate") history before the ETF's
-// inception. Index proxies (^GSPC, ^NDX, ^RUT) are price-only and therefore
-// understate total return over the simulated span; mutual fund proxies
-// (Vanguard funds) include dividends.
+// proxyFor maps common ETFs to a longer-lived series tracking the same
+// market, used to reconstruct ("simulate") history before the ETF's
+// inception. Every proxy is a TOTAL-RETURN series: a bundled reconstruction
+// (SP500, VTI), a total-return index (^RUTTR), an older fund's adjusted NAV
+// (the Vanguard mutual funds, QQQ) or a gold futures price, gold paying no
+// income. A price index would drop the dividends over the simulated span, and
+// the gap is not small: measured on the ETFs' own lives to 2026-09, ^RUT runs
+// 1.37 points a year under IWM and ^NDX 0.57 under QQQ.
+//
+// The single exception is QQQ itself: no public total-return Nasdaq-100
+// reaches before QQQ's own 1999-03 launch (^XNDX starts there), so its
+// 1985-1999 span stays the price index and understates by roughly the
+// index's dividend yield of those years.
+//
+// A proxy that has a longer history of its own (another entry, a bundled
+// simdata id) is fetched extended, so that history comes along (see
+// proxyHistory); TestProxyChainsEnd keeps the chains acyclic.
 var proxyFor = map[string]string{
-	// US large cap / total market → S&P 500 index.
-	"SPY": "^GSPC", "VOO": "^GSPC", "IVV": "^GSPC", "SPLG": "^GSPC",
-	"VTI": "^GSPC", "ITOT": "^GSPC", "SCHB": "^GSPC",
-	"CSPX.L": "^GSPC", "VUSA.L": "^GSPC", "VUAA.L": "^GSPC", "SXR8.DE": "^GSPC",
-	// Nasdaq 100.
-	"QQQ": "^NDX", "QQQM": "^NDX", "EQQQ.L": "^NDX",
-	// US small cap → Russell 2000.
-	"IWM": "^RUT", "VB": "^RUT",
+	// S&P 500 → the bundled S&P 500 total return (monthly 1871→, daily 1927→).
+	"SPY": "SP500", "VOO": "SP500", "IVV": "SP500", "SPLG": "SP500",
+	"CSPX.L": "SP500", "VUSA.L": "SP500", "VUAA.L": "SP500", "SXR8.DE": "SP500",
+	// US total market → the bundled VTI reconstruction (VTSMX, CRSP 1926→).
+	"ITOT": "VTI", "SCHB": "VTI",
+	// Nasdaq 100 → QQQ (1999), itself on the ^NDX price index (see above).
+	"QQQ": "^NDX", "QQQM": "QQQ", "EQQQ.L": "QQQ",
+	// US small cap: Russell 2000 total return (1995) for the Russell fund,
+	// VB's own mutual share class (1960; tracked the Russell 2000 to 2003,
+	// then MSCI and CRSP small cap like VB) for the Vanguard one.
+	"IWM": "^RUTTR", "VB": "NAESX",
 	// Developed ex-US → Vanguard Developed Markets fund (1999).
 	"EFA": "VTMGX", "VEA": "VTMGX", "IEFA": "VTMGX",
 	// Emerging markets → Vanguard Emerging Markets fund (1994).
@@ -50,7 +65,9 @@ func ProxySymbol(symbol string) (string, bool) {
 
 // ExtendBack prepends proxy history, rescaled to the asset's first quote, for
 // dates before the asset's own history starts. It reports whether the series
-// was extended.
+// was extended. Only the proxy's returns are kept, so it must be quoted in
+// the asset's currency (a sub-unit such as GBp and its currency agree):
+// FetchExtended converts it first.
 func ExtendBack(s, proxy *Series) bool {
 	if len(s.Points) == 0 || len(proxy.Points) == 0 || !s.SimulatedBefore.IsZero() {
 		return false
