@@ -45,4 +45,24 @@
 //
 // Design and calibration, including what the bundled Gompertz law gets wrong
 // and in which direction: docs/stochastic-lifetime-kernel-design.md.
+//
+// # Realism: the optimism that was measured out (2026-06)
+//
+// A ruin figure is only as honest as its defaults, and the first defaults
+// were measured materially more optimistic than the broad-sample evidence
+// (Anarkulova, Cederburg and O'Doherty, "The Safe Withdrawal Rate: Evidence
+// from a Broad Sample of Developed Markets", 2023, SSRN 4227132: a fixed 4 %
+// rule fails far more often than US-only backtests suggest; their 5 %-failure
+// rate is near 2.3 % real). Toggling one assumption at a time on a 1 M, 40-year
+// plan at a 4 % withdrawal, ruin moved from 21.8 % to 48.5 % with the flex cut
+// off, to 45.6 % at a 3 % real mean instead of 4.5, to 37.8 % at 17 % volatility
+// instead of 12, to 38.9 % over 50 years, and to 82.8 % with all of them at
+// once. The kernel was sound; the optimism was defaults, a short favourable
+// fit and i.i.d. draws that cannot produce a Japan-1990 decade. What guards
+// against it since: the flex cut is an explicit opt-in (a headline is the
+// FIXED rule everyone means), the return defaults are cautious and a
+// broad-sample prior is one toggle away, scenario.MarkovRegime clusters bad
+// years so sequence risk exists, and the horizon defaults past a FIRE life
+// expectancy. Any change that makes a headline rosier must say which of these
+// it undid.
 package decumul

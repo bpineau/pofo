@@ -188,9 +188,9 @@ binding constraint). What IS worth doing is the cheap UI item the measurement
 exposed: put the embedded gain fraction on the page (it is worth 0.30 point of
 withdrawal rate, twenty times the structure question) and, next to it, the two
 envelope amounts that already exist in `Params`, so the recipe becomes optional
-rather than mandatory. That item goes to
-`docs/decumulation-fire-program-2026-07.md`; the tax-model question is closed
-with the decision recorded there as well.
+rather than mandatory. That item shipped on 2026-09-10 (the Taxes group
+carries the embedded gain and the two envelope amounts); the tax-model
+question is closed with the decision recorded here.
 
 Done 2026-09-10, the same day: the Taxes group carries the embedded gain
 (default 50 %, this section's base case, and the recipe's worked example of
