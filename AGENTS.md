@@ -351,10 +351,11 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   `TREASURY-LONG-YIELD` declares in a `# junctions:` header so no engine prices
   a return across it; and `VFITX`'s adjusted close carries an unhandled
   year-end capital gain on 1993-12-31 (-3.16 %, permanent), which `simgen`'s
-  `tracked` map refuses against `TREASURY-INT-DAILY`. The same scan found
-  `VUSTX` (1992-12) and `VFINX` (five Decembers) carrying the same signature
-  with no separating band: measured, reported in the doc, deliberately NOT
-  repaired. A STRIPS fund is NOT a
+  `tracked` map refuses against `TREASURY-INT-DAILY`. `VFINX` carries the same
+  signature on nine sessions of 1980-1986 (about 30 % of level, ~4 pts/yr
+  cold on every recipe whose equity leg it carried then), refused since
+  2026-09-26 against `^GSPC`, the index it tracks; `VUSTX` (1992-12) has no
+  separating band and stays measured, reported, NOT repaired. A STRIPS fund is NOT a
   geared coupon fund: the gearing that matches a 27-year strip to a long coupon
   fund is 1.66 at 3 % yields and 3.31 at 12 %, so a constant fitted on the
   low-yield era halves the risk of the high-yield one (the incumbent recipe read

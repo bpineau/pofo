@@ -37,6 +37,14 @@ import (
 // a stale Xetra print reach 7.4 %, half the distance to the smallest real
 // defect.
 //
+// The same allowance also accepts a donor session that equals TWO of the
+// reference's, with its neighbour: that is the catch-up after a stale print
+// (the provider repeats a close, the next session carries both moves), and it
+// leaves no level error behind. Without it, VFINX's catch-up on 1987-11-30,
+// after a repeated close on 1987-11-27, reads 1.55 % of excess against the
+// S&P 500 and would be convicted above the 1.37 % of a real defect; pooled, it
+// reads 0.01 %.
+//
 // The tolerance is therefore NOT a package constant: it belongs to the pair.
 // A Xetra ETF against a US-close index and a Treasury mutual fund against a
 // constant-maturity par bond do not have the same noise floor, and each call
@@ -114,8 +122,9 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 	}
 
 	// The clock allowance: the reference may run one session ahead of the donor
-	// or one behind it, so a session is convicted only when it disagrees with
-	// all three.
+	// or one behind it, and a donor session may carry two of the reference's
+	// (the catch-up after a stale print), so a session is convicted only when it
+	// disagrees with all five.
 	excess := func(i int) float64 {
 		if math.IsNaN(rr[i]) {
 			return 0
@@ -124,6 +133,7 @@ func trackIndex(donor, reference *marketdata.Series, tol float64) (*marketdata.S
 		for _, k := range []int{-1, 1} {
 			if j := i + k; j >= 1 && j < n && !math.IsNaN(rr[j]) {
 				e = math.Min(e, math.Abs(dr[i]-rr[j]))
+				e = math.Min(e, math.Abs(dr[i]-rr[i]-rr[j]))
 			}
 		}
 		return e
