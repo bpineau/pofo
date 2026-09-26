@@ -515,27 +515,30 @@ the middle of an empty band, a factor of 1.8 from either side.
 
 No other file moves and no audit verdict moves.
 
-### Two neighbours measured and NOT repaired
+### One neighbour measured and NOT repaired, one repaired later
 
 The same scan over every Vanguard mutual-fund donor the recipes read found two
-more sets of the same signature, and both are reported rather than fixed,
-because the band that separates the defect from real market history closes.
+more sets of the same signature.
 
-- **`VUSTX`, 1992-12-11 to 1992-12-31.** A contaminated patch: -5.69 % against
-  the long reconstruction's -0.18 on the first day, +6.76 % against -0.08 on
-  the last, the latter on a day the raw NAV moved -0.10 % and the provider
-  credited a 0.632 distribution. Both ends clear 5.7 % of excess. But
-  1987-10-22 is a REAL +7.76 % against the long curve point's +2.64, i.e.
+- **`VUSTX`, 1992-12-11 to 1992-12-31, NOT repaired.** A contaminated patch:
+  -5.69 % against the long reconstruction's -0.18 on the first day, +6.76 %
+  against -0.08 on the last, the latter on a day the raw NAV moved -0.10 % and
+  the provider credited a 0.632 distribution. Both ends clear 5.7 % of excess.
+  But 1987-10-22 is a REAL +7.76 % against the long curve point's +2.64, i.e.
   4.86 % of honest excess, and no tolerance separates 4.86 from 5.69. Worse,
   H.15 suspends the 20-year point over 1987-01 to 1993-09, so the daily
-  reference does not cover the days in question at all.
-- **`VFINX`, five Decembers.** 1980-03-27, 1981-12-29, 1983-12-28, 1985-12-27
-  and 1986-12-09 all show the raw NAV falling far more than the distribution
-  the provider reports, the largest being -6.97 % against the CRSP market
-  factor's -0.66 on 1986-12-09 with no dividend reported at all. But
-  1987-10-19 is a real -20.46 % against that factor's -17.41, 3.77 % of honest
-  excess, and 1983-12-28's defect is 3.00 %.
-
-Both would need evidence the session test does not have: a second quote line,
-or the fund's published distribution history. Stated here so the next reader
-finds the measurement rather than the surprise.
+  reference does not cover the days in question at all. It would need evidence
+  the session test does not have: a second quote line, or the fund's published
+  distribution history.
+- **`VFINX`, nine sessions of 1980-1986, REPAIRED since 2026-09-26.** The
+  first measurement graded it against the CRSP total-market factor and found
+  no band (1987-10-19 is a real -20.46 % against that factor's -17.41, the
+  size premium's own move). Against the index the fund actually tracks, the
+  S&P 500 price index `^GSPC`, the band opens: over 11 773 sessions the largest
+  honest disagreement is 0.93 % and the smallest defect 1.37 % (1982-12-28),
+  once a stale close and its catch-up are read together (1987-11-30 reads
+  1.55 % alone, 0.01 % pooled with the repeated close before it). The nine
+  sessions (1980-12-30, 1981-04-20/21, 1981-12-29, 1982-12-28, 1983-12-28,
+  1984-12-28, 1985-12-27, 1986-12-09) cost about 30 % of level: the S&P 500
+  tracker `IE00BFMXXD54` read 11.45 %/yr over 1980-1987 against the index's
+  15.88, and 15.28 after the repair. `tracked` holds it at 1.15 %.

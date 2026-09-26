@@ -185,7 +185,24 @@ var dailyShape = map[string]string{
 // than the equity-ETF tolerance of the FCPE recipe, which is why trackIndex
 // takes the tolerance as an argument rather than owning one.
 //
-// Two neighbours were measured and are deliberately NOT here, because their
+// VFINX carries the same signature on nine Decembers of 1980-1986 (1980-12-30,
+// 1981-12-29, 1982-12-28, 1983-12-28, 1984-12-28, 1985-12-27, 1986-12-09, plus
+// the 1981-04-20/21 round trip), the raw NAV falling far more than the
+// distribution the provider reports: -7.22 % on 1986-12-09 against the S&P
+// 500's -0.75, about 30 % of cumulative level lost, i.e. every recipe whose
+// equity leg it carried over 1980-1987 ran some 4 points a year cold there (the
+// S&P 500 tracker IE00BFMXXD54 read 11.45 %/yr against the index's 15.88). It
+// is graded against the S&P 500 PRICE index ^GSPC, the index the fund tracks
+// (a day's dividend is two orders of magnitude under the tolerance). Measured
+// over 11 773 sessions with the stale-print allowance of trackIndex, the
+// largest disagreement with no defect behind it is 0.93 % (the repeated close
+// of 1987-11-27) and the smallest defect 1.37 % (1982-12-28); 1.15 % sits in
+// the middle of that empty band. A first measurement, against the CRSP
+// total-market factor rather than the S&P 500, found no band at all (the
+// 1987-10-19 crash reads 3.77 % of honest excess there, the size premium's own
+// move): the reference has to be the index the fund holds.
+//
+// One neighbour was measured and is deliberately NOT here, because its
 // separating band closes:
 //
 //   - VUSTX carries a contaminated patch of its own, 1992-12-11 (-5.69 %
@@ -196,18 +213,12 @@ var dailyShape = map[string]string{
 //     no tolerance separates 4.86 from 5.69. Worse, the H.15 20-year point is
 //     suspended over 1987-01..1993-09, so the daily reference does not even
 //     cover the days in question.
-//   - VFINX steps down on five Decembers (1980-03-27, 1981-12-29, 1983-12-28,
-//     1985-12-27, 1986-12-09) with the same signature, the raw NAV falling far
-//     more than the distribution the provider reports, the largest being
-//     -6.97 % on 1986-12-09 against the CRSP market factor's -0.66 with no
-//     dividend reported at all. But 1987-10-19 is a real -20.46 % against that
-//     factor's -17.41, 3.77 % of honest excess, and 1983-12-28's defect is
-//     3.00 %. Measured 2026-09-20, reported, not repaired.
 var tracked = map[string]struct {
 	ref string
 	tol float64
 }{
 	"VFITX": {"TREASURY-INT-DAILY", 0.015},
+	"VFINX": {sp500ShapeID, 0.0115},
 }
 
 // extendingFetcher wraps a Fetcher so that a configured component is spliced
