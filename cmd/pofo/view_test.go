@@ -102,7 +102,7 @@ func viewBase() *options {
 }
 
 func TestParseViewQueryExamples(t *testing.T) {
-	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&ex=ntsx-all-weather"), viewBase(), nil)
+	vr, err := parseViewQuery(mustQuery(t, "ex=golden-butterfly&ex=chimera-three-thirds"), viewBase(), nil)
 	if err != nil {
 		t.Fatal(err)
 	}
