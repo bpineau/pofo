@@ -19,10 +19,12 @@ func rbColumn(t *testing.T, assets []portfolio.Asset, contrib [][]float64) *colu
 	for i := range dates {
 		dates[i] = start.AddDate(0, 0, i)
 	}
-	return &column{
+	col := &column{
 		p:   &portfolio.Portfolio{Name: "T", Assets: assets},
 		sim: &portfolio.SimResult{Dates: dates, Contributions: contrib},
 	}
+	attachStudy(col, nil) // the attribution the block groups by class
+	return col
 }
 
 // The block's whole point: a class can carry a share of risk far above its

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/analyze"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/portfolio"
@@ -16,6 +17,32 @@ import (
 // report. Test-only: never widen the production API for this.
 func newTestComparison(cols []*column, bench *marketdata.Series, start, end time.Time, meta map[string]suggest.Meta, opt Options) *Comparison {
 	return &Comparison{columns: cols, bench: bench, commonStart: start, commonEnd: end, meta: meta, opt: opt}
+}
+
+// attachStudy gives a fabricated column the study analyze.Portfolio would
+// carry for it, since the report reads a column's composition and risk
+// attribution off its study: the look-through of its assets' weights and the
+// attribution of its simulation's MONTHLY contributions, with the calls
+// analyze makes. A column whose contributions change afterwards must be
+// attached again.
+func attachStudy(col *column, meta map[string]suggest.Meta) {
+	h := holdingsFor(col.p.Assets, meta)
+	comp := analyze.Composition{
+		AssetClass: suggest.AssetClassSplit(h),
+		Geography:  suggest.GeographySplit(h),
+		Currency:   suggest.CurrencySplit(h),
+		Duration:   suggest.DurationSplit(h),
+	}
+	comp.Sectors, comp.Equity = suggest.EquitySectorSplit(h)
+	comp.Coverage, comp.Unclassified = suggest.Coverage(h, suggest.RegimeFramework())
+	ps := &analyze.PortfolioStudy{Portfolio: col.p, Sim: col.sim, Composition: comp}
+	if col.sim != nil {
+		_, monthly := col.sim.MonthlyContributions()
+		if att, err := metrics.Attribute(monthly); err == nil {
+			ps.Attribution = att
+		}
+	}
+	col.study = ps
 }
 
 // TestNewTestComparison round-trips a fully populated column through the
@@ -71,8 +98,8 @@ func TestNewTestComparison(t *testing.T) {
 	}
 }
 
-// TestSeriesHelpers pins the small moved helpers (window, rebase, seriesSlices,
-// negate) that Compute will lean on in the next task.
+// TestSeriesHelpers pins the small helpers (window, rebase, negate) Compute
+// and the statistics table lean on.
 func TestSeriesHelpers(t *testing.T) {
 	dates := months(4)
 
@@ -87,13 +114,5 @@ func TestSeriesHelpers(t *testing.T) {
 
 	if got := negate([]float64{1, -2, 3}); !reflect.DeepEqual(got, []float64{-1, 2, -3}) {
 		t.Errorf("negate = %v, want [-1 2 -3]", got)
-	}
-
-	s := &marketdata.Series{Points: []marketdata.Point{
-		{Date: dates[0], Close: 10}, {Date: dates[1], Close: 20},
-	}}
-	sd, sv := seriesSlices(s)
-	if !reflect.DeepEqual(sd, dates[:2]) || !reflect.DeepEqual(sv, []float64{10, 20}) {
-		t.Errorf("seriesSlices = %v / %v", sd, sv)
 	}
 }

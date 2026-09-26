@@ -79,6 +79,28 @@ func ExampleCompute() {
 	// Output: columns: 1
 }
 
+// ExampleComparison_Studies reaches the numbers behind the report: one
+// analyze.PortfolioStudy per column, with each holding's own study, the
+// holdings' correlation matrix and the risk attribution. It prints shapes, not
+// drifting values, so the Output stays stable offline.
+func ExampleComparison_Studies() {
+	client := marketdata.NewClient("") // "" = no disk cache
+	spec, _ := portfolio.Parse("idx", strings.NewReader("60 MSCIWORLD\n40 SP500\n"))
+	cmp, err := Compute(context.Background(), client, []*portfolio.Spec{spec}, Options{
+		Currency: "USD", NoFees: true, Rebalance: 90,
+		Framework: suggest.RegimeFramework(),
+	})
+	if err != nil {
+		fmt.Println("error:", err)
+		return
+	}
+	for _, st := range cmp.Studies() {
+		fmt.Printf("%s: %d holdings, %dx%d correlation, %d risk shares\n",
+			st.Spec.Name, len(st.Holdings), len(st.Correlation), len(st.Correlation[0]), len(st.Attribution.Risk))
+	}
+	// Output: idx: 2 holdings, 2x2 correlation, 2 risk shares
+}
+
 // An optimized file is shown as TWO columns: the weights as written, and the
 // weights the optimizer chose, so the report compares the two rather than
 // silently replacing one with the other. Only the computed column carries the

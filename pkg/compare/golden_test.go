@@ -140,6 +140,8 @@ func fabricatedColumns(t *testing.T) (columns []*column, bench *marketdata.Serie
 
 	bench = goldenSeries("^GSPC", "S&P 500", "USD", dates, func(i int) float64 { return 100 + float64(i)*0.5 })
 
+	attachStudy(alpha, meta)
+	attachStudy(beta, meta)
 	return []*column{alpha, beta}, bench, start, end, meta
 }
 

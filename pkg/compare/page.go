@@ -23,7 +23,7 @@ func assetCWARP(s *marketdata.Series, benchDates []time.Time, benchValues []floa
 	if s == nil || len(benchDates) == 0 {
 		return "-"
 	}
-	dates, values := seriesSlices(s)
+	dates, values := s.Dates(), s.Values()
 	i, j := window(dates, start, end)
 	if j-i < 2 {
 		return "-"
@@ -73,7 +73,7 @@ func (c *Comparison) HTMLPage(d Decoration) *report.Page {
 	var benchDates []time.Time
 	var benchValues []float64
 	if bench != nil {
-		benchDates, benchValues = seriesSlices(bench)
+		benchDates, benchValues = bench.Dates(), bench.Values()
 	}
 	page := &report.Page{
 		Title:          "Portfolios: " + strings.Join(names, ", "),
@@ -124,16 +124,16 @@ func (c *Comparison) HTMLPage(d Decoration) *report.Page {
 			Name:     r.p.Name,
 			Subtitle: subtitle,
 			ChartSVG: template.HTML(svg),
-			Warnings: r.p.Warnings,
+			Warnings: r.warnings,
 		}
 		section.FireHref = d.FireHref[r.specName]
 		if r.note != "" {
 			section.Notes = []string{r.note}
 		}
 		section.ContribSVG, section.ContribMonthlySVG, section.RegimeSVG = contributionCharts(r)
-		section.Breakdowns = breakdownPies(r.p.Assets, meta)
+		section.Breakdowns = breakdownPies(r.composition(), meta)
 		if len(section.Breakdowns) > 0 {
-			section.Notes = append(section.Notes, compositionNotes(r.p.Assets, meta, r.currency)...)
+			section.Notes = append(section.Notes, compositionNotes(r.composition(), meta, r.currency)...)
 		}
 		section.Coverage = coverageBars(r.p.Assets, meta, c.opt.Framework)
 		if len(section.Coverage) > 0 {
