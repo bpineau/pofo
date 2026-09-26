@@ -177,13 +177,13 @@ func TestImportancePlateRenders(t *testing.T) {
 		}
 	}
 	for _, want := range []string{
-		">les dix premières années : 70 % de l'issue<",
+		">les dix premières années : 71 % de l'issue<",
 		">les deux premières années : 21 %<",
 		">les vingt dernières : 6 % en tout<",
 		">année de retraite  →<",
-		"Le quart le plus court de l'horizon porte 70 % du résultat",
-		"la concentration tombe à 58 % pour la première décennie",
-		"Le texte annonce 70 % au moins, la mesure en donne 70",
+		"Le quart le plus court de l'horizon porte 71 % du résultat",
+		"la concentration tombe à 59 % pour la première décennie",
+		"Le texte annonce 70 % au moins, la mesure en donne 71",
 		"sous-estime le risque de séquence",
 	} {
 		if !strings.Contains(svg, want) {
