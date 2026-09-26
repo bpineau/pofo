@@ -6,7 +6,6 @@ import (
 	"html/template"
 
 	"github.com/bpineau/pofo/pkg/compare"
-	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // siteNavCSS and siteNavHTML style and render the web app's cross-navigation
@@ -43,7 +42,7 @@ func (opt *options) decoration() compare.Decoration {
 		return compare.Decoration{}
 	}
 	return compare.Decoration{
-		SkinCSS:  template.CSS(webui.WarmSkin + siteNavCSS),
+		SkinCSS:  template.CSS(siteNavCSS),
 		SiteNav:  siteNavHTML,
 		Composer: opt.composer,
 		FireHref: opt.fireHref,

@@ -114,13 +114,15 @@ type Page struct {
 	StatRows        []StatRow
 	Footnotes       []string
 
-	Theme template.CSS // shared webui identity, inlined into the document
+	// Theme is the shared webui identity inlined into the document: the
+	// fonts, the instrument tokens and the book-warm skin over them, so the
+	// standalone CLI report and the served /view read the same. Render sets it.
+	Theme template.CSS
 
 	// SkinCSS and SiteNav are set only when the report is served inside the
-	// web app (-serve): SkinCSS remaps the theme to the book-warm identity so
-	// /view matches the hub and the book; SiteNav is a slim bar linking back
-	// to the other surfaces. Both are empty for the standalone CLI report, so
-	// its output is unchanged.
+	// web app (-serve): SkinCSS carries the web chrome's extra rules (the
+	// site nav's); SiteNav is a slim bar linking back to the other surfaces.
+	// Both are empty for the standalone CLI report.
 	SkinCSS template.CSS
 	SiteNav template.HTML
 
@@ -389,8 +391,9 @@ func (p Page) HasFireLinks() bool {
 func (Page) ReportJS() template.JS { return template.JS(reportJS) }
 
 // Render writes the HTML document for page to w. The embedded identity
-// fonts ride along with the theme so the document stays self-contained.
+// fonts and the warm skin ride along with the theme, so the document stays
+// self-contained and looks the same wherever it is opened.
 func Render(w io.Writer, page *Page) error {
-	page.Theme = template.CSS(webui.FontsCSS + webui.CSS)
+	page.Theme = template.CSS(webui.FontsCSS + webui.CSS + webui.WarmSkin)
 	return tpl.Execute(w, page)
 }

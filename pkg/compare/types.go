@@ -40,7 +40,7 @@ type Options struct {
 // deep links into the FIRE UI. It is inert data; the renderer decides what to
 // do with it.
 type Decoration struct {
-	SkinCSS  template.CSS      // extra stylesheet appended to the report skin
+	SkinCSS  template.CSS      // extra web-chrome rules appended after the report skin
 	SiteNav  template.HTML     // site navigation markup, if any
 	Composer template.HTML     // composer widget markup, if any
 	FireHref map[string]string // spec name -> FIRE deep link
