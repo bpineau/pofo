@@ -161,8 +161,18 @@ func TestResampleMonthly(t *testing.T) {
 	if want := []Dividend{{date(2024, 3, 28), 0.2}}; !reflect.DeepEqual(m.Dividends, want) {
 		t.Errorf("dividends = %v, want the kept date's only", m.Dividends)
 	}
+	// 03-26 (dropped) moves onto March's kept close, 03-28, where it merges
+	// with the junction already there: one junction guards the step into it.
 	if want := []time.Time{date(2024, 3, 28)}; !reflect.DeepEqual(m.Junctions, want) {
-		t.Errorf("junctions = %v, want the kept date's only", m.Junctions)
+		t.Errorf("junctions = %v, want the dropped one moved onto the period's close", m.Junctions)
+	}
+	late := resampleFixture(t)
+	late.Junctions = []time.Time{date(2024, 3, 27), date(2024, 4, 2), date(2024, 4, 3)}
+	if got, want := late.Resample(Monthly).Junctions, []time.Time{date(2024, 3, 28), date(2024, 4, 3)}; !reflect.DeepEqual(got, want) {
+		t.Errorf("junctions = %v, want %v (each moved to its period's close, two in April merged)", got, want)
+	}
+	if got := late.Resample(Yearly).Junctions; !reflect.DeepEqual(got, []time.Time{date(2024, 4, 3)}) {
+		t.Errorf("yearly junctions = %v, want the single kept close", got)
 	}
 	if m.Currency != "USD" || m.Symbol != "X" {
 		t.Errorf("metadata lost: %+v", m)

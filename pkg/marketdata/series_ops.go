@@ -149,13 +149,15 @@ const (
 // mid-month ends on that day's close, and the caller reads Last().Date to
 // know. The first period is kept as well, starting wherever the series does.
 //
-// Metadata is carried over. Junctions and Dividends that fall on a dropped
-// date are dropped with it, those on a kept date are kept: resampling a raw
+// Metadata is carried over. Dividends that fall on a dropped date are
+// dropped with it, those on a kept date are kept: resampling a raw
 // (unadjusted) series therefore loses the mid-period distributions, so
-// resample an adjusted one, or book the dividends before resampling. Nor
-// does a dropped junction move onto the period's close: a step of the
-// resampled series may span a junction the daily series declared, so check
-// Junctions BEFORE resampling a series that carries any.
+// resample an adjusted one, or book the dividends before resampling. A
+// Junction MOVES to the kept close of the period it falls in (the first kept
+// date at or after it), because the resampled step into that close spans the
+// definition change and must be refused like the daily step was; a junction
+// after the last kept date is dropped, there being no step for it to guard.
+// Two junctions in one period collapse into one.
 //
 // f must be positive; Resample panics otherwise, as for any programming
 // error.
@@ -186,8 +188,13 @@ func (s *Series) Resample(f Frequency) *Series {
 	}
 	var junctions []time.Time
 	for _, j := range out.Junctions {
-		if onKept[j] {
-			junctions = append(junctions, j)
+		for _, p := range kept {
+			if !p.Date.Before(j) {
+				if n := len(junctions); n == 0 || !junctions[n-1].Equal(p.Date) {
+					junctions = append(junctions, p.Date)
+				}
+				break
+			}
 		}
 	}
 	out.Dividends, out.Junctions = divs, junctions
