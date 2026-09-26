@@ -38,13 +38,13 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `asset_class` | `equity`, `government-bond`, `corporate-bond`, `aggregate-bond`, `inflation-linked-bond`, `money-market`, `gold`, `broad-commodity`, `managed-futures`, `insurance-linked`, `long-volatility`, `tail-risk`, `multi-asset`, `real-estate`, `other` |
 | `underlying` | one-line plain description of what it holds |
 | `benchmark_index` | the index it tracks, or `active (...)` / `null` |
-| `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `other` |
+| `strategy` | open vocabulary; common values: `physical-replication`, `synthetic-swap`, `active`, `futures-overlay`, `leveraged-2x`, `leveraged-3x`, `trend-following`, `long-volatility`, `multi-factor`, `systematic factor tilt`, `covered-call overlay`, `fundamentally-weighted`, `single-stock` (one issuer: it widens the plausibility band, see below, and no advisor ever proposes the record, `suggest.Advisable`), `other` |
 | `geography` | approximate region weights (percent), `{ "Global developed": 100 }`, or `null` when not meaningful (gold, broad managed futures, money market) |
 | `sectors` | approximate equity sector weights (percent), or `null` for non-equity; for a stacked fund, describes the equity leg |
 | `currency` | the quote line's currency: what `symbol`/`xid` actually serves (ISO code, plus `GBp` for a London pence line). Not the denomination, not the exposure; see "What `currency` means" |
 | `currency_exposure` | optional look-through fiat exposure: currency (ISO code, plus `None` for real assets and `Dynamic` for futures books) → percent of capital; any shortfall below 100 counts as `None`. Set it only where the automatic derivation (`suggest.CurrencySplit`: hedging, asset class, geography, then quote currency) is wrong: funds denominated differently than their holdings' countries (corporate/aggregate bonds, EM hard-currency debt), mixed-region equity residuals worth resolving |
 | `distribution` | `accumulating`, `distributing`, `n/a` |
-| `leverage` | `1.0` normal; `2.0` for 2× daily; embedded notional for capital-efficient funds (e.g. `1.5` for a 90/60 structure) |
+| `leverage` | `1.0` normal; `2.0` for 2x daily; embedded notional for capital-efficient funds, which is the SUM of `exposures` when that field is set (`1.5` for a 90/60 Efficient Core structure, `2.0` for a 100/100 return-stacked one) |
 | `duration` | effective duration in years (fixed income); for a stacked fund, the duration of its bond exposure per unit of notional (e.g. `7.0` for a 90/60 fund's intermediate futures ladder) |
 | `notes` | one line on the asset's portfolio role / the market regime it serves |
 | `confidence` | `high`, `medium`, `low`: confidence in the breakdowns |
@@ -119,6 +119,13 @@ move and a 90/60 stacked one 1.5 times the volatility.
 | `multi-asset` | 5 to 32 % | -12 to +28 % | 15 % | 45 % |
 | `real-estate` | 12 to 38 % | -15 to +25 % | 25 % | 80 % |
 | `other` | 0 to 60 % | -35 to +40 % | 25 % | 60 % |
+
+Every row describes a DIVERSIFIED holding. A record whose `strategy` is
+`single-stock` names one issuer, whose idiosyncratic risk no class row covers,
+so the same row is stretched by 1.75 (`marketdata.singleNameStretch`) on top of
+the leverage multiple: the two single-name records here measure 55 and 60 %/yr
+against the equity ceiling of 42, and gap 31 % on an earnings print against the
+class's 23. The verdict says what widened the band ("at a single name").
 
 They were calibrated on the measured statistics of every bundled record, each
 bound set clear of the widest real value in its class, so a full-catalog run

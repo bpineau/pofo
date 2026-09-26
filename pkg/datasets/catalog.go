@@ -2,6 +2,14 @@ package datasets
 
 import "encoding/json"
 
+// StrategySingleStock is the Strategy of a record holding ONE issuer: a
+// single-stock fund, an employee-savings vehicle invested in its employer's
+// share. Consumers treat such a record apart, because its class label
+// ("equity") describes a diversified fund and it is not one: the data doctor
+// widens its plausibility band (marketdata.VerifyAsset) and the coverage
+// advisor never proposes it (suggest.RankCandidates).
+const StrategySingleStock = "single-stock"
+
 // Asset is one row of the bundled asset catalog
 // (pkg/datasets/assetmeta/assets.json): a fund, ETF, index or commodity with its
 // resolution metadata (how to fetch its quotes) and its descriptive metadata
