@@ -855,13 +855,341 @@ real (shorter) quotes, from 2007.
 
 ## Using it as a library
 
-The repository is also a toolkit for writing other portfolio-processing
-applications. Layout:
+Everything under `pkg/` is a standard-library-only Go toolkit, bundled data
+included; `cmd/` only wires the CLI. Every snippet below is the body of the
+runnable example its first comment names, so `go test ./...` keeps it true.
+
+### Study a portfolio in ten lines
+
+`portfolio.NewSpec` builds a spec in code (weights as fractions), and
+`analyze.Portfolio` returns the numbers the report is drawn from: statistics,
+each holding on the same window, correlations, the risk budget, look-through
+composition, warnings. `src` is offline here; live, it is a `marketdata.Client`.
+
+```go
+// from analyze.Example_sixtyForty
+ctx := context.Background()
+src := newFake()
+
+spec, _ := portfolio.NewSpec("60/40",
+	portfolio.Line{ID: "IWDA", Weight: 0.6}, // IE00B4L5Y983
+	portfolio.Line{ID: "AGGH", Weight: 0.4}) // IE00BDBRDM35
+study, err := analyze.Portfolio(ctx, src, spec, analyze.Options{Currency: "EUR"})
+if err != nil {
+	panic(err)
+}
+
+st := study.Stats
+fmt.Printf("CAGR %.1f %%, volatility %.1f %%, max drawdown %.1f %%\n", st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
+fmt.Printf("correlation %s/%s: %.2f\n", study.Aligned.IDs[0], study.Aligned.IDs[1], study.Correlation[0][1])
+fmt.Printf("risk budget: %.0f %% / %.0f %% of the variance\n", study.Attribution.Risk[0]*100, study.Attribution.Risk[1]*100)
+```
+
+### Get a price history and its raw data
+
+`Fetch` resolves a ticker, ISIN or alias and caches adjusted daily closes;
+`FetchExtended` is the CLI's per-asset pipeline. `Raw` pairs unadjusted closes
+with `Dividends` (never pair dividends with adjusted closes); `NewSeries`
+wraps a consumer's own data.
+
+```go
+// from marketdata.Example_priceHistory (compiled, not run: it needs the network)
+ctx := context.Background()
+client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+// Real quotes, adjusted, native currency; the slices pkg/metrics takes.
+iwda, err := client.Fetch(ctx, "IWDA", time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)) // IE00B4L5Y983
+if err != nil {
+	panic(err)
+}
+dates, closes, returns := iwda.Dates(), iwda.Values(), iwda.Returns()
+fmt.Println(len(dates), len(closes), len(returns), iwda.Resample(marketdata.Monthly).Len())
+
+// The CLI's pipeline: the bundled backcast in front (SIM), in euros.
+long, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"})
+if err != nil {
+	panic(err)
+}
+fmt.Println("simulated before", long.SimulatedBefore.Format(time.DateOnly))
+
+// Unadjusted closes, the distributions beside them as cash.
+vt, err := client.FetchExtended(ctx, "VT", marketdata.FetchOptions{Raw: true}) // US9220427424
+if err != nil {
+	panic(err)
+}
+fmt.Println(len(vt.Dividends), "distributions in", vt.Currency)
+
+// Live: the freshest price, today's 5-minute path (ErrNotCovered off Yahoo).
+if q, err := client.Latest(ctx, "IWDA"); err == nil {
+	fmt.Println(q.Price, q.Currency, q.Live)
+}
+if today, err := client.Intraday(ctx, "IWDA"); err == nil {
+	fmt.Println(len(today.Points), "ticks today")
+}
+```
+
+### Dissect one asset
+
+`analyze.Asset` studies one identifier on its longest window: statistics,
+calendar years and months, drawdown episodes, and the relative statistics
+against a benchmark.
+
+```go
+// from analyze.ExampleAsset (synthetic series, offline)
+ctx := context.Background()
+src := newFake()
+
+a, err := analyze.Asset(ctx, src, "IWDA", analyze.Options{
+	Currency:  "EUR",
+	Benchmark: "MSCIWORLD",
+	From:      time.Date(2015, 1, 1, 0, 0, 0, 0, time.UTC),
+})
+if err != nil {
+	panic(err)
+}
+fmt.Printf("%s (%s), %s to %s, in %s\n", a.ID, a.Meta.Name,
+	a.Stats.Start.Format(time.DateOnly), a.Stats.End.Format(time.DateOnly), a.Series.Currency)
+fmt.Printf("CAGR %.1f %%, volatility %.1f %%, beta %.2f\n", a.Stats.CAGR*100, a.Stats.Volatility*100, a.Relative.Beta)
+for _, y := range a.Years[:2] {
+	fmt.Printf("%d: %+.1f %% (partial: %v)\n", y.End.Year(), y.Return*100, y.Partial)
+}
+fmt.Printf("%d drawdown episodes, the deepest %.1f %%\n", len(a.Drawdowns), a.Stats.MaxDrawdown*100)
+```
+
+### Compare several series on one calendar
+
+`marketdata.AlignSeries` puts series on one calendar where all of them quote
+(and errors where `Align` would forward-fill zeros); `pkg/metrics` takes plain
+slices, so it also reads a valuation series built elsewhere.
+
+```go
+// from metrics.Example_oneCalendar (threeFunds: three synthetic series)
+a, err := marketdata.AlignSeries(threeFunds(), time.Time{}, time.Time{})
+if err != nil {
+	panic(err)
+}
+r := a.Returns()
+corr, cov := metrics.CorrelationMatrix(r), metrics.Covariance(r)
+fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", a.Dates[0].Format(time.DateOnly),
+	a.IDs[0], a.IDs[1], corr[0][1], a.IDs[0], a.IDs[2], corr[0][2])
+fmt.Printf("%s volatility %.1f %%/yr\n", a.IDs[0], math.Sqrt(cov[0][0]*252)*100)
+
+// Partial flags a first year measured from the first quote; the last row
+// ends on the last quote, which its End says.
+for _, y := range metrics.CalendarReturns(a.Dates, a.Levels[0], 12) {
+	fmt.Printf("year to %s %+5.1f %%, partial=%v\n", y.End.Format(time.DateOnly), y.Return*100, y.Partial)
+}
+if _, betas, ok := metrics.RollingBeta(a.Dates, a.Levels[1], a.Dates, a.Levels[0], 1); ok {
+	fmt.Printf("one-year beta of %s on %s, last: %.2f\n", a.IDs[1], a.IDs[0], betas[len(betas)-1])
+}
+if v, ok := metrics.VaR(r[0], 0.95); ok {
+	fmt.Printf("daily 95 %% VaR of %s: %.2f %%\n", a.IDs[0], v*100)
+}
+```
+
+### Simulate a portfolio by hand
+
+What `analyze.Portfolio` wires, one step at a time. With flows,
+`SimResult.Index` is the time-weighted series (statistics) and `Values`
+follows the money (`IRR`); `TWR` recovers the first from the second.
+
+```go
+// from portfolio.Example_byHand (synthetic: a fetch callback serving made-up series)
+spec, _ := portfolio.NewSpec("60/40",
+	portfolio.Line{ID: "IWDA", Weight: 0.6}, // IE00B4L5Y983
+	portfolio.Line{ID: "AGGH", Weight: 0.4}) // IE00BDBRDM35
+p, err := portfolio.Build(spec, portfolio.BuildOptions{Fetch: synthetic})
+if err != nil {
+	panic(err)
+}
+p.Capital = 10_000
+p.Contribute = portfolio.Flow{Amount: 500, Period: portfolio.Monthly}
+sim, err := portfolio.Simulate(p, 90) // rebalance every 90 days
+if err != nil {
+	panic(err)
+}
+
+stats, _ := metrics.Compute(sim.Dates, sim.Index) // the strategy, flows stripped out
+fmt.Printf("CAGR %.1f %%, volatility %.1f %%, max drawdown %.1f %%\n", stats.CAGR*100, stats.Volatility*100, stats.MaxDrawdown*100)
+
+// The saver's own rate: money going in is negative, the final value closes the account.
+dates, flows := []time.Time{sim.Dates[0]}, []float64{-p.Capital}
+var booked []metrics.Flow // the same flows the other way round, for TWR
+for i, d := range sim.FlowDates {
+	dates, flows = append(dates, d), append(flows, -sim.FlowAmounts[i])
+	booked = append(booked, metrics.Flow{Date: d, Amount: sim.FlowAmounts[i]})
+}
+last := len(sim.Dates) - 1
+irr, _ := metrics.IRR(dates, flows, sim.Dates[last], sim.Values[last])
+twr, _ := metrics.TWR(sim.Dates, sim.Values, booked)
+fmt.Printf("put in %.0f, worth %.0f, money-weighted %.1f %%/yr\n", p.Capital+sim.Contributed, sim.Values[last], irr*100)
+fmt.Printf("time-weighted %+.1f %%, as the index says: %+.1f %%\n", twr*100, sim.Index[last]-100)
+```
+
+### Optimize weights
+
+`optimize.Solve` takes aligned daily returns and a `Spec`, whose bounds and
+limits bind every objective. Black-Litterman takes the file's weights as its
+prior and blends `view:` beliefs into the returns they imply.
+
+```go
+// from optimize.ExampleSolve_boundedBlackLitterman (exampleReturns: synthetic daily returns)
+spec, err := optimize.ParseSpec("black-litterman,view:TREND:8@70,bounds:TREND:10-40,max-vol:9")
+if err != nil {
+	log.Fatal(err)
+}
+if err := spec.Resolve([][]string{{"EQUITY"}, {"TREND"}, {"CASH"}}); err != nil {
+	log.Fatal(err)
+}
+spec.Prior = []float64{0.5, 0.3, 0.2} // the weights written in the file
+
+res, err := optimize.Solve(exampleReturns(750), spec)
+if err != nil {
+	log.Fatal(err)
+}
+fmt.Printf("EQUITY %.0f %%, TREND %.0f %%, CASH %.0f %%, feasible %v\n",
+	res.Weights[0]*100, res.Weights[1]*100, res.Weights[2]*100, res.Feasible)
+```
+
+### What the book is missing
+
+`pkg/suggest` reads what holdings ARE before what they returned: regime
+coverage and gaps, redundancies, candidates ranked on walk-forward windows.
+Its look-through splits (`AssetClassSplit`, `CurrencySplit`...) fill
+`PortfolioStudy.Composition`.
+
+```go
+// from suggest.ExampleAnalyze (deterministic synthetic returns)
+const n = 500
+held := make([]float64, n)
+diversifier := make([]float64, n)
+for i := range n {
+	held[i] = 0.004 * math.Sin(float64(i)/5)
+	diversifier[i] = 0.004*math.Cos(float64(i)/5) + 0.0003
+}
+holdings := []suggest.Holding{
+	{ID: "IWDA", Weight: 1, HasMeta: true, Meta: suggest.Meta{AssetClass: "equity"}}, // IE00B4L5Y983
+}
+candidates := []suggest.Candidate{{
+	Meta:        suggest.Meta{ID: "IGLN", AssetClass: "gold"}, // IE00B4ND3602
+	PortReturns: held,
+	Returns:     diversifier,
+	Years:       12,
+}}
+
+res := suggest.Analyze(holdings, [][]float64{held}, candidates, suggest.DefaultOptions(), suggest.RegimeFramework())
+fmt.Println("gaps:", res.Gaps)
+for _, s := range res.Suggestions {
+	fmt.Printf("%s at %.0f %% fills %s (%d/%d windows)\n",
+		s.Meta.ID, s.Weight*100, s.Fills, s.SharpeWins, s.Windows)
+}
+```
+
+### FIRE in a dozen lines
+
+A `scenario.Source` draws real-return paths (parametric here; the bootstraps
+resample history, `Deflate` makes it real); `Plan.Simulate` runs the
+withdrawal kernel, `Solve` turns the question around, and `Plan.Lifetime`
+draws the lifespan inside every path (`decumul.ExamplePlan_Simulate_lifetime`).
+
+```go
+// from decumul.Example_fire
+p := decumul.Plan{
+	Capital: 1_000_000, NeedAnnual: 32_000, Years: 35,
+	Tax:    decumul.CTOFlatTax{Rate: 0.314},
+	Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 35},
+}
+o := p.Simulate(20_000, 4, 7).Outcome() // paths, workers, seed
+fmt.Printf("ruin %.0f%%, median terminal wealth %.1f M\n", o.RuinProb*100, o.TerminalP50/1e6)
+
+spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 4, 7)
+fmt.Printf("5%% ruin at %.0f a year\n", math.Round(spend/500)*500)
+```
+
+### Reconstruct a missing history
+
+`simgen.Find` returns the recipe `pofo -gen-simdata` ships for an asset, and
+`Build` runs it on any `Fetcher`. `Validate` grades a reconstruction on its
+overlap with the real quotes (`simgen.ExampleValidate`); `pofo
+-verify-simdata ZROZ` renders the full audit.
+
+```go
+// from simgen.ExampleFind (offline: bundled reference data only)
+r, ok := simgen.Find("ZROZ")
+if !ok {
+	panic("no recipe")
+}
+s, err := r.Build(simgen.WithRefData(datasets.Refdata(), offline{}), time.Time{})
+if err != nil {
+	panic(err)
+}
+fmt.Println(r.Name)
+fmt.Printf("rebuilt from %s, graded against %s\n", s.First().Date.Format(time.DateOnly), r.ValidateAgainst)
+```
+
+### Render
+
+`compare.Compute` runs the CLI's comparison, `Studies` hands the numbers
+behind every chart, `chart.Line` draws standalone SVG and `report.Render` the
+HTML report. The two bundled indices keep it offline.
+
+```go
+// from compare.Example_render
+client := marketdata.NewClient("") // "" = no disk cache
+spec, _ := portfolio.NewSpec("world and US",
+	portfolio.Line{ID: "MSCIWORLD", Weight: 0.6},
+	portfolio.Line{ID: "SP500", Weight: 0.4})
+cmp, err := compare.Compute(context.Background(), client, []*portfolio.Spec{spec}, compare.Options{
+	Currency: "USD", NoFees: true, Rebalance: 90, Framework: suggest.RegimeFramework(),
+})
+if err != nil {
+	panic(err)
+}
+
+st := cmp.Studies()[0]
+svg := chart.Line(chart.Options{Title: st.Spec.Name, Width: 800, Height: 400}, []chart.Series{
+	{Name: st.Spec.Name, Dates: st.Sim.Dates, Values: st.Sim.Index},
+})
+
+var page strings.Builder
+if err := report.Render(&page, cmp.HTMLPage(compare.Decoration{})); err != nil {
+	panic(err)
+}
+fmt.Println(len(st.Holdings), "holdings,", len(st.Correlation), "x", len(st.Correlation[0]), "correlation")
+fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</html>"))
+```
+
+### Units
+
+| Quantity | Unit | Where |
+|---|---|---|
+| Weights | fraction (0.6) | `portfolio.Line`, `Holding.Weight`, `Asset.Weight`, `optimize`, `analyze` |
+| Weights | percent (60) | portfolio files, `Holding.RawWeight` |
+| Fees (TER) | percent per year (0.20) | `portfolio` (`Line.Fees`, `Holding.Fees`, `EnvelopeFees`, `BorrowSpread`), `marketdata.Client.Fees`, `datasets.Asset.Fees` |
+| Fees, volatility targets | fraction per year (0.0020) | `simgen` |
+| Returns, CAGR, volatility, drawdowns, VaR | fraction (0.04 = +4 %) | `metrics`, `analyze`, `scenario`, `decumul` (the last two in REAL terms) |
+| Ulcer, CWARP | percent points, percent | `metrics.Stats.Ulcer`, `metrics.Stats.CWARP` |
+| Rates (`^IRX`, `^ESTR`, `^SOFR`...) | annualized percent LEVEL | `marketdata` series, `portfolio.Portfolio.Cash`: never a return |
+| `#meta` directives | percent as written (`max-vol:9`) | fractions once parsed into `optimize.Spec` |
+
+### Where a number comes from
+
+| Question | Where it is answered |
+|---|---|
+| Is the math right? | `pkg/datasets/golden` (`make golden`): the statistics replayed on frozen real data against published references, Black-Litterman against its papers' tables |
+| Why does it differ from another tool? | the Conventions section of `go doc ./pkg/metrics`: 252 days, zero risk-free rate, drawdowns on daily closes, 365.25-day years |
+| Is a bundled series right? | the golden package's refdata, gap and spike guards; `pofo -verify-simdata ID` for a backcast against the real quotes; `make verify-catalog` for the data doctor |
+| What can a study not know? | its `Warnings`: simulated spans, distributing share classes, definition junctions, unconverted currencies |
+
+### Packages
 
 ```
+pkg/analyze/      the numbers-only studies: Asset and Portfolio in one call
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
-                  sources, cache, fees, simdata, alignment
-pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP, IRR…)
+                  sources, cache, fees, simdata, NewSeries, AlignSeries
+pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP,
+                  IRR, TWR), correlation and covariance matrices, calendar
+                  returns, rolling beta, VaR, risk attribution
 pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
                   risk-parity / max-sortino / return-to-drawdown / min-ulcer /
                   max-worst-5y / cwarp / black-litterman, under per-line bounds
@@ -869,8 +1197,9 @@ pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
 pkg/suggest/      regime coverage, look-through composition, redundancy and
                   gap-filling suggestions
 pkg/chart/        SVG charts (Line, Bars, Heatmap) and terminal (Term)
-pkg/portfolio/    allocation file format + rebalanced simulation with
+pkg/portfolio/    allocation file format, NewSpec, rebalanced simulation with
                   per-holding return attribution
+pkg/compare/      the CLI's comparison pipeline over analyze, and its page
 pkg/report/       HTML and text rendering of the comparison model
 pkg/simgen/       history reconstruction (composites, TSMOM, backcasts)
 pkg/scenario/     return-path generation (parametric, bootstrap, cohorts)
@@ -879,80 +1208,18 @@ pkg/decumul/      decumulation/FIRE engine + metrics + sweeps + optional
 pkg/datasets/     versioned data (embedded at build time) and its QA:
   assetmeta/        catalog asset metadata (classes, factors, regimes…)
   simdata/          permanent simulated histories (spliced at runtime)
+  refdata/          long reference series the backcasts are built on
   golden/           golden tests + frozen fixtures vs external references
-cmd/              the pofo binary (report, warmup, gen-simdata)
+cmd/              the pofo binary and the data generators (gen-*-refdata)
 ```
 
-Everything consumable as a library lives under `pkg/`, the bundled data
-(catalog and simulated histories) included, via `pkg/datasets`; `cmd/` only
-contains the CLI wiring.
-
-Each package has its documentation page, calculation conventions included
-(`go doc github.com/bpineau/pofo/pkg/metrics`), and runnable examples:
-
-```go
-import (
-	"github.com/bpineau/pofo/pkg/datasets"
-	"github.com/bpineau/pofo/pkg/chart"
-	"github.com/bpineau/pofo/pkg/marketdata"
-	"github.com/bpineau/pofo/pkg/metrics"
-	"github.com/bpineau/pofo/pkg/portfolio"
-)
-
-// Fetch a price history (transparent resolution + caching). FetchExtended
-// is the do-what-I-mean variant: it also splices simulated history behind
-// "…SIM" identifiers and converts the currency, exactly like the CLI;
-// Fetch is the raw real-quotes-only building block underneath.
-client := marketdata.NewClient(marketdata.DefaultCacheDir())
-series, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
-
-// Compute CAGR, Sharpe, Sortino, Ulcer, MaxDD, TTR, Beta…
-stats, err := metrics.Compute(series.Dates(), series.Values())
-
-// Render a standalone SVG.
-svg := chart.Line(chart.Options{Title: "Comparison"}, []chart.Series{{Name: "P1", Dates: dates, Values: values}})
-
-// The core path in three calls: parse a portfolio file, build it (each
-// holding fetched through the callback), then simulate with 90-day
-// rebalancing. Statistics chain on sim.Index via metrics.Compute.
-spec, _ := portfolio.ParseFile("p.txt")
-p, _ := portfolio.Build(spec, portfolio.BuildOptions{
-	Fetch: func(id string) (*marketdata.Series, error) {
-		return client.FetchExtended(ctx, id, marketdata.FetchOptions{Currency: "EUR"})
-	},
-})
-sim, _ := portfolio.Simulate(p, 90)
-
-// Read the bundled asset catalog as typed datasets.Asset records (name, TER,
-// UCITS, geography, sectors, asset class…); AssetMeta() returns the same data
-// as raw JSON if you prefer your own struct.
-for _, a := range datasets.Catalog() {
-	_ = a.Name // a.Fees, a.Geography, a.AssetClass, a.UCITS…
-}
-// Resolve a ticker / alias / ISIN to its full record in one call:
-iwda, ok := marketdata.Lookup("IWDA") // → (datasets.Asset, true)
-_ = iwda.Fees                         // 0.20  (percent/yr)
-```
-
-- `datasets`: the versioned data embedded at build time; `Catalog()` returns
-  the typed asset list (`Asset`), `AssetMeta()` the same data as raw JSON.
-- `marketdata`: resolution (aliases, ISIN, catalog), `Lookup` for an asset's
-  full metadata, `Resolve` to inspect the resolved source/symbol, multi-source
-  daily downloads, `Intraday` for the live 5-minute path, `Latest` for the
-  freshest quote, cache, simdata, proxies; `FetchExtended` bundles the whole
-  per-asset pipeline in one call.
-- `suggest`: regime/factor coverage, look-through composition splits (asset
-  classes, geography, currency exposure, equity sectors, duration) and
-  gap-filling (consumes `datasets.Asset`).
-- `metrics`: statistics over value series (returns, drawdowns, Beta).
-- `chart`: pure-stdlib inline SVG charts.
-- `portfolio`: allocation file parsing, `Build` (spec + fetch callback →
-  simulatable portfolio) and rebalanced simulation; `Simulate` attributes
-  each day's return to its holdings (`Contributions`, `MonthlyContributions`).
-- `report`: HTML report rendering.
-- `simgen`: reconstruction engine (linear composites, TSMOM
-  trend-following engine, donor chains) and validated recipes, all
-  built from fetchable quotes only.
+Each package's `go doc` page holds its conventions and more runnable
+examples (`go doc github.com/bpineau/pofo/pkg/metrics`); the catalog reads as
+typed records through `datasets.Catalog` and `marketdata.Lookup`. The root
+`doc.go` holds the layering (which package may import which) and the units
+table above. `pkg/simgen` and `pkg/marketdata` end their documentation with a
+"Generator plumbing" section: the exports that serve the data generators
+under `cmd/` and are not meant for consumers.
 
 ## Known limitations
 

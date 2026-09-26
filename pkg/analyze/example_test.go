@@ -15,7 +15,9 @@ import (
 //	src := marketdata.NewClient(marketdata.DefaultCacheDir())
 //
 // here it is an offline fake serving synthetic series, so the example runs
-// without the network.
+// without the network. The risk budget is each holding's share of the
+// portfolio's variance: a bond sleeve that moves against the equities can
+// carry less than none of it while holding 40 % of the capital.
 func Example_sixtyForty() {
 	ctx := context.Background()
 	src := newFake()
@@ -31,9 +33,11 @@ func Example_sixtyForty() {
 	st := study.Stats
 	fmt.Printf("CAGR %.1f %%, volatility %.1f %%, max drawdown %.1f %%\n", st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
 	fmt.Printf("correlation %s/%s: %.2f\n", study.Aligned.IDs[0], study.Aligned.IDs[1], study.Correlation[0][1])
+	fmt.Printf("risk budget: %.0f %% / %.0f %% of the variance\n", study.Attribution.Risk[0]*100, study.Attribution.Risk[1]*100)
 	// Output:
 	// CAGR 7.8 %, volatility 9.2 %, max drawdown -14.1 %
 	// correlation IWDA/AGGH: -0.16
+	// risk budget: 101 % / -1 % of the variance
 }
 
 // Asset dissects one asset on its longest window inside the options' bounds:

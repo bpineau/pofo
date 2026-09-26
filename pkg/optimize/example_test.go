@@ -139,6 +139,32 @@ func ExampleSolve_blackLittermanWithAView() {
 	// its weight goes from 30 % to 49 %
 }
 
+// Bounds and limits bind every objective, Black-Litterman included, and the
+// whole request fits the directive a portfolio file carries: ParseSpec reads
+// it, Resolve maps its identifiers onto the return rows, Solve answers. The
+// view alone takes TREND to 49 % (ExampleSolve_blackLittermanWithAView): its
+// bound stops it at 40, and the volatility cap, which the 60 % of EQUITY it
+// would otherwise hold breaks, moves nine points into CASH.
+func ExampleSolve_boundedBlackLitterman() {
+	spec, err := optimize.ParseSpec("black-litterman,view:TREND:8@70,bounds:TREND:10-40,max-vol:9")
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err := spec.Resolve([][]string{{"EQUITY"}, {"TREND"}, {"CASH"}}); err != nil {
+		log.Fatal(err)
+	}
+	spec.Prior = []float64{0.5, 0.3, 0.2} // the weights written in the file
+
+	res, err := optimize.Solve(exampleReturns(750), spec)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("EQUITY %.0f %%, TREND %.0f %%, CASH %.0f %%, feasible %v\n",
+		res.Weights[0]*100, res.Weights[1]*100, res.Weights[2]*100, res.Feasible)
+	// Output:
+	// EQUITY 51 %, TREND 40 %, CASH 9 %, feasible true
+}
+
 // exampleReturns builds three deterministic daily return series: a volatile
 // equity-like line, a mid-volatility diversifier and a calm one.
 func exampleReturns(t int) [][]float64 {
