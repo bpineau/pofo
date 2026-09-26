@@ -122,6 +122,22 @@ func TestTrackIndexAbsorbsAOneSessionClockLag(t *testing.T) {
 	}
 }
 
+// A repeated close followed by a catch-up carrying two of the reference's
+// sessions leaves no level error, so neither session is refused; a one-sided
+// step of the same size next to it still is.
+func TestTrackIndexAbsorbsAStalePrint(t *testing.T) {
+	donor := trackSeries(withEvent(flat(30), []float64{0, -0.058, 0, 0, -0.03}, flat(29))...)
+	ref := trackSeries(withEvent(flat(30), []float64{-0.015, -0.043, 0, 0, 0}, flat(29))...)
+
+	_, rejects := trackIndex(donor, ref, 0.0115)
+	if len(rejects) != 1 {
+		t.Fatalf("got %v, want only the one-sided step refused", rejects)
+	}
+	if want := donor.Points[35].Date; !rejects[0].Date.Equal(want) {
+		t.Errorf("refused %s, want the one-sided step on %s", rejects[0].Date.Format("2006-01-02"), want.Format("2006-01-02"))
+	}
+}
+
 // Sessions the reference does not cover cannot convict anyone: the donor's own
 // moves stand there, whatever they are.
 func TestTrackIndexKeepsUngradedSessions(t *testing.T) {
