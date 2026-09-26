@@ -31,6 +31,27 @@
 //     and, failing that, in Boursorama's search; the series with the
 //     deepest history wins, and the resolution is cached.
 //
+// # When a fetch finds nothing
+//
+// Two failures look alike from the outside, and a caller answering a stranger
+// (the web app above all) must tell them apart:
+//
+//   - no source quotes the identifier: every source that answered reported it
+//     holds nothing under that name. Fetch returns an *UnknownIdentifierError,
+//     which names the identifier and satisfies errors.Is(err,
+//     ErrUnknownIdentifier). It is permanent: a typo, an invented ticker, a
+//     line nothing carries.
+//   - a source did not answer: a network error, a rate limit, an HTTP 5xx, an
+//     unreadable payload. Nothing is marked, since the failure says nothing
+//     about the identifier, and the same request may work later.
+//
+// The distinction is drawn the safe way round: a failure counts as evidence
+// about the identifier only when the source that produced it said so, so an
+// unclassified one reads as the second case rather than blaming the caller's
+// identifier. ErrWrongCurrency is a third, narrower answer: the instrument
+// exists, but no source quotes it natively in the requested currency
+// (FetchOptions.Currency with NoConvert).
+//
 // # Sources
 //
 // Yahoo Finance (adjusted closes), Stooq (fallback for plain tickers,
