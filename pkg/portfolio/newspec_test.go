@@ -57,6 +57,15 @@ func TestNewSpecDefaults(t *testing.T) {
 	if h.Weight != 1 || h.RawWeight != 100 || h.Fees != -1 {
 		t.Errorf("holding = %+v, want weight 1, raw 100, fees -1 (any negative means unknown)", h)
 	}
+	// The zero value is unknown too: a Line that says nothing about fees must
+	// not declare a 0 % TER behind the caller's back.
+	spec, err = NewSpec("p", Line{ID: "VTI", Weight: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if h := spec.Holdings[0]; h.Fees != -1 {
+		t.Errorf("fees left at zero read %g, want -1 (unknown)", h.Fees)
+	}
 }
 
 func TestNewSpecNormalizes(t *testing.T) {

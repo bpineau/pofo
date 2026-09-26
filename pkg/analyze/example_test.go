@@ -21,8 +21,8 @@ func Example_sixtyForty() {
 	src := newFake()
 
 	spec, _ := portfolio.NewSpec("60/40",
-		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: -1}, // IE00B4L5Y983
-		portfolio.Line{ID: "AGGH", Weight: 0.4, Fees: -1}) // IE00BDBRDM35
+		portfolio.Line{ID: "IWDA", Weight: 0.6}, // IE00B4L5Y983
+		portfolio.Line{ID: "AGGH", Weight: 0.4}) // IE00BDBRDM35
 	study, err := analyze.Portfolio(ctx, src, spec, analyze.Options{Currency: "EUR"})
 	if err != nil {
 		panic(err)
@@ -75,9 +75,9 @@ func ExamplePortfolio() {
 	src := newFake()
 
 	spec, _ := portfolio.NewSpec("three funds",
-		portfolio.Line{ID: "IWDA", Weight: 0.5, Fees: -1}, // IE00B4L5Y983
-		portfolio.Line{ID: "VWRL", Weight: 0.2, Fees: -1}, // IE00B3RBWM25
-		portfolio.Line{ID: "IGLN", Weight: 0.3, Fees: -1}) // IE00B4ND3602
+		portfolio.Line{ID: "IWDA", Weight: 0.5}, // IE00B4L5Y983
+		portfolio.Line{ID: "VWRL", Weight: 0.2}, // IE00B3RBWM25
+		portfolio.Line{ID: "IGLN", Weight: 0.3}) // IE00B4ND3602
 	study, err := analyze.Portfolio(ctx, src, spec, analyze.Options{Currency: "EUR"})
 	if err != nil {
 		panic(err)
