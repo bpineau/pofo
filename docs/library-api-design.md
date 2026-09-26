@@ -1,7 +1,7 @@
 # The library face: audit and design
 
-Status: spec, 2026-09-26. Implementation plan at the end, one milestone per
-commit, each shippable on its own.
+Status: shipped 2026-09-26 (M1 to M6). Implementation plan at the end, one
+milestone per commit, each shippable on its own.
 
 pofo has four faces (AGENTS.md), and the first one, the finance LIBRARY, is the
 one a reader of `README.md` sees least of. This document audits what the
@@ -414,7 +414,7 @@ and reports the digit rather than moving a golden.
 No `internal/` move: the generators are part of the module and the churn
 buys nothing a doc heading does not.
 
-### M6. Documentation
+### M6. Documentation (shipped 2026-09-26)
 
 - `README.md`, "Using it as a library", rewritten by TASK, each snippet
   copied from a runnable example and saying which (`// see

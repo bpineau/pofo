@@ -24,6 +24,26 @@ func ExamplePlan_Simulate() {
 	// ruin 25%, median terminal wealth 0.5 M
 }
 
+// FIRE in a dozen lines: a scenario.Source of real returns, a plan, the
+// Monte-Carlo, and the question turned around, the spending a 5 % chance of
+// ruin allows. Solve bisects on one shared set of draws, so its answer is
+// monotone in the target rather than noisy.
+func Example_fire() {
+	p := decumul.Plan{
+		Capital: 1_000_000, NeedAnnual: 32_000, Years: 35,
+		Tax:    decumul.CTOFlatTax{Rate: 0.314},
+		Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 35},
+	}
+	o := p.Simulate(20_000, 4, 7).Outcome() // paths, workers, seed
+	fmt.Printf("ruin %.0f%%, median terminal wealth %.1f M\n", o.RuinProb*100, o.TerminalP50/1e6)
+
+	spend := p.Solve(0.05, decumul.WithdrawalAxis(10_000, 100_000), 20_000, 4, 7)
+	fmt.Printf("5%% ruin at %.0f a year\n", math.Round(spend/500)*500)
+	// Output:
+	// ruin 25%, median terminal wealth 0.5 M
+	// 5% ruin at 22000 a year
+}
+
 // The same household with the lifetime drawn inside every path. Ruin now means
 // running out WHILE ALIVE, and the wealth left at death becomes an output in
 // its own right. Years runs to 110 so the longevity tail is not truncated,

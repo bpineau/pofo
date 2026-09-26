@@ -132,10 +132,10 @@ func ExampleAnalyze() {
 		diversifier[i] = 0.004*math.Cos(float64(i)/5) + 0.0003
 	}
 	holdings := []suggest.Holding{
-		{ID: "WORLD", Weight: 1, HasMeta: true, Meta: suggest.Meta{AssetClass: "equity"}},
+		{ID: "IWDA", Weight: 1, HasMeta: true, Meta: suggest.Meta{AssetClass: "equity"}}, // IE00B4L5Y983
 	}
 	candidates := []suggest.Candidate{{
-		Meta:        suggest.Meta{ID: "GOLD", AssetClass: "gold"},
+		Meta:        suggest.Meta{ID: "IGLN", AssetClass: "gold"}, // IE00B4ND3602
 		PortReturns: held,
 		Returns:     diversifier,
 		Years:       12,
@@ -149,7 +149,7 @@ func ExampleAnalyze() {
 	}
 	// Output:
 	// gaps: [deflation inflation crisis]
-	// GOLD at 20 % fills inflation (8/8 windows)
+	// IGLN at 20 % fills inflation (8/8 windows)
 }
 
 // CurrencyProfile condenses a currency split into what an investor billed in

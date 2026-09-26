@@ -430,3 +430,43 @@ func ExampleAlignSeries() {
 	// [50 50 55] 2
 	// marketdata: AlignSeries: YOUNG starts 2024-01-03, after the window's start 2024-01-02
 }
+
+// Example_priceHistory walks the price-history API in one pass: real quotes,
+// the CLI's extended fetch (the bundled backcast in front, in euros), the
+// unadjusted closes with their dividends as cash, the parallel slices
+// pkg/metrics takes, a month-end view, and the two live reads.
+// (Not run: requires the network.)
+func Example_priceHistory() {
+	ctx := context.Background()
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+
+	// Real quotes, adjusted, native currency; the slices pkg/metrics takes.
+	iwda, err := client.Fetch(ctx, "IWDA", time.Date(2010, 1, 1, 0, 0, 0, 0, time.UTC)) // IE00B4L5Y983
+	if err != nil {
+		panic(err)
+	}
+	dates, closes, returns := iwda.Dates(), iwda.Values(), iwda.Returns()
+	fmt.Println(len(dates), len(closes), len(returns), iwda.Resample(marketdata.Monthly).Len())
+
+	// The CLI's pipeline: the bundled backcast in front (SIM), in euros.
+	long, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("simulated before", long.SimulatedBefore.Format(time.DateOnly))
+
+	// Unadjusted closes, the distributions beside them as cash.
+	vt, err := client.FetchExtended(ctx, "VT", marketdata.FetchOptions{Raw: true}) // US9220427424
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(vt.Dividends), "distributions in", vt.Currency)
+
+	// Live: the freshest price, today's 5-minute path (ErrNotCovered off Yahoo).
+	if q, err := client.Latest(ctx, "IWDA"); err == nil {
+		fmt.Println(q.Price, q.Currency, q.Live)
+	}
+	if today, err := client.Intraday(ctx, "IWDA"); err == nil {
+		fmt.Println(len(today.Points), "ticks today")
+	}
+}
