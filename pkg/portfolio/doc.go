@@ -54,6 +54,20 @@
 //	})
 //	sim, _ := portfolio.Simulate(p, 90)
 //
+// A portfolio assembled in code rather than read from a file starts from
+// NewSpec instead of Parse. Its Line takes the weight as a FRACTION (the
+// in-memory convention) and runs through the very validation and
+// normalization Parse applies, so NewSpec on some lines and Parse on the
+// same lines written as a file give the same Spec:
+//
+//	spec, _ := portfolio.NewSpec("60/40",
+//		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: -1},
+//		portfolio.Line{ID: "AGGH", Weight: 0.4, Fees: -1})
+//
+// Directives are Spec fields there (RebalanceDays, Sim, ...), left unset.
+// For the numbers of such a portfolio in one call (statistics, per-holding
+// studies, correlation, risk budget, look-through), see pkg/analyze.
+//
 // # Simulation
 //
 // Simulate replays the portfolio at base 100 over the union of the quoting
@@ -82,8 +96,9 @@
 //
 // # Units
 //
-// Holding.Weight and Asset.Weight are FRACTIONS (0.60 = 60 %); RawWeight,
-// Fees, EnvelopeFees and BorrowSpread are PERCENT per year as written in
+// Holding.Weight, Asset.Weight and Line.Weight are FRACTIONS (0.60 = 60 %);
+// RawWeight is the PERCENT a file writes; Fees (Line's included),
+// EnvelopeFees and BorrowSpread are PERCENT per year as written in
 // portfolio files. The simgen package uses fractions for its own fee
 // parameters; do not mix them up.
 package portfolio
