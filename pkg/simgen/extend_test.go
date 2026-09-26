@@ -165,6 +165,22 @@ func TestExtendingFetcherSplicesConfiguredComponent(t *testing.T) {
 	}
 }
 
+// The splice never reaches back into the inner fetcher's series: a memoizing
+// fetcher hands every caller the same pointer, and feeGap reads each donor's
+// real inception from that raw fetch.
+func TestExtendingFetcherLeavesTheRawSeriesAlone(t *testing.T) {
+	raw := atSeries("VTMGX", 100, 50, 200)
+	f := fakeFetcher{"VTMGX": raw, "DEVEXUS-USD": atSeries("dev-ex-US", 0, 200, 50)}
+
+	if _, err := extend(f).Fetch("VTMGX", time.Time{}); err != nil {
+		t.Fatal(err)
+	}
+	if !raw.Points[0].Date.Equal(day(100)) || !raw.SimulatedBefore.IsZero() {
+		t.Errorf("the raw series now starts %v (SimulatedBefore %v), want it untouched at %v",
+			raw.Points[0].Date, raw.SimulatedBefore, day(100))
+	}
+}
+
 // A component with no proxy, or a missing proxy, is returned unchanged (the
 // wrapper is safe to apply unconditionally).
 func TestExtendingFetcherLeavesOthersUnchanged(t *testing.T) {
