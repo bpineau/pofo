@@ -218,7 +218,7 @@ rendered):
 
 ```go
 client := marketdata.NewClient(marketdata.DefaultCacheDir()) // "" = no disk cache
-spec, _ := portfolio.NewSpec("60/40", portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: -1}, portfolio.Line{ID: "AGGH", Weight: 0.4, Fees: -1})
+spec, _ := portfolio.NewSpec("60/40", portfolio.Line{ID: "IWDA", Weight: 0.6}, portfolio.Line{ID: "AGGH", Weight: 0.4})
 study, _ := analyze.Portfolio(ctx, client, spec, analyze.Options{Currency: "EUR"}) // Stats, Holdings, Correlation, Attribution, Composition, Warnings
 ```
 

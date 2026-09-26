@@ -4,8 +4,8 @@
 // rendered.
 //
 //	spec, _ := portfolio.NewSpec("60/40",
-//		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: -1},
-//		portfolio.Line{ID: "AGGH", Weight: 0.4, Fees: -1})
+//		portfolio.Line{ID: "IWDA", Weight: 0.6},
+//		portfolio.Line{ID: "AGGH", Weight: 0.4})
 //	study, _ := analyze.Portfolio(ctx, client, spec, analyze.Options{Currency: "EUR"})
 //	fmt.Println(study.Stats.CAGR, study.Correlation[0][1], study.Attribution.Risk)
 //
