@@ -123,7 +123,7 @@ func TestOverlayBuildsStopWhereTheirReferenceDoes(t *testing.T) {
 		fake[id] = dailyFrom(id, 1994, 1, 1, 11800)
 	}
 	f := WithRefData(datasets.Refdata(), fake)
-	want, err := AnchorStart(f, PureTrendAnchor)
+	want, err := anchorStart(f, PureTrendAnchor)
 	if err != nil {
 		t.Fatal(err)
 	}

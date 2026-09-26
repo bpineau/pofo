@@ -41,15 +41,15 @@ func TestCapWeightedIsBuyAndHold(t *testing.T) {
 	}
 	// At the anchor the weights ARE the published split; the winner's weight
 	// grows after it and shrinks before it, which is the whole point.
-	at := CapWeights(fr, legs, anchor, 200)
+	at := capWeights(fr, legs, anchor, 200)
 	if math.Abs(at["A"]-0.4) > 1e-12 {
 		t.Errorf("anchor weight of A = %.6f, want the published 0.40", at["A"])
 	}
-	before, after := CapWeights(fr, legs, anchor, 0)["A"], CapWeights(fr, legs, anchor, 399)["A"]
+	before, after := capWeights(fr, legs, anchor, 0)["A"], capWeights(fr, legs, anchor, 399)["A"]
 	if !(before < 0.4 && 0.4 < after) {
 		t.Errorf("A's weight reads %.4f before the anchor and %.4f after: it must drift up with its own returns", before, after)
 	}
-	if s := before + CapWeights(fr, legs, anchor, 0)["B"]; math.Abs(s-1) > 1e-12 {
+	if s := before + capWeights(fr, legs, anchor, 0)["B"]; math.Abs(s-1) > 1e-12 {
 		t.Errorf("weights sum to %.6f, want 1", s)
 	}
 }

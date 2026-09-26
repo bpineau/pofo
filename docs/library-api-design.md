@@ -400,7 +400,7 @@ commit message. `make golden` unchanged. If the refactor cannot be made
 identical (a rounding order changes a printed digit), the milestone stops
 and reports the digit rather than moving a golden.
 
-### M5. Plumbing hygiene
+### M5. Plumbing hygiene (shipped 2026-09-26)
 
 - Unexport `simgen.AnchorTrend`, `AnchorStart`, `SeriesFromFrame`,
   `CapWeights` (no caller outside the package).

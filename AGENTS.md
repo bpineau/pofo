@@ -329,7 +329,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
   donor is projected onto the engine's daily calendar, and every donor segment
   is lifted to the target's published fee load by `feeAligned`, never to close a
   measured return gap); the engine supplies only the daily texture, and a
-  bundled reference the monthly path AND the level (`AnchorTrend`, no pin
+  bundled reference the monthly path AND the level (`anchorTrend`, no pin
   anywhere any more): the diversified funds read the NET all-styles composite
   (`TREND-NET-USD`, monthly), the overlays (RSST, RSBT, Winton) the NET
   pure-trend one (`TREND-PURE-NET-USD`, daily, `cmd/gen-sgtrend-refdata`), both

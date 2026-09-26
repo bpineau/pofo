@@ -11,7 +11,8 @@
 //	s, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 //
 // Every step stays independently reachable (Fetch, ReadSimdataFS,
-// ExtendBack, ConvertCurrency, Trim) for callers that need to deviate.
+// ConvertCurrency, Trim) for callers that need to deviate; the steps that
+// exist for the data generators are listed apart, under "Generator plumbing".
 //
 // # Resolution
 //
@@ -287,13 +288,14 @@
 //
 // # Simulated data
 //
-// ReadSimdata/WriteSimdata read and write the permanent simulated histories
-// (pkg/datasets/simdata/) produced by the simgen package; ExtendBack splices
-// those series, or a total-return proxy (ProxySymbol) converted into the
-// asset's currency, in front of the real quotes.
-// The "SIM suffix" convention (DBMFSIM = DBMF with simulated extension) is
-// decoded by SplitSim. Client.FetchExtended packages all of this into one
-// call; the pieces stay public for custom pipelines.
+// ReadSimdata and ReadSimdataFS read the permanent simulated histories
+// (pkg/datasets/simdata/) produced by the simgen package, and the long
+// reference series of pkg/datasets/refdata/ in the same format. The "SIM
+// suffix" convention (DBMFSIM = DBMF with simulated extension) is decoded by
+// SplitSim. Client.FetchExtended packages the whole extension into one call:
+// the bundled series, or a total-return proxy converted into the asset's
+// currency, spliced in front of the real quotes. Writing those files and
+// splicing by hand are the generators' business (see "Generator plumbing").
 //
 // # A series as data
 //
@@ -354,4 +356,20 @@
 //     calling Resolve before Fetch lets callers inspect the resolved
 //     source and symbol, and the result is cached so a subsequent Fetch
 //     reuses the same work.
+//
+// # Generator plumbing
+//
+// These are exported for the data generators and data modes under cmd/ (and,
+// for ExtendBack, for pkg/simgen, which the generators drive) and are not
+// meant for consumers, whose entry point is Client.FetchExtended:
+//
+//   - WarmupIDs lists every catalog identifier, the set "pofo -warmup",
+//     "pofo -verify-data" and the -suggest candidate pool walk;
+//   - SimdataFile and WriteSimdata write a simdata or refdata CSV, the format
+//     ReadSimdata reads back;
+//   - ExtendBack splices a proxy in front of a series, rescaled at the join
+//     and marked by SimulatedBefore, the step FetchExtended and every simgen
+//     recipe build on;
+//   - ProxySymbol names the long-history proxy FetchExtended splices behind a
+//     symbol.
 package marketdata
