@@ -191,3 +191,13 @@ envelope amounts that already exist in `Params`, so the recipe becomes optional
 rather than mandatory. That item goes to
 `docs/decumulation-fire-program-2026-07.md`; the tax-model question is closed
 with the decision recorded there as well.
+
+Done 2026-09-10, the same day: the Taxes group carries the embedded gain
+(default 50 %, this section's base case, and the recipe's worked example of
+47.3 % rounded to the slider's 5-point step) beside the rate, and the two
+envelope amounts behind an `envelopes` disclosure. The rate's help text now
+states that it applies to the gain share of every sale and points at the
+recipe. Both amounts at zero keeps the single blended sleeve, so the structure
+stays optional as recommended; the default gain fraction, however, moves every
+plan that had none, which is the 0.30 point above and the point of the
+exercise.
