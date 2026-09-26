@@ -118,12 +118,12 @@ func ExampleSimulate_flows() {
 }
 
 // NewSpec builds in code the Spec a file would give: weights are FRACTIONS
-// here (they are percent in a file), fees percent per year, and a negative
-// fee means "unknown, look it up".
+// here (they are percent in a file), fees percent per year, and a fee left
+// at zero means "unknown, look it up".
 func ExampleNewSpec() {
 	spec, err := portfolio.NewSpec("sixty-forty",
 		portfolio.Line{ID: "IWDA", Weight: 0.6, Fees: 0.2},
-		portfolio.Line{ID: "AGGH", Weight: 0.3, Fees: -1},
+		portfolio.Line{ID: "AGGH", Weight: 0.3},
 	)
 	if err != nil {
 		panic(err)

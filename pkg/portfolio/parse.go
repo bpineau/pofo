@@ -254,15 +254,17 @@ func validFees(pct float64) bool { return pct >= 0 && pct <= maxFeesPct }
 
 // Line is one allocation of a portfolio built in code, in the in-memory
 // convention: Weight is a FRACTION (0.6 for 60 %), Fees the asset's TER in
-// PERCENT per year (0.2 for 0.20 %/yr), as Holding.Fees. A negative Fees
-// means unknown, as an absent fee column does in a file; beware that the
-// zero value DECLARES a zero TER, which Build then keeps instead of looking
-// the fund's own up (BuildOptions.Fees), so write Fees: -1 when you do not
-// know it.
+// PERCENT per year (0.2 for 0.20 %/yr), as Holding.Fees. The ZERO value of
+// Fees means unknown, exactly as an absent fee column does in a file, and
+// Build then looks the fund's own charge up (BuildOptions.Fees); so does a
+// negative value. A TER of exactly zero cannot be declared through a Line: a
+// fee-free instrument is rare, the figure is informational (asset TERs are
+// already in the prices and never deducted), and a zero value that silently
+// declared "0 %" would be the trap every other omission avoids.
 type Line struct {
 	ID     string  // ticker, ISIN or alias, SIM suffix allowed, as in a file
 	Weight float64 // fraction of the portfolio, above 0 and at most 1
-	Fees   float64 // TER in percent per year, 0 to 20; negative when unknown
+	Fees   float64 // TER in percent per year, above 0 and at most 20; zero or negative when unknown
 }
 
 // NewSpec builds the Spec of a portfolio assembled in code rather than read
@@ -291,7 +293,7 @@ func NewSpec(name string, lines ...Line) (*Spec, error) {
 		if !validWeight(h.RawWeight) || h.RawWeight > 100 {
 			return nil, fmt.Errorf("line %d (%s): weight %g out of range (a fraction above 0 and at most 1)", i+1, id, l.Weight)
 		}
-		if l.Fees >= 0 || math.IsNaN(l.Fees) {
+		if l.Fees > 0 || math.IsNaN(l.Fees) {
 			if !validFees(l.Fees) {
 				return nil, fmt.Errorf("line %d (%s): fees %g out of range (0-20 %%/year)", i+1, id, l.Fees)
 			}
