@@ -9,6 +9,11 @@
 // knownSpikes in pkg/datasets/golden); a finding outside those lists on a
 // fresh checkout means a guard is not running.
 //
+// A series older than -stale days is flagged, unless its file declares that it
+// stops by design ("# ends:", read into marketdata.Series.Ends): its last date
+// is then marked "(end)", and it is flagged only if that date is not the
+// declared one.
+//
 // Usage:
 //
 //	go run examples/code/scanbundle.go [-v] [-stale 60] [-only PATTERN]
@@ -62,8 +67,17 @@ func main() {
 		if len(spikes) > 0 {
 			flags = append(flags, "spikes")
 		}
-		if age := now.Sub(s.Last().Date).Hours() / 24; age > float64(*stale) {
-			flags = append(flags, fmt.Sprintf("stale %.0f d", age))
+		// A file that declares where it stops (Series.Ends, its "# ends:"
+		// header) is complete rather than late; it is flagged only if its last
+		// point no longer matches the declaration.
+		last := s.Last().Date
+		switch {
+		case s.Ends.IsZero():
+			if age := now.Sub(last).Hours() / 24; age > float64(*stale) {
+				flags = append(flags, fmt.Sprintf("stale %.0f d", age))
+			}
+		case !last.Equal(s.Ends):
+			flags = append(flags, "declared end "+s.Ends.Format(time.DateOnly)+" not met")
 		}
 		if len(s.Junctions) > 0 {
 			flags = append(flags, fmt.Sprintf("%d junction(s)", len(s.Junctions)))
@@ -74,9 +88,13 @@ func main() {
 		// PeriodsPerYear measures the prevailing cadence, snapped to 252,
 		// 52, 12... A backcast that turns daily after a monthly deep past
 		// reads as daily.
+		lastCol := last.Format(time.DateOnly)
+		if !s.Ends.IsZero() {
+			lastCol += " (end)"
+		}
 		fmt.Fprintf(tw, "%s\t%s\t%.0f\t%s\t%s\t%d\t%d\t%d\t%s\n", id, s.Source,
 			metrics.PeriodsPerYear(s.Dates()), s.First().Date.Format(time.DateOnly),
-			s.Last().Date.Format(time.DateOnly), s.Len(), len(gaps), len(spikes), strings.Join(flags, ", "))
+			lastCol, s.Len(), len(gaps), len(spikes), strings.Join(flags, ", "))
 		for _, g := range gaps {
 			details = append(details, fmt.Sprintf("%s: no quote from %s to %s (%.0f days, the pace allows %.0f)",
 				id, g.From.Format(time.DateOnly), g.To.Format(time.DateOnly), g.Days, g.Limit))

@@ -3,6 +3,7 @@
 # name: GBP/USD spot (USD per GBP), daily
 # source: FRED DEXUSUK daily noon rate (fredgraph.csv?id=DEXUSUK, 1971-01->, trimmed at 2004-12: Yahoo GBPUSD=X takes over from ~2003-12). Real daily levels; longBack proxy behind GBPUSD=X in pkg/simgen/extend.go.
 # generated: 2026-07-03
+# ends: 2004-12-31 (trimmed where the real GBPUSD=X quotes take over; no generator, since nothing after this date is ever read)
 date,close
 1971-01-04,2.393800
 1971-01-05,2.394900

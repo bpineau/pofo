@@ -86,9 +86,9 @@ func TestAlignMonthEndPreservesCalendarYears(t *testing.T) {
 
 // TestMonthEndAnchorGate checks the registry, not the arithmetic. WTI-USD is
 // the one monthly reference deliberately left out of it: a monthly AVERAGE spot
-// still dated the first of the month, with no generator in this repository to
-// restate it in, so snapping it to the month's last trading day would slide the
-// whole 1946-2000 reconstruction with nothing regenerable behind the decision.
+// still dated the first of the month, as FRED publishes it and as its generator
+// (cmd/gen-wti-refdata) carries it, so snapping it to the month's last trading
+// day would slide the whole 1946-2000 reconstruction for no better label.
 // It must come back untouched. The euro and German bond references are IN the
 // registry since 2026-09 (their levels are the month-ends of a real daily curve
 // wherever one exists, and month-end labels before it), so they must be snapped

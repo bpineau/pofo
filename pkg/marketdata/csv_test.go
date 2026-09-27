@@ -87,6 +87,7 @@ func TestWriteCSVRoundTrip(t *testing.T) {
 			Currency:        "USD",
 			SimulatedBefore: d(1973, 1, 3),
 			Junctions:       []time.Time{d(1973, 1, 4), d(1977, 2, 15)},
+			Ends:            d(1977, 2, 15),
 			Points: []Point{
 				{Date: d(1973, 1, 3), Close: 6.177},
 				{Date: d(1973, 1, 4), Close: 6.89},
@@ -117,6 +118,7 @@ func TestWriteCSVRoundTrip(t *testing.T) {
 	for _, line := range []string{
 		"# TREASURY-LONG-YIELD name: US long Treasury yield: percent",
 		"# TREASURY-LONG-YIELD junctions: 1973-01-04,1977-02-15",
+		"# TREASURY-LONG-YIELD ends: 1977-02-15",
 		"id,date,value",
 		"TREASURY-LONG-YIELD,1973-01-04,6.89",
 		"my fund,2020-01-06,0",

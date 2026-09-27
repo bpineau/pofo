@@ -233,6 +233,14 @@
 // constant maturity stepped 0.71 pt overnight while the 10-year point sat
 // still; simgen's constant-maturity engines skip any period spanning one.
 //
+// A file that STOPS by design declares it the same way, in an optional
+// "# ends:" header (a date, then the reason in free text), read into
+// Series.Ends: its source was discontinued (WTI-ER-USD after EIA stopped
+// publishing its contract series) or it is trimmed where better data takes
+// over (the daily shape series). Verify then reads an old last point as the
+// whole record rather than a stale feed, and reports the file instead when its
+// last point is not the declared date.
+//
 // # Intraday
 //
 // Client.Intraday fetches the current trading day's price path for an
@@ -347,7 +355,8 @@
 //
 // Verify judges a series on its own: non-positive prices, suspicious moves,
 // calendar gaps (FindGaps), round trips (FindSpikes), flat runs, staleness,
-// each against the series' own cadence.
+// each against the series' own cadence (a declared Series.Ends replaces the
+// staleness check).
 // VerifyAsset adds what only the catalog record can say, and is what
 // -verify-data (and `make verify-catalog`, over the whole catalog) runs:
 //
@@ -488,7 +497,8 @@
 //   - WarmupIDs lists every catalog identifier, the set "pofo -warmup",
 //     "pofo -verify-data" and the -suggest candidate pool walk;
 //   - SimdataFile and WriteSimdata write a simdata or refdata CSV, the format
-//     ReadSimdata reads back;
+//     ReadSimdata reads back, and EndsHeader spells its "# ends:" line for the
+//     generators that format their own headers;
 //   - ExtendBack splices a proxy in front of a series, rescaled at the join
 //     and marked by SimulatedBefore, the step FetchExtended and every simgen
 //     recipe build on;

@@ -175,6 +175,46 @@ func TestSimdataJunctionsRoundTrip(t *testing.T) {
 	}
 }
 
+// A file that stops by design carries its "# ends:" header, reason included,
+// and reads back with Series.Ends set; the reason is for the reader only. A
+// malformed date is an error, as for a junction.
+func TestSimdataEnds(t *testing.T) {
+	dir := t.TempDir()
+	sf := &SimdataFile{
+		ID:      "WTI-ER-USD",
+		Ends:    d(2024, 4, 5),
+		EndsWhy: "EIA discontinued the contract series",
+		Points:  []Point{{Date: d(2024, 4, 4), Close: 100}, {Date: d(2024, 4, 5), Close: 101}},
+	}
+	if err := WriteSimdata(dir, sf); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(filepath.Join(dir, "WTI-ER-USD.csv"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "# ends: 2024-04-05 (EIA discontinued the contract series)\n"; !strings.Contains(string(raw), want) {
+		t.Errorf("the file does not carry %q:\n%s", want, raw)
+	}
+	s, ok, err := ReadSimdata(dir, "WTI-ER-USD")
+	if err != nil || !ok {
+		t.Fatalf("read back: ok=%v err=%v", ok, err)
+	}
+	if !s.Ends.Equal(d(2024, 4, 5)) {
+		t.Errorf("read back Ends %v, want 2024-04-05", s.Ends)
+	}
+	if got := EndsHeader(time.Time{}, "ignored"); got != "" {
+		t.Errorf("EndsHeader of a zero date = %q, want nothing", got)
+	}
+	if got := EndsHeader(d(2000, 12, 29), ""); got != "# ends: 2000-12-29\n" {
+		t.Errorf("EndsHeader without a reason = %q", got)
+	}
+	broken := fstest.MapFS{"B.csv": &fstest.MapFile{Data: []byte("# id: B\n# ends: soon (maybe)\ndate,close\n2020-01-02,100\n")}}
+	if _, _, err := ReadSimdataFS(broken, "B"); err == nil {
+		t.Error("a malformed ends date parsed without error")
+	}
+}
+
 // A file with no junction header reads back with none, and a malformed one is
 // an error rather than a silently ignored line.
 func TestSimdataJunctionsAbsentOrMalformed(t *testing.T) {

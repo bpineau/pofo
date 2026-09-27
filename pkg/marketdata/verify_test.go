@@ -50,6 +50,38 @@ func TestVerify(t *testing.T) {
 	}
 }
 
+// A series declared to stop on its last date (Series.Ends) is complete, not
+// stale, however old that date; one whose last point is not the declared date
+// is reported, because the declaration no longer describes it.
+func TestVerifyDeclaredEnd(t *testing.T) {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	s := &Series{Symbol: "ENDED"}
+	for i := range 30 {
+		s.Points = append(s.Points, Point{Date: start.AddDate(0, 0, i), Close: 100 + float64(i)})
+	}
+	now := start.AddDate(3, 0, 0)
+	count := func(what string) int {
+		n := 0
+		for _, is := range Verify(s, now) {
+			if strings.Contains(is.Message, what) {
+				n++
+			}
+		}
+		return n
+	}
+	if count("days old") != 1 {
+		t.Fatal("an undeclared three-year-old series is not reported stale")
+	}
+	s.Ends = s.Last().Date
+	if n := count("days old") + count("declared to end"); n != 0 {
+		t.Errorf("a series ending where declared drew %d staleness finding(s)", n)
+	}
+	s.Ends = s.Last().Date.AddDate(0, 0, 7)
+	if count("declared to end") != 1 {
+		t.Error("a series stopping before its declared end is not reported")
+	}
+}
+
 func TestVerifyFlatRun(t *testing.T) {
 	s := &Series{Symbol: "F"}
 	start := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)

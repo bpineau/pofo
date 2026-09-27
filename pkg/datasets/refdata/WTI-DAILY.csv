@@ -3,6 +3,7 @@
 # name: WTI crude oil spot price (daily), DAILY SHAPE series
 # source: FRED DCOILWTICO daily WTI spot (fredgraph.csv?id=DCOILWTICO, 1986-01->, trimmed at 2000-12: real CL=F quotes take over from 2000). Spot, not futures roll: LEVELS ARE NOT AUTHORITATIVE, used only as the intra-month daily shape behind the WTI-USD monthly-average anchors (simgen dailyShape/anchorShape).
 # generated: 2026-07-03
+# ends: 2000-12-29 (trimmed where the real CL=F quotes take over; no generator, since nothing after this date is ever read)
 date,close
 1986-01-02,25.560000
 1986-01-03,26.000000

@@ -1,9 +1,12 @@
 // Command gen-wti-refdata rebuilds pkg/datasets/refdata/WTI-ER-USD.csv, the
 // daily EXCESS RETURN of a continuously rolled long position in WTI crude oil
-// futures.
+// futures, and refreshes WTI-USD.csv, the monthly spot price it is contrasted
+// with (FRED WTISPLC, carried exactly as published: see spot.go).
 //
 // It runs at data-generation time only (network); the pofo binary embeds the
-// CSV and never fetches anything.
+// CSVs and never fetches anything. The third crude file, the daily spot shape
+// WTI-DAILY, is not regenerated: it stops at 2000-12 by design, where real
+// CL=F quotes take over, and says so in its "# ends:" header.
 //
 // WHY IT EXISTS. The bundled WTI series (WTI-USD, WTI-DAILY) are SPOT prices.
 // A spot price is not investable: a futures holder earns the spot move plus a
@@ -31,7 +34,8 @@
 // EIA DISCONTINUED these two series after 2024-04-05 and still publishes the
 // spot price (RWTC) daily, so the file ends there and cannot be extended from
 // this source. That is the reliability bound: the series stops where its
-// evidence stops. The published index families that would carry it further
+// evidence stops, and the file declares it in an "# ends:" header so no
+// staleness check mistakes it for a frozen feed. The published index families that would carry it further
 // (S&P GSCI Crude Oil ER, Bloomberg Crude Oil Subindex ER) have no free
 // historical download; see the notes in docs/specs/wti-rolled-reference-design.md.
 //
@@ -79,7 +83,7 @@
 // a copy of it, and it is not labelled as one. What it is good for is exactly
 // what spot cannot do: price the roll.
 //
-// Usage: gen-wti-refdata [-src URL] [-dir path] [-dry]
+// Usage: gen-wti-refdata [-src URL] [-fred URL] [-dir path] [-dry]
 package main
 
 import (
@@ -98,6 +102,7 @@ import (
 	"slices"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
@@ -125,6 +130,7 @@ const (
 
 func main() {
 	src := flag.String("src", defaultSrc, "EIA petroleum bulk archive")
+	fred := flag.String("fred", refgen.FREDBase, "FRED base URL (the monthly spot price, WTI-USD)")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output directory")
 	dry := flag.Bool("dry", false, "report without writing")
 	flag.Parse()
@@ -153,6 +159,10 @@ func main() {
 	if err := checkAgainstGSCI(idx); err != nil {
 		log.Fatalf("published-index cross-check: %v", err)
 	}
+	spot, err := refreshSpot(*fred, *dir)
+	if err != nil {
+		log.Fatalf("%s: %v", outSpot, err)
+	}
 
 	var b bytes.Buffer
 	fmt.Fprintf(&b, "# pofo simdata v1\n# id: %s\n", outID)
@@ -162,6 +172,7 @@ func main() {
 		"RCLC1/RCLC2 (%s). EXCESS return: the futures position alone, NO collateral interest; fund it "+
 		"with TBILL-3M for a total return. EIA discontinued both contract series after 2024-04-05, which "+
 		"is where this file ends. Regenerate with cmd/gen-wti-refdata.\n", *src)
+	b.WriteString(marketdata.EndsHeader(idx[len(idx)-1].date, "EIA discontinued its NYMEX contract series RCLC1/RCLC2 there"))
 	fmt.Fprintf(&b, "date,close\n")
 	for _, p := range idx {
 		fmt.Fprintf(&b, "%s,%.6f\n", p.date.Format("2006-01-02"), p.level)
@@ -175,6 +186,10 @@ func main() {
 		log.Fatalf("write: %v", err)
 	}
 	log.Printf("wrote %s (%d points)", out, len(idx))
+	if err := refgen.Write(*dir, refgen.Header{ID: outSpot, Name: "Crude oil spot (WTI, monthly)", Source: spotSource}, spot); err != nil {
+		log.Fatalf("write %s: %v", outSpot, err)
+	}
+	log.Printf("wrote %s (%d months)", filepath.Join(*dir, outSpot+".csv"), len(spot))
 }
 
 // point is one day of the index.

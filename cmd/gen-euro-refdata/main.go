@@ -87,7 +87,9 @@
 //     (the German 360/360 method to 1990-06, act/360 after),
 //     which is how it is accrued here since 2026-08. It used
 //     to be read as an effective annual yield, worth
-//     -0.23 %/yr of accrual over 1960-1994.
+//     -0.23 %/yr of accrual over 1960-1994. The file stops at
+//     1994-11 BY DESIGN and declares it in an "# ends:"
+//     header, so a staleness check reads it as complete.
 //
 // Every series is checked before it is written (-check, on by default): its
 // shape where an outside answer is known, its freshness (a dataflow that quietly
@@ -109,9 +111,9 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/simgen"
@@ -254,8 +256,9 @@ func main() {
 		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
 	write(*dir, "EURCASH-EUR", "Euro area 3-month cash total-return index (base 100, monthly)",
 		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) rolled monthly at the convention it is quoted in (simple, act/360, per EMMI's Benchmark Determination Methodology for Euribor); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd), like every other monthly series here, so a composite reading this leg beside a bond leg sees one point a month. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
-	write(*dir, "DECASH-EUR", "German 3-month money-market accrual (EUR/DM, monthly)",
-		"OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.", cash)
+	writeHeader(*dir, refgen.Header{ID: "DECASH-EUR", Name: "German 3-month money-market accrual (EUR/DM, monthly)",
+		Source: "OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.",
+		Ends:   cash[len(cash)-1].Date, EndsWhy: "trimmed where EURCASH-EUR, which starts 1994, takes the cash leg over"}, cash)
 }
 
 // obs is one dated observation.
@@ -583,20 +586,16 @@ func report(id string, pts []marketdata.Point) {
 }
 
 func write(dir, id, name, source string, pts []marketdata.Point) {
-	var b strings.Builder
-	b.WriteString("# pofo simdata v1\n")
-	fmt.Fprintf(&b, "# id: %s\n", id)
-	fmt.Fprintf(&b, "# name: %s\n", name)
-	fmt.Fprintf(&b, "# source: %s\n", source)
-	b.WriteString("date,close\n")
-	for _, p := range pts {
-		fmt.Fprintf(&b, "%s,%.6f\n", p.Date.Format("2006-01-02"), p.Close)
+	writeHeader(dir, refgen.Header{ID: id, Name: name, Source: source}, pts)
+}
+
+// writeHeader is write with the whole header, for a series that declares more
+// than its name and source (DECASH-EUR's by-design end).
+func writeHeader(dir string, h refgen.Header, pts []marketdata.Point) {
+	if err := refgen.Write(dir, h, pts); err != nil {
+		log.Fatalf("write %s: %v", h.ID, err)
 	}
-	path := filepath.Join(dir, id+".csv")
-	if err := os.WriteFile(path, []byte(b.String()), 0o644); err != nil {
-		log.Fatalf("write %s: %v", path, err)
-	}
-	log.Printf("wrote %s", path)
+	log.Printf("wrote %s", filepath.Join(dir, h.ID+".csv"))
 }
 
 // runChecks measures each new series where an outside answer is known, and

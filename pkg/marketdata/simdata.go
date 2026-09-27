@@ -28,6 +28,13 @@ import (
 // read back into Series.Junctions. It is the one piece of the format a consumer
 // must honour to be correct rather than merely informed: the step into a
 // junction is not a market move.
+//
+// A file that stops BY DESIGN (its source was discontinued, or it is trimmed
+// where better data takes over) says so in an optional "# ends:" header, the
+// date of its last point followed by the reason, read back into Series.Ends so
+// a staleness check knows an old last point is the whole record:
+//
+//	# ends: 2024-04-05 (EIA discontinued the contract series)
 type SimdataFile struct {
 	ID         string      // canonical identifier; the file is "<ID>.csv"
 	Name       string      // "# name:" header, a display name
@@ -35,6 +42,8 @@ type SimdataFile struct {
 	Validation string      // "# validation:" header, how it was checked
 	Generated  string      // "# generated:" header, the generation date
 	Junctions  []time.Time // "# junctions:" header, see Series.Junctions
+	Ends       time.Time   // "# ends:" header, see Series.Ends; zero for a live series
+	EndsWhy    string      // the reason written after the Ends date, in parentheses
 	Points     []Point     // the date,close rows, ascending
 }
 
@@ -102,10 +111,27 @@ func WriteSimdata(dir string, sf *SimdataFile) error {
 		}
 		fmt.Fprintf(&b, "# junctions: %s\n", strings.Join(days, ","))
 	}
+	if line := EndsHeader(sf.Ends, sf.EndsWhy); line != "" {
+		b.WriteString(line)
+	}
 	b.WriteString("date,close\n")
 	for _, p := range sf.Points {
 		fmt.Fprintf(&b, "%s,%.6f\n", p.Date.Format("2006-01-02"), p.Close)
 	}
 	path := filepath.Join(dir, sanitizeFilename(CanonicalID(sf.ID))+".csv")
 	return os.WriteFile(path, []byte(b.String()), 0o644)
+}
+
+// EndsHeader is the "# ends:" header line, newline included, declaring that a
+// bundled file stops by design on the given date for the given reason; empty
+// when the date is zero. WriteSimdata writes it, and the generators that
+// format their own headers call it so the line has one spelling.
+func EndsHeader(on time.Time, why string) string {
+	if on.IsZero() {
+		return ""
+	}
+	if why = strings.TrimSpace(why); why == "" {
+		return fmt.Sprintf("# ends: %s\n", on.Format(time.DateOnly))
+	}
+	return fmt.Sprintf("# ends: %s (%s)\n", on.Format(time.DateOnly), why)
 }
