@@ -64,7 +64,11 @@ you call `Client.ConvertCurrency`.
 
 Real (inflation-adjusted) statistics deflate by the Eurostat HICP for euro
 reports (`^HICP-FR`, extended to 1955 through the OECD CPI) and by the US
-CPI-U for dollar reports (`^CPI-US`, since 1913).
+CPI-U for dollar reports (`^CPI-US`, since 1913). The HICP comes from
+Eurostat's `prc_hicp_minr` dataset, on its 2015=100 unit. Past an index's
+last published month, the last level is held flat, so the most recent month
+or two always deflate at zero inflation; a live HICP more than three months
+behind the calendar is served with a warning.
 
 ## Special identifiers
 
