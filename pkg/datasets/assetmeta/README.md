@@ -49,7 +49,8 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `duration` | effective duration in years (fixed income); for a stacked fund, the duration of its bond exposure per unit of notional (e.g. `7.0` for a 90/60 fund's intermediate futures ladder) |
 | `notes` | one line on the asset's portfolio role / the market regime it serves |
 | `confidence` | `high`, `medium`, `low`: confidence in the breakdowns |
-| `sources` | reference URLs |
+| `sources` | reference URLs: the pages the current values were actually read from |
+| `as_of` | the month (`YYYY-MM`) of the factsheet or holdings file the breakdowns were read from, i.e. the date the page itself shows, not the day it was fetched. Absent on a record not refreshed since the field was introduced, whose breakdowns are of unknown age. A dated record's `geography` and `sectors` each sum to exactly 100 (an undated one is tolerated one point either way); `TestCatalogBreakdownsDated` holds both |
 
 ## Controlled vocabularies
 

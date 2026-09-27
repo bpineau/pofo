@@ -393,20 +393,23 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "France": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other": 7,
-      "Switzerland": 3,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 74
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 15,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
       "Information Technology": 31,
@@ -419,8 +422,11 @@
     "notes": "Oldest Amundi MSCI World swap ETF (2006, WLD); France-domiciled; unfunded swap; annual distribution",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ii-ucits-etf-dist/fr0010315770"
+      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ii-ucits-etf-dist/fr0010315770",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0010315770",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2005-12-30"
   },
   {
@@ -862,25 +868,27 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "France": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other": 7,
-      "Switzerland": 3,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 74
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
       "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 26,
+      "Information Technology": 31,
       "Materials": 3,
-      "Other": 4,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -889,8 +897,10 @@
     "notes": "PEA-eligible synthetic ETF (Amundi PEA Monde, DCAM); France domicile; launched March 2025",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=FR001400U5Q4"
+      "https://www.justetf.com/en/etf-profile.html?isin=FR001400U5Q4",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2025-03-04"
   },
   {
@@ -2400,33 +2410,40 @@
     "benchmark_index": "MSCI World Index (Net TR)",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other developed": 20,
-      "UK": 3,
-      "US": 68
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 6,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
-      "Health Care": 8,
+      "Financials": 16,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
-      "Materials": 4,
-      "Other": 2,
-      "Real Estate": 3,
-      "Utilities": 3
+      "Information Technology": 31,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Core global developed-market equity exposure; performs well in broad equity bull markets",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4L5Y983",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf",
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb"
     ],
+    "as_of": "2026-09",
     "since": "2009-09-25"
   },
   {
@@ -2538,32 +2555,34 @@
       "Germany": 2,
       "Japan": 6,
       "Netherlands": 1,
-      "Other": 10,
-      "Switzerland": 3,
-      "UK": 3,
-      "US": 68
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
-      "Health Care": 8,
+      "Financials": 16,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
+      "Information Technology": 31,
       "Materials": 3,
-      "Other": 4,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "distributing",
     "leverage": 1,
     "notes": "HSBC physical MSCI World; quarterly distributing; optimised sampling; no emerging market exposure",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/uk/etf-profile.html?isin=IE00B4X9L533"
+      "https://www.justetf.com/uk/etf-profile.html?isin=IE00B4X9L533",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4X9L533",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2010-08-19"
   },
   {
@@ -3534,32 +3553,34 @@
       "Germany": 2,
       "Japan": 6,
       "Netherlands": 1,
-      "Other": 10,
-      "Switzerland": 3,
-      "UK": 3,
-      "US": 68
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
+      "Information Technology": 31,
       "Materials": 3,
-      "Other": 3,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "State Street SPDR physical MSCI World; optimised sampling; no emerging market exposure",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/it/en_gb/intermediary/etfs/state-street-spdr-msci-world-ucits-etf-sppw-gy"
+      "https://www.ssga.com/it/en_gb/intermediary/etfs/state-street-spdr-msci-world-ucits-etf-sppw-gy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BFY0GT14",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2019-06-04"
   },
   {
@@ -3713,22 +3734,21 @@
       "Germany": 2,
       "Japan": 6,
       "Netherlands": 1,
-      "Other": 10,
-      "Switzerland": 3,
-      "UK": 3,
-      "US": 68
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
+      "Financials": 16,
       "Health Care": 9,
-      "Industrials": 10,
-      "Information Technology": 30,
+      "Industrials": 11,
+      "Information Technology": 31,
       "Materials": 3,
-      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -3737,8 +3757,11 @@
     "notes": "Large, liquid MSCI World physical ETF (Xtrackers); optimised sampling; no emerging market exposure",
     "confidence": "high",
     "sources": [
-      "https://etf.dws.com/en-gb/IE00BJ0KDQ92-msci-world-ucits-etf-1c/"
+      "https://etf.dws.com/en-gb/IE00BJ0KDQ92-msci-world-ucits-etf-1c/",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ0KDQ92",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2014-06-17"
   },
   {
@@ -5483,19 +5506,23 @@
     "benchmark_index": "MSCI World",
     "strategy": "synthetic-swap",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "France": 3,
-      "Japan": 5,
-      "Other developed": 12,
-      "UK": 3,
-      "US": 74
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 15,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
       "Information Technology": 31,
@@ -5508,8 +5535,11 @@
     "notes": "Synthetic MSCI World tracker in EUR (CW8); swap counterparty BNP Paribas; popular PEA-eligible; broad developed-market core",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599"
+      "https://www.amundietf.lu/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-acc/lu1681043599",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU1681043599",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2017-07-18"
   },
   {
@@ -5635,20 +5665,23 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "synthetic-swap",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "France": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other": 7,
-      "Switzerland": 3,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 74
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 15,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
       "Information Technology": 31,
@@ -5661,8 +5694,11 @@
     "notes": "Synthetic (unfunded swap, BNP Paribas); EUR-denominated distributing MSCI World; Luxembourg domicile",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-dist/lu2655993207"
+      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-msci-world-swap-ucits-etf-eur-dist/lu2655993207",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2655993207",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2024-03-15"
   },
   {
@@ -6216,23 +6252,27 @@
     "currency": "USD",
     "fees": 0.24,
     "asset_class": "equity",
-    "underlying": "~1,322 large- and mid-cap stocks across 23 developed markets",
+    "underlying": "~1,250 large- and mid-cap stocks across 23 developed markets",
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "France": 3,
-      "Japan": 5,
-      "Other developed": 13,
+      "France": 2,
+      "Germany": 2,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 72
+      "US": 73
     },
     "sectors": {
       "Communication Services": 9,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 15,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
       "Information Technology": 31,
@@ -6245,8 +6285,9 @@
     "notes": "Developed-world equity exposure excluding emerging markets; US-heavy due to market cap weighting",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/us/products/239691/ishares-msci-world-etf"
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2012-01-10"
   },
   {
@@ -6381,33 +6422,35 @@
       "France": 2,
       "Germany": 2,
       "Japan": 6,
-      "Netherlands": 2,
-      "Other": 4,
-      "Switzerland": 3,
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 72
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 17,
+      "Financials": 16,
       "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 29,
+      "Information Technology": 31,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on MSCI World; EUR share class; iShares; launched March 2024. Country and sector weights are the MSCI World index factsheet of 31/07/2026, not a fund sheet, so they refresh with the index.",
+    "notes": "PEA-eligible synthetic (unfunded swap) wrapper on MSCI World; EUR share class; iShares; launched March 2024. Country and sector weights are the MSCI World index's (read off a full-replication tracker's holdings, see as_of), not a fund sheet: the swap basket the fund actually holds is European PEA-eligible stock, so they refresh with the index.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE0002XZSHO1",
-      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb"
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2024-03-26"
   },
   {
@@ -6558,33 +6601,39 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other developed": 20,
-      "UK": 3,
-      "US": 68
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 6,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
-      "Health Care": 8,
+      "Financials": 16,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
-      "Materials": 4,
-      "Other": 2,
-      "Real Estate": 3,
-      "Utilities": 3
+      "Information Technology": 31,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Low-cost (0.12%) full-physical MSCI World; Amundi; Irish domicile; launched Jan 2024",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000BI8OT95"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000BI8OT95",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2024-01-17"
   },
   {
@@ -6606,33 +6655,39 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other developed": 20,
-      "UK": 3,
-      "US": 68
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 6,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
-      "Health Care": 8,
+      "Financials": 16,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
-      "Materials": 4,
-      "Other": 2,
-      "Real Estate": 3,
-      "Utilities": 3
+      "Information Technology": 31,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Cheapest physical MSCI World (0.06%); UBS; Irish domicile; full replication; launched 2019",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXV59"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXV59",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2019-06-07"
   },
   {
@@ -6654,33 +6709,39 @@
     "benchmark_index": "MSCI World Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
+      "France": 2,
+      "Germany": 2,
       "Japan": 6,
-      "Other developed": 20,
-      "UK": 3,
-      "US": 68
+      "Netherlands": 1,
+      "Other developed": 5,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 6,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 14,
-      "Health Care": 8,
+      "Financials": 16,
+      "Health Care": 9,
       "Industrials": 11,
-      "Information Technology": 28,
-      "Materials": 4,
-      "Other": 2,
-      "Real Estate": 3,
-      "Utilities": 3
+      "Information Technology": 31,
+      "Materials": 3,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
     "notes": "Accumulating share class of HSBC MSCI World (0.15%); Irish domicile; physical sampling; launched 2022",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000UQND7H4"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000UQND7H4",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "2022-06-28"
   },
   {
@@ -6706,32 +6767,34 @@
       "Germany": 2,
       "Japan": 6,
       "Netherlands": 1,
-      "Other": 5,
-      "Switzerland": 3,
+      "Other developed": 5,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 72
+      "US": 73
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
+      "Communication Services": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
       "Financials": 16,
       "Health Care": 9,
-      "Industrials": 12,
-      "Information Technology": 30,
+      "Industrials": 11,
+      "Information Technology": 31,
       "Materials": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "n/a",
     "leverage": 1,
-    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1969). The investable UCITS trackers are IWDA (IE00B4L5Y983) and URTH.; sector and country weights from the MSCI World index factsheet (Jun 2026)",
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1969). The investable UCITS trackers are IWDA (IE00B4L5Y983) and URTH. Sector and country weights: the index's, read off a full-replication tracker's holdings (the index factsheet publishes only its five largest countries), checked against the factsheet",
     "confidence": "high",
     "sources": [
       "https://www.msci.com/end-of-day-history?index=990100",
-      "https://www.msci.com/documents/10199/255599/msci-world-index.pdf"
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
     ],
+    "as_of": "2026-09",
     "since": "1969-12-01"
   },
   {
@@ -6785,34 +6848,34 @@
     "benchmark_index": "MSCI World Index (Net TR); the company's own 'indice de référence' is the 75/25 blend of the two ETF classes, price return",
     "strategy": "fund-of-funds",
     "geography": {
-      "US": 72,
+      "US": 73,
       "Japan": 6,
       "UK": 4,
       "Canada": 3,
-      "Switzerland": 3,
+      "Switzerland": 2,
       "France": 2,
       "Germany": 2,
       "Australia": 2,
       "Netherlands": 1,
-      "Other": 5
+      "Other developed": 5
     },
     "sectors": {
-      "Information Technology": 29,
-      "Financials": 17,
+      "Information Technology": 31,
+      "Financials": 16,
       "Industrials": 11,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Health Care": 9,
-      "Communication Services": 8,
+      "Communication Services": 9,
       "Consumer Staples": 5,
       "Energy": 4,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "nowcast_proxy": "URTH",
-    "notes": "World-equity FCPE offered inside Eres employee-savings plans (PEE/PER), managed by Eres Gestion (depositary CACEIS). Unhedged (the KID allows 0-110% non-euro currency). It has no ISIN: 990000135629 is the company's own share code (sicavonline's QS0009135623 is a pseudo-ISIN), and the only public price is the official daily NAV behind the fund page, served live from the airfund.io API and bundled as refdata/ERESMONDEM-NAV.csv for offline use. NAV timing: each day's NAV values the two ETFs at their official NAV, i.e. MSCI World with every market at its own close of that day (New York included), which is why a US-listed tracker (URTH) tracks its daily moves far better than a Xetra line (0.87 vs 0.62 daily correlation) and is the nowcast proxy. Fees: the KID states 0.56%/yr recurring (0.35% max management + 0.21% induced by the two ETFs) plus 0.06% transaction costs; the FY2025 report charged 0.62% all-in to Part M; measured 2024-03 to 2026-08, the NAV lagged the two ETFs' true total return by ~0.75%/yr, consistent with those charges plus a small cash drag. Entry fee up to 5% in the KID, waived by some plans. Country and sector weights are the MSCI World index factsheet of 31/07/2026.",
+    "notes": "World-equity FCPE offered inside Eres employee-savings plans (PEE/PER), managed by Eres Gestion (depositary CACEIS). Unhedged (the KID allows 0-110% non-euro currency). It has no ISIN: 990000135629 is the company's own share code (sicavonline's QS0009135623 is a pseudo-ISIN), and the only public price is the official daily NAV behind the fund page, served live from the airfund.io API and bundled as refdata/ERESMONDEM-NAV.csv for offline use. NAV timing: each day's NAV values the two ETFs at their official NAV, i.e. MSCI World with every market at its own close of that day (New York included), which is why a US-listed tracker (URTH) tracks its daily moves far better than a Xetra line (0.87 vs 0.62 daily correlation) and is the nowcast proxy. Fees: the KID states 0.56%/yr recurring (0.35% max management + 0.21% induced by the two ETFs) plus 0.06% transaction costs; the FY2025 report charged 0.62% all-in to Part M; measured 2024-03 to 2026-08, the NAV lagged the two ETFs' true total return by ~0.75%/yr, consistent with those charges plus a small cash drag. Entry fee up to 5% in the KID, waived by some plans. Country and sector weights are the MSCI World index's (see as_of), which both ETFs track.",
     "confidence": "high",
     "sources": [
       "https://www.eres-group.com/eres/new_fiche_fonds.php?id=990000135629",
@@ -6820,8 +6883,10 @@
       "https://www.eres-group.com/eres/pdf/ERES_XTRACKERS_ACTIONS_MONDE_Rapport.pdf",
       "https://www.justetf.com/en/etf-profile.html?isin=LU2263803533",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BK1PV551",
-      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb"
-    ]
+      "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb",
+      "https://www.ishares.com/us/products/239696/ishares-msci-world-etf"
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "ERES_DATADOG",

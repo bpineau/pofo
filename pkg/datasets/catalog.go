@@ -35,7 +35,10 @@ const (
 // unit of notional); Exposures maps asset_class → notional weight (may sum
 // past 1 for stacked funds); CurrencyExposure maps a fiat currency (ISO 4217,
 // plus "None" for real assets and "Dynamic" for futures books) to a percent
-// of capital, and any shortfall below 100 counts as "None".
+// of capital, and any shortfall below 100 counts as "None". AsOf dates the
+// breakdowns (YYYY-MM, the month of the factsheet or holdings file they were
+// read from); empty on a record not refreshed since the field was introduced,
+// whose breakdowns are then of unknown age.
 type Asset struct {
 	ID       string   `json:"id"`                  // canonical identifier (European ticker or ISIN)
 	ISIN     string   `json:"isin"`                // ISIN; may be empty for indices/commodities
@@ -69,6 +72,7 @@ type Asset struct {
 	Notes            string             `json:"notes"`                       // human-readable notes
 	Confidence       string             `json:"confidence"`                  // metadata confidence: "high", "medium", "low"
 	Sources          []string           `json:"sources"`                     // provenance URLs
+	AsOf             string             `json:"as_of,omitempty"`             // month the breakdowns were read (YYYY-MM); empty = undated
 }
 
 // Catalog parses the embedded asset metadata into the full list of catalog

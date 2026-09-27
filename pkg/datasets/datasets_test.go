@@ -93,6 +93,42 @@ func TestCatalogEURetailConsistent(t *testing.T) {
 	}
 }
 
+// TestCatalogBreakdownsDated enforces the as_of field and the whole-percent
+// convention of the breakdowns. A dated record (as_of set) was refreshed from
+// one source of one month, so its geography and sectors each sum to exactly
+// 100, the residual carried by a named "Other" label; an undated record is
+// allowed one point either way, the rounding its breakdowns were entered
+// with. as_of is a real YYYY-MM month, never in the future.
+func TestCatalogBreakdownsDated(t *testing.T) {
+	thisMonth := time.Now().UTC().Format("2006-01")
+	for _, a := range Catalog() {
+		if a.AsOf != "" {
+			m, err := time.Parse("2006-01", a.AsOf)
+			if err != nil || m.Format("2006-01") != a.AsOf {
+				t.Errorf("%s: as_of %q is not a YYYY-MM month", a.ID, a.AsOf)
+			} else if a.AsOf > thisMonth {
+				t.Errorf("%s: as_of %s is in the future", a.ID, a.AsOf)
+			}
+		}
+		for field, split := range map[string]map[string]float64{"geography": a.Geography, "sectors": a.Sectors} {
+			if len(split) == 0 {
+				continue
+			}
+			sum := 0.0
+			for _, w := range split {
+				sum += w
+			}
+			tol := 1.0
+			if a.AsOf != "" {
+				tol = 0
+			}
+			if math.Abs(sum-100) > tol {
+				t.Errorf("%s: %s sums to %g, want 100 (tolerance %g)", a.ID, field, sum, tol)
+			}
+		}
+	}
+}
+
 // seriesRow is one parsed data line of a bundled price/level CSV.
 type seriesRow struct {
 	date  time.Time
