@@ -80,20 +80,25 @@ func All() []Recipe {
 }
 
 // icomRecipe backcasts the iShares Diversified Commodity Swap UCITS ETF
-// (IE00BDFL4P12, USD, real from 2009), which tracks the Bloomberg Commodity
-// Total Return index, from the Bloomberg Commodity excess-return index (^BCOM,
-// Yahoo daily from 1991: spot plus roll yield, no collateral) plus the T-bill
-// rate (^IRX) as fully invested collateral: a total-return commodity index is
-// the excess-return index earning cash on its notional, so ER + cash = TR. The
-// real ICOM quotes are grafted from inception; same currency (USD), no FX leg.
-// ^BCOM only needs to cover the pre-2009 tail, which it does cleanly.
+// (IE00BDFL4P12, USD, real from 2017-07), which tracks the Bloomberg
+// Commodity Total Return index, from the Bloomberg Commodity excess-return
+// index (BCOM-ER-USD refdata, daily from 1991: spot plus roll yield, no
+// collateral) plus the T-bill rate (^IRX) as fully invested collateral: a
+// total-return commodity index is the excess-return index earning cash on its
+// notional, so ER + cash = TR, an identity cmd/gen-bcom-refdata checks year by
+// year against the published BCOMTR. The real ICOM quotes are grafted from
+// inception; same currency (USD), no FX leg.
+//
+// The index is bundled rather than fetched because Yahoo withdrew ^BCOM in
+// 2026-09, and a live lookup of that symbol then resolved to an unrelated
+// exchange-traded commodity.
 func icomRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00BDFL4P12",
 		Name:   "iShares Diversified Commodity: Bloomberg Commodity TR",
-		Method: "^BCOM (Bloomberg Commodity excess-return index, Yahoo daily from 1991) + ^IRX T-bill collateral = total return, real ICOM grafted from 2009",
+		Method: "BCOM-ER-USD (Bloomberg Commodity excess-return index, daily from 1991, refdata) + ^IRX T-bill collateral = total return, real ICOM grafted from 2017-07",
 		Build: composite("ICOM (Bloomberg Commodity TR)", []Leg{
-			{ID: "^BCOM", Weight: 1},
+			{ID: "BCOM-ER-USD", Weight: 1},
 			{ID: "^IRX", Weight: 1},
 		}, "^IRX", 0),
 		ValidateAgainst: "IE00BDFL4P12",
@@ -1940,7 +1945,7 @@ func composite(name string, legs []Leg, cashID string, fee float64) func(Fetcher
 //
 // The Dimensional pair keeps its own constants (dfsvxTER, disvxTER) next to the
 // recipe that first priced it. Two loads are deliberately absent: a rate (^IRX,
-// EURCASH-EUR), a futures price (GC=F) and an index (^BCOM, the refdata
+// EURCASH-EUR), a futures price (GC=F) and an index (BCOM-ER-USD, the refdata
 // reconstructions) charge nothing, so a target's whole load is due on them.
 const (
 	iwdaTER  = 0.0020

@@ -88,7 +88,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata french-refdata wti-refdata gold-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata french-refdata wti-refdata gold-refdata bcom-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -173,6 +173,11 @@ french-refdata: ## (Re)generate USSCV-USD and DEVEXUS-DAILY from the Ken French 
 .PHONY: gold-refdata
 gold-refdata: ## (Re)generate XAUUSD-LBMA, the daily LBMA gold fix in USD since 1968 (network); run `make simdata` after
 	$(GO) run ./cmd/gen-gold-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: bcom-refdata
+bcom-refdata: ## (Re)generate BCOM-ER-USD, the daily Bloomberg Commodity Index (excess return) since 1991, from the FT (network); run after `make tyield-refdata` (the check funds it with TBILL-3M) and `make simdata` after
+	$(GO) run ./cmd/gen-bcom-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: trend-refdata
