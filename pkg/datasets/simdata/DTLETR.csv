@@ -2,7 +2,7 @@
 # id: DTLETR
 # name: US long Treasuries hedged to EUR (total return, the DTLE segment)
 # method: the accumulating USD twin's own total return (real DTLA from 2018, 1.13×VUSTX geared to the 20+ duration before, extended TREASURY-LONG daily from 1962) financed at USD cash ^IRX and re-earning EUR cash (EURCASH-EUR) = EUR-hedged US long Treasuries, less what the class's 0.10%/yr TER exceeds its donor's own charge (0.03%/yr over the twin, nothing over the dearer geared mutual fund); total return, nothing grafted (the real DTLE series is a distributing NAV, price-only)
-# validation: corr=0.912 (weekly 0.928) beta=0.88 TE=6.4%/yr CAGR sim -5.21% vs real -7.18% (overlap 2224 d from 2017-09-25 to 2026-09-25) vs DTLE
+# validation: corr=0.912 (weekly 0.928) beta=0.88 TE=6.4%/yr CAGR sim -5.29% vs real -7.18% (overlap 2224 d from 2017-09-25 to 2026-09-25) vs DTLE
 # generated: 2026-09-27
 date,close
 1993-12-31,100.000000
@@ -8359,4 +8359,4 @@ date,close
 2026-09-22,375.690394
 2026-09-23,371.063612
 2026-09-24,366.776161
-2026-09-25,366.136484
+2026-09-25,363.588526
