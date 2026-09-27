@@ -1883,19 +1883,13 @@ func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetc
 }
 
 // afterFee returns a copy of s with a continuous annual fee applied, so a
-// pre-fee index level becomes an after-cost investable one.
+// pre-fee index level becomes an after-cost investable one (Series.LessFee,
+// a charge that is not positive leaving s itself).
 func afterFee(s *marketdata.Series, annual float64) *marketdata.Series {
-	if annual <= 0 || len(s.Points) == 0 {
+	if annual <= 0 {
 		return s
 	}
-	out := *s
-	out.Points = make([]marketdata.Point, len(s.Points))
-	t0 := s.Points[0].Date
-	for i, p := range s.Points {
-		yrs := p.Date.Sub(t0).Hours() / 24 / 365.25
-		out.Points[i] = marketdata.Point{Date: p.Date, Close: p.Close * math.Pow(1-annual, yrs)}
-	}
-	return &out
+	return s.LessFee(annual)
 }
 
 // composite is the shared Build for constant-weight linear recipes. cashID is

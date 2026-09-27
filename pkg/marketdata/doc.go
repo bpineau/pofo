@@ -332,10 +332,15 @@
 // takes parallel dates and values). NewSeries wraps a consumer's own data
 // (strictly ascending dates, normalized to 00:00 UTC, finite values); Dates,
 // Values and Returns (simple returns as fractions, the same numbers as
-// metrics.Returns) hand out fresh slices; Rebase scales a copy to start at a
-// chosen level; Resample keeps the last trading close of each calendar month,
-// quarter or year, a month-END series like every bundled monthly anchor.
-// Every one of them returns fresh slices and leaves its receiver alone.
+// metrics.Returns) hand out fresh slices, and Stats is metrics.Compute over
+// them in one call; Rebase scales a copy to start at a chosen level; LessFee
+// deducts a yearly charge on the calendar, as a FRACTION (0.0085 = 0.85 %/yr,
+// NOT the percent of Client.Fees); Change is the cumulative return between
+// two dates (a named episode: 2008, 2022), refusing a series that cannot
+// answer for one of them; Resample keeps the last trading close of each
+// calendar month, quarter or year, a month-END series like every bundled
+// monthly anchor. Every one of them returns fresh slices and leaves its
+// receiver alone.
 //
 // Several series meet on one calendar through AlignSeries, the strict sibling
 // of Align: it starts by default at CommonWindow's start (the latest first
@@ -344,6 +349,37 @@
 // Align itself stays for callers that compute their own start (portfolio's
 // simulation), SampleAt for an exogenous level read onto a calendar it must
 // not shape, and Trim is the window operation on one series.
+//
+// # Returns panels
+//
+// Aligned and Panel answer two different questions, and the difference is
+// the calendar. Aligned holds LEVELS on the UNION of the series' quoting
+// days, forward-filled across the days a series did not quote: what a
+// simulation needs, a portfolio being worth something every day any of its
+// holdings trades. Panel holds RETURNS on the STRICT intersection of their
+// periods, each return spanning the same interval in every column: what a
+// statistic across series needs, since a forward-filled day reads as a zero
+// return beside another series' real move and biases every correlation
+// toward zero.
+//
+// NewPanel cuts each series into periods of a Frequency (Daily, the quote
+// dates themselves, or Monthly, Quarterly, Yearly), labels every period
+// CANONICALLY (the calendar month-end at 00:00 UTC, whatever day a source
+// happened to close its month on, so panels from different sources join
+// exactly) and keeps the labels every series has. A series' unfinished last
+// period is not a period, a monthly hole inside the shared window is an
+// error naming the series, and a period crossing a definition junction is
+// dropped for every column (NewPanel's godoc holds the rules and why).
+//
+// From there, everything is a column or a selection of periods: Col hands a
+// column to pkg/metrics (Mean, Regress, LowestK, Corr), R is the
+// [asset][period] matrix CorrelationMatrix and Covariance take; Between keeps
+// an episode, Pick a sample of periods (the reference's worst decile, found
+// by metrics.LowestK); Mix appends a blend rebalanced every period, weights
+// summing to 1 with any financing as an explicit cash column; Series
+// rebuilds a column as a level, so Stats scores a blend in one call; and
+// PeriodsPerYear is the count that annualizes it all, 12 for a monthly
+// panel.
 //
 // # Toolbox
 //

@@ -6,7 +6,7 @@
 // Sharpe, Sortino, Ulcer, Max Drawdown, TTR) beyond the tolerances fails
 // the suite.
 //
-// Seven families live here:
+// The main families:
 //
 //   - golden_test.go pins the COMPUTATIONS on frozen daily fixtures.
 //   - refdata_test.go pins the bundled long backcast SERIES
@@ -22,6 +22,10 @@
 //     (reverse optimization and the Bayesian blend) on the published tables
 //     of He and Litterman (1999) and Idzorek (2005): no bundled data at all,
 //     only the model's own literature.
+//   - regression_test.go pins metrics.Regress on the NIST StRD Longley data
+//     set and its certified coefficients, standard errors, residual
+//     standard deviation and R-squared: the numerical-accuracy benchmark of
+//     least squares, six nearly collinear regressors.
 //   - trendcadence_test.go pins the managed-futures files' donor era to a
 //     CADENCE invariant: a weekly-dealing donor is projected onto a daily
 //     calendar there, and a projection that gets the daily amplitude wrong

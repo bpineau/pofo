@@ -1069,6 +1069,63 @@ if v, ok := metrics.VaR(r[0], 0.95); ok {
 }
 ```
 
+### Explore returns across series
+
+`marketdata.NewPanel` is the table a notebook would build: several series'
+returns on the periods they ALL share, labelled canonically (the calendar
+month-end for `Monthly`), so every column of a period spans the same
+interval. `Mix` appends a blend rebalanced every period (weights summing to
+1, financing as an explicit cash column), `Series` turns a column back into
+a level for `Stats`, `metrics.Regress` fits one column on others, and
+`metrics.LowestK` returns positions, so the worst months come with their
+dates and `Pick` reads the other columns on exactly those months.
+`Series.LessFee` (a FRACTION per year) and `Series.Change` (a named episode)
+work on one series.
+
+```go
+// from marketdata.Example_explore (threeLegs: three synthetic series)
+// Monthly returns on the months all three share, labelled month-end.
+p, err := marketdata.NewPanel(marketdata.Monthly, threeLegs()...)
+if err != nil {
+	panic(err)
+}
+fmt.Printf("%d months to %s\n", p.Len(), p.Ends[p.Len()-1].Format(time.DateOnly))
+
+// A 60/40 rebalanced every month, as a level, then its statistics.
+p, err = p.Mix("60/40", map[string]float64{"IWDA": 0.6, "AGGH": 0.4})
+if err != nil {
+	panic(err)
+}
+blend, err := p.Series("60/40")
+if err != nil {
+	panic(err)
+}
+st, err := blend.Stats()
+if err != nil {
+	panic(err)
+}
+fmt.Printf("60/40: CAGR %.1f %%, volatility %.1f %%, max drawdown %.1f %%\n", st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
+
+// Gold regressed on equities: beta, t-statistic, annualized alpha.
+reg, err := metrics.Regress(p.Col("IGLN"), p.Col("IWDA"))
+if err != nil {
+	panic(err)
+}
+fmt.Printf("IGLN on IWDA: beta %.2f (t %.1f), alpha %+.1f %%/yr, R2 %.2f\n",
+	reg.Betas[0].Value, reg.Betas[0].T, reg.AnnualAlpha(p.PeriodsPerYear())*100, reg.R2)
+
+// The three worst equity months, dated.
+eq := p.Col("IWDA")
+for _, t := range metrics.LowestK(eq, 3) {
+	fmt.Printf("%s IWDA %+.1f %%\n", p.Ends[t].Format("2006-01"), eq[t]*100)
+}
+
+// What gold did in the worst tenth of equity months.
+worst := p.Pick(metrics.LowestK(eq, p.Len()/10))
+fmt.Printf("worst %d months: IWDA %+.1f %%, IGLN %+.1f %% on average\n",
+	worst.Len(), metrics.Mean(worst.Col("IWDA"))*100, metrics.Mean(worst.Col("IGLN"))*100)
+```
+
 ### Simulate a portfolio by hand
 
 What `analyze.Portfolio` wires, one step at a time. With flows,
@@ -1250,7 +1307,7 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 | Weights | fraction (0.6) | `portfolio.Line`, `Holding.Weight`, `Asset.Weight`, `optimize`, `analyze` |
 | Weights | percent (60) | portfolio files, `Holding.RawWeight` |
 | Fees (TER) | percent per year (0.20) | `portfolio` (`Line.Fees`, `Holding.Fees`, `EnvelopeFees`, `BorrowSpread`), `marketdata.Client.Fees`, `datasets.Asset.Fees` |
-| Fees, volatility targets | fraction per year (0.0020) | `simgen` |
+| Fees, volatility targets | fraction per year (0.0020) | `simgen`, `marketdata.Series.LessFee` |
 | Returns, CAGR, volatility, drawdowns, VaR | fraction (0.04 = +4 %) | `metrics`, `analyze`, `scenario`, `decumul` (the last two in REAL terms) |
 | Ulcer, CWARP | percent points, percent | `metrics.Stats.Ulcer`, `metrics.Stats.CWARP` |
 | Cadence | periods per year (252 daily, 52 weekly, 12 monthly) | `metrics.PeriodsPerYear`, `Stats.PeriodsPerYear`, the `periodsPerYear` argument of `metrics`' bare-return functions and `optimize.Solve` |
@@ -1271,10 +1328,12 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 ```
 pkg/analyze/      the numbers-only studies: Asset and Portfolio in one call
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
-                  sources, cache, fees, simdata, NewSeries, AlignSeries
+                  sources, cache, fees, simdata, NewSeries, AlignSeries,
+                  returns panels (NewPanel: Mix, Pick, Between, Series)
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP,
                   IRR, TWR), correlation and covariance matrices, calendar
-                  returns, rolling beta, VaR, risk attribution
+                  returns, rolling beta, VaR, regression, dated extremes,
+                  risk attribution
 pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
                   risk-parity / max-sortino / return-to-drawdown / min-ulcer /
                   max-worst-5y / cwarp / black-litterman, under per-line bounds
