@@ -95,6 +95,15 @@
 //     and, failing that, in Boursorama's search; the series with the
 //     deepest history wins, and the resolution is cached.
 //
+// An index symbol ("^GSPC", "^BCOM") never reaches step 4 as a name: its
+// fallback keeps only listings of the symbol itself (as
+// FetchOptions.ExactOnly does for any ticker), and a cached resolution to
+// another instrument is ignored, because the full-text searches match a fund
+// whose name merely carries the index's short name. An index symbol whose
+// feed was withdrawn is served from the bundled reference that replaces it
+// ("^BCOM" from refdata BCOM-ER-USD, Yahoo having dropped the Bloomberg
+// Commodity family in 2026-09), without touching the network.
+//
 // # When a fetch finds nothing
 //
 // Two failures look alike from the outside, and a caller answering a stranger
