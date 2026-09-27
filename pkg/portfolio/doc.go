@@ -1,5 +1,22 @@
 // Package portfolio reads portfolio descriptions and simulates them over
-// time.
+// time: rebalancing, fees, external flows, leverage, and each holding's
+// share of every day's return.
+//
+// # Start here
+//
+//   - [Parse] and [ParseFile] read a portfolio file (the format below);
+//     [NewSpec] builds the same [Spec] in code, from [Line] values whose
+//     weights are FRACTIONS.
+//   - [Build] resolves a Spec into a [Portfolio], fetching every holding
+//     through the callback of [BuildOptions] (typically
+//     marketdata.Client.FetchExtended).
+//   - [Simulate] replays it over time into a [SimResult]: Index, the
+//     time-weighted series every statistic reads, and Values, the money.
+//
+// For the statistics, the correlations and the attribution in one call, use
+// pkg/analyze (analyze.Portfolio), which runs these three steps. Weights are
+// FRACTIONS in memory and PERCENT in files; fees are PERCENT per year (see
+// "Units" below).
 //
 // # File format
 //

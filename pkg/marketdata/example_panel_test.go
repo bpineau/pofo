@@ -128,6 +128,73 @@ func ExampleSeries_Change() {
 	// 2008: -37 %
 }
 
+// Stats is metrics.Compute over the series, annualized at its own cadence.
+func ExampleSeries_Stats() {
+	iwda := threeLegs()[0]
+	st, err := iwda.Stats()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%s, %s to %s, %.0f periods a year\n", iwda.Symbol,
+		st.Start.Format(time.DateOnly), st.End.Format(time.DateOnly), st.PeriodsPerYear)
+	fmt.Printf("CAGR %.1f %%, volatility %.1f %%, Sharpe %.2f, max drawdown %.1f %%\n",
+		st.CAGR*100, st.Volatility*100, st.Sharpe, st.MaxDrawdown*100)
+	// Output:
+	// IWDA, 2015-01-01 to 2024-12-31, 252 periods a year
+	// CAGR 10.7 %, volatility 10.8 %, Sharpe 0.97, max drawdown -14.2 %
+}
+
+// Mix appends a blend rebalanced every period; the weights sum to 1, and a
+// levered blend names its financing as an explicit cash column.
+func ExamplePanel_Mix() {
+	p, err := marketdata.NewPanel(marketdata.Monthly, threeLegs()...)
+	if err != nil {
+		panic(err)
+	}
+	p, err = p.Mix("thirds", map[string]float64{"IWDA": 1.0 / 3, "AGGH": 1.0 / 3, "IGLN": 1.0 / 3})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(p.IDs)
+	for _, id := range p.IDs {
+		col, err := p.Col(id)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%-6s mean %+.2f %%/month\n", id, metrics.Mean(col)*100)
+	}
+	// Output:
+	// [IWDA AGGH IGLN thirds]
+	// IWDA   mean +0.90 %/month
+	// AGGH   mean +0.22 %/month
+	// IGLN   mean +0.27 %/month
+	// thirds mean +0.46 %/month
+}
+
+// Track reads one column against another: a fund against the index it
+// follows, here an index less a 0.20 %/yr charge, which the tracking
+// difference reads slightly larger since it is charged on a growing level.
+func ExamplePanel_Track() {
+	index := threeLegs()[0]
+	fund, err := index.LessFee(0.0020)
+	if err != nil {
+		panic(err)
+	}
+	fund.Symbol = "FUND"
+	p, err := marketdata.NewPanel(marketdata.Monthly, fund, index)
+	if err != nil {
+		panic(err)
+	}
+	tr, err := p.Track("FUND", "IWDA")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%d months: correlation %.3f, tracking difference %+.2f %%/yr, beta %.2f\n",
+		tr.Periods, tr.Corr, tr.Difference*100, tr.Beta)
+	// Output:
+	// 119 months: correlation 1.000, tracking difference -0.22 %/yr, beta 1.00
+}
+
 // threeLegs is three synthetic daily series over ten years of weekdays, an
 // equity index, a bond fund and gold, whose slow components make monthly
 // returns worth studying: gold leans against equities' slow swings.

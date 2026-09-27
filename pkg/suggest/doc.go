@@ -1,6 +1,14 @@
 // Package suggest recommends catalog assets to add to a portfolio so it
 // covers the market regimes it is missing, and flags redundant holdings.
 //
+// [Analyze] runs the whole screen over [Holding] and [Candidate] values
+// under a [Framework] ([RegimeFramework] or [FactorFramework]) and
+// [DefaultOptions], and returns a [Result]: coverage per category, gaps,
+// redundancies and ranked [Suggestion] values. Its parts stand alone
+// ([Coverage], [Gaps], [Redundancies], [RankCandidates]), and so do the
+// look-through splits described below ([AssetClassSplit], [CurrencySplit]).
+// Weights and shares are FRACTIONS.
+//
 // It is the structure-first half of the optimizer: candidates are screened
 // by what they ARE (asset class, strategy, bond duration, currency hedging,
 // factor tilts and notional exposures → macro-regime coverage and statistical

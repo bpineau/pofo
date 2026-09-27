@@ -3,6 +3,22 @@
 // interface. It is decumulation-agnostic and reusable for any
 // path-dependent study (accumulation, glidepaths, stress tests).
 //
+// # Start here
+//
+//   - [Source] is the interface: Draw returns one [Sequence] of per-period
+//     real returns (FRACTIONS), Len its length.
+//   - [ParametricSource] draws i.i.d. Student-t returns from a mean and a
+//     volatility; [MarkovRegime] clusters bad years; [Glidepath] moves an
+//     equity weight across the horizon.
+//   - [BlockBootstrap], [StationaryBootstrap] and [HistoricalCohorts]
+//     resample or replay a [Panel] of historical returns; [PooledBootstrap]
+//     mixes several histories; [Compounded] turns monthly draws into yearly
+//     ones.
+//   - [Deflate] turns nominal prices and a price index into the real returns
+//     all of them take.
+//
+// pkg/decumul runs its withdrawal kernel over any Source.
+//
 // All returns are periodic and real (inflation already removed): use
 // Deflate to obtain them from nominal prices and an HICP series. A Source
 // yields one Sequence per Draw; callers run many Draws for a Monte-Carlo,

@@ -1,18 +1,22 @@
-// Package chart plots financial series charts without any dependency:
+// Package chart plots financial series charts without any dependency. Every
+// function takes plain data ([Series]: dates and values) and returns a
+// string, an SVG document or terminal text; nothing is written anywhere.
+// Start with [Line] (an SVG line chart of dated series) or [Term] (the same
+// in a terminal):
 //
-//   - Line produces a self-contained SVG document (axes, grid, legend,
+//   - [Line] produces a self-contained SVG document (axes, grid, legend,
 //     decimation of long series), embeddable as-is in an HTML page;
-//   - Sparkline produces a bare inline SVG curve (no axes, no labels)
+//   - [Sparkline] produces a bare inline SVG curve (no axes, no labels)
 //     for table cells and summaries;
-//   - Pie produces a self-contained SVG donut with a title and a legend,
+//   - [Pie] produces a self-contained SVG donut with a title and a legend,
 //     for composition breakdowns (geography, sector, asset type);
-//   - DivergingStack stacks signed series around a zero axis (positives up,
+//   - [DivergingStack] stacks signed series around a zero axis (positives up,
 //     negatives down), with an optional net line and categorical strip: the
 //     shape of a return-contribution timeline;
-//   - BarMatrix lays out a small-multiples grid of horizontal diverging
+//   - [BarMatrix] lays out a small-multiples grid of horizontal diverging
 //     bars (rows x categories on one shared scale), e.g. per-regime
 //     realized contributions;
-//   - Bars, HBars and CategoryBars are the bar family, drawn in the same
+//   - [Bars], [HBars] and [CategoryBars] are the bar family, drawn in the same
 //     dialect as Line (surface, mono labels, muted axes): vertical columns
 //     for a distribution, a signed tornado around a zero axis placed where
 //     the data puts it, and labelled rows in a common track. A lone series

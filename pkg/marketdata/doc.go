@@ -1,18 +1,40 @@
-// Package marketdata fetches, caches and post-processes historical asset
-// prices (daily closes) from public sources, addressed by ticker, ISIN or
-// alias.
+// Package marketdata is where every series comes from and how it is shaped
+// for the math: it fetches, caches and cleans historical prices (daily
+// closes) from public sources, addressed by ticker, ISIN or alias, reads the
+// series the binary bundles, and cuts several series into the tables a
+// statistic across series reads.
 //
-// Client.Fetch is the base entry point (resolution, download, disk cache);
-// Client.FetchExtended is the do-what-I-mean one, adding the SIM-suffix
-// history extension (bundled simulated series, long-history proxies) and
-// currency conversion, i.e. the exact per-asset pipeline of the pofo CLI:
+// # Start here
+//
+//   - [Bundled] reads an embedded series (a catalog asset's backcast, an
+//     index, a yield, a cash rate) with no network and no client;
+//     [BundledIDs] lists them.
+//   - [NewClient] and [Client.FetchExtended] fetch anything quoted: the CLI's
+//     per-asset pipeline (resolution, disk cache, SIM backcast, currency
+//     conversion). [Client.Offline] keeps it off the network.
+//   - [Series] is what every door returns: [Series.Stats] scores it,
+//     [Series.Returns], [Series.Resample], [Series.Change] and
+//     [Series.LessFee] reshape it, [NewSeries] wraps a consumer's own data.
+//   - [NewPanel] cuts several series into a returns table on the periods they
+//     all share: [Panel.Col], [Panel.Mix], [Panel.Pick], [Panel.Track].
+//     [AlignSeries] puts their levels on one calendar instead.
+//   - [ReadCSV], [ReadLongCSV] and [WriteCSV] move series in and out as files.
+//
+// The CLI's own fetch, a fund with its backcast in front, in euros:
 //
 //	client := marketdata.NewClient(marketdata.DefaultCacheDir())
 //	s, err := client.FetchExtended(ctx, "NTSGSIM", marketdata.FetchOptions{Currency: "EUR"})
 //
-// Every step stays independently reachable (Fetch, ReadSimdataFS,
-// ConvertCurrency, Trim) for callers that need to deviate; the steps that
-// exist for the data generators are listed apart, under "Generator plumbing".
+// Every step stays independently reachable ([Client.Fetch], [ReadSimdataFS],
+// [Client.ConvertCurrency], [Trim]) for callers that need to deviate; the
+// steps that exist for the data generators are listed apart, under "Generator
+// plumbing".
+//
+// Units: closes are ADJUSTED total-return levels in the major unit of
+// [Series].Currency, every [Point].Date is a session date at 00:00 UTC,
+// returns are FRACTIONS, [Series.LessFee] takes a FRACTION per year while
+// [Client.Fees] answers in PERCENT per year, and the rate symbols (^IRX,
+// ^ESTR...) are annualized PERCENT LEVELS, never prices.
 //
 // # Loading series
 //

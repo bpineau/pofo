@@ -72,6 +72,25 @@ func ExampleDeflate() {
 	// -12.0 %
 }
 
+// Historical cohorts replay every actual window of the history, the
+// deterministic "every retirement start year" backtest: eight years of
+// history hold four five-year windows.
+func ExampleHistoricalCohorts() {
+	panel := scenario.Panel{
+		Returns: [][]float64{{0.10, -0.20, 0.25, 0.05, 0.15, -0.05, 0.08, 0.12}},
+		Weights: []float64{1},
+	}
+	src := scenario.HistoricalCohorts{Panel: panel, Periods: 5}
+	for i := range src.Count() {
+		fmt.Printf("start %d: %s\n", i, pct(src.Cohort(i)))
+	}
+	// Output:
+	// start 0: +10 -20 +25 +5 +15
+	// start 1: -20 +25 +5 +15 -5
+	// start 2: +25 +5 +15 -5 +8
+	// start 3: +5 +15 -5 +8 +12
+}
+
 // pct prints a return path as whole percents.
 func pct(s scenario.Sequence) string {
 	out := ""

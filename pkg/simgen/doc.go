@@ -3,6 +3,26 @@
 // quotes. Results are stored as permanent "simdata" files that pofo
 // splices in front of the real histories.
 //
+// # Start here
+//
+// A consumer rarely runs an engine: the reconstructions ship as bundled
+// files, read by marketdata.Bundled or behind a SIM identifier
+// (marketdata.Client.FetchExtended). This package is for asking how one was
+// made and how good it is:
+//
+//   - [Find] returns the [Recipe] shipped for an asset ([All] lists them);
+//     [Recipe.Build] reruns it on any [Fetcher], [WithRefData] serving the
+//     bundled references offline and [WithContext] adapting a live
+//     marketdata.Client.
+//   - [Validate] grades a reconstruction on its overlap with the real quotes
+//     ([Validation]); [Audit] and [AuditAll] run the full audit behind
+//     "pofo -verify-simdata" ([AuditResult]).
+//   - The engines ([Composite], [CapWeighted], [TSMOM], [DonorChain],
+//     [TreasuryTR], [TreasuryZeroTR]) are listed below.
+//
+// Every fee, volatility target and weight here is a FRACTION (0.0085 =
+// 0.85 %/yr), unlike the PERCENT per year of pkg/portfolio.
+//
 // # Toolbox
 //
 //   - BuildFrame aligns the daily returns of several components (rate

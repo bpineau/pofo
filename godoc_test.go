@@ -6,10 +6,12 @@ import (
 	"go/ast"
 	"go/build"
 	"go/doc"
+	"go/doc/comment"
 	"go/parser"
 	"go/token"
 	"io/fs"
 	"path/filepath"
+	"regexp"
 	"slices"
 	"strings"
 	"testing"
@@ -22,7 +24,9 @@ import (
 // starts with its name, optionally after "A", "An" or "The", so go doc and
 // pkg.go.dev read as sentences. A constant or variable in a documented group
 // is covered by the group's comment, and a struct field or a grouped constant
-// by a trailing line comment as well.
+// by a trailing line comment as well. Every doc link ("[Series.Stats]",
+// "[metrics.Compute]") must resolve, so pkg.go.dev renders it as a link
+// rather than as bracketed text.
 //
 // It parses the sources with go/doc, standard library only, under the
 // build constraints of the running platform, the same files go doc reads.
@@ -84,6 +88,9 @@ func undocumented(dir string) ([]string, error) {
 	if strings.TrimSpace(p.Doc) == "" {
 		out = append(out, dir+": no package comment")
 	}
+	for _, l := range unresolved(p, p.Doc) {
+		out = append(out, fmt.Sprintf("%s: package comment: doc link %s resolves to nothing", dir, l))
+	}
 	named := func(pos token.Pos, kind, name, text string) {
 		_, bare, _ := strings.Cut(name, ".") // a method's comment starts with the method's own name
 		if bare == "" {
@@ -94,6 +101,9 @@ func undocumented(dir string) ([]string, error) {
 			report(pos, "%s %s has no doc comment", kind, name)
 		case !startsWith(text, bare):
 			report(pos, "%s %s: doc comment does not start with its name", kind, name)
+		}
+		for _, l := range unresolved(p, text) {
+			report(pos, "%s %s: doc link %s resolves to nothing", kind, name, l)
 		}
 	}
 	for _, v := range slices.Concat(p.Consts, p.Vars) {
@@ -187,6 +197,51 @@ func mentions(text, name string) bool {
 		}
 		rest = rest[i+len(name):]
 	}
+}
+
+// linkLike matches what a doc link looks like once the parser has declined
+// it: an exported name, optionally qualified by a package or a type, in
+// square brackets ("[Series.Stats]", "[metrics.Compute]"). Lowercase
+// bracketed words ("[asset][period]", "[i]") are prose, not links.
+var linkLike = regexp.MustCompile(`\[\*?(?:[A-Za-z_][A-Za-z0-9_]*\.){0,2}[A-Z][A-Za-z0-9_]*\]`)
+
+// unresolved returns the doc links of text that name nothing: a symbol of
+// the package that does not exist, or a package the file does not import.
+// The go/doc parser keeps such a link as plain text, which pkg.go.dev then
+// shows with its brackets; a link to another package's symbol is checked
+// for the package only, as go/doc does.
+func unresolved(p *doc.Package, text string) []string {
+	var out []string
+	var walk func([]comment.Text)
+	walk = func(ts []comment.Text) {
+		for _, t := range ts {
+			switch t := t.(type) {
+			case comment.Plain:
+				out = append(out, linkLike.FindAllString(string(t), -1)...)
+			case comment.Italic:
+				out = append(out, linkLike.FindAllString(string(t), -1)...)
+			case *comment.Link:
+				walk(t.Text)
+			}
+		}
+	}
+	for _, b := range p.Parser().Parse(text).Content {
+		switch b := b.(type) {
+		case *comment.Paragraph:
+			walk(b.Text)
+		case *comment.Heading:
+			walk(b.Text)
+		case *comment.List:
+			for _, item := range b.Items {
+				for _, c := range item.Content {
+					if para, ok := c.(*comment.Paragraph); ok {
+						walk(para.Text)
+					}
+				}
+			}
+		}
+	}
+	return out
 }
 
 // startsWith reports whether a doc comment opens with name, the Go

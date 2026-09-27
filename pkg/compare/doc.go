@@ -1,6 +1,13 @@
 // Package compare computes the portfolio comparison model and assembles the
 // report Page from it.
 //
+// [Compute] studies several [portfolio.Spec] values side by side into a
+// [Comparison]: [Comparison.Studies] hands the numbers ([analyze.PortfolioStudy]
+// per column), [Comparison.HTMLPage] the page [report.Render] writes, and
+// [Comparison.Columns] and [Comparison.StatRows] the terminal view. [Sweep]
+// answers what each holding's weight buys. For one portfolio's numbers
+// without a page, pkg/analyze is the lighter door.
+//
 // It is presentation over pkg/analyze, the numbers layer, and it sits between
 // that layer and the renderers (report, chart). Every column Compute builds is
 // an analyze.Portfolio study (fetch, build, simulation, per-holding studies,
