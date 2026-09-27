@@ -16,10 +16,10 @@
 // The file is the format pofo reads (weights in percent, "#meta"
 // directives; see examples/portfolios). The work is analyze.Portfolio's,
 // which the pofo report's columns are built with too; the holdings are read
-// through marketdata.Client.Load, so a catalog fund with a bundled backcast
-// runs on its whole reconstructed history, offline, and a holding written
-// with the SIM suffix (or the whole file under "#meta sim:on" or -sim) reads
-// its live quotes with that backcast in front.
+// through marketdata.Client.Load, so a fund runs on its real quotes only,
+// as the pofo report runs it, and a holding written with the SIM suffix (or
+// the whole file under "#meta sim:on" or -sim) on those quotes with its
+// bundled reconstruction in front, the long history.
 package main
 
 import (

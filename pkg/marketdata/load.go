@@ -17,17 +17,20 @@ import (
 //  1. A FILE, when id is a path (it holds a path separator or ends in
 //     ".csv"): ReadCSV, labelled with the path as written. This is how an
 //     older version of a bundled file joins in, piped out of "git show".
-//  2. The BUNDLE (Bundled), unless id carries the SIM suffix: a catalog
-//     asset's backcast, its whole reconstructed history as of the last data
-//     refresh, or a reference series (an index, a yield, a cash rate).
+//  2. The BUNDLE (Bundled), for a bare identifier: a reference series (an
+//     index, a yield, a cash rate) or a catalog index (SP500, MSCIWORLD),
+//     offline and the same on every machine.
 //  3. The CLIENT, Client.FetchExtended with opt: live quotes cached on disk,
-//     the backcast spliced in front of a SIM identifier. With c.Offline set,
-//     only the quote cache and the bundle answer, and anything else fails
-//     with an error wrapping ErrOffline.
+//     the bundled reconstruction spliced in front of a SIM identifier. With
+//     c.Offline set, only the quote cache and the bundle answer (a SIM
+//     identifier never fetched falls back on its bundled SIM history alone),
+//     and anything else fails with an error wrapping ErrOffline.
 //
-// So "IWDA" reads the fund's bundled backcast, offline and the same on every
-// machine, while "IWDASIM" reads its live quotes with that backcast in front,
-// and "VOO", bundled under no name, is fetched.
+// So Load keeps the SIM convention: "IWDA" reads the fund's real quotes
+// only, "IWDASIM" those quotes with the reconstruction in front, and
+// "TREASURY-LONG-USD", a reference series no source quotes, the bundle. A
+// quoted fund's reconstruction never answers to its bare name, here or in
+// Bundled.
 //
 // opt applies to every step: From and To trim the series, and Currency
 // converts it through Client.ConvertCurrency (the euro crosses are bundled,
@@ -72,7 +75,7 @@ func (c *Client) load(ctx context.Context, id string, opt FetchOptions) (*Series
 		s, err := Bundled(id)
 		switch {
 		case err == nil:
-			return c.localTo(ctx, s, "a bundled reference series", opt)
+			return c.localTo(ctx, s, "the bundled file", opt)
 		case !errors.Is(err, fs.ErrNotExist):
 			return nil, err
 		}

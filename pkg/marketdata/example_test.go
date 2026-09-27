@@ -545,10 +545,12 @@ func ExampleWriteCSV() {
 }
 
 // Bundled reads a series embedded in the binary, with no Client and no
-// network: a catalog asset's backcast ("simdata", in its record's currency)
-// or a reference series ("refdata": an index, a yield, a cash rate).
-// BundledIDs lists them all. The numbers move with every data refresh, so
-// this example prints what does not.
+// network: a catalog asset's SIM history ("simdata", in its record's
+// currency, under the SIM form of its identifier) or a reference series
+// ("refdata": an index, a yield, a cash rate). A quoted fund's bare
+// identifier means its real quotes, which are not bundled. BundledIDs lists
+// them all. The numbers move with every data refresh, so this example prints
+// what does not.
 func ExampleBundled() {
 	yield, err := marketdata.Bundled("TREASURY-LONG-YIELD")
 	if err != nil {
@@ -556,18 +558,19 @@ func ExampleBundled() {
 	}
 	fmt.Println(yield.Source, yield.Junctions[0].Format(time.DateOnly))
 
-	backcast, err := marketdata.Bundled("DBMF")
+	sim, err := marketdata.Bundled("DBMFSIM") // DBMF: US25159K3095
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(backcast.Source, backcast.Currency)
+	fmt.Println(sim.Symbol, sim.Source, sim.Currency)
+
+	_, err = marketdata.Bundled("DBMF") // its real quotes: FetchExtended
+	fmt.Println(errors.Is(err, fs.ErrNotExist))
 
 	fmt.Println(slices.Contains(marketdata.BundledIDs(), "SP500-USD"))
-	_, err = marketdata.Bundled("NO-SUCH-SERIES")
-	fmt.Println(errors.Is(err, fs.ErrNotExist))
 	// Output:
 	// refdata 1973-01-04
-	// simdata USD
+	// DBMFSIM simdata USD
 	// true
 	// true
 }
@@ -579,9 +582,9 @@ func ExampleClient_Load() {
 	client := marketdata.NewClient("") // no disk cache: the bundle alone answers
 	client.Offline = true
 
-	// A reference series and a catalog fund's backcast, both bundled; the
-	// fund converted into euros through the bundled euro crosses.
-	for _, id := range []string{"SP500-USD", "DBMF"} { // DBMF: US25159K3095
+	// A reference series and a catalog index, both bundled; the index
+	// converted into euros through the bundled euro crosses.
+	for _, id := range []string{"SP500-USD", "MSCIWORLD"} {
 		s, err := client.Load(ctx, id, marketdata.FetchOptions{
 			From: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
 			To:   time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC),
@@ -591,15 +594,29 @@ func ExampleClient_Load() {
 		}
 		fmt.Println(s.Symbol, s.Source, s.First().Date.Format(time.DateOnly))
 	}
-	eur, err := client.Load(ctx, "DBMF", marketdata.FetchOptions{Currency: "EUR"})
+	eur, err := client.Load(ctx, "MSCIWORLD", marketdata.FetchOptions{Currency: "EUR"})
 	if err != nil {
 		panic(err)
 	}
 	fmt.Println(eur.Currency)
+
+	// A quoted fund: "DBMFSIM" is its real quotes with the reconstruction in
+	// front, and offline, with nothing cached, the bundled SIM history alone.
+	// The bare "DBMF" would be its real quotes only, which offline and
+	// uncached do not exist.
+	sim, err := client.Load(ctx, "DBMFSIM", marketdata.FetchOptions{}) // DBMF: US25159K3095
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(sim.First().Date.Year() < 2019)
+	_, err = client.Load(ctx, "DBMF", marketdata.FetchOptions{})
+	fmt.Println(errors.Is(err, marketdata.ErrOffline))
 	// Output:
 	// SP500-USD refdata 2020-01-31
-	// DBMF simdata 2020-01-02
+	// MSCIWORLD simdata 2020-01-02
 	// EUR
+	// true
+	// true
 }
 
 // Example_loading walks the four ways into a series without a download: the

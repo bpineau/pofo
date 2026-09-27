@@ -14,7 +14,8 @@
 //	go run examples/code/oldnew.go -rev HEAD~20 TREASURY-LONG-USD
 //
 // It runs "git show", so it needs a checkout of the repository and runs
-// from its root. ID must be bundled (pofo -dump list names them).
+// from its root. ID must be bundled (pofo -dump list names them), a fund
+// under its SIM name (IWDASIM).
 package main
 
 import (
@@ -45,8 +46,13 @@ func main() {
 	}
 
 	// The same file at rev: its Source names the directory it lives in and
-	// its Symbol is the canonical identifier the file is named after.
-	path := fmt.Sprintf("pkg/datasets/%s/%s.csv", cur.Source, cur.Symbol)
+	// its Symbol is the canonical identifier, which names the file once a
+	// fund's SIM suffix is cut (a reference series has none to cut).
+	file := cur.Symbol
+	if cur.Source == "simdata" {
+		file, _ = marketdata.SplitSim(file)
+	}
+	path := fmt.Sprintf("pkg/datasets/%s/%s.csv", cur.Source, file)
 	out, err := exec.Command("git", "show", *rev+":"+path).Output()
 	if err != nil {
 		log.Fatalf("git show %s:%s: %v", *rev, path, err)

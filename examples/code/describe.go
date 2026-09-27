@@ -11,9 +11,11 @@
 //
 //	go run examples/code/describe.go SP500-USD
 //
-// ID goes through marketdata.Client.Load: a CSV path is a file, a bundled
-// identifier (pofo -dump list names them) comes from the bundle, offline,
-// and anything else, or an identifier with the SIM suffix, is fetched.
+// ID goes through marketdata.Client.Load: a CSV path is a file, a reference
+// series or a catalog index (pofo -dump list names them) comes from the
+// bundle, offline, and anything else is fetched: a fund's real quotes under
+// its plain name, with the bundled reconstruction in front under its SIM
+// name (IWDA against IWDASIM).
 package main
 
 import (

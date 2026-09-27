@@ -6,9 +6,9 @@
 //
 // # Start here
 //
-//   - [Bundled] reads an embedded series (a catalog asset's backcast, an
-//     index, a yield, a cash rate) with no network and no client;
-//     [BundledIDs] lists them.
+//   - [Bundled] reads an embedded series (an index, a yield, a cash rate, or
+//     a catalog fund's SIM history under its SIM name) with no network and
+//     no client; [BundledIDs] lists them.
 //   - [NewClient] and [Client.FetchExtended] fetch anything quoted: the CLI's
 //     per-asset pipeline (resolution, disk cache, SIM backcast, currency
 //     conversion). [Client.Offline] keeps it off the network.
@@ -52,9 +52,13 @@
 //     change without notice: read them through an Offline client, never
 //     directly.
 //   - Bundled for what the binary embeds, with no Client at all: a catalog
-//     asset's backcast (pkg/datasets/simdata, Source "simdata") or a
-//     reference series (pkg/datasets/refdata, Source "refdata": indices,
-//     yields, cash rates, NAV snapshots). BundledIDs lists them.
+//     asset's SIM history (pkg/datasets/simdata, Source "simdata": the
+//     reconstruction with the real quotes grafted on, as of the last
+//     refresh), answering to the SIM form of a quoted fund's identifier
+//     ("IWDASIM", never the bare "IWDA", which means real quotes only) and
+//     to the bare id of a catalog index ("SP500"); or a reference series
+//     (pkg/datasets/refdata, Source "refdata": indices, yields, cash rates,
+//     NAV snapshots). BundledIDs lists them.
 //   - ReadCSV for any "date,value" file, the layout of the bundled ones: a
 //     file of one's own, or a bundled file as of an older commit piped out
 //     of "git show". It honours the headers the bundled files carry
@@ -62,9 +66,11 @@
 //   - ReadLongCSV for several series in one "id,date,value" file.
 //
 // Client.Load chains three of them for a program that explores data: a path
-// is read as a file, an identifier the module bundles comes from the bundle,
-// and anything else, or an identifier with the SIM suffix, goes through
-// FetchExtended; the window and the currency conversion apply to all three.
+// is read as a file, a bare identifier the module bundles (a reference
+// series, a catalog index) comes from the bundle, and anything else goes
+// through FetchExtended, so a fund's bare identifier is its real quotes and
+// its SIM identifier those quotes with the reconstruction in front; the
+// window and the currency conversion apply to all three.
 // It is the call every script of examples/code makes.
 //
 // WriteCSV is the way out: the long layout, each series' metadata as "#"

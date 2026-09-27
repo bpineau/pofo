@@ -11,11 +11,12 @@ go run examples/code/describe.go -h          # its flags
 ```
 
 They read their data through `marketdata.Client.Load`: a CSV path is a
-file, an identifier the module bundles (a catalog fund's backcast, an index,
-a yield: `pofo -dump list` names them all) comes from the bundle, offline
-and the same on every machine, and anything else is fetched and cached on
-disk. `IWDA` therefore reads the fund's bundled backcast, while `IWDASIM`
-reads its live quotes with that backcast in front. `-offline` keeps every
+file, a reference series or a catalog index the module bundles (an index, a
+yield, a cash rate: `pofo -dump list` names them all) comes from the bundle,
+offline and the same on every machine, and anything else is fetched and
+cached on disk. The SIM convention holds: `IWDA` reads the fund's real
+quotes only, `IWDASIM` those quotes with its bundled reconstruction in
+front, the long history. `-offline` keeps every
 script off the network: the bundle and the quote cache only. Log lines
 (identifier resolution, currency warnings) go to standard error, the answer
 to standard output.

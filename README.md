@@ -943,7 +943,7 @@ backcast of every catalog fund), so most of these work offline.
 | A portfolio | `analyze.Portfolio` in one call; or `portfolio.Parse`/`NewSpec`, `Build`, `Simulate` |
 | Optimize weights | `optimize.ParseSpec`, `optimize.Solve` |
 | FIRE, decumulation | `decumul.Plan` over a `scenario.Source`, `Plan.Simulate`, `Plan.Solve`; `replay.Run` for history as it happened |
-| Backcasts | `simgen.Find`, `simgen.Validate`; the shipped ones through `marketdata.Bundled` or a `SIM` identifier |
+| Backcasts | `simgen.Find`, `simgen.Validate`; the shipped ones under a `SIM` identifier (`IWDASIM`), through `marketdata.Bundled` or `Client.FetchExtended` |
 | Render | `chart.Line`; `compare.Compute` + `report.Render` for the CLI's report |
 | Export | `marketdata.WriteCSV` |
 
@@ -1076,8 +1076,9 @@ if today, err := client.Intraday(ctx, "IWDA"); err == nil {
 ### Load series without a download, and export them
 
 `Bundled` reads any series embedded in the binary with no client at all (a
-catalog asset's backcast, or a reference series: indices, yields, cash
-rates), `BundledIDs` lists them; `ReadCSV` reads any `date,value` file, the
+reference series: indices, yields, cash rates; a catalog index; or a
+fund's SIM history under its SIM name, `IWDASIM`, since the bare `IWDA`
+means its real quotes, which are not bundled), `BundledIDs` lists them; `ReadCSV` reads any `date,value` file, the
 layout of the bundled ones, and `ReadLongCSV` several series in one
 `id,date,value` file; a client with `Offline` set serves the quote cache
 whatever its age (its file format is private: never read it directly);

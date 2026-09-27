@@ -21,8 +21,8 @@
 // The default is the file's own directive, else max-sharpe; cwarp needs a
 // benchmark and "train:" a hold-out, which pofo's report runs. Every figure
 // is IN SAMPLE: the weights were fitted on the very months that score them.
-// The holdings are read through marketdata.Client.Load (the bundle before
-// the network, the SIM suffix under "#meta sim:on").
+// The holdings are read through marketdata.Client.Load: real quotes, with
+// the bundled reconstruction in front under "#meta sim:on".
 package main
 
 import (
