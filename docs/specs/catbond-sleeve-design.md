@@ -159,6 +159,25 @@ losses it was built not to take. It is measured on MONTH-END returns, because
 observation dates, so a per-observation match would find nothing to measure and
 skip the donor in silence.
 
+The months are paired by the audit's own reading (`monthly` in
+`pkg/simgen/audit.go`: a `marketdata.Panel` of whole calendar months both
+quote, measured by `metrics.Track`), so the scale a file is built with is the
+one `-verify-simdata` reads back. Until 2026-09 the match had its own pairing,
+which counted the partial month at the end of the fund's record as a whole
+month and would have folded a month either side skips into the next one's
+return. Moving onto the shared pairing (measured 2026-09-27, same quotes both
+ways) dropped that partial month and nothing else:
+
+| class | months | scale before | scale after | backcast CAGR to the junction | growth to the junction |
+|---|---|---|---|---|---|
+| GAM Star EUR hedged | 179 -> 178 | 0.7749 | 0.7749 | 4.420 % (unchanged) | 1.28687 -> 1.28688 |
+| Solidum EUR hedged | 204 -> 203 | 0.9514 | 0.9511 | 5.060 -> 5.059 % | 1.20322 -> 1.20319 |
+| Plenum Defensive | 192 -> 191 | 0.7077 | 0.7069 | 4.351 -> 4.349 % | 1.22068 -> 1.22056 |
+
+The monthly volatility of the backcast stretch moved by at most 0.002 point
+(Plenum 1.459 -> 1.457 %/yr) and no audit figure moved by more than 0.01
+point.
+
 The fee alignment reads published ongoing charges only, never an observed return
 gap, exactly as `feeAligned` does for the trend family. The index's own load is
 the single ESTIMATE of the table (1.50 %/yr: an index of funds levies nothing
@@ -166,25 +185,20 @@ itself, but every return in it arrives net of a constituent's charge, and those
 constituents publish no schedule). Since the retail classes here run 1.20 to
 1.75 %, the resulting uplift is small by construction.
 
-Measured against the funds' own live windows:
+Measured against the funds' own live windows by `pofo -verify-simdata`
+(2026-09-27, windows ending 2026-09-18 for Solidum and 2026-09-24 for the two
+others):
 
-| class | real from | backcast CAGR | fund CAGR | gap |
-|---|---|---|---|---|
-| Solidum EUR hedged | 2009-09 | 3.43 % | 3.52 % | -0.09 pt |
-| Plenum Defensive | 2010-09 | 2.37 % | 1.88 % | +0.49 pt |
-| GAM Star EUR hedged | 2011-10 | 2.53 % | 4.29 % | -1.76 pt |
+| class | real from | backcast CAGR | fund CAGR | gap | monthly corr | vol engine / fund | grades |
+|---|---|---|---|---|---|---|---|
+| Solidum EUR hedged | 2009-09 | 3.46 % | 3.59 % | -0.13 pt | 0.83 | 3.48 / 3.11 % | level ok, path warn |
+| Plenum Defensive | 2010-09 | 2.40 % | 1.96 % | +0.43 pt | 0.66 | 2.63 / 2.64 % | level ok, path bad |
+| GAM Star EUR hedged | 2011-10 | 2.56 % | 4.36 % | -1.80 pt | 0.84 | 2.63 / 2.77 % | level warn, path warn |
 
-The audit harness (`pofo -verify-simdata`) grades them on the same windows:
-Solidum level ok / path warn (monthly correlation 0.83), GAM level warn / path
-warn (0.84), Plenum Defensive level ok / path bad (0.66, its defensive mandate
-diverging from the whole market it is reconstructed from). Those grades
-predate the 2026-09 cadence fix: the report's VOLATILITY column then
-annualized the weekly fund NAV per observation at 252, inflating it by about
-sqrt(5) against the engine (monthly steps spread over a daily calendar, which
-annualizes correctly); it now annualizes each series at its own cadence. The
-path grades read tracking error RELATIVE to that volatility, both on the same
-dates, so they did not move. The monthly correlations and the CAGR gaps remain
-the columns to trust here.
+Plenum's bad path is its defensive mandate diverging from the whole market it
+is reconstructed from. The two volatilities are read on the dates both sides
+quote, each annualized at that calendar's measured cadence; the monthly
+correlations and the CAGR gaps remain the columns to trust here.
 
 The GAM gap is manager selection, not a modelling error, and it is deliberately
 NOT closed: the class beat the index of its peers by about 1.8 points a year
