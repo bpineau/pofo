@@ -182,6 +182,44 @@ func ExampleTopK() {
 	// worst two: 0.41 0.33
 }
 
+// LowestK returns positions, smallest value first, so the worst months can
+// be dated and read on other series.
+func ExampleLowestK() {
+	months := []string{"2022-01", "2022-02", "2022-03", "2022-04", "2022-05", "2022-06"}
+	r := []float64{-0.05, -0.03, 0.03, -0.08, 0.00, -0.08}
+	for _, t := range metrics.LowestK(r, 3) {
+		fmt.Printf("%s %+.0f %%\n", months[t], r[t]*100)
+	}
+	// Output:
+	// 2022-04 -8 %
+	// 2022-06 -8 %
+	// 2022-01 -5 %
+}
+
+// Regress fits a fund's monthly returns on its index and a currency: the
+// fund tracks the index, is half exposed to the currency, and loses a
+// little every month; the regression finds all three.
+func ExampleRegress() {
+	var fund, index, fx []float64
+	for t := range 60 {
+		i := 0.04 * math.Sin(float64(t)*0.9)
+		c := 0.02 * math.Cos(float64(t)*1.7)
+		noise := 0.002 * math.Sin(float64(t)*2.9+1)
+		fund = append(fund, -0.001+1.0*i+0.5*c+noise)
+		index, fx = append(index, i), append(fx, c)
+	}
+	reg, err := metrics.Regress(fund, index, fx)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("beta index %.2f, beta fx %.2f, R2 %.3f\n", reg.Betas[0].Value, reg.Betas[1].Value, reg.R2)
+	fmt.Printf("alpha %.1f %%/yr (t %.1f), tracking error %.1f %%/yr\n",
+		reg.AnnualAlpha(12)*100, reg.Alpha.T, reg.AnnualResidualVol(12)*100)
+	// Output:
+	// beta index 1.00, beta fx 0.50, R2 0.998
+	// alpha -1.2 %/yr (t -5.4), tracking error 0.5 %/yr
+}
+
 func ExampleQuantiles() {
 	xs := []float64{5, 1, 4, 2, 3}
 	q := metrics.Quantiles(xs, 0.05, 0.50, 0.95)

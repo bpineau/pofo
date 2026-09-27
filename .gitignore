@@ -9,3 +9,4 @@ pofo-*.html
 /.claude/RESUME.md
 /.claude/settings.local.json
 /.claude/worktrees/
+/scratch/
