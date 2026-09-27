@@ -725,23 +725,24 @@
     "benchmark_index": "NYSE Arca Gold Miners TR USD",
     "strategy": "active",
     "geography": {
-      "Australia": 15,
-      "Canada": 45,
-      "Other": 7,
-      "Other Europe": 8,
-      "South Africa": 10,
-      "US": 15
+      "Canada": 69,
+      "Other developed": 9,
+      "UK": 3,
+      "US": 19
     },
     "sectors": {
       "Materials": 100
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active fund targeting gold miners; high beta to gold price with operational leverage; performs best in risk-on gold bull markets",
-    "confidence": "high",
+    "notes": "Active fund targeting gold miners; high beta to gold price with operational leverage; performs best in risk-on gold bull markets. A feeder: its one holding is CPR Invest - Global Gold Mines. Geography from FT's Morningstar-sourced look-through (see as_of), rescaled over the 96.8% it attributes: Canada 66.67, US 18.99, Australasia 7.59 and developed Asia 0.80 (in Other developed, no finer split published), UK 2.54, Latin America 0.20; all of it Basic Materials",
+    "confidence": "medium",
     "sources": [
-      "https://funds360.fefundinfo.com/opcvm/fiche/amundi-actions-or-part-p-c"
+      "https://funds360.fefundinfo.com/opcvm/fiche/amundi-actions-or-part-p-c",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=FR0012336683:EUR",
+      "https://markets.ft.com/data/funds/tearsheet/holdings?s=FR0012336683:EUR"
     ],
+    "as_of": "2026-07",
     "since": "2015-04-27"
   },
   {
@@ -1233,34 +1234,41 @@
     "benchmark_index": "WisdomTree Eurozone Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
-      "France": 34,
-      "Germany": 27,
-      "Netherlands": 12,
-      "Italy": 9,
-      "Spain": 8,
-      "Other eurozone": 10
+      "France": 27,
+      "Germany": 25,
+      "Netherlands": 17,
+      "Spain": 12,
+      "Italy": 10,
+      "Finland": 3,
+      "Belgium": 3,
+      "Ireland": 1,
+      "Austria": 1,
+      "Other eurozone": 1
     },
     "sectors": {
-      "Communication Services": 4,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 6,
+      "Communication Services": 3,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 25,
+      "Financials": 27,
       "Health Care": 6,
-      "Industrials": 21,
-      "Information Technology": 14,
+      "Industrials": 20,
+      "Information Technology": 16,
       "Materials": 4,
       "Utilities": 7
     },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Eurozone sibling of NTSX/NTSG; euro-native 90/60 leveraged 60/40 in a single fund; launched 2025-09; backcast to ~1986 via bundled euro-area refdata; sectors = MSCI EMU; duration = euro govt-futures ladder ~7y; fiat exposure ~100% EUR so no currency_exposure override needed",
+    "notes": "Eurozone sibling of NTSX/NTSG; euro-native 90/60 leveraged 60/40 in a single fund; launched 2025-09; backcast to ~1986 via bundled euro-area refdata; geography and sectors = the MSCI EMU equity leg's, read off iShares' Core MSCI EMU holdings (see as_of; real estate, 0.53, rounds to nothing); duration = euro govt-futures ladder ~7y; fiat exposure ~100% EUR so no currency_exposure override needed",
     "confidence": "high",
     "sources": [
       "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsz-wisdomtree-eurozone-efficient-core-ucits-etf---eur-acc",
       "https://www.msci.com/resources/factsheets/index_fact_sheet/msci-emu-index.pdf",
-      "https://www.optimizedportfolio.com/ntsx/"
+      "https://www.optimizedportfolio.com/ntsx/",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000OV4XWA3",
+      "https://www.ishares.com/ch/professionals/en/products/253729/ishares-msci-emu-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2025-09-30",
     "duration": 7.0,
     "exposures": {
@@ -5284,22 +5292,28 @@
     "benchmark_index": "MSCI World Health Care Index",
     "strategy": "active",
     "geography": {
-      "Japan": 5,
-      "Other": 8,
-      "Other Europe": 20,
-      "US": 67
+      "Belgium": 1,
+      "Denmark": 2,
+      "Other developed": 2,
+      "Other emerging": 1,
+      "Other eurozone": 1,
+      "Switzerland": 11,
+      "UK": 4,
+      "US": 78
     },
     "sectors": {
       "Health Care": 100
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Actively managed global healthcare equity fund; defensive growth characteristics; benefits from ageing demographics and innovation cycles",
+    "notes": "Actively managed global healthcare equity fund; defensive growth characteristics; benefits from ageing demographics and innovation cycles. Geography from the issuer factsheet of the A2 EUR class (see as_of), cash (3.26) left out: US 75.23, Switzerland 10.61, UK 4.07, then Denmark, Belgium and a tail under 1% each (Israel, China, Japan, Germany); every holding is Health Care. Ongoing charge 1.81% (management fee 1.50%)",
     "confidence": "high",
     "sources": [
-      "https://www.blackrock.com/lu/intermediaries/products/229337/blackrock-world-healthscience-a2-eur-fund"
+      "https://www.blackrock.com/lu/intermediaries/products/229337/blackrock-world-healthscience-a2-eur-fund",
+      "https://www.blackrock.com/lu/individual/literature/fact-sheet/bgf-world-healthscience-fund-class-a2-eur-factsheet-lu0171307068-lu-en-individual.pdf"
     ],
-    "since": "2003-01-09"
+    "as_of": "2026-08",
+    "since": "2001-04-06"
   },
   {
     "id": "LU0171310443",
@@ -5310,28 +5324,36 @@
     "source": "ft",
     "xid": "28295854",
     "currency": "EUR",
-    "fees": 1.81,
+    "fees": 1.8,
     "asset_class": "equity",
-    "underlying": "Global technology equities (>=70% in technology sector, large-cap bias; top holdings: NVIDIA, Broadcom, Microsoft, Apple, Meta)",
-    "benchmark_index": "MSCI All Country World Information Technology Net Return Index",
+    "underlying": "Global technology equities (>=70% in technology sector, large-cap bias; top holdings: NVIDIA, Microsoft, Broadcom, Apple, Samsung Electronics)",
+    "benchmark_index": "MSCI ACWI Information Technology 10/40 Index (constraint benchmark since 2024-02-23)",
     "strategy": "active",
     "geography": {
-      "Other": 5,
-      "Other Europe": 7,
-      "Other developed": 10,
-      "US": 78
+      "Japan": 1,
+      "Netherlands": 1,
+      "South Korea": 7,
+      "Taiwan": 10,
+      "US": 81
     },
     "sectors": {
-      "Information Technology": 100
+      "Communication Services": 7,
+      "Consumer Discretionary": 3,
+      "Financials": 1,
+      "Industrials": 1,
+      "Information Technology": 86,
+      "Materials": 1,
+      "Other": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Actively managed global tech equity fund; outperforms in secular tech bull markets; concentrated semiconductor and software exposure",
+    "notes": "Actively managed global tech equity fund; outperforms in secular tech bull markets; concentrated semiconductor and software exposure. Breakdowns from the issuer factsheet (see as_of), cash left out: its GICS industry groups folded into sectors (semiconductors 40.65, hardware 24.13, software 21.15 = IT; media 4.04 and telecoms 2.81 = Communication Services; autos and consumer discretionary 3.35). Ongoing charge 1.80% (management fee 1.50%)",
     "confidence": "high",
     "sources": [
       "https://www.blackrock.com/lu/individual/literature/fact-sheet/bgf-world-technology-fund-class-a2-eur-factsheet-lu0171310443-lu-en-individual.pdf"
     ],
-    "since": "2003-01-09"
+    "as_of": "2026-08",
+    "since": "1995-03-03"
   },
   {
     "id": "LU0274211480",
@@ -5390,27 +5412,31 @@
     "benchmark_index": "MSCI AC World Index (NR USD); reference only, not tracked",
     "strategy": "active",
     "geography": {
-      "Canada": 5,
-      "Other": 2,
-      "Other Europe": 41,
+      "Canada": 2,
+      "Other Europe": 2,
+      "Other developed": 8,
       "Other emerging": 2,
-      "US": 50
+      "Other eurozone": 21,
+      "UK": 2,
+      "US": 63
     },
     "sectors": {
-      "Energy": 11,
-      "Industrials": 22,
-      "Information Technology": 42,
-      "Materials": 5,
-      "Other": 3,
-      "Utilities": 17
+      "Consumer Discretionary": 1,
+      "Industrials": 19,
+      "Information Technology": 63,
+      "Materials": 3,
+      "Utilities": 14
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Thematic active equity fund on energy transition; benefits from decarbonisation capex cycle; concentrated semiconductors + clean infra exposure",
-    "confidence": "high",
+    "notes": "Thematic active equity fund on energy transition; benefits from decarbonisation capex cycle; concentrated semiconductors + clean infra exposure. Breakdowns from FT's Morningstar-sourced holdings page (see as_of), long positions only, rescaled: its regions (Eurozone 20.84, Developed Asia 7.84, Europe ex euro 2.04, Latin America 1.83) have no finer split, and its sector labels are Morningstar's under their GICS names (no energy line at that date)",
+    "confidence": "medium",
     "sources": [
-      "https://www.finect.com/fondos-inversion/LU0280435461-Pictetclean_energy_r_eur"
+      "https://www.finect.com/fondos-inversion/LU0280435461-Pictetclean_energy_r_eur",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0280435461:EUR",
+      "https://markets.ft.com/data/funds/tearsheet/holdings?s=LU0280435461:EUR"
     ],
+    "as_of": "2026-07",
     "since": "2007-12-05"
   },
   {
