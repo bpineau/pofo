@@ -5,13 +5,16 @@
 // macro-regime work (broadsample/, cape/, macropanel/). After a regeneration
 // (-gen-simdata, make refresh), a recompilation re-embeds the files.
 //
-// Simdata and Refdata expose their directory as an fs.FS of "<canonical
-// id>.csv" files (comment stamps, then date,close rows: marketdata.Bundled
-// reads one into a Series by identifier, and marketdata.BundledIDs lists
-// them); the panels are returned as raw CSV bytes.
+// Most consumers never import it: marketdata.Bundled reads any of these
+// series by identifier into a Series, marketdata.BundledIDs lists them, and
+// marketdata.Lookup answers for a catalog record by any accepted identifier.
+// This package is the raw layer underneath:
 //
-// Catalog returns the typed asset records (with their geography, sectors,
-// factors and exposures), and AssetMeta the same data as raw JSON. For a
-// resolution-aware, by-identifier lookup that also accepts aliases and fund
-// tickers, use marketdata.Lookup.
+//   - [Simdata] and [Refdata] expose their directory as an [fs.FS] of
+//     "<canonical id>.csv" files (comment stamps, then date,close rows);
+//   - [Catalog] returns the typed asset records ([Asset]: class, geography,
+//     sectors, factors, exposures, fees in PERCENT per year), and
+//     [AssetMeta] the same data as raw JSON;
+//   - [BroadSample], [CAPE] and [MacroPanel] return the research panels as
+//     raw CSV bytes.
 package datasets

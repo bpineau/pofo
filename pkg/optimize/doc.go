@@ -1,6 +1,22 @@
 // Package optimize computes portfolio weights that optimize a risk/return
 // objective from the historical returns of the candidate assets.
 //
+// # Start here
+//
+//   - [ParseSpec] reads the "#meta optimize:" grammar
+//     ("max-sharpe,max-weight:40") into a [Spec]; [Spec.Resolve] binds its
+//     identifiers to the asset order. A Spec can also be written in code.
+//   - [Solve] takes the aligned per-period returns ([asset][period], one
+//     calendar), their cadence (periods per year: 252 for daily returns) and
+//     the Spec, and returns a [Result]: the weights as FRACTIONS summing to
+//     1, the figures they reach, and whether every limit held (Feasible).
+//   - [SolveCWARP] is the one objective that also needs the replacement
+//     portfolio's returns.
+//
+// The package is date-free: slicing the returns to a training window
+// ([Window]) is the caller's job. Percent in the grammar ("max-vol:9"),
+// FRACTION once parsed.
+//
 // Ten objectives are supported:
 //
 //   - MaxSharpe ("max-sharpe"): the tangency portfolio, maximizing the

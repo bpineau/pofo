@@ -1,7 +1,23 @@
 // Package analyze is the high-level, numbers-only face of the library: one
-// call studies an asset (Asset) or a portfolio (Portfolio) and returns every
-// number the comparison report is drawn from, as plain values, with nothing
-// rendered; another (Pair) measures one series against its reference.
+// call studies an asset or a portfolio and returns every number the
+// comparison report is drawn from, as plain values, with nothing rendered;
+// another measures one series against its reference.
+//
+// # Start here
+//
+//   - [Asset] studies one identifier on its longest window: [metrics.Stats],
+//     calendar years and months, drawdown episodes, relative statistics
+//     against a benchmark ([AssetStudy]).
+//   - [Portfolio] builds and simulates a [portfolio.Spec] and studies it: the
+//     statistics, each holding on the same window, the correlation matrix,
+//     the risk and return attribution, the look-through composition
+//     ([PortfolioStudy]).
+//   - [Pair] measures a candidate series against a reference (a backcast
+//     against its fund, a file against its previous version), and
+//     [PairStudy.WriteText] prints the result.
+//
+// Asset and Portfolio read their data through a [Source], which
+// [*marketdata.Client] satisfies; Pair takes two [*marketdata.Series].
 //
 //	spec, _ := portfolio.NewSpec("60/40",
 //		portfolio.Line{ID: "IWDA", Weight: 0.6},
@@ -10,11 +26,10 @@
 //	fmt.Println(study.Stats.CAGR, study.Correlation[0][1], study.Attribution.Risk)
 //
 // It is the pipeline marketdata -> portfolio -> metrics -> suggest wired once,
-// with its traps closed: the holdings are aligned with marketdata.AlignSeries
-// (never Align's zero fill), each holding is studied on the portfolio's own
-// window, the SIM convention and the fee lookup follow the CLI. The data comes
-// from a Source, which *marketdata.Client satisfies; a consumer with its own
-// store, or a test, supplies another.
+// with its traps closed: the holdings are aligned with
+// [marketdata.AlignSeries] (never Align's zero fill), each holding is studied
+// on the portfolio's own window, the SIM convention and the fee lookup follow
+// the CLI. A consumer with its own store, or a test, supplies another Source.
 //
 // # Units
 //

@@ -6,6 +6,29 @@
 // covariance matrices, multiple regression, dated extremes, tracking error
 // and the lead-lag gaps of two closes struck at different hours.
 //
+// It is the math of the toolkit and imports nothing of it: every function
+// takes plain slices (parallel dates and values, or bare returns), so it
+// reads a series built anywhere. pkg/marketdata hands its series over
+// (Series.Stats, Panel.Col).
+//
+// # Start here
+//
+//   - [Compute] turns a dated value series into [Stats]: CAGR, volatility,
+//     Sharpe, Sortino, Ulcer, max drawdown, time to recovery, skew and
+//     kurtosis, annualized at the series' own cadence ([PeriodsPerYear]).
+//   - [Returns] and [Mean] are the building blocks; [CalendarReturns] the
+//     yearly or monthly table; [Drawdowns] the running drawdown, and
+//     [DrawdownEpisodes] and [MaxDrawdown] the dated episodes ([Episode]).
+//   - [Corr], [CorrelationMatrix] and [Covariance] relate return columns
+//     measured on one calendar; [Regress] fits one on several ([Regression]);
+//     [Track] measures a replica against what it follows ([Tracking]).
+//   - [LowestK] and [HighestK] date a sample's extremes; [VaR] and [CVaR]
+//     read its tail.
+//   - [TWR] and [IRR] measure a series that carries external flows ([Flow]).
+//
+// Every return and statistic is a FRACTION (0.07 = +7 %), except
+// [Stats].Ulcer in percent points and [Stats].CWARP in percent.
+//
 // # Conventions
 //
 // Knowing the conventions is essential to compare the results with other
