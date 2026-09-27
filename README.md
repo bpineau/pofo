@@ -37,6 +37,7 @@ go build ./cmd/pofo                       # self-contained binary (datasets embe
 ./pofo -b -assets AVWS,ZPRV               # same, with every history backcast
 ./pofo -dump IWDA,TREASURY-LONG-USD -monthly > s.csv  # the series themselves, as CSV
 ./pofo -dump list                         # every series bundled in the binary
+./pofo -pair SP500,VOO                    # one series against its reference, as text
 ./pofo -offline -cli -assets VOO,IWDA     # any mode, quote cache and bundled data only
 ./pofo -warmup                            # pre-warm the catalog cache
 ./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
@@ -72,6 +73,29 @@ knows; `-dump list` names them all, with their dates. Read the output with
 id,date,value
 TREASURY-LONG-USD,2020-01-31,6492.165025
 TREASURY-LONG-USD,2020-02-28,6873.785348
+```
+
+`-pair A,B` measures a candidate, A, against a reference, B: a backcast
+against the real fund, a fund against its index, a refreshed file against
+the version it replaces. It prints, as plain aligned text (JSON under
+`-json`), the common window, the dates each side holds, the ratio A/B and
+the first date it moves, the CAGR gap with its standard error, the level gap
+once both are rebased, then per cadence both series support (daily only when
+both are daily) the correlation, volatilities, tracking error, beta and
+alpha, the largest divergences with their dates, the calendar years side by
+side, and warnings for whatever makes a figure unreliable (a short window, a
+cadence or currency mismatch, a definition junction, monthly dates on the
+first of the month). Each side is fetched as `-dump` fetches it (so `-start`,
+`-end`, `-currency`, `SIM` and `-offline` apply), or read from a
+`date,value` CSV file when it holds a slash or ends in `.csv`, which is how a
+file is checked against its previous version. `-lead-lag` ranks the daily
+divergences forgiving a one-session difference in closing times, for a
+European listing against a US index.
+
+```sh
+git show HEAD~1:pkg/datasets/refdata/MSCIWORLD-USD.csv > /tmp/old.csv
+./pofo -offline -pair MSCIWORLD-USD,/tmp/old.csv
+./pofo -pair SP500,IE00BFMXXD54 -lead-lag -start 2020-01-01
 ```
 
 `-offline` keeps any mode off the network: quotes come from the cache
@@ -592,6 +616,9 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-offline` | | never touch the network: the quote cache whatever its age, then the bundled data; anything else is an error (refused with `-warmup` and `-gen-simdata`, which exist to download) |
 | `-dump` | | write these comma-separated series to stdout as long CSV (`id,date,value`), then exit; `list` names every bundled series |
 | `-monthly` | | with `-dump`: keep the last close of each calendar month |
+| `-pair` | | `A,B`: measure A against B (identifiers, or CSV paths when holding a slash or ending in `.csv`) and print the study as text, then exit |
+| `-json` | | with `-pair`: print the study as JSON |
+| `-lead-lag` | | with `-pair`: rank the daily divergences forgiving a one-session difference in closing times |
 | `-assets`, `-a` | | list `A,B,C`: each asset compared as a 100% portfolio |
 | `-simulate`, `-b` | | backcast every identifier of the run, as if each carried the `SIM` suffix |
 | `-cli` | | curves and summary table in the terminal, no HTML |
@@ -1150,6 +1177,35 @@ for _, id := range []string{"IWDA", "IGLN"} {
 fmt.Println()
 ```
 
+### Compare a series with its reference
+
+`analyze.Pair` measures a candidate against a reference on the window both
+cover: a backcast against the real fund, a fund against its index, a
+refreshed file against its previous version (`marketdata.ReadCSV` over `git
+show HEAD~1:<path>`). It returns the level figures (CAGR gap with its
+standard error, level gap, the ratio A/B and the first date it moves), a
+`Daily` and a `Monthly` block (correlation, volatilities, tracking error,
+beta, alpha, the largest divergences dated), the calendar years side by side
+and `Warnings`; `WriteText` prints it all as aligned text and the struct
+marshals to JSON. `PairOptions.LeadLag` forgives a one-session clock
+difference when ranking the daily divergences (`metrics.LeadLagGaps`).
+
+```go
+// from analyze.ExamplePair (backcastAndFund: two synthetic series)
+backcast, fund := backcastAndFund()
+st, err := analyze.Pair(backcast, fund, analyze.PairOptions{Divergences: 2})
+if err != nil {
+	panic(err)
+}
+fmt.Printf("%s to %s: CAGR gap %+.2f pt/yr (standard error %.2f)\n",
+	st.Start.Format(time.DateOnly), st.End.Format(time.DateOnly), st.CAGRGap*100, st.GapSE*100)
+m := st.Monthly
+fmt.Printf("monthly: corr %.3f, tracking error %.2f %%, beta %.2f\n", m.Corr, m.TrackingError*100, m.Beta)
+for _, d := range m.Divergences {
+	fmt.Printf("%s: %+.2f %% against %+.2f %%\n", d.End.Format("2006-01"), d.A*100, d.B*100)
+}
+```
+
 ### Simulate a portfolio by hand
 
 What `analyze.Portfolio` wires, one step at a time. With flows,
@@ -1350,14 +1406,15 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 ### Packages
 
 ```
-pkg/analyze/      the numbers-only studies: Asset and Portfolio in one call
+pkg/analyze/      the numbers-only studies: Asset and Portfolio in one call,
+                  Pair (a series against its reference, as text or JSON)
 pkg/marketdata/   data: resolution (aliases, ISIN, catalog), multi-provider
                   sources, cache, fees, simdata, NewSeries, AlignSeries,
                   returns panels (NewPanel: Mix, Pick, Between, Series)
 pkg/metrics/      statistics (CAGR, Sharpe, Sortino, drawdowns, Beta, CWARP,
                   IRR, TWR), correlation and covariance matrices, calendar
                   returns, rolling beta, VaR, regression, dated extremes,
-                  risk attribution
+                  tracking error, lead-lag gaps, risk attribution
 pkg/optimize/     weights for max-sharpe / min-volatility / max-return /
                   risk-parity / max-sortino / return-to-drawdown / min-ulcer /
                   max-worst-5y / cwarp / black-litterman, under per-line bounds

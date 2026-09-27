@@ -3,7 +3,8 @@
 // Drawdown, TTR (time to recovery), Beta against a benchmark, and the
 // native-versus-monthly volatility term structure (the Lo-MacKinlay
 // variance ratio); and over bare return samples, the correlation and
-// covariance matrices, multiple regression and dated extremes.
+// covariance matrices, multiple regression, dated extremes, tracking error
+// and the lead-lag gaps of two closes struck at different hours.
 //
 // # Conventions
 //
@@ -91,6 +92,17 @@
 // those periods (Panel.Pick): the conditional statistic "what did the hedge
 // do in the equity's worst decile". TopK stays the values-only fast path of
 // a tail statistic over a large sample.
+//
+// # Tracking a reference
+//
+// TrackingError is the annualized volatility of one return column minus
+// another, the risk of holding a replica, a share class or a
+// reconstruction instead of what it follows. LeadLagGaps is the period by
+// period disagreement between two such columns once a one-session
+// difference in closing times is forgiven (a Xetra line against an index
+// struck after New York): the test that tells a bad print from a time zone,
+// behind both the donor repairs of pkg/simgen and the dated divergences of
+// analyze.Pair.
 //
 // # Attribution
 //
