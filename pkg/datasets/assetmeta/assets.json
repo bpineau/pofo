@@ -360,32 +360,32 @@
     "benchmark_index": "CAC 40",
     "strategy": "physical-replication",
     "geography": {
-      "France": 83,
-      "Luxembourg": 2,
-      "Netherlands": 7,
-      "Other": 6,
-      "Switzerland": 2
+      "France": 99,
+      "Netherlands": 1
     },
     "sectors": {
       "Communication Services": 3,
-      "Consumer Discretionary": 16,
-      "Consumer Staples": 5,
-      "Energy": 9,
-      "Financials": 14,
-      "Health Care": 7,
-      "Industrials": 29,
-      "Information Technology": 6,
-      "Materials": 6,
-      "Utilities": 5
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 9,
+      "Energy": 8,
+      "Financials": 15,
+      "Health Care": 8,
+      "Industrials": 31,
+      "Information Technology": 3,
+      "Materials": 7,
+      "Real Estate": 1,
+      "Utilities": 3
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Physical full-replication ETF on French large caps; oldest French equity ETF; distributes annual dividends",
+    "notes": "Physical full-replication ETF on French large caps; oldest French equity ETF; distributes annual dividends. Breakdowns are the benchmark's, from the issuer's monthly factsheet; since is the ISIN's first NAV (2000-12-13, as justETF also dates it), the sheet's own share-class inception date (2019-09-05) coming after that first NAV",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.co.uk/en/professional/products/equity/amundi-cac-40-ucits-etf-dist/fr0007052782"
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/FR0007052782/ENG/LUX/INSTITUTIONNEL/ETF",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0007052782"
     ],
-    "since": "2001-01-22"
+    "as_of": "2026-08",
+    "since": "2000-12-13"
   },
   {
     "id": "FR0010315770",
@@ -457,25 +457,32 @@
     "benchmark_index": "Nasdaq-100 Leverage (2x) Notional Net Total Return Index",
     "strategy": "leveraged-2x",
     "geography": {
-      "Other": 2,
-      "US": 98
+      "Canada": 1,
+      "Ireland": 2,
+      "Netherlands": 1,
+      "UK": 1,
+      "US": 95
     },
     "sectors": {
-      "Communication Services": 16,
-      "Consumer Discretionary": 14,
-      "Health Care": 6,
-      "Industrials": 5,
-      "Information Technology": 55,
-      "Other": 4
+      "Communication Services": 14,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 6,
+      "Energy": 1,
+      "Health Care": 4,
+      "Industrials": 4,
+      "Information Technology": 58,
+      "Materials": 1,
+      "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 2,
-    "notes": "2x daily leveraged Nasdaq-100 via unfunded swap (LQQ); path-dependent returns; short-term tactical/satellite bull-market amplifier",
+    "notes": "2x daily leveraged Nasdaq-100 via unfunded swap (LQQ); path-dependent returns; short-term tactical/satellite bull-market amplifier. Breakdowns are the benchmark's, from the issuer's monthly factsheet",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/professional/products/equity/amundi-nasdaq100-daily-2x-leveraged-ucits-etf-acc/fr0010342592"
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/FR0010342592/ENG/LUX/RETAIL/ETF"
     ],
-    "since": "2007-01-19",
+    "as_of": "2026-08",
+    "since": "2006-06-27",
     "exposures": {
       "equity": 2.0
     },
@@ -532,25 +539,27 @@
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 11,
-      "Consumer Staples": 5,
-      "Energy": 3,
-      "Financials": 13,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
+      "Energy": 4,
+      "Financials": 12,
       "Health Care": 9,
       "Industrials": 9,
-      "Information Technology": 33,
-      "Materials": 3,
+      "Information Technology": 37,
+      "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 2,
-    "notes": "Tactical 2x daily leveraged US equity instrument; subject to volatility drag; suited for short-term directional bets, not long-term holding",
+    "notes": "Tactical 2x daily leveraged US equity instrument; subject to volatility drag; suited for short-term directional bets, not long-term holding. Breakdowns are the benchmark's, from the issuer's monthly factsheet",
     "confidence": "high",
     "sources": [
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/FR0010755611/ENG/LUX/INSTITUTIONNEL/ETF",
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010755611"
     ],
-    "since": "2009-09-25",
+    "as_of": "2026-08",
+    "since": "2009-06-16",
     "exposures": {
       "equity": 2.0
     },
@@ -651,27 +660,33 @@
     "benchmark_index": "Nasdaq-100",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Canada": 1,
+      "Ireland": 2,
+      "Netherlands": 1,
+      "UK": 1,
+      "US": 95
     },
     "sectors": {
-      "Communication Services": 16,
-      "Consumer Discretionary": 13,
-      "Consumer Staples": 9,
+      "Communication Services": 14,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 6,
       "Energy": 1,
-      "Health Care": 5,
+      "Health Care": 4,
       "Industrials": 4,
-      "Information Technology": 51,
+      "Information Technology": 58,
       "Materials": 1,
       "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic swap on Nasdaq-100 (PUST); heavily tilted to US mega-cap tech and growth",
+    "notes": "PEA-eligible synthetic swap on Nasdaq-100 (PUST); heavily tilted to US mega-cap tech and growth. Breakdowns are the benchmark's, from the issuer's monthly factsheet (the swap basket it physically holds is European, the exposure is the index)",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.be/en/professional/products/equity/amundi-pea-nasdaq100-ucits-etf-acc/fr0011871110"
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0011871110/FRA/FRA/INSTITUTIONNEL/ETF",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0011871110"
     ],
-    "since": "2014-06-25"
+    "as_of": "2026-08",
+    "since": "2014-05-20"
   },
   {
     "id": "FR0011871128",
@@ -768,33 +783,40 @@
     "benchmark_index": "MSCI EM ex-Egypt ESG Broad CTB Select",
     "strategy": "synthetic-swap",
     "geography": {
-      "China": 24,
-      "India": 12,
-      "Other emerging": 20,
-      "South Korea": 19,
-      "Taiwan": 25
+      "Brazil": 4,
+      "China": 21,
+      "India": 11,
+      "Mexico": 2,
+      "Other emerging": 7,
+      "Poland": 1,
+      "Saudi Arabia": 2,
+      "South Africa": 3,
+      "South Korea": 21,
+      "Taiwan": 28
     },
     "sectors": {
-      "Communication Services": 10,
-      "Consumer Discretionary": 13,
-      "Consumer Staples": 6,
-      "Energy": 5,
-      "Financials": 22,
-      "Health Care": 4,
-      "Industrials": 7,
-      "Information Technology": 21,
-      "Materials": 8,
-      "Real Estate": 2,
+      "Communication Services": 6,
+      "Consumer Discretionary": 8,
+      "Consumer Staples": 3,
+      "Energy": 3,
+      "Financials": 20,
+      "Health Care": 3,
+      "Industrials": 6,
+      "Information Technology": 42,
+      "Materials": 6,
+      "Real Estate": 1,
       "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic swap on diversified emerging market equities with ESG/climate tilt (PAEEM)",
-    "confidence": "medium",
+    "notes": "PEA-eligible synthetic swap on diversified emerging market equities with ESG/climate tilt (PAEEM). Breakdowns are the benchmark's, from the issuer's monthly factsheet",
+    "confidence": "high",
     "sources": [
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013412020/FRA/FRA/INSTITUTIONNEL/ETF",
       "https://www.justetf.com/en/etf-profile.html?isin=FR0013412020"
     ],
-    "since": "2018-04-16"
+    "as_of": "2026-08",
+    "since": "2019-04-25"
   },
   {
     "id": "FR0013412038",
@@ -811,34 +833,42 @@
     "benchmark_index": "MSCI Europe Net Total Return",
     "strategy": "synthetic-swap",
     "geography": {
+      "Belgium": 2,
+      "Denmark": 3,
+      "Finland": 2,
       "France": 15,
       "Germany": 14,
+      "Italy": 5,
       "Netherlands": 9,
-      "Other Europe": 26,
+      "Norway": 1,
+      "Other eurozone": 1,
+      "Spain": 6,
+      "Sweden": 6,
       "Switzerland": 14,
       "UK": 22
     },
     "sectors": {
       "Communication Services": 3,
-      "Consumer Discretionary": 7,
+      "Consumer Discretionary": 6,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 24,
+      "Financials": 26,
       "Health Care": 13,
       "Industrials": 19,
       "Information Technology": 9,
-      "Materials": 6,
+      "Materials": 5,
       "Real Estate": 1,
       "Utilities": 5
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic swap on broad developed European equities (PCEU); financials and industrials dominate",
+    "notes": "PEA-eligible synthetic swap on broad developed European equities (PCEU); financials and industrials dominate. Breakdowns are the benchmark's, from the issuer's monthly factsheet",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-msci-europe-ucits-etf-acc/fr0013412038"
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013412038/ENG/FRA/INSTITUTIONNEL/ETF"
     ],
-    "since": "2018-04-16"
+    "as_of": "2026-08",
+    "since": "2019-04-25"
   },
   {
     "id": "FR0013412285",
@@ -858,26 +888,28 @@
       "US": 100
     },
     "sectors": {
-      "Communication Services": 14,
+      "Communication Services": 11,
       "Consumer Discretionary": 5,
       "Consumer Staples": 5,
-      "Energy": 3,
-      "Financials": 13,
-      "Health Care": 11,
-      "Industrials": 6,
-      "Information Technology": 39,
+      "Energy": 2,
+      "Financials": 14,
+      "Health Care": 12,
+      "Industrials": 9,
+      "Information Technology": 37,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "PEA-eligible synthetic swap on US large-cap equities with ESG screening (PE500); near-identical to standard S&P 500",
+    "notes": "PEA-eligible synthetic swap on US large-cap equities with ESG screening (PE500); close to the standard S&P 500, with a much lighter Consumer Discretionary weight (5 against 9). Breakdowns are the benchmark's, from the issuer's monthly factsheet",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.fr/fr/professionnels/produits/equity/amundi-pea-sp-500-screened-ucits-etf-acc/fr0013412285"
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0013412285/FRA/FRA/INSTITUTIONNEL/ETF",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0013412285"
     ],
-    "since": "2018-04-16"
+    "as_of": "2026-08",
+    "since": "2019-04-25"
   },
   {
     "id": "FR001400U5Q4",
@@ -1025,37 +1057,45 @@
     "benchmark_index": "Solactive GBS Global Markets Large & Mid Cap Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
       "China": 3,
       "France": 2,
       "Germany": 2,
-      "India": 2,
+      "India": 1,
+      "Italy": 1,
       "Japan": 6,
-      "Other": 18,
+      "Netherlands": 1,
+      "Other": 5,
+      "South Korea": 2,
+      "Spain": 1,
+      "Sweden": 1,
+      "Switzerland": 2,
       "Taiwan": 3,
       "UK": 3,
-      "US": 58
+      "US": 62
     },
     "sectors": {
-      "Communication Services": 9,
-      "Consumer Discretionary": 10,
+      "Communication Services": 8,
+      "Consumer Discretionary": 9,
       "Consumer Staples": 5,
       "Energy": 4,
-      "Financials": 15,
+      "Financials": 17,
       "Health Care": 8,
       "Industrials": 10,
-      "Information Technology": 29,
+      "Information Technology": 31,
       "Materials": 4,
       "Real Estate": 2,
-      "Utilities": 3
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Cheapest all-world ETF (Amundi Prime, WEBN); full physical replication; tracks Solactive index",
+    "notes": "Cheapest all-world ETF (Amundi Prime, WEBN); full physical replication; tracks Solactive index. Breakdowns are the benchmark's, from the issuer's monthly factsheet, which names seventeen countries and leaves 5 % as 'Others' (developed and emerging)",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/individual/products/equity/amundi-prime-all-country-world-ucits-etf-acc/ie0003xja0j9"
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/IE0003XJA0J9/ENG/LUX/INSTITUTIONNEL/ETF"
     ],
+    "as_of": "2026-08",
     "since": "2024-06-05"
   },
   {
@@ -1660,26 +1700,33 @@
     "benchmark_index": "Nasdaq-100",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 7,
-      "US": 93
+      "Canada": 1,
+      "Ireland": 2,
+      "Netherlands": 1,
+      "UK": 1,
+      "US": 95
     },
     "sectors": {
-      "Communication Services": 15,
-      "Consumer Discretionary": 12,
-      "Consumer Staples": 7,
+      "Communication Services": 14,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 6,
+      "Energy": 1,
       "Health Care": 4,
       "Industrials": 4,
-      "Information Technology": 52,
-      "Other": 6
+      "Information Technology": 58,
+      "Materials": 1,
+      "Utilities": 1
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Oldest and largest UCITS Nasdaq-100 ETF (EQQQ); quarterly distributor, physically replicated",
+    "notes": "Oldest and largest UCITS Nasdaq-100 ETF (EQQQ); quarterly distributor, physically replicated. Breakdowns are the Nasdaq-100's own split as another issuer's factsheet publishes it (Invesco's pages refuse a script)",
     "confidence": "high",
     "sources": [
-      "https://www.invesco.com/uk/en/financial-products/etfs/invesco-eqqq-nasdaq-100-ucits-etf-dist.html"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0032077012",
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU1681038243/ENG/LUX/INSTITUTIONNEL/ETF"
     ],
-    "since": "2002-11-05"
+    "as_of": "2026-08",
+    "since": "2002-12-02"
   },
   {
     "id": "IE0032895942",
@@ -5707,38 +5754,44 @@
     "benchmark_index": "STOXX Europe 600",
     "strategy": "physical-replication",
     "geography": {
-      "France": 13,
+      "Belgium": 2,
+      "Denmark": 3,
+      "Finland": 2,
+      "France": 15,
       "Germany": 13,
-      "Italy": 3,
-      "Netherlands": 4,
-      "Other": 26,
-      "Spain": 4,
+      "Italy": 6,
+      "Netherlands": 8,
+      "Norway": 1,
+      "Other eurozone": 1,
+      "Poland": 1,
+      "Spain": 6,
       "Sweden": 5,
-      "Switzerland": 12,
-      "UK": 20
+      "Switzerland": 14,
+      "UK": 23
     },
     "sectors": {
       "Communication Services": 3,
       "Consumer Discretionary": 7,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 24,
-      "Health Care": 13,
+      "Financials": 26,
+      "Health Care": 12,
       "Industrials": 19,
-      "Information Technology": 8,
-      "Materials": 4,
-      "Other": 3,
-      "Real Estate": 2,
+      "Information Technology": 9,
+      "Materials": 6,
+      "Real Estate": 1,
       "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Low-cost EUR-accumulating pan-European core holding (MEUD); full physical replication of STOXX 600",
-    "confidence": "medium",
+    "notes": "Low-cost EUR-accumulating pan-European core holding (MEUD); full physical replication of STOXX 600. Breakdowns are the benchmark's, from the issuer's monthly factsheet; since is the first NAV (2013-04-03, as justETF also dates it), the sheet's own share-class inception date (2024-02-08) coming after it",
+    "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/individual/products/equity/amundi-core-stoxx-europe-600-ucits-etf-acc/lu0908500753"
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU0908500753/ENG/LUX/INSTITUTIONNEL/ETF",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU0908500753"
     ],
-    "since": "2013-02-19"
+    "as_of": "2026-08",
+    "since": "2013-04-03"
   },
   {
     "id": "LU1459801780",
@@ -5888,7 +5941,7 @@
   {
     "id": "LU1681038243",
     "isin": "LU1681038243",
-    "name": "Amundi Index Solutions - Amundi Nasdaq-100 Swap ETF EUR Acc",
+    "name": "Amundi Nasdaq-100 Swap UCITS ETF EUR Acc",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -5900,26 +5953,32 @@
     "benchmark_index": "Nasdaq-100",
     "strategy": "synthetic-swap",
     "geography": {
-      "Other": 8,
-      "US": 92
+      "Canada": 1,
+      "Ireland": 2,
+      "Netherlands": 1,
+      "UK": 1,
+      "US": 95
     },
     "sectors": {
-      "Communication Services": 15,
-      "Consumer Discretionary": 12,
-      "Consumer Staples": 8,
+      "Communication Services": 14,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 6,
+      "Energy": 1,
       "Health Care": 4,
       "Industrials": 4,
-      "Information Technology": 51,
-      "Other": 6
+      "Information Technology": 58,
+      "Materials": 1,
+      "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "EUR-denominated synthetic Nasdaq-100 tracker (ANX); swap-based",
+    "notes": "EUR-denominated synthetic Nasdaq-100 tracker (ANX); swap-based. Breakdowns are the benchmark's, from the issuer's monthly factsheet, which dates the share class 2018-04-18 and its first NAV 2010-06-08 (a predecessor's)",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/individual/products/equity/amundi-nasdaq100-swap-ucits-etf-eur-acc/lu1681038243"
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU1681038243/ENG/LUX/INSTITUTIONNEL/ETF"
     ],
-    "since": "2017-07-18"
+    "as_of": "2026-08",
+    "since": "2018-04-18"
   },
   {
     "id": "LU1681043599",
@@ -6953,28 +7012,29 @@
     "benchmark_index": "MSCI Greece IMI + Coca-Cola 20/35 Net Total Return (EUR)",
     "strategy": "physical-replication",
     "geography": {
-      "Greece": 86,
-      "UK": 14
+      "Greece": 88,
+      "UK": 12
     },
     "sectors": {
-      "Communication Services": 4,
-      "Consumer Discretionary": 8,
-      "Consumer Staples": 15,
-      "Energy": 4,
-      "Financials": 51,
-      "Industrials": 8,
+      "Communication Services": 3,
+      "Consumer Discretionary": 7,
+      "Consumer Staples": 13,
+      "Energy": 6,
+      "Financials": 53,
+      "Industrials": 6,
       "Materials": 3,
-      "Real Estate": 1,
-      "Utilities": 6
+      "Utilities": 9
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Single-country Greek equity (ex-Lyxor); bank-heavy (~51% financials) and concentrated; the 14% UK weight is Coca-Cola HBC (London-listed CDI, capped 20/35 in the index); high volatility; distributing annually; launched 2007. The 34-day hole between 2015-06-30 and 2015-08-03 that the data doctor flags is history, not a feed failure: Athens closed its exchange for five weeks under the capital controls, and reopened -14.2%. The series is otherwise clean end to end (no split, no denomination break, no adjacent move beyond 21.4%, rechecked 2026-08-21)",
+    "notes": "Single-country Greek equity (ex-Lyxor); bank-heavy (~53% financials) and concentrated; the 12% UK weight is Coca-Cola HBC (London-listed CDI, capped 20/35 in the index); high volatility; distributing annually; launched 2007. Breakdowns are the benchmark's, from the issuer's monthly factsheet (2026-08). The 34-day hole between 2015-06-30 and 2015-08-03 that the data doctor flags is history, not a feed failure: Athens closed its exchange for five weeks under the capital controls, and reopened -14.2%. The series is otherwise clean end to end (no split, no denomination break, no adjacent move beyond 21.4%, rechecked 2026-08-21)",
     "confidence": "high",
     "sources": [
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0010405431/FRA/FRA/INSTITUTIONNEL/ETF",
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010405431"
     ],
-    "since": "2007-01-05"
+    "as_of": "2026-08",
+    "since": "2007-01-04"
   },
   {
     "id": "IE00BD4TXW66",
@@ -8364,33 +8424,38 @@
     "source": "yahoo",
     "symbol": "QQQ",
     "currency": "USD",
-    "fees": 0.2,
+    "fees": 0.18,
     "asset_class": "equity",
     "underlying": "Nasdaq-100 Index: 100 largest non-financial companies listed on Nasdaq, heavy mega-cap technology tilt",
     "benchmark_index": "Nasdaq-100",
     "strategy": "physical-replication",
     "geography": {
-      "US": 97,
-      "Other": 3
+      "Canada": 1,
+      "Ireland": 2,
+      "Netherlands": 1,
+      "UK": 1,
+      "US": 95
     },
     "sectors": {
-      "Communication Services": 16,
-      "Consumer Discretionary": 13,
-      "Consumer Staples": 4,
-      "Health Care": 5,
-      "Industrials": 5,
-      "Information Technology": 52,
+      "Communication Services": 14,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 6,
+      "Energy": 1,
+      "Health Care": 4,
+      "Industrials": 4,
+      "Information Technology": 58,
       "Materials": 1,
-      "Utilities": 1,
-      "Other": 3
+      "Utilities": 1
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "US mega-cap growth/technology exposure; the standard growth sleeve in model portfolios; concentrated, higher beta and drawdowns than the S&P 500",
+    "notes": "US mega-cap growth/technology exposure; the standard growth sleeve in model portfolios; concentrated, higher beta and drawdowns than the S&P 500. Breakdowns are the Nasdaq-100's own split as another issuer's factsheet publishes it (Invesco's holdings download refuses a script)",
     "confidence": "high",
     "sources": [
-      "https://www.invesco.com/qqq-etf/en/home.html"
+      "https://www.invesco.com/qqq-etf/en/home.html",
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU1681038243/ENG/LUX/INSTITUTIONNEL/ETF"
     ],
+    "as_of": "2026-08",
     "since": "1999-03-10"
   },
   {
