@@ -184,18 +184,27 @@ func run(ctx context.Context, argv []string) error {
 	fs.BoolVar(simAll, "b", false, "shorthand for -simulate")
 	dumpList := fs.String("dump", "", "write the series of these comma-separated identifiers to stdout as long CSV (id,date,value), shaped by -start, -end, -currency (native unless set), -simulate and -monthly, then exit; bundled reference series (TREASURY-LONG-USD…) included; \"list\" prints what the binary bundles")
 	fs.BoolVar(&opt.monthly, "monthly", false, "with -dump: keep the last close of each calendar month")
+	pairArg := fs.String("pair", "", "compare two series, A,B: A the candidate (a reconstruction, a refreshed file), B the reference (the real fund, the index, the previous file); each an identifier (fetched as -dump fetches it) or the path of a date,value CSV file (it holds a slash or ends in .csv); prints the study as text, then exits")
+	pairJSON := fs.Bool("json", false, "with -pair: print the study as JSON")
+	leadLag := fs.Bool("lead-lag", false, "with -pair: rank the daily divergences forgiving a one-session difference in closing times (a Xetra close against a US one)")
 	fs.BoolVar(&opt.offline, "offline", false, "never touch the network: serve the quote cache whatever its age, then the bundled data, and fail on anything else")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: pofo [options] portfolio.txt [portfolio2.txt …]
        pofo [options] -assets VOO,IWDA,NTSG
        pofo [options] -b -assets AVWS,ZPRV
        pofo [options] -dump IWDA,TREASURY-LONG-USD -monthly > series.csv
+       pofo [options] -pair SP500,SP500-USD
+       pofo [options] -pair X,/tmp/X-before.csv -json
 
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
 
 -dump A,B,C writes the series themselves to stdout as CSV, for another
 program to read; "-dump list" names every series bundled in the binary.
+-pair A,B measures A (a backcast, a refreshed file) against B (the real
+fund, the index, the file as it was): level gap, correlation, tracking
+error, beta, calendar years side by side, dated divergences. A side holding
+a slash or ending in .csv is a file, e.g. from "git show HEAD~1:<path>".
 -offline keeps any mode off the network (quote cache and bundled data only).
 
 -simulate (-b) backcasts every identifier of the run, so "-b -a AVWS,ZPRV"
@@ -315,7 +324,7 @@ Options:
 		return fmt.Errorf("invalid -indexnow-key %q: 8 to 128 letters, digits and dashes", opt.indexNowKey)
 	}
 
-	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && *dumpList == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && *dumpList == "" && *pairArg == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -357,7 +366,7 @@ Options:
 			"-verify-data": *verifyData, "-suggest": *suggestFlag,
 			"-coverage": *coverageFlag, "-sweep": *sweepFlag,
 			"-gen-simdata": *genSimdata, "-verify-simdata": *verifySimdata,
-			"-dump": *dumpList != "",
+			"-dump": *dumpList != "", "-pair": *pairArg != "",
 		} {
 			if on {
 				return fmt.Errorf("-serve cannot be combined with %s", name)
@@ -370,17 +379,21 @@ Options:
 		return errors.New("-offline cannot be combined with -gen-simdata or -warmup, which exist to download")
 	}
 
-	// Rate charting and the dump take identifiers on their own flag and never
-	// build a portfolio: dispatch before any portfolio parsing.
+	// Rate charting, the dump and the pair take identifiers on their own flag
+	// and never build a portfolio: dispatch before any portfolio parsing.
 	if *ratesFlag != "" {
 		return runRates(ctx, &opt, opt.newClient(opt.cacheAge), *ratesFlag)
 	}
+	d := dumpOptions{simAll: *simAll}
+	if pinned(fs, "currency") {
+		d.currency = opt.currency
+	}
 	if *dumpList != "" {
-		d := dumpOptions{simAll: *simAll}
-		if pinned(fs, "currency") {
-			d.currency = opt.currency
-		}
 		return runDump(ctx, opt.newClient(opt.cacheAge), os.Stdout, splitIDs(*dumpList), &opt, d)
+	}
+	if *pairArg != "" {
+		p := pairOptions{dumpOptions: d, json: *pairJSON, leadLag: *leadLag}
+		return runPair(ctx, opt.newClient(opt.cacheAge), os.Stdout, *pairArg, &opt, p)
 	}
 
 	// The two simdata modes consume positional args as recipe ids, not files;

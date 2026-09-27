@@ -1,7 +1,7 @@
 // Package analyze is the high-level, numbers-only face of the library: one
 // call studies an asset (Asset) or a portfolio (Portfolio) and returns every
 // number the comparison report is drawn from, as plain values, with nothing
-// rendered.
+// rendered; another (Pair) measures one series against its reference.
 //
 //	spec, _ := portfolio.NewSpec("60/40",
 //		portfolio.Line{ID: "IWDA", Weight: 0.6},
@@ -37,6 +37,38 @@
 //
 // Nominal statistics only: an inflation-adjusted reading needs a consumer
 // price index per currency, which pkg/compare owns.
+//
+// # Pairs
+//
+// Pair compares a candidate series with a reference, the question behind
+// every data check: a reconstruction against the real fund, a fund against
+// its index, a refreshed bundled file against the version it replaces (read
+// through marketdata.ReadCSV from "git show HEAD~1:<path>"). It takes two
+// series, not identifiers, so it works on anything a caller holds, and reads
+// them on the window both cover:
+//
+//   - level and identity, at any cadence, off each series' close at or
+//     before each bound: the CAGR gap with its standard error (a gap inside
+//     two of them measures nothing), the level gap once both are rebased,
+//     the ratio A/B on the first date and the first shared date it moves (a
+//     rescaled copy forgiven), the dates only one side holds, and the
+//     calendar years side by side, which chain to the window's total;
+//   - a Monthly block on the calendar months both quote (a
+//     marketdata.Panel, so a fund's last trading close meets an index's
+//     calendar month-end) and, when both series are finer than monthly, a
+//     Daily block on the dates both quote: correlation, volatilities and
+//     their ratio, tracking error (metrics.TrackingError), beta and alpha
+//     (metrics.Regress), and the periods where the two disagree most, dated.
+//     PairOptions.LeadLag ranks the daily ones by metrics.LeadLagGaps, which
+//     forgives a one-session difference in closing times;
+//   - Warnings for what makes a figure unreliable: a window under two years,
+//     a currency or cadence mismatch, each side's own caveats (a junction, a
+//     reconstructed or estimated stretch), monthly dates on the first of the
+//     month (a close labelled by the month it opens reads one month off).
+//
+// PairStudy.WriteText prints it all as aligned text; the struct marshals to
+// JSON with no NaN in it, a figure that cannot be measured being left zero
+// with a warning or a nil block. The pofo CLI serves it as -pair.
 //
 // # Errors and warnings
 //
