@@ -21,9 +21,9 @@ type Article struct {
 
 // Category groups articles on the index page.
 type Category struct {
-	Title    string
-	Blurb    string
-	Articles []Article
+	Title    string    // the category heading
+	Blurb    string    // one line under it
+	Articles []Article // in reading order
 }
 
 // Categories is the book's table of contents, in reading order. It lists

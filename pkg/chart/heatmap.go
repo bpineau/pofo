@@ -7,9 +7,9 @@ import (
 
 // HeatmapData is a grid of values Z[y][x] in [0,1] over the axes Xs and Ys.
 type HeatmapData struct {
-	Xs, Ys         []float64
-	Z              [][]float64
-	XLabel, YLabel string
+	Xs, Ys         []float64   // the axes' values, ascending
+	Z              [][]float64 // Z[y][x] in [0,1], parallel to Ys then Xs
+	XLabel, YLabel string      // the axes' titles
 }
 
 // Heatmap renders Z as a coloured grid (green = low, red = high), suitable

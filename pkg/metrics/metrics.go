@@ -13,23 +13,23 @@ const (
 
 // Stats summarizes the behaviour of a value series.
 type Stats struct {
-	Start, End     time.Time
-	Years          float64
-	PeriodsPerYear float64 // the series' cadence (252 daily, 52 weekly, 12 monthly), which annualizes the per-period figures below
-	CAGR           float64 // annualized growth rate (0.07 = +7 %/year)
-	Volatility     float64 // standard deviation of the per-period returns, annualized at PeriodsPerYear (0.16 = 16 %/year)
-	Sharpe         float64 // annualized mean per-period return / Volatility, risk-free rate 0
-	Sortino        float64 // annualized mean per-period return / annualized downside deviation
-	Ulcer          float64 // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
-	MaxDrawdown    float64 // deepest peak-to-trough loss (-0.55 = −55 %)
-	TTRDays        int     // longest underwater stretch (peak to recovery), calendar days
-	TTROngoing     bool    // the longest stretch had not recovered by End
-	Beta           float64
-	HasBeta        bool
-	CWARP          float64 // Cole Wins Above Replacement Portfolio vs the benchmark, in percent (+ improves, - hurts)
-	HasCWARP       bool
-	Skew           float64 // skewness of the per-period returns (negative = longer left tail)
-	Kurtosis       float64 // excess kurtosis of the per-period returns (>0 = fatter tails than normal)
+	Start, End     time.Time // first and last dates of the series
+	Years          float64   // End - Start in 365.25-day years, the CAGR's exponent
+	PeriodsPerYear float64   // the series' cadence (252 daily, 52 weekly, 12 monthly), which annualizes the per-period figures below
+	CAGR           float64   // annualized growth rate (0.07 = +7 %/year)
+	Volatility     float64   // standard deviation of the per-period returns, annualized at PeriodsPerYear (0.16 = 16 %/year)
+	Sharpe         float64   // annualized mean per-period return / Volatility, risk-free rate 0
+	Sortino        float64   // annualized mean per-period return / annualized downside deviation
+	Ulcer          float64   // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
+	MaxDrawdown    float64   // deepest peak-to-trough loss (-0.55 = −55 %)
+	TTRDays        int       // longest underwater stretch (peak to recovery), calendar days
+	TTROngoing     bool      // the longest stretch had not recovered by End
+	Beta           float64   // against a benchmark (see Beta); Compute leaves it zero, a caller holding a benchmark fills it
+	HasBeta        bool      // Beta was measured (a benchmark overlapped the series)
+	CWARP          float64   // Cole Wins Above Replacement Portfolio vs the benchmark, in percent (+ improves, - hurts); filled like Beta
+	HasCWARP       bool      // CWARP was measured
+	Skew           float64   // skewness of the per-period returns (negative = longer left tail)
+	Kurtosis       float64   // excess kurtosis of the per-period returns (>0 = fatter tails than normal)
 }
 
 // Compute derives Stats from a value series. dates must be ascending and

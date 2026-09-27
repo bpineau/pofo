@@ -12,8 +12,8 @@ import (
 // handler emits relative URLs and only the server knows where each edition
 // sits.
 type Mount struct {
-	Base    string
-	Edition *Edition
+	Base    string   // absolute, with a trailing slash
+	Edition *Edition // the edition served there
 }
 
 // Page is one non-book page of the surrounding site, listed in the sitemap
@@ -21,7 +21,7 @@ type Mount struct {
 // the book.
 type Page struct {
 	Path  string // absolute path, "/visualizer"
-	Title string
+	Title string // the page's title
 	Note  string // one line, what the page is
 }
 
@@ -34,10 +34,10 @@ type Page struct {
 // absolute URLs the sitemap protocol requires are built per request from the
 // Host header; Handle does that for a caller.
 type Site struct {
-	Name    string // llms.txt H1: the site, not the book ("pofo")
-	Summary string // llms.txt blockquote: one paragraph on what the site is
-	Mounts  []Mount
-	Pages   []Page
+	Name    string  // llms.txt H1: the site, not the book ("pofo")
+	Summary string  // llms.txt blockquote: one paragraph on what the site is
+	Mounts  []Mount // the book's editions
+	Pages   []Page  // the server's other pages
 
 	// IndexNowKey, when set, publishes the IndexNow ownership key file at the
 	// root ("/<key>.txt"), which is what lets a deploy PUSH its URLs to the

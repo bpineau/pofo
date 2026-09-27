@@ -13,7 +13,7 @@ type Issue struct {
 	// (non-positive prices).
 	Severity string
 	Date     time.Time // first date concerned (zero when global)
-	Message  string
+	Message  string    // the finding in one line, without the date
 }
 
 // String renders the issue as a one-line "[severity] message", prefixed with

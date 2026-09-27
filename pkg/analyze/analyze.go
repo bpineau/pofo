@@ -28,7 +28,11 @@ const DefaultRebalance = 90
 // and To bound the window, Currency converts. Fees returns a TER in PERCENT
 // per year for a bare identifier (no SIM suffix), ok false when unknown.
 type Source interface {
+	// FetchExtended returns the series of id, backcast-extended under the
+	// SIM suffix, windowed and converted per opt.
 	FetchExtended(ctx context.Context, id string, opt marketdata.FetchOptions) (*marketdata.Series, error)
+	// Fees returns the TER of a bare id in PERCENT per year, ok false when
+	// unknown.
 	Fees(ctx context.Context, id string) (float64, bool)
 }
 

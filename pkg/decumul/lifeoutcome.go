@@ -28,13 +28,11 @@ type LifeOutcome struct {
 	// expected length of the failure; the p95 is what the unlucky tail faces,
 	// and it is the honest measure of how bad "ruin" is in this plan, since a
 	// ruin two years before death and one at 70 are not the same event.
-	BrokeYearsMean float64
-	BrokeYearsP95  float64
+	BrokeYearsMean, BrokeYearsP95 float64
 	// The estate left at the household's end: the p5/p50/p90 of real wealth at
 	// death (or at the horizon for the censored), and the share leaving
 	// nothing at all.
-	EstateP5, EstateP50, EstateP90 float64
-	EstateZero                     float64
+	EstateP5, EstateP50, EstateP90, EstateZero float64
 	// IncomeMean is the mean TOTAL real income per LIVED year: what the
 	// portfolio delivered plus the pensions and annuity received. It is the
 	// lifestyle side of the trade, against which the ruin and estate figures

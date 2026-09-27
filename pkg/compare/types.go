@@ -17,15 +17,15 @@ import (
 // rebalancing cadence, the SIM/fee toggles, an optional embedded simdata
 // filesystem, and the suggestion framework used for coverage/gap analysis.
 type Options struct {
-	Currency  string // base currency every column is evaluated in
-	Benchmark string // identifier of the benchmark series, if any
-	Start     time.Time
-	End       time.Time
-	Rebalance int   // rebalancing period in days
-	NoSim     bool  // ignore SIM-suffixed simulated history extension
-	NoFees    bool  // do not fetch the assets' ongoing charges (TER); envelope fees still apply
-	Simdata   fs.FS // optional filesystem of simulated-history CSVs
-	Framework suggest.Framework
+	Currency  string            // base currency every column is evaluated in
+	Benchmark string            // identifier of the benchmark series, if any
+	Start     time.Time         // first date analysed; zero = as early as the data goes
+	End       time.Time         // last date analysed; zero = the latest quote
+	Rebalance int               // rebalancing period in days
+	NoSim     bool              // ignore SIM-suffixed simulated history extension
+	NoFees    bool              // do not fetch the assets' ongoing charges (TER); envelope fees still apply
+	Simdata   fs.FS             // optional filesystem of simulated-history CSVs
+	Framework suggest.Framework // regime or factor lens of the coverage bars
 	// ExactForeign resolves identifiers OUTSIDE the bundled catalog
 	// exactly (marketdata.FetchOptions.ExactOnly): no instrument matched by
 	// name, so a typo fails instead of quoting an unrelated fund. Catalog
@@ -50,14 +50,14 @@ type Decoration struct {
 // its full and common-window value series, its holdings, and its statistics.
 // It is built from the internal column record by Comparison.Columns.
 type Column struct {
-	Name      string
-	Color     string
-	SimDates  []time.Time
-	WinDates  []time.Time
-	SimValues []float64
-	WinValues []float64
-	Assets    []portfolio.Asset
-	Stats     metrics.Stats
+	Name      string            // the spec's name
+	Color     string            // the column's CSS color in every chart
+	SimDates  []time.Time       // the portfolio's whole simulation
+	WinDates  []time.Time       // the comparison's common window
+	SimValues []float64         // money values over SimDates (flows included)
+	WinValues []float64         // the time-weighted index over WinDates, rebased to 100
+	Assets    []portfolio.Asset // the resolved holdings
+	Stats     metrics.Stats     // nominal statistics on the common window
 	// Note is the informational line a computed column carries, currently
 	// the optimizer's account of the weights it chose, the window it fitted
 	// them on and how they did outside it. Empty for a plain portfolio.

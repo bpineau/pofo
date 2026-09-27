@@ -8,8 +8,8 @@ import (
 
 // Fan is one model's wealth fan chart, named for its column in the strip.
 type Fan struct {
-	Name string `json:"name"`
-	SVG  string `json:"svg"`
+	Name string `json:"name"` // the planning model
+	SVG  string `json:"svg"`  // its wealth fan chart
 }
 
 // PathsResult is the set of wealth fan charts, one per planning model: the
@@ -18,8 +18,8 @@ type Fan struct {
 // repeated?". The four planning models are shown side by side so the central
 // case and the successively grimmer stresses can be compared at a glance.
 type PathsResult struct {
-	Fans []Fan  `json:"fans"`
-	Note string `json:"note"`
+	Fans []Fan  `json:"fans"` // one per planning model
+	Note string `json:"note"` // caveat; "" when none
 }
 
 // fanPercentiles are the bands drawn: a 5-95 outer envelope, a 25-75 inner

@@ -9,8 +9,8 @@ import (
 // SparkOptions controls a Sparkline's rendering. Width and Height default
 // to 72x20 pixels; Color defaults to the first palette color.
 type SparkOptions struct {
-	Width, Height int
-	Color         string
+	Width, Height int    // pixels; 0 = 72 and 20
+	Color         string // CSS stroke; "" = the first palette color
 }
 
 // Sparkline renders a bare inline curve: one polyline, no axes, no labels,

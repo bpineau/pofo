@@ -10,10 +10,10 @@ import (
 // and regimes survive), applies Weights (nil uses Panel.Weights) and
 // concatenates until Periods returns are produced.
 type BlockBootstrap struct {
-	Panel    Panel
-	Weights  []float64
-	BlockLen int
-	Periods  int
+	Panel    Panel     // the history resampled, real returns per period
+	Weights  []float64 // fractions per Panel asset; nil uses Panel.Weights
+	BlockLen int       // periods per block
+	Periods  int       // length of every drawn path
 
 	hist Sequence // Panel combined at Weights, filled by prepare
 }
@@ -47,10 +47,10 @@ func (b BlockBootstrap) Draw(rng *rand.Rand) Sequence {
 // starts a new random block. It avoids the fixed-length artefacts of
 // BlockBootstrap.
 type StationaryBootstrap struct {
-	Panel     Panel
-	Weights   []float64
-	MeanBlock float64
-	Periods   int
+	Panel     Panel     // the history resampled, real returns per period
+	Weights   []float64 // fractions per Panel asset; nil uses Panel.Weights
+	MeanBlock float64   // mean block length, in periods
+	Periods   int       // length of every drawn path
 
 	hist Sequence // Panel combined at Weights, filled by prepare
 }

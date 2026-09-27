@@ -10,10 +10,10 @@ import (
 
 // Holding is one position of the portfolio under analysis.
 type Holding struct {
-	ID      string
+	ID      string  // the holding's identifier
 	Weight  float64 // fraction of the portfolio
 	Meta    Meta    // catalog metadata; zero when unknown
-	HasMeta bool
+	HasMeta bool    // Meta is filled; a holding without it counts as unclassified
 }
 
 // Candidate is a catalog asset that could be added. PortReturns and Returns
@@ -23,12 +23,12 @@ type Holding struct {
 // dates), which annualizes the walk-forward Sharpe ratios; zero reads as
 // daily closes, metrics.TradingDaysPerYear.
 type Candidate struct {
-	Meta           Meta
-	PortReturns    []float64
-	Returns        []float64
-	PeriodsPerYear float64
-	Years          float64 // length of the overlap window, for display/filtering
-	Simulated      bool    // the candidate's history includes simulated data
+	Meta           Meta      // the candidate's catalog record
+	PortReturns    []float64 // the held portfolio's returns on the overlap window
+	Returns        []float64 // the candidate's, same calendar and length
+	PeriodsPerYear float64   // the calendar's cadence; zero reads as daily
+	Years          float64   // length of the overlap window, for display/filtering
+	Simulated      bool      // the candidate's history includes simulated data
 }
 
 // Options tunes the analysis. The zero value is unusable; start from
@@ -56,7 +56,7 @@ func DefaultOptions() Options {
 
 // Suggestion is one recommended asset to add.
 type Suggestion struct {
-	Meta          Meta
+	Meta          Meta     // the candidate's catalog record
 	Fills         Category // the gap category it primarily fills
 	Weight        float64  // suggested weight (fraction)
 	Corr          float64  // correlation to the held portfolio
@@ -66,18 +66,18 @@ type Suggestion struct {
 	DDWins        int      // ... where max-drawdown improved
 	Windows       int      // total walk-forward windows evaluated
 	MedSharpeGain float64  // median out-of-sample Sharpe gain across windows
-	Years         float64
-	Simulated     bool
+	Years         float64  // the candidate's Years
+	Simulated     bool     // the candidate's history includes simulated data
 }
 
 // Result is the full analysis.
 type Result struct {
-	Framework    string
-	Coverage     map[Category]float64
-	Unclassified float64
-	Gaps         []Category
-	Redundancies []Group
-	Suggestions  []Suggestion
+	Framework    string               // the Framework's Name
+	Coverage     map[Category]float64 // notional exposure per category (see Coverage), not normalized
+	Unclassified float64              // weight of the holdings without metadata
+	Gaps         []Category           // categories at or below Options.GapThreshold
+	Redundancies []Group              // near-duplicate holdings
+	Suggestions  []Suggestion         // ranked, at most Options.MaxSuggest
 }
 
 // Analyze computes the framework coverage, redundancies and ranked

@@ -15,11 +15,11 @@ import (
 // to every chapter, an optional PNG cover and a tree of chapters (one level of
 // nesting drives the table of contents).
 type Book struct {
-	Title       string
-	Author      string
-	Language    string // BCP 47, e.g. "fr"
-	Identifier  string // stable urn:uuid, one per book
-	Description string
+	Title       string    // dc:title
+	Author      string    // dc:creator
+	Language    string    // BCP 47, e.g. "fr"
+	Identifier  string    // stable urn:uuid, one per book
+	Description string    // dc:description; may be empty
 	Modified    time.Time // dcterms:modified and every zip timestamp; UTC
 	CSS         string    // single stylesheet applied to every chapter
 	Cover       []byte    // optional PNG; nil means no cover page
@@ -29,10 +29,10 @@ type Book struct {
 // Chapter is one content document. Children nest exactly one level deep
 // (a category page and its articles); a Child may not itself have Children.
 type Chapter struct {
-	FileName string // e.g. "combien-il-vous-faut.xhtml"; must be unique across the tree
-	Title    string // TOC label and <title>
-	Body     string // XHTML fragment placed inside <body>
-	Children []Chapter
+	FileName string    // e.g. "combien-il-vous-faut.xhtml"; must be unique across the tree
+	Title    string    // TOC label and <title>
+	Body     string    // XHTML fragment placed inside <body>
+	Children []Chapter // one level deep at most; nil for a leaf
 }
 
 // Fixed OCF locations. Content documents live under OEBPS/.

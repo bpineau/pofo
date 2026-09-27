@@ -47,9 +47,9 @@ var allFactors = []Category{Market, Size, Value, Momentum, Quality, Term, Credit
 // leg classifies a single asset_class in isolation and drives the
 // exposure-weighted Contribution for stacked funds.
 type Framework struct {
-	Name       string
-	Categories []Category
-	Classify   func(Meta) []Category
+	Name       string                // "regimes" or "factors", for display
+	Categories []Category            // every category, in display order
+	Classify   func(Meta) []Category // the categories one asset helps in
 	leg        func(Meta) []Category
 }
 

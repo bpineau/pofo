@@ -10,24 +10,23 @@ import (
 
 // Series is one line on a chart.
 type Series struct {
-	Name   string
-	Dates  []time.Time
-	Values []float64
-	Color  string // CSS color; picked from a default palette when empty
+	Name   string      // legend label
+	Dates  []time.Time // ascending, parallel to Values
+	Values []float64   // the levels drawn, in the chart's unit
+	Color  string      // CSS color; picked from a default palette when empty
 }
 
 // Options controls the rendering of a chart. The zero Style keeps the
 // default look; see Style and StyleMinimal for the available knobs.
 type Options struct {
-	Title  string
-	Width  int // pixels, defaults to 960
-	Height int // pixels, defaults to 420
-	Style  Style
+	Title  string // chart title; "" = none
+	Width  int    // pixels, defaults to 960
+	Height int    // pixels, defaults to 420
+	Style  Style  // look and feel; the zero value is the default
 	// XLabel and YLabel name the axes of the charts whose data arrives
 	// without them (the bar family). The line family takes its axis labels as
 	// arguments, since it cannot be drawn without knowing them.
-	XLabel string
-	YLabel string
+	XLabel, YLabel string
 }
 
 // defaultPalette is the pofo "instrument" series palette: a petrol anchor

@@ -13,9 +13,9 @@ import (
 // completely different fates: most of a plan's risk is decided in its first
 // ten years.
 type DecadeResult struct {
-	SVG   string `json:"decadeSvg"`
-	Cards []Card `json:"cards"`
-	Note  string `json:"note"`
+	SVG   string `json:"decadeSvg"` // the section's chart
+	Cards []Card `json:"cards"`     // its headline figures
+	Note  string `json:"note"`      // caveat; "" when none
 }
 
 // Decade simulates the central model at the planned spend and decomposes ruin

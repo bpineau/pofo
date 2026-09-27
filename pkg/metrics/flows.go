@@ -10,8 +10,8 @@ import (
 // normalization as the value series they accompany (pofo series use
 // 00:00 UTC): flows are matched to days by exact time.Time equality.
 type Flow struct {
-	Date   time.Time
-	Amount float64
+	Date   time.Time // the day the flow is booked, at its start (00:00 UTC for pofo series)
+	Amount float64   // in the value series' unit: positive in, negative out
 }
 
 // flowsByDay sums flow amounts per exact date.

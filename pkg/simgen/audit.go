@@ -34,7 +34,7 @@ type Junction struct {
 	Corr     float64 // monthly correlation over them
 	GapYear  float64 // CAGR of the deeper minus the nearer, per year
 	Measured bool    // false when the two cannot be compared (see Note)
-	Note     string  `json:",omitempty"`
+	Note     string  `json:",omitempty"` // why a link is unmeasured, or what to read into it
 }
 
 // AuditResult is one recipe's engine graded against reality: the raw
@@ -63,7 +63,7 @@ type AuditResult struct {
 
 	Reference  string    `json:",omitempty"` // the identifier that served as the truth
 	Start, End time.Time `json:",omitzero"`  // the measured window
-	Years      float64
+	Years      float64   // its length, 365.25-day years
 	Short      bool      // under two years: read the return gap as noise
 	RealFrom   time.Time `json:",omitzero"` // date from which a SIM consumer gets real quotes
 
@@ -72,15 +72,15 @@ type AuditResult struct {
 	// error and the two volatilities, all at that calendar's cadence, so
 	// TrackingErr / VolReal compares like with like.
 	DailyCorr, WeeklyCorr float64
-	Beta, TrackingErr     float64
-	VolSim, VolReal       float64
+	Beta, TrackingErr     float64 // engine on real; annualized tracking error
+	VolSim, VolReal       float64 // annualized volatilities
 	// MonthlyCorr is the correlation of whole calendar months both quote
 	// inside the window (a marketdata.Panel), zero when Months is under
 	// twelve; Notes says why when none could be cut.
 	MonthlyCorr float64
-	Months      int
+	Months      int     // whole calendar months behind MonthlyCorr
 	CAGRSim     float64 // over the window, 365.25-day years
-	CAGRReal    float64
+	CAGRReal    float64 // the reference's, on the same window
 	Delta       float64 // engine - real, per year
 	// GapSE is the standard error of Delta: the monthly tracking error over
 	// the square root of the years the months span (the daily one over the
@@ -90,13 +90,13 @@ type AuditResult struct {
 	TotalDrift          float64 // engine/real over the window, as a fraction
 	WorstSim, WorstReal float64 // worst single-period return, each on its own calendar
 
-	Level, Path Verdict
+	Level, Path Verdict  // the grades of the return gap and of the texture
 	Score       float64  // severity, worst first; presentation only
 	Notes       []string `json:",omitempty"` // what a figure could not be measured on, and why
 
-	Engine, Real *marketdata.Series   `json:"-"` // clipped to the window, for charting
-	Others       []*marketdata.Series `json:"-"` // curated comparison curves, same window
-	Chain        []Junction           `json:",omitempty"`
+	Engine, Real *marketdata.Series   `json:"-"`          // clipped to the window, for charting
+	Others       []*marketdata.Series `json:"-"`          // curated comparison curves, same window
+	Chain        []Junction           `json:",omitempty"` // a donor chain's junctions, the asset's own first, the deepest last
 	Caveat       string               `json:",omitempty"` // a hand-written note the numbers alone would misread
 }
 
@@ -106,9 +106,9 @@ func (a AuditResult) Measured() bool { return a.Err == "" }
 
 // AuditGroup is a family of recipes, in the order the report shows them.
 type AuditGroup struct {
-	Title   string
-	Note    string
-	Results []AuditResult
+	Title   string        // the family's heading
+	Note    string        // what to read the family's grades against
+	Results []AuditResult // its recipes, worst Score first
 }
 
 // auditGroups is the reading order of the report: the engines that need the

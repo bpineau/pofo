@@ -14,6 +14,8 @@ import (
 // caller only meets this interface when injecting another law: a published
 // life table, a cohort-projected law, or a deliberately harsher one.
 type MortalityLaw interface {
+	// Survival is the probability that a person of age is alive after
+	// years more years.
 	Survival(age, years float64) float64
 }
 
@@ -21,8 +23,8 @@ type MortalityLaw interface {
 // 0, and the law their remaining lifetime is drawn from. A nil Law means
 // FrenchMortality.
 type Life struct {
-	Age float64
-	Law MortalityLaw
+	Age float64      // age at the plan's year 0
+	Law MortalityLaw // nil = FrenchMortality
 }
 
 // law resolves Law, applying the FrenchMortality default.
@@ -75,6 +77,7 @@ func (o Owner) other() Owner {
 // horizon the household actually plans over, so the longevity tail an annuity
 // insures is not truncated away.
 type Lifetime struct {
+	// Self is the household's first (or only) life.
 	Self Life
 	// Partner is the household's second life; nil for a single person. The two
 	// lifespans are drawn INDEPENDENTLY from each member's own law. Real
@@ -108,7 +111,7 @@ func (lt Lifetime) survivorSpend() float64 {
 // horizon. Passing it to RunPath is how a caller asks for the fixed-horizon
 // kernel explicitly, and it is what every Lifetime-free plan uses.
 type Lives struct {
-	Self    int
+	Self    int // years the first member lives
 	Partner int // 0 or negative for a single-life household
 }
 

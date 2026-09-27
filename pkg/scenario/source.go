@@ -22,8 +22,8 @@ type Source interface {
 // Df is the degrees of freedom (lower = fatter tails); Df <= 2 falls back
 // to a Normal. Each drawn return r is clamped so that 1+r >= 0.
 type ParametricSource struct {
-	Mu, Sigma, Df float64
-	Periods       int
+	Mu, Sigma, Df float64 // real return per period (FRACTIONS: 0.035, 0.12), degrees of freedom
+	Periods       int     // path length (years for the decumulation kernel)
 }
 
 // Len reports the path length.

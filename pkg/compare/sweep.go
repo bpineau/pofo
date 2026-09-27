@@ -27,18 +27,18 @@ var DefaultSweepGrid = []float64{0, .05, .10, .15, .20, .25, .30, .35, .40, .45}
 // SweepPoint is one simulated allocation: the swept holding at Weight, the
 // others keeping their relative proportions.
 type SweepPoint struct {
-	Weight  float64 // the swept holding's weight, as a fraction
-	Written bool    // this is the weight the file actually holds
-	Stats   metrics.Stats
-	Worst5y float64 // worst rolling 5-year CAGR, NaN when the window is too short
+	Weight  float64       // the swept holding's weight, as a fraction
+	Written bool          // this is the weight the file actually holds
+	Stats   metrics.Stats // the whole allocation at that weight
+	Worst5y float64       // worst rolling 5-year CAGR, NaN when the window is too short
 }
 
 // SweepHolding is one holding's whole sweep.
 type SweepHolding struct {
-	ID      string
-	Symbol  string
-	Written float64 // the weight written in the file, as a fraction
-	Points  []SweepPoint
+	ID      string       // the holding as written in the file
+	Symbol  string       // what it resolved to
+	Written float64      // the weight written in the file, as a fraction
+	Points  []SweepPoint // the grid's weights, the written one included
 }
 
 // Sweep answers "what does each line's weight buy, and what does it cost".

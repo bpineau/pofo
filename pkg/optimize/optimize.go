@@ -81,7 +81,7 @@ func (l Limits) Any() bool {
 // out-of-sample). It travels in Spec only because it arrives in the same
 // "#meta optimize:" directive and one parser is better than two.
 type Window struct {
-	Start, End time.Time
+	Start, End time.Time // inclusive bounds; a zero bound is open
 }
 
 // IsZero reports whether the window constrains nothing.
@@ -108,6 +108,7 @@ func (w Window) String() string {
 
 // Spec describes an optimization: an objective and its constraints.
 type Spec struct {
+	// Objective is what the weights maximize or minimize.
 	Objective Objective
 	// MaxWeight caps each asset's weight, as a fraction in (0,1]; 0 means
 	// no cap. Ignored for RiskParity.
@@ -278,9 +279,8 @@ type Result struct {
 	// for every other objective): the annualized returns the prior
 	// allocation implicitly expects, the same returns after the views are
 	// blended in, and the risk aversion that scaled them.
-	Implied   []float64
-	Posterior []float64
-	Lambda    float64
+	Implied, Posterior []float64
+	Lambda             float64 // risk aversion
 }
 
 // ParseSpec reads a "#meta optimize:" value: an objective optionally

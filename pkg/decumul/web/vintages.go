@@ -20,9 +20,9 @@ import (
 // against is the one the household has, never the one the data happens to end
 // at.
 type VintagesResult struct {
-	SVG   string `json:"vintagesSvg"`
-	Cards []Card `json:"cards"`
-	Note  string `json:"note"`
+	SVG   string `json:"vintagesSvg"` // the section's chart
+	Cards []Card `json:"cards"`       // its headline figures
+	Note  string `json:"note"`        // caveat; "" when none
 }
 
 // vintage is one named historical start: a country of the JST panel and the

@@ -16,7 +16,9 @@ import (
 )
 
 // NavLink is one entry of the optional cross-navigation shown in the top bar.
-type NavLink struct{ Label, Href string }
+type NavLink struct {
+	Label, Href string // the link's text and target
+}
 
 // ExampleRef is one bundled portfolio the drawer's loader offers. It is a
 // plain data record so this package never imports the CLI's example
