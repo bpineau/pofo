@@ -50,7 +50,7 @@ Descriptive fields (consumed by `pkg/suggest`):
 | `notes` | one line on the asset's portfolio role / the market regime it serves |
 | `confidence` | `high`, `medium`, `low`: confidence in the breakdowns |
 | `sources` | reference URLs: the pages the current values were actually read from |
-| `as_of` | the month (`YYYY-MM`) of the factsheet or holdings file the breakdowns were read from, i.e. the date the page itself shows, not the day it was fetched. Absent on a record not refreshed since the field was introduced, whose breakdowns are of unknown age. A dated record's `geography` and `sectors` each sum to exactly 100 (an undated one is tolerated one point either way); `TestCatalogBreakdownsDated` holds both |
+| `as_of` | the month (`YYYY-MM`) of the factsheet or holdings file the breakdowns were read from, i.e. the date the page itself shows, not the day it was fetched; when geography and sectors come from pages of different months, the older of the two. Absent on a record not refreshed since the field was introduced, whose breakdowns are of unknown age. A dated record's `geography` and `sectors` each sum to exactly 100 (an undated one is tolerated one point either way); `TestCatalogBreakdownsDated` holds both |
 
 ## Controlled vocabularies
 
