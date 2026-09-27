@@ -79,7 +79,8 @@ const (
 )
 
 // Report builds the standard period table plus summary statistics for a
-// daily value series with external flows. Windows whose From pre-dates
+// value series with external flows, typically daily; the risk figures are
+// annualized at the cadence FlowReturns measures. Windows whose From pre-dates
 // the first point are dropped (the summary covers them); windows are
 // otherwise reported even when flat. Empty or single-point input returns
 // (nil, zero ReportSummary): nothing measurable, no error.
@@ -109,7 +110,7 @@ func Report(dates []time.Time, values []float64, flows []Flow, opt ReportOptions
 	}
 
 	twr, _ := TWR(dates, values, flows)
-	returns := FlowReturns(dates, values, flows)
+	returns, ppy := FlowReturns(dates, values, flows)
 	days := int(math.Round(dates[len(dates)-1].Sub(origin).Hours() / 24))
 	sum := ReportSummary{
 		TWR:         twr,
@@ -118,9 +119,9 @@ func Report(dates []time.Time, values []float64, flows []Flow, opt ReportOptions
 		MaxDrawdown: MaxDrawdown(dates, values),
 	}
 	if days >= minRisk && len(returns) >= 2 {
-		sum.Vol = Volatility(returns)
-		sum.Sharpe = Sharpe(returns, opt.RiskFree)
-		sum.Sortino = Sortino(returns, opt.RiskFree)
+		sum.Vol = Volatility(returns, ppy)
+		sum.Sharpe = Sharpe(returns, opt.RiskFree, ppy)
+		sum.Sortino = Sortino(returns, opt.RiskFree, ppy)
 		sum.HasRisk = true
 	}
 	if days >= minCAGR {

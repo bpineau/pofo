@@ -5,18 +5,20 @@ import (
 	"log"
 	"math"
 
+	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/optimize"
 )
 
-// Solve computes the weights for an objective from the assets' aligned daily
-// returns. Here two uncorrelated assets (one volatile, one calm) are
-// balanced for minimum variance: the calmer asset gets the larger weight.
+// Solve computes the weights for an objective from the assets' aligned
+// returns and their cadence (daily here). Two uncorrelated assets (one
+// volatile, one calm) are balanced for minimum variance: the calmer asset gets
+// the larger weight.
 func ExampleSolve() {
 	// Asset A swings ±2 %, asset B ±1 %, with zero covariance.
 	a := []float64{0.02, -0.02, 0.02, -0.02}
 	b := []float64{0.01, 0.01, -0.01, -0.01}
 
-	res, err := optimize.Solve([][]float64{a, b}, optimize.Spec{Objective: optimize.MinVolatility})
+	res, err := optimize.Solve([][]float64{a, b}, metrics.TradingDaysPerYear, optimize.Spec{Objective: optimize.MinVolatility})
 	if err != nil {
 		panic(err)
 	}
@@ -40,7 +42,7 @@ func ExampleSolveCWARP() {
 		equity[i] = repl[i]                // more equity beta
 		diversifier[i] = -repl[i] + 0.0007 // hedge plus carry
 	}
-	res, err := optimize.SolveCWARP([][]float64{equity, diversifier}, repl, optimize.Spec{Objective: optimize.CWARP})
+	res, err := optimize.SolveCWARP([][]float64{equity, diversifier}, repl, metrics.TradingDaysPerYear, optimize.Spec{Objective: optimize.CWARP})
 	if err != nil {
 		panic(err)
 	}
@@ -73,7 +75,7 @@ func ExampleSolve_underAVolatilityCap() {
 		hot[i] = 0.0009 + swing
 		calm[i] = 0.0003 - swing
 	}
-	res, err := optimize.Solve([][]float64{hot, calm}, optimize.Spec{
+	res, err := optimize.Solve([][]float64{hot, calm}, metrics.TradingDaysPerYear, optimize.Spec{
 		Objective: optimize.MaxReturn,
 		MinWeight: 0.05, // keep both lines in the book
 		Limits:    optimize.Limits{MaxVolatility: 0.08},
@@ -93,7 +95,7 @@ func ExampleSolve_blackLittermanWithoutAView() {
 	returns := exampleReturns(750)
 	prior := []float64{0.5, 0.3, 0.2}
 
-	res, err := optimize.Solve(returns, optimize.Spec{
+	res, err := optimize.Solve(returns, metrics.TradingDaysPerYear, optimize.Spec{
 		Objective: optimize.BlackLitterman,
 		Prior:     prior,
 	})
@@ -127,7 +129,7 @@ func ExampleSolve_blackLittermanWithAView() {
 	}
 	spec.Prior = []float64{0.5, 0.3, 0.2}
 
-	res, err := optimize.Solve(returns, spec)
+	res, err := optimize.Solve(returns, metrics.TradingDaysPerYear, spec)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -155,7 +157,7 @@ func ExampleSolve_boundedBlackLitterman() {
 	}
 	spec.Prior = []float64{0.5, 0.3, 0.2} // the weights written in the file
 
-	res, err := optimize.Solve(exampleReturns(750), spec)
+	res, err := optimize.Solve(exampleReturns(750), metrics.TradingDaysPerYear, spec)
 	if err != nil {
 		log.Fatal(err)
 	}

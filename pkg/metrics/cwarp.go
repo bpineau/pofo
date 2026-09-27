@@ -24,7 +24,7 @@ type CWARPParams struct {
 // and financed by borrowing, improves the replacement's risk-adjusted returns.
 //
 // The new portfolio's per-period return is r_new = r_repl + w*(r_asset - fin),
-// where fin is the daily financing charge. CWARP is the geometric average of
+// where fin is the per-period financing charge. CWARP is the geometric average of
 // the improvements in two ratios, minus one, in percent:
 //
 //	CWARP = ( sqrt( (Sortino_new/Sortino_repl) * (RtMDD_new/RtMDD_repl) ) - 1 ) * 100
@@ -37,11 +37,12 @@ type CWARPParams struct {
 // non-correlation and skew because both denominators are measured on the
 // combined series.
 //
-// asset and replacement are aligned daily simple-return series of equal length.
-// ok is false when the inputs are too short, or when a ratio is undefined (the
+// asset and replacement are aligned simple-return series of equal length,
+// periodsPerYear of them a year (TradingDaysPerYear for daily returns). ok is
+// false when the inputs are too short, or when a ratio is undefined (the
 // replacement never draws down, has no downside deviation, or a denominator is
 // non-positive), in which case the score would be meaningless.
-func CWARP(asset, replacement []float64, p CWARPParams) (float64, bool) {
+func CWARP(asset, replacement []float64, periodsPerYear float64, p CWARPParams) (float64, bool) {
 	if len(asset) != len(replacement) || len(asset) < 2 {
 		return 0, false
 	}
@@ -49,16 +50,16 @@ func CWARP(asset, replacement []float64, p CWARPParams) (float64, bool) {
 	if w == 0 {
 		w = defaultCWARPWeight
 	}
-	fin := p.Financing / tradingDaysPerYear
+	fin := p.Financing / periodsPerYear
 	newRet := make([]float64, len(asset))
 	for i := range asset {
 		newRet[i] = replacement[i] + w*(asset[i]-fin)
 	}
 
-	sRepl := Sortino(replacement, p.RiskFree)
-	sNew := Sortino(newRet, p.RiskFree)
-	mRepl, okR := ReturnToMaxDrawdown(replacement, p.RiskFree)
-	mNew, okN := ReturnToMaxDrawdown(newRet, p.RiskFree)
+	sRepl := Sortino(replacement, p.RiskFree, periodsPerYear)
+	sNew := Sortino(newRet, p.RiskFree, periodsPerYear)
+	mRepl, okR := ReturnToMaxDrawdown(replacement, p.RiskFree, periodsPerYear)
+	mNew, okN := ReturnToMaxDrawdown(newRet, p.RiskFree, periodsPerYear)
 	if math.IsNaN(sRepl) || math.IsNaN(sNew) || !okR || !okN {
 		return 0, false
 	}
@@ -66,29 +67,17 @@ func CWARP(asset, replacement []float64, p CWARPParams) (float64, bool) {
 }
 
 // CWARPvs computes the CWARP of `values` overlaid on a benchmark (the
-// replacement portfolio), matching their daily returns by exact date. It is
-// the convenient entry point for callers holding dated value series (a
-// portfolio and its benchmark). ok is false when fewer than minBetaOverlap
-// dates overlap or the score is undefined (see CWARP).
+// replacement portfolio), matching their returns by exact date as Beta does
+// and annualizing at the cadence of those paired returns. It is the
+// convenient entry point for callers holding dated value series (a portfolio
+// and its benchmark). ok is false when fewer than minBetaOverlap dates
+// overlap or the score is undefined (see CWARP).
 func CWARPvs(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64, p CWARPParams) (float64, bool) {
-	if len(dates) != len(values) || len(benchDates) != len(benchValues) || len(dates) < 2 || len(benchDates) < 2 {
+	pr := pairReturns(dates, values, benchDates, benchValues)
+	if len(pr.own) < minBetaOverlap {
 		return 0, false
 	}
-	bench := make(map[time.Time]float64, len(benchDates)-1)
-	for i := 1; i < len(benchDates); i++ {
-		bench[benchDates[i]] = benchValues[i]/benchValues[i-1] - 1
-	}
-	var asset, repl []float64
-	for i := 1; i < len(dates); i++ {
-		if br, found := bench[dates[i]]; found {
-			asset = append(asset, values[i]/values[i-1]-1)
-			repl = append(repl, br)
-		}
-	}
-	if len(asset) < minBetaOverlap {
-		return 0, false
-	}
-	return CWARP(asset, repl, p)
+	return CWARP(pr.own, pr.bench, pr.cadence(), p)
 }
 
 // cwarpScore combines the replacement and new-portfolio Sortino and
@@ -107,13 +96,13 @@ func cwarpScore(sortinoRepl, sortinoNew, rtmddRepl, rtmddNew float64) (float64, 
 	return (math.Sqrt(prod) - 1) * 100, true
 }
 
-// ReturnToMaxDrawdown returns (CAGR - rfAnnual) / |maxDrawdown| for a daily
-// return series (the Calmar-style return-to-drawdown ratio), annualizing the
-// compound growth by the number of periods (252 per year, matching the rest of
-// the package). Higher is better: return earned per unit of worst peak-to-
-// trough loss. ok is false when the path wipes out or never draws down (the
-// ratio is then undefined).
-func ReturnToMaxDrawdown(returns []float64, rfAnnual float64) (float64, bool) {
+// ReturnToMaxDrawdown returns (CAGR - rfAnnual) / |maxDrawdown| for a return
+// series (the Calmar-style return-to-drawdown ratio), annualizing the
+// compound growth by the number of periods, periodsPerYear of them a year
+// (TradingDaysPerYear for daily returns). Higher is better: return earned per
+// unit of worst peak-to-trough loss. ok is false when the path wipes out or
+// never draws down (the ratio is then undefined).
+func ReturnToMaxDrawdown(returns []float64, rfAnnual, periodsPerYear float64) (float64, bool) {
 	if len(returns) < 1 {
 		return 0, false
 	}
@@ -133,7 +122,7 @@ func ReturnToMaxDrawdown(returns []float64, rfAnnual float64) (float64, bool) {
 	if maxDD == 0 {
 		return 0, false // no drawdown: return-to-drawdown undefined
 	}
-	years := float64(len(returns)) / tradingDaysPerYear
+	years := float64(len(returns)) / periodsPerYear
 	cagr := math.Pow(v, 1/years) - 1
 	return (cagr - rfAnnual) / math.Abs(maxDD), true
 }

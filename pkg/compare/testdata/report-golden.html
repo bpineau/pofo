@@ -295,12 +295,12 @@ details.pf{margin-top:.8rem}
 <thead><tr><th>Metric</th><th class="n">Alpha</th><th class="n">Beta</th></tr></thead>
 <tbody>
 <tr><td title="compound annual growth rate">CAGR (annualized return)</td><td class="n best">11.12 %</td><td class="n">-0.80 %</td></tr>
-<tr><td title="standard deviation of daily returns, annualized">Volatility (annualized)</td><td class="n best">1.05 %</td><td class="n">30.42 %</td></tr>
+<tr><td title="standard deviation of daily returns (of each quote&#39;s return on a weekly or monthly series), annualized at that cadence">Volatility (annualized)</td><td class="n best">0.23 %</td><td class="n">6.64 %</td></tr>
 <tr><td title="standard deviation of monthly returns, annualized; lower than the daily figure means daily noise that mean-reverts within the month">Volatility (monthly, annualized)</td><td class="n">-</td><td class="n">-</td></tr>
 <tr><td title="monthly vs daily annualized variance; ≈1 i.i.d., &lt;1 mean-reverting (daily vol overstates risk), &gt;1 trending (it understates)">Variance ratio (monthly/daily)</td><td class="n">-</td><td class="n">-</td></tr>
-<tr><td title="annualized return / volatility (risk-free rate 0)">Sharpe</td><td class="n best">211.16</td><td class="n">-0.41</td></tr>
+<tr><td title="annualized return / volatility (risk-free rate 0)">Sharpe</td><td class="n best">46.08</td><td class="n">-0.09</td></tr>
 <tr><td title="same ratio on monthly returns; above the daily Sharpe when daily noise mean-reverts (variance ratio &lt;1), below it when the series trends">Sharpe (monthly)</td><td class="n">-</td><td class="n">-</td></tr>
-<tr><td title="annualized return / volatility of down days only">Sortino</td><td class="n">-</td><td class="n best">-0.58</td></tr>
+<tr><td title="annualized return / volatility of down days only">Sortino</td><td class="n">-</td><td class="n best">-0.13</td></tr>
 <tr><td title="annualized return / downside deviation of monthly returns; the monthly twin of Sortino">Sortino (monthly)</td><td class="n">-</td><td class="n">-</td></tr>
 <tr><td title="average depth and duration of drawdowns (lower is better)">Ulcer Index</td><td class="n best">0.00</td><td class="n">7.52</td></tr>
 <tr><td title="worst decline from a peak">Max Drawdown</td><td class="n best">0.00 %</td><td class="n">-14.78 %</td></tr>
@@ -326,7 +326,7 @@ details.pf{margin-top:.8rem}
 <li>Series converted to EUR (daily Yahoo FX crosses; the earliest known rate is held constant before the FX history starts). Columns tagged with a currency show the same portfolio through that currency&#39;s numeraire and CPI.</li>
 <li>Sources: Yahoo Finance (adjusted closes, dividends and splits reinvested), Financial Times and Morningstar (fund NAVs).</li>
 <li>Simulation: base 100, rebalanced to the target weights every 90 calendar days by default (overridable per portfolio via &#34;#meta rebalance:N&#34;), with no fees or taxes.</li>
-<li>Statistics computed over the period common to all portfolios; volatility and ratios annualized over 252 trading days, zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data; their volatilities and drawdowns therefore come out lower).</li>
+<li>Statistics computed over the period common to all portfolios; volatility and ratios annualized at the series&#39; own cadence (252 trading days a year on daily closes, 52 on a weekly NAV, 12 on a monthly index), zero risk-free rate for Sharpe and Sortino (Curvo convention; PortfolioVisualizer/LazyPortfolio use T-bills and monthly data; their volatilities and drawdowns therefore come out lower).</li>
 <li>Fees: published TERs (FT/justETF sources), already included in prices and NAVs, informational column; only the additional portfolio fees &#34;#meta extra-fees:X&#34; (envelope, mandate…) are deducted from the simulated performance.</li>
 <li>Monthly volatility and variance ratio (Lo-MacKinlay): the monthly figure annualizes the standard deviation of month-end returns, and the ratio divides the monthly annualized variance by the daily one. It exposes the autocorrelation the single-frequency stats hide: ≈1 means returns are serially uncorrelated (daily vol is faithful), below 1 means they mean-revert (daily vol overstates the risk realized over months), above 1 means they trend (daily vol understates it). Read it as complementary to the rolling-CAGR and drawdown columns, and note the small-sample caveat: a month-end series holds only ~12 points per year, so over short common periods the monthly figures are noisier point estimates than the daily ones.</li>
 <li>Max Drawdown, Ulcer and TTR on daily closes, harsher than monthly-step references (e.g. COVID 2020: −33.7 % daily, −20 % on monthly closes).</li>

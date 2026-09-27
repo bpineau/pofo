@@ -59,7 +59,7 @@ func blSpec(prior []float64, views ...View) Spec {
 func TestBlackLittermanNoViewReturnsThePrior(t *testing.T) {
 	returns := blReturns(1500)
 	prior := []float64{0.5, 0.3, 0.2}
-	res, err := Solve(returns, blSpec(prior))
+	res, err := Solve(returns, daily, blSpec(prior))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -76,7 +76,7 @@ func TestBlackLittermanNoViewReturnsThePrior(t *testing.T) {
 	if err := spec.Resolve([][]string{{"A"}, {"B"}, {"C"}}); err != nil {
 		t.Fatal(err)
 	}
-	bounded, err := Solve(returns, spec)
+	bounded, err := Solve(returns, daily, spec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -90,13 +90,13 @@ func TestBlackLittermanNoViewReturnsThePrior(t *testing.T) {
 func TestBlackLittermanAbsoluteViewDirection(t *testing.T) {
 	returns := blReturns(1500)
 	prior := []float64{0.5, 0.3, 0.2}
-	base, err := Solve(returns, blSpec(prior))
+	base, err := Solve(returns, daily, blSpec(prior))
 	if err != nil {
 		t.Fatal(err)
 	}
 	implied := base.Implied[1]
 
-	up, err := Solve(returns, blSpec(prior, View{Asset: "B", Return: implied + 0.03, Confidence: 0.5}))
+	up, err := Solve(returns, daily, blSpec(prior, View{Asset: "B", Return: implied + 0.03, Confidence: 0.5}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -107,7 +107,7 @@ func TestBlackLittermanAbsoluteViewDirection(t *testing.T) {
 		t.Fatalf("a bullish view did not raise the weight: %.4f vs prior %.4f", up.Weights[1], prior[1])
 	}
 
-	down, err := Solve(returns, blSpec(prior, View{Asset: "B", Return: implied - 0.03, Confidence: 0.5}))
+	down, err := Solve(returns, daily, blSpec(prior, View{Asset: "B", Return: implied - 0.03, Confidence: 0.5}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -124,14 +124,14 @@ func TestBlackLittermanAbsoluteViewDirection(t *testing.T) {
 func TestBlackLittermanRelativeViewMovesThePair(t *testing.T) {
 	returns := blReturns(1500)
 	prior := []float64{0.5, 0.3, 0.2}
-	base, err := Solve(returns, blSpec(prior))
+	base, err := Solve(returns, daily, blSpec(prior))
 	if err != nil {
 		t.Fatal(err)
 	}
 	gap := base.Implied[0] - base.Implied[1]
 
 	// State a gap far wider than the equilibrium one: A must gain, B lose.
-	res, err := Solve(returns, blSpec(prior, View{Asset: "A", Versus: "B", Return: gap + 0.04, Confidence: 0.6}))
+	res, err := Solve(returns, daily, blSpec(prior, View{Asset: "A", Versus: "B", Return: gap + 0.04, Confidence: 0.6}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -248,7 +248,7 @@ func TestBlackLittermanPriorValidation(t *testing.T) {
 		{"short", []float64{0.5, 0.5}, "3 assets"},
 		{"not an allocation", []float64{0.5, 0.3, 0.4}, "sum to"},
 	} {
-		_, err := Solve(returns, Spec{Objective: BlackLitterman, Prior: tc.prior})
+		_, err := Solve(returns, daily, Spec{Objective: BlackLitterman, Prior: tc.prior})
 		if err == nil || !strings.Contains(err.Error(), tc.want) {
 			t.Fatalf("%s prior: error = %v, want one mentioning %q", tc.name, err, tc.want)
 		}
@@ -339,7 +339,7 @@ func TestBlackLittermanUnderBounds(t *testing.T) {
 	if err := spec.Resolve([][]string{{"A"}, {"B"}, {"C"}}); err != nil {
 		t.Fatal(err)
 	}
-	res, err := Solve(returns, spec)
+	res, err := Solve(returns, daily, spec)
 	if err != nil {
 		t.Fatal(err)
 	}

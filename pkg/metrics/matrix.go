@@ -55,10 +55,11 @@ func CorrelationMatrix(returns [][]float64) [][]float64 {
 // Covariance is the per-period SAMPLE covariance (n-1 denominator) of every
 // pair of assets. returns is [asset][period], per-period returns as fractions
 // on ONE calendar (marketdata.Aligned.Returns), and the result is in squared
-// fractions per period: multiply by 252 for an annualized covariance of daily
-// returns, by 12 for monthly ones. The matrix is symmetric and its diagonal
-// is each asset's sample variance. Fewer than two periods leave every entry
-// NaN. It panics when the rows differ in length, as CorrelationMatrix does.
+// fractions per period: multiply by the calendar's PeriodsPerYear to
+// annualize it (252 for daily returns, 12 for monthly ones). The matrix is
+// symmetric and its diagonal is each asset's sample variance. Fewer than two
+// periods leave every entry NaN. It panics when the rows differ in length, as
+// CorrelationMatrix does.
 func Covariance(returns [][]float64) [][]float64 {
 	checkRectangular("Covariance", returns)
 	out := squareMatrix(len(returns))

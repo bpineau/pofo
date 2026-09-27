@@ -1,7 +1,7 @@
 // Package metrics computes risk and return statistics for a series of
 // dated values: CAGR, volatility, Sharpe, Sortino, Ulcer Index, Max
 // Drawdown, TTR (time to recovery), Beta against a benchmark, and the
-// daily-versus-monthly volatility term structure (the Lo-MacKinlay
+// native-versus-monthly volatility term structure (the Lo-MacKinlay
 // variance ratio).
 //
 // # Conventions
@@ -9,8 +9,16 @@
 // Knowing the conventions is essential to compare the results with other
 // tools:
 //
-//   - series are daily closes; volatility and ratios are annualized over
-//     252 trading days;
+//   - annualization follows the data's cadence: volatility and ratios are
+//     annualized at PeriodsPerYear of the series' dates, the observations it
+//     holds per year snapped to a canonical count (252 on trading-day closes,
+//     so every daily figure is the classic one; 52 on a weekly NAV; 12 on a
+//     monthly index; 365 on a calendar that quotes weekends). Stats reports
+//     the count it used. Functions that receive dates infer it; those that
+//     receive bare returns (Volatility, Sharpe, Sortino, ReturnToMaxDrawdown,
+//     WorstRollingReturn, CWARP) take it as an argument, TradingDaysPerYear
+//     for daily returns. A series that changes cadence along the way is read
+//     at its prevailing one: resample it first when that matters;
 //   - Sharpe and Sortino use a zero risk-free rate (like Curvo);
 //     PortfolioVisualizer and LazyPortfolioETF use T-bills and monthly
 //     data; their Sharpe ratios come out ≈ 0.10-0.15 lower;
@@ -20,11 +28,11 @@
 //   - the CAGR uses 365.25-day years between the first and the last
 //     date.
 //
-// The main entry point is Compute. Beta pairs daily returns with the
-// benchmark's by date. VarianceRatio resamples to month-end closes and
-// reports the volatility at both frequencies plus their ratio, revealing
-// the autocorrelation the daily statistics hide. Returns and Mean are
-// exposed as building blocks.
+// The main entry point is Compute. Beta pairs returns with the benchmark's by
+// date. VarianceRatio resamples a series sampled more often than monthly to
+// month-end closes and reports the volatility at both frequencies plus their
+// ratio, revealing the autocorrelation the daily statistics hide. Returns and
+// Mean are exposed as building blocks.
 //
 // # CWARP
 //
@@ -51,8 +59,8 @@
 // Corr is the one Pearson correlation of the tree (suggest.Correlation
 // delegates to it). CorrelationMatrix and Covariance take [asset][period]
 // returns on ONE calendar, as marketdata.Aligned.Returns produces them, and
-// panic on ragged rows; Covariance is per period (multiply by 252 for an
-// annualized daily one). CalendarReturns cuts a value series into calendar
+// panic on ragged rows; Covariance is per period (multiply by the calendar's
+// PeriodsPerYear, 252 for a daily one, to annualize it). CalendarReturns cuts a value series into calendar
 // months, quarters or years (blocks of months counted from January, as
 // marketdata.Series.Resample cuts them), each period chained on the previous
 // period's last close and the first one flagged Partial: the table behind an
@@ -81,10 +89,10 @@
 // When a series carries external contributions and withdrawals (a savings
 // account, a wealth tracker), Compute's raw figures would mistake them for
 // performance. TWR chain-links flow-neutralized daily returns, FlowReturns
-// yields the flow-adjusted daily returns (weekend points dropped, so
-// calendar-daily forward-filled series keep an honest volatility), and
-// Volatility, Sharpe and Sortino accept those returns with an explicit
-// annual risk-free rate (Compute's convention stays rf = 0). Annualize
+// yields the flow-adjusted returns and their cadence (weekend points dropped,
+// so calendar-daily forward-filled series keep an honest volatility and read
+// as trading days), and Volatility, Sharpe and Sortino accept those returns
+// with an explicit annual risk-free rate (Compute's convention stays rf = 0). Annualize
 // turns a cumulative return over a day span into a compound annual rate,
 // and IRR solves the money-weighted rate of the flows themselves.
 //

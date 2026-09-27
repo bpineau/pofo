@@ -121,8 +121,10 @@
 //
 // # Conventions and units
 //
-// Series are daily closes; volatility and ratios annualize over 252 trading
-// days with a zero risk-free rate, the CAGR over 365.25-day years. Units are
+// Volatility and ratios annualize at each series' own cadence
+// (metrics.PeriodsPerYear: 252 on daily closes, 52 on a weekly NAV, 12 on a
+// monthly index) with a zero risk-free rate, the CAGR over 365.25-day years.
+// Functions over bare returns take that cadence as an argument. Units are
 // the library's number one trap, and one table holds them:
 //
 //	weights          FRACTION in memory (portfolio.Line, Holding.Weight, Asset.Weight,
@@ -135,6 +137,9 @@
 //	                 0.04 = +4 %); scenario and decumul work in REAL terms
 //	statistics       FRACTION (metrics.Stats, analyze studies), except
 //	                 Stats.Ulcer in percent points and Stats.CWARP in percent
+//	cadence          PERIODS PER YEAR (252 daily, 52 weekly, 12 monthly):
+//	                 metrics.PeriodsPerYear, Stats.PeriodsPerYear, the
+//	                 periodsPerYear argument of metrics and optimize.Solve
 //	rates            annualized PERCENT LEVELS (^IRX, ^ESTR, ^SOFR..., and
 //	                 portfolio.Portfolio.Cash); never a return
 //	#meta directives PERCENT as written (max-vol:9, view:ID:8@70), FRACTION

@@ -57,7 +57,7 @@ func TestFlowReturnsDropsWeekendsAndAdjusts(t *testing.T) {
 	dates := []time.Time{fday(4), fday(5), fday(6), fday(7)}
 	values := []float64{100, 100, 100, 121}
 	flows := []Flow{{Date: fday(7), Amount: 11}}
-	got := FlowReturns(dates, values, flows)
+	got, _ := FlowReturns(dates, values, flows)
 	if len(got) != 1 {
 		t.Fatalf("returns = %v, want exactly the Monday return", got)
 	}
@@ -110,32 +110,40 @@ func TestRatiosMatchComputeAtZeroRF(t *testing.T) {
 		t.Fatal(err)
 	}
 	r := Returns(values)
-	if got := Volatility(r); math.Abs(got-stats.Volatility) > 1e-12 {
+	if stats.PeriodsPerYear != TradingDaysPerYear {
+		t.Fatalf("PeriodsPerYear = %v, want %v on a weekday calendar", stats.PeriodsPerYear, TradingDaysPerYear)
+	}
+	// Without flows, FlowReturns yields the same returns at the same cadence.
+	if fr, ppy := FlowReturns(dates, values, nil); ppy != TradingDaysPerYear || len(fr) != len(r) {
+		t.Fatalf("FlowReturns = %d returns at %v a year, want %d at %v", len(fr), ppy, len(r), TradingDaysPerYear)
+	}
+	ppy := stats.PeriodsPerYear
+	if got := Volatility(r, ppy); math.Abs(got-stats.Volatility) > 1e-12 {
 		t.Fatalf("Volatility = %v, want Compute's %v", got, stats.Volatility)
 	}
-	if got := Sharpe(r, 0); math.Abs(got-stats.Sharpe) > 1e-12 {
+	if got := Sharpe(r, 0, ppy); math.Abs(got-stats.Sharpe) > 1e-12 {
 		t.Fatalf("Sharpe(rf=0) = %v, want Compute's %v", got, stats.Sharpe)
 	}
-	if got := Sortino(r, 0); math.Abs(got-stats.Sortino) > 1e-12 {
+	if got := Sortino(r, 0, ppy); math.Abs(got-stats.Sortino) > 1e-12 {
 		t.Fatalf("Sortino(rf=0) = %v, want Compute's %v", got, stats.Sortino)
 	}
 	// A positive risk-free rate lowers both ratios.
-	if Sharpe(r, 0.03) >= Sharpe(r, 0) {
+	if Sharpe(r, 0.03, ppy) >= Sharpe(r, 0, ppy) {
 		t.Fatal("Sharpe should decrease with a higher risk-free rate")
 	}
-	if Sortino(r, 0.03) >= Sortino(r, 0) {
+	if Sortino(r, 0.03, ppy) >= Sortino(r, 0, ppy) {
 		t.Fatal("Sortino should decrease with a higher risk-free rate")
 	}
 }
 
 func TestRatiosUndefined(t *testing.T) {
-	if !math.IsNaN(Volatility(nil)) || !math.IsNaN(Volatility([]float64{0.01})) {
+	if !math.IsNaN(Volatility(nil, TradingDaysPerYear)) || !math.IsNaN(Volatility([]float64{0.01}, TradingDaysPerYear)) {
 		t.Fatal("Volatility of fewer than two returns should be NaN")
 	}
-	if !math.IsNaN(Sharpe([]float64{0, 0, 0}, 0)) {
+	if !math.IsNaN(Sharpe([]float64{0, 0, 0}, 0, TradingDaysPerYear)) {
 		t.Fatal("Sharpe with zero volatility should be NaN")
 	}
-	if !math.IsNaN(Sortino([]float64{0.01, 0.02}, 0)) {
+	if !math.IsNaN(Sortino([]float64{0.01, 0.02}, 0, TradingDaysPerYear)) {
 		t.Fatal("Sortino with no downside should be NaN")
 	}
 }

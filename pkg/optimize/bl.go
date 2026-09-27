@@ -283,12 +283,12 @@ type blProblem struct {
 // solved exactly from the prior as the starting point, which is what makes
 // the no-view answer the prior itself; with them it goes through the shared
 // penalized search like every other constrained objective.
-func solveBlackLitterman(returns [][]float64, spec Spec) (Result, error) {
+func solveBlackLitterman(returns [][]float64, ppy float64, spec Spec) (Result, error) {
 	n := len(returns)
 	if err := checkPrior(spec.Prior, n); err != nil {
 		return Result{}, err
 	}
-	_, cov := meanCov(returns)
+	_, cov := meanCov(returns, ppy)
 	lambda, err := riskAversion(spec.Prior, cov, spec.PriorReturn)
 	if err != nil {
 		return Result{}, err
@@ -301,7 +301,7 @@ func solveBlackLitterman(returns [][]float64, spec Spec) (Result, error) {
 
 	var res Result
 	if spec.Bounded() || spec.Limits.Any() {
-		bounded, err := solveConstrained(returns, spec, &blProblem{lambda: lambda, posterior: posterior})
+		bounded, err := solveConstrained(returns, ppy, spec, &blProblem{lambda: lambda, posterior: posterior})
 		if err != nil {
 			return Result{}, err
 		}

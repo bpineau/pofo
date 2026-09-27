@@ -51,35 +51,43 @@ func TWR(dates []time.Time, values []float64, flows []Flow) (float64, bool) {
 	return total - 1, true
 }
 
-// FlowReturns yields the flow-adjusted daily returns of a value series:
-// V_t/(V_{t-1} + F_t) - 1, the same start-of-day flow convention as TWR.
+// FlowReturns yields the flow-adjusted returns of a value series,
+// V_t/(V_{t-1} + F_t) - 1 (the same start-of-day flow convention as TWR),
+// and their cadence, ready for Volatility, Sharpe or Sortino.
 // Saturday and Sunday points are dropped, so a calendar-daily series
-// (weekends forward-filled flat) does not dilute its volatility; a
-// trading-day series is unaffected. Days with a non-positive base
-// (V_{t-1} + F_t) are skipped. Feed the result to Volatility, Sharpe or Sortino.
-func FlowReturns(dates []time.Time, values []float64, flows []Flow) []float64 {
+// (weekends forward-filled flat) does not dilute its volatility and reads as
+// the trading-day series it is; a trading-day series is unaffected. Days with
+// a non-positive base (V_{t-1} + F_t) are skipped. periodsPerYear is NaN when
+// no return survives.
+func FlowReturns(dates []time.Time, values []float64, flows []Flow) (returns []float64, periodsPerYear float64) {
 	if len(dates) != len(values) {
-		return nil
+		return nil, math.NaN()
 	}
 	byDay := flowsByDay(flows)
-	var out []float64
-	for i := 1; i < len(values); i++ {
+	var spans []float64
+	for i, last := 1, 0; i < len(values); i++ {
 		base := values[i-1] + byDay[dates[i]]
-		if base <= 0 {
-			continue
-		}
 		if wd := dates[i].Weekday(); wd == time.Saturday || wd == time.Sunday {
 			continue
 		}
-		out = append(out, values[i]/base-1)
+		// A return runs from the last weekday point, so a weekend folded
+		// into Monday counts as the one trading period it is.
+		span := dates[i].Sub(dates[last]).Hours() / 24
+		last = i
+		if base <= 0 {
+			continue
+		}
+		returns = append(returns, values[i]/base-1)
+		spans = append(spans, span)
 	}
-	return out
+	return returns, cadence(spans)
 }
 
-// Volatility is the annualized sample standard deviation of daily returns
-// (252 trading days), the same figure Compute reports. NaN for fewer than
-// two returns.
-func Volatility(returns []float64) float64 {
+// Volatility is the sample standard deviation of per-period returns,
+// annualized at periodsPerYear (TradingDaysPerYear for daily returns,
+// PeriodsPerYear of their dates in general): the figure Compute reports as
+// Stats.Volatility. NaN for fewer than two returns.
+func Volatility(returns []float64, periodsPerYear float64) float64 {
 	if len(returns) < 2 {
 		return math.NaN()
 	}
@@ -88,39 +96,40 @@ func Volatility(returns []float64) float64 {
 	for _, r := range returns {
 		ss += (r - m) * (r - m)
 	}
-	return math.Sqrt(ss/float64(len(returns)-1)) * math.Sqrt(tradingDaysPerYear)
+	return math.Sqrt(ss/float64(len(returns)-1)) * math.Sqrt(periodsPerYear)
 }
 
-// Sharpe is the annualized mean daily excess return over rfAnnual divided by
-// Volatility: the same arithmetic-annualization convention as Compute, which
-// fixes rfAnnual at zero. NaN when the volatility is zero or undefined.
-func Sharpe(returns []float64, rfAnnual float64) float64 {
-	v := Volatility(returns)
+// Sharpe is the mean per-period excess return over rfAnnual, annualized at
+// periodsPerYear, divided by Volatility: the same arithmetic-annualization
+// convention as Compute, which fixes rfAnnual at zero. NaN when the
+// volatility is zero or undefined.
+func Sharpe(returns []float64, rfAnnual, periodsPerYear float64) float64 {
+	v := Volatility(returns, periodsPerYear)
 	if !(v > 0) {
 		return math.NaN()
 	}
-	return (Mean(returns)*tradingDaysPerYear - rfAnnual) / v
+	return (Mean(returns)*periodsPerYear - rfAnnual) / v
 }
 
 // Sortino replaces Sharpe's denominator with the downside deviation against
-// the daily risk-free target rfAnnual/252. NaN when there is no downside or
-// no return at all.
-func Sortino(returns []float64, rfAnnual float64) float64 {
+// the per-period risk-free target rfAnnual/periodsPerYear, annualized at
+// periodsPerYear. NaN when there is no downside or no return at all.
+func Sortino(returns []float64, rfAnnual, periodsPerYear float64) float64 {
 	if len(returns) == 0 {
 		return math.NaN()
 	}
-	target := rfAnnual / tradingDaysPerYear
+	target := rfAnnual / periodsPerYear
 	ss := 0.0
 	for _, r := range returns {
 		if r < target {
 			ss += (r - target) * (r - target)
 		}
 	}
-	down := math.Sqrt(ss/float64(len(returns))) * math.Sqrt(tradingDaysPerYear)
+	down := math.Sqrt(ss/float64(len(returns))) * math.Sqrt(periodsPerYear)
 	if !(down > 0) {
 		return math.NaN()
 	}
-	return (Mean(returns)*tradingDaysPerYear - rfAnnual) / down
+	return (Mean(returns)*periodsPerYear - rfAnnual) / down
 }
 
 // Annualize converts a cumulative return earned over a calendar-day span

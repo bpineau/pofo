@@ -5,6 +5,7 @@ import (
 	"sort"
 
 	"github.com/bpineau/pofo/pkg/datasets"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Holding is one position of the portfolio under analysis.
@@ -16,14 +17,18 @@ type Holding struct {
 }
 
 // Candidate is a catalog asset that could be added. PortReturns and Returns
-// are the held portfolio's and the candidate's daily returns over their
-// common (overlap) window, aligned to the same calendar and equal length.
+// are the held portfolio's and the candidate's returns over their common
+// (overlap) window, aligned to the same calendar and equal length, and
+// PeriodsPerYear is that calendar's cadence (metrics.PeriodsPerYear of its
+// dates), which annualizes the walk-forward Sharpe ratios; zero reads as
+// daily closes, metrics.TradingDaysPerYear.
 type Candidate struct {
-	Meta        Meta
-	PortReturns []float64
-	Returns     []float64
-	Years       float64 // length of the overlap window, for display/filtering
-	Simulated   bool    // the candidate's history includes simulated data
+	Meta           Meta
+	PortReturns    []float64
+	Returns        []float64
+	PeriodsPerYear float64
+	Years          float64 // length of the overlap window, for display/filtering
+	Simulated      bool    // the candidate's history includes simulated data
 }
 
 // Options tunes the analysis. The zero value is unusable; start from
@@ -55,7 +60,7 @@ type Suggestion struct {
 	Fills         Category // the gap category it primarily fills
 	Weight        float64  // suggested weight (fraction)
 	Corr          float64  // correlation to the held portfolio
-	VolBefore     float64  // portfolio daily-return volatility before
+	VolBefore     float64  // portfolio per-period return volatility before (not annualized)
 	VolAfter      float64  // ... and after adding the candidate
 	SharpeWins    int      // walk-forward windows where Sharpe improved
 	DDWins        int      // ... where max-drawdown improved
@@ -117,10 +122,14 @@ func RankCandidates(gaps []Category, cov map[Category]float64, candidates []Cand
 		if fills == "" {
 			continue // helps no gap category
 		}
+		ppy := c.PeriodsPerYear
+		if ppy == 0 {
+			ppy = metrics.TradingDaysPerYear
+		}
 		bestW, bestGain := 0.0, math.Inf(-1)
 		var sWins, ddWins, total int
 		for _, w := range opts.Weights {
-			sw, dw, tot, gain := walkForward(c.PortReturns, c.Returns, w, opts.Windows)
+			sw, dw, tot, gain := walkForward(c.PortReturns, c.Returns, w, opts.Windows, ppy)
 			if tot == 0 || float64(sw)/float64(tot) < opts.MinWindowFrac {
 				continue
 			}
@@ -192,7 +201,8 @@ func primaryGap(m Meta, gapSet map[Category]bool, cov map[Category]float64, fw F
 // max-drawdown, the number evaluated, and the median Sharpe gain. Because
 // adding an asset at a fixed weight fits nothing to the data, this measures
 // the consistency of the benefit across periods, not an in-sample optimum.
-func walkForward(portR, candR []float64, w float64, k int) (sharpeWins, ddWins, total int, medSharpeGain float64) {
+// The Sharpe ratios are annualized at ppy returns a year.
+func walkForward(portR, candR []float64, w float64, k int, ppy float64) (sharpeWins, ddWins, total int, medSharpeGain float64) {
 	n := len(portR)
 	if n == 0 || len(candR) != n || k < 1 {
 		return 0, 0, 0, 0
@@ -212,7 +222,7 @@ func walkForward(portR, candR []float64, w float64, k int) (sharpeWins, ddWins, 
 		}
 		base := portR[start:end]
 		aug := mix(base, candR[start:end], w)
-		bs, as := windowSharpe(base), windowSharpe(aug)
+		bs, as := windowSharpe(base, ppy), windowSharpe(aug, ppy)
 		bd, ad := windowMaxDD(base), windowMaxDD(aug)
 		total++
 		if as > bs {
@@ -226,7 +236,7 @@ func walkForward(portR, candR []float64, w float64, k int) (sharpeWins, ddWins, 
 	return sharpeWins, ddWins, total, median(gains)
 }
 
-// mix returns the augmented daily returns: (1-w)*port + w*cand.
+// mix returns the augmented returns: (1-w)*port + w*cand.
 func mix(portR, candR []float64, w float64) []float64 {
 	out := make([]float64, len(portR))
 	for i := range portR {
@@ -235,13 +245,14 @@ func mix(portR, candR []float64, w float64) []float64 {
 	return out
 }
 
-// windowSharpe is the annualized Sharpe (risk-free 0) of a return slice.
-func windowSharpe(r []float64) float64 {
+// windowSharpe is the Sharpe ratio (risk-free 0) of a return slice,
+// annualized at ppy returns a year.
+func windowSharpe(r []float64, ppy float64) float64 {
 	s := std(r)
 	if s == 0 {
 		return 0
 	}
-	return mean(r) / s * math.Sqrt(252)
+	return mean(r) / s * math.Sqrt(ppy)
 }
 
 // windowMaxDD is the deepest peak-to-trough loss implied by a return slice

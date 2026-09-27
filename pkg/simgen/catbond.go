@@ -27,10 +27,10 @@ import (
 // event happens. So the index return always lands on a month end, and the only
 // reason the hedged file carries a daily calendar at all is that its two cash
 // legs accrue every day (hedgeToEUR, as in BTOP50E). Annualizing such a file
-// per observation happens to be right, since twelve monthly steps spread over
-// 252 days annualize to the same figure the monthly returns do; annualizing the
-// funds' own WEEKLY quotes per observation does not, and their statistics must
-// be read monthly.
+// per observation is right, since twelve monthly steps spread over 252 days
+// annualize to the same figure the monthly returns do; the funds' own WEEKLY
+// quotes annualize at their measured cadence (metrics.PeriodsPerYear reads 52),
+// though a line that changed cadence is still safest read monthly.
 //
 // RELIABILITY BOUNDS LENGTH. Nothing reaches before 2006-01, the index's first
 // month, even though cat bonds have traded since 1997 and the Swiss Re market
