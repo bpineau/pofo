@@ -29,7 +29,9 @@ func (i Issue) String() string {
 // prices, suspiciously large daily moves (missed split or bad point),
 // calendar gaps (FindGaps), one-session round trips no instrument makes
 // (FindSpikes), long flat stretches (stale feed) and a stale last quote.
-// now anchors the staleness check (pass time.Now() outside tests).
+// now anchors the staleness check (pass time.Now() outside tests). A series
+// that declares where it stops by design (Series.Ends) is never stale; it is
+// reported when its last quote is not the declared date instead.
 //
 // Two families are judged by their own rules. A RATE series (^IRX, ^ESTR,
 // ^ECB-DFR, …) is an annualized percent level, not a price: zero and negative
@@ -134,9 +136,16 @@ func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 		warn(sp.Date, "%+.1f %% then %+.1f %% cancel inside a %.2f %% neighbourhood: a print no instrument made?",
 			sp.In*100, sp.Out*100, sp.Sigma*100)
 	}
-	staleLimit := math.Max(maxStaleDays, 3*cadence[len(cadence)-1])
-	if age := now.Sub(s.Last().Date).Hours() / 24; age > staleLimit {
-		warn(s.Last().Date, "last quote is %.0f days old", age)
+	// A series declared to stop on a date (Series.Ends) is complete, not late;
+	// what is checked instead is that the declaration still describes it.
+	last := s.Last().Date
+	if s.Ends.IsZero() {
+		staleLimit := math.Max(maxStaleDays, 3*cadence[len(cadence)-1])
+		if age := now.Sub(last).Hours() / 24; age > staleLimit {
+			warn(last, "last quote is %.0f days old", age)
+		}
+	} else if !last.Equal(s.Ends) {
+		warn(last, "declared to end on %s, yet its last quote is %s", s.Ends.Format("2006-01-02"), last.Format("2006-01-02"))
 	}
 	return issues
 }

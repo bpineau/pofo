@@ -1,9 +1,11 @@
 // Command gen-tyield-refdata builds the bundled US Treasury references: the
 // LONG par-yield history the zero-coupon STRIPS reconstruction is priced off
-// (pkg/simgen.TreasuryZeroTR, behind the ZROZ recipe) and the two
+// (pkg/simgen.TreasuryZeroTR, behind the ZROZ recipe), the two
 // constant-maturity total-return series the Vanguard Treasury donors are
-// extended with. It runs at data-generation time only (network); the pofo
-// binary embeds the CSVs and never fetches the Federal Reserve.
+// extended with, and, at the short end of the same curve, the 3-month bill
+// rate every dollar cash leg reads before its real quotes (TBILL-3M, see
+// tbill.go). It runs at data-generation time only (network); the pofo binary
+// embeds the CSVs and never fetches the Federal Reserve.
 //
 // Why a yield series and not only total-return series. A coupon bond's duration
 // shrinks as its yield rises while a zero's does not, so no fixed multiple of a
@@ -16,7 +18,7 @@
 // command owns the whole family and a refresh can never leave them describing
 // different curves.
 //
-// Five files are written into pkg/datasets/refdata/:
+// Six files are written into pkg/datasets/refdata/:
 //
 //   - TREASURY-LONG-YIELD.csv  US long Treasury constant-maturity par yield,
 //     annualized percent (1953-04 →). Business-daily
@@ -36,10 +38,17 @@
 //     reference the Vanguard intermediate-Treasury donor is graded against
 //     (simgen trackIndex), which is why it now runs to the present rather than
 //     stopping where that donor's own quotes begin.
+//   - TBILL-3M.csv             FRED TB3MS, the 3-month bill rate, monthly
+//     averages dated the first of the month (1934-01 →), carried exactly as
+//     published: the deep extension of ^IRX. Its conventions and checks are
+//     in tbill.go.
 //
 // The two daily files had no generator at all until 2026-09-20 and could not be
-// refreshed; they are here now because the family must be refreshable as one,
-// and because one of them carried the definitional break described next.
+// refreshed, and TBILL-3M none until 2026-09-27 (it froze at 2026-05 unseen);
+// they are here now because the family must be refreshable as one, and because
+// one of them carried the definitional break described next. The daily 20-year
+// file declares its 1986 end in an "# ends:" header, so a staleness check reads
+// it as complete.
 //
 // # The 1973 definitional break
 //
@@ -127,7 +136,7 @@
 // goldens assert. Nothing here is trusted on the strength of having downloaded
 // cleanly.
 //
-// Usage: gen-tyield-refdata [-base URL] [-dir path] [-dry] [-check=false]
+// Usage: gen-tyield-refdata [-base URL] [-fred URL] [-dir path] [-dry] [-check=false]
 package main
 
 import (
@@ -137,12 +146,11 @@ import (
 	"log"
 	"math"
 	"net/http"
-	"os"
 	"path/filepath"
 	"sort"
-	"strings"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/simgen"
@@ -150,7 +158,8 @@ import (
 
 const (
 	defaultBase = "https://api.db.nomics.world/v22"
-	// The five bundled series this generator owns.
+	// The five bundled series this generator builds off H.15 (the sixth,
+	// TBILL-3M, is read from FRED: see tbill.go).
 	outID         = "TREASURY-LONG-YIELD"
 	outLong       = "TREASURY-LONG-USD"
 	outInter      = "TREASURY-INT-USD"
@@ -206,6 +215,7 @@ const (
 
 func main() {
 	base := flag.String("base", defaultBase, "DBnomics API base URL")
+	fred := flag.String("fred", refgen.FREDBase, "FRED base URL (the 3-month bill rate)")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
 	check := flag.Bool("check", true, "run the sanity checks before writing")
@@ -217,6 +227,7 @@ func main() {
 	daily5 := fetch(*base, int5D)
 	monthly5 := fetch(*base, int5M)
 	daily10 := fetch(*base, neigh10D)
+	bill := fetchBill(*fred)
 
 	a, b, resid, n := fitAffine(daily20, spine)
 	log.Printf("30y on 20y: y30 = %+.4f %+.4f*y20  (n=%d days, residual sd %.3f pt)", a, b, n, resid)
@@ -251,6 +262,7 @@ func main() {
 		checkReconstruction(outInter, interTR, sbbiInter, 6.4, 0.8, 3, 7)
 		checkShape(outLongDaily, longDaily, longTR, date(1962, 1), date(1987, 1))
 		checkShape(outInterDaily, interDaily, interTR, date(1962, 1), date(1993, 1))
+		checkBill(bill, *dir)
 		if failed > 0 {
 			log.Fatalf("%d sanity check(s) failed, nothing written", failed)
 		}
@@ -258,21 +270,23 @@ func main() {
 	if *dry {
 		return
 	}
-	write(*dir, outID, "US long Treasury constant-maturity par yield (annualized percent, daily from 1962, monthly before)",
-		fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (%s, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the %s..%s suspension of the 30-year issue), extended back by the 20-year business-daily point (%s, 1962-01-02->) and the 20-year monthly point (%s, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = %+.4f %+.4f*y20 (least squares over the %d overlapping days, residual sd %.3f pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR. DEFINITIONAL BREAK at %s, declared in the junctions header: the 20-year point steps %+.2f pt that day while the 10-year point does not move, and the term spread to the 10-year flips sign (-0.13 pt on average over 1962-1972, +0.13 over 1973-1986). Both published levels are kept; the RETURN across that one step is not a rate move and every consumer skips it.",
-			spine30D, substFrom, substTo, head20D, head20M, a, b, n, resid, defBreak20, breakSize(long, junctions[0])), junctions, long)
-	write(*dir, outLong, fmt.Sprintf("US long-term Treasury total return (%.0f-year par bond on the long constant-maturity yield, month-end)", longMaturity),
-		fmt.Sprintf("month-end samples of the bundled %s run through simgen.TreasuryTR (%.0f-year par bond, %.2f%%/yr). GAP-FREE from 1953-04: H.15 suspended the 20-year constant maturity between 1987-01 and 1993-09 and the 30-year point publishes straight through, so the long yield this is priced off has no hole and neither does this series. The BOND is 20-year throughout (the maturity of the published long-term government bond record, and the neighbourhood of what VUSTX holds); the CURVE POINT it is discounted at is the long one, i.e. the 30-year par yield from 1977-02 and the 20-year point mapped onto it before, which differs from the published 20-year point by %+.4f %+.4f*y20 (about +0.07 pt at a 4%%/yr yield, -0.22 pt at 12%%) and whose moves are %.3f as large. Month-end, one point per calendar month; the pre-1962 head is a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then. January 1973 is compounded in two pieces around the %s definitional break of the 20-year point, so it carries the real moves on each side of it and not the break itself. Proxy behind VUSTX.",
-			outID, longMaturity, reconFee*100, a, b-1, b, defBreak20), nil, longTR.Points)
-	write(*dir, outInter, fmt.Sprintf("US intermediate-term Treasury total return (%.0f-year constant maturity, month-end)", interMaturity),
-		fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, 5-year, via DBnomics: the business-daily point (%s, 1962-01-02->) sampled at each month's LAST quote, extended back by the monthly point (%s, 1953-04->, a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then), run through simgen.TreasuryTR (%.0f-year par bond, %.2f%%/yr). One curve point throughout: no map, no splice and no hole. Proxy behind VFITX, and the bond sleeve of the bundled US 60/40 (pkg/replay).",
-			int5D, int5M, interMaturity, reconFee*100), nil, interTR.Points)
-	write(*dir, outLongDaily, fmt.Sprintf("US long-term Treasury total return (%.0f-year CMT, daily), DAILY SHAPE series", longMaturity),
-		fmt.Sprintf("Federal Reserve H.15 20-year constant maturity, nominal, business-daily (%s), via DBnomics, run through simgen.TreasuryTR (%.0f-year par bond, no fee), 1962-01-02 to %s where H.15 discontinues that point. The %s definitional break of the 20-year point is declared a junction and its step is skipped. LEVELS ARE NOT AUTHORITATIVE: used only as the intra-month daily shape behind the %s monthly anchors (simgen dailyShape/anchorShape).",
-			head20D, longMaturity, longDailyEnd, defBreak20, outLong), nil, longDaily.Points)
-	write(*dir, outInterDaily, fmt.Sprintf("US intermediate-term Treasury total return (%.0f-year CMT, daily), DAILY SHAPE series", interMaturity),
-		fmt.Sprintf("Federal Reserve H.15 5-year constant maturity, nominal, business-daily (%s), via DBnomics, run through simgen.TreasuryTR (%.0f-year par bond, no fee), 1962-01-02 onwards. LEVELS ARE NOT AUTHORITATIVE: used as the intra-month daily shape behind the %s monthly anchors (simgen dailyShape/anchorShape) and as the same-index reference the Vanguard intermediate-Treasury donor is graded against (simgen trackIndex), which is why it runs to the present rather than stopping at that donor's inception.",
-			int5D, interMaturity, outInter), nil, interDaily.Points)
+	write(*dir, refgen.Header{ID: outID, Name: "US long Treasury constant-maturity par yield (annualized percent, daily from 1962, monthly before)", Junctions: junctions,
+		Source: fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, via DBnomics: the 30-year business-daily point (%s, 1977-02-15->, its row carrying the long-term 25-years-and-above average over the %s..%s suspension of the 30-year issue), extended back by the 20-year business-daily point (%s, 1962-01-02->) and the 20-year monthly point (%s, 1953-04->), both mapped onto the 30-year curve point by the affine fit y30 = %+.4f %+.4f*y20 (least squares over the %d overlapping days, residual sd %.3f pt) and shifted to meet the spine at the junction. RATE levels (annualized percent), NOT a price: read as a yield by simgen.TreasuryZeroTR (the 25+ STRIPS reconstruction behind ZROZ) and by TreasuryTR. DEFINITIONAL BREAK at %s, declared in the junctions header: the 20-year point steps %+.2f pt that day while the 10-year point does not move, and the term spread to the 10-year flips sign (-0.13 pt on average over 1962-1972, +0.13 over 1973-1986). Both published levels are kept; the RETURN across that one step is not a rate move and every consumer skips it.",
+			spine30D, substFrom, substTo, head20D, head20M, a, b, n, resid, defBreak20, breakSize(long, junctions[0]))}, long)
+	write(*dir, refgen.Header{ID: outLong, Name: fmt.Sprintf("US long-term Treasury total return (%.0f-year par bond on the long constant-maturity yield, month-end)", longMaturity),
+		Source: fmt.Sprintf("month-end samples of the bundled %s run through simgen.TreasuryTR (%.0f-year par bond, %.2f%%/yr). GAP-FREE from 1953-04: H.15 suspended the 20-year constant maturity between 1987-01 and 1993-09 and the 30-year point publishes straight through, so the long yield this is priced off has no hole and neither does this series. The BOND is 20-year throughout (the maturity of the published long-term government bond record, and the neighbourhood of what VUSTX holds); the CURVE POINT it is discounted at is the long one, i.e. the 30-year par yield from 1977-02 and the 20-year point mapped onto it before, which differs from the published 20-year point by %+.4f %+.4f*y20 (about +0.07 pt at a 4%%/yr yield, -0.22 pt at 12%%) and whose moves are %.3f as large. Month-end, one point per calendar month; the pre-1962 head is a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then. January 1973 is compounded in two pieces around the %s definitional break of the 20-year point, so it carries the real moves on each side of it and not the break itself. Proxy behind VUSTX.",
+			outID, longMaturity, reconFee*100, a, b-1, b, defBreak20)}, longTR.Points)
+	write(*dir, refgen.Header{ID: outInter, Name: fmt.Sprintf("US intermediate-term Treasury total return (%.0f-year constant maturity, month-end)", interMaturity),
+		Source: fmt.Sprintf("Federal Reserve H.15 selected interest rates, Treasury constant maturities, nominal, 5-year, via DBnomics: the business-daily point (%s, 1962-01-02->) sampled at each month's LAST quote, extended back by the monthly point (%s, 1953-04->, a month-AVERAGE yield carried at its month-end label, the only cadence H.15 published then), run through simgen.TreasuryTR (%.0f-year par bond, %.2f%%/yr). One curve point throughout: no map, no splice and no hole. Proxy behind VFITX, and the bond sleeve of the bundled US 60/40 (pkg/replay).",
+			int5D, int5M, interMaturity, reconFee*100)}, interTR.Points)
+	write(*dir, refgen.Header{ID: outLongDaily, Name: fmt.Sprintf("US long-term Treasury total return (%.0f-year CMT, daily), DAILY SHAPE series", longMaturity),
+		Ends: longDaily.Last().Date, EndsWhy: "H.15 discontinued the 20-year constant maturity at the end of 1986",
+		Source: fmt.Sprintf("Federal Reserve H.15 20-year constant maturity, nominal, business-daily (%s), via DBnomics, run through simgen.TreasuryTR (%.0f-year par bond, no fee), 1962-01-02 to %s where H.15 discontinues that point. The %s definitional break of the 20-year point is declared a junction and its step is skipped. LEVELS ARE NOT AUTHORITATIVE: used only as the intra-month daily shape behind the %s monthly anchors (simgen dailyShape/anchorShape).",
+			head20D, longMaturity, longDailyEnd, defBreak20, outLong)}, longDaily.Points)
+	write(*dir, refgen.Header{ID: outInterDaily, Name: fmt.Sprintf("US intermediate-term Treasury total return (%.0f-year CMT, daily), DAILY SHAPE series", interMaturity),
+		Source: fmt.Sprintf("Federal Reserve H.15 5-year constant maturity, nominal, business-daily (%s), via DBnomics, run through simgen.TreasuryTR (%.0f-year par bond, no fee), 1962-01-02 onwards. LEVELS ARE NOT AUTHORITATIVE: used as the intra-month daily shape behind the %s monthly anchors (simgen dailyShape/anchorShape) and as the same-index reference the Vanguard intermediate-Treasury donor is graded against (simgen trackIndex), which is why it runs to the present rather than stopping at that donor's inception.",
+			int5D, interMaturity, outInter)}, interDaily.Points)
+	write(*dir, billHeader(), bill)
 }
 
 // mustDate parses one of this file's own ISO date constants.
@@ -554,33 +568,12 @@ func report(id, unit string, pts []marketdata.Point) {
 		pts[0].Date.Format("2006-01-02"), pts[len(pts)-1].Date.Format("2006-01-02"), lo, hi, unit)
 }
 
-func write(dir, id, name, source string, junctions []time.Time, pts []marketdata.Point) {
-	var b strings.Builder
-	b.WriteString("# pofo simdata v1\n")
-	fmt.Fprintf(&b, "# id: %s\n", id)
-	fmt.Fprintf(&b, "# name: %s\n", name)
-	fmt.Fprintf(&b, "# source: %s\n", source)
-	fmt.Fprintf(&b, "# generated: %s\n", time.Now().UTC().Format("2006-01-02"))
-	for i, j := range junctions {
-		if i == 0 {
-			b.WriteString("# junctions: ")
-		} else {
-			b.WriteString(",")
-		}
-		b.WriteString(j.Format("2006-01-02"))
+// write stores one series under dir, or stops the generator.
+func write(dir string, h refgen.Header, pts []marketdata.Point) {
+	if err := refgen.Write(dir, h, pts); err != nil {
+		log.Fatalf("write %s: %v", h.ID, err)
 	}
-	if len(junctions) > 0 {
-		b.WriteString("\n")
-	}
-	b.WriteString("date,close\n")
-	for _, p := range pts {
-		fmt.Fprintf(&b, "%s,%.6f\n", p.Date.Format("2006-01-02"), p.Close)
-	}
-	path := filepath.Join(dir, id+".csv")
-	if err := os.WriteFile(path, []byte(b.String()), 0o644); err != nil {
-		log.Fatalf("write %s: %v", path, err)
-	}
-	log.Printf("wrote %s", path)
+	log.Printf("wrote %s", filepath.Join(dir, h.ID+".csv"))
 }
 
 // runChecks measures the assembled series where an outside answer is known and

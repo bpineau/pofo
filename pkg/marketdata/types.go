@@ -140,6 +140,17 @@ type Series struct {
 	// sat still. See cmd/gen-tyield-refdata and simgen.TreasuryTR, which skips
 	// any step spanning one of these dates.
 	Junctions []time.Time
+
+	// Ends is non-zero when the series STOPS BY DESIGN on that date, so an old
+	// last point is the whole record rather than a late one: its publisher
+	// discontinued it (EIA's WTI futures settlements after 2024-04-05, behind
+	// the bundled WTI-ER-USD), or it is kept only up to where better data takes
+	// over (a daily shape series trimmed where the real quotes begin). It comes
+	// from a bundled file's "# ends:" header, a date optionally followed by the
+	// reason in free text, and Verify honours it: such a series is never
+	// reported stale, and one whose last point is not that date is reported
+	// instead, since the declaration no longer describes the data.
+	Ends time.Time
 }
 
 // At returns the series value in force at the given time: the close of the

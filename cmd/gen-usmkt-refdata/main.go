@@ -32,20 +32,15 @@
 package main
 
 import (
-	"archive/zip"
-	"bytes"
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"math"
-	"net/http"
 	"slices"
-	"strconv"
-	"strings"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
@@ -71,7 +66,7 @@ func main() {
 	dry := flag.Bool("dry", false, "download and validate, write nothing")
 	flag.Parse()
 
-	raw, err := download(source)
+	raw, err := refgen.Get(source)
 	if err != nil {
 		log.Fatalf("download: %v", err)
 	}
@@ -131,103 +126,31 @@ func main() {
 	log.Printf("rebuild (make simdata) to carry the total-market recipes back to %s", points[0].Date.Format("2006-01"))
 }
 
-// download GETs a URL with a browser User-Agent, which this host requires.
-func download(url string) ([]byte, error) {
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)")
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("http %d", resp.StatusCode)
-	}
-	return io.ReadAll(io.LimitReader(resp.Body, 32<<20))
-}
-
-// parse turns the zipped CSV into the cumulated base-100 index. The file holds
-// a few prose lines, then a header naming the factor columns, then one row per
-// trading day with returns in PERCENT.
+// parse turns the zipped CSV into the cumulated base-100 index.
 func parse(raw []byte) ([]marketdata.Point, error) {
-	zr, err := zip.NewReader(bytes.NewReader(raw), int64(len(raw)))
+	body, err := refgen.FrenchCSV(raw)
 	if err != nil {
 		return nil, err
 	}
-	if len(zr.File) != 1 {
-		return nil, fmt.Errorf("zip holds %d files, want 1", len(zr.File))
-	}
-	f, err := zr.File[0].Open()
-	if err != nil {
-		return nil, err
-	}
-	defer f.Close()
-	body, err := io.ReadAll(io.LimitReader(f, 64<<20))
-	if err != nil {
-		return nil, err
-	}
-	return cumulate(string(body))
+	return cumulate(body)
 }
 
-// cumulate reads the CSV body: it locates the two columns it needs by NAME (the
-// library has added columns before) and compounds their sum from a base of 100
-// the day before the first return.
+// cumulate reads the CSV body's Mkt-RF and RF columns (refgen.FrenchTable,
+// which finds them by NAME and refuses the library's missing-value sentinel)
+// and compounds their sum, in percent, from a base of 100 the day before the
+// first return.
 func cumulate(body string) ([]marketdata.Point, error) {
-	excess, bill := -1, -1
-	var out []marketdata.Point
+	dates, cols, err := refgen.FrenchTable(body, "Mkt-RF", "RF")
+	if err != nil {
+		return nil, err
+	}
+	out := make([]marketdata.Point, len(dates))
 	level := 100.0
-	for _, line := range strings.Split(body, "\n") {
-		fields := strings.Split(strings.TrimRight(line, "\r"), ",")
-		for i, f := range fields {
-			switch strings.TrimSpace(f) {
-			case "Mkt-RF":
-				excess = i
-			case "RF":
-				bill = i
-			}
-		}
-		if excess < 0 || bill < 0 || len(fields) <= max(excess, bill) {
-			continue
-		}
-		date, ok := day(fields[0])
-		if !ok {
-			continue
-		}
-		mkt, err1 := strconv.ParseFloat(strings.TrimSpace(fields[excess]), 64)
-		rf, err2 := strconv.ParseFloat(strings.TrimSpace(fields[bill]), 64)
-		if err1 != nil || err2 != nil {
-			continue
-		}
-		if mkt <= -99 || rf <= -99 { // the library's missing-value sentinel
-			return nil, fmt.Errorf("%s: missing value in the source", date.Format("2006-01-02"))
-		}
-		level *= 1 + (mkt+rf)/100
-		out = append(out, marketdata.Point{Date: date, Close: level})
-	}
-	if excess < 0 || bill < 0 {
-		return nil, fmt.Errorf("no Mkt-RF/RF header in the source")
-	}
-	if len(out) == 0 {
-		return nil, fmt.Errorf("no daily return in the source")
+	for i, d := range dates {
+		level *= 1 + (cols[0][i]+cols[1][i])/100
+		out[i] = marketdata.Point{Date: d, Close: level}
 	}
 	return out, nil
-}
-
-// day parses the source's YYYYMMDD key, rejecting anything else (the monthly
-// files of the same library key on YYYYMM, and the prose lines on nothing).
-func day(field string) (time.Time, bool) {
-	s := strings.TrimSpace(field)
-	if len(s) != 8 {
-		return time.Time{}, false
-	}
-	t, err := time.Parse("20060102", s)
-	if err != nil {
-		return time.Time{}, false
-	}
-	return t.UTC(), true
 }
 
 // bundled reads an embedded reference series.

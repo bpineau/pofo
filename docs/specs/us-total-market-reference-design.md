@@ -26,8 +26,13 @@ return of the whole US market since 1926-07, cumulated from the Fama/French
 market factor: `Mkt-RF`, the excess return of the CRSP value-weighted portfolio
 of all NYSE, AMEX and NASDAQ common stocks, plus `RF`, the one-month Treasury
 bill return of the same day. The Ken French Data Library already stands behind
-two bundled series (`USSCV-USD`, `DEVEXUS-DAILY`), so this adds a source of the
-same grade rather than a new one.
+two bundled series (`USSCV-USD`, `DEVEXUS-DAILY`, regenerated since 2026-09 by
+`cmd/gen-french-refdata`, `make french-refdata`), so this adds a source of the
+same grade rather than a new one. The library REVISES its history each year as
+CRSP and Compustat are corrected (the 2026-09 refresh moved the small-value
+level at 2026-05 by -0.65 % at a daily-return correlation of 0.99999), so its
+generators check that a refresh is still the same series rather than an
+identical one.
 
 It is an ACADEMIC FACTOR: gross of fees, commissions and spreads, like
 `USSCV-USD` and unlike a fund NAV. What it owes before it may stand in for a
