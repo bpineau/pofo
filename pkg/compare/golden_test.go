@@ -150,10 +150,14 @@ func fabricatedColumns(t *testing.T) (columns []*column, bench *marketdata.Serie
 // reproduce the frozen bytes exactly. If it fails after a CODE change, the
 // rendering diverged: fix the code, do NOT regenerate the golden.
 //
-// One input is not fabricated: the report's regime strip reads the bundled
+// Two inputs are not fabricated. The report's regime strip reads the bundled
 // macro panel, so refreshing pkg/datasets/macropanel does legitimately move a
-// few pixels of it (a month at a quadrant boundary). That is the only reason to
-// re-run with UPDATE_GOLDEN=1, and the diff must be confined to the strip.
+// few pixels of it (a month at a quadrant boundary); and the composition
+// block reads the bundled catalog's breakdowns (fabricatedColumns loads
+// assets.json), so refreshing the geography or sectors of a record the
+// columns hold (IE00B8GKDB10, IE000EGGFVG6, IGLN, IB01) moves its pies and
+// currency line. Those are the only reasons to re-run with UPDATE_GOLDEN=1,
+// and the diff must be confined to the strip or to the composition block.
 func TestReportGolden(t *testing.T) {
 	cols, bench, start, end, meta := fabricatedColumns(t)
 	opt := Options{Rebalance: 90, Benchmark: "^GSPC", Framework: suggest.RegimeFramework(), Currency: "EUR"}
