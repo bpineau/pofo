@@ -3,10 +3,14 @@
 // back before their fetchable components. It runs at data-generation time only
 // (network); the pofo binary embeds the CSVs and never fetches OECD or the ECB.
 //
-// Everything is sourced from DBnomics (free, key-less), the same mirror the
-// macro panel uses. The OECD series come from the CURRENT short-term-statistics
-// dataflow (OECD/DSD_STES@DF_FINMARK) rather than the legacy MEI dataset, which
-// stopped being updated in 2024-01, and from its EA20 (euro area, 20 countries
+// The OECD series are read from the OECD's own SDMX API (refgen.OECD, the three
+// of them in one download), the ECB ones from DBnomics (free, key-less), which
+// keeps the ECB current. The OECD used to come through DBnomics too, until the
+// mirror's OECD provider stopped being indexed at 2026-06-16 and left every
+// OECD-fed file here stopped at 2026-05 while the OECD already served 2026-08.
+// The OECD series come from the CURRENT short-term-statistics dataflow
+// (DSD_STES@DF_FINMARK) rather than the legacy MEI dataset, which stopped
+// being updated in 2024-01, and from its EA20 (euro area, 20 countries
 // since Croatia joined in 2023) aggregate rather than EA19: over their whole
 // common history the two aggregates agree to within 1.5e-4 percentage point on
 // the yield and to the last published digit on the share-price index, and EA20
@@ -98,7 +102,7 @@
 // already trusts. Nothing here is trusted on the strength of having downloaded
 // cleanly.
 //
-// Usage: gen-euro-refdata [-base URL] [-dir path] [-dry] [-check=false]
+// Usage: gen-euro-refdata [-base URL] [-oecd URL] [-dir path] [-dry] [-check=false]
 package main
 
 import (
@@ -120,6 +124,14 @@ import (
 )
 
 const defaultBase = "https://api.db.nomics.world/v22"
+
+// The three OECD series this generator reads, all from DSD_STES@DF_FINMARK and
+// all in one download.
+const (
+	euroYieldKey = "EA20.M.IRLT.PA._Z._Z._Z._Z.N"  // euro-area long-term govt yield
+	euroShareKey = "EA20.M.SHARE.IX._Z._Z._Z._Z.N" // euro-area share prices
+	deShortKey   = "DEU.M.IR3TIB.PA._Z._Z._Z._Z.N" // German 3-month interbank
+)
 
 // netDivYield is the constant net dividend (and universe-drift) yield added to
 // the euro-area share-price index to turn its price return into a net total
@@ -172,18 +184,21 @@ const euroLongSlope = 0.9615
 var farFuture = time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
 
 func main() {
-	base := flag.String("base", defaultBase, "DBnomics API base URL")
+	base := flag.String("base", defaultBase, "DBnomics API base URL (the ECB series)")
+	oecdBase := flag.String("oecd", refgen.OECDBase, "OECD SDMX API base URL")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
 	check := flag.Bool("check", true, "run the sanity checks before writing")
 	flag.Parse()
+
+	oecd := fetchOECD(*oecdBase, euroYieldKey, euroShareKey, deShortKey)
 
 	// Euro-area government bond TR, monthly (~1970) and daily (~2004). The
 	// monthly file is the OECD-driven tail up to the day the ECB curve starts
 	// and that curve's own month-ends after it, exactly like its long twin
 	// below: see spliceCurve for why real data sets the level wherever it
 	// exists, and atMonthEnd for the labels the tail carries.
-	govYield := fetch(*base, "OECD/DSD_STES@DF_FINMARK/EA20.M.IRLT.PA._Z._Z._Z._Z.N")
+	govYield := oecd[euroYieldKey]
 	govSynth := simgen.TreasuryTR("Euro-area government bond total return (10y benchmark, OECD monthly yield)", asSeries(govYield), euroBondMaturity, 0)
 	govSynth.Points = atMonthEnd(govSynth.Points)
 	report("EUROGOV-SYN", govSynth.Points)
@@ -217,14 +232,14 @@ func main() {
 	report("EUROGOV-LONG-EUR", govLongMonthly.Points)
 
 	// Eurozone equity net TR, monthly (~1986).
-	price := fetch(*base, "OECD/DSD_STES@DF_FINMARK/EA20.M.SHARE.IX._Z._Z._Z._Z.N")
+	price := oecd[euroShareKey]
 	equity := atMonthEnd(grossUp(price, netDivYield))
 	report("EMU-EUR", equity)
 
 	// German 3-month money-market accrual, monthly (~1960), for the pre-euro
 	// cash tail. Trimmed at 1995 so it only ever feeds the splice under
 	// EURCASH-EUR (which starts 1994).
-	shortRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/DEU.M.IR3TIB.PA._Z._Z._Z._Z.N")
+	shortRate := oecd[deShortKey]
 	cash := atAccrualEnd(accrue(shortRate, date(1995, 1), germanMoneyMarket))
 	report("DECASH-EUR", cash)
 
@@ -243,21 +258,21 @@ func main() {
 		return
 	}
 	write(*dir, "EMU-EUR", "Eurozone equity total return (OECD euro-area share prices grossed to net TR, EUR, monthly)",
-		fmt.Sprintf("OECD euro-area share-price index EA20.M.SHARE (dataflow DSD_STES@DF_FINMARK, price only, ~1986-12) grossed to a net total return by a constant %.1f%%/yr net dividend yield calibrated on the EZU (MSCI Eurozone net TR) EUR overlap; via DBnomics. Proxy behind EZU. %s", netDivYield*100, monthAverageNote), equity)
+		fmt.Sprintf("OECD euro-area share-price index EA20.M.SHARE (dataflow DSD_STES@DF_FINMARK, price only, ~1986-12) grossed to a net total return by a constant %.1f%%/yr net dividend yield calibrated on the EZU (MSCI Eurozone net TR) EUR overlap; read from the OECD's own SDMX API. Proxy behind EZU. %s", netDivYield*100, monthAverageNote), equity)
 	write(*dir, "EUROGOV-EUR", "Euro-area government bond total return (10-year benchmark, EUR, monthly)",
-		fmt.Sprintf("month-ends of the ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y from %s; before it, the OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) rebased onto it at the junction; both run through the constant-maturity reconstruction (TreasuryTR, 10y); via DBnomics. Proxy behind the euro-govt bond ETF. %s",
+		fmt.Sprintf("month-ends of the ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y from %s; before it, the OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) rebased onto it at the junction; both run through the constant-maturity reconstruction (TreasuryTR, 10y); the curve via DBnomics, the OECD yield from the OECD's own SDMX API. Proxy behind the euro-govt bond ETF. %s",
 			govSplice.at.Format("2006-01"), monthAverageNote), govMonthly.Points)
 	write(*dir, "EUROGOV-DAILY", "Euro-area government bond total return (10-year benchmark, EUR, daily)",
 		"ECB daily euro-area 10y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y (~2004) run through TreasuryTR (10y); via DBnomics. Daily shape for EUROGOV-EUR.", govDaily.Points)
 	write(*dir, "EUROGOV-LONG-EUR", "Long euro-area government bond total return (25+ segment, EUR, monthly)",
-		fmt.Sprintf("month-ends of the ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y from %s; before it, the OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) mapped to a 25y yield (%.3f+%.4f*10y, calibrated on that same ECB curve) and rebased onto it at the junction; both run through TreasuryTR (%.0fy par, modified duration ~17, vol-matched to DBXG); via DBnomics. Proxy behind the euro 25+ govt ETF (DBXG). %s",
+		fmt.Sprintf("month-ends of the ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y from %s; before it, the OECD euro-area long-term government bond yield EA20.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1970-01) mapped to a 25y yield (%.3f+%.4f*10y, calibrated on that same ECB curve) and rebased onto it at the junction; both run through TreasuryTR (%.0fy par, modified duration ~17, vol-matched to DBXG); the curve via DBnomics, the OECD yield from the OECD's own SDMX API. Proxy behind the euro 25+ govt ETF (DBXG). %s",
 			splice.at.Format("2006-01"), euroLongIntercept, euroLongSlope, euroLongMaturity, monthAverageNote), govLongMonthly.Points)
 	write(*dir, "EUROGOV-LONG-DAILY", "Long euro-area government bond total return (25+ segment, EUR, daily)",
 		"ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.", govLongDaily.Points)
 	write(*dir, "EURCASH-EUR", "Euro area 3-month cash total-return index (base 100, monthly)",
 		"ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) rolled monthly at the convention it is quoted in (simple, act/360, per EMMI's Benchmark Determination Methodology for Euribor); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd), like every other monthly series here, so a composite reading this leg beside a bond leg sees one point a month. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.", eurCash)
 	writeHeader(*dir, refgen.Header{ID: "DECASH-EUR", Name: "German 3-month money-market accrual (EUR/DM, monthly)",
-		Source: "OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.",
+		Source: "OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); read from the OECD's own SDMX API. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.",
 		Ends:   cash[len(cash)-1].Date, EndsWhy: "trimmed where EURCASH-EUR, which starts 1994, takes the cash leg over"}, cash)
 }
 
@@ -267,9 +282,30 @@ type obs struct {
 	val  float64
 }
 
-// fetch downloads one DBnomics series and returns its non-null observations in
-// date order. Monthly ("YYYY-MM") and daily ("YYYY-MM-DD") periods are both
-// accepted; a monthly period is anchored on the first of the month.
+// fetchOECD reads the OECD series named by keys from DSD_STES@DF_FINMARK in one
+// download, and stops the generator when one of them is missing or empty. A
+// monthly period is anchored on the first of the month, as fetch does.
+func fetchOECD(base string, keys ...string) map[string][]obs {
+	got, err := refgen.OECD(base, refgen.FinMark, keys...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	out := make(map[string][]obs, len(keys))
+	for _, k := range keys {
+		if len(got[k]) < 2 {
+			log.Fatalf("OECD %s: only %d usable observations", k, len(got[k]))
+		}
+		for _, p := range got[k] {
+			out[k] = append(out[k], obs{date: p.Date, val: p.Close})
+		}
+	}
+	return out
+}
+
+// fetch downloads one DBnomics series (the ECB ones) and returns its non-null
+// observations in date order. Monthly ("YYYY-MM") and daily ("YYYY-MM-DD")
+// periods are both accepted; a monthly period is anchored on the first of the
+// month.
 func fetch(base, path string) []obs {
 	url := fmt.Sprintf("%s/series/%s?observations=1", base, path)
 	cl := &http.Client{Timeout: 60 * time.Second}
@@ -353,7 +389,7 @@ const monthAverageNote = "CADENCE: the OECD observation for a month is that mont
 // belong to, never past today.
 //
 // The OECD publishes a monthly observation as the month's AVERAGE of the daily
-// quotes and DBnomics anchors the period on the first of the month, so a
+// quotes and labels the period by its month (dated here on the first), so a
 // reconstruction driven by it reaches its level in the middle of the month:
 // neither end of the month is the exact date, and no relabelling can make it
 // one. What a label CAN be is consistent. Every other monthly reference in this
@@ -608,8 +644,9 @@ func writeHeader(dir string, h refgen.Header, pts []marketdata.Point) {
 //   - Freshness. The MEI dataflow this generator used to read went on answering
 //     HTTP 200 for two and a half years after it stopped being updated, so a
 //     stale tail is the failure mode to catch first: every OECD-sourced series
-//     must reach within a year of today, and the two ECB curve series within a
-//     quarter (the ECB publishes daily, the OECD with a lag and revisions).
+//     and the two ECB curve series must reach within a quarter of today. The
+//     OECD bound used to be a year, which let the DBnomics mirror's freeze
+//     (its OECD copy stopped at 2026-05) pass for four months unseen.
 //     Both EUROGOV files are now fed by the ECB from 2004, so a frozen OECD
 //     dataflow would no longer show at their tails: the OECD rule is applied to
 //     the two DEEP TAILS instead, which are the parts that still depend on the
@@ -693,6 +730,14 @@ func writeHeader(dir string, h refgen.Header, pts []marketdata.Point) {
 //     act/360 re-quote was gated: the restated form agreed to 4e-8, the rounding
 //     of the six decimals the file carries, proving the day count was all that
 //     moved.
+//   - The OECD-fed files against the ones they replace. A refresh extends a
+//     file; it does not rewrite it. Every step the rebuilt EMU-EUR,
+//     EUROGOV-EUR, EUROGOV-LONG-EUR and DECASH-EUR share with the shipped files
+//     must carry the same return (refgen.CompareSteps), except where the OECD
+//     revised a print, and at least refgen.MinReproduced of them must: a
+//     source, unit or definition change moves nearly every step. When the OECD
+//     reads moved from the DBnomics mirror to the OECD's own API (2026-09),
+//     every common step of all four was reproduced.
 //
 // spliced pairs a shipped monthly file with the daily ECB curve it is sampled
 // from past its junction, so the two splices are checked by the same code.
@@ -716,9 +761,12 @@ func runChecks(dir string, gov, govSynth, govDaily, govLong, govLongSynth, govLo
 		pts []marketdata.Point
 		max time.Duration
 	}{
-		{"EUROGOV-EUR (OECD tail)", govSynth.Points, 365 * 24 * time.Hour},
-		{"EUROGOV-LONG-EUR (synthesized tail)", govLongSynth.Points, 365 * 24 * time.Hour},
-		{"EMU-EUR", equity, 365 * 24 * time.Hour},
+		// The OECD publishes a month's financial-market averages within weeks;
+		// a quarter of silence is a frozen feed, as the DBnomics mirror's
+		// 2026-05 tail was when a year's bound still let it through.
+		{"EUROGOV-EUR (OECD tail)", govSynth.Points, 92 * 24 * time.Hour},
+		{"EUROGOV-LONG-EUR (synthesized tail)", govLongSynth.Points, 92 * 24 * time.Hour},
+		{"EMU-EUR", equity, 92 * 24 * time.Hour},
 		{"EUROGOV-DAILY", govDaily.Points, 92 * 24 * time.Hour},
 		{"EUROGOV-LONG-DAILY", govLongDaily.Points, 92 * 24 * time.Hour},
 		// The ECB publishes the monthly EURIBOR average within weeks; half a
@@ -886,6 +934,22 @@ func runChecks(dir string, gov, govSynth, govDaily, govLong, govLongSynth, govLo
 			c.id, c.named, c.method, convYears, worstConv, convYear)
 		if convYears < c.years || math.Abs(worstConv) > 0.10 {
 			fail("%s does not pay its own quoted rate: %d years compared, worst gap %+.3f pt in %d", c.id, convYears, worstConv, convYear)
+		}
+	}
+
+	for _, f := range []struct {
+		id  string
+		pts []marketdata.Point
+	}{{"EMU-EUR", equity}, {"EUROGOV-EUR", gov.Points}, {"EUROGOV-LONG-EUR", govLong.Points}, {"DECASH-EUR", cash}} {
+		prev, err := readRefdata(dir, f.id)
+		if err != nil {
+			log.Printf("check: no shipped %s to compare against (%v)", f.id, err)
+			continue
+		}
+		o := refgen.CompareSteps(prev.Points, f.pts)
+		log.Printf("check %s vs the shipped file: %s", f.id, o)
+		if o.Share() < refgen.MinReproduced {
+			fail("%s no longer reproduces the history it replaces: %s", f.id, o)
 		}
 	}
 

@@ -58,10 +58,13 @@
 //     United Kingdom, compounded. What the sterling futures
 //     leg finances at.
 //
-// The OECD series come from DBnomics (free, key-less), the same mirror the
-// macro panel and the euro reference series use, but from the CURRENT
-// short-term-statistics dataflow (OECD/DSD_STES@DF_FINMARK) rather than the
-// legacy MEI dataset, which stopped being updated in 2024-01. The Bundesbank
+// The OECD series are read from the OECD's own SDMX API (refgen.OECD, all four
+// in one download), like the macro panel's and the euro reference series', from
+// the CURRENT short-term-statistics dataflow (DSD_STES@DF_FINMARK) rather than
+// the legacy MEI dataset, which stopped being updated in 2024-01. They used to
+// come through the DBnomics mirror, until its OECD provider stopped being
+// indexed at 2026-06-16 and left GILT-GBP, JPCASH-JPY and GBCASH-GBP stopped
+// around 2026-05 while the OECD already served 2026-08. The Bundesbank
 // curve is read from the Bundesbank's own SDMX web service: it used to come
 // through DBnomics as well, until the mirror stopped indexing it at 2026-07-03
 // and BUND-DAILY froze there for three months with nothing to say so. The
@@ -73,12 +76,11 @@
 // spreads were thin, and the daily German curve's freshness. Nothing here is
 // trusted on the strength of having downloaded cleanly.
 //
-// Usage: gen-gbond-refdata [-base URL] [-jgb URL] [-buba URL] [-dir path] [-dry] [-check=false]
+// Usage: gen-gbond-refdata [-oecd URL] [-jgb URL] [-buba URL] [-dir path] [-dry] [-check=false]
 package main
 
 import (
 	"encoding/csv"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io"
@@ -98,8 +100,16 @@ import (
 	"github.com/bpineau/pofo/pkg/simgen"
 )
 
+// The four OECD series this generator reads, all from DSD_STES@DF_FINMARK and
+// all in one download.
 const (
-	defaultBase = "https://api.db.nomics.world/v22"
+	deLongKey  = "DEU.M.IRLT.PA._Z._Z._Z._Z.N"   // German long-term govt yield
+	jpCallKey  = "JPN.M.IRSTCI.PA._Z._Z._Z._Z.N" // Japanese call money
+	gbLongKey  = "GBR.M.IRLT.PA._Z._Z._Z._Z.N"   // British long-term govt yield
+	gbShortKey = "GBR.M.IRSTCI.PA._Z._Z._Z._Z.N" // British interbank overnight
+)
+
+const (
 	// defaultJGB is the Ministry of Finance's historical JGB interest-rate
 	// table. Only the /english/ path serves it; the Japanese one answers with
 	// a portal page.
@@ -130,7 +140,7 @@ const bondMaturity = 10.0
 const jgbTenor = "10Y"
 
 func main() {
-	base := flag.String("base", defaultBase, "DBnomics API base URL")
+	oecdBase := flag.String("oecd", refgen.OECDBase, "OECD SDMX API base URL")
 	jgbURL := flag.String("jgb", defaultJGB, "Ministry of Finance historical JGB rates CSV")
 	bubaURL := flag.String("buba", defaultBuba, "Bundesbank SDMX CSV of the daily 10-year federal securities yield")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
@@ -138,10 +148,12 @@ func main() {
 	check := flag.Bool("check", true, "run the sanity checks before writing")
 	flag.Parse()
 
+	oecd := fetchOECD(*oecdBase, deLongKey, jpCallKey, gbLongKey, gbShortKey)
+
 	// German 10-year, monthly (1956-05→) and daily (1997-08→). The monthly file
 	// is the OECD-driven tail up to the day the Bundesbank curve starts and that
 	// curve's own month-ends after it: see spliceCurve and atMonthEnd.
-	bundYield := fetch(*base, "OECD/DSD_STES@DF_FINMARK/DEU.M.IRLT.PA._Z._Z._Z._Z.N")
+	bundYield := oecd[deLongKey]
 	bundSynth := simgen.TreasuryTR("German government bond total return (10y benchmark, OECD monthly yield)", asSeries(bundYield), bondMaturity, 0)
 	bundSynth.Points = atMonthEnd(bundSynth.Points)
 	report("BUND-SYN", bundSynth.Points)
@@ -160,17 +172,17 @@ func main() {
 	jgb := simgen.TreasuryTR("Japanese government bond total return (10y benchmark, daily)", jgbYield, bondMaturity, 0)
 	report("JGB-JPY", jgb.Points)
 
-	jpRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/JPN.M.IRSTCI.PA._Z._Z._Z._Z.N")
+	jpRate := oecd[jpCallKey]
 	jpCash := atAccrualEnd(accrue(jpRate))
 	report("JPCASH-JPY", jpCash)
 
 	// British 10-year, monthly (1960-01→), and the sterling interbank accrual.
-	giltYield := fetch(*base, "OECD/DSD_STES@DF_FINMARK/GBR.M.IRLT.PA._Z._Z._Z._Z.N")
+	giltYield := oecd[gbLongKey]
 	gilt := simgen.TreasuryTR("British government bond total return (10y benchmark, monthly)", asSeries(giltYield), bondMaturity, 0)
 	gilt.Points = atMonthEnd(gilt.Points)
 	report("GILT-GBP", gilt.Points)
 
-	gbRate := fetch(*base, "OECD/DSD_STES@DF_FINMARK/GBR.M.IRSTCI.PA._Z._Z._Z._Z.N")
+	gbRate := oecd[gbShortKey]
 	gbCash := atAccrualEnd(accrue(gbRate))
 	report("GBCASH-GBP", gbCash)
 
@@ -181,18 +193,18 @@ func main() {
 		return
 	}
 	write(*dir, "BUND-EUR", "German government bond total return (10-year benchmark, EUR, monthly)",
-		fmt.Sprintf("month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from %s; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); the curve from the Bundesbank's SDMX web service, the OECD yield via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. %s",
+		fmt.Sprintf("month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from %s; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); the curve from the Bundesbank's SDMX web service, the OECD yield from the OECD's own SDMX API. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. %s",
 			bundSplice.at.Format("2006-01"), bondMaturity, monthAverageNote), bund.Points)
 	write(*dir, "BUND-DAILY", "German government bond total return (10-year benchmark, EUR, daily)",
 		fmt.Sprintf("Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, BBSIS D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A (~1997-08) run through TreasuryTR (%.0fy par); read from the Bundesbank's own SDMX web service (api.statistiken.bundesbank.de), not the DBnomics mirror, which stopped indexing it at 2026-07-03. Daily shape for BUND-EUR.", bondMaturity), bundDaily.Points)
 	write(*dir, "JGB-JPY", "Japanese government bond total return (10-year benchmark, JPY, daily)",
 		fmt.Sprintf("Japanese Ministry of Finance historical JGB interest rates (jgbcme_all.csv), %s column (~1986-07), run through TreasuryTR (%.0fy par). Japanese leg of the NTSG global bond overlay; the yield is negative on 453 days between 2016-02 and 2020-05 and the reconstruction prices those days rather than flat-lining them.", jgbTenor, bondMaturity), jgb.Points)
 	write(*dir, "GILT-GBP", "British government bond total return (10-year benchmark, GBP, monthly)",
-		fmt.Sprintf("OECD long-term government bond yield GBR.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1960) run through TreasuryTR (%.0fy par); via DBnomics. British leg of the NTSG global bond overlay; monthly texture accepted, the sleeve is ~1.8%% of net assets. No real daily or month-end gilt curve is spliced in front of it, unlike the German leg: the Bank of England publishes its daily curve as a workbook rather than a series, so this file carries the month-average cadence end to end. %s", bondMaturity, monthAverageNote), gilt.Points)
+		fmt.Sprintf("OECD long-term government bond yield GBR.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1960) run through TreasuryTR (%.0fy par); read from the OECD's own SDMX API. British leg of the NTSG global bond overlay; monthly texture accepted, the sleeve is ~1.8%% of net assets. No real daily or month-end gilt curve is spliced in front of it, unlike the German leg: the Bank of England publishes its daily curve as a workbook rather than a series, so this file carries the month-average cadence end to end. %s", bondMaturity, monthAverageNote), gilt.Points)
 	write(*dir, "JPCASH-JPY", "Japanese overnight money-market accrual (JPY, monthly)",
-		"OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the yen leg of the NTSG bond overlay finances at.", jpCash)
+		"OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); read from the OECD's own SDMX API. What the yen leg of the NTSG bond overlay finances at.", jpCash)
 	write(*dir, "GBCASH-GBP", "British overnight money-market accrual (GBP, monthly)",
-		"OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the sterling leg of the NTSG bond overlay finances at.", gbCash)
+		"OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); read from the OECD's own SDMX API. What the sterling leg of the NTSG bond overlay finances at.", gbCash)
 }
 
 // obs is one dated observation.
@@ -201,51 +213,23 @@ type obs struct {
 	val  float64
 }
 
-// fetch downloads one DBnomics series and returns its non-null observations in
-// date order. Monthly ("YYYY-MM") and daily ("YYYY-MM-DD") periods are both
-// accepted; a monthly period is anchored on the first of the month.
-func fetch(base, path string) []obs {
-	url := fmt.Sprintf("%s/series/%s?observations=1", base, path)
-	cl := &http.Client{Timeout: 120 * time.Second}
-	resp, err := cl.Get(url)
+// fetchOECD reads the OECD series named by keys from DSD_STES@DF_FINMARK in one
+// download, and stops the generator when one of them is missing or empty. A
+// monthly period is dated on the first of its month.
+func fetchOECD(base string, keys ...string) map[string][]obs {
+	got, err := refgen.OECD(base, refgen.FinMark, keys...)
 	if err != nil {
-		log.Fatalf("%s: %v", path, err)
+		log.Fatal(err)
 	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("%s: HTTP %d", path, resp.StatusCode)
-	}
-	var body struct {
-		Series struct {
-			Docs []struct {
-				Period []string `json:"period"`
-				Value  []any    `json:"value"`
-			} `json:"docs"`
-		} `json:"series"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		log.Fatalf("%s: decode: %v", path, err)
-	}
-	if len(body.Series.Docs) == 0 {
-		log.Fatalf("%s: no series returned", path)
-	}
-	doc := body.Series.Docs[0]
-	out := make([]obs, 0, len(doc.Period))
-	for i, per := range doc.Period {
-		v, ok := doc.Value[i].(float64)
-		if !ok {
-			continue // DBnomics encodes gaps as the JSON string "NA" or null
+	out := make(map[string][]obs, len(keys))
+	for _, k := range keys {
+		if len(got[k]) < 2 {
+			log.Fatalf("OECD %s: only %d usable observations", k, len(got[k]))
 		}
-		t, err := parsePeriod(per)
-		if err != nil {
-			log.Fatalf("%s: bad period %q: %v", path, per, err)
+		for _, p := range got[k] {
+			out[k] = append(out[k], obs{date: p.Date, val: p.Close})
 		}
-		out = append(out, obs{date: t, val: v})
 	}
-	if len(out) < 2 {
-		log.Fatalf("%s: only %d usable observations", path, len(out))
-	}
-	sort.Slice(out, func(i, j int) bool { return out[i].date.Before(out[j].date) })
 	return out
 }
 
@@ -281,13 +265,6 @@ func fetchBundesbank(url string) []obs {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].date.Before(out[j].date) })
 	return out
-}
-
-func parsePeriod(p string) (time.Time, error) {
-	if len(p) == 7 { // YYYY-MM
-		return time.Parse("2006-01", p)
-	}
-	return time.Parse("2006-01-02", p)
 }
 
 // fetchJGB downloads the Ministry of Finance's historical JGB rate table and
@@ -523,12 +500,16 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 // downloaded cleanly has proved nothing: the house rule is that a series is
 // validated against a reference BEFORE anything is allowed to trust it.
 //
-// The six checks, and why each number is the one to expect:
+// The seven checks, and why each number is the one to expect:
 //
 //   - Freshness of the daily German curve. The Bundesbank publishes it every
 //     business day, so a last point more than bubaMaxAge days old means the
 //     source (or a mirror in front of it) stopped: that is how BUND-DAILY once
-//     froze for three months unseen.
+//     froze for three months unseen. The OECD-fed series are held to a
+//     quarter (four months for the two accruals, whose last level closes the
+//     month before their last rate): the DBnomics mirror's OECD copy stopped
+//     at 2026-05 and GILT-GBP, JPCASH-JPY and GBCASH-GBP followed it, unseen,
+//     because nothing checked their tails.
 //   - German vs euro-area. Over the euro's first decade, before the sovereign
 //     crisis reopened them, the spreads between the euro aggregate and the Bund
 //     were a few tens of basis points. The two reconstructions must therefore
@@ -569,6 +550,14 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 //   - The two cash accruals. A money-market index is monotone by construction,
 //     and both countries' post-war short rates sit inside 0-20 %/yr, so their
 //     CAGR over the whole span must land inside 0-12 %/yr with no drawdown.
+//   - The shipped history. A refresh extends a file; it does not rewrite it.
+//     Every step the rebuilt BUND-EUR, GILT-GBP, JPCASH-JPY and GBCASH-GBP
+//     share with the files they replace must carry the same return
+//     (refgen.CompareSteps), except where the OECD revised a print, and at
+//     least refgen.MinReproduced of them must: a source, unit or definition
+//     change moves nearly every step. When the OECD reads moved from the
+//     DBnomics mirror to the OECD's own API (2026-09), every common step of
+//     all four was reproduced.
 func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Series, jpCash, gbCash []marketdata.Point, splice curveSplice) {
 	failed := 0
 	fail := func(format string, a ...any) {
@@ -603,6 +592,25 @@ func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Ser
 	log.Printf("check BUND-DAILY freshness: last %s (%.0f days old)", last.Format("2006-01-02"), age)
 	if age > bubaMaxAge {
 		fail("the Bundesbank daily curve ends %s, %.0f days ago: the source has stopped", last.Format("2006-01-02"), age)
+	}
+	for _, f := range []struct {
+		id  string
+		pts []marketdata.Point
+		max float64 // days
+	}{
+		{"BUND-EUR (OECD tail)", bundSynth.Points, 92},
+		{"GILT-GBP", gilt.Points, 92},
+		// An accrual's last level closes the month BEFORE its last rate, so it
+		// runs a month behind the yields.
+		{"JPCASH-JPY", jpCash, 123},
+		{"GBCASH-GBP", gbCash, 123},
+	} {
+		last := f.pts[len(f.pts)-1].Date
+		age := time.Since(last).Hours() / 24
+		log.Printf("check %s freshness: last %s (%.0f days old)", f.id, last.Format("2006-01-02"), age)
+		if age > f.max {
+			fail("%s stops at %s, %.0f days ago: its OECD source looks frozen", f.id, last.Format("2006-01"), age)
+		}
 	}
 
 	from, to := date(1998, 1), bundDaily.Last().Date
@@ -673,6 +681,22 @@ func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Ser
 			s.First().Date.Format("2006-01"), s.Last().Date.Format("2006-01"), dd*100)
 		if rate < 0 || rate > 0.12 || dd < -0.02 {
 			fail("%s is not a plausible money-market accrual", c.id)
+		}
+	}
+
+	for _, f := range []struct {
+		id  string
+		pts []marketdata.Point
+	}{{"BUND-EUR", bund.Points}, {"GILT-GBP", gilt.Points}, {"JPCASH-JPY", jpCash}, {"GBCASH-GBP", gbCash}} {
+		prev, err := readRefdata(dir, f.id)
+		if err != nil {
+			log.Printf("check: no shipped %s to compare against (%v)", f.id, err)
+			continue
+		}
+		o := refgen.CompareSteps(prev.Points, f.pts)
+		log.Printf("check %s vs the shipped file: %s", f.id, o)
+		if o.Share() < refgen.MinReproduced {
+			fail("%s no longer reproduces the history it replaces: %s", f.id, o)
 		}
 	}
 
