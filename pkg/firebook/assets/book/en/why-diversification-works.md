@@ -1,5 +1,5 @@
 # Why diversification works: the mechanics of the free lunch
-<!-- source: pourquoi-la-diversification-marche @ ac539c2a1e89 -->
+<!-- source: pourquoi-la-diversification-marche @ a9beb3cd3ea3 -->
 
 "Don't put all your eggs in one basket" is the oldest piece of financial advice in the world, and the most misunderstood. Most savers diversify the way people recite a prayer. They never see that the proverb hides a precise mathematical mechanism, the only one in all of finance that gives you something without asking for anything back: the free lunch Markowitz called "the only free lunch in investing". The mechanism has conditions and limits. Above all it has a consequence almost nobody talks about. A diversified portfolio that gets rebalanced can return more than the average of its parts, a bonus with the pretty name of rebalancing premium.
 
@@ -20,7 +20,7 @@ Two assets with the same expected return and the same volatility (20%), mixed 50
 That gives a first practical conclusion, and it doubles as an audit. Diversification is not counted in holdings, it is counted in low correlations. Thirty equity funds are a single asset: their cross correlations run from 0.85 to 1.00, and the thirty names dilute almost nothing. Two US equity funds are, to the rounding, the same asset. Four well-chosen blocks, on the other hand (world stocks, long bonds, gold, trend following) show cross correlations between −0.3 and +0.3, several of them frankly negative. They do more work than the thirty funds ([[defensive-assets]], [[all-weather-portfolios]]). The marginal benefit collapses fast. Going from one block to four uncorrelated ones transforms a portfolio. Going from eight to twenty changes almost nothing and multiplies the fees and the chances of a mistake.
 
 ::: figure triangle-correlations
-Correlations of monthly returns for seven dollar series, over a single common window from January 2001 to May 2026: four equity funds (world, S&P 500, the whole US market, developed markets ex-US), then the three other blocks (Treasuries 20 years and longer, spot gold, trend following). The trend leg is built from the real net asset values of trend-following programs, and from the fund itself since 2022.
+Correlations of monthly returns for seven dollar series, over a single common window from January 2001 to August 2026: four equity funds (world, S&P 500, the whole US market, developed markets ex-US), then the three other blocks (Treasuries 20 years and longer, spot gold, trend following). The trend leg is built from the real net asset values of trend-following programs, and from the fund itself since 2022.
 :::
 
 ## The hidden bonus: the rebalancing premium

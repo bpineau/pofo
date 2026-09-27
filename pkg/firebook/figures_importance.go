@@ -35,7 +35,7 @@ import (
 // year's return accounts for.
 //
 // Read on terminal WEALTH instead of on success, the same profile is flatter
-// (58 % for the first decade rather than 70 %); the legend carries that second
+// (60 % for the first decade rather than 71 %); the legend carries that second
 // reading, because the choice of outcome moves the number and hiding it would
 // make the plate look more certain than it is.
 //
@@ -61,16 +61,16 @@ var impWeights = []float64{0.60, 0.25, 0.075, 0.075}
 // The measured profile: the share of the outcome each retirement year accounts
 // for, in percent, year 1 first. Frozen, and recomputed by the guard test.
 var impShares = [impYears]float64{
-	10.96, 8.67, 9.98, 7.84, 7.31, 6.20, 5.57, 5.21, 4.77, 5.06, 3.72,
-	3.28, 3.24, 2.56, 2.21, 2.27, 1.42, 1.23, 1.24, 1.18, 1.11, 0.87,
-	0.83, 0.62, 0.53, 0.37, 0.35, 0.30, 0.25, 0.16, 0.07, 0.19, 0.10,
-	0.05, 0.13, 0.01, 0.00, 0.08, 0.01, 0.02,
+	10.49, 9.45, 9.58, 6.76, 6.86, 6.86, 6.08, 4.86, 4.34, 5.31, 3.28,
+	3.48, 3.57, 2.24, 2.61, 2.44, 2.04, 1.43, 1.14, 1.06, 1.27, 0.77,
+	0.89, 0.62, 0.75, 0.35, 0.23, 0.25, 0.26, 0.06, 0.05, 0.36, 0.12,
+	0.06, 0.05, 0.00, 0.02, 0.01, 0.00, 0.01,
 }
 
 // impWealthDecade is the same first-decade share computed on the log of
 // terminal wealth rather than on success, the second reading the legend
 // carries. Frozen and recomputed alongside the profile.
-const impWealthDecade = 59.8
+const impWealthDecade = 59.5
 
 // impDecadeShare is what the first decade carries, in percent.
 func impDecadeShare() float64 {

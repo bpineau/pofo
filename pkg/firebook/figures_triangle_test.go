@@ -89,25 +89,25 @@ func triReturns(t *testing.T) (anchors []int, rets [][]float64) {
 	return anchors, rets
 }
 
-// The window the plate claims: 306 month ends, December 2000 to May 2026, that
-// is 305 monthly returns with no month missing.
+// The window the plate claims: 309 month ends, December 2000 to August 2026,
+// that is 308 monthly returns with no month missing.
 func TestTriangleWindowIsTheOneTheCaptionStates(t *testing.T) {
 	anchors, rets := triReturns(t)
 	if got, want := anchors[0], triFirstAnchor; got != want {
 		t.Fatalf("the window opens at month key %d, the plate assumes %d (December 2000)", got, want)
 	}
-	if got, want := anchors[len(anchors)-1], 2026*12+4; got != want {
-		t.Fatalf("the window closes at month key %d, the caption says May 2026 (%d)", got, want)
+	if got, want := anchors[len(anchors)-1], 2026*12+7; got != want {
+		t.Fatalf("the window closes at month key %d, the caption says August 2026 (%d)", got, want)
 	}
 	for i := 1; i < len(anchors); i++ {
 		if anchors[i] != anchors[i-1]+1 {
 			t.Fatalf("the window skips a month at index %d (key %d after %d)", i, anchors[i], anchors[i-1])
 		}
 	}
-	if got, want := len(rets[0]), 305; got != want {
+	if got, want := len(rets[0]), 308; got != want {
 		t.Errorf("the window holds %d monthly returns, the caption says %d", got, want)
 	}
-	if !strings.Contains(figTriangleCorrelations(), "305 mois") {
+	if !strings.Contains(figTriangleCorrelations(), "308 mois") {
 		t.Error("the plate no longer states the length of its window")
 	}
 }
@@ -149,8 +149,8 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 	if got := len(triBrickPairs()); got != 6 {
 		t.Fatalf("the four bricks hold %d pairs, the plate says six", got)
 	}
-	if brLo != -0.12 || brHi != 0.23 {
-		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,12 to +0,23", brLo, brHi)
+	if brLo != -0.12 || brHi != 0.22 {
+		t.Errorf("the bricks run from %+.2f to %+.2f, the plate says −0,12 to +0,22", brLo, brHi)
 	}
 	if brLo < -0.3 || brHi > 0.3 {
 		t.Errorf("the bricks leave the −0,3 / +0,3 band the article claims (%+.2f to %+.2f)", brLo, brHi)
@@ -161,7 +161,7 @@ func TestTriangleRangesAreTheOnesThePlatePrints(t *testing.T) {
 		t.Errorf("the blocks overlap: equity floor %+.2f, brick ceiling %+.2f", eqLo, brHi)
 	}
 	svg := figTriangleCorrelations()
-	for _, want := range []string{"+0,85 à +1,00", "−0,12 à +0,23"} {
+	for _, want := range []string{"+0,85 à +1,00", "−0,12 à +0,22"} {
 		if !strings.Contains(svg, want) {
 			t.Errorf("the plate no longer prints %q", want)
 		}

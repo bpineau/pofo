@@ -79,7 +79,7 @@ func cagr10(real []float64, i int) float64 {
 	return (math.Pow(real[i]/real[i-120], 0.1) - 1) * 100
 }
 
-// The plate's 635 monthly readings are frozen literals; recompute all of them
+// The plate's 638 monthly readings are frozen literals; recompute all of them
 // from pkg/datasets and fail on any drift.
 func TestScvGapMatchesTheRecord(t *testing.T) {
 	months, scv, sp := scvRealLegs(t)

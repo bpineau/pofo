@@ -171,7 +171,7 @@ func TestBruitsPlateRenders(t *testing.T) {
 		}
 	}
 	for _, want := range []string{
-		">le chiffre affiché : 3,7 %<",
+		">le chiffre affiché : 3,6 %<",
 		">fenêtres historiques<",
 		">décennie perdue<",
 		">probabilité de ruine, en %<",
