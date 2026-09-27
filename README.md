@@ -1028,8 +1028,10 @@ fmt.Printf("time-weighted %+.1f %%, as the index says: %+.1f %%\n", twr*100, sim
 
 ### Optimize weights
 
-`optimize.Solve` takes aligned daily returns and a `Spec`, whose bounds and
-limits bind every objective. Black-Litterman takes the file's weights as its
+`optimize.Solve` takes aligned returns, their cadence (periods per year:
+`metrics.TradingDaysPerYear` for daily returns, `metrics.PeriodsPerYear` of
+their dates in general) and a `Spec`, whose bounds and limits bind every
+objective. Black-Litterman takes the file's weights as its
 prior and blends `view:` beliefs into the returns they imply.
 
 ```go
@@ -1043,7 +1045,7 @@ if err := spec.Resolve([][]string{{"EQUITY"}, {"TREND"}, {"CASH"}}); err != nil 
 }
 spec.Prior = []float64{0.5, 0.3, 0.2} // the weights written in the file
 
-res, err := optimize.Solve(exampleReturns(750), spec)
+res, err := optimize.Solve(exampleReturns(750), metrics.TradingDaysPerYear, spec)
 if err != nil {
 	log.Fatal(err)
 }
@@ -1169,6 +1171,7 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 | Fees, volatility targets | fraction per year (0.0020) | `simgen` |
 | Returns, CAGR, volatility, drawdowns, VaR | fraction (0.04 = +4 %) | `metrics`, `analyze`, `scenario`, `decumul` (the last two in REAL terms) |
 | Ulcer, CWARP | percent points, percent | `metrics.Stats.Ulcer`, `metrics.Stats.CWARP` |
+| Cadence | periods per year (252 daily, 52 weekly, 12 monthly) | `metrics.PeriodsPerYear`, `Stats.PeriodsPerYear`, the `periodsPerYear` argument of `metrics`' bare-return functions and `optimize.Solve` |
 | Rates (`^IRX`, `^ESTR`, `^SOFR`...) | annualized percent LEVEL | `marketdata` series, `portfolio.Portfolio.Cash`: never a return |
 | `#meta` directives | percent as written (`max-vol:9`) | fractions once parsed into `optimize.Spec` |
 
@@ -1177,7 +1180,7 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 | Question | Where it is answered |
 |---|---|
 | Is the math right? | `pkg/datasets/golden` (`make golden`): the statistics replayed on frozen real data against published references, Black-Litterman against its papers' tables |
-| Why does it differ from another tool? | the Conventions section of `go doc ./pkg/metrics`: 252 days, zero risk-free rate, drawdowns on daily closes, 365.25-day years |
+| Why does it differ from another tool? | the Conventions section of `go doc ./pkg/metrics`: annualized at the series' own cadence (252 on daily closes, 12 on a monthly index), zero risk-free rate, drawdowns on daily closes, 365.25-day years |
 | Is a bundled series right? | the golden package's refdata, gap and spike guards; `pofo -verify-simdata ID` for a backcast against the real quotes; `make verify-catalog` for the data doctor |
 | What can a study not know? | its `Warnings`: simulated spans, distributing share classes, definition junctions, unconverted currencies |
 

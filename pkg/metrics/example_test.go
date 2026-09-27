@@ -26,6 +26,48 @@ func ExampleCompute() {
 	// TTR: 3 days (ongoing: true)
 }
 
+// Compute annualizes at the series' own cadence: a monthly index is read at
+// twelve periods a year, so a 3 % monthly standard deviation is a 10.4 %
+// annual volatility, not the 47.6 % a fixed 252-day factor would claim.
+func ExampleCompute_monthly() {
+	var dates []time.Time
+	var values []float64
+	v := 100.0
+	for m := range 120 { // ten years of month-end closes
+		dates = append(dates, time.Date(2010, time.Month(m+2), 0, 0, 0, 0, 0, time.UTC))
+		values = append(values, v)
+		if m%2 == 0 {
+			v *= 1.03
+		} else {
+			v *= 0.97
+		}
+	}
+	stats, err := metrics.Compute(dates, values)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("%.0f periods a year, volatility %.1f %%/yr\n", stats.PeriodsPerYear, stats.Volatility*100)
+	// Output:
+	// 12 periods a year, volatility 10.4 %/yr
+}
+
+// PeriodsPerYear reads a series' cadence off its dates: trading days,
+// holidays included, snap to 252; a weekly NAV reads 52.
+func ExamplePeriodsPerYear() {
+	var daily, weekly []time.Time
+	for d := time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC); d.Year() == 2024; d = d.AddDate(0, 0, 1) {
+		if wd := d.Weekday(); wd != time.Saturday && wd != time.Sunday && d.YearDay() != 1 {
+			daily = append(daily, d) // weekdays, New Year's Day off
+		}
+		if d.Weekday() == time.Friday {
+			weekly = append(weekly, d)
+		}
+	}
+	fmt.Println(metrics.PeriodsPerYear(daily), metrics.PeriodsPerYear(weekly))
+	// Output:
+	// 252 52
+}
+
 // CWARP scores whether overlaying an asset on a replacement portfolio (here
 // equity beta) improves its risk-adjusted returns. An anti-correlated sleeve
 // with positive carry scores above zero.
@@ -39,7 +81,7 @@ func ExampleCWARP() {
 		}
 		diversifier[i] = -equity[i] + 0.0007 // hedge plus carry
 	}
-	score, ok := metrics.CWARP(diversifier, equity, metrics.CWARPParams{})
+	score, ok := metrics.CWARP(diversifier, equity, metrics.TradingDaysPerYear, metrics.CWARPParams{})
 	fmt.Printf("improves the portfolio: %v\n", ok && score > 0)
 	// Output:
 	// improves the portfolio: true
@@ -56,7 +98,7 @@ func ExampleReturnToMaxDrawdown() {
 			returns[i] = -0.02 // …interrupted by a drawdown
 		}
 	}
-	r, ok := metrics.ReturnToMaxDrawdown(returns, 0)
+	r, ok := metrics.ReturnToMaxDrawdown(returns, 0, metrics.TradingDaysPerYear)
 	fmt.Printf("defined: %v, positive: %v\n", ok, r > 0)
 	// Output:
 	// defined: true, positive: true
@@ -74,7 +116,7 @@ func ExampleUlcer() {
 			returns[i] = -0.01 // a prolonged drawdown
 		}
 	}
-	worst, _ := metrics.WorstRollingReturn(returns, 252)
+	worst, _ := metrics.WorstRollingReturn(returns, 252, metrics.TradingDaysPerYear)
 	fmt.Printf("Ulcer > 0: %v, worst 1y return negative: %v\n",
 		metrics.Ulcer(returns) > 0, worst < 0)
 	// Output:

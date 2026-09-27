@@ -168,10 +168,13 @@
 //
 // CWARP also needs a replacement series and is solved by SolveCWARP, not Solve.
 //
-// Conventions match pkg/metrics: simple daily returns, 252 trading days per
-// year and a risk-free rate of 0. Note that a zero risk-free rate moves the
-// tangency point: with rf = 0 the ratio rewards any positive return, so
-// cash-like assets score far better than they would against a realistic rate.
+// Conventions match pkg/metrics: simple returns on one calendar, annualized at
+// the cadence the caller passes (metrics.TradingDaysPerYear for daily
+// returns, metrics.PeriodsPerYear of their dates in general: the package is
+// date-free, so it never guesses one), and a risk-free rate of 0. Note that a
+// zero risk-free rate moves the tangency point: with rf = 0 the ratio rewards
+// any positive return, so cash-like assets score far better than they would
+// against a realistic rate.
 //
 // # Estimation error, which matters more than the solver
 //

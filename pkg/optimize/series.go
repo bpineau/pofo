@@ -7,17 +7,20 @@ import (
 	"github.com/bpineau/pofo/pkg/metrics"
 )
 
-// fiveYearWindow is the rolling window MaxWorst5y measures its worst-case
-// return over: five years of trading days (a date-free approximation of the
-// report's calendar-year "Worst rolling 5y CAGR").
-const fiveYearWindow = 5 * tradingDays
+// fiveYears is the rolling window MaxWorst5y measures its worst-case return
+// over: five years of periods at the returns' cadence (5*252 on daily
+// returns, a date-free approximation of the report's calendar-year "Worst
+// rolling 5y CAGR").
+func fiveYears(periodsPerYear float64) int {
+	return int(math.Round(5 * periodsPerYear))
+}
 
 // solveSeries handles the objectives that depend on the whole return path
 // (MaxSortino, ReturnToDrawdown) rather than only the mean and covariance. It
 // maximizes the portfolio's own metric over the capped simplex with the shared
 // multi-start solver; the weights are a good allocation, not a certified
 // optimum, since these objectives are non-convex and non-smooth.
-func solveSeries(returns [][]float64, spec Spec) (Result, error) {
+func solveSeries(returns [][]float64, ppy float64, spec Spec) (Result, error) {
 	n := len(returns)
 	t := len(returns[0])
 	maxW := spec.MaxWeight
@@ -34,13 +37,13 @@ func solveSeries(returns [][]float64, spec Spec) (Result, error) {
 	case MaxSortino:
 		score = func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			s := metrics.Sortino(buf, 0)
+			s := metrics.Sortino(buf, 0, ppy)
 			return s, !math.IsNaN(s)
 		}
 	case ReturnToDrawdown:
 		score = func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			return metrics.ReturnToMaxDrawdown(buf, 0)
+			return metrics.ReturnToMaxDrawdown(buf, 0, ppy)
 		}
 	case MinUlcer:
 		score = func(w []float64) (float64, bool) {
@@ -49,40 +52,49 @@ func solveSeries(returns [][]float64, spec Spec) (Result, error) {
 			return -u, !math.IsNaN(u) // minimize: maximize the negative
 		}
 	case MaxWorst5y:
-		if t < fiveYearWindow {
-			return Result{}, fmt.Errorf("max-worst-5y needs at least 5 years of common history, got %d trading days", t)
+		if err := checkFiveYears(t, ppy); err != nil {
+			return Result{}, err
 		}
 		score = func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			return metrics.WorstRollingReturn(buf, fiveYearWindow)
+			return metrics.WorstRollingReturn(buf, fiveYears(ppy), ppy)
 		}
 	default:
 		return Result{}, fmt.Errorf("solveSeries: unsupported objective %q", spec.Objective)
 	}
 
 	w := maximizeSimplex(n, maxW, score)
-	return seriesResult(w, returns), nil
+	return seriesResult(w, returns, ppy), nil
+}
+
+// checkFiveYears refuses a MaxWorst5y solve on fewer than five years of
+// returns.
+func checkFiveYears(t int, ppy float64) error {
+	if t < fiveYears(ppy) {
+		return fmt.Errorf("max-worst-5y needs at least 5 years of common history, got %d returns at %.0f a year", t, ppy)
+	}
+	return nil
 }
 
 // seriesResult packages the weights with their mean/covariance statistics (for
 // display consistency with the other objectives) plus the achieved Sortino and
 // return-to-max-drawdown measured on the realized portfolio series.
-func seriesResult(w []float64, returns [][]float64) Result {
-	mu, cov := meanCov(returns)
+func seriesResult(w []float64, returns [][]float64, ppy float64) Result {
+	mu, cov := meanCov(returns, ppy)
 	r := stats(w, mu, cov)
 	buf := make([]float64, len(returns[0]))
 	blend(returns, w, buf)
-	if s := metrics.Sortino(buf, 0); !math.IsNaN(s) {
+	if s := metrics.Sortino(buf, 0, ppy); !math.IsNaN(s) {
 		r.Sortino = s
 	}
-	if v, ok := metrics.ReturnToMaxDrawdown(buf, 0); ok {
+	if v, ok := metrics.ReturnToMaxDrawdown(buf, 0, ppy); ok {
 		r.ReturnToMaxDD = v
 	}
 	if u := metrics.Ulcer(buf); !math.IsNaN(u) {
 		r.Ulcer = u
 	}
-	if len(buf) >= fiveYearWindow {
-		if w5, ok := metrics.WorstRollingReturn(buf, fiveYearWindow); ok {
+	if window := fiveYears(ppy); len(buf) >= window {
+		if w5, ok := metrics.WorstRollingReturn(buf, window, ppy); ok {
 			r.Worst5y = w5
 		}
 	}

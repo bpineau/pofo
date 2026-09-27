@@ -194,7 +194,7 @@ type Validation struct {
 	Corr        float64 // correlation of daily returns
 	WeeklyCorr  float64 // correlation of 5-day returns (kinder to stale quotes)
 	Beta        float64 // slope sim→real
-	TrackingErr float64 // annualized stdev of (real − sim) daily returns
+	TrackingErr float64 // stdev of (real − sim) returns, annualized at the common dates' cadence
 	CAGRSim     float64
 	CAGRReal    float64
 }
@@ -250,7 +250,7 @@ func Validate(sim, real *marketdata.Series) (Validation, error) {
 	}
 	n := float64(len(srets))
 	meanDiff := (mr - ms)
-	v.TrackingErr = math.Sqrt(math.Max(0, varDiff/n-meanDiff*meanDiff)) * math.Sqrt(252)
+	v.TrackingErr = math.Sqrt(math.Max(0, varDiff/n-meanDiff*meanDiff)) * math.Sqrt(metrics.PeriodsPerYear(dates))
 
 	// Weekly (5 trading days) correlation.
 	var sw, rw []float64

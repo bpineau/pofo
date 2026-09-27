@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/optimize"
 )
 
@@ -27,7 +28,7 @@ func TestTrainSpanSelectsTheWindow(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	got, err := trainSpan(dates, spec.Train)
+	got, err := trainSpan(dates, metrics.PeriodsPerYear(dates), spec.Train)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,7 +51,7 @@ func TestTrainSpanRefusesShortWindows(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = trainSpan(dates, spec.Train)
+	_, err = trainSpan(dates, metrics.PeriodsPerYear(dates), spec.Train)
 	if err == nil || !strings.Contains(err.Error(), "two years") {
 		t.Fatalf("a one-year window must be refused, got %v", err)
 	}
@@ -59,7 +60,7 @@ func TestTrainSpanRefusesShortWindows(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := trainSpan(dates, spec.Train); err == nil {
+	if _, err := trainSpan(dates, metrics.PeriodsPerYear(dates), spec.Train); err == nil {
 		t.Fatal("a window with no quotes in it must be refused")
 	}
 }

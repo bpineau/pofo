@@ -28,7 +28,7 @@ func cwarpSeries() (repl, equity, diversifier []float64) {
 // achieves a positive score.
 func TestSolveCWARPFavorsDiversifier(t *testing.T) {
 	repl, equity, div := cwarpSeries()
-	res, err := SolveCWARP([][]float64{equity, div}, repl, Spec{Objective: CWARP})
+	res, err := SolveCWARP([][]float64{equity, div}, repl, daily, Spec{Objective: CWARP})
 	if err != nil {
 		t.Fatal(err)
 	}

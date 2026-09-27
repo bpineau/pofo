@@ -46,13 +46,14 @@ func Example_byHand() {
 	fmt.Printf("put in %.0f, worth %.0f, money-weighted %.1f %%/yr\n", p.Capital+sim.Contributed, sim.Values[last], irr*100)
 	fmt.Printf("time-weighted %+.1f %%, as the index says: %+.1f %%\n", twr*100, sim.Index[last]-100)
 	// Output:
-	// CAGR 10.7 %, volatility 9.5 %, max drawdown -5.3 %
+	// CAGR 10.7 %, volatility 11.4 %, max drawdown -5.3 %
 	// put in 27500, worth 33664, money-weighted 10.2 %/yr
 	// time-weighted +35.7 %, as the index says: +35.7 %
 }
 
-// synthetic serves three years of daily closes: a swinging equity line and a
-// calmer bond line.
+// synthetic serves three years of closes on every calendar day (so the
+// statistics annualize at 365 a year): a swinging equity line and a calmer
+// bond line.
 func synthetic(id string) (*marketdata.Series, error) {
 	drift, swing := 0.0004, 0.012
 	if id == "AGGH" {

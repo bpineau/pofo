@@ -42,7 +42,9 @@ func TestComputeRiskMetrics(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	near(t, "Volatility", s.Volatility, math.Sqrt(0.02)*math.Sqrt(252), 1e-9)
+	// Three consecutive calendar days read as the every-day cadence.
+	near(t, "PeriodsPerYear", s.PeriodsPerYear, 365, 0)
+	near(t, "Volatility", s.Volatility, math.Sqrt(0.02)*math.Sqrt(365), 1e-9)
 	near(t, "Sharpe", s.Sharpe, 0, 1e-9)
 	near(t, "Sortino", s.Sortino, 0, 1e-9)
 	near(t, "MaxDrawdown", s.MaxDrawdown, -0.10, 1e-12)

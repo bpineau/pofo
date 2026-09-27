@@ -116,7 +116,7 @@ func TestOptimizedPortfolioReportsItsHoldout(t *testing.T) {
 // (degenerate by construction) and weight bounds handed to risk-parity, whose
 // solver cannot honor them.
 func TestOptimizedPortfolioObjectiveNotes(t *testing.T) {
-	base := optFixture(1500)
+	base := optFixture(2000) // 5.5 years of calendar days: enough for max-worst-5y
 	cases := []struct {
 		spec string
 		want string

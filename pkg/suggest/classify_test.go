@@ -152,10 +152,10 @@ func TestPortfolioReturns(t *testing.T) {
 // division), and the median of an even-length sample is the midpoint of the
 // two central values.
 func TestWindowStatsAndMedian(t *testing.T) {
-	if got := windowSharpe([]float64{0.01, 0.01, 0.01}); got != 0 {
+	if got := windowSharpe([]float64{0.01, 0.01, 0.01}, 252); got != 0 {
 		t.Errorf("windowSharpe(flat) = %v, want 0 (zero volatility)", got)
 	}
-	if got := windowSharpe([]float64{0.01, -0.005, 0.02, 0.0}); got <= 0 {
+	if got := windowSharpe([]float64{0.01, -0.005, 0.02, 0.0}, 252); got <= 0 {
 		t.Errorf("windowSharpe(positive drift) = %v, want > 0", got)
 	}
 	if got := windowMaxDD([]float64{0.10, -0.20, 0.05}); math.Abs(got-(-0.20)) > 1e-12 {

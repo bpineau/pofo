@@ -106,10 +106,15 @@ The index is monthly and nothing invents a daily texture for it: no ILS series
 quotes daily anywhere, and a single day of cat bond return is not a path a
 reader could look up. The funds themselves deal weekly (Solidum semi-monthly).
 
-`pkg/metrics` annualizes by 252 observations, so **every per-observation
-statistic on these lines is wrong by roughly sqrt(5)** and the monthly columns
-are the ones to read. The GAM class reports 7.0 %/yr "volatility" and 3.0 %/yr
-monthly volatility; the second is the truth. The doctor (`Verify`) is already
+Until 2026-09 `pkg/metrics` annualized by 252 observations whatever the
+series, so every per-observation statistic on these lines was wrong by roughly
+sqrt(5): the GAM class reported 7.0 %/yr "volatility" against 3.0 %/yr monthly
+volatility, the second being the truth. Annualization now follows the measured
+cadence (`metrics.PeriodsPerYear`: 52 on a weekly NAV, 24 on a semi-monthly
+one), which puts the per-observation figure back on the monthly one's scale
+(7.0 x sqrt(52/252), about 3.2 %/yr by arithmetic, not a fresh measurement). A
+line whose cadence changed along the way is read at its prevailing one, so the
+monthly columns remain the safe read. The doctor (`Verify`) was already
 cadence-aware and judges them at their own pace.
 
 ### The euro hedge, and what it costs
@@ -172,12 +177,14 @@ Measured against the funds' own live windows:
 The audit harness (`pofo -verify-simdata`) grades them on the same windows:
 Solidum level ok / path warn (monthly correlation 0.83), GAM level warn / path
 warn (0.84), Plenum Defensive level ok / path bad (0.66, its defensive mandate
-diverging from the whole market it is reconstructed from). Read that report's
-VOLATILITY and tracking-error columns with the cadence trap in mind: it
-annualizes per observation, so the engine (monthly steps spread over a daily
-calendar, which annualizes correctly) is compared against a weekly fund NAV
-whose figure is inflated by about sqrt(5). The monthly correlations and the
-CAGR gaps are the columns to trust here.
+diverging from the whole market it is reconstructed from). Those grades
+predate the 2026-09 cadence fix: the report's VOLATILITY column then
+annualized the weekly fund NAV per observation at 252, inflating it by about
+sqrt(5) against the engine (monthly steps spread over a daily calendar, which
+annualizes correctly); it now annualizes each series at its own cadence. The
+path grades read tracking error RELATIVE to that volatility, both on the same
+dates, so they did not move. The monthly correlations and the CAGR gaps remain
+the columns to trust here.
 
 The GAM gap is manager selection, not a modelling error, and it is deliberately
 NOT closed: the class beat the index of its peers by about 1.8 points a year

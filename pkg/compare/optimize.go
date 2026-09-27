@@ -67,8 +67,10 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 		returns[i] = metrics.Returns(px)
 	}
 	// returns[i][k] is the move from dates[k] to dates[k+1]: a return is
-	// dated by its END, so dates[1:] indexes the return series.
+	// dated by its END, so dates[1:] indexes the return series. The common
+	// calendar's cadence annualizes everything the solver measures.
 	retDates := dates[1:]
+	ppy := metrics.PeriodsPerYear(dates)
 
 	// Per-asset bounds and views arrive keyed by identifier and the optimizer
 	// works on positions: resolve them here, where the holdings are known.
@@ -99,7 +101,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	var rest span
 	if !sp.Train.IsZero() {
 		var err error
-		if fit, err = trainSpan(retDates, sp.Train); err != nil {
+		if fit, err = trainSpan(retDates, ppy, sp.Train); err != nil {
 			return nil, "", fmt.Errorf("optimize: %w", err)
 		}
 		rest = longestOutside(len(retDates), fit)
@@ -109,9 +111,9 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	var res optimize.Result
 	var err error
 	if cwarpObj {
-		res, err = optimize.SolveCWARP(fitReturns, fit.cut(benchReturns), sp)
+		res, err = optimize.SolveCWARP(fitReturns, fit.cut(benchReturns), ppy, sp)
 	} else {
-		res, err = optimize.Solve(fitReturns, sp)
+		res, err = optimize.Solve(fitReturns, ppy, sp)
 	}
 	if err != nil {
 		return nil, "", fmt.Errorf("optimize: %w", err)
@@ -137,11 +139,11 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	note := fmt.Sprintf("weights computed by the optimizer (%s) over %s→%s: %s",
 		objectiveLabel(sp), retDates[fit.from].Format("2006-01-02"),
 		retDates[fit.to-1].Format("2006-01-02"), strings.Join(parts, ", "))
-	cagr, vol, dd := optimize.PathStats(fitReturns, res.Weights)
+	cagr, vol, dd := optimize.PathStats(fitReturns, res.Weights, ppy)
 	note += fmt.Sprintf(", in-sample CAGR %.1f %%/yr, volatility %.1f %%, deepest drawdown %.1f %%, Sharpe %.2f",
 		cagr*100, vol*100, dd*100, res.Sharpe)
-	if rest.len() >= holdoutMinDays {
-		hCAGR, hVol, hDD := optimize.PathStats(rest.of(returns), res.Weights)
+	if float64(rest.len()) >= holdoutMinYears*ppy {
+		hCAGR, hVol, hDD := optimize.PathStats(rest.of(returns), res.Weights, ppy)
 		note += fmt.Sprintf("; over %s→%s, which it did not see, CAGR %.1f %%/yr, volatility %.1f %%, deepest drawdown %.1f %%",
 			retDates[rest.from].Format("2006-01-02"), retDates[rest.to-1].Format("2006-01-02"),
 			hCAGR*100, hVol*100, hDD*100)
@@ -172,7 +174,7 @@ func optimizedPortfolio(base *portfolio.Portfolio, spec *portfolio.Spec, bench *
 	case optimize.BlackLitterman:
 		vols := make([]float64, len(fitReturns))
 		for i, r := range fitReturns {
-			vols[i] = metrics.Volatility(r)
+			vols[i] = metrics.Volatility(r, ppy)
 		}
 		note += blackLittermanNote(sp, res, names, vols)
 	}
@@ -270,10 +272,10 @@ func impliedList(names []string, implied []float64) []string {
 	return out
 }
 
-// holdoutMinDays is the shortest stretch worth reporting as out-of-sample:
-// a year of trading days. Below that the figures are noise wearing the
-// authority of a measurement.
-const holdoutMinDays = 252
+// holdoutMinYears is the shortest stretch worth reporting as out-of-sample,
+// counted in returns at the calendar's cadence (252 of them on daily data).
+// Below that the figures are noise wearing the authority of a measurement.
+const holdoutMinYears = 1
 
 // objectiveLabel names the objective and the limits that shaped a solve, so
 // the note says what was actually asked for.
@@ -317,13 +319,15 @@ func (s span) of(returns [][]float64) [][]float64 {
 	return out
 }
 
-// trainMinDays is the shortest fitting window the optimizer accepts: two
-// years of trading days. Anything shorter fits noise.
-const trainMinDays = 2 * 252
+// trainMinYears is the shortest fitting window the optimizer accepts, counted
+// in returns at the calendar's cadence (504 of them on daily data). Anything
+// shorter fits noise.
+const trainMinYears = 2
 
 // trainSpan returns the index range of the returns dated inside the window,
-// and fails when the window holds too little history to fit anything.
-func trainSpan(retDates []time.Time, w optimize.Window) (span, error) {
+// and fails when the window holds too little history to fit anything: fewer
+// than trainMinYears of returns at ppy a year.
+func trainSpan(retDates []time.Time, ppy float64, w optimize.Window) (span, error) {
 	s := span{-1, -1}
 	for i, d := range retDates {
 		if !w.Contains(d) {
@@ -337,8 +341,8 @@ func trainSpan(retDates []time.Time, w optimize.Window) (span, error) {
 	if s.from < 0 {
 		return span{}, fmt.Errorf("train %s: no quotes in that window", w)
 	}
-	if s.len() < trainMinDays {
-		return span{}, fmt.Errorf("train %s: %d trading days is under the two years the optimizer needs to fit anything", w, s.len())
+	if float64(s.len()) < trainMinYears*ppy {
+		return span{}, fmt.Errorf("train %s: %d returns at %.0f a year is under the two years the optimizer needs to fit anything", w, s.len(), ppy)
 	}
 	return s, nil
 }

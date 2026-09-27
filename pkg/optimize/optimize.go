@@ -8,8 +8,6 @@ import (
 	"time"
 )
 
-const tradingDays = 252
-
 // Objective is the quantity the optimizer targets.
 type Objective string
 
@@ -31,14 +29,15 @@ const (
 	// that are hard to sit through.
 	MinUlcer Objective = "min-ulcer"
 	// MaxWorst5y maximizes the worst rolling five-year return, the robust
-	// worst-case medium-term outcome (measured over 5*252 trading days).
+	// worst-case medium-term outcome (measured over five years of periods,
+	// 5*252 on daily returns).
 	MaxWorst5y Objective = "max-worst-5y"
 	// CWARP maximizes the portfolio's Cole Wins Above Replacement Portfolio
 	// score against a replacement/benchmark series; solved by SolveCWARP,
 	// which needs that extra series, not Solve.
 	CWARP Objective = "cwarp"
 	// MaxReturn maximizes the portfolio's own CAGR (geometric, over the
-	// blended daily path). Alone it is degenerate, since the whole budget
+	// blended return path). Alone it is degenerate, since the whole budget
 	// goes to the single best-performing asset; it earns its keep under a
 	// constraint (Spec.Limits), where it is the frontier point: the most
 	// return reachable without exceeding a volatility or drawdown budget.
@@ -49,8 +48,9 @@ const (
 // weight bounds. A zero field means "no limit": a 0 % volatility cap, a 0 %
 // return floor and a 0 % drawdown budget are all meaningless or infeasible,
 // so nothing is lost by using zero as the sentinel. Every limit is measured
-// on the blended daily return path, so MaxVolatility reads exactly like the
-// report's "Volatility (annualized)" row and MinReturn like its CAGR row.
+// on the blended return path, annualized at the returns' cadence, so
+// MaxVolatility reads exactly like the report's "Volatility (annualized)" row
+// and MinReturn like its CAGR row.
 //
 // Limits apply to every objective but RiskParity and CWARP, whose solvers do
 // not go through the constrained search: ParseSpec refuses that combination
@@ -540,41 +540,56 @@ func parseBound(s string, end bool) (time.Time, error) {
 }
 
 // Solve returns the weights optimizing spec.Objective over returns, the
-// aligned daily simple returns of each asset (returns[i] is asset i's
-// series; every slice must have the same length, at least 2).
-func Solve(returns [][]float64, spec Spec) (Result, error) {
-	n := len(returns)
-	if n == 0 {
-		return Result{}, fmt.Errorf("no assets to optimize")
-	}
-	t := len(returns[0])
-	if t < 2 {
-		return Result{}, fmt.Errorf("need at least 2 observations, got %d", t)
-	}
-	for i, r := range returns {
-		if len(r) != t {
-			return Result{}, fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
-		}
+// aligned simple returns of each asset (returns[i] is asset i's series; every
+// slice must have the same length, at least 2), periodsPerYear of them a year:
+// metrics.TradingDaysPerYear for daily returns, metrics.PeriodsPerYear of
+// their dates in general. Every annualized figure, in the objective, the
+// limits and the Result, is annualized at that cadence.
+func Solve(returns [][]float64, periodsPerYear float64, spec Spec) (Result, error) {
+	if err := checkPanel(returns, periodsPerYear); err != nil {
+		return Result{}, err
 	}
 	// Black-Litterman derives its own expected returns before optimizing,
 	// and chooses between the two paths below itself.
 	if spec.Objective == BlackLitterman {
-		return solveBlackLitterman(returns, spec)
+		return solveBlackLitterman(returns, periodsPerYear, spec)
 	}
 	// Bounds and limits route every objective through the one penalized
 	// path search; without them the closed forms answer exactly as before.
 	if spec.Objective != RiskParity && (spec.Bounded() || spec.Limits.Any() || spec.Objective == MaxReturn) {
-		return solveConstrained(returns, spec, nil)
+		return solveConstrained(returns, periodsPerYear, spec, nil)
 	}
 	switch spec.Objective {
 	case MaxSortino, ReturnToDrawdown, MinUlcer, MaxWorst5y:
-		return solveSeries(returns, spec)
+		return solveSeries(returns, periodsPerYear, spec)
 	}
-	mu, cov := meanCov(returns)
+	mu, cov := meanCov(returns, periodsPerYear)
 	return solve(mu, cov, spec)
 }
 
-// blend writes the weighted daily returns of the portfolio into out (len equal
+// checkPanel refuses returns the solvers cannot read: no asset, fewer than two
+// observations, ragged series, or a cadence that is not a positive count.
+func checkPanel(returns [][]float64, periodsPerYear float64) error {
+	n := len(returns)
+	if n == 0 {
+		return fmt.Errorf("no assets to optimize")
+	}
+	t := len(returns[0])
+	if t < 2 {
+		return fmt.Errorf("need at least 2 observations, got %d", t)
+	}
+	for i, r := range returns {
+		if len(r) != t {
+			return fmt.Errorf("asset %d has %d observations, expected %d", i, len(r), t)
+		}
+	}
+	if !(periodsPerYear > 0) || math.IsInf(periodsPerYear, 1) {
+		return fmt.Errorf("periods per year must be a positive count, got %v", periodsPerYear)
+	}
+	return nil
+}
+
+// blend writes the weighted returns of the portfolio into out (len equal
 // to each asset's return series).
 func blend(returns [][]float64, w, out []float64) {
 	for k := range out {
@@ -632,9 +647,10 @@ func maximizeSimplex(n int, maxW float64, score func([]float64) (float64, bool))
 	return best
 }
 
-// meanCov returns the annualized mean vector and covariance matrix of the
-// per-asset daily returns. Covariance uses the sample estimator (T−1).
-func meanCov(returns [][]float64) (mu []float64, cov [][]float64) {
+// meanCov returns the mean vector and covariance matrix of the per-asset
+// returns, annualized at periodsPerYear. Covariance uses the sample
+// estimator (T−1).
+func meanCov(returns [][]float64, periodsPerYear float64) (mu []float64, cov [][]float64) {
 	n := len(returns)
 	t := len(returns[0])
 	mean := make([]float64, n)
@@ -656,13 +672,13 @@ func meanCov(returns [][]float64) (mu []float64, cov [][]float64) {
 			for k := 0; k < t; k++ {
 				s += (returns[i][k] - mean[i]) * (returns[j][k] - mean[j])
 			}
-			c := s / denom * tradingDays
+			c := s / denom * periodsPerYear
 			cov[i][j], cov[j][i] = c, c
 		}
 	}
 	mu = make([]float64, n)
 	for i := range mean {
-		mu[i] = mean[i] * tradingDays
+		mu[i] = mean[i] * periodsPerYear
 	}
 	return mu, cov
 }

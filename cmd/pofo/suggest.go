@@ -182,17 +182,18 @@ func buildCandidates(ctx context.Context, c *marketdata.Client, opt *options, me
 			log.Printf("suggest: candidate %s skipped (only %.1f years overlap)", r.id, years)
 			continue
 		}
-		_, p := marketdata.Align(list, cstart, cend)
+		dates, p := marketdata.Align(list, cstart, cend)
 		heldRet := make([][]float64, len(held))
 		for i := range held {
 			heldRet[i] = metrics.Returns(p[i])
 		}
 		out = append(out, suggest.Candidate{
-			Meta:        r.m,
-			PortReturns: suggest.PortfolioReturns(weights, heldRet),
-			Returns:     metrics.Returns(p[len(held)]),
-			Years:       years,
-			Simulated:   !cs.SimulatedBefore.IsZero(),
+			Meta:           r.m,
+			PortReturns:    suggest.PortfolioReturns(weights, heldRet),
+			Returns:        metrics.Returns(p[len(held)]),
+			PeriodsPerYear: metrics.PeriodsPerYear(dates),
+			Years:          years,
+			Simulated:      !cs.SimulatedBefore.IsZero(),
 		})
 	}
 	return out

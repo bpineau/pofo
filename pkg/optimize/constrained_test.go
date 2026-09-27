@@ -42,7 +42,7 @@ func TestBoundsAreRespected(t *testing.T) {
 		Lower:     []float64{0.10, math.NaN(), 0.20},
 		Upper:     []float64{0.30, math.NaN(), 0.40},
 	}
-	res, err := Solve(r, spec)
+	res, err := Solve(r, daily, spec)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -66,7 +66,7 @@ func TestBoundsAreRespected(t *testing.T) {
 // assets it dislikes in sample.
 func TestMinWeightKeepsEveryLine(t *testing.T) {
 	r := threeSleeves()
-	res, err := Solve(r, Spec{Objective: MaxReturn, MinWeight: 0.15})
+	res, err := Solve(r, daily, Spec{Objective: MaxReturn, MinWeight: 0.15})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -82,28 +82,28 @@ func TestMinWeightKeepsEveryLine(t *testing.T) {
 // minimum-volatility portfolio's return.
 func TestVolatilityCapBinds(t *testing.T) {
 	r := threeSleeves()
-	floor, err := Solve(r, Spec{Objective: MinVolatility})
+	floor, err := Solve(r, daily, Spec{Objective: MinVolatility})
 	if err != nil {
 		t.Fatal(err)
 	}
-	cap := metrics.Volatility(blended(r, floor.Weights)) * 1.5
-	res, err := Solve(r, Spec{Objective: MaxReturn, Limits: Limits{MaxVolatility: cap}})
+	cap := metrics.Volatility(blended(r, floor.Weights), daily) * 1.5
+	res, err := Solve(r, daily, Spec{Objective: MaxReturn, Limits: Limits{MaxVolatility: cap}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !res.Feasible {
 		t.Fatal("solve reported the volatility cap as unreachable")
 	}
-	got := metrics.Volatility(blended(r, res.Weights))
+	got := metrics.Volatility(blended(r, res.Weights), daily)
 	if got > cap+1e-4 {
 		t.Fatalf("volatility %.4f above the %.4f cap", got, cap)
 	}
 	if got < cap*0.9 {
 		t.Fatalf("volatility %.4f well under the %.4f cap: the search left return on the table", got, cap)
 	}
-	if res.CAGR <= compound(blended(r, floor.Weights)) {
+	if res.CAGR <= compound(blended(r, floor.Weights), daily) {
 		t.Fatalf("capped max-return CAGR %.4f no better than min-volatility's %.4f",
-			res.CAGR, compound(blended(r, floor.Weights)))
+			res.CAGR, compound(blended(r, floor.Weights), daily))
 	}
 }
 
@@ -111,22 +111,22 @@ func TestVolatilityCapBinds(t *testing.T) {
 // and is calmer than the unconstrained max-return portfolio.
 func TestReturnFloorBinds(t *testing.T) {
 	r := threeSleeves()
-	top, err := Solve(r, Spec{Objective: MaxReturn})
+	top, err := Solve(r, daily, Spec{Objective: MaxReturn})
 	if err != nil {
 		t.Fatal(err)
 	}
-	floor := compound(blended(r, top.Weights)) * 0.7
-	res, err := Solve(r, Spec{Objective: MinVolatility, Limits: Limits{MinReturn: floor}})
+	floor := compound(blended(r, top.Weights), daily) * 0.7
+	res, err := Solve(r, daily, Spec{Objective: MinVolatility, Limits: Limits{MinReturn: floor}})
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !res.Feasible {
 		t.Fatal("solve reported the return floor as unreachable")
 	}
-	if got := compound(blended(r, res.Weights)); got < floor-1e-4 {
+	if got := compound(blended(r, res.Weights), daily); got < floor-1e-4 {
 		t.Fatalf("CAGR %.4f below the %.4f floor", got, floor)
 	}
-	if metrics.Volatility(blended(r, res.Weights)) >= metrics.Volatility(blended(r, top.Weights)) {
+	if metrics.Volatility(blended(r, res.Weights), daily) >= metrics.Volatility(blended(r, top.Weights), daily) {
 		t.Fatal("constrained min-volatility is not calmer than plain max-return")
 	}
 }
@@ -134,7 +134,7 @@ func TestReturnFloorBinds(t *testing.T) {
 // TestDrawdownBudget: a drawdown budget is respected when reachable.
 func TestDrawdownBudget(t *testing.T) {
 	r := threeSleeves()
-	res, err := Solve(r, Spec{Objective: MaxReturn, Limits: Limits{MaxDrawdown: 0.05}})
+	res, err := Solve(r, daily, Spec{Objective: MaxReturn, Limits: Limits{MaxDrawdown: 0.05}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,7 +150,7 @@ func TestDrawdownBudget(t *testing.T) {
 // least-violating point, flagged, rather than a plausible-looking answer.
 func TestUnreachableLimitReportsInfeasible(t *testing.T) {
 	r := threeSleeves()
-	res, err := Solve(r, Spec{Objective: MaxReturn, Limits: Limits{MinReturn: 10}})
+	res, err := Solve(r, daily, Spec{Objective: MaxReturn, Limits: Limits{MinReturn: 10}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -162,10 +162,10 @@ func TestUnreachableLimitReportsInfeasible(t *testing.T) {
 // TestInfeasibleBoxErrors: bounds that cannot hold a portfolio fail loudly.
 func TestInfeasibleBoxErrors(t *testing.T) {
 	r := threeSleeves()
-	if _, err := Solve(r, Spec{Objective: MaxReturn, MinWeight: 0.4}); err == nil {
+	if _, err := Solve(r, daily, Spec{Objective: MaxReturn, MinWeight: 0.4}); err == nil {
 		t.Fatal("three 40 % floors sum to 120 % and must be rejected")
 	}
-	_, err := Solve(r, Spec{Objective: MaxReturn, Upper: []float64{0.2, 0.2, 0.2}})
+	_, err := Solve(r, daily, Spec{Objective: MaxReturn, Upper: []float64{0.2, 0.2, 0.2}})
 	if err == nil || !strings.Contains(err.Error(), "below 100") {
 		t.Fatalf("caps summing to 60 %% must be rejected, got %v", err)
 	}
@@ -177,13 +177,13 @@ func TestInfeasibleBoxErrors(t *testing.T) {
 // path, since the old one is the reference.
 func TestConstrainedPathMatchesClosedForm(t *testing.T) {
 	r := threeSleeves()
-	closed, err := Solve(r, Spec{Objective: MaxSharpe, MaxWeight: 0.5})
+	closed, err := Solve(r, daily, Spec{Objective: MaxSharpe, MaxWeight: 0.5})
 	if err != nil {
 		t.Fatal(err)
 	}
 	// MinWeight 0 changes nothing but forces the constrained route.
 	spec := Spec{Objective: MaxSharpe, MaxWeight: 0.5, Lower: []float64{0, math.NaN(), math.NaN()}}
-	search, err := Solve(r, spec)
+	search, err := Solve(r, daily, spec)
 	if err != nil {
 		t.Fatal(err)
 	}

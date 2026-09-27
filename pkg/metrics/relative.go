@@ -55,8 +55,9 @@ func RollingCAGR(dates []time.Time, values []float64, years float64) (worst, med
 
 // Relative compares a series with a benchmark on their common dates and
 // derives the classic relative-performance statistics. ok is false when
-// fewer than 30 dates overlap. Conventions: daily returns, 252-day
-// annualization, risk-free rate 0 (consistent with Compute).
+// fewer than 30 dates overlap. Conventions: returns paired by date as Beta
+// pairs them, annualized at the cadence of those pairs (252 for two daily
+// series, as in Compute), risk-free rate 0 (consistent with Compute).
 type Relative struct {
 	Beta        float64
 	Alpha       float64 // Jensen's alpha, annualized (0.02 = +2 %/yr)
@@ -97,10 +98,11 @@ func VsBenchmark(dates []time.Time, values []float64, benchDates []time.Time, be
 		return Relative{}, false
 	}
 	var r Relative
+	ppy := p.cadence()
 	r.Beta = cov / varb
-	r.Alpha = (mp - r.Beta*mb) * tradingDaysPerYear
-	if te := math.Sqrt(varActive/float64(len(rp))) * math.Sqrt(tradingDaysPerYear); te > 0 {
-		r.InfoRatio = meanActive * tradingDaysPerYear / te
+	r.Alpha = (mp - r.Beta*mb) * ppy
+	if te := math.Sqrt(varActive/float64(len(rp))) * math.Sqrt(ppy); te > 0 {
+		r.InfoRatio = meanActive * ppy / te
 	}
 	capture := func(p, b float64, n int) float64 {
 		if n == 0 {

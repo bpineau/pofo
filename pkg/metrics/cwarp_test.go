@@ -37,7 +37,7 @@ func replSeries() []float64 {
 func TestCWARPZeroOverlayNeutral(t *testing.T) {
 	repl := replSeries()
 	asset := make([]float64, len(repl))
-	got, ok := CWARP(asset, repl, CWARPParams{})
+	got, ok := CWARP(asset, repl, TradingDaysPerYear, CWARPParams{})
 	if !ok {
 		t.Fatalf("CWARP not ok")
 	}
@@ -54,7 +54,7 @@ func TestCWARPDiversifierPositive(t *testing.T) {
 	for i := range repl {
 		asset[i] = -repl[i] + 0.0007 // hedge plus positive carry
 	}
-	got, ok := CWARP(asset, repl, CWARPParams{})
+	got, ok := CWARP(asset, repl, TradingDaysPerYear, CWARPParams{})
 	if !ok {
 		t.Fatalf("CWARP not ok")
 	}
@@ -69,7 +69,7 @@ func TestCWARPDiversifierPositive(t *testing.T) {
 func TestCWARPFinancedLeverageNegative(t *testing.T) {
 	repl := replSeries()
 	asset := append([]float64(nil), repl...) // same exposure
-	got, ok := CWARP(asset, repl, CWARPParams{Financing: 0.10})
+	got, ok := CWARP(asset, repl, TradingDaysPerYear, CWARPParams{Financing: 0.10})
 	if !ok {
 		t.Fatalf("CWARP not ok")
 	}
@@ -82,14 +82,14 @@ func TestCWARPFinancedLeverageNegative(t *testing.T) {
 // replacement that only ever rises (no drawdown, so RtMDD is undefined).
 func TestCWARPUndefined(t *testing.T) {
 	repl := replSeries()
-	if _, ok := CWARP(repl[:10], repl, CWARPParams{}); ok {
+	if _, ok := CWARP(repl[:10], repl, TradingDaysPerYear, CWARPParams{}); ok {
 		t.Fatalf("mismatched lengths should be not ok")
 	}
 	up := make([]float64, 100)
 	for i := range up {
 		up[i] = 0.001 // monotonically rising: no drawdown
 	}
-	if _, ok := CWARP(up, up, CWARPParams{}); ok {
+	if _, ok := CWARP(up, up, TradingDaysPerYear, CWARPParams{}); ok {
 		t.Fatalf("no-drawdown replacement should be not ok")
 	}
 }

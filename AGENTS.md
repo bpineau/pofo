@@ -188,7 +188,7 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | Path | What lives there |
 |---|---|
 | `pkg/marketdata` | fetch/cache daily + intraday prices; identifier resolution (alias, ticker, ISIN); FX conversion; SIM history extension; extended-hours quotes behind an opt-in (`Quote.Session`, `QuoteOptions.ExtendedHours`, `LatestBatchExtended`: a US pre-market or after-hours print when it is fresher than the regular one, never by default); data doctor (`Verify`/`VerifyAsset`, per-`asset_class` plausibility bands stretched by a record's leverage and, for a `single-stock` record, by its single-name concentration); telling a typo from an outage when a fetch finds nothing (`ErrUnknownIdentifier` / `UnknownIdentifierError`, `unknown.go`, which is what makes a nonexistent `/view` identifier a 404 instead of a 500); the `airfund` source (official daily NAV of a French employee-savings fund, `airfund.go`) and the proxy NOWCAST of such a fund past its last published NAV (`nowcast.go`: `Series.EstimatedFrom`/`WithoutEstimates`, estimated `Intraday` path and `Latest` quote, anchored on the proxy's close or, per the record's `nowcast_anchor`, on its open); the price-hygiene passes every fetch path runs (`clean.go`: strip provider placeholders, mend a single denomination break, drop the one-session round trips no asset of the class could have made, de-spike an FX cross, rate symbols exempt, and the pass ORDER is load-bearing, see the file's own comment); DEFINITION JUNCTIONS (`Series.Junctions`, read from a simdata file's `# junctions:` header, the dates where a publisher started measuring something else so the step between two real levels is not a move, which the constant-maturity engines skip); and `SampleAt`, which reads a series at an arbitrary date list, holding the first level flat backwards and returning how far back that extrapolation reached so the caller can warn; and the series-as-data bridge to the slice-based packages (`series_ops.go`): `NewSeries` for a consumer's own data, `Series.Dates/Values/Returns/Rebase/Resample` (`Resample` keeps the last TRADING close of each calendar period, a month-END series), `CommonWindow`, and `AlignSeries`/`Aligned`, Align's strict sibling that errors, naming the series, where Align would forward-fill zeros; the exports that serve only `cmd/` (`WriteSimdata`, `ExtendBack`, `WarmupIDs`, `ProxySymbol`) are listed under "Generator plumbing" at the end of `doc.go` |
-| `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling incl. `RollingBeta`/`RollingCorr`, CWARP) plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions); the cross-asset matrices (`Corr`, `CorrelationMatrix`, `Covariance`, on [asset][period] returns of one calendar), the calendar table (`CalendarReturns`: monthly/quarterly/yearly `PeriodReturn`s, first one `Partial`, what the goldens read published yearly returns with) and historical tails (`VaR`/`CVaR`, positive per-period losses) |
+| `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling incl. `RollingBeta`/`RollingCorr`, CWARP), annualized at the series' measured cadence (`PeriodsPerYear`, `cadence.go`; `TradingDaysPerYear` for bare daily returns), plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions); the cross-asset matrices (`Corr`, `CorrelationMatrix`, `Covariance`, on [asset][period] returns of one calendar), the calendar table (`CalendarReturns`: monthly/quarterly/yearly `PeriodReturn`s, first one `Partial`, what the goldens read published yearly returns with) and historical tails (`VaR`/`CVaR`, positive per-period losses) |
 | `pkg/portfolio` | portfolio file format (`Parse`) and its in-code twin (`NewSpec` over `Line`s, weights as FRACTIONS, sharing Parse's validation), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
 | `pkg/analyze` | the high-level, numbers-only API: `Asset` (one asset on its longest window: stats, calendar years/months, drawdown episodes, relative vs a benchmark, warnings) and `Portfolio` (build + simulate + each holding studied on the simulation's window + `Aligned` holdings + correlation matrix + risk/return attribution on MONTHLY contributions + catalog look-through `Composition`; the one pipeline `pkg/compare` builds its columns through), over a `Source` interface `*marketdata.Client` satisfies; nominal only (real stats stay in `compare`); an unknown identifier is an error, every other data problem a `Warnings` line; deliberately NOT here: typed units (a `Percent` type would touch every `portfolio` signature), a `metrics` API over `Series` (metrics stays slice-based and import-free), multi-factor regression and the efficient frontier |
 | `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/black-litterman-design.md`) |
@@ -297,9 +297,17 @@ the README, never the README alone.
   comparisons on `Index`, money outcomes (IRR) on `Values` + flows.
 - `pkg/scenario` and `pkg/decumul` work in REAL terms (inflation removed)
   and periodic returns; deflate nominal series first (`scenario.Deflate`).
-- Annualization: 252 trading days, zero risk-free rate, CAGR over
-  365.25-day years. Comparisons with PortfolioVisualizer et al. differ for
-  documented reasons (see `pkg/metrics/doc.go`).
+- Annualization follows the data's CADENCE: `metrics.PeriodsPerYear(dates)`
+  (the prevailing spacing's observations per year, snapped to 252 on any
+  trading-day calendar, 52 weekly, 12 monthly, 365 when weekends quote), so a
+  daily figure is the classic 252-day one and a monthly refdata file no longer
+  reads sqrt(21) too volatile. Functions over bare returns (`Volatility`,
+  `Sharpe`, `Sortino`, `CWARP`, `optimize.Solve`...) take the cadence as an
+  argument: `metrics.TradingDaysPerYear` for daily returns, never a literal
+  252. A line that CHANGES cadence (weekly then daily) is read at its
+  prevailing one and misreads the rest: resample it first. Zero risk-free
+  rate, CAGR over 365.25-day years. Comparisons with PortfolioVisualizer et
+  al. differ for documented reasons (see `pkg/metrics/doc.go`).
 - Rate symbols (`^IRX`, `^FVX`, `^TNX`, `^TYX`), the policy/money-market
   family (`^ESTR`, `^EONIA`, `^EURIBOR3M`, `^ECB-DFR`, `^ECB-MRO`, `^SOFR`, `^FEDFUNDS`,
   `^FED-TARGET`, registry in `pkg/marketdata/rates.go`) and `^VIX` are
@@ -426,7 +434,8 @@ the README, never the README alone.
   "airfund"`, share code in `symbol`, the Eres SITE's widget id in `xid`, the
   same for every fund of the site) with `refdata/<ID>-NAV.csv` as the offline
   fallback (`make eres-refdata`). `ERES_DATADOG` was WEEKLY until 2026-07-13, daily since
-  (cadence trap over most of the line: read the monthly columns) and is valued
+  (a line that changes cadence: its statistics annualize at the prevailing
+  weekly count and misread the daily tail, so read the monthly columns) and is valued
   at the NASDAQ OPENING price since 2022-04-11 and at the CLOSE before (the FY2025 annual report's valuation rules; measured two ways: 2.0 % rmse vs 3.6 % for the
   close, and 09:30 New York the best-fitting instant on the 5-minute history),
   so its record carries `nowcast_anchor: "open"` (catalog field, default
@@ -456,9 +465,10 @@ the README, never the README alone.
   `pkg/simgen/catbond.go`, each rescaled to its OWN monthly volatility with
   `monthlyVolMatch` (a monthly donor and a weekly fund share no observation
   dates, so `volMatch` would skip the donor in silence). Nothing reaches before
-  2006-01. THE CADENCE TRAP: these lines quote weekly or semi-monthly, so every
-  per-observation statistic on them is wrong by ~sqrt(5); read the monthly
-  columns.
+  2006-01. These lines quote weekly or semi-monthly; their statistics
+  annualize at that measured cadence (52 or 24 a year), no longer at 252, but
+  a line that switched cadence along the way is read at its prevailing one, so
+  the monthly columns stay the safe read.
 - Black-Litterman (`optimize:black-litterman`, `view:`, `prior-return:`): read
   `docs/black-litterman-design.md` first. The prior is the FILE's weights, not
   a market-capitalization portfolio, and with no view the objective returns

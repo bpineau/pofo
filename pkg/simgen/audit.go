@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Verdict grades one aspect of a reconstruction.
@@ -561,16 +562,21 @@ func pearson(a, b []float64) float64 {
 	return sab / math.Sqrt(sa*sb)
 }
 
-// windowVol is the annualized volatility of a series over the window, the
-// scale against which a tracking error means something.
+// windowVol is the annualized volatility of a series over the window, at the
+// series' own cadence: the scale against which a tracking error means
+// something.
 func windowVol(s *marketdata.Series, from, to time.Time) float64 {
 	c := clip(s, from, to)
 	if len(c.Points) < 30 {
 		return 0
 	}
 	r := make([]float64, 0, len(c.Points)-1)
-	for i := 1; i < len(c.Points); i++ {
-		r = append(r, c.Points[i].Close/c.Points[i-1].Close-1)
+	dates := make([]time.Time, 0, len(c.Points))
+	for i, p := range c.Points {
+		dates = append(dates, p.Date)
+		if i > 0 {
+			r = append(r, p.Close/c.Points[i-1].Close-1)
+		}
 	}
 	var m float64
 	for _, x := range r {
@@ -581,7 +587,7 @@ func windowVol(s *marketdata.Series, from, to time.Time) float64 {
 	for _, x := range r {
 		sum += (x - m) * (x - m)
 	}
-	return math.Sqrt(sum/float64(len(r))) * math.Sqrt(252)
+	return math.Sqrt(sum/float64(len(r))) * math.Sqrt(metrics.PeriodsPerYear(dates))
 }
 
 // worstDay is the worst single-day return over the window: a replication that

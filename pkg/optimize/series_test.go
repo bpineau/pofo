@@ -7,6 +7,10 @@ import (
 	"github.com/bpineau/pofo/pkg/metrics"
 )
 
+// daily is the cadence of the synthetic return series the tests feed the
+// solver: one return per trading day.
+const daily = metrics.TradingDaysPerYear
+
 // antiCorrelated builds two assets sharing a positive drift but whose dominant
 // swing is anti-correlated (it cancels in a balanced blend), each with its own
 // idiosyncratic wobble so neither is drawdown-free on its own. A blend cuts the
@@ -27,8 +31,8 @@ func antiCorrelated() (a, b []float64) {
 // form a genuine blend, since combining the anti-correlated pair cuts downside.
 func TestSolveMaxSortino(t *testing.T) {
 	a, b := antiCorrelated()
-	best := math.Max(metrics.Sortino(a, 0), metrics.Sortino(b, 0))
-	res, err := Solve([][]float64{a, b}, Spec{Objective: MaxSortino})
+	best := math.Max(metrics.Sortino(a, 0, daily), metrics.Sortino(b, 0, daily))
+	res, err := Solve([][]float64{a, b}, daily, Spec{Objective: MaxSortino})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -43,10 +47,10 @@ func TestSolveMaxSortino(t *testing.T) {
 // TestSolveReturnToDrawdown: same, for the return-to-max-drawdown objective.
 func TestSolveReturnToDrawdown(t *testing.T) {
 	a, b := antiCorrelated()
-	ra, _ := metrics.ReturnToMaxDrawdown(a, 0)
-	rb, _ := metrics.ReturnToMaxDrawdown(b, 0)
+	ra, _ := metrics.ReturnToMaxDrawdown(a, 0, daily)
+	rb, _ := metrics.ReturnToMaxDrawdown(b, 0, daily)
 	best := math.Max(ra, rb)
-	res, err := Solve([][]float64{a, b}, Spec{Objective: ReturnToDrawdown})
+	res, err := Solve([][]float64{a, b}, daily, Spec{Objective: ReturnToDrawdown})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +68,7 @@ func TestSolveReturnToDrawdown(t *testing.T) {
 func TestSolveMinUlcer(t *testing.T) {
 	a, b := antiCorrelated()
 	best := math.Min(metrics.Ulcer(a), metrics.Ulcer(b))
-	res, err := Solve([][]float64{a, b}, Spec{Objective: MinUlcer})
+	res, err := Solve([][]float64{a, b}, daily, Spec{Objective: MinUlcer})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -88,10 +92,10 @@ func TestSolveMaxWorst5y(t *testing.T) {
 		a[i] = 0.0004 + swing
 		b[i] = 0.0004 - swing + 0.0002*math.Sin(float64(i)*0.9)
 	}
-	wa, _ := metrics.WorstRollingReturn(a, fiveYearWindow)
-	wb, _ := metrics.WorstRollingReturn(b, fiveYearWindow)
+	wa, _ := metrics.WorstRollingReturn(a, fiveYears(daily), daily)
+	wb, _ := metrics.WorstRollingReturn(b, fiveYears(daily), daily)
 	best := math.Max(wa, wb)
-	res, err := Solve([][]float64{a, b}, Spec{Objective: MaxWorst5y})
+	res, err := Solve([][]float64{a, b}, daily, Spec{Objective: MaxWorst5y})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -103,8 +107,12 @@ func TestSolveMaxWorst5y(t *testing.T) {
 func TestSolveMaxWorst5yShortHistory(t *testing.T) {
 	a := make([]float64, 252) // only 1 year
 	b := make([]float64, 252)
-	if _, err := Solve([][]float64{a, b}, Spec{Objective: MaxWorst5y}); err == nil {
+	if _, err := Solve([][]float64{a, b}, daily, Spec{Objective: MaxWorst5y}); err == nil {
 		t.Fatalf("expected an error for a history shorter than 5 years")
+	}
+	// The same 252 returns read as monthly span 21 years: enough.
+	if _, err := Solve([][]float64{a, b}, 12, Spec{Objective: MaxWorst5y}); err != nil {
+		t.Fatalf("21 years of monthly returns: %v", err)
 	}
 }
 
