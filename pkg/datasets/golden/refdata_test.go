@@ -88,7 +88,11 @@ func loadRefdata(t *testing.T, id string) *marketdata.Series {
 // fails the test rather than reading a number.
 func calendarYear(t *testing.T, s *marketdata.Series, y int) float64 {
 	t.Helper()
-	for _, r := range metrics.CalendarReturns(s.Dates(), s.Values(), 12) {
+	years, err := metrics.CalendarReturns(s.Dates(), s.Values(), 12)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, r := range years {
 		if r.End.Year() != y {
 			continue
 		}

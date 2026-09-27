@@ -1090,14 +1090,25 @@ if err != nil {
 	panic(err)
 }
 r := a.Returns()
-corr, cov := metrics.CorrelationMatrix(r), metrics.Covariance(r)
+corr, err := metrics.CorrelationMatrix(r)
+if err != nil {
+	panic(err)
+}
+cov, err := metrics.Covariance(r)
+if err != nil {
+	panic(err)
+}
 fmt.Printf("from %s: %s/%s %.2f, %s/%s %.2f\n", a.Dates[0].Format(time.DateOnly),
 	a.IDs[0], a.IDs[1], corr[0][1], a.IDs[0], a.IDs[2], corr[0][2])
 fmt.Printf("%s volatility %.1f %%/yr\n", a.IDs[0], math.Sqrt(cov[0][0]*252)*100)
 
 // Partial flags a first year measured from the first quote; the last row
 // ends on the last quote, which its End says.
-for _, y := range metrics.CalendarReturns(a.Dates, a.Levels[0], 12) {
+years, err := metrics.CalendarReturns(a.Dates, a.Levels[0], 12)
+if err != nil {
+	panic(err)
+}
+for _, y := range years {
 	fmt.Printf("year to %s %+5.1f %%, partial=%v\n", y.End.Format(time.DateOnly), y.Return*100, y.Partial)
 }
 if _, betas, ok := metrics.RollingBeta(a.Dates, a.Levels[1], a.Dates, a.Levels[0], 1); ok {

@@ -160,11 +160,12 @@ func study(id string, s *marketdata.Series, bench *marketdata.Series) (*AssetStu
 }
 
 // calendar is the yearly and monthly return tables and the drawdown episodes
-// of a value series.
+// of a value series. Its two period lengths are positive and dates and
+// values come from one series, so CalendarReturns cannot fail here.
 func calendar(dates []time.Time, values []float64) (years, months []metrics.PeriodReturn, drawdowns []metrics.Episode) {
-	return metrics.CalendarReturns(dates, values, int(marketdata.Yearly)),
-		metrics.CalendarReturns(dates, values, int(marketdata.Monthly)),
-		metrics.DrawdownEpisodes(dates, values)
+	years, _ = metrics.CalendarReturns(dates, values, int(marketdata.Yearly))
+	months, _ = metrics.CalendarReturns(dates, values, int(marketdata.Monthly))
+	return years, months, metrics.DrawdownEpisodes(dates, values)
 }
 
 // relative measures a value series against the benchmark, the way the

@@ -34,11 +34,13 @@ func Corr(a, b []float64) float64 {
 // asset's per-period returns (fractions) on ONE calendar, which is what
 // marketdata.Aligned.Returns produces. The matrix is symmetric, its diagonal
 // is 1, except for an asset whose returns are constant, whose whole row and
-// column read 0 as Corr says. It panics when the rows differ in length,
-// since pairing periods that are not the same periods is a programming
-// error, not a number.
-func CorrelationMatrix(returns [][]float64) [][]float64 {
-	checkRectangular("CorrelationMatrix", returns)
+// column read 0 as Corr says. It is an error when the rows differ in length:
+// periods that are not the same periods pair into no number at all (build
+// the rows on one calendar, a marketdata.Panel or Aligned, first).
+func CorrelationMatrix(returns [][]float64) ([][]float64, error) {
+	if err := checkRectangular("CorrelationMatrix", returns); err != nil {
+		return nil, err
+	}
 	out := squareMatrix(len(returns))
 	for i := range returns {
 		if sampleStdev(returns[i]) > 0 {
@@ -49,7 +51,7 @@ func CorrelationMatrix(returns [][]float64) [][]float64 {
 			out[i][j], out[j][i] = c, c
 		}
 	}
-	return out
+	return out, nil
 }
 
 // Covariance is the per-period SAMPLE covariance (n-1 denominator) of every
@@ -58,10 +60,12 @@ func CorrelationMatrix(returns [][]float64) [][]float64 {
 // fractions per period: multiply by the calendar's PeriodsPerYear to
 // annualize it (252 for daily returns, 12 for monthly ones). The matrix is
 // symmetric and its diagonal is each asset's sample variance. Fewer than two
-// periods leave every entry NaN. It panics when the rows differ in length, as
-// CorrelationMatrix does.
-func Covariance(returns [][]float64) [][]float64 {
-	checkRectangular("Covariance", returns)
+// periods leave every entry NaN. It is an error when the rows differ in
+// length, as for CorrelationMatrix.
+func Covariance(returns [][]float64) ([][]float64, error) {
+	if err := checkRectangular("Covariance", returns); err != nil {
+		return nil, err
+	}
 	out := squareMatrix(len(returns))
 	means := make([]float64, len(returns))
 	for i, r := range returns {
@@ -80,16 +84,18 @@ func Covariance(returns [][]float64) [][]float64 {
 			out[i][j], out[j][i] = c, c
 		}
 	}
-	return out
+	return out, nil
 }
 
-// checkRectangular panics unless every row of returns has the same length.
-func checkRectangular(fn string, returns [][]float64) {
+// checkRectangular is an error naming the first row of returns whose length
+// differs from the first one's.
+func checkRectangular(fn string, returns [][]float64) error {
 	for i, r := range returns {
 		if len(r) != len(returns[0]) {
-			panic(fmt.Sprintf("metrics: %s: asset %d has %d returns, asset 0 has %d (not one calendar)", fn, i, len(r), len(returns[0])))
+			return fmt.Errorf("metrics: %s: asset %d has %d returns, asset 0 has %d (not one calendar)", fn, i, len(r), len(returns[0]))
 		}
 	}
+	return nil
 }
 
 // squareMatrix is an n by n matrix of zeros.

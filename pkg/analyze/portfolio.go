@@ -184,7 +184,9 @@ func Portfolio(ctx context.Context, src Source, spec *portfolio.Spec, opt Option
 		al.IDs[i] = a.ID
 	}
 	ps.Aligned = al
-	ps.Correlation = metrics.CorrelationMatrix(al.Returns())
+	if ps.Correlation, err = metrics.CorrelationMatrix(al.Returns()); err != nil {
+		return nil, fmt.Errorf("analyze: portfolio %s: %w", eff.Name, err)
+	}
 
 	_, monthly := sim.MonthlyContributions()
 	if att, err := metrics.Attribute(monthly); err == nil {
