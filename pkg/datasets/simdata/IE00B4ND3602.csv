@@ -2,8 +2,8 @@
 # id: IE00B4ND3602
 # name: iShares Physical Gold: spot gold minus storage
 # method: GC=F (XAU/USD gold spot, extended to the daily London/LBMA PM fix XAUUSD-LBMA ~1968) minus 0.12%/yr storage, real IGLN grafted from 2011
-# validation: corr=0.915 (weekly 0.979) beta=0.88 TE=7.1%/yr CAGR sim 7.28% vs real 7.07% (overlap 3810 d from 2011-04-11 to 2026-09-18) vs IE00B4ND3602
-# generated: 2026-09-20
+# validation: corr=0.915 (weekly 0.979) beta=0.95 TE=7.1%/yr CAGR sim 7.11% vs real 6.95% (overlap 3815 d from 2011-04-11 to 2026-09-25) vs IE00B4ND3602
+# generated: 2026-09-27
 date,close
 1968-04-01,0.797205
 1968-04-02,0.788742
@@ -14714,3 +14714,8 @@ date,close
 2026-09-16,84.340000
 2026-09-17,84.547500
 2026-09-18,84.490000
+2026-09-21,84.455000
+2026-09-22,83.987500
+2026-09-23,83.087500
+2026-09-24,82.405000
+2026-09-25,83.075000

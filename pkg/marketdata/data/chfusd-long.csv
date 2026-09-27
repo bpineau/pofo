@@ -3,7 +3,7 @@
 # Real daily levels from FRED, key-less CSV endpoint; "." (holiday) rows skipped, business days only.
 # Regenerate: make snapshots (cmd/gen-snapshots, FRED fredgraph.csv?id=DEXSZUS).
 # See pkg/marketdata/currency.go.
-# generated: 2026-09-10
+# generated: 2026-09-27
 1971-01-04,0.2315887
 1971-01-05,0.23192708
 1971-01-06,0.2319486
@@ -13966,3 +13966,12 @@
 2026-09-02,1.2300123
 2026-09-03,1.2386969
 2026-09-04,1.2351779
+2026-09-08,1.2359412
+2026-09-09,1.2342631
+2026-09-10,1.2325897
+2026-09-11,1.2256404
+2026-09-14,1.2235409
+2026-09-15,1.2210012
+2026-09-16,1.2208522
+2026-09-17,1.2128563
+2026-09-18,1.2132977
