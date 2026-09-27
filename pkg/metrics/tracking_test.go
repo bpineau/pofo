@@ -59,3 +59,71 @@ func TestLeadLagGaps(t *testing.T) {
 		}
 	}
 }
+
+// Track is the package's single-purpose figures gathered, never a second
+// formula: each field must equal the function it names.
+func TestTrack(t *testing.T) {
+	a := []float64{0.021, -0.012, 0.034, 0.008, -0.019, 0.015, 0.002}
+	b := []float64{0.018, -0.010, 0.030, 0.011, -0.020, 0.012, 0.004}
+	tr, err := Track(a, b, 12)
+	if err != nil {
+		t.Fatal(err)
+	}
+	growth := func(r []float64) float64 {
+		g := 1.0
+		for _, x := range r {
+			g *= 1 + x
+		}
+		return math.Pow(g, 12.0/float64(len(r))) - 1
+	}
+	beta := slope(b, a)
+	for name, c := range map[string][2]float64{
+		"Corr":          {tr.Corr, Corr(a, b)},
+		"VolA":          {tr.VolA, Volatility(a, 12)},
+		"VolB":          {tr.VolB, Volatility(b, 12)},
+		"VolRatio":      {tr.VolRatio, Volatility(a, 12) / Volatility(b, 12)},
+		"TrackingError": {tr.TrackingError, TrackingError(a, b, 12)},
+		"Difference":    {tr.Difference, growth(a) - growth(b)},
+		"Beta":          {tr.Beta, beta},
+		"Alpha":         {tr.Alpha, (Mean(a) - beta*Mean(b)) * 12},
+		"DifferenceSE":  {tr.DifferenceSE(), TrackingError(a, b, 12) / math.Sqrt(7.0/12)},
+	} {
+		if math.Abs(c[0]-c[1]) > 1e-15 {
+			t.Errorf("%s = %v, want %v", name, c[0], c[1])
+		}
+	}
+	if tr.Periods != 7 || tr.PeriodsPerYear != 12 {
+		t.Errorf("calendar = %d periods at %v, want 7 at 12", tr.Periods, tr.PeriodsPerYear)
+	}
+	// The slope agrees with the least-squares fit Regress computes.
+	if reg, err := Regress(a, b); err != nil || math.Abs(reg.Betas[0].Value-tr.Beta) > 1e-12 {
+		t.Errorf("Beta %v, Regress %v (%v)", tr.Beta, reg.Betas, err)
+	}
+
+	// A constant reference: co-movement figures only, no NaN.
+	flat, err := Track(a, []float64{0.001, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001}, 12)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if flat.Beta != 0 || flat.Alpha != 0 || flat.VolRatio != 0 || flat.Corr != 0 || !(flat.TrackingError > 0) {
+		t.Errorf("constant b = %+v, want zero beta, alpha, ratio and correlation, a tracking error", flat)
+	}
+	if (Tracking{}).DifferenceSE() != 0 {
+		t.Error("an empty Tracking has a standard error")
+	}
+
+	for name, c := range map[string]struct {
+		a, b []float64
+		ppy  float64
+	}{
+		"mismatch":  {a, b[:3], 12},
+		"one":       {a[:1], b[:1], 12},
+		"cadence":   {a, b, 0},
+		"NaN":       {[]float64{0.01, math.NaN()}, []float64{0.01, 0.02}, 12},
+		"wiped out": {[]float64{0.01, -1}, []float64{0.01, 0.02}, 12},
+	} {
+		if _, err := Track(c.a, c.b, c.ppy); err == nil {
+			t.Errorf("%s: no error", name)
+		}
+	}
+}

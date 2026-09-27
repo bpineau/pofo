@@ -166,6 +166,34 @@ func TestAuditGradesDonorChain(t *testing.T) {
 	}
 }
 
+// A donor that stopped quoting for months cannot be paired across the hole:
+// its return over it would read as one month's. The junction is graded on
+// the unbroken stretch after the hole, and says so.
+func TestAuditChainReadsPastAHole(t *testing.T) {
+	real := quoted(mkWobbly("F", 900, 4e-4, 0.01))
+	full := quoted(mkWobbly("HOLEY", 1500, 3e-4, 0.01))
+	holey := &marketdata.Series{Symbol: "HOLEY", Currency: full.Currency, Source: full.Source}
+	holeFrom, holeTo := time.Date(2020, 2, 1, 0, 0, 0, 0, time.UTC), time.Date(2020, 11, 30, 0, 0, 0, 0, time.UTC)
+	for _, p := range full.Points {
+		d := p.Date.AddDate(0, 0, -600)
+		if d.Before(holeFrom) || d.After(holeTo) {
+			holey.Points = append(holey.Points, marketdata.Point{Date: d, Close: p.Close})
+		}
+	}
+	a := Audit(fakeFetcher{"F": real, "HOLEY": holey}, staticRecipe("F", scaled("F engine", real, 1.3), "HOLEY"))
+	if len(a.Chain) != 1 {
+		t.Fatalf("chain = %+v", a.Chain)
+	}
+	j := a.Chain[0]
+	// December 2020 opens the stretch; June 2022 is unfinished: 2021-01 to 2022-05.
+	if !j.Measured || j.Months != 17 {
+		t.Errorf("junction = %+v, want 17 months measured after the hole", j)
+	}
+	if !strings.Contains(j.Note, "months before 2020-12 left out") {
+		t.Errorf("note = %q, want the hole said", j.Note)
+	}
+}
+
 func TestAuditChainSkipsMismatchedCurrencies(t *testing.T) {
 	real := quoted(mkWobbly("G", 900, 4e-4, 0.01))
 	donor := quoted(mkWobbly("EURDONOR", 1200, 3e-4, 0.01))

@@ -263,6 +263,36 @@ func monthlyVolMatch(ref, donor, cashIdx *marketdata.Series) (*marketdata.Series
 	return out, nil
 }
 
+// monthlyReturns maps "2006-01" to that month's return, measured from the
+// last quote of the previous month the series quotes, over [from, to].
+//
+// It is the pairing monthlyVolMatch was calibrated with, kept as is because
+// its scale factor ships in the bundled files: unlike a marketdata.Panel, it
+// keeps a partial last month and lets a month the series skips fold into
+// the next one's return. Moving the recipe onto a Panel is a data change
+// (regenerate and validate the three cat bond files), not a refactor.
+func monthlyReturns(s *marketdata.Series, from, to time.Time) map[string]float64 {
+	last := map[string]float64{}
+	var keys []string
+	for _, p := range s.Points {
+		if p.Date.Before(from) || p.Date.After(to) || p.Close <= 0 {
+			continue
+		}
+		k := p.Date.Format("2006-01")
+		if _, ok := last[k]; !ok {
+			keys = append(keys, k)
+		}
+		last[k] = p.Close
+	}
+	out := make(map[string]float64, len(keys))
+	for i := 1; i < len(keys); i++ {
+		if last[keys[i-1]] > 0 {
+			out[keys[i]] = last[keys[i]]/last[keys[i-1]] - 1
+		}
+	}
+	return out
+}
+
 // gamCatBondRecipe backcasts the GAM Star Cat Bond EUR-hedged accumulation
 // class (IE00B3Q8M574, real NAVs from 2011-10) with the EUR-hedged ILS fund
 // index in front of it, from 2006-01. The extra five and a half years are what

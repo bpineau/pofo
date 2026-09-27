@@ -98,18 +98,15 @@ type PairSide struct {
 }
 
 // PairReturns compares the two series' returns period by period, on one
-// calendar of periods both quote (a marketdata.Panel).
+// calendar of periods both quote (a marketdata.Panel): the embedded
+// metrics.Tracking (Periods, PeriodsPerYear, Corr, VolA, VolB, VolRatio,
+// TrackingError, Difference, Beta of A on B, Alpha; its fields marshal at
+// the top level of the block) plus the calendar's bounds and the dated
+// periods where the two disagree most.
 type PairReturns struct {
-	Periods        int       // returns compared
-	PeriodsPerYear float64   // the panel's cadence, what annualizes every figure below
-	Start, End     time.Time // the first period's start, the last period's end
-	Corr           float64   // Pearson correlation of the returns; zero when either is constant
-	VolA, VolB     float64   // annualized volatilities
-	VolRatio       float64   // VolA / VolB; zero when B does not move
-	TrackingError  float64   // annualized volatility of A's return minus B's
-	Beta           float64   // slope of A's returns on B's (least squares, with an intercept)
-	Alpha          float64   // that regression's intercept, per year (arithmetic)
-	Divergences    []Divergence
+	metrics.Tracking
+	Start, End  time.Time // the first period's start, the last period's end
+	Divergences []Divergence
 }
 
 // Divergence is one period where the two returns disagree, dated.
@@ -200,9 +197,9 @@ func Pair(a, b *marketdata.Series, opt PairOptions) (*PairStudy, error) {
 	st.measure(wa, wb, opt)
 	switch {
 	case st.Monthly != nil:
-		st.GapSE = st.Monthly.TrackingError / math.Sqrt(float64(st.Monthly.Periods)/st.Monthly.PeriodsPerYear)
+		st.GapSE = st.Monthly.DifferenceSE()
 	case st.Daily != nil:
-		st.GapSE = st.Daily.TrackingError / math.Sqrt(float64(st.Daily.Periods)/st.Daily.PeriodsPerYear)
+		st.GapSE = st.Daily.DifferenceSE()
 	}
 	return st, nil
 }
@@ -407,25 +404,15 @@ func (st *PairStudy) measure(wa, wb *marketdata.Series, opt PairOptions) {
 // where they disagree most.
 func (st *PairStudy) block(name string, p *marketdata.Panel, k int, leadLag bool) *PairReturns {
 	ra, rb := p.R[0], p.R[1]
-	ppy := p.PeriodsPerYear()
-	r := &PairReturns{
-		Periods:        p.Len(),
-		PeriodsPerYear: ppy,
-		Start:          p.Starts[0],
-		End:            p.Ends[p.Len()-1],
-		Corr:           metrics.Corr(ra, rb),
-		VolA:           metrics.Volatility(ra, ppy),
-		VolB:           metrics.Volatility(rb, ppy),
-		TrackingError:  metrics.TrackingError(ra, rb, ppy),
+	t, err := p.Track("A", "B")
+	if err != nil {
+		st.warn("no %s figures: %v", name, err)
+		return nil
 	}
-	if r.VolB > 0 {
-		r.VolRatio = r.VolA / r.VolB
+	if t.VolB == 0 {
+		st.warn("no %s beta or alpha: B does not move", name)
 	}
-	if reg, err := metrics.Regress(ra, rb); err == nil {
-		r.Beta, r.Alpha = reg.Betas[0].Value, reg.AnnualAlpha(ppy)
-	} else {
-		st.warn("no %s beta or alpha: %v", name, err)
-	}
+	r := &PairReturns{Tracking: t, Start: p.Starts[0], End: p.Ends[p.Len()-1]}
 
 	excess := make([]float64, len(ra))
 	for t := range ra {

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // seriesOf builds a series from (date, close) pairs.
@@ -293,6 +295,65 @@ func TestPanelSelectMixSeries(t *testing.T) {
 	wantErr(t, err, "period 3 out of range (the panel has 3)")
 	_, err = p.Pick([]int{-1})
 	wantErr(t, err, "period -1 out of range")
+}
+
+// Track is metrics.Track on two named columns at the panel's cadence.
+func TestPanelTrack(t *testing.T) {
+	eq := seriesOf(t, "EQ", date(2023, 12, 29), 100.0, date(2024, 1, 31), 110.0, date(2024, 2, 29), 99.0, date(2024, 3, 29), 104.0)
+	bd := seriesOf(t, "BD", date(2023, 12, 29), 100.0, date(2024, 1, 31), 100.0, date(2024, 2, 29), 102.0, date(2024, 3, 29), 101.0)
+	p := must(NewPanel(Monthly, eq, bd))
+	got, err := p.Track("EQ", "BD")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := must(metrics.Track(p.R[0], p.R[1], 12)); got != want {
+		t.Errorf("Track = %+v, want %+v", got, want)
+	}
+	_, err = p.Track("EQ", "GOLD")
+	wantErr(t, err, "no column GOLD (the panel holds EQ, BD)")
+	_, err = must(p.Pick([]int{0})).Track("EQ", "BD")
+	wantErr(t, err, "1 period(s), at least 2 needed")
+}
+
+// Compound reads a daily panel at a horizon of k sessions, skipping a run
+// that straddles a junction's gap and a short tail.
+func TestPanelCompound(t *testing.T) {
+	var da, db []any
+	for i := range 12 {
+		d := date(2024, 1, 1).AddDate(0, 0, i)
+		da = append(da, d, 100*math.Pow(1.01, float64(i)))
+		db = append(db, d, 50*math.Pow(1.02, float64(i)))
+	}
+	a, b := seriesOf(t, "A", da...), seriesOf(t, "B", db...)
+	p := must(NewPanel(Daily, a, b))
+	w, err := p.Compound(5)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Eleven daily periods: two whole runs of five, the eleventh left out.
+	if w.Len() != 2 || !w.Starts[0].Equal(date(2024, 1, 1)) || !w.Ends[1].Equal(date(2024, 1, 11)) {
+		t.Fatalf("runs = %v to %v", w.Starts, w.Ends)
+	}
+	closeTo(t, "A run", w.R[0][0], math.Pow(1.01, 5)-1)
+	closeTo(t, "B run", w.R[1][1], math.Pow(1.02, 5)-1)
+	closeTo(t, "cadence", w.PeriodsPerYear(), p.PeriodsPerYear()/5)
+
+	// A junction drops the period ending 01-03: the lone period before the
+	// gap fills no run, counting restarts after it, and the four left at
+	// the end fill none either.
+	b.Junctions = []time.Time{date(2024, 1, 3)}
+	g := must(must(NewPanel(Daily, a, b)).Compound(5))
+	if g.Len() != 1 || !g.Starts[0].Equal(date(2024, 1, 3)) || !g.Ends[0].Equal(date(2024, 1, 8)) {
+		t.Errorf("runs around the junction = %v to %v, want 01-03 to 01-08", g.Starts, g.Ends)
+	}
+
+	_, err = p.Compound(0)
+	wantErr(t, err, "0 sessions")
+	_, err = p.Compound(12)
+	wantErr(t, err, "no run of 12 unbroken periods among 11")
+	m := must(NewPanel(Monthly, seriesOf(t, "M", date(2024, 1, 31), 1.0, date(2024, 2, 29), 1.1, date(2024, 3, 29), 1.2)))
+	_, err = m.Compound(3)
+	wantErr(t, err, "calendar one")
 }
 
 func TestLessFee(t *testing.T) {

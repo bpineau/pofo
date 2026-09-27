@@ -401,6 +401,74 @@ func (p *Panel) Series(id string) (*Series, error) {
 	return &Series{Symbol: id, Points: points}, nil
 }
 
+// Track measures how column a follows column b over every period
+// (metrics.Track at the panel's PeriodsPerYear): correlation, volatilities,
+// tracking error and difference, beta and alpha. It is how a replica, a
+// share class or a reconstruction is read against what it follows, once
+// NewPanel has put the two on one calendar. It is an error when either
+// column is absent or the panel holds fewer than two periods.
+func (p *Panel) Track(a, b string) (metrics.Tracking, error) {
+	ia, ib := p.column(a), p.column(b)
+	for _, c := range []struct {
+		id string
+		i  int
+	}{{a, ia}, {b, ib}} {
+		if c.i < 0 {
+			return metrics.Tracking{}, fmt.Errorf("marketdata: Panel.Track: no column %s (the panel holds %s)", c.id, strings.Join(p.IDs, ", "))
+		}
+	}
+	t, err := metrics.Track(p.R[ia], p.R[ib], p.PeriodsPerYear())
+	if err != nil {
+		return metrics.Tracking{}, fmt.Errorf("marketdata: Panel.Track %s on %s: %w", a, b, err)
+	}
+	return t, nil
+}
+
+// Compound returns a daily panel read at a horizon of k sessions: every run
+// of k consecutive periods compounded into one, period t of the result
+// running from the run's first Start to its last End, each column's return
+// the product of (1 + r) over the run, minus one. It is the five-session
+// texture of two daily series (Compound(5)) without calendar weeks, which a
+// holiday would cut unevenly. Runs are counted from the first period and
+// never straddle a gap (a period NewPanel dropped at a junction, or one Pick
+// left out): the periods before a gap that do not fill a run are left out
+// and counting restarts after it, and so is a last run shorter than k. The
+// cadence is the daily one divided by k.
+//
+// It is an error when k is not positive, when p is a calendar panel
+// (Monthly and coarser: build one at the coarser Frequency instead, whose
+// periods are calendar ones) and when no whole run remains.
+func (p *Panel) Compound(k int) (*Panel, error) {
+	switch {
+	case k < 1:
+		return nil, fmt.Errorf("marketdata: Panel.Compound: %d sessions, at least 1 needed", k)
+	case p.Freq != Daily:
+		return nil, fmt.Errorf("marketdata: Panel.Compound: a %d-month panel is a calendar one; build it at the coarser Frequency instead", p.Freq)
+	}
+	out := &Panel{Freq: Daily, IDs: slices.Clone(p.IDs), R: make([][]float64, len(p.R)), cadence: p.PeriodsPerYear() / float64(k)}
+	for lo, t := 0, 0; t < p.Len(); t++ {
+		if t > lo && !p.Starts[t].Equal(p.Ends[t-1]) {
+			lo = t // a gap: the run restarts here
+		}
+		if t-lo+1 < k {
+			continue
+		}
+		out.Starts, out.Ends = append(out.Starts, p.Starts[lo]), append(out.Ends, p.Ends[t])
+		for i, col := range p.R {
+			g := 1.0
+			for _, r := range col[lo : lo+k] {
+				g *= 1 + r
+			}
+			out.R[i] = append(out.R[i], g-1)
+		}
+		lo = t + 1
+	}
+	if out.Len() == 0 {
+		return nil, fmt.Errorf("marketdata: Panel.Compound: no run of %d unbroken periods among %d", k, p.Len())
+	}
+	return out, nil
+}
+
 // PeriodsPerYear is the cadence that annualizes the panel's per-period
 // statistics (a volatility by its square root, a mean return or a
 // regression's alpha by the count itself): 12 for Monthly, 4 for

@@ -379,9 +379,12 @@
 // an episode, Pick a sample of periods (the reference's worst decile, found
 // by metrics.LowestK); Mix appends a blend rebalanced every period, weights
 // summing to 1 with any financing as an explicit cash column; Series
-// rebuilds a column as a level, so Stats scores a blend in one call; and
-// PeriodsPerYear is the count that annualizes it all, 12 for a monthly
-// panel.
+// rebuilds a column as a level, so Stats scores a blend in one call; Track
+// reads one column against another (metrics.Track: correlation, tracking
+// error and difference, beta, alpha), the figures of a replica or a
+// reconstruction against what it follows; Compound(5) reads a daily panel
+// at a five-session horizon; and PeriodsPerYear is the count that
+// annualizes it all, 12 for a monthly panel.
 //
 // # Toolbox
 //

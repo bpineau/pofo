@@ -104,6 +104,15 @@
 // behind both the donor repairs of pkg/simgen and the dated divergences of
 // analyze.Pair.
 //
+// Track gathers the whole comparison of two return columns in one Tracking
+// (correlation, the two volatilities and their ratio, tracking error,
+// tracking difference, beta and Jensen's alpha), each figure the one its
+// single-purpose function computes, and DifferenceSE says how many
+// standard errors a return gap over the window is worth. analyze.Pair's
+// blocks and pkg/simgen's reconstruction audit both read it, through
+// marketdata.Panel.Track, so a backcast is graded by one set of formulas
+// whichever tool reports it.
+//
 // # Attribution
 //
 // Attribute splits a portfolio's risk and realized return across its holdings,

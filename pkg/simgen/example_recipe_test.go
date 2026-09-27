@@ -44,8 +44,9 @@ func ExampleFind() {
 // Validate grades a reconstruction on the dates it shares with the real
 // series: correlation of daily and weekly returns, beta, tracking error and
 // the two growth rates. Here the reconstruction under-reads every move by a
-// tenth, adds a wobble of its own and drifts a little lower: the path is
-// right, the level is not, and only the growth rates say so.
+// tenth (its beta on the real series, 0.90, says so), adds a wobble of its
+// own and drifts a little lower: the path is right, the level is not, and
+// only the growth rates say so.
 func ExampleValidate() {
 	var dates []time.Time
 	var real, sim []float64
@@ -67,6 +68,6 @@ func ExampleValidate() {
 	fmt.Printf("%d common returns, correlation %.2f, beta %.2f\n", v.Overlap, v.Corr, v.Beta)
 	fmt.Printf("CAGR %.1f %% rebuilt vs %.1f %% real\n", v.CAGRSim*100, v.CAGRReal*100)
 	// Output:
-	// 749 common returns, correlation 0.98, beta 1.06
+	// 749 common returns, correlation 0.98, beta 0.90
 	// CAGR 8.1 % rebuilt vs 12.1 % real
 }

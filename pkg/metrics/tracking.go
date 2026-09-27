@@ -1,6 +1,91 @@
 package metrics
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
+
+// Tracking is how returns a follow returns b over ONE calendar of periods,
+// as Track measures them: the figures a replica, a share class or a
+// reconstruction is judged by against what it is meant to follow. Returns
+// are fractions and every annualized figure is per year at PeriodsPerYear.
+type Tracking struct {
+	Periods        int     // returns compared
+	PeriodsPerYear float64 // the calendar's cadence, what annualizes every figure below
+	Corr           float64 // Pearson correlation (Corr); zero when either side is constant
+	VolA, VolB     float64 // annualized sample volatilities (Volatility)
+	VolRatio       float64 // VolA / VolB; zero when b does not move
+	TrackingError  float64 // annualized sample volatility of a - b (TrackingError)
+	// Difference is the tracking difference: a's compound annual return over
+	// the periods minus b's, each (product of (1 + r))^(PeriodsPerYear /
+	// Periods) - 1. On a calendar with gaps (periods dropped at a junction)
+	// it compounds the periods that remain, so a step that is not a move
+	// never reaches it.
+	Difference float64
+	Beta       float64 // least-squares slope of a on b, cov(a, b) / var(b), as Beta; zero when b does not move
+	Alpha      float64 // Jensen's alpha, (mean a - Beta mean b) per year, arithmetic, as VsBenchmark
+}
+
+// DifferenceSE is the standard error of a yearly return gap between the two
+// series, TrackingError over the square root of the years the periods span:
+// a Difference (or any CAGR gap over the same window) inside two of it is
+// not a measurement. It is zero when no period was compared.
+func (t Tracking) DifferenceSE() float64 {
+	if t.Periods == 0 || !(t.PeriodsPerYear > 0) {
+		return 0
+	}
+	return t.TrackingError / math.Sqrt(float64(t.Periods)/t.PeriodsPerYear)
+}
+
+// Track measures how returns a follow returns b: a and b are parallel
+// per-period returns on one calendar (two columns of a marketdata.Panel,
+// whose Track method pairs them by name), and periodsPerYear its cadence
+// (Panel.PeriodsPerYear, or PeriodsPerYear of the dates). Every figure is
+// the one the package's single-purpose function computes (Corr, Volatility,
+// TrackingError, Beta's slope, VsBenchmark's alpha), gathered so that no
+// caller pairs them by hand. A constant b leaves Beta, Alpha and VolRatio at
+// zero rather than an error: its correlation and tracking error still mean
+// something.
+//
+// It is an error when the lengths differ, when fewer than two periods are
+// given, when a return is not finite or not above -1, and when
+// periodsPerYear is not a positive number.
+func Track(a, b []float64, periodsPerYear float64) (Tracking, error) {
+	switch {
+	case len(a) != len(b):
+		return Tracking{}, fmt.Errorf("metrics: Track: %d returns against %d (not one calendar)", len(a), len(b))
+	case len(a) < 2:
+		return Tracking{}, fmt.Errorf("metrics: Track: %d period(s), at least 2 needed", len(a))
+	case !(periodsPerYear > 0) || math.IsInf(periodsPerYear, 1):
+		return Tracking{}, fmt.Errorf("metrics: Track: %v periods per year", periodsPerYear)
+	}
+	growthA, growthB := 1.0, 1.0
+	for t := range a {
+		for _, r := range []float64{a[t], b[t]} {
+			if !(r > -1) || math.IsInf(r, 1) {
+				return Tracking{}, fmt.Errorf("metrics: Track: period %d holds the return %v", t, r)
+			}
+		}
+		growthA *= 1 + a[t]
+		growthB *= 1 + b[t]
+	}
+	n := float64(len(a))
+	tr := Tracking{
+		Periods:        len(a),
+		PeriodsPerYear: periodsPerYear,
+		Corr:           Corr(a, b),
+		VolA:           Volatility(a, periodsPerYear),
+		VolB:           Volatility(b, periodsPerYear),
+		TrackingError:  TrackingError(a, b, periodsPerYear),
+		Difference:     math.Pow(growthA, periodsPerYear/n) - math.Pow(growthB, periodsPerYear/n),
+	}
+	if tr.VolB > 0 {
+		tr.VolRatio = tr.VolA / tr.VolB
+		tr.Beta = slope(b, a)
+		tr.Alpha = (Mean(a) - tr.Beta*Mean(b)) * periodsPerYear
+	}
+	return tr, nil
+}
 
 // TrackingError is the annualized volatility of a's return in excess of
 // b's: the standard deviation of a[t] - b[t] over the periods (the sample
