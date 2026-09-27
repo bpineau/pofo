@@ -292,10 +292,26 @@
 // while a provider's isolated +21.9 %/-17.6 % on an emerging-market bond
 // fund does not.
 //
+// # Data guards
+//
+// Two rules read a series as DATA, because what they hunt is invisible to a
+// statistic, and each exists once. FindGaps returns the steps longer than
+// the series' own local pace allows (one and a half of its steps, never
+// under fourteen days): a monthly file that skips a month, a daily one
+// silent for three weeks. FindSpikes returns the one-session round trips no
+// instrument makes (opposite legs of 2 % and more, each beyond six local
+// standard deviations, cancelling to within a third of the smaller leg).
+// The data doctor reports both, and the bundle's golden guards run both
+// over every embedded file. The round trip is one mechanism, SpikeRule,
+// whose bars a caller sets: the fetch-time cleaner above Drops what its
+// stricter rule proves, pkg/simgen's shape despiker what a floorless one
+// does, and FindSpikes reports what shipped data must never carry.
+//
 // # The data doctor
 //
 // Verify judges a series on its own: non-positive prices, suspicious moves,
-// calendar gaps, flat runs, staleness, each against the series' own cadence.
+// calendar gaps (FindGaps), round trips (FindSpikes), flat runs, staleness,
+// each against the series' own cadence.
 // VerifyAsset adds what only the catalog record can say, and is what
 // -verify-data (and `make verify-catalog`, over the whole catalog) runs:
 //
