@@ -272,7 +272,7 @@ func TestDropRoundTripsGuards(t *testing.T) {
 
 	t.Run("too short to judge", func(t *testing.T) {
 		short := iemlLocalGovt2015
-		short.closes = short.closes[15:45] // 30 points, below 2*roundTripWindow
+		short.closes = short.closes[15:45] // 30 points, below 2*spikeWindow
 		if got := dropRoundTrips(pts(short.closes...), band); len(got) != 30 {
 			t.Fatalf("a 30-point series must be left alone, got %d points", len(got))
 		}

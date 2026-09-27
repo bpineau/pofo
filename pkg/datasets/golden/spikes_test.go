@@ -2,7 +2,7 @@ package golden
 
 import (
 	"io/fs"
-	"math"
+	"strings"
 	"testing"
 	"time"
 
@@ -21,9 +21,9 @@ import (
 // the year a reader most wants to look up, reads 50.0 % against 31.5 %.
 //
 // Two hygiene passes already hunt this shape and both declined these prints on
-// purpose: marketdata's dropRoundTrips asks the excursion to cancel to within
-// 2 % and to clear a per-class floor, simgen's despike asks it to cancel to
-// within a third of the smaller leg. Neither is wrong and neither is widened
+// purpose: marketdata's fetch-time cleaner asks the excursion to cancel to
+// within 2 % and to clear a per-class floor, simgen's despike asks it to cancel
+// to within a third of the smaller leg. Neither is wrong and neither is widened
 // here. What was missing is a check on the ARTEFACT rather than on the inputs:
 // nothing measured what actually shipped, so a print both passes let through
 // reached every consumer in silence.
@@ -34,23 +34,13 @@ import (
 // series read on its own cannot, and the fabricated print never reaches the
 // file. Every remaining entry is a series with no such reference behind it.
 //
-// The rule is deliberately narrow, so that a real market day can never trip it:
-// the two legs must point opposite ways, EACH exceed spikeFloor, EACH exceed
-// spikeZ local standard deviations (the suspect pair excluded from that
-// estimate), and the round trip must cancel to within a third of the smaller
-// leg. 1987-10-19, October 2008 and the March 2020 sessions clear none of the
-// last two clauses; the bundled files' own worst real days do not either.
-const (
-	// spikeZ: how many local standard deviations each leg must span. Six is
-	// the bar both existing passes use, for the same reason.
-	spikeZ = 6.0
-	// spikeWindow: returns on each side defining "local".
-	spikeWindow = 25
-	// spikeFloor: the smallest leg worth calling fabricated. Below it the
-	// candidates are cash-like files whose local sigma is a rounding error, so
-	// the z test alone flags arithmetic rather than data.
-	spikeFloor = 0.02
-)
+// The rule is marketdata.FindSpikes, the one the data doctor reports, and the
+// three passes share its mechanism (marketdata.SpikeRule): the two legs must
+// point opposite ways, EACH exceed 2 %, EACH exceed six local standard
+// deviations (the suspect pair excluded from that estimate), and the round
+// trip must cancel to within a third of the smaller leg. 1987-10-19, October
+// 2008 and the March 2020 sessions clear none of the last two clauses; the
+// bundled files' own worst real days do not either.
 
 // knownSpikes are the round trips the bundle currently ships, each measured and
 // dated. An entry is a defect deliberately left in place, never a bar widened
@@ -84,34 +74,32 @@ var rateLevelSeries = map[string]bool{
 // made, unless it is a measured entry of knownSpikes.
 func TestBundledSeriesHaveNoFabricatedRoundTrips(t *testing.T) {
 	checked := 0
-	for _, dir := range []struct {
-		name string
-		fsys fs.FS
-	}{{"refdata", datasets.Refdata()}, {"simdata", datasets.Simdata()}} {
-		names, err := fs.Glob(dir.fsys, "*.csv")
+	for _, dir := range []string{"refdata", "simdata"} {
+		fsys := bundleDir(dir)
+		names, err := fs.Glob(fsys, "*.csv")
 		if err != nil {
-			t.Fatalf("%s: %v", dir.name, err)
+			t.Fatalf("%s: %v", dir, err)
 		}
 		for _, name := range names {
-			id := name[:len(name)-len(".csv")]
-			key := dir.name + "/" + id
+			id := strings.TrimSuffix(name, ".csv")
+			key := dir + "/" + id
 			if rateLevelSeries[key] {
 				continue
 			}
-			s, ok, err := marketdata.ReadSimdataFS(dir.fsys, id)
+			s, ok, err := marketdata.ReadSimdataFS(fsys, id)
 			if err != nil || !ok {
 				t.Errorf("%s: read: ok=%v err=%v", key, ok, err)
 				continue
 			}
 			checked++
-			for _, sp := range roundTrips(s.Points) {
-				day := sp.date.Format("2006-01-02")
+			for _, sp := range marketdata.FindSpikes(s) {
+				day := sp.Date.Format(time.DateOnly)
 				if _, known := knownSpikes[key][day]; known {
 					continue
 				}
 				t.Errorf("%s %s: %+.2f %% then %+.2f %% cancels inside a %.2f %% neighbourhood: "+
 					"no instrument makes that round trip. Find the print, or add a measured entry to knownSpikes.",
-					key, day, sp.first*100, sp.second*100, sp.sigma*100)
+					key, day, sp.In*100, sp.Out*100, sp.Sigma*100)
 			}
 		}
 	}
@@ -126,18 +114,14 @@ func TestBundledSeriesHaveNoFabricatedRoundTrips(t *testing.T) {
 func TestKnownSpikesAreStillThere(t *testing.T) {
 	for key, days := range knownSpikes {
 		dir, id, _ := cutKey(key)
-		var fsys fs.FS = datasets.Simdata()
-		if dir == "refdata" {
-			fsys = datasets.Refdata()
-		}
-		s, ok, err := marketdata.ReadSimdataFS(fsys, id)
+		s, ok, err := marketdata.ReadSimdataFS(bundleDir(dir), id)
 		if err != nil || !ok {
 			t.Errorf("knownSpikes names %s, which is not bundled (ok=%v err=%v)", key, ok, err)
 			continue
 		}
 		found := map[string]bool{}
-		for _, sp := range roundTrips(s.Points) {
-			found[sp.date.Format("2006-01-02")] = true
+		for _, sp := range marketdata.FindSpikes(s) {
+			found[sp.Date.Format(time.DateOnly)] = true
 		}
 		for day := range days {
 			if !found[day] {
@@ -147,72 +131,15 @@ func TestKnownSpikesAreStillThere(t *testing.T) {
 	}
 }
 
+// cutKey splits a "dir/ID" key.
 func cutKey(key string) (dir, id string, ok bool) {
-	for i := range key {
-		if key[i] == '/' {
-			return key[:i], key[i+1:], true
-		}
-	}
-	return "", key, false
+	return strings.Cut(key, "/")
 }
 
-// spike is one fabricated round trip: the two legs and the local sigma they
-// were judged against.
-type spike struct {
-	date          time.Time
-	first, second float64
-	sigma         float64
-}
-
-// roundTrips reports the points whose arrival and departure returns are
-// opposite, each beyond spikeFloor and spikeZ local sigmas, and which cancel to
-// within a third of the smaller leg.
-func roundTrips(pts []marketdata.Point) []spike {
-	n := len(pts)
-	if n < 2*spikeWindow {
-		return nil
+// bundleDir is the embedded directory a key's prefix names.
+func bundleDir(dir string) fs.FS {
+	if dir == "refdata" {
+		return datasets.Refdata()
 	}
-	ret := func(i int) float64 { return pts[i].Close/pts[i-1].Close - 1 }
-	var out []spike
-	for i := 1; i+1 < n; i++ {
-		r1, r2 := ret(i), ret(i+1)
-		if r1*r2 >= 0 || math.Abs(r1) < spikeFloor || math.Abs(r2) < spikeFloor {
-			continue
-		}
-		if math.Abs((1+r1)*(1+r2)-1) >= math.Min(math.Abs(r1), math.Abs(r2))/3 {
-			continue
-		}
-		sigma, ok := localSigma(pts, i)
-		if !ok || math.Abs(r1) <= spikeZ*sigma || math.Abs(r2) <= spikeZ*sigma {
-			continue
-		}
-		out = append(out, spike{date: pts[i].Date, first: r1, second: r2, sigma: sigma})
-	}
-	return out
-}
-
-// localSigma is the standard deviation of the returns around index i with the
-// suspect pair (i and i+1) left out, so a fabricated print cannot inflate the
-// yardstick it is measured against.
-func localSigma(pts []marketdata.Point, i int) (float64, bool) {
-	var sum, sumsq float64
-	n := 0
-	for j := max(1, i-spikeWindow); j <= min(len(pts)-1, i+spikeWindow); j++ {
-		if j == i || j == i+1 || pts[j-1].Close <= 0 {
-			continue
-		}
-		r := pts[j].Close/pts[j-1].Close - 1
-		sum += r
-		sumsq += r * r
-		n++
-	}
-	if n < 10 {
-		return 0, false
-	}
-	mean := sum / float64(n)
-	v := sumsq/float64(n) - mean*mean
-	if v <= 0 {
-		return 0, false
-	}
-	return math.Sqrt(v), true
+	return datasets.Simdata()
 }

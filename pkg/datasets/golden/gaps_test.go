@@ -2,7 +2,6 @@ package golden
 
 import (
 	"io/fs"
-	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -28,46 +27,51 @@ import (
 // almost untouched. Hence this guard: it measures COVERAGE, which nothing else
 // does, over every bundled file at once.
 //
-// The rule applies to the MONTHLY (or coarser) series, identified by their own
-// median step rather than by a list, so a new reference file is covered the day
-// it lands. A daily series with a three-week hole would deserve its own,
-// stricter rule; this one would not catch it, and saying so is cheaper than
-// pretending otherwise.
-const (
-	// monthlyIfStepAbove is the median step above which a series is read as
-	// monthly rather than daily or weekly. Fifteen days sits clear of both.
-	monthlyIfStepAbove = 15 * 24 * time.Hour
-	// maxMonthlyGap is the longest step a monthly series may take. A calendar
-	// month is at most 31 days, and a month-end series crossing a leap year can
-	// legitimately stretch a little past that; 45 days is comfortably short of
-	// the 59 a single skipped month would produce.
-	maxMonthlyGap = 45 * 24 * time.Hour
-)
+// The rule is marketdata.FindGaps, the one the data doctor reports: a step
+// longer than one and a half of the series' LOCAL steps, and never under
+// fourteen days. A monthly file that skips a month (a 59-day step against a
+// ~46-day limit) fails, and so does a daily file silent for three weeks,
+// whatever its cadence and wherever it changes: the rule reads each stretch at
+// the pace it kept, so a new reference file is covered the day it lands.
 
-// knownMonthlyGaps are the bundled monthly series allowed to exceed
-// maxMonthlyGap, with the step they are allowed and why. An entry here is a
-// defect that has been measured and deliberately left, never a tolerance
-// widened to make a test pass; it must name the step it covers, so that a
-// SECOND, larger hole in the same file still fails.
+// knownGaps are the bundled series allowed a step past the rule, with the
+// longest step they are allowed and why. An entry here is a defect that has
+// been measured and deliberately left, never a tolerance widened to make a
+// test pass; it must name the step it covers, so that a SECOND, larger hole in
+// the same file still fails.
 //
-// It is EMPTY, and that is the point. Its one entry was EUROGOV-LONG-EUR, whose
-// deep segment (the OECD 10-year yield mapped to a 25-year one) was dated the
+// No monthly file has an entry. The last was EUROGOV-LONG-EUR, whose deep
+// segment (the OECD 10-year yield mapped to a 25-year one) was dated the
 // first of the month while the ECB-curve segment taking over in 2004-09 was
 // dated month-end, so the one step across the junction spanned 60 days and
 // carried two months of return. The sweep of 2026-09 gave every OECD-driven
 // monthly reference the month-end label the rest of the bundle uses
 // (cmd/gen-euro-refdata's atMonthEnd), which closed that junction to 30 days,
 // and both generators now refuse to write a file whose longest monthly step
-// exceeds the 45 days this guard allows. Leave the map in place: the next
-// series to land with a measured, deliberate hole belongs here, not in a
-// widened constant.
-var knownMonthlyGaps = map[string]struct {
+// exceeds 45 days.
+//
+// The entries below arrived when the guard stopped reading monthly files
+// only (2026-09-27): each is a REAL provider calendar inside a real-quote or
+// real-donor era, a fund that did not price for a while, never a hole the
+// pipeline made. They are measured, dated and pinned to their longest step.
+var knownGaps = map[string]struct {
 	maxDays int
 	why     string
-}{}
+}{
+	"simdata/DBXG": {35, "the fund's own Xetra closes over its first two years (2007-08 to 2009-08) " +
+		"are up to 35 days apart, a thinly traded new listing; real quotes, spliced as served. Measured 2026-09-27."},
+	"simdata/IE00B3Q8M574": {15, "2025-05-12 to 2025-05-27, one weekly NAV of the fund itself not " +
+		"published. Measured 2026-09-27."},
+	"simdata/LI0049587301": {28, "the fund's own weekly-to-fortnightly NAV skips a date around Easter " +
+		"and year-end (seven steps, 2019 to 2025). Measured 2026-09-27."},
+	"simdata/LI0115208543": {16, "the fund's own weekly NAV skips the Christmas week (2016, 2022, " +
+		"2023). Measured 2026-09-27."},
+	"simdata/LU1832174962": {32, "the donor's own NAV (LU0131510165): monthly steps among " +
+		"semi-monthly ones in 1996, semi-monthly among weekly ones in late 2009. Measured 2026-09-27."},
+}
 
 // TestBundledSeriesHaveNoHoles walks every embedded refdata and simdata file
-// and refuses a monthly series that skips a month.
+// and refuses a step its own pace does not allow.
 func TestBundledSeriesHaveNoHoles(t *testing.T) {
 	checked := 0
 	for _, dir := range []struct {
@@ -83,50 +87,44 @@ func TestBundledSeriesHaveNoHoles(t *testing.T) {
 		}
 		for _, name := range names {
 			id := strings.TrimSuffix(name, ".csv")
+			key := dir.name + "/" + id
 			s, ok, err := marketdata.ReadSimdataFS(dir.fsys, id)
 			if err != nil || !ok {
-				t.Errorf("%s/%s: ok=%v err=%v", dir.name, name, ok, err)
+				t.Errorf("%s: ok=%v err=%v", key, ok, err)
 				continue
-			}
-			if len(s.Points) < 3 {
-				continue
-			}
-			if medianStep(s) <= monthlyIfStepAbove {
-				continue // daily or weekly: out of this guard's scope
 			}
 			checked++
-			limit := maxMonthlyGap
-			if known, ok := knownMonthlyGaps[id]; ok {
-				limit = time.Duration(known.maxDays) * 24 * time.Hour
-			}
-			for i := 1; i < len(s.Points); i++ {
-				gap := s.Points[i].Date.Sub(s.Points[i-1].Date)
-				if gap <= limit {
+			for _, g := range marketdata.FindGaps(s) {
+				if known, ok := knownGaps[key]; ok && g.Days <= float64(known.maxDays) {
 					continue
 				}
-				t.Errorf("%s/%s: %.0f days between %s and %s, i.e. %d month(s) the series does not cover",
-					dir.name, id, gap.Hours()/24,
-					s.Points[i-1].Date.Format("2006-01-02"), s.Points[i].Date.Format("2006-01-02"),
-					int(gap.Hours()/24/30))
+				t.Errorf("%s: %.0f days between %s and %s, beyond the %.0f its pace allows",
+					key, g.Days, g.From.Format(time.DateOnly), g.To.Format(time.DateOnly), g.Limit)
 			}
 		}
 	}
-	t.Logf("%d monthly series inspected", checked)
-	if checked < 10 {
-		t.Errorf("only %d monthly series inspected, the guard is not seeing the bundle", checked)
+	if checked < 80 {
+		t.Errorf("only %d bundled series inspected, the guard is not seeing the bundle", checked)
 	}
 }
 
-// medianStep is the median interval between consecutive points, which tells a
-// monthly series from a daily one without trusting a name or a header. The
-// median rather than the mean, precisely because a hole must not be allowed to
-// promote a daily series into the monthly bucket where it would be graded
-// leniently.
-func medianStep(s *marketdata.Series) time.Duration {
-	steps := make([]time.Duration, 0, len(s.Points)-1)
-	for i := 1; i < len(s.Points); i++ {
-		steps = append(steps, s.Points[i].Date.Sub(s.Points[i-1].Date))
+// TestKnownGapsAreStillThere keeps the exception list honest: an entry whose
+// file no longer steps that far is a note about a file that has moved on,
+// and its allowance would silently cover a new hole.
+func TestKnownGapsAreStillThere(t *testing.T) {
+	for key, known := range knownGaps {
+		dir, id, _ := cutKey(key)
+		s, ok, err := marketdata.ReadSimdataFS(bundleDir(dir), id)
+		if err != nil || !ok {
+			t.Errorf("knownGaps names %s, which is not bundled (ok=%v err=%v)", key, ok, err)
+			continue
+		}
+		longest := 0.0
+		for _, g := range marketdata.FindGaps(s) {
+			longest = max(longest, g.Days)
+		}
+		if int(longest+0.5) != known.maxDays {
+			t.Errorf("knownGaps[%s] allows %d days, the file's longest gap is now %.0f: update or drop the entry", key, known.maxDays, longest)
+		}
 	}
-	slices.Sort(steps)
-	return steps[len(steps)/2]
 }

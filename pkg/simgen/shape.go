@@ -330,56 +330,15 @@ func retextured(shape *marketdata.Series, k float64) *marketdata.Series {
 // reason, so it reaches every file this shape textures (MSCIWORLD, URTH, IWDA,
 // WPEA, ERESMONDEM). The anchors still pin the month's total, so what it
 // distorts is the daily path inside September 2001, not the level.
+//
+// It is marketdata's round-trip test (SpikeRule, the one rule FindSpikes and
+// the fetch-time cleaner also run), under shapeSpikes; a shape shorter than
+// fifty points is too short for a local sigma and comes back unchanged.
 func despike(points []marketdata.Point) []marketdata.Point {
-	const (
-		zBar   = 6.0 // each leg must exceed zBar times the local sigma
-		window = 25  // returns on each side defining "local"
-	)
-	if len(points) < 10 {
-		return points
-	}
-	ret := func(i int) float64 { return points[i].Close/points[i-1].Close - 1 }
-	out := make([]marketdata.Point, 0, len(points))
-	out = append(out, points[0])
-	for i := 1; i < len(points); i++ {
-		if i+1 >= len(points) {
-			out = append(out, points[i])
-			continue
-		}
-		r1, r2 := ret(i), ret(i+1)
-		if r1*r2 >= 0 {
-			out = append(out, points[i])
-			continue
-		}
-		net := (1+r1)*(1+r2) - 1
-		if math.Abs(net) >= math.Min(math.Abs(r1), math.Abs(r2))/3 {
-			out = append(out, points[i])
-			continue
-		}
-		// Local sigma, the suspect pair excluded.
-		var sum, sumsq float64
-		n := 0
-		for j := max(1, i-window); j <= min(len(points)-1, i+window); j++ {
-			if j == i || j == i+1 {
-				continue
-			}
-			r := ret(j)
-			sum += r
-			sumsq += r * r
-			n++
-		}
-		if n < 10 {
-			out = append(out, points[i])
-			continue
-		}
-		mean := sum / float64(n)
-		sigma := math.Sqrt(sumsq/float64(n) - mean*mean)
-		if sigma <= 0 || math.Abs(r1) <= zBar*sigma || math.Abs(r2) <= zBar*sigma {
-			out = append(out, points[i])
-			continue
-		}
-		// The point is a glitch: skip it (its neighbours' direct ratio
-		// carries the true two-day move).
-	}
-	return out
+	return shapeSpikes.Drop(&marketdata.Series{Points: points}).Points
 }
+
+// shapeSpikes is despike's rule: marketdata's shared round-trip test with the
+// cancellation bar at a third of the smaller leg and no floor on the legs,
+// since an index shape's local sigma is never a rounding error.
+var shapeSpikes = marketdata.SpikeRule{MaxNetShare: 1.0 / 3}
