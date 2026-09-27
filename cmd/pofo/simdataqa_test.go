@@ -88,7 +88,7 @@ func TestQACardOfMeasured(t *testing.T) {
 		ID: "IE00BSPLC413", Name: "SPDR MSCI USA Small Value", Method: "index leg",
 		Reference: "ZPRV", RealFrom: day(1),
 		Start: day(1), End: day(5), Years: 4.2,
-		DailyCorr: 0.91, WeeklyCorr: 0.94, MonthlyCorr: 0.97, Beta: 1.02,
+		DailyCorr: 0.91, WeeklyCorr: 0.94, MonthlyCorr: 0.97, Months: 50, Beta: 1.02,
 		TrackingErr: 0.03, CAGRSim: 0.08, CAGRReal: 0.075, Delta: 0.005, TotalDrift: 0.02,
 		VolSim: 0.15, VolReal: 0.14, WorstSim: -0.07, WorstReal: -0.06,
 		Level: simgen.VerdictOK, Path: simgen.VerdictWarn,
