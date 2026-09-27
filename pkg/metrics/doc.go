@@ -18,7 +18,9 @@
 //     kurtosis, annualized at the series' own cadence ([PeriodsPerYear]).
 //   - [Returns] and [Mean] are the building blocks; [CalendarReturns] the
 //     yearly or monthly table; [Drawdowns] the running drawdown, and
-//     [DrawdownEpisodes] and [MaxDrawdown] the dated episodes ([Episode]).
+//     [DrawdownEpisodes] and [MaxDrawdown] the dated episodes ([Episode]);
+//     [RollingCAGRs] every dated N-year holding period ([HoldingPeriod]),
+//     which [RollingCAGR] summarizes.
 //   - [Corr], [CorrelationMatrix] and [Covariance] relate return columns
 //     measured on one calendar; [Regress] fits one on several ([Regression]);
 //     [Track] measures a replica against what it follows ([Tracking]).
