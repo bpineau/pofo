@@ -89,6 +89,11 @@ func All() []Recipe {
 // year against the published BCOMTR. The real ICOM quotes are grafted from
 // inception; same currency (USD), no FX leg.
 //
+// Both legs are indices, which carry no charge, so the fund's published
+// ongoing charge (icomFee) is deducted in full, the way IGLN's is from gold.
+// Without it the engine ran 0.21 pt a year above the real fund over their
+// 2017-2026 overlap, which is the fee plus a hundredth of swap spread.
+//
 // The index is bundled rather than fetched because Yahoo withdrew ^BCOM in
 // 2026-09, and a live lookup of that symbol then resolved to an unrelated
 // exchange-traded commodity.
@@ -96,15 +101,19 @@ func icomRecipe() Recipe {
 	return Recipe{
 		ID:     "IE00BDFL4P12",
 		Name:   "iShares Diversified Commodity: Bloomberg Commodity TR",
-		Method: "BCOM-ER-USD (Bloomberg Commodity excess-return index, daily from 1991, refdata) + ^IRX T-bill collateral = total return, real ICOM grafted from 2017-07",
+		Method: fmt.Sprintf("BCOM-ER-USD (Bloomberg Commodity excess-return index, daily from 1991, refdata) + ^IRX T-bill collateral = total return, less the fund's %.2f%%/yr ongoing charge, real ICOM grafted from 2017-07", icomFee*100),
 		Build: composite("ICOM (Bloomberg Commodity TR)", []Leg{
 			{ID: "BCOM-ER-USD", Weight: 1},
 			{ID: "^IRX", Weight: 1},
-		}, "^IRX", 0),
+		}, "^IRX", icomFee),
 		ValidateAgainst: "IE00BDFL4P12",
 		SpliceReal:      "IE00BDFL4P12",
 	}
 }
+
+// icomFee is the iShares Diversified Commodity Swap UCITS ETF's ongoing charge,
+// 0.19 %/yr (the catalog's fees for IE00BDFL4P12), as a FRACTION.
+const icomFee = 0.0019
 
 // eimiRecipe backcasts the iShares Core MSCI EM IMI UCITS ETF (IE00BKM4GZ66,
 // USD, real from 2014) from Vanguard Emerging Markets (VEIEX, 1994->, itself
