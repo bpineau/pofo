@@ -168,8 +168,10 @@ past 400 days in either direction.
 - **Quotes start well AFTER it.** The depth the record implies does not exist
   at this provider; a deeper listing of the same class may.
 
-Neither is repaired automatically and neither trims anything. Twenty-six
-records currently say one or the other, and all twenty-six are true.
+Neither is repaired automatically and neither trims anything. Twenty-four
+records currently say one or the other (2026-09, after WQDV's and BGF World
+Healthscience's `since` were corrected to their issuers' launch dates), and all
+twenty-four are true.
 
 ### Currency exposure
 
