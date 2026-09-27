@@ -936,7 +936,11 @@ if err != nil {
 	panic(err)
 }
 dates, closes, returns := iwda.Dates(), iwda.Values(), iwda.Returns()
-fmt.Println(len(dates), len(closes), len(returns), iwda.Resample(marketdata.Monthly).Len())
+monthEnds, err := iwda.Resample(marketdata.Monthly)
+if err != nil {
+	panic(err)
+}
+fmt.Println(len(dates), len(closes), len(returns), monthEnds.Len())
 
 // The CLI's pipeline: the bundled backcast in front (SIM), in euros.
 long, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"})
@@ -1004,8 +1008,11 @@ if err != nil {
 }
 
 // Out to any tool, month-end closes, one long id,date,value file.
-err = marketdata.WriteCSV(os.Stdout, tsy, old, iwda.Resample(marketdata.Monthly))
+monthly, err := iwda.Resample(marketdata.Monthly)
 if err != nil {
+	panic(err)
+}
+if err := marketdata.WriteCSV(os.Stdout, tsy, old, monthly); err != nil {
 	panic(err)
 }
 ```
@@ -1107,7 +1114,15 @@ if err != nil {
 fmt.Printf("60/40: CAGR %.1f %%, volatility %.1f %%, max drawdown %.1f %%\n", st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
 
 // Gold regressed on equities: beta, t-statistic, annualized alpha.
-reg, err := metrics.Regress(p.Col("IGLN"), p.Col("IWDA"))
+eq, err := p.Col("IWDA")
+if err != nil {
+	panic(err)
+}
+gold, err := p.Col("IGLN")
+if err != nil {
+	panic(err)
+}
+reg, err := metrics.Regress(gold, eq)
 if err != nil {
 	panic(err)
 }
@@ -1115,15 +1130,24 @@ fmt.Printf("IGLN on IWDA: beta %.2f (t %.1f), alpha %+.1f %%/yr, R2 %.2f\n",
 	reg.Betas[0].Value, reg.Betas[0].T, reg.AnnualAlpha(p.PeriodsPerYear())*100, reg.R2)
 
 // The three worst equity months, dated.
-eq := p.Col("IWDA")
 for _, t := range metrics.LowestK(eq, 3) {
 	fmt.Printf("%s IWDA %+.1f %%\n", p.Ends[t].Format("2006-01"), eq[t]*100)
 }
 
 // What gold did in the worst tenth of equity months.
-worst := p.Pick(metrics.LowestK(eq, p.Len()/10))
-fmt.Printf("worst %d months: IWDA %+.1f %%, IGLN %+.1f %% on average\n",
-	worst.Len(), metrics.Mean(worst.Col("IWDA"))*100, metrics.Mean(worst.Col("IGLN"))*100)
+worst, err := p.Pick(metrics.LowestK(eq, p.Len()/10))
+if err != nil {
+	panic(err)
+}
+fmt.Printf("worst %d months, on average:", worst.Len())
+for _, id := range []string{"IWDA", "IGLN"} {
+	col, err := worst.Col(id)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf(" %s %+.1f %%", id, metrics.Mean(col)*100)
+}
+fmt.Println()
 ```
 
 ### Simulate a portfolio by hand
