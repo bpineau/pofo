@@ -7,33 +7,38 @@ import (
 )
 
 const (
-	tradingDaysPerYear = 252
-	daysPerYear        = 365.25
-	minBetaOverlap     = 30
+	daysPerYear    = 365.25
+	minBetaOverlap = 30
 )
 
 // Stats summarizes the behaviour of a value series.
 type Stats struct {
-	Start, End  time.Time
-	Years       float64
-	CAGR        float64 // annualized growth rate (0.07 = +7 %/year)
-	Volatility  float64 // annualized standard deviation of daily returns (0.16 = 16 %/year)
-	Sharpe      float64 // annualized mean return / volatility, risk-free rate 0
-	Sortino     float64 // annualized mean return / downside deviation
-	Ulcer       float64 // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
-	MaxDrawdown float64 // deepest peak-to-trough loss (-0.55 = −55 %)
-	TTRDays     int     // longest underwater stretch (peak to recovery), calendar days
-	TTROngoing  bool    // the longest stretch had not recovered by End
-	Beta        float64
-	HasBeta     bool
-	CWARP       float64 // Cole Wins Above Replacement Portfolio vs the benchmark, in percent (+ improves, - hurts)
-	HasCWARP    bool
-	Skew        float64 // skewness of daily returns (negative = longer left tail)
-	Kurtosis    float64 // excess kurtosis of daily returns (>0 = fatter tails than normal)
+	Start, End     time.Time
+	Years          float64
+	PeriodsPerYear float64 // the series' cadence (252 daily, 52 weekly, 12 monthly), which annualizes the per-period figures below
+	CAGR           float64 // annualized growth rate (0.07 = +7 %/year)
+	Volatility     float64 // standard deviation of the per-period returns, annualized at PeriodsPerYear (0.16 = 16 %/year)
+	Sharpe         float64 // annualized mean per-period return / Volatility, risk-free rate 0
+	Sortino        float64 // annualized mean per-period return / annualized downside deviation
+	Ulcer          float64 // Ulcer Index, in PERCENT POINTS (e.g. 12.8), not a fraction like the fields above
+	MaxDrawdown    float64 // deepest peak-to-trough loss (-0.55 = −55 %)
+	TTRDays        int     // longest underwater stretch (peak to recovery), calendar days
+	TTROngoing     bool    // the longest stretch had not recovered by End
+	Beta           float64
+	HasBeta        bool
+	CWARP          float64 // Cole Wins Above Replacement Portfolio vs the benchmark, in percent (+ improves, - hurts)
+	HasCWARP       bool
+	Skew           float64 // skewness of the per-period returns (negative = longer left tail)
+	Kurtosis       float64 // excess kurtosis of the per-period returns (>0 = fatter tails than normal)
 }
 
 // Compute derives Stats from a value series. dates must be ascending and
 // values strictly positive and finite, both of equal length >= 2.
+//
+// The per-period statistics are annualized at the series' own cadence,
+// PeriodsPerYear(dates): a daily series at 252, a weekly NAV at 52, a monthly
+// index at 12. A series that changes cadence along the way should be
+// resampled first (see PeriodsPerYear).
 func Compute(dates []time.Time, values []float64) (Stats, error) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return Stats{}, fmt.Errorf("series too short (%d points)", len(values))
@@ -53,28 +58,12 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 		return Stats{}, fmt.Errorf("empty period")
 	}
 	s.CAGR = math.Pow(values[len(values)-1]/values[0], 1/s.Years) - 1
+	s.PeriodsPerYear = PeriodsPerYear(dates)
 
 	r := Returns(values)
-	mean := Mean(r)
-
-	variance, downSq := 0.0, 0.0
-	for _, x := range r {
-		variance += (x - mean) * (x - mean)
-		if x < 0 {
-			downSq += x * x
-		}
-	}
-	s.Volatility, s.Sharpe, s.Sortino = math.NaN(), math.NaN(), math.NaN()
-	if len(r) >= 2 {
-		std := math.Sqrt(variance / float64(len(r)-1))
-		s.Volatility = std * math.Sqrt(tradingDaysPerYear)
-		if s.Volatility > 0 {
-			s.Sharpe = mean * tradingDaysPerYear / s.Volatility
-		}
-	}
-	if downDev := math.Sqrt(downSq/float64(len(r))) * math.Sqrt(tradingDaysPerYear); downDev > 0 {
-		s.Sortino = mean * tradingDaysPerYear / downDev
-	}
+	s.Volatility = Volatility(r, s.PeriodsPerYear)
+	s.Sharpe = Sharpe(r, 0, s.PeriodsPerYear)
+	s.Sortino = Sortino(r, 0, s.PeriodsPerYear)
 	s.Skew = Skewness(r)
 	s.Kurtosis = ExcessKurtosis(r)
 
@@ -108,8 +97,8 @@ func Compute(dates []time.Time, values []float64) (Stats, error) {
 	return s, nil
 }
 
-// Returns computes simple daily returns between consecutive values. It
-// returns nil for fewer than two values.
+// Returns computes simple returns between consecutive values, one per
+// period of the series' cadence. It returns nil for fewer than two values.
 func Returns(values []float64) []float64 {
 	if len(values) < 2 {
 		return nil
@@ -121,7 +110,7 @@ func Returns(values []float64) []float64 {
 	return r
 }
 
-// Beta regresses the series' daily returns on the benchmark's, matching
+// Beta regresses the series' returns on the benchmark's, matching
 // observations by date. ok is false when fewer than 30 dates overlap.
 func Beta(dates []time.Time, values []float64, benchDates []time.Time, benchValues []float64) (float64, bool) {
 	p := pairReturns(dates, values, benchDates, benchValues)

@@ -38,27 +38,33 @@ func Rolling(dates []time.Time, values []float64, years float64, fn func(window 
 }
 
 // RollingVol is the annualized volatility of each trailing window of the
-// given length in years.
+// given length in years. Every window is annualized at the cadence of the
+// whole series, PeriodsPerYear(dates), so a short window cannot read its own
+// holidays as a different cadence.
 func RollingVol(dates []time.Time, values []float64, years float64) ([]time.Time, []float64, bool) {
-	return Rolling(dates, values, years, windowVol)
+	ppy := PeriodsPerYear(dates)
+	return Rolling(dates, values, years, func(w []float64) float64 { return windowVol(w, ppy) })
 }
 
 // RollingSharpe is the annualized Sharpe ratio (risk-free 0) of each trailing
-// window of the given length in years.
+// window of the given length in years, at the series' cadence as RollingVol.
 func RollingSharpe(dates []time.Time, values []float64, years float64) ([]time.Time, []float64, bool) {
+	ppy := PeriodsPerYear(dates)
 	return Rolling(dates, values, years, func(w []float64) float64 {
 		r := Returns(w)
-		vol := windowVol(w)
+		vol := windowVol(w, ppy)
 		if vol == 0 {
 			return math.NaN()
 		}
-		return Mean(r) * tradingDaysPerYear / vol
+		return Mean(r) * ppy / vol
 	})
 }
 
 // RollingSortino is the annualized Sortino ratio (downside deviation, target
-// 0) of each trailing window of the given length in years.
+// 0) of each trailing window of the given length in years, at the series'
+// cadence as RollingVol.
 func RollingSortino(dates []time.Time, values []float64, years float64) ([]time.Time, []float64, bool) {
+	ppy := PeriodsPerYear(dates)
 	return Rolling(dates, values, years, func(w []float64) float64 {
 		r := Returns(w)
 		if len(r) == 0 {
@@ -70,11 +76,11 @@ func RollingSortino(dates []time.Time, values []float64, years float64) ([]time.
 				downSq += x * x
 			}
 		}
-		dd := math.Sqrt(downSq/float64(len(r))) * math.Sqrt(tradingDaysPerYear)
+		dd := math.Sqrt(downSq/float64(len(r))) * math.Sqrt(ppy)
 		if dd == 0 {
 			return math.NaN()
 		}
-		return Mean(r) * tradingDaysPerYear / dd
+		return Mean(r) * ppy / dd
 	})
 }
 
@@ -151,9 +157,10 @@ func rollingPaired(p paired, years float64, fn func(own, bench []float64) float6
 	return points, out, true
 }
 
-// windowVol is the annualized standard deviation of a value window's daily
-// returns, the building block of the rolling Sharpe and volatility wrappers.
-func windowVol(window []float64) float64 {
+// windowVol is the standard deviation of a value window's per-period returns,
+// annualized at periodsPerYear: the building block of the rolling Sharpe and
+// volatility wrappers.
+func windowVol(window []float64, periodsPerYear float64) float64 {
 	r := Returns(window)
 	if len(r) < 2 {
 		return 0
@@ -163,5 +170,5 @@ func windowVol(window []float64) float64 {
 	for _, x := range r {
 		variance += (x - m) * (x - m)
 	}
-	return math.Sqrt(variance/float64(len(r)-1)) * math.Sqrt(tradingDaysPerYear)
+	return math.Sqrt(variance/float64(len(r)-1)) * math.Sqrt(periodsPerYear)
 }

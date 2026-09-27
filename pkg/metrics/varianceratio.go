@@ -7,34 +7,35 @@ import (
 
 const monthsPerYear = 12
 
-// VolTermStructure compares a value series' volatility measured at daily and
-// monthly sampling, the ingredients of the Lo-MacKinlay variance ratio.
+// VolTermStructure compares a value series' volatility measured at its own
+// sampling (daily for market closes, weekly for a weekly NAV) and at monthly
+// sampling, the ingredients of the Lo-MacKinlay variance ratio.
 //
-// Annualizing the daily and the monthly variance and taking their ratio reveals
-// the autocorrelation that single-frequency statistics hide:
+// Annualizing the native and the monthly variance and taking their ratio
+// reveals the autocorrelation that single-frequency statistics hide:
 //
-//   - Ratio ≈ 1: returns are serially uncorrelated (i.i.d.); the daily-based
+//   - Ratio ≈ 1: returns are serially uncorrelated (i.i.d.); the native
 //     volatility is a faithful estimate of multi-period risk.
 //   - Ratio < 1: returns mean-revert; daily noise that never compounds
 //     overstates the dispersion realized over months.
 //   - Ratio > 1: returns trend (positive autocorrelation, e.g. managed-futures
-//     sleeves); the daily-based volatility understates the realized risk.
+//     sleeves); the native volatility understates the realized risk.
 //
 // MonthlyN is the number of monthly returns behind MonthlyVol; with the usual
 // multi-year report periods it is small (≈ 12 per year), so MonthlyVol and the
-// ratio are noisier point estimates than the daily figures and should be read
+// ratio are noisier point estimates than the native figures and should be read
 // with that caveat in mind.
 type VolTermStructure struct {
-	DailyVol   float64 // annualized stdev of daily returns (stdev·√252)
+	NativeVol  float64 // annualized stdev of the series' own returns (stdev·√PeriodsPerYear: √252 on daily closes)
 	MonthlyVol float64 // annualized stdev of monthly returns (stdev·√12)
-	Ratio      float64 // monthly annualized variance / daily annualized variance
+	Ratio      float64 // monthly annualized variance / native annualized variance
 	MonthlyN   int     // number of monthly returns behind MonthlyVol
 
 	// Sharpe and Sortino recomputed from the same monthly returns (risk-free
 	// rate 0), i.e. annualized mean monthly return over MonthlyVol (resp. over
 	// the annualized downside deviation). They are the risk-adjusted twins of
-	// the daily-based Stats.Sharpe/Stats.Sortino: where the variance ratio
-	// differs from 1 they diverge from the daily figures, so a mean-reverting
+	// the native Stats.Sharpe/Stats.Sortino: where the variance ratio
+	// differs from 1 they diverge from the native figures, so a mean-reverting
 	// series scores a higher monthly Sharpe (its realized risk is lower than the
 	// daily volatility implies) and a trending one a lower monthly Sharpe. Read
 	// with the small-sample caveat above (MonthlyN points).
@@ -43,18 +44,25 @@ type VolTermStructure struct {
 }
 
 // VarianceRatio resamples values to calendar month-end closes and returns the
-// volatility term structure of the series: the annualized volatility at daily
-// and monthly sampling and their variance ratio (Lo-MacKinlay).
+// volatility term structure of the series: the annualized volatility at its
+// own sampling (annualized at PeriodsPerYear(dates)) and at monthly sampling,
+// and their variance ratio (Lo-MacKinlay).
 //
-// dates must be ascending and the same length as values, with at least two
-// monthly returns available (the series must span three distinct calendar
-// months); ok is false otherwise, or when the daily variance is zero.
+// dates must be ascending and the same length as values, sampled more often
+// than monthly, with at least two monthly returns available (the series must
+// span three distinct calendar months); ok is false otherwise, or when the
+// native variance is zero. A series sampled monthly or less has no finer
+// sampling to compare its month-end closes with.
 func VarianceRatio(dates []time.Time, values []float64) (vt VolTermStructure, ok bool) {
 	if len(dates) != len(values) || len(values) < 2 {
 		return VolTermStructure{}, false
 	}
-	dayStd := sampleStdev(Returns(values))
-	if !(dayStd > 0) {
+	ppy := PeriodsPerYear(dates)
+	if !(ppy > monthsPerYear) {
+		return VolTermStructure{}, false
+	}
+	nativeStd := sampleStdev(Returns(values))
+	if !(nativeStd > 0) {
 		return VolTermStructure{}, false
 	}
 
@@ -65,9 +73,9 @@ func VarianceRatio(dates []time.Time, values []float64) (vt VolTermStructure, ok
 	monthReturns := Returns(monthCloses)
 	monthStd := sampleStdev(monthReturns)
 
-	vt.DailyVol = dayStd * math.Sqrt(tradingDaysPerYear)
+	vt.NativeVol = nativeStd * math.Sqrt(ppy)
 	vt.MonthlyVol = monthStd * math.Sqrt(monthsPerYear)
-	vt.Ratio = (monthStd * monthStd * monthsPerYear) / (dayStd * dayStd * tradingDaysPerYear)
+	vt.Ratio = (monthStd * monthStd * monthsPerYear) / (nativeStd * nativeStd * ppy)
 	vt.MonthlyN = len(monthReturns)
 
 	// Monthly-sampled Sharpe/Sortino, same rf=0 convention as Stats: the

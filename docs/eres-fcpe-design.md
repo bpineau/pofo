@@ -164,10 +164,13 @@ site), with three differences worth a line each:
 
 - WEEKLY, then daily. One NAV a week (Fridays) until 2026-07-13, when the
   fund switched to daily valuation (fund page, "changements intervenus");
-  293 NAVs over five years, so every per-observation statistic over most of
-  the line is off by ~sqrt(5) (the cat bond cadence trap); the
-  audit's "real vol 115 %" is that artefact, the monthly correlation (0.96)
-  and the level are what to read. The refdata generator's per-NAV move bound
+  293 NAVs over five years. Until 2026-09 every per-observation statistic
+  annualized at 252 and was off by ~sqrt(5) over most of the line (the cat
+  bond cadence trap): the audit's "real vol 115 %" was that artefact.
+  Annualization now follows the measured cadence, which reads this line at
+  its prevailing weekly 52 (the bundled NAV snapshot: about 51 %/yr instead of
+  113 %), misreading only the short daily tail; the monthly correlation (0.96)
+  and the level remain what to read. The refdata generator's per-NAV move bound
   is a corruption detector (45 %) for this reason: the fund printed -24.6 %
   in the week of 2026-08-06 and that is real.
 - THE CLOCK is the OPENING price, established two ways. Fitting the fund's

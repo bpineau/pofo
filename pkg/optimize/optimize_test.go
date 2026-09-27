@@ -273,17 +273,22 @@ func TestParseSpecBlackLitterman(t *testing.T) {
 }
 
 func TestSolveValidation(t *testing.T) {
-	if _, err := Solve(nil, Spec{Objective: MaxSharpe}); err == nil {
+	if _, err := Solve(nil, daily, Spec{Objective: MaxSharpe}); err == nil {
 		t.Fatal("no assets should fail")
 	}
-	if _, err := Solve([][]float64{{0.01}}, Spec{Objective: MaxSharpe}); err == nil {
+	if _, err := Solve([][]float64{{0.01}}, daily, Spec{Objective: MaxSharpe}); err == nil {
 		t.Fatal("single observation should fail")
 	}
-	if _, err := Solve([][]float64{{0.01, 0.02}, {0.01}}, Spec{Objective: MaxSharpe}); err == nil {
+	if _, err := Solve([][]float64{{0.01, 0.02}, {0.01}}, daily, Spec{Objective: MaxSharpe}); err == nil {
 		t.Fatal("ragged returns should fail")
 	}
+	for _, ppy := range []float64{0, -12, math.NaN(), math.Inf(1)} {
+		if _, err := Solve([][]float64{{0.01, 0.02}}, ppy, Spec{Objective: MaxSharpe}); err == nil {
+			t.Fatalf("a cadence of %v periods a year should fail", ppy)
+		}
+	}
 	// Single asset is trivially fully weighted.
-	r, err := Solve([][]float64{{0.01, -0.02, 0.03}}, Spec{Objective: MaxSharpe})
+	r, err := Solve([][]float64{{0.01, -0.02, 0.03}}, daily, Spec{Objective: MaxSharpe})
 	if err != nil || len(r.Weights) != 1 || math.Abs(r.Weights[0]-1) > 1e-12 {
 		t.Fatalf("single asset: %+v %v", r, err)
 	}

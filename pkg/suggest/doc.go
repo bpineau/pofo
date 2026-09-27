@@ -7,7 +7,8 @@
 // diversification) before any return-based ranking, and the
 // return ranking is validated out-of-sample (walk-forward) so a suggestion
 // reflects a consistent benefit rather than one lucky period. Conventions
-// match pkg/metrics: simple daily returns, 252 trading days per year.
+// match pkg/metrics: simple returns on one calendar, annualized at its
+// cadence (Candidate.PeriodsPerYear, 252 on daily closes).
 //
 // One screen is not about coverage at all: Advisable rejects a record naming a
 // single issuer, whatever it scores. Such a record is in the catalog to be

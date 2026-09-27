@@ -2,7 +2,7 @@ package metrics
 
 import "math"
 
-// Ulcer returns the Ulcer Index of a daily return series, in PERCENT POINTS
+// Ulcer returns the Ulcer Index of a return series, in PERCENT POINTS
 // (e.g. 12.8), the root-mean-square of the running drawdown. Because it squares
 // the drawdown at every step, it grows with both the DEPTH and the DURATION of
 // underwater periods, so it is the smooth, optimizable measure of "how painful
@@ -26,12 +26,14 @@ func Ulcer(returns []float64) float64 {
 }
 
 // WorstRollingReturn returns the lowest annualized compound return over any
-// window of `window` consecutive daily returns: a robust worst-case measure of
-// medium-term outcomes. A window of about 5*252 approximates the worst rolling
-// 5-year CAGR, the "how bad could a five-year stretch get" figure that matters
-// when the drawdowns must be lived through. ok is false when the series is
-// shorter than the window, or a window wiped the capital out.
-func WorstRollingReturn(returns []float64, window int) (float64, bool) {
+// window of `window` consecutive returns, periodsPerYear of them a year
+// (TradingDaysPerYear for daily returns): a robust worst-case measure of
+// medium-term outcomes. A window of five years of periods (5*252 daily, 5*12
+// monthly) gives the worst rolling 5-year CAGR, the "how bad could a
+// five-year stretch get" figure that matters when the drawdowns must be lived
+// through. ok is false when the series is shorter than the window, or a window
+// wiped the capital out.
+func WorstRollingReturn(returns []float64, window int, periodsPerYear float64) (float64, bool) {
 	if window < 1 || len(returns) < window {
 		return 0, false
 	}
@@ -43,7 +45,7 @@ func WorstRollingReturn(returns []float64, window int) (float64, bool) {
 		}
 		prefix[i+1] = prefix[i] + math.Log(1+r)
 	}
-	years := float64(window) / tradingDaysPerYear
+	years := float64(window) / periodsPerYear
 	worst := math.Inf(1)
 	for i := 0; i+window <= len(returns); i++ {
 		total := math.Exp(prefix[i+window]-prefix[i]) - 1

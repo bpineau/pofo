@@ -29,20 +29,22 @@ const penaltyScale = 1e3
 // objectives are non-convex and non-smooth.
 // bl carries the Black-Litterman posterior and risk aversion when that is the
 // objective, and is nil otherwise.
-func solveConstrained(returns [][]float64, spec Spec, bl *blProblem) (Result, error) {
+func solveConstrained(returns [][]float64, ppy float64, spec Spec, bl *blProblem) (Result, error) {
 	n := len(returns)
 	t := len(returns[0])
 	lo, hi := spec.box(n)
 	if err := feasible(lo, hi); err != nil {
 		return Result{}, err
 	}
-	if spec.Objective == MaxWorst5y && t < fiveYearWindow {
-		return Result{}, fmt.Errorf("max-worst-5y needs at least 5 years of common history, got %d trading days", t)
+	if spec.Objective == MaxWorst5y {
+		if err := checkFiveYears(t, ppy); err != nil {
+			return Result{}, err
+		}
 	}
 
-	mu, cov := meanCov(returns)
+	mu, cov := meanCov(returns, ppy)
 	buf := make([]float64, t)
-	objective, err := objectiveFn(returns, mu, cov, buf, spec, bl)
+	objective, err := objectiveFn(returns, ppy, mu, cov, buf, spec, bl)
 	if err != nil {
 		return Result{}, err
 	}
@@ -51,23 +53,23 @@ func solveConstrained(returns [][]float64, spec Spec, bl *blProblem) (Result, er
 		if !ok {
 			return 0, false
 		}
-		if p := violation(returns, buf, w, spec.Limits); p > 0 {
+		if p := violation(returns, ppy, buf, w, spec.Limits); p > 0 {
 			return v - penaltyScale*p, true
 		}
 		return v, true
 	}
 
 	w := maximizeBox(lo, hi, score, spec.startingPoints(n, lo, hi))
-	res := seriesResult(w, returns)
-	res.Feasible = violation(returns, buf, w, spec.Limits) == 0
-	res.CAGR = pathCAGR(returns, buf, w)
+	res := seriesResult(w, returns, ppy)
+	res.Feasible = violation(returns, ppy, buf, w, spec.Limits) == 0
+	res.CAGR = pathCAGR(returns, ppy, buf, w)
 	return res, nil
 }
 
 // objectiveFn returns the quantity to maximize for the spec's objective,
 // evaluated on the blended path (or on mean/covariance where that is what the
 // objective means), and whether it is defined at that point.
-func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float64, spec Spec, bl *blProblem) (func([]float64) (float64, bool), error) {
+func objectiveFn(returns [][]float64, ppy float64, mu []float64, cov [][]float64, buf []float64, spec Spec, bl *blProblem) (func([]float64) (float64, bool), error) {
 	switch spec.Objective {
 	case BlackLitterman:
 		// The mean-variance utility at the POSTERIOR means, which is what
@@ -77,7 +79,7 @@ func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float
 		}, nil
 	case MaxReturn:
 		return func(w []float64) (float64, bool) {
-			c := pathCAGR(returns, buf, w)
+			c := pathCAGR(returns, ppy, buf, w)
 			return c, !math.IsNaN(c)
 		}, nil
 	case MaxSharpe:
@@ -99,13 +101,13 @@ func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float
 	case MaxSortino:
 		return func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			s := metrics.Sortino(buf, 0)
+			s := metrics.Sortino(buf, 0, ppy)
 			return s, !math.IsNaN(s)
 		}, nil
 	case ReturnToDrawdown:
 		return func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			return metrics.ReturnToMaxDrawdown(buf, 0)
+			return metrics.ReturnToMaxDrawdown(buf, 0, ppy)
 		}, nil
 	case MinUlcer:
 		return func(w []float64) (float64, bool) {
@@ -116,7 +118,7 @@ func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float
 	case MaxWorst5y:
 		return func(w []float64) (float64, bool) {
 			blend(returns, w, buf)
-			return metrics.WorstRollingReturn(buf, fiveYearWindow)
+			return metrics.WorstRollingReturn(buf, fiveYears(ppy), ppy)
 		}, nil
 	}
 	return nil, fmt.Errorf("objective %q does not accept weight bounds or limits", spec.Objective)
@@ -126,19 +128,19 @@ func objectiveFn(returns [][]float64, mu []float64, cov [][]float64, buf []float
 // relative overshoots (0 when every limit holds). Relative, so the three
 // limits can be added: 10 % over a volatility cap weighs like 10 % under a
 // return floor.
-func violation(returns [][]float64, buf []float64, w []float64, lim Limits) float64 {
+func violation(returns [][]float64, ppy float64, buf []float64, w []float64, lim Limits) float64 {
 	if !lim.Any() {
 		return 0
 	}
 	blend(returns, w, buf)
 	total := 0.0
 	if lim.MaxVolatility > 0 {
-		if vol := metrics.Volatility(buf); vol > lim.MaxVolatility {
+		if vol := metrics.Volatility(buf, ppy); vol > lim.MaxVolatility {
 			total += vol/lim.MaxVolatility - 1
 		}
 	}
 	if lim.MinReturn > 0 {
-		if c := compound(buf); c < lim.MinReturn {
+		if c := compound(buf, ppy); c < lim.MinReturn {
 			total += (lim.MinReturn - c) / math.Abs(lim.MinReturn)
 		}
 	}
@@ -151,14 +153,14 @@ func violation(returns [][]float64, buf []float64, w []float64, lim Limits) floa
 }
 
 // pathCAGR is the blend's annualized geometric return.
-func pathCAGR(returns [][]float64, buf, w []float64) float64 {
+func pathCAGR(returns [][]float64, ppy float64, buf, w []float64) float64 {
 	blend(returns, w, buf)
-	return compound(buf)
+	return compound(buf, ppy)
 }
 
-// compound annualizes a daily return series geometrically (252 trading days),
-// the CAGR of the path it describes. NaN if the path wipes out.
-func compound(r []float64) float64 {
+// compound annualizes a return series geometrically, ppy periods to the
+// year: the CAGR of the path it describes. NaN if the path wipes out.
+func compound(r []float64, ppy float64) float64 {
 	if len(r) == 0 {
 		return math.NaN()
 	}
@@ -169,7 +171,7 @@ func compound(r []float64) float64 {
 		}
 		sum += math.Log(1 + x)
 	}
-	return math.Expm1(sum * tradingDays / float64(len(r)))
+	return math.Expm1(sum * ppy / float64(len(r)))
 }
 
 // pathMaxDrawdown is the deepest peak-to-trough loss of the path, as a
@@ -307,14 +309,15 @@ func projectBoxSimplex(v, lo, hi []float64) []float64 {
 
 // PathStats returns the annualized geometric return (CAGR), the annualized
 // volatility and the deepest drawdown (a negative fraction) of the weighted
-// blend of returns. It is what the solver's limits are measured on, exposed
-// so a caller can report the same quantities on another window (a training
-// slice and the stretch that follows it, say).
-func PathStats(returns [][]float64, w []float64) (cagr, vol, maxDrawdown float64) {
+// blend of returns, periodsPerYear of them a year (see Solve). It is what the
+// solver's limits are measured on, exposed so a caller can report the same
+// quantities on another window (a training slice and the stretch that
+// follows it, say).
+func PathStats(returns [][]float64, w []float64, periodsPerYear float64) (cagr, vol, maxDrawdown float64) {
 	if len(returns) == 0 || len(returns[0]) == 0 {
 		return math.NaN(), math.NaN(), math.NaN()
 	}
 	buf := make([]float64, len(returns[0]))
 	blend(returns, w, buf)
-	return compound(buf), metrics.Volatility(buf), pathMaxDrawdown(buf)
+	return compound(buf, periodsPerYear), metrics.Volatility(buf, periodsPerYear), pathMaxDrawdown(buf)
 }

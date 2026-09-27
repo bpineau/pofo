@@ -47,8 +47,8 @@ func TestVarianceRatioMeanRevertingDailyFlatMonthly(t *testing.T) {
 	if vr.MonthlyVol != 0 {
 		t.Errorf("MonthlyVol = %v, want 0 (flat month-end closes)", vr.MonthlyVol)
 	}
-	if !(vr.DailyVol > 0) {
-		t.Errorf("DailyVol = %v, want > 0", vr.DailyVol)
+	if !(vr.NativeVol > 0) {
+		t.Errorf("NativeVol = %v, want > 0", vr.NativeVol)
 	}
 	if vr.Ratio != 0 {
 		t.Errorf("Ratio = %v, want 0", vr.Ratio)
@@ -80,8 +80,9 @@ func TestVarianceRatioKnownSeries(t *testing.T) {
 	monthCloses := []float64{100, 110, 105, 115}
 	monthRets := Returns(monthCloses)
 	expMonthlyVol := sampleStd(monthRets) * math.Sqrt(12)
-	expDailyVol := sampleStd(Returns(values)) * math.Sqrt(tradingDaysPerYear)
-	expRatio := (expMonthlyVol * expMonthlyVol) / (expDailyVol * expDailyVol)
+	// Consecutive calendar days, weekends included: the every-day cadence.
+	expNativeVol := sampleStd(Returns(values)) * math.Sqrt(365)
+	expRatio := (expMonthlyVol * expMonthlyVol) / (expNativeVol * expNativeVol)
 	expMonthlySharpe := Mean(monthRets) * 12 / expMonthlyVol
 	var downSq float64
 	for _, x := range monthRets {
@@ -102,8 +103,8 @@ func TestVarianceRatioKnownSeries(t *testing.T) {
 	if math.Abs(vr.MonthlyVol-expMonthlyVol) > eps {
 		t.Errorf("MonthlyVol = %v, want %v", vr.MonthlyVol, expMonthlyVol)
 	}
-	if math.Abs(vr.DailyVol-expDailyVol) > eps {
-		t.Errorf("DailyVol = %v, want %v", vr.DailyVol, expDailyVol)
+	if math.Abs(vr.NativeVol-expNativeVol) > eps {
+		t.Errorf("NativeVol = %v, want %v", vr.NativeVol, expNativeVol)
 	}
 	if math.Abs(vr.Ratio-expRatio) > eps {
 		t.Errorf("Ratio = %v, want %v", vr.Ratio, expRatio)
@@ -126,6 +127,17 @@ func TestVarianceRatioTooShort(t *testing.T) {
 	values := []float64{100, 101, 102}
 	if _, ok := VarianceRatio(dates, values); ok {
 		t.Error("VarianceRatio ok=true on a series spanning under three months")
+	}
+
+	// A monthly series has no finer sampling to set its month-ends against.
+	var monthly []time.Time
+	var levels []float64
+	for m := range 24 {
+		monthly = append(monthly, time.Date(2020, time.Month(m+2), 0, 0, 0, 0, 0, time.UTC))
+		levels = append(levels, 100+float64(m%5))
+	}
+	if _, ok := VarianceRatio(monthly, levels); ok {
+		t.Error("VarianceRatio ok=true on a monthly series")
 	}
 
 	if _, ok := VarianceRatio(nil, nil); ok {
