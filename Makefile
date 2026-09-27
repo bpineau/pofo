@@ -2,7 +2,13 @@
 
 GO        ?= go
 BINARIES  := pofo
-PKGS      := ./...
+# Every package of the module except the gitignored scratch/ programs (see
+# AGENTS.md, "Ad hoc exploration in Go"): a throwaway main that stopped
+# compiling must never fail the gate. Lazy (=), so only the targets that
+# read it pay for the listing; -e lists a broken package instead of failing.
+PKGS       = $(shell $(GO) list -e ./... | grep -v -e '/scratch$$' -e '/scratch/')
+# The Go files gofmt checks, scratch/ left out for the same reason.
+GOFILES    = $(shell find . -name '*.go' -not -path './scratch/*')
 # Local staticcheck if available, otherwise a pinned version via `go run`.
 STATICCHECK ?= $(shell command -v staticcheck 2>/dev/null || echo "$(GO) run honnef.co/go/tools/cmd/staticcheck@2026.2.1")
 
@@ -26,22 +32,25 @@ fmt: ## Reformat all the code (gofmt -w)
 
 .PHONY: fmt-check
 fmt-check: ## Fail if any code is not gofmt-formatted
-	@out="$$(gofmt -l .)"; \
+	@out="$$(gofmt -l $(GOFILES))"; \
 	if [ -n "$$out" ]; then \
 		echo "unformatted files:"; echo "$$out"; exit 1; \
 	fi
 
 .PHONY: vet
-vet: ## go vet on all packages
-	$(GO) vet $(PKGS)
+vet: ## go vet on all packages (scratch/ excluded)
+	@echo "$(GO) vet ./... (scratch/ excluded)"
+	@$(GO) vet $(PKGS)
 
 .PHONY: lint
 lint: vet ## vet + staticcheck
-	$(STATICCHECK) $(PKGS)
+	@echo "staticcheck ./... (scratch/ excluded)"
+	@$(STATICCHECK) $(PKGS)
 
 .PHONY: test
 test: ## Unit tests + examples (no network)
-	$(GO) test $(PKGS)
+	@echo "$(GO) test ./... (scratch/ excluded)"
+	@$(GO) test $(PKGS)
 
 .PHONY: golden
 golden: ## Golden tests (computations vs external references)
@@ -49,7 +58,8 @@ golden: ## Golden tests (computations vs external references)
 
 .PHONY: cover
 cover: ## Tests with coverage
-	$(GO) test -cover $(PKGS)
+	@echo "$(GO) test -cover ./... (scratch/ excluded)"
+	@$(GO) test -cover $(PKGS)
 
 .PHONY: check
 check: fmt-check lint test ## Everything: format, lint, tests (CI target)
