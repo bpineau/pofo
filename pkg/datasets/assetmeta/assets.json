@@ -1238,11 +1238,13 @@
     "benchmark_index": "WisdomTree Global Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
-      "France": 3,
+      "Canada": 3,
       "Japan": 6,
-      "Other developed": 19,
+      "Other Europe": 4,
+      "Other developed": 3,
+      "Other eurozone": 10,
       "UK": 3,
-      "US": 69
+      "US": 71
     },
     "sectors": {
       "Communication Services": 8,
@@ -1259,15 +1261,16 @@
     },
     "distribution": "accumulating",
     "leverage": 1.5,
-    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes. The bond leg is a FOUR-currency govt-futures basket, not a US ladder: ~80% US (2y/10y/30y equal notional) / 11% German (Bund/Buxl/Schatz) / 6% Japanese (mini 10y JGB) / 3% British (Long Gilt), per the audited Schedule of Investments of 31/12/2025, blended effective duration ~7y; collateral is US T-bills with FX forwards rolling the non-USD balances away. currency_exposure = MSCI World currency weights x0.9 equity notional + 10 USD collateral, the weights read off IWDA's holdings of 25/09/2026 (USD 73.2, EUR 8.1, JPY 5.9, CAD 3.3, GBP 3.3, CHF 2.1, AUD 1.5, SEK 0.7). sectors are the tracked index's, read off the same file, per the stacked-fund convention; geography is the fund's own book as of 31/07/2026, which the ESG screen left 3 points lighter in US than the plain index (68.6% against 72.0% on that date); it was not re-read (WisdomTree's site refuses a script, justETF publishes no split for the fund), so the record carries no as_of. Backcast design: docs/specs/ntsg-global-efficient-core-design.md.",
+    "notes": "Efficient 90/60 portfolio in a single fund; replicates a leveraged 60/40 blend; diversifies in rate-rally and equity-bull regimes. The bond leg is a FOUR-currency govt-futures basket, not a US ladder: ~80% US (2y/10y/30y equal notional) / 11% German (Bund/Buxl/Schatz) / 6% Japanese (mini 10y JGB) / 3% British (Long Gilt), per the audited Schedule of Investments of 31/12/2025, blended effective duration ~7y; collateral is US T-bills with FX forwards rolling the non-USD balances away. currency_exposure = MSCI World currency weights x0.9 equity notional + 10 USD collateral, the weights read off IWDA's holdings of 25/09/2026 (USD 73.2, EUR 8.1, JPY 5.9, CAD 3.3, GBP 3.3, CHF 2.1, AUD 1.5, SEK 0.7). sectors are the tracked index's, read off the same file, per the stacked-fund convention; geography is the fund's own equity book as FT's Morningstar-sourced holdings tab splits it by region (2026-09-23, rescaled from its 91 % of equity to the leg: US 71, eurozone 10, Japan 6), WisdomTree's site refusing a script. Backcast design: docs/specs/ntsg-global-efficient-core-design.md.",
     "confidence": "high",
     "sources": [
-      "https://www.wisdomtree.eu/en-gb/etfs/efficient-core/ntsg-wisdomtree-global-efficient-core-ucits-etf---usd-acc",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=NTSG:LSE:USD",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00077IIPQ8",
       "https://www.msci.com/documents/10199/178e6643-6ae6-47b9-82be-e1fc565ededb",
       "https://www.optimizedportfolio.com/ntsx/",
       "https://www.ishares.com/ch/professionals/en/products/251882/ishares-msci-world-ucits-etf-acc-fund"
     ],
+    "as_of": "2026-09",
     "since": "2024-11-05",
     "duration": 7.0,
     "exposures": {
@@ -4658,20 +4661,24 @@
     "strategy": "physical-replication",
     "geography": {
       "Netherlands": 8,
-      "Taiwan": 8,
-      "US": 84
+      "South Korea": 9,
+      "Taiwan": 10,
+      "US": 73
     },
     "sectors": {
       "Information Technology": 100
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Concentrated semiconductor thematic ETF (SMH); ~84% US-listed; meaningful TSMC and ASML exposure",
+    "notes": "Concentrated semiconductor thematic ETF (SMH); every line US-listed (TSMC, SK Hynix and ASML through their US listings); ~25 names capped at 10 %. Geography: FT's Morningstar region split (2026-09-23: US 72.5, developed Asia 19.4, eurozone 8.1), the Asian part named from the issuer's holdings file (TSMC 9.9, SK Hynix 9.2, 2026-09-25)",
     "confidence": "high",
     "sources": [
-      "https://www.vaneck.com/es/en/semiconductor-etf/"
+      "https://www.vaneck.com/ie/en/investments/semiconductor-etf/downloads/holdings/",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=SMH:LSE:USD",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BMC38736"
     ],
-    "since": "2015-10-22"
+    "as_of": "2026-09",
+    "since": "2020-12-01"
   },
   {
     "id": "IE00BMVB5P51",
@@ -4689,25 +4696,36 @@
     "benchmark_index": null,
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 1,
+      "Canada": 3,
       "China": 2,
-      "Japan": 4,
-      "Other": 42,
-      "Other Europe": 15,
-      "UK": 3,
-      "US": 34
+      "France": 4,
+      "Germany": 3,
+      "Italy": 2,
+      "Japan": 5,
+      "Other": 5,
+      "Other developed": 1,
+      "Other emerging": 3,
+      "Other eurozone": 2,
+      "South Korea": 2,
+      "Spain": 2,
+      "Switzerland": 1,
+      "Taiwan": 2,
+      "UK": 4,
+      "US": 58
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 5,
+      "Communication Services": 3,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 4,
       "Energy": 4,
       "Financials": 16,
-      "Health Care": 9,
+      "Health Care": 8,
       "Industrials": 12,
-      "Information Technology": 30,
+      "Information Technology": 34,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 2
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -4717,23 +4735,37 @@
       "equity": 0.6
     },
     "currency_exposure": {
-      "AUD": 2,
+      "AUD": 1,
       "CAD": 2,
       "CHF": 1,
       "CNY": 2,
-      "EUR": 45,
+      "EUR": 44,
       "GBP": 2,
-      "INR": 2,
-      "JPY": 3,
-      "USD": 41
+      "INR": 1,
+      "JPY": 4,
+      "KRW": 2,
+      "TWD": 2,
+      "USD": 37
     },
-    "notes": "Balanced moderate allocation (V60A, 60/40 eq/bond); bond sleeve EUR-hedged; lower volatility than 80/20 sibling; 60/40 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; currency_exposure = equity currencies x0.6 + EUR bonds; duration ~6.5y global agg",
-    "confidence": "high",
+    "notes": "Balanced moderate allocation (V60A, 60/40 eq/bond); bond sleeve EUR-hedged; lower volatility than 80/20 sibling; 60/40 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; duration ~6.5y global agg. Breakdowns are a look-through of the factsheet's allocation to thirteen underlying Vanguard funds (2026-08-31): equity sleeves through their FTSE indices' factsheets (country tables and ICB industries under their nearest GICS label; the Asia Pacific ex Japan one dated 2026-07-31), bond sleeves through their own factsheets' market allocation (ten countries each, the rest 'Other'; the gilt sleeve UK). Geography is the whole fund's (bond issuers included), sectors the equity sleeves', currency_exposure the equity countries' currencies plus EUR for every bond sleeve, the 2 % of currencies under half a point left as shortfall",
+    "confidence": "medium",
     "sources": [
       "https://fund-docs.vanguard.com/LifeStrategy_60_Equity_UCITS_ETF_EUR_Accumulating_9494_EU_INT_EN.pdf",
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5P51"
+      "https://fund-docs.vanguard.com/Global_Aggregate_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9443_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/USD_Treasury_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9518_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/EUR_Eurozone_Government_Bond_UCITS_ETF_EUR_Accumulating_9591_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/USD_Corporate_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9516_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/EUR_Corporate_Bond_UCITS_ETF_EUR_Accumulating_9695_EU_INT_UK_EN.pdf",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWD",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWORLDS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWNAMERS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWALLE",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWDEURS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=WIJPN",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWDPACXJ"
     ],
-    "since": "2018-11-15"
+    "as_of": "2026-07",
+    "since": "2020-12-08"
   },
   {
     "id": "IE00BMVB5R75",
@@ -4751,25 +4783,37 @@
     "benchmark_index": null,
     "strategy": "physical-replication",
     "geography": {
-      "China": 3,
-      "Japan": 5,
-      "Other": 24,
-      "Other Europe": 20,
+      "Australia": 2,
+      "Canada": 3,
+      "China": 2,
+      "France": 3,
+      "Germany": 3,
+      "India": 1,
+      "Italy": 1,
+      "Japan": 6,
+      "Other": 4,
+      "Other developed": 2,
+      "Other emerging": 2,
+      "Other eurozone": 2,
+      "South Korea": 2,
+      "Spain": 1,
+      "Switzerland": 1,
+      "Taiwan": 3,
       "UK": 3,
-      "US": 45
+      "US": 59
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 9,
-      "Consumer Staples": 5,
+      "Communication Services": 4,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 4,
       "Energy": 4,
-      "Financials": 16,
-      "Health Care": 9,
+      "Financials": 15,
+      "Health Care": 8,
       "Industrials": 12,
-      "Information Technology": 30,
+      "Information Technology": 34,
       "Materials": 3,
       "Real Estate": 2,
-      "Utilities": 2
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1,
@@ -4779,24 +4823,38 @@
       "equity": 0.8
     },
     "currency_exposure": {
-      "AUD": 3,
+      "AUD": 1,
       "CAD": 2,
       "CHF": 2,
-      "CNY": 3,
+      "CNY": 2,
       "EUR": 26,
       "GBP": 3,
-      "INR": 2,
-      "JPY": 4,
-      "KRW": 3,
-      "USD": 52
+      "INR": 1,
+      "JPY": 5,
+      "KRW": 2,
+      "SEK": 1,
+      "TWD": 3,
+      "USD": 50
     },
-    "notes": "Balanced growth allocation (V80A, 80/20 eq/bond); bond sleeve EUR-hedged; one-ticket diversified portfolio; 80/20 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; currency_exposure = equity currencies x0.8 + EUR bonds; duration ~6.5y global agg",
-    "confidence": "high",
+    "notes": "Balanced growth allocation (V80A, 80/20 eq/bond); bond sleeve EUR-hedged; one-ticket diversified portfolio; 80/20 via Vanguard funds; bond leg EUR-hedged (KID), equity leg unhedged; duration ~6.5y global agg. Breakdowns are a look-through of the factsheet's allocation to its underlying Vanguard funds (2026-08-31): equity sleeves through their FTSE indices' factsheets (country tables and ICB industries under their nearest GICS label; the Asia Pacific ex Japan one dated 2026-07-31) and the S&P 500 sleeve through the SP500 record, bond sleeves through their own factsheets' market allocation (ten countries each, the rest 'Other'). Geography is the whole fund's (bond issuers included), sectors the equity sleeves', currency_exposure the equity countries' currencies plus EUR for every bond sleeve, the 2 % of currencies under half a point left as shortfall",
+    "confidence": "medium",
     "sources": [
       "https://fund-docs.vanguard.com/LifeStrategy_80_Equity_UCITS_ETF_EUR_Accumulating_9496_EU_INT_EN.pdf",
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BMVB5R75"
+      "https://fund-docs.vanguard.com/Global_Aggregate_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9443_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/USD_Treasury_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9518_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/EUR_Eurozone_Government_Bond_UCITS_ETF_EUR_Accumulating_9591_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/USD_Corporate_Bond_UCITS_ETF_EUR_Hedged_Accumulating_9516_EU_INT_UK_EN.pdf",
+      "https://fund-docs.vanguard.com/EUR_Corporate_Bond_UCITS_ETF_EUR_Accumulating_9695_EU_INT_UK_EN.pdf",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWD",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWORLDS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWNAMERS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWALLE",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWDEURS",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=WIJPN",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWDPACXJ"
     ],
-    "since": "2018-11-15"
+    "as_of": "2026-07",
+    "since": "2020-12-08"
   },
   {
     "id": "IE00BP3QZ601",
@@ -6384,32 +6442,45 @@
     "benchmark_index": "Morningstar Developed Markets Large Cap Dividend Leaders Screened Select",
     "strategy": "physical-replication",
     "geography": {
-      "France": 10,
+      "Australia": 7,
+      "Canada": 3,
+      "Denmark": 3,
+      "France": 13,
       "Germany": 7,
-      "Other": 50,
-      "UK": 9,
-      "US": 24
+      "Italy": 9,
+      "Japan": 4,
+      "Netherlands": 2,
+      "Norway": 1,
+      "Other eurozone": 2,
+      "Singapore": 2,
+      "Spain": 6,
+      "Sweden": 3,
+      "Switzerland": 5,
+      "UK": 17,
+      "US": 16
     },
     "sectors": {
-      "Communication Services": 9,
-      "Consumer Discretionary": 4,
-      "Consumer Staples": 10,
-      "Energy": 20,
-      "Financials": 32,
-      "Health Care": 9,
-      "Industrials": 4,
+      "Communication Services": 8,
+      "Consumer Discretionary": 3,
+      "Consumer Staples": 11,
+      "Energy": 13,
+      "Financials": 42,
+      "Health Care": 12,
+      "Industrials": 3,
       "Materials": 1,
-      "Other": 5,
-      "Utilities": 6
+      "Utilities": 7
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Concentrated ~100-stock developed-market high-yield dividend portfolio (TDIV); strong value/income tilt; heavy financials and energy",
-    "confidence": "high",
+    "notes": "Concentrated ~100-stock developed-market high-yield dividend portfolio (TDIV); strong value/income tilt; heavy financials and energy. Geography aggregated from the issuer's holdings file by each line's listing exchange (2026-09-25; FT's region split agrees, UK 17.0, US 15.8); sectors from FT's Morningstar-sourced holdings tab (2026-09-23), Morningstar sectors under their GICS names, hence medium confidence",
+    "confidence": "medium",
     "sources": [
-      "https://www.vaneck.com/nl/en/investments/dividend-etf/"
+      "https://www.vaneck.com/nl/en/investments/dividend-etf/downloads/holdings/",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=TDIV:AEX:EUR",
+      "https://www.justetf.com/en/etf-profile.html?isin=NL0011683594"
     ],
-    "since": "2015-10-07",
+    "as_of": "2026-09",
+    "since": "2016-05-23",
     "factors": [
       "value"
     ]
@@ -6610,17 +6681,20 @@
     "geography": {
       "Australia": 2,
       "Canada": 3,
-      "China": 3,
+      "China": 2,
       "France": 2,
       "Germany": 2,
       "India": 2,
-      "Japan": 5,
-      "Other developed": 5,
-      "Other emerging": 6,
+      "Japan": 6,
+      "Netherlands": 1,
+      "Other developed": 2,
+      "Other emerging": 2,
+      "Other eurozone": 2,
+      "South Korea": 2,
       "Switzerland": 2,
-      "Taiwan": 2,
+      "Taiwan": 3,
       "UK": 3,
-      "US": 63
+      "US": 64
     },
     "sectors": {
       "Communication Services": 8,
@@ -6629,21 +6703,24 @@
       "Energy": 4,
       "Financials": 16,
       "Health Care": 9,
-      "Industrials": 12,
+      "Industrials": 11,
       "Information Technology": 30,
-      "Materials": 3,
+      "Materials": 4,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "distributing",
     "leverage": 2.0,
-    "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity; equity leg ~MSCI ACWI (sectors/geography/currency approximated); bond leg ~US core (~6y)",
+    "notes": "Return-stacked 100/100 stocks+bonds; hold bonds without giving up equity; bond leg an equal-notional 2/5/10-year and long Treasury futures ladder (~6y). The equity leg is a look-through of its holdings of 2026-09-24 (stockanalysis): SPTM 54.4 % plus S&P 500 futures 10.5 % as the US part (64 % of the leg, SPTM's own GICS split of 2026-09-24 standing for both), VXUS 36.7 % as the rest (Vanguard's country split and the FTSE ex-US index's ICB sectors, 2026-08-31); currency_exposure is that same country split turned into currencies, the 2 % of small emerging currencies left as shortfall",
     "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US88636J2042",
-      "https://www.returnstackedetfs.com/rsbt-return-stacked-bonds-managed-futures/",
-      "https://www.returnstackedetfs.com/rssb-return-stacked-global-stocks-bonds/"
+      "https://www.returnstackedetfs.com/rssb-return-stacked-global-stocks-bonds/",
+      "https://stockanalysis.com/etf/rssb/holdings/",
+      "https://www.ssga.com/us/en/intermediary/etfs/state-street-spdr-portfolio-sp-1500-composite-stock-market-etf-sptm",
+      "https://investor.vanguard.com/vmf/api/VXUS/diversification",
+      "https://research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=GXUSS"
     ],
+    "as_of": "2026-08",
     "since": "2023-12-04",
     "duration": 6.0,
     "exposures": {
@@ -6655,14 +6732,14 @@
       "CAD": 3,
       "CHF": 2,
       "CNY": 3,
-      "EUR": 9,
+      "EUR": 7,
       "GBP": 3,
-      "HKD": 2,
       "INR": 2,
-      "JPY": 5,
+      "JPY": 6,
       "KRW": 2,
-      "TWD": 2,
-      "USD": 65
+      "SEK": 1,
+      "TWD": 3,
+      "USD": 64
     }
   },
   {
@@ -7800,27 +7877,32 @@
     "benchmark_index": "WisdomTree International Efficient Core Index",
     "strategy": "futures-overlay",
     "geography": {
-      "Japan": 23,
-      "Other": 6,
-      "Other Europe": 63,
-      "Other developed": 8
+      "Japan": 25,
+      "Other": 2,
+      "Other Europe": 15,
+      "Other developed": 9,
+      "Other eurozone": 33,
+      "UK": 15,
+      "US": 1
     },
     "sectors": {
+      "Communication Services": 5,
       "Consumer Discretionary": 8,
       "Consumer Staples": 7,
-      "Financials": 25,
+      "Energy": 4,
+      "Financials": 27,
       "Health Care": 10,
       "Industrials": 17,
       "Information Technology": 12,
       "Materials": 6,
-      "Other": 15
+      "Other": 4
     },
     "distribution": "distributing",
     "leverage": 1.5,
-    "notes": "Capital-efficient 90/60 international-developed equity + US Treasuries; ex-US diversifier with a built-in bond cushion; currency_exposure = MSCI EAFE country weights x0.9 + USD collateral; duration = US Treasury-futures ladder ~7y",
-    "confidence": "high",
+    "notes": "Capital-efficient 90/60 international-developed equity + US Treasuries; ex-US diversifier with a built-in bond cushion; currency_exposure = MSCI EAFE country weights x0.9 + USD collateral (not re-read: the region split below cannot be turned into currencies, so the record stays undated); duration = US Treasury-futures ladder ~7y. Geography and sectors are the equity book as FT's Morningstar-sourced holdings tab splits it (2026-08-31, rescaled from its 92 % of equity to the leg; regions kept as regional buckets, Morningstar sectors under their GICS names, 'Other' being what its ten-row tables leave out); WisdomTree's site refuses a script",
+    "confidence": "medium",
     "sources": [
-      "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntsi",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=NTSI:PCQ:USD",
       "https://stockanalysis.com/etf/ntsi/",
       "https://www.msci.com/documents/10199/255599/msci-world-index.pdf",
       "https://www.optimizedportfolio.com/ntsx/"
@@ -7868,19 +7950,23 @@
       "Other": 18
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 10,
-      "Financials": 17,
-      "Information Technology": 39,
+      "Communication Services": 7,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 3,
+      "Energy": 3,
+      "Financials": 18,
+      "Health Care": 2,
+      "Industrials": 4,
+      "Information Technology": 46,
       "Materials": 6,
-      "Other": 20
+      "Other": 2
     },
     "distribution": "distributing",
     "leverage": 1.5,
-    "notes": "Capital-efficient 90/60 emerging-markets equity + US Treasuries; EM growth exposure with a bond stabiliser; currency_exposure approximates MSCI EM local currencies x0.9 + USD collateral (representative, not point-in-time)",
+    "notes": "Capital-efficient 90/60 emerging-markets equity + US Treasuries; EM growth exposure with a bond stabiliser; currency_exposure approximates MSCI EM local currencies x0.9 + USD collateral (representative, not point-in-time). Sectors are the equity book as FT's Morningstar-sourced holdings tab splits it (2026-08-31, Morningstar sectors under their GICS names); geography and currency_exposure were not re-read (FT gives regions only, developed Asia 50 / emerging Asia 29 / Latin America 6, coarser than the country split kept here; WisdomTree's site refuses a script), so the record stays undated",
     "confidence": "medium",
     "sources": [
-      "https://www.wisdomtree.com/investments/etfs/asset-allocation/ntse",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=NTSE:PCQ:USD",
       "https://stockanalysis.com/etf/ntse/",
       "https://www.optimizedportfolio.com/ntsx/"
     ],
@@ -8121,23 +8207,27 @@
     "benchmark_index": "MarketVector Global Gold Miners",
     "strategy": "physical-replication",
     "geography": {
-      "Australia": 7,
-      "Canada": 44,
-      "Mexico": 3,
-      "Other": 28,
-      "US": 18
+      "Australia": 8,
+      "Canada": 56,
+      "Other": 5,
+      "Other developed": 1,
+      "Other emerging": 5,
+      "UK": 2,
+      "US": 23
     },
     "sectors": {
       "Materials": 100
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price; equity risk plus amplified gold sensitivity",
+    "notes": "Gold-miner equity: a high-beta, operationally geared play on the gold price; equity risk plus amplified gold sensitivity. Geography is FT's Morningstar region split (2026-09-23), whose table stops at its ten largest rows: the unlisted 5 % stays 'Other'; Latin America and emerging Asia are the 'Other emerging' 5",
     "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=GDX:LSE:USD",
+      "https://www.vaneck.com/ie/en/investments/gold-miners-etf/downloads/holdings/",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BQQP9F84"
     ],
+    "as_of": "2026-09",
     "since": "2015-03-25"
   },
   {
@@ -8158,24 +8248,30 @@
     "benchmark_index": "Shiller Barclays CAPE US Sector Value Net TR",
     "strategy": "rules-based value rotation",
     "geography": {
-      "US": 100
+      "Other eurozone": 1,
+      "UK": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 25,
-      "Consumer Staples": 25,
-      "Energy": 25,
-      "Health Care": 25
+      "Communication Services": 23,
+      "Consumer Discretionary": 4,
+      "Financials": 22,
+      "Health Care": 26,
+      "Materials": 21,
+      "Real Estate": 4
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
       "value"
     ],
-    "notes": "CAPE quant: systematic US sector value tilt driven by cyclically-adjusted valuations rather than market cap; sectors are a rotating snapshot: the strategy holds the 4 cheapest-CAPE S&P 500 sectors at 25% each, reselected monthly",
+    "notes": "CAPE quant: systematic US sector value tilt driven by cyclically-adjusted valuations rather than market cap; sectors are a rotating snapshot: the strategy holds the 4 cheapest-CAPE S&P 500 sectors at 25% each, reselected monthly. The snapshot is FT's Morningstar-sourced holdings tab at 2026-06-30 (Morningstar sectors under their GICS names: health care, communication, financials and materials then), the latest it carried",
     "confidence": "low",
     "sources": [
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=UCAP:LSE:USD",
       "https://www.justetf.com/en/etf-profile.html?isin=LU1079841513"
     ],
+    "as_of": "2026-06",
     "since": "2015-06-22"
   },
   {
@@ -8315,29 +8411,36 @@
     "benchmark_index": "WisdomTree Global Developed Quality Dividend Growth",
     "strategy": "fundamentally-weighted",
     "geography": {
-      "France": 4,
-      "Japan": 8,
-      "Other": 24,
+      "Canada": 1,
+      "Japan": 9,
+      "Other Europe": 7,
+      "Other developed": 2,
+      "Other eurozone": 14,
       "UK": 5,
-      "US": 59
+      "US": 62
     },
     "sectors": {
-      "Consumer Discretionary": 15,
-      "Health Care": 14,
-      "Industrials": 17,
-      "Information Technology": 23,
-      "Other": 31
+      "Communication Services": 8,
+      "Consumer Discretionary": 14,
+      "Consumer Staples": 7,
+      "Financials": 9,
+      "Health Care": 17,
+      "Industrials": 18,
+      "Information Technology": 24,
+      "Materials": 3
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "factors": [
       "quality"
     ],
-    "notes": "Quality plus dividend-growth tilt: profitable, defensive companies; typically lower beta than market-cap world",
-    "confidence": "high",
+    "notes": "Quality plus dividend-growth tilt: profitable, defensive companies; typically lower beta than market-cap world. Breakdowns from FT's Morningstar-sourced holdings tab (2026-09-23; WisdomTree's site refuses a script): regions kept as regional buckets, Morningstar sectors under their GICS names, hence medium confidence",
+    "confidence": "medium",
     "sources": [
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=GGRA:LSE:USD",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ56SW52"
     ],
+    "as_of": "2026-09",
     "since": "2016-06-03"
   },
   {
@@ -8408,17 +8511,24 @@
     "geography": {
       "Canada": 3,
       "Japan": 7,
-      "Other": 22,
-      "UK": 4,
-      "US": 64
+      "Other": 1,
+      "Other Europe": 4,
+      "Other developed": 3,
+      "Other eurozone": 8,
+      "UK": 3,
+      "US": 71
     },
     "sectors": {
-      "Consumer Discretionary": 11,
-      "Financials": 17,
-      "Health Care": 9,
+      "Communication Services": 7,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 6,
+      "Financials": 16,
+      "Health Care": 10,
       "Industrials": 13,
-      "Information Technology": 22,
-      "Other": 28
+      "Information Technology": 24,
+      "Materials": 5,
+      "Other": 5
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -8427,11 +8537,13 @@
       "value",
       "quality"
     ],
-    "notes": "Dimensional core: near-market breadth with integrated small/value/profitability tilts. Short live history (launched Nov 2025)",
+    "notes": "Dimensional core: near-market breadth with integrated small/value/profitability tilts. Short live history (launched Nov 2025). Breakdowns from FT's Morningstar-sourced holdings tab (2026-09-24; Dimensional's own pages render in JavaScript): Morningstar regions kept as regional buckets and its sectors under their GICS names, the 5 'Other' being what its ten-row table leaves out",
     "confidence": "medium",
     "sources": [
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=DDGC:LSE:USD",
       "https://www.justetf.com/en/etf-profile.html?isin=IE000EGGFVG6"
     ],
+    "as_of": "2026-09",
     "since": "2025-11-12"
   },
   {
@@ -8454,19 +8566,26 @@
     "benchmark_index": "active (developed small/mid-cap value universe)",
     "strategy": "systematic factor tilt",
     "geography": {
-      "Canada": 5,
-      "Japan": 11,
-      "Other": 19,
-      "UK": 5,
-      "US": 60
+      "Canada": 3,
+      "Japan": 7,
+      "Other": 3,
+      "Other Europe": 4,
+      "Other developed": 3,
+      "Other eurozone": 8,
+      "UK": 4,
+      "US": 68
     },
     "sectors": {
-      "Consumer Discretionary": 14,
+      "Communication Services": 3,
+      "Consumer Discretionary": 12,
+      "Consumer Staples": 8,
       "Energy": 8,
-      "Financials": 25,
-      "Industrials": 21,
-      "Materials": 9,
-      "Other": 23
+      "Financials": 24,
+      "Health Care": 9,
+      "Industrials": 15,
+      "Information Technology": 9,
+      "Materials": 10,
+      "Other": 2
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -8475,11 +8594,13 @@
       "value",
       "quality"
     ],
-    "notes": "Dimensional targeted value: a concentrated small-cap value + profitability tilt, the aggressive end of the factor range. Short live history (launched Nov 2025)",
+    "notes": "Dimensional targeted value: a concentrated small-cap value + profitability tilt, the aggressive end of the factor range. Short live history (launched Nov 2025). Breakdowns from FT's Morningstar-sourced holdings tab (2026-09-24; Dimensional's own pages render in JavaScript): Morningstar regions kept as regional buckets and its sectors under their GICS names, 'Other' being what its ten-row tables leave out",
     "confidence": "medium",
     "sources": [
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=DDGT:LSE:USD",
       "https://www.justetf.com/en/etf-profile.html?isin=IE000S67ID55"
     ],
+    "as_of": "2026-09",
     "since": "2025-11-12"
   },
   {
