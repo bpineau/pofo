@@ -1,7 +1,7 @@
 # The FIRE book, English edition: FR -> EN glossary
 
 Opened 2026-08-16. The vocabulary file named by
-`docs/fire-book-en-translation-brief.md`. It exists for one reason: about
+`docs/specs/fire-book-en-translation-brief.md`. It exists for one reason: about
 eighty articles are translated by eighty independent sessions, and nothing
 else makes them agree on a word.
 

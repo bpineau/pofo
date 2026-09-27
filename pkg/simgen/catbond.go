@@ -38,7 +38,7 @@ import (
 // investors reaches further, and the market index is a different object (gross
 // of every fund fee, and 2002-2005 would have to be spliced on an estimate).
 // Hurricane Katrina therefore sits outside every file here, which is stated in
-// the catalog notes and in docs/catbond-sleeve-design.md rather than papered
+// the catalog notes and in docs/specs/catbond-sleeve-design.md rather than papered
 // over.
 
 // ilsAnchorID is the monthly NET ILS fund composite (refdata, 2006-01→).

@@ -7,7 +7,7 @@ import (
 )
 
 // The guard: files, manifest and wiki-links must stay consistent as the book
-// grows (the full plan lives in docs/fire-book-design.md, mirrored by
+// grows (the full plan lives in docs/specs/fire-book-design.md, mirrored by
 // planned).
 
 func plannedSet(t *testing.T) map[string]bool {

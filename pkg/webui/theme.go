@@ -9,7 +9,7 @@
 // `go build`.
 //
 // The identity ("instrument") and the reasoning behind it are documented in
-// docs/webui-instrument-redesign.md.
+// docs/specs/webui-instrument-redesign.md.
 //
 // It also holds the one piece of chrome every HTML surface must carry
 // identically and none of them renders: Beacon, an http.Handler wrapper that

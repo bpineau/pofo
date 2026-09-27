@@ -48,7 +48,7 @@
 //     (GrossTrendAnchor), kept as a shape yardstick. The two net ones settle
 //     the level as well as the path, and a build that takes its level from a
 //     reference stops where that reference does (anchorStart). See
-//     docs/trend-reconstruction-design.md;
+//     docs/specs/trend-reconstruction-design.md;
 //   - DonorChain assembles a young fund's past out of REAL records of the same
 //     trade instead of a reconstruction, nearest first: another manager's fund
 //     NAVs, or, for a fund whose whole programme replicates a published index,
@@ -71,7 +71,7 @@
 //     almost no observation dates, so the ratio must be measured on month-end
 //     returns instead. It is what lets the insurance-linked family
 //     (catbond.go: ILSFUND, ILSFUNDE and the cat bond share classes behind
-//     them) stand on a monthly index; see docs/catbond-sleeve-design.md;
+//     them) stand on a monthly index; see docs/specs/catbond-sleeve-design.md;
 //   - movesOnly is the other half of that projection, for a donor that quotes
 //     daily on paper and STALE in fact (a thin listing whose feed reprints the
 //     previous close for days on end). The repeated prints are dropped, which
@@ -125,7 +125,7 @@
 //     because a coupon bond's duration shrinks as its yield rises and a zero's
 //     does not, so no constant multiple of a coupon fund reproduces a strip
 //     across rate regimes: the ratio is 1.66 at a 3 % long yield and 3.31 at
-//     12 %. strips.go and docs/long-treasury-zero-coupon-design.md hold the
+//     12 %. strips.go and docs/specs/long-treasury-zero-coupon-design.md hold the
 //     table and the validation. A yield series may declare DEFINITION
 //     junctions (marketdata.Series.Junctions, read from a simdata file's
 //     "# junctions:" header): the step into one is not a rate move and both

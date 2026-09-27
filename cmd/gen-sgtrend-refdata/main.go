@@ -9,7 +9,7 @@
 //     composite, which is the pre-inception donor of the DBi family: those
 //     funds replicate this very index, and a fund's own index tracks it better
 //     than any other manager's single fund does (measured, see
-//     docs/trend-reconstruction-design.md).
+//     docs/specs/trend-reconstruction-design.md).
 //
 // It runs at data-generation time only (network); the pofo binary embeds the
 // CSVs and never fetches anything.

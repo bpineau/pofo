@@ -21,7 +21,7 @@ import (
 
 // runSuggest analyses each portfolio's macro-regime coverage, flags
 // redundant holdings, and recommends catalog assets to add that fill the
-// gaps, validated out-of-sample. See pkg/suggest and docs/suggest-design.md.
+// gaps, validated out-of-sample. The design is pkg/suggest's godoc.
 func runSuggest(ctx context.Context, c *marketdata.Client, specs []*portfolio.Spec, opt *options) error {
 	meta, err := suggest.LoadMeta(bytes.NewReader(datasets.AssetMeta()))
 	if err != nil {
