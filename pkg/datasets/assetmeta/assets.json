@@ -593,17 +593,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
-      "Energy": 4,
-      "Financials": 14,
-      "Health Care": 11,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
+      "Energy": 3,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 32,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -613,8 +615,12 @@
     "notes": "PEA-eligible synthetic S&P 500 (BNP Easy, ESE); France-domiciled unfunded swap; pure US large-cap exposure",
     "confidence": "high",
     "sources": [
-      "https://www.bnpparibas-am.com/en-sk/fundsheet/equity/bnp-paribas-easy-sp-500-ucits-etf-eur-c-c-fr0011550185/"
+      "https://www.bnpparibas-am.com/en-sk/fundsheet/equity/bnp-paribas-easy-sp-500-ucits-etf-eur-c-c-fr0011550185/",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0011550185",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2013-11-12"
   },
   {
@@ -669,17 +675,19 @@
     "benchmark_index": "S&P 500 Net Total Return Index",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 11,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 38,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -689,8 +697,12 @@
     "notes": "French-domiciled synthetic S&P 500 ETF designed for PEA eligibility; swap counterparty Societe Generale; EUR share class",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.be/en/professional/products/equity/amundi-pea-sp-500-ucits-etf-acc/fr0011871128"
+      "https://www.amundietf.be/en/professional/products/equity/amundi-pea-sp-500-ucits-etf-acc/fr0011871128",
+      "https://www.justetf.com/en/etf-profile.html?isin=FR0011871128",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2014-06-25"
   },
   {
@@ -1504,18 +1516,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 5,
-      "US": 95
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
       "Consumer Discretionary": 9,
-      "Consumer Staples": 5,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
       "Health Care": 9,
-      "Industrials": 9,
-      "Information Technology": 37,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -1525,8 +1538,12 @@
     "notes": "SPDR physical S&P 500 UCITS ETF accumulating (SPYL); TER 0.03%; cheapest S&P 500 UCITS",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy"
+      "https://www.ssga.com/nl/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-acc-spyl-gy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000XZSV718",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2023-10-31"
   },
   {
@@ -1545,20 +1562,20 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 5,
-      "US": 95
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 10,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 36,
+      "Information Technology": 39,
       "Materials": 2,
-      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -1567,8 +1584,11 @@
     "notes": "iShares physical S&P 500 UCITS ETF (IDUS), distributing quarterly; one of the oldest US-equity UCITS ETFs",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE0031442068"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE0031442068",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2003-05-19"
   },
   {
@@ -2187,20 +2207,20 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 5,
-      "US": 95
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 10,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 36,
+      "Information Technology": 39,
       "Materials": 2,
-      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -2209,8 +2229,11 @@
     "notes": "Vanguard physical S&P 500 UCITS ETF (VUSA), distributing quarterly; low TER",
     "confidence": "high",
     "sources": [
-      "https://www.vanguard.co.uk/professional/product/etf/equity/9503/sp-500-ucits-etf-usd-distributing"
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9503/sp-500-ucits-etf-usd-distributing",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3XXRP09",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
     ],
+    "as_of": "2026-08",
     "since": "2012-05-22"
   },
   {
@@ -2228,17 +2251,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 11,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 38,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -2248,8 +2273,12 @@
     "notes": "Lowest-cost S&P 500 UCITS ETF via synthetic unfunded swap; no withholding tax drag; alternative to physical for tax-efficient portfolios",
     "confidence": "high",
     "sources": [
-      "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B3YCGJ38_factsheet_en.pdf"
+      "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B3YCGJ38_factsheet_en.pdf",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3YCGJ38",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2010-05-20"
   },
   {
@@ -2748,18 +2777,18 @@
     "strategy": "physical-replication",
     "geography": {
       "Ireland": 1,
-      "Other": 2,
-      "US": 97
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 11,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 38,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -2769,8 +2798,11 @@
     "notes": "Flagship physical US large-cap core ETF (CSPX); USD denominated accumulating; one of the largest UCITS ETFs globally",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund"
+      "https://www.ishares.com/uk/individual/en/products/253743/ishares-sp-500-b-ucits-etf-acc-fund",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
     ],
+    "as_of": "2026-08",
     "since": "2010-05-19"
   },
   {
@@ -2991,18 +3023,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 5,
-      "US": 95
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
       "Consumer Discretionary": 9,
-      "Consumer Staples": 5,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
       "Health Care": 9,
-      "Industrials": 9,
-      "Information Technology": 37,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -3012,8 +3045,12 @@
     "notes": "SPDR physical S&P 500 UCITS ETF distributing (SPY5); TER 0.03%, quarterly dividends",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/uk/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-dist-spy5-gy"
+      "https://www.ssga.com/uk/en_gb/intermediary/etfs/state-street-spdr-sp-500-ucits-etf-dist-spy5-gy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B6YX5C33",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2012-04-03"
   },
   {
@@ -3506,20 +3543,20 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 5,
-      "US": 95
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 10,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 36,
+      "Information Technology": 39,
       "Materials": 2,
-      "Other": 3,
       "Real Estate": 2,
       "Utilities": 2
     },
@@ -3528,8 +3565,11 @@
     "notes": "Vanguard physical S&P 500 UCITS ETF accumulating (VUAA); same index as VUSA, dividends reinvested",
     "confidence": "high",
     "sources": [
-      "https://www.vanguard.co.uk/professional/product/etf/equity/9694/sp-500-ucits-etf-usd-accumulating"
+      "https://www.vanguard.co.uk/professional/product/etf/equity/9694/sp-500-ucits-etf-usd-accumulating",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BFMXXD54",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
     ],
+    "as_of": "2026-08",
     "since": "2019-03-19"
   },
   {
@@ -4790,17 +4830,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
-      "Health Care": 10,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -4810,8 +4852,12 @@
     "notes": "iShares equivalent of VOO; higher AUM liquidity and ETF options market depth; same S&P 500 beta",
     "confidence": "high",
     "sources": [
-      "https://www.blackrock.com/us/individual/products/239726/ishares-core-sp-500-etf"
+      "https://www.blackrock.com/us/individual/products/239726/ishares-core-sp-500-etf",
+      "https://www.ishares.com/us/products/239726/ishares-core-sp-500-etf",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2000-05-15"
   },
   {
@@ -5238,17 +5284,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
       "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 36,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -5258,8 +5306,12 @@
     "notes": "Low-cost swap-based core US large-cap equity exposure (LYPS); distributes dividends annually",
     "confidence": "high",
     "sources": [
-      "https://www.amundietf.lu/en/individual/products/equity/amundi-core-sp-500-swap-ucits-etf-eur-dist/lu0496786574"
+      "https://www.amundietf.lu/en/individual/products/equity/amundi-core-sp-500-swap-ucits-etf-eur-dist/lu0496786574",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU0496786574",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2010-09-27"
   },
   {
@@ -6186,17 +6238,19 @@
     "benchmark_index": "S&P 500 Index",
     "strategy": "synthetic-swap",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
-      "Health Care": 10,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -6206,8 +6260,12 @@
     "notes": "PEA-eligible synthetic (unfunded swap) wrapper on S&P 500; EUR share class; iShares; launched May 2025",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/ch/professionals/en/products/342916/ishares-s-p-500-swap-pea-ucits-etf"
+      "https://www.ishares.com/ch/professionals/en/products/342916/ishares-s-p-500-swap-pea-ucits-etf",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000DQLYVB9",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2025-05-29"
   },
   {
@@ -6333,17 +6391,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
-      "Health Care": 10,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -6353,8 +6413,12 @@
     "notes": "Core US large-cap equity exposure; low-cost beta building block; performs well in equity bull markets",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/etfs/profile/voo"
+      "https://investor.vanguard.com/investment-products/etfs/profile/voo",
+      "https://investor.vanguard.com/vmf/api/VOO/profile",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2010-09-07"
   },
   {
@@ -6513,18 +6577,18 @@
     "strategy": "physical-replication",
     "geography": {
       "Ireland": 1,
-      "Other": 2,
-      "US": 97
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 11,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 38,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -6534,8 +6598,11 @@
     "notes": "Ultra-low-cost (0.03%) full-physical S&P 500; UBS; Irish domicile; launched Aug 2025 so very short live history",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXW66"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BD4TXW66",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2025-08-05"
   },
   {
@@ -6557,18 +6624,18 @@
     "strategy": "physical-replication",
     "geography": {
       "Ireland": 1,
-      "Other": 2,
-      "US": 97
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 11,
-      "Health Care": 8,
+      "Financials": 12,
+      "Health Care": 9,
       "Industrials": 8,
-      "Information Technology": 38,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -6578,8 +6645,11 @@
     "notes": "Ultra-low-cost (0.03%) full-physical S&P 500; Xtrackers (DWS); Irish domicile; launched 2022",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000Z9SJA06"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000Z9SJA06",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "2022-06-08"
   },
   {
@@ -6940,28 +7010,33 @@
     "benchmark_index": "S&P 500 (Total Return)",
     "strategy": "index",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 13,
-      "Health Care": 11,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Financials": 12,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "n/a",
     "leverage": 1,
-    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1871). The investable UCITS tracker is VUAA (IE00BFMXXD54).; sector weights approximate the S&P 500 GICS breakdown (2026)",
+    "notes": "Non-investable benchmark: the pure index reconstruction, gross of any fund fee, served long by default (~1871). The investable UCITS tracker is VUAA (IE00BFMXXD54). Sector weights are the index's own GICS breakdown as State Street publishes it beside SPY; the country split is by issuer domicile (a few US-listed constituents are domiciled in Ireland and elsewhere), read off a physical tracker",
     "confidence": "high",
     "sources": [
-      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "1871-01-01"
   },
   {
@@ -7797,17 +7872,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
-      "Communication Services": 11,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Communication Services": 10,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
       "Financials": 12,
-      "Health Care": 10,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -7817,8 +7894,10 @@
     "notes": "The oldest and most traded US ETF (1993); the default S&P 500 reference in model portfolios and academic studies; VOO/IVV are cheaper for buy-and-hold",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy"
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
+    "as_of": "2026-08",
     "since": "1993-01-22"
   },
   {
@@ -8846,17 +8925,19 @@
     "benchmark_index": "S&P 500",
     "strategy": "physical-replication",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 13,
-      "Health Care": 11,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Financials": 12,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
@@ -8867,8 +8948,12 @@
     "confidence": "high",
     "sources": [
       "https://investor.vanguard.com/investment-products/mutual-funds/profile/vfinx",
-      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
-    ]
+      "https://investor.vanguard.com/vmf/api/VFINX/profile",
+      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/",
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "IE000UWJUW87",
