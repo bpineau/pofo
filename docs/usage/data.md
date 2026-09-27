@@ -77,6 +77,7 @@ These work wherever an identifier does: portfolio files, `-assets`, `-dump`,
 | `^GSPC` | S&P 500 price index | 1927 |
 | `^NDX`, `^DJI`, `^IXIC` | Nasdaq-100, Dow Jones, Nasdaq Composite | |
 | `^VIX` | CBOE volatility index, a level in percent | 1990, bundled |
+| `^BCOM` | Bloomberg Commodity Index, excess return (no collateral); Yahoo withdrew it, so it is served from the bundled `BCOM-ER-USD` | 1991, bundled |
 | `^IRX`, `^FVX`, `^TNX`, `^TYX` | US Treasury yields: 13 weeks, 5, 10 and 30 years | |
 | `^ESTR`, `^EONIA`, `^EURIBOR3M` | euro money-market rates | 2019, 1999 to 2021, 1994 |
 | `^ECB-DFR`, `^ECB-MRO` | ECB policy rates | 1999 |
@@ -86,6 +87,10 @@ These work wherever an identifier does: portfolio files, `-assets`, `-dump`,
 | `USDEUR=X`, any `<AAA><BBB>=X` | an exchange rate, quoted in the second currency | 1971 for euro crosses, bundled |
 | `XAUUSD` (`GOLD`), `XAGUSD` | gold and silver spot | `GOLDSIM` from 1968 |
 | `CL=F` | WTI crude oil, continuous futures | |
+
+An index symbol (`^...`) is resolved by its symbol only: when its quote
+fails, pofo never falls back to a fund found by name, which could be any
+product that carries the index's short name.
 
 Yields, rates, `^VIX` and the inflation indices are **levels**, not prices.
 They chart fine and give good regime context, but a return computed on them
