@@ -59,7 +59,7 @@ import (
 )
 
 // Validation bands, all measured before being set (2026-09-10, see
-// docs/index-benchmarks-design.md):
+// docs/specs/index-benchmarks-design.md):
 //
 // maxTD bounds the annualized tracking difference of a tracker against its
 // own index once the ongoing charge is added back. A tracker of the RIGHT

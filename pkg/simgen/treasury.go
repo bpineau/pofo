@@ -100,7 +100,7 @@ func stripPrice(y, n float64) float64 {
 // effects. The yield fed in is a PAR yield, while the strip is discounted at a
 // zero rate: on an upward-sloping curve the zero rate sits ABOVE the par yield
 // of the same maturity, so the reconstruction understates the carry a little
-// (see docs/long-treasury-zero-coupon-design.md for the measured sign and
+// (see docs/specs/long-treasury-zero-coupon-design.md for the measured sign and
 // size). And the constant-maturity convention reprices the aged strip at its
 // ORIGINAL curve point, not at the slightly shorter one it has rolled down to,
 // so the roll-down gain of a positively-sloped curve is left out too. Both push

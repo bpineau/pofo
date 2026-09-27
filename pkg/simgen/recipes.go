@@ -1650,7 +1650,7 @@ func tsmom(name string, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.S
 // record would charge the constituent managers' fees twice.
 //
 // The information ratios that used to do that levelling, and the measurement
-// behind each of them, are recorded in docs/trend-reconstruction-design.md:
+// behind each of them, are recorded in docs/specs/trend-reconstruction-design.md:
 // they are what any future claim about these funds' level has to be argued
 // against, and they are a measurement rather than a computation, so that is
 // where they live.
@@ -1786,7 +1786,7 @@ func msciWorld(annualFee float64, fallback func(Fetcher, time.Time) (*marketdata
 // ~15% a UCITS trend fund targets, so a sleeve held through this line carries
 // roughly 60% of the risk the real sleeve would; that understatement is the
 // price of the extra decade, and it is the honest direction to err in (see
-// "The tail that was removed" in docs/trend-reconstruction-design.md, where
+// "The tail that was removed" in docs/specs/trend-reconstruction-design.md, where
 // rescaling an index to a fund's target is exactly what discredited the older
 // 1988 tail). Non-investable: no ISIN, no fund fee added, and the index's
 // annual-rebalanced equal weighting of the 50% largest programmes is not
@@ -2737,7 +2737,7 @@ func dtleBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 // zero's own arithmetic gives 85 %. The live window could not see it: over
 // 2009-2026 the two forms agree closely, which is exactly what a multiple
 // fitted there does. pkg/simgen/strips.go carries the duration table and
-// docs/long-treasury-zero-coupon-design.md the validation.
+// docs/specs/long-treasury-zero-coupon-design.md the validation.
 func zrozRecipe() Recipe {
 	return Recipe{
 		ID:              "ZROZ",
@@ -2756,7 +2756,7 @@ func zrozRecipe() Recipe {
 // every file starts (1996-03). The 12-month TSMOM engine on a cross-asset
 // futures basket is still built and still matters, but only as the daily
 // texture the weekly-dealing deepest donor is projected onto; it is no longer
-// shipped in front of the chain. See docs/trend-reconstruction-design.md for
+// shipped in front of the chain. See docs/specs/trend-reconstruction-design.md for
 // what each layer is worth, and DonorChain for how they are joined.
 
 // xauusdRecipe snapshots gold: XAU/USD spot has decades of real history (~1968),
@@ -2821,7 +2821,7 @@ func iglnRecipe() Recipe {
 // levered to the target's volatility, which levers its drawdowns with it. Two
 // funds of this family nonetheless track their own index better than they track
 // any other manager's NAV, and for the same reason in both cases: they are
-// built to reproduce it. See docs/trend-reconstruction-design.md for the
+// built to reproduce it. See docs/specs/trend-reconstruction-design.md for the
 // arbitration.
 const (
 	allStylesIndex = "TREND-ALLSTYLES-NET-USD" // the index the DBi family replicates
@@ -3028,7 +3028,7 @@ func feeLoad(id string) float64 {
 // front of the chain as shipped history. A reconstruction anchored on a monthly
 // composite is a decent account of a decade in aggregate and a poor one of any
 // month a reader might look up, and a history that is worth reading throughout
-// beats a longer one that is not (see docs/trend-reconstruction-design.md).
+// beats a longer one that is not (see docs/specs/trend-reconstruction-design.md).
 func chainedTrend(name, calibrate string, donors []Donor, cfg TSMOMConfig) func(Fetcher, time.Time) (*marketdata.Series, error) {
 	return func(f Fetcher, from time.Time) (*marketdata.Series, error) {
 		texture, err := tsmom(name+" (daily texture)", cfg)(f, from)
@@ -3549,7 +3549,7 @@ func aqrHedgedRecon(f Fetcher, from time.Time, donorAdj float64, donorName strin
 // charge and the audited Swiss TNER before trusting it after a refresh. The
 // other three are prospectus arithmetic and do not drift: IAE1FT is exactly
 // 1.00 + 0.25 + 0.01, and IAET's cap sits 0.05 above B EUR's, which is the
-// whole of the alignment aqrIAETRecipe applies. See docs/aqr-mf.txt.
+// whole of the alignment aqrIAETRecipe applies. See docs/specs/aqr-mf.txt.
 const (
 	aqrRAEFOngoing   = 0.0023 // LU1662501532, flat, no performance fee
 	aqrBEUROngoing   = 0.0073 // LU1103258197, plus a 10 % performance fee

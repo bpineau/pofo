@@ -23,7 +23,7 @@ import (
 // The second is the reason it exists at all: it must track the fund BETTER than
 // the raw composite does, over the fund's own live window, which is the only
 // window where either can be judged. That is the measurement that put it in the
-// chain (docs/trend-reconstruction-design.md), and a refresh that quietly
+// chain (docs/specs/trend-reconstruction-design.md), and a refresh that quietly
 // reversed it would leave a worse donor in place with no other symptom.
 const (
 	dbiDonorID = "TREND-ALLSTYLES-DBI-USD"

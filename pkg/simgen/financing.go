@@ -23,7 +23,7 @@ import (
 // live window, ^IRX runs 0.01 to 0.15 points a year under the overnight rate
 // (0.34 over 2000-2018), and every capital-efficient reconstruction in this
 // file was hot by roughly that much on top of its other errors; see
-// docs/trend-reconstruction-design.md for the per-fund table.
+// docs/specs/trend-reconstruction-design.md for the per-fund table.
 //
 // Two rules keep the change confined to financing:
 //

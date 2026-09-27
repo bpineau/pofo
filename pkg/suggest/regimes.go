@@ -189,7 +189,7 @@ func regimeLeg(m Meta) []Category {
 		// offer for "pays a premium that owes nothing to this quadrant", and
 		// it is not a claim of crisis PROTECTION: the 2008 collateral shock
 		// hit these funds alongside everything else. See
-		// docs/catbond-sleeve-design.md.
+		// docs/specs/catbond-sleeve-design.md.
 		return []Category{Crisis}
 	case "long-volatility", "tail-risk":
 		return []Category{Deflation, Crisis}

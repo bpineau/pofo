@@ -25,7 +25,7 @@
 // figures are published in the methodology paper). It is also a market index,
 // gross of any fund's fee, so it would need a fee estimate to stand in for a
 // fund, where this one already arrives net. The published Swiss Re annual
-// returns are kept in docs/catbond-sleeve-design.md as an external check.
+// returns are kept in docs/specs/catbond-sleeve-design.md as an external check.
 //
 // VALIDATION. The source ships its own summary statistics next to the monthly
 // table (maximum drawdown, best and worst month, annualized standard

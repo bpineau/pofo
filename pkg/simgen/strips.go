@@ -31,7 +31,7 @@ import (
 // multiple, since no constant can span the two regimes: it is to price the
 // strip off the long yield itself, which is what TreasuryZeroTR does and what
 // the bundled TREASURY-LONG-YIELD series (cmd/gen-tyield-refdata) supplies back
-// to 1953. See docs/long-treasury-zero-coupon-design.md.
+// to 1953. See docs/specs/long-treasury-zero-coupon-design.md.
 
 // longTreasuryYieldID is the bundled long Treasury par-yield history every
 // zero-coupon reconstruction is priced off: the Fed's H.15 30-year constant

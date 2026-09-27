@@ -2,11 +2,14 @@
 
 Read this file first; it is the cheapest way in. Details live in each
 package's `doc.go` (`go doc ./pkg/<name>` renders it) and in `README.md`
-(user-facing, CLI-oriented). `docs/` holds only what the code cannot carry
-(rationale, data validation records, recurring procedures; `docs/README.md`
-is the one-line index): read the relevant one BEFORE reworking a feature, and
-never add a spec, a plan or a backlog there: design in the conversation, then
-let the godoc carry the shipped design.
+(user-facing, CLI-oriented). `docs/` has two halves (`docs/README.md` is the
+index): `docs/specs/` is AGENT-facing and holds only what the code cannot
+carry (rationale, data validation records, traps, nomenclature and glossaries,
+recurring procedures): read the relevant one BEFORE reworking a feature;
+`docs/usage/` holds the HUMAN guides (getting started, the CLI, the file
+format, the web app, the library, FIRE, data and backcasts). Never add a
+plan, a backlog or a pre-implementation spec to either: design in the
+conversation, then let the godoc carry the shipped design.
 
 ## What pofo is, and what it is for
 
@@ -130,7 +133,7 @@ When a trade-off is unclear, these decide it, in order.
    or building a fallback, and watch for anti-bot gates.
 6. **This repo is public: nothing personal in it.** No real holding, no amount,
    no name, no home path, no session narration, in code, docs, examples or
-   commit messages. Dated decisions stand anonymous, in `docs/`. Example
+   commit messages. Dated decisions stand anonymous, in `docs/specs/`. Example
    portfolios use real, public identifiers (tickers in the identifier column,
    ISINs in the comment) and never an invented alias.
 7. **English for all code, godoc and docs**, except the French edition of the
@@ -141,8 +144,8 @@ When a trade-off is unclear, these decide it, in order.
    `example_test.go` examples; extend them with any new API. New logic comes
    with tests: most packages sit at 75 to 97 % coverage and that is the bar.
 9. **Documentation is part of the change**, not a follow-up: README, `doc.go`,
-   the design doc in `docs/` and this file's Map are updated in the same commit
-   as the code they describe.
+   the spec in `docs/specs/`, the human guide in `docs/usage/` and this file's
+   Map are updated in the same commit as the code they describe.
 
 ## Commands
 
@@ -266,24 +269,24 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/metrics` | risk/return statistics on dated value series (CAGR, Sharpe, drawdowns, IRR, variance ratio, rolling incl. `RollingBeta`/`RollingCorr` and the dated N-year holding periods `RollingCAGRs`, CWARP), annualized at the series' measured cadence (`PeriodsPerYear`, `cadence.go`; `TradingDaysPerYear` for bare daily returns), plus per-holding attribution (`Attribute`: Euler risk shares + realized return shares from a simulation's contributions); the cross-asset matrices (`Corr`, `CorrelationMatrix`, `Covariance`, on [asset][period] returns of one calendar), the calendar table (`CalendarReturns`: monthly/quarterly/yearly `PeriodReturn`s, first one `Partial`, what the goldens read published yearly returns with), historical tails (`VaR`/`CVaR`, positive per-period losses), multiple regression (`Regress`, `regress.go`: OLS with intercept by Householder QR on centered data, per-period `Regression` with SEs and t-stats, `AnnualAlpha`/`AnnualResidualVol`; golden = NIST StRD Longley in `pkg/datasets/golden/regression_test.go`) and dated extremes (`LowestK`/`HighestK` return POSITIONS, stable on ties; `TopK` stays the values-only partial-selection fast path), and tracking a reference (`tracking.go`: `TrackingError`; `Track`/`Tracking`, the whole comparison of two return columns (corr, vols, tracking error and difference, beta, alpha, `DifferenceSE`) that `analyze.Pair`'s blocks and `simgen`'s `Validate`/`Audit` all read, so a backcast is graded by one set of formulas; and `LeadLagGaps`, the one copy of the one-session clock allowance that `simgen`'s `trackIndex` and `analyze.Pair` both use) |
 | `pkg/portfolio` | portfolio file format (`Parse`) and its in-code twin (`NewSpec` over `Line`s, weights as FRACTIONS, sharing Parse's validation), `Build` (spec + fetch callback -> Portfolio), `Simulate` (rebalancing, fees, flows, leverage, per-holding return attribution incl. monthly folding) |
 | `pkg/analyze` | the high-level, numbers-only API: `Asset` (one asset on its longest window: stats, calendar years/months, drawdown episodes, relative vs a benchmark, warnings) and `Portfolio` (build + simulate + each holding studied on the simulation's window + `Aligned` holdings + correlation matrix + risk/return attribution on MONTHLY contributions + catalog look-through `Composition`; the one pipeline `pkg/compare` builds its columns through), and `Pair` (`pair.go`, one series against its reference, on two `*Series` rather than identifiers: CAGR gap with its standard error, level gap, identity diagnostics for old-vs-new files, a `Daily` block only when both are finer than monthly and a `Monthly` one on a `marketdata.Panel`, dated divergences, calendar years side by side, `Warnings`; `WriteText` in `pair_text.go`, JSON-safe with no NaN; `pofo -pair` in `cmd/pofo/pair.go`), `Asset` and `Portfolio` over a `Source` interface `*marketdata.Client` satisfies; nominal only (real stats stay in `compare`); an unknown identifier is an error, every other data problem a `Warnings` line; deliberately NOT here: typed units (a `Percent` type would touch every `portfolio` signature), a `metrics` API over `Series` (metrics stays slice-based and import-free), multi-factor regression and the efficient frontier |
-| `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/black-litterman-design.md`) |
+| `pkg/optimize` | long-only weights: max-sharpe, min-volatility, max-return, risk-parity, max-sortino, return-to-drawdown, min-ulcer, max-worst-5y, cwarp, black-litterman; per-line bounds (`min-weight`, `bounds:ID:LO-HI`) and feasibility limits (`max-vol`, `min-return`, `max-drawdown`) route every objective through one penalized box-simplex search; `train:` is parsed here and applied by the caller (see `docs/specs/weight-search-design.md`); `black-litterman` takes the FILE's weights as its prior and blends `view:ID:Q@C` beliefs into the returns they imply (`bl.go`, `docs/specs/black-litterman-design.md`) |
 | `pkg/suggest` | macro-regime/factor coverage, look-through composition splits (asset classes, geography, currency exposure, equity sectors, duration), redundancy, gap-filling suggestions |
 | `pkg/scenario` | synthetic real-return paths: parametric Student-t, block/stationary bootstrap, historical cohorts, behind one `Source` interface; `Prepare` hoists a source's rng-independent setup (the panel combining) out of a Monte-Carlo driver's draw loop |
-| `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; optional STOCHASTIC LIFETIME (`Plan.Lifetime` draws the household's lifespan per path: alive-ruin, estate at death, couple reversion, `Plan.Annuity` realising mortality credits; `docs/stochastic-lifetime-kernel-design.md`); `web/` = embedded live UI |
+| `pkg/decumul` | withdrawal/FIRE engine over a `scenario.Source`: ruin probability, outcome metrics, solvers, sweeps; optional STOCHASTIC LIFETIME (`Plan.Lifetime` draws the household's lifespan per path: alive-ruin, estate at death, couple reversion, `Plan.Annuity` realising mortality credits; `docs/specs/stochastic-lifetime-kernel-design.md`); `web/` = embedded live UI |
 | `pkg/replay` | the seven canonical withdrawal rules (shared names/tags/colours/plan mutations) run deterministically over the years as they happened, on a bundled real US 60/40 (S&P 500 + 5y Treasuries, CPI-deflated, from 1954); portraits of a rule (income mean/CV/leanest year/lean years/estate), not failure probabilities; feeds the FIRE book's `sept-facons-de-vivre` article and the simulator's policy frontier |
 | `pkg/bookmd` | the shared book-Markdown-dialect renderer (`ToHTML`, callouts, wiki-links, figures), extracted from firebook so other repos can reuse it |
 | `pkg/epub` | generic stdlib-only EPUB 3 writer (`Book`/`Chapter` in, `.epub` bytes out) + `Normalize` (HTML5 -> XHTML); deterministic output for a given `Modified`; the device constraints (epubcheck, no rgba in SVG, short table headers) are in its godoc |
 | `pkg/opds` | generic stdlib-only OPDS 1.2 acquisition-feed builder (`Feed`/`Entry` in, Atom `.xml` bytes out); book-agnostic, relative acquisition links, deterministic output for fixed `Updated`; consumed by firebook's `opds.xml` route so KOReader can add the catalog once and refresh the book in place |
 | `pkg/seo` | generic stdlib-only builders for the machine-readable files a site publishes: `Sitemap` (sitemaps.org urlset), `Robots` (robots.txt records), `LLMs` (llms.txt, the llmstxt.org convention), `Feed` (Atom 1.0 syndication) and `IndexNow` (the push protocol: `Validate`/`Bodies`/`Submit`, endpoint an argument so tests use `httptest`); content-agnostic and deterministic, assembled by `firebook.Site` |
-| `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); `epub.go` assembles the whole book as an EPUB 3 (`EPUB`, served at `le-fire-tranquille.epub` and by `pofo -export-epub`), and the handler serves an OPDS 1.2 catalog at `opds.xml` (built via `pkg/opds`, relative acquisition link, shares the lazy EPUB build time) for KOReader; everything renders through an `Edition` value (`French`, plus `English` = "The Quiet FIRE", COMPLETE since 2026-08-19: 82 translated articles under `assets/book/en/`, mounted at `/firebook/en/`, its own `the-quiet-fire.epub`, a hard completeness guard in `manifest_en_test.go`, and `WithAlternate` hreflang cross-links between the two mounts; `pofo -export-epub -book-lang fr|en` writes either edition) and the package-level API is a thin French wrapper; `Drift` / `pofo -book-drift` / `make book-drift` report what a translation owes, via per-article source stamps; SEO/GEO lives in `site.go` (`BookSite`/`Site` renders `/sitemap.xml`, `/robots.txt`, `/llms.txt` and the optional IndexNow key file `/<key>.txt` over `pkg/seo`, mounted at the root of BOTH servers; `Site.URLs` is the one list the sitemap renders and `pofo -indexnow` pushes) and in the handler's head (canonical, `og:url`, hreflang + x-default and `og:image`, all FULLY QUALIFIED via `Edition.absolute` = `RequestOrigin` + `HomePath`; Open Graph, JSON-LD `Book`/`Article`/`BreadcrumbList`), plus the Markdown mirror route `<slug>.md` that serves an article's source untouched for AI agents, an Atom feed per edition at `feed.xml` (`feed.go`, one entry per article, `<updated>` = the mount's single publication stamp, the same one the EPUB and OPDS carry) and the social card at `card.png` (`card.go`: `CardSVG` draws the book's hero block at 1200x630 in the v2 plate identity from the edition's own words, `scripts/card-shot.sh` rasterizes it into the committed `assets/cards/<lang>.png`); plan, depth conventions and progress ledger in `docs/fire-book-design.md`, English edition in `docs/fire-book-en-edition-design.md` |
+| `pkg/firebook` | the FIRE book "Le FIRE tranquille": embedded French decumulation handbook (markdown articles under `assets/book/fr/` + manifest + renderer + handler with per-page SEO metadata), served by the fire UI at `/firebook/fr/` (old `/book/fr/` 301-redirects); `epub.go` assembles the whole book as an EPUB 3 (`EPUB`, served at `le-fire-tranquille.epub` and by `pofo -export-epub`), and the handler serves an OPDS 1.2 catalog at `opds.xml` (built via `pkg/opds`, relative acquisition link, shares the lazy EPUB build time) for KOReader; everything renders through an `Edition` value (`French`, plus `English` = "The Quiet FIRE", COMPLETE since 2026-08-19: 82 translated articles under `assets/book/en/`, mounted at `/firebook/en/`, its own `the-quiet-fire.epub`, a hard completeness guard in `manifest_en_test.go`, and `WithAlternate` hreflang cross-links between the two mounts; `pofo -export-epub -book-lang fr|en` writes either edition) and the package-level API is a thin French wrapper; `Drift` / `pofo -book-drift` / `make book-drift` report what a translation owes, via per-article source stamps; SEO/GEO lives in `site.go` (`BookSite`/`Site` renders `/sitemap.xml`, `/robots.txt`, `/llms.txt` and the optional IndexNow key file `/<key>.txt` over `pkg/seo`, mounted at the root of BOTH servers; `Site.URLs` is the one list the sitemap renders and `pofo -indexnow` pushes) and in the handler's head (canonical, `og:url`, hreflang + x-default and `og:image`, all FULLY QUALIFIED via `Edition.absolute` = `RequestOrigin` + `HomePath`; Open Graph, JSON-LD `Book`/`Article`/`BreadcrumbList`), plus the Markdown mirror route `<slug>.md` that serves an article's source untouched for AI agents, an Atom feed per edition at `feed.xml` (`feed.go`, one entry per article, `<updated>` = the mount's single publication stamp, the same one the EPUB and OPDS carry) and the social card at `card.png` (`card.go`: `CardSVG` draws the book's hero block at 1200x630 in the v2 plate identity from the edition's own words, `scripts/card-shot.sh` rasterizes it into the committed `assets/cards/<lang>.png`); plan, depth conventions and progress ledger in `docs/specs/fire-book-design.md`, English edition in `docs/specs/fire-book-en-edition-design.md` |
 | `pkg/simgen` | rebuilds the missing past of complex assets (constant-weight composites, cap-weighted drifting blends (`CapWeighted`), TSMOM engine, donor chains) into simdata files; `tracked.go` holds a donor to the index it tracks when the repository bundles a same-index reference (`trackIndex`: a session disagreeing past a stated per-pair tolerance takes the reference's return, a bad first print is dropped, the reference may lead or lag one session so a closing-time difference is not a defect); `audit.go` grades every engine against the real quotes (`Audit`/`AuditAll`, behind `pofo -verify-simdata`; every figure off `Validate`'s daily panel and a monthly panel of whole calendar months through `Panel.Track`, no private return math; `WriteAuditText` and the JSON-safe `AuditResult` are its machine output); the exports that serve only `cmd/` (`Audit`, `Splice`, `Rebase`, the DBi donor trio...) are listed under "Generator plumbing" at the end of `doc.go` |
 | `pkg/chart` | stdlib-only SVG + terminal charts |
 | `pkg/report` | HTML/text rendering of the comparison model |
-| `pkg/webui` | the identity every HTML surface shares: design tokens (`CSS`), embedded OFL typefaces (`FontsCSS`), the favicon, and `Beacon`, the handler wrapper that splices the optional Cloudflare Web Analytics tag into every `text/html` response; see `docs/webui-instrument-redesign.md` |
+| `pkg/webui` | the identity every HTML surface shares: design tokens (`CSS`), embedded OFL typefaces (`FontsCSS`), the favicon, and `Beacon`, the handler wrapper that splices the optional Cloudflare Web Analytics tag into every `text/html` response; see `docs/specs/webui-instrument-redesign.md` |
 | `pkg/compare` | `Sweep` (per-holding weight grid, the evidence behind a file's sane ranges, behind `pofo -sweep`); compute the comparison model and assemble the HTML report `Page`, as presentation over `pkg/analyze`: every column is an `analyze.Portfolio` study (`Comparison.Studies`), and compare keeps only the currency expansion, the optimizer column, the benchmark, the common window and its nominal/real stats; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
-| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture computation tests, PLUS two guards that measure the bundle as DATA rather than as computations, because what they hunt is invisible to a return: `gaps_test.go` refuses a step longer than the series' own pace allows (a monthly file skipping a month, a daily one silent for three weeks), and `spikes_test.go` refuses a one-session round trip no instrument could have made; both call the library rules `marketdata.FindGaps`/`FindSpikes`, never a private copy) |
+| `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/specs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/specs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture computation tests, PLUS two guards that measure the bundle as DATA rather than as computations, because what they hunt is invisible to a return: `gaps_test.go` refuses a step longer than the series' own pace allows (a monthly file skipping a month, a daily one silent for three weeks), and `spikes_test.go` refuses a one-session round trip no instrument could have made; both call the library rules `marketdata.FindGaps`/`FindSpikes`, never a private copy) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB), `dump.go` (`-dump`: series to stdout as long CSV via `marketdata.WriteCSV`, bundled references included; the global `-offline` flag is set on every mode's client by `options.newClient` in `main.go`), `pair.go` (`-pair A,B`: `analyze.Pair` as text, or JSON under `-json`, each side an identifier fetched as `-dump` does or a CSV path) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `foreign.go` (identifiers outside the bundled catalog: the ISIN/ticker shape gate plus the per-client and per-process hourly fetch budgets behind `-serve-foreign-per-hour`, 0 = catalog only), `prefs.go` (the settings cookie), `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) and `logdedup.go` (log hygiene for the long-lived servers: each informational fetch line once per process, every `warning:` always; `/healthz` and the access log live in `serve.go`) |
-| `docs/` | only what the code cannot carry: rationale behind non-obvious decisions, validation records of bundled data, recurring procedures (`docs/README.md` is the one-line index). No specs, plans or backlogs: a shipped package's design is its godoc |
+| `docs/` | `docs/README.md` indexes both halves. `docs/specs/`: agent-facing, only what the code cannot carry (rationale behind non-obvious decisions, validation records of bundled data, traps, nomenclature and glossaries, recurring procedures). `docs/usage/`: the human guides. No plans or backlogs in either: a shipped package's design is its godoc |
 | `examples/portfolios/` | portfolio files for the CLI (also exercised by `make demo`); package `portfolios`, whose `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` (the public URL kept its historical path) |
 | `examples/code/` | single-file SCRIPTS over the library, one question each (`describe`, `stats`, `blend`, `regress`, `worstmonths`, `episodes`, `rolling`, `calendar`, `currency`, `fees`, `pair`, `oldnew`, `scanbundle`, `correl`, `simulate`, `optimize`, `fire`, `replay`, `export`; indexed by its `README.md`): each a `package main` behind `//go:build ignore`, run as `go run examples/code/<name>.go`, reading its ids through `marketdata.Client.Load`; no tests by design, `make examples` (in `make check`) compiles, vets and lints each file so a library change that breaks one fails the gate |
 | root (`.`) | `doc.go` = the library's ENTRY POINT (question to package, a complete program, the units table, the packages, the layering measured by `go list`); `example_test.go` = that program as the package `Example`, run by `TestExampleRuns`; `godoc_test.go` = `TestGodoc`, the documentation bar over `pkg/` (package comment, a doc comment on every exported identifier incl. struct fields and interface methods, starting with its name, every doc link resolving); `snippets_test.go` = `TestReadmeSnippets`, every README ```` ```go ```` block headed `// from pkg.ExampleX` must be that example's body, and `doc.go`'s program the root `Example`'s |
@@ -410,12 +413,12 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
 - New simulated history: add a recipe in `pkg/simgen/recipes.go`, validate
   with `./pofo -gen-simdata -dry <ID>`, generate with `make simdata`.
 - AQR Managed Futures share classes (`LU1103...`, `LU1662...`, `LU2622...`):
-  read `docs/aqr-mf.txt` first. Every EUR class holds the same portfolio, so
+  read `docs/specs/aqr-mf.txt` first. Every EUR class holds the same portfolio, so
   NAV differences are fee differences; `RAEF`'s management fee is WAIVED at the
   manager's discretion, which is why it looks like it beats its siblings and
   why its pin is the least durable in the catalog.
 - Managed-futures / trend reconstructions: read
-  `docs/trend-reconstruction-design.md` first. RELIABILITY BOUNDS LENGTH is the
+  `docs/specs/trend-reconstruction-design.md` first. RELIABILITY BOUNDS LENGTH is the
   standing decision: every file stops where its evidence stops, the donor chains
   at their deepest real NAV (1996-03) and the overlays at their reference's
   first day (2000-01), and no engine tail is shipped in front of either. Real
@@ -451,7 +454,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   weekly donor is projected onto that texture; those plates read `CTA` and
   `SP500`, so a DBi-only change leaves them alone.
 - Long / zero-coupon Treasury work (`ZROZ`, STRIPS, `EDV`-shaped funds): read
-  `docs/long-treasury-zero-coupon-design.md` first. TWO DATA TRAPS live there
+  `docs/specs/long-treasury-zero-coupon-design.md` first. TWO DATA TRAPS live there
   besides the engine: H.15's 20-year point changed DEFINITION on 1973-01-04
   (6.04 to 6.78 overnight with the 10-year point still), which the bundled
   `TREASURY-LONG-YIELD` declares in a `# junctions:` header so no engine prices
@@ -477,7 +480,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   approximation, documented and deliberately NOT corrected. The coupon-to-coupon
   gearing of the 20+ year ETFs (`longTreasuryGearing`) drifts only 7 % across
   the same rate range and stands.
-- Rolled commodity / crude oil work: read `docs/wti-rolled-reference-design.md`
+- Rolled commodity / crude oil work: read `docs/specs/wti-rolled-reference-design.md`
   first. `WTI-USD` and `WTI-DAILY` are SPOT and are not investable: the roll
   yield was +9.5 points a year over 1986-2000 and -12.8 over 2005-2016, so a
   position priced off spot is wrong by a double-digit rate whose SIGN FLIPS by
@@ -488,7 +491,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   GSCI Crude Oil total return. It ENDS 2024-04-05 because EIA discontinued those
   series there, and no engine tail is shipped in front of that bound.
 - World-equity blends (`VT`, the FTSE All-World UCITS class, `RSSB`'s equity
-  sleeve): read `docs/world-equity-capweight-design.md` first. Their weights are
+  sleeve): read `docs/specs/world-equity-capweight-design.md` first. Their weights are
   CAP-WEIGHTED, not fixed: `CapWeighted` holds the published 2009-10-31 FTSE
   All-World split (40.4 US / 46.1 developed-ex-US / 13.5 emerging, `worldLegs`)
   and never rebalances, so the weights drift with the legs' own returns. A fixed
@@ -497,7 +500,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   fourteen years after the anchor. `Composite` stays for the funds that really
   do rebalance to fixed weights.
 - Total-US-market / size-completion work: read
-  `docs/us-total-market-reference-design.md` first. `VTI` is backcast on the
+  `docs/specs/us-total-market-reference-design.md` first. `VTI` is backcast on the
   target's OWN share class (`VTSMX`, 1992-04) extended by the CRSP total-market
   factor (`USMKT-USD`, `make usmkt-refdata`), and the S&P 500 is NOT a stand-in
   for the whole market: the mid/small completion premium is worth about a point
@@ -508,7 +511,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   the world blends' US leg).
 - Employee-savings fund (FCPE: `ERESMONDEM`, the world-equity fund, and
   `ERES_DATADOG`, the single-stock DDOG fund kept apart from the listed `DDOG`)
-  work: read `docs/eres-fcpe-design.md` first. Such a fund has no ISIN and no
+  work: read `docs/specs/eres-fcpe-design.md` first. Such a fund has no ISIN and no
   listing; its official NAV comes live from the airfund.io API (`source:
   "airfund"`, share code in `symbol`, the Eres SITE's widget id in `xid`, the
   same for every fund of the site) with `refdata/<ID>-NAV.csv` as the offline
@@ -537,7 +540,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   move) and `DBXW.DE` starts 2009-01-02, its earlier quotes being the fund's
   USD line (excess return correlated 0.998 with EUR/USD).
 - Catastrophe bond / insurance-linked (ILS) work: read
-  `docs/catbond-sleeve-design.md` first. The reference is `ILS-NET-USD`
+  `docs/specs/catbond-sleeve-design.md` first. The reference is `ILS-NET-USD`
   (`cmd/gen-catbond-refdata`, monthly from 2006-01, already net of the
   constituent funds' fees), served as `ILSFUND` / `ILSFUNDE` (EUR-hedged, via
   the shared `hedgeToEUR`) and spliced behind three retail UCITS classes by
@@ -549,14 +552,14 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   a line that switched cadence along the way is read at its prevailing one, so
   the monthly columns stay the safe read.
 - Black-Litterman (`optimize:black-litterman`, `view:`, `prior-return:`): read
-  `docs/black-litterman-design.md` first. The prior is the FILE's weights, not
+  `docs/specs/black-litterman-design.md` first. The prior is the FILE's weights, not
   a market-capitalization portfolio, and with no view the objective returns
   those weights EXACTLY (the identity every test hangs on). The golden lives
   in `pkg/datasets/golden/blacklitterman_test.go` and pins the model on the
   printed tables of He and Litterman (1999) and Idzorek (2005); a confidence
   of 0.5 is those papers' own `Ω = diag(P τ Σ Pᵀ)`.
 - Weight search (bounded/constrained optimize, `train:`, `-sweep`): read
-  `docs/weight-search-design.md` first; it also records what was deliberately
+  `docs/specs/weight-search-design.md` first; it also records what was deliberately
   left for later (the Pareto `improve` mode, the frontier chart) and the traps
   (zero risk-free Sharpe, `Spec.Train` inert inside `pkg/optimize`).
 - New statistic: `pkg/metrics` + tests + a golden anchor if externally
@@ -596,20 +599,20 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   hand-built cashflow: UI work only), and a CAPE-conditioned spending rule
   (WR = a + b/CAPE), refused until a scenario source simulates a valuation
   path. The per-envelope tax model was measured and refused
-  (`docs/fire-envelopes-tax-model-design.md`). Anything
+  (`docs/specs/fire-envelopes-tax-model-design.md`). Anything
   touching mortality, estates, couples or annuities goes through
-  `docs/stochastic-lifetime-kernel-design.md` as well: `Plan.Lifetime` draws the
+  `docs/specs/stochastic-lifetime-kernel-design.md` as well: `Plan.Lifetime` draws the
   lifespan INSIDE each path, and the standing rule is that the household never
   sees its own drawn death (spending rules plan over `PlanHorizon`, never over
   the lifespan the path was dealt).
 - FIRE book work: French is the SOURCE OF TRUTH and every edit lands there
   first. After a French edit, `make book-drift` lists the translations it made
   stale; that report is the English worklist. TRANSLATING an article: follow
-  `docs/fire-book-en-translation-brief.md` step by step (it names the FR -> EN
+  `docs/specs/fire-book-en-translation-brief.md` step by step (it names the FR -> EN
   slug map, the `<!-- edition: fr-only -->` marker that flags never-translated
   French articles, the stamp, the manifest entry, the ledger) with
-  `docs/fire-book-en-glossary.md` open. Read
-  `docs/fire-book-en-edition-design.md` before touching anything English, and
+  `docs/specs/fire-book-en-glossary.md` open. Read
+  `docs/specs/fire-book-en-edition-design.md` before touching anything English, and
   never duplicate a plate: figures stay single-source French, and the English
   edition translates the rendered SVG through `figureDict`
   (`scripts/figure-audit.sh en` after any dictionary change). NEW PLATE: the
@@ -617,7 +620,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   `pkg/firebook/figures_kit.go`, and `scripts/figure-shot.sh <slug> [fr|en]`
   renders one to PNG for the eye.
 - Global Efficient Core (NTSG) / multi-currency government bond baskets: read
-  `docs/ntsg-global-efficient-core-design.md` first. The bond overlay is FOUR
+  `docs/specs/ntsg-global-efficient-core-design.md` first. The bond overlay is FOUR
   local-currency sleeves (`pkg/simgen/globalbond.go`, 80 % US / 11 % German /
   6 % Japanese / 3 % British), each an excess return over its OWN money-market
   rate with NO FX and NO carry (the fund rolls the currency away with forwards
@@ -631,7 +634,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   answering HTTP 200; no generator is left on it).
 - Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
   govt sleeve (DBXG, `dbxgRecipe`): read
-  `docs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
+  `docs/specs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
   series (`EMU-EUR`, `EUROGOV-EUR{,-DAILY}`, `EUROGOV-LONG-EUR{,-DAILY}` for the
   25+ segment, `DECASH-EUR`, and since 2026-08 the euro cash leg `EURCASH-EUR`,
   which had no generator and froze when its FRED source died) come from DBnomics
@@ -658,7 +661,7 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
   0.60 -> 0.95). Every OECD-driven monthly file now carries a month-END label,
   the cash accruals included, which emptied the `gaps_test.go` allow-list;
   `GILT-GBP`, `EMU-EUR`, `WTI-USD` and `TBILL-3M` are measured, named and left
-  (see the sweep section of `docs/ntsz-eurozone-efficient-core-design.md`).
+  (see the sweep section of `docs/specs/ntsz-eurozone-efficient-core-design.md`).
 
 ## Definition of done
 
@@ -675,7 +678,8 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
       `make verify-catalog` runs the doctor over all of it.
 - [ ] Docs updated in the SAME commit: the package's `doc.go`, its
       `example_test.go`, `README.md` if a command or an output changed, the
-      design doc in `docs/`, and this file's Map if a package gained a concern.
+      spec in `docs/specs/`, the guide in `docs/usage/` if a user-visible
+      behavior changed, and this file's Map if a package gained a concern.
       Every new exported identifier (struct fields included) carries a doc
       comment that starts with its name and states its unit and sentinel
       values (`TestGodoc`); a new entry point gets a runnable `Example`, and

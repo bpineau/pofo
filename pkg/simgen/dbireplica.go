@@ -36,7 +36,7 @@ import (
 // does not; the composite carries exposures the fund does not. Averaging the
 // two at equal weight cancels part of both errors, and measurement says the
 // combination is worth more than either side alone (see
-// docs/trend-reconstruction-design.md for the table). The weight is the
+// docs/specs/trend-reconstruction-design.md for the table). The weight is the
 // unsearched midpoint, not an optimum: the measured curve is flat enough that
 // a quarter or three quarters still beat the composite everywhere.
 const DBiDonorID = "TREND-ALLSTYLES-DBI-USD"
@@ -145,8 +145,8 @@ var dbiLegs = []dbiLeg{
 	// CL=F books the calendar spread as a return once a month. The leg is left
 	// alone regardless, because WTI-ER-USD stops at 2024-04-05 where EIA
 	// discontinued its source and the blend is graded against the fund through
-	// 2026. See docs/trend-reconstruction-design.md and
-	// docs/wti-rolled-reference-design.md.
+	// 2026. See docs/specs/trend-reconstruction-design.md and
+	// docs/specs/wti-rolled-reference-design.md.
 	{Name: "WTI crude", Deep: "CL=F", Kind: dbiPrice},
 	{Name: "EUR", Deep: "EURUSD=X", Kind: dbiFX, Carry: "EUR"},
 	{Name: "JPY", Deep: "JPYUSD=X", Kind: dbiFX, Carry: "JPCASH-JPY"},

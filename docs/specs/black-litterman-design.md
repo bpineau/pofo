@@ -2,7 +2,7 @@
 
 Status: specified 2026-08-27, SHIPPED 2026-08-27 (`pkg/optimize/bl.go`,
 `pkg/datasets/golden/blacklitterman_test.go`). Companion to
-`docs/weight-search-design.md`, which owns the box-simplex solver, the
+`docs/specs/weight-search-design.md`, which owns the box-simplex solver, the
 feasibility limits and the `train:` window this objective reuses.
 
 ## 1. What it answers
@@ -184,7 +184,7 @@ and `stats`' doc says so; `CAGR`/`Feasible` keep their path meaning.
   `pkg/metrics/example_test.go` if it lists them, `pkg/optimize/series.go`,
   `pkg/optimize/doc.go` ("Ten objectives"), and the `CLAUDE.md` map line for
   `pkg/optimize`. `docs/README.md` indexes this document;
-  `docs/weight-search-design.md` gets a pointer paragraph.
+  `docs/specs/weight-search-design.md` gets a pointer paragraph.
 - `example_test.go`: one runnable example on a synthetic three-asset
   problem showing the no-view identity and one view moving one weight.
 

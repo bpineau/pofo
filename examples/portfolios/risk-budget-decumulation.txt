@@ -666,7 +666,7 @@
 #     base, different series.
 #   THE DIRECT TREND SHARE CLASS is chosen on fee PLUMBING, not on past
 #     returns, and the reasoning generalises to any multi-class fund
-#     (details in pofo docs/aqr-mf.txt). Every EUR class of that fund
+#     (details in pofo docs/specs/aqr-mf.txt). Every EUR class of that fund
 #     holds the same portfolio, so comparing two of them on NAV measures
 #     their fee difference and never the manager. What each levies INSIDE
 #     its NAV: 0.23%/yr for the cheapest class, 0.78% plus 10% of the
