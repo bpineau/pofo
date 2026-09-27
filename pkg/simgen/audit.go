@@ -1,6 +1,7 @@
 package simgen
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -66,18 +67,32 @@ type AuditResult struct {
 	Short      bool      // under two years: read the return gap as noise
 	RealFrom   time.Time `json:",omitzero"` // date from which a SIM consumer gets real quotes
 
+	// The texture, read on the dates both quote (Validate): the correlation
+	// of their returns there and of five-session returns, beta, the tracking
+	// error and the two volatilities, all at that calendar's cadence, so
+	// TrackingErr / VolReal compares like with like.
 	DailyCorr, WeeklyCorr float64
-	MonthlyCorr           float64 // zero when Months is under twelve
-	Months                int     // the calendar months MonthlyCorr reads
 	Beta, TrackingErr     float64
-	CAGRSim, CAGRReal     float64
-	Delta                 float64 // engine - real, per year
-	TotalDrift            float64 // engine/real over the window, as a fraction
 	VolSim, VolReal       float64
-	WorstSim, WorstReal   float64 // worst single-day return
+	// MonthlyCorr is the correlation of whole calendar months both quote
+	// inside the window (a marketdata.Panel), zero when Months is under
+	// twelve; Notes says why when none could be cut.
+	MonthlyCorr float64
+	Months      int
+	CAGRSim     float64 // over the window, 365.25-day years
+	CAGRReal    float64
+	Delta       float64 // engine - real, per year
+	// GapSE is the standard error of Delta: the monthly tracking error over
+	// the square root of the years the months span (the daily one over the
+	// window's when fewer than twelve months carry it). A Delta inside two
+	// of it is not a measurement, whatever its verdict says.
+	GapSE               float64
+	TotalDrift          float64 // engine/real over the window, as a fraction
+	WorstSim, WorstReal float64 // worst single-period return, each on its own calendar
 
 	Level, Path Verdict
-	Score       float64 // severity, worst first; presentation only
+	Score       float64  // severity, worst first; presentation only
+	Notes       []string `json:",omitempty"` // what a figure could not be measured on, and why
 
 	Engine, Real *marketdata.Series   `json:"-"` // clipped to the window, for charting
 	Others       []*marketdata.Series `json:"-"` // curated comparison curves, same window
@@ -226,12 +241,21 @@ func Audit(f Fetcher, r Recipe) AuditResult {
 	a.Years = v.End.Sub(v.Start).Hours() / 24 / 365.25
 	a.Short = a.Years < 2
 	a.DailyCorr, a.WeeklyCorr, a.Beta, a.TrackingErr = v.Corr, v.WeeklyCorr, v.Beta, v.TrackingErr
-	a.MonthlyCorr, a.Months = monthlyCorr(engine, real, v.Start, v.End)
 	a.CAGRSim, a.CAGRReal = v.CAGRSim, v.CAGRReal
 	a.Delta = v.CAGRSim - v.CAGRReal
 	a.TotalDrift = math.Pow(1+a.Delta, a.Years) - 1
-	a.VolSim, a.WorstSim = windowVol(engine, v.Start, v.End), worstDay(engine, v.Start, v.End)
-	a.VolReal, a.WorstReal = windowVol(real, v.Start, v.End), worstDay(real, v.Start, v.End)
+	a.VolSim, a.VolReal = v.VolSim, v.VolReal
+	a.WorstSim, a.WorstReal = worstPeriod(engine, v.Start, v.End), worstPeriod(real, v.Start, v.End)
+	a.GapSE = v.TrackingErr / math.Sqrt(a.Years)
+	m, note, err := monthly(engine, real, v.Start, v.End)
+	if note != "" {
+		a.Notes = append(a.Notes, "monthly figures: "+note)
+	}
+	if err != nil {
+		a.Notes = append(a.Notes, "no monthly figures: "+err.Error())
+	} else if a.Months = m.Periods; m.Periods >= minMonths {
+		a.MonthlyCorr, a.GapSE = m.Corr, m.DifferenceSE()
+	}
 	a.Level, a.Path, a.Score = grade(a)
 
 	// What a SIM consumer actually gets: real quotes wherever they exist, the
@@ -383,15 +407,15 @@ func chainOf(f Fetcher, r Recipe) []Junction {
 			j.Note = "different currencies (the recipe converts or hedges this junction)"
 		default:
 			j.Span = deep.First().Date.Format("2006") + " to " + near.First().Date.Format("2006")
-			from, to := deep.First().Date, near.Last().Date
-			xa, xb := pairMonthly(near, deep, from, to)
-			j.Months = len(xa)
-			if len(xa) >= 12 {
-				j.Measured = true
-				j.Corr = pearson(xa, xb)
-				j.GapYear = annualizeMonthly(xb) - annualizeMonthly(xa)
-			} else {
-				j.Note = "overlap too short"
+			m, note, err := monthly(deep, near, time.Time{}, time.Time{})
+			switch {
+			case err != nil:
+				j.Note = "no monthly comparison: " + err.Error()
+			case m.Periods < minMonths:
+				j.Months, j.Note = m.Periods, "overlap too short"
+			default:
+				j.Months, j.Measured, j.Note = m.Periods, true, note
+				j.Corr, j.GapYear = m.Corr, m.Difference
 			}
 		}
 		out = append(out, j)
@@ -411,7 +435,7 @@ func grade(a AuditResult) (level, path Verdict, score float64) {
 		level = VerdictOK
 	}
 	corr := a.MonthlyCorr
-	if a.Months < 12 {
+	if a.Months < minMonths {
 		corr = a.WeeklyCorr
 	}
 	rel := 1.0
@@ -490,127 +514,86 @@ func Rebase(v []float64) []float64 {
 	return out
 }
 
-// monthlyCorr is the correlation of calendar-month returns over the window,
-// the honest yardstick for a reconstruction meant to be held for years: the
-// daily and weekly figures are dominated by intra-month texture, which no
-// reconstruction of a fifty-market programme can match day by day.
-func monthlyCorr(a, b *marketdata.Series, from, to time.Time) (float64, int) {
-	xa, xb := pairMonthly(a, b, from, to)
-	if len(xa) < 12 {
-		return 0, len(xa)
+// minMonths is the fewest whole calendar months a monthly correlation is
+// read on, for the card and for a donor-chain junction alike.
+const minMonths = 12
+
+// monthly reads a against b on the whole calendar months both quote inside
+// [from, to] (zero bounds open), a marketdata.Panel: the honest yardstick
+// for a reconstruction meant to be held for years, since daily and weekly
+// figures are dominated by intra-month texture, which no reconstruction of a
+// fifty-market programme can match day by day.
+//
+// A month one side skips cannot be paired: its return would span two months
+// against the other's one (a fund that stopped quoting for two years once
+// read as a single month's move). The reading then starts after the last
+// such hole, on the unbroken stretch that ends the overlap, and note says
+// so; it is empty when the whole overlap was read.
+func monthly(a, b *marketdata.Series, from, to time.Time) (t metrics.Tracking, note string, err error) {
+	if a.Len() == 0 || b.Len() == 0 {
+		return metrics.Tracking{}, "", errors.New("empty series")
 	}
-	return pearson(xa, xb), len(xa)
+	lo, hi := later(from, a.First().Date, b.First().Date), earlier(to, a.Last().Date, b.Last().Date)
+	if resume := later(resumes(a, lo, hi), resumes(b, lo, hi)); resume.After(lo) {
+		lo, note = resume, "months before "+resume.Format("2006-01")+" left out: one side skips a month there"
+	}
+	p, err := pairPanel(marketdata.Monthly, marketdata.Trim(a, lo, hi), marketdata.Trim(b, lo, hi))
+	if err != nil {
+		return metrics.Tracking{}, note, err
+	}
+	if p.Len() < 2 {
+		return metrics.Tracking{Periods: p.Len()}, note, nil
+	}
+	t, err = p.Track(columnA, columnB)
+	return t, note, err
 }
 
-// pairMonthly returns the two series' calendar-month returns over the months
-// they both quote.
-func pairMonthly(a, b *marketdata.Series, from, to time.Time) (xa, xb []float64) {
-	ma, mb := monthlyReturns(a, from, to), monthlyReturns(b, from, to)
-	keys := make([]string, 0, len(ma))
-	for k := range ma {
-		if _, ok := mb[k]; ok {
-			keys = append(keys, k)
+// resumes is the first date of s inside [from, to] after the last calendar
+// month it skips there, or the zero time when it skips none.
+func resumes(s *marketdata.Series, from, to time.Time) time.Time {
+	var at, prev time.Time
+	month := func(d time.Time) int { return d.Year()*12 + int(d.Month()) }
+	for _, p := range marketdata.Trim(s, from, to).Points {
+		if !prev.IsZero() && month(p.Date)-month(prev) > 1 {
+			at = p.Date
 		}
+		prev = p.Date
 	}
-	sort.Strings(keys)
-	for _, k := range keys {
-		xa, xb = append(xa, ma[k]), append(xb, mb[k])
-	}
-	return xa, xb
+	return at
 }
 
-// monthlyReturns maps "2006-01" to that month's return, measured from the last
-// quote of the previous month.
-func monthlyReturns(s *marketdata.Series, from, to time.Time) map[string]float64 {
-	last := map[string]float64{}
-	var keys []string
-	for _, p := range s.Points {
-		if p.Date.Before(from) || p.Date.After(to) || p.Close <= 0 {
-			continue
-		}
-		k := p.Date.Format("2006-01")
-		if _, ok := last[k]; !ok {
-			keys = append(keys, k)
-		}
-		last[k] = p.Close
-	}
-	out := make(map[string]float64, len(keys))
-	for i := 1; i < len(keys); i++ {
-		if last[keys[i-1]] > 0 {
-			out[keys[i]] = last[keys[i]]/last[keys[i-1]] - 1
+// later is the latest of the dates, earlier the earliest non-zero one; a
+// zero date is an open bound and never wins.
+func later(ds ...time.Time) time.Time {
+	var out time.Time
+	for _, d := range ds {
+		if d.After(out) {
+			out = d
 		}
 	}
 	return out
 }
 
-// annualizeMonthly compounds monthly returns into a per-year rate.
-func annualizeMonthly(r []float64) float64 {
-	if len(r) == 0 {
-		return 0
-	}
-	p := 1.0
-	for _, x := range r {
-		p *= 1 + x
-	}
-	return math.Pow(p, 12/float64(len(r))) - 1
-}
-
-func pearson(a, b []float64) float64 {
-	var ma, mb float64
-	for i := range a {
-		ma, mb = ma+a[i], mb+b[i]
-	}
-	ma, mb = ma/float64(len(a)), mb/float64(len(b))
-	var sab, sa, sb float64
-	for i := range a {
-		da, db := a[i]-ma, b[i]-mb
-		sab, sa, sb = sab+da*db, sa+da*da, sb+db*db
-	}
-	if sa <= 0 || sb <= 0 {
-		return 0
-	}
-	return sab / math.Sqrt(sa*sb)
-}
-
-// windowVol is the annualized volatility of a series over the window, at the
-// series' own cadence: the scale against which a tracking error means
-// something.
-func windowVol(s *marketdata.Series, from, to time.Time) float64 {
-	c := clip(s, from, to)
-	if len(c.Points) < 30 {
-		return 0
-	}
-	r := make([]float64, 0, len(c.Points)-1)
-	dates := make([]time.Time, 0, len(c.Points))
-	for i, p := range c.Points {
-		dates = append(dates, p.Date)
-		if i > 0 {
-			r = append(r, p.Close/c.Points[i-1].Close-1)
+func earlier(ds ...time.Time) time.Time {
+	var out time.Time
+	for _, d := range ds {
+		if !d.IsZero() && (out.IsZero() || d.Before(out)) {
+			out = d
 		}
 	}
-	var m float64
-	for _, x := range r {
-		m += x
-	}
-	m /= float64(len(r))
-	var sum float64
-	for _, x := range r {
-		sum += (x - m) * (x - m)
-	}
-	return math.Sqrt(sum/float64(len(r))) * math.Sqrt(metrics.PeriodsPerYear(dates))
+	return out
 }
 
-// worstDay is the worst single-day return over the window: a replication that
-// levers into a volatility spike shows it here long before the CAGR does.
-func worstDay(s *marketdata.Series, from, to time.Time) float64 {
-	c := clip(s, from, to)
-	worst := 0.0
-	for i := 1; i < len(c.Points); i++ {
-		if r := c.Points[i].Close/c.Points[i-1].Close - 1; r < worst {
-			worst = r
-		}
+// worstPeriod is the worst single-period return of s over the window, on its
+// own calendar (a day for a daily series): a replication that levers into a
+// volatility spike shows it here long before the CAGR does. It is zero when
+// s never fell.
+func worstPeriod(s *marketdata.Series, from, to time.Time) float64 {
+	r := metrics.Returns(clip(s, from, to).Values())
+	if k := metrics.LowestK(r, 1); len(k) == 1 && r[k[0]] < 0 {
+		return r[k[0]]
 	}
-	return worst
+	return 0
 }
 
 // String renders one audit as a single log line.
@@ -642,8 +625,8 @@ func (a AuditResult) RelativeTE() float64 {
 
 // WriteAuditText prints groups as plain text, one aligned row per recipe
 // under each family's title: the two verdicts, the correlations, the level
-// gap and the relative tracking error that decided them, the window and the
-// reference. A recipe that could not be measured prints its reason instead.
+// gap (points a year) with its standard error and the relative tracking
+// error that decided them, the window and the reference. A recipe that could not be measured prints its reason instead.
 // It is the machine-friendly twin of the HTML report: one line per verdict,
 // nothing to scrape.
 func WriteAuditText(w io.Writer, groups []AuditGroup) error {
@@ -653,7 +636,7 @@ func WriteAuditText(w io.Writer, groups []AuditGroup) error {
 			fmt.Fprintln(tw)
 		}
 		fmt.Fprintf(tw, "# %s\n", g.Title)
-		fmt.Fprintln(tw, "ID\tLEVEL\tPATH\tMONTHLY\tWEEKLY\tDAILY\tGAP %/YR\tTE/VOL\tYEARS\tREFERENCE")
+		fmt.Fprintln(tw, "ID\tLEVEL\tPATH\tMONTHLY\tWEEKLY\tDAILY\tGAP %/YR\tSE\tTE/VOL\tYEARS\tREFERENCE")
 		for _, a := range g.Results {
 			if !a.Measured() {
 				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", a.ID, a.Level, a.Path, a.Err)
@@ -663,9 +646,9 @@ func WriteAuditText(w io.Writer, groups []AuditGroup) error {
 			if a.Short {
 				short = " (short)"
 			}
-			fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%.2f\t%.2f\t%+.2f\t%.2f\t%.1f%s\t%s\n",
+			fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%.2f\t%.2f\t%+.2f\t%.2f\t%.2f\t%.1f%s\t%s\n",
 				a.ID, a.Level, a.Path, a.monthly(), a.WeeklyCorr, a.DailyCorr,
-				a.Delta*100, a.RelativeTE(), a.Years, short, a.Reference)
+				a.Delta*100, a.GapSE*100, a.RelativeTE(), a.Years, short, a.Reference)
 		}
 	}
 	return tw.Flush()

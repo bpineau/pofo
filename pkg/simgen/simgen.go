@@ -2,9 +2,9 @@ package simgen
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/fs"
-	"math"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -187,15 +187,18 @@ func Composite(fr *Frame, legs []Leg, cashID string, annualFee float64) ([]float
 }
 
 // Validation summarizes how well a simulated series tracks the real one over
-// their overlap.
+// their overlap: the dates both quote, a marketdata.Panel at Daily, so every
+// return of either side spans the same sessions.
 type Validation struct {
-	Overlap     int // number of common daily returns
+	Overlap     int // number of common returns (daily for two daily series)
 	Start, End  time.Time
-	Corr        float64 // correlation of daily returns
-	WeeklyCorr  float64 // correlation of 5-day returns (kinder to stale quotes)
-	Beta        float64 // slope sim→real
-	TrackingErr float64 // stdev of (real − sim) returns, annualized at the common dates' cadence
-	CAGRSim     float64
+	Corr        float64 // correlation of those returns
+	WeeklyCorr  float64 // correlation of five-session returns (kinder to stale quotes); zero under twelve of them
+	Beta        float64 // slope of sim on real
+	TrackingErr float64 // sample stdev of (sim - real) returns, annualized at the common calendar's cadence
+	VolSim      float64 // sample volatility of each side on that calendar, annualized
+	VolReal     float64
+	CAGRSim     float64 // over the common window, 365.25-day years
 	CAGRReal    float64
 }
 
@@ -207,70 +210,63 @@ func (v Validation) String() string {
 		v.Overlap, v.Start.Format("2006-01-02"), v.End.Format("2006-01-02"))
 }
 
-// Validate compares a simulated series with the real one on common dates.
+// minValidationPoints is the fewest dates two series must share for
+// Validate to measure anything.
+const minValidationPoints = 60
+
+// Validate compares a simulated series with the real one on the dates both
+// quote. It is an error when they share fewer than sixty dates, and when
+// either holds a close that is not a positive price on one of them.
 func Validate(sim, real *marketdata.Series) (Validation, error) {
-	realByDate := make(map[time.Time]float64, len(real.Points))
-	for _, p := range real.Points {
-		realByDate[p.Date] = p.Close
+	p, err := pairPanel(marketdata.Daily, sim, real)
+	if err != nil {
+		return Validation{}, fmt.Errorf("simgen: Validate: %w", err)
 	}
-	var dates []time.Time
-	var sv, rv []float64
-	for _, p := range sim.Points {
-		if r, ok := realByDate[p.Date]; ok {
-			dates = append(dates, p.Date)
-			sv = append(sv, p.Close)
-			rv = append(rv, r)
-		}
+	if p.Len()+1 < minValidationPoints {
+		return Validation{}, fmt.Errorf("simgen: Validate: insufficient overlap (%d common points)", p.Len()+1)
 	}
-	if len(sv) < 60 {
-		return Validation{}, fmt.Errorf("insufficient overlap (%d common points)", len(sv))
+	t, err := p.Track(columnA, columnB)
+	if err != nil {
+		return Validation{}, fmt.Errorf("simgen: Validate: %w", err)
 	}
-	var v Validation
-	v.Overlap = len(sv) - 1
-	v.Start, v.End = dates[0], dates[len(dates)-1]
-	years := v.End.Sub(v.Start).Hours() / 24 / 365.25
-	v.CAGRSim = math.Pow(sv[len(sv)-1]/sv[0], 1/years) - 1
-	v.CAGRReal = math.Pow(rv[len(rv)-1]/rv[0], 1/years) - 1
-
-	srets := metrics.Returns(sv)
-	rrets := metrics.Returns(rv)
-	ms, mr := metrics.Mean(srets), metrics.Mean(rrets)
-	var covSR, varS, varR, varDiff float64
-	for i := range srets {
-		ds, dr := srets[i]-ms, rrets[i]-mr
-		covSR += ds * dr
-		varS += ds * ds
-		varR += dr * dr
-		diff := rrets[i] - srets[i]
-		varDiff += diff * diff
+	v := Validation{
+		Overlap: t.Periods, Start: p.Starts[0], End: p.Ends[p.Len()-1],
+		Corr: t.Corr, Beta: t.Beta, TrackingErr: t.TrackingError, VolSim: t.VolA, VolReal: t.VolB,
 	}
-	if varS > 0 && varR > 0 {
-		v.Corr = covSR / math.Sqrt(varS*varR)
-		v.Beta = covSR / varS
-	}
-	n := float64(len(srets))
-	meanDiff := (mr - ms)
-	v.TrackingErr = math.Sqrt(math.Max(0, varDiff/n-meanDiff*meanDiff)) * math.Sqrt(metrics.PeriodsPerYear(dates))
-
-	// Weekly (5 trading days) correlation.
-	var sw, rw []float64
-	for i := 5; i < len(sv); i += 5 {
-		sw = append(sw, sv[i]/sv[i-5]-1)
-		rw = append(rw, rv[i]/rv[i-5]-1)
-	}
-	if len(sw) >= 12 {
-		msw, mrw := metrics.Mean(sw), metrics.Mean(rw)
-		var cov, vs, vr float64
-		for i := range sw {
-			cov += (sw[i] - msw) * (rw[i] - mrw)
-			vs += (sw[i] - msw) * (sw[i] - msw)
-			vr += (rw[i] - mrw) * (rw[i] - mrw)
-		}
-		if vs > 0 && vr > 0 {
-			v.WeeklyCorr = cov / math.Sqrt(vs*vr)
-		}
+	days := int(v.End.Sub(v.Start).Hours() / 24)
+	v.CAGRSim = metrics.Annualize(growth(p.R[0])-1, days)
+	v.CAGRReal = metrics.Annualize(growth(p.R[1])-1, days)
+	if w, err := p.Compound(5); err == nil && w.Len() >= 12 {
+		v.WeeklyCorr = metrics.Corr(w.R[0], w.R[1])
 	}
 	return v, nil
+}
+
+// The column names pairPanel gives its two series: the Symbols of an engine
+// and of the quotes it rebuilds may well be equal.
+const (
+	columnA = "A"
+	columnB = "B"
+)
+
+// pairPanel puts two series, a reconstruction and its reference or two
+// links of a donor chain, on one calendar of f, as columnA and columnB.
+func pairPanel(f marketdata.Frequency, a, b *marketdata.Series) (*marketdata.Panel, error) {
+	if a.Len() == 0 || b.Len() == 0 {
+		return nil, errors.New("empty series")
+	}
+	ca, cb := *a, *b
+	ca.Symbol, cb.Symbol = columnA, columnB
+	return marketdata.NewPanel(f, &ca, &cb)
+}
+
+// growth is the growth factor returns compound to.
+func growth(returns []float64) float64 {
+	g := 1.0
+	for _, r := range returns {
+		g *= 1 + r
+	}
+	return g
 }
 
 // seriesFromFrame packages composite values as a marketdata series.

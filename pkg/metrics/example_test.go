@@ -376,6 +376,24 @@ func ExampleTrackingError() {
 	// 0.34 %/yr
 }
 
+// Track reads a replica against its index in one call: it moves with the
+// index almost exactly, and trails it by about a fifth of a point a year,
+// which six months cannot tell from zero (the difference is well inside two
+// standard errors).
+func ExampleTrack() {
+	index := []float64{0.012, -0.020, 0.031, 0.004, -0.007, 0.015}
+	replica := []float64{0.011, -0.019, 0.030, 0.005, -0.008, 0.015}
+	t, err := metrics.Track(replica, index, 12)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("corr %.3f, beta %.2f, tracking error %.2f %%/yr\n", t.Corr, t.Beta, t.TrackingError*100)
+	fmt.Printf("difference %+.2f pt/yr, standard error %.2f\n", t.Difference*100, t.DifferenceSE()*100)
+	// Output:
+	// corr 0.999, beta 0.97, tracking error 0.34 %/yr
+	// difference -0.20 pt/yr, standard error 0.48
+}
+
 // LeadLagGaps forgives a one-session clock difference: a Xetra line that
 // books each of New York's moves a session late disagrees with the index by
 // two points and more on the days of the big move, and by nothing once the
