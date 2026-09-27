@@ -102,7 +102,7 @@ var French = &Edition{
 // It is mounted at /firebook/en/ and is complete: every French article that is
 // not marked fr-only has an English counterpart, a guard test enforces it, and
 // the two editions cross-link article by article (WithAlternate). See
-// docs/fire-book-en-edition-design.md.
+// docs/specs/fire-book-en-edition-design.md.
 var English = &Edition{
 	Lang:     "en",
 	OGLocale: "en_US",

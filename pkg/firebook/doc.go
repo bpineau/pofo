@@ -16,7 +16,7 @@
 // The table of contents is data (Categories); the index page and the
 // navigation are generated from it, so adding an article means adding its
 // .md file and one manifest line. Wiki-links may point at planned but not yet
-// written articles (the full plan is docs/fire-book-design.md); those render
+// written articles (the full plan is docs/specs/fire-book-design.md); those render
 // as plain text until the target exists, and a guard test keeps files,
 // manifest and links consistent.
 //
@@ -68,7 +68,7 @@
 // Every paired page then declares both languages with rel="alternate"
 // hreflang links (plus an x-default naming the source edition) and offers a
 // switch to its counterpart; a page the sibling does not carry declares
-// nothing. The design is docs/fire-book-en-edition-design.md.
+// nothing. The design is docs/specs/fire-book-en-edition-design.md.
 //
 // # Being found, and being quoted
 //

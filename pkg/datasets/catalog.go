@@ -15,7 +15,7 @@ const StrategySingleStock = "single-stock"
 // a fund valued after its market has closed; NowcastAnchorOpen belongs to a
 // fund whose valuation rules name the opening price of the valuation day, whose
 // nowcast must therefore leave that session's open-to-close move out of the
-// anchor (marketdata.Client nowcast, docs/eres-fcpe-design.md).
+// anchor (marketdata.Client nowcast, docs/specs/eres-fcpe-design.md).
 const (
 	NowcastAnchorClose = "close"
 	NowcastAnchorOpen  = "open"

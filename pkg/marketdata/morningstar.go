@@ -30,7 +30,7 @@ const morningstarUniverses = "FOALL$$ALL|ETALL$$ALL"
 // fields matters, not their content: a bare fund id happens to work, an
 // exchange-traded one does not, and appending this to either is harmless.
 // Losing that suffix is what silently emptied this source (see
-// docs/trend-reconstruction-design.md).
+// docs/specs/trend-reconstruction-design.md).
 const morningstarIDSuffix = "]2]1]"
 
 // fetchMorningstar downloads a daily NAV series from the Morningstar

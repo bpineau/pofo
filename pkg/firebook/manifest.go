@@ -28,7 +28,7 @@ type Category struct {
 
 // Categories is the book's table of contents, in reading order. It lists
 // only WRITTEN articles; the full plan (written and future) is
-// docs/fire-book-design.md, mirrored by planned below. The index page and
+// docs/specs/fire-book-design.md, mirrored by planned below. The index page and
 // all navigation are generated from this manifest.
 var Categories = []Category{
 	{
@@ -222,7 +222,7 @@ func (e *Edition) find(slug string) (Article, Category, bool) {
 }
 
 // planned lists every article of the book's full plan, written or not
-// (docs/fire-book-design.md is the human-readable version). Wiki-links are
+// (docs/specs/fire-book-design.md is the human-readable version). Wiki-links are
 // validated against this set, so an article may link forward to a page that
 // does not exist yet (it renders as plain text until then), while a typo in
 // a slug still fails the guard test.

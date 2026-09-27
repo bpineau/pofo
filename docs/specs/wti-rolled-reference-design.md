@@ -190,4 +190,4 @@ deep tail, not to graft an engine onto it.
   a month, which is a monthly phantom in a regression leg rather than a level
   error. Repricing it still fails the gate, because this series stops at
   2024-04-05 while the blend is graded against the fund through 2026; the full
-  record is in `docs/trend-reconstruction-design.md`.
+  record is in `docs/specs/trend-reconstruction-design.md`.

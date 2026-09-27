@@ -339,7 +339,7 @@ func TestFigureDictValuesAreXMLSafe(t *testing.T) {
 }
 
 // Completeness, enforced unconditionally since the edition shipped (M4 of
-// docs/fire-book-en-edition-design.md): every French article either has an
+// docs/specs/fire-book-en-edition-design.md): every French article either has an
 // English counterpart or says in its own file that it is French-only.
 func TestEnglishEditionIsComplete(t *testing.T) {
 	covered := map[string]bool{}

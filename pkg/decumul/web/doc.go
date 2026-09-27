@@ -48,7 +48,7 @@
 // is computed exactly as it was before the controls existed. The structure is
 // worth 0.015 point of withdrawal rate and the drain order 0.03, against 0.12
 // for the rate's calibration and 0.30 for the gain fraction: see
-// docs/fire-envelopes-tax-model-design.md, which also carries the calibration
+// docs/specs/fire-envelopes-tax-model-design.md, which also carries the calibration
 // recipe (a gain-weighted rate, a capital-weighted gain fraction) that the
 // help texts point at.
 //

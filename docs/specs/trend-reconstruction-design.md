@@ -35,7 +35,7 @@ object from the reconstructions here and must stay one. It is not a fund's
 path, it is not rescaled to a fund's target (the move that discredited the
 removed tail), and a sleeve held through it carries roughly half the risk the
 real one would, which understates both the sleeve's contribution and its drag.
-See `docs/index-benchmarks-design.md` and
+See `docs/specs/index-benchmarks-design.md` and
 `examples/portfolios/risk-budget-decumulation-deephist.txt`, which measures what the
 substitution costs before using it.
 
@@ -590,7 +590,7 @@ other end.
 
 **What the defect actually is, measured 2026-08-21.** A rolled WTI excess-return
 series now exists in the repo (`WTI-ER-USD`, 1985 to 2024-04,
-`docs/wti-rolled-reference-design.md`), so the leg could be compared with a
+`docs/specs/wti-rolled-reference-design.md`), so the leg could be compared with a
 properly rolled one rather than argued about. It is NOT only a level error, and
 the earlier framing above understated it. Over the 5913 shared days from 2000-08
 the two series correlate 0.957 daily, and the difference is not a slow drift:
@@ -1232,7 +1232,7 @@ Not one of the six reaches one and a half standard errors from zero, and the
 two longest windows, ZROZ's sixteen years and NTSX's eight, are the two
 smallest gaps in the table. NTSG has changed sign since the figure that opened
 this item: it was rebuilt in 2026-08 on the MSCI World equity leg and the
-four-currency bond overlay (`docs/ntsg-global-efficient-core-design.md`), and
+four-currency bond overlay (`docs/specs/ntsg-global-efficient-core-design.md`), and
 now reads two and a half points COLD. What was recorded as "uniformly hot" was
 a snapshot of five short windows, three of which have since moved by more than
 the effect being chased.

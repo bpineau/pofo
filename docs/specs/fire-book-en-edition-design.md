@@ -9,7 +9,7 @@ completeness guard), except on-device KOReader validation, still owed.
 Next: M3, the three US-framework articles.
 This document is the implementation brief for the
 English edition of the embedded FIRE book ("Le FIRE tranquille",
-`pkg/firebook`). Read `docs/fire-book-design.md` first: everything there
+`pkg/firebook`). Read `docs/specs/fire-book-design.md` first: everything there
 (depth bar, callout types, figure system, guard-test discipline) applies to
 the English edition too unless this document says otherwise.
 
@@ -438,7 +438,7 @@ then a reading of the sections) yields the list below, settled the same day.
 Three outcomes per article: fr-only (marker on the French file, no English
 counterpart, dropped from `plannedEN`), adapt (one or more sections rewritten
 for the US reader; the rest translates), or generalize (the default, see
-`docs/fire-book-en-translation-brief.md`, section 3). An article absent from
+`docs/specs/fire-book-en-translation-brief.md`, section 3). An article absent from
 this table is generalized.
 
 | FR slug | EN slug | Decision | Why |

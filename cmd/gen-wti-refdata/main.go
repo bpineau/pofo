@@ -33,7 +33,7 @@
 // this source. That is the reliability bound: the series stops where its
 // evidence stops. The published index families that would carry it further
 // (S&P GSCI Crude Oil ER, Bloomberg Crude Oil Subindex ER) have no free
-// historical download; see the notes in docs/wti-rolled-reference-design.md.
+// historical download; see the notes in docs/specs/wti-rolled-reference-design.md.
 //
 // METHOD. A long position in the first nearby contract, rolled into the second
 // nearby over the fifth through ninth business day of each month, one fifth of

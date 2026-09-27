@@ -17,7 +17,7 @@ history.
 NTSX reaches back to 1953 by leaning on long-running **US** index funds
 (Vanguard) and USD refdata (S&P 500 to 1871, CMT Treasuries to 1953), and NTSG to
 1969 on the MSCI World reconstruction plus a four-currency bond basket
-(`docs/ntsg-global-efficient-core-design.md`). NTSZ is **euro-native end to end**, and no comparable deep euro building blocks
+(`docs/specs/ntsg-global-efficient-core-design.md`). NTSZ is **euro-native end to end**, and no comparable deep euro building blocks
 existed in the repo. So the deep tail is assembled from four new bundled
 reference series, all sourced from **DBnomics** (free, key-less; the same mirror
 the macro panel uses) by `cmd/gen-euro-refdata`. The pofo binary never fetches

@@ -84,7 +84,7 @@ type Lifetime struct {
 	// couples are positively dependent (shared environment, the broken-heart
 	// effect), so independence overstates the chance that someone is still
 	// alive, which overstates the plan's longevity load rather than flattering
-	// it. See docs/stochastic-lifetime-kernel-design.md.
+	// it. See docs/specs/stochastic-lifetime-kernel-design.md.
 	Partner *Life
 	// SurvivorSpend scales the household's needs-based spending once one
 	// member is gone (the literature's figure is around 0.7: one person does

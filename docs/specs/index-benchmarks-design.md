@@ -79,7 +79,7 @@ matter: nothing is rescaled to a fund's volatility target (the index is served
 at its own ~9.3 % in USD, ~8 % hedged, against the ~15 % a UCITS trend fund
 runs), and nothing is grafted. Rescaling an index to a fund's target is
 precisely what discredited an earlier tail over this period; see "The tail that
-was removed" in `docs/trend-reconstruction-design.md`. A sleeve held through
+was removed" in `docs/specs/trend-reconstruction-design.md`. A sleeve held through
 this line therefore carries roughly half the risk of the real one, which is
 the price of the extra decade and the safe direction to err in. Measured over
 1996-2026 on `examples/portfolios/risk-budget-decumulation-longhist.txt`, substituting the

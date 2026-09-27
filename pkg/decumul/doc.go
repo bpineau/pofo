@@ -70,7 +70,7 @@
 // PathResult.LifeYears.
 //
 // Design and calibration, including what the bundled Gompertz law gets wrong
-// and in which direction: docs/stochastic-lifetime-kernel-design.md.
+// and in which direction: docs/specs/stochastic-lifetime-kernel-design.md.
 //
 // # Realism: the optimism that was measured out (2026-06)
 //

@@ -2,8 +2,8 @@
 
 Opened 2026-08-16. This is the one file a translation session needs to
 read before touching an article. It is deliberately procedural; the reasons
-behind each rule live in `docs/fire-book-en-edition-design.md`, the
-vocabulary in `docs/fire-book-en-glossary.md`. Read all three, in that
+behind each rule live in `docs/specs/fire-book-en-edition-design.md`, the
+vocabulary in `docs/specs/fire-book-en-glossary.md`. Read all three, in that
 order, then work.
 
 The French edition ("Le FIRE tranquille", `pkg/firebook/assets/book/fr/`)
@@ -94,7 +94,7 @@ weight for the target reader.
 ## 4. Translate
 
 The style sheet, in full, is the "English style sheet" section of the
-design doc; the vocabulary is `docs/fire-book-en-glossary.md`. The
+design doc; the vocabulary is `docs/specs/fire-book-en-glossary.md`. The
 non-negotiables:
 
 - US English. NO em-dash, NO en-dash, anywhere (prose, tables, captions,
@@ -186,7 +186,7 @@ index page grows with the manifest.
   reported overflow. Do NOT render and eyeball PNGs per article: the visual
   pass is batched once per part by the maintainer.
 - Append one row to the ledger table of
-  `docs/fire-book-en-edition-design.md` ("France-specific passages"
+  `docs/specs/fire-book-en-edition-design.md` ("France-specific passages"
   section): FR slug, EN slug, generalize/adapt, one-line note of what you
   neutralized or rewrote and which fr-only links you dropped.
 
