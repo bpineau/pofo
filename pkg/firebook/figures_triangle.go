@@ -51,8 +51,8 @@ var triRows = []triSeries{
 
 // triCorr is the lower triangle of the correlation matrix of the MONTHLY
 // returns of those seven series, over ONE common window: the month ends every
-// series quotes, from December 2000 to May 2026, that is 305 monthly returns
-// from January 2001 to May 2026. Row i holds the correlations of series i with
+// series quotes, from December 2000 to August 2026, that is 308 monthly returns
+// from January 2001 to August 2026. Row i holds the correlations of series i with
 // series 0 to i-1.
 //
 // Reproduce: read each identifier with marketdata.ReadSimdataFS on
@@ -76,8 +76,8 @@ var triCorr = [][]float64{
 	{0.97, 1.00},
 	{0.94, 0.85, 0.86},
 	{-0.12, -0.13, -0.13, -0.09},
-	{0.13, 0.06, 0.06, 0.23, 0.23},
-	{-0.08, -0.10, -0.10, -0.05, 0.11, 0.16},
+	{0.13, 0.06, 0.07, 0.24, 0.22},
+	{-0.08, -0.10, -0.09, -0.05, 0.11, 0.18},
 }
 
 // triEquityRows is the number of leading rows that are equity funds: the block
@@ -207,7 +207,7 @@ func figTriangleCorrelations() string {
 	var b strings.Builder
 	b.WriteString(plateHead("diversification", "Quatre fonds actions ne font qu'un seul actif"))
 	b.WriteString(sTxt(24, 64, 10.2, figMuted, "start", "400",
-		"corrélation des rendements mensuels, janvier 2001 à mai 2026, une seule fenêtre commune de 305 mois"))
+		"corrélation des rendements mensuels, janvier 2001 à août 2026, une seule fenêtre commune de 308 mois"))
 
 	// Rows: the name, then the index right against the grid, where it heads the
 	// column of the same number. The three redundant equity funds are set in
