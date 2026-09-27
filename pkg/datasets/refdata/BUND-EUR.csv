@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: BUND-EUR
 # name: German government bond total return (10-year benchmark, EUR, monthly)
-# source: month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from 1997-08; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, 10y par); via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. CADENCE: the OECD observation for a month is that month's AVERAGE of the daily quotes, so the level is reached mid-month and its monthly returns are smoothed. The label is the month's last day, the convention every other monthly series here carries, so that the file's steps and its junction with a real month-end segment are one month each; it is a name for the month, not a claim that the level is a month-end close.
+# source: month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from 1997-08; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, 10y par); the curve from the Bundesbank's SDMX web service, the OECD yield via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. CADENCE: the OECD observation for a month is that month's AVERAGE of the daily quotes, so the level is reached mid-month and its monthly returns are smoothed. The label is the month's last day, the convention every other monthly series here carries, so that the file's steps and its junction with a real month-end segment are one month each; it is a name for the month, not a claim that the level is a month-end close.
 date,close
 1956-05-31,100.000000
 1956-06-30,97.724658
@@ -845,4 +845,6 @@ date,close
 2026-04-30,5466.211084
 2026-05-29,5544.946849
 2026-06-30,5612.062058
-2026-07-03,5570.434495
+2026-07-31,5494.537037
+2026-08-31,5435.837736
+2026-09-25,5332.032845

@@ -2,6 +2,8 @@
 # id: DECASH-EUR
 # name: German 3-month money-market accrual (EUR/DM, monthly)
 # source: OECD German 3-month interbank rate DEU.M.IR3TIB (dataflow DSD_STES@DF_FINMARK, ~1960-01, the Bundesbank's three-month money at the Frankfurt banking centre, FIBOR from 1991-01) rolled monthly at the convention it is quoted in (simple, German 360/360 to 1990-06 and act/360 after); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd). Pre-euro cash tail spliced under EURCASH-EUR at 1994.
+# generated: 2026-09-27
+# ends: 1994-11-30 (trimmed where EURCASH-EUR, which starts 1994, takes the cash leg over)
 date,close
 1959-12-31,100.000000
 1960-01-31,100.363333
