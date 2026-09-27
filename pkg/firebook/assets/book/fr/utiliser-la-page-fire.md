@@ -96,4 +96,4 @@ Par honnêteté de conception, plusieurs choses restent hors champ. Pas de prév
 
 - Les deux volets pliants de la page elle-même : « How this machine works » (chaque contrôle, chaque modèle) et « Method & honest caveats ».
 - La version longue de la tuyauterie ([[la-machine-pofo]]), les familles de modèles ([[historique-vs-parametrique]]) et la lecture des cônes ([[lire-un-fan-chart]]).
-- Le **readme** de pofo (section « Decumulation / FIRE analysis ») pour les options de la CLI.
+- Le guide FIRE de la documentation de pofo (`docs/usage/fire.md` dans le dépôt) pour la ligne de commande et la bibliothèque Go.

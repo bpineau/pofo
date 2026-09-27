@@ -1,13 +1,17 @@
 # pofo, for coding agents
 
 Read this file first; it is the cheapest way in. Details live in each
-package's `doc.go` (`go doc ./pkg/<name>` renders it) and in `README.md`
-(user-facing, CLI-oriented). `docs/` has two halves (`docs/README.md` is the
-index): `docs/specs/` is AGENT-facing and holds only what the code cannot
-carry (rationale, data validation records, traps, nomenclature and glossaries,
-recurring procedures): read the relevant one BEFORE reworking a feature;
-`docs/usage/` holds the HUMAN guides (getting started, the CLI, the file
-format, the web app, the library, FIRE, data and backcasts). Never add a
+package's `doc.go` (`go doc ./pkg/<name>` renders it). `README.md` is the
+short, high-level front page (the four faces, a quick start, a routing table);
+it routes to the guides and holds no detail of its own. `docs/` has two halves
+(`docs/README.md` is the index): `docs/specs/` is AGENT-facing and holds only
+what the code cannot carry (rationale, data validation records, traps,
+nomenclature and glossaries, recurring procedures): read the relevant one
+BEFORE reworking a feature; `docs/usage/` holds the HUMAN guides
+(`getting-started.md`, `cli.md`, `portfolio-files.md`, `web.md`, `fire.md`,
+`data.md`, and `library/`, one page per task, whose `README.md` carries the
+units table). A user-visible change updates the guide that describes it, not
+the README. Never add a
 plan, a backlog or a pre-implementation spec to either: design in the
 conversation, then let the godoc carry the shipped design.
 
@@ -143,9 +147,10 @@ When a trade-off is unclear, these decide it, in order.
 8. **Every package keeps a `doc.go`** with its conventions and runnable
    `example_test.go` examples; extend them with any new API. New logic comes
    with tests: most packages sit at 75 to 97 % coverage and that is the bar.
-9. **Documentation is part of the change**, not a follow-up: README, `doc.go`,
-   the spec in `docs/specs/`, the human guide in `docs/usage/` and this file's
-   Map are updated in the same commit as the code they describe.
+9. **Documentation is part of the change**, not a follow-up: `doc.go`, the
+   spec in `docs/specs/`, the human guide in `docs/usage/`, this file's Map
+   (and the README's routing table if a guide is added) are updated in the
+   same commit as the code they describe.
 
 ## Commands
 
@@ -257,9 +262,9 @@ Tests never touch the network: HTTP sources are faked with `httptest`
   `make verify-catalog` runs the doctor over all of it (plausibility bands per
   `asset_class`, identity vs the record); run it after any catalog edit or
   `make refresh`.
-- Documentation: `go test -run 'TestGodoc|TestReadmeSnippets' .` is the
-  cheap check (both run in `make test`); `go doc ./pkg/<name>` renders what
-  pkg.go.dev will show.
+- Documentation: `go test -run 'TestGodoc|TestDocSnippets|TestUnitsTable' .`
+  is the cheap check (all run in `make test`); `go doc ./pkg/<name>` renders
+  what pkg.go.dev will show.
 
 ## Map
 
@@ -286,10 +291,10 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 | `pkg/compare` | `Sweep` (per-holding weight grid, the evidence behind a file's sane ranges, behind `pofo -sweep`); compute the comparison model and assemble the HTML report `Page`, as presentation over `pkg/analyze`: every column is an `analyze.Portfolio` study (`Comparison.Studies`), and compare keeps only the currency expansion, the optimizer column, the benchmark, the common window and its nominal/real stats; presentation-neutral, web chrome arrives via `Decoration`, terminal output via `Columns`/`StatRows`; shared by the CLI and `-serve` |
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/specs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/specs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture computation tests, PLUS two guards that measure the bundle as DATA rather than as computations, because what they hunt is invisible to a return: `gaps_test.go` refuses a step longer than the series' own pace allows (a monthly file skipping a month, a daily one silent for three weeks), and `spikes_test.go` refuses a one-session round trip no instrument could have made; both call the library rules `marketdata.FindGaps`/`FindSpikes`, never a private copy) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB), `dump.go` (`-dump`: series to stdout as long CSV via `marketdata.WriteCSV`, bundled references included; the global `-offline` flag is set on every mode's client by `options.newClient` in `main.go`), `pair.go` (`-pair A,B`: `analyze.Pair` as text, or JSON under `-json`, each side an identifier fetched as `-dump` does or a CSV path) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `foreign.go` (identifiers outside the bundled catalog: the ISIN/ticker shape gate plus the per-client and per-process hourly fetch budgets behind `-serve-foreign-per-hour`, 0 = catalog only), `prefs.go` (the settings cookie), `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) and `logdedup.go` (log hygiene for the long-lived servers: each informational fetch line once per process, every `warning:` always; `/healthz` and the access log live in `serve.go`) |
-| `docs/` | `docs/README.md` indexes both halves. `docs/specs/`: agent-facing, only what the code cannot carry (rationale behind non-obvious decisions, validation records of bundled data, traps, nomenclature and glossaries, recurring procedures). `docs/usage/`: the human guides. No plans or backlogs in either: a shipped package's design is its godoc |
+| `docs/` | `docs/README.md` indexes both halves. `docs/specs/`: agent-facing, only what the code cannot carry (rationale behind non-obvious decisions, validation records of bundled data, traps, nomenclature and glossaries, recurring procedures). `docs/usage/`: the human guides, `README.md` its index: `getting-started`, `cli`, `portfolio-files`, `web`, `fire`, `data`, and `library/` (`README.md` = the question-to-call table, a first program and the UNITS table; then `loading`, `statistics`, `panels`, `comparing`, `portfolios`, `optimization`, `backcasts`, `rendering`); short paragraphs, task headings, real command output, no history and no agent minutiae (those stay in `docs/specs/` and here). No plans or backlogs in either: a shipped package's design is its godoc |
 | `examples/portfolios/` | portfolio files for the CLI (also exercised by `make demo`); package `portfolios`, whose `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` (the public URL kept its historical path) |
 | `examples/code/` | single-file SCRIPTS over the library, one question each (`describe`, `stats`, `blend`, `regress`, `worstmonths`, `episodes`, `rolling`, `calendar`, `currency`, `fees`, `pair`, `oldnew`, `scanbundle`, `correl`, `simulate`, `optimize`, `fire`, `replay`, `export`; indexed by its `README.md`): each a `package main` behind `//go:build ignore`, run as `go run examples/code/<name>.go`, reading its ids through `marketdata.Client.Load`; no tests by design, `make examples` (in `make check`) compiles, vets and lints each file so a library change that breaks one fails the gate |
-| root (`.`) | `doc.go` = the library's ENTRY POINT (question to package, a complete program, the units table, the packages, the layering measured by `go list`); `example_test.go` = that program as the package `Example`, run by `TestExampleRuns`; `godoc_test.go` = `TestGodoc`, the documentation bar over `pkg/` (package comment, a doc comment on every exported identifier incl. struct fields and interface methods, starting with its name, every doc link resolving); `snippets_test.go` = `TestReadmeSnippets`, every README ```` ```go ```` block headed `// from pkg.ExampleX` must be that example's body, and `doc.go`'s program the root `Example`'s |
+| root (`.`) | `doc.go` = the library's ENTRY POINT (question to package, a complete program, the units table, the packages, the layering measured by `go list`); `example_test.go` = that program as the package `Example`, plus `Example_quickStart`, the README's ten-line program, both run by `TestExampleRuns` (unpinned output, it moves with the data); `godoc_test.go` = `TestGodoc`, the documentation bar over `pkg/` (package comment, a doc comment on every exported identifier incl. struct fields and interface methods, starting with its name, every doc link resolving); `snippets_test.go` = `TestDocSnippets`, every ```` ```go ```` block of `README.md` and of `docs/usage/**/*.md` must open on `// from pkg.ExampleX` and be that example's body (a block naming no example fails too), and `doc.go`'s program the root `Example`'s; plus `TestUnitsTable`, the library guide's units table held to `doc.go`'s (same rows in order, every backquoted name in a guide row present in `doc.go`'s row) |
 
 ## The core pipeline (library)
 
@@ -319,16 +324,19 @@ stats, _ := metrics.Compute(sim.Dates, sim.Index)
 ```
 
 Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
-`ConvertCurrency`, `Trim`, ...) when a caller needs to deviate. README.md's
-"Using it as a library" walks the library BY TASK, and every snippet there is
-a verbatim copy of a runnable `Example*` it names: change the example, then
-the README, never the README alone (`TestReadmeSnippets` fails otherwise).
+`ConvertCurrency`, `Trim`, ...) when a caller needs to deviate. The library
+guide, `docs/usage/library/`, walks the library BY TASK, and every Go snippet
+in it (and in the other guides and the README) is a verbatim copy of a
+runnable `Example*` it names: change the example, then the guide, never the
+guide alone (`TestDocSnippets` fails otherwise). A guide that needs a new
+snippet gets a new `Example` first, on synthetic data with a pinned
+`// Output:` where it can.
 
 ## Conventions and traps (do not guess, check here)
 
-- UNITS, the number one trap. The per-package table lives in README.md
-  ("Using it as a library", Units) and in the root `doc.go`; keep the two in
-  step. Fees and rates mix two conventions:
+- UNITS, the number one trap. The per-package table lives in the root
+  `doc.go` (authoritative) and in `docs/usage/library/README.md` ("Units");
+  `TestUnitsTable` keeps the two in step. Fees and rates mix two conventions:
   - PERCENT per year: `portfolio.Holding.Fees`, `Portfolio.EnvelopeFees`,
     `Portfolio.BorrowSpread`, `marketdata.Client.Fees` (0.85 = 0.85 %/yr).
   - FRACTION per year: everything in `pkg/simgen` (fees, vol targets:
@@ -568,8 +576,8 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
 - Ad hoc analysis across series (blends, regressions, conditional stats on
   the worst months, fee drags, named episodes): in Go, over
   `marketdata.NewPanel` and `pkg/metrics`, never in a Python notebook with
-  its own return math. README's "Explore returns across series" is the
-  recipe; throwaway programs go under the gitignored `/scratch/`.
+  its own return math. `docs/usage/library/panels.md` is the recipe;
+  throwaway programs go under the gitignored `/scratch/`.
 - Report per-portfolio blocks (composition pies, coverage bars, risk budget,
   realized contribution charts): assembled in `pkg/compare` (`breakdownPies`,
   `coverageBars` in `composition.go`; `riskBudgetRows` in `riskbudget.go`, over
@@ -677,9 +685,10 @@ the README, never the README alone (`TestReadmeSnippets` fails otherwise).
       `./pofo -verify-data -assets <id>` checks one asset end to end and
       `make verify-catalog` runs the doctor over all of it.
 - [ ] Docs updated in the SAME commit: the package's `doc.go`, its
-      `example_test.go`, `README.md` if a command or an output changed, the
-      spec in `docs/specs/`, the guide in `docs/usage/` if a user-visible
-      behavior changed, and this file's Map if a package gained a concern.
+      `example_test.go`, the spec in `docs/specs/`, the guide in
+      `docs/usage/` if a command, an output or a user-visible behavior
+      changed (the README only if a guide is added or a face changes), and
+      this file's Map if a package gained a concern.
       Every new exported identifier (struct fields included) carries a doc
       comment that starts with its name and states its unit and sentinel
       values (`TestGodoc`); a new entry point gets a runnable `Example`, and
