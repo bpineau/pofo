@@ -179,7 +179,7 @@ and `stats`' doc says so; `CAGR`/`Feasible` keep their path meaning.
   origin, then one entry per line "ID: implied X % -> posterior Y %" (only
   lines a view touched change, the others are listed once as "unchanged"),
   then the views as parsed. `objectiveLabel` names the objective.
-- Every enumeration of the objectives is extended: `README.md`, `AGENTS.md`,
+- Every enumeration of the objectives is extended: `docs/usage/portfolio-files.md`, `AGENTS.md`,
   root `doc.go`, `cmd/pofo/main.go` (flag help), `pkg/metrics/doc.go`,
   `pkg/metrics/example_test.go` if it lists them, `pkg/optimize/series.go`,
   `pkg/optimize/doc.go` ("Ten objectives"), and the `CLAUDE.md` map line for

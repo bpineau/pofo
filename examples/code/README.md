@@ -58,7 +58,8 @@ mkdir -p scratch && cp examples/code/blend.go scratch/volcheck.go
 go run scratch/volcheck.go SP500-USD=60 TREASURY-INT-USD=40
 ```
 
-`go doc github.com/bpineau/pofo` is the library's entry point (which package
+The [library guide](../../docs/usage/library/README.md) walks the packages by
+task, `go doc github.com/bpineau/pofo` is the API's entry point (which package
 answers which question, a complete program, the units table), and every
 package's `go doc` page opens on the calls to start with. What turns out to
 be worth keeping becomes a script here, a `pofo` mode, or library code with

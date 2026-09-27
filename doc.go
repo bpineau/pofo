@@ -96,16 +96,18 @@
 // reconstruction against its reference, a portfolio file's correlations,
 // simulation and optimized weights, a FIRE run, the withdrawal rules through
 // history, a CSV export. Copy the nearest one into the gitignored scratch/
-// directory to explore further. README.md's chapter "Using it as a library"
-// walks the library by task, each snippet a verbatim copy of a runnable
-// example, and every package's own documentation opens on the calls to start
-// with. Some of the same questions without writing Go: "pofo -dump", "pofo
-// -pair", "pofo -verify-simdata -json", each with -offline.
+// directory to explore further. The library guide, docs/usage/library in the
+// repository (README.md there is its index), walks the packages by task, each
+// snippet a verbatim copy of a runnable example; docs/usage holds the other
+// guides (getting started, the command line, portfolio files, the web app,
+// FIRE, data and backcasts). Every package's own documentation opens on the
+// calls to start with. Some of the same questions without writing Go: "pofo
+// -dump", "pofo -pair", "pofo -verify-simdata -json", each with -offline.
 //
 // # Units and conventions
 //
 // Units are the library's number one trap, and this table holds them (the
-// README's Units table says the same):
+// library guide's Units table repeats it, and a test keeps the two in step):
 //
 //	weights          FRACTION in memory (portfolio.Line, Holding.Weight, Asset.Weight,
 //	                 Panel.Mix, optimize, analyze); PERCENT in portfolio files and

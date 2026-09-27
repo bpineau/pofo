@@ -9,7 +9,7 @@
 // What a p= holding identifier may be: any identifier the bundled catalog
 // resolves offline (an id, an ISIN, an alias or an embedded fund ticker, with
 // the optional SIM suffix), always; plus, when the server was started with a
-// foreign-identifier budget (-serve-foreign-per-hour, off by default), a
+// foreign-identifier budget (-serve-foreign-per-hour, 10 by default, 0 = off), a
 // well-formed ISIN or exchange ticker outside the catalog, fetched from the
 // usual sources within an hourly per-client and per-process allowance. The
 // gate and the budgets live in foreign.go. A well-formed identifier no source
