@@ -205,6 +205,35 @@ Tests never touch the network: HTTP sources are faked with `httptest`
   `make verify-catalog` runs the doctor over all of it (plausibility bands per
   `asset_class`, identity vs the record); run it after any catalog edit or
   `make refresh`.
+- Holes and bad prints in any series (a bundled file, a cached quote, a
+  generator's output before it ships): `marketdata.FindGaps` and
+  `marketdata.FindSpikes`, the very rules the golden guards and the doctor
+  run. Never re-implement them.
+
+## Ad hoc exploration in Go
+
+A question the CLI does not answer (a regression across three series, a
+before/after over the whole catalog, a statistic no mode prints) is answered
+in Go, never in Python, with a throwaway program INSIDE the module, so pofo's
+packages import with no `go.mod` or `replace` dance:
+
+```sh
+mkdir -p scratch/volcheck && $EDITOR scratch/volcheck/main.go   # package main
+go run ./scratch/volcheck
+```
+
+- `scratch/` is gitignored: never commit it, never `git add -f` it. What turns
+  out to be worth keeping moves into a `pkg/` package with tests, or into a
+  `cmd/pofo` mode.
+- Reach data without the network: `marketdata.Bundled(id)` for any embedded
+  series, a client with `Offline = true` for the quote cache, `ReadCSV` for a
+  file (`git show REV:path` for an old version); then `NewPanel`,
+  `Panel.Track`, `analyze.Pair`, `FindGaps`/`FindSpikes`, `pkg/metrics`.
+- The Makefile's gate leaves `scratch/` out (`PKGS` filters it from
+  `go list ./...`, `fmt-check` from its file list), so a scratch program that
+  stopped compiling never fails `make check`. A bare `go vet ./...`,
+  `go test ./...` or `gofmt -l .` still sees it: delete it when done, or keep
+  it compiling.
 
 ## Map
 
