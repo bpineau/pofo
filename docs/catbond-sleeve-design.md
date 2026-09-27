@@ -194,7 +194,7 @@ manager's, which is the conservative direction.
 
 ## What a 5 to 10 % sleeve does to a decumulation book
 
-Measured on `examples/dragon-decumulation-household.txt` with `sim:on`, in EUR,
+Measured on `examples/portfolios/dragon-decumulation-household.txt` with `sim:on`, in EUR,
 rebalanced every 90 days, over **2005-12-31 to 2026-08-06** (the deepest window
 the file's own lines and this sleeve share), with the Solidum class as the
 sleeve. Two funding rules: pro rata from every line, and out of the bond block

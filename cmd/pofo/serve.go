@@ -22,7 +22,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/examples/portfolios"
 	"github.com/bpineau/pofo/pkg/decumul/web"
 	"github.com/bpineau/pofo/pkg/firebook"
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -99,7 +99,7 @@ var fireSiteNav = []web.NavLink{
 // /firesimulator/p/), the /catalog.json route and /view; the standalone -fire
 // binary has none of them, so it gets no picker.
 var firePicker = sync.OnceValue(func() web.Picker {
-	infos := examples.List()
+	infos := portfolios.List()
 	refs := make([]web.ExampleRef, 0, len(infos))
 	for _, in := range infos {
 		refs = append(refs, web.ExampleRef{Name: in.Name, Title: in.Title, Blurb: in.Blurb})
@@ -140,7 +140,7 @@ type server struct {
 	client   *marketdata.Client
 	render   func(ctx context.Context, opt *options, specs []*portfolio.Spec) ([]byte, error)
 	sem      chan struct{}
-	examples map[string]examples.Info
+	examples map[string]portfolios.Info
 	// presets are the bundled builds the hub's composer offers, shared with
 	// every /view mount through viewPresets (computed once: the examples are
 	// embedded and immutable).
@@ -632,7 +632,7 @@ func (s *server) fireForExample(ctx context.Context, name string) http.Handler {
 	if ok {
 		return h
 	}
-	raw, err := examples.FS.ReadFile(name + ".txt")
+	raw, err := portfolios.FS.ReadFile(name + ".txt")
 	if err != nil {
 		return nil
 	}
@@ -716,7 +716,7 @@ func (s *server) exampleFile(w http.ResponseWriter, r *http.Request) {
 		http.NotFound(w, r)
 		return
 	}
-	raw, err := examples.FS.ReadFile(name + ".txt")
+	raw, err := portfolios.FS.ReadFile(name + ".txt")
 	if err != nil {
 		http.NotFound(w, r)
 		return

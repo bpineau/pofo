@@ -201,11 +201,11 @@ figure-drift: ## What the FIRE book's frozen figures owe the bundled data (optio
 
 .PHONY: demo
 demo: build ## Demo report on the example portfolios
-	./pofo examples/*.txt
+	./pofo examples/portfolios/*.txt
 
 .PHONY: suggest
 suggest: build ## Demo the -suggest analysis on a catalog-based example
-	./pofo -suggest examples/msci-world.txt
+	./pofo -suggest examples/portfolios/msci-world.txt
 
 .PHONY: clean
 clean: ## Remove the binaries (not data/ nor pkg/datasets/)

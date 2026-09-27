@@ -78,9 +78,9 @@
 #   overvaluation, which is precisely why the withdrawal rule above exists.
 #
 #   Compare for yourself, same window, same rule:
-#     ./pofo examples/ern-75-25-jeske.txt examples/golden-butterfly.txt \
-#            examples/miller-50-40-10.txt examples/all-weather-dalio.txt
-#     ./pofo -fire examples/ern-75-25-jeske.txt
+#     ./pofo examples/portfolios/ern-75-25-jeske.txt examples/portfolios/golden-butterfly.txt \
+#            examples/portfolios/miller-50-40-10.txt examples/portfolios/all-weather-dalio.txt
+#     ./pofo -fire examples/portfolios/ern-75-25-jeske.txt
 #   The honest summary is that the two camps disagree less about the data
 #   than about which century to weight, and about whether a spending rule
 #   or an asset sleeve should absorb the shock.

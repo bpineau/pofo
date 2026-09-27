@@ -14,7 +14,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/examples/portfolios"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
 )
@@ -216,9 +216,9 @@ type globalsSeed struct {
 // holding-less card). It is pure over the embedded, immutable examples, so the
 // server computes it once at startup.
 func buildPresets() []composerPreset {
-	out := make([]composerPreset, 0, len(examples.List()))
-	for _, in := range examples.List() {
-		raw, err := examples.FS.ReadFile(in.Name + ".txt")
+	out := make([]composerPreset, 0, len(portfolios.List()))
+	for _, in := range portfolios.List() {
+		raw, err := portfolios.FS.ReadFile(in.Name + ".txt")
 		if err != nil {
 			continue
 		}

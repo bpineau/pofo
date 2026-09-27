@@ -34,12 +34,12 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/examples/portfolios"
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
 // hubItem is one catalog row, pre-shaped for the template. Untitled marks the
-// files whose first line is not a real title (examples.List degrades those to
+// files whose first line is not a real title (portfolios.List degrades those to
 // Title == Name): they render as a bare mono id instead of a lowercase pseudo
 // title with an empty blurb, so no row ever looks broken.
 type hubItem struct {
@@ -51,12 +51,12 @@ type hubItem struct {
 
 // hubItems adapts the sorted example list into template rows.
 func hubItems() []hubItem {
-	list := examples.List()
+	list := portfolios.List()
 	items := make([]hubItem, 0, len(list))
 	for _, in := range list {
 		items = append(items, hubItem{
 			Name:     in.Name,
-			Label:    in.Title, // examples.List already falls back to Name
+			Label:    in.Title, // portfolios.List already falls back to Name
 			Blurb:    in.Blurb,
 			Untitled: in.Title == in.Name,
 		})
