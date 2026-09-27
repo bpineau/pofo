@@ -1,8 +1,139 @@
-// Package pofo is the root of a dependency-free Go toolkit for tracking
-// and designing stock-market portfolios. The command in cmd/pofo is one
+// Package pofo is the root of a dependency-free (standard library only) Go
+// toolkit for deciding and checking how a long-horizon portfolio is built:
+// market data with decades of bundled history, risk and return statistics,
+// portfolio simulation and optimization, withdrawal (FIRE) studies, and the
+// reconstruction of the past of young funds. The command in cmd/pofo is one
 // application built on it; every capability it exposes is reusable from the
-// library packages under pkg/. README.md's chapter "Using it as a library"
-// walks the library by task, each snippet copied from a runnable example.
+// library packages under pkg/. This package itself holds no code.
+//
+// # Start here
+//
+// Import the package that owns the question. Much of the data is bundled
+// with the module (indices since 1871, yields, gold, trend and bond
+// references, the backcast of every catalog fund), so most of these work
+// offline.
+//
+//   - Load a series ([marketdata]): Bundled (embedded, no network),
+//     NewClient then Client.FetchExtended (live quotes, cached on disk;
+//     Client.Offline stays off the network), ReadCSV (a file of your own).
+//   - Describe it ([metrics], [analyze]): Series.Stats, which returns a
+//     metrics.Stats; metrics.CalendarReturns, metrics.DrawdownEpisodes; or
+//     analyze.Asset for everything at once.
+//   - Compare series: analyze.Pair (a candidate against its reference: a
+//     backcast against its fund, a file against its previous version);
+//     marketdata.AlignSeries then metrics.CorrelationMatrix.
+//   - Returns panels, blends, conditional statistics: marketdata.NewPanel,
+//     then Panel.Mix (a rebalanced blend), Panel.Series, Panel.Pick with
+//     metrics.LowestK (the worst months, dated), Panel.Track.
+//   - Regression: metrics.Regress on panel columns.
+//   - A portfolio ([portfolio]): analyze.Portfolio in one call, or
+//     portfolio.Parse or NewSpec, then Build and Simulate.
+//   - Optimize weights ([optimize]): ParseSpec, then Solve.
+//   - FIRE and decumulation ([decumul], [scenario], [replay]): a
+//     decumul.Plan over a scenario.Source, then Plan.Simulate and
+//     Plan.Solve; replay.Run for history as it happened.
+//   - Backcasts ([simgen]): Find and Validate; the shipped ones are read by
+//     marketdata.Bundled or behind a SIM identifier.
+//   - Render ([chart], [compare], [report]): chart.Line, or compare.Compute
+//     then report.Render for the CLI's HTML report.
+//   - Export: marketdata.WriteCSV.
+//
+// A complete program, offline (the package example below):
+//
+//	package main
+//
+//	import (
+//		"fmt"
+//		"log"
+//
+//		"github.com/bpineau/pofo/pkg/marketdata"
+//	)
+//
+//	func main() {
+//		// The S&P 500 total return since 1871, bundled with the module.
+//		sp500, err := marketdata.Bundled("SP500-USD")
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//		bonds, err := marketdata.Bundled("TREASURY-INT-USD")
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//
+//		// Monthly returns on the months both share, and a 60/40 rebalanced
+//		// every month (weights are fractions).
+//		p, err := marketdata.NewPanel(marketdata.Monthly, sp500, bonds)
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//		p, err = p.Mix("60/40", map[string]float64{"SP500-USD": 0.6, "TREASURY-INT-USD": 0.4})
+//		if err != nil {
+//			log.Fatal(err)
+//		}
+//		for _, id := range p.IDs {
+//			s, err := p.Series(id)
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//			st, err := s.Stats()
+//			if err != nil {
+//				log.Fatal(err)
+//			}
+//			fmt.Printf("%-16s CAGR %5.2f %%/yr, volatility %4.1f %%/yr, max drawdown %5.1f %%\n",
+//				id, st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
+//		}
+//	}
+//
+// Longer programs, one question each, live in examples/lib (README.md there
+// is the index): describe a series, blend, regress, the worst months,
+// a reconstruction against its reference, a portfolio file simulated, a FIRE
+// run, a CSV export. README.md's chapter "Using it as a library" walks the
+// library by task, each snippet a verbatim copy of a runnable example, and
+// every package's own documentation opens on the calls to start with. The
+// same questions without writing Go: "pofo -dump", "pofo -pair", "pofo
+// -verify-simdata -json", each with -offline.
+//
+// # Units and conventions
+//
+// Units are the library's number one trap, and this table holds them (the
+// README's Units table says the same):
+//
+//	weights          FRACTION in memory (portfolio.Line, Holding.Weight, Asset.Weight,
+//	                 Panel.Mix, optimize, analyze); PERCENT in portfolio files and
+//	                 Holding.RawWeight
+//	fees (TER)       PERCENT per year in portfolio (Line.Fees, Holding.Fees,
+//	                 EnvelopeFees, BorrowSpread), marketdata Client.Fees and
+//	                 datasets.Asset.Fees; FRACTION per year in simgen (and its
+//	                 volatility targets) and marketdata Series.LessFee
+//	returns          FRACTION everywhere (metrics, analyze, scenario, decumul:
+//	                 0.04 = +4 %); scenario and decumul work in REAL terms
+//	statistics       FRACTION (metrics.Stats, analyze studies), except
+//	                 Stats.Ulcer in percent points and Stats.CWARP in percent
+//	per period or    a return, a Regression, a Covariance and a VaR are PER
+//	  annualized     PERIOD; CAGR, volatility, Sharpe, Sortino, tracking error
+//	                 are ANNUALIZED (Regression.AnnualAlpha converts)
+//	cadence          PERIODS PER YEAR (252 daily, 52 weekly, 12 monthly):
+//	                 metrics.PeriodsPerYear, Stats.PeriodsPerYear,
+//	                 Panel.PeriodsPerYear, the periodsPerYear argument of the
+//	                 bare-return functions and of optimize.Solve
+//	dates            every Point.Date is a session date at 00:00 UTC; series
+//	                 match by exact time.Time equality; a monthly series is
+//	                 labelled by its month-END
+//	closes           ADJUSTED (dividends reinvested, total return) by
+//	                 default; FetchOptions.Raw gives unadjusted closes with
+//	                 Series.Dividends beside them (never both adjusted and
+//	                 dividends); a distributing fund's NAV is a PRICE return
+//	SIM suffix       "IWDA" is real quotes only; "IWDASIM" splices the bundled
+//	                 backcast in front (Client.FetchExtended; Series.SimulatedBefore
+//	                 marks the join); "#meta sim:on" asks it for a whole file
+//	rates            annualized PERCENT LEVELS (^IRX, ^ESTR, ^SOFR..., and
+//	                 portfolio.Portfolio.Cash); never a return
+//	#meta directives PERCENT as written (max-vol:9, view:ID:8@70), FRACTION
+//	                 once parsed into optimize.Spec
+//
+// Volatility and ratios annualize at each series' own cadence with a zero
+// risk-free rate, the CAGR over 365.25-day years; the conventions section of
+// the metrics documentation says why the figures differ from other tools'.
 //
 // # Packages
 //
@@ -134,32 +265,6 @@
 // window, nominal and real statistics, the report Page), so the CLI and the
 // -serve web app share one comparison pipeline.
 //
-// # Conventions and units
-//
-// Volatility and ratios annualize at each series' own cadence
-// (metrics.PeriodsPerYear: 252 on daily closes, 52 on a weekly NAV, 12 on a
-// monthly index) with a zero risk-free rate, the CAGR over 365.25-day years.
-// Functions over bare returns take that cadence as an argument. Units are
-// the library's number one trap, and one table holds them:
-//
-//	weights          FRACTION in memory (portfolio.Line, Holding.Weight, Asset.Weight,
-//	                 optimize, analyze); PERCENT in portfolio files and Holding.RawWeight
-//	fees (TER)       PERCENT per year in portfolio (Line.Fees, Holding.Fees,
-//	                 EnvelopeFees, BorrowSpread), marketdata Client.Fees and
-//	                 datasets.Asset.Fees; FRACTION per year in simgen (and its
-//	                 volatility targets) and marketdata Series.LessFee
-//	returns          FRACTION everywhere (metrics, analyze, scenario, decumul:
-//	                 0.04 = +4 %); scenario and decumul work in REAL terms
-//	statistics       FRACTION (metrics.Stats, analyze studies), except
-//	                 Stats.Ulcer in percent points and Stats.CWARP in percent
-//	cadence          PERIODS PER YEAR (252 daily, 52 weekly, 12 monthly):
-//	                 metrics.PeriodsPerYear, Stats.PeriodsPerYear, the
-//	                 periodsPerYear argument of metrics and optimize.Solve
-//	rates            annualized PERCENT LEVELS (^IRX, ^ESTR, ^SOFR..., and
-//	                 portfolio.Portfolio.Cash); never a return
-//	#meta directives PERCENT as written (max-vol:9, view:ID:8@70), FRACTION
-//	                 once parsed into optimize.Spec
-//
 // # API versus plumbing
 //
 // Most exported symbols are the API. A few exist for the data generators and
@@ -169,6 +274,16 @@
 // plumbing" section of their package documentation, so a reader can tell the
 // toolkit from the machinery that maintains its data.
 //
-// This package itself holds no code: start from the package docs above
-// (for example, go doc github.com/bpineau/pofo/pkg/analyze).
+// [marketdata]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/marketdata
+// [metrics]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/metrics
+// [analyze]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/analyze
+// [portfolio]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/portfolio
+// [optimize]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/optimize
+// [decumul]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/decumul
+// [scenario]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/scenario
+// [replay]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/replay
+// [simgen]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/simgen
+// [chart]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/chart
+// [compare]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/compare
+// [report]: https://pkg.go.dev/github.com/bpineau/pofo/pkg/report
 package pofo

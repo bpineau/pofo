@@ -921,8 +921,79 @@ real (shorter) quotes, from 2007.
 ## Using it as a library
 
 Everything under `pkg/` is a standard-library-only Go toolkit, bundled data
-included; `cmd/` only wires the CLI. Every snippet below is the body of the
-runnable example its first comment names, so `go test ./...` keeps it true.
+included; `cmd/` only wires the CLI. The entry point is the root package
+documentation (`go doc github.com/bpineau/pofo`, or pkg.go.dev), and every
+package's own `go doc` page opens on the calls to start with. Every snippet
+below is the body of the runnable example its first comment names, and
+`go test ./...` fails when one drifts from it.
+
+### Start here
+
+Import the package that owns the question. Much of the data is bundled with
+the module (indices since 1871, yields, gold, trend and bond references, the
+backcast of every catalog fund), so most of these work offline.
+
+| Question | Where |
+|---|---|
+| Load a series | `marketdata.Bundled` (embedded, no network), `NewClient` + `Client.FetchExtended` (live, cached; `Offline` stays off the network), `ReadCSV` |
+| Describe it | `Series.Stats` (`metrics.Stats`), `metrics.CalendarReturns`, `metrics.DrawdownEpisodes`; `analyze.Asset` for everything at once |
+| Compare series | `analyze.Pair` (a candidate against its reference); `marketdata.AlignSeries` + `metrics.CorrelationMatrix` |
+| Returns panels, blends, conditional statistics | `marketdata.NewPanel`, then `Panel.Mix`, `Panel.Series`, `Panel.Pick` + `metrics.LowestK`, `Panel.Track` |
+| Regression | `metrics.Regress` on panel columns |
+| A portfolio | `analyze.Portfolio` in one call; or `portfolio.Parse`/`NewSpec`, `Build`, `Simulate` |
+| Optimize weights | `optimize.ParseSpec`, `optimize.Solve` |
+| FIRE, decumulation | `decumul.Plan` over a `scenario.Source`, `Plan.Simulate`, `Plan.Solve`; `replay.Run` for history as it happened |
+| Backcasts | `simgen.Find`, `simgen.Validate`; the shipped ones through `marketdata.Bundled` or a `SIM` identifier |
+| Render | `chart.Line`; `compare.Compute` + `report.Render` for the CLI's report |
+| Export | `marketdata.WriteCSV` |
+
+A first program, offline: two bundled series, a monthly 60/40 of them, the
+statistics of all three (the body of a `main` importing `fmt`, `log` and
+`github.com/bpineau/pofo/pkg/marketdata`; the root `doc.go` shows it whole).
+
+```go
+// from pofo.Example
+// The S&P 500 total return since 1871, bundled with the module.
+sp500, err := marketdata.Bundled("SP500-USD")
+if err != nil {
+	log.Fatal(err)
+}
+bonds, err := marketdata.Bundled("TREASURY-INT-USD")
+if err != nil {
+	log.Fatal(err)
+}
+
+// Monthly returns on the months both share, and a 60/40 rebalanced
+// every month (weights are fractions).
+p, err := marketdata.NewPanel(marketdata.Monthly, sp500, bonds)
+if err != nil {
+	log.Fatal(err)
+}
+p, err = p.Mix("60/40", map[string]float64{"SP500-USD": 0.6, "TREASURY-INT-USD": 0.4})
+if err != nil {
+	log.Fatal(err)
+}
+for _, id := range p.IDs {
+	s, err := p.Series(id)
+	if err != nil {
+		log.Fatal(err)
+	}
+	st, err := s.Stats()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%-16s CAGR %5.2f %%/yr, volatility %4.1f %%/yr, max drawdown %5.1f %%\n",
+		id, st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
+}
+```
+
+Whole programs, one question each (describe a series, blend, regress, the
+worst months, a reconstruction against its reference, a bundled file against
+its older version, a portfolio file simulated, a FIRE run, a CSV export),
+live in [`examples/lib/`](examples/lib/README.md); they run offline and are
+the starting points to copy into the gitignored `scratch/` directory. The
+same questions without writing Go: `pofo -dump`, `pofo -pair`,
+`pofo -verify-simdata -json`, each with `-offline`.
 
 ### Study a portfolio in ten lines
 
@@ -1401,15 +1472,21 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 
 ### Units
 
+The root `doc.go` holds the same table; the two are kept in step.
+
 | Quantity | Unit | Where |
 |---|---|---|
-| Weights | fraction (0.6) | `portfolio.Line`, `Holding.Weight`, `Asset.Weight`, `optimize`, `analyze` |
+| Weights | fraction (0.6) | `portfolio.Line`, `Holding.Weight`, `Asset.Weight`, `Panel.Mix`, `optimize`, `analyze` |
 | Weights | percent (60) | portfolio files, `Holding.RawWeight` |
 | Fees (TER) | percent per year (0.20) | `portfolio` (`Line.Fees`, `Holding.Fees`, `EnvelopeFees`, `BorrowSpread`), `marketdata.Client.Fees`, `datasets.Asset.Fees` |
 | Fees, volatility targets | fraction per year (0.0020) | `simgen`, `marketdata.Series.LessFee` |
 | Returns, CAGR, volatility, drawdowns, VaR | fraction (0.04 = +4 %) | `metrics`, `analyze`, `scenario`, `decumul` (the last two in REAL terms) |
 | Ulcer, CWARP | percent points, percent | `metrics.Stats.Ulcer`, `metrics.Stats.CWARP` |
-| Cadence | periods per year (252 daily, 52 weekly, 12 monthly) | `metrics.PeriodsPerYear`, `Stats.PeriodsPerYear`, the `periodsPerYear` argument of `metrics`' bare-return functions and `optimize.Solve` |
+| Per period or annualized | a return, a `Regression`, a `Covariance`, a VaR are PER PERIOD; CAGR, volatility, Sharpe, Sortino, tracking error are ANNUALIZED | `Regression.AnnualAlpha` converts |
+| Cadence | periods per year (252 daily, 52 weekly, 12 monthly) | `metrics.PeriodsPerYear`, `Stats.PeriodsPerYear`, `Panel.PeriodsPerYear`, the `periodsPerYear` argument of `metrics`' bare-return functions and `optimize.Solve` |
+| Dates | a session date at 00:00 UTC; a monthly series is labelled by its month-END | every `Point.Date`; series match by exact `time.Time` equality |
+| Closes | ADJUSTED (dividends reinvested) by default | `FetchOptions.Raw` gives unadjusted closes with `Series.Dividends` (never both); a distributing fund's NAV is a PRICE return |
+| `SIM` suffix | `IWDA` = real quotes only, `IWDASIM` = the bundled backcast spliced in front | `Client.FetchExtended`, `Series.SimulatedBefore`; `#meta sim:on` for a whole file |
 | Rates (`^IRX`, `^ESTR`, `^SOFR`...) | annualized percent LEVEL | `marketdata` series, `portfolio.Portfolio.Cash`: never a return |
 | `#meta` directives | percent as written (`max-vol:9`) | fractions once parsed into `optimize.Spec` |
 
@@ -1455,6 +1532,7 @@ pkg/datasets/     versioned data (embedded at build time) and its QA:
   refdata/          long reference series the backcasts are built on
   golden/           golden tests + frozen fixtures vs external references
 cmd/              the pofo binary and the data generators (gen-*-refdata)
+examples/lib/     runnable example programs over the library, offline
 ```
 
 Each package's `go doc` page holds its conventions and more runnable
