@@ -212,6 +212,8 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 		s, err = c.fetchPolicyRate(ctx, canonical, from)
 	case isIndexAsset(canonical):
 		s, err = c.fetchIndexAsset(canonical, from, spec)
+	case isWithdrawnIndex(canonical):
+		s, err = c.fetchWithdrawnIndex(canonical, from, spec)
 	case IsISIN(canonical):
 		s, err = c.fetchISIN(ctx, canonical, from, spec)
 	default:
@@ -298,9 +300,20 @@ func (c *Client) fetchISIN(ctx context.Context, isin string, from time.Time, spe
 
 // fetchTicker downloads a plain ticker, falling back to the search-based
 // resolution (preferring listings of the same ticker on other exchanges)
-// when the direct quote is missing or degenerate.
+// when the direct quote is missing or degenerate. An index symbol ("^...")
+// is never resolved by name: the fallback keeps only listings of the symbol
+// itself, and a cached resolution to anything else is ignored (see
+// withdrawnIndexSymbols for why).
 func (c *Client) fetchTicker(ctx context.Context, ticker string, from time.Time, spec fetchSpec) (*Series, error) {
-	if s, ok := c.cachedResolutionHistory(ctx, ticker, from, spec); ok {
+	if isIndexSymbol(ticker) {
+		spec.exactOnly = true
+		if res, ok := c.loadResolution(ticker); ok && !isListingOf(res.Symbol, ticker) {
+			c.Logf("warning: ignoring the cached resolution of %s to %s (%s): an index symbol is resolved by its symbol only",
+				ticker, res.Symbol, res.Name)
+		} else if s, ok := c.cachedResolutionHistory(ctx, ticker, from, spec); ok {
+			return s, nil
+		}
+	} else if s, ok := c.cachedResolutionHistory(ctx, ticker, from, spec); ok {
 		return s, nil
 	}
 	direct, directErr := c.historyView(ctx, ticker, from, spec.raw)
@@ -524,9 +537,7 @@ func (c *Client) resolveBest(ctx context.Context, query string, from time.Time, 
 		return false
 	}
 	matchesBase := func(symbol string) bool {
-		return preferBase != "" &&
-			(symbol == preferBase || strings.HasPrefix(symbol, preferBase+".") ||
-				strings.HasPrefix(symbol, preferBase+":"))
+		return preferBase != "" && isListingOf(symbol, preferBase)
 	}
 	// exactMiss rejects, under fetchSpec.exactOnly, a candidate that is not a
 	// listing of the queried ticker itself: the searches are full-text, so
@@ -678,6 +689,12 @@ func (c *Client) morningstarResolution(ctx context.Context, query, preferBase st
 		}
 	}
 	return resolution{}, failures, absentOnly
+}
+
+// isListingOf reports whether a quote symbol is a listing of the ticker base:
+// the ticker itself, or it on an exchange ("IWDA.AS", "FAMMWS:MIL").
+func isListingOf(symbol, base string) bool {
+	return symbol == base || strings.HasPrefix(symbol, base+".") || strings.HasPrefix(symbol, base+":")
 }
 
 // rankQuotes orders Yahoo search candidates: listings of the searched ticker
