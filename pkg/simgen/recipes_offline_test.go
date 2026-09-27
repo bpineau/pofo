@@ -88,7 +88,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 	stip := mkWave("STIP", n, 1e-4, 0.002, 1.25, 2.5)
 	gold := mkWave("GC=F", n, 3e-4, 0.011, 0.5, 0.8)
 	crude := mkWave("CL=F", n, 2e-4, 0.020, 1.9, 2.2)
-	bcom := mkWave("^BCOM", n, 2e-4, 0.012, 1.6, 0.9)
+	bcom := mkWave("BCOM-ER-USD", n, 2e-4, 0.012, 1.6, 0.9)
 	dfsvx := mkWave("DFSVX", n, 4e-4, 0.013, 0.8, 1.4)
 	disvx := mkWave("DISVX", n, 3e-4, 0.011, 1.5, 0.2)
 	// The same manager's own small-value sleeves quote over the recent part of
@@ -159,7 +159,7 @@ func TestAllRecipesBuildOffline(t *testing.T) {
 		"VFINX":   vfinx, "VTSMX": vtsmx, "VTMGX": vtmgx, "VEIEX": veiex,
 		"VFITX": vfitx, "VUSTX": vustx, "VFISX": vfisx, "VIPSX": vipsx,
 		"TIP": tip, "STIP": stip,
-		"GC=F": gold, "CL=F": crude, "^BCOM": bcom,
+		"GC=F": gold, "CL=F": crude, "BCOM-ER-USD": bcom,
 		"DFSVX": dfsvx, "DISVX": disvx, "AVUV": avuv, "AVDV": avdv, "IBCI": ibci,
 		chsnDonor:      chsnTwin,
 		"LU0131510165": indepFr,

@@ -37,7 +37,7 @@ corrects it.
 
 | Directory under `pkg/datasets/` | What it holds |
 |---|---|
-| `refdata/` | long reference series: the S&P 500 since 1871, the US total market since 1926, MSCI World and its regions since 1969, Treasury yields and total returns since 1953, T-bills, gold, rolled crude, euro, German, Japanese and British bonds and cash, trend and insurance-linked composites |
+| `refdata/` | long reference series: the S&P 500 since 1871, the US total market since 1926, MSCI World and its regions since 1969, Treasury yields and total returns since 1953, T-bills, gold, rolled crude, the Bloomberg Commodity Index since 1991, euro, German, Japanese and British bonds and cash, trend and insurance-linked composites |
 | `simdata/` | reconstructed histories of catalog funds and indices (the `SIM` series) |
 | `assetmeta/` | the curated catalog: identity, currency, fees, asset class, regimes |
 | `broadsample/`, `cape/`, `macropanel/` | research panels: developed-market real returns, the Shiller CAPE, OECD macro series |
