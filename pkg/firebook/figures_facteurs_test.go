@@ -111,7 +111,10 @@ func TestScvGapAnnotationsAreTheRealExtremes(t *testing.T) {
 	extreme := func(fromYear, toYear int, max bool) int {
 		best := 0
 		for _, m := range months[120:] {
-			if m/12 < fromYear || m/12 > toYear {
+			// A refresh that extends the record past the plate's frozen span
+			// is TestScvGapMatchesTheRecord's finding; here it must not index
+			// past the frozen readings and abort the whole drift report.
+			if m/12 < fromYear || m/12 > toYear || m-scvGapStart >= len(scvGapPoints) {
 				continue
 			}
 			if best == 0 || (max && gap(m) > gap(best)) || (!max && gap(m) < gap(best)) {
