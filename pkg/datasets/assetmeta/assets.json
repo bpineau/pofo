@@ -118,6 +118,7 @@
     "sources": [
       "https://www.simplify.us/etfs/cta-simplify-managed-futures-strategy-etf"
     ],
+    "as_of": "2026-09",
     "since": "2022-03-07"
   },
   {
@@ -136,14 +137,15 @@
     "strategy": "trend-following",
     "geography": null,
     "sectors": null,
-    "distribution": "accumulating",
+    "distribution": "distributing",
     "leverage": 1,
     "notes": "Managed-futures / CTA replicator: it reads the recent returns of a basket of large CTA programmes and reproduces their implied positions in ten to fifteen liquid futures. Tends to profit in trending markets and acts as crisis alpha during equity bear markets. Replication is PHYSICAL (US Treasury bills, listed futures and two delta-one commodity notes per the audited report), not a swap. The DBi strategy across all vehicles held USD 5.6bn at 2026-06-30; the UCITS sub-fund that mirrors it for European buyers (DBMFE, LU2951555585, MFEH, LU2604697206) USD 594.2m at 2026-07-31. The 0.85% pin is the net expense ratio after the manager's fee waiver on a 0.95% gross.",
     "confidence": "high",
     "sources": [
-      "https://stockanalysis.com/etf/dbmf/holdings/",
-      "https://www.imgp.com/imgp-dbi-managed-futures-fund/"
+      "https://www.imgp.com/fund/US53700T8273/",
+      "https://stockanalysis.com/etf/dbmf/"
     ],
+    "as_of": "2026-09",
     "since": "2019-05-07"
   },
   {
@@ -5488,6 +5490,7 @@
     "sources": [
       "https://kraneshares.com/kmlm/"
     ],
+    "as_of": "2026-09",
     "since": "2020-12-01"
   },
   {
@@ -6396,9 +6399,11 @@
     "notes": "UCITS wrapper of the US DBMF; managed-futures crisis-alpha diversifier",
     "confidence": "high",
     "sources": [
+      "https://www.imgp.com/fund/LU2951555585/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU2951555585"
     ],
-    "since": "2025-04-22"
+    "as_of": "2026-09",
+    "since": "2025-03-07"
   },
   {
     "id": "LU3024069877",
@@ -6422,8 +6427,10 @@
     "notes": "Ex-commodities CTA replication; for portfolios already holding commodities",
     "confidence": "high",
     "sources": [
+      "https://www.imgp.com/fund/LU3024069877/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU3024069877"
     ],
+    "as_of": "2026-09",
     "since": "2025-03-28"
   },
   {
@@ -6619,8 +6626,10 @@
     "notes": "AQR systematic trend fund (managed futures with an equity anchor); crisis-alpha diversifier",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US00191K3100"
+      "https://funds.aqr.com/funds/alternatives/aqr-trend-total-return-fund/qnzix",
+      "https://stockanalysis.com/quote/mutf/qnzix/"
     ],
+    "as_of": "2026-09",
     "since": "2021-12-16"
   },
   {
@@ -6644,14 +6653,15 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 2.0,
-    "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income; bond leg tracks Bloomberg US Aggregate (~6y duration); currency_exposure = USD bonds + Dynamic managed-futures book",
+    "notes": "Return-stacked 100/100 bonds+CTA; add trend without cutting fixed income; bond leg aims to track the Bloomberg US Aggregate's effective duration (issuer FAQ), so `duration` is that index's, 5.8y at 2026-08-31 per Vanguard's benchmark figure for BND; currency_exposure = USD bonds + Dynamic managed-futures book",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US88636J1051",
-      "https://www.returnstackedetfs.com/rsbt-return-stacked-bonds-managed-futures/"
+      "https://www.returnstackedetfs.com/rsbt-return-stacked-bonds-managed-futures/",
+      "https://investor.vanguard.com/vmf/api/BND/characteristic"
     ],
+    "as_of": "2026-08",
     "since": "2023-02-07",
-    "duration": 6.0,
+    "duration": 5.8,
     "exposures": {
       "aggregate-bond": 1.0,
       "managed-futures": 1.0
@@ -8036,12 +8046,12 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Winton flagship trend-following UCITS, I GBP-hedged accumulating class; crisis-alpha diversifier uncorrelated to equities. NO PERFORMANCE FEE on any class of this fund, which with AQR's IAE1FT makes it one of only two schedules in the reachable managed-futures panel that bill nothing extra in the year the sleeve pays the floor. The class a French investor can actually reach through IBKR is not this one but the EUR-hedged I-P (IE00BG382T50, ongoing charge 1.12%/yr, GBP 50,000 minimum); the I classes at 1.05% are not on the platform, and the 0.33 pt/yr the cheaper class buys is not what caps this fund. What caps it is its 0.79 monthly correlation with the DBi replication book, the highest of the reachable panel: as a SECOND trend leg next to DBMFE it is close to a clone, and the pair measurably degrades both Sharpe and worst 12 months against holding DBMFE alone. Manager-level caveat: Winton fell from USD 28.5bn (2012) to 7.3bn (2020) and is back to 11.7bn of regulatory assets, of which only ~3.8bn on the Major-Market Trend programme this fund runs; the sub-fund itself is healthy at GBP 853m.",
+    "notes": "Winton flagship trend-following UCITS, I GBP-hedged accumulating class; crisis-alpha diversifier uncorrelated to equities. NO PERFORMANCE FEE on any class of this fund, which with AQR's IAE1FT makes it one of only two schedules in the reachable managed-futures panel that bill nothing extra in the year the sleeve pays the floor. The class a French investor can actually reach through IBKR is not this one but the EUR-hedged I-P (IE00BG382T50, ongoing charge 1.12%/yr, GBP 50,000 minimum); the I classes at 1.05% are not on the platform, and the 0.33 pt/yr the cheaper class buys is not what caps this fund. What caps it is its 0.79 monthly correlation with the DBi replication book, the highest of the reachable panel: as a SECOND trend leg next to DBMFE it is close to a clone, and the pair measurably degrades both Sharpe and worst 12 months against holding DBMFE alone. Manager-level caveat: Winton fell from USD 28.5bn (2012) to 7.3bn (2020) and is back to 11.7bn of regulatory assets, of which only ~3.8bn on the Major-Market Trend programme this fund runs; the sub-fund itself is healthy at GBP 870m (FT, 2026-08-31).",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BG382Q20",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=IE00BG382Q20:GBP"
     ],
+    "as_of": "2026-08",
     "since": "2018-07-02"
   },
   {
@@ -8072,18 +8082,19 @@
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103257975:USD"
     ],
+    "as_of": "2026-08",
     "since": "2015-03-05"
   },
   {
     "id": "LU0503879685",
     "isin": "LU0503879685",
-    "name": "Man AHL Trend Alternative IN USD Acc",
+    "name": "Man Trend Alternative IN USD Acc",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
     "xid": "129519741",
     "currency": "USD",
-    "fees": 1.66,
+    "fees": 1.72,
     "asset_class": "managed-futures",
     "underlying": "Systematic trend-following (Man AHL): long/short across equities, bonds, currencies, commodities and credit via futures and forwards",
     "benchmark_index": "active (no index)",
@@ -8092,12 +8103,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Man AHL flagship trend UCITS; fast/medium/slow momentum; crisis-alpha diversifier (performance fee may apply)",
+    "notes": "Man AHL flagship trend UCITS, now marketed as Man Trend Alternative (the share classes keep the AHL name on the issuer's list); fast/medium/slow momentum; crisis-alpha diversifier (performance fee may apply). The pin is FT's ongoing charge (2026-08-31), which the issuer defines as including the management fee and excluding any performance fee.",
     "confidence": "high",
     "sources": [
-      "https://www.man.com/strategy/ahl-trend-alternative",
+      "https://www.man.com/products/man-trend-alternative",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0503879685:USD"
     ],
+    "as_of": "2026-08",
     "since": "2010-08-10"
   },
   {
@@ -9245,12 +9257,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Euro-denominated UNHEDGED share class of the iMGP DBi Managed Futures UCITS ETF (sibling of the USD LU2951555585 and of the EUR-hedged MFEH LU3359622902, one portfolio at 0.75%/yr for the three); the EUR trend sleeve for the dragon/hydra/fire builds; managed-futures crisis-alpha diversifier. UNHEDGED IS A POSITION, NOT A DETAIL: regressed on the USD class and on EURUSD over 2025-05..2026-08 the class reads a strategy beta of +0.92 and a EURUSD beta of -0.94, i.e. essentially the whole notional is long dollar, and it correlates only 0.68 monthly with the hedged class of the same sub-fund. Over the 1996-2026 backcast the currency leg is worth +0.24 pt/yr of CAGR for +2.78 pts/yr of volatility; it paid handsomely in 2008 (+18.4 pts) and in the 2022 real-rate shock (+18.3 pts) and cost -7.9 pts in the 2025 tariff shock. Registered for sale in France, which MFEH is not. Sub-fund USD 594.2m at 2026-07-31; the audited portfolio is physical (Treasury bills, listed futures, two delta-one commodity notes), not the swap structure justETF files it under.",
+    "notes": "Euro-denominated UNHEDGED share class of the iMGP DBi Managed Futures UCITS ETF (sibling of the USD LU2951555585 and of the EUR-hedged MFEH LU3359622902, one portfolio at 0.75%/yr for the three); the EUR trend sleeve for the dragon/hydra/fire builds; managed-futures crisis-alpha diversifier. UNHEDGED IS A POSITION, NOT A DETAIL: regressed on the USD class and on EURUSD over 2025-05..2026-08 the class reads a strategy beta of +0.92 and a EURUSD beta of -0.94, i.e. essentially the whole notional is long dollar, and it correlates only 0.68 monthly with the hedged class of the same sub-fund. Over the 1996-2026 backcast the currency leg is worth +0.24 pt/yr of CAGR for +2.78 pts/yr of volatility; it paid handsomely in 2008 (+18.4 pts) and in the 2022 real-rate shock (+18.3 pts) and cost -7.9 pts in the 2025 tariff shock. Registered for sale in France (as MFEH is too since 2026-09, per the issuer's class pages). Sub-fund USD 594.2m at 2026-07-31; the audited portfolio is physical (Treasury bills, listed futures, two delta-one commodity notes), not the swap structure justETF files it under.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU2951555403",
-      "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR"
+      "https://markets.ft.com/data/etfs/tearsheet/summary?s=DBMFE:PAR:EUR",
+      "https://www.imgp.com/fund/LU2951555403/"
     ],
+    "as_of": "2026-09",
     "currency_exposure": {
       "USD": 100
     }
@@ -9277,13 +9291,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "The EUR-HEDGED route into the same DBi Dynamic Beta Engine replication book as DBMFE, which is cheaper (0.75%/yr) but UNHEDGED. R EUR HP retail class (class launch 2024-04-29, ongoing charges 1.12%/yr = 0.80% max management fee plus expenses, no performance fee) of the iMGP DBi Managed Futures Fund sub-fund of the iMGP Funds Luxembourg SICAV, launched 2023-01-25. The 2025 UCITS ETF classes (DBMF USD LU2951555585, DBMFE EUR LU2951555403, MFEH EUR LU3359622902) are classes OF THAT SAME SUB-FUND, not of a separate one: the audited annual report lists all of them in one class table. The hedge is real and class-level, measured on local returns: correlation vs the US DBMF ETF (USD) 0.95 daily / 0.997 monthly over 2024-04..2026-08, vs the unhedged DBMFE only 0.37 daily / 0.70 monthly (the difference is USDEUR noise), and the CAGR gap vs DBMF USD of -2.3 pts/yr decomposes into the 1.8 pts average SOFR-ESTR carry, the 0.27 pts fee gap and ~0.25 pts hedging cost. IBKR carries it with zero minimum, and unlike MFEH it IS registered for sale in France. Class AUM EUR 4.2m at 2026-08; sub-fund USD 594.2m at 2026-07-31 (255.0m end-2025, 74.5m end-2023), the DBi strategy across all vehicles USD 5.6bn at 2026-06-30. No simdata backcast: if one is ever wanted, the DBMFE recipe's donor chain hedges trivially via the FX identity (donor local USD returns plus EUR cash minus USD cash), which is what the MFEH recipe already does.",
+    "notes": "The EUR-HEDGED route into the same DBi Dynamic Beta Engine replication book as DBMFE, which is cheaper (0.75%/yr) but UNHEDGED. R EUR HP retail class (class launch 2024-04-29, ongoing charges 1.12%/yr = 0.80% max management fee plus expenses, no performance fee) of the iMGP DBi Managed Futures Fund sub-fund of the iMGP Funds Luxembourg SICAV, launched 2023-01-25. The 2025 UCITS ETF classes (DBMF USD LU2951555585, DBMFE EUR LU2951555403, MFEH EUR LU3359622902) are classes OF THAT SAME SUB-FUND, not of a separate one: the audited annual report lists all of them in one class table. The hedge is real and class-level, measured on local returns: correlation vs the US DBMF ETF (USD) 0.95 daily / 0.997 monthly over 2024-04..2026-08, vs the unhedged DBMFE only 0.37 daily / 0.70 monthly (the difference is USDEUR noise), and the CAGR gap vs DBMF USD of -2.3 pts/yr decomposes into the 1.8 pts average SOFR-ESTR carry, the 0.27 pts fee gap and ~0.25 pts hedging cost. IBKR carries it with zero minimum, and it is registered for sale in France (the issuer's class page lists FR; MFEH's has too since 2026-09). Class AUM EUR 4.2m at 2026-08; sub-fund USD 594.2m at 2026-07-31 (255.0m end-2025, 74.5m end-2023), the DBi strategy across all vehicles USD 5.6bn at 2026-06-30. No simdata backcast: if one is ever wanted, the DBMFE recipe's donor chain hedges trivially via the FX identity (donor local USD returns plus EUR cash minus USD cash), which is what the MFEH recipe already does.",
     "confidence": "high",
     "sources": [
-      "https://www.imgp.com/fund/lu2604697206-imgp-dbi-managed-futures-fund-r-eur-hp/",
-      "https://www.imgp.com/imgp-dbi-managed-futures-fund/",
+      "https://www.imgp.com/fund/LU2604697206/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2604697206:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "FOLOW",
@@ -9305,12 +9319,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Managed-futures UCITS ETF from the BNPP Easy range (Euronext Paris FOLOW, Xetra EEAU, SIX FOLOW/FOLOWCHF): synthetic swap on an in-house systematic multi-asset long/short index, EUR-denominated, unhedged. Launched 2026-05-29 and still tiny (~EUR 11m); an ETF-format access fallback for the trend sleeve when the AQR fund classes are unreachable, to size with care until it has assets and a live record. No backcast: NAV history starts at launch.",
+    "notes": "Managed-futures UCITS ETF from the BNPP Easy range (Euronext Paris FOLOW, Xetra EEAU, SIX FOLOW/FOLOWCHF): synthetic swap on an in-house systematic multi-asset long/short index, EUR-denominated, unhedged. Launched 2026-05-29 and still small (EUR 29m on justETF, 2026-09); an ETF-format access fallback for the trend sleeve when the AQR fund classes are unreachable, to size with care until it has assets and a live record. No backcast: NAV history starts at launch.",
     "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/de/etf-profile.html?isin=LU3307218399",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU3307218399",
       "https://www.bnpparibas-am.com/de-de/fundsheet/other/bnp-paribas-easy-managed-futures-ucits-etf-c-lu3307218399"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "LU1662501532",
@@ -9342,7 +9357,8 @@
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662501532:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU1103258197",
@@ -9373,7 +9389,8 @@
       "https://www.fundsquare.net/fund-tree?idInstr=202658",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1103258197:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU1662499612",
@@ -9406,7 +9423,8 @@
       "https://www.fundsquare.net/fund-tree?idInstr=202658",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662499612:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU1662502183",
@@ -9436,7 +9454,8 @@
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662502183:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU1662498721",
@@ -9469,7 +9488,8 @@
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU1662498721:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU2622190622",
@@ -9502,7 +9522,8 @@
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-ucits-fund",
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2622190622:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "AQMIX",
@@ -9515,7 +9536,7 @@
     "symbol": "AQMIX",
     "currency": "USD",
     "fees": 1.25,
-    "since": "2010-01-06",
+    "since": "2010-01-05",
     "asset_class": "managed-futures",
     "underlying": "Systematic trend-following across commodities, currencies, equities and fixed income, on several hundred futures, forwards and swaps, long and short; signals read both price and fundamental trends; commodity exposure held through a Cayman subsidiary",
     "benchmark_index": "active (no index; secondary benchmark ICE BofA US 3-Month T-Bill)",
@@ -9524,13 +9545,14 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "The LONGEST real AQR managed-futures record available: continuous daily NAVs from 2010-01-06, about five years deeper than any AQR UCITS class, and quoted within a day or two (the UCITS classes lag ten days or more). US 40-Act fund, so not buyable from the EU: this is a HISTORY and research vehicle, and the buyable equivalent is the UCITS (RAEF LU1662501532 in EUR-hedged form, LU1103257975 in USD). It is a faithful proxy for them at the horizons that matter, weekly correlation 0.90 and monthly 0.93 with beta 1.0 since 2015; the daily correlation of 0.73 is an artefact of the two wrappers striking NAV at different cutoffs, not a strategy difference. Adviser targets 5% to 13% annualized volatility (realized 9.6% since inception), turnover 412%/yr, USD 3.2bn. FEES need care: the 1.25% pin is the advisory and operating cost (mgmt 1.05% + 0.19% other under a 0.25% specified-expense cap + 0.01% acquired fund fees). The headline 3.09% total in the prospectus adds 1.84% of dividends on short sales and interest expense, which is the financing cost of the physical short book rather than an advisory fee, and it jumped only because the fund moved from equity derivatives to physical shorts in 2024. Class R6 (AQMRX) is ~0.08 pts cheaper but starts 2014-09; QMHIX is the same strategy at roughly 1.5x the volatility target (14.7% realized) from 2013-07.",
+    "notes": "The LONGEST real AQR managed-futures record available: continuous daily NAVs from its 2010-01-05 inception, about five years deeper than any AQR UCITS class, and quoted within a day or two (the UCITS classes lag ten days or more). US 40-Act fund, so not buyable from the EU: this is a HISTORY and research vehicle, and the buyable equivalent is the UCITS (RAEF LU1662501532 in EUR-hedged form, LU1103257975 in USD). It is a faithful proxy for them at the horizons that matter, weekly correlation 0.90 and monthly 0.93 with beta 1.0 since 2015; the daily correlation of 0.73 is an artefact of the two wrappers striking NAV at different cutoffs, not a strategy difference. Adviser targets 5% to 13% annualized volatility (realized 9.6% since inception), turnover 412%/yr, USD 3.7bn (2026-09-25). FEES need care: the 1.25% pin is the advisory and operating cost, which the issuer's page prints as its 'Adjusted Expense Ratio' beside gross and net ratios of 3.09% (mgmt 1.05% + 0.19% other under a 0.25% specified-expense cap + 0.01% acquired fund fees). The headline 3.09% total in the prospectus adds 1.84% of dividends on short sales and interest expense, which is the financing cost of the physical short book rather than an advisory fee, and it jumped only because the fund moved from equity derivatives to physical shorts in 2024. Class R6 (AQMRX) is ~0.08 pts cheaper but starts 2014-09; QMHIX is the same strategy at roughly 1.5x the volatility target (14.7% realized) from 2013-07.",
     "confidence": "high",
     "sources": [
       "https://funds.aqr.com/funds/alternatives/aqr-managed-futures-strategy-fund/aqmix",
       "https://www.sec.gov/Archives/edgar/data/1444822/000119312526198087/d24166d497k.htm",
       "https://stockanalysis.com/quote/mutf/AQMIX/"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "LU2392538067",
@@ -9544,7 +9566,7 @@
     "source": "ft",
     "xid": "786515385",
     "currency": "USD",
-    "fees": 1.75,
+    "fees": 1.62,
     "since": "2023-02-14",
     "asset_class": "managed-futures",
     "underlying": "Trend-following applied ONLY to alternative markets: credit (IG, high yield, emerging), developed and emerging rates and currencies, alternative commodities (agriculturals, metals, power, emissions), volatility futures, and proprietary long/short equity factor books",
@@ -9554,12 +9576,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "The alternative-markets complement to classic trend, not a substitute: it deliberately excludes the equity-index and developed-government-bond futures that dominate a standard managed-futures book, and has run at only 0.66 daily correlation with the AQR Managed Futures UCITS fund (LU1103257975) since launch. USD reference class of a sub-fund launched 2023-02-14, USD 1.68bn at 31 March 2026. EXPENSIVE by design: the 1.75% pin is the base schedule (mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, so the KID ongoing charge runs a little above it) and every class also pays a performance fee, 20% over the ML 3-Month T-Bill hurdle here, high-on-high, crystallised each 31 March, which took 2.24 pts of average class NAV in the year to 31 March 2026: roughly 4% all-in that year. Minimum initial subscription USD 100,000. Average notional leverage 4327% over that year (sum-of-notionals, inflated by FX forwards and short-rate futures), absolute VaR averaging 3.23% against a 20% limit. Short live history (2023-02) and no backcast, so treat every statistic as a 3-year sample from an unusually good stretch.",
+    "notes": "The alternative-markets complement to classic trend, not a substitute: it deliberately excludes the equity-index and developed-government-bond futures that dominate a standard managed-futures book, and has run at only 0.66 daily correlation with the AQR Managed Futures UCITS fund (LU1103257975) since launch. USD reference class of a sub-fund launched 2023-02-14, USD 1.68bn at 31 March 2026. EXPENSIVE by design: the 1.62% pin is FT's ongoing charge (2026-08-31), what reaches the NAV, under a base schedule of 1.75% (mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, the cap being a maximum), and every class also pays a performance fee, 20% over the ML 3-Month T-Bill hurdle here, high-on-high, crystallised each 31 March, which took 2.24 pts of average class NAV in the year to 31 March 2026: roughly 4% all-in that year. Minimum initial subscription USD 100,000. Average notional leverage 4327% over that year (sum-of-notionals, inflated by FX forwards and short-rate futures), absolute VaR averaging 3.23% against a 20% limit. Short live history (2023-02) and no backcast, so treat every statistic as a 3-year sample from an unusually good stretch.",
     "confidence": "high",
     "sources": [
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2392538067:USD"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "LU2392538224",
@@ -9575,7 +9598,7 @@
     "currency": "EUR",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "fees": 1.75,
+    "fees": 1.62,
     "since": "2023-03-31",
     "asset_class": "managed-futures",
     "underlying": "Trend-following applied ONLY to alternative markets: credit (IG, high yield, emerging), developed and emerging rates and currencies, alternative commodities (agriculturals, metals, power, emissions), volatility futures, and proprietary long/short equity factor books, EUR-hedged",
@@ -9585,12 +9608,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-hedged accumulating class of the AQR Alternative Trends UCITS fund, the euro vehicle for the exposure described on LU2392538067 (measured: beta 0.00 on EURUSD, 0.98 on the USD class's local returns). Same schedule as the USD class, with the hurdle in EUR STR: mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, PLUS a 20% performance fee that took 2.27 pts of average class NAV in the year to 31 March 2026. Minimum initial subscription EUR 100,000. Two cheaper EUR classes exist and both come with a catch: IAE2 (mgmt 1.20%) needs EUR 80 million, and IDE3 (LU2574380825, mgmt 0.90%, expense cap 0.14%, performance fee only 10%, EUR 100,000 minimum, KID ongoing charge 1.14%) is DISTRIBUTING, so its quoted NAV is not a total-return series and it is left out of the catalog on purpose.",
+    "notes": "EUR-hedged accumulating class of the AQR Alternative Trends UCITS fund, the euro vehicle for the exposure described on LU2392538067 (measured: beta 0.00 on EURUSD, 0.98 on the USD class's local returns). Same schedule as the USD class, with the hurdle in EUR STR: mgmt 1.50% + 0.24% expense cap + 0.01% subscription tax, of which FT's ongoing charge (the 1.62% pin, 2026-08-31) is what reaches the NAV, PLUS a 20% performance fee that took 2.27 pts of average class NAV in the year to 31 March 2026. Minimum initial subscription EUR 100,000. Two cheaper EUR classes exist and both come with a catch: IAE2 (mgmt 1.20%) needs EUR 80 million, and IDE3 (LU2574380825, mgmt 0.90%, expense cap 0.14%, performance fee only 10%, EUR 100,000 minimum, KID ongoing charge 1.14%) is DISTRIBUTING, so its quoted NAV is not a total-return series and it is left out of the catalog on purpose.",
     "confidence": "high",
     "sources": [
       "https://ucits.aqr.com/",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2392538224:EUR"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "IE00BKYBHJ61",
@@ -10250,6 +10274,7 @@
     "sources": [
       "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi"
     ],
+    "as_of": "2026-09",
     "since": "1986-12-31"
   },
   {
@@ -10278,6 +10303,7 @@
     "sources": [
       "https://portal.barclayhedge.com/cgi-bin/barclay_stats/bcndx.cgi"
     ],
+    "as_of": "2026-09",
     "since": "1986-12-31",
     "currency_hedged": true,
     "hedged_to": "EUR",
@@ -10304,12 +10330,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR-HEDGED share class of the same iMGP DBi managed-futures sub-fund as DBMFE (LU2951555403, unhedged EUR) and LU2951555585 (USD): one portfolio, three classes, all at 0.75%/yr. The hedge costs the USD-EUR carry gap (SOFR minus ESTR: 1.46%/yr at 2026-08, 1.50%/yr averaged over 2019-10..2026-08, near zero over 2000-2014) plus forward-roll frictions, and removes ~3 points of volatility and the drawdowns EURUSD added (backcast 1996-2026: vol 12.7% vs 15.6%, MaxDD -21.6% vs -25.2%, CAGR 8.96% vs 9.52%). TWO THINGS THE 0.75% PIN DOES NOT COVER, both verified on the issuer documents 2026-08: prospectus section 10.3 lets an 'HP' hedged class carry up to a further 0.10%/yr of currency risk management fee, and the 0.75% itself is an estimate carried over from the unhedged class because this one was born 2026-05-13 and has never closed a financial year. NOT REGISTERED FOR SALE IN FRANCE: the issuer's per-class Registered Locations widget gives DE, DK, FI, IT, LU, SE for LU3359622902, while DBMFE and the fund class LU2604697206 do carry France, and the KID language sets agree (DA/DE/FI/IT/SV, no ES/NL/NO/PT). Class AUM EUR 11.6m at 2026-08-21, Xetra only. justETF files this class and DBMFE as 'Synthetic (Swap-based)'; the audited portfolio is PHYSICAL (US Treasury bills, listed futures, two delta-one commodity notes). The euro-registered alternative into the identical hedged book is LU2604697206 at 1.12%/yr: 37bp/yr for French registration and one closed financial year of real costs.",
+    "notes": "EUR-HEDGED share class of the same iMGP DBi managed-futures sub-fund as DBMFE (LU2951555403, unhedged EUR) and LU2951555585 (USD): one portfolio, three classes, all at 0.75%/yr. The hedge costs the USD-EUR carry gap (SOFR minus ESTR: 1.46%/yr at 2026-08, 1.50%/yr averaged over 2019-10..2026-08, near zero over 2000-2014) plus forward-roll frictions, and removes ~3 points of volatility and the drawdowns EURUSD added (backcast 1996-2026: vol 12.7% vs 15.6%, MaxDD -21.6% vs -25.2%, CAGR 8.96% vs 9.52%). TWO THINGS THE 0.75% PIN DOES NOT COVER, both verified on the issuer documents 2026-08: prospectus section 10.3 lets an 'HP' hedged class carry up to a further 0.10%/yr of currency risk management fee, and the 0.75% itself is an estimate carried over from the unhedged class because this one was born 2026-05-13 and has never closed a financial year. REGISTERED FOR SALE IN FRANCE SINCE 2026-09: the issuer's per-class Registered Locations widget, which gave DE, DK, FI, IT, LU, SE in 2026-08 (KID languages DA/DE/FI/IT/SV then), now lists DE, DK, FI, FR, IT, LU, SE; check that a French broker actually lists the line before relying on it. Class AUM EUR 18m on justETF (2026-09), Xetra only. justETF files this class and DBMFE as 'Synthetic (Swap-based)'; the audited portfolio is PHYSICAL (US Treasury bills, listed futures, two delta-one commodity notes). The fund-class alternative into the identical hedged book is LU2604697206 at 1.12%/yr: 37bp/yr more, for one closed financial year of real costs.",
     "confidence": "high",
     "sources": [
       "https://www.imgp.com/fund/LU3359622902/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU3359622902"
     ],
+    "as_of": "2026-09",
     "symbol": "MFEH.DE",
     "currency_hedged": true,
     "hedged_to": "EUR",
