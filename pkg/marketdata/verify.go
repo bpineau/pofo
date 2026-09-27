@@ -27,7 +27,8 @@ func (i Issue) String() string {
 
 // Verify inspects a series for common data-quality problems: non-positive
 // prices, suspiciously large daily moves (missed split or bad point),
-// calendar gaps, long flat stretches (stale feed) and a stale last quote.
+// calendar gaps (FindGaps), one-session round trips no instrument makes
+// (FindSpikes), long flat stretches (stale feed) and a stale last quote.
 // now anchors the staleness check (pass time.Now() outside tests).
 //
 // Two families are judged by their own rules. A RATE series (^IRX, ^ESTR,
@@ -71,7 +72,6 @@ const maxMove = 0.25
 func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 	const (
 		maxRateJump  = 3.0 // percentage points in a day, for a rate level
-		maxGapDays   = 14  // calendar days without a quote
 		maxFlatRun   = 20  // consecutive identical closes
 		maxStaleDays = 10  // calendar days since the last quote
 	)
@@ -117,9 +117,6 @@ func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 					r*100, limit*100)
 			}
 		}
-		if gap, limit := pt.Date.Sub(prev.Date).Hours()/24, math.Max(maxGapDays, 3*cadence[k]); gap > limit {
-			warn(pt.Date, "no quotes for %.0f days (since %s)", gap, prev.Date.Format("2006-01-02"))
-		}
 		if pt.Close == prev.Close {
 			flatRun++
 			if flatRun == maxFlatRun && !rate {
@@ -128,6 +125,14 @@ func verify(s *Series, now time.Time, moveLimit float64) []Issue {
 		} else {
 			flatRun = 1
 		}
+	}
+	for _, g := range FindGaps(s) {
+		warn(g.To, "no quotes for %.0f days (since %s), beyond the %.0f its pace allows",
+			g.Days, g.From.Format("2006-01-02"), g.Limit)
+	}
+	for _, sp := range FindSpikes(s) {
+		warn(sp.Date, "%+.1f %% then %+.1f %% cancel inside a %.2f %% neighbourhood: a print no instrument made?",
+			sp.In*100, sp.Out*100, sp.Sigma*100)
 	}
 	staleLimit := math.Max(maxStaleDays, 3*cadence[len(cadence)-1])
 	if age := now.Sub(s.Last().Date).Hours() / 24; age > staleLimit {

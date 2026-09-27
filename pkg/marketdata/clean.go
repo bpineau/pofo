@@ -284,35 +284,26 @@ func dropDropouts(pts []Point) []Point {
 	return out
 }
 
-// Round-trip cleaning constants. A candidate must satisfy ALL of them, which is
-// what makes the pass safe to run on every series pofo fetches.
-const (
-	// roundTripZ: each leg must exceed this many standard deviations of the
-	// LOCAL return distribution. Six is the same bar simgen's despike uses on
-	// index shapes, and for the same reason: a crash raises the local sigma
-	// with it, so the days that feel extreme to a reader (2020-03-12 at -9.5 %
-	// against a ~4.3 % local sigma, barely two sigmas) never come close.
-	roundTripZ = 6.0
-	// roundTripWindow: how many returns on each side define "local". Five weeks
-	// of trading either way is long enough for a stable sigma and short enough
-	// to follow a regime change.
-	roundTripWindow = 25
-	// roundTripNet: how completely the excursion must undo itself. Two percent
-	// over the two sessions is the whole tolerance, so a move that merely
-	// bounced does not qualify: 1987-10-19 fell 20.5 % and rebounded 5.3 %, and
-	// the 2001-09-24 print in the MSCI World shape gains 13.1 % then gives back
-	// 7.1 %, leaving 5.0 % standing. Both stay, deliberately, for the same
-	// reason: what does not fully reverse may be history.
-	roundTripNet = 0.02
-)
+// roundTripNet is how completely an excursion must undo itself before the
+// cleaner drops it. Two percent over the two sessions is the whole tolerance,
+// so a move that merely bounced does not qualify: 1987-10-19 fell 20.5 % and
+// rebounded 5.3 %, and the 2001-09-24 print in the MSCI World shape gains
+// 13.1 % then gives back 7.1 %, leaving 5.0 % standing. Both stay,
+// deliberately, for the same reason: what does not fully reverse may be
+// history.
+const roundTripNet = 0.02
 
 // dropRoundTrips removes an interior print that leaves the level and comes back
 // in the next session, when three independent tests all say no asset could have
 // done it: the two legs point opposite ways and cancel to within roundTripNet;
-// each exceeds roundTripZ local standard deviations, the suspect pair excluded
-// from that estimate; and each exceeds band.SpikeLeg, the class-level floor
-// below which a round trip is just volatility. The dropped point's neighbours
-// then meet directly, which carries the true two-session move.
+// each exceeds six local standard deviations, the suspect pair excluded from
+// that estimate (the clauses every SpikeRule shares: a crash raises the local
+// sigma with it, so 2020-03-12 at -9.5 % against a ~4.3 % local sigma, barely
+// two sigmas, never comes close); and each exceeds band.SpikeLeg, the
+// class-level floor below which a round trip is just volatility. The dropped
+// point's neighbours then meet directly, which carries the true two-session
+// move. It is SpikeRule.Drop under that rule: FindSpikes' rule reports more,
+// this one repairs only what it can prove.
 //
 // Four such prints in the bundled catalog, each confirmed against a sibling
 // listing of the same fund:
@@ -340,64 +331,7 @@ const (
 // Rate symbols never reach this pass (see cleanQuotes): a policy rate crossing
 // zero and back produces ratios that mean nothing.
 func dropRoundTrips(pts []Point, band Band) []Point {
-	n := len(pts)
-	if n < 2*roundTripWindow {
-		return pts
-	}
-	leg := band.SpikeLeg()
-	ret := func(i int) float64 { return pts[i].Close/pts[i-1].Close - 1 }
-	out := make([]Point, 0, n)
-	out = append(out, pts[0])
-	for i := 1; i+1 < n; i++ {
-		if pts[i-1].Close <= 0 || pts[i].Close <= 0 || pts[i+1].Close <= 0 {
-			out = append(out, pts[i])
-			continue
-		}
-		r1, r2 := ret(i), ret(i+1)
-		if r1*r2 >= 0 || math.Abs(r1) < leg || math.Abs(r2) < leg {
-			out = append(out, pts[i])
-			continue
-		}
-		if math.Abs((1+r1)*(1+r2)-1) > roundTripNet {
-			out = append(out, pts[i])
-			continue
-		}
-		sigma, ok := localSigma(pts, i)
-		if !ok || math.Abs(r1) <= roundTripZ*sigma || math.Abs(r2) <= roundTripZ*sigma {
-			out = append(out, pts[i])
-			continue
-		}
-		// A print no asset made: drop it and let its neighbours meet.
-	}
-	out = append(out, pts[n-1])
-	return out
-}
-
-// localSigma is the standard deviation of the returns around index i, with the
-// suspect pair (the returns into and out of i) excluded so a bad print cannot
-// inflate the very yardstick meant to convict it. ok is false when too few
-// returns surround i for the estimate to mean anything.
-func localSigma(pts []Point, i int) (float64, bool) {
-	var sum, sumsq float64
-	count := 0
-	for j := max(1, i-roundTripWindow); j <= min(len(pts)-1, i+roundTripWindow); j++ {
-		if j == i || j == i+1 || pts[j-1].Close <= 0 || pts[j].Close <= 0 {
-			continue
-		}
-		r := pts[j].Close/pts[j-1].Close - 1
-		sum += r
-		sumsq += r * r
-		count++
-	}
-	if count < 10 {
-		return 0, false
-	}
-	mean := sum / float64(count)
-	variance := sumsq/float64(count) - mean*mean
-	if variance <= 0 {
-		return 0, false
-	}
-	return math.Sqrt(variance), true
+	return SpikeRule{MinLeg: band.SpikeLeg(), MaxNet: roundTripNet}.drop(pts)
 }
 
 // fxSpikeRatio is the minimum adjacent move treated as a candidate bad print

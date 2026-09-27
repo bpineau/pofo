@@ -624,7 +624,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-cli` | | curves and summary table in the terminal, no HTML |
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
-| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog, `make verify-catalog`) for anomalies. Series hygiene (bad points, gaps, stale feeds, each judged against the pace the series kept at the time), plus, for a catalogued asset, plausibility against its class's volatility/CAGR/move/drawdown band and identity against its record (served currency, share class, inception). Prints a summary and exits |
+| `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog, `make verify-catalog`) for anomalies. Series hygiene (bad points, gaps, one-session round trips no instrument makes, stale feeds, each judged against the pace the series kept at the time), plus, for a catalogued asset, plausibility against its class's volatility/CAGR/move/drawdown band and identity against its record (served currency, share class, inception). Prints a summary and exits |
 | `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, print one verdict row per recipe on stdout, then exit (`-json`: the audit as JSON instead) |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
@@ -1408,7 +1408,7 @@ fmt.Println(strings.HasPrefix(svg, "<svg"), strings.Contains(page.String(), "</h
 |---|---|
 | Is the math right? | `pkg/datasets/golden` (`make golden`): the statistics replayed on frozen real data against published references, Black-Litterman against its papers' tables |
 | Why does it differ from another tool? | the Conventions section of `go doc ./pkg/metrics`: annualized at the series' own cadence (252 on daily closes, 12 on a monthly index), zero risk-free rate, drawdowns on daily closes, 365.25-day years |
-| Is a bundled series right? | the golden package's refdata, gap and spike guards; `pofo -verify-simdata ID` for a backcast against the real quotes; `make verify-catalog` for the data doctor |
+| Is a bundled series right? | the golden package's refdata, gap and spike guards, whose rules are `marketdata.FindGaps` and `marketdata.FindSpikes` (run them on any series, a bundled file or a cached quote); `pofo -verify-simdata ID` for a backcast against the real quotes; `make verify-catalog` for the data doctor |
 | What can a study not know? | its `Warnings`: simulated spans, distributing share classes, definition junctions, unconverted currencies |
 
 ### Packages
