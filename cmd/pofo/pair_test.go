@@ -74,7 +74,9 @@ func TestPairRefusals(t *testing.T) {
 		{"one side", []string{"-pair", "SP500"}, "-pair takes two series"},
 		{"three sides", []string{"-pair", "SP500,SP500-USD,TBILL-3M"}, "-pair takes two series"},
 		{"a missing file", []string{"-pair", "SP500,./nope.csv"}, "nope.csv"},
-		{"no overlap", []string{"-pair", "SP500,SP500-USD", "-start", "2026-09-12"}, "SP500-USD: no point between -start and -end"},
+		// The window closes before TBILL-3M's first month (1934-01), a date no
+		// refresh of the bundle moves, where the S&P 500 already quotes.
+		{"no overlap", []string{"-pair", "SP500,TBILL-3M", "-end", "1933-12-31"}, "TBILL-3M: no point between -start and -end"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			out, err := runArgs(t, append([]string{"-offline", "-data", t.TempDir()}, tc.argv...)...)

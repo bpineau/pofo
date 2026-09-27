@@ -220,7 +220,13 @@ stale market data; pass `-cache-age 6h` after a pause.
 
 EVERY bundled series that tracks a live source has a generator in that chain:
 a file refreshed by hand freezes unseen (`TBILL-3M`, `WTI-USD`, `XAUUSD-LBMA`,
-`USSCV-USD` and `DEVEXUS-DAILY` all did, at 2026-05, until 2026-09-27). The
+`USSCV-USD` and `DEVEXUS-DAILY` all did, at 2026-05, until 2026-09-27). A
+MIRROR can freeze too, behind a generator that runs fine: DBnomics stopped
+indexing the Bundesbank curve at 2026-07-03 (`BUND-DAILY` now reads the
+Bundesbank's own SDMX service, with a freshness check), and its OECD mirror
+was last indexed 2026-06-16, so every OECD-fed file (`EMU-EUR`, `GILT-GBP`,
+`GBCASH-GBP`, `JPCASH-JPY`, the macro panel, the OECD tails) stops around
+2026-05 while the OECD's own API serves 2026-08. The
 shared plumbing (FRED and Ken French readers, the history-reproduction,
 cadence and flat-run checks, the header writer) is `cmd/internal/refgen`. A
 file that STOPS by design (its source was discontinued, or it is trimmed where

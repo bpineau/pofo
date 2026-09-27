@@ -62,16 +62,18 @@
 // macro panel and the euro reference series use, but from the CURRENT
 // short-term-statistics dataflow (OECD/DSD_STES@DF_FINMARK) rather than the
 // legacy MEI dataset, which stopped being updated in 2024-01. The Bundesbank
-// series is on DBnomics too; the Japanese one is a plain CSV served by the
-// Ministry of Finance.
+// curve is read from the Bundesbank's own SDMX web service: it used to come
+// through DBnomics as well, until the mirror stopped indexing it at 2026-07-03
+// and BUND-DAILY froze there for three months with nothing to say so. The
+// Japanese one is a plain CSV served by the Ministry of Finance.
 //
 // Every series is checked before it is written (-check, on by default): each
-// one's CAGR and annualized volatility over a window with a known answer, and
-// the German reconstruction against the euro-area one over the years when
-// their spreads were thin. Nothing here is trusted on the strength of having
-// downloaded cleanly.
+// one's CAGR and annualized volatility over a window with a known answer, the
+// German reconstruction against the euro-area one over the years when their
+// spreads were thin, and the daily German curve's freshness. Nothing here is
+// trusted on the strength of having downloaded cleanly.
 //
-// Usage: gen-gbond-refdata [-base URL] [-jgb URL] [-dir path] [-dry] [-check=false]
+// Usage: gen-gbond-refdata [-base URL] [-jgb URL] [-buba URL] [-dir path] [-dry] [-check=false]
 package main
 
 import (
@@ -90,6 +92,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/metrics"
 	"github.com/bpineau/pofo/pkg/simgen"
@@ -101,6 +104,16 @@ const (
 	// table. Only the /english/ path serves it; the Japanese one answers with
 	// a portal page.
 	defaultJGB = "https://www.mof.go.jp/english/policy/jgbs/reference/interest_rate/historical/jgbcme_all.csv"
+	// defaultBuba is the Bundesbank's own SDMX web service, serving the daily
+	// 10-year point of its listed federal securities term structure as CSV.
+	// It is read at the source rather than through DBnomics: the mirror stopped
+	// indexing this series at 2026-07-03 while the Bundesbank kept publishing,
+	// and BUND-DAILY froze there unseen until 2026-09-27 (the two agree on
+	// every one of the 7336 days they share).
+	defaultBuba = "https://api.statistiken.bundesbank.de/rest/data/BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A?format=csv&lang=en"
+	// bubaMaxAge bounds the age of the daily curve's last point, in days: the
+	// Bundesbank publishes it every business day.
+	bubaMaxAge = 10
 )
 
 // bondMaturity is the constant maturity (years) every leg of the basket is
@@ -119,6 +132,7 @@ const jgbTenor = "10Y"
 func main() {
 	base := flag.String("base", defaultBase, "DBnomics API base URL")
 	jgbURL := flag.String("jgb", defaultJGB, "Ministry of Finance historical JGB rates CSV")
+	bubaURL := flag.String("buba", defaultBuba, "Bundesbank SDMX CSV of the daily 10-year federal securities yield")
 	dir := flag.String("dir", "pkg/datasets/refdata", "output refdata directory")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
 	check := flag.Bool("check", true, "run the sanity checks before writing")
@@ -132,7 +146,7 @@ func main() {
 	bundSynth.Points = atMonthEnd(bundSynth.Points)
 	report("BUND-SYN", bundSynth.Points)
 
-	bundDailyYield := fetch(*base, "BUBA/BBSIS/D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A._Z._Z.A")
+	bundDailyYield := fetchBundesbank(*bubaURL)
 	bundDaily := simgen.TreasuryTR("German government bond total return (10y benchmark, daily)", asSeries(bundDailyYield), bondMaturity, 0)
 	report("BUND-DAILY", bundDaily.Points)
 
@@ -167,10 +181,10 @@ func main() {
 		return
 	}
 	write(*dir, "BUND-EUR", "German government bond total return (10-year benchmark, EUR, monthly)",
-		fmt.Sprintf("month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from %s; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. %s",
+		fmt.Sprintf("month-ends of the Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, from %s; before it the OECD long-term government bond yield DEU.M.IRLT (dataflow DSD_STES@DF_FINMARK, ~1956) rebased onto them at the junction; both run through the constant-maturity reconstruction (TreasuryTR, %.0fy par); the curve from the Bundesbank's SDMX web service, the OECD yield via DBnomics. German leg of the NTSG global bond overlay; the euro-area aggregate EUROGOV-EUR is not reused, it carries periphery spreads a Bund basket never had. %s",
 			bundSplice.at.Format("2006-01"), bondMaturity, monthAverageNote), bund.Points)
 	write(*dir, "BUND-DAILY", "German government bond total return (10-year benchmark, EUR, daily)",
-		fmt.Sprintf("Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, BBSIS D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A (~1997-08) run through TreasuryTR (%.0fy par); via DBnomics. Daily shape for BUND-EUR.", bondMaturity), bundDaily.Points)
+		fmt.Sprintf("Bundesbank daily term structure of listed federal securities (Svensson), 10-year residual maturity, BBSIS D.I.ZST.ZI.EUR.S1311.B.A604.R10XX.R.A.A (~1997-08) run through TreasuryTR (%.0fy par); read from the Bundesbank's own SDMX web service (api.statistiken.bundesbank.de), not the DBnomics mirror, which stopped indexing it at 2026-07-03. Daily shape for BUND-EUR.", bondMaturity), bundDaily.Points)
 	write(*dir, "JGB-JPY", "Japanese government bond total return (10-year benchmark, JPY, daily)",
 		fmt.Sprintf("Japanese Ministry of Finance historical JGB interest rates (jgbcme_all.csv), %s column (~1986-07), run through TreasuryTR (%.0fy par). Japanese leg of the NTSG global bond overlay; the yield is negative on 453 days between 2016-02 and 2020-05 and the reconstruction prices those days rather than flat-lining them.", jgbTenor, bondMaturity), jgb.Points)
 	write(*dir, "GILT-GBP", "British government bond total return (10-year benchmark, GBP, monthly)",
@@ -230,6 +244,40 @@ func fetch(base, path string) []obs {
 	}
 	if len(out) < 2 {
 		log.Fatalf("%s: only %d usable observations", path, len(out))
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].date.Before(out[j].date) })
+	return out
+}
+
+// fetchBundesbank downloads one daily series from the Bundesbank's SDMX web
+// service as CSV and returns its observations in date order. The file opens
+// with a few metadata rows (title, unit, last update), then one row per
+// CALENDAR day, date first; a day without a value (a weekend, a holiday) reads
+// "." and is skipped.
+func fetchBundesbank(url string) []obs {
+	raw, err := refgen.Get(url)
+	if err != nil {
+		log.Fatalf("Bundesbank: %v", err)
+	}
+	var out []obs
+	for _, line := range strings.Split(string(raw), "\n") {
+		day, rest, ok := strings.Cut(strings.TrimSpace(line), ",")
+		if !ok {
+			continue
+		}
+		t, err := time.Parse(time.DateOnly, day)
+		if err != nil {
+			continue // a metadata row
+		}
+		value, _, _ := strings.Cut(rest, ",")
+		v, err := strconv.ParseFloat(value, 64)
+		if err != nil {
+			continue // ".": no value that day
+		}
+		out = append(out, obs{date: t, val: v})
+	}
+	if len(out) < 2 {
+		log.Fatalf("Bundesbank: only %d usable observations", len(out))
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].date.Before(out[j].date) })
 	return out
@@ -475,8 +523,12 @@ func write(dir, id, name, source string, pts []marketdata.Point) {
 // downloaded cleanly has proved nothing: the house rule is that a series is
 // validated against a reference BEFORE anything is allowed to trust it.
 //
-// The five checks, and why each number is the one to expect:
+// The six checks, and why each number is the one to expect:
 //
+//   - Freshness of the daily German curve. The Bundesbank publishes it every
+//     business day, so a last point more than bubaMaxAge days old means the
+//     source (or a mirror in front of it) stopped: that is how BUND-DAILY once
+//     froze for three months unseen.
 //   - German vs euro-area. Over the euro's first decade, before the sovereign
 //     crisis reopened them, the spreads between the euro aggregate and the Bund
 //     were a few tens of basis points. The two reconstructions must therefore
@@ -544,6 +596,13 @@ func runChecks(dir string, bund, bundSynth, bundDaily, jgb, gilt *marketdata.Ser
 		if corr < 0.90 || math.Abs(cb-cg) > 0.01 {
 			fail("the German and euro-area reconstructions diverge over the years their spreads were thin")
 		}
+	}
+
+	last := bundDaily.Last().Date
+	age := time.Since(last).Hours() / 24
+	log.Printf("check BUND-DAILY freshness: last %s (%.0f days old)", last.Format("2006-01-02"), age)
+	if age > bubaMaxAge {
+		fail("the Bundesbank daily curve ends %s, %.0f days ago: the source has stopped", last.Format("2006-01-02"), age)
 	}
 
 	from, to := date(1998, 1), bundDaily.Last().Date
