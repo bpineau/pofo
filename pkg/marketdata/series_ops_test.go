@@ -201,12 +201,15 @@ func TestResamplePeriods(t *testing.T) {
 	if got := one.Resample(Monthly).Points; len(got) != 1 || got[0].Date != date(2024, 5, 15) {
 		t.Errorf("single point resample = %v", got)
 	}
+	if d := s.Resample(Daily); !reflect.DeepEqual(d.Points, s.Points) || &d.Points[0] == &s.Points[0] {
+		t.Errorf("Daily resample is not an unchanged copy: %v", d.Points)
+	}
 	defer func() {
 		if recover() == nil {
-			t.Error("Resample(0) did not panic")
+			t.Error("Resample(-1) did not panic")
 		}
 	}()
-	s.Resample(0)
+	s.Resample(-1)
 }
 
 func TestCommonWindow(t *testing.T) {

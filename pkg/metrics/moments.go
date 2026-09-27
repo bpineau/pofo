@@ -164,7 +164,8 @@ func quantileRanks(n int, q float64) (lo, hi int) {
 // conditional drawdown): only the rank that cuts the tail off is placed, and
 // only the tail itself is then sorted, so reading the worst 5 % of a large
 // sample costs a fraction of sorting all of it. n at or above len(xs) returns
-// the whole sample sorted descending, and n <= 0 returns nil.
+// the whole sample sorted descending, and n <= 0 returns nil. HighestK and
+// LowestK answer WHERE the extremes sit (their positions, to date them).
 func TopK(xs []float64, n int) []float64 {
 	if n <= 0 || len(xs) == 0 {
 		return nil

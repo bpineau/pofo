@@ -17,8 +17,11 @@
 //     from.
 //   - pkg/marketdata: fetches, caches and post-processes daily, intraday and
 //     latest (real-time) prices from public sources, addressed by ticker, ISIN
-//     or alias; resolves identifiers against the embedded catalog and aligns
-//     trading calendars (AlignSeries, the strict one). It is also the one
+//     or alias; resolves identifiers against the embedded catalog, aligns
+//     trading calendars (AlignSeries, the strict one) and cuts several
+//     series into a returns Panel on the periods they share, the table a
+//     statistic across series reads (blends, regressions, the other
+//     series over one series' worst months). It is also the one
 //     way in and out for data at rest: Bundled reads any embedded series
 //     without a client, an Offline client serves the quote cache without
 //     the network, ReadCSV and ReadLongCSV read CSV files, WriteCSV writes
@@ -27,7 +30,8 @@
 //     (CAGR, volatility, Sharpe, Sortino, Ulcer, max drawdown,
 //     time-to-recovery, Beta, CWARP, IRR, TWR), the correlation and
 //     covariance matrices, calendar returns, rolling beta and correlation,
-//     historical VaR, and the Euler risk attribution.
+//     historical VaR, multiple regression (Regress), dated extremes
+//     (LowestK, HighestK) and the Euler risk attribution.
 //   - pkg/optimize: long-only weights for an objective (max-sharpe,
 //     min-volatility, max-return, risk-parity, max-sortino,
 //     return-to-drawdown, min-ulcer, max-worst-5y, cwarp) from the assets'
@@ -77,7 +81,7 @@
 // measured by go list, each package followed by what it imports of pofo:
 //
 //	datasets, metrics, chart, webui, bookmd, epub, opds, seo    (nothing)
-//	marketdata   datasets
+//	marketdata   datasets metrics
 //	optimize     metrics
 //	suggest      datasets metrics
 //	scenario     marketdata
@@ -94,6 +98,10 @@
 // Two edges are rules, not accidents: metrics imports nothing of pofo (it is
 // the math, and takes a valuation series its caller built), and analyze never
 // imports chart, report or compare (the numbers come before any picture).
+// marketdata importing metrics is the first rule's consequence, not an
+// exception to it: the data package hands its series to the math (Stats,
+// Panel.Series, a panel's cadence), and the math never learns what a Series
+// is.
 //
 // # Typical pipeline
 //
@@ -136,7 +144,7 @@
 //	fees (TER)       PERCENT per year in portfolio (Line.Fees, Holding.Fees,
 //	                 EnvelopeFees, BorrowSpread), marketdata Client.Fees and
 //	                 datasets.Asset.Fees; FRACTION per year in simgen (and its
-//	                 volatility targets)
+//	                 volatility targets) and marketdata Series.LessFee
 //	returns          FRACTION everywhere (metrics, analyze, scenario, decumul:
 //	                 0.04 = +4 %); scenario and decumul work in REAL terms
 //	statistics       FRACTION (metrics.Stats, analyze studies), except

@@ -2,7 +2,8 @@
 // dated values: CAGR, volatility, Sharpe, Sortino, Ulcer Index, Max
 // Drawdown, TTR (time to recovery), Beta against a benchmark, and the
 // native-versus-monthly volatility term structure (the Lo-MacKinlay
-// variance ratio).
+// variance ratio); and over bare return samples, the correlation and
+// covariance matrices, multiple regression and dated extremes.
 //
 // # Conventions
 //
@@ -71,6 +72,25 @@
 // Quantiles, as POSITIVE per-period losses (0.95 = the loss exceeded in 5 %
 // of periods), never annualized. Everything here takes and returns
 // fractions.
+//
+// # Regression and dated extremes
+//
+// Regress is ordinary least squares with an intercept, on one regressor or
+// several: a fund on its index and a currency, a strategy on two factors.
+// It centers the data and factorizes the regressors by Householder QR, never
+// forming X'X, and the golden package holds it to the certified values of
+// the NIST StRD Longley benchmark. Its Regression is PER PERIOD (alpha a
+// per-period return, ResidualSD a per-period deviation); AnnualAlpha and
+// AnnualResidualVol annualize them at a cadence the caller passes, the
+// PeriodsPerYear of the data. Each coefficient carries its standard error
+// and t-statistic, classical ones that trust independent residuals.
+//
+// LowestK and HighestK return the POSITIONS of a sample's extremes, stable
+// on ties and blind to NaN, so the worst months of a return column can be
+// dated (a marketdata.Panel's Ends) and the other columns read on exactly
+// those periods (Panel.Pick): the conditional statistic "what did the hedge
+// do in the equity's worst decile". TopK stays the values-only fast path of
+// a tail statistic over a large sample.
 //
 // # Attribution
 //

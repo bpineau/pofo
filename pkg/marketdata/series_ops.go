@@ -4,14 +4,18 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"sort"
 	"time"
+
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // This file is the bridge between a Series and the slice-based rest of the
 // tree (pkg/metrics, pkg/chart, a consumer's own code): a constructor for
 // data the caller owns, the parallel slices every statistic takes, the
-// calendar operations (Rebase, Resample) and the strict sibling of Align.
-// Everything here returns fresh slices and never modifies its receiver.
+// one-call statistics, the level operations (Rebase, LessFee, Change), the
+// calendar ones (Resample) and the strict sibling of Align. Everything here
+// returns fresh slices and never modifies its receiver.
 
 // NewSeries builds a series from a consumer's own data (a valuation it
 // computed, a level it read elsewhere). symbol is free text and becomes
@@ -80,23 +84,120 @@ func (s *Series) Values() []float64 {
 //
 // It reads every step as it is: a step into one of the series' Junctions is
 // returned like any other, and a caller working on a series that declares
-// some must skip those steps itself. It is meaningless on a rate or a
-// yield, which is a percent LEVEL, not a price.
+// some must skip those steps itself (NewPanel does). It is meaningless on a
+// rate or a yield, which is a percent LEVEL, not a price.
 func (s *Series) Returns() []float64 {
-	return periodReturns(s.Values())
+	return metrics.Returns(s.Values())
 }
 
-// periodReturns is metrics.Returns, restated here because marketdata must
-// not import metrics (the layering runs the other way).
-func periodReturns(values []float64) []float64 {
-	if len(values) < 2 {
-		return nil
+// Stats is metrics.Compute over the series' dates and closes: CAGR,
+// volatility, drawdowns and the rest, annualized at the series' own cadence
+// (252 on daily closes, 12 on a month-end series such as Panel.Series
+// returns). The closes must be positive, so it is meaningless on a rate or a
+// yield; the error names the series.
+func (s *Series) Stats() (metrics.Stats, error) {
+	st, err := metrics.Compute(s.Dates(), s.Values())
+	if err != nil {
+		return metrics.Stats{}, fmt.Errorf("marketdata: %s: %w", s.symbol(), err)
 	}
-	r := make([]float64, len(values)-1)
-	for i := 1; i < len(values); i++ {
-		r[i-1] = values[i]/values[i-1] - 1
+	return st, nil
+}
+
+// LessFee returns a copy of s with an annual charge deducted continuously on
+// the calendar: each close is multiplied by (1 - annual) raised to the years
+// elapsed since the first point (365.25-day years), so a full year costs
+// exactly annual of the level and weekends and holidays pay their share. It
+// turns a gross index into what a fund tracking it at that cost would have
+// returned, or a fund's net NAV into a wrapper's.
+//
+// annual is a FRACTION per year: 0.0085 for 0.85 %/yr. It is NOT the percent
+// convention of Client.Fees and portfolio.Holding.Fees, where 0.85 means
+// 0.85 %/yr; passing such a figure here deducts 85 % a year. Convert with
+// Fees/100. A negative annual is an uplift (a cost the series carries and
+// the target does not). annual must be below 1; LessFee panics otherwise, as
+// for any programming error.
+//
+// Metadata is carried over; Dividends are not rescaled (see Rebase).
+func (s *Series) LessFee(annual float64) *Series {
+	if !(annual < 1) {
+		panic(fmt.Sprintf("marketdata: LessFee with an annual charge of %v (a FRACTION per year: 0.0085 for 0.85 %%/yr)", annual))
 	}
-	return r
+	out := s.clone()
+	if len(out.Points) == 0 || annual == 0 {
+		return out
+	}
+	t0 := out.Points[0].Date
+	for i, p := range out.Points {
+		yrs := p.Date.Sub(t0).Hours() / 24 / 365.25
+		out.Points[i].Close = p.Close * math.Pow(1-annual, yrs)
+	}
+	return out
+}
+
+// Change is the cumulative return of s between two dates, as a FRACTION
+// (0.25 = +25 %): the close at or before to over the close at or before
+// from, minus one. Change(2008-01-01, 2008-12-31) is therefore calendar
+// 2008, measured from the last close of 2007, and a weekend or holiday
+// bound reads the session before it. Both bounds are civil dates.
+//
+// It refuses what it could only answer wrong: to before from; a series
+// that starts after from (it has no level there); a series that stops
+// before to, since the move after its last quote is unknown and a shorter
+// episode would come back unannounced (a series knows its level at a date
+// when it quotes after it, or on or after that date's last weekday, so a
+// series ending on a Friday answers for the weekend); a non-positive close
+// at from; and a Junction between the two closes, where the change is a
+// change of definition rather than a move.
+func (s *Series) Change(from, to time.Time) (float64, error) {
+	from, to = dayUTC(from), dayUTC(to)
+	if to.Before(from) {
+		return 0, fmt.Errorf("marketdata: Change %s: ends %s, before it starts %s", s.symbol(), to.Format(time.DateOnly), from.Format(time.DateOnly))
+	}
+	if s.Len() == 0 || s.First().Date.After(from) {
+		return 0, fmt.Errorf("marketdata: Change %s: no close at or before %s", s.symbol(), from.Format(time.DateOnly))
+	}
+	if !knowsLevelAt(s.Last().Date, to) {
+		return 0, fmt.Errorf("marketdata: Change %s: last close %s, before %s", s.symbol(), s.Last().Date.Format(time.DateOnly), to.Format(time.DateOnly))
+	}
+	a, b := s.closeAt(from), s.closeAt(to)
+	if !(a.Close > 0) {
+		return 0, fmt.Errorf("marketdata: Change %s: close %v on %s is not a positive price", s.symbol(), a.Close, a.Date.Format(time.DateOnly))
+	}
+	if j, ok := s.junctionIn(a.Date, b.Date); ok {
+		return 0, fmt.Errorf("marketdata: Change %s: definition junction on %s between %s and %s", s.symbol(),
+			j.Format(time.DateOnly), a.Date.Format(time.DateOnly), b.Date.Format(time.DateOnly))
+	}
+	return b.Close/a.Close - 1, nil
+}
+
+// closeAt is the last point at or before d; the series must start at or
+// before d.
+func (s *Series) closeAt(d time.Time) Point {
+	i := sort.Search(len(s.Points), func(i int) bool { return s.Points[i].Date.After(d) })
+	return s.Points[i-1]
+}
+
+// junctionIn reports the first of s's Junctions in (from, to]: the step from
+// the close on from to the close on to crosses it.
+func (s *Series) junctionIn(from, to time.Time) (time.Time, bool) {
+	for _, j := range s.Junctions {
+		if j.After(from) && !j.After(to) {
+			return j, true
+		}
+	}
+	return time.Time{}, false
+}
+
+// knowsLevelAt reports whether a series whose last quote is last knows its
+// level at d: it quoted at or after d's last weekday (d itself, or the
+// Friday before a weekend). The rule is conservative on purpose: a series
+// that stops on the Thursday before a Friday holiday does not answer for
+// that Friday, a missing answer rather than a stale one.
+func knowsLevelAt(last, d time.Time) bool {
+	for d.Weekday() == time.Saturday || d.Weekday() == time.Sunday {
+		d = d.AddDate(0, 0, -1)
+	}
+	return !last.Before(d)
 }
 
 // Rebase returns a copy of s scaled so its first close is base (100 for an
@@ -125,16 +226,33 @@ func (s *Series) Rebase(base float64) *Series {
 	return out
 }
 
-// Frequency is a calendar period, counted in months.
+// Frequency is a calendar period, counted in months, or Daily: the quote
+// date itself, whatever separates two quotes.
 type Frequency int
 
-// The calendar periods Resample cuts on. Any positive number of months is
-// accepted; these name the usual ones.
+// The calendar periods Resample and NewPanel cut on. Any positive number of
+// months is accepted; these name the usual ones. Daily, the zero value, cuts
+// nothing: every quote is its own period.
 const (
+	Daily     Frequency = 0
 	Monthly   Frequency = 1
 	Quarterly Frequency = 3
 	Yearly    Frequency = 12
 )
+
+// index numbers the period of f holding d: months since year 0 divided by
+// f, so consecutive periods get consecutive numbers. It is meaningless for
+// Daily.
+func (f Frequency) index(d time.Time) int {
+	return (d.Year()*12 + int(d.Month()) - 1) / int(f)
+}
+
+// end is the canonical label of period p of f (an index): the calendar last
+// day of its last month, at 00:00 UTC.
+func (f Frequency) end(p int) time.Time {
+	last := (p+1)*int(f) - 1 // the block's last month, counted from year 0
+	return time.Date(last/12, time.Month(last%12+2), 0, 0, 0, 0, 0, time.UTC)
+}
 
 // Resample keeps the last point of each calendar period of f months and
 // returns them as a new series: each kept point keeps its own close AND its
@@ -159,17 +277,19 @@ const (
 // after the last kept date is dropped, there being no step for it to guard.
 // Two junctions in one period collapse into one.
 //
-// f must be positive; Resample panics otherwise, as for any programming
-// error.
+// Daily returns an unchanged copy, every point being its own period. A
+// negative f panics, as for any programming error.
 func (s *Series) Resample(f Frequency) *Series {
-	if f < 1 {
-		panic(fmt.Sprintf("marketdata: Resample with a non-positive frequency (%d months)", f))
+	if f < 0 {
+		panic(fmt.Sprintf("marketdata: Resample with a negative frequency (%d months)", f))
 	}
 	out := s.clone()
-	period := func(d time.Time) int { return (d.Year()*12 + int(d.Month()) - 1) / int(f) }
+	if f == Daily {
+		return out
+	}
 	kept := out.Points[:0]
 	for i, p := range out.Points {
-		if i+1 < len(out.Points) && period(out.Points[i+1].Date) == period(p.Date) {
+		if i+1 < len(out.Points) && f.index(out.Points[i+1].Date) == f.index(p.Date) {
 			continue
 		}
 		kept = append(kept, p)
@@ -343,7 +463,7 @@ func (s *Series) symbol() string {
 func (a *Aligned) Returns() [][]float64 {
 	out := make([][]float64, len(a.Levels))
 	for i, levels := range a.Levels {
-		out[i] = periodReturns(levels)
+		out[i] = metrics.Returns(levels)
 		if out[i] == nil {
 			out[i] = []float64{}
 		}
