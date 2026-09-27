@@ -2,6 +2,7 @@
 # id: EURCASH-EUR
 # name: Euro area 3-month cash total-return index (base 100, monthly)
 # source: ECB monthly EURIBOR 3-month rate FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA (1994-01->) rolled monthly at the convention it is quoted in (simple, act/360, per EMMI's Benchmark Determination Methodology for Euribor); via DBnomics. Each row is dated the month-END it closes (atAccrualEnd), like every other monthly series here, so a composite reading this leg beside a bond leg sees one point a month. The EUR cash leg used to hedge USD assets to EUR (return = local + USD cash - EUR cash is captured as +EUR cash here), and the leg XEON and ERNX are carried back on. Replaced FRED IR3TIB01EZM156N in 2026-08, which became unreachable and left the file frozen at 2026-01; the two agree to 2.4e-5 relative over the 385 months they share.
+# generated: 2026-09-27
 date,close
 1993-12-31,100.000000
 1994-01-31,100.595028

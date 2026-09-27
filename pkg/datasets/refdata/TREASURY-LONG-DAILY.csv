@@ -2,7 +2,8 @@
 # id: TREASURY-LONG-DAILY
 # name: US long-term Treasury total return (20-year CMT, daily), DAILY SHAPE series
 # source: Federal Reserve H.15 20-year constant maturity, nominal, business-daily (FED/H15/RIFLGFCY20_N.B), via DBnomics, run through simgen.TreasuryTR (20-year par bond, no fee), 1962-01-02 to 1986-12-31 where H.15 discontinues that point. The 1973-01-04 definitional break of the 20-year point is declared a junction and its step is skipped. LEVELS ARE NOT AUTHORITATIVE: used only as the intra-month daily shape behind the TREASURY-LONG-USD monthly anchors (simgen dailyShape/anchorShape).
-# generated: 2026-09-20
+# generated: 2026-09-27
+# ends: 1986-12-31 (H.15 discontinued the 20-year constant maturity at the end of 1986)
 date,close
 1962-01-02,100.000000
 1962-01-03,100.011143

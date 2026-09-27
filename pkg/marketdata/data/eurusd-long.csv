@@ -7,7 +7,7 @@
 # Regenerate: make snapshots (cmd/gen-snapshots) refetches the DEXUSEU leg only and
 # carries the pre-1999 head over; that head came from FRED EXUSEC + DBnomics
 # BUBA/BBEX3/D.USD.DEM.AA.AC.000. See pkg/marketdata/currency.go.
-# generated: 2026-09-10
+# generated: 2026-09-27
 1971-01-04,0.731763
 1971-01-05,0.731763
 1971-01-06,0.731803
@@ -13923,3 +13923,12 @@
 2026-09-02,1.159200
 2026-09-03,1.162300
 2026-09-04,1.161800
+2026-09-08,1.162700
+2026-09-09,1.162700
+2026-09-10,1.162900
+2026-09-11,1.160400
+2026-09-14,1.154900
+2026-09-15,1.154200
+2026-09-16,1.153800
+2026-09-17,1.147900
+2026-09-18,1.146400

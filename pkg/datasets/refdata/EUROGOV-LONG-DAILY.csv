@@ -2,6 +2,7 @@
 # id: EUROGOV-LONG-DAILY
 # name: Long euro-area government bond total return (25+ segment, EUR, daily)
 # source: ECB daily euro-area 25y yield-curve point B.U2.EUR.4F.G_N_A.SV_C_YM.SR_25Y (~2004) run through TreasuryTR (24y par, modified duration ~17, vol-matched to DBXG); via DBnomics. Daily shape for EUROGOV-LONG-EUR.
+# generated: 2026-09-27
 date,close
 2004-09-06,100.000000
 2004-09-07,100.181819
@@ -5634,3 +5635,10 @@ date,close
 2026-09-11,188.134574
 2026-09-14,188.539738
 2026-09-15,188.166565
+2026-09-16,188.728924
+2026-09-17,189.980656
+2026-09-18,189.798446
+2026-09-21,190.716590
+2026-09-22,191.176761
+2026-09-23,189.913851
+2026-09-24,189.831197
