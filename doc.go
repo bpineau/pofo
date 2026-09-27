@@ -35,7 +35,8 @@
 //     decumul.Plan over a scenario.Source, then Plan.Simulate and
 //     Plan.Solve; replay.Run for history as it happened.
 //   - Backcasts ([simgen]): Find and Validate; the shipped ones are read by
-//     marketdata.Bundled or behind a SIM identifier.
+//     a SIM identifier ("IWDASIM", through marketdata.Bundled or
+//     Client.FetchExtended; the bare "IWDA" is the real quotes only).
 //   - Render ([chart], [compare], [report]): chart.Line, or compare.Compute
 //     then report.Render for the CLI's HTML report.
 //   - Export: marketdata.WriteCSV.
@@ -162,7 +163,8 @@
 //     statistic across series reads (blends, regressions, the other
 //     series over one series' worst months). It is also the one
 //     way in and out for data at rest: Bundled reads any embedded series
-//     without a client, an Offline client serves the quote cache without
+//     without a client (a fund's reconstruction under its SIM name only),
+//     an Offline client serves the quote cache without
 //     the network, ReadCSV and ReadLongCSV read CSV files, WriteCSV writes
 //     them.
 //   - pkg/metrics: risk/return statistics on parallel date and value slices
