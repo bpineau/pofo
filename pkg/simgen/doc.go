@@ -66,8 +66,12 @@
 //     reconstructions and they are not interchangeable: an overlay finances at
 //     the overnight rate, a collateral sleeve earns the bill rate, and the two
 //     have differed by 0.02 to 1.15 points a year depending on the decade;
-//   - Validate measures daily and weekly correlation, beta, tracking error
-//     and CAGR against the real series; WithRefData serves the bundled
+//   - Validate measures daily and five-session correlation, beta (of the
+//     reconstruction on the real series), tracking error, both volatilities
+//     and CAGR against the real series, on a marketdata.Panel of the dates
+//     both quote read by marketdata.Panel.Track, the same metrics.Tracking
+//     analyze.Pair reports; the audit adds the monthly figures on a monthly
+//     panel of whole calendar months. WithRefData serves the bundled
 //     reference series (datasets.Refdata, e.g. MSCIWORLD-USD, SP500-USD) and
 //     any extra local CSVs (dev -refdata) before the network;
 //   - extend/longBack splice a long real proxy behind a short component leg

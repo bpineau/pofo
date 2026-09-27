@@ -7,6 +7,7 @@ import (
 
 	"github.com/bpineau/pofo/pkg/datasets"
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // mkWave builds a deterministic daily series whose returns oscillate around
@@ -361,7 +362,7 @@ func TestCHSNReshapesTheStaleDonorAndPassesTheCleanOneThrough(t *testing.T) {
 		if len(a) < (half-live)/4 {
 			t.Fatalf("only %d common days in the stale era, the check would be vacuous", len(a))
 		}
-		return pearson(a, b)
+		return metrics.Corr(a, b)
 	}
 	if c := against(proxy); c < 0.95 {
 		t.Errorf("stale era correlates %.2f with the proxy's texture, want it to follow the proxy", c)

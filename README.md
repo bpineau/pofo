@@ -1193,7 +1193,10 @@ standard error, level gap, the ratio A/B and the first date it moves), a
 beta, alpha, the largest divergences dated), the calendar years side by side
 and `Warnings`; `WriteText` prints it all as aligned text and the struct
 marshals to JSON. `PairOptions.LeadLag` forgives a one-session clock
-difference when ranking the daily divergences (`metrics.LeadLagGaps`).
+difference when ranking the daily divergences (`metrics.LeadLagGaps`). Each
+block is a `metrics.Tracking`, which `Panel.Track(a, b)` returns for any two
+columns of a panel you built yourself (and `metrics.Track` for two bare
+return slices); the reconstruction audit reads the same one.
 
 ```go
 // from analyze.ExamplePair (backcastAndFund: two synthetic series)
