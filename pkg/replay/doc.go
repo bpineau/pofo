@@ -3,6 +3,12 @@
 // strategy can be described by the life it delivered rather than by a failure
 // probability.
 //
+// [Run] replays one [Setup] (a start year, a capital, a spending, a horizon)
+// and returns a [Result]: the untouched market and one [Rule] portrait per
+// withdrawal rule of [Policies]. [Reference] is the bundled real 60/40 it
+// replays on. Everything is REAL (inflation removed) and every rate a
+// FRACTION.
+//
 // It answers a different question from pkg/decumul, which simulates thousands
 // of imagined futures and reports how often a plan fails. Here there is no
 // randomness at all: one start year, one sequence of real returns, seven rules,

@@ -26,6 +26,28 @@ func ExampleCompute() {
 	// TTR: 3 days (ongoing: true)
 }
 
+// DrawdownEpisodes dates every peak-to-trough-to-recovery fall; MaxDrawdown
+// is the deepest of them, and an episode not recovered by the end is Ongoing.
+func ExampleDrawdownEpisodes() {
+	start := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	values := []float64{100, 90, 100, 105, 80, 95, 110, 104}
+	dates := make([]time.Time, len(values))
+	for i := range dates {
+		dates[i] = start.AddDate(0, i, 0)
+	}
+	for _, e := range metrics.DrawdownEpisodes(dates, values) {
+		fmt.Printf("peak %s, trough %s, %+.0f %%, ongoing %v\n",
+			e.PeakDate.Format("2006-01"), e.TroughDate.Format("2006-01"), e.Depth*100, e.Ongoing)
+	}
+	worst := metrics.MaxDrawdown(dates, values)
+	fmt.Printf("deepest: %+.0f %%, recovered %s\n", worst.Depth*100, worst.RecoverDate.Format("2006-01"))
+	// Output:
+	// peak 2020-01, trough 2020-02, -10 %, ongoing false
+	// peak 2020-04, trough 2020-05, -24 %, ongoing false
+	// peak 2020-07, trough 2020-08, -5 %, ongoing true
+	// deepest: -24 %, recovered 2020-07
+}
+
 // Compute annualizes at the series' own cadence: a monthly index is read at
 // twelve periods a year, so a 3 % monthly standard deviation is a 10.4 %
 // annual volatility, not the 47.6 % a fixed 252-day factor would claim.

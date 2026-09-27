@@ -152,3 +152,23 @@ func ExamplePlan_Solve() {
 	// Output:
 	// 5% chance of ever being broke and alive at 24000 a year
 }
+
+// Sweep1D maps ruin across one parameter on one set of drawn paths, so the
+// curve is smooth: here the yearly spending of a 1 M plan over 35 years.
+func ExamplePlan_Sweep1D() {
+	p := decumul.Plan{
+		Capital: 1_000_000, Years: 35,
+		Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 35},
+	}
+	points, err := p.Sweep1D(decumul.NeedAnnual, []float64{30_000, 40_000, 50_000}, 20_000, 4, 7)
+	if err != nil {
+		panic(err)
+	}
+	for _, pt := range points {
+		fmt.Printf("%.0f a year: ruin %.0f %%, median terminal wealth %.1f M\n", pt.Value, pt.RuinProb*100, pt.TerminalP50/1e6)
+	}
+	// Output:
+	// 30000 a year: ruin 17 %, median terminal wealth 0.8 M
+	// 40000 a year: ruin 42 %, median terminal wealth 0.2 M
+	// 50000 a year: ruin 67 %, median terminal wealth 0.0 M
+}

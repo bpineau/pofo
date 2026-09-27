@@ -4,6 +4,32 @@
 // and parameter sweeps, and to size a starting capital or a cash buffer
 // against a target ruin probability.
 //
+// # Start here
+//
+//   - A [Plan] is the question: Capital, NeedAnnual (real spending per
+//     year), Years, a return [scenario.Source], optional Tax ([CTOFlatTax],
+//     [AVTax]), Cashflows (pensions), a Buffer, and optional spending rules
+//     (Flex, Guard, RiskGuard, Percent, Bounded, Amortize: see "Spending
+//     rules" below for which one wins).
+//   - [Plan.Simulate] draws the paths into an [Ensemble];
+//     [Ensemble.Outcome] summarizes it ([Outcome]: ruin probability,
+//     terminal wealth percentiles, spending cuts) and [Ensemble.Fan] draws
+//     its wealth bands.
+//   - [Plan.Solve] turns the question around along an axis
+//     ([WithdrawalAxis], [CapitalAxis]...): the spending, or the capital,
+//     that meets a target ruin. [Plan.Sweep1D] and [Plan.Sweep2D] map ruin
+//     across parameters.
+//   - [Plan.RunPath] runs the kernel on one given return path.
+//
+// A 1 M plan spending 32 000 a year for 35 years, on i.i.d. real returns:
+//
+//	p := decumul.Plan{
+//		Capital: 1_000_000, NeedAnnual: 32_000, Years: 35,
+//		Source: scenario.ParametricSource{Mu: 0.035, Sigma: 0.12, Df: 6, Periods: 35},
+//	}
+//	o := p.Simulate(20_000, 4, 7).Outcome() // paths, workers, seed
+//	fmt.Println(o.RuinProb)
+//
 // Everything is in real euros: the spending floor is constant in purchasing
 // power, returns are real, pensions are entered as real Cashflows. The
 // parametric model is i.i.d. with fat tails and is probably optimistic vs
