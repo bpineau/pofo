@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: GBCASH-GBP
 # name: British overnight money-market accrual (GBP, monthly)
-# source: OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the sterling leg of the NTSG bond overlay finances at.
+# source: OECD immediate interest rate, interbank GBR.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1978-01) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); read from the OECD's own SDMX API. What the sterling leg of the NTSG bond overlay finances at.
 date,close
 1977-12-31,100.000000
 1978-01-31,100.535118
@@ -584,3 +584,6 @@ date,close
 2026-02-28,1456.588387
 2026-03-31,1461.121429
 2026-04-30,1465.522953
+2026-05-31,1470.084643
+2026-06-30,1474.512934
+2026-07-31,1479.104059

@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: JPCASH-JPY
 # name: Japanese overnight money-market accrual (JPY, monthly)
-# source: OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); via DBnomics. What the yen leg of the NTSG bond overlay finances at.
+# source: OECD immediate interest rate, call money JPN.M.IRSTCI (dataflow DSD_STES@DF_FINMARK, ~1985-07) compounded into a money-market level, each row dated the month-END it closes (atAccrualEnd); read from the OECD's own SDMX API. What the yen leg of the NTSG bond overlay finances at.
 date,close
 1985-06-30,100.000000
 1985-07-31,100.529243
@@ -494,3 +494,6 @@ date,close
 2026-02-28,163.967056
 2026-03-31,164.068032
 2026-04-30,164.165676
+2026-05-31,164.266635
+2026-06-30,164.379669
+2026-07-31,164.515507
