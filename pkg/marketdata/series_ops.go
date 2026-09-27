@@ -114,24 +114,24 @@ func (s *Series) Stats() (metrics.Stats, error) {
 // convention of Client.Fees and portfolio.Holding.Fees, where 0.85 means
 // 0.85 %/yr; passing such a figure here deducts 85 % a year. Convert with
 // Fees/100. A negative annual is an uplift (a cost the series carries and
-// the target does not). annual must be below 1; LessFee panics otherwise, as
-// for any programming error.
+// the target does not). An annual that is not finite, or not below 1 (a
+// charge of the whole level or more), is an error.
 //
 // Metadata is carried over; Dividends are not rescaled (see Rebase).
-func (s *Series) LessFee(annual float64) *Series {
-	if !(annual < 1) {
-		panic(fmt.Sprintf("marketdata: LessFee with an annual charge of %v (a FRACTION per year: 0.0085 for 0.85 %%/yr)", annual))
+func (s *Series) LessFee(annual float64) (*Series, error) {
+	if !(annual < 1) || math.IsInf(annual, -1) {
+		return nil, fmt.Errorf("marketdata: LessFee %s: annual charge %v is not below 1 (a FRACTION per year: 0.0085 for 0.85 %%/yr)", s.symbol(), annual)
 	}
 	out := s.clone()
 	if len(out.Points) == 0 || annual == 0 {
-		return out
+		return out, nil
 	}
 	t0 := out.Points[0].Date
 	for i, p := range out.Points {
 		yrs := p.Date.Sub(t0).Hours() / 24 / 365.25
 		out.Points[i].Close = p.Close * math.Pow(1-annual, yrs)
 	}
-	return out
+	return out, nil
 }
 
 // Change is the cumulative return of s between two dates, as a FRACTION
@@ -278,14 +278,14 @@ func (f Frequency) end(p int) time.Time {
 // Two junctions in one period collapse into one.
 //
 // Daily returns an unchanged copy, every point being its own period. A
-// negative f panics, as for any programming error.
-func (s *Series) Resample(f Frequency) *Series {
+// negative f is an error.
+func (s *Series) Resample(f Frequency) (*Series, error) {
 	if f < 0 {
-		panic(fmt.Sprintf("marketdata: Resample with a negative frequency (%d months)", f))
+		return nil, fmt.Errorf("marketdata: Resample %s: negative frequency (%d months)", s.symbol(), f)
 	}
 	out := s.clone()
 	if f == Daily {
-		return out
+		return out, nil
 	}
 	kept := out.Points[:0]
 	for i, p := range out.Points {
@@ -318,7 +318,7 @@ func (s *Series) Resample(f Frequency) *Series {
 		}
 	}
 	out.Dividends, out.Junctions = divs, junctions
-	return out
+	return out, nil
 }
 
 // points is s.Points, nil-safe.
