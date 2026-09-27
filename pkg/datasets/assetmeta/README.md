@@ -9,8 +9,10 @@ this file only.
 
 The descriptive data was collected from issuer factsheets/KIIDs, justETF,
 Morningstar and index providers. Breakdowns are approximate (whole percents)
-and dated; they describe the instrument, not a precise point-in-time holding.
-Treat `confidence: medium|low` records with extra care and refresh as needed.
+and dated (`as_of`, on the records refreshed since 2026-09; an undated record's
+breakdowns are of unknown age); they describe the instrument, not a precise
+point-in-time holding. Treat `confidence: medium|low` records, and undated
+ones, with extra care and refresh as needed.
 
 ## Schema (`assets.json`: array of objects)
 
@@ -268,24 +270,65 @@ Field guide for refreshing the descriptive data: per family, where the numbers
 live and the dead ends. Each asset's `sources` array holds the deepest stable
 URL actually used, and its `notes` line the interpretation hint.
 
-### Geography splits
-- Broad index funds (MSCI World / EAFE / EM, S&P 500, MSCI EMU): the MSCI index
-  factsheet PDF (`msci.com/documents/10199/255599/<index>.pdf`, "Country
-  Weights" panel) or the issuer factsheet. MSCI World country weights are also
-  the currency basis for the Efficient Core and Winton equity legs.
-- Active small/mid funds (Independance AM): the monthly reporting PDF carries a
-  "Repartition geographique" pie and a sector table on page 2 (e.g. LU1832174962:
-  `independance-am.com/wp-content/uploads/YYYY/MM/...-reporting-europe-small-...pdf`).
-  That PDF is image-based: WebFetch returns binary, so open it as a PDF (the
-  Read tool renders the pie and table).
+### Where the numbers are, family by family (checked 2026-09)
+- **iShares UCITS** (the richest source there is): the Swiss site
+  `ishares.com/ch/professionals/en/products/<id>/<slug>` still serves the old
+  page, with TER, launch dates, effective duration and weighted maturity in
+  plain HTML, and a link to the full holdings CSV (`...<id>/<slug>/<n>.ajax?
+  fileType=csv&fileName=<TICKER>_holdings&dataType=fund`, one line per holding
+  with sector, location and market currency, "Fund Holdings as of" on its first
+  line). Aggregate it by MARKET VALUE, not by the `Weight (%)` column: that
+  column is rounded to two decimals, which loses a quarter of a 20,000-line bond
+  fund. The product id and slug of every iShares fund come from one JSON file,
+  the site's product screener
+  (`ishares.com/ch/professionals/en/product-screener/product-screener-v3.1.jsn?dcrPath=/templatedata/config/product-screener-v3/data/en/ch/product-screener/ishares-product-screener-backend-config&siteEntryPassthrough=true`),
+  which also carries every fund's TER, effective duration and share-class
+  inception date. The UK site was rebuilt in 2026 and no longer carries any of
+  it; a US page (`ishares.com/us/products/<id>/...`) embeds its exposure arrays
+  as escaped JSON (`"name":"fund"` next to `"name":"type"`), nine countries
+  plus "Other".
+- **Broad indices**: read the index's split off a full-replication tracker's
+  holdings file (IWDA for MSCI World, IEMG/EEM for MSCI EM/EM IMI, ACWI, CSEMU
+  for MSCI EMU): the MSCI factsheet (`msci.com/documents/10199/<uuid>`) names
+  only five countries and is a good cross-check; S&P DJI answers 403, and State
+  Street publishes the S&P 500's own sector split beside SPY
+  (`ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy`). FTSE Russell's
+  factsheet (`research.ftserussell.com/Analytics/FactSheets/Home/DownloadSingleIssue?issueName=AWORLDS`)
+  has the full country table but classifies by ICB, not GICS: put each ICB
+  industry under its nearest GICS label and say so in `notes`.
+- **State Street UCITS**: the daily holdings xlsx
+  (`ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-<ticker>-gy.xlsx`,
+  trade country and GICS sector per line); the fund page's country table is
+  JavaScript-only.
+- **Vanguard US**: `investor.vanguard.com/vmf/api/<TICKER>/profile` (expense
+  ratio and its date), `/characteristic` (duration, holding count, foreign
+  share), `/diversification` (sectors, by ICB). Vanguard EMEA: the factsheet
+  PDFs on `fund-docs.vanguard.com` (ten countries, ICB sectors).
+- **UBS ETFs**: the monthly factsheets on swissfunddata
+  (`swissfunddata.ch/sfdpub/docs/fsm-<fund>-<YYYYMMDD>-en.pdf`, month-end
+  dated), with modified duration and the country table in text.
+- **BlackRock BGF funds**: the factsheet PDF; its breakdown bars carry printed
+  values, readable by rendering page 3 (the Read tool on the PDF).
+- **Active funds without a text breakdown** (Pictet, Amundi feeders): FT's
+  holdings tab (`markets.ft.com/data/funds/tearsheet/holdings?s=<ISIN>:<CCY>`)
+  carries Morningstar's sector and REGIONAL split, dated; keep its regions as
+  regional buckets and its confidence at medium.
+- **Independance AM**: the monthly reporting PDF
+  (`independance-am.com/wp-content/uploads/YYYY/MM/YYMMDD-reporting-<fund>-x-eur-c2-en.pdf`)
+  is image-only and its geography pie labels slices by colour only, which is
+  interpretation rather than reading: refresh it only when the percentages can
+  be tied to countries unambiguously.
 - Keep region residuals as `Other eurozone/Europe/developed/emerging`; do not
-  invent country detail an issuer does not publish.
+  invent country detail an issuer does not publish. A fund denominated in one
+  currency whose issuers sit in many countries (a USD corporate or ultrashort
+  fund) takes a `currency_exposure` override, or its new country detail will
+  read as that many currencies.
 
 ### Equity-leg sectors of stacked funds
-- Use the tracked index's sector weights, not a blended fund sheet. NTSG / RSSB /
-  Winton = MSCI World; NTSX / RSST = S&P 500; NTSZ = MSCI EMU
-  (`msci.com/resources/factsheets/index_fact_sheet/msci-emu-index.pdf`, "Sector
-  Weights"). A LifeStrategy-type multi-asset sheet lumps the bond sleeve into
+- Use the tracked index's sector weights, not a blended fund sheet. NTSG /
+  Winton = MSCI World; NTSX / RSST / GDE = S&P 500; NTSZ = MSCI EMU (read off a
+  tracker's holdings, see above); RSSB's leg is approximated by MSCI ACWI. A
+  LifeStrategy-type multi-asset sheet lumps the bond sleeve into
   "Other"; once `exposures` is set, replace `sectors` with the equity index's
   breakdown or the equity pie mis-reads it.
 
@@ -347,9 +390,15 @@ two classes to the cent.
 
 ### Time sinks and dead ends
 - Independance factsheets are image-only PDFs: read as PDF, not HTML.
-- justETF / Boursorama / Morningstar fund pages and the spglobal sector
-  dashboards are JavaScript-rendered or return 403 to automated fetch; use the
-  index-provider PDF or a cached web-search result for the numbers.
+- justETF's profile page answers a plain HTTP fetch and is the quickest TER,
+  distribution and launch-date check for any UCITS ISIN, but its breakdowns are
+  four countries plus "Other" and its sector labels are its own (Technology,
+  Finance, Consumer Non-Cyclicals...), not GICS: never copy them into `sectors`.
+- Answer 403 or render only in JavaScript, so a script gets no number: S&P DJI
+  (factsheets and dashboards), WisdomTree (both the .com and the .eu site),
+  PIMCO, DWS/Xtrackers, Boursorama, Morningstar's own pages, the UBS fund pages
+  (the swissfunddata PDFs work). Never fill a gap with a web-search snippet: a
+  number a search engine summarised is not a page read.
 - Ossiam CAPE US Sector Value (LU1079841513): the four held sectors rotate
   monthly and are not published as a stable table; any snapshot is low
   confidence (four cheapest-CAPE S&P 500 sectors at 25% each).
