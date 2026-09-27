@@ -48,9 +48,9 @@ corrects it.
 
 ```text
 ID                       KIND     FIRST       LAST        POINTS  NAME
+BCOM-ER-USD              refdata  1991-01-02  2026-09-25  8890    Bloomberg Commodity Index (excess return, USD, daily)
 BTOP50                   simdata  1986-12-31  2026-07-31  7092    Barclay BTOP50 managed futures (index, net of manager fees)
-BTOP50E                  simdata  1986-12-31  2026-09-18  10334   Barclay BTOP50 managed futures, hedged to EUR (index)
-BUND-DAILY               refdata  1997-08-07  2026-07-03  7336    German government bond total return (10-year benchmark, EUR, daily)
+BTOP50E                  simdata  1986-12-31  2026-09-25  10339   Barclay BTOP50 managed futures, hedged to EUR (index)
 ```
 
 ### Currencies and inflation
