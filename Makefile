@@ -61,8 +61,21 @@ cover: ## Tests with coverage
 	@echo "$(GO) test -cover ./... (scratch/ excluded)"
 	@$(GO) test -cover $(PKGS)
 
+# The scripts of examples/code are one main package per file behind a
+# "//go:build ignore" line, so ./... never lists them and `go run FILE` runs
+# each one. They carry no tests: this compiles, vets and lints every file on
+# its own, so a library change that breaks a script fails the gate.
+EXAMPLES = $(wildcard examples/code/*.go)
+
+.PHONY: examples
+examples: ## Build, vet and staticcheck every script of examples/code
+	@echo "go build + vet + staticcheck examples/code/*.go, one file at a time"
+	@for f in $(EXAMPLES); do \
+		$(GO) build -o /dev/null $$f && $(GO) vet $$f && $(STATICCHECK) $$f || { echo "examples: $$f"; exit 1; }; \
+	done
+
 .PHONY: check
-check: fmt-check lint test ## Everything: format, lint, tests (CI target)
+check: fmt-check lint test examples ## Everything: format, lint, tests, the example scripts (CI target)
 
 .PHONY: warmup
 warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog

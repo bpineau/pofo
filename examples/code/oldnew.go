@@ -1,11 +1,20 @@
-// Oldnew compares a bundled series with an older version of its own file,
-// the check a data refresh calls for: did the new file move the past, and
-// where?
+//go:build ignore
+
+// Oldnew answers "did a data refresh move the past?": a bundled series
+// against an older version of its own file, read out of git, with the date
+// from which the two part ways (a rescaled copy forgiven) and the largest
+// divergences, dated.
 //
-//	go run ./examples/lib/oldnew [-rev HEAD~10] [ID]
+// Usage:
 //
-// It runs "git show", so it needs a checkout of the repository; the default
-// ID is TREASURY-LONG-USD.
+//	go run examples/code/oldnew.go [-rev HEAD~10] [-k 5] ID
+//
+// Example:
+//
+//	go run examples/code/oldnew.go -rev HEAD~20 TREASURY-LONG-USD
+//
+// It runs "git show", so it needs a checkout of the repository and runs
+// from its root. ID must be bundled (pofo -dump list names them).
 package main
 
 import (
@@ -23,19 +32,19 @@ import (
 func main() {
 	log.SetFlags(0)
 	rev := flag.String("rev", "HEAD~10", "the git revision to compare with")
+	k := flag.Int("k", analyze.DefaultDivergences, "largest divergences listed per calendar")
 	flag.Parse()
-	id := "TREASURY-LONG-USD"
-	if flag.NArg() > 0 {
-		id = flag.Arg(0)
+	if flag.NArg() != 1 {
+		log.Fatal("usage: oldnew [flags] ID")
 	}
 
 	// The version the module embeds today.
-	cur, err := marketdata.Bundled(id)
+	cur, err := marketdata.Bundled(flag.Arg(0))
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// The same file at rev: its Source says which directory it lives in and
+	// The same file at rev: its Source names the directory it lives in and
 	// its Symbol is the canonical identifier the file is named after.
 	path := fmt.Sprintf("pkg/datasets/%s/%s.csv", cur.Source, cur.Symbol)
 	out, err := exec.Command("git", "show", *rev+":"+path).Output()
@@ -50,8 +59,8 @@ func main() {
 	old.Currency = cur.Currency // a file does not state it; Bundled reads it off the catalog
 
 	// Pair's identity line says whether the two agree, and from which date
-	// the new file departs from the old one (a rescaled copy forgiven).
-	st, err := analyze.Pair(cur, old, analyze.PairOptions{Divergences: 3})
+	// the new file departs from the old one.
+	st, err := analyze.Pair(cur, old, analyze.PairOptions{Divergences: *k})
 	if err != nil {
 		log.Fatal(err)
 	}
