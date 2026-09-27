@@ -1,5 +1,5 @@
 # Using the FIRE simulator
-<!-- source: utiliser-la-page-fire @ 4065a2a25cf6 -->
+<!-- source: utiliser-la-page-fire @ cde1a6912913 -->
 
 pofo's FIRE simulator is a laboratory for a retirement plan, and it runs in a browser. You describe your situation there: capital, spending, age, pension, spending rules. It then runs that one plan through several market models, from the one that follows your own funds most closely to the harshest the century has on record. This article is the full manual. It says which order to read the sections in, what each group of parameters controls, and above all how to **read** what you are looking at. The tool is built to inform a decision, not to hand down a verdict.
 
@@ -97,4 +97,4 @@ Several things are deliberately out of scope. No forecast: no model here predict
 
 - The two fold-out panels on the page itself: "How this machine works" (every control, every model) and "Method & honest caveats".
 - The long version of the plumbing ([[under-the-hood]]), the families of models ([[historical-vs-parametric]]) and how to read the fans ([[reading-a-fan-chart]]).
-- pofo's **readme**, section "Decumulation / FIRE analysis", for the command-line options.
+- The FIRE guide in pofo's documentation (`docs/usage/fire.md` in the repository) for the command line and the Go library.

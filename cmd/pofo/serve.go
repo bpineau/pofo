@@ -168,7 +168,7 @@ type server struct {
 	// foreign rations the identifiers outside the bundled catalog that
 	// visitors may have fetched from the upstream sources (foreign.go).
 	// Nil = the feature is off and only catalog identifiers are accepted,
-	// which is the default (-serve-foreign-per-hour 0).
+	// which is what -serve-foreign-per-hour 0 asks for (the default is 10).
 	foreign *foreignBudget
 }
 
