@@ -35,14 +35,16 @@ type PeriodReturn struct {
 // dates must be ascending and parallel to values (levels, any positive unit:
 // only their ratios are read). A period with no point in it is absent from
 // the table, and the next period's return spans the gap. The result is nil
-// for empty or mismatched slices. months must be positive; CalendarReturns
-// panics otherwise, as for any programming error.
-func CalendarReturns(dates []time.Time, values []float64, months int) []PeriodReturn {
-	if months < 1 {
-		panic(fmt.Sprintf("metrics: CalendarReturns with a non-positive period (%d months)", months))
-	}
-	if len(dates) != len(values) || len(dates) == 0 {
-		return nil
+// for empty slices. It is an error when months is not positive and when
+// dates and values differ in length.
+func CalendarReturns(dates []time.Time, values []float64, months int) ([]PeriodReturn, error) {
+	switch {
+	case months < 1:
+		return nil, fmt.Errorf("metrics: CalendarReturns: a non-positive period (%d months)", months)
+	case len(dates) != len(values):
+		return nil, fmt.Errorf("metrics: CalendarReturns: %d dates for %d values", len(dates), len(values))
+	case len(dates) == 0:
+		return nil, nil
 	}
 	period := func(d time.Time) int { return (d.Year()*12 + int(d.Month()) - 1) / months }
 	var out []PeriodReturn
@@ -59,5 +61,5 @@ func CalendarReturns(dates []time.Time, values []float64, months int) []PeriodRe
 		})
 		base, first = values[i], i+1
 	}
-	return out
+	return out, nil
 }
