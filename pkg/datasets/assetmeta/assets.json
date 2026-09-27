@@ -1117,27 +1117,47 @@
     "benchmark_index": "MSCI World ex USA Index",
     "strategy": "physical-replication",
     "geography": {
-      "Japan": 22,
-      "UK": 14,
-      "France": 10,
-      "Canada": 10,
-      "Switzerland": 9,
-      "Other": 35
+      "Australia": 6,
+      "Canada": 12,
+      "Denmark": 1,
+      "Finland": 1,
+      "France": 8,
+      "Germany": 8,
+      "Hong Kong": 2,
+      "Italy": 3,
+      "Japan": 21,
+      "Netherlands": 6,
+      "Other developed": 2,
+      "Other emerging": 1,
+      "Other eurozone": 2,
+      "Singapore": 2,
+      "Spain": 3,
+      "Sweden": 3,
+      "Switzerland": 8,
+      "UK": 11
     },
     "sectors": {
-      "Financials": 21,
-      "Health Care": 11,
-      "Industrials": 17,
+      "Communication Services": 4,
+      "Consumer Discretionary": 7,
+      "Consumer Staples": 6,
+      "Energy": 6,
+      "Financials": 28,
+      "Health Care": 9,
+      "Industrials": 18,
       "Information Technology": 11,
-      "Other": 40
+      "Materials": 7,
+      "Real Estate": 1,
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "World ex-US building block; US-underweight diversifier popular for valuation balance",
+    "notes": "World ex-US building block; US-underweight diversifier popular for valuation balance. Breakdowns aggregated from the issuer's constituent export (country of each issuer, GICS sector)",
     "confidence": "high",
     "sources": [
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/IE0006WW1TQ4/",
       "https://www.justetf.com/en/etf-profile.html?isin=IE0006WW1TQ4"
     ],
+    "as_of": "2026-09",
     "since": "2024-03-06"
   },
   {
@@ -2437,34 +2457,45 @@
     "benchmark_index": "MSCI All Country World Investable Market Index (ACWI IMI)",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 3,
-      "China": 3,
+      "China": 2,
+      "France": 2,
+      "Germany": 2,
+      "India": 1,
       "Japan": 6,
-      "Other": 23,
+      "Netherlands": 1,
+      "Other developed": 3,
+      "Other emerging": 2,
+      "Other eurozone": 2,
+      "South Korea": 3,
+      "Switzerland": 2,
       "Taiwan": 3,
       "UK": 3,
-      "US": 59
+      "US": 63
     },
     "sectors": {
       "Communication Services": 8,
-      "Consumer Discretionary": 9,
+      "Consumer Discretionary": 8,
       "Consumer Staples": 5,
       "Energy": 4,
       "Financials": 16,
-      "Health Care": 8,
-      "Industrials": 12,
-      "Information Technology": 30,
+      "Health Care": 9,
+      "Industrials": 11,
+      "Information Technology": 31,
       "Materials": 4,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "SPDR MSCI ACWI IMI; widest global coverage including small caps (~99% investable universe)",
+    "notes": "SPDR MSCI ACWI IMI; widest global coverage including small caps (~99% investable universe). Breakdowns aggregated from the issuer's daily holdings file (trade country, GICS sector)",
     "confidence": "high",
     "sources": [
-      "https://www.ssga.com/de/en_gb/intermediary/etfs/spdr-msci-all-country-world-investable-market-ucits-etf-acc-spyi-gy"
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-spyi-gy.xlsx",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3YLTY66"
     ],
+    "as_of": "2026-09",
     "since": "2011-05-13"
   },
   {
@@ -2907,7 +2938,7 @@
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Accumulating Nasdaq-100 (CSNDX); broadly equivalent to EQQQ but reinvests dividends; its holdings file is the catalog's Nasdaq-100 breakdown",
+    "notes": "Accumulating Nasdaq-100 (CSNDX); broadly equivalent to EQQQ but reinvests dividends. Breakdowns from its own holdings file (2026-09), whose location field puts 97 % in the US where the benchmark split the Amundi Nasdaq-100 lines carry (2026-08) says 95",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/ch/professionals/en/products/253741/ishares-nasdaq-100-ucits-etf"
@@ -3303,7 +3334,7 @@
     "id": "IE00B8GF1M35",
     "isin": "IE00B8GF1M35",
     "aliases": [],
-    "name": "SPDR Dow Jones Global Real Estate UCITS ETF USD (Dist)",
+    "name": "State Street SPDR Dow Jones Global Real Estate UCITS ETF USD (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -3315,23 +3346,31 @@
     "benchmark_index": "Dow Jones Global Select Real Estate Securities Index",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 6,
-      "Other": 4,
-      "Other Europe": 12,
-      "Other developed": 20,
-      "US": 58
+      "Australia": 2,
+      "France": 2,
+      "Hong Kong": 2,
+      "Japan": 7,
+      "Other developed": 2,
+      "Other emerging": 2,
+      "Other eurozone": 2,
+      "Singapore": 3,
+      "Switzerland": 1,
+      "UK": 4,
+      "US": 73
     },
     "sectors": {
       "Real Estate": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Broad global REIT ETF; alternative index to IWDP, lower fee",
+    "notes": "Broad global REIT ETF; alternative index to IWDP, lower fee. Geography aggregated from the issuer's daily holdings file; retail (20 %), health care (18 %) and industrial (15 %) property lead its own type split",
     "confidence": "high",
     "sources": [
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-spyj-gy.xlsx",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B8GF1M35"
     ],
-    "since": "2012-10-30"
+    "as_of": "2026-09",
+    "since": "2012-10-23"
   },
   {
     "id": "IE00B8GKDB10",
@@ -4017,27 +4056,30 @@
     "benchmark_index": "Nasdaq Global Artificial Intelligence and Big Data Index",
     "strategy": "physical-replication",
     "geography": {
-      "China": 2,
+      "China": 4,
       "Germany": 2,
-      "Other": 10,
-      "South Korea": 13,
-      "US": 73
+      "Other developed": 1,
+      "South Korea": 8,
+      "Taiwan": 1,
+      "US": 84
     },
     "sectors": {
-      "Communication Services": 14,
-      "Consumer Discretionary": 5,
-      "Financials": 5,
-      "Information Technology": 69,
-      "Other": 7
+      "Communication Services": 11,
+      "Consumer Discretionary": 11,
+      "Financials": 3,
+      "Industrials": 1,
+      "Information Technology": 74
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Global thematic ETF covering AI/big data/cybersecurity (XAIX); notable South Korea tilt via Samsung, SK Hynix",
+    "notes": "Global thematic ETF covering AI/big data/cybersecurity (XAIX); notable South Korea tilt via Samsung, SK Hynix. Breakdowns aggregated from the issuer's constituent export, which classifies by ICB: each industry sits under its nearest GICS label",
     "confidence": "high",
     "sources": [
-      "https://etf.dws.com/en-lu/IE00BGV5VN51-artificial-intelligence-big-data-ucits-etf-1c/"
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/IE00BGV5VN51/",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BGV5VN51"
     ],
-    "since": "2019-09-24"
+    "as_of": "2026-09",
+    "since": "2019-01-29"
   },
   {
     "id": "IE00BJ0KDQ92",
@@ -4558,25 +4600,32 @@
     "benchmark_index": "S&P 500 Equal Weight Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 91,
-      "Ireland": 2,
-      "Other": 7
+      "Ireland": 1,
+      "US": 99
     },
     "sectors": {
-      "Financials": 14,
-      "Health Care": 10,
-      "Industrials": 14,
-      "Information Technology": 17,
-      "Other": 45
+      "Communication Services": 4,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 7,
+      "Energy": 4,
+      "Financials": 15,
+      "Health Care": 12,
+      "Industrials": 17,
+      "Information Technology": 15,
+      "Materials": 5,
+      "Real Estate": 6,
+      "Utilities": 6
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Equal-weight S&P 500; removes mega-cap concentration, implicit size and value tilt",
+    "notes": "Equal-weight S&P 500; removes mega-cap concentration, implicit size and value tilt. Breakdowns aggregated from the issuer's constituent export (country of each issuer, GICS sector)",
     "confidence": "high",
     "sources": [
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/IE00BLNMYC90/",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BLNMYC90"
     ],
-    "since": "2020-02-27",
+    "as_of": "2026-09",
+    "since": "2014-06-10",
     "factors": [
       "size"
     ]
@@ -5518,31 +5567,32 @@
     "benchmark_index": "DAX",
     "strategy": "physical-replication",
     "geography": {
-      "Germany": 93,
-      "Netherlands": 6,
-      "Other": 1
+      "France": 7,
+      "Germany": 93
     },
     "sectors": {
-      "Communication Services": 2,
-      "Consumer Discretionary": 7,
-      "Consumer Staples": 4,
-      "Energy": 2,
+      "Communication Services": 6,
+      "Consumer Discretionary": 6,
+      "Consumer Staples": 1,
       "Financials": 21,
       "Health Care": 7,
       "Industrials": 35,
-      "Information Technology": 13,
-      "Materials": 5,
+      "Information Technology": 15,
+      "Materials": 4,
       "Real Estate": 1,
-      "Utilities": 3
+      "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Lowest-TER DAX ETF (DBXD), Luxembourg-domiciled accumulating share class",
+    "notes": "Lowest-TER DAX ETF (DBXD), Luxembourg-domiciled accumulating share class. Breakdowns are the DAX's as the iShares Core DAX holdings file gives them in GICS (2026-09); this fund's own constituent export agrees on geography (Germany 92.9, France 6.6) but classifies by ICB",
     "confidence": "high",
     "sources": [
-      "https://www.xtrackers.com/en/products/etf/equity/lu0274211480"
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/LU0274211480/",
+      "https://www.ishares.com/ch/professionals/en/products/251464/ishares-dax-ucits-etf-de-fund",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU0274211480"
     ],
-    "since": "2007-10-01"
+    "as_of": "2026-09",
+    "since": "2007-01-10"
   },
   {
     "id": "LU0280435461",
@@ -5648,7 +5698,7 @@
   {
     "id": "LU0328475792",
     "isin": "LU0328475792",
-    "name": "Xtrackers Stoxx Europe 600 UCITS ETF 1C",
+    "name": "Xtrackers STOXX Europe 600 UCITS ETF 1C",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -5660,38 +5710,45 @@
     "benchmark_index": "STOXX Europe 600",
     "strategy": "physical-replication",
     "geography": {
-      "France": 13,
+      "Belgium": 2,
+      "Denmark": 3,
+      "Finland": 2,
+      "France": 15,
       "Germany": 13,
-      "Italy": 3,
-      "Netherlands": 4,
-      "Other": 26,
-      "Spain": 4,
+      "Italy": 5,
+      "Netherlands": 8,
+      "Norway": 1,
+      "Other eurozone": 2,
+      "Poland": 1,
+      "Spain": 6,
       "Sweden": 5,
-      "Switzerland": 12,
-      "UK": 20
+      "Switzerland": 14,
+      "UK": 23
     },
     "sectors": {
       "Communication Services": 3,
-      "Consumer Discretionary": 7,
+      "Consumer Discretionary": 6,
       "Consumer Staples": 8,
-      "Energy": 5,
-      "Financials": 24,
-      "Health Care": 13,
-      "Industrials": 18,
+      "Energy": 6,
+      "Financials": 26,
+      "Health Care": 12,
+      "Industrials": 19,
       "Information Technology": 9,
-      "Materials": 4,
-      "Other": 3,
-      "Real Estate": 2,
-      "Utilities": 4
+      "Materials": 5,
+      "Real Estate": 1,
+      "Utilities": 5
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Xtrackers physically replicated STOXX 600 ETF (XSX6)",
-    "confidence": "medium",
+    "notes": "Xtrackers physically replicated STOXX 600 ETF (XSX6). Breakdowns are the STOXX Europe 600's as the iShares STOXX Europe 600 holdings file gives them in GICS (2026-09); this fund's own constituent export classifies by ICB and places issuers otherwise (UK 19, Netherlands 10)",
+    "confidence": "high",
     "sources": [
-      "https://etf.dws.com/en-gb/LU0328475792-stoxx-europe-600-ucits-etf-1c/"
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/LU0328475792/",
+      "https://www.ishares.com/ch/professionals/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU0328475792"
     ],
-    "since": "2008-01-22"
+    "as_of": "2026-09",
+    "since": "2009-01-20"
   },
   {
     "id": "LU0496786574",
