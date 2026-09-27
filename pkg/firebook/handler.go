@@ -21,7 +21,9 @@ import (
 )
 
 // NavLink is one entry of the optional site navigation bar.
-type NavLink struct{ Label, Href string }
+type NavLink struct {
+	Label, Href string // the link's text and target
+}
 
 // handlerConfig collects Handler options.
 type handlerConfig struct {

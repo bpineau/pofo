@@ -7,9 +7,9 @@ import "math/rand/v2"
 // "every retirement start date" backtest. Count is the number of windows;
 // Draw picks one at random so it also satisfies Source.
 type HistoricalCohorts struct {
-	Panel   Panel
-	Weights []float64
-	Periods int
+	Panel   Panel     // the history the windows are cut from, real returns per period
+	Weights []float64 // fractions per Panel asset; nil uses Panel.Weights
+	Periods int       // length of every window
 
 	hist Sequence // Panel combined at Weights, filled by prepare
 }

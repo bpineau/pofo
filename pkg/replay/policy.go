@@ -18,12 +18,12 @@ import (
 // simulator's ruin-versus-lifestyle frontier and the book's historical replays
 // are the same rules, in the same order and the same colours.
 type Policy struct {
-	Name   string
-	NameFR string
-	Tag    string
-	Help   string
-	Color  string
-	Apply  func(*decumul.Plan)
+	Name   string              // English display name
+	NameFR string              // French display name, for the book
+	Tag    string              // short stable key, for URLs and legends
+	Help   string              // one-sentence description
+	Color  string              // CSS color the rule wears in every chart
+	Apply  func(*decumul.Plan) // sets the rule on a bare plan
 }
 
 // PolicyConfig is what the rules need from their caller to be configured: the
@@ -38,11 +38,11 @@ type Policy struct {
 // into its sensor and AmortReturn is the real return the amortisation rule
 // spreads wealth at.
 type PolicyConfig struct {
-	WR          float64
-	SafeWR      []float64
-	RaiseCap    float64
-	PVRate      float64
-	AmortReturn float64
+	WR          float64   // initial withdrawal rate, a FRACTION (0.04)
+	SafeWR      []float64 // per-year safe rates, FRACTIONS (see SafeRateTable)
+	RaiseCap    float64   // ceiling on raises, currency units per year; 0 = the planned spend
+	PVRate      float64   // real discount rate of future cashflows, a FRACTION
+	AmortReturn float64   // real return the amortisation rule assumes, a FRACTION
 }
 
 // Policies returns the seven rules configured for one plan, from the most rigid

@@ -10,9 +10,9 @@ const solveSteps = 18
 // depth). The search is confined to [Lo, Hi]. The axes the solver serves do not
 // change the return Source, so a single set of drawn paths is reused throughout.
 type SolveAxis struct {
-	Apply      func(Plan, float64) Plan
-	Increasing bool
-	Lo, Hi     float64
+	Apply      func(Plan, float64) Plan // returns the plan with the candidate value set
+	Increasing bool                     // ruin rises with the value
+	Lo, Hi     float64                  // the search interval
 }
 
 // WithdrawalAxis solves for the annual net spending (NeedAnnual). Ruin rises

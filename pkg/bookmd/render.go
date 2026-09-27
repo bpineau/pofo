@@ -9,7 +9,9 @@ import (
 
 // Callout describes one ::: block type: the label heads the box when the
 // author gives no title, the glyph prefixes it.
-type Callout struct{ Glyph, Label string }
+type Callout struct {
+	Glyph, Label string // the prefix glyph and the default heading
+}
 
 // Callouts is the built-in superset of ::: block types used by all books.
 // Unknown types degrade to "encart".

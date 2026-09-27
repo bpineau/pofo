@@ -9,21 +9,21 @@ import (
 // MatrixColumn is one column of a BarMatrix: a titled group holding one value
 // per row (e.g. one macro regime with each asset's contribution in it).
 type MatrixColumn struct {
-	Title    string
-	Subtitle string // small line under the title (e.g. "56 months · 22%")
-	Color    string // header swatch; empty = no swatch
-	Values   []float64
+	Title    string    // the column header
+	Subtitle string    // small line under the title (e.g. "56 months · 22%")
+	Color    string    // header swatch; empty = no swatch
+	Values   []float64 // one signed value per row
 }
 
 // BarMatrixOptions styles a BarMatrix. RowColors defaults to the palette in
 // row order. An optional Summary row totals each column; it is drawn clamped
 // to the shared row scale (its label always carries the true value).
 type BarMatrixOptions struct {
-	Title     string
-	Width     int // default 1200
-	RowLabels []string
-	RowColors []string
-	Unit      string // value unit for tooltips and labels (e.g. "pts/yr")
+	Title     string   // chart title; "" = none
+	Width     int      // default 1200
+	RowLabels []string // one per row, in Values order
+	RowColors []string // one CSS color per row; nil = the palette
+	Unit      string   // value unit for tooltips and labels (e.g. "pts/yr")
 
 	Summary      []float64 // optional bottom row, one value per column
 	SummaryLabel string    // its row label (default "total")

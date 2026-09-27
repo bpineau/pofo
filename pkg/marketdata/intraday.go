@@ -15,24 +15,24 @@ var ErrNotCovered = errors.New("not covered")
 // IntradayPoint is one intraday observation, typically a 5-minute tick.
 type IntradayPoint struct {
 	Time  time.Time // exact instant, in the exchange's local time zone
-	Close float64
+	Close float64   // last price of the tick, in the series' Currency
 }
 
 // IntradaySeries is the current trading day's price path of one instrument,
 // sorted by ascending time. Unlike Series it is ephemeral: it covers only
 // today and is never written to the on-disk cache.
 type IntradaySeries struct {
-	Symbol   string
-	Name     string
-	Currency string
-	Source   string // "yahoo", or "nowcast" for an estimate
-	Points   []IntradayPoint
+	Symbol   string          // the quoted symbol (the fund's own id for a nowcast)
+	Name     string          // display name; may be empty
+	Currency string          // ISO code of Points (major unit)
+	Source   string          // "yahoo", or "nowcast" for an estimate
+	Points   []IntradayPoint // ascending instants of the current session
 
 	// Estimate is true when the path is a nowcast: an unlisted fund's last
 	// daily value scaled by the intraday move of Proxy (its catalog
 	// nowcast_proxy), converted into Currency tick by tick.
 	Estimate bool
-	Proxy    string
+	Proxy    string // the nowcast proxy's symbol; "" unless Estimate
 }
 
 // First returns the earliest point, or the zero IntradayPoint if empty.

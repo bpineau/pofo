@@ -27,20 +27,20 @@ import (
 // statistic; the statistics that are genuinely per-lifetime are bounded by
 // LifeYears instead.
 type PathResult struct {
-	Wealth    []float64
-	Spend     []float64
-	Ruined    bool
-	RuinYear  int
-	FirstCut  int
-	CutYears  int
-	TaxPaid   float64
-	Withdrawn float64
-	Ret10     float64 // annualized real market return of the first decade (sequence risk)
-	LifeYears int     // whole years the household lived, capped at the horizon
-	Outlived  bool    // it was still alive at the horizon (censored, not dead)
-	Estate    float64 // total real wealth at the household's end
-	Annuity   float64 // cumulative real annuity income received over the path
-	Premium   float64 // net premium actually converted into an annuity
+	Wealth    []float64 // Years+1 year-end real wealth levels, Wealth[0] = Capital
+	Spend     []float64 // Years real spending levels actually delivered
+	Ruined    bool      // a withdrawal could not be funded
+	RuinYear  int       // the first unfunded year, 0-based; -1 when not Ruined
+	FirstCut  int       // the first year below the uncut standard; -1 when never
+	CutYears  int       // how many years were
+	TaxPaid   float64   // cumulative real tax on sales
+	Withdrawn float64   // cumulative real net amount delivered (the sum of Spend)
+	Ret10     float64   // annualized real market return of the first decade (sequence risk)
+	LifeYears int       // whole years the household lived, capped at the horizon
+	Outlived  bool      // it was still alive at the horizon (censored, not dead)
+	Estate    float64   // total real wealth at the household's end
+	Annuity   float64   // cumulative real annuity income received over the path
+	Premium   float64   // net premium actually converted into an annuity
 	// Received is the cumulative real income from OUTSIDE the portfolio over
 	// the lived years: cashflows after any reversion, plus the annuity (so it
 	// includes Annuity). Spend records only what the portfolio delivered, since

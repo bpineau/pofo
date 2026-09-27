@@ -13,8 +13,8 @@ import (
 // points) from nudging one controllable lever at a time, under the central
 // model. It answers "what is the most effective way to make my plan robust?".
 type SensitivityResult struct {
-	SVG  string `json:"sensitivitySvg"`
-	Note string `json:"note"`
+	SVG  string `json:"sensitivitySvg"` // the section's chart
+	Note string `json:"note"`           // caveat; "" when none
 }
 
 // Sensitivity nudges each lever once and measures the resulting change in ruin,

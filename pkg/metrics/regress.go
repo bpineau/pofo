@@ -12,7 +12,7 @@ import (
 // usual threshold of a coefficient distinguishable from zero). On an exact
 // fit SE is zero and T is infinite, or NaN for a zero Value.
 type Estimate struct {
-	Value, SE, T float64
+	Value, SE, T float64 // the coefficient, its standard error, Value / SE
 }
 
 // Regression is an ordinary least squares fit with an intercept,

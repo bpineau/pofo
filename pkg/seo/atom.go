@@ -21,7 +21,7 @@ const atomNS = "http://www.w3.org/2005/Atom"
 // address it was fetched from. ID defaults to Link, which is the usual choice
 // for a page that has one stable address.
 type FeedEntry struct {
-	Title   string
+	Title   string    // the page's title
 	Link    string    // absolute URL of the page
 	ID      string    // stable identifier; empty means "the Link"
 	Summary string    // optional plain-text summary; omitted when empty
@@ -35,15 +35,15 @@ type FeedEntry struct {
 // (rel="alternate"). Output is deterministic for a fixed set of times, so a
 // server can hash it for an ETag and a test can compare it byte for byte.
 type Feed struct {
-	Title    string
-	Subtitle string    // optional one-line description; omitted when empty
-	ID       string    // stable identifier; empty means "the Self URL"
-	Self     string    // absolute URL of the feed itself
-	Link     string    // absolute URL of the page the feed covers
-	Language string    // xml:lang of the feed and its entries ("fr", "en")
-	Author   string    // feed-level author name; omitted when empty
-	Updated  time.Time // rendered in UTC as RFC 3339
-	Entries  []FeedEntry
+	Title    string      // the feed's title
+	Subtitle string      // optional one-line description; omitted when empty
+	ID       string      // stable identifier; empty means "the Self URL"
+	Self     string      // absolute URL of the feed itself
+	Link     string      // absolute URL of the page the feed covers
+	Language string      // xml:lang of the feed and its entries ("fr", "en")
+	Author   string      // feed-level author name; omitted when empty
+	Updated  time.Time   // rendered in UTC as RFC 3339
+	Entries  []FeedEntry // in feed order, newest first by convention
 }
 
 // Atom renders the feed as an Atom 1.0 document. Every text and attribute

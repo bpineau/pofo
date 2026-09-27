@@ -7,7 +7,7 @@ import "math"
 // exp((x−Mode)/Dispersion)/Dispersion. Two parameters fit developed-country
 // adult mortality well and avoid bundling a full life table.
 type Gompertz struct {
-	Mode, Dispersion float64
+	Mode, Dispersion float64 // modal age at death and dispersion, in years
 }
 
 // FrenchMortality approximates the INSEE 2020s unisex period table for adults:
@@ -39,7 +39,7 @@ func (g Gompertz) CoupleSurvival(age, years float64) float64 {
 // states: Dead (nobody left alive), Broke (alive with the capital exhausted)
 // and Funded (alive with capital remaining). The three sum to 1.
 type LifePoint struct {
-	Dead, Broke, Funded float64
+	Dead, Broke, Funded float64 // shares of the households, summing to 1
 }
 
 // LifeCurve combines the ensemble's ruin timing with a survival curve into

@@ -18,17 +18,17 @@ func (Page) Favicon() template.URL { return faviconDataURI }
 
 // AssetRow is one line of a portfolio composition table.
 type AssetRow struct {
-	Weight   string
-	ID       string
-	Symbol   string
-	Name     string
+	Weight   string // formatted weight, e.g. "60 %"
+	ID       string // the identifier as written
+	Symbol   string // what it resolved to
+	Name     string // display name
 	Class    string // catalog asset class (equity, gold…), empty when unknown
 	UCITS    string // "yes", "no", "no (KID)" (non-UCITS but EU-retail-buyable wrapper) or "?" when undetermined
 	Fees     string // published TER, or "-" when unknown
-	Currency string
-	History  string
+	Currency string // the quote currency of the fetched series
+	History  string // the history's span, flagging a simulated part
 	CWARP    string // per-asset CWARP vs the benchmark (as a 25 % overlay), or "-"
-	Note     string
+	Note     string // a remark on the line (a distributing class...), or ""
 }
 
 // CoverageSeg is one holding's slice of a coverage bar.
@@ -58,7 +58,7 @@ type CoverageBar struct {
 // as a figure only: means are the hardest quantity to estimate, and a sleeve
 // held as insurance is MEANT to show a small or negative return share.
 type RiskRow struct {
-	Label       string
+	Label       string  // the asset class
 	Capital     string  // formatted share of capital, e.g. "40.0 %"
 	Risk        string  // formatted share of variance
 	Return      string  // formatted share of realized return
@@ -70,9 +70,9 @@ type RiskRow struct {
 // PortfolioSection groups everything shown for one portfolio. Sections are
 // rendered folded (<details>) so the report opens on the comparison.
 type PortfolioSection struct {
-	Name              string
-	Subtitle          string // optional hint shown next to the name (e.g. rebalancing override)
-	ChartSVG          template.HTML
+	Name              string          // the portfolio's name
+	Subtitle          string          // optional hint shown next to the name (e.g. rebalancing override)
+	ChartSVG          template.HTML   // the portfolio's value chart
 	ContribSVG        template.HTML   // realized-contribution timeline, trailing-12m window; empty to omit
 	ContribMonthlySVG template.HTML   // same timeline, raw monthly window (toggled with ContribSVG)
 	Breakdowns        []template.HTML // composition pies (geography, currency, equity sectors, asset type) as SVGs; empty to omit
@@ -80,39 +80,39 @@ type PortfolioSection struct {
 	Coverage          []CoverageBar   // macro-regime or factor coverage; empty to omit
 	RiskBudget        []RiskRow       // capital / risk / return share per asset class; empty to omit
 	RegimeSVG         template.HTML   // realized contribution per regime (bar matrix); empty to omit
-	Assets            []AssetRow
-	Notes             []string // informational lines (e.g. optimizer choices)
-	Warnings          []string
-	FireHref          string // link to the FIRE simulator pre-loaded with this portfolio; empty to omit (the CLI report)
+	Assets            []AssetRow      // the composition table
+	Notes             []string        // informational lines (e.g. optimizer choices)
+	Warnings          []string        // what the numbers cannot know (simulated spans, currencies...)
+	FireHref          string          // link to the FIRE simulator pre-loaded with this portfolio; empty to omit (the CLI report)
 }
 
 // StatCell is one value of the statistics table; Best cells are highlighted.
 type StatCell struct {
-	Text string
-	Best bool
+	Text string // the formatted value
+	Best bool   // the best value of its row
 }
 
 // StatRow is one metric across all portfolios.
 type StatRow struct {
-	Label string
-	Hint  string
-	Cells []StatCell
+	Label string     // the metric's name
+	Hint  string     // tooltip explaining it
+	Cells []StatCell // one per portfolio, in PortfolioNames order
 }
 
 // Page is the full document model.
 type Page struct {
-	Title           string
-	GeneratedAt     string
-	RebalanceDays   int
-	Portfolios      []PortfolioSection
-	CompareSVG      template.HTML // top overview curve (comparison, or the single portfolio)
-	OverviewHeading string        // heading for the overview chart section
-	UnderwaterSVG   template.HTML // drawdown chart over the common period
-	CommonStart     string
-	CommonEnd       string
-	PortfolioNames  []string
-	StatRows        []StatRow
-	Footnotes       []string
+	Title           string             // the document title
+	GeneratedAt     string             // formatted generation time
+	RebalanceDays   int                // the default rebalancing period, for the header
+	Portfolios      []PortfolioSection // one per compared portfolio
+	CompareSVG      template.HTML      // top overview curve (comparison, or the single portfolio)
+	OverviewHeading string             // heading for the overview chart section
+	UnderwaterSVG   template.HTML      // drawdown chart over the common period
+	CommonStart     string             // formatted first date of the common window
+	CommonEnd       string             // formatted last date of the common window
+	PortfolioNames  []string           // the statistics table's column heads
+	StatRows        []StatRow          // the statistics table
+	Footnotes       []string           // lines under the table
 
 	// Theme is the shared webui identity inlined into the document: the
 	// fonts, the instrument tokens and the book-warm skin over them, so the
@@ -123,8 +123,8 @@ type Page struct {
 	// web app (-serve): SkinCSS carries the web chrome's extra rules (the
 	// site nav's); SiteNav is a slim bar linking back to the other surfaces.
 	// Both are empty for the standalone CLI report.
-	SkinCSS template.CSS
-	SiteNav template.HTML
+	SkinCSS template.CSS  // web chrome rules; empty for the CLI
+	SiteNav template.HTML // site navigation bar; empty for the CLI
 
 	// Composer is the web app's live composer panel, injected by -serve
 	// under the site nav; empty for the CLI so the standalone report is

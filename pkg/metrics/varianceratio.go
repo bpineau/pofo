@@ -39,8 +39,7 @@ type VolTermStructure struct {
 	// series scores a higher monthly Sharpe (its realized risk is lower than the
 	// daily volatility implies) and a trending one a lower monthly Sharpe. Read
 	// with the small-sample caveat above (MonthlyN points).
-	MonthlySharpe  float64
-	MonthlySortino float64
+	MonthlySharpe, MonthlySortino float64
 }
 
 // VarianceRatio resamples values to calendar month-end closes and returns the

@@ -11,9 +11,9 @@ import (
 // required at the target ruin as the planned spending moves (what one more
 // k€/yr of lifestyle costs in capital).
 type CurvesResult struct {
-	HorizonSVG string `json:"horizonSvg"`
-	CapitalSVG string `json:"capitalSvg"`
-	Note       string `json:"note"`
+	HorizonSVG string `json:"horizonSvg"` // safe withdrawal rate against the horizon
+	CapitalSVG string `json:"capitalSvg"` // required capital against the planned spend
+	Note       string `json:"note"`       // caveat; "" when none
 }
 
 // curveHorizons are the retirement lengths sampled on the safe-WR curve.

@@ -80,8 +80,8 @@ type Point struct {
 // 00:00 UTC like every Point) and the per-share amount in the series' quote
 // currency.
 type Dividend struct {
-	Date   time.Time
-	Amount float64
+	Date   time.Time // ex-date, 00:00 UTC
+	Amount float64   // per share, in the series' quote currency (major unit)
 }
 
 // MergeDividends upserts events into dst by ex-date (one event per date,
@@ -104,11 +104,11 @@ func MergeDividends(dst []Dividend, events ...Dividend) []Dividend {
 
 // Series is the price history of one asset, sorted by ascending date.
 type Series struct {
-	Symbol   string
-	Name     string
-	Currency string
-	Source   string // "yahoo", "stooq", "ft", "morningstar" or "simdata"
-	Points   []Point
+	Symbol   string  // the identifier it was fetched or loaded under (canonical)
+	Name     string  // display name, from the source or the catalog; may be empty
+	Currency string  // ISO code of Points (major unit); "" for rates and indices without one
+	Source   string  // "yahoo", "stooq", "ft", "morningstar", "simdata", "refdata"...
+	Points   []Point // strictly ascending dates, one per session
 
 	// Dividends lists the cash distributions the source reported, sorted
 	// by ex-date. Beware of double counting: the default (adjusted) close
@@ -119,7 +119,7 @@ type Series struct {
 	// SimulatedBefore is non-zero when points before that date were
 	// reconstructed from ProxySymbol instead of actual quotes.
 	SimulatedBefore time.Time
-	ProxySymbol     string
+	ProxySymbol     string // what the points before SimulatedBefore come from
 
 	// EstimatedFrom is non-zero when the points from that date on are a
 	// nowcast: the fund's last published value carried forward by the daily
@@ -127,7 +127,7 @@ type Series struct {
 	// funds priced once a day and published with a lag; WithoutEstimates
 	// removes it, and nothing stored or shipped keeps it.
 	EstimatedFrom time.Time
-	EstimateProxy string
+	EstimateProxy string // the nowcast proxy behind the points from EstimatedFrom on
 
 	// Junctions are the dates on which the series' DEFINITION changes rather
 	// than its subject: the publisher started measuring something else, so the

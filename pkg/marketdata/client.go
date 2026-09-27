@@ -23,26 +23,30 @@ const defaultUserAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleW
 // Client downloads price histories with an on-disk cache.
 // The zero value is not usable; use NewClient.
 type Client struct {
-	HTTP            *http.Client
-	CacheDir        string
-	MaxAge          time.Duration // how long a cached download stays fresh
-	ChartBase       string
-	SearchBase      string
-	StooqBase       string
-	FTBase          string
-	JustETFBase     string
-	BoursoramaBase  string
-	MorningstarBase string
-	EurostatBase    string
-	FredBase        string
-	DBnomicsBase    string
-	NYFedBase       string
-	ECBBase         string
-	CBOEBase        string
+	HTTP     *http.Client  // every request goes through it (timeouts included)
+	CacheDir string        // on-disk quote cache; "" disables caching
+	MaxAge   time.Duration // how long a cached download stays fresh
+
+	// The base URLs of the sources, one per provider. NewClient sets the
+	// public ones; a test points them at an httptest server.
+	ChartBase       string // Yahoo chart API (daily and intraday bars)
+	SearchBase      string // Yahoo search API (identifier resolution)
+	StooqBase       string // Stooq CSV download
+	FTBase          string // Financial Times markets data (fund NAVs)
+	JustETFBase     string // justETF profiles (TERs)
+	BoursoramaBase  string // Boursorama search (Morningstar id fallback)
+	MorningstarBase string // Morningstar screener and NAV histories
+	EurostatBase    string // Eurostat API (^HICP-<geo>)
+	FredBase        string // FRED CSV download (^CPI-US, dollar rates)
+	DBnomicsBase    string // DBnomics API (ECB policy and money-market rates)
+	NYFedBase       string // New York Fed markets API (dollar reference rates)
+	ECBBase         string // ECB Data Portal (euro reference FX rates)
+	CBOEBase        string // CBOE (^VIX history)
 	AirfundBase     string // airfund.io delivery API (FCPE NAV histories)
 	CookieBase      string // Yahoo cookie bootstrap host (fc.yahoo.com)
-	UserAgent       string
-	Logf            func(format string, args ...any)
+
+	UserAgent string                           // sent with every request
+	Logf      func(format string, args ...any) // informational lines and warnings; never nil (NewClient sets a no-op)
 
 	// RefreshInflation forces the bundled CPI/HICP deflators (^CPI-US,
 	// ^HICP-<geo>) to be fetched from their live source instead of served

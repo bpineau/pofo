@@ -10,15 +10,15 @@ import (
 // user can see the texture of a single retirement (a couple of bear markets,
 // the slope of the drawdown) rather than only the aggregate bands.
 type SamplePath struct {
-	Wealth []float64
-	Ruined bool
+	Wealth []float64 // year-end real wealth, as PathResult.Wealth
+	Ruined bool      // the path ran out
 }
 
 // WealthFan summarises an Ensemble's wealth paths over time: percentile bands
 // per year (the aleatory spread within one model) plus a handful of
 // representative individual paths spanning the terminal-wealth distribution.
 type WealthFan struct {
-	Years   int
+	Years   int          // the ensemble's horizon; each band has Years+1 points
 	Pcts    []float64    // percentile levels, ascending (e.g. 0.05, 0.50, 0.95)
 	Bands   [][]float64  // Bands[p][year] = the Pcts[p] quantile of wealth that year
 	Samples []SamplePath // representative paths, ascending by terminal wealth

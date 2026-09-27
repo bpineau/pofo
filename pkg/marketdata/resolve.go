@@ -13,8 +13,8 @@ type Resolution struct {
 	Source   string // "yahoo", "stooq", "ft" or "morningstar"
 	Symbol   string // Yahoo or Stooq symbol, or Morningstar id; empty for ft
 	Xid      string // FT internal id; empty otherwise
-	Name     string
-	Currency string
+	Name     string // the instrument's name as the source reports it
+	Currency string // ISO quote currency; may be empty
 }
 
 func toResolution(r resolution) Resolution { return Resolution(r) }

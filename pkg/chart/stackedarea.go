@@ -9,10 +9,10 @@ import (
 // AreaSeries is one layer of a stacked-area chart: values over the x index,
 // stacked bottom-up in slice order.
 type AreaSeries struct {
-	Name   string
-	Values []float64
-	Color  string  // CSS color; picked from the default palette when empty
-	Weight float64 // fill opacity, 0..1; 0 means the default 0.5
+	Name   string    // legend label
+	Values []float64 // one value per x position, in the chart's unit
+	Color  string    // CSS color; picked from the default palette when empty
+	Weight float64   // fill opacity, 0..1; 0 means the default 0.5
 }
 
 // StackedArea renders layers stacked bottom-up over the x index (year 0..N):

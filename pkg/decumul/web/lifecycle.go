@@ -15,12 +15,12 @@ import (
 // puts the ruin risk in perspective: a failure at 93 is not the same life
 // event as a failure at 61.
 type LifecycleResult struct {
-	LifeSVG     string `json:"lifeSvg"`
-	RuinYearSVG string `json:"ruinYearSvg"`
-	CausesSVG   string `json:"causesSvg"`
-	BequestSVG  string `json:"bequestSvg"`
-	Cards       []Card `json:"cards"`
-	Note        string `json:"note"`
+	LifeSVG     string `json:"lifeSvg"`     // funded, broke and dead shares per year
+	RuinYearSVG string `json:"ruinYearSvg"` // when the ruined paths ran out
+	CausesSVG   string `json:"causesSvg"`   // the shapes of ruin
+	BequestSVG  string `json:"bequestSvg"`  // the estate distribution
+	Cards       []Card `json:"cards"`       // the section's headline figures
+	Note        string `json:"note"`        // caveat; "" when none
 	// Annuitised says the plan bought an annuity, so this view is the only one
 	// on the page carrying it. The front end shows the standing note that says
 	// so, rather than leaving a reader to wonder why the sections above did

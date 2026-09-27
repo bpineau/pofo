@@ -11,8 +11,8 @@ import (
 // risk (how fast ruin rises as you spend more) and where the plan sits across
 // models, rather than a single point.
 type FrontierResult struct {
-	SVG  string `json:"frontierSvg"`
-	Note string `json:"note"`
+	SVG  string `json:"frontierSvg"` // the section's chart
+	Note string `json:"note"`        // caveat; "" when none
 }
 
 // frontierWRs are the withdrawal rates (fractions of capital) sampled along the

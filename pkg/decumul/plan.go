@@ -16,9 +16,9 @@ import (
 // Lifetime); their zero values are exactly the historical behaviour, an income
 // the whole household receives for as long as it exists.
 type Cashflow struct {
-	FromYear int
-	ToYear   int // exclusive end; 0 = to the horizon
-	Annual   float64
+	FromYear int     // first year it pays, 0-based
+	ToYear   int     // exclusive end; 0 = to the horizon
+	Annual   float64 // real income per year, in the units of Plan.Capital
 	// Owner names the life the flow depends on. The zero value, Household,
 	// pays while anyone is alive.
 	Owner Owner
@@ -66,8 +66,8 @@ func (c Cashflow) paidAt(year int, l life) float64 {
 // explicit zero is honoured (always draw the buffer, resp. never refill), which
 // a plain zero field could not express.
 type BufferSleeve struct {
-	Years          float64
-	RealReturn     float64
+	Years          float64  // size in years of NeedAnnual; 0 = no buffer
+	RealReturn     float64  // real return per year, a FRACTION (-0.02 for cash under 2 % inflation)
 	DrawThreshold  *float64 // nil = 0.10; 0 = always tap the buffer first
 	RefillCap      *float64 // nil = 0.50; 0 = never refill
 	RefillStopYear int      // stop refilling from this year (0 = never stop)
@@ -102,8 +102,8 @@ func (b BufferSleeve) refillCap() float64 {
 // written-rules style "cut when drawdown > 20% or current rate > 3.6%"; a
 // zero WRThreshold keeps the drawdown-only behaviour. A zero rule is inactive.
 type FlexRule struct {
-	Threshold, Cut float64
-	WRThreshold    float64
+	Threshold, Cut float64 // drawdown trigger and spending cut, FRACTIONS (0.20, 0.25)
+	WRThreshold    float64 // current withdrawal-rate trigger, a FRACTION; 0 = off
 }
 
 // triggered reports whether the cut applies given the current drawdown and
@@ -215,13 +215,17 @@ func (g Guardrails) stepped(n int) Guardrails {
 // whose market value is growth and whose cost basis is cost. It returns the
 // gross amount to sell, the new cost basis after the sale, and the tax paid.
 type Tax interface {
+	// GrossUp returns the gross sale that nets net after tax, the cost
+	// basis left after it and the tax paid; a sale is capped at growth.
 	GrossUp(net, growth, cost float64) (gross, newCost, taxPaid float64)
 }
 
 // CTOFlatTax is the French taxable-account flat tax: only the realised gain
 // fraction of a sale is taxed at Rate, so the effective rate starts low and
 // drifts toward Rate as unrealised gains compound.
-type CTOFlatTax struct{ Rate float64 }
+type CTOFlatTax struct {
+	Rate float64 // on the realised gain, a FRACTION (0.314 for the 2026 PFU)
+}
 
 // GrossUp implements Tax.
 func (t CTOFlatTax) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid float64) {
@@ -249,15 +253,15 @@ func (t CTOFlatTax) GrossUp(net, growth, cost float64) (gross, newCost, taxPaid 
 
 // Plan is a full decumulation scenario.
 type Plan struct {
-	Capital    float64
-	NeedAnnual float64
-	Cashflows  []Cashflow
-	Years      int
-	Buffer     BufferSleeve
-	Flex       FlexRule
-	Tax        Tax
-	Source     scenario.Source
-	Guard      Guardrails // optional Guyton-Klinger spending rule (replaces Flex when active)
+	Capital    float64         // starting wealth, any currency unit (the buffer comes out of it)
+	NeedAnnual float64         // real net spending per year, same unit, before Cashflows
+	Cashflows  []Cashflow      // real incomes (pensions, rents) that reduce what is sold
+	Years      int             // horizon in years; Source must draw at least as many periods
+	Buffer     BufferSleeve    // optional low-volatility pocket drawn in drawdowns
+	Flex       FlexRule        // optional drawdown spending cut
+	Tax        Tax             // taxes a sale from the growth sleeve; nil = untaxed
+	Source     scenario.Source // draws the growth sleeve's REAL yearly returns
+	Guard      Guardrails      // optional Guyton-Klinger spending rule (replaces Flex when active)
 	// RiskGuard is the risk-based guardrail (Kitces/Morningstar). It is the
 	// same architecture as Guard with a horizon-aware sensor, and it takes
 	// precedence over Guard, Flex and Ratchet when active.
@@ -438,7 +442,7 @@ func (g RiskGuardrails) stepped(n int) RiskGuardrails {
 // of current wealth, with the yearly change in real spending clamped to
 // [+Up, -Down] (Vanguard's classic bounds are +5% / -2.5%).
 type BoundedPct struct {
-	Pct, Up, Down float64
+	Pct, Up, Down float64 // FRACTIONS: 0.04, 0.05, 0.025; a zero Pct is inactive
 }
 
 // active reports whether the bounded rule is set.

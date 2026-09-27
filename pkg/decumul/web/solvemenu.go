@@ -11,9 +11,9 @@ import (
 // human-readable instruction, and whether the target is reachable through it
 // alone.
 type SolverOption struct {
-	Lever string `json:"lever"`
-	Text  string `json:"text"`
-	OK    bool   `json:"ok"`
+	Lever string `json:"lever"` // what is moved (spend, capital, buffer, flex...)
+	Text  string `json:"text"`  // the instruction, for a human
+	OK    bool   `json:"ok"`    // the target is reachable through this lever alone
 }
 
 // SolverMenu answers "what do I need to keep ruin at my target?" per controllable
@@ -27,10 +27,10 @@ type SolverOption struct {
 // the menu then reports the headroom instead: how much more could be spent while
 // still meeting the target.
 type SolverMenu struct {
-	TargetRuin  float64        `json:"targetRuin"`
-	CurrentRuin float64        `json:"currentRuin"`
-	Met         bool           `json:"met"`
-	Options     []SolverOption `json:"options"`
+	TargetRuin  float64        `json:"targetRuin"`  // the ruin target (fraction)
+	CurrentRuin float64        `json:"currentRuin"` // ruin at the planned spend (fraction)
+	Met         bool           `json:"met"`         // the plan already meets the target
+	Options     []SolverOption `json:"options"`     // one per lever
 }
 
 // bufferCandidates are the buffer-years tried when solving the buffer lever.

@@ -10,9 +10,9 @@ import (
 // are normalized internally); Color is optional and falls back to the
 // default palette in slice order.
 type Slice struct {
-	Label string
-	Value float64
-	Color string
+	Label string  // legend label
+	Value float64 // positive, any unit (normalized to shares)
+	Color string  // optional CSS color
 }
 
 // PieOptions controls a Pie's rendering. Width defaults to 300px; the height
@@ -21,10 +21,10 @@ type Slice struct {
 // legend (and the title row) and renders a bare square donut sized
 // Width x Width, for callers laying out their own labels.
 type PieOptions struct {
-	Title      string
-	Width      int
-	Hole       float64
-	HideLegend bool
+	Title      string  // shown above the legend
+	Width      int     // pixels; 0 = 300
+	Hole       float64 // donut hole / outer radius, in (0, 1); 0 = 0.6
+	HideLegend bool    // bare square donut, no legend nor title
 }
 
 // Pie renders a donut chart with a title and a legend beneath it. Slices of

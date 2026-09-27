@@ -33,6 +33,8 @@ const (
 	figRule = "#D4D0CA"
 )
 
+// FigureSVG renders the book plate registered under id as an SVG document,
+// or returns "" when no plate has that id.
 func FigureSVG(id string) string {
 	if f, ok := figures[id]; ok {
 		return f()

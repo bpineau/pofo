@@ -105,8 +105,8 @@ type PairSide struct {
 // periods where the two disagree most.
 type PairReturns struct {
 	metrics.Tracking
-	Start, End  time.Time // the first period's start, the last period's end
-	Divergences []Divergence
+	Start, End  time.Time    // the first period's start, the last period's end
+	Divergences []Divergence // the largest disagreements, largest first (PairOptions.Divergences of them)
 }
 
 // Divergence is one period where the two returns disagree, dated.
@@ -124,7 +124,7 @@ type Divergence struct {
 // before the year's start (or Start) to its close at or before the year's
 // end (or End), so the rows chain to the window's total.
 type PairYear struct {
-	Year    int
+	Year    int     // the calendar year
 	A, B    float64 // the two returns
 	Diff    float64 // A - B
 	Partial bool    // the window cuts the year: it opens after the prior year's last weekday or closes before its own

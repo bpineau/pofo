@@ -99,11 +99,11 @@ func NewLostDecadeRegime(mu, sigma, df float64, periods int) MarkovRegime {
 // mean/sigma/df; constructing the struct directly allows custom state
 // parameters, but the blended long-run mean is then set by the caller.
 type MarkovRegime struct {
-	CalmMu, CalmSigma  float64
-	BearMu, BearSigma  float64
+	CalmMu, CalmSigma  float64 // calm state: mean and standard deviation of the real return per period, FRACTIONS
+	BearMu, BearSigma  float64 // the same in the bear state
 	StayCalm, StayBear float64 // probability of staying in the current state, [0,1)
-	Df                 float64
-	Periods            int
+	Df                 float64 // Student-t degrees of freedom; <=2 falls back to Normal
+	Periods            int     // path length
 }
 
 // Len reports the path length.

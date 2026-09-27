@@ -14,8 +14,8 @@ import (
 // AssetSeries is one holding's weight and its (nominal) price points,
 // already converted to the report currency.
 type AssetSeries struct {
-	Weight float64
-	Points []marketdata.Point
+	Weight float64            // fraction of the portfolio
+	Points []marketdata.Point // nominal closes in the report currency
 }
 
 // BuildMonthlyPanel deflates each asset by hicp and aligns the resulting

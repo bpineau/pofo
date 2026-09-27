@@ -53,7 +53,7 @@ func (p Plan) set(param Param, v float64) Plan {
 
 // SweepPoint is one evaluated parameter value.
 type SweepPoint struct {
-	Value, RuinProb, TerminalP50 float64
+	Value, RuinProb, TerminalP50 float64 // the parameter, ruin as a FRACTION, median real terminal wealth
 }
 
 // Sweep1D evaluates ruin and median terminal wealth across values of param,
@@ -103,7 +103,7 @@ func (p Plan) BestBuffer(candidates []float64, nPaths, workers int, seed uint64)
 
 // Surface is a grid of ruin probabilities over two parameters.
 type Surface struct {
-	Xs, Ys []float64
+	Xs, Ys []float64   // the two parameters' values
 	Ruin   [][]float64 // Ruin[y][x]
 }
 

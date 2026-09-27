@@ -9,8 +9,8 @@ import (
 
 // Ensemble is the result of many simulated paths sharing a horizon.
 type Ensemble struct {
-	Paths []PathResult
-	Years int
+	Paths []PathResult // one per simulated path, in draw order
+	Years int          // the plan's horizon, the length of every path
 }
 
 // Draws is the exogenous randomness of one ensemble: a return sequence per
@@ -23,8 +23,8 @@ type Ensemble struct {
 // CapitalForRuin do exactly this internally, which is also what keeps their
 // bisections free of Monte-Carlo noise.
 type Draws struct {
-	Returns []scenario.Sequence
-	Lives   []Lives // nil when the plan has no Lifetime
+	Returns []scenario.Sequence // one real-return path per simulated path
+	Lives   []Lives             // nil when the plan has no Lifetime
 }
 
 // lifeStream offsets the lifespan RNG's second word so lifespans and returns

@@ -14,10 +14,10 @@ import "math"
 // classic French sequencing being CTO first, then PEA, then assurance-vie.
 // A nil Plan.Envelopes keeps the historical single sleeve taxed by Plan.Tax.
 type Envelope struct {
-	Name     string
+	Name     string  // label, such as "CTO" or "PEA"
 	Amount   float64 // relative size of the pocket (pro-rata of the growth sleeve)
 	GainFrac float64 // unrealised gain fraction at start, in [0, 1]
-	Tax      Tax
+	Tax      Tax     // how a sale from this pocket is taxed; nil = untaxed
 }
 
 // YearlyTax is a Tax whose liability carries per-year, per-path state, such as
@@ -26,7 +26,9 @@ type Envelope struct {
 // boundary.
 type YearlyTax interface {
 	Tax
+	// NewPath returns fresh state for one simulated path.
 	NewPath() YearlyTax
+	// NewYear resets the per-year state at a year boundary.
 	NewYear()
 }
 
@@ -40,8 +42,8 @@ type YearlyTax interface {
 // AVTax is a stateless template: the kernel derives per-path state through
 // NewPath, so a Plan can be simulated concurrently.
 type AVTax struct {
-	Rate      float64
-	Allowance float64
+	Rate      float64 // on the gain above the allowance, a FRACTION
+	Allowance float64 // tax-free realised gain per year, in currency units
 }
 
 // GrossUp implements Tax on the template with a zero used-allowance; the

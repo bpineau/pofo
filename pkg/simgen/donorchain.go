@@ -21,7 +21,7 @@ import (
 // feeAligned in the recipes for how this family derives it, and why it is
 // derived from published fee schedules rather than from observed return gaps.
 type Donor struct {
-	ID     string
+	ID     string  // the donor's identifier, as a Fetcher takes it
 	Uplift float64 // fraction per year, e.g. 0.006 = +0.60 %/yr
 }
 

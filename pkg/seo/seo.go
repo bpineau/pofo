@@ -62,14 +62,14 @@ func Sitemap(urls []URL) []byte {
 type Group struct {
 	Comment  string   // one comment line above the record, "#" added
 	Agents   []string // User-agent values; empty means "*"
-	Allow    []string
-	Disallow []string
+	Allow    []string // Allow path prefixes
+	Disallow []string // Disallow path prefixes
 }
 
 // Robots is a robots.txt: a few comment lines, the records, and the sitemaps.
 type Robots struct {
 	Preamble []string // comment lines at the top of the file, "#" added
-	Groups   []Group
+	Groups   []Group  // the records, in file order
 	Sitemaps []string // absolute sitemap URLs
 }
 
@@ -124,24 +124,24 @@ func writeComment(b *strings.Builder, text string) {
 
 // Link is one entry of an llms.txt section.
 type Link struct {
-	Title string
-	URL   string
+	Title string // the link text
+	URL   string // absolute or site-relative target
 	Note  string // optional, rendered after ": "
 }
 
 // Section is one H2 block of an llms.txt: a title and its link list.
 type Section struct {
-	Title string
-	Links []Link
+	Title string // the H2 heading
+	Links []Link // its list, in order
 }
 
 // LLMs is an llms.txt file (llmstxt.org): the site name, a one-paragraph
 // summary, free-form notes, then the link sections.
 type LLMs struct {
-	Title    string   // H1: the site name
-	Summary  string   // the blockquote right under it, one paragraph
-	Notes    []string // plain paragraphs between the summary and the sections
-	Sections []Section
+	Title    string    // H1: the site name
+	Summary  string    // the blockquote right under it, one paragraph
+	Notes    []string  // plain paragraphs between the summary and the sections
+	Sections []Section // the H2 blocks, in order
 }
 
 // Text renders the llms.txt as Markdown.

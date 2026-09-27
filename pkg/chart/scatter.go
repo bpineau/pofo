@@ -9,9 +9,9 @@ import (
 
 // LabeledPoint is one point of a Scatter: a position, a text label and a color.
 type LabeledPoint struct {
-	X, Y  float64
-	Label string
-	Color string
+	X, Y  float64 // the position, in the axes' units
+	Label string  // text drawn beside the point
+	Color string  // CSS color of the dot
 }
 
 // Scatter plots a handful of labeled points against two axes, joined in x-order

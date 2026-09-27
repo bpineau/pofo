@@ -5,8 +5,8 @@ import "sort"
 // RecoveryBucket is the share of underwater episodes whose recovery took
 // Years years.
 type RecoveryBucket struct {
-	Years int
-	Share float64
+	Years int     // years to regain the prior real high
+	Share float64 // fraction of all underwater episodes
 }
 
 // RecoveryTimeDistribution is the full histogram of years-to-regain a prior

@@ -29,13 +29,13 @@ import (
 // must honour to be correct rather than merely informed: the step into a
 // junction is not a market move.
 type SimdataFile struct {
-	ID         string
-	Name       string
-	Method     string
-	Validation string
-	Generated  string
-	Junctions  []time.Time
-	Points     []Point
+	ID         string      // canonical identifier; the file is "<ID>.csv"
+	Name       string      // "# name:" header, a display name
+	Method     string      // "# method:" header, how the history was built
+	Validation string      // "# validation:" header, how it was checked
+	Generated  string      // "# generated:" header, the generation date
+	Junctions  []time.Time // "# junctions:" header, see Series.Junctions
+	Points     []Point     // the date,close rows, ascending
 }
 
 // ReadSimdata loads the simulated series stored for the canonical id in a

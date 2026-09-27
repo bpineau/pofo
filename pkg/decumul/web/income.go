@@ -16,9 +16,9 @@ import (
 // the portfolio alone, which is why pension timing dominates the sensitivity
 // ranking and why sequence risk concentrates there.
 type IncomeResult struct {
-	SVG   string `json:"incomeSvg"`
-	Cards []Card `json:"cards"`
-	Note  string `json:"note"`
+	SVG   string `json:"incomeSvg"` // the section's chart
+	Cards []Card `json:"cards"`     // its headline figures
+	Note  string `json:"note"`      // caveat; "" when none
 }
 
 // Income simulates the central model and stacks the median funding mix.

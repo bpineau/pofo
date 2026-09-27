@@ -11,9 +11,9 @@ import (
 // an x value (Axis 'x') or a horizontal line at a y value (Axis 'y'), with a
 // short label.
 type Marker struct {
-	Axis  rune // 'x' for a vertical line, 'y' for a horizontal line
-	Value float64
-	Label string
+	Axis  rune    // 'x' for a vertical line, 'y' for a horizontal line
+	Value float64 // where the line stands, in that axis' units
+	Label string  // short text beside it
 }
 
 // MultiLine renders several numeric-x line series on shared x and y axes, with

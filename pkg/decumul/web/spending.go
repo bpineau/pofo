@@ -12,9 +12,9 @@ import (
 // lived cost of the adaptive policy, i.e. how often, how soon and for how long
 // the standard of living actually dropped below the uncut plan.
 type SpendingResult struct {
-	SVG   string `json:"spendingSvg"`
-	Cards []Card `json:"cards"`
-	Note  string `json:"note"`
+	SVG   string `json:"spendingSvg"` // the section's chart
+	Cards []Card `json:"cards"`       // its headline figures
+	Note  string `json:"note"`        // caveat; "" when none
 }
 
 // spendPercentiles are the bands drawn on the spending fan.

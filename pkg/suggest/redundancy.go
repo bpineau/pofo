@@ -8,9 +8,9 @@ import (
 // Group is a set of holdings that move almost identically and belong to the
 // same asset class, effectively one bet held several times.
 type Group struct {
-	IDs     []string
-	Weight  float64 // combined fraction of the portfolio
-	MinCorr float64 // weakest pairwise correlation inside the group
+	IDs     []string // the holdings of the group
+	Weight  float64  // combined fraction of the portfolio
+	MinCorr float64  // weakest pairwise correlation inside the group
 }
 
 // Redundancies groups holdings whose daily returns correlate at or above

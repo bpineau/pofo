@@ -14,19 +14,19 @@ const daysPerYear = 365.25
 
 // Asset is a resolved portfolio constituent, ready for simulation.
 type Asset struct {
-	ID     string // identifier as written in the portfolio file
-	Symbol string
-	Name   string
-	Weight float64 // fraction of the portfolio; weights sum to 1
-	Fees   float64 // TER in percent per year; negative when unknown
-	Series *marketdata.Series
+	ID     string             // identifier as written in the portfolio file
+	Symbol string             // the series' Symbol, what the identifier resolved to
+	Name   string             // display name; may be empty
+	Weight float64            // fraction of the portfolio; weights sum to 1
+	Fees   float64            // TER in percent per year; negative when unknown
+	Series *marketdata.Series // the fetched history, in the portfolio's currency
 }
 
 // Portfolio is a fully resolved portfolio.
 type Portfolio struct {
-	Name     string
-	Assets   []Asset
-	Warnings []string
+	Name     string   // the spec's name
+	Assets   []Asset  // the holdings, in file order
+	Warnings []string // what Build noticed (currencies, short histories...), for display
 
 	// EnvelopeFees is the yearly fee of the hosting envelope in percent
 	// per year (0 or negative: none). Asset TERs are already net in
@@ -52,8 +52,7 @@ type Portfolio struct {
 	// Contribute and Withdraw are periodic external flows, applied on the
 	// first trading day of each new calendar period at that day's prices.
 	// A percentage withdrawal takes that share of the current value.
-	Contribute Flow
-	Withdraw   Flow
+	Contribute, Withdraw Flow
 }
 
 // SimResult is the simulated value of a portfolio over time.
@@ -64,14 +63,14 @@ type Portfolio struct {
 // withdrawals out, so it is the series to use for metrics and for
 // comparing portfolios. Without flows the two only differ by scale.
 type SimResult struct {
-	Dates  []time.Time
-	Values []float64
-	Index  []float64
+	Dates  []time.Time // the simulation's calendar, 00:00 UTC
+	Values []float64   // worth on each date, flows included (money outcomes, IRR)
+	Index  []float64   // time-weighted index from 100, flows stripped (statistics)
 
 	// FlowDates and FlowAmounts record the external flows (positive:
 	// contribution, negative: withdrawal), e.g. for metrics.IRR.
 	FlowDates   []time.Time
-	FlowAmounts []float64
+	FlowAmounts []float64 // parallel to FlowDates, in currency units
 
 	// Contributions[i][k] is asset i's contribution to day k's
 	// time-weighted (Index) return, as a fraction of the previous day's
@@ -87,8 +86,7 @@ type SimResult struct {
 	// here and in FlowAmounts, for what was left to pay it and no more: the
 	// household cannot spend money that is not there, and the money-weighted
 	// return is computed from these very flows.
-	Contributed float64
-	Withdrawn   float64
+	Contributed, Withdrawn float64
 
 	// Ruined is true when the value hit zero (levered losses, or
 	// withdrawals from a depleted portfolio): the series is truncated.
