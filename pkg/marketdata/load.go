@@ -31,10 +31,12 @@ import (
 //
 // opt applies to every step: From and To trim the series, and Currency
 // converts it through Client.ConvertCurrency (the euro crosses are bundled,
-// so converting to or from the euro works offline). A bundled reference
-// series or a file whose header states no currency cannot be converted, and
-// asking is an error rather than a silent pass-through; NoConvert with a
-// Currency that is not the series' own is ErrWrongCurrency, as for a fetch.
+// so converting to or from the euro works offline). A series whose currency
+// is unknown passes through unchanged, as FetchExtended passes one: a bundled
+// reference series states none (its identifier usually names it, as
+// EURCASH-EUR does), nor may a file's header, and Client.Logf says which
+// series was taken as it is. NoConvert with a Currency that is not the
+// series' own is ErrWrongCurrency, as for a fetch.
 // Raw asks for unadjusted closes, which no bundled series holds (they are
 // total returns), so Raw skips the bundle.
 //
@@ -84,16 +86,15 @@ func (c *Client) load(ctx context.Context, id string, opt FetchOptions) (*Series
 
 // localTo applies opt's window and currency to a series read from the
 // bundle or a file, which no source fetched and FetchExtended never shaped.
-// origin names where a missing currency should have been stated, for the
-// error.
+// origin names where a missing currency would have been stated, for the log.
 func (c *Client) localTo(ctx context.Context, s *Series, origin string, opt FetchOptions) (*Series, error) {
 	s = Trim(s, opt.From, opt.To)
 	if opt.Currency == "" || s.Currency == opt.Currency || s.Len() == 0 {
 		return s, nil
 	}
 	if s.Currency == "" {
-		return nil, fmt.Errorf("%s: %s states no currency to convert into %s from; drop the conversion",
-			s.Symbol, origin, opt.Currency)
+		c.Logf("%s: %s states no currency, taken as it is rather than converted into %s", s.Symbol, origin, opt.Currency)
+		return s, nil
 	}
 	if opt.NoConvert {
 		return nil, fmt.Errorf("%s is quoted in %s, not %s: %w", s.Symbol, s.Currency, opt.Currency, ErrWrongCurrency)
