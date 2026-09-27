@@ -572,6 +572,36 @@ func ExampleBundled() {
 	// true
 }
 
+// Load is the one call an exploration program makes per identifier: the
+// bundle first, then the client. Offline, it never touches the network.
+func ExampleClient_Load() {
+	ctx := context.Background()
+	client := marketdata.NewClient("") // no disk cache: the bundle alone answers
+	client.Offline = true
+
+	// A reference series and a catalog fund's backcast, both bundled; the
+	// fund converted into euros through the bundled euro crosses.
+	for _, id := range []string{"SP500-USD", "DBMF"} { // DBMF: US25159K3095
+		s, err := client.Load(ctx, id, marketdata.FetchOptions{
+			From: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC),
+			To:   time.Date(2020, 12, 31, 0, 0, 0, 0, time.UTC),
+		})
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(s.Symbol, s.Source, s.First().Date.Format(time.DateOnly))
+	}
+	eur, err := client.Load(ctx, "DBMF", marketdata.FetchOptions{Currency: "EUR"})
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(eur.Currency)
+	// Output:
+	// SP500-USD refdata 2020-01-31
+	// DBMF simdata 2020-01-02
+	// EUR
+}
+
 // Example_loading walks the four ways into a series without a download: the
 // bundled data, any "date,value" file (here a bundled file as of an older
 // commit), the quotes a previous run cached (Offline: whatever their age,

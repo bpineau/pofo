@@ -15,7 +15,9 @@
 //
 //   - Load a series ([marketdata]): Bundled (embedded, no network),
 //     NewClient then Client.FetchExtended (live quotes, cached on disk;
-//     Client.Offline stays off the network), ReadCSV (a file of your own).
+//     Client.Offline stays off the network), ReadCSV (a file of your own);
+//     Client.Load tries the three in turn (a path is a file, then the
+//     bundle, then the client), the one call an exploration script needs.
 //   - Describe it ([metrics], [analyze]): Series.Stats, which returns a
 //     metrics.Stats; metrics.CalendarReturns, metrics.DrawdownEpisodes; or
 //     analyze.Asset for everything at once.
