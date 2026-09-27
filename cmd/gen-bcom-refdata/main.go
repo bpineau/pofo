@@ -53,7 +53,8 @@
 // close), daily-return correlation 0.99995 and the same compound return to
 // the fourth decimal. Funded with the bundled T-bill, the file reproduces the
 // publisher's BCOMTR figures within 0.01 point a year (pkg/datasets/golden,
-// TestGoldenBCOM), and the commodity backcast built on it follows FT's BCOMTR
+// TestGoldenBCOM), and the commodity backcast built on it, before the fund's
+// 0.19 %/yr ongoing charge the recipe deducts since, followed FT's BCOMTR
 // over 2009-06 to 2017-07 at -0.016 point a year with a 0.015 % tracking
 // error.
 //
