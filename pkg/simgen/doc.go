@@ -200,7 +200,11 @@
 //     it against them over their overlap: two verdicts (level, does it earn
 //     the return; path, does it move with the asset), the donor chain junction
 //     by junction, and the curves to plot. This is what "pofo -verify-simdata"
-//     renders, and that report is the way to read a reconstruction;
+//     renders, and that report is the way to read a reconstruction.
+//     WriteAuditText prints the same verdicts as one aligned row per recipe,
+//     and an AuditGroup slice marshals to JSON with no NaN and without the
+//     curves (what "pofo -verify-simdata -json" prints), so a program reads
+//     the verdicts without scraping the page;
 //   - Splice extends a real series backwards by a reconstruction, the last
 //     step of "pofo -gen-simdata";
 //   - Rebase scales a value slice to 100 at its first point, for the

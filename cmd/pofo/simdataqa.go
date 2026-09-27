@@ -2,14 +2,17 @@
 // engine is replayed WITHOUT the real quotes it normally splices in, and put
 // against those quotes over the window where they exist, which is the only
 // window where a backcast can be judged at all. Output is a self-contained
-// HTML page, opened like an ordinary report.
+// HTML page, opened like an ordinary report, plus the verdicts as plain text
+// on stdout; under -json, the whole audit as JSON on stdout and no page.
 package main
 
 import (
 	"context"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"html/template"
+	"io"
 	"log"
 	"math"
 	"os"
@@ -23,9 +26,13 @@ import (
 	"github.com/bpineau/pofo/pkg/webui"
 )
 
-// runVerifySimdata audits the recipes named in ids (all of them when empty),
-// writes the report and opens it.
-func runVerifySimdata(ctx context.Context, client *marketdata.Client, opt *options, ids []string) error {
+// runVerifySimdata audits the recipes named in ids (all of them when empty).
+// By default it writes the HTML report and opens it, and prints the verdicts
+// to w as plain text (simgen.WriteAuditText), one row per recipe. Under
+// asJSON it prints the whole audit to w as JSON (the []simgen.AuditGroup,
+// in reading order) and writes no HTML: that is the form a program reads,
+// never the page.
+func runVerifySimdata(ctx context.Context, client *marketdata.Client, w io.Writer, opt *options, ids []string, asJSON bool) error {
 	recipes := simgen.All()
 	if len(ids) > 0 {
 		recipes = recipes[:0]
@@ -41,7 +48,20 @@ func runVerifySimdata(ctx context.Context, client *marketdata.Client, opt *optio
 	// files are built with: bundled reference series first, network behind.
 	fetcher := simgen.WithRefData(datasets.Refdata(), simgen.WithContext(ctx, client))
 	groups := simgen.AuditAll(fetcher, recipes, func(id string) { log.Printf("→ %s", id) })
+	if asJSON {
+		enc := json.NewEncoder(w)
+		enc.SetIndent("", "  ")
+		return enc.Encode(groups)
+	}
+	if err := writeQAPage(groups, opt); err != nil {
+		return err
+	}
+	return simgen.WriteAuditText(w, groups)
+}
 
+// writeQAPage renders groups as the HTML report, at -o or a fresh /tmp
+// path, and opens it unless -no-open.
+func writeQAPage(groups []simgen.AuditGroup, opt *options) error {
 	outPath := opt.out
 	if outPath == "" {
 		outPath = fmt.Sprintf("/tmp/pofo-simdata-qa-%s.html", time.Now().Format("20060102-150405"))
@@ -145,9 +165,12 @@ func qaCardOf(a simgen.AuditResult) qaCard {
 	c.TE = pctOf(a.TrackingErr)
 	c.TEVol = "-"
 	if a.VolReal > 0 {
-		c.TEVol = fmt.Sprintf("%.2f", a.TrackingErr/a.VolReal)
+		c.TEVol = fmt.Sprintf("%.2f", a.RelativeTE())
 	}
-	c.Daily, c.Weekly, c.Monthly = num2(a.DailyCorr), num2(a.WeeklyCorr), num2(a.MonthlyCorr)
+	c.Daily, c.Weekly, c.Monthly = num2(a.DailyCorr), num2(a.WeeklyCorr), "-"
+	if a.Months >= 12 {
+		c.Monthly = num2(a.MonthlyCorr)
+	}
 	c.Beta = num2(a.Beta)
 
 	series := []chart.Series{

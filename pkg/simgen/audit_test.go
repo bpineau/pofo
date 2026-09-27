@@ -1,6 +1,7 @@
 package simgen
 
 import (
+	"encoding/json"
 	"math"
 	"strings"
 	"testing"
@@ -186,11 +187,13 @@ func TestGradeThresholds(t *testing.T) {
 		a           AuditResult
 		level, path Verdict
 	}{
-		{"tight", AuditResult{Delta: 0.005, MonthlyCorr: 0.95, TrackingErr: 0.02, VolReal: 0.10}, VerdictOK, VerdictOK},
-		{"level warns", AuditResult{Delta: 0.015, MonthlyCorr: 0.95, TrackingErr: 0.02, VolReal: 0.10}, VerdictWarn, VerdictOK},
-		{"level fails", AuditResult{Delta: -0.030, MonthlyCorr: 0.95, TrackingErr: 0.02, VolReal: 0.10}, VerdictBad, VerdictOK},
-		{"path warns", AuditResult{Delta: 0.005, MonthlyCorr: 0.80, TrackingErr: 0.02, VolReal: 0.10}, VerdictOK, VerdictWarn},
-		{"path fails", AuditResult{Delta: 0.005, MonthlyCorr: 0.60, TrackingErr: 0.08, VolReal: 0.10}, VerdictOK, VerdictBad},
+		{"tight", AuditResult{Delta: 0.005, MonthlyCorr: 0.95, Months: 36, TrackingErr: 0.02, VolReal: 0.10}, VerdictOK, VerdictOK},
+		{"level warns", AuditResult{Delta: 0.015, MonthlyCorr: 0.95, Months: 36, TrackingErr: 0.02, VolReal: 0.10}, VerdictWarn, VerdictOK},
+		{"level fails", AuditResult{Delta: -0.030, MonthlyCorr: 0.95, Months: 36, TrackingErr: 0.02, VolReal: 0.10}, VerdictBad, VerdictOK},
+		{"path warns", AuditResult{Delta: 0.005, MonthlyCorr: 0.80, Months: 36, TrackingErr: 0.02, VolReal: 0.10}, VerdictOK, VerdictWarn},
+		{"path fails", AuditResult{Delta: 0.005, MonthlyCorr: 0.60, Months: 36, TrackingErr: 0.08, VolReal: 0.10}, VerdictOK, VerdictBad},
+		// Under twelve months the monthly figure is not one: the weekly decides.
+		{"weekly stands in", AuditResult{Delta: 0.005, MonthlyCorr: 0.99, Months: 8, WeeklyCorr: 0.70, TrackingErr: 0.07, VolReal: 0.10}, VerdictOK, VerdictBad},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			level, path, _ := grade(tc.a)
@@ -268,5 +271,60 @@ func TestRebaseAndDrift(t *testing.T) {
 	}
 	if vals[len(vals)-1] <= 100 {
 		t.Errorf("a hot engine must drift up, ended at %.1f", vals[len(vals)-1])
+	}
+}
+
+// The audit is read by programs as JSON and as text rows: a recipe that
+// could not be measured, a window too short for a monthly figure and a
+// chart curve must neither break the encoder with a NaN nor bloat it.
+func TestAuditMachineOutput(t *testing.T) {
+	real := quoted(mkWobbly("A", 900, 4e-4, 0.01))
+	short := quoted(mkWobbly("S", 200, 4e-4, 0.01))
+	f := fakeFetcher{"A": real, "S": short}
+	groups := AuditAll(f, []Recipe{
+		staticRecipe("A", scaled("A engine", real, 1.2)),
+		staticRecipe("S", scaled("S engine", short, 1.2)),
+		staticRecipe("NOREF", scaled("engine", real, 1.1)),
+	}, nil)
+
+	raw, err := json.Marshal(groups)
+	if err != nil {
+		t.Fatalf("the audit does not marshal: %v", err)
+	}
+	var back []AuditGroup
+	if err := json.Unmarshal(raw, &back); err != nil {
+		t.Fatal(err)
+	}
+	byID := map[string]AuditResult{}
+	for _, r := range back[0].Results {
+		byID[r.ID] = r
+	}
+	if a := byID["A"]; a.Level == "" || a.Months < 12 || a.MonthlyCorr == 0 || a.Start.IsZero() {
+		t.Errorf("A round-tripped as %+v, want its verdicts, months and window", a)
+	}
+	if s := byID["S"]; s.Months >= 12 || s.MonthlyCorr != 0 {
+		t.Errorf("S reads %d months, monthly %v: a short window must leave the figure at zero", s.Months, s.MonthlyCorr)
+	}
+	if n := byID["NOREF"]; n.Err == "" || n.Level != VerdictUnknown {
+		t.Errorf("NOREF = %+v, want its reason and n/a", n)
+	}
+	for _, key := range []string{`"Engine"`, `"Real"`, `"Others"`, `"Points"`} {
+		if strings.Contains(string(raw), key) {
+			t.Errorf("the JSON carries %s: chart curves stay out", key)
+		}
+	}
+
+	var text strings.Builder
+	if err := WriteAuditText(&text, groups); err != nil {
+		t.Fatal(err)
+	}
+	out := text.String()
+	for _, want := range []string{"# " + otherGroup, "LEVEL", "no independent reference", "(short)"} {
+		if !strings.Contains(out, want) {
+			t.Errorf("text summary lacks %q:\n%s", want, out)
+		}
+	}
+	if rows := strings.Count(out, "\n"); rows != 5 {
+		t.Errorf("text summary has %d lines, want a title, a header and one row per recipe:\n%s", rows, out)
 	}
 }
