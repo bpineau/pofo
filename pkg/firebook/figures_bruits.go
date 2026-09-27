@@ -42,7 +42,7 @@ var bruitWeights = []float64{0.60, 0.25, 0.075, 0.075}
 
 // bruitRef is the plan's ruin measured with enough paths for the sampling
 // noise to vanish, in percent: the value the three noises are read around.
-const bruitRef = 3.67
+const bruitRef = 3.56
 
 // bruitBand is one of the three noises: its name, the two bounds it puts on the
 // displayed figure, and the note printed under its bar.
@@ -61,19 +61,19 @@ type bruitBand struct {
 var bruitBands = []bruitBand{
 	{
 		name: "Le bruit d'échantillonnage",
-		lo:   2.84, hi: 4.49,
+		lo:   2.74, hi: 4.37,
 		detail: "2 000 trajectoires, intervalle binomial à 95 %",
 		color:  figGreen,
 	},
 	{
 		name: "La sensibilité aux paramètres",
-		lo:   2.31, hi: 5.99,
+		lo:   2.35, hi: 5.99,
 		detail: "le rendement réel espéré déplacé d'un demi-point",
 		color:  figBlue,
 	},
 	{
 		name: "Le choix du modèle",
-		lo:   0.00, hi: 35.42,
+		lo:   0.00, hi: 35.35,
 		detail:  "les six colonnes du simulateur, même plan partout",
 		color:   figBad,
 		loLabel: "fenêtres historiques", hiLabel: "décennie perdue",
@@ -88,11 +88,11 @@ var bruitColumns = []struct {
 	ruin float64
 }{
 	{"Fenêtres historiques", 0.00},
-	{"Bootstrap par blocs", 2.68},
-	{"Student-t central", 3.96},
-	{"Stress de séquence", 7.99},
+	{"Bootstrap par blocs", 2.77},
+	{"Student-t central", 3.79},
+	{"Stress de séquence", 7.98},
 	{"Échantillon mondial", 22.59},
-	{"Décennie perdue", 35.42},
+	{"Décennie perdue", 35.35},
 }
 
 // bruitWidth is one noise's span, in points of ruin.
