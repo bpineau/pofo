@@ -3,6 +3,7 @@ package marketdata
 import (
 	"context"
 	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -82,9 +83,16 @@ func TestLoadCurrency(t *testing.T) {
 		t.Errorf("conversion moved nothing: %.4f in both currencies", ru)
 	}
 
-	// A reference series states no currency: converting it is refused.
-	if _, err := c.Load(ctx, "TBILL-3M", FetchOptions{Currency: "EUR"}); err == nil || !strings.Contains(err.Error(), "no currency") {
-		t.Errorf("reference series converted: %v", err)
+	// A reference series states no currency: it passes through unchanged,
+	// as FetchExtended passes one, and the log says so.
+	var logged []string
+	c.Logf = func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) }
+	cash, err := c.Load(ctx, "EURCASH-EUR", FetchOptions{Currency: "EUR"})
+	if err != nil || cash.Currency != "" {
+		t.Errorf("reference series: %v, currency %q", err, cash.Currency)
+	}
+	if len(logged) != 1 || !strings.Contains(logged[0], "EURCASH-EUR") {
+		t.Errorf("log = %q, want one line naming the series", logged)
 	}
 	// NoConvert demands the native line.
 	if _, err := c.Load(ctx, "DBMF", FetchOptions{Currency: "EUR", NoConvert: true}); !errors.Is(err, ErrWrongCurrency) {
