@@ -191,7 +191,11 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 - Is a backcast any good? `./pofo -verify-simdata [ID...]` replays each engine
   without its real graft, against the real quotes, and opens an HTML report:
   level and path verdicts, drift panel, donor-chain junctions. This is the
-  cheapest way to see what a recipe change did.
+  cheapest way to see what a recipe change did. It also prints one text row
+  per recipe on stdout, and `-json` prints the whole `[]simgen.AuditGroup`
+  instead of the page (no NaN, no curves): read those, never scrape the HTML.
+  `-offline` replays it from the quote cache, which makes a before/after diff
+  of a change exact.
 - One golden at a time: `go test -v -run TestGoldenGold ./pkg/datasets/golden/`.
   Chart snapshots moved on purpose? Regenerate with
   `UPDATE_SNAPSHOTS=1 go test ./pkg/chart -run TestChartSnapshots` and justify

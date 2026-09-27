@@ -2,9 +2,11 @@ package simgen
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"sort"
 	"strings"
+	"text/tabwriter"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -31,7 +33,7 @@ type Junction struct {
 	Corr     float64 // monthly correlation over them
 	GapYear  float64 // CAGR of the deeper minus the nearer, per year
 	Measured bool    // false when the two cannot be compared (see Note)
-	Note     string
+	Note     string  `json:",omitempty"`
 }
 
 // AuditResult is one recipe's engine graded against reality: the raw
@@ -44,35 +46,43 @@ type Junction struct {
 // asset, judged on the monthly correlation and on the tracking error relative
 // to the asset's own volatility, so a cash-like proxy is not condemned for a
 // meaningless daily correlation.
+//
+// It marshals to JSON under its Go field names with no NaN: a figure that
+// could not be measured is zero (MonthlyCorr with Months under twelve, every
+// statistic when Err is set), a date never set is omitted, and the curves
+// kept for charting (Engine, Real, Others) stay out.
 type AuditResult struct {
 	ID     string // the recipe's identifier
 	Name   string // the recipe's display name
 	Method string // the recipe's one-line construction summary
 	Group  string // the family this recipe belongs to, for ordering
 
-	Err      string   // non-empty when nothing could be measured
-	Rejected []string // reference candidates refused, and why
+	Err      string   `json:",omitempty"` // non-empty when nothing could be measured
+	Rejected []string `json:",omitempty"` // reference candidates refused, and why
 
-	Reference  string    // the identifier that served as the truth
-	Start, End time.Time // the measured window
+	Reference  string    `json:",omitempty"` // the identifier that served as the truth
+	Start, End time.Time `json:",omitzero"`  // the measured window
 	Years      float64
 	Short      bool      // under two years: read the return gap as noise
-	RealFrom   time.Time // date from which a SIM consumer gets real quotes
+	RealFrom   time.Time `json:",omitzero"` // date from which a SIM consumer gets real quotes
 
-	DailyCorr, WeeklyCorr, MonthlyCorr float64
-	Beta, TrackingErr                  float64
-	CAGRSim, CAGRReal, Delta           float64 // Delta = engine - real, per year
-	TotalDrift                         float64 // engine/real over the window, as a fraction
-	VolSim, VolReal                    float64
-	WorstSim, WorstReal                float64 // worst single-day return
+	DailyCorr, WeeklyCorr float64
+	MonthlyCorr           float64 // zero when Months is under twelve
+	Months                int     // the calendar months MonthlyCorr reads
+	Beta, TrackingErr     float64
+	CAGRSim, CAGRReal     float64
+	Delta                 float64 // engine - real, per year
+	TotalDrift            float64 // engine/real over the window, as a fraction
+	VolSim, VolReal       float64
+	WorstSim, WorstReal   float64 // worst single-day return
 
 	Level, Path Verdict
 	Score       float64 // severity, worst first; presentation only
 
-	Engine, Real *marketdata.Series   // clipped to the window, for charting
-	Others       []*marketdata.Series // curated comparison curves, same window
-	Chain        []Junction
-	Caveat       string // a hand-written note the numbers alone would misread
+	Engine, Real *marketdata.Series   `json:"-"` // clipped to the window, for charting
+	Others       []*marketdata.Series `json:"-"` // curated comparison curves, same window
+	Chain        []Junction           `json:",omitempty"`
+	Caveat       string               `json:",omitempty"` // a hand-written note the numbers alone would misread
 }
 
 // Measured reports whether the audit found an independent reference and
@@ -216,7 +226,7 @@ func Audit(f Fetcher, r Recipe) AuditResult {
 	a.Years = v.End.Sub(v.Start).Hours() / 24 / 365.25
 	a.Short = a.Years < 2
 	a.DailyCorr, a.WeeklyCorr, a.Beta, a.TrackingErr = v.Corr, v.WeeklyCorr, v.Beta, v.TrackingErr
-	a.MonthlyCorr = monthlyCorr(engine, real, v.Start, v.End)
+	a.MonthlyCorr, a.Months = monthlyCorr(engine, real, v.Start, v.End)
 	a.CAGRSim, a.CAGRReal = v.CAGRSim, v.CAGRReal
 	a.Delta = v.CAGRSim - v.CAGRReal
 	a.TotalDrift = math.Pow(1+a.Delta, a.Years) - 1
@@ -401,12 +411,12 @@ func grade(a AuditResult) (level, path Verdict, score float64) {
 		level = VerdictOK
 	}
 	corr := a.MonthlyCorr
-	if corr == 0 || math.IsNaN(corr) {
+	if a.Months < 12 {
 		corr = a.WeeklyCorr
 	}
 	rel := 1.0
 	if a.VolReal > 0 {
-		rel = a.TrackingErr / a.VolReal
+		rel = a.RelativeTE()
 	}
 	switch {
 	case corr < 0.75 && rel > 0.6:
@@ -484,12 +494,12 @@ func Rebase(v []float64) []float64 {
 // the honest yardstick for a reconstruction meant to be held for years: the
 // daily and weekly figures are dominated by intra-month texture, which no
 // reconstruction of a fifty-market programme can match day by day.
-func monthlyCorr(a, b *marketdata.Series, from, to time.Time) float64 {
+func monthlyCorr(a, b *marketdata.Series, from, to time.Time) (float64, int) {
 	xa, xb := pairMonthly(a, b, from, to)
 	if len(xa) < 12 {
-		return math.NaN()
+		return 0, len(xa)
 	}
-	return pearson(xa, xb)
+	return pearson(xa, xb), len(xa)
 }
 
 // pairMonthly returns the two series' calendar-month returns over the months
@@ -557,7 +567,7 @@ func pearson(a, b []float64) float64 {
 		sab, sa, sb = sab+da*db, sa+da*da, sb+db*db
 	}
 	if sa <= 0 || sb <= 0 {
-		return math.NaN()
+		return 0
 	}
 	return sab / math.Sqrt(sa*sb)
 }
@@ -608,6 +618,55 @@ func (a AuditResult) String() string {
 	if !a.Measured() {
 		return fmt.Sprintf("%-14s %s", a.ID, a.Err)
 	}
-	return fmt.Sprintf("%-14s level=%-4s path=%-4s monthly=%.2f gap=%+.2f%%/yr over %.1fy vs %s",
-		a.ID, a.Level, a.Path, a.MonthlyCorr, a.Delta*100, a.Years, a.Reference)
+	return fmt.Sprintf("%-14s level=%-4s path=%-4s monthly=%s gap=%+.2f%%/yr over %.1fy vs %s",
+		a.ID, a.Level, a.Path, a.monthly(), a.Delta*100, a.Years, a.Reference)
+}
+
+// monthly is MonthlyCorr to two decimals, or "-" when too few months carry it.
+func (a AuditResult) monthly() string {
+	if a.Months < 12 {
+		return "-"
+	}
+	return fmt.Sprintf("%.2f", a.MonthlyCorr)
+}
+
+// RelativeTE is the tracking error over the reference's own volatility, the
+// ratio the path verdict reads beside the correlation; zero when the
+// reference does not move.
+func (a AuditResult) RelativeTE() float64 {
+	if a.VolReal > 0 {
+		return a.TrackingErr / a.VolReal
+	}
+	return 0
+}
+
+// WriteAuditText prints groups as plain text, one aligned row per recipe
+// under each family's title: the two verdicts, the correlations, the level
+// gap and the relative tracking error that decided them, the window and the
+// reference. A recipe that could not be measured prints its reason instead.
+// It is the machine-friendly twin of the HTML report: one line per verdict,
+// nothing to scrape.
+func WriteAuditText(w io.Writer, groups []AuditGroup) error {
+	tw := tabwriter.NewWriter(w, 0, 0, 2, ' ', 0)
+	for i, g := range groups {
+		if i > 0 {
+			fmt.Fprintln(tw)
+		}
+		fmt.Fprintf(tw, "# %s\n", g.Title)
+		fmt.Fprintln(tw, "ID\tLEVEL\tPATH\tMONTHLY\tWEEKLY\tDAILY\tGAP %/YR\tTE/VOL\tYEARS\tREFERENCE")
+		for _, a := range g.Results {
+			if !a.Measured() {
+				fmt.Fprintf(tw, "%s\t%s\t%s\t%s\n", a.ID, a.Level, a.Path, a.Err)
+				continue
+			}
+			short := ""
+			if a.Short {
+				short = " (short)"
+			}
+			fmt.Fprintf(tw, "%s\t%s\t%s\t%s\t%.2f\t%.2f\t%+.2f\t%.2f\t%.1f%s\t%s\n",
+				a.ID, a.Level, a.Path, a.monthly(), a.WeeklyCorr, a.DailyCorr,
+				a.Delta*100, a.RelativeTE(), a.Years, short, a.Reference)
+		}
+	}
+	return tw.Flush()
 }

@@ -171,7 +171,7 @@ func run(ctx context.Context, argv []string) error {
 	fs.IntVar(&opt.foreignPerHour, "serve-foreign-per-hour", 10, "with -serve: how many identifiers outside the bundled catalog one client may have fetched from the quote sources per hour (0 = refuse them all, catalog only)")
 	fs.IntVar(&opt.foreignGlobalPerHour, "serve-foreign-global-per-hour", 60, "with -serve: the same budget for the whole process, all clients together")
 	pprofAddr := fs.String("pprof", "", "temporarily serve net/http/pprof on this address (e.g. localhost:6060) for profiling -serve/-fire; empty = disabled")
-	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, then exit")
+	verifySimdata := fs.Bool("verify-simdata", false, "reconstruction quality report: replay every recipe's engine (or those named as arguments) against the real quotes, write an HTML page and open it, print one verdict row per recipe on stdout (-json: the audit as JSON, no page), then exit")
 	genSimdata := fs.Bool("gen-simdata", false, "(re)generate the simulated histories (recipes as arguments, default: all) then stop; rebuild afterwards to re-embed them")
 	exportEpub := fs.String("export-epub", "", "write one edition of the embedded FIRE book to this path as an EPUB 3 file, then exit (e.g. -export-epub le-fire-tranquille.epub)")
 	bookLang := fs.String("book-lang", "fr", "with -export-epub: which edition of the FIRE book to write, fr (Le FIRE tranquille) or en (The Quiet FIRE)")
@@ -185,7 +185,7 @@ func run(ctx context.Context, argv []string) error {
 	dumpList := fs.String("dump", "", "write the series of these comma-separated identifiers to stdout as long CSV (id,date,value), shaped by -start, -end, -currency (native unless set), -simulate and -monthly, then exit; bundled reference series (TREASURY-LONG-USD…) included; \"list\" prints what the binary bundles")
 	fs.BoolVar(&opt.monthly, "monthly", false, "with -dump: keep the last close of each calendar month")
 	pairArg := fs.String("pair", "", "compare two series, A,B: A the candidate (a reconstruction, a refreshed file), B the reference (the real fund, the index, the previous file); each an identifier (fetched as -dump fetches it) or the path of a date,value CSV file (it holds a slash or ends in .csv); prints the study as text, then exits")
-	pairJSON := fs.Bool("json", false, "with -pair: print the study as JSON")
+	jsonOut := fs.Bool("json", false, "with -pair: print the study as JSON; with -verify-simdata: print the audit as JSON instead of writing the HTML report")
 	leadLag := fs.Bool("lead-lag", false, "with -pair: rank the daily divergences forgiving a one-session difference in closing times (a Xetra close against a US one)")
 	fs.BoolVar(&opt.offline, "offline", false, "never touch the network: serve the quote cache whatever its age, then the bundled data, and fail on anything else")
 	fs.Usage = func() {
@@ -195,6 +195,7 @@ func run(ctx context.Context, argv []string) error {
        pofo [options] -dump IWDA,TREASURY-LONG-USD -monthly > series.csv
        pofo [options] -pair SP500,SP500-USD
        pofo [options] -pair X,/tmp/X-before.csv -json
+       pofo [options] -verify-simdata -json DBMF VTI > audit.json
 
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
@@ -205,6 +206,9 @@ program to read; "-dump list" names every series bundled in the binary.
 fund, the index, the file as it was): level gap, correlation, tracking
 error, beta, calendar years side by side, dated divergences. A side holding
 a slash or ending in .csv is a file, e.g. from "git show HEAD~1:<path>".
+-verify-simdata [ID...] grades every backcast engine against the real
+quotes: an HTML report plus one text row per recipe on stdout, or the
+whole audit as JSON under -json (no HTML then).
 -offline keeps any mode off the network (quote cache and bundled data only).
 
 -simulate (-b) backcasts every identifier of the run, so "-b -a AVWS,ZPRV"
@@ -392,14 +396,14 @@ Options:
 		return runDump(ctx, opt.newClient(opt.cacheAge), os.Stdout, splitIDs(*dumpList), &opt, d)
 	}
 	if *pairArg != "" {
-		p := pairOptions{dumpOptions: d, json: *pairJSON, leadLag: *leadLag}
+		p := pairOptions{dumpOptions: d, json: *jsonOut, leadLag: *leadLag}
 		return runPair(ctx, opt.newClient(opt.cacheAge), os.Stdout, *pairArg, &opt, p)
 	}
 
 	// The two simdata modes consume positional args as recipe ids, not files;
 	// dispatch before any portfolio parsing.
 	if *verifySimdata {
-		return runVerifySimdata(ctx, opt.newClient(generatorAge(fs, opt.cacheAge)), &opt, fs.Args())
+		return runVerifySimdata(ctx, opt.newClient(generatorAge(fs, opt.cacheAge)), os.Stdout, &opt, fs.Args(), *jsonOut)
 	}
 	if *genSimdata {
 		return runGenSimdata(ctx, opt.newClient(generatorAge(fs, opt.cacheAge)), &opt, *refdataDir, fs.Args(), *dry)

@@ -617,7 +617,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-dump` | | write these comma-separated series to stdout as long CSV (`id,date,value`), then exit; `list` names every bundled series |
 | `-monthly` | | with `-dump`: keep the last close of each calendar month |
 | `-pair` | | `A,B`: measure A against B (identifiers, or CSV paths when holding a slash or ending in `.csv`) and print the study as text, then exit |
-| `-json` | | with `-pair`: print the study as JSON |
+| `-json` | | with `-pair`: print the study as JSON; with `-verify-simdata`: print the audit as JSON (`[]simgen.AuditGroup`, no NaN, no curves) and write no HTML |
 | `-lead-lag` | | with `-pair`: rank the daily divergences forgiving a one-session difference in closing times |
 | `-assets`, `-a` | | list `A,B,C`: each asset compared as a 100% portfolio |
 | `-simulate`, `-b` | | backcast every identifier of the run, as if each carried the `SIM` suffix |
@@ -625,7 +625,7 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-width` | `$COLUMNS` or 100 | width of the `-cli` chart (wider = more granularity) |
 | `-warmup` | | pre-warm the built-in asset catalog then exit |
 | `-verify-data` | | data doctor: check the referenced assets' quotes (or the whole catalog, `make verify-catalog`) for anomalies. Series hygiene (bad points, gaps, stale feeds, each judged against the pace the series kept at the time), plus, for a catalogued asset, plausibility against its class's volatility/CAGR/move/drawdown band and identity against its record (served currency, share class, inception). Prints a summary and exits |
-| `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, then exit |
+| `-verify-simdata` | | reconstruction quality report: replay every recipe's engine (or the ones named as arguments) against the real quotes, write an HTML page and open it, print one verdict row per recipe on stdout, then exit (`-json`: the audit as JSON instead) |
 | `-suggest` | | recommend catalog assets to add for better regime coverage, flag redundant holdings, then exit |
 | `-coverage` | | offline advisor: show which regimes/factors a portfolio misses and the catalog assets that fill them, then exit |
 | `-sweep` | | per-holding weight sweep: what each line's weight buys and costs, then exit |
@@ -823,8 +823,9 @@ then stored as self-documenting CSVs (method, validation, date) in
 ```sh
 ./pofo -gen-simdata                   # regenerate everything (then make build to re-embed)
 ./pofo -gen-simdata -dry NTSX         # validate without writing
-./pofo -verify-simdata                # how good is every engine? HTML report, opened
+./pofo -verify-simdata                # how good is every engine? HTML report, opened, verdicts on stdout
 ./pofo -verify-simdata CTA DBMF       # just these two
+./pofo -verify-simdata -json > qa.json   # the whole audit as JSON, for a program (no HTML)
 ```
 
 `-verify-simdata` is the standing answer to "can this backcast be trusted".
@@ -838,6 +839,10 @@ asset, on the monthly correlation and on the tracking error relative to the
 asset's own volatility. Recipes built as donor chains also get a chain of
 custody: every junction graded on its own overlap, since the card's own
 statistics can only grade the nearest one. Worst first inside each family.
+The same verdicts print on stdout as one aligned row per recipe, and `-json`
+prints the whole audit (every figure, the chain, the caveats) for a program to
+read; `-offline` replays it from the quote cache, so two runs around a recipe
+change compare exactly.
 
 Every series is built **only from quotes the tool itself can fetch**
 (Vanguard/Yahoo funds with decades of history, the `^IRX` cash rate, gold and
