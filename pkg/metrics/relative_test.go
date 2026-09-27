@@ -3,6 +3,7 @@ package metrics
 import (
 	"math"
 	"testing"
+	"time"
 )
 
 func TestDrawdowns(t *testing.T) {
@@ -36,6 +37,41 @@ func TestRollingCAGRConstantGrowth(t *testing.T) {
 	// Series shorter than the window: not ok.
 	if _, _, _, _, ok := RollingCAGR(dates[:300], values[:300], 5); ok {
 		t.Error("expected ok=false for a window longer than the series")
+	}
+}
+
+func TestRollingCAGRs(t *testing.T) {
+	// Yearly closes: +10 %, -50 %, +100 %, +10 %. The two-year windows are
+	// 2000-2002, 2001-2003 and 2002-2004, each dated on its closes.
+	dates := []time.Time{date(2000, 12, 31), date(2001, 12, 31), date(2002, 12, 31), date(2003, 12, 31), date(2004, 12, 31)}
+	values := []float64{100, 110, 55, 110, 121}
+	got := RollingCAGRs(dates, values, 2)
+	if len(got) != 3 {
+		t.Fatalf("%d windows, want 3: %+v", len(got), got)
+	}
+	for k, w := range got {
+		if !w.Start.Equal(dates[k]) || !w.End.Equal(dates[k+2]) {
+			t.Errorf("window %d = %s to %s, want %s to %s", k, w.Start, w.End, dates[k], dates[k+2])
+		}
+		held := dates[k+2].Sub(dates[k]).Hours() / 24 / 365.25
+		if want := math.Pow(values[k+2]/values[k], 1/held) - 1; math.Abs(w.CAGR-want) > 1e-12 {
+			t.Errorf("window %d CAGR = %v, want %v", k, w.CAGR, want)
+		}
+	}
+	// RollingCAGR summarizes the very same windows.
+	worst, _, best, n, ok := RollingCAGR(dates, values, 2)
+	if !ok || n != 3 || worst != got[0].CAGR || best != got[2].CAGR {
+		t.Errorf("RollingCAGR = %v %v %d %v, want the windows' extremes", worst, best, n, ok)
+	}
+	for name, out := range map[string][]HoldingPeriod{
+		"ragged":       RollingCAGRs(dates, values[:4], 2),
+		"no length":    RollingCAGRs(dates, values, 0),
+		"too short":    RollingCAGRs(dates, values, 10),
+		"nothing held": RollingCAGRs(nil, nil, 1),
+	} {
+		if out != nil {
+			t.Errorf("%s: %+v, want nil", name, out)
+		}
 	}
 }
 

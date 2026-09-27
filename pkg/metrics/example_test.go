@@ -145,6 +145,32 @@ func ExampleUlcer() {
 	// Ulcer > 0: true, worst 1y return negative: true
 }
 
+// RollingCAGRs dates every holding period, so the worst one says when it
+// started, and a custom count reads the share of windows that lost money.
+func ExampleRollingCAGRs() {
+	// Yearly closes through a bust and a recovery.
+	var dates []time.Time
+	for y := 2000; y <= 2006; y++ {
+		dates = append(dates, time.Date(y, 12, 31, 0, 0, 0, 0, time.UTC))
+	}
+	values := []float64{100, 110, 55, 60, 110, 121, 133}
+
+	windows := metrics.RollingCAGRs(dates, values, 2)
+	worst, lost := windows[0], 0
+	for _, w := range windows {
+		if w.CAGR < worst.CAGR {
+			worst = w
+		}
+		if w.CAGR < 0 {
+			lost++
+		}
+	}
+	fmt.Printf("%d two-year windows, %d lost money; the worst ran %d to %d at %.1f %%/yr\n",
+		len(windows), lost, worst.Start.Year(), worst.End.Year(), worst.CAGR*100)
+	// Output:
+	// 5 two-year windows, 2 lost money; the worst ran 2001 to 2003 at -26.2 %/yr
+}
+
 // Beta regresses a series' daily returns on a benchmark's, matching
 // observations by date.
 func ExampleBeta() {

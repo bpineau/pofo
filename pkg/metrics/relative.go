@@ -22,14 +22,53 @@ func Drawdowns(values []float64) []float64 {
 }
 
 // RollingCAGR computes the annualized return of every rolling window of the
-// given calendar length (one window per starting point) and summarizes the
-// distribution. ok is false when the series is shorter than the window.
+// given calendar length (one window per starting point, as RollingCAGRs
+// lists them) and summarizes the distribution. ok is false when the series
+// is shorter than the window.
 func RollingCAGR(dates []time.Time, values []float64, years float64) (worst, median, best float64, windows int, ok bool) {
-	if len(dates) != len(values) || years <= 0 {
+	all := RollingCAGRs(dates, values, years)
+	if len(all) < 2 {
 		return 0, 0, 0, 0, false
 	}
-	span := time.Duration(years * 365.25 * 24 * float64(time.Hour))
-	var cagrs []float64
+	sorted := make([]float64, len(all))
+	for i, w := range all {
+		sorted[i] = w.CAGR
+	}
+	slices.Sort(sorted)
+	return sorted[0], sorted[len(sorted)/2], sorted[len(sorted)-1], len(all), true
+}
+
+// HoldingPeriod is one rolling window of RollingCAGRs: bought at the close
+// of Start, sold at the close of End.
+type HoldingPeriod struct {
+	Start time.Time // the buying close
+	End   time.Time // the selling close, the first on or after the anniversary
+	CAGR  float64   // annualized over End - Start in 365.25-day years, a FRACTION
+}
+
+// RollingCAGRs lists every holding period of the given calendar length in
+// years, one per starting point in date order: bought at each close and sold
+// at the first close on or after its anniversary, its CAGR annualized over
+// the span actually held. The anniversary is years × 365.25 days later, less
+// half a day, so a calendar span of whole years counts in full whatever its
+// leap days: a month-end series sells two years after 2001-12-31 on
+// 2003-12-31 (730 days, not 730.5), not a month later. It is the dated distribution RollingCAGR
+// summarizes, for a caller that wants to know WHEN the worst ten years
+// started, or what share of the windows lost money.
+//
+// The windows overlap, so they are far from independent: a century of
+// monthly closes yields over a thousand ten-year windows, and barely ten
+// disjoint ones. A window whose first or last level is not positive is
+// skipped. The result is nil when dates and values differ in length, when
+// years is not positive or when no window fits.
+func RollingCAGRs(dates []time.Time, values []float64, years float64) []HoldingPeriod {
+	if len(dates) != len(values) || years <= 0 {
+		return nil
+	}
+	// A calendar year holds 365 or 366 days, never 365.25: the half day
+	// forgiven is what a whole number of calendar years can fall short by.
+	span := time.Duration(years*365.25*24*float64(time.Hour)) - 12*time.Hour
+	var out []HoldingPeriod
 	j := 0
 	for i := range dates {
 		target := dates[i].Add(span)
@@ -39,18 +78,13 @@ func RollingCAGR(dates []time.Time, values []float64, years float64) (worst, med
 		if j >= len(dates) {
 			break
 		}
-		actualYears := dates[j].Sub(dates[i]).Hours() / 24 / 365.25
-		if values[i] > 0 && values[j] > 0 && actualYears > 0 {
-			cagrs = append(cagrs, math.Pow(values[j]/values[i], 1/actualYears)-1)
+		held := dates[j].Sub(dates[i]).Hours() / 24 / 365.25
+		if values[i] > 0 && values[j] > 0 && held > 0 {
+			out = append(out, HoldingPeriod{Start: dates[i], End: dates[j], CAGR: math.Pow(values[j]/values[i], 1/held) - 1})
 		}
 		j = max(j-1, 0) // windows overlap: restart search near previous end
 	}
-	if len(cagrs) < 2 {
-		return 0, 0, 0, 0, false
-	}
-	sorted := append([]float64(nil), cagrs...)
-	slices.Sort(sorted)
-	return sorted[0], sorted[len(sorted)/2], sorted[len(sorted)-1], len(cagrs), true
+	return out
 }
 
 // Relative compares a series with a benchmark on their common dates and
