@@ -49,7 +49,9 @@ func runDump(ctx context.Context, c *marketdata.Client, w io.Writer, ids []strin
 			return fmt.Errorf("%s: no point between -start and -end", id)
 		}
 		if opt.monthly {
-			s = s.Resample(marketdata.Monthly)
+			if s, err = s.Resample(marketdata.Monthly); err != nil {
+				return err
+			}
 		}
 		list = append(list, s)
 	}

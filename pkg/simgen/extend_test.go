@@ -283,7 +283,10 @@ func TestMSCIWorldFallsBack(t *testing.T) {
 // afterFee applies a continuous annual drag.
 func TestAfterFee(t *testing.T) {
 	s := atSeries("x", 0, 366, 100) // ~1 year of constant level
-	out := afterFee(s, 0.02)
+	out, err := afterFee(s, 0.02)
+	if err != nil {
+		t.Fatal(err)
+	}
 	if last := out.Points[len(out.Points)-1].Close; last < 97.8 || last > 98.2 {
 		t.Errorf("after 2%%/yr fee over ~1y, level = %.3f, want ~98", last)
 	}

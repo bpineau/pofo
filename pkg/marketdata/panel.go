@@ -242,15 +242,14 @@ func (p *Panel) column(id string) int { return slices.Index(p.IDs, id) }
 
 // Col returns the returns of column id over every period, in a fresh slice
 // parallel to Ends: the argument of metrics.Mean, Regress, LowestK and the
-// other functions over bare returns. It panics when the panel has no such
-// column, as a misspelt identifier in the caller's code is a programming
-// error; that is what lets a call chain straight into a statistic.
-func (p *Panel) Col(id string) []float64 {
+// other functions over bare returns. It is an error when the panel has no
+// such column; the error lists the columns it has.
+func (p *Panel) Col(id string) ([]float64, error) {
 	i := p.column(id)
 	if i < 0 {
-		panic(fmt.Sprintf("marketdata: Panel has no column %q (it holds %s)", id, strings.Join(p.IDs, ", ")))
+		return nil, fmt.Errorf("marketdata: Panel.Col: no column %s (the panel holds %s)", id, strings.Join(p.IDs, ", "))
 	}
-	return slices.Clone(p.R[i])
+	return slices.Clone(p.R[i]), nil
 }
 
 // Between returns the periods that END inside [from, to], both bounds civil
@@ -270,15 +269,15 @@ func (p *Panel) Between(from, to time.Time) *Panel {
 // such as the worst decile of one column (metrics.LowestK), on which the
 // other columns are then read (the conditional mean of a hedge over an
 // asset's worst months). A picked panel is no longer one path, so Series
-// refuses it unless the periods listed are consecutive. It panics on an
-// index out of range.
-func (p *Panel) Pick(periods []int) *Panel {
+// refuses it unless the periods listed are consecutive. An index out of
+// range is an error.
+func (p *Panel) Pick(periods []int) (*Panel, error) {
 	for _, t := range periods {
 		if t < 0 || t >= p.Len() {
-			panic(fmt.Sprintf("marketdata: Panel.Pick: period %d of %d", t, p.Len()))
+			return nil, fmt.Errorf("marketdata: Panel.Pick: period %d out of range (the panel has %d)", t, p.Len())
 		}
 	}
-	return p.pick(periods)
+	return p.pick(periods), nil
 }
 
 // pick copies the listed periods into a new panel.

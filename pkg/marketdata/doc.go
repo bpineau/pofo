@@ -340,7 +340,9 @@
 // answer for one of them; Resample keeps the last trading close of each
 // calendar month, quarter or year, a month-END series like every bundled
 // monthly anchor. Every one of them returns fresh slices and leaves its
-// receiver alone.
+// receiver alone, and a bad argument (a charge of the whole level, a negative
+// frequency, and on a Panel an unknown column or period) is an error, never
+// a panic.
 //
 // Several series meet on one calendar through AlignSeries, the strict sibling
 // of Align: it starts by default at CommonWindow's start (the latest first

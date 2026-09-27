@@ -150,7 +150,7 @@ func resampleFixture(t *testing.T) *Series {
 
 func TestResampleMonthly(t *testing.T) {
 	s := resampleFixture(t)
-	m := s.Resample(Monthly)
+	m := must(s.Resample(Monthly))
 	want := []Point{{date(2024, 3, 28), 4}, {date(2024, 4, 3), 7}}
 	if !reflect.DeepEqual(m.Points, want) {
 		t.Fatalf("monthly = %v, want %v (last trading close, partial last month kept)", m.Points, want)
@@ -168,10 +168,10 @@ func TestResampleMonthly(t *testing.T) {
 	}
 	late := resampleFixture(t)
 	late.Junctions = []time.Time{date(2024, 3, 27), date(2024, 4, 2), date(2024, 4, 3)}
-	if got, want := late.Resample(Monthly).Junctions, []time.Time{date(2024, 3, 28), date(2024, 4, 3)}; !reflect.DeepEqual(got, want) {
+	if got, want := must(late.Resample(Monthly)).Junctions, []time.Time{date(2024, 3, 28), date(2024, 4, 3)}; !reflect.DeepEqual(got, want) {
 		t.Errorf("junctions = %v, want %v (each moved to its period's close, two in April merged)", got, want)
 	}
-	if got := late.Resample(Yearly).Junctions; !reflect.DeepEqual(got, []time.Time{date(2024, 4, 3)}) {
+	if got := must(late.Resample(Yearly)).Junctions; !reflect.DeepEqual(got, []time.Time{date(2024, 4, 3)}) {
 		t.Errorf("yearly junctions = %v, want the single kept close", got)
 	}
 	if m.Currency != "USD" || m.Symbol != "X" {
@@ -184,32 +184,28 @@ func TestResampleMonthly(t *testing.T) {
 
 func TestResamplePeriods(t *testing.T) {
 	s := resampleFixture(t)
-	if got := s.Resample(Quarterly).Dates(); !reflect.DeepEqual(got, []time.Time{date(2024, 3, 28), date(2024, 4, 3)}) {
+	if got := must(s.Resample(Quarterly)).Dates(); !reflect.DeepEqual(got, []time.Time{date(2024, 3, 28), date(2024, 4, 3)}) {
 		t.Errorf("quarterly = %v", got)
 	}
-	if got := s.Resample(Yearly).Dates(); !reflect.DeepEqual(got, []time.Time{date(2024, 4, 3)}) {
+	if got := must(s.Resample(Yearly)).Dates(); !reflect.DeepEqual(got, []time.Time{date(2024, 4, 3)}) {
 		t.Errorf("yearly = %v", got)
 	}
 	years := mustSeries(t, "Y", date(2022, 12, 30), date(2023, 6, 30), date(2023, 12, 29), date(2024, 1, 2))
-	if got := years.Resample(Yearly).Values(); !reflect.DeepEqual(got, []float64{1, 3, 4}) {
+	if got := must(years.Resample(Yearly)).Values(); !reflect.DeepEqual(got, []float64{1, 3, 4}) {
 		t.Errorf("yearly across years = %v", got)
 	}
-	if e := (&Series{}).Resample(Monthly); e.Len() != 0 {
+	if e := must((&Series{}).Resample(Monthly)); e.Len() != 0 {
 		t.Errorf("empty resample = %+v", e)
 	}
 	one := mustSeries(t, "O", date(2024, 5, 15))
-	if got := one.Resample(Monthly).Points; len(got) != 1 || got[0].Date != date(2024, 5, 15) {
+	if got := must(one.Resample(Monthly)).Points; len(got) != 1 || got[0].Date != date(2024, 5, 15) {
 		t.Errorf("single point resample = %v", got)
 	}
-	if d := s.Resample(Daily); !reflect.DeepEqual(d.Points, s.Points) || &d.Points[0] == &s.Points[0] {
+	if d := must(s.Resample(Daily)); !reflect.DeepEqual(d.Points, s.Points) || &d.Points[0] == &s.Points[0] {
 		t.Errorf("Daily resample is not an unchanged copy: %v", d.Points)
 	}
-	defer func() {
-		if recover() == nil {
-			t.Error("Resample(-1) did not panic")
-		}
-	}()
-	s.Resample(-1)
+	_, err := s.Resample(-1)
+	wantErr(t, err, "Resample X: negative frequency (-1 months)")
 }
 
 func TestCommonWindow(t *testing.T) {

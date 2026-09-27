@@ -390,10 +390,18 @@ func ExampleSeries_Resample() {
 	s, _ := marketdata.NewSeries("DEMO",
 		[]time.Time{d(2, 28), d(2, 29), d(3, 27), d(3, 28), d(4, 1), d(4, 2)},
 		[]float64{100, 101, 104, 105, 103, 106})
-	for _, p := range s.Resample(marketdata.Monthly).Points {
+	monthly, err := s.Resample(marketdata.Monthly)
+	if err != nil {
+		panic(err)
+	}
+	for _, p := range monthly.Points {
 		fmt.Println(p.Date.Format("2006-01-02"), p.Close)
 	}
-	fmt.Println(s.Resample(marketdata.Quarterly).Len())
+	quarterly, err := s.Resample(marketdata.Quarterly)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(quarterly.Len())
 	// Output:
 	// 2024-02-29 101
 	// 2024-03-28 105
@@ -452,7 +460,11 @@ func Example_priceHistory() {
 		panic(err)
 	}
 	dates, closes, returns := iwda.Dates(), iwda.Values(), iwda.Returns()
-	fmt.Println(len(dates), len(closes), len(returns), iwda.Resample(marketdata.Monthly).Len())
+	monthEnds, err := iwda.Resample(marketdata.Monthly)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(dates), len(closes), len(returns), monthEnds.Len())
 
 	// The CLI's pipeline: the bundled backcast in front (SIM), in euros.
 	long, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"})
@@ -597,8 +609,11 @@ func Example_loading() {
 	}
 
 	// Out to any tool, month-end closes, one long id,date,value file.
-	err = marketdata.WriteCSV(os.Stdout, tsy, old, iwda.Resample(marketdata.Monthly))
+	monthly, err := iwda.Resample(marketdata.Monthly)
 	if err != nil {
+		panic(err)
+	}
+	if err := marketdata.WriteCSV(os.Stdout, tsy, old, monthly); err != nil {
 		panic(err)
 	}
 }

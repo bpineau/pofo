@@ -302,7 +302,7 @@ func xeonRecipe() Recipe {
 			if err != nil {
 				return nil, err
 			}
-			return afterFee(s, 0.0010), nil
+			return afterFee(s, 0.0010)
 		},
 		ValidateAgainst: "LU0290358497",
 		SpliceReal:      "LU0290358497",
@@ -1878,16 +1878,16 @@ func shapedIndex(anchorID, shapeID string, annualFee float64, fallback func(Fetc
 			shape.Points = despike(shape.Points)
 			out = shapedSeries(alignMonthEnd(anchorID, anchor, shape), shape)
 		}
-		return afterFee(out, annualFee), nil
+		return afterFee(out, annualFee)
 	}
 }
 
 // afterFee returns a copy of s with a continuous annual fee applied, so a
 // pre-fee index level becomes an after-cost investable one (Series.LessFee,
 // a charge that is not positive leaving s itself).
-func afterFee(s *marketdata.Series, annual float64) *marketdata.Series {
+func afterFee(s *marketdata.Series, annual float64) (*marketdata.Series, error) {
 	if annual <= 0 {
-		return s
+		return s, nil
 	}
 	return s.LessFee(annual)
 }
@@ -2398,7 +2398,7 @@ func dbxgBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	return afterFee(gov, dbxgFee), nil
+	return afterFee(gov, dbxgFee)
 }
 
 // mthFee is MTH's 0.07 %/yr TER, deducted from the pre-inception proxy (the
@@ -2428,7 +2428,7 @@ func mthBuild(f Fetcher, from time.Time) (*marketdata.Series, error) {
 	if err != nil {
 		return nil, err
 	}
-	return afterFee(gov, mthFee), nil
+	return afterFee(gov, mthFee)
 }
 
 // indepEuropeRecipe backcasts Independance AM Europe Small (LU1832174962,

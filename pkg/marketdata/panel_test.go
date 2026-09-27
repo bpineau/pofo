@@ -23,6 +23,15 @@ func seriesOf(t *testing.T, symbol string, pts ...any) *Series {
 	return s
 }
 
+// must returns v, and panics on err, which fails the test that called it
+// with the error and its stack.
+func must[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
+}
+
 func wantErr(t *testing.T, err error, want string) {
 	t.Helper()
 	if err == nil || !strings.Contains(err.Error(), want) {
@@ -63,7 +72,7 @@ func TestPanelMonthlyCanonicalLabels(t *testing.T) {
 	if !reflect.DeepEqual(p.IDs, []string{"A", "B"}) || p.Freq != Monthly || p.Len() != 3 {
 		t.Errorf("panel = %+v", p)
 	}
-	ra, rb := p.Col("A"), p.Col("B")
+	ra, rb := must(p.Col("A")), must(p.Col("B"))
 	closeTo(t, "A Feb", ra[0], 102.0/101-1)
 	closeTo(t, "A Apr", ra[2], 99.0/103-1)
 	closeTo(t, "B Mar", rb[1], 0)
@@ -138,7 +147,7 @@ func TestPanelDailyCadence(t *testing.T) {
 	if p.PeriodsPerYear() != 252 {
 		t.Errorf("daily PeriodsPerYear = %v", p.PeriodsPerYear())
 	}
-	if got := p.Pick([]int{0, 5, 9}).PeriodsPerYear(); got != 252 {
+	if got := must(p.Pick([]int{0, 5, 9})).PeriodsPerYear(); got != 252 {
 		t.Errorf("picked daily PeriodsPerYear = %v", got)
 	}
 	st, err := mustPanelSeries(t, p, "S").Stats()
@@ -221,7 +230,7 @@ func TestPanelSelectMixSeries(t *testing.T) {
 	if len(p.IDs) != 3 || len(m.IDs) != 4 || m.IDs[3] != "60/40" {
 		t.Fatalf("Mix changed its receiver or misnamed: %v / %v", p.IDs, m.IDs)
 	}
-	mix := m.Col("60/40")
+	mix := must(m.Col("60/40"))
 	closeTo(t, "Jan", mix[0], 0.6*0.10)
 	closeTo(t, "Feb", mix[1], 0.6*(99.0/110-1)+0.4*0.02)
 
@@ -229,7 +238,7 @@ func TestPanelSelectMixSeries(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	closeTo(t, "leveraged Jan", lev.Col("LEV")[0], 1.5*0.10-0.5*0.01)
+	closeTo(t, "leveraged Jan", must(lev.Col("LEV"))[0], 1.5*0.10-0.5*0.01)
 
 	for name, tc := range map[string]struct {
 		id   string
@@ -257,7 +266,7 @@ func TestPanelSelectMixSeries(t *testing.T) {
 	if _, err := m.Series("NOPE"); err == nil {
 		t.Error("Series of an absent column did not fail")
 	}
-	if _, err := m.Pick(nil).Series("EQ"); err == nil {
+	if _, err := must(m.Pick(nil)).Series("EQ"); err == nil {
 		t.Error("Series of an empty panel did not fail")
 	}
 
@@ -265,54 +274,45 @@ func TestPanelSelectMixSeries(t *testing.T) {
 	if feb.Len() != 1 || !feb.Starts[0].Equal(date(2024, 1, 31)) {
 		t.Errorf("Between = %+v", feb)
 	}
-	worst := p.Pick([]int{1, 0})
+	worst := must(p.Pick([]int{1, 0}))
 	if !reflect.DeepEqual(worst.Ends, []time.Time{date(2024, 2, 29), date(2024, 1, 31)}) || worst.R[0][0] != p.R[0][1] {
 		t.Errorf("Pick = %+v", worst)
 	}
 	if _, err := worst.Series("EQ"); err == nil {
 		t.Error("Series of a sampled panel did not fail")
 	}
-	if got := p.Pick([]int{1, 2}); got.Len() != 2 {
+	if got := must(p.Pick([]int{1, 2})); got.Len() != 2 {
 		t.Errorf("consecutive pick = %+v", got)
 	} else if _, err := got.Series("EQ"); err != nil {
 		t.Errorf("consecutive pick is one path: %v", err)
 	}
 
-	for name, f := range map[string]func(){
-		"Col":  func() { p.Col("NOPE") },
-		"Pick": func() { p.Pick([]int{3}) },
-	} {
-		func() {
-			defer func() {
-				if r := recover(); r == nil {
-					t.Errorf("%s did not panic", name)
-				}
-			}()
-			f()
-		}()
-	}
+	_, err = p.Col("NOPE")
+	wantErr(t, err, "no column NOPE (the panel holds EQ, BD, CASH)")
+	_, err = p.Pick([]int{0, 3})
+	wantErr(t, err, "period 3 out of range (the panel has 3)")
+	_, err = p.Pick([]int{-1})
+	wantErr(t, err, "period -1 out of range")
 }
 
 func TestLessFee(t *testing.T) {
 	// 1461 days are exactly four 365.25-day years.
 	s := seriesOf(t, "S", date(2020, 1, 1), 100.0, date(2024, 1, 1), 150.0)
 	s.Dividends = []Dividend{{Date: date(2022, 1, 1), Amount: 1}}
-	net := s.LessFee(0.01)
+	net := must(s.LessFee(0.01))
 	closeTo(t, "first", net.Points[0].Close, 100)
 	closeTo(t, "last", net.Points[1].Close, 150*math.Pow(0.99, 4))
 	if s.Points[1].Close != 150 || len(net.Dividends) != 1 {
 		t.Errorf("LessFee modified its receiver or dropped metadata")
 	}
-	closeTo(t, "uplift", s.LessFee(-0.01).Points[1].Close, 150*math.Pow(1.01, 4))
-	if e := (&Series{}).LessFee(0.01); e.Len() != 0 {
+	closeTo(t, "uplift", must(s.LessFee(-0.01)).Points[1].Close, 150*math.Pow(1.01, 4))
+	if e := must((&Series{}).LessFee(0.01)); e.Len() != 0 {
 		t.Errorf("empty = %+v", e)
 	}
-	defer func() {
-		if recover() == nil {
-			t.Error("LessFee(1) did not panic")
-		}
-	}()
-	s.LessFee(1)
+	for _, bad := range []float64{1, 85, math.NaN(), math.Inf(-1)} {
+		_, err := s.LessFee(bad)
+		wantErr(t, err, "LessFee S: annual charge")
+	}
 }
 
 func TestChange(t *testing.T) {
