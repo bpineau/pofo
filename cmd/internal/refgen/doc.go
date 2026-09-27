@@ -1,7 +1,9 @@
 // Package refgen holds what several reference-data generators under cmd/ share:
-// reading a public source (Get, Post, FRED), the checks every refreshed series must
-// pass before it may replace the bundled file (SameHistory, MonthlyCadence,
-// FlatRun), and writing the file in the bundle's simdata format with its
+// reading a public source (Get, Post, FRED, and OECD, the OECD's own SDMX API,
+// which batches a dataflow's keys into one download to stay inside the API's
+// hourly budget and backs off on HTTP 429), the checks every refreshed series
+// must pass before it may replace the bundled file (SameHistory, CompareSteps,
+// MonthlyCadence, FlatRun), and writing the file in the bundle's simdata format with its
 // "# source:" header and, for a series that stops by design, its "# ends:"
 // declaration (Write).
 //

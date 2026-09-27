@@ -1,8 +1,16 @@
 // Command gen-macropanel builds the bundled multi-country monthly macro panel
 // (pkg/datasets/macropanel/oecd-monthly.csv) from the OECD's short-term
-// statistics, served through the free, key-less DBnomics mirror. It runs at
+// statistics, read from the OECD's own SDMX API (refgen.OECD). It runs at
 // data-generation time only (network); the pofo binary never fetches OECD, it
 // embeds the committed CSV.
+//
+// The API admits 60 downloads an hour, so the panel is read one DATAFLOW at a
+// time rather than one series at a time: every key a dataflow owes the panel,
+// all countries and all fallbacks, travels in a single request, and the whole
+// panel costs four downloads. It used to be read through the DBnomics mirror,
+// one request per series, until the mirror's OECD provider stopped being
+// indexed at 2026-06-16 and froze the panel around 2026-05 while the OECD
+// already served 2026-08.
 //
 // The panel carries, per country and month, the macro drivers behind regime and
 // factor analysis: industrial production (a growth proxy), consumer prices
@@ -55,34 +63,23 @@
 //
 // Usage:
 //
-//	gen-macropanel [-base URL] [-o path] [-dry] [-check=false]
+//	gen-macropanel [-oecd URL] [-o path] [-dry] [-check=false]
 package main
 
 import (
-	"encoding/json"
+	"bufio"
+	"bytes"
 	"flag"
 	"fmt"
-	"io"
 	"log"
 	"math"
-	"net/http"
 	"os"
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
-)
 
-const defaultBase = "https://api.db.nomics.world/v22"
-
-// The three OECD dataflows the panel reads. The '@' of an SDMX dataflow id is
-// percent-encoded here because it travels in the URL path.
-const (
-	indserv     = "OECD/DSD_STES%40DF_INDSERV"
-	prices      = "OECD/DSD_PRICES%40DF_PRICES_ALL"
-	pricesC2018 = "OECD/DSD_PRICES_COICOP2018%40DF_PRICES_C2018_ALL"
-	finmark     = "OECD/DSD_STES%40DF_FINMARK"
+	"github.com/bpineau/pofo/cmd/internal/refgen"
 )
 
 // countries covered by the panel: a broad OECD + large-emerging set, wide enough
@@ -93,7 +90,7 @@ var countries = []string{
 	"POL", "CZE", "HUN", "KOR", "MEX", "TUR", "NZL", "ZAF", "BRA", "IND",
 }
 
-// column is one output column and the DBnomics series that may fill it, in
+// column is one output column and the OECD series that may fill it, in
 // PRIORITY order: the first source quoting a country-month owns that cell. The
 // "{ISO}" of each key stands for the ISO country code.
 type column struct {
@@ -105,28 +102,33 @@ type column struct {
 	sources []source
 }
 
-// source is one candidate series for a column, with the short label used in the
-// logs when it had to stand in for the one above it.
-type source struct{ label, key string }
+// source is one candidate series for a column: the dataflow it lives in, its
+// key, and the short label used in the logs when it had to stand in for the one
+// above it.
+type source struct {
+	label string
+	flow  refgen.Flow
+	key   string
+}
 
 var columns = []column{
 	{"ip", true, []source{
-		{"industry B-to-E", indserv + "/{ISO}.M.PRVM.IX.BTE.Y._Z._Z.N"},
-		{"manufacturing", indserv + "/{ISO}.M.PRVM.IX.C.Y._Z._Z.N"},
+		{"industry B-to-E", refgen.IndServ, "{ISO}.M.PRVM.IX.BTE.Y._Z._Z.N"},
+		{"manufacturing", refgen.IndServ, "{ISO}.M.PRVM.IX.C.Y._Z._Z.N"},
 	}},
 	{"cpi", true, []source{
-		{"all items (COICOP 2018)", pricesC2018 + "/{ISO}.M.N.CPI.IX._T.N._Z"},
-		{"all items (COICOP 1999)", prices + "/{ISO}.M.N.CPI.IX._T.N._Z"},
+		{"all items (COICOP 2018)", refgen.PricesC2018, "{ISO}.M.N.CPI.IX._T.N._Z"},
+		{"all items (COICOP 1999)", refgen.Prices, "{ISO}.M.N.CPI.IX._T.N._Z"},
 	}},
 	{"shortrate", false, []source{
-		{"3-month interbank", finmark + "/{ISO}.M.IR3TIB.PA._Z._Z._Z._Z.N"},
-		{"immediate rate", finmark + "/{ISO}.M.IRSTCI.PA._Z._Z._Z._Z.N"},
+		{"3-month interbank", refgen.FinMark, "{ISO}.M.IR3TIB.PA._Z._Z._Z._Z.N"},
+		{"immediate rate", refgen.FinMark, "{ISO}.M.IRSTCI.PA._Z._Z._Z._Z.N"},
 	}},
 	{"longrate", false, []source{
-		{"long-term govt yield", finmark + "/{ISO}.M.IRLT.PA._Z._Z._Z._Z.N"},
+		{"long-term govt yield", refgen.FinMark, "{ISO}.M.IRLT.PA._Z._Z._Z._Z.N"},
 	}},
 	{"shareprice", true, []source{
-		{"share prices", finmark + "/{ISO}.M.SHARE.IX._Z._Z._Z._Z.N"},
+		{"share prices", refgen.FinMark, "{ISO}.M.SHARE.IX._Z._Z._Z._Z.N"},
 	}},
 }
 
@@ -138,7 +140,7 @@ type cell struct {
 }
 
 func main() {
-	base := flag.String("base", defaultBase, "DBnomics API base URL")
+	base := flag.String("oecd", refgen.OECDBase, "OECD SDMX API base URL")
 	out := flag.String("o", "pkg/datasets/macropanel/oecd-monthly.csv", "output CSV path")
 	dry := flag.Bool("dry", false, "print coverage and checks without writing")
 	check := flag.Bool("check", true, "run the sanity checks before writing")
@@ -151,6 +153,7 @@ func main() {
 	logCoverage(recs, contrib)
 	if *check {
 		runChecks(panel, recs)
+		compareShipped(*out, panel)
 	}
 	if *dry {
 		return
@@ -161,43 +164,49 @@ func main() {
 	log.Printf("wrote %s (%d rows, %d countries)", *out, len(recs), len(panel))
 }
 
-// fetchAll downloads every candidate series concurrently. Concurrency only ever
-// touches the map of RAW series, one entry per (country, column, source), so it
-// cannot decide which source wins a cell: merge does that, afterwards, in
-// priority order. A series the provider does not have (HTTP 404) is a normal,
-// documented absence; any other failure aborts the run rather than silently
-// shipping a thinner panel.
+// fetchAll downloads every candidate series, ONE download per dataflow: all the
+// keys a dataflow owes the panel (every country, every source of every column
+// living there) travel in a single request, which is what keeps a full refresh
+// inside the OECD's hourly download budget. It only fills the map of RAW
+// series, one entry per (country, column, source), so it cannot decide which
+// source wins a cell: merge does that, afterwards, in priority order. A series
+// the dataflow does not carry is a normal, documented absence; a failed
+// download aborts the run rather than silently shipping a thinner panel.
 func fetchAll(base string) map[cell]map[string]float64 {
-	raw := map[cell]map[string]float64{}
-	var mu sync.Mutex
-	var failures []string
-	var wg sync.WaitGroup
-	sem := make(chan struct{}, 8)
+	var flows []refgen.Flow
+	keys := map[refgen.Flow][]string{}
+	cells := map[refgen.Flow]map[string][]cell{}
 	for _, iso := range countries {
 		for ci, c := range columns {
 			for ri, s := range c.sources {
-				wg.Add(1)
-				go func(iso string, ci, ri int, key string) {
-					defer wg.Done()
-					sem <- struct{}{}
-					defer func() { <-sem }()
-					obs, err := fetch(base, strings.ReplaceAll(key, "{ISO}", iso))
-					mu.Lock()
-					defer mu.Unlock()
-					switch {
-					case err != nil:
-						failures = append(failures, fmt.Sprintf("%s %s: %v", iso, c.name, err))
-					case obs != nil:
-						raw[cell{iso, ci, ri}] = obs
-					}
-				}(iso, ci, ri, s.key)
+				if cells[s.flow] == nil {
+					flows = append(flows, s.flow)
+					cells[s.flow] = map[string][]cell{}
+				}
+				k := strings.ReplaceAll(s.key, "{ISO}", iso)
+				if cells[s.flow][k] == nil {
+					keys[s.flow] = append(keys[s.flow], k)
+				}
+				cells[s.flow][k] = append(cells[s.flow][k], cell{iso, ci, ri})
 			}
 		}
 	}
-	wg.Wait()
-	if len(failures) > 0 {
-		sort.Strings(failures)
-		log.Fatalf("%d fetch(es) failed, nothing written:\n  %s", len(failures), strings.Join(failures, "\n  "))
+	raw := map[cell]map[string]float64{}
+	for _, f := range flows {
+		got, err := refgen.OECD(base, f, keys[f]...)
+		if err != nil {
+			log.Fatalf("%v; nothing written", err)
+		}
+		log.Printf("OECD %s: %d of %d series", f.ID, len(got), len(keys[f]))
+		for k, pts := range got {
+			obs := make(map[string]float64, len(pts))
+			for _, p := range pts {
+				obs[p.Date.Format("2006-01")] = p.Close
+			}
+			for _, c := range cells[f][k] {
+				raw[c] = obs
+			}
+		}
 	}
 	return raw
 }
@@ -305,78 +314,160 @@ func rebase(fallback, primary map[string]float64) (map[string]float64, float64) 
 	return out, f
 }
 
-// fetch downloads one monthly DBnomics series, month ("YYYY-MM") keyed to its
-// float value. A missing series returns (nil, nil): several countries publish
-// no monthly industrial production or CPI at all, which is a fact about the
-// provider, not an error. Rate limiting and transient server errors are retried
-// with a growing backoff.
-func fetch(base, path string) (map[string]float64, error) {
-	url := fmt.Sprintf("%s/series/%s?observations=1", base, path)
-	cl := &http.Client{Timeout: 60 * time.Second}
-	var body []byte
-	for attempt := 0; ; attempt++ {
-		req, err := http.NewRequest(http.MethodGet, url, nil)
-		if err != nil {
-			return nil, err
+// compareShipped measures, column by column, how far the rebuilt panel
+// reproduces the committed one it is about to replace: the cells both carry,
+// how many of them read the same at the four decimals the file is written at,
+// which countries the others belong to and the months they span, the largest
+// change the model would see (a rate as it stands, an index level through its
+// year-on-year ratio), and the cells the new panel no longer carries at all.
+//
+// Only the RATES are gated. A market rate is not revised once it is a year old,
+// so a firm rate cell (older than the shipped panel's last firmRateMonths) that
+// moves by more than maxFirmRateMove percentage point means the source changed
+// what it serves, and nothing is written. The index columns are reported and
+// not gated, because their publishers do revise them legitimately and deep: a
+// seasonal-adjustment pass moves the whole of an industrial-production series,
+// a national rebasing moves a consumer-price index back to its first year.
+// Measured when the panel moved from the DBnomics mirror to the OECD's own API
+// (2026-09): every common share-price and short-rate cell reproduced but four
+// recent ones; the long rates reproduced but for France and Italy, whose whole
+// histories now carry a sub-basis-point re-rounding; Japan's CPI moved end to
+// end after the country's rebasing (at most 0.40 pt of year-on-year rate); and
+// 15 % of the production cells moved with the usual revisions, Belgium's by up
+// to 5.7 pt of year-on-year rate around 2000. The mirror's last Japanese
+// three-month rate (2026-05) was also a provisional 0.73 % the OECD has since
+// replaced with 1.27 %.
+func compareShipped(path string, panel map[string]map[string]map[string]float64) {
+	const (
+		firmRateMonths  = 12
+		maxFirmRateMove = 0.10 // percentage point
+	)
+	old, err := readPanel(path)
+	if err != nil {
+		log.Printf("check: no shipped panel to compare against (%v)", err)
+		return
+	}
+	newest := ""
+	for _, byMonth := range old {
+		for m := range byMonth {
+			newest = max(newest, m)
 		}
-		req.Header.Set("User-Agent", "pofo-gen-macropanel/2.0")
-		resp, err := cl.Do(req)
-		if err == nil {
-			switch {
-			case resp.StatusCode == http.StatusNotFound:
-				resp.Body.Close()
-				return nil, nil
-			case resp.StatusCode == http.StatusOK:
-				body, err = io.ReadAll(io.LimitReader(resp.Body, 16<<20))
-				resp.Body.Close()
-				if err == nil {
-					return parse(body)
+	}
+	firm := monthsBefore(newest, firmRateMonths)
+	failed := 0
+	for _, c := range columns {
+		common, same, lost := 0, 0, 0
+		first, last := "", ""
+		moved := map[string]int{}
+		worst, worstAt := 0.0, ""
+		for iso, byMonth := range old {
+			wasCol, nowCol := series(old, iso, c.name), series(panel, iso, c.name)
+			for m, cols := range byMonth {
+				was, ok := cols[c.name]
+				if !ok {
+					continue
 				}
-			default:
-				err = fmt.Errorf("HTTP %d", resp.StatusCode)
-				resp.Body.Close()
+				now, ok := panel[iso][m][c.name]
+				if !ok {
+					lost++
+					continue
+				}
+				common++
+				if cellText(now) == cellText(was) {
+					same++
+					continue
+				}
+				moved[iso]++
+				if first == "" || m < first {
+					first = m
+				}
+				last = max(last, m)
+				// What a move is worth is what the model reads: a rate as it
+				// stands, an index level only through its year-on-year ratio.
+				d := math.Abs(now - was)
+				if !c.level && m < firm && d > maxFirmRateMove {
+					failed++
+					log.Printf("CHECK FAILED: %s %s %s moved from %.4f to %.4f, a year-old rate the source should not revise", iso, c.name, m, was, now)
+				}
+				if c.level {
+					y0, ok0 := yoy(wasCol, m)
+					y1, ok1 := yoy(nowCol, m)
+					if !ok0 || !ok1 {
+						continue
+					}
+					d = math.Abs(y1-y0) * 100
+				}
+				if d > worst {
+					worst, worstAt = d, iso+" "+m
+				}
 			}
 		}
-		if attempt == 4 {
-			return nil, err
+		var who []string
+		for iso, n := range moved {
+			who = append(who, fmt.Sprintf("%s %d", iso, n))
 		}
-		time.Sleep(time.Duration(1<<attempt) * time.Second)
+		sort.Strings(who)
+		msg := fmt.Sprintf("check %-10s vs the shipped panel: %d of %d common cells reproduced (%.2f%%), %d cells no longer served",
+			c.name, same, common, 100*float64(same)/float64(max(common, 1)), lost)
+		if len(who) > 0 {
+			what := "level"
+			if c.level {
+				what = "year-on-year rate"
+			}
+			msg += fmt.Sprintf("; moved %s..%s, worst %s change %.3f pt (%s): %s", first, last, what, worst, worstAt, strings.Join(who, ", "))
+		}
+		log.Print(msg)
+	}
+	if failed > 0 {
+		log.Fatalf("%d firm rate cell(s) revised, nothing written", failed)
 	}
 }
 
-// parse reads DBnomics' series envelope, keeping the monthly observations that
-// carry a number (gaps are encoded as the JSON string "NA" or as null).
-func parse(body []byte) (map[string]float64, error) {
-	var doc struct {
-		Series struct {
-			Docs []struct {
-				Period []string          `json:"period"`
-				Value  []json.RawMessage `json:"value"`
-			} `json:"docs"`
-		} `json:"series"`
-	}
-	if err := json.Unmarshal(body, &doc); err != nil {
+// cellText is how a value is written in the panel.
+func cellText(v float64) string { return strconv.FormatFloat(v, 'f', 4, 64) }
+
+// readPanel reads a panel CSV written by writeCSV back into its
+// country -> month -> column shape; empty cells are absent.
+func readPanel(path string) (map[string]map[string]map[string]float64, error) {
+	body, err := os.ReadFile(path)
+	if err != nil {
 		return nil, err
 	}
-	if len(doc.Series.Docs) == 0 {
-		return nil, nil
-	}
-	d := doc.Series.Docs[0]
-	out := make(map[string]float64, len(d.Period))
-	for i, p := range d.Period {
-		if i >= len(d.Value) {
-			break
-		}
-		var v float64
-		if json.Unmarshal(d.Value[i], &v) != nil { // "NA"
+	out := map[string]map[string]map[string]float64{}
+	var head []string
+	sc := bufio.NewScanner(bytes.NewReader(body))
+	for sc.Scan() {
+		line := sc.Text()
+		if line == "" || strings.HasPrefix(line, "#") {
 			continue
 		}
-		if len(p) != 7 || p[4] != '-' { // keep only "YYYY-MM"
+		f := strings.Split(line, ",")
+		if head == nil {
+			head = f
 			continue
 		}
-		out[p] = v
+		if len(f) != len(head) {
+			return nil, fmt.Errorf("%s: row %q has %d fields, want %d", path, line, len(f), len(head))
+		}
+		iso, m := f[0], f[1]
+		for i := 2; i < len(f); i++ {
+			if f[i] == "" {
+				continue
+			}
+			v, err := strconv.ParseFloat(f[i], 64)
+			if err != nil {
+				return nil, fmt.Errorf("%s: row %q: %v", path, line, err)
+			}
+			if out[iso] == nil {
+				out[iso] = map[string]map[string]float64{}
+			}
+			if out[iso][m] == nil {
+				out[iso][m] = map[string]float64{}
+			}
+			out[iso][m][head[i]] = v
+		}
 	}
-	return out, nil
+	return out, sc.Err()
 }
 
 // record is one country-month row of the panel.
@@ -406,7 +497,7 @@ func writeCSV(path string, recs []record) error {
 	b.WriteString("# Multi-country monthly macro panel: OECD short-term statistics and prices.\n")
 	b.WriteString("# Columns: iso,date(YYYY-MM),ip,cpi,shortrate,longrate,shareprice\n")
 	b.WriteString("# ip/cpi/shareprice are index levels; shortrate/longrate are per-cent yields.\n")
-	b.WriteString("# Source: OECD via DBnomics (https://db.nomics.world): production from\n")
+	b.WriteString("# Source: OECD SDMX API (https://sdmx.oecd.org): production from\n")
 	b.WriteString("# DSD_STES@DF_INDSERV, prices from DSD_PRICES_COICOP2018@DF_PRICES_C2018_ALL\n")
 	b.WriteString("# falling back to DSD_PRICES@DF_PRICES_ALL, rates and share\n")
 	b.WriteString("# prices from DSD_STES@DF_FINMARK (the legacy OECD/MEI froze at 2024-01).\n")
@@ -486,9 +577,10 @@ func missingNote(missing []string) string {
 //     answering HTTP 200 for two and a half years after it stopped being
 //     updated, so a stale tail is the failure mode to catch first: every column
 //     must reach within maxLag of today, somewhere in the panel. The bound is
-//     six months rather than one quarter because the OECD publishes industrial
-//     production with a ~3-month lag and DBnomics reindexes on its own cadence;
-//     a frozen dataflow misses by years, not by weeks.
+//     three months, four for industrial production, which the OECD publishes
+//     with a longer lag. It used to be six, which a MIRROR's freeze passes: the
+//     DBnomics copy this generator read until 2026-09 stopped at 2026-05 and
+//     still looked fresh four months later.
 //   - Freshness, per country. The check above is blind to ONE country freezing:
 //     the United States alone reaching the current month satisfies it, which is
 //     exactly how Japanese CPI shipped stuck at 2021-06 for as long as it did,
@@ -522,10 +614,13 @@ func runChecks(panel map[string]map[string]map[string]float64, recs []record) {
 		log.Printf("CHECK FAILED: "+format, a...)
 	}
 
-	const maxLag = 6 // months
-	now := time.Now().UTC()
-	horizon := now.AddDate(0, -maxLag, 0).Format("2006-01")
+	thisMonth := time.Now().UTC().Format("2006-01")
 	for _, c := range columns {
+		maxLag := 3 // months
+		if c.name == "ip" {
+			maxLag = 4 // production is published later than prices and rates
+		}
+		horizon := monthsBefore(thisMonth, maxLag)
 		last, n := "", 0
 		for _, r := range recs {
 			if _, ok := r.Val[c.name]; !ok {

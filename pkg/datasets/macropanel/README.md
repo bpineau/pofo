@@ -50,9 +50,11 @@ columns are ever read, so their base years do not matter.
 ## Source & citation
 
 OECD short-term statistics (`DSD_STES`) and prices (`DSD_PRICES_COICOP2018`,
-falling back to `DSD_PRICES`), served
-through the free, key-less DBnomics mirror, <https://db.nomics.world/OECD>.
-Cite the OECD when reusing. The panel was read from the legacy `OECD/MEI`
+falling back to `DSD_PRICES`), read from the OECD's own key-less SDMX API,
+<https://sdmx.oecd.org/public/rest>. Cite the OECD when reusing. Until 2026-09
+it came through the DBnomics mirror, whose OECD copy was last indexed
+2026-06-16 and left the panel stopped at 2026-05 while the OECD served 2026-08.
+The panel was read from the legacy `OECD/MEI`
 dataset until 2026-08; that dataflow stopped being updated in 2024-01 while
 still answering HTTP 200, which is why the generator now leads its validation
 pass with a freshness check. That check is run twice: once per column, and once
@@ -63,16 +65,22 @@ is invisible to the first.
 ## Regenerate
 
 ```sh
-make macropanel        # fetches the OECD dataflows via DBnomics and rewrites the CSV
+make macropanel        # fetches the OECD dataflows from the OECD API and rewrites the CSV
 ```
 
-The generator (`cmd/gen-macropanel`) pulls each series per country from the
-DBnomics JSON API with stdlib `net/http`+`encoding/json`, merges each column's
-sources deterministically, and writes the long per-country-month table. Two runs
-over one vintage of the provider's data produce byte-identical files. Before
-writing, it grades the result (`-check`, on by default): freshness per column,
-country coverage, a rate series that ends on a run of repeated levels, and one
-public anchor per column (the 2020 collapse in US production, the ~9 % US
-inflation peak of 2022, the ~5.3 % US 3-month rate of 2023, the 1981 and 2020
-extremes of the US long yield, the 2007-2009 fall in US share prices). It
-refuses to write if any of them fails.
+The generator (`cmd/gen-macropanel`) reads the panel through
+`cmd/internal/refgen.OECD`, ONE download per dataflow (every country and every
+fallback key of a dataflow in a single SDMX request, four downloads in all),
+because the API admits 60 downloads an hour and answers the next with HTTP 429;
+it merges each column's sources deterministically and writes the long
+per-country-month table. Two runs over one vintage of the OECD's data produce
+byte-identical files. Before writing, it grades the result (`-check`, on by
+default): freshness per column (three months, four for production) and per
+country, country coverage, a rate series that ends on a run of repeated levels,
+and one public anchor per column (the 2020 collapse in US production, the ~9 %
+US inflation peak of 2022, the ~5.3 % US 3-month rate of 2023, the 1981 and
+2020 extremes of the US long yield, the 2007-2009 fall in US share prices). It
+then compares the rebuilt panel with the committed one, column by column, and
+refuses to write if any of the checks fails or if a rate more than a year old
+moved by more than 0.10 pt; revisions of the index columns (seasonal
+adjustment, national rebasing) are reported, not refused.

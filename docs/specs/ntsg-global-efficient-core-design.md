@@ -125,6 +125,15 @@ Two source notes that cost time to find:
   updated in **2024-01** while still answering HTTP 200; `cmd/gen-euro-refdata`
   and `cmd/gen-macropanel` were both moved off it in 2026-08, so no generator
   reads it any more;
+- and it must be read at the **OECD's own SDMX API** (`sdmx.oecd.org`,
+  `cmd/internal/refgen.OECD`, the four keys in one download), not through
+  DBnomics: the mirror's OECD provider was last indexed on 2026-06-16, and
+  `GILT-GBP`, `JPCASH-JPY` and `GBCASH-GBP` stopped at 2026-05 behind it with
+  no freshness check on their tails to say so. Since 2026-09 the OECD-fed
+  files are held to a quarter (four months for the accruals) and compared step
+  by step with the files they replace; at the switch the API reproduced the
+  mirror's vintage exactly (844, 796, 490 and 580 of as many common steps of
+  `BUND-EUR`, `GILT-GBP`, `JPCASH-JPY` and `GBCASH-GBP`);
 - the Ministry of Finance CSV is only served on the `/english/` path. It carries
   two header rows, dates as `YYYY/M/D` with no zero padding, and a bare `-`
   wherever a tenor did not quote: the table opens in 1974 but its 10-year column

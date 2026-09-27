@@ -225,11 +225,15 @@ a file refreshed by hand freezes unseen (`TBILL-3M`, `WTI-USD`, `XAUUSD-LBMA`,
 MIRROR can freeze too, behind a generator that runs fine: DBnomics stopped
 indexing the Bundesbank curve at 2026-07-03 (`BUND-DAILY` now reads the
 Bundesbank's own SDMX service, with a freshness check), and its OECD mirror
-was last indexed 2026-06-16, so every OECD-fed file (`EMU-EUR`, `GILT-GBP`,
-`GBCASH-GBP`, `JPCASH-JPY`, the macro panel, the OECD tails) stops around
-2026-05 while the OECD's own API serves 2026-08. The
-shared plumbing (FRED and Ken French readers, the history-reproduction,
-cadence and flat-run checks, the header writer) is `cmd/internal/refgen`. A
+was last indexed 2026-06-16, which froze every OECD-fed file (`EMU-EUR`,
+`GILT-GBP`, `GBCASH-GBP`, `JPCASH-JPY`, the macro panel, the OECD tails) at
+2026-05 until the generators moved to the OECD's own SDMX API in 2026-09
+(`refgen.OECD`). That API admits 60 downloads an HOUR and answers the next
+with HTTP 429: never loop over series against it, pass a dataflow's keys to
+ONE `refgen.OECD` call (it folds them into one SDMX key), and do not burn the
+budget on exploratory probes. The shared plumbing (FRED, OECD and Ken French
+readers, the history-reproduction (`SameHistory`, `CompareSteps`), cadence and
+flat-run checks, the header writer) is `cmd/internal/refgen`. A
 file that STOPS by design (its source was discontinued, or it is trimmed where
 real quotes take over) says so in an `# ends: <date> (<reason>)` header, read
 into `marketdata.Series.Ends`; `Verify` and `go run examples/code/scanbundle.go`
@@ -660,14 +664,17 @@ snippet gets a new `Example` first, on synthetic data with a pinned
   OECD source is the CURRENT `OECD/DSD_STES@DF_FINMARK` dataflow, which
   `gen-euro-refdata` and `gen-macropanel` also read since 2026-08 (the legacy
   `OECD/MEI` dataflow all three used to read froze at 2024-01 while still
-  answering HTTP 200; no generator is left on it).
+  answering HTTP 200; no generator is left on it), read at the OECD's own SDMX
+  API since 2026-09 rather than through the DBnomics mirror, which froze at
+  2026-05.
 - Eurozone Efficient Core (NTSZ) / euro-native backcasts, incl. the long euro
   govt sleeve (DBXG, `dbxgRecipe`): read
   `docs/specs/ntsz-eurozone-efficient-core-design.md` first. The deep euro reference
   series (`EMU-EUR`, `EUROGOV-EUR{,-DAILY}`, `EUROGOV-LONG-EUR{,-DAILY}` for the
   25+ segment, `DECASH-EUR`, and since 2026-08 the euro cash leg `EURCASH-EUR`,
-  which had no generator and froze when its FRED source died) come from DBnomics
-  via `cmd/gen-euro-refdata`
+  which had no generator and froze when its FRED source died) come from the
+  OECD's own SDMX API (the OECD inputs) and DBnomics (the ECB ones) via
+  `cmd/gen-euro-refdata`
   (`make euro-refdata`), which validates every series before writing it (its
   freshness and flat-run checks exist because the MEI freeze and a degraded
   fetch both shipped unnoticed); a short rate is a number PLUS a convention, so

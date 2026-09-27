@@ -219,7 +219,12 @@ Every generator checks what it downloaded before it writes, and refuses
 otherwise: a source that stopped updating, a frozen run, a value out of its
 historical range, or (for a source that never revises, like the T-bill rate
 or the gold fix) a refresh that does not reproduce the bundled history point
-for point. To find a bundled file that has fallen behind its source:
+for point. Generators read each series at its publisher rather than through a
+mirror wherever they can, because a mirror freezes behind a generator that runs
+fine: the OECD series (euro, British and Japanese references, the macro panel)
+come from the OECD's own SDMX API, which admits 60 downloads an hour, so each
+generator asks for a whole dataflow's series in one request. To find a bundled
+file that has fallen behind its source:
 
 ```sh
 go run examples/code/scanbundle.go -stale 45

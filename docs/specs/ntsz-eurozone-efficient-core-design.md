@@ -19,9 +19,10 @@ NTSX reaches back to 1953 by leaning on long-running **US** index funds
 1969 on the MSCI World reconstruction plus a four-currency bond basket
 (`docs/specs/ntsg-global-efficient-core-design.md`). NTSZ is **euro-native end to end**, and no comparable deep euro building blocks
 existed in the repo. So the deep tail is assembled from four new bundled
-reference series, all sourced from **DBnomics** (free, key-less; the same mirror
-the macro panel uses) by `cmd/gen-euro-refdata`. The pofo binary never fetches
-OECD or the ECB; it embeds the CSVs.
+reference series, built by `cmd/gen-euro-refdata` from the **OECD's own SDMX
+API** (the three OECD series, in one download, through
+`cmd/internal/refgen.OECD`) and from **DBnomics** (free, key-less) for the ECB
+series. The pofo binary never fetches OECD or the ECB; it embeds the CSVs.
 
 | Refdata (new) | Content | Source | Span |
 |---|---|---|---|
@@ -80,9 +81,9 @@ window (levels rebased at the first common date):
   0.1 pt on the risk.
 
 The generator now validates every series before writing it (`-check`, on by
-default), the way `cmd/gen-gbond-refdata` does: freshness (an OECD series more
-than a year stale, or an ECB one more than a quarter, fails: this exact failure
-went unnoticed for two years), flat runs, `EUROGOV-EUR` against the bundled
+default), the way `cmd/gen-gbond-refdata` does: freshness (an OECD or ECB
+series more than a quarter stale fails: this exact failure went unnoticed for
+two years; the OECD bound was a year until 2026-09), flat runs, `EUROGOV-EUR` against the bundled
 `BUND-EUR` over 1999-2010 (corr 0.955, CAGR gap -0.26 pt), the daily curve
 against the monthly yield (vol ratio 1.09), the long reconstruction against
 DBXG's realized volatility (13.99 %/yr), the synthesized long yield against the
@@ -90,6 +91,22 @@ ECB curve it was fitted on (it grades the deep tail, which is all it feeds), the
 long splice against the curve it samples (264 month-ends, bit-exact), and the equity gross-up against the EZU overlap
 `netDivYield` was calibrated on (3.05 %/yr, the calibration target to two
 decimals).
+
+### 2026-09: the OECD read at the source, not through the mirror
+
+The OECD series used to reach the generator through DBnomics. The mirror's
+OECD provider was last indexed on **2026-06-16**, so `EMU-EUR` and the OECD
+tails stopped at 2026-05 while the OECD's own API (`sdmx.oecd.org`) already
+served 2026-08, and the one-year freshness bound let it through. The generator
+now reads the three keys from the OECD API in ONE download (the API admits 60
+downloads an hour and answers the next with HTTP 429, which the shared client
+backs off from), the OECD freshness bound is a quarter, and every OECD-fed file
+is compared step by step with the file it replaces (`refgen.CompareSteps`,
+returns rather than levels, at least 95 % reproduced). At the switch the OECD
+API reproduced the mirror's vintage **exactly**: 473 of 473 common steps of
+`EMU-EUR`, 680 of 680 of `EUROGOV-EUR` and of `EUROGOV-LONG-EUR`, 419 of 419 of
+`DECASH-EUR`, to the six decimals the files carry. The ECB series stay on
+DBnomics, which is current for them.
 
 Both calibrations were re-derived from the live data and **neither moved**: the
 25-year-on-10-year regression over the full 2004-2026 ECB curve still fits
