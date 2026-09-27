@@ -14,7 +14,8 @@
 //   - [Simdata] and [Refdata] expose their directory as an [fs.FS] of
 //     "<canonical id>.csv" files (comment stamps, then date,close rows);
 //   - [Catalog] returns the typed asset records ([Asset]: class, geography,
-//     sectors, factors, exposures, fees in PERCENT per year), and
+//     sectors, factors, exposures, fees in PERCENT per year, and the month
+//     the breakdowns were read, AsOf, empty when unknown), and
 //     [AssetMeta] the same data as raw JSON;
 //   - [BroadSample], [CAPE] and [MacroPanel] return the research panels as
 //     raw CSV bytes.
