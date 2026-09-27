@@ -45,10 +45,11 @@ func (c *Client) cachePath(symbol string) string {
 // downloaded with a start date covering the requested one, and is not a file
 // an older format left mis-dated (see cacheFormat and misdated): such a file
 // is refetched rather than served, while the stale-cache fallback below still
-// reads it, an outdated date being better than no data during an outage.
+// reads it, an outdated date being better than no data during an outage. An
+// Offline client takes a file of any age: what it holds is all there is.
 func (c *Client) loadCache(symbol string, from time.Time) (*Series, bool) {
 	s, cf, ok := c.loadCacheEntry(symbol, from)
-	if !ok || time.Since(cf.FetchedAt) > c.MaxAge {
+	if !ok || (!c.Offline && time.Since(cf.FetchedAt) > c.MaxAge) {
 		return nil, false
 	}
 	if cf.Version < cacheFormat && misdated(s) {
@@ -85,7 +86,10 @@ func (c *Client) loadCacheAnyAge(symbol string, from time.Time) (*Series, time.T
 }
 
 // loadCacheEntry reads a cache file and returns the series it holds together
-// with the envelope, so a caller can judge the file as well as the data.
+// with the envelope, so a caller can judge the file as well as the data. A
+// file downloaded from a later start than from is refused, since a refetch
+// would be deeper, except by an Offline client, which has no refetch to wait
+// for and serves the shorter history.
 func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFile, bool) {
 	if c.CacheDir == "" {
 		return nil, cacheFile{}, false
@@ -99,7 +103,7 @@ func (c *Client) loadCacheEntry(symbol string, from time.Time) (*Series, cacheFi
 		return nil, cacheFile{}, false
 	}
 	reqFrom, err := time.ParseInLocation("2006-01-02", cf.RequestedFrom, time.UTC)
-	if err != nil || reqFrom.After(from) {
+	if err != nil || (reqFrom.After(from) && !c.Offline) {
 		return nil, cacheFile{}, false
 	}
 	s := &Series{Symbol: cf.Symbol, Name: cf.Name, Currency: cf.Currency, Source: cf.Source}

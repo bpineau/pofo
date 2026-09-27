@@ -51,6 +51,20 @@ type Client struct {
 	// downloads them inline.
 	RefreshInflation bool
 
+	// Offline keeps the client off the network: it downloads nothing and
+	// serves what is already local, the disk cache whatever its age and its
+	// depth, then the snapshots bundled in the binary (the euro crosses, ^VIX,
+	// the inflation indices, an FCPE's NAV, a catalog index, and through
+	// FetchExtended the backcast behind a SIM identifier). A request nothing
+	// local answers fails with an error wrapping ErrOffline, and a live-only
+	// one (Intraday, a search) always does. It holds for every method, which
+	// is why it lives on the Client rather than in FetchOptions.
+	//
+	// The cache is pofo's own (DefaultCacheDir, the CLI's -data): its file
+	// format is private and changes without notice, so a caller that wants
+	// cached quotes without the network sets Offline instead of reading it.
+	Offline bool
+
 	// MemoTTL bounds how long the per-process memoization keeps a series.
 	// The memo exists to dedupe the same series inside one computation, not
 	// to freeze it: its key pins the request window to the day, so without a
@@ -114,6 +128,10 @@ type resolution struct {
 // natively in the requested currency (FetchOptions.Currency combined with
 // NoConvert, or QuoteOptions likewise). Detect it with errors.Is.
 var ErrWrongCurrency = errors.New("no native quote line in the requested currency")
+
+// ErrOffline reports that a Client set Offline needed the network: nothing
+// cached or bundled answers the request. Detect it with errors.Is.
+var ErrOffline = errors.New("offline, and nothing cached or bundled answers")
 
 // fetchSpec carries the per-request constraints threaded through the
 // internal fetch path (fetch, fetchISIN/fetchTicker, resolveBest). The
@@ -199,6 +217,12 @@ func (c *Client) fetch(ctx context.Context, id string, from time.Time, spec fetc
 	// per-source failure summary it caused.
 	if err != nil && ctx.Err() != nil {
 		return nil, fmt.Errorf("%s: %w", canonical, ctx.Err())
+	}
+	// Offline, every source reports the same refusal, and the per-source
+	// summary of a search would only repeat it: say it once. A currency
+	// refusal stays itself, the instrument having been found.
+	if err != nil && c.Offline && !errors.Is(err, ErrWrongCurrency) {
+		return nil, fmt.Errorf("%s: %w", canonical, ErrOffline)
 	}
 	return s, err
 }
@@ -840,6 +864,9 @@ func (c *Client) history(ctx context.Context, symbol string, from time.Time, raw
 	if s, ok := c.loadCache(cacheID, from); ok {
 		return s, nil
 	}
+	if c.Offline {
+		return c.staleFallback(ctx, cacheID, symbol, from, fmt.Errorf("%s: %w", symbol, ErrOffline))
+	}
 	c.Logf("downloading %s…", symbol)
 	s, yahooErr := c.fetchYahoo(ctx, symbol, from, raw)
 	if yahooErr != nil {
@@ -921,8 +948,14 @@ func (c *Client) cachedHistory(ctx context.Context, source, id string, from time
 		c.memoize(key, s)
 		return s, nil
 	}
-	c.Logf("downloading %s via %s…", id, source)
-	s, err := fetch()
+	var s *Series
+	var err error
+	if c.Offline {
+		err = fmt.Errorf("%s via %s: %w", id, source, ErrOffline)
+	} else {
+		c.Logf("downloading %s via %s…", id, source)
+		s, err = fetch()
+	}
 	if err == nil && len(s.Points) == 0 {
 		err = markAbsent(fmt.Errorf("no %s quotes for %s", source, id))
 	}
@@ -1011,6 +1044,9 @@ func (c *Client) post(ctx context.Context, rawURL, contentType string, payload [
 // while a transport error, a rate limit, a 5xx or any other status is the
 // source not answering and stays unmarked. See errAbsent.
 func (c *Client) do(ctx context.Context, method, rawURL, contentType string, payload []byte, headers map[string]string) ([]byte, error) {
+	if c.Offline {
+		return nil, ErrOffline
+	}
 	var lastErr error
 	rateLimited := false
 	for attempt := range 3 {

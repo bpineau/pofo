@@ -43,6 +43,9 @@ func (c *Client) invalidateYahooAuth() {
 // redirect response, which must not be followed or the cookie is lost - then
 // trades it for the crumb at /v1/test/getcrumb.
 func (c *Client) fetchYahooAuth(ctx context.Context) (yahooAuth, error) {
+	if c.Offline {
+		return yahooAuth{}, ErrOffline
+	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.CookieBase, nil)
 	if err != nil {
 		return yahooAuth{}, err
