@@ -172,8 +172,10 @@
     "confidence": "high",
     "sources": [
       "https://investors.datadoghq.com/",
-      "https://www.fidelity.co.uk/factsheet-data/factsheet/US23804L1035-datadog-inc/profile"
+      "https://www.fidelity.co.uk/factsheet-data/factsheet/US23804L1035-datadog-inc/profile",
+      "https://stockanalysis.com/stocks/ddog/company/"
     ],
+    "as_of": "2026-09",
     "since": "2019-09-19"
   },
   {
@@ -4281,34 +4283,44 @@
     "benchmark_index": "JP Morgan Diversified Factor Global Developed (Region Aware) Equity Index",
     "strategy": "physical-replication",
     "geography": {
+      "Australia": 2,
       "Canada": 11,
-      "Japan": 6,
-      "Other": 9,
-      "Other Europe": 15,
+      "France": 2,
+      "Germany": 1,
+      "Ireland": 2,
+      "Japan": 7,
+      "Netherlands": 2,
+      "Other developed": 2,
+      "Other eurozone": 2,
+      "South Korea": 2,
+      "Spain": 2,
+      "Sweden": 1,
+      "Switzerland": 2,
       "UK": 4,
-      "US": 55
+      "US": 58
     },
     "sectors": {
-      "Communication Services": 6,
-      "Consumer Discretionary": 8,
-      "Consumer Staples": 8,
-      "Energy": 8,
+      "Communication Services": 5,
+      "Consumer Discretionary": 11,
+      "Consumer Staples": 9,
+      "Energy": 9,
       "Financials": 11,
-      "Health Care": 12,
+      "Health Care": 13,
       "Industrials": 10,
-      "Information Technology": 10,
+      "Information Technology": 8,
       "Materials": 8,
-      "Other": 2,
-      "Real Estate": 8,
+      "Real Estate": 7,
       "Utilities": 9
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Multi-factor (value+momentum+low-vol+size) with explicit regional diversification (JPGL); lower US bias, more balanced sectors",
+    "notes": "Multi-factor (value+momentum+low-vol+size) with explicit regional diversification (JPGL); lower US bias, more balanced sectors. Geography from the issuer's daily holdings file (country of each issuer, cash left out, 2026-09); sectors from the issuer's own breakdown (2026-08), whose Technology, Telecommunications and Basic Materials sit under their nearest GICS label",
     "confidence": "high",
     "sources": [
-      "https://am.jpmorgan.com/gb/en/asset-management/adv/products/jpm-global-equity-multi-factor-ucits-etf-usd-acc-ie00bjrcll96"
+      "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE00BJRCLL96&country=gb&role=adv&locale=en-GB",
+      "https://am.jpmorgan.com/FundsMarketingHandler/product-data?cusip=IE00BJRCLL96&dataType=fund&documentType=FS&country=gb&role=adv&locale=en-GB"
     ],
+    "as_of": "2026-08",
     "since": "2019-07-09",
     "factors": [
       "value",
@@ -7537,7 +7549,8 @@
     "sources": [
       "https://www.eres-group.com/eres/new_fiche_fonds.php?id=990000124099",
       "https://www.eres-group.com/eres/pdf/DIC_990000124099.pdf"
-    ]
+    ],
+    "as_of": "2026-07"
   },
   {
     "id": "SP500",
@@ -8016,30 +8029,45 @@
     "currency": "USD",
     "fees": 0.35,
     "asset_class": "equity",
-    "underlying": "Developed-market large-cap equity (defensive, lower-volatility selection) with a written out-of-the-money index call overlay (equity-linked notes) for monthly option premium",
+    "underlying": "Developed-market large-cap equity (defensive, lower-volatility selection) with a written out-of-the-money index call overlay (index options, per the daily holdings file) for monthly option premium",
     "benchmark_index": "active (MSCI World reference)",
     "strategy": "covered-call overlay",
     "geography": {
+      "Canada": 1,
       "France": 5,
       "Germany": 4,
-      "Japan": 11,
-      "Other": 20,
-      "US": 60
+      "Ireland": 3,
+      "Japan": 12,
+      "Netherlands": 3,
+      "Other developed": 4,
+      "Other eurozone": 1,
+      "Singapore": 1,
+      "Spain": 2,
+      "Switzerland": 2,
+      "US": 62
     },
     "sectors": {
-      "Communication Services": 11,
-      "Financials": 12,
-      "Health Care": 13,
-      "Information Technology": 23,
-      "Other": 41
+      "Communication Services": 10,
+      "Consumer Discretionary": 6,
+      "Consumer Staples": 9,
+      "Energy": 2,
+      "Financials": 14,
+      "Health Care": 14,
+      "Industrials": 7,
+      "Information Technology": 25,
+      "Materials": 4,
+      "Real Estate": 2,
+      "Utilities": 7
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Covered-call income: lower equity beta and higher yield, but the call overlay caps upside; trades equity convexity for premium",
+    "notes": "Covered-call income: lower equity beta and higher yield, but the call overlay caps upside; trades equity convexity for premium. Geography from the issuer's daily holdings file (country of each issuer, cash left out, 2026-09), sectors from the issuer's GICS breakdown (2026-08)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000WX7BVB0"
+      "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE000WX7BVB0&country=gb&role=adv&locale=en-GB",
+      "https://am.jpmorgan.com/FundsMarketingHandler/product-data?cusip=IE000WX7BVB0&dataType=fund&documentType=FS&country=gb&role=adv&locale=en-GB"
     ],
+    "as_of": "2026-08",
     "since": "2023-11-30"
   },
   {
@@ -8156,7 +8184,7 @@
     "aliases": [
       "JREG"
     ],
-    "name": "JPMorgan Global Research Enhanced Index Equity (ESG) UCITS ETF USD Acc",
+    "name": "JPM Global Research Enhanced Index Equity Active UCITS ETF USD (acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -8168,26 +8196,41 @@
     "benchmark_index": "MSCI World",
     "strategy": "research-enhanced index",
     "geography": {
+      "Australia": 1,
       "Canada": 3,
-      "Japan": 5,
-      "Other": 21,
-      "UK": 3,
-      "US": 68
+      "France": 3,
+      "Germany": 2,
+      "Ireland": 3,
+      "Japan": 6,
+      "Netherlands": 2,
+      "Other developed": 2,
+      "Other eurozone": 2,
+      "Switzerland": 2,
+      "UK": 4,
+      "US": 70
     },
     "sectors": {
-      "Consumer Discretionary": 10,
-      "Financials": 13,
+      "Communication Services": 13,
+      "Consumer Discretionary": 7,
+      "Consumer Staples": 3,
+      "Energy": 4,
+      "Financials": 17,
+      "Health Care": 9,
       "Industrials": 10,
-      "Information Technology": 31,
-      "Other": 36
+      "Information Technology": 29,
+      "Materials": 4,
+      "Real Estate": 2,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Enhanced indexing: MSCI World beta plus modest stock-selection alpha at low tracking error and near-passive cost",
-    "confidence": "high",
+    "notes": "Enhanced indexing: MSCI World beta plus modest stock-selection alpha at low tracking error and near-passive cost. Geography from the issuer's daily holdings file (country of each issuer, 2026-09); sectors are the issuer's own research sectors (2026-08) folded onto GICS by hand (semis, hardware and software to IT; media and telecoms to Communication; banks, insurance and financial services to Financials; retail, autos and consumer cyclicals to Discretionary), hence medium confidence",
+    "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BF4G6Y48"
+      "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE00BF4G6Y48&country=gb&role=adv&locale=en-GB",
+      "https://am.jpmorgan.com/FundsMarketingHandler/product-data?cusip=IE00BF4G6Y48&dataType=fund&documentType=FS&country=gb&role=adv&locale=en-GB"
     ],
+    "as_of": "2026-08",
     "since": "2018-10-10"
   },
   {
@@ -8312,27 +8355,37 @@
     "currency": "USD",
     "fees": 0.35,
     "asset_class": "equity",
-    "underlying": "US large-cap equity (defensive, low-volatility selection) with a written S&P 500 call overlay (equity-linked notes) for monthly income",
+    "underlying": "US large-cap equity (defensive, low-volatility selection) with a written S&P 500 call overlay (index options, per the daily holdings file) for monthly income",
     "benchmark_index": "active (S&P 500 reference)",
     "strategy": "covered-call overlay",
     "geography": {
-      "US": 100
+      "Ireland": 6,
+      "Other developed": 1,
+      "US": 93
     },
     "sectors": {
+      "Communication Services": 9,
       "Consumer Discretionary": 12,
+      "Consumer Staples": 8,
+      "Energy": 3,
+      "Financials": 12,
       "Health Care": 13,
       "Industrials": 13,
-      "Information Technology": 23,
-      "Other": 39
+      "Information Technology": 21,
+      "Materials": 2,
+      "Real Estate": 2,
+      "Utilities": 5
     },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "US covered-call income: defensive equity plus option premium, lower beta and capped upside. Distributing: the NAV price series excludes payouts, so total return is understated; prefer for income, not growth",
+    "notes": "US covered-call income: defensive equity plus option premium, lower beta and capped upside. Distributing: the NAV price series excludes payouts, so total return is understated; prefer for income, not growth. Geography from the issuer's daily holdings file (country of each issuer, cash left out, 2026-09: the Ireland 6 is US-listed companies domiciled there), sectors from the issuer's GICS breakdown (2026-08)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000U5MJOZ6"
+      "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE000U5MJOZ6&country=gb&role=adv&locale=en-GB",
+      "https://am.jpmorgan.com/FundsMarketingHandler/product-data?cusip=IE000U5MJOZ6&dataType=fund&documentType=FS&country=gb&role=adv&locale=en-GB"
     ],
-    "since": "2024-11-05"
+    "as_of": "2026-08",
+    "since": "2024-10-29"
   },
   {
     "id": "IE000EGGFVG6",
@@ -8788,28 +8841,27 @@
       "US": 100
     },
     "sectors": {
-      "Communication Services": 5,
-      "Consumer Discretionary": 8,
-      "Consumer Staples": 18,
-      "Energy": 11,
-      "Financials": 14,
-      "Health Care": 14,
-      "Industrials": 12,
-      "Information Technology": 10,
-      "Materials": 4,
-      "Real Estate": 1,
-      "Utilities": 3
+      "Communication Services": 6,
+      "Consumer Discretionary": 7,
+      "Consumer Staples": 19,
+      "Energy": 15,
+      "Financials": 10,
+      "Health Care": 22,
+      "Industrials": 8,
+      "Information Technology": 13
     },
     "distribution": "distributing",
     "leverage": 1,
     "factors": [
       "quality"
     ],
-    "notes": "The most referenced US dividend-quality ETF; value/quality tilt, lower beta than the market; income-oriented model-portfolio staple",
-    "confidence": "high",
+    "notes": "The most referenced US dividend-quality ETF; value/quality tilt, lower beta than the market; income-oriented model-portfolio staple. Breakdowns from FT's Morningstar-sourced holdings tab (Schwab's own pages refuse a script): Morningstar sectors under their nearest GICS label (Defensive = Staples, Cyclical = Discretionary), hence medium confidence",
+    "confidence": "medium",
     "sources": [
-      "https://www.schwabassetmanagement.com/products/schd"
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=SCHD:PCQ:USD",
+      "https://stockanalysis.com/etf/schd/"
     ],
+    "as_of": "2026-08",
     "since": "2011-10-20"
   },
   {
@@ -8938,16 +8990,21 @@
     "benchmark_index": "active (Russell 2000 Value reference)",
     "strategy": "systematic factor tilt",
     "geography": {
-      "US": 100
+      "Other developed": 1,
+      "Other emerging": 1,
+      "US": 98
     },
     "sectors": {
-      "Consumer Discretionary": 14,
-      "Energy": 9,
-      "Financials": 28,
-      "Industrials": 20,
+      "Communication Services": 3,
+      "Consumer Discretionary": 18,
+      "Consumer Staples": 4,
+      "Energy": 14,
+      "Financials": 29,
+      "Health Care": 4,
+      "Industrials": 15,
       "Information Technology": 7,
-      "Materials": 7,
-      "Other": 15
+      "Materials": 5,
+      "Real Estate": 1
     },
     "distribution": "distributing",
     "leverage": 1,
@@ -8956,11 +9013,14 @@
       "value",
       "quality"
     ],
-    "notes": "The de-facto standard small-cap-value factor sleeve in US factor portfolios (Ben Felix et al.); concentrated value + profitability tilt",
+    "notes": "The de-facto standard small-cap-value factor sleeve in US factor portfolios (Ben Felix et al.); concentrated value + profitability tilt. Sectors from the issuer's quarterly factsheet (GICS, 2026-06); geography from FT's Morningstar-sourced region split (2026-08: 97.8 % US stocks, the rest mostly Latin American and European listings)",
     "confidence": "high",
     "sources": [
-      "https://www.avantisinvestors.com/avantis-investments/avuv"
+      "https://www.avantisinvestors.com/avantis-investments/avantis-us-small-cap-value-etf/",
+      "https://res.avantisinvestors.com/docs/avantis-us-small-cap-value-avuv-etf-fact-sheet.pdf",
+      "https://markets.ft.com/data/etfs/tearsheet/holdings?s=AVUV:PCQ:USD"
     ],
+    "as_of": "2026-06",
     "since": "2019-09-24"
   },
   {
@@ -8978,30 +9038,34 @@
     "benchmark_index": "S&P 500 (3x daily)",
     "strategy": "leveraged-3x",
     "geography": {
-      "US": 100
+      "Ireland": 1,
+      "Other": 1,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 10,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 5,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 4,
       "Energy": 3,
-      "Financials": 13,
-      "Health Care": 11,
-      "Industrials": 9,
-      "Information Technology": 33,
+      "Financials": 12,
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 39,
       "Materials": 2,
       "Real Estate": 2,
       "Utilities": 2
     },
     "distribution": "distributing",
     "leverage": 3,
-    "notes": "3x daily S&P 500; half of the well-known HFEA (Hedgefundie) leveraged pair with TMF; severe volatility drag in choppy markets, not a passive hold; sectors = S&P 500; currency_exposure = 3x USD notional (levered sums above 100 are intended)",
+    "notes": "3x daily S&P 500; half of the well-known HFEA (Hedgefundie) leveraged pair with TMF; severe volatility drag in choppy markets, not a passive hold; geography and sectors copy the SP500 record's (the index's GICS split as State Street publishes it, 2026-09; domicile split off a physical tracker, 2026-08); currency_exposure = 3x USD notional (levered sums above 100 are intended)",
     "confidence": "high",
     "sources": [
       "https://www.proshares.com/our-etfs/leveraged-and-inverse/upro",
-      "https://www.spglobal.com/spdji/en/indices/equity/sp-500/"
+      "https://www.ssga.com/us/en/intermediary/etfs/spdr-sp-500-etf-trust-spy",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5BMR087"
     ],
-    "since": "2009-06-25",
+    "as_of": "2026-08",
+    "since": "2009-06-23",
     "exposures": {
       "equity": 3.0
     },
