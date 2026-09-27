@@ -23,23 +23,53 @@ func TestBundled(t *testing.T) {
 		t.Errorf("junctions %v lack the declared 1973-01-04", ref.Junctions)
 	}
 
-	sim, err := Bundled("dbmf")
+	sim, err := Bundled("dbmfsim")
 	if err != nil {
 		t.Fatal(err)
 	}
 	e, _ := Lookup("DBMF")
-	if sim.Symbol != "DBMF" || sim.Source != "simdata" || sim.Currency != e.Currency || sim.Len() < 1000 {
-		t.Errorf("backcast = %s %q %q, %d points", sim.Symbol, sim.Source, sim.Currency, sim.Len())
+	if sim.Symbol != "DBMFSIM" || sim.Source != "simdata" || sim.Currency != e.Currency || sim.Len() < 1000 {
+		t.Errorf("SIM history = %s %q %q, %d points", sim.Symbol, sim.Source, sim.Currency, sim.Len())
 	}
 
 	_, err = Bundled("NO-SUCH-SERIES")
 	if !errors.Is(err, fs.ErrNotExist) {
 		t.Fatalf("error = %v, want one wrapping fs.ErrNotExist", err)
 	}
-	for _, where := range []string{"NO-SUCH-SERIES.csv", "pkg/datasets/simdata", "pkg/datasets/refdata", "BundledIDs"} {
+	for _, where := range []string{"NO-SUCH-SERIES", "pkg/datasets/simdata", "pkg/datasets/refdata", "BundledIDs"} {
 		if !strings.Contains(err.Error(), where) {
 			t.Errorf("error %q does not say %q", err, where)
 		}
+	}
+}
+
+// The SIM convention, which every door obeys: a quoted fund's reconstruction
+// answers only to its SIM form, never to its plain name, whatever alias or
+// ISIN spells it; a catalog index, quoted nowhere, answers to both; a
+// reference series has no SIM form.
+func TestBundledSimConvention(t *testing.T) {
+	for _, bare := range []string{"IWDA", "iwda", "IE00B4L5Y983", "DBMF", "ERESMONDEM"} {
+		_, err := Bundled(bare)
+		if !errors.Is(err, fs.ErrNotExist) || !strings.Contains(err.Error(), "SIM") {
+			t.Errorf("Bundled(%s) = %v, want a not-found naming the SIM form", bare, err)
+		}
+	}
+	a, errA := Bundled("IWDASIM")
+	b, errB := Bundled("IE00B4L5Y983SIM")
+	if errA != nil || errB != nil || a.Symbol != "IE00B4L5Y983SIM" || b.Symbol != a.Symbol || a.Len() != b.Len() {
+		t.Errorf("alias and ISIN SIM forms: %v, %v", errA, errB)
+	}
+	for _, id := range []string{"SP500", "SP500SIM", "MSCIWORLD"} {
+		s, err := Bundled(id)
+		if err != nil || s.Source != "simdata" || s.Currency == "" {
+			t.Errorf("catalog index %s: %v", id, err)
+		}
+	}
+	if _, err := Bundled("TBILL-3MSIM"); !errors.Is(err, fs.ErrNotExist) {
+		t.Errorf("a reference series with a SIM suffix: %v, want not found", err)
+	}
+	if _, err := Bundled("VOOSIM"); !errors.Is(err, fs.ErrNotExist) {
+		t.Errorf("a catalog asset without a reconstruction: %v, want not found", err)
 	}
 }
 
@@ -73,16 +103,20 @@ func TestBundledIDs(t *testing.T) {
 			t.Errorf("%s: %v", id, err)
 			continue
 		}
+		file, _ := SplitSim(id)
+		if s.Source == "refdata" {
+			file = id
+		}
 		switch {
-		case sim[id] && ref[id]:
-			t.Errorf("%s is both a backcast and a reference series", id)
+		case sim[file] && ref[file]:
+			t.Errorf("%s is both a backcast and a reference series", file)
 		case s.Symbol != id:
 			t.Errorf("Bundled(%s).Symbol = %s: the file name is not canonical", id, s.Symbol)
-		case ref[id] && KnownLocal(id):
-			t.Errorf("reference series %s shadows a catalog identifier", id)
-		case sim[id]:
-			if _, ok := Lookup(id); !ok {
-				t.Errorf("backcast %s belongs to no catalog asset", id)
+		case ref[file] && KnownLocal(file):
+			t.Errorf("reference series %s shadows a catalog identifier", file)
+		case sim[file]:
+			if _, ok := Lookup(file); !ok {
+				t.Errorf("backcast %s belongs to no catalog asset", file)
 			}
 		}
 	}

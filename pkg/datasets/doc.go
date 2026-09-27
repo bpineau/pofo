@@ -6,7 +6,8 @@
 // (-gen-simdata, make refresh), a recompilation re-embeds the files.
 //
 // Most consumers never import it: marketdata.Bundled reads any of these
-// series by identifier into a Series, marketdata.BundledIDs lists them, and
+// series by identifier into a Series (a fund's simdata file under its SIM
+// identifier, "IWDASIM"), marketdata.BundledIDs lists them, and
 // marketdata.Lookup answers for a catalog record by any accepted identifier.
 // This package is the raw layer underneath:
 //
