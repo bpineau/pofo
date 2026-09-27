@@ -297,12 +297,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "German-law physical gold ETC (Xetra-Gold, 4GLD); EUR trading currency with unhedged USD gold exposure; largest European gold ETC",
+    "notes": "German-law physical gold ETC (Xetra-Gold, 4GLD); EUR trading currency with unhedged USD gold exposure; largest European gold ETC. justETF lists a 0.00% TER (2026-09); launch 2007-11-27 per justETF",
     "confidence": "high",
     "sources": [
-      "https://www.xetra-gold.com/en/"
+      "https://www.xetra-gold.com/en/",
+      "https://www.justetf.com/en/etf-profile.html?isin=DE000A0S9GB0"
     ],
-    "since": "2007-12-06"
+    "as_of": "2026-09",
+    "since": "2007-11-27"
   },
   {
     "id": "EEMA",
@@ -510,18 +512,19 @@
     "fees": 0.1,
     "asset_class": "money-market",
     "underlying": "Euro overnight money-market rate (€STR) via swap",
-    "benchmark_index": "Solactive €STR Overnight Total Return Index",
+    "benchmark_index": "Solactive Euro Overnight Return Index",
     "strategy": "synthetic-swap",
     "geography": null,
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR cash-equivalent; popular French liquidity sleeve / dry powder",
+    "notes": "EUR cash-equivalent; popular French liquidity sleeve / dry powder. Share class created, and first NAV, 2007-09-13 (Amundi monthly factsheet, 2026-08-31); Yahoo's line starts 2009-06. The factsheet prints no duration, so the 0.05 (an overnight rate's is a day) is not a read figure",
     "confidence": "high",
     "sources": [
+      "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/FR0010510800/FRA/FRA/INSTITUTIONNEL/ETF",
       "https://www.justetf.com/en/etf-profile.html?isin=FR0010510800"
     ],
-    "since": "2008-06-10",
+    "since": "2007-09-13",
     "duration": 0.05
   },
   {
@@ -1571,19 +1574,39 @@
     "benchmark_index": "Markit iBoxx EUR Liquid Investment Grade Ultrashort Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 30,
-      "Other Europe": 70
+      "US": 19,
+      "France": 16,
+      "Germany": 14,
+      "UK": 7,
+      "Netherlands": 6,
+      "Canada": 5,
+      "Italy": 5,
+      "Spain": 5,
+      "Sweden": 4,
+      "Switzerland": 3,
+      "Australia": 2,
+      "Belgium": 2,
+      "Denmark": 2,
+      "Finland": 2,
+      "Japan": 2,
+      "Austria": 1,
+      "Luxembourg": 1,
+      "Other Europe": 1,
+      "Other developed": 1,
+      "Other emerging": 1,
+      "Other eurozone": 1
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR near-cash liquidity sleeve earning IG credit spreads with negligible duration; EUR-denominated near-cash: currency_exposure = 100% EUR (geography is issuer domicile, not FX)",
+    "notes": "EUR near-cash liquidity sleeve earning IG credit spreads with negligible duration; EUR-denominated near-cash: currency_exposure = 100% EUR (every holding is euro-denominated, geography is issuer domicile, not FX). Geography by issuer country from the holdings file (2026-09-25, market-value weighted, countries under 1% folded into regional buckets); effective duration 0.35 on the product page",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000RHYOR04"
+      "https://www.ishares.com/ch/professionals/en/products/327355/ishares-ultrashort-bond-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2022-04-27",
-    "duration": 0.4,
+    "duration": 0.35,
     "currency_exposure": {
       "EUR": 100
     }
@@ -2751,12 +2774,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Lower-cost physical silver ETC (0.20%)",
+    "notes": "Lower-cost physical silver ETC (0.20%). Launched 2011-04-08 (iShares product page and justETF, and the first quote); the 2009 date this record carried was not the ETC's",
     "confidence": "high",
     "sources": [
+      "https://www.ishares.com/ch/professionals/en/products/258443/ishares-physical-silver-etc-fund",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4NCWG09"
     ],
-    "since": "2009-09-24"
+    "as_of": "2026-09",
+    "since": "2011-04-08"
   },
   {
     "id": "IE00B4ND3602",
@@ -2780,9 +2805,11 @@
     "notes": "Pure gold price exposure via physical backing; inflation and tail-risk hedge, uncorrelated to equities. Fund and share class both launched 08/04/2011 (iShares factsheet), which is where the real quotes start; an earlier 2009 inception date in this record was wrong.",
     "confidence": "high",
     "sources": [
+      "https://www.ishares.com/ch/professionals/en/products/258441/ishares-physical-gold-etc-fund",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B4ND3602",
       "https://www.ishares.com/gls-download/literature/fact-sheet/sgln-ishares-physical-gold-etc-fund-fact-sheet-en-gb.pdf"
     ],
+    "as_of": "2026-09",
     "since": "2011-04-08"
   },
   {
@@ -3036,12 +3063,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Low-cost physical gold ETC; allocated gold in JP Morgan London vaults; safe-haven / inflation hedge / USD hedge role",
+    "notes": "Low-cost physical gold ETC; allocated gold in JP Morgan London vaults; safe-haven / inflation hedge / USD hedge role. Launch 2009-06-25 per justETF, which the first quote (2009-06-26) confirms; Invesco's factsheet refuses a script (HTTP 406)",
     "confidence": "high",
     "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B579F325",
       "https://www.invesco.com/content/dam/invesco/emea/en/product-documents/etf/share-class/factsheet/IE00B579F325_factsheet_en.pdf"
     ],
-    "since": "2009-04-27"
+    "as_of": "2026-09",
+    "since": "2009-06-25"
   },
   {
     "id": "IE00B5BMR087",
@@ -3227,12 +3256,12 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "PIMCO's flagship USD cash-management ETF; near-cash liquidity sleeve with active credit selection",
-    "confidence": "high",
+    "notes": "PIMCO's flagship USD cash-management ETF; near-cash liquidity sleeve with active credit selection. Launched 2011-02-22 (justETF, and the first quote; the 2009 date this record carried was not the class's). The geography and the 0.4 duration were not re-read (PIMCO's pages are JavaScript-only) and stay undated",
+    "confidence": "medium",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00B67B7N93"
     ],
-    "since": "2009-03-05",
+    "since": "2011-02-22",
     "duration": 0.4
   },
   {
@@ -3681,7 +3710,8 @@
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BD6FTQ80"
     ],
-    "since": "2017-06-07"
+    "as_of": "2026-09",
+    "since": "2017-01-09"
   },
   {
     "id": "IE00BDBRDM35",
@@ -3755,8 +3785,9 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDFL4P12",
-      "https://www.ishares.com/ch/professionals/en/product-screener/product-screener-v3.1.jsn?dcrPath=/templatedata/config/product-screener-v3/data/en/ch/product-screener/ishares-product-screener-backend-config&siteEntryPassthrough=true"
+      "https://www.ishares.com/ch/professionals/en/products/287254/ishares-diversified-commodity-swap-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2017-07-18"
   },
   {
@@ -3850,12 +3881,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Lowest-cost broad-commodity UCITS (0.15%)",
+    "notes": "Lowest-cost broad-commodity UCITS (0.15%, justETF 2026-09); launched 2017-07-11 per justETF",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BF0BCP69"
     ],
-    "since": "2018-01-09"
+    "as_of": "2026-09",
+    "since": "2017-07-11"
   },
   {
     "id": "IE00BF3N7102",
@@ -4053,7 +4085,7 @@
     "aliases": [
       "JPSA"
     ],
-    "name": "JPMorgan USD Ultra-Short Income UCITS ETF USD (Acc)",
+    "name": "JPMorgan USD Ultra-Short Income Active UCITS ETF USD (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -4065,19 +4097,39 @@
     "benchmark_index": "ICE BofA 3-Month US Treasury Bill Index",
     "strategy": "active",
     "geography": {
-      "US": 75,
-      "Other": 25
+      "US": 53,
+      "Canada": 11,
+      "UK": 6,
+      "Netherlands": 5,
+      "France": 4,
+      "Australia": 3,
+      "Germany": 3,
+      "Japan": 3,
+      "Spain": 3,
+      "Sweden": 3,
+      "Denmark": 1,
+      "Ireland": 1,
+      "United Arab Emirates": 1,
+      "Other Europe": 1,
+      "Other developed": 1,
+      "Other eurozone": 1
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "UCITS analog of the US JPST; USD cash sleeve, accumulating",
+    "notes": "UCITS analog of the US JPST; USD cash sleeve, accumulating. Geography is the issuers' countries from JPMorgan's product data (2026-08-31, regional breakdown by market value, under 1% folded into buckets); every line of the daily holdings file (2026-09-25) is USD-denominated, hence the USD 100 exposure, without which the new split would read CAD and GBP. Average duration 0.7 years for a 0.92-year average maturity (same data, 2026-08-31); ongoing charge 0.18%, share class launched 2019-04-03 in a fund launched 2018-02-15",
     "confidence": "high",
     "sources": [
+      "https://am.jpmorgan.com/FundsMarketingHandler/product-data?cusip=IE00BG8BCY43&dataType=fund&documentType=FS&country=gb&role=adv&locale=en-GB",
+      "https://am.jpmorgan.com/FundsMarketingHandler/excel?type=dailyETFHoldings&cusip=IE00BG8BCY43&country=gb&role=adv&locale=en-GB",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BG8BCY43"
     ],
-    "since": "2018-11-15",
-    "duration": 0.4
+    "as_of": "2026-08",
+    "since": "2019-04-03",
+    "duration": 0.7,
+    "currency_exposure": {
+      "USD": 100
+    }
   },
   {
     "id": "IE00BGCSB447",
@@ -5516,12 +5568,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Largest UCITS silver ETC; dual monetary/industrial metal; higher beta than gold",
+    "notes": "Largest European silver ETC; dual monetary/industrial metal; higher beta than gold. Launch 2007-04-24 per justETF (WisdomTree's pages refuse a script)",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3333"
     ],
-    "since": "2007-11-28"
+    "as_of": "2026-09",
+    "since": "2007-04-24"
   },
   {
     "id": "JE00B1VS3770",
@@ -5542,19 +5595,21 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Physically backed gold ETC (PHAU, Jersey-domiciled, HSBC custodian); inflation hedge, tail-risk and USD weakness diversifier",
+    "notes": "Physically backed gold ETC (PHAU, Jersey-domiciled, HSBC custodian); inflation hedge, tail-risk and USD weakness diversifier. Launch 2007-04-24 per justETF, where FT's history starts too (WisdomTree's pages refuse a script)",
     "confidence": "high",
     "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3770",
       "https://www.wisdomtree.eu/en-gb/products/physical-precious-metals/wisdomtree-physical-gold"
     ],
-    "since": "2007-11-28"
+    "as_of": "2026-09",
+    "since": "2007-04-24"
   },
   {
     "id": "JE00B1VS3W29",
     "isin": "JE00B1VS3W29",
     "aliases": [],
     "name": "WisdomTree Physical Precious Metals",
-    "ucits": true,
+    "ucits": false,
     "eu_retail": true,
     "source": "yahoo",
     "symbol": "PHPM.L",
@@ -5568,12 +5623,13 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Single-ticket exposure to all four precious metals; adds silver/PGM diversification beyond gold",
+    "notes": "Single-ticket exposure to all four precious metals; adds silver/PGM diversification beyond gold. An ETC (Jersey debt security), so not UCITS, though EU-retail buyable. Launch 2007-04-24 per justETF (WisdomTree's pages refuse a script); the basket weights in `underlying` drift with metal prices and were not re-read",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=JE00B1VS3W29"
     ],
-    "since": "2007-11-28"
+    "as_of": "2026-09",
+    "since": "2007-04-24"
   },
   {
     "id": "KMLM",
@@ -7858,8 +7914,10 @@
     "notes": "Harvests commodity carry factor via long-deferred/short-front-month futures spread; return uncorrelated to equity beta; benefits from backwardated commodity curves",
     "confidence": "medium",
     "sources": [
+      "https://www.justetf.com/en/etf-profile.html?isin=XS3022291473",
       "https://www.wisdomtree.eu/en-gb/etps/unleveraged-etps/wisdomtree-enhanced-commodity-carry"
     ],
+    "as_of": "2026-09",
     "since": "2025-04-24"
   },
   {
@@ -9203,8 +9261,9 @@
     "notes": "The iconic US gold trust (largest and most referenced); pricier than modern alternatives (GLDM, IAUM) but the standard in US model portfolios",
     "confidence": "high",
     "sources": [
-      "https://www.spdrgoldshares.com/"
+      "https://www.spdrgoldshares.com/usa/gld/"
     ],
+    "as_of": "2026-09",
     "since": "2004-11-18"
   },
   {
@@ -9228,8 +9287,10 @@
     "notes": "Long-standing US broad-commodity sleeve (energy-tilted); classic inflation/supply-shock diversifier in model portfolios",
     "confidence": "high",
     "sources": [
+      "https://stockanalysis.com/etf/dbc/",
       "https://www.invesco.com/us/financial-products/etfs/product-detail?productId=DBC"
     ],
+    "as_of": "2026-09",
     "since": "2006-02-03"
   },
   {
@@ -10120,7 +10181,8 @@
     "sources": [
       "https://hanetf.com/fund/co2-sparkchange-physical-carbon-eua-etc/",
       "https://www.justetf.com/en/etf-profile.html?isin=XS2353177293"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "IE000Q9IHH10",
@@ -10361,7 +10423,7 @@
     "xid": "535666183",
     "currency": "EUR",
     "fees": 0.13,
-    "since": "1984-05-16",
+    "since": "1984-03-30",
     "asset_class": "money-market",
     "underlying": "Classic French money market SICAV: short-dated euro paper, the fund-form sibling of an overnight-rate ETF",
     "benchmark_index": "active (ESTR as the reference)",
