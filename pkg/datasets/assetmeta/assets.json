@@ -53,7 +53,7 @@
     "source": "yahoo",
     "symbol": "BTAL",
     "currency": "USD",
-    "fees": 1.43,
+    "fees": 1.4,
     "asset_class": "other",
     "underlying": "Long low-beta / short high-beta US equities, dollar-neutral within sectors",
     "benchmark_index": "active (no index)",
@@ -62,11 +62,13 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Iconic anti-beta ETF; persistently negative market beta; shines in risk-off, vol spikes",
+    "notes": "Iconic anti-beta ETF; persistently negative market beta; shines in risk-off, vol spikes. Tracked the Dow Jones U.S. Thematic Market Neutral Low Beta Index from its 2011-09-13 inception to 2022-02-13, active rules-based since. The 1.40% pin is the total expense ratio (stockanalysis.com, 2026-09), which includes the dividend and interest expense of the short book; the issuer caps its OWN operating expenses at 0.45% (AGF page, cap to 2028-11-01) and prints an adjusted ratio a script cannot read, so unlike AQMIX the pin here is the all-in figure",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US00110G4082"
+      "https://stockanalysis.com/etf/btal/",
+      "https://www.agf.com/us/products/btal/"
     ],
+    "as_of": "2026-09",
     "since": "2011-09-13"
   },
   {
@@ -993,7 +995,7 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Global macro hedge fund (Brevan Howard); low equity correlation; hedges interest-rate and macro tail risks; London-listed closed-end vehicle",
+    "notes": "Global macro hedge fund (Brevan Howard); low equity correlation; hedges interest-rate and macro tail risks; London-listed closed-end vehicle (Guernsey, admitted to the LSE 2007-03-14 per the company site). The fees of the master fund are inside the NAV and the monthly factsheet prints no ongoing charge, so `fees` stays 0 (unknown). Each class faces a yearly class-closure vote (circulars of January 2025 and 2026 on the company site)",
     "confidence": "high",
     "sources": [
       "https://bhmacro.com/"
@@ -1415,17 +1417,18 @@
     "fees": 0.5,
     "asset_class": "tail-risk",
     "underlying": "S&P 500 exposure with a quarterly put-option buffer absorbing the -3% to -12% band",
-    "benchmark_index": "Cboe S&P 500 Quarterly Buffer Protect Index",
+    "benchmark_index": "Cboe S&P 500 15% WHT Quarterly 9% (-3% to -12%) Buffer Protect Index",
     "strategy": "long-volatility",
     "geography": null,
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Tail-risk buffer ETF; cushions sharp drawdowns via puts, low drag in calm markets",
+    "notes": "Tail-risk buffer ETF; cushions sharp drawdowns via puts, low drag in calm markets. Tiny (EUR 3m on justETF, 2026-09): closure risk is real",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=IE000EPX8KB7"
     ],
+    "as_of": "2026-09",
     "since": "2023-02-21",
     "currency_exposure": {
       "USD": 100
@@ -3829,7 +3832,7 @@
     "aliases": [
       "SPF1"
     ],
-    "name": "SPDR Refinitiv Global Convertible Bond EUR Hdg UCITS ETF (Acc)",
+    "name": "State Street SPDR FTSE Global Convertible Bond UCITS ETF EUR Hedged (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -3838,12 +3841,23 @@
     "fees": 0.55,
     "asset_class": "other",
     "underlying": "Global convertible bonds, EUR hedged; embedded equity optionality",
-    "benchmark_index": "Refinitiv Qualified Global Convertible (EUR Hedged) Index",
+    "benchmark_index": "FTSE Qualified Global Convertible (EUR Hedged) Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 25,
-      "Other Europe": 25,
-      "US": 50
+      "US": 53,
+      "Other": 12,
+      "Japan": 8,
+      "Germany": 4,
+      "Taiwan": 4,
+      "China": 3,
+      "France": 3,
+      "Hong Kong": 3,
+      "Italy": 2,
+      "Netherlands": 2,
+      "South Korea": 2,
+      "Spain": 2,
+      "Other Europe": 1,
+      "Other developed": 1
     },
     "sectors": null,
     "distribution": "accumulating",
@@ -3851,12 +3865,14 @@
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "Hybrid bond/equity with convex payoff; rises with equities, has a bond floor; EUR-hedged global convertibles: currency_exposure = 100% EUR",
+    "notes": "Hybrid bond/equity with convex payoff; rises with equities, has a bond floor; EUR-hedged global convertibles: currency_exposure = 100% EUR. Renamed with its index (Refinitiv -> FTSE Qualified Global Convertible). Geography is the country of issue in State Street's daily holdings file (2026-09-24, market-value weighted, under 1% folded): the offshore domiciles (Cayman Islands 6.8, British Virgin Islands 2.2, Jersey, Bermuda, Mauritius) and the file's unassigned 'Europe' stay in Other, Cayman being mostly Chinese issuers such as Alibaba",
     "confidence": "high",
     "sources": [
+      "https://www.ssga.com/library-content/products/fund-data/etfs/emea/holdings-daily-emea-en-spf1-gy.xlsx",
       "https://www.justetf.com/en/etf-profile.html?isin=IE00BDT6FP91"
     ],
-    "since": "2017-11-30",
+    "as_of": "2026-09",
+    "since": "2018-05-23",
     "currency_hedged": true,
     "hedged_to": "EUR"
   },
@@ -5925,12 +5941,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active long-volatility absolute-return fund; diversifies against equity tail risk and benefits from volatility spikes",
+    "notes": "Active long-volatility absolute-return fund; diversifies against equity tail risk and benefits from volatility spikes. Ongoing charge 1.49% under a 1.20% maximum management fee, class launched 2007-11-15 (FT, 2026-08-31), where FT's NAV history starts",
     "confidence": "medium",
     "sources": [
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=LU0319687124:USD",
       "https://www.amundi.com/globaldistributor/product/view/LU0319687124"
     ],
-    "since": "2008-11-03"
+    "as_of": "2026-08",
+    "since": "2007-11-15"
   },
   {
     "id": "LU0328475792",
@@ -6743,8 +6761,9 @@
     "notes": "Convex long-rates hedge; profits from rising long-term rates and rate-vol spikes",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US82889N8552"
+      "https://stockanalysis.com/etf/pfix/"
     ],
+    "as_of": "2026-09",
     "since": "2021-05-10"
   },
   {
@@ -8201,12 +8220,13 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Market-neutral multi-style alternative (AQR); ~0 equity beta, returns independent of stocks and bonds; gross ER ~6% incl. short-financing, management ~1.4%",
+    "notes": "Market-neutral multi-style alternative (AQR); ~0 equity beta, returns independent of stocks and bonds. The 1.42% pin is the issuer's 'Adjusted Expense Ratio', against gross and net ratios of 6.02% that add the dividend and interest expense of the short book (AQR page, 2026-09), the same reading as AQMIX",
     "confidence": "medium",
     "sources": [
       "https://funds.aqr.com/en/funds/alternatives/aqr-style-premia-alternative-fund/qsprx",
       "https://stockanalysis.com/quote/mutf/QSPRX/"
     ],
+    "as_of": "2026-09",
     "since": "2014-09-02"
   },
   {
@@ -9998,7 +10018,7 @@
     "xid": "1034001072",
     "currency": "EUR",
     "fees": 1.28,
-    "since": "2025-12-03",
+    "since": "2025-12-02",
     "asset_class": "insurance-linked",
     "underlying": "Actively managed book of ~55 catastrophe bonds: insurance-linked securities that pay a spread over collateral (T-bills / money market funds) and lose principal when a defined natural catastrophe exceeds its trigger",
     "benchmark_index": "active (no index)",
@@ -10011,7 +10031,7 @@
     "currency_exposure": {
       "USD": 100
     },
-    "notes": "Europe's first cat bond UCITS ETF (King Ridge Capital / HANetf, listed 2025-12-03 Xetra + Borsa Italiana as C47B/CATB, London 2026-01). The risk factor is physical (US hurricane, US and Japan quake, European windstorm, flood, wildfire), so the decorrelation to equities is causal, not statistical: NOT a crisis hedge, and a loss year comes from the weather, not from the cycle. Three practical caveats: 1.28% TER, an unhedged USD share class (the EUR-converted series is dominated by USD/EUR, ~10% annualized vol since launch against ~2-4% for the underlying asset), and USD 17m of assets at 2026-07, small enough that closure or a wide spread is a real risk. Use LU0951570927 (EUR-hedged, 2013) for any statistic on the asset class itself.",
+    "notes": "Europe's first cat bond UCITS ETF (King Ridge Capital / HANetf, listed 2025-12-03 Xetra + Borsa Italiana as C47B/CATB, London 2026-01). The risk factor is physical (US hurricane, US and Japan quake, European windstorm, flood, wildfire), so the decorrelation to equities is causal, not statistical: NOT a crisis hedge, and a loss year comes from the weather, not from the cycle. Three practical caveats: 1.28% TER, an unhedged USD share class (the EUR-converted series is dominated by USD/EUR, ~10% annualized vol since launch against ~2-4% for the underlying asset), and USD 24.6m of assets at 2026-09-24 (issuer page, which gives the 2025-12-02 inception and the 1.28% TER), small enough that closure or a wide spread is a real risk. Use LU0951570927 (EUR-hedged, 2013) for any statistic on the asset class itself.",
     "confidence": "medium",
     "sources": [
       "https://hanetf.com/fund/catb-cat-bond-etf/",
@@ -10081,28 +10101,30 @@
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "Event-driven premium, structurally cash-plus: equity beta near zero (0.03 vs the S&P 500 since launch) and realized volatility around 1.5-2%, because the payoff is a spread that closes on a legal calendar rather than a market path. 'Plus' is the levered-risk version of the same book. Fees are the real objection: 1.81% management plus 0.23% transaction costs plus a 20% performance fee over the hurdle. The tail is regulatory, not macro: an antitrust block or a financing failure kills a spread instantly, and deal breaks cluster when credit tightens, so this is NOT a crisis asset. Live since 2023-04 only, in an unusually calm arbitrage regime; use MNA (2009) for a track record covering 2011, 2015-16 and 2020.",
+    "notes": "Event-driven premium, structurally cash-plus: equity beta near zero (0.03 vs the S&P 500 since launch) and realized volatility around 1.5-2%, because the payoff is a spread that closes on a legal calendar rather than a market path. 'Plus' is the levered-risk version of the same book. Fees are the real objection: 1.81% of management and other running costs plus 0.23% transaction costs plus a 20% performance fee over the hurdle (KID of 2026-04-16, on actual costs). The tail is regulatory, not macro: an antitrust block or a financing failure kills a spread instantly, and deal breaks cluster when credit tightens, so this is NOT a crisis asset. Live since 2023-04 only, in an unusually calm arbitrage regime; use MNA (2009) for a track record covering 2011, 2015-16 and 2020.",
     "confidence": "medium",
     "sources": [
+      "https://www.carmignac.com/assets/sequantis/kideu_LU2585801256_en_LU/KIDEU_Carmignac-Portfolio-Merger-Arbitrage-Plus-A-EUR-Acc_LU2585801256_INTL_en.pdf",
       "https://www.carmignac.com/en/our-funds/carmignac-portfolio-merger-arbitrage-plus-LU2585801256-a-eur-acc",
       "https://markets.ft.com/data/funds/tearsheet/summary?s=LU2585801256:EUR"
-    ]
+    ],
+    "as_of": "2026-04"
   },
   {
     "id": "MNA",
     "isin": "US45409B8000",
     "aliases": [],
-    "name": "NYLI Merger Arbitrage ETF",
+    "name": "NYLIM Merger Arbitrage ETF",
     "ucits": false,
     "eu_retail": false,
     "source": "yahoo",
     "symbol": "MNA",
     "currency": "USD",
-    "fees": 0.77,
+    "fees": 0.78,
     "since": "2009-11-17",
     "asset_class": "other",
-    "underlying": "IQ Merger Arbitrage Index: long the targets of announced developed-market deals, with a short global-equity index hedge",
-    "benchmark_index": "IQ Merger Arbitrage Index",
+    "underlying": "NYLIM Merger Arbitrage Index (formerly IQ Merger Arbitrage): long the targets of announced global deals, short the acquirer's stock in stock-for-stock deals",
+    "benchmark_index": "NYLIM Merger Arbitrage Index",
     "strategy": "other",
     "geography": null,
     "sectors": null,
@@ -10111,12 +10133,13 @@
     "currency_exposure": {
       "USD": 100
     },
-    "notes": "The long track record of the merger-arbitrage premium (2009-11), the reason it is in the catalog: it covers the 2011 and 2015-16 deal-break waves and the 2020 shock, which no European UCITS share class does. Rules-based and cheap (0.77%) but a weaker version of the strategy than an active book: it takes the announced-deal universe wholesale, including the spreads that are wide because the deal deserves to fail. Not buyable by an EU retail investor (no PRIIPs KID): use LU2585801256 for the investable version.",
+    "notes": "The long track record of the merger-arbitrage premium (2009-11), the reason it is in the catalog: it covers the 2011 and 2015-16 deal-break waves and the 2020 shock, which no European UCITS share class does. Rules-based and cheap (0.78%) but a weaker version of the strategy than an active book: it takes the announced-deal universe wholesale, including the spreads that are wide because the deal deserves to fail. Not buyable by an EU retail investor (no PRIIPs KID): use LU2585801256 for the investable version. Renamed from NYLI (and IQ before it) by New York Life Investment Management.",
     "confidence": "medium",
     "sources": [
-      "https://stockanalysis.com/etf/mna/",
-      "https://www.newyorklifeinvestments.com/"
-    ]
+      "https://www.newyorklifeinvestments.com/etf/nyli-merger-arbitrage-etf-mna",
+      "https://stockanalysis.com/etf/mna/"
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "JAAA",
@@ -10565,6 +10588,7 @@
       "https://www.ilsadvisers.com/products-solutions/#ils-index",
       "https://www.ilsadvisers.com/wp-content/themes/raft/data/ils-index.json"
     ],
+    "as_of": "2026-09",
     "since": "2005-12-31"
   },
   {
@@ -10591,8 +10615,10 @@
     "notes": "EUR-hedged view of ILSFUND, the form a euro book compares against: every cat bond share class a European household can hold is EUR-hedged. The identity is exact here, a catastrophe bond being a floating-rate note whose collateral earns the money-market rate, so hedging really does swap the dollar cash leg for the euro one. That swap is not free: over 2006-2026 it costs about 0.7 points a year, and over 2011-2026, with dollar rates far above euro ones, about 1.5. Same caveats as ILSFUND: non-investable, index returns landing on month ends (only the two cash legs accrue daily), nothing before 2006-01.",
     "confidence": "high",
     "sources": [
-      "https://www.ilsadvisers.com/products-solutions/#ils-index"
+      "https://www.ilsadvisers.com/products-solutions/#ils-index",
+      "https://www.ilsadvisers.com/wp-content/themes/raft/data/ils-index.json"
     ],
+    "as_of": "2026-09",
     "since": "2005-12-31",
     "currency_hedged": true,
     "hedged_to": "EUR",
@@ -10642,7 +10668,7 @@
     "aliases": [
       "GAMCAT"
     ],
-    "name": "GAM Star Cat Bond Ordinary EUR Acc Hedged",
+    "name": "GAM Swiss Re Cat Bond Ordinary EUR Acc Hedged",
     "ucits": true,
     "eu_retail": true,
     "source": "ft",
