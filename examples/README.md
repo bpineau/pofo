@@ -1,5 +1,8 @@
 # Example portfolios
 
+(Looking for Go code? [`lib/`](lib/README.md) holds runnable example
+programs over the library, one question each.)
+
 Ready-to-run model portfolios: famous strategies and well-regarded
 investors' builds, modernized with the bundled (mostly UCITS) catalog. Each
 file's header gives the name, the idea and a link to the source. Run any of
