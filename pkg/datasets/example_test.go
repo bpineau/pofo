@@ -24,7 +24,7 @@ func ExampleCatalog() {
 
 // Simdata exposes the embedded simulated histories as a read-only file system:
 // one "<canonical id>.csv" per asset, comment stamps then "date,close" rows.
-// marketdata.ReadSimdataFS parses one into a Series; a bare fs.ReadFile is
+// marketdata.Bundled parses one into a Series; a bare fs.ReadFile is
 // enough to inspect the stamps.
 func ExampleSimdata() {
 	b, err := fs.ReadFile(datasets.Simdata(), "DBMF.csv")

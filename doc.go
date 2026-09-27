@@ -18,7 +18,11 @@
 //   - pkg/marketdata: fetches, caches and post-processes daily, intraday and
 //     latest (real-time) prices from public sources, addressed by ticker, ISIN
 //     or alias; resolves identifiers against the embedded catalog and aligns
-//     trading calendars (AlignSeries, the strict one).
+//     trading calendars (AlignSeries, the strict one). It is also the one
+//     way in and out for data at rest: Bundled reads any embedded series
+//     without a client, an Offline client serves the quote cache without
+//     the network, ReadCSV and ReadLongCSV read CSV files, WriteCSV writes
+//     them.
 //   - pkg/metrics: risk/return statistics on parallel date and value slices
 //     (CAGR, volatility, Sharpe, Sortino, Ulcer, max drawdown,
 //     time-to-recovery, Beta, CWARP, IRR, TWR), the correlation and

@@ -53,6 +53,9 @@ func (c *Client) fetchFREDRate(ctx context.Context, id string) ([]Point, error) 
 }
 
 func (c *Client) fredSeries(ctx context.Context, id string, keepNonPositive bool) ([]Point, error) {
+	if c.Offline {
+		return nil, ErrOffline
+	}
 	u := fmt.Sprintf("%s/graph/fredgraph.csv?id=%s", c.FredBase, url.QueryEscape(id))
 	req, err := http.NewRequest(http.MethodGet, u, nil)
 	if err != nil {

@@ -60,6 +60,8 @@ type options struct {
 	composer   template.HTML     // live composer panel injected under the site nav (opt.web only)
 	width      int
 	cacheAge   time.Duration
+	offline    bool              // serve the quote cache and the bundled data only, never the network
+	monthly    bool              // with -dump: month-end closes only
 	fw         suggest.Framework // classification used by coverage and -suggest
 	// indexNowKey publishes the IndexNow ownership key file at the root of
 	// the -serve mux ("/<key>.txt"); empty leaves the feature off.
@@ -95,16 +97,28 @@ const generatorCacheAge = 24 * time.Hour
 // generatorCacheAge unless the command line pinned -cache-age itself, in
 // which case the operator's choice is honoured.
 func generatorAge(fs *flag.FlagSet, chosen time.Duration) time.Duration {
-	pinned := false
-	fs.Visit(func(f *flag.Flag) {
-		if f.Name == "cache-age" {
-			pinned = true
-		}
-	})
-	if pinned {
+	if pinned(fs, "cache-age") {
 		return chosen
 	}
 	return generatorCacheAge
+}
+
+// pinned reports whether the command line set the named flag, for the modes
+// whose default differs from the flag's own.
+func pinned(fs *flag.FlagSet, name string) bool {
+	set := false
+	fs.Visit(func(f *flag.Flag) { set = set || f.Name == name })
+	return set
+}
+
+// newClient returns the quote client every mode fetches through: the -data
+// cache, the given freshness, logging to stderr, and -offline.
+func (opt *options) newClient(maxAge time.Duration) *marketdata.Client {
+	c := marketdata.NewClient(opt.dataDir)
+	c.MaxAge = maxAge
+	c.Logf = log.Printf
+	c.Offline = opt.offline
+	return c
 }
 
 // frameworkFor resolves the -framework flag to a classification.
@@ -168,13 +182,21 @@ func run(ctx context.Context, argv []string) error {
 	fs.StringVar(assetsList, "a", "", "shorthand for -assets")
 	simAll := fs.Bool("simulate", false, "backcast every identifier, as if each carried the SIM suffix (like \"#meta sim:on\"); one without a simulated history keeps its real quotes")
 	fs.BoolVar(simAll, "b", false, "shorthand for -simulate")
+	dumpList := fs.String("dump", "", "write the series of these comma-separated identifiers to stdout as long CSV (id,date,value), shaped by -start, -end, -currency (native unless set), -simulate and -monthly, then exit; bundled reference series (TREASURY-LONG-USD…) included; \"list\" prints what the binary bundles")
+	fs.BoolVar(&opt.monthly, "monthly", false, "with -dump: keep the last close of each calendar month")
+	fs.BoolVar(&opt.offline, "offline", false, "never touch the network: serve the quote cache whatever its age, then the bundled data, and fail on anything else")
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `Usage: pofo [options] portfolio.txt [portfolio2.txt …]
        pofo [options] -assets VOO,IWDA,NTSG
        pofo [options] -b -assets AVWS,ZPRV
+       pofo [options] -dump IWDA,TREASURY-LONG-USD -monthly > series.csv
 
 Without files, -assets A,B,C compares each asset as a portfolio
 100 %% invested in it (can be combined with files).
+
+-dump A,B,C writes the series themselves to stdout as CSV, for another
+program to read; "-dump list" names every series bundled in the binary.
+-offline keeps any mode off the network (quote cache and bundled data only).
 
 -simulate (-b) backcasts every identifier of the run, so "-b -a AVWS,ZPRV"
 means "-a AVWSSIM,ZPRVSIM" without the suffixes; -no-simulate overrides it.
@@ -293,7 +315,7 @@ Options:
 		return fmt.Errorf("invalid -indexnow-key %q: 8 to 128 letters, digits and dashes", opt.indexNowKey)
 	}
 
-	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
+	if len(files) == 0 && *assetsList == "" && *ratesFlag == "" && *dumpList == "" && !*warmup && !*genSimdata && !*verifySimdata && !*verifyData && !*suggestFlag && !*coverageFlag && !*sweepFlag && !*fireFlag && !*serveFlag {
 		fs.Usage()
 		return errors.New("no portfolio file and no -assets option")
 	}
@@ -335,35 +357,39 @@ Options:
 			"-verify-data": *verifyData, "-suggest": *suggestFlag,
 			"-coverage": *coverageFlag, "-sweep": *sweepFlag,
 			"-gen-simdata": *genSimdata, "-verify-simdata": *verifySimdata,
+			"-dump": *dumpList != "",
 		} {
 			if on {
 				return fmt.Errorf("-serve cannot be combined with %s", name)
 			}
 		}
 	}
+	// A generator writes what ships inside the binary, and warming a cache is
+	// downloading by definition: neither has anything to do offline.
+	if opt.offline && (*genSimdata || *warmup) {
+		return errors.New("-offline cannot be combined with -gen-simdata or -warmup, which exist to download")
+	}
 
-	// Rate charting takes symbols on its own flag and never builds a
-	// portfolio: dispatch before any portfolio parsing.
+	// Rate charting and the dump take identifiers on their own flag and never
+	// build a portfolio: dispatch before any portfolio parsing.
 	if *ratesFlag != "" {
-		rateClient := marketdata.NewClient(opt.dataDir)
-		rateClient.MaxAge = opt.cacheAge
-		rateClient.Logf = log.Printf
-		return runRates(ctx, &opt, rateClient, *ratesFlag)
+		return runRates(ctx, &opt, opt.newClient(opt.cacheAge), *ratesFlag)
+	}
+	if *dumpList != "" {
+		d := dumpOptions{simAll: *simAll}
+		if pinned(fs, "currency") {
+			d.currency = opt.currency
+		}
+		return runDump(ctx, opt.newClient(opt.cacheAge), os.Stdout, splitIDs(*dumpList), &opt, d)
 	}
 
 	// The two simdata modes consume positional args as recipe ids, not files;
 	// dispatch before any portfolio parsing.
 	if *verifySimdata {
-		qaClient := marketdata.NewClient(opt.dataDir)
-		qaClient.MaxAge = generatorAge(fs, opt.cacheAge)
-		qaClient.Logf = log.Printf
-		return runVerifySimdata(ctx, qaClient, &opt, fs.Args())
+		return runVerifySimdata(ctx, opt.newClient(generatorAge(fs, opt.cacheAge)), &opt, fs.Args())
 	}
 	if *genSimdata {
-		genClient := marketdata.NewClient(opt.dataDir)
-		genClient.MaxAge = generatorAge(fs, opt.cacheAge)
-		genClient.Logf = log.Printf
-		return runGenSimdata(ctx, genClient, &opt, *refdataDir, fs.Args(), *dry)
+		return runGenSimdata(ctx, opt.newClient(generatorAge(fs, opt.cacheAge)), &opt, *refdataDir, fs.Args(), *dry)
 	}
 
 	specs, err := buildSpecs(files, *assetsList, *simAll)
@@ -374,9 +400,7 @@ Options:
 		return errors.New("the -assets option contains no identifier")
 	}
 
-	client := marketdata.NewClient(opt.dataDir)
-	client.MaxAge = opt.cacheAge
-	client.Logf = log.Printf
+	client := opt.newClient(opt.cacheAge)
 
 	if *warmup {
 		return runWarmup(ctx, client, &opt)
@@ -464,12 +488,22 @@ func buildSpecs(files []string, assetsList string, simAll bool) ([]*portfolio.Sp
 		}
 		add(spec)
 	}
-	for id := range strings.SplitSeq(assetsList, ",") {
-		if id = strings.TrimSpace(id); id != "" {
-			add(portfolio.Single(id))
-		}
+	for _, id := range splitIDs(assetsList) {
+		add(portfolio.Single(id))
 	}
 	return specs, nil
+}
+
+// splitIDs reads a comma-separated identifier list (-assets, -dump), trimmed,
+// empty entries dropped.
+func splitIDs(list string) []string {
+	var ids []string
+	for id := range strings.SplitSeq(list, ",") {
+		if id = strings.TrimSpace(id); id != "" {
+			ids = append(ids, id)
+		}
+	}
+	return ids
 }
 
 // renderComparison runs the whole pipeline and renders the HTML report:

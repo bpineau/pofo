@@ -6,8 +6,9 @@
 // (-gen-simdata, make refresh), a recompilation re-embeds the files.
 //
 // Simdata and Refdata expose their directory as an fs.FS of "<canonical
-// id>.csv" files (comment stamps, then date,close rows: read one with
-// marketdata.ReadSimdataFS); the panels are returned as raw CSV bytes.
+// id>.csv" files (comment stamps, then date,close rows: marketdata.Bundled
+// reads one into a Series by identifier, and marketdata.BundledIDs lists
+// them); the panels are returned as raw CSV bytes.
 //
 // Catalog returns the typed asset records (with their geography, sectors,
 // factors and exposures), and AssetMeta the same data as raw JSON. For a

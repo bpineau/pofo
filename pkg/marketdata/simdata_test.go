@@ -102,10 +102,11 @@ func TestReadSimdataFSMalformed(t *testing.T) {
 		{"comment without a colon is skipped", "# pofo simdata v1\n" + head + "2000-01-03,1\n", ""},
 		{"blank lines are skipped", head + "\n2000-01-03,1\n\n", ""},
 		{"no data at all", head, "no data"},
-		{"line without a comma", head + "2000-01-03\n", "invalid line"},
-		{"unparseable date", head + "03/01/2000,1\n", "invalid date"},
-		{"unparseable close", head + "2000-01-03,abc\n", "invalid close"},
-		{"non-positive close", head + "2000-01-03,0\n", "invalid close"},
+		{"line without a comma", head + "2000-01-03\n", `line 4: "2000-01-03" is not a date,value row`},
+		{"unparseable date", head + "03/01/2000,1\n", `line 4: invalid date "03/01/2000"`},
+		{"unparseable close", head + "2000-01-03,abc\n", `line 4: invalid value "abc"`},
+		{"non-positive close", head + "2000-01-03,0\n", `line 4: invalid value "0"`},
+		{"duplicate date", head + "2000-01-03,1\n2000-01-04,2\n2000-01-03,3\n", "lines 4 and 6: 2000-01-03 given twice"},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
