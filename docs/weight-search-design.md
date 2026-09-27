@@ -170,7 +170,7 @@ For each line of the portfolio, hold the other lines' RELATIVE proportions
 fixed, move that line's weight across a grid, and report what happens:
 
 ```
-$ pofo -sweep examples/hydra-five-engines-capital-efficient.txt
+$ pofo -sweep examples/portfolios/hydra-five-engines-capital-efficient.txt
 
 NTSG (written 18 %)
   weight    CAGR     vol  Sharpe    maxDD     TTR  worst5y

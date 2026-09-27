@@ -5,7 +5,7 @@
 #
 #   scripts/report-shot.sh [portfolio-file] [out-prefix] [extra pofo flags...]
 #
-# Defaults: examples/dragon-decumulation-household.txt and /tmp/pofo-shot.
+# Defaults: examples/portfolios/dragon-decumulation-household.txt and /tmp/pofo-shot.
 # Produces <out-prefix>.html (sections forced open) and <out-prefix>.png
 # (full-page, 1500px wide). Crop a region with e.g.:
 #   sips -c <height> 1500 --cropOffset <y> 0 out.png --out crop.png
@@ -14,7 +14,7 @@
 # the quote cache is warm (run ./pofo -warmup once, or render any report).
 set -e
 
-FILE="${1:-examples/dragon-decumulation-household.txt}"
+FILE="${1:-examples/portfolios/dragon-decumulation-household.txt}"
 OUT="${2:-/tmp/pofo-shot}"
 [ $# -ge 1 ] && shift
 [ $# -ge 1 ] && shift

@@ -82,7 +82,7 @@ precisely what discredited an earlier tail over this period; see "The tail that
 was removed" in `docs/trend-reconstruction-design.md`. A sleeve held through
 this line therefore carries roughly half the risk of the real one, which is
 the price of the extra decade and the safe direction to err in. Measured over
-1996-2026 on `examples/risk-budget-decumulation-longhist.txt`, substituting the
+1996-2026 on `examples/portfolios/risk-budget-decumulation-longhist.txt`, substituting the
 index for the two fund lines at equal weight costs 0.74 points of CAGR and
 moves the drawdown by 0.06.
 

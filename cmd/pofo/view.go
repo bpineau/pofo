@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/examples/portfolios"
 	"github.com/bpineau/pofo/pkg/marketdata"
 	"github.com/bpineau/pofo/pkg/portfolio"
 )
@@ -112,7 +112,7 @@ func parseViewQuery(q url.Values, base *options, gate *foreignGate) (*viewReques
 		if _, ok := known[name]; !ok {
 			return nil, fmt.Errorf("unknown example %q", name)
 		}
-		raw, err := examples.FS.ReadFile(name + ".txt")
+		raw, err := portfolios.FS.ReadFile(name + ".txt")
 		if err != nil {
 			return nil, fmt.Errorf("unknown example %q", name)
 		}
@@ -310,9 +310,9 @@ func parseViewGlobals(q url.Values, vr *viewRequest, base *options) error {
 }
 
 // knownExamples indexes the embedded portfolio files by name.
-func knownExamples() map[string]examples.Info {
-	byName := map[string]examples.Info{}
-	for _, in := range examples.List() {
+func knownExamples() map[string]portfolios.Info {
+	byName := map[string]portfolios.Info{}
+	for _, in := range portfolios.List() {
 		byName[in.Name] = in
 	}
 	return byName

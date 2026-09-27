@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/bpineau/pofo/examples"
+	"github.com/bpineau/pofo/examples/portfolios"
 	"github.com/bpineau/pofo/pkg/portfolio"
 	"github.com/bpineau/pofo/pkg/scenario"
 )
@@ -370,8 +370,8 @@ func TestServeFireMetaSourceAndPicker(t *testing.T) {
 			t.Errorf("%s: picker mount = %v", path, p)
 		}
 		exs, _ := p["examples"].([]any)
-		if len(exs) != len(examples.List()) {
-			t.Errorf("%s: %d examples, want %d", path, len(exs), len(examples.List()))
+		if len(exs) != len(portfolios.List()) {
+			t.Errorf("%s: %d examples, want %d", path, len(exs), len(portfolios.List()))
 		}
 	}
 }
@@ -574,7 +574,7 @@ func TestServeHubComposer(t *testing.T) {
 	// Every embedded preset is valid JSON whose p= the server would accept.
 	re := regexp.MustCompile(`data-preset-\d+="([^"]*)"`)
 	matches := re.FindAllStringSubmatch(body, -1)
-	if want := len(examples.List()); len(matches) < want {
+	if want := len(portfolios.List()); len(matches) < want {
 		t.Fatalf("only %d presets embedded, want every bundled example (%d)", len(matches), want)
 	}
 	for _, m := range matches {
