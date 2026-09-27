@@ -69,10 +69,11 @@ func shapedSeries(anchors, shape *marketdata.Series) *marketdata.Series {
 // shape's own last trading day of M.
 //
 // WTI-USD is the one monthly reference deliberately left out. It is a monthly
-// AVERAGE spot price still dated the first of the month, as FRED publishes it,
-// and it has no generator in this repository to restate it in: moving its
-// anchors to the end of the month would shift the whole 1946-2000 reconstruction
-// by a month with nothing regenerable behind the decision. Measured against the
+// AVERAGE spot price still dated the first of the month, as FRED publishes it
+// and as cmd/gen-wti-refdata deliberately carries it: no label is right for a
+// month-average (month-start and month-end are wrong by the same fifteen days in
+// opposite directions), so moving its anchors to the end of the month would
+// shift the whole 1946-2000 reconstruction by a month for nothing. Measured against the
 // real daily spot it stands on (WTI-DAILY, 1986-2000), the average's signature
 // is plain: 0.83 of the daily series' monthly volatility, and monthly returns
 // correlating 0.74 contemporaneously against 0.50 one month late.

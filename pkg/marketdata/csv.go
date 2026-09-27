@@ -33,10 +33,11 @@ const (
 	keyCurrency        = "currency"         // Series.Currency
 	keyJunctions       = "junctions"        // Series.Junctions, comma-separated ISO dates
 	keySimulatedBefore = "simulated-before" // Series.SimulatedBefore, one ISO date
+	keyEnds            = "ends"             // Series.Ends, one ISO date, then an optional free-text reason
 )
 
 // seriesKeys lists the metadata keys in the order WriteCSV writes them.
-var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions}
+var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions, keyEnds}
 
 // ReadCSV reads one series from a "date,value" CSV: the layout of every file
 // bundled under pkg/datasets, of a file written by hand, or of an old version
@@ -44,10 +45,12 @@ var seriesKeys = []string{keyName, keyCurrency, keySimulatedBefore, keyJunctions
 // is empty, the file's "# id:" header supplies it.
 //
 // Blank lines and "#" comments are skipped, except for the metadata headers
-// "# name:", "# currency:", "# simulated-before:" (one ISO date) and
-// "# junctions:" (comma-separated ISO dates), which set the Series field of
-// the same name. Junctions are the one header a consumer must honour to be
-// correct rather than merely informed: see Series.Junctions. The first other
+// "# name:", "# currency:", "# simulated-before:" (one ISO date),
+// "# junctions:" (comma-separated ISO dates) and "# ends:" (one ISO date,
+// optionally followed by the reason in free text, which is not kept), which
+// set the Series field of the same name. Junctions are the one header a
+// consumer must honour to be correct rather than merely informed: see
+// Series.Junctions. The first other
 // line may be a column header ("date,close", "date,value": a date field that
 // is not a date and a value that is not a number); every other line is an ISO
 // date (2006-01-02)
@@ -72,7 +75,7 @@ func ReadCSV(r io.Reader, id string) (*Series, error) {
 // appear, each sorted by date. Blank lines and "#" comments are skipped,
 // except for the per-series metadata headers WriteCSV writes,
 // "# <id> <key>: <value>" with the keys ReadCSV knows (name, currency,
-// simulated-before, junctions). The first other line may be the column
+// simulated-before, junctions, ends). The first other line may be the column
 // header, recognized as ReadCSV recognizes one.
 //
 // A date given twice for one identifier is an error, as is metadata for an
@@ -129,8 +132,8 @@ func ReadLongCSV(r io.Reader) ([]*Series, error) {
 
 // WriteCSV writes the series in the long "id,date,value" layout, one after the
 // other in the order given: first each series' metadata as comments
-// ("# <id> name: …", then currency, simulated-before and junctions, each only
-// when set), then the column header, then one row per point. It is what
+// ("# <id> name: …", then currency, simulated-before, junctions and ends, each
+// only when set), then the column header, then one row per point. It is what
 // "pofo -dump" prints, and the form to hand a series to another tool: any CSV
 // reader that skips "#" lines (pandas' comment="#", R's comment.char) reads
 // the rows.
@@ -138,7 +141,7 @@ func ReadLongCSV(r io.Reader) ([]*Series, error) {
 // Values are written in the shortest form that parses back to the same
 // float64 (strconv 'g', -1), so ReadLongCSV returns exactly the symbols,
 // names and currencies (trimmed of surrounding blanks), simulation frontiers,
-// junctions and points it was given. Nothing else a Series carries is
+// junctions, declared ends and points it was given. Nothing else a Series carries is
 // written: not its source, its dividends nor a nowcast frontier (strip a
 // nowcast tail with WithoutEstimates first, as every storing consumer does).
 //
@@ -226,6 +229,10 @@ func metadataValue(s *Series, key string) string {
 			days[i] = j.Format(time.DateOnly)
 		}
 		return strings.Join(days, ",")
+	case keyEnds:
+		if !s.Ends.IsZero() {
+			return s.Ends.Format(time.DateOnly)
+		}
 	}
 	return ""
 }
@@ -300,6 +307,13 @@ func (b *seriesBuilder) metadata(n int, key, val string) error {
 			}
 			b.s.Junctions = append(b.s.Junctions, t)
 		}
+	case keyEnds:
+		day, _, _ := strings.Cut(val, " ") // the reason that may follow is for the reader
+		t, err := parseDate(day)
+		if err != nil {
+			return fmt.Errorf("line %d: invalid %s date %q", n, key, day)
+		}
+		b.s.Ends = t
 	}
 	return nil
 }

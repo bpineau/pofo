@@ -88,7 +88,7 @@ warmup: build ## Pre-fetch the cache (quotes + fees) for the catalog
 # network. A generator that fails stops the chain, so nothing downstream is
 # rebuilt on half-refreshed inputs.
 .PHONY: refresh
-refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata wti-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
+refresh: cape broadsample macropanel euro-refdata gbond-refdata tyield-refdata sp500-refdata usmkt-refdata msci-refdata french-refdata wti-refdata gold-refdata trend-refdata trendnet-refdata sgtrend-refdata dbi-refdata catbond-refdata eres-refdata simdata snapshots ## Refresh EVERY bundled series from its live source (network, several minutes)
 	@echo "refreshed; now run 'make check', 'make golden' and 'make verify-catalog'."
 	@echo "'make figure-drift' says which FIRE book plates the new data left behind; that is optional, and the book may lag."
 
@@ -141,7 +141,7 @@ gbond-refdata: ## (Re)generate the bundled German/Japanese/British government bo
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: tyield-refdata
-tyield-refdata: ## (Re)generate the five US Treasury references: the long par yield the STRIPS reconstruction is priced off, the long and intermediate constant-maturity total returns, and their daily shapes (network); run `make simdata` after
+tyield-refdata: ## (Re)generate the six US Treasury references: the long par yield the STRIPS reconstruction is priced off, the long and intermediate constant-maturity total returns, their daily shapes, and the 3-month bill rate TBILL-3M every dollar cash leg reads (network); run `make simdata` after
 	$(GO) run ./cmd/gen-tyield-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
@@ -161,8 +161,18 @@ msci-refdata: ## (Re)extend the MSCIWORLD-USD/DEVEXUS-USD/EM-USD monthly referen
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: wti-refdata
-wti-refdata: ## (Re)generate WTI-ER-USD, the rolled-futures EXCESS return of WTI crude (network)
+wti-refdata: ## (Re)generate WTI-ER-USD, the rolled-futures EXCESS return of WTI crude, and refresh WTI-USD, the monthly spot price (network); run after `make tyield-refdata` (the check funds the roll with TBILL-3M) and `make simdata` after
 	$(GO) run ./cmd/gen-wti-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: french-refdata
+french-refdata: ## (Re)generate USSCV-USD and DEVEXUS-DAILY from the Ken French Data Library (network); run after `make msci-refdata` (DEVEXUS-DAILY is graded against DEVEXUS-USD) and `make simdata` after
+	$(GO) run ./cmd/gen-french-refdata
+	$(GO) build -o pofo ./cmd/pofo
+
+.PHONY: gold-refdata
+gold-refdata: ## (Re)generate XAUUSD-LBMA, the daily LBMA gold fix in USD since 1968 (network); run `make simdata` after
+	$(GO) run ./cmd/gen-gold-refdata
 	$(GO) build -o pofo ./cmd/pofo
 
 .PHONY: trend-refdata
