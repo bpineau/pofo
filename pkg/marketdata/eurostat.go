@@ -13,16 +13,18 @@ import (
 	"time"
 )
 
-// hicpFRSnapshot is a bundled offline fallback for ^HICP-FR: the monthly index
-// anchors (long history, ~1955→), used when the live Eurostat API is
-// unreachable. It carries the same chain the live path builds (Eurostat HICP
-// from 1996 with the OECD French CPI (FRED FRACPIALLMINMEI) spliced before it)
-// so an offline run still deflates the high-inflation 1955-1990s a long
-// retirement backcast needs. The live series is always preferred; this only
-// needs refreshing occasionally to keep the recent tail current. Regenerate
-// with "make snapshots" (cmd/gen-snapshots), which refetches the Eurostat leg
-// and carries the pre-1996 OECD head over unchanged, refusing to write if
-// Eurostat has rebased under the chain point.
+// hicpFRSnapshot is the bundled history of ^HICP-FR: the monthly index anchors
+// (long history, ~1955→) a normal run serves offline-first (fetchHICP), the
+// live Eurostat API being read only under RefreshInflation. It carries the
+// same chain the live path builds (Eurostat HICP from 1996 with the OECD
+// French CPI (FRED FRACPIALLMINMEI) spliced before it) so an offline run still
+// deflates the high-inflation 1955-1990s a long retirement backcast needs.
+// Since every run that is not a warmup deflates by it, its tail IS the euro
+// inflation pofo knows: refresh it with every data refresh. Regenerate with
+// "make snapshots" (cmd/gen-snapshots), which refetches the Eurostat leg and
+// carries the pre-1996 OECD head over unchanged, refusing to write if
+// Eurostat has rebased under the chain point or if its series has stopped
+// updating (the trap hicpDataset records).
 //
 //go:embed data/hicp-fr.csv
 var hicpFRSnapshot string
@@ -107,8 +109,10 @@ var hicpName = map[string]string{
 // geography with a bundled snapshot (^HICP-FR) is served offline-first: a
 // normal run never downloads it, and the live Eurostat API is used only under
 // RefreshInflation (warmup). Geographies without an embed keep the live path.
+// The disk cache files the series under hicpCacheSource, which names the
+// dataset it was read from.
 func (c *Client) fetchHICP(ctx context.Context, symbol, geo string, from time.Time) (*Series, error) {
-	return c.embeddedHistory(ctx, "eurostat", symbol, from,
+	return c.embeddedHistory(ctx, hicpCacheSource, symbol, from,
 		func() (*Series, bool) {
 			anchors, ok := embeddedHICP(geo)
 			if !ok {
@@ -135,11 +139,57 @@ func hicpSeries(symbol, geo string, monthly []Point) *Series {
 	}
 }
 
+// hicpDataset is the Eurostat dataset the HICP deflators are read from, and
+// hicpQuery the one series of it they read: monthly, all items, on the
+// 2015=100 base. The query filters every dimension but time and geo to a
+// single category, which is what lets downloadHICP read the JSON-stat payload
+// by time position alone.
+//
+// THE REBASE TRAP. In 2026 Eurostat moved the HICP to the ECOICOP 2
+// classification and a 2025=100 base, publishing it under a new dataset,
+// prc_hicp_minr, and stopped updating the old one, prc_hicp_midx, at 2025-12,
+// which kept answering HTTP 200 with a complete-looking history. Every euro
+// deflation then read 2026 as a year without inflation, and nothing failed.
+// The new dataset carries the whole history from 1996-01 on both bases; its
+// I15 unit reproduces the old series (France identical to the last digit over
+// 1996-01..2025-12, the euro area within 0.013 point on any monthly change,
+// all of it before 2016 on the months Eurostat flags as back-calculated), so
+// reading it leaves every level where it was, the bundled snapshot's 1996
+// chain point included. hicpLagging is the guard that makes the next freeze
+// visible; docs/specs/inflation-deflators.md holds the validation record.
+const (
+	hicpDataset = "prc_hicp_minr"
+	hicpQuery   = "format=JSON&lang=EN&freq=M&unit=I15&coicop18=TOTAL"
+)
+
+// hicpCacheSource is the cache identity's source part for a HICP series. It
+// names the dataset, so that moving to another one refetches instead of
+// serving a copy of the old dataset for up to MaxAge (and at any age to an
+// Offline client): the move off the frozen prc_hicp_midx would otherwise have
+// kept serving its 2025-12 end from every warm cache.
+const hicpCacheSource = "eurostat." + hicpDataset
+
+// hicpMaxLag is how many calendar months the last published HICP month may
+// trail the current one before the series is presumed frozen. Eurostat
+// publishes month M around the middle of M+1, so a live series trails by one
+// month, two early in a month; three is already a missed release.
+const hicpMaxLag = 3
+
+// hicpLagging reports whether a HICP series whose last month is last has
+// stopped updating as of now: it trails now's month by more than hicpMaxLag.
+func hicpLagging(last, now time.Time) bool {
+	behind := (now.Year()-last.Year())*12 + int(now.Month()) - int(last.Month())
+	return behind > hicpMaxLag
+}
+
 // downloadHICP fetches the monthly all-items HICP (2015=100) for geo from the
-// Eurostat dissemination API and interpolates it to a daily index.
+// Eurostat dissemination API and interpolates it to a daily index. A series
+// that trails the calendar (hicpLagging) is still served, since a late index
+// beats none, but with a warning: every date past its end deflates at zero
+// inflation.
 func (c *Client) downloadHICP(ctx context.Context, symbol, geo string) (*Series, error) {
-	u := fmt.Sprintf("%s/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"+
-		"?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=%s", c.EurostatBase, url.QueryEscape(geo))
+	u := fmt.Sprintf("%s/eurostat/api/dissemination/statistics/1.0/data/%s?%s&geo=%s",
+		c.EurostatBase, hicpDataset, hicpQuery, url.QueryEscape(geo))
 	body, err := c.get(ctx, u)
 	if err != nil {
 		return nil, err
@@ -176,6 +226,10 @@ func (c *Client) downloadHICP(ctx context.Context, symbol, geo string) (*Series,
 		return nil, fmt.Errorf("eurostat HICP %s: only %d monthly points", geo, len(monthly))
 	}
 	sort.Slice(monthly, func(i, j int) bool { return monthly[i].Date.Before(monthly[j].Date) })
+	if last := monthly[len(monthly)-1].Date; hicpLagging(last, time.Now()) {
+		c.Logf("warning: Eurostat %s ends %s for %s: the dataset looks frozen (a rebase moves the live index to a new dataset); every later date deflates at zero inflation",
+			hicpDataset, last.Format("2006-01"), geo)
+	}
 
 	// Eurostat's harmonised index only starts in the mid-1990s. For France,
 	// extend it back with the OECD national CPI from FRED (monthly, 1955→),

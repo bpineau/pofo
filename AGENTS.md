@@ -231,7 +231,14 @@ was last indexed 2026-06-16, which froze every OECD-fed file (`EMU-EUR`,
 (`refgen.OECD`). That API admits 60 downloads an HOUR and answers the next
 with HTTP 429: never loop over series against it, pass a dataflow's keys to
 ONE `refgen.OECD` call (it folds them into one SDMX key), and do not burn the
-budget on exploratory probes. The shared plumbing (FRED, OECD and Ken French
+budget on exploratory probes. A DATASET can freeze as well, when its
+publisher rebases: Eurostat moved the HICP to a new dataset (`prc_hicp_minr`,
+ECOICOP 2) in 2026 and left the old `prc_hicp_midx` answering at 2025-12, so
+`^HICP-FR` deflated all of 2026 at zero inflation until 2026-09-27; the
+offline snapshots (`pkg/marketdata/data/`) are now held to their own
+`# generated:` stamp by `TestSnapshotsCurrentWhenGenerated` and by
+`cmd/gen-snapshots`' `stale` check (`docs/specs/inflation-deflators.md`).
+The shared plumbing (FRED, OECD and Ken French
 readers, the history-reproduction (`SameHistory`, `CompareSteps`), cadence and
 flat-run checks, the header writer) is `cmd/internal/refgen`. A
 file that STOPS by design (its source was discontinued, or it is trimmed where

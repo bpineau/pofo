@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 )
@@ -103,7 +104,7 @@ func TestEmbeddedHICPFR(t *testing.T) {
 }
 
 func TestFetchEurostatHICPEmbedFirst(t *testing.T) {
-	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
+	const path = "/eurostat/api/dissemination/statistics/1.0/data/" + hicpDataset
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		t.Error("Eurostat must not be hit: ^HICP-FR is served offline-first from the embed")
@@ -127,7 +128,7 @@ func TestFetchEurostatHICPEmbedFirst(t *testing.T) {
 // A geography without a bundled snapshot (^HICP-EA) still uses the live API in
 // the default (non-refresh) mode: embed-first only diverts geos that have one.
 func TestFetchEurostatHICPNoEmbedGoesLive(t *testing.T) {
-	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
+	const path = "/eurostat/api/dissemination/statistics/1.0/data/" + hicpDataset
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, `{
@@ -148,11 +149,16 @@ func TestFetchEurostatHICPNoEmbedGoesLive(t *testing.T) {
 }
 
 func TestFetchEurostatHICP(t *testing.T) {
-	const path = "/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx"
+	const path = "/eurostat/api/dissemination/statistics/1.0/data/" + hicpDataset
 	mux := http.NewServeMux()
 	mux.HandleFunc(path, func(w http.ResponseWriter, r *http.Request) {
-		if g := r.URL.Query().Get("geo"); g != "FR" {
-			t.Errorf("geo query = %q, want FR", g)
+		// The one series of the live dataset: all items (ECOICOP 2's TOTAL),
+		// monthly, on the 2015=100 unit the bundled snapshot is chained on.
+		q := r.URL.Query()
+		for key, want := range map[string]string{"geo": "FR", "unit": "I15", "coicop18": "TOTAL", "freq": "M", "format": "JSON"} {
+			if got := q.Get(key); got != want {
+				t.Errorf("%s query = %q, want %q", key, got, want)
+			}
 		}
 		fmt.Fprint(w, `{
 			"value": {"0": 100.0, "1": 101.0},
@@ -181,5 +187,82 @@ func TestFetchEurostatHICP(t *testing.T) {
 	}
 	if got := s.Last(); !got.Date.Equal(time.Date(2006, 2, 1, 0, 0, 0, 0, time.UTC)) || math.Abs(got.Close-101) > 1e-9 {
 		t.Errorf("last = %v, want {2006-02-01, 101}", got)
+	}
+}
+
+// TestHICPLagging pins the frozen-dataset guard: Eurostat publishes month M in
+// the middle of M+1, so one or two months behind is a live series and more
+// than three is one that stopped (the former prc_hicp_midx, stuck at 2025-12).
+func TestHICPLagging(t *testing.T) {
+	month := func(y int, m time.Month) time.Time { return time.Date(y, m, 1, 0, 0, 0, 0, time.UTC) }
+	now := time.Date(2026, 9, 27, 0, 0, 0, 0, time.UTC)
+	for _, c := range []struct {
+		last time.Time
+		want bool
+	}{
+		{month(2026, 8), false},
+		{month(2026, 7), false},
+		{month(2026, 6), false}, // three months: the allowance itself
+		{month(2026, 5), true},
+		{month(2025, 12), true}, // across a year boundary
+	} {
+		if got := hicpLagging(c.last, now); got != c.want {
+			t.Errorf("hicpLagging(%s, %s) = %v, want %v", c.last.Format("2006-01"), now.Format("2006-01-02"), got, c.want)
+		}
+	}
+}
+
+// A live HICP that trails the calendar is still served (a late deflator
+// beats none) but says so, since every later date deflates at zero inflation.
+func TestFetchEurostatHICPWarnsWhenFrozen(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/eurostat/api/dissemination/statistics/1.0/data/"+hicpDataset, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{
+			"value": {"0": 100.0, "1": 101.0},
+			"dimension": {"time": {"category": {"index": {"2006-01": 0, "2006-02": 1}}}}
+		}`)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	var logged []string
+	c.Logf = func(format string, args ...any) { logged = append(logged, fmt.Sprintf(format, args...)) }
+
+	if _, err := c.Fetch(context.Background(), "^HICP-EA", time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)); err != nil {
+		t.Fatal(err)
+	}
+	for _, line := range logged {
+		if strings.HasPrefix(line, "warning:") && strings.Contains(line, "2006-02") && strings.Contains(line, "EA") {
+			return
+		}
+	}
+	t.Errorf("no frozen-dataset warning naming the last month; logged %q", logged)
+}
+
+// A HICP cached from the frozen dataset (filed under the former "eurostat"
+// identity) is never served: the cache identity names the dataset, so the
+// move to prc_hicp_minr refetches instead of replaying a 2025-12 end.
+func TestFetchEurostatHICPIgnoresFormerDatasetCache(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/eurostat/api/dissemination/statistics/1.0/data/"+hicpDataset, func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{
+			"value": {"0": 100.0, "1": 101.0, "2": 102.0},
+			"dimension": {"time": {"category": {"index": {"2006-01": 0, "2006-02": 1, "2006-03": 2}}}}
+		}`)
+	})
+	c, srv := newTestClient(t, t.TempDir(), mux)
+	defer srv.Close()
+	from := time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)
+	frozen := hicpSeries("^HICP-EA", "EA", []Point{
+		{Date: time.Date(2006, 1, 1, 0, 0, 0, 0, time.UTC), Close: 100},
+		{Date: time.Date(2006, 2, 1, 0, 0, 0, 0, time.UTC), Close: 101},
+	})
+	c.saveCacheAs(sourceCacheID("eurostat", "^HICP-EA", false), frozen, from)
+
+	s, err := c.Fetch(context.Background(), "^HICP-EA", from)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := s.Last().Date; !got.Equal(time.Date(2006, 3, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("last = %s, want 2006-03-01: the former dataset's cached copy was served", got.Format("2006-01-02"))
 	}
 }

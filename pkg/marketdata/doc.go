@@ -200,7 +200,12 @@
 // downloads it. The live Eurostat API is consulted only under
 // Client.RefreshInflation (set by "pofo -warmup"), which refreshes the disk
 // cache a later run then prefers. Geographies without a bundled snapshot
-// (^HICP-EA, …) keep the live path.
+// (^HICP-EA, …) keep the live path. The index is read from Eurostat's
+// prc_hicp_minr dataset (ECOICOP 2, on its 2015=100 unit), the one Eurostat
+// kept updating when it rebased the HICP in 2026 and froze the former
+// prc_hicp_midx at 2025-12: a deflator that stops quietly reads every later
+// month as zero inflation, so a live series trailing the calendar by more than
+// three months is served with a warning.
 //
 // "^CPI-US" is the dollar sibling: the US CPI-U all-items index (1982-84=100,
 // monthly since 1913), embedded and served offline-first the same way, with the
