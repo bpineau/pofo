@@ -39,6 +39,8 @@
 //   - Render ([chart], [compare], [report]): chart.Line, or compare.Compute
 //     then report.Render for the CLI's HTML report.
 //   - Export: marketdata.WriteCSV.
+//   - A ready answer: examples/code holds a runnable script for most of the
+//     questions above (the index is below).
 //
 // A complete program, offline (the package example below):
 //
@@ -86,14 +88,18 @@
 //		}
 //	}
 //
-// Longer programs, one question each, live in examples/lib (README.md there
-// is the index): describe a series, blend, regress, the worst months,
-// a reconstruction against its reference, a portfolio file simulated, a FIRE
-// run, a CSV export. README.md's chapter "Using it as a library" walks the
-// library by task, each snippet a verbatim copy of a runnable example, and
-// every package's own documentation opens on the calls to start with. The
-// same questions without writing Go: "pofo -dump", "pofo -pair", "pofo
-// -verify-simdata -json", each with -offline.
+// Whole scripts, one question each, live in examples/code (README.md there
+// is the index), each a single file run as "go run examples/code/NAME.go":
+// describe or compare series, blend, regress, the worst months, the crises,
+// rolling outcomes, calendar years, the currency effect, a fee, a
+// reconstruction against its reference, a portfolio file's correlations,
+// simulation and optimized weights, a FIRE run, the withdrawal rules through
+// history, a CSV export. Copy the nearest one into the gitignored scratch/
+// directory to explore further. README.md's chapter "Using it as a library"
+// walks the library by task, each snippet a verbatim copy of a runnable
+// example, and every package's own documentation opens on the calls to start
+// with. Some of the same questions without writing Go: "pofo -dump", "pofo
+// -pair", "pofo -verify-simdata -json", each with -offline.
 //
 // # Units and conventions
 //

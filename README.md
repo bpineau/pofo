@@ -987,13 +987,18 @@ for _, id := range p.IDs {
 }
 ```
 
-Whole programs, one question each (describe a series, blend, regress, the
-worst months, a reconstruction against its reference, a bundled file against
-its older version, a portfolio file simulated, a FIRE run, a CSV export),
-live in [`examples/lib/`](examples/lib/README.md); they run offline and are
-the starting points to copy into the gitignored `scratch/` directory. The
-same questions without writing Go: `pofo -dump`, `pofo -pair`,
-`pofo -verify-simdata -json`, each with `-offline`.
+Whole scripts, one question each (describe a series or several side by side,
+blend, regress, the worst months, the crises, rolling N-year outcomes,
+calendar years against a published table, the currency effect, a fee, a
+reconstruction against its reference, a bundled file against its older
+version, the bundle's own soundness, a portfolio file's correlations,
+simulation and optimized weights, a FIRE run, the withdrawal rules through
+history, a CSV export), live in [`examples/code/`](examples/code/README.md):
+each is one file, run as `go run examples/code/<name>.go`, offline on the
+bundled data by default, and the starting point to copy into the gitignored
+`scratch/` directory. Some of the same questions without writing Go:
+`pofo -dump`, `pofo -pair`, `pofo -verify-simdata -json`, each with
+`-offline`.
 
 ### Study a portfolio in ten lines
 
@@ -1533,7 +1538,7 @@ pkg/datasets/     versioned data (embedded at build time) and its QA:
   golden/           golden tests + frozen fixtures vs external references
 cmd/              the pofo binary and the data generators (gen-*-refdata)
 examples/portfolios/  model portfolio files (embedded for the web UI)
-examples/lib/     runnable example programs over the library, offline
+examples/code/    single-file scripts over the library, one question each
 ```
 
 Each package's `go doc` page holds its conventions and more runnable
