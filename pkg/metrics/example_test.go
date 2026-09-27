@@ -364,3 +364,33 @@ func ExampleCVaR() {
 	// Output:
 	// ok=true 1-day CVaR 95 % = 3.000 %
 }
+
+// TrackingError is the annualized volatility of one return column minus
+// another: here a replica that lags its index by a basis point on some
+// months and leads it on others.
+func ExampleTrackingError() {
+	index := []float64{0.012, -0.020, 0.031, 0.004, -0.007, 0.015}
+	replica := []float64{0.011, -0.019, 0.030, 0.005, -0.008, 0.015}
+	fmt.Printf("%.2f %%/yr\n", metrics.TrackingError(replica, index, 12)*100)
+	// Output:
+	// 0.34 %/yr
+}
+
+// LeadLagGaps forgives a one-session clock difference: a Xetra line that
+// books each of New York's moves a session late disagrees with the index by
+// two points and more on the days of the big move, and by nothing once the
+// clock is allowed for. The last session is a real disagreement and stays
+// one.
+func ExampleLeadLagGaps() {
+	index := []float64{0.001, 0.022, -0.004, 0.003, 0.010}
+	xetra := []float64{0.000, 0.001, 0.022, -0.004, 0.030}
+	for t, g := range metrics.LeadLagGaps(xetra, index) {
+		fmt.Printf("session %d: |a-b| %.1f pt, forgiven %.1f pt\n", t, math.Abs(xetra[t]-index[t])*100, g*100)
+	}
+	// Output:
+	// session 0: |a-b| 0.1 pt, forgiven 0.1 pt
+	// session 1: |a-b| 2.1 pt, forgiven 0.0 pt
+	// session 2: |a-b| 2.6 pt, forgiven 0.0 pt
+	// session 3: |a-b| 0.7 pt, forgiven 0.0 pt
+	// session 4: |a-b| 2.0 pt, forgiven 2.0 pt
+}

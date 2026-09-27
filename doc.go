@@ -31,7 +31,8 @@
 //     time-to-recovery, Beta, CWARP, IRR, TWR), the correlation and
 //     covariance matrices, calendar returns, rolling beta and correlation,
 //     historical VaR, multiple regression (Regress), dated extremes
-//     (LowestK, HighestK) and the Euler risk attribution.
+//     (LowestK, HighestK), tracking error, lead-lag gaps (LeadLagGaps, two
+//     closes struck at different hours) and the Euler risk attribution.
 //   - pkg/optimize: long-only weights for an objective (max-sharpe,
 //     min-volatility, max-return, risk-parity, max-sortino,
 //     return-to-drawdown, min-ulcer, max-worst-5y, cwarp) from the assets'
@@ -47,7 +48,9 @@
 //   - pkg/analyze: the high-level, numbers-only face: one call studies an
 //     asset or a portfolio (statistics, calendar tables, drawdown episodes,
 //     correlation, risk and return attribution, look-through composition,
-//     warnings) and renders nothing.
+//     warnings) and renders nothing; Pair measures one series against its
+//     reference (a backcast against the fund, a file against its previous
+//     version) and prints itself as text.
 //   - pkg/simgen: reconstruction of the missing past of complex assets
 //     (capital-efficient funds, managed futures) into simdata files.
 //   - pkg/scenario: synthetic real-return path generation (parametric

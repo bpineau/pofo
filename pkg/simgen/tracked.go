@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Holding a donor to the index it tracks.
@@ -142,21 +143,8 @@ func trackIndex(donor, reference *marketdata.Series, tol float64, refuse ...time
 	// or one behind it, and next to a repeated close the donor session may carry
 	// two of the reference's (the catch-up after a stale print), so a session is
 	// convicted only when it disagrees with every reading it is allowed.
-	excess := func(i int) float64 {
-		if math.IsNaN(rr[i]) {
-			return 0
-		}
-		e := math.Abs(dr[i] - rr[i])
-		for _, k := range []int{-1, 1} {
-			if j := i + k; j >= 1 && j < n && !math.IsNaN(rr[j]) {
-				e = math.Min(e, math.Abs(dr[i]-rr[j]))
-				if dr[j] == 0 {
-					e = math.Min(e, math.Abs(dr[i]-rr[i]-rr[j]))
-				}
-			}
-		}
-		return e
-	}
+	gaps := metrics.LeadLagGaps(dr[1:], rr[1:])
+	excess := func(i int) float64 { return gaps[i-1] }
 	listed := make(map[time.Time]bool, len(refuse))
 	for _, d := range refuse {
 		listed[d] = true
