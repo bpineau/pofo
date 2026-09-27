@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/bpineau/pofo/pkg/datasets"
+	"github.com/bpineau/pofo/pkg/metrics"
 )
 
 // Band bounds the statistics an asset of a given class can plausibly show over
@@ -138,11 +139,8 @@ const spikeLegSigmas = 4.0
 // finding on its own, while SpikeLeg only stops the cleaner from touching
 // ordinary volatility on the way to a reversal it can prove.
 func (b Band) SpikeLeg() float64 {
-	return spikeLegSigmas * b.VolHi / math.Sqrt(tradingDaysPerYear)
+	return spikeLegSigmas * b.VolHi / math.Sqrt(metrics.TradingDaysPerYear)
 }
-
-// tradingDaysPerYear is the annualization factor used across the toolkit.
-const tradingDaysPerYear = 252
 
 // widestBand answers for an identifier no catalog record claims. It is the
 // loosest row of the table, so an uncatalogued series gets the most
@@ -211,7 +209,7 @@ func bandFor(id string) Band {
 // the series as served (its own cadence included, so a weekly NAV annualizes by
 // its own pace rather than by 252).
 type shape struct {
-	perYear  float64   // observations per year
+	perYear  float64   // observations per year, metrics.PeriodsPerYear of the dates
 	years    float64   // span of the series
 	vol      float64   // annualized standard deviation of the returns
 	cagr     float64   // annualized growth over the span
@@ -231,12 +229,18 @@ func measure(pts []Point) (sh shape, ok bool) {
 	if sh.years <= 0 || pts[0].Close <= 0 || pts[len(pts)-1].Close <= 0 {
 		return sh, false
 	}
-	sh.perYear = float64(len(pts)-1) / sh.years
 	sh.cagr = math.Pow(pts[len(pts)-1].Close/pts[0].Close, 1/sh.years) - 1
 
+	// The cadence is the series' PREVAILING one, snapped to a canonical
+	// count: a hole or a sparse deep history does not dilute it, where the
+	// raw count of observations over the span did (a daily fund silent for
+	// one year of ten read 227 a year, understating its volatility by 5 %).
+	dates := make([]time.Time, len(pts))
 	rets := make([]float64, 0, len(pts)-1)
 	peak := pts[0].Close
+	dates[0] = pts[0].Date
 	for i := 1; i < len(pts); i++ {
+		dates[i] = pts[i].Date
 		if pts[i-1].Close <= 0 || pts[i].Close <= 0 {
 			return sh, false
 		}
@@ -248,16 +252,8 @@ func measure(pts []Point) (sh shape, ok bool) {
 		peak = math.Max(peak, pts[i].Close)
 		sh.drawdown = math.Max(sh.drawdown, 1-pts[i].Close/peak)
 	}
-	var mean float64
-	for _, r := range rets {
-		mean += r
-	}
-	mean /= float64(len(rets))
-	var ss float64
-	for _, r := range rets {
-		ss += (r - mean) * (r - mean)
-	}
-	sh.vol = math.Sqrt(ss/float64(len(rets)-1)) * math.Sqrt(sh.perYear)
+	sh.perYear = metrics.PeriodsPerYear(dates)
+	sh.vol = metrics.Volatility(rets, sh.perYear)
 	return sh, true
 }
 
