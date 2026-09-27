@@ -48,6 +48,53 @@ stored user data on the web side; personalized financial advice. The web UI
 serves the bundled catalog plus tightly budgeted foreign identifiers, and
 stores nothing about a visitor.
 
+## Exploring data: use pofo, not Python
+
+Every ad hoc question about a series, a backcast or a portfolio is answered
+with pofo: a CLI mode when one prints it, a Go program in `scratch/`
+otherwise. Never Python over hand-parsed CSVs or the cache's private JSON. A
+Python one-off over pofo's data is the sign of a MISSING API: report it (what
+it computed, which call was lacking) rather than work around it.
+
+| Question | CLI | Library (and the program to copy) |
+|---|---|---|
+| What is in this series? | `./pofo -dump ID[,ID...]` (long CSV; `-monthly`, `-start`/`-end`, `-currency`, `-simulate`; `-dump list` names every bundled series) | `marketdata.Bundled`, `Series.Stats`, `metrics.CalendarReturns` (`describe`) |
+| Does A match its reference (a backcast vs its fund, a fund vs its index)? | `./pofo -pair A,B` (`-json`; `-lead-lag` for a European close against a US index) | `analyze.Pair` (`pair`) |
+| Did a refresh move a bundled file? | `git show HEAD~1:pkg/datasets/refdata/X.csv > /tmp/old.csv && ./pofo -offline -pair X,/tmp/old.csv` (a side with a slash or `.csv` is a file) | `git show` into `marketdata.ReadCSV`, then `analyze.Pair` (`oldnew`) |
+| Is a backcast any good? | `./pofo -verify-simdata [ID...]` (`-json` = `[]simgen.AuditGroup`; never scrape the HTML) | `simgen.Validate`, `simgen.Audit` |
+| Blends, regressions, worst months, conditional statistics | none | `marketdata.NewPanel`, `Panel.Mix`/`Pick`/`Track`, `metrics.Regress`, `metrics.LowestK` (`blend`, `regress`, `worstmonths`) |
+| Holes and bad prints in any series | `./pofo -verify-data -assets ID`, `make verify-catalog` | `marketdata.FindGaps`, `FindSpikes`, the rules the golden guards run (never re-implement them) |
+| A portfolio, a FIRE plan | `./pofo file.txt`, `./pofo -fire file.txt` | `analyze.Portfolio`, `portfolio.Build`/`Simulate`, `decumul.Plan` (`simulate`, `fire`) |
+| Data out to another tool | `./pofo -dump` | `marketdata.WriteCSV` (`export`) |
+
+`-offline` keeps any mode off the network: the quote cache at any age, then
+the bundled data, `ErrOffline` otherwise.
+
+The library route: copy the nearest program of `examples/lib/` (its README
+indexes them; all run offline on bundled data) into the gitignored
+`scratch/`, inside the module so pofo's packages import with no `go.mod` or
+`replace` dance, and edit it there:
+
+```sh
+mkdir -p scratch/volcheck && cp examples/lib/blend/main.go scratch/volcheck/
+go run ./scratch/volcheck
+```
+
+`go doc .` is the API's entry point (question to package, a complete program,
+the units table), then `go doc ./pkg/<name>`, which opens on "Start here".
+Data without the network: `marketdata.Bundled(id)` (any embedded series), a
+client with `Offline = true` (the quote cache), `ReadCSV` (a file; `git show
+REV:path` for an old version).
+
+- `scratch/` is gitignored: never commit it, never `git add -f` it. What turns
+  out to be worth keeping moves into a `pkg/` package with tests, a
+  `cmd/pofo` mode, or `examples/lib/`.
+- The Makefile's gate leaves `scratch/` out (`PKGS` filters it from
+  `go list ./...`, `fmt-check` from its file list), so a scratch program that
+  stopped compiling never fails `make check`. A bare `go vet ./...`,
+  `go test ./...` or `gofmt -l .` still sees it: delete it when done, or keep
+  it compiling.
+
 ## Priorities and non-negotiables
 
 When a trade-off is unclear, these decide it, in order.
@@ -88,7 +135,7 @@ When a trade-off is unclear, these decide it, in order.
 
 ```sh
 make build     # ./pofo binary, pkg/datasets/ embedded via go:embed
-make test      # go test ./...  (unit tests + runnable examples, NO network)
+make test      # go test ./...  (unit tests, runnable examples, the examples/lib programs, the godoc guards; NO network)
 make lint      # go vet + staticcheck
 make check     # fmt-check + lint + test: run this before any commit
 make golden    # computation goldens vs frozen external references
@@ -159,25 +206,11 @@ Tests never touch the network: HTTP sources are faked with `httptest`
 
 ## Verifying changes cheaply
 
-- Looking at data: `./pofo -dump ID[,ID...]` prints the series as long CSV
-  (`id,date,value`, metadata and junctions as `#` comments), shaped by
-  `-start`/`-end`/`-currency`/`-simulate`/`-monthly`; bundled reference
-  series work too (`./pofo -dump TREASURY-LONG-USD -monthly`), `-dump list`
-  names every bundled series, and `-offline` keeps any mode off the network.
-  An old version of a bundled file: `git show REV:pkg/datasets/refdata/X.csv`
-  piped into `marketdata.ReadCSV`. Write the analysis in Go against
-  `marketdata.Bundled`, `ReadCSV` and an `Offline` client, never Python over
-  hand-parsed CSVs or the cache's private JSON.
-- Comparing two series: `./pofo -pair A,B` prints A (the candidate) against
-  B (the reference): CAGR gap with its standard error, level gap, ratio A/B
-  and the first date it moves, daily and monthly correlation, tracking error,
-  beta and alpha, dated divergences, calendar years side by side, warnings
-  (`-json` for JSON, `-lead-lag` for a European close against a US index).
-  A reconstruction against its reference: `./pofo -pair SP500,VOO`. A
-  refreshed bundled file against its previous version: `git show
-  HEAD~1:pkg/datasets/refdata/X.csv > /tmp/old.csv && ./pofo -offline -pair
-  X,/tmp/old.csv` (a side with a slash or a `.csv` suffix is a file). In Go,
-  `analyze.Pair` on any two series.
+- Data questions (a series, a pair, a refreshed file, holes and bad prints):
+  the table of "Exploring data" above. `-pair` prints the CAGR gap with its
+  standard error, the level gap, the ratio A/B and the first date it moves,
+  daily and monthly correlation, tracking error, beta, alpha, dated
+  divergences and the calendar years side by side.
 - Report/chart changes: `scripts/report-shot.sh [file] [out-prefix]` builds,
   renders the report with every section unfolded and screenshots it full-page
   (needs Chrome and a warm quote cache; `./pofo -warmup` once). Crop a region
@@ -205,35 +238,9 @@ Tests never touch the network: HTTP sources are faked with `httptest`
   `make verify-catalog` runs the doctor over all of it (plausibility bands per
   `asset_class`, identity vs the record); run it after any catalog edit or
   `make refresh`.
-- Holes and bad prints in any series (a bundled file, a cached quote, a
-  generator's output before it ships): `marketdata.FindGaps` and
-  `marketdata.FindSpikes`, the very rules the golden guards and the doctor
-  run. Never re-implement them.
-
-## Ad hoc exploration in Go
-
-A question the CLI does not answer (a regression across three series, a
-before/after over the whole catalog, a statistic no mode prints) is answered
-in Go, never in Python, with a throwaway program INSIDE the module, so pofo's
-packages import with no `go.mod` or `replace` dance:
-
-```sh
-mkdir -p scratch/volcheck && $EDITOR scratch/volcheck/main.go   # package main
-go run ./scratch/volcheck
-```
-
-- `scratch/` is gitignored: never commit it, never `git add -f` it. What turns
-  out to be worth keeping moves into a `pkg/` package with tests, or into a
-  `cmd/pofo` mode.
-- Reach data without the network: `marketdata.Bundled(id)` for any embedded
-  series, a client with `Offline = true` for the quote cache, `ReadCSV` for a
-  file (`git show REV:path` for an old version); then `NewPanel`,
-  `Panel.Track`, `analyze.Pair`, `FindGaps`/`FindSpikes`, `pkg/metrics`.
-- The Makefile's gate leaves `scratch/` out (`PKGS` filters it from
-  `go list ./...`, `fmt-check` from its file list), so a scratch program that
-  stopped compiling never fails `make check`. A bare `go vet ./...`,
-  `go test ./...` or `gofmt -l .` still sees it: delete it when done, or keep
-  it compiling.
+- Documentation: `go test -run 'TestGodoc|TestReadmeSnippets' .` is the
+  cheap check (both run in `make test`); `go doc ./pkg/<name>` renders what
+  pkg.go.dev will show.
 
 ## Map
 
@@ -261,9 +268,8 @@ go run ./scratch/volcheck
 | `pkg/datasets` | embedded data: `assetmeta/assets.json` catalog, `simdata/` CSVs, `refdata/` (the three MSCI monthly anchors `MSCIWORLD-USD`/`DEVEXUS-USD`/`EM-USD` are a manual Curvo export extended past its last month by `cmd/gen-msci-refdata`, which never rewrites an exported point: see the `# tail-from:` marker and `docs/index-benchmarks-design.md`; incl. `ERESMONDEM-NAV`, the Eres FCPE's official NAV snapshot behind the `airfund` source, `ILS-NET-USD`, the monthly net insurance-linked composite, `WTI-ER-USD`, the daily EXCESS return of a rolled long WTI futures position, 1985-2024, which prices the roll the spot series `WTI-USD`/`WTI-DAILY` cannot; `TREASURY-LONG-YIELD`, the long Treasury constant-maturity PAR YIELD in annualized percent, 1953-04 on, which the zero-coupon STRIPS reconstruction is priced off, together with the two month-end total-return series `cmd/gen-tyield-refdata` writes beside it, `TREASURY-LONG-USD` (a 20-year par bond on that yield, gap-free across the 1987-1993 suspension of the 20-year point) and `TREASURY-INT-USD` (a 5-year par bond on the H.15 5-year point), plus the daily shapes `TREASURY-LONG-DAILY`/`TREASURY-INT-DAILY` the same command now owns; and `USMKT-USD`, the whole US market's daily total return from 1926-07 (Ken French market factor, `cmd/gen-usmkt-refdata`, gross: `docs/us-total-market-reference-design.md`)), `broadsample/` (JST per-country real returns for the FIRE empirical model), `cape/` (Shiller CAPE, FIRE valuation anchor), `macropanel/` (OECD monthly multi-country macro drivers: IP/CPI/rates/share prices, for regime & growth-inflation-breadth work), `golden/` (frozen-fixture computation tests, PLUS two guards that measure the bundle as DATA rather than as computations, because what they hunt is invisible to a return: `gaps_test.go` refuses a step longer than the series' own pace allows (a monthly file skipping a month, a daily one silent for three weeks), and `spikes_test.go` refuses a one-session round trip no instrument could have made; both call the library rules `marketdata.FindGaps`/`FindSpikes`, never a private copy) |
 | `cmd/pofo` | wiring over `pkg/compare`, one file per concern: `main.go` (flags + mode dispatch + terminal output + `renderComparison`), `fetch.go`, `adapt.go` (maps `options` onto `compare.Options`/`Decoration`), `suggest.go`, `simdata.go`, `sweep.go` (`-sweep`), `fire.go`, `epubexport.go` (`-export-epub`: writes the FIRE book EPUB), `dump.go` (`-dump`: series to stdout as long CSV via `marketdata.WriteCSV`, bundled references included; the global `-offline` flag is set on every mode's client by `options.newClient` in `main.go`), `pair.go` (`-pair A,B`: `analyze.Pair` as text, or JSON under `-json`, each side an identifier fetched as `-dump` does or a CSV path) (the report-assembly files `page.go`/`composition.go`/`contrib.go` moved into `pkg/compare`); the `-serve` web constellation is `serve.go` (mux + lifecycle), `landing.go` (the front-door landing page at `/`), `hub.go` (the portfolio visualizer's home at `/visualizer`), `view.go` (the shareable `/view` URL grammar), `foreign.go` (identifiers outside the bundled catalog: the ISIN/ticker shape gate plus the per-client and per-process hourly fetch budgets behind `-serve-foreign-per-hour`, 0 = catalog only), `prefs.go` (the settings cookie), `composer.go` (+ `composer.js`/`composer.css`: the live in-page editor over the `/view` grammar, fed by the `/catalog.json` endpoint `serve.go` exposes) and `logdedup.go` (log hygiene for the long-lived servers: each informational fetch line once per process, every `warning:` always; `/healthz` and the access log live in `serve.go`) |
 | `docs/` | only what the code cannot carry: rationale behind non-obvious decisions, validation records of bundled data, recurring procedures (`docs/README.md` is the one-line index). No specs, plans or backlogs: a shipped package's design is its godoc |
-| `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt` |
-
-Root `doc.go` describes the layering and the typical pipeline.
+| `examples/` | portfolio files for the CLI (also exercised by `make demo`); `embed.go` embeds them (`go:embed *.txt`) and lists them (`List`) so `-serve` can build the hub catalog and serve each file raw at `/examples/<name>.txt`; `lib/` holds the runnable example PROGRAMS over the library (one question each, offline on bundled data, indexed by `lib/README.md`), which `lib_test.go` builds and runs (clean exit and some output; figures unpinned since they move with the data; skipped under `-short`) |
+| root (`.`) | `doc.go` = the library's ENTRY POINT (question to package, a complete program, the units table, the packages, the layering measured by `go list`); `example_test.go` = that program as the package `Example`, run by `TestExampleRuns`; `godoc_test.go` = `TestGodoc`, the documentation bar over `pkg/` (package comment, a doc comment on every exported identifier incl. struct fields and interface methods, starting with its name, every doc link resolving); `snippets_test.go` = `TestReadmeSnippets`, every README ```` ```go ```` block headed `// from pkg.ExampleX` must be that example's body, and `doc.go`'s program the root `Example`'s |
 
 ## The core pipeline (library)
 
@@ -296,7 +302,7 @@ Every step is also reachable individually (`Fetch`, `ReadSimdataFS`,
 `ConvertCurrency`, `Trim`, ...) when a caller needs to deviate. README.md's
 "Using it as a library" walks the library BY TASK, and every snippet there is
 a verbatim copy of a runnable `Example*` it names: change the example, then
-the README, never the README alone.
+the README, never the README alone (`TestReadmeSnippets` fails otherwise).
 
 ## Conventions and traps (do not guess, check here)
 
@@ -648,6 +654,10 @@ the README, never the README alone.
 - [ ] Docs updated in the SAME commit: the package's `doc.go`, its
       `example_test.go`, `README.md` if a command or an output changed, the
       design doc in `docs/`, and this file's Map if a package gained a concern.
+      Every new exported identifier (struct fields included) carries a doc
+      comment that starts with its name and states its unit and sentinel
+      values (`TestGodoc`); a new entry point gets a runnable `Example`, and
+      the package's "Start here" names it.
 - [ ] No third-party dependency added.
 - [ ] No typographic dash anywhere in the diff (figure labels and the commit
       message included).
