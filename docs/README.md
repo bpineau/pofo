@@ -25,6 +25,7 @@ package's design is its godoc (`go doc ./pkg/<name>`).
 | [`fire-book-en-translation-brief.md`](specs/fire-book-en-translation-brief.md) | the procedure to translate one article, step by step |
 | [`fire-book-en-glossary.md`](specs/fire-book-en-glossary.md) | the book's FR to EN vocabulary, which keeps translation sessions consistent |
 | [`fire-envelopes-tax-model-design.md`](specs/fire-envelopes-tax-model-design.md) | the per-envelope tax model, measured and refused; the blended-rate calibration |
+| [`inflation-deflators.md`](specs/inflation-deflators.md) | `^HICP-<geo>` and `^CPI-US`: sources, the 2026 Eurostat rebase that froze the old HICP dataset, its validation record, the freshness guards |
 | [`index-benchmarks-design.md`](specs/index-benchmarks-design.md) | why `MSCIWORLD`/`SP500` are fee-free index benchmarks with bare ids; the MSCI tail policy |
 | [`long-treasury-zero-coupon-design.md`](specs/long-treasury-zero-coupon-design.md) | the US Treasury references, the STRIPS reconstruction, the Vanguard donor defects |
 | [`ntsg-global-efficient-core-design.md`](specs/ntsg-global-efficient-core-design.md) | the four-currency bond basket of the Global Efficient Core backcast and its references |

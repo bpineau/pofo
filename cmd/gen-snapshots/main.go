@@ -21,10 +21,10 @@
 //     anchors carrying the Frankfurt DM/USD shape) is settled history built
 //     from two sources this command does not touch, so it is carried over from
 //     the existing file unchanged.
-//   - hicp-fr.csv    Eurostat prc_hicp_midx (geo=FR, all-items, 2015=100) from
-//     1996-01, likewise over a carried-over OECD head chained at the 1996
-//     overlap; the command re-checks that overlap and refuses to write if
-//     Eurostat has rebased under it.
+//   - hicp-fr.csv    Eurostat prc_hicp_minr (geo=FR, ECOICOP 2 all-items,
+//     unit I15 = 2015=100) from 1996-01, likewise over a carried-over OECD
+//     head chained at the 1996 overlap; the command re-checks that overlap and
+//     refuses to write if Eurostat has rebased under it.
 //
 // Every file keeps its own comment header verbatim (curated prose that says
 // where the data comes from); only the "# generated:" stamp is refreshed.
@@ -33,6 +33,13 @@
 // in the file by more than a rounding is reported and, unless -force, not
 // written: the sources publish revisions (the CPI in particular), and a
 // revision worth accepting is worth reading first.
+//
+// So is a source that has STOPPED: a rebuild whose last row trails today by
+// more than its cadence allows (maxLag) is refused the same way. A statistics
+// office that rebases a series tends to publish the continuation under a new
+// dataset and leave the old one answering, complete-looking and frozen, which
+// is how Eurostat's prc_hicp_midx ended at 2025-12 while every other check
+// here passed.
 //
 // Usage: gen-snapshots [-dir path] [-only name,name] [-dry] [-force]
 package main
@@ -122,6 +129,9 @@ func refresh(s snapshot, dir, stamp string, dry, force bool) error {
 		return err
 	}
 	problems := check(old, fresh)
+	if p := stale(fresh[len(fresh)-1].label, time.Now().UTC()); p != "" {
+		problems = append(problems, p)
+	}
 	log.Printf("%-16s %d rows -> %d, %s..%s, %s", s.file,
 		len(old), len(fresh), fresh[0].label, fresh[len(fresh)-1].label, drift(old, fresh))
 	for _, p := range problems {
@@ -277,10 +287,12 @@ func fred(id string) ([]row, error) {
 
 // eurostatHICP reads the monthly all-items HICP (2015=100) of one geography
 // from the Eurostat dissemination API, whose JSON-stat payload indexes values
-// by position rather than by date.
+// by position rather than by date. It reads the same series as the library's
+// live path (pkg/marketdata's hicpDataset, whose godoc tells why it is
+// prc_hicp_minr and not the prc_hicp_midx Eurostat froze at 2025-12).
 func eurostatHICP(geo string) ([]row, error) {
-	body, err := get("https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx" +
-		"?format=JSON&lang=EN&freq=M&unit=I15&coicop=CP00&geo=" + geo)
+	body, err := get("https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr" +
+		"?format=JSON&lang=EN&freq=M&unit=I15&coicop18=TOTAL&geo=" + geo)
 	if err != nil {
 		return nil, fmt.Errorf("eurostat HICP %s: %w", geo, err)
 	}
@@ -413,6 +425,38 @@ func check(old, fresh []row) []string {
 		out = append(out, fmt.Sprintf("%d dates present before are gone", missing))
 	}
 	return out
+}
+
+// maxLag bounds how long before the rebuild the last row's period may have
+// ended before its source is presumed to have stopped. A daily series gets
+// three weeks, which covers FRED's weekly H.10 release and a holiday. A monthly
+// one gets ten weeks from the end of its month: the CPI and the HICP publish
+// month M around the middle of M+1, so a live source trails by seven weeks at
+// worst, and ten already means a missed release.
+const (
+	dailyMaxLag   = 21 * 24 * time.Hour
+	monthlyMaxLag = 70 * 24 * time.Hour
+)
+
+// stale reports, as a problem line, a last row whose period ended more than
+// maxLag before now; "" when the source is current. A monthly label
+// (YYYY-MM) is dated at the end of its month, a daily one (YYYY-MM-DD) at its
+// day; a label of neither shape is not judged.
+func stale(last string, now time.Time) string {
+	var end time.Time
+	var limit time.Duration
+	if t, err := time.Parse("2006-01-02", last); err == nil {
+		end, limit = t, dailyMaxLag
+	} else if t, err := time.Parse("2006-01", last); err == nil {
+		end, limit = t.AddDate(0, 1, 0), monthlyMaxLag
+	} else {
+		return ""
+	}
+	if age := now.Sub(end); age > limit {
+		return fmt.Sprintf("the source ends at %s, %.0f days ago: it has stopped updating (a rebased series often continues under a new dataset); find where it went before refreshing",
+			last, age.Hours()/24)
+	}
+	return ""
 }
 
 // drift summarises how far the rebuild moved the values the file already had:
