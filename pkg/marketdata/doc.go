@@ -12,6 +12,8 @@
 //   - [NewClient] and [Client.FetchExtended] fetch anything quoted: the CLI's
 //     per-asset pipeline (resolution, disk cache, SIM backcast, currency
 //     conversion). [Client.Offline] keeps it off the network.
+//   - [Client.Load] is the explorer's door: a CSV path, else the bundle, else
+//     the client, one call per identifier.
 //   - [Series] is what every door returns: [Series.Stats] scores it,
 //     [Series.Returns], [Series.Resample], [Series.Change] and
 //     [Series.LessFee] reshape it, [NewSeries] wraps a consumer's own data.
@@ -58,6 +60,12 @@
 //     of "git show". It honours the headers the bundled files carry
 //     ("# junctions:" above all) and its errors name the line.
 //   - ReadLongCSV for several series in one "id,date,value" file.
+//
+// Client.Load chains three of them for a program that explores data: a path
+// is read as a file, an identifier the module bundles comes from the bundle,
+// and anything else, or an identifier with the SIM suffix, goes through
+// FetchExtended; the window and the currency conversion apply to all three.
+// It is the call every script of examples/code makes.
 //
 // WriteCSV is the way out: the long layout, each series' metadata as "#"
 // comments any CSV reader can skip, values that parse back exactly. "pofo
