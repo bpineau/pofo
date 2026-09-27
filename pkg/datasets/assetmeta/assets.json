@@ -194,36 +194,43 @@
     "benchmark_index": "STOXX Europe 600",
     "strategy": "physical-replication",
     "geography": {
-      "France": 14,
+      "Belgium": 2,
+      "Denmark": 3,
+      "Finland": 2,
+      "France": 15,
       "Germany": 13,
-      "Netherlands": 7,
-      "Other Europe": 28,
-      "Sweden": 6,
-      "Switzerland": 12,
-      "UK": 20
+      "Italy": 5,
+      "Netherlands": 8,
+      "Norway": 1,
+      "Other eurozone": 2,
+      "Poland": 1,
+      "Spain": 6,
+      "Sweden": 5,
+      "Switzerland": 14,
+      "UK": 23
     },
     "sectors": {
       "Communication Services": 3,
-      "Consumer Discretionary": 7,
+      "Consumer Discretionary": 6,
       "Consumer Staples": 8,
-      "Energy": 5,
-      "Financials": 24,
-      "Health Care": 13,
-      "Industrials": 18,
-      "Information Technology": 8,
-      "Materials": 6,
-      "Other": 2,
+      "Energy": 6,
+      "Financials": 26,
+      "Health Care": 12,
+      "Industrials": 19,
+      "Information Technology": 9,
+      "Materials": 5,
       "Real Estate": 1,
       "Utilities": 5
     },
     "distribution": "distributing",
     "leverage": 1,
     "notes": "Broad European large/mid-cap core holding; distributing; full physical replication of STOXX 600",
-    "confidence": "medium",
+    "confidence": "high",
     "sources": [
-      "https://www.ishares.com/ch/individual/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund"
+      "https://www.ishares.com/ch/professionals/en/products/251931/ishares-stoxx-europe-600-ucits-etf-de-fund"
     ],
-    "since": "2004-04-13"
+    "as_of": "2026-09",
+    "since": "2004-02-13"
   },
   {
     "id": "DE0005933931",
@@ -241,31 +248,30 @@
     "benchmark_index": "DAX",
     "strategy": "physical-replication",
     "geography": {
-      "Germany": 93,
-      "Netherlands": 6,
-      "Other": 1
+      "France": 7,
+      "Germany": 93
     },
     "sectors": {
-      "Communication Services": 2,
-      "Consumer Discretionary": 7,
-      "Consumer Staples": 4,
-      "Energy": 2,
+      "Communication Services": 6,
+      "Consumer Discretionary": 6,
+      "Consumer Staples": 1,
       "Financials": 21,
       "Health Care": 7,
       "Industrials": 35,
-      "Information Technology": 13,
-      "Materials": 5,
+      "Information Technology": 15,
+      "Materials": 4,
       "Real Estate": 1,
-      "Utilities": 3
+      "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Concentrated German large-cap exposure (EXS1, 40 stocks); domiciled in Germany as a contractual fund (Sondervermoegen)",
+    "notes": "Concentrated German large-cap exposure (EXS1, 40 stocks); domiciled in Germany as a contractual fund (Sondervermoegen); the issuer's holdings file locates Airbus in France, hence the 7",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/de/individual/de/products/251770/"
+      "https://www.ishares.com/ch/professionals/en/products/251464/ishares-dax-ucits-etf-de-fund"
     ],
-    "since": "2000-04-05"
+    "as_of": "2026-09",
+    "since": "2000-12-27"
   },
   {
     "id": "DE000A0S9GB0",
@@ -304,25 +310,26 @@
     "currency": "USD",
     "fees": 0.49,
     "asset_class": "equity",
-    "underlying": "~890 large- and mid-cap stocks across 8 Asian emerging markets",
+    "underlying": "~900 large- and mid-cap stocks across 8 Asian emerging markets",
     "benchmark_index": "MSCI EM Asia Custom Capped Index",
     "strategy": "physical-replication",
     "geography": {
-      "China": 36,
+      "China": 29,
       "India": 14,
-      "Other emerging": 13,
-      "South Korea": 15,
-      "Taiwan": 22
+      "Other emerging": 2,
+      "South Korea": 21,
+      "Taiwan": 33,
+      "Thailand": 1
     },
     "sectors": {
-      "Communication Services": 7,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 3,
+      "Communication Services": 6,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 2,
       "Energy": 3,
-      "Financials": 15,
-      "Health Care": 3,
+      "Financials": 16,
+      "Health Care": 4,
       "Industrials": 8,
-      "Information Technology": 43,
+      "Information Technology": 45,
       "Materials": 4,
       "Real Estate": 1,
       "Utilities": 2
@@ -330,10 +337,11 @@
     "distribution": "distributing",
     "leverage": 1,
     "notes": "Pure Asian emerging market equity play; dominant tech/semiconductor exposure; benefits from EM Asia growth cycles",
-    "confidence": "medium",
+    "confidence": "high",
     "sources": [
       "https://www.ishares.com/us/products/239629/ishares-msci-emerging-markets-asia-etf"
     ],
+    "as_of": "2026-09",
     "since": "2012-02-08"
   },
   {
@@ -1282,7 +1290,7 @@
     "aliases": [
       "WUTS"
     ],
-    "name": "iShares MSCI World Utilities Sector ESG UCITS ETF USD (Acc)",
+    "name": "iShares MSCI World Utilities Sector Advanced UCITS ETF USD (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -1291,26 +1299,33 @@
     "fees": 0.18,
     "asset_class": "equity",
     "underlying": "Developed-market utilities: electric, gas, water",
-    "benchmark_index": "MSCI World Utilities Advanced Select Index",
+    "benchmark_index": "MSCI World Utilities Advanced Select 20 35 Capped Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 48,
-      "Spain": 14,
-      "UK": 12,
-      "Italy": 9,
-      "Other": 17
+      "Australia": 2,
+      "Canada": 3,
+      "Denmark": 3,
+      "France": 1,
+      "Italy": 10,
+      "New Zealand": 1,
+      "Other developed": 2,
+      "Other eurozone": 3,
+      "Portugal": 3,
+      "Spain": 20,
+      "UK": 13,
+      "US": 39
     },
     "sectors": {
-      "Utilities": 99,
-      "Other": 1
+      "Utilities": 100
     },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Defensive utilities sector; rate-sensitive, bond-proxy equity",
-    "confidence": "medium",
+    "notes": "Defensive utilities sector; rate-sensitive, bond-proxy equity; the 20/35 capping holds the US under 40 % and lifts Spain and Italy",
+    "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000A89Y2G7"
+      "https://www.ishares.com/ch/professionals/en/products/340744/ishares-msci-world-utilities-sector-advanced-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2025-05-09"
   },
   {
@@ -1756,24 +1771,28 @@
     "benchmark_index": "FTSE EPRA/NAREIT Developed Europe ex UK Dividend+ Index",
     "strategy": "physical-replication",
     "geography": {
-      "Germany": 25,
-      "France": 18,
-      "Sweden": 16,
-      "Netherlands": 14,
-      "Spain": 10,
-      "Other Europe": 17
+      "Belgium": 14,
+      "Finland": 1,
+      "France": 25,
+      "Germany": 18,
+      "Netherlands": 2,
+      "Other eurozone": 1,
+      "Spain": 6,
+      "Sweden": 12,
+      "Switzerland": 21
     },
     "sectors": {
       "Real Estate": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Pure European REIT play in EUR; domestic real-asset income",
+    "notes": "European listed property ex UK, a third of it outside the euro (Swiss and Swedish names); real-asset income",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M63284"
+      "https://www.ishares.com/ch/professionals/en/products/251808/ishares-european-property-yield-ucits-etf"
     ],
-    "since": "2006-02-20"
+    "as_of": "2026-09",
+    "since": "2005-11-04"
   },
   {
     "id": "IE00B1FZS350",
@@ -1839,27 +1858,37 @@
     "benchmark_index": "FTSE Global Core Infrastructure Index",
     "strategy": "physical-replication",
     "geography": {
-      "Australia": 12,
-      "Canada": 5,
-      "Other": 7,
-      "Other Europe": 26,
-      "Other emerging": 1,
-      "US": 49
+      "Australia": 1,
+      "Brazil": 2,
+      "Canada": 13,
+      "China": 1,
+      "Hong Kong": 2,
+      "India": 2,
+      "Italy": 1,
+      "Japan": 4,
+      "Other developed": 1,
+      "Other emerging": 3,
+      "Other eurozone": 1,
+      "Spain": 2,
+      "UK": 4,
+      "US": 63
     },
     "sectors": {
-      "Energy": 18,
-      "Industrials": 40,
-      "Other": 1,
-      "Utilities": 41
+      "Communication Services": 2,
+      "Energy": 17,
+      "Industrials": 23,
+      "Real Estate": 4,
+      "Utilities": 54
     },
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Listed-infrastructure real-asset income; defensive, low correlation to broad equity",
+    "notes": "Listed-infrastructure real-asset income, utilities-led; defensive, low correlation to broad equity",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS467"
+      "https://www.ishares.com/ch/professionals/en/products/251809/ishares-global-infrastructure-ucits-etf"
     ],
-    "since": "2007-11-08"
+    "as_of": "2026-09",
+    "since": "2006-10-20"
   },
   {
     "id": "IE00B1FZS913",
@@ -1945,28 +1974,36 @@
     "benchmark_index": "S&P Global Clean Energy Transition Index",
     "strategy": "physical-replication",
     "geography": {
-      "Brazil": 6,
-      "China": 19,
-      "Denmark": 5,
-      "Other": 24,
-      "Other Europe": 14,
-      "US": 32
+      "Brazil": 7,
+      "China": 22,
+      "Denmark": 6,
+      "Germany": 2,
+      "India": 5,
+      "Japan": 3,
+      "Other developed": 5,
+      "Other emerging": 2,
+      "Other eurozone": 1,
+      "Portugal": 4,
+      "South Korea": 2,
+      "Spain": 1,
+      "Taiwan": 2,
+      "US": 38
     },
     "sectors": {
-      "Energy": 1,
-      "Industrials": 33,
-      "Information Technology": 17,
-      "Other": 15,
-      "Utilities": 34
+      "Energy": 2,
+      "Industrials": 35,
+      "Information Technology": 22,
+      "Utilities": 41
     },
     "distribution": "distributing",
     "leverage": 1,
     "notes": "Thematic clean-energy play (IQQH/INRG); concentrated in Utilities and Industrials; high policy-risk sensitivity; satellite/ESG allocation",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/251911/ishares-global-clean-energy-ucits-etf"
+      "https://www.ishares.com/ch/professionals/en/products/251911/ishares-global-clean-energy-ucits-etf"
     ],
-    "since": "2007-11-08"
+    "as_of": "2026-09",
+    "since": "2007-07-06"
   },
   {
     "id": "IE00B2NPKV68",
@@ -2231,21 +2268,20 @@
     "benchmark_index": "S&P 500 Capped 35/20 Information Technology Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 6,
-      "US": 94
+      "US": 100
     },
     "sectors": {
-      "Information Technology": 96,
-      "Other": 4
+      "Information Technology": 100
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Pure-play US tech sector ETF (IUIT); ~96% IT sector concentration; high-conviction tech sleeve",
+    "notes": "Pure-play US tech sector ETF (IUIT); a single GICS sector, capped 35/20 per name; high-conviction tech sleeve",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/280510/ishares-sp-500-information-technology-sector-ucits-etf"
+      "https://www.ishares.com/ch/professionals/en/products/280510/ishares-sp-500-information-technology-sector-ucits-etf"
     ],
-    "since": "2010-06-10"
+    "as_of": "2026-09",
+    "since": "2015-11-20"
   },
   {
     "id": "IE00B3XXRP09",
@@ -2454,38 +2490,42 @@
     "benchmark_index": "MSCI Europe Index",
     "strategy": "physical-replication",
     "geography": {
+      "Belgium": 2,
       "Denmark": 3,
-      "France": 14,
+      "Finland": 2,
+      "France": 15,
       "Germany": 14,
-      "Italy": 3,
-      "Netherlands": 6,
-      "Other": 19,
-      "Spain": 4,
+      "Italy": 5,
+      "Netherlands": 9,
+      "Norway": 1,
+      "Other eurozone": 2,
+      "Spain": 6,
       "Sweden": 5,
-      "Switzerland": 12,
-      "UK": 20
+      "Switzerland": 14,
+      "UK": 22
     },
     "sectors": {
       "Communication Services": 3,
-      "Consumer Discretionary": 7,
+      "Consumer Discretionary": 6,
       "Consumer Staples": 8,
       "Energy": 5,
-      "Financials": 24,
+      "Financials": 26,
       "Health Care": 13,
       "Industrials": 19,
       "Information Technology": 9,
-      "Materials": 6,
+      "Materials": 5,
       "Real Estate": 1,
       "Utilities": 5
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Optimised-sampling iShares MSCI Europe core holding (IMAE); broader than STOXX 600, ~400 holdings",
+    "notes": "iShares MSCI Europe core holding (IMAE); large and mid caps only, ~390 holdings, narrower than the STOXX 600",
     "confidence": "high",
     "sources": [
-      "https://www.blackrock.com/lu/intermediaries/products/251861/ishares-msci-europe-ucits-etf-acc-fund"
+      "https://www.ishares.com/ch/professionals/en/products/251861/ishares-msci-europe-ucits-etf-acc-fund"
     ],
-    "since": "2009-07-30"
+    "as_of": "2026-09",
+    "since": "2009-09-25"
   },
   {
     "id": "IE00B4L5Y983",
@@ -2709,25 +2749,32 @@
     "strategy": "physical-replication",
     "geography": {
       "Australia": 62,
-      "Hong Kong": 21,
-      "Singapore": 14,
-      "New Zealand": 3
+      "Hong Kong": 18,
+      "New Zealand": 2,
+      "Singapore": 18
     },
     "sectors": {
-      "Financials": 42,
-      "Materials": 17,
-      "Real Estate": 9,
-      "Industrials": 8,
-      "Other": 24
+      "Communication Services": 2,
+      "Consumer Discretionary": 6,
+      "Consumer Staples": 3,
+      "Energy": 3,
+      "Financials": 46,
+      "Health Care": 4,
+      "Industrials": 9,
+      "Information Technology": 1,
+      "Materials": 16,
+      "Real Estate": 7,
+      "Utilities": 3
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "notes": "Regional developed Asia-Pacific ex-Japan; commodity- and financials-heavy",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B52MJY50"
+      "https://www.ishares.com/ch/professionals/en/products/253735/ishares-msci-pacific-ex-japan-ucits-etf-acc-fund"
     ],
-    "since": "2010-10-20"
+    "as_of": "2026-09",
+    "since": "2010-01-12"
   },
   {
     "id": "IE00B52VJ196",
@@ -2740,46 +2787,50 @@
     "currency": "GBp",
     "fees": 0.2,
     "asset_class": "equity",
-    "underlying": "Large- and mid-cap European equities screened for ESG criteria with reduced fossil-fuel exposure (~128 stocks)",
+    "underlying": "Large- and mid-cap European equities screened for ESG criteria with reduced fossil-fuel exposure (~120 stocks)",
     "benchmark_index": "MSCI Europe SRI Select Reduced Fossil Fuels Index",
     "strategy": "physical-replication",
     "geography": {
-      "Denmark": 7,
-      "France": 20,
-      "Germany": 8,
-      "Netherlands": 13,
-      "Other": 14,
-      "Spain": 4,
-      "Sweden": 6,
-      "Switzerland": 17,
-      "UK": 11
+      "Belgium": 1,
+      "Denmark": 4,
+      "Finland": 3,
+      "France": 18,
+      "Germany": 10,
+      "Italy": 2,
+      "Netherlands": 16,
+      "Norway": 2,
+      "Other eurozone": 2,
+      "Spain": 3,
+      "Sweden": 4,
+      "Switzerland": 23,
+      "UK": 12
     },
     "sectors": {
-      "Communication Services": 3,
-      "Consumer Discretionary": 8,
+      "Communication Services": 4,
+      "Consumer Discretionary": 6,
       "Consumer Staples": 9,
-      "Energy": 3,
-      "Financials": 23,
-      "Health Care": 9,
-      "Industrials": 19,
+      "Financials": 27,
+      "Health Care": 12,
+      "Industrials": 20,
       "Information Technology": 11,
-      "Materials": 5,
-      "Real Estate": 4,
-      "Utilities": 6
+      "Materials": 6,
+      "Real Estate": 1,
+      "Utilities": 4
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "SRI-screened European equity exposure (IESG) with fossil-fuel exclusions; higher active share vs plain MSCI Europe",
+    "notes": "SRI-screened European equity exposure (IESG) with fossil-fuel exclusions (no Energy sector left); higher active share vs plain MSCI Europe",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B52VJ196"
+      "https://www.ishares.com/ch/professionals/en/products/251767/ishares-msci-europe-sri-ucits-etf"
     ],
-    "since": "2010-11-11"
+    "as_of": "2026-09",
+    "since": "2011-02-25"
   },
   {
     "id": "IE00B53SZB19",
     "isin": "IE00B53SZB19",
-    "name": "iShares VII PLC - iShares NASDAQ 100 UCITS ETF",
+    "name": "iShares NASDAQ 100 UCITS ETF USD (Acc)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -2791,26 +2842,29 @@
     "benchmark_index": "Nasdaq-100",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 8,
-      "US": 92
+      "Netherlands": 1,
+      "Other developed": 2,
+      "US": 97
     },
     "sectors": {
       "Communication Services": 15,
-      "Consumer Discretionary": 12,
-      "Consumer Staples": 8,
+      "Consumer Discretionary": 10,
+      "Consumer Staples": 6,
       "Health Care": 4,
-      "Industrials": 4,
-      "Information Technology": 51,
-      "Other": 6
+      "Industrials": 3,
+      "Information Technology": 60,
+      "Materials": 1,
+      "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Accumulating Nasdaq-100 (CSNDX); broadly equivalent to EQQQ but reinvests dividends",
+    "notes": "Accumulating Nasdaq-100 (CSNDX); broadly equivalent to EQQQ but reinvests dividends; its holdings file is the catalog's Nasdaq-100 breakdown",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/ch/individual/en/products/253741/ishares-nasdaq-100-ucits-etf"
+      "https://www.ishares.com/ch/professionals/en/products/253741/ishares-nasdaq-100-ucits-etf"
     ],
-    "since": "2010-03-25"
+    "as_of": "2026-09",
+    "since": "2010-01-26"
   },
   {
     "id": "IE00B579F325",
@@ -3065,26 +3119,29 @@
     "benchmark_index": "S&P 500 Minimum Volatility Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 92,
-      "Switzerland": 2,
-      "Ireland": 2,
-      "Other": 4
+      "US": 100
     },
     "sectors": {
-      "Consumer Staples": 10,
+      "Communication Services": 5,
+      "Consumer Discretionary": 6,
+      "Consumer Staples": 9,
+      "Energy": 8,
       "Financials": 15,
-      "Health Care": 13,
-      "Information Technology": 31,
-      "Other": 31
+      "Health Care": 14,
+      "Industrials": 6,
+      "Information Technology": 34,
+      "Materials": 2,
+      "Utilities": 1
     },
     "distribution": "accumulating",
     "leverage": 1.0,
     "notes": "Minimum-volatility factor tilt on the S&P 500; US-only low-vol equity",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B6SPMN59"
+      "https://www.ishares.com/ch/professionals/en/products/251383/ishares-sp-500-minimum-volatility-ucits-etf"
     ],
-    "since": "2012-10-30",
+    "as_of": "2026-09",
+    "since": "2012-11-30",
     "factors": [
       "low-vol"
     ]
@@ -3986,7 +4043,7 @@
     "aliases": [
       "WFNS"
     ],
-    "name": "iShares MSCI World Financials Sector ESG UCITS ETF USD (Dist)",
+    "name": "iShares MSCI World Financials Sector Advanced UCITS ETF USD (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -3994,28 +4051,37 @@
     "currency": "USD",
     "fees": 0.18,
     "asset_class": "equity",
-    "underlying": "Developed-market financials: banks, insurance, diversified financials",
-    "benchmark_index": "MSCI World Financials Advanced Select Index",
+    "underlying": "Developed-market financials: banks, insurance, diversified financials, payments",
+    "benchmark_index": "MSCI World Financials Advanced Select 20 35 Capped Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 44,
-      "Canada": 10,
-      "UK": 6,
-      "Japan": 6,
-      "Other": 34
+      "Australia": 5,
+      "Canada": 11,
+      "France": 3,
+      "Germany": 3,
+      "Hong Kong": 1,
+      "Italy": 3,
+      "Japan": 7,
+      "Netherlands": 2,
+      "Other developed": 2,
+      "Other eurozone": 3,
+      "Singapore": 2,
+      "Spain": 3,
+      "Switzerland": 3,
+      "UK": 7,
+      "US": 45
     },
     "sectors": {
-      "Financials": 88,
-      "Information Technology": 8,
-      "Other": 4
+      "Financials": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
     "notes": "Global financials sector; benefits from rising rates / steep curves",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP097"
+      "https://www.ishares.com/ch/professionals/en/products/308836/ishares-msci-world-financials-sector-advanced-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2021-05-18"
   },
   {
@@ -4036,23 +4102,28 @@
     "benchmark_index": "MSCI World Energy Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 61,
-      "Canada": 16,
-      "UK": 10,
+      "Australia": 2,
+      "Canada": 14,
       "France": 5,
-      "Other": 8
+      "Italy": 1,
+      "Japan": 1,
+      "Norway": 1,
+      "Other eurozone": 1,
+      "Spain": 1,
+      "UK": 11,
+      "US": 63
     },
     "sectors": {
-      "Energy": 99,
-      "Other": 1
+      "Energy": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
     "notes": "Pure-play global energy sector; inflation/commodity-cycle equity tilt",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP105"
+      "https://www.ishares.com/ch/professionals/en/products/308904/ishares-msci-world-energy-sector-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2019-10-17"
   },
   {
@@ -4061,7 +4132,7 @@
     "aliases": [
       "WCSS"
     ],
-    "name": "iShares MSCI World Consumer Staples Sector ESG UCITS ETF USD (Dist)",
+    "name": "iShares MSCI World Consumer Staples Sector Advanced UCITS ETF USD (Dist)",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -4070,26 +4141,31 @@
     "fees": 0.18,
     "asset_class": "equity",
     "underlying": "Developed-market consumer staples: food, beverage, household products",
-    "benchmark_index": "MSCI World Consumer Staples Advanced Select Index",
+    "benchmark_index": "MSCI World Consumer Staples Advanced Select 20 35 Capped Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 54,
-      "France": 8,
-      "Switzerland": 7,
-      "UK": 7,
-      "Other": 24
+      "Canada": 3,
+      "France": 9,
+      "Germany": 2,
+      "Japan": 4,
+      "Norway": 1,
+      "Other developed": 1,
+      "Other eurozone": 3,
+      "Switzerland": 6,
+      "UK": 17,
+      "US": 54
     },
     "sectors": {
-      "Consumer Staples": 88,
-      "Other": 12
+      "Consumer Staples": 100
     },
     "distribution": "distributing",
     "leverage": 1.0,
     "notes": "Defensive consumer-staples sector; low cyclicality",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BJ5JP329"
+      "https://www.ishares.com/ch/professionals/en/products/308902/ishares-msci-world-consumer-staples-sector-advanced-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2019-10-17"
   },
   {
@@ -7981,18 +8057,33 @@
     "benchmark_index": "STOXX Developed World Equity Factor Screened",
     "strategy": "multi-factor",
     "geography": {
+      "Australia": 1,
       "Canada": 4,
-      "Ireland": 3,
+      "Denmark": 1,
+      "France": 2,
+      "Germany": 1,
+      "Italy": 3,
       "Japan": 9,
-      "Other": 25,
-      "US": 59
+      "Netherlands": 2,
+      "Other developed": 4,
+      "Other eurozone": 2,
+      "Spain": 2,
+      "Sweden": 2,
+      "UK": 1,
+      "US": 66
     },
     "sectors": {
-      "Communication Services": 8,
-      "Consumer Discretionary": 11,
+      "Communication Services": 9,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 5,
+      "Energy": 4,
       "Financials": 19,
-      "Information Technology": 30,
-      "Other": 32
+      "Health Care": 9,
+      "Industrials": 8,
+      "Information Technology": 32,
+      "Materials": 2,
+      "Real Estate": 1,
+      "Utilities": 2
     },
     "distribution": "accumulating",
     "leverage": 1.0,
@@ -8005,8 +8096,9 @@
     "notes": "Integrated multifactor: targets value, quality, momentum and size together in one developed-world sleeve",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BZ0PKT83"
+      "https://www.ishares.com/ch/professionals/en/products/277246/ishares-factorselect-msci-world-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2015-09-04"
   },
   {
@@ -8454,29 +8546,30 @@
     "benchmark_index": "Russell 2000",
     "strategy": "physical-replication",
     "geography": {
-      "US": 100
+      "Other developed": 2,
+      "US": 98
     },
     "sectors": {
       "Communication Services": 2,
-      "Consumer Discretionary": 10,
-      "Consumer Staples": 3,
-      "Energy": 4,
+      "Consumer Discretionary": 9,
+      "Consumer Staples": 2,
+      "Energy": 7,
       "Financials": 19,
-      "Health Care": 16,
-      "Industrials": 17,
+      "Health Care": 20,
+      "Industrials": 14,
       "Information Technology": 14,
       "Materials": 4,
       "Real Estate": 6,
-      "Utilities": 3,
-      "Other": 2
+      "Utilities": 3
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "The reference US small-cap instrument (and the most traded small-cap options complex); higher beta, cyclical tilt versus the S&P 500",
+    "notes": "The reference US small-cap instrument (and the most traded small-cap options complex); higher beta, cyclical tilt versus the S&P 500; the 2 % outside the US are issuers the holdings file locates in Canada, Bermuda, Norway and the like",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/us/products/239710/ishares-russell-2000-etf"
     ],
+    "as_of": "2026-09",
     "since": "2000-05-22"
   },
   {
