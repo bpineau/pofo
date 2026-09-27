@@ -8,9 +8,28 @@ import (
 	"github.com/bpineau/pofo/pkg/marketdata"
 )
 
-// TestExampleRuns runs the package example, whose output is not pinned, so a
-// bundled series it reads going missing fails a test rather than a reader.
-func TestExampleRuns(t *testing.T) { Example() }
+// TestExampleRuns runs the package examples, whose output is not pinned, so a
+// bundled series they read going missing fails a test rather than a reader.
+func TestExampleRuns(t *testing.T) {
+	Example()
+	Example_quickStart()
+}
+
+// The shortest useful program, the one README.md opens on: a bundled series
+// and its statistics, offline. Like Example, it pins no output.
+func Example_quickStart() {
+	// The S&P 500 total return since 1871, bundled: no network, no API key.
+	sp500, err := marketdata.Bundled("SP500-USD")
+	if err != nil {
+		log.Fatal(err)
+	}
+	st, err := sp500.Stats()
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("%d-%d: CAGR %.1f %%/yr, volatility %.1f %%/yr, max drawdown %.1f %%\n",
+		st.Start.Year(), st.End.Year(), st.CAGR*100, st.Volatility*100, st.MaxDrawdown*100)
+}
 
 // A first program: two bundled series, a monthly 60/40 of them, and the
 // statistics of all three, offline. Its figures move with every data
