@@ -529,6 +529,10 @@ const minMonths = 12
 // read as a single month's move). The reading then starts after the last
 // such hole, on the unbroken stretch that ends the overlap, and note says
 // so; it is empty when the whole overlap was read.
+//
+// It is the one month pairing of the package: the audit's card and its
+// donor-chain junctions read it, and so does monthlyVolMatch, the scale
+// factor the insurance-linked files are built with.
 func monthly(a, b *marketdata.Series, from, to time.Time) (t metrics.Tracking, note string, err error) {
 	if a.Len() == 0 || b.Len() == 0 {
 		return metrics.Tracking{}, "", errors.New("empty series")
