@@ -10,7 +10,7 @@
     "currency": "USD",
     "fees": 0.03,
     "asset_class": "aggregate-bond",
-    "underlying": "~17,000 US investment-grade taxable bonds, maturity >=1 year",
+    "underlying": "~11,400 US investment-grade taxable bonds, maturity >=1 year",
     "benchmark_index": "Bloomberg US Aggregate Float Adjusted Index",
     "strategy": "physical-replication",
     "geography": {
@@ -27,13 +27,15 @@
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios; currency_exposure = 100% USD (the small foreign sleeve is USD-denominated)",
+    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios; currency_exposure = 100% USD (the small foreign sleeve is USD-denominated). Duration (5.7, index 5.8) and holding count re-read on Vanguard's characteristics feed as of 2026-08-31, which reports 0.0% foreign holdings; the geography and sector splits were not re-read and stay undated",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/etfs/profile/bnd"
+      "https://investor.vanguard.com/investment-products/etfs/profile/bnd",
+      "https://investor.vanguard.com/vmf/api/BND/characteristic",
+      "https://investor.vanguard.com/vmf/api/BND/profile"
     ],
     "since": "2007-04-03",
-    "duration": 6.0,
+    "duration": 5.7,
     "currency_exposure": {
       "USD": 100
     }
@@ -567,13 +569,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active flexible EUR bond fund (Flornoy Ferri); benchmark-agnostic, top-down + bottom-up; suits low-rate or credit-spread tightening regimes",
+    "notes": "Active flexible EUR bond fund (Flornoy Ferri); benchmark-agnostic, top-down + bottom-up; suits low-rate or credit-spread tightening regimes. Duration is the monthly factsheet's rate sensitivity (4.54 at 31/08/2026, inside the [0, 7] band the same sheet states); the geography split was not re-read (the factsheet draws it as unlabelled bars) and stays undated",
     "confidence": "medium",
     "sources": [
-      "https://www.flornoyferri.com/nos_fonds/omnibond/"
+      "https://www.flornoyferri.com/nos_fonds/omnibond/",
+      "https://www.flornoyferri.com/wp-content/uploads/2020/06/Fiche_Fonds_OMNIBOND_Part-R.pdf"
     ],
     "since": "2011-12-16",
-    "duration": 6.0,
+    "duration": 4.5,
     "currency_exposure": {
       "EUR": 100
     }
@@ -1505,12 +1508,14 @@
     "notes": "EUR-hedged short-duration TIPS; US inflation protection without USD/EUR FX risk",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000WIQIPT2"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE000WIQIPT2",
+      "https://www.ishares.com/ch/professionals/en/products/326936/ishares-tips-0-5-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2022-04-06",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "duration": 2.5
+    "duration": 2.3
   },
   {
     "id": "IE000XZSV718",
@@ -1895,10 +1900,12 @@
     "notes": "Core USD inflation hedge; long real-rate duration; serves reflation and stagflation regimes",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZSC47"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZSC47",
+      "https://www.ishares.com/ch/professionals/en/products/251714/ishares-tips-ucits-etf"
     ],
-    "since": "2007-11-08",
-    "duration": 7.0
+    "as_of": "2026-09",
+    "since": "2006-12-08",
+    "duration": 6.4
   },
   {
     "id": "IE00B1XNHC34",
@@ -2580,11 +2587,18 @@
     "benchmark_index": "Bloomberg Euro Treasury Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "Italy": 25,
       "France": 24,
-      "Germany": 18,
-      "Spain": 15,
-      "Other": 18
+      "Italy": 22,
+      "Germany": 19,
+      "Spain": 14,
+      "Belgium": 5,
+      "Netherlands": 4,
+      "Austria": 3,
+      "Finland": 2,
+      "Portugal": 2,
+      "Greece": 1,
+      "Ireland": 1,
+      "Other eurozone": 3
     },
     "sectors": null,
     "distribution": "distributing",
@@ -2592,10 +2606,12 @@
     "notes": "Broad EUR sovereign core; defensive in EUR risk-off",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4WXJJ64"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B4WXJJ64",
+      "https://www.ishares.com/ch/professionals/en/products/251740/ishares-euro-government-bond-ucits-etf"
     ],
-    "since": "2009-09-24",
-    "duration": 7.5
+    "as_of": "2026-09",
+    "since": "2009-04-17",
+    "duration": 6.6
   },
   {
     "id": "IE00B4X9L533",
@@ -3396,24 +3412,37 @@
     "benchmark_index": "Bloomberg Global Aggregate Bond (EUR Hedged)",
     "strategy": "physical-replication",
     "geography": {
-      "Canada": 3,
-      "Other": 26,
-      "Other Europe": 34,
-      "Other developed": 2,
-      "US": 35
+      "Australia": 2,
+      "Canada": 4,
+      "China": 12,
+      "France": 5,
+      "Germany": 5,
+      "Italy": 3,
+      "Japan": 8,
+      "Netherlands": 1,
+      "Other": 3,
+      "Other developed": 3,
+      "Other emerging": 5,
+      "Other eurozone": 3,
+      "South Korea": 1,
+      "Spain": 2,
+      "UK": 4,
+      "US": 39
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Broad investment-grade global bonds EUR-hedged (AGGH); diversified rate/credit exposure across developed and EM issuers",
+    "notes": "Broad investment-grade global bonds EUR-hedged (AGGH); diversified rate/credit exposure across developed and EM issuers. Geography by issuer country, weighed by market value over the fund's ~20,000 lines (supranational issuers in Other), China third behind the US and ahead of Japan",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
+      "https://www.ishares.com/uk/individual/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf",
+      "https://www.ishares.com/ch/professionals/en/products/291770/ishares-core-global-aggregate-bond-ucits-etf"
     ],
-    "since": "2017-11-02",
+    "as_of": "2026-09",
+    "since": "2017-11-21",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "duration": 6.5
+    "duration": 6.0
   },
   {
     "id": "IE00BDFL4P12",
@@ -3469,10 +3498,12 @@
     "notes": "Short-duration TIPS; inflation protection with low rate risk (duration ~2.3y)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BDQYWQ65"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BDQYWQ65",
+      "https://www.ishares.com/ch/professionals/en/products/287202/ishares-tips-0-5-ucits-etf"
     ],
-    "since": "2017-10-05",
-    "duration": 2.5
+    "as_of": "2026-09",
+    "since": "2017-04-20",
+    "duration": 2.3
   },
   {
     "id": "IE00BDT6FP91",
@@ -3772,18 +3803,33 @@
     "benchmark_index": "iBoxx USD Liquid Investment Grade Ultrashort Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 75,
-      "Other": 25
+      "Australia": 5,
+      "Canada": 6,
+      "France": 2,
+      "Germany": 4,
+      "Ireland": 1,
+      "Japan": 4,
+      "Netherlands": 2,
+      "Other developed": 2,
+      "Other eurozone": 1,
+      "Switzerland": 1,
+      "UK": 4,
+      "US": 68
     },
     "sectors": null,
+    "currency_exposure": {
+      "USD": 100
+    },
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "USD near-cash liquidity sleeve earning IG credit spreads with minimal duration",
+    "notes": "USD near-cash liquidity sleeve earning IG credit spreads with minimal duration. Geography is the issuers' countries; every bond is USD-denominated, hence the USD 100 exposure override",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BGCSB447"
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00BGCSB447",
+      "https://www.ishares.com/ch/professionals/en/products/297891/ishares-ultrashort-bond-ucits-etf"
     ],
-    "since": "2019-03-21",
+    "as_of": "2026-09",
+    "since": "2018-07-03",
     "duration": 0.4
   },
   {
@@ -4702,14 +4748,16 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Long-duration US Treasuries (IDTL, 20+yr); deflation/recession hedge and rate-cut beneficiary. The DISTRIBUTING twin of DTLA (IE00BFM6TC58): same fund, same book, same 0.07% and the same 15.34-year effective duration for a 26.07-year average maturity (iShares factsheet, 30/06/2026); a taxable account pays income tax on its coupons every year, which is why the accumulating class is the one held. Fund and share class launched 20/01/2015, an earlier 2020 date in this record being wrong.",
+    "notes": "Long-duration US Treasuries (IDTL, 20+yr); deflation/recession hedge and rate-cut beneficiary. The DISTRIBUTING twin of DTLA (IE00BFM6TC58): same fund, same book, same 0.07% and the same effective duration, 14.84 years for a 26.05-year average maturity (iShares, see as_of); a taxable account pays income tax on its coupons every year, which is why the accumulating class is the one held. Fund and share class launched 20/01/2015, an earlier 2020 date in this record being wrong.",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/284433/",
-      "https://www.ishares.com/uk/individual/en/literature/fact-sheet/idtl-ishares-treasury-bond-20yr-ucits-etf-fund-fact-sheet-en-gb.pdf"
+      "https://www.ishares.com/uk/individual/en/literature/fact-sheet/idtl-ishares-treasury-bond-20yr-ucits-etf-fund-fact-sheet-en-gb.pdf",
+      "https://www.ishares.com/ch/professionals/en/products/272124/ishares-usd-treasury-bond-20-yr-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2015-01-20",
-    "duration": 15.3
+    "duration": 14.8
   },
   {
     "id": "DTLA",
@@ -4731,18 +4779,20 @@
     "strategy": "physical-replication",
     "geography": null,
     "sectors": null,
-    "duration": 15.3,
+    "duration": 14.8,
     "distribution": "accumulating",
     "leverage": 1.0,
     "currency_exposure": {
       "USD": 100
     },
-    "notes": "The ACCUMULATING share class of the long US Treasury UCITS range, and the only long-Treasury wrapper here that is both accumulating and quoted with adjusted closes: the distributing twin IDTL (IE00BSKRJZ44) forces annual coupon taxation on a taxable account, and the EUR-hedged class DTLE (IE00BD8PGZ49) is distributing AND quoted by FT as a price-only NAV (see DTLETR). Unhedged, so a euro holder gets the crisis-USD kicker on top of the flight-to-quality rally, which is the case for holding it rather than a euro long-bond line; the corollary is that the hedge carry is not paid either. Deflation and recession sleeve. Effective duration 15.34 years for a 26.07-year average maturity (iShares factsheet, 30/06/2026): the segment's convexity is bought at a duration that shortens as yields rise, so re-read it at each refresh rather than assuming the 17 of a lower-rate year.",
+    "notes": "The ACCUMULATING share class of the long US Treasury UCITS range, and the only long-Treasury wrapper here that is both accumulating and quoted with adjusted closes: the distributing twin IDTL (IE00BSKRJZ44) forces annual coupon taxation on a taxable account, and the EUR-hedged class DTLE (IE00BD8PGZ49) is distributing AND quoted by FT as a price-only NAV (see DTLETR). Unhedged, so a euro holder gets the crisis-USD kicker on top of the flight-to-quality rally, which is the case for holding it rather than a euro long-bond line; the corollary is that the hedge carry is not paid either. Deflation and recession sleeve. Effective duration 14.84 years for a 26.05-year average maturity (iShares, see as_of; 15.34 at 30/06/2026): the segment's convexity is bought at a duration that shortens as yields rise, so re-read it at each refresh rather than assuming the 17 of a lower-rate year.",
     "confidence": "high",
     "sources": [
       "https://www.ishares.com/uk/individual/en/products/291772/",
-      "https://finance.yahoo.com/quote/DTLA.L"
-    ]
+      "https://finance.yahoo.com/quote/DTLA.L",
+      "https://www.ishares.com/ch/professionals/en/products/297191/ishares-treasury-bond-20%20yr-ucits-etf"
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "IE00BSPLC298",
@@ -4984,13 +5034,14 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Intermediate-duration US treasuries (duration ~7.5y); classic recession/deflation ballast",
+    "notes": "Intermediate-duration US treasuries (effective duration ~7y); classic recession/deflation ballast",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin="
+      "https://www.ishares.com/ch/professionals/en/products/239456/ishares-710-year-treasury-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2002-07-22",
-    "duration": 7.5
+    "duration": 6.9
   },
   {
     "id": "IVV",
@@ -5568,8 +5619,10 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1459801780",
-      "https://www.ubs.com/at/en/assetmanagement/funds/etf/lu1459801780-ubs-lux-fund-solutions-bloomberg-tips-1-10-ucits-etf-hedged-to-eur-a-acc-pd001.html"
+      "https://www.ubs.com/at/en/assetmanagement/funds/etf/lu1459801780-ubs-lux-fund-solutions-bloomberg-tips-1-10-ucits-etf-hedged-to-eur-a-acc-pd001.html",
+      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_80_03-20260831-en.pdf"
     ],
+    "as_of": "2026-08",
     "since": "2016-09-30",
     "currency_hedged": true,
     "hedged_to": "EUR",
@@ -5629,9 +5682,9 @@
     "benchmark_index": "Bloomberg Euro Government Inflation-Linked 1-10 Year",
     "strategy": "physical-replication",
     "geography": {
-      "France": 43,
-      "Italy": 32,
-      "Spain": 16,
+      "France": 41,
+      "Italy": 33,
+      "Spain": 17,
       "Germany": 9
     },
     "sectors": null,
@@ -5641,10 +5694,11 @@
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1645380368",
-      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260630-en.pdf"
+      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260831-en.pdf"
     ],
+    "as_of": "2026-08",
     "since": "2017-10-31",
-    "duration": 4.6
+    "duration": 4.9
   },
   {
     "id": "LU1645380442",
@@ -5664,22 +5718,23 @@
     "benchmark_index": "Bloomberg Euro Government Inflation-Linked 1-10 Year",
     "strategy": "physical-replication",
     "geography": {
-      "France": 43,
-      "Italy": 32,
-      "Spain": 16,
+      "France": 41,
+      "Italy": 33,
+      "Spain": 17,
       "Germany": 9
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR inflation hedge, intermediate segment; pairs with nominal euro govts; European stagflation protection; brand-new EUR-acc share class (launched 2025-07), backcast from euro linker history. Modified duration 4.55, average remaining maturity 4.75 years, yield 2.98% and the four-country split come from the UBS monthly factsheet dated 30/06/2026 for the distributing class LU1645380368, which holds the same portfolio; the index only reaches France, Italy, Germany and Spain, so there is no residual bucket to carry.",
+    "notes": "EUR inflation hedge, intermediate segment; pairs with nominal euro govts; European stagflation protection; brand-new EUR-acc share class (launched 2025-07), backcast from euro linker history. Modified duration (4.85) and the four-country split (France 40.8, Italy 33.4, Spain 16.8, Germany 9.1) come from the UBS monthly factsheet (see as_of) for the distributing class LU1645380368, which holds the same portfolio; the index only reaches France, Italy, Germany and Spain, so there is no residual bucket to carry.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1645380442",
-      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260630-en.pdf"
+      "https://www.swissfunddata.ch/sfdpub/docs/fsm-2880_83_01-20260831-en.pdf"
     ],
+    "as_of": "2026-08",
     "since": "2025-07-15",
-    "duration": 4.6
+    "duration": 4.9
   },
   {
     "id": "LU1681038243",
@@ -6397,10 +6452,12 @@
     "notes": "Short-duration US treasuries; cash-like defensive ballast, low rate risk",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=US4642874576"
+      "https://www.justetf.com/en/etf-profile.html?isin=US4642874576",
+      "https://www.ishares.com/ch/professionals/en/products/239452/ishares-13-year-treasury-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2002-07-22",
-    "duration": 1.9
+    "duration": 1.8
   },
   {
     "id": "SPEA",
@@ -6471,13 +6528,14 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Long-duration US treasuries (duration ~17y); strong convexity in deflation/recession; the classic risk-off hedge",
+    "notes": "Long-duration US treasuries (effective duration ~15y at 2026 yields, ~17 in a lower-rate year); strong convexity in deflation/recession; the classic risk-off hedge",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin="
+      "https://www.ishares.com/ch/professionals/en/products/239454/ishares-20-year-treasury-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2002-07-22",
-    "duration": 17.0
+    "duration": 14.9
   },
   {
     "id": "URTH",
@@ -6551,10 +6609,13 @@
     "notes": "Core US bond market exposure; defensive ballast in risk-off regimes; pays monthly income distributions",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vbmfx"
+      "https://investor.vanguard.com/investment-products/mutual-funds/profile/vbmfx",
+      "https://investor.vanguard.com/vmf/api/VBMFX/characteristic",
+      "https://investor.vanguard.com/vmf/api/VBMFX/profile"
     ],
+    "as_of": "2026-08",
     "since": "1986-12-11",
-    "duration": 6.0
+    "duration": 5.7
   },
   {
     "id": "VOO",
@@ -7066,7 +7127,7 @@
     "strategy": "index",
     "geography": null,
     "sectors": null,
-    "duration": 15.3,
+    "duration": 14.8,
     "distribution": "n/a",
     "leverage": 1.0,
     "currency_exposure": {
@@ -7075,9 +7136,10 @@
     "notes": "TOTAL-RETURN view of the EUR-hedged US long-Treasury segment, served from its embedded reconstruction (~1962, no live symbol) because the tradable line cannot supply one: DTLE (IE00BD8PGZ49) is a DISTRIBUTING class whose public NAV series is a PRICE return, understating total return by the distribution yield (~3.1%/yr measured over 2017-2026). Use this id for any backtest or statistic on the segment, and DTLE only to price the actual holding. A French investor holding DTLE in a taxable account also pays income tax on those coupons every year, which an accumulating euro-native line (MTH LU1686832194) avoids; the hedge itself converts the USD yield into the EUR yield, so the hedged class is not a way to earn US rates.",
     "confidence": "medium",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/291770/",
+      "https://www.ishares.com/ch/professionals/en/products/290713/ishares-treasury-bond-20%20yr-ucits-etf",
       "https://fred.stlouisfed.org/series/DGS20"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "ERESMONDEM",
@@ -7297,7 +7359,8 @@
     "notes": "Extreme long-duration zero-coupon Treasuries; highest interest-rate sensitivity; powerful deflation/recession hedge; very volatile",
     "confidence": "high",
     "sources": [
-      "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd"
+      "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd",
+      "https://stockanalysis.com/etf/zroz/"
     ],
     "since": "2009-10-30",
     "duration": 26.0
@@ -8155,7 +8218,8 @@
     "sources": [
       "https://investor.vanguard.com/investment-products/etfs/profile/vti",
       "https://investor.vanguard.com/vmf/api/VTI/profile",
-      "https://investor.vanguard.com/vmf/api/VTI/diversification"
+      "https://investor.vanguard.com/vmf/api/VTI/diversification",
+      "https://investor.vanguard.com/vmf/api/VTI/characteristic"
     ],
     "as_of": "2026-08",
     "since": "2001-05-24"
@@ -8419,13 +8483,15 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "The reference US TIPS instrument; real-rate duration ~6.5y, protects against realized US inflation but not against rising real rates",
+    "notes": "The reference US TIPS instrument; real-rate duration ~6y, protects against realized US inflation but not against rising real rates",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/us/products/239467/ishares-tips-bond-etf"
+      "https://www.ishares.com/us/products/239467/ishares-tips-bond-etf",
+      "https://www.ishares.com/ch/professionals/en/products/239467/ishares-tips-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2003-12-04",
-    "duration": 6.5
+    "duration": 6.2
   },
   {
     "id": "GLD",
@@ -9014,13 +9080,15 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "duration": 15.3,
-    "since": "2017-09-25",
-    "notes": "EUR-hedged share class of IDTL (IE00BSKRJZ44); strips the USD FX from the long-duration Treasury sleeve; deflation/recession hedge. Same bond book as DTLA and IDTL, so the same 15.34-year effective duration (iShares factsheet, 30/06/2026). Its public NAV is a PRICE return: price the holding with it, never compute a statistic on it, use DTLETR for that.",
+    "duration": 14.8,
+    "since": "2017-09-21",
+    "notes": "EUR-hedged share class of IDTL (IE00BSKRJZ44); strips the USD FX from the long-duration Treasury sleeve; deflation/recession hedge. Same bond book as DTLA and IDTL, so the same effective duration, 14.84 years (iShares, see as_of). Its public NAV is a PRICE return: price the holding with it, never compute a statistic on it, use DTLETR for that.",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/291773/"
-    ]
+      "https://www.ishares.com/uk/individual/en/products/291773/",
+      "https://www.ishares.com/ch/professionals/en/products/290713/ishares-treasury-bond-20%20yr-ucits-etf"
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "DBXG",
@@ -9070,26 +9138,28 @@
     "benchmark_index": "Bloomberg Euro Treasury 50bn 25+ Year Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "France": 31,
-      "Germany": 20,
-      "Italy": 15,
+      "France": 30,
+      "Germany": 21,
+      "Italy": 14,
       "Spain": 11,
       "Belgium": 9,
       "Netherlands": 6,
       "Austria": 5,
       "Portugal": 2,
-      "Finland": 1
+      "Finland": 1,
+      "Other eurozone": 1
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "duration": 19.0,
-    "notes": "euro-native long-duration line, accumulating, cheapest (0.07%) and largest of the eurozone 25+ ETFs (EUR 276m against EUR 104m for the only peer, Xtrackers LU0290357846 at 0.15%); deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists), though Germany is a fifth of the book, not the sixth an older split suggested. Duration and country weights from the Amundi monthly reporting dated 30/06/2026 (rate sensitivity 18.96, yield 4.00%, 49 holdings); the ETF dates from 2015-03-02 but the FT quote series only starts 2018-09.",
+    "duration": 18.5,
+    "notes": "euro-native long-duration line, accumulating, cheapest (0.07%) and largest of the eurozone 25+ ETFs (EUR 276m against EUR 104m for the only peer, Xtrackers LU0290357846 at 0.15%, sizes as of 2026-06); deflation/recession convexity in the liability currency; euro sovereign mix carries OAT/BTP spread risk (no Bund-only long ETF exists), though Germany is a fifth of the book, not the sixth an older split suggested. Duration and country weights from the Amundi monthly reporting (see as_of: rate sensitivity 18.45, yield 4.38%, 49 holdings; 18.96 and 4.00% at 30/06/2026); the ETF dates from 2015-03-02 but the FT quote series only starts 2018-09.",
     "confidence": "high",
     "sources": [
       "https://www.justetf.com/en/etf-profile.html?isin=LU1686832194",
       "https://www.amundietf.fr/pdfDocuments/monthly-factsheet/LU1686832194/FRA/FRA/RETAIL/ETF"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "VFINX",
