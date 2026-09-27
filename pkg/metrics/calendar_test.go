@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"math"
+	"strings"
 	"testing"
 	"time"
 )
@@ -38,7 +39,7 @@ func TestCalendarReturns(t *testing.T) {
 	total := values[len(values)-1]/values[0] - 1
 
 	for _, months := range []int{1, 3, 12} {
-		table := CalendarReturns(dates, values, months)
+		table := must(CalendarReturns(dates, values, months))
 		chained := 1.0
 		for k, r := range table {
 			chained *= 1 + r.Return
@@ -64,18 +65,18 @@ func TestCalendarReturns(t *testing.T) {
 		}
 	}
 
-	monthly := CalendarReturns(dates, values, 1)
+	monthly := must(CalendarReturns(dates, values, 1))
 	if len(monthly) != 28 { // Mar 2020 .. Jun 2022
 		t.Errorf("%d monthly periods, want 28", len(monthly))
 	}
 	if !monthly[0].End.Equal(date(2020, 3, 31)) || !monthly[1].Start.Equal(date(2020, 4, 1)) {
 		t.Errorf("first month %s..%s, second starts %s", monthly[0].Start, monthly[0].End, monthly[1].Start)
 	}
-	if n := len(CalendarReturns(dates, values, 3)); n != 10 { // 2020Q1 .. 2022Q2
+	if n := len(must(CalendarReturns(dates, values, 3))); n != 10 { // 2020Q1 .. 2022Q2
 		t.Errorf("%d quarterly periods, want 10", n)
 	}
 
-	yearly := CalendarReturns(dates, values, 12)
+	yearly := must(CalendarReturns(dates, values, 12))
 	if len(yearly) != 3 {
 		t.Fatalf("%d yearly periods, want 3", len(yearly))
 	}
@@ -96,7 +97,7 @@ func TestCalendarReturnsGap(t *testing.T) {
 	// No quote in February: March's return spans it.
 	dates := []time.Time{date(2021, 1, 15), date(2021, 1, 29), date(2021, 3, 5), date(2021, 3, 31)}
 	values := []float64{100, 110, 99, 121}
-	got := CalendarReturns(dates, values, 1)
+	got := must(CalendarReturns(dates, values, 1))
 	if len(got) != 2 {
 		t.Fatalf("%d periods, want 2", len(got))
 	}
@@ -108,20 +109,18 @@ func TestCalendarReturnsGap(t *testing.T) {
 }
 
 func TestCalendarReturnsEdgeCases(t *testing.T) {
-	if got := CalendarReturns(nil, nil, 12); got != nil {
-		t.Errorf("empty: %v", got)
+	if got, err := CalendarReturns(nil, nil, 12); got != nil || err != nil {
+		t.Errorf("empty: %v, %v", got, err)
 	}
-	if got := CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{1, 2}, 12); got != nil {
-		t.Errorf("mismatched: %v", got)
+	if got, err := CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{1, 2}, 12); got != nil || err == nil {
+		t.Errorf("mismatched: %v, %v, want an error", got, err)
 	}
-	got := CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{100}, 12)
+	got := must(CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{100}, 12))
 	if len(got) != 1 || got[0].Return != 0 || !got[0].Partial || !got[0].Start.Equal(got[0].End) {
 		t.Errorf("one point: %+v", got)
 	}
-	defer func() {
-		if recover() == nil {
-			t.Error("months=0 did not panic")
-		}
-	}()
-	CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{100}, 0)
+	if _, err := CalendarReturns([]time.Time{date(2021, 1, 4)}, []float64{100}, 0); err == nil ||
+		!strings.Contains(err.Error(), "non-positive period (0 months)") {
+		t.Errorf("months=0: %v, want an error", err)
+	}
 }

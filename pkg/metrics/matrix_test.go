@@ -2,6 +2,7 @@ package metrics
 
 import (
 	"math"
+	"strings"
 	"testing"
 )
 
@@ -11,6 +12,15 @@ var threeAssets = [][]float64{
 	{0.010, -0.020, 0.015, 0.003, -0.007, 0.012},
 	{0.020, -0.010, 0.010, 0.000, -0.012, 0.008},
 	{-0.005, 0.010, 0.002, -0.004, 0.006, -0.009},
+}
+
+// must returns v, and panics on err, which fails the test that called it
+// with the error and its stack.
+func must[T any](v T, err error) T {
+	if err != nil {
+		panic(err)
+	}
+	return v
 }
 
 func TestCorrKnownValues(t *testing.T) {
@@ -31,7 +41,7 @@ func TestCorrKnownValues(t *testing.T) {
 }
 
 func TestCorrelationMatrix(t *testing.T) {
-	m := CorrelationMatrix(threeAssets)
+	m := must(CorrelationMatrix(threeAssets))
 	if len(m) != 3 {
 		t.Fatalf("got %d rows, want 3", len(m))
 	}
@@ -54,15 +64,15 @@ func TestCorrelationMatrix(t *testing.T) {
 }
 
 func TestCorrelationMatrixConstantAsset(t *testing.T) {
-	m := CorrelationMatrix([][]float64{{0.01, -0.01, 0.02}, {0, 0, 0}})
+	m := must(CorrelationMatrix([][]float64{{0.01, -0.01, 0.02}, {0, 0, 0}}))
 	if m[0][0] != 1 || m[1][1] != 0 || m[0][1] != 0 || m[1][0] != 0 {
 		t.Errorf("constant asset: %v", m)
 	}
 }
 
 func TestCovariance(t *testing.T) {
-	cov := Covariance(threeAssets)
-	corr := CorrelationMatrix(threeAssets)
+	cov := must(Covariance(threeAssets))
+	corr := must(CorrelationMatrix(threeAssets))
 	for i := range cov {
 		sd := sampleStdev(threeAssets[i])
 		near(t, "variance", cov[i][i], sd*sd, 1e-15)
@@ -77,13 +87,13 @@ func TestCovariance(t *testing.T) {
 }
 
 func TestMatricesEdgeCases(t *testing.T) {
-	if m := CorrelationMatrix(nil); len(m) != 0 {
+	if m := must(CorrelationMatrix(nil)); len(m) != 0 {
 		t.Errorf("CorrelationMatrix(nil) = %v", m)
 	}
-	if m := Covariance(nil); len(m) != 0 {
+	if m := must(Covariance(nil)); len(m) != 0 {
 		t.Errorf("Covariance(nil) = %v", m)
 	}
-	one := Covariance([][]float64{{0.01}, {0.02}})
+	one := must(Covariance([][]float64{{0.01}, {0.02}}))
 	for _, row := range one {
 		for _, c := range row {
 			if !math.IsNaN(c) {
@@ -91,19 +101,15 @@ func TestMatricesEdgeCases(t *testing.T) {
 			}
 		}
 	}
-	if m := CorrelationMatrix([][]float64{{0.01}, {0.02}}); m[0][0] != 0 || m[0][1] != 0 {
+	if m := must(CorrelationMatrix([][]float64{{0.01}, {0.02}})); m[0][0] != 0 || m[0][1] != 0 {
 		t.Errorf("one period: correlation %v, want zeros", m)
 	}
-	for name, fn := range map[string]func([][]float64) [][]float64{
+	for name, fn := range map[string]func([][]float64) ([][]float64, error){
 		"CorrelationMatrix": CorrelationMatrix, "Covariance": Covariance,
 	} {
-		func() {
-			defer func() {
-				if recover() == nil {
-					t.Errorf("%s: ragged input did not panic", name)
-				}
-			}()
-			fn([][]float64{{0.01, 0.02}, {0.01}})
-		}()
+		m, err := fn([][]float64{{0.01, 0.02}, {0.01}})
+		if err == nil || m != nil || !strings.Contains(err.Error(), "asset 1 has 1 returns, asset 0 has 2") {
+			t.Errorf("%s: ragged input = %v, %v, want an error naming the row", name, m, err)
+		}
 	}
 }

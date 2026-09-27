@@ -246,7 +246,11 @@ func ExampleCorrelationMatrix() {
 		{0.020, -0.010, 0.010, 0.000, -0.012}, // more equity
 		{-0.005, 0.010, 0.002, -0.004, 0.006}, // a hedge
 	}
-	for _, row := range metrics.CorrelationMatrix(returns) {
+	corr, err := metrics.CorrelationMatrix(returns)
+	if err != nil {
+		panic(err)
+	}
+	for _, row := range corr {
 		fmt.Printf("%5.2f %5.2f %5.2f\n", row[0], row[1], row[2])
 	}
 	// Output:
@@ -262,7 +266,10 @@ func ExampleCovariance() {
 		{0.010, -0.020, 0.015, 0.003, -0.007},
 		{0.020, -0.010, 0.010, 0.000, -0.012},
 	}
-	cov := metrics.Covariance(returns)
+	cov, err := metrics.Covariance(returns)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Printf("annualized vols: %.1f %% %.1f %%\n",
 		math.Sqrt(cov[0][0]*252)*100, math.Sqrt(cov[1][1]*252)*100)
 	fmt.Printf("annualized covariance: %.5f\n", cov[0][1]*252)
@@ -282,7 +289,11 @@ func ExampleCalendarReturns() {
 		time.Date(2023, 3, 15, 0, 0, 0, 0, time.UTC),
 	}
 	values := []float64{100, 108, 90, 81, 89.1}
-	for _, y := range metrics.CalendarReturns(dates, values, 12) {
+	years, err := metrics.CalendarReturns(dates, values, 12)
+	if err != nil {
+		panic(err)
+	}
+	for _, y := range years {
 		fmt.Printf("%d: %+.1f %% (to %s, partial %v)\n",
 			y.End.Year(), y.Return*100, y.End.Format(time.DateOnly), y.Partial)
 	}

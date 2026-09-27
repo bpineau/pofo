@@ -61,8 +61,9 @@
 // Corr is the one Pearson correlation of the tree (suggest.Correlation
 // delegates to it). CorrelationMatrix and Covariance take [asset][period]
 // returns on ONE calendar, as marketdata.Aligned.Returns produces them, and
-// panic on ragged rows; Covariance is per period (multiply by the calendar's
-// PeriodsPerYear, 252 for a daily one, to annualize it). CalendarReturns cuts a value series into calendar
+// return an error on ragged rows; Covariance is per period (multiply by the
+// calendar's PeriodsPerYear, 252 for a daily one, to annualize it).
+// CalendarReturns cuts a value series into calendar
 // months, quarters or years (blocks of months counted from January, as
 // marketdata.Series.Resample cuts them), each period chained on the previous
 // period's last close and the first one flagged Partial: the table behind an
