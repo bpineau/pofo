@@ -1,6 +1,7 @@
 package refgen
 
 import (
+	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
@@ -44,11 +45,28 @@ func Get(url string) ([]byte, error) {
 	return get(client, url, browserAgent)
 }
 
+// Post sends body to url as contentType with the same browser User-Agent and
+// returns the response body (at most 64 MiB): the chart APIs that take their
+// query as a JSON document rather than in the URL.
+func Post(url, contentType string, body []byte) ([]byte, error) {
+	req, err := http.NewRequest(http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", contentType)
+	return do(client, req, browserAgent)
+}
+
 func get(c *http.Client, url, agent string) ([]byte, error) {
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
+	return do(c, req, agent)
+}
+
+func do(c *http.Client, req *http.Request, agent string) ([]byte, error) {
+	url := req.URL.String()
 	req.Header.Set("User-Agent", agent)
 	resp, err := c.Do(req)
 	if err != nil {

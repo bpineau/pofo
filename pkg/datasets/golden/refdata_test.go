@@ -521,6 +521,65 @@ func TestGoldenWTIRolled(t *testing.T) {
 	}
 }
 
+// TestGoldenBCOM validates BCOM-ER-USD, the daily Bloomberg Commodity Index
+// (an EXCESS return, cmd/gen-bcom-refdata), against the total-return figures
+// Bloomberg publishes in its BCOM factsheet (August 31, 2026 edition,
+// https://assets.bbhub.io/professional/sites/27/BCOM.pdf): BCOMTR annualized
+// +3.69 % since inception (1991-01-02), +8.12 % over ten years, +12.22 % over
+// five, +15.13 % over three, and +15.77 % in calendar 2025.
+//
+// The published index is funded at the 3-month T-bill and the bundled one is
+// not, so the test compounds the file with the bundled TBILL-3M first, which is
+// exactly what the commodity backcast (simgen's icomRecipe) does with ^IRX.
+// Measured 2026-09-27, every figure lands within 0.01 point of the published
+// one (3.684, 8.116, 12.226, 15.124 and 15.765 %), so a tolerance of 0.05
+// point catches a dropped session, a unit slip or a misread symbol while
+// leaving room for the bill's rounding.
+func TestGoldenBCOM(t *testing.T) {
+	s := loadRefdata(t, "BCOM-ER-USD")
+	if p := s.Points[0]; p.Date.Format("2006-01-02") != "1991-01-02" || p.Close != 100 {
+		t.Errorf("history starts %s at %g, want the index's base, 100 on 1991-01-02", p.Date.Format("2006-01-02"), p.Close)
+	}
+	funded := fundWithTBill(t, s)
+	asOf := mustDate(t, "2026-08-31")
+	for _, c := range []struct {
+		name string
+		from time.Time
+		ref  float64
+	}{
+		{"since inception", s.Points[0].Date, 3.69},
+		{"10 years", asOf.AddDate(-10, 0, 0), 8.12},
+		{"5 years", asOf.AddDate(-5, 0, 0), 12.22},
+		{"3 years", asOf.AddDate(-3, 0, 0), 15.13},
+	} {
+		within(t, "BCOM funded, "+c.name, 100*annualizedBetween(t, funded, c.from, asOf), c.ref, 0.05)
+	}
+	within(t, "BCOM funded, 2025", calendarYear(t, funded, 2025), 15.77, 0.05)
+}
+
+// annualizedBetween is the compound annual rate of s between its last
+// observation on or before from and its last on or before to.
+func annualizedBetween(t *testing.T, s *marketdata.Series, from, to time.Time) float64 {
+	t.Helper()
+	at := func(d time.Time) (time.Time, float64) {
+		var when time.Time
+		var v float64
+		for _, p := range s.Points {
+			if p.Date.After(d) {
+				break
+			}
+			when, v = p.Date, p.Close
+		}
+		return when, v
+	}
+	d0, v0 := at(from)
+	d1, v1 := at(to)
+	if v0 <= 0 || v1 <= 0 || !d1.After(d0) {
+		t.Fatalf("no window %s..%s in the series", from.Format("2006-01-02"), to.Format("2006-01-02"))
+	}
+	return math.Pow(v1/v0, 365.25/(d1.Sub(d0).Hours()/24)) - 1
+}
+
 // fundWithTBill compounds an excess-return series with the bundled 3-month
 // T-bill, the way the published S&P GSCI total-return indices are funded: the
 // rate is a DISCOUNT rate in percent on a 91-day bill and it accrues on every

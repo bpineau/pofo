@@ -1,5 +1,5 @@
 // Package refgen holds what several reference-data generators under cmd/ share:
-// reading a public source (Get, FRED), the checks every refreshed series must
+// reading a public source (Get, Post, FRED), the checks every refreshed series must
 // pass before it may replace the bundled file (SameHistory, MonthlyCadence,
 // FlatRun), and writing the file in the bundle's simdata format with its
 // "# source:" header and, for a series that stops by design, its "# ends:"
