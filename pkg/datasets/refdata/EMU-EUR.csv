@@ -1,7 +1,7 @@
 # pofo simdata v1
 # id: EMU-EUR
 # name: Eurozone equity total return (OECD euro-area share prices grossed to net TR, EUR, monthly)
-# source: OECD euro-area share-price index EA20.M.SHARE (dataflow DSD_STES@DF_FINMARK, price only, ~1986-12) grossed to a net total return by a constant 2.2%/yr net dividend yield calibrated on the EZU (MSCI Eurozone net TR) EUR overlap; via DBnomics. Proxy behind EZU. CADENCE: the OECD observation for a month is that month's AVERAGE of the daily quotes, so the level is reached mid-month and its monthly returns are smoothed (measured against the real ECB curve over 2004-2026: volatility ratio 0.92, and the correlation of monthly returns is the same at lag 0 and at lag -1, which is the signature of an average rather than a close). The label is the month's last day, the convention every other monthly series here carries, so that the file's steps and its junction with the real-curve segment are one month each; it is a name for the month, not a claim that the level is a month-end close.
+# source: OECD euro-area share-price index EA20.M.SHARE (dataflow DSD_STES@DF_FINMARK, price only, ~1986-12) grossed to a net total return by a constant 2.2%/yr net dividend yield calibrated on the EZU (MSCI Eurozone net TR) EUR overlap; read from the OECD's own SDMX API. Proxy behind EZU. CADENCE: the OECD observation for a month is that month's AVERAGE of the daily quotes, so the level is reached mid-month and its monthly returns are smoothed (measured against the real ECB curve over 2004-2026: volatility ratio 0.92, and the correlation of monthly returns is the same at lag 0 and at lag -1, which is the signature of an average rather than a close). The label is the month's last day, the convention every other monthly series here carries, so that the file's steps and its junction with the real-curve segment are one month each; it is a name for the month, not a claim that the level is a month-end close.
 # generated: 2026-09-27
 date,close
 1986-12-31,100.000000
@@ -478,3 +478,6 @@ date,close
 2026-03-31,1444.479699
 2026-04-30,1498.623784
 2026-05-31,1526.137704
+2026-06-30,1580.979525
+2026-07-31,1600.770887
+2026-08-31,1640.433809
