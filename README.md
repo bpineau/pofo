@@ -346,7 +346,7 @@ other lines' **relative proportions**, and re-runs the real simulation at every
 point:
 
 ```
-$ pofo -sweep examples/hydra-five-engines-capital-efficient.txt
+$ pofo -sweep examples/portfolios/hydra-five-engines-capital-efficient.txt
 
 NTSG (written 18.0 %)
     weight      CAGR       vol  Sharpe     maxDD     TTR   worst5y
@@ -495,7 +495,7 @@ single port:
 ```sh
 ./pofo -serve                             # http://127.0.0.1:8787/
 ./pofo -serve -listen 127.0.0.1:9000      # a different port
-./pofo -serve examples/dragon-decumulation-household.txt  # seed the FIRE panel from a file
+./pofo -serve examples/portfolios/dragon-decumulation-household.txt  # seed the FIRE panel from a file
 ```
 
 **Identifiers a visitor may compose.** Everything the bundled catalog resolves
@@ -1532,6 +1532,7 @@ pkg/datasets/     versioned data (embedded at build time) and its QA:
   refdata/          long reference series the backcasts are built on
   golden/           golden tests + frozen fixtures vs external references
 cmd/              the pofo binary and the data generators (gen-*-refdata)
+examples/portfolios/  model portfolio files (embedded for the web UI)
 examples/lib/     runnable example programs over the library, offline
 ```
 

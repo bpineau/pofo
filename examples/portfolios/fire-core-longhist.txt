@@ -7,7 +7,7 @@
 #   have actual 1990s/2000s sequences to resample, instead of being capped
 #   by the youngest fund. For buying decisions use fire-decumulation-core;
 #   for ruin-probability work use this one:
-#   ./pofo -fire examples/fire-core-longhist.txt
+#   ./pofo -fire examples/portfolios/fire-core-longhist.txt
 #meta capital:2000000
 #meta withdraw:60000/year
 #meta rebalance:90

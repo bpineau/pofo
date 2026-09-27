@@ -36,7 +36,7 @@ path, it is not rescaled to a fund's target (the move that discredited the
 removed tail), and a sleeve held through it carries roughly half the risk the
 real one would, which understates both the sleeve's contribution and its drag.
 See `docs/index-benchmarks-design.md` and
-`examples/risk-budget-decumulation-deephist.txt`, which measures what the
+`examples/portfolios/risk-budget-decumulation-deephist.txt`, which measures what the
 substitution costs before using it.
 
 ## The rule that comes first

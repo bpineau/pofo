@@ -186,7 +186,7 @@
 #   geometry, the ranges above and their empirical/a-priori labels are the
 #   part built to survive. The per-line sweep (rest renormalized,
 #   1996-2026) is re-runnable with:
-#     ./pofo -sweep examples/cerberus-three-heads.txt
+#     ./pofo -sweep examples/portfolios/cerberus-three-heads.txt
 #
 # ## Measured profile (this toolkit, EUR, common window 1996-03 -> 2026-08)
 #   CAGR 10.61%, volatility 9.55% (8.66% monthly), Sharpe 1.07, Sortino

@@ -1,7 +1,7 @@
 # Example portfolios
 
-(Looking for Go code? [`lib/`](lib/README.md) holds runnable example
-programs over the library, one question each.)
+(Looking for Go code? [`../code/`](../code/README.md) holds runnable
+scripts over the library, one question each.)
 
 Ready-to-run model portfolios: famous strategies and well-regarded
 investors' builds, modernized with the bundled (mostly UCITS) catalog. Each
@@ -9,10 +9,10 @@ file's header gives the name, the idea and a link to the source. Run any of
 them:
 
 ```sh
-./pofo examples/all-weather-dalio.txt          # HTML report
-./pofo -cli examples/dragon-portfolio-artemis.txt
-./pofo -coverage examples/cockroach-portfolio-mutiny.txt   # regime coverage, offline
-./pofo examples/*.txt                           # compare them all
+./pofo examples/portfolios/all-weather-dalio.txt          # HTML report
+./pofo -cli examples/portfolios/dragon-portfolio-artemis.txt
+./pofo -coverage examples/portfolios/cockroach-portfolio-mutiny.txt   # regime coverage, offline
+./pofo examples/portfolios/*.txt                          # compare them all
 ```
 
 **Conventions.** Classic American models (All Weather, Permanent, Dragon…)
@@ -152,8 +152,8 @@ capital-efficient engine, a two-engine trend sleeve, gold, and a defensive
 pocket matched to a real-euro liability. Compare the stages side by side:
 
 ```sh
-./pofo examples/fire-bond-tent-departure.txt examples/fire-decumulation-core.txt
-./pofo -fire examples/fire-core-longhist.txt    # ruin-probability explorer
+./pofo examples/portfolios/fire-bond-tent-departure.txt examples/portfolios/fire-decumulation-core.txt
+./pofo -fire examples/portfolios/fire-core-longhist.txt    # ruin-probability explorer
 ```
 
 - `fire-bond-tent-departure`: the year-0 build, defensive tent inflated to

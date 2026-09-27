@@ -1,4 +1,4 @@
-package examples
+package portfolios
 
 import (
 	"strings"

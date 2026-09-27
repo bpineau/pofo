@@ -263,7 +263,7 @@
 #   property; on an identical panel this build matches or beats them
 #   (the tables above; to see it
 #   yourself, window the siblings with the CLI flag, e.g.
-#   `pofo -start 2000-07-01 -fire examples/hydra-five-engines-ucits.txt`).
+#   `pofo -start 2000-07-01 -fire examples/portfolios/hydra-five-engines-ucits.txt`).
 #
 # ## Range check honesty (measured floors, believed ceilings)
 #
