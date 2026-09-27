@@ -162,9 +162,14 @@ past 400 days in either direction.
 - **Quotes start well BEFORE it.** The provider is serving a predecessor under
   this class's name: a merged fund, a converted share class, an older vehicle.
   The statistics are then somebody else's, and the fee load almost certainly
-  differs. PFOCX (quotes from 1992-12, class launched 2008-04) is the standing
-  example, and it also carries the flat runs and the -12.9 % step of that older
-  series.
+  differs. Or the record names the wrong instrument altogether, which is why
+  the warning deserves a look at the ticker before a shrug: the standing
+  example of this bullet, "PFOCX" (quotes from 1992-12 for a class said to be
+  launched 2008-04, with flat runs and a -12.9 % step), turned out in 2026-09
+  to be another fund's ticker, the C class of PIMCO International Bond (U.S.
+  Dollar-Hedged), filed under the name of PIMCO Preferred and Capital
+  Securities; the record now points at the latter's Institutional class
+  (`PFINX`).
 - **Quotes start well AFTER it.** The depth the record implies does not exist
   at this provider; a deeper listing of the same class may.
 

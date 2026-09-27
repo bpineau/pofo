@@ -19,21 +19,22 @@
     },
     "sectors": {
       "Asset-Backed": 1,
-      "Commercial MBS": 1,
-      "Government Mortgage-Backed": 27,
-      "Investment-Grade Corporate": 19,
-      "Other": 6,
-      "US Government": 46
+      "Commercial MBS": 2,
+      "Government Mortgage-Backed": 19,
+      "Investment-Grade Corporate": 25,
+      "Other": 4,
+      "US Government": 49
     },
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios; currency_exposure = 100% USD (the small foreign sleeve is USD-denominated). Duration (5.7, index 5.8) and holding count re-read on Vanguard's characteristics feed as of 2026-08-31, which reports 0.0% foreign holdings; the geography and sector splits were not re-read and stay undated",
+    "notes": "Broad US investment-grade bond market; intermediate duration; classic fixed income anchor in multi-asset portfolios; currency_exposure = 100% USD (the small foreign sleeve is USD-denominated). Duration (5.7, index 5.8) and holding count re-read on Vanguard's characteristics feed as of 2026-08-31; the splits are the fact sheet's 'Distribution by issuer' of 2026-06-30: Treasury/Agency 49.2 (US Government), Government Mortgage-Backed 19.3, Finance 8.1 + Industrial 14.8 + Utilities 2.6 (Investment-Grade Corporate), Commercial Mortgage-Backed 1.5, Asset-Backed 0.5, and Foreign 3.5 + Other 0.5 (Other); the geography's 4 non-US points are that Foreign issuer sleeve",
     "confidence": "high",
     "sources": [
-      "https://investor.vanguard.com/investment-products/etfs/profile/bnd",
+      "https://fund-docs.vanguard.com/F0928.pdf",
       "https://investor.vanguard.com/vmf/api/BND/characteristic",
       "https://investor.vanguard.com/vmf/api/BND/profile"
     ],
+    "as_of": "2026-06",
     "since": "2007-04-03",
     "duration": 5.7,
     "currency_exposure": {
@@ -580,7 +581,7 @@
     "source": "ft",
     "xid": "121432102",
     "currency": "EUR",
-    "fees": 1.1,
+    "fees": 1.11,
     "asset_class": "aggregate-bond",
     "underlying": "Flexible multi-segment EUR bonds (government, corporate, high-yield, EM debt, convertibles); unconstrained duration [0-7]",
     "benchmark_index": "ESTR + 100 bps",
@@ -592,11 +593,12 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Active flexible EUR bond fund (Flornoy Ferri); benchmark-agnostic, top-down + bottom-up; suits low-rate or credit-spread tightening regimes. Duration is the monthly factsheet's rate sensitivity (4.54 at 31/08/2026, inside the [0, 7] band the same sheet states); the geography split was not re-read (the factsheet draws it as unlabelled bars) and stays undated",
+    "notes": "Active flexible EUR bond fund (Flornoy Ferri); benchmark-agnostic, top-down + bottom-up; suits low-rate or credit-spread tightening regimes. Duration is the monthly factsheet's rate sensitivity (4.54 at 31/08/2026, inside the [0, 7] band the same sheet states); the geography split was not re-read (the factsheet draws it as bars without printed values) and stays undated. The fee is the KID's recurring 'management fees and other' cost, 1.11%/yr on actual costs (KID of 2026-07-28), against a 1.10% maximum on the factsheet",
     "confidence": "medium",
     "sources": [
       "https://www.flornoyferri.com/nos_fonds/omnibond/",
-      "https://www.flornoyferri.com/wp-content/uploads/2020/06/Fiche_Fonds_OMNIBOND_Part-R.pdf"
+      "https://www.flornoyferri.com/wp-content/uploads/2020/06/Fiche_Fonds_OMNIBOND_Part-R.pdf",
+      "https://www.flornoyferri.com/wp-content/uploads/2020/06/DIC-OMNIBOND-Action-R.pdf"
     ],
     "since": "2011-12-16",
     "duration": 4.5,
@@ -1773,19 +1775,25 @@
     "benchmark_index": "iBoxx USD Liquid Investment Grade Index",
     "strategy": "physical-replication",
     "geography": {
-      "US": 80,
-      "Other": 20
+      "US": 86,
+      "UK": 4,
+      "Canada": 3,
+      "Other eurozone": 3,
+      "Japan": 2,
+      "Other Europe": 1,
+      "Other developed": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Flagship UCITS USD IG corporate ETF; credit-spread exposure at investment-grade quality; currency_exposure = 100% USD (USD-denominated bonds incl. foreign issuers)",
+    "notes": "Flagship UCITS USD IG corporate ETF; credit-spread exposure at investment-grade quality; currency_exposure = 100% USD (USD-denominated bonds incl. foreign issuers). Geography by issuer country from the holdings file (2026-09-25, market-value weighted, cash left out, countries under 1% folded into regional buckets)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE0032895942"
+      "https://www.ishares.com/ch/professionals/en/products/251832/ishares-corporate-bond-ucits-etf"
     ],
-    "since": "2003-05-07",
-    "duration": 7.0,
+    "as_of": "2026-09",
+    "since": "2003-05-16",
+    "duration": 7.6,
     "currency_exposure": {
       "USD": 100
     }
@@ -1809,21 +1817,21 @@
     "benchmark_index": "Bloomberg Euro Government Inflation-Linked Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "France": 35,
-      "Germany": 15,
-      "Italy": 30,
-      "Other eurozone": 8,
-      "Spain": 12
+      "France": 41,
+      "Italy": 34,
+      "Spain": 16,
+      "Germany": 9
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection; FT xid is the Amsterdam EUR listing (IBCI:AEX:EUR), daily history from the 2005 inception (Yahoo only starts 2009). All-maturity, so effective duration 7.14 years for a 7.55-year average maturity and a 1.35% real yield (iShares factsheet, 30/06/2026): holding it rather than the 1-10 segment (CHSN) is a real-rate bet, not a longer inflation hedge.",
+    "notes": "EUR inflation hedge; pairs with nominal euro govts; European stagflation protection; FT xid is the Amsterdam EUR listing (IBCI:AEX:EUR), daily history from the 2005 inception (Yahoo only starts 2009). All-maturity, so effective duration 7.14 years for a 7.55-year average maturity and a 1.35% real yield (iShares factsheet, 30/06/2026; 7.11 on the product page at 2026-09-25): holding it rather than the 1-10 segment (CHSN) is a real-rate bet, not a longer inflation hedge. Geography by issuer from the holdings file (2026-09-25, market-value weighted): four issuers only, Germany down to 9% as its linkers run off.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B0M62X26",
+      "https://www.ishares.com/ch/professionals/en/products/251739/ishares-euro-inflation-linked-government-bond-ucits-etf",
       "https://www.ishares.com/uk/individual/en/literature/fact-sheet/ibci-ishares-inflation-linked-govt-bond-ucits-etf-fund-fact-sheet-en-gb.pdf"
     ],
+    "as_of": "2026-09",
     "since": "2005-11-18",
     "duration": 7.1
   },
@@ -1979,25 +1987,26 @@
     "fees": 0.15,
     "asset_class": "government-bond",
     "underlying": "Euro-area government bonds with 15-30 years to maturity",
-    "benchmark_index": "Bloomberg Euro Government Bond 15-30 Year Index",
+    "benchmark_index": "Bloomberg Euro Government Bond 30 Year Term Index",
     "strategy": "physical-replication",
     "geography": {
-      "Italy": 28,
-      "France": 26,
-      "Germany": 20,
-      "Spain": 14,
-      "Other": 12
+      "Germany": 29,
+      "France": 24,
+      "Italy": 22,
+      "Spain": 15,
+      "Netherlands": 10
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Long-duration EUR sovereign; convexity in deflation; barbell partner to broad EUR govt",
+    "notes": "Long-duration EUR sovereign; convexity in deflation; barbell partner to broad EUR govt. A 'Term' index holds only the five largest euro issuers, which is the whole geography (holdings file 2026-09-25, market-value weighted)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B1FZS913"
+      "https://www.ishares.com/ch/professionals/en/products/251735/ishares-euro-government-bond-1530yr-ucits-etf"
     ],
-    "since": "2007-11-08",
-    "duration": 16.5
+    "as_of": "2026-09",
+    "since": "2006-12-08",
+    "duration": 15.8
   },
   {
     "id": "IE00B1FZSC47",
@@ -2094,22 +2103,45 @@
     "fees": 0.45,
     "asset_class": "government-bond",
     "underlying": "USD-denominated EM sovereign and quasi-sovereign bonds",
-    "benchmark_index": "J.P. Morgan EMBI Global Core Index",
+    "benchmark_index": "J.P. Morgan EMBI Global Diversified Core Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 25,
-      "Other emerging": 75
+      "Saudi Arabia": 7,
+      "Mexico": 6,
+      "Turkey": 5,
+      "Brazil": 4,
+      "Dominican Republic": 4,
+      "Hungary": 4,
+      "Indonesia": 4,
+      "Philippines": 4,
+      "Poland": 4,
+      "Argentina": 3,
+      "Bahrain": 3,
+      "Chile": 3,
+      "China": 3,
+      "Colombia": 3,
+      "Egypt": 3,
+      "Nigeria": 3,
+      "Oman": 3,
+      "Panama": 3,
+      "Peru": 3,
+      "Romania": 3,
+      "South Africa": 3,
+      "Malaysia": 2,
+      "Uruguay": 2,
+      "Other emerging": 18
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Benchmark EM hard-currency sovereign ETF; high carry; benefits in EM risk-on / commodity booms; USD hard-currency EM sovereigns: currency_exposure = 100% USD despite EM issuer geography",
+    "notes": "Benchmark EM hard-currency sovereign ETF; high carry; benefits in EM risk-on / commodity booms; USD hard-currency EM sovereigns: currency_exposure = 100% USD despite EM issuer geography. Geography by issuer country from the holdings file (2026-09-25, market-value weighted, countries under 2% folded into Other emerging, which also holds the Gulf issuers not named)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B2NPKV68"
+      "https://www.ishares.com/ch/professionals/en/products/251824/ishares-jp-morgan-emerging-markets-bond-ucits-etf"
     ],
-    "since": "2008-03-18",
-    "duration": 7.0,
+    "as_of": "2026-09",
+    "since": "2008-02-15",
+    "duration": 6.4,
     "currency_exposure": {
       "USD": 100
     }
@@ -2125,26 +2157,40 @@
     "currency": "EUR",
     "fees": 0.16,
     "asset_class": "aggregate-bond",
-    "underlying": "Bloomberg MSCI Euro Aggregate and Green Bond ESG SRI Index; govt ~71%, corp ~29%",
+    "underlying": "Bloomberg MSCI Euro Aggregate and Green Bond ESG SRI Index; treasury and government-related ~74%, corporate and covered ~26% (holdings file, 2026-09-25)",
     "benchmark_index": "Bloomberg MSCI Euro Aggregate and Green Bond ESG SRI",
     "strategy": "physical-replication",
     "geography": {
-      "France": 19,
-      "Germany": 15,
-      "Italy": 11,
-      "Other": 47,
-      "Spain": 8
+      "France": 20,
+      "Germany": 19,
+      "Italy": 13,
+      "Spain": 9,
+      "Other": 9,
+      "Netherlands": 5,
+      "Belgium": 4,
+      "Other Europe": 4,
+      "US": 4,
+      "Austria": 2,
+      "Finland": 2,
+      "Other eurozone": 2,
+      "UK": 2,
+      "Canada": 1,
+      "Ireland": 1,
+      "Other developed": 1,
+      "Other emerging": 1,
+      "Portugal": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "EUR-denominated investment-grade aggregate bonds (SEAG) with ESG/SRI screening; core EUR rate exposure with green bond tilt; GBP-quoted share class of a euro-aggregate fund: currency_exposure = 100% EUR (holdings are euro-denominated)",
+    "notes": "EUR-denominated investment-grade aggregate bonds (SEAG) with ESG/SRI screening; core EUR rate exposure with green bond tilt; currency_exposure = 100% EUR (every holding is euro-denominated, checked on the holdings file). Geography by issuer country from the holdings file (2026-09-25, market-value weighted, countries under 1% folded into regional buckets, supranational issuers in Other)",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
+      "https://www.ishares.com/ch/professionals/en/products/251725/ishares-euro-aggregate-bond-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2009-03-06",
-    "duration": 6.5,
+    "duration": 5.9,
     "currency_exposure": {
       "EUR": 100
     }
@@ -2167,19 +2213,38 @@
     "benchmark_index": "Bloomberg Euro Corporate Bond Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 12,
-      "Other Europe": 88
+      "US": 21,
+      "France": 18,
+      "Germany": 13,
+      "UK": 9,
+      "Spain": 6,
+      "Italy": 5,
+      "Netherlands": 5,
+      "Sweden": 3,
+      "Switzerland": 3,
+      "Australia": 2,
+      "Belgium": 2,
+      "Denmark": 2,
+      "Japan": 2,
+      "Other Europe": 2,
+      "Other eurozone": 2,
+      "Austria": 1,
+      "Canada": 1,
+      "Finland": 1,
+      "Luxembourg": 1,
+      "Other developed": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Broad EUR IG corporate credit; income with moderate spread and rate duration",
+    "notes": "Broad EUR IG corporate credit; income with moderate spread and rate duration. Geography by issuer country from the holdings file (2026-09-25, market-value weighted, countries under 1% folded into regional buckets); every bond is euro-denominated, hence the EUR 100 exposure, without which a fifth of US issuers would read as dollars",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3F81R35"
+      "https://www.ishares.com/ch/professionals/en/products/251726/ishares-euro-corporate-bond-ucits-etf"
     ],
-    "since": "2009-04-07",
-    "duration": 4.5,
+    "as_of": "2026-09",
+    "since": "2009-03-06",
+    "duration": 4.3,
     "currency_exposure": {
       "EUR": 100
     }
@@ -2254,29 +2319,29 @@
     "source": "yahoo",
     "symbol": "CSBGE3.MI",
     "currency": "EUR",
-    "fees": 0.15,
+    "fees": 0.1,
     "asset_class": "government-bond",
     "underlying": "Euro-area government bonds with 1-3 years to maturity",
     "benchmark_index": "Bloomberg Euro Government Bond 1-3 Year Index",
     "strategy": "physical-replication",
     "geography": {
-      "Italy": 24,
-      "France": 24,
-      "Germany": 18,
-      "Spain": 16,
-      "Other": 18
+      "Germany": 32,
+      "France": 28,
+      "Italy": 28,
+      "Spain": 12
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Short-duration EUR sovereign; low-volatility defensive sleeve near cash",
+    "notes": "Short-duration EUR sovereign; low-volatility defensive sleeve near cash. iShares names its benchmark 'BBG EU Term 1-3 Year Index': a term index of the four largest euro issuers, which is the whole geography (holdings file 2026-09-25, market-value weighted). TER 0.10% on the issuer's page and screener (was pinned at 0.15)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91",
-      "https://www.borsaitaliana.it/borsa/etf/scheda/IE00B3VTMJ91.html"
+      "https://www.ishares.com/ch/professionals/en/products/253455/ishares-euro-government-bond-13-ucits-etf-acc-fund",
+      "https://www.justetf.com/en/etf-profile.html?isin=IE00B3VTMJ91"
     ],
+    "as_of": "2026-09",
     "since": "2009-06-02",
-    "duration": 1.9
+    "duration": 1.6
   },
   {
     "id": "IE00B3VVMM84",
@@ -3036,34 +3101,55 @@
     "currency": "USD",
     "fees": 0.5,
     "asset_class": "government-bond",
-    "underlying": "Local-currency emerging-market government bonds across ~18 countries",
-    "benchmark_index": "J.P. Morgan GBI-EM Global Diversified Index",
+    "underlying": "Local-currency emerging-market government bonds across ~17 countries",
+    "benchmark_index": "J.P. Morgan GBI-EM Global Diversified 10% Cap 1% Floor Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 30,
-      "Other emerging": 70
+      "China": 10,
+      "India": 10,
+      "Malaysia": 10,
+      "Mexico": 10,
+      "Indonesia": 9,
+      "Poland": 9,
+      "Thailand": 8,
+      "Brazil": 7,
+      "South Africa": 7,
+      "Colombia": 5,
+      "Czech Republic": 4,
+      "Hungary": 3,
+      "Romania": 3,
+      "Chile": 2,
+      "Peru": 2,
+      "Turkey": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Local-currency EM bonds with FX carry; diversifies vs USD EM bonds; currency_exposure = representative JPM GBI-EM Global Diversified local-currency weights (medium confidence; drifts with index)",
-    "confidence": "medium",
+    "notes": "Local-currency EM bonds with FX carry; diversifies vs USD EM bonds. Geography by issuer country and currency_exposure by market currency, both from the fund's holdings file (2026-09-25, market-value weighted, cash and forwards left out); the fund holds part of its Brazil sleeve through an iShares Brazil local-bond ETF listed in Amsterdam (the file's 'Germany', USD-quoted), counted here as Brazil and BRL",
+    "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B5M4WH52"
+      "https://www.ishares.com/ch/professionals/en/products/251724/ishares-emerging-markets-local-government-bond-ucits-etf"
     ],
-    "since": "2011-01-27",
-    "duration": 5.0,
+    "as_of": "2026-09",
+    "since": "2011-06-20",
+    "duration": 5.2,
     "currency_exposure": {
-      "BRL": 11,
-      "CNY": 12,
-      "CZK": 8,
-      "IDR": 11,
-      "INR": 11,
-      "MXN": 11,
-      "MYR": 9,
-      "PLN": 8,
-      "THB": 9,
-      "ZAR": 10
+      "CNY": 10,
+      "INR": 10,
+      "MXN": 10,
+      "MYR": 10,
+      "IDR": 9,
+      "PLN": 9,
+      "THB": 8,
+      "BRL": 7,
+      "ZAR": 7,
+      "COP": 5,
+      "CZK": 4,
+      "HUF": 3,
+      "RON": 3,
+      "CLP": 2,
+      "PEN": 2,
+      "TRY": 1
     }
   },
   {
@@ -3084,19 +3170,35 @@
     "benchmark_index": "iBoxx EUR Liquid High Yield Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 10,
-      "Other Europe": 90
+      "France": 19,
+      "Italy": 17,
+      "US": 14,
+      "Germany": 12,
+      "UK": 9,
+      "Luxembourg": 5,
+      "Netherlands": 4,
+      "Other Europe": 4,
+      "Other eurozone": 4,
+      "Sweden": 3,
+      "Japan": 2,
+      "Spain": 2,
+      "Czech Republic": 1,
+      "Greece": 1,
+      "Other developed": 1,
+      "Other emerging": 1,
+      "Slovenia": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Largest, most liquid EUR HY ETF; risk-on credit-spread play",
+    "notes": "Largest, most liquid EUR HY ETF; risk-on credit-spread play. Geography by issuer country from the holdings file (2026-09-25, market-value weighted, countries under 1% folded into regional buckets); every bond is euro-denominated. Effective duration 2.51 on the product page, the screener's 1.39 for the same date disagreeing with it (the page is the one pinned)",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00B66F4759"
+      "https://www.ishares.com/ch/professionals/en/products/251843/ishares-euro-high-yield-corporate-bond-ucits-etf"
     ],
-    "since": "2010-02-25",
-    "duration": 3.0,
+    "as_of": "2026-09",
+    "since": "2010-09-03",
+    "duration": 2.5,
     "currency_exposure": {
       "EUR": 100
     }
@@ -3774,20 +3876,25 @@
     "strategy": "physical-replication",
     "geography": {
       "US": 90,
-      "Other": 10
+      "Canada": 4,
+      "Other eurozone": 2,
+      "UK": 2,
+      "Other developed": 1,
+      "Other emerging": 1
     },
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "notes": "Access to deep USD HY market without FX risk; complements EUR HY",
+    "notes": "Access to deep USD HY market without FX risk; complements EUR HY. Geography by issuer country from the fund's holdings file (2026-09-25, market-value weighted, countries under 1% folded into regional buckets). Effective duration 3.23 on the product page, the screener's 1.86 for the same date disagreeing with it (the page is the one pinned). Share class launched 2018-03-05 in a fund launched 2011-09-13",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE00BF3N7102"
+      "https://www.ishares.com/ch/professionals/en/products/291745/ishares-high-yield-corp-bond-ucits-etf"
     ],
-    "since": "2018-01-16",
+    "as_of": "2026-09",
+    "since": "2018-03-05",
     "currency_hedged": true,
     "hedged_to": "EUR",
-    "duration": 3.5
+    "duration": 3.2
   },
   {
     "id": "IE00BF4RFH31",
@@ -4031,7 +4138,7 @@
     "fees": 0.07,
     "asset_class": "government-bond",
     "underlying": "US Treasury bonds with 0-1 year maturity",
-    "benchmark_index": "IDC US Treasury Short Term Index (0-1 year)",
+    "benchmark_index": "ICE US Treasury Short Bond Index",
     "strategy": "physical-replication",
     "geography": {
       "US": 100
@@ -4039,13 +4146,14 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
-    "notes": "Ultra-short US Treasuries (IB01, 0-1yr); near-zero duration, cash-like liquidity buffer; benefits from high short-term rates",
+    "notes": "Ultra-short US Treasuries (IB01, 0-1yr); near-zero duration, cash-like liquidity buffer; benefits from high short-term rates. Every line of the holdings file (2026-09-25) is a US Treasury or USD cash",
     "confidence": "high",
     "sources": [
-      "https://www.ishares.com/uk/individual/en/products/307243/"
+      "https://www.ishares.com/ch/professionals/en/products/307243/ishares-treasury-bond-0-1yr-ucits-etf"
     ],
+    "as_of": "2026-09",
     "since": "2019-02-20",
-    "duration": 0.4
+    "duration": 0.3
   },
   {
     "id": "IE00BGV5VN51",
@@ -5972,31 +6080,43 @@
     "currency": "EUR",
     "fees": 0.25,
     "asset_class": "aggregate-bond",
-    "underlying": "Global green bonds (sovereigns, supranationals, corporates), EUR and USD",
-    "benchmark_index": "Solactive Green Bond Index",
+    "underlying": "Investment-grade green bonds (sovereigns, supranationals, agencies, corporates) denominated in EUR and USD only",
+    "benchmark_index": "Solactive Green Bond EUR USD IG Index",
     "strategy": "physical-replication",
     "geography": {
-      "Other": 20,
-      "Other Europe": 45,
-      "US": 35
+      "Germany": 22,
+      "Other": 22,
+      "France": 15,
+      "Italy": 8,
+      "Netherlands": 8,
+      "US": 5,
+      "Spain": 4,
+      "Belgium": 3,
+      "Austria": 2,
+      "Finland": 2,
+      "Ireland": 2,
+      "Norway": 2,
+      "Sweden": 2,
+      "Denmark": 1,
+      "Hong Kong": 1,
+      "UK": 1
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "notes": "Investment-grade green-labelled bond allocation; aggregate-style diversification with ESG screen; unhedged global green bonds: currency_exposure ~EUR/USD-led (medium confidence; verify hedging on refresh)",
-    "confidence": "medium",
+    "notes": "Investment-grade green-labelled bond allocation with an ESG screen; unhedged. Despite the 'Global' in its name the index holds EUR and USD bonds only, so the old CAD/CNY/GBP/JPY exposure was wrong: currency_exposure is the index's own split (Solactive factsheet, 2026-08-31: EUR 89.3, USD 10.7), geography the fund's issuer countries (Amundi monthly factsheet, 2026-08-31; supranationals 12.7 and the sheet's 'Others' 9.0 in Other). Duration is the fund's modified duration, 6.32",
+    "confidence": "high",
     "sources": [
+      "https://www.amundietf.lu/pdfDocuments/monthly-factsheet/LU1563454310/ENG/LUX/INSTITUTIONNEL/ETF",
+      "https://www.solactive.com/downloads/Factsheet_DE000SLA2514.pdf",
       "https://www.justetf.com/en/etf-profile.html?isin=LU1563454310"
     ],
-    "since": "2017-04-18",
-    "duration": 7.0,
+    "as_of": "2026-08",
+    "since": "2017-02-21",
+    "duration": 6.3,
     "currency_exposure": {
-      "CAD": 2,
-      "CNY": 3,
-      "EUR": 55,
-      "GBP": 3,
-      "JPY": 4,
-      "USD": 33
+      "EUR": 89,
+      "USD": 11
     }
   },
   {
@@ -6572,18 +6692,18 @@
     "since": "2021-05-10"
   },
   {
-    "id": "PFOCX",
-    "isin": "US6933912601",
-    "name": "PIMCO Preferred and Capital Securities Fund",
+    "id": "PFINX",
+    "isin": "US72202E6822",
+    "name": "PIMCO Preferred and Capital Securities Fund Institutional Class",
     "ucits": false,
     "eu_retail": false,
     "source": "yahoo",
-    "symbol": "PFOCX",
+    "symbol": "PFINX",
     "currency": "USD",
-    "fees": 1.72,
+    "fees": 0.8,
     "asset_class": "corporate-bond",
-    "underlying": "Preferred and capital securities (banks/insurers), mostly USD investment-grade and high-yield hybrids",
-    "benchmark_index": "ICE BofA US All Capital Securities Index",
+    "underlying": "Preferred and capital securities (banks/insurers), mostly USD investment-grade and high-yield hybrids, incl. contingent convertibles",
+    "benchmark_index": "active (supplemental: 70% ICE BofA 8% Constrained Core West Preferred & Jr Subordinated Securities + 30% ICE BofA Contingent Capital; regulatory: Bloomberg Global Aggregate USD Hedged)",
     "strategy": "active",
     "geography": {
       "Other": 10,
@@ -6593,12 +6713,14 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Actively managed preferred/hybrid bank capital securities; high income; credit- and rate-sensitive",
-    "confidence": "medium",
+    "notes": "Actively managed preferred/hybrid bank capital securities; high income; credit- and rate-sensitive. IDENTITY FIXED 2026-09: this record was keyed PFOCX, a ticker that is NOT this fund but the C class of the PIMCO International Bond Fund (U.S. Dollar-Hedged), and its ISIN and quotes were that fund's (the 1992 history, the 1996 flat runs and -12.9% step once read as a predecessor's); it now points at the Institutional class of the fund it always described (ticker PFINX, class launched 2015-04-13, ISIN from its CUSIP 72202E682, which FT's search resolves to PFINX). Fee: the summary prospectus of 2026-08-01 gives 0.97%/yr net of waiver, of which 0.17% interest expense; the pin is the 0.80% excluding it, the same reading as AQMIX's. The geography and the 4.0 duration were not re-read (PIMCO's pages are JavaScript-only, FT's region table covers only the equity sliver) and stay undated",
+    "confidence": "low",
     "sources": [
-      "https://www.pimco.com/us/en/investments/mutual-fund/preferred-and-capital-securities-fund/c"
+      "https://www.sec.gov/Archives/edgar/data/810893/000119312526321560/d119100d497k.htm",
+      "https://markets.ft.com/data/funds/tearsheet/summary?s=PFINX",
+      "https://stockanalysis.com/quote/mutf/pfinx/"
     ],
-    "since": "2008-04-30",
+    "since": "2015-04-13",
     "duration": 4.0,
     "currency_exposure": {
       "USD": 100
@@ -7760,14 +7882,15 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1,
-    "notes": "Extreme long-duration zero-coupon Treasuries; highest interest-rate sensitivity; powerful deflation/recession hedge; very volatile",
+    "notes": "Extreme long-duration zero-coupon Treasuries; highest interest-rate sensitivity; powerful deflation/recession hedge; very volatile. PIMCO's pages are JavaScript-only, so the duration is the INDEX's, read off the other tracker of the same ICE BofA Long US Treasury Principal STRIPS Index (iShares GOVZ, effective duration 26.45 at 2026-09-25); fee, launch date and quarterly payout from stockanalysis.com",
     "confidence": "high",
     "sources": [
-      "https://www.pimco.com/us/en/investments/etf/pimco-25-year-zero-coupon-u-s-treasury-index-exchange-traded-fund/usetf-usd",
-      "https://stockanalysis.com/etf/zroz/"
+      "https://stockanalysis.com/etf/zroz/",
+      "https://www.ishares.com/us/products/315911/ishares-25+-year-treasury-strips-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2009-10-30",
-    "duration": 26.0
+    "duration": 26.5
   },
   {
     "id": "GDE",
@@ -8174,7 +8297,7 @@
     "aliases": [
       "JCL0"
     ],
-    "name": "Janus Henderson Tabula EUR AAA CLO UCITS ETF EUR Acc",
+    "name": "Janus Henderson EUR AAA CLO Active Core UCITS ETF EUR Acc",
     "ucits": true,
     "eu_retail": true,
     "source": "yahoo",
@@ -8189,17 +8312,18 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "duration": 0.25,
+    "duration": 0.27,
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge. Measured against the ESTR ETF (LU0290358497) on their common window since 2024-12: 3.42 %/yr against 2.15 %, so +126 bp net of fees, for 1.2 % volatility and a 0.70 % worst drawdown. TER pinned at the 0.25 % justETF now publishes; the December 2024 launch schedule said 0.35 %, and the euro AAA CLO ETF segment repriced as BlackRock and Invesco arrived at 0.25 %.",
+    "notes": "AAA CLO floating-rate credit: near-zero rate duration with a senior secured spread over cash; a cash-plus building block, not a duration hedge. Measured against the ESTR ETF (LU0290358497) on their common window since 2024-12: 3.42 %/yr against 2.15 %, so +126 bp net of fees, for 1.2 % volatility and a 0.70 % worst drawdown. Renamed by the issuer (was 'Tabula EUR AAA CLO'); the factsheet of 2026-08-31 gives an ongoing charge of 0.25 %, an effective interest-rate duration of 0.27 years (weighted average life 4.9) and the 2024-12-18 inception; the December 2024 launch schedule said 0.35 %, and the euro AAA CLO ETF segment repriced as BlackRock and Invesco arrived at 0.25 %.",
     "confidence": "high",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081",
-      "https://www.janushenderson.com/en-gb/adviser/press-releases/janus-henderson-launches-its-first-aaa-clo-etf-in-europe/"
+      "https://cdn.janushenderson.com/webdocs/JTCLOE_LU2941599081_MAR191_M_31082026_PA%28EN-PT%29.pdf",
+      "https://www.justetf.com/en/etf-profile.html?isin=LU2941599081"
     ],
-    "since": "2024-12-23"
+    "as_of": "2026-08",
+    "since": "2024-12-18"
   },
   {
     "id": "IE00BQQP9F84",
@@ -9226,13 +9350,15 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 3,
-    "notes": "3x daily long-duration treasuries; the bond half of the HFEA (Hedgefundie) pair with UPRO; ~3x the ~18y underlying duration, extreme rate sensitivity plus volatility drag",
+    "notes": "3x daily long-duration treasuries; the bond half of the HFEA (Hedgefundie) pair with UPRO; 3x the underlying index's duration, extreme rate sensitivity plus volatility drag. `duration` is per unit of notional, i.e. the index's: Direxion's pages answer a script with an anti-bot challenge, so it is read off the other tracker of the same ICE US Treasury 20+ Year index (iShares TLT, effective duration 14.84 at 2026-09-25; was pinned at 18); fee, launch date and quarterly payout from stockanalysis.com",
     "confidence": "high",
     "sources": [
-      "https://www.direxion.com/product/daily-20-year-treasury-bull-bear-3x-etfs"
+      "https://stockanalysis.com/etf/tmf/",
+      "https://www.ishares.com/us/products/239454/ishares-20-year-treasury-bond-etf"
     ],
+    "as_of": "2026-09",
     "since": "2009-04-16",
-    "duration": 18.0,
+    "duration": 14.8,
     "exposures": {
       "government-bond": 3.0
     }
@@ -9693,19 +9819,20 @@
     "benchmark_index": "iBoxx EUR Eurozone Sovereigns 25+ Index",
     "strategy": "physical-replication",
     "geography": {
-      "France": 40,
-      "Italy": 25,
-      "Germany": 15,
-      "Spain": 12,
-      "Other eurozone": 8
+      "France": 35,
+      "Germany": 26,
+      "Italy": 17,
+      "Spain": 14,
+      "Netherlands": 8
     },
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1,
     "duration": 19.0,
-    "notes": "euro-native long-duration line: deflation/recession convexity in the liability currency, accumulating (no coupons to declare); euro sovereign mix carries OAT/BTP spread risk. The only ETF on the iBoxx EUR Eurozone 25+ (DE ES FR IT NL), and at EUR 104m against MTH's 276m for 0.15% against 0.07%, it is the second choice on both counts: watch for closure. duration is the segment's, read off the comparable Amundi book (18.96 on 30/06/2026), the issuer publishing no figure this record could pin.",
+    "notes": "euro-native long-duration line: deflation/recession convexity in the liability currency, accumulating (no coupons to declare); euro sovereign mix carries OAT/BTP spread risk. The only ETF on the iBoxx EUR Eurozone 25+ (DE ES FR IT NL), and at EUR 96m (justETF, 2026-09) against MTH's 276m for 0.15% against 0.07%, it is the second choice on both counts: watch for closure. Geography by issuer from the DWS constituent export (read 2026-09, the file carries no date; bond lines only, weights as published). duration is the segment's, read off the comparable Amundi book (18.96 on 30/06/2026), the issuer publishing no figure this record could pin; it was not re-read, so the record stays undated.",
     "confidence": "medium",
     "sources": [
+      "https://etf.dws.com/etfdata/export/GBR/ENG/excel/product/constituent/LU0290357846/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU0290357846"
     ],
     "since": "2007-06-05",
@@ -9941,7 +10068,7 @@
     "symbol": "JAAA",
     "currency": "USD",
     "fees": 0.2,
-    "since": "2020-10-19",
+    "since": "2020-10-16",
     "asset_class": "corporate-bond",
     "underlying": "Actively selected AAA tranches of US collateralised loan obligations: the senior claim on a diversified pool of senior secured leveraged loans, floating-rate over SOFR",
     "benchmark_index": "active (no index)",
@@ -9950,16 +10077,18 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "duration": 0.25,
+    "duration": 0.08,
     "currency_exposure": {
       "USD": 100
     },
-    "notes": "The USD reference for the AAA CLO sleeve (USD 29bn, 0.20%), the long-history sibling of the euro LU2941599081. What the series shows, measured in USD: 4.4%/yr against 3.0% for T-bills (BIL) since 2020-10, for 1.6% volatility and a 2.6% worst drawdown. The spread is compensation for liquidity and complexity, not for rate duration (near zero) nor, historically, for default: no AAA CLO tranche has ever defaulted across ~7,000 tranches rated 1993-2022. The risk that does show up is mark-to-market in a liquidity squeeze, which is exactly when a retiree sells.",
+    "notes": "The USD reference for the AAA CLO sleeve (USD 31.5bn at 2026-09-25, 0.20% gross and net, effective duration 0.08 years for a 4.6-year weighted maturity, per the issuer's page), the long-history sibling of the euro LU2941599081. What the series shows, measured in USD: 4.4%/yr against 3.0% for T-bills (BIL) since 2020-10, for 1.6% volatility and a 2.6% worst drawdown. The spread is compensation for liquidity and complexity, not for rate duration (near zero) nor, historically, for default: no AAA CLO tranche has ever defaulted across ~7,000 tranches rated 1993-2022. The risk that does show up is mark-to-market in a liquidity squeeze, which is exactly when a retiree sells.",
     "confidence": "medium",
     "sources": [
+      "https://www.janushenderson.com/en-us/advisor/product/jaaa-aaa-clo-etf/",
       "https://stockanalysis.com/etf/jaaa/",
       "https://www.lsta.org/news-resources/clo-aaas-credit-losses-and-cave-living/"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "XS2353177293",
@@ -10007,7 +10136,7 @@
     "xid": "1001800450",
     "currency": "EUR",
     "fees": 0.25,
-    "since": "2025-07-24",
+    "since": "2025-07-18",
     "asset_class": "corporate-bond",
     "underlying": "Euro-denominated AAA-rated CLO tranches (at least 80 %), with up to 20 % in tranches rated A- or above; senior secured leveraged-loan collateral, floating rate over Euribor",
     "benchmark_index": "active (no index)",
@@ -10016,16 +10145,17 @@
     "sectors": null,
     "distribution": "accumulating",
     "leverage": 1.0,
-    "duration": 0.25,
+    "duration": 0.12,
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "BlackRock's entry in the euro AAA CLO ETF segment (listed 2025-07-18), the cheapest tier at 0.25 %. Measured against the ESTR ETF over its own window: 3.37 %/yr against 2.01 %, so +136 bp net of fees, worst drawdown 0.30 %. Read the mandate before treating it as a pure AAA sleeve: up to a fifth of the book may sit in A- or better, which is a step down the capital structure that the name does not say.",
+    "notes": "BlackRock's entry in the euro AAA CLO ETF segment (launched 2025-07-18), the cheapest tier at 0.25 %; effective duration 0.12 years on the issuer's page (2026-09-25). Measured against the ESTR ETF over its own window: 3.37 %/yr against 2.01 %, so +136 bp net of fees, worst drawdown 0.30 %. Read the mandate before treating it as a pure AAA sleeve: up to a fifth of the book may sit in A- or better, which is a step down the capital structure that the name does not say.",
     "confidence": "medium",
     "sources": [
-      "https://www.justetf.com/en/etf-profile.html?isin=IE000Q9IHH10",
+      "https://www.ishares.com/ch/professionals/en/products/343060/ishares-aaa-clo-active-ucits-etf",
       "https://www.blackrock.com/lu/intermediaries/products/343060/ishares-aaa-clo-active-ucits-etf"
-    ]
+    ],
+    "as_of": "2026-09"
   },
   {
     "id": "IE000Y2JPPS4",
@@ -10041,7 +10171,7 @@
     "xid": "964668920",
     "currency": "EUR",
     "fees": 0.25,
-    "since": "2025-02-13",
+    "since": "2025-02-10",
     "asset_class": "corporate-bond",
     "underlying": "Euro-denominated CLO tranches rated AAA (at least 80 %) and AA (up to 20 %), ~113 positions, floating rate over Euribor",
     "benchmark_index": "active (no index)",
@@ -10073,7 +10203,7 @@
     "symbol": "LAAA.DE",
     "currency": "EUR",
     "fees": 0.35,
-    "since": "2024-09-11",
+    "since": "2024-09-10",
     "asset_class": "corporate-bond",
     "underlying": "European AAA-rated CLO tranches (the EU risk-retention rule keeps most US CLOs out of a UCITS wrapper), floating rate over Euribor",
     "benchmark_index": "active (no index)",
@@ -10082,16 +10212,18 @@
     "sectors": null,
     "distribution": "distributing",
     "leverage": 1.0,
-    "duration": 0.25,
+    "duration": 0.17,
     "currency_exposure": {
       "EUR": 100
     },
-    "notes": "Europe's FIRST CLO ETF (Xetra, 2024-09-10), from the specialist Fair Oaks; EUR 37m, 0.35 %, quarterly distributions. DATA TRAP, read before comparing: the quotes are PRICE-ONLY. Yahoo carries no distribution for LAAA.DE, so the series shows 0.51 %/yr since inception where the total return is roughly three points higher (12-month distribution yield ~3.0 %). Any chart or statistic that puts this line next to an accumulating sibling (JCL0, EUCL, CLOA) understates it by the whole coupon. Prefer an accumulating share class for analysis, and keep this one for what it is, the income vehicle of the family.",
+    "notes": "Europe's FIRST CLO ETF (Xetra, 2024-09-10), from the specialist Fair Oaks; EUR 37m in this class (justETF), EUR 136m in the fund, 0.35 %, quarterly distributions; interest-rate duration 0.17 years (issuer page, 2026-08-28). DATA TRAP, read before comparing: the quotes are PRICE-ONLY. Yahoo carries no distribution for LAAA.DE, so the series shows 0.51 %/yr since inception where the total return is roughly three points higher (12-month distribution yield ~3.0 %). Any chart or statistic that puts this line next to an accumulating sibling (JCL0, EUCL, CLOA) understates it by the whole coupon. Prefer an accumulating share class for analysis, and keep this one for what it is, the income vehicle of the family.",
     "confidence": "medium",
     "sources": [
+      "https://www.clo-etf.com/faaa-clo-etf/",
       "https://www.justetf.com/en/etf-profile.html?isin=LU2785470191",
       "https://www.etfstream.com/articles/fair-oaks-capital-launches-europe-s-first-clo-etf"
-    ]
+    ],
+    "as_of": "2026-08"
   },
   {
     "id": "AAA",

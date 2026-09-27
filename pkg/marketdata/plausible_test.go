@@ -170,8 +170,9 @@ func TestIdentityIssues(t *testing.T) {
 	})
 
 	t.Run("since", func(t *testing.T) {
-		// Predecessor history served under a later class's name (the PFOCX
-		// shape), and provider depth that never reaches the inception.
+		// Predecessor history served under a later class's name (or another
+		// instrument's history under this one's), and provider depth that
+		// never reaches the inception.
 		if got := messages(identityIssues(datasets.Asset{Since: "2012-06-01"}, base)); !strings.Contains(got, "predecessor history") {
 			t.Fatalf("quotes starting 2.4 years before inception must be flagged, got:\n%s", got)
 		}
