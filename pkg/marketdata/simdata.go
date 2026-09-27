@@ -1,14 +1,11 @@
 package marketdata
 
 import (
-	"bufio"
 	"errors"
 	"fmt"
 	"io/fs"
 	"os"
 	"path/filepath"
-	"sort"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -48,7 +45,10 @@ func ReadSimdata(dir, id string) (*Series, bool, error) {
 }
 
 // ReadSimdataFS is ReadSimdata over any fs.FS, typically the datasets
-// embedded in the binary or os.DirFS for development overrides.
+// embedded in the binary or os.DirFS for development overrides. It reads the
+// file named after CanonicalID(id) with ReadCSV's parser, under one rule
+// stricter than ReadCSV's: a bundled series is a price or a level, so every
+// value must be positive. Symbol is id in upper case and Source "simdata".
 func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
 	path := sanitizeFilename(CanonicalID(id)) + ".csv"
 	f, err := fsys.Open(path)
@@ -60,56 +60,11 @@ func ReadSimdataFS(fsys fs.FS, id string) (s *Series, ok bool, err error) {
 	}
 	defer f.Close()
 
-	name := ""
-	s = &Series{Symbol: strings.ToUpper(id), Source: "simdata"}
-	sc := bufio.NewScanner(f)
-	for sc.Scan() {
-		line := strings.TrimSpace(sc.Text())
-		switch {
-		case line == "" || line == "date,close":
-			continue
-		case strings.HasPrefix(line, "#"):
-			key, val, found := strings.Cut(strings.TrimSpace(strings.TrimPrefix(line, "#")), ":")
-			if !found {
-				continue
-			}
-			val = strings.TrimSpace(val)
-			switch strings.TrimSpace(key) {
-			case "name":
-				name = val
-			case "junctions":
-				for _, d := range strings.Split(val, ",") {
-					t, err := time.ParseInLocation("2006-01-02", strings.TrimSpace(d), time.UTC)
-					if err != nil {
-						return nil, false, fmt.Errorf("%s: invalid junction date %q", path, d)
-					}
-					s.Junctions = append(s.Junctions, t)
-				}
-			}
-			continue
-		}
-		dateStr, closeStr, found := strings.Cut(line, ",")
-		if !found {
-			return nil, false, fmt.Errorf("%s: invalid line %q", path, line)
-		}
-		t, err := time.ParseInLocation("2006-01-02", dateStr, time.UTC)
-		if err != nil {
-			return nil, false, fmt.Errorf("%s: invalid date %q", path, dateStr)
-		}
-		cl, err := strconv.ParseFloat(closeStr, 64)
-		if err != nil || cl <= 0 {
-			return nil, false, fmt.Errorf("%s: invalid close %q", path, closeStr)
-		}
-		s.Points = append(s.Points, Point{Date: t, Close: cl})
+	s, err = readSingle(f, strings.ToUpper(id), positive)
+	if err != nil {
+		return nil, false, fmt.Errorf("%s: %w", path, err)
 	}
-	if err := sc.Err(); err != nil {
-		return nil, false, err
-	}
-	if len(s.Points) == 0 {
-		return nil, false, fmt.Errorf("%s: no data", path)
-	}
-	sort.Slice(s.Points, func(i, j int) bool { return s.Points[i].Date.Before(s.Points[j].Date) })
-	s.Name = name
+	s.Source = "simdata"
 	if s.Name == "" {
 		s.Name = s.Symbol + " (simdata)"
 	}

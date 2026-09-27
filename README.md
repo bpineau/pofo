@@ -35,6 +35,9 @@ go build ./cmd/pofo                       # self-contained binary (datasets embe
 ./pofo -assets WPEA,NTSG,CSPX             # compare individual assets (100% each)
 ./pofo -cli -assets VOO,IWDA              # quick check in the terminal
 ./pofo -b -assets AVWS,ZPRV               # same, with every history backcast
+./pofo -dump IWDA,TREASURY-LONG-USD -monthly > s.csv  # the series themselves, as CSV
+./pofo -dump list                         # every series bundled in the binary
+./pofo -offline -cli -assets VOO,IWDA     # any mode, quote cache and bundled data only
 ./pofo -warmup                            # pre-warm the catalog cache
 ./pofo -gen-simdata                       # regenerate pkg/datasets/simdata (then rebuild)
 ./pofo -export-epub le-fire-tranquille.epub  # export the FIRE book as EPUB 3 (-book-lang en for English)
@@ -50,6 +53,30 @@ it, handy for comparing ETFs against each other without writing a file. It
 can be combined with portfolio files. Add `-simulate` (`-b`) to backcast every
 identifier of the run, so `-b -assets AVWS,ZPRV` says what
 `-assets AVWSSIM,ZPRVSIM` says without suffixing each one.
+
+`-dump` hands the series themselves to another program: it prints them to
+stdout as one long CSV (`id,date,value`, each series' name, currency,
+backcast frontier and definition junctions as leading `#` comments, values
+that parse back exactly) and nothing else, the fetch narration staying on
+stderr. It fetches exactly as a report would (`SIM` suffix, `-simulate`,
+`-no-simulate`, the cache), cuts to `-start`/`-end`, keeps the month-end
+closes under `-monthly`, and keeps each series in its native currency unless
+`-currency` is given. It also reads the reference series bundled in the binary
+(`TREASURY-LONG-USD`, `TBILL-3M`, `MSCIWORLD-USD`…), which no quote source
+knows; `-dump list` names them all, with their dates. Read the output with
+`pandas.read_csv(path, comment="#")` or, in Go, `marketdata.ReadLongCSV`.
+
+```sh
+./pofo -dump TREASURY-LONG-USD -monthly -start 2020-01-01 | head
+# TREASURY-LONG-USD name: US long-term Treasury total return (20-year par bond on the long constant-maturity yield, month-end)
+id,date,value
+TREASURY-LONG-USD,2020-01-31,6492.165025
+TREASURY-LONG-USD,2020-02-28,6873.785348
+```
+
+`-offline` keeps any mode off the network: quotes come from the cache
+whatever their age, then from the bundled data, and an identifier neither
+holds is an error rather than a download.
 
 ## Portfolio file format
 
@@ -562,6 +589,9 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 | `-benchmark` | `^GSPC` | reference for Beta, capture ratios and the CWARP replacement |
 | `-currency` | `EUR` | convert every series (and the benchmark) to this currency; empty disables |
 | `-cache-age` | `720h` (1 month) | cache freshness before re-downloading; the data generators (`-gen-simdata`, `-verify-simdata`) default to `24h` instead, since what they write ships inside the binary |
+| `-offline` | | never touch the network: the quote cache whatever its age, then the bundled data; anything else is an error (refused with `-warmup` and `-gen-simdata`, which exist to download) |
+| `-dump` | | write these comma-separated series to stdout as long CSV (`id,date,value`), then exit; `list` names every bundled series |
+| `-monthly` | | with `-dump`: keep the last close of each calendar month |
 | `-assets`, `-a` | | list `A,B,C`: each asset compared as a 100% portfolio |
 | `-simulate`, `-b` | | backcast every identifier of the run, as if each carried the `SIM` suffix |
 | `-cli` | | curves and summary table in the terminal, no HTML |
@@ -611,7 +641,10 @@ tailscale serve 8787       # https://<machine>.<tailnet>.ts.net/ , private to yo
 - **Cache**: 1 month by default (`-cache-age`), a day for the data
   generators, whose output ships in the binary; a failed refresh **serves the
   stale data** with a stderr warning (charts may stop before today), and never
-  deletes anything.
+  deletes anything. `-offline` serves it whatever its age and never
+  downloads. Its file format is private and changes without notice: read
+  cached quotes with `-dump -offline`, or an `Offline` client in Go, never
+  from the files.
 - **History extension** (`…SIM` identifiers only): first the
   `pkg/datasets/simdata/` files (below), otherwise a known total-return proxy
   (VOO→SP500, IWM→^RUTTR, BND→VBMFX, …), converted into the asset's quote
@@ -925,6 +958,55 @@ if q, err := client.Latest(ctx, "IWDA"); err == nil {
 }
 if today, err := client.Intraday(ctx, "IWDA"); err == nil {
 	fmt.Println(len(today.Points), "ticks today")
+}
+```
+
+### Load series without a download, and export them
+
+`Bundled` reads any series embedded in the binary with no client at all (a
+catalog asset's backcast, or a reference series: indices, yields, cash
+rates), `BundledIDs` lists them; `ReadCSV` reads any `date,value` file, the
+layout of the bundled ones, and `ReadLongCSV` several series in one
+`id,date,value` file; a client with `Offline` set serves the quote cache
+whatever its age (its file format is private: never read it directly);
+`WriteCSV` writes the long layout, values that parse back exactly.
+
+```go
+// from marketdata.Example_loading (compiled, not run: it reads the local cache and a git checkout)
+ctx := context.Background()
+
+// Everything the binary bundles, no Client needed.
+fmt.Println(len(marketdata.BundledIDs()), "bundled series")
+tsy, err := marketdata.Bundled("TREASURY-LONG-USD")
+if err != nil {
+	panic(err)
+}
+
+// Any "date,value" file: the same series ten commits ago.
+out, err := exec.Command("git", "show", "HEAD~10:pkg/datasets/refdata/TREASURY-LONG-USD.csv").Output()
+if err != nil {
+	panic(err)
+}
+old, err := marketdata.ReadCSV(bytes.NewReader(out), "TREASURY-LONG-USD@HEAD~10")
+if err != nil {
+	panic(err)
+}
+
+// What a previous run cached, whatever its age; never the network.
+client := marketdata.NewClient(marketdata.DefaultCacheDir())
+client.Offline = true
+iwda, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"}) // IE00B4L5Y983
+if errors.Is(err, marketdata.ErrOffline) {
+	panic("never fetched: run it once online")
+}
+if err != nil {
+	panic(err)
+}
+
+// Out to any tool, month-end closes, one long id,date,value file.
+err = marketdata.WriteCSV(os.Stdout, tsy, old, iwda.Resample(marketdata.Monthly))
+if err != nil {
+	panic(err)
 }
 ```
 

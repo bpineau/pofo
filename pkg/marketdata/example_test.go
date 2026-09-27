@@ -1,9 +1,15 @@
 package marketdata_test
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
+	"os"
+	"os/exec"
+	"slices"
+	"strings"
 	"time"
 
 	"github.com/bpineau/pofo/pkg/marketdata"
@@ -468,5 +474,131 @@ func Example_priceHistory() {
 	}
 	if today, err := client.Intraday(ctx, "IWDA"); err == nil {
 		fmt.Println(len(today.Points), "ticks today")
+	}
+}
+
+// ReadCSV reads one "date,value" series: a file written by hand, a bundled
+// one, or an old version of a bundled file piped out of "git show". The "#"
+// headers the bundled files carry come along, junctions included, and a rate
+// may be negative.
+func ExampleReadCSV() {
+	const file = `# name: A policy rate (annualized percent)
+# junctions: 2024-01-03
+date,value
+2024-01-02,-0.50
+2024-01-03,0.25
+2024-01-04,0.25
+`
+	s, err := marketdata.ReadCSV(strings.NewReader(file), "RATE")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(s.Symbol, "|", s.Name, "|", s.Len(), s.First().Close, s.Junctions[0].Format(time.DateOnly))
+
+	_, err = marketdata.ReadCSV(strings.NewReader("2024-01-02,1\n2024-01-03,one\n"), "BAD")
+	fmt.Println(err)
+	// Output:
+	// RATE | A policy rate (annualized percent) | 3 -0.5 2024-01-03
+	// marketdata: ReadCSV BAD: line 2: invalid value "one"
+}
+
+// WriteCSV writes several series in the long "id,date,value" layout, their
+// metadata as "#" comments any CSV reader can skip, and every value in the
+// shortest form that parses back exactly: ReadLongCSV returns what was
+// written.
+func ExampleWriteCSV() {
+	day := func(d int) time.Time { return time.Date(2024, 1, d, 0, 0, 0, 0, time.UTC) }
+	fund, _ := marketdata.NewSeries("FUND", []time.Time{day(2), day(3)}, []float64{100, 100.1})
+	fund.Currency = "EUR"
+	rate, _ := marketdata.NewSeries("RATE", []time.Time{day(2)}, []float64{3.9})
+
+	var buf bytes.Buffer
+	if err := marketdata.WriteCSV(&buf, fund, rate); err != nil {
+		panic(err)
+	}
+	fmt.Print(buf.String())
+
+	back, err := marketdata.ReadLongCSV(&buf)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(len(back), back[0].Currency, back[0].Last().Close == 100.1)
+	// Output:
+	// # FUND currency: EUR
+	// id,date,value
+	// FUND,2024-01-02,100
+	// FUND,2024-01-03,100.1
+	// RATE,2024-01-02,3.9
+	// 2 EUR true
+}
+
+// Bundled reads a series embedded in the binary, with no Client and no
+// network: a catalog asset's backcast ("simdata", in its record's currency)
+// or a reference series ("refdata": an index, a yield, a cash rate).
+// BundledIDs lists them all. The numbers move with every data refresh, so
+// this example prints what does not.
+func ExampleBundled() {
+	yield, err := marketdata.Bundled("TREASURY-LONG-YIELD")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(yield.Source, yield.Junctions[0].Format(time.DateOnly))
+
+	backcast, err := marketdata.Bundled("DBMF")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(backcast.Source, backcast.Currency)
+
+	fmt.Println(slices.Contains(marketdata.BundledIDs(), "SP500-USD"))
+	_, err = marketdata.Bundled("NO-SUCH-SERIES")
+	fmt.Println(errors.Is(err, fs.ErrNotExist))
+	// Output:
+	// refdata 1973-01-04
+	// simdata USD
+	// true
+	// true
+}
+
+// Example_loading walks the four ways into a series without a download: the
+// bundled data, any "date,value" file (here a bundled file as of an older
+// commit), the quotes a previous run cached (Offline: whatever their age,
+// never the network), and out again to any tool as long CSV.
+// (Not run: it reads the local cache and a git checkout.)
+func Example_loading() {
+	ctx := context.Background()
+
+	// Everything the binary bundles, no Client needed.
+	fmt.Println(len(marketdata.BundledIDs()), "bundled series")
+	tsy, err := marketdata.Bundled("TREASURY-LONG-USD")
+	if err != nil {
+		panic(err)
+	}
+
+	// Any "date,value" file: the same series ten commits ago.
+	out, err := exec.Command("git", "show", "HEAD~10:pkg/datasets/refdata/TREASURY-LONG-USD.csv").Output()
+	if err != nil {
+		panic(err)
+	}
+	old, err := marketdata.ReadCSV(bytes.NewReader(out), "TREASURY-LONG-USD@HEAD~10")
+	if err != nil {
+		panic(err)
+	}
+
+	// What a previous run cached, whatever its age; never the network.
+	client := marketdata.NewClient(marketdata.DefaultCacheDir())
+	client.Offline = true
+	iwda, err := client.FetchExtended(ctx, "IWDASIM", marketdata.FetchOptions{Currency: "EUR"}) // IE00B4L5Y983
+	if errors.Is(err, marketdata.ErrOffline) {
+		panic("never fetched: run it once online")
+	}
+	if err != nil {
+		panic(err)
+	}
+
+	// Out to any tool, month-end closes, one long id,date,value file.
+	err = marketdata.WriteCSV(os.Stdout, tsy, old, iwda.Resample(marketdata.Monthly))
+	if err != nil {
+		panic(err)
 	}
 }

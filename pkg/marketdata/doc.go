@@ -14,6 +14,33 @@
 // ConvertCurrency, Trim) for callers that need to deviate; the steps that
 // exist for the data generators are listed apart, under "Generator plumbing".
 //
+// # Loading series
+//
+// Four doors lead to a Series, and only the first may use the network:
+//
+//   - Client.FetchExtended (or Fetch) for anything quoted, downloaded and
+//     cached on disk under DefaultCacheDir, the directory the CLI's -data
+//     defaults to. Client.Offline keeps it off the network: the cache then
+//     answers whatever its age and depth, the bundled data behind it (a
+//     catalog index, the backcast of a SIM identifier, the snapshots listed
+//     under "Sources"), and anything else fails with an error wrapping
+//     ErrOffline. The cache's JSON files are private to this package and
+//     change without notice: read them through an Offline client, never
+//     directly.
+//   - Bundled for what the binary embeds, with no Client at all: a catalog
+//     asset's backcast (pkg/datasets/simdata, Source "simdata") or a
+//     reference series (pkg/datasets/refdata, Source "refdata": indices,
+//     yields, cash rates, NAV snapshots). BundledIDs lists them.
+//   - ReadCSV for any "date,value" file, the layout of the bundled ones: a
+//     file of one's own, or a bundled file as of an older commit piped out
+//     of "git show". It honours the headers the bundled files carry
+//     ("# junctions:" above all) and its errors name the line.
+//   - ReadLongCSV for several series in one "id,date,value" file.
+//
+// WriteCSV is the way out: the long layout, each series' metadata as "#"
+// comments any CSV reader can skip, values that parse back exactly. "pofo
+// -dump" is the same on the command line.
+//
 // # Resolution
 //
 // An identifier goes through the following steps. CanonicalID applies
@@ -63,8 +90,8 @@
 // API (the official daily NAV behind a French employee-savings fund's page,
 // catalog source "airfund": such a fund has no ISIN and no listing, and its
 // bundled refdata NAV snapshot answers offline). Downloads are cached on
-// disk (JSON, one file per instrument); a failed refresh serves the stale
-// data with a warning rather than failing. Each file records the format it was
+// disk (one file per instrument, in a format private to this package); a
+// failed refresh serves the stale data with a warning rather than failing. Each file records the format it was
 // written under, so a fix that changes what a correct file holds can distrust
 // its own past output without invalidating a whole cache (see cacheFormat).
 //
@@ -290,7 +317,9 @@
 //
 // ReadSimdata and ReadSimdataFS read the permanent simulated histories
 // (pkg/datasets/simdata/) produced by the simgen package, and the long
-// reference series of pkg/datasets/refdata/ in the same format. The "SIM
+// reference series of pkg/datasets/refdata/ in the same format, through
+// ReadCSV's parser; Bundled is the one-call form over the embedded copies.
+// The "SIM
 // suffix" convention (DBMFSIM = DBMF with simulated extension) is decoded by
 // SplitSim. Client.FetchExtended packages the whole extension into one call:
 // the bundled series, or a total-return proxy converted into the asset's
