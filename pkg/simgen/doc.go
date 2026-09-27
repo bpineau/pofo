@@ -69,7 +69,9 @@
 //   - monthlyVolMatch is DonorChain's volatility match for the case a
 //     per-observation one cannot serve: a MONTHLY donor and a weekly fund share
 //     almost no observation dates, so the ratio must be measured on month-end
-//     returns instead. It is what lets the insurance-linked family
+//     returns instead, on the whole calendar months both quote (the same
+//     marketdata.Panel pairing the audit reads its monthly figures on). It is
+//     what lets the insurance-linked family
 //     (catbond.go: ILSFUND, ILSFUNDE and the cat bond share classes behind
 //     them) stand on a monthly index; see docs/specs/catbond-sleeve-design.md;
 //   - movesOnly is the other half of that projection, for a donor that quotes

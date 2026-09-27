@@ -218,33 +218,35 @@ func catBondBuild(target string) func(Fetcher, time.Time) (*marketdata.Series, e
 }
 
 // monthlyVolMatch rescales donor so its MONTH-END returns realize the same
-// standard deviation the reference does over their common months, on returns in
+// volatility the reference does over their common months, on returns in
 // excess of cash so the cash leg keeps its own size. It is volMatch's sibling
 // for the case volMatch cannot serve: a monthly donor and a weekly reference
 // share almost no observation dates, so a per-observation match would find
 // nothing to measure and silently skip the donor.
 //
+// The months are paired by monthly, the audit's own reading (a
+// marketdata.Panel of whole calendar months both quote, measured by
+// metrics.Track), so the ratio a file is built with is the one its audit
+// reads back. That pairing leaves out a partial last month rather than
+// measuring it as a whole one, and a month either side skips is never
+// folded into the next one's return: the reading starts after the last
+// such hole.
+//
 // cashIdx is a money-market INDEX LEVEL, not an annualized rate: the euro cash
 // leg this family finances at is eurOvernightDeep, and reading it as a rate the
 // way cashAccrual does would inflate it a hundredfold.
 func monthlyVolMatch(ref, donor, cashIdx *marketdata.Series) (*marketdata.Series, error) {
-	lo, hi := time.Time{}, time.Date(3000, 1, 1, 0, 0, 0, 0, time.UTC)
-	a, b := monthlyReturns(ref, lo, hi), monthlyReturns(donor, lo, hi)
-	var ra, rb []float64
-	for m, r := range b {
-		if v, ok := a[m]; ok {
-			ra = append(ra, v)
-			rb = append(rb, r)
-		}
+	m, _, err := monthly(ref, donor, time.Time{}, time.Time{})
+	if err != nil {
+		return nil, err
 	}
-	if len(ra) < 36 {
-		return nil, fmt.Errorf("%d common months, want at least 36", len(ra))
+	if m.Periods < 36 {
+		return nil, fmt.Errorf("%d common months, want at least 36", m.Periods)
 	}
-	sa, sb := stdev(ra), stdev(rb)
-	if sa <= 0 || sb <= 0 {
-		return nil, fmt.Errorf("degenerate volatility (%.4f, %.4f)", sa, sb)
+	if m.VolA <= 0 || m.VolB <= 0 {
+		return nil, fmt.Errorf("degenerate volatility (%.4f, %.4f)", m.VolA, m.VolB)
 	}
-	k := sa / sb
+	k := m.VolRatio
 	if k < 0.5 || k > 2 {
 		return nil, fmt.Errorf("volatility ratio %.2f outside [0.5, 2]: not the same trade", k)
 	}
@@ -261,36 +263,6 @@ func monthlyVolMatch(ref, donor, cashIdx *marketdata.Series) (*marketdata.Series
 		out.Points = append(out.Points, marketdata.Point{Date: donor.Points[i].Date, Close: v})
 	}
 	return out, nil
-}
-
-// monthlyReturns maps "2006-01" to that month's return, measured from the
-// last quote of the previous month the series quotes, over [from, to].
-//
-// It is the pairing monthlyVolMatch was calibrated with, kept as is because
-// its scale factor ships in the bundled files: unlike a marketdata.Panel, it
-// keeps a partial last month and lets a month the series skips fold into
-// the next one's return. Moving the recipe onto a Panel is a data change
-// (regenerate and validate the three cat bond files), not a refactor.
-func monthlyReturns(s *marketdata.Series, from, to time.Time) map[string]float64 {
-	last := map[string]float64{}
-	var keys []string
-	for _, p := range s.Points {
-		if p.Date.Before(from) || p.Date.After(to) || p.Close <= 0 {
-			continue
-		}
-		k := p.Date.Format("2006-01")
-		if _, ok := last[k]; !ok {
-			keys = append(keys, k)
-		}
-		last[k] = p.Close
-	}
-	out := make(map[string]float64, len(keys))
-	for i := 1; i < len(keys); i++ {
-		if last[keys[i-1]] > 0 {
-			out[keys[i]] = last[keys[i]]/last[keys[i-1]] - 1
-		}
-	}
-	return out
 }
 
 // gamCatBondRecipe backcasts the GAM Star Cat Bond EUR-hedged accumulation
