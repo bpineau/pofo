@@ -173,12 +173,14 @@ past 400 days in either direction.
 - **Quotes start well AFTER it.** The depth the record implies does not exist
   at this provider; a deeper listing of the same class may.
 
-Neither is repaired automatically and neither trims anything. Nineteen
+Neither is repaired automatically and neither trims anything. Seventeen
 records currently say one or the other (2026-09, after the equity refresh
 corrected `since` to the issuers' launch dates: six false warnings cleared, the
 LifeStrategy pair, IUIT, the S&P 500 equal-weight and semiconductor lines and
 VEVE, and one true one added, INFR, whose Yahoo line starts 439 days after its
-launch), and all nineteen are true.
+launch; then the non-equity refresh: the iShares silver ETC and PIMCO's MINT
+cleared, the misidentified PFOCX gone, the Amundi EUR Overnight line added,
+Yahoo starting 648 days after its 2007 first NAV), and all seventeen are true.
 
 ### Currency exposure
 
@@ -371,6 +373,30 @@ URL actually used, and its `notes` line the interpretation hint.
   is image-only and its geography pie labels slices by colour only, which is
   interpretation rather than reading: refresh it only when the percentages can
   be tied to countries unambiguously.
+- **Bond and cash lines (checked 2026-09)**: on iShares, pin the product
+  page's "Effective Duration", not the screener's field of the same name, which
+  disagrees on the high-yield and EM funds (IHYG 2.51 against 1.39, IHYE 3.23
+  against 1.86, IEMB 6.35 against 5.89, same date); the holdings CSV files
+  T-bills under the asset class "Cash" (IB01) and can hold a sibling ETF under
+  that ETF's domicile (IEML's Brazil local-bond ETF shows as "Germany"), so
+  read a surprising country before trusting it; a "Term" index holds only the
+  largest euro issuers, which is why IBGL and CSBGE3 name four or five
+  countries. Amundi's bond factsheets print modified duration and a country
+  table with values; an index provider's factsheet can carry the currency
+  split the fund's does not (Solactive, as a labelled donut on page 2: render
+  it). JPMorgan's product data holds the average duration inside
+  `bondQualityBreakdown`. Janus Henderson prints effective duration on its US
+  ETF pages and in the EU factsheet PDFs (`cdn.janushenderson.com/webdocs/...`),
+  Fair Oaks on `clo-etf.com`. Where the issuer refuses a script (PIMCO,
+  Direxion's anti-bot page), the INDEX's duration can be read off another
+  tracker of the same index (GOVZ for ZROZ, TLT for TMF), said in `notes`.
+  A US fund's summary prospectus (SEC EDGAR 497K, which answers a plain
+  script once the redirect is followed) carries the fee table with the
+  interest and short-dividend expense split out; the catalog pins the
+  ratio net of those financing costs where an issuer prints one (AQMIX,
+  QSPRX, PFINX) and says so in `notes` where it cannot (BTAL). Dead ends:
+  Invesco's factsheet PDFs (HTTP 406), Hartford's pages (404), AGF's adjusted
+  ratio (JavaScript), BarclayHedge's index page (500; its excel dump works).
 - Keep region residuals as `Other eurozone/Europe/developed/emerging`; do not
   invent country detail an issuer does not publish. A fund denominated in one
   currency whose issuers sit in many countries (a USD corporate or ultrashort
